@@ -1,3 +1,8 @@
+2007-05-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Parser/Resolver.cs: Added protection against infinite loop in
+	  ResolveIdentifier. Fixes bug #81769.
+
 2007-05-25  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* Parser/CodeGenerator.cs (EncapsulateFieldImpGetSet):

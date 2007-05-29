@@ -238,7 +238,7 @@ namespace CSharpBinding.Parser
 			LanguageItemVisitor itemVisitor = new LanguageItemVisitor (this);
 			ILanguageItem item = expr.AcceptVisitor (itemVisitor, null) as ILanguageItem;
 			
-			if (item == null && expr is BinaryOperatorExpression) {
+			if (item == null && expr is BinaryOperatorExpression && !id.EndsWith ("()")) {
 				// The expression parser does not correctly parse individual generic type names.
 				// Try resolving again but using a more complex expression.
 				return ResolveIdentifier (fileCompilationUnit, id + "()", line, col);
