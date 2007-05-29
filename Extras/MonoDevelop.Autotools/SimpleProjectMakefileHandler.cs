@@ -21,6 +21,7 @@ Boston, MA 02111-1307, USA.
 using System;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
@@ -187,6 +188,7 @@ namespace MonoDevelop.Autotools
 				// Handle files to be deployed
 				Hashtable deployDirs = new Hashtable ();
 				Hashtable deployFileVars = new Hashtable ();
+				Dictionary<string, DeployFile> uniqueDeployFiles = new Dictionary<string, DeployFile> ();
 				StringBuilder deployFileCopy = new StringBuilder ();
 				ArrayList builtFiles = new ArrayList ();
 				
@@ -194,6 +196,12 @@ namespace MonoDevelop.Autotools
 				foreach (DeployFile dfile in deployFiles) {
 					if (dfile.SourcePath == project.GetOutputFileName ())
 						continue;
+
+					// GetDeployFiles can return duplicates, ignore them
+					string key = dfile.SourcePath + dfile.RelativeTargetPath;
+					if (uniqueDeployFiles.ContainsKey (key))
+						continue;
+					uniqueDeployFiles [key] = dfile;
 
 					string fname = null;
 					
@@ -269,7 +277,7 @@ namespace MonoDevelop.Autotools
 				StringBuilder conf_vars = new StringBuilder ();
 				foreach (CombineConfiguration combineConfig in project.RootCombine.Configurations)
 				{
-					DotNetProjectConfiguration config = GetProjectConfig (combineConfig, project) as DotNetProjectConfiguration;
+					DotNetProjectConfiguration config = GetProjectConfig (combineConfig.Name, project) as DotNetProjectConfiguration;
 					if (config == null)
 						continue;
 
@@ -316,7 +324,7 @@ namespace MonoDevelop.Autotools
 						{
 							Project refp = GetProjectFromName ( reference.Reference, project );
 
-							DotNetProjectConfiguration dnpc = GetProjectConfig (combineConfig, refp) as DotNetProjectConfiguration;
+							DotNetProjectConfiguration dnpc = GetProjectConfig (combineConfig.Name, refp) as DotNetProjectConfiguration;
 							if ( dnpc == null )
 								throw new Exception ( GettextCatalog.GetString 
 										("Could not add reference to project '{0}'", refp.Name) );
@@ -366,9 +374,13 @@ namespace MonoDevelop.Autotools
 			return makefile;
 		}
 
-		// Gets the Project config corresponding to the @combineConfig for a project (@entry)
-		IConfiguration GetProjectConfig (CombineConfiguration combineConfig, CombineEntry entry)
+		// Get the Project config corresponding to its @parentConfig
+		IConfiguration GetProjectConfig (string parentConfig, CombineEntry entry)
 		{
+			CombineConfiguration combineConfig = entry.ParentCombine.Configurations [parentConfig] as CombineConfiguration;
+			if (combineConfig == null)
+				return null;
+
 			foreach (CombineConfigurationEntry cce in combineConfig.Entries) {
 				if (cce.Entry == entry)
 					return entry.Configurations [cce.ConfigurationName];

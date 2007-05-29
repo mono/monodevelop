@@ -1,5 +1,12 @@
 2007-05-29  Ankit Jain  <jankit@novell.com>
 
+	* SimpleProjectMakefileHandler.cs (Deploy): GetDeployFiles can return
+	duplicates, ignore them. Update code for change in GetProjectConfig.
+	(GetProjectConfig): Look for project's config in ParentCombine's
+	configs.
+
+2007-05-29  Ankit Jain  <jankit@novell.com>
+
 	* SimpleProjectMakefileHandler.cs (Deploy): Enumerate solution level
 	configs, and use the corresponding project config for emitting Makefile.am
 	(GetProjectConfig): New.
