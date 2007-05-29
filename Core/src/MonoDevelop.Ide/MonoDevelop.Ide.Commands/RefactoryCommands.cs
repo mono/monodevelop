@@ -222,9 +222,9 @@ namespace MonoDevelop.Ide.Commands
 				IClass cls = (IClass) item;
 				
 				if (cls.ClassType == ClassType.Interface)
-					txt = GettextCatalog.GetString ("Interface {0}", itemName);
+					txt = GettextCatalog.GetString ("Interface <b>{0}</b>", itemName);
 				else
-					txt = GettextCatalog.GetString ("Class {0}", itemName);
+					txt = GettextCatalog.GetString ("Class <b>{0}</b>", itemName);
 				
 				if (cls.BaseTypes.Count > 0) {
 					foreach (IReturnType rt in cls.BaseTypes) {
@@ -271,35 +271,36 @@ namespace MonoDevelop.Ide.Commands
 					}
 				}
 			} else if (item is IField) {
-				txt = GettextCatalog.GetString ("Field '{0}'", itemName);
+				txt = GettextCatalog.GetString ("Field <b>{0}</b>", itemName);
 				if (canJumpTo)
 					ciset.CommandInfos.Add (GettextCatalog.GetString ("Encapsulate Field"), new RefactoryOperation (refactorer.EncapsulateField));
 				AddRefactoryMenuForClass (ctx, pinfo, ciset, ((IField) item).ReturnType.FullyQualifiedName);
 			} else if (item is IProperty) {
-				txt = GettextCatalog.GetString ("Property '{0}'", itemName);
+				txt = GettextCatalog.GetString ("Property <b>{0}</b>", itemName);
 				AddRefactoryMenuForClass (ctx, pinfo, ciset, ((IProperty) item).ReturnType.FullyQualifiedName);
 			} else if (item is IEvent) {
-				txt = GettextCatalog.GetString ("Event {0}", itemName);
+				txt = GettextCatalog.GetString ("Event <b>{0}</b>", itemName);
 			} else if (item is IMethod) {
 				IMethod method = item as IMethod;
 				
 				if (method.IsConstructor)
-					txt = GettextCatalog.GetString ("Constructor {0}", EscapeName (method.DeclaringType.Name));
+					txt = GettextCatalog.GetString ("Constructor <b>{0}</b>", EscapeName (method.DeclaringType.Name));
 				else
-					txt = GettextCatalog.GetString ("Method {0}", itemName);
+					txt = GettextCatalog.GetString ("Method <b>{0}</b>", itemName);
 			} else if (item is IIndexer) {
-				txt = GettextCatalog.GetString ("Indexer {0}", itemName);
+				txt = GettextCatalog.GetString ("Indexer <b>{0}</b>", itemName);
 			} else if (item is IParameter) {
-				txt = GettextCatalog.GetString ("Parameter {0}", itemName);
+				txt = GettextCatalog.GetString ("Parameter <b>{0}</b>", itemName);
 				AddRefactoryMenuForClass (ctx, pinfo, ciset, ((IParameter) item).ReturnType.FullyQualifiedName);
 			} else if (item is LocalVariable) {
 				LocalVariable var = (LocalVariable) item;
 				AddRefactoryMenuForClass (ctx, pinfo, ciset, var.ReturnType.FullyQualifiedName);
-				txt = GettextCatalog.GetString ("Variable {0}", itemName);
+				txt = GettextCatalog.GetString ("Variable <b>{0}</b>", itemName);
 			} else
 				return null;
 			
 			ciset.Text = txt;
+			ciset.UseMarkup = true;
 			return ciset;
 		}
 		

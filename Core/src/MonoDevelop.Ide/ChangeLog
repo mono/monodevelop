@@ -1,3 +1,8 @@
+2007-05-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: In the refactoring
+	  menu, show type and member names in bold.
+
 2007-05-25  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs: Moved the
