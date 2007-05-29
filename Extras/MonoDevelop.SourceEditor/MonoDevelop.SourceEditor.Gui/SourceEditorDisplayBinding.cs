@@ -194,7 +194,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			mainBox.PackStart (editorBar, false, true, 0);
 			
 			classBrowser = new HBox(true, 2);
-			classCombo = new Gtk.ComboBox(); 
+			classCombo = new Gtk.ComboBox();
 			classCombo.WidthRequest = 1;
 			membersCombo = new Gtk.ComboBox();
 			membersCombo.WidthRequest = 1;
@@ -232,6 +232,14 @@ namespace MonoDevelop.SourceEditor.Gui
 			se.View.ToggleOverwrite += new EventHandler (CaretModeChanged);
 			ContentNameChanged += new EventHandler (UpdateFSW);
 			
+			// setup a focus chain so that the editor widget gets focus when
+			// switching tabs rather than the classCombo, by default
+			Widget [] chain = new Widget [3];
+			chain[0] = se;
+			chain[1] = classCombo;
+			chain[2] = membersCombo;
+			((Container) mainBox).FocusChain = chain;
+			
 			CaretModeChanged (null, null);
 			SetInitialValues ();
 			
@@ -253,6 +261,7 @@ namespace MonoDevelop.SourceEditor.Gui
 				Services.DebuggingService.BreakpointRemoved += breakpointRemovedHandler;
 				Services.DebuggingService.ExecutionLocationChanged += executionChangedHandler;
 			}
+			
 			mainBox.ShowAll ();
 		}
 		
