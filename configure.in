@@ -22,9 +22,15 @@ AC_SUBST(LD_LIBRARY_PATH)
 
 dnl to add MD's mimetypes
 AC_PATH_PROG(UPDATE_MIME_DB, update-mime-database, no)
+if test "x$UPDATE_MIME_DB" = "xno"; then
+   AC_MSG_ERROR([You need to install update-mime-database])
+fi
 AC_SUBST(UPDATE_MIME_DB)
 
 AC_PATH_PROG(UPDATE_DESKTOP_DB, update-desktop-database, no)
+if test "x$UPDATE_DESKTOP_DB" = "xno"; then
+   AC_MSG_ERROR([You need to install update-desktop-database])
+fi
 AC_SUBST(UPDATE_DESKTOP_DB)
 
 dnl Find pkg-config

@@ -1,3 +1,9 @@
+2007-05-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* configure.in (UPDATE_DESKTOP_DB): Abort if UPDATE_MIME_DB or
+	UPDATE_DESKTOP_DB = no. These tools are required. Fixes bug
+	#81212.
+
 2007-05-13 Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* configure.in: Remove JSCall# dependency for AspNetEdit.
