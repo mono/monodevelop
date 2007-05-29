@@ -324,8 +324,8 @@ namespace MonoDevelop.Ide.Gui
 					}
 					
 					IPositionable ipos = (IPositionable) vcFound.GetContent (typeof(IPositionable));
-					if (line != -1 && ipos != null) {
-						ipos.JumpTo (line, column != -1 ? column : 0);
+					if (line >= 1 && ipos != null) {
+						ipos.JumpTo (line, column >= 1 ? column : 1);
 					}
 					
 					return doc;

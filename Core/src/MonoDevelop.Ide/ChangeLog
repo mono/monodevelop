@@ -1,5 +1,13 @@
 2007-05-29  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Use the new
+	  IClass.SourceProject property to know if an IClass can be changed
+	  or not. CanJumpTo is not reliable since now MD allows jumping to
+	  source code files taken from debug info of assemblies.
+	* MonoDevelop.Ide.Gui/Workbench.cs: (OpenDocument) Columns are 1 based.
+
+2007-05-29  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: In the refactoring
 	  menu, show type and member names in bold.
 

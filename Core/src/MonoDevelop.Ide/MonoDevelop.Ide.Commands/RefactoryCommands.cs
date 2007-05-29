@@ -195,27 +195,29 @@ namespace MonoDevelop.Ide.Commands
 			CommandInfoSet ciset = new CommandInfoSet ();
 			string itemName = EscapeName (item.Name);
 			bool canRename = false;
-			bool canJumpTo = false;
 			string txt;
 			
 			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item)) {
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Go to declaration"), new RefactoryOperation (refactorer.GoToDeclaration));
-				canJumpTo = true;
 			}
 			
 			if ((item is IMember) && !(item is IClass))
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Find references"), new RefactoryOperation (refactorer.FindReferences));
 			
-			if ((item is LocalVariable) || (item is IParameter) || 
-			    (((item is IMember) || (item is IClass)) && canJumpTo)) {
-				// We can rename local variables (always), method params (always), 
-				// or class/members (if we can jump to their declarations)
+			// We can rename local variables (always), method params (always), 
+			// or class/members (if they belong to a project)
+			if ((item is LocalVariable) || (item is IParameter))
 				canRename = true;
-				
-				if (!(item is IClass)) {
-					// Defer adding this item for Classes until later
-					ciset.CommandInfos.Add (GettextCatalog.GetString ("_Rename"), new RefactoryOperation (refactorer.Rename));
-				}
+			else if (item is IClass)
+				canRename = ((IClass)item).SourceProject != null;
+			else if (item is IMember) {
+				IClass cls = ((IMember)item).DeclaringType;
+				canRename = cls != null && cls.SourceProject != null;
+			}
+			
+			if (canRename && !(item is IClass)) {
+				// Defer adding this item for Classes until later
+				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Rename"), new RefactoryOperation (refactorer.Rename));
 			}
 			
 			if (item is IClass) {
@@ -241,11 +243,11 @@ namespace MonoDevelop.Ide.Commands
 				if (canRename)
 					ciset.CommandInfos.Add (GettextCatalog.GetString ("_Rename"), new RefactoryOperation (refactorer.Rename));
 				
-				if (cls.ClassType == ClassType.Interface && eclass != null) {
+				if (canRename && cls.ClassType == ClassType.Interface && eclass != null) {
 					// An interface is selected, so just need to provide these 2 submenu items
 					ciset.CommandInfos.Add (GettextCatalog.GetString ("Implement Interface (implicit)"), new RefactoryOperation (refactorer.ImplementImplicitInterface));
 					ciset.CommandInfos.Add (GettextCatalog.GetString ("Implement Interface (explicit)"), new RefactoryOperation (refactorer.ImplementExplicitInterface));
-				} else if (cls.BaseTypes.Count > 0 && cls.ClassType != ClassType.Interface && cls == eclass) {
+				} else if (canRename && cls.BaseTypes.Count > 0 && cls.ClassType != ClassType.Interface && cls == eclass) {
 					// Class might have interfaces... offer to implement them
 					CommandInfoSet impset = new CommandInfoSet ();
 					CommandInfoSet expset = new CommandInfoSet ();
@@ -272,7 +274,7 @@ namespace MonoDevelop.Ide.Commands
 				}
 			} else if (item is IField) {
 				txt = GettextCatalog.GetString ("Field <b>{0}</b>", itemName);
-				if (canJumpTo)
+				if (canRename)
 					ciset.CommandInfos.Add (GettextCatalog.GetString ("Encapsulate Field"), new RefactoryOperation (refactorer.EncapsulateField));
 				AddRefactoryMenuForClass (ctx, pinfo, ciset, ((IField) item).ReturnType.FullyQualifiedName);
 			} else if (item is IProperty) {
