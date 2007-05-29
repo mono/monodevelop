@@ -1,3 +1,22 @@
+2007-05-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Parser.Cecil/MonoSymbolWriter.cs,
+	  MonoDevelop.Projects.Parser.Cecil/MonoSymbolFile.cs,
+	  MonoDevelop.Projects.Parser.Cecil/MdbWriter.cs,
+	  MonoDevelop.Projects.Parser.Cecil/SymbolWriterImpl.cs,
+	  MonoDevelop.Projects.Parser.Cecil/MdbReader.cs,
+	  MonoDevelop.Projects.Parser.Cecil/MonoSymbolTable.cs,
+	  MonoDevelop.Projects.Parser.Cecil/MdbFactory.cs,
+	  MonoDevelop.Projects.mdp, Makefile.am: Added symbol reader for mdb
+	  files.
+	* MonoDevelop.Projects.Parser/ReflectionClass.cs,
+	  MonoDevelop.Projects.Parser/ReflectionMethod.cs,
+	  MonoDevelop.Projects.Parser/ReflectionProperty.cs,
+	  MonoDevelop.Projects.Parser/ReflectionIndexer.cs,
+	  MonoDevelop.Projects.Parser/DefaultRegion.cs: When parsing an
+	  assembly, get the source file path from the debug information, when
+	  available.
+
 2007-05-25  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs

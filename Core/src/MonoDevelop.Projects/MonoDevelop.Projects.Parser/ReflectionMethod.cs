@@ -9,6 +9,7 @@ using System.Text;
 using System.Collections;
 using System.Xml;
 using Mono.Cecil;
+using Mono.Cecil.Cil;
 using MDGenericParameter = MonoDevelop.Projects.Parser.GenericParameter;
 
 namespace MonoDevelop.Projects.Parser
@@ -57,6 +58,13 @@ namespace MonoDevelop.Projects.Parser
 		public ReflectionMethod (MethodDefinition methodBase, XmlDocument docs)
 		{
 			string name = methodBase.Name;
+			if (methodBase.HasBody && methodBase.Body.Instructions != null && methodBase.Body.Instructions.Count > 0) {
+				SequencePoint sp = methodBase.Body.Instructions[0].SequencePoint;
+				if (sp != null) {
+					Region = new DefaultRegion (sp.StartLine, sp.StartColumn);
+					Region.FileName = sp.Document.Url;
+				}
+			}
 			
 			if (methodBase.IsConstructor) {
 				name = ".ctor";

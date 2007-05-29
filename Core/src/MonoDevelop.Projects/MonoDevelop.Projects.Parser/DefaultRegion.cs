@@ -24,11 +24,17 @@ namespace MonoDevelop.Projects.Parser {
 			get {
 				return beginLine;
 			}
+			set {
+				beginLine = value; 
+			}
 		}
 
 		public virtual int BeginColumn {
 			get {
 				return beginColumn;
+			}
+			set {
+				beginColumn = value;
 			}
 		}
 

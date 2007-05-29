@@ -128,21 +128,21 @@ namespace MonoDevelop.Projects.Parser
 				}
 				
 				foreach (PropertyDefinition propertyInfo in type.Properties) {
-//					if (!propertyInfo.IsSpecialName) {
 					ParameterDefinitionCollection p = propertyInfo.Parameters;
 					
 					if (p == null || p.Count == 0) {
 						IProperty newProperty = new ReflectionProperty (propertyInfo, docs);
 						if (!newProperty.IsInternal) {
 							properties.Add(newProperty);
+							UpdateClassRegion (newProperty.Region);
 						}
 					} else {
 						IIndexer newIndexer = new ReflectionIndexer (propertyInfo, docs);
 						if (!newIndexer.IsInternal) {
-							indexer.Add(newIndexer);
+							indexer.Add (newIndexer);
+							UpdateClassRegion (newIndexer.Region);
 						}
 					}
-//					}
 				}
 				
 				foreach (MethodDefinition methodInfo in type.Methods) {
@@ -153,14 +153,16 @@ namespace MonoDevelop.Projects.Parser
 					IMethod newMethod = new ReflectionMethod (methodInfo, docs);
 					
 					if (!newMethod.IsInternal) {
-						methods.Add(newMethod);
+						methods.Add (newMethod);
+						UpdateClassRegion (newMethod.Region);
 					}
 				}
 				
 				foreach (MethodDefinition constructorInfo in type.Constructors) {
 					IMethod newMethod = new ReflectionMethod (constructorInfo, docs);
 					if (!newMethod.IsInternal) {
-						methods.Add(newMethod);
+						methods.Add (newMethod);
+						UpdateClassRegion (newMethod.Region);
 					}
 				}
 				
@@ -172,6 +174,27 @@ namespace MonoDevelop.Projects.Parser
 						events.Add(newEvent);
 					}
 //					}
+				}
+			}
+		}
+		
+		void UpdateClassRegion (IRegion memberRegion)
+		{
+			DefaultRegion reg = memberRegion as DefaultRegion;
+			if (reg == null)
+				return;
+			
+			if (region == null)
+				region = new DefaultRegion (0, 0);
+			
+			DefaultRegion cregion = (DefaultRegion) region;
+			
+			if (cregion.FileName == null || cregion.FileName == reg.FileName) {
+				cregion.FileName = reg.FileName;
+				reg.FileName = null;
+				if (cregion.BeginLine == 0 || cregion.BeginLine > reg.BeginLine) {
+					cregion.BeginLine = reg.BeginLine;
+					cregion.BeginColumn = reg.BeginColumn;
 				}
 			}
 		}

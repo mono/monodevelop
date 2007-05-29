@@ -9,6 +9,7 @@ using System.Collections;
 using System.Text;
 using System.Xml;
 using Mono.Cecil;
+using Mono.Cecil.Cil;
 
 namespace MonoDevelop.Projects.Parser
 {
@@ -31,20 +32,50 @@ namespace MonoDevelop.Projects.Parser
 */
 		public ReflectionIndexer (PropertyDefinition propertyInfo, XmlDocument docs)
 		{
+			int line = 0, col = 0;
+			string file = null;
+			
 			// indexers does have the same name as the object that declare the indexers
 			Name = propertyInfo.DeclaringType.Name;
 			
 			// show the abstract layer that we have getter & setters
 			if (propertyInfo.GetMethod != null) {
-				getterRegion = new DefaultRegion(0, 0, 0, 0);
+				if (propertyInfo.GetMethod.HasBody && propertyInfo.GetMethod.Body.Instructions.Count > 0) {
+					SequencePoint sp = propertyInfo.GetMethod.Body.Instructions[0].SequencePoint;
+					if (sp != null) {
+						getterRegion = new DefaultRegion (sp.StartLine, sp.StartColumn);
+						file = sp.Document.Url;
+						line = sp.StartLine;
+						col = sp.StartColumn;
+					}
+				}
+				if (getterRegion == null)
+					getterRegion = new DefaultRegion(0, 0, 0, 0);
 			} else {
 				getterRegion = null;
 			}
 			
 			if (propertyInfo.SetMethod != null) {
-				setterRegion = new DefaultRegion(0, 0, 0, 0);
+				if (propertyInfo.SetMethod.HasBody && propertyInfo.SetMethod.Body.Instructions.Count > 0) {
+					SequencePoint sp = propertyInfo.SetMethod.Body.Instructions[0].SequencePoint;
+					if (sp != null) {
+						setterRegion = new DefaultRegion (sp.StartLine, sp.StartColumn);
+						file = sp.Document.Url;
+						if (line == 0 || sp.StartLine < line) {
+							line = sp.StartLine;
+							col = sp.StartColumn;
+						}
+					}
+				}
+				if (setterRegion == null)
+					setterRegion = new DefaultRegion(0, 0, 0, 0);
 			} else {
 				setterRegion = null;
+			}
+			
+			if (file != null) {
+				Region = new DefaultRegion (line, col);
+				Region.FileName = file;
 			}
 
 			XmlNode node = null;

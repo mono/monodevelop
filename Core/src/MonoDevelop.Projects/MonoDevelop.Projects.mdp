@@ -232,6 +232,14 @@
     <File name="./MonoDevelop.Projects/TypelibImporter.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/UnknownCombineEntry.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/UnknownProjectVersionException.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser.Cecil" subtype="Directory" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser.Cecil/MdbFactory.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser.Cecil/MdbReader.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser.Cecil/MdbWriter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser.Cecil/MonoSymbolFile.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser.Cecil/MonoSymbolTable.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser.Cecil/MonoSymbolWriter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser.Cecil/SymbolWriterImpl.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
