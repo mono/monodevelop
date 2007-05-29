@@ -6,12 +6,15 @@
 // </file>
 
 using System;
+using System.Text;
 using System.IO;
 using System.Collections;
 using System.Threading;
 using System.Xml;
 using MonoDevelop.Projects.Parser;
 using Mono.Cecil;
+using Mono.Cecil.Mdb;
+using Mono.Unix;
 
 //using ICSharpCode.SharpAssembly.Metadata.Rows;
 //using ICSharpCode.SharpAssembly.Metadata;
@@ -50,63 +53,24 @@ namespace MonoDevelop.Projects.Parser {
 		{
 		}
 		
-/*		byte[] GetBytes (string fileName)
-		{
-			Runtime.LoggingService.Info (fileName);
-			FileStream fs = System.IO.File.OpenRead(fileName);
-			long size = fs.Length;
-			byte[] outArray = new byte[size];
-			fs.Read(outArray, 0, (int)size);
-			fs.Close();
-			return outArray;
-		}
-*/
-
 		public void Load(string fileName, bool nonLocking)
 		{
-//			AssemblyReader assembly = new AssemblyReader();
-//			assembly.Load(fileName);
-//			
-//			TypeDef[] typeDefTable = (TypeDef[])assembly.MetadataTable.Tables[TypeDef.TABLE_ID];
-//			
-//			for (int i = 0; i < typeDefTable.Length; ++i) {
-//				Runtime.LoggingService.Info("ADD " + i);
-//				classes.Add(new SharpAssemblyClass(assembly, typeDefTable, i));
-//			}
-			
-			// read xml documentation for the assembly
-			/*XmlDocument doc        = null;
-			Hashtable   docuNodes  = new Hashtable();
-			string      xmlDocFile = System.IO.Path.ChangeExtension(fileName, ".xml");
-			
-			string   localizedXmlDocFile = System.IO.Path.GetDirectoryName(fileName) + System.IO.Path.DirectorySeparatorChar +
-			                               Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName + System.IO.Path.DirectorySeparatorChar +
-								           System.IO.Path.ChangeExtension(System.IO.Path.GetFileName(fileName), ".xml");
-			if (System.IO.File.Exists(localizedXmlDocFile)) {
-				xmlDocFile = localizedXmlDocFile;
-			}
-			
-			if (System.IO.File.Exists(xmlDocFile)) {
-				doc = new XmlDocument();
-				doc.Load(xmlDocFile);
-				
-				// convert the XmlDocument into a hash table
-				if (doc.DocumentElement != null && doc.DocumentElement["members"] != null) {
-					foreach (XmlNode node in doc.DocumentElement["members"].ChildNodes) {
-						if (node != null && node.Attributes != null && node.Attributes["name"] != null) {
-							docuNodes[node.Attributes["name"].InnerText] = node;
-						}
-					}
-				}
-				}*/
-
-			//FIXME: Re-enable this code when the mono bug goes away, 0.32
-			//hopefully
-			//System.Reflection.Assembly asm = nonLocking ? Assembly.Load(GetBytes(fileName)) : Assembly.LoadFrom(fileName);
+			// Jump links
+			fileName = Mono.Unix.UnixPath.GetRealPath (fileName);
 			
 			this.fileName = fileName;
 			
 			AssemblyDefinition asm = AssemblyFactory.GetAssembly (fileName);
+			
+			if (File.Exists (fileName + ".mdb")) {
+				MdbFactory f = new MdbFactory ();
+				try {
+					asm.MainModule.LoadSymbols (f.CreateReader (asm.MainModule, fileName));
+				} catch (Exception ex) {
+					// Ignore symbol loading errors
+					Console.WriteLine (ex);
+				}
+			}
 			
 			foreach (TypeDefinition type in asm.MainModule.Types) {
 				TypeAttributes vis = type.Attributes & TypeAttributes.VisibilityMask;

@@ -1,5 +1,10 @@
 2007-05-29  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects.Parser/AssemblyInformation.cs: Removed unused
+	  code. Load debug symbols if an mdb file exists.
+
+2007-05-29  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects.Parser.Cecil/MonoSymbolWriter.cs,
 	  MonoDevelop.Projects.Parser.Cecil/MonoSymbolFile.cs,
 	  MonoDevelop.Projects.Parser.Cecil/MdbWriter.cs,
