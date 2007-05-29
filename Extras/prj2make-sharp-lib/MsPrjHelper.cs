@@ -802,6 +802,9 @@ namespace MonoDevelop.Prj2Make
 			
 			if (basePath != null)
 				path = Path.Combine (basePath, path);
+
+			if (System.IO.File.Exists (path))
+				return path;
 				
 			if (Path.IsPathRooted (path)) {
 					
