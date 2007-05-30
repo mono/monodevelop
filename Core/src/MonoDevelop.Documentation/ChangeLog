@@ -1,3 +1,8 @@
+2007-05-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Documentation/DocumentationService.cs: Don't crash is
+	  something goes wrong when getting help.
+
 2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Documentation.addin.xml: Migration to Mono.Addins.

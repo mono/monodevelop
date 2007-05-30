@@ -32,7 +32,14 @@ namespace MonoDevelop.Documentation
 		}
 
 		public XmlDocument GetHelpXml (string type) {
-			return helpTree.GetHelpXml ("T:" + type);
+			try {
+				return helpTree.GetHelpXml ("T:" + type);
+			}
+			catch (Exception ex) {
+				// If something goes wrong, just report the error
+				Runtime.LoggingService.Error (ex);
+				return null;
+			}
 		}
 
 		public string GetHelpUrl(ILanguageItem languageItem)
