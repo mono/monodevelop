@@ -81,6 +81,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs {
 				configNodeProperties.SetProperty("Config", config);
 				AddNodes(configNodeProperties, newNode, configurationNode.GetChildObjects (false));
 			}
+			TreeView.ExpandRow (treeStore.GetPath (configurationTreeNode), false);
 		}
 		
 		// override base method so that we can make the text cell render editable 

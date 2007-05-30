@@ -109,6 +109,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			} else {
 				configIter = iter;
 				FillConfigurations ();
+				TreeView.ExpandRow (treeStore.GetPath (configIter), false);
 			}
 		}
 		

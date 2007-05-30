@@ -1,3 +1,9 @@
+2007-05-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs: Make sure
+	  root nodes in option dialogs are expanded by default.
+
 2007-05-30  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs
