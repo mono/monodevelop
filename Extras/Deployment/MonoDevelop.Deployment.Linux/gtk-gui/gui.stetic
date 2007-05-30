@@ -1,11 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
+  <configuration>
+    <images-root-path>../</images-root-path>
+  </configuration>
   <import>
     <widget-library name="../../../../build/AddIns/MonoDevelop.Projects.Gui.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Components.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Deployment.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.Deployment.Linux.dll" />
+    <widget-library name="../../../../build/AddIns/MonoDevelop.Deployment.Linux.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.Deployment.Linux.BasicOptionPanelWidget" design-size="409 245">
     <property name="MemberName" />
@@ -147,6 +150,7 @@
       <widget class="Gtk.Notebook" id="notebook2">
         <property name="MemberName" />
         <property name="CanFocus">True</property>
+        <property name="CurrentPage">0</property>
         <child>
           <placeholder />
         </child>
@@ -170,6 +174,7 @@
       <widget class="Gtk.Notebook" id="notebook">
         <property name="MemberName" />
         <property name="CanFocus">True</property>
+        <property name="CurrentPage">0</property>
         <property name="TabPos">Left</property>
         <child>
           <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">

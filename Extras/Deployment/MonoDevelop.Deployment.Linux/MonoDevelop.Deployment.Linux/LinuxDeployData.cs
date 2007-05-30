@@ -37,9 +37,11 @@ namespace MonoDevelop.Deployment.Linux
 		public static LinuxDeployData GetLinuxDeployData (CombineEntry entry)
 		{
 			LinuxDeployData data = (LinuxDeployData) entry.ExtendedProperties ["Deployment.LinuxDeployData"];
-			if (data != null && data.entry == null) {
-				data.Bind (entry);
-				data.connected = true;
+			if (data != null) {
+				if (data.entry == null) {
+					data.Bind (entry);
+					data.connected = true;
+				}
 				return data;
 			}
 			
@@ -55,9 +57,7 @@ namespace MonoDevelop.Deployment.Linux
 		
 		internal static LinuxDeployData CreateDefault (CombineEntry entry)
 		{
-			LinuxDeployData data = new LinuxDeployData (entry);
-			data.ScriptName = entry.Name.ToLower ();
-			return data;
+			return new LinuxDeployData (entry);
 		}
 		
 		void Bind (CombineEntry entry)
@@ -95,14 +95,16 @@ namespace MonoDevelop.Deployment.Linux
 		}
 		
 		public string ScriptName {
-			get { return scriptName; }
+			get { return scriptName != null ? scriptName : PackageName; }
 			set {
-				if (scriptName != value) {
+				if (value != ScriptName) {
 					scriptName = value; 
 					UpdateEntry ();
 				}
 			}
 		}
+					    
+				
 		
 		public bool GenerateDesktopEntry {
 			get { return generateDesktopEntry; }

@@ -27,6 +27,7 @@ namespace MonoDevelop.Deployment.Linux {
             this.notebook2 = new Gtk.Notebook();
             this.notebook2.CanFocus = true;
             this.notebook2.Name = "notebook2";
+            this.notebook2.CurrentPage = 0;
             // Notebook tab
             Gtk.Label w1 = new Gtk.Label();
             w1.Visible = true;

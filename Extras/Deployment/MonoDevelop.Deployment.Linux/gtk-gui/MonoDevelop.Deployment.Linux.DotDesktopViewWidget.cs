@@ -161,6 +161,7 @@ namespace MonoDevelop.Deployment.Linux {
             this.notebook = new Gtk.Notebook();
             this.notebook.CanFocus = true;
             this.notebook.Name = "notebook";
+            this.notebook.CurrentPage = 0;
             this.notebook.TabPos = ((Gtk.PositionType)(0));
             // Container child notebook.Gtk.Notebook+NotebookChild
             this.scrolledwindow1 = new Gtk.ScrolledWindow();
