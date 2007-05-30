@@ -19,6 +19,11 @@
 
 	<!-- Extension points -->
 	
+	<ExtensionPoint path = "/MonoDevelop/ProjectOptions">
+		<Description>Dialog panels for project options.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.DialogPanel" />
+	</ExtensionPoint>
+	
 	<ExtensionPoint path = "/SharpDevelop/Workbench/ProjectOptions/GeneralOptions">
 		<Description>Dialog panels for project options.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.DialogPanel" />
@@ -44,6 +49,24 @@
 	</ExtensionPoint>
 
 	<!-- Extensions points -->
+
+	<Extension path = "/MonoDevelop/ProjectOptions">
+		<DialogPanel id     = "Application"
+		             _label = "Application"
+		             class  = "MonoDevelop.Projects.Gui.ProjectOptions.CommonApplicationPreferences"/>
+		<DialogPanel id     = "Compiling"
+		             _label = "Compiling"
+		             class  = "MonoDevelop.Projects.Gui.ProjectOptions.DotNetCompilingPreferences"/>
+		<DialogPanel id     = "Debug"
+		             _label = "Debug"
+		             class  = "MonoDevelop.Projects.Gui.ProjectOptions.CommonDebugPreferences"/>
+		<DialogPanel id     = "Signing"
+		             _label = "Signing"
+		             class  = "MonoDevelop.Projects.Gui.ProjectOptions.CommonAssemblySigningPreferences"/>
+<!--		<DialogPanel id     = "CustomCommands"
+		             _label = "Custom Commands"
+		             class  = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanel"/>-->
+	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/GeneralOptions">
 		<DialogPanel id    = "Common"

@@ -18,6 +18,11 @@ FILES =  \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs \
+	gtk-gui/MonoDevelop.Projects.Gui.ProjectOptions.CommonApplicationPreferences.cs \
+	gtk-gui/MonoDevelop.Projects.Gui.ProjectOptions.CommonAssemblySigningPreferences.cs \
+	gtk-gui/MonoDevelop.Projects.Gui.ProjectOptions.CommonDebugPreferences.cs \
+	gtk-gui/MonoDevelop.Projects.Gui.ProjectOptions.DotNetCompilingPreferences.cs \
+	gtk-gui/MonoDevelop.Projects.Gui.ProjectOptions.ProjectOptionsDialog.cs \
 	MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs \
 	MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs \
 	MonoDevelop.Projects.Gui.Completion/CommentCompletionDataProvider.cs \
@@ -47,6 +52,12 @@ FILES =  \
 	MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/ConfigurationManager.cs \
 	MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs \
+	MonoDevelop.Projects.Gui.ProjectOptions/AbtractDialogPanel.cs \
+	MonoDevelop.Projects.Gui.ProjectOptions/CommonApplicationPreferences.cs \
+	MonoDevelop.Projects.Gui.ProjectOptions/CommonAssemblySigningPreferences.cs \
+	MonoDevelop.Projects.Gui.ProjectOptions/CommonDebugPreferences.cs \
+	MonoDevelop.Projects.Gui.ProjectOptions/DotNetCompilingPreferences.cs \
+	MonoDevelop.Projects.Gui.ProjectOptions/ProjectOptionsDialog.cs \
 	MonoDevelop.Projects.Gui/IconService.cs \
 	MonoDevelop.Projects.Gui/ProjectsGuiServices.cs
 

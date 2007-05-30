@@ -59,9 +59,12 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 			attributes |= NodeAttributes.AllowRename;
 		}
 		
-/*		public override string ContextMenuAddinPath {
+		public override Type CommandHandlerType {
+			get { return typeof(SolutionNodeCommandHandler); }
+		}
+		public override string ContextMenuAddinPath {
 			get { return "/SharpDevelop/Views/ProjectBrowser/ContextMenu/CombineBrowserNode"; }
-		}*/
+		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
@@ -100,23 +103,9 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 			Solution solution = dataObject as Solution;
 			return solution != null && solution.Items.Count > 0;
 		}
-		
-		public override void OnNodeAdded (object dataObject)
-		{
-			Solution solution = dataObject as Solution;
-/*			combine.EntryAdded += combineEntryAdded;
-			combine.EntryRemoved += combineEntryRemoved;
-			combine.NameChanged += combineNameChanged;
-			combine.StartupPropertyChanged += startupChanged;*/
-		}
-		
-		public override void OnNodeRemoved (object dataObject)
-		{
-			Solution solution = dataObject as Solution;
-/*			combine.EntryAdded -= combineEntryAdded;
-			combine.EntryRemoved -= combineEntryRemoved;
-			combine.NameChanged -= combineNameChanged;
-			combine.StartupPropertyChanged -= startupChanged;*/
-		}
+	}
+	
+	public class SolutionNodeCommandHandler : NodeCommandHandler
+	{
 	}
 }

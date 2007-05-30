@@ -38,6 +38,7 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Search;
 using MonoDevelop.Ide.Projects.Item;
+using MonoDevelop.Projects.Gui.ProjectOptions;
 
 namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 {
@@ -64,10 +65,13 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 		{
 			attributes |= NodeAttributes.AllowRename;
 		}
+		public override Type CommandHandlerType {
+			get { return typeof(SolutionProjectNodeCommandHandler); }
+		}
 		
-/*		public override string ContextMenuAddinPath {
-			get { return "/SharpDevelop/Views/ProjectBrowser/ContextMenu/CombineBrowserNode"; }
-		}*/
+		public override string ContextMenuAddinPath {
+			get { return "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectBrowserNode"; }
+		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
@@ -79,9 +83,6 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 				label = String.Format (GettextCatalog.GetString ("Error loading {0}: Project type guid unknown {1})."), solutionProject.Name, solutionProject.TypeGuid);
 			} else {
 				label = solutionProject.Name;
-				
-				Console.WriteLine (BackendBindingService.GetBackendBindingCodonByGuid (solutionProject.TypeGuid).Id);
-				
 				icon = Context.GetIcon (Services.Icons.GetImageForProjectType (BackendBindingService.GetBackendBindingCodonByGuid (solutionProject.TypeGuid).Id));
 			}
 		}
@@ -125,21 +126,42 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 				return false;
 			return solutionProject.Project != null && solutionProject.Project.Items.Count > 0;
 		}
-		
-		public override void OnNodeAdded (object dataObject)
+	}
+	
+	public class SolutionProjectNodeCommandHandler : FolderNodeCommandHandler
+	{
+		protected override string GetPath(object dataItem)
 		{
-/*			combine.EntryAdded += combineEntryAdded;
-			combine.EntryRemoved += combineEntryRemoved;
-			combine.NameChanged += combineNameChanged;
-			combine.StartupPropertyChanged += startupChanged;*/
+			SolutionProject solutionProject = CurrentNode.DataItem as SolutionProject;
+			if (solutionProject == null) 
+				return null;
+			return solutionProject.Project.BasePath;
 		}
 		
-		public override void OnNodeRemoved (object dataObject)
+		protected override SolutionProject GetProject(object dataItem)
 		{
-/*			combine.EntryAdded -= combineEntryAdded;
-			combine.EntryRemoved -= combineEntryRemoved;
-			combine.NameChanged -= combineNameChanged;
-			combine.StartupPropertyChanged -= startupChanged;*/
+			SolutionProject solutionProject = CurrentNode.DataItem as SolutionProject;
+			if (solutionProject == null) 
+				return null;
+			return solutionProject;
+		}
+		
+		[CommandHandler (ProjectCommands.SetAsStartupProject)]
+		public void SetAsStartupProject ()
+		{
+			SolutionProject solutionProject = CurrentNode.DataItem as SolutionProject;
+			if (solutionProject == null) 
+				return;
+			// TODO
+		}
+		
+		[CommandHandler (ProjectCommands.Options)]
+		public void Options ()
+		{
+			using (ProjectOptionsDialog optionsDialog = new ProjectOptionsDialog ()) {
+				optionsDialog.Run ();
+			}
 		}
 	}
+	
 }

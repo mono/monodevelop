@@ -125,7 +125,7 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 				return;
 			
 			foreach (Category category in this.categories)
-				categoryTreeStore.AppendValues (category.Name, category);
+				categoryTreeStore.AppendValues (GettextCatalog.GetString (category.Name), category);
 			
 			this.treeviewCatalog.AppendColumn (null, new CellRendererText (), "text", 0);			
 		}

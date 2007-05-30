@@ -842,7 +842,7 @@
 		<SolutionPad id = "MonoDevelop.Ide.Gui.Pads.ProjectSolutionPad" defaultPlacement = "Left" _label = "New Solution" class = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.ProjectSolutionPad">
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.SolutionProjectNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.SolutionFolderNodeBuilder"/>
-			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.SolutionItemNodeBuilder"/>
+<!--			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.SolutionItemNodeBuilder"/> -->
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.SolutionNodeBuilder"/>
 			
 			

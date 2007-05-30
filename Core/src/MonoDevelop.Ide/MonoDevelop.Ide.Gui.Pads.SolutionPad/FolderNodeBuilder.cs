@@ -152,30 +152,49 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 	
 	public class FolderNodeCommandHandler: NodeCommandHandler
 	{
+		protected virtual string GetPath(object dataItem)
+		{
+			FolderNode folderNode = dataItem as FolderNode;
+			if (folderNode == null) 
+				return null;
+			return folderNode.Path;
+		}
+		
+		protected virtual SolutionProject GetProject(object dataItem)
+		{
+			FolderNode folderNode = dataItem as FolderNode;
+			if (folderNode == null) 
+				return null;
+			return folderNode.Project;
+		}
+		
 		[CommandHandler (ProjectCommands.AddNewFiles)]
 		public void AddNewFileToProject()
 		{
-			FolderNode folderNode = CurrentNode.DataItem as FolderNode;
-			if (folderNode == null) 
+			string   path    = GetPath(CurrentNode.DataItem);
+			SolutionProject project = GetProject(CurrentNode.DataItem);
+			if (path == null || project == null)
 				return;
-			using (AddNewFilesToProjectDialog dialog = new AddNewFilesToProjectDialog ("C#", folderNode.Path)) {
+			
+			using (AddNewFilesToProjectDialog dialog = new AddNewFilesToProjectDialog ("C#", path)) {
 				dialog.Run ();
 				if (dialog.CreatedFiles != null) 
 					foreach (string fileName in dialog.CreatedFiles) 
-						folderNode.Project.Project.Items.Add (new ProjectFile (fileName, SystemFileNodeCommandHandler.GetFileType (fileName, folderNode.Project)));
+						project.Project.Items.Add (new ProjectFile (fileName, SystemFileNodeCommandHandler.GetFileType (fileName, project)));
 			}
-			ProjectService.SaveProject (folderNode.Project.Project);
+			ProjectService.SaveProject (project.Project);
 			CurrentNode.Expanded = true;
 		}
 		
 		[CommandHandler (ProjectCommands.NewFolder)]
 		public void AddNewFolder ()
 		{
-			FolderNode folderNode = CurrentNode.DataItem as FolderNode;
-			if (folderNode == null) 
+			string   path    = GetPath(CurrentNode.DataItem);
+			SolutionProject project = GetProject(CurrentNode.DataItem);
+			if (path == null || project == null)
 				return;
 			
-			string baseFolderPath = folderNode.Path;
+			string baseFolderPath = path;
 			string directoryName = Path.Combine (baseFolderPath, GettextCatalog.GetString("New Folder"));
 			int index = -1;
 
@@ -189,19 +208,19 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 			}
 			
 			Directory.CreateDirectory (directoryName);
-			folderNode.Project.Project.Items.Add (new ProjectFile (directoryName, FileType.Folder));
+			project.Project.Items.Add (new ProjectFile (directoryName, FileType.Folder));
 
-			ProjectService.SaveProject (folderNode.Project.Project);
+			ProjectService.SaveProject (project.Project);
 			CurrentNode.Expanded = true;
 		}
 		
 		[CommandHandler (SearchCommands.FindInFiles)]
 		public void OnFindInFiles ()
 		{
-			FolderNode folderNode = CurrentNode.DataItem as FolderNode;
-			if (folderNode == null) 
+			string path = GetPath(CurrentNode.DataItem);
+			if (path == null)
 				return;
-			SearchReplaceInFilesManager.SearchOptions.SearchDirectory = folderNode.Path;
+			SearchReplaceInFilesManager.SearchOptions.SearchDirectory = path;
 			SearchReplaceInFilesManager.ShowFindDialog ();
 		}
 		

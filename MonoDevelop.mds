@@ -13,6 +13,7 @@
     <Execute type="None" entry="Core" />
     <Execute type="None" entry="Extras" />
   </StartMode>
+  <Deployment.LinuxDeployData scriptName="monodevelop_np" />
   <DeployTargets />
   <Entries>
     <Entry filename="./Core/src/Core.mds" />

@@ -55,6 +55,17 @@
     <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="./gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="./gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.ProjectOptions/CommonApplicationPreferences.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.ProjectOptions/CommonAssemblySigningPreferences.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.ProjectOptions/CommonDebugPreferences.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.ProjectOptions/DotNetCompilingPreferences.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.ProjectOptions/ProjectOptionsDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="./gtk-gui/MonoDevelop.Projects.Gui.ProjectOptions.ProjectOptionsDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="./gtk-gui/MonoDevelop.Projects.Gui.ProjectOptions.DotNetCompilingPreferences.cs" subtype="Code" buildaction="Compile" />
+    <File name="./gtk-gui/MonoDevelop.Projects.Gui.ProjectOptions.CommonDebugPreferences.cs" subtype="Code" buildaction="Compile" />
+    <File name="./gtk-gui/MonoDevelop.Projects.Gui.ProjectOptions.CommonAssemblySigningPreferences.cs" subtype="Code" buildaction="Compile" />
+    <File name="./gtk-gui/MonoDevelop.Projects.Gui.ProjectOptions.CommonApplicationPreferences.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.ProjectOptions/AbtractDialogPanel.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -84,6 +95,7 @@
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
+  <Deployment.LinuxDeployData scriptName="monodevelop.projects.gui" />
   <GtkDesignInfo partialTypes="True" isWidgetLibrary="True" gettextClass="MonoDevelop.Core.GettextCatalog">
     <ExportedWidgets>
       <Widget>MonoDevelop.Projects.Gui.Deployment.DirectoryDeployEditorWidget</Widget>
@@ -94,6 +106,11 @@
       <Widget>MonoDevelop.Projects.Gui.Deployment.CombinedDeployEditorWidget</Widget>
       <Widget>MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget</Widget>
       <Widget>MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget</Widget>
+      <Widget>MonoDevelop.Projects.Gui.ProjectOptions.DotNetCompilingPreferences</Widget>
+      <Widget>MonoDevelop.Projects.Gui.ProjectOptions.CommonDebugPreferences</Widget>
+      <Widget>MonoDevelop.Projects.Gui.ProjectOptions.CommonBuildEventPreferences</Widget>
+      <Widget>MonoDevelop.Projects.Gui.ProjectOptions.CommonAssemblySigningPreferences</Widget>
+      <Widget>MonoDevelop.Projects.Gui.ProjectOptions.CommonApplicationPreferences</Widget>
     </ExportedWidgets>
   </GtkDesignInfo>
   <DeploymentInformation strategy="File">
