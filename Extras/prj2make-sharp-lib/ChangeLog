@@ -1,3 +1,11 @@
+2007-05-31  Ankit Jain  <jankit@novell.com>
+
+	Fix #81776.
+	* MSBuildFileFormat.cs (Escape): New.
+	(Unescape): New.
+	MSBuild literals need to be escaped/unescaped.
+	Update code to escape/unescape relevant values.
+
 2007-05-29  Ankit Jain  <jankit@novell.com>
 
 	* MsPrjHelper.cs (MapPath): Small optimization. Return path if it
