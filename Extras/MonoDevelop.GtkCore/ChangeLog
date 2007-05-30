@@ -1,3 +1,12 @@
+2007-05-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.mdp: Updated.
+	* MonoDevelop.GtkCore.Dialogs/GtkFeatureWidget.cs: Fix feature message.
+	* lib/libsteticui.dll, lib/libstetic.dll: Updated from Stetic module.
+	  Includes fixes for bugs #81761, #81758 and #81762.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs:
+	  (UpdateLibraries) Properly check for library changes.
+
 2007-05-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* lib/libsteticui.dll, lib/libstetic.dll: Updated from stetic module.

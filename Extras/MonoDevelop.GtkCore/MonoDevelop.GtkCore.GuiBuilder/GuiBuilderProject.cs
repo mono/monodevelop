@@ -518,7 +518,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			string[] newLibs = (string[]) libs.ToArray (typeof(string));
 			
 			// See if something has changed
-			if (oldLibs.Length == newLibs.Length) {
+			if (oldLibs.Length == newLibs.Length + internalLibs.Length) {
 				bool found = false;
 				foreach (string s in newLibs) {
 					if (!((IList)oldLibs).Contains (s)) {

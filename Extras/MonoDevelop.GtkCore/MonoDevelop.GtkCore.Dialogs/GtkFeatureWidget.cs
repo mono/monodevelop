@@ -14,7 +14,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 		public GtkFeatureWidget (DotNetProject project)
 		{
 			Spacing = 6;
-			Label lab = new Label (GettextCatalog.GetString ("Enables support for the Gtk# designer."));
+			Label lab = new Label (GettextCatalog.GetString ("Gtk# designer support is enabled."));
 			PackStart (lab, false, false, 0);
 			
 			DotNetProjectConfiguration conf = project.ActiveConfiguration as DotNetProjectConfiguration;

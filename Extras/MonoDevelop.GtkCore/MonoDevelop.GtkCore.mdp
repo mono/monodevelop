@@ -99,7 +99,6 @@
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
-  <Deployment.LinuxDeployData scriptName="monodevelop.gtkcore" generatePcFile="False" />
   <DeploymentInformation strategy="File">
     <excludeFiles />
   </DeploymentInformation>
