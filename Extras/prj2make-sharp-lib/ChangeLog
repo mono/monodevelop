@@ -1,5 +1,10 @@
 2007-05-31  Ankit Jain  <jankit@novell.com>
 
+	* MSBuildFileFormat.cs: Don't remove './' from the paths. VS2005 is not
+	able to handle paths with '/' but no './' prefix.
+
+2007-05-31  Ankit Jain  <jankit@novell.com>
+
 	Fix #81776.
 	* MSBuildFileFormat.cs (Escape): New.
 	(Unescape): New.
