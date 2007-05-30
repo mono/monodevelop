@@ -47,7 +47,6 @@ FILES =  \
 	SimpleProjectMakefileHandler.cs \
 	SolutionDeployer.cs \
 	SolutionMakefileHandler.cs \
-	SolutionOptionsPanel.cs \
 	TarballBuilderEditorWidget.cs \
 	TemplateEngine.cs
 

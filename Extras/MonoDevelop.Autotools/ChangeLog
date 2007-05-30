@@ -1,3 +1,16 @@
+2007-05-31  Ankit Jain  <jankit@novell.com>
+
+	* SimpleProjectMakefileHandler.cs: Comment out all .pc file generation
+	related code. It is handled by the deployment infrastructure.
+	* SolutionDeployer.cs (GenerateFiles): Remove code related to .pc file
+	generation.
+
+	SolutionOptionsPanel.cs is not used now.
+	* Makefile.am: Remove SolutionOptionsPanel.cs from the list of files.
+	* MonoDevelop.Autotools.mdp: Likewise
+	* MonoDevelop.Autotools.addin.xml: Remove extensions related to
+	SolutionOptionsPanel.
+
 2007-05-29  Ankit Jain  <jankit@novell.com>
 
 	* SimpleProjectMakefileHandler.cs (Deploy): GetDeployFiles can return

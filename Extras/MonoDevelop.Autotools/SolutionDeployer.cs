@@ -40,8 +40,6 @@ namespace MonoDevelop.Autotools
 		string solution_name;
 		string solution_version;
 
-		bool pkgconfig = false;
-		
 		AutotoolsContext context;
 
 		public bool HasGeneratedFiles ( Combine combine )
@@ -90,17 +88,11 @@ namespace MonoDevelop.Autotools
 				solution_name = combine.Name;
 				solution_version = AutotoolsContext.EscapeStringForAutoconf (combine.Version, true);
 
-				// check if we need to create pkgconfig file
-				object en_obj =  ((IExtendedDataItem) combine).ExtendedProperties ["MakePkgConfig"];
-				if (en_obj== null) pkgconfig = false;
-				else pkgconfig = (bool) en_obj;
-				
 				Makefile makefile = handler.Deploy ( context, combine, monitor );
 				string path = Path.Combine (solution_dir, "Makefile");
 				context.AddAutoconfFile ( path );
 
 				CreateAutoGenDotSH ( monitor );
-				CreatePkgConfigFile ( combine, monitor, makefile, context );
 				CreateConfigureDotAC ( combine, defaultConf, monitor, context );
 				CreateMakefileInclude ( monitor );
 
@@ -426,6 +418,7 @@ namespace MonoDevelop.Autotools
 			writer.Close();
 		}
 
+/*
 		void CreatePkgConfigFile ( Combine combine, IProgressMonitor monitor, Makefile mfile, AutotoolsContext context )
 		{
 			if ( !pkgconfig ) return;
@@ -473,6 +466,7 @@ namespace MonoDevelop.Autotools
 			mfile.AppendToVariable ( "pkgconfig_DATA", fileName );
 			mfile.AppendToVariable ( "DISTCLEANFILES", fileName );
 		}
+*/
 	}
 }
 

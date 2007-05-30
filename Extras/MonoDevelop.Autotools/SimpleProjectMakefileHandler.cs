@@ -338,7 +338,7 @@ namespace MonoDevelop.Autotools
 					conf_vars.AppendFormat ( "PROJECT_REFERENCES = {0}\n", projectReferences.ToString() );
 					pref = (PlatformID.Unix == Environment.OSVersion.Platform) ? project.GetRelativeChildPath ( config.OutputDirectory ) : project.GetRelativeChildPath ( config.OutputDirectory ).Replace("\\","/");
 					conf_vars.AppendFormat ( "BUILD_DIR = {0}\n", pref);
-					conf_vars.Append ( "endif\n" );
+					conf_vars.Append ( "endif\n\n" );
 					
 					// Register files built by this configuration.
 					// Built files won't be distributed.
@@ -443,6 +443,7 @@ namespace MonoDevelop.Autotools
 			return wrapperName;
 		}
 
+/*
 		void CreatePkgConfigFile ( Project project, 
 				Set packages, 
 				Set dlls,
@@ -510,7 +511,8 @@ namespace MonoDevelop.Autotools
 			// add for autoconf processing
 			context.AddAutoconfFile ( Path.GetDirectoryName (project.FileName) + "/" + fileName );
 		}
-		
+*/
+
 		// GetUniqueName: A way of getting a (hopefully) unique name for the pkg-config item
 		// Solution.[Solution].Project
 		// FIXME: makes assumption that the root combine is the top of the autotools setup
@@ -528,6 +530,7 @@ namespace MonoDevelop.Autotools
 		}
 
 		// FIXME: makes assumption that the root combine is the top of the autotools setup
+/*
 		bool NeedsPCFile ( Project project ) 
 		{
 			//go up the chain and find the first non-null of the parm
@@ -545,6 +548,7 @@ namespace MonoDevelop.Autotools
 			}
 			return true;
 		}
+*/
 
 		// FIXME: makes assumption that the root combine is the top of the autotools setup
 		Project GetProjectFromName ( string name, Project project )

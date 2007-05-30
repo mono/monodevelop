@@ -72,21 +72,12 @@
 		<DataType class = "MonoDevelop.Autotools.TarballDeployTarget" />
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/CombineOptions/GeneralOptions">
-		<DialogPanel id= "AutoTools" _label = "Autotools"
-			class = "MonoDevelop.AutoTools.SolutionOptionsPanel" />
-	</Extension>
-
 	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/GeneralOptions/Common">
 		<DialogPanel id= "Makefile" _label = "Makefile Integration"
 			class = "MonoDevelop.Autotools.MakefileOptionPanel" />
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/Serialization/ExtendedProperties">
-		<ItemProperty class = "MonoDevelop.Projects.Combine"
-			name = "MakePkgConfig" type = "System.Boolean" />
-		<ItemProperty class = "MonoDevelop.Projects.Combine"
-			name = "MakeLibPC" type = "System.Boolean" />
 		<ItemProperty class = "MonoDevelop.Projects.Project"
 			name = "MonoDevelop.Autotools.MakefileInfo" type = "MonoDevelop.Autotools.MakefileData" />
 	</Extension>
