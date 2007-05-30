@@ -1,3 +1,7 @@
+2007-05-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	Updated.
+
 2007-05-29  Jeffrey Stedfast  <fejj@novell.com>
 
 	* configure.in (UPDATE_DESKTOP_DB): Abort if UPDATE_MIME_DB or
