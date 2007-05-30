@@ -76,7 +76,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				actionCombo.Changed += new EventHandler(OptionsChanged);
 
 				// Populating entryTreeView					
-				CombineExecuteDefinition edef;
  				store = new ListStore (typeof(string), typeof(string), typeof(CombineExecuteDefinition) );
 				entryTreeView.Model = store;
 				
@@ -89,22 +88,18 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				if(combine.CombineExecuteDefinitions.Count == combine.Entries.Count) {
 					// add the previously saved execute definitions to the treeview list
 					for (int n = 0; n < combine.CombineExecuteDefinitions.Count; n++) {
-						edef = (CombineExecuteDefinition)combine.CombineExecuteDefinitions[n];
+						CombineExecuteDefinition edef = (CombineExecuteDefinition)combine.CombineExecuteDefinitions[n];
+						if (edef == null || edef.Entry == null) {
+							// Invalid
+							store.Clear ();
+							AddEmptyExecuteDefinitions ();
+							break;
+						}
 						string action = edef.Type == EntryExecuteType.None ? GettextCatalog.GetString ("None") : GettextCatalog.GetString ("Execute");
 						store.AppendValues (edef.Entry.Name, action, edef);
 					}
 				} else {
-					// add an empty set of execute definitions
-					for (int n = 0; n < combine.Entries.Count; n++) {
-						edef = new CombineExecuteDefinition ((CombineEntry) combine.Entries[n],EntryExecuteType.None);
-						string action = edef.Type == EntryExecuteType.None ? GettextCatalog.GetString ("None") : GettextCatalog.GetString ("Execute");
-						store.AppendValues (edef.Entry.Name, action, edef);
-					}
-					
-					// tell the user we encountered and worked around an issue
-					Gtk.Application.Invoke (delegate {
-						Services.MessageService.ShowError (null, GettextCatalog.GetString ("The Solution Execute Definitions for this Solution were invalid. A new empty set of Execute Definitions has been created."), (Gtk.Window) Toplevel, true);
-					});
+					AddEmptyExecuteDefinitions ();
 				}
 					
  				entryTreeView.Selection.Changed += new EventHandler(SelectedEntryChanged);
@@ -116,7 +111,21 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 
 				OnSingleRadioButtonClicked(null, null);				
 			}
-						
+
+			void AddEmptyExecuteDefinitions ()
+			{
+				for (int n = 0; n < combine.Entries.Count; n++) {
+					CombineExecuteDefinition edef = new CombineExecuteDefinition ((CombineEntry) combine.Entries[n],EntryExecuteType.None);
+					string action = edef.Type == EntryExecuteType.None ? GettextCatalog.GetString ("None") : GettextCatalog.GetString ("Execute");
+					store.AppendValues (edef.Entry.Name, action, edef);
+				}
+				
+				// tell the user we encountered and worked around an issue
+				Gtk.Application.Invoke (delegate {
+					Services.MessageService.ShowError (null, GettextCatalog.GetString ("The Solution Execute Definitions for this Solution were invalid. A new empty set of Execute Definitions has been created."), (Gtk.Window) Toplevel, true);
+				});
+			}
+					
 			protected void OnMoveUpButtonClicked(object sender, EventArgs e)
 			{
 				if(entryTreeView.Selection.CountSelectedRows() == 1)

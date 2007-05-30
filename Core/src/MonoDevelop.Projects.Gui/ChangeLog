@@ -1,3 +1,10 @@
+2007-05-30  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs
+	(.ctor): If CombineExecuteDefinition is invalid then load an empty
+	default set.
+	(AddEmptyExecuteDefinitions): New.
+
 2007-05-21  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs:
