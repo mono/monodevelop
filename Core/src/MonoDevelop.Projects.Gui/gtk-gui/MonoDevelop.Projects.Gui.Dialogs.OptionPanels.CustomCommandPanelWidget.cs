@@ -11,7 +11,7 @@
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
     
     
-    public partial class CustomCommandPanelWidget {
+    internal partial class CustomCommandPanelWidget {
         
         private Gtk.VBox vbox;
         

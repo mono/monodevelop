@@ -1,5 +1,14 @@
 2007-05-30  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs,
+	  gtk-gui/gui.stetic,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanelWidget.cs:
+	  Option panel widgets don't need to be public.
+
+2007-05-30  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs,
 	  MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs: Make sure
 	  root nodes in option dialogs are expanded by default.

@@ -1,5 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
+  <configuration>
+    <images-root-path>../</images-root-path>
+  </configuration>
   <import>
     <widget-library name="../../../../build/AddIns/MonoDevelop.Components.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Projects.Gui.dll" />
@@ -8,6 +11,7 @@
     <property name="MemberName" />
     <property name="CanFocus">True</property>
     <property name="Events">FocusChangeMask</property>
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox1">
         <property name="MemberName" />
@@ -257,6 +261,7 @@ Custom Command</property>
   <widget class="Gtk.Bin" id="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget" design-size="486 335">
     <property name="MemberName" />
     <property name="Events">ButtonPressMask</property>
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox">
         <property name="MemberName" />

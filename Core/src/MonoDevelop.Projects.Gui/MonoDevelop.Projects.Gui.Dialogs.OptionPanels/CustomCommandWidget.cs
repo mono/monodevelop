@@ -6,9 +6,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
-	
-	
-	public partial class CustomCommandWidget : Gtk.Bin
+	internal partial class CustomCommandWidget : Gtk.Bin
 	{
 		CustomCommand cmd;
 		CombineEntry entry;
