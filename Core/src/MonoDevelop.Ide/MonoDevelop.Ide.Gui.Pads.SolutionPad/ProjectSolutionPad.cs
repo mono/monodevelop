@@ -2,9 +2,9 @@
 // ProjectSolutionPad.cs
 //
 // Author:
-//   Mike Krüger <mkrueger@novell.com>
+//   Lluis Sanchez Gual
 //
-// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2005 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,113 +27,67 @@
 //
 
 using System;
-using System.Diagnostics;
 using System.Resources;
 
-using Gtk;
-using Gdk;
-
+using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Projects;
 
-namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
+namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
-	public class ProjectSolutionPad : TreeViewPad
+	public class ProjectSolutionPad: SolutionPad
 	{
-		static ProjectSolutionPad instance = null;
-		public static ProjectSolutionPad Instance {
-			get {
-				return instance;
-			}
-		}
-		
-		ToolButton openButton;
-		ToggleToolButton showHiddenButton;
-		
-		public bool ShowAllFiles {
-			get {
-				return showHiddenButton.Active;
-			}
-			set {
-				showHiddenButton.Active = value;
-			}
-		}
-		
-		protected override Toolbar CreateToolbar ()
+		public ProjectSolutionPad ()
 		{
-			Toolbar toolbar = new Toolbar ();
-			toolbar.IconSize = IconSize.Menu;
-						
-			openButton = new ToggleToolButton ();
-			openButton.Label = GettextCatalog.GetString ("Open");
-			openButton.IconWidget = new Gtk.Image (Services.Resources.GetBitmap (MonoDevelop.Core.Gui.Stock.OpenFileIcon));
-			
-			openButton.IsImportant = true;
-			openButton.Clicked += new EventHandler (OpenButtonClicked);
-			//showHiddenButton.SetTooltip (tips, GettextCatalog.GetString ("Toggle show all files"), GettextCatalog.GetString ("Show Successful Tests"));
-			toolbar.Insert (openButton, -1);
-			
-			showHiddenButton = new ToggleToolButton ();
-			showHiddenButton.Label = GettextCatalog.GetString ("Show Hidden");
-			showHiddenButton.Active = false;
-			//showHiddenButton.IconWidget = Context.GetIcon (Stock.PropertiesIcon);
-			showHiddenButton.IsImportant = true;
-			showHiddenButton.Toggled += new EventHandler (ShowHiddenButtonToggled);
-			//showHiddenButton.SetTooltip (tips, GettextCatalog.GetString ("Toggle show all files"), GettextCatalog.GetString ("Show Successful Tests"));
-			toolbar.Insert (showHiddenButton, -1);
-			
-			return toolbar;
+			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnWindowChanged);
 		}
 		
-		public ProjectSolutionPad()
+		protected override void OnSelectionChanged (object sender, EventArgs args)
 		{
-			Debug.Assert (instance == null);
-			instance = this;
-			ProjectService.SolutionOpened += delegate(object sender, SolutionEventArgs e) {
-				FillTree (e.Solution);
-			};
-			
-			ProjectService.SolutionClosed += delegate(object sender, EventArgs e) {
-				Clear ();
-			};
-			
-			Runtime.Properties.PropertyChanged += delegate(object sender, PropertyEventArgs e) {
-				if (e.OldValue != e.NewValue && e.Key == "MonoDevelop.Core.Gui.ProjectBrowser.ShowExtensions") {
-					RedrawContent ();
+			base.OnSelectionChanged (sender, args);
+			ITreeNavigator nav = GetSelectedNode ();
+			if (nav != null) {
+				Project p = (Project) nav.GetParentDataItem (typeof(Project), true);
+				IdeApp.ProjectOperations.CurrentSelectedProject = p;
+				Combine c = (Combine) nav.GetParentDataItem (typeof(Combine), true);
+				IdeApp.ProjectOperations.CurrentSelectedCombine = c;
+				CombineEntry ce = (CombineEntry) nav.GetParentDataItem (typeof(CombineEntry), true);
+				IdeApp.ProjectOperations.CurrentSelectedCombineEntry = ce;
+			}
+		}
+		
+		protected override void OnCloseCombine (object sender, CombineEventArgs e)
+		{
+			base.OnCloseCombine (sender, e);
+			IdeApp.ProjectOperations.CurrentSelectedProject = null;
+			IdeApp.ProjectOperations.CurrentSelectedCombine = null;
+			IdeApp.ProjectOperations.CurrentSelectedCombineEntry = null;
+		}
+		
+		void OnWindowChanged (object ob, EventArgs args)
+		{
+			Services.DispatchService.GuiDispatch (new MessageHandler (SelectActiveFile));
+		}
+		
+		void SelectActiveFile ()
+		{
+			Document doc = IdeApp.Workbench.ActiveDocument;
+			if (doc != null && doc.Project != null) {
+				string file = doc.FileName;
+				if (file != null) {
+					ProjectFile pf = doc.Project.ProjectFiles.GetFile (doc.FileName);
+					if (pf != null) {
+						ITreeNavigator nav = GetNodeAtObject (pf, true);
+						if (nav != null) {
+							nav.ExpandToNode ();
+							nav.Selected = true;
+						}
+					}
 				}
-			};
-			
-			FillTree (ProjectService.Solution);
-		}
-		
-		void OpenButtonClicked (object sender, EventArgs e)
-		{
-			ITreeNavigator navigator = base.GetSelectedNode ();
-			FileNode fileNode = navigator.DataItem as FileNode;
-			if (fileNode != null) {
-				IdeApp.Workbench.OpenDocument (fileNode.FileName);
-			} else {
-				navigator.Expanded = true;
 			}
-		}
-		
-		void ShowHiddenButtonToggled (object sender, EventArgs e)
-		{
-// Memento crashes ???
-//	IXmlConvertable memento = base.CreateMemento();
-			FillTree (ProjectService.Solution);
-//			if (memento != null) 
-//				base.SetMemento (memento);
-		}
-		
-		void FillTree (Solution solution)
-		{
-			Clear ();
-			if (solution != null)
-				LoadTree (solution);
 		}
 	}
 }
+

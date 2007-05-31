@@ -2,9 +2,9 @@
 // SystemFileNodeBuilder.cs
 //
 // Author:
-//   Mike Krüger <mkrueger@novell.com>
+//   Lluis Sanchez Gual
 //
-// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2005 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,34 +27,23 @@
 //
 
 using System;
-using System.Collections;
 using System.IO;
+using System.Collections;
 
-using MonoDevelop.Ide.Projects;
+using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Utils;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui.Search;
-using MonoDevelop.Ide.Projects.Item;
 
-namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
+namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
-	public class SystemFileNodeBuilder : TypeNodeBuilder
+	public class SystemFileNodeBuilder: TypeNodeBuilder
 	{
-		public SystemFileNodeBuilder ()
-		{
-		}
-
 		public override Type NodeDataType {
-			get { return typeof(SystemFileNode); }
-		}
-		
-		public override string ContextMenuAddinPath {
-			get { return "/SharpDevelop/Views/ProjectBrowser/ContextMenu/SystemFileNode"; }
+			get { return typeof(SystemFile); }
 		}
 		
 		public override Type CommandHandlerType {
@@ -63,11 +52,11 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			SystemFileNode systemFileNode = dataObject as SystemFileNode;
-			if (systemFileNode == null) 
-				return "FileNode";
-			
-			return Path.GetFileName (systemFileNode.FileName);
+			return Path.GetFileName (((SystemFile)dataObject).Name);
+		}
+		
+		public override string ContextMenuAddinPath {
+			get { return "/SharpDevelop/Views/ProjectBrowser/ContextMenu/SystemFileNode"; }
 		}
 		
 		public override void GetNodeAttributes (ITreeNavigator treeNavigator, object dataObject, ref NodeAttributes attributes)
@@ -77,36 +66,121 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			SystemFileNode systemFileNode = dataObject as SystemFileNode;
-			if (systemFileNode == null) 
-				return;
-			label = Path.GetFileName (systemFileNode.FileName);
-			icon  = Context.GetIcon (Stock.DashedFileIcon);
+			SystemFile file = (SystemFile) dataObject;
+			label = file.Name;
+			
+			string ic = Services.Icons.GetImageForFile (file.Path);
+			if (ic != Stock.MiscFiles || !File.Exists (file.Path))
+				icon = Context.GetIcon (ic);
+			else
+				icon = FileIconLoader.GetPixbufForFile (file.Path, 16);
+			
+			if (file.ShowTransparent) {
+				Gdk.Pixbuf gicon = Context.GetComposedIcon (icon, "fade");
+				if (gicon == null) {
+					gicon = Services.Icons.MakeTransparent (icon, 0.5);
+					Context.CacheComposedIcon (icon, "fade", gicon);
+				}
+				icon = gicon;
+				label = "<span foreground='dimgrey'>" + label + "</span>";
+			}
+		}
+		
+		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
+		{
+			if (otherNode.DataItem is ProjectFolder)
+				return 1;
+			else
+				return DefaultSort;
 		}
 	}
 	
-	public class SystemFileNodeCommandHandler: FileNodeCommandHandler
+	public class SystemFileNodeCommandHandler: NodeCommandHandler
 	{
-		public static FileType GetFileType (string fileName, SolutionProject project)
+		public override void RenameItem (string newName)
 		{
-			BackendBindingCodon codon = BackendBindingService.GetBackendBindingCodon (project);
-			if (codon != null && codon.IsCompileable (fileName))
-				return FileType.Compile;
-			return FileType.Content;
+			SystemFile file = CurrentNode.DataItem as SystemFile;
+			string oldname = file.Path;
+
+			string newname = Path.Combine (Path.GetDirectoryName (oldname), newName);
+			if (oldname != newname) {
+				try {
+					if (Runtime.FileService.IsValidFileName (newname)) {
+						Runtime.FileService.RenameFile (oldname, newName);
+					}
+				} catch (System.IO.IOException) {   // assume duplicate file
+					Services.MessageService.ShowError (GettextCatalog.GetString ("File or directory name is already in use, choose a different one."));
+				} catch (System.ArgumentException) { // new file name with wildcard (*, ?) characters in it
+					Services.MessageService.ShowError (GettextCatalog.GetString ("The file name you have chosen contains illegal characters. Please choose a different file name."));
+				}
+			}
+		}
+		
+		public override void ActivateItem ()
+		{
+			SystemFile file = CurrentNode.DataItem as SystemFile;
+			IdeApp.Workbench.OpenDocument (file.Path);
+		}
+		
+		[CommandHandler (EditCommands.Delete)]
+		public void RemoveItem ()
+		{
+			SystemFile file = CurrentNode.DataItem as SystemFile;
+			
+			bool yes = Services.MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to permanently delete the file {0}?", file.Path));
+			if (!yes) return;
+
+			try {
+				Runtime.FileService.DeleteFile (file.Path);
+			} catch {
+				Services.MessageService.ShowError (GettextCatalog.GetString ("The file {0} could not be deleted", file.Path));
+			}
+		}
+		
+		public override DragOperation CanDragNode ()
+		{
+			return DragOperation.Copy | DragOperation.Move;
 		}
 		
 		[CommandHandler (ProjectCommands.IncludeToProject)]
-		public void IncludeToProject ()
+		public void IncludeFileToProject ()
 		{
-			SystemFileNode systemFileNode = CurrentNode.DataItem as SystemFileNode;
-			if (systemFileNode == null) 
-				return;
-			string relativePath = Runtime.FileService.AbsoluteToRelativePath (systemFileNode.Project.Project.BasePath, systemFileNode.FileName);
-			if (relativePath.StartsWith ("." + Path.DirectorySeparatorChar))
-				relativePath = relativePath.Substring (2);
-			systemFileNode.Project.Project.Items.Add (new ProjectFile (relativePath, GetFileType (systemFileNode.FileName, systemFileNode.Project)));
-			ProjectService.SaveProject (systemFileNode.Project.Project);
+			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
+			SystemFile file = (SystemFile) CurrentNode.DataItem;
+			
+			if (project.IsCompileable (file.Path))
+				project.AddFile (file.Path, BuildAction.Compile);
+			else
+				project.AddFile (file.Path, BuildAction.Nothing);
+			
+			IdeApp.ProjectOperations.SaveProject (project);
+		}
+		
+		[CommandUpdateHandler (ProjectCommands.IncludeToProject)]
+		public void UpdateIncludeFileToProject (CommandInfo info)
+		{
+			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
+			info.Visible = project != null;
+		}
+		
+		[CommandHandler (ViewCommands.OpenWithList)]
+		public void OnOpenWith (object ob)
+		{
+			SystemFile file = CurrentNode.DataItem as SystemFile;
+			((FileViewer)ob).OpenFile (file.Path);
+		}
+		
+		[CommandUpdateHandler (ViewCommands.OpenWithList)]
+		public void OnOpenWithUpdate (CommandArrayInfo info)
+		{
+			SystemFile file = CurrentNode.DataItem as SystemFile;
+			FileViewer prev = null; 
+			foreach (FileViewer fv in IdeApp.Workbench.GetFileViewers (file.Path)) {
+				if (prev != null && fv.IsExternal != prev.IsExternal)
+					info.AddSeparator ();
+				info.Add (fv.Title, fv);
+				prev = fv;
+			}
 		}
 	}
 }
-
