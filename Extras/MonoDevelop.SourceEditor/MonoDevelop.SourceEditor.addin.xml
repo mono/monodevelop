@@ -5,7 +5,7 @@
        copyright   = ""
        url         = ""
        description = "Provides a text editor for the MonoDevelop IDE based on GtkSourceView"
-       category    = "IDE extensions"
+       category    = "MonoDevelop Core"
        version     = "0.13.0">
 	
 	<Runtime>

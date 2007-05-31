@@ -201,16 +201,20 @@ namespace MonoDevelop.SourceEditor.Gui
 			
 			// Setup the columns and column renders for the comboboxes
 			CellRendererPixbuf pixr = new CellRendererPixbuf();
+			pixr.Ypad = 0;
 			classCombo.PackStart(pixr, false);
 			classCombo.AddAttribute(pixr, "pixbuf", 0);
 			CellRenderer colr = new CellRendererText();
+			colr.Ypad = 0;
 			classCombo.PackStart(colr, true);
 			classCombo.AddAttribute(colr, "text", 1);
 			
 			pixr = new CellRendererPixbuf();
+			pixr.Ypad = 0;
 			membersCombo.PackStart(pixr, false);
 			membersCombo.AddAttribute(pixr, "pixbuf", 0);
 			colr = new CellRendererText();
+			colr.Ypad = 0;
 			membersCombo.PackStart(colr, true);
 			membersCombo.AddAttribute(colr, "text", 1);
 			
@@ -614,7 +618,7 @@ namespace MonoDevelop.SourceEditor.Gui
 				memberStore.AppendValues(pix, methodName.ToString (), method);
 			
 				// Check if the current cursor position in inside this method
-				if (method.BodyRegion.BeginLine <= line && line <= method.BodyRegion.EndLine) {
+				if (method.BodyRegion != null && method.BodyRegion.BeginLine <= line && line <= method.BodyRegion.EndLine) {
 					activeIndex = position;
 				}
 				++position;
