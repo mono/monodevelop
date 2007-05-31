@@ -46,7 +46,13 @@ namespace MonoDevelop.Core.Gui.Dialogs
 				OnCustomizationObjectChanged();
 			}
 		}
-		
+		public Gtk.Window Parent {
+			get {
+				return null;
+			}
+			set {
+			}
+		}
 		public virtual bool EnableFinish {
 			get {
 				return isFinished;

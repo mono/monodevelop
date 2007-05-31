@@ -39,5 +39,6 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			get;
 			set;
 		}
+		
 	}
 }

@@ -49,6 +49,11 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			get;
 		}
 		
+		Gtk.Window Parent {
+			get;
+			set;
+		}
+		
 		/// <returns>
 		/// true, if the DialogMessage could be executed.
 		/// </returns>
