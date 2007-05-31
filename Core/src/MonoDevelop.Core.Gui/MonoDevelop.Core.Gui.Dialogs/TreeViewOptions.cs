@@ -121,6 +121,9 @@ namespace MonoDevelop.Core.Gui.Dialogs {
 
 			descriptors [descriptor.ID] = i;
 			AddChildNodes (customizer, i, descriptor);
+			
+			if (iter.Equals (Gtk.TreeIter.Zero))
+				TreeView.ExpandRow (treeStore.GetPath (i), false);
 		}
 		
 		protected virtual Gtk.TreeIter AddPath (string label, Gtk.TreeIter iter)

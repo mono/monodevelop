@@ -1,3 +1,8 @@
+2007-05-31  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.Dialogs/TreeViewOptions.cs: Expand root nodes by
+	  default.
+
 2007-05-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui/CommandService.cs: Unregister commands from
