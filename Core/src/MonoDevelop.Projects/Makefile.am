@@ -14,6 +14,33 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
+	MonoDevelop.Ide.Projects.Item/ItemType.cs \
+	MonoDevelop.Ide.Projects.Item/ProjectFile.cs \
+	MonoDevelop.Ide.Projects.Item/ProjectItem.cs \
+	MonoDevelop.Ide.Projects.Item/ProjectItemFactory.cs \
+	MonoDevelop.Ide.Projects.Item/ReferenceProjectItem.cs \
+	MonoDevelop.Ide.Projects.Item/UnknownProjectItem.cs \
+	MonoDevelop.Ide.Projects/AbstractBackendBinding.cs \
+	MonoDevelop.Ide.Projects/BackendBindingCodon.cs \
+	MonoDevelop.Ide.Projects/BackendBindingService.cs \
+	MonoDevelop.Ide.Projects/BeforeCompileAction.cs \
+	MonoDevelop.Ide.Projects/CompilerResult.cs \
+	MonoDevelop.Ide.Projects/ExecutionContext.cs \
+	MonoDevelop.Ide.Projects/IBackendBinding.cs \
+	MonoDevelop.Ide.Projects/IProject.cs \
+	MonoDevelop.Ide.Projects/MSBuildProject.cs \
+	MonoDevelop.Ide.Projects/ProjectEventArgs.cs \
+	MonoDevelop.Ide.Projects/ProjectReadHelper.cs \
+	MonoDevelop.Ide.Projects/Solution.cs \
+	MonoDevelop.Ide.Projects/SolutionEventArgs.cs \
+	MonoDevelop.Ide.Projects/SolutionFolder.cs \
+	MonoDevelop.Ide.Projects/SolutionItem.cs \
+	MonoDevelop.Ide.Projects/SolutionItemFactory.cs \
+	MonoDevelop.Ide.Projects/SolutionProject.cs \
+	MonoDevelop.Ide.Projects/SolutionReadHelper.cs \
+	MonoDevelop.Ide.Projects/SolutionSection.cs \
+	MonoDevelop.Ide.Projects/StartAction.cs \
+	MonoDevelop.Ide.Projects/UnknownProject.cs \
 	MonoDevelop.Projects.Ambience/Ambience.cs \
 	MonoDevelop.Projects.Ambience/AmbienceService.cs \
 	MonoDevelop.Projects.Ambience/CodeDOMGeneratorUtility.cs \

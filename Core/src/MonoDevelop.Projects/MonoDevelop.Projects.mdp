@@ -232,6 +232,33 @@
     <File name="./MonoDevelop.Projects/TypelibImporter.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/UnknownCombineEntry.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/UnknownProjectVersionException.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/AbstractBackendBinding.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/BackendBindingCodon.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/BackendBindingService.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/BeforeCompileAction.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/CompilerResult.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/ExecutionContext.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/IBackendBinding.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/IProject.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/MSBuildProject.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/ProjectEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/ProjectReadHelper.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/Solution.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/SolutionEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/SolutionFolder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/SolutionItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/SolutionItemFactory.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/SolutionProject.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/SolutionReadHelper.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/SolutionSection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/UnknownProject.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects.Item/ItemType.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects.Item/ProjectFile.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects.Item/ProjectItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects.Item/ProjectItemFactory.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects.Item/ReferenceProjectItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects.Item/UnknownProjectItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/StartAction.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
