@@ -1,3 +1,7 @@
+2007-05-31  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AspNetAddIn.addin.xml: Fix typo.
+
 2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AspNetAddIn.mdp: Copy the .addins.xml file to the output dir.
