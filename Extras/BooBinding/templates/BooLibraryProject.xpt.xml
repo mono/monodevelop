@@ -7,7 +7,7 @@
 	<TemplateConfiguration>
 		<_Name>Boo Library</_Name>
 		<Category>Boo</Category>
-		<Icon>Boo.Project.Form</Icon>
+		<Icon>res:Boo.Project.Form</Icon>
 		<LanguageName>Boo</LanguageName>
 		<_Description>Creates a Boo library</_Description>
 	</TemplateConfiguration>

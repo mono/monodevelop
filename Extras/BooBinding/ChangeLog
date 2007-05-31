@@ -1,3 +1,8 @@
+2007-05-31  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* templates/BooLibraryProject.xpt.xml: Get template icon from
+	  resources.
+
 2007-05-28  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* BooBinding.mdp, Makefile.am: Make sure the correct Mono.Cecil dll is
