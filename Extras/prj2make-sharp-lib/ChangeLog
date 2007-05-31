@@ -1,5 +1,12 @@
 2007-06-01  Ankit Jain  <jankit@novell.com>
 
+	* MSBuildFileFormat.cs (ReadItemGroups): Don't ignore resources external
+	to the project directory. These now get handled by the *ResourceIdBuilder.
+	* CSharpResourceIdBuilder.cs: If the file is external to the project,
+	then use only the filename.
+
+2007-06-01  Ankit Jain  <jankit@novell.com>
+
 	* MSBuildFileFormat.cs (ReadItemGroups): If reference name cannot be
 	resolved, then try to find the correct case for the assembly name.
 	(AssemblyNamesTable): New.

@@ -937,12 +937,15 @@ namespace MonoDevelop.Prj2Make
 						if (path == null)
 							continue;
 
-						if (!path.StartsWith (project.BaseDirectory)) {
+						/* IResourceBuilder, in this case will use just the
+						 * filename to build the resource id. Ignoring <Link> here
+						 *
+						 * if (!path.StartsWith (project.BaseDirectory)) {
 							monitor.ReportWarning (GettextCatalog.GetString (
 								"The specified path '{0}' for the EmbeddedResource is outside the project directory. Ignoring.", include));
 							Console.WriteLine ("The specified path '{0}' for the EmbeddedResource is outside the project directory. Ignoring.", include);
 							continue;
-						}
+						}*/
 
 						pf = project.AddFile (path, BuildAction.EmbedAsResource);
 						if (ReadAsString (node, "LogicalName", ref str_tmp, false))

@@ -39,8 +39,10 @@ namespace MonoDevelop.Prj2Make
 		{
 			if (String.IsNullOrEmpty (pf.DependsOn)) {
 				string fname = pf.RelativePath;
-				if (fname.StartsWith ("./"))
-					fname = fname.Substring (2);
+				if (pf.IsExternalToProject)
+					fname = Path.GetFileName (fname);
+				else
+					fname = MSBuildFileFormat.NormalizeRelativePath (fname);
 
 				if (String.Compare (Path.GetExtension (fname), ".resx", true) == 0)
 					fname = Path.ChangeExtension (fname, ".resources");
