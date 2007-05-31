@@ -1,5 +1,13 @@
 2007-05-31  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.GtkCore/GtkCoreService.cs: In GetBaseType, use
+	  Project.GetWidgetTypes to get all registered wiget types, including
+	  base widget types (which were not provided by GetComponentTypes).
+	* lib/libsteticui.dll, lib/libstetic.dll: Updated from stetic module.
+	  Includes fix for bug #81785.
+
+2007-05-31  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.GtkCore/GtkCoreService.cs: Don't include non-public
 	  members to the objects.xml file.
 

@@ -210,10 +210,10 @@ namespace MonoDevelop.GtkCore
 		static string GetBaseType (IClass widgetClass, Project project)
 		{
 			GtkDesignInfo info = GetGtkInfo (project);
-			Stetic.ComponentType[] types = info.GuiBuilderProject.SteticProject.GetComponentTypes ();
+			string[] types = info.GuiBuilderProject.SteticProject.GetWidgetTypes ();
 			Hashtable typesHash = new Hashtable ();
-			foreach (Stetic.ComponentType t in types)
-				typesHash [t.Name] = t;
+			foreach (string t in types)
+				typesHash [t] = t;
 				
 			IParserContext pctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
 			string ret = GetBaseType (widgetClass, pctx, typesHash);
