@@ -1,5 +1,10 @@
 2007-05-31  Jeffrey Stedfast  <fejj@novell.com>
 
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/LibSvnClient.cs:
+	Call a function in the .ctor to cause an exception if the library doesn't exist.
+
+2007-05-31  Jeffrey Stedfast  <fejj@novell.com>
+
 	Fix for bug #81766.
 
 	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:

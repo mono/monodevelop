@@ -16,7 +16,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 	public abstract class LibSvnClient {
 		public LibSvnClient ()
 		{
-			
+			client_version ();
 		}
 		
 		public static LibSvnClient GetLib ()
