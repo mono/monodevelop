@@ -1,5 +1,11 @@
 2007-05-31  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.DesignerSupport.Projects/ComponentNodeBuilder.cs: Don't
+	  use the CurrentNode property in the OnChanged event since it may
+	  not be properly initialized when the event is fired.
+
+2007-05-31  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.DesignerSupport.addin.xml: Changed add-in category.
 
 2007-05-18  Lluis Sanchez Gual <lluis@novell.com> 

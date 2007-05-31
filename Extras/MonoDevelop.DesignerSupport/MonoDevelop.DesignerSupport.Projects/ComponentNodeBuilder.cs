@@ -38,10 +38,14 @@ namespace MonoDevelop.DesignerSupport.Projects
 
 		public void OnChanged (object obj)
 		{
-			CombineEntry ce = (CombineEntry) CurrentNode.GetParentDataItem (typeof(CombineEntry), true);
-			if (ce != null) {
-				using (IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (false)) {
-					ce.Save (mon);
+			// Don't use the CurrentNode property here since it may not be properly initialized when the event is fired.
+			ITreeNavigator nav = Tree.GetNodeAtObject (obj);
+			if (nav != null) {
+				CombineEntry ce = (CombineEntry) nav.GetParentDataItem (typeof(CombineEntry), true);
+				if (ce != null) {
+					using (IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (false)) {
+						ce.Save (mon);
+					}
 				}
 			}
 		}
