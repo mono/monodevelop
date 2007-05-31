@@ -8,7 +8,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 	{
 		uint failures;
 		
-		internal SslServerTrustDialog (string realm, uint failures, SvnClient.svn_auth_ssl_server_cert_info_t cert_info, bool may_save)
+		internal SslServerTrustDialog (string realm, uint failures, LibSvnClient.svn_auth_ssl_server_cert_info_t cert_info, bool may_save)
 		{
 			this.Build();
 			
@@ -24,13 +24,13 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 				radioAccept.Visible = false;
 			
 			string reason = "";
-			if ((failures & SvnClient.SVN_AUTH_SSL_NOTYETVALID) != 0)
+			if ((failures & LibSvnClient.SVN_AUTH_SSL_NOTYETVALID) != 0)
 				reason += "\n" + GettextCatalog.GetString ("Certificate is not yet valid.");
-			if ((failures & SvnClient.SVN_AUTH_SSL_EXPIRED) != 0)
+			if ((failures & LibSvnClient.SVN_AUTH_SSL_EXPIRED) != 0)
 				reason += "\n" + GettextCatalog.GetString ("Certificate has expired.");
-			if ((failures & SvnClient.SVN_AUTH_SSL_CNMISMATCH) != 0)
+			if ((failures & LibSvnClient.SVN_AUTH_SSL_CNMISMATCH) != 0)
 				reason += "\n" + GettextCatalog.GetString ("Certificate's CN (hostname) does not match the remote hostname.");
-			if ((failures & SvnClient.SVN_AUTH_SSL_UNKNOWNCA) != 0)
+			if ((failures & LibSvnClient.SVN_AUTH_SSL_UNKNOWNCA) != 0)
 				reason += "\n" + GettextCatalog.GetString ("Certificate authority is unknown (i.e. not trusted).");
 			if (reason.Length > 0) {
 				labelReason.Markup = "<b>" + reason.Substring (1) + "</b>";
@@ -50,9 +50,9 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			}
 		}
 		
-		internal static bool Show (string realm, uint failures, int may_save, SvnClient.svn_auth_ssl_server_cert_info_t cert_info, out SvnClient.svn_auth_cred_ssl_server_trust_t retData)
+		internal static bool Show (string realm, uint failures, int may_save, LibSvnClient.svn_auth_ssl_server_cert_info_t cert_info, out LibSvnClient.svn_auth_cred_ssl_server_trust_t retData)
 		{
-			SvnClient.svn_auth_cred_ssl_server_trust_t data = new SvnClient.svn_auth_cred_ssl_server_trust_t ();
+			LibSvnClient.svn_auth_cred_ssl_server_trust_t data = new LibSvnClient.svn_auth_cred_ssl_server_trust_t ();
 			
 			bool res = false;
 			object monitor = new Object ();

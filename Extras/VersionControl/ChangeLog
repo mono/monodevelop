@@ -1,3 +1,30 @@
+2007-05-31  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fix for bug #81766.
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:
+	Updated to reflect changes to SvnClient nested classes/structs (which have been moved to LibSvnClient).
+	
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/ClientCertificateDialog.cs: Same.
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/ClientCertificatePasswordDialog.cs: Same.
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/SslServerTrustDialog.cs: Same.
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/UserPasswordDialog.cs: Same.
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs:
+	Same.
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/LibApr.cs:
+	Moved some constants here.
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:
+	Use a LibSvnClient object.
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/LibSvnClient.cs:
+	New source file that wraps libsvn_client-1.so.[0,1]
+
 2007-05-31  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:

@@ -99,7 +99,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			return File.Exists (GetTextBase (sourcefile))
 				|| Directory.Exists (GetDirectoryDotSvn (sourcefile));
 		}
-
+		
 		public bool CanCommit (Repository repo, string sourcepath)
 		{
 			if (Directory.Exists (sourcepath) && Directory.Exists (GetDirectoryDotSvn (sourcepath)))
@@ -115,7 +115,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			
 			if (!Directory.Exists (GetDirectoryDotSvn (Path.GetDirectoryName (sourcepath))))
 				return false;
-
+			
 			if (File.Exists (sourcepath)) {
 				if (File.Exists (GetTextBase (sourcepath)))
 					return false;
@@ -133,46 +133,46 @@ namespace MonoDevelop.VersionControl.Subversion
 			return ver.Status == VersionStatus.Unversioned;
 		}
 		
-		public string GetPathToBaseText(string sourcefile) {
-			return GetTextBase(sourcefile);
+		public string GetPathToBaseText (string sourcefile) {
+			return GetTextBase (sourcefile);
 		}
 		
 		public Revision[] GetHistory (Repository repo, string sourcefile, Revision since) {
 			ArrayList revs = new ArrayList();
 			
-			SvnClient.Rev startrev;
+			LibSvnClient.Rev startrev;
 			string curPath;
-
+			
 			// We need to know the URL and last committed revision of
 			// sourcefile.  We can GetVersionInfo the sourcefile, unless
 			// this is the root directory of the repository, in which
 			// case GetVersionInfo will throw an exception
 			try {
 				VersionInfo node = GetVersionInfo (repo, sourcefile, false);
-				startrev = ((SvnRevision)node.Revision).ForApi();
+				startrev = ((SvnRevision) node.Revision).ForApi ();
 				curPath = node.RepositoryPath;
 			} catch {
-				startrev = SvnClient.Rev.Head;
+				startrev = LibSvnClient.Rev.Head;
 				curPath = Client.GetPathUrl(sourcefile);
 			} 
 			
-			SvnClient.Rev sincerev = SvnClient.Rev.First;
+			LibSvnClient.Rev sincerev = LibSvnClient.Rev.First;
 			if (since != null)
-				sincerev = ((SvnRevision)since).ForApi();
-
-			foreach (SvnClient.LogEnt log in Client.Log(sourcefile, startrev, sincerev)) {
-				ArrayList changedPaths = new ArrayList();
-				foreach (SvnClient.LogEntChangedPath chg in log.ChangedPaths) {
+				sincerev = ((SvnRevision) since).ForApi ();
+			
+			foreach (LibSvnClient.LogEnt log in Client.Log (sourcefile, startrev, sincerev)) {
+				ArrayList changedPaths = new ArrayList ();
+				foreach (LibSvnClient.LogEntChangedPath chg in log.ChangedPaths) {
 					RevisionPath rp = new RevisionPath (chg.Path, chg.Action, chg.ActionDesc);
 					changedPaths.Add (rp);
 				}
 				
 				SvnRevision d = new SvnRevision (repo, log.Revision, log.Time, log.Author, log.Message, (RevisionPath[])changedPaths.ToArray(typeof(RevisionPath)));
 				revs.Add(d);
-
+				
 				// Be aware of the change in path resulting from a copy.
 				// Not sure if this works.
-				foreach (SvnClient.LogEntChangedPath chg in log.ChangedPaths) {
+				foreach (LibSvnClient.LogEntChangedPath chg in log.ChangedPaths) {
 					if (curPath.EndsWith(chg.Path) && chg.CopyFromPath != null) {
 						curPath = curPath.Substring(0, curPath.Length-chg.Path.Length) + chg.CopyFromPath;
 						break;
@@ -202,17 +202,19 @@ namespace MonoDevelop.VersionControl.Subversion
 			// If the directory is not versioned, there is no version info
 			if (!Directory.Exists (GetDirectoryDotSvn (Path.GetDirectoryName (sourcefile))))
 				return null;
-				
-			IList statuses = Client.Status(sourcefile, SvnClient.Rev.Head, false, false, getRemoteStatus);
+			
+			IList statuses = Client.Status (sourcefile, LibSvnClient.Rev.Head, false, false, getRemoteStatus);
 			if (statuses.Count == 0)
 				throw new ArgumentException("Path '" + sourcefile + "' does not exist in the repository.");
-				
-			SvnClient.StatusEnt ent;
+			
+			LibSvnClient.StatusEnt ent;
 			if (statuses.Count != 1)
 				throw new ArgumentException("Path '" + sourcefile + "' does not refer to a file in the repository.");
-			ent = (SvnClient.StatusEnt)statuses[0];
+			
+			ent = (LibSvnClient.StatusEnt) statuses[0];
 			if (ent.IsDirectory)
 				throw new ArgumentException("Path '" + sourcefile + "' does not refer to a file.");
+			
 			return CreateNode (ent, repo);
 		}
 		
@@ -224,8 +226,8 @@ namespace MonoDevelop.VersionControl.Subversion
 			if (!Directory.Exists (GetDirectoryDotSvn (parent)))
 				return null;
 				
-			IList statuses = Client.Status (parent, SvnClient.Rev.Head, false, false, getRemoteStatus);
-			foreach (SvnClient.StatusEnt ent in statuses) {
+			IList statuses = Client.Status (parent, LibSvnClient.Rev.Head, false, false, getRemoteStatus);
+			foreach (LibSvnClient.StatusEnt ent in statuses) {
 				if (ent.LocalFilePath == localPath)
 					return CreateNode (ent, repo);
 			}
@@ -233,7 +235,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		}
 		
 		public VersionInfo[] GetDirectoryVersionInfo (Repository repo, string sourcepath, bool getRemoteStatus, bool recursive) {
-			IList ents = Client.Status(sourcepath, SvnClient.Rev.Head, recursive, true, getRemoteStatus);
+			IList ents = Client.Status (sourcepath, LibSvnClient.Rev.Head, recursive, true, getRemoteStatus);
 			return CreateNodes (repo, ents);
 		}
 		
@@ -250,7 +252,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		}
 		
 		public void Checkout (string url, string path, Revision rev, bool recurse, IProgressMonitor monitor) {
-			Client.Checkout (url, path, SvnClient.Rev.Head, recurse, monitor);
+			Client.Checkout (url, path, LibSvnClient.Rev.Head, recurse, monitor);
 		}
 		
 		public void Revert (string[] paths, bool recurse, IProgressMonitor monitor) {
@@ -266,43 +268,33 @@ namespace MonoDevelop.VersionControl.Subversion
 		}
 		
 		public IList List(string path, bool recurse) {
-			return Client.List(path, recurse, SvnClient.Rev.Head);
+			return Client.List(path, recurse, LibSvnClient.Rev.Head);
 		}
 		
 		public void Move(string srcPath, string destPath, bool force, IProgressMonitor monitor) {
-			Client.Move (srcPath, destPath, SvnClient.Rev.Head, force, monitor);
+			Client.Move (srcPath, destPath, LibSvnClient.Rev.Head, force, monitor);
 		}
 		
 		public string PathDiff (string path, bool recursive)
 		{
-			return Client.PathDiff (path, SvnClient.Rev.Base, path, SvnClient.Rev.Working, recursive);
+			return Client.PathDiff (path, LibSvnClient.Rev.Base, path, LibSvnClient.Rev.Working, recursive);
 		}
 		
-		private VersionInfo CreateNode (SvnClient.StatusEnt ent, Repository repo) 
+		private VersionInfo CreateNode (LibSvnClient.StatusEnt ent, Repository repo) 
 		{
 			VersionStatus rs = VersionStatus.Unversioned;
 			Revision rr = null;
 			
-			if (ent.RemoteTextStatus != SvnClient.VersionStatus.EMPTY) {
-				rs = ConvertStatus(SvnClient.NodeSchedule.Normal, ent.RemoteTextStatus);
-				rr = new SvnRevision (repo, 
-					ent.LastCommitRevision, 
-					ent.LastCommitDate,
-					ent.LastCommitAuthor,
-					"(unavailable)",
-					null
-				);
+			if (ent.RemoteTextStatus != LibSvnClient.VersionStatus.EMPTY) {
+				rs = ConvertStatus (LibSvnClient.NodeSchedule.Normal, ent.RemoteTextStatus);
+				rr = new SvnRevision (repo, ent.LastCommitRevision, ent.LastCommitDate,
+				                      ent.LastCommitAuthor, "(unavailable)", null);
 			}
 			
-			VersionInfo ret = new VersionInfo(
-				ent.LocalFilePath,
-				ent.Url,
-				ent.IsDirectory,
-				ConvertStatus(ent.Schedule, ent.TextStatus),
-				new SvnRevision(repo, ent.Revision),
-				rs,
-				rr
-			);
+			VersionInfo ret = new VersionInfo (ent.LocalFilePath, ent.Url, ent.IsDirectory,
+			                                   ConvertStatus (ent.Schedule, ent.TextStatus),
+			                                   new SvnRevision (repo, ent.Revision),
+			                                   rs, rr);
 			
 			return ret;
 		}
@@ -310,27 +302,28 @@ namespace MonoDevelop.VersionControl.Subversion
 		private VersionInfo[] CreateNodes (Repository repo, IList ent) {
 			VersionInfo[] ret = new VersionInfo[ent.Count];
 			for (int i = 0; i < ent.Count; i++)
-				ret[i] = CreateNode((SvnClient.StatusEnt)ent[i], repo);
+				ret[i] = CreateNode ((LibSvnClient.StatusEnt) ent[i], repo);
 			return ret;
 		}
 		
-		private VersionStatus ConvertStatus(SvnClient.NodeSchedule schedule, SvnClient.VersionStatus status) {
+		private VersionStatus ConvertStatus (LibSvnClient.NodeSchedule schedule, LibSvnClient.VersionStatus status) {
 			switch (schedule) {
-				case SvnClient.NodeSchedule.Add: return VersionStatus.ScheduledAdd;
-				case SvnClient.NodeSchedule.Delete: return VersionStatus.ScheduledDelete;
-				case SvnClient.NodeSchedule.Replace: return VersionStatus.ScheduledReplace;
+				case LibSvnClient.NodeSchedule.Add: return VersionStatus.ScheduledAdd;
+				case LibSvnClient.NodeSchedule.Delete: return VersionStatus.ScheduledDelete;
+				case LibSvnClient.NodeSchedule.Replace: return VersionStatus.ScheduledReplace;
 			}
-
+			
 			switch (status) {
-				case SvnClient.VersionStatus.None: return VersionStatus.Unchanged;
-				case SvnClient.VersionStatus.Normal: return VersionStatus.Unchanged;
-				case SvnClient.VersionStatus.Unversioned: return VersionStatus.Unversioned;
-				case SvnClient.VersionStatus.Modified: return VersionStatus.Modified;
-				case SvnClient.VersionStatus.Merged: return VersionStatus.Modified;
-				case SvnClient.VersionStatus.Conflicted: return VersionStatus.Conflicted;
-				case SvnClient.VersionStatus.Ignored: return VersionStatus.UnversionedIgnored;
-				case SvnClient.VersionStatus.Obstructed: return VersionStatus.Obstructed;
+				case LibSvnClient.VersionStatus.None: return VersionStatus.Unchanged;
+				case LibSvnClient.VersionStatus.Normal: return VersionStatus.Unchanged;
+				case LibSvnClient.VersionStatus.Unversioned: return VersionStatus.Unversioned;
+				case LibSvnClient.VersionStatus.Modified: return VersionStatus.Modified;
+				case LibSvnClient.VersionStatus.Merged: return VersionStatus.Modified;
+				case LibSvnClient.VersionStatus.Conflicted: return VersionStatus.Conflicted;
+				case LibSvnClient.VersionStatus.Ignored: return VersionStatus.UnversionedIgnored;
+				case LibSvnClient.VersionStatus.Obstructed: return VersionStatus.Obstructed;
 			}
+			
 			return VersionStatus.Unversioned;
 		}
 		
@@ -344,7 +337,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 			
 			public SvnRevision (Repository repo, int rev, DateTime time, string author, string message, RevisionPath[] changedFiles)
-			: base (repo, time, author, message, changedFiles)
+				: base (repo, time, author, message, changedFiles)
 			{
 				Rev = rev;
 			}
@@ -353,15 +346,15 @@ namespace MonoDevelop.VersionControl.Subversion
 			{
 				return Rev.ToString();
 			}
-		
+			
 			public override Revision GetPrevious()
 			{
 				return new SvnRevision (Repository, Rev-1);
 			}
 			
-			public SvnClient.Rev ForApi() 
+			public LibSvnClient.Rev ForApi () 
 			{
-				return SvnClient.Rev.Number(Rev);
+				return LibSvnClient.Rev.Number (Rev);
 			}
 		}
 

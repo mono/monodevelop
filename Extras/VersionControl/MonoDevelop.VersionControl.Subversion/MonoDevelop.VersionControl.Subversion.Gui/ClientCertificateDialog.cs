@@ -24,9 +24,9 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			get { return checkSave.Active; }
 		}
 		
-		internal static bool Show (string realm, int may_save, out SvnClient.svn_auth_cred_ssl_client_cert_t retData)
+		internal static bool Show (string realm, int may_save, out LibSvnClient.svn_auth_cred_ssl_client_cert_t retData)
 		{
-			SvnClient.svn_auth_cred_ssl_client_cert_t data = new SvnClient.svn_auth_cred_ssl_client_cert_t ();
+			LibSvnClient.svn_auth_cred_ssl_client_cert_t data = new LibSvnClient.svn_auth_cred_ssl_client_cert_t ();
 			
 			bool res = false;
 			object monitor = new Object ();

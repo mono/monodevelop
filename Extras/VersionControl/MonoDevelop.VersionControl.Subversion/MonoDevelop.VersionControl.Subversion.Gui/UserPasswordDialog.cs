@@ -36,9 +36,9 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 		}
 		
 		
-		internal static bool Show (string realm, bool may_save, out SvnClient.svn_auth_cred_username_t data)
+		internal static bool Show (string realm, bool may_save, out LibSvnClient.svn_auth_cred_username_t data)
 		{
-			data = new SvnClient.svn_auth_cred_username_t ();
+			data = new LibSvnClient.svn_auth_cred_username_t ();
 			int save;
 			string pwd, user = "";
 			bool ret = Show (false, realm, may_save, ref user, out pwd, out save);
@@ -47,9 +47,9 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			return ret;
 		}
 		
-		internal static bool Show (string user_name, string realm, bool may_save, out SvnClient.svn_auth_cred_simple_t data)
+		internal static bool Show (string user_name, string realm, bool may_save, out LibSvnClient.svn_auth_cred_simple_t data)
 		{
-			data = new SvnClient.svn_auth_cred_simple_t ();
+			data = new LibSvnClient.svn_auth_cred_simple_t ();
 			int save;
 			string pwd;
 			bool ret = Show (true, realm, may_save, ref user_name, out pwd, out save);

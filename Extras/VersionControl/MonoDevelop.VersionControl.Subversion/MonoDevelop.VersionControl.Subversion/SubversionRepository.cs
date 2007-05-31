@@ -28,7 +28,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			get {
 				List<Repository> list = new List<Repository> ();
 				
-				foreach (SvnClient.DirEnt ent in Svn.List (Url, false)) {
+				foreach (LibSvnClient.DirEnt ent in Svn.List (Url, false)) {
 					if (ent.IsDirectory) {
 						SubversionRepository rep = new SubversionRepository (Svn, Url + "/" + ent.Name);
 						rep.Name = ent.Name;

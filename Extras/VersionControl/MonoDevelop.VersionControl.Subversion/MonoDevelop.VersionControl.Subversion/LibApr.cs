@@ -6,12 +6,17 @@ namespace MonoDevelop.VersionControl.Subversion
 {
 	public abstract class LibApr
 	{
+		public static readonly int APR_OS_DEFAULT = 0xFFF;
+		public static readonly int APR_WRITE = 2;
+		public static readonly int APR_CREATE = 4;
+		public static readonly int APR_TRUNCATE = 16;
+		
 		public static LibApr GetLib ()
 		{
 			try {
 				return new LibApr0 ();
 			} catch {}
-
+			
 			return new LibApr1 ();
 		}
 		
