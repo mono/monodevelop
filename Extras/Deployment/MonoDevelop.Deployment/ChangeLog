@@ -1,3 +1,19 @@
+2007-05-31  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment/DeployService.cs: Handle add-in unloading.
+	* gtk-gui/gui.stetic, MonoDevelop.Deployment.Gui/DeployDialog.cs,
+	  MonoDevelop.Deployment.Gui/SourcesZipEditorWidget.cs,
+	  MonoDevelop.Deployment.Gui/EditPackageDialog.cs,
+	  MonoDevelop.Deployment.Gui/InstallDialog.cs,
+	  MonoDevelop.Deployment.Gui/EntrySelectionTree.cs,
+	  MonoDevelop.Deployment.Gui/LocalFileCopyConfigurationEditorWidget.cs,
+	  MonoDevelop.Deployment.Gui/BinariesZipEditorWidget.cs,
+	  MonoDevelop.Deployment.Gui/DeployFileListWidget.cs,
+	  MonoDevelop.Deployment.Gui/FileCopyConfigurationSelector.cs,
+	  MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs,
+	  MonoDevelop.Deployment.Gui/CommandDeployEditorWidget.cs: Made gui
+	  classes internal.
+
 2007-05-22  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Deployment.Gui/DeployOperations.cs (Install):

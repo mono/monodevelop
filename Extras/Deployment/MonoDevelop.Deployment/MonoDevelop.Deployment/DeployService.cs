@@ -270,6 +270,15 @@ namespace MonoDevelop.Deployment
 			if (args.Change == ExtensionChange.Add) {
 				copiers.Add (new FileCopyHandler ((IFileCopyHandler)args.ExtensionObject));
 			}
+			else {
+				IFileCopyHandler h = (IFileCopyHandler)args.ExtensionObject;
+				foreach (FileCopyHandler c in copiers) {
+					if (c.Id == h.Id) {
+						copiers.Remove (c);
+						break;
+					}
+				}
+			}
 		}
 	}
 }

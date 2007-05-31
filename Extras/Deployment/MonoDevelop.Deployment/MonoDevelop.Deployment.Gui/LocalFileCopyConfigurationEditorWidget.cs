@@ -4,7 +4,7 @@ using MonoDevelop.Deployment;
 
 namespace MonoDevelop.Deployment.Gui
 {
-	public partial class LocalFileCopyConfigurationEditorWidget : Gtk.Bin
+	internal partial class LocalFileCopyConfigurationEditorWidget : Gtk.Bin
 	{
 		LocalFileCopyConfiguration config;
 		

@@ -6,7 +6,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Deployment.Gui
 {
-	public partial class PackagingFeatureWidget : Gtk.Bin
+	internal partial class PackagingFeatureWidget : Gtk.Bin
 	{
 		CombineEntry entry;
 		Combine parentCombine;

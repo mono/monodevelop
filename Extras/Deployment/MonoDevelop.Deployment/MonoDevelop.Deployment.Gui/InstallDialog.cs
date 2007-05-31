@@ -4,7 +4,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Deployment.Gui
 {
-	public partial class InstallDialog : Gtk.Dialog
+	internal partial class InstallDialog : Gtk.Dialog
 	{
 		public InstallDialog (CombineEntry entry)
 		{

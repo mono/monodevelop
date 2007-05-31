@@ -4,7 +4,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Deployment.Gui
 {
-	public partial class BinariesZipEditorWidget : Gtk.Bin
+	internal partial class BinariesZipEditorWidget : Gtk.Bin
 	{
 		BinariesZipPackageBuilder builder;
 		bool loading;

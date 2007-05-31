@@ -8,7 +8,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Deployment.Gui
 {
-	public partial class DeployDialog : Gtk.Dialog
+	internal partial class DeployDialog : Gtk.Dialog
 	{
 		ListStore store;
 		List<PackageBuilder> builders = new List<PackageBuilder> ();

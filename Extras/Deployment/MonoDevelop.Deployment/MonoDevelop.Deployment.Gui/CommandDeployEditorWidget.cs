@@ -4,7 +4,7 @@ using MonoDevelop.Deployment;
 
 namespace MonoDevelop.Deployment.Gui
 {
-	public partial class CommandDeployEditorWidget : Gtk.Bin
+	internal partial class CommandDeployEditorWidget : Gtk.Bin
 	{
 		CommandPackageBuilder target;
 		

@@ -6,7 +6,7 @@ using MonoDevelop.Ide.Gui;
 namespace MonoDevelop.Deployment.Gui
 {
 
-	public partial class EditPackageDialog : Gtk.Dialog
+	internal partial class EditPackageDialog : Gtk.Dialog
 	{
 		PackageBuilder target;
 		Package package;

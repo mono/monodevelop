@@ -8,7 +8,7 @@ namespace MonoDevelop.Deployment
 {
 	
 	
-	public partial class DeployFileListWidget : Gtk.Bin
+	internal partial class DeployFileListWidget : Gtk.Bin
 	{
 		ListStore store;
 		

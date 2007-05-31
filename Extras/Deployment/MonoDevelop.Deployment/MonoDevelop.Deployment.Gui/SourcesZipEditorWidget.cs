@@ -6,7 +6,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Deployment.Gui
 {
-	public partial class SourcesZipEditorWidget : Gtk.Bin
+	internal partial class SourcesZipEditorWidget : Gtk.Bin
 	{
 		IFileFormat[] formats;
 		SourcesZipPackageBuilder target;

@@ -1,5 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
+  <configuration>
+    <images-root-path>../</images-root-path>
+  </configuration>
   <import>
     <widget-library name="../../../../build/AddIns/MonoDevelop.Components.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Projects.Gui.dll" />
@@ -9,6 +12,7 @@
   <widget class="Gtk.Bin" id="MonoDevelop.Deployment.Gui.LocalFileCopyConfigurationEditorWidget" design-size="348 50">
     <property name="MemberName" />
     <property name="Events">ButtonPressMask</property>
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox2">
         <property name="MemberName" />
@@ -44,6 +48,7 @@
   <widget class="Gtk.Bin" id="MonoDevelop.Deployment.Gui.FileCopyConfigurationSelector" design-size="300 300">
     <property name="MemberName" />
     <property name="Events">ButtonPressMask</property>
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox1">
         <property name="MemberName" />
@@ -114,6 +119,7 @@
   <widget class="Gtk.Bin" id="MonoDevelop.Deployment.Gui.CommandDeployEditorWidget" design-size="300 158">
     <property name="MemberName" />
     <property name="Events">ButtonPressMask</property>
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox1">
         <property name="MemberName" />
@@ -212,6 +218,7 @@
   <widget class="Gtk.Dialog" id="MonoDevelop.Deployment.Gui.DeployDialog" design-size="573 432">
     <property name="MemberName" />
     <property name="Events">ButtonPressMask</property>
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Create Package</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">3</property>
@@ -257,6 +264,7 @@
               <widget class="Gtk.Notebook" id="notebook">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
+                <property name="CurrentPage">0</property>
                 <property name="ShowBorder">False</property>
                 <property name="BorderWidth">6</property>
                 <signal name="SelectPage" handler="OnNotebookSelectPage" />
@@ -930,6 +938,7 @@
   <widget class="Gtk.Dialog" id="MonoDevelop.Deployment.Gui.InstallDialog" design-size="453 193">
     <property name="MemberName" />
     <property name="Events">ButtonPressMask</property>
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Install Project</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
@@ -1067,6 +1076,7 @@
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.Deployment.Gui.SourcesZipEditorWidget" design-size="452 132">
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox2">
         <property name="MemberName" />
@@ -1253,6 +1263,7 @@
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.Deployment.Gui.EntrySelectionTree" design-size="300 300">
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
         <property name="MemberName" />
@@ -1271,6 +1282,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Deployment.Gui.EditPackageDialog" design-size="599 450">
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
@@ -1288,6 +1300,7 @@
               <widget class="Gtk.Notebook" id="notebook">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
+                <property name="CurrentPage">0</property>
                 <signal name="SwitchPage" handler="OnNotebookSwitchPage" />
                 <child>
                   <widget class="Gtk.VBox" id="targetBox">
@@ -1500,6 +1513,7 @@
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.Deployment.Gui.BinariesZipEditorWidget" design-size="443 132">
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox2">
         <property name="MemberName" />
@@ -1685,6 +1699,7 @@
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.Deployment.DeployFileListWidget" design-size="569 391">
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox2">
         <property name="MemberName" />
@@ -1748,6 +1763,7 @@
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.Deployment.Gui.PackagingFeatureWidget" design-size="300 300">
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="box">
         <property name="MemberName" />

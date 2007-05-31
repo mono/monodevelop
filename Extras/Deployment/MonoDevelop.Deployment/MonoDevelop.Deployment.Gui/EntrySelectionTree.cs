@@ -7,7 +7,7 @@ using Gtk;
 
 namespace MonoDevelop.Deployment.Gui
 {
-	public partial class EntrySelectionTree : Gtk.Bin
+	internal partial class EntrySelectionTree : Gtk.Bin
 	{
 		TreeStore store;
 		Hashtable selectedEntries = new Hashtable ();
