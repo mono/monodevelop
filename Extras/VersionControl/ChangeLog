@@ -1,3 +1,9 @@
+2007-05-31  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:
+	  Directly call Svn.Commit when publishing a project, since the
+	  regular Commit method has problems importing new folders.
+
 2007-05-28  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:

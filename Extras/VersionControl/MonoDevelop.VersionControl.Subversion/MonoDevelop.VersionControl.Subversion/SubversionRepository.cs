@@ -113,10 +113,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				Add (file, false, monitor);
 			}
 			
-			ChangeSet cset = CreateChangeSet (localPath);
-			cset.AddFile (localPath);
-			cset.GlobalComment = message;
-			Commit (cset, monitor);
+			Svn.Commit (new string[] { localPath }, message, monitor);
 			
 			return new SubversionRepository (Svn, paths[0]);
 		}
