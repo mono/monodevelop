@@ -1,3 +1,7 @@
+2007-05-31  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.DesignerSupport.addin.xml: Changed add-in category.
+
 2007-05-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.DesignerSupport.mdp,

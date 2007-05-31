@@ -5,7 +5,7 @@
        copyright   = "MIT X11"
        url         = "http://www.monodevelop.com/"
        description = "Supporting services and pads for visual design tools."
-	   category    = "IDE extensions"
+	   category    = "MonoDevelop Core"
        version     = "0.13.0">
 	
 	<Runtime>
