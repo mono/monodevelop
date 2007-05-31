@@ -1,3 +1,7 @@
+2007-06-01  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Components.mdp: Change runtime to 2.0 .
+
 2007-05-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Components.DockToolbars/ArrowWindow.cs: Fix warning.

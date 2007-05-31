@@ -844,6 +844,24 @@ namespace MonoDevelop.Prj2Make
 					case "Reference":
 						string hintPath = String.Empty;
 						string fullname = Runtime.SystemAssemblyService.GetAssemblyFullName (include);
+						if (fullname == null) {
+							// Check if the case of the assembly name might be incorrect
+							// Eg. System.XML
+							int commaPos = include.IndexOf (',');
+							string asmname = include;
+							string rest = String.Empty;
+
+							if (commaPos >= 0) {
+								asmname = include.Substring (0, commaPos).Trim ();
+								rest = include.Substring (commaPos);
+							}
+
+							if (AssemblyNamesTable.ContainsKey (asmname) && asmname != AssemblyNamesTable [asmname]) {
+								// assembly name is in the table and case is different
+								fullname = Runtime.SystemAssemblyService.GetAssemblyFullName (
+									AssemblyNamesTable [asmname] + rest);
+							}
+						}
 						if ((fullname != null && 
 							Runtime.SystemAssemblyService.FindInstalledAssembly (fullname) != null) ||
 							!ReadAsString (node, "HintPath", ref hintPath, false)) {
@@ -1353,6 +1371,27 @@ namespace MonoDevelop.Prj2Make
 					conditionRegex = new Regex (@"'([^']*)'\s*==\s*'([^']*)'");
 				return conditionRegex;
 			}
+		}
+
+		// Contains only assembly name like "System.Xml"
+		// used to get the correct case of assembly names,
+		// like System.XML
+		static Dictionary<string, string> assemblyNamesTable = null;
+		static Dictionary<string, string> AssemblyNamesTable {
+			get {
+				if (assemblyNamesTable == null) {
+					assemblyNamesTable = new Dictionary<string, string> (StringComparer.InvariantCultureIgnoreCase);
+					foreach (string fullname in Runtime.SystemAssemblyService.GetAssemblyFullNames ()) {
+						string name = fullname;
+						if (name.IndexOf (',') >= 0)
+							name = name.Substring (0, name.IndexOf (',')).Trim ();
+						assemblyNamesTable [name] = name;
+					}
+				}
+
+				return assemblyNamesTable;
+			}
+
 		}
 	}
 

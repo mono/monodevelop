@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using MonoDevelop.Core.Execution;
@@ -13,7 +14,7 @@ namespace MonoDevelop.Core
 	public class SystemAssemblyService : AbstractService
 	{
 		Hashtable assemblyPathToPackage = new Hashtable ();
-		Hashtable assemblyFullNameToPath = new Hashtable ();
+		Dictionary<string, string> assemblyFullNameToPath = new Dictionary<string, string> ();
 		Hashtable packagesHash = new Hashtable ();
 		ArrayList packages = new ArrayList ();
 		
@@ -33,6 +34,11 @@ namespace MonoDevelop.Core
 		public ClrVersion[] GetSupportedClrVersions ()
 		{
 			return new ClrVersion [] { ClrVersion.Net_1_1, ClrVersion.Net_2_0 };
+		}
+
+		public ICollection<string> GetAssemblyFullNames ()
+		{
+			return assemblyFullNameToPath.Keys;
 		}
 		
 		public SystemPackage RegisterPackage (string name, string version, string description, ClrVersion targetVersion, params string[] assemblyFiles)
@@ -68,8 +74,8 @@ namespace MonoDevelop.Core
 			Initialize ();
 			
 			fullname = NormalizeAsmName (fullname);
-			string path = (string)assemblyFullNameToPath[fullname];
-			if (path == null)
+			string path;
+			if (!assemblyFullNameToPath.TryGetValue (fullname, out path))
 				return null;
 
 			return (SystemPackage) assemblyPathToPackage[path];
@@ -100,7 +106,7 @@ namespace MonoDevelop.Core
 		{
 			Initialize ();
 			fullname = NormalizeAsmName (fullname);
-			if (assemblyFullNameToPath.Contains (fullname))
+			if (assemblyFullNameToPath.ContainsKey (fullname))
 				return fullname;
 			
 			// Try to find a newer version of the same assembly.
@@ -120,8 +126,8 @@ namespace MonoDevelop.Core
 			
 			assemblyName = NormalizeAsmName (assemblyName); 
 			
-			string path = (string)assemblyFullNameToPath [assemblyName];
-			if (path != null)
+			string path;
+			if (assemblyFullNameToPath.TryGetValue (assemblyName, out path))
 				return path;
 
 			if (assemblyName == "mscorlib")
@@ -199,10 +205,10 @@ namespace MonoDevelop.Core
 				return fullName;
 			
 			string fname = Path.GetFileName ((string) assemblyFullNameToPath [fullName]);
-			foreach (DictionaryEntry e in assemblyFullNameToPath) {
-				SystemPackage rpack = (SystemPackage) assemblyPathToPackage [e.Value];
-				if (rpack.IsCorePackage && rpack.TargetVersion == targetVersion && Path.GetFileName ((string)e.Value) == fname)
-					return (string) e.Key;
+			foreach (KeyValuePair<string, string> pair in assemblyFullNameToPath) {
+				SystemPackage rpack = (SystemPackage) assemblyPathToPackage [pair.Value];
+				if (rpack.IsCorePackage && rpack.TargetVersion == targetVersion && Path.GetFileName (pair.Value) == fname)
+					return pair.Key;
 			}
 			return null;
 		}
@@ -214,7 +220,7 @@ namespace MonoDevelop.Core
 			assemblyName = NormalizeAsmName (assemblyName);
 			
 			// Fast path for known assemblies.
-			if (assemblyFullNameToPath.Contains (assemblyName))
+			if (assemblyFullNameToPath.ContainsKey (assemblyName))
 				return assemblyName;
 
 			AssemblyLocator locator = (AssemblyLocator) Runtime.ProcessService.CreateExternalProcessObject (typeof(AssemblyLocator), true);

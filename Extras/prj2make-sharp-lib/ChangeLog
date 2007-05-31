@@ -1,3 +1,9 @@
+2007-06-01  Ankit Jain  <jankit@novell.com>
+
+	* MSBuildFileFormat.cs (ReadItemGroups): If reference name cannot be
+	resolved, then try to find the correct case for the assembly name.
+	(AssemblyNamesTable): New.
+
 2007-05-31  Ankit Jain  <jankit@novell.com>
 
 	* MSBuildFileFormat.cs: Don't remove './' from the paths. VS2005 is not
