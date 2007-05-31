@@ -1,3 +1,7 @@
+2007-05-31  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Autotools/Autotools.mdp, CSharpBinding.mdp: Removed unused elements.
+
 2007-05-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Parser/Resolver.cs: Added protection against infinite loop in

@@ -98,7 +98,4 @@
     <ProjectReference type="Assembly" localcopy="False" refto="../../contrib/Mono.Addins.dll" />
   </References>
   <GtkDesignInfo partialTypes="True" />
-  <DeploymentInformation strategy="File">
-    <excludeFiles />
-  </DeploymentInformation>
 </Project>
