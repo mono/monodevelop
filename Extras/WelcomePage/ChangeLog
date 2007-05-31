@@ -1,3 +1,7 @@
+2007-05-31  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* WelcomePage.mdp: Added ChangeLog file to project.
+
 2007-05-21  Ankit Jain  <jankit@novell.com>
 
 	* WelcomePageView.cs (CatchUri): Destroy dialog.
