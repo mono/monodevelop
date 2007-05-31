@@ -46,6 +46,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Widget MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog
             this.Name = "MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog";
             this.Title = Mono.Unix.Catalog.GetString("Encapsulate Field");
+            this.WindowPosition = ((Gtk.WindowPosition)(4));
             // Internal child MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";
@@ -144,6 +145,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.radioUpdateExternal = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("_External"));
             this.radioUpdateExternal.CanFocus = true;
             this.radioUpdateExternal.Name = "radioUpdateExternal";
+            this.radioUpdateExternal.Active = true;
             this.radioUpdateExternal.DrawIndicator = true;
             this.radioUpdateExternal.UseUnderline = true;
             this.radioUpdateExternal.Group = new GLib.SList(System.IntPtr.Zero);
@@ -180,7 +182,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Internal child MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.ActionArea
             Gtk.HButtonBox w14 = this.ActionArea;
             w14.Name = "dialog1_ActionArea";
-            w14.Spacing = 6;
+            w14.Spacing = 10;
             w14.BorderWidth = ((uint)(5));
             w14.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -212,7 +214,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
                 this.Child.ShowAll();
             }
             this.DefaultWidth = 400;
-            this.DefaultHeight = 229;
+            this.DefaultHeight = 235;
             this.Show();
         }
     }

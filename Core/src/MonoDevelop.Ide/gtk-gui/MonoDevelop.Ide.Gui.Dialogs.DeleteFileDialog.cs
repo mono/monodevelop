@@ -33,7 +33,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.Events = ((Gdk.EventMask)(256));
             this.Name = "MonoDevelop.Ide.Gui.Dialogs.DeleteFileDialog";
             this.Title = Mono.Unix.Catalog.GetString("Delete File");
-            this.BorderWidth = ((uint)(6));
+            this.WindowPosition = ((Gtk.WindowPosition)(4));
             // Internal child MonoDevelop.Ide.Gui.Dialogs.DeleteFileDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Events = ((Gdk.EventMask)(256));
@@ -43,11 +43,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.hbox1 = new Gtk.HBox();
             this.hbox1.Name = "hbox1";
             this.hbox1.Spacing = 12;
-            this.hbox1.BorderWidth = ((uint)(6));
+            this.hbox1.BorderWidth = ((uint)(12));
             // Container child hbox1.Gtk.Box+BoxChild
             this.image1 = new Gtk.Image();
             this.image1.Name = "image1";
-            this.image1.Pixbuf = Gtk.IconTheme.Default.LoadIcon("gtk-dialog-question", 48, 0);
+            this.image1.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-dialog-question", 48);
             this.hbox1.Add(this.image1);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox1[this.image1]));
             w2.Position = 0;
@@ -92,7 +92,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Internal child MonoDevelop.Ide.Gui.Dialogs.DeleteFileDialog.ActionArea
             Gtk.HButtonBox w7 = this.ActionArea;
             w7.Name = "MonoDevelop.Ide.DeleteFileDialog_ActionArea";
-            w7.Spacing = 6;
+            w7.Spacing = 10;
             w7.BorderWidth = ((uint)(5));
             w7.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child MonoDevelop.Ide.DeleteFileDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -123,8 +123,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 393;
-            this.DefaultHeight = 154;
+            this.DefaultWidth = 363;
+            this.DefaultHeight = 149;
             this.Show();
             this.NoButton.Clicked += new System.EventHandler(this.OnNoButtonClicked);
             this.YesButton.Clicked += new System.EventHandler(this.OnYesButtonClicked);

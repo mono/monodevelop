@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -42,6 +43,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			foreach (ICombineEntryFeature feature in features)
 				if (!feature.IsEnabled (parentCombine, entry))
 					AddFeature (feature);
+			
+			if (box.Children.Length == 0) {
+				// No features
+				Label lab = new Label ();
+				lab.Xalign = 0;
+				lab.Text = GettextCatalog.GetString ("There are no additional features available for this project.");
+				box.PackStart (lab, false, false, 0);
+				lab.Show ();
+			}
 			scrolled.AddWithViewport (box);
 		}
 		

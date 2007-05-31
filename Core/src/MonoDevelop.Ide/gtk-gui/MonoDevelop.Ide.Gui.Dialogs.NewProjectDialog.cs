@@ -88,6 +88,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.TypeHint = ((Gdk.WindowTypeHint)(1));
             this.WindowPosition = ((Gtk.WindowPosition)(1));
             this.DestroyWithParent = true;
+            this.HasSeparator = false;
             // Internal child MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog-vbox1";
@@ -96,6 +97,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.notebook = new Gtk.Notebook();
             this.notebook.CanFocus = true;
             this.notebook.Name = "notebook";
+            this.notebook.CurrentPage = 0;
             this.notebook.ShowBorder = false;
             // Container child notebook.Gtk.Notebook+NotebookChild
             this.vbox1 = new Gtk.VBox();

@@ -1,3 +1,18 @@
+2007-05-31  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Dialogs/CombineEntryFeatureSelector.cs: Show a
+	  message when there are no available features for a project.
+	* MonoDevelop.Ide.mdp: Remove useless deploy data.
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.DeleteFileDialog.cs,
+	  gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.RenameItemDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ExportProjectDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog.cs,
+	  gtk-gui/gui.stetic,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs: Updated.
+
 2007-05-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Use the new
