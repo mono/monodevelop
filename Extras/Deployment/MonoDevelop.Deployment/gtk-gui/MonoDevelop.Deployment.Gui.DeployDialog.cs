@@ -11,7 +11,7 @@
 namespace MonoDevelop.Deployment.Gui {
     
     
-    public partial class DeployDialog {
+    internal partial class DeployDialog {
         
         private Gtk.HBox hbox1;
         
@@ -158,6 +158,7 @@ namespace MonoDevelop.Deployment.Gui {
             this.notebook = new Gtk.Notebook();
             this.notebook.CanFocus = true;
             this.notebook.Name = "notebook";
+            this.notebook.CurrentPage = 0;
             this.notebook.ShowBorder = false;
             this.notebook.BorderWidth = ((uint)(6));
             // Container child notebook.Gtk.Notebook+NotebookChild
@@ -424,7 +425,6 @@ namespace MonoDevelop.Deployment.Gui {
             this.radioCreateProject = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("Save in a new Packaging Project"));
             this.radioCreateProject.CanFocus = true;
             this.radioCreateProject.Name = "radioCreateProject";
-            this.radioCreateProject.Active = true;
             this.radioCreateProject.DrawIndicator = true;
             this.radioCreateProject.UseUnderline = true;
             this.radioCreateProject.Group = new GLib.SList(System.IntPtr.Zero);

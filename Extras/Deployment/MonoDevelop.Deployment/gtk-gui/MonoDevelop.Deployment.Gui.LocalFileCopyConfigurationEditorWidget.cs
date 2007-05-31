@@ -11,7 +11,7 @@
 namespace MonoDevelop.Deployment.Gui {
     
     
-    public partial class LocalFileCopyConfigurationEditorWidget {
+    internal partial class LocalFileCopyConfigurationEditorWidget {
         
         private Gtk.VBox vbox2;
         

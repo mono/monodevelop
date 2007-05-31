@@ -11,7 +11,7 @@
 namespace MonoDevelop.Deployment.Gui {
     
     
-    public partial class EditPackageDialog {
+    internal partial class EditPackageDialog {
         
         private Gtk.VBox vbox2;
         
@@ -66,6 +66,7 @@ namespace MonoDevelop.Deployment.Gui {
             this.notebook = new Gtk.Notebook();
             this.notebook.CanFocus = true;
             this.notebook.Name = "notebook";
+            this.notebook.CurrentPage = 0;
             // Container child notebook.Gtk.Notebook+NotebookChild
             this.targetBox = new Gtk.VBox();
             this.targetBox.Name = "targetBox";

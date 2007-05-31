@@ -11,7 +11,7 @@
 namespace MonoDevelop.Deployment.Gui {
     
     
-    public partial class PackagingFeatureWidget {
+    internal partial class PackagingFeatureWidget {
         
         private Gtk.VBox box;
         
