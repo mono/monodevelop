@@ -382,6 +382,9 @@ namespace MonoDevelop.GtkCore
 		
 		static bool IsBrowsable (IParserContext ctx, IMember member)
 		{
+			if (!member.IsPublic)
+				return false;
+
 			IProperty prop = member as IProperty;
 			if (prop != null) {
 				if (!prop.CanGet || !prop.CanSet)

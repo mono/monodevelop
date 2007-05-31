@@ -1,3 +1,8 @@
+2007-05-31  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore/GtkCoreService.cs: Don't include non-public
+	  members to the objects.xml file.
+
 2007-05-30  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.mdp: Updated.
