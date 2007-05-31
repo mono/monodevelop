@@ -88,13 +88,6 @@ namespace CSharpBinding
 			return outputType.ToLower ();
 		}
 		
-		string GetExtension (string outputType)
-		{
-			if (outputType.ToLower () == "exe" || outputType.ToLower () == "winexe") {
-				return ".exe";
-			}
-			return ".dll";
-		}
 		
 		public override CompilerResult Compile (IProject prj, IProgressMonitor monitor)
 		{
@@ -110,7 +103,7 @@ namespace CSharpBinding
 				if (!String.IsNullOrEmpty (project.DefineConstants))
 					writer.WriteLine ("/d:{0}", project.DefineConstants);
 				
-				string assemblyName = project.AssemblyName + GetExtension (project.OutputType);
+				string assemblyName = project.AssemblyName + MSBuildProject.GetExtension (project.OutputType);
 				if (String.IsNullOrEmpty (project.OutputPath)) {
 					writer.WriteLine ("\"/out:{0}\"", assemblyName);
 				} else {
