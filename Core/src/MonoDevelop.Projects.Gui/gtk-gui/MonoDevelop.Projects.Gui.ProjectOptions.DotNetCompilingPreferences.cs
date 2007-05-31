@@ -25,17 +25,17 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
         
         private Gtk.Label label5;
         
-        private Gtk.Entry entry8;
+        private Gtk.Entry entrySymbols;
         
         private Gtk.Table table11;
         
-        private Gtk.CheckButton checkbutton1;
+        private Gtk.CheckButton checkbuttonAllowUnsafe;
         
-        private Gtk.CheckButton checkbutton2;
+        private Gtk.CheckButton checkbuttonFlowCheck;
         
-        private Gtk.CheckButton checkbutton3;
+        private Gtk.CheckButton checkbuttonNoStdLib;
         
-        private Gtk.CheckButton checkbutton4;
+        private Gtk.CheckButton checkbuttonOptimizeCode;
         
         private Gtk.Label GtkLabel4;
         
@@ -45,17 +45,17 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
         
         private Gtk.Table table12;
         
-        private Gtk.CheckButton checkbutton5;
+        private Gtk.CheckButton checkbuttonGenerateXmlDoc;
         
-        private Gtk.ComboBox combobox3;
+        private Gtk.ComboBox comboboxDebugInfo;
         
-        private Gtk.ComboBox combobox4;
+        private Gtk.ComboBox comboboxTargetFramework;
         
-        private Gtk.Entry entry11;
+        private Gtk.Entry entryXmlDocumentation;
         
         private Gtk.HBox hbox4;
         
-        private Gtk.Entry entry10;
+        private Gtk.Entry entryOutputPath;
         
         private Gtk.Button button3;
         
@@ -73,9 +73,9 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
         
         private Gtk.Table table9;
         
-        private Gtk.ComboBox combobox2;
+        private Gtk.ComboBox comboboxWarningLevel;
         
-        private Gtk.Entry entry7;
+        private Gtk.Entry entrySupressWarnings;
         
         private Gtk.Label label3;
         
@@ -89,13 +89,13 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
         
         private Gtk.Table table8;
         
-        private Gtk.Entry entry6;
+        private Gtk.Entry entrySpecificWarnings;
         
-        private Gtk.RadioButton radiobutton4;
+        private Gtk.RadioButton radiobuttonAllWarnings;
         
-        private Gtk.RadioButton radiobutton5;
+        private Gtk.RadioButton radiobuttonNone;
         
-        private Gtk.RadioButton radiobutton6;
+        private Gtk.RadioButton radiobuttonSpecificWarnings;
         
         private Gtk.Label GtkLabel12;
         
@@ -136,13 +136,13 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
             w1.Expand = false;
             w1.Fill = false;
             // Container child hbox3.Gtk.Box+BoxChild
-            this.entry8 = new Gtk.Entry();
-            this.entry8.CanFocus = true;
-            this.entry8.Name = "entry8";
-            this.entry8.IsEditable = true;
-            this.entry8.InvisibleChar = '●';
-            this.hbox3.Add(this.entry8);
-            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox3[this.entry8]));
+            this.entrySymbols = new Gtk.Entry();
+            this.entrySymbols.CanFocus = true;
+            this.entrySymbols.Name = "entrySymbols";
+            this.entrySymbols.IsEditable = true;
+            this.entrySymbols.InvisibleChar = '●';
+            this.hbox3.Add(this.entrySymbols);
+            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox3[this.entrySymbols]));
             w2.Position = 1;
             this.vbox3.Add(this.hbox3);
             Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox3[this.hbox3]));
@@ -155,52 +155,52 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
             this.table11.RowSpacing = ((uint)(6));
             this.table11.ColumnSpacing = ((uint)(6));
             // Container child table11.Gtk.Table+TableChild
-            this.checkbutton1 = new Gtk.CheckButton();
-            this.checkbutton1.CanFocus = true;
-            this.checkbutton1.Name = "checkbutton1";
-            this.checkbutton1.Label = MonoDevelop.Core.GettextCatalog.GetString("O_ptimize Code");
-            this.checkbutton1.DrawIndicator = true;
-            this.checkbutton1.UseUnderline = true;
-            this.table11.Add(this.checkbutton1);
-            Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.table11[this.checkbutton1]));
+            this.checkbuttonAllowUnsafe = new Gtk.CheckButton();
+            this.checkbuttonAllowUnsafe.CanFocus = true;
+            this.checkbuttonAllowUnsafe.Name = "checkbuttonAllowUnsafe";
+            this.checkbuttonAllowUnsafe.Label = MonoDevelop.Core.GettextCatalog.GetString("Allow _Unsafe Code");
+            this.checkbuttonAllowUnsafe.DrawIndicator = true;
+            this.checkbuttonAllowUnsafe.UseUnderline = true;
+            this.table11.Add(this.checkbuttonAllowUnsafe);
+            Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.table11[this.checkbuttonAllowUnsafe]));
+            w4.TopAttach = ((uint)(1));
+            w4.BottomAttach = ((uint)(2));
             w4.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table11.Gtk.Table+TableChild
-            this.checkbutton2 = new Gtk.CheckButton();
-            this.checkbutton2.CanFocus = true;
-            this.checkbutton2.Name = "checkbutton2";
-            this.checkbutton2.Label = MonoDevelop.Core.GettextCatalog.GetString("Allow _Unsafe Code");
-            this.checkbutton2.DrawIndicator = true;
-            this.checkbutton2.UseUnderline = true;
-            this.table11.Add(this.checkbutton2);
-            Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.table11[this.checkbutton2]));
-            w5.TopAttach = ((uint)(1));
-            w5.BottomAttach = ((uint)(2));
+            this.checkbuttonFlowCheck = new Gtk.CheckButton();
+            this.checkbuttonFlowCheck.CanFocus = true;
+            this.checkbuttonFlowCheck.Name = "checkbuttonFlowCheck";
+            this.checkbuttonFlowCheck.Label = MonoDevelop.Core.GettextCatalog.GetString("_Check for arithmetic over-/underflow");
+            this.checkbuttonFlowCheck.DrawIndicator = true;
+            this.checkbuttonFlowCheck.UseUnderline = true;
+            this.table11.Add(this.checkbuttonFlowCheck);
+            Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.table11[this.checkbuttonFlowCheck]));
+            w5.LeftAttach = ((uint)(1));
+            w5.RightAttach = ((uint)(2));
             w5.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table11.Gtk.Table+TableChild
-            this.checkbutton3 = new Gtk.CheckButton();
-            this.checkbutton3.CanFocus = true;
-            this.checkbutton3.Name = "checkbutton3";
-            this.checkbutton3.Label = MonoDevelop.Core.GettextCatalog.GetString("_Check for arithmetic over-/underflow");
-            this.checkbutton3.DrawIndicator = true;
-            this.checkbutton3.UseUnderline = true;
-            this.table11.Add(this.checkbutton3);
-            Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.table11[this.checkbutton3]));
+            this.checkbuttonNoStdLib = new Gtk.CheckButton();
+            this.checkbuttonNoStdLib.CanFocus = true;
+            this.checkbuttonNoStdLib.Name = "checkbuttonNoStdLib";
+            this.checkbuttonNoStdLib.Label = MonoDevelop.Core.GettextCatalog.GetString("Do not reference _mscorlib.dll");
+            this.checkbuttonNoStdLib.DrawIndicator = true;
+            this.checkbuttonNoStdLib.UseUnderline = true;
+            this.table11.Add(this.checkbuttonNoStdLib);
+            Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.table11[this.checkbuttonNoStdLib]));
+            w6.TopAttach = ((uint)(1));
+            w6.BottomAttach = ((uint)(2));
             w6.LeftAttach = ((uint)(1));
             w6.RightAttach = ((uint)(2));
             w6.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table11.Gtk.Table+TableChild
-            this.checkbutton4 = new Gtk.CheckButton();
-            this.checkbutton4.CanFocus = true;
-            this.checkbutton4.Name = "checkbutton4";
-            this.checkbutton4.Label = MonoDevelop.Core.GettextCatalog.GetString("Do not reference _mscorlib.dll");
-            this.checkbutton4.DrawIndicator = true;
-            this.checkbutton4.UseUnderline = true;
-            this.table11.Add(this.checkbutton4);
-            Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.table11[this.checkbutton4]));
-            w7.TopAttach = ((uint)(1));
-            w7.BottomAttach = ((uint)(2));
-            w7.LeftAttach = ((uint)(1));
-            w7.RightAttach = ((uint)(2));
+            this.checkbuttonOptimizeCode = new Gtk.CheckButton();
+            this.checkbuttonOptimizeCode.CanFocus = true;
+            this.checkbuttonOptimizeCode.Name = "checkbuttonOptimizeCode";
+            this.checkbuttonOptimizeCode.Label = MonoDevelop.Core.GettextCatalog.GetString("O_ptimize Code");
+            this.checkbuttonOptimizeCode.DrawIndicator = true;
+            this.checkbuttonOptimizeCode.UseUnderline = true;
+            this.table11.Add(this.checkbuttonOptimizeCode);
+            Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.table11[this.checkbuttonOptimizeCode]));
             w7.YOptions = ((Gtk.AttachOptions)(4));
             this.vbox3.Add(this.table11);
             Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox3[this.table11]));
@@ -234,24 +234,24 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
             this.table12.RowSpacing = ((uint)(6));
             this.table12.ColumnSpacing = ((uint)(6));
             // Container child table12.Gtk.Table+TableChild
-            this.checkbutton5 = new Gtk.CheckButton();
-            this.checkbutton5.CanFocus = true;
-            this.checkbutton5.Name = "checkbutton5";
-            this.checkbutton5.Label = MonoDevelop.Core.GettextCatalog.GetString("_XML documentation:");
-            this.checkbutton5.Active = true;
-            this.checkbutton5.DrawIndicator = true;
-            this.checkbutton5.UseUnderline = true;
-            this.table12.Add(this.checkbutton5);
-            Gtk.Table.TableChild w12 = ((Gtk.Table.TableChild)(this.table12[this.checkbutton5]));
+            this.checkbuttonGenerateXmlDoc = new Gtk.CheckButton();
+            this.checkbuttonGenerateXmlDoc.CanFocus = true;
+            this.checkbuttonGenerateXmlDoc.Name = "checkbuttonGenerateXmlDoc";
+            this.checkbuttonGenerateXmlDoc.Label = MonoDevelop.Core.GettextCatalog.GetString("_XML documentation:");
+            this.checkbuttonGenerateXmlDoc.Active = true;
+            this.checkbuttonGenerateXmlDoc.DrawIndicator = true;
+            this.checkbuttonGenerateXmlDoc.UseUnderline = true;
+            this.table12.Add(this.checkbuttonGenerateXmlDoc);
+            Gtk.Table.TableChild w12 = ((Gtk.Table.TableChild)(this.table12[this.checkbuttonGenerateXmlDoc]));
             w12.TopAttach = ((uint)(1));
             w12.BottomAttach = ((uint)(2));
             w12.XOptions = ((Gtk.AttachOptions)(4));
             w12.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table12.Gtk.Table+TableChild
-            this.combobox3 = new Gtk.ComboBox();
-            this.combobox3.Name = "combobox3";
-            this.table12.Add(this.combobox3);
-            Gtk.Table.TableChild w13 = ((Gtk.Table.TableChild)(this.table12[this.combobox3]));
+            this.comboboxDebugInfo = new Gtk.ComboBox();
+            this.comboboxDebugInfo.Name = "comboboxDebugInfo";
+            this.table12.Add(this.comboboxDebugInfo);
+            Gtk.Table.TableChild w13 = ((Gtk.Table.TableChild)(this.table12[this.comboboxDebugInfo]));
             w13.TopAttach = ((uint)(2));
             w13.BottomAttach = ((uint)(3));
             w13.LeftAttach = ((uint)(1));
@@ -259,10 +259,10 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
             w13.XOptions = ((Gtk.AttachOptions)(4));
             w13.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table12.Gtk.Table+TableChild
-            this.combobox4 = new Gtk.ComboBox();
-            this.combobox4.Name = "combobox4";
-            this.table12.Add(this.combobox4);
-            Gtk.Table.TableChild w14 = ((Gtk.Table.TableChild)(this.table12[this.combobox4]));
+            this.comboboxTargetFramework = new Gtk.ComboBox();
+            this.comboboxTargetFramework.Name = "comboboxTargetFramework";
+            this.table12.Add(this.comboboxTargetFramework);
+            Gtk.Table.TableChild w14 = ((Gtk.Table.TableChild)(this.table12[this.comboboxTargetFramework]));
             w14.TopAttach = ((uint)(3));
             w14.BottomAttach = ((uint)(4));
             w14.LeftAttach = ((uint)(1));
@@ -270,13 +270,13 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
             w14.XOptions = ((Gtk.AttachOptions)(4));
             w14.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table12.Gtk.Table+TableChild
-            this.entry11 = new Gtk.Entry();
-            this.entry11.CanFocus = true;
-            this.entry11.Name = "entry11";
-            this.entry11.IsEditable = true;
-            this.entry11.InvisibleChar = '●';
-            this.table12.Add(this.entry11);
-            Gtk.Table.TableChild w15 = ((Gtk.Table.TableChild)(this.table12[this.entry11]));
+            this.entryXmlDocumentation = new Gtk.Entry();
+            this.entryXmlDocumentation.CanFocus = true;
+            this.entryXmlDocumentation.Name = "entryXmlDocumentation";
+            this.entryXmlDocumentation.IsEditable = true;
+            this.entryXmlDocumentation.InvisibleChar = '●';
+            this.table12.Add(this.entryXmlDocumentation);
+            Gtk.Table.TableChild w15 = ((Gtk.Table.TableChild)(this.table12[this.entryXmlDocumentation]));
             w15.TopAttach = ((uint)(1));
             w15.BottomAttach = ((uint)(2));
             w15.LeftAttach = ((uint)(1));
@@ -288,13 +288,13 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
             this.hbox4.Name = "hbox4";
             this.hbox4.Spacing = 6;
             // Container child hbox4.Gtk.Box+BoxChild
-            this.entry10 = new Gtk.Entry();
-            this.entry10.CanFocus = true;
-            this.entry10.Name = "entry10";
-            this.entry10.IsEditable = true;
-            this.entry10.InvisibleChar = '●';
-            this.hbox4.Add(this.entry10);
-            Gtk.Box.BoxChild w16 = ((Gtk.Box.BoxChild)(this.hbox4[this.entry10]));
+            this.entryOutputPath = new Gtk.Entry();
+            this.entryOutputPath.CanFocus = true;
+            this.entryOutputPath.Name = "entryOutputPath";
+            this.entryOutputPath.IsEditable = true;
+            this.entryOutputPath.InvisibleChar = '●';
+            this.hbox4.Add(this.entryOutputPath);
+            Gtk.Box.BoxChild w16 = ((Gtk.Box.BoxChild)(this.hbox4[this.entryOutputPath]));
             w16.Position = 0;
             // Container child hbox4.Gtk.Box+BoxChild
             this.button3 = new Gtk.Button();
@@ -372,22 +372,22 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
             this.table9.RowSpacing = ((uint)(6));
             this.table9.ColumnSpacing = ((uint)(6));
             // Container child table9.Gtk.Table+TableChild
-            this.combobox2 = new Gtk.ComboBox();
-            this.combobox2.Name = "combobox2";
-            this.table9.Add(this.combobox2);
-            Gtk.Table.TableChild w25 = ((Gtk.Table.TableChild)(this.table9[this.combobox2]));
+            this.comboboxWarningLevel = new Gtk.ComboBox();
+            this.comboboxWarningLevel.Name = "comboboxWarningLevel";
+            this.table9.Add(this.comboboxWarningLevel);
+            Gtk.Table.TableChild w25 = ((Gtk.Table.TableChild)(this.table9[this.comboboxWarningLevel]));
             w25.LeftAttach = ((uint)(1));
             w25.RightAttach = ((uint)(2));
             w25.XOptions = ((Gtk.AttachOptions)(4));
             w25.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table9.Gtk.Table+TableChild
-            this.entry7 = new Gtk.Entry();
-            this.entry7.CanFocus = true;
-            this.entry7.Name = "entry7";
-            this.entry7.IsEditable = true;
-            this.entry7.InvisibleChar = '●';
-            this.table9.Add(this.entry7);
-            Gtk.Table.TableChild w26 = ((Gtk.Table.TableChild)(this.table9[this.entry7]));
+            this.entrySupressWarnings = new Gtk.Entry();
+            this.entrySupressWarnings.CanFocus = true;
+            this.entrySupressWarnings.Name = "entrySupressWarnings";
+            this.entrySupressWarnings.IsEditable = true;
+            this.entrySupressWarnings.InvisibleChar = '●';
+            this.table9.Add(this.entrySupressWarnings);
+            Gtk.Table.TableChild w26 = ((Gtk.Table.TableChild)(this.table9[this.entrySupressWarnings]));
             w26.TopAttach = ((uint)(1));
             w26.BottomAttach = ((uint)(2));
             w26.LeftAttach = ((uint)(1));
@@ -441,51 +441,51 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
             this.table8.RowSpacing = ((uint)(6));
             this.table8.ColumnSpacing = ((uint)(6));
             // Container child table8.Gtk.Table+TableChild
-            this.entry6 = new Gtk.Entry();
-            this.entry6.CanFocus = true;
-            this.entry6.Name = "entry6";
-            this.entry6.IsEditable = true;
-            this.entry6.InvisibleChar = '●';
-            this.table8.Add(this.entry6);
-            Gtk.Table.TableChild w32 = ((Gtk.Table.TableChild)(this.table8[this.entry6]));
+            this.entrySpecificWarnings = new Gtk.Entry();
+            this.entrySpecificWarnings.CanFocus = true;
+            this.entrySpecificWarnings.Name = "entrySpecificWarnings";
+            this.entrySpecificWarnings.IsEditable = true;
+            this.entrySpecificWarnings.InvisibleChar = '●';
+            this.table8.Add(this.entrySpecificWarnings);
+            Gtk.Table.TableChild w32 = ((Gtk.Table.TableChild)(this.table8[this.entrySpecificWarnings]));
             w32.TopAttach = ((uint)(1));
             w32.BottomAttach = ((uint)(2));
             w32.LeftAttach = ((uint)(1));
             w32.RightAttach = ((uint)(2));
             w32.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table8.Gtk.Table+TableChild
-            this.radiobutton4 = new Gtk.RadioButton(MonoDevelop.Core.GettextCatalog.GetString("_None"));
-            this.radiobutton4.CanFocus = true;
-            this.radiobutton4.Name = "radiobutton4";
-            this.radiobutton4.DrawIndicator = true;
-            this.radiobutton4.UseUnderline = true;
-            this.radiobutton4.Group = new GLib.SList(System.IntPtr.Zero);
-            this.table8.Add(this.radiobutton4);
-            Gtk.Table.TableChild w33 = ((Gtk.Table.TableChild)(this.table8[this.radiobutton4]));
+            this.radiobuttonAllWarnings = new Gtk.RadioButton(MonoDevelop.Core.GettextCatalog.GetString("A_ll"));
+            this.radiobuttonAllWarnings.CanFocus = true;
+            this.radiobuttonAllWarnings.Name = "radiobuttonAllWarnings";
+            this.radiobuttonAllWarnings.DrawIndicator = true;
+            this.radiobuttonAllWarnings.UseUnderline = true;
+            this.radiobuttonAllWarnings.Group = new GLib.SList(System.IntPtr.Zero);
+            this.table8.Add(this.radiobuttonAllWarnings);
+            Gtk.Table.TableChild w33 = ((Gtk.Table.TableChild)(this.table8[this.radiobuttonAllWarnings]));
+            w33.TopAttach = ((uint)(2));
+            w33.BottomAttach = ((uint)(3));
             w33.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table8.Gtk.Table+TableChild
-            this.radiobutton5 = new Gtk.RadioButton(MonoDevelop.Core.GettextCatalog.GetString("Sp_ecific Warnings:"));
-            this.radiobutton5.CanFocus = true;
-            this.radiobutton5.Name = "radiobutton5";
-            this.radiobutton5.DrawIndicator = true;
-            this.radiobutton5.UseUnderline = true;
-            this.radiobutton5.Group = this.radiobutton4.Group;
-            this.table8.Add(this.radiobutton5);
-            Gtk.Table.TableChild w34 = ((Gtk.Table.TableChild)(this.table8[this.radiobutton5]));
-            w34.TopAttach = ((uint)(1));
-            w34.BottomAttach = ((uint)(2));
+            this.radiobuttonNone = new Gtk.RadioButton(MonoDevelop.Core.GettextCatalog.GetString("_None"));
+            this.radiobuttonNone.CanFocus = true;
+            this.radiobuttonNone.Name = "radiobuttonNone";
+            this.radiobuttonNone.DrawIndicator = true;
+            this.radiobuttonNone.UseUnderline = true;
+            this.radiobuttonNone.Group = this.radiobuttonAllWarnings.Group;
+            this.table8.Add(this.radiobuttonNone);
+            Gtk.Table.TableChild w34 = ((Gtk.Table.TableChild)(this.table8[this.radiobuttonNone]));
             w34.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table8.Gtk.Table+TableChild
-            this.radiobutton6 = new Gtk.RadioButton(MonoDevelop.Core.GettextCatalog.GetString("A_ll"));
-            this.radiobutton6.CanFocus = true;
-            this.radiobutton6.Name = "radiobutton6";
-            this.radiobutton6.DrawIndicator = true;
-            this.radiobutton6.UseUnderline = true;
-            this.radiobutton6.Group = this.radiobutton4.Group;
-            this.table8.Add(this.radiobutton6);
-            Gtk.Table.TableChild w35 = ((Gtk.Table.TableChild)(this.table8[this.radiobutton6]));
-            w35.TopAttach = ((uint)(2));
-            w35.BottomAttach = ((uint)(3));
+            this.radiobuttonSpecificWarnings = new Gtk.RadioButton(MonoDevelop.Core.GettextCatalog.GetString("Sp_ecific Warnings:"));
+            this.radiobuttonSpecificWarnings.CanFocus = true;
+            this.radiobuttonSpecificWarnings.Name = "radiobuttonSpecificWarnings";
+            this.radiobuttonSpecificWarnings.DrawIndicator = true;
+            this.radiobuttonSpecificWarnings.UseUnderline = true;
+            this.radiobuttonSpecificWarnings.Group = this.radiobuttonAllWarnings.Group;
+            this.table8.Add(this.radiobuttonSpecificWarnings);
+            Gtk.Table.TableChild w35 = ((Gtk.Table.TableChild)(this.table8[this.radiobuttonSpecificWarnings]));
+            w35.TopAttach = ((uint)(1));
+            w35.BottomAttach = ((uint)(2));
             w35.YOptions = ((Gtk.AttachOptions)(4));
             this.GtkAlignment3.Add(this.table8);
             this.frame5.Add(this.GtkAlignment3);

@@ -33,11 +33,11 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
         
         private Gtk.Label label9;
         
-        private Gtk.ComboBox combobox5;
+        private Gtk.ComboBox comboboxConfig;
         
         private Gtk.Label label10;
         
-        private Gtk.ComboBox combobox6;
+        private Gtk.ComboBox comboboxPlatform;
         
         private Gtk.Button buttonCancel;
         
@@ -133,11 +133,11 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
             w8.Expand = false;
             w8.Fill = false;
             // Container child hbox6.Gtk.Box+BoxChild
-            this.combobox5 = new Gtk.ComboBox();
-            this.combobox5.WidthRequest = 120;
-            this.combobox5.Name = "combobox5";
-            this.hbox6.Add(this.combobox5);
-            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.hbox6[this.combobox5]));
+            this.comboboxConfig = Gtk.ComboBox.NewText();
+            this.comboboxConfig.WidthRequest = 120;
+            this.comboboxConfig.Name = "comboboxConfig";
+            this.hbox6.Add(this.comboboxConfig);
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.hbox6[this.comboboxConfig]));
             w9.Position = 1;
             w9.Expand = false;
             w9.Fill = false;
@@ -152,11 +152,11 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
             w10.Expand = false;
             w10.Fill = false;
             // Container child hbox6.Gtk.Box+BoxChild
-            this.combobox6 = new Gtk.ComboBox();
-            this.combobox6.WidthRequest = 150;
-            this.combobox6.Name = "combobox6";
-            this.hbox6.Add(this.combobox6);
-            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.hbox6[this.combobox6]));
+            this.comboboxPlatform = Gtk.ComboBox.NewText();
+            this.comboboxPlatform.WidthRequest = 150;
+            this.comboboxPlatform.Name = "comboboxPlatform";
+            this.hbox6.Add(this.comboboxPlatform);
+            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.hbox6[this.comboboxPlatform]));
             w11.Position = 3;
             w11.Expand = false;
             w11.Fill = false;

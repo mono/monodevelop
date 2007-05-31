@@ -17,17 +17,17 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
         
         private Gtk.Table table6;
         
-        private Gtk.Entry entry3;
+        private Gtk.Entry entryAssemblyName;
         
-        private Gtk.Entry entry4;
+        private Gtk.Entry entryRootNamespace;
         
         private Gtk.HBox hbox6;
         
-        private Gtk.ComboBox combobox1;
+        private Gtk.ComboBox comboboxOutputType;
         
         private Gtk.Label label8;
         
-        private Gtk.ComboBox combobox2;
+        private Gtk.ComboBox comboboxStartupObject;
         
         private Gtk.Label label5;
         
@@ -41,9 +41,9 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
         
         private Gtk.Label label9;
         
-        private Gtk.Entry entry5;
+        private Gtk.Entry entryApplicationIcon;
         
-        private Gtk.Button button1;
+        private Gtk.Button buttonBrowseIcon;
         
         private Gtk.Frame frame1;
         
@@ -51,11 +51,11 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
         
         private Gtk.Table table5;
         
-        private Gtk.Entry entry6;
+        private Gtk.Entry entryOutputName;
         
-        private Gtk.Entry entry7;
+        private Gtk.Entry entryProjectFile;
         
-        private Gtk.Entry entry8;
+        private Gtk.Entry entryProjectFolder;
         
         private Gtk.Label label10;
         
@@ -80,25 +80,25 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
             this.table6.RowSpacing = ((uint)(6));
             this.table6.ColumnSpacing = ((uint)(6));
             // Container child table6.Gtk.Table+TableChild
-            this.entry3 = new Gtk.Entry();
-            this.entry3.CanFocus = true;
-            this.entry3.Name = "entry3";
-            this.entry3.IsEditable = true;
-            this.entry3.InvisibleChar = '●';
-            this.table6.Add(this.entry3);
-            Gtk.Table.TableChild w1 = ((Gtk.Table.TableChild)(this.table6[this.entry3]));
+            this.entryAssemblyName = new Gtk.Entry();
+            this.entryAssemblyName.CanFocus = true;
+            this.entryAssemblyName.Name = "entryAssemblyName";
+            this.entryAssemblyName.IsEditable = true;
+            this.entryAssemblyName.InvisibleChar = '●';
+            this.table6.Add(this.entryAssemblyName);
+            Gtk.Table.TableChild w1 = ((Gtk.Table.TableChild)(this.table6[this.entryAssemblyName]));
             w1.LeftAttach = ((uint)(1));
             w1.RightAttach = ((uint)(2));
             w1.XOptions = ((Gtk.AttachOptions)(4));
             w1.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table6.Gtk.Table+TableChild
-            this.entry4 = new Gtk.Entry();
-            this.entry4.CanFocus = true;
-            this.entry4.Name = "entry4";
-            this.entry4.IsEditable = true;
-            this.entry4.InvisibleChar = '●';
-            this.table6.Add(this.entry4);
-            Gtk.Table.TableChild w2 = ((Gtk.Table.TableChild)(this.table6[this.entry4]));
+            this.entryRootNamespace = new Gtk.Entry();
+            this.entryRootNamespace.CanFocus = true;
+            this.entryRootNamespace.Name = "entryRootNamespace";
+            this.entryRootNamespace.IsEditable = true;
+            this.entryRootNamespace.InvisibleChar = '●';
+            this.table6.Add(this.entryRootNamespace);
+            Gtk.Table.TableChild w2 = ((Gtk.Table.TableChild)(this.table6[this.entryRootNamespace]));
             w2.TopAttach = ((uint)(1));
             w2.BottomAttach = ((uint)(2));
             w2.LeftAttach = ((uint)(1));
@@ -110,11 +110,11 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
             this.hbox6.Name = "hbox6";
             this.hbox6.Spacing = 6;
             // Container child hbox6.Gtk.Box+BoxChild
-            this.combobox1 = new Gtk.ComboBox();
-            this.combobox1.WidthRequest = 90;
-            this.combobox1.Name = "combobox1";
-            this.hbox6.Add(this.combobox1);
-            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.hbox6[this.combobox1]));
+            this.comboboxOutputType = Gtk.ComboBox.NewText();
+            this.comboboxOutputType.WidthRequest = 100;
+            this.comboboxOutputType.Name = "comboboxOutputType";
+            this.hbox6.Add(this.comboboxOutputType);
+            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.hbox6[this.comboboxOutputType]));
             w3.Position = 0;
             w3.Expand = false;
             w3.Fill = false;
@@ -128,11 +128,12 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
             w4.Expand = false;
             w4.Fill = false;
             // Container child hbox6.Gtk.Box+BoxChild
-            this.combobox2 = new Gtk.ComboBox();
-            this.combobox2.WidthRequest = 210;
-            this.combobox2.Name = "combobox2";
-            this.hbox6.Add(this.combobox2);
-            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.hbox6[this.combobox2]));
+            this.comboboxStartupObject = Gtk.ComboBox.NewText();
+            this.comboboxStartupObject.WidthRequest = 210;
+            this.comboboxStartupObject.CanFocus = true;
+            this.comboboxStartupObject.Name = "comboboxStartupObject";
+            this.hbox6.Add(this.comboboxStartupObject);
+            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.hbox6[this.comboboxStartupObject]));
             w5.Position = 2;
             w5.Expand = false;
             w5.Fill = false;
@@ -205,22 +206,22 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
             w12.Expand = false;
             w12.Fill = false;
             // Container child hbox7.Gtk.Box+BoxChild
-            this.entry5 = new Gtk.Entry();
-            this.entry5.CanFocus = true;
-            this.entry5.Name = "entry5";
-            this.entry5.IsEditable = true;
-            this.entry5.InvisibleChar = '●';
-            this.hbox7.Add(this.entry5);
-            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.hbox7[this.entry5]));
+            this.entryApplicationIcon = new Gtk.Entry();
+            this.entryApplicationIcon.CanFocus = true;
+            this.entryApplicationIcon.Name = "entryApplicationIcon";
+            this.entryApplicationIcon.IsEditable = true;
+            this.entryApplicationIcon.InvisibleChar = '●';
+            this.hbox7.Add(this.entryApplicationIcon);
+            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.hbox7[this.entryApplicationIcon]));
             w13.Position = 2;
             // Container child hbox7.Gtk.Box+BoxChild
-            this.button1 = new Gtk.Button();
-            this.button1.CanFocus = true;
-            this.button1.Name = "button1";
-            this.button1.UseUnderline = true;
-            this.button1.Label = MonoDevelop.Core.GettextCatalog.GetString("_Browse...");
-            this.hbox7.Add(this.button1);
-            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.hbox7[this.button1]));
+            this.buttonBrowseIcon = new Gtk.Button();
+            this.buttonBrowseIcon.CanFocus = true;
+            this.buttonBrowseIcon.Name = "buttonBrowseIcon";
+            this.buttonBrowseIcon.UseUnderline = true;
+            this.buttonBrowseIcon.Label = MonoDevelop.Core.GettextCatalog.GetString("_Browse...");
+            this.hbox7.Add(this.buttonBrowseIcon);
+            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.hbox7[this.buttonBrowseIcon]));
             w14.Position = 3;
             w14.Expand = false;
             w14.Fill = false;
@@ -244,39 +245,42 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
             this.table5.RowSpacing = ((uint)(6));
             this.table5.ColumnSpacing = ((uint)(6));
             // Container child table5.Gtk.Table+TableChild
-            this.entry6 = new Gtk.Entry();
-            this.entry6.CanFocus = true;
-            this.entry6.Name = "entry6";
-            this.entry6.IsEditable = false;
-            this.entry6.InvisibleChar = '●';
-            this.table5.Add(this.entry6);
-            Gtk.Table.TableChild w16 = ((Gtk.Table.TableChild)(this.table5[this.entry6]));
+            this.entryOutputName = new Gtk.Entry();
+            this.entryOutputName.Sensitive = false;
+            this.entryOutputName.CanFocus = true;
+            this.entryOutputName.Name = "entryOutputName";
+            this.entryOutputName.IsEditable = false;
+            this.entryOutputName.InvisibleChar = '●';
+            this.table5.Add(this.entryOutputName);
+            Gtk.Table.TableChild w16 = ((Gtk.Table.TableChild)(this.table5[this.entryOutputName]));
+            w16.TopAttach = ((uint)(2));
+            w16.BottomAttach = ((uint)(3));
             w16.LeftAttach = ((uint)(1));
             w16.RightAttach = ((uint)(2));
             w16.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table5.Gtk.Table+TableChild
-            this.entry7 = new Gtk.Entry();
-            this.entry7.CanFocus = true;
-            this.entry7.Name = "entry7";
-            this.entry7.IsEditable = false;
-            this.entry7.InvisibleChar = '●';
-            this.table5.Add(this.entry7);
-            Gtk.Table.TableChild w17 = ((Gtk.Table.TableChild)(this.table5[this.entry7]));
+            this.entryProjectFile = new Gtk.Entry();
+            this.entryProjectFile.Sensitive = false;
+            this.entryProjectFile.CanFocus = true;
+            this.entryProjectFile.Name = "entryProjectFile";
+            this.entryProjectFile.IsEditable = false;
+            this.entryProjectFile.InvisibleChar = '●';
+            this.table5.Add(this.entryProjectFile);
+            Gtk.Table.TableChild w17 = ((Gtk.Table.TableChild)(this.table5[this.entryProjectFile]));
             w17.TopAttach = ((uint)(1));
             w17.BottomAttach = ((uint)(2));
             w17.LeftAttach = ((uint)(1));
             w17.RightAttach = ((uint)(2));
             w17.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table5.Gtk.Table+TableChild
-            this.entry8 = new Gtk.Entry();
-            this.entry8.CanFocus = true;
-            this.entry8.Name = "entry8";
-            this.entry8.IsEditable = false;
-            this.entry8.InvisibleChar = '●';
-            this.table5.Add(this.entry8);
-            Gtk.Table.TableChild w18 = ((Gtk.Table.TableChild)(this.table5[this.entry8]));
-            w18.TopAttach = ((uint)(2));
-            w18.BottomAttach = ((uint)(3));
+            this.entryProjectFolder = new Gtk.Entry();
+            this.entryProjectFolder.Sensitive = false;
+            this.entryProjectFolder.CanFocus = true;
+            this.entryProjectFolder.Name = "entryProjectFolder";
+            this.entryProjectFolder.IsEditable = false;
+            this.entryProjectFolder.InvisibleChar = '●';
+            this.table5.Add(this.entryProjectFolder);
+            Gtk.Table.TableChild w18 = ((Gtk.Table.TableChild)(this.table5[this.entryProjectFolder]));
             w18.LeftAttach = ((uint)(1));
             w18.RightAttach = ((uint)(2));
             w18.YOptions = ((Gtk.AttachOptions)(4));

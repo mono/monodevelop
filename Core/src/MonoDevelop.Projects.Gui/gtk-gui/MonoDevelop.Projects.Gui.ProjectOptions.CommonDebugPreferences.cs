@@ -21,31 +21,31 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
         
         private Gtk.Table table1;
         
-        private Gtk.Entry entry2;
+        private Gtk.Entry entryURL;
         
         private Gtk.HBox hbox1;
         
-        private Gtk.Entry entry1;
+        private Gtk.Entry entryCommand;
         
-        private Gtk.Button button1;
+        private Gtk.Button buttonBrowseCommand;
         
-        private Gtk.RadioButton radiobutton1;
+        private Gtk.RadioButton radiobuttonCommandLine;
         
-        private Gtk.RadioButton radiobutton2;
+        private Gtk.RadioButton radiobuttonProject;
         
-        private Gtk.RadioButton radiobutton3;
+        private Gtk.RadioButton radiobuttonURL;
         
         private Gtk.Label GtkLabel4;
         
         private Gtk.Table table2;
         
-        private Gtk.Entry entry4;
+        private Gtk.Entry entryArguments;
         
         private Gtk.HBox hbox2;
         
-        private Gtk.Entry entry5;
+        private Gtk.Entry entryWorkingDir;
         
-        private Gtk.Button button2;
+        private Gtk.Button buttonBrowseWorkingDir;
         
         private Gtk.Label label1;
         
@@ -75,13 +75,13 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
             this.table1.RowSpacing = ((uint)(6));
             this.table1.ColumnSpacing = ((uint)(6));
             // Container child table1.Gtk.Table+TableChild
-            this.entry2 = new Gtk.Entry();
-            this.entry2.CanFocus = true;
-            this.entry2.Name = "entry2";
-            this.entry2.IsEditable = true;
-            this.entry2.InvisibleChar = '●';
-            this.table1.Add(this.entry2);
-            Gtk.Table.TableChild w1 = ((Gtk.Table.TableChild)(this.table1[this.entry2]));
+            this.entryURL = new Gtk.Entry();
+            this.entryURL.CanFocus = true;
+            this.entryURL.Name = "entryURL";
+            this.entryURL.IsEditable = true;
+            this.entryURL.InvisibleChar = '●';
+            this.table1.Add(this.entryURL);
+            Gtk.Table.TableChild w1 = ((Gtk.Table.TableChild)(this.table1[this.entryURL]));
             w1.TopAttach = ((uint)(2));
             w1.BottomAttach = ((uint)(3));
             w1.LeftAttach = ((uint)(1));
@@ -92,22 +92,22 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
             this.hbox1.Name = "hbox1";
             this.hbox1.Spacing = 6;
             // Container child hbox1.Gtk.Box+BoxChild
-            this.entry1 = new Gtk.Entry();
-            this.entry1.CanFocus = true;
-            this.entry1.Name = "entry1";
-            this.entry1.IsEditable = true;
-            this.entry1.InvisibleChar = '●';
-            this.hbox1.Add(this.entry1);
-            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox1[this.entry1]));
+            this.entryCommand = new Gtk.Entry();
+            this.entryCommand.CanFocus = true;
+            this.entryCommand.Name = "entryCommand";
+            this.entryCommand.IsEditable = true;
+            this.entryCommand.InvisibleChar = '●';
+            this.hbox1.Add(this.entryCommand);
+            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox1[this.entryCommand]));
             w2.Position = 0;
             // Container child hbox1.Gtk.Box+BoxChild
-            this.button1 = new Gtk.Button();
-            this.button1.CanFocus = true;
-            this.button1.Name = "button1";
-            this.button1.UseUnderline = true;
-            this.button1.Label = MonoDevelop.Core.GettextCatalog.GetString("Browse...");
-            this.hbox1.Add(this.button1);
-            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.hbox1[this.button1]));
+            this.buttonBrowseCommand = new Gtk.Button();
+            this.buttonBrowseCommand.CanFocus = true;
+            this.buttonBrowseCommand.Name = "buttonBrowseCommand";
+            this.buttonBrowseCommand.UseUnderline = true;
+            this.buttonBrowseCommand.Label = MonoDevelop.Core.GettextCatalog.GetString("Browse...");
+            this.hbox1.Add(this.buttonBrowseCommand);
+            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.hbox1[this.buttonBrowseCommand]));
             w3.Position = 1;
             w3.Expand = false;
             w3.Fill = false;
@@ -119,37 +119,36 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
             w4.RightAttach = ((uint)(2));
             w4.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
-            this.radiobutton1 = new Gtk.RadioButton(MonoDevelop.Core.GettextCatalog.GetString("_Project:"));
-            this.radiobutton1.CanFocus = true;
-            this.radiobutton1.Name = "radiobutton1";
-            this.radiobutton1.Active = true;
-            this.radiobutton1.DrawIndicator = true;
-            this.radiobutton1.UseUnderline = true;
-            this.radiobutton1.Group = new GLib.SList(System.IntPtr.Zero);
-            this.table1.Add(this.radiobutton1);
-            Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.table1[this.radiobutton1]));
+            this.radiobuttonCommandLine = new Gtk.RadioButton(MonoDevelop.Core.GettextCatalog.GetString("_Command line:"));
+            this.radiobuttonCommandLine.CanFocus = true;
+            this.radiobuttonCommandLine.Name = "radiobuttonCommandLine";
+            this.radiobuttonCommandLine.DrawIndicator = true;
+            this.radiobuttonCommandLine.UseUnderline = true;
+            this.radiobuttonCommandLine.Group = new GLib.SList(System.IntPtr.Zero);
+            this.table1.Add(this.radiobuttonCommandLine);
+            Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.table1[this.radiobuttonCommandLine]));
+            w5.TopAttach = ((uint)(1));
+            w5.BottomAttach = ((uint)(2));
             w5.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
-            this.radiobutton2 = new Gtk.RadioButton(MonoDevelop.Core.GettextCatalog.GetString("_Command line:"));
-            this.radiobutton2.CanFocus = true;
-            this.radiobutton2.Name = "radiobutton2";
-            this.radiobutton2.DrawIndicator = true;
-            this.radiobutton2.UseUnderline = true;
-            this.radiobutton2.Group = this.radiobutton1.Group;
-            this.table1.Add(this.radiobutton2);
-            Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.table1[this.radiobutton2]));
-            w6.TopAttach = ((uint)(1));
-            w6.BottomAttach = ((uint)(2));
+            this.radiobuttonProject = new Gtk.RadioButton(MonoDevelop.Core.GettextCatalog.GetString("_Project:"));
+            this.radiobuttonProject.CanFocus = true;
+            this.radiobuttonProject.Name = "radiobuttonProject";
+            this.radiobuttonProject.DrawIndicator = true;
+            this.radiobuttonProject.UseUnderline = true;
+            this.radiobuttonProject.Group = this.radiobuttonCommandLine.Group;
+            this.table1.Add(this.radiobuttonProject);
+            Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.table1[this.radiobuttonProject]));
             w6.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
-            this.radiobutton3 = new Gtk.RadioButton(MonoDevelop.Core.GettextCatalog.GetString("_URL:"));
-            this.radiobutton3.CanFocus = true;
-            this.radiobutton3.Name = "radiobutton3";
-            this.radiobutton3.DrawIndicator = true;
-            this.radiobutton3.UseUnderline = true;
-            this.radiobutton3.Group = this.radiobutton1.Group;
-            this.table1.Add(this.radiobutton3);
-            Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.table1[this.radiobutton3]));
+            this.radiobuttonURL = new Gtk.RadioButton(MonoDevelop.Core.GettextCatalog.GetString("_URL:"));
+            this.radiobuttonURL.CanFocus = true;
+            this.radiobuttonURL.Name = "radiobuttonURL";
+            this.radiobuttonURL.DrawIndicator = true;
+            this.radiobuttonURL.UseUnderline = true;
+            this.radiobuttonURL.Group = this.radiobuttonCommandLine.Group;
+            this.table1.Add(this.radiobuttonURL);
+            Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.table1[this.radiobuttonURL]));
             w7.TopAttach = ((uint)(2));
             w7.BottomAttach = ((uint)(3));
             w7.YOptions = ((Gtk.AttachOptions)(4));
@@ -171,13 +170,13 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
             this.table2.RowSpacing = ((uint)(6));
             this.table2.ColumnSpacing = ((uint)(6));
             // Container child table2.Gtk.Table+TableChild
-            this.entry4 = new Gtk.Entry();
-            this.entry4.CanFocus = true;
-            this.entry4.Name = "entry4";
-            this.entry4.IsEditable = true;
-            this.entry4.InvisibleChar = '●';
-            this.table2.Add(this.entry4);
-            Gtk.Table.TableChild w11 = ((Gtk.Table.TableChild)(this.table2[this.entry4]));
+            this.entryArguments = new Gtk.Entry();
+            this.entryArguments.CanFocus = true;
+            this.entryArguments.Name = "entryArguments";
+            this.entryArguments.IsEditable = true;
+            this.entryArguments.InvisibleChar = '●';
+            this.table2.Add(this.entryArguments);
+            Gtk.Table.TableChild w11 = ((Gtk.Table.TableChild)(this.table2[this.entryArguments]));
             w11.LeftAttach = ((uint)(1));
             w11.RightAttach = ((uint)(2));
             w11.YOptions = ((Gtk.AttachOptions)(4));
@@ -186,22 +185,22 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
             this.hbox2.Name = "hbox2";
             this.hbox2.Spacing = 6;
             // Container child hbox2.Gtk.Box+BoxChild
-            this.entry5 = new Gtk.Entry();
-            this.entry5.CanFocus = true;
-            this.entry5.Name = "entry5";
-            this.entry5.IsEditable = true;
-            this.entry5.InvisibleChar = '●';
-            this.hbox2.Add(this.entry5);
-            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.hbox2[this.entry5]));
+            this.entryWorkingDir = new Gtk.Entry();
+            this.entryWorkingDir.CanFocus = true;
+            this.entryWorkingDir.Name = "entryWorkingDir";
+            this.entryWorkingDir.IsEditable = true;
+            this.entryWorkingDir.InvisibleChar = '●';
+            this.hbox2.Add(this.entryWorkingDir);
+            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.hbox2[this.entryWorkingDir]));
             w12.Position = 0;
             // Container child hbox2.Gtk.Box+BoxChild
-            this.button2 = new Gtk.Button();
-            this.button2.CanFocus = true;
-            this.button2.Name = "button2";
-            this.button2.UseUnderline = true;
-            this.button2.Label = MonoDevelop.Core.GettextCatalog.GetString("Browse...");
-            this.hbox2.Add(this.button2);
-            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.hbox2[this.button2]));
+            this.buttonBrowseWorkingDir = new Gtk.Button();
+            this.buttonBrowseWorkingDir.CanFocus = true;
+            this.buttonBrowseWorkingDir.Name = "buttonBrowseWorkingDir";
+            this.buttonBrowseWorkingDir.UseUnderline = true;
+            this.buttonBrowseWorkingDir.Label = MonoDevelop.Core.GettextCatalog.GetString("Browse...");
+            this.hbox2.Add(this.buttonBrowseWorkingDir);
+            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.hbox2[this.buttonBrowseWorkingDir]));
             w13.Position = 1;
             w13.Expand = false;
             w13.Fill = false;

@@ -326,7 +326,7 @@ Custom Command</property>
             <property name="RowSpacing">6</property>
             <property name="ColumnSpacing">6</property>
             <child>
-              <widget class="Gtk.Entry" id="entry3">
+              <widget class="Gtk.Entry" id="entryAssemblyName">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="IsEditable">True</property>
@@ -347,7 +347,7 @@ Custom Command</property>
               </packing>
             </child>
             <child>
-              <widget class="Gtk.Entry" id="entry4">
+              <widget class="Gtk.Entry" id="entryRootNamespace">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="IsEditable">True</property>
@@ -374,10 +374,10 @@ Custom Command</property>
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
                 <child>
-                  <widget class="Gtk.ComboBox" id="combobox1">
+                  <widget class="Gtk.ComboBox" id="comboboxOutputType">
                     <property name="MemberName" />
-                    <property name="WidthRequest">90</property>
-                    <property name="IsTextCombo">False</property>
+                    <property name="WidthRequest">100</property>
+                    <property name="IsTextCombo">True</property>
                     <property name="Items" translatable="yes" />
                   </widget>
                   <packing>
@@ -400,10 +400,11 @@ Custom Command</property>
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.ComboBox" id="combobox2">
+                  <widget class="Gtk.ComboBox" id="comboboxStartupObject">
                     <property name="MemberName" />
                     <property name="WidthRequest">210</property>
-                    <property name="IsTextCombo">False</property>
+                    <property name="CanFocus">True</property>
+                    <property name="IsTextCombo">True</property>
                     <property name="Items" translatable="yes" />
                   </widget>
                   <packing>
@@ -527,7 +528,7 @@ Custom Command</property>
               </packing>
             </child>
             <child>
-              <widget class="Gtk.Entry" id="entry5">
+              <widget class="Gtk.Entry" id="entryApplicationIcon">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="IsEditable">True</property>
@@ -539,7 +540,7 @@ Custom Command</property>
               </packing>
             </child>
             <child>
-              <widget class="Gtk.Button" id="button1">
+              <widget class="Gtk.Button" id="buttonBrowseIcon">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Type">TextOnly</property>
@@ -581,13 +582,16 @@ Custom Command</property>
                     <property name="RowSpacing">6</property>
                     <property name="ColumnSpacing">6</property>
                     <child>
-                      <widget class="Gtk.Entry" id="entry6">
+                      <widget class="Gtk.Entry" id="entryOutputName">
                         <property name="MemberName" />
+                        <property name="Sensitive">False</property>
                         <property name="CanFocus">True</property>
                         <property name="IsEditable">False</property>
                         <property name="InvisibleChar">●</property>
                       </widget>
                       <packing>
+                        <property name="TopAttach">2</property>
+                        <property name="BottomAttach">3</property>
                         <property name="LeftAttach">1</property>
                         <property name="RightAttach">2</property>
                         <property name="AutoSize">True</property>
@@ -601,8 +605,9 @@ Custom Command</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.Entry" id="entry7">
+                      <widget class="Gtk.Entry" id="entryProjectFile">
                         <property name="MemberName" />
+                        <property name="Sensitive">False</property>
                         <property name="CanFocus">True</property>
                         <property name="IsEditable">False</property>
                         <property name="InvisibleChar">●</property>
@@ -623,15 +628,14 @@ Custom Command</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.Entry" id="entry8">
+                      <widget class="Gtk.Entry" id="entryProjectFolder">
                         <property name="MemberName" />
+                        <property name="Sensitive">False</property>
                         <property name="CanFocus">True</property>
                         <property name="IsEditable">False</property>
                         <property name="InvisibleChar">●</property>
                       </widget>
                       <packing>
-                        <property name="TopAttach">2</property>
-                        <property name="BottomAttach">3</property>
                         <property name="LeftAttach">1</property>
                         <property name="RightAttach">2</property>
                         <property name="AutoSize">True</property>
@@ -804,7 +808,7 @@ Custom Command</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Projects.Gui.ProjectOptions.CommonDebugPreferences" design-size="418 300">
+  <widget class="Gtk.Bin" id="MonoDevelop.Projects.Gui.ProjectOptions.CommonDebugPreferences" design-size="462 326">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.VBox" id="vbox1">
@@ -832,7 +836,7 @@ Custom Command</property>
                       <placeholder />
                     </child>
                     <child>
-                      <widget class="Gtk.Entry" id="entry2">
+                      <widget class="Gtk.Entry" id="entryURL">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="IsEditable">True</property>
@@ -858,7 +862,7 @@ Custom Command</property>
                         <property name="MemberName" />
                         <property name="Spacing">6</property>
                         <child>
-                          <widget class="Gtk.Entry" id="entry1">
+                          <widget class="Gtk.Entry" id="entryCommand">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
                             <property name="IsEditable">True</property>
@@ -870,7 +874,7 @@ Custom Command</property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="Gtk.Button" id="button1">
+                          <widget class="Gtk.Button" id="buttonBrowseCommand">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
                             <property name="Type">TextOnly</property>
@@ -902,29 +906,7 @@ Custom Command</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.RadioButton" id="radiobutton1">
-                        <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="Label" translatable="yes">_Project:</property>
-                        <property name="Active">True</property>
-                        <property name="DrawIndicator">True</property>
-                        <property name="HasLabel">True</property>
-                        <property name="UseUnderline">True</property>
-                        <property name="Group">group1</property>
-                      </widget>
-                      <packing>
-                        <property name="AutoSize">True</property>
-                        <property name="YOptions">Fill</property>
-                        <property name="XExpand">True</property>
-                        <property name="XFill">True</property>
-                        <property name="XShrink">False</property>
-                        <property name="YExpand">False</property>
-                        <property name="YFill">True</property>
-                        <property name="YShrink">False</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="Gtk.RadioButton" id="radiobutton2">
+                      <widget class="Gtk.RadioButton" id="radiobuttonCommandLine">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="Label" translatable="yes">_Command line:</property>
@@ -947,7 +929,28 @@ Custom Command</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.RadioButton" id="radiobutton3">
+                      <widget class="Gtk.RadioButton" id="radiobuttonProject">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="Label" translatable="yes">_Project:</property>
+                        <property name="DrawIndicator">True</property>
+                        <property name="HasLabel">True</property>
+                        <property name="UseUnderline">True</property>
+                        <property name="Group">group1</property>
+                      </widget>
+                      <packing>
+                        <property name="AutoSize">True</property>
+                        <property name="YOptions">Fill</property>
+                        <property name="XExpand">True</property>
+                        <property name="XFill">True</property>
+                        <property name="XShrink">False</property>
+                        <property name="YExpand">False</property>
+                        <property name="YFill">True</property>
+                        <property name="YShrink">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.RadioButton" id="radiobuttonURL">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="Label" translatable="yes">_URL:</property>
@@ -999,7 +1002,7 @@ Custom Command</property>
             <property name="RowSpacing">6</property>
             <property name="ColumnSpacing">6</property>
             <child>
-              <widget class="Gtk.Entry" id="entry4">
+              <widget class="Gtk.Entry" id="entryArguments">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="IsEditable">True</property>
@@ -1023,7 +1026,7 @@ Custom Command</property>
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
                 <child>
-                  <widget class="Gtk.Entry" id="entry5">
+                  <widget class="Gtk.Entry" id="entryWorkingDir">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="IsEditable">True</property>
@@ -1035,7 +1038,7 @@ Custom Command</property>
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.Button" id="button2">
+                  <widget class="Gtk.Button" id="buttonBrowseWorkingDir">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="Type">TextOnly</property>
@@ -1153,7 +1156,7 @@ Custom Command</property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="Gtk.Entry" id="entry8">
+                          <widget class="Gtk.Entry" id="entrySymbols">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
                             <property name="IsEditable">True</property>
@@ -1180,27 +1183,7 @@ Custom Command</property>
                         <property name="RowSpacing">6</property>
                         <property name="ColumnSpacing">6</property>
                         <child>
-                          <widget class="Gtk.CheckButton" id="checkbutton1">
-                            <property name="MemberName" />
-                            <property name="CanFocus">True</property>
-                            <property name="Label" translatable="yes">O_ptimize Code</property>
-                            <property name="DrawIndicator">True</property>
-                            <property name="HasLabel">True</property>
-                            <property name="UseUnderline">True</property>
-                          </widget>
-                          <packing>
-                            <property name="AutoSize">True</property>
-                            <property name="YOptions">Fill</property>
-                            <property name="XExpand">True</property>
-                            <property name="XFill">True</property>
-                            <property name="XShrink">False</property>
-                            <property name="YExpand">False</property>
-                            <property name="YFill">True</property>
-                            <property name="YShrink">False</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="Gtk.CheckButton" id="checkbutton2">
+                          <widget class="Gtk.CheckButton" id="checkbuttonAllowUnsafe">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
                             <property name="Label" translatable="yes">Allow _Unsafe Code</property>
@@ -1222,7 +1205,7 @@ Custom Command</property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="Gtk.CheckButton" id="checkbutton3">
+                          <widget class="Gtk.CheckButton" id="checkbuttonFlowCheck">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
                             <property name="Label" translatable="yes">_Check for arithmetic over-/underflow</property>
@@ -1244,7 +1227,7 @@ Custom Command</property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="Gtk.CheckButton" id="checkbutton4">
+                          <widget class="Gtk.CheckButton" id="checkbuttonNoStdLib">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
                             <property name="Label" translatable="yes">Do not reference _mscorlib.dll</property>
@@ -1257,6 +1240,26 @@ Custom Command</property>
                             <property name="BottomAttach">2</property>
                             <property name="LeftAttach">1</property>
                             <property name="RightAttach">2</property>
+                            <property name="AutoSize">True</property>
+                            <property name="YOptions">Fill</property>
+                            <property name="XExpand">True</property>
+                            <property name="XFill">True</property>
+                            <property name="XShrink">False</property>
+                            <property name="YExpand">False</property>
+                            <property name="YFill">True</property>
+                            <property name="YShrink">False</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="Gtk.CheckButton" id="checkbuttonOptimizeCode">
+                            <property name="MemberName" />
+                            <property name="CanFocus">True</property>
+                            <property name="Label" translatable="yes">O_ptimize Code</property>
+                            <property name="DrawIndicator">True</property>
+                            <property name="HasLabel">True</property>
+                            <property name="UseUnderline">True</property>
+                          </widget>
+                          <packing>
                             <property name="AutoSize">True</property>
                             <property name="YOptions">Fill</property>
                             <property name="XExpand">True</property>
@@ -1316,7 +1319,7 @@ Custom Command</property>
                     <property name="RowSpacing">6</property>
                     <property name="ColumnSpacing">6</property>
                     <child>
-                      <widget class="Gtk.CheckButton" id="checkbutton5">
+                      <widget class="Gtk.CheckButton" id="checkbuttonGenerateXmlDoc">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="Label" translatable="yes">_XML documentation:</property>
@@ -1340,7 +1343,7 @@ Custom Command</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.ComboBox" id="combobox3">
+                      <widget class="Gtk.ComboBox" id="comboboxDebugInfo">
                         <property name="MemberName" />
                         <property name="IsTextCombo">False</property>
                         <property name="Items" translatable="yes" />
@@ -1362,7 +1365,7 @@ Custom Command</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.ComboBox" id="combobox4">
+                      <widget class="Gtk.ComboBox" id="comboboxTargetFramework">
                         <property name="MemberName" />
                         <property name="IsTextCombo">False</property>
                         <property name="Items" translatable="yes" />
@@ -1384,7 +1387,7 @@ Custom Command</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.Entry" id="entry11">
+                      <widget class="Gtk.Entry" id="entryXmlDocumentation">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="IsEditable">True</property>
@@ -1411,7 +1414,7 @@ Custom Command</property>
                         <property name="MemberName" />
                         <property name="Spacing">6</property>
                         <child>
-                          <widget class="Gtk.Entry" id="entry10">
+                          <widget class="Gtk.Entry" id="entryOutputPath">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
                             <property name="IsEditable">True</property>
@@ -1553,7 +1556,7 @@ Custom Command</property>
                     <property name="RowSpacing">6</property>
                     <property name="ColumnSpacing">6</property>
                     <child>
-                      <widget class="Gtk.ComboBox" id="combobox2">
+                      <widget class="Gtk.ComboBox" id="comboboxWarningLevel">
                         <property name="MemberName" />
                         <property name="IsTextCombo">False</property>
                         <property name="Items" translatable="yes" />
@@ -1573,7 +1576,7 @@ Custom Command</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.Entry" id="entry7">
+                      <widget class="Gtk.Entry" id="entrySupressWarnings">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="IsEditable">True</property>
@@ -1680,7 +1683,7 @@ Custom Command</property>
                       <placeholder />
                     </child>
                     <child>
-                      <widget class="Gtk.Entry" id="entry6">
+                      <widget class="Gtk.Entry" id="entrySpecificWarnings">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="IsEditable">True</property>
@@ -1702,7 +1705,30 @@ Custom Command</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.RadioButton" id="radiobutton4">
+                      <widget class="Gtk.RadioButton" id="radiobuttonAllWarnings">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="Label" translatable="yes">A_ll</property>
+                        <property name="DrawIndicator">True</property>
+                        <property name="HasLabel">True</property>
+                        <property name="UseUnderline">True</property>
+                        <property name="Group">group1</property>
+                      </widget>
+                      <packing>
+                        <property name="TopAttach">2</property>
+                        <property name="BottomAttach">3</property>
+                        <property name="AutoSize">True</property>
+                        <property name="YOptions">Fill</property>
+                        <property name="XExpand">True</property>
+                        <property name="XFill">True</property>
+                        <property name="XShrink">False</property>
+                        <property name="YExpand">False</property>
+                        <property name="YFill">True</property>
+                        <property name="YShrink">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.RadioButton" id="radiobuttonNone">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="Label" translatable="yes">_None</property>
@@ -1723,7 +1749,7 @@ Custom Command</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.RadioButton" id="radiobutton5">
+                      <widget class="Gtk.RadioButton" id="radiobuttonSpecificWarnings">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="Label" translatable="yes">Sp_ecific Warnings:</property>
@@ -1735,29 +1761,6 @@ Custom Command</property>
                       <packing>
                         <property name="TopAttach">1</property>
                         <property name="BottomAttach">2</property>
-                        <property name="AutoSize">True</property>
-                        <property name="YOptions">Fill</property>
-                        <property name="XExpand">True</property>
-                        <property name="XFill">True</property>
-                        <property name="XShrink">False</property>
-                        <property name="YExpand">False</property>
-                        <property name="YFill">True</property>
-                        <property name="YShrink">False</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="Gtk.RadioButton" id="radiobutton6">
-                        <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="Label" translatable="yes">A_ll</property>
-                        <property name="DrawIndicator">True</property>
-                        <property name="HasLabel">True</property>
-                        <property name="UseUnderline">True</property>
-                        <property name="Group">group1</property>
-                      </widget>
-                      <packing>
-                        <property name="TopAttach">2</property>
-                        <property name="BottomAttach">3</property>
                         <property name="AutoSize">True</property>
                         <property name="YOptions">Fill</property>
                         <property name="XExpand">True</property>
@@ -1905,10 +1908,10 @@ Custom Command</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.ComboBox" id="combobox5">
+                      <widget class="Gtk.ComboBox" id="comboboxConfig">
                         <property name="MemberName" />
                         <property name="WidthRequest">120</property>
-                        <property name="IsTextCombo">False</property>
+                        <property name="IsTextCombo">True</property>
                         <property name="Items" translatable="yes" />
                       </widget>
                       <packing>
@@ -1932,10 +1935,10 @@ Custom Command</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.ComboBox" id="combobox6">
+                      <widget class="Gtk.ComboBox" id="comboboxPlatform">
                         <property name="MemberName" />
                         <property name="WidthRequest">150</property>
-                        <property name="IsTextCombo">False</property>
+                        <property name="IsTextCombo">True</property>
                         <property name="Items" translatable="yes" />
                       </widget>
                       <packing>
