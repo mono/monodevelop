@@ -1,3 +1,8 @@
+2007-05-31  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Services/NUnitService.cs: If a solution is already open when
+	  initializing the nunit service, load the test tree.
+
 2007-05-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Gui/TestResultsPad.cs: Fixed some status messages. Make sure the

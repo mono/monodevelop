@@ -71,6 +71,11 @@ namespace MonoDevelop.NUnit
 			ps.DataContext.RegisterProperty (typeof(AbstractConfiguration), "UnitTestInformation", typeof(UnitTestOptionsSet));
 			
 			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/Services/NUnit/TestProviders", OnExtensionChange);
+			
+			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
+				rootTest = BuildTest (IdeApp.ProjectOperations.CurrentOpenCombine);
+				NotifyTestSuiteChanged ();
+			}
 		}
 		
 		void OnExtensionChange (object s, ExtensionNodeEventArgs args)
@@ -117,8 +122,7 @@ namespace MonoDevelop.NUnit
 		protected virtual void OnOpenCombine (object sender, CombineEventArgs e)
 		{
 			rootTest = BuildTest (e.Combine);
-			if (TestSuiteChanged != null)
-				TestSuiteChanged (this, EventArgs.Empty);
+			NotifyTestSuiteChanged ();
 		}
 
 		protected virtual void OnCloseCombine (object sender, CombineEventArgs e)
@@ -127,8 +131,7 @@ namespace MonoDevelop.NUnit
 				((IDisposable)rootTest).Dispose ();
 				rootTest = null;
 			}
-			if (TestSuiteChanged != null)
-				TestSuiteChanged (this, EventArgs.Empty);
+			NotifyTestSuiteChanged ();
 		}
 		
 		void OnReferenceAddedToProject (object sender, ProjectReferenceEventArgs e)
@@ -148,8 +151,7 @@ namespace MonoDevelop.NUnit
 				
 			rootTest = BuildTest (IdeApp.ProjectOperations.CurrentOpenCombine);
 
-			if (TestSuiteChanged != null)
-				TestSuiteChanged (this, EventArgs.Empty);
+			NotifyTestSuiteChanged ();
 		}
 		
 		public UnitTest BuildTest (CombineEntry entry)
@@ -169,6 +171,12 @@ namespace MonoDevelop.NUnit
 		{
 			UnitTestOptionsDialog optionsDialog = new UnitTestOptionsDialog (IdeApp.Workbench.RootWindow, test);
 			optionsDialog.Run ();
+		}
+		
+		void NotifyTestSuiteChanged ()
+		{
+			if (TestSuiteChanged != null)
+				TestSuiteChanged (this, EventArgs.Empty);
 		}
 		
 		public event EventHandler TestSuiteChanged;
