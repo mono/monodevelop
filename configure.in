@@ -191,24 +191,24 @@ monoquery_avail=0
 
 if test "x$enable_monoquery" == "xyes"; then
    monoquery_try_compile () {
-      cat <<EOF | sed -e "s/\${DbProvider}/${DbProvider}/g" > conftest.cs
+      cat <<EOF | sed -e "s/\${Dbase}/${Dbase}/g" -e "s/\${Using}/${Using}/g" > conftest.cs
 using System;
 using System.Data;
 using System.Collections;
 
-using ByteFX.Data.${DbProvider}Client;
+using ${Using};
 
 namespace Autoconf.Try.Compile {
 	public class Program {
 		public static void Main (string [[]] args)
 		{
-			${DbProvider}Connection connection = new ${DbProvider}Connection ();
+			${Dbase}Connection connection = new ${Dbase}Connection ();
 			connection.Open ();
 		}
 	}
 }
 EOF
-      $CSC conftest.cs -r:System.Data -r:ByteFX.Data > /dev/null 2>&1
+      $CSC conftest.cs -r:System.Data $ExtraDbAssemblies > /dev/null 2>&1
       if test $? == 0; then
 	 my_ac_conftest_result="yes"
 	 monoquery_avail=`expr $monoquery_avail + 1`
@@ -219,33 +219,57 @@ EOF
    }
    
    AC_MSG_CHECKING([for PostgreSQL support])
-   DbProvider="Npgsql"
+   ExtraDbAssemblies="-r:Npgsql"
+   Using="Npgsql"
+   Dbase="Npgsql"
    monoquery_try_compile
    enable_postgres=$my_ac_conftest_result
+   AM_CONDITIONAL(ENABLE_POSTGRES, [test $enable_postgres = yes])
    AC_MSG_RESULT($my_ac_conftest_result)
    
    AC_MSG_CHECKING([for MySQL support])
-   DbProvider="MySql"
+   ExtraDbAssemblies="-r:ByteFX.Data"
+   Using="ByteFX.Data.MySqlClient"
+   Dbase="MySql"
    monoquery_try_compile
    enable_mysql=$my_ac_conftest_result
+   AM_CONDITIONAL(ENABLE_MYSQL, [test $enable_mysql = yes])
    AC_MSG_RESULT($my_ac_conftest_result)
    
    AC_MSG_CHECKING([for SQLite support])
-   DbProvider="Sqlite"
+   ExtraDbAssemblies="-r:Mono.Data.SqliteClient"
+   Using="Mono.Data.SqliteClient"
+   Dbase="Sqlite"
    monoquery_try_compile
    enable_sqlite=$my_ac_conftest_result
+   AM_CONDITIONAL(ENABLE_SQLITE, [test $enable_sqlite = yes])
    AC_MSG_RESULT($my_ac_conftest_result)
    
    AC_MSG_CHECKING([for Oracle support])
-   DbProvider="Sqlite"
+   ExtraDbAssemblies="-r:System.Data.OracleClient"
+   Using="System.Data.OracleClient"
+   Dbase="Oracle"
    monoquery_try_compile
    enable_oracle=$my_ac_conftest_result
+   AM_CONDITIONAL(ENABLE_ORACLE, [test $enable_oracle = yes])
    AC_MSG_RESULT($my_ac_conftest_result)
    
    AC_MSG_CHECKING([for SQL Server support])
-   DbProvider="Sql"
+   ExtraDbAssemblies=""
+   Using="System.Data.SqlClient"
+   Dbase="Sql"
    monoquery_try_compile
    enable_sqlserv=$my_ac_conftest_result
+   AM_CONDITIONAL(ENABLE_SQLSERV, [test $enable_sqlserv = yes])
+   AC_MSG_RESULT($my_ac_conftest_result)
+   
+   AC_MSG_CHECKING([for Sybase support])
+   ExtraDbAssemblies="-r:Mono.Data.SybaseClient"
+   Using="Mono.Data.SybaseClient"
+   Dbase="Sybase"
+   monoquery_try_compile
+   enable_sybase=$my_ac_conftest_result
+   AM_CONDITIONAL(ENABLE_SYBASE, [test $enable_sybase = yes])
    AC_MSG_RESULT($my_ac_conftest_result)
    
    dnl If no providers are available, disable MonoQuery support
@@ -475,6 +499,7 @@ echo "   *     MySQL:        $enable_mysql"
 echo "   *     SQLite:       $enable_sqlite"
 echo "   *     Oracle:       $enable_oracle"
 echo "   *     SQL Server:   $enable_sqlserv"
+echo "   *     Sybase:       $enable_sybase"
 fi
 
 echo "   * java support: $enable_java"
