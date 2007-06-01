@@ -1,3 +1,8 @@
+2007-06-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Mono.Data.Sql/Makefile.am: Only build the supported database
+	providers (based on configure results).
+
 2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoQuery/MonoQuery.mdp: Copy the .addins.xml file to the output dir.

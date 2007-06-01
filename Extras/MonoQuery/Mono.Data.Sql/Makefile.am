@@ -1,15 +1,41 @@
+COND_FILES=
+COND_REFS=
 
-FILES =  \
+if ENABLE_POSTGRES
+COND_FILES += $(srcdir)/Providers/NpgsqlDbProvider.cs
+COND_REFS += -r:Npgsql
+endif
+
+if ENABLE_MYSQL
+COND_FILES += $(srcdir)/Providers/MySqlDbProvider.cs
+COND_REFS += -r:ByteFX.Data
+endif
+
+if ENABLE_SQLITE
+COND_FILES += $(srcdir)/Providers/SqliteDbProvider.cs
+COND_REFS += -r:Mono.Data.SqliteClient
+endif
+
+if ENABLE_ORACLE
+COND_FILES += $(srcdir)/Providers/OracleDbProvider.cs
+COND_REFS += -r:System.Data.OracleClient
+endif
+
+if ENABLE_SQLSERV
+COND_FILES += $(srcdir)/Providers/SqlDbProvider.cs
+endif
+
+if ENABLE_SYBASE
+COND_FILES += $(srcdir)/Providers/SybaseDbProvider.cs
+COND_REFS += -r:Mono.Data.SybaseClient
+endif
+
+FILES = \
 	AssemblyInfo.cs \
 	Providers/DbProviderBase.cs \
 	Providers/FirebirdDbProvider.cs \
-	Providers/MySqlDbProvider.cs \
-	Providers/NpgsqlDbProvider.cs \
 	Providers/OdbcDbProvider.cs \
-	Providers/OracleDbProvider.cs \
-	Providers/SqlDbProvider.cs \
-	Providers/SqliteDbProvider.cs \
-	Providers/SybaseDbProvider.cs \
+	$(COND_FILES) \
 	Schema/AbstractSchema.cs \
 	Schema/AggregateSchema.cs \
 	Schema/CheckConstraintSchema.cs \
@@ -36,16 +62,7 @@ FILES =  \
 	Schema/UserSchema.cs \
 	Schema/ViewSchema.cs
 
-REFS =  \
-	-r:$(top_srcdir)/contrib/FirebirdSql.Data.Firebird.dll \
-	-r:ByteFX.Data \
-	-r:Mono.Data.SqliteClient \
-	-r:Mono.Data.SybaseClient \
-	-r:Npgsql \
-	-r:System \
-	-r:System.Data \
-	-r:System.Data.OracleClient
-
+REFS = -r:System -r:System.Data -r:$(top_srcdir)/contrib/FirebirdSql.Data.Firebird.dll $(COND_REFS)
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoQuery
 
@@ -57,7 +74,7 @@ else
 all:
 endif
 
-$(ASSEMBLY): $(FILES)
+$(ASSEMBLY): $(FILES) $(COND_FILES)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(SCS_FLAGS) -target:library -out:$@ $(build_sources) $(REFS)
 
