@@ -1,3 +1,8 @@
+2007-06-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* configure.in: Wrote some configure script-fu to detect which
+	MonoQuery providers were available.
+
 2007-05-30  Lluis Sanchez Gual <lluis@novell.com> 
 
 	Updated.

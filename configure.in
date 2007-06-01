@@ -20,7 +20,7 @@ fi
 AC_SUBST(PATH)
 AC_SUBST(LD_LIBRARY_PATH)
 
-dnl to add MD's mimetypes
+dnl Add MD's mimetypes to mime and desktop databases
 AC_PATH_PROG(UPDATE_MIME_DB, update-mime-database, no)
 if test "x$UPDATE_MIME_DB" = "xno"; then
    AC_MSG_ERROR([You need to install update-mime-database])
@@ -178,12 +178,84 @@ AC_ARG_ENABLE(subversion,
 
 AM_CONDITIONAL(ENABLE_SUBVERSION, test x$enable_subversion = xyes)
 
+dnl *********************************************************
+dnl *** The following hunk of script-fu is to detect the  ***
+dnl *** available MonoQuery database providers...         ***
+dnl *********************************************************
 AC_ARG_ENABLE(monoquery,
 	AC_HELP_STRING([--enable-monoquery],
-		[enable MonoQuery support [default=yes]]),
+		[enable MonoQuery support [default=auto]]),
 		enable_monoquery=${enableval}, enable_monoquery=yes)
 
-AM_CONDITIONAL(ENABLE_MONOQUERY, test x$enable_monoquery = xyes)
+monoquery_avail=0
+
+if test "x$enable_monoquery" == "xyes"; then
+   monoquery_try_compile () {
+      cat <<EOF | sed -e "s/\${DbProvider}/${DbProvider}/g" > conftest.cs
+using System;
+using System.Data;
+using System.Collections;
+
+using ByteFX.Data.${DbProvider}Client;
+
+namespace Autoconf.Try.Compile {
+	public class Program {
+		public static void Main (string [[]] args)
+		{
+			${DbProvider}Connection connection = new ${DbProvider}Connection ();
+			connection.Open ();
+		}
+	}
+}
+EOF
+      $CSC conftest.cs -r:System.Data -r:ByteFX.Data > /dev/null 2>&1
+      if test $? == 0; then
+	 my_ac_conftest_result="yes"
+	 monoquery_avail=`expr $monoquery_avail + 1`
+      else
+         my_ac_conftest_result="no"
+      fi
+      rm -f conftest.cs
+   }
+   
+   AC_MSG_CHECKING([for PostgreSQL support])
+   DbProvider="Npgsql"
+   monoquery_try_compile
+   enable_postgres=$my_ac_conftest_result
+   AC_MSG_RESULT($my_ac_conftest_result)
+   
+   AC_MSG_CHECKING([for MySQL support])
+   DbProvider="MySql"
+   monoquery_try_compile
+   enable_mysql=$my_ac_conftest_result
+   AC_MSG_RESULT($my_ac_conftest_result)
+   
+   AC_MSG_CHECKING([for SQLite support])
+   DbProvider="Sqlite"
+   monoquery_try_compile
+   enable_sqlite=$my_ac_conftest_result
+   AC_MSG_RESULT($my_ac_conftest_result)
+   
+   AC_MSG_CHECKING([for Oracle support])
+   DbProvider="Sqlite"
+   monoquery_try_compile
+   enable_oracle=$my_ac_conftest_result
+   AC_MSG_RESULT($my_ac_conftest_result)
+   
+   AC_MSG_CHECKING([for SQL Server support])
+   DbProvider="Sql"
+   monoquery_try_compile
+   enable_sqlserv=$my_ac_conftest_result
+   AC_MSG_RESULT($my_ac_conftest_result)
+   
+   dnl If no providers are available, disable MonoQuery support
+   if test $monoquery_avail == 0; then
+      enable_monoquery="no"
+   fi
+fi
+
+AM_CONDITIONAL(ENABLE_MONOQUERY, test "x$enable_monoquery" == "xyes")
+
 
 dnl ASP.NET project addin
 XSP_VERSION=0.1
@@ -398,11 +470,11 @@ echo "   * MonoQuery support: $enable_monoquery"
 
 if test "x$enable_monoquery" = "xyes"; then
 echo "   *   Providers:"
-echo "   *     PostgreSQL:   yes"
-echo "   *     MySQL:        yes"
-echo "   *     SQLite:       yes"
-echo "   *     Oracle:       yes"
-echo "   *     SQL Server:   yes"
+echo "   *     PostgreSQL:   $enable_postgres"
+echo "   *     MySQL:        $enable_mysql"
+echo "   *     SQLite:       $enable_sqlite"
+echo "   *     Oracle:       $enable_oracle"
+echo "   *     SQL Server:   $enable_sqlserv"
 fi
 
 echo "   * java support: $enable_java"
