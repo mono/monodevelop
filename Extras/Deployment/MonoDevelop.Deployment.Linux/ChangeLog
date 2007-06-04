@@ -1,3 +1,8 @@
+2007-06-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment.Linux/MenuCategorySelectorDialog.cs: Always
+	  select a "main" category when selecting a subcategory.
+
 2007-05-30  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment.Linux/LinuxDeployData.cs: Don't set the

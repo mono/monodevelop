@@ -157,6 +157,17 @@ namespace MonoDevelop.Deployment.Linux
 				selection.Add (cat);
 			
 			store.SetValue (iter, 2, !sel);
+			
+			// A 'main' category must always be selected when a subcategory is selected 
+			while (store.IterParent (out iter, iter)) {
+				string txt = (string) store.GetValue (iter, 1);
+				if (txt.StartsWith ("<b>")) {
+					store.SetValue (iter, 2, true);
+					cat = (string) store.GetValue (iter, 0);
+					if (!selection.Contains (cat))
+						selection.Add (cat);
+				}
+			}
 		}
 	}
 }
