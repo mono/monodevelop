@@ -1,8 +1,8 @@
 //
-// MakefileProjectBinding.cs
+// ProjectItemEventArgs.cs
 //
 // Author:
-//   Lluis Sanchez Gual
+//   Mike Krüger <mkrueger@novell.com>
 //
 // Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
@@ -25,36 +25,22 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-/*
-using System;
-using System.IO;
-using System.Xml;
-using MonoDevelop.Projects.Serialization;
-using MonoDevelop.Core;
-using MonoDevelop.Projects;
 
-namespace MonoDevelop.Projects
+using System;
+
+namespace MonoDevelop.Ide.Projects.Item
 {
-	public class GenericProjectBinding : IProjectBinding
+	public class ProjectItemEventArgs : EventArgs
 	{
-		public virtual string Name {
-			get { return "GenericProject"; }
+		ProjectItem projectItem;
+		
+		public ProjectItem ProjectItem {
+			get { return this.projectItem; }
 		}
 		
-		public Project CreateProject (ProjectCreateInformation info, XmlElement projectOptions)
+		public ProjectItemEventArgs (ProjectItem projectItem)
 		{
-			return new GenericProject (info, projectOptions);
-		}
-		
-		public Project CreateSingleFileProject (string file)
-		{
-			return null;
-		}
-		
-		public bool CanCreateSingleFileProject (string file)
-		{
-			return false;
+			this.projectItem = projectItem;
 		}
 	}
 }
-*/

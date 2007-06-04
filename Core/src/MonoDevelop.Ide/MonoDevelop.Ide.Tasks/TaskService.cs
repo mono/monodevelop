@@ -16,6 +16,8 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Ide.Gui;
 
@@ -55,14 +57,21 @@ namespace MonoDevelop.Ide.Tasks
 			IdeApp.ProjectOperations.ParserDatabase.CommentTasksChanged += new CommentTasksChangedEventHandler (OnCommentTasksChanged);
 			
 			// Load all tags that are stored in pidb files
-            foreach (Project p in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects ())
+            foreach (SolutionItem item in MonoDevelop.Ide.Projects.ProjectService.Solution.Items)
             {
-                IProjectParserContext pContext = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (p);
-                foreach (ProjectFile file in p.ProjectFiles)
+            	SolutionProject project = item as SolutionProject;
+            	if (project == null)
+            		continue;
+            	
+                IProjectParserContext pContext = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project.Project);
+                foreach (ProjectItem projectItem in project.Project.Items)
                 {
-                	TagCollection tags = pContext.GetFileSpecialComments (file.Name); 
+                	MonoDevelop.Ide.Projects.Item.ProjectFile file = projectItem as MonoDevelop.Ide.Projects.Item.ProjectFile;
+                	if (file == null)
+                		continue;
+                	TagCollection tags = pContext.GetFileSpecialComments (file.FullPath); 
                 	if (tags !=null)
-                		UpdateCommentTags (file.Name, tags);
+                		UpdateCommentTags (file.FullPath, tags);
                 }
         	}
         	
@@ -120,14 +129,22 @@ namespace MonoDevelop.Ide.Tasks
 				if (combine != null)
 				{
 					// update priorities
-		            foreach (Project p in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects ())
+		            foreach (SolutionItem item in MonoDevelop.Ide.Projects.ProjectService.Solution.Items)
 		            {
-		                IProjectParserContext pContext = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (p);
-		                foreach (ProjectFile file in p.ProjectFiles)
+		            	SolutionProject project = item as SolutionProject;
+		            	if (project == null)
+		            		continue;
+		            	
+		                IProjectParserContext pContext = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project.Project);
+		                foreach (ProjectItem projectItem in project.Project.Items)
 		                {
-		                	TagCollection tags = pContext.GetFileSpecialComments (file.Name); 
+		                	MonoDevelop.Ide.Projects.Item.ProjectFile file = projectItem as MonoDevelop.Ide.Projects.Item.ProjectFile;
+		                	if (file == null)
+		                		continue;
+
+		                	TagCollection tags = pContext.GetFileSpecialComments (file.FullPath); 
 		                	if (tags !=null)
-		                		UpdateCommentTags (file.Name, tags);
+		                		UpdateCommentTags (file.FullPath, tags);
 		                }
 		        	}
 				}

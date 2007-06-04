@@ -31,7 +31,8 @@ using System.IO;
 using System.Collections;
 using System.Text;
 
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
@@ -40,49 +41,46 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
 	public class ProjectNodeBuilder: TypeNodeBuilder
 	{
-		CombineEntryRenamedEventHandler projectNameChanged;
-
 		public ProjectNodeBuilder ()
 		{
-			projectNameChanged = (CombineEntryRenamedEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryRenamedEventHandler (OnProjectRenamed));
 		}
 		
 		public override Type NodeDataType {
-			get { return typeof(Project); }
+			get { return typeof(IProject); }
 		}
 		
 		public override void OnNodeAdded (object dataObject)
 		{
-			Project project = (Project) dataObject;
-			project.NameChanged += projectNameChanged;
+			IProject project = (IProject) dataObject;
+			project.NameChanged += new EventHandler<RenameEventArgs> (OnProjectRenamed);
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
-			Project project = (Project) dataObject;
-			project.NameChanged -= projectNameChanged;
+			IProject project = (IProject) dataObject;
+			project.NameChanged -= new EventHandler<RenameEventArgs> (OnProjectRenamed);
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return ((Project)dataObject).Name;
+			return ((IProject)dataObject).Name;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			Project p = dataObject as Project;
+			IProject p = dataObject as IProject;
 			label = p.Name;
-			string iconName = Services.Icons.GetImageForProjectType (p.ProjectType);
+			string iconName = Services.Icons.GetImageForProjectType (BackendBindingService.GetBackendBindingCodonByLanguage (p.Language).Id);
 			icon = Context.GetIcon (iconName);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			Project project = (Project) dataObject;
+			IProject project = (IProject) dataObject;
 			BuildChildNodes (builder, project);
 		}
 		
-		public static void BuildChildNodes (ITreeBuilder builder, Project project)
+		public static void BuildChildNodes (ITreeBuilder builder, IProject project)
 		{
 			bool publicOnly = builder.Options ["PublicApiOnly"];
 			
@@ -101,7 +99,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			}
 		}
 		
-		public static void FillNamespaces (ITreeBuilder builder, Project project, string ns)
+		public static void FillNamespaces (ITreeBuilder builder, IProject project, string ns)
 		{
 			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
 			if (ctx.GetClassList (ns, false, true).Length > 0) {
@@ -123,9 +121,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			return true;
 		}
 		
-		void OnProjectRenamed (object sender, CombineEntryRenamedEventArgs e)
+		void OnProjectRenamed (object sender, RenameEventArgs e)
 		{
-			ITreeBuilder tb = Context.GetTreeBuilder (e.CombineEntry);
+			ITreeBuilder tb = Context.GetTreeBuilder (e.Project);
 			if (tb != null) tb.Update ();
 		}
 	}

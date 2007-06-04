@@ -18,6 +18,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Ide.Projects;
 
 using MonoDevelop.Components;
 using IconView = MonoDevelop.Components.IconView;
@@ -377,15 +378,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				return false;
 			}
 			
-			ProjectCreateInformation cinfo = new ProjectCreateInformation ();
+			NewSolutionData cinfo = new NewSolutionData ();
 			
-			cinfo.CombinePath     = SolutionLocation;
-			cinfo.ProjectBasePath = ProjectLocation;
-//				cinfo.Description     = Runtime.StringParserService.Parse(item.Template.Description);
-			
-			cinfo.ProjectName     = name;
-			cinfo.CombineName     = CreateSolutionDirectory ? txt_subdirectory.Text : name;
-//				cinfo.ProjectTemplate = item.Template;
+			cinfo.Path        = SolutionLocation;
+			cinfo.ProjectPath = ProjectLocation;
+			cinfo.Name        = name;
+//			cinfo.Description     = Runtime.StringParserService.Parse(item.Template.Description);
+//			cinfo.CombineName     = CreateSolutionDirectory ? txt_subdirectory.Text : name;
+//			cinfo.ProjectTemplate = item.Template;
 			
 			try {
 				if (newCombine)

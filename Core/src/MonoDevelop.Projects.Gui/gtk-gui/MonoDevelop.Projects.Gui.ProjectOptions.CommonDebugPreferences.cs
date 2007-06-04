@@ -122,6 +122,7 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
             this.radiobuttonCommandLine = new Gtk.RadioButton(MonoDevelop.Core.GettextCatalog.GetString("_Command line:"));
             this.radiobuttonCommandLine.CanFocus = true;
             this.radiobuttonCommandLine.Name = "radiobuttonCommandLine";
+            this.radiobuttonCommandLine.Active = true;
             this.radiobuttonCommandLine.DrawIndicator = true;
             this.radiobuttonCommandLine.UseUnderline = true;
             this.radiobuttonCommandLine.Group = new GLib.SList(System.IntPtr.Zero);

@@ -167,6 +167,7 @@ namespace MonoDevelop.Projects
 		
 		object ReadProjectFile (string fileName, IProgressMonitor monitor)
 		{
+		/*
 			XmlTextReader reader = null;
 			try {
 				reader = new XmlTextReader (new StreamReader (fileName));
@@ -216,7 +217,8 @@ namespace MonoDevelop.Projects
 				monitor.EndTask ();
 				if (reader != null)
 					reader.Close ();
-			}
+			}*/
+			return null;
 		}
 	}
 }

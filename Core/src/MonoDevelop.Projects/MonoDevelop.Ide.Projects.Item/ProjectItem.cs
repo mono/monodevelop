@@ -34,8 +34,18 @@ namespace MonoDevelop.Ide.Projects.Item
 {
 	public abstract class ProjectItem
 	{
+		IProject                   project;
 		string                     include;
 		Dictionary<string, string> metaData = new Dictionary<string, string>();
+		
+		public IProject Project {
+			get {
+				return this.project;
+			}
+			set {
+				this.project = value;
+			}
+		}
 		
 		public string Include {
 			get { return this.include; }

@@ -33,7 +33,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Reflection;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.ProgressMonitoring;
@@ -58,8 +58,9 @@ namespace MonoDevelop.Ide.Templates
 			template = element;
 		}
 		
-		public string CreateEntry (ProjectCreateInformation projectCreateInformation, string defaultLanguage, ref string guid)
+		public string CreateEntry (NewSolutionData projectCreateInformation, string defaultLanguage, ref string guid)
 		{
+/*	TODO: Project Conversion
 			guid = "";
 			StringParserService stringParserService = Runtime.StringParserService;
 			
@@ -97,7 +98,8 @@ namespace MonoDevelop.Ide.Templates
 				}
 			}
 			
-			return fileName;
+			return fileName;*/
+			return "";
 		}
 		
 		public static CombineEntryDescriptor CreateDescriptor (XmlElement element)

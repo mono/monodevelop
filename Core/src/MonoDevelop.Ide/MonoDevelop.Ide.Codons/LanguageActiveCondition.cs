@@ -13,7 +13,7 @@ using System.Xml;
 using Mono.Addins;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Codons
@@ -28,15 +28,18 @@ namespace MonoDevelop.Ide.Codons
 		public override bool Evaluate (NodeElement condition)
 		{
 			string lang = condition.GetAttribute ("value");
-			Project project = IdeApp.ProjectOperations.CurrentSelectedProject;
-			
+			SolutionProject project = ProjectService.ActiveProject;
+			if (project == null)
+				return false;
 			if (lang == "*")
-				return (project is DotNetProject);
-			
-			if (project != null)
-				foreach (string suppLang in project.SupportedLanguages)
-					if (suppLang == lang) return true;
-			
+				return (project.Project is MSBuildProject);
+				
+			BackendBindingCodon codon = BackendBindingService.GetBackendBindingCodonByGuid (project.TypeGuid);
+			if (codon != null)
+				//foreach (string suppLang in project.SupportedLanguages)
+					if (codon.Id == lang) 
+						return true;
+						
 			return false;
 		}
 	}

@@ -29,6 +29,8 @@
 using System;
 using System.CodeDom;
 using System.Collections;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Parser;
@@ -38,12 +40,12 @@ namespace MonoDevelop.Projects.CodeGeneration
 	public class CodeRefactorer
 	{
 		IParserDatabase pdb;
-		Combine rootCombine;
+		Solution rootCombine;
 		ITextFileProvider fileProvider;
 		
 		delegate void RefactorDelegate (IProgressMonitor monitor, RefactorerContext gctx, IRefactorer gen, string file);
 		
-		public CodeRefactorer (Combine rootCombine, IParserDatabase pdb)
+		public CodeRefactorer (Solution rootCombine, IParserDatabase pdb)
 		{
 			this.rootCombine = rootCombine;
 			this.pdb = pdb;
@@ -59,7 +61,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			set { fileProvider = value; } 
 		}
 		
-		public IClass CreateClass (Project project, string language, string directory, string namspace, CodeTypeDeclaration type)
+		public IClass CreateClass (IProject project, string language, string directory, string namspace, CodeTypeDeclaration type)
 		{
 			IParserContext ctx = pdb.GetProjectParserContext (project);
 			RefactorerContext gctx = new RefactorerContext (ctx, fileProvider);
@@ -175,8 +177,11 @@ namespace MonoDevelop.Projects.CodeGeneration
 			ArrayList list = new ArrayList ();
 			
 			if (rootCombine != null) {
-				foreach (Project p in rootCombine.GetAllProjects ()) {
-					IParserContext ctx = pdb.GetProjectParserContext (p);
+				foreach (SolutionItem item in rootCombine.Items) {
+					SolutionProject project = item as SolutionProject;
+					if (project == null)
+						continue;
+					IParserContext ctx = pdb.GetProjectParserContext (project.Project);
 					foreach (IClass cls in ctx.GetProjectContents ()) {
 						if (IsSubclass (ctx, baseClass, cls))
 							list.Add (cls);
@@ -220,7 +225,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			else if (scope == RefactoryScope.Project)
 			{
 				string file = cls.Region.FileName;
-				Project prj = GetProjectForFile (file);
+				IProject prj = GetProjectForFile (file);
 				if (prj == null)
 					return;
 				RefactorProject (monitor, prj, refactorDelegate);
@@ -263,30 +268,38 @@ namespace MonoDevelop.Projects.CodeGeneration
 			}
 		}
 		
-		void RefactorCombine (IProgressMonitor monitor, CombineEntry ce, RefactorDelegate refactorDelegate)
+		void RefactorCombine (IProgressMonitor monitor, Solution ce, RefactorDelegate refactorDelegate)
 		{
-			if (ce is Combine) {
+/*			if (ce is Combine) {
 				foreach (CombineEntry e in ((Combine)ce).Entries)
 					RefactorCombine (monitor, e, refactorDelegate);
-			} else if (ce is Project) {
-				RefactorProject (monitor, (Project) ce, refactorDelegate);
+			} else if (ce is Project) {*/
+			foreach (SolutionItem item in ce.Items) {
+				SolutionProject project = item as SolutionProject;
+				if (project == null)
+					continue;
+				RefactorProject (monitor, project.Project, refactorDelegate);
 			}
+				
+//			}
 		}
 		
-		void RefactorProject (IProgressMonitor monitor, Project p, RefactorDelegate refactorDelegate)
+		void RefactorProject (IProgressMonitor monitor, IProject p, RefactorDelegate refactorDelegate)
 		{
 			RefactorerContext gctx = GetGeneratorContext (p);
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Refactoring project {0}", p.Name));
-			foreach (ProjectFile file in p.ProjectFiles) {
-				if (file.BuildAction != BuildAction.Compile) continue;
-				IRefactorer gen = Services.Languages.GetRefactorerForFile (file.Name);
+			foreach (ProjectItem item in p.Items) {
+				MonoDevelop.Ide.Projects.Item.ProjectFile file = item as MonoDevelop.Ide.Projects.Item.ProjectFile;
+				if (file == null || file.FileType != FileType.Compile)
+					continue;
+				IRefactorer gen = Services.Languages.GetRefactorerForFile (file.FullPath);
 				if (gen == null) continue;
-				refactorDelegate (monitor, gctx, gen, file.Name);
+				refactorDelegate (monitor, gctx, gen, file.FullPath);
 				gctx.Save ();
 			}
 		}
 		
-		RefactorerContext GetGeneratorContext (Project p)
+		RefactorerContext GetGeneratorContext (IProject p)
 		{
 			IParserContext ctx = pdb.GetProjectParserContext (p);
 			return new RefactorerContext (ctx, fileProvider);
@@ -304,7 +317,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		IParserContext GetParserContext (IClass cls)
 		{
-			Project p = GetProjectForFile (cls.Region.FileName);
+			IProject p = GetProjectForFile (cls.Region.FileName);
 			if (p != null)
 				return pdb.GetProjectParserContext (p);
 			else
@@ -313,21 +326,25 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		IParserContext GetParserContext (LocalVariable var)
 		{
-			Project p = GetProjectForFile (var.Region.FileName);
+			IProject p = GetProjectForFile (var.Region.FileName);
 			if (p != null)
 				return pdb.GetProjectParserContext (p);
 			else
 				return pdb.GetFileParserContext (var.Region.FileName);
 		}
 		
-		Project GetProjectForFile (string file)
+		IProject GetProjectForFile (string file)
 		{
 			if (rootCombine == null)
 				return null;
 
-			foreach (Project p in rootCombine.GetAllProjects ())
-				if (p.IsFileInProject (file))
-					return p;
+			foreach (SolutionItem item in this.rootCombine.Items) {
+				SolutionProject project = item as SolutionProject;
+				if (project == null)
+					continue;
+				if (project.Project.IsFileInProject (file))
+					return project.Project;
+			}
 			return null;
 		}
 		

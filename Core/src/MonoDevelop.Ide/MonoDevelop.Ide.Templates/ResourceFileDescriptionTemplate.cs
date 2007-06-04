@@ -27,8 +27,10 @@
 //
 
 using System;
+using System.IO;
 using System.Xml;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -57,10 +59,9 @@ namespace MonoDevelop.Ide.Templates
 			return template.Create (language, directory, name);
 		}
 		
-		public override void AddToProject (Project project, string language, string directory, string name)
+		public override void AddToProject (IProject project, string language, string directory, string name)
 		{
-			ProjectFile file = template.AddFileToProject (project, language, directory, name);
-			file.BuildAction = BuildAction.EmbedAsResource;
+			project.Add (new ProjectFile( Path.Combine (directory, name), FileType.EmbeddedResource));
 		}
 		
 		public override void Show ()

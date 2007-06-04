@@ -158,7 +158,10 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 		[CommandHandler (ProjectCommands.Options)]
 		public void Options ()
 		{
-			using (ProjectOptionsDialog optionsDialog = new ProjectOptionsDialog ()) {
+			SolutionProject solutionProject = CurrentNode.DataItem as SolutionProject;
+			if (solutionProject == null) 
+				return;
+			using (ProjectOptionsDialog optionsDialog = new ProjectOptionsDialog (solutionProject.Project)) {
 				optionsDialog.Run ();
 			}
 		}

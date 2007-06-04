@@ -39,6 +39,6 @@ namespace MonoDevelop.Projects
 		bool CanCreateSingleFileProject (string file);
 		Project CreateSingleFileProject (string file);
 		
-		Project CreateProject (string type, ProjectCreateInformation info, XmlElement projectOptions);
+		Project CreateProject (string type, MonoDevelop.Ide.Projects.NewSolutionData info, XmlElement projectOptions);
 	}
 }

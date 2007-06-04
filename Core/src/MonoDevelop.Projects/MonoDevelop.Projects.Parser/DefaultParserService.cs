@@ -9,6 +9,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Reflection;
@@ -25,6 +26,7 @@ using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.ProgressMonitoring;
 using Mono.Addins;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects.Utility;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Parser;
@@ -586,7 +588,7 @@ namespace MonoDevelop.Projects.Parser
 			nameTable = new StringNameTable (sharedNameTable);
 		}
 		
-		public IProjectParserContext GetProjectParserContext (Project project)
+		public IProjectParserContext GetProjectParserContext (IProject project)
 		{
 			CodeCompletionDatabase pdb = GetProjectDatabase (project);
 			if (pdb == null)
@@ -706,7 +708,7 @@ namespace MonoDevelop.Projects.Parser
 			return GetDatabase (null, uri);
 		}
 		
-		internal ProjectCodeCompletionDatabase GetProjectDatabase (Project project)
+		internal ProjectCodeCompletionDatabase GetProjectDatabase (IProject project)
 		{
 			if (project == null) return null;
 			return (ProjectCodeCompletionDatabase) GetDatabase (null, "Project:" + project.Name);
@@ -829,26 +831,26 @@ namespace MonoDevelop.Projects.Parser
 		
 		public void Load (CombineEntry entry)
 		{
-			if (entry is Project)
-				LoadProjectDatabase ((Project)entry);
+			if (entry is IProject)
+				LoadProjectDatabase ((IProject)entry);
 			else if (entry is Combine)
 				LoadCombineDatabases ((Combine)entry);
 		}
 		
 		public void Unload (CombineEntry entry)
 		{
-			if (entry is Project)
-				UnloadProjectDatabase ((Project)entry);
+			if (entry is IProject)
+				UnloadProjectDatabase ((IProject)entry);
 			else if (entry is Combine)
 				UnloadCombineDatabases ((Combine)entry);
 		}
 		
-		public bool IsLoaded (Project project)
+		public bool IsLoaded (IProject project)
 		{
 			return (GetProjectDatabase (project) != null);
 		}
 		
-		void LoadProjectDatabase (Project project)
+		void LoadProjectDatabase (IProject project)
 		{
 			lock (databases)
 			{
@@ -860,10 +862,11 @@ namespace MonoDevelop.Projects.Parser
 				
 				foreach (ReferenceEntry re in db.References)
 					GetDatabase (re.Uri);
-
-				project.NameChanged += new CombineEntryRenamedEventHandler (OnProjectRenamed);
+				
+				project.NameChanged += new EventHandler<RenameEventArgs> (ProjectRenamed);						
+/* TODO: Project Conversion				
 				project.ReferenceAddedToProject += new ProjectReferenceEventHandler (OnProjectReferencesChanged);
-				project.ReferenceRemovedFromProject += new ProjectReferenceEventHandler (OnProjectReferencesChanged);
+				project.ReferenceRemovedFromProject += new ProjectReferenceEventHandler (OnProjectReferencesChanged);*/
 			}
 		}
 		
@@ -894,13 +897,30 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
-		void UnloadProjectDatabase (Project project)
+		void ProjectRenamed (object sender, RenameEventArgs e)
+		{
+			lock (databases)
+			{
+				ProjectCodeCompletionDatabase db = GetProjectDatabase (e.Project);
+				if (db == null) return;
+				
+				db.Rename (e.NewName);
+				databases.Remove ("Project:" + e.OldName);
+				databases ["Project:" + e.NewName] = db;
+				RefreshProjectDatabases ();
+				CleanUnusedDatabases ();
+			}
+		
+		}
+		
+		void UnloadProjectDatabase (IProject project)
 		{
 			string uri = "Project:" + project.Name;
 			UnloadDatabase (uri);
-			project.NameChanged -= new CombineEntryRenamedEventHandler (OnProjectRenamed);
-			project.ReferenceAddedToProject -= new ProjectReferenceEventHandler (OnProjectReferencesChanged);
-			project.ReferenceRemovedFromProject -= new ProjectReferenceEventHandler (OnProjectReferencesChanged);
+			project.NameChanged -= new EventHandler<RenameEventArgs> (ProjectRenamed);						
+/* TODO: Project Conversion			
+	project.ReferenceAddedToProject     -= new ProjectReferenceEventHandler (OnProjectReferencesChanged);
+			project.ReferenceRemovedFromProject -= new ProjectReferenceEventHandler (OnProjectReferencesChanged);*/
 		}
 		
 		void CleanUnusedDatabases ()
@@ -962,20 +982,6 @@ namespace MonoDevelop.Projects.Parser
 			CleanUnusedDatabases ();
 		}
 		
-		void OnProjectRenamed (object sender, CombineEntryRenamedEventArgs args)
-		{
-			lock (databases)
-			{
-				ProjectCodeCompletionDatabase db = GetProjectDatabase ((Project) args.CombineEntry);
-				if (db == null) return;
-				
-				db.Rename (args.NewName);
-				databases.Remove ("Project:" + args.OldName);
-				databases ["Project:" + args.NewName] = db;
-				RefreshProjectDatabases ();
-				CleanUnusedDatabases ();
-			}
-		}
 		
 		void OnCombineEntryAdded (object sender, CombineEntryEventArgs args)
 		{
@@ -995,7 +1001,7 @@ namespace MonoDevelop.Projects.Parser
 			}
 			CleanUnusedDatabases ();
 		}
-		
+		/* TODO: Project References
 		void OnProjectReferencesChanged (object sender, ProjectReferenceEventArgs args)
 		{
 			ProjectCodeCompletionDatabase db = GetProjectDatabase (args.Project);
@@ -1003,7 +1009,7 @@ namespace MonoDevelop.Projects.Parser
 				db.UpdateFromProject ();
 				NotifyReferencesChanged (db);
 			}
-		}
+		}*/
 		
 		void RefreshProjectDatabases ()
 		{
@@ -1187,7 +1193,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public IParseInformation UpdateFile (string fileName, string fileContent)
 		{
-			Project project = null;
+			IProject project = null;
 			
 			lock (databases) {
 				foreach (object ob in databases.Values) {
@@ -1201,7 +1207,7 @@ namespace MonoDevelop.Projects.Parser
 			return UpdateFile (project, fileName, fileContent);
 		}
 		
-		public IParseInformation UpdateFile (Project project, string fileName, string fileContent)
+		public IParseInformation UpdateFile (IProject project, string fileName, string fileContent)
 		{
 			try {
 				if (parserService.GetParser (fileName) == null)
@@ -1575,7 +1581,7 @@ namespace MonoDevelop.Projects.Parser
 			return null;
 		}
 		
-		public bool ResolveTypes (Project project, ICompilationUnit unit, ClassCollection types, out ClassCollection result)
+		public bool ResolveTypes (IProject project, ICompilationUnit unit, ClassCollection types, out ClassCollection result)
 		{
 			CodeCompletionDatabase db = GetProjectDatabase (project);
 			CompilationUnitTypeResolver tr = new CompilationUnitTypeResolver (db, unit, this);
@@ -1672,6 +1678,15 @@ namespace MonoDevelop.Projects.Parser
 			return DoParseFile (fileName, fileContent);
 		}
 		
+		static string GetParseableFileContent (string fileName)
+		{
+			fileName = fileName.Replace('\\', '/'); // FIXME PEDRO
+			StreamReader sr = File.OpenText (fileName);
+			string content = sr.ReadToEnd ();
+			sr.Close();
+			return content;
+		}
+		
 		public IParseInformation DoParseFile (string fileName, string fileContent)
 		{
 			IParser parser = parserService.GetParser (fileName);
@@ -1704,7 +1719,7 @@ namespace MonoDevelop.Projects.Parser
 						ProjectCodeCompletionDatabase db = ob as ProjectCodeCompletionDatabase;
 						if (db != null) {
 							if (db.Project.IsFileInProject (fileName))
-								fileContent = db.Project.GetParseableFileContent(fileName);
+								fileContent = GetParseableFileContent (fileName);
 						}
 					}
 				}
@@ -1805,7 +1820,7 @@ namespace MonoDevelop.Projects.Parser
 			OnCommentTasksChanged (new CommentTasksChangedEventArgs (fe.FileName, fe.CommentTasks));
 		}
 		
-		public void NotifyParseInfoChange (string file, ClassUpdateInformation res, Project project)
+		public void NotifyParseInfoChange (string file, ClassUpdateInformation res, IProject project)
 		{
 			ClassInformationEventArgs args = new ClassInformationEventArgs (file, res, project);
 			OnClassInformationChanged (args);

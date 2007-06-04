@@ -80,7 +80,7 @@ namespace CSharpBinding
 		
 		public override IProject LoadProject (string fileName)
 		{
-			return MSBuildProject.Load (fileName);
+			return MSBuildProject.Load ("C#", fileName);
 		}
 		
 		string ToOutput (string outputType)

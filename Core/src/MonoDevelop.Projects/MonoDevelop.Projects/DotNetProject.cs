@@ -4,7 +4,7 @@
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
 //     <version value="$version"/>
 // </file>
-
+/*
 using System;
 using System.Text;
 using System.Collections;
@@ -275,3 +275,4 @@ namespace MonoDevelop.Projects
 		}
 	}
 }
+*/

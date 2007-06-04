@@ -33,5 +33,8 @@ namespace MonoDevelop.Ide.Projects
 {
 	public class UnknownProject : MSBuildProject
 	{
+		public UnknownProject () : base (null)
+		{
+		}
 	}
 }

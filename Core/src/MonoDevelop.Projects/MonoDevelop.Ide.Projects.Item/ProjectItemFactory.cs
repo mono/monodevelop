@@ -31,15 +31,15 @@ namespace MonoDevelop.Ide.Projects.Item
 {
 	public static class ProjectItemFactory
 	{
-		public static ProjectItem Create(string itemType)
+		public static ProjectItem Create (string itemType)
 		{
 			switch (itemType) {
 			case "Reference":
-				return new ReferenceProjectItem();
+				return new ReferenceProjectItem ();
 			case "ProjectReference":
-				return new UnknownProjectItem(itemType);
+				return new ProjectReferenceProjectItem ();
 			case "Import":
-				return new UnknownProjectItem(itemType);
+				return new UnknownProjectItem (itemType);
 					
 			case "None":
 			case "Compile":
@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Projects.Item
 			case "Resource":
 			case "Content":
 			case "Folder":
-				return new ProjectFile(ProjectFile.GetFileType (itemType));
+				return new ProjectFile (ProjectFile.GetFileType (itemType));
 /*
 				case "WebReferences":
 					return ;

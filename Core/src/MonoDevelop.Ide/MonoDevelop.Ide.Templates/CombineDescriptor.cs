@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Templates
 			get { return (ICombineEntryDescriptor[]) entryDescriptors.ToArray (typeof(ICombineEntryDescriptor)); }
 		}
 		
-		public string CreateEntry (MonoDevelop.Projects.ProjectCreateInformation projectCreateInformation, string defaultLanguage, ref string guid)
+		public string CreateEntry (NewSolutionData projectCreateInformation, string defaultLanguage, ref string guid)
 		{
 			guid = "";
 			Solution newCombine;
@@ -63,19 +63,19 @@ namespace MonoDevelop.Ide.Templates
 				newCombine = new Solution ();
 
 			string  newCombineName = Runtime.StringParserService.Parse(name, new string[,] { 
-				{"ProjectName", projectCreateInformation.CombineName}
+				{"ProjectName", projectCreateInformation.Name}
 			});
 			
-			string oldCombinePath = projectCreateInformation.CombinePath;
-			string oldProjectPath = projectCreateInformation.ProjectBasePath;
+			string oldCombinePath = projectCreateInformation.Path;
+			string oldProjectPath = projectCreateInformation.ProjectPath;
 			if (relativeDirectory != null && relativeDirectory.Length > 0 && relativeDirectory != ".") {
-				projectCreateInformation.CombinePath     = projectCreateInformation.CombinePath + Path.DirectorySeparatorChar + relativeDirectory;
-				projectCreateInformation.ProjectBasePath = projectCreateInformation.CombinePath + Path.DirectorySeparatorChar + relativeDirectory;
-				if (!Directory.Exists(projectCreateInformation.CombinePath)) {
-					Directory.CreateDirectory(projectCreateInformation.CombinePath);
+				projectCreateInformation.Path        = Path.Combine (projectCreateInformation.Path, relativeDirectory);
+				projectCreateInformation.ProjectPath = Path.Combine (projectCreateInformation.Path, relativeDirectory);
+				if (!Directory.Exists(projectCreateInformation.Path)) {
+					Directory.CreateDirectory(projectCreateInformation.Path);
 				}
-				if (!Directory.Exists(projectCreateInformation.ProjectBasePath)) {
-					Directory.CreateDirectory(projectCreateInformation.ProjectBasePath);
+				if (!Directory.Exists(projectCreateInformation.ProjectPath)) {
+					Directory.CreateDirectory(projectCreateInformation.ProjectPath);
 				}
 			}
 			SolutionSection configSection = newCombine.GetSection ("SolutionConfigurationPlatforms");
@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.Templates
 			foreach (ICombineEntryDescriptor entryDescriptor in entryDescriptors) {
 				string newGuid = "";
 				string fileName = entryDescriptor.CreateEntry (projectCreateInformation, defaultLanguage, ref newGuid);
-				string deNormalizedFileName = SolutionProject.DeNormalizePath (fileName.Substring (Runtime.FileService.GetDirectoryNameWithSeparator(projectCreateInformation.CombinePath).Length));  
+				string deNormalizedFileName = SolutionProject.DeNormalizePath (fileName.Substring (Runtime.FileService.GetDirectoryNameWithSeparator(projectCreateInformation.Path).Length));  
 					
 				newCombine.AddItem ( new SolutionProject ("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", newGuid, Path.GetFileNameWithoutExtension (fileName), deNormalizedFileName));
 				if (configSection != null && projectConfigSection != null) {
@@ -100,12 +100,12 @@ namespace MonoDevelop.Ide.Templates
 				}
 			}
 			
-			projectCreateInformation.CombinePath     = oldCombinePath;
-			projectCreateInformation.ProjectBasePath = oldProjectPath;
+			projectCreateInformation.Path        = oldCombinePath;
+			projectCreateInformation.ProjectPath = oldProjectPath;
 			
 			// Save combine
 			using (IProgressMonitor monitor = new NullProgressMonitor ()) {
-				string combineLocation = Runtime.FileService.GetDirectoryNameWithSeparator(projectCreateInformation.CombinePath) + newCombineName + ".sln";
+				string combineLocation = Path.Combine (projectCreateInformation.Path, newCombineName + ".sln");
 				if (File.Exists(combineLocation)) {
 					IMessageService messageService =(IMessageService)ServiceManager.GetService(typeof(IMessageService));
 					if (messageService.AskQuestion (GettextCatalog.GetString ("Solution file {0} already exists, do you want to overwrite\nthe existing file?", combineLocation))) {

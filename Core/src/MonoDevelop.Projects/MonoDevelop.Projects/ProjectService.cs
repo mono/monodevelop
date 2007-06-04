@@ -262,22 +262,22 @@ namespace MonoDevelop.Projects
 		
 		public Project CreateSingleFileProject (string file)
 		{
-			foreach (ProjectBindingCodon projectBinding in projectBindings) {
+/*			foreach (ProjectBindingCodon projectBinding in projectBindings) {
 				if (projectBinding.ProjectBinding.CanCreateSingleFileProject (file)) {
 					return projectBinding.ProjectBinding.CreateSingleFileProject (file);
 				}
-			}
+			}*/
 			return null;
 		}
 		
-		public Project CreateProject (string type, ProjectCreateInformation info, XmlElement projectOptions)
+		public Project CreateProject (string type, MonoDevelop.Ide.Projects.NewSolutionData info, XmlElement projectOptions)
 		{
-			foreach (ProjectBindingCodon projectBinding in projectBindings) {
+/*			foreach (ProjectBindingCodon projectBinding in projectBindings) {
 				if (projectBinding.ProjectBinding.Name == type) {
 					Project project = projectBinding.ProjectBinding.CreateProject (info, projectOptions);
 					return project;
 				}
-			}
+			}*/
 			return null;
 		}
 		

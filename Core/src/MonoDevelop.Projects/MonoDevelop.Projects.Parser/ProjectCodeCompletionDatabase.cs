@@ -31,7 +31,8 @@ using System.Collections;
 using System.IO;
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Projects.Parser;
 using System.Reflection;
 
@@ -39,42 +40,44 @@ namespace MonoDevelop.Projects.Parser
 {
 	internal class ProjectCodeCompletionDatabase: CodeCompletionDatabase
 	{
-		Project project;
+		IProject project;
 		bool initialFileCheck;
 		ClrVersion lastVersion = ClrVersion.Default;
 		
-		public ProjectCodeCompletionDatabase (Project project, ParserDatabase parserDatabase)
+		public ProjectCodeCompletionDatabase (IProject project, ParserDatabase parserDatabase)
 		: base (parserDatabase)
 		{
-			SetLocation (project.BaseDirectory, project.Name);
+			SetLocation (project.BasePath, project.Name);
 			
 			this.project = project;
 			
 			Read ();
 			
 			UpdateFromProject ();
-			
-			project.FileChangedInProject += new ProjectFileEventHandler (OnFileChanged);
-			project.FileAddedToProject += new ProjectFileEventHandler (OnFileAdded);
+/* TODO: Project Conversion		
+			project.FileChangedInProject   += new ProjectFileEventHandler (OnFileChanged);
+			project.FileAddedToProject     += new ProjectFileEventHandler (OnFileAdded);
 			project.FileRemovedFromProject += new ProjectFileEventHandler (OnFileRemoved);
-			project.FileRenamedInProject += new ProjectFileRenamedEventHandler (OnFileRenamed);
-			project.Modified += new CombineEntryEventHandler (OnProjectModified);
-
+			project.FileRenamedInProject   += new ProjectFileRenamedEventHandler (OnFileRenamed);
+			project.Modified               += new CombineEntryEventHandler (OnProjectModified);
+*/
 			initialFileCheck = true;
 		}
 		
-		public Project Project {
+		public IProject Project {
 			get { return project; }
 		}
 		
 		public override void Dispose ()
 		{
 			base.Dispose ();
+/* TODO: Project conversion
 			project.FileChangedInProject -= new ProjectFileEventHandler (OnFileChanged);
 			project.FileAddedToProject -= new ProjectFileEventHandler (OnFileAdded);
 			project.FileRemovedFromProject -= new ProjectFileEventHandler (OnFileRemoved);
 			project.FileRenamedInProject -= new ProjectFileRenamedEventHandler (OnFileRenamed);
 			project.Modified -= new CombineEntryEventHandler (OnProjectModified);
+			*/
 		}
 		
 		public override void CheckModifiedFiles ()
@@ -129,11 +132,14 @@ namespace MonoDevelop.Projects.Parser
 		public void UpdateFromProject ()
 		{
 			Hashtable fs = new Hashtable ();
-			foreach (ProjectFile file in project.ProjectFiles)
+			foreach (ProjectItem item in project.Items)
 			{
-				if (file.BuildAction != BuildAction.Compile) continue;
-				if (GetFile (file.Name) == null) AddFile (file.Name);
-				fs [file.Name] = null;
+				MonoDevelop.Ide.Projects.Item.ProjectFile file = item as MonoDevelop.Ide.Projects.Item.ProjectFile;
+				if (file == null || file.FileType != FileType.Compile) 
+					continue;
+				if (GetFile (file.FullPath) == null) 
+					AddFile (file.FullPath);
+				fs [file.FullPath] = null;
 			}
 			
 			ArrayList keys = new ArrayList ();
@@ -145,9 +151,12 @@ namespace MonoDevelop.Projects.Parser
 			}
 			
 			fs.Clear ();
-			foreach (ProjectReference pr in project.ProjectReferences)
+			foreach (ProjectItem item in project.Items)
 			{
-				string[] refIds = GetReferenceKeys (pr);
+				ReferenceProjectItem reference = item as ReferenceProjectItem;
+				if (reference == null) 
+					continue;
+				string[] refIds = GetReferenceKeys (reference);
 				foreach (string refId in refIds) {
 					fs[refId] = null;
 					if (!HasReference (refId))
@@ -168,7 +177,8 @@ namespace MonoDevelop.Projects.Parser
 		
 		bool UpdateCorlibReference ()
 		{
-			// Creates a reference to the correct version of mscorlib, depending
+		/* TODO: Prj. conversion
+		// Creates a reference to the correct version of mscorlib, depending
 			// on the target runtime version. Returns true if the references
 			// have changed.
 			
@@ -201,7 +211,7 @@ namespace MonoDevelop.Projects.Parser
 			} else {
 				AddReference (requiredRefUri);
 				return true;
-			}
+			}*/
 			return false;
 		}
 		
@@ -210,24 +220,16 @@ namespace MonoDevelop.Projects.Parser
 			return re.Uri.StartsWith ("Assembly:mscorlib");
 		}
 		
-		string[] GetReferenceKeys (ProjectReference pr)
+		string[] GetReferenceKeys (ReferenceProjectItem item)
 		{
-			switch (pr.ReferenceType) {
-				case ReferenceType.Project:
-					return new string[] { "Project:" + pr.Reference };
-				case ReferenceType.Gac:
-					string refId = pr.Reference;
-					string ext = Path.GetExtension (refId).ToLower ();
-					if (ext == ".dll" || ext == ".exe")
-						refId = refId.Substring (0, refId.Length - 4);
-					return new string[] { "Assembly:" + refId };
-				default:
-					ArrayList list = new ArrayList ();
-					foreach (string s in pr.GetReferencedFileNames ())
-						list.Add ("Assembly:" + s);
-					return (string[]) list.ToArray (typeof(string));
+			if (item is ProjectReferenceProjectItem) {
+				return new string[] { "Project:" + ((ProjectReferenceProjectItem)item).ProjectName };
 			}
-		}
+			if (!String.IsNullOrEmpty (item.HintPath)) {
+				return new string[] { "Assembly:" + Path.GetFullPath (Path.Combine (item.Project.BasePath, item.HintPath)) };
+			}
+			return new string[] { "Assembly:" + item.Include };
+  		}
 		
 		protected override void ParseFile (string fileName, IProgressMonitor monitor)
 		{

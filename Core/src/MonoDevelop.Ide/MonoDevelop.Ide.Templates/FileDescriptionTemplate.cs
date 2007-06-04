@@ -11,7 +11,7 @@ using System.CodeDom.Compiler;
 using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Ide.Codons;
 
@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.Templates
 		public abstract string Name { get; }
 		
 		public abstract void Load (XmlElement filenode);
-		public abstract void AddToProject (Project project, string language, string directory, string name);
+		public abstract void AddToProject (IProject project, string language, string directory, string name);
 		
 		/// <returns>Returns a list of all files created.</returns>
 		public abstract string[] Create (string language, string directory, string name);

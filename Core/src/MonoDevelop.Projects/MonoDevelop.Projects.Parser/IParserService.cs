@@ -11,6 +11,7 @@ using System.Collections.Specialized;
 
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.Projects.Parser
@@ -45,18 +46,18 @@ namespace MonoDevelop.Projects.Parser
 	{
 		void Load (CombineEntry entry);
 		void Unload (CombineEntry entry);
-		bool IsLoaded (Project entry);
+		bool IsLoaded (IProject entry);
 		
 		// Returns the normalized assembly name to use to later reference this assembly
 		string LoadAssembly (string assemblyName);
 		void UnloadAssembly (string assemblyName);
 		
-		IProjectParserContext GetProjectParserContext (Project project);
+		IProjectParserContext GetProjectParserContext (IProject project);
 		IFileParserContext GetFileParserContext (string file);
 		IAssemblyParserContext GetAssemblyParserContext (string assemblyFile);
 
 		IParseInformation UpdateFile (string fileName, string fileContent);
-		IParseInformation UpdateFile (Project project, string fileName, string fileContent);
+		IParseInformation UpdateFile (IProject project, string fileName, string fileContent);
 		
 		bool TrackFileChanges { get; set; }
 		bool IsParsing { get; }

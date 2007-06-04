@@ -68,18 +68,19 @@ namespace MonoDevelop.Projects
 		
 		public void WriteFile (string file, object node, IProgressMonitor monitor)
 		{
-			if (node is Combine)
+/*			if (node is Combine)
 				CmbxFileFormat.WriteFile (file, node, monitor);
 			else
-				PrjxFileFormat.WriteFile (file, node, monitor);
+				PrjxFileFormat.WriteFile (file, node, monitor);*/
 		}
 		
 		public object ReadFile (string file, IProgressMonitor monitor)
 		{
-			if (string.Compare (Path.GetExtension (file), ".cmbx", true) == 0)
+/*			if (string.Compare (Path.GetExtension (file), ".cmbx", true) == 0)
 				return CmbxFileFormat.ReadFile (file, monitor);
 			else
-				return PrjxFileFormat.ReadFile (file, monitor);
+				return PrjxFileFormat.ReadFile (file, monitor);*/
+			return null;
 		}
 	}
 }

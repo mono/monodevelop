@@ -37,6 +37,7 @@ using MonoDevelop.Core.Properties;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.Ide.Tasks
 {
@@ -356,8 +357,8 @@ namespace MonoDevelop.Ide.Tasks
 			Task task = SelectedTask;
 			if (task != null && ! String.IsNullOrEmpty (task.FileName)) {
 				Document doc = IdeApp.Workbench.OpenDocument (task.FileName, Math.Max (1, task.Line), Math.Max (1, task.Column), true);
-				if (doc != null && doc.HasProject && doc.Project is DotNetProject) {
-					IDotNetLanguageBinding binding = ((DotNetProject)doc.Project).LanguageBinding;
+				if (doc != null && doc.HasProject) {
+					IBackendBinding binding = BackendBindingService.GetBackendBinding (doc.Project);
 					if (! String.IsNullOrEmpty (binding.CommentTag)) {
 						string line = doc.TextEditor.GetLineText (task.Line);
 						int index = line.IndexOf (binding.CommentTag);

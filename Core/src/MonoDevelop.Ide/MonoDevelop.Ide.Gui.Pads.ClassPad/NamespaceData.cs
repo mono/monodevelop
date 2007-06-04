@@ -30,7 +30,7 @@ using System;
 using System.IO;
 using System.Collections;
 
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Parser;
 
@@ -39,9 +39,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 	public class NamespaceData
 	{
 		string namesp;
-		Project project;
+		IProject project;
 		
-		public NamespaceData (Project p, string fullNamespace)
+		public NamespaceData (IProject p, string fullNamespace)
 		{
 			project = p;
 			namesp = fullNamespace;
@@ -59,7 +59,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			get { return namesp; }
 		}
 		
-		public Project Project {
+		public IProject Project {
 			get { return project; }
 		}
 		

@@ -50,8 +50,10 @@ namespace MonoDevelop.Projects.Gui.ProjectOptions {
             this.HeightRequest = 560;
             this.Name = "MonoDevelop.Projects.Gui.ProjectOptions.ProjectOptionsDialog";
             this.Title = MonoDevelop.Core.GettextCatalog.GetString("Project Options");
+            this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.DefaultWidth = 740;
             this.DefaultHeight = 560;
+            this.HasSeparator = false;
             // Internal child MonoDevelop.Projects.Gui.ProjectOptions.ProjectOptionsDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";

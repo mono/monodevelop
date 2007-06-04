@@ -8,7 +8,7 @@
 using System;
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -16,7 +16,7 @@ namespace MonoDevelop.Ide.Gui
 	{
 		string untitledName = "";
 		string contentName  = null;
-		Project project = null;
+		IProject project = null;
 		
 		bool   isDirty  = false;
 		bool   isViewOnly = false;
@@ -100,14 +100,11 @@ namespace MonoDevelop.Ide.Gui
 		
 		public abstract void Load(string fileName);
 		
-		public virtual Project Project
-		{
-			get
-			{
+		public virtual IProject Project {
+			get {
 				return project;
 			}
-			set
-			{
+			set {
 				project = value;
 			}
 		}
@@ -122,7 +119,7 @@ namespace MonoDevelop.Ide.Gui
 			get
 			{
 				if (project != null) {
-					return Runtime.FileService.AbsoluteToRelativePath (project.BaseDirectory, ContentName).Substring (2);
+					return Runtime.FileService.AbsoluteToRelativePath (project.BasePath, ContentName).Substring (2);
 				}
 				return null;
 			}

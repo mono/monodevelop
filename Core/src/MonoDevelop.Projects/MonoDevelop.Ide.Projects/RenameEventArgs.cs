@@ -1,8 +1,8 @@
 //
-// MakefileProjectBinding.cs
+// RenameEventArgs.cs
 //
 // Author:
-//   Lluis Sanchez Gual
+//   Mike Krüger <mkrueger@novell.com>
 //
 // Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
@@ -25,36 +25,40 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-/*
-using System;
-using System.IO;
-using System.Xml;
-using MonoDevelop.Projects.Serialization;
-using MonoDevelop.Core;
-using MonoDevelop.Projects;
 
-namespace MonoDevelop.Projects
+using System;
+
+namespace MonoDevelop.Ide.Projects
 {
-	public class GenericProjectBinding : IProjectBinding
+	public class RenameEventArgs : EventArgs
 	{
-		public virtual string Name {
-			get { return "GenericProject"; }
+		string newName;
+		string oldName;
+		IProject project;
+		
+		public string NewName {
+			get {
+				return newName;
+			}
 		}
 		
-		public Project CreateProject (ProjectCreateInformation info, XmlElement projectOptions)
-		{
-			return new GenericProject (info, projectOptions);
+		public string OldName {
+			get {
+				return oldName;
+			}
 		}
 		
-		public Project CreateSingleFileProject (string file)
-		{
-			return null;
+		public IProject Project {
+			get {
+				return project;
+			}
 		}
 		
-		public bool CanCreateSingleFileProject (string file)
+		public RenameEventArgs (IProject project, string newName, string oldName)
 		{
-			return false;
+			this.project = project;
+			this.newName = newName;
+			this.oldName = oldName;
 		}
 	}
 }
-*/

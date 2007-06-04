@@ -39,7 +39,7 @@ using System.IO;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Templates;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects.CodeGeneration;
 
 namespace MonoDevelop.Ide.Templates
@@ -61,9 +61,9 @@ namespace MonoDevelop.Ide.Templates
 				sourceLang = "C#";
 			
 			CodeDomProvider provider = null;
-			IDotNetLanguageBinding sourceBinding = GetLanguageBinding (sourceLang) as IDotNetLanguageBinding;
+			IBackendBinding sourceBinding = GetLanguageBinding (sourceLang);
 			if (sourceBinding != null)
-				provider = sourceBinding.GetCodeDomProvider ();
+				provider = sourceBinding.CodeDomProvider;
 			if (provider == null)
 				throw new InvalidOperationException ("Invalid Code Translation template: the source language '" + sourceLang + "' does not have support for CodeDom.");
 			
@@ -81,9 +81,9 @@ namespace MonoDevelop.Ide.Templates
 				throw new InvalidOperationException ("Language not defined in CodeDom based template.");
 			
 			CodeDomProvider provider = null;
-			IDotNetLanguageBinding binding = GetLanguageBinding (language) as IDotNetLanguageBinding;
+			IBackendBinding binding = GetLanguageBinding (language);
 			if (binding != null)
-				provider = binding.GetCodeDomProvider ();
+				provider = binding.CodeDomProvider;
 			if (provider == null)
 				throw new InvalidOperationException ("The language '" + language + "' does not have support for CodeDom.");
 			ICodeGenerator generator = provider.CreateGenerator();
@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.Templates
 			return txt.Substring (i+1);
 		}
 		
-		public override void ModifyTags (Project project, string language, string identifier, string fileName, ref Hashtable tags)
+		public override void ModifyTags (IProject project, string language, string identifier, string fileName, ref Hashtable tags)
 		{
 			//prevent parser breakage from missing tags, which SingleFile only provides for DotNetProject
 			//if ((project as DotNetProject) == null)

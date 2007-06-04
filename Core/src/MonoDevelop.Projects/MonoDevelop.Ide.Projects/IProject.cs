@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 
+
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Projects.Item;
 
@@ -36,6 +37,11 @@ namespace MonoDevelop.Ide.Projects
 {
 	public interface IProject
 	{
+		/// <summary>This is the language identifier to 
+		/// identify the backend binding for the project.</summary>
+		string Language {
+			get;
+		}
 		string FileName {
 			get;
 			set;
@@ -53,10 +59,19 @@ namespace MonoDevelop.Ide.Projects
 			get;
 		}
 		
-		List<ProjectItem> Items {
+		System.Collections.ObjectModel.ReadOnlyCollection<ProjectItem> Items {
 			get;
 		}
 		
 		void Save ();
+		
+		bool IsFileInProject (string fileName);
+		
+		void Add (ProjectItem item);
+		void Remove (ProjectItem item);
+		
+		event EventHandler<RenameEventArgs> NameChanged;
+		event EventHandler<ProjectItemEventArgs> ItemAdded;
+		event EventHandler<ProjectItemEventArgs> ItemRemoved;
 	}
 }

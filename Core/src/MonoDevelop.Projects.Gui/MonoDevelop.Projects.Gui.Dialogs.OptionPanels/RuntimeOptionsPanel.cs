@@ -49,12 +49,12 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			//
 			[Glade.Widget] ComboBox runtimeVersionCombo;
 			
-			DotNetProject project;
+//			DotNetProject project;
 			ArrayList supportedVersions = new ArrayList (); 
 
 			public RuntimeOptionsPanelWidget (IProperties CustomizationObject) : base ("Base.glade", "RuntimeOptionsPanel")
  			{
-				project = ((IProperties)CustomizationObject).GetProperty("Project") as DotNetProject;
+	/*			project = ((IProperties)CustomizationObject).GetProperty("Project") as DotNetProject;
 				if (project != null) {
 					// Get the list of available versions, and add only those supported by the target language.
 					ClrVersion[] langSupported = project.LanguageBinding.GetSupportedClrVersions ();
@@ -71,15 +71,15 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 						Sensitive = false;
 	 			}
 	 			else
-	 				Sensitive = false;
+	 				Sensitive = false;*/
 			}
 
 			public bool Store ()
 			{	
-				if (project == null || runtimeVersionCombo.Active == -1)
+/*				if (project == null || runtimeVersionCombo.Active == -1)
 					return true;
 				
-				project.ClrVersion = (ClrVersion) supportedVersions [runtimeVersionCombo.Active];
+				project.ClrVersion = (ClrVersion) supportedVersions [runtimeVersionCombo.Active];*/
 				return true;
 			}
 		}

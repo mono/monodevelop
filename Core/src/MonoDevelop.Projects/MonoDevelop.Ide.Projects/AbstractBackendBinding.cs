@@ -28,6 +28,7 @@
 
 
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 
 using MonoDevelop.Ide.Projects;
@@ -49,6 +50,18 @@ namespace MonoDevelop.Ide.Projects
 			get {
 				return null;
 			}	
+		}
+		
+		public virtual CodeDomProvider CodeDomProvider {
+			get {
+				return null;
+			}
+		}
+		
+		public virtual ClrVersion[] SupportedClrVersions {
+			get {
+				return null;
+			}
 		}
 		
 		public abstract string CommentTag {
@@ -79,7 +92,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			return null;
 		}
-		public virtual IProject CreateProject (MonoDevelop.Projects.ProjectCreateInformation info)
+		public virtual IProject CreateProject (NewSolutionData info)
 		{
 			return null;
 		}

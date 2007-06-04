@@ -32,7 +32,8 @@ using System.Xml;
 using System.Collections;
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.StandardHeaders;
 
@@ -56,13 +57,14 @@ namespace MonoDevelop.Ide.Templates
 			get { return name; } 
 		}
 		
-		public sealed override void AddToProject (Project project, string language, string directory, string name)
+		public sealed override void AddToProject (IProject project, string language, string directory, string name)
 		{
 			AddFileToProject (project, language, directory, name);
 		}
 		
-		public ProjectFile AddFileToProject (Project project, string language, string directory, string name)
+		public ProjectItem AddFileToProject (IProject project, string language, string directory, string name)
 		{
+		/* TODO: Project Conversion
 			generatedFile = GetFileName (project, language, directory, name);
 			if (project != null && project.IsFileInProject (generatedFile))
 				throw new UserException (GettextCatalog.GetString ("The file '{0}' already exists in the project.", Path.GetFileName (generatedFile)));
@@ -71,7 +73,7 @@ namespace MonoDevelop.Ide.Templates
 			if (generatedFile != null) {
 				project.AddFile (generatedFile, BuildAction.Compile);
 				return project.GetProjectFile (generatedFile);
-			} else
+			} else */
 				return null;
 		}
 		
@@ -87,7 +89,7 @@ namespace MonoDevelop.Ide.Templates
 		
 		// Creates a file and saves it to disk. Returns the path to the new file
 		// All parameters are optional (can be null)
-		public string SaveFile (Project project, string language, string baseDirectory, string entryName)
+		public string SaveFile (IProject project, string language, string baseDirectory, string entryName)
 		{
 			string file = GetFileName (project, language, baseDirectory, entryName);
 			
@@ -121,7 +123,7 @@ namespace MonoDevelop.Ide.Templates
 		
 		// Returns the name of the file that this template generates.
 		// All parameters are optional (can be null)
-		public virtual string GetFileName (Project project, string language, string baseDirectory, string entryName)
+		public virtual string GetFileName (IProject project, string language, string baseDirectory, string entryName)
 		{
 			if (string.IsNullOrEmpty (entryName) && !string.IsNullOrEmpty (defaultName))
 				entryName = defaultName;
@@ -145,8 +147,9 @@ namespace MonoDevelop.Ide.Templates
 					fileName = fileName + defaultExtension;
 				}
 				else if (!string.IsNullOrEmpty  (language)) {
-					ILanguageBinding languageBinding = GetLanguageBinding (language);
-					fileName = languageBinding.GetFileName (fileName);
+					BackendBindingCodon languageBinding = GetLanguageBindingCodon (language);
+					if (languageBinding != null && languageBinding.FileExtensions != null && languageBinding.FileExtensions.Length > 0)
+						fileName = fileName + languageBinding.FileExtensions[0];
 				} 
 			}
 			
@@ -158,7 +161,7 @@ namespace MonoDevelop.Ide.Templates
 		
 		// Returns a stream with the content of the file.
 		// project and language parameters are optional
-		public virtual Stream CreateFile (Project project, string language, string fileName)
+		public virtual Stream CreateFile (IProject project, string language, string fileName)
 		{
 			StringParserService sps = (StringParserService) ServiceManager.GetService (typeof (StringParserService));
 			
@@ -197,18 +200,18 @@ namespace MonoDevelop.Ide.Templates
 		// We supply defaults whenever it is possible, to avoid having unsubstituted tags. However,
 		// do not substitute blanks when a sensible default cannot be guessed, because they result
 		//in less obvious errors.
-		public virtual void ModifyTags (Project project, string language, string identifier, string fileName, ref Hashtable tags)
+		public virtual void ModifyTags (IProject project, string language, string identifier, string fileName, ref Hashtable tags)
 		{
-			DotNetProject netProject = project as DotNetProject;
+			MSBuildProject netProject = project as MSBuildProject;
 			string languageExtension = "";
 			if (!string.IsNullOrEmpty (language)) {
-				ILanguageBinding binding = GetLanguageBinding (language);
-				if (binding != null)
-					languageExtension = Path.GetExtension (binding.GetFileName ("Default")).Remove (0, 1);
+				BackendBindingCodon languageBinding = GetLanguageBindingCodon (language);
+				if (languageBinding != null && languageBinding.FileExtensions != null && languageBinding.FileExtensions.Length > 0)
+					languageExtension =  languageBinding.FileExtensions[0];
 			}
 			
 			//need a default namespace or if there is no project, substitutions can get very messed up
-			string ns = netProject != null ? netProject.GetDefaultNamespace (fileName) : "Application";
+			string ns = netProject != null ? netProject.RootNamespace : "Application";
 			
 			//need an 'identifier' for tag substitution, e.g. class name or page name
 			//if not given an identifier, use fileName
@@ -235,9 +238,17 @@ namespace MonoDevelop.Ide.Templates
 			tags ["FileName"] = fileName;
 		}
 		
-		protected ILanguageBinding GetLanguageBinding (string language)
+		protected IBackendBinding GetLanguageBinding (string language)
 		{
-			ILanguageBinding binding = MonoDevelop.Projects.Services.Languages.GetBindingPerLanguageName (language);
+			BackendBindingCodon codon = GetLanguageBindingCodon (language);
+			if (codon == null)
+				return null;
+			return codon.BackendBinding;
+		}
+		
+		protected BackendBindingCodon GetLanguageBindingCodon (string language)
+		{
+			BackendBindingCodon binding = BackendBindingService.GetBackendBindingCodonByLanguage (language);
 			if (binding == null)
 				throw new InvalidOperationException ("Language '" + language + "' not found");
 			return binding;
@@ -260,9 +271,9 @@ namespace MonoDevelop.Ide.Templates
 		{
 			if (name.Length > 0) {
 				if (language != null && language.Length > 0) {
-					IDotNetLanguageBinding binding = GetLanguageBinding (language) as IDotNetLanguageBinding;
+					IBackendBinding binding = GetLanguageBinding (language);
 					if (binding != null) {
-						System.CodeDom.Compiler.CodeDomProvider provider = binding.GetCodeDomProvider ();
+						System.CodeDom.Compiler.CodeDomProvider provider = binding.CodeDomProvider;
 						if (provider != null)
 							return provider.IsValidIdentifier (name);
 					}

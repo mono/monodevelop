@@ -1,4 +1,4 @@
-
+/*
 using System;
 using System.Xml;
 
@@ -31,3 +31,4 @@ namespace MonoDevelop.Projects
 	{
 	}
 }
+*/

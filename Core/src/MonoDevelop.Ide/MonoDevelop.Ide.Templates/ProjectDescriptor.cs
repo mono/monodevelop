@@ -67,7 +67,7 @@ namespace MonoDevelop.Ide.Templates
 			this.name = name;
 		}
 		
-		public string CreateEntry (MonoDevelop.Projects.ProjectCreateInformation projectCreateInformation, string defaultLanguage, ref string guid)
+		public string CreateEntry (NewSolutionData projectCreateInformation, string defaultLanguage, ref string guid)
 		{
 			StringParserService stringParserService = Runtime.StringParserService;
 			
@@ -78,26 +78,26 @@ namespace MonoDevelop.Ide.Templates
 			}
 			
 			//Project_ project = Services.ProjectService.CreateProject (projectType, projectCreateInformation, projectOptions);
-			MSBuildProject project = new MSBuildProject ();
+			MSBuildProject project = new MSBuildProject (defaultLanguage);
 			
 			if (project == null) {
 				Services.MessageService.ShowError (GettextCatalog.GetString ("Can't create project with type : {0}", projectType));
 				return String.Empty;
 			}
 			
-			project.RootNamespace = projectCreateInformation.ProjectName;
-			project.AssemblyName  = projectCreateInformation.ProjectName;
+			project.RootNamespace = projectCreateInformation.Name;
+			project.AssemblyName  = projectCreateInformation.Name;
 			project.OutputType    = "Exe"; // TODO: put output type in the templates
 			
 			string newProjectName = stringParserService.Parse(name, new string[,] { 
-				{"ProjectName", projectCreateInformation.ProjectName}
+				{"ProjectName", projectCreateInformation.Name}
 			});
 			
-			project.FileName = Runtime.FileService.GetDirectoryNameWithSeparator(projectCreateInformation.ProjectBasePath) + newProjectName + ".csproj";
+			project.FileName = Runtime.FileService.GetDirectoryNameWithSeparator(projectCreateInformation.ProjectPath) + newProjectName + ".csproj";
 			
 			// Add References
 			foreach (string reference in references) {
-				project.Items.Add (new ReferenceProjectItem (reference));
+				project.Add (new ReferenceProjectItem (reference));
 			}
 
 			foreach (FileDescriptionTemplate file in resources) {
@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide.Templates
 				try {
 					string[] fileNames = singleFile.Create (defaultLanguage, project.BasePath, null);
 					foreach (string fileName in fileNames) 
-						project.Items.Add (new ProjectFile (fileName, FileType.EmbeddedResource));
+						project.Add (new ProjectFile (fileName, FileType.EmbeddedResource));
 				} catch (Exception ex) {
 					Services.MessageService.ShowError (ex, GettextCatalog.GetString ("File {0} could not be written.", file.Name));
 				}
@@ -119,8 +119,8 @@ namespace MonoDevelop.Ide.Templates
 				try {
 					string[] fileNames = file.Create (defaultLanguage, project.BasePath, null);
 					foreach (string fileName in fileNames) {
-						string deNormalizedFileName = SolutionProject.DeNormalizePath (fileName.Substring (Runtime.FileService.GetDirectoryNameWithSeparator(projectCreateInformation.ProjectBasePath).Length));  
-						project.Items.Add (new ProjectFile (deNormalizedFileName, FileType.Compile));
+						string deNormalizedFileName = SolutionProject.DeNormalizePath (fileName.Substring (Runtime.FileService.GetDirectoryNameWithSeparator(projectCreateInformation.ProjectPath).Length));  
+						project.Add (new ProjectFile (deNormalizedFileName, FileType.Compile));
 					}
 				} catch (Exception ex) {
 					Services.MessageService.ShowError (ex, GettextCatalog.GetString ("File {0} could not be written.", file.Name));

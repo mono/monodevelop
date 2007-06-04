@@ -184,8 +184,6 @@
     <File name="./MonoDevelop.Projects.Text/ITextFile.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Text/ITextFileProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Text/TextFile.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/ProjectCreateInformation.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/IProjectBinding.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/DefaultCompilerResult.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Extensions/FileFilterCodon.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/ICompilerResult.cs" subtype="Code" buildaction="Compile" />
@@ -259,6 +257,11 @@
     <File name="./MonoDevelop.Ide.Projects.Item/ReferenceProjectItem.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Projects.Item/UnknownProjectItem.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Projects/StartAction.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/NewSolutionData.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/IProjectBinding.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects.Item/ProjectItemEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/RenameEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects.Item/ProjectReferenceProjectItem.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />

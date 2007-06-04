@@ -22,7 +22,7 @@ using MonoDevelop.Ide.Gui;
 
 using Mono.Addins;
 using MonoDevelop.Core.Gui;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -35,9 +35,9 @@ namespace MonoDevelop.Ide.Templates
 			this.fileName = fileName;
 		}
 		
-		public void Run(ProjectCreateInformation projectCreateInformation)
+		public void Run(NewSolutionData projectCreateInformation)
 		{
-			IdeApp.Workbench.OpenDocument (projectCreateInformation.ProjectBasePath + Path.DirectorySeparatorChar + fileName);
+			IdeApp.Workbench.OpenDocument (Path.Combine (projectCreateInformation.Path, fileName));
 		}
 	}
 	
@@ -234,7 +234,8 @@ namespace MonoDevelop.Ide.Templates
 		void ExpandLanguageWildcards (ArrayList list)
 		{
 			//Template can match all CodeDom .NET languages with a "*"
-			if (list.Contains ("*")) {
+/*	TODO: Project file conversion.		
+	if (list.Contains ("*")) {
 				ILanguageBinding [] bindings = MonoDevelop.Projects.Services.Languages.GetLanguageBindings ();
 				foreach (ILanguageBinding lb in bindings) {
 					IDotNetLanguageBinding dnlang = lb as IDotNetLanguageBinding;
@@ -242,13 +243,13 @@ namespace MonoDevelop.Ide.Templates
 						list.Add (dnlang.Language);
 				list.Remove ("*");
 				}
-			}
+			}*/
 		}
 		
 		string lastCombine    = null;
-		ProjectCreateInformation projectCreateInformation;
+		NewSolutionData projectCreateInformation;
 		
-		public string CreateCombine (ProjectCreateInformation projectCreateInformation)
+		public string CreateCombine (NewSolutionData projectCreateInformation)
 		{
 			this.projectCreateInformation = projectCreateInformation;
 			string guid = "";
@@ -256,7 +257,7 @@ namespace MonoDevelop.Ide.Templates
 			return lastCombine;
 		}
 		
-		public string CreateProject (ProjectCreateInformation projectCreateInformation)
+		public string CreateProject (NewSolutionData projectCreateInformation)
 		{
 			this.projectCreateInformation = projectCreateInformation;
 			

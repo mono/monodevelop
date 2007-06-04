@@ -29,7 +29,7 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Ide.Gui;
@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 				AddProjectContent (builder, nsData.Project, nsData, list);
 			}
 			else {
-				foreach (Project p in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects ()) {
+				foreach (IProject p in ProjectService.Solution.AllProjects) {
 					IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (p);
 					LanguageItemCollection list = ctx.GetNamespaceContents (nsData.FullName, false);
 					AddProjectContent (builder, p, nsData, list);
@@ -87,7 +87,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			
 		}
 		
-		void AddProjectContent (ITreeBuilder builder, Project project, NamespaceData nsData, LanguageItemCollection list)
+		void AddProjectContent (ITreeBuilder builder, IProject project, NamespaceData nsData, LanguageItemCollection list)
 		{
 			bool nestedNs = builder.Options ["NestedNamespaces"];
 			bool publicOnly = builder.Options ["PublicApiOnly"];
@@ -170,7 +170,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			}
 		}
 		
-		void AddClass (Project project, IClass cls)
+		void AddClass (IProject project, IClass cls)
 		{
 			ITreeBuilder builder = Context.GetTreeBuilder ();
 			if (!builder.MoveToObject (project)) {

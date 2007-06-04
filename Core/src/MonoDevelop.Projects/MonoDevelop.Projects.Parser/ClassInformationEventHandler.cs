@@ -10,7 +10,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.IO;
 
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.Projects.Parser
 {
@@ -19,7 +19,7 @@ namespace MonoDevelop.Projects.Parser
 	public class ClassInformationEventArgs : EventArgs
 	{
 		string fileName;
-		Project project;
+		IProject project;
 		ClassUpdateInformation classInformation;
 				
 		public string FileName {
@@ -34,11 +34,11 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
-		public Project Project {
+		public IProject Project {
 			get { return project; }
 		}
 		
-		public ClassInformationEventArgs(string fileName, ClassUpdateInformation classInformation, Project project)
+		public ClassInformationEventArgs(string fileName, ClassUpdateInformation classInformation, IProject project)
 		{
 			this.project = project;
 			this.fileName = fileName;

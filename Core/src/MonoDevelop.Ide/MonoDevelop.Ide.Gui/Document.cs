@@ -35,7 +35,7 @@ using Gtk;
 
 using MonoDevelop.Core;
 using MonoDevelop.Components;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Content;
@@ -70,7 +70,8 @@ namespace MonoDevelop.Ide.Gui
 			this.window = window;
 			window.Closed += OnClosed;
 			window.ActiveViewContentChanged += OnActiveViewContentChanged;
-			IdeApp.ProjectOperations.EntryRemovedFromCombine += OnEntryRemoved;
+// TODO:Project Conversion
+//			IdeApp.ProjectOperations.EntryRemovedFromCombine += OnEntryRemoved;
 		}
 		
 		public string FileName {
@@ -87,7 +88,7 @@ namespace MonoDevelop.Ide.Gui
 			get { return Window.ViewContent.Project != null; }
 		}
 		
-		public Project Project {
+		public IProject Project {
 			get { return Window.ViewContent.Project; }
 		}
 		
@@ -288,7 +289,8 @@ namespace MonoDevelop.Ide.Gui
 		{
 			window.Closed -= OnClosed;
 			window.ActiveViewContentChanged -= OnActiveViewContentChanged;
-			IdeApp.ProjectOperations.EntryRemovedFromCombine -= OnEntryRemoved;
+// TODO: Project Conversion
+//			IdeApp.ProjectOperations.EntryRemovedFromCombine -= OnEntryRemoved;
 			OnClosed (a);
 			
 			while (editorExtension != null) {
@@ -340,12 +342,12 @@ namespace MonoDevelop.Ide.Gui
 			if (editorExtension != null)
 				last.Next = editor.AttachExtension (editorExtension);
 		}
-		
+/* TODO: Project Conversion
 		void OnEntryRemoved (object sender, CombineEntryEventArgs args)
 		{
 			if (args.CombineEntry == window.ViewContent.Project)
 				window.ViewContent.Project = null;
-		}
+		}*/
 		
 		public event EventHandler Closed;
 		public event EventHandler Saved;

@@ -71,6 +71,15 @@ namespace MonoDevelop.Ide.Projects
 			return null;
 		}
 		
+		public static BackendBindingCodon GetBackendBindingCodonByLanguage (string language)
+		{
+			foreach (BackendBindingCodon codon in backendBindingCodons) { 
+				if (codon.Id == language) 
+					return codon;
+			}
+			return null;
+		}
+		
 		public static BackendBindingCodon GetBackendBindingCodon (SolutionProject project)
 		{
 			return project != null ? GetBackendBindingCodonByGuid (project.TypeGuid) : null;
@@ -82,9 +91,20 @@ namespace MonoDevelop.Ide.Projects
 			return codon != null ? codon.BackendBinding : null;
 		}
 		
+		public static IBackendBinding GetBackendBindingByLanguage (string language)
+		{
+			BackendBindingCodon codon = GetBackendBindingCodonByLanguage (language);
+			return codon != null ? codon.BackendBinding : null;
+		}
+		
 		public static IBackendBinding GetBackendBinding (SolutionProject project)
 		{
 			return project != null ? GetBackendBindingByGuid (project.TypeGuid) : null;
+		}
+		
+		public static IBackendBinding GetBackendBinding (IProject project)
+		{
+			return GetBackendBindingByLanguage (project.Language);
 		}
 		
 	}

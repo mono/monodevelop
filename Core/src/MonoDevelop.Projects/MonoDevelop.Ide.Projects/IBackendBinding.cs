@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 
 using MonoDevelop.Core;
@@ -55,12 +56,23 @@ namespace MonoDevelop.Ide.Projects
 		}
 		
 		IProject LoadProject (string fileName);
-		IProject CreateProject (MonoDevelop.Projects.ProjectCreateInformation info);
+		IProject CreateProject (NewSolutionData info);
 		
 		void StartProject (IProject project, IProgressMonitor monitor, ExecutionContext context);
 		void CleanProject (IProject project, IProgressMonitor monitor);
 		
 		CompilerResult Compile (IProject project, IProgressMonitor monitor);
 #endregion
+
+		/// <returns> null, if not supported. </returns>
+		CodeDomProvider CodeDomProvider {
+			get;
+		}
+		
+		/// <returns> null, if not supported. </returns>
+		ClrVersion[] SupportedClrVersions {
+			get;
+		}
+
 	}
 }

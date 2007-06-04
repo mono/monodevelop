@@ -77,8 +77,22 @@
   </object>
   <object type="MonoDevelop.Projects.Gui.ProjectOptions.CommonAssemblySigningPreferences" palette-category="widget" allow-children="false" base-type="Gtk.Widget">
     <itemgroups>
+      <itemgroup label="AbstractDialogPanel Properties">
+        <property name="EnableFinish" />
+        <property name="BorderWidth" />
+        <property name="FocusHadjustment" />
+        <property name="FocusVadjustment" />
+      </itemgroup>
     </itemgroups>
     <signals>
+      <itemgroup label="AbstractDialogPanel Signals">
+        <signal name="EnableFinishChanged" />
+        <signal name="CustomizationObjectChanged" />
+        <signal name="ResizeChecked" />
+        <signal name="Removed" />
+        <signal name="FocusChildSet" />
+        <signal name="Added" />
+      </itemgroup>
     </signals>
   </object>
   <object type="MonoDevelop.Projects.Gui.ProjectOptions.CommonApplicationPreferences" palette-category="widget" allow-children="false" base-type="Gtk.Widget">

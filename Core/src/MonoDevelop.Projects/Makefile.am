@@ -17,7 +17,9 @@ FILES =  \
 	MonoDevelop.Ide.Projects.Item/ItemType.cs \
 	MonoDevelop.Ide.Projects.Item/ProjectFile.cs \
 	MonoDevelop.Ide.Projects.Item/ProjectItem.cs \
+	MonoDevelop.Ide.Projects.Item/ProjectItemEventArgs.cs \
 	MonoDevelop.Ide.Projects.Item/ProjectItemFactory.cs \
+	MonoDevelop.Ide.Projects.Item/ProjectReferenceProjectItem.cs \
 	MonoDevelop.Ide.Projects.Item/ReferenceProjectItem.cs \
 	MonoDevelop.Ide.Projects.Item/UnknownProjectItem.cs \
 	MonoDevelop.Ide.Projects/AbstractBackendBinding.cs \
@@ -28,9 +30,12 @@ FILES =  \
 	MonoDevelop.Ide.Projects/ExecutionContext.cs \
 	MonoDevelop.Ide.Projects/IBackendBinding.cs \
 	MonoDevelop.Ide.Projects/IProject.cs \
+	MonoDevelop.Ide.Projects/IProjectBinding.cs \
 	MonoDevelop.Ide.Projects/MSBuildProject.cs \
+	MonoDevelop.Ide.Projects/NewSolutionData.cs \
 	MonoDevelop.Ide.Projects/ProjectEventArgs.cs \
 	MonoDevelop.Ide.Projects/ProjectReadHelper.cs \
+	MonoDevelop.Ide.Projects/RenameEventArgs.cs \
 	MonoDevelop.Ide.Projects/Solution.cs \
 	MonoDevelop.Ide.Projects/SolutionEventArgs.cs \
 	MonoDevelop.Ide.Projects/SolutionFolder.cs \
@@ -227,7 +232,6 @@ FILES =  \
 	MonoDevelop.Projects/IDotNetLanguageBinding.cs \
 	MonoDevelop.Projects/IFileFormat.cs \
 	MonoDevelop.Projects/ILanguageBinding.cs \
-	MonoDevelop.Projects/IProjectBinding.cs \
 	MonoDevelop.Projects/IProjectService.cs \
 	MonoDevelop.Projects/Language.cs \
 	MonoDevelop.Projects/LanguageBindingService.cs \
@@ -237,7 +241,6 @@ FILES =  \
 	MonoDevelop.Projects/PrjxFileFormat.cs \
 	MonoDevelop.Projects/Project.cs \
 	MonoDevelop.Projects/ProjectConvertTool.cs \
-	MonoDevelop.Projects/ProjectCreateInformation.cs \
 	MonoDevelop.Projects/ProjectEventArgs.cs \
 	MonoDevelop.Projects/ProjectFile.cs \
 	MonoDevelop.Projects/ProjectFileCollection.cs \

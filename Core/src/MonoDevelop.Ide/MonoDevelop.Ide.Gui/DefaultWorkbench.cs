@@ -16,6 +16,7 @@ using System.ComponentModel;
 using System.Xml;
 
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using Mono.Addins;
 using MonoDevelop.Core.Properties;
 
@@ -178,7 +179,7 @@ namespace MonoDevelop.Ide.Gui
 		public void InitializeWorkspace()
 		{
 			// FIXME: GTKize
-			IdeApp.ProjectOperations.CurrentProjectChanged += (ProjectEventHandler) Services.DispatchService.GuiDispatch (new ProjectEventHandler(SetProjectTitle));
+			MonoDevelop.Ide.Projects.ProjectService.ActiveProjectChanged  += (EventHandler<MonoDevelop.Ide.Projects.ProjectEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<MonoDevelop.Ide.Projects.ProjectEventArgs> (SetProjectTitle));
 
 			Runtime.FileService.FileRemoved += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler(CheckRemovedFile));
 			Runtime.FileService.FileRenamed += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler(CheckRenamedFile));
@@ -491,7 +492,7 @@ namespace MonoDevelop.Ide.Gui
 			return true;
 		}
 		
-		void SetProjectTitle(object sender, ProjectEventArgs e)
+		void SetProjectTitle(object sender, MonoDevelop.Ide.Projects.ProjectEventArgs e)
 		{
 			if (e.Project != null) {
 				Title = String.Concat(e.Project.Name, " - ", "MonoDevelop");
@@ -557,7 +558,7 @@ namespace MonoDevelop.Ide.Gui
 		void AsyncParseCurrentFile (object ob)
 		{
 			object[] data = (object[]) ob;
-			IdeApp.ProjectOperations.ParserDatabase.UpdateFile ((Project) data[0], (string) data[1], (string) data[2]);
+			IdeApp.ProjectOperations.ParserDatabase.UpdateFile ((IProject) data[0], (string) data[1], (string) data[2]);
 		}
 
 		public Gtk.Toolbar[] ToolBars {

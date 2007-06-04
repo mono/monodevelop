@@ -62,6 +62,16 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 		
+		public IEnumerable<IProject> AllProjects {
+			get {
+				foreach (SolutionItem item in this.Items) {
+					SolutionProject project = item as SolutionProject;
+					if (project != null)
+						yield return project.Project;
+				}
+			}
+		}
+		
 		public Solution ()
 		{
 			sections.Add (new SolutionSection ("SolutionConfigurationPlatforms", "preSolution"));

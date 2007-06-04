@@ -7,7 +7,7 @@
 
 using System;
 
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -92,7 +92,7 @@ namespace MonoDevelop.Ide.Gui
 		/// <summary>
 		/// The name of the project the content is attached to
 		/// </summary>
-		Project Project {
+		IProject Project {
 			get;
 			set;
 		}

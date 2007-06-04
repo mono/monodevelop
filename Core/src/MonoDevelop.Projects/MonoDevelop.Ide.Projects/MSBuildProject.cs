@@ -29,6 +29,7 @@
 using System;
 using System.ComponentModel;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Xml;
@@ -42,6 +43,7 @@ namespace MonoDevelop.Ide.Projects
 	public class MSBuildProject : IProject
 	{
 		string            fileName;
+		string            language;
 		List<string>      imports = new List<string> ();
 		List<ProjectItem> items   = new List<ProjectItem> ();
 		List<PropertyGroup> propertyGroups = new List<PropertyGroup> ();
@@ -52,6 +54,12 @@ namespace MonoDevelop.Ide.Projects
 			}
 			set {
 				fileName = value;
+			}
+		}
+		
+		public string Language {
+			get {
+				return language;
 			}
 		}
 		
@@ -74,9 +82,9 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 		
-		public List<ProjectItem> Items {
+		public ReadOnlyCollection<ProjectItem> Items {
 			get {
-				return items;
+				return items.AsReadOnly ();
 			}
 		}
 		
@@ -86,8 +94,9 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 		
-		public MSBuildProject ()
+		public MSBuildProject (string language)
 		{
+			this.language = language;
 			propertyGroups.Add(new PropertyGroup (null));
 			propertyGroups.Add(new PropertyGroup (" '$(Configuration)' == 'Debug' "));
 			propertyGroups.Add(new PropertyGroup (" '$(Configuration)' == 'Release' "));
@@ -108,8 +117,9 @@ namespace MonoDevelop.Ide.Projects
 			SetProperty ("DefineConstants", @"TRACE", "Release", null);
 		}
 		
-		public MSBuildProject (string fileName)
+		public MSBuildProject (string language, string fileName)
 		{
+			this.language = language;
 			this.fileName = fileName;
 		}
 		
@@ -503,9 +513,9 @@ namespace MonoDevelop.Ide.Projects
 			});
 		}
 		
-		public static IProject Load (string fileName)
+		public static IProject Load (string language, string fileName)
 		{
-			MSBuildProject result = new MSBuildProject (fileName);
+			MSBuildProject result = new MSBuildProject (language, fileName);
 			using (XmlReader reader = XmlTextReader.Create (fileName)) {
 				ProjectReadHelper.ReadList (reader, "Project", delegate() {
 					switch (reader.LocalName) {
@@ -567,5 +577,54 @@ namespace MonoDevelop.Ide.Projects
 			
 		}
 #endregion
+		public bool IsFileInProject (string fileName)
+		{
+			string exactFileName = Path.GetFullPath (fileName);
+			foreach (ProjectItem item in this.Items) {
+				if (item is ProjectFile)
+					if (Path.GetFullPath (Path.Combine (this.BasePath, item.Include)) == exactFileName)
+						return true;
+			}
+			return false;
+		}
+		
+		public void Add (ProjectItem item)
+		{
+			if (item.Project == this) 
+				return;
+			item.Project = this;
+			this.items.Add (item);
+			OnItemAdded (new ProjectItemEventArgs (item));
+		}
+		
+		public void Remove (ProjectItem item)
+		{
+			if (item.Project != this) 
+				return;
+			item.Project = null;
+			this.items.Remove (item);
+			OnItemRemoved (new ProjectItemEventArgs (item));
+		}
+		
+		public event EventHandler<RenameEventArgs> NameChanged;
+		protected virtual void OnNameChanged(RenameEventArgs e)
+		{
+			if (NameChanged != null)
+				NameChanged (this, e);
+		}
+		
+		public event EventHandler<ProjectItemEventArgs> ItemAdded;
+		protected virtual void OnItemAdded(ProjectItemEventArgs e)
+		{
+			if (ItemAdded != null)
+				ItemAdded (this, e);
+		}
+		
+		public event EventHandler<ProjectItemEventArgs> ItemRemoved;
+		protected virtual void OnItemRemoved(ProjectItemEventArgs e)
+		{
+			if (ItemRemoved != null)
+				ItemRemoved (this, e);
+		}
 	}
 }

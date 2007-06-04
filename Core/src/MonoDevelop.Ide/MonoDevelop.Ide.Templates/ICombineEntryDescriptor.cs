@@ -28,12 +28,12 @@
 
 
 using System;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.Ide.Templates
 {
 	internal interface ICombineEntryDescriptor
 	{
-		string CreateEntry (ProjectCreateInformation projectCreateInformation, string defaultLanguage, ref string guid);
+		string CreateEntry (NewSolutionData projectCreateInformation, string defaultLanguage, ref string guid);
 	}
 }

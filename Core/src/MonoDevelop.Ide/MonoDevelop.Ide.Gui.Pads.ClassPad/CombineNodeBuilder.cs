@@ -29,7 +29,7 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 
@@ -37,62 +37,58 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
 	public class CombineNodeBuilder: TypeNodeBuilder
 	{
-		CombineEntryChangeEventHandler combineEntryAdded;
-		CombineEntryChangeEventHandler combineEntryRemoved;
-		CombineEntryRenamedEventHandler combineNameChanged;
 		
 		public CombineNodeBuilder ()
 		{
-			combineEntryAdded = (CombineEntryChangeEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryChangeEventHandler (OnEntryAdded));
-			combineEntryRemoved = (CombineEntryChangeEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryChangeEventHandler (OnEntryRemoved));
-			combineNameChanged = (CombineEntryRenamedEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryRenamedEventHandler (OnCombineRenamed));
 		}
 			
 		public override Type NodeDataType {
-			get { return typeof(Combine); }
+			get { return typeof(Solution); }
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return ((Combine)dataObject).Name;
+			return ((Solution)dataObject).Name;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			Combine combine = dataObject as Combine;
+			Solution combine = dataObject as Solution;
 			label = GettextCatalog.GetString ("Solution {0}", combine.Name);
 			icon = Context.GetIcon (Stock.CombineIcon);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			Combine combine = (Combine) dataObject;
+			Solution combine = (Solution) dataObject;
 			if (builder.Options ["ShowProjects"]) {
-				foreach (CombineEntry entry in combine.Entries)
+				foreach (IProject entry in combine.AllProjects)
 					builder.AddChild (entry);
 			} else {
 				AddClasses (builder, combine);
 			}
 		}
 
-		void AddClasses (ITreeBuilder builder, CombineEntry entry)
+		void AddClasses (ITreeBuilder builder, Solution entry)
 		{
-			if (entry is Combine) {
-				foreach (CombineEntry e in ((Combine)entry).Entries)
-					AddClasses (builder, e);
-			} else if (entry is Project) {
-				ProjectNodeBuilder.BuildChildNodes (builder, entry as Project);
-			}
+			foreach (IProject project in entry.AllProjects) {
+				AddClasses (builder, project);
+			} 
+		}
+		
+		void AddClasses (ITreeBuilder builder, IProject entry)
+		{
+			ProjectNodeBuilder.BuildChildNodes (builder, entry);
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			return ((Combine) dataObject).Entries.Count > 0;
+			return ((Solution) dataObject).Items.Count > 0;
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
-			if (otherNode.DataItem is Combine)
+			if (otherNode.DataItem is Solution)
 				return DefaultSort;
 			else
 				return -1;
@@ -100,20 +96,23 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 
 		public override void OnNodeAdded (object dataObject)
 		{
+/* TODO: Project Conversion
 			Combine combine = (Combine) dataObject;
 			combine.EntryAdded += combineEntryAdded;
 			combine.EntryRemoved += combineEntryRemoved;
-			combine.NameChanged += combineNameChanged;
+			combine.NameChanged += combineNameChanged;*/
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
+/* TODO: Project Conversion
 			Combine combine = (Combine) dataObject;
 			combine.EntryAdded -= combineEntryAdded;
 			combine.EntryRemoved -= combineEntryRemoved;
-			combine.NameChanged -= combineNameChanged;
+			combine.NameChanged -= combineNameChanged;*/
 		}
 		
+/* TODO: Project Conversion
 		void OnEntryAdded (object sender, CombineEntryEventArgs e)
 		{
 			IdeApp.Services.DispatchService.GuiDispatch (OnAddEntry, e.CombineEntry);
@@ -139,6 +138,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		{
 			ITreeBuilder tb = Context.GetTreeBuilder (e.CombineEntry);
 			if (tb != null) tb.Update ();
-		}
+		}*/
 	}
 }

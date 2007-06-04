@@ -137,23 +137,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/PropertyNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ProjectPad/LinkedFilesFolder.cs \
-	MonoDevelop.Ide.Gui.Pads.ProjectPad/LinkedFilesFolderNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolder.cs \
-	MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceFolderNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectSolutionPad.cs \
-	MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolder.cs \
-	MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolderNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs \
-	MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFile.cs \
-	MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.SolutionPad/AddNewFilesToProjectDialog.cs \
 	MonoDevelop.Ide.Gui.Pads.SolutionPad/FileNode.cs \
 	MonoDevelop.Ide.Gui.Pads.SolutionPad/FileNodeBuilder.cs \
@@ -279,33 +262,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/Workbench.cs \
 	MonoDevelop.Ide.Gui/WorkbenchMemento.cs \
 	MonoDevelop.Ide.Gui/WorkbenchWindowCollection.cs \
-	MonoDevelop.Ide.Projects.Item/ItemType.cs \
-	MonoDevelop.Ide.Projects.Item/ProjectFile.cs \
-	MonoDevelop.Ide.Projects.Item/ProjectItem.cs \
-	MonoDevelop.Ide.Projects.Item/ProjectItemFactory.cs \
-	MonoDevelop.Ide.Projects.Item/ReferenceProjectItem.cs \
-	MonoDevelop.Ide.Projects.Item/UnknownProjectItem.cs \
-	MonoDevelop.Ide.Projects/AbstractBackendBinding.cs \
-	MonoDevelop.Ide.Projects/BackendBindingCodon.cs \
-	MonoDevelop.Ide.Projects/BackendBindingService.cs \
-	MonoDevelop.Ide.Projects/BeforeCompileAction.cs \
-	MonoDevelop.Ide.Projects/CompilerResult.cs \
-	MonoDevelop.Ide.Projects/ExecutionContext.cs \
-	MonoDevelop.Ide.Projects/IBackendBinding.cs \
-	MonoDevelop.Ide.Projects/IProject.cs \
-	MonoDevelop.Ide.Projects/MSBuildProject.cs \
-	MonoDevelop.Ide.Projects/ProjectEventArgs.cs \
-	MonoDevelop.Ide.Projects/ProjectReadHelper.cs \
 	MonoDevelop.Ide.Projects/ProjectService.cs \
-	MonoDevelop.Ide.Projects/Solution.cs \
-	MonoDevelop.Ide.Projects/SolutionEventArgs.cs \
-	MonoDevelop.Ide.Projects/SolutionFolder.cs \
-	MonoDevelop.Ide.Projects/SolutionItem.cs \
-	MonoDevelop.Ide.Projects/SolutionItemFactory.cs \
-	MonoDevelop.Ide.Projects/SolutionProject.cs \
-	MonoDevelop.Ide.Projects/SolutionReadHelper.cs \
-	MonoDevelop.Ide.Projects/SolutionSection.cs \
-	MonoDevelop.Ide.Projects/UnknownProject.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderPanel.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs \
 	MonoDevelop.Ide.Tasks/CommentTasksView.cs \

@@ -1,8 +1,8 @@
 //
-// MakefileProjectBinding.cs
+// ProjectReferenceProjectItem.cs
 //
 // Author:
-//   Lluis Sanchez Gual
+//   Mike Krüger <mkrueger@novell.com>
 //
 // Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
@@ -25,36 +25,40 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-/*
-using System;
-using System.IO;
-using System.Xml;
-using MonoDevelop.Projects.Serialization;
-using MonoDevelop.Core;
-using MonoDevelop.Projects;
 
-namespace MonoDevelop.Projects
+using System;
+
+namespace MonoDevelop.Ide.Projects.Item
 {
-	public class GenericProjectBinding : IProjectBinding
+	public class ProjectReferenceProjectItem : ReferenceProjectItem
 	{
-		public virtual string Name {
-			get { return "GenericProject"; }
+		public string ProjectGUID {
+			get {
+				return base.GetMetadata ("Project");
+			}
+			set {
+				base.SetMetadata ("Project", value);
+			}
 		}
 		
-		public Project CreateProject (ProjectCreateInformation info, XmlElement projectOptions)
-		{
-			return new GenericProject (info, projectOptions);
+		public string ProjectName {
+			get {
+				return base.GetMetadata ("Name");
+			}
+			set {
+				base.SetMetadata ("Name", value);
+			}
 		}
 		
-		public Project CreateSingleFileProject (string file)
-		{
-			return null;
+		
+		protected override string Tag {
+			get {
+				return "ReferenceProjectItem";
+			}
 		}
 		
-		public bool CanCreateSingleFileProject (string file)
+		public ProjectReferenceProjectItem ()
 		{
-			return false;
 		}
 	}
 }
-*/

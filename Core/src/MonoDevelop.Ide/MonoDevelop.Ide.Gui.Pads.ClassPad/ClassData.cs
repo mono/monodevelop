@@ -30,7 +30,7 @@ using System;
 using System.IO;
 using System.Collections;
 
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Parser;
 
@@ -39,9 +39,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 	public class ClassData
 	{
 		IClass cls;
-		Project project;
+		IProject project;
 		
-		public ClassData (Project p, IClass c)
+		public ClassData (IProject p, IClass c)
 		{
 			cls = c;
 			project = p;
@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			get { return cls; }
 		}
 		
-		public Project Project {
+		public IProject Project {
 			get { return project; }
 		}
 		

@@ -68,9 +68,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		public void SetProject (Project prj)
 		{
-			DotNetProject netProject = prj as DotNetProject;
-			if (netProject != null)
-				version = ((DotNetProjectConfiguration)netProject.ActiveConfiguration).ClrVersion;
+// TODO: Project Conversion
+//			DotNetProject netProject = prj as DotNetProject;
+//	if (netProject != null)
+//		version = ((DotNetProjectConfiguration)netProject.ActiveConfiguration).ClrVersion;
 		}
 		
 		int SortTree (TreeModel model, TreeIter first, TreeIter second)
