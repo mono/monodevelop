@@ -12,10 +12,11 @@ using Gtk;
 using System.Collections;
 using System.Collections.Generic;
 
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
@@ -122,12 +123,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				break;
 			}
 			case 2: {// whole project
-				if (IdeApp.ProjectOperations.CurrentOpenCombine == null) {
+				if (ProjectService.Solution == null) {
 					Services.MessageService.ShowError (GettextCatalog.GetString ("You must be in project mode"));
 					break;
 				}
 				total = new Report (GettextCatalog.GetString ("total"), 0, 0, 0);
-				CountCombine (IdeApp.ProjectOperations.CurrentOpenCombine, ref total);
+				CountCombine (ProjectService.Solution, ref total);
 				break;
 			}
 			}
@@ -135,20 +136,19 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			UpdateList();
 		}
 		
-		void CountCombine(Combine combine, ref Report all)
+		void CountCombine(Solution combine, ref Report all)
 		{
-			foreach (CombineEntry entry in combine.Entries) {
-				if (entry is Project) {
-					foreach (ProjectFile finfo in ((Project)entry).ProjectFiles) {
-						if (finfo.Subtype != Subtype.Directory && 
-						    finfo.BuildAction == BuildAction.Compile) {
-							Report r = GetReport(finfo.Name);
-							all += r;
-							items.Add(r);
-						}
+			foreach (IProject project in combine.AllProjects) {
+				foreach (ProjectItem item in project.Items) {
+					ProjectFile finfo = item as ProjectFile;
+					if (finfo == null)
+						continue;
+					if (finfo.FileType == FileType.Compile) {
+						Report r = GetReport (finfo.FullPath);
+						all += r;
+						items.Add(r);
 					}
-				} else
-					CountCombine ((Combine)entry, ref all);
+				}
 			}
 		}
 		

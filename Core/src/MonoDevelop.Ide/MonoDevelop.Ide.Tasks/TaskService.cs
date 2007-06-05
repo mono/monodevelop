@@ -15,7 +15,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Projects.Parser;
@@ -31,7 +31,7 @@ namespace MonoDevelop.Ide.Tasks
 		Dictionary<string, TaskPriority> priorities = new Dictionary<string, TaskPriority> ();
 		List<UserTask> userTasks = new List<UserTask> ();
 		string compilerOutput = String.Empty;
-		Combine combine;
+		Solution combine;
 		
 		public TaskService ()
 			: base ()
@@ -43,18 +43,20 @@ namespace MonoDevelop.Ide.Tasks
 			base.InitializeService ();
 			ReloadPriories ();
 			
-			IdeApp.ProjectOperations.CombineOpened += new CombineEventHandler (ProjectServiceSolutionOpened);
-			IdeApp.ProjectOperations.CombineClosed += new CombineEventHandler (ProjectServiceSolutionClosed);
-			IdeApp.ProjectOperations.FileRenamedInProject += new ProjectFileRenamedEventHandler (ProjectFileRenamed);
-			IdeApp.ProjectOperations.FileRemovedFromProject += new ProjectFileEventHandler (ProjectFileRemoved);
+			ProjectService.SolutionOpened += new EventHandler<SolutionEventArgs> (ProjectServiceSolutionOpened);
+			ProjectService.SolutionClosed += new EventHandler<SolutionEventArgs> (ProjectServiceSolutionClosed);
+// TODO: Project Conversion
+//			IdeApp.ProjectOperations.FileRenamedInProject += new ProjectFileRenamedEventHandler (ProjectFileRenamed);
+//			IdeApp.ProjectOperations.FileRemovedFromProject += new ProjectFileEventHandler (ProjectFileRemoved);
 
 			Runtime.Properties.PropertyChanged += (PropertyEventHandler) Services.DispatchService.GuiDispatch (new PropertyEventHandler (OnPropertyUpdated));
 		}
 
-		void ProjectServiceSolutionOpened (object sender, CombineEventArgs e)
+		void ProjectServiceSolutionOpened (object sender, SolutionEventArgs e)
 		{
-			combine = e.Combine;
-			IdeApp.ProjectOperations.ParserDatabase.CommentTasksChanged += new CommentTasksChangedEventHandler (OnCommentTasksChanged);
+			combine = e.Solution;
+// TODO: Projec Conversion
+//			IdeApp.ProjectOperations.ParserDatabase.CommentTasksChanged += new CommentTasksChangedEventHandler (OnCommentTasksChanged);
 			
 			// Load all tags that are stored in pidb files
             foreach (SolutionItem item in MonoDevelop.Ide.Projects.ProjectService.Solution.Items)
@@ -62,21 +64,21 @@ namespace MonoDevelop.Ide.Tasks
             	SolutionProject project = item as SolutionProject;
             	if (project == null)
             		continue;
-            	
-                IProjectParserContext pContext = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project.Project);
-                foreach (ProjectItem projectItem in project.Project.Items)
-                {
-                	MonoDevelop.Ide.Projects.Item.ProjectFile file = projectItem as MonoDevelop.Ide.Projects.Item.ProjectFile;
-                	if (file == null)
-                		continue;
-                	TagCollection tags = pContext.GetFileSpecialComments (file.FullPath); 
-                	if (tags !=null)
-                		UpdateCommentTags (file.FullPath, tags);
-                }
+// TODO: Project Conversion.           	
+//                IProjectParserContext pContext = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project.Project);
+//                foreach (ProjectItem projectItem in project.Project.Items)
+//                {
+//                	MonoDevelop.Ide.Projects.Item.ProjectFile file = projectItem as MonoDevelop.Ide.Projects.Item.ProjectFile;
+//                	if (file == null)
+//                		continue;
+//                	TagCollection tags = pContext.GetFileSpecialComments (file.FullPath); 
+//                	if (tags !=null)
+//                		UpdateCommentTags (file.FullPath, tags);
+//                }
         	}
         	
         	// Load User Tasks from xml file
-        	string fileToLoad = GetUserTasksFilename (e.Combine);
+        	string fileToLoad = GetUserTasksFilename (e.Solution);
         	if (File.Exists (fileToLoad))
         	{
         		try
@@ -95,13 +97,14 @@ namespace MonoDevelop.Ide.Tasks
         	}
 		}
 				
-		void ProjectServiceSolutionClosed (object sender, CombineEventArgs e)
+		void ProjectServiceSolutionClosed (object sender, SolutionEventArgs e)
 		{
 			combine = null;
-			IdeApp.ProjectOperations.ParserDatabase.CommentTasksChanged -= new CommentTasksChangedEventHandler (OnCommentTasksChanged);
+// TODO: Project Conversion.
+//			IdeApp.ProjectOperations.ParserDatabase.CommentTasksChanged -= new CommentTasksChangedEventHandler (OnCommentTasksChanged);
 			
 			// Save UserTasks to xml file
-			string fileToSave = GetUserTasksFilename (e.Combine);
+			string fileToSave = GetUserTasksFilename (e.Solution);
 			try
 			{
 				XmlSerializer serializer = new XmlSerializer (userTasks.GetType ());
@@ -134,60 +137,60 @@ namespace MonoDevelop.Ide.Tasks
 		            	SolutionProject project = item as SolutionProject;
 		            	if (project == null)
 		            		continue;
-		            	
-		                IProjectParserContext pContext = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project.Project);
-		                foreach (ProjectItem projectItem in project.Project.Items)
-		                {
-		                	MonoDevelop.Ide.Projects.Item.ProjectFile file = projectItem as MonoDevelop.Ide.Projects.Item.ProjectFile;
-		                	if (file == null)
-		                		continue;
-
-		                	TagCollection tags = pContext.GetFileSpecialComments (file.FullPath); 
-		                	if (tags !=null)
-		                		UpdateCommentTags (file.FullPath, tags);
-		                }
+//	TODO: ProjectConversion
+//		                IProjectParserContext pContext = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project.Project);
+//		                foreach (ProjectItem projectItem in project.Project.Items)
+//		                {
+//		                	MonoDevelop.Ide.Projects.Item.ProjectFile file = projectItem as MonoDevelop.Ide.Projects.Item.ProjectFile;
+//		                	if (file == null)
+//		                		continue;
+//
+//		                	TagCollection tags = pContext.GetFileSpecialComments (file.FullPath); 
+//		                	if (tags !=null)
+//		                		UpdateCommentTags (file.FullPath, tags);
+//		                }
 		        	}
 				}
 			}
 		}
-		
-		void ProjectFileRemoved (object sender, ProjectFileEventArgs e)
-		{
-			for (int i = 0; i < tasks.Count; ++i) {
-				Task curTask = tasks[i];
-				string fname = e.ProjectFile.Name;
-				// The method GetFullPath only works if the file exists
-				if (File.Exists (fname))
-					fname = Path.GetFullPath (fname);
-				if (curTask.FileName == fname) {
-					Remove (curTask);
-					--i;
-				}
-			}
-		}
-		
-		void ProjectFileRenamed (object sender, ProjectFileRenamedEventArgs e)
-		{
-			for (int i = 0; i < tasks.Count; ++i) {
-				Task curTask = tasks[i];
-				if (Path.GetFullPath (curTask.FileName) == Path.GetFullPath (e.OldName)) {
-					Remove (curTask);
-					curTask.FileName = Path.GetFullPath (e.NewName);
-					Add (curTask);
-					--i;
-				}
-			}
-		}
-		
+// TODO: Project Conversion.
+//		void ProjectFileRemoved (object sender, ProjectFileEventArgs e)
+//		{
+//			for (int i = 0; i < tasks.Count; ++i) {
+//				Task curTask = tasks[i];
+//				string fname = e.ProjectFile.Name;
+//				// The method GetFullPath only works if the file exists
+//				if (File.Exists (fname))
+//					fname = Path.GetFullPath (fname);
+//				if (curTask.FileName == fname) {
+//					Remove (curTask);
+//					--i;
+//				}
+//			}
+//		}
+//		
+//		void ProjectFileRenamed (object sender, ProjectFileRenamedEventArgs e)
+//		{
+//			for (int i = 0; i < tasks.Count; ++i) {
+//				Task curTask = tasks[i];
+//				if (Path.GetFullPath (curTask.FileName) == Path.GetFullPath (e.OldName)) {
+//					Remove (curTask);
+//					curTask.FileName = Path.GetFullPath (e.NewName);
+//					Add (curTask);
+//					--i;
+//				}
+//			}
+//		}
+//		
 		[AsyncDispatch]
 		void OnCommentTasksChanged (object sender, CommentTasksChangedEventArgs e)
 		{
 			UpdateCommentTags (e.FileName, e.TagComments);
 		}
 
-		string GetUserTasksFilename (Combine combine)
+		string GetUserTasksFilename (Solution combine)
 		{
-			string combineFilename = combine.FileName;
+			string combineFilename = ProjectService.SolutionFileName;
 			string combinePath = Path.GetDirectoryName (combineFilename);
 			string userTasksFilename = Path.Combine(combinePath, combine.Name + ".usertasks");
 			return userTasksFilename;

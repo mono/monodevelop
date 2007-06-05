@@ -29,7 +29,7 @@
 using System;
 using System.Resources;
 
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Ide.Gui;
@@ -40,8 +40,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 	{
 		public SolutionPad ()
 		{
-			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OnOpenCombine));
-			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCloseCombine));
+			ProjectService.SolutionOpened += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (OnOpenCombine));
+			ProjectService.SolutionClosed += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (OnCloseCombine));
 			Runtime.Properties.PropertyChanged += (PropertyEventHandler) Services.DispatchService.GuiDispatch (new PropertyEventHandler (TrackPropertyChange));
 		}
 		
@@ -52,12 +52,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 		}
 		
-		protected virtual void OnOpenCombine (object sender, CombineEventArgs e)
+		protected virtual void OnOpenCombine (object sender, SolutionEventArgs e)
 		{
-			LoadTree (e.Combine);
+			LoadTree (e.Solution);
 		}
 
-		protected virtual void OnCloseCombine (object sender, CombineEventArgs e)
+		protected virtual void OnCloseCombine (object sender, SolutionEventArgs e)
 		{
 			Clear ();
 		}

@@ -22,7 +22,7 @@ namespace MonoDevelop.Ide.Codons
 	{
 		public LanguageActiveCondition ()
 		{
-			IdeApp.ProjectOperations.CurrentProjectChanged += delegate { NotifyChanged (); };
+			ProjectService.ActiveProjectChanged += delegate { NotifyChanged (); };
 		}
 		
 		public override bool Evaluate (NodeElement condition)

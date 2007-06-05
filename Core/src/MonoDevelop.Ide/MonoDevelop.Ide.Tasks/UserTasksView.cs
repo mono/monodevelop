@@ -33,10 +33,10 @@ using Gtk;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.Ide.Tasks
 {	
@@ -130,19 +130,19 @@ namespace MonoDevelop.Ide.Tasks
 			delButton.SetTooltip (tips, GettextCatalog.GetString ("Delete Task"), GettextCatalog.GetString ("Delete Task"));
 
 			Services.TaskService.UserTasksChanged += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (UserTasksChanged));
-			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (CombineOpened));
-			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (CombineClosed));
+			ProjectService.SolutionOpened += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (CombineOpened));
+			ProjectService.SolutionClosed += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (CombineClosed));
 			Runtime.Properties.PropertyChanged += (PropertyEventHandler) Services.DispatchService.GuiDispatch (new PropertyEventHandler (OnPropertyUpdated));	
 			ValidateButtons ();
 		}
 		
-		void CombineOpened (object sender, CombineEventArgs e)
+		void CombineOpened (object sender, SolutionEventArgs e)
 		{
 			solutionLoaded = true;
 			ValidateButtons ();
 		}
 		
-		void CombineClosed (object sender, CombineEventArgs e)
+		void CombineClosed (object sender, SolutionEventArgs e)
 		{
 			solutionLoaded = true;
 			ValidateButtons ();

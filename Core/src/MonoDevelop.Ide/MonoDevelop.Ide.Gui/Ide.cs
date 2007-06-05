@@ -55,7 +55,7 @@ namespace MonoDevelop.Ide.Gui
 	public abstract class IdeApp
 	{
 		static Workbench workbench;
-		static ProjectOperations projectOperations;
+//		static ProjectOperations projectOperations;
 		static HelpOperations helpOperations;
 		static CommandService commandService;
 		static IdeServices ideServices;
@@ -71,9 +71,9 @@ namespace MonoDevelop.Ide.Gui
 			get { return workbench; }
 		}
 		
-		public static ProjectOperations ProjectOperations {
+/*		public static ProjectOperations ProjectOperations {
 			get { return projectOperations; }
-		}
+		}*/
 		
 		public static HelpOperations HelpOperations {
 			get { return helpOperations; }

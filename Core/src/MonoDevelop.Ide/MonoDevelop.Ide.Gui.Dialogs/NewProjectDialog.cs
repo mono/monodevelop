@@ -14,7 +14,8 @@ using Mono.Addins;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
@@ -44,10 +45,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		bool newCombine;
 		string lastName = "";
 		ProjectTemplate selectedItem;
-		CombineEntry currentEntry;
-		Combine parentCombine;
+		IProject currentEntry;
+		Solution parentCombine;
 		
-		public NewProjectDialog (Combine parentCombine, bool openCombine, bool newCombine, string basePath)
+		public NewProjectDialog (Solution parentCombine, bool openCombine, bool newCombine, string basePath)
 		{
 			Build ();
 			notebook.Page = 0;
@@ -252,9 +253,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			return true;
 		}
 		
-		public void SaveFile(Project project, string filename, string content, bool showFile)
+		public void SaveFile(IProject project, string filename, string content, bool showFile)
 		{
-			project.ProjectFiles.Add (new ProjectFile(filename));
+			project.Add (new ProjectFile (filename, FileType.Compile));
 			
 			StreamWriter sr = System.IO.File.CreateText (filename);
 			sr.Write (Runtime.StringParserService.Parse(content, new string[,] { {"PROJECT", txt_name.Text}, {"FILE", System.IO.Path.GetFileName(filename)}}));
@@ -277,29 +278,30 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				if (!CreateProject ())
 					return;
 				
-				CombineEntry entry;
-				try {
-					entry = Services.ProjectService.ReadCombineEntry (NewCombineEntryLocation, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
-				}
-				catch (Exception ex) {
-					Services.MessageService.ShowError (ex, GettextCatalog.GetString ("The file '{0}' could not be loaded.", NewCombineEntryLocation));
-					return;
-				}
-				if (parentCombine == null) {
-					parentCombine = (Combine) entry;
-					if (parentCombine.Entries.Count > 0)
-						currentEntry = parentCombine.Entries [0];
-					else
-						currentEntry = parentCombine;
-				} else {
-					currentEntry = entry;
-				}
-				try {
-					featureList.Fill (parentCombine, currentEntry, CombineEntryFeatures.GetFeatures (parentCombine, currentEntry));
-				}
-				catch (Exception ex) {
-					Console.WriteLine (ex);
-				}
+				IProject entry = null;
+// TODO: Project Conversion
+//				try {
+//					entry = Services.ProjectService.ReadCombineEntry (NewCombineEntryLocation, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
+//				}
+//				catch (Exception ex) {
+//					Services.MessageService.ShowError (ex, GettextCatalog.GetString ("The file '{0}' could not be loaded.", NewCombineEntryLocation));
+//					return;
+//				}
+//				if (parentCombine == null) {
+//					parentCombine = (So) entry;
+//					if (parentCombine.Entries.Count > 0)
+//						currentEntry = parentCombine.Entries [0];
+//					else
+//						currentEntry = parentCombine;
+//				} else {
+//					currentEntry = entry;
+//				}
+//				try {
+//					featureList.Fill (parentCombine, currentEntry, CombineEntryFeatures.GetFeatures (parentCombine, currentEntry));
+//				}
+//				catch (Exception ex) {
+//					Console.WriteLine (ex);
+//				}
 				notebook.Page++;
 				btn_new.Label = Gtk.Stock.Ok;
 			}
@@ -307,20 +309,30 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				if (!featureList.Validate ())
 					return;
 				
-				if (!newCombine)
-					parentCombine.Entries.Add (currentEntry);
-				
-				featureList.ApplyFeatures ();
-				if (newCombine)
-					IdeApp.ProjectOperations.SaveCombineEntry (parentCombine);
-				else
-					IdeApp.ProjectOperations.SaveCombine ();
+// TODO: Project Conversion
+//				if (!newCombine)
+//					parentCombine.Entries.Add (currentEntry);
+//				
+//				featureList.ApplyFeatures ();
+//				if (newCombine)
+//					IdeApp.ProjectOperations.SaveCombineEntry (parentCombine);
+//				else
+//					IdeApp.ProjectOperations.SaveCombine ();
 				
 				if (openCombine)
 					selectedItem.OpenCreatedCombine();
 				Respond (ResponseType.Ok);
 			}
 		}
+		IProject FindProject (string name)
+		{
+			if (ProjectService.Solution != null)
+				foreach (IProject project in ProjectService.Solution.AllProjects)
+					if (project.Name == name)
+						return project;
+			return null;
+		}
+		
 		
 		bool CreateProject ()
 		{
@@ -349,7 +361,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				return false;
 			}
 
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null && IdeApp.ProjectOperations.CurrentOpenCombine.FindProject (name) != null) {
+			if (ProjectService.Solution != null && FindProject (name) != null) {
 				Services.MessageService.ShowError(GettextCatalog.GetString ("A Project with that name is already in your Project Space"));
 				return false;
 			}

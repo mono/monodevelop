@@ -19,7 +19,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Commands
@@ -47,14 +47,17 @@ namespace MonoDevelop.Ide.Commands
 		
 		string GetCurrentTargetPath()
 		{
-			if (IdeApp.ProjectOperations.CurrentSelectedProject != null) {
-				return IdeApp.ProjectOperations.CurrentSelectedProject.GetOutputFileName ();
+			if (ProjectService.ActiveProject != null) {
+				return ProjectService.GetOutputFileName (ProjectService.ActiveProject.Project);
 			}
+			/* TODO: Project Conversion. btw. is this needed ? 
+                     Should never happen because of the active project logic.
 			if (IdeApp.Workbench.ActiveDocument != null) {
 				string fileName = IdeApp.Workbench.ActiveDocument.FileName;
-				Project project = IdeApp.ProjectOperations.CurrentOpenCombine.FindProject (fileName);
-				if (project != null) return project.GetOutputFileName();
-			}
+				IProject project = IdeApp.ProjectOperations.CurrentOpenCombine.FindProject (fileName);
+				if (project != null) 
+					return project.GetOutputFileName();
+			}*/
 			return String.Empty;
 		}
 		
@@ -107,29 +110,29 @@ namespace MonoDevelop.Ide.Commands
 					break;
 				case "TARGETEXT":
 					try {
-						return Path.GetExtension(GetCurrentTargetPath());
+						return Path.GetExtension(GetCurrentTargetPath());	
 					} catch (Exception) {}
 					break;
 				
 				case "PROJECTDIR":
-					if (IdeApp.ProjectOperations.CurrentSelectedProject != null) {
-						return IdeApp.ProjectOperations.CurrentSelectedProject.BaseDirectory;
+					if (ProjectService.ActiveProject != null) {
+						return ProjectService.ActiveProject.Project.BasePath;
 					}
 					break;
 				case "PROJECTFILENAME":
-					if (IdeApp.ProjectOperations.CurrentSelectedProject != null) {
+					if (ProjectService.ActiveProject != null) {
 						try {
-							return Path.GetFileName(IdeApp.ProjectOperations.CurrentSelectedProject.FileName);
+							return Path.GetFileName (ProjectService.ActiveProject.Project.FileName);
 						} catch (Exception) {}
 					}
 					break;
 				
 				case "COMBINEDIR":
-					return Path.GetDirectoryName (IdeApp.ProjectOperations.CurrentOpenCombine.FileName);
+					return ProjectService.Solution != null ? Path.GetDirectoryName (ProjectService.SolutionFileName) : "";
 
 				case "COMBINEFILENAME":
 					try {
-						return Path.GetFileName (IdeApp.ProjectOperations.CurrentOpenCombine.FileName);
+						return ProjectService.Solution != null ? Path.GetFileName (ProjectService.SolutionFileName) : "";
 					} catch (Exception) {}
 					break;
 				case "STARTUPPATH":

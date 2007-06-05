@@ -12,6 +12,7 @@ using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Gui.Search;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Components.Commands;
 
@@ -56,7 +57,7 @@ namespace MonoDevelop.Ide.Commands
 	    
 	    protected override void Update(CommandInfo info)
 	    {
-	    	info.Enabled = (IdeApp.ProjectOperations.CurrentOpenCombine != null);
+	    	info.Enabled = (ProjectService.Solution != null);
 	    }
 	}
 }

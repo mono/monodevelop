@@ -2,6 +2,7 @@
 using System;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core.Properties;
 using Mono.Addins;
 using MonoDevelop.Components;
@@ -29,15 +30,15 @@ namespace MonoDevelop.Ide.Commands
 				int response = fs.Run ();
 				string name = fs.Filename;
 				fs.Hide ();
-				if (response == (int)Gtk.ResponseType.Ok)
-					IdeApp.ProjectOperations.DebugApplication (name);
+// TODO: Project Conversion
+//				if (response == (int)Gtk.ResponseType.Ok)
+//				IdeApp.ProjectOperations.DebugApplication (name);
 			}
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = Services.DebuggingService != null &&
-							IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
+			info.Enabled = Services.DebuggingService != null && ProjectService.CurrentRunOperation.IsCompleted;
 		}
 	}
 	

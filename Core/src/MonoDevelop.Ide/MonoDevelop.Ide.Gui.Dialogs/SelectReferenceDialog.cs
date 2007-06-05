@@ -6,8 +6,10 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Core;
 
 using Gtk;
@@ -32,7 +34,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		GacReferencePanel gacRefPanel;
 		ProjectReferencePanel projectRefPanel;
 		AssemblyReferencePanel assemblyRefPanel;
-		Project configureProject;
+		IProject configureProject;
 		
 		const int NameColumn = 0;
 		const int TypeNameColumn = 1;
@@ -40,9 +42,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		const int ProjectReferenceColumn = 3;
 		const int IconColumn = 4;
 		
-		public ProjectReferenceCollection ReferenceInformations {
+		public List<ProjectReferenceProjectItem> ReferenceInformations {
 			get {
-				ProjectReferenceCollection referenceInformations = new ProjectReferenceCollection();
+				List<ProjectReferenceProjectItem> referenceInformations = new List<ProjectReferenceProjectItem>();
 				Gtk.TreeIter looping_iter;
 				if (!refTreeStore.GetIterFirst (out looping_iter)) {
 					return referenceInformations;
@@ -68,7 +70,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			get { return AddReferenceDialog; }
 		}
 
-		public void SetProject (Project configureProject)
+		public void SetProject (IProject configureProject)
 		{
 			this.configureProject = configureProject;
 			((ListStore) ReferencesTreeView.Model).Clear ();
@@ -84,7 +86,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			OnChanged (null, null);
 		}
 		
-		TreeIter AddReference (ProjectReference refInfo)
+		TreeIter AddReference (ReferenceProjectItem refInfo)
 		{
 			switch (refInfo.ReferenceType) {
 				case ReferenceType.Assembly:
@@ -98,12 +100,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 		}
 
-		TreeIter AddAssemplyReference (ProjectReference refInfo)
+		TreeIter AddAssemplyReference (ReferenceProjectItem refInfo)
 		{
 			return refTreeStore.AppendValues (System.IO.Path.GetFileName (refInfo.Reference), GetTypeText (refInfo), System.IO.Path.GetFullPath (refInfo.Reference), refInfo, "md-closed-folder");
 		}
 
-		TreeIter AddProjectReference (ProjectReference refInfo)
+		TreeIter AddProjectReference (ReferenceProjectItem refInfo)
 		{
 			Combine c = configureProject.RootCombine;
 			if (c == null) return TreeIter.Zero;
@@ -116,13 +118,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			return refTreeStore.AppendValues (System.IO.Path.GetFileName (refInfo.Reference), GetTypeText (refInfo), p.BaseDirectory, refInfo, iconName);
 		}
 
-		TreeIter AddGacReference (ProjectReference refInfo)
+		TreeIter AddGacReference (ReferenceProjectItem refInfo)
 		{
 			gacRefPanel.SignalRefChange (refInfo.Reference, true);
 			return refTreeStore.AppendValues (System.IO.Path.GetFileNameWithoutExtension (refInfo.Reference), GetTypeText (refInfo), refInfo.Reference, refInfo, "md-package");
 		}
 		
-		public SelectReferenceDialog(Project configureProject)
+		public SelectReferenceDialog(IProject configureProject)
 		{
 			Glade.XML refXML = new Glade.XML (null, "Base.glade", "AddReferenceDialog", null);
 			refXML.Autoconnect (this);
@@ -166,7 +168,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				RemoveReferenceButton.Sensitive = false;
 		}
 		
-		string GetTypeText (ProjectReference pref)
+		string GetTypeText (ReferenceProjectItem pref)
 		{
 			switch (pref.ReferenceType) {
 				case ReferenceType.Gac: return GettextCatalog.GetString ("Package");
@@ -176,33 +178,33 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 		}
 
-		public void RemoveReference (ReferenceType referenceType, string reference)
+		public void RemoveReference (bool projectReference, string reference)
 		{
-			TreeIter iter = FindReference (referenceType, reference);
+			TreeIter iter = FindReference (projectReference, reference);
 			if (iter.Equals (TreeIter.Zero))
 				return;
 			refTreeStore.Remove (ref iter);
 		}
 		
-		public void AddReference (ReferenceType referenceType, string reference)
+		public void AddReference (bool projectReference, string reference)
 		{
-			TreeIter iter = FindReference (referenceType, reference);
+			TreeIter iter = FindReference (projectReference, reference);
 			if (!iter.Equals (TreeIter.Zero))
 				return;
 			
-			ProjectReference tag = new ProjectReference (referenceType, reference);
+			ReferenceProjectItem tag = projectReference ? new ProjectReferenceProjectItem (reference) : new ReferenceProjectItem (reference);
 			TreeIter ni = AddReference (tag);
 			if (!ni.Equals (TreeIter.Zero))
 				ReferencesTreeView.ScrollToCell (refTreeStore.GetPath (ni), null, false, 0, 0);
 		}
 		
-		TreeIter FindReference (ReferenceType referenceType, string reference)
+		TreeIter FindReference (bool projectReference, string reference)
 		{
 			TreeIter looping_iter;
 			if (refTreeStore.GetIterFirst (out looping_iter)) {
 				do {
-					ProjectReference pref = (ProjectReference) refTreeStore.GetValue (looping_iter, ProjectReferenceColumn);
-					if (pref.Reference == reference && pref.ReferenceType == referenceType) {
+					ReferenceProjectItem pref = (ReferenceProjectItem) refTreeStore.GetValue (looping_iter, ProjectReferenceColumn);
+					if (pref.Include == reference && (!projectReference || pref is ProjectReferenceProjectItem) ) {
 						return looping_iter;
 					}
 				} while (refTreeStore.IterNext (ref looping_iter));

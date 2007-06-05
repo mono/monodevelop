@@ -3,6 +3,7 @@ using System.Collections;
 
 using Gtk;
 
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.Gui;
@@ -25,8 +26,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			tvFiles = new TreeView (tsFiles);
 			TreeIter topCombineIter = TreeIter.Zero;
 			Hashtable projectIters = new Hashtable ();
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				topCombineIter = tsFiles.AppendValues (GettextCatalog.GetString ("Solution: {0}", IdeApp.ProjectOperations.CurrentOpenCombine.Name), true, null, false);
+			if (ProjectService.Solution != null) {
+				topCombineIter = tsFiles.AppendValues (GettextCatalog.GetString ("Solution: {0}", ProjectService.Solution.Name), true, null, false);
 			}
 			foreach (Document doc in IdeApp.Workbench.Documents) {
 				if (!doc.IsDirty)

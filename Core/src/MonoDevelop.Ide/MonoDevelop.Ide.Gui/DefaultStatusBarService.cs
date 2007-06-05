@@ -12,7 +12,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -29,7 +29,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			base.OnInitialize (e);
 			statusBar = new SdStatusBar ();
-			IdeApp.ProjectOperations.CombineClosed += new CombineEventHandler (OnCombineClosed);
+			ProjectService.SolutionOpened  += new EventHandler<SolutionEventArgs> (OnCombineClosed);
 		}
 
 		public void Dispose()
@@ -118,7 +118,7 @@ namespace MonoDevelop.Ide.Gui
 			statusBar.SetMessage(image, stringParserService.Parse(message));
 		}
 
-		void OnCombineClosed (object sender, CombineEventArgs e)
+		void OnCombineClosed (object sender, SolutionEventArgs e)
 		{
 			SetMessage ("");
 		}

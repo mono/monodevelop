@@ -12,7 +12,7 @@ using System.Diagnostics;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.ProgressMonitoring;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
@@ -168,8 +168,8 @@ namespace MonoDevelop.Ide.Commands
 				info.Enabled = false;
 				return;
 			}
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				info.Enabled = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
+			if (ProjectService.Solution != null) {
+				info.Enabled = ProjectService.CurrentRunOperation.IsCompleted;
 			} else {
 				info.Enabled = (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsBuildTarget);
 			}
@@ -191,12 +191,12 @@ namespace MonoDevelop.Ide.Commands
 	
 	internal class DebugEntryHandler: CommandHandler
 	{
-		CombineEntry entry;
+		SolutionProject entry;
 		
 		protected override void Run ()
 		{
-			entry = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
-			IAsyncOperation op = IdeApp.ProjectOperations.Build (entry);
+			entry = ProjectService.ActiveProject;
+			IAsyncOperation op = ProjectService.BuildProject (entry);
 			op.Completed += new OperationHandler (ExecuteCombine);
 		}
 		
@@ -207,14 +207,16 @@ namespace MonoDevelop.Ide.Commands
 				return;
 			}
 
-			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedCombineEntry != null && 
-							IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
+			info.Enabled = ProjectService.ActiveProject != null && 
+							ProjectService.CurrentRunOperation.IsCompleted;
 		}
 		
 		void ExecuteCombine (IAsyncOperation op)
 		{
-			if (op.Success)
-				IdeApp.ProjectOperations.Debug (entry);
+// TODO: Project conversion.
+//	if (op.Success)
+//		
+//				IdeApp.ProjectOperations.Debug (entry);
 		}
 	}
 	
@@ -249,7 +251,7 @@ namespace MonoDevelop.Ide.Commands
 				}
 			} else {
 				if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsBuildTarget) {
-					info.Enabled = IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted;
+					info.Enabled = ProjectService.CurrentBuildOperation.IsCompleted;
 					string file = Path.GetFileName (IdeApp.Workbench.ActiveDocument.FileName);
 					info.Text = info.Description = GettextCatalog.GetString ("Build {0}", file);
 				} else {
@@ -285,7 +287,7 @@ namespace MonoDevelop.Ide.Commands
 				}
 			} else {
 				if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsBuildTarget) {
-					info.Enabled = IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted;
+					info.Enabled = ProjectService.CurrentBuildOperation.IsCompleted;
 					string file = Path.GetFileName (IdeApp.Workbench.ActiveDocument.FileName);
 					info.Text = info.Description = GettextCatalog.GetString ("Rebuild {0}", file);
 				} else {
@@ -356,16 +358,16 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			if (!IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted)
-				IdeApp.ProjectOperations.CurrentBuildOperation.Cancel ();
-			if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted)
-				IdeApp.ProjectOperations.CurrentRunOperation.Cancel ();
+			if (!ProjectService.CurrentBuildOperation.IsCompleted)
+				ProjectService.CurrentBuildOperation.Cancel ();
+			if (!ProjectService.CurrentRunOperation.IsCompleted)
+				ProjectService.CurrentRunOperation.Cancel ();
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = !IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted ||
-							!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
+			info.Enabled = !ProjectService.CurrentBuildOperation.IsCompleted ||
+							!ProjectService.CurrentRunOperation.IsCompleted;
 		}
 	}
 		
@@ -373,14 +375,15 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			CombineEntry ce = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
+/* TODO: Project Conversion			
+CombineEntry ce = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
 			if (ce != null)
-				IdeApp.ProjectOperations.ShowOptions (ce);
+				IdeApp.ProjectOperations.ShowOptions (ce);*/
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedCombineEntry != null;
+			info.Enabled = ProjectService.ActiveProject != null;
 		}
 	}
 	
@@ -388,32 +391,34 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run (object c)
 		{
-			CombineEntry ce = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
-			CustomCommand cmd = (CustomCommand) c;
-			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
-			
-			Thread t = new Thread (
-				delegate () {
-					using (monitor) {
-						cmd.Execute (monitor, ce);
-					}
-				}
-			);
-			t.IsBackground = true;
-			t.Start ();
+// TODO: Project Conversion
+//			IProject ce = ProjectService.ActiveProject.Project;
+//			CustomCommand cmd = (CustomCommand) c;
+//			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
+//			
+//			Thread t = new Thread (
+//				delegate () {
+//					using (monitor) {
+//						cmd.Execute (monitor, ce);
+//					}
+//				}
+//			);
+//			t.IsBackground = true;
+//			t.Start ();
 		}
 		
 		protected override void Update (CommandArrayInfo info)
 		{
-			CombineEntry ce = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
-			if (ce != null) {
-				AbstractConfiguration conf = ce.ActiveConfiguration as AbstractConfiguration;
-				if (conf != null) {
-					foreach (CustomCommand cmd in conf.CustomCommands)
-						if (cmd.Type == CustomCommandType.Custom)
-							info.Add (cmd.Name, cmd);
-				}
-			}
+// TODO: Project Conversion.
+//			IProject ce = ProjectService.ActiveProject.Project;
+//			if (ce != null) {
+//				AbstractConfiguration conf = ce.ActiveConfiguration as AbstractConfiguration;
+//				if (conf != null) {
+//					foreach (CustomCommand cmd in conf.CustomCommands)
+//						if (cmd.Type == CustomCommandType.Custom)
+//							info.Add (cmd.Name, cmd);
+//				}
+//			}
 		}
 	}
 	
@@ -421,8 +426,9 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			CombineEntry ce = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
-			IdeApp.ProjectOperations.Export (ce, null);
+// TODO: Project Conversion.
+//			CombineEntry ce = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
+//			IdeApp.ProjectOperations.Export (ce, null);
 		}
 	}
 	
@@ -431,8 +437,8 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run ()
 		{
 			try {
-				if (IdeApp.ProjectOperations.CurrentSelectedProject != null) {
-					string assembly    = IdeApp.ProjectOperations.CurrentSelectedProject.GetOutputFileName ();
+				if (ProjectService.ActiveProject != null) {
+					string assembly    = ProjectService.GetOutputFileName (ProjectService.ActiveProject.Project);
 					string projectFile = Path.ChangeExtension(assembly, ".ndoc");
 					if (!File.Exists(projectFile)) {
 						StreamWriter sw = File.CreateText(projectFile);

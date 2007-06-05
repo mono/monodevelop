@@ -20,7 +20,7 @@ using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Codons;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.CodeGeneration;
 
@@ -227,7 +227,7 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 		
-		internal static ArrayList GetFileTemplates (Project project)
+		internal static ArrayList GetFileTemplates (IProject project)
 		{
 			ArrayList list = new ArrayList ();
 			foreach (FileTemplate t in fileTemplates) {
@@ -297,7 +297,7 @@ namespace MonoDevelop.Ide.Templates
 			return fileName;
 		}
 		
-		protected virtual bool IsValidForProject (Project project)
+		protected virtual bool IsValidForProject (IProject project)
 		{
 			// When there is no project, only single template files can be created.
 			

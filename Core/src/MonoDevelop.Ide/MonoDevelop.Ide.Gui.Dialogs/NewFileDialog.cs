@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 
 using MonoDevelop.Core;
@@ -17,7 +18,7 @@ using MonoDevelop.Core.Properties;
 using Mono.Addins;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 
 using Gtk;
 using MonoDevelop.Components;
@@ -46,19 +47,19 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		Entry nameEntry;
 		
 		// Add To Project widgets
-		Combine solution;
-		string[] projectNames;
+		Solution solution;
+		List<string> projectNames;
 		CheckButton projectAddCheckbox;
 		ComboBox projectAddCombo;
 		FolderEntry projectFolderEntry;
 		Label projectPathLabel;
 		
-		Project parentProject;
+		IProject parentProject;
 		string basePath;
 		
 		string currentProjectType = string.Empty;
 		
-		public NewFileDialog (Project parentProject, string basePath) : base ()
+		public NewFileDialog (IProject parentProject, string basePath) : base ()
 		{
 			this.parentProject = parentProject;
 			this.basePath = basePath;
@@ -84,14 +85,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				icons.Clear ();
 			}
 			
-			Project project = null;
+			IProject project = null;
 			
 			if (projectAddCheckbox == null || projectAddCheckbox.Active)
 			    project = parentProject;
 			
 			// if there's a parent project, check whether it wants to filter languages, else use defaults
-			if ((project != null) && (project.SupportedLanguages != null) && (project.SupportedLanguages.Length > 0)) {
-				projectLangs.AddRange (project.SupportedLanguages);
+			if (project != null && !String.IsNullOrEmpty (project.Language)) {
+				projectLangs.Add (project.Language);
 			} else {
 				projectLangs.Add ("");  // match all non-filtered templates
 				projectLangs.Add ("*");	// match all .NET langs with CodeDom
@@ -209,7 +210,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		void InitializeTemplates()
 		{
-			Project project = null;
+			IProject project = null;
 			
 			if (projectAddCheckbox == null || projectAddCheckbox.Active)
 				project = parentProject;
@@ -258,11 +259,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			//Template can match all CodeDom .NET languages with a "*"
 			if (list.Contains ("*")) {
-				ILanguageBinding [] bindings = MonoDevelop.Projects.Services.Languages.GetLanguageBindings ();
-				foreach (ILanguageBinding lb in bindings) {
-					IDotNetLanguageBinding dnlang = lb as IDotNetLanguageBinding;
-					if (dnlang != null && dnlang.GetCodeDomProvider () != null)
-						list.Add (dnlang.Language);
+				foreach (BackendBindingCodon codon in BackendBindingService.BackendBindingCodons) {
+					if (codon.BackendBinding.CodeDomProvider != null)
+						list.Add (codon.Id);
 					list.Remove ("*");
 				}
 			}
@@ -270,7 +269,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		void AddTemplate (TemplateItem titem, string templateLanguage)
 		{
-			Project project = null;
+			IProject project = null;
 			Category cat = null;
 			
 			if (projectAddCheckbox == null || projectAddCheckbox.Active)
@@ -393,7 +392,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (iconView.CurrentlySelected != null && nameEntry.Text.Length > 0) {
 				TemplateItem titem = (TemplateItem) iconView.CurrentlySelected;
 				FileTemplate item = titem.Template;
-				Project project = null;
+				IProject project = null;
 				string path = null;
 				
 				if (projectAddCheckbox == null || projectAddCheckbox.Active) {
@@ -500,16 +499,24 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			InitializeDialog (true);
 		}
 		
+		IProject FindProject (string name)
+		{
+			foreach (IProject project in solution.AllProjects)
+				if (project.Name == name)
+					return project;
+			return null;
+		}
+		
 		void AddToProjectComboChanged (object o, EventArgs e)
 		{
 			int which = projectAddCombo.Active;
 			string projectName = projectNames[which];
-			Project project = solution.FindProject (projectName);
+			IProject project = FindProject (projectName);
 			
 			if (project != null) {
 				if (basePath == null || basePath == String.Empty ||
-				    (parentProject != null && basePath == parentProject.BaseDirectory)) {
-					basePath = project.BaseDirectory;
+				    (parentProject != null && basePath == parentProject.BasePath)) {
+					basePath = project.BasePath;
 					projectFolderEntry.Path = basePath;
 				}
 				
@@ -576,36 +583,36 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			nameEntry.Activated += new EventHandler (OpenEvent);
 			this.VBox.PackStart (nameBox, false, false, 6);
 			
-			CombineEntryCollection projects = null;
+			/*CombineEntryCollection projects = null;
 			if (parentProject == null) {
-				solution = IdeApp.ProjectOperations.CurrentOpenCombine;
+				solution = ProjectService.Solution;
 				if (solution != null)
-					projects = solution.GetAllProjects ();
-			}
+					projects = solution.AllProjects ();
+			}*/
 			
-			if (projects != null) {
+			if (solution != null) {
 				HBox hbox = new HBox (false, 0);
 				
 				projectAddCheckbox = new CheckButton ("_Add to project:");
 				projectAddCheckbox.Toggled += new EventHandler (AddToProjectToggled);
 				hbox.PackStart (projectAddCheckbox, false, false, 6);
 				
-				Project curProject = IdeApp.ProjectOperations.CurrentSelectedProject;
-				projectNames = new string [projects.Count];
+				IProject curProject = ProjectService.ActiveProject.Project;
+				projectNames.Clear ();
+				
+				foreach (IProject project in solution.AllProjects)
+					projectNames.Add (project.Name);
+				
+				projectNames.Sort ();
 				int i = 0;
-				
-				foreach (Project project in projects)
-					projectNames[i++] = project.Name;
-				
-				Array.Sort (projectNames);
 				if (curProject != null) {
-					for (i = 0; i < projectNames.Length; i++) {
+					for (; i < projectNames.Count; i++) {
 						if (projectNames[i] == curProject.Name)
 							break;
 					}
 				}
 				
-				projectAddCombo = new ComboBox (projectNames);
+				projectAddCombo = new ComboBox (projectNames.ToArray ());
 				projectAddCombo.Active = i;
 				projectAddCombo.Sensitive = false;
 				projectAddCombo.Changed += new EventHandler (AddToProjectComboChanged);
@@ -622,14 +629,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				projectFolderEntry = new FolderEntry ();
 				projectFolderEntry.Sensitive = false;
 				if (curProject != null)
-					projectFolderEntry.Path = curProject.BaseDirectory;
+					projectFolderEntry.Path = curProject.BasePath;
 				projectFolderEntry.PathChanged += new EventHandler (AddToProjectPathChanged);
 				hbox.PackStart (projectFolderEntry, true, true, 6);
 				
 				this.VBox.PackStart (hbox, true, true, 6);
 				
 				if (curProject != null) {
-					basePath = curProject.BaseDirectory;
+					basePath = curProject.BasePath;
 					parentProject = curProject;
 				}
 			}

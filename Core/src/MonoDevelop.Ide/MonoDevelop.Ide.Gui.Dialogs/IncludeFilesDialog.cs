@@ -15,6 +15,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Projects;
 
 using Gtk;
 
@@ -124,8 +125,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				
 				store.IterNext(ref current);
 			}
-			
-			IdeApp.ProjectOperations.SaveCombine ();
+			MonoDevelop.Ide.Projects.ProjectService.SaveSolution ();
 			
 			IncludeFilesDialogWidget.Destroy();
 		}

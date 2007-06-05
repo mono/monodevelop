@@ -25,7 +25,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-
+/* TODO: Project Conversion
 
 using System;
 using System.Collections;
@@ -35,7 +35,7 @@ using System.Xml;
 using System.CodeDom.Compiler;
 using System.Collections.Specialized;
 
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Projects.Parser;
@@ -59,22 +59,20 @@ namespace MonoDevelop.Ide.Gui
 	/// </summary>
 	public class ProjectOperations
 	{
-		IProjectService projectService = MonoDevelop.Projects.Services.ProjectService;
 		IAsyncOperation currentBuildOperation = NullAsyncOperation.Success;
 		IAsyncOperation currentRunOperation = NullAsyncOperation.Success;
 		
 		GuiHelper guiHelper = new GuiHelper ();
 		SelectReferenceDialog selDialog = null;
 		
-		CombineEntry currentEntry = null;
-		Project currentProject = null;
-		Combine currentCombine = null;
-		Combine openCombine = null;
+		IProject currentProject = null;
+		Solution currentCombine = null;
+		Solution openCombine = null;
 		
 		IParserDatabase parserDatabase;
 		CodeRefactorer refactorer;
 
-		ICompilerResult lastResult = new DefaultCompilerResult ();
+		CompilerResult lastResult = new CompilerResult ();
 		
 		ProjectFileEventHandler fileAddedToProjectHandler;
 		ProjectFileEventHandler fileRemovedFromProjectHandler;
@@ -448,7 +446,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		internal bool HasOpenDocuments (Project project, bool modifiedOnly)
+		internal bool HasOpenDocuments (IProject project, bool modifiedOnly)
 		{
 			foreach (Document doc in IdeApp.Workbench.Documents) {
 				if (doc.Project == project && (!modifiedOnly || doc.IsDirty))
@@ -465,10 +463,10 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		void SearchNewFiles (Project project)
+		void SearchNewFiles (IProject project)
 		{
 			StringCollection newFiles   = new StringCollection();
-			StringCollection collection = Runtime.FileService.SearchDirectory (project.BaseDirectory, "*");
+			StringCollection collection = Runtime.FileService.SearchDirectory (project.BasePath, "*");
 
 			foreach (string sfile in collection) {
 				string extension = Path.GetExtension(sfile).ToUpper();
@@ -1454,3 +1452,4 @@ namespace MonoDevelop.Ide.Gui
 		}
 	}
 }
+*/

@@ -16,7 +16,7 @@ using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 
 using Gtk;
 using Pango;
@@ -82,9 +82,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 			tag.LeftMargin = 10;
 			buffer.TagTable.Add (tag);
 			tags.Add (tag);
-
-			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCombineOpen));
-			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCombineClosed));
+			
+			ProjectService.SolutionOpened += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (OnCombineOpen));
+			ProjectService.SolutionClosed += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (OnCombineClosed));
 
 			this.title = title;
 			this.icon = icon;
@@ -118,12 +118,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 			asyncOperation.Cancel ();
 		}
 
-		void OnCombineOpen (object sender, CombineEventArgs e)
+		void OnCombineOpen (object sender, SolutionEventArgs e)
 		{
 			buffer.Clear ();
 		}
 
-		void OnCombineClosed (object sender, CombineEventArgs e)
+		void OnCombineClosed (object sender, SolutionEventArgs e)
 		{
 			buffer.Clear ();
 		}

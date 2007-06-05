@@ -26,6 +26,7 @@ FILES =  \
 	MonoDevelop.Ide.Projects/BackendBindingCodon.cs \
 	MonoDevelop.Ide.Projects/BackendBindingService.cs \
 	MonoDevelop.Ide.Projects/BeforeCompileAction.cs \
+	MonoDevelop.Ide.Projects/BuildEventArgs.cs \
 	MonoDevelop.Ide.Projects/CompilerResult.cs \
 	MonoDevelop.Ide.Projects/ExecutionContext.cs \
 	MonoDevelop.Ide.Projects/IBackendBinding.cs \

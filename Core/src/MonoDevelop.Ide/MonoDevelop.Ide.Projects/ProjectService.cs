@@ -55,6 +55,12 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 		
+		public static string SolutionFileName {
+			get {
+				return Solution != null ? solutionFileName : null;
+			}
+		}
+		
 		public static SolutionProject ActiveProject {
 			get {
 				return activeProject;
@@ -415,6 +421,7 @@ namespace MonoDevelop.Ide.Projects
 			} else {
 				monitor.ReportError(GettextCatalog.GetString("Build failed."), null);
 			}
+			OnEndBuild (new BuildEventArgs (monitor, errors == 0));
 		}
 		
 		static IAsyncOperation currentRunOperation = NullAsyncOperation.Success;
@@ -467,6 +474,21 @@ namespace MonoDevelop.Ide.Projects
 				monitor.Dispose ();
 			}
 		}
+		public static string GetOutputFileName (IProject project)
+		{
+			MSBuildProject msProject = project as MSBuildProject;
+			if (msProject != null) 
+				return Path.GetFullPath (Path.Combine (Path.Combine (msProject.BasePath, msProject.OutputPath), msProject.OutputAssemblyFileName));
+			return null;
+		}
+		
+		public static event EventHandler<BuildEventArgs> EndBuild;
+		public static void OnEndBuild (BuildEventArgs e)
+		{
+			if (EndBuild != null)
+				EndBuild (null, e);
+		}
+		
 		
 		public static event EventHandler<ProjectEventArgs>  ActiveProjectChanged;
 		public static void OnActiveProjectChanged (ProjectEventArgs e)
@@ -490,8 +512,8 @@ namespace MonoDevelop.Ide.Projects
 				SolutionClosing (null, e);
 		}
 		
-		public static event EventHandler SolutionClosed;
-		public static void OnSolutionClosed (EventArgs e)
+		public static event EventHandler<SolutionEventArgs> SolutionClosed;
+		public static void OnSolutionClosed (SolutionEventArgs e)
 		{
 			if (SolutionClosed != null)
 				SolutionClosed (null, e);

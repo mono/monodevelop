@@ -28,15 +28,13 @@
 
 using System;
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.Ide.Gui
 {
 	internal class ConfigurationComboBox: Gtk.Alignment
 	{
 		Gtk.ComboBox combo;
-		ConfigurationEventHandler onActiveConfigurationChanged;
-		ConfigurationEventHandler onConfigurationsChanged;
 		
 		public ConfigurationComboBox (): base (0.5f, 0.5f, 1.0f, 0f)
 		{
@@ -46,12 +44,11 @@ namespace MonoDevelop.Ide.Gui
 			combo.Changed += new EventHandler (OnChanged);
 			Add (combo);
 			ShowAll ();
-			
-			onActiveConfigurationChanged = (ConfigurationEventHandler) Services.DispatchService.GuiDispatch (new ConfigurationEventHandler (OnActiveConfigurationChanged));
-			onConfigurationsChanged = (ConfigurationEventHandler) Services.DispatchService.GuiDispatch (new ConfigurationEventHandler (OnConfigurationsChanged));
-			
-			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OpenCombine));
-			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (CloseCombine));
+// TODO: Project Conversion
+//			onActiveConfigurationChanged = (ConfigurationEventHandler) Services.DispatchService.GuiDispatch (new ConfigurationEventHandler (OnActiveConfigurationChanged));
+//			onConfigurationsChanged = (ConfigurationEventHandler) Services.DispatchService.GuiDispatch (new ConfigurationEventHandler (OnConfigurationsChanged));
+			ProjectService.SolutionOpened += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (OpenCombine));
+			ProjectService.SolutionClosed += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (CloseCombine));
 			Reset ();
 		}
 		
@@ -63,22 +60,23 @@ namespace MonoDevelop.Ide.Gui
 			combo.Sensitive = false;
 		}
 		
-		void RefreshCombo (Combine combine)
+		void RefreshCombo (Solution combine)
 		{
 			((Gtk.ListStore)combo.Model).Clear ();
 			combo.Sensitive = true;
 			int active = 0;
-			for (int n=0; n < combine.Configurations.Count; n++) {
-				IConfiguration c = combine.Configurations [n];
-				combo.AppendText (c.Name);
-				if (combine.ActiveConfiguration == c)
-					active = n;
-			}
+// TODO: Project Conversion			
+//			for (int n=0; n < combine.Configurations.Count; n++) {
+//				IConfiguration c = combine.Configurations [n];
+//				combo.AppendText (c.Name);
+//				if (combine.ActiveConfiguration == c)
+//					active = n;
+//			}
 			combo.Active = active;
 			combo.ShowAll ();
 		}
 
-		void OpenCombine (object sender, CombineEventArgs e)
+		void OpenCombine (object sender, SolutionEventArgs e)
 		{
 			RefreshCombo (e.Combine);
 			e.Combine.ActiveConfigurationChanged += onActiveConfigurationChanged;
@@ -86,7 +84,7 @@ namespace MonoDevelop.Ide.Gui
 			e.Combine.ConfigurationRemoved += onConfigurationsChanged;
 		}
 
-		void CloseCombine (object sender, CombineEventArgs e)
+		void CloseCombine (object sender, SolutionEventArgs e)
 		{
 			Reset ();
 			e.Combine.ActiveConfigurationChanged -= onActiveConfigurationChanged;
@@ -94,23 +92,24 @@ namespace MonoDevelop.Ide.Gui
 			e.Combine.ConfigurationRemoved -= onConfigurationsChanged;
 		}
 		
-		void OnConfigurationsChanged (object sender, ConfigurationEventArgs e)
-		{
-			Console.WriteLine ("combo OnConfigurationsChanged");
-			RefreshCombo (IdeApp.ProjectOperations.CurrentOpenCombine);
-		}
-		
-		void OnActiveConfigurationChanged (object sender, ConfigurationEventArgs e)
-		{
-			Combine combine = (Combine) e.CombineEntry;
-			for (int n=0; n < combine.Configurations.Count; n++) {
-				IConfiguration c = combine.Configurations [n];
-				if (combine.ActiveConfiguration == c) {
-					combo.Active = n;
-					break;
-				}
-			}
-		}
+// TODO: Project Conversion
+//		void OnConfigurationsChanged (object sender, ConfigurationEventArgs e)
+//		{
+//			Console.WriteLine ("combo OnConfigurationsChanged");
+//			RefreshCombo (IdeApp.ProjectOperations.CurrentOpenCombine);
+//		}
+//		
+//		void OnActiveConfigurationChanged (object sender, ConfigurationEventArgs e)
+//		{
+//			Combine combine = (Combine) e.CombineEntry;
+//			for (int n=0; n < combine.Configurations.Count; n++) {
+//				IConfiguration c = combine.Configurations [n];
+//				if (combine.ActiveConfiguration == c) {
+//					combo.Active = n;
+//					break;
+//				}
+//			}
+//		}
 		
 		protected void OnChanged (object sender, EventArgs args)
 		{

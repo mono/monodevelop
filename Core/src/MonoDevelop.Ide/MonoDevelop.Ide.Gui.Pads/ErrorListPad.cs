@@ -15,9 +15,10 @@ using System.Diagnostics;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Ide.Projects;
 
 using Gtk;
 
@@ -152,9 +153,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			Services.TaskService.TasksCleared     += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (ShowResults));
 			Services.TaskService.TaskAdded        += (TaskEventHandler) Services.DispatchService.GuiDispatch (new TaskEventHandler (TaskAdded));
-			IdeApp.ProjectOperations.EndBuild      += new BuildEventHandler (SelectTaskView);
-			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCombineOpen));
-			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCombineClosed));
+			
+			ProjectService.EndBuild       += new EventHandler<BuildEventArgs> (SelectTaskView);
+			ProjectService.SolutionOpened += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (OnCombineOpen));
+			ProjectService.SolutionClosed += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (OnCombineClosed));
 			view.RowActivated            += new RowActivatedHandler (OnRowActivated);
 						
 			iconWarning = sw.RenderIcon (Gtk.Stock.DialogWarning, Gtk.IconSize.Menu, "");
@@ -399,12 +401,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 			col.Resizable = true;
 		}
 		
-		void OnCombineOpen(object sender, CombineEventArgs e)
+		void OnCombineOpen(object sender, SolutionEventArgs e)
 		{
 			Clear();
 		}
 		
-		void OnCombineClosed(object sender, CombineEventArgs e)
+		void OnCombineClosed(object sender, SolutionEventArgs e)
 		{
 			Clear();
 		}

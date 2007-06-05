@@ -12,7 +12,7 @@ using System.Collections;
 using Mono.Addins;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Components;
 using MonoDevelop.Core.Gui.Dialogs;
@@ -50,7 +50,8 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			IdeApp.ProjectOperations.NewProject ();
+// TODO: Project Conversion
+//			IdeApp.ProjectOperations.NewProject ();
 		}
 	}
 	
@@ -141,12 +142,12 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run()
 		{
-			IdeApp.ProjectOperations.CloseCombine();
+			ProjectService.CloseSolution ();
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = (IdeApp.ProjectOperations.CurrentOpenCombine != null);
+			info.Enabled = (ProjectService.Solution != null);
 		}
 	}
 		
@@ -300,7 +301,7 @@ namespace MonoDevelop.Ide.Commands
 			string filename = dataItem.ToString();
 			
 			try {
-				IdeApp.ProjectOperations.OpenCombine(filename);
+				ProjectService.OpenSolution (filename);
 			} catch (Exception ex) {
 				Services.MessageService.ShowError (ex, "Could not load project or solution: " + filename);
 			}

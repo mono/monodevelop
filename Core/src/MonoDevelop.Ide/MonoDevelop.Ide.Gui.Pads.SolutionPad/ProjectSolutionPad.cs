@@ -96,7 +96,7 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 				FillTree (e.Solution);
 			};
 			
-			ProjectService.SolutionClosed += delegate(object sender, EventArgs e) {
+			ProjectService.SolutionClosed += delegate(object sender, SolutionEventArgs e) {
 				Clear ();
 			};
 			

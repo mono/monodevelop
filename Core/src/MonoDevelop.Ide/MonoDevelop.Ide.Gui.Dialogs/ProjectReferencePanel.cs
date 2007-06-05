@@ -6,7 +6,8 @@
 // </file>
 using System;
 
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui;
@@ -26,7 +27,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		{
 			this.selectDialog = selectDialog;
 			
-			store = new ListStore (typeof (string), typeof (string), typeof(Project), typeof(bool), typeof(Gdk.Pixbuf), typeof(bool));
+			store = new ListStore (typeof (string), typeof (string), typeof(IProject), typeof(bool), typeof(Gdk.Pixbuf), typeof(bool));
 			store.DefaultSortFunc = new Gtk.TreeIterCompareFunc (CompareNodes);
 			treeView = new TreeView (store);
 			
@@ -64,7 +65,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			BorderWidth = 6;
 		}
 
-		public void SetProject (Project configureProject)
+		public void SetProject (IProject configureProject)
 		{
 			store.Clear ();
 			PopulateListView (configureProject);
@@ -74,15 +75,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		{
 			Gtk.TreeIter iter;
 			store.GetIterFromString (out iter, e.Path);
-			Project project = (Project) store.GetValue (iter, 2);
+			IProject project = (IProject) store.GetValue (iter, 2);
 			
 			if ((bool)store.GetValue (iter, 3) == false) {
 				store.SetValue (iter, 3, true);
-				selectDialog.AddReference (ReferenceType.Project, project.Name);
+				selectDialog.AddReference (null, project.Name);
 				
 			} else {
 				store.SetValue (iter, 3, false);
-				selectDialog.RemoveReference(ReferenceType.Project, project.Name);
+				selectDialog.RemoveReference(null, project.Name);
 			}
 		}
 		
@@ -94,7 +95,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			}
 
 			do {
-				Project project = (Project) store.GetValue (looping_iter, 2);
+				IProject project = (IProject) store.GetValue (looping_iter, 2);
 				if (project == null)
 					return;
 				if (project.Name == refLoc) {
@@ -113,16 +114,16 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			return String.Compare (s1, s2, true);
 		}
 		
-		void PopulateListView (Project configureProject)
+		void PopulateListView (IProject configureProject)
 		{
-			Combine openCombine = IdeApp.ProjectOperations.CurrentOpenCombine;
+			Solution openCombine = ProjectService.Solution;
 			
 			if (openCombine == null) {
 				return;
 			}
 			
 			bool circDeps = false;
-			foreach (Project projectEntry in openCombine.GetAllProjects()) {
+			foreach (IProject projectEntry in openCombine.AllProjects) {
 
 				if (projectEntry == configureProject) {
 					continue;
@@ -132,19 +133,22 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 					continue;
 				}
 
-				string iconName = Services.Icons.GetImageForProjectType (projectEntry.ProjectType);
+				string iconName = Services.Icons.GetImageForProjectType (projectEntry.Language);
 				Gdk.Pixbuf icon = treeView.RenderIcon (iconName, Gtk.IconSize.Menu, "");
-				store.AppendValues (projectEntry.Name, projectEntry.BaseDirectory, projectEntry, false, icon, true);
+				store.AppendValues (projectEntry.Name, projectEntry.BasePath, projectEntry, false, icon, true);
 			}
 			
 			if (circDeps)
 				store.AppendValues ("", "<span foreground='dimgrey'>" + GettextCatalog.GetString ("(Projects referencing '{0}' are not shown,\nsince cyclic dependencies are not allowed)", configureProject.Name) + "</span>", null, false, null, false);
 		}
 		
-		bool ProjectReferencesProject (Project project, string targetProject)
+		bool ProjectReferencesProject (IProject project, string targetProject)
 		{
-			foreach (ProjectReference pr in project.ProjectReferences) {
-				if (pr.Reference == targetProject)
+			foreach (ProjectItem item in project.Items) {
+				ReferenceProjectItem pr = item as ReferenceProjectItem;
+				if (pr == null)
+					continue;
+				if (pr is ProjectReferenceProjectItem && ((ProjectReferenceProjectItem)pr).Name == targetProject)
 					return true;
 				
 				Project pref = project.RootCombine.FindProject (pr.Reference);

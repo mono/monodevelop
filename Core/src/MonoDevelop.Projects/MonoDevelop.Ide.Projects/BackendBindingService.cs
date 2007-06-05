@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 using Mono.Addins;
 
@@ -37,6 +38,12 @@ namespace MonoDevelop.Ide.Projects
 	{
 		const string addinPath = "/MonoDevelop/BackendBindings";
 		static List<BackendBindingCodon> backendBindingCodons = new List<BackendBindingCodon> ();
+		
+		public static ReadOnlyCollection<BackendBindingCodon> BackendBindingCodons {
+			get {
+				return backendBindingCodons.AsReadOnly ();
+			}
+		}
 		
 		static BackendBindingService ()
 		{

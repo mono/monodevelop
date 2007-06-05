@@ -66,12 +66,13 @@ namespace MonoDevelop.Ide.Commands
 					int line, column;
 					
 					editor.GetLineColumnFromPosition (editor.CursorPosition, out line, out column);
-					IParserContext ctx;
-					if (doc.Project != null)
-						ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (doc.Project);
-					else
-						ctx = IdeApp.ProjectOperations.ParserDatabase.GetFileParserContext (doc.FileName);
-					
+					IParserContext ctx = null;
+//	TODO: Project Conversion
+//					if (doc.Project != null)
+//						ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (doc.Project);
+//					else
+//						ctx = IdeApp.ProjectOperations.ParserDatabase.GetFileParserContext (doc.FileName);
+//					
 					// Look for an identifier at the cursor position
 					
 					string id = editor.SelectedText;
@@ -137,24 +138,24 @@ namespace MonoDevelop.Ide.Commands
 			CommandInfoSet ciset = new CommandInfoSet ();
 			bool canRename = false;
 			string txt;
-			
-			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item))
-				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Go to declaration"), new RefactoryOperation (refactorer.GoToDeclaration));
-			
+//	TODO: Project Conversion
+//			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item))
+//				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Go to declaration"), new RefactoryOperation (refactorer.GoToDeclaration));
+//			
 			if ((item is IMember) && !(item is IClass))
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Find references"), new RefactoryOperation (refactorer.FindReferences));
-			
-			if ((item is LocalVariable) || (item is IParameter) || 
-			    (((item is IMember) || (item is IClass)) && IdeApp.ProjectOperations.CanJumpToDeclaration (item))) {
-				// We can rename local variables (always), method params (always), 
-				// or class/members (if we can jump to their declarations)
-				canRename = true;
-				
-				if (!(item is IClass)) {
-					// Defer adding this item for Classes until later
-					ciset.CommandInfos.Add (GettextCatalog.GetString ("_Rename"), new RefactoryOperation (refactorer.Rename));
-				}
-			}
+//	TODO: Project Conversion
+//			if ((item is LocalVariable) || (item is IParameter) || 
+//			    (((item is IMember) || (item is IClass)) && IdeApp.ProjectOperations.CanJumpToDeclaration (item))) {
+//				// We can rename local variables (always), method params (always), 
+//				// or class/members (if we can jump to their declarations)
+//				canRename = true;
+//				
+//				if (!(item is IClass)) {
+//					// Defer adding this item for Classes until later
+//					ciset.CommandInfos.Add (GettextCatalog.GetString ("_Rename"), new RefactoryOperation (refactorer.Rename));
+//				}
+//			}
 			
 			if (item is IClass) {
 				IClass cls = (IClass) item;
@@ -163,16 +164,16 @@ namespace MonoDevelop.Ide.Commands
 					txt = GettextCatalog.GetString ("Interface {0}", item.Name);
 				else
 					txt = GettextCatalog.GetString ("Class {0}", item.Name);
-				
-				if (cls.BaseTypes.Count > 0) {
-					foreach (IReturnType rt in cls.BaseTypes) {
-						IClass bc = ctx.GetClass (rt.FullyQualifiedName, null, true, true);
-						if (bc != null && bc.ClassType != ClassType.Interface && IdeApp.ProjectOperations.CanJumpToDeclaration (bc)) {
-							ciset.CommandInfos.Add (GettextCatalog.GetString ("Go to _base"), new RefactoryOperation (refactorer.GoToBase));
-						}
-					}
-				}
-				
+//	TODO: Project Conversion
+//				if (cls.BaseTypes.Count > 0) {
+//					foreach (IReturnType rt in cls.BaseTypes) {
+//						IClass bc = ctx.GetClass (rt.FullyQualifiedName, null, true, true);
+//						if (bc != null && bc.ClassType != ClassType.Interface && IdeApp.ProjectOperations.CanJumpToDeclaration (bc)) {
+//							ciset.CommandInfos.Add (GettextCatalog.GetString ("Go to _base"), new RefactoryOperation (refactorer.GoToBase));
+//						}
+//					}
+//				}
+//				
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("Find _derived classes"), new RefactoryOperation (refactorer.FindDerivedClasses));
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Find references"), new RefactoryOperation (refactorer.FindReferences));
 				
@@ -267,7 +268,8 @@ namespace MonoDevelop.Ide.Commands
 		
 		public void GoToDeclaration ()
 		{
-			IdeApp.ProjectOperations.JumpToDeclaration (item);
+//	TODO: Project Conversion
+//			IdeApp.ProjectOperations.JumpToDeclaration (item);
 		}
 		
 		public void FindReferences ()
@@ -280,33 +282,34 @@ namespace MonoDevelop.Ide.Commands
 		
 		void FindReferencesThread ()
 		{
-			using (monitor) {
-				CodeRefactorer refactorer = IdeApp.ProjectOperations.CodeRefactorer;
-				
-				if (item is IMember) {
-					IMember member = (IMember) item;
-					
-					// private is filled only in keyword case
-					if (member.IsPrivate || (!member.IsProtectedOrInternal && !member.IsPublic)) {
-						// look in project to be partial classes safe
-						references = refactorer.FindMemberReferences (monitor, member.DeclaringType, member,
-											      RefactoryScope.Project);
-					} else {
-						// for all other types look in solution because
-						// internal members can be used in friend assemblies
-						references = refactorer.FindMemberReferences (monitor, member.DeclaringType, member,
-											      RefactoryScope.Solution);
-					}
-				} else if (item is IClass) {
-					references = refactorer.FindClassReferences (monitor, (IClass)item, RefactoryScope.Solution);
-				}
-				
-				if (references != null) {
-					foreach (MemberReference mref in references) {
-						monitor.ReportResult (mref.FileName, mref.Line, mref.Column, mref.TextLine);
-					}
-				}
-			}
+//	TODO: Project Conversion			
+//			using (monitor) {
+//				CodeRefactorer refactorer = IdeApp.ProjectOperations.CodeRefactorer;
+//				
+//				if (item is IMember) {
+//					IMember member = (IMember) item;
+//					
+//					// private is filled only in keyword case
+//					if (member.IsPrivate || (!member.IsProtectedOrInternal && !member.IsPublic)) {
+//						// look in project to be partial classes safe
+//						references = refactorer.FindMemberReferences (monitor, member.DeclaringType, member,
+//											      RefactoryScope.Project);
+//					} else {
+//						// for all other types look in solution because
+//						// internal members can be used in friend assemblies
+//						references = refactorer.FindMemberReferences (monitor, member.DeclaringType, member,
+//											      RefactoryScope.Solution);
+//					}
+//				} else if (item is IClass) {
+//					references = refactorer.FindClassReferences (monitor, (IClass)item, RefactoryScope.Solution);
+//				}
+//				
+//				if (references != null) {
+//					foreach (MemberReference mref in references) {
+//						monitor.ReportResult (mref.FileName, mref.Line, mref.Column, mref.TextLine);
+//					}
+//				}
+//			}
 		}
 		
 		public void GoToBase ()
@@ -335,16 +338,17 @@ namespace MonoDevelop.Ide.Commands
 		
 		void FindDerivedThread ()
 		{
-			using (monitor) {
-				IClass cls = (IClass) item;
-				if (cls == null) return;
-			
-				IClass[] classes = IdeApp.ProjectOperations.CodeRefactorer.FindDerivedClasses (cls);
-				foreach (IClass sub in classes) {
-					if (sub.Region != null)
-						monitor.ReportResult (sub.Region.FileName, sub.Region.BeginLine, sub.Region.BeginColumn, sub.FullyQualifiedName);
-				}
-			}
+//	TODO: Project Conversion
+//			using (monitor) {
+//				IClass cls = (IClass) item;
+//				if (cls == null) return;
+//			
+//				IClass[] classes = IdeApp.ProjectOperations.CodeRefactorer.FindDerivedClasses (cls);
+//				foreach (IClass sub in classes) {
+//					if (sub.Region != null)
+//						monitor.ReportResult (sub.Region.FileName, sub.Region.BeginLine, sub.Region.BeginColumn, sub.FullyQualifiedName);
+//				}
+//			}
 		}
 		
 		void ImplementInterface (bool explicitly)

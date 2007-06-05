@@ -3,7 +3,7 @@ using System;
 using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
@@ -40,8 +40,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			fb.DirectoryChangedEvent += new DirectoryChangedEventHandler (OnDirChanged);
 			filelister.RowActivated += new Gtk.RowActivatedHandler (FileSelected);
-			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler(OnCombineOpened));
-			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler(OnCombineClosed));
+			ProjectService.SolutionOpened += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (OnCombineOpened));
+			ProjectService.SolutionClosed += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (OnCombineClosed));
 
 			Gtk.Frame treef  = new Gtk.Frame ();
 			treef.Add (fb);
@@ -112,17 +112,18 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 		}
 
-		void OnCombineOpened(object sender, CombineEventArgs args)
+		void OnCombineOpened(object sender, SolutionEventArgs args)
 		{
 			try {
-				if (args.Combine.StartupEntry != null)
-					fb.CurrentDir = args.Combine.StartupEntry.BaseDirectory;
+// TODO: Project Conversion
+//				if (args.Combine.StartupEntry != null)
+//					fb.CurrentDir = args.Solution.StartupEntry.BaseDirectory;
 			} catch {
 				fb.CurrentDir = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
 			}
 		}
 
-		void OnCombineClosed(object sender, CombineEventArgs args)
+		void OnCombineClosed(object sender, SolutionEventArgs args)
 		{
 			fb.CurrentDir = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
 		}

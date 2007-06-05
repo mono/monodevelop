@@ -13,7 +13,7 @@ using System.Xml;
 using Mono.Addins;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Codons
@@ -22,7 +22,7 @@ namespace MonoDevelop.Ide.Codons
 	{
 		public ProjectActiveCondition ()
 		{
-			IdeApp.ProjectOperations.CurrentProjectChanged += delegate {
+			ProjectService.ActiveProjectChanged += delegate {
 				NotifyChanged(); 
 			};
 		}
@@ -31,11 +31,11 @@ namespace MonoDevelop.Ide.Codons
 		{
 			string activeproject = condition.GetAttribute ("value");
 			
-			Project project = IdeApp.ProjectOperations.CurrentSelectedProject;
+			IProject project = ProjectService.ActiveProject.Project;
 			if (activeproject == "*") {
 				return project != null;
 			}
-			return project != null && project.ProjectType == activeproject;
+			return project != null && project.Language == activeproject;
 		}
 	}
 

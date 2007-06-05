@@ -293,6 +293,7 @@ namespace MonoDevelop.Projects
 				
 			return formatManager.GetFileFormats (filename).Length > 0;
 		}
+		
 
 		public override void InitializeService()
 		{
