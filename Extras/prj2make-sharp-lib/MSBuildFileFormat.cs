@@ -253,8 +253,8 @@ namespace MonoDevelop.Prj2Make
 					EnsureChildValue (configElement, "CheckForOverflowUnderflow", ns, vbparams.GenerateOverflowChecks);
 					EnsureChildValue (configElement, "DefineConstants", ns, vbparams.DefineSymbols);
 					EnsureChildValue (configElement, "WarningLevel", ns, vbparams.WarningLevel);
-					EnsureChildValue (configElement, "OptionExplicit", ns, vbparams.OptionExplicit);
-					EnsureChildValue (configElement, "OptionStrict", ns, vbparams.OptionStrict);
+					EnsureChildValue (configElement, "OptionExplicit", ns, vbparams.OptionExplicit ? "On" : "Off");
+					EnsureChildValue (configElement, "OptionStrict", ns, vbparams.OptionStrict ? "On" : "Off");
 					if (vbparams.Win32Icon != null && vbparams.Win32Icon.Length > 0)
 						EnsureChildValue (configElement, "ApplicationIcon", ns,
 							Escape (Runtime.FileService.AbsoluteToRelativePath (
@@ -630,7 +630,18 @@ namespace MonoDevelop.Prj2Make
 				Combine c = project.RootCombine;
 				if (c != null) {
 					Project p = c.FindProject (projectRef.Reference);
-					//FIXME: if (p == null) : This should not happen!
+					if (p == null) {
+						Runtime.LoggingService.WarnFormat (GettextCatalog.GetString (
+							"The project '{0}' referenced from '{1}' could not be found.",
+							projectRef.Reference, project.Name));
+						
+						Console.WriteLine (GettextCatalog.GetString (
+							"The project '{0}' referenced from '{1}' could not be found.",
+							projectRef.Reference, project.Name));
+
+						return elem;
+					}
+
 					reference = Runtime.FileService.AbsoluteToRelativePath (
 						project.BaseDirectory, p.FileName);
 

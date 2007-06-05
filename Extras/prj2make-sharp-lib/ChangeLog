@@ -1,3 +1,10 @@
+2007-06-05  Ankit Jain  <jankit@novell.com>
+
+	* MSBuildFileFormat.cs (ReferenceToXmlElement): Handle invalid project
+	reference.
+	(WriteFileInternal): OptionExplicit and OptionStrict values need to be
+	written as On/Off.
+
 2007-06-01  Ankit Jain  <jankit@novell.com>
 
 	* MSBuildFileFormat.cs (ReadItemGroups): Don't ignore resources external
