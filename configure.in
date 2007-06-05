@@ -197,7 +197,7 @@ enable_sybase=no
 
 if test "x$enable_monoquery" == "xyes"; then
    monoquery_try_compile () {
-      cat <<EOF | sed -e "s/\${Dbase}/${Dbase}/g" -e "s/\${Using}/${Using}/g" > conftest.cs
+      cat <<EOF | sed -e "s/\${Dbase}/${Dbase}/g" -e "s/\${Using}/${Using}/g" > myconftest.cs
 using System;
 using System.Data;
 using System.Collections;
@@ -214,14 +214,14 @@ namespace Autoconf.Try.Compile {
 	}
 }
 EOF
-      $CSC conftest.cs -r:System.Data $ExtraDbAssemblies > /dev/null 2>&1
+      $CSC myconftest.cs -r:System.Data $ExtraDbAssemblies > /dev/null 2>&1
       if test $? == 0; then
 	 my_ac_conftest_result="yes"
 	 monoquery_avail=`expr $monoquery_avail + 1`
       else
          my_ac_conftest_result="no"
       fi
-      rm -f conftest.cs
+      rm -f myconftest.cs myconftest.exe
    }
    
    AC_MSG_CHECKING([for PostgreSQL support])

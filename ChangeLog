@@ -1,3 +1,10 @@
+2007-06-05  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* configure.in: Instead of generating conftest.cs and conftest.exe
+	for the monoquery configure tests, use myconftest.cs and
+	myconftest.exe so that autoconf doesn't get confused and think
+	that the system c compiler outputs .exe's.
+
 2007-06-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* configure.in: AM_CONDITIONAL()s always need to be run.
