@@ -99,6 +99,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		HBox classBrowser;
 		Gtk.ComboBox classCombo;
 		Gtk.ComboBox membersCombo;
+		bool loadingMembers;
 		ListStore classStore;
 		ListStore memberStore;
 		bool classBrowserVisible = true;
@@ -178,11 +179,10 @@ namespace MonoDevelop.SourceEditor.Gui
 				return classBrowserVisible;
 			}
 			set {
-				if (value && !classBrowserVisible)
-					editorBar.PackEnd (classBrowser, true, true, 0);
-				if (!value && classBrowserVisible)
-					editorBar.Remove(classBrowser);
+				classBrowser.Visible = value;
 				classBrowserVisible = value;
+				if (classBrowserVisible)
+					BindClassCombo ();
 			}
 		}
 		
@@ -228,12 +228,16 @@ namespace MonoDevelop.SourceEditor.Gui
 			classCombo.Model = classStore;	
 			memberStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(IMember));
 			membersCombo.Model = memberStore;
+   			membersCombo.Changed += new EventHandler (MemberChanged);
+			classCombo.Changed += new EventHandler (ClassChanged);
 			
 			se = new SourceEditor (this);
 			se.Buffer.ModifiedChanged += new EventHandler (OnModifiedChanged);
 			se.Buffer.MarkSet += new MarkSetHandler (OnMarkSet);
 			se.Buffer.Changed += new EventHandler (OnChanged);
 			se.View.ToggleOverwrite += new EventHandler (CaretModeChanged);
+		  	se.View.MoveCursor += new MoveCursorHandler (OnMoveCursorEvent);
+		  	se.View.ButtonReleaseEvent += new ButtonReleaseEventHandler (OnButtonReleaseEvent);
 			ContentNameChanged += new EventHandler (UpdateFSW);
 			
 			// setup a focus chain so that the editor widget gets focus when
@@ -245,7 +249,6 @@ namespace MonoDevelop.SourceEditor.Gui
 			((Container) mainBox).FocusChain = chain;
 			
 			CaretModeChanged (null, null);
-			SetInitialValues ();
 			
 			propertyHandler = (PropertyEventHandler) Services.DispatchService.GuiDispatch (new PropertyEventHandler (PropertiesChanged));
 			PropertyService propertyService = (PropertyService) ServiceManager.GetService (typeof (PropertyService));
@@ -266,7 +269,11 @@ namespace MonoDevelop.SourceEditor.Gui
 				Services.DebuggingService.ExecutionLocationChanged += executionChangedHandler;
 			}
 			
+			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += new ParseInformationEventHandler(UpdateClassBrowser);
+			
 			mainBox.ShowAll ();
+			
+			SetInitialValues ();
 		}
 		
 		public override object GetContent (Type type)
@@ -326,7 +333,18 @@ namespace MonoDevelop.SourceEditor.Gui
 			se.Buffer.MarkSet -= new MarkSetHandler (OnMarkSet);
 			se.Buffer.Changed -= new EventHandler (OnChanged);
 			se.View.ToggleOverwrite -= new EventHandler (CaretModeChanged);
+		  	se.View.MoveCursor -= new MoveCursorHandler (OnMoveCursorEvent);
+		  	se.View.ButtonReleaseEvent -= new ButtonReleaseEventHandler (OnButtonReleaseEvent);
 			ContentNameChanged -= new EventHandler (UpdateFSW);
+   			membersCombo.Changed -= new EventHandler (MemberChanged);
+			classCombo.Changed -= new EventHandler (ClassChanged);
+			
+			classStore.Dispose ();
+			memberStore.Dispose ();
+			
+			membersCombo.Model = null;
+			classCombo.Model = null;
+			
 			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged -= new ParseInformationEventHandler(UpdateClassBrowser);
 			se.Dispose ();
 			fsw.Dispose ();
@@ -412,10 +430,6 @@ namespace MonoDevelop.SourceEditor.Gui
 			IFileParserContext context = IdeApp.ProjectOperations.ParserDatabase.GetFileParserContext(fileName);
 			memberParseInfo = context.ParseFile(fileName);
 			BindClassCombo();
-			
-			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += new ParseInformationEventHandler(UpdateClassBrowser);
-		  	Editor.View.MoveCursor += new MoveCursorHandler (OnMoveCursorEvent);
-		  	Editor.View.ButtonReleaseEvent += new ButtonReleaseEventHandler (OnButtonReleaseEvent);
 		}
 		
 		public INavigationPoint BuildNavPoint ()
@@ -434,6 +448,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			// This event handler can get called when files other than the current content are updated. eg.
 			// when loading a new document. If we didn't do this check the member combo for this tab would have
 			// methods for a different class in it!
+			
 			if (ContentName == args.FileName && !handlingParseEvent) {
 				handlingParseEvent = true;
 				memberParseInfo = args.ParseInformation;
@@ -454,12 +469,15 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		private void UpdateMethodBrowser()
 		{
+			if (!ClassBrowserVisible)
+				return;
+
 			if (memberParseInfo == null) {
-				ClassBrowserVisible = false;
+				classBrowser.Visible = false;
 				return;
 			}
 			
-			membersCombo.Changed -= new EventHandler (MemberChanged);
+			loadingMembers = true;
 			
 			// find out where the current cursor position is and set the combos.
 			int line;
@@ -483,22 +501,19 @@ namespace MonoDevelop.SourceEditor.Gui
 			    	if (member is IField) {
 			    		if (((IField) member).Region.BeginLine <= line && line <= ((IField) member).Region.EndLine) {
 			    			membersCombo.Active = index;
-			    			membersCombo.Changed += new EventHandler (MemberChanged);
-			    			return;
+							break;
 			    		}
 			    	}
 			    	if (member is IProperty) {
 			    		if (((IProperty) member).BodyRegion.BeginLine <= line && line <= ((IProperty) member).BodyRegion.EndLine) {
 			    			membersCombo.Active = index;
-			    			membersCombo.Changed += new EventHandler (MemberChanged);
-			    			return;
+							break;
 			    		}
 			    	}
 			    	if (member is IMethod) {
 			    		if (((IMethod) member).BodyRegion.BeginLine <= line && line <= ((IMethod) member).BodyRegion.EndLine) {
 			    			membersCombo.Active = index;
-			    			membersCombo.Changed += new EventHandler (MemberChanged);
-			    			return;
+							break;
 			    		}
 			    	}
 			    	index++;
@@ -508,6 +523,7 @@ namespace MonoDevelop.SourceEditor.Gui
 				// Changed class, so rebind
 				BindClassCombo();
 			}
+			loadingMembers = false;
 		}
 		
 		
@@ -516,67 +532,71 @@ namespace MonoDevelop.SourceEditor.Gui
 			if (disposed)
 				return false;
 			
-			classCombo.Changed -= new EventHandler (ClassChanged);
-			// Clear down all our local stores.
-			classStore.Clear();				
-			
-			// check the IParseInformation member variable to see if we could get ParseInformation for the 
-			// current docuement. If not we can't display class and member info so hide the browser bar.
-			if (memberParseInfo == null) {
-				ClassBrowserVisible = false;
-				return false;
-			}
-			
 			if (!ClassBrowserVisible)
-				ClassBrowserVisible = true;
-				
-			ClassCollection cls = ((ICompilationUnit)memberParseInfo.BestCompilationUnit).Classes;
-			// if we've got this far then we have valid parse info - but if we have not classes the not much point
-			// in displaying the browser bar
-			if (cls.Count == 0) {
-				ClassBrowserVisible = false;
 				return false;
-			}
-				
-			foreach (IClass c in cls) {
-				// Get the appropriate icon from the Icon service for the current IClass.
-				Gdk.Pixbuf pix = IdeApp.Services.Resources.GetIcon (IdeApp.Services.Icons.GetIcon (c), IconSize.Menu);
-				classStore.AppendValues (pix, c.Name, c);
-			}
 			
-			// find out where the current cursor position is and set the combos.
-			int line;
-			int column;
-			this.GetLineColumnFromPosition(this.CursorPosition, out line, out column);
-			for(int i = 0; i < cls.Count; i++) {
-				IClass c = cls[i];
-				if (c.BodyRegion != null && c.BodyRegion.BeginLine <= line && line <= c.BodyRegion.EndLine)	{
-					// found the right class. Now need right method
-					classCombo.Active = i;
-					BindMemberCombo(c);
-					
-					handlingParseEvent = false;
-					classCombo.Changed += new EventHandler (ClassChanged);
-					
-					// return false to stop the GLib.Timeout
+			loadingMembers = true;
+			
+			try {
+				// Clear down all our local stores.
+				classStore.Clear();				
+				
+				// check the IParseInformation member variable to see if we could get ParseInformation for the 
+				// current docuement. If not we can't display class and member info so hide the browser bar.
+				if (memberParseInfo == null) {
+					classBrowser.Visible = false;
 					return false;
 				}
-			}
-			// Sometimes there might be no classes e.g. AssemblyInfo.cs
-			if (cls.Count > 0) {
-				for (int i = 0; i < cls.Count; i++) {
-					// If the first "class" is a delegate it will have no members 
-					if (cls[i].ClassType != ClassType.Delegate) {
-						BindMemberCombo(cls[i]);
+				
+				ClassCollection cls = ((ICompilationUnit)memberParseInfo.BestCompilationUnit).Classes;
+				// if we've got this far then we have valid parse info - but if we have not classes the not much point
+				// in displaying the browser bar
+				if (cls.Count == 0) {
+					classBrowser.Visible = false;
+					return false;
+				}
+				
+				classBrowser.Visible = true;
+					
+				foreach (IClass c in cls) {
+					// Get the appropriate icon from the Icon service for the current IClass.
+					Gdk.Pixbuf pix = IdeApp.Services.Resources.GetIcon (IdeApp.Services.Icons.GetIcon (c), IconSize.Menu);
+					classStore.AppendValues (pix, c.Name, c);
+				}
+				
+				// find out where the current cursor position is and set the combos.
+				int line;
+				int column;
+				this.GetLineColumnFromPosition(this.CursorPosition, out line, out column);
+				for(int i = 0; i < cls.Count; i++) {
+					IClass c = cls[i];
+					if (c.BodyRegion != null && c.BodyRegion.BeginLine <= line && line <= c.BodyRegion.EndLine)	{
+						// found the right class. Now need right method
 						classCombo.Active = i;
-						break;
+						BindMemberCombo(c);
+						handlingParseEvent = false;
+						
+						// return false to stop the GLib.Timeout
+						return false;
 					}
 				}
+				// Sometimes there might be no classes e.g. AssemblyInfo.cs
+				if (cls.Count > 0) {
+					for (int i = 0; i < cls.Count; i++) {
+						// If the first "class" is a delegate it will have no members 
+						if (cls[i].ClassType != ClassType.Delegate) {
+							BindMemberCombo(cls[i]);
+							classCombo.Active = i;
+							break;
+						}
+					}
+				}
+				handlingParseEvent = false;
 			}
-			classCombo.Changed += new EventHandler (ClassChanged);
+			finally {
+				loadingMembers = false;
+			}
 			
-			handlingParseEvent = false;
-
 			// return false to stop the GLib.Timeout
 			return false;
 		}
@@ -584,6 +604,9 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		private void BindMemberCombo(IClass c)
 		{
+			if (!ClassBrowserVisible)
+				return;
+
 			int position = 0;
 			int activeIndex = 0;
 			// find out where the current cursor position is and set the combos.
@@ -661,6 +684,9 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		private void MemberChanged(object sender, EventArgs e)
 		{
+			if (loadingMembers)
+				return;
+
 			Gtk.TreeIter iter;
 			if (membersCombo.GetActiveIter (out iter)) {	    
 				// Find the IMember object in our list store by name from the member combo
@@ -682,6 +708,9 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		private void ClassChanged(object sender, EventArgs e)
 		{
+			if (loadingMembers)
+				return;
+			
 			Gtk.TreeIter iter;
 			if (classCombo.GetActiveIter(out iter)) 	{
 				IClass selectedClass = (IClass)classStore.GetValue(iter, 2);
