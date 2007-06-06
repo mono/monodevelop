@@ -79,11 +79,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			
 			if ((bool)store.GetValue (iter, 3) == false) {
 				store.SetValue (iter, 3, true);
-				selectDialog.AddReference (null, project.Name);
+				selectDialog.AddReference (true, project.Name);
 				
 			} else {
 				store.SetValue (iter, 3, false);
-				selectDialog.RemoveReference(null, project.Name);
+				selectDialog.RemoveReference(true, project.Name);
 			}
 		}
 		
@@ -141,17 +141,24 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			if (circDeps)
 				store.AppendValues ("", "<span foreground='dimgrey'>" + GettextCatalog.GetString ("(Projects referencing '{0}' are not shown,\nsince cyclic dependencies are not allowed)", configureProject.Name) + "</span>", null, false, null, false);
 		}
+		IProject FindProject (string name)
+		{
+			foreach (IProject project in ProjectService.Solution.AllProjects)
+				if (project.Name == name)
+					return project;
+			return null;
+		}
 		
 		bool ProjectReferencesProject (IProject project, string targetProject)
 		{
 			foreach (ProjectItem item in project.Items) {
-				ReferenceProjectItem pr = item as ReferenceProjectItem;
+				ProjectReferenceProjectItem pr = item as ProjectReferenceProjectItem;
 				if (pr == null)
 					continue;
-				if (pr is ProjectReferenceProjectItem && ((ProjectReferenceProjectItem)pr).Name == targetProject)
+				if (((ProjectReferenceProjectItem)pr).ProjectName == targetProject)
 					return true;
 				
-				Project pref = project.RootCombine.FindProject (pr.Reference);
+				IProject pref = FindProject (pr.ProjectName);
 				if (pref != null && ProjectReferencesProject (pref, targetProject))
 					return true;
 			}

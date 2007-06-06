@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					return referenceInformations;
 				}
 				do {
-					referenceInformations.Add ((ProjectReference) refTreeStore.GetValue(looping_iter, ProjectReferenceColumn));
+					referenceInformations.Add ((ProjectReferenceProjectItem) refTreeStore.GetValue(looping_iter, ProjectReferenceColumn));
 				} while (refTreeStore.IterNext (ref looping_iter));
 				return referenceInformations;
 			}
@@ -78,17 +78,29 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			projectRefPanel.SetProject (configureProject);
 			gacRefPanel.SetProject (configureProject);
 			gacRefPanel.Reset ();
-			assemblyRefPanel.SetBasePath (configureProject.BaseDirectory);
+			assemblyRefPanel.SetBasePath (configureProject.BasePath);
 
-			foreach (ProjectReference refInfo in configureProject.ProjectReferences)
+			foreach (ProjectItem item in configureProject.Items) {
+				ProjectReferenceProjectItem refInfo = item as ProjectReferenceProjectItem;
+				if (refInfo == null)
+					continue;
 				AddReference (refInfo);
+			}
 
 			OnChanged (null, null);
 		}
 		
 		TreeIter AddReference (ReferenceProjectItem refInfo)
 		{
-			switch (refInfo.ReferenceType) {
+			if (refInfo is ProjectReferenceProjectItem)
+				return AddProjectReference (refInfo);
+			
+			if (!String.IsNullOrEmpty (pref.HintPath))
+				return AddAssemplyReference (refInfo);
+				
+			return AddGacReference (refInfo);
+			
+/*			switch (refInfo.ReferenceType) {
 				case ReferenceType.Assembly:
 					return AddAssemplyReference (refInfo);
 				case ReferenceType.Project:
@@ -97,7 +109,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					return AddGacReference (refInfo);
 				default:
 					return TreeIter.Zero;
-			}
+			}*/
 		}
 
 		TreeIter AddAssemplyReference (ReferenceProjectItem refInfo)
@@ -107,21 +119,21 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 		TreeIter AddProjectReference (ReferenceProjectItem refInfo)
 		{
-			Combine c = configureProject.RootCombine;
+			Solution c = ProjectService.Solution; 
 			if (c == null) return TreeIter.Zero;
 			
-			Project p = c.FindProject (refInfo.Reference);
+			IProject p = c.FindProject (refInfo.Reference);
 			if (p == null) return TreeIter.Zero;
 			
-			string iconName = Services.Icons.GetImageForProjectType (p.ProjectType);
+			string iconName = Services.Icons.GetImageForProjectType (p.Language);
 			projectRefPanel.SignalRefChange (refInfo.Reference, true);
 			return refTreeStore.AppendValues (System.IO.Path.GetFileName (refInfo.Reference), GetTypeText (refInfo), p.BaseDirectory, refInfo, iconName);
 		}
 
 		TreeIter AddGacReference (ReferenceProjectItem refInfo)
 		{
-			gacRefPanel.SignalRefChange (refInfo.Reference, true);
-			return refTreeStore.AppendValues (System.IO.Path.GetFileNameWithoutExtension (refInfo.Reference), GetTypeText (refInfo), refInfo.Reference, refInfo, "md-package");
+			gacRefPanel.SignalRefChange (refInfo.Include, true);
+			return refTreeStore.AppendValues (System.IO.Path.GetFileNameWithoutExtension (refInfo.Include), GetTypeText (refInfo), refInfo.Reference, refInfo, "md-package");
 		}
 		
 		public SelectReferenceDialog(IProject configureProject)
@@ -129,7 +141,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			Glade.XML refXML = new Glade.XML (null, "Base.glade", "AddReferenceDialog", null);
 			refXML.Autoconnect (this);
 			
-			refTreeStore = new ListStore (typeof (string), typeof(string), typeof(string), typeof(ProjectReference), typeof(string));
+			refTreeStore = new ListStore (typeof (string), typeof(string), typeof(string), typeof(ReferenceProjectItem), typeof(string));
 			ReferencesTreeView.Model = refTreeStore;
 
 			TreeViewColumn col = new TreeViewColumn ();
@@ -170,12 +182,17 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		string GetTypeText (ReferenceProjectItem pref)
 		{
-			switch (pref.ReferenceType) {
-				case ReferenceType.Gac: return GettextCatalog.GetString ("Package");
-				case ReferenceType.Assembly: return GettextCatalog.GetString ("Assembly");
-				case ReferenceType.Project: return GettextCatalog.GetString ("Project");
-				default: return "";
-			}
+			if (pref is ProjectReferenceProjectItem)
+				return GettextCatalog.GetString ("Project");
+			if (!String.IsNullOrEmpty (pref.HintPath))
+				return GettextCatalog.GetString ("Assembly");
+			return GettextCatalog.GetString ("Package");
+//			switch (pref.ReferenceType) {
+//				case ReferenceType.Gac: return GettextCatalog.GetString ("Package");
+//				case ReferenceType.Assembly: return GettextCatalog.GetString ("Assembly");
+//				case ReferenceType.Project: return GettextCatalog.GetString ("Project");
+//				default: return "";
+//			}
 		}
 
 		public void RemoveReference (bool projectReference, string reference)

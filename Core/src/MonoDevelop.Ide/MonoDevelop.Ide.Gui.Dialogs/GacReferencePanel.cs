@@ -103,11 +103,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			store.GetIterFromString (out iter, e.Path);
 			if ((bool)store.GetValue (iter, 3) == false) {
 				store.SetValue (iter, 3, true);
-				selectDialog.AddReference (ReferenceType.Gac, (string)store.GetValue (iter, 4));
+				selectDialog.AddReference (false, (string)store.GetValue (iter, 4));
 				
 			} else {
 				store.SetValue (iter, 3, false);
-				selectDialog.RemoveReference (ReferenceType.Gac, (string)store.GetValue (iter, 4));
+				selectDialog.RemoveReference (false, (string)store.GetValue (iter, 4));
 			}
 		}
 
