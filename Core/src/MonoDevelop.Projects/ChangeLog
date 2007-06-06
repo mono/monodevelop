@@ -1,3 +1,10 @@
+2007-06-06  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Projects/Project.cs (Dispose): Remove event handler for
+	FileWatcher.	     
+	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs (Dispose):
+	Remove handler for PropertyChanged event.
+
 2007-05-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Parser/IClass.cs,

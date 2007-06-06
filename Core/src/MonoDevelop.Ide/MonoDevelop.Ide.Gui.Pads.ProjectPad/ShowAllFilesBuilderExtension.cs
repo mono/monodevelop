@@ -29,6 +29,7 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
@@ -46,7 +47,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		FileEventHandler deletedHandler;
 		FileEventHandler renamedHandler;
 		
-		ArrayList projects = new ArrayList ();
+		List<Project> projects = new List<Project> ();
 		
 		public override bool CanBuildNode (Type dataType)
 		{
@@ -87,15 +88,17 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void OnNodeAdded (object dataObject)
 		{
 			base.OnNodeAdded (dataObject);
-			if (dataObject is Project)
-				projects.Add (dataObject);
+			Project p = dataObject as Project;
+			if (p != null)
+				projects.Add (p);
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
 			base.OnNodeRemoved (dataObject);
-			if (dataObject is Project)
-				projects.Remove (dataObject);
+			Project p = dataObject as Project;
+			if (p != null)
+				projects.Remove (p);
 		}
 		
 		internal static string GetFolderPath (object dataObject)

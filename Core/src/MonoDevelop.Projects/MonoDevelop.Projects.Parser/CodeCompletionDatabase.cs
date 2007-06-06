@@ -97,6 +97,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public virtual void Dispose ()
 		{
+			Runtime.Properties.PropertyChanged -= new PropertyEventHandler (OnPropertyUpdated);
 			disposed = true;
 		}
 		

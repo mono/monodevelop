@@ -271,6 +271,7 @@ namespace MonoDevelop.Projects
 		public override void Dispose()
 		{
 			base.Dispose ();
+			projectFileWatcher.Changed -= new FileSystemEventHandler (OnFileChanged);
 			projectFileWatcher.Dispose ();
 			foreach (ProjectFile file in ProjectFiles) {
 				file.Dispose ();

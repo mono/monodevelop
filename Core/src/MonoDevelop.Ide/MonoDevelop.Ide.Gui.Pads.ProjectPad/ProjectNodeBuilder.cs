@@ -46,7 +46,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		ProjectFileRenamedEventHandler fileRenamedHandler;
 		ProjectFileEventHandler filePropertyChangedHandler;
 		CombineEntryRenamedEventHandler projectNameChanged;
-		Hashtable projectsByPath = new Hashtable ();
 		
 		public override Type NodeDataType {
 			get { return typeof(Project); }
@@ -83,7 +82,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			base.OnNodeAdded (dataObject);
 			Project project = (Project) dataObject;
 			project.NameChanged += projectNameChanged;
-			projectsByPath.Remove (project.BaseDirectory);
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
@@ -91,7 +89,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			base.OnNodeRemoved (dataObject);
 			Project project = (Project) dataObject;
 			project.NameChanged -= projectNameChanged;
-			projectsByPath [project.BaseDirectory] = project;
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)

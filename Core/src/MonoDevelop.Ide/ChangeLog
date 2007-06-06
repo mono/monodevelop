@@ -1,3 +1,12 @@
+2007-06-06  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs (projectsByPath):
+	Remove, unused.
+	* MonoDevelop.Ide.Gui.Pads/ProjectPad/ShowAllFilesBuilderExtension.cs (projects):
+	Change type from ArrayList to strongly typed List<Project>.
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs (CloseCombine): Remove handlers
+	on the closed combine.
+
 2007-05-31  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Dialogs/CombineEntryFeatureSelector.cs: Show a

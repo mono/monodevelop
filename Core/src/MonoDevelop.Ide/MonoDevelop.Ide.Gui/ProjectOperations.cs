@@ -279,6 +279,17 @@ namespace MonoDevelop.Ide.Gui
 					SaveCombinePreferences ();
 				Combine closedCombine = CurrentOpenCombine;
 				CurrentSelectedProject = null;
+
+				closedCombine.FileAddedToProject -= fileAddedToProjectHandler;
+				closedCombine.FileRemovedFromProject -= fileRemovedFromProjectHandler;
+				closedCombine.FileRenamedInProject -= fileRenamedInProjectHandler;
+				closedCombine.FileChangedInProject -= fileChangedInProjectHandler;
+				closedCombine.FilePropertyChangedInProject -= filePropertyChangedInProjectHandler;
+				closedCombine.ReferenceAddedToProject -= referenceAddedToProjectHandler;
+				closedCombine.ReferenceRemovedFromProject -= referenceRemovedFromProjectHandler;
+				closedCombine.EntryAddedToCombine -= entryAddedToCombineHandler;
+				closedCombine.EntryRemovedFromCombine -= entryRemovedFromCombineHandler;
+
 				CurrentOpenCombine = CurrentSelectedCombine = null;
 				CurrentSelectedCombineEntry = null;
 				refactorer = null;
