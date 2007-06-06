@@ -15,7 +15,6 @@ namespace MonoDevelop.Ide.Gui
 	public abstract class AbstractPadContent : IPadContent
 	{
 		string id;
-		string defaultPosition = "left";
 		IPadWindow window;
 		string title;
 		string icon;
@@ -54,11 +53,6 @@ namespace MonoDevelop.Ide.Gui
 		public string Id {
 			get { return id; }
 			set { id = value; }
-		}
-		
-		public string DefaultPlacement {
-			get { return defaultPosition; }
-			set { defaultPosition = value; }
 		}
 		
 		public virtual void RedrawContent()

@@ -1,3 +1,7 @@
+2007-06-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui/AbstractPadContent.cs: Removed unused property.
+
 2007-06-06  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs (projectsByPath):
