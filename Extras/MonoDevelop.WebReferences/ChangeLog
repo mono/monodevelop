@@ -1,3 +1,9 @@
+2007-06-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/gui.stetic,
+	  MonoDevelop.WebReferences.Dialogs/WebReferenceDialog.cs: Made the
+	  dialog internal.
+
 2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.WebReferences.mdp: Copy the .addins.xml file to the

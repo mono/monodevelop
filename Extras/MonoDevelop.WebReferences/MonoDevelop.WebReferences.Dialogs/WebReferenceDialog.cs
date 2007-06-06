@@ -17,7 +17,7 @@ using Gtk;
 namespace MonoDevelop.WebReferences.Dialogs
 {
 	
-	public class WebReferenceDialog : Gtk.Dialog
+	internal class WebReferenceDialog : Gtk.Dialog
 	{
 		#region Widgets
 		protected Gtk.Action btnNext;

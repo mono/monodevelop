@@ -1,5 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
+  <configuration>
+    <images-root-path>../</images-root-path>
+  </configuration>
   <import>
     <widget-library name="../../../build/AddIns/MonoDevelop.Projects.Gui.dll" />
     <widget-library name="../../../build/AddIns/MonoDevelop.Components.dll" />
@@ -45,6 +48,7 @@
     </action-group>
     <property name="MemberName" />
     <property name="Events">ButtonPressMask</property>
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Add Web Reference</property>
     <property name="Icon">resource:WebReference.Service.png</property>
     <property name="WindowPosition">CenterOnParent</property>
