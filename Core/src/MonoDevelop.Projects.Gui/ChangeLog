@@ -1,3 +1,7 @@
+2007-06-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/objects.xml: Updated.
+
 2007-05-30  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs,

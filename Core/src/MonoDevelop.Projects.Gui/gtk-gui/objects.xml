@@ -1,37 +1,17 @@
 <objects>
   <object type="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
     <itemgroups>
-      <itemgroup label="Container Properties">
-        <property name="BorderWidth" />
-        <property name="FocusHadjustment" />
-        <property name="FocusVadjustment" />
-      </itemgroup>
     </itemgroups>
     <signals>
-      <itemgroup label="Container Signals">
-        <signal name="ResizeChecked" />
-        <signal name="Removed" />
-        <signal name="FocusChildSet" />
-        <signal name="Added" />
-      </itemgroup>
     </signals>
   </object>
-  <object type="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
+  <object type="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin" internal="true">
     <itemgroups>
-      <itemgroup label="Container Properties">
-        <property name="BorderWidth" />
-        <property name="FocusHadjustment" />
-        <property name="FocusVadjustment" />
-      </itemgroup>
     </itemgroups>
     <signals>
       <itemgroup label="CustomCommandWidget Signals">
         <signal name="CommandCreated" />
         <signal name="CommandRemoved" />
-        <signal name="ResizeChecked" />
-        <signal name="Removed" />
-        <signal name="FocusChildSet" />
-        <signal name="Added" />
       </itemgroup>
     </signals>
   </object>
