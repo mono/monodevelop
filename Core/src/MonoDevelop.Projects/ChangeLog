@@ -1,3 +1,8 @@
+2007-06-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Serialization/GenericCollectionHandler.cs: Unset
+	  itemParam after using it for calling a method using reflection.
+
 2007-06-06  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Projects/Project.cs (Dispose): Remove event handler for

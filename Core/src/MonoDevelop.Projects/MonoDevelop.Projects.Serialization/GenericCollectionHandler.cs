@@ -107,6 +107,7 @@ namespace MonoDevelop.Projects.Serialization
 		{
 			itemParam [0] = item;
 			addMethod.Invoke (collection, itemParam);
+			itemParam [0] = null;
 			position = (int)position + 1;
 		}
 		
@@ -138,6 +139,7 @@ namespace MonoDevelop.Projects.Serialization
 		{
 			itemParam [0] = position;
 			indexer.SetValue (collection, item, itemParam);
+			itemParam [0] = null;
 		}
 		
 		public override object GetInitialPosition (object collection)
@@ -155,7 +157,9 @@ namespace MonoDevelop.Projects.Serialization
 		public override object GetCurrentItem (object collection, object position)
 		{
 			itemParam [0] = position;
-			return indexer.GetValue (collection, itemParam);
+			object res = indexer.GetValue (collection, itemParam);
+			itemParam [0] = null;
+			return res;
 		}
 		
 		public override bool IsEmpty (object collection)
