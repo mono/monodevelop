@@ -71,8 +71,14 @@
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/Pads">
-		<Pad id = "MonoDevelop.DesignerSupport.ToolboxPad" class = "MonoDevelop.DesignerSupport.ToolboxPad" _label="Toolbox" />
-		<Pad id = "MonoDevelop.DesignerSupport.PropertyPad" class = "MonoDevelop.DesignerSupport.PropertyPad" _label="Properties" />
+		<Pad id = "MonoDevelop.DesignerSupport.ToolboxPad" 
+			class = "MonoDevelop.DesignerSupport.ToolboxPad" 
+			_label="Toolbox" 
+			defaultPlacement="right"/>
+		<Pad id = "MonoDevelop.DesignerSupport.PropertyPad" 
+			class = "MonoDevelop.DesignerSupport.PropertyPad" 
+			_label="Properties"
+			defaultPlacement="MonoDevelop.DesignerSupport.ToolboxPad/bottom; right" />
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/Contexts/Edit">

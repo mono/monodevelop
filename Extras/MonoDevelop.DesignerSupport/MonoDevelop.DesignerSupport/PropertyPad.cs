@@ -49,7 +49,6 @@ namespace MonoDevelop.DesignerSupport
 		public PropertyPad ()
 		{
 			DesignerSupport.Service.SetPropertyPad (this);
-			DefaultPlacement = "right";
 			
 			grid = new pg.PropertyGrid ();
 			frame = new Gtk.Frame ();
