@@ -23,6 +23,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Xml;
 using Gtk;
 
@@ -85,7 +86,6 @@ namespace Gdl
 			
 			Child.AddNotification ("position", new GLib.NotifyHandler (OnNotifyPosition));
 			Child.ButtonReleaseEvent += new ButtonReleaseEventHandler (OnButtonReleased);
-			Child.KeyPressEvent += new KeyPressEventHandler (OnKeyPressed);
 												
 			Child.Parent = this;
 			Child.Show ();
@@ -166,20 +166,20 @@ namespace Gdl
 			// after that we can remove the Paned child
 			if (Child != null) {
 				Child.ButtonReleaseEvent -= new ButtonReleaseEventHandler (OnButtonReleased);
-				Child.KeyPressEvent -= new KeyPressEventHandler (OnKeyPressed);
 				Child.Unparent ();
 				Child = null;
 			}
 		}	
 	
-		protected override void ForAll (bool include_internals, Callback cb)
-		{
-			if (include_internals) {
-				base.ForAll (include_internals, cb);
-			} else {
+		public override IEnumerable<Widget> DockChildren {
+			get {
 				if (Child != null) {
-					((Paned)Child).Foreach (cb);
+					foreach (Widget w in ((Paned)Child).Children)
+						if (w is DockObject)
+							yield return w;
 				}
+				else
+					yield break;
 			}
 		}
 		
@@ -277,7 +277,7 @@ namespace Gdl
 				} else { /* Otherwise try our children. */
 					mayDock = false;
 					DockRequest myRequest = new DockRequest (request);
-					foreach (DockObject item in Children) {
+					foreach (DockObject item in DockChildren) {
 						if (item.OnDockRequest (relX, relY, ref myRequest)) {
 							mayDock = true;
 							request = myRequest;
@@ -333,14 +333,6 @@ namespace Gdl
 		void OnNotifyPosition (object sender, GLib.NotifyArgs a)
 		{
 			positionChanged = true;
-		}
-
-		[GLib.ConnectBefore]
-		void OnKeyPressed (object sender, KeyPressEventArgs a)
-		{
-			// eat Shift|F8, see http://bugzilla.ximian.com/show_bug.cgi?id=61113
-			if (a.Event.Key == Gdk.Key.F8 && a.Event.State == Gdk.ModifierType.ShiftMask)
-				a.RetVal = true;
 		}
 
 		[GLib.ConnectBefore]

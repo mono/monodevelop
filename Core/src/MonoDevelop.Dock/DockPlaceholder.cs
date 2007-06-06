@@ -310,10 +310,10 @@ namespace Gdl
 		[System.Diagnostics.Conditional ("DEBUG")]
 		void PrintPlacementStack ()
 		{
-			Console.WriteLine ("-- {0} count {1}", host.Name, placementStack.Count);
+/*			Console.WriteLine ("-- {0} count {1}", host.Name, placementStack.Count);
 			foreach (DockPlacement dp in placementStack)
 				Console.WriteLine (dp);
-		}
+*/		}
 		
 		public static void DumpTree (Widget w)
 		{
@@ -328,12 +328,12 @@ namespace Gdl
 		[System.Diagnostics.Conditional ("DEBUG")]
 		static void DumpTreeRec (Widget w, int n)
 		{
-			if (w is DockObject)
+/*			if (w is DockObject)
 				Console.WriteLine (new string (' ', n*4) + "- " + ((DockObject)w).Name + " " + w.GetType ());
 			if (w is Gtk.Container) {
 				foreach (Widget c in ((Gtk.Container)w).Children)
 					DumpTreeRec (c, n+1);
 			}
-		}
+*/		}
 	}
 }

@@ -23,6 +23,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Xml;
 using Gtk;
 
@@ -95,21 +96,24 @@ namespace Gdl
 			Dock ((DockObject)widget, DockPlacement.Center, null);
 		}
 		
-		protected override void ForAll (bool includeInternals, Callback cb)
-		{
-			if (includeInternals) {
-				base.ForAll (includeInternals, cb);
-			} else {
+		public override IEnumerable<Widget> DockChildren {
+			get {
 				if (Child != null) {
-					((Notebook)Child).Foreach (cb);
+					foreach (Widget w in ((Notebook)Child).Children)
+						if (w is DockObject)
+							yield return w;
 				}
+				else
+					yield break;
 			}
 		}
-
-		private void DockChild (Widget w)
+		
+		private void DockObjectChildren (DockObject dob)
 		{
-			if (w is DockObject)
-				Dock ((DockObject)w, dockInfo.position, dockInfo.data);
+			foreach (DockObject w in dob.DockChildren) {
+				Dock (w, dockInfo.position, dockInfo.data);
+				DockObjectChildren (w);
+			}
 		}
 
 		public override void OnDocked (DockObject requestor, DockPlacement position, object data)
@@ -121,7 +125,7 @@ namespace Gdl
 				if (requestor.IsCompound) {
 					requestor.Freeze ();
 					dockInfo = new DockInfo (position, data);
-					requestor.Foreach (new Callback (DockChild));
+					DockObjectChildren (requestor);
 					requestor.Thaw ();
 				} else {
 					DockItem requestorItem = requestor as DockItem;

@@ -43,9 +43,12 @@ namespace Gdl
 		private string stockid;
 		private bool reducePending;
 
-		private PropertyInfo[] publicProps;
-		Dictionary<string, PropertyInfo> afterProps;
-		Dictionary<string, PropertyInfo> beforeProps;
+		static Dictionary<Type, TypeProps> props = new Dictionary<Type, TypeProps> ();
+		
+		class TypeProps { 
+			public Dictionary<string, PropertyInfo> AfterProps;
+			public Dictionary<string, PropertyInfo> BeforeProps;
+		}
 		
 		public event DetachedHandler Detached;
 		public event DockedHandler Docked;
@@ -162,31 +165,32 @@ namespace Gdl
 
 		private PropertyInfo[] PublicProps {
 			get {
-				if (publicProps == null)
-					publicProps = this.GetType ().GetProperties (BindingFlags.Public | BindingFlags.Instance);
-				return publicProps;
+				return this.GetType ().GetProperties (BindingFlags.Public | BindingFlags.Instance);
 			}
 		}
 
 		void SetPropertyValue (string property, string val, bool after)
 		{
-			if (afterProps == null) {
-				afterProps = new Dictionary<string, PropertyInfo> ();
-				beforeProps = new Dictionary<string, PropertyInfo> ();
+			TypeProps tprops;
+			if (!props.TryGetValue (GetType (), out tprops)) {
+				tprops = new TypeProps ();
+				tprops.AfterProps = new Dictionary<string, PropertyInfo> ();
+				tprops.BeforeProps = new Dictionary<string, PropertyInfo> ();
 				foreach (PropertyInfo pp in PublicProps) {
 					if (pp.IsDefined (typeof (AfterAttribute), true))
-						afterProps [pp.Name.ToLower ()] = pp;
+						tprops.AfterProps [pp.Name.ToLower ()] = pp;
 					else
-						beforeProps [pp.Name.ToLower ()] = pp;
+						tprops.BeforeProps [pp.Name.ToLower ()] = pp;
 				}
+				props [GetType ()] = tprops;
 			}
 			
 			property = property.ToLower ();
 			PropertyInfo p = null;
-			if (after && afterProps.ContainsKey (property)) {
-				p = afterProps [property];
-			} else if (beforeProps.ContainsKey (property)) {
-				p = beforeProps [property];
+			if (after && tprops.AfterProps.ContainsKey (property)) {
+				p = tprops.AfterProps [property];
+			} else if (tprops.BeforeProps.ContainsKey (property)) {
+				p = tprops.BeforeProps [property];
 			}
 			if (p != null)
 				SetPropertyValue (p, property, val);
@@ -261,7 +265,7 @@ namespace Gdl
 				/* detach our dock object children if we have some, and even
 				   if we are not attached, so they can get notification */
 				Freeze ();
-				foreach (DockObject child in Children)
+				foreach (DockObject child in DockChildren)
 					child.Detach (true);
 				reducePending = false;
 				Thaw ();
@@ -281,7 +285,7 @@ namespace Gdl
 		protected override void OnShown ()
 		{
 			if (IsCompound)
-				foreach (Widget child in Children)
+				foreach (Widget child in DockChildren)
 					child.Show ();
 
 			base.OnShown ();
@@ -290,7 +294,7 @@ namespace Gdl
 		protected override void OnHidden ()
 		{
 			if (IsCompound)
-				foreach (Widget child in Children)
+				foreach (Widget child in DockChildren)
 					child.Hide ();
 
 			base.OnHidden ();
@@ -300,8 +304,10 @@ namespace Gdl
 		{
 			/* detach children */
 			if (recursive && IsCompound) {
-				foreach (DockObject child in Children) {
-					child.Detach (recursive);
+				foreach (Widget c in DockChildren) {
+					DockObject child = c as DockObject;
+					if (child != null)
+						child.Detach (recursive);
 				}
 			}
 			
@@ -323,8 +329,12 @@ namespace Gdl
 			DockPlaceholder.DumpTree (this);
 			
 			DockObject parent = ParentObject;
-			Widget[] children = Children;
-			if (children.Length <= 1) {
+			List<Widget> children = new List<Widget> ();
+			foreach (Widget w in DockChildren)
+				if (w is DockObject)
+					children.Add (w);
+			
+			if (children.Count <= 1) {
 				if (parent != null)
 					parent.Freeze ();
 
@@ -591,6 +601,14 @@ namespace Gdl
 			PropertyChangedHandler handler = PropertyChanged;
 			if (handler != null)
 				handler (this, name);
+		}
+		
+		public virtual IEnumerable<Widget> DockChildren {
+			get {
+				foreach (Widget w in Children)
+					if (w is DockObject)
+						yield return w;
+			}
 		}
 	}
 }

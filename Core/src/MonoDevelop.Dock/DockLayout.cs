@@ -538,7 +538,7 @@ namespace Gdl
 		void ForeachToplevelDetach (DockObject obj)
 		{
 			DockObject child;
-			foreach (Widget w in obj.Children) {
+			foreach (Widget w in obj.DockChildren) {
 				child = w as DockObject;
 				if (w != null)
 					ForeachDetach (child);
@@ -575,7 +575,7 @@ namespace Gdl
 			// recurse the object if appropriate
 			if (obj.IsCompound) {
 				DockObject child;
-				foreach (Widget w in obj.Children)
+				foreach (Widget w in obj.DockChildren)
 				{
 					child = w as DockObject;
 					if (child != null)

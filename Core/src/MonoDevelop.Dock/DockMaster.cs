@@ -106,7 +106,7 @@ namespace Gdl
 		{
 			item.Locked = locked;
 			if (item.IsCompound) {
-				foreach (Widget w in item.Children) {
+				foreach (Widget w in item.DockChildren) {
 					DockItem i = w as DockItem;
 					if (i != null)
 						ForeachLockUnlock (i, locked);
