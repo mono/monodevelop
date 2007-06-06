@@ -42,7 +42,11 @@
 	</ExtensionPoint>
 	
 	<Extension path = "/SharpDevelop/Workbench/Pads">
-		<Pad id = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderProjectPad" class = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderProjectPad" _label="Widget Tree"/>
+		<Pad id = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderProjectPad" 
+			class = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderProjectPad" 
+			_label="Widget Tree"
+			defaultPlacement="MonoDevelop.DesignerSupport.PropertyPad/center; bottom"
+			/>
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/Contexts/Edit">

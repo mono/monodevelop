@@ -41,7 +41,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public GuiBuilderProjectPad ()
 		{
-			DefaultPlacement = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderPropertiesPad/center; bottom";
 			pview = GuiBuilderService.SteticApp.ProjectWidget;
 			pview.ShowAll ();
 		}
