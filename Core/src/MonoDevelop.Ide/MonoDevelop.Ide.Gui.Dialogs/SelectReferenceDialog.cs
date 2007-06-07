@@ -93,9 +93,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		TreeIter AddReference (ReferenceProjectItem refInfo)
 		{
 			if (refInfo is ProjectReferenceProjectItem)
-				return AddProjectReference (refInfo);
+				return AddProjectReference (refInfo as ProjectReferenceProjectItem);
 			
-			if (!String.IsNullOrEmpty (pref.HintPath))
+			if (!String.IsNullOrEmpty (refInfo.HintPath))
 				return AddAssemplyReference (refInfo);
 				
 			return AddGacReference (refInfo);
@@ -114,26 +114,26 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 		TreeIter AddAssemplyReference (ReferenceProjectItem refInfo)
 		{
-			return refTreeStore.AppendValues (System.IO.Path.GetFileName (refInfo.Reference), GetTypeText (refInfo), System.IO.Path.GetFullPath (refInfo.Reference), refInfo, "md-closed-folder");
+			return refTreeStore.AppendValues (System.IO.Path.GetFileName (refInfo.Include), GetTypeText (refInfo), System.IO.Path.GetFullPath (refInfo.HintPath), refInfo, "md-closed-folder");
 		}
 
-		TreeIter AddProjectReference (ReferenceProjectItem refInfo)
+		TreeIter AddProjectReference (ProjectReferenceProjectItem refInfo)
 		{
 			Solution c = ProjectService.Solution; 
 			if (c == null) return TreeIter.Zero;
 			
-			IProject p = c.FindProject (refInfo.Reference);
+			IProject p = ProjectService.FindProject (refInfo.ProjectName).Project;
 			if (p == null) return TreeIter.Zero;
 			
 			string iconName = Services.Icons.GetImageForProjectType (p.Language);
-			projectRefPanel.SignalRefChange (refInfo.Reference, true);
-			return refTreeStore.AppendValues (System.IO.Path.GetFileName (refInfo.Reference), GetTypeText (refInfo), p.BaseDirectory, refInfo, iconName);
+			projectRefPanel.SignalRefChange (refInfo.Include, true);
+			return refTreeStore.AppendValues (System.IO.Path.GetFileName (refInfo.Include), GetTypeText (refInfo), p.BasePath, refInfo, iconName);
 		}
 
 		TreeIter AddGacReference (ReferenceProjectItem refInfo)
 		{
 			gacRefPanel.SignalRefChange (refInfo.Include, true);
-			return refTreeStore.AppendValues (System.IO.Path.GetFileNameWithoutExtension (refInfo.Include), GetTypeText (refInfo), refInfo.Reference, refInfo, "md-package");
+			return refTreeStore.AppendValues (System.IO.Path.GetFileNameWithoutExtension (refInfo.Include), GetTypeText (refInfo), refInfo.Include, refInfo, "md-package");
 		}
 		
 		public SelectReferenceDialog(IProject configureProject)
@@ -209,7 +209,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (!iter.Equals (TreeIter.Zero))
 				return;
 			
-			ReferenceProjectItem tag = projectReference ? new ProjectReferenceProjectItem (reference) : new ReferenceProjectItem (reference);
+			ReferenceProjectItem tag;
+			if (projectReference) {
+				SolutionProject project = ProjectService.FindProject (reference);
+				tag = new ProjectReferenceProjectItem (project.Location, project.Guid, project.Name);
+			} else {
+				tag = new ReferenceProjectItem (reference);
+			}
+				
 			TreeIter ni = AddReference (tag);
 			if (!ni.Equals (TreeIter.Zero))
 				ReferencesTreeView.ScrollToCell (refTreeStore.GetPath (ni), null, false, 0, 0);
@@ -234,14 +241,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			TreeIter iter;
 			TreeModel mdl;
 			if (ReferencesTreeView.Selection.GetSelected (out mdl, out iter)) {
-				switch (((ProjectReference)refTreeStore.GetValue (iter, ProjectReferenceColumn)).ReferenceType) {
-					case ReferenceType.Gac:
-						gacRefPanel.SignalRefChange ((string)refTreeStore.GetValue (iter, LocationColumn), false);
-						break;
-					case ReferenceType.Project:
-						projectRefPanel.SignalRefChange ((string)refTreeStore.GetValue (iter, NameColumn), false);
-						break;
+				ReferenceProjectItem item = (ReferenceProjectItem)refTreeStore.GetValue (iter, ProjectReferenceColumn);
+				if (item is ProjectReferenceProjectItem) {
+					projectRefPanel.SignalRefChange ((string)refTreeStore.GetValue (iter, NameColumn), false);
+				} else {
+					gacRefPanel.SignalRefChange ((string)refTreeStore.GetValue (iter, LocationColumn), false);
 				}
+				
 				TreeIter newIter = iter;
 				if (refTreeStore.IterNext (ref newIter)) {
 					ReferencesTreeView.Selection.SelectIter (newIter);

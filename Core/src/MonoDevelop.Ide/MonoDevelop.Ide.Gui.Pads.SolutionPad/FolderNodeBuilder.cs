@@ -180,7 +180,7 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 				dialog.Run ();
 				if (dialog.CreatedFiles != null) 
 					foreach (string fileName in dialog.CreatedFiles) 
-						project.Project.Items.Add (new ProjectFile (fileName, SystemFileNodeCommandHandler.GetFileType (fileName, project)));
+						project.Project.Add (new ProjectFile (fileName, SystemFileNodeCommandHandler.GetFileType (fileName, project)));
 			}
 			ProjectService.SaveProject (project.Project);
 			CurrentNode.Expanded = true;
@@ -208,7 +208,7 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 			}
 			
 			Directory.CreateDirectory (directoryName);
-			project.Project.Items.Add (new ProjectFile (directoryName, FileType.Folder));
+			project.Project.Add (new ProjectFile (directoryName, FileType.Folder));
 
 			ProjectService.SaveProject (project.Project);
 			CurrentNode.Expanded = true;

@@ -105,8 +105,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 				//FIXME: use mimetypes not extensions
 				// also change to Project tab when its a project
-				if (Services.ProjectService.IsCombineEntryFile (item.FullName))
-					IdeApp.ProjectOperations.OpenCombine (item.FullName);
+				if (ProjectService.IsSolution (item.FullName))
+					ProjectService.OpenSolution (item.FullName);
 				else
 					IdeApp.Workbench.OpenDocument (item.FullName);
 			}

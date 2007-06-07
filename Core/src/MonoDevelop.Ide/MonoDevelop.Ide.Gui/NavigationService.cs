@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.Ide.Gui {
 	/// <summary>
@@ -52,9 +52,11 @@ namespace MonoDevelop.Ide.Gui {
 		static NavigationService ()
 		{
 			//WorkbenchSingleton.WorkbenchCreated += WorkbenchCreatedHandler;
+
+			// TODO: Project Conversion
+//			IdeApp.ProjectOperations.FileRenamedInProject += FileRenamed;
 			
-			IdeApp.ProjectOperations.FileRenamedInProject += FileRenamed;
-			IdeApp.ProjectOperations.CombineClosed += SolutionClosed;
+			ProjectService.SolutionClosed += SolutionClosed;
 		}
 		
 #region Public Properties
@@ -289,15 +291,16 @@ namespace MonoDevelop.Ide.Gui {
 //			}
 //		}
 //#endregion
-		
-		static void FileRenamed (object sender, ProjectFileRenamedEventArgs e)
-		{
-			foreach (INavigationPoint p in history) {
-				if (p.FileName.Equals (e.OldName)) {
-					p.FileNameChanged (e.NewName);
-				}
-			}
-		}
+
+// TODO: Project Conversion		
+//		static void FileRenamed (object sender, ProjectFileRenamedEventArgs e)
+//		{
+//			foreach (INavigationPoint p in history) {
+//				if (p.FileName.Equals (e.OldName)) {
+//					p.FileNameChanged (e.NewName);
+//				}
+//			}
+//		}
 		
 		static void SolutionClosed (object sender, EventArgs e)
 		{

@@ -79,6 +79,12 @@ namespace MonoDevelop.Projects.Ambience
 			return amb;
 		}
 		
+		public Ambience GetAmbienceForProject (MonoDevelop.Ide.Projects.IProject project)
+		{
+			Ambience result = AmbienceFromName (project.Language);
+			return result ?? GenericAmbience;
+		}
+		
 		public Ambience GetAmbienceForFile (string fileName)
 		{
 			ILanguageBinding lang = Services.Languages.GetBindingPerFileName (fileName);

@@ -32,12 +32,13 @@
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Ide.Gui.Pads.ProjectPad;
+using MonoDevelop.Ide.Gui.Pads.SolutionViewPad;
 
 using MonoDevelop.DesignerSupport;
 
@@ -84,7 +85,8 @@ namespace MonoDevelop.DesignerSupport.CodeBehind
 			if (cls.Region == null) return;
 			string filename = cls.Region.FileName;
 			if (filename == null) return;
-			Project proj = IdeApp.ProjectOperations.CurrentOpenCombine.GetProjectContainingFile (filename);
+			
+			IProject proj = ProjectService.GetProjectContainingFile (filename);
 			if (proj == null) return;
 			
 			builder = Context.GetTreeBuilder (proj);

@@ -35,7 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 using Mono.Addins;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using NUnit.Core;
 using MonoDevelop.Ide.Gui;
 using GuiServices = MonoDevelop.Core.Gui.Services;
@@ -61,14 +61,16 @@ namespace MonoDevelop.NUnit
 		
 		public override void InitializeService ()
 		{
-			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new CombineEventHandler (OnOpenCombine));
-			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCloseCombine));
-			IdeApp.ProjectOperations.ReferenceAddedToProject += new ProjectReferenceEventHandler (OnReferenceAddedToProject);
-			IdeApp.ProjectOperations.ReferenceRemovedFromProject += new ProjectReferenceEventHandler (OnReferenceRemovedFromProject);
-			
-			IProjectService ps = MonoDevelop.Projects.Services.ProjectService;
-			ps.DataContext.IncludeType (typeof(UnitTestOptionsSet));
-			ps.DataContext.RegisterProperty (typeof(AbstractConfiguration), "UnitTestInformation", typeof(UnitTestOptionsSet));
+			ProjectService.SolutionOpened += (EventHandler<SolutionEventArgs>) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (OnOpenCombine));
+			ProjectService.SolutionClosed += (EventHandler<SolutionEventArgs>) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (OnCloseCombine));
+// TODO: Project Conversion
+//			IdeApp.ProjectOperations.ReferenceAddedToProject += new ProjectReferenceEventHandler (OnReferenceAddedToProject);
+//			IdeApp.ProjectOperations.ReferenceRemovedFromProject += new ProjectReferenceEventHandler (OnReferenceRemovedFromProject);
+//				// TODO: Project Conversion
+
+//				IProjectService ps = MonoDevelop.Projects.Services.ProjectService;
+//				ps.DataContext.IncludeType (typeof(UnitTestOptionsSet));
+//				ps.DataContext.RegisterProperty (typeof(AbstractConfiguration), "UnitTestInformation", typeof(UnitTestOptionsSet));
 			
 			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/Services/NUnit/TestProviders", OnExtensionChange);
 		}
@@ -76,20 +78,21 @@ namespace MonoDevelop.NUnit
 		void OnExtensionChange (object s, ExtensionNodeEventArgs args)
 		{
 			if (args.Change == ExtensionChange.Add) {
-				IProjectService ps = MonoDevelop.Projects.Services.ProjectService;
-				ITestProvider provider = args.ExtensionObject as ITestProvider;
-				providers.Add (provider);
-				
-				Type[] types = provider.GetOptionTypes ();
-				if (types != null) {
-					foreach (Type t in types) {
-						if (!typeof(ICloneable).IsAssignableFrom (t)) {
-							Console.WriteLine ("Option types must implement ICloneable: " + t);
-							continue;
-						}
-						ps.DataContext.IncludeType (t);
-					}
-				}
+// TODO: Project Conversion
+//				IProjectService ps = MonoDevelop.Projects.Services.ProjectService;
+//				ITestProvider provider = args.ExtensionObject as ITestProvider;
+//				providers.Add (provider);
+//				
+//				Type[] types = provider.GetOptionTypes ();
+//				if (types != null) {
+//					foreach (Type t in types) {
+//						if (!typeof(ICloneable).IsAssignableFrom (t)) {
+//							Console.WriteLine ("Option types must implement ICloneable: " + t);
+//							continue;
+//						}
+//						ps.DataContext.IncludeType (t);
+//					}
+//				}
 			}
 		}
 		
@@ -106,14 +109,14 @@ namespace MonoDevelop.NUnit
 		}
 		
 		
-		protected virtual void OnOpenCombine (object sender, CombineEventArgs e)
+		protected virtual void OnOpenCombine (object sender, SolutionEventArgs e)
 		{
-			rootTest = BuildTest (e.Combine);
+			rootTest = BuildTest (e.Solution);
 			if (TestSuiteChanged != null)
 				TestSuiteChanged (this, EventArgs.Empty);
 		}
 
-		protected virtual void OnCloseCombine (object sender, CombineEventArgs e)
+		protected virtual void OnCloseCombine (object sender, SolutionEventArgs e)
 		{
 			if (rootTest != null) {
 				((IDisposable)rootTest).Dispose ();
@@ -122,29 +125,38 @@ namespace MonoDevelop.NUnit
 			if (TestSuiteChanged != null)
 				TestSuiteChanged (this, EventArgs.Empty);
 		}
-		
-		void OnReferenceAddedToProject (object sender, ProjectReferenceEventArgs e)
-		{
-			RebuildTests ();
-		}
-		
-		void OnReferenceRemovedFromProject (object sender, ProjectReferenceEventArgs e)
-		{
-			RebuildTests ();
-		}
+// TODO: Project Conversion
+//		void OnReferenceAddedToProject (object sender, ProjectReferenceEventArgs e)
+//		{
+//			RebuildTests ();
+//		}
+//		
+//		void OnReferenceRemovedFromProject (object sender, ProjectReferenceEventArgs e)
+//		{
+//			RebuildTests ();
+//		}
 		
 		void RebuildTests ()
 		{
 			if (rootTest != null)
 				((IDisposable)rootTest).Dispose ();
 				
-			rootTest = BuildTest (IdeApp.ProjectOperations.CurrentOpenCombine);
+			rootTest = BuildTest (ProjectService.Solution);
 
 			if (TestSuiteChanged != null)
 				TestSuiteChanged (this, EventArgs.Empty);
 		}
 		
-		public UnitTest BuildTest (CombineEntry entry)
+		public UnitTest BuildTest (IProject entry)
+		{
+			foreach (ITestProvider p in providers) {
+				UnitTest t = p.CreateUnitTest (entry);
+				if (t != null) return t;
+			}
+			return null;
+		}
+		
+		public UnitTest BuildTest (Solution entry)
 		{
 			foreach (ITestProvider p in providers) {
 				UnitTest t = p.CreateUnitTest (entry);

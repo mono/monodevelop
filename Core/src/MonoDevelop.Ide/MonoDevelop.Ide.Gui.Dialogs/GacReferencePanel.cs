@@ -8,7 +8,7 @@
 using System;
 using System.IO;
 
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core;
 
 using Gtk;
@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			BorderWidth = 6;
 		}
 		
-		public void SetProject (Project prj)
+		public void SetProject (IProject prj)
 		{
 // TODO: Project Conversion
 //			DotNetProject netProject = prj as DotNetProject;

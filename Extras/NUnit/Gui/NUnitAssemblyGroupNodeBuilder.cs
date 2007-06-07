@@ -29,7 +29,7 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
@@ -43,11 +43,13 @@ namespace MonoDevelop.NUnit
 {
 	public class NUnitAssemblyGroupNodeBuilder: TypeNodeBuilder
 	{
-		ConfigurationEventHandler configsChanged;
+// TODO:Project Conversion
+//		ConfigurationEventHandler configsChanged;
 		
 		public NUnitAssemblyGroupNodeBuilder ()
 		{
-			configsChanged = (ConfigurationEventHandler) GuiServices.DispatchService.GuiDispatch (new ConfigurationEventHandler (OnConfigurationsChanged));
+// TODO:Project Conversion
+//			configsChanged = (ConfigurationEventHandler) GuiServices.DispatchService.GuiDispatch (new ConfigurationEventHandler (OnConfigurationsChanged));
 		}
 		
 		public override Type CommandHandlerType {
@@ -90,23 +92,25 @@ namespace MonoDevelop.NUnit
 		
 		public override void OnNodeAdded (object dataObject)
 		{
-			NUnitAssemblyGroupProject project = dataObject as NUnitAssemblyGroupProject;
-			project.ConfigurationAdded += configsChanged;
-			project.ConfigurationRemoved += configsChanged;
+// TODO: Project Conversion
+//			NUnitAssemblyGroupProject project = dataObject as NUnitAssemblyGroupProject;
+//			project.ConfigurationAdded += configsChanged;
+//			project.ConfigurationRemoved += configsChanged;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
-			NUnitAssemblyGroupProject project = dataObject as NUnitAssemblyGroupProject;
-			project.ConfigurationAdded -= configsChanged;
-			project.ConfigurationRemoved -= configsChanged;
+// TODO: Project Conversion
+//			NUnitAssemblyGroupProject project = dataObject as NUnitAssemblyGroupProject;
+//			project.ConfigurationAdded -= configsChanged;
+//			project.ConfigurationRemoved -= configsChanged;
 		}
-		
-		public void OnConfigurationsChanged (object sender, ConfigurationEventArgs args)
-		{
-			ITreeBuilder tb = Context.GetTreeBuilder (sender);
-			if (tb != null) tb.UpdateAll ();
-		}
+// TODO: Project Conversion
+//		public void OnConfigurationsChanged (object sender, ConfigurationEventArgs args)
+//		{
+//			ITreeBuilder tb = Context.GetTreeBuilder (sender);
+//			if (tb != null) tb.UpdateAll ();
+//		}
 	}
 	
 	class NUnitAssemblyGroupNodeCommandHandler: NodeCommandHandler
@@ -122,7 +126,7 @@ namespace MonoDevelop.NUnit
 			NUnitAssemblyGroupProject project = CurrentNode.DataItem as NUnitAssemblyGroupProject;
 			project.ParentCombine.RemoveEntry (project);
 			project.Dispose ();
-			IdeApp.ProjectOperations.SaveCombine ();
+			ProjectService.SaveSolution ();
 		}
 	}
 }

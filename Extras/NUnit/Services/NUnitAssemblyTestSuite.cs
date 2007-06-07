@@ -34,7 +34,7 @@ using System.Collections;
 using System.Threading;
 using System.Runtime.Serialization.Formatters.Binary;
 
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core;
 using NUnit.Core;
 
@@ -54,7 +54,7 @@ namespace MonoDevelop.NUnit
 		{
 		}
 		
-		public NUnitAssemblyTestSuite (string name, CombineEntry ownerCombineEntry): base (name, ownerCombineEntry)
+		public NUnitAssemblyTestSuite (string name, IProject ownerCombineEntry): base (name, ownerCombineEntry)
 		{
 		}
 		

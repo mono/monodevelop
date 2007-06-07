@@ -78,18 +78,20 @@ namespace MonoDevelop.Ide.Gui
 
 		void OpenCombine (object sender, SolutionEventArgs e)
 		{
-			RefreshCombo (e.Combine);
-			e.Combine.ActiveConfigurationChanged += onActiveConfigurationChanged;
-			e.Combine.ConfigurationAdded += onConfigurationsChanged;
-			e.Combine.ConfigurationRemoved += onConfigurationsChanged;
+			RefreshCombo (e.Solution);
+// TODO: Project Conversion
+//			e.Combine.ActiveConfigurationChanged += onActiveConfigurationChanged;
+//			e.Combine.ConfigurationAdded += onConfigurationsChanged;
+//			e.Combine.ConfigurationRemoved += onConfigurationsChanged;
 		}
 
 		void CloseCombine (object sender, SolutionEventArgs e)
 		{
 			Reset ();
-			e.Combine.ActiveConfigurationChanged -= onActiveConfigurationChanged;
-			e.Combine.ConfigurationAdded -= onConfigurationsChanged;
-			e.Combine.ConfigurationRemoved -= onConfigurationsChanged;
+// TODO: Project Conversion
+//			e.Combine.ActiveConfigurationChanged -= onActiveConfigurationChanged;
+//			e.Combine.ConfigurationAdded -= onConfigurationsChanged;
+//			e.Combine.ConfigurationRemoved -= onConfigurationsChanged;
 		}
 		
 // TODO: Project Conversion
@@ -113,14 +115,15 @@ namespace MonoDevelop.Ide.Gui
 		
 		protected void OnChanged (object sender, EventArgs args)
 		{
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				Gtk.TreeIter iter;
-				if (combo.GetActiveIter (out iter)) {
-					string cs = (string) combo.Model.GetValue (iter, 0);
-					IConfiguration conf = IdeApp.ProjectOperations.CurrentOpenCombine.GetConfiguration (cs);
-					IdeApp.ProjectOperations.CurrentOpenCombine.ActiveConfiguration = conf;
-				}
-			}
+// TODO: Project Conversion
+//			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
+//				Gtk.TreeIter iter;
+//				if (combo.GetActiveIter (out iter)) {
+//					string cs = (string) combo.Model.GetValue (iter, 0);
+//					IConfiguration conf = IdeApp.ProjectOperations.CurrentOpenCombine.GetConfiguration (cs);
+//					IdeApp.ProjectOperations.CurrentOpenCombine.ActiveConfiguration = conf;
+//				}
+//			}
 		}
 	}
 }

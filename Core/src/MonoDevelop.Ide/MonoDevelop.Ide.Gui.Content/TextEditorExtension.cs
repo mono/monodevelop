@@ -1,6 +1,6 @@
 
 using System;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Ambience;
@@ -45,13 +45,15 @@ namespace MonoDevelop.Ide.Gui.Content
 			
 			IViewContent view = document.Window.ViewContent;
 			string file = view.IsUntitled ? view.UntitledName : view.ContentName;
-			Project project = view.Project;
-			IParserDatabase pdb = IdeApp.ProjectOperations.ParserDatabase;
-			
-			if (project != null)
-				return pdb.GetProjectParserContext (project);
-			else
-				return pdb.GetFileParserContext (file);
+// TODO: Project Conversion
+//			IProject project = view.Project;
+//			IParserDatabase pdb = IdeApp.ProjectOperations.ParserDatabase;
+//			
+//			if (project != null)
+//				return pdb.GetProjectParserContext (project);
+//			else
+//				return pdb.GetFileParserContext (file);
+			return null;
 		}
 		
 		protected MonoDevelop.Projects.Ambience.Ambience GetAmbience ()
@@ -59,14 +61,13 @@ namespace MonoDevelop.Ide.Gui.Content
 			CheckInitialized ();
 			
 			IViewContent view = document.Window.ViewContent;
-			Project project = view.Project;
+// TODO: Project Conversion
+//			IProject project = view.Project;
+//			if (project != null)
+//				return project.Ambience;
 			
-			if (project != null)
-				return project.Ambience;
-			else {
-				string file = view.IsUntitled ? view.UntitledName : view.ContentName;
-				return MonoDevelop.Projects.Services.Ambience.GetAmbienceForFile (file);
-			}
+			string file = view.IsUntitled ? view.UntitledName : view.ContentName;
+			return MonoDevelop.Projects.Services.Ambience.GetAmbienceForFile (file);
 		}
 		
 		public virtual bool ExtendsEditor (Document doc, IEditableTextBuffer editor)

@@ -33,7 +33,7 @@ using System.Collections;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Codons;
@@ -550,8 +550,8 @@ namespace MonoDevelop.Ide.Gui
 					binding = Services.DisplayBindings.GetBindingPerFileName(fileName);
 				
 				if (binding != null) {
-					Project project = null;
-					Combine combine = null;
+					IProject project = null;
+					Solution combine = null;
 					GetProjectAndCombineFromFile (fileName, out project, out combine);
 					
 					if (combine != null && project != null)
@@ -584,17 +584,19 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		void GetProjectAndCombineFromFile (string fileName, out Project project, out Combine combine)
+		void GetProjectAndCombineFromFile (string fileName, out IProject project, out Solution combine)
 		{
-			combine = IdeApp.ProjectOperations.CurrentOpenCombine;
+			combine = ProjectService.Solution;
 			project = null;
 			
 			if (combine != null)
 			{
-				foreach (Project projectaux in combine.GetAllProjects())
+				foreach (IProject projectaux in combine.AllProjects)
 				{
-					if (projectaux.IsFileInProject (fileName))
+					if (projectaux.IsFileInProject (fileName)) {
 						project = projectaux;
+						break;
+					}
 				}
 			}
 		}
@@ -640,7 +642,7 @@ namespace MonoDevelop.Ide.Gui
 	class LoadFileWrapper
 	{
 		IDisplayBinding binding;
-		Project project;
+		IProject project;
 		FileInformation fileInfo;
 		IWorkbench workbench;
 		IViewContent newContent;
@@ -652,7 +654,7 @@ namespace MonoDevelop.Ide.Gui
 			this.binding = binding;
 		}
 		
-		public LoadFileWrapper (IWorkbench workbench, IDisplayBinding binding, Project project, FileInformation fileInfo)
+		public LoadFileWrapper (IWorkbench workbench, IDisplayBinding binding, IProject project, FileInformation fileInfo)
 		{
 			this.workbench = workbench;
 			this.fileInfo = fileInfo;

@@ -86,8 +86,9 @@ namespace MonoDevelop.Ide.Projects
 			if (Solution != null) {
 				ActiveProject = null;
 				OnSolutionClosing (new SolutionEventArgs (solution));
+				Solution closedSolution = solution;
 				solution = null;
-				OnSolutionClosed (EventArgs.Empty);
+				OnSolutionClosed (new SolutionEventArgs (closedSolution));
 			}
 		}
 		
@@ -105,6 +106,27 @@ namespace MonoDevelop.Ide.Projects
 		public static bool IsSolution (string fileName)
 		{
 			return Path.GetExtension (fileName) == ".sln";
+		}
+		
+		public static IProject GetProjectContainingFile (string fileName)
+		{
+			if (Solution != null)
+				foreach (IProject project in Solution.AllProjects) 
+					if (project.IsFileInProject (fileName))
+						return project;
+			return null;
+		}
+		
+		public static SolutionProject FindProject (string name)
+		{
+			foreach (SolutionItem item in Solution.Items) {
+				SolutionProject project = item as SolutionProject;
+				if (project == null)
+					continue;
+				if (project.Name == name)
+					return project;
+			}
+			return null;
 		}
 		
 		static IAsyncOperation currentBuildOperation = NullAsyncOperation.Success;
@@ -128,7 +150,7 @@ namespace MonoDevelop.Ide.Projects
 		}
 		
 		static List<string> dirtyFiles = new List<string> ();
-		static void MarkFileDirty (string fileName)
+		public static void MarkFileDirty (string fileName)
 		{
 			if (!dirtyFiles.Contains (fileName))
 				dirtyFiles.Add (fileName);

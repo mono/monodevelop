@@ -27,22 +27,22 @@
 //
 
 using System;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using NUnit.Core;
 
 namespace MonoDevelop.NUnit
 {
 	public class SystemTestProvider: ITestProvider
 	{
-		public UnitTest CreateUnitTest (CombineEntry entry)
+		public UnitTest CreateUnitTest (IProject entry)
 		{
-			if (entry is Combine)
-				return CombineTestGroup.CreateTest ((Combine)entry);
-			if (entry is DotNetProject)
-				return NUnitProjectTestSuite.CreateTest ((Project)entry);
 			if (entry is NUnitAssemblyGroupProject)
 				return ((NUnitAssemblyGroupProject)entry).RootTest;
-			return null;
+			return NUnitProjectTestSuite.CreateTest (entry);
+		}
+		public UnitTest CreateUnitTest (Solution entry)
+		{
+			return CombineTestGroup.CreateTest (entry);
 		}
 		
 		public Type[] GetOptionTypes ()

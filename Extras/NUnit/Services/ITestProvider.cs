@@ -28,14 +28,15 @@
 
 
 using System;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using NUnit.Core;
 
 namespace MonoDevelop.NUnit
 {
 	public interface ITestProvider
 	{
-		UnitTest CreateUnitTest (CombineEntry entry);
+		UnitTest CreateUnitTest (IProject entry);
+		UnitTest CreateUnitTest (Solution entry);
 		Type[] GetOptionTypes ();
 	}
 }

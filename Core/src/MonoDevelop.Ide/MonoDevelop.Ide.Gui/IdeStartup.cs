@@ -47,6 +47,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Execution;
@@ -234,9 +235,9 @@ namespace MonoDevelop.Ide.Gui
 				string file = fileToOpen;
 				if (file == null || file.Length == 0)
 					return false;
-				if (MonoDevelop.Projects.Services.ProjectService.IsCombineEntryFile (file)) {
+				if (ProjectService.IsSolution (file)) {
 					try {
-						IdeApp.ProjectOperations.OpenCombine (file);
+						ProjectService.OpenSolution (file);
 					} catch {
 					}
 				} else {

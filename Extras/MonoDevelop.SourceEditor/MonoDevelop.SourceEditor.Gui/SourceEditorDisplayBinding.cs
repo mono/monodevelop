@@ -311,7 +311,8 @@ namespace MonoDevelop.SourceEditor.Gui
 			se.Buffer.Changed -= new EventHandler (OnChanged);
 			se.View.ToggleOverwrite -= new EventHandler (CaretModeChanged);
 			ContentNameChanged -= new EventHandler (UpdateFSW);
-			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged -= new ParseInformationEventHandler(UpdateClassBrowser);
+// TODO: Project Conversion
+//			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged -= new ParseInformationEventHandler(UpdateClassBrowser);
 			se.Dispose ();
 			fsw.Dispose ();
 			se = null;
@@ -393,13 +394,14 @@ namespace MonoDevelop.SourceEditor.Gui
 				UpdateExecutionLocation ();
 			}
 			
-			IFileParserContext context = IdeApp.ProjectOperations.ParserDatabase.GetFileParserContext(fileName);
-			memberParseInfo = context.ParseFile(fileName);
-			BindClassCombo();
-			
-			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += new ParseInformationEventHandler(UpdateClassBrowser);
-		  	Editor.View.MoveCursor += new MoveCursorHandler (OnMoveCursorEvent);
-		  	Editor.View.ButtonReleaseEvent += new ButtonReleaseEventHandler (OnButtonReleaseEvent);
+// TODO: Project Conversion
+//			IFileParserContext context = IdeApp.ProjectOperations.ParserDatabase.GetFileParserContext(fileName);
+//			memberParseInfo = context.ParseFile(fileName);
+//			BindClassCombo();
+//				
+//			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += new ParseInformationEventHandler(UpdateClassBrowser);
+//		  	Editor.View.MoveCursor += new MoveCursorHandler (OnMoveCursorEvent);
+//		  	Editor.View.ButtonReleaseEvent += new ButtonReleaseEventHandler (OnButtonReleaseEvent);
 		}
 		
 		public INavigationPoint BuildNavPoint ()

@@ -15,7 +15,6 @@ using System.CodeDom.Compiler;
 using System.ComponentModel;
 using System.Xml;
 
-using MonoDevelop.Projects;
 using MonoDevelop.Ide.Projects;
 using Mono.Addins;
 using MonoDevelop.Core.Properties;
@@ -165,8 +164,8 @@ namespace MonoDevelop.Ide.Gui
 					file = new Uri(file).LocalPath;
 
 					try {
-						if (Services.ProjectService.IsCombineEntryFile (file))
-							IdeApp.ProjectOperations.OpenCombine(file);
+						if (ProjectService.IsSolution (file))
+							ProjectService.OpenSolution (file);
 						else
 							IdeApp.Workbench.OpenDocument (file);
 					} catch (Exception e) {
@@ -463,8 +462,8 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (!IdeApp.OnExit ())
 				return false;
-
-			IdeApp.ProjectOperations.SaveCombinePreferences ();
+// TODO: ProjectConversion
+//			IdeApp.ProjectOperations.SaveCombinePreferences ();
 
 			bool showDirtyDialog = false;
 
@@ -484,8 +483,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			CloseAllViews ();
-			
-			IdeApp.ProjectOperations.CloseCombine (false);
+			ProjectService.CloseSolution ();
 			Runtime.Properties.SetProperty("SharpDevelop.Workbench.WorkbenchMemento", CreateMemento());
 			IdeApp.OnExited ();
 			OnClosed (null);
@@ -557,8 +555,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		void AsyncParseCurrentFile (object ob)
 		{
-			object[] data = (object[]) ob;
-			IdeApp.ProjectOperations.ParserDatabase.UpdateFile ((IProject) data[0], (string) data[1], (string) data[2]);
+// TODO: Project Conversion
+//			object[] data = (object[]) ob;
+//			IdeApp.ProjectOperations.ParserDatabase.UpdateFile ((IProject) data[0], (string) data[1], (string) data[2]);
 		}
 
 		public Gtk.Toolbar[] ToolBars {

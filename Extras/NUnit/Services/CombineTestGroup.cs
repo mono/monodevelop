@@ -30,7 +30,7 @@ using System;
 using System.IO;
 using System.Collections;
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 
 using NUnit.Core;
 
@@ -38,53 +38,57 @@ namespace MonoDevelop.NUnit
 {
 	public class CombineTestGroup: UnitTestGroup
 	{
-		Combine combine;
+		Solution combine;
 		
-		public CombineTestGroup (Combine c): base (c.Name, c)
+		public CombineTestGroup (Solution c): base (c.Name, null)
 		{
-			string storeId = Path.GetFileName (c.FileName);
-			string resultsPath = Path.Combine (c.BaseDirectory, "test-results");
+			string storeId = Path.GetFileName (ProjectService.SolutionFileName);
+			string resultsPath = Path.Combine (Path.GetDirectoryName (ProjectService.SolutionFileName), "test-results");
 			ResultsStore = new XmlResultsStore (resultsPath, storeId);
 			
 			combine = c;
-			combine.EntryAdded += OnEntryChanged;
-			combine.EntryRemoved += OnEntryChanged;
-			combine.NameChanged += OnCombineRenamed;
+// TODO: Project Conversion			
+//			combine.EntryAdded += OnEntryChanged;
+//			combine.EntryRemoved += OnEntryChanged;
+//			combine.NameChanged += OnCombineRenamed;
 		}
 		
-		public static CombineTestGroup CreateTest (Combine c)
+		public static CombineTestGroup CreateTest (Solution c)
 		{
 			return new CombineTestGroup (c);
 		}
 		
 		public override void Dispose ()
 		{
-			combine.EntryAdded -= OnEntryChanged;
-			combine.EntryRemoved -= OnEntryChanged;
-			combine.NameChanged -= OnCombineRenamed;
+// TODO: Project Conversion
+//			combine.EntryAdded -= OnEntryChanged;
+//			combine.EntryRemoved -= OnEntryChanged;
+//			combine.NameChanged -= OnCombineRenamed;
 			base.Dispose ();
 		}
-		
-		void OnEntryChanged (object sender, CombineEntryEventArgs e)
-		{
-			UpdateTests ();
-		}
-		
-		void OnCombineRenamed (object sender, CombineEntryRenamedEventArgs e)
-		{
-			UnitTestGroup parent = Parent as UnitTestGroup;
-			if (parent != null)
-				parent.UpdateTests ();
-		}
+// TODO: Project Conversion
+//		
+//		void OnEntryChanged (object sender, CombineEntryEventArgs e)
+//		{
+//			UpdateTests ();
+//		}
+//		
+//		void OnCombineRenamed (object sender, CombineEntryRenamedEventArgs e)
+//		{
+//			UnitTestGroup parent = Parent as UnitTestGroup;
+//			if (parent != null)
+//				parent.UpdateTests ();
+//		}
 		
 		protected override void OnCreateTests ()
 		{
-			NUnitService testService = (NUnitService) ServiceManager.GetService (typeof(NUnitService));
-			foreach (CombineEntry e in combine.Entries) {
-				UnitTest t = testService.BuildTest (e);
-				if (t != null)
-					Tests.Add (t);
-			}
+// TODO: Project Conversion
+//			NUnitService testService = (NUnitService) ServiceManager.GetService (typeof(NUnitService));
+//			foreach (CombineEntry e in combine.Entries) {
+//				UnitTest t = testService.BuildTest (e);
+//				if (t != null)
+//					Tests.Add (t);
+//			}
 		}
 	}
 }

@@ -3,7 +3,7 @@ using System.IO;
 using System.Collections;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
-
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.VersionControl.Dialogs;
 
 namespace MonoDevelop.VersionControl
@@ -75,7 +75,7 @@ namespace MonoDevelop.VersionControl
 			}
 			if ( projectFn == null ) {
 				foreach (string str in list ) {
-					if (MonoDevelop.Projects.Services.ProjectService.IsCombineEntryFile (str)) {
+					if (ProjectService.IsSolution (str)) {
 						projectFn = str;
 						break;
 					}
@@ -83,7 +83,7 @@ namespace MonoDevelop.VersionControl
 			}
 			
 			if (projectFn != null)
-				IdeApp.ProjectOperations.OpenCombine (projectFn);
+				ProjectService.OpenSolution (projectFn);
 		}
 	}
 }

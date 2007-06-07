@@ -252,7 +252,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		public virtual IAsyncOperation Build ()
 		{
-			return IdeApp.ProjectOperations.BuildFile (Window.ViewContent.ContentName);
+// TODO: Project Conversion			
+//			return IdeApp.ProjectOperations.BuildFile (Window.ViewContent.ContentName);
+			return null;
 		}
 		
 		public virtual IAsyncOperation Rebuild ()
@@ -266,12 +268,16 @@ namespace MonoDevelop.Ide.Gui
 		
 		public virtual IAsyncOperation Run ()
 		{
-			return IdeApp.ProjectOperations.ExecuteFile (Window.ViewContent.ContentName);
+// TODO: Project Conversion			
+//			return IdeApp.ProjectOperations.ExecuteFile (Window.ViewContent.ContentName);
+			return null;
 		}
 		
 		public virtual IAsyncOperation Debug ()
 		{
-			return IdeApp.ProjectOperations.DebugFile (Window.ViewContent.ContentName);
+// TODO: Project Conversion			
+//			return IdeApp.ProjectOperations.DebugFile (Window.ViewContent.ContentName);
+			return null;
 		}
 		
 		public void Close ()

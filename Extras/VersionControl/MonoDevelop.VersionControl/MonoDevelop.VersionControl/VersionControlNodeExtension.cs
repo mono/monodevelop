@@ -8,8 +8,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Ide.Gui.Pads.ProjectPad;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui.Pads.SolutionViewPad;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Components.Commands;
 
 using MonoDevelop.VersionControl.Views;
@@ -24,11 +24,11 @@ namespace MonoDevelop.VersionControl
 		public override bool CanBuildNode (Type dataType)
 		{
 			//Console.Error.WriteLine(dataType);
-			return typeof(ProjectFile).IsAssignableFrom (dataType)
-				|| typeof(SystemFile).IsAssignableFrom (dataType)
-				|| typeof(Project).IsAssignableFrom (dataType)
-				|| typeof(ProjectFolder).IsAssignableFrom (dataType)
-				|| typeof(Combine).IsAssignableFrom (dataType);
+			return typeof(FileNode).IsAssignableFrom (dataType)
+				|| typeof(SystemFileNode).IsAssignableFrom (dataType)
+				|| typeof(SolutionProject).IsAssignableFrom (dataType)
+				|| typeof(FolderNode).IsAssignableFrom (dataType)
+				|| typeof(Solution).IsAssignableFrom (dataType);
 		}
 		
 		public VersionControlNodeExtension ()
@@ -43,37 +43,43 @@ namespace MonoDevelop.VersionControl
 		
 			// Add status overlays
 			
-			if (dataObject is CombineEntry) {
-				CombineEntry ce = (CombineEntry) dataObject;
+			if (dataObject is Solution) {
+				Solution ce = (Solution) dataObject;
 				Repository rep = VersionControlProjectService.GetRepository (ce);
 				if (rep != null)
-					AddFolderOverlay (rep, ce.BaseDirectory, ref icon, ref closedIcon);
+					AddFolderOverlay (rep, Path.GetDirectoryName (ProjectService.SolutionFileName) /* ce.BaseDirectory */, ref icon, ref closedIcon);
 				return;
-			} else if (dataObject is ProjectFolder) {
-				ProjectFolder ce = (ProjectFolder) dataObject;
+			} else if (dataObject is SolutionProject) {
+				SolutionProject ce = (SolutionProject) dataObject;
 				Repository rep = VersionControlProjectService.GetRepository (ce.Project);
+				if (rep != null)
+					AddFolderOverlay (rep, Path.Combine (Path.GetDirectoryName (ProjectService.SolutionFileName), ce.Location), ref icon, ref closedIcon);
+				return;
+			} else if (dataObject is FolderNode) {
+				FolderNode ce = (FolderNode) dataObject;
+				Repository rep = VersionControlProjectService.GetRepository (ce.Project.Project);
 				if (rep != null)
 					AddFolderOverlay (rep, ce.Path, ref icon, ref closedIcon);
 				return;
 			}
 			
-			Project prj;
+			SolutionProject prj;
 			string file;
 			
-			if (dataObject is ProjectFile) {
-				ProjectFile pfile = (ProjectFile) dataObject;
+			if (dataObject is FileNode) {
+				FileNode pfile = (FileNode) dataObject;
 				prj = pfile.Project;
-				file = pfile.FilePath;
+				file = pfile.FileName;
 			} else {
-				SystemFile pfile = (SystemFile) dataObject;
+				SystemFileNode pfile = (SystemFileNode) dataObject;
 				prj = pfile.Project;
-				file = pfile.Path;
+				file = pfile.FileName;
 			}
 			
 			if (prj == null)
 				return;
 			
-			Repository repo = VersionControlProjectService.GetRepository (prj);
+			Repository repo = VersionControlProjectService.GetRepository (prj.Project);
 			if (repo == null)
 				return;
 			
@@ -160,14 +166,14 @@ namespace MonoDevelop.VersionControl
 		
 		internal static string GetPath (object dataObject)
 		{
-			if (dataObject is ProjectFile) {
-				return ((ProjectFile) dataObject).FilePath;
-			} else if (dataObject is SystemFile) {
-				return ((SystemFile) dataObject).Path;
-			} else if (dataObject is CombineEntry) {
-				return ((CombineEntry)dataObject).BaseDirectory;
-			} else if (dataObject is ProjectFolder) {
-				return ((ProjectFolder)dataObject).Path;
+			if (dataObject is FileNode) {
+				return Path.GetDirectoryName (((FileNode) dataObject).FileName);
+			} else if (dataObject is SystemFileNode) {
+				return Path.GetDirectoryName (((SystemFileNode) dataObject).FileName);
+			} else if (dataObject is Solution) {
+				return Path.GetDirectoryName (ProjectService.SolutionFileName);//((Solution)dataObject).BaseDirectory;
+			} else if (dataObject is FolderNode) {
+				return ((FolderNode)dataObject).Path;
 			}
 			return null;
 		}
@@ -285,39 +291,40 @@ namespace MonoDevelop.VersionControl
 		{
 			string path;
 			bool isDir;
-			CombineEntry pentry;
+			SolutionProject pentry;
 			
-			if (CurrentNode.DataItem is ProjectFile) {
-				ProjectFile file = (ProjectFile)CurrentNode.DataItem;
-				path = file.FilePath;
+			if (CurrentNode.DataItem is FileNode) {
+				FileNode file = (FileNode)CurrentNode.DataItem;
+				path = Path.GetDirectoryName (file.FileName);
 				isDir = false;
 				pentry = file.Project;
-			} else if (CurrentNode.DataItem is SystemFile) {
-				SystemFile file = (SystemFile)CurrentNode.DataItem;
-				path = file.Path;
+			} else if (CurrentNode.DataItem is SystemFileNode) {
+				SystemFileNode file = (SystemFileNode)CurrentNode.DataItem;
+				path = Path.GetDirectoryName (file.FileName);
 				isDir = false;
 				pentry = file.Project;
-			} else if (CurrentNode.DataItem is Project) {
-				Project project = (Project)CurrentNode.DataItem;
-				path = project.BaseDirectory;
+			} else if (CurrentNode.DataItem is SolutionProject) {
+				SolutionProject project = (SolutionProject)CurrentNode.DataItem;
+				path = Path.Combine (Path.GetDirectoryName (ProjectService.SolutionFileName),
+				                     project.Location);
 				isDir = true;
 				pentry = project;
-			} else if (CurrentNode.DataItem is ProjectFolder) {
-				ProjectFolder f = ((ProjectFolder)CurrentNode.DataItem);
+			} else if (CurrentNode.DataItem is FolderNode) {
+				FolderNode f = ((FolderNode)CurrentNode.DataItem);
 				path = f.Path;
 				isDir = true;
 				pentry = f.Project;
-			} else if (CurrentNode.DataItem is Combine) {
-				Combine c = ((Combine)CurrentNode.DataItem);
-				path = c.BaseDirectory;
+			} else if (CurrentNode.DataItem is Solution) {
+				Solution c = (Solution)CurrentNode.DataItem;
+				path = Path.GetDirectoryName (ProjectService.SolutionFileName);// c.BaseDirectory;
 				isDir = true;				
-				pentry = c;
+				pentry = null;
 			} else {
 				Console.Error.WriteLine(CurrentNode.DataItem);
 				return TestResult.NoVersionControl;
 			}
 			
-			Repository repo = VersionControlProjectService.GetRepository (pentry);
+			Repository repo = VersionControlProjectService.GetRepository (pentry.Project);
 			if (repo == null) {
 				if (cmd != Commands.Publish)
 					return TestResult.NoVersionControl;
@@ -355,7 +362,7 @@ namespace MonoDevelop.VersionControl
 						break;
 					case Commands.Publish:
 						if (isDir)
-							res = PublishCommand.Publish (pentry, path, test);
+							res = PublishCommand.Publish (pentry == null ? null : pentry.Project, path, test);
 						break;
 				}
 			}

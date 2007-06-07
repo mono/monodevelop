@@ -9,7 +9,7 @@ using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.VersionControl
@@ -49,13 +49,16 @@ namespace MonoDevelop.VersionControl
 			icon_conflicted = MonoDevelop.Core.Gui.Services.Resources.GetIcon (Gtk.Stock.DialogWarning, Gtk.IconSize.Menu);
 			icon_added = MonoDevelop.Core.Gui.Services.Resources.GetIcon (Gtk.Stock.Add, Gtk.IconSize.Menu);
 			icon_controled = Gdk.Pixbuf.LoadFromResource("overlay_controled.png");
-			
-			IdeApp.ProjectOperations.FileAddedToProject += OnFileAdded;
+
+// TODO: Project Conversion
+//			IdeApp.ProjectOperations.FileAddedToProject += OnFileAdded;
+//-----------------------------------------------------------------------			
 			//IdeApp.ProjectOperations.FileChangedInProject += OnFileChanged;
 			//IdeApp.ProjectOperations.FileRemovedFromProject += OnFileRemoved;
 			//IdeApp.ProjectOperations.FileRenamedInProject += OnFileRenamed;
 			
-			IdeApp.ProjectOperations.EntryAddedToCombine += OnEntryAdded;
+// TODO: Project Conversion
+//			IdeApp.ProjectOperations.EntryAddedToCombine += OnEntryAdded;
 		}
 		
 		public static Gdk.Pixbuf LoadOverlayIconForStatus(VersionStatus status)
@@ -122,16 +125,32 @@ namespace MonoDevelop.VersionControl
 			return GettextCatalog.GetString ("Unversioned");
 		}
 		
-		public static Repository GetRepository (CombineEntry entry)
+		public static Repository GetRepository (Solution entry)
 		{
-			Repository repo = (Repository) entry.ExtendedProperties [typeof(Repository)];
-			if (repo != null)
-				return repo;
-			
-			repo = VersionControlService.GetRepositoryReference (entry.BaseDirectory, entry.Name);
-			entry.ExtendedProperties [typeof(Repository)] = repo;
-			
-			return repo;
+// TODO: Project Conversion
+//			Repository repo = (Repository) entry.ExtendedProperties [typeof(Repository)];
+//			if (repo != null)
+//				return repo;
+//			 
+//			repo = VersionControlService.GetRepositoryReference (Path.GetDirectoryName (ProjectService.SolutionFileName), entry.Name);
+//			entry.ExtendedProperties [typeof(Repository)] = repo;
+//			
+//			return repo;
+			return null;
+		}
+		
+		public static Repository GetRepository (IProject entry)
+		{
+// TODO: Project Conversion
+//			Repository repo = (Repository) entry.ExtendedProperties [typeof(Repository)];
+//			if (repo != null)
+//				return repo;
+//			
+//			repo = VersionControlService.GetRepositoryReference (Path.Combine (Path.GetDirectoryName (ProjectService.SolutionFileName), entry.Location), entry.Name);
+//			entry.ExtendedProperties [typeof(Repository)] = repo;
+//			
+//			return repo;
+			return null;
 		}
 		
 		internal static void SetCommitComment (string file, string comment, bool save)
@@ -288,17 +307,18 @@ namespace MonoDevelop.VersionControl
 				NotifyFileStatusChanged (repo, args.ProjectFile.FilePath, false);
 		}
 */
-		static void OnFileAdded (object s, ProjectFileEventArgs args)
-		{
-			string path = args.ProjectFile.FilePath;
-			Repository repo = GetRepository (args.Project);
-			if (repo != null && repo.CanAdd (path)) {
-				using (IProgressMonitor monitor = GetStatusMonitor ()) {
-					repo.Add (path, false, monitor);
-				}
-				NotifyFileStatusChanged (repo, path, args.ProjectFile.Subtype == Subtype.Directory);
-			}
-		}
+// TODO: Project Conversion
+//		static void OnFileAdded (object s, ProjectFileEventArgs args)
+//		{
+//			string path = args.ProjectFile.FilePath;
+//			Repository repo = GetRepository (args.Project);
+//			if (repo != null && repo.CanAdd (path)) {
+//				using (IProgressMonitor monitor = GetStatusMonitor ()) {
+//					repo.Add (path, false, monitor);
+//				}
+//				NotifyFileStatusChanged (repo, path, args.ProjectFile.Subtype == Subtype.Directory);
+//			}
+//		}
 		
 /*		static void OnFileRemoved (object s, ProjectFileEventArgs args)
 		{
@@ -322,58 +342,61 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 */
-		static void CombineEntryAddFiles (CombineEntry entry, ArrayList files)
-		{
-			files.Add (entry.FileName);
-			
-			if (entry is Project) {
-				foreach (ProjectFile file in ((Project) entry).ProjectFiles) {
-					if (file.Subtype != Subtype.Directory)
-						files.Add (file.FilePath);
-				}
-			} else if (entry is Combine) {
-				foreach (CombineEntry ent in ((Combine) entry).Entries)
-					CombineEntryAddFiles (ent, files);
-			}
-		}
-		
-		static void OnEntryAdded (object o, CombineEntryEventArgs args)
-		{
-			// handles addition of solutions and projects
-			CombineEntry parent = (CombineEntry) args.CombineEntry.ParentCombine;
-			
-			if (parent == null)
-				return;
-			
-			Repository repo = GetRepository (parent);
-			
-			if (repo == null)
-				return;
-			
-			CombineEntry entry = args.CombineEntry;
-			string path = entry.BaseDirectory;
-			
-			if (!repo.CanAdd (path))
-				return;
-			
-			// While we /could/ call repo.Add with `recursive = true', we don't
-			// necessarily want to add files under the project/solution directory
-			// that may not be a part of this project/solution.
-			
-			ArrayList files = new ArrayList ();
-			
-			files.Add (path);
-			CombineEntryAddFiles (entry, files);
-			
-			using (IProgressMonitor monitor = GetStatusMonitor ()) {
-				string[] paths = (string[]) files.ToArray (typeof (string));
-				
-				for (int i = 0; i < paths.Length; i++)
-					repo.Add (paths[i], false, monitor);
-			}
-			
-			NotifyFileStatusChanged (repo, parent.BaseDirectory, true);
-		}
+
+//TODO: Project Conversion
+//		static void CombineEntryAddFiles (CombineEntry entry, ArrayList files)
+//		{
+//			files.Add (entry.FileName);
+//			
+//			if (entry is Project) {
+//				foreach (ProjectFile file in ((Project) entry).ProjectFiles) {
+//					if (file.Subtype != Subtype.Directory)
+//						files.Add (file.FilePath);
+//				}
+//			} else if (entry is Combine) {
+//				foreach (CombineEntry ent in ((Combine) entry).Entries)
+//					CombineEntryAddFiles (ent, files);
+//			}
+//		}
+
+//TODO: Project Conversion
+//		static void OnEntryAdded (object o, CombineEntryEventArgs args)
+//		{
+//			// handles addition of solutions and projects
+//			CombineEntry parent = (CombineEntry) args.CombineEntry.ParentCombine;
+//			
+//			if (parent == null)
+//				return;
+//			
+//			Repository repo = GetRepository (parent);
+//			
+//			if (repo == null)
+//				return;
+//			
+//			CombineEntry entry = args.CombineEntry;
+//			string path = entry.BaseDirectory;
+//			
+//			if (!repo.CanAdd (path))
+//				return;
+//			
+//			// While we /could/ call repo.Add with `recursive = true', we don't
+//			// necessarily want to add files under the project/solution directory
+//			// that may not be a part of this project/solution.
+//			
+//			ArrayList files = new ArrayList ();
+//			
+//			files.Add (path);
+//			CombineEntryAddFiles (entry, files);
+//			
+//			using (IProgressMonitor monitor = GetStatusMonitor ()) {
+//				string[] paths = (string[]) files.ToArray (typeof (string));
+//				
+//				for (int i = 0; i < paths.Length; i++)
+//					repo.Add (paths[i], false, monitor);
+//			}
+//			
+//			NotifyFileStatusChanged (repo, parent.BaseDirectory, true);
+//		}
 		
 		static IProgressMonitor GetStatusMonitor ()
 		{

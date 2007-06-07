@@ -18,6 +18,7 @@ using MonoDevelop.Core.Gui.Utils;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -192,7 +193,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			if (content.IsDirty) {
 				newTitle += "*";
-				IdeApp.ProjectOperations.MarkFileDirty (content.ContentName);
+				ProjectService.MarkFileDirty (content.ContentName);
 			} else if (content.IsReadOnly) {
 				newTitle += "+";
 			}

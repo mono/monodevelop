@@ -90,15 +90,16 @@ namespace CSharpBinding
 		
 		void FillClasses ()
 		{
-			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
-			foreach (IClass c in ctx.GetProjectContents ()) {
-				if (c.Methods != null) {
-					foreach (IMethod m in c.Methods) {
-						if (m.IsStatic && m.Name == "Main")
-							classListStore.AppendValues (c.FullyQualifiedName);
-					}
-				}
-			}
+// TODO: Project Conversion
+//			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
+//			foreach (IClass c in ctx.GetProjectContents ()) {
+//				if (c.Methods != null) {
+//					foreach (IMethod m in c.Methods) {
+//						if (m.IsStatic && m.Name == "Main")
+//							classListStore.AppendValues (c.FullyQualifiedName);
+//					}
+//				}
+//			}
 		}
 		
 		void UpdateTarget ()

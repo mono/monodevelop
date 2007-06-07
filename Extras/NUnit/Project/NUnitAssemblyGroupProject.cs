@@ -132,8 +132,8 @@ namespace MonoDevelop.NUnit
 		NUnitAssemblyGroupProject project;
 		string resultsPath;
 		NUnitAssemblyGroupProjectConfiguration lastConfig;
-		
-		public RootTest (NUnitAssemblyGroupProject project): base (project.Name, project)
+		// TODO: Project Conversion: was: (project.Name, project)
+		public RootTest (NUnitAssemblyGroupProject project): base (project.Name, null)
 		{
 			this.project = project;
 			resultsPath = Path.Combine (project.BaseDirectory, "test-results");

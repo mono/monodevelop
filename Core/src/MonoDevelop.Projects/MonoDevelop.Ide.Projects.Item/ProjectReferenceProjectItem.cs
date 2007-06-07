@@ -60,5 +60,11 @@ namespace MonoDevelop.Ide.Projects.Item
 		public ProjectReferenceProjectItem ()
 		{
 		}
+		
+		public ProjectReferenceProjectItem (string include, string guid, string name) : base (include)
+		{
+			this.ProjectGUID = guid;
+			this.ProjectName = name;
+		}
 	}
 }

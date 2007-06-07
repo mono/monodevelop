@@ -33,7 +33,8 @@ using System.IO;
 using System.Collections;
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Ide.Gui;
 
@@ -43,52 +44,58 @@ namespace MonoDevelop.NUnit
 {
 	public class NUnitProjectTestSuite: NUnitAssemblyTestSuite
 	{
-		Project project;
+		IProject project;
 		DateTime lastAssemblyTime;
 		string resultsPath;
 		string storeId;
 		
-		public NUnitProjectTestSuite (Project project): base (project.Name, project)
+		public NUnitProjectTestSuite (IProject project): base (project.Name, project)
 		{
 			storeId = Path.GetFileName (project.FileName);
-			resultsPath = Path.Combine (project.BaseDirectory, "test-results");
+			resultsPath = Path.Combine (project.BasePath, "test-results");
 			ResultsStore = new XmlResultsStore (resultsPath, storeId);
 			this.project = project;
 			lastAssemblyTime = GetAssemblyTime ();
-			project.NameChanged += new CombineEntryRenamedEventHandler (OnProjectRenamed);
-			IdeApp.ProjectOperations.EndBuild += new BuildEventHandler (OnProjectBuilt);
+			project.NameChanged += new EventHandler<RenameEventArgs> (OnProjectRenamed);
+			ProjectService.EndBuild  += new EventHandler<BuildEventArgs> (OnProjectBuilt);
 		}
 		
-		public static NUnitProjectTestSuite CreateTest (Project project)
+		public static NUnitProjectTestSuite CreateTest (IProject project)
 		{
-			foreach (ProjectReference p in project.ProjectReferences)
-				if (p.Reference.IndexOf ("nunit.framework") != -1)
+			foreach (ProjectItem item in project.Items) {
+				ReferenceProjectItem p = item as ReferenceProjectItem;
+				if (p == null)
+					continue;
+				if (p.Include.IndexOf ("nunit.framework") != -1)
 					return new NUnitProjectTestSuite (project);
+			}
 			return null;
 		}
 
 		protected override SourceCodeLocation GetSourceCodeLocation (string fullClassName, string methodName)
 		{
-			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
-			IClass cls = ctx.GetClass (fullClassName);
-			if (cls == null)
-				return null;
-			
-			foreach (IMethod met in cls.Methods) {
-				if (met.Name == methodName)
-					return new SourceCodeLocation (cls.Region.FileName, met.Region.BeginLine, met.Region.BeginColumn);
-			}
-			return new SourceCodeLocation (cls.Region.FileName, cls.Region.BeginLine, cls.Region.BeginColumn);
+// TODO: Project Conversion
+//			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
+//			IClass cls = ctx.GetClass (fullClassName);
+//			if (cls == null)
+//				return null;
+//			
+//			foreach (IMethod met in cls.Methods) {
+//				if (met.Name == methodName)
+//					return new SourceCodeLocation (cls.Region.FileName, met.Region.BeginLine, met.Region.BeginColumn);
+//			}
+//			return new SourceCodeLocation (cls.Region.FileName, cls.Region.BeginLine, cls.Region.BeginColumn);
+			return null;
 		}
 		
 		public override void Dispose ()
 		{
-			project.NameChanged -= new CombineEntryRenamedEventHandler (OnProjectRenamed);
-			IdeApp.ProjectOperations.EndBuild -= new BuildEventHandler (OnProjectBuilt);
+			project.NameChanged -= new EventHandler<RenameEventArgs> (OnProjectRenamed);
+			ProjectService.EndBuild -= new EventHandler<BuildEventArgs> (OnProjectBuilt);
 			base.Dispose ();
 		}
 		
-		void OnProjectRenamed (object sender, CombineEntryRenamedEventArgs e)
+		void OnProjectRenamed (object sender, RenameEventArgs e)
 		{
 			UnitTestGroup parent = Parent as UnitTestGroup;
 			if (parent != null)
@@ -113,7 +120,7 @@ namespace MonoDevelop.NUnit
 		}
 	
 		protected override string AssemblyPath {
-			get { return project.GetOutputFileName (); }
+			get { return ProjectService.GetOutputFileName (project); }
 		}
 		
 		protected override string TestInfoCachePath {

@@ -30,6 +30,7 @@ using System;
 using System.Collections;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Codons;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
 using Mono.Addins;
@@ -244,7 +245,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (Filename == null || Filename.Length == 0 || System.IO.Directory.Exists (Filename))
 				return;
 			 
-			if (IdeApp.Services.ProjectService.IsCombineEntryFile (Filename)) {
+			if (ProjectService.IsSolution (Filename)) {
 				viewerSelector.AppendText (GettextCatalog.GetString ("Solution Workbench"));
 				currentViewers.Add (null);
 			}
@@ -272,7 +273,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				return;
 			}
 			    
-			if (IdeApp.Services.ProjectService.IsCombineEntryFile (Filename))
+			if (ProjectService.IsSolution (Filename))
 				encodingLabel.Sensitive = encodingMenu.Sensitive = (SelectedViewer != null);
 			else
 				encodingLabel.Sensitive = encodingMenu.Sensitive = true;

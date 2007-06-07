@@ -161,7 +161,7 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 			foreach (ProjectItem item in fileNode.Project.Project.Items) {
 				string fileName = Path.GetFullPath (Path.Combine (fileNode.Project.Project.BasePath, SolutionProject.NormalizePath (item.Include)));
 				if (fileName == fileNode.FileName) {
-					fileNode.Project.Project.Items.Remove (item);
+					fileNode.Project.Project.Remove (item);
 					ProjectService.SaveProject (fileNode.Project.Project);
 					break;
 				}

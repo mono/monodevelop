@@ -34,7 +34,8 @@ using System.Collections.Generic;
 using System.Threading;
 using Gdk;
 using Gtk;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
@@ -255,31 +256,22 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		void SearchThread ()
 		{
-			Combine s = IdeApp.ProjectOperations.CurrentOpenCombine;
+			Solution s = ProjectService.Solution;
 			if (s == null)
 				return;
 		
-			CombineEntryCollection projects = s.GetAllProjects ();
-			if (projects.Count < 1)
-				return;
-
-			foreach (CombineEntry entry in projects) {
-				Project p = entry as Project;
-				if (p == null)
-					continue;
-				
+			foreach (IProject p in s.AllProjects) {
 				if (searchFiles) {
-					ProjectFileCollection files = p.ProjectFiles;
-					if (files.Count < 1)
-						continue;
-					
 					string toMatch;
 					lock (matchLock) {
 						toMatch = matchString;
 					}
 
-					foreach (ProjectFile file in files) {
-						CheckFile (file.FilePath, toMatch);
+					foreach (ProjectItem item in p.Items) {
+						ProjectFile file = item as ProjectFile;
+						if (file == null)
+							continue;
+						CheckFile (file.FullPath, toMatch);
 					}
 				} else {
 					
@@ -287,10 +279,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					lock (matchLock) {
 						toMatch = matchString;
 					}
-					
-					IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (p);
-					foreach (IClass c in ctx.GetProjectContents())
-						CheckType (c, toMatch);
+// TODO: Project Conversion			
+//					IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (p);
+//					foreach (IClass c in ctx.GetProjectContents())
+//						CheckType (c, toMatch);
 				}
 			}
 		}

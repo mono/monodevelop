@@ -129,7 +129,7 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 				string relativePath = Runtime.FileService.AbsoluteToRelativePath (systemFolderNode.Project.Project.BasePath, fileName);
 				if (relativePath.StartsWith ("." + Path.DirectorySeparatorChar))
 					relativePath = relativePath.Substring (2);
-				systemFolderNode.Project.Project.Items.Add (new ProjectFile (relativePath, fileType));
+				systemFolderNode.Project.Project.Add (new ProjectFile (relativePath, fileType));
 			}
 			List<string> directories = new List<string> ();
 			directories.Add (systemFolderNode.Path);
@@ -140,7 +140,7 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 					string relativePath = Runtime.FileService.AbsoluteToRelativePath (systemFolderNode.Project.Project.BasePath, directory);
 					if (relativePath.StartsWith ("." + Path.DirectorySeparatorChar))
 						relativePath = relativePath.Substring (2);
-					systemFolderNode.Project.Project.Items.Add (new ProjectFile (relativePath, FileType.Folder));
+					systemFolderNode.Project.Project.Add (new ProjectFile (relativePath, FileType.Folder));
 				}
 			}
 			

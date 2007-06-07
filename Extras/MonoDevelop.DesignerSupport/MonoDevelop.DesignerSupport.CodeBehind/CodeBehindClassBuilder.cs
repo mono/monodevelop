@@ -32,7 +32,7 @@
 using System;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Ide.Gui.Pads.ProjectPad;
+using MonoDevelop.Ide.Gui.Pads.SolutionViewPad;
 
 namespace MonoDevelop.DesignerSupport.CodeBehind
 {

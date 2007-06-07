@@ -43,7 +43,7 @@ using MonoDevelop.Ide.Gui.Dialogs;
 
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.Tasks;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Gui;
 using MonoDevelop.Projects.Documentation;
@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.Gui
 		public static void Initialize (IProgressMonitor monitor)
 		{
 			workbench = new Workbench ();
-			projectOperations = new ProjectOperations ();
+//			projectOperations = new ProjectOperations ();
 			helpOperations = new HelpOperations ();
 			commandService = new CommandService ();
 			ideServices = new IdeServices ();
@@ -113,16 +113,16 @@ namespace MonoDevelop.Ide.Gui
 				RecentOpen recentOpen = Workbench.RecentOpen;
 
 				if (recentOpen.RecentProject != null && recentOpen.RecentProject.Length > 0) { 
-					IdeApp.ProjectOperations.OpenCombine(recentOpen.RecentProject[0].ToString());
+					ProjectService.OpenSolution (recentOpen.RecentProject[0].ToString());
 				}
 			}
 			monitor.Step (1);
 			
 			foreach (string file in StartupInfo.GetRequestedFileList()) {
 				//FIXME: use mimetypes
-				if (Services.ProjectService.IsCombineEntryFile (file)) {
+				if (ProjectService.IsSolution (file)) {
 					try {
-						IdeApp.ProjectOperations.OpenCombine (file);
+						ProjectService.OpenSolution (file);
 					} catch (Exception e) {
 						Services.MessageService.ShowError (e, "Could not load solution: " + file);
 					}
@@ -207,7 +207,6 @@ namespace MonoDevelop.Ide.Gui
 		TaskService taskService;
 		IParserService parserService;
 		DispatchService dispatchService;
-		IProjectService projectService;
 
 		public IStatusBarService StatusBar {
 			get {
@@ -286,14 +285,6 @@ namespace MonoDevelop.Ide.Gui
 				if (dispatchService == null)
 					dispatchService = (DispatchService) ServiceManager.GetService (typeof(DispatchService));
 				return dispatchService;
-			}
-		}
-	
-		public IProjectService ProjectService {
-			get {
-				if (projectService == null)
-					projectService = (IProjectService) ServiceManager.GetService (typeof(IProjectService));
-				return projectService;
 			}
 		}
 	}

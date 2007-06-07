@@ -71,23 +71,24 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		
 		void OnOKClicked (object sender, EventArgs e)
 		{
-			CodeRefactorer refactorer = IdeApp.ProjectOperations.CodeRefactorer;
-			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Title, null);
-			string name = entry.Text;
-			
-			if (item is IMember) {
-				IMember member = (IMember) item;
-				
-				refactorer.RenameMember (monitor, member.DeclaringType, member, name, RefactoryScope.Solution);
-			} else if (item is IClass) {
-				refactorer.RenameClass (monitor, (IClass) item, name, RefactoryScope.Solution);
-			} else if (item is LocalVariable) {
-				refactorer.RenameVariable (monitor, (LocalVariable) item, name);
-			} else if (item is IParameter) {
-				refactorer.RenameParameter (monitor, (IParameter) item, name);
-			}
-			
-			((Widget) this).Destroy ();
+// TODO: Project Conversion
+//			CodeRefactorer refactorer = IdeApp.ProjectOperations.CodeRefactorer;
+//			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Title, null);
+//			string name = entry.Text;
+//			
+//			if (item is IMember) {
+//				IMember member = (IMember) item;
+//				
+//				refactorer.RenameMember (monitor, member.DeclaringType, member, name, RefactoryScope.Solution);
+//			} else if (item is IClass) {
+//				refactorer.RenameClass (monitor, (IClass) item, name, RefactoryScope.Solution);
+//			} else if (item is LocalVariable) {
+//				refactorer.RenameVariable (monitor, (LocalVariable) item, name);
+//			} else if (item is IParameter) {
+//				refactorer.RenameParameter (monitor, (IParameter) item, name);
+//			}
+//			
+//			((Widget) this).Destroy ();
 		}
 	}
 }

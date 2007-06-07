@@ -1,7 +1,8 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Ide.Gui;
@@ -12,7 +13,7 @@ namespace MonoDevelop.VersionControl
 {
 	public class PublishCommand 
 	{
-		public static bool Publish (CombineEntry entry, string localPath, bool test)
+		public static bool Publish (IProject entry, string localPath, bool test)
 		{
 			if (test)
 				return true;
@@ -21,15 +22,18 @@ namespace MonoDevelop.VersionControl
 
 			// Build the list of files to be checked in			
 			string moduleName = entry.Name;
-			if (localPath == entry.BaseDirectory) {
+			if (localPath == entry.BasePath) {
 				GetFiles (files, entry);
-			} else if (entry is Project) {
-				foreach (ProjectFile file in ((Project)entry).ProjectFiles.GetFilesInPath (localPath))
-					if (file.Subtype != Subtype.Directory)
-						files.Add (file.FilePath);
-			} else
-				return false;
-	
+			} else  {
+				foreach (ProjectItem item in entry.Items) {
+					ProjectFile file = item as ProjectFile;
+					if (file == null)
+						continue;
+					if (file.FullPath.StartsWith (localPath) && file.FileType != FileType.Folder) 
+						files.Add (file.FullPath);
+				}
+			}
+			
 			using (SelectRepositoryDialog dlg = new SelectRepositoryDialog (SelectRepositoryMode.Publish)) {
 				dlg.ModuleName = moduleName;
 				dlg.Message = GettextCatalog.GetString ("Initial check-in of module {0}", moduleName);
@@ -47,17 +51,22 @@ namespace MonoDevelop.VersionControl
 			return true;
 		}
 		
-		static void GetFiles (ArrayList files, CombineEntry entry)
+		static void GetFiles (ArrayList files, IProject entry)
 		{
 			files.Add (entry.FileName);
-			if (entry is Project) {
-				foreach (ProjectFile file in ((Project)entry).ProjectFiles)
-					if (file.Subtype != Subtype.Directory)
-						files.Add (file.FilePath);
-			} else if (entry is Combine) {
-				foreach (CombineEntry e in ((Combine)entry).Entries)
-					GetFiles (files, e);
+			foreach (ProjectItem item in entry.Items) {
+				ProjectFile file = item as ProjectFile;
+				if (file == null)
+					continue;
+				if (file.FileType != FileType.Folder)
+					files.Add (file.FullPath);
 			}
+		}
+		static void GetFiles (ArrayList files, Solution entry)
+		{
+			files.Add (ProjectService.SolutionFileName); 
+			foreach (IProject e in entry.AllProjects)
+				GetFiles (files, e);
 		}
 		
 		public static bool CanPublish (Repository vc, string path, bool isDir) {
@@ -73,11 +82,11 @@ namespace MonoDevelop.VersionControl
 		string moduleName;
 		string[] files;
 		string message;
-		Combine co;
+		Solution co;
 					
 		public PublishWorker (Repository vc, string moduleName, string localPath, string[] files, string message) 
 		{
-			this.co = IdeApp.ProjectOperations.CurrentOpenCombine;
+			this.co = ProjectService.Solution;
 			this.vc = vc;
 			this.path = localPath;
 			this.moduleName = moduleName;

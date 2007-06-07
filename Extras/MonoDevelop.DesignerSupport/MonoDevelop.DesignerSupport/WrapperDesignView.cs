@@ -81,7 +81,7 @@ namespace MonoDevelop.DesignerSupport
 			get { return content; }
 		}
 		
-		public override MonoDevelop.Projects.Project Project {
+		public override MonoDevelop.Ide.Projects.IProject Project {
 			get { return base.Project; }
 			set { 
 				base.Project = value; 

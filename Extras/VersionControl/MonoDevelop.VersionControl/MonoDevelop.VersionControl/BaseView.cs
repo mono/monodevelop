@@ -61,7 +61,7 @@ namespace MonoDevelop.VersionControl
 			get { return ""; }
 		}
 		
-		MonoDevelop.Projects.Project IViewContent.Project {
+		MonoDevelop.Ide.Projects.IProject IViewContent.Project {
 			get { return null; }
 			set { }
 		}

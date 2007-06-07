@@ -9,7 +9,8 @@ using System;
 using System.Collections;
 using System.IO;
 
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 
@@ -72,31 +73,29 @@ namespace MonoDevelop.Ide.Gui.Search
 		}
 		
 		
-		void AddFiles(Project project)
+		void AddFiles(IProject project)
 		{
-			foreach (ProjectFile file in project.ProjectFiles) {
-				if (file.Subtype == Subtype.Code) {
-					files.Add(file.Name);
+			foreach (ProjectItem item in project.Items) {
+				ProjectFile file = item as ProjectFile; 
+				if (file == null)
+					continue;
+				if (file.FileType == FileType.Compile) {
+					files.Add (file.FullPath);
 				}
 			}
 		}
 		
-		void AddFiles(Combine combine)
+		void AddFiles(Solution solution)
 		{
-			foreach (CombineEntry entry in combine.Entries) {
-				if (entry is Project) {
-					AddFiles ((Project)entry);
-				} else if (entry is Combine) {
-					AddFiles ((Combine)entry);
-				}
-			}
+			foreach (IProject project in solution.AllProjects) 
+				AddFiles (project);
 		}
 		
 		public void Reset() 
 		{
 			files.Clear();
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				AddFiles (IdeApp.ProjectOperations.CurrentOpenCombine);
+			if (ProjectService.Solution != null) {
+				AddFiles (ProjectService.Solution);
 			}
 			
 			curIndex = -1;

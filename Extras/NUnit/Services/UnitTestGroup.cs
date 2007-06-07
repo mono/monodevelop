@@ -29,7 +29,7 @@
 using System;
 using MonoDevelop.Core;
 using System.Collections;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.NUnit
 {
@@ -41,7 +41,7 @@ namespace MonoDevelop.NUnit
 		{
 		}
 		
-		protected UnitTestGroup (string name, CombineEntry ownerCombineEntry): base (name, ownerCombineEntry)
+		protected UnitTestGroup (string name, IProject ownerCombineEntry): base (name, ownerCombineEntry)
 		{
 		}
 		

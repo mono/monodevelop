@@ -29,7 +29,7 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Components.Commands;
@@ -64,14 +64,17 @@ namespace MonoDevelop.NUnit
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return ((IConfiguration)dataObject).Name;
+// TODO: Project Conversion
+//			return ((IConfiguration)dataObject).Name;
+			return "";
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			IConfiguration conf = dataObject as IConfiguration;
-			label = conf.Name;
-			icon = Context.GetIcon (Stock.ClosedFolder);
+// TODO: Project Conversion
+//			IConfiguration conf = dataObject as IConfiguration;
+//			label = conf.Name;
+//			icon = Context.GetIcon (Stock.ClosedFolder);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
@@ -125,8 +128,7 @@ namespace MonoDevelop.NUnit
 
 				foreach (string file in fdiag.Filenames)
 					config.Assemblies.Add (new TestAssembly (file));
-				
-				IdeApp.ProjectOperations.SaveCombine();
+				ProjectService.SaveSolution ();
 			}
 			finally {
 				fdiag.Destroy ();

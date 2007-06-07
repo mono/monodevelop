@@ -499,19 +499,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			InitializeDialog (true);
 		}
 		
-		IProject FindProject (string name)
-		{
-			foreach (IProject project in solution.AllProjects)
-				if (project.Name == name)
-					return project;
-			return null;
-		}
 		
 		void AddToProjectComboChanged (object o, EventArgs e)
 		{
 			int which = projectAddCombo.Active;
 			string projectName = projectNames[which];
-			IProject project = FindProject (projectName);
+			IProject project = ProjectService.FindProject (projectName).Project;
 			
 			if (project != null) {
 				if (basePath == null || basePath == String.Empty ||

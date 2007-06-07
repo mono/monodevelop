@@ -17,7 +17,7 @@ using MonoDevelop.Ide.CodeTemplates;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.SourceEditor.Actions;
@@ -345,24 +345,26 @@ namespace MonoDevelop.SourceEditor.Gui
 		IParserContext GetParserContext ()
 		{
 			string file = ParentEditor.DisplayBinding.IsUntitled ? ParentEditor.DisplayBinding.UntitledName : ParentEditor.DisplayBinding.ContentName;
-			Project project = ParentEditor.DisplayBinding.Project;
-			IParserDatabase pdb = IdeApp.ProjectOperations.ParserDatabase;
+//	TODO: project Conversion			
+//			IProject project = ParentEditor.DisplayBinding.Project;
+//				IParserDatabase pdb = IdeApp.ProjectOperations.ParserDatabase;
 			
-			if (project != null)
-				return pdb.GetProjectParserContext (project);
-			else
-				return pdb.GetFileParserContext (file);
+//				if (project != null)
+//					return pdb.GetProjectParserContext (project);
+//				else
+//	return pdb.GetFileParserContext (file);
+			
+			return null;
 		}
 		
 		MonoDevelop.Projects.Ambience.Ambience GetAmbience ()
 		{
-			Project project = ParentEditor.DisplayBinding.Project;
+			IProject project = ParentEditor.DisplayBinding.Project;
 			if (project != null)
-				return project.Ambience;
-			else {
-				string file = ParentEditor.DisplayBinding.IsUntitled ? ParentEditor.DisplayBinding.UntitledName : ParentEditor.DisplayBinding.ContentName;
-				return MonoDevelop.Projects.Services.Ambience.GetAmbienceForFile (file);
-			}
+				return MonoDevelop.Projects.Services.Ambience.GetAmbienceForProject (project);
+			
+			string file = ParentEditor.DisplayBinding.IsUntitled ? ParentEditor.DisplayBinding.UntitledName : ParentEditor.DisplayBinding.ContentName;
+			return MonoDevelop.Projects.Services.Ambience.GetAmbienceForFile (file);
 		}
 
 		internal bool MonodocResolver ()

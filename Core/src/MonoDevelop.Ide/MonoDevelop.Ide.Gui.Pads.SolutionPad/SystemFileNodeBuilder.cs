@@ -104,7 +104,7 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 			string relativePath = Runtime.FileService.AbsoluteToRelativePath (systemFileNode.Project.Project.BasePath, systemFileNode.FileName);
 			if (relativePath.StartsWith ("." + Path.DirectorySeparatorChar))
 				relativePath = relativePath.Substring (2);
-			systemFileNode.Project.Project.Items.Add (new ProjectFile (relativePath, GetFileType (systemFileNode.FileName, systemFileNode.Project)));
+			systemFileNode.Project.Project.Add (new ProjectFile (relativePath, GetFileType (systemFileNode.FileName, systemFileNode.Project)));
 			ProjectService.SaveProject (systemFileNode.Project.Project);
 		}
 	}

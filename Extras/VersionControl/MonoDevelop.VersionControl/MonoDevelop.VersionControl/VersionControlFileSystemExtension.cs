@@ -2,7 +2,7 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.FileSystem;
 
@@ -13,7 +13,7 @@ namespace MonoDevelop.VersionControl
 		public override bool CanHandlePath (string path, bool isDirectory)
 		{
 			// FIXME: don't load this extension if the ide is not loaded.
-			if (IdeApp.ProjectOperations == null || IdeApp.ProjectOperations.CurrentOpenCombine == null)
+			if (ProjectService.Solution == null)
 				return false;
 			else
 				return GetRepository (path) != null;
@@ -22,8 +22,8 @@ namespace MonoDevelop.VersionControl
 		Repository GetRepository (string path)
 		{
 			// FIXME: Optimize
-			foreach (Project prj in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects ()) {
-				if (path.StartsWith (prj.BaseDirectory)) {
+			foreach (IProject prj in ProjectService.Solution.AllProjects) {
+				if (path.StartsWith (prj.BasePath)) {
 					return VersionControlProjectService.GetRepository (prj);
 				}
 			}

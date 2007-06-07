@@ -31,7 +31,7 @@ using System;
 using System.Collections;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects.Serialization;
 
 namespace MonoDevelop.NUnit
@@ -44,7 +44,7 @@ namespace MonoDevelop.NUnit
 		UnitTest parent;
 		TestStatus status;
 		Hashtable options;
-		CombineEntry ownerCombineEntry;
+		IProject ownerCombineEntry;
 		UnitTestResultsStore results;
 		
 		protected UnitTest (string name)
@@ -52,17 +52,19 @@ namespace MonoDevelop.NUnit
 			this.name = name;
 		}
 		
-		protected UnitTest (string name, CombineEntry ownerCombineEntry)
+		protected UnitTest (string name, IProject ownerCombineEntry)
 		{
 			this.name = name;
 			this.ownerCombineEntry = ownerCombineEntry;
-			ownerCombineEntry.ActiveConfigurationChanged += new ConfigurationEventHandler (OnConfugurationChanged);
+// TODO: Project Conversion
+//			ownerCombineEntry.ActiveConfigurationChanged += new ConfigurationEventHandler (OnConfugurationChanged);
 		}
 		
 		public virtual void Dispose ()
 		{
-			if (ownerCombineEntry != null)
-				ownerCombineEntry.ActiveConfigurationChanged -= new ConfigurationEventHandler (OnConfugurationChanged);
+// TODO: Project Conversion
+//			if (ownerCombineEntry != null)
+//				ownerCombineEntry.ActiveConfigurationChanged -= new ConfigurationEventHandler (OnConfugurationChanged);
 		}
 		
 		internal void SetParent (UnitTest t)
@@ -73,9 +75,11 @@ namespace MonoDevelop.NUnit
 		public virtual string ActiveConfiguration {
 			get {
 				if (ownerCombineEntry != null) {
-					if (ownerCombineEntry.ActiveConfiguration == null)
-						return "";
-					return ownerCombineEntry.ActiveConfiguration.Name;
+// TODO: Project Conversion
+//					if (ownerCombineEntry.ActiveConfiguration == null)
+//						return "";
+//					return ownerCombineEntry.ActiveConfiguration.Name;
+					return "";
 				} else if (Parent != null) {
 					return Parent.ActiveConfiguration;
 				} else {
@@ -87,10 +91,12 @@ namespace MonoDevelop.NUnit
 		public virtual string[] GetConfigurations ()
 		{
 			if (ownerCombineEntry != null) {
-				string[] res = new string [ownerCombineEntry.Configurations.Count];
-				for (int n=0; n<ownerCombineEntry.Configurations.Count; n++)
-					res [n] = ownerCombineEntry.Configurations [n].Name;
-				return res;
+// TODO: Project Conversion
+//				string[] res = new string [ownerCombineEntry.Configurations.Count];
+//				for (int n=0; n<ownerCombineEntry.Configurations.Count; n++)
+//					res [n] = ownerCombineEntry.Configurations [n].Name;
+//				return res;
+				return new string [] { "default" };
 			} else if (Parent != null) {
 				return Parent.GetConfigurations ();
 			} else {
@@ -285,7 +291,7 @@ namespace MonoDevelop.NUnit
 			}
 		}
 		
-		protected CombineEntry OwnerCombineEntry {
+		protected IProject OwnerCombineEntry {
 			get { return ownerCombineEntry; }
 		}
 		
@@ -370,68 +376,67 @@ namespace MonoDevelop.NUnit
 		
 		protected virtual void OnSaveOptions (OptionsData[] data)
 		{
-			CombineEntry ce;
+			IProject ce;
 			string path;
 			
 			GetOwnerCombineEntry (this, out ce, out path);
 			
 			if (ce == null)
 				throw new InvalidOperationException ("Options can't be saved.");
-			
-			foreach (OptionsData d in data) {
-				IExtendedDataItem edi = (IExtendedDataItem) ce.GetConfiguration (d.Configuration);
-				if (edi == null)
-					continue;
-				UnitTestOptionsSet oset = (UnitTestOptionsSet) edi.ExtendedProperties ["UnitTestInformation"];
-				if (oset == null) {
-					oset = new UnitTestOptionsSet ();
-					edi.ExtendedProperties ["UnitTestInformation"] = oset;
-				}
-				
-				UnitTestOptionsEntry te = oset.FindEntry (path);
-
-				if (d.Options.Count > 0) {
-					if (te == null) {
-						te = new UnitTestOptionsEntry ();
-						te.Path = path;
-						oset.Tests.Add (te);
-					}
-					te.Options.Clear ();
-					te.Options.AddRange (d.Options);
-				} else if (te != null) {
-					oset.Tests.Remove (te);
-				}
-			}
-			
-			ce.Save (new NullProgressMonitor ());
+// TODO: Project Conversion
+//			foreach (OptionsData d in data) {
+//				IExtendedDataItem edi = (IExtendedDataItem) ce.GetConfiguration (d.Configuration);
+//				if (edi == null)
+//					continue;
+//				UnitTestOptionsSet oset = (UnitTestOptionsSet) edi.ExtendedProperties ["UnitTestInformation"];
+//				if (oset == null) {
+//					oset = new UnitTestOptionsSet ();
+//					edi.ExtendedProperties ["UnitTestInformation"] = oset;
+//				}
+//				
+//				UnitTestOptionsEntry te = oset.FindEntry (path);
+//
+//				if (d.Options.Count > 0) {
+//					if (te == null) {
+//						te = new UnitTestOptionsEntry ();
+//						te.Path = path;
+//						oset.Tests.Add (te);
+//					}
+//					te.Options.Clear ();
+//					te.Options.AddRange (d.Options);
+//				} else if (te != null) {
+//					oset.Tests.Remove (te);
+//				}
+//			}
+			ProjectService.SaveProject (ce); // ce.Save (new NullProgressMonitor ());
 		}
 		
 		protected virtual ICollection OnLoadOptions (string configuration)
 		{
-			CombineEntry ce;
+			IProject ce;
 			string path;
 			
 			GetOwnerCombineEntry (this, out ce, out path);
 			
 			if (ce == null)
 				return null;
-			
-			IExtendedDataItem edi = (IExtendedDataItem) ce.GetConfiguration (configuration);
-			if (edi == null)
-				return null;
-
-			UnitTestOptionsSet oset = (UnitTestOptionsSet) edi.ExtendedProperties ["UnitTestInformation"];
-			if (oset == null)
-				return null;
-			
-			UnitTestOptionsEntry te = oset.FindEntry (path);
-			if (te != null)
-				return te.Options;
-			else
+//TODO: project Conversion		
+//			IExtendedDataItem edi = (IExtendedDataItem) ce.GetConfiguration (configuration);
+//			if (edi == null)
+//				return null;
+//
+//			UnitTestOptionsSet oset = (UnitTestOptionsSet) edi.ExtendedProperties ["UnitTestInformation"];
+//			if (oset == null)
+//				return null;
+//			
+//			UnitTestOptionsEntry te = oset.FindEntry (path);
+//			if (te != null)
+//				return te.Options;
+//			else
 				return null;
 		}
 		
-		void GetOwnerCombineEntry (UnitTest t, out CombineEntry c, out string path)
+		void GetOwnerCombineEntry (UnitTest t, out IProject c, out string path)
 		{
 			if (OwnerCombineEntry != null) {
 				c = OwnerCombineEntry;
@@ -448,12 +453,12 @@ namespace MonoDevelop.NUnit
 				path = null;
 			}
 		}
-		
-		void OnConfugurationChanged (object ob, ConfigurationEventArgs args)
-		{
-			OnActiveConfigurationChanged ();
-		}
-		
+//	TODO: Project Conversion
+//		void OnConfugurationChanged (object ob, ConfigurationEventArgs args)
+//		{
+//			OnActiveConfigurationChanged ();
+//		}
+//		
 		protected virtual void OnActiveConfigurationChanged ()
 		{
 			OnTestChanged ();

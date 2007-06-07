@@ -83,37 +83,38 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public static void BuildChildNodes (ITreeBuilder builder, IProject project)
 		{
 			bool publicOnly = builder.Options ["PublicApiOnly"];
-			
-			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
-			LanguageItemCollection list = ctx.GetNamespaceContents ("", false);
-			foreach (ILanguageItem ob in list) {
-				if (ob is Namespace) {
-					if (builder.Options ["NestedNamespaces"])
-						builder.AddChild (new NamespaceData (project, ((Namespace)ob).Name));
-					else {
-						FillNamespaces (builder, project, ((Namespace)ob).Name);
-					}
-				}
-				else if (!publicOnly || ((IClass)ob).IsPublic)
-					builder.AddChild (new ClassData (project, ob as IClass));
-			}
+// TODO: Project Conversion			
+//			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
+//			LanguageItemCollection list = ctx.GetNamespaceContents ("", false);
+//			foreach (ILanguageItem ob in list) {
+//				if (ob is Namespace) {
+//					if (builder.Options ["NestedNamespaces"])
+//						builder.AddChild (new NamespaceData (project, ((Namespace)ob).Name));
+//					else {
+//						FillNamespaces (builder, project, ((Namespace)ob).Name);
+//					}
+//				}
+//				else if (!publicOnly || ((IClass)ob).IsPublic)
+//					builder.AddChild (new ClassData (project, ob as IClass));
+//			}
 		}
 		
 		public static void FillNamespaces (ITreeBuilder builder, IProject project, string ns)
 		{
-			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
-			if (ctx.GetClassList (ns, false, true).Length > 0) {
-				if (builder.Options ["ShowProjects"])
-					builder.AddChild (new NamespaceData (project, ns));
-				else {
-					if (!builder.HasChild (ns, typeof (NamespaceData)))
-						builder.AddChild (new NamespaceData (null, ns));
-				}
-			}
-				
-			string[] list = ctx.GetNamespaceList (ns, false, true);
-			foreach (string subns in list)
-				FillNamespaces (builder, project, ns + "." + subns);
+// TODO: Project Conversion			
+//			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
+//			if (ctx.GetClassList (ns, false, true).Length > 0) {
+//				if (builder.Options ["ShowProjects"])
+//					builder.AddChild (new NamespaceData (project, ns));
+//				else {
+//					if (!builder.HasChild (ns, typeof (NamespaceData)))
+//						builder.AddChild (new NamespaceData (null, ns));
+//				}
+//			}
+//				
+//			string[] list = ctx.GetNamespaceList (ns, false, true);
+//			foreach (string subns in list)
+//				FillNamespaces (builder, project, ns + "." + subns);
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
