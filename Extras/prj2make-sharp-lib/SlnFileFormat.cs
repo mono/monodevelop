@@ -227,7 +227,7 @@ namespace MonoDevelop.Prj2Make
 					writer.WriteLine (@"Project(""{{{0}}}"") = ""{1}"", ""{2}"", ""{{{3}}}""",
 						ProjectTypeGuids [project.LanguageName],
 						project.Name, 
-						MSBuildFileFormat.NormalizeRelativePath (Runtime.FileService.AbsoluteToRelativePath (
+						Runtime.FileService.NormalizeRelativePath (Runtime.FileService.AbsoluteToRelativePath (
 							baseDirectory, project.FileName)),
 						msbData.Guid);
 				} else {

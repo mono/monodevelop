@@ -1,3 +1,10 @@
+2007-06-07  Ankit Jain  <jankit@novell.com>
+
+	* MSBuildFileFormat.cs (NormalizeRelativePath): Moved to
+	Runtime.FileService .
+	* SlnFileFormat.cs: Track api change.
+	* CSharpResourceIdBuilder.cs: Track api change.
+
 2007-06-05  Ankit Jain  <jankit@novell.com>
 
 	* MSBuildFileFormat.cs (ReferenceToXmlElement): Handle invalid project

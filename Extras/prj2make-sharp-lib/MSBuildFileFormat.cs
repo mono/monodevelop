@@ -1329,19 +1329,6 @@ namespace MonoDevelop.Prj2Make
 			return null;
 		}
 
-		public static string NormalizeRelativePath (string path)
-		{
-			path = path.Trim (Path.DirectorySeparatorChar,' ');
-			while (path.StartsWith ("." + Path.DirectorySeparatorChar)) {
-				path = path.Substring (2);
-				path = path.Trim (Path.DirectorySeparatorChar,' ');
-			}
-			if (path == ".")
-				return string.Empty;
-			else
-				return path;
-		}
-
 		static char [] charToEscapeArray = {'$', '%', '\'', '(', ')', '*', ';', '?', '@'};
 		static string charsToEscapeString = "$%'()*;?@";
 

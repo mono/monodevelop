@@ -1,3 +1,8 @@
+2007-06-07  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Core/FileService.cs (NormalizeRelativePath): Moved from
+	AutotoolsContext.cs to here.
+
 2007-06-01  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Core/SystemAssemblyService.cs (assemblyFullNameToPath):

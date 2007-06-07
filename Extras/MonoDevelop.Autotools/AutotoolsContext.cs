@@ -126,7 +126,7 @@ namespace MonoDevelop.Autotools
 			string bd = Runtime.FileService.GetFullPath (BaseDirectory);
 			if (fpath.StartsWith (bd + Path.DirectorySeparatorChar) || fpath == bd) {
 				string rel = Runtime.FileService.AbsoluteToRelativePath (bd, fpath);
-				rel = NormalizeRelativePath (rel);
+				rel = Runtime.FileService.NormalizeRelativePath (rel);
 				rel = "$(top_builddir)" + Path.DirectorySeparatorChar + rel;
 				builtFiles.Add (rel);
 			}
@@ -172,7 +172,7 @@ namespace MonoDevelop.Autotools
 			string bd = Path.GetFullPath (project.BaseDirectory);
 			if (fpath.StartsWith (bd + Path.DirectorySeparatorChar) || fpath == bd) {
 				string rel = Runtime.FileService.AbsoluteToRelativePath (bd, fpath);
-				rel = NormalizeRelativePath (rel);
+				rel = Runtime.FileService.NormalizeRelativePath (rel);
 				if (isGenerated)
 					return rel;
 				else
@@ -181,7 +181,7 @@ namespace MonoDevelop.Autotools
 			bd = Path.GetFullPath (BaseDirectory);
 			if (fpath.StartsWith (bd + Path.DirectorySeparatorChar) || fpath == bd) {
 				string rel = Runtime.FileService.AbsoluteToRelativePath (bd, fpath);
-				rel = NormalizeRelativePath (rel);
+				rel = Runtime.FileService.NormalizeRelativePath (rel);
 				string file = "$(top_builddir)" + Path.DirectorySeparatorChar + rel;
 				if (builtFiles.Contains (file))
 					return file;
@@ -193,19 +193,6 @@ namespace MonoDevelop.Autotools
 			throw new InvalidOperationException ("The project '" + project.Name + "' references the file '" + Path.GetFileName (path) + "' which is located outside the solution directory.");
 		}
 		
-		public static string NormalizeRelativePath (string path)
-		{
-			path = path.Trim (Path.DirectorySeparatorChar,' ');
-			while (path.StartsWith ("." + Path.DirectorySeparatorChar)) {
-				path = path.Substring (2);
-				path = path.Trim (Path.DirectorySeparatorChar,' ');
-			}
-			if (path == ".")
-				return string.Empty;
-			else
-				return path;
-		}
-			
 		// TODO: add an extension point with which addins can implement 
 		// autotools functionality.
 		public static IMakefileHandler GetMakefileHandler ( CombineEntry entry )

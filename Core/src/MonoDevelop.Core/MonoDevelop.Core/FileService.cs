@@ -389,7 +389,19 @@ namespace MonoDevelop.Core
 			
 			return tmpFolder;
 		}
-		
+
+		public string NormalizeRelativePath (string path)
+		{
+			path = path.Trim (Path.DirectorySeparatorChar,' ');
+			while (path.StartsWith ("." + Path.DirectorySeparatorChar)) {
+				path = path.Substring (2);
+				path = path.Trim (Path.DirectorySeparatorChar,' ');
+			}
+			if (path == ".")
+				return string.Empty;
+			else
+				return path;
+		}
 		
 		bool HandleError (string message, Exception ex)
 		{

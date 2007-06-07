@@ -145,7 +145,7 @@ namespace MonoDevelop.Autotools
 				foreach (ProjectFile projectFile in project.ProjectFiles) 
 				{
 					pfpath = (PlatformID.Unix == Environment.OSVersion.Platform) ? projectFile.RelativePath : projectFile.RelativePath.Replace("\\","/");
-					pfpath = AutotoolsContext.NormalizeRelativePath (pfpath);
+					pfpath = Runtime.FileService.NormalizeRelativePath (pfpath);
 					switch ( projectFile.BuildAction )
 					{
 						case BuildAction.Compile:
@@ -169,7 +169,7 @@ namespace MonoDevelop.Autotools
 								string newPath = Path.Combine (rdir, Path.GetFileName ( projectFile.FilePath ));
 								Runtime.FileService.CopyFile ( projectFile.FilePath, newPath ) ;
 								pfpath = (PlatformID.Unix == Environment.OSVersion.Platform) ? project.GetRelativeChildPath (newPath) : project.GetRelativeChildPath (newPath).Replace("\\","/");
-								pfpath = AutotoolsContext.NormalizeRelativePath (pfpath);
+								pfpath = Runtime.FileService.NormalizeRelativePath (pfpath);
 							}
 							if (!String.IsNullOrEmpty (projectFile.ResourceId) && projectFile.ResourceId != Path.GetFileName (pfpath))
 								res_files.AppendFormat ( "\\\n\t{0},{1} ", pfpath, projectFile.ResourceId);
@@ -244,7 +244,7 @@ namespace MonoDevelop.Autotools
 						default:
 							string var;
 							if (dfile.TargetDirectoryID != TargetDirectory.Binaries) {
-								string ddir = AutotoolsContext.NormalizeRelativePath (Path.GetDirectoryName (dfile.RelativeTargetPath).Trim ('/',' '));
+								string ddir = Runtime.FileService.NormalizeRelativePath (Path.GetDirectoryName (dfile.RelativeTargetPath).Trim ('/',' '));
 								if (ddir.Length > 0)
 									ddir = "/" + ddir;
 								var = ctx.GetDeployDirectoryVar (dfile.TargetDirectoryID + ddir);

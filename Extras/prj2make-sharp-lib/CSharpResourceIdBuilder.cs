@@ -26,6 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using System;
 using System.IO;
@@ -42,7 +43,7 @@ namespace MonoDevelop.Prj2Make
 				if (pf.IsExternalToProject)
 					fname = Path.GetFileName (fname);
 				else
-					fname = MSBuildFileFormat.NormalizeRelativePath (fname);
+					fname = Runtime.FileService.NormalizeRelativePath (fname);
 
 				if (String.Compare (Path.GetExtension (fname), ".resx", true) == 0)
 					fname = Path.ChangeExtension (fname, ".resources");

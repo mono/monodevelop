@@ -300,7 +300,7 @@ namespace MonoDevelop.Autotools
 				if (PlatformID.Unix != Environment.OSVersion.Platform)
 					tmpmf = tmpmf.Replace("\\","/");
 
-				configFiles.Append(AutotoolsContext.NormalizeRelativePath (tmpmf));
+				configFiles.Append(Runtime.FileService.NormalizeRelativePath (tmpmf));
 				configFiles.Append("\n");
 			}
 			templateEngine.Variables["CONFIG_FILES"] = configFiles.ToString();
