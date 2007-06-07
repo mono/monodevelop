@@ -1,3 +1,9 @@
+2007-06-07  Ankit Jain  <jankit@novell.com>
+
+	Fixes bug#81820.
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs
+	(.ctor): Use Runtime.FileService.NormalizeRelativePath for project files.
+
 2007-06-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/objects.xml: Updated.

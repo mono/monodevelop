@@ -48,8 +48,9 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				
 				foreach (ProjectFile info in project.ProjectFiles) {
 					if (info.BuildAction == BuildAction.Nothing || info.BuildAction == BuildAction.Compile) {
-						string name = Runtime.FileService.AbsoluteToRelativePath(
-							project.BaseDirectory, info.Name).Substring(2);
+						string name = Runtime.FileService.NormalizeRelativePath (
+								Runtime.FileService.AbsoluteToRelativePath(
+									project.BaseDirectory, info.Name));
 						store.AppendValues (info.BuildAction == BuildAction.Compile ? true : false, name);
 					}
 				}
