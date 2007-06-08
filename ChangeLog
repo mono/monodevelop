@@ -1,3 +1,7 @@
+2007-06-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	Bump version of the package and all add-ins.
+
 2007-06-05  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* configure.in: Instead of generating conftest.cs and conftest.exe

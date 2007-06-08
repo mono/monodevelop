@@ -5,18 +5,18 @@
         copyright   = "GPL"
         url         = "http://monodevelop.com"
         description = "Add-in for working with ChangeLog files"
-        version     = "0.13.0">
+        version     = "0.14.0">
  
         <Runtime>
 		<Import assembly="ChangeLogAddIn.dll" />
 		</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="0.13.0"/>
-		<Addin id="Core.Gui" version="0.13.0"/>
-	    <Addin id="Projects" version="0.13.0"/>
-		<Addin id="Ide" version="0.13.0"/>
-		<Addin id="VersionControl" version="0.13.0"/>
+		<Addin id="Core" version="0.14.0"/>
+		<Addin id="Core.Gui" version="0.14.0"/>
+	    <Addin id="Projects" version="0.14.0"/>
+		<Addin id="Ide" version="0.14.0"/>
+		<Addin id="VersionControl" version="0.14.0"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/VersionControl/CommitDialogExtensions">
