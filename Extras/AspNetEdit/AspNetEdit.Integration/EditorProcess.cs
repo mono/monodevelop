@@ -73,6 +73,23 @@ namespace AspNetEdit.Editor
 			get { return host; }
 		}
 		
+		protected override void HandleError (Exception e)
+		{
+			//remove the grid in case it was the source of the exception, as GTK# expose exceptions can fire repeatedly
+			//also user should not be able to edit things when showing exceptions
+			if (propertyGrid != null) {
+				Gtk.Container parent = propertyGrid.Parent as Gtk.Container;
+				if (parent != null)
+					parent.Remove (propertyGrid);
+				
+				propertyGrid.Destroy ();
+				propertyGrid = null;
+			}
+			
+			//show the error message
+			base.HandleError (e);
+		}
+		
 		void LoadGui (MonoDevelopProxy proxy, string document, string fileName)
 		{
 			System.Diagnostics.Trace.WriteLine ("Creating AspNetEdit EditorHost");

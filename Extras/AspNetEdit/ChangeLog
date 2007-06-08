@@ -1,3 +1,10 @@
+2007-06-08  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* AspNetEdit.Integration/EditorProcess.cs,
+	  AspNetEdit.Integration/AspNetEditViewContent.cs: An attempt to 
+	  handle errors more gracefully, and some attempts to handle 
+	  document 'dirtiness' (not quite working).
+
 2007-05-13  Michael Hutchinson <m.j.hutchinson@gmail.com> 
 
 	* libs/jscall.dll, libs/JSCall.js: Having removed the unmanaged 

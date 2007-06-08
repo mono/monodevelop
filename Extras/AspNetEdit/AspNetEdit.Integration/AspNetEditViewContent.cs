@@ -58,6 +58,9 @@ namespace AspNetEdit.Integration
 		
 		MonoDevelopProxy proxy;
 		
+		bool activated = false;
+		bool suppressSerialisation = false;
+		
 		internal AspNetEditViewContent (IViewContent viewContent)
 		{
 			this.viewContent = viewContent;
@@ -67,7 +70,29 @@ namespace AspNetEdit.Integration
 			designerFrame.Shadow = ShadowType.None;
 			designerFrame.BorderWidth = 0;
 			
+			viewContent.WorkbenchWindow.Closing += workbenchWindowClosingHandler;
+			viewContent.DirtyChanged += vcDirtyChanged;
+			viewContent.BeforeSave += vcBeforeSave;
+			
 			designerFrame.Show ();
+		}
+		
+		void workbenchWindowClosingHandler (object sender, WorkbenchWindowEventArgs args)
+		{
+			if (activated)
+				suppressSerialisation = true;
+		}
+		
+		void vcDirtyChanged (object sender, System.EventArgs e)
+		{
+			if (activated && !viewContent.IsDirty)
+				viewContent.IsDirty = true;
+		}
+				
+		void vcBeforeSave (object sender, System.EventArgs e)
+		{
+			if (activated)
+				saveDocumentToTextView ();
 		}
 		
 		public override Gtk.Widget Control {
@@ -78,10 +103,22 @@ namespace AspNetEdit.Integration
 			get { return "Designer"; }
 		}
 		
-		public override void Dispose()
+		bool disposed = false;
+		
+		public override void Dispose ()
 		{
+			if (disposed)
+				return;
+			
+			disposed = true;
+			
+			base.WorkbenchWindow.Closing -= workbenchWindowClosingHandler;
+			viewContent.DirtyChanged -= vcDirtyChanged;
+			viewContent.BeforeSave -= vcBeforeSave;
+			
 			DestroyEditorAndSockets ();
 			designerFrame.Destroy ();
+			base.Dispose ();
 		}
 		
 		public override void Selected ()
@@ -120,9 +157,25 @@ namespace AspNetEdit.Integration
 			
 			ITextBuffer textBuf = (ITextBuffer) viewContent.GetContent (typeof(ITextBuffer));			
 			editorProcess.Initialise (proxy, textBuf.Text, viewContent.ContentName);
+			
+			activated = true;
+			
+			//FIXME: track 'dirtiness' properly
+			viewContent.IsDirty = true;
 		}
 		
 		public override void Deselected ()
+		{
+			activated = false;
+			
+			//don't need to save if window is closing
+			if (!suppressSerialisation)
+				saveDocumentToTextView ();
+			
+			DestroyEditorAndSockets ();
+		}
+			
+		void saveDocumentToTextView ()
 		{
 			if (!editorProcess.ExceptionOccurred) {
 				IEditableTextBuffer textBuf = (IEditableTextBuffer) viewContent.GetContent (typeof(IEditableTextBuffer));
@@ -133,12 +186,10 @@ namespace AspNetEdit.Integration
 				} catch (Exception e) {
 					IdeApp.Services.MessageService.ShowError (e, "The document could not be retrieved from the designer");
 				}
-				
+			
 				if (doc != null)
 					textBuf.Text = doc;
 			}
-			
-			DestroyEditorAndSockets ();
 		}
 		
 		void DestroyEditorAndSockets ()
