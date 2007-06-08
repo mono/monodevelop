@@ -1,7 +1,7 @@
 using System;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Ide.Gui.Pads.ProjectPad;
+using MonoDevelop.Ide.Gui.Pads.SolutionViewPad;
 using MonoDevelop.Projects;
 
 
@@ -15,7 +15,7 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		/// <returns>True if the node can be build, otherwise false.</returns>
 		public override bool CanBuildNode (Type dataType)
 		{
-			return typeof(ProjectFolder).IsAssignableFrom (dataType);
+			return typeof(FolderNode).IsAssignableFrom (dataType);
 		}
 		
 		/// <summary>Get the attributes for the current node.</summary>
@@ -27,8 +27,8 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 			if (treeNavigator.Options ["ShowAllFiles"])
 				return;
 				
-			ProjectFolder folder = dataObject as ProjectFolder;
-			if (folder != null && folder.Project != null && Library.GetWebReferencePath(folder.Project) == folder.Path)
+			FolderNode folder = dataObject as FolderNode;
+			if (folder != null && folder.Project != null && Library.GetWebReferencePath(folder.Project.Project) == folder.Path)
 				attributes |= NodeAttributes.Hidden;
 		}
 	}

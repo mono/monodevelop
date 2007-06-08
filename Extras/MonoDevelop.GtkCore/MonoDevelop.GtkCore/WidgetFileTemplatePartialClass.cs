@@ -1,22 +1,22 @@
 
 using System;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide.Templates;
 
 namespace MonoDevelop.GtkCore
 {
 	public class WidgetFileTemplatePartialClass: FileTemplate
 	{
-		protected override bool IsValidForProject (Project project)
+		protected override bool IsValidForProject (IProject project)
 		{
 			if (!base.IsValidForProject (project))
 				return false;
 			
-			DotNetProject prj = project as DotNetProject;
+			MSBuildProject prj = project as MSBuildProject;
 			if (prj == null)
 				return false;
 				
-			if (prj.LanguageBinding == null)
+			if (BackendBindingService.GetBackendBinding (prj) == null)
 				return false;
 
 			return GtkCoreService.SupportsPartialTypes (prj);

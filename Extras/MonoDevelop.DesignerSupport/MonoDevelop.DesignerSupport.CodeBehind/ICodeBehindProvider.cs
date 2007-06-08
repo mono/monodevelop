@@ -32,7 +32,8 @@
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Projects.Parser;
 
 namespace MonoDevelop.DesignerSupport.CodeBehind

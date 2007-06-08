@@ -28,11 +28,11 @@
 
 
 using System;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Ide.Gui.Pads.ProjectPad;
+using MonoDevelop.Ide.Gui.Pads.SolutionViewPad;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.GtkCore.GuiBuilder;
 
@@ -42,8 +42,8 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 	{
 		public override bool CanBuildNode (Type dataType)
 		{
-			return typeof(ProjectFolder).IsAssignableFrom (dataType) ||
-					typeof(Project).IsAssignableFrom (dataType);
+			return typeof(FolderNode).IsAssignableFrom (dataType) ||
+					typeof(SolutionProject).IsAssignableFrom (dataType);
 		}
 		
 		public override Type CommandHandlerType {
@@ -55,9 +55,9 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			if (treeNavigator.Options ["ShowAllFiles"])
 				return;
 
-			ProjectFolder folder = dataObject as ProjectFolder;
+			FolderNode folder = dataObject as FolderNode;
 			if (folder != null && folder.Project != null) {
-				GtkDesignInfo info = GtkCoreService.GetGtkInfo (folder.Project);
+				GtkDesignInfo info = GtkCoreService.GetGtkInfo (folder.Project.Project);
 				if (info != null && info.GtkGuiFolder == folder.Path)
 					attributes |= NodeAttributes.Hidden;
 			}
@@ -117,8 +117,8 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		[CommandHandler (GtkCommands.ImportGladeFile)]
 		protected void OnImportGladeFile ()
 		{
-			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
-			GuiBuilderService.ImportGladeFile (project);
+			SolutionProject project = CurrentNode.GetParentDataItem (typeof(SolutionProject), true) as SolutionProject;
+			GuiBuilderService.ImportGladeFile (project.Project);
 		}
 		
 		[CommandUpdateHandler (GtkCommands.ImportGladeFile)]
@@ -130,8 +130,8 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		[CommandHandler (GtkCommands.EditIcons)]
 		protected void OnEditIcons ()
 		{
-			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
-			GuiBuilderProject gp = GtkCoreService.GetGtkInfo (project).GuiBuilderProject;
+			SolutionProject project = CurrentNode.GetParentDataItem (typeof(SolutionProject), true) as SolutionProject;
+			GuiBuilderProject gp = GtkCoreService.GetGtkInfo (project.Project).GuiBuilderProject;
 			Stetic.Project sp = gp.SteticProject;
 			sp.EditIcons ();
 			gp.Save (true);
@@ -146,8 +146,9 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		[CommandHandler (GtkCommands.GtkSettings)]
 		protected void OnGtkSettings ()
 		{
-			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
-			IdeApp.ProjectOperations.ShowOptions (project, "SteticOptionsPanel");
+// TODO: Project Conversion
+//	SolutionProject project = CurrentNode.GetParentDataItem (typeof(SolutionProject), true) as SolutionProject;
+//			IdeApp.ProjectOperations.ShowOptions (project.Project, "SteticOptionsPanel");
 		}
 		
 		[CommandUpdateHandler (GtkCommands.EditIcons)]
@@ -158,7 +159,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		
 		bool CanAddWindow ()
 		{
-			DotNetProject project = CurrentNode.GetParentDataItem (typeof(Project), true) as DotNetProject;
+			MSBuildProject project = CurrentNode.GetParentDataItem (typeof(MSBuildProject), true) as MSBuildProject;
 			if (project != null) {
 				GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
 				return (info == null || !info.GuiBuilderProject.HasError);
@@ -168,24 +169,25 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		
 		public void AddNewWindow (string id)
 		{
-			DotNetProject project = CurrentNode.GetParentDataItem (typeof(Project), true) as DotNetProject;
+			SolutionProject project = CurrentNode.GetParentDataItem (typeof(SolutionProject), true) as SolutionProject;
 			if (project == null)
 				return;
 			
-			ProjectFolder folder = CurrentNode.GetParentDataItem (typeof(ProjectFolder), true) as ProjectFolder;
+			FolderNode folder = CurrentNode.GetParentDataItem (typeof(FolderNode), true) as FolderNode;
 			
-			if (GtkCoreService.SupportsPartialTypes (project))
+			if (GtkCoreService.SupportsPartialTypes (project.Project as MSBuildProject))
 				id = "Partial" + id;
 			
 			string path;
 			if (folder != null)
 				path = folder.Path;
 			else
-				path = project.BaseDirectory;
+				path = project.Project.BasePath;
 
-			IdeApp.ProjectOperations.CreateProjectFile (project, path, id);
+// TODO: Projct Conversion
+//			IdeApp.ProjectOperations.CreateProjectFile (project, path, id);
 			
-			IdeApp.ProjectOperations.SaveProject (project);
+			ProjectService.SaveProject (project.Project);
 			CurrentNode.Expanded = true;
 		}
 	}

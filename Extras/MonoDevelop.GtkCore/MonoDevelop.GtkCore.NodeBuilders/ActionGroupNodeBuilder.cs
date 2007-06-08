@@ -33,7 +33,8 @@ using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.GtkCore.GuiBuilder;
 using MonoDevelop.GtkCore.Dialogs;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 
 namespace MonoDevelop.GtkCore.NodeBuilders
 {
@@ -101,9 +102,9 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 				}
 			}
 			else {
-				Project project = (Project) CurrentNode.GetParentDataItem (typeof(Project), false);
+				SolutionProject project = (SolutionProject) CurrentNode.GetParentDataItem (typeof(SolutionProject), false);
 				Stetic.ActionGroupComponent group = (Stetic.ActionGroupComponent) CurrentNode.DataItem;
-				GuiBuilderService.OpenActionGroup (project, group);
+				GuiBuilderService.OpenActionGroup (project.Project, group);
 			}
 		}
 		
@@ -124,22 +125,22 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			if (w != null)
 				return;
 
-			Project project = (Project) CurrentNode.GetParentDataItem (typeof(Project), false);
+			SolutionProject project = (SolutionProject) CurrentNode.GetParentDataItem (typeof(SolutionProject), false);
 			Stetic.ActionGroupComponent group = (Stetic.ActionGroupComponent) CurrentNode.DataItem;
-			GuiBuilderProject gproject = GtkCoreService.GetGtkInfo (project).GuiBuilderProject;
+			GuiBuilderProject gproject = GtkCoreService.GetGtkInfo (project.Project).GuiBuilderProject;
 			string sfile = gproject.GetSourceCodeFile (group);
 
 			if (sfile != null) {
 				using (ConfirmWindowDeleteDialog dialog = new ConfirmWindowDeleteDialog (group.Name, sfile, group)) {
 					if (dialog.Run () == (int) Gtk.ResponseType.Yes) {
 						if (dialog.DeleteFile) {
-							ProjectFile file = project.GetProjectFile (sfile);
+							ProjectFile file = project.Project.GetFile (sfile);
 							if (file != null)
-								project.ProjectFiles.Remove (file);
+								project.Project.Remove (file);
 						}
 						gproject.RemoveActionGroup (group);
 						gproject.Save (false);
-						IdeApp.ProjectOperations.SaveProject (project);
+						ProjectService.SaveProject (project.Project);
 					}
 				}
 			}

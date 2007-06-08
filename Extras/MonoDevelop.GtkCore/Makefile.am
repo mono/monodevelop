@@ -34,7 +34,6 @@ FILES =  \
 	MonoDevelop.GtkCore.GuiBuilder/ClassUtils.cs \
 	MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs \
 	MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs \
-	MonoDevelop.GtkCore.GuiBuilder/GtkProjectServiceExtension.cs \
 	MonoDevelop.GtkCore.GuiBuilder/GuiBuilderDisplayBinding.cs \
 	MonoDevelop.GtkCore.GuiBuilder/GuiBuilderPalettePad.cs \
 	MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs \

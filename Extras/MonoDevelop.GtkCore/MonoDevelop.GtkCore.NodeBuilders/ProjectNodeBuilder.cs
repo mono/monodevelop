@@ -29,7 +29,7 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui;
@@ -42,7 +42,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 	{
 		public override bool CanBuildNode (Type dataType)
 		{
-			return typeof(DotNetProject).IsAssignableFrom (dataType);
+			return typeof(MSBuildProject).IsAssignableFrom (dataType);
 		}
 		
 		protected override void Initialize ()
@@ -57,12 +57,12 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			GtkDesignInfo info = GtkCoreService.GetGtkInfo ((Project)dataObject);
+			GtkDesignInfo info = GtkCoreService.GetGtkInfo ((IProject)dataObject);
 			if (info != null)
-				builder.AddChild (new WindowsFolder ((Project)dataObject));
+				builder.AddChild (new WindowsFolder ((IProject)dataObject));
 		}
 		
-		void OnGtkSupportChanged (Project p, bool enabled)
+		void OnGtkSupportChanged (IProject p, bool enabled)
 		{
 			ITreeBuilder tb = Context.GetTreeBuilder (p);
 			if (tb != null)

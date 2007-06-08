@@ -29,15 +29,16 @@
 using System;
 using System.Collections;
 using System.IO;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 
 namespace MonoDevelop.GtkCore
 {
 	public class ProjectResourceProvider: MarshalByRefObject, Stetic.IResourceProvider
 	{
-		Project project;
+		IProject project;
 		
-		public ProjectResourceProvider (Project project)
+		public ProjectResourceProvider (IProject project)
 		{
 			this.project = project;
 		}
@@ -45,34 +46,43 @@ namespace MonoDevelop.GtkCore
 		public Stetic.ResourceInfo[] GetResources ()
 		{
 			ArrayList list = new ArrayList ();
-			foreach (ProjectFile file in project.ProjectFiles) {
-				list.Add (new Stetic.ResourceInfo (Path.GetFileName (file.Name), file.Name));
+			foreach (ProjectItem item in project.Items) {
+				ProjectFile file = item as ProjectFile;
+				if (file == null)
+					continue;
+				list.Add (new Stetic.ResourceInfo (Path.GetFileName (file.FullPath), file.FullPath));
 			}
 			return (Stetic.ResourceInfo[]) list.ToArray (typeof(Stetic.ResourceInfo));
 		}
 		
 		public Stream GetResourceStream (string resourceName)
 		{
-			foreach (ProjectFile file in project.ProjectFiles) {
-				if (resourceName == Path.GetFileName (file.Name))
-					return File.OpenRead (file.Name);
+			foreach (ProjectItem item in project.Items) {
+				ProjectFile file = item as ProjectFile;
+				if (file == null)
+					continue;
+				if (resourceName == Path.GetFileName (file.FullPath))
+					return File.OpenRead (file.FullPath);
 			}
 			return null;
 		}
 		
 		public Stetic.ResourceInfo AddResource (string fileName)
 		{
-			project.AddFile (fileName, BuildAction.EmbedAsResource);
-			project.Save (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor());
+			project.Add (new ProjectFile (fileName, FileType.EmbeddedResource));
+			ProjectService.SaveProject (project);
 			return new Stetic.ResourceInfo (Path.GetFileName (fileName), fileName);
 		}
 		
 		public void RemoveResource (string resourceName)
 		{
-			foreach (ProjectFile file in project.ProjectFiles) {
-				if (resourceName == Path.GetFileName (file.Name)) {
-					project.ProjectFiles.Remove (file);
-					project.Save (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor());
+			foreach (ProjectItem item in project.Items) {
+				ProjectFile file = item as ProjectFile;
+				if (file == null)
+					continue;
+				if (resourceName == Path.GetFileName (file.FullPath)) {
+					project.Remove (file);
+					ProjectService.SaveProject (project);
 					return;
 				}
 			}

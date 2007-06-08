@@ -35,7 +35,7 @@ using Gdk;
 using Glade;
 	
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui;
@@ -60,7 +60,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 			ListStore store;
 			TreeViewColumn column;
 			
-			Project project;
+			IProject project;
 			ArrayList selection;
 			GtkDesignInfo designInfo;
 			
@@ -88,7 +88,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 				
 				tree.AppendColumn (column);
 				
-				this.project = (Project)((IProperties)customizationObject).GetProperty("Project");
+				this.project = (IProject)((IProperties)customizationObject).GetProperty("Project");
 				designInfo = GtkCoreService.GetGtkInfo (project);
 				
 				selection = new ArrayList ();

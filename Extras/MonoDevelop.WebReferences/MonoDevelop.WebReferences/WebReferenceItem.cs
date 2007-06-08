@@ -10,7 +10,8 @@ using System.Xml.Serialization;
 using System.Net;
 using System.Text.RegularExpressions;
 
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 
@@ -75,11 +76,11 @@ namespace MonoDevelop.WebReferences
 		{
 			// Read the map file into the discovery client protocol and setup the code generator
 			DiscoveryProtocol protocol = new DiscoveryProtocol();
-			protocol.ReadAllUseBasePath(MapFile.FilePath);
+			protocol.ReadAllUseBasePath(MapFile.FullPath);
 			protocol.ResolveAll();
 			
 			// Re-generate the proxy and map files
-			string basePath = new FileInfo(MapFile.FilePath).Directory.FullName;
+			string basePath = new FileInfo(MapFile.FullPath).Directory.FullName;
 			CodeGenerator codeGen = new CodeGenerator(ProxyFile.Project, (DiscoveryClientProtocol)protocol);
 			codeGen.CreateProxyFile(basePath, MapFile.Project.Name + "." + Name, "Reference");
 			codeGen.CreateMapFile(basePath, "Reference.map");
@@ -89,9 +90,9 @@ namespace MonoDevelop.WebReferences
 		/// <summary>Delete the web reference from the project.</summary>
 		public void Delete()
 		{
-			Project project = proxyFile.Project;
-			project.ProjectFiles.Remove(proxyFile);
-			project.ProjectFiles.Remove(mapFile);
+			IProject project = proxyFile.Project;
+			project.Remove(proxyFile);
+			project.Remove(mapFile);
 			Directory.Delete(Path.Combine(Library.GetWebReferencePath(project), Name), true);
 		}
 	}	

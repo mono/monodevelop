@@ -4,7 +4,7 @@ using Gdk;
 
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.GtkCore.GuiBuilder;
 
@@ -12,12 +12,12 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 {
 	class StockIconsNode
 	{
-		public StockIconsNode (Project project)
+		public StockIconsNode (IProject project)
 		{
 			this.Project = project;
 		}
 		
-		public Project Project;
+		public IProject Project;
 	}
 	
 	public class StockIconsNodeBuilder: TypeNodeBuilder

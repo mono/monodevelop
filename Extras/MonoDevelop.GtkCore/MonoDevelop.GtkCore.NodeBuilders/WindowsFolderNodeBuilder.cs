@@ -29,14 +29,14 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
-using MonoDevelop.Ide.Gui.Pads.ProjectPad;
+using MonoDevelop.Ide.Gui.Pads.SolutionViewPad;
 using MonoDevelop.GtkCore.GuiBuilder;
 
 namespace MonoDevelop.GtkCore.NodeBuilders
@@ -69,7 +69,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			Project p = ((WindowsFolder)dataObject).Project;
+			IProject p = ((WindowsFolder)dataObject).Project;
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (p);
 			if (info != null && info.GuiBuilderProject.HasError) {
 				label = GettextCatalog.GetString ("User Interface (GUI project load failed)");
@@ -82,7 +82,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			Project p = ((WindowsFolder)dataObject).Project;
+			IProject p = ((WindowsFolder)dataObject).Project;
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (p);
 			if (info != null && !info.GuiBuilderProject.HasError) {
 				builder.AddChild (new StockIconsNode (p));
@@ -100,7 +100,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
-			if (otherNode.DataItem is ResourceFolder || otherNode.DataItem is ProjectReferenceCollection)
+			if (otherNode.DataItem is ReferenceFolderNode)
 				return 1;
 			else
 				return -1;

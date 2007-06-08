@@ -66,6 +66,7 @@ namespace MonoDevelop.Ide.Projects
 		void Save ();
 		
 		bool IsFileInProject (string fileName);
+		ProjectFile GetFile (string fileName);
 		
 		void Add (ProjectItem item);
 		void Remove (ProjectItem item);

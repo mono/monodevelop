@@ -91,6 +91,11 @@ namespace MonoDevelop.Ide.Projects
 		{
 			return project != null ? GetBackendBindingCodonByGuid (project.TypeGuid) : null;
 		}
+		public static BackendBindingCodon GetBackendBindingCodon (IProject project)
+		{
+			return GetBackendBindingCodonByLanguage (project.Language);
+		}
+		
 		
 		public static IBackendBinding GetBackendBindingByGuid (string guid)
 		{

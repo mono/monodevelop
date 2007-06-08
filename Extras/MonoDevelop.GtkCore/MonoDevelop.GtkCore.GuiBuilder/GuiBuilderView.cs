@@ -37,7 +37,7 @@ using MonoDevelop.Ide.Gui.Search;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.DesignerSupport.Toolbox; 
@@ -198,7 +198,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				// will not save the code to disk.
 				GtkDesignInfo info = GtkCoreService.GetGtkInfo (gproject.Project);
 				if (info != null && info.GeneratePartialClasses)
-					GuiBuilderService.GenerateSteticCodeStructure ((DotNetProject)gproject.Project, designer.RootComponent, false, false);
+					GuiBuilderService.GenerateSteticCodeStructure ((MSBuildProject)gproject.Project, designer.RootComponent, false, false);
 			}
 			base.ShowPage (npage);
 		}
@@ -295,7 +295,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					info.AddExportedWidget (codeBinder.TargetObject.Name);
 					info.UpdateGtkFolder ();
 					GtkCoreService.UpdateObjectsFile (gproject.Project);
-					IdeApp.ProjectOperations.SaveProject (gproject.Project);
+					ProjectService.SaveProject (gproject.Project);
 				}
 			}
 		}

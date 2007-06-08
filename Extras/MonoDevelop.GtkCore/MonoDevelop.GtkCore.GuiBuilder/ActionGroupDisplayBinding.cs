@@ -35,7 +35,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.GtkCore.Dialogs;
@@ -54,7 +55,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			if (excludeThis)
 				return false;
-			if (IdeApp.ProjectOperations.CurrentOpenCombine == null)
+			if (ProjectService.Solution == null)
 				return false;
 			
 			if (GetActionGroup (fileName) == null)
@@ -76,7 +77,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			excludeThis = true;
 			IDisplayBinding db = IdeApp.Workbench.DisplayBindings.GetBindingPerFileName (fileName);
 			
-			Project project = IdeApp.ProjectOperations.CurrentOpenCombine.GetProjectContainingFile (fileName);
+			IProject project = ProjectService.GetProjectContainingFile (fileName);
 			GtkDesignInfo info = GtkCoreService.EnableGtkSupport (project);
 			
 			ActionGroupView view = new ActionGroupView (db.CreateContentForFile (fileName), GetActionGroup (fileName), info.GuiBuilderProject);
@@ -91,7 +92,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		Stetic.ActionGroupComponent GetActionGroup (string file)
 		{
-			Project project = IdeApp.ProjectOperations.CurrentOpenCombine.GetProjectContainingFile (file);
+			IProject project = ProjectService.GetProjectContainingFile (file);
 			if (project == null)
 				return null;
 				
@@ -102,7 +103,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return info.GuiBuilderProject.GetActionGroupForFile (file);
 		}
 		
-		internal static string BindToClass (Project project, Stetic.ActionGroupComponent group)
+		internal static string BindToClass (IProject project, Stetic.ActionGroupComponent group)
 		{
 			GuiBuilderProject gproject = GuiBuilderService.GetGuiBuilderProject (project);
 			string file = gproject.GetSourceCodeFile (group);
@@ -119,7 +120,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 			// Ask what to do
 			
-			using (BindDesignDialog dialog = new BindDesignDialog (group.Name, list, project.BaseDirectory)) {
+			using (BindDesignDialog dialog = new BindDesignDialog (group.Name, list, project.BasePath)) {
 				if (!dialog.Run ())
 					return null;
 				
@@ -132,11 +133,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return gproject.GetSourceCodeFile (group);
 		}
 		
-		static IClass CreateClass (Project project, Stetic.ActionGroupComponent group, string name, string namspace, string folder)
+		static IClass CreateClass (IProject project, Stetic.ActionGroupComponent group, string name, string namspace, string folder)
 		{
 			string fullName = namspace.Length > 0 ? namspace + "." + name : name;
 			
-			CodeRefactorer gen = new CodeRefactorer (IdeApp.ProjectOperations.CurrentOpenCombine, IdeApp.ProjectOperations.ParserDatabase);
+			// TODO: Project Conversion
+			CodeRefactorer gen = null; //new CodeRefactorer (ProjectService.Solution, IdeApp.ProjectOperations.ParserDatabase);
 			
 			CodeTypeDeclaration type = new CodeTypeDeclaration ();
 			type.Name = name;
@@ -178,15 +180,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			// Create the class
 			
-			IClass cls = gen.CreateClass (project, ((DotNetProject)project).LanguageName, folder, namspace, type);
+			IClass cls = gen.CreateClass (project, ((MSBuildProject)project).Language, folder, namspace, type);
 			if (cls == null)
 				throw new UserException ("Could not create class " + fullName);
 			
-			project.AddFile (cls.Region.FileName, BuildAction.Compile);
-			IdeApp.ProjectOperations.SaveProject (project);
+			project.Add (new ProjectFile (cls.Region.FileName, FileType.Compile));
+			ProjectService.SaveProject (project);
 			
 			// Make sure the database is up-to-date
-			IdeApp.ProjectOperations.ParserDatabase.UpdateFile (project, cls.Region.FileName, null);
+// TODO: Project Conversion
+//			IdeApp.ProjectOperations.ParserDatabase.UpdateFile (project, cls.Region.FileName, null);
 			return cls;
 		}
 		

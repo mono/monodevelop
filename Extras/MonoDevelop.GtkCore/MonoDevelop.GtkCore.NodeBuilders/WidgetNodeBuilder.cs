@@ -29,7 +29,8 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Pads;
@@ -136,17 +137,17 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		public void OnDelete ()
 		{
 			GuiBuilderWindow w = (GuiBuilderWindow) CurrentNode.DataItem;
-			string fn = Runtime.FileService.AbsoluteToRelativePath (w.Project.Project.BaseDirectory, w.SourceCodeFile);
+			string fn = Runtime.FileService.AbsoluteToRelativePath (w.Project.Project.BasePath, w.SourceCodeFile);
 			using (ConfirmWindowDeleteDialog dialog = new ConfirmWindowDeleteDialog (w.Name, fn, w.RootWidget)) {
 				if (dialog.Run () == (int) Gtk.ResponseType.Yes) {
 					if (dialog.DeleteFile) {
-						ProjectFile file = w.Project.Project.GetProjectFile (w.SourceCodeFile);
+						ProjectFile file = w.Project.Project.GetFile (w.SourceCodeFile);
 						if (file != null)
-							w.Project.Project.ProjectFiles.Remove (file);
+							w.Project.Project.Remove (file);
 					}
 					w.Project.Remove (w);
 					w.Project.Save (false);
-					IdeApp.ProjectOperations.SaveProject (w.Project.Project);
+					ProjectService.SaveProject (w.Project.Project);
 				}
 			}
 		}

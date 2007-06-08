@@ -36,7 +36,8 @@ using System.CodeDom;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Core.Gui;
@@ -120,7 +121,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			// Ask what to do
 
 			try {
-				using (BindDesignDialog dialog = new BindDesignDialog (Name, list, Project.Project.BaseDirectory)) {
+				using (BindDesignDialog dialog = new BindDesignDialog (Name, list, Project.Project.BasePath)) {
 					if (!dialog.Run ())
 						return false;
 					
@@ -141,8 +142,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		void CreateClass (string name, string namspace, string folder)
 		{
 			string fullName = namspace.Length > 0 ? namspace + "." + name : name;
-			
-			CodeRefactorer gen = new CodeRefactorer (IdeApp.ProjectOperations.CurrentOpenCombine, IdeApp.ProjectOperations.ParserDatabase);
+			// TODO: Project Conversion (null is not correct)
+			CodeRefactorer gen = null; //new CodeRefactorer (ProjectService.Solution, IdeApp.ProjectOperations.ParserDatabase);
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (fproject.Project);
 			
 			CodeTypeDeclaration type = new CodeTypeDeclaration ();
@@ -198,15 +199,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			// Create the class
 			
-			IClass cls = gen.CreateClass (Project.Project, ((DotNetProject)Project.Project).LanguageName, folder, namspace, type);
+			IClass cls = gen.CreateClass (Project.Project, ((MSBuildProject)Project.Project).Language, folder, namspace, type);
 			if (cls == null)
 				throw new UserException ("Could not create class " + fullName);
 			
-			Project.Project.AddFile (cls.Region.FileName, BuildAction.Compile);
-			IdeApp.ProjectOperations.SaveProject (Project.Project);
+			Project.Project.Add (new ProjectFile (cls.Region.FileName, FileType.Compile));
+			ProjectService.SaveProject (Project.Project);
 			
 			// Make sure the database is up-to-date
-			IdeApp.ProjectOperations.ParserDatabase.UpdateFile (Project.Project, cls.Region.FileName, null);
+// TODO: Project Conversion
+//			IdeApp.ProjectOperations.ParserDatabase.UpdateFile (Project.Project, cls.Region.FileName, null);
 		}
 		
 		void AddSignalsRec (CodeTypeDeclaration type, Stetic.Component comp)

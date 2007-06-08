@@ -72,6 +72,13 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 		
+		public string SetExtension (string fileName)
+		{
+			if (this.FileExtensions.Length == 0) 
+				return fileName;
+			return fileName + this.FileExtensions[0];
+		}
+		
 		public bool IsCompileable (string fileName)
 		{
 			if (String.IsNullOrEmpty (fileName)) 

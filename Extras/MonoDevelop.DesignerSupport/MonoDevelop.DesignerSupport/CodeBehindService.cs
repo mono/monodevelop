@@ -35,7 +35,8 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.DesignerSupport.CodeBehind;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Ide.Gui;
 
@@ -60,14 +61,16 @@ namespace MonoDevelop.DesignerSupport
 		
 		internal void Initialise ()
 		{
-			IdeApp.ProjectOperations.FileAddedToProject += onFileEvent;
-			IdeApp.ProjectOperations.FileChangedInProject += onFileEvent;
-			IdeApp.ProjectOperations.FileRemovedFromProject += onFileEvent;
+// TODO: Project Conversion
+//			IdeApp.ProjectOperations.FileAddedToProject += onFileEvent;
+//			IdeApp.ProjectOperations.FileChangedInProject += onFileEvent;
+//			IdeApp.ProjectOperations.FileRemovedFromProject += onFileEvent;
 			
-			IdeApp.ProjectOperations.CombineClosed += onCombineClosed;
-			IdeApp.ProjectOperations.CombineOpened += onCombineOpened;
+			ProjectService.SolutionClosed += onCombineClosed;
+			ProjectService.SolutionOpened += onCombineOpened;
 			
-			IdeApp.ProjectOperations.ParserDatabase.ClassInformationChanged += onClassInformationChanged;
+// TODO: Project Conversion
+//			IdeApp.ProjectOperations.ParserDatabase.ClassInformationChanged += onClassInformationChanged;
 		}
 		
 		void OnProviderExtensionChanged (object s, ExtensionNodeEventArgs args)
@@ -81,8 +84,8 @@ namespace MonoDevelop.DesignerSupport
 			if (args.Change == ExtensionChange.Remove)
 				providers.Remove ((ICodeBehindProvider) args.ExtensionObject);
 			
-			if (IdeApp.ProjectOperations != null && IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				CombineEventArgs rootCombineArgs = new CombineEventArgs (IdeApp.ProjectOperations.CurrentOpenCombine);
+			if (ProjectService.Solution != null) {
+				SolutionEventArgs rootCombineArgs = new SolutionEventArgs (ProjectService.Solution);
 				if (codeBehindBindings.Count > 0) {
 					onCombineClosed (this, rootCombineArgs);
 					codeBehindBindings.Clear ();
@@ -94,25 +97,26 @@ namespace MonoDevelop.DesignerSupport
 		~CodeBehindService ()
 		{
 			AddinManager.RemoveExtensionNodeHandler (codeBehindProviderPath, OnProviderExtensionChanged);
+// TODO: Project Conversion
+//			IdeApp.ProjectOperations.FileAddedToProject -= onFileEvent;
+//			IdeApp.ProjectOperations.FileChangedInProject -= onFileEvent;
+//			IdeApp.ProjectOperations.FileRemovedFromProject -= onFileEvent;
 			
-			IdeApp.ProjectOperations.FileAddedToProject -= onFileEvent;
-			IdeApp.ProjectOperations.FileChangedInProject -= onFileEvent;
-			IdeApp.ProjectOperations.FileRemovedFromProject -= onFileEvent;
+			ProjectService.SolutionClosed -= onCombineClosed;
+			ProjectService.SolutionOpened -= onCombineOpened;
 			
-			IdeApp.ProjectOperations.CombineClosed -= onCombineClosed;
-			IdeApp.ProjectOperations.CombineOpened -= onCombineOpened;
-			
-			IdeApp.ProjectOperations.ParserDatabase.ClassInformationChanged -= onClassInformationChanged;
+// TODO: Project Conversion
+//			IdeApp.ProjectOperations.ParserDatabase.ClassInformationChanged -= onClassInformationChanged;
 		}
 		
 		#endregion
 		
 		#region file event handlers
-		
-		void onFileEvent (object sender, ProjectFileEventArgs e)
-		{
-			updateCodeBehind (e.ProjectFile);
-		}
+// TODO: Project Conversion		
+//		void onFileEvent (object sender, ProjectFileEventArgs e)
+//		{
+//			updateCodeBehind (e.ProjectFile);
+//		}
 		
 		void onClassInformationChanged (object sender, ClassInformationEventArgs e)
 		{
@@ -168,26 +172,32 @@ namespace MonoDevelop.DesignerSupport
 			
 		}
 		
-		void onCombineOpened (object sender, CombineEventArgs e)
+		void onCombineOpened (object sender, SolutionEventArgs e)
 		{
 			//loop through all project files in all combines and check for CodeBehind
-			foreach (CombineEntry entry in e.Combine.Entries) {
-				Project proj = entry as Project;
+			foreach (IProject proj in e.Solution.AllProjects) {
 				if (proj != null)
-					foreach (ProjectFile pf in proj.ProjectFiles)
+					foreach (ProjectItem item in proj.Items) {
+						ProjectFile pf = item as ProjectFile;
+						if (pf == null)
+							continue;
 						updateCodeBehind (pf);
+					}
 			}
 		}
 		
-		void onCombineClosed (object sender, CombineEventArgs e)
+		void onCombineClosed (object sender, SolutionEventArgs e)
 		{
 			//loop through all project files in all combines and remove their Projectfiles from our list
-			foreach (CombineEntry entry in e.Combine.Entries) {
-				Project proj = entry as Project;
+			foreach (IProject proj in e.Solution.AllProjects) {
 				if (proj != null)
-					foreach (ProjectFile pf in proj.ProjectFiles)
+					foreach (ProjectItem item in proj.Items) {
+						ProjectFile pf = item as ProjectFile;
+						if (pf == null)
+							continue;
 						if (codeBehindBindings.ContainsKey (pf))
 							codeBehindBindings.Remove (pf);
+					}
 			}
 		}
 		
@@ -203,10 +213,11 @@ namespace MonoDevelop.DesignerSupport
 				string name = provider.GetCodeBehindClassName (file);
 				
 				if (name != null) {
-					//look it up in the parser database
-					IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (file.Project);
-					newCodeBehind = ctx.GetClass (name);
-					
+// TODO: Project Conversion
+//					//look it up in the parser database
+//					IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (file.Project);
+//					newCodeBehind = ctx.GetClass (name);
+//					
 					//if class was not found, create a dummy one
 					if (newCodeBehind == null) {
 						NotFoundClass dummy = new NotFoundClass ();
@@ -267,11 +278,12 @@ namespace MonoDevelop.DesignerSupport
 		//determines whether a file contains only codebehind classes
 		public bool ContainsOnlyCodeBehind (ProjectFile file)
 		{
-			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (file.Project);
+// TODO: Project Conversion
+			IParserContext ctx = null; //IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (file.Project);
 			if (ctx == null)
 				return false;
 			
-			IClass[] classes = ctx.GetFileContents (file.FilePath);
+			IClass[] classes = ctx.GetFileContents (file.FullPath);
 			if ((classes == null) || (classes.Length == 0))
 				return false;
 			
@@ -285,11 +297,14 @@ namespace MonoDevelop.DesignerSupport
 			return allClassesAreCodeBehind;
 		}
 		
-		public IList<IClass> GetAllCodeBehindClasses (Project project)
+		public IList<IClass> GetAllCodeBehindClasses (IProject project)
 		{
 			List<IClass> matches = new List<IClass> ();
 			 
-			foreach (ProjectFile pf in project.ProjectFiles){
+			foreach (ProjectItem item in project.Items){
+				ProjectFile pf = item as ProjectFile;
+				if (pf == null)
+					continue;
 				IClass match = codeBehindBindings[pf];
 				if (match == null)
 					matches.Add (match);

@@ -34,7 +34,8 @@ using System;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Projects.Parser;
 
 namespace MonoDevelop.DesignerSupport.CodeBehind
@@ -81,7 +82,7 @@ namespace MonoDevelop.DesignerSupport.CodeBehind
 			if (content.Project == null)
 				return null;
 			
-			ProjectFile file = content.Project.GetProjectFile (content.ContentName);
+			ProjectFile file = content.Project.GetFile (content.ContentName);
 			if (file == null)
 				return null;
 			

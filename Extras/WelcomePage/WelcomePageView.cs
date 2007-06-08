@@ -31,6 +31,7 @@ using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Components.HtmlControl;
@@ -165,8 +166,7 @@ namespace MonoDevelop.WelcomePage
 				Uri fileuri = new Uri ( projectUri );
 				try {
 					loadingProject = true;
-					IAsyncOperation oper = IdeApp.ProjectOperations.OpenCombine ( fileuri.LocalPath );
-					oper.WaitForCompleted ();
+					ProjectService.OpenSolution ( fileuri.LocalPath );
 				} finally {
 					loadingProject = false;
 				}

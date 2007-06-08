@@ -36,7 +36,8 @@ using System.Collections.Specialized;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Serialization;
 
@@ -47,9 +48,9 @@ namespace MonoDevelop.GtkCore
 	public class GtkDesignInfo: IDisposable
 	{
 		ArrayList exportedWidgets = new ArrayList ();
-		DotNetProject project;
+		MSBuildProject project;
 		GuiBuilderProject builderProject;
-		IDotNetLanguageBinding binding;
+		BackendBindingCodon binding;
 		ProjectResourceProvider resourceProvider;
 		
 		[ItemProperty (DefaultValue=false)]
@@ -68,7 +69,7 @@ namespace MonoDevelop.GtkCore
 		{
 		}
 		
-		public GtkDesignInfo (DotNetProject project)
+		public GtkDesignInfo (MSBuildProject project)
 		{
 			partialTypes = GtkCoreService.SupportsPartialTypes (project);
 			IExtendedDataItem item = (IExtendedDataItem) project;
@@ -76,10 +77,10 @@ namespace MonoDevelop.GtkCore
 			Bind (project);
 		}
 		
-		public void Bind (DotNetProject project)
+		public void Bind (MSBuildProject project)
 		{
 			this.project = project;
-			binding = Services.Languages.GetBindingPerLanguageName (project.LanguageName) as IDotNetLanguageBinding;
+			binding = BackendBindingService.GetBackendBindingCodon (project);
 		}
 		
 		public void Dispose ()
@@ -119,7 +120,7 @@ namespace MonoDevelop.GtkCore
 		}
 		
 		public string SteticGeneratedFile {
-			get { return Path.Combine (GtkGuiFolder, binding.GetFileName ("generated")); }
+			get { return Path.Combine (GtkGuiFolder, binding.SetExtension ("generated")); }
 		}
 		
 		public string SteticFile {
@@ -127,7 +128,7 @@ namespace MonoDevelop.GtkCore
 		}
 		
 		public string GtkGuiFolder {
-			get { return Path.Combine (project.BaseDirectory, "gtk-gui"); }
+			get { return Path.Combine (project.BasePath, "gtk-gui"); }
 		}
 		
 		public bool IsWidgetLibrary {
@@ -231,7 +232,7 @@ namespace MonoDevelop.GtkCore
 			
 			// Add the stetic file to the project
 			if (!project.IsFileInProject (SteticFile)) {
-				project.AddFile (SteticFile, BuildAction.EmbedAsResource);
+				project.Add (new ProjectFile (SteticFile, FileType.EmbeddedResource));
 				projectModified = true;
 			}
 		
@@ -243,7 +244,7 @@ namespace MonoDevelop.GtkCore
 
 			// Add the generated file to the project, if not already there
 			if (!project.IsFileInProject (SteticGeneratedFile)) {
-				project.AddFile (SteticGeneratedFile, BuildAction.Compile);
+				project.Add (new ProjectFile (SteticGeneratedFile, FileType.Compile));
 				projectModified = true;
 			}
 
@@ -256,7 +257,7 @@ namespace MonoDevelop.GtkCore
 					string fn = GuiBuilderService.GenerateSteticCodeStructure (project, win.RootWidget, true, false);
 					partialFiles.Add (fn);
 					if (!project.IsFileInProject (fn)) {
-						project.AddFile (fn, BuildAction.Compile);
+						project.Add (new ProjectFile (fn, FileType.Compile));
 						projectModified = true;
 					}
 				}
@@ -265,16 +266,21 @@ namespace MonoDevelop.GtkCore
 					string fn = GuiBuilderService.GenerateSteticCodeStructure (project, ag, true, false);
 					partialFiles.Add (fn);
 					if (!project.IsFileInProject (fn)) {
-						project.AddFile (fn, BuildAction.Compile);
+						project.Add (new ProjectFile (fn, FileType.Compile));
 						projectModified = true;
 					}
 				}
 				
 				// Remove all project files which are not in the generated list
-				foreach (ProjectFile pf in project.ProjectFiles.GetFilesInPath (GtkGuiFolder)) {
-					if (pf.FilePath != SteticGeneratedFile && pf.FilePath != ObjectsFile && pf.FilePath != SteticFile && !partialFiles.Contains (pf.FilePath)) {
-						project.ProjectFiles.Remove (pf);
-						Runtime.FileService.DeleteFile (pf.FilePath);
+				foreach (ProjectItem item in project.Items) {
+					ProjectFile pf = item as ProjectFile;
+					if (pf == null)
+						continue;
+					if (!pf.FullPath.StartsWith (GtkGuiFolder))
+						continue;
+					if (pf.FullPath != SteticGeneratedFile && pf.FullPath != ObjectsFile && pf.FullPath != SteticFile && !partialFiles.Contains (pf.FullPath)) {
+						project.Remove (pf);
+						Runtime.FileService.DeleteFile (pf.FullPath);
 						projectModified = true;
 					}
 				}
@@ -288,13 +294,13 @@ namespace MonoDevelop.GtkCore
 					doc.Save (ObjectsFile);
 				}
 				
-				ProjectFile file = project.GetProjectFile (ObjectsFile);
+				ProjectFile file = project.GetFile (ObjectsFile);
 				if (file == null) {
-					project.AddFile (ObjectsFile, BuildAction.EmbedAsResource);
+					project.Add (new ProjectFile (ObjectsFile, FileType.EmbeddedResource));
 					projectModified = true;
 				}
-				else if (file.BuildAction != BuildAction.EmbedAsResource) {
-					file.BuildAction = BuildAction.EmbedAsResource;
+				else if (file.FileType != FileType.EmbeddedResource) {
+					file.FileType = FileType.EmbeddedResource;
 					projectModified = true;
 				}
 			}
@@ -302,24 +308,30 @@ namespace MonoDevelop.GtkCore
 			// Add gtk-sharp and gdk-sharp references, if not already added.
 			
 			bool gtk=false, gdk=false, posix=false;
-			foreach (ProjectReference r in project.ProjectReferences) {
-				if (r.Reference.StartsWith ("gtk-sharp") && r.ReferenceType == ReferenceType.Gac)
+			foreach (ProjectItem item in project.Items) {
+				ReferenceProjectItem r = item as ReferenceProjectItem;
+				if (r == null)
+					continue;
+				
+				if (r.Include.StartsWith ("gtk-sharp") && String.IsNullOrEmpty (r.HintPath)) //  && r.ReferenceType == ReferenceType.Gac
 					gtk = true;
-				else if (r.Reference.StartsWith ("gdk-sharp") && r.ReferenceType == ReferenceType.Gac)
+				else if (r.Include.StartsWith ("gdk-sharp") && String.IsNullOrEmpty (r.HintPath))
 					gdk = true;
-				else if (r.Reference.StartsWith ("Mono.Posix") && r.ReferenceType == ReferenceType.Gac)
+				else if (r.Include.StartsWith ("Mono.Posix") && String.IsNullOrEmpty (r.HintPath))
 					posix = true;
 			}
 			if (!gtk)
-				project.ProjectReferences.Add (new ProjectReference (ReferenceType.Gac, typeof(Gtk.Widget).Assembly.FullName));
+				project.Add (new ReferenceProjectItem (typeof(Gtk.Widget).Assembly.FullName));
 			if (!gdk)
-				project.ProjectReferences.Add (new ProjectReference (ReferenceType.Gac, typeof(Gdk.Window).Assembly.FullName));
+				project.Add (new ReferenceProjectItem (typeof(Gdk.Window).Assembly.FullName));
 				
 			if (!posix && GenerateGettext && GettextClass == "Mono.Unix.Catalog") {
 				// Add a reference to Mono.Posix. Use the version for the selected project's runtime version.
-				string aname = Runtime.SystemAssemblyService.FindInstalledAssembly ("Mono.Posix, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756");
-				aname = Runtime.SystemAssemblyService.GetAssemblyNameForVersion (aname, project.ClrVersion);
-				project.ProjectReferences.Add (new ProjectReference (ReferenceType.Gac, aname));
+// TODO: Project Conversion (may be correct ?)
+//				string aname = Runtime.SystemAssemblyService.FindInstalledAssembly ("Mono.Posix, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756");
+//				aname = Runtime.SystemAssemblyService.GetAssemblyNameForVersion (aname, project.ClrVersion);
+//				project.Add (new ReferenceProjectItem (aname));
+				project.Add (new ReferenceProjectItem ("Mono.Posix"));
 			}
 			
 			return projectModified || gtk || gdk || posix;
@@ -327,10 +339,10 @@ namespace MonoDevelop.GtkCore
 		
 		CodeDomProvider GetCodeDomProvider ()
 		{
-			IDotNetLanguageBinding binding = Services.Languages.GetBindingPerLanguageName (project.LanguageName) as IDotNetLanguageBinding;
-			CodeDomProvider provider = binding.GetCodeDomProvider ();
+			IBackendBinding binding = BackendBindingService.GetBackendBinding (project);
+			CodeDomProvider provider = binding.CodeDomProvider;
 			if (provider == null)
-				throw new UserException ("Code generation not supported in language: " + project.LanguageName);
+				throw new UserException ("Code generation not supported in language: " + project.Language);
 			return provider;
 		}
 	}	

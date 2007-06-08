@@ -577,16 +577,27 @@ namespace MonoDevelop.Ide.Projects
 			
 		}
 #endregion
+		
+		public string GetDefaultNamespace (string fileName)
+		{
+			return this.RootNamespace;
+		}
+		
 		public bool IsFileInProject (string fileName)
+		{
+			return GetFile (fileName) != null;
+		}
+		public ProjectFile GetFile (string fileName)
 		{
 			string exactFileName = Path.GetFullPath (fileName);
 			foreach (ProjectItem item in this.Items) {
 				if (item is ProjectFile)
 					if (Path.GetFullPath (Path.Combine (this.BasePath, item.Include)) == exactFileName)
-						return true;
+						return item as ProjectFile;
 			}
-			return false;
+			return null;
 		}
+		
 		
 		public void Add (ProjectItem item)
 		{

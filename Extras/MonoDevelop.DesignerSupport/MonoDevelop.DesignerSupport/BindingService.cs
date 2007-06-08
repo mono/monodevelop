@@ -34,6 +34,7 @@ using System.CodeDom;
 using System.Reflection;
 using System.Collections.Generic;
 
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.CodeGeneration;
@@ -136,9 +137,11 @@ namespace MonoDevelop.DesignerSupport
 		
 		public static CodeRefactorer GetCodeGenerator ()
 		{			
-			CodeRefactorer cr = new CodeRefactorer (IdeApp.ProjectOperations.CurrentOpenCombine, IdeApp.ProjectOperations.ParserDatabase);
-			cr.TextFileProvider = openedFileProvider;
-			return cr;
+// TODO: Project Conversion
+//			CodeRefactorer cr = new CodeRefactorer (ProjectService.Solution, IdeApp.ProjectOperations.ParserDatabase);
+//			cr.TextFileProvider = openedFileProvider;
+//			return cr;
+			return null;
 		}
 		
 		//copied from MonoDevelop.GtkCore.GuiBuilder

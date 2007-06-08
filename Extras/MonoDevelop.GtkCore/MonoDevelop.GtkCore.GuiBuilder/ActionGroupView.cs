@@ -29,7 +29,7 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
@@ -125,7 +125,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				// will not save the code to disk.
 				GtkDesignInfo info = GtkCoreService.GetGtkInfo (project.Project);
 				if (info != null && info.GeneratePartialClasses)
-					GuiBuilderService.GenerateSteticCodeStructure ((DotNetProject)project.Project, designer.RootComponent, false, false);
+					GuiBuilderService.GenerateSteticCodeStructure ((MSBuildProject)project.Project, designer.RootComponent, false, false);
 			}
 			base.ShowPage (npage);
 		}

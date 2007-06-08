@@ -64,7 +64,9 @@ namespace MonoDeveloper
 		
 		public bool CanWriteFile (object obj)
 		{
-			return (obj is MonoProject) || (obj is MonoCombine);
+// TODO: Project Conversion
+//			return (obj is MonoProject) || (obj is MonoCombine);
+			return false;
 		}
 		
 		public void WriteFile (string file, object node, IProgressMonitor monitor)
@@ -86,9 +88,11 @@ namespace MonoDeveloper
 			if (aname != null) {
 				// It is a project
 				monitor.BeginTask ("Loading '" + fileName + "'", 0);
-				MonoProject project = new MonoProject (mkfile);
-				monitor.EndTask ();
-				return project;
+// TODO: Project Conversion
+//				MonoProject project = new MonoProject (mkfile);
+//				monitor.EndTask ();
+//				return project;
+				return null;
 			} else {
 				string subdirs;
 				StringBuilder subdirsBuilder = new StringBuilder ();

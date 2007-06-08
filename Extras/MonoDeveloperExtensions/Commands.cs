@@ -32,7 +32,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Ide.Gui.Pads.ProjectPad;
+using MonoDevelop.Ide.Gui.Pads.SolutionViewPad;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui;
@@ -48,22 +48,25 @@ namespace MonoDeveloper
 	{
 		protected override void Run ()
 		{
-			MonoProject p = IdeApp.ProjectOperations.CurrentSelectedProject as MonoProject;
-			if (p != null)
-				MonoDevelop.Core.Gui.Services.DispatchService.BackgroundDispatch (new StatefulMessageHandler (Install), p);
+// TODO: Project Conversion
+//			MonoProject p = IdeApp.ProjectOperations.CurrentSelectedProject as MonoProject;
+//			if (p != null)
+//				MonoDevelop.Core.Gui.Services.DispatchService.BackgroundDispatch (new StatefulMessageHandler (Install), p);
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Visible = IdeApp.ProjectOperations.CurrentSelectedProject is MonoProject;
+// TODO: Project Conversion
+//			info.Visible = IdeApp.ProjectOperations.CurrentSelectedProject is MonoProject;
 		}
 		
 		void Install (object prj)
 		{
-			MonoProject p = prj as MonoProject;
-			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ()) {
-				p.Install (monitor);
-			}
+// TODO: Project Conversion
+//			MonoProject p = prj as MonoProject;
+//			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ()) {
+//				p.Install (monitor);
+//			}
 		}
 
 	}

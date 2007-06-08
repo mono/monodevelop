@@ -54,10 +54,10 @@ namespace MonoDevelop.DesignerSupport.CodeBehind
 			classChangeHandler = (CodeBehindService.CodeBehindClassEventHandler)
 				IdeApp.Services.DispatchService.GuiDispatch (new CodeBehindService.CodeBehindClassEventHandler (onClassChanged));
 			DesignerSupport.Service.CodeBehindService.CodeBehindClassUpdated += classChangeHandler;
-			
-			fileChangeHandler = (CodeBehindService.CodeBehindFileEventHandler)
-				IdeApp.Services.DispatchService.GuiDispatch (new CodeBehindService.CodeBehindFileEventHandler (onFileChanged));
-			DesignerSupport.Service.CodeBehindService.CodeBehindFileUpdated += fileChangeHandler;
+// TODO: Project Conversion
+//			fileChangeHandler = (CodeBehindService.CodeBehindFileEventHandler)
+//				IdeApp.Services.DispatchService.GuiDispatch (new CodeBehindService.CodeBehindFileEventHandler (onFileChanged));
+//			DesignerSupport.Service.CodeBehindService.CodeBehindFileUpdated += fileChangeHandler;
 		}
 		
 		public override void Dispose ()

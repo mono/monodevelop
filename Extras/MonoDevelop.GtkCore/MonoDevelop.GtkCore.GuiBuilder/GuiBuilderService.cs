@@ -35,7 +35,7 @@ using System.CodeDom.Compiler;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Core.Gui;
@@ -64,9 +64,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		static GuiBuilderService ()
 		{
 			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnActiveDocumentChanged);
-			IdeApp.ProjectOperations.StartBuild += OnBeforeCompile;
-			IdeApp.ProjectOperations.EndBuild += OnProjectCompiled;
-			IdeApp.ProjectOperations.ParserDatabase.AssemblyInformationChanged += (AssemblyInformationEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new AssemblyInformationEventHandler (OnAssemblyInfoChanged));
+			ProjectService.StartBuild  += OnBeforeCompile;
+			ProjectService.EndBuild += OnProjectCompiled;
+// TODO: Project Conversion
+//			IdeApp.ProjectOperations.ParserDatabase.AssemblyInformationChanged += (AssemblyInformationEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new AssemblyInformationEventHandler (OnAssemblyInfoChanged));
 			
 			IdeApp.Exited += delegate {
 				if (steticApp != null) {
@@ -99,7 +100,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		}
 
 		
-		public static GuiBuilderProject GetGuiBuilderProject (Project project)
+		public static GuiBuilderProject GetGuiBuilderProject (IProject project)
 		{
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
 			if (info != null)
@@ -108,7 +109,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return null;
 		}
 		
-		public static ActionGroupView OpenActionGroup (Project project, Stetic.ActionGroupComponent group)
+		public static ActionGroupView OpenActionGroup (IProject project, Stetic.ActionGroupComponent group)
 		{
 			GuiBuilderProject p = GetGuiBuilderProject (project);
 			string file = p != null ? p.GetSourceCodeFile (group) : null;
@@ -180,11 +181,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		static void OnBeforeCompile (object s, BuildEventArgs args)
 		{
-			if (IdeApp.ProjectOperations.CurrentOpenCombine == null)
+			if (ProjectService.Solution == null)
 				return;
 
 			// Generate stetic files for all modified projects
-			GtkProjectServiceExtension.GenerateSteticCode = true;
+// TODO: Project Conversion
+//			GtkProjectServiceExtension.GenerateSteticCode = true;
 		}
 
 		static void OnProjectCompiled (object s, BuildEventArgs args)
@@ -192,8 +194,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (args.Success) {
 				// Unload stetic projects which are not currently
 				// being used by the IDE. This will avoid unnecessary updates.
-				if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-					foreach (Project prj in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects ()) {
+				if (ProjectService.Solution != null) {
+					foreach (IProject prj in ProjectService.Solution.AllProjects) {
 						GtkDesignInfo info = GtkCoreService.GetGtkInfo (prj);
 						if (info != null && !HasOpenDesigners (prj, false)) {
 							info.ReloadGuiBuilderProject ();
@@ -213,7 +215,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		internal static bool HasOpenDesigners (Project project, bool modifiedOnly)
+		internal static bool HasOpenDesigners (IProject project, bool modifiedOnly)
 		{
 			foreach (Document doc in IdeApp.Workbench.Documents) {
 				if ((doc.GetContent<GuiBuilderView>() != null || doc.GetContent<ActionGroupView>() != null) && doc.Project == project && (!modifiedOnly || doc.IsDirty))
@@ -245,20 +247,20 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		public static void ImportGladeFile (Project project)
+		public static void ImportGladeFile (IProject project)
 		{
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
 			if (info == null) info = GtkCoreService.EnableGtkSupport (project);
 			info.GuiBuilderProject.ImportGladeFile ();
 		}
 		
-		public static string GetBuildCodeFileName (Project project, Stetic.Component component)
+		public static string GetBuildCodeFileName (IProject project, Stetic.Component component)
 		{
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
 			return Path.Combine (info.GtkGuiFolder, component.Name + Path.GetExtension (info.SteticGeneratedFile));
 		}
 		
-		public static string GenerateSteticCodeStructure (DotNetProject project, Stetic.Component component, bool saveToFile, bool overwrite)
+		public static string GenerateSteticCodeStructure (MSBuildProject project, Stetic.Component component, bool saveToFile, bool overwrite)
 		{
 			// Generate a class which contains fields for all bound widgets of the component
 			
@@ -305,9 +307,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				cu.Namespaces.Add (cns);
 			}
 			
-			CodeDomProvider provider = project.LanguageBinding.GetCodeDomProvider ();
+			CodeDomProvider provider = BackendBindingService.GetBackendBinding (project).CodeDomProvider;
 			if (provider == null)
-				throw new UserException ("Code generation not supported for language: " + project.LanguageName);
+				throw new UserException ("Code generation not supported for language: " + project.Language);
 			
 			ICodeGenerator gen = provider.CreateGenerator ();
 			TextWriter fileStream;
@@ -321,25 +323,25 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			} finally {
 				fileStream.Close ();
 			}
-
-			if (IdeApp.ProjectOperations.ParserDatabase.IsLoaded (project)) {
-				// Only update the parser database if the project is actually loaded in the IDE.
-				if (saveToFile)
-					IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project).UpdateDatabase ();
-				else
-					IdeApp.ProjectOperations.ParserDatabase.UpdateFile (project, fileName, ((StringWriter)fileStream).ToString ());
-			}
+// TODO: Project Conversion
+//			if (IdeApp.ProjectOperations.ParserDatabase.IsLoaded (project)) {
+//				// Only update the parser database if the project is actually loaded in the IDE.
+//				if (saveToFile)
+//					IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project).UpdateDatabase ();
+//				else
+//					IdeApp.ProjectOperations.ParserDatabase.UpdateFile (project, fileName, ((StringWriter)fileStream).ToString ());
+//			}
 
 			return fileName;
 		}
 		
 		
-		public static Stetic.CodeGenerationResult GenerateSteticCode (IProgressMonitor monitor, Project prj)
+		public static Stetic.CodeGenerationResult GenerateSteticCode (IProgressMonitor monitor, IProject prj)
 		{
 			if (generating)
 				return null;
 
-			DotNetProject project = prj as DotNetProject;
+			MSBuildProject project = prj as MSBuildProject;
 			if (project == null)
 				return null;
 				
@@ -366,7 +368,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			// Make sure the referenced assemblies are up to date. It is necessary to do
 			// it now since they may contain widget libraries.
-			prj.CopyReferencesToOutputPath (false);
+// TODO: Project Conversion
+//			prj.CopyReferencesToOutputPath (false);
 			
 			info.GuiBuilderProject.UpdateLibraries ();
 			
@@ -421,9 +424,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (generationResult == null)
 				return null;
 				
-			CodeDomProvider provider = project.LanguageBinding.GetCodeDomProvider ();
+			CodeDomProvider provider = BackendBindingService.GetBackendBinding (project).CodeDomProvider;
 			if (provider == null)
-				throw new UserException ("Code generation not supported in language: " + project.LanguageName);
+				throw new UserException ("Code generation not supported in language: " + project.Language);
 			
 			ICodeGenerator gen = provider.CreateGenerator ();
 			string basePath = Path.GetDirectoryName (info.SteticGeneratedFile);
@@ -446,7 +449,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			// Make sure the generated files are added to the project
 			if (info.UpdateGtkFolder ()) {
 				Gtk.Application.Invoke (delegate {
-					IdeApp.ProjectOperations.SaveProject (project);
+					ProjectService.SaveProject (project);
 				});
 			}
 			

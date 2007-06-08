@@ -4,7 +4,7 @@ using System.CodeDom.Compiler;
 using System.IO;
 using System.Web.Services.Discovery;
 using System.Web.Services.Description;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.WebReferences
 {
@@ -14,7 +14,7 @@ namespace MonoDevelop.WebReferences
 		#region Properties
 		/// <summary>Gets or sets the project assocated with the Code Generator.</summary>
 		/// <value>A Project containing all the project information.</summary>
-		public Project Project
+		public IProject Project
 		{
 			get { return project; }
 			set { project = value; }
@@ -22,15 +22,11 @@ namespace MonoDevelop.WebReferences
 		
 		/// <summary>Gets the lanague binding assocated with the Code Generator.</summary>
 		/// <value>An IDotNetLanguageBinding containing the default language information for the current project.</summary>
-		public IDotNetLanguageBinding LanguageBinding
+		public BackendBindingCodon LanguageBinding
 		{
-			get
-			{
+			get {
 				if (languageBinding == null)
-				{
-					DotNetProject dotNetProject = (DotNetProject) project;
-					languageBinding = dotNetProject.LanguageBinding;
-				}
+					languageBinding = BackendBindingService.GetBackendBindingCodon (project);
 				return languageBinding;
 			}
 		}
@@ -47,7 +43,7 @@ namespace MonoDevelop.WebReferences
 		/// <value>A string containing the default language.</value>
 		public string DefaultLanguage
 		{
-			get { return this.LanguageBinding.Language; }
+			get { return this.LanguageBinding.Id; }
 		}
 		
 		/// <summary>Gets the default file extension based on the default language for the project.</summary>
@@ -77,7 +73,7 @@ namespace MonoDevelop.WebReferences
 			get
 			{
 				if (provider == null)
-					provider = LanguageBinding.GetCodeDomProvider();
+					provider = LanguageBinding.BackendBinding.CodeDomProvider;
 					
 				// Throw an exception if no provider has been set
 				if (provider == null)
@@ -89,16 +85,16 @@ namespace MonoDevelop.WebReferences
 		#endregion
 		
 		#region Member Variables
-		private Project project;
+		private IProject project;
 		private DiscoveryClientProtocol protocol;
 		private CodeDomProvider provider;
-		private IDotNetLanguageBinding languageBinding;
+		private BackendBindingCodon languageBinding;
 		#endregion
 		
 		/// <summary>Initializes a new instance of the CodeGenerator class by specifying the parent project and discovery client protocol.</summary>
 		/// <param name="project">A Project containing the parent project for the Code Generator.</param>
 		/// <param name="protocol">A DiscoveryClientProtocol containing the protocol for the Code Generator.</param>
-		public CodeGenerator(Project project, DiscoveryClientProtocol protocol)
+		public CodeGenerator(IProject project, DiscoveryClientProtocol protocol)
 		{
 			this.project = project;
 			this.protocol = protocol;

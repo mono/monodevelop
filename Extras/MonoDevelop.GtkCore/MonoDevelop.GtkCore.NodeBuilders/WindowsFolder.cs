@@ -27,18 +27,18 @@
 //
 
 using System;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.GtkCore.GuiBuilder;
 
 namespace MonoDevelop.GtkCore.NodeBuilders
 {
 	class WindowsFolder
 	{
-		Project project;
+		IProject project;
 		
 		public event EventHandler Changed;
 		
-		public WindowsFolder (Project project)
+		public WindowsFolder (IProject project)
 		{
 			this.project = project;
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
@@ -58,7 +58,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			if (Changed != null) Changed (this, EventArgs.Empty);
 		}
 		
-		public Project Project {
+		public IProject Project {
 			get { return project; }
 		}
 	}

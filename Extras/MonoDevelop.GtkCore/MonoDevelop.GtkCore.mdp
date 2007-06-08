@@ -58,7 +58,6 @@
     <File name="./templates/DialogPartial.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./templates/WidgetPartial.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./templates/WindowPartial.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./MonoDevelop.GtkCore.GuiBuilder/GtkProjectServiceExtension.cs" subtype="Code" buildaction="Compile" />
     <File name="./icons/widget.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/actiongroup.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs" subtype="Code" buildaction="Compile" />

@@ -32,7 +32,7 @@ using System.Xml;
 using System.IO;
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Templates;
@@ -76,7 +76,7 @@ namespace MonoDevelop.GtkCore
 			// TODO: Gtk 
 			return new string[] { };
 		}
-		public override void AddToProject (Project project, string language, string directory, string name)
+		public override void AddToProject (IProject project, string language, string directory, string name)
 		{
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
 			if (info == null)
@@ -87,11 +87,12 @@ namespace MonoDevelop.GtkCore
 			string fileName = fileTemplate.GetFileName (project, language, directory, name);
 			fileTemplate.AddToProject (project, language, directory, name);
 
-			IdeApp.ProjectOperations.ParserDatabase.UpdateFile (project, fileName, null);
+			// TODO: Project Service
+//			IdeApp.ProjectOperations.ParserDatabase.UpdateFile (project, fileName, null);
 			
 			StringParserService sps = (StringParserService) ServiceManager.GetService (typeof (StringParserService));
 			
-			DotNetProject netProject = project as DotNetProject;
+			MSBuildProject netProject = project as MSBuildProject;
 			string ns = netProject != null ? netProject.GetDefaultNamespace (fileName) : "";
 			string cname = Path.GetFileNameWithoutExtension (fileName);
 			string fullName = ns.Length > 0 ? ns + "." + cname : cname;

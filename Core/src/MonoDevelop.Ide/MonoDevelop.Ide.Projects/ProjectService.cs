@@ -205,9 +205,10 @@ namespace MonoDevelop.Ide.Projects
 				return;
 			IProgressMonitor monitor = array[1] as IProgressMonitor;
 			ExecutionContext context = array[2] as ExecutionContext;
-			
+			OnStartBuild (new BuildEventArgs (monitor, true));
 			List<CompilerResult> results = new List<CompilerResult> ();
 			for (int i = 0; i < solution.Items.Count; ++i) {
+			
 				SolutionProject project = solution.Items[i] as SolutionProject;
 				if (project == null)
 					continue;
@@ -322,6 +323,7 @@ namespace MonoDevelop.Ide.Projects
 					monitor.BeginStepTask (GettextCatalog.GetString ("Build Project {0}", project.Project.Name), 1, 0);
 				});
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Performing main compilation..."));
+				OnStartBuild (new BuildEventArgs (monitor, true));
 				
 				IBackendBinding backendBinding = GetBackendBinding (project, monitor); 
 				if (backendBinding == null) {
@@ -509,6 +511,13 @@ namespace MonoDevelop.Ide.Projects
 		{
 			if (EndBuild != null)
 				EndBuild (null, e);
+		}
+		
+		public static event EventHandler<BuildEventArgs> StartBuild;
+		public static void OnStartBuild (BuildEventArgs e)
+		{
+			if (StartBuild != null)
+				StartBuild (null, e);
 		}
 		
 		

@@ -31,7 +31,7 @@ using System;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -77,11 +77,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		GuiBuilderWindow GetWindow (string file)
 		{
-			if (IdeApp.ProjectOperations.CurrentOpenCombine == null)
+			if (ProjectService.Solution == null)
 				return null;
 
-			Project project = null;
-			foreach (Project p in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects ()) {
+			IProject project = null;
+			foreach (IProject p in ProjectService.Solution.AllProjects) {
 				if (p.IsFileInProject (file)) {
 					project = p;
 					break;

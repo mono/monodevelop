@@ -20,7 +20,8 @@ using System;
 using System.IO;
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
@@ -59,8 +60,11 @@ namespace MonoDevelop.ChangeLogAddIn
 
 			ITreeNavigator navigator = solutionPad.GetSelectedNode();
 			if (navigator == null) return null;
-
-			return navigator.DataItem as ProjectFile;			
+			MonoDevelop.Ide.Gui.Pads.SolutionViewPad.FileNode file = navigator.DataItem as MonoDevelop.Ide.Gui.Pads.SolutionViewPad.FileNode;
+			if (file != null) {
+				return file.Project.Project.GetFile (file.FileName);
+			}
+			return null;			
 		}
 		
 		private void InsertEntry(Document document)
@@ -73,7 +77,7 @@ namespace MonoDevelop.ChangeLogAddIn
 
 			string changeLogFileName = document.FileName;
 			string changeLogFileNameDirectory = Path.GetDirectoryName(changeLogFileName);
-			string selectedFileName = projectFile.Name;
+			string selectedFileName = projectFile.FullPath;
 			string selectedFileNameDirectory = Path.GetDirectoryName(selectedFileName);
 	
 	        int pos = GetHeaderEndPosition(document);
@@ -134,30 +138,27 @@ namespace MonoDevelop.ChangeLogAddIn
 		    
             Document document = null;
             
-            Project project = IdeApp.ProjectOperations.CurrentSelectedProject;
-		    if (project != null && project.BaseDirectory != null) {
-    		    string changelog = Path.Combine(project.BaseDirectory, "ChangeLog");
+            IProject project = ProjectService.ActiveProject.Project;
+		    if (project != null && project.BasePath != null) {
+    		    string changelog = Path.Combine(project.BasePath, "ChangeLog");
     		    if (File.Exists(changelog))
     		        document = IdeApp.Workbench.OpenDocument(changelog, false);
             }
                         
             if (document == null && project != null) {
-                Combine combine = project.ParentCombine;
-                while (combine != null && combine.BaseDirectory != null) {
-                    string changelog = Path.Combine(combine.BaseDirectory, "ChangeLog");
-        		    if (File.Exists(changelog)) {
-                        document = IdeApp.Workbench.OpenDocument(changelog, false);
-                        break;
-                    }
-                    combine = combine.ParentCombine;
-                }
+//                Solution combine = ProjectService.Solution;
+				string baseDirectory = Path.GetDirectoryName (ProjectService.SolutionFileName);
+				string changelog = Path.Combine(baseDirectory, "ChangeLog");
+				if (File.Exists(changelog)) {
+                   document = IdeApp.Workbench.OpenDocument(changelog, false);
+				}
             }
             
             // If no ChangeLog has been found, we create one in the current
             // project's base directory.
             
-			if (document == null && create && project != null && project.BaseDirectory != null) {
-    		    string changelog = Path.Combine(project.BaseDirectory, "ChangeLog");
+			if (document == null && create && project != null && project.BasePath != null) {
+    		    string changelog = Path.Combine(project.BasePath, "ChangeLog");
                 document = IdeApp.Workbench.NewDocument(changelog, "text/plain", "");
                 document.Save();
 			}

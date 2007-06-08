@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Specialized; 
 using System.IO;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 
 namespace MonoDevelop.WebReferences
 {
@@ -39,15 +40,18 @@ namespace MonoDevelop.WebReferences
 		public WebReferenceItemCollection() {}
 
 		/// <summary>Initializes a new instance of the WebReferenceItemCollection class by specifying the project</summary>
-		public WebReferenceItemCollection(Project project)
+		public WebReferenceItemCollection(IProject project)
 		{
 			string webRefPath = Library.GetWebReferencePath(project);
-			foreach (ProjectFile file in project.ProjectFiles)
+			foreach (ProjectItem projectItem in project.Items)
 			{
-				if (file.FilePath.StartsWith(webRefPath))
+				ProjectFile file = projectItem as ProjectFile;
+				if (file == null)
+					continue;
+				if (file.FullPath.StartsWith(webRefPath))
 				{
 					WebReferenceItem item;
-					FileInfo fileInfo = new FileInfo(file.FilePath); 
+					FileInfo fileInfo = new FileInfo(file.FullPath); 
 					string refName = fileInfo.Directory.Name;
 					
 					// Add the item if it does not exist, otherwise get the current item

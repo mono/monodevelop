@@ -19,6 +19,7 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
+	GtkProjectServiceExtension.cs \
 	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindClassBuilder.cs \
 	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindDisplayBinding.cs \
 	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindProjectFileExtension.cs \

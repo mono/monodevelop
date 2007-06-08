@@ -36,7 +36,7 @@ using System.CodeDom.Compiler;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects.Serialization;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Ide.Gui;
@@ -53,9 +53,9 @@ namespace MonoDevelop.GtkCore
 		
 		public static event GtkSupportEvent GtkSupportChanged;
 		
-		public static GtkDesignInfo GetGtkInfo (Project project)
+		public static GtkDesignInfo GetGtkInfo (IProject project)
 		{
-			if (!(project is DotNetProject))
+			if (!(project is MSBuildProject))
 				return null;
 
 			IExtendedDataItem item = (IExtendedDataItem) project;
@@ -63,17 +63,17 @@ namespace MonoDevelop.GtkCore
 			if (info == null)
 				return null;
 
-			info.Bind ((DotNetProject) project);
+			info.Bind ((MSBuildProject) project);
 			return info;
 		}
 		
-		internal static GtkDesignInfo EnableGtkSupport (Project project)
+		internal static GtkDesignInfo EnableGtkSupport (IProject project)
 		{
 			GtkDesignInfo info = GetGtkInfo (project);
 			if (info != null)
 				return info;
 
-			info = new GtkDesignInfo ((DotNetProject) project);
+			info = new GtkDesignInfo ((MSBuildProject) project);
 			info.UpdateGtkFolder ();
 			
 			if (GtkSupportChanged != null)
@@ -82,38 +82,36 @@ namespace MonoDevelop.GtkCore
 			return info;
 		}
 		
-		internal static void DisableGtkSupport (Project project)
+		internal static void DisableGtkSupport (IProject project)
 		{
 			GtkDesignInfo info = GetGtkInfo (project);
 			if (info == null)
 				return;
-
-			project.ExtendedProperties ["GtkDesignInfo"] = null;
+// TODO: Project Conversion
+//			project.ExtendedProperties ["GtkDesignInfo"] = null;
 			info.Dispose ();
 			
 			if (GtkSupportChanged != null)
 				GtkSupportChanged (project, false);
 		}
 		
-		internal static bool SupportsPartialTypes (DotNetProject project)
+		internal static bool SupportsPartialTypes (MSBuildProject project)
 		{
 			GtkDesignInfo info = GetGtkInfo (project);
 			if (info != null)
 				return info.GeneratePartialClasses;
 
-			if (project.LanguageBinding == null)
-				return false;
-
-			CodeDomProvider provider = project.LanguageBinding.GetCodeDomProvider ();
+			
+			CodeDomProvider provider = BackendBindingService.GetBackendBinding (project).CodeDomProvider;
 			return provider.Supports (GeneratorSupport.PartialTypes);
 		}
 		
 		static void OnFileChanged (object s, FileEventArgs args)
 		{
-			if (IdeApp.ProjectOperations.CurrentOpenCombine == null)
+			if (ProjectService.Solution == null)
 				return;
 
-			foreach (Project project in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects ()) {
+			foreach (IProject project in ProjectService.Solution.AllProjects) {
 				if (!project.IsFileInProject (args.FileName))
 					continue;
 					
@@ -121,7 +119,8 @@ namespace MonoDevelop.GtkCore
 				if (info == null)
 					continue;
 
-				IdeApp.ProjectOperations.ParserDatabase.UpdateFile (project, args.FileName, null);
+// TODO: Project Conversion
+//				IdeApp.ProjectOperations.ParserDatabase.UpdateFile (project, args.FileName, null);
 				foreach (IClass cls in info.GetExportedClasses ()) {
 					if (cls.Region.FileName == args.FileName)
 						UpdateObjectsFile (project, cls, null);
@@ -129,7 +128,7 @@ namespace MonoDevelop.GtkCore
 			}
 		}
 		
-		internal static void UpdateObjectsFile (Project project)
+		internal static void UpdateObjectsFile (IProject project)
 		{
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
 			if (info == null) return;
@@ -163,7 +162,7 @@ namespace MonoDevelop.GtkCore
 			doc.Save (info.ObjectsFile);
 		}
 		
-		static void UpdateObjectsFile (Project project, IClass widgetClass, IClass wrapperClass)
+		static void UpdateObjectsFile (IProject project, IClass widgetClass, IClass wrapperClass)
 		{
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
 			info.UpdateGtkFolder ();
@@ -177,47 +176,50 @@ namespace MonoDevelop.GtkCore
 			doc.Save (info.ObjectsFile);
 		}
 		
-		static void UpdateClass (Project project, XmlDocument doc, IClass widgetClass, IClass wrapperClass)
+		static void UpdateClass (IProject project, XmlDocument doc, IClass widgetClass, IClass wrapperClass)
 		{
-			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
-			string typeName = widgetClass.FullyQualifiedName;
-			XmlElement objectElem = (XmlElement) doc.SelectSingleNode ("objects/object[@type='" + typeName + "']");
-			
-			if (objectElem == null) {
-			
-				// The widget class is not yet in the XML file. Create an element for it.
-				objectElem = doc.CreateElement ("object");
-				objectElem.SetAttribute ("type", typeName);
-				objectElem.SetAttribute ("palette-category", "widget");
-				objectElem.SetAttribute ("allow-children", "false");
-				if (wrapperClass != null)
-					objectElem.SetAttribute ("wrapper", wrapperClass.FullyQualifiedName);
-				
-				// By default add a reference to Gtk.Widget properties and events
-				XmlElement itemGroups = objectElem.OwnerDocument.CreateElement ("itemgroups");
-				objectElem.AppendChild (itemGroups);
-				
-				itemGroups = objectElem.OwnerDocument.CreateElement ("signals");
-				objectElem.AppendChild (itemGroups);
-				
-				objectElem.SetAttribute ("base-type", GetBaseType (widgetClass, project));
-				doc.DocumentElement.AppendChild (objectElem);
-			}
-			
-			MergeObject (project, ctx, objectElem, widgetClass, wrapperClass);
+// TODO: Project Conversion			
+//			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
+//			string typeName = widgetClass.FullyQualifiedName;
+//			XmlElement objectElem = (XmlElement) doc.SelectSingleNode ("objects/object[@type='" + typeName + "']");
+//			
+//			if (objectElem == null) {
+//			
+//				// The widget class is not yet in the XML file. Create an element for it.
+//				objectElem = doc.CreateElement ("object");
+//				objectElem.SetAttribute ("type", typeName);
+//				objectElem.SetAttribute ("palette-category", "widget");
+//				objectElem.SetAttribute ("allow-children", "false");
+//				if (wrapperClass != null)
+//					objectElem.SetAttribute ("wrapper", wrapperClass.FullyQualifiedName);
+//				
+//				// By default add a reference to Gtk.Widget properties and events
+//				XmlElement itemGroups = objectElem.OwnerDocument.CreateElement ("itemgroups");
+//				objectElem.AppendChild (itemGroups);
+//				
+//				itemGroups = objectElem.OwnerDocument.CreateElement ("signals");
+//				objectElem.AppendChild (itemGroups);
+//				
+//				objectElem.SetAttribute ("base-type", GetBaseType (widgetClass, project));
+//				doc.DocumentElement.AppendChild (objectElem);
+//			}
+//			
+//			MergeObject (project, ctx, objectElem, widgetClass, wrapperClass);
 		}
 		
-		static string GetBaseType (IClass widgetClass, Project project)
+		static string GetBaseType (IClass widgetClass, IProject project)
 		{
 			GtkDesignInfo info = GetGtkInfo (project);
 			Stetic.ComponentType[] types = info.GuiBuilderProject.SteticProject.GetComponentTypes ();
 			Hashtable typesHash = new Hashtable ();
 			foreach (Stetic.ComponentType t in types)
 				typesHash [t.Name] = t;
-				
-			IParserContext pctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
-			string ret = GetBaseType (widgetClass, pctx, typesHash);
-			return ret ?? "Gtk.Widget";
+
+// TODO: Project Conversion
+//			IParserContext pctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
+//			string ret = GetBaseType (widgetClass, pctx, typesHash);
+//			return ret ?? "Gtk.Widget";
+			return "Gtk.Widget";
 		}
 		
 		static string GetBaseType (IClass cls, IParserContext pctx, Hashtable typesHash)
@@ -238,7 +240,7 @@ namespace MonoDevelop.GtkCore
 			return null;
 		}
 		
-		static void MergeObject (Project project, IParserContext ctx, XmlElement objectElem, IClass widgetClass, IClass wrapperClass)
+		static void MergeObject (IProject project, IParserContext ctx, XmlElement objectElem, IClass widgetClass, IClass wrapperClass)
 		{
 			string topType = GetBaseType (widgetClass, project);
 			
@@ -400,14 +402,16 @@ namespace MonoDevelop.GtkCore
 			return true;
 		}
 		
-		static public IClass[] GetExportableClasses (Project project)
+		static public IClass[] GetExportableClasses (IProject project)
 		{
-			IParserContext pctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
-			ArrayList list = new ArrayList ();
-			foreach (IClass cls in pctx.GetProjectContents ())
-				if (IsWidget (cls, pctx)) list.Add (cls);
-
-			return (IClass[]) list.ToArray (typeof(IClass));
+// TODO: Project Conversion
+//			IParserContext pctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
+//			ArrayList list = new ArrayList ();
+//			foreach (IClass cls in pctx.GetProjectContents ())
+//				if (IsWidget (cls, pctx)) list.Add (cls);
+//
+//			return (IClass[]) list.ToArray (typeof(IClass));
+			return new IClass[] {}; 
 		}
 		
 		static bool IsWidget (IClass cls, IParserContext pctx)
@@ -461,5 +465,5 @@ namespace MonoDevelop.GtkCore
 		}
 	}
 	
-	public delegate void GtkSupportEvent (Project project, bool enabled);
+	public delegate void GtkSupportEvent (IProject project, bool enabled);
 }

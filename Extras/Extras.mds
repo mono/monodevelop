@@ -14,12 +14,8 @@
       <Entry build="False" name="MonoDevelop.Debugger" configuration="Debug" />
       <Entry build="True" name="ChangeLogAddIn" configuration="Debug" />
       <Entry build="True" name="MonoDeveloperExtensions" configuration="Debug" />
-      <Entry build="True" name="AspNetAddIn" configuration="Debug" />
-      <Entry build="False" name="AspNetEdit" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.DesignerSupport" configuration="Debug" />
-      <Entry build="True" name="MonoDevelop.Autotools" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.WebReferences" configuration="Debug" />
-      <Entry build="True" name="Deployment" configuration="" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
@@ -35,12 +31,8 @@
       <Entry build="True" name="MonoDevelop.Debugger" configuration="Debug" />
       <Entry build="True" name="ChangeLogAddIn" configuration="Debug" />
       <Entry build="True" name="MonoDeveloperExtensions" configuration="" />
-      <Entry build="True" name="AspNetAddIn" configuration="Debug" />
-      <Entry build="True" name="AspNetEdit" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.DesignerSupport" configuration="Debug" />
-      <Entry build="True" name="MonoDevelop.Autotools" configuration="Release" />
       <Entry build="True" name="MonoDevelop.WebReferences" configuration="Release" />
-      <Entry build="True" name="Deployment" configuration="" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="MonoDevelop.NUnit" single="True">
@@ -58,10 +50,7 @@
     <Execute type="None" entry="MonoDevelop.Debugger" />
     <Execute type="None" entry="ChangeLogAddIn" />
     <Execute type="None" entry="MonoDeveloperExtensions" />
-    <Execute type="None" entry="AspNetAddIn" />
-    <Execute type="None" entry="AspNetEdit" />
     <Execute type="None" entry="MonoDevelop.DesignerSupport" />
-    <Execute type="None" entry="MonoDevelop.Autotools" />
     <Execute type="None" entry="MonoDevelop.WebReferences" />
     <Execute type="None" entry="Deployment" />
     <Execute type="None" entry="BooBinding" />
@@ -83,11 +72,7 @@
     <Entry filename="./DebuggerAddIn/MonoDevelop.Debugger.mdp" />
     <Entry filename="./ChangeLogAddIn/ChangeLogAddIn.mdp" />
     <Entry filename="./MonoDeveloperExtensions/MonoDeveloperExtensions.mds" />
-    <Entry filename="./AspNetAddIn/AspNetAddIn.mdp" />
-    <Entry filename="./AspNetEdit/AspNetEdit.mdp" />
     <Entry filename="./MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.mdp" />
-    <Entry filename="./MonoDevelop.Autotools/MonoDevelop.Autotools.mdp" />
     <Entry filename="./MonoDevelop.WebReferences/MonoDevelop.WebReferences.mdp" />
-    <Entry filename="./Deployment/Deployment.mds" />
   </Entries>
 </Combine>

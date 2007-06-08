@@ -33,7 +33,7 @@ using System.Collections;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.CodeGeneration;
@@ -54,12 +54,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	{
 		ITextFileProvider textFileProvider;
 		Stetic.Component targetObject;
-		Project project;
+		IProject project;
 		GuiBuilderProject gproject;
 		string className;
 		string classFile;
 		
-		public CodeBinder (Project project, ITextFileProvider textFileProvider, Stetic.Component targetObject)
+		public CodeBinder (IProject project, ITextFileProvider textFileProvider, Stetic.Component targetObject)
 		{
 			this.project = project;
 			this.textFileProvider = textFileProvider;
@@ -89,7 +89,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			if (targetObject == null)
 				return;
-			IdeApp.ProjectOperations.ParserDatabase.UpdateFile (project, fileName, null);
+// TODO: Project Conversion
+//			IdeApp.ProjectOperations.ParserDatabase.UpdateFile (project, fileName, null);
 			classFile = fileName;
 			UpdateBindings (targetObject, GetClass ());
 		}
@@ -238,9 +239,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		CodeRefactorer GetCodeGenerator ()
 		{
-			CodeRefactorer cr = new CodeRefactorer (IdeApp.ProjectOperations.CurrentOpenCombine, IdeApp.ProjectOperations.ParserDatabase);
-			cr.TextFileProvider = textFileProvider;
-			return cr;
+// TODO: Project Conversion
+//			CodeRefactorer cr = new CodeRefactorer (IdeApp.ProjectOperations.CurrentOpenCombine, IdeApp.ProjectOperations.ParserDatabase);
+//			cr.TextFileProvider = textFileProvider;
+//			return cr;
+			return null;
 		}
 		
 		public IClass GetClass ()

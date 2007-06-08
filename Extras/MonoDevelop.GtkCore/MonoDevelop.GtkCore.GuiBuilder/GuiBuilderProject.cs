@@ -36,7 +36,8 @@ using System.CodeDom;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Core.Gui;
@@ -48,7 +49,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	{
 		ArrayList formInfos;
 		Stetic.Project gproject;
-		Project project;
+		IProject project;
 		string fileName;
 		bool hasError;
 		bool needsUpdate = true;
@@ -64,7 +65,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public event EventHandler Unloaded;
 		public event EventHandler Changed;
 
-		public GuiBuilderProject (Project project, string fileName)
+		public GuiBuilderProject (IProject project, string fileName)
 		{
 			this.fileName = fileName;
 			this.project = project;
@@ -99,10 +100,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			gproject.ComponentAdded += new Stetic.ComponentEventHandler (OnAddWidget);
 			gproject.ComponentRemoved += new Stetic.ComponentRemovedEventHandler (OnRemoveWidget);
 			gproject.ActionGroupsChanged += OnGroupsChanged;
-			project.FileRemovedFromProject += new ProjectFileEventHandler (OnFileRemoved);
-			project.ReferenceAddedToProject += OnReferenceAdded;
-			project.ReferenceRemovedFromProject += OnReferenceRemoved;
-			
+// TODO: Project Conversion 
+//			project.FileRemovedFromProject += new ProjectFileEventHandler (OnFileRemoved);
+//			project.ReferenceAddedToProject += OnReferenceAdded;
+//			project.ReferenceRemovedFromProject += OnReferenceRemoved;
+//			
 			foreach (Stetic.WidgetComponent ob in gproject.GetComponents ())
 				RegisterWindow (ob, false);
 				
@@ -131,9 +133,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			gproject.ComponentAdded -= new Stetic.ComponentEventHandler (OnAddWidget);
 			gproject.ComponentRemoved -= new Stetic.ComponentRemovedEventHandler (OnRemoveWidget);
 			gproject.ActionGroupsChanged -= OnGroupsChanged;
-			project.FileRemovedFromProject -= new ProjectFileEventHandler (OnFileRemoved);
-			project.ReferenceAddedToProject -= OnReferenceAdded;
-			project.ReferenceRemovedFromProject -= OnReferenceRemoved;
+// TODO: Project Conversion 
+//			project.FileRemovedFromProject -= new ProjectFileEventHandler (OnFileRemoved);
+//			project.ReferenceAddedToProject -= OnReferenceAdded;
+//			project.ReferenceRemovedFromProject -= OnReferenceRemoved;
 			gproject.Dispose ();
 			gproject = null;
 			formInfos = null;
@@ -196,7 +199,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
 			if (info.UpdateGtkFolder () && saveMdProject)
-				IdeApp.ProjectOperations.SaveProject (project);
+				ProjectService.SaveProject (project);
 			GuiBuilderService.StoreConfiguration ();
 		}
 		
@@ -218,7 +221,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		public Project Project {
+		public IProject Project {
 			get { return project; }
 		}
 		
@@ -311,8 +314,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		void OnFileRemoved (object sender, ProjectFileEventArgs args)
-		{
+//		void OnFileRemoved (object sender, ProjectFileEventArgs args)
+//		{
 			// Disable for now since it may have issues when moving files.
 			
 /*			ArrayList toDelete = new ArrayList ();
@@ -324,7 +327,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			foreach (GuiBuilderWindow win in toDelete)
 				Remove (win);
-*/		}
+*/         //}
 
 		void OnGroupsChanged (object s, EventArgs a)
 		{
@@ -332,45 +335,50 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				NotifyChanged ();
 		}
 
-		void OnReferenceAdded (object ob, ProjectReferenceEventArgs args)
-		{
-			if (disposed)
-				return;
-			string pref = GetReferenceLibraryPath (args.ProjectReference);
-			if (pref != null) {
-				gproject.AddWidgetLibrary (pref);
-				Save (false);
-			}
-		}
-		
-		void OnReferenceRemoved (object ob, ProjectReferenceEventArgs args)
-		{
-			if (disposed)
-				return;
-			string pref = GetReferenceLibraryPath (args.ProjectReference);
-			if (pref != null) {
-				gproject.RemoveWidgetLibrary (pref);
-				Save (false);
-			}
-		}
+// TODO: Project Conversion
+//		void OnReferenceAdded (object ob, ProjectReferenceEventArgs args)
+//		{
+//			if (disposed)
+//				return;
+//			string pref = GetReferenceLibraryPath (args.ProjectReference);
+//			if (pref != null) {
+//				gproject.AddWidgetLibrary (pref);
+//				Save (false);
+//			}
+//		}
+//		
+//		void OnReferenceRemoved (object ob, ProjectReferenceEventArgs args)
+//		{
+//			if (disposed)
+//				return;
+//			string pref = GetReferenceLibraryPath (args.ProjectReference);
+//			if (pref != null) {
+//				gproject.RemoveWidgetLibrary (pref);
+//				Save (false);
+//			}
+//		}
 
-		string GetReferenceLibraryPath (ProjectReference pref)
+		string GetReferenceLibraryPath (ReferenceProjectItem pref)
+		{
+			// Assume everything is a widget library. Stetic will discard it if it is not.
+			string path = Path.GetFullPath (Path.Combine (pref.Project.BasePath, pref.HintPath));
+			
+			if (path != null && GuiBuilderService.SteticApp.IsWidgetLibrary (path))
+				return path;
+			else
+				return null;
+		}
+		string GetReferenceLibraryPath (ProjectReferenceProjectItem pref)
 		{
 			string path = null;
 			
-			if (pref.ReferenceType == ReferenceType.Project) {
-				DotNetProject p = project.RootCombine.FindProject (pref.Reference) as DotNetProject;
-				if (p != null) {
-					GtkDesignInfo info = GtkCoreService.GetGtkInfo (p);
-					if (info != null && info.IsWidgetLibrary)
-						path = p.GetOutputFileName ();
-				}
-			} else if (pref.ReferenceType == ReferenceType.Gac || 
-					pref.ReferenceType == ReferenceType.Assembly) {
-				
-				// Assume everything is a widget library. Stetic will discard it if it is not.
-				path = pref.Reference;
+			MSBuildProject p = ProjectService.FindProject (pref.ProjectName).Project as MSBuildProject;
+			if (p != null) {
+				GtkDesignInfo info = GtkCoreService.GetGtkInfo (p);
+				if (info != null && info.IsWidgetLibrary)
+					path = p.AssemblyName;
 			}
+			
 			if (path != null && GuiBuilderService.SteticApp.IsWidgetLibrary (path))
 				return path;
 			else
@@ -487,12 +495,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public IParserContext GetParserContext ()
 		{
-			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (Project);
-			if (needsUpdate) {
-				needsUpdate = false;
-				ctx.UpdateDatabase ();
-			}
-			return ctx;
+// TODO: Project Conversion
+//			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (Project);
+//			if (needsUpdate) {
+//				needsUpdate = false;
+//				ctx.UpdateDatabase ();
+//			}
+//			return ctx;
+			return null;
 		}
 		
 		public void UpdateLibraries ()
@@ -504,8 +514,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			ArrayList libs = new ArrayList ();
 			
-			foreach (ProjectReference pref in project.ProjectReferences) {
-				string wref = GetReferenceLibraryPath (pref);
+			foreach (ProjectItem item in project.Items) {
+				string wref = null;
+				if (item is ProjectReferenceProjectItem) {
+					wref = GetReferenceLibraryPath (item as ProjectReferenceProjectItem);
+				} else if (item is ReferenceProjectItem) {
+					wref = GetReferenceLibraryPath (item as ReferenceProjectItem);
+				} 
 				if (wref != null)
 					libs.Add (wref);
 			}
@@ -513,7 +528,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			// If the project is a library, add itself as a widget source
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
 			if (info != null && info.IsWidgetLibrary)
-				libs.Add (project.GetOutputFileName ());
+				libs.Add (ProjectService.GetOutputFileName (project));
 
 			string[] newLibs = (string[]) libs.ToArray (typeof(string));
 			

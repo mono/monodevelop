@@ -33,7 +33,7 @@ using System.Collections.Generic;
 using MonoDevelop.Projects.Serialization;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Deployment
@@ -239,13 +239,14 @@ namespace MonoDevelop.Deployment
 			return list.ToArray ();
 		}
 		
-		CombineEntry GetEntry (string fileName)
+		IProject GetEntry (string fileName)
 		{
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				CombineEntry fe = FindEntry (IdeApp.ProjectOperations.CurrentOpenCombine, Runtime.FileService.GetFullPath (fileName));
-				return fe;
+			if (ProjectService.Solution != null) {
+//				CombineEntry fe = FindEntry (IdeApp.ProjectOperations.CurrentOpenCombine, Runtime.FileService.GetFullPath (fileName));
+				return ProjectService.GetProjectContainingFile (fileName);
 			}
-			return Services.ProjectService.ReadCombineEntry (fileName, new NullProgressMonitor ());
+			return null;
+//			return Services.ProjectService.ReadCombineEntry (fileName, new NullProgressMonitor ());
 		}
 		
 		CombineEntry FindEntry (CombineEntry e, string fileName)

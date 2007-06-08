@@ -9,7 +9,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Ide.Gui.Pads.ProjectPad;
+using MonoDevelop.Ide.Gui.Pads.SolutionViewPad;
 using MonoDevelop.WebReferences.Commands;
 
 namespace MonoDevelop.WebReferences.NodeBuilders
@@ -44,7 +44,8 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		protected override void Initialize()
 		{
 			base.Initialize();
-			IdeApp.ProjectOperations.FileRemovedFromProject += (ProjectFileEventHandler) IdeApp.Services.DispatchService.GuiDispatch (new ProjectFileEventHandler (OnRemoveFile));
+// TODO: Project Conversion
+//			IdeApp.ProjectOperations.FileRemovedFromProject += (ProjectFileEventHandler) IdeApp.Services.DispatchService.GuiDispatch (new ProjectFileEventHandler (OnRemoveFile));
 		}
 		
 		/// <summary>Gets the node name for the current node.</summary>
@@ -106,11 +107,12 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		/// This event handler refresh the web reference folder node when a *.map project file 
 		/// has been removed from the project.
 		/// </remarks>
-		public void OnRemoveFile (object sender, ProjectFileEventArgs e)
-		{
-			ITreeBuilder tb = Context.GetTreeBuilder ();
-			if (e.ProjectFile.Name.EndsWith(".map") && e.ProjectFile.FilePath.StartsWith(Library.GetWebReferencePath(e.Project)))
-				tb.UpdateAll();
-		}
+// TODO: Project Conversion
+//		public void OnRemoveFile (object sender, ProjectFileEventArgs e)
+//		{
+//			ITreeBuilder tb = Context.GetTreeBuilder ();
+//			if (e.ProjectFile.Name.EndsWith(".map") && e.ProjectFile.FilePath.StartsWith(Library.GetWebReferencePath(e.Project)))
+//				tb.UpdateAll();
+//		}
 	}
 }

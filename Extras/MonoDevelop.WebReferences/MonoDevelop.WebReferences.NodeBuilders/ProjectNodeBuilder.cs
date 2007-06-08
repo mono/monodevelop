@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui;
@@ -25,7 +25,7 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		/// <returns>True if the node can be build, otherwise false.</returns>
 		public override bool CanBuildNode (Type dataType)
 		{
-			return typeof(DotNetProject).IsAssignableFrom (dataType);
+			return typeof(MSBuildProject).IsAssignableFrom (dataType);
 		}
 		
 		/// <summary>Adds the WebReferencesFolder to the tree builder for all the DotNet projects.</summary>
@@ -33,7 +33,7 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		/// <param name="dataObject">An object containing the data for the current node in the tree.</param>
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			Project project = (Project) dataObject;
+			IProject project = (IProject) dataObject;
 			if (Library.ProjectContainsWebReference(project))
 				builder.AddChild (new WebReferenceFolder(project));
 		}

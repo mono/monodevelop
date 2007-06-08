@@ -6,7 +6,8 @@ using System.Web.Services.Description;
 using System.Web.Services.Discovery;
 using System.Xml;
 using System.Xml.Schema;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 
 
 namespace MonoDevelop.WebReferences
@@ -166,19 +167,22 @@ namespace MonoDevelop.WebReferences
 		/// <summary>Gets the path where all web references will be stored for the specified project.</summary>
 		/// <param name="project">A Project containing the root project information.</project>
 		/// <returns>A string containing the base path for web references.</returns>
-		public static string GetWebReferencePath (Project project)
+		public static string GetWebReferencePath (IProject project)
 		{
-			return Path.Combine(project.BaseDirectory, "WebReferences");
+			return Path.Combine(project.BasePath, "WebReferences");
 		}
 		
 		/// <summary>Checks whether or not the current project does contain any web references.</summary>
 		/// <returns>True if the project does contain any web references, otherwise false.</returns>
-		public static bool ProjectContainsWebReference(Project project)
+		public static bool ProjectContainsWebReference(IProject project)
 		{
 			string webRefPath = Library.GetWebReferencePath(project);
-			foreach (ProjectFile file in project.ProjectFiles)
+			foreach (ProjectItem item in project.Items)
 			{
-				if (file.FilePath.StartsWith(webRefPath))
+				ProjectFile file = item as ProjectFile;
+				if (file == null) 
+					continue;
+				if (file.FullPath.StartsWith(webRefPath))
 					return true;
 			}
 			return false;

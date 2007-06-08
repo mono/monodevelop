@@ -111,7 +111,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			ShowPage (0);
 		}
 		
-		public override MonoDevelop.Projects.Project Project {
+		public override MonoDevelop.Ide.Projects.IProject Project {
 			get { return base.Project; }
 			set { 
 				base.Project = value; 
