@@ -1,3 +1,11 @@
+2007-05-31  Rafael 'fumasa' Giorgetti  <fumasa@gmail.com>
+
+        * MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/LibSvnClient.cs:
+        Add struct svn_client_commit_info_t.
+
+        * MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:
+        Show revision number when Commit.
+
 2007-05-31  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/LibSvnClient.cs:

@@ -263,7 +263,13 @@ namespace MonoDevelop.VersionControl.Subversion {
 			[MarshalAs (UnmanagedType.SysInt)] public int line;
 		}
 		
-		public struct svn_version_t {
+                public struct svn_client_commit_info_t {
+                        public int revision;
+                        public IntPtr date;
+                        public IntPtr author;
+                }
+
+                public struct svn_version_t {
   			public int major;
   			public int minor;
   			public int patch;
