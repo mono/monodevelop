@@ -46,7 +46,6 @@ Clean
 After Clean
 Custom Command</property>
                 <property name="Active">0</property>
-                <signal name="Changed" handler="OnComboTypeChanged" />
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -63,7 +62,6 @@ Custom Command</property>
                 <property name="Type">StockItem</property>
                 <property name="StockId">gtk-remove</property>
                 <property name="IsDialogButton">False</property>
-                <signal name="Clicked" handler="OnButtonRemoveClicked" />
                 <property name="label">gtk-remove</property>
               </widget>
               <packing>
@@ -97,7 +95,6 @@ Custom Command</property>
                 <property name="Label" translatable="yes">Browse...</property>
                 <property name="UseUnderline">True</property>
                 <property name="IsDialogButton">False</property>
-                <signal name="Clicked" handler="OnButtonBrowseClicked" />
               </widget>
               <packing>
                 <property name="TopAttach">1</property>
@@ -121,7 +118,6 @@ Custom Command</property>
                 <property name="CanFocus">True</property>
                 <property name="IsEditable">True</property>
                 <property name="InvisibleChar">●</property>
-                <signal name="Changed" handler="OnEntryCommandChanged" />
               </widget>
               <packing>
                 <property name="TopAttach">1</property>
@@ -144,7 +140,6 @@ Custom Command</property>
                 <property name="CanFocus">True</property>
                 <property name="IsEditable">True</property>
                 <property name="InvisibleChar">●</property>
-                <signal name="Changed" handler="OnEntryNameChanged" />
               </widget>
               <packing>
                 <property name="LeftAttach">1</property>
@@ -217,7 +212,6 @@ Custom Command</property>
                 <property name="DrawIndicator">True</property>
                 <property name="HasLabel">True</property>
                 <property name="UseUnderline">True</property>
-                <signal name="Clicked" handler="OnCheckExternalConsClicked" />
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -234,7 +228,6 @@ Custom Command</property>
                 <property name="DrawIndicator">True</property>
                 <property name="HasLabel">True</property>
                 <property name="UseUnderline">True</property>
-                <signal name="Clicked" handler="OnCheckPauseConsClicked" />
               </widget>
               <packing>
                 <property name="Position">1</property>
@@ -910,6 +903,7 @@ Custom Command</property>
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="Label" translatable="yes">_Command line:</property>
+                        <property name="Active">True</property>
                         <property name="DrawIndicator">True</property>
                         <property name="HasLabel">True</property>
                         <property name="UseUnderline">True</property>
@@ -1801,10 +1795,12 @@ Custom Command</property>
     <property name="WidthRequest">740</property>
     <property name="HeightRequest">560</property>
     <property name="Title" translatable="yes">Project Options</property>
+    <property name="WindowPosition">CenterOnParent</property>
     <property name="DefaultWidth">740</property>
     <property name="DefaultHeight">560</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
+    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
         <property name="MemberName" />

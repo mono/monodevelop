@@ -12,7 +12,7 @@ namespace MonoDevelop.Projects.Gui
 	{
 		static AmbienceService ambienceService;
 		static DispatchService dispatchService;
-		static IProjectService projectService;
+//		static IProjectService projectService;
 		static LanguageBindingService languageBindingService;
 		static MessageService messageService;
 		static ResourceService resourceService;
@@ -43,13 +43,13 @@ namespace MonoDevelop.Projects.Gui
 		}
 	
 	
-		internal static IProjectService ProjectService {
-			get {
-				if (projectService == null)
-					projectService = (IProjectService) ServiceManager.GetService (typeof(IProjectService));
-				return projectService;
-			}
-		}
+//		internal static IProjectService ProjectService {
+//			get {
+//				if (projectService == null)
+//					projectService = (IProjectService) ServiceManager.GetService (typeof(IProjectService));
+//				return projectService;
+//			}
+//		}
 	
 		internal static MessageService MessageService {
 			get {

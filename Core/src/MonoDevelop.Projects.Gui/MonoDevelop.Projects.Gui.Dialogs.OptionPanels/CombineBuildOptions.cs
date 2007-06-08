@@ -20,38 +20,38 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
 	public class CombineBuildOptions : AbstractOptionPanel
 	{
-		CombineBuildOptionsWidget widget;
-		
-		class CombineBuildOptionsWidget : GladeWidgetExtract 
-		{
-			// Gtk Controls
-			[Glade.Widget] Gnome.FileEntry outputDirButton;
-			
-			Combine combine;
-
-			public  CombineBuildOptionsWidget(IProperties CustomizationObject) : 
-				base ("Base.glade", "CombineBuildOptions")
-			{
-				this.combine = (Combine)((IProperties)CustomizationObject).GetProperty("Combine");
-				outputDirButton.Filename = combine.OutputDirectory + System.IO.Path.DirectorySeparatorChar;
-			}
-
-			public bool Store()
-			{
-				combine.OutputDirectory = outputDirButton.Filename;
-				return true;
-			}
-		}
-
-		public override void LoadPanelContents()
-		{
-			Add (widget = new  CombineBuildOptionsWidget ((IProperties) CustomizationObject));
-		}
-
-		public override bool StorePanelContents()
-		{
-			bool success = widget.Store ();
- 			return success;
-		}					
+//		CombineBuildOptionsWidget widget;
+//		
+//		class CombineBuildOptionsWidget : GladeWidgetExtract 
+//		{
+//			// Gtk Controls
+//			[Glade.Widget] Gnome.FileEntry outputDirButton;
+//			
+//			Combine combine;
+//
+//			public  CombineBuildOptionsWidget(IProperties CustomizationObject) : 
+//				base ("Base.glade", "CombineBuildOptions")
+//			{
+//				this.combine = (Combine)((IProperties)CustomizationObject).GetProperty("Combine");
+//				outputDirButton.Filename = combine.OutputDirectory + System.IO.Path.DirectorySeparatorChar;
+//			}
+//
+//			public bool Store()
+//			{
+//				combine.OutputDirectory = outputDirButton.Filename;
+//				return true;
+//			}
+//		}
+//
+//		public override void LoadPanelContents()
+//		{
+//			Add (widget = new  CombineBuildOptionsWidget ((IProperties) CustomizationObject));
+//		}
+//
+//		public override bool StorePanelContents()
+//		{
+//			bool success = widget.Store ();
+// 			return success;
+//		}					
 	}
 }

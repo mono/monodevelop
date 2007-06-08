@@ -90,9 +90,13 @@ namespace MonoDevelop.Ide.Projects
 		
 		public void AddItem (SolutionItem item)
 		{
-			Items.Add(item);
-			
-			//System.Console.WriteLine ("Add item:" + item);
+			Items.Add (item);
+			OnItemAdded (new SolutionItemEventArgs (item));
+		}
+		public void RemoveItem (SolutionItem item)
+		{
+			Items.Remove (item);
+			OnItemRemoved (new SolutionItemEventArgs (item));
 		}
 		
 		public SolutionItem GetItem (string guid)
@@ -202,5 +206,19 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 #endregion
+		
+		public event EventHandler<SolutionItemEventArgs> ItemAdded;
+		protected virtual void OnItemAdded (SolutionItemEventArgs e)
+		{
+			if (ItemAdded != null)
+				ItemAdded (this, e);
+		}
+		
+		public event EventHandler<SolutionItemEventArgs> ItemRemoved;
+		protected virtual void OnItemRemoved (SolutionItemEventArgs e)
+		{
+			if (ItemRemoved != null)
+				ItemRemoved (this, e);
+		}
 	}
 }

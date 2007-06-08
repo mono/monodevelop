@@ -391,20 +391,19 @@ CombineEntry ce = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
 	{
 		protected override void Run (object c)
 		{
-// TODO: Project Conversion
-//			IProject ce = ProjectService.ActiveProject.Project;
-//			CustomCommand cmd = (CustomCommand) c;
-//			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
-//			
-//			Thread t = new Thread (
-//				delegate () {
-//					using (monitor) {
-//						cmd.Execute (monitor, ce);
-//					}
-//				}
-//			);
-//			t.IsBackground = true;
-//			t.Start ();
+			IProject ce = ProjectService.ActiveProject.Project;
+			CustomCommand cmd = (CustomCommand) c;
+			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
+			
+			Thread t = new Thread (
+				delegate () {
+					using (monitor) {
+						cmd.Execute (monitor, ce);
+					}
+				}
+			);
+			t.IsBackground = true;
+			t.Start ();
 		}
 		
 		protected override void Update (CommandArrayInfo info)

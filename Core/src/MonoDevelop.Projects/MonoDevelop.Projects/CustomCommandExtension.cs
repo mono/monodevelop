@@ -1,13 +1,14 @@
-
+/* TODO: Project Conversion
 using System;
 using MonoDevelop.Core;
 using System.CodeDom.Compiler;
+using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.Projects
 {
 	public class CustomCommandExtension: ProjectServiceExtension
 	{
-		public override ICompilerResult Build (IProgressMonitor monitor, CombineEntry entry)
+		public override ICompilerResult Build (IProgressMonitor monitor, IProject entry)
 		{
 			AbstractConfiguration conf = entry.ActiveConfiguration as AbstractConfiguration;
 			if (conf != null) {
@@ -55,3 +56,4 @@ namespace MonoDevelop.Projects
 		}
 	}
 }
+*/

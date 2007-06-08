@@ -26,8 +26,6 @@
     </itemgroups>
     <signals>
       <itemgroup label="CustomCommandWidget Signals">
-        <signal name="CommandCreated" />
-        <signal name="CommandRemoved" />
         <signal name="ResizeChecked" />
         <signal name="Removed" />
         <signal name="FocusChildSet" />

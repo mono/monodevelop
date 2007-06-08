@@ -41,46 +41,46 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
 	public class CombineInformationPanel : AbstractOptionPanel 
 	{
-		CombineInformationWidget widget;
-		
-		class CombineInformationWidget : GladeWidgetExtract 
-		{
-			[Glade.Widget] Label versLabel;
-			[Glade.Widget] Label descLabel;
-			[Glade.Widget] Entry versEntry;
-			[Glade.Widget] TextView descView;
-
-			Combine combine;
-
-			public CombineInformationWidget (IProperties CustomizationObject) : 
-				base ("Base.glade", "CombineInformationPanel")
-			{
-				this.combine = (Combine) ((IProperties)CustomizationObject).GetProperty("Combine");
-
-				versLabel.UseUnderline = true;
-				descLabel.UseUnderline = true;
-
-				versEntry.Text = combine.Version;
-				descView.Buffer.Text = combine.Description;
-			}			
-			
-			public void Store (IProperties CustomizationObject)
-			{
-				combine.Version = versEntry.Text;
-				combine.Description = descView.Buffer.Text;
-			}
-		}
-
-		public override void LoadPanelContents()
-		{
-			Add ( widget = new  CombineInformationWidget ((IProperties) CustomizationObject));
-		}
-		
-		public override bool StorePanelContents()
-		{
-			widget.Store ((IProperties) CustomizationObject);
- 			return true;
-		}
+//		CombineInformationWidget widget;
+//		
+//		class CombineInformationWidget : GladeWidgetExtract 
+//		{
+//			[Glade.Widget] Label versLabel;
+//			[Glade.Widget] Label descLabel;
+//			[Glade.Widget] Entry versEntry;
+//			[Glade.Widget] TextView descView;
+//
+//			Combine combine;
+//
+//			public CombineInformationWidget (IProperties CustomizationObject) : 
+//				base ("Base.glade", "CombineInformationPanel")
+//			{
+//				this.combine = (Combine) ((IProperties)CustomizationObject).GetProperty("Combine");
+//
+//				versLabel.UseUnderline = true;
+//				descLabel.UseUnderline = true;
+//
+//				versEntry.Text = combine.Version;
+//				descView.Buffer.Text = combine.Description;
+//			}			
+//			
+//			public void Store (IProperties CustomizationObject)
+//			{
+//				combine.Version = versEntry.Text;
+//				combine.Description = descView.Buffer.Text;
+//			}
+//		}
+//
+//		public override void LoadPanelContents()
+//		{
+//			Add ( widget = new  CombineInformationWidget ((IProperties) CustomizationObject));
+//		}
+//		
+//		public override bool StorePanelContents()
+//		{
+//			widget.Store ((IProperties) CustomizationObject);
+// 			return true;
+//		}
 	}
 }
 

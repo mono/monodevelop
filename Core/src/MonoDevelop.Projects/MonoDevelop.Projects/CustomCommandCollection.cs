@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.Projects
 {
@@ -21,12 +22,12 @@ namespace MonoDevelop.Projects
 				Add (cmd.Clone ());
 		}
 		
-		public void ExecuteCommand (IProgressMonitor monitor, CombineEntry entry, CustomCommandType type)
+		public void ExecuteCommand (IProgressMonitor monitor, IProject entry, CustomCommandType type)
 		{
 			ExecuteCommand (monitor, entry, type, null);
 		}
 		
-		public void ExecuteCommand (IProgressMonitor monitor, CombineEntry entry, CustomCommandType type, ExecutionContext context)
+		public void ExecuteCommand (IProgressMonitor monitor, IProject entry, CustomCommandType type, ExecutionContext context)
 		{
 			foreach (CustomCommand cmd in this) {
 				if (cmd.Type == type)

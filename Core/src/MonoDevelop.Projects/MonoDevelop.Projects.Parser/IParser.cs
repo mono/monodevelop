@@ -11,7 +11,7 @@ using System.Collections.Specialized;
 
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using Project_ = MonoDevelop.Projects.Project;
+//using Project_ = MonoDevelop.id.Projects.Project;
 
 namespace MonoDevelop.Projects.Parser
 {

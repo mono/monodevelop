@@ -1,5 +1,5 @@
 //
-// IBuildStep.cs
+// BuildEventArgs.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -28,14 +28,26 @@
 
 using System;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Projects;
 
-namespace MonoDevelop.Projects
+namespace MonoDevelop.Ide.Projects
 {
-	public interface IBuildStep
+	public class BuildEventArgs: EventArgs
 	{
-		ICompilerResult Build (IProgressMonitor monitor, IProject project);
-		bool NeedsBuilding (IProject project);
+		IProgressMonitor monitor;
+		bool success;
+		
+		public BuildEventArgs (IProgressMonitor monitor, bool success)
+		{
+			this.monitor = monitor;
+			this.success = success;
+		}
+		
+		public IProgressMonitor ProgressMonitor {
+			get { return monitor; }
+		}
+		
+		public bool Success {
+			get { return success; }
+		}
 	}
-	
 }

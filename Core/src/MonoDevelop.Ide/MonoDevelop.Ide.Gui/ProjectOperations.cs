@@ -69,8 +69,6 @@ namespace MonoDevelop.Ide.Gui
 		Solution currentCombine = null;
 		Solution openCombine = null;
 		
-		IParserDatabase parserDatabase;
-		CodeRefactorer refactorer;
 
 		CompilerResult lastResult = new CompilerResult ();
 		

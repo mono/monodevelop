@@ -211,13 +211,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
                 this.Child.ShowAll();
             }
             this.Show();
-            this.comboType.Changed += new System.EventHandler(this.OnComboTypeChanged);
-            this.buttonRemove.Clicked += new System.EventHandler(this.OnButtonRemoveClicked);
-            this.entryName.Changed += new System.EventHandler(this.OnEntryNameChanged);
-            this.entryCommand.Changed += new System.EventHandler(this.OnEntryCommandChanged);
-            this.buttonBrowse.Clicked += new System.EventHandler(this.OnButtonBrowseClicked);
-            this.checkExternalCons.Clicked += new System.EventHandler(this.OnCheckExternalConsClicked);
-            this.checkPauseCons.Clicked += new System.EventHandler(this.OnCheckPauseConsClicked);
         }
     }
 }

@@ -1,10 +1,10 @@
 //
-// IBuildStep.cs
+// SolutionItemEventArgs.cs
 //
 // Author:
-//   Lluis Sanchez Gual
+//   Mike Krüger <mkrueger@novell.com>
 //
-// Copyright (C) 2006 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,15 +27,22 @@
 //
 
 using System;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Projects;
 
-namespace MonoDevelop.Projects
+namespace MonoDevelop.Ide.Projects
 {
-	public interface IBuildStep
+	public class SolutionItemEventArgs : EventArgs
 	{
-		ICompilerResult Build (IProgressMonitor monitor, IProject project);
-		bool NeedsBuilding (IProject project);
+		SolutionItem solutionItem;
+		
+		public SolutionItem SolutionItem {
+			get {
+				return solutionItem;
+			}
+		}
+		
+		public SolutionItemEventArgs (SolutionItem solutionItem)
+		{
+			this.solutionItem = solutionItem;
+		}
 	}
-	
 }

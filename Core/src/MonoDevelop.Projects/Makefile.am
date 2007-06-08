@@ -41,6 +41,7 @@ FILES =  \
 	MonoDevelop.Ide.Projects/SolutionEventArgs.cs \
 	MonoDevelop.Ide.Projects/SolutionFolder.cs \
 	MonoDevelop.Ide.Projects/SolutionItem.cs \
+	MonoDevelop.Ide.Projects/SolutionItemEventArgs.cs \
 	MonoDevelop.Ide.Projects/SolutionItemFactory.cs \
 	MonoDevelop.Ide.Projects/SolutionProject.cs \
 	MonoDevelop.Ide.Projects/SolutionReadHelper.cs \

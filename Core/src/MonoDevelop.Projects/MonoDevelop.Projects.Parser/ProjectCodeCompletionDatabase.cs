@@ -91,39 +91,48 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
-		void OnFileChanged (object sender, ProjectFileEventArgs args)
+		void OnFileChanged (object sender, ProjectItemEventArgs args)
 		{
-			FileEntry file = GetFile (args.ProjectFile.Name);
+			ProjectFile projectFile = args.ProjectItem as ProjectFile;
+			if (projectFile == null)
+				return;
+			FileEntry file = GetFile (projectFile.FullPath);
 			if (file != null) QueueParseJob (file);
 		}
 		
-		void OnFileAdded (object sender, ProjectFileEventArgs args)
+		void OnFileAdded (object sender, ProjectItemEventArgs args)
 		{
-			if (args.ProjectFile.BuildAction == BuildAction.Compile) {
-				FileEntry file = AddFile (args.ProjectFile.Name);
+			ProjectFile projectFile = args.ProjectItem as ProjectFile;
+			if (projectFile == null)
+				return;
+			if (projectFile.FileType == FileType.Compile) {
+				FileEntry file = AddFile (projectFile.FullPath);
 				// CheckModifiedFiles won't detect new files, so parsing
 				// must be manyally signaled
 				QueueParseJob (file);
 			}
 		}
 
-		void OnFileRemoved (object sender, ProjectFileEventArgs args)
+		void OnFileRemoved (object sender, ProjectItemEventArgs args)
 		{
-			RemoveFile (args.ProjectFile.Name);
+			ProjectFile projectFile = args.ProjectItem as ProjectFile;
+			if (projectFile == null)
+				return;
+			RemoveFile (projectFile.FullPath);
 		}
-
-		void OnFileRenamed (object sender, ProjectFileRenamedEventArgs args)
-		{
-			if (args.ProjectFile.BuildAction == BuildAction.Compile) {
-				RemoveFile (args.OldName);
-				FileEntry file = AddFile (args.NewName);
-				// CheckModifiedFiles won't detect new files, so parsing
-				// must be manyally signaled
-				QueueParseJob (file);
-			}
-		}
+// TODO: Project Conversion
+//		void OnFileRenamed (object sender, ProjectFileRenamedEventArgs args)
+//		{
+//			if (args.ProjectFile.BuildAction == BuildAction.Compile) {
+//				RemoveFile (args.OldName);
+//				FileEntry file = AddFile (args.NewName);
+//				// CheckModifiedFiles won't detect new files, so parsing
+//				// must be manyally signaled
+//				QueueParseJob (file);
+//			}
+//		}
 		
-		void OnProjectModified (object s, CombineEntryEventArgs args)
+		void OnProjectModified (object s, SolutionItemEventArgs args)
 		{
 			if (UpdateCorlibReference ())
 				parserDatabase.NotifyReferencesChanged (this);

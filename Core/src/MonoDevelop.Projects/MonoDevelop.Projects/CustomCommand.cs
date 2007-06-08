@@ -1,6 +1,7 @@
 
 using System;
 using System.IO;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects.Serialization;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
@@ -60,12 +61,12 @@ namespace MonoDevelop.Projects
 			return cmd;
 		}
 		
-		public void Execute (IProgressMonitor monitor, CombineEntry entry)
+		public void Execute (IProgressMonitor monitor, IProject entry)
 		{
 			Execute (monitor, entry, null);
 		}
 		
-		public void Execute (IProgressMonitor monitor, CombineEntry entry, ExecutionContext context)
+		public void Execute (IProgressMonitor monitor, IProject entry, ExecutionContext context)
 		{
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Executing: {0}", command));
 			
@@ -79,7 +80,7 @@ namespace MonoDevelop.Projects
 				exe = command.Substring (0, i);
 				args = command.Substring (i + 1);
 			}
-			string localPath = Path.Combine (entry.BaseDirectory, exe);
+			string localPath = Path.Combine (entry.BasePath, exe);
 			if (File.Exists (localPath))
 				exe = localPath;
 			
@@ -92,14 +93,14 @@ namespace MonoDevelop.Projects
 				else
 					console = context.ConsoleFactory.CreateConsole (!pauseExternalConsole);
 				IExecutionHandler handler = context.ExecutionHandlerFactory.CreateExecutionHandler ("Native");
-				oper = handler.Execute (exe, args, entry.BaseDirectory, console);
+				oper = handler.Execute (exe, args, entry.BasePath, console);
 			}
 			else {
 				if (externalConsole) {
 					IConsole console = ExternalConsoleFactory.Instance.CreateConsole (!pauseExternalConsole);
-					oper = Runtime.ProcessService.StartConsoleProcess (exe, args, entry.BaseDirectory, console, null);
+					oper = Runtime.ProcessService.StartConsoleProcess (exe, args, entry.BasePath, console, null);
 				} else {
-					oper = Runtime.ProcessService.StartProcess (exe, args, entry.BaseDirectory, monitor.Log, monitor.Log, null, false);
+					oper = Runtime.ProcessService.StartProcess (exe, args, entry.BasePath, monitor.Log, monitor.Log, null, false);
 				}
 			}
 				

@@ -26,76 +26,78 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-using MonoDevelop.Core;
-
-namespace MonoDevelop.Projects
-{
-	public class UnknownCombineEntry: CombineEntry
-	{
-		string loadError = string.Empty;
-		bool unloaded;
-		
-		public UnknownCombineEntry ()
-		{
-			NeedsReload = false;
-		}
-		
-		public override string FileName {
-			get { return base.FileName; }
-			set { base.FileName = value; NeedsReload = false; }
-		}
-
-		
-		public string LoadError {
-			get { return loadError; }
-			set { loadError = value; }
-		}
-		
-		public bool UnloadedEntry {
-			get { return unloaded; }
-			set { unloaded = value; }
-		}
-		
-		public override string Name {
-			get {
-				if (FileName != null && FileName.Length > 0)
-					return System.IO.Path.GetFileNameWithoutExtension (FileName);
-				else
-					return GettextCatalog.GetString ("Unknown entry");
-			}
-			set { }
-		}
-		
-		public override IConfiguration CreateConfiguration (string name)
-		{
-			return null;
-		}
-		
-		protected internal override void OnClean (IProgressMonitor monitor)
-		{
-		}
-		
-		protected internal override ICompilerResult OnBuild (IProgressMonitor monitor)
-		{
-			return null;
-		}
-		
-		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context)
-		{
-		}
-		
-		protected internal override bool OnGetNeedsBuilding ()
-		{
-			return false;
-		}
-		
-		protected internal override void OnSetNeedsBuilding (bool value)
-		{
-		}
-		
-		protected internal override void OnSave (IProgressMonitor monitor)
-		{
-		}
-	}
-}
+// TODO: Project Conversion ? 
+//using System;
+//using MonoDevelop.Core;
+//
+//namespace MonoDevelop.Projects
+//{
+//	public class UnknownCombineEntry: CombineEntry
+//	{
+//		string loadError = string.Empty;
+//		bool unloaded;
+//		
+//		public UnknownCombineEntry ()
+//		{
+//			NeedsReload = false;
+//		}
+//		
+//		public override string FileName {
+//			get { return base.FileName; }
+//			set { base.FileName = value; NeedsReload = false; }
+//		}
+//
+//		
+//		public string LoadError {
+//			get { return loadError; }
+//			set { loadError = value; }
+//		}
+//		
+//		public bool UnloadedEntry {
+//			get { return unloaded; }
+//			set { unloaded = value; }
+//		}
+//		
+//		public override string Name {
+//			get {
+//				if (FileName != null && FileName.Length > 0)
+//					return System.IO.Path.GetFileNameWithoutExtension (FileName);
+//				else
+//					return GettextCatalog.GetString ("Unknown entry");
+//			}
+//			set { }
+//		}
+//		
+//		public override IConfiguration CreateConfiguration (string name)
+//		{
+//			return null;
+//		}
+//		
+//		protected internal override void OnClean (IProgressMonitor monitor)
+//		{
+//		}
+//		
+//		protected internal override ICompilerResult OnBuild (IProgressMonitor monitor)
+//		{
+//			return null;
+//		}
+//		
+//		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context)
+//		{
+//		}
+//		
+//		protected internal override bool OnGetNeedsBuilding ()
+//		{
+//			return false;
+//		}
+//		
+//		protected internal override void OnSetNeedsBuilding (bool value)
+//		{
+//		}
+//		
+//		protected internal override void OnSave (IProgressMonitor monitor)
+//		{
+//		}
+//	}
+//}
+//
