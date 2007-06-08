@@ -39,6 +39,7 @@ namespace AspNetAddIn.Parser
 	{
 		private string inheritedClass;
 		private string codeBehindFile;
+		private string codeFile;
 		private string language;
 		private AspNetAddIn.WebSubtype type = WebSubtype.None;
 		
@@ -60,9 +61,9 @@ namespace AspNetAddIn.Parser
 				case "application":
 					type = WebSubtype.Global;
 					break;
-				//case "master":
-				//	type = WebSubtype.MasterPage;
-				//	break;
+				case "master":
+					type = WebSubtype.MasterPage;
+					break;
 				default:
 					type = WebSubtype.None;
 					return;
@@ -74,6 +75,7 @@ namespace AspNetAddIn.Parser
 			
 			codeBehindFile = node.Attributes ["codebehind"] as string;
 			language = node.Attributes ["language"] as string;
+			codeFile = node.Attributes ["codefile"] as string;
 		}
 		
 		public string InheritedClass {
@@ -82,6 +84,10 @@ namespace AspNetAddIn.Parser
 		
 		public string CodeBehindFile {
 			get { return codeBehindFile; }
+		}
+		
+		public string CodeFile {
+			get { return codeFile; }
 		}
 		
 		public string Language {

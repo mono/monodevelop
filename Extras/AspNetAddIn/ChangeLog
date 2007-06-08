@@ -1,3 +1,9 @@
+2007-06-08 Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* Parser/Document.cs: Report parse errors on console, not in dialogue.
+	
+	* Parser/PageInfoVisitor.cs: Add CodeFile property.
+
 2007-05-31  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AspNetAddIn.addin.xml: Fix typo.
