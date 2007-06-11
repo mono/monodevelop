@@ -5,7 +5,7 @@
     <widget-library name="../../../build/AddIns/MonoDevelop.Components.dll" />
     <widget-library name="../../../build/AddIns/MonoDevelop.Projects.Gui.dll" />
   </import>
-  <widget class="Gtk.Bin" id="CSharpBinding.CodeGenerationPanelWidget" design-size="356 416">
+  <widget class="Gtk.Bin" id="CSharpBinding.CodeGenerationPanelWidget" design-size="356 421">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.VBox" id="vbox62">
@@ -494,7 +494,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="CSharpBinding.FormattingPanelWidget" design-size="320 240">
+  <widget class="Gtk.Bin" id="CSharpBinding.FormattingPanelWidget" design-size="334 240">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.VBox" id="container">

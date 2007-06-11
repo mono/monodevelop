@@ -4,13 +4,13 @@
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
 //     <version value="$version"/>
 // </file>
-
+/*
 using System;
 using System.Collections;
 using System.IO;
 using System.Drawing;
 
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
@@ -26,7 +26,7 @@ namespace CSharpBinding
 {
 	partial class CodeGenerationPanelWidget : Gtk.Bin 
 	{
-		Project project;
+		IProject project;
 		DotNetProjectConfiguration configuration;
 		CSharpCompilerParameters compilerParameters = null;
 		ListStore classListStore;
@@ -185,3 +185,4 @@ namespace CSharpBinding
 		}
 	}
 }
+*/

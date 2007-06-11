@@ -48,14 +48,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		protected override void Initialize ()
 		{
 			changeClassInformationHandler = (ClassInformationEventHandler) Services.DispatchService.GuiDispatch (new ClassInformationEventHandler (OnClassInformationChanged));
-// TODO: Project Conversion
-//			IdeApp.ProjectOperations.ParserDatabase.ClassInformationChanged += changeClassInformationHandler;
+			RefactoryService.ParserDatabase.ClassInformationChanged += changeClassInformationHandler;
 		}
 		
 		public override void Dispose ()
 		{
-// TODO: Project Conversion
-//			IdeApp.ProjectOperations.ParserDatabase.ClassInformationChanged -= changeClassInformationHandler;
+			RefactoryService.ParserDatabase.ClassInformationChanged -= changeClassInformationHandler;
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
@@ -73,20 +71,20 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			NamespaceData nsData = dataObject as NamespaceData;
-// TODO: Project Conversion
-//			if (nsData.Project != null) {
-//				IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (nsData.Project);
-//				LanguageItemCollection list = ctx.GetNamespaceContents (nsData.FullName, false);
-//				AddProjectContent (builder, nsData.Project, nsData, list);
-//			}
-//			else {
-//				foreach (IProject p in ProjectService.Solution.AllProjects) {
-//					IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (p);
-//					LanguageItemCollection list = ctx.GetNamespaceContents (nsData.FullName, false);
-//					AddProjectContent (builder, p, nsData, list);
-//				}
-//			}
-//			
+
+			if (nsData.Project != null) {
+				IParserContext ctx = RefactoryService.ParserDatabase.GetProjectParserContext (nsData.Project);
+				LanguageItemCollection list = ctx.GetNamespaceContents (nsData.FullName, false);
+				AddProjectContent (builder, nsData.Project, nsData, list);
+			}
+			else {
+				foreach (IProject p in ProjectService.Solution.AllProjects) {
+					IParserContext ctx = RefactoryService.ParserDatabase.GetProjectParserContext (p);
+					LanguageItemCollection list = ctx.GetNamespaceContents (nsData.FullName, false);
+					AddProjectContent (builder, p, nsData, list);
+				}
+			}
+			
 		}
 		
 		void AddProjectContent (ITreeBuilder builder, IProject project, NamespaceData nsData, LanguageItemCollection list)

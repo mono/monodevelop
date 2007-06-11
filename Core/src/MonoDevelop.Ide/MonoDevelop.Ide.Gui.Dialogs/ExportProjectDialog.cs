@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 using MonoDevelop.Components;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -10,19 +10,20 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	{
 		IFileFormat[] formats;
 		
-		public ExportProjectDialog (CombineEntry entry, IFileFormat selectedFormat)
+		public ExportProjectDialog (IProject entry, IFileFormat selectedFormat)
 		{
 			this.Build();
 			
-			formats = Services.ProjectService.FileFormats.GetFileFormatsForObject (entry);
-			foreach (IFileFormat format in formats)
-				comboFormat.AppendText (format.Name);
+			formats = ProjectService.GetFileFormatsForObject (entry);
+			if (formats != null)
+				foreach (IFileFormat format in formats)
+					comboFormat.AppendText (format.Name);
 
 			int sel = Array.IndexOf (formats, selectedFormat);
 			if (sel == -1) sel = 0;
 			comboFormat.Active = sel;
 			
-			folderEntry.Path = entry.BaseDirectory;
+			folderEntry.Path = entry.BasePath;
 			UpdateControls ();
 		}
 		

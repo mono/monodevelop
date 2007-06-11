@@ -45,15 +45,13 @@ namespace MonoDevelop.Ide.Gui.Content
 			
 			IViewContent view = document.Window.ViewContent;
 			string file = view.IsUntitled ? view.UntitledName : view.ContentName;
-// TODO: Project Conversion
-//			IProject project = view.Project;
-//			IParserDatabase pdb = IdeApp.ProjectOperations.ParserDatabase;
-//			
-//			if (project != null)
-//				return pdb.GetProjectParserContext (project);
-//			else
-//				return pdb.GetFileParserContext (file);
-			return null;
+
+			IProject project = view.Project;
+			IParserDatabase pdb = RefactoryService.ParserDatabase;
+			
+			if (project != null)
+				return pdb.GetProjectParserContext (project);
+			return pdb.GetFileParserContext (file);
 		}
 		
 		protected MonoDevelop.Projects.Ambience.Ambience GetAmbience ()

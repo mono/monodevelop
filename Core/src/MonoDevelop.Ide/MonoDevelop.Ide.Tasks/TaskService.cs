@@ -55,8 +55,7 @@ namespace MonoDevelop.Ide.Tasks
 		void ProjectServiceSolutionOpened (object sender, SolutionEventArgs e)
 		{
 			combine = e.Solution;
-// TODO: Projec Conversion
-//			IdeApp.ProjectOperations.ParserDatabase.CommentTasksChanged += new CommentTasksChangedEventHandler (OnCommentTasksChanged);
+			RefactoryService.ParserDatabase.CommentTasksChanged += new CommentTasksChangedEventHandler (OnCommentTasksChanged);
 			
 			// Load all tags that are stored in pidb files
             foreach (SolutionItem item in MonoDevelop.Ide.Projects.ProjectService.Solution.Items)

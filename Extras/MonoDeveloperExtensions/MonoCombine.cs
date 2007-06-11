@@ -27,11 +27,11 @@
 //
 
 using System;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 
 namespace MonoDeveloper
 {	
-	class MonoCombine: Combine
+	class MonoCombine : Solution
 	{
 	}
 }

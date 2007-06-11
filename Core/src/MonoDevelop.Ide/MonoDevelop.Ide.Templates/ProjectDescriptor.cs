@@ -18,7 +18,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.ProgressMonitoring;
 
-using Project_ = MonoDevelop.Projects.Project;
+//using Project_ = MonoDevelop.Projects.Project;
 
 namespace MonoDevelop.Ide.Templates
 {

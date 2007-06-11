@@ -50,6 +50,15 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 		
+		public string FileName {
+			get {
+				return this.fileName;
+			}
+			set {
+				this.fileName = value;
+			}
+		}
+		
 		public List<SolutionItem> Items {
 			get {
 				return items;
@@ -77,6 +86,7 @@ namespace MonoDevelop.Ide.Projects
 			sections.Add (new SolutionSection ("SolutionConfigurationPlatforms", "preSolution"));
 			sections.Add (new SolutionSection ("ProjectConfigurationPlatforms", "postSolution"));
 		}
+		
 		public Solution (string fileName)
 		{
 			this.fileName = fileName;

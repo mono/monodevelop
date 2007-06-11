@@ -1,16 +1,11 @@
 <Combine name="Extras" fileversion="2.0">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
-      <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
       <Entry build="True" name="CSharpBinding" configuration="Debug" />
-      <Entry build="True" name="ILAsmBinding" configuration="Debug" />
       <Entry build="True" name="VersionControl" configuration="Debug" />
-      <Entry build="True" name="JavaBinding" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.SourceEditor" configuration="Debug" />
-      <Entry build="False" name="NemerleBinding" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.GtkCore" configuration="Debug" />
       <Entry build="True" name="WelcomePage" configuration="Debug" />
-      <Entry build="True" name="VBNetBinding" configuration="Debug" />
       <Entry build="False" name="MonoDevelop.Debugger" configuration="Debug" />
       <Entry build="True" name="ChangeLogAddIn" configuration="Debug" />
       <Entry build="True" name="MonoDeveloperExtensions" configuration="Debug" />
@@ -18,16 +13,11 @@
       <Entry build="True" name="MonoDevelop.WebReferences" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
-      <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
       <Entry build="True" name="CSharpBinding" configuration="Debug" />
-      <Entry build="True" name="ILAsmBinding" configuration="Debug" />
       <Entry build="True" name="VersionControl" configuration="Debug" />
-      <Entry build="True" name="JavaBinding" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.SourceEditor" configuration="Debug" />
-      <Entry build="True" name="NemerleBinding" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.GtkCore" configuration="Debug" />
       <Entry build="True" name="WelcomePage" configuration="Debug" />
-      <Entry build="True" name="VBNetBinding" configuration="" />
       <Entry build="True" name="MonoDevelop.Debugger" configuration="Debug" />
       <Entry build="True" name="ChangeLogAddIn" configuration="Debug" />
       <Entry build="True" name="MonoDeveloperExtensions" configuration="" />
@@ -35,18 +25,13 @@
       <Entry build="True" name="MonoDevelop.WebReferences" configuration="Release" />
     </Configuration>
   </Configurations>
-  <StartMode startupentry="MonoDevelop.NUnit" single="True">
-    <Execute type="None" entry="MonoDevelop.NUnit" />
+  <StartMode startupentry="CSharpBinding" single="True">
     <Execute type="None" entry="CSharpBinding" />
-    <Execute type="None" entry="ILAsmBinding" />
     <Execute type="None" entry="VersionControl" />
-    <Execute type="None" entry="JavaBinding" />
     <Execute type="None" entry="MonoDevelop.SourceEditor" />
-    <Execute type="None" entry="NemerleBinding" />
     <Execute type="None" entry="MonoDevelop.GtkCore" />
     <Execute type="None" entry="WelcomePage" />
     <Execute type="None" entry="prj2make-sharp-lib" />
-    <Execute type="None" entry="VBNetBinding" />
     <Execute type="None" entry="MonoDevelop.Debugger" />
     <Execute type="None" entry="ChangeLogAddIn" />
     <Execute type="None" entry="MonoDeveloperExtensions" />
@@ -59,16 +44,11 @@
     <Execute type="None" entry="MonoQuery" />
   </StartMode>
   <Entries>
-    <Entry filename="./NUnit/MonoDevelop.NUnit.mdp" />
     <Entry filename="./CSharpBinding/CSharpBinding.mdp" />
-    <Entry filename="./ILAsmBinding/ILAsmBinding.mdp" />
     <Entry filename="./VersionControl/VersionControl.mds" />
-    <Entry filename="./JavaBinding/JavaBinding.mdp" />
     <Entry filename="./MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.mdp" />
-    <Entry filename="./NemerleBinding/NemerleBinding.mdp" />
     <Entry filename="./MonoDevelop.GtkCore/MonoDevelop.GtkCore.mdp" />
     <Entry filename="./WelcomePage/WelcomePage.mdp" />
-    <Entry filename="./VBNetBinding/VBNetBinding.mds" />
     <Entry filename="./DebuggerAddIn/MonoDevelop.Debugger.mdp" />
     <Entry filename="./ChangeLogAddIn/ChangeLogAddIn.mdp" />
     <Entry filename="./MonoDeveloperExtensions/MonoDeveloperExtensions.mds" />

@@ -1,12 +1,12 @@
 
 using System;
 
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.Ide.Templates
 {
 	internal interface INewFileCreator
 	{
-		bool CreateItem (FileTemplate template, Project project, string directory, string language, string name);
+		bool CreateItem (FileTemplate template, IProject project, string directory, string language, string name);
 	}
 }

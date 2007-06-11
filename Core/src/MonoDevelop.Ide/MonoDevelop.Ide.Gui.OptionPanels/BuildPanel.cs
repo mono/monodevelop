@@ -14,7 +14,7 @@ using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core;
 using Mono.Addins;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 
 using Gtk;
 using MonoDevelop.Components;

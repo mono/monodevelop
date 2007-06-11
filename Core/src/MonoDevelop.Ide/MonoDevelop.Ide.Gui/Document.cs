@@ -244,7 +244,9 @@ namespace MonoDevelop.Ide.Gui
 			get
 			{
 				if (Window.ViewContent.ContentName != null)
-					return Services.ProjectService.CanCreateSingleFileProject(Window.ViewContent.ContentName);
+// TODO: Project Conversion ?
+//					return Services.ProjectService.CanCreateSingleFileProject (Window.ViewContent.ContentName);
+					return true; 
 				
 				return false;
 			}

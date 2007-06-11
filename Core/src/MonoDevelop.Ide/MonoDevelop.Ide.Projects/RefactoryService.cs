@@ -34,6 +34,7 @@ using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.CodeGeneration;
+
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
@@ -57,6 +58,13 @@ namespace MonoDevelop.Ide.Projects
 			get { return parserDatabase; }
 		}
 		
+		static RefactoryService()
+		{
+			parserDatabase = Services.ParserService.CreateParserDatabase ();
+			parserDatabase.TrackFileChanges = true;
+			parserDatabase.ParseProgressMonitorFactory = new ParseProgressMonitorFactory ();
+		}
+		
 		public static CodeRefactorer CodeRefactorer {
 			get {
 				if (codeRefactorer == null) {
@@ -64,6 +72,14 @@ namespace MonoDevelop.Ide.Projects
 					codeRefactorer.TextFileProvider = new OpenDocumentFileProvider ();
 				}
 				return codeRefactorer;
+			}
+		}
+
+		class ParseProgressMonitorFactory: IProgressMonitorFactory
+		{
+			public IProgressMonitor CreateProgressMonitor ()
+			{
+				return IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Code Completion Database Generation", "md-parser");
 			}
 		}
 		

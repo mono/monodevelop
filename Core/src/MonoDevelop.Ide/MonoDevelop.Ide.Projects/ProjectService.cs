@@ -96,6 +96,10 @@ namespace MonoDevelop.Ide.Projects
 		{
 			project.Save ();
 		}
+		public static void SaveProject (IProject project, IProgressMonitor monitor)
+		{
+			project.Save ();
+		}
 		
 		public static void SaveSolution ()
 		{
@@ -503,6 +507,17 @@ namespace MonoDevelop.Ide.Projects
 			MSBuildProject msProject = project as MSBuildProject;
 			if (msProject != null) 
 				return Path.GetFullPath (Path.Combine (Path.Combine (msProject.BasePath, msProject.OutputPath), msProject.OutputAssemblyFileName));
+			return null;
+		}
+		
+		public static IFileFormat[] GetFileFormatsForObject (IProject project)
+		{
+			// TODO: File Formats
+			return null;
+		}
+		public static IFileFormat[] GetFileFormatsForObject (Solution solution)
+		{
+			// TODO: File Formats
 			return null;
 		}
 		

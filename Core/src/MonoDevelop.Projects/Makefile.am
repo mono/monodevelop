@@ -30,6 +30,7 @@ FILES =  \
 	MonoDevelop.Ide.Projects/CompilerResult.cs \
 	MonoDevelop.Ide.Projects/ExecutionContext.cs \
 	MonoDevelop.Ide.Projects/IBackendBinding.cs \
+	MonoDevelop.Ide.Projects/IFileFormat.cs \
 	MonoDevelop.Ide.Projects/IProject.cs \
 	MonoDevelop.Ide.Projects/IProjectBinding.cs \
 	MonoDevelop.Ide.Projects/MSBuildProject.cs \
@@ -232,7 +233,6 @@ FILES =  \
 	MonoDevelop.Projects/ICompilerResult.cs \
 	MonoDevelop.Projects/IConfiguration.cs \
 	MonoDevelop.Projects/IDotNetLanguageBinding.cs \
-	MonoDevelop.Projects/IFileFormat.cs \
 	MonoDevelop.Projects/ILanguageBinding.cs \
 	MonoDevelop.Projects/IProjectService.cs \
 	MonoDevelop.Projects/Language.cs \

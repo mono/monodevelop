@@ -8,7 +8,7 @@
 using System;
 using System.Collections;
 using System.CodeDom.Compiler;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 
@@ -28,7 +28,7 @@ namespace MonoDevelop.Ide.Tasks
 		string   description;
 		string   fileName;
 		TaskType type;
-		Project project;
+		IProject project;
 		int      line;
 		int      column;
 		string errorNumber;
@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Tasks
 			                     description);
 		}
 		
-		public Project Project {
+		public IProject Project {
 			get {
 				return project;
 			}
@@ -110,13 +110,13 @@ namespace MonoDevelop.Ide.Tasks
 //			this.line        = line;
 //		}
 		
-		public Task (string fileName, string description, int column, int line, TaskType type, Project project)
+		public Task (string fileName, string description, int column, int line, TaskType type, IProject project)
 			: this (fileName, description, column, line, type)
 		{
 			this.project = project;
 		}
 		
-		public Task (string fileName, string description, int column, int line, TaskType type, Project project, TaskPriority priority)
+		public Task (string fileName, string description, int column, int line, TaskType type, IProject project, TaskPriority priority)
 			: this (fileName, description, column, line, type, priority)
 		{
 			this.project = project;
@@ -137,7 +137,7 @@ namespace MonoDevelop.Ide.Tasks
 			FileName    = fileName;
 		}
 		
-		public Task (Project project, CompilerError error)
+		public Task (IProject project, CompilerError error)
 		{
 			this.project = project;
 			type        = error.IsWarning ? error.ErrorNumber == "COMMENT" ? TaskType.Message : TaskType.Warning : TaskType.Error;

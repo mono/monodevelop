@@ -33,6 +33,7 @@ using System.Threading;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Ide.Gui.Content;
@@ -67,12 +68,11 @@ namespace MonoDevelop.Ide.Commands
 					
 					editor.GetLineColumnFromPosition (editor.CursorPosition, out line, out column);
 					IParserContext ctx = null;
-//	TODO: Project Conversion
-//					if (doc.Project != null)
-//						ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (doc.Project);
-//					else
-//						ctx = IdeApp.ProjectOperations.ParserDatabase.GetFileParserContext (doc.FileName);
-//					
+					if (doc.Project != null)
+						ctx = RefactoryService.ParserDatabase.GetProjectParserContext (doc.Project);
+					else
+						ctx = RefactoryService.ParserDatabase.GetFileParserContext (doc.FileName);
+					
 					// Look for an identifier at the cursor position
 					
 					string id = editor.SelectedText;

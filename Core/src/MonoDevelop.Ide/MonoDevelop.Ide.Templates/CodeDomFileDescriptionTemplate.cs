@@ -32,7 +32,7 @@ using System.Xml;
 using System.CodeDom;
 using System.CodeDom.Compiler;
 
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects.CodeGeneration;
 
 namespace MonoDevelop.Ide.Templates
@@ -54,11 +54,11 @@ namespace MonoDevelop.Ide.Templates
 			if (language == null || language == "")
 				throw new InvalidOperationException ("Language not defined in CodeDom based template.");
 			
-			IDotNetLanguageBinding binding = GetLanguageBinding (language) as IDotNetLanguageBinding;
+			IBackendBinding binding = GetLanguageBinding (language);
 			
 			CodeDomProvider provider = null;
 			if (binding != null)
-				provider = binding.GetCodeDomProvider ();
+				provider = binding.CodeDomProvider;
 				
 			if (provider == null)
 				throw new InvalidOperationException ("The language '" + language + "' does not have support for CodeDom.");

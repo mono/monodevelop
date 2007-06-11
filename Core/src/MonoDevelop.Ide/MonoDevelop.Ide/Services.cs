@@ -24,7 +24,6 @@ namespace MonoDevelop.Ide
 		static TaskService taskService;
 		static IParserService parserService;
 		static DispatchService dispatchService;
-		static IProjectService projectService;
 	
 		public static IStatusBarService StatusBar {
 			get {
@@ -103,14 +102,6 @@ namespace MonoDevelop.Ide
 				if (dispatchService == null)
 					dispatchService = (DispatchService) ServiceManager.GetService (typeof(DispatchService));
 				return dispatchService;
-			}
-		}
-	
-		public static IProjectService ProjectService {
-			get {
-				if (projectService == null)
-					projectService = (IProjectService) ServiceManager.GetService (typeof(IProjectService));
-				return projectService;
 			}
 		}
 	}

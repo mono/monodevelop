@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.Ide.Templates;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -11,8 +11,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	{
 		List<ICombineEntryFeature> selectedFeatures = new List<ICombineEntryFeature> ();
 		List<Gtk.Widget> selectedEditors = new List<Gtk.Widget> ();
-		CombineEntry entry;
-		Combine parentCombine;
+		IProject entry;
+		Solution parentCombine;
 		VBox box = new VBox ();
 		
 		public CombineEntryFeatureSelector ()
@@ -23,7 +23,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			box.Show ();
 		}
 		
-		public void Fill (Combine parentCombine, CombineEntry entry, ICombineEntryFeature[] features)
+		public void Fill (Solution parentCombine, IProject entry, ICombineEntryFeature[] features)
 		{
 			selectedFeatures.Clear ();
 			selectedEditors.Clear ();

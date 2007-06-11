@@ -279,10 +279,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					lock (matchLock) {
 						toMatch = matchString;
 					}
-// TODO: Project Conversion			
-//					IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (p);
-//					foreach (IClass c in ctx.GetProjectContents())
-//						CheckType (c, toMatch);
+					IParserContext ctx = RefactoryService.ParserDatabase.GetProjectParserContext (p);
+					foreach (IClass c in ctx.GetProjectContents())
+						CheckType (c, toMatch);
 				}
 			}
 		}

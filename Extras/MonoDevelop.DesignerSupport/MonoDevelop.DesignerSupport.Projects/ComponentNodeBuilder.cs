@@ -1,7 +1,7 @@
 
 using System;
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.DesignerSupport.PropertyGrid;
@@ -38,10 +38,10 @@ namespace MonoDevelop.DesignerSupport.Projects
 
 		public void OnChanged (object obj)
 		{
-			CombineEntry ce = (CombineEntry) CurrentNode.GetParentDataItem (typeof(CombineEntry), true);
+			SolutionProject ce = (SolutionProject) CurrentNode.GetParentDataItem (typeof(SolutionProject), true);
 			if (ce != null) {
 				using (IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (false)) {
-					ce.Save (mon);
+					ProjectService.SaveProject (ce.Project, mon);
 				}
 			}
 		}

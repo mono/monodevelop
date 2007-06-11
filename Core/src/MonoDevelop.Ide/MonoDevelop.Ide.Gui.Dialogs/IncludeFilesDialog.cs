@@ -1,3 +1,4 @@
+/*
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
@@ -38,9 +39,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		// regular members
 		StringCollection newFiles;
-		Project         project;
+		IProject         project;
 		
-		public IncludeFilesDialog(Project project, StringCollection newFiles)
+		public IncludeFilesDialog(IProject project, StringCollection newFiles)
 		{
 			Runtime.LoggingService.Debug ("*** Include files dialog ***");
 			// we must do it from *here* otherwise, we get this assembly, not the caller
@@ -164,4 +165,4 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 	}
 }
-
+*/

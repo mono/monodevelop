@@ -41,8 +41,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.Events = ((Gdk.EventMask)(256));
             this.Name = "MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog";
             this.Title = Mono.Unix.Catalog.GetString("Open File in Solution");
-            this.WindowPosition = ((Gtk.WindowPosition)(4));
-            this.HasSeparator = false;
             // Internal child MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Events = ((Gdk.EventMask)(256));

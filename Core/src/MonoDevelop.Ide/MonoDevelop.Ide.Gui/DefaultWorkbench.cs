@@ -555,9 +555,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		void AsyncParseCurrentFile (object ob)
 		{
-// TODO: Project Conversion
-//			object[] data = (object[]) ob;
-//			IdeApp.ProjectOperations.ParserDatabase.UpdateFile ((IProject) data[0], (string) data[1], (string) data[2]);
+			object[] data = (object[]) ob;
+			RefactoryService.ParserDatabase.UpdateFile ((IProject) data[0], (string) data[1], (string) data[2]);
 		}
 
 		public Gtk.Toolbar[] ToolBars {

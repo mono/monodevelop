@@ -97,7 +97,7 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		/// <returns>An integer containing the sort order for the objects.</returns>
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
-			return (otherNode.DataItem is ProjectReferenceCollection) ? 1 : -1;
+			return (otherNode.DataItem is ReferenceFolderNode) ? 1 : -1;
 		}
 		
 		/// <summary>Executes whenever a file is removed from a project.</summary>

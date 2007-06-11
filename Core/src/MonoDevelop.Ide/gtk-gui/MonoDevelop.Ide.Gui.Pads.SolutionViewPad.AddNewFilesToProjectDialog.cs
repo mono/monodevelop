@@ -43,13 +43,11 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad {
             this.Name = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.AddNewFilesToProjectDialog";
             this.Title = Mono.Unix.Catalog.GetString("Add new File");
             this.TypeHint = ((Gdk.WindowTypeHint)(1));
-            this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.Modal = true;
             this.Resizable = false;
             this.AllowGrow = false;
             this.DefaultWidth = 460;
             this.DefaultHeight = 300;
-            this.HasSeparator = false;
             // Internal child MonoDevelop.Ide.Gui.Pads.SolutionViewPad.AddNewFilesToProjectDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";

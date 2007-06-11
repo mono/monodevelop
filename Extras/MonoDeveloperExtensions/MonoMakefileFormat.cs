@@ -28,11 +28,12 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using MonoDevelop.Core;
 using System.Text.RegularExpressions;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 
 namespace MonoDeveloper
 {
@@ -73,7 +74,7 @@ namespace MonoDeveloper
 		{
 		}
 		
-		public System.Collections.Specialized.StringCollection GetExportFiles (object obj)
+		public List<string> GetExportFiles (object obj)
 		{
 			return null;
 		}
@@ -107,9 +108,8 @@ namespace MonoDeveloper
 				subdirs = subdirsBuilder.ToString ();
 				if (subdirs != null && (subdirs = subdirs.Trim (' ','\t')) != "")
 				{
-					Combine combine = new MonoCombine ();
+					Solution combine = new MonoCombine ();
 					combine.FileName = fileName;
-					combine.Name = Path.GetFileName (basePath);
 					subdirs = subdirs.Replace ('\t',' ');
 					string[] dirs = subdirs.Split (' ');
 					
@@ -123,8 +123,9 @@ namespace MonoDeveloper
 						string tdir = dir.Trim ();
 						if (tdir == "") continue;
 						string mfile = Path.Combine (Path.Combine (basePath, tdir), "Makefile");
-						if (File.Exists (mfile) && CanReadFile (mfile))
-							combine.AddEntry (mfile, monitor);
+// TODO: Project Conversion
+//						if (File.Exists (mfile) && CanReadFile (mfile))
+//							combine.AddItem (mfile, monitor);
 					}
 					monitor.EndTask ();
 					return combine;

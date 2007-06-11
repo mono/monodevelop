@@ -4,7 +4,7 @@
 //     <owner name="Mike KrÃ¼ger" email="mike@icsharpcode.net"/>
 //     <version value="$version"/>
 // </file>
-
+/*
 using System;
 using System.Collections;
 using System.IO;
@@ -340,3 +340,4 @@ namespace CSharpBinding
 		}
 	}
 }
+*/

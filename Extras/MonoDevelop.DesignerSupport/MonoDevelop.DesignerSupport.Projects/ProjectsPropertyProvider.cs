@@ -1,7 +1,8 @@
 
 using System;
 using System.ComponentModel;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 
 namespace MonoDevelop.DesignerSupport.Projects
 {
@@ -26,17 +27,18 @@ namespace MonoDevelop.DesignerSupport.Projects
 		{
 			this.file = file;
 		}
-		
-		[Category ("Build")]
-		public BuildAction BuildAction {
-			get { return file.BuildAction; }
-			set { file.BuildAction = value; }
-		}
-		
-		[Category ("Build")]
-		public string ResourceId {
-			get { return file.ResourceId; }
-			set { file.ResourceId = value; }
-		}
+
+//TODO: Project Conversion ?	
+//		[Category ("Build")]
+//		public BuildAction BuildAction {
+//			get { return file.BuildAction; }
+//			set { file.BuildAction = value; }
+//		}
+//		
+//		[Category ("Build")]
+//		public string ResourceId {
+//			get { return file.ResourceId; }
+//			set { file.ResourceId = value; }
+//		}
 	}
 }

@@ -8,7 +8,7 @@ using System.Text;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Core.Properties;
 using Mono.Addins;
@@ -311,8 +311,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			se.Buffer.Changed -= new EventHandler (OnChanged);
 			se.View.ToggleOverwrite -= new EventHandler (CaretModeChanged);
 			ContentNameChanged -= new EventHandler (UpdateFSW);
-// TODO: Project Conversion
-//			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged -= new ParseInformationEventHandler(UpdateClassBrowser);
+			RefactoryService.ParserDatabase.ParseInformationChanged -= new ParseInformationEventHandler(UpdateClassBrowser);
 			se.Dispose ();
 			fsw.Dispose ();
 			se = null;
@@ -394,14 +393,13 @@ namespace MonoDevelop.SourceEditor.Gui
 				UpdateExecutionLocation ();
 			}
 			
-// TODO: Project Conversion
-//			IFileParserContext context = IdeApp.ProjectOperations.ParserDatabase.GetFileParserContext(fileName);
-//			memberParseInfo = context.ParseFile(fileName);
-//			BindClassCombo();
-//				
-//			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += new ParseInformationEventHandler(UpdateClassBrowser);
-//		  	Editor.View.MoveCursor += new MoveCursorHandler (OnMoveCursorEvent);
-//		  	Editor.View.ButtonReleaseEvent += new ButtonReleaseEventHandler (OnButtonReleaseEvent);
+			IFileParserContext context = RefactoryService.ParserDatabase.GetFileParserContext(fileName);
+			memberParseInfo = context.ParseFile(fileName);
+			BindClassCombo();
+				
+			RefactoryService.ParserDatabase.ParseInformationChanged += new ParseInformationEventHandler(UpdateClassBrowser);
+		  	Editor.View.MoveCursor += new MoveCursorHandler (OnMoveCursorEvent);
+		  	Editor.View.ButtonReleaseEvent += new ButtonReleaseEventHandler (OnButtonReleaseEvent);
 		}
 		
 		public INavigationPoint BuildNavPoint ()

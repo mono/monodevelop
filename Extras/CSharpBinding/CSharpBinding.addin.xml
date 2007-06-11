@@ -136,12 +136,6 @@
 		                class                = "CSharpBinding.CSharpBackendBinding" />
     </Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/LanguageBindings">
-		<LanguageBinding id    = "CSharp"
-		                 supportedextensions = ".cs"
-		                 class = "CSharpBinding.CSharpLanguageBinding" />
-    </Extension>
-	
 	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
 		<DataType class = "CSharpBinding.CSharpCompilerParameters" />
 	</Extension>
