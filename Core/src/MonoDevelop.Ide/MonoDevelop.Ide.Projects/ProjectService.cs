@@ -76,6 +76,8 @@ namespace MonoDevelop.Ide.Projects
 		{
 			solutionFileName = fileName;
 			solution = Solution.Load (fileName);
+			RefactoryService.ParserDatabase.Load (solution);
+			
 			ActiveProject = null;
 			OnSolutionOpened (new SolutionEventArgs (solution));
 			return NullAsyncOperation.Success;

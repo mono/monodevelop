@@ -64,6 +64,7 @@ namespace MonoDevelop.Ide.Projects.Item
 		public static FileType GetFileType (string str)
 		{
 			try {
+				Console.WriteLine ((FileType)Enum.Parse (typeof(FileType), str));
 				return (FileType)Enum.Parse (typeof(FileType), str);
 			} catch (Exception) {
 				return FileType.None;

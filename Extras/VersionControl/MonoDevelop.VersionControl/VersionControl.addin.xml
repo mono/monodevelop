@@ -38,11 +38,11 @@
 	<Extension path = "/Workspace/FileSystemExtensions" extension-nodes="Class" description="File system extensions|File system extensions which can provide specific behavior when handling files. Specified classes must implement MonoDevelop.Core.FileSystem.FileSystemExtension.">
 		<Class class = "MonoDevelop.VersionControl.VersionControlFileSystemExtension" />
 	</Extension>
-
+<!-- TODO: Version control - solution pad extension
 	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
 		<PadOption id = "ShowVersionControlOverlays" _label = "Show version control overlay icons" defaultValue = "True" />
 		<NodeBuilder id = "VersionControlNodeExtension" class = "MonoDevelop.VersionControl.VersionControlNodeExtension"/>
-	</Extension>
+	</Extension> -->
 
 	<Extension path = "/SharpDevelop/Workbench/StockIcons">
 		<StockIcon stockid = "vc-add" resource = "overlay_added.png" />

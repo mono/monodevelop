@@ -506,7 +506,7 @@ namespace MonoDevelop.Ide.Projects
 						item.SetMetadata (reader.LocalName, reader.ReadString ());
 						return true;
 					});
-					items.Add (item);
+					this.Add (item);
 					return true;
 				}
 				return false;

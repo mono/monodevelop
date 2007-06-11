@@ -83,8 +83,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 			buffer.TagTable.Add (tag);
 			tags.Add (tag);
 			
-			ProjectService.SolutionOpened += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (OnCombineOpen));
-			ProjectService.SolutionClosed += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (OnCombineClosed));
+// TODO: Dispatching ?
+//			ProjectService.SolutionOpened += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (OnCombineOpen));
+//			ProjectService.SolutionClosed += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (OnCombineClosed));
+			ProjectService.SolutionOpened += new EventHandler<SolutionEventArgs> (OnCombineOpen);
+			ProjectService.SolutionClosed += new EventHandler<SolutionEventArgs> (OnCombineClosed);
 
 			this.title = title;
 			this.icon = icon;

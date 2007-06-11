@@ -40,8 +40,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 	{
 		public SolutionPad ()
 		{
-			ProjectService.SolutionOpened += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (OnOpenCombine));
-			ProjectService.SolutionClosed += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (OnCloseCombine));
+// TODO: Dispatching ?
+//			ProjectService.SolutionOpened += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (OnOpenCombine));
+//			ProjectService.SolutionClosed += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (OnCloseCombine));
+			ProjectService.SolutionOpened += new EventHandler<SolutionEventArgs> (OnOpenCombine);
+			ProjectService.SolutionClosed += new EventHandler<SolutionEventArgs> (OnCloseCombine);
 			Runtime.Properties.PropertyChanged += (PropertyEventHandler) Services.DispatchService.GuiDispatch (new PropertyEventHandler (TrackPropertyChange));
 		}
 		

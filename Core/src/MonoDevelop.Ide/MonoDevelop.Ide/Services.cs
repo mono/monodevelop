@@ -22,7 +22,7 @@ namespace MonoDevelop.Ide
 		static IDocumentationService documentationService;
 		static IDebuggingService debuggingService;
 		static TaskService taskService;
-		static IParserService parserService;
+//		static IParserService parserService;
 		static DispatchService dispatchService;
 	
 		public static IStatusBarService StatusBar {
@@ -89,13 +89,13 @@ namespace MonoDevelop.Ide
 			}
 		}
 	
-		public static IParserService ParserService {
+/*		public static IParserService ParserService {
 			get {
 				if (parserService == null)
 					parserService = (IParserService) ServiceManager.GetService (typeof(IParserService));
 				return parserService;
 			}
-		}
+		}*/
 	
 		public static DispatchService DispatchService {
 			get {

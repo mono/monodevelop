@@ -40,8 +40,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			fb.DirectoryChangedEvent += new DirectoryChangedEventHandler (OnDirChanged);
 			filelister.RowActivated += new Gtk.RowActivatedHandler (FileSelected);
-			ProjectService.SolutionOpened += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (OnCombineOpened));
-			ProjectService.SolutionClosed += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (OnCombineClosed));
+// TODO: Dispatching ?
+//			ProjectService.SolutionOpened += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (OnCombineOpened));
+//			ProjectService.SolutionClosed += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (OnCombineClosed));
+			ProjectService.SolutionOpened += new EventHandler<SolutionEventArgs> (OnCombineOpened);
+			ProjectService.SolutionClosed += new EventHandler<SolutionEventArgs> (OnCombineClosed);
 
 			Gtk.Frame treef  = new Gtk.Frame ();
 			treef.Add (fb);

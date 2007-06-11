@@ -128,9 +128,9 @@ namespace CSharpBinding
 				}
 				
 				foreach (ProjectItem item in project.Items) {
-					Console.WriteLine ("item:" + item);
-					if (item is ProjectFile) {
-						writer.WriteLine ("\"{0}\"", item.Include);
+					ProjectFile file = item as ProjectFile; 
+					if (file != null && file.FileType == FileType.Compile) {
+						writer.WriteLine ("\"{0}\"", file.FullPath);
 					}
 				}
 			} catch (Exception e) {

@@ -82,10 +82,10 @@
 	<!-- Extensions -->
 
 	<Extension path = "/Workspace/Services">
-		<Class id    = "ProjectService"
+<!--		<Class id    = "ProjectService"
 		       class = "MonoDevelop.Projects.ProjectService"/>
 		<Class id    = "ParserService"
-		       class = "MonoDevelop.Projects.Parser.DefaultParserService"/>
+		       class = "MonoDevelop.Projects.Parser.DefaultParserService"/> -->
 		<Class id    = "LanguageService"
 		       class = "MonoDevelop.Projects.LanguageService"/>
 		<Class id    = "LanguageBindingService"

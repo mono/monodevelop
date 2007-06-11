@@ -541,7 +541,7 @@ namespace MonoDevelop.Ide.Gui
 			if (fileName == null || fileName.Length == 0)
 				return false;
 			
-			if (Services.ParserService.GetParser (fileName) == null)
+			if (RefactoryService.ParserService.GetParser (fileName) == null)
 				return false;
 			
 			string text = editable.Text;

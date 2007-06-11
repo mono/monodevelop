@@ -156,7 +156,9 @@ namespace MonoDevelop.Ide.Gui
 			} catch (Exception e) {
 				error = e;
 			} finally {
-				monitor.Dispose ();
+				try {
+					monitor.Dispose ();
+				} catch (Exception) { }
 			}
 			
 			if (error != null) {

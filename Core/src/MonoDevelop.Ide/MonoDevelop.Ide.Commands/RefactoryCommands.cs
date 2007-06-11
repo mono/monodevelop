@@ -76,14 +76,15 @@ namespace MonoDevelop.Ide.Commands
 					// Look for an identifier at the cursor position
 					
 					string id = editor.SelectedText;
-					if (id.Length == 0) {
-						IExpressionFinder finder = Services.ParserService.GetExpressionFinder (editor.Name);
-						if (finder == null)
-							return;
-						id = finder.FindFullExpression (editor.Text, editor.CursorPosition).Expression;
-						if (id == null) return;
-					}
-					
+// TODO: Project Conversion
+//					if (id.Length == 0) {
+//						IExpressionFinder finder = Services.ParserService.GetExpressionFinder (editor.Name);
+//						if (finder == null)
+//							return;
+//						id = finder.FindFullExpression (editor.Text, editor.CursorPosition).Expression;
+//						if (id == null) return;
+//					}
+//					
 					ILanguageItem item = ctx.ResolveIdentifier (id, line, column, editor.Name, null);
 					ILanguageItem eitem = ctx.GetEnclosingLanguageItem (line, column, editor);
 					

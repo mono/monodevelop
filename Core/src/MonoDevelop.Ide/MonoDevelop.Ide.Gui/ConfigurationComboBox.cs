@@ -47,8 +47,12 @@ namespace MonoDevelop.Ide.Gui
 // TODO: Project Conversion
 //			onActiveConfigurationChanged = (ConfigurationEventHandler) Services.DispatchService.GuiDispatch (new ConfigurationEventHandler (OnActiveConfigurationChanged));
 //			onConfigurationsChanged = (ConfigurationEventHandler) Services.DispatchService.GuiDispatch (new ConfigurationEventHandler (OnConfigurationsChanged));
-			ProjectService.SolutionOpened += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (OpenCombine));
-			ProjectService.SolutionClosed += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (CloseCombine));
+
+// TODO: Gui Dispatch
+//			ProjectService.SolutionOpened += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (OpenCombine));
+//			ProjectService.SolutionClosed += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (CloseCombine));
+			ProjectService.SolutionOpened += new EventHandler<SolutionEventArgs> (OpenCombine);
+			ProjectService.SolutionClosed += new EventHandler<SolutionEventArgs> (CloseCombine);
 			Reset ();
 		}
 		

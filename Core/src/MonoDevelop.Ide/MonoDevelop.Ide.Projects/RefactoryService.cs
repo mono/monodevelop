@@ -53,14 +53,21 @@ namespace MonoDevelop.Ide.Projects
 	{
 		static IParserDatabase parserDatabase;
 		static CodeRefactorer  codeRefactorer;
+		static IParserService  parserService;
 		
 		public static IParserDatabase ParserDatabase {
 			get { return parserDatabase; }
 		}
 		
+		public static IParserService ParserService {
+			get { return parserService; }
+		}
+		
 		static RefactoryService()
 		{
-			parserDatabase = Services.ParserService.CreateParserDatabase ();
+			parserService = new DefaultParserService ();
+			
+			parserDatabase = ParserService.CreateParserDatabase ();
 			parserDatabase.TrackFileChanges = true;
 			parserDatabase.ParseProgressMonitorFactory = new ParseProgressMonitorFactory ();
 		}

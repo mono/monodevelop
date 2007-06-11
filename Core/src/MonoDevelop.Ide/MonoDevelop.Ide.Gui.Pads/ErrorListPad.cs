@@ -155,8 +155,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 			Services.TaskService.TaskAdded        += (TaskEventHandler) Services.DispatchService.GuiDispatch (new TaskEventHandler (TaskAdded));
 			
 			ProjectService.EndBuild       += new EventHandler<BuildEventArgs> (SelectTaskView);
-			ProjectService.SolutionOpened += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (OnCombineOpen));
-			ProjectService.SolutionClosed += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (OnCombineClosed));
+// TODO: Dispatching ?
+//			ProjectService.SolutionOpened += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (OnCombineOpen));
+//			ProjectService.SolutionClosed += (EventHandler<SolutionEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<SolutionEventArgs> (OnCombineClosed));
+			ProjectService.SolutionOpened += new EventHandler<SolutionEventArgs> (OnCombineOpen);
+			ProjectService.SolutionClosed += new EventHandler<SolutionEventArgs> (OnCombineClosed);
 			view.RowActivated            += new RowActivatedHandler (OnRowActivated);
 						
 			iconWarning = sw.RenderIcon (Gtk.Stock.DialogWarning, Gtk.IconSize.Menu, "");
