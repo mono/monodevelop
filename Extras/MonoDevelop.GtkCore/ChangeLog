@@ -1,5 +1,9 @@
 2007-06-11  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* lib/libsteticui.dll, lib/libstetic.dll: Updated from Stetic module.
+
+2007-06-11  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.GtkCore.NodeBuilders/StockIconsNodeBuilder.cs,
 	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs,
 	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: Set the import
