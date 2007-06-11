@@ -1,3 +1,7 @@
+2007-06-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.addin.xml: Show the help pad in the left by default.
+
 2007-06-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui/AbstractPadContent.cs: Removed unused property.
