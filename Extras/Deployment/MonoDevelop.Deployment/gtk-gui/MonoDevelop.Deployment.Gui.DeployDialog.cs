@@ -254,7 +254,6 @@ namespace MonoDevelop.Deployment.Gui {
             this.entryTree = new MonoDevelop.Deployment.Gui.EntrySelectionTree();
             this.entryTree.Events = ((Gdk.EventMask)(256));
             this.entryTree.Name = "entryTree";
-            this.entryTree.BorderWidth = ((uint)(0));
             this.pageSelectProject.Add(this.entryTree);
             Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.pageSelectProject[this.entryTree]));
             w13.Position = 3;
@@ -425,7 +424,6 @@ namespace MonoDevelop.Deployment.Gui {
             this.radioCreateProject = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("Save in a new Packaging Project"));
             this.radioCreateProject.CanFocus = true;
             this.radioCreateProject.Name = "radioCreateProject";
-            this.radioCreateProject.Active = true;
             this.radioCreateProject.DrawIndicator = true;
             this.radioCreateProject.UseUnderline = true;
             this.radioCreateProject.Group = new GLib.SList(System.IntPtr.Zero);

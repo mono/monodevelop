@@ -137,7 +137,6 @@ namespace MonoDevelop.Deployment.Gui {
             this.entrySelector = new MonoDevelop.Deployment.Gui.EntrySelectionTree();
             this.entrySelector.Events = ((Gdk.EventMask)(256));
             this.entrySelector.Name = "entrySelector";
-            this.entrySelector.BorderWidth = ((uint)(0));
             this.vbox4.Add(this.entrySelector);
             Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox4[this.entrySelector]));
             w8.Position = 1;
@@ -159,7 +158,6 @@ namespace MonoDevelop.Deployment.Gui {
             this.fileListView = new MonoDevelop.Deployment.DeployFileListWidget();
             this.fileListView.Events = ((Gdk.EventMask)(256));
             this.fileListView.Name = "fileListView";
-            this.fileListView.BorderWidth = ((uint)(0));
             this.pageFiles.Add(this.fileListView);
             Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.pageFiles[this.fileListView]));
             w10.Position = 0;

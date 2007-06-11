@@ -389,7 +389,6 @@
                       <widget class="MonoDevelop.Deployment.Gui.EntrySelectionTree" id="entryTree">
                         <property name="MemberName" />
                         <property name="Events">ButtonPressMask</property>
-                        <property name="BorderWidth">0</property>
                       </widget>
                       <packing>
                         <property name="Position">3</property>
@@ -623,7 +622,6 @@
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
                                 <property name="Label" translatable="yes">Save in a new Packaging Project</property>
-                                <property name="Active">True</property>
                                 <property name="DrawIndicator">True</property>
                                 <property name="HasLabel">True</property>
                                 <property name="UseUnderline">True</property>
@@ -1398,7 +1396,6 @@
                       <widget class="MonoDevelop.Deployment.Gui.EntrySelectionTree" id="entrySelector">
                         <property name="MemberName" />
                         <property name="Events">ButtonPressMask</property>
-                        <property name="BorderWidth">0</property>
                         <signal name="SelectionChanged" handler="OnEntrySelectorSelectionChanged" />
                       </widget>
                       <packing>
@@ -1430,7 +1427,6 @@
                       <widget class="MonoDevelop.Deployment.DeployFileListWidget" id="fileListView">
                         <property name="MemberName" />
                         <property name="Events">ButtonPressMask</property>
-                        <property name="BorderWidth">0</property>
                       </widget>
                       <packing>
                         <property name="Position">0</property>
