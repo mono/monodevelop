@@ -67,10 +67,7 @@ namespace MonoDevelop.Components.Commands
 		public void SetRootWindow (Gtk.Window root)
 		{
 			rootWidget = root;
-			if (rootWidget.IsRealized)
-				rootWidget.AddAccelGroup (AccelGroup);
-			else
-				rootWidget.Realized += new EventHandler (RootRealized);
+			rootWidget.AddAccelGroup (AccelGroup);
 		}
 		
 		public void Dispose ()
@@ -492,11 +489,6 @@ namespace MonoDevelop.Components.Commands
 				Gtk.AccelMap.AddEntry (path, ckey, mod);
 			}
 			return path;
-		}
-		
-		void RootRealized (object sender, EventArgs e)
-		{
-			rootWidget.AddAccelGroup (AccelGroup);
 		}
 		
 		internal Gtk.AccelGroup AccelGroup {

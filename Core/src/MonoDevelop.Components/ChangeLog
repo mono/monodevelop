@@ -1,3 +1,11 @@
+2007-06-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Components.Commands/CommandManager.cs: Setting the accel
+	  group before the main window is realized seems to work now. Notice
+	  that if the accel group is assigned after the main menu is created
+	  (which was hapening without this change), then the menu shortcuts
+	  won't work until a menu is opened.
+
 2007-06-01  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Components.mdp: Change runtime to 2.0 .
