@@ -1,5 +1,9 @@
 2007-06-11  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* lib/libsteticui.dll: One last update.
+
+2007-06-11  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* lib/libsteticui.dll, lib/libstetic.dll: Updated from Stetic module.
 
 2007-06-11  Lluis Sanchez Gual <lluis@novell.com> 
