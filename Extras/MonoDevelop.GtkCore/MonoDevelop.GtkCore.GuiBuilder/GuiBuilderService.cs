@@ -42,6 +42,7 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Deployment;
 using Mono.Cecil;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
@@ -474,6 +475,28 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			return generationResult;
 		}
+		
+		internal static string ImportFile (Project prj, string file)
+		{
+			ProjectFile pfile = prj.ProjectFiles.GetFile (file);
+			if (pfile == null) {
+				string[] files = IdeApp.ProjectOperations.AddFilesToProject (prj, new string[] { file }, prj.BaseDirectory);
+				if (files.Length == 0)
+					return null;
+				if (files [0] == null)
+					return null;
+				pfile = prj.ProjectFiles.GetFile (files[0]);
+			}
+			if (pfile.BuildAction == BuildAction.EmbedAsResource) {
+				if (!IdeApp.Services.MessageService.AskQuestion (GettextCatalog.GetString ("You are requesting the file '{0}' to be used as source for an image. However, this file is already added to the project as a resource. Are you sure you want to continue (the file will have to be removed from the resource list)?")))
+					return null;
+			}
+			pfile.BuildAction = BuildAction.FileCopy;
+			DeployProperties props = DeployService.GetDeployProperties (pfile);
+			props.UseProjectRelativePath = true;
+			return pfile.FilePath;
+		}
+		
 	}
 
 

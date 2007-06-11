@@ -46,7 +46,8 @@ namespace MonoDevelop.GtkCore
 		{
 			ArrayList list = new ArrayList ();
 			foreach (ProjectFile file in project.ProjectFiles) {
-				list.Add (new Stetic.ResourceInfo (Path.GetFileName (file.Name), file.Name));
+				if (file.BuildAction == BuildAction.EmbedAsResource)
+					list.Add (new Stetic.ResourceInfo (Path.GetFileName (file.Name), file.Name));
 			}
 			return (Stetic.ResourceInfo[]) list.ToArray (typeof(Stetic.ResourceInfo));
 		}

@@ -1,3 +1,13 @@
+2007-06-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.NodeBuilders/StockIconsNodeBuilder.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: Set the import
+	  file callback when editing project stock icons.
+	* MonoDevelop.GtkCore/ProjectResourceProvider.cs: The GetResources
+	  method only returns resource files now.
+	* lib/libsteticui.dll, lib/libstetic.dll: Updated from stetic module.
+
 2007-06-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.addin.xml,

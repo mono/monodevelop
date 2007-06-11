@@ -105,7 +105,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			designer.ComponentNameChanged += OnComponentNameChanged;
 			designer.RootComponentChanged += OnRootComponentChanged;
 			designer.ComponentTypesChanged += OnComponentTypesChanged;
-			designer.ImportFileCallback += ImportFile;
+			designer.ImportFileCallback = ImportFile;
 			
 			// Designer page
 			designerPage = new DesignerPage (designer);
@@ -210,23 +210,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		string ImportFile (string file)
 		{
-			ProjectFile pfile = gproject.Project.ProjectFiles.GetFile (file);
-			if (pfile == null) {
-				string[] files = IdeApp.ProjectOperations.AddFilesToProject (gproject.Project, new string[] { file }, gproject.Project.BaseDirectory);
-				if (files.Length == 0)
-					return null;
-				if (files [0] == null)
-					return null;
-				pfile = gproject.Project.ProjectFiles.GetFile (files[0]);
-			}
-			if (pfile.BuildAction == BuildAction.EmbedAsResource) {
-				if (!IdeApp.Services.MessageService.AskQuestion (GettextCatalog.GetString ("You are requesting the file '{0}' to be used as source for an image. However, this file is already added to the project as a resource. Are you sure you want to continue (the file will have to be removed from the resource list)?")))
-					return null;
-			}
-			pfile.BuildAction = BuildAction.FileCopy;
-			DeployProperties props = DeployService.GetDeployProperties (pfile);
-			props.UseProjectRelativePath = true;
-			return pfile.FilePath;
+			return GuiBuilderService.ImportFile (gproject.Project, file);
 		}
 		
 		void OnRootComponentChanged (object s, EventArgs args)
