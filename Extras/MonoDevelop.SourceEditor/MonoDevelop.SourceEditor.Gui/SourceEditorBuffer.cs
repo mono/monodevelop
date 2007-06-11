@@ -77,6 +77,10 @@ namespace MonoDevelop.SourceEditor.Gui
 		int highlightLine = -1;
 		bool underlineErrors = true;
 		string sourceEncoding;
+		
+		protected SourceEditorBuffer (IntPtr ptr): base (ptr)
+		{
+		}
 
 		public SourceEditorView View
 		{
