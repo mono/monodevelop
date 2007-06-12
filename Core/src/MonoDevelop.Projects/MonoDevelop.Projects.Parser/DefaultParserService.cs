@@ -862,7 +862,7 @@ namespace MonoDevelop.Projects.Parser
 					GetDatabase (re.Uri);
 				
 				project.NameChanged += new EventHandler<RenameEventArgs> (ProjectRenamed);						
-/* TODO: Project Conversion				
+/* TODO: Project Conversion	
 				project.ReferenceAddedToProject += new ProjectReferenceEventHandler (OnProjectReferencesChanged);
 				project.ReferenceRemovedFromProject += new ProjectReferenceEventHandler (OnProjectReferencesChanged);*/
 			}

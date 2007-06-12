@@ -55,6 +55,12 @@ namespace MonoDevelop.Ide.Projects.Item
 			}
 		}
 		
+		public string Name {
+			get {
+				return Path.GetFileName (Include);
+			}
+		}
+		
 		protected override string Tag {
 			get {
 				return this.FileType.ToString ();

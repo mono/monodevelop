@@ -210,6 +210,8 @@ namespace CSharpBinding.Parser
 		public ILanguageItem ResolveIdentifier (IParserContext parserContext, string id, int line, int col, string fileName, string fileContent)
 		{
 			IParseInformation parseInfo = parserContext.GetParseInformation (fileName);
+			if (parseInfo == null)
+				return null;
 			ICSharpCode.NRefactory.Parser.AST.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Parser.AST.CompilationUnit;
 			currentFile = fileName;
 			if (fileCompilationUnit == null)

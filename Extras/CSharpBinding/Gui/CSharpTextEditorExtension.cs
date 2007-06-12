@@ -235,7 +235,10 @@ namespace CSharpBinding
 		{
 			if (completionChar == '(') {
 				IParserContext pctx = GetParserContext ();
-				
+				if (pctx == null) {
+					Console.WriteLine ("Parser context == null !!!");
+					return null;
+				}
 				// Get the text from the begining of the line
 				int lin, col;
 				Editor.GetLineColumnFromPosition (Editor.CursorPosition, out lin, out col);

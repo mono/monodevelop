@@ -160,6 +160,7 @@ namespace MonoDevelop.Ide.Projects
 			}
 			set {
 				SetProperty ("Configuration", value, null, null);
+				OnConfigurationChanged (EventArgs.Empty);
 			}
 		}
 		
@@ -169,6 +170,7 @@ namespace MonoDevelop.Ide.Projects
 			}
 			set {
 				SetProperty ("Platform", value, null, null);
+				OnPlatformChanged (EventArgs.Empty);
 			}
 		}
 		
@@ -618,24 +620,38 @@ namespace MonoDevelop.Ide.Projects
 		}
 		
 		public event EventHandler<RenameEventArgs> NameChanged;
-		protected virtual void OnNameChanged(RenameEventArgs e)
+		protected virtual void OnNameChanged (RenameEventArgs e)
 		{
 			if (NameChanged != null)
 				NameChanged (this, e);
 		}
 		
 		public event EventHandler<ProjectItemEventArgs> ItemAdded;
-		protected virtual void OnItemAdded(ProjectItemEventArgs e)
+		protected virtual void OnItemAdded (ProjectItemEventArgs e)
 		{
 			if (ItemAdded != null)
 				ItemAdded (this, e);
 		}
 		
 		public event EventHandler<ProjectItemEventArgs> ItemRemoved;
-		protected virtual void OnItemRemoved(ProjectItemEventArgs e)
+		protected virtual void OnItemRemoved (ProjectItemEventArgs e)
 		{
 			if (ItemRemoved != null)
 				ItemRemoved (this, e);
+		}
+		
+		public event EventHandler ConfigurationChanged;
+		protected virtual void OnConfigurationChanged (EventArgs e)
+		{
+			if (ConfigurationChanged != null)
+				ConfigurationChanged (this, e);
+		}
+		
+		public event EventHandler PlatformChanged;
+		protected virtual void OnPlatformChanged (EventArgs e)
+		{
+			if (PlatformChanged != null)
+				PlatformChanged (this, e);
 		}
 	}
 }

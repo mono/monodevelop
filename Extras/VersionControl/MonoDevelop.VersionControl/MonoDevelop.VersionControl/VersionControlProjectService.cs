@@ -10,6 +10,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.VersionControl
@@ -50,15 +51,13 @@ namespace MonoDevelop.VersionControl
 			icon_added = MonoDevelop.Core.Gui.Services.Resources.GetIcon (Gtk.Stock.Add, Gtk.IconSize.Menu);
 			icon_controled = Gdk.Pixbuf.LoadFromResource("overlay_controled.png");
 
-// TODO: Project Conversion
-//			IdeApp.ProjectOperations.FileAddedToProject += OnFileAdded;
-//-----------------------------------------------------------------------			
+			ProjectService.FileAdded += OnFileAdded; 
+				
 			//IdeApp.ProjectOperations.FileChangedInProject += OnFileChanged;
 			//IdeApp.ProjectOperations.FileRemovedFromProject += OnFileRemoved;
 			//IdeApp.ProjectOperations.FileRenamedInProject += OnFileRenamed;
 			
-// TODO: Project Conversion
-//			IdeApp.ProjectOperations.EntryAddedToCombine += OnEntryAdded;
+			ProjectService.ItemAdded += OnEntryAdded;
 		}
 		
 		public static Gdk.Pixbuf LoadOverlayIconForStatus(VersionStatus status)
@@ -307,18 +306,17 @@ namespace MonoDevelop.VersionControl
 				NotifyFileStatusChanged (repo, args.ProjectFile.FilePath, false);
 		}
 */
-// TODO: Project Conversion
-//		static void OnFileAdded (object s, ProjectFileEventArgs args)
-//		{
-//			string path = args.ProjectFile.FilePath;
-//			Repository repo = GetRepository (args.Project);
-//			if (repo != null && repo.CanAdd (path)) {
-//				using (IProgressMonitor monitor = GetStatusMonitor ()) {
-//					repo.Add (path, false, monitor);
-//				}
-//				NotifyFileStatusChanged (repo, path, args.ProjectFile.Subtype == Subtype.Directory);
-//			}
-//		}
+		static void OnFileAdded (object s, ProjectFileEventArgs args)
+		{
+			string path = args.File.FullPath;
+			Repository repo = GetRepository (args.Project);
+			if (repo != null && repo.CanAdd (path)) {
+				using (IProgressMonitor monitor = GetStatusMonitor ()) {
+					repo.Add (path, false, monitor);
+				}
+				NotifyFileStatusChanged (repo, path, args.File.FileType == FileType.Folder);
+			}
+		}
 		
 /*		static void OnFileRemoved (object s, ProjectFileEventArgs args)
 		{
@@ -343,60 +341,60 @@ namespace MonoDevelop.VersionControl
 		}
 */
 
-//TODO: Project Conversion
-//		static void CombineEntryAddFiles (CombineEntry entry, ArrayList files)
-//		{
-//			files.Add (entry.FileName);
-//			
-//			if (entry is Project) {
-//				foreach (ProjectFile file in ((Project) entry).ProjectFiles) {
-//					if (file.Subtype != Subtype.Directory)
-//						files.Add (file.FilePath);
-//				}
+		static void CombineEntryAddFiles (IProject entry, ArrayList files)
+		{
+			files.Add (entry.FileName);
+			//if (entry is Project) {<
+				foreach (ProjectItem item in entry.Items) {
+					ProjectFile file = item as ProjectFile;
+					if (file == null) 
+						continue;
+					if (file.FileType != FileType.Folder)
+						files.Add (file.FullPath);
+				}
 //			} else if (entry is Combine) {
 //				foreach (CombineEntry ent in ((Combine) entry).Entries)
 //					CombineEntryAddFiles (ent, files);
 //			}
-//		}
+		}
 
-//TODO: Project Conversion
-//		static void OnEntryAdded (object o, CombineEntryEventArgs args)
-//		{
-//			// handles addition of solutions and projects
-//			CombineEntry parent = (CombineEntry) args.CombineEntry.ParentCombine;
-//			
-//			if (parent == null)
-//				return;
-//			
-//			Repository repo = GetRepository (parent);
-//			
-//			if (repo == null)
-//				return;
-//			
-//			CombineEntry entry = args.CombineEntry;
-//			string path = entry.BaseDirectory;
-//			
-//			if (!repo.CanAdd (path))
-//				return;
-//			
-//			// While we /could/ call repo.Add with `recursive = true', we don't
-//			// necessarily want to add files under the project/solution directory
-//			// that may not be a part of this project/solution.
-//			
-//			ArrayList files = new ArrayList ();
-//			
-//			files.Add (path);
-//			CombineEntryAddFiles (entry, files);
-//			
-//			using (IProgressMonitor monitor = GetStatusMonitor ()) {
-//				string[] paths = (string[]) files.ToArray (typeof (string));
-//				
-//				for (int i = 0; i < paths.Length; i++)
-//					repo.Add (paths[i], false, monitor);
-//			}
-//			
-//			NotifyFileStatusChanged (repo, parent.BaseDirectory, true);
-//		}
+		static void OnEntryAdded (object o, SolutionItemEventArgs args)
+		{
+			if (!(args.SolutionItem is SolutionProject)) 
+				return;
+			
+			// handles addition of solutions and projects
+			Solution parent = ProjectService.Solution;
+			
+			Repository repo = GetRepository (parent);
+			
+			if (repo == null)
+				return;
+			
+			IProject entry = ((SolutionProject)args.SolutionItem).Project;
+			string path = entry.BasePath;
+			
+			if (!repo.CanAdd (path))
+				return;
+			
+			// While we /could/ call repo.Add with `recursive = true', we don't
+			// necessarily want to add files under the project/solution directory
+			// that may not be a part of this project/solution.
+			
+			ArrayList files = new ArrayList ();
+			
+			files.Add (path);
+			CombineEntryAddFiles (entry, files);
+			
+			using (IProgressMonitor monitor = GetStatusMonitor ()) {
+				string[] paths = (string[]) files.ToArray (typeof (string));
+				
+				for (int i = 0; i < paths.Length; i++)
+					repo.Add (paths[i], false, monitor);
+			}
+			
+			NotifyFileStatusChanged (repo, Path.GetDirectoryName (parent.FileName), true);
+		}
 		
 		static IProgressMonitor GetStatusMonitor ()
 		{

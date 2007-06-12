@@ -70,8 +70,7 @@ namespace MonoDevelop.Ide.Gui
 			this.window = window;
 			window.Closed += OnClosed;
 			window.ActiveViewContentChanged += OnActiveViewContentChanged;
-// TODO:Project Conversion
-//			IdeApp.ProjectOperations.EntryRemovedFromCombine += OnEntryRemoved;
+			ProjectService.ItemRemoved += OnEntryRemoved;
 		}
 		
 		public string FileName {
@@ -350,12 +349,14 @@ namespace MonoDevelop.Ide.Gui
 			if (editorExtension != null)
 				last.Next = editor.AttachExtension (editorExtension);
 		}
-/* TODO: Project Conversion
-		void OnEntryRemoved (object sender, CombineEntryEventArgs args)
+		
+		void OnEntryRemoved (object sender, SolutionItemEventArgs args)
 		{
-			if (args.CombineEntry == window.ViewContent.Project)
+			SolutionProject project = args.SolutionItem as SolutionProject;
+			if (project != null && project.Project == window.ViewContent.Project)
 				window.ViewContent.Project = null;
-		}*/
+		}
+		
 		
 		public event EventHandler Closed;
 		public event EventHandler Saved;

@@ -63,6 +63,16 @@ namespace MonoDevelop.Ide.Projects
 			get;
 		}
 		
+		string Configuration {
+			get;
+			set;
+		}
+		
+		string Platform {
+			get;
+			set;
+		}
+		
 		void Save ();
 		
 		bool IsFileInProject (string fileName);
@@ -74,5 +84,8 @@ namespace MonoDevelop.Ide.Projects
 		event EventHandler<RenameEventArgs> NameChanged;
 		event EventHandler<ProjectItemEventArgs> ItemAdded;
 		event EventHandler<ProjectItemEventArgs> ItemRemoved;
+		
+		event EventHandler ConfigurationChanged;
+		event EventHandler PlatformChanged;
 	}
 }

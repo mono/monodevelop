@@ -26,7 +26,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-// TODO: Project Conversion ? 
 //using System;
 //using MonoDevelop.Core;
 //

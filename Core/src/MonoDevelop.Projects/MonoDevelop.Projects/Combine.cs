@@ -5,7 +5,6 @@
 //     <version value="$version"/>
 // </file>
 
-// TODO: Project Conversion ? 
 //using System;
 //using System.Xml;
 //using System.IO;

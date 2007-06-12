@@ -262,6 +262,8 @@ FILES =  \
 	MonoDevelop.Ide.Gui/Workbench.cs \
 	MonoDevelop.Ide.Gui/WorkbenchMemento.cs \
 	MonoDevelop.Ide.Gui/WorkbenchWindowCollection.cs \
+	MonoDevelop.Ide.Projects/ProjectFileEventArgs.cs \
+	MonoDevelop.Ide.Projects/ProjectFileRenamedEventArgs.cs \
 	MonoDevelop.Ide.Projects/ProjectService.cs \
 	MonoDevelop.Ide.Projects/RefactoryService.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderPanel.cs \

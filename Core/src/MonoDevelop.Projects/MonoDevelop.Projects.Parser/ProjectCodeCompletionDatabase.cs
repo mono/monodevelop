@@ -54,10 +54,10 @@ namespace MonoDevelop.Projects.Parser
 			Read ();
 			
 			UpdateFromProject ();
+			project.ItemAdded += new EventHandler<ProjectItemEventArgs> (OnFileAdded);
+			project.ItemRemoved += new EventHandler<ProjectItemEventArgs> (OnFileRemoved);
 /* TODO: Project Conversion		
 			project.FileChangedInProject   += new ProjectFileEventHandler (OnFileChanged);
-			project.FileAddedToProject     += new ProjectFileEventHandler (OnFileAdded);
-			project.FileRemovedFromProject += new ProjectFileEventHandler (OnFileRemoved);
 			project.FileRenamedInProject   += new ProjectFileRenamedEventHandler (OnFileRenamed);
 			project.Modified               += new CombineEntryEventHandler (OnProjectModified);
 */
@@ -71,10 +71,11 @@ namespace MonoDevelop.Projects.Parser
 		public override void Dispose ()
 		{
 			base.Dispose ();
+			project.ItemAdded   -= new EventHandler<ProjectItemEventArgs> (OnFileAdded);
+			project.ItemRemoved -= new EventHandler<ProjectItemEventArgs> (OnFileRemoved);
+			
 /* TODO: Project conversion
 			project.FileChangedInProject -= new ProjectFileEventHandler (OnFileChanged);
-			project.FileAddedToProject -= new ProjectFileEventHandler (OnFileAdded);
-			project.FileRemovedFromProject -= new ProjectFileEventHandler (OnFileRemoved);
 			project.FileRenamedInProject -= new ProjectFileRenamedEventHandler (OnFileRenamed);
 			project.Modified -= new CombineEntryEventHandler (OnProjectModified);
 			*/

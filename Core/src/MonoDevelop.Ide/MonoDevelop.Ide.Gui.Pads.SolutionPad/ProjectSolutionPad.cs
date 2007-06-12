@@ -112,6 +112,8 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 		void OpenButtonClicked (object sender, EventArgs e)
 		{
 			ITreeNavigator navigator = base.GetSelectedNode ();
+			if (navigator == null)
+				return;
 			FileNode fileNode = navigator.DataItem as FileNode;
 			if (fileNode != null) {
 				IdeApp.Workbench.OpenDocument (fileNode.FileName);

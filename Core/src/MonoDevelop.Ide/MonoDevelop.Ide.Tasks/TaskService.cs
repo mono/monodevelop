@@ -45,9 +45,8 @@ namespace MonoDevelop.Ide.Tasks
 			
 			ProjectService.SolutionOpened += new EventHandler<SolutionEventArgs> (ProjectServiceSolutionOpened);
 			ProjectService.SolutionClosed += new EventHandler<SolutionEventArgs> (ProjectServiceSolutionClosed);
-// TODO: Project Conversion
-//			IdeApp.ProjectOperations.FileRenamedInProject += new ProjectFileRenamedEventHandler (ProjectFileRenamed);
-//			IdeApp.ProjectOperations.FileRemovedFromProject += new ProjectFileEventHandler (ProjectFileRemoved);
+			ProjectService.FileRenamed    += new EventHandler<ProjectFileRenamedEventArgs> (ProjectFileRenamed);
+			ProjectService.FileRemoved    += new EventHandler<ProjectFileEventArgs> (ProjectFileRemoved);
 
 			Runtime.Properties.PropertyChanged += (PropertyEventHandler) Services.DispatchService.GuiDispatch (new PropertyEventHandler (OnPropertyUpdated));
 		}
@@ -152,35 +151,35 @@ namespace MonoDevelop.Ide.Tasks
 				}
 			}
 		}
-// TODO: Project Conversion.
-//		void ProjectFileRemoved (object sender, ProjectFileEventArgs e)
-//		{
-//			for (int i = 0; i < tasks.Count; ++i) {
-//				Task curTask = tasks[i];
-//				string fname = e.ProjectFile.Name;
-//				// The method GetFullPath only works if the file exists
-//				if (File.Exists (fname))
-//					fname = Path.GetFullPath (fname);
-//				if (curTask.FileName == fname) {
-//					Remove (curTask);
-//					--i;
-//				}
-//			}
-//		}
-//		
-//		void ProjectFileRenamed (object sender, ProjectFileRenamedEventArgs e)
-//		{
-//			for (int i = 0; i < tasks.Count; ++i) {
-//				Task curTask = tasks[i];
-//				if (Path.GetFullPath (curTask.FileName) == Path.GetFullPath (e.OldName)) {
-//					Remove (curTask);
-//					curTask.FileName = Path.GetFullPath (e.NewName);
-//					Add (curTask);
-//					--i;
-//				}
-//			}
-//		}
-//		
+		
+		void ProjectFileRemoved (object sender, ProjectFileEventArgs e)
+		{
+			for (int i = 0; i < tasks.Count; ++i) {
+				Task curTask = tasks[i];
+				string fname = e.File.Name;
+				// The method GetFullPath only works if the file exists
+				if (File.Exists (fname))
+					fname = Path.GetFullPath (fname);
+				if (curTask.FileName == fname) {
+					Remove (curTask);
+					--i;
+				}
+			}
+		}
+		
+		void ProjectFileRenamed (object sender, ProjectFileRenamedEventArgs e)
+		{
+			for (int i = 0; i < tasks.Count; ++i) {
+				Task curTask = tasks[i];
+				if (Path.GetFullPath (curTask.FileName) == Path.GetFullPath (e.OldName)) {
+					Remove (curTask);
+					curTask.FileName = Path.GetFullPath (e.File.Name);
+					Add (curTask);
+					--i;
+				}
+			}
+		}
+		
 		[AsyncDispatch]
 		void OnCommentTasksChanged (object sender, CommentTasksChangedEventArgs e)
 		{

@@ -76,6 +76,13 @@ namespace MonoDevelop.Ide.Projects
 		{
 			solutionFileName = fileName;
 			solution = Solution.Load (fileName);
+			solution.ItemAdded += delegate (object sender, SolutionItemEventArgs e) {
+				OnItemAdded (e);
+			};
+			solution.ItemRemoved += delegate (object sender, SolutionItemEventArgs e) {
+				OnItemRemoved (e);
+			};
+			
 			RefactoryService.ParserDatabase.Load (solution);
 			
 			ActiveProject = null;
@@ -523,45 +530,78 @@ namespace MonoDevelop.Ide.Projects
 			return null;
 		}
 		
+		public static event EventHandler<SolutionItemEventArgs> ItemAdded;
+		static void OnItemAdded (SolutionItemEventArgs e)
+		{
+			if (ItemAdded != null)
+				ItemAdded (null, e);
+		}
+		
+		public static event EventHandler<SolutionItemEventArgs> ItemRemoved;
+		static void OnItemRemoved (SolutionItemEventArgs e)
+		{
+			if (ItemRemoved != null)
+				ItemRemoved (null, e);
+		}
+		
+		public static event EventHandler<ProjectFileRenamedEventArgs> FileRenamed;
+		public static void OnFileRenamed (ProjectFileRenamedEventArgs e)
+		{
+			if (FileRenamed != null)
+				FileRenamed (null, e);
+		}
+		
+		public static event EventHandler<ProjectFileEventArgs> FileRemoved;
+		static void OnFileRemoved (ProjectFileEventArgs e)
+		{
+			if (FileRemoved != null)
+				FileRemoved (null, e);
+		}
+		
+		public static event EventHandler<ProjectFileEventArgs> FileAdded;
+		static void OnFileAdded (ProjectFileEventArgs e)
+		{
+			if (FileAdded != null)
+				FileAdded (null, e);
+		}
+		
 		public static event EventHandler<BuildEventArgs> EndBuild;
-		public static void OnEndBuild (BuildEventArgs e)
+		static void OnEndBuild (BuildEventArgs e)
 		{
 			if (EndBuild != null)
 				EndBuild (null, e);
 		}
 		
 		public static event EventHandler<BuildEventArgs> StartBuild;
-		public static void OnStartBuild (BuildEventArgs e)
+		static void OnStartBuild (BuildEventArgs e)
 		{
 			if (StartBuild != null)
 				StartBuild (null, e);
 		}
 		
-		
 		public static event EventHandler<ProjectEventArgs>  ActiveProjectChanged;
-		public static void OnActiveProjectChanged (ProjectEventArgs e)
+		static void OnActiveProjectChanged (ProjectEventArgs e)
 		{
 			if (ActiveProjectChanged != null)
 				ActiveProjectChanged (null, e);
 		}
 		
-		
 		public static event EventHandler<SolutionEventArgs> SolutionOpened;
-		public static void OnSolutionOpened (SolutionEventArgs e)
+		static void OnSolutionOpened (SolutionEventArgs e)
 		{
 			if (SolutionOpened != null)
 				SolutionOpened (null, e);
 		}
 		
 		public static event EventHandler<SolutionEventArgs> SolutionClosing;
-		public static void OnSolutionClosing (SolutionEventArgs e)
+		static void OnSolutionClosing (SolutionEventArgs e)
 		{
 			if (SolutionClosing != null)
 				SolutionClosing (null, e);
 		}
 		
 		public static event EventHandler<SolutionEventArgs> SolutionClosed;
-		public static void OnSolutionClosed (SolutionEventArgs e)
+		static void OnSolutionClosed (SolutionEventArgs e)
 		{
 			if (SolutionClosed != null)
 				SolutionClosed (null, e);
