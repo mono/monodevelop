@@ -7,7 +7,6 @@
 using System;
 
 using MonoDevelop.Ide.Projects;
-using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui;

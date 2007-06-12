@@ -1,5 +1,5 @@
 //
-// ReferenceFolderNode.cs
+// UnknownProjectItem.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -28,21 +28,26 @@
 
 using System;
 
-using MonoDevelop.Ide.Projects;
-
-namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
+namespace MonoDevelop.Ide.Projects
 {
-	public class ReferenceFolderNode
+	public class UnknownProjectItem : ProjectItem
 	{
-		SolutionProject solutionProject;
+		string itemType;
 		
-		public SolutionProject SolutionProject {
-			get { return solutionProject;}
+		public string ItemType {
+			get { return itemType; }
+			set { itemType = value; }
 		}
 		
-		public ReferenceFolderNode(SolutionProject solutionProject)
+		protected override string Tag {
+			get {
+				return itemType;
+			}
+		}
+		
+		public UnknownProjectItem(string itemType)
 		{
-			this.solutionProject = solutionProject;
+			this.ItemType = itemType;
 		}
 	}
 }

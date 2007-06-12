@@ -9,8 +9,10 @@
     <property name="MemberName" />
     <property name="Events">ButtonPressMask</property>
     <property name="Title" translatable="yes">Open File in Solution</property>
+    <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
+    <property name="HasSeparator">False</property>
     <signal name="Shown" handler="HandleShown" />
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog_VBox">
@@ -191,8 +193,10 @@
     <property name="MemberName" />
     <property name="Events">ButtonPressMask</property>
     <property name="Title" translatable="yes">Export Project</property>
+    <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
+    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog_VBox">
         <property name="MemberName" />
@@ -355,9 +359,11 @@
     <property name="MemberName" />
     <property name="Events">ButtonPressMask</property>
     <property name="Title" translatable="yes">Delete File</property>
+    <property name="WindowPosition">CenterOnParent</property>
     <property name="BorderWidth">6</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
+    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog_VBox">
         <property name="MemberName" />
@@ -507,6 +513,7 @@
     <property name="DestroyWithParent">True</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
+    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog-vbox1">
         <property name="MemberName" />
@@ -1000,8 +1007,10 @@
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog" design-size="594 443">
     <property name="MemberName" />
     <property name="Title" translatable="yes">New Project Features</property>
+    <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
+    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
         <property name="MemberName" />
@@ -1093,8 +1102,10 @@
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.RenameItemDialog" design-size="360 121">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Rename {0}</property>
+    <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
+    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
         <property name="MemberName" />
@@ -1201,6 +1212,7 @@
     <property name="MemberName" />
     <property name="Title" translatable="yes">Add new File</property>
     <property name="TypeHint">Dialog</property>
+    <property name="WindowPosition">CenterOnParent</property>
     <property name="Modal">True</property>
     <property name="Resizable">False</property>
     <property name="AllowGrow">False</property>
@@ -1208,6 +1220,7 @@
     <property name="DefaultHeight">300</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
+    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
         <property name="MemberName" />

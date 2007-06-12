@@ -1,5 +1,5 @@
 //
-// ProjectItemFactory.cs
+// IConverter.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -25,40 +25,19 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-using System;
 
-namespace MonoDevelop.Ide.Projects.Item
+using System;
+using MonoDevelop.Ide.Projects;
+
+namespace MonoDevelop.Projects.Converter
 {
-	public static class ProjectItemFactory
+	/// <summary>
+	/// Converters are used to load solutions that don't follow the solution file format.
+	/// (For example foreign projects)
+	/// </summary>
+	public class IConverter
 	{
-		public static ProjectItem Create (string itemType)
-		{
-			switch (itemType) {
-			case "Reference":
-				return new ReferenceProjectItem ();
-			case "ProjectReference":
-				return new ProjectReferenceProjectItem ();
-			case "Import":
-				return new UnknownProjectItem (itemType);
-					
-			case "None":
-			case "Compile":
-			case "EmbeddedResource":
-			case "Resource":
-			case "Content":
-			case "Folder":
-				return new ProjectFile (ProjectFile.GetFileType (itemType));
-/*
-				case "WebReferences":
-					return ;
-				case "WebReferenceUrl":
-					return ;
-				case "COMReference":
-					return ;
-*/
-			default:
-				return new UnknownProjectItem(itemType);
-			}
-		}
+		bool CanLoad (string sourceFile);
+		Solution Read (string sourceFile);
 	}
 }

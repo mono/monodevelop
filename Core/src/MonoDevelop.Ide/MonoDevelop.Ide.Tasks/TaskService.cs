@@ -16,8 +16,6 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Projects;
-using MonoDevelop.Ide.Projects;
-using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Ide.Gui;
 

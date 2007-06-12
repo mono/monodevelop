@@ -1,10 +1,10 @@
 //
-// IFileFormat.cs
+// ProjectItemFactory.cs
 //
 // Author:
-//   Lluis Sanchez Gual
+//   Mike Krüger <mkrueger@novell.com>
 //
-// Copyright (C) 2005 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -25,26 +25,40 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-
-
 using System;
-using MonoDevelop.Core;
-using System.Collections.Specialized;
 
-namespace MonoDevelop.Projects
+namespace MonoDevelop.Ide.Projects
 {
-	public interface IFileFormat
+	public static class ProjectItemFactory
 	{
-		string Name { get; }
-		string GetValidFormatName (object obj, string fileName);
-		
-		bool CanReadFile (string file);
-		bool CanWriteFile (object obj);
-		
-		void WriteFile (string file, object obj, IProgressMonitor monitor);
-		object ReadFile (string file, IProgressMonitor monitor);
-		
-		// Returns the list of files where the object is stored
-		StringCollection GetExportFiles (object obj);
+		public static ProjectItem Create (string itemType)
+		{
+			switch (itemType) {
+			case "Reference":
+				return new ReferenceProjectItem ();
+			case "ProjectReference":
+				return new ProjectReferenceProjectItem ();
+			case "Import":
+				return new UnknownProjectItem (itemType);
+					
+			case "None":
+			case "Compile":
+			case "EmbeddedResource":
+			case "Resource":
+			case "Content":
+			case "Folder":
+				return new ProjectFile (ProjectFile.GetFileType (itemType));
+/*
+				case "WebReferences":
+					return ;
+				case "WebReferenceUrl":
+					return ;
+				case "COMReference":
+					return ;
+*/
+			default:
+				return new UnknownProjectItem(itemType);
+			}
+		}
 	}
 }

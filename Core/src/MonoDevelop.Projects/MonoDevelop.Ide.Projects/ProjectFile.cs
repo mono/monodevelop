@@ -29,7 +29,7 @@
 using System;
 using System.IO;
 
-namespace MonoDevelop.Ide.Projects.Item
+namespace MonoDevelop.Ide.Projects
 {
 	public enum FileType {
 		None,

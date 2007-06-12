@@ -32,7 +32,6 @@ using System.Collections;
 using System.Text;
 
 using MonoDevelop.Ide.Projects;
-using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;

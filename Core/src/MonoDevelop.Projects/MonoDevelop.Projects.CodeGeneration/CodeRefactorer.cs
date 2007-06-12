@@ -30,7 +30,6 @@ using System;
 using System.CodeDom;
 using System.Collections;
 using MonoDevelop.Ide.Projects;
-using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Parser;
@@ -289,7 +288,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			RefactorerContext gctx = GetGeneratorContext (p);
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Refactoring project {0}", p.Name));
 			foreach (ProjectItem item in p.Items) {
-				MonoDevelop.Ide.Projects.Item.ProjectFile file = item as MonoDevelop.Ide.Projects.Item.ProjectFile;
+				ProjectFile file = item as ProjectFile;
 				if (file == null || file.FileType != FileType.Compile)
 					continue;
 				IRefactorer gen = Services.Languages.GetRefactorerForFile (file.FullPath);

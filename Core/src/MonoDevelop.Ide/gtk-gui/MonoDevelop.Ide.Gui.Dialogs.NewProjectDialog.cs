@@ -88,6 +88,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.TypeHint = ((Gdk.WindowTypeHint)(1));
             this.WindowPosition = ((Gtk.WindowPosition)(1));
             this.DestroyWithParent = true;
+            this.HasSeparator = false;
             // Internal child MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog-vbox1";
@@ -354,10 +355,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             w27.Expand = false;
             w27.Fill = false;
             // Container child vbox5.Gtk.Box+BoxChild
-            this.featureList = new MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector();
-            this.featureList.Events = ((Gdk.EventMask)(256));
-            this.featureList.Name = "featureList";
-            this.featureList.BorderWidth = ((uint)(0));
+            this.featureList = null;
             this.vbox5.Add(this.featureList);
             Gtk.Box.BoxChild w28 = ((Gtk.Box.BoxChild)(this.vbox5[this.featureList]));
             w28.Position = 1;

@@ -14,14 +14,6 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
-	MonoDevelop.Ide.Projects.Item/ItemType.cs \
-	MonoDevelop.Ide.Projects.Item/ProjectFile.cs \
-	MonoDevelop.Ide.Projects.Item/ProjectItem.cs \
-	MonoDevelop.Ide.Projects.Item/ProjectItemEventArgs.cs \
-	MonoDevelop.Ide.Projects.Item/ProjectItemFactory.cs \
-	MonoDevelop.Ide.Projects.Item/ProjectReferenceProjectItem.cs \
-	MonoDevelop.Ide.Projects.Item/ReferenceProjectItem.cs \
-	MonoDevelop.Ide.Projects.Item/UnknownProjectItem.cs \
 	MonoDevelop.Ide.Projects/AbstractBackendBinding.cs \
 	MonoDevelop.Ide.Projects/BackendBindingCodon.cs \
 	MonoDevelop.Ide.Projects/BackendBindingService.cs \
@@ -33,10 +25,17 @@ FILES =  \
 	MonoDevelop.Ide.Projects/IFileFormat.cs \
 	MonoDevelop.Ide.Projects/IProject.cs \
 	MonoDevelop.Ide.Projects/IProjectBinding.cs \
+	MonoDevelop.Ide.Projects/ItemType.cs \
 	MonoDevelop.Ide.Projects/MSBuildProject.cs \
 	MonoDevelop.Ide.Projects/NewSolutionData.cs \
 	MonoDevelop.Ide.Projects/ProjectEventArgs.cs \
+	MonoDevelop.Ide.Projects/ProjectFile.cs \
+	MonoDevelop.Ide.Projects/ProjectItem.cs \
+	MonoDevelop.Ide.Projects/ProjectItemEventArgs.cs \
+	MonoDevelop.Ide.Projects/ProjectItemFactory.cs \
 	MonoDevelop.Ide.Projects/ProjectReadHelper.cs \
+	MonoDevelop.Ide.Projects/ProjectReferenceProjectItem.cs \
+	MonoDevelop.Ide.Projects/ReferenceProjectItem.cs \
 	MonoDevelop.Ide.Projects/RenameEventArgs.cs \
 	MonoDevelop.Ide.Projects/Solution.cs \
 	MonoDevelop.Ide.Projects/SolutionEventArgs.cs \
@@ -49,6 +48,7 @@ FILES =  \
 	MonoDevelop.Ide.Projects/SolutionSection.cs \
 	MonoDevelop.Ide.Projects/StartAction.cs \
 	MonoDevelop.Ide.Projects/UnknownProject.cs \
+	MonoDevelop.Ide.Projects/UnknownProjectItem.cs \
 	MonoDevelop.Projects.Ambience/Ambience.cs \
 	MonoDevelop.Projects.Ambience/AmbienceService.cs \
 	MonoDevelop.Projects.Ambience/CodeDOMGeneratorUtility.cs \
@@ -60,6 +60,9 @@ FILES =  \
 	MonoDevelop.Projects.CodeGeneration/RefactorerContext.cs \
 	MonoDevelop.Projects.CodeGeneration/RefactorOperations.cs \
 	MonoDevelop.Projects.CodeGeneration/XmlCodeDomReader.cs \
+	MonoDevelop.Projects.Converter/CombineToSolutionConverter.cs \
+	MonoDevelop.Projects.Converter/CSharpMdp2csproj.xls \
+	MonoDevelop.Projects.Converter/IConverter.cs \
 	MonoDevelop.Projects.Documentation/IDocumentationService.cs \
 	MonoDevelop.Projects.Extensions/DataTypeCodon.cs \
 	MonoDevelop.Projects.Extensions/FileFilterCodon.cs \

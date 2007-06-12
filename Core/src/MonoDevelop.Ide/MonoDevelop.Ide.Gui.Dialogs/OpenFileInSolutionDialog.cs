@@ -35,7 +35,6 @@ using System.Threading;
 using Gdk;
 using Gtk;
 using MonoDevelop.Ide.Projects;
-using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;

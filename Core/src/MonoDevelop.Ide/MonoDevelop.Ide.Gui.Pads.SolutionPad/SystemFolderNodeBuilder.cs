@@ -37,7 +37,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Search;
-using MonoDevelop.Ide.Projects.Item;
 
 namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 {

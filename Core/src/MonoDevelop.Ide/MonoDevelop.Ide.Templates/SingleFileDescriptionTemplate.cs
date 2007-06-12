@@ -33,7 +33,6 @@ using System.Collections;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Projects;
-using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.StandardHeaders;
 

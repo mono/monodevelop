@@ -31,7 +31,6 @@ using System.Collections;
 using System.IO;
 
 using MonoDevelop.Ide.Projects;
-using MonoDevelop.Ide.Projects.Item;
 
 namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 {

@@ -10,7 +10,6 @@ using System.Collections;
 using System.IO;
 
 using MonoDevelop.Ide.Projects;
-using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 

@@ -1,5 +1,5 @@
 //
-// UnknownProjectItem.cs
+// ProjectReferenceProjectItem.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -28,26 +28,43 @@
 
 using System;
 
-namespace MonoDevelop.Ide.Projects.Item
+namespace MonoDevelop.Ide.Projects
 {
-	public class UnknownProjectItem : ProjectItem
+	public class ProjectReferenceProjectItem : ReferenceProjectItem
 	{
-		string itemType;
-		
-		public string ItemType {
-			get { return itemType; }
-			set { itemType = value; }
-		}
-		
-		protected override string Tag {
+		public string ProjectGUID {
 			get {
-				return itemType;
+				return base.GetMetadata ("Project");
+			}
+			set {
+				base.SetMetadata ("Project", value);
 			}
 		}
 		
-		public UnknownProjectItem(string itemType)
+		public string ProjectName {
+			get {
+				return base.GetMetadata ("Name");
+			}
+			set {
+				base.SetMetadata ("Name", value);
+			}
+		}
+		
+		
+		protected override string Tag {
+			get {
+				return "ReferenceProjectItem";
+			}
+		}
+		
+		public ProjectReferenceProjectItem ()
 		{
-			this.ItemType = itemType;
+		}
+		
+		public ProjectReferenceProjectItem (string include, string guid, string name) : base (include)
+		{
+			this.ProjectGUID = guid;
+			this.ProjectName = name;
 		}
 	}
 }

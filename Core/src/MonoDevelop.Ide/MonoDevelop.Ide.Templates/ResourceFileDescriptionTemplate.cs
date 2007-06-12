@@ -30,7 +30,6 @@ using System;
 using System.IO;
 using System.Xml;
 using MonoDevelop.Ide.Projects;
-using MonoDevelop.Ide.Projects.Item;
 
 namespace MonoDevelop.Ide.Templates
 {

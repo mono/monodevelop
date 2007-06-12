@@ -31,7 +31,6 @@ using System.Collections.Generic;
 
 
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Projects.Item;
 
 namespace MonoDevelop.Ide.Projects
 {

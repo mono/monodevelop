@@ -16,7 +16,6 @@ using System.Reflection;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Projects;
-using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.ProgressMonitoring;
 

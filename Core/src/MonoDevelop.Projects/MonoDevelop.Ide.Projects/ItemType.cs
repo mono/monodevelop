@@ -1,5 +1,5 @@
 //
-// ReferenceProjectItem.cs
+// ItemType.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -28,46 +28,28 @@
 
 using System;
 
-namespace MonoDevelop.Ide.Projects.Item
+namespace MonoDevelop.Ide.Projects
 {
-	public class ReferenceProjectItem : ProjectItem
+	public enum ItemType
 	{
-		public string HintPath {
-			get {
-				return base.GetMetadata ("HintPath");
-			}
-			set {
-				base.SetMetadata ("HintPath", value);
-			}
-		}
+		None,
 		
-		public bool SpecificVersion {
-			get {
-				string specificVersion = base.GetMetadata ("SpecificVersion");
-				return String.IsNullOrEmpty (specificVersion) ? false : Boolean.Parse (specificVersion);
-			}
-			set {
-				base.SetMetadata ("SpecificVersion", value.ToString ());
-			}
-		}
+		Compile,
 		
-		protected override string Tag {
-			get {
-				return "Reference";
-			}
-		}
+		Reference,
+		ProjectReference,
+		COMReference,
+		WebReferences,
+		WebReferenceUrl,
 		
-		public ReferenceProjectItem ()
-		{
-		}
+		Import,
+		EmbeddedResource,
+		Content,
+		ApplicationDefinition,
+		Page,
+		BootstrapperFile,
 		
-		public ReferenceProjectItem (string reference) : base (reference)
-		{
-		}
-		
-		public ReferenceProjectItem (string reference, string hintPath) : base (reference)
-		{
-			this.HintPath = hintPath;
-		}
+		Resource,
+		Folder
 	}
 }

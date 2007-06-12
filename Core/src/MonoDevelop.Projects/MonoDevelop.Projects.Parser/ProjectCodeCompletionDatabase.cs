@@ -32,7 +32,6 @@ using System.IO;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Projects;
-using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Projects.Parser;
 using System.Reflection;
 
@@ -144,7 +143,7 @@ namespace MonoDevelop.Projects.Parser
 			Hashtable fs = new Hashtable ();
 			foreach (ProjectItem item in project.Items)
 			{
-				MonoDevelop.Ide.Projects.Item.ProjectFile file = item as MonoDevelop.Ide.Projects.Item.ProjectFile;
+				ProjectFile file = item as ProjectFile;
 				if (file == null || file.FileType != FileType.Compile) 
 					continue;
 				if (GetFile (file.FullPath) == null) 

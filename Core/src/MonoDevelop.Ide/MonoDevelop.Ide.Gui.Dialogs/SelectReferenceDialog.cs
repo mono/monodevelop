@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 
 using MonoDevelop.Ide.Projects;
-using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Core;
 
 using Gtk;

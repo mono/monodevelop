@@ -15,7 +15,6 @@ using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Projects;
-using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui.Dialogs;

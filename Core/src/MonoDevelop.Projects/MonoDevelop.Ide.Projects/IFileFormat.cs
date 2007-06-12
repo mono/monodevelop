@@ -1,10 +1,10 @@
 //
-// ItemType.cs
+// IFileFormat.cs
 //
 // Author:
-//   Mike Krüger <mkrueger@novell.com>
+//   Lluis Sanchez Gual
 //
-// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2005 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -26,30 +26,25 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 
-namespace MonoDevelop.Ide.Projects.Item
+using System;
+using MonoDevelop.Core;
+using System.Collections.Generic;
+
+namespace MonoDevelop.Ide.Projects
 {
-	public enum ItemType
+	public interface IFileFormat
 	{
-		None,
+		string Name { get; }
+		string GetValidFormatName (object obj, string fileName);
 		
-		Compile,
+		bool CanReadFile (string file);
+		bool CanWriteFile (object obj);
 		
-		Reference,
-		ProjectReference,
-		COMReference,
-		WebReferences,
-		WebReferenceUrl,
+		void WriteFile (string file, object obj, IProgressMonitor monitor);
+		object ReadFile (string file, IProgressMonitor monitor);
 		
-		Import,
-		EmbeddedResource,
-		Content,
-		ApplicationDefinition,
-		Page,
-		BootstrapperFile,
-		
-		Resource,
-		Folder
+		// Returns the list of files where the object is stored
+		List<string> GetExportFiles (object obj);
 	}
 }

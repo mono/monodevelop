@@ -1,5 +1,5 @@
 //
-// ProjectReferenceProjectItem.cs
+// ReferenceProjectItem.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -28,43 +28,46 @@
 
 using System;
 
-namespace MonoDevelop.Ide.Projects.Item
+namespace MonoDevelop.Ide.Projects
 {
-	public class ProjectReferenceProjectItem : ReferenceProjectItem
+	public class ReferenceProjectItem : ProjectItem
 	{
-		public string ProjectGUID {
+		public string HintPath {
 			get {
-				return base.GetMetadata ("Project");
+				return base.GetMetadata ("HintPath");
 			}
 			set {
-				base.SetMetadata ("Project", value);
+				base.SetMetadata ("HintPath", value);
 			}
 		}
 		
-		public string ProjectName {
+		public bool SpecificVersion {
 			get {
-				return base.GetMetadata ("Name");
+				string specificVersion = base.GetMetadata ("SpecificVersion");
+				return String.IsNullOrEmpty (specificVersion) ? false : Boolean.Parse (specificVersion);
 			}
 			set {
-				base.SetMetadata ("Name", value);
+				base.SetMetadata ("SpecificVersion", value.ToString ());
 			}
 		}
-		
 		
 		protected override string Tag {
 			get {
-				return "ReferenceProjectItem";
+				return "Reference";
 			}
 		}
 		
-		public ProjectReferenceProjectItem ()
+		public ReferenceProjectItem ()
 		{
 		}
 		
-		public ProjectReferenceProjectItem (string include, string guid, string name) : base (include)
+		public ReferenceProjectItem (string reference) : base (reference)
 		{
-			this.ProjectGUID = guid;
-			this.ProjectName = name;
+		}
+		
+		public ReferenceProjectItem (string reference, string hintPath) : base (reference)
+		{
+			this.HintPath = hintPath;
 		}
 	}
 }

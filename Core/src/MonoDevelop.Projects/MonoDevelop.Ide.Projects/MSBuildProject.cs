@@ -36,7 +36,6 @@ using System.Xml;
 using System.Text.RegularExpressions;
 
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Projects.Item;
 
 namespace MonoDevelop.Ide.Projects
 {

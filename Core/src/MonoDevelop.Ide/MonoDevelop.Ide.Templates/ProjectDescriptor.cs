@@ -13,7 +13,6 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Reflection;
 using MonoDevelop.Ide.Projects;
-using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.ProgressMonitoring;
