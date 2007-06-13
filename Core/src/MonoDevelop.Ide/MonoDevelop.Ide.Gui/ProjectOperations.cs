@@ -1094,13 +1094,15 @@ namespace MonoDevelop.Ide.Gui
 		
 		void BuildDone (IProgressMonitor monitor, ICompilerResult result)
 		{
+			Task[] tasks = null;
+		
 			try {
 				if (result != null) {
 					lastResult = result;
 					monitor.Log.WriteLine ();
 					monitor.Log.WriteLine (GettextCatalog.GetString ("---------------------- Done ----------------------"));
 					
-					Task[] tasks = new Task [result.CompilerResults.Errors.Count];
+					tasks = new Task [result.CompilerResults.Errors.Count];
 					for (int n=0; n<tasks.Length; n++)
 						tasks [n] = new Task (null, result.CompilerResults.Errors [n]);
 
@@ -1124,6 +1126,17 @@ namespace MonoDevelop.Ide.Gui
 			}
 			finally {
 				monitor.Dispose ();
+			}
+			
+			// If there is at least an error or warning, show the error list pad.
+			if (tasks != null && tasks.Length > 0) {
+				try {
+					Pad errorsPad = IdeApp.Workbench.Pads [typeof(MonoDevelop.Ide.Gui.Pads.ErrorListPad)];
+					if ((bool) Runtime.Properties.GetProperty ("SharpDevelop.ShowTaskListAfterBuild", true)) {
+						errorsPad.Visible = true;
+						errorsPad.BringToFront ();
+					}
+				} catch {}
 			}
 		}
 		

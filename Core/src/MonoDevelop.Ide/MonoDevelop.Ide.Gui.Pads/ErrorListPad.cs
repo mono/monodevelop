@@ -152,7 +152,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			Services.TaskService.TasksCleared     += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (ShowResults));
 			Services.TaskService.TaskAdded        += (TaskEventHandler) Services.DispatchService.GuiDispatch (new TaskEventHandler (TaskAdded));
-			IdeApp.ProjectOperations.EndBuild      += new BuildEventHandler (SelectTaskView);
 			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCombineOpen));
 			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCombineClosed));
 			view.RowActivated            += new RowActivatedHandler (OnRowActivated);
@@ -168,6 +167,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 			Control.ShowAll ();
 			
 			CreateMenu ();
+
+			// Load existing tasks
+			foreach (Task t in Services.TaskService.Tasks) {
+				AddTask (t);
+			}
 		}
 
 		void LoadColumnsVisibility ()

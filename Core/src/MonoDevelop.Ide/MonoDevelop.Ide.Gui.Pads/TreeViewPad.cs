@@ -208,6 +208,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				name = Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.Pads.CustomFont", name);
 				text_render.FontDesc = Pango.FontDescription.FromString (name);
 			}
+			text_render.Ypad = 1;
 			Runtime.Properties.PropertyChanged += new PropertyEventHandler (PropertyChanged);
 			text_render.Edited += new Gtk.EditedHandler (HandleOnEdit);
 			text_render.EditingCanceled += new EventHandler (HandleOnEditCancelled);

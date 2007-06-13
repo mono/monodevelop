@@ -1,3 +1,13 @@
+2007-06-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs: Reduce spacing between rows.
+	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs,
+	  MonoDevelop.Ide.Gui/ProjectOperations.cs: Subscribing the EndBuild
+	  event in ErrorListPad to show the error list after building doesn't
+	  work anymore since pads are lazily loaded now.
+	* gtk-gui/generated.cs: Made IconLoader internal.
+	* gtk-gui/objects.xml: Updated.
+
 2007-06-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.addin.xml: Show the help pad in the left by default.
