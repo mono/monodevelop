@@ -1,3 +1,8 @@
+2007-06-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlNodeExtension.cs:
+	  Move the overlay icon one pixel up, to reduce spacing.
+
 2007-05-31  Rafael 'fumasa' Giorgetti  <fumasa@gmail.com>
 
         * MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/LibSvnClient.cs:

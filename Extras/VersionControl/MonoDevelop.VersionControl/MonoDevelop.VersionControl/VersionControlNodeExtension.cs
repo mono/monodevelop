@@ -110,7 +110,7 @@ namespace MonoDevelop.VersionControl
 			}
 			
 			int dx = 2;
-			int dy = 3;
+			int dy = 2;
 			
 			Gdk.Pixbuf res = new Gdk.Pixbuf (icon.Colorspace, icon.HasAlpha, icon.BitsPerSample, icon.Width + dx, icon.Height + dy);
 			res.Fill (0);
