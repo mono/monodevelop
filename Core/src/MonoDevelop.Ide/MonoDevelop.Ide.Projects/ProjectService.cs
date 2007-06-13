@@ -47,7 +47,6 @@ namespace MonoDevelop.Ide.Projects
 	public static class ProjectService
 	{
 		static Solution        solution;
-		static string          solutionFileName;
 		static SolutionProject activeProject;
 		static List<IConverter> converters = new List<IConverter> ();
 		
@@ -59,7 +58,7 @@ namespace MonoDevelop.Ide.Projects
 		
 		public static string SolutionFileName {
 			get {
-				return Solution != null ? solutionFileName : null;
+				return Solution != null ? Solution.FileName : null;
 			}
 		}
 		
@@ -82,7 +81,6 @@ namespace MonoDevelop.Ide.Projects
 		
 		public static IAsyncOperation OpenSolution (string fileName)
 		{
-			solutionFileName = fileName;
 			solution = null;
 			foreach (IConverter converter in converters) 
 				if (converter.CanLoad (fileName)) {
@@ -129,7 +127,7 @@ namespace MonoDevelop.Ide.Projects
 		public static void SaveSolution ()
 		{
 			if (Solution != null)
-				Solution.Save (solutionFileName);
+				Solution.Save ();
 		}
 		
 		public static bool IsSolution (string fileName)
@@ -151,14 +149,7 @@ namespace MonoDevelop.Ide.Projects
 		
 		public static SolutionProject FindProject (string name)
 		{
-			foreach (SolutionItem item in Solution.Items) {
-				SolutionProject project = item as SolutionProject;
-				if (project == null)
-					continue;
-				if (project.Name == name)
-					return project;
-			}
-			return null;
+			return Solution != null ? Solution.FindProject (name) : null;
 		}
 		
 		static IAsyncOperation currentBuildOperation = NullAsyncOperation.Success;
@@ -534,7 +525,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			MSBuildProject msProject = project as MSBuildProject;
 			if (msProject != null) 
-				return Path.GetFullPath (Path.Combine (Path.Combine (msProject.BasePath, msProject.OutputPath), msProject.OutputAssemblyFileName));
+				return Path.GetFullPath (Path.Combine (msProject.BasePath, msProject.OutputAssemblyFileName));
 			return null;
 		}
 		

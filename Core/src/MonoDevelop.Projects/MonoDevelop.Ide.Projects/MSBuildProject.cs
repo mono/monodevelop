@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.Projects
 		
 		public string OutputAssemblyFileName {
 			get {
-				return Path.Combine (this.OutputPath, this.AssemblyName + GetExtension (this.OutputType));
+				return Path.Combine (SolutionProject.NormalizePath (this.OutputPath), this.AssemblyName + GetExtension (this.OutputType));
 			}
 		}
 		

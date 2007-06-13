@@ -28,6 +28,7 @@
 
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -39,6 +40,7 @@ namespace MonoDevelop.Projects.Converter
 {
 	public class CombineToSolutionConverter : IConverter 
 	{
+		
 		public bool CanLoad (string sourceFile)
 		{
 			return Path.GetExtension (sourceFile) == ".mds";
@@ -47,21 +49,33 @@ namespace MonoDevelop.Projects.Converter
 		public Solution Read (string sourceFile)
 		{
 			Solution result = new Solution (Path.ChangeExtension (sourceFile, ".sln"));
-			ReadSolution (result, sourceFile);
+			List<ProjectReference> references = new List<ProjectReference> ();
+			ReadSolution (result, sourceFile, references);
+			
+			foreach (ProjectReference reference in references) {
+				SolutionProject project = result.FindProject (reference.ProjectName);
+				if (project != null) {
+					// TODO: correct location
+					reference.Project.Add (new ProjectReferenceProjectItem (project.Project.FileName, 
+					                                                        project.Guid, 
+					                                                        project.Name));
+				}
+			}
+			
 			return result;
 		}
 		
 		static Regex entryLinePattern = new Regex("<Entry\\s*filename=\\s*\"(?<File>.*)\"\\s*/>", RegexOptions.Compiled);
-		void ReadSolution (Solution solution, string sourceFile)
+		void ReadSolution (Solution solution, string sourceFile, List<ProjectReference> references)
 		{
 			string sourcePath = Path.GetDirectoryName (sourceFile);
 			string content = File.ReadAllText (sourceFile);
 			foreach (Match match in entryLinePattern.Matches (content)) {
 				string fileName = Path.GetFullPath (Path.Combine (sourcePath, match.Result("${File}")));
 				if (Path.GetExtension (fileName) == ".mds")
-					ReadSolution (solution, fileName);
+					ReadSolution (solution, fileName, references);
 				else if (Path.GetExtension (fileName) == ".mdp") 
-					solution.AddItem (ReadProject (fileName));
+					solution.AddItem (ReadProject (fileName, references));
 			}
 		}
 		
@@ -108,7 +122,25 @@ namespace MonoDevelop.Projects.Converter
 			return result;
 		}
 		
-		SolutionProject ReadProject (string sourceFile)
+		class ProjectReference {
+			IProject project;
+			string   projectName;
+			
+			public IProject Project {
+				get { return project; }
+			}
+			public string ProjectName {
+				get { return projectName; }
+			}
+			
+			public ProjectReference (IProject project, string projectName)
+			{
+				this.project     = project;
+				this.projectName = projectName;
+			}
+		}
+		
+		SolutionProject ReadProject (string sourceFile, List<ProjectReference> references)
 		{
 			XmlDocument doc = new XmlDocument ();
 			doc.Load (sourceFile);
@@ -122,31 +154,58 @@ namespace MonoDevelop.Projects.Converter
 			MSBuildProject project = new MSBuildProject (language, Path.ChangeExtension (sourceFile, GetExtension (language)));
 			project.Configuration = "Debug";
 			project.Platform      = "AnyCpu";
-			XmlElement debug = doc.DocumentElement.SelectSingleNode (@"/Project/Configurations/Configuration[name=Debug]") as XmlElement;
+			XmlElement debug = doc.DocumentElement.SelectSingleNode (@"/Project/Configurations/Configuration") as XmlElement;
 			if (debug != null) {
-				project.OutputPath = ConvertPath (debug["Output"].GetAttribute ("directory"));
-				project.OutputType = debug["Build"].GetAttribute ("target");
+				project.OutputPath   = ConvertPath (debug["Output"].GetAttribute ("directory"));
+				project.AssemblyName = debug["Output"].GetAttribute ("assembly");
+				project.OutputType   = debug["Build"].GetAttribute ("target");
 			} else {
-				project.OutputPath = "bin\\debug";
-				project.OutputType = "Exe";
+				project.OutputPath   = "bin\\debug";
+				project.AssemblyName = "a";
+				project.OutputType   = "Exe";
 			}
 			
 			XmlNode contents = doc.DocumentElement.SelectSingleNode ("/Project/Contents");
-			foreach (XmlNode node in contents.ChildNodes) {
-				XmlElement el = node as XmlElement;
-				if (el == null)
-					continue;
-				string name        = ConvertPath (el.GetAttribute ("name"));
-				string buildaction = el.GetAttribute ("buildaction");
-				if (buildaction == "Exclude")
-					continue;
-				ProjectFile newFile = new ProjectFile (name, GetFileType (buildaction));
-				if (buildaction == "FileCopy")
-					newFile.CopyToOutputDirectory = bool.TrueString;
-				project.Add (newFile);
-			}
+			if (contents != null)
+				foreach (XmlNode node in contents.ChildNodes) {
+					XmlElement el = node as XmlElement;
+					if (el == null)
+						continue;
+					string name        = ConvertPath (el.GetAttribute ("name"));
+					string buildaction = el.GetAttribute ("buildaction");
+					if (buildaction == "Exclude")
+						continue;
+					ProjectFile newFile = new ProjectFile (name, GetFileType (buildaction));
+					if (buildaction == "FileCopy")
+						newFile.CopyToOutputDirectory = bool.TrueString;
+					project.Add (newFile);
+				}
+			
+			XmlNode reference = doc.DocumentElement.SelectSingleNode ("/Project/References");
+			if (reference != null)
+				foreach (XmlNode node in reference.ChildNodes) {
+					XmlElement el = node as XmlElement;
+					if (el == null)
+						continue;
+					string type  = el.GetAttribute ("type");
+					string refto = el.GetAttribute ("refto");
+					switch (type) {
+					case "Assembly":
+						project.Add (new ReferenceProjectItem (Path.GetFileNameWithoutExtension (refto), refto));
+						break;
+					case "Project":
+						references.Add (new ProjectReference (project, refto));
+						break;
+					case "Gac":
+						string gacReference = refto;
+						if (gacReference.IndexOf (",") > 0)
+							gacReference = gacReference.Substring (0, gacReference.IndexOf (","));  
+						project.Add (new ReferenceProjectItem (gacReference));
+						break;
+					}
+				}
+			
 			result.Project = project;
-			Console.WriteLine ("gen. prj:" + result + " -- " + result.Project + " -- " + result.Project.Items.Count);
 			return result;
 		}
 	}

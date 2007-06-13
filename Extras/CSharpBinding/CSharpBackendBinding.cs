@@ -103,17 +103,29 @@ namespace CSharpBinding
 					writer.WriteLine ("/d:{0}", project.DefineConstants);
 				
 				string assemblyName = project.AssemblyName + MSBuildProject.GetExtension (project.OutputType);
-				if (String.IsNullOrEmpty (project.OutputPath)) {
-					writer.WriteLine ("\"/out:{0}\"", assemblyName);
-				} else {
-					string path = SolutionProject.NormalizePath (project.OutputPath);
-					if (!Directory.Exists (Path.Combine (project.BasePath, path))) {
-						Directory.CreateDirectory (Path.Combine (project.BasePath, path));
-					}
-					writer.WriteLine ("\"/out:{0}\"", Path.Combine(path, assemblyName));
+				if (!String.IsNullOrEmpty (project.OutputPath)) {
+					assemblyName = Path.Combine(SolutionProject.NormalizePath (project.OutputPath), assemblyName);
 				}
 				
+				if (!Path.IsPathRooted (assemblyName))
+					assemblyName = Path.Combine (prj.BasePath, assemblyName);
+				
+				if (!Directory.Exists (Path.GetDirectoryName (assemblyName))) {
+					Directory.CreateDirectory (Path.GetDirectoryName (assemblyName));
+				}
+				
+				writer.WriteLine ("\"/out:{0}\"", assemblyName);
+				
 				foreach (ProjectItem item in project.Items) {
+					ProjectReferenceProjectItem projectReferenceItem = item as ProjectReferenceProjectItem;
+					if (projectReferenceItem != null) {
+						SolutionProject solutionProject = ProjectService.FindProject (projectReferenceItem.ProjectName);
+						if (solutionProject != null) {
+							writer.WriteLine ("\"/r:{0}\"", ProjectService.GetOutputFileName (solutionProject.Project));
+						}
+						continue;
+					}
+					
 					ReferenceProjectItem referenceItem = item as ReferenceProjectItem;
 					if (referenceItem != null) {
 						string reference = referenceItem.Include;

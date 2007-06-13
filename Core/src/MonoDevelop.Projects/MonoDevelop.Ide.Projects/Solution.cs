@@ -197,9 +197,13 @@ namespace MonoDevelop.Ide.Projects
 				return result;
 			}
 		}
-		
+		public void Save ()
+		{
+			this.Save (this.FileName);
+		}
 		public void Save (string fileName)
 		{
+			this.fileName = fileName;
 			using (StreamWriter writer = new StreamWriter(fileName, false, Encoding.UTF8)) {
 				writer.WriteLine ();
 				writer.WriteLine ("#Microsoft Visual Studio Solution File, Format Version " + versionNumber);
@@ -216,6 +220,17 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 #endregion
+		
+		public SolutionProject FindProject (string name)
+		{
+			foreach (SolutionItem item in this.Items) {
+				SolutionProject project = item as SolutionProject;
+				if (project != null && project.Name == name)
+					return project;
+			}
+			return null;
+		}
+		
 		
 		public event EventHandler<SolutionItemEventArgs> ItemAdded;
 		protected virtual void OnItemAdded (SolutionItemEventArgs e)
