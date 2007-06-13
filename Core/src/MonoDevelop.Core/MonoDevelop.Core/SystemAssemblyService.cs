@@ -223,6 +223,9 @@ namespace MonoDevelop.Core
 			if (assemblyFullNameToPath.ContainsKey (assemblyName))
 				return assemblyName;
 
+			if (File.Exists (assemblyName)) {
+				return AssemblyName.GetAssemblyName (assemblyName).FullName;
+			}
 			AssemblyLocator locator = (AssemblyLocator) Runtime.ProcessService.CreateExternalProcessObject (typeof(AssemblyLocator), true);
 			using (locator) {
 				return locator.GetFullName (assemblyName);

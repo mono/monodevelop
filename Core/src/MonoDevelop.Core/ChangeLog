@@ -1,3 +1,8 @@
+2007-06-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core/SystemAssemblyService.cs: In GetAssemblyFullName,
+	  use AssemblyName.GetAssemblyName if the provided name is a file.
+
 2007-06-07  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Core/FileService.cs (NormalizeRelativePath): Moved from
