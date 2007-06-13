@@ -1,3 +1,8 @@
+2007-06-13  Wade Berrier  <wberrier@novell.com>
+
+	* ja_JP.po: rename to ja.po
+	(/usr/share/locale/ja_JP isn't typically used)
+
 2007-06-11  Ankit Jain  <jankit@novell.com>
 
 	* es.po: Update Spanish translation by Andrés G. Aragoneses.
