@@ -201,7 +201,7 @@ namespace MonoDevelop.Core
 
 			fullName = NormalizeAsmName (fullName);
 			SystemPackage package = GetPackageFromFullName (fullName);
-			if (package == null || !package.IsCorePackage)
+			if (package == null || !package.IsCorePackage || package.TargetVersion == targetVersion)
 				return fullName;
 			
 			string fname = Path.GetFileName ((string) assemblyFullNameToPath [fullName]);

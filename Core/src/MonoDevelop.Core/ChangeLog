@@ -1,3 +1,8 @@
+2007-06-14  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Core/SystemAssemblyService.cs (GetAssemblyNameForVersion):
+	Return fullname if its ClrVersion matches the target version.
+
 2007-06-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core/SystemAssemblyService.cs: In GetAssemblyFullName,
