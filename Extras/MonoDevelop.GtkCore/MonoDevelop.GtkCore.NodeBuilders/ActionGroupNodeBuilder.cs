@@ -34,7 +34,6 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.GtkCore.GuiBuilder;
 using MonoDevelop.GtkCore.Dialogs;
 using MonoDevelop.Ide.Projects;
-using MonoDevelop.Ide.Projects.Item;
 
 namespace MonoDevelop.GtkCore.NodeBuilders
 {

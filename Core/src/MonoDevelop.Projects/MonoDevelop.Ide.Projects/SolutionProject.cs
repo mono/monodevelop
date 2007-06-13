@@ -47,6 +47,9 @@ namespace MonoDevelop.Ide.Projects
 			get {
 				return project;
 			}
+			set {
+				this.project = value;
+			}
 		}
 		
 		public SolutionProject (string typeGuid, string guid, string name, string location) : base (guid, name, location)

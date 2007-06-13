@@ -1,5 +1,5 @@
 //
-// IConverter.cs
+// ProjectFileRenamedEventArgs.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -27,17 +27,19 @@
 //
 
 using System;
-using MonoDevelop.Ide.Projects;
 
-namespace MonoDevelop.Projects.Converter
+namespace MonoDevelop.Ide.Projects
 {
-	/// <summary>
-	/// Converters are used to load solutions that don't follow the solution file format.
-	/// (For example foreign projects)
-	/// </summary>
-	public interface IConverter
+	public class ProjectFileRenamedEventArgs : ProjectFileEventArgs
 	{
-		bool CanLoad (string sourceFile);
-		Solution Read (string sourceFile);
+		string oldName;
+		
+		public string OldName {
+			get { return oldName; }
+		}
+		
+		public ProjectFileRenamedEventArgs (IProject project, ProjectFile file, string oldName) : base (project, file)
+		{
+		}
 	}
 }

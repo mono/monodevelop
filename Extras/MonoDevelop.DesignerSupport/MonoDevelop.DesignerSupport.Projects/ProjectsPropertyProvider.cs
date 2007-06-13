@@ -2,7 +2,6 @@
 using System;
 using System.ComponentModel;
 using MonoDevelop.Ide.Projects;
-using MonoDevelop.Ide.Projects.Item;
 
 namespace MonoDevelop.DesignerSupport.Projects
 {

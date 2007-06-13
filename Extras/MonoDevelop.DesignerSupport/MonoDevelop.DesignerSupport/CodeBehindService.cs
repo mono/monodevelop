@@ -36,7 +36,6 @@ using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.DesignerSupport.CodeBehind;
 using MonoDevelop.Ide.Projects;
-using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Ide.Gui;
 

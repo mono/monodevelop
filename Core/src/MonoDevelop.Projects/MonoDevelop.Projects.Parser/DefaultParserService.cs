@@ -962,8 +962,9 @@ namespace MonoDevelop.Projects.Parser
 		
 		void LoadCombineDatabases (Solution combine)
 		{
-			foreach (IProject entry in combine.AllProjects)
+			foreach (IProject entry in combine.AllProjects) {
 				Load (entry);
+			}
 
 			combine.ItemAdded += OnCombineEntryAdded;
 			combine.ItemRemoved += OnCombineEntryRemoved;

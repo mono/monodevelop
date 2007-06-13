@@ -93,6 +93,8 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 				return;
 			
 			string basePath = solutionProject.Project.BasePath;
+			Console.WriteLine ("base path: " + basePath);
+			
 			ctx.AddChild (new ReferenceFolderNode (solutionProject));
 			
 			foreach (string fileName in Directory.GetFiles(basePath)) {

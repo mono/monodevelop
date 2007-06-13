@@ -35,7 +35,6 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Projects;
-using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Projects.Parser;
 
 namespace MonoDevelop.DesignerSupport.CodeBehind

@@ -31,7 +31,8 @@ using System;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-
+using System.Xml;
+using System.Xml.XPath;
 using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.Projects.Converter
@@ -42,7 +43,6 @@ namespace MonoDevelop.Projects.Converter
 		{
 			return Path.GetExtension (sourceFile) == ".mds";
 		}
-		static Regex entryLinePattern = new Regex("<Entry\s+filename=\"(?<File>.*)\"", RegexOptions.Compiled);
 	
 		public Solution Read (string sourceFile)
 		{
@@ -51,29 +51,102 @@ namespace MonoDevelop.Projects.Converter
 			return result;
 		}
 		
+		static Regex entryLinePattern = new Regex("<Entry\\s*filename=\\s*\"(?<File>.*)\"\\s*/>", RegexOptions.Compiled);
 		void ReadSolution (Solution solution, string sourceFile)
 		{
 			string sourcePath = Path.GetDirectoryName (sourceFile);
 			string content = File.ReadAllText (sourceFile);
-			Match match = combineLinePattern.Match (content);
-			while (match.Success) {
+			foreach (Match match in entryLinePattern.Matches (content)) {
 				string fileName = Path.GetFullPath (Path.Combine (sourcePath, match.Result("${File}")));
 				if (Path.GetExtension (fileName) == ".mds")
-					ReadSolution (result, fileName);
+					ReadSolution (solution, fileName);
 				else if (Path.GetExtension (fileName) == ".mdp") 
-					result.AddItem (ReadProject (fileName));
-				
-				match = match.NextMatch();
+					solution.AddItem (ReadProject (fileName));
 			}
+		}
+		
+		string GetGUID (string language)
+		{
+			switch (language) {
+			case "C#":
+				return "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}";
+			}
+			return "{00000000-0000-0000-0000-000000000000}";
+		}
+		
+		string GetExtension (string language)
+		{
+			switch (language) {
+			case "C#":
+				return ".csproj";
+			}
+			return ".unknown";
+		}
+		FileType GetFileType (string buildaction)
+		{
+			switch (buildaction) {
+			case "Nothing":
+				return FileType.None;
+			case "Compile":
+				return FileType.Compile;
+			case "EmbedAsResource":
+				return FileType.EmbeddedResource;
+			case "FileCopy":
+				return FileType.None;
+				
+			}
+			return FileType.None;
+		}
+		
+		static string ConvertPath (string path)
+		{
+			if (path == null)
+				return null;
+			string result = path.Replace ('/', '\\');
+			if (result.StartsWith (".\\"))
+				result = result.Substring (2);
+			return result;
 		}
 		
 		SolutionProject ReadProject (string sourceFile)
 		{
-			SolutionProject result = new SolutionProject ("todo", 
-			                                              "{" + Guid.NewGuid () + "}", 
+			XmlDocument doc = new XmlDocument ();
+			doc.Load (sourceFile);
+			string version  = doc.DocumentElement.GetAttribute ("fileversion");
+			string language = doc.DocumentElement.GetAttribute ("language");
+			
+			SolutionProject result = new SolutionProject (GetGUID (language), 
+			                                              "{" + Guid.NewGuid ().ToString ().ToUpper () + "}", 
 			                                              Path.GetFileNameWithoutExtension (sourceFile),
 			                                              sourceFile);
+			MSBuildProject project = new MSBuildProject (language, Path.ChangeExtension (sourceFile, GetExtension (language)));
+			project.Configuration = "Debug";
+			project.Platform      = "AnyCpu";
+			XmlElement debug = doc.DocumentElement.SelectSingleNode (@"/Project/Configurations/Configuration[name=Debug]") as XmlElement;
+			if (debug != null) {
+				project.OutputPath = ConvertPath (debug["Output"].GetAttribute ("directory"));
+				project.OutputType = debug["Build"].GetAttribute ("target");
+			} else {
+				project.OutputPath = "bin\\debug";
+				project.OutputType = "Exe";
+			}
 			
+			XmlNode contents = doc.DocumentElement.SelectSingleNode ("/Project/Contents");
+			foreach (XmlNode node in contents.ChildNodes) {
+				XmlElement el = node as XmlElement;
+				if (el == null)
+					continue;
+				string name        = ConvertPath (el.GetAttribute ("name"));
+				string buildaction = el.GetAttribute ("buildaction");
+				if (buildaction == "Exclude")
+					continue;
+				ProjectFile newFile = new ProjectFile (name, GetFileType (buildaction));
+				if (buildaction == "FileCopy")
+					newFile.CopyToOutputDirectory = bool.TrueString;
+				project.Add (newFile);
+			}
+			result.Project = project;
+			Console.WriteLine ("gen. prj:" + result + " -- " + result.Project + " -- " + result.Project.Items.Count);
 			return result;
 		}
 	}

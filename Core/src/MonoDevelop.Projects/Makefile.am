@@ -61,7 +61,6 @@ FILES =  \
 	MonoDevelop.Projects.CodeGeneration/RefactorOperations.cs \
 	MonoDevelop.Projects.CodeGeneration/XmlCodeDomReader.cs \
 	MonoDevelop.Projects.Converter/CombineToSolutionConverter.cs \
-	MonoDevelop.Projects.Converter/CSharpMdp2csproj.xls \
 	MonoDevelop.Projects.Converter/IConverter.cs \
 	MonoDevelop.Projects.Documentation/IDocumentationService.cs \
 	MonoDevelop.Projects.Extensions/DataTypeCodon.cs \

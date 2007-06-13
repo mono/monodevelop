@@ -267,10 +267,8 @@
     <File name="./MonoDevelop.Ide.Projects/ReferenceProjectItem.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Projects/UnknownProjectItem.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Extensions/FileFormatCodon.cs" subtype="Code" buildaction="Exclude" />
-    <File name="./MonoDevelop.Projects.Converter" subtype="Directory" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Converter/IConverter.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Converter/CombineToSolutionConverter.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Converter/CSharpMdp2csproj.xls" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />

@@ -8,7 +8,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Pads.SolutionViewPad;
 using MonoDevelop.Ide.Projects;
-using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.WebReferences.Dialogs;
 
 namespace MonoDevelop.WebReferences.Commands

@@ -35,7 +35,6 @@ using System.Text.RegularExpressions;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.Projects;
-using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 
@@ -129,7 +128,10 @@ namespace CSharpBinding
 				
 				foreach (ProjectItem item in project.Items) {
 					ProjectFile file = item as ProjectFile; 
-					if (file != null && file.FileType == FileType.Compile) {
+					if (file == null)
+						continue;
+					Console.WriteLine ("File: " + file + " typ : " + file.FileType);
+					if (file.FileType == FileType.Compile) {
 						writer.WriteLine ("\"{0}\"", file.FullPath);
 					}
 				}

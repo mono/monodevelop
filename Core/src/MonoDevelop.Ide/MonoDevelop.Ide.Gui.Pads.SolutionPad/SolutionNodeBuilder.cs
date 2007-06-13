@@ -92,6 +92,8 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 			if (solution != null) {
 				foreach (SolutionItem item in solution.Items) {
 					if (item.Parent == null) { 
+						Console.WriteLine ("add :" + item);
+						
 						ctx.AddChild (item);
 					}
 				}

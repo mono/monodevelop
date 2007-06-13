@@ -40,6 +40,7 @@ using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Projects.Converter;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -48,6 +49,7 @@ namespace MonoDevelop.Ide.Projects
 		static Solution        solution;
 		static string          solutionFileName;
 		static SolutionProject activeProject;
+		static List<IConverter> converters = new List<IConverter> ();
 		
 		public static Solution Solution {
 			get {
@@ -72,10 +74,24 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 		
+		static ProjectService ()
+		{
+			// TODO: Read the converters through the addin tree.
+			converters.Add (new CombineToSolutionConverter ());
+		}
+		
 		public static IAsyncOperation OpenSolution (string fileName)
 		{
 			solutionFileName = fileName;
-			solution = Solution.Load (fileName);
+			solution = null;
+			foreach (IConverter converter in converters) 
+				if (converter.CanLoad (fileName)) {
+					solution = converter.Read (fileName);
+					break;
+				}
+			if (solution == null)
+				solution = Solution.Load (fileName);
+			
 			solution.ItemAdded += delegate (object sender, SolutionItemEventArgs e) {
 				OnItemAdded (e);
 			};
@@ -118,6 +134,9 @@ namespace MonoDevelop.Ide.Projects
 		
 		public static bool IsSolution (string fileName)
 		{
+			foreach (IConverter converter in converters) 
+				if (converter.CanLoad (fileName))
+					return true;
 			return Path.GetExtension (fileName) == ".sln";
 		}
 		

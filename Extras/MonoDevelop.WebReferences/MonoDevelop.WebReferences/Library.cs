@@ -7,8 +7,6 @@ using System.Web.Services.Discovery;
 using System.Xml;
 using System.Xml.Schema;
 using MonoDevelop.Ide.Projects;
-using MonoDevelop.Ide.Projects.Item;
-
 
 namespace MonoDevelop.WebReferences
 {
