@@ -1,3 +1,10 @@
+2007-06-13  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs
+	(ProjectOptionsCommands): Remove, unused.
+	(SetSelectedConfigurationAsStartup): Remove. Active configuration cannot
+	be set for a project by the user.
+
 2007-06-07  Ankit Jain  <jankit@novell.com>
 
 	Fixes bug#81820.

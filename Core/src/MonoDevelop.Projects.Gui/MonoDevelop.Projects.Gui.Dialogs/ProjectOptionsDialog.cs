@@ -18,14 +18,6 @@ using MonoDevelop.Core.Gui.Dialogs;
 
 namespace MonoDevelop.Projects.Gui.Dialogs {
 
-	internal enum ProjectOptionsCommands
-	{
-		AddProjectConfiguration,
-		RenameProjectConfiguration,
-		RemoveProjectConfiguration,
-		SetActiveProjectConfiguration
-	}
-
 	/// <summary>
 	/// Dialog for viewing the project options (plain treeview isn't good enough :/)
 	/// </summary>
@@ -193,20 +185,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs {
 			}
 		}
 		
-		[CommandHandler ("SetActiveConfiguration")]
-		public void SetSelectedConfigurationAsStartup()
-		{
-			Gtk.TreeModel mdl;
-			Gtk.TreeIter  iter;
-			if (TreeView.Selection.GetSelected (out mdl, out iter)) {					
-				IConfiguration config = (IConfiguration) mdl.GetValue(iter, 1);	
-				if (config != null) {
-					project.ActiveConfiguration = config;
-					UpdateBoldConfigurationNode();
-				}
-			}
-		}
-		
 		[CommandHandler ("RenameConfiguration")]
 		public void RenameProjectConfiguration()
 		{
@@ -316,7 +294,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs {
 						cset.Add (new LocalCommandEntry ("RenameConfiguration", GettextCatalog.GetString ("Rename")));
 						cset.Add (new LocalCommandEntry ("RemoveConfiguration", GettextCatalog.GetString ("Remove")));
 						cset.Add (new CommandEntry (Command.Separator));
-						cset.Add (new LocalCommandEntry ("SetActiveConfiguration", GettextCatalog.GetString ("Set as active")));
 						CommandManager.ShowContextMenu (cset);
 					}
 				}
