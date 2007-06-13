@@ -1,3 +1,10 @@
+2007-06-14  Ankit Jain  <jankit@novell.com>
+
+	* MakefileData.cs (PkgManagerTable): New. A global table to keep weak
+	references to ConfiguredPackagesManager objects.
+	(UpdateProject): Use the new PkgManagerTable.
+	(ConfiguredPackagesManager.LastWriteTime): New.
+
 2007-06-07  Ankit Jain  <jankit@novell.com>
 
 	* AutotoolsContext.cs (NormalizeRelativePath): Moved to Runtime.FileService .

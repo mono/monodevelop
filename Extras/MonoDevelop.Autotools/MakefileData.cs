@@ -597,6 +597,19 @@ namespace MonoDevelop.Autotools
 			}
 		}
 
+		// Global table for keeping weak references to ConfiguredPackagesManager objects,
+		// one per configure.in file. A strong reference to the object is kept in
+		// every project's ExtendedProperties, this ensures that it won't get collected
+		// too early.
+		static Dictionary<string, WeakReference> pkgManagerTable = null;
+		static Dictionary<string, WeakReference> PkgManagerTable {
+			get {
+				if (pkgManagerTable == null)
+					pkgManagerTable = new Dictionary<string, WeakReference> ();
+				return pkgManagerTable;
+			}
+		}
+
 		//use events.. 
 		public void UpdateProject (IProgressMonitor monitor, bool promptForRemoval)
 		{
@@ -636,8 +649,27 @@ namespace MonoDevelop.Autotools
 			encodeValues = null;
 
 			try {
-				if (IsAutotoolsProject)
-					configuredPackages = new ConfiguredPackagesManager (Path.Combine (AbsoluteConfigureInPath, "configure.in"));
+				if (IsAutotoolsProject) {
+					string path = Path.Combine (AbsoluteConfigureInPath, "configure.in");
+					configuredPackages = null;
+					WeakReference weakref;
+					if (PkgManagerTable.TryGetValue (path, out weakref)) {
+						if (weakref.IsAlive) {
+							configuredPackages = (ConfiguredPackagesManager) weakref.Target;
+							FileInfo finfo = new FileInfo (path);
+							if (finfo.LastWriteTime > configuredPackages.LastWriteTime)
+								// file has changed since last time we parsed it!
+								configuredPackages = null;
+						}
+					}
+
+					// no entry in table or it got collected or file has changed
+					if (configuredPackages == null) {
+						configuredPackages = new ConfiguredPackagesManager (path);
+						PkgManagerTable [path] = new WeakReference (configuredPackages);
+						ownerProject.ExtendedProperties ["MonoDevelop.Autotools.ConfiguredPackagesManager"] = configuredPackages;
+					}
+				}
 			} catch (Exception e) {
 				Console.WriteLine (String.Format (
 					"Error trying to read configure.in : {0} for project {1} : {2} ",
@@ -1557,6 +1589,7 @@ namespace MonoDevelop.Autotools
 		Dictionary<string, string> varNameAcSubst;
 
 		string fullpath;
+		DateTime lastWriteTime;
 
 		public ConfiguredPackagesManager (string fullpath)
 		{
@@ -1566,6 +1599,8 @@ namespace MonoDevelop.Autotools
 				//FIXME: Exception type?
 				throw new ArgumentException (GettextCatalog.GetString ("Unable to find configure.in at {0}", fullpath));
 
+			FileInfo finfo = new FileInfo (fullpath);
+			lastWriteTime = finfo.LastWriteTime;
 			ReadPackagesList ();
 		}
 
@@ -1645,6 +1680,10 @@ namespace MonoDevelop.Autotools
 					varNameAcSubst [s] = s;
 				}
 			}
+		}
+
+		public DateTime LastWriteTime {
+			get { return lastWriteTime; }
 		}
 
 		static Regex pkgCheckModulesRegex = null;
