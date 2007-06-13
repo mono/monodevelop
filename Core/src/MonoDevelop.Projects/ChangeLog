@@ -1,3 +1,9 @@
+2007-06-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs: Read
+	  assembly's references only when the assembly has changed since it
+	  was parsed for the last time. Reduces loading time.
+
 2007-06-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Serialization/GenericCollectionHandler.cs: Unset

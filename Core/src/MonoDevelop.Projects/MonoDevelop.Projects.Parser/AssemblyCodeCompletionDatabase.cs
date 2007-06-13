@@ -48,6 +48,7 @@ namespace MonoDevelop.Projects.Parser
 		bool loadError;
 		bool isPackageAssembly;
 		bool parsing;
+		string assemblyFile;
 		
 		// This is the package version of the assembly. It is serialized.
 		string packageVersion;
@@ -55,11 +56,9 @@ namespace MonoDevelop.Projects.Parser
 		public AssemblyCodeCompletionDatabase (string baseDir, string assemblyName, ParserDatabase parserDatabase)
 		: base (parserDatabase)
 		{
-			string assemblyFile;
-			string[] refUris;
 			string name;
 			
-			if (!GetAssemblyInfo (assemblyName, out this.assemblyName, out assemblyFile, out name, out refUris)) {
+			if (!GetAssemblyInfo (assemblyName, out this.assemblyName, out assemblyFile, out name)) {
 				loadError = true;
 				return;
 			}
@@ -86,21 +85,25 @@ namespace MonoDevelop.Projects.Parser
 				headers ["CheckFile"] = assemblyFile;
 			}
 			
-			// Update references to other assemblies
-			
-			Hashtable rs = new Hashtable ();
-			foreach (string uri in refUris) {
-				rs[uri] = null;
-				if (!HasReference (uri))
-					AddReference (uri);
-			}
-			
-			ArrayList keys = new ArrayList ();
-			keys.AddRange (references);
-			foreach (ReferenceEntry re in keys)
-			{
-				if (!rs.Contains (re.Uri))
-					RemoveReference (re.Uri);
+			FileEntry fe = GetFile (assemblyFile);
+			if (IsFileModified (fe)) {
+				string[] refUris = ReadAssemblyReferences ();
+				// Update references to other assemblies
+				
+				Hashtable rs = new Hashtable ();
+				foreach (string uri in refUris) {
+					rs[uri] = null;
+					if (!HasReference (uri))
+						AddReference (uri);
+				}
+				
+				ArrayList keys = new ArrayList ();
+				keys.AddRange (references);
+				foreach (ReferenceEntry re in keys)
+				{
+					if (!rs.Contains (re.Uri))
+						RemoveReference (re.Uri);
+				}
 			}
 		}
 		
@@ -233,14 +236,12 @@ namespace MonoDevelop.Projects.Parser
 				return new DatabaseGenerator ();
 		}
 		
-		public bool GetAssemblyInfo (string assemblyName, out string realAssemblyName, out string assemblyFile, out string name, out string[] references)
+		public bool GetAssemblyInfo (string assemblyName, out string realAssemblyName, out string assemblyFile, out string name)
 		{
 			name = null;
 			assemblyFile = null;
 			realAssemblyName = null;
-			references = null;
 			
-			AssemblyDefinition asm = null;
 			string ext = Path.GetExtension (assemblyName).ToLower ();
 			
 			if (ext == ".dll" || ext == ".exe") 
@@ -248,43 +249,47 @@ namespace MonoDevelop.Projects.Parser
 				name = assemblyName.Substring (0, assemblyName.Length - 4);
 				name = name.Replace(',','_').Replace(" ","").Replace('/','_');
 				assemblyFile = assemblyName;
-				try {
-					asm = AssemblyFactory.GetAssemblyManifest (assemblyFile);
-				}
-				catch {}
-				
-				if (asm == null) {
-					Console.WriteLine ("Could not load assembly: " + assemblyFile);
-					return false;
-				}
 			}
 			else
 			{
 				assemblyFile = Runtime.SystemAssemblyService.GetAssemblyLocation (assemblyName);
 
-				if (assemblyFile != null && File.Exists (assemblyFile))
-					asm = AssemblyFactory.GetAssemblyManifest (assemblyFile);
-				
-				if (asm == null) {
+				bool gotname = false;
+				if (assemblyFile != null && File.Exists (assemblyFile)) {
+					try {
+						assemblyName = AssemblyName.GetAssemblyName (assemblyFile).FullName;
+						gotname = true;
+					} catch (Exception ex) {
+						Runtime.LoggingService.Error (ex);
+					}
+				}
+				if (!gotname) {
 					Console.WriteLine ("Could not load assembly: " + assemblyName);
 					return false;
 				}
-				
-				assemblyName = asm.Name.FullName;
 				name = EncodeGacAssemblyName (assemblyName);
 			}
 			
 			realAssemblyName = assemblyName;
-			
-			// Update references to other assemblies
-			
-			AssemblyNameReferenceCollection names = asm.MainModule.AssemblyReferences;
-			references = new string [names.Count];
-
-			for (int n=0; n<names.Count; n++)
-				references [n] = "Assembly:" + names [n].FullName;
-			
 			return true;
+		}
+		
+		public string[] ReadAssemblyReferences ()
+		{
+			try {
+				AssemblyDefinition asm = AssemblyFactory.GetAssemblyManifest (assemblyFile);
+			
+				AssemblyNameReferenceCollection names = asm.MainModule.AssemblyReferences;
+				string[] references = new string [names.Count];
+
+				for (int n=0; n<names.Count; n++)
+					references [n] = "Assembly:" + names [n].FullName;
+				return references;
+				
+			} catch (Exception ex) {
+				Runtime.LoggingService.Error (ex);
+				return null;
+			}
 		}
 		
 		string EncodeGacAssemblyName (string assemblyName)
