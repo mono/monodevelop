@@ -142,7 +142,6 @@ namespace CSharpBinding
 					ProjectFile file = item as ProjectFile; 
 					if (file == null)
 						continue;
-					Console.WriteLine ("File: " + file + " typ : " + file.FileType);
 					if (file.FileType == FileType.Compile) {
 						writer.WriteLine ("\"{0}\"", file.FullPath);
 					}

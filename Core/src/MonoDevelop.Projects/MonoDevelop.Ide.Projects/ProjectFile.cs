@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.Projects
 		
 		public string FullPath {
 			get {
-				return Path.GetFullPath (Path.Combine (Project.BasePath, Include));
+				return Path.GetFullPath (Path.Combine (Project.BasePath, Include.Replace ('\\', Path.DirectorySeparatorChar)));
 			}
 		}
 		

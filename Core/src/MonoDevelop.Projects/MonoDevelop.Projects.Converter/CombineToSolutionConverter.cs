@@ -159,6 +159,15 @@ namespace MonoDevelop.Projects.Converter
 				project.OutputPath   = ConvertPath (debug["Output"].GetAttribute ("directory"));
 				project.AssemblyName = debug["Output"].GetAttribute ("assembly");
 				project.OutputType   = debug["Build"].GetAttribute ("target");
+				
+				if (debug["CodeGeneration"].HasAttribute ("definesymbols"))
+					project.DefineConstants = debug["CodeGeneration"].GetAttribute ("definesymbols");
+				if (debug["CodeGeneration"].HasAttribute ("optimize"))
+					project.SetProperty ("Optimize", debug["CodeGeneration"].GetAttribute ("optimize"));
+				if (debug["CodeGeneration"].HasAttribute ("unsafecodeallowed"))
+					project.SetProperty ("AllowUnsafeBlocks", debug["CodeGeneration"].GetAttribute ("unsafecodeallowed"));
+				if (debug["CodeGeneration"].HasAttribute ("generateoverflowchecks"))
+					project.SetProperty ("CheckForOverflowUnderflow", debug["CodeGeneration"].GetAttribute ("generateoverflowchecks"));
 			} else {
 				project.OutputPath   = "bin\\debug";
 				project.AssemblyName = "a";
