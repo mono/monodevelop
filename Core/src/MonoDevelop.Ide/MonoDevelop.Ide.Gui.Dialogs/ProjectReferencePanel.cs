@@ -154,10 +154,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				ProjectReferenceProjectItem pr = item as ProjectReferenceProjectItem;
 				if (pr == null)
 					continue;
-				if (((ProjectReferenceProjectItem)pr).ProjectName == targetProject)
+				if (((ProjectReferenceProjectItem)pr).Name == targetProject)
 					return true;
 				
-				IProject pref = FindProject (pr.ProjectName);
+				IProject pref = FindProject (pr.Name);
 				if (pref != null && ProjectReferencesProject (pref, targetProject))
 					return true;
 			}

@@ -41,15 +41,6 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 		
-		public string ProjectName {
-			get {
-				return base.GetMetadata ("Name");
-			}
-			set {
-				base.SetMetadata ("Name", value);
-			}
-		}
-		
 		
 		protected override string Tag {
 			get {
@@ -64,7 +55,7 @@ namespace MonoDevelop.Ide.Projects
 		public ProjectReferenceProjectItem (string include, string guid, string name) : base (include)
 		{
 			this.ProjectGUID = guid;
-			this.ProjectName = name;
+			this.Name = name;
 		}
 	}
 }

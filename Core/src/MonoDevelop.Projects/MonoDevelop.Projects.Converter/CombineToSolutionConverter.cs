@@ -40,7 +40,6 @@ namespace MonoDevelop.Projects.Converter
 {
 	public class CombineToSolutionConverter : IConverter 
 	{
-		
 		public bool CanLoad (string sourceFile)
 		{
 			return Path.GetExtension (sourceFile) == ".mds";
@@ -55,11 +54,33 @@ namespace MonoDevelop.Projects.Converter
 			foreach (ProjectReference reference in references) {
 				SolutionProject project = result.FindProject (reference.ProjectName);
 				if (project != null) {
-					// TODO: correct location
-					reference.Project.Add (new ProjectReferenceProjectItem (project.Project.FileName, 
+					string relativePath = MonoDevelop.Core.Runtime.FileService.AbsoluteToRelativePath (Path.GetDirectoryName (reference.Project.FileName), project.Project.FileName);
+					reference.Project.Add (new ProjectReferenceProjectItem (ConvertPath (relativePath), 
 					                                                        project.Guid, 
 					                                                        project.Name));
 				}
+			}
+			SolutionSection configSection = new SolutionSection ("SolutionConfigurationPlatforms", SolutionSection.PreSolution);
+			configSection.Add ("Debug|Any CPU", "Debug|Any CPU");
+			configSection.Add ("Release|Any CPU", "Release|Any CPU");
+			result.AddSection (configSection);
+			
+			SolutionSection projectConfigSection = new SolutionSection ("ProjectConfigurationPlatforms", SolutionSection.PostSolution);
+			foreach (IProject project in result.AllProjects) {
+				foreach (string config in new string[] {"Debug|Any CPU", "Release|Any CPU" }) {
+					projectConfigSection.Add (project.Guid + "." + config + ".Build.0", config);
+					projectConfigSection.Add (project.Guid + "." + config + ".ActiveCfg", config);
+				}
+			}
+			result.AddSection (projectConfigSection);
+			
+			SolutionSection nestedProjectsSection = new SolutionSection ("NestedProjects", SolutionSection.PreSolution);
+			result.AddSection (nestedProjectsSection);
+			
+			// save all stuff (test wise)
+			result.Save ();
+			foreach (IProject project in result.AllProjects) {
+				project.Save ();
 			}
 			
 			return result;
@@ -72,10 +93,11 @@ namespace MonoDevelop.Projects.Converter
 			string content = File.ReadAllText (sourceFile);
 			foreach (Match match in entryLinePattern.Matches (content)) {
 				string fileName = Path.GetFullPath (Path.Combine (sourcePath, match.Result("${File}")));
-				if (Path.GetExtension (fileName) == ".mds")
+				if (Path.GetExtension (fileName) == ".mds") {
+					
 					ReadSolution (solution, fileName, references);
-				else if (Path.GetExtension (fileName) == ".mdp") 
-					solution.AddItem (ReadProject (fileName, references));
+				} else if (Path.GetExtension (fileName) == ".mdp") 
+					solution.AddItem (ReadProject (solution, fileName, references));
 			}
 		}
 		
@@ -140,18 +162,21 @@ namespace MonoDevelop.Projects.Converter
 			}
 		}
 		
-		SolutionProject ReadProject (string sourceFile, List<ProjectReference> references)
+		SolutionProject ReadProject (Solution solution, string sourceFile, List<ProjectReference> references)
 		{
 			XmlDocument doc = new XmlDocument ();
 			doc.Load (sourceFile);
 			string version  = doc.DocumentElement.GetAttribute ("fileversion");
 			string language = doc.DocumentElement.GetAttribute ("language");
-			
+			string absoluteLocation = Path.GetFullPath (Path.ChangeExtension (sourceFile, GetExtension (language)));
+			string relativeLocation = absoluteLocation.Substring (Path.GetDirectoryName (solution.FileName).Length + 1);
+			string projectGuid = "{" + Guid.NewGuid ().ToString ().ToUpper () + "}";
 			SolutionProject result = new SolutionProject (GetGUID (language), 
-			                                              "{" + Guid.NewGuid ().ToString ().ToUpper () + "}", 
-			                                              Path.GetFileNameWithoutExtension (sourceFile),
-			                                              sourceFile);
-			MSBuildProject project = new MSBuildProject (language, Path.ChangeExtension (sourceFile, GetExtension (language)));
+			                                              projectGuid, 
+			                                              Path.GetFileNameWithoutExtension (relativeLocation),
+			                                              relativeLocation);
+			MSBuildProject project = new MSBuildProject (language, absoluteLocation);
+			project.Guid          = projectGuid;
 			project.Configuration = "Debug";
 			project.Platform      = "AnyCpu";
 			XmlElement debug = doc.DocumentElement.SelectSingleNode (@"/Project/Configurations/Configuration") as XmlElement;
@@ -175,7 +200,7 @@ namespace MonoDevelop.Projects.Converter
 			}
 			
 			XmlNode contents = doc.DocumentElement.SelectSingleNode ("/Project/Contents");
-			if (contents != null)
+			if (contents != null) {
 				foreach (XmlNode node in contents.ChildNodes) {
 					XmlElement el = node as XmlElement;
 					if (el == null)
@@ -189,9 +214,10 @@ namespace MonoDevelop.Projects.Converter
 						newFile.CopyToOutputDirectory = bool.TrueString;
 					project.Add (newFile);
 				}
+			}
 			
 			XmlNode reference = doc.DocumentElement.SelectSingleNode ("/Project/References");
-			if (reference != null)
+			if (reference != null) {
 				foreach (XmlNode node in reference.ChildNodes) {
 					XmlElement el = node as XmlElement;
 					if (el == null)
@@ -200,19 +226,23 @@ namespace MonoDevelop.Projects.Converter
 					string refto = el.GetAttribute ("refto");
 					switch (type) {
 					case "Assembly":
-						project.Add (new ReferenceProjectItem (Path.GetFileNameWithoutExtension (refto), refto));
+						project.Add (new ReferenceProjectItem (Path.GetFileNameWithoutExtension (refto), ConvertPath (refto)));
 						break;
 					case "Project":
 						references.Add (new ProjectReference (project, refto));
 						break;
 					case "Gac":
 						string gacReference = refto;
-						if (gacReference.IndexOf (",") > 0)
-							gacReference = gacReference.Substring (0, gacReference.IndexOf (","));  
-						project.Add (new ReferenceProjectItem (gacReference));
+						ReferenceProjectItem newReference = new ReferenceProjectItem (refto);
+						if (gacReference.IndexOf (",") > 0) {
+							newReference.Name            = gacReference.Substring (0, gacReference.IndexOf (","));
+							newReference.SpecificVersion = true;
+						}
+						project.Add (newReference);
 						break;
 					}
 				}
+			}
 			
 			result.Project = project;
 			return result;

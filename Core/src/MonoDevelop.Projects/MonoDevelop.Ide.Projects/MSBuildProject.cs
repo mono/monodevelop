@@ -150,6 +150,9 @@ namespace MonoDevelop.Ide.Projects
 			get {
 				return GetProperty ("ProjectGuid", null, null);
 			}
+			set {
+				SetProperty ("ProjectGuid", value, null, null);
+			}
 		}
 		
 		
@@ -551,17 +554,29 @@ namespace MonoDevelop.Ide.Projects
 				foreach (PropertyGroup propertyGroup in this.propertyGroups) {
 					propertyGroup.Write (writer);
 				}
+				
+				// normal references
 				writer.WriteStartElement ("ItemGroup");
 				foreach (ProjectItem item in this.Items) {
-					if (item is ReferenceProjectItem) {
+					if (item is ReferenceProjectItem && !(item is ProjectReferenceProjectItem)) {
 						item.Write (writer);
 					}
 				}
 				writer.WriteEndElement (); // ItemGroup
 				
+				// all other items
 				writer.WriteStartElement ("ItemGroup");
 				foreach (ProjectItem item in this.Items) {
 					if (!(item is ReferenceProjectItem)) {
+						item.Write (writer);
+					}
+				}
+				writer.WriteEndElement (); // ItemGroup
+				
+				// project references
+				writer.WriteStartElement ("ItemGroup");
+				foreach (ProjectItem item in this.Items) {
+					if (item is ProjectReferenceProjectItem) {
 						item.Write (writer);
 					}
 				}

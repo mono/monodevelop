@@ -51,6 +51,15 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 		
+		public string Name {
+			get {
+				return base.GetMetadata ("Name");
+			}
+			set {
+				base.SetMetadata ("Name", value);
+			}
+		}
+		
 		protected override string Tag {
 			get {
 				return "Reference";

@@ -37,6 +37,9 @@ namespace MonoDevelop.Ide.Projects
 {
 	public class SolutionSection
 	{
+		public const string PreSolution  = "preSolution";
+		public const string PostSolution = "postSolution"; 
+		
 		string name;
 		string type;
 		List<KeyValuePair<string, string>> contents = new List<KeyValuePair<string, string>> ();
@@ -57,6 +60,11 @@ namespace MonoDevelop.Ide.Projects
 		{
 			this.name = name;
 			this.type = type;
+		}
+		
+		public void Add (string key, string value)
+		{
+			this.Contents.Add (new KeyValuePair<string, string> (key, value)); 
 		}
 		
 		static Regex sectionPattern  = new Regex("\\s*(?<Key>.*\\S)\\s*=\\s*(?<Value>.*\\S)\\s*", RegexOptions.Compiled);

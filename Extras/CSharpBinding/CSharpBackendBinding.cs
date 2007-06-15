@@ -119,7 +119,7 @@ namespace CSharpBinding
 				foreach (ProjectItem item in project.Items) {
 					ProjectReferenceProjectItem projectReferenceItem = item as ProjectReferenceProjectItem;
 					if (projectReferenceItem != null) {
-						SolutionProject solutionProject = ProjectService.FindProject (projectReferenceItem.ProjectName);
+						SolutionProject solutionProject = ProjectService.FindProject (projectReferenceItem.Name);
 						if (solutionProject != null) {
 							writer.WriteLine ("\"/r:{0}\"", ProjectService.GetOutputFileName (solutionProject.Project));
 						}

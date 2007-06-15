@@ -121,7 +121,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			Solution c = ProjectService.Solution; 
 			if (c == null) return TreeIter.Zero;
 			
-			IProject p = ProjectService.FindProject (refInfo.ProjectName).Project;
+			IProject p = ProjectService.FindProject (refInfo.Name).Project;
 			if (p == null) return TreeIter.Zero;
 			
 			string iconName = Services.Icons.GetImageForProjectType (p.Language);

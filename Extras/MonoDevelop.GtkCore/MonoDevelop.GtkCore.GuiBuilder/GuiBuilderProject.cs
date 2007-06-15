@@ -371,7 +371,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			string path = null;
 			
-			MSBuildProject p = ProjectService.FindProject (pref.ProjectName).Project as MSBuildProject;
+			MSBuildProject p = ProjectService.FindProject (pref.Name).Project as MSBuildProject;
 			if (p != null) {
 				GtkDesignInfo info = GtkCoreService.GetGtkInfo (p);
 				if (info != null && info.IsWidgetLibrary)

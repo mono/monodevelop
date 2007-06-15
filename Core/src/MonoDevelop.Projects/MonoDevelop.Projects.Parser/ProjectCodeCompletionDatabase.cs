@@ -232,7 +232,7 @@ namespace MonoDevelop.Projects.Parser
 		string[] GetReferenceKeys (ReferenceProjectItem item)
 		{
 			if (item is ProjectReferenceProjectItem) {
-				return new string[] { "Project:" + ((ProjectReferenceProjectItem)item).ProjectName };
+				return new string[] { "Project:" + ((ProjectReferenceProjectItem)item).Name };
 			}
 			if (!String.IsNullOrEmpty (item.HintPath)) {
 				return new string[] { "Assembly:" + Path.GetFullPath (Path.Combine (item.Project.BasePath, item.HintPath)) };
