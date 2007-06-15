@@ -133,8 +133,14 @@ namespace CSharpBinding
 							string fileName = Path.Combine (project.BasePath, SolutionProject.NormalizePath (referenceItem.HintPath));
 							if (File.Exists (fileName))
 								reference = fileName;
+							writer.WriteLine ("\"/r:{0}\"", reference);
+						} else {
+							string file = Runtime.SystemAssemblyService.GetAssemblyLocation (reference);
+							if (String.IsNullOrEmpty (file))
+								file = reference;
+							writer.WriteLine ("\"/r:{0}\"", file);
 						}
-						writer.WriteLine ("\"/r:{0}\"", reference);
+						
 					}
 				}
 				

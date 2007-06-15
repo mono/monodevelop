@@ -206,7 +206,7 @@ namespace MonoDevelop.Ide.Projects
 			this.fileName = fileName;
 			using (StreamWriter writer = new StreamWriter(fileName, false, Encoding.UTF8)) {
 				writer.WriteLine ();
-				writer.WriteLine ("#Microsoft Visual Studio Solution File, Format Version " + versionNumber);
+				writer.WriteLine ("Microsoft Visual Studio Solution File, Format Version " + versionNumber);
 				writer.WriteLine ("# Visual Studio 2005");				writer.WriteLine ("# MonoDevelop ");
 				
 				foreach (SolutionItem item in this.Items) {

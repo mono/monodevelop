@@ -82,6 +82,7 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 			SolutionFolder solutionFolder = dataObject as SolutionFolder;
 			if (solutionFolder == null) 
 				return;
+			
 			foreach (SolutionItem item in solutionFolder.Items)
 				ctx.AddChild (item);
 		}
@@ -92,20 +93,5 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 			return solutionFolder != null && solutionFolder.Items.Count > 0;
 		}
 		
-		public override void OnNodeAdded (object dataObject)
-		{
-/*			combine.EntryAdded += combineEntryAdded;
-			combine.EntryRemoved += combineEntryRemoved;
-			combine.NameChanged += combineNameChanged;
-			combine.StartupPropertyChanged += startupChanged;*/
-		}
-		
-		public override void OnNodeRemoved (object dataObject)
-		{
-/*			combine.EntryAdded -= combineEntryAdded;
-			combine.EntryRemoved -= combineEntryRemoved;
-			combine.NameChanged -= combineNameChanged;
-			combine.StartupPropertyChanged -= startupChanged;*/
-		}
 	}
 }

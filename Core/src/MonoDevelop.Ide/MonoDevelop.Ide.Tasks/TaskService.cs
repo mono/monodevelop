@@ -186,7 +186,7 @@ namespace MonoDevelop.Ide.Tasks
 
 		string GetUserTasksFilename (Solution combine)
 		{
-			string combineFilename = ProjectService.SolutionFileName;
+			string combineFilename = combine.FileName;
 			string combinePath = Path.GetDirectoryName (combineFilename);
 			string userTasksFilename = Path.Combine(combinePath, combine.Name + ".usertasks");
 			return userTasksFilename;
@@ -195,21 +195,21 @@ namespace MonoDevelop.Ide.Tasks
 		void ReloadPriories ()
 		{
 			priorities.Clear ();
-				string tokens = (string)Runtime.Properties.GetProperty ("Monodevelop.TaskListTokens", "FIXME:2;TODO:1;HACK:1;UNDONE:0");
-				foreach (string token in tokens.Split (new char[] {';'}, StringSplitOptions.RemoveEmptyEntries))
+			string tokens = (string)Runtime.Properties.GetProperty ("Monodevelop.TaskListTokens", "FIXME:2;TODO:1;HACK:1;UNDONE:0");
+			foreach (string token in tokens.Split (new char[] {';'}, StringSplitOptions.RemoveEmptyEntries))
+			{
+				int pos = token.IndexOf (':');
+				if (pos != -1)
 				{
-					int pos = token.IndexOf (':');
-					if (pos != -1)
-					{
-						int priority;
-						if (! int.TryParse (token.Substring (pos + 1), out priority))
-							priority = 1;
-						priorities.Add (token.Substring (0, pos), (TaskPriority)priority);
-					} else
-					{
-						priorities.Add (token, TaskPriority.Normal);
-					}
+					int priority;
+					if (! int.TryParse (token.Substring (pos + 1), out priority))
+						priority = 1;
+					priorities.Add (token.Substring (0, pos), (TaskPriority)priority);
+				} else
+				{
+					priorities.Add (token, TaskPriority.Normal);
 				}
+			}
 		}
 		
 		public int TaskCount {

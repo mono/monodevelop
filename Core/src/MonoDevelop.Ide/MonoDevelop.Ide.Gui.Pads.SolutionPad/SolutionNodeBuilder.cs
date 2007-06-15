@@ -91,9 +91,7 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 			Solution solution = dataObject as Solution;
 			if (solution != null) {
 				foreach (SolutionItem item in solution.Items) {
-					if (item.Parent == null) { 
-						Console.WriteLine ("add :" + item);
-						
+					if (item.Parent == null) {
 						ctx.AddChild (item);
 					}
 				}

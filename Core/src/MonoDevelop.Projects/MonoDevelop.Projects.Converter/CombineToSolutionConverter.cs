@@ -49,7 +49,14 @@ namespace MonoDevelop.Projects.Converter
 		{
 			Solution result = new Solution (Path.ChangeExtension (sourceFile, ".sln"));
 			List<ProjectReference> references = new List<ProjectReference> ();
-			ReadSolution (result, sourceFile, references);
+			Folder rootFolder = new Folder ("root");
+			ReadSolution (result, rootFolder, sourceFile, references);
+			
+			foreach (Folder folder in rootFolder.Folders[0].Folders) {
+				folder.SolutionFolder.Parent = null;
+			}
+			foreach (Folder folder in rootFolder.Folders[0].AllFolders)
+				result.AddItem (folder.SolutionFolder);
 			
 			foreach (ProjectReference reference in references) {
 				SolutionProject project = result.FindProject (reference.ProjectName);
@@ -75,6 +82,13 @@ namespace MonoDevelop.Projects.Converter
 			result.AddSection (projectConfigSection);
 			
 			SolutionSection nestedProjectsSection = new SolutionSection ("NestedProjects", SolutionSection.PreSolution);
+			foreach (Folder folder in rootFolder.AllFolders) {
+				foreach (SolutionProject project in folder.Projects) {
+					folder.SolutionFolder.AddChild (project);
+					nestedProjectsSection.Add (project.Guid, folder.SolutionFolder.Guid);
+				}
+			}
+			
 			result.AddSection (nestedProjectsSection);
 			
 			// save all stuff (test wise)
@@ -85,19 +99,86 @@ namespace MonoDevelop.Projects.Converter
 			
 			return result;
 		}
-		
+		static Regex namePattern      = new Regex("<Combine\\s*name=\\s*\"(?<Name>^[\"]*)\"\\s", RegexOptions.Compiled);
 		static Regex entryLinePattern = new Regex("<Entry\\s*filename=\\s*\"(?<File>.*)\"\\s*/>", RegexOptions.Compiled);
-		void ReadSolution (Solution solution, string sourceFile, List<ProjectReference> references)
+		
+		class Folder 
+		{
+			string name;
+			SolutionFolder folder;
+			List<Folder>  folders = new List<Folder> (); 
+			List<SolutionProject> projects = new List<SolutionProject> ();
+			
+			public string Name {
+				get { return name; }
+				set { name = value; }
+			}
+			
+			public SolutionFolder SolutionFolder {
+				get { return folder; }
+			}
+			
+			public List<Folder> Folders {
+				get { return folders; }
+			}
+			
+			public List<SolutionProject> Projects {
+				get { return projects; }
+			}
+			
+			public IEnumerable<Folder> AllFolders {
+				get {
+					Stack<Folder> folders = new Stack<Folder> ();
+					foreach (Folder folder in Folders)
+						folders.Push (folder);
+					while (folders.Count > 0) {
+						Folder folder = folders.Pop ();
+						yield return folder;
+						foreach (Folder childFolder in folder.Folders)
+							folders.Push (childFolder);
+					}
+				}
+			}
+		
+			public Folder (string name)
+			{
+				this.name   = name;
+				this.folder = new SolutionFolder (GenerateGuid (), name, name);
+			}
+			
+			public Folder GetFolder (string name)
+			{
+				foreach (Folder folder in folders)
+					if (folder.Name == name)
+						return folder;
+				Console.WriteLine ("Create Folder:" + name);
+				Folder result = new Folder (name);
+				folders.Add (result);
+				this.SolutionFolder.AddChild (result.SolutionFolder);
+				return result;
+			}
+		}
+		
+		void ReadSolution (Solution solution, Folder parentFolder, string sourceFile, List<ProjectReference> references)
 		{
 			string sourcePath = Path.GetDirectoryName (sourceFile);
 			string content = File.ReadAllText (sourceFile);
+			string name = Path.GetFileNameWithoutExtension (sourceFile);
+			Match nameMatch = namePattern.Match (content);
+			if (nameMatch.Success) 
+				name = nameMatch.Result ("${Name}");
+			Folder curFolder = parentFolder.GetFolder (name);
+			
 			foreach (Match match in entryLinePattern.Matches (content)) {
 				string fileName = Path.GetFullPath (Path.Combine (sourcePath, match.Result("${File}")));
 				if (Path.GetExtension (fileName) == ".mds") {
-					
-					ReadSolution (solution, fileName, references);
-				} else if (Path.GetExtension (fileName) == ".mdp") 
-					solution.AddItem (ReadProject (solution, fileName, references));
+					ReadSolution (solution, curFolder, fileName, references);
+				} else if (Path.GetExtension (fileName) == ".mdp") {
+					SolutionProject project = ReadProject (solution, fileName, references);
+					if (curFolder != null)
+						curFolder.Projects.Add (project);
+					solution.AddItem (project);
+				}
 			}
 		}
 		
@@ -162,6 +243,11 @@ namespace MonoDevelop.Projects.Converter
 			}
 		}
 		
+		static string GenerateGuid ()
+		{
+			return "{" + Guid.NewGuid ().ToString ().ToUpper () + "}";
+		}
+		
 		SolutionProject ReadProject (Solution solution, string sourceFile, List<ProjectReference> references)
 		{
 			XmlDocument doc = new XmlDocument ();
@@ -170,7 +256,7 @@ namespace MonoDevelop.Projects.Converter
 			string language = doc.DocumentElement.GetAttribute ("language");
 			string absoluteLocation = Path.GetFullPath (Path.ChangeExtension (sourceFile, GetExtension (language)));
 			string relativeLocation = absoluteLocation.Substring (Path.GetDirectoryName (solution.FileName).Length + 1);
-			string projectGuid = "{" + Guid.NewGuid ().ToString ().ToUpper () + "}";
+			string projectGuid = GenerateGuid ();
 			SolutionProject result = new SolutionProject (GetGUID (language), 
 			                                              projectGuid, 
 			                                              Path.GetFileNameWithoutExtension (relativeLocation),
