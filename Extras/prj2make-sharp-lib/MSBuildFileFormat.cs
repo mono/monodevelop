@@ -732,6 +732,9 @@ namespace MonoDevelop.Prj2Make
 						Escape (Runtime.FileService.AbsoluteToRelativePath (
 							Path.GetDirectoryName (projectFile.Name), projectFile.DependsOn)));
 			}
+
+			if (projectFile.IsExternalToProject)
+				EnsureChildValue (elem, "Link", ns, Path.GetFileName (projectFile.Name));
 			
 			return elem;
 		}
