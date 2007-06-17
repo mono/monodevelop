@@ -53,7 +53,18 @@ namespace MonoDevelop.Prj2Make
 				// this is when invoked w/o the gui
 				//FIXME: Replace with a better way to check this
 				IdeApp.ProjectOperations.AddingEntryToCombine += new AddEntryEventHandler (HandleAddEntry);
-		}	
+		}
+
+		public override bool NeedsReload {
+			get {
+				if (ParentCombine != null && ParentCombine is MSBuildSolution)
+					// Solution folder
+					return false;
+				else
+					return base.NeedsReload;
+			}
+			set { base.NeedsReload = value; }
+		}
 
 		public SlnData Data {
 			get {

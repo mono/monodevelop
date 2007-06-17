@@ -1,5 +1,10 @@
 2007-06-18  Ankit Jain  <jankit@novell.com>
 
+	* MSBuildSolution.cs (NeedsReload): Override. Return false for solution
+	folders.
+
+2007-06-18  Ankit Jain  <jankit@novell.com>
+
 	* MSBuildFileFormat.cs (FileToXmlElement): Emit a "Link" element for
 	files external to the project.
 
