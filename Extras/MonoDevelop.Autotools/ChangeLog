@@ -1,5 +1,13 @@
 2007-06-18  Ankit Jain  <jankit@novell.com>
 
+	* MakefileOptionPanelWidget.cs: On loading a new makefile, try to guess
+	possible variables and prefixes for various lists like files, references etc.
+	If guess'ing fails, then try some usual variable names.
+	When a variable is selected in the combo by the user, try to guess the
+	prefix.
+
+2007-06-18  Ankit Jain  <jankit@novell.com>
+
 	* MakefileData.cs (PackagedAssemblyNames): New. Table for mapping short
 	assembly names (like System.Xml) to their full names.
 	(ParseReferenceAsGac): Use the new PackagedAssemblyNames table. This will

@@ -671,6 +671,7 @@
                     <property name="WidthRequest">200</property>
                     <property name="IsTextCombo">True</property>
                     <property name="Items" />
+                    <signal name="Changed" handler="OnComboResourcesVarChanged" />
                   </widget>
                   <packing>
                     <property name="TopAttach">3</property>
@@ -944,6 +945,7 @@
                     <property name="WidthRequest">200</property>
                     <property name="IsTextCombo">True</property>
                     <property name="Items" />
+                    <signal name="Changed" handler="OnComboAsmRefVarChanged" />
                   </widget>
                   <packing>
                     <property name="TopAttach">3</property>
@@ -966,6 +968,7 @@
                     <property name="WidthRequest">200</property>
                     <property name="IsTextCombo">True</property>
                     <property name="Items" />
+                    <signal name="Changed" handler="OnComboGacRefVarChanged" />
                   </widget>
                   <packing>
                     <property name="TopAttach">2</property>
@@ -988,6 +991,7 @@
                     <property name="WidthRequest">200</property>
                     <property name="IsTextCombo">True</property>
                     <property name="Items" />
+                    <signal name="Changed" handler="OnComboProjectRefVarChanged" />
                   </widget>
                   <packing>
                     <property name="TopAttach">4</property>

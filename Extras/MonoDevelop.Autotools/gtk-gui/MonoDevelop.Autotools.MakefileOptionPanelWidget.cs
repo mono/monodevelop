@@ -1034,11 +1034,15 @@ namespace MonoDevelop.Autotools {
             this.cbCleanTarget.Clicked += new System.EventHandler(this.OnCbCleanTargetClicked);
             this.cbBuildTarget.Clicked += new System.EventHandler(this.OnCbBuildTargetClicked);
             this.cbFileSync.Clicked += new System.EventHandler(this.OnCbFileSyncClicked);
+            this.comboResourcesVar.Changed += new System.EventHandler(this.OnComboResourcesVarChanged);
             this.cbKeepResourcesSync.Clicked += new System.EventHandler(this.OnCbKeepResourcesSyncClicked);
             this.cbKeepOthersSync.Clicked += new System.EventHandler(this.OnCbKeepOthersSyncClicked);
             this.cbKeepFilesSync.Clicked += new System.EventHandler(this.OnCbKeepFilesSyncClicked);
             this.cbKeepDeployFilesSync.Clicked += new System.EventHandler(this.OnCbKeepDeployFilesSyncClicked);
             this.cbKeepRefSync.Clicked += new System.EventHandler(this.OnCbKeepRefSyncClicked);
+            this.comboProjectRefVar.Changed += new System.EventHandler(this.OnComboProjectRefVarChanged);
+            this.comboGacRefVar.Changed += new System.EventHandler(this.OnComboGacRefVarChanged);
+            this.comboAsmRefVar.Changed += new System.EventHandler(this.OnComboAsmRefVarChanged);
             this.cbAutotoolsProject.Clicked += new System.EventHandler(this.OnCbAutotoolsProjectClicked);
             this.comboMessageType.Changed += new System.EventHandler(this.OnComboMessageTypeChanged);
         }

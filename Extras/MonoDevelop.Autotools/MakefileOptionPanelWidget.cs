@@ -56,8 +56,6 @@ namespace MonoDevelop.Autotools
 				SetActiveVar (comboMessageType, data.MessageRegexName);
 
 				HandleEnableMakefileIntegrationClicked (cbEnableMakefileIntegration.Active);
-
-				LoadVariables ();
 			}
 
 			//FIXME: ResetAll  : use for new data, use for new makefile
@@ -166,15 +164,15 @@ namespace MonoDevelop.Autotools
 
 			// References
 			data.SyncReferences = this.cbKeepRefSync.Active;
-			data.GacRefVar.Sync = this.cbKeepResourcesSync.Active;
+			data.GacRefVar.Sync = this.cbKeepRefSync.Active;
 			data.GacRefVar.Name = GetActiveVar (comboGacRefVar);
 			data.GacRefVar.Prefix = this.entryGacRefPattern.Text.Trim ();
 
-			data.AsmRefVar.Sync = this.cbKeepResourcesSync.Active;
+			data.AsmRefVar.Sync = this.cbKeepRefSync.Active;
 			data.AsmRefVar.Name = GetActiveVar (comboAsmRefVar);
 			data.AsmRefVar.Prefix = this.entryAsmRefPattern.Text.Trim ();
 
-			data.ProjectRefVar.Sync = this.cbKeepResourcesSync.Active;
+			data.ProjectRefVar.Sync = this.cbKeepRefSync.Active;
 			data.ProjectRefVar.Name = GetActiveVar (comboProjectRefVar);
 			data.ProjectRefVar.Prefix = this.entryProjectRefPattern.Text.Trim ();
 
@@ -358,14 +356,22 @@ namespace MonoDevelop.Autotools
 		{
 			table1.Sensitive = active;
 			if (active) {
-				HandleMakefileNameChanged (fileEntryMakefilePath.Path, false);
-				LoadVariables ();
+				bool first_load = String.IsNullOrEmpty (data.RelativeMakefileName);
+				if (TryLoadMakefile (false)) {
+					if (first_load)
+						GuessVariables ();
+					else
+						LoadVariables ();
+				} else {
+					fileEntryMakefilePath.Path = fileEntryMakefilePath.DefaultPath;
+				}
 			} else {
 				SetActive (active);
 			}
 		}
 
-		void HandleMakefileNameChanged (string fname, bool showError)
+		// return true if all went fine
+		bool TryLoadMakefile (bool showError)
 		{
 			try {
 				data.RelativeMakefileName = fileEntryMakefilePath.Path;
@@ -376,9 +382,149 @@ namespace MonoDevelop.Autotools
 					FillCombos (vars);
 
 				SetActive (active);
+
+				return active;
 			} catch {
-				// Ignore
+				return false;
 			}
+		}
+
+		// Try to guess suitable variables for build files, references and resources
+		void GuessVariables ()
+		{
+			ICollection<string> vars = TryGetVariables (false);
+			if (vars == null)
+				return;
+
+			string files_var = GetActiveVar (comboFilesVar);
+			string res_var = GetActiveVar (comboResourcesVar);
+			string ref_var = GetActiveVar (comboGacRefVar);
+
+			string prefix;
+			foreach (string var in vars) {
+				if (ref_var.Length > 0 && res_var.Length > 0 && files_var.Length > 0)
+					break;
+
+				if (files_var.Length == 0 && CheckSourceCode (data.Makefile.GetListVariable (var))) {
+					files_var = var;
+					SetFilesVariable (files_var);
+					continue;
+				}
+
+				if (res_var.Length == 0 && CheckRes (data.Makefile.GetListVariable (var), out prefix)) {
+					res_var = var;
+					SetResourcesVariable (res_var, prefix);
+					continue;
+				}
+
+				// We only try to find one variable for references
+				if (ref_var.Length == 0 && CheckRefs (data.Makefile.GetListVariable (var), out prefix)) {
+					ref_var = var;
+					SetReferencesVariable (ref_var, prefix);
+					continue;
+				}
+			}
+
+			// Try to guess using some common variable names
+			if (files_var.Length == 0) {
+				string [] files_var_names = {"FILES"};
+
+				foreach (string var in files_var_names) {
+					if (data.Makefile.GetListVariable (var) != null) {
+						SetFilesVariable (var);
+						break;
+					}
+				}
+			}
+
+			//as these vars would've been already selected if a valid prefix was there
+			if (res_var.Length == 0) {
+				string [] res_var_names = {"RESOURCES", "RES"};
+
+				foreach (string var in res_var_names) {
+					if (data.Makefile.GetListVariable (var) != null) {
+						SetResourcesVariable (var, GuessResPrefix (data.Makefile.GetListVariable (var)));
+						break;
+					}
+				}
+			}
+
+			if (ref_var.Length == 0) {
+				string [] ref_var_names = {"REFERENCES", "REFS"};
+
+				foreach (string var in ref_var_names) {
+					if (data.Makefile.GetListVariable (var) != null) {
+						SetReferencesVariable (var, GuessRefPrefix (data.Makefile.GetListVariable (var)));
+						break;
+					}
+				}
+			}
+		}
+
+		void ResetAll ()
+		{
+			cbFileSync.Active = false;
+
+			cbKeepFilesSync.Active = false;
+			entryFilesPattern.Text = String.Empty;
+
+			cbKeepDeployFilesSync.Active = false;
+			entryDeployFilesPattern.Text = String.Empty;
+
+			cbKeepResourcesSync.Active = false;
+			entryResourcesPattern.Text = String.Empty;
+
+			cbKeepOthersSync.Active = false;
+			entryOthersPattern.Text = String.Empty;
+
+			cbKeepRefSync.Active = false;
+
+			entryGacRefPattern.Text = String.Empty;
+			entryAsmRefPattern.Text = String.Empty;
+			entryProjectRefPattern.Text = String.Empty;
+
+			SetActive (false);
+		}
+
+		void SetFilesVariable (string files_var)
+		{
+			cbFileSync.Sensitive = true;
+			cbFileSync.Active = true;
+			HandleFileSyncClicked (cbFileSync);
+
+			cbKeepFilesSync.Sensitive = true;
+			cbKeepFilesSync.Active = true;
+			HandleKeepFilesSyncClicked (cbKeepFilesSync);
+
+			SetActiveVar (comboFilesVar, files_var);
+		}
+
+		void SetResourcesVariable (string res_var, string prefix)
+		{
+			cbFileSync.Sensitive = true;
+			cbFileSync.Active = true;
+			HandleFileSyncClicked (cbFileSync);
+
+			cbKeepResourcesSync.Sensitive = true;
+			cbKeepResourcesSync.Active = true;
+
+			SetActiveVar (comboResourcesVar, res_var);
+			entryResourcesPattern.Text = prefix;
+		}
+
+		void SetReferencesVariable (string ref_var, string prefix)
+		{
+			cbKeepRefSync.Sensitive = true;
+			cbKeepRefSync.Active = true;
+			HandleKeepRefSyncClicked (cbKeepRefSync);
+
+			SetActiveVar (comboGacRefVar, ref_var);
+			SetActiveVar (comboAsmRefVar, ref_var);
+			SetActiveVar (comboProjectRefVar, ref_var);
+
+			entryGacRefPattern.Text = prefix;
+			entryAsmRefPattern.Text = prefix;
+			entryProjectRefPattern.Text = prefix;
 		}
 
 		void SetActive (bool active)
@@ -491,7 +637,11 @@ namespace MonoDevelop.Autotools
 
 		void OnMakefilePathFocusOut (object sender, FocusOutEventArgs e)
 		{
-			HandleMakefileNameChanged (fileEntryMakefilePath.Path, true);
+			if (data.AbsoluteMakefileName != fileEntryMakefilePath.Path) {
+				ResetAll ();
+				if (TryLoadMakefile (true))
+					GuessVariables ();
+			}
 		}
 		
 		void FillCombos (ICollection<string> vars)
@@ -676,6 +826,208 @@ namespace MonoDevelop.Autotools
 				CleanTargetName.Sensitive = false;
 				CleanTargetName.Text = "";
 			}
+		}
+
+		protected virtual void OnComboGacRefVarChanged (object sender, System.EventArgs e)
+		{
+			HandleComboGacRefVarChanged ((ComboBox) sender);
+		}
+
+		void HandleComboGacRefVarChanged (ComboBox cb)
+		{
+			string active = GetActiveVar (cb);
+			entryGacRefPattern.Text = GuessRefPrefix (data.Makefile.GetListVariable (active));
+		}
+
+		protected virtual void OnComboAsmRefVarChanged (object sender, System.EventArgs e)
+		{
+			HandleComboAsmRefVarChanged ((ComboBox) sender);
+		}
+
+		void HandleComboAsmRefVarChanged (ComboBox cb)
+		{
+			string active = GetActiveVar (cb);
+			entryAsmRefPattern.Text = GuessRefPrefix (data.Makefile.GetListVariable (active));
+		}
+
+		protected virtual void OnComboProjectRefVarChanged (object sender, System.EventArgs e)
+		{
+			HandleComboProjectRefVarChanged ((ComboBox) sender);
+		}
+
+		void HandleComboProjectRefVarChanged (ComboBox cb)
+		{
+			string active = GetActiveVar (cb);
+			entryProjectRefPattern.Text = GuessRefPrefix (data.Makefile.GetListVariable (active));
+		}
+
+		protected virtual void OnComboResourcesVarChanged (object sender, System.EventArgs e)
+		{
+			HandleComboResourcesVarChanged ((ComboBox) sender);
+		}
+
+		void HandleComboResourcesVarChanged (ComboBox cb)
+		{
+			string active = GetActiveVar (cb);
+			entryResourcesPattern.Text = GuessResPrefix (data.Makefile.GetListVariable (active));
+		}
+
+		// Returns true if either
+		//	- has a valid prefix
+		//	- Or all entries are
+		//		assembly names from packages (eg. System, gtk-sharp) or
+		//		variables like $(FOO) or
+		//		*.dll
+		bool CheckRefs (List<string> list, out string prefix)
+		{
+			prefix = GuessRefPrefix (list);
+			if (prefix.Length > 0)
+				return true;
+
+			// 'core' here simply means any assembly available from
+			// packages, eg. System, gtk-sharp
+			bool has_core_or_pkgref = false;
+			foreach (string file in list) {
+				if (MakefileData.PackagedAssemblyNames.ContainsKey (file) || IsPkgRef (file)) {
+					has_core_or_pkgref = true;
+					continue;
+				}
+
+				// invalid if any entry isn't one of core/variable/dll/pkgrefs
+				if (!IsVariable (file) && !IsDll (file))
+					return false;
+			}
+
+			return has_core_or_pkgref;
+		}
+
+		bool CheckRes (List<string> list, out string prefix)
+		{
+			prefix = GuessResPrefix (list);
+			if (prefix.Length > 0)
+				return true;
+
+			// no consistent prefix found
+			// FIXME: any other checks? check for *.resx/*.resources?
+			return false;
+		}
+
+		// Returns the prefix if all files,
+		//	other than variables like $(FOO) and
+		//	pkg references like -pkg:foo,
+		// have the same prefix.
+		// Valid prefixes : -r: /r: -reference: /reference:
+		string GuessRefPrefix (List<string> list)
+		{
+			if (list == null || list.Count == 0)
+				return String.Empty;
+
+			string prefix = String.Empty;
+			int i = 0;
+
+			for (i = 0; i < list.Count; i ++) {
+				string file = list [i];
+				if (IsVariable (file) || IsPkgRef (file))
+					continue;
+
+				//check for prefix
+				if (file.Length > 3 &&
+					(file [0] == '-' || file [0] == '/') && file [1] == 'r') {
+					if (file [2] == ':' ||
+						(file.Length > 12 && file.Substring (2, 9) == "eference:")) {
+						prefix = file.Substring (0, file.IndexOf (':') + 1);
+					}
+				}
+				break;
+			}
+
+			if (prefix.Length > 0) {
+				// Ensure that all remaining entries are valid
+				for (; i < list.Count; i ++) {
+					string s = list [i];
+					if (! ((s.StartsWith (prefix) && s.Length > prefix.Length) || IsVariable (s) || IsPkgRef (s)))
+						return String.Empty;
+				}
+			}
+
+			return prefix;
+		}
+
+		// Returns the prefix if all files,
+		//	other than variables like $(FOO),
+		// have the same prefix.
+		// Valid prefixes : -res: /res: -resource: /resource:
+		string GuessResPrefix (List<string> list)
+		{
+			if (list == null || list.Count == 0)
+				return String.Empty;
+
+			string prefix = String.Empty;
+			int i = 0;
+
+			for (i = 0; i < list.Count; i ++) {
+				string file = list [i];
+				if (IsVariable (file))
+					continue;
+
+				if (file.Length > 5 &&
+					(file [0] == '-' || file [0] == '/') &&
+						file [1] == 'r' && file [2] == 'e' && file [3] == 's') {
+					//check for prefix
+					if (file [4] == ':' || (file.Length > 11 && file.Substring (2, 8) == "esource:"))
+						prefix = file.Substring (0, file.IndexOf (':') + 1);
+				}
+				break;
+			}
+
+			if (prefix.Length > 0) {
+				// Ensure that all remaining entries are valid
+				for (; i < list.Count; i ++) {
+					string file = list [i];
+					if (! ((file.StartsWith (prefix) && file.Length > prefix.Length) || IsVariable (file)))
+						return String.Empty;
+				}
+			}
+
+			return prefix;
+		}
+
+		// Return true if entries are either source code files
+		// or variables. Atleast one source file must be present.
+		bool CheckSourceCode (List<string> list)
+		{
+			if (!isDotNetProject || list == null || list.Count == 0)
+				return false;
+
+			bool has_source = false;
+			DotNetProject dnp = (DotNetProject) data.OwnerProject;
+
+			foreach (string s in list) {
+				if (dnp.LanguageBinding.IsSourceCodeFile (s))
+					has_source = true;
+				else if (!IsVariable (s))
+					return false;
+			}
+
+			return has_source;
+		}
+
+		bool IsVariable (string file)
+		{
+			return (file.Length > 3 && file [0] == '$' && file [1] == '(' &&
+				file.IndexOf (')') == file.Length - 1);
+		}
+
+		bool IsDll (string file)
+		{
+			return SPath.GetExtension (file).ToUpper () == ".DLL";
+		}
+
+		bool IsPkgRef (string file)
+		{
+			return (file.Length > 5 &&
+				file [0] == '-' && file [1] == 'p' && file [2] == 'k' &&
+				file [3] == 'g' && file [4] == ':');
 		}
 	}
 }
