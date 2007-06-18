@@ -1,3 +1,11 @@
+2007-06-18  Ankit Jain  <jankit@novell.com>
+
+	* MakefileData.cs (PackagedAssemblyNames): New. Table for mapping short
+	assembly names (like System.Xml) to their full names.
+	(ParseReferenceAsGac): Use the new PackagedAssemblyNames table. This will
+	help avoid doing Assembly.Load to find full names for names
+	like System.Xml . Speeds up loading for large projects.
+
 2007-06-14  Ankit Jain  <jankit@novell.com>
 
 	* MakefileData.cs (PkgManagerTable): New. A global table to keep weak

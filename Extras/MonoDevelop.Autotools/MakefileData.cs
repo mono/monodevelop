@@ -1067,6 +1067,20 @@ namespace MonoDevelop.Autotools
 			return true;
 		}
 
+		static Dictionary<string, string> packagedAssemblyNames;
+		public static Dictionary<string, string> PackagedAssemblyNames {
+			get {
+				if (packagedAssemblyNames == null) {
+					packagedAssemblyNames = new Dictionary<string, string> ();
+					foreach (string asm in Runtime.SystemAssemblyService.GetAssemblyFullNames ())
+						//asm.IndexOf(,) should be > 0 as this is a fullname
+						packagedAssemblyNames [asm.Substring (0, asm.IndexOf (',')).Trim ()] = asm;
+				}
+
+				return packagedAssemblyNames;
+			}
+		}
+
 		ProjectReference ParseReferenceAsGac (string rname, DotNetProject project)
 		{
 			string aname = rname;
@@ -1074,7 +1088,13 @@ namespace MonoDevelop.Autotools
 				//-r:Mono.Posix.dll
 				aname = rname.Substring (0, rname.Length - 4);
 
-			string fullname = Runtime.SystemAssemblyService.GetAssemblyFullName (aname);
+			string fullname;
+			if (!PackagedAssemblyNames.TryGetValue (aname, out fullname)) {
+				fullname = Runtime.SystemAssemblyService.GetAssemblyFullName (aname);
+
+				//fullname can be null
+				PackagedAssemblyNames [aname] = fullname;
+			}
 			if (fullname == null)
 				return null;
 
@@ -1577,8 +1597,6 @@ namespace MonoDevelop.Autotools
 
 	}
 
-	//FIXME: ConfiguredPackagedStore ?
-	//This should be shared by all projects, having the same configure.in
 	public class ConfiguredPackagesManager
 	{
 		Dictionary<string, List<string>> pkgVarNameToPkgName;
