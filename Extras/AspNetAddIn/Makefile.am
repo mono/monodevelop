@@ -22,7 +22,10 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
+	gtk-gui/AspNetAddIn.AspNetConfigurationPanelWidget.cs \
+	gtk-gui/generated.cs \
 	Gui/AspNetConfigurationPanel.cs \
+	Gui/AspNetConfigurationPanelWidget.cs \
 	Gui/XspOptionsPanel.cs \
 	Parser/Document.cs \
 	Parser/Internal/AspParser.cs \
@@ -53,11 +56,14 @@ FILES =  \
 	Project/AspNetCodeBehindProvider.cs \
 	Project/AspNetDisplayBinding.cs \
 	Project/AspNetFileDescriptionTemplate.cs \
+	Project/CodeBehind.cs \
 	Project/VerifyCodeBehindBuildStep.cs \
 	Project/XspParameters.cs
 
 RES =  \
 	AspNetAddIn.glade \
+	gtk-gui/gui.stetic \
+	gtk-gui/objects.xml \
 	Templates/CodeBehindWebControl.xft.xml \
 	Templates/CodeBehindWebForm.xft.xml \
 	Templates/CodeBehindWebHandler.xft.xml \

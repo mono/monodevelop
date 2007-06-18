@@ -23,37 +23,50 @@ namespace AspNetAddIn
 			if (aspProject == null)
 				return base.Build (monitor, project);
 			
-			//check the codebehind verification options
-			//TODO: add options for warnings as errors, ignoring parse errors etc
-			AspNetAppProjectConfiguration config = (AspNetAppProjectConfiguration) aspProject.ActiveConfiguration;
-			if (!config.AutoGenerateCodeBehindMembers) {
-				monitor.Log.WriteLine ("Auto-generation of CodeBehind members is disabled. Skipping CodeBehind verification.");
-				return base.Build (monitor, project);
-			}
-			
-			monitor.Log.WriteLine ("Verifying CodeBehind...");
-			
-			IParserContext ctx = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (aspProject);
-			ctx.UpdateDatabase ();
-			
+			//lists of members to be added 
 			List<System.CodeDom.CodeMemberField> membersToAdd = new List<System.CodeDom.CodeMemberField> ();
 			List<IClass> classesForMembers = new List<IClass> ();
 			
+			AspNetAppProjectConfiguration config = (AspNetAppProjectConfiguration) aspProject.ActiveConfiguration;
+			
+			//get an updated parser database
+			IParserContext ctx = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (aspProject);
+			ctx.UpdateDatabase ();
+			
+			monitor.Log.WriteLine ("Generating CodeBehind members...");
+			if (!config.GenerateNonPartialCodeBehindMembers)
+				monitor.Log.WriteLine ("Auto-generation of CodeBehind members is disabled for non-partial classes.");
+			
 			//find the members that need to be added to CodeBehind classes
 			foreach (ProjectFile file in aspProject.ProjectFiles) {
+				
 				WebSubtype type = AspNetAppProject.DetermineWebSubtype (Path.GetExtension (file.FilePath));
-				if ((type != WebSubtype.WebForm) && (type != WebSubtype.WebControl))
+				if ((type != WebSubtype.WebForm) && (type != WebSubtype.WebControl) && (type != WebSubtype.MasterPage))
 						continue;
 				
-				Document doc = aspProject.GetDocument (file);
-				if (string.IsNullOrEmpty (doc.Info.InheritedClass))
+				string className = CodeBehind.GetCodeBehindClassName (file);
+				if (className == null)
 					continue;
 				
-				IClass cls = ctx.GetClass (doc.Info.InheritedClass);
+				IClass cls = ctx.GetClass (className);
 				if (cls == null) {
-					monitor.ReportWarning ("Cannot find CodeBehind class \"" + doc.Info.InheritedClass  + "\" for  file \"" + file.Name + "\".");
+					monitor.ReportWarning ("Cannot find CodeBehind class \"" + className  + "\" for  file \"" + file.Name + "\".");
 					continue;
 				}
+				
+				//handle partial designer classes; skip if non-partial and this is disabled
+				IClass designerClass = CodeBehind.GetDesignerClass (cls);
+				if (designerClass != null) {
+					cls = designerClass;
+				} else if (!config.GenerateNonPartialCodeBehindMembers) {
+					continue;
+				}
+
+				//if (File.GetLastWriteTime (cls.Region.FileName) >= File.GetLastWriteTime (file.FilePath)) {
+				
+				
+				
+				Document doc = aspProject.GetDocument (file);
 				
 				foreach (System.CodeDom.CodeMemberField member in doc.MemberList.List.Values) {
 						MonoDevelop.Projects.Parser.IMember existingMember = BindingService.GetCompatibleMemberInClass (cls, member);
@@ -74,8 +87,7 @@ namespace AspNetAddIn
 						monitor.ReportWarning (m.ToString ());
 					}			
 			});
-			
-			
+
 			if (membersToAdd.Count > 0) {
 				monitor.Log.WriteLine (string.Format ("Added {0} member{1} to CodeBehind classes. Saving updated source files.", membersToAdd.Count, (membersToAdd.Count>1)?"s":""));
 				
@@ -91,17 +103,5 @@ namespace AspNetAddIn
 			
 			return base.Build (monitor, project);
 		}
-		/*
-		class AddMembersEventArgs : System.EventArgs
-		{
-			public IClass Class;
-			public IMember Member;
-			
-			AddMembersEventArgs (IClass cls, IMember member)
-			{
-				Class = cls;
-				Member = member;
-			}
-		}*/
 	}
 }

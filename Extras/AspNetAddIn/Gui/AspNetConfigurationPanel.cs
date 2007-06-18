@@ -39,28 +39,7 @@ namespace AspNetAddIn
 {
 	
 	public class AspNetConfigurationPanel : AbstractOptionPanel
-	{
-		class AspNetConfigurationPanelWidget : MonoDevelop.Components.GladeWidgetExtract
-		{
-			AspNetAppProjectConfiguration configuration;
-			AspNetAppProject project;
-			
-			[Glade.Widget] CheckButton autogenerateCodeBehindMembers;
-			
-			public AspNetConfigurationPanelWidget  (IProperties customizationObject) : base ("AspNetAddIn.glade", "AspNetConfigurationPanel")
-			{
-				configuration = (AspNetAppProjectConfiguration)((IProperties)customizationObject).GetProperty("Config");
-				project = (AspNetAppProject)((IProperties)customizationObject).GetProperty("Project");
-				
-				autogenerateCodeBehindMembers.Active = configuration.AutoGenerateCodeBehindMembers;
-			}
-			
-			public void Store ()
-			{				
-				configuration.AutoGenerateCodeBehindMembers = autogenerateCodeBehindMembers.Active;
-			}
-		}
-		
+	{		
 		AspNetConfigurationPanelWidget panel;
 		
 		public override void LoadPanelContents ()
@@ -75,8 +54,5 @@ namespace AspNetAddIn
  			return true;
 		}
 	}
-	
-	//this should be a nested class, but MD code completion doesn't work with that
-
 }
 

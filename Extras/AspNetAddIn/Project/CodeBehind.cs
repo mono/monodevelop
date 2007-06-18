@@ -1,11 +1,10 @@
-//
-// AspNetAppProjectConfiguration.cs: ASP.NET-specific configuration options 
-//     and behaviours
+// 
+// CodeBehind.cs:
 //
 // Authors:
 //   Michael Hutchinson <m.j.hutchinson@gmail.com>
 //
-// Copyright (C) 2006 Michael Hutchinson
+// Copyright (C) 2007 Michael Hutchinson
 //
 //
 // This source code is licenced under The MIT License:
@@ -31,42 +30,52 @@
 //
 
 using System;
+using System.IO;
+using System.Collections;
+using System.Collections.Generic;
+
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Projects.Parser;
+using MonoDevelop.DesignerSupport;
+
+using AspNetAddIn.Parser;
 
 namespace AspNetAddIn
 {
-	public class AspNetAppProjectConfiguration : DotNetProjectConfiguration 
+	
+	
+	public static class CodeBehind
 	{
-		[ItemProperty ("AspNet/GenerateNonPartialCodeBehindMembers")]
-		bool generateNonPartialCodeBehindMembers = false;
 		
-		public bool GenerateNonPartialCodeBehindMembers {
-			get { return generateNonPartialCodeBehindMembers; }
-			set { generateNonPartialCodeBehindMembers = value; }
+		public static string GetCodeBehindClassName (ProjectFile file)
+		{
+			FileStream fs = File.Open (file.FilePath, FileMode.Open);
+			
+			AspNetAppProject proj = file.Project as AspNetAppProject;
+			if (proj == null)
+				return null;
+			
+			Document doc = proj.GetDocument (file);
+			
+			if (doc == null || string.IsNullOrEmpty (doc.Info.InheritedClass))
+				return null;
+			
+			return doc.Info.InheritedClass;
 		}
 		
-		#region //override behaviour of base class to make sure things compile to the right places
-		
-		public override CompileTarget CompileTarget {
-			get { return CompileTarget.Library; }
-			set {
-				//if (value != CompileTarget.Library)
-				//	throw new InvalidOperationException ("ASP.NET applications must compile to a library.");
-			}
+		public static IClass GetDesignerClass (IClass cls)
+		{
+			if (cls.Parts.Length <= 1)
+				return null;
+			
+			string designerEnding = ".designer" + Path.GetExtension (cls.Region.FileName);
+			
+			foreach (IClass c in cls.Parts)
+				if (c.Region.FileName.EndsWith (designerEnding))
+				    return c;
+			
+			return null;
 		}
-		
-		public override string OutputDirectory {
-			get {
-				if (SourceDirectory != null)
-					return System.IO.Path.Combine (SourceDirectory, "bin");
-				else
-					return "bin";
-			}
-			set { }
-		}
-		
-		#endregion
 		
 	}
 }

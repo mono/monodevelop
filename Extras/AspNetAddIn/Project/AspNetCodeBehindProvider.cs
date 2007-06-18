@@ -15,16 +15,7 @@ namespace AspNetAddIn
 		
 		public string GetCodeBehindClassName (ProjectFile file)
 		{
-			AspNetAppProject proj = file.Project as AspNetAppProject;
-			if (proj == null)
-				return null;
-			
-			Document doc = proj.GetDocument (file);
-			
-			if (doc != null)
-				return doc.Info.InheritedClass;
-			
-			return null;
+			return AspNetAddIn.CodeBehind.GetCodeBehindClassName (file);
 		}
 	}
 }

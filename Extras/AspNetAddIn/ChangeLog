@@ -1,3 +1,20 @@
+2007-06-18  Michael Hutchinson <m.j.hutchinson@gmail.com> 
+
+	* Gui/AspNetConfigurationPanel.cs,
+	  Gui/AspNetConfigurationPanelWidget.cs, AspNetAddIn.glade,
+	  gtk-gui/generated.cs,
+	  gtk-gui/AspNetAddIn.AspNetConfigurationPanelWidget.cs,
+	  gtk-gui/objects.xml, gtk-gui/gui.stetic: More Stetic! Convert
+	  configuration panel widget from Glade to Stetic.
+	* Project/CodeBehind.cs: Some shared code for handling CodeBehind.
+	* Project/VerifyCodeBehindBuildStep.cs: Use partial classes if they're
+	  present.
+	* Project/AspNetAppProjectConfiguration.cs: Silence the error when user
+	  picks non-library target type. Rename AutoGenerateCodeBehindMembers
+	  to GenerateNonPartialCodeBehindMembers.
+	* Project/AspNetCodeBehindProvider.cs: Use code from Codebehind class.
+	* AspNetAddIn.mdp, Makefile.am: Added files.
+
 2007-06-08 Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* Parser/Document.cs: Report parse errors on console, not in dialogue.
