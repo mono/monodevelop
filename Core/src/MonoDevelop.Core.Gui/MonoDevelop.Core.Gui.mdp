@@ -176,6 +176,8 @@
     <File name="./icons/plugin-22.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/plugin-32.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./MonoDevelop.Core.Gui.Dialogs/SetupApp.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Freedesktop.RecentFiles/RecentItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Freedesktop.RecentFiles/RecentFileStorage.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="gecko-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=ccf7d78a55e9f021" />

@@ -31,24 +31,20 @@ namespace MonoDevelop.Core.Gui
 		/// </summary>
 		const int MAX_LENGTH = 10;
 		
-		RecentItem[] lastfile;
-		RecentItem[] lastproject;
-		RecentFiles recentFiles;
+		static RecentFileStorage recentFiles = new RecentFileStorage ();
 		
 		public event EventHandler RecentFileChanged;
 		public event EventHandler RecentProjectChanged;
 		
 		public RecentItem[] RecentFile {
 			get {
-				Debug.Assert(lastfile != null, "RecentOpen : set string[] LastFile (value == null)");
-				return lastfile;
+				return recentFiles.GetItemsInGroup ("MonoDevelop Files");;
 			}
 		}
 
 		public RecentItem[] RecentProject {
 			get {
-				Debug.Assert(lastproject != null, "RecentOpen : set string[] LastProject (value == null)");
-				return lastproject;
+				return recentFiles.GetItemsInGroup ("MonoDevelop Projects");
 			}
 		}
 		
@@ -68,11 +64,10 @@ namespace MonoDevelop.Core.Gui
 
 		public RecentOpen()
 		{
-			recentFiles = RecentFiles.GetInstance ();
-			recentFiles.Purge ("MonoDevelop Files");
-			recentFiles.Purge ("MonoDevelop Projects");
-			UpdateLastFile ();
-			UpdateLastProject ();
+			recentFiles.RemoveMissingFiles ("MonoDevelop Files");
+			recentFiles.RemoveMissingFiles ("MonoDevelop Projects");
+			OnRecentFileChange();
+			OnRecentProjectChange();
 		}
 		
 		public void AddLastFile (string name, string project)
@@ -84,19 +79,17 @@ namespace MonoDevelop.Core.Gui
 				ri.Private = String.Format ("{0} [{1}]", Path.GetFileName (name), project);
 
 			recentFiles.AddWithLimit (ri, "MonoDevelop Files", MAX_LENGTH);
-			UpdateLastFile ();
+			OnRecentFileChange();
 		}
 		
 		public void ClearRecentFiles()
 		{
-			lastfile = null;
 			recentFiles.ClearGroup ("MonoDevelop Files");
 			OnRecentFileChange();
 		}
 		
 		public void ClearRecentProjects()
 		{
-			lastproject = null;
 			recentFiles.ClearGroup ("MonoDevelop Projects");
 			OnRecentProjectChange();
 		}
@@ -106,7 +99,7 @@ namespace MonoDevelop.Core.Gui
 			RecentItem ri = new RecentItem (new Uri (name), MimeType.GetMimeTypeForUri (name), "MonoDevelop Projects");
 			ri.Private = projectName;
 			recentFiles.AddWithLimit (ri, "MonoDevelop Projects", MAX_LENGTH);
-			UpdateLastProject ();
+			OnRecentProjectChange();
 		}
 		
 		public void FileRemoved(object sender, FileEventArgs e)
@@ -115,7 +108,7 @@ namespace MonoDevelop.Core.Gui
 				return;
 			
 			recentFiles.RemoveItem (new Uri (e.FileName));
-			UpdateLastFile ();
+			OnRecentFileChange();
 		}
 		
 		public void FileRenamed(object sender, FileEventArgs e)
@@ -127,20 +120,10 @@ namespace MonoDevelop.Core.Gui
 				recentFiles.RenameItem (new Uri (e.SourceFile), new Uri (e.TargetFile));
 			else
 				recentFiles.RenameItem (new Uri (e.FileName), new Uri (e.TargetFile));
-			UpdateLastFile ();
-		}
-
-		void UpdateLastFile ()
-		{
-			lastfile = recentFiles.GetItemsInGroup ("MonoDevelop Files");
 			OnRecentFileChange();
 		}
 
-		void UpdateLastProject ()
-		{
-			lastproject = recentFiles.GetItemsInGroup ("MonoDevelop Projects");
-			OnRecentProjectChange();
-		}
+
 	}
 }
 

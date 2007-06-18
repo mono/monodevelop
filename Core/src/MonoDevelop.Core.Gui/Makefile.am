@@ -18,7 +18,8 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
-	Freedesktop.RecentFiles/RecentFiles.cs \
+	Freedesktop.RecentFiles/RecentFileStorage.cs \
+	Freedesktop.RecentFiles/RecentItem.cs \
 	MonoDevelop.Core.Gui.Codons/CommandCodon.cs \
 	MonoDevelop.Core.Gui.Codons/CommandItemCodon.cs \
 	MonoDevelop.Core.Gui.Codons/DialogPanelCodon.cs \
