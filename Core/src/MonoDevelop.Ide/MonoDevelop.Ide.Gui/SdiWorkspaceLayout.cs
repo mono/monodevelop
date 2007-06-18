@@ -7,7 +7,6 @@
  
 using System;
 using System.IO;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Xml;
@@ -34,14 +33,14 @@ namespace MonoDevelop.Ide.Gui
 	/// </summary>
 	internal class SdiWorkbenchLayout : IWorkbenchLayout
 	{
-		static string configFile = Runtime.Properties.ConfigDirectory + "DefaultEditingLayout.xml";
+		static string configFile = Path.Combine (Runtime.Properties.ConfigDirectory, "DefaultEditingLayout.xml");
 
 		// contains the fully qualified name of the current layout (ie. Edit.Default)
 		string currentLayout = "";
 		// list of layout names for the current context, without the context prefix
-		ArrayList layouts = new ArrayList ();
+		List<string> layouts = new List<string> ();
 
-		private IWorkbench workbench;
+		DefaultWorkbench workbench;
 
 		// current workbench context
 		WorkbenchContext workbenchContext;
@@ -76,6 +75,9 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
+		Gtk.VBox fullViewVBox     = new VBox (false, 0);
+		Gtk.VBox documentViewVBox = new VBox (false, 0);
+		DockItem documentDockItem;
 		public void Attach (IWorkbench wb)
 		{
 			DefaultWorkbench workbench = (DefaultWorkbench) wb;
@@ -83,13 +85,12 @@ namespace MonoDevelop.Ide.Gui
 			this.workbench = workbench;
 			wbWindow = (Window) workbench;
 			
-			Gtk.VBox vbox = new VBox (false, 0);
-			rootWidget = vbox;
+			rootWidget = fullViewVBox;
 
-			vbox.PackStart (workbench.TopMenu, false, false, 0);
+			fullViewVBox.PackStart (workbench.TopMenu, false, false, 0);
 			
 			toolbarFrame = new CommandFrame (IdeApp.CommandService.CommandManager);
-			vbox.PackStart (toolbarFrame, true, true, 0);
+			fullViewVBox.PackStart (toolbarFrame, true, true, 0);
 			
 			if (workbench.ToolBars != null) {
 				for (int i = 0; i < workbench.ToolBars.Length; i++) {
@@ -112,19 +113,25 @@ namespace MonoDevelop.Ide.Gui
 			tabControl = new DragNotebook ();
 			tabControl.Scrollable = true;
 			tabControl.SwitchPage += new SwitchPageHandler (ActiveMdiChanged);
-			tabControl.TabsReordered += new TabsReorderedHandler (OnTabsReordered);
-			DockItem item = new DockItem ("Documents", "Documents",
-						      DockItemBehavior.Locked | DockItemBehavior.NoGrip);
-			item.PreferredWidth = -2;
-			item.PreferredHeight = -2;
-			item.Add (tabControl);
-			item.Show ();
-			dock.AddItem (item, DockPlacement.Center);
-
-			workbench.Add (vbox);
 			
-			vbox.PackEnd (Services.StatusBar.Control, false, true, 0);
-			vbox.ShowAll ();
+			tabControl.ButtonPressEvent += delegate(object sender, ButtonPressEventArgs e) {
+				if (e.Event.Type == Gdk.EventType.TwoButtonPress)
+					ToggleFullViewMode ();
+			};
+			
+			tabControl.TabsReordered += new TabsReorderedHandler (OnTabsReordered);
+			
+			documentDockItem = new DockItem ("Documents", "Documents", DockItemBehavior.Locked | DockItemBehavior.NoGrip);
+			documentDockItem.PreferredWidth = -2;
+			documentDockItem.PreferredHeight = -2;
+			documentDockItem.Add (tabControl);
+			documentDockItem.Show ();
+			dock.AddItem (documentDockItem, DockPlacement.Center);
+
+			workbench.Add (fullViewVBox);
+			
+			fullViewVBox.PackEnd (Services.StatusBar.Control, false, true, 0);
+			fullViewVBox.ShowAll ();
 			Services.StatusBar.Control.ShowAll ();
 			
 			foreach (IViewContent content in workbench.ViewContentCollection)
@@ -139,18 +146,45 @@ namespace MonoDevelop.Ide.Gui
 			{
 				AddPad (content, content.DefaultPlacement);
 			}
+
 			
 			CreateDefaultLayout();
 
 			workbench.ContextChanged += contextChangedHandler;
 		}
+		
+		bool isInFullViewMode = true;
+
+		void ToggleFullViewMode ()
+		{
+			isInFullViewMode = !isInFullViewMode;
+			if (isInFullViewMode) {
+				documentViewVBox.Remove (workbench.TopMenu);
+				documentViewVBox.Remove (this.tabControl);
+				workbench.Remove (this.documentViewVBox);
+				this.fullViewVBox.PackStart (workbench.TopMenu, false, false, 0);
+				this.fullViewVBox.ReorderChild (workbench.TopMenu, 0);
+				documentDockItem.Add (this.tabControl);
+				
+				workbench.Add (this.fullViewVBox);
+				
+			} else {
+				workbench.Remove (this.fullViewVBox);
+				documentDockItem.Remove (this.tabControl);
+				fullViewVBox.Remove (workbench.TopMenu);
+				
+				documentViewVBox.PackStart (workbench.TopMenu, false, false, 0);
+				documentViewVBox.PackStart (this.tabControl, true, true, 0);
+				documentViewVBox.ShowAll ();
+							
+				workbench.Add (this.documentViewVBox);
+				
+			}
+		}
 
 		public IXmlConvertable CreateMemento()
 		{
-			if (initialized)
-				return new SdiWorkbenchLayoutMemento (toolbarFrame.GetStatus ());
-			else
-				return new SdiWorkbenchLayoutMemento (new DockToolbarFrameStatus ());
+			return new SdiWorkbenchLayoutMemento (initialized ? toolbarFrame.GetStatus () : new DockToolbarFrameStatus ());
 		}
 		
 		public void SetMemento(IXmlConvertable memento)
@@ -181,7 +215,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			// switch pad collections
 			if (padCollections [ctxt] != null)
-				activePadCollection = (List<PadCodon>) padCollections [ctxt];
+				activePadCollection = padCollections [ctxt];
 			else
 				// this is so, for unkwown contexts, we get the full set of pads
 				activePadCollection = workbench.PadContentCollection;
@@ -225,14 +259,14 @@ namespace MonoDevelop.Ide.Gui
 			}
 			set {
 				// Store a list of pads being shown
-				ArrayList visible = new ArrayList ();
+				List<PadCodon> visible = new List<PadCodon> ();
 				foreach (PadCodon content in activePadCollection) {
 					if (IsVisible (content))
 						visible.Add (content);
 				}
 				
 				// save previous layout first
-				if (currentLayout != "")
+				if (!String.IsNullOrEmpty (currentLayout))
 					dockLayout.SaveLayout (currentLayout);
 				
 				string newLayout = workbench.Context.Id + "." + value;
@@ -252,7 +286,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 				else
 				{
-					if (currentLayout == "") {
+					if (String.IsNullOrEmpty (currentLayout)) {
 						// if the layout doesn't exist and we need to
 						// load a layout (ie.  we've just been
 						// created), load the default so old layout
@@ -269,8 +303,8 @@ namespace MonoDevelop.Ide.Gui
 
 				// persist the selected layout for the current context
 				Runtime.Properties.SetProperty ("MonoDevelop.Core.Gui.SdiWorkbenchLayout." +
-				                             workbenchContext.Id, value);
-
+				                                workbenchContext.Id, 
+				                                value);
 				// Notify hide/show events
 				foreach (PadCodon content in activePadCollection) {
 					if (IsVisible (content)) {
@@ -308,7 +342,7 @@ namespace MonoDevelop.Ide.Gui
 		List<PadCodon> activePadCollection;
 
 		// set of PadContentCollection objects for the different workbench contexts
-		Hashtable padCollections = new Hashtable ();
+		Dictionary<WorkbenchContext, List<PadCodon>> padCollections = new Dictionary<WorkbenchContext, List<PadCodon>> ();
 
 		public List<PadCodon> PadContentCollection {
 			get {
@@ -553,9 +587,8 @@ namespace MonoDevelop.Ide.Gui
 			padWindows.Remove (content);
 			padCodons.Remove (win);
 			
-			foreach (List<PadCodon> pads in padCollections.Values) {
+			foreach (List<PadCodon> pads in padCollections.Values) 
 				pads.Remove (content);
-			}
 		}
 		
 		public bool IsVisible (PadCodon padContent)
@@ -569,9 +602,8 @@ namespace MonoDevelop.Ide.Gui
 		public void HidePad (PadCodon padContent)
 		{
 			DockItem item = GetDockItem (padContent);
-			if (item != null) {
+			if (item != null) 
 				item.HideItem();
-			}
 		}
 		
 		public void ActivatePad (PadCodon padContent)
@@ -622,29 +654,29 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IPadWindow GetPadWindow (PadCodon content)
 		{
-			return (IPadWindow) padWindows [content];
+			return padWindows [content];
 		}
 		
-		public void CloseWindowEvent(object sender, EventArgs e)
+		public void CloseWindowEvent (object sender, EventArgs e)
 		{
-			SdiWorkspaceWindow f = (SdiWorkspaceWindow)sender;
+			SdiWorkspaceWindow f = (SdiWorkspaceWindow) sender;
 			
 			// Unsubscribe events to avoid memory leaks
 			f.TabLabel.Button.Clicked -= new EventHandler (closeClicked);
 			f.TabLabel.Button.StateChanged -= new StateChangedHandler (stateChanged);
 
 			if (f.ViewContent != null) {
-				((IWorkbench)wbWindow).CloseContent(f.ViewContent);
+				((IWorkbench)wbWindow).CloseContent (f.ViewContent);
 				ActiveMdiChanged(this, null);
 			}
 		}
 		
-		public IWorkbenchWindow ShowView(IViewContent content)
+		public IWorkbenchWindow ShowView (IViewContent content)
 		{	
 			Gtk.Image mimeimage = null;
 			
 			if (content.StockIconId != null ) {
-				mimeimage = new Gtk.Image ( content.StockIconId, IconSize.Menu );
+				mimeimage = new Gtk.Image (content.StockIconId, IconSize.Menu );
 			}
 			else if (content.IsUntitled && content.UntitledName == null) {
 				mimeimage = new Gtk.Image (FileIconLoader.GetPixbufForType ("gnome-fs-regular", 16));
@@ -658,10 +690,10 @@ namespace MonoDevelop.Ide.Gui
 			tabLabel.ClearFlag (WidgetFlags.CanFocus);
 			SdiWorkspaceWindow sdiWorkspaceWindow = new SdiWorkspaceWindow (workbench, content, tabControl, tabLabel);
 
-			sdiWorkspaceWindow.Closed += new EventHandler(CloseWindowEvent);
+			sdiWorkspaceWindow.Closed += new EventHandler (CloseWindowEvent);
 			tabControl.InsertPage (sdiWorkspaceWindow, tabLabel, -1);
 			
-			tabLabel.Show();
+			tabLabel.Show ();
 			return sdiWorkspaceWindow;
 		}
 
@@ -702,7 +734,7 @@ namespace MonoDevelop.Ide.Gui
 		/// </summary>          
 		public void NextTab()
 		{
-			this.tabControl.NextPage();
+			this.tabControl.NextPage ();
 		}
 		
 		/// <summary>
@@ -710,10 +742,10 @@ namespace MonoDevelop.Ide.Gui
 		/// </summary>          
 		public void PreviousTab()
 		{
-			this.tabControl.PrevPage();
+			this.tabControl.PrevPage ();
 		}
 		
-		public void ActiveMdiChanged(object sender, SwitchPageArgs e)
+		public void ActiveMdiChanged (object sender, SwitchPageArgs e)
 		{
 			if (ignorePageSwitch)
 				return;
@@ -783,7 +815,7 @@ namespace MonoDevelop.Ide.Gui
 				s.Serialize (w, Status);
 				w.Close ();
 				
-				XmlDocumentFragment docFrag = doc.CreateDocumentFragment();
+				XmlDocumentFragment docFrag = doc.CreateDocumentFragment ();
 				docFrag.InnerXml = w.ToString ();
 				return docFrag ["DockToolbarFrameStatus"];
 			}

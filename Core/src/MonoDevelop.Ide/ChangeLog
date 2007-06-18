@@ -1,3 +1,10 @@
+2007-06-18  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Implemented maximize
+	  editing area when double clicking on a tab. 
+	
+	  Described in http://bugzilla.ximian.com/show_bug.cgi?id=81349.
+
 2007-06-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs: Reduce spacing between rows.
