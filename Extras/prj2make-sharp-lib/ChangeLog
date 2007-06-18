@@ -1,5 +1,15 @@
 2007-06-18  Ankit Jain  <jankit@novell.com>
 
+	* MSBuildFileFormat.cs (CanonicalizePath): New. Escapes, normalizes and
+	converts '/' to '\\' for a path.
+	Update code to use this when emitting paths to the *proj file.
+	* SlnFileFormat.cs (WriteProjects): Emit path using windows path
+	seperator.
+	(LoadSolution): Use SlnMaker.MapPath instead of the local copy.
+	(MapPath): Remove, unused now.
+
+2007-06-18  Ankit Jain  <jankit@novell.com>
+
 	* MSBuildSolution.cs (NeedsReload): Override. Return false for solution
 	folders.
 

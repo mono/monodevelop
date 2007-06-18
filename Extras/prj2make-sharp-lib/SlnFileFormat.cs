@@ -228,7 +228,7 @@ namespace MonoDevelop.Prj2Make
 						ProjectTypeGuids [project.LanguageName],
 						project.Name, 
 						Runtime.FileService.NormalizeRelativePath (Runtime.FileService.AbsoluteToRelativePath (
-							baseDirectory, project.FileName)),
+							baseDirectory, project.FileName)).Replace ('/', '\\'),
 						msbData.Guid);
 				} else {
 					//Solution
@@ -482,7 +482,7 @@ namespace MonoDevelop.Prj2Make
 					(projectPath.EndsWith (".csproj") || projectPath.EndsWith (".vbproj")))
 				{
 					MSBuildProject project = null;
-					string path = MapPath (Path.GetDirectoryName (fileName), projectPath);
+					string path = SlnMaker.MapPath (Path.GetDirectoryName (fileName), projectPath);
 					if (String.IsNullOrEmpty (path)) {
 						monitor.ReportWarning (GettextCatalog.GetString (
 							"Invalid project path found in {0} : {1}", fileName, projectPath));
@@ -846,54 +846,6 @@ namespace MonoDevelop.Prj2Make
 			reader.Close();
 
 			return strVersion;
-		}
-
-		internal static string MapPath (string basePath, string relPath)
-		{
-			if (relPath == null || relPath.Length == 0)
-				return null;
-			
-			string path = relPath.Replace ("\\", "/");
-			if (char.IsLetter (path [0]) && path.Length > 1 && path[1] == ':')
-				return null;
-			
-			if (basePath != null)
-				path = Path.Combine (basePath, path);
-				
-			if (Path.IsPathRooted (path)) {
-					
-				// Windows paths are case-insensitive. When mapping an absolute path
-				// we can try to find the correct case for the path.
-				
-				string[] names = path.Substring (1).Split ('/');
-				string part = "/";
-				
-				for (int n=0; n<names.Length; n++) {
-					string[] entries;
-					if (n < names.Length - 1)
-						entries = Directory.GetDirectories (part);
-					else
-						entries = Directory.GetFiles (part);
-					
-					string fpath = null;
-					foreach (string e in entries) {
-						if (string.Compare (Path.GetFileName (e), names[n], true) == 0) {
-							fpath = e;
-							break;
-						}
-					}
-					if (fpath == null) {
-						// Part of the path does not exist. Can't do any more checking.
-						for (; n < names.Length; n++)
-							part += "/" + names[n];
-						return part;
-					}
-					
-					part = fpath;
-				}
-				return part;
-			} else
-				return path;
 		}
 
 		// static regexes
