@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 
 using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Core;
@@ -38,6 +39,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		public FileScout()
 		{
+			string path = Runtime.Properties.GetProperty("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", 
+									System.Environment.GetEnvironmentVariable("HOME")).ToString();
+
+			if (Directory.Exists(path))
+			{
+				fb.CurrentDir = path;
+			}
+
 			fb.DirectoryChangedEvent += new DirectoryChangedEventHandler (OnDirChanged);
 			filelister.RowActivated += new Gtk.RowActivatedHandler (FileSelected);
 			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler(OnCombineOpened));
@@ -88,7 +97,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 						}
 					}
 				}
-				catch (System.IO.IOException) {} // Avoid crash on file existence check error
+				catch (IOException) {} // Avoid crash on file existence check error
 			}
 		}
 

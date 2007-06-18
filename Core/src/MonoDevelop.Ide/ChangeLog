@@ -1,3 +1,8 @@
+2007-06-18 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
+
+	* MonoDevelop.Ide.Gui.Pads/FileScout.cs: Use the configured
+	default new project path as startup path. Fixes bug #79393.
+
 2007-06-18  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Implemented maximize
