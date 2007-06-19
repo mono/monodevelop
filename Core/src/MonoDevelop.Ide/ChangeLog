@@ -1,3 +1,7 @@
+2007-06-19 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
+
+	* Base.glade: Fixed casing of label text.
+
 2007-06-18 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Ide.Gui.Pads/FileScout.cs: Use the configured
