@@ -1,5 +1,10 @@
 2007-06-19 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 
+	* templates/EmptyEnum.xft.xml,
+	  templates/EmptyStruct.xft.xml: Fixed typos.
+
+2007-06-19 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
+
 	* Base.glade: Fixed casing of label text.
 
 2007-06-18 Jacob Ilsø Christensen <jacobilsoe@gmail.com>

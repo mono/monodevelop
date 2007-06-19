@@ -6,7 +6,7 @@
 		<Icon>md-empty-file-icon</Icon>
 		<Category>General</Category>
 		<LanguageName>*</LanguageName>
-		<_Description>Creates an empty interface.</_Description>
+		<_Description>Creates an empty struct.</_Description>
 	</TemplateConfiguration>
 	
 	<TemplateFiles>
