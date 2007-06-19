@@ -1,3 +1,7 @@
+2007-06-19  Mike Krüger <mkrueger@novell.com> 
+
+	Added file system watcher and file locking to recent file handling.
+
 2007-06-18  Mike Krüger <mkrueger@novell.com> 
 
 	Improved recent file management. The files are now stored only on disc. Still TODO: File System Locks (how to use the posix log from .NET) and file system watcher.

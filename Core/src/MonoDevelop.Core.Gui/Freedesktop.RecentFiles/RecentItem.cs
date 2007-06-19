@@ -151,7 +151,7 @@ namespace Freedesktop.RecentFiles
 			RecentItem item = o as RecentItem;
 			if (item == null)
 				throw new ArgumentException ("Can only compare items of " + typeof (RecentItem) + " item was: " + o);
-			return this.Timestamp.CompareTo (item.Timestamp);
+			return item.Timestamp.CompareTo (this.Timestamp);
 		}
 		
 		public override string ToString ()
@@ -183,7 +183,6 @@ namespace Freedesktop.RecentFiles
 					if (reader.LocalName == Node)
 						return result;
 					throw new XmlException ("Found unknown end element:" + reader.LocalName);
-					break;
 				case XmlNodeType.Element:
 					if (readGroup) {
 						result.AddGroup (reader.ReadElementString ());

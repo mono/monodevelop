@@ -34,6 +34,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Xml;
 
 namespace Freedesktop.RecentFiles
@@ -47,24 +48,38 @@ namespace Freedesktop.RecentFiles
 	public sealed class RecentFileStorage
 	{
 		const int MaxRecentItemsCount = 500; // max. items according to the spec.
-		static readonly string FileName = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), ".recently-used");
+		const string FileName = ".recently-used";
+		static readonly string RecentFileFullPath = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), FileName);
+				
+		FileSystemWatcher watcher;
+        ReaderWriterLock readerWriterLock = new ReaderWriterLock();
 		
-//		FileSystemWatcher watcher;
-        
 		public RecentFileStorage()
 		{
-/* TODO: watcher
-			watcher = new FileSystemWatcher (FileName);
-			watcher.Changed += delegate {
+			watcher = new FileSystemWatcher (Environment.GetFolderPath (Environment.SpecialFolder.Personal));
+			watcher.Filter = FileName;
+			watcher.Created += new FileSystemEventHandler (FileChanged);
+			watcher.Changed += new FileSystemEventHandler (FileChanged);
+			watcher.Deleted += new FileSystemEventHandler (FileChanged);
+			watcher.Renamed += delegate {
 				OnRecentFilesChanged (EventArgs.Empty);
 			};
-			watcher.EnableRaisingEvents = true;*/
+			watcher.EnableRaisingEvents = true;
 		}
+		
+		void FileChanged (object sender, FileSystemEventArgs e)
+		{
+			OnRecentFilesChanged (EventArgs.Empty);
+		}
+		
 		int lockLevel = 0;
 		void ObtainLock ()
 		{
 			lockLevel++;
-			// todo
+			if (lockLevel == 1) {
+				watcher.EnableRaisingEvents = false;
+				readerWriterLock.AcquireWriterLock (5000);
+			}
 		}
 		
 		void ReleaseLock ()
@@ -72,7 +87,10 @@ namespace Freedesktop.RecentFiles
 			if (lockLevel <= 0)
 				throw new InvalidOperationException ("not locked.");
 			lockLevel--;
-			// todo
+			if (lockLevel == 0) {
+				readerWriterLock.ReleaseWriterLock ();
+				watcher.EnableRaisingEvents = true;
+			}
 		}
 		
 		delegate bool RecentItemPredicate (RecentItem item);
@@ -91,8 +109,8 @@ namespace Freedesktop.RecentFiles
 						continue;
 					}
 				}
-				if (filteredSomething)
-					WriteStore (store);
+				if (filteredSomething) 
+					WriteStore (store);				
 			} finally {
 				ReleaseLock ();
 			}
@@ -127,7 +145,6 @@ namespace Freedesktop.RecentFiles
 			});
 		}
 		
-
 		public void RemoveItem (Uri uri)
 		{
 			FilterOut (delegate(RecentItem item) {
@@ -182,9 +199,9 @@ namespace Freedesktop.RecentFiles
 		static List<RecentItem> ReadStore ()
 		{
 			List<RecentItem> result = new List<RecentItem> ();
-			if (!File.Exists (RecentFileStorage.FileName))
+			if (!File.Exists (RecentFileStorage.RecentFileFullPath))
 				return result;
-			XmlTextReader reader = new XmlTextReader (RecentFileStorage.FileName);
+			XmlTextReader reader = new XmlTextReader (RecentFileStorage.RecentFileFullPath);
 			try {
 				while (true) {
 					bool read = false;
@@ -206,12 +223,12 @@ namespace Freedesktop.RecentFiles
 			return result;
 		}
 		
-		static void WriteStore (List<RecentItem> items)
+		void WriteStore (List<RecentItem> items)
 		{
 			items.Sort ();
 			if (items.Count > MaxRecentItemsCount)
 				items.RemoveRange (MaxRecentItemsCount, items.Count - MaxRecentItemsCount);
-			XmlTextWriter writer = new XmlTextWriter (RecentFileStorage.FileName, System.Text.Encoding.UTF8);
+			XmlTextWriter writer = new XmlTextWriter (RecentFileStorage.RecentFileFullPath, System.Text.Encoding.UTF8);
 			try {
 				writer.Formatting = Formatting.Indented;
 				writer.WriteStartDocument();
@@ -222,6 +239,7 @@ namespace Freedesktop.RecentFiles
 				writer.WriteEndElement (); // RecentFiles
 			} finally {
 				writer.Close ();
+				OnRecentFilesChanged (EventArgs.Empty);
 			}
 		}
 		
