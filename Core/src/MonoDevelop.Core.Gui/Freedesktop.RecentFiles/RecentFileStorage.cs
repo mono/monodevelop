@@ -35,6 +35,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Xml;
 
@@ -243,16 +244,17 @@ namespace Freedesktop.RecentFiles
 			return result;
 		}
 		
+		static Encoding utf8WithoutByteOrderMark = new UTF8Encoding (false);
 		void WriteStore (List<RecentItem> items)
 		{
 			Debug.Assert (IsLocked);
 			items.Sort ();
 			if (items.Count > MaxRecentItemsCount)
 				items.RemoveRange (MaxRecentItemsCount, items.Count - MaxRecentItemsCount);
-			XmlTextWriter writer = new XmlTextWriter (RecentFileStorage.RecentFileFullPath, System.Text.Encoding.UTF8);
+			XmlTextWriter writer = new XmlTextWriter (RecentFileStorage.RecentFileFullPath, utf8WithoutByteOrderMark);
 			try {
 				writer.Formatting = Formatting.Indented;
-				writer.WriteStartDocument();
+				writer.WriteStartDocument (true);
 				writer.WriteStartElement ("RecentFiles");
 				if (items != null) 
 					foreach (RecentItem item in items)
