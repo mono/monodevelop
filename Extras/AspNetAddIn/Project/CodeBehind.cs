@@ -49,8 +49,6 @@ namespace AspNetAddIn
 		
 		public static string GetCodeBehindClassName (ProjectFile file)
 		{
-			FileStream fs = File.Open (file.FilePath, FileMode.Open);
-			
 			AspNetAppProject proj = file.Project as AspNetAppProject;
 			if (proj == null)
 				return null;

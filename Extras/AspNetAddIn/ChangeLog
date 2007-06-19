@@ -1,3 +1,8 @@
+2007-06-19  Michael Hutchinson <m.j.hutchinson@gmail.com> 
+
+	* Project/CodeBehind.cs: Oops, remove some development code in which 
+	  caused sharing violations.
+
 2007-06-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/AspNetAddIn.AspNetConfigurationPanelWidget.cs,
