@@ -1,3 +1,7 @@
+2007-06-19   <> 
+
+	Changed the C# file icon to look a bit more like gnome.
+
 2007-05-31  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Autotools/Autotools.mdp, CSharpBinding.mdp: Removed unused elements.
