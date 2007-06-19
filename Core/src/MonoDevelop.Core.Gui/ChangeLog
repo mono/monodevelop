@@ -1,5 +1,9 @@
 2007-06-19  Mike Krüger <mkrueger@novell.com> 
 
+	RecentItems now use the .NET classes for Uri and DateTime and hides some details of the freedesktop recent file management.
+
+2007-06-19  Mike Krüger <mkrueger@novell.com> 
+
 	Added file system watcher and file locking to recent file handling.
 
 2007-06-18  Mike Krüger <mkrueger@novell.com> 

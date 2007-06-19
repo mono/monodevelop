@@ -38,7 +38,7 @@ namespace MonoDevelop.Core.Gui
 		
 		public RecentItem[] RecentFile {
 			get {
-				return recentFiles.GetItemsInGroup ("MonoDevelop Files");;
+				return recentFiles.GetItemsInGroup ("MonoDevelop Files");
 			}
 		}
 

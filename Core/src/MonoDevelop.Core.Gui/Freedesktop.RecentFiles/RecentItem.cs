@@ -40,13 +40,13 @@ namespace Freedesktop.RecentFiles
 	/// </summary>
     public class RecentItem : IComparable
 	{
-        string       uri;
+        Uri          uri;
         string       mimeType;
-        int          timestamp;
+        DateTime     timestamp;
         string       privateData;
 		List<string> groups = new List<string> ();
 
-		public string Uri {
+		public Uri Uri {
 			get {
 				return uri; 
 			}			
@@ -64,7 +64,7 @@ namespace Freedesktop.RecentFiles
 			}
 		}
 		
-		public int Timestamp {
+		public DateTime Timestamp {
 			get {
 				return timestamp;
 			}
@@ -99,9 +99,9 @@ namespace Freedesktop.RecentFiles
 		public RecentItem (Uri uri, string mimetype, string group)
 		{
 			Debug.Assert (uri != null);
-			this.uri       = uri != null ? uri.ToString () : "";
+			this.uri       = uri;
 			this.mimeType  = mimetype;
-			this.timestamp = CreateTimestamp ();
+			NewTimeStamp ();
 			
 			if (!String.IsNullOrEmpty (group)) {
 				this.groups.Add (group);
@@ -133,17 +133,12 @@ namespace Freedesktop.RecentFiles
 		
 		public void NewTimeStamp ()
 		{
-			this.timestamp = CreateTimestamp ();
+			this.timestamp = DateTime.Now;
 		}
 		
 		public bool IsInGroup (string group)
 		{
 			return this.groups.Contains (group);
-		}
-		
-		public static int CreateTimestamp ()
-		{
-			return (int) (DateTime.UtcNow - new DateTime (1970, 1, 1, 0, 0, 0, 0)).TotalSeconds;
 		}
 		
 		public int CompareTo (object o)
@@ -156,9 +151,22 @@ namespace Freedesktop.RecentFiles
 		
 		public override string ToString ()
 		{
-			return String.Format ("[Uri={0}, MimeType={1}, Timestamp={2}]", this.Uri, this.MimeType, this.Timestamp);
+			return this.Uri != null ? this.Uri.LocalPath : "";
+		}
+
+#region Unix Time functions
+		static readonly DateTime UnixStartTime = new DateTime (1970, 1, 1, 0, 0, 0, 0);
+		static int ToUnixTime (DateTime time)
+		{
+			return (int)(time - UnixStartTime).TotalSeconds;
 		}
 		
+		static DateTime ToDateTime (int unixTime)
+		{
+			return UnixStartTime.AddSeconds (unixTime);
+		}
+#endregion
+
 #region I/O
 		public const string Node          = "RecentItem";
 		public const string UriNode       = "URI";
@@ -191,14 +199,17 @@ namespace Freedesktop.RecentFiles
 					switch (reader.LocalName) {
 					case "Uri":
 					case UriNode:
-						result.uri = reader.ReadElementString ();
+						string uriString = reader.ReadElementString ();
+						if (!String.IsNullOrEmpty (uriString)) {
+							result.uri = new Uri (uriString);
+						}
 						break;
 					case "MimeType":
 					case MimeTypeNode:
 						result.mimeType = reader.ReadElementString ();
 						break;
 					case TimestampNode:
-						result.timestamp = Int32.Parse (reader.ReadElementString ());
+						result.timestamp = ToDateTime (Int32.Parse (reader.ReadElementString ()));
 						break;
 					case PrivateNode:
 						result.privateData = reader.ReadElementString ();
@@ -218,9 +229,9 @@ namespace Freedesktop.RecentFiles
 		public void Write (XmlWriter writer)
 		{
 			writer.WriteStartElement (Node);
-			writer.WriteElementString (UriNode, this.uri);
+			writer.WriteElementString (UriNode, this.uri != null ? this.uri.ToString () : "");
 			writer.WriteElementString (MimeTypeNode, this.mimeType);
-			writer.WriteElementString (TimestampNode, this.timestamp.ToString ());
+			writer.WriteElementString (TimestampNode, ToUnixTime (this.timestamp).ToString ());
 			if (!String.IsNullOrEmpty (this.privateData))
 				writer.WriteElementString (PrivateNode, this.privateData);
 			

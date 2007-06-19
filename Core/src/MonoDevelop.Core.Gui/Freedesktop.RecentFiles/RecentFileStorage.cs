@@ -33,6 +33,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Xml;
@@ -73,6 +74,11 @@ namespace Freedesktop.RecentFiles
 		}
 		
 		int lockLevel = 0;
+		bool IsLocked {
+			get {
+				return lockLevel > 0;
+			}
+		}
 		void ObtainLock ()
 		{
 			lockLevel++;
@@ -84,7 +90,7 @@ namespace Freedesktop.RecentFiles
 		
 		void ReleaseLock ()
 		{
-			if (lockLevel <= 0)
+			if (!IsLocked)
 				throw new InvalidOperationException ("not locked.");
 			lockLevel--;
 			if (lockLevel == 0) {
@@ -140,30 +146,35 @@ namespace Freedesktop.RecentFiles
 		{
 			FilterOut (delegate(RecentItem item) {
 				return item.IsInGroup (group) &&
-					   item.Uri.StartsWith ("file:") &&
-					   !File.Exists (new Uri (item.Uri).LocalPath);
+					   item.Uri.IsFile &&
+					   !File.Exists (item.Uri.LocalPath);
 			});
 		}
 		
 		public void RemoveItem (Uri uri)
 		{
+			if (uri == null)
+				return;
 			FilterOut (delegate(RecentItem item) {
-				return item.Uri == uri.ToString ();
+				return item.Uri != null && item.Uri.Equals (uri);
 			});
 		}
 		
-		public void RemoveItem (RecentItem itemToRemove)
+		public void RemoveItem (RecentItem item)
 		{
-			FilterOut (delegate(RecentItem item) {
-				return item == itemToRemove;
-			});
+			if (item != null)
+				RemoveItem (item.Uri);
 		}
 		
 		public void RenameItem (Uri oldUri, Uri newUri)
 		{
+			if (oldUri == null || newUri == null)
+				return;
 			RunOperation (true, delegate(RecentItem item) {
-				if (item.Uri == oldUri.ToString ()) {
-					item.Uri = newUri.ToString ();
+				if (item.Uri == null)
+					return;
+				if (item.Uri.Equals (oldUri)) {
+					item.Uri = new Uri (newUri.ToString ());
 					item.NewTimeStamp ();
 				}
 			});
@@ -180,24 +191,33 @@ namespace Freedesktop.RecentFiles
 			return result.ToArray ();
 		}
 		
-		public void AddWithLimit (RecentItem item, string group, int max)
+		void CheckLimit (string group, int limit)
+		{
+			Debug.Assert (IsLocked);
+			RecentItem[] items = GetItemsInGroup (group);
+			for (int i = limit; i < items.Length; i++)
+				this.RemoveItem (items[i]);
+		}
+		
+		public void AddWithLimit (RecentItem item, string group, int limit)
 		{
 			ObtainLock ();
 			try {
-				RecentItem[] items = GetItemsInGroup (group);
-				if (items.Length == max && items.Length > 0)
-					this.RemoveItem (items[items.Length - 1]);
+				RemoveItem (item.Uri);
 				
 				List<RecentItem> store = ReadStore ();
 				store.Add (item);
 				WriteStore (store);
+				
+				CheckLimit (group, limit);
 			} finally {
 				ReleaseLock ();
 			}
 		}
 		
-		static List<RecentItem> ReadStore ()
+		List<RecentItem> ReadStore ()
 		{
+			Debug.Assert (IsLocked);
 			List<RecentItem> result = new List<RecentItem> ();
 			if (!File.Exists (RecentFileStorage.RecentFileFullPath))
 				return result;
@@ -225,6 +245,7 @@ namespace Freedesktop.RecentFiles
 		
 		void WriteStore (List<RecentItem> items)
 		{
+			Debug.Assert (IsLocked);
 			items.Sort ();
 			if (items.Count > MaxRecentItemsCount)
 				items.RemoveRange (MaxRecentItemsCount, items.Count - MaxRecentItemsCount);
