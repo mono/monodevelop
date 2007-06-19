@@ -1,3 +1,9 @@
+2007-06-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/AspNetAddIn.AspNetConfigurationPanelWidget.cs,
+	  AspNetAddIn.mdp: Changed some old 2.4 dependencies to 2.8. Use
+	  GettextCatalog for localizable strings.
+
 2007-06-18  Michael Hutchinson <m.j.hutchinson@gmail.com> 
 
 	* Gui/AspNetConfigurationPanel.cs,

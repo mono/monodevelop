@@ -38,7 +38,7 @@ namespace AspNetAddIn {
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
             this.label1.Xalign = 0F;
-            this.label1.LabelProp = Mono.Unix.Catalog.GetString("Code Generation");
+            this.label1.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("Code Generation");
             this.vbox1.Add(this.label1);
             Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.vbox1[this.label1]));
             w1.Position = 0;
@@ -66,7 +66,7 @@ namespace AspNetAddIn {
             this.autoGenerateNonPartialCodeBehind = new Gtk.CheckButton();
             this.autoGenerateNonPartialCodeBehind.CanFocus = true;
             this.autoGenerateNonPartialCodeBehind.Name = "autoGenerateNonPartialCodeBehind";
-            this.autoGenerateNonPartialCodeBehind.Label = Mono.Unix.Catalog.GetString("Autogenerate CodeBehind members for non-partial classes");
+            this.autoGenerateNonPartialCodeBehind.Label = MonoDevelop.Core.GettextCatalog.GetString("Autogenerate CodeBehind members for non-partial classes");
             this.autoGenerateNonPartialCodeBehind.DrawIndicator = true;
             this.autoGenerateNonPartialCodeBehind.UseUnderline = true;
             this.vbox2.Add(this.autoGenerateNonPartialCodeBehind);
