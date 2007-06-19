@@ -1,5 +1,9 @@
 2007-06-19  Mike Krüger <mkrueger@novell.com> 
 
+	removed standalone tag from .recently-used.
+
+2007-06-19  Mike Krüger <mkrueger@novell.com> 
+
 	removed the BOM in .recently-used file.
 
 2007-06-19  Mike Krüger <mkrueger@novell.com> 

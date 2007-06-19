@@ -254,7 +254,7 @@ namespace Freedesktop.RecentFiles
 			XmlTextWriter writer = new XmlTextWriter (RecentFileStorage.RecentFileFullPath, utf8WithoutByteOrderMark);
 			try {
 				writer.Formatting = Formatting.Indented;
-				writer.WriteStartDocument (true);
+				writer.WriteStartDocument ();
 				writer.WriteStartElement ("RecentFiles");
 				if (items != null) 
 					foreach (RecentItem item in items)
