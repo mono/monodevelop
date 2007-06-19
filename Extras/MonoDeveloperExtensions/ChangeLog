@@ -1,3 +1,10 @@
+2007-06-19  Ankit Jain  <jankit@novell.com>
+
+	Fix bug#81901.
+	* MonoProject.cs (AddSourceFile): Use File.* for file operations
+	instead of FileService.
+	(RemoveSourceFile): Likewise.
+
 2007-05-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDeveloperExtensions.addin.xml: Removed MS namespace from add-in

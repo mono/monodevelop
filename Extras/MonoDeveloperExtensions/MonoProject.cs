@@ -295,8 +295,8 @@ namespace MonoDeveloper
 				if (sr != null) sr.Close ();
 				if (sw != null) sw.Close ();
 			}
-			Runtime.FileService.DeleteFile (outFile + ".sources");
-			Runtime.FileService.MoveFile (outFile + ".sources.new", outFile + ".sources");
+			File.Delete (outFile + ".sources");
+			File.Move (outFile + ".sources.new", outFile + ".sources");
 		}
 		
 		bool RemoveSourceFile (string sourceFile)
@@ -325,8 +325,8 @@ namespace MonoDeveloper
 				if (sw != null) sw.Close ();
 			}
 			if (found) {
-				Runtime.FileService.DeleteFile (outFile + ".sources");
-				Runtime.FileService.MoveFile (outFile + ".sources.new", outFile + ".sources");
+				File.Delete (outFile + ".sources");
+				File.Move (outFile + ".sources.new", outFile + ".sources");
 			}
 			return found;
 		}
