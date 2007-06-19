@@ -41,7 +41,6 @@ namespace MonoDevelop.VersionControl.Subversion.Gui {
             this.Events = ((Gdk.EventMask)(256));
             this.Name = "MonoDevelop.VersionControl.Subversion.Gui.UserPasswordDialog";
             this.Title = Mono.Unix.Catalog.GetString("Subversion");
-            this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.Modal = true;
             this.Resizable = false;
             this.AllowGrow = false;

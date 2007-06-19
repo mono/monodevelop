@@ -73,7 +73,6 @@ namespace MonoDevelop.VersionControl.Subversion.Gui {
             this.Events = ((Gdk.EventMask)(256));
             this.Name = "MonoDevelop.VersionControl.Subversion.Gui.SslServerTrustDialog";
             this.Title = Mono.Unix.Catalog.GetString("Repository Certified by an Unknown Authority");
-            this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.Modal = true;
             // Internal child MonoDevelop.VersionControl.Subversion.Gui.SslServerTrustDialog.VBox
             Gtk.VBox w1 = this.VBox;
@@ -91,7 +90,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui {
             // Container child vbox2.Gtk.Box+BoxChild
             this.image1 = new Gtk.Image();
             this.image1.Name = "image1";
-            this.image1.Pixbuf = Gtk.IconTheme.Default.LoadIcon("gtk-dialog-warning", 48, 0);
+            this.image1.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-dialog-warning", 48);
             this.vbox2.Add(this.image1);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox2[this.image1]));
             w2.Position = 0;
