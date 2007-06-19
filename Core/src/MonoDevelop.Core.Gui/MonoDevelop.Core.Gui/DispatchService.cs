@@ -22,7 +22,7 @@ namespace MonoDevelop.Core.Gui
 		{
 			guiContext = new GuiSyncContext ();
 			
-			guiThreadId = AppDomain.GetCurrentThreadId();
+			guiThreadId = Thread.CurrentThread.ManagedThreadId;
 			
 			handler = new GLib.IdleHandler (guiDispatcher);
 			arrBackgroundQueue = new ArrayList ();
@@ -94,12 +94,12 @@ namespace MonoDevelop.Core.Gui
 		
 		public bool IsGuiThread
 		{
-			get { return guiThreadId == AppDomain.GetCurrentThreadId(); }
+			get { return guiThreadId == Thread.CurrentThread.ManagedThreadId; }
 		}
 		
 		public void AssertGuiThread ()
 		{
-			if (guiThreadId != AppDomain.GetCurrentThreadId())
+			if (guiThreadId != Thread.CurrentThread.ManagedThreadId)
 				throw new InvalidOperationException ("This method can only be called in the GUI thread");
 		}
 		
