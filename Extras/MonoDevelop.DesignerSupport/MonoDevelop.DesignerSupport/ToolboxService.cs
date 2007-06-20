@@ -200,25 +200,36 @@ namespace MonoDevelop.DesignerSupport
 		public IList GetToolboxItems (IToolboxConsumer consumer)
 		{
 			List<ItemToolboxNode> arr = new List<ItemToolboxNode> ();
+			Hashtable nodes = new Hashtable ();
 			
 			if (consumer != null) {
 				//get the user items
 				foreach (ItemToolboxNode node in userItems)
 					//hide unknown nodes -- they're only there because deserialisation has failed, so they won't actually be usable
 					if ( !(node is UnknownToolboxNode))
-						if (IsSupported (node, consumer))
+						if (!nodes.Contains (node) && IsSupported (node, consumer)) {
 							arr.Add (node);
+							nodes.Add (node, node);
+						}
 				
 				//merge the default items
 				foreach (ItemToolboxNode node in defaultItems)
-					if (IsSupported (node, consumer))
+					if (!nodes.Contains (node) && IsSupported (node, consumer)) {
 						arr.Add (node);
+						nodes.Add (node, node);
+					}
 				
 				//merge the list of dynamic items from each provider
 				foreach (IToolboxDynamicProvider prov in dynamicProviders) {
 					IList<ItemToolboxNode> dynItems = prov.GetDynamicItems (consumer);
-					if (dynItems != null)
-						arr.AddRange (dynItems);
+					if (dynItems != null) {
+						foreach (ItemToolboxNode node in dynItems) {
+							if (!nodes.Contains (node)) {
+								arr.Add (node);
+								nodes.Add (node, node);
+							}
+						}
+					}
 				}
 			}
 			

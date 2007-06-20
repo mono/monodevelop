@@ -129,6 +129,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			nodeView.NodeSelection.Changed += OnSelectionChanged;
 			nodeView.RowActivated  += OnRowActivated;
 			nodeView.DragBegin += OnDragBegin;
+			nodeView.DragDataDelete += OnDragDataDelete;
 
 			
 			//update view when toolbox service updated
@@ -260,9 +261,16 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		void OnDragBegin (object o, Gtk.DragBeginArgs arg)
 		{
-			toolboxService.DragSelectedItem (nodeView, arg.Context);
+			try {
+				toolboxService.DragSelectedItem (nodeView, arg.Context);
+			} catch (Exception ex) {
+				MonoDevelop.Core.Runtime.LoggingService.Error (ex);
+			}
 		}
 		
+		void OnDragDataDelete (object o, Gtk.DragDataDeleteArgs arg)
+		{
+		}
 		#endregion	
 	}
 }
