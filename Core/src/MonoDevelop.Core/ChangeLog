@@ -1,3 +1,7 @@
+2007-06-20  Mike Krüger <mkrueger@novell.com> 
+
+	String parser service now has more tags: year,month,day, hour,minute,second.
+
 2007-06-14  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Core/SystemAssemblyService.cs (GetAssemblyNameForVersion):

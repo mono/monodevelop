@@ -69,12 +69,33 @@ namespace MonoDevelop.Core
 				case "DATE": // current date
 					propertyValue = DateTime.Today.ToShortDateString();
 					break;
+				case "YEAR": // current year
+					propertyValue = DateTime.Today.Year;
+					break;
+				case "MONTH": // current month
+					propertyValue = DateTime.Today.Month;
+					break;
+				case "DAY": // current day
+					propertyValue = DateTime.Today.Day;
+					break;
+				
 				case "TIME": // current time
 					propertyValue = DateTime.Now.ToShortTimeString();
 					break;
+				case "HOUR": // current hour
+					propertyValue = DateTime.Now.Hour;
+					break;
+				case "MINUTE": // current minute
+					propertyValue = DateTime.Now.Minute;
+					break;
+				case "SECOND": // current second
+					propertyValue = DateTime.Now.Second;
+					break;
+				
 				case "USER": // current time
 					propertyValue = Environment.UserName;
 					break;
+				
 				default:
 					propertyValue = null;
 					if (customTags != null) {
