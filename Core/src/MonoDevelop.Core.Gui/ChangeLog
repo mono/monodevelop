@@ -1,3 +1,7 @@
+2007-06-20  Mike Krüger <mkrueger@novell.com> 
+
+	Fixed a bug (treeviewoptions asserted that all option dialog widgets are frames).
+
 2007-06-19  Mike Krüger <mkrueger@novell.com> 
 
 	* icons/Icons.16x16.ClosedFolderBitmap: overworked some of the windows

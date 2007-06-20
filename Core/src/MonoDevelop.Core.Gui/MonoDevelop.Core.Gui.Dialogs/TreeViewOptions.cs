@@ -107,7 +107,8 @@ namespace MonoDevelop.Core.Gui.Dialogs {
 		{
 			if (descriptor.DialogPanel != null) { // may be null, if it is only a "path"
 				descriptor.DialogPanel.CustomizationObject = customizer;
-				((Gtk.Frame)descriptor.DialogPanel.Control).Shadow = Gtk.ShadowType.None;
+				if (descriptor.DialogPanel.Control is Gtk.Frame) 
+					((Gtk.Frame)descriptor.DialogPanel.Control).Shadow = Gtk.ShadowType.None;
 				OptionPanels.Add (descriptor.DialogPanel);
 				mainBook.AppendPage (descriptor.DialogPanel.Control, new Gtk.Label ("a"));
 			}
