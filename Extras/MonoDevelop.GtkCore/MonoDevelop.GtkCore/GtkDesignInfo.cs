@@ -32,6 +32,7 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 
 using MonoDevelop.Core;
@@ -52,6 +53,11 @@ namespace MonoDevelop.GtkCore
 		IDotNetLanguageBinding binding;
 		ProjectResourceProvider resourceProvider;
 		
+		static string[] GtkSharpAssemblies = new string [] { 
+			"art-sharp", "atk-sharp", "gconf-sharp", "gdk-sharp", "glade-sharp","glib-sharp","gnome-sharp",
+			"gnome-vfs-sharp", "gtk-dotnet", "gtkhtml-sharp", "gtk-sharp", "pango-sharp", "rsvg-sharp", "vte-sharp"
+		};
+		
 		[ItemProperty (DefaultValue=false)]
 		bool partialTypes;
 		
@@ -63,6 +69,9 @@ namespace MonoDevelop.GtkCore
 		
 		[ItemProperty (DefaultValue="Mono.Unix.Catalog")]
 		string gettextClass = "Mono.Unix.Catalog";
+		
+		[ItemProperty]
+		string gtkVersion;
 		
 		public GtkDesignInfo ()
 		{
@@ -156,6 +165,25 @@ namespace MonoDevelop.GtkCore
 		public string GettextClass {
 			get { return gettextClass; }
 			set { gettextClass = value; }
+		}
+		
+		public string TargetGtkVersion {
+			get {
+				if (gtkVersion != null)
+					return gtkVersion;
+				else
+					return GtkCoreService.DefaultGtkVersion;
+			}
+			set {
+				if (TargetGtkVersion != value) {
+					if (value != GtkCoreService.DefaultGtkVersion)
+						gtkVersion = value;
+					else
+						gtkVersion = null;
+					GuiBuilderProject.SteticProject.TargetGtkVersion = TargetGtkVersion;
+					GuiBuilderProject.Save (false);
+				}
+			}
 		}
 		
 		public bool IsExported (string name)
@@ -301,14 +329,42 @@ namespace MonoDevelop.GtkCore
 			
 			// Add gtk-sharp and gdk-sharp references, if not already added.
 			
+			string gtkAsmVersion = "";
+			
+			foreach (SystemPackage p in Runtime.SystemAssemblyService.GetPackages ()) {
+				if (p.Name == "gtk-sharp-2.0" && p.Version == TargetGtkVersion) {
+					string fn = Runtime.SystemAssemblyService.GetAssemblyFullName (p.Assemblies[0]);
+					int i = fn.IndexOf (',');
+					gtkAsmVersion = fn.Substring (i+1).Trim ();
+					break;
+				}
+			}
+			
 			bool gtk=false, gdk=false, posix=false;
-			foreach (ProjectReference r in project.ProjectReferences) {
-				if (r.Reference.StartsWith ("gtk-sharp") && r.ReferenceType == ReferenceType.Gac)
+			foreach (ProjectReference r in new ArrayList (project.ProjectReferences)) {
+				if (r.ReferenceType != ReferenceType.Gac)
+					continue;
+				int i = r.Reference.IndexOf (',');
+				if (i == -1)
+					continue;
+
+				string aname = r.Reference.Substring (0,i).Trim ();
+				if (aname == "gtk-sharp")
 					gtk = true;
-				else if (r.Reference.StartsWith ("gdk-sharp") && r.ReferenceType == ReferenceType.Gac)
+				else if (aname == "gdk-sharp")
 					gdk = true;
-				else if (r.Reference.StartsWith ("Mono.Posix") && r.ReferenceType == ReferenceType.Gac)
+				else if (aname == "Mono.Posix")
 					posix = true;
+				
+				// Is a gtk-sharp-2.0 assembly?
+				if (Array.IndexOf (GtkSharpAssemblies, aname) == -1)
+					continue;
+				
+				// Correct version?
+				if (r.Reference.Substring (i+1).Trim() != gtkAsmVersion) {
+					project.ProjectReferences.Remove (r);
+					project.ProjectReferences.Add (new ProjectReference (ReferenceType.Gac, aname + ", " + gtkAsmVersion));
+				}
 			}
 			if (!gtk)
 				project.ProjectReferences.Add (new ProjectReference (ReferenceType.Gac, typeof(Gtk.Widget).Assembly.FullName));

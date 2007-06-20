@@ -10,12 +10,26 @@ namespace MonoDevelop.GtkCore.Dialogs
 	class GtkFeatureWidget : Gtk.VBox
 	{
 		CheckButton libCheck;
+		ComboBox versionCombo;
 		
 		public GtkFeatureWidget (DotNetProject project)
 		{
 			Spacing = 6;
 			Label lab = new Label (GettextCatalog.GetString ("Gtk# designer support is enabled."));
 			PackStart (lab, false, false, 0);
+			
+			versionCombo = Gtk.ComboBox.NewText ();
+			foreach (string v in GtkCoreService.SupportedGtkVersions)
+				versionCombo.AppendText (v);
+			versionCombo.Active = 0;
+			
+			// GTK# version selector
+			HBox box = new HBox (false, 6);
+			Gtk.Label vlab = new Label (GettextCatalog.GetString ("Target GTK# version:"));
+			box.PackStart (vlab, false, false, 0);
+			box.PackStart (versionCombo, false, false, 0);
+			box.PackStart (new Label (GettextCatalog.GetString ("(or upper)")), false, false, 0);
+			PackStart (box, false, false, 0);
 			
 			DotNetProjectConfiguration conf = project.ActiveConfiguration as DotNetProjectConfiguration;
 			if (conf != null && conf.CompileTarget == CompileTarget.Library || conf.CompiledOutputName.EndsWith (".dll")) {

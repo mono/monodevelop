@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.DesignerSupport.Toolbox;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Serialization;
 using Stetic;
 using MonoDevelop.Core;
 
@@ -30,25 +32,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			foreach (ComponentType type in types) {
 				if (type.Category == "window")
 					continue;
-				ComponentToolboxNode node = new ComponentToolboxNode ();
-				node.Name = type.Description;
-				node.ComponentType = type;
-				node.Category = GetCategoryName (type.Category);
-				node.Icon = type.Icon;
+				ComponentToolboxNode node = new ComponentToolboxNode (type);
 				list.Add (node);
 				list.Sort ();
 			}
 			return list;
-		}
-		
-		string GetCategoryName (string cat)
-		{
-			if (cat == "container")
-				return GettextCatalog.GetString ("Containers");
-			else if (cat == "widget")
-				return GettextCatalog.GetString ("Widgets");
-			else
-				return cat;
 		}
 		
 		public void NotifyItemsChanged ()
@@ -62,7 +50,67 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	
 	class ComponentToolboxNode: ItemToolboxNode, IComparable
 	{
-		public ComponentType ComponentType;
+		public ComponentType componentType;
+		
+		[ItemProperty]
+		ReferenceType refType;
+		[ItemProperty]
+		string reference;
+		[ItemProperty]
+		string className;
+		
+		public ComponentToolboxNode ()
+		{
+		}
+		
+		public ComponentToolboxNode (ComponentType type)
+		{
+			Name = type.Description.Length > 0 ? type.Description : type.Name;
+			componentType = type;
+			className = type.ClassName;
+			Category = GetCategoryName (type.Category);
+			Icon = type.Icon;
+		}
+		
+		public Stetic.ComponentType ComponentType {
+			get {
+				return componentType;
+			}
+		}
+
+		public ReferenceType ReferenceType {
+			get {
+				return refType;
+			}
+			set {
+				refType = value;
+			}
+		}
+
+		public string Reference {
+			get {
+				return reference;
+			}
+			set {
+				reference = value;
+			}
+		}
+
+		public string ClassName {
+			get {
+				return className;
+			}
+		}
+		
+		string GetCategoryName (string cat)
+		{
+			if (cat == "container")
+				return GettextCatalog.GetString ("Containers");
+			else if (cat == "widget")
+				return GettextCatalog.GetString ("Widgets");
+			else
+				return cat;
+		}
 		
 		public int CompareTo (object obj)
 		{

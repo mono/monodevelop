@@ -6,7 +6,7 @@
        url       = ""
        description = "Provides support for visual design of GTK# windows, dialogs and widgets."
 	   category    = "IDE extensions"
-       version   = "0.14.0">
+       version   = "0.15.0">
 
 	<Runtime>
 		<Import assembly="libstetic.dll"/>
@@ -180,6 +180,14 @@
 	
 	<Extension path = "/MonoDevelop/DesignerSupport/ToolboxProviders">
 		<Class class = "MonoDevelop.GtkCore.GuiBuilder.ToolboxProvider" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/DesignerSupport/ToolboxLoaders">
+		<Class id="ToolboxItemLoader" class="MonoDevelop.GtkCore.GuiBuilder.ToolboxLoader"/>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
+		<DataType class = "MonoDevelop.GtkCore.GuiBuilder.ComponentToolboxNode" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Workbench/ProjectFeatures">

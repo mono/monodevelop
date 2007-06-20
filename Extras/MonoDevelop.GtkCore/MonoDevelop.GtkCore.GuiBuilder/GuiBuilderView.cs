@@ -387,9 +387,25 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			if (designer != null) {
 				ComponentToolboxNode node = item as ComponentToolboxNode;
-				if (node != null)
-					designer.BeginComponentDrag (node.ComponentType, source, ctx);
+				if (node != null) {
+					if (node.Reference == null)
+						designer.BeginComponentDrag (node.ComponentType, source, ctx);
+					else
+						designer.BeginComponentDrag (node.Name, node.ClassName, source, ctx, delegate { CheckReference (node); });
+				}
 			}
+		}
+			
+		void CheckReference (ComponentToolboxNode node)
+		{
+				if (node.Reference == null)
+					return;
+				foreach (ProjectReference pr in gproject.Project.ProjectReferences) {
+					if (pr.Reference == node.Reference)
+						return;
+				}
+				ProjectReference pref = new ProjectReference (node.ReferenceType, node.Reference);
+				gproject.Project.ProjectReferences.Add (pref);
 		}
 
 		Gtk.TargetEntry[] targets = new Gtk.TargetEntry[] {

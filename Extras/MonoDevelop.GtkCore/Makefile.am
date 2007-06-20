@@ -44,6 +44,7 @@ FILES =  \
 	MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs \
 	MonoDevelop.GtkCore.GuiBuilder/GuiBuilderWindow.cs \
 	MonoDevelop.GtkCore.GuiBuilder/PropertiesWidget.cs \
+	MonoDevelop.GtkCore.GuiBuilder/ToolboxLoader.cs \
 	MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs \
 	MonoDevelop.GtkCore.NodeBuilders/ActionGroupNodeBuilder.cs \
 	MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs \

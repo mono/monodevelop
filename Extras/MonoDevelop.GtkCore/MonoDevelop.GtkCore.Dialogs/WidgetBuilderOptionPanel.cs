@@ -56,6 +56,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 			[Glade.Widget] Gtk.CheckButton checkGtkEnabled;
 			[Glade.Widget] Gtk.Entry entryGettext;
 			[Glade.Widget] Gtk.Notebook notebook;
+			[Glade.Widget] Gtk.ComboBox comboVersions;
 			
 			ListStore store;
 			TreeViewColumn column;
@@ -111,6 +112,11 @@ namespace MonoDevelop.GtkCore.Dialogs
 				notebook.Sensitive = checkGtkEnabled.Active;
 				entryGettext.Sensitive = checkGettext.Active;
 				
+				comboVersions.RemoveText (0);
+				foreach (string v in GtkCoreService.SupportedGtkVersions)
+					comboVersions.AppendText (v);
+				comboVersions.Active = Array.IndexOf (GtkCoreService.SupportedGtkVersions, designInfo.TargetGtkVersion);
+				
 				checkWidgetLib.Clicked += delegate {
 					tree.Sensitive = checkWidgetLib.Active;
 				};
@@ -158,6 +164,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 					
 					designInfo.GenerateGettext = checkGettext.Active;
 					designInfo.GettextClass = entryGettext.Text;
+					designInfo.TargetGtkVersion = comboVersions.ActiveText;
 						
 					designInfo.UpdateGtkFolder ();
 					designInfo.ForceCodeGenerationOnBuild ();

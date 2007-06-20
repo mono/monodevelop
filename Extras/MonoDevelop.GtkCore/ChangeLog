@@ -1,3 +1,19 @@
+2007-06-20  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gui.glade, MonoDevelop.GtkCore/GtkDesignInfo.cs,
+	  MonoDevelop.GtkCore/GtkCoreService.cs,
+	  MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs,
+	  MonoDevelop.GtkCore.Dialogs/GtkFeatureWidget.cs: Allow selecting
+	  the target GTK# version of the project.
+	* MonoDevelop.GtkCore.addin.xml, MonoDevelop.GtkCore.mdp, Makefile.am,
+	  MonoDevelop.GtkCore.GuiBuilder/ToolboxLoader.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs: Implemented a
+	  toolbox loader, which allows registering assemblies in the toolbox.
+	  When a widget from a toolbox is dropped to a window, MD will now
+	  add a reference to the required assembly.
+	* lib/libsteticui.dll, lib/libstetic.dll: Updated from stetic module.
+
 2007-06-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* lib/libsteticui.dll: One last update.
