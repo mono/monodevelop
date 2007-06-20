@@ -1,3 +1,10 @@
+2007-06-20  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.AddIns/PackageExtensionNode.cs,
+	  MonoDevelop.Core/SystemPackage.cs,
+	  MonoDevelop.Core/SystemAssemblyService.cs: Allow specifying the gac
+	  root where assemblies from a package are installed.
+
 2007-06-20  Mike Krüger <mkrueger@novell.com> 
 
 	forget some ToStrings ()

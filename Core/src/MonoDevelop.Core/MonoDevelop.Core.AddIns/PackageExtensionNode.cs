@@ -16,6 +16,9 @@ namespace MonoDevelop.Core.AddIns
 		[NodeAttribute("clrVersion")]
 		ClrVersion clrVersion = ClrVersion.Default;
 		
+		[NodeAttribute ("gacRoot")]
+		bool hasGacRoot;
+		
 		string[] assemblies;
 		
 		public string[] Assemblies {
@@ -38,6 +41,15 @@ namespace MonoDevelop.Core.AddIns
 		
 		public ClrVersion TargetClrVersion {
 			get { return clrVersion; }
+		}
+		
+		public string GacRoot {
+			get {
+				if (hasGacRoot)
+					return Addin.GetFilePath (".");
+				else
+					return null;
+			}
 		}
 	}
 }

@@ -38,8 +38,9 @@ namespace MonoDevelop.Core
 		string[] assemblies;
 		bool isInternal;
 		ClrVersion targetVersion;
+		string gacRoot;
 		
-		internal void Initialize (string name, string version, string description, string[] assemblies, ClrVersion targetVersion, bool isInternal)
+		internal void Initialize (string name, string version, string description, string[] assemblies, ClrVersion targetVersion, string gacRoot, bool isInternal)
 		{
 			this.isInternal = isInternal;
 			this.name = name;
@@ -47,10 +48,15 @@ namespace MonoDevelop.Core
 			this.assemblies = assemblies;
 			this.description = description;
 			this.targetVersion = targetVersion;
+			this.gacRoot = gacRoot;
 		}
 		
 		public string Name {
 			get { return name; }
+		}
+		
+		public string GacRoot {
+			get { return gacRoot; }
 		}
 		
 		public string Version {
