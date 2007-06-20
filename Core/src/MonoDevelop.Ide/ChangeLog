@@ -1,3 +1,7 @@
+2007-06-20  Mike Krüger <mkrueger@novell.com> 
+
+	Worked on the standard header feature.
+
 2007-06-19 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 
 	* templates/EmptyEnum.xft.xml,

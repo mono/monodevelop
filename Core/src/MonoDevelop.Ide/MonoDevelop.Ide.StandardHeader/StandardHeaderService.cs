@@ -30,17 +30,35 @@ using System;
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Xml;
 using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.StandardHeaders
 {
 	public static class StandardHeaderService
 	{
-		const string version          = "1.0";
+		const string version          = "1.1";
 		const string templateFileName = "StandardHeader.xml";
 		
 		static string header;
+		static bool   generateComments;
+		
+		static List<KeyValuePair<string, string>> headerTemplates = new List<KeyValuePair<string, string>> ();
+		static List<KeyValuePair<string, string>> customTemplates = new List<KeyValuePair<string, string>> ();
+		
+		public static ReadOnlyCollection<KeyValuePair<string, string>> HeaderTemplates {
+			get {
+				return headerTemplates.AsReadOnly ();
+			}
+		}
+		
+		public static ReadOnlyCollection<KeyValuePair<string, string>> CustomTemplates {
+			get {
+				return customTemplates.AsReadOnly ();
+			}
+		}
 		
 		public static string Header {
 			get { 
@@ -49,7 +67,17 @@ namespace MonoDevelop.Ide.StandardHeaders
 			set {
 				if (header != value) {
 					header = value;
-					Save (ConfigLocation);
+				}
+			}
+		}
+		
+		public static bool GenerateComments {
+			get {
+				return generateComments;
+			}
+			set {
+				if (generateComments != value) {
+					generateComments = value;
 				}
 			}
 		}
@@ -63,14 +91,13 @@ namespace MonoDevelop.Ide.StandardHeaders
 		
 		static string GetComment (string language)
 		{
-			switch (language) {
-			case "C#":
-				return "//";
-			case "VBNet":
-				return "'";
-			}
+			LanguageBindingService languageBindingService = (LanguageBindingService) ServiceManager.GetService (typeof (LanguageBindingService));
+			ILanguageBinding binding = languageBindingService.GetBindingPerLanguageName (language);
+			if (binding != null)
+				return binding.CommentTag;
 			return null;
 		}
+		
 		public static string GetHeader (string language)
 		{
 			if (Header == null || GetComment (language) == null) {
@@ -81,18 +108,44 @@ namespace MonoDevelop.Ide.StandardHeaders
 			char ch = Environment.NewLine.ToCharArray () [0];
 			string[] lines = Header.Split (ch);
 			foreach (string line in lines) {
-				result.Append (GetComment (language));
+				if (generateComments)
+					result.Append (GetComment (language));
 				result.Append (line);
 				result.Append (Environment.NewLine);
 			}
 			return result.ToString();
 		}
 		
+		static void LoadHeaderTemplates ()
+		{
+			Stream stream = typeof (StandardHeaderService).Assembly.GetManifestResourceStream ("StandardHeaderTemplates.xml");
+			if (stream != null) {
+				XmlTextReader reader = new XmlTextReader (stream);
+				try {
+					while (reader.Read ()) {
+						if (reader.IsStartElement ()) {
+							switch (reader.LocalName) {
+							case HeaderNode:
+								string name   = reader.GetAttribute (NameAttribute);
+								string header = reader.ReadString ();
+								headerTemplates.Add (new KeyValuePair<string, string> (name, header));
+								break;
+							}
+						}
+					}
+				} finally {
+					reader.Close ();					
+				}
+			}
+		}
+		
 		static StandardHeaderService ()
 		{
+			LoadHeaderTemplates ();
+			
 			if (File.Exists (ConfigLocation)) {
-				Load (ConfigLocation);
-				return;
+				if (Load (ConfigLocation))
+					return;
 			}
 			PropertyService propertyService = (PropertyService) ServiceManager.GetService (typeof (PropertyService));
 			string file = Path.Combine (Path.Combine (propertyService.DataDirectory, "options"), templateFileName);
@@ -100,36 +153,93 @@ namespace MonoDevelop.Ide.StandardHeaders
 				Load (file);
 		}
 		
-#region I/O
-		const string Node             = "StandardHeader";
-		const string VersionAttribute = "version";
-		
-		static void Load (string fileName)
+		public static void RemoveTemplate (string name)
 		{
-			using (XmlReader reader = XmlTextReader.Create (fileName)) {
-				while (reader.Read ()) {
-					if (reader.IsStartElement ()) {
-						switch (reader.LocalName) {
-						case Node:
-							header = reader.ReadString ();
-							break;
-						}
-					}
+			for (int i = 0; i < customTemplates.Count; ++i) {
+				Console.WriteLine (customTemplates[i].Key + " -- " + name + " : " + (customTemplates[i].Key == name));
+				if (customTemplates[i].Key == name) {
+					customTemplates.RemoveAt (i);
+					i--;
+					continue;
 				}
 			}
 		}
 		
+		public static void AddTemplate (string name, string header)
+		{
+			customTemplates.Add (new KeyValuePair<string, string> (name, header));
+		}
+		
+		public static void CommitChanges ()
+		{
+			Save (ConfigLocation);
+		}
+		
+#region I/O
+		const string Node             = "StandardHeader";
+		const string HeaderNode       = "Header";
+		const string NameAttribute    = "_name";
+		const string VersionAttribute = "version";
+		const string GenerateCommentsAttribute = "generateComments";
+		
+		static bool Load (string fileName)
+		{
+			customTemplates.Clear ();
+			XmlReader reader = XmlTextReader.Create (fileName);
+			try {
+				while (reader.Read ()) {
+					if (reader.IsStartElement ()) {
+						switch (reader.LocalName) {
+						case Node:
+							if (!String.IsNullOrEmpty (reader.GetAttribute (GenerateCommentsAttribute)))
+								generateComments = Boolean.Parse (reader.GetAttribute (GenerateCommentsAttribute));
+							string fileVersion = reader.GetAttribute (VersionAttribute);
+							if (fileVersion != version) 
+								return false;
+							break;
+						case HeaderNode:
+							string name       = reader.GetAttribute (NameAttribute);
+							string headerText = reader.ReadString ();
+							if (String.IsNullOrEmpty (name)) {
+								header = reader.ReadString ();
+							}
+							customTemplates.Add (new KeyValuePair<string, string> (name, header));
+							break;
+							
+						}
+					}
+				}
+			} finally {
+				reader.Close ();
+			}
+			return true;
+		}
+		
 		static void Save (string fileName)
 		{
-			using (XmlWriter writer = XmlTextWriter.Create (fileName)) {
+			XmlWriter writer = XmlTextWriter.Create (fileName);
+			try {
 				writer.Settings.Indent = true;
 				writer.WriteStartElement (Node);
 				writer.WriteAttributeString (VersionAttribute, version);
+				writer.WriteAttributeString (GenerateCommentsAttribute, generateComments.ToString ());
+				
+				writer.WriteStartElement (HeaderNode);
 				writer.WriteString (header);
+				writer.WriteEndElement (); // HeaderNode
+				
+				foreach (KeyValuePair<string, string> template in customTemplates) { 
+					writer.WriteStartElement (HeaderNode);
+					writer.WriteAttributeString (NameAttribute, template.Key);
+					writer.WriteString (template.Value);
+					writer.WriteEndElement (); // HeaderNode
+				}
+				
 				writer.WriteEndElement (); // Node
+			} finally {
+				writer.Close ();
 			}
 		}
 #endregion
-		
 	}
 }

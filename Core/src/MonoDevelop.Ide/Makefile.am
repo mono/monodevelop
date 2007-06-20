@@ -40,6 +40,8 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.RenameItemDialog.cs \
+	gtk-gui/MonoDevelop.Ide.NewHeaderTemplateDialog.cs \
+	gtk-gui/MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateGroup.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateLoader.cs \
@@ -77,8 +79,8 @@ FILES =  \
 	MonoDevelop.Ide.ExternalTools/ExternalTool.cs \
 	MonoDevelop.Ide.ExternalTools/ToolLoader.cs \
 	MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs \
-	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HTMLInterfaces.cs \
 	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs \
+	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HTMLInterfaces.cs \
 	MonoDevelop.Ide.Gui.Content/IBookmarkBuffer.cs \
 	MonoDevelop.Ide.Gui.Content/IClipboardHandler.cs \
 	MonoDevelop.Ide.Gui.Content/ICodeStyleOperations.cs \
@@ -264,6 +266,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/Workbench.cs \
 	MonoDevelop.Ide.Gui/WorkbenchMemento.cs \
 	MonoDevelop.Ide.Gui/WorkbenchWindowCollection.cs \
+	MonoDevelop.Ide.StandardHeader/NewHeaderTemplateDialog.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderPanel.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs \
 	MonoDevelop.Ide.Tasks/CommentTasksView.cs \
@@ -301,6 +304,7 @@ RES =  \
 	icons/navigate-previous.png \
 	icons/parsing.png \
 	icons/SplashScreen.png \
+	MonoDevelop.Ide.StandardHeader/StandardHeaderTemplates.xml \
 	templates/AppConfigFile.xft.xml \
 	templates/BlankCombine.xpt.xml \
 	templates/EmptyClass.xft.xml \

@@ -28,7 +28,7 @@
 
 using System;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core;
@@ -38,34 +38,171 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.StandardHeaders
 {
-	public class StandardHeaderPanel : AbstractOptionPanel
+	public partial class StandardHeaderPanel : Gtk.Bin, IDialogPanel
 	{
-		StandardHeaderWidget widget;
-		
-		public override void LoadPanelContents ()
+		public StandardHeaderPanel()
 		{
-			Add (widget = new  StandardHeaderWidget ());
+			this.Build();
 		}
 		
-		public override bool StorePanelContents ()
-		{			
-			return widget.Store();
-		}
 		
-		class StandardHeaderWidget : GladeWidgetExtract 
+		public void LoadPanelContents()
 		{
-			[Glade.Widget] public Gtk.TextView textView;
+			this.headerTextview.Buffer.Text         = StandardHeaderService.Header;
+			this.generateCommentsCheckbutton.Active = StandardHeaderService.GenerateComments;
 			
-			public StandardHeaderWidget () : base ("Base.glade", "StandardHeaderPanel")
-			{
-				textView.Buffer.Text = StandardHeaderService.Header;
+			foreach (KeyValuePair<string, string> header in StandardHeaderService.CustomTemplates) {
+				templateCombobox.AppendText (header.Key);
+			}
+			foreach (KeyValuePair<string, string> header in StandardHeaderService.HeaderTemplates) {
+				templateCombobox.AppendText (header.Key);
 			}
 			
-			public bool Store ()
-			{
-				StandardHeaderService.Header = textView.Buffer.Text;
-				return true;
+			this.headerTextview.Buffer.Changed += new EventHandler (ClearTemplateComboBox);
+			
+			this.addButton.Clicked += delegate {
+				NewHeaderTemplateDialog newHeaderTemplateDialog = new NewHeaderTemplateDialog ();
+				ResponseType response = (ResponseType)newHeaderTemplateDialog.Run ();
+				if (response == ResponseType.Ok) {
+					StandardHeaderService.AddTemplate (newHeaderTemplateDialog.HeaderName, this.headerTextview.Buffer.Text);
+					templateCombobox.AppendText (newHeaderTemplateDialog.HeaderName);
+				}
+				newHeaderTemplateDialog.Destroy ();
+			};
+			
+			this.removeButton.Clicked += delegate {
+				if (templateCombobox.Active < 0)
+					return;
+				if (Services.MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure to remove the custom header template '{0}'?", templateCombobox.ActiveText), "MonoDevelop")) {
+					StandardHeaderService.RemoveTemplate (templateCombobox.ActiveText);
+					templateCombobox.RemoveText (templateCombobox.Active);
+				}
+			};
+			
+			templateCombobox.Changed += delegate {
+				if (templateCombobox.Active < 0)
+					return;
+				this.headerTextview.Buffer.Changed -= new EventHandler (ClearTemplateComboBox);
+				this.addButton.Sensitive = false;
+				foreach (KeyValuePair<string, string> header in StandardHeaderService.CustomTemplates) {
+					if (header.Key == templateCombobox.ActiveText) {
+						this.headerTextview.Buffer.Text = header.Value;
+						this.removeButton.Sensitive = true;
+						break;
+					}
+				}
+							
+				foreach (KeyValuePair<string, string> header in StandardHeaderService.HeaderTemplates) {
+					if (header.Key == templateCombobox.ActiveText) {
+						this.headerTextview.Buffer.Text = header.Value;
+						this.removeButton.Sensitive = false;
+						break;
+					}
+				}
+				this.headerTextview.Buffer.Changed += new EventHandler (ClearTemplateComboBox);
+			};
+		}
+		
+		void ClearTemplateComboBox (object sender, EventArgs e)
+		{
+			templateCombobox.Active     = -1;
+			this.removeButton.Sensitive = false;
+			this.addButton.Sensitive    = true;
+		}
+		
+		public bool StorePanelContents()
+		{
+			StandardHeaderService.Header           = headerTextview.Buffer.Text;
+			StandardHeaderService.GenerateComments = generateCommentsCheckbutton.Active;
+			StandardHeaderService.CommitChanges ();
+			return true;
+		}
+		
+#region Cut & Paste from abstract option panel
+		bool   wasActivated = false;
+		bool   isFinished   = true;
+		object customizationObject = null;
+		
+		public Widget Control {
+			get {
+				return this;
 			}
 		}
+
+		public virtual Gtk.Image Icon {
+			get {
+				return null;
+			}
+		}
+		
+		public bool WasActivated {
+			get {
+				return wasActivated;
+			}
+		}
+		
+		public virtual object CustomizationObject {
+			get {
+				return customizationObject;
+			}
+			set {
+				customizationObject = value;
+				OnCustomizationObjectChanged();
+			}
+		}
+		
+		public virtual bool EnableFinish {
+			get {
+				return isFinished;
+			}
+			set {
+				if (isFinished != value) {
+					isFinished = value;
+					OnEnableFinishChanged();
+				}
+			}
+		}
+
+		public virtual bool ReceiveDialogMessage(DialogMessage message)
+		{
+			try {
+				switch (message) {
+					case DialogMessage.Activated:
+						if (!wasActivated) {
+							LoadPanelContents();
+							wasActivated = true;
+						}
+						break;
+					case DialogMessage.OK:
+						if (wasActivated) {
+							return StorePanelContents();
+						}
+						break;
+				}
+			} catch (Exception ex) {
+				Services.MessageService.ShowError (ex);
+			}
+			
+			return true;
+		}
+		
+		
+		protected virtual void OnEnableFinishChanged()
+		{
+			if (EnableFinishChanged != null) {
+				EnableFinishChanged(this, null);
+			}
+		}
+		protected virtual void OnCustomizationObjectChanged()
+		{
+			if (CustomizationObjectChanged != null) {
+				CustomizationObjectChanged(this, null);
+			}
+		}
+		
+		public event EventHandler CustomizationObjectChanged;
+		public event EventHandler EnableFinishChanged;
+#endregion
 	}
+	
 }
