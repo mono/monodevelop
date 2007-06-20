@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide
 			this.Build();
 			buttonOk.Sensitive = false;
 			this.nameEntry.Changed += delegate {
-				buttonOk.Sensitive = !String.IsNullOrEmpty (HeaderName);
+				buttonOk.Sensitive = !string.IsNullOrEmpty (HeaderName);
 			};
 		}
 	}

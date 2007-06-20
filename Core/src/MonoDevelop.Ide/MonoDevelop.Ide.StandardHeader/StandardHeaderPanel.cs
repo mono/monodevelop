@@ -62,8 +62,8 @@ namespace MonoDevelop.Ide.StandardHeaders
 			
 			this.addButton.Clicked += delegate {
 				NewHeaderTemplateDialog newHeaderTemplateDialog = new NewHeaderTemplateDialog ();
-				ResponseType response = (ResponseType)newHeaderTemplateDialog.Run ();
-				if (response == ResponseType.Ok) {
+				Gtk.ResponseType response = (Gtk.ResponseType)newHeaderTemplateDialog.Run ();
+				if (response == Gtk.ResponseType.Ok) {
 					StandardHeaderService.AddTemplate (newHeaderTemplateDialog.HeaderName, this.headerTextview.Buffer.Text);
 					templateCombobox.AppendText (newHeaderTemplateDialog.HeaderName);
 				}
@@ -73,7 +73,7 @@ namespace MonoDevelop.Ide.StandardHeaders
 			this.removeButton.Clicked += delegate {
 				if (templateCombobox.Active < 0)
 					return;
-				if (Services.MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure to remove the custom header template '{0}'?", templateCombobox.ActiveText), "MonoDevelop")) {
+				if (Services.MessageService.AskQuestion (MonoDevelop.Core.GettextCatalog.GetString ("Are you sure to remove the custom header template '{0}'?", templateCombobox.ActiveText), "MonoDevelop")) {
 					StandardHeaderService.RemoveTemplate (templateCombobox.ActiveText);
 					templateCombobox.RemoveText (templateCombobox.Active);
 				}
@@ -82,9 +82,9 @@ namespace MonoDevelop.Ide.StandardHeaders
 			templateCombobox.Changed += delegate {
 				if (templateCombobox.Active < 0)
 					return;
-				this.headerTextview.Buffer.Changed -= new EventHandler (ClearTemplateComboBox);
+				this.headerTextview.Buffer.Changed -= new System.EventHandler (ClearTemplateComboBox);
 				this.addButton.Sensitive = false;
-				foreach (KeyValuePair<string, string> header in StandardHeaderService.CustomTemplates) {
+				foreach (System.Collections.Generic.KeyValuePair<string, string> header in StandardHeaderService.CustomTemplates) {
 					if (header.Key == templateCombobox.ActiveText) {
 						this.headerTextview.Buffer.Text = header.Value;
 						this.removeButton.Sensitive = true;
@@ -92,14 +92,14 @@ namespace MonoDevelop.Ide.StandardHeaders
 					}
 				}
 							
-				foreach (KeyValuePair<string, string> header in StandardHeaderService.HeaderTemplates) {
+				foreach (System.Collections.Generic.KeyValuePair<string, string> header in StandardHeaderService.HeaderTemplates) {
 					if (header.Key == templateCombobox.ActiveText) {
 						this.headerTextview.Buffer.Text = header.Value;
 						this.removeButton.Sensitive = false;
 						break;
 					}
 				}
-				this.headerTextview.Buffer.Changed += new EventHandler (ClearTemplateComboBox);
+				this.headerTextview.Buffer.Changed += new System.EventHandler (ClearTemplateComboBox);
 			};
 		}
 		
