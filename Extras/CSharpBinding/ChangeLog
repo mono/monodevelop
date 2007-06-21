@@ -1,3 +1,8 @@
+2007-06-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* CSharpBindingCompilerManager.cs: Implemented support for additional
+	  gac roots specified in packages.
+
 2007-06-20  Jeffrey Stedfast  <fejj@gnome.org>
 
 	Fixes a SmartIndenting bug reported by Latexer on IRC.

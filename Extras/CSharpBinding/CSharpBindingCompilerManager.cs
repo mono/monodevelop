@@ -39,6 +39,7 @@ namespace CSharpBinding
 			string responseFileName = Path.GetTempFileName();
 			StreamWriter writer = new StreamWriter(responseFileName);
 			bool hasWin32Res = false;
+			ArrayList gacRoots = new ArrayList ();
 
 			writer.WriteLine("\"/out:" + exe + '"');
 			
@@ -63,6 +64,8 @@ namespace CSharpBinding
 								pkg_references.Add (pkg.Name);
 								writer.WriteLine ("\"-pkg:" + pkg.Name + "\"");
 							}
+							if (pkg.GacRoot != null && !gacRoots.Contains (pkg.GacRoot))
+								gacRoots.Add (pkg.GacRoot);
 							break;
 						default:
 							writer.WriteLine ("\"/r:" + fileName + "\"");
@@ -176,7 +179,7 @@ namespace CSharpBinding
 			if (projectFiles != null && projectFiles.Count > 0)
 				workingDir = projectFiles [0].Project.BaseDirectory;
 
-			DoCompilation(outstr, tf, workingDir, ref output, ref error);
+			DoCompilation(outstr, tf, workingDir, gacRoots, ref output, ref error);
 
 			ICompilerResult result = ParseOutput(tf, output, error);
 			if (result.CompilerOutput.Trim () != "")
@@ -288,7 +291,7 @@ namespace CSharpBinding
 			return new DefaultCompilerResult(cr, compilerOutput.ToString());
 		}
 		
-		private void DoCompilation(string outstr, TempFileCollection tf, string working_dir, ref string output, ref string error) {
+		private void DoCompilation(string outstr, TempFileCollection tf, string working_dir, ArrayList gacRoots, ref string output, ref string error) {
 			output = Path.GetTempFileName();
 			error = Path.GetTempFileName();
 			
@@ -298,8 +301,22 @@ namespace CSharpBinding
 
 			outstr = outstr.Substring(tokens[0].Length+1);
 
-			ProcessService ps = (ProcessService) ServiceManager.GetService (typeof(ProcessService));
-			ProcessWrapper pw = ps.StartProcess(tokens[0], "\"" + outstr + "\"", working_dir, outwr, errwr, delegate{});
+			ProcessStartInfo pinfo = new ProcessStartInfo (tokens[0], "\"" + outstr + "\"");
+			pinfo.WorkingDirectory = working_dir;
+			
+			if (gacRoots.Count > 0) {
+				// Create the gac prefix string
+				string gacPrefix = string.Join ("" + Path.PathSeparator, (string[])gacRoots.ToArray (typeof(string)));
+				string oldGacVar = Environment.GetEnvironmentVariable ("MONO_GAC_PREFIX");
+				if (!string.IsNullOrEmpty (oldGacVar))
+					gacPrefix += Path.PathSeparator + oldGacVar;
+				pinfo.EnvironmentVariables ["MONO_GAC_PREFIX"] = gacPrefix;
+			}
+			pinfo.UseShellExecute = false;
+			pinfo.RedirectStandardOutput = true;
+			pinfo.RedirectStandardError = true;
+			
+			ProcessWrapper pw = Runtime.ProcessService.StartProcess (pinfo, outwr, errwr, null);
 			pw.WaitForExit();
 			outwr.Close();
 			errwr.Close();
