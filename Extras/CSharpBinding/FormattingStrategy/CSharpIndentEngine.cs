@@ -556,11 +556,15 @@ namespace CSharpBinding.FormattingStrategy {
 				
 				stack.Push (Inside.Block, pKeyword, curLineNr, 0);
 			} else if (inside == Inside.Case && (keyword == "default" || keyword == "case")) {
-				// e.g. "case 0: {" or "case 0:\n{"
-				stack.Push (Inside.Block, keyword, curLineNr, -1);
-				
-				if (firstNonLwsp == -1)
-					TrimIndent ();
+				if (curLineNr == stack.PeekLineNr (0) || firstNonLwsp == -1) {
+					// e.g. "case 0: {" or "case 0:\n{"
+					stack.Push (Inside.Block, keyword, curLineNr, -1);
+					
+					if (firstNonLwsp == -1)
+						TrimIndent ();
+				} else {
+					stack.Push (Inside.Block, keyword, curLineNr, 0);
+				}
 			} else {
 				stack.Push (Inside.Block, keyword, curLineNr, 0);
 			}

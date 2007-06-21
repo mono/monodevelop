@@ -1,4 +1,18 @@
-2007-06-19   <> 
+2007-06-20  Jeffrey Stedfast  <fejj@gnome.org>
+
+	Fixes a SmartIndenting bug reported by Latexer on IRC.
+
+	* FormattingStrategy/CSharpIndentEngine.cs (PushOpenBrace): When
+	inside a Case statement, only use nSpaces = -1 when we are either
+	on the line where the case/default label was entered or if the
+	first non-lwsp char is the '{', else use nSpaces = 0 so that we
+	indent properly.
+
+	* FormattingStrategy/CSharpIndentEngineStack.cs (Push): When
+	pushing a new Block inside a Case, we can still add an indent
+	level if nSpaces != -1.
+
+2007-06-19  Mike Krueger  <mkrueger@novell.com> 
 
 	Changed the C# file icon to look a bit more like gnome.
 

@@ -152,7 +152,7 @@ namespace CSharpBinding.FormattingStrategy {
 					if (inside == Inside.FoldedStatement) {
 						indentBuilder.Append ('\t');
 					} else if (inside == Inside.Block) {
-						if (parent != Inside.Case && nSpaces != -1)
+						if (parent != Inside.Case || nSpaces != -1)
 							indentBuilder.Append ('\t');
 					}
 					
