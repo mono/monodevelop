@@ -1,3 +1,7 @@
+2007-06-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* lib/libsteticui.dll, lib/libstetic.dll: Updated from Stetic module.
+
 2007-06-20  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gui.glade, MonoDevelop.GtkCore/GtkDesignInfo.cs,
