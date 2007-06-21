@@ -1,3 +1,8 @@
+2007-06-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Execution/ProcessService.cs: Added new overload for
+	  StartProcess.
+
 2007-06-20  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.AddIns/PackageExtensionNode.cs,

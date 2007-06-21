@@ -62,6 +62,13 @@ namespace MonoDevelop.Core.Execution
 				outputStreamChanged, errorStreamChanged, exited);
 		}
 
+		public ProcessWrapper StartProcess (ProcessStartInfo startInfo, TextWriter outWriter, TextWriter errorWriter, EventHandler exited)
+		{
+			ProcessEventHandler wout = OutWriter.GetWriteHandler (outWriter);
+			ProcessEventHandler werr = OutWriter.GetWriteHandler (errorWriter);
+			return StartProcess (startInfo, wout, werr, exited);	
+		}
+		
 		public ProcessWrapper StartProcess (ProcessStartInfo startInfo, ProcessEventHandler outputStreamChanged, ProcessEventHandler errorStreamChanged, EventHandler exited)
 		{
 			if (startInfo == null)
