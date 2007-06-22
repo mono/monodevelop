@@ -88,6 +88,7 @@
                   <widget class="Gtk.TreeView" id="tree">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
+                    <property name="HeadersClickable">True</property>
                     <signal name="RowActivated" handler="HandleRowActivate" />
                   </widget>
                 </child>
@@ -567,6 +568,7 @@
                                       <widget class="Gtk.TreeView" id="lst_template_types">
                                         <property name="MemberName" />
                                         <property name="HeadersVisible">False</property>
+                                        <property name="HeadersClickable">True</property>
                                       </widget>
                                     </child>
                                   </widget>

@@ -1,3 +1,7 @@
+2007-06-22  Mike Krüger <mkrueger@novell.com> 
+
+	Added MIT license to standard headers.
+
 2007-06-20  Michael Hutchinson  <m.j.hutchinson@gmail.com>
 
 	* MonoDevelop.Ide.StandardHeader/NewHeaderTemplateDialog.cs,
