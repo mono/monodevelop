@@ -1,5 +1,6 @@
 //
-// Author: John Luke  <jluke@cfl.rr.com>
+// Authors: John Luke  <jluke@cfl.rr.com>
+//          Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 // License: LGPL
 //
 
@@ -14,30 +15,34 @@ namespace MonoDevelop.Components
 	{
 		private Label title;
 		private Gtk.Image icon;
-		private Button btn;
 		private EventBox titleBox;
-		Tooltips tips;
+		private Tooltips tips;
 		
 		protected TabLabel (IntPtr p): base (p)
 		{
 		}
 
 		public TabLabel (Label label, Gtk.Image icon) : base (false, 2)
-		{
-			this.titleBox = new EventBox ();
-			titleBox.VisibleWindow = false;
+		{	
+			this.title = label;
 			this.icon = icon;
-			this.PackStart (icon, false, true, 2);
+			
+			EventBox eventBox = new EventBox ();
+			eventBox.VisibleWindow = false;			
+			eventBox.Add (icon);
+			this.PackStart (eventBox, false, true, 2);
 
-			title = label;
+			titleBox = new EventBox ();
+			titleBox.VisibleWindow = false;			
 			titleBox.Add (title);
 			this.PackStart (titleBox, true, true, 0);
 			
-			btn = new Button ();
-			btn.Add (new Gtk.Image (GetType().Assembly, "MonoDevelop.Close.png"));
-			btn.Relief = ReliefStyle.None;
-			btn.SetSizeRequest (18, 18);
-			this.PackStart (btn, false, false, 2);
+			Button button = new Button ();
+			button.Add (new Gtk.Image (GetType().Assembly, "MonoDevelop.Close.png"));
+			button.Relief = ReliefStyle.None;
+			button.SetSizeRequest (18, 18);
+			button.Clicked += new EventHandler(ButtonClicked);
+			this.PackStart (button, false, false, 2);
 			this.ClearFlag (WidgetFlags.CanFocus);
 
 			this.ShowAll ();
@@ -54,16 +59,32 @@ namespace MonoDevelop.Components
 			get { return icon; }
 			set { icon = value; }
 		}
-
-		public Button Button
-		{
-			get { return btn; }
-		}
 		
+		public event EventHandler CloseClicked;
+				
 		public void SetTooltip (string tip, string desc)
 		{
 			if (tips == null) tips = new Tooltips ();
 			tips.SetTip (titleBox, tip, desc);
+		}
+		
+		protected override bool OnButtonReleaseEvent (EventButton evnt)
+		{
+			if (evnt.Button == 2 && CloseClicked != null)
+			{
+				CloseClicked(this, null);
+				return true;
+			}
+							
+			return false;
+		}
+							
+		private void ButtonClicked(object o, EventArgs eventArgs)
+		{
+			if (CloseClicked != null)
+			{
+				CloseClicked(this, null);				
+			}
 		}
 	}
 }
