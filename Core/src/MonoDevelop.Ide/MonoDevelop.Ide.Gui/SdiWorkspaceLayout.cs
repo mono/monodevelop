@@ -662,8 +662,7 @@ namespace MonoDevelop.Ide.Gui
 			SdiWorkspaceWindow f = (SdiWorkspaceWindow) sender;
 			
 			// Unsubscribe events to avoid memory leaks
-			f.TabLabel.Button.Clicked -= new EventHandler (closeClicked);
-			f.TabLabel.Button.StateChanged -= new StateChangedHandler (stateChanged);
+			f.TabLabel.CloseClicked -= new EventHandler (closeClicked);			
 
 			if (f.ViewContent != null) {
 				((IWorkbench)wbWindow).CloseContent (f.ViewContent);
@@ -685,8 +684,7 @@ namespace MonoDevelop.Ide.Gui
 			}			
 
 			TabLabel tabLabel = new TabLabel (new Label (), mimeimage != null ? mimeimage : new Gtk.Image (""));
-			tabLabel.Button.Clicked += new EventHandler (closeClicked);
-			tabLabel.Button.StateChanged += new StateChangedHandler (stateChanged);
+			tabLabel.CloseClicked += new EventHandler (closeClicked);			
 			tabLabel.ClearFlag (WidgetFlags.CanFocus);
 			SdiWorkspaceWindow sdiWorkspaceWindow = new SdiWorkspaceWindow (workbench, content, tabControl, tabLabel);
 
@@ -697,17 +695,11 @@ namespace MonoDevelop.Ide.Gui
 			return sdiWorkspaceWindow;
 		}
 
-		void stateChanged (object o, StateChangedArgs e)
-		{
-			if (((Gtk.Widget)o).State == Gtk.StateType.Active)
-				((Gtk.Widget)o).State = Gtk.StateType.Normal;
-		}
-
 		void closeClicked (object o, EventArgs e)
 		{
-			Widget parent = ((Widget)o).Parent;
+			Widget tabLabel = ((Widget)o);
 			foreach (Widget child in tabControl.Children) {
-				if (tabControl.GetTabLabel (child) == parent) {
+				if (tabControl.GetTabLabel (child) == tabLabel) {
 					int pageNum = tabControl.PageNum (child);
 					((SdiWorkspaceWindow)child).CloseWindow (false, false, pageNum);
 					break;

@@ -1,3 +1,8 @@
+2007-06-22  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
+
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Use the new CloseClicked
+	  event of TabLabel. Fixes bug #81890.
+
 2007-06-22  Mike Krüger <mkrueger@novell.com> 
 
 	Added MIT license to standard headers.
