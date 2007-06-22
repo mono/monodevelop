@@ -43,6 +43,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 		Gdk.Pixbuf iconError;
 		Gdk.Pixbuf iconInfo;
 		Gdk.Pixbuf iconQuestion;
+		
+		const string showErrorsPropertyName = "SharpDevelop.TaskList.ShowErrors";
+		const string showWarningsPropertyName = "SharpDevelop.TaskList.ShowWarnings";
+		const string showMessagesPropertyName = "SharpDevelop.TaskList.ShowMessages";
 
 		enum Columns
 		{
@@ -90,7 +94,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			errorBtn = new ToggleToolButton ();
 			UpdateErrorsNum();
-			errorBtn.Active = (bool)Runtime.Properties.GetProperty ("SharpDevelop.TaskList.ShowErrors", true);
+			errorBtn.Active = (bool)Runtime.Properties.GetProperty (showErrorsPropertyName, true);
 			errorBtn.IconWidget = new Gtk.Image (Gtk.Stock.DialogError, Gtk.IconSize.Button);
 			errorBtn.IsImportant = true;
 			errorBtn.Toggled += new EventHandler (FilterChanged);
@@ -101,7 +105,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			warnBtn = new ToggleToolButton ();
 			UpdateWarningsNum();
-			warnBtn.Active = (bool)Runtime.Properties.GetProperty ("SharpDevelop.TaskList.ShowWarnings", true);
+			warnBtn.Active = (bool)Runtime.Properties.GetProperty (showWarningsPropertyName, true);
 			warnBtn.IconWidget = new Gtk.Image (Gtk.Stock.DialogWarning, Gtk.IconSize.Button);
 			warnBtn.IsImportant = true;
 			warnBtn.Toggled += new EventHandler (FilterChanged);
@@ -112,7 +116,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			msgBtn = new ToggleToolButton ();
 			UpdateMessagesNum();
-			msgBtn.Active = (bool)Runtime.Properties.GetProperty ("SharpDevelop.TaskList.ShowMessages", true);
+			msgBtn.Active = (bool)Runtime.Properties.GetProperty (showMessagesPropertyName, true);
 			msgBtn.IconWidget = new Gtk.Image (Gtk.Stock.DialogInfo, Gtk.IconSize.Button);
 			msgBtn.IsImportant = true;
 			msgBtn.Toggled += new EventHandler (FilterChanged);
@@ -441,9 +445,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void FilterChanged (object sender, EventArgs e)
 		{
 			
-			Runtime.Properties.SetProperty ("SharpDevelop.TaskList.ShowErrors", errorBtn.Active);
-			Runtime.Properties.SetProperty ("SharpDevelop.TaskList.ShowWarnings", warnBtn.Active);
-			Runtime.Properties.SetProperty ("SharpDevelop.TaskList.ShowMessages", msgBtn.Active);
+			Runtime.Properties.SetProperty (showErrorsPropertyName, errorBtn.Active);
+			Runtime.Properties.SetProperty (showWarningsPropertyName, warnBtn.Active);
+			Runtime.Properties.SetProperty (showMessagesPropertyName, msgBtn.Active);
 			
 			filter.Refilter ();
 		}

@@ -1,5 +1,9 @@
 2007-06-22  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
 
+	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs: Removed code duplication.
+
+2007-06-22  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
+
 	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Use the new CloseClicked
 	  event of TabLabel. Fixes bug #81890.
 
