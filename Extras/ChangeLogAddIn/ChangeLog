@@ -1,3 +1,7 @@
+2007-06-22  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
+
+	* ChangeLogAddIn.mdp: Included ChangeLog file.
+
 2007-05-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ChangeLogAddIn.mdp, Makefile.am: Reference shared assemblies from the
