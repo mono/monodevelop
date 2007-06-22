@@ -1,3 +1,10 @@
+2007-06-22  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Core.Gui.Dialogs/TreeViewOptions.cs,
+	  MonoDevelop.Core.Gui.Dialogs/IDialogPanel.cs: Tree View Options now
+	  works on the IDialogPanel interface instead of the abstract class
+	  AbstractOptionPanel.
+
 2007-06-20  Mike Krüger <mkrueger@novell.com> 
 
 	Fixed a bug (treeviewoptions asserted that all option dialog widgets are frames).

@@ -41,6 +41,10 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			get;
 		}
 		
+		bool WasActivated {
+			get;
+		}
+				
 		bool EnableFinish {
 			get;
 		}

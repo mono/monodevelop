@@ -125,7 +125,6 @@
     <File name="./MonoDevelop.Core.Gui/SyncContext.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui/SyncContextAttribute.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui/SyncObject.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Freedesktop.RecentFiles/RecentFiles.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui/RecentOpen.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui.Dialogs/DefaultDialogPanelDescriptor.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui.Codons/DialogPanelCodon.cs" subtype="Code" buildaction="Compile" />

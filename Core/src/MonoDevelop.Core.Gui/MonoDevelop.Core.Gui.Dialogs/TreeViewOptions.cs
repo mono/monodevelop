@@ -8,6 +8,7 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 
 using MonoDevelop.Core;
 using Mono.Addins;
@@ -22,11 +23,10 @@ namespace MonoDevelop.Core.Gui.Dialogs {
 	/// IDE Options + Plugin Options)
 	/// </summary>
 	public class TreeViewOptions {
-		
-		protected ArrayList OptionPanels = new ArrayList ();
+		List<IDialogPanel> optionPanels = new List<IDialogPanel> ();
 		protected IProperties properties = null;
 		CommandManager cmdManager;
-		Hashtable descriptors = new Hashtable ();
+		Dictionary<string, Gtk.TreeIter> descriptors = new Dictionary<string, Gtk.TreeIter> ();
 
 		protected Gtk.TreeStore treeStore;
 		
@@ -57,7 +57,9 @@ namespace MonoDevelop.Core.Gui.Dialogs {
 		
 		protected virtual bool StoreContents ()
 		{
-			foreach (AbstractOptionPanel pane in OptionPanels) {
+			foreach (IDialogPanel pane in optionPanels) {
+				if (!pane.WasActivated)
+					continue;
 				if (!pane.ReceiveDialogMessage (DialogMessage.OK))
 					return false;
 			}
@@ -109,7 +111,7 @@ namespace MonoDevelop.Core.Gui.Dialogs {
 				descriptor.DialogPanel.CustomizationObject = customizer;
 				if (descriptor.DialogPanel.Control is Gtk.Frame) 
 					((Gtk.Frame)descriptor.DialogPanel.Control).Shadow = Gtk.ShadowType.None;
-				OptionPanels.Add (descriptor.DialogPanel);
+				optionPanels.Add (descriptor.DialogPanel);
 				mainBook.AppendPage (descriptor.DialogPanel.Control, new Gtk.Label ("a"));
 			}
 			
