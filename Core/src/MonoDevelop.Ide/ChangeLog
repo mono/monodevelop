@@ -1,5 +1,10 @@
 2007-06-22  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
 
+	* MonoDevelop.Ide.addin.xml: Adds Shift+Ctrl+F shortcut to "Find in
+	  Files" and fixes two typos. Fixes bug #81821.
+
+2007-06-22  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
+
 	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs: Removed code duplication.
 
 2007-06-22  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 

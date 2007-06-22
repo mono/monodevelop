@@ -645,12 +645,13 @@
 				shortcut = "Control|H" />
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles"
 				defaultHandler = "MonoDevelop.Ide.Commands.FindInFilesHandler"
-				_label = "F_ind In Files..." 
+				_label = "F_ind in Files..." 
 				icon = "md-find-in-files" 
-				description = "Find in files" />
+				description = "Find in files"
+				shortcut = "Shift|Control|F" />
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.ReplaceInFiles"
 				defaultHandler = "MonoDevelop.Ide.Commands.ReplaceInFilesHandler"
-				_label = "R_eplace In Files..." 
+				_label = "R_eplace in Files..." 
 				icon = "md-replace-in-files" 
 				description = "Replace in files" />
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType"		
