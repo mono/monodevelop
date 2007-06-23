@@ -1,3 +1,7 @@
+2007-06-23  Jacob Ilsø Christensen <jacobilsoe@gmail.com>
+
+	* POTFILES.in: Added missing files.
+
 2007-06-18  Atsushi Enomoto  <atsushi@ximian.com>
 
 	* ja_JP.po, ja.po : renamed former to latter.

@@ -13,10 +13,13 @@ Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/ProgressDialog.cs
 Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/StatusPanel.cs
 Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/TreeViewOptions.cs
 Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/WizardDialog.cs
+Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CombineEntryFeatureSelector.cs
 Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.ErrorHandlers/CombineLoadError.cs
 Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs
 Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs
 Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/ResourceNotFoundException.cs
+Core/src/MonoDevelop.Core/MonoDevelop.Core/FileService.cs
+Core/src/MonoDevelop.Core/MonoDevelop.Core/ServiceManager.cs
 Core/src/MonoDevelop.Core/MonoDevelop.Core.addin.xml
 Core/src/MonoDevelop.Dock/DockItem.cs
 Core/src/MonoDevelop.Dock/DockItemGrip.cs
