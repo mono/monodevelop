@@ -49,7 +49,7 @@
 		<DialogPanel id    = "Common"
 		             _label = "General">
 			<DialogPanel id = "GeneralProjectPanel"
-			             _label = "Project options"
+			             _label = "Project Options"
 			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptions"/>
 			<DialogPanel id = "Compile"
 			             _label = "Compile"
