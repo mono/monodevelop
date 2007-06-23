@@ -252,7 +252,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 			ICompletionData data = completionData[List.Selection];
 			ICompletionDataWithMarkup datawMarkup = data as ICompletionDataWithMarkup;
-			CodeCompletionData ccdata = (CodeCompletionData) data;
+			CodeCompletionData ccdata = data as CodeCompletionData;
 
 			string descMarkup = datawMarkup != null ? datawMarkup.DescriptionPango : data.Description;
 
@@ -264,9 +264,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 	
 				declarationviewwindow.AddOverload (descMarkup);
 
-				foreach (CodeCompletionData odata in ccdata.GetOverloads ()) {
-					ICompletionDataWithMarkup odatawMarkup = odata as ICompletionDataWithMarkup;
-					declarationviewwindow.AddOverload (odatawMarkup == null ? odata.Description : odatawMarkup.DescriptionPango);
+				if (ccdata != null) {
+					foreach (CodeCompletionData odata in ccdata.GetOverloads ()) {
+						ICompletionDataWithMarkup odatawMarkup = odata as ICompletionDataWithMarkup;
+						declarationviewwindow.AddOverload (odatawMarkup == null ? odata.Description : odatawMarkup.DescriptionPango);
+					}
 				}
 			}
 			
@@ -282,7 +284,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			declarationviewwindow.SetFixedWidth (-1);
 			declarationviewwindow.ReshowWithInitialSize ();
 			declarationviewwindow.ShowAll ();
-			declarationviewwindow.Multiple = (ccdata.Overloads != 0);
+			declarationviewwindow.Multiple = (ccdata != null && ccdata.Overloads != 0);
 
 			declarationviewwindow.GdkWindow.GetSize (out dvwWidth, out dvwHeight);
 

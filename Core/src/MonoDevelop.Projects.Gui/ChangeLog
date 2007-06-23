@@ -1,3 +1,8 @@
+2007-06-23  Marcos David Marin Amador <MarcosMarin@gmail.com>
+
+	* MonoDevelop.Projects.Gui.CompletionCompletionList/Window.cs: Check whether 
+	  ICompletionData is a CodeCompletionData instead of just casting it.
+
 2007-06-13  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs
