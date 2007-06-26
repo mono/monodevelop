@@ -45,11 +45,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		ItemToolboxNode selectedNode;
 		Hashtable expandedCategories = new Hashtable ();
 		
-		private ScrolledWindow scrolledWindow;
-		private Toolbar toolbar;
-		private ToggleToolButton filterToggleButton;
-		private ToggleToolButton catToggleButton;
-		private Entry filterEntry;
+		CompactToolboxView compactToolboxView;
+		ScrolledWindow scrolledWindow;
+		Toolbar toolbar;
+		ToggleToolButton filterToggleButton;
+		ToggleToolButton catToggleButton;
+		ToggleToolButton compactModeToggleButton;
+		Entry filterEntry;
 		
 		public Toolbox (ToolboxService toolboxService)
 		{			
@@ -71,11 +73,16 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			catToggleButton.Toggled += new EventHandler (toggleCategorisation);
 			toolbar.Insert (catToggleButton, 1);
 			
+			compactModeToggleButton = new ToggleToolButton ();
+			compactModeToggleButton.IconWidget = new Image ("md-design-categorise", IconSize.Menu);
+			compactModeToggleButton.Toggled += new EventHandler (ToggleCompactMode);
+			toolbar.Insert (compactModeToggleButton, 2);
+	
 			SeparatorToolItem sep = new SeparatorToolItem();
-			toolbar.Insert (sep, 2);
+			toolbar.Insert (sep, 3);
 			
 			ToolButton toolboxAddButton = new ToolButton (Stock.Add);
-			toolbar.Insert (toolboxAddButton, 3);
+			toolbar.Insert (toolboxAddButton, 4);
 			toolboxAddButton.Clicked += new EventHandler (toolboxAddButton_Clicked);
 			
 			filterEntry = new Entry();
@@ -83,6 +90,15 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			filterEntry.Changed += new EventHandler (filterTextChanged);
 			
 			#endregion
+			
+			compactToolboxView = new CompactToolboxView ();
+			compactToolboxView.SelectionChanged += delegate {
+				selectedNode = this.compactToolboxView.CurrentlySelected as ItemToolboxNode;
+				toolboxService.SelectItem (selectedNode);
+			};
+			compactToolboxView.DragBegin += delegate(object sender, Gtk.DragBeginArgs e) {
+				toolboxService.DragSelectedItem (compactToolboxView, e.Context);
+			};
 			
 			scrolledWindow = new ScrolledWindow ();
 			base.PackEnd (scrolledWindow, true, true, 0);
@@ -150,25 +166,36 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		#region Toolbar event handlers
 		
-		private void toggleFiltering (object sender, EventArgs e)
+		void ToggleCompactMode (object sender, EventArgs e)
+		{
+			if (compactModeToggleButton.Active) {
+				Remove (this.scrolledWindow);
+				PackEnd (this.compactToolboxView, true, true, 0);
+				ShowAll ();
+			} else {
+				Remove (this.compactToolboxView);
+				PackEnd (scrolledWindow, true, true, 0);
+				ShowAll ();
+			}
+		}
+		
+		void toggleFiltering (object sender, EventArgs e)
 		{
 			if (!filterToggleButton.Active && (base.Children.Length == 3)) {
 				filterEntry.Text = "";
 				base.Remove (filterEntry);
-			}
-			else if (base.Children.Length == 2) {
+			} else if (base.Children.Length == 2) {
 				base.PackStart (filterEntry, false, false, 4);
 				filterEntry.Show ();
 				filterEntry.GrabFocus ();
-			}
-			else throw new Exception ("Unexpected number of widgets");
+			} else throw new Exception ("Unexpected number of widgets");
 		}
 		
-		private void toggleCategorisation (object sender, EventArgs e)
+		void toggleCategorisation (object sender, EventArgs e)
 		{
 			store.SetCategorised (catToggleButton.Active);
+			this.compactToolboxView.ShowCategories = catToggleButton.Active;
 			EnsureState ();
-			
 		}
 		
 		private void filterTextChanged (object sender, EventArgs e)
@@ -194,6 +221,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			Gtk.TargetEntry[] targetTable = toolboxService.GetCurrentDragTargetTable ();
 			if (targetTable != null)
 				Gtk.Drag.SourceSet (nodeView, Gdk.ModifierType.Button1Mask, targetTable, Gdk.DragAction.Copy | Gdk.DragAction.Move);
+			
+			Gtk.Drag.SourceUnset (this.compactToolboxView);
+			if (targetTable != null)
+				Gtk.Drag.SourceSet (this.compactToolboxView, Gdk.ModifierType.Button1Mask, targetTable, Gdk.DragAction.Copy | Gdk.DragAction.Move);
+			this.compactToolboxView.SetNodes (nodes);
+			
 			store.SetNodes (nodes);
 			EnsureState ();
 		}

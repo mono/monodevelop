@@ -37,7 +37,7 @@ using Gtk;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
-	public class CategoryToolboxNode: BaseToolboxNode
+	public class CategoryToolboxNode : BaseToolboxNode
 	{
 		private ArrayList children = new ArrayList ();
 		private string name;
