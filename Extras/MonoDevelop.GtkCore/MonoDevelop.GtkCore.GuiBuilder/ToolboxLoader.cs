@@ -49,6 +49,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			List<ItemToolboxNode> list = new List<ItemToolboxNode> ();
 			foreach (ComponentType ct in GuiBuilderService.SteticApp.GetComponentTypes (filename)) {
+				if (ct.Category == "window")
+					continue;
 				ComponentToolboxNode cn = new ComponentToolboxNode (ct);
 				cn.ReferenceType = ReferenceType.Assembly;
 				cn.Reference = filename;
