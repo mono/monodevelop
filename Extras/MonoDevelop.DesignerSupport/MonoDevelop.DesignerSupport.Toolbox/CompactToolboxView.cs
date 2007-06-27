@@ -105,9 +105,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	{
 		ToolboxObject         selectedItem = null;
 		List<ToolboxCategory> categories   = new List<ToolboxCategory> ();
-		Tooltips tips = new Tooltips ();
 		bool showCategories = true;
-		const int spacing = 4;
+		const int spacing            = 4;
+		const int categoryHeaderSize = 22;
 		
 		public bool ShowCategories {
 			get {
@@ -117,6 +117,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				if (this.showCategories != value) {
 					this.showCategories = value;
 					this.QueueDraw ();
+					SetHeight ();
 				}
 			}
 		}
@@ -169,7 +170,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		public CompactWidget ()
 		{
-			this.Events = EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.PointerMotionMask; 
+			this.Events =  EventMask.ExposureMask | 
+				           EventMask.EnterNotifyMask |
+				           EventMask.LeaveNotifyMask |
+				           EventMask.ButtonPressMask | 
+					       EventMask.PointerMotionMask /*|
+				           EventMask.PointerMotionHintMask*/
+			;
+			//WidgetFlags |= WidgetFlags.NoWindow;			
 		}
 		
 		public ToolboxCategory GetCategory (string name)
@@ -194,10 +202,40 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 		
+		int SetHeight ()
+		{
+			int width  = this.GdkWindow.VisibleRegion.Clipbox.Width;
+			int height = spacing + (IconSize.Height + spacing) * (int)Math.Ceiling ((double)this.ItemCount / (double)(width / (IconSize.Width + spacing)));
+			if (this.showCategories) 
+				height += categoryHeaderSize * this.categories.Count;
+			this.SetSizeRequest (width, height);
+			//this.GdkWindow.Resize (width, height);
+			return height;
+		}
+		
+		
 		protected override void OnRealized ()
 		{
 			base.OnRealized ();
-			this.HeightRequest = (IconSize.Height + spacing) * (this.ItemCount / this.WidthRequest / (IconSize.Width + spacing));  
+			SetHeight ();
+			WidgetFlags |= WidgetFlags.Realized;
+		}
+	
+		
+		protected override void OnSizeRequested (ref Requisition req)
+		{
+			int width  = this.GdkWindow.VisibleRegion.Clipbox.Width;
+			int height = spacing + (IconSize.Height + spacing) * (int)Math.Ceiling ((double)this.ItemCount / (double)(width / (IconSize.Width + spacing)));
+			if (this.showCategories) 
+				height += categoryHeaderSize * this.categories.Count;
+			req.Width  = width; 
+			req.Height = height;
+		}
+		
+		protected override void OnSizeAllocated (Gdk.Rectangle allocation)		
+		{
+			base.OnSizeAllocated (allocation);
+			SetHeight ();
 		}
 		
 		protected override bool OnButtonPressEvent (Gdk.EventButton e)
@@ -230,7 +268,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					xpos = spacing;
 					if (catAction != null)
 						catAction (category);
-					ypos += 25;
+					ypos += categoryHeaderSize;
 					IterateIcons (category.Items, ref xpos, ref  ypos, action);
 				}
 			} else {
@@ -238,23 +276,32 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 		
+		Tooltips tips = new Tooltips ();
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
 		{
 			int xpos = spacing;
 			int ypos = spacing;
-			mouseOverItem = null;
+			bool found = false;
 			Iterate (ref xpos, ref ypos, null, delegate (ToolboxObject item) {
 				if (xpos <= e.X && e.X <= xpos + IconSize.Width + spacing  &&
 				    ypos <= e.Y && e.Y <= ypos + IconSize.Height + spacing) {
-					mouseOverItem = item;
-					tips.SetTip (this, item.Text, item.Text);
-					this.QueueDraw ();
+					found = true;
+					if (mouseOverItem != item) {
+						mouseOverItem = item;
+						tips.SetTip (this, item.Text, null);
+						this.QueueDraw ();
+					}
 				}
 			});
+			if (!found) {
+				mouseOverItem = null;
+			}
 			return base.OnMotionNotifyEvent (e);
 		}
+		
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
+			Console.WriteLine (e.Type);
 			Gdk.Window win = e.Window;
 			Gdk.Rectangle area = e.Area;
 			win.DrawRectangle (Style.BaseGC (StateType.Normal), true, area);
@@ -321,7 +368,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				OnSelectionChanged (EventArgs.Empty);
 			};
 			
-			this.Child = compactWidget;
+			this.AddWithViewport (compactWidget);
+			this.HscrollbarPolicy = PolicyType.Never;
+			this.VscrollbarPolicy = PolicyType.Automatic;
 		}
 		
 		public void SetNodes (ICollection nodes)
