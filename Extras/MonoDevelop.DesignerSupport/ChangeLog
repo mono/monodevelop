@@ -1,5 +1,10 @@
 2007-06-28  Mike Krüger <mkrueger@novell.com> 
 
+	* icons/md-design-listboxtoggle.png: Added an icon for the toolbox
+	  listbox toggle.
+
+2007-06-28  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.DesignerSupport.Toolbox/CompactToolboxView.cs: Removed
 	  some debugging code.
 

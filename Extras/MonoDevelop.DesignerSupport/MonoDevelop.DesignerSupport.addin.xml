@@ -95,6 +95,7 @@
 	
 	<Extension path = "/SharpDevelop/Workbench/StockIcons">
 		<StockIcon stockid = "md-design-categorise" resource = "group-by-category.png" />
+		<StockIcon stockid = "md-design-listboxtoggle" resource = "md-design-listboxtoggle.png" />
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">

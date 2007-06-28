@@ -74,7 +74,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			toolbar.Insert (catToggleButton, 1);
 			
 			compactModeToggleButton = new ToggleToolButton ();
-			compactModeToggleButton.IconWidget = new Image ("md-design-categorise", IconSize.Menu);
+			compactModeToggleButton.IconWidget = new Image ("md-design-listboxtoggle", IconSize.Menu);
 			compactModeToggleButton.Toggled += new EventHandler (ToggleCompactMode);
 			toolbar.Insert (compactModeToggleButton, 2);
 	

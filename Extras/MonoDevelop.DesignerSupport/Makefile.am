@@ -84,6 +84,7 @@ FILES =  \
 
 RES =  \
 	icons/group-by-category.png \
+	icons/md-design-listboxtoggle.png \
 	icons/MonoDevelop.DesignerSupport.PropertyGrid.DefaultPropertyTab.bmp \
 	icons/MonoDevelop.DesignerSupport.PropertyGrid.EventPropertyTab.bmp \
 	icons/MonoDevelop.DesignerSupport.PropertyGrid.SortByCat.png

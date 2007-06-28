@@ -83,7 +83,7 @@
     <File name="./MonoDevelop.DesignerSupport.Projects/ProjectsPropertyProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.DesignerSupport/CustomDescriptor.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.DesignerSupport.Toolbox/CompactToolboxView.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.CategorizedToolbox" subtype="Directory" buildaction="Compile" />
+    <File name="./icons/md-design-listboxtoggle.png" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
