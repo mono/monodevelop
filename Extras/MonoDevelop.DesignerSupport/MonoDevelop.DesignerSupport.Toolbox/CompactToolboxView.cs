@@ -174,10 +174,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				           EventMask.EnterNotifyMask |
 				           EventMask.LeaveNotifyMask |
 				           EventMask.ButtonPressMask | 
-					       EventMask.PointerMotionMask /*|
-				           EventMask.PointerMotionHintMask*/
+					       EventMask.PointerMotionMask
 			;
-			//WidgetFlags |= WidgetFlags.NoWindow;			
 		}
 		
 		public ToolboxCategory GetCategory (string name)
@@ -209,18 +207,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			if (this.showCategories) 
 				height += categoryHeaderSize * this.categories.Count;
 			this.SetSizeRequest (width, height);
-			//this.GdkWindow.Resize (width, height);
 			return height;
 		}
-		
 		
 		protected override void OnRealized ()
 		{
 			base.OnRealized ();
 			SetHeight ();
-			WidgetFlags |= WidgetFlags.Realized;
 		}
-	
 		
 		protected override void OnSizeRequested (ref Requisition req)
 		{
@@ -301,7 +295,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
-			Console.WriteLine (e.Type);
 			Gdk.Window win = e.Window;
 			Gdk.Rectangle area = e.Area;
 			win.DrawRectangle (Style.BaseGC (StateType.Normal), true, area);
