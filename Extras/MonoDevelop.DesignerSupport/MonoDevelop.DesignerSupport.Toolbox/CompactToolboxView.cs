@@ -106,6 +106,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		ToolboxObject         selectedItem = null;
 		List<ToolboxCategory> categories   = new List<ToolboxCategory> ();
 		bool showCategories = true;
+		bool realSizeRequest;
 		const int spacing            = 4;
 		const int categoryHeaderSize = 22;
 		
@@ -117,7 +118,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				if (this.showCategories != value) {
 					this.showCategories = value;
 					this.QueueDraw ();
-					SetHeight ();
 				}
 			}
 		}
@@ -200,36 +200,32 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 		
-		int SetHeight ()
-		{
-			int width  = this.GdkWindow.VisibleRegion.Clipbox.Width;
-			int height = spacing + (IconSize.Height + spacing) * (int)Math.Ceiling ((double)this.ItemCount / (double)(width / (IconSize.Width + spacing)));
-			if (this.showCategories) 
-				height += categoryHeaderSize * this.categories.Count;
-			this.SetSizeRequest (width, height);
-			return height;
-		}
-		
-		protected override void OnRealized ()
-		{
-			base.OnRealized ();
-			SetHeight ();
-		}
-		
 		protected override void OnSizeRequested (ref Requisition req)
 		{
-			int width  = this.GdkWindow.VisibleRegion.Clipbox.Width;
+			if (!realSizeRequest) {
+				// Request a minimal width, to size recalculation infinite loops with
+				// small widths, due to the vscrollbar being shown and hidden.
+				req.Width = 50;
+				req.Height = 0;
+				return;
+			}
+			int width  = Allocation.Width;
 			int height = spacing + (IconSize.Height + spacing) * (int)Math.Ceiling ((double)this.ItemCount / (double)(width / (IconSize.Width + spacing)));
 			if (this.showCategories) 
 				height += categoryHeaderSize * this.categories.Count;
-			req.Width  = width; 
+			req.Width  = 50; 
 			req.Height = height;
 		}
 		
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)		
 		{
 			base.OnSizeAllocated (allocation);
-			SetHeight ();
+			if (!realSizeRequest) {
+				realSizeRequest = true;
+				QueueResize ();
+			}
+			else
+				realSizeRequest = false;
 		}
 		
 		protected override bool OnButtonPressEvent (Gdk.EventButton e)

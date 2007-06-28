@@ -1,3 +1,8 @@
+2007-06-28  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.DesignerSupport.Toolbox/CompactToolboxView.cs: Fix size
+	  request calculation.
+
 2007-06-28  Mike Krüger <mkrueger@novell.com> 
 
 	* icons/md-design-listboxtoggle.png: Added an icon for the toolbox
