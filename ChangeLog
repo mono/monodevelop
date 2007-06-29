@@ -1,3 +1,7 @@
+2007-06-29 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* configure.in: Added sv to ALL_LINGUAS.
+
 2007-06-18  Atsushi Enomoto  <atsushi@ximian.com>
 
 	* configure.in: renamed from ja_JP.po to ja.po
