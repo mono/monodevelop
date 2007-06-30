@@ -1,3 +1,11 @@
+2007-06-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs: When a
+	  solution contains a reference to an unknown project type (perhaps
+	  the addin is not available on the machine) an exception occurs when
+	  viewing the configuration properties for the solution. Patch by
+	  Jerome Haltom.
+
 2007-06-23 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Projects.Gui.addin.xml: Fixed capitalization.

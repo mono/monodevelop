@@ -139,10 +139,11 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			ConfigurationData data = new ConfigurationData (entry);
 			foreach (IConfiguration conf in entry.Configurations) {
 				IConfiguration copy = entry.CreateConfiguration (conf.Name);
-				copy.CopyFrom (conf);
-				data.Configurations.Add (copy);
+				if (copy != null) {
+					copy.CopyFrom (conf);
+					data.Configurations.Add (copy);
+				}
 			}
-			
 			if (entry is Combine) {
 				foreach (CombineEntry e in ((Combine)entry).Entries)
 					data.Children.Add (ConfigurationData.Build (e));
