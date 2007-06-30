@@ -172,7 +172,7 @@ namespace MonoDevelop.Ide.Tasks
 		{
 			string combineFilename = combine.FileName;
 			string combinePath = Path.GetDirectoryName (combineFilename);
-			string userTasksFilename = Path.Combine(combinePath, combine.Name + ".usertasks");
+			string userTasksFilename = Path.Combine(combinePath, Path.GetFileNameWithoutExtension(combineFilename) + ".usertasks");
 			return userTasksFilename;
 		}
 		

@@ -7,6 +7,15 @@
 	* MonoDevelop.Ide.mdp: Fix gtk versions.
 	* Makefile.am: Flush.
 
+2007-06-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs,
+	  MonoDevelop.Ide.Gui/ProjectOperations.cs: Some changes to make the
+	  select reference dialog easier to reuse.
+	* MonoDevelop.Ide.mdp: Fix gtk versions.
+	* Makefile.am: Flush.
+
 2007-06-22  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
 
 	* MonoDevelop.Ide.addin.xml: Adds Shift+Ctrl+F shortcut to "Find in

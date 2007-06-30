@@ -779,7 +779,7 @@ namespace MonoDevelop.Ide.Gui
 			Combine combine = (Combine) data;
 			string combinefilename = combine.FileName;
 			string combinepath = Path.GetDirectoryName(combinefilename);
-			string preferencesFileName = Path.Combine(combinepath, combine.Name + ".userprefs");
+			string preferencesFileName = Path.Combine(combinepath, Path.GetFileNameWithoutExtension(combinefilename) + ".userprefs");
 	
 			if (!File.Exists(preferencesFileName))
 				return;
@@ -884,7 +884,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			propertynode.AppendChild(properties.ToXmlElement(doc));
 			
-			string fileToSave = combinepath + Path.DirectorySeparatorChar + combine.Name + ".userprefs";
+			string fileToSave = combinepath + Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(combinefilename) + ".userprefs";
 
 			try
 			{
