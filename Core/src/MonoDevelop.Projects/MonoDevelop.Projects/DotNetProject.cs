@@ -236,8 +236,12 @@ namespace MonoDevelop.Projects
 		
 		public override string GetOutputFileName ()
 		{
-			DotNetProjectConfiguration conf = (DotNetProjectConfiguration) ActiveConfiguration;
-			return conf.CompiledOutputName;
+			if (ActiveConfiguration != null) {
+				DotNetProjectConfiguration conf = (DotNetProjectConfiguration) ActiveConfiguration;
+				return conf.CompiledOutputName;
+			}
+			else
+				return null;
 		}
 		
 		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context)

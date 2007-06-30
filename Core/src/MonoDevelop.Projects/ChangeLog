@@ -1,3 +1,8 @@
+2007-06-30 Jerome Haltom <wasabi@larvalstage.net>
+
+	* MonoDevelop.Projects/DotNetProject.cs: Check for null 
+	  ActiveConfiguration.
+
 2007-06-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs: Read
