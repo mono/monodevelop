@@ -74,11 +74,31 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			((ListStore) ReferencesTreeView.Model).Clear ();
 
 			projectRefPanel.SetProject (configureProject);
-			gacRefPanel.SetProject (configureProject);
+			projectRefPanel.Show ();
+			
+			DotNetProject netProject = configureProject as DotNetProject;
+			if (netProject != null)
+				gacRefPanel.SetClrVersion (((DotNetProjectConfiguration)netProject.ActiveConfiguration).ClrVersion);
 			gacRefPanel.Reset ();
 			assemblyRefPanel.SetBasePath (configureProject.BaseDirectory);
 
 			foreach (ProjectReference refInfo in configureProject.ProjectReferences)
+				AddReference (refInfo);
+
+			OnChanged (null, null);
+		}
+		
+		public void SetReferenceCollection (ProjectReferenceCollection references, ClrVersion targetVersion)
+		{
+			((ListStore) ReferencesTreeView.Model).Clear ();
+
+			projectRefPanel.Hide ();
+			
+			gacRefPanel.SetClrVersion (targetVersion);
+			gacRefPanel.Reset ();
+			assemblyRefPanel.SetBasePath  (Environment.GetFolderPath (Environment.SpecialFolder.Personal));
+
+			foreach (ProjectReference refInfo in references)
 				AddReference (refInfo);
 
 			OnChanged (null, null);
@@ -122,7 +142,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			return refTreeStore.AppendValues (System.IO.Path.GetFileNameWithoutExtension (refInfo.Reference), GetTypeText (refInfo), refInfo.Reference, refInfo, "md-package");
 		}
 		
-		public SelectReferenceDialog(Project configureProject)
+		public SelectReferenceDialog ()
 		{
 			Glade.XML refXML = new Glade.XML (null, "Base.glade", "AddReferenceDialog", null);
 			refXML.Autoconnect (this);
@@ -146,7 +166,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			projectRefPanel = new ProjectReferencePanel (this);
 			gacRefPanel = new GacReferencePanel (this);
 			assemblyRefPanel = new AssemblyReferencePanel (this);
-			SetProject (configureProject);
 			
 			mainBook.RemovePage (mainBook.CurrentPage);
 			mainBook.AppendPage (gacRefPanel, new Label (GettextCatalog.GetString ("Packages")));

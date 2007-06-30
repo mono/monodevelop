@@ -723,13 +723,11 @@ namespace MonoDevelop.Ide.Gui
 
 		public bool AddReferenceToProject (Project project)
 		{
-			bool res = false;
-			
 			try {
 				if (selDialog == null)
-					selDialog = new SelectReferenceDialog(project);
-				else
-					selDialog.SetProject (project);
+					selDialog = new SelectReferenceDialog ();
+				
+				selDialog.SetProject (project);
 
 				if (selDialog.Run() == (int)Gtk.ResponseType.Ok) {
 					ProjectReferenceCollection newRefs = selDialog.ReferenceInformations;
@@ -746,12 +744,34 @@ namespace MonoDevelop.Ide.Gui
 						if (!project.ProjectReferences.Contains (refInfo))
 							project.ProjectReferences.Add(refInfo);
 					
-					res = true;
+					return true;
 				}
+				else
+					return false;
 			} finally {
 				selDialog.Hide ();
 			}
-			return res;
+		}
+		
+		public bool SelectProjectReferences (ProjectReferenceCollection references, ClrVersion targetVersion)
+		{
+			try {
+				if (selDialog == null)
+					selDialog = new SelectReferenceDialog ();
+				
+				selDialog.SetReferenceCollection (references, targetVersion);
+
+				if (selDialog.Run() == (int)Gtk.ResponseType.Ok) {
+					references.Clear ();
+					references.AddRange (selDialog.ReferenceInformations);
+					return true;
+				}
+				else
+					return false;
+			} finally {
+				if (selDialog != null)
+					selDialog.Hide ();
+			}
 		}
 		
 		void RestoreCombinePreferences (object data)

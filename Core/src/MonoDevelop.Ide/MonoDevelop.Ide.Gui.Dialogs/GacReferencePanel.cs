@@ -66,11 +66,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			BorderWidth = 6;
 		}
 		
-		public void SetProject (Project prj)
+		public void SetClrVersion (ClrVersion version)
 		{
-			DotNetProject netProject = prj as DotNetProject;
-			if (netProject != null)
-				version = ((DotNetProjectConfiguration)netProject.ActiveConfiguration).ClrVersion;
+			this.version = version;
 		}
 		
 		int SortTree (TreeModel model, TreeIter first, TreeIter second)
