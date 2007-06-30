@@ -1,3 +1,7 @@
+2007-06-30 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* gui.glade: Fixed capitalization.
+
 2007-06-27  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/ToolboxLoader.cs: Don't show windows
