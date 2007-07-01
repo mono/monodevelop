@@ -1251,7 +1251,7 @@
 	      <child>
 		<widget class="GtkLabel" id="label63">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">_wrap mode: </property>
+		  <property name="label" translatable="yes">_Wrap mode: </property>
 		  <property name="use_underline">True</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>

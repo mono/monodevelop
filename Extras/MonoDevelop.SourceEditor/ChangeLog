@@ -1,3 +1,7 @@
+2007-07-01  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* EditorBindings.glade: Fixed capitalization issue.
+
 2007-06-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs: Added IntPtr
