@@ -31,6 +31,7 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using Mono.Addins;
+using Mono.Addins.Setup;
 using System.IO;
 using System.Collections;
 
@@ -40,8 +41,9 @@ public class MonoDevelopProcessHost
 	{
 		if (args.Length == 0 || args [0] == "--help") {
 			Console.WriteLine ("MonoDevelop Application Runner");
-			Console.WriteLine ("Usage: mdrun <applicationId> ... : Runs an application.");
-			Console.WriteLine ("       mdrun -q : Lists available applications.");
+			Console.WriteLine ("Usage: mdtool <applicationId> ... : Runs an application.");
+			Console.WriteLine ("       mdtool setup ... : Runs the setup utility.");
+			Console.WriteLine ("       mdtool -q : Lists available applications.");
 			return 0;
 		}
 		
@@ -62,7 +64,10 @@ public class MonoDevelopProcessHost
 			
 			string[] newArgs = new string [args.Length - 1];
 			Array.Copy (args, 1, newArgs, 0, args.Length - 1);
-			return Runtime.ApplicationService.StartApplication (args[0], newArgs);
+			if (args [0] != "setup")
+				return Runtime.ApplicationService.StartApplication (args[0], newArgs);
+			else
+				return RunSetup (newArgs);
 		} catch (UserException ex) {
 			Console.WriteLine (ex.Message);
 			return -1;
@@ -76,5 +81,18 @@ public class MonoDevelopProcessHost
 				// Ignore shutdown exceptions
 			}
 		}
+	}
+	
+	static int RunSetup (string[] args)
+	{
+		Console.WriteLine ("MonoDevelop Add-in Setup Utility");
+		bool verbose = false;
+		foreach (string a in args)
+			if (a == "-v")
+				verbose = true;
+	
+		SetupTool setupTool = new SetupTool (AddinManager.Registry);
+		setupTool.VerboseOutput = verbose;
+		return setupTool.Run (args);
 	}
 }
