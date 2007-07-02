@@ -1,3 +1,9 @@
+2007-07-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.AddIns/SetupApp.cs, Makefile.am,
+	  MonoDevelop.Core.addin.xml, MonoDevelop.Core.mdp: Removed
+	  implementation of setup utility, moved to mdtool.
+
 2007-07-02  Ben Motmans <ben.motmans@gmail.com>
 
 	* MonoDevelop.Core.Execution/ProcessWrapper.cs,

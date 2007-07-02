@@ -86,7 +86,6 @@
     <File name="./MonoDevelop.Core.AddIns/PackageExtensionNode.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.AddIns/ApplicationExtensionNode.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.AddIns/IconCodon.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.AddIns/SetupApp.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.ProgressMonitoring/FilteredProgressMonitor.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>

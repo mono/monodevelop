@@ -56,10 +56,4 @@
 					platform = "Native"
 		            class = "MonoDevelop.Core.Execution.NativePlatformExecutionHandler"/>
 	</Extension>
-
-	<Extension path = "/System/Applications">
-		<Application id    = "setup"
-		       description = "Add-in setup utility"
-		       class = "MonoDevelop.Core.AddIns.SetupApp"/>
-	</Extension>
 </Addin>
