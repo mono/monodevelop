@@ -1,3 +1,9 @@
+2007-07-02  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs,
+	  MonoDevelop.DesignerSupport.Toolbox/CompactToolboxView.cs: Worked
+	  on toolbox view (tooltips, sizing and some behavior issues).
+
 2007-06-28  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.DesignerSupport.Toolbox/CompactToolboxView.cs: Fix size

@@ -73,6 +73,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			this.text = text;
 			this.tag  = tag;
 		}
+		
+		public bool FilterItem (string filter)
+		{
+			return !String.IsNullOrEmpty (filter) && Text.ToUpper ().IndexOf (filter.ToUpper ()) < 0;			
+		}
 	}
 	
 	public class ToolboxCategory
@@ -99,12 +104,21 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			this.name = name;
 		}
+		
+		public bool ContainsIcons (string filter)
+		{
+			foreach (ToolboxObject item in Items)
+				if (!item.FilterItem (filter))
+					return true;
+			return false;
+		}
 	}
 	
 	public class CompactWidget : Gtk.DrawingArea
 	{
 		ToolboxObject         selectedItem = null;
 		List<ToolboxCategory> categories   = new List<ToolboxCategory> ();
+		string filter = "";
 		bool showCategories = true;
 		bool realSizeRequest;
 		const int spacing            = 4;
@@ -121,7 +135,17 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				}
 			}
 		}
-		
+		public string Filter {
+			get {
+				return filter;
+			}
+			set {
+				if (filter != value) {
+					filter = value;
+					this.QueueDraw ();
+				}
+			}
+		}
 		public IEnumerable<ToolboxObject> AllItems {
 			get {
 				foreach (ToolboxCategory category in this.categories) {
@@ -200,6 +224,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 		
+		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing e)
+		{
+			ClearMouseOverItem ();
+			return true;
+			//return OnLeaveNotifyEvent (e);
+		}
+		
 		protected override void OnSizeRequested (ref Requisition req)
 		{
 			if (!realSizeRequest) {
@@ -209,12 +240,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				req.Height = 0;
 				return;
 			}
-			int width  = Allocation.Width;
-			int height = spacing + (IconSize.Height + spacing) * (int)Math.Ceiling ((double)this.ItemCount / (double)(width / (IconSize.Width + spacing)));
-			if (this.showCategories) 
-				height += categoryHeaderSize * this.categories.Count;
+			int xpos = spacing;
+			int ypos = spacing;
+			Iterate (ref xpos, ref ypos, null, null);
 			req.Width  = 50; 
-			req.Height = height;
+			req.Height = ypos;
 		}
 		
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)		
@@ -241,6 +271,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		void IterateIcons (IEnumerable<ToolboxObject> collection, ref int xpos, ref int ypos, Action action)
 		{
 			foreach (ToolboxObject item in collection) {
+				if (item.FilterItem (filter))
+					continue;
 				if (xpos + IconSize.Width + spacing >= this.GdkWindow.VisibleRegion.Clipbox.Width) {
 					xpos = spacing;
 					ypos += IconSize.Height + spacing;
@@ -255,6 +287,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			if (this.showCategories) {
 				foreach (ToolboxCategory category in this.Categories) {
+					if (!category.ContainsIcons (filter))
+						continue;
 					xpos = spacing;
 					if (catAction != null)
 						catAction (category);
@@ -266,7 +300,34 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 		
-		Tooltips tips = new Tooltips ();
+		void ClearMouseOverItem ()
+		{
+			if (mouseOverItem != null) {
+				mouseOverItem = null;
+				HideTooltipWindow ();
+				this.QueueDraw ();
+			}
+		}
+		
+		CustomTooltipWindow tooltipWindow = null;
+		public void HideTooltipWindow ()
+		{
+			if (tooltipWindow != null) {
+				tooltipWindow.Destroy ();
+				tooltipWindow = null;
+			}
+		}
+		public void ShowTooltip (string text, int x, int y)
+		{
+			HideTooltipWindow (); 
+			tooltipWindow = new CustomTooltipWindow ();
+			tooltipWindow.Tooltip = text;
+			int ox, oy;
+			this.GdkWindow.GetOrigin (out ox, out oy);
+			tooltipWindow.Move (ox + x, oy + y);
+			tooltipWindow.ShowAll ();
+		}
+
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
 		{
 			int xpos = spacing;
@@ -278,13 +339,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					found = true;
 					if (mouseOverItem != item) {
 						mouseOverItem = item;
-						tips.SetTip (this, item.Text, null);
+						ShowTooltip (item.Text, xpos - 2, ypos + IconSize.Height + 3);
 						this.QueueDraw ();
 					}
 				}
 			});
 			if (!found) {
-				mouseOverItem = null;
+				ClearMouseOverItem ();
 			}
 			return base.OnMotionNotifyEvent (e);
 		}
@@ -312,20 +373,26 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				if (item == selectedItem) {
 					win.DrawRectangle (Style.BaseGC (StateType.Selected), 
 					                   true, 
-					                   new Gdk.Rectangle (xpos - spacing, ypos - spacing, IconSize.Width + spacing, IconSize.Height+ spacing));
+					                   new Gdk.Rectangle (xpos - 1, 
+					                                      ypos - 1, 
+					                                      IconSize.Width  + 2, 
+					                                      IconSize.Height + 2));
 				}
 				win.DrawPixbuf (this.Style.ForegroundGC (StateType.Normal), 
 				                item.Icon, 0, 0, 
-				                xpos + (IconSize.Width - item.Icon.Width) / 2, ypos + (IconSize.Height - item.Icon.Height) / 2, 
+				                xpos + 1 + (IconSize.Width  - item.Icon.Width) / 2, 
+				                ypos + 1 + (IconSize.Height - item.Icon.Height) / 2, 
 				                item.Icon.Width, item.Icon.Height, Gdk.RgbDither.None, 0, 0);
 				
 				if (item == mouseOverItem) {
 					win.DrawRectangle (Style.DarkGC (StateType.Prelight), 
 					                   false, 
-					                   new Gdk.Rectangle (xpos - spacing, ypos - spacing, IconSize.Width + spacing, IconSize.Height+ spacing));
+					                   new Gdk.Rectangle (xpos - 2, 
+					                                      ypos - 2 , 
+					                                      IconSize.Width + 3, 
+					                                      IconSize.Height + 3));
 				}
 			});
-			
 			return true;		
 		}
 	}
@@ -346,6 +413,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 			set {
 				compactWidget.ShowCategories = value;
+			}
+		}
+		public string Filter {
+			get {
+				return compactWidget.Filter;
+			}
+			set {
+				compactWidget.Filter = value;
 			}
 		}
 
@@ -382,4 +457,46 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		public event EventHandler SelectionChanged;
 	}
+	
+	public class CustomTooltipWindow : Gtk.Window
+	{
+		string tooltip;
+		public string Tooltip {
+			get {
+				return tooltip;
+			}
+			set {
+				tooltip = value;
+				label.Markup = tooltip;
+			}
+		}
+		
+		Label label = new Label ();
+		public CustomTooltipWindow () : base (Gtk.WindowType.Popup)
+		{
+			label.Xalign = 0;
+			label.Xpad = 3;
+			label.Ypad = 3;
+			Add (label);
+		}
+		
+		protected override bool OnExposeEvent (Gdk.EventExpose ev)
+		{
+			base.OnExposeEvent (ev);
+			Gtk.Requisition req = SizeRequest ();
+			Gtk.Style.PaintFlatBox (this.Style, 
+			                        this.GdkWindow, 
+			                        Gtk.StateType.Normal, 
+			                        Gtk.ShadowType.Out, 
+			                        Gdk.Rectangle.Zero, 
+			                        this, "tooltip", 0, 0, req.Width, req.Height);
+			Gtk.Style.PaintBox (this.Style, 
+			                        this.GdkWindow, 
+			                        Gtk.StateType.Normal, 
+			                        Gtk.ShadowType.Out, 
+			                        Gdk.Rectangle.Zero, 
+			                        this, "tooltip", 0, 0, req.Width, req.Height);
+			return true;
+		}
+	}	
 }

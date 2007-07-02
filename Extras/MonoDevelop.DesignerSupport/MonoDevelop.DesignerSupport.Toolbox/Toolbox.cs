@@ -201,6 +201,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		private void filterTextChanged (object sender, EventArgs e)
 		{
 			store.SetFilter (filterEntry.Text);
+			this.compactToolboxView.Filter = filterEntry.Text;
 			EnsureState ();
 		}
 		
