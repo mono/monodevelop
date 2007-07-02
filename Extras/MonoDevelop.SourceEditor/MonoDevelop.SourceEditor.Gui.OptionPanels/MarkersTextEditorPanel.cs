@@ -48,7 +48,9 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 			[Glade.Widget] CheckButton showErrorsCheckBox;
 			[Glade.Widget] CheckButton showVRulerCheckBox;
 			[Glade.Widget] CheckButton highlightCurrentLineCheckBox;
-			[Glade.Widget] CheckButton showControlCharactersCheckBox;
+			[Glade.Widget] CheckButton highlightSpacesCheckBox;
+			[Glade.Widget] CheckButton highlightTabsCheckBox;
+			[Glade.Widget] CheckButton highlightNewlinesCheckBox;
 			[Glade.Widget] SpinButton  vRulerRowTextBox;
 			[Glade.Widget] ComboBox    wrapModeComboBox;
 			
@@ -58,10 +60,13 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 				showLineNumberCheckBox.Active = TextEditorProperties.ShowLineNumbers;
 				showBracketHighlighterCheckBox.Active = TextEditorProperties.ShowMatchingBracket;
 				showErrorsCheckBox.Active = TextEditorProperties.UnderlineErrors;
-				showControlCharactersCheckBox.Active = TextEditorProperties.ShowControlCharacters;
 				
 				highlightCurrentLineCheckBox.Active = TextEditorProperties.HighlightCurrentLine;
 				highlightCurrentLineCheckBox.Sensitive = MonoDevelop.SourceEditor.Gui.SourceEditorView.HighlightCurrentLineSupported;
+
+				highlightSpacesCheckBox.Active = TextEditorProperties.HighlightSpaces;
+				highlightTabsCheckBox.Active = TextEditorProperties.HighlightTabs;
+				highlightNewlinesCheckBox.Active = TextEditorProperties.HighlightNewlines;				
 				
 				showVRulerCheckBox.Active = TextEditorProperties.ShowVerticalRuler;
 				vRulerRowTextBox.Value = TextEditorProperties.VerticalRulerRow;
@@ -78,8 +83,10 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 				TextEditorProperties.ShowMatchingBracket = showBracketHighlighterCheckBox.Active;
 				TextEditorProperties.UnderlineErrors = showErrorsCheckBox.Active;
 				TextEditorProperties.ShowVerticalRuler = showVRulerCheckBox.Active;
-				TextEditorProperties.HighlightCurrentLine = highlightCurrentLineCheckBox.Active;
-				TextEditorProperties.ShowControlCharacters = showControlCharactersCheckBox.Active;
+				TextEditorProperties.HighlightCurrentLine = highlightCurrentLineCheckBox.Active;				
+				TextEditorProperties.HighlightSpaces = highlightSpacesCheckBox.Active;
+				TextEditorProperties.HighlightTabs = highlightTabsCheckBox.Active;
+				TextEditorProperties.HighlightNewlines = highlightNewlinesCheckBox.Active;
 				try {
 					TextEditorProperties.VerticalRulerRow = (int) vRulerRowTextBox.Value;
 				} 

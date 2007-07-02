@@ -390,12 +390,30 @@ namespace MonoDevelop.Ide.Gui.Content {
 			}
 		}
 		
-		public static bool ShowControlCharacters {
+		public static bool HighlightSpaces {
 			get {
-				return properties.GetProperty ("ShowControlCharacters", false);
+				return properties.GetProperty ("HighlightSpaces", false);
 			}
 			set {
-				properties.SetProperty ("ShowControlCharacters", value);
+				properties.SetProperty ("HighlightSpaces", value);
+			}
+		}
+
+		public static bool HighlightTabs {
+			get {
+				return properties.GetProperty ("HighlightTabs", false);
+			}
+			set {
+				properties.SetProperty ("HighlightTabs", value);
+			}
+		}
+	
+		public static bool HighlightNewlines {
+			get {
+				return properties.GetProperty ("HighlightNewlines", false);
+			}
+			set {
+				properties.SetProperty ("HighlightNewlines", value);
 			}
 		}
 	}

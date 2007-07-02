@@ -1,3 +1,9 @@
+2007-07-02 Fabian Sturm <f@rtfs.org>
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Added separate spaces, tabs and newline highlighting.
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Same.
+	* MonoDevelop.SourceEditor.Gui.OptionPanels/MarkersTextEditorPanel.cs: Same.
+
 2007-07-01  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* EditorBindings.glade: Fixed capitalization issue.

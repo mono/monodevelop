@@ -1,3 +1,7 @@
+2007-07-02 Fabian Sturm <f@rtfs.org>
+
+	* src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs: Added properties for separate spaces, tabs and newline highlighting.
+
 2006-09-26 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* src/Core.mds: Updated.

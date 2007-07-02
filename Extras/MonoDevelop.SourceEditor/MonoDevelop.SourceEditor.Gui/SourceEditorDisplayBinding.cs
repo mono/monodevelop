@@ -1247,9 +1247,17 @@ namespace MonoDevelop.SourceEditor.Gui
 				case "HighlightCurrentLine":
 					se.View.HighlightCurrentLine = TextEditorProperties.HighlightCurrentLine;
 					break;
-				case "ShowControlCharacters":
-					SourceEditorView.DrawWhiteSpacesEnabled = TextEditorProperties.ShowControlCharacters;
-				se.View.QueueDraw ();
+				case "HighlightSpaces":
+					SourceEditorView.HighlightSpacesEnabled = TextEditorProperties.HighlightSpaces;
+					se.View.QueueDraw ();
+					break;
+				case "HighlightTabs":
+					SourceEditorView.HighlightTabsEnabled = TextEditorProperties.HighlightTabs;
+					se.View.QueueDraw ();
+					break;
+				case "HighlightNewlines":
+					SourceEditorView.HighlightNewlinesEnabled = TextEditorProperties.HighlightNewlines;
+					se.View.QueueDraw ();
 					break;
 				default:
 					Console.WriteLine ("unhandled property change: {0}", e.Key);

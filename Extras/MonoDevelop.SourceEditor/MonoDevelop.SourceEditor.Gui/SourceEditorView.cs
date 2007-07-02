@@ -34,7 +34,9 @@ namespace MonoDevelop.SourceEditor.Gui
 	public class SourceEditorView : SourceView, ICompletionWidget, ITextEditorExtension
 	{
 		public static readonly bool HighlightCurrentLineSupported;
-		public static bool DrawWhiteSpacesEnabled = TextEditorProperties.ShowControlCharacters;
+		public static bool HighlightSpacesEnabled = TextEditorProperties.HighlightSpaces;
+		public static bool HighlightTabsEnabled = TextEditorProperties.HighlightTabs;
+		public static bool HighlightNewlinesEnabled = TextEditorProperties.HighlightNewlines;
 		
 		public readonly SourceEditor ParentEditor;
 		internal IFormattingStrategy fmtr = new DefaultFormattingStrategy ();
@@ -808,7 +810,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			}
 		}
 #endregion
-
+ 
 #region Drawing control characters functionality
 		class DrawControlCharacterImp
 		{
@@ -912,7 +914,7 @@ namespace MonoDevelop.SourceEditor.Gui
 				cntx.Stroke ();
 				cntx.Restore ();
 			}
-
+			
 			static void DrawLineEndAtIter (Cairo.Context cntx, TextView view, TextIter iter)
 			{
 				Gdk.Rectangle rect = view.GetIterLocation (iter);
@@ -939,7 +941,7 @@ namespace MonoDevelop.SourceEditor.Gui
 
 			static void Draw (Gdk.Drawable drawable, TextView view, TextIter start, TextIter end)
 			{
-				if (DrawWhiteSpacesEnabled)
+				if (HighlightSpacesEnabled || HighlightTabsEnabled || HighlightNewlinesEnabled)
 				{
 					Cairo.Context cntx = Gdk.CairoHelper.Create (drawable);
 					
@@ -955,14 +957,17 @@ namespace MonoDevelop.SourceEditor.Gui
 						switch (iter.Char)
 						{
 							case " ":
-								DrawSpaceAtIter (cntx, view, iter);
+							  if (HighlightSpacesEnabled)
+								  DrawSpaceAtIter (cntx, view, iter);
 								break;
 							case "\t":
-								DrawTabAtIter (cntx, view, iter);
+							  if (HighlightTabsEnabled)
+								  DrawTabAtIter (cntx, view, iter);
 								break;
 							case "\n":
 							case "\r":
-								DrawLineEndAtIter (cntx, view, iter);
+							  if (HighlightNewlinesEnabled)
+								  DrawLineEndAtIter (cntx, view, iter);
 								break;
 							default:
 								break;
