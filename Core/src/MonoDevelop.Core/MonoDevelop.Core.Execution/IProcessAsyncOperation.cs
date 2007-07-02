@@ -34,5 +34,7 @@ namespace MonoDevelop.Core.Execution
 	public interface IProcessAsyncOperation: IAsyncOperation
 	{
 		int ExitCode { get; }
+		
+		int ProcessId { get; }
 	}
 }

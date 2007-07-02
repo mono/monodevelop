@@ -1,3 +1,8 @@
+2007-07-02  Ben Motmans <ben.motmans@gmail.com>
+
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs:
+	Added overloads for Execute and ExecuteFile with ExecutionContext parameter
+
 2007-06-30  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs,

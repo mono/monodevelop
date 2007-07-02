@@ -898,10 +898,15 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IAsyncOperation Execute (CombineEntry entry)
 		{
+			ExecutionContext context = new ExecutionContext (new DefaultExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
+			return Execute (entry, context);
+		}
+		
+		public IAsyncOperation Execute (CombineEntry entry, ExecutionContext context)
+		{
 			if (currentRunOperation != null && !currentRunOperation.IsCompleted) return currentRunOperation;
 
 			IProgressMonitor monitor = new MessageDialogProgressMonitor ();
-			ExecutionContext context = new ExecutionContext (new DefaultExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
 
 			Services.DispatchService.ThreadDispatch (new StatefulMessageHandler (ExecuteCombineEntryAsync), new object[] {entry, monitor, context});
 			currentRunOperation = monitor.AsyncOperation;
@@ -1027,6 +1032,21 @@ namespace MonoDevelop.Ide.Gui
 			Project tempProject = projectService.CreateSingleFileProject (file);
 			if (tempProject != null) {
 				IAsyncOperation aop = Execute (tempProject);
+				ProjectOperationHandler h = new ProjectOperationHandler ();
+				h.Project = tempProject;
+				aop.Completed += new OperationHandler (h.Run);
+				return aop;
+			} else {
+				Services.MessageService.ShowError(GettextCatalog.GetString ("No runnable executable found."));
+				return NullAsyncOperation.Failure;
+			}
+		}
+		
+		public IAsyncOperation ExecuteFile (string file, ExecutionContext context)
+		{
+			Project tempProject = projectService.CreateSingleFileProject (file);
+			if (tempProject != null) {
+				IAsyncOperation aop = Execute (tempProject, context);
 				ProjectOperationHandler h = new ProjectOperationHandler ();
 				h.Project = tempProject;
 				aop.Completed += new OperationHandler (h.Run);

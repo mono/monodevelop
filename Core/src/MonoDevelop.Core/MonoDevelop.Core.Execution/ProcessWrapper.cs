@@ -73,6 +73,10 @@ namespace MonoDevelop.Core.Execution
 			get { return ExitCode; }
 		}
 		
+		int IProcessAsyncOperation.ProcessId {
+			get { return Id; }
+		}
+		
 		void IAsyncOperation.Cancel ()
 		{
 			try {
