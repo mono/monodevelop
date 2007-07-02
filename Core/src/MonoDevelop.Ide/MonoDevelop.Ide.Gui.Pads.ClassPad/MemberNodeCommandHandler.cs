@@ -38,22 +38,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 	public class MemberNodeCommandHandler: NodeCommandHandler
 	{
 		public override void ActivateItem ()
-		{
-			string file = GetFileName ();
-			IMember member = CurrentNode.DataItem as IMember;
-			int line = member.Region.BeginLine;
-			IdeApp.Workbench.OpenDocument (file, Math.Max (1, line), 1, true);
-		}
-		
-		string GetFileName ()
-		{
-			IMember member = (IMember) CurrentNode.GetParentDataItem (typeof(IMember), true);
-			if (member != null && member.Region.FileName != null) return member.Region.FileName;
-			
-			ClassData cls = (ClassData) CurrentNode.GetParentDataItem (typeof(ClassData), true);
-			if (cls != null && cls.Class.Region.FileName != null) return cls.Class.Region.FileName;
-			
-			return null;
+		{			
+			ILanguageItem member = CurrentNode.DataItem as ILanguageItem;
+			IdeApp.ProjectOperations.JumpToDeclaration(member);
 		}
 	}
 }

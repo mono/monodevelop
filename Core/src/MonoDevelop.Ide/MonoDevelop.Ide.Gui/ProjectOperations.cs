@@ -206,49 +206,54 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public void JumpToDeclaration (ILanguageItem item)
-		{
+		string GetDeclaredFile(ILanguageItem item)
+		{			
 			if (item is IMember) {
-				IMember mem = (IMember) item;
-				string file = null;
+				IMember mem = (IMember) item;				
 				if (mem.Region == null)
-					return;
+					return null;
 				else if (mem.Region.FileName != null)
-					file = mem.Region.FileName;
-				else if (mem.DeclaringType != null)
-					file = GetClassFileName (mem.DeclaringType);
-				if (file != null)
-					IdeApp.Workbench.OpenDocument (file, mem.Region.BeginLine, mem.Region.BeginColumn, true);
+					return mem.Region.FileName;
+				else if (mem.DeclaringType != null) {
+					foreach (IClass c in mem.DeclaringType.Parts) {
+						if ((mem is IField && c.Fields.Contains((IField)mem)) ||
+						    (mem is IEvent && c.Events.Contains((IEvent)mem)) || 
+						    (mem is IProperty  && c.Properties.Contains((IProperty)mem)) ||
+						    (mem is IMethod && c.Methods.Contains((IMethod)mem))) {
+							return GetClassFileName(c);							
+						}                                   
+					}
+				}
 			} else if (item is IClass) {
 				IClass cls = (IClass) item;
-				string file = GetClassFileName (cls);
-				if (cls.Region != null && file != null)
-					IdeApp.Workbench.OpenDocument (file, cls.Region.BeginLine, cls.Region.BeginColumn, true);
+				return GetClassFileName (cls);
 			} else if (item is LocalVariable) {
 				LocalVariable cls = (LocalVariable) item;
-				if (cls.Region != null)
-					IdeApp.Workbench.OpenDocument (cls.Region.FileName, cls.Region.BeginLine, cls.Region.BeginColumn, true);
+				return cls.Region.FileName;
 			}
+			return null;
 		}
 		
 		public bool CanJumpToDeclaration (ILanguageItem item)
 		{
+			return (GetDeclaredFile(item) != null);
+		}
+		
+		public void JumpToDeclaration (ILanguageItem item)
+		{
+			String file;
+			if ((file = GetDeclaredFile(item)) == null)
+				return;
 			if (item is IMember) {
 				IMember mem = (IMember) item;
-				if (mem.Region == null)
-					return false;
-				else if (mem.Region.FileName != null)
-					return true;
-				else if (mem.DeclaringType != null)
-					return GetClassFileName (mem.DeclaringType) != null;
+				IdeApp.Workbench.OpenDocument (file, mem.Region.BeginLine, mem.Region.BeginColumn, true);
 			} else if (item is IClass) {
 				IClass cls = (IClass) item;
-				return cls.Region != null && GetClassFileName (cls) != null;
+				IdeApp.Workbench.OpenDocument (file, cls.Region.BeginLine, cls.Region.BeginColumn, true);
 			} else if (item is LocalVariable) {
-				LocalVariable cls = (LocalVariable) item;
-				return cls.Region != null;
+				LocalVariable lvar = (LocalVariable) item;
+				IdeApp.Workbench.OpenDocument (file, lvar.Region.BeginLine, lvar.Region.BeginColumn, true);
 			}
-			return false;
 		}
 		
 		string GetClassFileName (IClass cls)

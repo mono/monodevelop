@@ -1,3 +1,11 @@
+2007-07-02  Balaji Rao <balajirrao@gmail.com>
+
+	* Monodevelop.Ide.Gui/ProjectOperations.cs:
+	Fixed and improved JumpToDeclaration method to support partial classes
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/MemberNodeCommandHandler.cs:
+	Uses ProjectOperation.JumpToDeclaration() inplace of
+	ProjectOperation.OpenDocument directly.
+
 2007-07-02  Ben Motmans <ben.motmans@gmail.com>
 
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs:
