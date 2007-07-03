@@ -378,7 +378,7 @@ namespace MonoDevelop.NUnit
 		[CommandHandler (TestCommands.SelectTestInTree)]
 		protected void OnSelectTestInTree ()
 		{
-			Pad pad = IdeApp.Workbench.Pads [typeof(TestPad)];
+			Pad pad = IdeApp.Workbench.GetPad<TestPad> ();
 			TestPad content = (TestPad) pad.Content;
 			content.SelectTest (GetSelectedTest ());
 		}
