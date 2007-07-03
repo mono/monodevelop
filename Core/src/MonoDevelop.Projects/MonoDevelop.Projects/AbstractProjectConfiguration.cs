@@ -38,7 +38,7 @@ namespace MonoDevelop.Projects
 		[ItemProperty ("Output/signAssembly")]
 		bool signAssembly = false;
 		
-		[ItemProperty ("Output/assemblyKeyFile")]
+		[ProjectPathItemProperty ("Output/assemblyKeyFile")]
 		string assemblyKeyFile = String.Empty;
 		
 		[ProjectPathItemProperty ("Execution/executeScript", DefaultValue = "")]

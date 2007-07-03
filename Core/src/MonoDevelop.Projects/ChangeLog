@@ -1,5 +1,10 @@
 2007-07-03  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects/AbstractProjectConfiguration.cs: little fix for
+	  signing.
+
+2007-07-03  Mike Krüger <mkrueger@novell.com> 
+
 	* Makefile.am: added strong naming support to project configuration.
 
 2007-06-30 Jerome Haltom <wasabi@larvalstage.net>
