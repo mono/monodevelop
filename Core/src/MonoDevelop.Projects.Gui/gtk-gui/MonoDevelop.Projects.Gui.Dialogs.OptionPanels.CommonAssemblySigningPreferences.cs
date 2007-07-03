@@ -19,7 +19,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
         
         private Gtk.HBox hbox1;
         
-        private Gtk.Label label1;
+        private Gtk.Label strongNameFileLabel;
         
         private MonoDevelop.Components.FileEntry strongNameFileEntry;
         
@@ -49,12 +49,12 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.hbox1.Name = "hbox1";
             this.hbox1.Spacing = 6;
             // Container child hbox1.Gtk.Box+BoxChild
-            this.label1 = new Gtk.Label();
-            this.label1.Name = "label1";
-            this.label1.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("S_trong Name File:");
-            this.label1.UseUnderline = true;
-            this.hbox1.Add(this.label1);
-            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox1[this.label1]));
+            this.strongNameFileLabel = new Gtk.Label();
+            this.strongNameFileLabel.Name = "strongNameFileLabel";
+            this.strongNameFileLabel.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("S_trong Name File:");
+            this.strongNameFileLabel.UseUnderline = true;
+            this.hbox1.Add(this.strongNameFileLabel);
+            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox1[this.strongNameFileLabel]));
             w2.Position = 0;
             w2.Expand = false;
             w2.Fill = false;

@@ -1,5 +1,10 @@
 2007-07-03  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CommonAssemblySigningPreferences.cs:
+	  Made the assembly signing panel a bit nicer.
+
+2007-07-03  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Gui.addin.xml, MonoDevelop.Projects.Gui.mdp,
 	  gtk-gui/objects.xml,
 	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences.cs,

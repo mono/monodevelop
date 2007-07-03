@@ -35,8 +35,8 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
 	public partial class CommonAssemblySigningPreferences : Gtk.Bin, IDialogPanel
 	{
+		Project project;
 		AbstractProjectConfiguration configuration;
-		
 		public CommonAssemblySigningPreferences()
 		{
 			this.Build();
@@ -46,12 +46,23 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		{
 			IProperties props = (IProperties) CustomizationObject;
 			configuration = props.GetProperty("Config") as AbstractProjectConfiguration;
+			project = (Project)((IProperties)CustomizationObject).GetProperty("Project");
+			this.signAssemblyCheckbutton.Toggled += new EventHandler (SignAssemblyCheckbuttonActivated);
 			if (configuration != null) {
 				this.signAssemblyCheckbutton.Active = configuration.SignAssembly;
 				this.strongNameFileEntry.Path = configuration.AssemblyKeyFile;
 			}
+			if (project != null) {
+				this.strongNameFileEntry.DefaultPath = project.BaseDirectory;
+			}
+			SignAssemblyCheckbuttonActivated (null, null);
 		}
-
+		
+		void SignAssemblyCheckbuttonActivated (object sender, EventArgs e)
+		{
+			this.strongNameFileLabel.Sensitive = this.strongNameFileEntry.Sensitive = this.signAssemblyCheckbutton.Active;
+		}
+		
 		public bool StorePanelContents ()
 		{
 			if (configuration != null) {

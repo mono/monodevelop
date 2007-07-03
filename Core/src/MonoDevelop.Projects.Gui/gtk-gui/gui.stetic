@@ -344,7 +344,7 @@ Custom Command</property>
             <property name="MemberName" />
             <property name="Spacing">6</property>
             <child>
-              <widget class="Gtk.Label" id="label1">
+              <widget class="Gtk.Label" id="strongNameFileLabel">
                 <property name="MemberName" />
                 <property name="LabelProp" translatable="yes">S_trong Name File:</property>
                 <property name="UseUnderline">True</property>
