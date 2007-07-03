@@ -11,7 +11,7 @@ using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeTemplates;
 
-namespace MonoDevelop.Ide.Gui.Dialogs
+namespace MonoDevelop.Ide.CodeTemplates
 {
 	public class EditTemplateDialog : Gtk.Dialog 
 	{

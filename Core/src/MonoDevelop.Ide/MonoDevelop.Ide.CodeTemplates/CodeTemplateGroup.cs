@@ -1,14 +1,36 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version value="$version"/>
-// </file>
+//
+// CodeTemplateGroup.cs
+//
+// Author:
+//   Mike Krüger <mkrueger@novell.com>
+//
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
 
 using System;
-using System.Collections;
-using System.Xml;
 using System.Diagnostics;
+using System.Collections.Generic;
+using System.Xml;
+
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.CodeTemplates
@@ -18,16 +40,16 @@ namespace MonoDevelop.Ide.CodeTemplates
 	/// </summary>
 	public class CodeTemplateGroup
 	{
-		ArrayList extensions = new ArrayList();
-		ArrayList templates  = new ArrayList();
+		List<string>       extensions = new List<string> ();
+		List<CodeTemplate> templates  = new List<CodeTemplate> ();
 		
-		public ArrayList Extensions {
+		public List<string> Extensions {
 			get {
 				return extensions;
 			}
 		}
 		
-		public ArrayList Templates {
+		public List<CodeTemplate> Templates {
 			get {
 				return templates;
 			}
@@ -35,55 +57,56 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public string[] ExtensionStrings {
 			get {
-				string[] extensionStrings = new string[extensions.Count];
-				extensions.CopyTo(extensionStrings, 0);
-				return extensionStrings;
+				return extensions.ToArray ();
 			}
 			set {
 				extensions.Clear();
-				foreach (string str in value) {
-					extensions.Add(str);
+				extensions.AddRange (value);
+			}
+		}
+		
+		public CodeTemplateGroup ()
+		{
+		}
+		
+		public CodeTemplateGroup (string extensions)
+		{
+			if (!String.IsNullOrEmpty (extensions))
+				this.ExtensionStrings = extensions.Split (';');
+		}
+
+#region I/O
+		public const string Node = "CodeTemplateGroup";
+		const string extensionsAttribute = "extensions";
+		
+		public static CodeTemplateGroup Read (XmlReader reader)
+		{
+			Debug.Assert (reader.LocalName == Node);
+			
+			CodeTemplateGroup result = new CodeTemplateGroup ();
+			if (!String.IsNullOrEmpty (reader.GetAttribute (extensionsAttribute)))
+				result.ExtensionStrings = reader.GetAttribute (extensionsAttribute).Split (';');
+			
+			while (reader.Read ()) {
+				if (reader.IsStartElement ()) {
+					switch (reader.LocalName) {
+					case CodeTemplate.Node:
+						result.templates.Add (CodeTemplate.Read (reader));
+						break;
+					}
 				}
 			}
+			return result;
 		}
 		
-		public CodeTemplateGroup(string extensions)
+		public void Write (XmlWriter writer)
 		{
-			ExtensionStrings = extensions.Split(';');
+			writer.WriteStartElement (Node);
+			writer.WriteAttributeString (extensionsAttribute, String.Join(";", ExtensionStrings));
+			foreach (CodeTemplate template in this.templates)
+				template.Write (writer);
+			writer.WriteEndElement (); // Node
 		}
-		
-		public CodeTemplateGroup(XmlElement el)
-		{
-			if (el == null) {
-				throw new ArgumentNullException("el");
-			}
-			string[] exts = el.GetAttribute("extensions").Split(';');
-			foreach (string ext in exts) {
-				extensions.Add(ext);
-			}
-			foreach (XmlNode childNode in el.ChildNodes) {
-				XmlElement childElement = childNode as XmlElement;
-				if (childElement == null)
-					continue;
-				templates.Add(new CodeTemplate(childElement));
-			}
-		}
-		
-		public XmlElement ToXmlElement(XmlDocument doc)
-		{
-			if (doc == null) {
-				throw new ArgumentNullException("doc");
-			}
-			XmlElement newElement = doc.CreateElement("CodeTemplateGroup");
-			
-			newElement.SetAttribute("extensions", String.Join(";", ExtensionStrings));
-			
-			foreach (CodeTemplate codeTemplate in templates) {
-				newElement.AppendChild(codeTemplate.ToXmlElement(doc));
-			}
-			
-			return newElement;
-		}
-		
+#endregion
 	}
 }

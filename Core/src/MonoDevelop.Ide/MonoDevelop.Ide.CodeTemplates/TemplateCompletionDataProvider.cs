@@ -40,7 +40,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public ICompletionData[] GenerateCompletionData (ICompletionWidget widget, char charTyped)
 		{
-			CodeTemplateGroup templateGroup = CodeTemplateLoader.GetTemplateGroupPerFilename (fileName);
+			CodeTemplateGroup templateGroup = CodeTemplateService.GetTemplateGroupPerFilename (fileName);
 			if (templateGroup == null) {
 				return null;
 			}

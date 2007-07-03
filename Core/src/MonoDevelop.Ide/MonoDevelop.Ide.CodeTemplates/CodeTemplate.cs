@@ -1,32 +1,50 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version value="$version"/>
-// </file>
+//
+// CodeTemplate.cs
+//
+// Author:
+//   Mike Krüger <mkrueger@novell.com>
+//
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
 
 using System;
-using System.Xml;
 using System.Diagnostics;
+using System.Xml;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
-	/// <summary>
-	/// This class reperesents a single Code Template
-	/// </summary>
 	public class CodeTemplate
 	{
-		string shortcut     = String.Empty;
-		string description  = String.Empty;
-		string text         = String.Empty;
+		string shortcut;
+		string description;
+		string text;
 		
 		public string Shortcut {
 			get {
 				return shortcut;
 			}
 			set {
+				Debug.Assert (!String.IsNullOrEmpty (value));
 				shortcut = value;
-				Debug.Assert(shortcut != null, "MonoDevelop.Internal.Template : string Shortcut == null");
 			}
 		}
 		
@@ -35,8 +53,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 				return description;
 			}
 			set {
+				Debug.Assert (!String.IsNullOrEmpty (value));
 				description = value;
-				Debug.Assert(description != null, "MonoDevelop.Internal.Template : string Description == null");
 			}
 		}
 		
@@ -45,8 +63,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 				return text;
 			}
 			set {
+				Debug.Assert (!String.IsNullOrEmpty (value));
 				text = value;
-				Debug.Assert(text != null, "MonoDevelop.Internal.Template : string Text == null");
 			}
 		}
 		
@@ -54,39 +72,43 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 		}
 		
-		public CodeTemplate(string shortcut, string description, string text)
+		public CodeTemplate (string shortcut, string description, string text)
 		{
-			this.shortcut    = shortcut;
+			this.shortcut = shortcut;
 			this.description = description;
-			this.text        = text;
+			this.text = text;
 		}
 		
-		public CodeTemplate(XmlElement el)
+		public override string ToString ()
 		{
-			if (el == null) {
-				throw new ArgumentNullException("el");
-			}
-			
-			if (el.Attributes["template"] == null || el.Attributes["description"] == null) {
-				throw new Exception("CodeTemplate(XmlElement el) : template and description attributes must exist (check the CodeTemplate XML)");
-			}
-			
-			Shortcut    = el.GetAttribute("template");
-			Description = el.GetAttribute("description");
-			Text        = el.InnerText;
+			return String.Format ("[CodeTemplate: Shortcut={0}, Description={1}, Text={2}]", this.shortcut, this.description, this.text);
+		}
+
+#region I/O
+		public const string Node          = "CodeTemplate";
+		const string shortcutAttribute    = "template";
+		const string descriptionAttribute = "description";
+		
+		public void Write (XmlWriter writer)
+		{
+			writer.WriteStartElement (Node);
+			writer.WriteAttributeString (shortcutAttribute, this.shortcut);
+			writer.WriteAttributeString (descriptionAttribute, this.description);
+			writer.WriteString (this.text);
+			writer.WriteEndElement (); // Node
 		}
 		
-		public XmlElement ToXmlElement(XmlDocument doc)
+		public static CodeTemplate Read (XmlReader reader)
 		{
-			if (doc == null) {
-				throw new ArgumentNullException("doc");
-			}
+			Debug.Assert (reader.LocalName == Node);
 			
-			XmlElement newElement = doc.CreateElement("CodeTemplate");
-			newElement.SetAttribute("template",    Shortcut);
-			newElement.SetAttribute("description", Description);
-			newElement.InnerText = Text;
-			return newElement;
+			CodeTemplate result = new CodeTemplate ();
+			result.shortcut    = reader.GetAttribute (shortcutAttribute);
+			result.description = reader.GetAttribute (descriptionAttribute);
+			result.text        = reader.ReadString ();
+			Console.WriteLine (result);
+			return result;
 		}
+#endregion
 	}
 }

@@ -44,7 +44,10 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateGroup.cs \
-	MonoDevelop.Ide.CodeTemplates/CodeTemplateLoader.cs \
+	MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs \
+	MonoDevelop.Ide.CodeTemplates/CodeTemplateService.cs \
+	MonoDevelop.Ide.CodeTemplates/EditTemplateDialog.cs \
+	MonoDevelop.Ide.CodeTemplates/EditTemplateGroupDialog.cs \
 	MonoDevelop.Ide.CodeTemplates/TemplateCompletionDataProvider.cs \
 	MonoDevelop.Ide.Codons/CombineOpenCondition.cs \
 	MonoDevelop.Ide.Codons/ContextPadCodon.cs \
@@ -103,7 +106,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/DeleteFileDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs \
-	MonoDevelop.Ide.Gui.Dialogs/EditTemplateDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/ExportProjectDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/FeatureSelectorDialog.cs \

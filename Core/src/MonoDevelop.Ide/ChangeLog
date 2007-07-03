@@ -1,5 +1,21 @@
 2007-07-03  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateLoader.cs,
+	  MonoDevelop.Ide.CodeTemplates/EditTemplateGroupDialog.cs,
+	  MonoDevelop.Ide.CodeTemplates/EditTemplateDialog.cs,
+	  MonoDevelop.Ide.CodeTemplates/CodeTemplateGroup.cs,
+	  MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs,
+	  MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs,
+	  MonoDevelop.Ide.CodeTemplates/CodeTemplateService.cs,
+	  MonoDevelop.Ide.CodeTemplates/TemplateCompletionDataProvider.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/EditTemplateDialog.cs,
+	  MonoDevelop.Ide.addin.xml: Refactored the code templates: They were
+	  scattered over 3 places, now the code template feature is at one
+	  place. Re-wrote the code template loading/saving (No slow
+	  XmlDocument anymore).
+
+2007-07-03  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs,
 	  MonoDevelop.Ide.Gui/IWorkbench.cs,
 	  MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Moved the view and pad

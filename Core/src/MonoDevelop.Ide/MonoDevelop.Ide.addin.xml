@@ -1155,4 +1155,11 @@
 		<StockIcon stockid = "md-navigate-next" resource = "navigate-next.png" />
 		<StockIcon stockid = "md-navigate-previous" resource = "navigate-previous.png" />
 	</Extension>
+	
+	<Extension path = "/SharpDevelop/Dialogs/OptionsDialog/CodingOptions">
+		<DialogPanel id = "CodeTemplates"
+		             _label = "Code Templates"
+		             class = "MonoDevelop.Ide.CodeTemplates.CodeTemplatePane"/>
+	</Extension>
+
 </Addin>
