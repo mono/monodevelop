@@ -94,6 +94,11 @@ namespace VBBinding {
 			if (compilerparameters.DefineSymbols.Length > 0) {
 				sb.Append("-define:");sb.Append('"');sb.Append(compilerparameters.DefineSymbols);sb.Append('"');sb.Append(Environment.NewLine);
 			}
+			if (configuration.SignAssembly) {
+				if (File.Exists (configuration.AssemblyKeyFile)) {
+					sb.Append("-keyfile:");sb.Append('"');sb.Append(configuration.AssemblyKeyFile);sb.Append('"');sb.Append(Environment.NewLine);
+				}
+			}
 			
 			if (compilerparameters.MainClass != null && compilerparameters.MainClass.Length > 0) {
 				sb.Append("-main:");sb.Append(compilerparameters.MainClass);sb.Append(Environment.NewLine);
