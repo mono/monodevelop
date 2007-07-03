@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Codons;
@@ -62,14 +63,14 @@ namespace MonoDevelop.Ide.Gui
 		/// <summary>
 		/// A collection in which all active workspace windows are saved.
 		/// </summary>
-		List<IViewContent> ViewContentCollection {
+		ReadOnlyCollection<IViewContent> ViewContentCollection {
 			get;
 		}
 		
 		/// <summary>
 		/// A collection in which all active workspace windows are saved.
 		/// </summary>
-		List<PadCodon> PadContentCollection {
+		ReadOnlyCollection<PadCodon> PadContentCollection {
 			get;
 		}
 		

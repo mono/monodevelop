@@ -139,7 +139,7 @@ namespace MonoDevelop.Ide.Gui
 
 			// by default, the active pad collection is the full set
 			// will be overriden in CreateDefaultLayout() below
-			activePadCollection = workbench.PadContentCollection;
+			activePadCollection = new List<MonoDevelop.Ide.Codons.PadCodon> (workbench.PadContentCollection);
 
 			// create DockItems for all the pads
 			foreach (PadCodon content in workbench.PadContentCollection)
@@ -198,8 +198,8 @@ namespace MonoDevelop.Ide.Gui
 		{
 			lock (workbench.ViewContentCollection) {
 				IViewContent content = workbench.ViewContentCollection[oldPlacement];
-				workbench.ViewContentCollection.RemoveAt (oldPlacement);
-				workbench.ViewContentCollection.Insert (newPlacement, content);
+				workbench.InternalViewContentCollection.RemoveAt (oldPlacement);
+				workbench.InternalViewContentCollection.Insert (newPlacement, content);
 				
 			}
 		}
@@ -218,7 +218,7 @@ namespace MonoDevelop.Ide.Gui
 				activePadCollection = padCollections [ctxt];
 			else
 				// this is so, for unkwown contexts, we get the full set of pads
-				activePadCollection = workbench.PadContentCollection;
+				activePadCollection = new List<MonoDevelop.Ide.Codons.PadCodon> (workbench.PadContentCollection);
 
 			workbenchContext = ctxt;
 			

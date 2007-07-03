@@ -1,5 +1,12 @@
 2007-07-03  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs,
+	  MonoDevelop.Ide.Gui/IWorkbench.cs,
+	  MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Moved the view and pad
+	  collections to read only in the public api.
+
+2007-07-03  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.mdp, MonoDevelop.Ide.Gui/ProjectOperations.cs,
 	  MonoDevelop.Ide.Gui/Workbench.cs,
 	  MonoDevelop.Ide.Gui/DefaultWorkbench.cs,

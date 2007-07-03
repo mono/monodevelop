@@ -8,6 +8,7 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Diagnostics;
@@ -41,8 +42,8 @@ namespace MonoDevelop.Ide.Gui
 		readonly static string viewContentPath = "/SharpDevelop/Workbench/Pads";
 		readonly static string toolbarsPath = "/SharpDevelop/Workbench/ToolBar";
 		
-		List<PadCodon> padContentCollection       = new List<PadCodon> ();
-		List<IViewContent> workbenchContentCollection = new List<IViewContent> ();
+		List<PadCodon> padContentCollection      = new List<PadCodon> ();
+		List<IViewContent> viewContentCollection = new List<IViewContent> ();
 		
 		bool closeAll = false;
 
@@ -101,10 +102,10 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public List<PadCodon> PadContentCollection {
+		public ReadOnlyCollection<PadCodon> PadContentCollection {
 			get {
 				Debug.Assert(padContentCollection != null);
-				return padContentCollection;
+				return padContentCollection.AsReadOnly ();
 			}
 		}
 		
@@ -116,10 +117,17 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public List<IViewContent> ViewContentCollection {
+		public ReadOnlyCollection<IViewContent> ViewContentCollection {
 			get {
-				Debug.Assert(workbenchContentCollection != null);
-				return workbenchContentCollection;
+				Debug.Assert(viewContentCollection != null);
+				return viewContentCollection.AsReadOnly ();
+			}
+		}
+		
+		internal List<IViewContent> InternalViewContentCollection {
+			get {
+				Debug.Assert(viewContentCollection != null);
+				return viewContentCollection;
 			}
 		}
 		
@@ -219,8 +227,8 @@ namespace MonoDevelop.Ide.Gui
 			if (Runtime.Properties.GetProperty("SharpDevelop.LoadDocumentProperties", true) && content is IMementoCapable) {
 				StoreMemento(content);
 			}
-			if (workbenchContentCollection.Contains(content)) {
-				workbenchContentCollection.Remove(content);
+			if (viewContentCollection.Contains(content)) {
+				viewContentCollection.Remove(content);
 			}
 		}
 		
@@ -228,7 +236,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			try {
 				closeAll = true;
-				List<IViewContent> fullList = new List<IViewContent>(workbenchContentCollection);
+				List<IViewContent> fullList = new List<IViewContent>(viewContentCollection);
 				foreach (IViewContent content in fullList) {
 					IWorkbenchWindow window = content.WorkbenchWindow;
 					window.CloseWindow(true, true, 0);
@@ -242,7 +250,7 @@ namespace MonoDevelop.Ide.Gui
 		public virtual void ShowView (IViewContent content, bool bringToFront)
 		{
 			Debug.Assert(layout != null);
-			ViewContentCollection.Add(content);
+			viewContentCollection.Add(content);
 			if (Runtime.Properties.GetProperty("SharpDevelop.LoadDocumentProperties", true) && content is IMementoCapable) {
 				try {
 					IXmlConvertable memento = GetStoredMemento(content);
@@ -268,7 +276,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public virtual void ShowPad (PadCodon content)
 		{
-			PadContentCollection.Add(content);
+			padContentCollection.Add(content);
 			
 			if (layout != null)
 				layout.ShowPad (content);
@@ -276,7 +284,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void RemovePad (PadCodon codon)
 		{
-			PadContentCollection.Remove (codon);
+			padContentCollection.Remove (codon);
 			
 			if (layout != null)
 				layout.RemovePad (codon);
@@ -292,7 +300,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void RedrawAllComponents()
 		{
-			foreach (IViewContent content in workbenchContentCollection) {
+			foreach (IViewContent content in viewContentCollection) {
 				content.RedrawContent();
 			}
 			foreach (PadCodon content in padContentCollection) {
