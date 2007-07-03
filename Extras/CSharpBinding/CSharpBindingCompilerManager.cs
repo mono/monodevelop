@@ -81,6 +81,11 @@ namespace CSharpBinding
 //			writer.WriteLine("/utf8output");
 //			writer.WriteLine("/w:" + compilerparameters.WarningLevel);;
 				
+			if (configuration.SignAssembly) {
+				if (File.Exists (configuration.AssemblyKeyFile))
+					writer.WriteLine("/keyfile:" + configuration.AssemblyKeyFile);
+			}
+			
 			if (configuration.DebugMode) {
 				writer.WriteLine("/debug:+");
 				writer.WriteLine("/debug:full");
