@@ -61,6 +61,9 @@
 			<DialogPanel id = "CustomCommands"
 			             _label = "Custom Commands"
 			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanel"/>
+			<DialogPanel id = "SigningPreferences"
+			             _label = "Assembly Signing"
+			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences"/>
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/CombineOptions/GeneralOptions">

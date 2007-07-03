@@ -16,6 +16,7 @@ REFS =  \
 
 FILES =  \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs \
 	MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs \
@@ -37,6 +38,7 @@ FILES =  \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineInformationPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs \
+	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CommonAssemblySigningPreferences.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanelWidget.cs \
