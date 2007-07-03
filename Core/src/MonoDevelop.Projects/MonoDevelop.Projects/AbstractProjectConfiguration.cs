@@ -35,6 +35,12 @@ namespace MonoDevelop.Projects
 		[ItemProperty ("Build/debugmode")]
 		bool debugmode = true;
 		
+		[ItemProperty ("Output/signAssembly")]
+		bool signAssembly = false;
+		
+		[ItemProperty ("Output/assemblyKeyFile")]
+		string assemblyKeyFile = String.Empty;
+		
 		[ProjectPathItemProperty ("Execution/executeScript", DefaultValue = "")]
 		string executeScript = String.Empty;
 		
@@ -89,6 +95,16 @@ namespace MonoDevelop.Projects
 			set { pauseconsoleoutput = value; }
 		}
 		
+		public bool SignAssembly {
+			get { return signAssembly; }
+			set { signAssembly = value; }
+		}
+		public string AssemblyKeyFile {
+			get { return assemblyKeyFile; }
+			set { assemblyKeyFile = value; }
+		}
+		
+		
 		public override void CopyFrom (IConfiguration configuration)
 		{
 			base.CopyFrom (configuration);
@@ -103,6 +119,8 @@ namespace MonoDevelop.Projects
 			commandLineParameters = conf.commandLineParameters;
 			externalConsole = conf.externalConsole;
 			pauseconsoleoutput = conf.pauseconsoleoutput;
+			signAssembly = conf.signAssembly;
+			assemblyKeyFile = conf.assemblyKeyFile;
 		}
 	}
 }

@@ -1,3 +1,7 @@
+2007-07-03  Mike Krüger <mkrueger@novell.com> 
+
+	* Makefile.am: added strong naming support to project configuration.
+
 2007-06-30 Jerome Haltom <wasabi@larvalstage.net>
 
 	* MonoDevelop.Projects/DotNetProject.cs: Check for null 
