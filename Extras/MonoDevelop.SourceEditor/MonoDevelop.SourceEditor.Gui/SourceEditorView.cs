@@ -528,7 +528,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			if (AutoInsertTemplates) {
 				string word = GetWordBeforeCaret ();
 				if (word != null) {
-					CodeTemplateGroup templateGroup = CodeTemplateLoader.GetTemplateGroupPerFilename (ParentEditor.DisplayBinding.ContentName);
+					CodeTemplateGroup templateGroup = CodeTemplateService.GetTemplateGroupPerFilename (ParentEditor.DisplayBinding.ContentName);
 					if (templateGroup != null) {
 						foreach (CodeTemplate template in templateGroup.Templates) {
 							if (template.Shortcut == word) {
@@ -943,7 +943,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			{
 				if (HighlightSpacesEnabled || HighlightTabsEnabled || HighlightNewlinesEnabled)
 				{
-					Cairo.Context cntx = Gdk.CairoHelper.Create (drawable);
+				/*	Cairo.Context cntx = Gdk.CairoHelper.Create (drawable);
 					
 					//shift to pixel grid to reduce antialiasing
 					cntx.Antialias = Cairo.Antialias.Default;
@@ -974,7 +974,7 @@ namespace MonoDevelop.SourceEditor.Gui
 						}
 						if (! iter.ForwardChar ())
 							break;
-					}
+					}*/
 				}
 			}
 		}

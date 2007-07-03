@@ -46,12 +46,6 @@
 		<Class id = "SourceViewService" class="MonoDevelop.SourceEditor.SourceViewService" />
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Dialogs/OptionsDialog/CodingOptions">
-		<DialogPanel id = "CodeTemplates"
-		             _label = "Code Templates"
-		             class = "MonoDevelop.SourceEditor.Gui.OptionPanels.CodeTemplatePane"/>
-	</Extension>
-
 	<Extension path = "/SharpDevelop/Commands">
 		<Command id = "MonoDevelop.SourceEditor.EditorCommands.HighlightingTypeList"
 				type = "array|radio"

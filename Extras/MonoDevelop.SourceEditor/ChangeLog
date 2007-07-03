@@ -1,3 +1,12 @@
+2007-07-03  Mike Krüger <mkrueger@novell.com> 
+
+	* EditorBindings.glade,
+	  MonoDevelop.SourceEditor.Gui/SourceEditorView.cs,
+	  MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs,
+	  MonoDevelop.SourceEditor.addin.xml, MonoDevelop.SourceEditor.mdp:
+	  Removed the code template options (now they're part of the Ide
+	  project).
+
 2007-07-02 Fabian Sturm <f@rtfs.org>
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Added separate spaces, tabs and newline highlighting.

@@ -12,7 +12,6 @@ FILES =  \
 	MonoDevelop.SourceEditor.Gui.Dialogs/EditTemplateGroupDialog.cs \
 	MonoDevelop.SourceEditor.Gui.Dialogs/GotoLineNumberDialog.cs \
 	MonoDevelop.SourceEditor.Gui.OptionPanels/BehaviorTextEditorPanel.cs \
-	MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs \
 	MonoDevelop.SourceEditor.Gui.OptionPanels/GeneralTextEditorPanel.cs \
 	MonoDevelop.SourceEditor.Gui.OptionPanels/MarkersTextEditorPanel.cs \
 	MonoDevelop.SourceEditor.Gui.OptionPanels/SyntaxHighlightingPanel.cs \
@@ -41,6 +40,7 @@ REFS =  \
 	$(GNOME_VFS_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(GTKSOURCEVIEW_SHARP_LIBS) \
+	$(MONO_CAIRO_LIBS) \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
@@ -48,7 +48,6 @@ REFS =  \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
-	-r:Mono.Cairo \
 	-r:System \
 	-r:System.Drawing \
 	-r:System.Xml
