@@ -1,3 +1,8 @@
+2007-07-03  Mike Krüger <mkrueger@novell.com> 
+
+	* ChangeLogAddIn.cs: Changed a bit because of the removal of custom
+	  collections in the Ide project.
+
 2007-06-22  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
 
 	* ChangeLogAddIn.mdp: Included ChangeLog file.

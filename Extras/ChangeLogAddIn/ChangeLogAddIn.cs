@@ -51,7 +51,7 @@ namespace MonoDevelop.ChangeLogAddIn
 
         private ProjectFile GetSelectedProjectFile()
 		{
-			Pad pad = IdeApp.Workbench.Pads[typeof(SolutionPad)];
+			Pad pad = IdeApp.Workbench.GetPad<SolutionPad> ();
 			if (pad == null) return null;
 
 			SolutionPad solutionPad = pad.Content as SolutionPad;
