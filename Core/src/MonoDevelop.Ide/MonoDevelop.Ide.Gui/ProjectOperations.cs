@@ -1176,7 +1176,7 @@ namespace MonoDevelop.Ide.Gui
 			// If there is at least an error or warning, show the error list pad.
 			if (tasks != null && tasks.Length > 0) {
 				try {
-					Pad errorsPad = IdeApp.Workbench.Pads [typeof(MonoDevelop.Ide.Gui.Pads.ErrorListPad)];
+					Pad errorsPad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ();
 					if ((bool) Runtime.Properties.GetProperty ("SharpDevelop.ShowTaskListAfterBuild", true)) {
 						errorsPad.Visible = true;
 						errorsPad.BringToFront ();

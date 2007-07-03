@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.Gui
 		/// <summary>
 		/// A collection in which all active workspace windows are saved.
 		/// </summary>
-		ViewContentCollection ViewContentCollection {
+		List<IViewContent> ViewContentCollection {
 			get;
 		}
 		

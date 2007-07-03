@@ -1,3 +1,12 @@
+2007-07-03  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.mdp, MonoDevelop.Ide.Gui/ProjectOperations.cs,
+	  MonoDevelop.Ide.Gui/Workbench.cs,
+	  MonoDevelop.Ide.Gui/DefaultWorkbench.cs,
+	  MonoDevelop.Ide.Gui/IWorkbench.cs,
+	  MonoDevelop.Ide.Tasks/TaskService.cs: Refactoring - removed some
+	  custom collections and used generic collections instead.
+
 2007-07-02  Balaji Rao <balajirrao@gmail.com>
 
 	* Monodevelop.Ide.Gui/ProjectOperations.cs:

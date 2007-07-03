@@ -85,8 +85,6 @@
     <File name="./MonoDevelop.Ide.Gui/IWorkbenchLayout.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui/IWorkbenchWindow.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui/ViewCommandHandlers.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Ide.Gui/ViewContentCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Ide.Gui/WorkbenchWindowCollection.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui.Content/IBookmarkBuffer.cs" subtype="Code" buildaction="Compile" />
@@ -215,11 +213,9 @@
     <File name="./MonoDevelop.Ide.Gui.BrowserDisplayBinding/HTMLInterfaces.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.CodeTemplates/TemplateCompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui/Document.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Ide.Gui/DocumentCollection.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui/HelpOperations.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui/Ide.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui/Pad.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Ide.Gui/PadCollection.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui/ProjectOperations.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui/Workbench.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui/IStatusIcon.cs" subtype="Code" buildaction="Compile" />

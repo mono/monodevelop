@@ -227,7 +227,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui/DefaultWorkbench.cs \
 	MonoDevelop.Ide.Gui/DisplayBindingService.cs \
 	MonoDevelop.Ide.Gui/Document.cs \
-	MonoDevelop.Ide.Gui/DocumentCollection.cs \
 	MonoDevelop.Ide.Gui/ExitEventHandler.cs \
 	MonoDevelop.Ide.Gui/FileViewer.cs \
 	MonoDevelop.Ide.Gui/HelpOperations.cs \
@@ -250,7 +249,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui/NavigationService.cs \
 	MonoDevelop.Ide.Gui/OutputProgressMonitor.cs \
 	MonoDevelop.Ide.Gui/Pad.cs \
-	MonoDevelop.Ide.Gui/PadCollection.cs \
 	MonoDevelop.Ide.Gui/ProgressMonitors.cs \
 	MonoDevelop.Ide.Gui/ProjectOperations.cs \
 	MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs \
@@ -261,11 +259,9 @@ FILES =  \
 	MonoDevelop.Ide.Gui/TextEditor.cs \
 	MonoDevelop.Ide.Gui/TipOfTheDayStartupHandler.cs \
 	MonoDevelop.Ide.Gui/ViewCommandHandlers.cs \
-	MonoDevelop.Ide.Gui/ViewContentCollection.cs \
 	MonoDevelop.Ide.Gui/ViewContentEventHandler.cs \
 	MonoDevelop.Ide.Gui/Workbench.cs \
 	MonoDevelop.Ide.Gui/WorkbenchMemento.cs \
-	MonoDevelop.Ide.Gui/WorkbenchWindowCollection.cs \
 	MonoDevelop.Ide.StandardHeader/NewHeaderTemplateDialog.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderPanel.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs \

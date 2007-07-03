@@ -394,8 +394,9 @@ namespace MonoDevelop.Ide.Tasks
 		
 		void ShowErrorsCallback ()
 		{
-			Pad pad = IdeApp.Workbench.Pads [typeof(ErrorListPad)];
-			if (pad != null) pad.BringToFront ();
+			Pad pad = IdeApp.Workbench.GetPad<ErrorListPad> ();
+			if (pad != null)
+				pad.BringToFront ();
 		}
 	
 		protected virtual void OnCompilerOutputChanged (EventArgs e) 

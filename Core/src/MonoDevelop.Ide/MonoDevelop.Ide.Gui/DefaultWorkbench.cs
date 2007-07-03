@@ -41,8 +41,8 @@ namespace MonoDevelop.Ide.Gui
 		readonly static string viewContentPath = "/SharpDevelop/Workbench/Pads";
 		readonly static string toolbarsPath = "/SharpDevelop/Workbench/ToolBar";
 		
-		List<PadCodon> padContentCollection       = new List<PadCodon>();
-		ViewContentCollection workbenchContentCollection = new ViewContentCollection();
+		List<PadCodon> padContentCollection       = new List<PadCodon> ();
+		List<IViewContent> workbenchContentCollection = new List<IViewContent> ();
 		
 		bool closeAll = false;
 
@@ -116,7 +116,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public ViewContentCollection ViewContentCollection {
+		public List<IViewContent> ViewContentCollection {
 			get {
 				Debug.Assert(workbenchContentCollection != null);
 				return workbenchContentCollection;
@@ -228,7 +228,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			try {
 				closeAll = true;
-				ViewContentCollection fullList = new ViewContentCollection(workbenchContentCollection);
+				List<IViewContent> fullList = new List<IViewContent>(workbenchContentCollection);
 				foreach (IViewContent content in fullList) {
 					IWorkbenchWindow window = content.WorkbenchWindow;
 					window.CloseWindow(true, true, 0);

@@ -29,7 +29,7 @@
 
 using System;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
@@ -49,8 +49,8 @@ namespace MonoDevelop.Ide.Gui
 	/// </summary>
 	public class Workbench
 	{
-		DocumentCollection documents = new DocumentCollection ();
-		PadCollection pads;
+		List<Document> documents = new List<Document> ();
+		List<Pad> pads;
 		ProgressMonitorManager monitors = new ProgressMonitorManager ();
 		DefaultWorkbench workbench;
 		RecentOpen recentOpen = null;
@@ -133,7 +133,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public DocumentCollection Documents {
+		public List<Document> Documents {
 			get { return documents; }
 		}
 
@@ -141,16 +141,17 @@ namespace MonoDevelop.Ide.Gui
 			get { return WrapDocument (workbench.ActiveWorkbenchWindow); }
 		}
 		
-		public PadCollection Pads {
+		public List<Pad> Pads {
 			get {
 				if (pads == null) {
-					pads = new PadCollection ();
+					pads = new List<Pad> ();
 					foreach (PadCodon pc in workbench.ActivePadContentCollection)
 						WrapPad (pc);
 				}
 				return pads;
 			}
 		}
+		
 		
 		public Gtk.Window RootWindow {
 			get { return (Gtk.Window) workbench; }
@@ -203,6 +204,14 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
+		public Pad GetPad<T> ()
+		{
+			foreach (Pad pad in Pads)
+				if (typeof(T).IsInstanceOfType (pad.Content))
+					return null;
+			return null;
+		}		
+		
 		public void DeleteLayout (string name)
 		{
 			workbench.WorkbenchLayout.DeleteLayout (name);
@@ -253,7 +262,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public FileViewer[] GetFileViewers (string fileName)
 		{
-			ArrayList list = new ArrayList ();
+			List<FileViewer> list = new List<FileViewer> ();
 			
 			string mimeType = Gnome.Vfs.MimeType.GetMimeTypeForUri (fileName);
 
@@ -265,7 +274,7 @@ namespace MonoDevelop.Ide.Gui
 				if (app.Command != "monodevelop")
 					list.Add (new FileViewer (app));
 				
-			return (FileViewer[]) list.ToArray (typeof(FileViewer));
+			return list.ToArray ();
 		}
 		
 		public Document OpenDocument (string fileName)
