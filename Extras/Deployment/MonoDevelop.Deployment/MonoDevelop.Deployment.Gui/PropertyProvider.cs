@@ -71,6 +71,14 @@ namespace MonoDevelop.Deployment.Gui
 			set { props.UseProjectRelativePath = value; }
 		}
 		
+		[Category ("Deployment")]
+		[DisplayName ("File attributes")]
+		[Description ("Attributes to apply to the target file.")]
+		public DeployFileAttributes FileAttributes {
+			get { return props.FileAttributes; }
+			set { props.FileAttributes = value; }
+		}
+		
 		protected override bool IsReadOnly (string propertyName)
 		{
 			if (file.BuildAction != BuildAction.FileCopy)

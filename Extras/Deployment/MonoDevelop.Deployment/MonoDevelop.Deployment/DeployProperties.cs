@@ -76,5 +76,18 @@ namespace MonoDevelop.Deployment
 				}
 			}
 		}
+		
+		public DeployFileAttributes FileAttributes {
+			get {
+				object val = file.ExtendedProperties ["DeployService.FileAttributes"];
+				return val != null ? (DeployFileAttributes) val : DeployFileAttributes.None;
+			}
+			set {
+				if (value == DeployFileAttributes.None)
+					file.ExtendedProperties.Remove ("DeployService.FileAttributes");
+				else
+					file.ExtendedProperties ["DeployService.FileAttributes"] = value;
+			}
+		}
 	}
 }

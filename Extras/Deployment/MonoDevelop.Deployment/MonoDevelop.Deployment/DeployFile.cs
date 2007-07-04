@@ -46,6 +46,7 @@ namespace MonoDevelop.Deployment
 		bool isTemplate;
 		CombineEntry sourceCombineEntry;
 		string displayName;
+		DeployFileAttributes attributes;
 		
 		public DeployFile (ProjectFile pfile)
 		{
@@ -53,6 +54,7 @@ namespace MonoDevelop.Deployment
 			this.targetDirectoryID = props.TargetDirectory;
 			this.sourcePath = pfile.FilePath;
 			this.relativeTargetPath = props.RelativeDeployPath;
+			this.attributes = props.FileAttributes;
 			if (props.HasPathReferences)
 				isTemplate = true;
 			sourceCombineEntry = pfile.Project;
@@ -111,6 +113,11 @@ namespace MonoDevelop.Deployment
 			set { isTemplate = value; }
 		}
 		
+		public DeployFileAttributes FileAttributes {
+			get { return attributes; }
+			set { attributes = value; }
+		}
+		
 		public string ResolvedTargetFile {
 			get {
 				if (deployContext == null)
@@ -129,5 +136,13 @@ namespace MonoDevelop.Deployment
 		public DeployFileCollection (DeployFileCollection other): base (other)
 		{
 		}
+	}
+	
+	[Flags]
+	public enum DeployFileAttributes
+	{
+		None = 0,
+		Executable = 1,
+		ReadOnly = 2
 	}
 }

@@ -58,7 +58,7 @@ namespace MonoDevelop.Deployment
 					continue;
 				}
 				
-				CopyFile (monitor, df.SourcePath, df.ResolvedTargetFile);
+				CopyFile (monitor, df.SourcePath, df.ResolvedTargetFile, df.FileAttributes);
 			}
 			
 			Combine c = entry as Combine;
@@ -72,7 +72,7 @@ namespace MonoDevelop.Deployment
 			}
 		}
 		
-		void CopyFile (IProgressMonitor monitor, string src, string dest)
+		void CopyFile (IProgressMonitor monitor, string src, string dest, DeployFileAttributes atts)
 		{
 			dest = Runtime.FileService.GetFullPath (dest);
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Deploying file {0}.", dest));
@@ -81,6 +81,14 @@ namespace MonoDevelop.Deployment
 			if (!Directory.Exists (targetDir))
 				Directory.CreateDirectory (targetDir);
 			Runtime.FileService.CopyFile (src, dest);
+			
+			Mono.Unix.Native.FilePermissions perms = Mono.Unix.Native.FilePermissions.DEFFILEMODE;
+			if ((atts & DeployFileAttributes.Executable) != 0)
+				perms |= Mono.Unix.Native.FilePermissions.S_IXGRP | Mono.Unix.Native.FilePermissions.S_IXUSR | Mono.Unix.Native.FilePermissions.S_IXOTH;
+			if ((atts & DeployFileAttributes.ReadOnly) != 0)
+				perms &= ~(Mono.Unix.Native.FilePermissions.S_IWGRP | Mono.Unix.Native.FilePermissions.S_IWOTH | Mono.Unix.Native.FilePermissions.S_IWUSR);
+			if (perms != Mono.Unix.Native.FilePermissions.DEFFILEMODE)
+				Mono.Unix.Native.Syscall.chmod (dest, perms);
 		}
 		
 		public string GetDirectory (DeployContext ctx, string folderId)

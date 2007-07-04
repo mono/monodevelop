@@ -1,3 +1,12 @@
+2007-07-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment/InstallResolver.cs,
+	  MonoDevelop.Deployment/DeployFile.cs,
+	  MonoDevelop.Deployment/DeployProperties.cs,
+	  MonoDevelop.Deployment.Gui/PropertyProvider.cs: Added property for
+	  specifying the attributes that the deployed file will have.
+	* gtk-gui/objects.xml, gtk-gui/gui.stetic: Updated.
+
 2007-06-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs,

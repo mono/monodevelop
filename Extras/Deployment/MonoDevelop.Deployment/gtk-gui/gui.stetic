@@ -321,6 +321,7 @@
                           <widget class="Gtk.TreeView" id="targetsTree">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
+                            <property name="HeadersClickable">True</property>
                           </widget>
                         </child>
                       </widget>
@@ -1274,6 +1275,7 @@
           <widget class="Gtk.TreeView" id="tree">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
+            <property name="HeadersClickable">True</property>
           </widget>
         </child>
       </widget>
@@ -1726,6 +1728,7 @@
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="RulesHint">True</property>
+                <property name="HeadersClickable">True</property>
               </widget>
             </child>
           </widget>
