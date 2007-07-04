@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Xml;
 
 namespace MonoDevelop.Projects.Serialization
 {
@@ -48,6 +49,23 @@ namespace MonoDevelop.Projects.Serialization
 		public override object Deserialize (SerializationContext serCtx, object mapData, DataNode data)
 		{
 			return Convert.ChangeType (((DataValue)data).Value, ValueType);
+		}
+	}
+	
+	internal class DateTimeDataType: PrimitiveDataType
+	{
+		public DateTimeDataType (): base (typeof(DateTime))
+		{
+		}
+		
+		public override DataNode Serialize (SerializationContext serCtx, object mapData, object value)
+		{
+			return new DataValue (Name, XmlConvert.ToString ((DateTime)value, XmlDateTimeSerializationMode.Local));
+		}
+		
+		public override object Deserialize (SerializationContext serCtx, object mapData, DataNode data)
+		{
+			return XmlConvert.ToDateTime (((DataValue)data).Value, XmlDateTimeSerializationMode.Local);
 		}
 	}
 }

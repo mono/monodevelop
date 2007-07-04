@@ -1,3 +1,10 @@
+2007-07-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Serialization/DataContext.cs,
+	  MonoDevelop.Projects.Serialization/PrimitiveDataType.cs: Added
+	  support for DateTime serialization.
+	* Makefile.am: Updated.
+
 2007-07-03  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects/AbstractProjectConfiguration.cs: little fix for

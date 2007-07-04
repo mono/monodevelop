@@ -119,6 +119,8 @@ namespace MonoDevelop.Projects.Serialization
 				return new EnumDataType (type);
 			else if (type.IsPrimitive || type == typeof(string))
 				return new PrimitiveDataType (type);
+			else if (type == typeof(DateTime))
+				return new DateTimeDataType ();
 			else {
 				ICollectionHandler handler = GetCollectionHandler (type);
 				if (handler != null)
