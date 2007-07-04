@@ -1,3 +1,8 @@
+2007-07-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.ProgressMonitoring/ConsoleProgressStatus.cs: Track
+	  api changes.
+
 2007-07-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.AddIns/SetupApp.cs, Makefile.am,

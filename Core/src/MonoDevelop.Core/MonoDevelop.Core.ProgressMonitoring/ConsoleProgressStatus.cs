@@ -47,8 +47,8 @@ namespace MonoDevelop.Core.ProgressMonitoring
 			get { return monitor.IsCancelRequested; }
 		}
 		
-		public bool VerboseLog {
-			get { return false; }
+		public int LogLevel {
+			get { return 1; }
 		}
 		
 		public void Cancel ()
