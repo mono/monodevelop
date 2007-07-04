@@ -53,7 +53,7 @@ namespace MonoDevelop.Deployment.Linux
 			using (StreamWriter sw = new StreamWriter (file)) {
 				sw.WriteLine ("#!/bin/sh");
 				sw.WriteLine ();
-				sw.WriteLine ("exec mono \"" + exe + "\"");
+				sw.WriteLine ("exec mono \"" + exe + "\" \"$@\"");
 			}
 			string outfile = data.ScriptName;
 			if (string.IsNullOrEmpty (outfile))
@@ -61,6 +61,7 @@ namespace MonoDevelop.Deployment.Linux
 			DeployFile df = new DeployFile (netProject, file, outfile, TargetDirectory.Binaries);
 			df.ContainsPathReferences = true;
 			df.DisplayName = GettextCatalog.GetString ("Launch script for {0}", netProject.Name);
+			df.FileAttributes = DeployFileAttributes.Executable;
 			return df;
 		}
 		

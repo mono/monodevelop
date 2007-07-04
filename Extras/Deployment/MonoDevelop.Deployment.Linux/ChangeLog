@@ -1,3 +1,9 @@
+2007-07-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment.Linux/LinuxDeployExtension.cs: In the
+	  generated launch script, transfer script parameters to mono.
+	* gtk-gui/objects.xml: Updated.
+
 2007-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment.Linux/MenuCategorySelectorDialog.cs: Always
