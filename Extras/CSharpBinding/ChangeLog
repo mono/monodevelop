@@ -3,6 +3,10 @@
 	* Parser/CodeGenerator.cs: (Visit::FieldReferenceExpression):
 	Don't limit ourselves to just Fields and Properties. Fixes bug
 	#81963.
+	(Visit::IdentifierExpression): When checking of a LocalVariable is
+	within bounds, use Region.BeginColumn instead of Region.EndColumn
+	and swap on which LocalVariable instance we check. Fixes part of
+	bug #82020.
 
 2007-07-05  Jeffrey Stedfast  <fejj@novell.com>
 

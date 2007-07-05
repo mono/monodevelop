@@ -473,18 +473,18 @@ namespace CSharpBinding.Parser
 			return false;
 		}
 		
-		//void Debug (string what, string name, AbstractNode node)
-		//{
-		//	Console.WriteLine ("{0} reference for {1} @ ({2}, {3})", what, name,
-		//	                   node.StartLocation.Y, node.StartLocation.X);
-		//}
+		void Debug (string what, string name, AbstractNode node)
+		{
+			Console.WriteLine ("{0}: {1} reference for {2} @ ({3}, {4})", file.Name, what, name,
+			                   node.StartLocation.Y, node.StartLocation.X);
+		}
 		
 		public override object Visit(FieldDeclaration fieldDeclaration, object data)
 		{
 			if (member is IClass && member.Name == GetNameWithoutPrefix (ReturnType.GetSystemType (fieldDeclaration.TypeReference.Type))) {
 				IClass cls = resolver.ResolveIdentifier (fileCompilationUnit, ReturnType.GetSystemType (fieldDeclaration.TypeReference.Type), fieldDeclaration.StartLocation.Y, fieldDeclaration.StartLocation.X) as IClass;
 				if (cls != null && cls.FullyQualifiedName == ((IClass)member).FullyQualifiedName) {
-					//Debug ("adding FieldDeclaration", cls.FullyQualifiedName, fieldDeclaration);
+					Debug ("adding FieldDeclaration", cls.FullyQualifiedName, fieldDeclaration);
 					references.Add (CreateReference (fieldDeclaration.StartLocation.Y, fieldDeclaration.StartLocation.X, cls.FullyQualifiedName));
 				}
 			}
@@ -493,14 +493,14 @@ namespace CSharpBinding.Parser
 		
 		public override object Visit (FieldReferenceExpression fieldExp, object data)
 		{
-			//Debug ("FieldReferenceExpression", fieldExp.FieldName, fieldExp);
+			Debug ("FieldReferenceExpression", fieldExp.FieldName, fieldExp);
 			if (fieldExp.FieldName == member.Name) {
 				IClass cls = resolver.ResolveExpressionType (fileCompilationUnit, fieldExp.TargetObject, fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
 				if (cls != null && IsExpectedClass (cls)) {
 					int pos = file.GetPositionFromLineColumn (fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
 					string txt = file.GetText (pos, pos + member.Name.Length);
 					if (txt == member.Name) {
-						//Debug ("adding FieldReferenceExpression", member.Name, fieldExp);
+						Debug ("adding FieldReferenceExpression", member.Name, fieldExp);
 						references.Add (CreateReference (fieldExp.StartLocation.Y, fieldExp.StartLocation.X, member.Name));
 					}
 				}
@@ -511,13 +511,13 @@ namespace CSharpBinding.Parser
 		
 		public override object Visit (InvocationExpression invokeExp, object data)
 		{
-			//Debug ("InvocationExpression", invokeExp.ToString (), invokeExp);
+			Debug ("InvocationExpression", invokeExp.ToString (), invokeExp);
 			if (member is IMethod && invokeExp.TargetObject is FieldReferenceExpression) {
 				FieldReferenceExpression fieldExp = (FieldReferenceExpression) invokeExp.TargetObject;
 				if (fieldExp.FieldName == member.Name) {
 					IClass cls = resolver.ResolveExpressionType (fileCompilationUnit, fieldExp.TargetObject, fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
 					if (cls != null && IsExpectedClass (cls)) {
-						//Debug ("adding InvocationExpression", member.Name, invokeExp);
+						Debug ("adding InvocationExpression", member.Name, invokeExp);
 						references.Add (CreateReference (fieldExp.StartLocation.Y, fieldExp.StartLocation.X, member.Name));
 					}
 				}
@@ -527,7 +527,7 @@ namespace CSharpBinding.Parser
 		
 		public override object Visit (IdentifierExpression idExp, object data)
 		{
-			//Debug ("IdentifierExpression", idExp.Identifier, idExp);
+			Debug ("IdentifierExpression", idExp.Identifier, idExp);
 			if (idExp.Identifier == member.Name) {
 				Point p = idExp.StartLocation;
 				ILanguageItem item = resolver.ResolveIdentifier (fileCompilationUnit, idExp.Identifier, p.Y, p.X);
@@ -536,20 +536,20 @@ namespace CSharpBinding.Parser
 					if (m != null && IsExpectedClass (m.DeclaringType) &&
 						((member is IField && item is IField) || (member is IMethod && item is IMethod) ||
 						 (member is IProperty && item is IProperty) || (member is IEvent && item is IEvent))) {
-						//Debug ("adding IdentifierExpression member", member.Name, idExp);
+						Debug ("adding IdentifierExpression member", member.Name, idExp);
 						references.Add (CreateReference (idExp.StartLocation.Y, idExp.StartLocation.X, member.Name));
 					}
 				} else if (member is IClass) {
 					if (item is IClass && ((IClass) item).FullyQualifiedName == declaringType.FullyQualifiedName) {
-						//Debug ("adding IdentifierExpression class", idExp.Identifier, idExp);
+						Debug ("adding IdentifierExpression class", idExp.Identifier, idExp);
 						references.Add (CreateReference (idExp.StartLocation.Y, idExp.StartLocation.X, idExp.Identifier));
 					}
 				} else if (member is LocalVariable) {
 					LocalVariable avar = member as LocalVariable;
 					LocalVariable var = item as LocalVariable;
 					
-					if (var != null && var.Region.IsInside (avar.Region.BeginLine, avar.Region.EndColumn)) {
-						//Debug ("adding IdentifierExpression variable", idExp.Identifier, idExp);
+					if (var != null && avar.Region.IsInside (var.Region.BeginLine, var.Region.BeginColumn)) {
+						Debug ("adding IdentifierExpression variable", idExp.Identifier, idExp);
 						references.Add (CreateReference (idExp.StartLocation.Y, idExp.StartLocation.X, idExp.Identifier));
 					}
 				} else if (member is IParameter) {
@@ -557,7 +557,7 @@ namespace CSharpBinding.Parser
 					
 					// FIXME: might need to match more than this?
 					if (param != null && IsExpectedMember (param.DeclaringMember)) {
-						//Debug ("adding IdentifierExpression param", idExp.Identifier, idExp);
+						Debug ("adding IdentifierExpression param", idExp.Identifier, idExp);
 						references.Add (CreateReference (idExp.StartLocation.Y, idExp.StartLocation.X, idExp.Identifier));
 					}
 				}
@@ -584,6 +584,7 @@ namespace CSharpBinding.Parser
 		
 		public override object Visit(TypeDeclaration typeDeclaration, object data)
 		{
+			Debug ("TypeDeclaration", typeDeclaration.Name, typeDeclaration);
 			if (member is IClass && typeDeclaration.BaseTypes != null) {
 				string fname = declaringType.FullyQualifiedName;
 				
@@ -636,7 +637,7 @@ namespace CSharpBinding.Parser
 						int line, column;
 						
 						file.GetLineColumnFromPosition (begin + offset, out line, out column);
-						//Debug ("adding TypeDeclaration", typeDeclaration.Name, typeDeclaration);
+						Debug ("adding TypeDeclaration", typeDeclaration.Name, typeDeclaration);
 						references.Add (CreateReference (line, column, bc.Type));
 					}
 				}
