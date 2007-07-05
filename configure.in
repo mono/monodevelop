@@ -197,7 +197,7 @@ enable_oracle=no
 enable_sqlserv=no
 enable_sybase=no
 
-if test "x$enable_monoquery" == "xyes"; then
+if test "x$enable_monoquery" = "xyes"; then
    monoquery_try_compile () {
       cat <<EOF | sed -e "s/\${Dbase}/${Dbase}/g" -e "s/\${Using}/${Using}/g" > myconftest.cs
 using System;
@@ -217,7 +217,7 @@ namespace Autoconf.Try.Compile {
 }
 EOF
       $CSC myconftest.cs -r:System.Data $ExtraDbAssemblies > /dev/null 2>&1
-      if test $? == 0; then
+      if test $? -eq 0; then
 	 my_ac_conftest_result="yes"
 	 monoquery_avail=`expr $monoquery_avail + 1`
       else
@@ -275,12 +275,12 @@ EOF
    AC_MSG_RESULT($my_ac_conftest_result)
    
    dnl If no providers are available, disable MonoQuery support
-   if test $monoquery_avail == 0; then
+   if test $monoquery_avail -eq 0; then
       enable_monoquery="no"
    fi
 fi
 
-AM_CONDITIONAL(ENABLE_MONOQUERY, test "x$enable_monoquery" == "xyes")
+AM_CONDITIONAL(ENABLE_MONOQUERY, [test $enable_monoquery = yes])
 AM_CONDITIONAL(ENABLE_POSTGRES, [test $enable_postgres = yes])
 AM_CONDITIONAL(ENABLE_MYSQL, [test $enable_mysql = yes])
 AM_CONDITIONAL(ENABLE_SQLITE, [test $enable_sqlite = yes])
@@ -301,7 +301,7 @@ if test "x$enable_aspnet" = "xyes"; then
 	PKG_CHECK_MODULES(XSP, xsp >= $XSP_VERSION xsp-2 >= $XSP2_VERSION)
 fi
 
-AM_CONDITIONAL(ENABLE_ASPNET, test x$enable_aspnet = xyes) 
+AM_CONDITIONAL(ENABLE_ASPNET, [test x$enable_aspnet = xyes]) 
 
 
 #We need to know where Mozilla is for launch scripts and possible for AspNetEdit
