@@ -35,7 +35,7 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		/// <value>A string containing the AddIn path for the context menu for the WebReferenceFolderNodeBuilder.</summary>
 		public override string ContextMenuAddinPath 
 		{
-			get { return "/SharpDevelop/Views/ProjectBrowser/ContextMenu/WebReferenceFolder/WebReferenceItem"; }
+			get { return "/SharpDevelop/Views/ProjectBrowser/ContextMenu/WebReferenceItem"; }
 		}
 		#endregion
 		
