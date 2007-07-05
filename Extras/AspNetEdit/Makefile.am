@@ -69,9 +69,6 @@ FILES =	\
 
 RES = #
 
-DATA_FILES = \
-	data/WebControlsToolbox.xml
-
 LOCAL_LIBS = \
 	libs/jscall.dll
 

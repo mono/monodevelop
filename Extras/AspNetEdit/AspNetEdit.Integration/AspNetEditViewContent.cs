@@ -252,6 +252,10 @@ namespace AspNetEdit.Integration
 		public TargetEntry[] DragTargets {
 			get { return null; }
 		}
+		
+		string IToolboxConsumer.DefaultItemDomain {
+			get { return null; }
+		}
 
 		#endregion IToolboxConsumer
 		

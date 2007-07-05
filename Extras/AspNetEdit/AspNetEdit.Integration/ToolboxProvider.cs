@@ -40,16 +40,14 @@ namespace AspNetEdit.Integration
 	
 	public class ToolboxProvider : IToolboxDefaultProvider
 	{
-		
-		public IList<ItemToolboxNode> GetItems ()
+		public IEnumerable<string> GetDefaultFiles ()
 		{
-			string dataDir = Path.GetDirectoryName (typeof(ToolboxProvider).Assembly.Location);
-			string file = Path.Combine (dataDir, "WebControlsToolbox.xml");
-			if (!File.Exists (file)) {
-				IdeApp.Services.MessageService.ShowWarning ("Could not find data file \""+file+"\"");
-				return null;
-			}
-			return ToolboxList.LoadFromFile (file);
+			yield return typeof(System.Web.UI.Control).Assembly.Location;
+		}
+		
+		public IEnumerable<ItemToolboxNode> GetDefaultItems ()
+		{
+			return null;
 		}
 	}
 }
