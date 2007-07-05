@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 
 namespace MonoDevelop.Core.Properties {
@@ -118,9 +118,9 @@ namespace MonoDevelop.Core.Properties {
 			 65001     //  Unicode (UTF-8)
 		};
 
-		static ArrayList _encodings;
-		static ArrayList _names;
-		static Hashtable _cp2index;
+		static List<EncodingWrapper> _encodings;
+		static List<string> _names;
+		static Dictionary<int, int> _cp2index;
 	    
 		class EncodingWrapper: IComparable {
          
@@ -180,8 +180,8 @@ namespace MonoDevelop.Core.Properties {
 			}
 		}
         
-        static IList GetSupportedEncodings() {
-			ArrayList list = new ArrayList();
+        static List<EncodingWrapper> GetSupportedEncodings() {
+			List<EncodingWrapper> list = new List<EncodingWrapper>();
 			foreach (int cp in _wellKnownCodePages) {
 				try {
 					list.Add(new EncodingWrapper(cp));
@@ -199,7 +199,7 @@ namespace MonoDevelop.Core.Properties {
         }
         
 		static CharacterEncodings() {
-			_encodings = new ArrayList();
+			_encodings = new List<EncodingWrapper> ();
 //			try {
 //				// create system default encoding
 //				_encodings.Add(new EncodingWrapper(0));
@@ -207,8 +207,8 @@ namespace MonoDevelop.Core.Properties {
 //			catch {}
 			_encodings.AddRange(GetSupportedEncodings());
 			
-			_names = new ArrayList();
-			_cp2index = new Hashtable();
+			_names = new List<string> ();
+			_cp2index = new Dictionary<int, int> ();
 			int i = 0;
 			foreach (EncodingWrapper ew in _encodings) {
 				_names.Add(ew.Name);
@@ -217,7 +217,7 @@ namespace MonoDevelop.Core.Properties {
 			}
 		}
 
-		public static IList Names {
+		public static List<string> Names {
 			get {
 				return _names;
 			}

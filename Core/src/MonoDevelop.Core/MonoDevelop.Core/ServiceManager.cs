@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 using Mono.Addins;
 using MonoDevelop.Core.Properties;
@@ -18,11 +18,11 @@ namespace MonoDevelop.Core
 	/// </summary>
 	public class ServiceManager
 	{
-		ArrayList serviceList       = new ArrayList();
-		Hashtable servicesHashtable = new Hashtable();
-		Hashtable initializedServices = new Hashtable ();
+		List<IService>             serviceList         = new List<IService> ();
+		Dictionary<Type, IService> servicesHashtable   = new Dictionary<Type, IService> ();
+		List<IService>             initializedServices = new List<IService> ();
 		
-		static ServiceManager      defaultServiceManager = new ServiceManager();
+		static ServiceManager defaultServiceManager = new ServiceManager ();
 
 		protected ServiceManager ()
 		{
@@ -51,8 +51,8 @@ namespace MonoDevelop.Core
 		static ServiceManager()
 		{
 			// add 'core' services
-			AddService(new PropertyService());
-			AddService(new StringParserService());
+			AddService (new PropertyService());
+			AddService (new StringParserService());
 		}
 		
 		/// <remarks>
@@ -60,9 +60,8 @@ namespace MonoDevelop.Core
 		/// </remarks>
 		public static void UnloadAllServices()
 		{
-			foreach (IService service in defaultServiceManager.serviceList) {
+			foreach (IService service in defaultServiceManager.serviceList) 
 				service.UnloadService();
-			}
 		}
 		
 		public static void AddService(IService service)
@@ -72,9 +71,8 @@ namespace MonoDevelop.Core
 		
 		public static void AddServices(IService[] services)
 		{
-			foreach (IService service in services) {
+			foreach (IService service in services) 
 				AddService(service);
-			}
 		}
 
 		// HACK: MONO BUGFIX
@@ -103,10 +101,8 @@ namespace MonoDevelop.Core
 		/// </remarks>
 		IService FetchService(Type serviceType)
 		{
-			IService s = (IService)servicesHashtable[serviceType];
-			if (s != null) {
-				return s;
-			}
+			if (servicesHashtable.ContainsKey (serviceType)) 
+				return servicesHashtable[serviceType];
 			
 			foreach (IService service in serviceList) {
 				if (IsInstanceOfType(serviceType, service)) {
@@ -114,7 +110,7 @@ namespace MonoDevelop.Core
 					if (!initializedServices.Contains (service)) {
 						Runtime.LoggingService.Info (GettextCatalog.GetString ("Initializing service: ") + serviceType);
 						service.InitializeService();
-						initializedServices [service] = service;
+						initializedServices.Add (service);
 					}
 					return service;
 				}

@@ -13,9 +13,9 @@ namespace MonoDevelop.Core
 {
 	public class SystemAssemblyService : AbstractService
 	{
-		Hashtable assemblyPathToPackage = new Hashtable ();
+		Dictionary<string, SystemPackage> assemblyPathToPackage = new Dictionary<string, SystemPackage> ();
 		Dictionary<string, string> assemblyFullNameToPath = new Dictionary<string, string> ();
-		Hashtable packagesHash = new Hashtable ();
+		Dictionary<string, SystemPackage> packagesHash = new Dictionary<string, SystemPackage> ();
 		List<SystemPackage> packages = new List<SystemPackage> ();
 		
 		object initLock = new object ();
@@ -83,8 +83,8 @@ namespace MonoDevelop.Core
 			if (clrVersion == ClrVersion.Default)
 				clrVersion = currentVersion;
 
-			ArrayList list = new ArrayList ();
-			foreach (DictionaryEntry e in assemblyPathToPackage) {
+			List<string> list = new List<string> ();
+			foreach (KeyValuePair<string, SystemPackage> e in assemblyPathToPackage) {
 				SystemPackage pkg = (SystemPackage) e.Value;
 				if (pkg.TargetVersion != ClrVersion.Default && pkg.TargetVersion != clrVersion)
 					continue;
@@ -102,12 +102,12 @@ namespace MonoDevelop.Core
 			if (!assemblyFullNameToPath.TryGetValue (fullname, out path))
 				return null;
 
-			return (SystemPackage) assemblyPathToPackage[path];
+			return assemblyPathToPackage.ContainsKey (path) ? assemblyPathToPackage [path] : null;
 		}
 
 		public SystemPackage GetPackage (string name)
 		{
-			return (SystemPackage) packagesHash [name];
+			return packagesHash.ContainsKey (name) ? packagesHash [name] : null;
 		}
 
 		public SystemPackage GetPackage (string name, string version)
@@ -120,7 +120,7 @@ namespace MonoDevelop.Core
 
 		public SystemPackage GetPackageFromPath (string path)
 		{
-			return (SystemPackage) assemblyPathToPackage [path];
+			return assemblyPathToPackage.ContainsKey (path) ? assemblyPathToPackage [path] : null;
 		}
 		
 		string NormalizeAsmName (string name)
@@ -128,8 +128,7 @@ namespace MonoDevelop.Core
 			int i = name.IndexOf (", PublicKeyToken=null");
 			if (i != -1)
 				return name.Substring (0, i).Trim ();
-			else
-				return name;
+			return name;
 		}
 	
 		// Returns the installed version of the given assembly name
@@ -204,8 +203,7 @@ namespace MonoDevelop.Core
 			string gf = GetGacFile (gacDir, aname);
 			if (File.Exists (gf))
 				return gf;
-			else
-				return null;
+			return null;
 		}
 		
 		string GetGacFile (string gacDir, string aname)
@@ -330,7 +328,7 @@ namespace MonoDevelop.Core
 			}
 			search_dirs += Path.PathSeparator + libpath;
 			if (search_dirs != null && search_dirs.Length > 0) {
-				ArrayList scanDirs = new ArrayList ();
+				List<string> scanDirs = new List<string> ();
 				foreach (string potentialDir in search_dirs.Split (Path.PathSeparator)) {
 					try {
 						string absPotentialDir = Path.GetFullPath (potentialDir);
@@ -366,7 +364,7 @@ namespace MonoDevelop.Core
 		void RegisterSystemAssemblies (string prefix, string version, ClrVersion ver)
 		{
 			SystemPackage package = new SystemPackage ();
-			ArrayList list = new ArrayList ();
+			List<string> list = new List<string> ();
 			
 			string dir = Path.Combine (prefix, version);
 			if(!Directory.Exists(dir)) {
@@ -378,7 +376,7 @@ namespace MonoDevelop.Core
 				list.Add (assembly);
 			}
 
-			package.Initialize ("mono", version, "The Mono runtime", (string[]) list.ToArray (typeof(string)), ver, null, false);
+			package.Initialize ("mono", version, "The Mono runtime", list.ToArray (), ver, null, false);
 			packages.Add (package);
 		}
 		
@@ -386,10 +384,10 @@ namespace MonoDevelop.Core
 		{
 			// Don't register the package twice
 			string pname = Path.GetFileNameWithoutExtension (pcfile);
-			if (packagesHash.Contains (pname))
+			if (packagesHash.ContainsKey (pname))
 				return;
 
-			ArrayList fullassemblies = null;
+			List<string> fullassemblies = null;
 			string version = "";
 			string desc = "";
 			
@@ -423,7 +421,7 @@ namespace MonoDevelop.Core
 				AddAssembly (assembly, package);
 			}
 
-			package.Initialize (pname, version, desc, (string[]) fullassemblies.ToArray (typeof(string)), ClrVersion.Default, null, false);
+			package.Initialize (pname, version, desc, fullassemblies.ToArray (), ClrVersion.Default, null, false);
 			packages.Add (package);
 			packagesHash [pname] = package;
 		}
@@ -441,11 +439,11 @@ namespace MonoDevelop.Core
 			}
 		}
 	
-		private ArrayList GetAssembliesWithLibInfo (string line, string file)
+		private List<string> GetAssembliesWithLibInfo (string line, string file)
 		{
-			ArrayList references = new ArrayList ();
-			ArrayList libdirs = new ArrayList ();
-			ArrayList retval = new ArrayList ();
+			List<string> references = new List<string> ();
+			List<string> libdirs = new List<string> ();
+			List<string> retval = new List<string> ();
 			foreach (string piece in line.Split (' ')) {
 				if (piece.ToLower ().Trim ().StartsWith ("/r:") || piece.ToLower ().Trim ().StartsWith ("-r:")) {
 					references.Add (ProcessPiece (piece.Substring (3).Trim (), file));
@@ -465,9 +463,9 @@ namespace MonoDevelop.Core
 			return retval;
 		}
 	
-		private ArrayList GetAssembliesWithoutLibInfo (string line, string file)
+		private List<string> GetAssembliesWithoutLibInfo (string line, string file)
 		{
-			ArrayList references = new ArrayList ();
+			List<string> references = new List<string> ();
 			foreach (string reference in line.Split (' ')) {
 				if (reference.ToLower ().Trim ().StartsWith ("/r:") || reference.ToLower ().Trim ().StartsWith ("-r:")) {
 					string final_ref = reference.Substring (3).Trim ();

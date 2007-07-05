@@ -9,8 +9,6 @@ using System;
 
 namespace MonoDevelop.Core.Properties
 {
-	public delegate void PropertyEventHandler(object sender, PropertyEventArgs e);
-	
 	public class PropertyEventArgs : EventArgs
 	{
 		IProperties properties;

@@ -28,13 +28,13 @@
 
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Core.ProgressMonitoring
 {
 	public class AggregatedOperationMonitor: IDisposable
 	{
-		ArrayList list = new ArrayList ();
+		List<IAsyncOperation> list = new List<IAsyncOperation> ();
 		IProgressMonitor monitor;
 		
 		public AggregatedOperationMonitor (IProgressMonitor monitor, params IAsyncOperation[] operations)

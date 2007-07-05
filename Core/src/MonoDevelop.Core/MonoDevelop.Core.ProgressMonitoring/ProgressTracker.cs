@@ -28,7 +28,7 @@
 
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Core.ProgressMonitoring
 {
@@ -36,7 +36,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 	{
 		bool done;
 		
-		ArrayList tasks = new ArrayList ();
+		List<Task> tasks = new List<Task> ();
 		class Task
 		{
 			public string Name;
@@ -97,7 +97,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		}
 		
 		Task LastTask {
-			get { return (Task)tasks [tasks.Count-1]; }
+			get { return tasks [tasks.Count - 1]; }
 		}
 		
 		public string CurrentTask {
@@ -127,7 +127,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 
 				double work = 0;
 				for (int n = tasks.Count - 1; n >= 0; n--) {
-					Task t = (Task) tasks [n];
+					Task t = tasks [n];
 					work = t.GetWorkPercent (work) * (double)t.StepSize;
 				}
 				return work;

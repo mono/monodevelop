@@ -30,7 +30,7 @@
 using System;
 using System.IO;
 using System.Text;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Core.ProgressMonitoring
 {
@@ -38,11 +38,11 @@ namespace MonoDevelop.Core.ProgressMonitoring
 	
 	public class LogTextWriter: TextWriter
 	{
-		ArrayList chainedWriters;
+		List<TextWriter> chainedWriters;
 		
 		public void ChainWriter (TextWriter writer)
 		{
-			if (chainedWriters == null) chainedWriters = new ArrayList ();
+			if (chainedWriters == null) chainedWriters = new List<TextWriter> ();
 			chainedWriters.Add (writer);
 		}
 		

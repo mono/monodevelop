@@ -1,3 +1,20 @@
+2007-07-05  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Core.Execution/ProcessService.cs,
+	  MonoDevelop.Core.ProgressMonitoring/ProgressTracker.cs,
+	  MonoDevelop.Core.ProgressMonitoring/AggregatedOperationMonitor.cs,
+	  MonoDevelop.Core.ProgressMonitoring/LogTextWriter.cs,
+	  MonoDevelop.Core.ProgressMonitoring/AggregatedProgressMonitor.cs,
+	  MonoDevelop.Core.ProgressMonitoring/NullProgressMonitor.cs,
+	  MonoDevelop.Core.Properties/DefaultProperties.cs,
+	  MonoDevelop.Core.Properties/PropertyEventArgs.cs,
+	  MonoDevelop.Core.Properties/IProperties.cs,
+	  MonoDevelop.Core.Properties/CharacterEncodings.cs,
+	  MonoDevelop.Core.mdp, MonoDevelop.Core/ServiceManager.cs,
+	  MonoDevelop.Core/StringParserService.cs,
+	  MonoDevelop.Core/SystemAssemblyService.cs: Refactored a bit.
+	  Brought source code to .NET2 standards.
+
 2007-07-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.ProgressMonitoring/ConsoleProgressStatus.cs: Track

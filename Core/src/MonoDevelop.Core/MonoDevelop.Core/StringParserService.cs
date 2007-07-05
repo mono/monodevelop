@@ -6,8 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Text;
 using System.Globalization;
 
@@ -23,10 +22,10 @@ namespace MonoDevelop.Core
 	/// </summary>
 	public class StringParserService : AbstractService
 	{
-		PropertyDictionary properties         = new PropertyDictionary();
-		Hashtable          stringTagProviders = new Hashtable();
+		Dictionary<string, string> properties = new Dictionary<string, string> ();
+		Dictionary<string, IStringTagProvider> stringTagProviders = new Dictionary<string, IStringTagProvider> ();
 		
-		public PropertyDictionary Properties {
+		public Dictionary<string, string> Properties {
 			get {
 				return properties;
 			}
@@ -34,7 +33,7 @@ namespace MonoDevelop.Core
 		
 		public StringParserService()
 		{
-			IDictionary variables = Environment.GetEnvironmentVariables();
+			System.Collections.IDictionary variables = Environment.GetEnvironmentVariables();
 			foreach (string name in variables.Keys) {
 				properties.Add("env:" + name, (string)variables[name]);
 			}
@@ -184,7 +183,7 @@ namespace MonoDevelop.Core
 			return sb.ToString ();
 		}
 	}
-	
+	/*
 	public class PropertyDictionary : DictionaryBase
 	{
 		/// <summary>
@@ -234,5 +233,5 @@ namespace MonoDevelop.Core
 		{
 			readOnlyProperties.Clear();
 		}
-	}
+	}*/
 }

@@ -164,6 +164,6 @@ namespace MonoDevelop.Core.Properties
 		/// The property changed event handler, it is called
 		/// when a property has changed.
 		/// </summary>
-		event PropertyEventHandler PropertyChanged;
+		event EventHandler<PropertyEventArgs> PropertyChanged;
 	}
 }

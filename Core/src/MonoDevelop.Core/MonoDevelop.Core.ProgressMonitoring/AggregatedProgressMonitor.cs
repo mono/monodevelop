@@ -28,7 +28,7 @@
 
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 
 namespace MonoDevelop.Core.ProgressMonitoring
@@ -51,7 +51,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 	public class AggregatedProgressMonitor: IProgressMonitor, IAsyncOperation
 	{
 		IProgressMonitor masterMonitor;
-		ArrayList monitors = new ArrayList ();
+		List<MonitorInfo> monitors = new List<MonitorInfo> ();
 		LogTextWriter logger;
 		
 		class MonitorInfo {

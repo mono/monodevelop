@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
 using System.Xml;
@@ -21,7 +21,7 @@ namespace MonoDevelop.Core.Properties
 	/// </summary>
 	public class DefaultProperties : IProperties
 	{
-		Hashtable properties = new Hashtable();
+		Dictionary<string, object> properties = new Dictionary<string, object> ();
 		
 		/// <summary>
 		/// Gets a property out of the collection.
@@ -35,7 +35,7 @@ namespace MonoDevelop.Core.Properties
 		/// <param name="defaultvalue">
 		/// The default value of the property.
 		/// </param>
-		public object GetProperty(string key, object defaultvalue)
+		public object GetProperty (string key, object defaultvalue)
 		{
 			if (!properties.ContainsKey(key)) {
 				if (defaultvalue != null) {
@@ -44,7 +44,7 @@ namespace MonoDevelop.Core.Properties
 				return defaultvalue;
 			}
 			
-			object obj = properties[key];
+			object obj = properties [key];
 			
 			// stored an XmlElement in properties node ->
 			// set a FromXmlElement of the defaultvalue type at this propertyposition.
@@ -63,7 +63,7 @@ namespace MonoDevelop.Core.Properties
 		/// <param name="key">
 		/// The name of the property.
 		/// </param>
-		public object GetProperty(string key)
+		public object GetProperty (string key)
 		{
 			return GetProperty(key, (object)null);
 		}
@@ -201,8 +201,8 @@ namespace MonoDevelop.Core.Properties
 		/// </param>
 		public void SetProperty(string key, object val)
 		{
-			object oldValue = properties[key];
-			if (!val.Equals(oldValue)) {
+			object oldValue = GetProperty (key, val);
+			if (!val.Equals (oldValue)) {
 				if (val is DateTime)
 					val = ((DateTime)val).ToString ("s", CultureInfo.InvariantCulture);
 				properties[key] = val;
@@ -255,7 +255,7 @@ namespace MonoDevelop.Core.Properties
 		{
 			XmlElement propertiesnode  = doc.CreateElement("Properties");
 			
-			foreach (DictionaryEntry entry in properties) {
+			foreach (KeyValuePair<string, object> entry in properties) {
 				if (entry.Value != null) {
 					if (entry.Value is XmlElement) { // write unchanged XmlElement back
 						propertiesnode.AppendChild(doc.ImportNode((XmlElement)entry.Value, true));
@@ -294,7 +294,7 @@ namespace MonoDevelop.Core.Properties
 		public IProperties Clone()
 		{
 			DefaultProperties df = new DefaultProperties();
-			df.properties = (Hashtable)properties.Clone();
+			df.properties = new Dictionary<string, object> (properties);
 			return df;
 		}
 		
@@ -305,6 +305,6 @@ namespace MonoDevelop.Core.Properties
 			}
 		}
 		
-		public event PropertyEventHandler PropertyChanged;
+		public event EventHandler<PropertyEventArgs> PropertyChanged;
 	}
 }

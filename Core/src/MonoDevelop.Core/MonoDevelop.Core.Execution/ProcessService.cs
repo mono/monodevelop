@@ -1,7 +1,7 @@
 // created on 12/17/2004 at 22:07
 using System;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using System.Diagnostics;
 using Mono.Remoting.Channels.Unix;
@@ -18,7 +18,7 @@ namespace MonoDevelop.Core.Execution
 	public class ProcessService : AbstractService
 	{
 		ProcessHostController externalProcess;
-		ArrayList executionHandlers;
+		List<ExtensionNode> executionHandlers;
 		string remotingChannel = "unix";
 		string unixRemotingFile;
 		
@@ -151,7 +151,7 @@ namespace MonoDevelop.Core.Execution
 		public IExecutionHandler GetDefaultExecutionHandler (string platformId)
 		{
 			if (executionHandlers == null) {
-				executionHandlers = new ArrayList ();
+				executionHandlers = new List<ExtensionNode> ();
 				AddinManager.AddExtensionNodeHandler ("/SharpDevelop/Workbench/ExecutionHandlers", OnExtensionChange);
 			}
 			

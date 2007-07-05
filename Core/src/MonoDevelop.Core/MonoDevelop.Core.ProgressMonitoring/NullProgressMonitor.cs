@@ -28,7 +28,7 @@
 
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using System.IO;
 
@@ -38,9 +38,9 @@ namespace MonoDevelop.Core.ProgressMonitoring
 	{
 		bool done, canceled, error;
 		ManualResetEvent waitEvent;
-		ArrayList errors;
-		ArrayList warnings;
-		ArrayList messages;
+		List<ProgressError> errors;
+		List<string> warnings;
+		List<string> messages;
 		
 		public object SyncRoot {
 			get { return this; }
@@ -49,27 +49,24 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		public string[] Messages {
 			get {
 				if (messages != null)
-					return (string[]) messages.ToArray (typeof(string));
-				else
-					return new string [0];
+					return messages.ToArray ();
+				return new string [0];
 			}
 		}
 		
 		public string[] Warnings {
 			get {
 				if (warnings != null)
-					return (string[]) warnings.ToArray (typeof(string));
-				else
-					return new string [0];
+					return warnings.ToArray ();
+				return new string [0];
 			}
 		}
 		
 		public ProgressError[] Errors {
 			get {
 				if (errors != null)
-					return (ProgressError[]) errors.ToArray (typeof(ProgressError));
-				else
-					return new ProgressError [0];
+					return errors.ToArray ();
+				return new ProgressError [0];
 			}
 		}
 		
@@ -96,21 +93,21 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		public virtual void ReportSuccess (string message)
 		{
 			if (messages == null)
-				messages = new ArrayList ();
+				messages = new List<string> ();
 			messages.Add (message);
 		}
 		
 		public virtual void ReportWarning (string message)
 		{
 			if (warnings == null)
-				warnings = new ArrayList ();
+				warnings = new List<string> ();
 			warnings.Add (message);
 		}
 		
 		public virtual void ReportError (string message, Exception ex)
 		{
 			if (errors == null)
-				errors = new ArrayList ();
+				errors = new List<ProgressError> ();
 				
 			if (message == null && ex != null)
 				message = ex.Message;
