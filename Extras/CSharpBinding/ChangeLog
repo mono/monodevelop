@@ -1,5 +1,11 @@
 2007-07-05  Jeffrey Stedfast  <fejj@novell.com>
 
+	* Parser/CodeGenerator.cs: (Visit::FieldReferenceExpression):
+	Don't limit ourselves to just Fields and Properties. Fixes bug
+	#81963.
+
+2007-07-05  Jeffrey Stedfast  <fejj@novell.com>
+
 	* Parser/CodeGenerator.cs: Sanity check that both begin and end
 	are != -1 to prevent a crash.
 	(Visit): When adding a typeDeclaration to the list of references,

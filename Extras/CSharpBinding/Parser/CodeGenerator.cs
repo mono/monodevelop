@@ -154,7 +154,6 @@ namespace CSharpBinding.Parser
 			MemberReferenceCollection refs = new MemberReferenceCollection ();
 			MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (ctx, resolver, cls, cls, refs);
 			
-			Console.WriteLine ("CSharp CodeGenerator FindClassReferences visiting {0}", fileName);
 			IEditableTextFile file = ctx.GetFile (fileName);
 			visitor.Visit (ctx.ParserContext, file);
 			return refs;
@@ -313,7 +312,6 @@ namespace CSharpBinding.Parser
 			IField field = (IField) member;
 			int lineBegin, lineEnd;
 			int colBegin, colEnd;
-			IRegion region;
 			int pos, i;
 			
 			// find the offset of the field
@@ -475,12 +473,18 @@ namespace CSharpBinding.Parser
 			return false;
 		}
 		
+		//void Debug (string what, string name, AbstractNode node)
+		//{
+		//	Console.WriteLine ("{0} reference for {1} @ ({2}, {3})", what, name,
+		//	                   node.StartLocation.Y, node.StartLocation.X);
+		//}
+		
 		public override object Visit(FieldDeclaration fieldDeclaration, object data)
 		{
 			if (member is IClass && member.Name == GetNameWithoutPrefix (ReturnType.GetSystemType (fieldDeclaration.TypeReference.Type))) {
 				IClass cls = resolver.ResolveIdentifier (fileCompilationUnit, ReturnType.GetSystemType (fieldDeclaration.TypeReference.Type), fieldDeclaration.StartLocation.Y, fieldDeclaration.StartLocation.X) as IClass;
 				if (cls != null && cls.FullyQualifiedName == ((IClass)member).FullyQualifiedName) {
-					//Console.WriteLine ("adding FieldDeclaration reference {0}", cls.FullyQualifiedName);
+					//Debug ("adding FieldDeclaration", cls.FullyQualifiedName, fieldDeclaration);
 					references.Add (CreateReference (fieldDeclaration.StartLocation.Y, fieldDeclaration.StartLocation.X, cls.FullyQualifiedName));
 				}
 			}
@@ -489,30 +493,31 @@ namespace CSharpBinding.Parser
 		
 		public override object Visit (FieldReferenceExpression fieldExp, object data)
 		{
-			if ((member is IField || member is IProperty) && fieldExp.FieldName == member.Name)
-			{
+			//Debug ("FieldReferenceExpression", fieldExp.FieldName, fieldExp);
+			if (fieldExp.FieldName == member.Name) {
 				IClass cls = resolver.ResolveExpressionType (fileCompilationUnit, fieldExp.TargetObject, fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
 				if (cls != null && IsExpectedClass (cls)) {
 					int pos = file.GetPositionFromLineColumn (fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
 					string txt = file.GetText (pos, pos + member.Name.Length);
 					if (txt == member.Name) {
-						//Console.WriteLine ("adding FieldReferenceExpression reference {0}", member.Name);
+						//Debug ("adding FieldReferenceExpression", member.Name, fieldExp);
 						references.Add (CreateReference (fieldExp.StartLocation.Y, fieldExp.StartLocation.X, member.Name));
 					}
 				}
-			} 
+			}
 			
 			return base.Visit (fieldExp, data);
 		}
 		
 		public override object Visit (InvocationExpression invokeExp, object data)
 		{
+			//Debug ("InvocationExpression", invokeExp.ToString (), invokeExp);
 			if (member is IMethod && invokeExp.TargetObject is FieldReferenceExpression) {
 				FieldReferenceExpression fieldExp = (FieldReferenceExpression) invokeExp.TargetObject;
 				if (fieldExp.FieldName == member.Name) {
 					IClass cls = resolver.ResolveExpressionType (fileCompilationUnit, fieldExp.TargetObject, fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
 					if (cls != null && IsExpectedClass (cls)) {
-						//Console.WriteLine ("adding InvocationExpression reference {0}", member.Name);
+						//Debug ("adding InvocationExpression", member.Name, invokeExp);
 						references.Add (CreateReference (fieldExp.StartLocation.Y, fieldExp.StartLocation.X, member.Name));
 					}
 				}
@@ -522,6 +527,7 @@ namespace CSharpBinding.Parser
 		
 		public override object Visit (IdentifierExpression idExp, object data)
 		{
+			//Debug ("IdentifierExpression", idExp.Identifier, idExp);
 			if (idExp.Identifier == member.Name) {
 				Point p = idExp.StartLocation;
 				ILanguageItem item = resolver.ResolveIdentifier (fileCompilationUnit, idExp.Identifier, p.Y, p.X);
@@ -530,12 +536,12 @@ namespace CSharpBinding.Parser
 					if (m != null && IsExpectedClass (m.DeclaringType) &&
 						((member is IField && item is IField) || (member is IMethod && item is IMethod) ||
 						 (member is IProperty && item is IProperty) || (member is IEvent && item is IEvent))) {
-						//Console.WriteLine ("adding IdentifierExpression member reference {0}", member.Name);
+						//Debug ("adding IdentifierExpression member", member.Name, idExp);
 						references.Add (CreateReference (idExp.StartLocation.Y, idExp.StartLocation.X, member.Name));
 					}
 				} else if (member is IClass) {
 					if (item is IClass && ((IClass) item).FullyQualifiedName == declaringType.FullyQualifiedName) {
-						//Console.WriteLine ("adding IdentifierExpression class reference {0}", idExp.Identifier);
+						//Debug ("adding IdentifierExpression class", idExp.Identifier, idExp);
 						references.Add (CreateReference (idExp.StartLocation.Y, idExp.StartLocation.X, idExp.Identifier));
 					}
 				} else if (member is LocalVariable) {
@@ -543,7 +549,7 @@ namespace CSharpBinding.Parser
 					LocalVariable var = item as LocalVariable;
 					
 					if (var != null && var.Region.IsInside (avar.Region.BeginLine, avar.Region.EndColumn)) {
-						//Console.WriteLine ("adding IdentifierExpression class reference {0}", idExp.Identifier);
+						//Debug ("adding IdentifierExpression variable", idExp.Identifier, idExp);
 						references.Add (CreateReference (idExp.StartLocation.Y, idExp.StartLocation.X, idExp.Identifier));
 					}
 				} else if (member is IParameter) {
@@ -551,7 +557,7 @@ namespace CSharpBinding.Parser
 					
 					// FIXME: might need to match more than this?
 					if (param != null && IsExpectedMember (param.DeclaringMember)) {
-						//Console.WriteLine ("adding IdentifierExpression param reference {0}", idExp.Identifier);
+						//Debug ("adding IdentifierExpression param", idExp.Identifier, idExp);
 						references.Add (CreateReference (idExp.StartLocation.Y, idExp.StartLocation.X, idExp.Identifier));
 					}
 				}
@@ -630,7 +636,7 @@ namespace CSharpBinding.Parser
 						int line, column;
 						
 						file.GetLineColumnFromPosition (begin + offset, out line, out column);
-						//Console.WriteLine ("adding TypeDeclaration reference {0} : {1} @ {2},{3}", typeDeclaration.Name, bc.Type, line, column);
+						//Debug ("adding TypeDeclaration", typeDeclaration.Name, typeDeclaration);
 						references.Add (CreateReference (line, column, bc.Type));
 					}
 				}
