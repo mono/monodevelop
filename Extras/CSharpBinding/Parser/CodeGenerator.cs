@@ -154,6 +154,7 @@ namespace CSharpBinding.Parser
 			MemberReferenceCollection refs = new MemberReferenceCollection ();
 			MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (ctx, resolver, cls, cls, refs);
 			
+			Console.WriteLine ("CSharp CodeGenerator FindClassReferences visiting {0}", fileName);
 			IEditableTextFile file = ctx.GetFile (fileName);
 			visitor.Visit (ctx.ParserContext, file);
 			return refs;
@@ -163,6 +164,10 @@ namespace CSharpBinding.Parser
 		{
 			int begin = file.GetPositionFromLineColumn (var.Region.BeginLine, var.Region.BeginColumn);
 			int end = file.GetPositionFromLineColumn (var.Region.EndLine, var.Region.EndColumn);
+			
+			if (begin == -1 || end == -1)
+				return -1;
+			
 			string txt = file.GetText (begin, end);
 			
 			int i = txt.IndexOf ('=');
@@ -181,6 +186,10 @@ namespace CSharpBinding.Parser
 			IMember member = param.DeclaringMember;
 			int begin = file.GetPositionFromLineColumn (member.Region.BeginLine, member.Region.BeginColumn);
 			int end = file.GetPositionFromLineColumn (member.Region.EndLine, member.Region.EndColumn);
+			
+			if (begin == -1 || end == -1)
+				return -1;
+			
 			string txt = file.GetText (begin, end);
 			int open, close, i, j;
 			char obrace, cbrace;
@@ -240,6 +249,10 @@ namespace CSharpBinding.Parser
 		{
 			int begin = file.GetPositionFromLineColumn (member.Region.BeginLine, member.Region.BeginColumn);
 			int end = file.GetPositionFromLineColumn (member.Region.EndLine, member.Region.EndColumn);
+			
+			if (begin == -1 || end == -1)
+				return -1;
+			
 			string txt = file.GetText (begin, end);
 			string name = member.Name;
 			int len = txt.Length;
@@ -509,8 +522,7 @@ namespace CSharpBinding.Parser
 		
 		public override object Visit (IdentifierExpression idExp, object data)
 		{
-			if (idExp.Identifier == member.Name)
-			{
+			if (idExp.Identifier == member.Name) {
 				Point p = idExp.StartLocation;
 				ILanguageItem item = resolver.ResolveIdentifier (fileCompilationUnit, idExp.Identifier, p.Y, p.X);
 				if (member is IMember) {
@@ -547,6 +559,23 @@ namespace CSharpBinding.Parser
 			return base.Visit (idExp, data);
 		}
 		
+		bool ClassNamesMatch (string fqName, string name)
+		{
+			int dot;
+			
+			do {
+				if (name == fqName)
+					return true;
+				
+				if ((dot = fqName.IndexOf ('.')) == -1)
+					break;
+				
+				fqName = fqName.Substring (dot + 1);
+			} while (true);
+			
+			return false;
+		}
+		
 		public override object Visit(TypeDeclaration typeDeclaration, object data)
 		{
 			if (member is IClass && typeDeclaration.BaseTypes != null) {
@@ -554,9 +583,55 @@ namespace CSharpBinding.Parser
 				
 				foreach (TypeReference bc in typeDeclaration.BaseTypes) {
 					IClass bclass = resolver.ResolveIdentifier (fileCompilationUnit, bc.Type, typeDeclaration.StartLocation.Y, typeDeclaration.StartLocation.X) as IClass;
-					if (bclass != null && bclass.FullyQualifiedName == fname) {
-						//Console.WriteLine ("adding TypeDeclaration reference {0}", bc.Type);
-						references.Add (CreateReference (typeDeclaration.StartLocation.Y, typeDeclaration.StartLocation.X, bc.Type));
+					if (bclass == null || bclass.FullyQualifiedName != fname)
+						continue;
+					
+					// Note: typeDeclaration.StartLocation marks the location of the subtype,
+					// we want the location of the parent class' reference in the declaration
+					int begin = file.GetPositionFromLineColumn (typeDeclaration.StartLocation.Y, typeDeclaration.StartLocation.X);
+					int end = file.GetPositionFromLineColumn (typeDeclaration.EndLocation.Y, typeDeclaration.EndLocation.X);
+					string txt = file.GetText (begin, end);
+					int offset, wstart, wend, brace;
+					
+					if ((brace = txt.IndexOf ('{')) == -1)
+						continue;
+					
+					txt = txt.Substring (0, brace);
+					
+					if ((offset = txt.IndexOf (typeDeclaration.Name)) == -1)
+						continue;
+					
+					offset += typeDeclaration.Name.Length;
+					
+					if ((offset = txt.IndexOf (':', offset)) == -1)
+						continue;
+					
+					offset++;
+					
+					bool found = false;
+					
+					do {
+						if ((wstart = txt.IndexOf (bclass.Name, offset)) == -1)
+							break;
+						
+						wend = wstart + bclass.Name.Length;
+						if (wend < txt.Length && (txt[wend] == ',' || txt[wend] == '{' || Char.IsWhiteSpace (txt[wend]))) {
+							while (wstart > offset && !Char.IsWhiteSpace (txt[wstart - 1]) && txt[wstart - 1] != ',')
+								wstart--;
+							
+							if ((found = ClassNamesMatch (fname, txt.Substring (wstart, wend - wstart))))
+								break;
+						}
+						
+						offset = wend;
+					} while (true);
+					
+					if (found) {
+						int line, column;
+						
+						file.GetLineColumnFromPosition (begin + offset, out line, out column);
+						//Console.WriteLine ("adding TypeDeclaration reference {0} : {1} @ {2},{3}", typeDeclaration.Name, bc.Type, line, column);
+						references.Add (CreateReference (line, column, bc.Type));
 					}
 				}
 			}

@@ -1,7 +1,10 @@
 2007-07-05  Jeffrey Stedfast  <fejj@novell.com>
 
-	* Parser/CodeGenerator.cs: Sanity check that bot begin and end are
-	!= -1 to prevent a crash.
+	* Parser/CodeGenerator.cs: Sanity check that both begin and end
+	are != -1 to prevent a crash.
+	(Visit): When adding a typeDeclaration to the list of references,
+	don't add it using the StartLocation - instead, we need to find
+	the actual reference offset using StartLocation as a hint.
 
 2007-07-03  Mike Krüger <mkrueger@novell.com> 
 
