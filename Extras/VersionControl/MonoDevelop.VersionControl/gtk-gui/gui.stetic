@@ -1,9 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
-  <import>
-    <widget-library name="../../../../build/AddIns/MonoDevelop.Components.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.Ide.dll" />
-  </import>
+  <configuration>
+    <images-root-path>../</images-root-path>
+  </configuration>
   <icon-factory>
     <icon-set id="vcs-repository">
       <source>
@@ -33,6 +32,7 @@
               <widget class="Gtk.Notebook" id="notebook">
                 <property name="MemberName">notebook</property>
                 <property name="CanFocus">True</property>
+                <property name="CurrentPage">0</property>
                 <signal name="ChangeCurrentPage" handler="OnNotebookChangeCurrentPage" />
                 <child>
                   <widget class="Gtk.VBox" id="vbox2">
@@ -129,6 +129,7 @@
                           <widget class="Gtk.TreeView" id="repoTree">
                             <property name="MemberName">repoTree</property>
                             <property name="CanFocus">True</property>
+                            <property name="HeadersClickable">True</property>
                             <signal name="CursorChanged" handler="OnRepoTreeCursorChanged" />
                           </widget>
                         </child>
@@ -1127,6 +1128,7 @@
                   <widget class="Gtk.TreeView" id="fileList">
                     <property name="MemberName">fileList</property>
                     <property name="CanFocus">True</property>
+                    <property name="HeadersClickable">True</property>
                   </widget>
                 </child>
               </widget>

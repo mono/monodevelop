@@ -99,6 +99,7 @@ namespace MonoDevelop.VersionControl.Dialogs {
             this.notebook = new Gtk.Notebook();
             this.notebook.CanFocus = true;
             this.notebook.Name = "notebook";
+            this.notebook.CurrentPage = 0;
             // Container child notebook.Gtk.Notebook+NotebookChild
             this.vbox2 = new Gtk.VBox();
             this.vbox2.Name = "vbox2";
