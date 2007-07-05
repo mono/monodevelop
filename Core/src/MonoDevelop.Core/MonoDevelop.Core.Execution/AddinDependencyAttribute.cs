@@ -28,7 +28,7 @@
 
 using System;
 	
-namespace MonoDevelop.Core
+namespace MonoDevelop.Core.Execution
 {
 	[AttributeUsage (AttributeTargets.Class, AllowMultiple = true)]
 	public class AddinDependencyAttribute: Attribute
