@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.Tasks
 			Services.TaskService.TaskAdded += (TaskEventHandler) Services.DispatchService.GuiDispatch (new TaskEventHandler (GeneratedTaskAdded));
 			Services.TaskService.TaskRemoved += (TaskEventHandler) Services.DispatchService.GuiDispatch (new TaskEventHandler (GeneratedTaskRemoved));
 
-			Runtime.Properties.PropertyChanged += (PropertyEventHandler) Services.DispatchService.GuiDispatch (new PropertyEventHandler (OnPropertyUpdated));
+			Runtime.Properties.PropertyChanged += (EventHandler<PropertyEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<PropertyEventArgs> (OnPropertyUpdated));
 
 			CreateMenu ();
 		}

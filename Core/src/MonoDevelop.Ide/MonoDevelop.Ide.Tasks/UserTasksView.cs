@@ -132,7 +132,7 @@ namespace MonoDevelop.Ide.Tasks
 			Services.TaskService.UserTasksChanged += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (UserTasksChanged));
 			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (CombineOpened));
 			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (CombineClosed));
-			Runtime.Properties.PropertyChanged += (PropertyEventHandler) Services.DispatchService.GuiDispatch (new PropertyEventHandler (OnPropertyUpdated));	
+			Runtime.Properties.PropertyChanged += (EventHandler<PropertyEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<PropertyEventArgs> (OnPropertyUpdated));	
 			ValidateButtons ();
 		}
 		

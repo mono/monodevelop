@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.Gui
 				
 				((Gtk.Window)workbench).Visible = false;
 				workbench.ActiveWorkbenchWindowChanged += new EventHandler (OnDocumentChanged);
-				Runtime.Properties.PropertyChanged += new PropertyEventHandler(TrackPropertyChanges);
+				Runtime.Properties.PropertyChanged += new EventHandler<PropertyEventArgs> (TrackPropertyChanges);
 				
 				if (Services.DebuggingService != null) {
 					Services.DebuggingService.PausedEvent += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnDebuggerPaused));

@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OnOpenCombine));
 			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCloseCombine));
-			Runtime.Properties.PropertyChanged += (PropertyEventHandler) Services.DispatchService.GuiDispatch (new PropertyEventHandler (TrackPropertyChange));
+			Runtime.Properties.PropertyChanged += (EventHandler<PropertyEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<PropertyEventArgs> (TrackPropertyChange));
 		}
 		
 		public override void Initialize (NodeBuilder[] builders, TreePadOption[] options)

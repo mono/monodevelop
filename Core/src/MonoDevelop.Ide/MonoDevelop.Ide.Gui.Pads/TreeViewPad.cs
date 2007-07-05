@@ -209,7 +209,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				text_render.FontDesc = Pango.FontDescription.FromString (name);
 			}
 			text_render.Ypad = 1;
-			Runtime.Properties.PropertyChanged += new PropertyEventHandler (PropertyChanged);
+			Runtime.Properties.PropertyChanged += new EventHandler<PropertyEventArgs> (PropertyChanged);
 			text_render.Edited += new Gtk.EditedHandler (HandleOnEdit);
 			text_render.EditingCanceled += new EventHandler (HandleOnEditCancelled);
 			

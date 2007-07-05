@@ -1,3 +1,13 @@
+2007-07-05  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs,
+	  MonoDevelop.Ide.Gui.Pads/SolutionPad.cs,
+	  MonoDevelop.Ide.Gui/Workbench.cs,
+	  MonoDevelop.Ide.Tasks/UserTasksView.cs,
+	  MonoDevelop.Ide.Tasks/CommentTasksView.cs,
+	  MonoDevelop.Ide.Tasks/TaskService.cs: Changed source a bit due to
+	  core refactorings.
+
 2007-07-03  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplateLoader.cs,
