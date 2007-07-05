@@ -1,3 +1,8 @@
+2007-07-05  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Differentiate
+	between Class, Enum, and Struct.
+
 2007-07-05  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs,

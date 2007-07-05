@@ -197,9 +197,8 @@ namespace MonoDevelop.Ide.Commands
 			bool canRename = false;
 			string txt;
 			
-			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item)) {
+			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item))
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Go to declaration"), new RefactoryOperation (refactorer.GoToDeclaration));
-			}
 			
 			if ((item is IMember) && !(item is IClass))
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Find references"), new RefactoryOperation (refactorer.FindReferences));
@@ -209,9 +208,9 @@ namespace MonoDevelop.Ide.Commands
 			if ((item is LocalVariable) || (item is IParameter))
 				canRename = true;
 			else if (item is IClass)
-				canRename = ((IClass)item).SourceProject != null;
+				canRename = ((IClass) item).SourceProject != null;
 			else if (item is IMember) {
-				IClass cls = ((IMember)item).DeclaringType;
+				IClass cls = ((IMember) item).DeclaringType;
 				canRename = cls != null && cls.SourceProject != null;
 			}
 			
@@ -223,7 +222,11 @@ namespace MonoDevelop.Ide.Commands
 			if (item is IClass) {
 				IClass cls = (IClass) item;
 				
-				if (cls.ClassType == ClassType.Interface)
+				if (cls.ClassType == ClassType.Enum)
+					txt = GettextCatalog.GetString ("Enum <b>{0}</b>", itemName);
+				else if (cls.ClassType == ClassType.Struct)
+					txt = GettextCatalog.GetString ("Struct <b>{0}</b>", itemName);
+				else if (cls.ClassType == ClassType.Interface)
 					txt = GettextCatalog.GetString ("Interface <b>{0}</b>", itemName);
 				else
 					txt = GettextCatalog.GetString ("Class <b>{0}</b>", itemName);
