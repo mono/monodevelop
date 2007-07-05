@@ -37,6 +37,7 @@ using System.Drawing.Design;
 using System.Runtime.Serialization.Formatters.Binary;
 
 using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -151,6 +152,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			
    			ms.Close ();
    			return Convert.ToBase64String(bytes);
+		}
+		
+		public override string ItemDomain {
+			get { return GettextCatalog.GetString ("Web and Windows Forms Components"); }
 		}
 		
 		#endregion

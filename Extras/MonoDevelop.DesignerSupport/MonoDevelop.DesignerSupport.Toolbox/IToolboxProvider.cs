@@ -39,7 +39,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	//Used to fetch or generate the default toolbox items at the beginning of each MD session
 	public interface IToolboxDefaultProvider
 	{
-		IList<ItemToolboxNode> GetItems ();
+		// It should return a list of items to be added by default to the toolbox
+		IEnumerable<ItemToolboxNode> GetDefaultItems ();
+		
+		// It should return a list of files which contains items to be added by default
+		// to the toolbox (all items in the files will be added).
+		IEnumerable<string> GetDefaultFiles ();
 	}
 	
 	//Can provide dynamic toolbox items for a specific consumer. 

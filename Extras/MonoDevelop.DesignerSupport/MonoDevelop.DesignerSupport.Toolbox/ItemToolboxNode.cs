@@ -38,6 +38,7 @@ using System.Drawing.Design;
 using Gtk;
 
 using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -90,6 +91,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		//collection of ToolboxItemFilterAttribute
 		public virtual IList ItemFilters {
 			get { return itemFilters; }
+		}
+		
+		public virtual string ItemDomain {
+			get { return GettextCatalog.GetString ("Unknown"); }
 		}
 		
 		#endregion

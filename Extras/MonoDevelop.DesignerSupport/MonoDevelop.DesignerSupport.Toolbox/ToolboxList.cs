@@ -41,32 +41,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 {
 	public class ToolboxList : List<ItemToolboxNode>
 	{
-		
 		public ToolboxList ()
 		{
-		}
-		
-		public void SaveContents (string fileName)
-		{
-			using (StreamWriter writer = new StreamWriter (fileName)) {
-				XmlDataSerializer serializer = new XmlDataSerializer (IdeApp.Services.ProjectService.DataContext);
-				serializer.Serialize (writer, this);
-			}
-		}
-		
-		//static methods shouldn't really replace constructors, but because of the way the Deserialize
-		//method works, this saves us copying all the items from one ToolboxList to another
-		public static ToolboxList LoadFromFile (string fileName)
-		{
-			object o;
-			
-			using (StreamReader reader = new StreamReader (fileName))
-			{
-				XmlDataSerializer serializer = new XmlDataSerializer (IdeApp.Services.ProjectService.DataContext);
-				o = serializer.Deserialize (reader, typeof (ToolboxList));	
-			}
-			
-			return (ToolboxList) o;			
 		}
 	}
 }

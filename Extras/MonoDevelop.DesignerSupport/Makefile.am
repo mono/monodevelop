@@ -10,6 +10,7 @@ REFS =  \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
+	-r:Mono.Posix \
 	-r:System \
 	-r:System.Design \
 	-r:System.Drawing \
@@ -19,6 +20,8 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
+	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog.cs \
 	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindClassBuilder.cs \
 	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindDisplayBinding.cs \
 	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindProjectFileExtension.cs \
@@ -57,12 +60,14 @@ FILES =  \
 	MonoDevelop.DesignerSupport.Toolbox/BaseToolboxNode.cs \
 	MonoDevelop.DesignerSupport.Toolbox/CategoryToolboxNode.cs \
 	MonoDevelop.DesignerSupport.Toolbox/CompactToolboxView.cs \
+	MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs \
 	MonoDevelop.DesignerSupport.Toolbox/ItemToolboxNode.cs \
 	MonoDevelop.DesignerSupport.Toolbox/IToolboxConsumer.cs \
 	MonoDevelop.DesignerSupport.Toolbox/IToolboxLoader.cs \
 	MonoDevelop.DesignerSupport.Toolbox/IToolboxProvider.cs \
 	MonoDevelop.DesignerSupport.Toolbox/TextToolboxNode.cs \
 	MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs \
+	MonoDevelop.DesignerSupport.Toolbox/ToolboxConfiguration.cs \
 	MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxLoader.cs \
 	MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxNode.cs \
 	MonoDevelop.DesignerSupport.Toolbox/ToolboxList.cs \
@@ -83,6 +88,7 @@ FILES =  \
 	MonoDevelop.DesignerSupport/WrapperDesignView.cs
 
 RES =  \
+	gtk-gui/gui.stetic \
 	icons/group-by-category.png \
 	icons/md-design-listboxtoggle.png \
 	icons/MonoDevelop.DesignerSupport.PropertyGrid.DefaultPropertyTab.bmp \

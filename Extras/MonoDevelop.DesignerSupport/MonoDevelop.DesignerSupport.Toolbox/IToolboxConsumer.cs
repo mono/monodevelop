@@ -36,8 +36,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 {
 	public interface IToolboxConsumer
 	{
-		/*TODO: drag/drop stuff */
-		
 		//This is run when an item is activated from the toolbox service.
 		void ConsumeItem (ItemToolboxNode item);
 		
@@ -55,5 +53,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		//Used if ToolboxItemFilterAttribute demands ToolboxItemFilterType.Custom
 		//If not expecting it, should just return false
 		bool CustomFilterSupports (ItemToolboxNode item);
+		
+		// Returns the item domain to show by default in the component selector dialog
+		// when this consumer is active.
+		string DefaultItemDomain { get; }
 	}
 }

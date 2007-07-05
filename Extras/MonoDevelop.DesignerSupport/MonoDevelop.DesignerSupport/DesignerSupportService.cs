@@ -176,10 +176,6 @@ namespace MonoDevelop.DesignerSupport
 				//lazy load of toolbox contents
 				if (toolboxService == null) {
 					toolboxService = new ToolboxService ();
-										
-					string path = System.IO.Path.Combine (Runtime.Properties.ConfigDirectory, "Toolbox.xml");
-					if (System.IO.File.Exists (path))
-						toolboxService.LoadUserToolbox (path);
 				}
 				
 				return toolboxService;
@@ -204,12 +200,6 @@ namespace MonoDevelop.DesignerSupport
 			codeBehindService.Initialise ();
 			IdeApp.CommandService.CommandManager.RegisterCommandTargetVisitor (new PropertyPadVisitor ());
 			AddinManager.ExtensionChanged += OnExtensionChanged;
-		}
-		
-		public override void UnloadService()
-		{
-			if (toolboxService != null)
-				toolboxService.SaveUserToolbox (System.IO.Path.Combine (Runtime.Properties.ConfigDirectory, "Toolbox.xml"));
 		}
 		
 		void OnExtensionChanged (object s, ExtensionEventArgs args)

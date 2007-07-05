@@ -1,3 +1,32 @@
+2007-07-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.DesignerSupport.mdp,
+	  MonoDevelop.DesignerSupport/ToolboxService.cs,
+	  gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog.cs,
+	  gtk-gui/gui.stetic,
+	  MonoDevelop.DesignerSupport.Toolbox/ItemToolboxNode.cs,
+	  MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxNode.cs,
+	  MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs,
+	  Makefile.am: Implemented an index of components, which can be used
+	  by the user to select which components have to be shown in the
+	  toolbar.
+	* MonoDevelop.DesignerSupport/DesignerSupportService.cs: Toolbox
+	  configuration loading/saving is now handled by the toolbox service.
+	* MonoDevelop.DesignerSupport.PropertyGrid.Editors/TextEditor.cs: Fix
+	  warning.
+	* MonoDevelop.DesignerSupport.Toolbox/IToolboxConsumer.cs: Removed
+	  TODO.
+	* MonoDevelop.DesignerSupport.Toolbox/ToolboxConfiguration.cs: New
+	  class that stores toolbox information.
+	* MonoDevelop.DesignerSupport.Toolbox/ToolboxList.cs: Moved
+	  serialization code to ToolboxConfiguration.
+	* MonoDevelop.DesignerSupport.Toolbox/IToolboxProvider.cs:
+	  Implementations of IToolboxDefaultProviders can now return a file
+	  that implements toolbox items and all of them will be loaded by
+	  default in the toolbox. It is not necessary to specify all default
+	  items one by one, although it can still be done.
+
 2007-07-02  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs,

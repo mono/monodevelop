@@ -42,7 +42,6 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 		PropertyDescriptor property;
 		bool disposed;
 		string initialText;
-		EditSession session;
 		
 		public TextEditor()
 		{
@@ -87,7 +86,6 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 		
 		public void Initialize (EditSession session)
 		{
-			this.session = session;
 			property = session.Property;
 			LocalizableAttribute at = (LocalizableAttribute) property.Attributes [typeof(LocalizableAttribute)];
 			button.Visible = (at != null && at.IsLocalizable);
