@@ -35,7 +35,7 @@ namespace MonoDevelop.Projects
 		[ItemProperty ("Build/debugmode")]
 		bool debugmode = true;
 		
-		[ItemProperty ("Output/signAssembly")]
+		[ItemProperty ("Output/signAssembly", DefaultValue = false)]
 		bool signAssembly = false;
 		
 		[ProjectPathItemProperty ("Output/assemblyKeyFile")]
