@@ -92,12 +92,12 @@ namespace MonoDevelop.Projects.Parser
 			references = new ArrayList ();
 			headers = new Hashtable ();
 			
-			Runtime.Properties.PropertyChanged += new PropertyEventHandler (OnPropertyUpdated);	
+			Runtime.Properties.PropertyChanged += new EventHandler<PropertyEventArgs> (OnPropertyUpdated);	
 		}
 		
 		public virtual void Dispose ()
 		{
-			Runtime.Properties.PropertyChanged -= new PropertyEventHandler (OnPropertyUpdated);
+			Runtime.Properties.PropertyChanged -= new EventHandler<PropertyEventArgs> (OnPropertyUpdated);
 			disposed = true;
 		}
 		
