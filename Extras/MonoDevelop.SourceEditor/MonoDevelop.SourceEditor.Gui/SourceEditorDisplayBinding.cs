@@ -120,7 +120,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		DateTime lastSaveTime;
 		bool warnOverwrite = false;
 		
-		PropertyEventHandler propertyHandler;
+		EventHandler<PropertyEventArgs> propertyHandler;
 		
 		void UpdateFSW (object o, EventArgs e)
 		{
@@ -250,7 +250,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			
 			CaretModeChanged (null, null);
 			
-			propertyHandler = (PropertyEventHandler) Services.DispatchService.GuiDispatch (new PropertyEventHandler (PropertiesChanged));
+			propertyHandler = (EventHandler<PropertyEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<PropertyEventArgs> (PropertiesChanged));
 			PropertyService propertyService = (PropertyService) ServiceManager.GetService (typeof (PropertyService));
 			properties = ((IProperties) propertyService.GetProperty("MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new DefaultProperties()));
 			properties.PropertyChanged += propertyHandler;

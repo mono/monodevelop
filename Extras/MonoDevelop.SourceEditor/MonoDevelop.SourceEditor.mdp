@@ -1,13 +1,13 @@
 <Project name="MonoDevelop.SourceEditor" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
-      <Output directory="../../build/AddIns/" assembly="MonoDevelop.SourceEditor" />
+      <Output directory="../../build/AddIns/" signAssembly="False" assembly="MonoDevelop.SourceEditor" />
       <Build debugmode="True" target="Library" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
-      <Output directory="../../build/AddIns/" assembly="MonoDevelop.SourceEditor" />
+      <Output directory="../../build/AddIns/" signAssembly="False" assembly="MonoDevelop.SourceEditor" />
       <Build debugmode="False" target="Library" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
@@ -78,6 +78,7 @@
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
+  <MonoDevelop.Gettext.TranslationInfo />
   <DeploymentInformation strategy="File">
     <excludeFiles />
   </DeploymentInformation>

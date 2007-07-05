@@ -1,3 +1,8 @@
+2007-07-05  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Changed
+	  source a bit due to core refactorings.
+
 2007-07-03  Mike Krüger <mkrueger@novell.com> 
 
 	* EditorBindings.glade,
