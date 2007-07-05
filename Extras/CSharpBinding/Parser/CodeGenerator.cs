@@ -81,6 +81,9 @@ namespace CSharpBinding.Parser
 				begin = file.GetPositionFromLineColumn (cls.Region.BeginLine, cls.Region.BeginColumn);
 				end = file.GetPositionFromLineColumn (cls.Region.EndLine, cls.Region.EndColumn);
 				
+				if (begin == -1 || end == -1)
+					continue;
+				
 				txt = file.GetText (begin, end);
 				
 				switch (cls.ClassType) {

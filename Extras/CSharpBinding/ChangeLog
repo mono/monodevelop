@@ -1,3 +1,8 @@
+2007-07-05  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Parser/CodeGenerator.cs: Sanity check that bot begin and end are
+	!= -1 to prevent a crash.
+
 2007-07-03  Mike Krüger <mkrueger@novell.com> 
 
 	* CSharpBindingCompilerManager.cs: added signing support.
