@@ -1,5 +1,7 @@
 
 using System;
+using System.Collections;
+using System.ComponentModel;
 using System.Collections.Generic;
 using MonoDevelop.DesignerSupport.Toolbox;
 using MonoDevelop.Projects;
@@ -9,7 +11,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class ToolboxProvider: IToolboxDynamicProvider
+	public class ToolboxProvider: IToolboxDynamicProvider, IToolboxDefaultProvider
 	{
 		internal static ToolboxProvider Instance;
 		
@@ -23,19 +25,27 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			GuiBuilderView view = consumer as GuiBuilderView;
 			if (view == null)
 				return null;
-				
+			
 			ComponentType[] types = view.GetComponentTypes ();
 			if (types == null)
 				return null;
 				
+			Hashtable refs = new Hashtable ();
+			foreach (ProjectReference pr in view.Project.ProjectReferences)
+				foreach (string f in pr.GetReferencedFileNames ()) {
+					refs[f] = f;
+				}
+			
 			List<ItemToolboxNode> list = new List<ItemToolboxNode> ();
 			foreach (ComponentType type in types) {
 				if (type.Category == "window")
 					continue;
-				ComponentToolboxNode node = new ComponentToolboxNode (type);
-				list.Add (node);
-				list.Sort ();
+				if (type.ClassName == "Gtk.Action" || refs.Contains (type.Library)) {
+					ComponentToolboxNode node = new ComponentToolboxNode (type);
+					list.Add (node);
+				}
 			}
+			list.Sort ();
 			return list;
 		}
 		
@@ -43,6 +53,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			if (ItemsChanged != null)
 				ItemsChanged (this, EventArgs.Empty);
+		}
+
+		public virtual IEnumerable<ItemToolboxNode> GetDefaultItems ()
+		{
+			return null;
+		}
+
+		public virtual IEnumerable<string> GetDefaultFiles ()
+		{
+			yield return typeof(Stetic.Wrapper.Widget).Assembly.Location;
 		}
 		
 		public event EventHandler ItemsChanged;
@@ -58,6 +78,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		string reference;
 		[ItemProperty]
 		string className;
+		[ItemProperty]
+		string gtkVersion;
+		
+		static ToolboxItemFilterAttribute[] attributes = new ToolboxItemFilterAttribute[] {
+			new ToolboxItemFilterAttribute ("gtk-sharp", ToolboxItemFilterType.Require)
+		};
+		
+		internal static readonly string GtkWidgetDomain = GettextCatalog.GetString ("GTK# Widgets");
 		
 		public ComponentToolboxNode ()
 		{
@@ -70,6 +98,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			className = type.ClassName;
 			Category = GetCategoryName (type.Category);
 			Icon = type.Icon;
+			gtkVersion = type.TargetGtkVersion;
+		}
+		
+		public override IList ItemFilters {
+			get { return attributes; }
 		}
 		
 		public Stetic.ComponentType ComponentType {
@@ -101,6 +134,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return className;
 			}
 		}
+
+		public string GtkVersion {
+			get {
+				return gtkVersion;
+			}
+		}
 		
 		string GetCategoryName (string cat)
 		{
@@ -122,5 +161,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return Category.CompareTo (other.Category);
 		}
 
+		public override string ItemDomain {
+			get { return GtkWidgetDomain; }
+		}
 	}
 }

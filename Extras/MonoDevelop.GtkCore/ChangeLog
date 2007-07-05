@@ -1,3 +1,18 @@
+2007-07-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* lib/libsteticui.dll, lib/libstetic.dll: Updated from Stetic module.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Added null
+	  check.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: Track api changes
+	  in DesignerSupport. When adding a project reference to a widget
+	  library, take into account that widgets may be implemented in a
+	  library different from the one providing the widget list.
+	* MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs: In
+	  GetDynamicItems, only return widgets provided by libraries
+	  referenced by the project. Don't return widgets from libstetic
+	  since those are already included by default in the toolbox.
+	  Implemented IToolboxDefaultProvider.
+
 2007-07-03  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Changed a bit

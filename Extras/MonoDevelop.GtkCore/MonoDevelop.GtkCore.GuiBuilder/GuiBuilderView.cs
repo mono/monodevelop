@@ -371,7 +371,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		ToolboxItemFilterAttribute[] IToolboxConsumer.ToolboxFilterAttributes {
 			get {
 				return new ToolboxItemFilterAttribute [] {
-					new ToolboxItemFilterAttribute ("gtk-sharp")
+					new ToolboxItemFilterAttribute ("gtk-sharp", ToolboxItemFilterType.Custom)
 				};
 			}
 		}
@@ -380,10 +380,19 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		//If not expecting it, should just return false
 		bool IToolboxConsumer.CustomFilterSupports (ItemToolboxNode item)
 		{
+			ComponentToolboxNode cnode = item as ComponentToolboxNode;
+			if (cnode != null) {
+				if (cnode.GtkVersion == null || Mono.Addins.Addin.CompareVersions (gproject.SteticProject.TargetGtkVersion, cnode.GtkVersion) <= 0)
+					return true;
+			}
 			return false;
 		}
 		
-		public void DragItem (ItemToolboxNode item, Gtk.Widget source, Gdk.DragContext ctx)
+		string IToolboxConsumer.DefaultItemDomain {
+			get { return ComponentToolboxNode.GtkWidgetDomain; }
+		}
+			
+		void IToolboxConsumer.DragItem (ItemToolboxNode item, Gtk.Widget source, Gdk.DragContext ctx)
 		{
 			if (designer != null) {
 				ComponentToolboxNode node = item as ComponentToolboxNode;
@@ -400,11 +409,32 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 				if (node.Reference == null)
 					return;
+				
+				ProjectReference pref;
+				
+				// If the class name includes an assembly name it means that the
+				// widget is implemented in another assembly, not in the one that
+				// has the objects.xml file.
+				int i = node.ClassName.IndexOf (',');
+				if (i != -1) {
+					string asm = node.ClassName.Substring (i+1).Trim ();
+					asm = Runtime.SystemAssemblyService.GetAssemblyFullName (asm);
+					if (asm == null)
+						return;
+					if (Runtime.SystemAssemblyService.GetPackageFromFullName (asm) != null) {
+						pref = new ProjectReference (ReferenceType.Gac, asm);
+					} else {
+						asm = Runtime.SystemAssemblyService.GetAssemblyLocation (asm);
+						pref = new ProjectReference (ReferenceType.Assembly, asm);
+					}
+				}
+				else
+					pref = new ProjectReference (node.ReferenceType, node.Reference);
+				
 				foreach (ProjectReference pr in gproject.Project.ProjectReferences) {
-					if (pr.Reference == node.Reference)
+					if (pr.Reference == pref.Reference)
 						return;
 				}
-				ProjectReference pref = new ProjectReference (node.ReferenceType, node.Reference);
 				gproject.Project.ProjectReferences.Add (pref);
 		}
 
@@ -412,7 +442,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			new Gtk.TargetEntry ("application/x-stetic-widget", 0, 0)
 		};
 			
-		public TargetEntry[] DragTargets {
+		TargetEntry[] IToolboxConsumer.DragTargets {
 			get { return targets; }
 		}
 	}

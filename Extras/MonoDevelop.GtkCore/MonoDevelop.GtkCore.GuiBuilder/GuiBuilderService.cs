@@ -64,6 +64,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		static GuiBuilderService ()
 		{
+			if (IdeApp.Workbench == null)
+				return;
 			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnActiveDocumentChanged);
 			IdeApp.ProjectOperations.StartBuild += OnBeforeCompile;
 			IdeApp.ProjectOperations.EndBuild += OnProjectCompiled;
