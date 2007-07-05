@@ -77,6 +77,7 @@ FILES =  \
 	MonoDevelop.DesignerSupport.Toolbox/UnknownToolboxNode.cs \
 	MonoDevelop.DesignerSupport/BindingService.cs \
 	MonoDevelop.DesignerSupport/CodeBehindService.cs \
+	MonoDevelop.DesignerSupport/Commands.cs \
 	MonoDevelop.DesignerSupport/CustomDescriptor.cs \
 	MonoDevelop.DesignerSupport/DesignerSupportService.cs \
 	MonoDevelop.DesignerSupport/IPropertyProvider.cs \

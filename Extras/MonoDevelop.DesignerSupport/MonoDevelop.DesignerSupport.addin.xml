@@ -42,6 +42,11 @@
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/DesignerSupport/ToolboxItemContextMenu" name = "Toolbox item context menu">
+		<Description>Context menu for toolbox items.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet" />
+	</ExtensionPoint>
+	
 	<!-- Extensions -->
 
 	<Extension path = "/Workspace/Services">
@@ -104,5 +109,16 @@
 	
 	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ClassPad">
 		<NodeBuilder class = "MonoDevelop.DesignerSupport.Projects.ComponentNodeBuilder"/>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Commands">
+		<Command id = "MonoDevelop.DesignerSupport.Commands.SelectItems"
+				defaultHandler = "MonoDevelop.DesignerSupport.SelectItemsCommandHandler"
+				_label = "Add Items..." />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/DesignerSupport/ToolboxItemContextMenu">
+		<CommandItem id = "MonoDevelop.DesignerSupport.Commands.SelectItems" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
 </Addin>

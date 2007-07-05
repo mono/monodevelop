@@ -198,6 +198,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				           EventMask.EnterNotifyMask |
 				           EventMask.LeaveNotifyMask |
 				           EventMask.ButtonPressMask | 
+				           EventMask.ButtonReleaseMask | 
 					       EventMask.PointerMotionMask
 			;
 		}
@@ -226,7 +227,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing e)
 		{
-			ClearMouseOverItem ();
+			// Don't clear the selection when clicking on a button
+			if (e.Detail != NotifyType.Ancestor || e.Mode != Gdk.CrossingMode.Grab)
+				ClearMouseOverItem ();
 			return true;
 			//return OnLeaveNotifyEvent (e);
 		}
@@ -317,14 +320,15 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				tooltipWindow = null;
 			}
 		}
-		public void ShowTooltip (string text, int x, int y)
+		public void ShowTooltip (string text, int x, int y, int iconWidth)
 		{
 			HideTooltipWindow (); 
 			tooltipWindow = new CustomTooltipWindow ();
 			tooltipWindow.Tooltip = text;
 			int ox, oy;
 			this.GdkWindow.GetOrigin (out ox, out oy);
-			tooltipWindow.Move (ox + x, oy + y);
+			int w = tooltipWindow.Child.SizeRequest().Width;
+			tooltipWindow.Move (ox + x - (w - iconWidth)/2, oy + y);
 			tooltipWindow.ShowAll ();
 		}
 
@@ -339,7 +343,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					found = true;
 					if (mouseOverItem != item) {
 						mouseOverItem = item;
-						ShowTooltip (item.Text, xpos - 2, ypos + IconSize.Height + 3);
+						ShowTooltip (item.Text, xpos - 2, ypos + IconSize.Height + 3, IconSize.Width + 4);
 						this.QueueDraw ();
 					}
 				}
@@ -447,6 +451,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					category.Items.Add (newItem);
 				}
 			}
+			QueueDraw ();
 		}
 		
 		protected virtual void OnSelectionChanged (EventArgs e)

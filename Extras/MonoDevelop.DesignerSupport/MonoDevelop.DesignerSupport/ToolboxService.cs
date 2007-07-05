@@ -149,6 +149,13 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 		
+		public void RemoveUserItem (ItemToolboxNode node)
+		{
+			Configuration.ItemList.Remove (node);
+			SaveConfiguration ();
+			OnToolboxContentsChanged ();
+		}
+		
 		public void RegisterDefaultToolboxProvider (IToolboxDefaultProvider provider)
 		{
 			string pname = provider.GetType().FullName;

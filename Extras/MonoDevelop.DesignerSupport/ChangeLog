@@ -1,5 +1,17 @@
 2007-07-05  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.DesignerSupport.addin.xml,
+	  MonoDevelop.DesignerSupport.mdp,
+	  MonoDevelop.DesignerSupport/Commands.cs,
+	  MonoDevelop.DesignerSupport/ToolboxService.cs,
+	  MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs, Makefile.am: Added
+	  a context menu to the toolbox, which allows adding/removing items.
+	* MonoDevelop.DesignerSupport.Toolbox/CompactToolboxView.cs: Show the
+	  tooltip centered. Avoid the selection to be cleared when clicking
+	  on an item. Redraw the widget when the item list changes.
+
+2007-07-05  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.DesignerSupport.mdp,
 	  MonoDevelop.DesignerSupport/ToolboxService.cs,
 	  gtk-gui/generated.cs,

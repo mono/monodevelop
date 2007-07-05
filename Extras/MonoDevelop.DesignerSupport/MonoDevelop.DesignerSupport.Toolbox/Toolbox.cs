@@ -34,6 +34,8 @@ using System.Collections;
 using System.Drawing.Design;
 using System.ComponentModel.Design;
 using System.ComponentModel;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -99,6 +101,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			compactToolboxView.DragBegin += delegate(object sender, Gtk.DragBeginArgs e) {
 				toolboxService.DragSelectedItem (compactToolboxView, e.Context);
 			};
+			compactToolboxView.ButtonReleaseEvent += OnButtonRelease;
 			
 			scrolledWindow = new ScrolledWindow ();
 			base.PackEnd (scrolledWindow, true, true, 0);
@@ -156,6 +159,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			//track expanded state of nodes
 			nodeView.RowCollapsed += new RowCollapsedHandler (whenRowCollapsed);
 			nodeView.RowExpanded += new RowExpandedHandler (whenRowExpanded);
+			nodeView.ButtonReleaseEvent += OnButtonRelease;
 			
 			//set initial state
 			filterToggleButton.Active = false;
@@ -208,6 +212,31 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		void toolboxAddButton_Clicked (object sender, EventArgs e)
 		{
 			toolboxService.AddUserItems ();
+		}
+		
+		private void OnButtonRelease(object sender, Gtk.ButtonReleaseEventArgs args)
+		{
+			if (args.Event.Button == 3) {
+				ShowPopup ();
+			}
+		}
+		
+		void ShowPopup ()
+		{
+			CommandEntrySet eset = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/DesignerSupport/ToolboxItemContextMenu");
+			IdeApp.CommandService.ShowContextMenu (eset, this);
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Delete)]
+		internal void OnDeleteItem ()
+		{
+			toolboxService.RemoveUserItem (selectedNode);
+		}
+
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.EditCommands.Delete)]
+		internal void OnUpdateDeleteItem (CommandInfo info)
+		{
+			info.Enabled = selectedNode != null;
 		}
 		
 		#endregion
