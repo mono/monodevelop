@@ -234,13 +234,9 @@ namespace MonoDevelop.Core.Properties {
 			return GetEncodingByIndex(GetEncodingIndex(cp));
 		}
 		
-		public static int GetEncodingIndex(int cp) {
-			try {
-				return (Int32)_cp2index[cp];
-			}
-			catch {
-				return -1;
-			}
+		public static int GetEncodingIndex(int cp) 
+		{
+			return _cp2index.ContainsKey (cp) ? _cp2index[cp] : -1;
 		}
 
 		public static int GetCodePageByIndex(int i) {

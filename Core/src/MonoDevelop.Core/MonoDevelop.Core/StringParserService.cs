@@ -106,8 +106,8 @@ namespace MonoDevelop.Core
 						}
 					}
 					
-					if (propertyValue == null) {
-						propertyValue = properties[propertyName.ToUpper()];
+					if (propertyValue == null && properties.ContainsKey (propertyName.ToUpper())) {
+						propertyValue = properties [propertyName.ToUpper()];
 					}
 					
 					if (propertyValue == null) {
@@ -183,55 +183,4 @@ namespace MonoDevelop.Core
 			return sb.ToString ();
 		}
 	}
-	/*
-	public class PropertyDictionary : DictionaryBase
-	{
-		/// <summary>
-		/// Maintains a list of the property names that are readonly.
-		/// </summary>
-		StringCollection readOnlyProperties = new StringCollection();
-		
-		/// <summary>
-		/// Adds a property that cannot be changed.
-		/// </summary>
-		/// <remarks>
-		/// Properties added with this method can never be changed.  Note that
-		/// they are removed if the <c>Clear</c> method is called.
-		/// </remarks>
-		/// <param name="name">Name of property</param>
-		/// <param name="value">Value of property</param>
-		public void AddReadOnly(string name, string value) 
-		{
-			if (!readOnlyProperties.Contains(name)) {
-				readOnlyProperties.Add(name);
-				Dictionary.Add(name, value);
-			}
-		}
-		
-		/// <summary>
-		/// Adds a property to the collection.
-		/// </summary>
-		/// <param name="name">Name of property</param>
-		/// <param name="value">Value of property</param>
-		public void Add(string name, string value) 
-		{
-			if (!readOnlyProperties.Contains(name)) {
-				Dictionary.Add(name, value);
-			}
-		}
-		
-		public string this[string name] {
-			get { 
-				return (string)Dictionary[(object)name.ToUpper()];
-			}
-			set {
-				Dictionary[name.ToUpper()] = value;
-			}
-		}
-		
-		protected override void OnClear() 
-		{
-			readOnlyProperties.Clear();
-		}
-	}*/
 }

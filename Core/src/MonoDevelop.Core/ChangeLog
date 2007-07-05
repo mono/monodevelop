@@ -1,5 +1,11 @@
 2007-07-05  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Core.Properties/CharacterEncodings.cs,
+	  MonoDevelop.Core/StringParserService.cs: Removed some commented out
+	  code.
+
+2007-07-05  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Core.Execution/ProcessService.cs,
 	  MonoDevelop.Core.ProgressMonitoring/ProgressTracker.cs,
 	  MonoDevelop.Core.ProgressMonitoring/AggregatedOperationMonitor.cs,
