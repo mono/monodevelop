@@ -340,7 +340,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			prop.Name = propName;
 			
 			prop.Type = ReturnTypeToDom (field.ReturnType);
-			prop.Attributes = MemberAttributes.Public;
+			prop.Attributes = MemberAttributes.Public | MemberAttributes.Final;
 			
 			prop.HasGet = true;
 			

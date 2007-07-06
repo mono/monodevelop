@@ -1,3 +1,9 @@
+2007-07-06  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs
+	(EncapsulateField): Get rid of the virtual attribute in the
+	generated code.
+
 2007-07-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/AbstractProjectConfiguration.cs: Added default
