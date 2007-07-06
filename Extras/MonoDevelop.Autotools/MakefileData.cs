@@ -651,6 +651,9 @@ namespace MonoDevelop.Autotools
 			try {
 				if (IsAutotoolsProject) {
 					string path = Path.Combine (AbsoluteConfigureInPath, "configure.in");
+					if (!File.Exists (path))
+						path = Path.Combine (AbsoluteConfigureInPath, "configure.ac");
+					
 					configuredPackages = null;
 					WeakReference weakref;
 					if (PkgManagerTable.TryGetValue (path, out weakref)) {
@@ -1613,7 +1616,7 @@ namespace MonoDevelop.Autotools
 		{
 			this.fullpath = fullpath;
 			
-			if (!File.Exists (fullpath) || String.Compare (Path.GetFileName (fullpath), "configure.in") != 0)
+			if (!File.Exists (fullpath) || (Path.GetFileName (fullpath) != "configure.in" && Path.GetFileName (fullpath) != "configure.ac"))
 				//FIXME: Exception type?
 				throw new ArgumentException (GettextCatalog.GetString ("Unable to find configure.in at {0}", fullpath));
 

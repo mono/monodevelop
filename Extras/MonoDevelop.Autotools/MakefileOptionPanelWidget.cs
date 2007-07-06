@@ -209,7 +209,9 @@ namespace MonoDevelop.Autotools
 				}
 
 				if (tmpData.IsAutotoolsProject &&
-					!File.Exists (System.IO.Path.Combine (tmpData.AbsoluteConfigureInPath, "configure.in"))) {
+					!File.Exists (System.IO.Path.Combine (tmpData.AbsoluteConfigureInPath, "configure.in")) &&
+				    !File.Exists (System.IO.Path.Combine (tmpData.AbsoluteConfigureInPath, "configure.ac")))
+				{
 					IdeApp.Services.MessageService.ShowError (null, GettextCatalog.GetString (
 						"Path specified for configure.in is invalid: {0}", tmpData.RelativeConfigureInPath),
 						(Window) Toplevel, true);

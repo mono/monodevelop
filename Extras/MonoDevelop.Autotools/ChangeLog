@@ -1,3 +1,9 @@
+2007-07-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MakefileOptionPanelWidget.cs, MakefileData.cs: Load configure.ac in
+	  place of configure.in if it exist.
+	* gtk-gui/objects.xml: Updated.
+
 2007-06-18  Ankit Jain  <jankit@novell.com>
 
 	* MakefileOptionPanelWidget.cs: On loading a new makefile, try to guess
