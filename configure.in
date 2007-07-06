@@ -189,6 +189,7 @@ AC_ARG_ENABLE(monoquery,
 		[enable MonoQuery support [default=auto]]),
 		enable_monoquery=${enableval}, enable_monoquery=yes)
 
+SQL_PROVIDER_ATTRIBUTES="[[XmlInclude (typeof (FirebirdDbProvider))]\n\t[XmlInclude (typeof (OdbcDbProvider))]]"
 monoquery_avail=0
 enable_postgres=no
 enable_mysql=no
@@ -220,6 +221,7 @@ EOF
       if test $? -eq 0; then
 	 my_ac_conftest_result="yes"
 	 monoquery_avail=`expr $monoquery_avail + 1`
+	 SQL_PROVIDER_ATTRIBUTES="[$SQL_PROVIDER_ATTRIBUTES\n\t[XmlInclude (typeof (${Dbase}DbProvider))]]"
       else
          my_ac_conftest_result="no"
       fi
@@ -287,6 +289,10 @@ AM_CONDITIONAL(ENABLE_SQLITE, [test $enable_sqlite = yes])
 AM_CONDITIONAL(ENABLE_ORACLE, [test $enable_oracle = yes])
 AM_CONDITIONAL(ENABLE_SQLSERV, [test $enable_sqlserv = yes])
 AM_CONDITIONAL(ENABLE_SYBASE, [test $enable_sybase = yes])
+
+sed -e "s/@SQLProviderAttributes@/$SQL_PROVIDER_ATTRIBUTES/" \
+    $srcdir/Extras/MonoQuery/MonoQuery/Gui/DbProviderCollection.cs.in \
+    > $srcdir/Extras/MonoQuery/MonoQuery/Gui/DbProviderCollection.cs
 
 
 dnl ASP.NET project addin
