@@ -1,3 +1,8 @@
+2007-07-06  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Parser/CodeGenerator.cs (Visit::PropertyDeclaration):
+	Implemented to fix bug #82020.
+
 2007-07-05  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Parser/CodeGenerator.cs: (Visit::FieldReferenceExpression):
