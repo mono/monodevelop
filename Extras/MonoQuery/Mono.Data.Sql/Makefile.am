@@ -30,12 +30,12 @@ COND_FILES += $(srcdir)/Providers/SybaseDbProvider.cs
 COND_REFS += -r:Mono.Data.SybaseClient
 endif
 
-FILES = \
+FILES =  \
+	$(COND_FILES) \
 	AssemblyInfo.cs \
 	Providers/DbProviderBase.cs \
 	Providers/FirebirdDbProvider.cs \
 	Providers/OdbcDbProvider.cs \
-	$(COND_FILES) \
 	Schema/AbstractSchema.cs \
 	Schema/AggregateSchema.cs \
 	Schema/CheckConstraintSchema.cs \
@@ -62,7 +62,11 @@ FILES = \
 	Schema/UserSchema.cs \
 	Schema/ViewSchema.cs
 
-REFS = -r:System -r:System.Data -r:$(top_srcdir)/contrib/FirebirdSql.Data.Firebird.dll $(COND_REFS)
+REFS =  \
+	$(COND_REFS) \
+	-r:$(top_srcdir)/contrib/FirebirdSql.Data.Firebird.dll \
+	-r:System \
+	-r:System.Data
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoQuery
 

@@ -99,7 +99,7 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(ADDIN_BUILD)/$(ADDIN)
 
-EXTRA_DIST = $(FILES) $(ADDIN) $(RES)
+EXTRA_DIST = $(FILES) $(ADDIN) $(RES) Gui/DbProviderCollection.cs.in
 
 if ENABLE_MONOQUERY
 monoquerydir = $(MD_ADDIN_DIR)/MonoQuery
