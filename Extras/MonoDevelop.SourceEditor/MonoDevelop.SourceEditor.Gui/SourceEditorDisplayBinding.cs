@@ -141,7 +141,7 @@ namespace MonoDevelop.SourceEditor.Gui
 					return;
 			}
 			
-			if (e.ChangeType == WatcherChangeTypes.Changed) {
+			if (e.ChangeType == WatcherChangeTypes.Changed || e.ChangeType == WatcherChangeTypes.Created) {
 				ShowFileChangedWarning ();
 			}
 		}
@@ -255,6 +255,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			properties = ((IProperties) propertyService.GetProperty("MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new DefaultProperties()));
 			properties.PropertyChanged += propertyHandler;
 			fsw = new FileSystemWatcher ();
+			fsw.Created += (FileSystemEventHandler) Services.DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));	
 			fsw.Changed += (FileSystemEventHandler) Services.DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));
 			UpdateFSW (null, null);
 			mainBox.PackStart (se, true, true, 0);

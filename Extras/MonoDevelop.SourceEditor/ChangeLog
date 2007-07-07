@@ -1,3 +1,8 @@
+2007-07-07  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:
+	Make sure files are reverted also when created. Fixes bug #81911.
+
 2007-07-05  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Changed
