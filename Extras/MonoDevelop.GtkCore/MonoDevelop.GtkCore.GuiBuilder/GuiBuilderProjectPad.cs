@@ -32,10 +32,11 @@ using Gtk;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.DesignerSupport.PropertyGrid;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class GuiBuilderProjectPad: AbstractPadContent
+	public class GuiBuilderProjectPad: AbstractPadContent, ICustomPropertyPadProvider
 	{
 		Stetic.ProjectView pview;
 		
@@ -50,6 +51,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		}
 		
 		public void Fill (object o)
+		{
+		}
+		
+		Gtk.Widget ICustomPropertyPadProvider.GetCustomPropertyWidget ()
+		{
+			return PropertiesWidget.Instance;
+		}
+		
+		void ICustomPropertyPadProvider.DisposeCustomPropertyWidget ()
 		{
 		}
 		
