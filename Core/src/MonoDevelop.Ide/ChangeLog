@@ -1,5 +1,11 @@
 2007-07-09  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs: When adding
+	  a folder, expand the parent folder so the new subfolder is shown.
+	  It should fix bug #81984.
+
+2007-07-09  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui/Workbench.cs: Fix GetPad.
 
 2007-07-09  Lluis Sanchez Gual <lluis@novell.com> 
