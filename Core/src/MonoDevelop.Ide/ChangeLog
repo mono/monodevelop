@@ -1,5 +1,9 @@
 2007-07-09  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui/Workbench.cs: Fix GetPad.
+
+2007-07-09  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.mdp: Updated.
 	* MonoDevelop.Ide.Gui/Document.cs: Set the correct default directory
 	  when running the Save As command.

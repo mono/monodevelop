@@ -208,7 +208,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			foreach (Pad pad in Pads)
 				if (typeof(T).IsInstanceOfType (pad.Content))
-					return null;
+					return pad;
 			return null;
 		}		
 		
