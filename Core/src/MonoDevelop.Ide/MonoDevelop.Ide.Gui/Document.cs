@@ -197,7 +197,12 @@ namespace MonoDevelop.Ide.Gui
 			if (filename == null) {
 				FileSelectorDialog fdiag = new FileSelectorDialog (GettextCatalog.GetString ("Save as..."), Gtk.FileChooserAction.Save);
 				try {
-					fdiag.CurrentName = Window.ViewContent.UntitledName;
+					if (Window.ViewContent.IsUntitled)
+						fdiag.CurrentName = Window.ViewContent.UntitledName;
+					else {
+						fdiag.SetCurrentFolder (Path.GetDirectoryName (Window.ViewContent.ContentName));
+						fdiag.CurrentName = Path.GetFileName (Window.ViewContent.ContentName);
+					}
 					fdiag.Encoding = encoding;
 					fdiag.ShowEncodingSelector = (tbuffer != null);
 					int response = fdiag.Run ();
