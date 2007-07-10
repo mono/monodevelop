@@ -1,5 +1,10 @@
 2007-07-10  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* lib/libsteticui.dll, lib/libstetic.dll: Updated. Fixes bugs 81977,
+	  81810 and 82052.
+
+2007-07-10  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs,
 	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs,
 	  MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs,
