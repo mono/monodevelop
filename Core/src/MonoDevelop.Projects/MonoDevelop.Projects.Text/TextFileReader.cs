@@ -49,5 +49,14 @@ namespace MonoDevelop.Projects.Text
 		public string SourceEncoding {
 			get { return sourceEncoding; }
 		}
+
+		protected override void Dispose (bool disposing)
+		{
+			if (disposing && reader != null)
+				reader.Close ();
+
+			reader = null;
+			base.Dispose (disposing);
+		}
 	}
 }
