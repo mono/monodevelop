@@ -146,7 +146,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (obj == targetObject)
 				return;	// The root widget name can only be changed internally.
 			else
-				cls = GetClass ();
+				cls = GetClass (false);
 			
 			string newName = GetObjectName (obj);
 			if (newName.Length == 0)
@@ -250,10 +250,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public IClass GetClass ()
 		{
+			return GetClass (true);
+		}
+		
+		public IClass GetClass (bool getUserClass)
+		{
 			if (targetObject == null)
 				return null;
 
-			IClass cls = gproject.FindClass (className);
+			IClass cls = gproject.FindClass (className, getUserClass);
 			if (cls != null)
 				return cls;
 				

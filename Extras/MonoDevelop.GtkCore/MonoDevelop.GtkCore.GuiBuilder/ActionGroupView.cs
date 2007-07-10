@@ -127,7 +127,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				// will not save the code to disk.
 				GtkDesignInfo info = GtkCoreService.GetGtkInfo (project.Project);
 				if (info != null && info.GeneratePartialClasses)
-					GuiBuilderService.GenerateSteticCodeStructure ((DotNetProject)project.Project, designer.RootComponent, false, false);
+					GuiBuilderService.GenerateSteticCodeStructure ((DotNetProject)project.Project, designer.RootComponent, null, false, false);
 			}
 			base.ShowPage (npage);
 		}

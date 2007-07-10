@@ -429,7 +429,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public Stetic.ActionGroupInfo GetActionGroupForFile (string fileName)
 		{
 			foreach (Stetic.ActionGroupInfo group in SteticProject.ActionGroups) {
-				if (fileName == GetSourceCodeFile (group))
+				if (fileName == GetSourceCodeFile (group, true))
 					return group;
 			}
 			return null;
@@ -442,7 +442,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public string GetSourceCodeFile (Stetic.ProjectItemInfo obj)
 		{
-			IClass cls = GetClass (obj);
+			return GetSourceCodeFile (obj, true);
+		}
+		
+		public string GetSourceCodeFile (Stetic.ProjectItemInfo obj, bool getUserClass)
+		{
+			IClass cls = GetClass (obj, getUserClass);
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
 			
 			if (cls != null) {
@@ -456,25 +461,34 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return null;
 		}
 		
-		IClass GetClass (Stetic.ProjectItemInfo obj)
+		IClass GetClass (Stetic.ProjectItemInfo obj, bool getUserClass)
 		{
 			string name = CodeBinder.GetClassName (obj);
-			return FindClass (name);
+			return FindClass (name, getUserClass);
 		}
 		
 		public IClass FindClass (string className)
+		{
+			return FindClass (className, true);
+		}
+		
+		public IClass FindClass (string className, bool getUserClass)
 		{
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
 			IParserContext ctx = GetParserContext ();
 			IClass[] classes = ctx.GetProjectContents ();
 			foreach (IClass cls in classes) {
 				if (cls.FullyQualifiedName == className) {
-					// Return this class only if it is declared outside the gtk-gui
-					// folder. Generated partial classes will be ignored.
-					foreach (IClass part in cls.Parts) {
-						if (!part.Region.FileName.StartsWith (info.GtkGuiFolder))
-							return part;
+					if (getUserClass) {
+						// Return this class only if it is declared outside the gtk-gui
+						// folder. Generated partial classes will be ignored.
+						foreach (IClass part in cls.Parts) {
+							if (!part.Region.FileName.StartsWith (info.GtkGuiFolder))
+								return part;
+						}
 					}
+					else
+						return cls;
 				}
 			}
 			return null;

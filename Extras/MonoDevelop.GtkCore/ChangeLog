@@ -1,3 +1,12 @@
+2007-07-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs: Properly rename
+	  fields when the widget name is changed. Fixes bug #81976.
+
 2007-07-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProjectPad.cs: Update the

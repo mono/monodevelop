@@ -203,7 +203,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				// will not save the code to disk.
 				GtkDesignInfo info = GtkCoreService.GetGtkInfo (gproject.Project);
 				if (info != null && info.GeneratePartialClasses)
-					GuiBuilderService.GenerateSteticCodeStructure ((DotNetProject)gproject.Project, designer.RootComponent, false, false);
+					GuiBuilderService.GenerateSteticCodeStructure ((DotNetProject)gproject.Project, designer.RootComponent, null, false, false);
 			}
 			base.ShowPage (npage);
 		}
@@ -220,7 +220,21 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void OnComponentNameChanged (object s, Stetic.ComponentNameEventArgs args)
 		{
-			codeBinder.UpdateField (args.Component, args.OldName);
+			try {
+				// Make sure the fields in the partial class are up to date.
+				// Provide the args parameter to GenerateSteticCodeStructure, in this
+				// way the component that has been renamed will be generated with the
+				// old name, and UpdateField will be able to find it (to rename the
+				// references to the field, it needs to have the old name).
+				GtkDesignInfo info = GtkCoreService.GetGtkInfo (gproject.Project);
+				if (info != null && info.GeneratePartialClasses)
+					GuiBuilderService.GenerateSteticCodeStructure ((DotNetProject)gproject.Project, designer.RootComponent, args, false, false);
+				
+				codeBinder.UpdateField (args.Component, args.OldName);
+			}
+			catch (Exception ex) {
+				IdeApp.Services.MessageService.ShowError (ex);
+			}
 		}
 		
 		void OnComponentTypesChanged (object s, EventArgs a)

@@ -271,15 +271,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public static string GenerateSteticCodeStructure (DotNetProject project, Stetic.ProjectItemInfo item, bool saveToFile, bool overwrite)
 		{
-			return GenerateSteticCodeStructure (project, item, null, saveToFile, overwrite);
+			return GenerateSteticCodeStructure (project, item, null, null, saveToFile, overwrite);
 		}
 		
-		public static string GenerateSteticCodeStructure (DotNetProject project, Stetic.Component component, bool saveToFile, bool overwrite)
+		public static string GenerateSteticCodeStructure (DotNetProject project, Stetic.Component component, Stetic.ComponentNameEventArgs args, bool saveToFile, bool overwrite)
 		{
-			return GenerateSteticCodeStructure (project, null, component, saveToFile, overwrite);
+			return GenerateSteticCodeStructure (project, null, component, args, saveToFile, overwrite);
 		}
 		
-		static string GenerateSteticCodeStructure (DotNetProject project, Stetic.ProjectItemInfo item, Stetic.Component component, bool saveToFile, bool overwrite)
+		static string GenerateSteticCodeStructure (DotNetProject project, Stetic.ProjectItemInfo item, Stetic.Component component, Stetic.ComponentNameEventArgs args, bool saveToFile, bool overwrite)
 		{
 			// Generate a class which contains fields for all bound widgets of the component
 			
@@ -314,10 +314,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				cns.Types.Add (type);
 				
 				foreach (Stetic.ObjectBindInfo binfo in component.GetObjectBindInfo ()) {
+					// When a component is being renamed, we have to generate the 
+					// corresponding field using the old name, since it will be renamed
+					// later using refactory
+					string nname = args != null && args.Component.Name == binfo.Name ? args.OldName : binfo.Name;
 					type.Members.Add (
 						new CodeMemberField (
 							binfo.TypeName,
-							binfo.Name
+							nname
 						)
 					);
 				}
@@ -334,7 +338,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (provider == null)
 				throw new UserException ("Code generation not supported for language: " + project.LanguageName);
 			
-			ICodeGenerator gen = provider.CreateGenerator ();
 			TextWriter fileStream;
 			if (saveToFile)
 				fileStream = new StreamWriter (fileName);
@@ -342,7 +345,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				fileStream = new StringWriter ();
 			
 			try {
-				gen.GenerateCodeFromCompileUnit (cu, fileStream, new CodeGeneratorOptions ());
+				provider.GenerateCodeFromCompileUnit (cu, fileStream, new CodeGeneratorOptions ());
 			} finally {
 				fileStream.Close ();
 			}
@@ -450,7 +453,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (provider == null)
 				throw new UserException ("Code generation not supported in language: " + project.LanguageName);
 			
-			ICodeGenerator gen = provider.CreateGenerator ();
 			string basePath = Path.GetDirectoryName (info.SteticGeneratedFile);
 			string ext = Path.GetExtension (info.SteticGeneratedFile);
 			
@@ -462,7 +464,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					fname = Path.Combine (basePath, unit.Name) + ext;
 				StreamWriter fileStream = new StreamWriter (fname);
 				try {
-					gen.GenerateCodeFromCompileUnit (unit, fileStream, new CodeGeneratorOptions ());
+					provider.GenerateCodeFromCompileUnit (unit, fileStream, new CodeGeneratorOptions ());
 				} finally {
 					fileStream.Close ();
 				}
