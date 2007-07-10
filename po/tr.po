@@ -1715,7 +1715,7 @@ msgstr "Proje alanınızda bu adda bir proje zaten var"
 #: src/Main/Base/Gui/Dialogs/NewProjectDialog.cs:238
 #, csharp-format
 msgid "Could not create file {0}. File already exists."
-msgstr "Dosya oluşturulamadı {0]: Dosya zaten var"
+msgstr "Dosya oluşturulamadı {0}: Dosya zaten var"
 
 #: src/Main/Base/Gui/Dialogs/NewProjectDialog.cs:242
 #, csharp-format
@@ -2174,7 +2174,7 @@ msgstr "Çözüm {0} ({1} girdi)"
 #: src/Main/Base/Gui/Pads/ProjectBrowser/BrowserNode/CombineBrowserNode.cs:107
 #, csharp-format
 msgid "Do you really want to remove solution {0} from solution {1}?"
-msgstr "Çözüm {0}'ı çözüm {1] içerisinden çıkarmak istediğinize emin misiniz?"
+msgstr "Çözüm {0}'ı çözüm {1} içerisinden çıkarmak istediğinize emin misiniz?"
 
 #. assume duplicate file
 #: src/Main/Base/Gui/Pads/ProjectBrowser/BrowserNode/DirectoryNode.cs:107

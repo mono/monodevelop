@@ -232,7 +232,7 @@ msgstr "Utwórz nowy folder"
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:322
 #, csharp-format
 msgid "Cannot enter '{0}' folder"
-msgstr "Nie można otworzyć folderu '{0)'"
+msgstr "Nie można otworzyć folderu '{0}'"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:357
 #, csharp-format
@@ -2002,7 +2002,7 @@ msgstr "Pusta nazwa katalogu"
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:342
 #, csharp-format
 msgid "Invalid directory name: {0}"
-msgstr "Nieprawidłowa nazwa katalogu: {0)"
+msgstr "Nieprawidłowa nazwa katalogu: {0}"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:347
 #, csharp-format

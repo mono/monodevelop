@@ -1,3 +1,9 @@
+2007-07-10  Ankit Jain  <jankit@novell.com>
+
+	* ja.po: Fix typos.
+	* pl.po: Likewise.
+	* tr.po: Likewise.
+
 2007-06-29  Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 
         * sv.po: Added Swedish translation (thank Daniel Nylander)

@@ -6149,7 +6149,7 @@ msgid ""
 "Makefile variable '{0}' not found. Skipping writing of {1} Files to the "
 "makefile."
 msgstr ""
-"Makefile変数 '{0]'が見つかりません。makefileへの{1}のファイルの出力をスキップ"
+"Makefile変数 '{0}'が見つかりません。makefileへの{1}のファイルの出力をスキップ"
 "します。"
 
 #: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1355
