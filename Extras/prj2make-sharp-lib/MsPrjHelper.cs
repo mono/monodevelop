@@ -19,8 +19,8 @@ namespace MonoDevelop.Prj2Make
 	public class SlnMaker
 	{ 
 		public static string slash;
-		static Hashtable projNameInfo = new Hashtable();
-		static Hashtable projGuidInfo = new Hashtable();
+		Hashtable projNameInfo = new Hashtable();
+		Hashtable projGuidInfo = new Hashtable();
 		private string prjxFileName;
 		private string cmbxFileName;
 		private string m_strSlnVer;
@@ -139,35 +139,36 @@ namespace MonoDevelop.Prj2Make
 		protected void ParseSolution(string fname)
 		{
 			FileStream fis = new FileStream(fname,FileMode.Open, FileAccess.Read, FileShare.Read);
-			StreamReader reader = new StreamReader(fis);
-			Regex regex = new Regex(@"Project\(""\{(.*)\}""\) = ""(.*)"", ""(.*)"", ""(\{.*\})""");
-    
-			while (true)
-			{
-				string s = reader.ReadLine();
-				Match match;
-    
-				match = regex.Match(s);
-				if (match.Success)
+			using (StreamReader reader = new StreamReader(fis)) {
+				Regex regex = new Regex(@"Project\(""\{(.*)\}""\) = ""(.*)"", ""(.*)"", ""(\{.*\})""");
+
+				while (true)
 				{
-					string projectName = match.Groups[2].Value;
-					string csprojPath = match.Groups[3].Value;
-					string projectGuid = match.Groups[4].Value;
-    
-					if (csprojPath.EndsWith (".csproj") && !csprojPath.StartsWith("http://"))
+					string s = reader.ReadLine();
+					Match match;
+
+					match = regex.Match(s);
+					if (match.Success)
 					{
-						csprojPath = MapPath (Path.GetDirectoryName (fname), csprojPath);
-						
-						CsprojInfo pi = new CsprojInfo (m_bIsUnix, m_bIsMcs, projectName, projectGuid, csprojPath);
-    
-						projNameInfo[projectName] = pi;
-						projGuidInfo[projectGuid] = pi;
+						string projectName = match.Groups[2].Value;
+						string csprojPath = match.Groups[3].Value;
+						string projectGuid = match.Groups[4].Value;
+
+						if (csprojPath.EndsWith (".csproj") && !csprojPath.StartsWith("http://"))
+						{
+							csprojPath = MapPath (Path.GetDirectoryName (fname), csprojPath);
+
+							CsprojInfo pi = new CsprojInfo (m_bIsUnix, m_bIsMcs, projectName, projectGuid, csprojPath);
+
+							projNameInfo[projectName] = pi;
+							projGuidInfo[projectGuid] = pi;
+						}
 					}
-				}
-    
-				if (s.StartsWith("Global"))
-				{
-					break;
+
+					if (s.StartsWith("Global"))
+					{
+						break;
+					}
 				}
 			}
 		}
@@ -456,8 +457,6 @@ namespace MonoDevelop.Prj2Make
 		public DotNetProject CreatePrjxFromCsproj (string csprojFileName, IProgressMonitor monitor, bool save)
 		{
 			try {
-				TextFileReader fsIn = null;
-				XmlSerializer xmlDeSer = null;
 				MonoDevelop.Prj2Make.Schema.Csproj.VisualStudioProject csprojObj = null;
 				
 				monitor.BeginTask (GettextCatalog.GetString ("Importing project: ") + csprojFileName, 5);
@@ -468,18 +467,17 @@ namespace MonoDevelop.Prj2Make
 					Path.Combine (Path.GetDirectoryName (csprojFileName),
 					Path.GetFileNameWithoutExtension (csprojFileName))
 					);
-				
-				prjxObj.FileName = prjxFileName;
 
 				// Load the csproj
-				fsIn = new TextFileReader (csprojFileName);
-				xmlDeSer = new XmlSerializer (typeof(VisualStudioProject));
-				csprojObj = (VisualStudioProject) xmlDeSer.Deserialize (fsIn);	    
-				fsIn.Close();
+				using (TextFileReader fsIn = new TextFileReader (csprojFileName)) {
+					XmlSerializer xmlDeSer = new XmlSerializer (typeof(VisualStudioProject));
+					csprojObj = (VisualStudioProject) xmlDeSer.Deserialize (fsIn);
+				}
 				
 				monitor.Step (1);
 
 				// Begin prjxObj population
+				prjxObj.FileName = prjxFileName;
 				prjxObj.Name = Path.GetFileNameWithoutExtension(csprojFileName);
 				prjxObj.Description = "";
 				prjxObj.NewFileSearch = NewFileSearch.None;
