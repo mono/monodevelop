@@ -95,6 +95,10 @@
 		<NodeBuilder class = "MonoDevelop.Gettext.NodeBuilders.TranslationNodeBuilder"/>
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/IDE/StartupHandlers">
+		<Class class = "MonoDevelop.Gettext.TranslationServiceStartupCommand" />
+	</Extension>
+	
 <!--
 	<Extension path = "/SharpDevelop/Workbench/ProjectBindings">
 		<ProjectBinding id = "Translation" class = "MonoDevelop.Gettext.GettextProjectBinding" />
@@ -141,7 +145,5 @@
 		<CommandItem id = "MonoDevelop.Gettext.Commands.IncludeInTranslation" insertafter="Include" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/IDE/StartupHandlers">
-		<Class class = "MonoDevelop.Gettext.Translator.TranslatorCoreStartupCommand" />
-	</Extension>-->
+	-->
 </Addin>

@@ -57,4 +57,5 @@ namespace MonoDevelop.Gettext
 			this.isoCode = isoCode;
 		}
 	}
+	
 }

@@ -34,6 +34,7 @@ using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Gettext.Editor;
 
 namespace MonoDevelop.Gettext
 {
@@ -50,9 +51,24 @@ namespace MonoDevelop.Gettext
 		{
 		}
 		
+		string GetFileName (Translation translation)
+		{
+			return GetFileName (translation.IsoCode);
+		}
 		string GetFileName (string isoCode)
 		{
 			return Path.Combine (base.BaseDirectory, isoCode + ".po");
+		}
+		
+		public void AddTranslationString (string originalString)
+		{
+			foreach (Translation translation in this.Translations) {
+				string poFileName = GetFileName (translation);
+				Catalog catalog = new Catalog (poFileName);
+				if (catalog.FindItem (originalString) == null)
+					catalog.AddItem (new CatalogEntry(catalog, originalString, null));
+				catalog.Save (poFileName);
+			}
 		}
 		
 		public void AddNewTranslation (string isoCode, IProgressMonitor monitor)
