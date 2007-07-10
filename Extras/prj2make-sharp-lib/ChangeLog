@@ -1,5 +1,13 @@
 2007-07-10  Ankit Jain  <jankit@novell.com>
 
+	* MsPrjHelper.cs (GetSlnFileVersion): Use static Regex objects -
+	SlnFileFormat.SlnVersionRegex and SlnFileFormat.ProjectRegex .
+	* VS2003SlnFileFormat (GetSlnFileVersion): Likewise.
+	* SlnFileFormat.cs (SlnVersionRegex):
+	(ProjectRegex): Make internal.
+
+2007-07-10  Ankit Jain  <jankit@novell.com>
+
 	* MsPrjHelper.cs (projNameInfo):
 	(projGuidInfo): Should not be static.
 	(ParseSolution): Use 'using' pattern with the StreamReader.

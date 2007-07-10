@@ -850,7 +850,7 @@ namespace MonoDevelop.Prj2Make
 
 		// static regexes
 		static Regex projectRegex = null;
-		static Regex ProjectRegex {
+		internal static Regex ProjectRegex {
 			get {
 				if (projectRegex == null)
 					projectRegex = new Regex(@"Project\(""\{(.*)\}""\) = ""(.*)"", ""(.*)"", ""(\{.*\})""");
@@ -868,7 +868,7 @@ namespace MonoDevelop.Prj2Make
 		}
 
 		static Regex slnVersionRegex = null;
-		static Regex SlnVersionRegex {
+		internal static Regex SlnVersionRegex {
 			get {
 				if (slnVersionRegex == null)
 					slnVersionRegex = new Regex (@"Microsoft Visual Studio Solution File, Format Version (\d.\d\d)");

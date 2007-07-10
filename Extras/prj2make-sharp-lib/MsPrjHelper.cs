@@ -93,11 +93,9 @@ namespace MonoDevelop.Prj2Make
 			Match match;
 			FileStream fis = new FileStream(strInSlnFile, FileMode.Open, FileAccess.Read, FileShare.Read);
 			StreamReader reader = new StreamReader(fis);
-			Regex regex = new Regex(@"Microsoft Visual Studio Solution File, Format Version (\d.\d\d)");
-			
 			strInput = reader.ReadLine();
 
-			match = regex.Match(strInput);
+			match = SlnFileFormat.SlnVersionRegex.Match(strInput);
 			if (match.Success)
 			{
 				strVersion = match.Groups[1].Value;
@@ -140,14 +138,12 @@ namespace MonoDevelop.Prj2Make
 		{
 			FileStream fis = new FileStream(fname,FileMode.Open, FileAccess.Read, FileShare.Read);
 			using (StreamReader reader = new StreamReader(fis)) {
-				Regex regex = new Regex(@"Project\(""\{(.*)\}""\) = ""(.*)"", ""(.*)"", ""(\{.*\})""");
-
 				while (true)
 				{
 					string s = reader.ReadLine();
 					Match match;
 
-					match = regex.Match(s);
+					match = SlnFileFormat.ProjectRegex.Match(s);
 					if (match.Success)
 					{
 						string projectName = match.Groups[2].Value;

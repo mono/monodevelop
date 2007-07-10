@@ -143,13 +143,11 @@ namespace MonoDevelop.Prj2Make
 			string strInput = null;
 			Match match;
 			StreamReader reader = new StreamReader(strInSlnFile);
-			Regex regex = new Regex(@"Microsoft Visual Studio Solution File, Format Version (\d.\d\d)");
-			
 			strInput = reader.ReadLine();
 
-			match = regex.Match(strInput);
+			match = SlnFileFormat.SlnVersionRegex.Match(strInput);
 			if (!match.Success) {
-				match = regex.Match (reader.ReadLine ());
+				match = SlnFileFormat.SlnVersionRegex.Match (reader.ReadLine ());
 			}
 
 			if (match.Success)
