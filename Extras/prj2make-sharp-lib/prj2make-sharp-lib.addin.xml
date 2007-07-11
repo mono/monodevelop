@@ -1,10 +1,10 @@
 <Addin id = "Prj2Make"
        namespace   = "MonoDevelop"
-       name	 = "Visual Studio .NET Solution Importer"
-       author	 = "Francisco 'Paco' Martinez"
+       name	 = "Visual Studio .NET Project Support"
+       author	 = "Francisco 'Paco' Martinez, Ankit Jain"
        copyright = "GPL"
        url       = ""
-       description = "Generates MonoDevelop solutions from Visual Studio .NET solutions files"
+       description = "Support for VS2005 or MSBuild based projects and importer for VS2003 projects"
 	   category    = "IDE extensions"
        version   = "0.14.0">
 
