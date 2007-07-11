@@ -47,6 +47,11 @@
 		<ExtensionNode name="Command" type="MonoDevelop.Core.Gui.Codons.CommandCodon" />
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/SharpDevelop/Views/ClassBrowser/ContextMenu/ProjectBrowserNode" name = "Project node context menu in the class pad">
+		<Description>Context menu for projects in the class pad.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+	
 	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/CombineBrowserNode" name = "Solution context menu">
 		<Description>Context menu for solutions in the solution pad.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>

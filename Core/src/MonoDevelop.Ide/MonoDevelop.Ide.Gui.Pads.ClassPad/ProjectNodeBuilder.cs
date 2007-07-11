@@ -51,6 +51,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			get { return typeof(Project); }
 		}
 		
+		public override string ContextMenuAddinPath {
+			get { return "/SharpDevelop/Views/ClassBrowser/ContextMenu/ProjectBrowserNode"; }
+		}
+		
 		public override void OnNodeAdded (object dataObject)
 		{
 			Project project = (Project) dataObject;
