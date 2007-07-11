@@ -1,3 +1,8 @@
+2007-07-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Use the
+	  MarkSet event to update the method browser. Fixes bug #81864.
+
 2007-07-07  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:

@@ -236,8 +236,6 @@ namespace MonoDevelop.SourceEditor.Gui
 			se.Buffer.MarkSet += new MarkSetHandler (OnMarkSet);
 			se.Buffer.Changed += new EventHandler (OnChanged);
 			se.View.ToggleOverwrite += new EventHandler (CaretModeChanged);
-		  	se.View.MoveCursor += new MoveCursorHandler (OnMoveCursorEvent);
-		  	se.View.ButtonReleaseEvent += new ButtonReleaseEventHandler (OnButtonReleaseEvent);
 			ContentNameChanged += new EventHandler (UpdateFSW);
 			
 			// setup a focus chain so that the editor widget gets focus when
@@ -334,8 +332,6 @@ namespace MonoDevelop.SourceEditor.Gui
 			se.Buffer.MarkSet -= new MarkSetHandler (OnMarkSet);
 			se.Buffer.Changed -= new EventHandler (OnChanged);
 			se.View.ToggleOverwrite -= new EventHandler (CaretModeChanged);
-		  	se.View.MoveCursor -= new MoveCursorHandler (OnMoveCursorEvent);
-		  	se.View.ButtonReleaseEvent -= new ButtonReleaseEventHandler (OnButtonReleaseEvent);
 			ContentNameChanged -= new EventHandler (UpdateFSW);
    			membersCombo.Changed -= new EventHandler (MemberChanged);
 			classCombo.Changed -= new EventHandler (ClassChanged);
@@ -455,17 +451,6 @@ namespace MonoDevelop.SourceEditor.Gui
 				memberParseInfo = args.ParseInformation;
 				GLib.Timeout.Add (1000, new GLib.TimeoutHandler (BindClassCombo));
 			}
-		}
-		
-		[GLib.ConnectBefore]
-		private void OnButtonReleaseEvent (object o, ButtonReleaseEventArgs args)
-		{
-			UpdateMethodBrowser();
-		}
-		
-		private void OnMoveCursorEvent (object sender, Gtk.MoveCursorArgs args)
-		{
-			UpdateMethodBrowser();
 		}
 		
 		private void UpdateMethodBrowser()
@@ -980,6 +965,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		{
 			// 99% of the time, this is the insertion point
 			UpdateLineCol ();
+			UpdateMethodBrowser ();
 		}
 		
 		void OnChanged (object o, EventArgs e)
