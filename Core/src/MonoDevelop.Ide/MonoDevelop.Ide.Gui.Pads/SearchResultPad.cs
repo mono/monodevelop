@@ -20,7 +20,7 @@ using Gtk;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
-	public class SearchResultPad : IPadContent
+	public class SearchResultPad : IPadContent, ILocationListPad
 	{
 		ScrolledWindow sw;
 		Gtk.TreeView view;
@@ -280,7 +280,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				matchCount++;
 				
 				Gdk.Pixbuf stock;
-				stock = sw.RenderIcon (Services.Icons.GetImageForFile (file), Gtk.IconSize.SmallToolbar, "");
+				stock = sw.RenderIcon (Services.Icons.GetImageForFile (file), Gtk.IconSize.Menu, "");
 	
 				string tmpPath = file;
 				if (basePath != null)
@@ -300,5 +300,73 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			status.Text = " " + statusText + " - " + string.Format(GettextCatalog.GetPluralString("{0} match", "{0} matches", matchCount), matchCount);	
 		}
+
+		public virtual bool GetNextLocation (out string file, out int line, out int column)
+		{
+			bool hasNext;
+			TreeIter iter;
+			
+			if (view.Selection.GetSelected (out iter))
+				hasNext = store.IterNext (ref iter);
+			else
+				hasNext = store.GetIterFirst (out iter);
+			
+			if (!hasNext) {
+				file = null;
+				line = 0;
+				column = 0;
+				view.Selection.UnselectAll ();
+				return false;
+			} else {
+				view.Selection.SelectIter (iter);
+				file = (string) store.GetValue (iter, COL_FULLPATH);
+				if (file == null)
+					return GetNextLocation (out file, out line, out column);
+				line = (int) store.GetValue (iter, COL_LINE);
+				column = 1;
+				view.ScrollToCell (store.GetPath (iter), view.Columns[0], false, 0, 0);
+				store.SetValue (iter, COL_READ, true);
+				store.SetValue (iter, COL_READ_WEIGHT, (int) Pango.Weight.Normal);
+				return true;
+			}
+		}
+
+		public virtual bool GetPreviousLocation (out string file, out int line, out int column)
+		{
+			bool hasNext, hasSel;
+			TreeIter iter;
+			TreeIter selIter;
+			TreeIter prevIter = TreeIter.Zero;
+			
+			hasSel = view.Selection.GetSelected (out selIter);
+			hasNext = store.GetIterFirst (out iter);
+			
+			while (hasNext) {
+				if (hasSel && iter.Equals (selIter))
+					break;
+				prevIter = iter;
+				hasNext = store.IterNext (ref iter);
+			}
+			
+			if (prevIter.Equals (TreeIter.Zero)) {
+				file = null;
+				line = 0;
+				column = 0;
+				view.Selection.UnselectAll ();
+				return false;
+			} else {
+				view.Selection.SelectIter (prevIter);
+				file = (string) store.GetValue (prevIter, COL_FULLPATH);
+				if (file == null)
+					return GetPreviousLocation (out file, out line, out column);
+				line = (int) store.GetValue (prevIter, COL_LINE);
+				column = 1;
+				view.ScrollToCell (store.GetPath (prevIter), view.Columns[0], false, 0, 0);
+				store.SetValue (prevIter, COL_READ, true);
+				store.SetValue (prevIter, COL_READ_WEIGHT, (int) Pango.Weight.Normal);
+				return true;
+			}
+		}
+		
 	}
 }

@@ -18,6 +18,7 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Ide.Gui.Pads;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -35,6 +36,8 @@ namespace MonoDevelop.Ide.Commands
 		RefreshTree,
 		CollapseAllTreeNodes,
 		LayoutSelector,
+		ShowNext,
+		ShowPrevious
 	}
 	
 	internal class FullScreenHandler: CommandHandler
@@ -107,6 +110,40 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run (object layout)
 		{
 			IdeApp.Workbench.CurrentLayout = (string) layout;
+		}
+	}
+	
+	internal class ShowNextHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			IdeApp.Workbench.ShowNext ();
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			Pad pad = IdeApp.Workbench.GetLocationListPad ();
+			if (pad != null)
+				info.Text = GettextCatalog.GetString ("Show Next ({0})", pad.Title);
+			else
+				info.Enabled = false;
+		}
+	}
+	
+	internal class ShowPreviousHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			IdeApp.Workbench.ShowPrevious ();
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			Pad pad = IdeApp.Workbench.GetLocationListPad ();
+			if (pad != null)
+				info.Text = GettextCatalog.GetString ("Show Previous ({0})", pad.Title);
+			else
+				info.Enabled = false;
 		}
 	}
 }

@@ -3346,7 +3346,7 @@
 
 <widget class="GtkDialog" id="ReplaceDialogWidget">
   <property name="visible">True</property>
-  <property name="title">Replace Dialog</property>
+  <property name="title">Replace</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
   <property name="modal">False</property>
@@ -3856,7 +3856,7 @@
 
 <widget class="GtkDialog" id="FindInFilesDialogWidget">
   <property name="visible">True</property>
-  <property name="title">Find Dialog</property>
+  <property name="title">Find in Files</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
   <property name="modal">False</property>
@@ -4305,7 +4305,7 @@
 
 <widget class="GtkDialog" id="ReplaceInFilesDialogWidget">
   <property name="visible">True</property>
-  <property name="title">Replace Dialog</property>
+  <property name="title">Replace in Files</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
   <property name="modal">False</property>
@@ -4902,7 +4902,7 @@
 
 <widget class="GtkDialog" id="FindDialogWidget">
   <property name="visible">True</property>
-  <property name="title">Find Dialog</property>
+  <property name="title">Find</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
   <property name="modal">False</property>

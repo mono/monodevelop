@@ -82,8 +82,8 @@ FILES =  \
 	MonoDevelop.Ide.ExternalTools/ExternalTool.cs \
 	MonoDevelop.Ide.ExternalTools/ToolLoader.cs \
 	MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs \
-	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs \
 	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HTMLInterfaces.cs \
+	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs \
 	MonoDevelop.Ide.Gui.Content/IBookmarkBuffer.cs \
 	MonoDevelop.Ide.Gui.Content/IClipboardHandler.cs \
 	MonoDevelop.Ide.Gui.Content/ICodeStyleOperations.cs \
@@ -168,6 +168,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads/FileList.cs \
 	MonoDevelop.Ide.Gui.Pads/FileListItem.cs \
 	MonoDevelop.Ide.Gui.Pads/FileScout.cs \
+	MonoDevelop.Ide.Gui.Pads/ILocationListPad.cs \
 	MonoDevelop.Ide.Gui.Pads/ITreeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads/ITreeBuilderContext.cs \
 	MonoDevelop.Ide.Gui.Pads/ITreeNavigator.cs \

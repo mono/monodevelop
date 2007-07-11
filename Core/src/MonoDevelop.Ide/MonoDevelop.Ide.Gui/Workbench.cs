@@ -38,6 +38,7 @@ using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Core.Gui.Utils;
 using MonoDevelop.Core.Gui.Dialogs;
 using Mono.Addins;
@@ -423,6 +424,55 @@ namespace MonoDevelop.Ide.Gui
 			ops.Run ();
 		}
 		
+		internal void ShowNext ()
+		{
+			// Shows the next item in a pad that implements ILocationListPad.
+			
+			Pad pad = GetLocationListPad ();
+			if (pad != null) {
+				ILocationListPad loc = (ILocationListPad) pad.Content;
+				string file;
+				int lin, col;
+				if (loc.GetNextLocation (out file, out lin, out col))
+					OpenDocument (file, lin, col, true);
+			}
+		}
+		
+		internal void ShowPrevious ()
+		{
+			// Shows the previous item in a pad that implements ILocationListPad.
+			
+			Pad pad = GetLocationListPad ();
+			if (pad != null) {
+				ILocationListPad loc = (ILocationListPad) pad.Content;
+				string file;
+				int lin, col;
+				if (loc.GetPreviousLocation (out file, out lin, out col))
+					OpenDocument (file, lin, col, true);
+			}
+		}
+		
+		internal Pad GetLocationListPad ()
+		{
+			// Locates a pad which implements ILocationListPad. If there are more than
+			// one, it returns the last one being focused.
+			
+			Pad active = null;
+			
+			foreach (Pad p in IdeApp.Workbench.Pads) {
+				if (!p.Visible)
+					continue;
+				ILocationListPad loc = p.Content as ILocationListPad;
+				if (loc != null && (active == null || p.Window == PadWindow.LastActiveLocationList))
+					active = p;
+			}
+			if (active == null)
+				return null;
+			
+			active.BringToFront ();
+			return active;
+		}
+		
 		void OnDocumentChanged (object s, EventArgs a)
 		{
 			if (ActiveDocumentChanged != null)
@@ -477,10 +527,16 @@ namespace MonoDevelop.Ide.Gui
 						}
 						
 					} else {
-						if (window.ViewContent.IsFile)
-							window.ViewContent.Save (window.ViewContent.ContentName);
-						else
-							window.ViewContent.Save ();
+						try {
+							if (window.ViewContent.IsFile)
+								window.ViewContent.Save (window.ViewContent.ContentName);
+							else
+								window.ViewContent.Save ();
+						}
+						catch (Exception ex) {
+							args.Cancel = true;
+							IdeApp.Services.MessageService.ShowError (ex, GettextCatalog.GetString ("The document could not be saved."));
+						}
 					}
 				}
 			}

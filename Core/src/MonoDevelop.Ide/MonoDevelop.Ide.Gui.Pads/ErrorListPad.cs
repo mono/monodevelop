@@ -23,7 +23,7 @@ using Gtk;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
-	internal class ErrorListPad : IPadContent
+	internal class ErrorListPad : IPadContent, ILocationListPad
 	{
 		VBox control;
 		ScrolledWindow sw;
@@ -367,9 +367,15 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		void OnTaskJumpto (object o, EventArgs args)
 		{
-			Task task = SelectedTask;
-			if (task != null)
-				task.JumpToPosition ();
+			TreeIter iter;
+			TreeModel model;
+			if (view.Selection.GetSelected (out model, out iter)) {
+				iter = filter.ConvertIterToChildIter (iter);
+				store.SetValue (iter, (int)Columns.Weight, (int) Pango.Weight.Normal);
+				Task task = (Task) store.GetValue (iter, (int)Columns.Task);
+				if (task != null)
+					task.JumpToPosition ();
+			}
 		}
 
 		void OnColumnVisibilityChanged (object o, EventArgs args)
@@ -645,6 +651,78 @@ namespace MonoDevelop.Ide.Gui.Pads
 					compare = task1.Line.CompareTo (task2.Line);
 			}
 			return compare;
+		}
+
+		public virtual bool GetNextLocation (out string file, out int line, out int column)
+		{
+			bool hasNext;
+			TreeIter iter;
+			TreeModel model;
+			
+			if (view.Selection.GetSelected (out model, out iter))
+				hasNext = model.IterNext (ref iter);
+			else {
+				model = view.Model;
+				hasNext = model.GetIterFirst (out iter);
+			}
+			
+			if (!hasNext) {
+				file = null;
+				line = 0;
+				column = 0;
+				view.Selection.UnselectAll ();
+				return false;
+			} else {
+				view.Selection.SelectIter (iter);
+				Task t = (Task) model.GetValue (iter, (int)Columns.Task);
+				file = t.FileName;
+				if (file == null)
+					return GetNextLocation (out file, out line, out column);
+				line = t.Line;
+				column = t.Column;
+				view.ScrollToCell (view.Model.GetPath (iter), view.Columns[0], false, 0, 0);
+				iter = filter.ConvertIterToChildIter (iter);
+				store.SetValue (iter, (int)Columns.Weight, (int) Pango.Weight.Normal);
+				return true;
+			}
+		}
+
+		public virtual bool GetPreviousLocation (out string file, out int line, out int column)
+		{
+			bool hasNext, hasSel;
+			TreeIter iter;
+			TreeIter selIter;
+			TreeIter prevIter = TreeIter.Zero;
+			
+			hasSel = view.Selection.GetSelected (out selIter);
+			hasNext = view.Model.GetIterFirst (out iter);
+			
+			while (hasNext) {
+				if (hasSel && iter.Equals (selIter))
+					break;
+				prevIter = iter;
+				hasNext = view.Model.IterNext (ref iter);
+			}
+			
+			if (prevIter.Equals (TreeIter.Zero)) {
+				file = null;
+				line = 0;
+				column = 0;
+				view.Selection.UnselectAll ();
+				return false;
+			} else {
+				view.Selection.SelectIter (prevIter);
+				Task t = (Task) view.Model.GetValue (prevIter, (int)Columns.Task);
+				file = t.FileName;
+				if (file == null)
+					return GetPreviousLocation (out file, out line, out column);
+				line = t.Line;
+				column = t.Column;
+				view.ScrollToCell (view.Model.GetPath (prevIter), view.Columns[0], false, 0, 0);
+				prevIter = filter.ConvertIterToChildIter (prevIter);
+				store.SetValue (prevIter, (int)Columns.Weight, (int) Pango.Weight.Normal);
+				return true;
+			}
 		}
 	}
 }

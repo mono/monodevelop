@@ -547,6 +547,16 @@
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.OpenWithList"
 				type = "array"
 				_label = "OpenWithList" />
+		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ShowNext"
+				defaultHandler = "MonoDevelop.Ide.Commands.ShowNextHandler"
+				_label = "Browse Next" 
+				description = "Browse Next"
+				shortcut = "F4" />
+		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ShowPrevious"
+				defaultHandler = "MonoDevelop.Ide.Commands.ShowPreviousHandler"
+				_label = "Browse Previous" 
+				description = "Browse Previous"
+				shortcut = "Shift|F4" />
 
 		<!-- ToolCommands -->
 		
@@ -1056,6 +1066,9 @@
 				<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.DeleteCurrentLayout" />
 			</ItemSet>
 			<SeparatorItem id = "ViewItemsSeparator2" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ShowPrevious" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ShowNext" />
+			<SeparatorItem id = "ViewItemsSeparator3" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FullScreen" />
 		</ItemSet>
 		

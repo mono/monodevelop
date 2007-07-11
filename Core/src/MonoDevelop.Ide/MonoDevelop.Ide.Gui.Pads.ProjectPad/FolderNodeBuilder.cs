@@ -242,7 +242,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			int result;
 			string[] files;
-			IProgressMonitor monitor = null;
 			
 			try {
 				result = fdiag.Run ();

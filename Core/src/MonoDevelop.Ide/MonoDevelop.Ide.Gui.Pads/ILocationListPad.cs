@@ -1,10 +1,10 @@
 //
-// Pad.cs
+// ILocationListPad.cs
 //
 // Author:
 //   Lluis Sanchez Gual
 //
-// Copyright (C) 2005 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -26,57 +26,16 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
-
 using System;
-using System.Drawing;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Codons;
 
-namespace MonoDevelop.Ide.Gui
+namespace MonoDevelop.Ide.Gui.Pads
 {
-	public class Pad
+	// This interface can be implemented by Pads to support the ShowNext/ShowPrevious commands
+	// For example, the errors pad and the search result pads implement it.
+	
+	public interface ILocationListPad
 	{
-		IPadWindow window;
-		PadCodon content;
-		IWorkbench workbench;
-		
-		internal Pad (IWorkbench workbench, PadCodon content)
-		{
-			this.window    = workbench.WorkbenchLayout.GetPadWindow (content);
-			this.content   = content;
-			this.workbench = workbench;
-		}
-		
-		public object Content {
-			get { return window.Content; }
-		}
-		
-		public string Title {
-			get { return window.Title; }
-		}
-		
-		public string Id {
-			get { return window.Id; }
-		}
-		
-		public void BringToFront ()
-		{
-			PadWindow.LastActivePadWindow = window;
-			workbench.BringToFront (content);
-		}
-		
-		public bool Visible {
-			get {
-				return window.Visible;
-			}
-			set {
-				window.Visible = value;
-			}
-		}
-		
-		internal IPadWindow Window {
-			get { return window; }
-		}
+		bool GetNextLocation (out string file, out int line, out int column);
+		bool GetPreviousLocation (out string file, out int line, out int column);
 	}
 }

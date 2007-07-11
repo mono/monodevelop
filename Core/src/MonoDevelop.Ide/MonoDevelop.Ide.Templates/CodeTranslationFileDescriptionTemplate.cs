@@ -86,7 +86,6 @@ namespace MonoDevelop.Ide.Templates
 				provider = binding.GetCodeDomProvider ();
 			if (provider == null)
 				throw new InvalidOperationException ("The language '" + language + "' does not have support for CodeDom.");
-			ICodeGenerator generator = provider.CreateGenerator();
 			
 			//parse the source code
 			if (tempSubstitutedContent == null)
@@ -104,7 +103,7 @@ namespace MonoDevelop.Ide.Templates
 			options.BracingStyle = "C";
 			
 			StringWriter sw = new StringWriter ();
-			generator.GenerateCodeFromCompileUnit (ccu, sw, options);
+			provider.GenerateCodeFromCompileUnit (ccu, sw, options);
 			string txt = sw.ToString ();
 			sw.Close ();
 			

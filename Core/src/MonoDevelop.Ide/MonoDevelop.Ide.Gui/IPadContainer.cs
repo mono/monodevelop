@@ -53,13 +53,31 @@ namespace MonoDevelop.Ide.Gui
 		string title;
 		string icon;
 		IPadContent content;
-		PadCodon    codon;
+		PadCodon codon;
 		IWorkbenchLayout layout;
+		
+		static IPadWindow lastWindow;
+		static IPadWindow lastLocationList;
 		
 		internal PadWindow (IWorkbenchLayout layout, PadCodon codon)
 		{
 			this.layout = layout;
 			this.codon = codon;
+		}
+		
+		// This property keeps track of the last focused pad. It is used by the
+		// ShowNext/ShowPrevious commands to know which pad has to show the next/previous item.
+		internal static IPadWindow LastActivePadWindow {
+			get { return lastWindow; }
+			set {
+				lastWindow = value;
+				if (lastWindow != null && lastWindow.Content is MonoDevelop.Ide.Gui.Pads.ILocationListPad)
+					lastLocationList = lastWindow;
+			}
+		}
+		
+		internal static IPadWindow LastActiveLocationList {
+			get { return lastLocationList; }
 		}
 		
 		public IPadContent Content {

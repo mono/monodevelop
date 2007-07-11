@@ -68,7 +68,6 @@ namespace MonoDevelop.Ide.Templates
 			XmlCodeDomReader xcd = new XmlCodeDomReader ();
 			CodeCompileUnit cu = xcd.ReadCompileUnit (domContent);
 			
-			ICodeGenerator generator = provider.CreateGenerator();
 			CodeGeneratorOptions options = new CodeGeneratorOptions();
 			if (TextEditorProperties.ConvertTabsToSpaces) {
 				options.IndentString = new String (' ', TextEditorProperties.TabIndent);
@@ -78,7 +77,7 @@ namespace MonoDevelop.Ide.Templates
 			options.BracingStyle = "C";
 			
 			StringWriter sw = new StringWriter ();
-			generator.GenerateCodeFromCompileUnit (cu, sw, options);
+			provider.GenerateCodeFromCompileUnit (cu, sw, options);
 			sw.Close();
 			
 			string txt = sw.ToString ();

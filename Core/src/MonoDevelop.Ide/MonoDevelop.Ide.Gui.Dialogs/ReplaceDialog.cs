@@ -156,21 +156,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			store = new ListStore (typeof (string));
 			store.AppendValues (GettextCatalog.GetString ("Current File"));
 			store.AppendValues (GettextCatalog.GetString ("All Open Files"));
-			store.AppendValues (GettextCatalog.GetString ("Entire Solution"));
 			
 			searchLocationComboBox.Model = store;
 			searchLocationComboBox.PackStart (cr, true);
 			searchLocationComboBox.AddAttribute (cr, "text", 0);
 			
 			index = 0;
-			switch (SearchReplaceManager.SearchOptions.DocumentIteratorType) {
-				case DocumentIteratorType.AllOpenFiles:
-					index = 1;
-					break;
-				case DocumentIteratorType.WholeCombine:
-					SearchReplaceManager.SearchOptions.DocumentIteratorType = DocumentIteratorType.CurrentDocument;
-					break;
-			}
+			if (SearchReplaceManager.SearchOptions.DocumentIteratorType == DocumentIteratorType.AllOpenFiles)
+				index = 1;
+
 			searchLocationComboBox.Active = index;
 			
 			searchPatternEntry.Text = SearchReplaceManager.SearchOptions.SearchPattern;
@@ -252,9 +246,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					break;
 				case 1:
 					SearchReplaceManager.SearchOptions.DocumentIteratorType = DocumentIteratorType.AllOpenFiles;
-					break;
-				case 2:
-					SearchReplaceManager.SearchOptions.DocumentIteratorType = DocumentIteratorType.WholeCombine;
 					break;
 			}
 		}

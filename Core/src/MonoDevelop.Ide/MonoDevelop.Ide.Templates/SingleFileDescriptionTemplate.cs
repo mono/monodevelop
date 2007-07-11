@@ -268,7 +268,7 @@ namespace MonoDevelop.Ide.Templates
 							return provider.IsValidIdentifier (name);
 					}
 				}
-				return name.IndexOfAny (Path.InvalidPathChars) == -1;
+				return name.IndexOfAny (Path.GetInvalidFileNameChars ()) == -1;
 			}
 			else
 				return false;

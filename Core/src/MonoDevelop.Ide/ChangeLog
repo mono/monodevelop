@@ -1,3 +1,26 @@
+2007-07-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs,
+	  MonoDevelop.Ide.Templates/CodeTranslationFileDescriptionTemplate.cs,
+	  MonoDevelop.Ide.Templates/CodeDomFileDescriptionTemplate.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs: Fix
+	  warnings.
+	* Base.glade: Fixed some dialog titles.
+	* MonoDevelop.Ide.Commands/ViewCommands.cs,
+	  MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs,
+	  MonoDevelop.Ide.Gui.Pads/ILocationListPad.cs,
+	  MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs,
+	  MonoDevelop.Ide.addin.xml, MonoDevelop.Ide.Gui/IPadContainer.cs,
+	  MonoDevelop.Ide.Gui/Workbench.cs,
+	  MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs,
+	  MonoDevelop.Ide.Gui/Pad.cs: Implemented ShowNext and ShowPrevious
+	  commands, which allows browsing through the list of errors or the
+	  list of search results.
+	* MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs: Removed the option for
+	  searching through all files of the project, since it's already
+	  implemented in "Find in Files".
+	* MonoDevelop.Ide.mdp, Makefile.am: New file.
+
 2007-07-10  Marcos David Marín Amador <MarcosMarin@gmail.com>
 
 	* MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs,

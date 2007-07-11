@@ -461,12 +461,12 @@ namespace MonoDevelop.Ide.Gui
 				if (newContent is Widget) {
 					pcontent = newContent.Control;
 				} else {
-					CommandRouterContainer crc = new CommandRouterContainer (newContent.Control, newContent, true);
+					PadCommandRouterContainer crc = new PadCommandRouterContainer (window, newContent.Control, newContent, true);
 					crc.Show ();
 					pcontent = crc;
 				}
 				
-				CommandRouterContainer router = new CommandRouterContainer (pcontent, toolbarFrame, false);
+				PadCommandRouterContainer router = new PadCommandRouterContainer (window, pcontent, toolbarFrame, false);
 				router.Show ();
 				item.Add (router);
 			}
@@ -814,5 +814,21 @@ namespace MonoDevelop.Ide.Gui
 		}
 	}
 
+	class PadCommandRouterContainer: CommandRouterContainer
+	{
+		PadWindow window;
+		
+		public PadCommandRouterContainer (PadWindow window, Gtk.Widget child, object target, bool continueToParent): base (child, target, continueToParent)
+		{
+			this.window = window;
+		}
+		
+		public override object GetDelegatedCommandTarget ()
+		{
+			// This pad has currently the focus. Set the actve pad property.
+			PadWindow.LastActivePadWindow = window;
+			return base.GetDelegatedCommandTarget ();
+		}
 
+	}
 }
