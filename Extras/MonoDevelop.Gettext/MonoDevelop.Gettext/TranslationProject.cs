@@ -27,6 +27,8 @@
 //
 
 using System;
+using System.CodeDom;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -47,8 +49,10 @@ namespace MonoDevelop.Gettext
 			get { return translations.AsReadOnly (); }
 		}
 		
-		public TranslationProject()
+		public TranslationProject ()
 		{
+			TranslationService.IsTranslationEnabled = true;
+			this.NeedsBuilding = true;
 		}
 		
 		string GetFileName (Translation translation)
@@ -62,12 +66,19 @@ namespace MonoDevelop.Gettext
 		
 		public void AddTranslationString (string originalString)
 		{
+			AddTranslationString (originalString, null);
+		}
+		
+		public void AddTranslationString (string originalString, string originalPluralString)
+		{
 			foreach (Translation translation in this.Translations) {
 				string poFileName = GetFileName (translation);
 				Catalog catalog = new Catalog (poFileName);
-				if (catalog.FindItem (originalString) == null)
-					catalog.AddItem (new CatalogEntry(catalog, originalString, null));
-				catalog.Save (poFileName);
+				if (catalog.FindItem (originalString) == null) {
+					Console.WriteLine ("add item: " + originalString);
+					catalog.AddItem (new CatalogEntry (catalog, originalString, originalPluralString));
+					catalog.Save (poFileName);
+				}
 			}
 		}
 		
@@ -92,13 +103,53 @@ namespace MonoDevelop.Gettext
 			return new TranslationProjectConfiguration (name);
 		}
 		
-		protected override void OnClean (IProgressMonitor monitor)
-		{
-		}
-		
 		protected override ICompilerResult OnBuild (IProgressMonitor monitor)
 		{
-			return null;
+			CompilerResults results = new CompilerResults (null);
+			string applicationName = this.ParentCombine.StartupEntry.Name;
+			string outputDirectory = Path.Combine (this.ParentCombine.StartupEntry.BaseDirectory, "locale");
+			if (this.ParentCombine.StartupEntry is DotNetProject) {
+				outputDirectory = Path.Combine (Path.GetDirectoryName (((DotNetProject)ParentCombine.StartupEntry).GetOutputFileName ()),"locale");
+			}
+			
+			foreach (Translation translation in this.Translations) {
+				string poFileName  = GetFileName (translation);
+				string moDirectory = Path.Combine (Path.Combine (outputDirectory, translation.IsoCode), "LC_MESSAGES");
+				if (!Directory.Exists (moDirectory))
+					Directory.CreateDirectory (moDirectory);
+				string moFileName  = Path.Combine (moDirectory, applicationName + ".mo");
+				
+				System.Diagnostics.Process process = new System.Diagnostics.Process ();
+				process.StartInfo.FileName = "msgfmt";
+				process.StartInfo.Arguments = poFileName + " -o " + moFileName;
+				process.StartInfo.UseShellExecute = true;
+				process.Start ();
+				process.WaitForExit ();
+				if (process.ExitCode == 0) {
+					monitor.Log.WriteLine (GettextCatalog.GetString ("Translation {0}: Compilation suceed.", translation.IsoCode));
+				} else {
+					string error   = process.StandardError.ReadToEnd ();
+					string message = String.Format (GettextCatalog.GetString ("Translation {0}: Compilation failed. Reason: {1}"), translation.IsoCode, error);
+					monitor.Log.WriteLine (message);
+					results.Errors.Add (new CompilerError (this.Name, 0, 0, null, message));
+				}
+			}
+			
+			return new DefaultCompilerResult (results, "");
+		}
+		
+		protected override void OnClean (IProgressMonitor monitor)
+		{
+			base.NeedsBuilding = true;
+			monitor.Log.WriteLine (GettextCatalog.GetString ("Removing all .mo files."));
+			string applicationName = this.ParentCombine.StartupEntry.Name;
+			string outputDirectory = Path.Combine (this.ParentCombine.StartupEntry.BaseDirectory, "locale");
+			foreach (Translation translation in this.Translations) {
+				string moDirectory = Path.Combine (Path.Combine (outputDirectory, translation.IsoCode), "LC_MESSAGES");
+				string moFileName  = Path.Combine (moDirectory, applicationName + ".mo");
+				if (File.Exists (moFileName)) 
+					File.Delete (moFileName);
+			}
 		}
 		
 		protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context)
@@ -107,11 +158,12 @@ namespace MonoDevelop.Gettext
 		
 		protected override bool OnGetNeedsBuilding ()
 		{
-			return false;
+			return this.NeedsBuilding;
 		}
 		
 		protected override void OnSetNeedsBuilding (bool val)
 		{
+			this.NeedsBuilding = val;
 		}
 		
 		protected virtual void OnTranslationAdded (EventArgs e)

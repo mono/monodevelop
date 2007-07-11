@@ -40,7 +40,16 @@ namespace MonoDevelop.Gettext
 	{
 		static bool isTranslationEnabled = false;
 		
-		internal static void Initialize ()
+		public static bool IsTranslationEnabled {
+			get {
+				return isTranslationEnabled;
+			}
+			set {
+				isTranslationEnabled = value;
+			}
+		}
+		
+		static TranslationService ()
 		{
 			IdeApp.ProjectOperations.FileChangedInProject += new ProjectFileEventHandler (FileChangedInProject);
 			IdeApp.ProjectOperations.CombineOpened += new CombineEventHandler (CombineOpened);
@@ -49,18 +58,28 @@ namespace MonoDevelop.Gettext
 			};
 		}
 		
-		static TranslationProject GetTranslationProject ()
+		static TranslationProject GetTranslationProject (Project p)
 		{
-			foreach (CombineEntry entry in IdeApp.ProjectOperations.CurrentOpenCombine.Entries) {
+			foreach (CombineEntry entry in p.ParentCombine.Entries) {
 				if (entry is TranslationProject) {
 					return (TranslationProject)entry;
 				}
 			}
 			return null;
 		}
-		const string regex = @"translatable=""yes""\s*>(.*)</property>";
-		static Regex steticTranslationPattern = new Regex(regex, RegexOptions.Compiled);
 		
+		static Regex xmlTranslationPattern = new Regex(@"_.*=""(.*)""", RegexOptions.Compiled);
+		static void UpdateXmlTranslations (TranslationProject translationProject, string fileName)
+		{
+			string text = File.ReadAllText (fileName);
+			if (!String.IsNullOrEmpty (text)) {
+				foreach (Match match in xmlTranslationPattern.Matches (text)) {
+					translationProject.AddTranslationString (match.Groups[1].Value);
+				}
+			}
+		}
+		
+		static Regex steticTranslationPattern = new Regex(@"translatable=""yes""\s*>(.*)</property>", RegexOptions.Compiled);
 		static void UpdateSteticTranslations (TranslationProject translationProject, string fileName)
 		{
 			string text = File.ReadAllText (fileName);
@@ -71,19 +90,41 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
+		static Regex translationPattern = new Regex(@"GetString\s*\(\s*""(.*)""\s*\)\s*[,.*]", RegexOptions.Compiled);
+		static Regex pluralTranslationPattern = new Regex(@"GetPluralString\s*\(\s*""(.*)""\s*,\s*""(.*)""\s*[,.*]", RegexOptions.Compiled);
+		
 		static void UpdateTranslations (TranslationProject translationProject, string fileName)
 		{
 			string text = File.ReadAllText (fileName);
+			if (!String.IsNullOrEmpty (text)) {
+				foreach (Match match in translationPattern.Matches (text)) {
+					Console.WriteLine (match.Groups[1].Value);
+					translationProject.AddTranslationString (match.Groups[1].Value);
+				}
+				foreach (Match match in pluralTranslationPattern.Matches (text)) {
+					Console.WriteLine (match.Groups[1].Value);
+					translationProject.AddTranslationString (match.Groups[1].Value, match.Groups[2].Value);
+				}
+			}
 		}
 		
 		static void FileChangedInProject (object sender, ProjectFileEventArgs e)
 		{
 			if (!isTranslationEnabled)
 				return;
-			TranslationProject translationProject = GetTranslationProject ();
+			
+			TranslationProject translationProject = GetTranslationProject (e.Project);
 			if (translationProject == null)
 				return;
-			UpdateTranslations (translationProject, e.ProjectFile.FilePath);
+			switch (Path.GetExtension (e.ProjectFile.FilePath)) {
+			case ".xml":
+				UpdateXmlTranslations (translationProject, e.ProjectFile.FilePath);
+				break;
+			default:
+				UpdateTranslations (translationProject, e.ProjectFile.FilePath);
+				break;
+			}
+			
 			ProjectFile steticFile = e.Project.GetProjectFile (Path.Combine (e.Project.BaseDirectory, "gtk-gui/gui.stetic"));
 			if (steticFile != null) 
 				UpdateSteticTranslations (translationProject, steticFile.FilePath);
@@ -100,13 +141,4 @@ namespace MonoDevelop.Gettext
 			isTranslationEnabled = false;
 		}
 	}
-	
-	public class TranslationServiceStartupCommand : CommandHandler
-	{
-		protected override void Run ()
-		{
-			TranslationService.Initialize ();
-		}
-	}
-	
 }

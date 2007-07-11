@@ -94,11 +94,6 @@
 		<NodeBuilder class = "MonoDevelop.Gettext.NodeBuilders.TranslationProjectNodeBuilder"/>
 		<NodeBuilder class = "MonoDevelop.Gettext.NodeBuilders.TranslationNodeBuilder"/>
 	</Extension>
-	
-	<Extension path = "/MonoDevelop/IDE/StartupHandlers">
-		<Class class = "MonoDevelop.Gettext.TranslationServiceStartupCommand" />
-	</Extension>
-	
 <!--
 	<Extension path = "/SharpDevelop/Workbench/ProjectBindings">
 		<ProjectBinding id = "Translation" class = "MonoDevelop.Gettext.GettextProjectBinding" />
