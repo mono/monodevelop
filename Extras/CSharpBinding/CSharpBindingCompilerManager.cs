@@ -181,8 +181,15 @@ namespace CSharpBinding
 			TempFileCollection tf = new TempFileCollection();
 
 			string workingDir = ".";
-			if (projectFiles != null && projectFiles.Count > 0)
+			if (projectFiles != null && projectFiles.Count > 0) {
 				workingDir = projectFiles [0].Project.BaseDirectory;
+				if (workingDir == null)
+					// Dummy projects created for single files have no filename
+					// and so no BaseDirectory.
+					// This is a workaround for a bug in 
+					// ProcessStartInfo.WorkingDirectory - not able to handle null
+					workingDir = ".";
+			}
 
 			DoCompilation(outstr, tf, workingDir, gacRoots, ref output, ref error);
 
