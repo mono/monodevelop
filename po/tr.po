@@ -2194,7 +2194,7 @@ msgstr ""
 #: src/Main/Base/Gui/Pads/ProjectBrowser/BrowserNode/DirectoryNode.cs:127
 #, csharp-format
 msgid "Do you want to remove folder {0} from project {1}?"
-msgstr "{0} dizinini {0} projesi içerisinden çıkarmak istiyor musunuz?"
+msgstr "{0} dizinini {1} projesi içerisinden çıkarmak istiyor musunuz?"
 
 #: src/Main/Base/Gui/Pads/ProjectBrowser/BrowserNode/FileNode.cs:136
 #, csharp-format
