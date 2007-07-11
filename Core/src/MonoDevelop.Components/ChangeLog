@@ -1,3 +1,8 @@
+2007-07-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Components.Commands/CommandRouterContainer.cs: Make
+	  methods overridable.
+
 2007-06-22  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
 
 	* MonoDevelop.Components/TabLabel.cs: Added a CloseClicked event to

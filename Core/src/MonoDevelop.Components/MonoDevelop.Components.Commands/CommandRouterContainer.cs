@@ -43,12 +43,12 @@ namespace MonoDevelop.Components.Commands
 				endTarget = Parent;
 		}
 		
-		public object GetNextCommandTarget ()
+		public virtual object GetNextCommandTarget ()
 		{
 			return endTarget;
 		}
 		
-		public object GetDelegatedCommandTarget ()
+		public virtual object GetDelegatedCommandTarget ()
 		{
 			return delegated;
 		}
