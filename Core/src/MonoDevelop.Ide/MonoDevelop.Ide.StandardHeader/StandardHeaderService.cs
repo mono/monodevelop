@@ -134,7 +134,7 @@ namespace MonoDevelop.Ide.StandardHeaders
 						}
 					}
 				} finally {
-					reader.Close ();					
+					reader.Close ();
 				}
 			}
 		}
@@ -185,8 +185,9 @@ namespace MonoDevelop.Ide.StandardHeaders
 		static bool Load (string fileName)
 		{
 			customTemplates.Clear ();
-			XmlReader reader = XmlTextReader.Create (fileName);
+			XmlReader reader = null;
 			try {
+				reader = XmlTextReader.Create (fileName);
 				while (reader.Read ()) {
 					if (reader.IsStartElement ()) {
 						switch (reader.LocalName) {
@@ -209,15 +210,19 @@ namespace MonoDevelop.Ide.StandardHeaders
 						}
 					}
 				}
+			} catch (Exception e) {
+				Runtime.LoggingService.Error (e);
 			} finally {
-				reader.Close ();
+				if (reader != null)
+					reader.Close ();
 			}
 			return true;
 		}
 		
 		static void Save (string fileName)
 		{
-			XmlWriter writer = XmlTextWriter.Create (fileName);
+			Stream stream = new FileStream (fileName, FileMode.Create);
+			XmlWriter writer = new XmlTextWriter (stream, Encoding.UTF8);
 			try {
 				writer.Settings.Indent = true;
 				writer.WriteStartElement (Node);
@@ -238,6 +243,7 @@ namespace MonoDevelop.Ide.StandardHeaders
 				writer.WriteEndElement (); // Node
 			} finally {
 				writer.Close ();
+				stream.Close ();
 			}
 		}
 #endregion

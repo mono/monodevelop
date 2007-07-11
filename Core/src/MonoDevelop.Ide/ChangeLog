@@ -1,3 +1,8 @@
+2007-07-11  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs: fixed bug
+	  81996:Sharing violation of header template.
+
 2007-07-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs: When adding
