@@ -391,6 +391,30 @@ namespace MonoDevelop.Autotools
 			}
 		}
 
+		string FindConfigureScript (string startpath)
+		{
+			if (String.IsNullOrEmpty (startpath))
+				return null;
+
+			string path = startpath;
+			while (true) {
+				string fname = SPath.Combine (path, "configure.in");
+				if (File.Exists (fname))
+					return fname;
+
+				fname = SPath.Combine (path, "configure.ac");
+				if (File.Exists (fname))
+					return fname;
+
+				string parentpath = SPath.GetFullPath (SPath.Combine (path, ".."));
+				if (parentpath == path)
+					//reached root
+					return null;
+
+				path = parentpath;
+			}
+		}
+
 		// Try to guess suitable variables for build files, references and resources
 		void GuessVariables ()
 		{
@@ -461,6 +485,14 @@ namespace MonoDevelop.Autotools
 					}
 				}
 			}
+
+			// Try to find configure.(in|ac) string
+			string path = FindConfigureScript (SPath.GetDirectoryName (data.AbsoluteMakefileName));
+			if (path != null) {
+				fileEntryConfigureInPath.Path = fileEntryConfigureInPath.DefaultPath = SPath.GetDirectoryName (path);
+				cbAutotoolsProject.Active = true;
+				HandleCbAutotoolsProjectClicked (cbAutotoolsProject);
+			}
 		}
 
 		void ResetAll ()
@@ -484,6 +516,9 @@ namespace MonoDevelop.Autotools
 			entryGacRefPattern.Text = String.Empty;
 			entryAsmRefPattern.Text = String.Empty;
 			entryProjectRefPattern.Text = String.Empty;
+
+			fileEntryConfigureInPath.Path = String.Empty;
+			cbAutotoolsProject.Active = false;
 
 			SetActive (false);
 		}

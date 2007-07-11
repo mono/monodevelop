@@ -1,3 +1,9 @@
+2007-07-11  Ankit Jain  <jankit@novell.com>
+
+	* MakefileOptionPanelWidget.cs (FindConfigureScript): New.
+	(GuessVariables): Try to look for configure.(in|ac) script.
+	(ResetAll): Reset the configure script related widgets also.
+
 2007-07-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MakefileOptionPanelWidget.cs, MakefileData.cs: Load configure.ac in
