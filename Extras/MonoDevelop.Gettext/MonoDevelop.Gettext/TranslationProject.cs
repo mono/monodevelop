@@ -51,8 +51,6 @@ namespace MonoDevelop.Gettext
 		
 		public TranslationProject ()
 		{
-			TranslationService.IsTranslationEnabled = true;
-			this.NeedsBuilding = true;
 		}
 		
 		string GetFileName (Translation translation)

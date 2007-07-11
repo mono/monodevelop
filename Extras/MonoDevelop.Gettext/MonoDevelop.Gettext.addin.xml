@@ -79,6 +79,8 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
 		<CommandItem id = "MonoDevelop.Gettext.Commands.AddTranslation" />
 		<SeparatorItem />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
+		<SeparatorItem />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
 	
@@ -94,6 +96,15 @@
 		<NodeBuilder class = "MonoDevelop.Gettext.NodeBuilders.TranslationProjectNodeBuilder"/>
 		<NodeBuilder class = "MonoDevelop.Gettext.NodeBuilders.TranslationNodeBuilder"/>
 	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/ProjectBindings">
+		<ProjectBinding id = "Translation" class = "MonoDevelop.Gettext.GettextProjectBinding" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/IDE/StartupHandlers">
+		<Class class = "MonoDevelop.Gettext.TranslationServiceStartupCommand"/>
+	</Extension>
+	
 <!--
 	<Extension path = "/SharpDevelop/Workbench/ProjectBindings">
 		<ProjectBinding id = "Translation" class = "MonoDevelop.Gettext.GettextProjectBinding" />

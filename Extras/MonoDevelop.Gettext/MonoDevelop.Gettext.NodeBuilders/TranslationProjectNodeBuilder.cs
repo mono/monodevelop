@@ -114,6 +114,12 @@ namespace MonoDevelop.Gettext.NodeBuilders
 		
 		class TranslationProjectNodeCommandHandler : NodeCommandHandler
 		{
+			[CommandHandler (MonoDevelop.Ide.Commands.ProjectCommands.Options)]
+			public void OnOptions ()
+			{
+				TranslationProjectOptionsDialog options = new TranslationProjectOptionsDialog ();
+				options.Show ();
+			}
 			[CommandHandler (Commands.AddTranslation)]
 			public void OnAddTranslation ()
 			{

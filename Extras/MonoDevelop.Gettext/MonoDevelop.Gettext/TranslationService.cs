@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -48,9 +49,11 @@ namespace MonoDevelop.Gettext
 				isTranslationEnabled = value;
 			}
 		}
-		
-		static TranslationService ()
+		static bool isInitialized = false;
+		internal static void InitializeTranslationService ()
 		{
+			Debug.Assert (!isInitialized);
+			isInitialized = true;
 			IdeApp.ProjectOperations.FileChangedInProject += new ProjectFileEventHandler (FileChangedInProject);
 			IdeApp.ProjectOperations.CombineOpened += new CombineEventHandler (CombineOpened);
 			IdeApp.ProjectOperations.CombineClosed += delegate {
@@ -139,6 +142,14 @@ namespace MonoDevelop.Gettext
 				}
 			}
 			isTranslationEnabled = false;
+		}
+	}
+	
+	public class TranslationServiceStartupCommand : CommandHandler
+	{
+		protected override void Run ()
+		{
+			TranslationService.InitializeTranslationService ();
 		}
 	}
 }
