@@ -889,11 +889,23 @@ namespace CSharpBinding.Parser
 			
 			// If the name matches an alias, try using the alias first.
 			if (unit != null) {
-				string aliasResult = FindAlias (name, unit);
+				string aname;
+				string apostfix;
+				
+				// If the type name has a namespace name, try to find an alias for the namespace
+				int i = name.IndexOf ('.');
+				if (i != -1) {
+					aname = name.Substring (0,i);
+					apostfix = name.Substring (i);
+				} else {
+					aname = name;
+					apostfix = string.Empty;
+				}
+				string aliasResult = FindAlias (aname, unit);
 				if (aliasResult != null) {
 					// Don't provide the compilation unit when trying to resolve the alias,
 					// since aliases are not affected by other 'using' directives.
-					c = SearchType (aliasResult, genericArguments, null);
+					c = SearchType (aliasResult + apostfix, genericArguments, null);
 					if (c != null)
 						return c;
 				}

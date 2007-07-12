@@ -1,3 +1,8 @@
+2007-07-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Parser/Resolver.cs: Properly resolve type names qualified with a
+	  namespace alias. Fixes bug #81999.
+
 2007-07-12  Jeffrey Stedfast  <fejj@novell.com>
 
 	* FormattingStrategy/CSharpIndentEngine.cs (PushNewLine): If we
