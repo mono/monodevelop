@@ -12,7 +12,7 @@ namespace MonoDevelop.Ide.Gui
 
 	public class HelpViewer : AbstractViewContent
 	{
-		HTML html_viewer = new HTML ();
+		HTML html_viewer;
 
 		ScrolledWindow scroller = new ScrolledWindow ();
 
@@ -30,10 +30,16 @@ namespace MonoDevelop.Ide.Gui
 
 		public HelpViewer ()
 		{
-			html_viewer.LinkClicked += new LinkClickedHandler (LinkClicked);
-			html_viewer.UrlRequested += new UrlRequestedHandler (UrlRequested);
-			html_viewer.OnUrl += new OnUrlHandler (OnUrl);
-			scroller.Add (html_viewer);
+			try {
+				html_viewer = new HTML ();
+				html_viewer.LinkClicked += new LinkClickedHandler (LinkClicked);
+				html_viewer.UrlRequested += new UrlRequestedHandler (UrlRequested);
+				html_viewer.OnUrl += new OnUrlHandler (OnUrl);
+				scroller.Add (html_viewer);
+			} catch (Exception ex) {
+				Label lab = new Label (GettextCatalog.GetString ("The help viewer could not be loaded.") + "\n\n" + ex.GetType() + ": " + ex.Message);
+				scroller.Add (lab);
+			}
 			Control.ShowAll ();
 		}
 
@@ -67,6 +73,9 @@ namespace MonoDevelop.Ide.Gui
  
 		public void LoadUrl (string url)
 		{
+			if (html_viewer == null)
+				return;
+			
 			if (url.StartsWith("#"))
 			{
 				html_viewer.JumpToAnchor(url.Substring(1));
@@ -83,6 +92,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void Render (string text, Node matched_node, string url)
 		{
+			if (html_viewer == null)
+				return;
+			
 			Gtk.HTMLStream stream = html_viewer.Begin ("text/html");
 			
 			stream.Write ("<html><body>");
