@@ -19,36 +19,42 @@ Boston, MA 02111-1307, USA.
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Autotools
 {
-	public class Set : IEnumerable
+	public class Set<T>: IEnumerable<T>
 	{
-		private Hashtable hashtable = new Hashtable();
+		private Dictionary<T,object> hashtable = new Dictionary<T,object>();
 		
-		public void Add(object o)
+		public void Add (T o)
 		{
 			hashtable[o] = this;
 		}
 		
-		public void Remove(object o)
+		public void Remove(T o)
 		{
 			hashtable.Remove(o);
 		}
 		
-		public bool Contains(object o)
+		public bool Contains(T o)
 		{
-			return hashtable.Contains(o);
+			return hashtable.ContainsKey (o);
 		}
 		
-		public IEnumerator GetEnumerator()
+		public IEnumerator<T> GetEnumerator()
 		{
 			return hashtable.Keys.GetEnumerator();
 		}
 		
-		public bool ContainsSet(Set set)
+		IEnumerator IEnumerable.GetEnumerator()
 		{
-			foreach(object o in set) {
+			return hashtable.Keys.GetEnumerator();
+		}
+		
+		public bool ContainsSet(Set<T> set)
+		{
+			foreach(T o in set) {
 				if(!Contains(o))
 					return false;
 			}
@@ -56,16 +62,16 @@ namespace MonoDevelop.Autotools
 			return true;
 		}
 		
-		public void Union(Set set)
+		public void Union (IEnumerable<T> set)
 		{
-			foreach(object o in set) {
+			foreach(T o in set) {
 				hashtable[o] = this;
 			}
 		}
 		
-		public void Without(Set set)
+		public void Without(Set<T> set)
 		{
-			foreach(object o in set) {
+			foreach(T o in set) {
 				hashtable.Remove(o);
 			}
 		}

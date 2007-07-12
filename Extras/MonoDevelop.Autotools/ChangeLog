@@ -1,3 +1,11 @@
+2007-07-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* SolutionMakefileHandler.cs, AutotoolsContext.cs: Keep track of the
+	  project build sequence in AutotoolsContext. In CalculateSubDirOrder
+	  ignore references to projects built earlier in the build sequence.
+	  Fixes bug #80588. Also, track changes in the Set class.
+	* SimpleProjectMakefileHandler.cs, Set.cs: Set is now a generic class.
+
 2007-07-11  Ankit Jain  <jankit@novell.com>
 
 	* MakefileOptionPanelWidget.cs (FindConfigureScript): New.

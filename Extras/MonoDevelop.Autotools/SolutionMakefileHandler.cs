@@ -22,6 +22,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 
@@ -58,7 +59,7 @@ namespace MonoDevelop.Autotools
 					subdirs.AppendFormat ( "if {0}\n", "ENABLE_" + ctx.EscapeAndUpperConfigName (config.Name));
 					subdirs.Append (" SUBDIRS = ");
 					
-					foreach ( CombineEntry ce in CalculateSubDirOrder ( config ) )
+					foreach (CombineEntry ce in CalculateSubDirOrder (ctx, config))
 					{
 						if (combine.BaseDirectory == ce.BaseDirectory) {
 							subdirs.Append (" . ");
@@ -92,6 +93,8 @@ namespace MonoDevelop.Autotools
 					string outpath;
 					if ( handler != null && handler.CanDeploy ( ce ) )
 					{
+						if (ce is Project)
+							ctx.RegisterBuiltProject (ce.Name);
 						makefile = handler.Deploy ( ctx, ce, monitor );
 						if (combine.BaseDirectory == ce.BaseDirectory) {
 							if (includedProject != null)
@@ -132,11 +135,14 @@ namespace MonoDevelop.Autotools
 		}
 
 		// utility function for finding the correct order to process directories
-		ArrayList CalculateSubDirOrder ( CombineConfiguration config )
+		List<CombineEntry> CalculateSubDirOrder (AutotoolsContext ctx, CombineConfiguration config)
 		{
-			ArrayList resultOrder = new ArrayList();
-			Set dependenciesMet = new Set();
-			Set inResult = new Set();
+			List<CombineEntry> resultOrder = new List<CombineEntry>();
+			Set<string> dependenciesMet = new Set<string>();
+			Set<CombineEntry> inResult = new Set<CombineEntry>();
+			
+			// We don't have to worry about projects built in parent combines
+			dependenciesMet.Union (ctx.GetBuiltProjects ());
 
 			bool added;
 			string notMet;
@@ -153,13 +159,13 @@ namespace MonoDevelop.Autotools
 					
 					if ( inResult.Contains (entry) ) continue;
 
-					Set references, provides;
+					Set<string> references, provides;
 					if (entry is Project)
 					{
 						Project project = entry as Project;
 
 						references = GetReferencedProjects (project);
-						provides = new Set();
+						provides = new Set<string>();
 						provides.Add(project.Name);
 					} 
 					else if (entry is Combine) 
@@ -193,12 +199,12 @@ namespace MonoDevelop.Autotools
 		 * returns a set of all monodevelop projects that a give
 		 * projects references
 		 */
-		Set GetReferencedProjects (Project project)
+		Set<string> GetReferencedProjects (Project project)
 		{
-			Set set = (Set) projectReferences [project];
+			Set<string> set = (Set<string>) projectReferences [project];
 			if (set != null) return set;
 
-			set = new Set();
+			set = new Set<string>();
 
 			foreach (ProjectReference reference in project.ProjectReferences) 
 			{
@@ -217,17 +223,17 @@ namespace MonoDevelop.Autotools
 		 * returns a set of projects that a combine contains and a set of projects
 		 * that are referenced from combine projects but not part of the combine
 		 */
-		void GetAllProjects (CombineConfiguration config, out Set projects, out Set references)
+		void GetAllProjects (CombineConfiguration config, out Set<string> projects, out Set<string> references)
 		{
-			projects = (Set) combineProjects [config];
+			projects = (Set<string>) combineProjects [config];
 			if(projects != null) 
 			{
-				references = (Set) combineReferences [config];
+				references = (Set<string>) combineReferences [config];
 				return;
 			}
 
-			projects = new Set();
-			references = new Set();
+			projects = new Set<string>();
+			references = new Set<string>();
 			
 			foreach (CombineConfigurationEntry centry in config.Entries) 
 			{
@@ -242,8 +248,8 @@ namespace MonoDevelop.Autotools
 				} 
 				else if (entry is Combine) 
 				{
-					Set subProjects;
-					Set subReferences;
+					Set<string> subProjects;
+					Set<string> subReferences;
 					
 					CombineConfiguration cc = (entry as Combine).Configurations[config.Name] as CombineConfiguration;
 					if ( cc == null ) continue;

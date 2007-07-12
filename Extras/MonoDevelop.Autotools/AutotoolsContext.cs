@@ -37,10 +37,12 @@ namespace MonoDevelop.Autotools
 		
 		string template_dir = Path.GetDirectoryName ( typeof ( AutotoolsContext ).Assembly.Location ) + "/";
 		
-		Set autoconfConfigFiles = new Set ();
-		Set referencedPackages = new Set();
-		Set globalFilesReferences = new Set();
-		Set compilers = new Set ();
+		Set<string> autoconfConfigFiles = new Set<string> ();
+		Set<string> referencedPackages = new Set<string>();
+		Set<string> globalFilesReferences = new Set<string>();
+		Set<string> compilers = new Set<string> ();
+		Set<string> builtProjects = new Set<string> ();
+		
 		ArrayList builtFiles = new ArrayList ();
 		Dictionary<string, string> configNamesDict = new Dictionary<string, string> (StringComparer.InvariantCultureIgnoreCase);
 		
@@ -135,6 +137,16 @@ namespace MonoDevelop.Autotools
 		public void AddGlobalReferencedFile (string filePath)
 		{
 			globalFilesReferences.Add (filePath);
+		}
+		
+		public void RegisterBuiltProject (string name)
+		{
+			builtProjects.Add (name);
+		}
+		
+		public IEnumerable<string> GetBuiltProjects ()
+		{
+			return builtProjects;
 		}
 
 		public IEnumerable GetAutoConfFiles ()

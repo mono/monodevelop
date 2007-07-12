@@ -70,8 +70,8 @@ namespace MonoDevelop.Autotools
 				ISimpleAutotoolsSetup setup = FindSetupForProject ( project );
 		
 				// store all refs for easy access
-				Set pkgs = new Set();
-				Set dlls = new Set();
+				Set<SystemPackage> pkgs = new Set<SystemPackage>();
+				Set<string> dlls = new Set<string>();
 				
 				// strings for variables
 				StringWriter references = new StringWriter();
