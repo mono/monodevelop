@@ -85,6 +85,11 @@ namespace MonoDevelop.Components.DockToolbars
 			contentBox.PackStart (w, true, true, 0);
 		}
 		
+		public void RemoveContent (Widget w)
+		{
+			contentBox.Remove (w);
+		}
+		
 		public string CurrentLayout {
 			get { return currentLayout; }
 			set {

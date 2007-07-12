@@ -1,3 +1,8 @@
+2007-07-12  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Components.DockToolbars/DockToolbarFrame.cs: Worked on
+	  Bugzilla Bug 81349.
+
 2007-07-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Components.DockToolbars/DockToolbarPanel.cs: When adding
