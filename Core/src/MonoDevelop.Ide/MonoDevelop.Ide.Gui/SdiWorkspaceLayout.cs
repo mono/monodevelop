@@ -77,6 +77,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		Gtk.VBox fullViewVBox     = new VBox (false, 0);
 		Gtk.VBox documentViewVBox = new VBox (false, 0);
+		Gtk.HBox dockBox;
 		DockItem documentDockItem;
 		public void Attach (IWorkbench wb)
 		{
@@ -104,7 +105,7 @@ namespace MonoDevelop.Ide.Gui
 			// Create the docking widget and add it to the window.
 			dock = new Dock ();
 			DockBar dockBar = new DockBar (dock);
-			Gtk.HBox dockBox = new HBox (false, 5);
+			dockBox = new HBox (false, 5);
 			dockBox.PackStart (dockBar, false, true, 0);
 			dockBox.PackStart (dock, true, true, 0);
 			toolbarFrame.AddContent (dockBox);
@@ -154,31 +155,18 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		bool isInFullViewMode = true;
-
+		CommandFrame frame;
 		void ToggleFullViewMode ()
 		{
 			isInFullViewMode = !isInFullViewMode;
 			if (isInFullViewMode) {
-				documentViewVBox.Remove (workbench.TopMenu);
-				documentViewVBox.Remove (this.tabControl);
-				workbench.Remove (this.documentViewVBox);
-				this.fullViewVBox.PackStart (workbench.TopMenu, false, false, 0);
-				this.fullViewVBox.ReorderChild (workbench.TopMenu, 0);
+				toolbarFrame.RemoveContent (this.tabControl);
 				documentDockItem.Add (this.tabControl);
-				
-				workbench.Add (this.fullViewVBox);
-				
+				toolbarFrame.AddContent (dockBox);
 			} else {
-				workbench.Remove (this.fullViewVBox);
+				toolbarFrame.RemoveContent (dockBox);
 				documentDockItem.Remove (this.tabControl);
-				fullViewVBox.Remove (workbench.TopMenu);
-				
-				documentViewVBox.PackStart (workbench.TopMenu, false, false, 0);
-				documentViewVBox.PackStart (this.tabControl, true, true, 0);
-				documentViewVBox.ShowAll ();
-							
-				workbench.Add (this.documentViewVBox);
-				
+				toolbarFrame.AddContent (this.tabControl);
 			}
 		}
 
