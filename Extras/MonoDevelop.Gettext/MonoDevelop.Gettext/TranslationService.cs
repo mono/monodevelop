@@ -113,9 +113,6 @@ namespace MonoDevelop.Gettext
 		
 		static void FileChangedInProject (object sender, ProjectFileEventArgs e)
 		{
-			if (!isTranslationEnabled)
-				return;
-			
 			TranslationProject translationProject = GetTranslationProject (e.Project);
 			if (translationProject == null)
 				return;

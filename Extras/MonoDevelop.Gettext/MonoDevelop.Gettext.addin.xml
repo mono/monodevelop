@@ -86,6 +86,8 @@
 	
 	<Extension path = "/MonoDevelop/Deployment/ProjectBrowser/ContextMenu/Translation">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.Open" />
+		<SeparatorItem />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectTemplates">
@@ -97,15 +99,15 @@
 		<NodeBuilder class = "MonoDevelop.Gettext.NodeBuilders.TranslationNodeBuilder"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/ProjectBindings">
-		<ProjectBinding id = "Translation" class = "MonoDevelop.Gettext.GettextProjectBinding" />
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/IDE/StartupHandlers">
 		<Class class = "MonoDevelop.Gettext.TranslationServiceStartupCommand"/>
 	</Extension>
 	
 <!--
+	<Extension path = "/SharpDevelop/Workbench/ProjectBindings">
+		<ProjectBinding id = "Translation" class = "MonoDevelop.Gettext.GettextProjectBinding" />
+	</Extension>
+	
 	<Extension path = "/SharpDevelop/Workbench/ProjectBindings">
 		<ProjectBinding id = "Translation" class = "MonoDevelop.Gettext.GettextProjectBinding" />
 	</Extension>

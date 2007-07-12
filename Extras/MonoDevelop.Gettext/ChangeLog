@@ -1,7 +1,22 @@
+2007-07-12  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Gettext.addin.xml,
+	  gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs,
+	  MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs,
+	  MonoDevelop.Gettext/TranslationService.cs,
+	  MonoDevelop.Gettext/TranslationProjectOptionsDialog.cs,
+	  MonoDevelop.Gettext/TranslationProject.cs,
+	  templates/TranslationProject.xpt.xml: Worked on translation project
+	  options.
+
 2007-07-11  Mike Krüger <mkrueger@novell.com> 
 
-	* gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs: Fixed
-	  little bug. Added options dialog.
+	* gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs,
+	MonoDevelop.Gettext/TranslationProjectOptionsDialog.cs,
+	MonoDevelop.Gettext/MonoDevelop.Gettext/TranslationProject.cs,
+	MonoDevelop.Gettext/TranslationService.cs,
+	MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs: Fixed 
+	little bug. Added options dialog.
 
 2007-07-11  Mike Krüger <mkrueger@novell.com> 
 

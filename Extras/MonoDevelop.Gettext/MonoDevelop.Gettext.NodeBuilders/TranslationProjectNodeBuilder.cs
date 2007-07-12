@@ -114,10 +114,30 @@ namespace MonoDevelop.Gettext.NodeBuilders
 		
 		class TranslationProjectNodeCommandHandler : NodeCommandHandler
 		{
+			[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Delete)]
+			public void OnDelete ()
+			{
+				TranslationProject project = CurrentNode.DataItem as TranslationProject;
+				if (project == null)
+					return;
+				
+				bool yes = MonoDevelop.Core.Gui.Services.MessageService.AskQuestion (GettextCatalog.GetString (
+					"Do you really want to remove the translations from solution {0}?", project.ParentCombine.Name));
+
+				if (yes) {
+					project.ParentCombine.RemoveEntry (project);
+					project.Dispose ();
+					IdeApp.ProjectOperations.SaveCombine ();
+				}
+			}
+					
 			[CommandHandler (MonoDevelop.Ide.Commands.ProjectCommands.Options)]
 			public void OnOptions ()
 			{
-				TranslationProjectOptionsDialog options = new TranslationProjectOptionsDialog ();
+				TranslationProject project = CurrentNode.DataItem as TranslationProject;
+				if (project == null)
+					return;
+				TranslationProjectOptionsDialog options = new TranslationProjectOptionsDialog (project);
 				options.Show ();
 			}
 			[CommandHandler (Commands.AddTranslation)]

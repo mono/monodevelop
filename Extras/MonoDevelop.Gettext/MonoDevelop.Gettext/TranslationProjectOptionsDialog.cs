@@ -32,9 +32,53 @@ namespace MonoDevelop.Gettext
 {
 	public partial class TranslationProjectOptionsDialog : Gtk.Dialog
 	{
-		public TranslationProjectOptionsDialog()
+		TranslationProject project;
+		public TranslationProjectOptionsDialog (TranslationProject project)
 		{
+			this.project = project;
 			this.Build();
+			
+			TranslationProjectConfiguration config = this.project.ActiveConfiguration as TranslationProjectConfiguration;
+			
+			entryPackageName.Text        = config.PackageName;
+			entryRelPath.Text            = config.RelPath;
+			folderentrySystemPath.Path   = config.AbsPath;
+			radiobuttonRelPath.Active    = config.OutputType == TranslationOutputType.RelativeToOutput;
+			radiobuttonSystemPath.Active = config.OutputType == TranslationOutputType.SystemPath;
+			
+			entryPackageName.Changed += new EventHandler (UpdateInitString);
+			entryRelPath.Changed += new EventHandler (UpdateInitString);
+			folderentrySystemPath.PathChanged  += new EventHandler (UpdateInitString);
+			radiobuttonRelPath.Activated += new EventHandler (UpdateInitString);
+			radiobuttonSystemPath.Activated += new EventHandler (UpdateInitString);
+			
+			UpdateInitString (this, EventArgs.Empty);
+			this.buttonOk.Clicked += delegate {
+				config.PackageName = entryPackageName.Text;
+				config.RelPath = entryRelPath.Text;
+				config.AbsPath = folderentrySystemPath.Path;
+				if (radiobuttonRelPath.Active) {
+					config.OutputType = TranslationOutputType.RelativeToOutput;
+				} else {
+					config.OutputType = TranslationOutputType.SystemPath;
+				}
+				this.Destroy ();
+			};
+			this.buttonCancel.Clicked += delegate {
+				this.Destroy ();
+			};
 		}
+		
+		void UpdateInitString (object sender, EventArgs e)
+		{
+			string path;
+			if (radiobuttonRelPath.Active) {
+				path = "./" + entryRelPath.Text;
+			} else {
+				path = folderentrySystemPath.Path;
+			}
+			labelInitString.Text = "Mono.Unix.Catalog.Init (\"" + entryPackageName.Text + "\", \"" + path + "\");";
+		}
+		
 	}
 }
