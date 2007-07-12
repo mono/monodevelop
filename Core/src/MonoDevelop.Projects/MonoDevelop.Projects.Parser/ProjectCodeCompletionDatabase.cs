@@ -256,7 +256,7 @@ namespace MonoDevelop.Projects.Parser
 			ICompilationUnit cu = (ICompilationUnit)parserInfo.BestCompilationUnit;
 
 			ClassCollection resolved;
-			bool allResolved = parserDatabase.ResolveTypes (project, cu, cu.Classes, out resolved);
+			bool allResolved = parserDatabase.ResolveTypes (this, cu, cu.Classes, out resolved);
 			ClassUpdateInformation res = UpdateClassInformation (resolved, fileName);
 			
 			FileEntry file = files [fileName] as FileEntry;

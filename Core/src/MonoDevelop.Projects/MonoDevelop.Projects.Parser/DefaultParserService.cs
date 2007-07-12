@@ -1521,11 +1521,10 @@ namespace MonoDevelop.Projects.Parser
 			return null;
 		}
 		
-		public bool ResolveTypes (Project project, ICompilationUnit unit, ClassCollection types, out ClassCollection result)
+		internal bool ResolveTypes (CodeCompletionDatabase db, ICompilationUnit unit, ClassCollection types, out ClassCollection result)
 		{
-			CodeCompletionDatabase db = GetProjectDatabase (project);
 			CompilationUnitTypeResolver tr = new CompilationUnitTypeResolver (db, unit, this);
-			IParserContext ctx = this.GetProjectParserContext (project);
+			IParserContext ctx = new ParserContext (parserService, this, db);
 			
 			bool allResolved = true;
 			result = new ClassCollection ();
