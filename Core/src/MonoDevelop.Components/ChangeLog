@@ -1,3 +1,9 @@
+2007-07-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Components.DockToolbars/DockToolbarPanel.cs: When adding
+	  a toolbar make sure it does not hide other toolbars. Fixes bug
+	  #76853.
+
 2007-07-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Components.Commands/CommandRouterContainer.cs: Make

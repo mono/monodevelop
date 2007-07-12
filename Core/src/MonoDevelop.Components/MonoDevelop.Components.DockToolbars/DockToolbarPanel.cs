@@ -112,6 +112,7 @@ namespace MonoDevelop.Components.DockToolbars
 			MoveBar (bar, offset, row, false);
 			bar.AnchorOffset = offset;
 			SortBars ();
+			UpdateRowSizes (bar.DockRow);
 			PackBars ();
 			EnableAnimation (ea);
 		}
