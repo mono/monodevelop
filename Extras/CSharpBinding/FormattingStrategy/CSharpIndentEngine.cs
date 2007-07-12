@@ -606,6 +606,7 @@ namespace CSharpBinding.FormattingStrategy {
 		
 		void PushNewLine (Inside inside)
 		{
+		 top:
 			switch (inside) {
 			case Inside.PreProcessor:
 				// pop the preprocesor state unless the eoln is escaped
@@ -621,7 +622,9 @@ namespace CSharpBinding.FormattingStrategy {
 				// pop the line comment
 				keyword = stack.PeekKeyword (0);
 				stack.Pop ();
-				break;
+				
+				inside = stack.PeekInside (0);
+				goto top;
 			case Inside.VerbatimString:
 				// nothing to do
 				break;
