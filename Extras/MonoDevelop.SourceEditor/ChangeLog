@@ -1,3 +1,17 @@
+2007-07-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Track api changes.
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Added
+	  null checks.
+	* MonoDevelop.SourceEditor.Properties,
+	  MonoDevelop.SourceEditor.InsightWindow,
+	  MonoDevelop.SourceEditor.InsightWindow/MethodInsightDataProvider.cs,
+	  MonoDevelop.SourceEditor.InsightWindow/InsightWindow.cs,
+	  MonoDevelop.SourceEditor.InsightWindow/IInsightDataProvider.cs,
+	  MonoDevelop.SourceEditor.InsightWindow/IndexerInsightDataProvider.cs,
+	  MonoDevelop.SourceEditor.Document: Removed unused files and
+	  directories.
+
 2007-07-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Use the

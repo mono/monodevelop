@@ -722,7 +722,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			remove { completionContextChanged -= value; }
 		}
 
-		ICodeCompletionContext ICompletionWidget.CreateCodeCompletionContext (int triggerOffset)
+		CodeCompletionContext ICompletionWidget.CreateCodeCompletionContext (int triggerOffset)
 		{
 			TextIter iter = Buffer.GetIterAtOffset (triggerOffset);
 			Gdk.Rectangle rect = GetIterLocation (iter);
@@ -756,11 +756,6 @@ namespace MonoDevelop.SourceEditor.Gui
 			ScrollMarkOnscreen (buf.InsertMark);
 		}
 
-		void ICompletionWidget.InsertAtCursor (string text)
-		{
-			buf.InsertAtCursor (text);
-		}
-		
 		int ICompletionWidget.TextLength
 		{
 			get

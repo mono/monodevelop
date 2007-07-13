@@ -645,7 +645,7 @@ namespace MonoDevelop.SourceEditor.Gui
 				}
 				
 				// Check if the current cursor position in inside this property
-				if (property.BodyRegion.BeginLine <= line && line <= property.BodyRegion.EndLine) {
+				if (property.BodyRegion != null && property.BodyRegion.BeginLine <= line && line <= property.BodyRegion.EndLine) {
 					activeIndex = position;
 				}
 				++position;
@@ -655,7 +655,7 @@ namespace MonoDevelop.SourceEditor.Gui
 				memberStore.AppendValues (pix, member.Name, member);
 				
 				// Check if the current cursor position in inside this field
-				if (member.Region.BeginLine <= line && line <= member.Region.EndLine) {
+				if (member.Region != null && member.Region.BeginLine <= line && line <= member.Region.EndLine) {
 					activeIndex = position;
 				}
 				++position;
@@ -963,9 +963,10 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		void OnMarkSet (object o, MarkSetArgs args)
 		{
-			// 99% of the time, this is the insertion point
-			UpdateLineCol ();
-			UpdateMethodBrowser ();
+			if (args.Mark == se.Buffer.InsertMark) {
+				UpdateLineCol ();
+				UpdateMethodBrowser ();
+			}
 		}
 		
 		void OnChanged (object o, EventArgs e)
