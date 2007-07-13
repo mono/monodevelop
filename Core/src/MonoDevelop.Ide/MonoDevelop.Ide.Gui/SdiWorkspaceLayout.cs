@@ -755,6 +755,8 @@ namespace MonoDevelop.Ide.Gui
 					}
 				} else {
 					((Gtk.Window)workbench).Title = "MonoDevelop";
+					if (!isInFullViewMode) 
+						this.ToggleFullViewMode ();
 				}
 			} catch {
 				((Gtk.Window)workbench).Title = "MonoDevelop";

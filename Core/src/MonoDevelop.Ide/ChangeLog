@@ -1,3 +1,8 @@
+2007-07-13  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Fixed bug 82073: Window
+	  panes vanish permanently
+
 2007-07-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui/HelpViewer.cs: Don't crash if Gtk.HTML can't be
