@@ -11,9 +11,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 		string GetText (int startOffset, int endOffset);
 		char GetChar (int offset);
 		Gtk.Style GtkStyle { get; }
-		void InsertAtCursor (string text);
 
-		ICodeCompletionContext CreateCodeCompletionContext (int triggerOffset);
+		CodeCompletionContext CreateCodeCompletionContext (int triggerOffset);
 		string GetCompletionText (ICodeCompletionContext ctx);
 		void SetCompletionText (ICodeCompletionContext ctx, string partial_word, string complete_word);
 		
@@ -23,6 +22,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 	public interface ICodeCompletionContext
 	{
 		int TriggerOffset { get; }
+		int TriggerWordLength { get; }
 		int TriggerLine { get; }
 		int TriggerLineOffset { get; }
 		int TriggerXCoord { get; }
@@ -33,6 +33,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 	public class CodeCompletionContext: ICodeCompletionContext
 	{
 		int triggerOffset;
+		int triggerWordLength;
 		int triggerLine;
 		int triggerLineOffset;
 		int triggerXCoord;
@@ -67,6 +68,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public int TriggerTextHeight {
 			get { return triggerTextHeight; }
 			set { triggerTextHeight = value; }
+		}
+
+		public int TriggerWordLength {
+			get { return triggerWordLength; }
+			set { triggerWordLength = value; }
 		}
 	}
 }

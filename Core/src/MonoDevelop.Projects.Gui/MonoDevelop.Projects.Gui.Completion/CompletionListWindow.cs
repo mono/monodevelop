@@ -20,6 +20,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		Widget parsingMessage;
 		char firstChar;
 		CompletionDelegate closedDelegate;
+		int initialWordLength;
 		
 		const int declarationWindowMargin = 3;
 		static DataComparer dataComparer = new DataComparer ();
@@ -65,6 +66,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 					return;
 				}
 				
+				wnd.initialWordLength = text.Length;
 				wnd.PartialWord = text; 
 				//if there is only one matching result we take it by default
 				if (wnd.IsUniqueMatch && !wnd.IsChanging)
@@ -85,6 +87,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				mutableProvider.CompletionDataChanged -= OnCompletionDataChanged;
 			}
 			
+			initialWordLength = 0;
 			this.provider = provider;
 			this.completionContext = completionContext;
 			this.closedDelegate = closedDelegate;
@@ -190,7 +193,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 						return;
 					}
 				}
-				completionWidget.SetCompletionText (completionContext, wnd.PartialWord, word);
+				int replaceLen = completionContext.TriggerWordLength + wnd.PartialWord.Length - initialWordLength;
+				string pword = completionWidget.GetText (completionContext.TriggerOffset, completionContext.TriggerOffset + replaceLen);
+				completionWidget.SetCompletionText (completionContext, pword, word);
 			}
 		}
 		
