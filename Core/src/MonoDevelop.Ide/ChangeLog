@@ -1,5 +1,10 @@
 2007-07-13  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Fixed bug
+	  81349:double-click src tab => maximize.
+
+2007-07-13  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Fixed bug 82073: Window
 	  panes vanish permanently
 

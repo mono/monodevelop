@@ -116,7 +116,7 @@ namespace MonoDevelop.Ide.Gui
 			tabControl.SwitchPage += new SwitchPageHandler (ActiveMdiChanged);
 			
 			tabControl.ButtonPressEvent += delegate(object sender, ButtonPressEventArgs e) {
-				if (e.Event.Type == Gdk.EventType.TwoButtonPress)
+				if (e.Event.Type == Gdk.EventType.TwoButtonPress && tabControl.FindTabAtPosition (e.Event.XRoot, e.Event.YRoot) >= 0)
 					ToggleFullViewMode ();
 			};
 			
@@ -159,6 +159,8 @@ namespace MonoDevelop.Ide.Gui
 		void ToggleFullViewMode ()
 		{
 			isInFullViewMode = !isInFullViewMode;
+			this.tabControl.LeaveDragMode (0);
+			
 			if (isInFullViewMode) {
 				toolbarFrame.RemoveContent (this.tabControl);
 				documentDockItem.Add (this.tabControl);
@@ -169,7 +171,7 @@ namespace MonoDevelop.Ide.Gui
 				toolbarFrame.AddContent (this.tabControl);
 			}
 		}
-
+		
 		public IXmlConvertable CreateMemento()
 		{
 			return new SdiWorkbenchLayoutMemento (initialized ? toolbarFrame.GetStatus () : new DockToolbarFrameStatus ());
