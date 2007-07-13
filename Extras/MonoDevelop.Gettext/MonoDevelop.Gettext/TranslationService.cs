@@ -93,19 +93,20 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
-		static Regex translationPattern = new Regex(@"GetString\s*\(\s*""(.*)""\s*\)\s*[,.*]", RegexOptions.Compiled);
-		static Regex pluralTranslationPattern = new Regex(@"GetPluralString\s*\(\s*""(.*)""\s*,\s*""(.*)""\s*[,.*]", RegexOptions.Compiled);
+		static Regex translationPattern = new Regex(@"GetString\s*\(\s*""([^""]*)""\s*\)", RegexOptions.Compiled);
+		static Regex pluralTranslationPattern = new Regex(@"GetPluralString\s*\(\s*""([^""]*)""\s*,\s*""([^""]*)""\s*,.*\)", RegexOptions.Compiled);
 		
 		static void UpdateTranslations (TranslationProject translationProject, string fileName)
 		{
 			string text = File.ReadAllText (fileName);
 			if (!String.IsNullOrEmpty (text)) {
+				Console.WriteLine ("find matches");
 				foreach (Match match in translationPattern.Matches (text)) {
-					Console.WriteLine (match.Groups[1].Value);
+					Console.WriteLine ("match1: " +match.Groups[1].Value);
 					translationProject.AddTranslationString (match.Groups[1].Value);
 				}
 				foreach (Match match in pluralTranslationPattern.Matches (text)) {
-					Console.WriteLine (match.Groups[1].Value);
+					Console.WriteLine ("match2: " +match.Groups[1].Value);
 					translationProject.AddTranslationString (match.Groups[1].Value, match.Groups[2].Value);
 				}
 			}

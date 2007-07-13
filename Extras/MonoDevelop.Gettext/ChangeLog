@@ -1,3 +1,9 @@
+2007-07-13  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Gettext/TranslationService.cs,
+	  MonoDevelop.Gettext/TranslationProject.cs: Worked on translation
+	  addin.
+
 2007-07-12  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Gettext.addin.xml,

@@ -52,6 +52,7 @@ namespace MonoDevelop.Gettext
 		
 		public TranslationProject ()
 		{
+			this.NeedsBuilding = true;
 			isDirty = true;
 		}
 		
@@ -151,11 +152,12 @@ namespace MonoDevelop.Gettext
 				System.Diagnostics.Process process = new System.Diagnostics.Process ();
 				process.StartInfo.FileName = "msgfmt";
 				process.StartInfo.Arguments = poFileName + " -o " + moFileName;
-				process.StartInfo.UseShellExecute = true;
+				process.StartInfo.UseShellExecute = false;
+				process.StartInfo.RedirectStandardError = true;
 				process.Start ();
 				process.WaitForExit ();
 				if (process.ExitCode == 0) {
-					monitor.Log.WriteLine (GettextCatalog.GetString ("Translation {0}: Compilation suceed.", translation.IsoCode));
+					monitor.Log.WriteLine (GettextCatalog.GetString ("Translation {0}: Compilation succeeded.", translation.IsoCode));
 				} else {
 					string error   = process.StandardError.ReadToEnd ();
 					string message = String.Format (GettextCatalog.GetString ("Translation {0}: Compilation failed. Reason: {1}"), translation.IsoCode, error);
@@ -164,15 +166,16 @@ namespace MonoDevelop.Gettext
 				}
 			}
 			isDirty = false;
+			this.NeedsBuilding = false;
 			return new DefaultCompilerResult (results, "");
 		}
 		
 		protected override void OnClean (IProgressMonitor monitor)
 		{
 			isDirty = true;
+			this.NeedsBuilding = true;
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Removing all .mo files."));
 			TranslationProjectConfiguration config = (TranslationProjectConfiguration)this.ActiveConfiguration;
-
 			string outputDirectory = OutputDirectory;
 			foreach (Translation translation in this.Translations) {
 				string moDirectory = Path.Combine (Path.Combine (outputDirectory, translation.IsoCode), "LC_MESSAGES");
@@ -185,6 +188,7 @@ namespace MonoDevelop.Gettext
 		protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context)
 		{
 		}
+		
 		bool isDirty = true;
 		protected override bool OnGetNeedsBuilding ()
 		{

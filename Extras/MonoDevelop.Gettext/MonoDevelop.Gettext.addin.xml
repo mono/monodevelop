@@ -73,10 +73,14 @@
 	
 	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
 		<DataType class = "MonoDevelop.Gettext.TranslationProject" />
+		<DataType class = "MonoDevelop.Gettext.TranslationProjectConfiguration" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Deployment/ProjectBrowser/ContextMenu/TranslationProject">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
+		<SeparatorItem />
 		<CommandItem id = "MonoDevelop.Gettext.Commands.AddTranslation" />
 		<SeparatorItem />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
