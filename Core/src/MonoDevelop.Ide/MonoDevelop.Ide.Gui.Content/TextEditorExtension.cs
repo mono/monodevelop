@@ -11,7 +11,7 @@ namespace MonoDevelop.Ide.Gui.Content
 	{
 		internal ITextEditorExtension Next;
 		internal Document document;
-		ICodeCompletionContext currentCompletionContext;
+		CodeCompletionContext currentCompletionContext;
 		ICompletionWidget completionWidget;
 		bool autoHideCompletionWindow = true;
 		
@@ -107,9 +107,13 @@ namespace MonoDevelop.Ide.Gui.Content
 			if (completionWidget != null && currentCompletionContext == null) {
 				ICompletionDataProvider cp = null;
 				if (key == Gdk.Key.space && (modifier & Gdk.ModifierType.ControlMask) != 0) {
-					int cpos = GetCompletionCommandOffset ();
-					if (cpos == -1) cpos = Editor.CursorPosition;
+					int cpos, wlen;
+					if (!GetCompletionCommandOffset (out cpos, out wlen)) {
+						cpos = Editor.CursorPosition;
+						wlen = 0;
+					}
 					currentCompletionContext = completionWidget.CreateCodeCompletionContext (cpos);
+					currentCompletionContext.TriggerWordLength = wlen;
 					cp = CodeCompletionCommand (currentCompletionContext);
 				}
 				else {
@@ -172,21 +176,33 @@ namespace MonoDevelop.Ide.Gui.Content
 		}
 		
 		// return -1 if completion can't be shown
-		public virtual int GetCompletionCommandOffset ()
+		public virtual bool GetCompletionCommandOffset (out int cpos, out int wlen)
 		{
-			int pos = Editor.CursorPosition;
+			cpos = wlen = 0;
+			int pos = Editor.CursorPosition - 1;
 			while (pos >= 0) {
-				string txt = Editor.GetText (pos - 1, pos);
-				if (txt == null || txt.Length == 0)
-					return -1;
-				char c = txt [0];
+				char c = Editor.GetCharAt (pos);
 				if (!char.IsLetterOrDigit (c) && c != '_')
-					return pos;
+					break;
 				pos--;
 			}
-			return -1;
+			if (pos == -1)
+				return false;
+			
+			pos++;
+			cpos = pos;
+			int len = Editor.TextLength;
+			
+			while (pos < len) {
+				char c = Editor.GetCharAt (pos);
+				if (!char.IsLetterOrDigit (c) && c != '_')
+					break;
+				pos++;
+			}
+			wlen = pos - cpos;
+			return true;
 		}
-		
+
 		public virtual ICompletionDataProvider CodeCompletionCommand (ICodeCompletionContext completionContext)
 		{
 			// This default implementation of CodeCompletionCommand calls HandleCodeCompletion providing
