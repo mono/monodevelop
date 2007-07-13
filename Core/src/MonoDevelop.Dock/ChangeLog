@@ -1,3 +1,8 @@
+2007-07-13  Mike Krüger <mkrueger@novell.com> 
+
+	* DragNotebook.cs: Worked on bug 81349:double-click src tab =>
+	  maximize.
+
 2007-06-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* DockObject.cs, DockLayout.cs, DockNotebook.cs, DockPaned.cs,

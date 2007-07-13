@@ -19,7 +19,7 @@ namespace Gdl
 
 		bool DragInProgress;
 
-		int FindTabAtPosition (double cursorX, double cursorY) {
+		public int FindTabAtPosition (double cursorX, double cursorY) {
 
 			int    dragNotebookXRoot;
 			int    dragNotebookYRoot;
@@ -74,16 +74,20 @@ namespace Gdl
 			if (args.Event.Button == 1 && args.Event.Type == EventType.ButtonPress && FindTabAtPosition (args.Event.XRoot, args.Event.YRoot) >= 0)
 				MotionNotifyEvent += new MotionNotifyEventHandler (OnMotionNotify);
 		}
-
-		[GLib.ConnectBefore]
-		void OnButtonRelease (object obj, ButtonReleaseEventArgs args) {
+		
+		public void LeaveDragMode (uint time)
+		{
 			if (Pointer.IsGrabbed) {
-				Pointer.Ungrab (args.Event.Time);
+				Pointer.Ungrab (time);
 				Grab.Remove (this);
 			}
-
 			MotionNotifyEvent -= new MotionNotifyEventHandler (OnMotionNotify);
 			DragInProgress = false;
+		}
+		
+		[GLib.ConnectBefore]
+		void OnButtonRelease (object obj, ButtonReleaseEventArgs args) {
+			LeaveDragMode (args.Event.Time);
 		}
 
 
