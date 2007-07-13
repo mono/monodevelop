@@ -1,3 +1,7 @@
+2007-07-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/ShellTextView.boo: Track api changes.
+
 2007-05-31  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* templates/BooLibraryProject.xpt.xml: Get template icon from

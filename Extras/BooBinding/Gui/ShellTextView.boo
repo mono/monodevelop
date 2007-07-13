@@ -484,7 +484,7 @@ class ShellTextView (SourceView, ICompletionWidget):
 	
 	public event CompletionContextChanged as EventHandler;
 
-	def ICompletionWidget.CreateCodeCompletionContext (triggerOffset as int) as ICodeCompletionContext:
+	def ICompletionWidget.CreateCodeCompletionContext (triggerOffset as int) as CodeCompletionContext:
 		triggerIter = Buffer.GetIterAtOffset (triggerOffset);
 		rect = GetIterLocation (Buffer.GetIterAtMark (Buffer.InsertMark))
 
@@ -525,9 +525,6 @@ class ShellTextView (SourceView, ICompletionWidget):
 		Buffer.MoveMark (Buffer.InsertMark, offsetIter)
 		Buffer.Delete (offsetIter, endIter)
 		Buffer.InsertAtCursor (complete_word)
-	
-	def ICompletionWidget.InsertAtCursor (text as string):
-		Buffer.InsertAtCursor (text)
 	
 	ICompletionWidget.GtkStyle:
 		get:
