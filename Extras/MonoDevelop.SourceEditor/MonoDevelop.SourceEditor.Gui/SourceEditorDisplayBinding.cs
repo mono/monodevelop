@@ -226,7 +226,9 @@ namespace MonoDevelop.SourceEditor.Gui
 			// Set up the data stores for the comboboxes
 			classStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(IClass));
 			classCombo.Model = classStore;	
+			classStore.SetSortColumnId (1, SortType.Ascending);
 			memberStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(IMember));
+			memberStore.SetSortColumnId (1, SortType.Ascending);
 			membersCombo.Model = memberStore;
    			membersCombo.Changed += new EventHandler (MemberChanged);
 			classCombo.Changed += new EventHandler (ClassChanged);
@@ -607,11 +609,10 @@ namespace MonoDevelop.SourceEditor.Gui
 			HybridDictionary methodMap = new HybridDictionary();
 			
 			Gdk.Pixbuf pix;
-			// Add items to the member drop down 
-			MethodCollection sortedMethods = c.Methods;
-			ArrayList.Adapter (sortedMethods).Sort (new CaseInsensitiveComparer ());
 			
-			foreach (IMethod method in sortedMethods) {
+			// Add items to the member drop down 
+			
+			foreach (IMethod method in c.Methods) {
 				pix = IdeApp.Services.Resources.GetIcon(IdeApp.Services.Icons.GetIcon(method), IconSize.Menu); 
 				// For methods we append their parameter types too. This is a nice feature,
 				// and it is also necessay to avoid problems with overloaded methods having
