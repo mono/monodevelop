@@ -40,7 +40,6 @@ REFS =  \
 	$(GNOME_VFS_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(GTKSOURCEVIEW_SHARP_LIBS) \
-	$(MONO_CAIRO_LIBS) \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
@@ -48,6 +47,7 @@ REFS =  \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
+	-r:Mono.Cairo \
 	-r:System \
 	-r:System.Drawing \
 	-r:System.Xml

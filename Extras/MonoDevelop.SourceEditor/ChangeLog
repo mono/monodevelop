@@ -1,5 +1,9 @@
 2007-07-17  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Makefile.am: Fix build.
+
+2007-07-17  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Uncommented code
 	  that draws space marks.
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Fixed
