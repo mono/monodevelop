@@ -455,9 +455,11 @@ namespace MonoDevelop.Projects.CodeGeneration
 			RefactorerContext gctx = GetGeneratorContext (p);
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Refactoring project {0}", p.Name));
 			foreach (ProjectFile file in p.ProjectFiles) {
-				if (file.BuildAction != BuildAction.Compile) continue;
+				if (file.BuildAction != BuildAction.Compile)
+					continue;
 				IRefactorer gen = Services.Languages.GetRefactorerForFile (file.Name);
-				if (gen == null) continue;
+				if (gen == null)
+					continue;
 				refactorDelegate (monitor, gctx, gen, file.Name);
 				gctx.Save ();
 			}

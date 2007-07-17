@@ -341,6 +341,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 			
 			prop.Type = ReturnTypeToDom (field.ReturnType);
 			prop.Attributes = MemberAttributes.Public | MemberAttributes.Final;
+			if (field.IsStatic)
+				prop.Attributes |= MemberAttributes.Static;
 			
 			prop.HasGet = true;
 			
