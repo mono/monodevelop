@@ -20,6 +20,8 @@ namespace MonoDevelop.SourceEditor
 		
 		public LanguageItemWindow (ILanguageItem item, IParserContext ctx, Ambience ambience) : base (WindowType.Popup)
 		{
+			Name = "gtk-tooltips";
+			
 			string s;
 			
 			if (item is IParameter) {

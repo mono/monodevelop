@@ -108,6 +108,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		IParseInformation memberParseInfo;
 		bool handlingParseEvent = false;
 		bool disposed;
+		Tooltips tips = new Tooltips ();
 		
 		BreakpointEventHandler breakpointAddedHandler;
 		BreakpointEventHandler breakpointRemovedHandler;
@@ -219,16 +220,20 @@ namespace MonoDevelop.SourceEditor.Gui
 			membersCombo.AddAttribute(colr, "text", 1);
 			
 			// Pack the controls into the editorbar just below the file name tabs.
-			classBrowser.PackStart(classCombo, true, true, 0);
-			classBrowser.PackStart(membersCombo, true, true, 0);
+			EventBox tbox = new EventBox ();
+			tbox.Add (classCombo);
+			classBrowser.PackStart(tbox, true, true, 0);
+			tbox = new EventBox ();
+			tbox.Add (membersCombo);
+			classBrowser.PackStart (tbox, true, true, 0);
+			
 			editorBar.PackEnd (classBrowser, false, true, 0);
+			
 			
 			// Set up the data stores for the comboboxes
 			classStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(IClass));
 			classCombo.Model = classStore;	
-			classStore.SetSortColumnId (1, SortType.Ascending);
 			memberStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(IMember));
-			memberStore.SetSortColumnId (1, SortType.Ascending);
 			membersCombo.Model = memberStore;
    			membersCombo.Changed += new EventHandler (MemberChanged);
 			classCombo.Changed += new EventHandler (ClassChanged);
@@ -455,7 +460,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			}
 		}
 		
-		private void UpdateMethodBrowser()
+		void UpdateMethodBrowser ()
 		{
 			if (!ClassBrowserVisible)
 				return;
@@ -465,57 +470,66 @@ namespace MonoDevelop.SourceEditor.Gui
 				return;
 			}
 			
-			loadingMembers = true;
-			
-			// find out where the current cursor position is and set the combos.
 			int line;
 			int column;
-			this.GetLineColumnFromPosition (this.CursorPosition, out line, out column);
+			GetLineColumnFromPosition (this.CursorPosition, out line, out column);
+
+			// Find the selected class
 			
-			int index = 0;
-			Gtk.TreeIter iter;
-			IClass currentClass = null;
+			TreeIter iter;
+			if (!classStore.GetIterFirst (out iter))
+				return;
 			
-			// check we are in the right class
-			if (classCombo.GetActiveIter (out iter))
-				currentClass = classCombo.Model.GetValue (iter, 2) as IClass;
+			IClass classFound = null;
+			do {
+				IClass c = (IClass) classStore.GetValue (iter, 2);
+				if (c.BodyRegion != null && c.BodyRegion.BeginLine <= line && line <= c.BodyRegion.EndLine)
+					classFound = c;
+			} while (classFound == null && classStore.IterNext (ref iter));
+
+			loadingMembers = true;
 			
-			if (currentClass != null && currentClass.BodyRegion != null && currentClass.BodyRegion.BeginLine <= line && line <= currentClass.BodyRegion.EndLine) {
-				// we are still in the active class, just need to check method now
-				bool more = memberStore.GetIterFirst (out iter);
-			    while (more)
-				{
-			    	object member = memberStore.GetValue (iter, 2);
-			    	if (member is IField) {
-			    		if (((IField) member).Region.BeginLine <= line && line <= ((IField) member).Region.EndLine) {
-			    			membersCombo.Active = index;
-							break;
-			    		}
-			    	}
-			    	if (member is IProperty) {
-			    		if (((IProperty) member).BodyRegion.BeginLine <= line && line <= ((IProperty) member).BodyRegion.EndLine) {
-			    			membersCombo.Active = index;
-							break;
-			    		}
-			    	}
-			    	if (member is IMethod) {
-			    		if (((IMethod) member).BodyRegion.BeginLine <= line && line <= ((IMethod) member).BodyRegion.EndLine) {
-			    			membersCombo.Active = index;
-							break;
-			    		}
-			    	}
-			    	index++;
-					more = memberStore.IterNext (ref iter);
+			try {
+				if (classFound == null) {
+					classCombo.Active = -1;
+					membersCombo.Active = -1;
+					memberStore.Clear ();
+					UpdateComboTip (classCombo, null);
+					UpdateComboTip (membersCombo, null);
+					return;
 				}
-			} else {
-				// Changed class, so rebind
-				BindClassCombo();
+				
+				TreeIter citer;
+				if (!classCombo.GetActiveIter (out citer) || !citer.Equals (iter)) {
+					classCombo.SetActiveIter (iter);
+					BindMemberCombo (classFound);
+					return;
+				}
+				
+				// Find the member
+				
+				if (!memberStore.GetIterFirst (out iter))
+					return;
+				
+				do {
+					IMember mem = (IMember) memberStore.GetValue (iter, 2);
+					if (IsMemberSelected (mem, line, column)) {
+						membersCombo.SetActiveIter (iter);
+						UpdateComboTip (membersCombo, mem);
+						return;
+					}
+				}
+				while (memberStore.IterNext (ref iter));
+				
+				membersCombo.Active = -1;
+				UpdateComboTip (membersCombo, null);
 			}
-			loadingMembers = false;
+			finally {
+				loadingMembers = false;
+			}
 		}
 		
-		
-		private bool BindClassCombo()
+		private bool BindClassCombo ()
 		{
 			if (disposed)
 				return false;
@@ -545,8 +559,11 @@ namespace MonoDevelop.SourceEditor.Gui
 				}
 				
 				classBrowser.Visible = true;
-					
-				foreach (IClass c in cls) {
+				ArrayList classes = new ArrayList ();
+				classes.AddRange (cls);
+				classes.Sort (new LanguageItemComparer ());
+
+				foreach (IClass c in classes) {
 					// Get the appropriate icon from the Icon service for the current IClass.
 					Gdk.Pixbuf pix = IdeApp.Services.Resources.GetIcon (IdeApp.Services.Icons.GetIcon (c), IconSize.Menu);
 					classStore.AppendValues (pix, c.Name, c);
@@ -569,16 +586,8 @@ namespace MonoDevelop.SourceEditor.Gui
 					}
 				}
 				// Sometimes there might be no classes e.g. AssemblyInfo.cs
-				if (cls.Count > 0) {
-					for (int i = 0; i < cls.Count; i++) {
-						// If the first "class" is a delegate it will have no members 
-						if (cls[i].ClassType != ClassType.Delegate) {
-							BindMemberCombo(cls[i]);
-							classCombo.Active = i;
-							break;
-						}
-					}
-				}
+				classCombo.Active = -1;
+				UpdateComboTip (classCombo, null);
 				handlingParseEvent = false;
 			}
 			finally {
@@ -590,77 +599,87 @@ namespace MonoDevelop.SourceEditor.Gui
 		}
 		
 		
-		private void BindMemberCombo(IClass c)
+		private void BindMemberCombo (IClass c)
 		{
 			if (!ClassBrowserVisible)
 				return;
 
 			int position = 0;
-			int activeIndex = 0;
+			int activeIndex = -1;
+			
 			// find out where the current cursor position is and set the combos.
 			int line;
 			int column;
 			this.GetLineColumnFromPosition(this.CursorPosition, out line, out column);
 			
+			UpdateComboTip (classCombo, c);
 			membersCombo.Changed -= new EventHandler (MemberChanged);
 			// Clear down all our local stores.
+			
+			membersCombo.Model = null;
 			memberStore.Clear();
+			UpdateComboTip (membersCombo, null);
 				
 			HybridDictionary methodMap = new HybridDictionary();
 			
 			Gdk.Pixbuf pix;
 			
+			ArrayList members = new ArrayList ();
+			members.AddRange (c.Methods);
+			members.AddRange (c.Properties);
+			members.AddRange (c.Fields);
+			members.Sort (new LanguageItemComparer ());
+			
 			// Add items to the member drop down 
 			
-			foreach (IMethod method in c.Methods) {
-				pix = IdeApp.Services.Resources.GetIcon(IdeApp.Services.Icons.GetIcon(method), IconSize.Menu); 
-				// For methods we append their parameter types too. This is a nice feature,
-				// and it is also necessay to avoid problems with overloaded methods having
-				// the same name
-				StringBuilder methodName = new StringBuilder();
-				methodName.Append(method.Name + " (");
-				for (int i = 0; i < method.Parameters.Count; i++) {
-					methodName.Append(method.Parameters [i].ReturnType.Name);
-					if (i < method.Parameters.Count - 1) methodName.Append (", ");
+			foreach (IMember mem in members)
+			{
+				pix = IdeApp.Services.Resources.GetIcon(IdeApp.Services.Icons.GetIcon (mem), IconSize.Menu); 
+				string name;
+					
+				if (mem is IMethod) {
+					IMethod method = (IMethod) mem;
+					// For methods we append their parameter types too. This is a nice feature,
+					// and it is also necessay to avoid problems with overloaded methods having
+					// the same name
+					StringBuilder methodName = new StringBuilder();
+					methodName.Append(method.Name + " (");
+					for (int i = 0; i < method.Parameters.Count; i++) {
+						methodName.Append(method.Parameters [i].ReturnType.Name);
+						if (i < method.Parameters.Count - 1) methodName.Append (", ");
+					}
+					methodName.Append(")"); 
+					name = methodName.ToString ();
 				}
-				methodName.Append(")"); 
-				
-				memberStore.AppendValues(pix, methodName.ToString (), method);
-			
-				// Check if the current cursor position in inside this method
-				if (method.BodyRegion != null && method.BodyRegion.BeginLine <= line && line <= method.BodyRegion.EndLine) {
-					activeIndex = position;
-				}
-				++position;
-			}
-			foreach (IProperty property in c.Properties) {
-				pix = IdeApp.Services.Resources.GetIcon (IdeApp.Services.Icons.GetIcon (property), IconSize.Menu);
-				if (methodMap [property.Name] != null) {
-					// The unlikely case that two properties have the same name has occured.
-					// We use the fully qualified name for each subsequent property to avoid
-					// problems.
-					memberStore.AppendValues (pix, property.FullyQualifiedName, property);
+				else if (mem is IProperty) {
+					IProperty property = (IProperty) mem;
+					if (methodMap [property.Name] != null) {
+						// The unlikely case that two properties have the same name has occured.
+						// We use the fully qualified name for each subsequent property to avoid
+						// problems.
+						name = property.FullyQualifiedName;
+					}
+					else {
+						name = property.Name;
+					}
 				}
 				else {
-					memberStore.AppendValues (pix, property.Name, property);
+					name = mem.Name;
 				}
 				
-				// Check if the current cursor position in inside this property
-				if (property.BodyRegion != null && property.BodyRegion.BeginLine <= line && line <= property.BodyRegion.EndLine) {
-					activeIndex = position;
-				}
-				++position;
-			}
-			foreach(IField member in c.Fields) {
-				pix = IdeApp.Services.Resources.GetIcon (IdeApp.Services.Icons.GetIcon (member), IconSize.Menu);
-				memberStore.AppendValues (pix, member.Name, member);
+				// Add the member to the list
+				memberStore.AppendValues (pix, name, mem);
 				
-				// Check if the current cursor position in inside this field
-				if (member.Region != null && member.Region.BeginLine <= line && line <= member.Region.EndLine) {
+				// Check if the current cursor position in inside this member
+				if (IsMemberSelected (mem, line, column)) {
+					UpdateComboTip (membersCombo, mem);
 					activeIndex = position;
 				}
-				++position;
+				
+				position++;
 			}
+			membersCombo.Model = memberStore;
+			
 			// don't need method map anymore
 			methodMap.Clear ();
 			
@@ -721,6 +740,31 @@ namespace MonoDevelop.SourceEditor.Gui
 					BindMemberCombo(selectedClass);
 				}
 			}
+		}
+		
+		void UpdateComboTip (ComboBox combo, ILanguageItem it)
+		{
+			MonoDevelop.Projects.Ambience.Ambience am = se.View.GetAmbience ();
+			string txt;
+			if (it != null)
+				txt = am.Convert (it, MonoDevelop.Projects.Ambience.ConversionFlags.All);
+			else
+				txt = null;
+			tips.SetTip (combo.Parent, txt, txt);
+		}
+		
+		bool IsMemberSelected (IMember mem, int line, int column)
+		{
+			if (mem is IMethod) {
+				IMethod method = (IMethod) mem;
+				return (method.BodyRegion != null && method.BodyRegion.BeginLine <= line && line <= method.BodyRegion.EndLine);
+			}
+			else if (mem is IProperty) {
+				IProperty property = (IProperty) mem;
+				return (property.BodyRegion != null && property.BodyRegion.BeginLine <= line && line <= property.BodyRegion.EndLine);
+			}
+			else
+				return (mem.Region != null && mem.Region.BeginLine <= line && line <= mem.Region.EndLine);
 		}
 		
 		void OnBreakpointAdded (object sender, BreakpointEventArgs args)
@@ -1345,6 +1389,14 @@ namespace MonoDevelop.SourceEditor.Gui
 				return ((SourceBuffer)Buffer).BackwardSearch (iter, str, flags, out match_start, out match_end, limit);
 			else
 				return ((SourceBuffer)Buffer).ForwardSearch (iter, str, flags, out match_start, out match_end, limit);
+		}
+	}
+	
+	class LanguageItemComparer: IComparer
+	{
+		public int Compare (object x, object y)
+		{
+			return string.Compare (((ILanguageItem)x).Name, ((ILanguageItem)y).Name, true);
 		}
 	}
 }

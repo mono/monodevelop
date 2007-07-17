@@ -1,3 +1,15 @@
+2007-07-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Uncommented code
+	  that draws space marks.
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Fixed
+	  several issues with the class and member combos. Added tooltips to
+	  the combos which display type information.
+	* MonoDevelop.SourceEditor.Gui/LanguageItemWindow.cs: When using
+	  'gtk-tooltips' as window name, the window will be shown with the
+	  tooltip background. Fixes bug #81794.
+	* MonoDevelop.SourceEditor.mdp: Updated.
+
 2007-07-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Sort the

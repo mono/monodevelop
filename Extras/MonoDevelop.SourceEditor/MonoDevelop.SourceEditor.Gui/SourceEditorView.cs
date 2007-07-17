@@ -360,7 +360,7 @@ namespace MonoDevelop.SourceEditor.Gui
 				return pdb.GetFileParserContext (file);
 		}
 		
-		MonoDevelop.Projects.Ambience.Ambience GetAmbience ()
+		public MonoDevelop.Projects.Ambience.Ambience GetAmbience ()
 		{
 			Project project = ParentEditor.DisplayBinding.Project;
 			if (project != null)
@@ -938,7 +938,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			{
 				if (HighlightSpacesEnabled || HighlightTabsEnabled || HighlightNewlinesEnabled)
 				{
-				/*	Cairo.Context cntx = Gdk.CairoHelper.Create (drawable);
+					Cairo.Context cntx = Gdk.CairoHelper.Create (drawable);
 					
 					//shift to pixel grid to reduce antialiasing
 					cntx.Antialias = Cairo.Antialias.Default;
@@ -969,7 +969,7 @@ namespace MonoDevelop.SourceEditor.Gui
 						}
 						if (! iter.ForwardChar ())
 							break;
-					}*/
+					}
 				}
 			}
 		}
