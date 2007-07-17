@@ -1,3 +1,9 @@
+2007-07-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:
+	  If a file is deleted and it is scheduled to Add, revert the Add
+	  operation. Fixes bug #81953.
+
 2007-07-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs,

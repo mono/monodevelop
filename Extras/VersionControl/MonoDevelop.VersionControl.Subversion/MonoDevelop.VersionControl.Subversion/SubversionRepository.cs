@@ -340,8 +340,14 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			if (IsVersioned (path))
 				Svn.Delete (path, force, monitor);
-			else
+			else {
+				VersionInfo srcInfo = GetVersionInfo (path, false);
+				if (srcInfo != null && srcInfo.Status == VersionStatus.ScheduledAdd) {
+					// Revert the add command
+					Revert (path, false, monitor);
+				}
 				base.DeleteFile (path, force, monitor);
+			}
 		}
 		
 		public override void DeleteDirectory (string path, bool force, IProgressMonitor monitor)
