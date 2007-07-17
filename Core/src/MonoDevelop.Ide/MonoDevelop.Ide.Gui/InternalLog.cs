@@ -72,6 +72,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		static void OnLogAppended (object sender, LogAppendedArgs args)
 		{
+			if (args.Level == InternalLog.Debug)
+				return;
+			
 			lock (messages) {
 				messages.Add (args);
 				switch (args.Level) {

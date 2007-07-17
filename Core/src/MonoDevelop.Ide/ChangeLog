@@ -1,3 +1,8 @@
+2007-07-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs,
+	  MonoDevelop.Ide.Gui/InternalLog.cs: Ignore debug messages for now.
+
 2007-07-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs,

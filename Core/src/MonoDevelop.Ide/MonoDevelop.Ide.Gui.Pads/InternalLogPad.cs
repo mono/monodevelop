@@ -308,6 +308,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		void MessageAdded (object sender, LogAppendedArgs args)
 		{
+			if (args.Level == InternalLog.Debug)
+				return;
 			AddMessage (args);
 		}
 		
