@@ -235,7 +235,7 @@
     <binding command="Lowercase Selection" shortcut="Control+Shift+l" />
     <binding command="New Action Group..." shortcut="" />
     <binding command="New Dialog..." shortcut="" />
-    <binding command="New File..." shortcut="Control+N" />
+    <binding command="New File..." shortcut="" />
     <binding command="New Folder" shortcut="" />
     <binding command="New Layout..." shortcut="" />
     <binding command="New Project..." shortcut="Control+Shift+N" />
@@ -254,7 +254,7 @@
     <binding command="Previous Bookmark" shortcut="Shift+F2" />
     <binding command="Previous Window" shortcut="Control+Prior" />
     <binding command="Print Preview" shortcut="Control+Shift+P" />
-    <binding command="Print..." shortcut="Control+P" />
+    <binding command="Print..." shortcut="" />
     <binding command="Proportional time scale" shortcut="" />
     <binding command="Publish..." shortcut="" />
     <binding command="Quit" shortcut="Control+X|Control+C" />
