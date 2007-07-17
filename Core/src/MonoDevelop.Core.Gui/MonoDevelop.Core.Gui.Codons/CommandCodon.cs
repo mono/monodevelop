@@ -39,7 +39,7 @@ using System.ComponentModel;
 
 namespace MonoDevelop.Core.Gui.Codons
 {
-	[ExtensionNode (Description="An user interface command. The 'id' of the command must match the full name of an existing enumeration. An arbitrary string can also be used as id for the command by just using '@' as prefix for the string.")]
+	[ExtensionNode (Description="A user interface command. The 'id' of the command must match the full name of an existing enumeration. An arbitrary string can also be used as an id for the command by just using '@' as prefix for the string.")]
 	public class CommandCodon : TypeExtensionNode
 	{
 		[NodeAttribute ("_label", true, "Label")]
@@ -48,7 +48,7 @@ namespace MonoDevelop.Core.Gui.Codons
 		[NodeAttribute ("_description", "Description of the command")]
 		string _description;
 		
-		[NodeAttribute ("shortcut", "Key combination that triggers the command. Control and Alt modifiers can be specified using '|' as separator. For example 'Control|d'")]
+		[NodeAttribute ("shortcut", "Key combination that triggers the command. Control, Alt and Shift modifiers can be specified using '+' as a separator. Multi-state key bindings can be specified using a '|' between the mode and accel. For example 'Control+d' or 'Control+x|Control+s'")]
 		string shortcut;
 		
 		[NodeAttribute("icon", "Icon of the command. The provided value must be a registered stock icon. A resource icon can also be specified using 'res:' as prefix for the name, for example: 'res:customIcon.png'")]
@@ -152,7 +152,9 @@ namespace MonoDevelop.Core.Gui.Codons
 			
 			if (icon != null)
 				cmd.Icon = ResourceService.GetStockId (Addin, icon);
-			cmd.AccelKey = shortcut;
+			
+			cmd.AccelKey = KeyBindingManager.CanonicalizeBinding (shortcut);
+			
 			cmd.DisabledVisible = disabledVisible;
 			
 			return cmd;

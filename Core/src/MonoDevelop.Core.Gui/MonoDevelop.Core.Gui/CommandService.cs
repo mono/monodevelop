@@ -54,7 +54,7 @@ namespace MonoDevelop.Core.Gui
 		void OnExtensionChange (object s, ExtensionNodeEventArgs args)
 		{
 			if (args.Change == ExtensionChange.Add)
-				manager.RegisterCommand (args.ExtensionObject as Command, null);
+				manager.RegisterCommand (args.ExtensionObject as Command);
 			else
 				manager.UnregisterCommand (args.ExtensionObject as Command);
 		}
