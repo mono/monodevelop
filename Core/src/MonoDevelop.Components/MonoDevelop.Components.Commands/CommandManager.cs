@@ -26,9 +26,11 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+
 using System;
 using System.Reflection;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Components.Commands
 {
@@ -36,6 +38,9 @@ namespace MonoDevelop.Components.Commands
 	{
 		public static CommandManager Main = new CommandManager ();
 		Gtk.Window rootWidget;
+		KeyBindingManager bindings;
+		Gtk.AccelGroup accelGroup;
+		string mode;
 		
 		Hashtable cmds = new Hashtable ();
 		Hashtable handlerInfo = new Hashtable ();
@@ -43,14 +48,11 @@ namespace MonoDevelop.Components.Commands
 		ArrayList globalHandlers = new ArrayList ();
 		ArrayList commandUpdateErrors = new ArrayList ();
 		ArrayList visitors = new ArrayList ();
-		Hashtable overloadedAccelCommands = new Hashtable ();
 		Stack delegatorStack = new Stack ();
 		bool disposed;
 		bool toolbarUpdaterRunning;
 		bool enableToolbarUpdate;
 		int guiLock;
-		
-		Gtk.AccelGroup accelGroup;
 		
 		public CommandManager (): this (null)
 		{
@@ -59,15 +61,72 @@ namespace MonoDevelop.Components.Commands
 		public CommandManager (Gtk.Window root)
 		{
 			rootWidget = root;
+			bindings = new KeyBindingManager ();
 			ActionCommand c = new ActionCommand (CommandSystemCommands.ToolbarList, "Toolbar List", null, null, ActionType.Check);
 			c.CommandArray = true;
-			RegisterCommand (c, "");
+			RegisterCommand (c);
+		}
+		
+		bool CanUseBinding (string mode, string binding)
+		{
+			if (!bindings.BindingExists (binding))
+				return false;
+			
+			if (mode == null && bindings.ModeExists (binding)) {
+				// binding is a simple accel and is registered as a mode... modes take precedence
+				return false;
+			}
+			
+			return true;
+		}
+		
+		[GLib.ConnectBefore]
+		void OnKeyPressed (object o, Gtk.KeyPressEventArgs e)
+		{
+			string accel = KeyBindingManager.AccelFromKey (e.Event.Key, e.Event.State);
+			
+			if (accel == null) {
+				// incomplete accel
+				e.RetVal = true;
+				return;
+			}
+			
+			string binding = KeyBindingManager.Binding (mode, accel);
+			List<Command> commands = null;
+			
+			if (CanUseBinding (mode, binding)) {
+				commands = bindings.Commands (binding);
+				e.RetVal = true;
+				mode = null;
+			} else if (mode != null && CanUseBinding (null, accel)) {
+				// fall back to accel
+				commands = bindings.Commands (accel);
+				e.RetVal = true;
+				mode = null;
+			} else if (bindings.ModeExists (accel)) {
+				e.RetVal = true;
+				mode = accel;
+				return;
+			} else {
+				e.RetVal = false;
+				mode = null;
+				return;
+			}
+			
+			for (int i = 0; i < commands.Count; i++) {
+				if (DispatchCommand (commands[i].Id))
+					break;
+			}
 		}
 		
 		public void SetRootWindow (Gtk.Window root)
 		{
+			if (rootWidget != null)
+				rootWidget.KeyPressEvent -= OnKeyPressed;
+			
 			rootWidget = root;
 			rootWidget.AddAccelGroup (AccelGroup);
+			rootWidget.KeyPressEvent += new Gtk.KeyPressEventHandler (OnKeyPressed);
 		}
 		
 		public void Dispose ()
@@ -113,45 +172,18 @@ namespace MonoDevelop.Components.Commands
 				}
 			}
 		}
-
 		
 		public void RegisterCommand (Command cmd)
 		{
-			RegisterCommand (cmd, "");
-		}
-		
-		public void RegisterCommand (Command cmd, string category)
-		{
-			cmds [cmd.Id] = cmd;
+			KeyBindingService.LoadBinding (cmd);
 			
-			if (cmd.AccelKey != null && cmd.AccelKey != "") {
-				// Register overloaded key bindings
-				foreach (Command ac in cmds.Values) {
-					if (ac.AccelKey == cmd.AccelKey) {
-						ArrayList list = (ArrayList) overloadedAccelCommands [ac.AccelKey];
-						if (list == null) {
-							list = new ArrayList ();
-							overloadedAccelCommands [ac.AccelKey] = list;
-							list.Add (ac.Id);
-						}
-						list.Add (cmd.Id);
-						break;
-					}
-				}
-			}
+			cmds[cmd.Id] = cmd;
+			bindings.RegisterCommand (cmd);
 		}
 		
 		public void UnregisterCommand (Command cmd)
 		{
-			if (cmd.AccelKey != null && cmd.AccelKey != "") {
-				// Unregister overloaded key bindings
-				ArrayList list = (ArrayList) overloadedAccelCommands [cmd.AccelKey];
-				if (list != null) {
-					list.Remove (cmd.Id);
-					if (list.Count < 2)
-						overloadedAccelCommands.Remove (cmd.AccelKey);
-				}
-			}
+			bindings.UnregisterCommand (cmd);
 			cmds.Remove (cmd.Id);
 		}
 		
@@ -269,7 +301,7 @@ namespace MonoDevelop.Components.Commands
 		{
 			if (guiLock > 0)
 				return false;
-
+			
 			ActionCommand cmd = null;
 			try {
 				cmd = GetActionCommand (commandId);
@@ -300,14 +332,18 @@ namespace MonoDevelop.Components.Commands
 										break;
 									}
 								}
-								if (!found) return false;
+								
+								if (!found)
+									return false;
 							} else
 								bypass = true;
 						} else {
 							info.Bypass = false;
 							cui.Run (cmdTarget, info);
 							bypass = info.Bypass;
-							if (!bypass && (!info.Enabled || !info.Visible)) return false;
+							
+							if (!bypass && (!info.Enabled || !info.Visible))
+								return false;
 						}
 					}
 					
@@ -416,11 +452,6 @@ namespace MonoDevelop.Components.Commands
 			return null;
 		}
 		
-		internal ArrayList FindAlternateAccelCommands (object commandId)
-		{
-			return (ArrayList) overloadedAccelCommands [commandId];
-		}
-		
 		internal bool DispatchCommandFromAccel (object commandId, object dataItem, object initialTarget)
 		{
 			// Dispatches a command that has been fired by an accelerator.
@@ -437,11 +468,11 @@ namespace MonoDevelop.Components.Commands
 				return false;
 			
 			string accel = cmd.AccelKey;
-			if (accel == null || accel == "")
+			if (accel == null)
 				return DispatchCommand (commandId, dataItem, initialTarget);
 			
-			ArrayList list = (ArrayList) overloadedAccelCommands [accel];
-			if (list == null)
+			List<Command> list = bindings.Commands (accel);
+			if (list == null || list.Count == 1)
 				// The command is not overloaded, so it can be handled normally.
 				return DispatchCommand (commandId, dataItem, initialTarget);
 			
@@ -456,39 +487,19 @@ namespace MonoDevelop.Components.Commands
 			// Execution failed. Now try to execute alternate commands
 			// bound to the same key.
 			
-			foreach (object altId in list) {
-				if (altId == commandId)	// already handled above.
+			for (int i = 0; i < list.Count; i++) {
+				if (list[i].Id == commandId) // already handled above.
 					continue;
-				CommandInfo cinfo = GetCommandInfo (altId, initialTarget);
-				if (cinfo.AccelKey != accel)	// Key changed by a handler, just ignore the command.
+				
+				CommandInfo cinfo = GetCommandInfo (list[i].Id, initialTarget);
+				if (cinfo.AccelKey != accel) // Key changed by a handler, just ignore the command.
 					continue;
-				if (DispatchCommand (altId, cinfo.DataItem, initialTarget))
+				
+				if (DispatchCommand (list[i].Id, cinfo.DataItem, initialTarget))
 					return true;
 			}
+			
 			return false;
-		}
-		
-		internal string GetAccelPath (string key)
-		{
-			string path = "<MonoDevelop>/MainWindow/" + key;
-			if (!Gtk.AccelMap.LookupEntry (path, new Gtk.AccelKey()) ) {
-				string[] keys = key.Split ('|');
-				Gdk.ModifierType mod = 0;
-				uint ckey = 0;
-				foreach (string keyp in keys) {
-					if (keyp == "Control") {
-						mod |= Gdk.ModifierType.ControlMask;
-					} else if (keyp == "Shift") {
-						mod |= Gdk.ModifierType.ShiftMask;
-					} else if (keyp == "Alt") {
-						mod |= Gdk.ModifierType.Mod1Mask;
-					} else {
-						ckey = Gdk.Keyval.FromName (keyp);
-					}
-				}
-				Gtk.AccelMap.AddEntry (path, ckey, mod);
-			}
-			return path;
 		}
 		
 		internal Gtk.AccelGroup AccelGroup {
@@ -536,7 +547,8 @@ namespace MonoDevelop.Components.Commands
 			object cmdTarget = GetActiveWidget (rootWidget);
 			if (cmdTarget == null) {
 				globalPos = 0;
-				if (globalHandlers.Count == 0) return null;
+				if (globalHandlers.Count == 0)
+					return null;
 				return globalHandlers [0];
 			} else {
 				globalPos = -1;
@@ -571,7 +583,8 @@ namespace MonoDevelop.Components.Commands
 					if (cmdTarget != null)
 						return cmdTarget;
 				}
-				if (globalHandlers.Count == 0) return null;
+				if (globalHandlers.Count == 0)
+					return null;
 				globalPos = 0;
 				return globalHandlers [0];
 			} else

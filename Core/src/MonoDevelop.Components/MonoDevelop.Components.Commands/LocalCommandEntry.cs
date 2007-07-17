@@ -49,16 +49,16 @@ namespace MonoDevelop.Components.Commands
 		internal protected override Gtk.MenuItem CreateMenuItem (CommandManager manager)
 		{
 			if (manager.GetCommand (CommandId) == null)
-				manager.RegisterCommand (cmd, "");
-
+				manager.RegisterCommand (cmd);
+			
 			return base.CreateMenuItem (manager);
 		}
 		
 		internal protected override Gtk.ToolItem CreateToolItem (CommandManager manager)
 		{
 			if (manager.GetCommand (CommandId) == null)
-				manager.RegisterCommand (cmd, "");
-
+				manager.RegisterCommand (cmd);
+			
 			return base.CreateToolItem (manager);
 		}
 	}

@@ -1,13 +1,13 @@
 <Project name="MonoDevelop.Components" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
-      <Output directory="../../../build/AddIns/" assembly="MonoDevelop.Components" signAssembly="False" />
+      <Output directory="../../../build/AddIns/" assembly="MonoDevelop.Components" />
       <Build debugmode="True" target="Library" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
-      <Output directory="../../../build/AddIns/" assembly="MonoDevelop.Components" signAssembly="False" />
+      <Output directory="../../../build/AddIns/" assembly="MonoDevelop.Components" />
       <Build debugmode="False" target="Library" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
@@ -96,6 +96,9 @@
     <File name="./gtk-gui/generated.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Components.Commands/ICommandTargetVisitor.cs" subtype="Code" buildaction="Compile" />
     <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Components.Commands/KeyBindingManager.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Components.Commands/KeyBindingService.cs" subtype="Code" buildaction="Compile" />
+    <File name="./KeyBindingSchemes.xml" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="gecko-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=ccf7d78a55e9f021" />
@@ -113,6 +116,12 @@
     <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </References>
+  <GtkDesignInfo partialTypes="True" isWidgetLibrary="True" gettextClass="MonoDevelop.Core.GettextCatalog">
+    <ExportedWidgets>
+      <Widget>MonoDevelop.Components.FileEntry</Widget>
+      <Widget>MonoDevelop.Components.FolderEntry</Widget>
+    </ExportedWidgets>
+  </GtkDesignInfo>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <ExcludedFiles>
       <File>./AssemblyInfo.cs</File>
@@ -125,12 +134,6 @@
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
-  <GtkDesignInfo partialTypes="True" isWidgetLibrary="True" gettextClass="MonoDevelop.Core.GettextCatalog">
-    <ExportedWidgets>
-      <Widget>MonoDevelop.Components.FileEntry</Widget>
-      <Widget>MonoDevelop.Components.FolderEntry</Widget>
-    </ExportedWidgets>
-  </GtkDesignInfo>
   <MonoDevelop.Gettext.TranslationInfo />
   <DeploymentInformation strategy="File">
     <excludeFiles />

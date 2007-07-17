@@ -30,6 +30,8 @@ using System;
 
 namespace MonoDevelop.Components.Commands
 {
+	public delegate void KeyBindingChangedEventHandler (object s, KeyBindingChangedEventArgs args);
+	
 	public abstract class Command
 	{
 		public static readonly object Separator = new Object ();
@@ -69,7 +71,13 @@ namespace MonoDevelop.Components.Commands
 		
 		public string AccelKey {
 			get { return accelKey; }
-			set { accelKey = value; }
+			set {
+				string binding = accelKey;
+				accelKey = value == String.Empty ? null : value;
+				
+				if (KeyBindingChanged != null && accelKey != binding)
+					KeyBindingChanged (this, new KeyBindingChangedEventArgs (this, binding));
+			}
 		}
 		
 		public bool DisabledVisible {
@@ -80,6 +88,31 @@ namespace MonoDevelop.Components.Commands
 		public string Description {
 			get { return description; }
 			set { description = value; }
+		}
+		
+		public event KeyBindingChangedEventHandler KeyBindingChanged;
+	}
+	
+	public class KeyBindingChangedEventArgs {
+		Command command;
+		string binding;
+		
+		public KeyBindingChangedEventArgs (Command command, string oldBinding)
+		{
+			this.command = command;
+			this.binding = oldBinding;
+		}
+		
+		public Command Command {
+			get { return command; }
+		}
+		
+		public string OldKeyBinding {
+			get { return binding; }
+		}
+		
+		public string NewKeyBinding {
+			get { return command.AccelKey; }
 		}
 	}
 }

@@ -54,6 +54,8 @@ FILES =  \
 	MonoDevelop.Components.Commands/ICommandRouter.cs \
 	MonoDevelop.Components.Commands/ICommandTargetVisitor.cs \
 	MonoDevelop.Components.Commands/ICommandUserItem.cs \
+	MonoDevelop.Components.Commands/KeyBindingManager.cs \
+	MonoDevelop.Components.Commands/KeyBindingService.cs \
 	MonoDevelop.Components.Commands/LinkCommandEntry.cs \
 	MonoDevelop.Components.Commands/LocalCommandEntry.cs \
 	MonoDevelop.Components.Commands/MenuToolButton.cs \
@@ -95,7 +97,8 @@ FILES =  \
 RES =  \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
-	icons/MonoDevelop.Close.png
+	icons/MonoDevelop.Close.png \
+	KeyBindingSchemes.xml
 
 GENERATED_FILES = \
 AssemblyInfo.cs

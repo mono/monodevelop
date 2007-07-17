@@ -72,12 +72,13 @@ namespace MonoDevelop.Components.Commands
 		protected override void OnParentSet (Gtk.Widget parent)
 		{
 			base.OnParentSet (parent);
-			if (Parent == null) return;
+			if (Parent == null)
+				return;
 			
 			((ICommandUserItem)this).Update (null);
 			
 			if (!isArrayItem) {
-				// Make sure the accelerators allways work for this item
+				// Make sure the accelerators always work for this item
 				// while the menu is hidden
 				Sensitive = true;
 				Visible = true;
@@ -100,8 +101,7 @@ namespace MonoDevelop.Components.Commands
 			if (!wasButtonActivation) {
 				// It's being activated by an accelerator.
 				commandManager.DispatchCommandFromAccel (commandId, arrayDataItem, initialTarget);
-			}
-			else {
+			} else {
 				wasButtonActivation = false;
 				commandManager.DispatchCommand (commandId, arrayDataItem, initialTarget);
 			}
@@ -109,8 +109,7 @@ namespace MonoDevelop.Components.Commands
 		
 		void Update (CommandInfo cmdInfo)
 		{
-			if (isArray && !isArrayItem)
-			{
+			if (isArray && !isArrayItem) {
 				this.Visible = false;
 				Gtk.Menu menu = (Gtk.Menu) Parent;  
 				
@@ -137,26 +136,54 @@ namespace MonoDevelop.Components.Commands
 						itemArray.Add (item);
 					}
 				}
-			}
-			else {
-				Gtk.AccelLabel child = (Gtk.AccelLabel)Child;
-				if (child == null) return;
-				child.Show ();
-				child.Xalign = 0;
-				if (cmdInfo.UseMarkup) {
-					child.Markup = cmdInfo.Text;
-					child.UseMarkup = true;
+			} else {
+				Gtk.Widget child = Child;
+				if (child == null)
+					return;
+				
+				Gtk.Label accel_label = null;
+				Gtk.Label label = null;
+				
+				if (!(child is Gtk.HBox)) {
+					child = new Gtk.HBox (false, 0);
+					accel_label = new Gtk.Label ("");
+					accel_label.UseUnderline = false;
+					accel_label.Xalign = 1.0f;
+					accel_label.Show ();
+					
+					label = new Gtk.Label ("");
+					label.UseUnderline = true;
+					label.Xalign = 0.0f;
+					label.Show ();
+					
+					((Gtk.Box) child).PackStart (label);
+					((Gtk.Box) child).PackStart (accel_label);
+					child.Show ();
+					
+					this.Remove (Child);
+					this.Add (child);
 				} else {
-					child.Text = cmdInfo.Text;
-					child.UseMarkup = false;
+					accel_label = (Gtk.Label) ((Gtk.Box) child).Children[1];
+					label = (Gtk.Label) ((Gtk.Box) child).Children[0];
 				}
-				child.UseUnderline = true;
-				child.AccelWidget = this;
+				
+				if (cmdInfo.AccelKey != null)
+					accel_label.Text = "    " + KeyBindingManager.BindingToLabel (cmdInfo.AccelKey);
+				else
+					accel_label.Text = String.Empty;
+				
+				if (cmdInfo.UseMarkup) {
+					label.Markup = cmdInfo.Text;
+					label.UseMarkup = true;
+				} else {
+					label.Text = cmdInfo.Text;
+					label.UseMarkup = false;
+				}
+				
+				label.UseUnderline = true;
+				
 				this.Sensitive = cmdInfo.Enabled;
 				this.Visible = cmdInfo.Visible;
-				
-				if (cmdInfo.AccelKey != null && cmdInfo.AccelKey != "")
-					this.AccelPath = commandManager.GetAccelPath (cmdInfo.AccelKey);
 				
 				if (cmdInfo.Icon != null && cmdInfo.Icon != "" && cmdInfo.Icon != lastIcon) {
 					Image = new Gtk.Image (cmdInfo.Icon, Gtk.IconSize.Menu);

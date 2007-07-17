@@ -1,3 +1,34 @@
+2007-07-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	* KeyBindingSchemes.xml: Added
+
+	* MonoDevelop.Components.Commands/CommandManager.cs: Use the new
+	KeyBindingManager and connect to the root window's KeyPressEvent
+	so that we can manage our own keybindings, bypassing Gtk's limited
+	key-binding management.
+
+	* MonoDevelop.Components.Commands/KeyBindingManager.cs: New source
+	file which manages key bindings.
+
+	* MonoDevelop.Components.Commands/KeyBindingService.cs: New source
+	file that can load alternate key binding schemes and save custom
+	configurations.
+
+	* MonoDevelop.Components.Commands/CommandCheckMenuItem.cs
+	(Update): Manually pack an accel label into the menu item so that
+	we can display Emacs-like key bindings.
+
+	* MonoDevelop.Components.Commands/CommandMenuItem.cs (Update):
+	Manually pack an accel label into the menu item so that we can
+	display Emacs-like key bindings.
+
+	* MonoDevelop.Components.Commands/Command.cs (set_AccelKey): If
+	the new accel is an empty string, set to null (simplifies checks
+	using this string). Also emit an event that the accel changed.
+
+	* MonoDevelop.Components.Commands/LocalCommandEntry.cs: Updated to
+	not pass a category string to RegisterCommand().
+
 2007-07-12  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Components.DockToolbars/DockToolbarFrame.cs: Worked on
