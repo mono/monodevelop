@@ -1070,17 +1070,24 @@ namespace MonoDevelop.Autotools
 			return true;
 		}
 
-		static Dictionary<string, string> packagedAssemblyNames;
-		public static Dictionary<string, string> PackagedAssemblyNames {
+		// maps "System" -> full name
+		// for assemblies from the GAC (SystemPackage.IsCorePackage)
+		// GetAssemblyNameForVersion should be used to get the exact assembly name
+		// for a ClrVersion
+		static Dictionary<string, string> corePackageAssemblyNames;
+		public static Dictionary<string, string> CorePackageAssemblyNames {
 			get {
-				if (packagedAssemblyNames == null) {
-					packagedAssemblyNames = new Dictionary<string, string> ();
-					foreach (string asm in Runtime.SystemAssemblyService.GetAssemblyFullNames ())
-						//asm.IndexOf(,) should be > 0 as this is a fullname
-						packagedAssemblyNames [asm.Substring (0, asm.IndexOf (',')).Trim ()] = asm;
+				if (corePackageAssemblyNames == null) {
+					corePackageAssemblyNames = new Dictionary<string, string> ();
+					foreach (string asm in Runtime.SystemAssemblyService.GetAssemblyFullNames ()) {
+						SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (asm);
+						if (pkg != null && pkg.IsCorePackage)
+							//asm.IndexOf(,) should be > 0 as this is a fullname
+							corePackageAssemblyNames [asm.Substring (0, asm.IndexOf (',')).Trim ()] = asm;
+					}
 				}
 
-				return packagedAssemblyNames;
+				return corePackageAssemblyNames;
 			}
 		}
 
@@ -1092,11 +1099,11 @@ namespace MonoDevelop.Autotools
 				aname = rname.Substring (0, rname.Length - 4);
 
 			string fullname;
-			if (!PackagedAssemblyNames.TryGetValue (aname, out fullname)) {
+			if (!CorePackageAssemblyNames.TryGetValue (aname, out fullname)) {
 				fullname = Runtime.SystemAssemblyService.GetAssemblyFullName (aname);
 
 				//fullname can be null
-				PackagedAssemblyNames [aname] = fullname;
+				CorePackageAssemblyNames [aname] = fullname;
 			}
 			if (fullname == null)
 				return null;

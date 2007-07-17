@@ -1,3 +1,10 @@
+2007-07-17  Ankit Jain  <jankit@novell.com>
+
+	* MakefileData.cs (PackagedAssemblyNames): Rename to ..
+	(CorePackageAssemblyNames): .. this. This has entries for assemblies
+	from the 'core' package only.
+	* MakefileOptionPanelWidget.cs (CheckRefs): Track changes in api.
+
 2007-07-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* SolutionMakefileHandler.cs, AutotoolsContext.cs: Keep track of the

@@ -921,11 +921,10 @@ namespace MonoDevelop.Autotools
 			if (prefix.Length > 0)
 				return true;
 
-			// 'core' here simply means any assembly available from
-			// packages, eg. System, gtk-sharp
+			// 'core' here simply means any assemblies in the gac
 			bool has_core_or_pkgref = false;
 			foreach (string file in list) {
-				if (MakefileData.PackagedAssemblyNames.ContainsKey (file) || IsPkgRef (file)) {
+				if (MakefileData.CorePackageAssemblyNames.ContainsKey (file) || IsPkgRef (file)) {
 					has_core_or_pkgref = true;
 					continue;
 				}
