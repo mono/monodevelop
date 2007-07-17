@@ -1184,10 +1184,18 @@ namespace CSharpBinding.Parser
 				}
 			}
 			if (callingClass != null) {
-				ListMembers(result, callingClass, callingClass);
+				ListMembers (result, callingClass, callingClass);
+				
+				// Add classes from calling namespace
+				if (callingClass.Namespace.Length > 0)
+					result.AddRange (parserContext.GetNamespaceContents (callingClass.Namespace, true));
 			}
 			string n = "";
+			
+			// Add contents of the default namespace
 			result.AddRange(parserContext.GetNamespaceContents (n, true));
+			
+			// Add contents of imported namespaces
 			foreach (IUsing u in currentUnit.Usings) {
 				if (u != null && (u.Region == null || u.Region.IsInside(caretLine, caretColumn))) {
 					foreach (string name in u.Usings) {

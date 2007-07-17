@@ -329,7 +329,7 @@ namespace CSharpBinding
 			pinfo.RedirectStandardError = true;
 			
 			ProcessWrapper pw = Runtime.ProcessService.StartProcess (pinfo, outwr, errwr, null);
-			pw.WaitForExit();
+			pw.WaitForOutput();
 			outwr.Close();
 			errwr.Close();
 		}

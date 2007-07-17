@@ -1,3 +1,10 @@
+2007-07-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Parser/Resolver.cs: When resolving a type, include the enclosing
+	  namespace in the namespace search list. Fixes bug #81865.
+	* CSharpBindingCompilerManager.cs: Make sure all output is read after
+	  running the compilation process. Should fix bug #82092.
+
 2007-07-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Parser/Resolver.cs: Properly resolve type names qualified with a
