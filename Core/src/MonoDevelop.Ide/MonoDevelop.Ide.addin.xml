@@ -834,6 +834,7 @@
 	<Extension path = "/SharpDevelop/Workbench/Pads" extension-nodes="Pad, SolutionPad" description="Pads shown in the workbench.">
 		<Pad id = "MonoDevelop.Ide.Gui.Pads.FileScout" _label = "Files" class = "MonoDevelop.Ide.Gui.Pads.FileScout"/>
 		<Pad id = "MonoDevelop.Ide.Gui.Pads.ErrorListPad" defaultPlacement = "Bottom" _label = "Error List" class = "MonoDevelop.Ide.Gui.Pads.ErrorListPad"/>
+		<Pad id = "MonoDevelop.Ide.Gui.Pads.InternalLogPad" defaultPlacement = "Bottom" _label = "Message Log" class = "MonoDevelop.Ide.Gui.Pads.InternalLogPad"/>
 		<Pad id = "MonoDevelop.Ide.Gui.Pads.TaskListPad" defaultPlacement = "Bottom" _label = "Task List" class = "MonoDevelop.Ide.Gui.Pads.TaskListPad"/>
 		<Pad id = "MonoDevelop.Ide.Gui.Pads.HelpTree" defaultPlacement = "Left" _label = "Help" class = "MonoDevelop.Ide.Gui.Pads.HelpTree"/>
 
@@ -882,6 +883,7 @@
 			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.FileScout" />
 			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.HelpTree" />
 			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.ErrorListPad"/>
+			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.InternalLogPad"/>
 			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.TaskListPad"/>
 		</WorkbenchContext>
 		<WorkbenchContext id = "Debug">
@@ -890,6 +892,7 @@
 			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.FileScout" defaultVisible = "False"/>
 			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.HelpTree" defaultVisible = "False"/>
 			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.ErrorListPad"/>
+			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.InternalLogPad"/>
 			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.TaskListPad" defaultVisible = "False"/>
 		</WorkbenchContext>
 	</Extension>

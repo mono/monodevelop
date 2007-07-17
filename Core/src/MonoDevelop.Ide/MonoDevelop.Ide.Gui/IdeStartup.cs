@@ -63,6 +63,7 @@ namespace MonoDevelop.Ide.Gui
 		public int Run (string[] args)
 		{
 			Gnome.Vfs.Vfs.Initialize ();
+			InternalLog.Initialize ();
 			MonoDevelopOptions options = new MonoDevelopOptions ();
 			options.ProcessArgs (args);
 			string[] remainingArgs = options.RemainingArguments;
@@ -112,6 +113,8 @@ namespace MonoDevelop.Ide.Gui
 			if (!CheckBug77135 ())
 				return 1;
 
+			CheckFileWatcher ();
+			
 			if (options.ipc_tcp) {
 				Runtime.ProcessService.ExternalProcessRemotingChannel = "tcp";
 				// Remoting check
@@ -201,7 +204,6 @@ namespace MonoDevelop.Ide.Gui
 		
 		void OnAddinError (object s, AddinErrorEventArgs args)
 		{
-			Console.WriteLine (args.Exception);
 			if (errorsList != null)
 				errorsList.Add (new AddinError (args.AddinId, args.Message, args.Exception, false));
 		}
@@ -246,6 +248,26 @@ namespace MonoDevelop.Ide.Gui
 				}
 				IdeApp.Workbench.RootWindow.Present ();
 				return false;
+			}
+		}
+		
+		void CheckFileWatcher ()
+		{
+			string watchesFile = "/proc/sys/fs/inotify/max_user_watches";
+			try {
+				if (File.Exists (watchesFile)) {
+					string val = File.ReadAllText (watchesFile);
+					int n = int.Parse (val);
+					if (n <= 9000) {
+						string msg = "Inotify watch limit is too low (" + n + ").\n";
+						msg += "MonoDevelop will switch to managed file watching.\n";
+						msg += "See http://www.monodevelop.com/Inotify_Watches_Limit for more info.";
+						Runtime.LoggingService.Warn (msg);
+						Environment.SetEnvironmentVariable ("MONO_MANAGED_WATCHER", "1");
+					}
+				}
+			} catch {
+				// Ignore
 			}
 		}
 		

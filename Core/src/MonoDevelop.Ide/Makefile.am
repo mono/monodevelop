@@ -172,6 +172,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads/FileListItem.cs \
 	MonoDevelop.Ide.Gui.Pads/FileScout.cs \
 	MonoDevelop.Ide.Gui.Pads/ILocationListPad.cs \
+	MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs \
 	MonoDevelop.Ide.Gui.Pads/ITreeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads/ITreeBuilderContext.cs \
 	MonoDevelop.Ide.Gui.Pads/ITreeNavigator.cs \
@@ -241,6 +242,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/Ide.cs \
 	MonoDevelop.Ide.Gui/IdeStartup.cs \
 	MonoDevelop.Ide.Gui/INavigationPoint.cs \
+	MonoDevelop.Ide.Gui/InternalLog.cs \
 	MonoDevelop.Ide.Gui/IPadContainer.cs \
 	MonoDevelop.Ide.Gui/IPadContent.cs \
 	MonoDevelop.Ide.Gui/ISecondaryViewContent.cs \

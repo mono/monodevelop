@@ -54,6 +54,7 @@ namespace MonoDevelop.Ide.Gui
 {
 	public abstract class IdeApp
 	{
+		static bool initialized;
 		static Workbench workbench;
 		static ProjectOperations projectOperations;
 		static HelpOperations helpOperations;
@@ -86,6 +87,12 @@ namespace MonoDevelop.Ide.Gui
 		public static IdeServices Services {
 			get { return ideServices; }
 		}
+
+		public static bool Initialized {
+			get {
+				return initialized;
+			}
+		}
 		
 		public static void Initialize (IProgressMonitor monitor)
 		{
@@ -107,6 +114,10 @@ namespace MonoDevelop.Ide.Gui
 			
 			// register string tag provider (TODO: move to add-in tree :)
 			Runtime.StringParserService.RegisterStringTagProvider(new MonoDevelop.Ide.Commands.SharpDevelopStringTagProvider());
+			
+			initialized = true;
+			
+			InternalLog.EnableErrorNotification ();
 			
 			// load previous combine
 			if ((bool)Runtime.Properties.GetProperty("SharpDevelop.LoadPrevProjectOnStartup", false)) {
