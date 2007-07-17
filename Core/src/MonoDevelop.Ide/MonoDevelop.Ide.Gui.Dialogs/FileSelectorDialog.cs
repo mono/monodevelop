@@ -37,6 +37,8 @@ using MonoDevelop.Core.Properties;
 using MonoDevelop.Projects.Text;
 using Gtk;
 
+#pragma warning disable 612
+
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	public class FileSelectorDialog: FileSelector
@@ -310,3 +312,5 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		}
 	}
 }
+
+#pragma warning restore 612

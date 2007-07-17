@@ -96,7 +96,6 @@ namespace MonoDevelop.Ide.Gui
 		
 		void OnConfigurationsChanged (object sender, ConfigurationEventArgs e)
 		{
-			Console.WriteLine ("combo OnConfigurationsChanged");
 			RefreshCombo (IdeApp.ProjectOperations.CurrentOpenCombine);
 		}
 		

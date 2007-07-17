@@ -1,3 +1,17 @@
+2007-07-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs,
+	  MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/RenameItemDialog.cs,
+	  MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Fix warnings.
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: No refactoring
+	  commands for unsaved documents. Better than a crash.
+	* MonoDevelop.Ide.Gui/ConfigurationComboBox.cs: Removed debug message.
+	* MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs: ShowMessage
+	  requires escaped text.
+
 2007-07-17  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs: New OptionPanel

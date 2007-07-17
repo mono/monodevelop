@@ -17,6 +17,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Core.Gui.Dialogs;
 
+#pragma warning disable 612
+
 namespace MonoDevelop.Ide.Gui.OptionPanels
 {
 	internal class ExternalToolPane: AbstractOptionPanel
@@ -361,3 +363,5 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		}
 	}
 }
+
+#pragma warning restore 612

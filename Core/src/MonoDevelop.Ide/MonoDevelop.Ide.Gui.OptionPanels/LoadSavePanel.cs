@@ -15,6 +15,8 @@ using MonoDevelop.Core;
 using Gtk;
 using MonoDevelop.Components;
 
+#pragma warning disable 612
+
 namespace MonoDevelop.Ide.Gui.OptionPanels
 {
 	/// <summary>
@@ -95,3 +97,4 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	}
 }
 
+#pragma warning restore 612

@@ -14,13 +14,11 @@ using MonoDevelop.Projects.CodeGeneration;
 
 namespace MonoDevelop.Ide.Gui.Dialogs {
 	public partial class EncapsulateFieldDialog : Gtk.Dialog {
-		IParserContext ctx;
 		IField field;
 		
 		public EncapsulateFieldDialog (IParserContext ctx, IField field)
 		{
 			this.field = field;
-			this.ctx = ctx;
 			
 			this.Build ();
 			

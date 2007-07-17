@@ -8,12 +8,10 @@ using MonoDevelop.Projects.CodeGeneration;
 
 namespace MonoDevelop.Ide.Gui.Dialogs {
 	public partial class RenameItemDialog : Gtk.Dialog {
-		IParserContext ctx;
 		ILanguageItem item;
 		
 		public RenameItemDialog (IParserContext ctx, ILanguageItem item)
 		{
-			this.ctx = ctx;
 			this.item = item;
 			
 			this.Build ();

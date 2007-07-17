@@ -75,10 +75,10 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		Gtk.VBox fullViewVBox     = new VBox (false, 0);
-		Gtk.VBox documentViewVBox = new VBox (false, 0);
+		Gtk.VBox fullViewVBox = new VBox (false, 0);
 		Gtk.HBox dockBox;
 		DockItem documentDockItem;
+		
 		public void Attach (IWorkbench wb)
 		{
 			DefaultWorkbench workbench = (DefaultWorkbench) wb;
@@ -155,7 +155,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		bool isInFullViewMode = true;
-		CommandFrame frame;
+
 		void ToggleFullViewMode ()
 		{
 			isInFullViewMode = !isInFullViewMode;
