@@ -49,7 +49,7 @@
 	<Extension path = "/SharpDevelop/Commands">
 		<Command id = "MonoDevelop.SourceEditor.EditorCommands.HighlightingTypeList"
 				type = "array|radio"
-				_label = "bogus_label" />
+				_label = "" />
 		<Command id = "MonoDevelop.SourceEditor.EditorCommands.ShowBufferOptions"
 				_label = "Buffer Options"
 				icon = "md-properties-icon" />
