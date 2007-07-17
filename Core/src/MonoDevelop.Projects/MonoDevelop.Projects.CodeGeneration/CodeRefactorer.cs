@@ -104,11 +104,11 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return m;
 		}
 		
-		public IMember ImplementMember (IClass cls, string prefix, IMember member)
+		public IMember ImplementMember (IClass cls, string prefix, bool explicitly, IMember member)
 		{
 			RefactorerContext gctx = GetGeneratorContext (cls);
 			IRefactorer gen = GetGeneratorForClass (cls);
-			IMember m = gen.ImplementMember (gctx, cls, prefix, member);
+			IMember m = gen.ImplementMember (gctx, cls, prefix, explicitly, member);
 			gctx.Save ();
 			return m;
 		}
@@ -178,7 +178,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				IEvent ev = iface.Events[i];
 				
 				for (j = 0, alreadyImplemented = false; j < klass.Events.Count; j++) {
-					if (klass.Events[j].FullyQualifiedName == ev.FullyQualifiedName) {
+					if (klass.Events[j].Name == ev.Name) {
 						alreadyImplemented = true;
 						break;
 					}
@@ -187,7 +187,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				if (alreadyImplemented)
 					continue;
 				
-				if ((newMember = gen.ImplementMember (gctx, klass, prefix, ev)) != null)
+				if ((newMember = gen.ImplementMember (gctx, klass, prefix, explicitly, ev)) != null)
 					klass = newMember.DeclaringType;
 			}
 			
@@ -196,7 +196,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				IMethod method = iface.Methods[i];
 				
 				for (j = 0, alreadyImplemented = false; j < klass.Methods.Count; j++) {
-					if (klass.Methods[j].FullyQualifiedName == method.FullyQualifiedName) {
+					if (klass.Methods[j].Name == method.Name) {
 						alreadyImplemented = true;
 						break;
 					}
@@ -205,7 +205,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				if (alreadyImplemented)
 					continue;
 				
-				if ((newMember = gen.ImplementMember (gctx, klass, prefix, method)) != null)
+				if ((newMember = gen.ImplementMember (gctx, klass, prefix, explicitly, method)) != null)
 					klass = newMember.DeclaringType;
 			}
 			
@@ -214,7 +214,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				IProperty prop = iface.Properties[i];
 				
 				for (j = 0, alreadyImplemented = false; j < klass.Properties.Count; j++) {
-					if (klass.Properties[j].FullyQualifiedName == prop.FullyQualifiedName) {
+					if (klass.Properties[j].Name == prop.Name) {
 						alreadyImplemented = true;
 						break;
 					}
@@ -223,7 +223,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				if (alreadyImplemented)
 					continue;
 				
-				if ((newMember = gen.ImplementMember (gctx, klass, prefix, prop)) != null)
+				if ((newMember = gen.ImplementMember (gctx, klass, prefix, explicitly, prop)) != null)
 					klass = newMember.DeclaringType;
 			}
 			

@@ -1,5 +1,15 @@
 2007-07-17  Jeffrey Stedfast  <fejj@novell.com>
 
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs (ImplementMember):
+	If we are implementing explicitly, don't set any access modifiers.
+
+	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs (ImplementMember): Now
+	takes an explicitly argument so we know to turn off access modifiers.
+
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs (ImplementInterface):
+	When making sure we haven't already implemented the member, check Names
+	instead of FullyQualifiedNames.
+
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: If the field
 	is static, set the property to be static too. Fixes bug #82121.
 

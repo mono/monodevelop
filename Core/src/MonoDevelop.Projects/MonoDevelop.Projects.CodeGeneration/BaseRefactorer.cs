@@ -126,7 +126,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return typeRef;
 		}
 		
-		public virtual IMember ImplementMember (RefactorerContext ctx, IClass cls, string prefix, IMember member)
+		public virtual IMember ImplementMember (RefactorerContext ctx, IClass cls, string prefix, bool explicitly, IMember member)
 		{
 			CodeTypeMember m;
 			
@@ -165,7 +165,10 @@ namespace MonoDevelop.Projects.CodeGeneration
 			else
 				m.Name = member.Name;
 			
-			m.Attributes = MemberAttributes.Public;
+			m.Attributes = MemberAttributes.Final;
+			
+			if (!explicitly)
+				m.Attributes |= MemberAttributes.Public;
 			
 			return AddMember (ctx, cls, m);
 		}
