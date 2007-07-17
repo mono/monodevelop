@@ -44,16 +44,6 @@ namespace CSharpBinding
 			if (TextEditorProperties.IndentStyle != IndentStyle.Smart)
 				return base.KeyPress (key, modifier);
 			
-			// If any text is selected, it's going to blown away or modified in some
-			// unpredictable way, so if the selected region starts somewhere before
-			// our known cursor position, reset our engine state - it will have to
-			// be recalculated.
-			if (Editor.SelectionEndPosition > Editor.SelectionStartPosition) {
-				if (engine.Cursor > Editor.SelectionStartPosition)
-					engine.Reset ();
-				return base.KeyPress (key, modifier);
-			}
-			
 			switch (key) {
 			case Gdk.Key.KP_Enter:
 			case Gdk.Key.Return:
@@ -94,49 +84,6 @@ namespace CSharpBinding
 					break;
 				
 				engine.Push (ch);
-			}
-			
-			if (c == '\t') {
-				// Tab is a special case... depending on the context, the user may be
-				// requesting a re-indent, tab-completing, or may just be wanting to
-				// insert a literal tab.
-				if (!engine.IsInsideVerbatimString) {
-					bufLen = Editor.TextLength;
-					
-					if (base.KeyPress (key, modifier)) {
-						nInserted = Editor.TextLength - bufLen;
-						
-						if (nInserted >= 1)
-							ch = Editor.GetCharAt (cursor);
-						else
-							ch = '\0';
-						
-						if (nInserted > 1 || (ch != '\0' && ch != '\t')) {
-							// tab-completion
-							return true;
-						}
-						
-						if (nInserted == 1 && ch == '\t') {
-							// base class inserted a tab, delete it
-							Editor.DeleteText (cursor, nInserted);
-						}
-					}
-					
-					reindent = true;
-					insert = false;
-				}
-			}
-			
-			if (insert)
-				engine.Push (c);
-			
-			// engine.Debug ();
-			
-			if (!(reindent || engine.NeedsReindent)) {
-				if (insert)
-					return base.KeyPress (key, modifier);
-				
-				return true;
 			}
 			
 			if (c == '\n') {
@@ -182,6 +129,61 @@ namespace CSharpBinding
 				}
 				
 				// need more context... fall thru
+			} else {
+				if (c == '\t') {
+					// Tab is a special case... depending on the context, the user may be
+					// requesting a re-indent, tab-completing, or may just be wanting to
+					// insert a literal tab.
+					if (!engine.IsInsideVerbatimString) {
+						bufLen = Editor.TextLength;
+						
+						if (base.KeyPress (key, modifier)) {
+							nInserted = Editor.TextLength - bufLen;
+							
+							if (nInserted >= 1)
+								ch = Editor.GetCharAt (cursor);
+							else
+								ch = '\0';
+							
+							if (nInserted > 1 || (ch != '\0' && ch != '\t')) {
+								// tab-completion
+								return true;
+							}
+							
+							if (nInserted == 1 && ch == '\t') {
+								// base class inserted a tab, delete it
+								Editor.DeleteText (cursor, nInserted);
+							}
+						}
+						
+						reindent = true;
+						insert = false;
+					}
+				}
+				
+				if (insert) {
+					bool recalibrate = cursor >= Editor.SelectionStartPosition;
+					
+					if (!base.KeyPress (key, modifier))
+						return false;
+					
+					if (recalibrate || cursor <= Editor.CursorPosition)
+						engine.Reset ();
+					
+					cursor = Editor.CursorPosition;
+					
+					for (int i = engine.Cursor; i < cursor; i++) {
+						if ((ch = Editor.GetCharAt (i)) == 0)
+							break;
+						
+						engine.Push (ch);
+					}
+				}
+				
+				//engine.Debug ();
+				
+				if (!(reindent || engine.NeedsReindent))
+					return true;
 			}
 			
 			// Get more context but w/o changing our IndentEngine state
@@ -230,9 +232,6 @@ namespace CSharpBinding
 			pos += offset;
 			Editor.CursorPosition = pos;
 			Editor.Select (pos, pos);
-			
-			if (insert)
-				return base.KeyPress (key, modifier);
 			
 			return true;
 		}

@@ -1,3 +1,9 @@
+2007-07-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Gui/CSharpTextEditorExtension.cs (KeyPress): Fixed a bug caused
+	when using any key other than Enter to auto-complete (e.g. using a
+	'(' or something).
+
 2007-07-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Parser/Resolver.cs: When resolving a type, include the enclosing
