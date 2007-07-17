@@ -1,3 +1,8 @@
+2007-07-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui/IconService.cs: New overload for getting an
+	  icon of a member.
+
 2007-07-13  Marcos David Marín Amador <MarcosMarin@gmail.com>
 
 	* MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml:

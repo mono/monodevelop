@@ -90,6 +90,21 @@ namespace MonoDevelop.Projects.Gui
 			return mod_private;
 		}
 		
+		public string GetIcon (IMember member)
+		{
+			if (member is IMethod)
+				return GetIcon ((IMethod) member);
+			if (member is IProperty)
+				return GetIcon ((IProperty) member);
+			if (member is IField)
+				return GetIcon ((IField) member);
+			if (member is IEvent)
+				return GetIcon ((IEvent) member);
+			if (member is IIndexer)
+				return GetIcon ((IIndexer) member);
+			return null;
+		}
+		
 		public string GetIcon (IMethod method)
 		{
 			return GetWithModifiers (method.Modifiers, Stock.Method, Stock.ProtectedMethod, Stock.InternalMethod, Stock.PrivateMethod);
