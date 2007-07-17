@@ -347,7 +347,7 @@ namespace VBBinding {
 
 			ProcessService ps = (ProcessService) ServiceManager.GetService (typeof(ProcessService));
 			ProcessWrapper pw = ps.StartProcess(tokens[0], "\"" + outstr + "\"", working_dir, outwr, errwr, delegate{});
-			pw.WaitForExit();
+			pw.WaitForOutput();
 			outwr.Close();
 			errwr.Close();
 		}
