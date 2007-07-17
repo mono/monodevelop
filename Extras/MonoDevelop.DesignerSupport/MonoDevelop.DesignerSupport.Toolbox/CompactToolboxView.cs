@@ -479,6 +479,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		Label label = new Label ();
 		public CustomTooltipWindow () : base (Gtk.WindowType.Popup)
 		{
+			Name = "gtk-tooltips";
 			label.Xalign = 0;
 			label.Xpad = 3;
 			label.Ypad = 3;
@@ -490,12 +491,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			base.OnExposeEvent (ev);
 			Gtk.Requisition req = SizeRequest ();
 			Gtk.Style.PaintFlatBox (this.Style, 
-			                        this.GdkWindow, 
-			                        Gtk.StateType.Normal, 
-			                        Gtk.ShadowType.Out, 
-			                        Gdk.Rectangle.Zero, 
-			                        this, "tooltip", 0, 0, req.Width, req.Height);
-			Gtk.Style.PaintBox (this.Style, 
 			                        this.GdkWindow, 
 			                        Gtk.StateType.Normal, 
 			                        Gtk.ShadowType.Out, 

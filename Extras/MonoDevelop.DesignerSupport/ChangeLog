@@ -1,3 +1,8 @@
+2007-07-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.DesignerSupport.Toolbox/CompactToolboxView.cs: Improve
+	  tooltip look.
+
 2007-07-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.DesignerSupport.addin.xml,
