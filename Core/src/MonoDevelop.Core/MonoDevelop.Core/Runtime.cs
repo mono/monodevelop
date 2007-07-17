@@ -77,18 +77,18 @@ namespace MonoDevelop.Core
 		
 		static void OnLoadError (object s, AddinErrorEventArgs args)
 		{
-			Console.WriteLine ("Add-in error (" + args.AddinId + "): " + args.Message);
-			Console.WriteLine (args.Exception);
+			object msg = "Add-in error (" + args.AddinId + "): " + args.Message;
+			Runtime.LoggingService.Error (msg, args.Exception);
 		}
 		
 		static void OnLoad (object s, AddinEventArgs args)
 		{
-//			Console.WriteLine ("Add-in loaded: " + args.AddinId);
+			Runtime.LoggingService.Info ("Add-in loaded: " + args.AddinId);
 		}
 		
 		static void OnUnload (object s, AddinEventArgs args)
 		{
-			Console.WriteLine ("Add-in unloaded: " + args.AddinId);
+			Runtime.LoggingService.Info ("Add-in unloaded: " + args.AddinId);
 		}
 		
 		internal static bool Initialized {

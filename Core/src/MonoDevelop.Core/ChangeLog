@@ -1,3 +1,9 @@
+2007-07-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Execution/ProcessHostController.cs,
+	  MonoDevelop.Core/Runtime.cs: Use the logging service instead of the
+	  console.
+
 2007-07-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Execution/AddinDependencyAttribute.cs: Set the
