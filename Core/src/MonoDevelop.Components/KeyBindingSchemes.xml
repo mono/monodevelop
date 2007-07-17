@@ -215,12 +215,12 @@
     <binding command="Find Next Selection" shortcut="Control+F3" />
     <binding command="Find Previous" shortcut="Shift+F3" />
     <binding command="Find Previous Selection" shortcut="Control+Shift+F3" />
-    <binding command="Find..." shortcut="Control+F" />
+    <binding command="Find..." shortcut="Control+S" />
     <binding command="Forward" shortcut="" />
     <binding command="Full Screen" shortcut="" />
     <binding command="Generate Autotools Files" shortcut="" />
     <binding command="Go to Line..." shortcut="Control+X|G" />
-    <binding command="Go to Matching Brace" shortcut="Control+B" />
+    <binding command="Go to Matching Brace" shortcut="" />
     <binding command="Go to Type..." shortcut="Control+Shift+t" />
     <binding command="GTK# support settings..." shortcut="" />
     <binding command="Import Glade file..." shortcut="" />
