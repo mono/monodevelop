@@ -903,6 +903,9 @@
 			<DialogPanel id = "SelectStyle"
 				         _label = "Visual Style"
 				         class = "MonoDevelop.Ide.Gui.OptionPanels.SelectStylePanel"/>
+			<DialogPanel id = "KeyBindings"
+				         _label = "Key Bindings"
+				         class = "MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel"/>				         
 			<DialogPanel id = "LoadSave"
 			             _label = "Load/Save"
 			             class = "MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanel"/>

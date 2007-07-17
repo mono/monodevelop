@@ -4,6 +4,7 @@ REFS =  \
 	$(GCONF_SHARP_LIBS) \
 	$(GECKO_SHARP_LIBS) \
 	$(GLADE_SHARP_LIBS) \
+	$(GLIB_SHARP_LIBS) \
 	$(GNOME_SHARP_LIBS) \
 	$(GNOME_VFS_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
@@ -40,6 +41,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.RenameItemDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs \
 	gtk-gui/MonoDevelop.Ide.NewHeaderTemplateDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs \
@@ -130,6 +132,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/CodeGenerationPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs \
+	MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/SelectStylePanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/TasksOptionsPanel.cs \
