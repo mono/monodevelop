@@ -20,6 +20,7 @@ REFS =  \
 FILES =  \
 	Freedesktop.RecentFiles/RecentFileStorage.cs \
 	Freedesktop.RecentFiles/RecentItem.cs \
+	MonoDevelop.Core.Gui.Codons/CommandCategoryCodon.cs \
 	MonoDevelop.Core.Gui.Codons/CommandCodon.cs \
 	MonoDevelop.Core.Gui.Codons/CommandItemCodon.cs \
 	MonoDevelop.Core.Gui.Codons/DialogPanelCodon.cs \

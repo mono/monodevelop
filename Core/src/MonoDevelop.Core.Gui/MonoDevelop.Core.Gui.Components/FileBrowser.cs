@@ -452,7 +452,7 @@ namespace MonoDevelop.Core.Gui.Components
 			} catch (UnauthorizedAccessException){
 				// Ignore
 			} catch (Exception ex) {
-				Console.WriteLine (ex);
+				Runtime.LoggingService.Error (ex);
 			}
 		}
 

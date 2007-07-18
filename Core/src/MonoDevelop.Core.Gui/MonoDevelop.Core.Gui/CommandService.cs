@@ -33,6 +33,7 @@ using System.Collections;
 using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.Codons;
 using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Core.Gui
@@ -53,10 +54,19 @@ namespace MonoDevelop.Core.Gui
 		
 		void OnExtensionChange (object s, ExtensionNodeEventArgs args)
 		{
-			if (args.Change == ExtensionChange.Add)
-				manager.RegisterCommand (args.ExtensionObject as Command);
-			else
-				manager.UnregisterCommand (args.ExtensionObject as Command);
+			if (args.Change == ExtensionChange.Add) {
+				if (args.ExtensionNode is CommandCodon)
+					manager.RegisterCommand ((Command) args.ExtensionObject);
+				else
+					// It's a category node. Track changes in the category.
+					args.ExtensionNode.ExtensionNodeChanged += OnExtensionChange;
+			}
+			else {
+				if (args.ExtensionNode is CommandCodon)
+					manager.UnregisterCommand ((Command)args.ExtensionObject);
+				else
+					args.ExtensionNode.ExtensionNodeChanged -= OnExtensionChange;
+			}
 		}
 		
 		public void EnableUpdate ()

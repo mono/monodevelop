@@ -157,6 +157,11 @@ namespace MonoDevelop.Core.Gui.Codons
 			
 			cmd.DisabledVisible = disabledVisible;
 			
+			// Assign the category of the command
+			CommandCategoryCodon cat = Parent as CommandCategoryCodon;
+			if (cat != null)
+				cmd.Category = cat.Name;
+			
 			return cmd;
 		}
 		
