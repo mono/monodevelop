@@ -1,3 +1,17 @@
+2007-07-18  Mike Krüger <mike@icsharpcode.net> 
+
+	* MonoDevelop.Gettext.Editor/CatalogEntry.cs,
+	  MonoDevelop.Gettext.Editor/CatalogEditor.cs,
+	  MonoDevelop.Gettext.Editor/CatalogDeletedEntry.cs,
+	  MonoDevelop.Gettext.Editor/CatalogHeaders.cs,
+	  MonoDevelop.Gettext.Editor/CatalogParser.cs,
+	  MonoDevelop.Gettext.Editor/POEditorWidget.cs,
+	  MonoDevelop.Gettext.Editor/Catalog.cs,
+	  gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs,
+	  MonoDevelop.Gettext/TranslationService.cs,
+	  MonoDevelop.Gettext/TranslationProject.cs: Worked on gettext addin.
+	  New (stetic based) editor, some fixes.
+
 2007-07-13  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Gettext/TranslationService.cs,

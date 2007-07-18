@@ -33,7 +33,7 @@ using System.Text;
 
 namespace MonoDevelop.Gettext.Editor
 {
-	internal class CatalogHeaders
+	public class CatalogHeaders
 	{
 		static readonly string version;
 		const string AddinName = "MonoDevelop.Gettext";

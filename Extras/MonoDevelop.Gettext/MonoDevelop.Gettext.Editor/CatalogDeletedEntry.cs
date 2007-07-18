@@ -36,7 +36,7 @@ namespace MonoDevelop.Gettext.Editor
 	// This class holds information about one particular deleted item.
 	// This includes deleted lines, references, translation's status
 	// (fuzzy, non translated, translated) and optional comment(s).
-	internal class CatalogDeletedEntry
+	public class CatalogDeletedEntry
 	{
 		List<string> deletedLines;
         List<string> references;

@@ -37,7 +37,7 @@ namespace MonoDevelop.Gettext.Editor
 	// This includes original string and its occurences in source code
 	// (so-called references), translation and translation's status
 	// (fuzzy, non translated, translated) and optional comment.
-	internal class CatalogEntry
+	public class CatalogEntry
 	{
 		public enum Validity
 		{

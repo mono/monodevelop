@@ -34,7 +34,7 @@ using System.IO;
 
 namespace MonoDevelop.Gettext.Editor
 {
-	internal abstract class CatalogParser
+	public abstract class CatalogParser
 	{
 		//string fileName;
         string loadedFile;

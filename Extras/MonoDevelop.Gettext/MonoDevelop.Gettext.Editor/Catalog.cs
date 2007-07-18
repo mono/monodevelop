@@ -36,7 +36,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Gettext.Editor
 {
-	internal class Catalog : IEnumerable<CatalogEntry>
+	public class Catalog : IEnumerable<CatalogEntry>
 	{
 		IDictionary<string, CatalogEntry> entriesDict;
 		List<CatalogEntry> entriesList;

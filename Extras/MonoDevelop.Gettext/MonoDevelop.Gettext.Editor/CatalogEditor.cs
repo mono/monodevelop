@@ -39,7 +39,8 @@ namespace MonoDevelop.Gettext.Editor
 {
 	internal class CatalogEditor : AbstractViewContent
 	{
-		Catalog catalog;
+		Catalog catalog = new Catalog ();
+		POEditorWidget poEditorWidget = new POEditorWidget ();
 		EditorWidget catalogEditor;
 		CatalogHeadersWidget headersEditor;
 		
@@ -53,88 +54,85 @@ namespace MonoDevelop.Gettext.Editor
 		
 		private CatalogEditor ()
 		{
-			catalog = new Catalog ();
-			catalogEditor = new EditorWidget (catalog);
-			headersEditor = new CatalogHeadersWidget ();
-			headersEditor.CatalogHeaders = catalog.Headers;
-			headersEditor.PluralDefinitionChanged += delegate
-			{
-				catalogEditor.UpdatePluralDefinitions ();
-			};
-			catalogEditor.ShowAll ();
-			headersEditor.ShowAll ();
+//			catalogEditor = new EditorWidget (catalog);
 			
-			notebook = new Gtk.Notebook ();
-			
-			// Main notebook
-			notebook.TabPos = Gtk.PositionType.Bottom;
-			notebook.ShowTabs = false;
-			notebook.Show ();
-			box = new VBox ();
-			
-			// Bottom box - toolbar + progress bar
-			hbox = new HBox ();
-			
-			toolbar = new Toolbar ();
-//			toolbar.IconSize = IconSize.SmallToolbar;
-			toolbar.ToolbarStyle = ToolbarStyle.BothHoriz;
-			toolbar.ShowArrow = false;
-			
-			AddButton (GettextCatalog.GetString ("Translation"), catalogEditor).Active = true;
-			AddButton (GettextCatalog.GetString ("Headers"), headersEditor).Active = false;
-			toolbar.ShowAll ();
-			
-			statBar = new ProgressBar ();
-			statBar.Orientation = ProgressBarOrientation.LeftToRight;
-			string barText = String.Format (GettextCatalog.GetString ("{0:#00.00}% Translated"), 0.0) + " (";
-			barText += String.Format (GettextCatalog.GetPluralString ("{0} Fuzzy Message", "{0} Fuzzy Messages", 0), 0) + ")";
-			statBar.Text = barText;
-			statBar.Show ();
-			
-			vbox = new VBox ();
-			vbox.PackStart (statBar, false, false, 2);
-			vbox.Show ();
-			
-			hbox.PackStart (toolbar, true, true, 0);
-			hbox.PackStart (vbox, false, false, 4); 
-			
-			hbox.Show ();
-			
-			box.PackStart (notebook, true, true, 0);
-			box.PackStart (hbox, false, false, 0);
-			
-			box.Show ();
+//			headersEditor.PluralDefinitionChanged += delegate
+//			{
+//				catalogEditor.UpdatePluralDefinitions ();
+//			};
+//			poEditorWidget.Showll ();
+//			//catalogEditor.ShowAll ();
+//			headersEditor.ShowAll ();
+//			
+//			notebook = new Gtk.Notebook ();
+//			
+//			// Main notebook
+//			notebook.TabPos = Gtk.PositionType.Bottom;
+//			notebook.ShowTabs = false;
+//			notebook.Show ();
+//			box = new VBox ();
+//			
+//			// Bottom box - toolbar + progress bar
+//			hbox = new HBox ();
+//			
+//			toolbar = new Toolbar ();
+////			toolbar.IconSize = IconSize.SmallToolbar;
+//			toolbar.ToolbarStyle = ToolbarStyle.BothHoriz;
+//			toolbar.ShowArrow = false;
+//			
+//			AddButton (GettextCatalog.GetString ("Translation"), catalogEditor).Active = true;
+//			AddButton (GettextCatalog.GetString ("Headers"), headersEditor).Active = false;
+//			toolbar.ShowAll ();
+//			
+//			statBar = new ProgressBar ();
+//			statBar.Orientation = ProgressBarOrientation.LeftToRight;
+//			string barText = String.Format (GettextCatalog.GetString ("{0:#00.00}% Translated"), 0.0) + " (";
+//			barText += String.Format (GettextCatalog.GetPluralString ("{0} Fuzzy Message", "{0} Fuzzy Messages", 0), 0) + ")";
+//			statBar.Text = barText;
+//			statBar.Show ();
+//			
+//			vbox = new VBox ();
+//			vbox.PackStart (statBar, false, false, 2);
+//			vbox.Show ();
+//			
+//			hbox.PackStart (toolbar, true, true, 0);
+//			hbox.PackStart (vbox, false, false, 4); 
+//			
+//			hbox.Show ();
+//			
+//			box.PackStart (notebook, true, true, 0);
+//			box.PackStart (hbox, false, false, 0);
+//			
+//			box.Show ();
 		}
 		
-		public CatalogEditor (string poFile)
-			: this ()
+		public CatalogEditor (string poFile) : this ()
 		{
 			Load (poFile);
-			catalog.OnDirtyChanged += delegate (object sender, EventArgs args)
-			{
+			catalog.OnDirtyChanged += delegate (object sender, EventArgs args) {
 				IsDirty = catalog.IsDirty;
-				UpdateStats ();
 				if (sender is CatalogEntry)
-					this.catalogEditor.UpdateEntry (sender as CatalogEntry);
+					this.poEditorWidget.UpdateEntry (sender as CatalogEntry);
 			};
-			catalogEditor.ShowAll ();
-			headersEditor.ShowAll ();
+			
+//			catalogEditor.ShowAll ();
+//			headersEditor.ShowAll ();
 		}
-		
-		ToggleToolButton AddButton (string label, Gtk.Widget page)
-		{
-			updating = true;
-			ToggleToolButton button = new ToggleToolButton ();
-			button.Label = label;
-			button.IsImportant = true;
-			button.Clicked += new EventHandler (OnButtonToggled);
-			button.ShowAll ();
-			toolbar.Insert (button, -1);
-			notebook.AppendPage (page, new Gtk.Label ());
-			updating = false;
-			return button;
-		}
-		
+//		
+//		ToggleToolButton AddButton (string label, Gtk.Widget page)
+//		{
+//			updating = true;
+//			ToggleToolButton button = new ToggleToolButton ();
+//			button.Label = label;
+//			button.IsImportant = true;
+//			button.Clicked += new EventHandler (OnButtonToggled);
+//			button.ShowAll ();
+//			toolbar.Insert (button, -1);
+//			notebook.AppendPage (page, new Gtk.Label ());
+//			updating = false;
+//			return button;
+//		}
+//		
 //		void RemoveButton (int npage)
 //		{
 //			notebook.RemovePage (npage);
@@ -142,42 +140,44 @@ namespace MonoDevelop.Gettext.Editor
 //			ShowPage (0);
 //		}
 		
-		void OnButtonToggled (object s, EventArgs args)
-		{
-			int i = Array.IndexOf (toolbar.Children, s);
-			if (i != -1)
-				ShowPage (i);
-		}
-		
-		void ShowPage (int npage)
-		{
-			if (notebook.CurrentPage == npage)
-				return;
-				
-			if (updating) return;
-			updating = true;
-			
-			notebook.CurrentPage = npage;
-			Gtk.Widget[] buttons = toolbar.Children;
-			for (int n=0; n<buttons.Length; n++) {
-				ToggleToolButton b = (ToggleToolButton) buttons [n];
-				b.Active = (n == npage);
-			}
-
-			updating = false;
-		}
+//		void OnButtonToggled (object s, EventArgs args)
+//		{
+//			int i = Array.IndexOf (toolbar.Children, s);
+//			if (i != -1)
+//				ShowPage (i);
+//		}
+//		
+//		void ShowPage (int npage)
+//		{
+//			if (notebook.CurrentPage == npage)
+//				return;
+//				
+//			if (updating) return;
+//			updating = true;
+//			
+//			notebook.CurrentPage = npage;
+//			Gtk.Widget[] buttons = toolbar.Children;
+//			for (int n=0; n<buttons.Length; n++) {
+//				ToggleToolButton b = (ToggleToolButton) buttons [n];
+//				b.Active = (n == npage);
+//			}
+//
+//			updating = false;
+//		}
 		
 		public override void Dispose ()
 		{
-			headersEditor.Destroy ();
-			catalogEditor.Destroy ();
-			statBar.Destroy ();
-			vbox.Destroy ();
-			hbox.Destroy ();
-			box.Destroy ();
-			vbox = null;
-			hbox = null;
-			box = null;
+			this.poEditorWidget.Destroy ();
+			this.poEditorWidget = null;
+			
+//			catalogEditor.Destroy ();
+//			statBar.Destroy ();
+//			vbox.Destroy ();
+//			hbox.Destroy ();
+//			box.Destroy ();
+//			vbox = null;
+//			hbox = null;
+//			box = null;
 			base.Dispose ();
 		}
 		
@@ -188,25 +188,14 @@ namespace MonoDevelop.Gettext.Editor
 			{
 				// TODO: GUI Feedback
 			}
+			poEditorWidget.Catalog = catalog;
+			poEditorWidget.POFileName = fileName;
 			
-			catalogEditor.Catalog = catalog;
-			headersEditor.CatalogHeaders = catalog.Headers;
+//			catalogEditor.Catalog = catalog;
+//			headersEditor.CatalogHeaders = catalog.Headers;
 			
 			this.ContentName = fileName;
 			this.IsDirty = false;
-			UpdateStats ();
-		}
-		
-		void UpdateStats ()
-		{
-			int all, untrans, fuzzy, bad;
-			catalog.GetStatistics (out all, out fuzzy, out bad, out untrans);
-			double percentage = all > 0 ? ((double)(all - untrans) / all) * 100 : 0.0;
-			string barText = String.Format (GettextCatalog.GetString ("{0:#00.00}% Translated"), percentage) + " (";
-			barText += String.Format (GettextCatalog.GetPluralString ("{0} Fuzzy Message", "{0} Fuzzy Messages", fuzzy), fuzzy) + ")";
-			statBar.Text = barText;
-			percentage = percentage / 100;
-			statBar.Fraction = percentage;
 		}
 		
 		public override void Save (string fileName)
@@ -224,7 +213,7 @@ namespace MonoDevelop.Gettext.Editor
 		
 		public override Widget Control
 		{
-			get { return box; }
+			get { return poEditorWidget; }
 		}
 				
 		public override bool IsReadOnly

@@ -71,13 +71,22 @@ namespace MonoDevelop.Gettext
 			return null;
 		}
 		
+		static int GetLineNumber (string text, int index)
+		{
+			int result = 0;
+			for (int i = 0; i < index; i++)
+				if (text[i] == '\n')
+					result++;
+			return result;
+		}
+		
 		static Regex xmlTranslationPattern = new Regex(@"_.*=""(.*)""", RegexOptions.Compiled);
 		static void UpdateXmlTranslations (TranslationProject translationProject, string fileName)
 		{
 			string text = File.ReadAllText (fileName);
 			if (!String.IsNullOrEmpty (text)) {
 				foreach (Match match in xmlTranslationPattern.Matches (text)) {
-					translationProject.AddTranslationString (match.Groups[1].Value);
+					translationProject.AddTranslationString (match.Groups[1].Value, fileName, GetLineNumber (text, match.Index));
 				}
 			}
 		}
@@ -88,7 +97,7 @@ namespace MonoDevelop.Gettext
 			string text = File.ReadAllText (fileName);
 			if (!String.IsNullOrEmpty (text)) {
 				foreach (Match match in steticTranslationPattern.Matches (text)) {
-					translationProject.AddTranslationString (match.Groups[1].Value);
+					translationProject.AddTranslationString (match.Groups[1].Value, fileName, GetLineNumber (text, match.Index));
 				}
 			}
 		}
@@ -102,12 +111,10 @@ namespace MonoDevelop.Gettext
 			if (!String.IsNullOrEmpty (text)) {
 				Console.WriteLine ("find matches");
 				foreach (Match match in translationPattern.Matches (text)) {
-					Console.WriteLine ("match1: " +match.Groups[1].Value);
-					translationProject.AddTranslationString (match.Groups[1].Value);
+					translationProject.AddTranslationString (match.Groups[1].Value, fileName, GetLineNumber (text, match.Index));
 				}
 				foreach (Match match in pluralTranslationPattern.Matches (text)) {
-					Console.WriteLine ("match2: " +match.Groups[1].Value);
-					translationProject.AddTranslationString (match.Groups[1].Value, match.Groups[2].Value);
+					translationProject.AddTranslationString (match.Groups[1].Value, match.Groups[2].Value, fileName, GetLineNumber (text, match.Index));
 				}
 			}
 		}

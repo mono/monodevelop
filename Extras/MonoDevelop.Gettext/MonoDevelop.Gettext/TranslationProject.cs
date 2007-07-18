@@ -83,19 +83,23 @@ namespace MonoDevelop.Gettext
 			return Path.Combine (base.BaseDirectory, isoCode + ".po");
 		}
 		
-		public void AddTranslationString (string originalString)
+		public void AddTranslationString (string originalString, string fileName, int lineNr)
 		{
-			AddTranslationString (originalString, null);
+			AddTranslationString (originalString, null, fileName, lineNr);
 		}
 		
-		public void AddTranslationString (string originalString, string originalPluralString)
+		public void AddTranslationString (string originalString, string originalPluralString, string fileName, int lineNr)
 		{
 			foreach (Translation translation in this.Translations) {
 				string poFileName = GetFileName (translation);
 				Catalog catalog = new Catalog (poFileName);
 				if (catalog.FindItem (originalString) == null) {
-					Console.WriteLine ("add item: " + originalString);
-					catalog.AddItem (new CatalogEntry (catalog, originalString, originalPluralString));
+					CatalogEntry newEntry = new CatalogEntry (catalog, originalString, originalPluralString);
+					
+					newEntry.AddReference (MonoDevelop.Core.Runtime.FileService.AbsoluteToRelativePath (this.BaseDirectory, fileName) + ":" + lineNr);
+					if (!String.IsNullOrEmpty (originalPluralString))
+						newEntry.SetTranslations (new string[] {"", ""});
+					catalog.AddItem (newEntry);
 					catalog.Save (poFileName);
 				}
 			}
