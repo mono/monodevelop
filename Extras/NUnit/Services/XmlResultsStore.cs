@@ -31,6 +31,7 @@ using System.IO;
 using System.Collections;
 using System.Xml.Serialization;
 using System.Globalization;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.NUnit
 {
@@ -237,7 +238,7 @@ namespace MonoDevelop.NUnit
 			try {
 				res = (TestRecord) serializer.Deserialize (s);
 			} catch (Exception ex) {
-				Console.WriteLine (ex);
+				Runtime.LoggingService.Error (ex);
 				return null;
 			} finally {
 				s.Close ();

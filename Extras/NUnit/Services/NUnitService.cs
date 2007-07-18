@@ -89,7 +89,7 @@ namespace MonoDevelop.NUnit
 				if (types != null) {
 					foreach (Type t in types) {
 						if (!typeof(ICloneable).IsAssignableFrom (t)) {
-							Console.WriteLine ("Option types must implement ICloneable: " + t);
+							Runtime.LoggingService.Error ("Option types must implement ICloneable: " + t);
 							continue;
 						}
 						ps.DataContext.IncludeType (t);
@@ -214,7 +214,7 @@ namespace MonoDevelop.NUnit
 				test.SaveResults ();
 				success = true;
 			} catch (Exception ex) {
-				Console.WriteLine (ex);
+				Runtime.LoggingService.Error (ex);
 				monitor.ReportRuntimeError (null, ex);
 				success = false;
 			} finally {

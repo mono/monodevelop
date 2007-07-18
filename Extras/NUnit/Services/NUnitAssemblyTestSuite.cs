@@ -153,7 +153,7 @@ namespace MonoDevelop.NUnit
 				testInfoCache.SetInfo (AssemblyPath, loadData.Info);
 			}
 			catch (Exception ex) {
-				Console.WriteLine (ex);
+				Runtime.LoggingService.Error (ex);
 				newStatus = TestStatus.LoadError;
 			}
 			finally {
@@ -220,7 +220,7 @@ namespace MonoDevelop.NUnit
 						}
 					}
 				} catch (Exception ex) {
-					Console.WriteLine (ex);	// Remove this
+					Runtime.LoggingService.Error (ex);
 				}
 				
 				ExternalTestRunner runner = null;
@@ -284,7 +284,7 @@ namespace MonoDevelop.NUnit
 				else
 					result = localMonitor.GetLocalTestResult (res);
 			} catch (Exception ex) {
-				Console.WriteLine (ex);
+				Runtime.LoggingService.Error (ex);
 				if (localMonitor.RunningTest != null) {
 					RuntimeErrorCleanup (testContext, localMonitor.RunningTest, ex);
 				} else {
