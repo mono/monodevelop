@@ -1,3 +1,11 @@
+2007-07-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs (Load): Only
+	add the key/value pair to the user-defined templates if it is not the
+	default. Also, set header = headerText when it /is/ the default rather
+	than setting it to reader.Read () since that will return empty string
+	once the header text had already been read.
+
 2007-07-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Content/IExtensibleTextEditor.cs,

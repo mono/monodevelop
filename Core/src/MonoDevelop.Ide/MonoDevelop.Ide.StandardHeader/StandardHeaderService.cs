@@ -201,12 +201,15 @@ namespace MonoDevelop.Ide.StandardHeaders
 						case HeaderNode:
 							string name       = reader.GetAttribute (NameAttribute);
 							string headerText = reader.ReadString ();
-							if (String.IsNullOrEmpty (name)) {
-								header = reader.ReadString ();
-							}
-							customTemplates.Add (new KeyValuePair<string, string> (name, header));
-							break;
 							
+							if (String.IsNullOrEmpty (name)) {
+								// Default header
+								header = headerText;
+							} else {
+								customTemplates.Add (new KeyValuePair<string, string> (name, headerText));
+							}
+							
+							break;
 						}
 					}
 				}
