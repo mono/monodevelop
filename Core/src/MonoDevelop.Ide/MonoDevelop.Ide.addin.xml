@@ -709,6 +709,14 @@
 				type="array"
 				_label = "Refactory Operations" /> 
 		</Category>
+				
+		<!-- TextEditorCommands -->
+		<Category _name = "Text Editor" id = "TextEditor">
+		
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow"
+				_label = "Show completion window" 
+				shortcut = "Control|space" />
+		</Category>
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/CombineBrowserNode" extension-nodes="CommandItem, SeparatorItem, ItemSet, LinkItem, LocalCommandItem" description="Context menu for solutions in the solution pad.">
@@ -1075,6 +1083,7 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UncommentCode" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" />
 			<ItemSet id = "Advanced" _label = "_Advanced">
 				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UppercaseSelection" />
 				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection" />

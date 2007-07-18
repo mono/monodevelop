@@ -4,10 +4,12 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Ambience;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
-	public class TextEditorExtension: ITextEditorExtension, IDisposable
+	public class TextEditorExtension: ITextEditorExtension, ICommandRouter, IDisposable
 	{
 		internal ITextEditorExtension Next;
 		internal Document document;
@@ -105,21 +107,8 @@ namespace MonoDevelop.Ide.Gui.Content
 			// Handle code completion
 			
 			if (completionWidget != null && currentCompletionContext == null) {
-				ICompletionDataProvider cp = null;
-				if (key == Gdk.Key.space && (modifier & Gdk.ModifierType.ControlMask) != 0) {
-					int cpos, wlen;
-					if (!GetCompletionCommandOffset (out cpos, out wlen)) {
-						cpos = Editor.CursorPosition;
-						wlen = 0;
-					}
-					currentCompletionContext = completionWidget.CreateCodeCompletionContext (cpos);
-					currentCompletionContext.TriggerWordLength = wlen;
-					cp = CodeCompletionCommand (currentCompletionContext);
-				}
-				else {
-					currentCompletionContext = completionWidget.CreateCodeCompletionContext (Editor.CursorPosition);
-					cp = HandleCodeCompletion (currentCompletionContext, (char)(uint)key);
-				}
+				currentCompletionContext = completionWidget.CreateCodeCompletionContext (Editor.CursorPosition);
+				ICompletionDataProvider cp = HandleCodeCompletion (currentCompletionContext, (char)(uint)key);
 					
 				if (cp != null)
 					CompletionListWindow.ShowWindow ((char)(uint)key, cp, completionWidget, currentCompletionContext, OnCompletionWindowClosed);
@@ -163,6 +152,36 @@ namespace MonoDevelop.Ide.Gui.Content
 			
 			if (Next != null)
 				Next.CursorPositionChanged ();
+		}
+		
+		[CommandUpdateHandler (TextEditorCommands.ShowCompletionWindow)]
+		internal void OnUpdateCompletionCommand (CommandInfo info)
+		{
+			info.Bypass = !CanRunCompletionCommand ();
+		}
+		
+		[CommandHandler (TextEditorCommands.ShowCompletionWindow)]
+		public virtual void RunCompletionCommand ()
+		{
+			ICompletionDataProvider cp = null;
+			int cpos, wlen;
+			if (!GetCompletionCommandOffset (out cpos, out wlen)) {
+				cpos = Editor.CursorPosition;
+				wlen = 0;
+			}
+			currentCompletionContext = completionWidget.CreateCodeCompletionContext (cpos);
+			currentCompletionContext.TriggerWordLength = wlen;
+			cp = CodeCompletionCommand (currentCompletionContext);
+				
+			if (cp != null)
+				CompletionListWindow.ShowWindow ((char)0, cp, completionWidget, currentCompletionContext, OnCompletionWindowClosed);
+			else
+				currentCompletionContext = null;
+		}
+		
+		public virtual bool CanRunCompletionCommand ()
+		{
+			return (completionWidget != null && currentCompletionContext == null);
 		}
 		
 		public virtual ICompletionDataProvider HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar)
@@ -246,12 +265,29 @@ namespace MonoDevelop.Ide.Gui.Content
 			if (document == null)
 				throw new InvalidOperationException ("Editor extension not yet initialized");
 		}
+		
+		object ITextEditorExtension.GetExtensionCommandTarget ()
+		{
+			return this;
+		}
+		
+		object ICommandRouter.GetNextCommandTarget ()
+		{
+			if (Next != null)
+				return Next.GetExtensionCommandTarget ();
+			else
+				return null;
+		}
 	}
 	
 	public interface ITextEditorExtension
 	{
 		bool KeyPress (Gdk.Key key, Gdk.ModifierType modifier);
 		void CursorPositionChanged ();
+		
+		// Return the object that is going to process commands, or null
+		// if commands don't need custom processing
+		object GetExtensionCommandTarget ();
 	}
 	
 	class TextEditorExtensionMarker: TextEditorExtension

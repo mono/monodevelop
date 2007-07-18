@@ -78,6 +78,7 @@ FILES =  \
 	MonoDevelop.Ide.Commands/ProjectCommands.cs \
 	MonoDevelop.Ide.Commands/RefactoryCommands.cs \
 	MonoDevelop.Ide.Commands/SearchCommands.cs \
+	MonoDevelop.Ide.Commands/TextEditorCommands.cs \
 	MonoDevelop.Ide.Commands/ToolsCommands.cs \
 	MonoDevelop.Ide.Commands/ViewCommands.cs \
 	MonoDevelop.Ide.Commands/WindowCommands.cs \

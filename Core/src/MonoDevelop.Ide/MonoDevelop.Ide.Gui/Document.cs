@@ -124,10 +124,7 @@ namespace MonoDevelop.Ide.Gui
 			get {
 				if (!editorChecked) {
 					editorChecked = true;
-					if (GetContent<IEditableTextBuffer> () != null)
-						textEditor = new TextEditor (Window.ViewContent);
-					else
-						textEditor = null;
+					textEditor = TextEditor.GetTextEditor (Window.ViewContent);
 				}
 				return textEditor;
 			}
@@ -347,6 +344,10 @@ namespace MonoDevelop.Ide.Gui
 			}
 			if (editorExtension != null)
 				last.Next = editor.AttachExtension (editorExtension);
+		}
+		
+		internal object ExtendedCommandTargetChain {
+			get { return editorExtension; }
 		}
 		
 		void OnEntryRemoved (object sender, CombineEntryEventArgs args)

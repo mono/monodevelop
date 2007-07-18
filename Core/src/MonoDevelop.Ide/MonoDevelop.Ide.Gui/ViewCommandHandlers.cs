@@ -48,14 +48,16 @@ using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public class ViewCommandHandlers: ICommandRouter
+	public class ViewCommandHandlers: ICommandDelegatorRouter
 	{
 		IWorkbenchWindow window;
 		object nextTarget;
+		Document doc;
 
 		public ViewCommandHandlers (IWorkbenchWindow window)
 		{
 			this.window = window;
+			doc = IdeApp.Workbench.WrapDocument (window);
 		}
 		
 		public T GetContent <T>()
@@ -63,9 +65,14 @@ namespace MonoDevelop.Ide.Gui
 			return (T) window.ActiveViewContent.GetContent (typeof(T));
 		}
 		
-		object ICommandRouter.GetNextCommandTarget ()
+		object ICommandDelegatorRouter.GetNextCommandTarget ()
 		{
 			return nextTarget;
+		}
+		
+		object ICommandDelegatorRouter.GetDelegatedCommandTarget ()
+		{
+			return doc.ExtendedCommandTargetChain;
 		}
 		
 		public void SetNextCommandTarget (object nextTarget)

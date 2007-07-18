@@ -479,7 +479,7 @@ namespace MonoDevelop.Ide.Gui
 				ActiveDocumentChanged (s, a);
 		}
 		
-		Document WrapDocument (IWorkbenchWindow window)
+		internal Document WrapDocument (IWorkbenchWindow window)
 		{
 			if (window == null) return null;
 			Document doc = FindDocument (window);

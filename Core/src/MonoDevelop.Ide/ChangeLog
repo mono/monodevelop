@@ -1,3 +1,16 @@
+2007-07-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Content/IExtensibleTextEditor.cs,
+	  MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs,
+	  MonoDevelop.Ide.Commands/TextEditorCommands.cs,
+	  MonoDevelop.Ide.addin.xml, MonoDevelop.Ide.mdp, Makefile.am,
+	  MonoDevelop.Ide.Gui/Document.cs,
+	  MonoDevelop.Ide.Gui/ViewCommandHandlers.cs,
+	  MonoDevelop.Ide.Gui/TextEditor.cs,
+	  MonoDevelop.Ide.Gui/Workbench.cs: Included text editor extensions
+	  in the commad route, so extensions can now implement command
+	  handlers. Implemented the ShowCompletionWindow as a command.
+
 2007-07-17  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs: Use cmd.Id

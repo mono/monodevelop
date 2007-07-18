@@ -16,16 +16,20 @@ namespace MonoDevelop.Ide.Gui
 		
 		// All line and column numbers are 1-based
 		
-		public TextEditor (IBaseViewContent content)
+		public static TextEditor GetTextEditor (IBaseViewContent content)
 		{
-			bookmarkBuffer = (IBookmarkBuffer) content.GetContent (typeof(IBookmarkBuffer));
-			codeStyleOperations = (ICodeStyleOperations) content.GetContent (typeof(ICodeStyleOperations));
-			textBuffer = (IEditableTextBuffer) content.GetContent (typeof(IEditableTextBuffer));
-			encodedTextContent = (IEncodedTextContent) content.GetContent (typeof(IEncodedTextContent));
-			positionable = (IPositionable) content.GetContent (typeof(IPositionable));
-			completionWidget = (ICompletionWidget) content.GetContent (typeof(ICompletionWidget));
-			if (textBuffer == null)
-				throw new InvalidOperationException ("Content does not provide an IEditableTextBuffer implementation.");
+			IEditableTextBuffer tb = (IEditableTextBuffer) content.GetContent (typeof(IEditableTextBuffer));
+			if (tb == null)
+				return null;
+			
+			TextEditor ed = new TextEditor ();
+			ed.textBuffer = tb;
+			ed.bookmarkBuffer = (IBookmarkBuffer) content.GetContent (typeof(IBookmarkBuffer));
+			ed.codeStyleOperations = (ICodeStyleOperations) content.GetContent (typeof(ICodeStyleOperations));
+			ed.encodedTextContent = (IEncodedTextContent) content.GetContent (typeof(IEncodedTextContent));
+			ed.positionable = (IPositionable) content.GetContent (typeof(IPositionable));
+			ed.completionWidget = (ICompletionWidget) content.GetContent (typeof(ICompletionWidget));
+			return ed;
 		}
 		
 		public bool SupportsBookmarks {
