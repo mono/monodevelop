@@ -45,7 +45,7 @@ namespace MonoDevelop.Deployment.Gui
 				if (editor != null)
 					PackStart (editor.CreateEditor (target), true, true, 0);
 			} catch (Exception ex) {
-				Console.WriteLine (ex);
+				Runtime.LoggingService.Error (ex);
 				PackStart (new Gtk.Label ("Could not create editor for deploy target of type " + target));
 			}
 			ShowAll ();

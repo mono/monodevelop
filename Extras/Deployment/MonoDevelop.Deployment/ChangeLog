@@ -1,3 +1,9 @@
+2007-07-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment/DeployContext.cs,
+	  MonoDevelop.Deployment.Gui/PackageBuilderEditor.cs: Use the log
+	  service for logging errors.
+
 2007-07-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment/InstallResolver.cs,
