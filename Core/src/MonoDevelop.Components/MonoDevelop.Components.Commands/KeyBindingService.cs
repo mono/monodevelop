@@ -71,7 +71,12 @@ namespace MonoDevelop.Components.Commands {
 			if (cmd == null)
 				return;
 			
-			string key = cmd.Text.Replace ("_", String.Empty);
+			string key;
+			if (cmd.Id is Enum)
+				key = cmd.Id.GetType () + "." + cmd.Id;
+			else
+				key = cmd.Id.ToString ();
+			
 			if (current.ContainsKey (key))
 				cmd.AccelKey = current[key];
 		}

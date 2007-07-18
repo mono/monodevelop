@@ -1,3 +1,8 @@
+2007-07-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Components.Commands/KeyBindingService.cs (LoadBinding):
+	Doh, need to use the correct hash key.
+
 2007-07-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Components.Commands/CommandManager.cs,
