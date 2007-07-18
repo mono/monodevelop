@@ -65,6 +65,7 @@
     <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="./MonoDevelopNUnit.addin.xml" subtype="Code" buildaction="FileCopy" />
     <File name="./templates/NUnitProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./Gui/nunit.png" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="glade-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />

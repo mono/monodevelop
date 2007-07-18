@@ -60,6 +60,7 @@ RES =  \
 	Gui/NUnit.Loading.png \
 	Gui/NUnit.None.png \
 	Gui/NUnit.NotRun.png \
+	Gui/nunit.png \
 	Gui/NUnit.Running.png \
 	Gui/NUnit.Success.png \
 	Gui/NUnit.SuccessAndFailed.png \
