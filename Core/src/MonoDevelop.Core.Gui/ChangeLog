@@ -1,3 +1,10 @@
+2007-07-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.Codons/CommandCategoryCodon.cs: Translate
+	  category names.
+	* icons/Icons.16x16.PropertiesIcon, icons/Icons.16x16.TaskListIcon: Use
+	  gnome icons.
+
 2007-07-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.mdp,

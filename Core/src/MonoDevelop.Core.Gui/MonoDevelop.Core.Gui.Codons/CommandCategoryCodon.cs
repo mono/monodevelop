@@ -42,7 +42,7 @@ namespace MonoDevelop.Core.Gui.Codons
 		
 		public string Name {
 			get {
-				return name;
+				return GettextCatalog.GetString (name);
 			}
 		}
 	}
