@@ -1,3 +1,19 @@
+2007-07-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs: Show command
+	  icons in the list.
+	* MonoDevelop.Ide.Commands/ViewCommands.cs: The pad list doesn't show
+	  checkboxes anymore. Instead, clicking on an option always brings
+	  the pad to front.
+	* MonoDevelop.Ide.Gui.Pads/TaskListPad.cs,
+	  MonoDevelop.Ide.Gui.Pads/FileScout.cs: Pad icons are set in the xml
+	  file.
+	* MonoDevelop.Ide.addin.xml: Updated some pad icons.
+	* MonoDevelop.Ide.mdp, Makefile.am, icons/system-file-manager.png: New
+	  icon for the file pad.
+	* MonoDevelop.Ide.Gui/Workbench.cs: Minor fix.
+	* MonoDevelop.Ide.Gui/Pad.cs: Added icon property.
+
 2007-07-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Templates/FileTemplate.cs,

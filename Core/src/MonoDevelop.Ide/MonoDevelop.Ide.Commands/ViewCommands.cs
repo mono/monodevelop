@@ -81,6 +81,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			foreach (Pad pad in IdeApp.Workbench.Pads) {
 				CommandInfo cmd = new CommandInfo (pad.Title);
+				cmd.Icon = pad.Icon;
 				cmd.UseMarkup = true;
 				cmd.Checked = pad.Visible;
 				info.Add (cmd, pad);
@@ -90,7 +91,8 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run (object ob)
 		{
 			Pad pad = (Pad) ob;
-			pad.Visible = !pad.Visible;
+			pad.Visible = true;
+			pad.BringToFront ();
 		}
 	}
 	

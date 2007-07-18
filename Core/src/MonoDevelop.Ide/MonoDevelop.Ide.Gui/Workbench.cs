@@ -430,6 +430,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			Pad pad = GetLocationListPad ();
 			if (pad != null) {
+				pad.BringToFront ();
 				ILocationListPad loc = (ILocationListPad) pad.Content;
 				string file;
 				int lin, col;
@@ -444,6 +445,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			Pad pad = GetLocationListPad ();
 			if (pad != null) {
+				pad.BringToFront ();
 				ILocationListPad loc = (ILocationListPad) pad.Content;
 				string file;
 				int lin, col;
@@ -469,7 +471,6 @@ namespace MonoDevelop.Ide.Gui
 			if (active == null)
 				return null;
 			
-			active.BringToFront ();
 			return active;
 		}
 		

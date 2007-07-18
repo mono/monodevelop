@@ -56,6 +56,10 @@ namespace MonoDevelop.Ide.Gui
 			get { return window.Title; }
 		}
 		
+		public string Icon {
+			get { return window.Icon; }
+		}
+		
 		public string Id {
 			get { return window.Id; }
 		}

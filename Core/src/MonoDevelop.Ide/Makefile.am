@@ -308,6 +308,7 @@ RES =  \
 	icons/navigate-previous.png \
 	icons/parsing.png \
 	icons/SplashScreen.png \
+	icons/system-file-manager.png \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderTemplates.xml \
 	templates/AppConfigFile.xft.xml \
 	templates/BlankCombine.xpt.xml \

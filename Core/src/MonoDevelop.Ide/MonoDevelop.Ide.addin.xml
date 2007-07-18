@@ -521,7 +521,7 @@
 		
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ViewList"
 				defaultHandler = "MonoDevelop.Ide.Commands.ViewListHandler"
-				type="check|array"
+				type="array"
 				_label = "View List" />
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.LayoutList"
 				defaultHandler = "MonoDevelop.Ide.Commands.LayoutListHandler"
@@ -614,6 +614,7 @@
 		
 		<Command id = "MonoDevelop.Ide.Commands.HelpCommands.Help"
 				_label = "Help" 
+				icon = "gtk-help"
 				description = "Help"
 				shortcut = "F1" />
 		<Command id = "MonoDevelop.Ide.Commands.HelpCommands.TipOfTheDay"
@@ -909,11 +910,11 @@
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/Pads">
-		<Pad id = "MonoDevelop.Ide.Gui.Pads.FileScout" _label = "Files" class = "MonoDevelop.Ide.Gui.Pads.FileScout"/>
-		<Pad id = "MonoDevelop.Ide.Gui.Pads.ErrorListPad" defaultPlacement = "Bottom" _label = "Error List" class = "MonoDevelop.Ide.Gui.Pads.ErrorListPad"/>
+		<Pad id = "MonoDevelop.Ide.Gui.Pads.FileScout" _label = "Files" icon="system-file-manager" class = "MonoDevelop.Ide.Gui.Pads.FileScout"/>
+		<Pad id = "MonoDevelop.Ide.Gui.Pads.ErrorListPad" defaultPlacement = "Bottom" _label = "Error List" icon="gtk-dialog-error" class = "MonoDevelop.Ide.Gui.Pads.ErrorListPad"/>
 		<Pad id = "MonoDevelop.Ide.Gui.Pads.InternalLogPad" defaultPlacement = "Bottom" _label = "Message Log" class = "MonoDevelop.Ide.Gui.Pads.InternalLogPad"/>
-		<Pad id = "MonoDevelop.Ide.Gui.Pads.TaskListPad" defaultPlacement = "Bottom" _label = "Task List" class = "MonoDevelop.Ide.Gui.Pads.TaskListPad"/>
-		<Pad id = "MonoDevelop.Ide.Gui.Pads.HelpTree" defaultPlacement = "Left" _label = "Help" class = "MonoDevelop.Ide.Gui.Pads.HelpTree"/>
+		<Pad id = "MonoDevelop.Ide.Gui.Pads.TaskListPad" defaultPlacement = "Bottom" _label = "Task List" icon="md-task-list-icon" class = "MonoDevelop.Ide.Gui.Pads.TaskListPad"/>
+		<Pad id = "MonoDevelop.Ide.Gui.Pads.HelpTree" defaultPlacement = "Left" _label = "Help" icon="gtk-help" class = "MonoDevelop.Ide.Gui.Pads.HelpTree"/>
 
 		<SolutionPad id = "MonoDevelop.Ide.Gui.Pads.ProjectPad" defaultPlacement = "Left" _label = "Solution" icon = "md-combine-icon" class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectSolutionPad">
 			<PadOption id = "ShowAllFiles" _label = "Show All Files" defaultValue = "False" />
@@ -1256,6 +1257,7 @@
 		<StockIcon stockid = "md-parser" resource = "parsing.png" />
 		<StockIcon stockid = "md-navigate-next" resource = "navigate-next.png" />
 		<StockIcon stockid = "md-navigate-previous" resource = "navigate-previous.png" />
+		<StockIcon stockid = "system-file-manager" resource = "system-file-manager.png" />
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Dialogs/OptionsDialog/CodingOptions">

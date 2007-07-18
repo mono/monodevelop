@@ -60,8 +60,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		void IPadContent.Initialize (IPadWindow window)
 		{
-			window.Title = GettextCatalog.GetString ("Task List");
-			window.Icon = MonoDevelop.Core.Gui.Stock.TaskListIcon;
 		}
 		
 		public Gtk.Widget Control {

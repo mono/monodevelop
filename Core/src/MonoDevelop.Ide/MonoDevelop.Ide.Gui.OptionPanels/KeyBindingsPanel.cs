@@ -43,6 +43,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
 		static readonly int bindingCol = 2;
 		static readonly int descCol = 3;
 		static readonly int boldCol = 4;
+		static readonly int iconCol = 5;
+		static readonly int iconVisibleCol = 6;
 		
 		bool accelIncomplete = false;
 		bool accelComplete = false;
@@ -53,9 +55,22 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
 		{
 			this.Build ();
 			
-			keyStore = new TreeStore (typeof (Command), typeof (string), typeof (string), typeof (string), typeof (int));
+			keyStore = new TreeStore (typeof (Command), typeof (string), typeof (string), typeof (string), typeof (int), typeof(string), typeof(bool));
 			keyTreeView.Model = keyStore;
-			keyTreeView.AppendColumn ("Command", new CellRendererText (), "text", labelCol, "weight", boldCol);
+			
+			TreeViewColumn col = new TreeViewColumn ();
+			col.Title = GettextCatalog.GetString ("Command");
+			col.Spacing = 4;
+			CellRendererPixbuf crp = new CellRendererPixbuf ();
+			col.PackStart (crp, false);
+			col.AddAttribute (crp, "stock-id", iconCol);
+			col.AddAttribute (crp, "visible", iconVisibleCol);
+			CellRendererText crt = new CellRendererText ();
+			col.PackStart (crt, true);
+			col.AddAttribute (crt, "text", labelCol);
+			col.AddAttribute (crt, "weight", boldCol);
+			keyTreeView.AppendColumn (col);
+			
 			keyTreeView.AppendColumn ("Key Binding", new CellRendererText (), "text", bindingCol);
 			keyTreeView.AppendColumn ("Description", new CellRendererText (), "text", descCol);
 			
@@ -104,7 +119,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
 			List<string> catNames = new List<string> ();
 			
 			foreach (object c in IdeApp.CommandService.CommandManager.GetCommands ()) {
-				Command cmd = c as Command;
+				ActionCommand cmd = c as ActionCommand;
+				if (cmd == null || cmd.CommandArray)
+					continue;
+				
 				string key;
 				
 				if (cmd.Id is Enum)
@@ -130,7 +148,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
 				TreeIter icat;
 				if (!categories.TryGetValue (cat, out icat)) {
 					string name = cat.Length == 0 ? GettextCatalog.GetString ("Other") : cat;
-					icat = keyStore.AppendValues (null, name, String.Empty, String.Empty, (int) Pango.Weight.Bold);
+					icat = keyStore.AppendValues (null, name, String.Empty, String.Empty, (int) Pango.Weight.Bold, null, false);
 					categories [cat] = icat;
 				}
 			}
@@ -141,7 +159,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
 				string label = cmd.Text.Replace ("_", String.Empty);
 				
 				TreeIter icat = categories [cmd.Category];
-				keyStore.AppendValues (icat, cmd, label, cmd.AccelKey != null ? cmd.AccelKey : String.Empty, cmd.Description, (int) Pango.Weight.Normal);
+				keyStore.AppendValues (icat, cmd, label, cmd.AccelKey != null ? cmd.AccelKey : String.Empty, cmd.Description, (int) Pango.Weight.Normal, cmd.Icon, true);
 			}
 		}
 		

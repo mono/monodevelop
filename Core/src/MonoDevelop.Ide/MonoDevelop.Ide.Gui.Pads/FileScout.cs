@@ -12,8 +12,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 	{
 		void IPadContent.Initialize (IPadWindow window)
 		{
-			window.Title = GettextCatalog.GetString ("Files");
-			window.Icon = Gtk.Stock.Open;
 		}
 		
 		public string Id {
