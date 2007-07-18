@@ -126,7 +126,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		TextEditor ThisEditor {
 			get {
 				if (thisEditor == null)
-					thisEditor = new TextEditor (ParentEditor.DisplayBinding);
+					thisEditor = TextEditor.GetTextEditor (ParentEditor.DisplayBinding);
 				return thisEditor;
 			}
 		}
@@ -476,6 +476,13 @@ namespace MonoDevelop.SourceEditor.Gui
 			NavigationService.Log (ParentEditor.DisplayBinding.BuildNavPoint ());
 		}
 
+		object ITextEditorExtension.GetExtensionCommandTarget ()
+		{
+			// There is no need to process commands here because they are all
+			// processed before the editor extensions
+			return null;
+		}
+		
 		internal bool GotoSelectionEnd ()
 		{
 			return buf.GotoSelectionEnd ();

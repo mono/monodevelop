@@ -1,5 +1,9 @@
 2007-07-18  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Track api changes.
+
+2007-07-18  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs,
 	  MonoDevelop.SourceEditor.Gui/LanguageItemWindow.cs,
 	  MonoDevelop.SourceEditor/SourceViewService.cs: Fix log calls.
