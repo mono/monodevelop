@@ -196,7 +196,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				}
 			}
 			} catch (Exception ex) {
-				Console.WriteLine (ex);
+				Runtime.LoggingService.Error (ex);
 			}
 		}
 

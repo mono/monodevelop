@@ -52,7 +52,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				// No SVN
 				// FIXME: hack to help diagnose a bug
 				if (!ex.Message.Contains ("is not a working copy"))
-					Console.WriteLine (ex);
+					Runtime.LoggingService.Error (ex);
 				return null;
 			}
 		}

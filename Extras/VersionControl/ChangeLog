@@ -1,3 +1,10 @@
+2007-07-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:
+	  Use the log service for logging errors.
+	* MonoDevelop.VersionControl/gtk-gui/gui.stetic: Updated.
+
 2007-07-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:
