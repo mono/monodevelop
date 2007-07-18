@@ -100,6 +100,7 @@
     <binding command="MonoDevelop.Ide.Commands.SearchCommands.GotoType" shortcut="Control+Shift+T" />
     <binding command="MonoDevelop.Ide.Commands.SearchCommands.Replace" shortcut="Control+H" />
     <binding command="MonoDevelop.Ide.Commands.SearchCommands.ReplaceInFiles" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" shortcut="Control+Space" />
     <binding command="MonoDevelop.Ide.Commands.ToolCommands.AddinManager" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.ToolCommands.ToolList" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.ViewCommands.CollapseAllTreeNodes" shortcut="" />
@@ -268,6 +269,7 @@
     <binding command="MonoDevelop.Ide.Commands.SearchCommands.GotoType" shortcut="Control+Shift+T" />
     <binding command="MonoDevelop.Ide.Commands.SearchCommands.Replace" shortcut="Alt+Shift+%" />
     <binding command="MonoDevelop.Ide.Commands.SearchCommands.ReplaceInFiles" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" shortcut="Control+Space" />
     <binding command="MonoDevelop.Ide.Commands.ToolCommands.AddinManager" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.ToolCommands.ToolList" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.ViewCommands.CollapseAllTreeNodes" shortcut="" />
