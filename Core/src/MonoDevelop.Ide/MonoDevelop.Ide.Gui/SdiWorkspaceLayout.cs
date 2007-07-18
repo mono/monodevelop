@@ -354,7 +354,6 @@ namespace MonoDevelop.Ide.Gui
 		{
 			AddinManager.AddExtensionNodeHandler ("/SharpDevelop/Workbench/Contexts", OnExtensionChanged);
 			
-			Runtime.LoggingService.Debug ("Default Layout created.");
 			dockLayout = new DockLayout (dock);
 			if (System.IO.File.Exists (configFile)) {
 				dockLayout.LoadFromFile (configFile);
@@ -388,7 +387,6 @@ namespace MonoDevelop.Ide.Gui
 		{
 			workbench.ContextChanged -= contextChangedHandler;
 
-			Runtime.LoggingService.Debug ("Call to SdiWorkSpaceLayout.Detach");
 			dockLayout.SaveLayout (currentLayout);
 			dockLayout.SaveToFile (configFile);
 			rootWidget.Remove(((DefaultWorkbench)workbench).TopMenu);

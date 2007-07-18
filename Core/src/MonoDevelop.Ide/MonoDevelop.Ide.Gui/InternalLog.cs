@@ -72,8 +72,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		static void OnLogAppended (object sender, LogAppendedArgs args)
 		{
-			if (args.Level == InternalLog.Debug)
+			if (args.Level == InternalLog.Debug) {
 				return;
+			}
 			
 			lock (messages) {
 				messages.Add (args);
@@ -85,7 +86,7 @@ namespace MonoDevelop.Ide.Gui
 					case InternalLog.Debug: DebugCount++; break;
 				}
 			}
-			if (args.Level == InternalLog.Error || args.Level == InternalLog.Fatal) {
+			if (args.Level == InternalLog.Fatal) {
 				if (errorNotificationEnabled) {
 					Gtk.Application.Invoke (delegate {
 						NotifyError (args);

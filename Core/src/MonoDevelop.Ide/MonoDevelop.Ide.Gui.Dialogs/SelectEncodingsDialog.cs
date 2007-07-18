@@ -30,6 +30,7 @@ using System;
 using System.Collections;
 using Gtk;
 using Glade;
+using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.Ide
@@ -46,28 +47,28 @@ namespace MonoDevelop.Ide
 		public SelectEncodingsDialog ()
 		{
 			try {
-			Glade.XML refXML = new Glade.XML (null, "Base.glade", "SelectEncodingsDialog", null);
-			refXML.Autoconnect (this);
-			
-			storeAvail = new ListStore (typeof(string), typeof(string));
-			listAvail.Model = storeAvail;
-			listAvail.AppendColumn ("Name", new Gtk.CellRendererText (), "text", 0);
-			listAvail.AppendColumn ("Encoding", new Gtk.CellRendererText (), "text", 1);
-			
-			storeSelected = new ListStore (typeof(string), typeof(string));
-			listSelected.Model = storeSelected;
-			listSelected.AppendColumn ("Name", new Gtk.CellRendererText (), "text", 0);
-			listSelected.AppendColumn ("Encoding", new Gtk.CellRendererText (), "text", 1);
-			
-			foreach (TextEncoding e in TextEncoding.SupportedEncodings) {
-				if (!((IList)TextEncoding.ConversionEncodings).Contains (e))
-					storeAvail.AppendValues (e.Name, e.Id);
-			}
-			
-			foreach (TextEncoding e in TextEncoding.ConversionEncodings)
-				storeSelected.AppendValues (e.Name, e.Id);
+				Glade.XML refXML = new Glade.XML (null, "Base.glade", "SelectEncodingsDialog", null);
+				refXML.Autoconnect (this);
+				
+				storeAvail = new ListStore (typeof(string), typeof(string));
+				listAvail.Model = storeAvail;
+				listAvail.AppendColumn ("Name", new Gtk.CellRendererText (), "text", 0);
+				listAvail.AppendColumn ("Encoding", new Gtk.CellRendererText (), "text", 1);
+				
+				storeSelected = new ListStore (typeof(string), typeof(string));
+				listSelected.Model = storeSelected;
+				listSelected.AppendColumn ("Name", new Gtk.CellRendererText (), "text", 0);
+				listSelected.AppendColumn ("Encoding", new Gtk.CellRendererText (), "text", 1);
+				
+				foreach (TextEncoding e in TextEncoding.SupportedEncodings) {
+					if (!((IList)TextEncoding.ConversionEncodings).Contains (e))
+						storeAvail.AppendValues (e.Name, e.Id);
+				}
+				
+				foreach (TextEncoding e in TextEncoding.ConversionEncodings)
+					storeSelected.AppendValues (e.Name, e.Id);
 			} catch (Exception  ex) {
-				Console.WriteLine (ex);
+				Runtime.LoggingService.Error (ex);
 			}
 		}
 		

@@ -30,6 +30,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
+using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Components.Commands;
 using Mono.Addins;
@@ -41,19 +42,20 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
 		static readonly int labelCol = 1;
 		static readonly int bindingCol = 2;
 		static readonly int descCol = 3;
+		static readonly int boldCol = 4;
 		
 		bool accelIncomplete = false;
 		bool accelComplete = false;
-		ListStore keyStore;
+		TreeStore keyStore;
 		string mode;
 		
 		public KeyBindingsPanel ()
 		{
 			this.Build ();
 			
-			keyStore = new ListStore (typeof (Command), typeof (string), typeof (string), typeof (string));
+			keyStore = new TreeStore (typeof (Command), typeof (string), typeof (string), typeof (string), typeof(int));
 			keyTreeView.Model = keyStore;
-			keyTreeView.AppendColumn ("Command", new CellRendererText (), "text", labelCol);
+			keyTreeView.AppendColumn ("Command", new CellRendererText (), "text", labelCol, "weight", boldCol);
 			keyTreeView.AppendColumn ("Key Binding", new CellRendererText (), "text", bindingCol);
 			keyTreeView.AppendColumn ("Description", new CellRendererText (), "text", descCol);
 			
@@ -82,9 +84,13 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
 				return true;
 			
 			do {
-				command = (Command) model.GetValue (iter, commandCol);
-				command.AccelKey = (string) model.GetValue (iter, bindingCol);
-				KeyBindingService.StoreBinding (command);
+				TreeIter citer;
+				model.IterChildren (out citer, iter);
+				do {
+					command = (Command) model.GetValue (citer, commandCol);
+					command.AccelKey = (string) model.GetValue (citer, bindingCol);
+					KeyBindingService.StoreBinding (command);
+				} while (model.IterNext (ref citer));
 			} while (model.IterNext (ref iter));
 			
 			KeyBindingService.SaveCurrentBindings ();
@@ -95,9 +101,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
 		public void LoadPanelContents ()
 		{
 			SortedDictionary<string, Command> commands = new SortedDictionary<string, Command> ();
-			object[] cmds = AddinManager.GetExtensionObjects ("/SharpDevelop/Commands");
+			List<string> catNames = new List<string> ();
 			
-			foreach (object c in cmds) {
+			foreach (object c in IdeApp.CommandService.CommandManager.GetCommands ()) {
 				Command cmd = c as Command;
 				string label = cmd.Text.Replace ("_", String.Empty);
 				
@@ -110,13 +116,28 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
 				} else {
 					commands.Add (label, cmd);
 				}
+				if (!catNames.Contains (cmd.Category))
+					catNames.Add (cmd.Category);
+			}
+
+			// Add the categories, sorted
+			catNames.Sort ();
+			Dictionary <string,TreeIter> categories = new Dictionary<string,TreeIter> ();
+			foreach (string cat in catNames) {
+				TreeIter icat;
+				if (!categories.TryGetValue (cat, out icat)) {
+					string name = cat.Length == 0 ? GettextCatalog.GetString ("Other") : cat;
+					icat = keyStore.AppendValues (null, name, "", "", (int) Pango.Weight.Bold);
+					categories [cat] = icat;
+				}
 			}
 			
 			foreach (KeyValuePair<string, Command> pair in commands) {
 				Command cmd = pair.Value;
 				string label = pair.Key;
 				
-				keyStore.AppendValues (cmd, label, cmd.AccelKey != null ? cmd.AccelKey : String.Empty, cmd.Description);
+				TreeIter icat = categories [cmd.Category];
+				keyStore.AppendValues (icat, cmd, label, cmd.AccelKey != null ? cmd.AccelKey : String.Empty, cmd.Description, (int) Pango.Weight.Normal);
 			}
 		}
 		
@@ -136,9 +157,13 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
 				KeyBindingService.LoadScheme (combo.ActiveText);
 				
 				do {
-					command = (Command) model.GetValue (iter, commandCol);
-					binding = KeyBindingService.SchemeBinding (command);
-					model.SetValue (iter, bindingCol, binding);
+					TreeIter citer;
+					model.IterChildren (out citer, iter);
+					do {
+						command = (Command) model.GetValue (citer, commandCol);
+						binding = KeyBindingService.SchemeBinding (command);
+						model.SetValue (citer, bindingCol, binding);
+					} while (model.IterNext (ref citer));
 				} while (model.IterNext (ref iter));
 				
 				KeyBindingService.UnloadScheme ();
@@ -146,8 +171,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
 				// Restore back to current settings...
 				
 				do {
-					command = (Command) model.GetValue (iter, commandCol);
-					model.SetValue (iter, bindingCol, command.AccelKey != null ? command.AccelKey : String.Empty);
+					TreeIter citer;
+					model.IterChildren (out citer, iter);
+					do {
+						command = (Command) model.GetValue (citer, commandCol);
+						model.SetValue (citer, bindingCol, command.AccelKey != null ? command.AccelKey : String.Empty);
+					} while (model.IterNext (ref citer));
 				} while (model.IterNext (ref iter));
 			}
 		}
@@ -160,11 +189,16 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
 			
 			accelComplete = false;
 			
-			if (sel.GetSelected (out model, out iter)) {
+			if (sel.GetSelected (out model, out iter) && model.GetValue (iter,commandCol) != null) {
+				accelEntry.Sensitive = true;
 				accelEntry.Text = (string) model.GetValue (iter, bindingCol);
 				accelEntry.GrabFocus ();
 				accelIncomplete = false;
 				accelComplete = true;
+			}
+			else {
+				accelEntry.Sensitive = false;
+				accelEntry.Text = string.Empty;
 			}
 		}
 		
@@ -230,7 +264,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
 			TreeModel model;
 			TreeIter iter;
 			
-			if (sel.GetSelected (out model, out iter))
+			if (sel.GetSelected (out model, out iter) && model.GetValue (iter, commandCol) != null)
 				keyStore.SetValue (iter, bindingCol, accelEntry.Text);
 		}
 		

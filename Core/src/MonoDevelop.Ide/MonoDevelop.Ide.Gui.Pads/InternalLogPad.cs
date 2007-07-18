@@ -231,11 +231,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			IdeApp.CommandService.ShowContextMenu (opset, this);
 		}
 
-		void OnTaskCopied (object o, EventArgs args)
-		{
-			OnCopy ();
-		}
-		
 		[CommandHandler (EditCommands.SelectAll)]
 		internal void OnSelectAll ()
 		{

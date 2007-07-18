@@ -45,6 +45,9 @@
 	<ExtensionPoint path = "/SharpDevelop/Commands" name = "User interface commands">
 		<Description>User interface commands.</Description>
 		<ExtensionNode name="Command" type="MonoDevelop.Core.Gui.Codons.CommandCodon" />
+		<ExtensionNode name="Category" type="MonoDevelop.Core.Gui.Codons.CommandCategoryCodon">
+			<ExtensionNode name="Command" type="MonoDevelop.Core.Gui.Codons.CommandCodon" />
+		</ExtensionNode>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/SharpDevelop/Views/ClassBrowser/ContextMenu/ProjectBrowserNode" name = "Project node context menu in the class pad">
@@ -203,6 +206,7 @@
 	<Extension path = "/SharpDevelop/Commands">
 	
 		<!-- EditCommands -->
+		<Category _name = "Edit" id="Edit">
 				
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.Copy"
 				_label = "_Copy"
@@ -282,8 +286,11 @@
 				_label = "Pre_ferences..."
 				icon = "gtk-preferences"
 				description = "Show MonoDevelop preferences window" />
+				
+		</Category>
 
 		<!-- NavigationCommands -->
+		<Category _name = "Navigation" id = "Navigation">
 
 		<Command id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack"
 				type = "custom"
@@ -295,8 +302,10 @@
 				widget = "MonoDevelop.Ide.Gui.NavigationHistoryForward"
 				_label = "_Forward"
 				_description = "Navigate Forward"/>
+		</Category>
 
 		<!-- ProjectCommands -->
+		<Category _name = "Project" id = "Project">
 				
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewProject"
 				_label = "Add New Project..."
@@ -417,8 +426,11 @@
 				defaultHandler = "MonoDevelop.Ide.Commands.ExportProjectHandler"
 				_label = "Export..." />
 
+		</Category>
+
 
 		<!-- FileCommands -->
+		<Category _name = "File" id = "File">
 		
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenFile"
 				defaultHandler = "MonoDevelop.Ide.Commands.OpenFileHandler"
@@ -502,8 +514,10 @@
 				icon = "gtk-quit" 
 				description = "Quit MonoDevelop"
 				shortcut = "Control|Q" />
+		</Category>
 				
 		<!-- ViewCommands -->
+		<Category _name = "View" id = "View">
 		
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ViewList"
 				defaultHandler = "MonoDevelop.Ide.Commands.ViewListHandler"
@@ -558,7 +572,10 @@
 				description = "Browse Previous"
 				shortcut = "Shift|F4" />
 
+		</Category>
+		
 		<!-- ToolCommands -->
+		<Category _name = "Tools" id = "Tools">
 		
 		<Command id = "MonoDevelop.Ide.Commands.ToolCommands.AddinManager"
 				defaultHandler = "MonoDevelop.Ide.Commands.AddinManagerHandler"
@@ -569,7 +586,10 @@
 				type="array"
 				_label = "Tool List" />
 				
+		</Category>
+		
 		<!-- WindowCommands -->
+		<Category _name = "Window" id = "Window">
 		
 		<Command id  = "MonoDevelop.Ide.Commands.WindowCommands.NextWindow"
 				defaultHandler = "MonoDevelop.Ide.Commands.NextWindowHandler"
@@ -587,8 +607,10 @@
 				defaultHandler = "MonoDevelop.Ide.Commands.OpenWindowListHandler"
 				type="radio|array"
 				_label = "Window List" />
+		</Category>
 				
 		<!-- HelpCommands -->
+		<Category _name = "Help" id = "Help">
 		
 		<Command id = "MonoDevelop.Ide.Commands.HelpCommands.TipOfTheDay"
 				defaultHandler = "MonoDevelop.Ide.Commands.TipOfTheDayHandler"
@@ -600,8 +622,10 @@
 				_label = "_About..." 
 				icon = "gnome-stock-about" 
 				description = "Show about dialog" />
+		</Category>
 				
 		<!-- DebugCommands -->
+		<Category _name = "Debug" id = "Debug">
 		
 		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.DebugApplication"
 				defaultHandler = "MonoDevelop.Ide.Commands.DebugApplicationHandler"
@@ -628,8 +652,10 @@
 		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.ClearAllBreakpoints"
 				defaultHandler = "MonoDevelop.Ide.Commands.ClearAllBreakpointsHandler"
 				_label = "Clear All Breakpoints" />
+		</Category>
 
 		<!-- SearchCommands -->
+		<Category _name = "Search" id = "Serach">
 		
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.Find"
 				_label = "_Find..." 
@@ -673,13 +699,16 @@
 		        defaultHandler = "MonoDevelop.Ide.Commands.GotoTypeHandler"
 				_label = "Go to Type..." 
                 shortcut = "Control|Shift|T" />
+		</Category>
 				
 		<!-- RefactoryCommands -->
+		<Category _name = "Refactory" id = "Refactory">
 		
 		<Command id = "MonoDevelop.Ide.Commands.RefactoryCommands.CurrentRefactoryOperations"
 				defaultHandler = "MonoDevelop.Ide.Commands.CurrentRefactoryOperationsHandler"
 				type="array"
 				_label = "Refactory Operations" /> 
+		</Category>
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/CombineBrowserNode" extension-nodes="CommandItem, SeparatorItem, ItemSet, LinkItem, LocalCommandItem" description="Context menu for solutions in the solution pad.">

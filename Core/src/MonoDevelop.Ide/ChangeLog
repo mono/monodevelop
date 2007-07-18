@@ -1,5 +1,20 @@
 2007-07-18  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs,
+	  MonoDevelop.Ide.addin.xml: Added support for command categories.
+	* MonoDevelop.Ide.Commands/ToolsCommands.cs,
+	  MonoDevelop.Ide.Gui.Pads/FileList.cs,
+	  MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Removed debug code.
+	* MonoDevelop.Ide.Gui.Dialogs/SelectEncodingsDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs,
+	  MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Use the log service for
+	  logging errors.
+	* MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs: Fix warning.
+	* MonoDevelop.Ide.Gui/InternalLog.cs: Only fatal errors are notified in
+	  the status bar.
+
+2007-07-18  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs,
 	  MonoDevelop.Ide.Gui/InternalLog.cs: Ignore debug messages for now.
 

@@ -74,10 +74,6 @@ namespace MonoDevelop.Ide.Commands
 				}
 			}
 			
-			// debug command and args
-			Runtime.LoggingService.Debug("command : " + command);
-			Runtime.LoggingService.Debug("args    : " + args);
-			
 			// create the process
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
 			monitor.Log.WriteLine ("Running: {0} {1} ...", command, args);
@@ -92,7 +88,6 @@ namespace MonoDevelop.Ide.Commands
 					p = Runtime.ProcessService.StartProcess (command, args, workingDirectory, null);
 
 				p.WaitForOutput ();
-				Runtime.LoggingService.Debug ("DONE");
 				
 				monitor.Log.WriteLine ();
 				if (p.ExitCode == 0) {
