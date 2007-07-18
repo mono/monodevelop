@@ -69,7 +69,7 @@
 			<NodeBuilder id = "ParametersNodeBuilder" class = "MonoQuery.ParametersNodeBuilder"/>
 		</SolutionPad>
 		
-		<Pad id = "MonoQuery.SqlDefinitionPad" class = "MonoQuery.SqlDefinitionPad" defaultPlacement = "Bottom"  _label = "SQL Definition"/>
+		<Pad id = "MonoQuery.SqlDefinitionPad" class = "MonoQuery.SqlDefinitionPad" defaultPlacement = "Bottom"  _label = "SQL Definition" icon = "md-mono-query-view"/>
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/Contexts/Edit">
