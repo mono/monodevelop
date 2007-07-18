@@ -162,12 +162,12 @@ namespace CSharpBinding
 				}
 				
 				if (insert) {
-					bool recalibrate = cursor >= Editor.SelectionStartPosition;
+					bool recalibrate = cursor > Editor.SelectionStartPosition;
 					
 					if (!base.KeyPress (key, modifier))
 						return false;
 					
-					if (recalibrate || cursor <= Editor.CursorPosition)
+					if (recalibrate || cursor >= Editor.CursorPosition)
 						engine.Reset ();
 					
 					cursor = Editor.CursorPosition;
