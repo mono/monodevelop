@@ -1,3 +1,9 @@
+2007-07-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs,
+	  MonoDevelop.SourceEditor.Gui/LanguageItemWindow.cs,
+	  MonoDevelop.SourceEditor/SourceViewService.cs: Fix log calls.
+
 2007-07-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Makefile.am: Fix build.

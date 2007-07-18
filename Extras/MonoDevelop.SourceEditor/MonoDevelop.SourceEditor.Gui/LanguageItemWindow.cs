@@ -106,8 +106,8 @@ namespace MonoDevelop.SourceEditor
 						ret.Append(xml.Value);
 					}
 				} while (xml.Read ());
-			} catch {
-				Console.WriteLine ("DocBoom");
+			} catch (Exception ex) {
+				Runtime.LoggingService.Error (ex);
 				return doc;
 			}
 			return ret.ToString ();

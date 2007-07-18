@@ -1293,7 +1293,6 @@ namespace MonoDevelop.SourceEditor.Gui
 					se.View.QueueDraw ();
 					break;
 				default:
-					Console.WriteLine ("unhandled property change: {0}", e.Key);
 					break;
 			}
  		}

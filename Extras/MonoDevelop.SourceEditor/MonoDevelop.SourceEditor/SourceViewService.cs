@@ -69,7 +69,6 @@ namespace MonoDevelop.SourceEditor
 								ParseColor (reader.GetAttribute ("foreground"), ref sts.Foreground);
 								ParseColor (reader.GetAttribute ("background"), ref sts.Background);
 								lang.SetTagStyle (name, sts);
-								Runtime.LoggingService.DebugFormat ("Overrode style {0} {1}", lang.Name, name);
 								break;
 							case "SourceLanguage":
 								lang = FindLanguage (reader.GetAttribute ("name"));
@@ -169,7 +168,6 @@ namespace MonoDevelop.SourceEditor
 					}
 
 					writer.WriteEndElement ();
-					Runtime.LoggingService.DebugFormat ("Preserved style {0} {1}", sl.Name, tag.Id);
 				}
 
 				writer.WriteEndElement ();
