@@ -221,7 +221,7 @@
     <binding command="Generate Autotools Files" shortcut="" />
     <binding command="Go to Line..." shortcut="Control+X|G" />
     <binding command="Go to Matching Brace" shortcut="" />
-    <binding command="Go to Type..." shortcut="Control+Shift+t" />
+    <binding command="Go to Type..." shortcut="Control+Shift+T" />
     <binding command="GTK# support settings..." shortcut="" />
     <binding command="Import Glade file..." shortcut="" />
     <binding command="Include in Synchronized Makefile" shortcut="" />
