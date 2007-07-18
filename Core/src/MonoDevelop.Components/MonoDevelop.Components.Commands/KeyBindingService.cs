@@ -81,7 +81,12 @@ namespace MonoDevelop.Components.Commands {
 			if (cmd == null)
 				return;
 			
-			string key = cmd.Text.Replace ("_", String.Empty);
+			string key;
+			if (cmd.Id is Enum)
+				key = cmd.Id.GetType () + "." + cmd.Id;
+			else
+				key = cmd.Id.ToString ();
+			
 			if (!current.ContainsKey (key))
 				current.Add (key, cmd.AccelKey);
 			else
@@ -93,7 +98,12 @@ namespace MonoDevelop.Components.Commands {
 			if (schemeName == null || cmd == null)
 				return null;
 			
-			string key = cmd.Text.Replace ("_", String.Empty);
+			string key;
+			if (cmd.Id is Enum)
+				key = cmd.Id.GetType () + "." + cmd.Id;
+			else
+				key = cmd.Id.ToString ();
+			
 			if (scheme.ContainsKey (key))
 				return scheme[key];
 			
@@ -102,6 +112,9 @@ namespace MonoDevelop.Components.Commands {
 		
 		public static string SchemeBinding (string name, Command cmd)
 		{
+			if (cmd == null || name == null)
+				return null;
+			
 			if (schemeName != name)
 				LoadScheme (name);
 			

@@ -1,315 +1,339 @@
 <?xml version="1.0"?>
 <schemes version="1.0">
   <scheme name="Default">
-    <binding command="About..." shortcut="" />
-    <binding command="Active Configuration" shortcut="" />
-    <binding command="Active Layout" shortcut="" />
-    <binding command="Add" shortcut="" />
-    <binding command="Add assembly..." shortcut="" />
-    <binding command="Add connection" shortcut="" />
-    <binding command="Add existing Project" shortcut="" />
-    <binding command="Add existing Solution" shortcut="" />
-    <binding command="Add Files..." shortcut="" />
-    <binding command="Add Items..." shortcut="" />
-    <binding command="Add New Project..." shortcut="" />
-    <binding command="Add New Solution..." shortcut="" />
-    <binding command="Add Package..." shortcut="" />
-    <binding command="Add Resource" shortcut="" />
-    <binding command="Add Web Reference" shortcut="" />
-    <binding command="Add-in Manager..." shortcut="" />
-    <binding command="Back" shortcut="" />
-    <binding command="Browse Next" shortcut="F4" />
-    <binding command="Browse Previous" shortcut="Shift+F4" />
-    <binding command="Buffer Options" shortcut="" />
-    <binding command="Build" shortcut="F7" />
-    <binding command="Build Solution" shortcut="F8" />
-    <binding command="Checkout..." shortcut="" />
-    <binding command="Clean" shortcut="" />
-    <binding command="Clean Solution" shortcut="" />
-    <binding command="Clear All Breakpoints" shortcut="" />
-    <binding command="Clear Bookmarks" shortcut="" />
-    <binding command="Clear Recent Files" shortcut="" />
-    <binding command="Clear Recent Solutions" shortcut="" />
-    <binding command="Close All" shortcut="Control+Shift+W" />
-    <binding command="Close File" shortcut="Control+W" />
-    <binding command="Close Solution" shortcut="" />
-    <binding command="Collapse All Nodes" shortcut="" />
-    <binding command="Comment Line(s)" shortcut="Control+Alt+C" />
-    <binding command="Commit" shortcut="" />
-    <binding command="Copy" shortcut="Control+C" />
-    <binding command="Create Package..." shortcut="" />
-    <binding command="Custom command list" shortcut="" />
-    <binding command="Cut" shortcut="Control+X" />
-    <binding command="Debug" shortcut="Control+F5" />
-    <binding command="Debug Application..." shortcut="" />
-    <binding command="Delete" shortcut="Delete" />
-    <binding command="Delete All" shortcut="" />
-    <binding command="Delete Current Layout" shortcut="" />
-    <binding command="Deployment" shortcut="" />
-    <binding command="Diff" shortcut="" />
-    <binding command="Disconnect" shortcut="" />
-    <binding command="Display Options List" shortcut="" />
-    <binding command="Drop table" shortcut="" />
-    <binding command="Edit Project Icons..." shortcut="" />
-    <binding command="Edit References..." shortcut="" />
-    <binding command="Empty table" shortcut="" />
-    <binding command="Export..." shortcut="" />
-    <binding command="Find in Files..." shortcut="Control+Shift+F" />
-    <binding command="Find Next" shortcut="F3" />
-    <binding command="Find Next Selection" shortcut="Control+F3" />
-    <binding command="Find Previous" shortcut="Shift+F3" />
-    <binding command="Find Previous Selection" shortcut="Control+Shift+F3" />
-    <binding command="Find..." shortcut="Control+F" />
-    <binding command="Forward" shortcut="" />
-    <binding command="Full Screen" shortcut="" />
-    <binding command="Generate Autotools Files" shortcut="" />
-    <binding command="Go to Line..." shortcut="Control+G" />
-    <binding command="Go to Matching Brace" shortcut="Control+B" />
-    <binding command="Go to Type..." shortcut="Control+Shift+T" />
-    <binding command="GTK# support settings..." shortcut="" />
-    <binding command="Import Glade file..." shortcut="" />
-    <binding command="Include in Synchronized Makefile" shortcut="" />
-    <binding command="Include To Project" shortcut="" />
-    <binding command="Indent Selection" shortcut="Control+Alt+Home" />
-    <binding command="Insert ChangeLog Entry" shortcut="" />
-    <binding command="Install" shortcut="" />
-    <binding command="Layout List" shortcut="" />
-    <binding command="Local Copy Reference" shortcut="" />
-    <binding command="Log" shortcut="" />
-    <binding command="Lowercase Selection" shortcut="Control+Shift+L" />
-    <binding command="New Action Group..." shortcut="" />
-    <binding command="New Dialog..." shortcut="" />
-    <binding command="New File..." shortcut="Control+N" />
-    <binding command="New Folder" shortcut="" />
-    <binding command="New Layout..." shortcut="" />
-    <binding command="New Project..." shortcut="Control+Shift+N" />
-    <binding command="New Widget..." shortcut="" />
-    <binding command="New Window..." shortcut="" />
-    <binding command="Next Bookmark" shortcut="F2" />
-    <binding command="Next Window" shortcut="Control+Next" />
-    <binding command="Open" shortcut="" />
-    <binding command="Open File in Solution..." shortcut="Alt+Shift+O" />
-    <binding command="Open..." shortcut="Control+O" />
-    <binding command="OpenWithList" shortcut="" />
-    <binding command="Options..." shortcut="" />
-    <binding command="Paste" shortcut="Control+V" />
-    <binding command="Pause" shortcut="Control+F8" />
-    <binding command="Preferences..." shortcut="" />
-    <binding command="Previous Bookmark" shortcut="Shift+F2" />
-    <binding command="Previous Window" shortcut="Control+Prior" />
-    <binding command="Print Preview" shortcut="Control+Shift+P" />
-    <binding command="Print..." shortcut="Control+P" />
-    <binding command="Proportional time scale" shortcut="" />
-    <binding command="Publish..." shortcut="" />
-    <binding command="Quit" shortcut="Control+Q" />
-    <binding command="Rebuild" shortcut="Control+F7" />
-    <binding command="Rebuild Solution" shortcut="Control+F8" />
-    <binding command="Recent Files" shortcut="" />
-    <binding command="Recent Projects" shortcut="" />
-    <binding command="Redo" shortcut="Control+y" />
-    <binding command="Refactory Operations" shortcut="" />
-    <binding command="Refresh" shortcut="" />
-    <binding command="Reload" shortcut="" />
-    <binding command="Reload File" shortcut="Control+U" />
-    <binding command="Remove" shortcut="" />
-    <binding command="Remove From Project" shortcut="" />
-    <binding command="Rename" shortcut="F2" />
-    <binding command="Replace in Files..." shortcut="" />
-    <binding command="Replace..." shortcut="Control+H" />
-    <binding command="Reset Options" shortcut="" />
-    <binding command="Results chart" shortcut="" />
-    <binding command="Revert" shortcut="" />
-    <binding command="Run" shortcut="F5" />
-    <binding command="Run Test" shortcut="" />
-    <binding command="Save" shortcut="Control+S" />
-    <binding command="Save All" shortcut="" />
-    <binding command="Save As..." shortcut="Control+Shift+S" />
-    <binding command="Select All" shortcut="Control+A" />
-    <binding command="Select test in tree" shortcut="" />
-    <binding command="Set As Startup Project" shortcut="" />
-    <binding command="Show failed tests" shortcut="" />
-    <binding command="Show ignored tests" shortcut="" />
-    <binding command="Show one result per day" shortcut="" />
-    <binding command="Show results pad" shortcut="" />
-    <binding command="Show successful tests" shortcut="" />
-    <binding command="Show test source code" shortcut="" />
-    <binding command="SQL Query Editor" shortcut="" />
-    <binding command="Status/Commit..." shortcut="" />
-    <binding command="Step Into" shortcut="Control+L1" />
-    <binding command="Step Out" shortcut="Shift+L1" />
-    <binding command="Step Over" shortcut="L1" />
-    <binding command="Stop" shortcut="Shift+F5" />
-    <binding command="Time chart" shortcut="" />
-    <binding command="Tip of the Day..." shortcut="" />
-    <binding command="Toggle Bookmark" shortcut="Control+F2" />
-    <binding command="Toggle Breakpoint" shortcut="F9" />
-    <binding command="Tool List" shortcut="" />
-    <binding command="Uncomment Line(s)" shortcut="Control+Alt+U" />
-    <binding command="Undo" shortcut="Control+Z" />
-    <binding command="Unindent Selection" shortcut="Control+Alt+End" />
-    <binding command="Update" shortcut="" />
-    <binding command="Update Web Reference" shortcut="" />
-    <binding command="Update Web References" shortcut="" />
-    <binding command="Uppercase Selection" shortcut="Control+Shift+U" />
-    <binding command="View List" shortcut="" />
-    <binding command="Welcome Page" shortcut="" />
-    <binding command="Window List" shortcut="" />
-    <binding command="Word Count..." shortcut="" />
+    <binding command="MonoDevelop.Autotools.Commands.GenerateFiles" shortcut="" />
+    <binding command="MonoDevelop.Autotools.Commands.SynchWithMakefile" shortcut="" />
+    <binding command="MonoDevelop.ChangeLogAddIn.ChangeLogCommands.InsertEntry" shortcut="" />
+    <binding command="MonoDevelop.Components.Commands.CommandSystemCommands.ToolbarList" shortcut="" />
+    <binding command="MonoDevelop.Deployment.Commands.AddPackage" shortcut="" />
+    <binding command="MonoDevelop.Deployment.Commands.CreatePackage" shortcut="" />
+    <binding command="MonoDevelop.Deployment.Commands.Install" shortcut="" />
+    <binding command="MonoDevelop.DesignerSupport.Commands.SelectItems" shortcut="" />
+    <binding command="MonoDevelop.GtkCore.GtkCommands.AddNewActionGroup" shortcut="" />
+    <binding command="MonoDevelop.GtkCore.GtkCommands.AddNewDialog" shortcut="" />
+    <binding command="MonoDevelop.GtkCore.GtkCommands.AddNewWidget" shortcut="" />
+    <binding command="MonoDevelop.GtkCore.GtkCommands.AddNewWindow" shortcut="" />
+    <binding command="MonoDevelop.GtkCore.GtkCommands.EditIcons" shortcut="" />
+    <binding command="MonoDevelop.GtkCore.GtkCommands.GtkSettings" shortcut="" />
+    <binding command="MonoDevelop.GtkCore.GtkCommands.ImportGladeFile" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.DebugCommands.ClearAllBreakpoints" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.DebugCommands.DebugApplication" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.DebugCommands.Pause" shortcut="Control+F8" />
+    <binding command="MonoDevelop.Ide.Commands.DebugCommands.StepInto" shortcut="Control+L1" />
+    <binding command="MonoDevelop.Ide.Commands.DebugCommands.StepOut" shortcut="Shift+L1" />
+    <binding command="MonoDevelop.Ide.Commands.DebugCommands.StepOver" shortcut="L1" />
+    <binding command="MonoDevelop.Ide.Commands.DebugCommands.ToggleBreakpoint" shortcut="F9" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.CommentCode" shortcut="Control+Alt+C" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.Copy" shortcut="Control+C" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.Cut" shortcut="Control+X" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.Delete" shortcut="Delete" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.IndentSelection" shortcut="Control+Alt+Home" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection" shortcut="Control+Shift+L" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.Paste" shortcut="Control+V" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.Redo" shortcut="Control+Y" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.Rename" shortcut="F2" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.SelectAll" shortcut="Control+A" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.UncommentCode" shortcut="Control+Alt+U" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.Undo" shortcut="Control+Z" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" shortcut="Control+Alt+End" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.UppercaseSelection" shortcut="Control+Shift+U" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.WordCount" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.ClearRecentFiles" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.ClearRecentProjects" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.CloseAllFiles" shortcut="Control+Shift+W" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.CloseCombine" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.CloseFile" shortcut="Control+W" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.Exit" shortcut="Control+Q" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.NewFile" shortcut="Control+N" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.NewProject" shortcut="Control+Shift+N" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.OpenFile" shortcut="Control+O" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.OpenFileInSolution" shortcut="Alt+Shift+O" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.RecentFileList" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.RecentProjectList" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.ReloadFile" shortcut="Control+U" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.Save" shortcut="Control+S" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.SaveAll" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.SaveAs" shortcut="Control+Shift+S" />
+    <binding command="MonoDevelop.Ide.Commands.HelpCommands.About" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.HelpCommands.TipOfTheDay" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.NavigationCommands.NavigateForward" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.AddCombine" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.AddNewCombine" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.AddNewFiles" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.AddNewProject" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.AddProject" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.AddReference" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.AddResource" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.Build" shortcut="F7" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.BuildSolution" shortcut="F8" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.Clean" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.CleanSolution" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.ConfigurationSelector" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.Debug" shortcut="Control+F5" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.DebugEntry" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.IncludeInBuild" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.IncludeInDeploy" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.IncludeToProject" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.LocalCopyReference" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.NewFolder" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.Options" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.Rebuild" shortcut="Control+F7" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.RebuildSolution" shortcut="Control+F8" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.Reload" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.RemoveFromProject" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.Run" shortcut="F5" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.SetAsStartupProject" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.Stop" shortcut="Shift+F5" />
+    <binding command="MonoDevelop.Ide.Commands.RefactoryCommands.CurrentRefactoryOperations" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.SearchCommands.Find" shortcut="Control+F" />
+    <binding command="MonoDevelop.Ide.Commands.SearchCommands.FindInFiles" shortcut="Control+Shift+F" />
+    <binding command="MonoDevelop.Ide.Commands.SearchCommands.FindNext" shortcut="F3" />
+    <binding command="MonoDevelop.Ide.Commands.SearchCommands.FindNextSelection" shortcut="Control+F3" />
+    <binding command="MonoDevelop.Ide.Commands.SearchCommands.FindPrevious" shortcut="Shift+F3" />
+    <binding command="MonoDevelop.Ide.Commands.SearchCommands.FindPreviousSelection" shortcut="Control+Shift+F3" />
+    <binding command="MonoDevelop.Ide.Commands.SearchCommands.GotoType" shortcut="Control+Shift+T" />
+    <binding command="MonoDevelop.Ide.Commands.SearchCommands.Replace" shortcut="Control+H" />
+    <binding command="MonoDevelop.Ide.Commands.SearchCommands.ReplaceInFiles" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ToolCommands.AddinManager" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ToolCommands.ToolList" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.CollapseAllTreeNodes" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.DeleteCurrentLayout" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.FullScreen" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.LayoutList" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.LayoutSelector" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.NewLayout" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.Open" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.OpenWithList" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.RefreshTree" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.ResetTreeDisplayOptions" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.ShowNext" shortcut="F4" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.ShowPrevious" shortcut="Shift+F4" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.TreeDisplayOptionList" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.ViewList" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.WindowCommands.NextWindow" shortcut="Control+Next" />
+    <binding command="MonoDevelop.Ide.Commands.WindowCommands.OpenWindowList" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.WindowCommands.PrevWindow" shortcut="Control+Prior" />
+    <binding command="MonoDevelop.NUnit.Commands.NUnitProjectCommands.AddAssembly" shortcut="" />
+    <binding command="MonoDevelop.NUnit.Commands.TestChartCommands.ShowFailedTests" shortcut="" />
+    <binding command="MonoDevelop.NUnit.Commands.TestChartCommands.ShowIgnoredTests" shortcut="" />
+    <binding command="MonoDevelop.NUnit.Commands.TestChartCommands.ShowResults" shortcut="" />
+    <binding command="MonoDevelop.NUnit.Commands.TestChartCommands.ShowSuccessfulTests" shortcut="" />
+    <binding command="MonoDevelop.NUnit.Commands.TestChartCommands.ShowTime" shortcut="" />
+    <binding command="MonoDevelop.NUnit.Commands.TestChartCommands.SingleDayResult" shortcut="" />
+    <binding command="MonoDevelop.NUnit.Commands.TestChartCommands.UseTimeScale" shortcut="" />
+    <binding command="MonoDevelop.NUnit.Commands.TestCommands.RunTest" shortcut="" />
+    <binding command="MonoDevelop.NUnit.Commands.TestCommands.SelectTestInTree" shortcut="" />
+    <binding command="MonoDevelop.NUnit.Commands.TestCommands.ShowTestCode" shortcut="" />
+    <binding command="MonoDevelop.NUnit.Commands.TestCommands.ShowTestDetails" shortcut="" />
+    <binding command="MonoDevelop.SourceEditor.EditorCommands.ClearBookmarks" shortcut="" />
+    <binding command="MonoDevelop.SourceEditor.EditorCommands.GotoLineNumber" shortcut="Control+G" />
+    <binding command="MonoDevelop.SourceEditor.EditorCommands.GotoMatchingBrace" shortcut="Control+B" />
+    <binding command="MonoDevelop.SourceEditor.EditorCommands.HighlightingTypeList" shortcut="" />
+    <binding command="MonoDevelop.SourceEditor.EditorCommands.NextBookmark" shortcut="F2" />
+    <binding command="MonoDevelop.SourceEditor.EditorCommands.PrevBookmark" shortcut="Shift+F2" />
+    <binding command="MonoDevelop.SourceEditor.EditorCommands.PrintDocument" shortcut="Control+P" />
+    <binding command="MonoDevelop.SourceEditor.EditorCommands.PrintPreviewDocument" shortcut="Control+Shift+P" />
+    <binding command="MonoDevelop.SourceEditor.EditorCommands.ShowBufferOptions" shortcut="" />
+    <binding command="MonoDevelop.SourceEditor.EditorCommands.ToggleBookmark" shortcut="Control+F2" />
+    <binding command="MonoDevelop.VersionControl.Commands.Add" shortcut="" />
+    <binding command="MonoDevelop.VersionControl.Commands.Checkout" shortcut="" />
+    <binding command="MonoDevelop.VersionControl.Commands.Commit" shortcut="" />
+    <binding command="MonoDevelop.VersionControl.Commands.Diff" shortcut="" />
+    <binding command="MonoDevelop.VersionControl.Commands.Log" shortcut="" />
+    <binding command="MonoDevelop.VersionControl.Commands.Publish" shortcut="" />
+    <binding command="MonoDevelop.VersionControl.Commands.Remove" shortcut="" />
+    <binding command="MonoDevelop.VersionControl.Commands.Revert" shortcut="" />
+    <binding command="MonoDevelop.VersionControl.Commands.Status" shortcut="" />
+    <binding command="MonoDevelop.VersionControl.Commands.Update" shortcut="" />
+    <binding command="MonoDevelop.WebReferences.WebReferenceCommands.Add" shortcut="" />
+    <binding command="MonoDevelop.WebReferences.WebReferenceCommands.Delete" shortcut="" />
+    <binding command="MonoDevelop.WebReferences.WebReferenceCommands.DeleteAll" shortcut="" />
+    <binding command="MonoDevelop.WebReferences.WebReferenceCommands.Update" shortcut="" />
+    <binding command="MonoDevelop.WebReferences.WebReferenceCommands.UpdateAll" shortcut="" />
+    <binding command="MonoDevelop.WelcomePage.WelcomePageCommands.ShowWelcomePage" shortcut="" />
+    <binding command="MonoDeveloper.Commands.Install" shortcut="" />
+    <binding command="MonoQuery.Commands.MonoQueryCommands.AddConnection" shortcut="" />
+    <binding command="MonoQuery.Commands.MonoQueryCommands.DisconnectConnection" shortcut="" />
+    <binding command="MonoQuery.Commands.MonoQueryCommands.DropTable" shortcut="" />
+    <binding command="MonoQuery.Commands.MonoQueryCommands.EmptyTable" shortcut="" />
+    <binding command="MonoQuery.Commands.MonoQueryCommands.QueryCommand" shortcut="" />
+    <binding command="MonoQuery.Commands.MonoQueryCommands.Refresh" shortcut="" />
+    <binding command="MonoQuery.Commands.MonoQueryCommands.RefreshConnection" shortcut="" />
+    <binding command="MonoQuery.Commands.MonoQueryCommands.RefreshProviderList" shortcut="" />
+    <binding command="MonoQuery.Commands.MonoQueryCommands.RemoveConnection" shortcut="" />
   </scheme>
   <scheme name="GNU/Emacs">
-    <binding command="About..." shortcut="" />
-    <binding command="Active Configuration" shortcut="" />
-    <binding command="Active Layout" shortcut="" />
-    <binding command="Add" shortcut="" />
-    <binding command="Add assembly..." shortcut="" />
-    <binding command="Add connection" shortcut="" />
-    <binding command="Add existing Project" shortcut="" />
-    <binding command="Add existing Solution" shortcut="" />
-    <binding command="Add Files..." shortcut="" />
-    <binding command="Add Items..." shortcut="" />
-    <binding command="Add New Project..." shortcut="" />
-    <binding command="Add New Solution..." shortcut="" />
-    <binding command="Add Package..." shortcut="" />
-    <binding command="Add Resource" shortcut="" />
-    <binding command="Add Web Reference" shortcut="" />
-    <binding command="Add-in Manager..." shortcut="" />
-    <binding command="Back" shortcut="" />
-    <binding command="Browse Next" shortcut="F4" />
-    <binding command="Browse Previous" shortcut="Shift+F4" />
-    <binding command="Buffer Options" shortcut="" />
-    <binding command="Build" shortcut="F7" />
-    <binding command="Build Solution" shortcut="F8" />
-    <binding command="Checkout..." shortcut="" />
-    <binding command="Clean" shortcut="" />
-    <binding command="Clean Solution" shortcut="" />
-    <binding command="Clear All Breakpoints" shortcut="" />
-    <binding command="Clear Bookmarks" shortcut="" />
-    <binding command="Clear Recent Files" shortcut="" />
-    <binding command="Clear Recent Solutions" shortcut="" />
-    <binding command="Close All" shortcut="Control+Shift+W" />
-    <binding command="Close File" shortcut="" />
-    <binding command="Close Solution" shortcut="" />
-    <binding command="Collapse All Nodes" shortcut="" />
-    <binding command="Comment Line(s)" shortcut="Control+Alt+c" />
-    <binding command="Commit" shortcut="" />
-    <binding command="Copy" shortcut="Alt+W" />
-    <binding command="Create Package..." shortcut="" />
-    <binding command="Custom command list" shortcut="" />
-    <binding command="Cut" shortcut="Control+W" />
-    <binding command="Debug" shortcut="Control+F5" />
-    <binding command="Debug Application..." shortcut="" />
-    <binding command="Delete" shortcut="Delete" />
-    <binding command="Delete All" shortcut="" />
-    <binding command="Delete Current Layout" shortcut="" />
-    <binding command="Deployment" shortcut="" />
-    <binding command="Diff" shortcut="" />
-    <binding command="Disconnect" shortcut="" />
-    <binding command="Display Options List" shortcut="" />
-    <binding command="Drop table" shortcut="" />
-    <binding command="Edit Project Icons..." shortcut="" />
-    <binding command="Edit References..." shortcut="" />
-    <binding command="Empty table" shortcut="" />
-    <binding command="Export..." shortcut="" />
-    <binding command="Find in Files..." shortcut="Control+Shift+F" />
-    <binding command="Find Next" shortcut="F3" />
-    <binding command="Find Next Selection" shortcut="Control+F3" />
-    <binding command="Find Previous" shortcut="Shift+F3" />
-    <binding command="Find Previous Selection" shortcut="Control+Shift+F3" />
-    <binding command="Find..." shortcut="Control+S" />
-    <binding command="Forward" shortcut="" />
-    <binding command="Full Screen" shortcut="" />
-    <binding command="Generate Autotools Files" shortcut="" />
-    <binding command="Go to Line..." shortcut="Control+X|G" />
-    <binding command="Go to Matching Brace" shortcut="" />
-    <binding command="Go to Type..." shortcut="Control+Shift+T" />
-    <binding command="GTK# support settings..." shortcut="" />
-    <binding command="Import Glade file..." shortcut="" />
-    <binding command="Include in Synchronized Makefile" shortcut="" />
-    <binding command="Include To Project" shortcut="" />
-    <binding command="Indent Selection" shortcut="Control+Alt+Home" />
-    <binding command="Insert ChangeLog Entry" shortcut="Alt+n" />
-    <binding command="Install" shortcut="" />
-    <binding command="Layout List" shortcut="" />
-    <binding command="Local Copy Reference" shortcut="" />
-    <binding command="Log" shortcut="" />
-    <binding command="Lowercase Selection" shortcut="Control+Shift+l" />
-    <binding command="New Action Group..." shortcut="" />
-    <binding command="New Dialog..." shortcut="" />
-    <binding command="New File..." shortcut="" />
-    <binding command="New Folder" shortcut="" />
-    <binding command="New Layout..." shortcut="" />
-    <binding command="New Project..." shortcut="Control+Shift+N" />
-    <binding command="New Widget..." shortcut="" />
-    <binding command="New Window..." shortcut="" />
-    <binding command="Next Bookmark" shortcut="F2" />
-    <binding command="Next Window" shortcut="Control+Next" />
-    <binding command="Open" shortcut="" />
-    <binding command="Open File in Solution..." shortcut="Alt+Shift+O" />
-    <binding command="Open..." shortcut="Control+X|Control+F" />
-    <binding command="OpenWithList" shortcut="" />
-    <binding command="Options..." shortcut="" />
-    <binding command="Paste" shortcut="Control+Y" />
-    <binding command="Pause" shortcut="Control+F8" />
-    <binding command="Preferences..." shortcut="" />
-    <binding command="Previous Bookmark" shortcut="Shift+F2" />
-    <binding command="Previous Window" shortcut="Control+Prior" />
-    <binding command="Print Preview" shortcut="Control+Shift+P" />
-    <binding command="Print..." shortcut="" />
-    <binding command="Proportional time scale" shortcut="" />
-    <binding command="Publish..." shortcut="" />
-    <binding command="Quit" shortcut="Control+X|Control+C" />
-    <binding command="Rebuild" shortcut="Control+F7" />
-    <binding command="Rebuild Solution" shortcut="Control+F8" />
-    <binding command="Recent Files" shortcut="" />
-    <binding command="Recent Projects" shortcut="" />
-    <binding command="Redo" shortcut="" />
-    <binding command="Refactory Operations" shortcut="" />
-    <binding command="Refresh" shortcut="" />
-    <binding command="Reload" shortcut="" />
-    <binding command="Reload File" shortcut="Control+U" />
-    <binding command="Remove" shortcut="" />
-    <binding command="Remove From Project" shortcut="" />
-    <binding command="Rename" shortcut="F2" />
-    <binding command="Replace in Files..." shortcut="" />
-    <binding command="Replace..." shortcut="Alt+Shift+%" />
-    <binding command="Reset Options" shortcut="" />
-    <binding command="Results chart" shortcut="" />
-    <binding command="Revert" shortcut="" />
-    <binding command="Run" shortcut="F5" />
-    <binding command="Run Test" shortcut="" />
-    <binding command="Save" shortcut="Control+X|Control+S" />
-    <binding command="Save All" shortcut="" />
-    <binding command="Save As..." shortcut="Control+X|Control+W" />
-    <binding command="Select All" shortcut="Control+X|H" />
-    <binding command="Select test in tree" shortcut="" />
-    <binding command="Set As Startup Project" shortcut="" />
-    <binding command="Show failed tests" shortcut="" />
-    <binding command="Show ignored tests" shortcut="" />
-    <binding command="Show one result per day" shortcut="" />
-    <binding command="Show results pad" shortcut="" />
-    <binding command="Show successful tests" shortcut="" />
-    <binding command="Show test source code" shortcut="" />
-    <binding command="SQL Query Editor" shortcut="" />
-    <binding command="Status/Commit..." shortcut="" />
-    <binding command="Step Into" shortcut="Control+L1" />
-    <binding command="Step Out" shortcut="Shift+L1" />
-    <binding command="Step Over" shortcut="L1" />
-    <binding command="Stop" shortcut="Shift+F5" />
-    <binding command="Time chart" shortcut="" />
-    <binding command="Tip of the Day..." shortcut="" />
-    <binding command="Toggle Bookmark" shortcut="Control+F2" />
-    <binding command="Toggle Breakpoint" shortcut="F9" />
-    <binding command="Tool List" shortcut="" />
-    <binding command="Uncomment Line(s)" shortcut="Control+Alt+U" />
-    <binding command="Undo" shortcut="Control+Shift+_" />
-    <binding command="Unindent Selection" shortcut="Control+Alt+End" />
-    <binding command="Update" shortcut="" />
-    <binding command="Update Web Reference" shortcut="" />
-    <binding command="Update Web References" shortcut="" />
-    <binding command="Uppercase Selection" shortcut="Control+Shift+U" />
-    <binding command="View List" shortcut="" />
-    <binding command="Welcome Page" shortcut="" />
-    <binding command="Window List" shortcut="" />
-    <binding command="Word Count..." shortcut="" />
+    <binding command="MonoDevelop.Autotools.Commands.GenerateFiles" shortcut="" />
+    <binding command="MonoDevelop.Autotools.Commands.SynchWithMakefile" shortcut="" />
+    <binding command="MonoDevelop.ChangeLogAddIn.ChangeLogCommands.InsertEntry" shortcut="Alt+N" />
+    <binding command="MonoDevelop.Components.Commands.CommandSystemCommands.ToolbarList" shortcut="" />
+    <binding command="MonoDevelop.Deployment.Commands.AddPackage" shortcut="" />
+    <binding command="MonoDevelop.Deployment.Commands.CreatePackage" shortcut="" />
+    <binding command="MonoDevelop.Deployment.Commands.Install" shortcut="" />
+    <binding command="MonoDevelop.DesignerSupport.Commands.SelectItems" shortcut="" />
+    <binding command="MonoDevelop.GtkCore.GtkCommands.AddNewActionGroup" shortcut="" />
+    <binding command="MonoDevelop.GtkCore.GtkCommands.AddNewDialog" shortcut="" />
+    <binding command="MonoDevelop.GtkCore.GtkCommands.AddNewWidget" shortcut="" />
+    <binding command="MonoDevelop.GtkCore.GtkCommands.AddNewWindow" shortcut="" />
+    <binding command="MonoDevelop.GtkCore.GtkCommands.EditIcons" shortcut="" />
+    <binding command="MonoDevelop.GtkCore.GtkCommands.GtkSettings" shortcut="" />
+    <binding command="MonoDevelop.GtkCore.GtkCommands.ImportGladeFile" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.DebugCommands.ClearAllBreakpoints" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.DebugCommands.DebugApplication" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.DebugCommands.Pause" shortcut="Control+F8" />
+    <binding command="MonoDevelop.Ide.Commands.DebugCommands.StepInto" shortcut="Control+L1" />
+    <binding command="MonoDevelop.Ide.Commands.DebugCommands.StepOut" shortcut="Shift+L1" />
+    <binding command="MonoDevelop.Ide.Commands.DebugCommands.StepOver" shortcut="L1" />
+    <binding command="MonoDevelop.Ide.Commands.DebugCommands.ToggleBreakpoint" shortcut="F9" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.CommentCode" shortcut="Control+Alt+C" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.Copy" shortcut="Alt+W" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.Cut" shortcut="Control+W" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.Delete" shortcut="Delete" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.IndentSelection" shortcut="Control+Alt+Home" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection" shortcut="Control+Shift+L" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.Paste" shortcut="Control+Y" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.Redo" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.Rename" shortcut="F2" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.SelectAll" shortcut="Control+X|H" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.UncommentCode" shortcut="Control+Alt+U" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.Undo" shortcut="Control+Shift+_" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" shortcut="Control+Alt+End" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.UppercaseSelection" shortcut="Control+Shift+U" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.WordCount" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.ClearRecentFiles" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.ClearRecentProjects" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.CloseAllFiles" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.CloseCombine" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.CloseFile" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.Exit" shortcut="Control+X|Control+C" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.NewFile" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.NewProject" shortcut="Control+Shift+N" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.OpenFile" shortcut="Control+X|Control+F" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.OpenFileInSolution" shortcut="Alt+Shift+O" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.RecentFileList" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.RecentProjectList" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.ReloadFile" shortcut="Control+U" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.Save" shortcut="Control+X|Control+S" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.SaveAll" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.SaveAs" shortcut="Control+X|Control+W" />
+    <binding command="MonoDevelop.Ide.Commands.HelpCommands.About" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.HelpCommands.TipOfTheDay" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.NavigationCommands.NavigateForward" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.AddCombine" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.AddNewCombine" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.AddNewFiles" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.AddNewProject" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.AddProject" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.AddReference" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.AddResource" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.Build" shortcut="F7" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.BuildSolution" shortcut="F8" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.Clean" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.CleanSolution" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.ConfigurationSelector" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.Debug" shortcut="Control+F5" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.DebugEntry" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.IncludeInBuild" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.IncludeInDeploy" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.IncludeToProject" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.LocalCopyReference" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.NewFolder" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.Options" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.Rebuild" shortcut="Control+F7" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.RebuildSolution" shortcut="Control+F8" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.Reload" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.RemoveFromProject" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.Run" shortcut="F5" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.SetAsStartupProject" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.Stop" shortcut="Shift+F5" />
+    <binding command="MonoDevelop.Ide.Commands.RefactoryCommands.CurrentRefactoryOperations" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.SearchCommands.Find" shortcut="Control+S" />
+    <binding command="MonoDevelop.Ide.Commands.SearchCommands.FindInFiles" shortcut="Control+Shift+F" />
+    <binding command="MonoDevelop.Ide.Commands.SearchCommands.FindNext" shortcut="F3" />
+    <binding command="MonoDevelop.Ide.Commands.SearchCommands.FindNextSelection" shortcut="Control+F3" />
+    <binding command="MonoDevelop.Ide.Commands.SearchCommands.FindPrevious" shortcut="Shift+F3" />
+    <binding command="MonoDevelop.Ide.Commands.SearchCommands.FindPreviousSelection" shortcut="Control+Shift+F3" />
+    <binding command="MonoDevelop.Ide.Commands.SearchCommands.GotoType" shortcut="Control+Shift+T" />
+    <binding command="MonoDevelop.Ide.Commands.SearchCommands.Replace" shortcut="Alt+Shift+%" />
+    <binding command="MonoDevelop.Ide.Commands.SearchCommands.ReplaceInFiles" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ToolCommands.AddinManager" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ToolCommands.ToolList" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.CollapseAllTreeNodes" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.DeleteCurrentLayout" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.FullScreen" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.LayoutList" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.LayoutSelector" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.NewLayout" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.Open" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.OpenWithList" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.RefreshTree" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.ResetTreeDisplayOptions" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.ShowNext" shortcut="F4" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.ShowPrevious" shortcut="Shift+F4" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.TreeDisplayOptionList" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.ViewList" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.WindowCommands.NextWindow" shortcut="Control+Next" />
+    <binding command="MonoDevelop.Ide.Commands.WindowCommands.OpenWindowList" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.WindowCommands.PrevWindow" shortcut="Control+Prior" />
+    <binding command="MonoDevelop.NUnit.Commands.NUnitProjectCommands.AddAssembly" shortcut="" />
+    <binding command="MonoDevelop.NUnit.Commands.TestChartCommands.ShowFailedTests" shortcut="" />
+    <binding command="MonoDevelop.NUnit.Commands.TestChartCommands.ShowIgnoredTests" shortcut="" />
+    <binding command="MonoDevelop.NUnit.Commands.TestChartCommands.ShowResults" shortcut="" />
+    <binding command="MonoDevelop.NUnit.Commands.TestChartCommands.ShowSuccessfulTests" shortcut="" />
+    <binding command="MonoDevelop.NUnit.Commands.TestChartCommands.ShowTime" shortcut="" />
+    <binding command="MonoDevelop.NUnit.Commands.TestChartCommands.SingleDayResult" shortcut="" />
+    <binding command="MonoDevelop.NUnit.Commands.TestChartCommands.UseTimeScale" shortcut="" />
+    <binding command="MonoDevelop.NUnit.Commands.TestCommands.RunTest" shortcut="" />
+    <binding command="MonoDevelop.NUnit.Commands.TestCommands.SelectTestInTree" shortcut="" />
+    <binding command="MonoDevelop.NUnit.Commands.TestCommands.ShowTestCode" shortcut="" />
+    <binding command="MonoDevelop.NUnit.Commands.TestCommands.ShowTestDetails" shortcut="" />
+    <binding command="MonoDevelop.SourceEditor.EditorCommands.ClearBookmarks" shortcut="" />
+    <binding command="MonoDevelop.SourceEditor.EditorCommands.GotoLineNumber" shortcut="Control+X|G" />
+    <binding command="MonoDevelop.SourceEditor.EditorCommands.GotoMatchingBrace" shortcut="" />
+    <binding command="MonoDevelop.SourceEditor.EditorCommands.HighlightingTypeList" shortcut="" />
+    <binding command="MonoDevelop.SourceEditor.EditorCommands.NextBookmark" shortcut="F2" />
+    <binding command="MonoDevelop.SourceEditor.EditorCommands.PrevBookmark" shortcut="Shift+F2" />
+    <binding command="MonoDevelop.SourceEditor.EditorCommands.PrintDocument" shortcut="" />
+    <binding command="MonoDevelop.SourceEditor.EditorCommands.PrintPreviewDocument" shortcut="" />
+    <binding command="MonoDevelop.SourceEditor.EditorCommands.ShowBufferOptions" shortcut="" />
+    <binding command="MonoDevelop.SourceEditor.EditorCommands.ToggleBookmark" shortcut="Control+F2" />
+    <binding command="MonoDevelop.VersionControl.Commands.Add" shortcut="" />
+    <binding command="MonoDevelop.VersionControl.Commands.Checkout" shortcut="" />
+    <binding command="MonoDevelop.VersionControl.Commands.Commit" shortcut="" />
+    <binding command="MonoDevelop.VersionControl.Commands.Diff" shortcut="" />
+    <binding command="MonoDevelop.VersionControl.Commands.Log" shortcut="" />
+    <binding command="MonoDevelop.VersionControl.Commands.Publish" shortcut="" />
+    <binding command="MonoDevelop.VersionControl.Commands.Remove" shortcut="" />
+    <binding command="MonoDevelop.VersionControl.Commands.Revert" shortcut="" />
+    <binding command="MonoDevelop.VersionControl.Commands.Status" shortcut="" />
+    <binding command="MonoDevelop.VersionControl.Commands.Update" shortcut="" />
+    <binding command="MonoDevelop.WebReferences.WebReferenceCommands.Add" shortcut="" />
+    <binding command="MonoDevelop.WebReferences.WebReferenceCommands.Delete" shortcut="" />
+    <binding command="MonoDevelop.WebReferences.WebReferenceCommands.DeleteAll" shortcut="" />
+    <binding command="MonoDevelop.WebReferences.WebReferenceCommands.Update" shortcut="" />
+    <binding command="MonoDevelop.WebReferences.WebReferenceCommands.UpdateAll" shortcut="" />
+    <binding command="MonoDevelop.WelcomePage.WelcomePageCommands.ShowWelcomePage" shortcut="" />
+    <binding command="MonoDeveloper.Commands.Install" shortcut="" />
+    <binding command="MonoQuery.Commands.MonoQueryCommands.AddConnection" shortcut="" />
+    <binding command="MonoQuery.Commands.MonoQueryCommands.DisconnectConnection" shortcut="" />
+    <binding command="MonoQuery.Commands.MonoQueryCommands.DropTable" shortcut="" />
+    <binding command="MonoQuery.Commands.MonoQueryCommands.EmptyTable" shortcut="" />
+    <binding command="MonoQuery.Commands.MonoQueryCommands.QueryCommand" shortcut="" />
+    <binding command="MonoQuery.Commands.MonoQueryCommands.Refresh" shortcut="" />
+    <binding command="MonoQuery.Commands.MonoQueryCommands.RefreshConnection" shortcut="" />
+    <binding command="MonoQuery.Commands.MonoQueryCommands.RefreshProviderList" shortcut="" />
+    <binding command="MonoQuery.Commands.MonoQueryCommands.RemoveConnection" shortcut="" />
   </scheme>
 </schemes>

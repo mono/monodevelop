@@ -1,3 +1,8 @@
+2007-07-17  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* MonoDevelop.Components.Commands/KeyBindingService.cs: Use the
+	cmd.Id as the key instead of cmd.Text.
+
 2007-07-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Components.Commands/Command.cs,
