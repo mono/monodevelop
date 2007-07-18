@@ -56,6 +56,7 @@
     <binding command="MonoDevelop.Ide.Commands.FileCommands.SaveAll" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.FileCommands.SaveAs" shortcut="Control+Shift+S" />
     <binding command="MonoDevelop.Ide.Commands.HelpCommands.About" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.HelpCommands.Help" shortcut="F1" />
     <binding command="MonoDevelop.Ide.Commands.HelpCommands.TipOfTheDay" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.NavigationCommands.NavigateForward" shortcut="" />
@@ -100,6 +101,22 @@
     <binding command="MonoDevelop.Ide.Commands.SearchCommands.GotoType" shortcut="Control+Shift+T" />
     <binding command="MonoDevelop.Ide.Commands.SearchCommands.Replace" shortcut="Control+H" />
     <binding command="MonoDevelop.Ide.Commands.SearchCommands.ReplaceInFiles" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.CharLeft" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.CharRight" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLeftChar" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLine" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteRightChar" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteToLineEnd" shortcut="Control+K" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DocumentEnd" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DocumentStart" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.LineDown" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.LineEnd" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.LineStart" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.LineUp" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.PageDown" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.PageUp" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.ScrollLineDown" shortcut="Control+Down" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.ScrollLineUp" shortcut="Control+Up" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" shortcut="Control+Space" />
     <binding command="MonoDevelop.Ide.Commands.ToolCommands.AddinManager" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.ToolCommands.ToolList" shortcut="" />
@@ -220,11 +237,12 @@
     <binding command="MonoDevelop.Ide.Commands.FileCommands.OpenFileInSolution" shortcut="Alt+Shift+O" />
     <binding command="MonoDevelop.Ide.Commands.FileCommands.RecentFileList" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.FileCommands.RecentProjectList" shortcut="" />
-    <binding command="MonoDevelop.Ide.Commands.FileCommands.ReloadFile" shortcut="Control+U" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.ReloadFile" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.FileCommands.Save" shortcut="Control+X|Control+S" />
     <binding command="MonoDevelop.Ide.Commands.FileCommands.SaveAll" shortcut="Control+X|S" />
     <binding command="MonoDevelop.Ide.Commands.FileCommands.SaveAs" shortcut="Control+X|Control+W" />
     <binding command="MonoDevelop.Ide.Commands.HelpCommands.About" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.HelpCommands.Help" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.HelpCommands.TipOfTheDay" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.NavigationCommands.NavigateForward" shortcut="" />
@@ -269,6 +287,22 @@
     <binding command="MonoDevelop.Ide.Commands.SearchCommands.GotoType" shortcut="Control+Shift+T" />
     <binding command="MonoDevelop.Ide.Commands.SearchCommands.Replace" shortcut="Alt+Shift+%" />
     <binding command="MonoDevelop.Ide.Commands.SearchCommands.ReplaceInFiles" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.CharLeft" shortcut="Control+B" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.CharRight" shortcut="Control+F" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLeftChar" shortcut="Control+H" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLine" shortcut="Control+U" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteRightChar" shortcut="Control+D" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteToLineEnd" shortcut="Control+K" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DocumentEnd" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DocumentStart" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.LineDown" shortcut="Control+N" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.LineEnd" shortcut="Control+E" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.LineStart" shortcut="Control+A" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.LineUp" shortcut="Control+P" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.PageDown" shortcut="Control+X|]" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.PageUp" shortcut="Control+X|[" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.ScrollLineDown" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.ScrollLineUp" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" shortcut="Control+Space" />
     <binding command="MonoDevelop.Ide.Commands.ToolCommands.AddinManager" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.ToolCommands.ToolList" shortcut="" />
