@@ -3,41 +3,6 @@ using MonoDevelop.SourceEditor.Gui;
 
 namespace MonoDevelop.SourceEditor.Actions
 {
-	public class DeleteLine : AbstractEditAction
-	{
-		public override void Execute (SourceEditorView sourceView)
-		{
-			sourceView.DeleteLine ();
-		}
-	}
-
-	public class End : AbstractEditAction
-	{
-		public override void Execute (SourceEditorView sourceView)
-		{
-			if (!sourceView.GotoSelectionEnd ())
-				PassToBase = true;
-		}
-	}
-
-	public class F1 : AbstractEditAction
-	{
-		public override void Execute (SourceEditorView sourceView)
-		{
-			if (!sourceView.MonodocResolver ())
-				PassToBase = true;
-		}
-	}		
-
-	public class Home : AbstractEditAction
-	{
-		public override void Execute (SourceEditorView sourceView)
-		{
-			if (!sourceView.GotoSelectionStart ())
-				PassToBase = true;
-		}
-	}
-
 	// indents the next line using the FormattingStrategy
 	public class Return : AbstractEditAction
 	{
@@ -52,22 +17,6 @@ namespace MonoDevelop.SourceEditor.Actions
 			PassToBase = false;
 		}
 	}		
-
-	public class ScrollUp : AbstractEditAction
-	{
-		public override void Execute (SourceEditorView sourceView)
-		{
-			sourceView.ScrollUp ();
-		}
-	}
-
-	public class ScrollDown : AbstractEditAction
-	{
-		public override void Execute (SourceEditorView sourceView)
-		{
-			sourceView.ScrollDown ();
-		}
-	}
 
 	public class ShiftTab : AbstractEditAction
 	{

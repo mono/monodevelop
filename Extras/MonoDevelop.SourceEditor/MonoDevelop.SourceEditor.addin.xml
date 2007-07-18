@@ -183,13 +183,6 @@
 	
 	<Extension path = "/AddIns/DefaultTextEditor/EditActions" extension-nodes="EditAction" description="Custom edit actions.">
 		<!-- these are the default editor actions -->
-		<EditAction id = "DeleteLine" class = "MonoDevelop.SourceEditor.Actions.DeleteLine" keys = "Control|k" />
-		<EditAction id = "DeleteLine2" class = "MonoDevelop.SourceEditor.Actions.DeleteLine" keys = "Control|l" />
-		<EditAction id = "End" class = "MonoDevelop.SourceEditor.Actions.End" keys = "End"/>
-		<EditAction id = "F1" class = "MonoDevelop.SourceEditor.Actions.F1" keys = "F1"/>
-		<EditAction id = "Home" class = "MonoDevelop.SourceEditor.Actions.Home" keys = "Home"/>
-		<EditAction id = "ScrollUp" class = "MonoDevelop.SourceEditor.Actions.ScrollUp" keys = "Control|Up"/>
-		<EditAction id = "ScrollDown" class = "MonoDevelop.SourceEditor.Actions.ScrollDown" keys = "Control|Down"/>
 		<EditAction id = "ShiftTab" class = "MonoDevelop.SourceEditor.Actions.ShiftTab" keys = "Shift|ISO_Left_Tab"/>
 		<EditAction id = "Tab" class = "MonoDevelop.SourceEditor.Actions.Tab" keys = "Tab"/>
 		<EditAction id = "Return" class = "MonoDevelop.SourceEditor.Actions.Return" keys = "Return"/>

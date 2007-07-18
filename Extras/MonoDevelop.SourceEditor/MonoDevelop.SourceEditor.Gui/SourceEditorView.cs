@@ -331,6 +331,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			Global.PropagateEvent (this, evnt);
 		}
 
+		[CommandHandler (TextEditorCommands.DeleteToLineEnd)]
 		internal void DeleteLine ()
 		{
 			TextIter start = buf.GetIterAtMark (buf.InsertMark);
@@ -371,17 +372,14 @@ namespace MonoDevelop.SourceEditor.Gui
 			}
 		}
 
-		internal bool MonodocResolver ()
+		[CommandHandler (HelpCommands.Help)]
+		internal void MonodocResolver ()
 		{
 			TextIter insertIter = buf.GetIterAtMark (buf.InsertMark);
 			ILanguageItem languageItem = GetLanguageItem (insertIter);
 			
-			if (languageItem == null)
-				return false;
-
-			IdeApp.HelpOperations.ShowHelp (MonoDevelop.Projects.Services.DocumentationService.GetHelpUrl(languageItem));
-			
-			return true;
+			if (languageItem != null)
+				IdeApp.HelpOperations.ShowHelp (MonoDevelop.Projects.Services.DocumentationService.GetHelpUrl(languageItem));
 		}
 		
 		ILanguageItem GetLanguageItem (TextIter ti)
@@ -406,6 +404,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			return ctx.ResolveIdentifier (expression, ti.Line + 1, ti.LineOffset + 1, fileName, txt);
 		}
 
+		[CommandHandler (TextEditorCommands.ScrollLineUp)]
 		internal void ScrollUp ()
 		{
 			ParentEditor.Vadjustment.Value -= (ParentEditor.Vadjustment.StepIncrement / 5);
@@ -415,6 +414,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			ParentEditor.Vadjustment.ChangeValue();
 		}
 
+		[CommandHandler (TextEditorCommands.ScrollLineDown)]
 		internal void ScrollDown ()
 		{
 			double maxvalue = ParentEditor.Vadjustment.Upper - ParentEditor.Vadjustment.PageSize;
@@ -483,14 +483,15 @@ namespace MonoDevelop.SourceEditor.Gui
 			return null;
 		}
 		
-		internal bool GotoSelectionEnd ()
+		[CommandHandler (TextEditorCommands.CharRight)]
+		internal void CursorRight ()
 		{
-			return buf.GotoSelectionEnd ();
-		}
-
-		internal bool GotoSelectionStart ()
-		{
-			return buf.GotoSelectionStart ();
+			buf.BeginUserAction ();
+			TextIter it = buf.GetIterAtMark (buf.InsertMark);
+			it.ForwardChar ();
+			buf.MoveMark (buf.InsertMark, it); 
+			buf.MoveMark (buf.SelectionBound, it); 
+			buf.EndUserAction ();
 		}
 		
 		public int FindPrevWordStart (string doc, int offset)

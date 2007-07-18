@@ -1,5 +1,15 @@
 2007-07-18  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs,
+	  MonoDevelop.SourceEditor.Actions/DefaultEditActions.cs,
+	  MonoDevelop.SourceEditor.addin.xml: Replaced old actions by command
+	  handlers.
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: When
+	  setting the cursor position, also set the selection bound, and make
+	  sure the new cursor position is visible.
+
+2007-07-18  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Track api changes.
 
 2007-07-18  Lluis Sanchez Gual <lluis@novell.com> 

@@ -1089,7 +1089,11 @@ namespace MonoDevelop.SourceEditor.Gui
 
 		public int CursorPosition {
 			get { return se.Buffer.GetIterAtMark (se.Buffer.InsertMark).Offset; }
-			set { se.Buffer.MoveMark (se.Buffer.InsertMark, se.Buffer.GetIterAtOffset (value)); }
+			set {
+				se.Buffer.MoveMark (se.Buffer.InsertMark, se.Buffer.GetIterAtOffset (value)); 
+				se.Buffer.MoveMark (se.Buffer.SelectionBound, se.Buffer.GetIterAtOffset (value));
+				se.View.ScrollMarkOnscreen (se.Buffer.InsertMark);
+			}
 		}
 
 		public void Select (int startPosition, int endPosition)
