@@ -109,6 +109,28 @@ namespace MonoDevelop.Ide.Gui
 			get { return textBuffer.SelectionEndPosition; }
 		}
 		
+		public int CursorLine {
+			get {
+				int line, column;
+				textBuffer.GetLineColumnFromPosition (textBuffer.CursorPosition, out line, out column);
+				return line;
+			}
+			set {
+				textBuffer.CursorPosition = textBuffer.GetPositionFromLineColumn (value, CursorColumn);
+			}
+		}
+		
+		public int CursorColumn {
+			get {
+				int line, column;
+				textBuffer.GetLineColumnFromPosition (textBuffer.CursorPosition, out line, out column);
+				return column;
+			}
+			set {
+				textBuffer.CursorPosition = textBuffer.GetPositionFromLineColumn (CursorLine, value);
+			}
+		}
+		
 		public void Select (int startPosition, int endPosition)
 		{
 			textBuffer.Select (startPosition, endPosition);
@@ -117,6 +139,11 @@ namespace MonoDevelop.Ide.Gui
 		public void ShowPosition (int position)
 		{
 			textBuffer.ShowPosition (position);
+		}
+		
+		public void ShowCursorPosition ()
+		{
+			textBuffer.ShowPosition (textBuffer.CursorPosition);
 		}
 		
 		public string Text {
@@ -155,6 +182,16 @@ namespace MonoDevelop.Ide.Gui
 		public void DeleteText (int position, int length)
 		{
 			textBuffer.DeleteText (position, length);
+		}
+		
+		public void DeleteLine (int line)
+		{
+			int pos1 = GetPositionFromLineColumn (line, 1);
+			int pos2 = GetPositionFromLineColumn (line + 1, 1);
+			if (pos2 == -1)
+				DeleteText (pos1, TextLength - pos1);
+			else
+				DeleteText (pos1, pos2 - pos1);
 		}
 		
 		public void JumpTo (int line, int col)

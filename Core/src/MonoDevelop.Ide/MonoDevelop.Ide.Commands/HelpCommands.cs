@@ -23,6 +23,7 @@ namespace MonoDevelop.Ide.Commands
 {
 	public enum HelpCommands
 	{
+		Help,
 		TipOfTheDay,
 		About
 	}

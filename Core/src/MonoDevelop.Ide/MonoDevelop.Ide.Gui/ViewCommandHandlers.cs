@@ -382,5 +382,122 @@ namespace MonoDevelop.Ide.Gui
 		{
 			info.Enabled = GetContent <IEditableTextBuffer> () != null;
 		}
+		
+
+		// Text editor commands
+		
+		[CommandUpdateHandler (TextEditorCommands.LineEnd)]
+		[CommandUpdateHandler (TextEditorCommands.LineStart)]
+		[CommandUpdateHandler (TextEditorCommands.DeleteLeftChar)]
+		[CommandUpdateHandler (TextEditorCommands.DeleteRightChar)]
+		[CommandUpdateHandler (TextEditorCommands.CharLeft)]
+		[CommandUpdateHandler (TextEditorCommands.CharRight)]
+		[CommandUpdateHandler (TextEditorCommands.LineUp)]
+		[CommandUpdateHandler (TextEditorCommands.LineDown)]
+		[CommandUpdateHandler (TextEditorCommands.DocumentStart)]
+		[CommandUpdateHandler (TextEditorCommands.DocumentEnd)]
+		[CommandUpdateHandler (TextEditorCommands.DeleteLine)]
+		[CommandUpdateHandler (TextEditorCommands.DeleteToLineEnd)]		
+		protected void OnUpdateLineEnd (CommandInfo info)
+		{
+			// If the current document is not an editor, just ignore the text
+			// editor commands.
+			info.Bypass = doc.TextEditor == null;
+		}
+		
+		[CommandHandler (TextEditorCommands.LineEnd)]
+		protected void OnLineEnd ()
+		{
+			doc.TextEditor.CursorColumn = int.MaxValue;
+		}
+		
+		[CommandHandler (TextEditorCommands.LineStart)]
+		protected void OnLineStart ()
+		{
+			doc.TextEditor.CursorColumn = 1;
+		}
+		
+		[CommandHandler (TextEditorCommands.DeleteLeftChar)]
+		protected void OnDeleteLeftChar ()
+		{
+			int pos = doc.TextEditor.CursorPosition;
+			if (pos > 0) {
+				doc.TextEditor.DeleteText (pos-1, 1);
+			}
+		}
+		
+		[CommandHandler (TextEditorCommands.DeleteRightChar)]
+		protected void OnDeleteRightChar ()
+		{
+			int pos = doc.TextEditor.CursorPosition;
+			if (pos < doc.TextEditor.TextLength) {
+				doc.TextEditor.DeleteText (pos, 1);
+			}
+		}
+		
+		[CommandHandler (TextEditorCommands.CharLeft)]
+		protected void OnCharLeft ()
+		{
+			int pos = doc.TextEditor.CursorPosition;
+			if (pos > 0) {
+				doc.TextEditor.CursorPosition = pos - 1;
+			}
+		}
+		
+		[CommandHandler (TextEditorCommands.CharRight)]
+		protected void OnCharRight ()
+		{
+			int pos = doc.TextEditor.CursorPosition;
+			if (pos < doc.TextEditor.TextLength) {
+				doc.TextEditor.CursorPosition = pos + 1;
+			}
+		}
+		
+		[CommandHandler (TextEditorCommands.LineUp)]
+		protected void OnLineUp ()
+		{
+			int lin = doc.TextEditor.CursorLine;
+			if (lin > 1) {
+				doc.TextEditor.CursorLine = lin - 1;
+			}
+		}
+		
+		[CommandHandler (TextEditorCommands.LineDown)]
+		protected void OnLineDown ()
+		{
+			doc.TextEditor.CursorLine++;
+		}
+		
+		[CommandHandler (TextEditorCommands.DocumentStart)]
+		protected void OnDocumentStart ()
+		{
+			doc.TextEditor.CursorPosition = 0;
+		}
+		
+		[CommandHandler (TextEditorCommands.DocumentEnd)]
+		protected void OnDocumentEnd ()
+		{
+			doc.TextEditor.CursorPosition = doc.TextEditor.TextLength;
+		}
+		
+		[CommandHandler (TextEditorCommands.DeleteLine)]
+		protected void OnDeleteLine ()
+		{
+			doc.TextEditor.DeleteLine (doc.TextEditor.CursorLine);
+			doc.TextEditor.ShowCursorPosition ();
+		}
+		
+		[CommandHandler (TextEditorCommands.DeleteToLineEnd)]
+		protected void OnDeleteToLineEnd ()
+		{
+			int len = doc.TextEditor.GetLineLength (doc.TextEditor.CursorLine);
+			int col = doc.TextEditor.CursorColumn;
+			if (col == len + 1) {
+				int npos = doc.TextEditor.GetPositionFromLineColumn (doc.TextEditor.CursorLine + 1, 1);
+				doc.TextEditor.DeleteText (doc.TextEditor.CursorPosition, npos - doc.TextEditor.CursorPosition);
+			} else {
+				doc.TextEditor.DeleteText (doc.TextEditor.CursorPosition, len - col + 1);
+			}
+		}
 	}
 }

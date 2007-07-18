@@ -1,3 +1,12 @@
+2007-07-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Commands/TextEditorCommands.cs,
+	  MonoDevelop.Ide.addin.xml,
+	  MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: Added new editor
+	  commands.
+	* MonoDevelop.Ide.Commands/HelpCommands.cs: New help command.
+	* MonoDevelop.Ide.Gui/TextEditor.cs: Added new helper methods.
+
 2007-07-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs (Load): Only

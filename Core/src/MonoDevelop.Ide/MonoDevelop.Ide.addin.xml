@@ -612,6 +612,10 @@
 		<!-- HelpCommands -->
 		<Category _name = "Help" id = "Help">
 		
+		<Command id = "MonoDevelop.Ide.Commands.HelpCommands.Help"
+				_label = "Help" 
+				description = "Help"
+				shortcut = "F1" />
 		<Command id = "MonoDevelop.Ide.Commands.HelpCommands.TipOfTheDay"
 				defaultHandler = "MonoDevelop.Ide.Commands.TipOfTheDayHandler"
 				_label = "_Tip of the Day..." 
@@ -716,6 +720,42 @@
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow"
 				_label = "Show completion window" 
 				shortcut = "Control|space" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.LineEnd"
+				_label = "Go to end of line" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.LineStart"
+				_label = "Go to beginning of line" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLeftChar"
+				_label = "Delete left character" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DeleteRightChar"
+				_label = "Delete right character" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.CharLeft"
+				_label = "Go left one character" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.CharRight"
+				_label = "Go right one character" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.LineUp"
+				_label = "Go to previous line" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.LineDown"
+				_label = "Go to next line" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DocumentStart"
+				_label = "Go to beginning of document" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DocumentEnd"
+				_label = "Go to end of document" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.PageUp"
+				_label = "Go up one page" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.PageDown"
+				_label = "Go down one page" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ScrollLineUp"
+				_label = "Scroll line up"
+				shortcut = "Control|Up" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ScrollLineDown"
+				_label = "Scroll line down"
+				shortcut = "Control|Down" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLine"
+				_label = "Delete entire line" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DeleteToLineEnd"
+				_label = "Delete to end of line"
+				shortcut="Control|K" />
+				
 		</Category>
 	</Extension>
 	
