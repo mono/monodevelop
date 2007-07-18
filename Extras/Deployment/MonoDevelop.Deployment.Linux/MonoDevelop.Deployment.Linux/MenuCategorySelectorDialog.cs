@@ -76,7 +76,7 @@ namespace MonoDevelop.Deployment.Linux
 			
 			XmlElement cat = (XmlElement) categories.SelectSingleNode ("Category[@name='" + s + "']");
 			if (cat == null)
-				Console.WriteLine ("Category not found: " + s);
+				Runtime.LoggingService.Error ("Category not found: " + s);
 			else
 				InsertCategory (cat);
 		}
