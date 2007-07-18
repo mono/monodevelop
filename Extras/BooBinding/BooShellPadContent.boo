@@ -38,9 +38,6 @@ public class BooShellPadContent (AbstractPadContent):
 				CreateBooShell()
 			return _scroller
 	
-	def constructor():
-		super( "Boo Shell", "md-boo-binding-base" )
-	
 	def CreateBooShell():
 		_scroller = Gtk.ScrolledWindow()
 		_model = BooShellModel ()

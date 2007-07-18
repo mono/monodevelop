@@ -82,7 +82,7 @@
   </Extension>
 
   <Extension path = "/SharpDevelop/Workbench/Pads">
-	<Pad id = "BooBinding.Pads.BooShellPadContent" class = "BooBinding.Pads.BooShellPadContent" defaultPlacement = "Bottom"/>
+	<Pad id = "BooBinding.Pads.BooShellPadContent" _label="Boo Shell" icon="boo-project-icon" class = "BooBinding.Pads.BooShellPadContent" defaultPlacement = "Bottom"/>
   </Extension>
 
   <Extension path = "/SharpDevelop/Workbench/Contexts/Edit">
@@ -97,5 +97,9 @@
 				class = "BooBinding.Gui.OptionPanels.GeneralBooShellPanel" />
 	</DialogPanel>
   </Extension>
+  
+	<Extension path = "/SharpDevelop/Workbench/StockIcons">
+		<StockIcon stockid = "boo-project-icon" resource = "Boo.ProjectIcon" />
+	</Extension>
 
 </Addin>
