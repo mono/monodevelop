@@ -103,7 +103,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				try {
 					documentation = GetDocumentation (documentation);
 				} catch (Exception e) {
-					Console.WriteLine(e.ToString());
+					Runtime.LoggingService.Error (e);
 				}
 			}
 		
@@ -325,8 +325,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 						ret.Append(whitespace.Replace(xml.Value, " "));
 					}
 				} while (xml.Read ());
-			} catch {
-				Console.WriteLine ("DocBoom");
+			} catch (Exception ex) {
+				Runtime.LoggingService.Error (ex);
 				return doc;
 			}
 			return ret.ToString ();

@@ -116,9 +116,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 							--start;
 						}
 						
-						Console.WriteLine("{0} -- {1}", offset, start);
 						string word = widget.GetText (start, offset);
-						Console.WriteLine("word >{0}<", word);
 						switch (word) {
 							case "ref":
 							case "out":
