@@ -256,6 +256,7 @@ namespace CSharpBinding.FormattingStrategy {
 			string str = linebuf.ToString (wordStart, linebuf.Length - wordStart);
 			string[] keywords = new string [] {
 				"namespace",
+				"interface",
 				"struct",
 				"class",
 				"enum",
@@ -296,6 +297,10 @@ namespace CSharpBinding.FormattingStrategy {
 			    !KeywordIsSpecial (stack.PeekKeyword (0)) &&
 			    !KeywordIsSpecial (keyword)) {
 				keyword = String.Empty;
+				return;
+			} else if (stack.PeekInside (0) == Inside.FoldedStatement &&
+			           (keyword == "base" || keyword == "class" || keyword == "interface")) {
+				// don't push another folded statement in this case either...
 				return;
 			}
 			
@@ -567,15 +572,18 @@ namespace CSharpBinding.FormattingStrategy {
 			
 			// push a new block onto the stack
 			if (inside == Inside.FoldedStatement) {
-				string pKeyword = stack.PeekKeyword (0);
+				string pKeyword;
 				
-				stack.Pop ();
-				
-				if ((pKeyword == "base" || pKeyword == "this" || pKeyword == "class") &&
-				    stack.PeekInside (0) == Inside.FoldedStatement) {
-					// Folded Constructor or class
-					pKeyword = stack.PeekKeyword (0);
+				if (firstNonLwsp == -1) {
+					pKeyword = stack.PeekKeyword (1);
 					stack.Pop ();
+				} else
+					pKeyword = keyword;
+				
+				if (pKeyword == "base" || pKeyword == "this" || pKeyword == "class" || pKeyword == "interface") {
+					// folded ctor or class
+					while (stack.PeekInside (0) == Inside.FoldedStatement)
+						stack.Pop ();
 				}
 				
 				if (firstNonLwsp == -1)
@@ -624,6 +632,9 @@ namespace CSharpBinding.FormattingStrategy {
 				keyword = String.Empty;
 			
 			stack.Pop ();
+			
+			while (stack.PeekInside (0) == Inside.FoldedStatement)
+				stack.Pop ();
 			
 			if (firstNonLwsp == -1) {
 				needsReindent = true;
@@ -711,6 +722,9 @@ namespace CSharpBinding.FormattingStrategy {
 				case ';':
 					// handled elsewhere
 					break;
+				case ',':
+					// avoid indenting if we are in a list
+					break;
 				default:
 					if (stack.PeekLineNr (0) == curLineNr) {
 						// is this right? I don't remember why I did this...
@@ -718,13 +732,6 @@ namespace CSharpBinding.FormattingStrategy {
 					}
 					
 					if (inside == Inside.Block) {
-						if (pc == ',') {
-							// avoid indenting if we are in a list
-							/* Note: this may negate the need for checking
-							 * for "enum" and "struct" below */
-							break;
-						}
-						
 						if (stack.PeekKeyword (0) == "struct" ||
 						    stack.PeekKeyword (0) == "enum" ||
 						    stack.PeekKeyword (0) == "=") {

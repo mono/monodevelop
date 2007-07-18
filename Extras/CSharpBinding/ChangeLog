@@ -1,5 +1,8 @@
 2007-07-18  Jeffrey Stedfast  <fejj@novell.com>
 
+	* FormattingStrategy/CSharpIndentEngine.cs: A few fixes, including
+	one for bug #82055.
+
 	* Gui/CSharpTextEditorExtension.cs (IsInUsing): Simplified.
 	(GetPreviousToken): Fixed bug #82131.
 
