@@ -537,12 +537,10 @@ namespace MonoDevelop.Components.Commands
 			
 			MethodInfo[] methods = type.GetMethods (BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 			foreach (MethodInfo method in methods) {
-				object attr = Attribute.GetCustomAttribute (method, typeof(CommandHandlerAttribute));
-				if (attr != null)
+				foreach (CommandHandlerAttribute attr in method.GetCustomAttributes (typeof(CommandHandlerAttribute), true))
 					handlers.Add (new CommandHandlerInfo (method, (CommandHandlerAttribute) attr));
 
-				attr = Attribute.GetCustomAttribute (method, typeof(CommandUpdateHandlerAttribute));
-				if (attr != null)
+				foreach (CommandUpdateHandlerAttribute attr in method.GetCustomAttributes (typeof(CommandUpdateHandlerAttribute), true))
 					updaters.Add (new CommandUpdaterInfo (method, (CommandUpdateHandlerAttribute) attr));
 			}
 			

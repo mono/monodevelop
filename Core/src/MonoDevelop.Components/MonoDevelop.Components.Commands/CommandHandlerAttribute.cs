@@ -45,6 +45,7 @@ namespace MonoDevelop.Components.Commands
 		}
 	}
 
+	[AttributeUsage (AttributeTargets.Method, AllowMultiple=true)]
 	public class CommandHandlerAttribute: CommandMethodAttribute
 	{
 		public CommandHandlerAttribute (object commandId): base (commandId)
@@ -52,6 +53,7 @@ namespace MonoDevelop.Components.Commands
 		}
 	}
 	
+	[AttributeUsage (AttributeTargets.Method, AllowMultiple=true)]
 	public class CommandUpdateHandlerAttribute: CommandMethodAttribute
 	{
 		public CommandUpdateHandlerAttribute (object commandId): base (commandId)

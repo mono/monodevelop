@@ -1,5 +1,11 @@
 2007-07-18  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Components.Commands/CommandManager.cs,
+	  MonoDevelop.Components.Commands/CommandHandlerAttribute.cs: Allow
+	  assigning multiple command handler attributes to a single method.
+
+2007-07-18  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Components.Commands/CommandManager.cs: Don't crash if a
 	  command is not found.
 
