@@ -204,7 +204,7 @@
     <binding command="MonoDevelop.Ide.Commands.EditCommands.SelectAll" shortcut="Control+X|H" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.UncommentCode" shortcut="Control+Alt+U" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.Undo" shortcut="Control+Shift+_" />
-    <binding command="MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" shortcut="Control+Alt+End" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" shortcut="Control+X|Shift+Tab" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.UppercaseSelection" shortcut="Control+X|Control+U" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.WordCount" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.FileCommands.ClearRecentFiles" shortcut="" />
