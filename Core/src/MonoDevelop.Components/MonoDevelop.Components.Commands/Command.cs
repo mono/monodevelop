@@ -41,6 +41,7 @@ namespace MonoDevelop.Components.Commands
 		string description;
 		string icon;
 		string accelKey;
+		string category;
 		bool disabledVisible;
 		internal string AccelPath;
 		
@@ -88,6 +89,11 @@ namespace MonoDevelop.Components.Commands
 		public string Description {
 			get { return description; }
 			set { description = value; }
+		}
+		
+		public string Category {
+			get { return category == null ? string.Empty : category; }
+			set { category = value; }
 		}
 		
 		public event KeyBindingChangedEventHandler KeyBindingChanged;

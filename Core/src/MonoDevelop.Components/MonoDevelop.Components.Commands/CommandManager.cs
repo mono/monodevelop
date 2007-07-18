@@ -42,7 +42,7 @@ namespace MonoDevelop.Components.Commands
 		Gtk.AccelGroup accelGroup;
 		string mode;
 		
-		Hashtable cmds = new Hashtable ();
+		Dictionary<object,Command> cmds = new Dictionary<object,Command> ();
 		Hashtable handlerInfo = new Hashtable ();
 		ArrayList toolbars = new ArrayList ();
 		ArrayList globalHandlers = new ArrayList ();
@@ -215,6 +215,11 @@ namespace MonoDevelop.Components.Commands
 		public Command GetCommand (object cmdId)
 		{
 			return cmds [cmdId] as Command;
+		}
+		
+		public IEnumerable<Command> GetCommands ()
+		{
+			return cmds.Values;
 		}
 		
 		public ActionCommand GetActionCommand (object cmdId)

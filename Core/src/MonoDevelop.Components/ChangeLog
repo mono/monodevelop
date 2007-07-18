@@ -1,3 +1,9 @@
+2007-07-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Components.Commands/Command.cs,
+	  MonoDevelop.Components.Commands/CommandManager.cs: Add support for
+	  command categories.
+
 2007-07-17  Jeffrey Stedfast  <fejj@novell.com>
 
 	* KeyBindingSchemes.xml: Added
