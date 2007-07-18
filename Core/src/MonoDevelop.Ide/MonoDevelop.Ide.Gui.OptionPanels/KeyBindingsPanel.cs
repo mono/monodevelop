@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
 		{
 			this.Build ();
 			
-			keyStore = new TreeStore (typeof (Command), typeof (string), typeof (string), typeof (string), typeof(int));
+			keyStore = new TreeStore (typeof (Command), typeof (string), typeof (string), typeof (string), typeof (int));
 			keyTreeView.Model = keyStore;
 			keyTreeView.AppendColumn ("Command", new CellRendererText (), "text", labelCol, "weight", boldCol);
 			keyTreeView.AppendColumn ("Key Binding", new CellRendererText (), "text", bindingCol);
@@ -105,21 +105,24 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
 			
 			foreach (object c in IdeApp.CommandService.CommandManager.GetCommands ()) {
 				Command cmd = c as Command;
-				string label = cmd.Text.Replace ("_", String.Empty);
+				string key;
 				
-				if (label == String.Empty)
-					continue;
+				if (cmd.Id is Enum)
+					key = cmd.Id.GetType () + "." + cmd.Id;
+				else
+					key = cmd.Id.ToString ();
 				
-				if (commands.ContainsKey (label)) {
-					if (commands[label].AccelKey == null)
-						commands[label] = cmd;
+				if (commands.ContainsKey (key)) {
+					if (commands[key].AccelKey == null || commands[key].Text == String.Empty)
+						commands[key] = cmd;
 				} else {
-					commands.Add (label, cmd);
+					commands.Add (key, cmd);
 				}
+				
 				if (!catNames.Contains (cmd.Category))
 					catNames.Add (cmd.Category);
 			}
-
+			
 			// Add the categories, sorted
 			catNames.Sort ();
 			Dictionary <string,TreeIter> categories = new Dictionary<string,TreeIter> ();
@@ -127,14 +130,15 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
 				TreeIter icat;
 				if (!categories.TryGetValue (cat, out icat)) {
 					string name = cat.Length == 0 ? GettextCatalog.GetString ("Other") : cat;
-					icat = keyStore.AppendValues (null, name, "", "", (int) Pango.Weight.Bold);
+					icat = keyStore.AppendValues (null, name, String.Empty, String.Empty, (int) Pango.Weight.Bold);
 					categories [cat] = icat;
 				}
 			}
 			
 			foreach (KeyValuePair<string, Command> pair in commands) {
 				Command cmd = pair.Value;
-				string label = pair.Key;
+				
+				string label = cmd.Text.Replace ("_", String.Empty);
 				
 				TreeIter icat = categories [cmd.Category];
 				keyStore.AppendValues (icat, cmd, label, cmd.AccelKey != null ? cmd.AccelKey : String.Empty, cmd.Description, (int) Pango.Weight.Normal);
@@ -195,8 +199,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
 				accelEntry.GrabFocus ();
 				accelIncomplete = false;
 				accelComplete = true;
-			}
-			else {
+			} else {
 				accelEntry.Sensitive = false;
 				accelEntry.Text = string.Empty;
 			}
