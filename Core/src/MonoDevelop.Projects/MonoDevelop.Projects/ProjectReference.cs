@@ -116,7 +116,6 @@ namespace MonoDevelop.Projects
 							if (p != null) return p.GetOutputFileName ();
 						}
 					}
-					Console.WriteLine ("Reference not found for project " + reference);
 					return null;
 				
 				default:

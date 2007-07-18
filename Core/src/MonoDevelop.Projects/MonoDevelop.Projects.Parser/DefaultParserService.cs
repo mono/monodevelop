@@ -1466,7 +1466,6 @@ namespace MonoDevelop.Projects.Parser
 		
 		public IClass SearchType (CodeCompletionDatabase db, IUsing iusing, string partitialTypeName, ReturnTypeList genericArguments, bool caseSensitive)
 		{
-			Runtime.LoggingService.Debug ("Search type : >{0}<", partitialTypeName);
 			IClass c = GetClass (db, partitialTypeName, genericArguments, false, caseSensitive);
 			if (c != null) {
 				return c;
@@ -1474,12 +1473,9 @@ namespace MonoDevelop.Projects.Parser
 			
 			foreach (string str in iusing.Usings) {
 				string possibleType = String.Concat(str, ".", partitialTypeName);
-				Runtime.LoggingService.Debug ("looking for {0}", possibleType);
 				c = GetClass (db, possibleType, genericArguments, false, caseSensitive);
-				if (c != null) {
-					Runtime.LoggingService.Debug ("Found!");
+				if (c != null)
 					return c;
-				}
 			}
 			
 			// search class in partitial namespaces
@@ -1487,12 +1483,9 @@ namespace MonoDevelop.Projects.Parser
 			if (declaringNamespace != null) {
 				while (declaringNamespace.Length > 0) {
 					string className = String.Concat(declaringNamespace, ".", partitialTypeName);
-					Runtime.LoggingService.DebugFormat ("looking for {0}", className);
 					c = GetClass (db, className, genericArguments, false, caseSensitive);
-					if (c != null) {
-						Runtime.LoggingService.Debug ("Found!");
+					if (c != null)
 						return c;
-					}
 					int index = declaringNamespace.IndexOf('.');
 					if (index > 0) {
 						declaringNamespace = declaringNamespace.Substring(0, index);
@@ -1508,12 +1501,9 @@ namespace MonoDevelop.Projects.Parser
 					string className = null;
 					if (aliasString.Length > 0) {
 						className = String.Concat(entry.Value.ToString(), partitialTypeName.Remove(0, aliasString.Length));
-						Runtime.LoggingService.DebugFormat ("looking for {0}", className);
 						c = GetClass (db, className, genericArguments, false, caseSensitive);
-						if (c != null) {
-							Runtime.LoggingService.Debug ("Found!");
+						if (c != null)
 							return c;
-						}
 					}
 				}
 			}

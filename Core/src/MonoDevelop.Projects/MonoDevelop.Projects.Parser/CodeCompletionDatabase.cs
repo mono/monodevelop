@@ -310,7 +310,7 @@ namespace MonoDevelop.Projects.Parser
 						
 					Runtime.FileService.MoveFile (tmpDataFile, dataFile);
 				} catch (Exception ex) {
-					Console.WriteLine (ex);
+					Runtime.LoggingService.Error (ex);
 					if (dfile != null)
 						dfile.Close ();
 					if (File.Exists (tmpDataFile))

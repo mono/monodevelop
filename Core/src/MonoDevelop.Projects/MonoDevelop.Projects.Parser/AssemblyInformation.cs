@@ -68,7 +68,7 @@ namespace MonoDevelop.Projects.Parser {
 					asm.MainModule.LoadSymbols (f.CreateReader (asm.MainModule, fileName));
 				} catch (Exception ex) {
 					// Ignore symbol loading errors
-					Console.WriteLine (ex);
+					Runtime.LoggingService.Error (ex);
 				}
 			}
 			

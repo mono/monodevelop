@@ -264,7 +264,7 @@ namespace MonoDevelop.Projects.Parser
 					}
 				}
 				if (!gotname) {
-					Console.WriteLine ("Could not load assembly: " + assemblyName);
+					Runtime.LoggingService.Error ("Could not load assembly: " + assemblyName);
 					return false;
 				}
 				name = EncodeGacAssemblyName (assemblyName);

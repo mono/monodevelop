@@ -1,3 +1,13 @@
+2007-07-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/ProjectReference.cs,
+	  MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Parser/AssemblyInformation.cs,
+	  MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Use the log
+	  service for logging errors.
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs: Removed debug
+	  code from critical execution paths.
+
 2007-07-17  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs (ImplementMember):
