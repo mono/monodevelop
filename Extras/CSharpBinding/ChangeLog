@@ -1,3 +1,8 @@
+2007-07-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Gui/CSharpTextEditorExtension.cs (IsInUsing): Simplified.
+	(GetPreviousToken): Fixed bug #82131.
+
 2007-07-17  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Gui/CSharpTextEditorExtension.cs (KeyPress): Fixed a bug caused

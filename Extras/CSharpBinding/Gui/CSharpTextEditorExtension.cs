@@ -342,7 +342,6 @@ namespace CSharpBinding
 			
 			i = ctx.TriggerOffset;
 			if (charTyped == ' ' && GetPreviousToken ("override", ref i, false)) {
-			
 				// Look for modifiers, in order to find the beginning of the declaration
 				int firstMod = i;
 				for (int n=0; n<3; n++) {
@@ -380,10 +379,11 @@ namespace CSharpBinding
 
 			string ns;
 			if (IsInUsing (expression, ctx.TriggerOffset, out ns)) {
-				if (charTyped == ' ' && ns != String.Empty)
+				if (charTyped == ' ' && ns != String.Empty) {
 					// 'using System' and charTyped == ' '
 					// subnamespaces show up only on '.'
 					return null;
+				}
 				
 				Resolver res = new Resolver (parserContext);
 				// Don't show namespaces when "using" is not a namespace directive
@@ -415,15 +415,17 @@ namespace CSharpBinding
 		 *	using System. : ns - "System"
 		 *	using System.Collections. : ns - "System.Collections"
 		 */
-		bool IsInUsing (string expression, int triggerOffset, out string ns)
+		bool IsInUsing (string expr, int triggerOffset, out string ns)
 		{
-			ns = "";
-			if (expression == "using" || expression.EndsWith(" using") || expression.EndsWith("\tusing")||
-				expression.EndsWith("\nusing")|| expression.EndsWith("\rusing"))
+			int len = expr.Length;
+			
+			ns = String.Empty;
+			if (expr == "using" || (expr.EndsWith ("using") && char.IsWhiteSpace (expr[len - 5])))
 				return true;
-
-			ns = expression;
-			int i = triggerOffset - expression.Length - 1;
+			
+			ns = expr;
+			int i = triggerOffset - expr.Length - 1;
+			
 			return (GetPreviousToken (ref i, true) == "using");
 		}
 		
@@ -452,11 +454,12 @@ namespace CSharpBinding
 			int endOffset = i + 1;
 			
 			do {
-				c = Editor.GetCharAt (--i);
-			} while (i > 0 && (char.IsLetterOrDigit (c) || c == '_'));
-			
-			if (char.IsWhiteSpace (c))
-				i++;
+				c = Editor.GetCharAt (i - 1);
+				if (!(char.IsLetterOrDigit (c) || c == '_'))
+					break;
+				
+				i--;
+			} while (i > 0);
 			
 			return Editor.GetText (i, endOffset);
 		}
