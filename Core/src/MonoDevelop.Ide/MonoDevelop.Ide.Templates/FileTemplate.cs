@@ -127,18 +127,9 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 		
-		static FileTemplate LoadFileTemplate (RuntimeAddin addin, string filename)
+		static FileTemplate LoadFileTemplate (RuntimeAddin addin, ProjectTemplateCodon codon)
 		{
-			Stream stream = addin.GetResource (filename);
-			if (stream == null)
-				throw new ApplicationException ("Template " + filename + " not found");
-
-			XmlDocument doc = new XmlDocument();
-			try {
-				doc.Load(stream);
-			} finally {
-				stream.Close ();
-			}
+			XmlDocument doc = codon.GetTemplate ();
 			
 			XmlElement config = doc.DocumentElement["TemplateConfiguration"];
 			
@@ -161,12 +152,12 @@ namespace MonoDevelop.Ide.Templates
 			if (config["_Name"] != null)
 				fileTemplate.name = GettextCatalog.GetString (config["_Name"].InnerText);
 			else
-				throw new InvalidOperationException ("Missing element '_Name' in file template: " + filename);
+				throw new InvalidOperationException ("Missing element '_Name' in file template: " + codon.Id);
 			
 			if (config["Category"] != null)
 				fileTemplate.category = config["Category"].InnerText;
 			else
-				throw new InvalidOperationException ("Missing element 'Category' in file template: " + filename);
+				throw new InvalidOperationException ("Missing element 'Category' in file template: " + codon.Id);
 			
 			if (config["LanguageName"] != null)
 				fileTemplate.languagename = config["LanguageName"].InnerText;
@@ -209,17 +200,17 @@ namespace MonoDevelop.Ide.Templates
 		static void OnExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
 			if (args.Change == ExtensionChange.Add) {
-				FileTemplateCodon codon = (FileTemplateCodon) args.ExtensionNode;
+				ProjectTemplateCodon codon = (ProjectTemplateCodon) args.ExtensionNode;
 				try {
-					FileTemplate t = LoadFileTemplate (codon.Addin, codon.Resource);
+					FileTemplate t = LoadFileTemplate (codon.Addin, codon);
 					t.id = codon.Id;
 					fileTemplates.Add (t);
 				} catch (Exception e) {
-					Services.MessageService.ShowError (e, GettextCatalog.GetString ("Error loading template from resource {0}", codon.Resource));
+					Runtime.LoggingService.Fatal ((object)GettextCatalog.GetString ("Error loading template: {0}", codon.Id), e);
 				}
 			}
 			else {
-				FileTemplateCodon codon = (FileTemplateCodon) args.ExtensionNode;
+				ProjectTemplateCodon codon = (ProjectTemplateCodon) args.ExtensionNode;
 				foreach (FileTemplate t in fileTemplates) {
 					if (t.Id == codon.Id) {
 						fileTemplates.Remove (t);

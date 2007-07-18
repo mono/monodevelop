@@ -54,7 +54,6 @@ FILES =  \
 	MonoDevelop.Ide.Codons/CombineOpenCondition.cs \
 	MonoDevelop.Ide.Codons/ContextPadCodon.cs \
 	MonoDevelop.Ide.Codons/DisplayBindingCodon.cs \
-	MonoDevelop.Ide.Codons/FileTemplateCodon.cs \
 	MonoDevelop.Ide.Codons/FileTemplateTypeCodon.cs \
 	MonoDevelop.Ide.Codons/IDisplayBinding.cs \
 	MonoDevelop.Ide.Codons/ISubDisplayBinding.cs \

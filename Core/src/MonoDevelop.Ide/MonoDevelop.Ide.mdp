@@ -198,7 +198,6 @@
     <File name="./MonoDevelop.Ide.Codons/DisplayBindingCodon.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Codons/IDisplayBinding.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Codons/ISubDisplayBinding.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Ide.Codons/FileTemplateCodon.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Codons/FileTemplateTypeCodon.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Codons/ProjectTemplateCodon.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Codons/NodeBuilderCodon.cs" subtype="Code" buildaction="Compile" />

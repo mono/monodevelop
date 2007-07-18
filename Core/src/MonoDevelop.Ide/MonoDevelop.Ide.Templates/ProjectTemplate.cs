@@ -132,18 +132,9 @@ namespace MonoDevelop.Ide.Templates
 		}
 #endregion
 		
-		protected ProjectTemplate (RuntimeAddin addin, string id, string fileName)
+		protected ProjectTemplate (RuntimeAddin addin, string id, ProjectTemplateCodon codon)
 		{
-			Stream stream = addin.GetResource (fileName);
-			if (stream == null)
-				throw new ApplicationException ("Template " + fileName + " not found");
-
-			XmlDocument doc = new XmlDocument();
-			try {
-				doc.Load(stream);
-			} finally {
-				stream.Close ();
-			}
+			XmlDocument doc = codon.GetTemplate ();
 						
 			XmlElement config = doc.DocumentElement["TemplateConfiguration"];
 			string category = config["Category"].InnerText;
@@ -173,7 +164,7 @@ namespace MonoDevelop.Ide.Templates
 						// per-language template instances should not share the XmlDocument
 						ProjectTemplates.Add (new ProjectTemplate (addin, id, (XmlDocument) doc.Clone (), language, language+"/"+category));
 					} catch (Exception e) {
-						Services.MessageService.ShowError (e, GettextCatalog.GetString ("Error loading template from resource {0}", fileName));
+						Runtime.LoggingService.Fatal ((object)GettextCatalog.GetString ("Error loading template {0}", codon.Id), e);
 					}
 				}
 			} else {
@@ -285,9 +276,9 @@ namespace MonoDevelop.Ide.Templates
 			if (args.Change == ExtensionChange.Add) {
 				ProjectTemplateCodon codon = (ProjectTemplateCodon) args.ExtensionNode;
 				try {
-					ProjectTemplates.Add (new ProjectTemplate (codon.Addin, codon.Id, codon.Resource));
+					ProjectTemplates.Add (new ProjectTemplate (codon.Addin, codon.Id, codon));
 				} catch (Exception e) {
-					Services.MessageService.ShowError (e, GettextCatalog.GetString ("Error loading template from resource {0}", codon.Resource));
+					Runtime.LoggingService.Fatal (e);
 				}
 			}
 			else {

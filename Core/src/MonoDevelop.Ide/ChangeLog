@@ -1,5 +1,17 @@
 2007-07-18  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Templates/FileTemplate.cs,
+	  MonoDevelop.Ide.Templates/ProjectTemplate.cs: Support reading
+	  templates from files, not only from resources.
+	* MonoDevelop.Ide.addin.xml: Removed use of FileTemplateCodon. Removed
+	  a bunch of obsolete attributes.
+	* MonoDevelop.Ide.mdp, Makefile.am,
+	  MonoDevelop.Ide.Codons/FileTemplateCodon.cs: Removed unused file.
+	* MonoDevelop.Ide.Codons/ProjectTemplateCodon.cs: Rewritten to support
+	  templates stored in files.
+
+2007-07-18  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Commands/TextEditorCommands.cs,
 	  MonoDevelop.Ide.addin.xml,
 	  MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: Added new editor
