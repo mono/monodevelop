@@ -149,14 +149,26 @@ namespace MonoDevelop.Gettext
 				File.WriteAllText (GetFileName (isoCode), "");
 				monitor.ReportSuccess (String.Format (GettextCatalog.GetString ("Language '{0}' successfully added."), isoCode));
 				monitor.Step (1);
+				isDirty = true; 
 				this.Save (monitor);
 				OnTranslationAdded (EventArgs.Empty);
-				isDirty = true; 
 			} catch (Exception e) {
 				monitor.ReportError (String.Format ( GettextCatalog.GetString ("Language '{0}' could not be added: "), isoCode), e);
 			} finally {
 				monitor.EndTask ();
 			}
+		}
+		
+		public void RemoveTranslation (string isoCode)
+		{
+			for (int i = 0; i < this.translations.Count; i++) { 
+				if (translations[i].IsoCode == isoCode) {
+					translations.RemoveAt (i);
+					OnTranslationRemoved (EventArgs.Empty);
+					break;
+				}
+			}
+			isDirty = true;
 		}
 		
 		public override IConfiguration CreateConfiguration (string name)
@@ -248,6 +260,14 @@ namespace MonoDevelop.Gettext
 		}
 		
 		public event EventHandler TranslationAdded;
+		
+		protected virtual void OnTranslationRemoved (EventArgs e)
+		{
+			if (TranslationRemoved != null)
+				TranslationRemoved (this, e);
+		}
+		
+		public event EventHandler TranslationRemoved;
 	}
 	
 	public enum TranslationOutputType {

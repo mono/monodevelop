@@ -102,6 +102,29 @@ namespace MonoDevelop.Gettext.NodeBuilders
 					return;
 				IdeApp.Workbench.OpenDocument (Path.Combine (project.BaseDirectory, translation.FileName));
 			}
+			
+			[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Delete)]
+			public void OnDelete ()
+			{
+				TranslationProject project     = CurrentNode.GetParentDataItem (typeof(TranslationProject), false) as TranslationProject;
+				Translation        translation = CurrentNode.DataItem as Translation;
+				if (project == null || translation == null)
+					return;
+				
+				bool yes = MonoDevelop.Core.Gui.Services.MessageService.AskQuestion (GettextCatalog.GetString (
+					"Do you really want to remove the translation {0} from solution {1}?", translation.IsoCode, project.ParentCombine.Name));
+
+				if (yes) {
+					string fileName = Path.Combine (project.BaseDirectory, translation.FileName);
+					if (File.Exists (fileName)) {
+						Runtime.FileService.DeleteFile (fileName);
+					}
+					
+					project.RemoveTranslation (translation.IsoCode);
+					IdeApp.ProjectOperations.SaveCombineEntry (project);
+				}
+			}
+			
 		}
 	}
 }

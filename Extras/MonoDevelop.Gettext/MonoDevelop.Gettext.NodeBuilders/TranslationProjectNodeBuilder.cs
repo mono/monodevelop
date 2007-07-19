@@ -77,6 +77,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 			if (project == null)
 				return;
 			project.TranslationAdded += new EventHandler (UpdateTranslationNodes);
+			project.TranslationRemoved += new EventHandler (UpdateTranslationNodes);
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
@@ -84,6 +85,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 			TranslationProject project = dataObject as TranslationProject;
 			if (project == null)
 				return;
+			project.TranslationRemoved -= new EventHandler (UpdateTranslationNodes);
 			project.TranslationAdded -= new EventHandler (UpdateTranslationNodes);
 		}
 		
