@@ -1,5 +1,12 @@
 2007-07-19  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs,
+	  MonoDevelop.Gettext/TranslationService.cs,
+	  MonoDevelop.Gettext/TranslationProject.cs: New Translations are now
+	  containing a list of all translation strings.
+
+2007-07-19  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Gettext.NodeBuilders/TranslationNodeBuilder.cs,
 	  MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs,
 	  MonoDevelop.Gettext/TranslationProject.cs: Translations can now be

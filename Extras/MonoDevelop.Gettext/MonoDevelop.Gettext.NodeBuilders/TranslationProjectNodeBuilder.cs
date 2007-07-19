@@ -164,6 +164,12 @@ namespace MonoDevelop.Gettext.NodeBuilders
 						
 						using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (monitorTitle, "md-package", true, true)) {
 							project.AddNewTranslation (language, monitor);
+							
+							foreach (Project p in project.ParentCombine.GetAllProjects ()) {
+								foreach (ProjectFile file in p.ProjectFiles) {
+									TranslationService.UpdateTranslation (project, file.FilePath, language);
+								}
+							}
 						}
 					}
 					

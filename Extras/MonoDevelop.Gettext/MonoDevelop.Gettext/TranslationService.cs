@@ -125,19 +125,25 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
+		public static void UpdateTranslation (TranslationProject translationProject, string fileName, string isoCode)
+		{
+			switch (Path.GetExtension (fileName)) {
+			case ".xml":
+				UpdateXmlTranslations (translationProject, fileName);
+				break;
+			default:
+				UpdateTranslations (translationProject, fileName);
+				break;
+			}
+		}
+		
 		static void FileChangedInProject (object sender, ProjectFileEventArgs e)
 		{
 			TranslationProject translationProject = GetTranslationProject (e.Project);
 			if (translationProject == null)
 				return;
-			switch (Path.GetExtension (e.ProjectFile.FilePath)) {
-			case ".xml":
-				UpdateXmlTranslations (translationProject, e.ProjectFile.FilePath);
-				break;
-			default:
-				UpdateTranslations (translationProject, e.ProjectFile.FilePath);
-				break;
-			}
+			
+			UpdateTranslation (translationProject, e.ProjectFile.FilePath, null);
 			
 			ProjectFile steticFile = e.Project.GetProjectFile (Path.Combine (e.Project.BaseDirectory, "gtk-gui/gui.stetic"));
 			if (steticFile != null) 

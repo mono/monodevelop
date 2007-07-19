@@ -113,32 +113,38 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
-		public void AddTranslationStrings (string fileName, List<TranslationProject.MatchLocation> matches)
+		
+		public void AddTranslationStrings (Translation translation, string fileName, List<TranslationProject.MatchLocation> matches)
 		{
 			string relativeFileName = MonoDevelop.Core.Runtime.FileService.AbsoluteToRelativePath (this.BaseDirectory, fileName);
+			string poFileName = GetFileName (translation);
+			Catalog catalog = new Catalog (poFileName);
+			
+			foreach (CatalogEntry entry in catalog) {
+				foreach (string reference in entry.References) {
+					if (reference.StartsWith (relativeFileName + ":"))
+						entry.RemoveReference (reference);
+				}
+			}
+			
+			foreach (MatchLocation match in matches) {
+				CatalogEntry entry = catalog.FindItem (match.OriginalString);
+				if (entry == null) {
+					entry = new CatalogEntry (catalog, match.OriginalString, match.OriginalPluralString);
+					if (!String.IsNullOrEmpty (match.OriginalPluralString))
+						entry.SetTranslations (new string[] {"", ""});
+					catalog.AddItem (entry);
+				}
+				entry.AddReference (relativeFileName + ":" + match.Line);
+			}
+			
+			catalog.Save (poFileName);
+		}
+		
+		public void AddTranslationStrings (string fileName, List<TranslationProject.MatchLocation> matches)
+		{
 			foreach (Translation translation in this.Translations) {
-				string poFileName = GetFileName (translation);
-				Catalog catalog = new Catalog (poFileName);
-				
-				foreach (CatalogEntry entry in catalog) {
-					foreach (string reference in entry.References) {
-						if (reference.StartsWith (relativeFileName + ":"))
-							entry.RemoveReference (reference);
-					}
-				}
-				
-				foreach (MatchLocation match in matches) {
-					CatalogEntry entry = catalog.FindItem (match.OriginalString);
-					if (entry == null) {
-						entry = new CatalogEntry (catalog, match.OriginalString, match.OriginalPluralString);
-						if (!String.IsNullOrEmpty (match.OriginalPluralString))
-							entry.SetTranslations (new string[] {"", ""});
-						catalog.AddItem (entry);
-					}
-					entry.AddReference (relativeFileName + ":" + match.Line);
-				}
-				
-				catalog.Save (poFileName);
+				AddTranslationStrings (translation, fileName, matches);
 			}
 		}
 		
@@ -159,16 +165,23 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
+		public Translation GetTranslation (string isoCode)
+		{
+			foreach (Translation translation in this.translations) {
+				if (translation.IsoCode == isoCode) 
+					return translation;
+			}
+			return null;
+		}
+		
 		public void RemoveTranslation (string isoCode)
 		{
-			for (int i = 0; i < this.translations.Count; i++) { 
-				if (translations[i].IsoCode == isoCode) {
-					translations.RemoveAt (i);
-					OnTranslationRemoved (EventArgs.Empty);
-					break;
-				}
+			Translation translation = GetTranslation (isoCode);
+			if (translation != null) {
+				this.translations.Remove (translation);
+				OnTranslationRemoved (EventArgs.Empty);
+				isDirty = true;
 			}
-			isDirty = true;
 		}
 		
 		public override IConfiguration CreateConfiguration (string name)
