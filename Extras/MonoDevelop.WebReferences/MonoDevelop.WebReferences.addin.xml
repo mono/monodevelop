@@ -37,6 +37,7 @@
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Commands">
+		<Category _name = "Web Reference" id = "WebReferences">
 		<Command id = "MonoDevelop.WebReferences.WebReferenceCommands.Add"
 			_label = "Add Web Reference" 
 			icon = "md-webreference-item" />
@@ -52,6 +53,7 @@
 		<Command id = "MonoDevelop.WebReferences.WebReferenceCommands.Delete"
 			_label = "Delete"
 			icon = "gtk-delete" />
+		</Category>
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectBrowserNode/Add">
