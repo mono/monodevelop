@@ -83,6 +83,7 @@
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Commands">
+		<Category _name = "Gtk Core" id = "GtkCore">
 		<Command id = "MonoDevelop.GtkCore.GtkCommands.AddNewDialog"
 				icon = "md-gtkcore-dialog"
 				_label = "New Dialog..." />
@@ -101,6 +102,7 @@
 				_label = "Edit Project Icons..." />
 		<Command id = "MonoDevelop.GtkCore.GtkCommands.GtkSettings"
 				_label = "GTK# support settings..." />
+		</Category>
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectBrowserNode/Add">
