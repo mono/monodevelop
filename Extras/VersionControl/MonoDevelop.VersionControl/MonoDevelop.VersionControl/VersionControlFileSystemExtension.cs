@@ -100,6 +100,5 @@ namespace MonoDevelop.VersionControl
 			Repository repo = GetRepository (file);
 			VersionControlProjectService.NotifyFileStatusChanged (repo, file, false);
 		}
-
 	}
 }

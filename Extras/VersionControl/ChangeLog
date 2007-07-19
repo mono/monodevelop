@@ -1,5 +1,8 @@
 2007-07-19  Jeffrey Stedfast  <fejj@novell.com>
 
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlProjectService.cs:
+	Lluis' previous change is not actually needed.
+
 	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlFileSystemExtension.cs
 	(NotifyFileChanged): Implemented. Fixes bug #81910.
 
