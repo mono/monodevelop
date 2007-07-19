@@ -1,3 +1,8 @@
+2007-07-19  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs: Clear status text on
+	pad clear.
+
 2007-07-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs: Generate

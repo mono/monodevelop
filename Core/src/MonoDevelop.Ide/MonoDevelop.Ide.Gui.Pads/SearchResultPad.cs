@@ -199,6 +199,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			matchCount = 0;
 			store.Clear ();
 			logBuffer.Clear ();
+			status.Text = string.Empty;
 			if (log != null) log = new StringBuilder ();
 		}
 
