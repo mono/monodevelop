@@ -1,3 +1,9 @@
+2007-07-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.VersionControl/VersionControl.addin.xml: Set the
+	category for the version-control commands so they look all nice
+	and pretty in the key-binding manager :)
+
 2007-07-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs,
