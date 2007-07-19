@@ -388,11 +388,11 @@ namespace MonoDevelop.Ide.Gui
 				if (content.StockIconId != null ) {
 					tabLabel.Icon = new Gtk.Image ( content.StockIconId, IconSize.Menu );
 				}
-				else if (content.ContentName.IndexOfAny (new char[] { '*', '+'}) == -1) {
+				else if (content.ContentName != null && content.ContentName.IndexOfAny (new char[] { '*', '+'}) == -1) {
 					tabLabel.Icon.Pixbuf = FileIconLoader.GetPixbufForFile (content.ContentName, 16);
 				}
-			} catch {
-				Runtime.LoggingService.Error (e);
+			} catch (Exception ex) {
+				Runtime.LoggingService.Error (ex);
 				tabLabel.Icon.Pixbuf = FileIconLoader.GetPixbufForType ("gnome-fs-regular", 16);
 			}
 

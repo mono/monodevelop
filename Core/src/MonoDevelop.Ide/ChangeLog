@@ -1,5 +1,11 @@
 2007-07-19  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs: Generate
+	  comments by default.
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Fix nullref.
+
+2007-07-19  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs: Show command
 	  icons in the list.
 	* MonoDevelop.Ide.Commands/ViewCommands.cs: The pad list doesn't show

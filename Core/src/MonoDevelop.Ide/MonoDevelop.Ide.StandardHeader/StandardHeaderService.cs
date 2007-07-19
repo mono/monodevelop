@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.StandardHeaders
 		const string templateFileName = "StandardHeader.xml";
 		
 		static string header;
-		static bool   generateComments;
+		static bool   generateComments = true;
 		
 		static List<KeyValuePair<string, string>> headerTemplates = new List<KeyValuePair<string, string>> ();
 		static List<KeyValuePair<string, string>> customTemplates = new List<KeyValuePair<string, string>> ();
