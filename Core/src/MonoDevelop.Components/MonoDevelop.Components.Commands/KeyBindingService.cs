@@ -77,6 +77,9 @@ namespace MonoDevelop.Components.Commands {
 			else
 				key = cmd.Id.ToString ();
 			
+			// Note: Only override the cmd.AccelKey if the scheme had the binding defined,
+			// this way if an Addin later gets installed which has its own set of Commands
+			// w/ key-bindings, we won't inadvertantly override them.
 			if (current.ContainsKey (key))
 				cmd.AccelKey = current[key];
 		}
