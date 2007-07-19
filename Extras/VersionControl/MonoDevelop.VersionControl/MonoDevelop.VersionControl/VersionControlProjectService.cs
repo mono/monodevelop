@@ -51,7 +51,7 @@ namespace MonoDevelop.VersionControl
 			icon_controled = Gdk.Pixbuf.LoadFromResource("overlay_controled.png");
 			
 			IdeApp.ProjectOperations.FileAddedToProject += OnFileAdded;
-			//IdeApp.ProjectOperations.FileChangedInProject += OnFileChanged;
+			IdeApp.ProjectOperations.FileChangedInProject += OnFileChanged;
 			//IdeApp.ProjectOperations.FileRemovedFromProject += OnFileRemoved;
 			//IdeApp.ProjectOperations.FileRenamedInProject += OnFileRenamed;
 			
@@ -281,13 +281,13 @@ namespace MonoDevelop.VersionControl
 				FileStatusChanged (null, new FileUpdateEventArgs (repo, localPath, isDirectory));
 		}
 		
-/*		static void OnFileChanged (object s, ProjectFileEventArgs args)
+		static void OnFileChanged (object s, ProjectFileEventArgs args)
 		{
 			Repository repo = GetRepository (args.Project);
 			if (repo != null)
 				NotifyFileStatusChanged (repo, args.ProjectFile.FilePath, false);
 		}
-*/
+
 		static void OnFileAdded (object s, ProjectFileEventArgs args)
 		{
 			string path = args.ProjectFile.FilePath;
