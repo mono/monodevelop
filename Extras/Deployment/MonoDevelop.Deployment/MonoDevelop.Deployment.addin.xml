@@ -22,6 +22,7 @@
 	</Dependencies>
 
 	<Extension path = "/SharpDevelop/Commands">
+		<Category _name = "Deployment" id = "Deployment">
 		<Command id = "MonoDevelop.Deployment.Commands.CreatePackage"
 				defaultHandler = "MonoDevelop.Deployment.CreatePackageHandler"
 				_label = "Create Package..." />
@@ -31,6 +32,7 @@
 		<Command id = "MonoDevelop.Deployment.Commands.Install"
 				defaultHandler = "MonoDevelop.Deployment.InstallHandler"
 				_label = "Install" />
+		</Category>
 	</Extension>	
 
 
