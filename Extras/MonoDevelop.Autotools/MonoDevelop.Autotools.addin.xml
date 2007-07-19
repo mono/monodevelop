@@ -40,12 +40,14 @@
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Commands">
+		<Category _name = "Autotools" id = "Autotools">
 		<Command id = "MonoDevelop.Autotools.Commands.GenerateFiles"
 			_label = "Generate Autotools Files"
 			description="Generate autotools files for a solution"/>
 		<Command id = "MonoDevelop.Autotools.Commands.SynchWithMakefile"
 			type="check"
 			_label = "Include in Synchronized Makefile" />
+		</Category>
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/CombineBrowserNode/Tools">
