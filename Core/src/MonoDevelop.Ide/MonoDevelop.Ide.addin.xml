@@ -1257,6 +1257,8 @@
 		<StockIcon stockid = "md-parser" resource = "parsing.png" />
 		<StockIcon stockid = "md-navigate-next" resource = "navigate-next.png" />
 		<StockIcon stockid = "md-navigate-previous" resource = "navigate-previous.png" />
+		<StockIcon stockid = "md-pin-up" resource = "pinup.png" />
+		<StockIcon stockid = "md-pin-down" resource = "pindown.png" />
 		<StockIcon stockid = "system-file-manager" resource = "system-file-manager.png" />
 	</Extension>
 	

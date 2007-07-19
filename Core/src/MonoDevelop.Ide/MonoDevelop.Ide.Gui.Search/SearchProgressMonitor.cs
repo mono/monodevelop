@@ -95,7 +95,6 @@ namespace MonoDevelop.Ide.Gui.Search
 			outputPad.EndProgress ();
 			base.OnCompleted ();
 			
-			IdeApp.Workbench.ProgressMonitors.ReleasePad (outputPad);
 			outputPad = null;
 		}
 		

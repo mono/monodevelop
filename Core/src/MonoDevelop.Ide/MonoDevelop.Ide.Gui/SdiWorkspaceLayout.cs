@@ -563,6 +563,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void RemovePad (PadCodon content)
 		{
+			PadWindow win = (PadWindow) padWindows [content];
+			win.NotifyDestroyed ();
+			
 			DockItem item = GetDockItem (content);
 			if (item != null) {
 				if (item.IsAttached) {
@@ -571,7 +574,6 @@ namespace MonoDevelop.Ide.Gui
 				}
 				item.Destroy ();
 			}
-			PadWindow win = (PadWindow) padWindows [content];
 			padWindows.Remove (content);
 			padCodons.Remove (win);
 			

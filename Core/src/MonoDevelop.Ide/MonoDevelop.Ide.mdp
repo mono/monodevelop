@@ -305,6 +305,8 @@
     <File name="./gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Commands/TextEditorCommands.cs" subtype="Code" buildaction="Compile" />
     <File name="./icons/system-file-manager.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./icons/pindown.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./icons/pinup.png" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="gecko-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=ccf7d78a55e9f021" />

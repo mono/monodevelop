@@ -307,6 +307,8 @@ RES =  \
 	icons/navigate-next.png \
 	icons/navigate-previous.png \
 	icons/parsing.png \
+	icons/pindown.png \
+	icons/pinup.png \
 	icons/SplashScreen.png \
 	icons/system-file-manager.png \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderTemplates.xml \

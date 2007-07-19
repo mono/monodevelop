@@ -83,7 +83,6 @@ namespace MonoDevelop.Ide.Commands
 				CommandInfo cmd = new CommandInfo (pad.Title);
 				cmd.Icon = pad.Icon;
 				cmd.UseMarkup = true;
-				cmd.Checked = pad.Visible;
 				info.Add (cmd, pad);
 			}
 		}

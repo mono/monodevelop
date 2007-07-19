@@ -27,10 +27,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 		ListStore store;
 		string basePath;
 		IAsyncOperation asyncOperation;
-		string title;
+		string originalTitle;
 		string id;
 		int matchCount;
 		string statusText;
+		int instanceNum;
 		
 		const int COL_TYPE = 0, COL_LINE = 1, COL_COLUMN = 2, COL_DESC = 3, COL_FILE = 4, COL_PATH = 5, COL_FULLPATH = 6, COL_READ = 7, COL_READ_WEIGHT = 8, COL_ISFILE = 9;
 		
@@ -39,6 +40,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		Gtk.ScrolledWindow logScroller;
 		ToggleToolButton buttonOutput;
 		ToolButton buttonStop;
+		ToggleToolButton buttonPin;
 		Label status;
 		Gtk.Tooltips tips = new Gtk.Tooltips ();
 		
@@ -46,14 +48,17 @@ namespace MonoDevelop.Ide.Gui.Pads
 		Widget control;
 		IPadWindow window;
 		
-		public SearchResultPad ()
+		public SearchResultPad (int instanceNum)
 		{
+			this.instanceNum = instanceNum;
+			
 			// Toolbar
 			
 			Toolbar toolbar = new Toolbar ();
-			toolbar.IconSize = IconSize.SmallToolbar;
+			toolbar.IconSize = IconSize.Menu;
 			toolbar.Orientation = Orientation.Vertical;
 			toolbar.ToolbarStyle = ToolbarStyle.Icons;
+			toolbar.ShowArrow = true;
 
 			buttonStop = new ToolButton ("gtk-stop");
 			buttonStop.Clicked += new EventHandler (OnButtonStopClick);
@@ -69,6 +74,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 			buttonOutput.Clicked += new EventHandler (OnButtonOutputClick);
 			buttonOutput.SetTooltip (tips, GettextCatalog.GetString ("Show output"), "Show output");
 			toolbar.Insert (buttonOutput, -1);
+
+			buttonPin = new ToggleToolButton ("md-pin-up");
+			buttonPin.Clicked += new EventHandler (OnButtonPinClick);
+			buttonPin.SetTooltip (tips, GettextCatalog.GetString ("Pin results pad"), GettextCatalog.GetString ("Pin results pad"));
+			toolbar.Insert (buttonPin, -1);
 			
 			// Results list
 			
@@ -133,13 +143,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			this.window = window;
 			window.Icon = MonoDevelop.Core.Gui.Stock.FindIcon;
-			window.Title = GettextCatalog.GetString ("Search Results");
 		}
 		
 		public void BeginProgress (string title)
 		{
-			this.title = title;
-			window.Title = "<span foreground=\"blue\">" + title + "</span>";
+			originalTitle = window.Title;
+			window.Title = "<span foreground=\"blue\">" + originalTitle + "</span>";
 			
 			matchCount = 0;
 			store.Clear ();
@@ -152,13 +161,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		public void EndProgress ()
 		{
-			window.Title = title;
+			window.Title = originalTitle;
 			buttonStop.Sensitive = false;
 			status.Text = " " + statusText;
 		}
 		
 		public bool AllowReuse {
-			get { return !buttonStop.Sensitive; }
+			get { return !buttonStop.Sensitive && !buttonPin.Active; }
 		}
 		
 		public IAsyncOperation AsyncOperation {
@@ -218,6 +227,20 @@ namespace MonoDevelop.Ide.Gui.Pads
 				logScroller.Show ();
 			} else {
 				logScroller.Hide ();
+			}
+		}
+		
+		void OnButtonPinClick (object sender, EventArgs e)
+		{
+			if (buttonPin.Active)
+				buttonPin.StockId = "md-pin-down";
+			else
+				buttonPin.StockId = "md-pin-up";
+		}
+		
+		public int InstanceNum {
+			get {
+				return instanceNum;
 			}
 		}
 

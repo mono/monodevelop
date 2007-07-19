@@ -31,6 +31,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		Gtk.ScrolledWindow scroller;
 		Gtk.HBox hbox;
 		ToolButton buttonStop;
+		ToggleToolButton buttonPin;
 
 		private static Gtk.Tooltips tips = new Gtk.Tooltips ();
 		
@@ -40,14 +41,21 @@ namespace MonoDevelop.Ide.Gui.Pads
 		ArrayList tags = new ArrayList ();
 		Stack indents = new Stack ();
 
-		string title;
+		string originalTitle;
 		string icon;
 		string id;
+		int instanceNum;
+		string typeTag;
 
 		private IAsyncOperation asyncOperation;
 
-		public DefaultMonitorPad (string title, string icon)
+		public DefaultMonitorPad (string typeTag, string icon, int instanceNum)
 		{
+			this.instanceNum = instanceNum;
+			this.typeTag = typeTag;
+			
+			this.icon = icon;
+			
 			buffer = new Gtk.TextBuffer (new Gtk.TextTagTable ());
 			textEditorControl = new Gtk.TextView (buffer);
 			textEditorControl.Editable = false;
@@ -56,9 +64,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 			scroller.Add (textEditorControl);
 
 			Toolbar toolbar = new Toolbar ();
-			toolbar.IconSize = IconSize.SmallToolbar;
+			toolbar.IconSize = IconSize.Menu;
 			toolbar.Orientation = Orientation.Vertical;
 			toolbar.ToolbarStyle = ToolbarStyle.Icons;
+			toolbar.ShowArrow = true;
 
 			buttonStop = new ToolButton ("gtk-stop");
 			buttonStop.Clicked += new EventHandler (OnButtonStopClick);
@@ -69,6 +78,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 			buttonClear.Clicked += new EventHandler (OnButtonClearClick);
 			buttonClear.SetTooltip (tips, GettextCatalog.GetString ("Clear console"), GettextCatalog.GetString ("Clear console"));
 			toolbar.Insert (buttonClear, -1);
+
+			buttonPin = new ToggleToolButton ("md-pin-up");
+			buttonPin.Clicked += new EventHandler (OnButtonPinClick);
+			buttonPin.SetTooltip (tips, GettextCatalog.GetString ("Pin output pad"), GettextCatalog.GetString ("Pin output pad"));
+			toolbar.Insert (buttonPin, -1);
 
 			hbox = new HBox (false, 5);
 			hbox.PackStart (scroller, true, true, 0);
@@ -86,16 +100,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCombineOpen));
 			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCombineClosed));
 
-			this.title = title;
-			this.icon = icon;
-			
 			Control.ShowAll ();
 		}
 
 		void IPadContent.Initialize (IPadWindow window)
 		{
 			this.window = window;
-			window.Title = title;
 			window.Icon = icon;
 		}
 		
@@ -127,12 +137,24 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			buffer.Clear ();
 		}
+		
+		void OnButtonPinClick (object sender, EventArgs e)
+		{
+			if (buttonPin.Active)
+				buttonPin.StockId = "md-pin-down";
+			else
+				buttonPin.StockId = "md-pin-up";
+		}
+		
+		public bool AllowReuse {
+			get { return !buttonStop.Sensitive && !buttonPin.Active; }
+		}
 
 		public void BeginProgress (string title)
 		{
-			this.title = title;
+			originalTitle = window.Title;
 			buffer.Clear ();
-			window.Title = "<span foreground=\"blue\">" + title + "</span>";
+			window.Title = "<span foreground=\"blue\">" + originalTitle + "</span>";
 			buttonStop.Sensitive = true;
 		}
 		
@@ -177,10 +199,22 @@ namespace MonoDevelop.Ide.Gui.Pads
 		public string DefaultPlacement {
 			get { return "Bottom"; }
 		}
-		
+
+		public string TypeTag {
+			get {
+				return typeTag;
+			}
+		}
+
+		public int InstanceNum {
+			get {
+				return instanceNum;
+			}
+		}
+
 		public void EndProgress ()
 		{
-			window.Title = title;
+			window.Title = originalTitle;
 			buttonStop.Sensitive = false;
 		}
 		

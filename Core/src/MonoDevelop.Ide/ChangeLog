@@ -1,3 +1,24 @@
+2007-07-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Commands/ViewCommands.cs: Minor fix.
+	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs,
+	  MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs,
+	  MonoDevelop.Ide.Gui/OutputProgressMonitor.cs,
+	  MonoDevelop.Ide.Gui/ProgressMonitors.cs,
+	  MonoDevelop.Ide.Gui.Search/SearchProgressMonitor.cs: Allow
+	  'pinning' output and search result pads. Pinned pads won't be
+	  reused (so they will keep the original results) until unpinned.
+	* MonoDevelop.Ide.addin.xml, MonoDevelop.Ide.mdp, Makefile.am,
+	  icons/pindown.png, icons/pinup.png: Added pushpin icons.
+	* MonoDevelop.Ide.Gui/IPadContainer.cs: Fix bug in show/hide event
+	  notification. Added Destroyed event, needed by the workbench so it
+	  can properly update the pad list.
+	* MonoDevelop.Ide.Gui/Workbench.cs,
+	  MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: When a pad is closed,
+	  update the workbench pad list.
+	* MonoDevelop.Ide.Gui/Pad.cs: The new destroy method allow removing a
+	  pad from the workbench.
+
 2007-07-19  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs: Clear status text on

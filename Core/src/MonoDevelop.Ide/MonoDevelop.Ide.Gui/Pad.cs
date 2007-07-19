@@ -82,5 +82,11 @@ namespace MonoDevelop.Ide.Gui
 		internal IPadWindow Window {
 			get { return window; }
 		}
+		
+		public void Destroy ()
+		{
+			Visible = false;
+			((DefaultWorkbench)workbench).RemovePad (content);
+		}
 	}
 }

@@ -250,7 +250,7 @@ namespace MonoDevelop.Ide.Gui
 				ActiveDocument.Close ();
 		}
 
-		public Pad ShowPad (PadCodon content)
+		internal Pad ShowPad (PadCodon content)
 		{
 			workbench.ShowPad (content);
 			return WrapPad (content);
@@ -499,6 +499,9 @@ namespace MonoDevelop.Ide.Gui
 		{
 			Pad pad = new Pad (workbench, padContent);
 			Pads.Add (pad);
+			pad.Window.PadDestroyed += delegate {
+				Pads.Remove (pad);
+			};
 			return pad;
 		}
 		

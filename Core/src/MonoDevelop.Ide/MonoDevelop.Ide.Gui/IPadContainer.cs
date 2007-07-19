@@ -31,6 +31,7 @@ using System;
 using System.Drawing;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Codons;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -46,6 +47,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		event EventHandler PadShown;
 		event EventHandler PadHidden;
+		event EventHandler PadDestroyed;
 	}
 	
 	internal class PadWindow: IPadWindow
@@ -63,6 +65,8 @@ namespace MonoDevelop.Ide.Gui
 		{
 			this.layout = layout;
 			this.codon = codon;
+			this.title = GettextCatalog.GetString (codon.Label);
+			this.icon = codon.Icon;
 		}
 		
 		// This property keeps track of the last focused pad. It is used by the
@@ -136,20 +140,27 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		internal void NotifyHidden ()
+		internal void NotifyShown ()
 		{
 			if (PadShown != null)
 				PadShown (this, EventArgs.Empty);
 		}
 		
-		internal void NotifyShown ()
+		internal void NotifyHidden ()
 		{
 			if (PadHidden != null)
 				PadHidden (this, EventArgs.Empty);
 		}
 		
+		internal void NotifyDestroyed ()
+		{
+			if (PadDestroyed != null)
+				PadDestroyed (this, EventArgs.Empty);
+		}
+		
 		public event EventHandler PadShown;
 		public event EventHandler PadHidden;
+		public event EventHandler PadDestroyed;
 		
 		internal event EventHandler TitleChanged;
 		internal event EventHandler IconChanged;
