@@ -132,7 +132,7 @@ namespace MonoDevelop.Gettext
 			this.textviewComments.Buffer.Changed += delegate {
 				if (this.isUpdating)
 					return;
-				string[] lines = textviewComments.Buffer.Text.Split (new string[] {Environment.NewLine }, StringSplitOptions.None);
+				string[] lines = textviewComments.Buffer.Text.Split (new string[] { Environment.NewLine }, StringSplitOptions.None);
 				for (int i = 0; i < lines.Length; i++) {
 					if (!lines[i].StartsWith ("#"))
 						lines[i] = "# " + lines[i];
@@ -162,7 +162,7 @@ namespace MonoDevelop.Gettext
 			this.isUpdating = true;
 			try {
 				currentEntry = entry;
-				this.textviewOriginal.Buffer.Text   = entry.String;
+				this.textviewOriginal.Buffer.Text = entry.String;
 				this.textviewTranslated.Buffer.Text = entry.GetTranslation (0);
 				
 				frameOriginalPlural.Visible = frameTranslatedPlural.Visible = entry.HasPlural;
@@ -175,8 +175,8 @@ namespace MonoDevelop.Gettext
 				this.foundInStore.Clear ();
 				foreach (string reference in entry.References) {
 					string file;
-					string    line;
-					int    i = reference.IndexOf (':');
+					string line;
+					int i = reference.IndexOf (':');
 					if (i >= 0) {
 						file = reference.Substring (0, i);
 						line = reference.Substring (i + 1);
