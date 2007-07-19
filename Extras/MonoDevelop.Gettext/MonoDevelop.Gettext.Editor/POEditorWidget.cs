@@ -117,16 +117,27 @@ namespace MonoDevelop.Gettext
 			};
 			
 			this.textviewTranslated.Buffer.Changed += delegate {
+				if (this.isUpdating)
+					return;
 				this.currentEntry.SetTranslation (textviewTranslated.Buffer.Text, 0);
 				UpdateProgressBar ();
 			};
 			
 			this.textviewTranslatedPlural.Buffer.Changed += delegate {
+				if (this.isUpdating)
+					return;
 				this.currentEntry.SetTranslation (textviewTranslatedPlural.Buffer.Text, 1);
 				UpdateProgressBar ();
 			};
 			this.textviewComments.Buffer.Changed += delegate {
-				this.currentEntry.Comment = textviewComments.Buffer.Text;
+				if (this.isUpdating)
+					return;
+				string[] lines = textviewComments.Buffer.Text.Split (new string[] {Environment.NewLine }, StringSplitOptions.None);
+				for (int i = 0; i < lines.Length; i++) {
+					if (!lines[i].StartsWith ("#"))
+						lines[i] = "# " + lines[i];
+				}
+				this.currentEntry.Comment = String.Join (Environment.NewLine, lines);
 				UpdateProgressBar ();
 			};
 		}
@@ -148,33 +159,38 @@ namespace MonoDevelop.Gettext
 		
 		void EditEntry (CatalogEntry entry)
 		{
-			currentEntry = entry;
-			this.textviewOriginal.Buffer.Text = entry.String;
-			this.textviewTranslated.Buffer.Text = entry.GetTranslation (0);
-			
-			frameOriginalPlural.Visible = frameTranslatedPlural.Visible = entry.HasPlural;
-			
-			if (entry.HasPlural) {
-				this.textviewOriginalPlural.Buffer.Text = entry.PluralString;
-				this.textviewTranslatedPlural.Buffer.Text = entry.GetTranslation (1);
-			}
-			
-			this.foundInStore.Clear ();
-			foreach (string reference in entry.References) {
-				string file;
-				string    line;
-				int    i = reference.IndexOf (':');
-				if (i >= 0) {
-					file = reference.Substring (0, i);
-					line = reference.Substring (i + 1);
-				} else {
-					file = reference;
-					line = "?";
+			this.isUpdating = true;
+			try {
+				currentEntry = entry;
+				this.textviewOriginal.Buffer.Text   = entry.String;
+				this.textviewTranslated.Buffer.Text = entry.GetTranslation (0);
+				
+				frameOriginalPlural.Visible = frameTranslatedPlural.Visible = entry.HasPlural;
+				
+				if (entry.HasPlural) {
+					this.textviewOriginalPlural.Buffer.Text = entry.PluralString;
+					this.textviewTranslatedPlural.Buffer.Text = entry.GetTranslation (1);
 				}
-				string fullName = System.IO.Path.Combine (System.IO.Path.GetDirectoryName (this.poFileName), file);
-				this.foundInStore.AppendValues (file, line, fullName);
+				
+				this.foundInStore.Clear ();
+				foreach (string reference in entry.References) {
+					string file;
+					string    line;
+					int    i = reference.IndexOf (':');
+					if (i >= 0) {
+						file = reference.Substring (0, i);
+						line = reference.Substring (i + 1);
+					} else {
+						file = reference;
+						line = "?";
+					}
+					string fullName = System.IO.Path.Combine (System.IO.Path.GetDirectoryName (this.poFileName), file);
+					this.foundInStore.AppendValues (file, line, fullName);
+				}
+				this.textviewComments.Buffer.Text = entry.Comment;
+			} finally {
+				this.isUpdating = false;
 			}
-			this.textviewComments.Buffer.Text = entry.Comment;
 		}
 		
 #endregion

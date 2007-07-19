@@ -83,25 +83,62 @@ namespace MonoDevelop.Gettext
 			return Path.Combine (base.BaseDirectory, isoCode + ".po");
 		}
 		
-		public void AddTranslationString (string originalString, string fileName, int lineNr)
+		public class MatchLocation
 		{
-			AddTranslationString (originalString, null, fileName, lineNr);
+			string originalString;
+			string originalPluralString;
+			int    line;
+			
+			public string OriginalString {
+				get { return originalString; }
+			}
+			
+			public string OriginalPluralString {
+				get { return originalPluralString; }
+			}
+			
+			public int Line {
+				get { return line; }
+			}
+			
+			public MatchLocation (string originalString, string originalPluralString, int line)
+			{
+				this.originalString = originalString;
+				this.originalPluralString = originalPluralString;
+				this.line = line;
+			}
+			
+			public MatchLocation (string originalString, int line) : this (originalString, null, line)
+			{
+			}
 		}
 		
-		public void AddTranslationString (string originalString, string originalPluralString, string fileName, int lineNr)
+		public void AddTranslationStrings (string fileName, List<TranslationProject.MatchLocation> matches)
 		{
+			string relativeFileName = MonoDevelop.Core.Runtime.FileService.AbsoluteToRelativePath (this.BaseDirectory, fileName);
 			foreach (Translation translation in this.Translations) {
 				string poFileName = GetFileName (translation);
 				Catalog catalog = new Catalog (poFileName);
-				if (catalog.FindItem (originalString) == null) {
-					CatalogEntry newEntry = new CatalogEntry (catalog, originalString, originalPluralString);
-					
-					newEntry.AddReference (MonoDevelop.Core.Runtime.FileService.AbsoluteToRelativePath (this.BaseDirectory, fileName) + ":" + lineNr);
-					if (!String.IsNullOrEmpty (originalPluralString))
-						newEntry.SetTranslations (new string[] {"", ""});
-					catalog.AddItem (newEntry);
-					catalog.Save (poFileName);
+				
+				foreach (CatalogEntry entry in catalog) {
+					foreach (string reference in entry.References) {
+						if (reference.StartsWith (relativeFileName + ":"))
+							entry.RemoveReference (reference);
+					}
 				}
+				
+				foreach (MatchLocation match in matches) {
+					CatalogEntry entry = catalog.FindItem (match.OriginalString);
+					if (entry == null) {
+						entry = new CatalogEntry (catalog, match.OriginalString, match.OriginalPluralString);
+						if (!String.IsNullOrEmpty (match.OriginalPluralString))
+							entry.SetTranslations (new string[] {"", ""});
+						catalog.AddItem (entry);
+					}
+					entry.AddReference (relativeFileName + ":" + match.Line);
+				}
+				
+				catalog.Save (poFileName);
 			}
 		}
 		

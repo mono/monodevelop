@@ -130,8 +130,7 @@ namespace MonoDevelop.Gettext.Editor
         }
 
         // Returns array of all occurences of this string in source code.
-        public string[] References
-        {
+        public string[] References {
 			get { return references.ToArray (); }
 		}
 
@@ -139,10 +138,11 @@ namespace MonoDevelop.Gettext.Editor
         public string Comment
         {
 			get { return comment; }
-			set
-			{
-				comment = value;
-				MarkOwnerDirty ();
+			set {
+				if (comment != value) {
+					comment = value;
+					MarkOwnerDirty ();
+				}
 			}
 		}
 
@@ -170,6 +170,12 @@ namespace MonoDevelop.Gettext.Editor
         {
             references.Clear ();
         }
+		
+		public void RemoveReference (string reference)
+		{
+            if (references.Contains (reference))
+				references.Remove (reference);
+		}
 
         // Sets the string.
         public void SetString (string str)
@@ -190,10 +196,13 @@ namespace MonoDevelop.Gettext.Editor
         {
 			while (index >= translations.Count)
 				translations.Add (String.Empty);
-			translations[index] = translation;
+			
+			if (translations[index] != translation) {
+				translations[index] = translation;
 
-			validity = Validity.Unknown;
-			MarkOwnerDirty ();
+				validity = Validity.Unknown;
+				MarkOwnerDirty ();
+			}
         }
 
         // Sets all translations.

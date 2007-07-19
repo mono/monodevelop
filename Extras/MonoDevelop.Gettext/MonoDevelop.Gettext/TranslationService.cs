@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -85,9 +86,11 @@ namespace MonoDevelop.Gettext
 		{
 			string text = File.ReadAllText (fileName);
 			if (!String.IsNullOrEmpty (text)) {
+				List<TranslationProject.MatchLocation> matches = new List<TranslationProject.MatchLocation> ();
 				foreach (Match match in xmlTranslationPattern.Matches (text)) {
-					translationProject.AddTranslationString (match.Groups[1].Value, fileName, GetLineNumber (text, match.Index));
+					matches.Add (new TranslationProject.MatchLocation (match.Groups[1].Value, GetLineNumber (text, match.Index)));
 				}
+				translationProject.AddTranslationStrings (fileName, matches);
 			}
 		}
 		
@@ -96,9 +99,11 @@ namespace MonoDevelop.Gettext
 		{
 			string text = File.ReadAllText (fileName);
 			if (!String.IsNullOrEmpty (text)) {
+				List<TranslationProject.MatchLocation> matches = new List<TranslationProject.MatchLocation> ();
 				foreach (Match match in steticTranslationPattern.Matches (text)) {
-					translationProject.AddTranslationString (match.Groups[1].Value, fileName, GetLineNumber (text, match.Index));
+					matches.Add (new TranslationProject.MatchLocation (match.Groups[1].Value, GetLineNumber (text, match.Index)));
 				}
+				translationProject.AddTranslationStrings (fileName, matches);
 			}
 		}
 		
@@ -109,13 +114,14 @@ namespace MonoDevelop.Gettext
 		{
 			string text = File.ReadAllText (fileName);
 			if (!String.IsNullOrEmpty (text)) {
-				Console.WriteLine ("find matches");
+				List<TranslationProject.MatchLocation> matches = new List<TranslationProject.MatchLocation> ();
 				foreach (Match match in translationPattern.Matches (text)) {
-					translationProject.AddTranslationString (match.Groups[1].Value, fileName, GetLineNumber (text, match.Index));
+					matches.Add (new TranslationProject.MatchLocation (match.Groups[1].Value, GetLineNumber (text, match.Index)));
 				}
 				foreach (Match match in pluralTranslationPattern.Matches (text)) {
-					translationProject.AddTranslationString (match.Groups[1].Value, match.Groups[2].Value, fileName, GetLineNumber (text, match.Index));
+					matches.Add (new TranslationProject.MatchLocation (match.Groups[1].Value, match.Groups[2].Value, GetLineNumber (text, match.Index)));
 				}
+				translationProject.AddTranslationStrings (fileName, matches);
 			}
 		}
 		
