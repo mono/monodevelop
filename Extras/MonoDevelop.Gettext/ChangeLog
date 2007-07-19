@@ -1,5 +1,33 @@
 2007-07-19  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Gettext.Editor/CatalogEntry.cs,
+	  MonoDevelop.Gettext.Editor/CatalogEditor.cs,
+	  MonoDevelop.Gettext.Editor/CatalogDeletedEntry.cs,
+	  MonoDevelop.Gettext.Editor/GtkSpell.cs,
+	  MonoDevelop.Gettext.Editor/CatalogEditorWidget.cs,
+	  MonoDevelop.Gettext.Editor/CatalogHeaders.cs,
+	  MonoDevelop.Gettext.Editor/PluralForms.cs,
+	  MonoDevelop.Gettext.Editor/CatalogParser.cs,
+	  MonoDevelop.Gettext.Editor/CatalogEntryEditorWidget.cs,
+	  MonoDevelop.Gettext.Editor/POEditorWidget.cs,
+	  MonoDevelop.Gettext.Editor/Catalog.cs,
+	  MonoDevelop.Gettext.Translator/TranslationFileDescriptionTemplate.cs,
+	  MonoDevelop.Gettext.Translator/PropertyProvider.cs,
+	  MonoDevelop.Gettext.Translator/TranslationProjectInfo.cs,
+	  MonoDevelop.Gettext.Translator/TranslatorCoreService.cs,
+	  MonoDevelop.Gettext.Translator/TranslatorInfo.cs,
+	  MonoDevelop.Gettext.Translator/TranslationProject.cs, Commands.cs,
+	  MonoDevelop.Gettext.addin.xml, gtk-gui/gui.stetic,
+	  MonoDevelop.Gettext.mdp, MonoDevelop.Gettext/CatalogEntry.cs,
+	  MonoDevelop.Gettext/CatalogDeletedEntry.cs,
+	  MonoDevelop.Gettext/CatalogHeaders.cs,
+	  MonoDevelop.Gettext/PluralForms.cs,
+	  MonoDevelop.Gettext/CatalogParser.cs,
+	  MonoDevelop.Gettext/IsoCodes.cs, MonoDevelop.Gettext/Catalog.cs,
+	  IsoCodes.cs: Restructured/Refactored the project.
+
+2007-07-19  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: changed formatting.
 
 2007-07-19  Mike Krüger <mkrueger@novell.com> 

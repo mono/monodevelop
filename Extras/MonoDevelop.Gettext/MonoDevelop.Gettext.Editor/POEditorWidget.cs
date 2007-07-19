@@ -53,6 +53,10 @@ namespace MonoDevelop.Gettext
 			set {
 				catalog = value;
 				headersEditor.CatalogHeaders = catalog.Headers;
+				if (GtkSpell.IsSupported) {
+					GtkSpell.Attach (this.textviewOriginal, catalog.LocaleCode);
+					GtkSpell.Attach (this.textviewOriginalPlural, catalog.LocaleCode);
+				}
 				UpdateFromCatalog ();
 				UpdateProgressBar ();
 			}
@@ -166,6 +170,7 @@ namespace MonoDevelop.Gettext
 				this.textviewTranslated.Buffer.Text = entry.GetTranslation (0);
 				
 				frameOriginalPlural.Visible = frameTranslatedPlural.Visible = entry.HasPlural;
+				
 				
 				if (entry.HasPlural) {
 					this.textviewOriginalPlural.Buffer.Text = entry.PluralString;

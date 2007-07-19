@@ -16,7 +16,7 @@
       <widget class="Gtk.Notebook" id="notebook1">
         <property name="MemberName" />
         <property name="CanFocus">True</property>
-        <property name="CurrentPage">0</property>
+        <property name="CurrentPage">1</property>
         <property name="TabPos">Left</property>
         <property name="BorderWidth">8</property>
         <child>
@@ -611,25 +611,6 @@
           <widget class="Gtk.Label" id="label2">
             <property name="MemberName" />
             <property name="LabelProp" translatable="yes">Language settings</property>
-          </widget>
-          <packing>
-            <property name="type">tab</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.Label" id="label13">
-            <property name="MemberName" />
-            <property name="LabelProp" translatable="yes">TODO</property>
-          </widget>
-          <packing>
-            <property name="Position">2</property>
-            <property name="TabExpand">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.Label" id="label1">
-            <property name="MemberName" />
-            <property name="LabelProp" translatable="yes">Custom headers</property>
           </widget>
           <packing>
             <property name="type">tab</property>

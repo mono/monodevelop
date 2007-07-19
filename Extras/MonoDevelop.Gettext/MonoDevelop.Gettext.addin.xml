@@ -31,13 +31,6 @@
 	<ExtensionPoint path = "/MonoDevelop/Deployment/ProjectBrowser/ContextMenu/Translation" name="Translation context menu">
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
-	
-	
-<!--	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/TranslationNode">
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
-	</ExtensionPoint>
-
--->
 
 	<!-- Extensions -->
 
@@ -106,56 +99,4 @@
 	<Extension path = "/MonoDevelop/IDE/StartupHandlers">
 		<Class class = "MonoDevelop.Gettext.TranslationServiceStartupCommand"/>
 	</Extension>
-	
-<!--
-	<Extension path = "/SharpDevelop/Workbench/ProjectBindings">
-		<ProjectBinding id = "Translation" class = "MonoDevelop.Gettext.GettextProjectBinding" />
-	</Extension>
-	
-	<Extension path = "/SharpDevelop/Workbench/ProjectBindings">
-		<ProjectBinding id = "Translation" class = "MonoDevelop.Gettext.GettextProjectBinding" />
-	</Extension>
-
-	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
-		<NodeBuilder id = "TranslatorNodeExtension" class = "MonoDevelop.Gettext.TranslatorNodeExtension"/>
-		<NodeBuilder id = "FileNodeExtension" class = "MonoDevelop.Gettext.FileNodeExtension"/>
-		<NodeBuilder id = "HiddenFoldersExtension" class = "MonoDevelop.Gettext.HiddenFoldersExtension"/>
-	</Extension>
-
-	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
-		<DataType class = "MonoDevelop.Gettext.Translator.TranslationProject" />
-		<DataType class = "MonoDevelop.Gettext.Translator.TranslationProjectConfiguration" />
-	</Extension>
-
-	<Extension path = "/SharpDevelop/Workbench/Serialization/ExtendedProperties">
-		<ItemProperty class = "MonoDevelop.Projects.Project"
-					  name = "MonoDevelop.Gettext.TranslationInfo"
-					  type = "MonoDevelop.Gettext.Translator.TranslationProjectInfo" />
-	</Extension>
-
-	<Extension path = "/MonoDevelop/DesignerSupport/PropertyProviders">
-		<Class class = "MonoDevelop.Gettext.Translator.PropertyProvider"/>
-	</Extension>
-
-	<Extension path = "/SharpDevelop/Commands">
-		<Command id = "MonoDevelop.Gettext.Commands.IncludeInTranslation"
-			type = "check"
-			_label = "Translation" />
-	</Extension>
-
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectBrowserNode/Add">
-		<SeparatorItem insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" />
-		<CommandItem id = "MonoDevelop.Gettext.Commands.AddTranslation" />
-	</Extension>
-
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/TranslationNode">
-		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.Open" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
-	</Extension>
-
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectFileNode/Include">
-		<CommandItem id = "MonoDevelop.Gettext.Commands.IncludeInTranslation" insertafter="Include" />
-	</Extension>
-
-	-->
 </Addin>

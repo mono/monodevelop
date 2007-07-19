@@ -31,7 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MonoDevelop.Gettext.Editor
+namespace MonoDevelop.Gettext
 {
 /*
                                 Simplified Grammar

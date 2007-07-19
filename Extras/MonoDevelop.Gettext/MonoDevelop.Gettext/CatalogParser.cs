@@ -32,7 +32,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 
-namespace MonoDevelop.Gettext.Editor
+namespace MonoDevelop.Gettext
 {
 	public abstract class CatalogParser
 	{

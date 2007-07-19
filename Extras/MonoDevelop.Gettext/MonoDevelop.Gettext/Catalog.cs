@@ -34,7 +34,7 @@ using System.Collections.Generic;
 using System.Text;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Gettext.Editor
+namespace MonoDevelop.Gettext
 {
 	public class Catalog : IEnumerable<CatalogEntry>
 	{

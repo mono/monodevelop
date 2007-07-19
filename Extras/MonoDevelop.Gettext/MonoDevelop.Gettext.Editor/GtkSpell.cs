@@ -71,9 +71,9 @@ namespace MonoDevelop.Gettext.Editor
 			return gtkspell_new_attach (tv.Handle, locale, IntPtr.Zero);
 		}
 		
-		public static void Detach (IntPtr ptr)
+		public static void Detach (TextView tv)
 		{
-			gtkspell_detach (ptr);
+			gtkspell_detach (tv.Handle);
 		}
 	}
 }

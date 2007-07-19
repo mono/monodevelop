@@ -31,7 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MonoDevelop.Gettext.Editor
+namespace MonoDevelop.Gettext
 {
 	// This class holds information about one particular string.
 	// This includes original string and its occurences in source code
