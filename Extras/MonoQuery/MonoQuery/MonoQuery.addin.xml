@@ -78,17 +78,18 @@
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Commands">
+		<Category _name = "MonoQuery" id = "MonoQuery">
 		<Command id = "MonoQuery.Commands.MonoQueryCommands.AddConnection"
 			defaultHandler = "MonoQuery.Commands.AddConnection"
 			_label = "Add connection"
 			icon = "md-mono-query-addconnection"/>
 		<Command id = "MonoQuery.Commands.MonoQueryCommands.RemoveConnection"
-			_label = "Remove"/>
+			_label = "Remove Connection"/>
 		<Command id = "MonoQuery.Commands.MonoQueryCommands.RefreshProviderList"
-			_label = "Refresh"
+			_label = "Refresh Provider List"
 			icon = "gtk-refresh"/>
 		<Command id = "MonoQuery.Commands.MonoQueryCommands.RefreshConnection"
-			_label = "Refresh"
+			_label = "Refresh Connection"
 			icon = "gtk-refresh"/>
 		<Command id = "MonoQuery.Commands.MonoQueryCommands.DisconnectConnection"
 			_label = "Disconnect"
@@ -105,6 +106,7 @@
 		<Command id = "MonoQuery.Commands.MonoQueryCommands.Refresh"
 			_label = "Refresh"
 			icon = "gtk-refresh"/>
+		</Category>
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Views/DatabasePad/ContextMenu/ConnectionsBrowserNode">
