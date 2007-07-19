@@ -65,6 +65,11 @@ namespace MonoDevelop.Core
 			
 			string configDir = System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), ".config");
 			configDir = System.IO.Path.Combine (configDir, "MonoDevelop");
+			
+			if ("build" == new System.IO.DirectoryInfo (System.AppDomain.CurrentDomain.BaseDirectory).Parent.Name) {
+				Console.WriteLine ("Using debug add-in registry: " + System.AppDomain.CurrentDomain.BaseDirectory);
+				configDir = ".";
+			}
 				
 			AddinManager.Initialize (configDir);
 			if (updateAddinRegistry)
