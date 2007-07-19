@@ -94,5 +94,12 @@ namespace MonoDevelop.VersionControl
 			Repository repo = GetRepository (file);
 			return repo.RequestFileWritePermission (file);
 		}
+		
+		public override void NotifyFileChanged (string file)
+		{
+			Repository repo = GetRepository (file);
+			VersionControlProjectService.NotifyFileStatusChanged (repo, file, false);
+		}
+
 	}
 }

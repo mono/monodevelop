@@ -253,7 +253,7 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		// Called after a file has been modified.
-		// This method is allways called for versioned and unversioned files.
+		// This method is always called for versioned and unversioned files.
 		public virtual void NotifyFileChanged (string path)
 		{
 		}
