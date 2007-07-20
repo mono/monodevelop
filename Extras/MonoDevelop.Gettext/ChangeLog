@@ -1,5 +1,10 @@
 2007-07-20  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Gettext/TranslationProject.cs: Worked on gettext
+	  deployment.
+
+2007-07-20  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Gettext/TranslationService.cs,
 	  MonoDevelop.Gettext/TranslationProject.cs: Improved update code.
 

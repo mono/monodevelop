@@ -38,10 +38,11 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Serialization;
 using MonoDevelop.Gettext.Editor;
+using MonoDevelop.Deployment;
 
 namespace MonoDevelop.Gettext
 {
-	public class TranslationProject : CombineEntry
+	public class TranslationProject : CombineEntry, IDeployable
 	{
 		[ItemProperty]
 		List<Translation> translations = new List<Translation> ();
@@ -273,6 +274,21 @@ namespace MonoDevelop.Gettext
 		protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context)
 		{
 		}
+		
+#region Deployment
+		public DeployFileCollection GetDeployFiles ()
+		{
+			DeployFileCollection result = new DeployFileCollection ();
+			TranslationProjectConfiguration config = (TranslationProjectConfiguration)this.ActiveConfiguration;
+			foreach (Translation translation in this.Translations) {
+				string poFileName  = GetFileName (translation);
+				string moDirectory = Path.Combine (translation.IsoCode, "LC_MESSAGES");
+				string moFileName  = Path.Combine (moDirectory, config.PackageName + ".mo");
+				result.Add (new DeployFile (this, poFileName, moFileName)); 
+			}
+			return result;
+		}
+#endregion
 		
 		bool isDirty = true;
 		protected override bool OnGetNeedsBuilding ()
