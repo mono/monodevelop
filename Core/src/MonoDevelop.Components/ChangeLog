@@ -1,3 +1,9 @@
+2007-07-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Components.Commands/KeyBindingManager.cs
+	(AccelToKey): Fixed to properly parse keys like % and others that
+	are valid characters but have a named enum value.
+
 2007-07-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.Components.Commands/KeyBindingService.cs (LoadBinding):

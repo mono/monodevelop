@@ -144,10 +144,13 @@ namespace MonoDevelop.Components.Commands {
 				
 				str = accel.Substring (i, j - i);
 				if ((mod = ModifierMask (str)) == Gdk.ModifierType.None) {
-					if (str != "Space")
+					if (str == "Space")
+						k = (uint) Gdk.Key.space;
+					else if (str.Length > 1)
 						k = Gdk.Keyval.FromName (str);
 					else
-						k = (uint) Gdk.Key.space;
+						k = (uint) str[0];
+					
 					break;
 				}
 				
@@ -303,7 +306,10 @@ namespace MonoDevelop.Components.Commands {
 				
 				str = shortcut.Substring (i, j - i);
 				if ((mod = ModifierMask (str)) == Gdk.ModifierType.None) {
-					key = (Gdk.Key) Gdk.Key.Parse (typeof (Gdk.Key), str);
+					if (str.Length > 1)
+						key = (Gdk.Key) Gdk.Key.Parse (typeof (Gdk.Key), str);
+					else
+						key = (Gdk.Key) str[0];
 					
 					if (j < shortcut.Length)
 						Console.WriteLine ("WARNING: trailing data after Gdk.Key portion of shortcut {0}", shortcut);
