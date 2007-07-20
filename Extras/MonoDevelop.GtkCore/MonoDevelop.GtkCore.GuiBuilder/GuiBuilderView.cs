@@ -488,7 +488,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		[CommandUpdateHandler (EditCommands.Delete)]
 		protected void OnUpdateDelete (CommandInfo cinfo)
 		{
-			cinfo.Enabled = designer.Selection != null && designer.Selection.CanCut;
+			cinfo.Enabled = designer.CanDeleteSelection;
 		}
 		
 		[CommandHandler (EditCommands.Copy)]
@@ -500,7 +500,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		[CommandUpdateHandler (EditCommands.Copy)]
 		protected void OnUpdateCopy (CommandInfo cinfo)
 		{
-			cinfo.Enabled = designer.Selection != null && designer.Selection.CanCopy;
+			cinfo.Enabled = designer.CanCopySelection;
 		}
 		
 		[CommandHandler (EditCommands.Cut)]
@@ -512,7 +512,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		[CommandUpdateHandler (EditCommands.Cut)]
 		protected void OnUpdateCut (CommandInfo cinfo)
 		{
-			cinfo.Enabled = designer.Selection != null && designer.Selection.CanCut;
+			cinfo.Enabled = designer.CanCutSelection;
 		}
 		
 		[CommandHandler (EditCommands.Paste)]
@@ -536,7 +536,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		[CommandUpdateHandler (EditCommands.Paste)]
 		protected void OnUpdatePaste (CommandInfo cinfo)
 		{
-			cinfo.Enabled = designer.Selection == null || designer.Selection.CanPaste;
+			cinfo.Enabled = designer.CanPasteToSelection;
 		}
 		
 		[CommandUpdateHandler (EditCommands.Undo)]

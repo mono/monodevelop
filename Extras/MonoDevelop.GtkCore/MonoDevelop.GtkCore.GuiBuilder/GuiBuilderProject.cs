@@ -448,17 +448,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public string GetSourceCodeFile (Stetic.ProjectItemInfo obj, bool getUserClass)
 		{
 			IClass cls = GetClass (obj, getUserClass);
-			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
 			
-			if (cls != null) {
-				// Ignore partial classes located at the gtk-gui folder
-				foreach (IClass pc in cls.Parts) {
-					if (!pc.Region.FileName.StartsWith (info.GtkGuiFolder)) {
-						return pc.Region.FileName;
-					}
-				}
-			}
-			return null;
+			if (cls != null)
+				return cls.Region.FileName;
+			else
+				return null;
 		}
 		
 		IClass GetClass (Stetic.ProjectItemInfo obj, bool getUserClass)
@@ -479,7 +473,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			IClass[] classes = ctx.GetProjectContents ();
 			foreach (IClass cls in classes) {
 				if (cls.FullyQualifiedName == className) {
-					if (getUserClass) {
+					if (getUserClass && cls.Parts.Length > 1) {
 						// Return this class only if it is declared outside the gtk-gui
 						// folder. Generated partial classes will be ignored.
 						foreach (IClass part in cls.Parts) {

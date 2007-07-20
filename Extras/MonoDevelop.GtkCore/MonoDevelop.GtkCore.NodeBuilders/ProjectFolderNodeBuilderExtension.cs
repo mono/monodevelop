@@ -172,6 +172,8 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			if (project == null)
 				return;
 			
+			object dataItem = CurrentNode.DataItem;
+			
 			ProjectFolder folder = CurrentNode.GetParentDataItem (typeof(ProjectFolder), true) as ProjectFolder;
 			
 			if (GtkCoreService.SupportsPartialTypes (project))
@@ -186,7 +188,10 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			IdeApp.ProjectOperations.CreateProjectFile (project, path, id);
 			
 			IdeApp.ProjectOperations.SaveProject (project);
-			CurrentNode.Expanded = true;
+			
+			ITreeNavigator nav = Tree.GetNodeAtObject (dataItem);
+			if (nav != null)
+				nav.Expanded = true;
 		}
 	}
 }

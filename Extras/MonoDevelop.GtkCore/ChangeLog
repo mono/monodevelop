@@ -1,3 +1,18 @@
+2007-07-20  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs:
+	  Don't try to use the CurrentNode property after adding the file,
+	  since it may have changed. Should fix bug #82123.
+	* lib/libsteticui.dll, lib/libstetic.dll: Updated from Stetic module.
+	  Fixes bugs #81846 and #82144.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: Fix window
+	  source file lookup.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: Use the new methods
+	  for checking clipboard operations on the current selection.
+	* MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs: Include the
+	  current project in the list of libraries to show in the toolbox.
+	  Fixes bug #82125.
+
 2007-07-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* lib/libsteticui.dll, lib/libstetic.dll: Updated. Fixes bugs 81977,
