@@ -1,3 +1,8 @@
+2007-07-19  Ben Motmans <ben.motmans@gmail.com>
+
+	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs: overwrite the
+	node_hash field with a standard hashtable [fixes #81942]
+
 2007-07-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.DesignerSupport.Toolbox/CompactToolboxView.cs: Improve

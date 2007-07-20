@@ -30,6 +30,7 @@
 
 using System;
 using Gtk;
+using System.Reflection;
 using System.Collections;
 using System.Drawing.Design;
 using System.ComponentModel.Design;
@@ -110,6 +111,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			//Initialise model
 			
 			store = new ToolboxStore ();
+			
+			//HACK: see #81942 (caused by #82087)
+			typeof (ToolboxStore).GetField ("node_hash", BindingFlags.Instance | BindingFlags.NonPublic).SetValue (store, new Hashtable ());
 			
 			//initialise view
 			nodeView = new NodeView (store);
