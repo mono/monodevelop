@@ -478,7 +478,7 @@
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLeftChar" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLine" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteRightChar" shortcut="" />
-    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteToLineEnd" shortcut="Control+K" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteToLineEnd" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DocumentEnd" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DocumentStart" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.LineDown" shortcut="" />
