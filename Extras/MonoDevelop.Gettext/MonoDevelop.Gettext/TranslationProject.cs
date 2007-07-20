@@ -113,12 +113,33 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
+		int updateLevel = 0;
+		Dictionary<string, Catalog> catalogs = new Dictionary<string, Catalog> (); 
+		public void BeginUpdate ()
+		{
+			updateLevel++;
+			if (updateLevel == 1) {
+				catalogs.Clear ();
+			}
+		}
+		
+		public void EndUpdate ()
+		{
+			updateLevel--;
+			if (updateLevel == 0) {
+				foreach (KeyValuePair<string, Catalog> catalog in catalogs) {
+					catalog.Value.Save (catalog.Key);
+				}
+			}
+		}
 		
 		public void AddTranslationStrings (Translation translation, string fileName, List<TranslationProject.MatchLocation> matches)
 		{
 			string relativeFileName = MonoDevelop.Core.Runtime.FileService.AbsoluteToRelativePath (this.BaseDirectory, fileName);
 			string poFileName = GetFileName (translation);
-			Catalog catalog = new Catalog (poFileName);
+			if (!catalogs.ContainsKey (poFileName))
+				catalogs[poFileName] = new Catalog (poFileName);
+			Catalog catalog = catalogs[poFileName];
 			
 			foreach (CatalogEntry entry in catalog) {
 				foreach (string reference in entry.References) {
@@ -137,8 +158,6 @@ namespace MonoDevelop.Gettext
 				}
 				entry.AddReference (relativeFileName + ":" + match.Line);
 			}
-			
-			catalog.Save (poFileName);
 		}
 		
 		public void AddTranslationStrings (string fileName, List<TranslationProject.MatchLocation> matches)

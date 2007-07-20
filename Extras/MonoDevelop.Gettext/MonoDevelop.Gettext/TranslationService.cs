@@ -127,13 +127,18 @@ namespace MonoDevelop.Gettext
 		
 		public static void UpdateTranslation (TranslationProject translationProject, string fileName, string isoCode)
 		{
-			switch (Path.GetExtension (fileName)) {
-			case ".xml":
-				UpdateXmlTranslations (translationProject, fileName);
-				break;
-			default:
-				UpdateTranslations (translationProject, fileName);
-				break;
+			translationProject.BeginUpdate ();
+			try {
+				switch (Path.GetExtension (fileName)) {
+				case ".xml":
+					UpdateXmlTranslations (translationProject, fileName);
+					break;
+				default:
+					UpdateTranslations (translationProject, fileName);
+					break;
+				}
+			} finally {
+				translationProject.EndUpdate ();
 			}
 		}
 		
@@ -142,12 +147,16 @@ namespace MonoDevelop.Gettext
 			TranslationProject translationProject = GetTranslationProject (e.Project);
 			if (translationProject == null)
 				return;
-			
-			UpdateTranslation (translationProject, e.ProjectFile.FilePath, null);
-			
-			ProjectFile steticFile = e.Project.GetProjectFile (Path.Combine (e.Project.BaseDirectory, "gtk-gui/gui.stetic"));
-			if (steticFile != null) 
-				UpdateSteticTranslations (translationProject, steticFile.FilePath);
+			translationProject.BeginUpdate ();
+			try {
+				UpdateTranslation (translationProject, e.ProjectFile.FilePath, null);
+				
+				ProjectFile steticFile = e.Project.GetProjectFile (Path.Combine (e.Project.BaseDirectory, "gtk-gui/gui.stetic"));
+				if (steticFile != null) 
+					UpdateSteticTranslations (translationProject, steticFile.FilePath);
+			} finally {
+				translationProject.EndUpdate ();
+			}
 		}
 		
 		static void CombineOpened (object sender, CombineEventArgs e)

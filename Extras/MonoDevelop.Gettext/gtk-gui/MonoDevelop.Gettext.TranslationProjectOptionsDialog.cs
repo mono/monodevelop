@@ -67,7 +67,9 @@ namespace MonoDevelop.Gettext {
         
         private Gtk.Label label4;
         
-        private Gtk.TreeView treeview1;
+        private Gtk.ScrolledWindow scrolledwindow1;
+        
+        private Gtk.TreeView treeviewProjectList;
         
         private Gtk.Label label2;
         
@@ -90,7 +92,7 @@ namespace MonoDevelop.Gettext {
             this.notebook1 = new Gtk.Notebook();
             this.notebook1.CanFocus = true;
             this.notebook1.Name = "notebook1";
-            this.notebook1.CurrentPage = 0;
+            this.notebook1.CurrentPage = 1;
             // Container child notebook1.Gtk.Notebook+NotebookChild
             this.vbox2 = new Gtk.VBox();
             this.vbox2.Name = "vbox2";
@@ -299,30 +301,38 @@ namespace MonoDevelop.Gettext {
             w23.Expand = false;
             w23.Fill = false;
             // Container child pageSelectProject.Gtk.Box+BoxChild
-            this.treeview1 = new Gtk.TreeView();
-            this.treeview1.CanFocus = true;
-            this.treeview1.Name = "treeview1";
-            this.pageSelectProject.Add(this.treeview1);
-            Gtk.Box.BoxChild w24 = ((Gtk.Box.BoxChild)(this.pageSelectProject[this.treeview1]));
-            w24.Position = 3;
+            this.scrolledwindow1 = new Gtk.ScrolledWindow();
+            this.scrolledwindow1.CanFocus = true;
+            this.scrolledwindow1.Name = "scrolledwindow1";
+            this.scrolledwindow1.VscrollbarPolicy = ((Gtk.PolicyType)(1));
+            this.scrolledwindow1.HscrollbarPolicy = ((Gtk.PolicyType)(1));
+            this.scrolledwindow1.ShadowType = ((Gtk.ShadowType)(1));
+            // Container child scrolledwindow1.Gtk.Container+ContainerChild
+            this.treeviewProjectList = new Gtk.TreeView();
+            this.treeviewProjectList.CanFocus = true;
+            this.treeviewProjectList.Name = "treeviewProjectList";
+            this.scrolledwindow1.Add(this.treeviewProjectList);
+            this.pageSelectProject.Add(this.scrolledwindow1);
+            Gtk.Box.BoxChild w25 = ((Gtk.Box.BoxChild)(this.pageSelectProject[this.scrolledwindow1]));
+            w25.Position = 3;
             this.notebook1.Add(this.pageSelectProject);
-            Gtk.Notebook.NotebookChild w25 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.pageSelectProject]));
-            w25.Position = 1;
-            w25.TabExpand = false;
+            Gtk.Notebook.NotebookChild w26 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.pageSelectProject]));
+            w26.Position = 1;
+            w26.TabExpand = false;
             // Notebook tab
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
             this.label2.LabelProp = Mono.Unix.Catalog.GetString("Include in Projects");
             this.notebook1.SetTabLabel(this.pageSelectProject, this.label2);
             w1.Add(this.notebook1);
-            Gtk.Box.BoxChild w26 = ((Gtk.Box.BoxChild)(w1[this.notebook1]));
-            w26.Position = 0;
+            Gtk.Box.BoxChild w27 = ((Gtk.Box.BoxChild)(w1[this.notebook1]));
+            w27.Position = 0;
             // Internal child MonoDevelop.Gettext.TranslationProjectOptionsDialog.ActionArea
-            Gtk.HButtonBox w27 = this.ActionArea;
-            w27.Name = "dialog1_ActionArea";
-            w27.Spacing = 6;
-            w27.BorderWidth = ((uint)(5));
-            w27.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
+            Gtk.HButtonBox w28 = this.ActionArea;
+            w28.Name = "dialog1_ActionArea";
+            w28.Spacing = 6;
+            w28.BorderWidth = ((uint)(5));
+            w28.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonCancel = new Gtk.Button();
             this.buttonCancel.CanDefault = true;
@@ -332,9 +342,9 @@ namespace MonoDevelop.Gettext {
             this.buttonCancel.UseUnderline = true;
             this.buttonCancel.Label = "gtk-cancel";
             this.AddActionWidget(this.buttonCancel, -6);
-            Gtk.ButtonBox.ButtonBoxChild w28 = ((Gtk.ButtonBox.ButtonBoxChild)(w27[this.buttonCancel]));
-            w28.Expand = false;
-            w28.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w29 = ((Gtk.ButtonBox.ButtonBoxChild)(w28[this.buttonCancel]));
+            w29.Expand = false;
+            w29.Fill = false;
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonOk = new Gtk.Button();
             this.buttonOk.CanDefault = true;
@@ -344,15 +354,15 @@ namespace MonoDevelop.Gettext {
             this.buttonOk.UseUnderline = true;
             this.buttonOk.Label = "gtk-ok";
             this.AddActionWidget(this.buttonOk, -5);
-            Gtk.ButtonBox.ButtonBoxChild w29 = ((Gtk.ButtonBox.ButtonBoxChild)(w27[this.buttonOk]));
-            w29.Position = 1;
-            w29.Expand = false;
-            w29.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w30 = ((Gtk.ButtonBox.ButtonBoxChild)(w28[this.buttonOk]));
+            w30.Position = 1;
+            w30.Expand = false;
+            w30.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
             this.DefaultWidth = 519;
-            this.DefaultHeight = 347;
+            this.DefaultHeight = 346;
             this.Show();
         }
     }

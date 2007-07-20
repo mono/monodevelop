@@ -960,7 +960,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Gettext.TranslationProjectOptionsDialog" design-size="519 347">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Gettext.TranslationProjectOptionsDialog" design-size="519 346">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Translation Options</property>
     <property name="WindowPosition">CenterOnParent</property>
@@ -975,7 +975,7 @@
           <widget class="Gtk.Notebook" id="notebook1">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="CurrentPage">0</property>
+            <property name="CurrentPage">1</property>
             <child>
               <widget class="Gtk.VBox" id="vbox2">
                 <property name="MemberName" />
@@ -1287,10 +1287,19 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.TreeView" id="treeview1">
+                  <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="HeadersClickable">True</property>
+                    <property name="VscrollbarPolicy">Automatic</property>
+                    <property name="HscrollbarPolicy">Automatic</property>
+                    <property name="ShadowType">In</property>
+                    <child>
+                      <widget class="Gtk.TreeView" id="treeviewProjectList">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="HeadersClickable">True</property>
+                      </widget>
+                    </child>
                   </widget>
                   <packing>
                     <property name="Position">3</property>
