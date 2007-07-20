@@ -87,6 +87,7 @@
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Commands">
+		<Category _name = "NUnit" id = "NUnit">
 		<Command id = "MonoDevelop.NUnit.Commands.TestCommands.RunTest" _label = "Run Test" />
 		<Command id = "MonoDevelop.NUnit.Commands.TestCommands.ShowTestCode" _label = "Show test source code" />
 		<Command id = "MonoDevelop.NUnit.Commands.TestCommands.SelectTestInTree" _label = "Select test in tree" />
@@ -99,6 +100,7 @@
 		<Command id = "MonoDevelop.NUnit.Commands.TestChartCommands.ShowFailedTests" _label = "Show failed tests" type="check"/>
 		<Command id = "MonoDevelop.NUnit.Commands.TestChartCommands.ShowIgnoredTests" _label = "Show ignored tests" type="check"/>
 		<Command id = "MonoDevelop.NUnit.Commands.NUnitProjectCommands.AddAssembly" _label = "Add assembly..."/>
+		</Category>
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/NUnitAssemblyGroup">
