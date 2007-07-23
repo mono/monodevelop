@@ -148,11 +148,27 @@ namespace MonoDevelop.Gettext
 		
 		void UpdateProgressBar ()
 		{
-			int all, untrans, fuzzy, bad;
-			catalog.GetStatistics (out all, out fuzzy, out bad, out untrans);
+			int all, untrans, fuzzy, missing, bad;
+			catalog.GetStatistics (out all, out fuzzy, out missing, out bad, out untrans);
 			double percentage = all > 0 ? ((double)(all - untrans) / all) * 100 : 0.0;
-			string barText = String.Format (GettextCatalog.GetString ("{0:#00.00}% Translated"), percentage) + " (";
-			barText += String.Format (GettextCatalog.GetPluralString ("{0} Fuzzy Message", "{0} Fuzzy Messages", fuzzy), fuzzy) + ")";
+			string barText = String.Format (GettextCatalog.GetString ("{0:#00.00}% Translated"), percentage);
+			
+			if (missing > 0 || fuzzy > 0)
+				barText += " (";
+			
+			if (fuzzy > 0) {
+				barText += String.Format (GettextCatalog.GetPluralString ("{0} Fuzzy Message", "{0} Fuzzy Messages", fuzzy), fuzzy);
+			}
+			
+			if (missing > 0) {
+				if (fuzzy > 0) {
+					barText += ", ";
+				}
+				barText += String.Format (GettextCatalog.GetPluralString ("{0} Missing Message", "{0} Missing Messages", missing), missing);
+			}
+			if (missing > 0 || fuzzy > 0)
+				barText += ")";
+			
 			this.progressbar1.Text = barText;
 			percentage = percentage / 100;
 			this.progressbar1.Fraction = percentage;
@@ -235,15 +251,20 @@ namespace MonoDevelop.Gettext
 		
 		static string GetStockForEntry (CatalogEntry entry)
 		{
+			if (entry.References.Length == 0)
+				return Stock.DialogError;
 			return entry.IsFuzzy ? Stock.About : entry.IsTranslated ? Stock.Apply : Stock.Cancel;
 		}
 		
-		static Color translated = new Color (255, 255, 255);
+		static Color translated   = new Color (255, 255, 255);
 		static Color untranslated = new Color (234, 232, 227);
-		static Color fuzzy = new Color (237, 226, 187);
+		static Color fuzzy        = new Color (237, 226, 187);
+		static Color missing      = new Color (237, 167, 167);
 		
 		static Color GetRowColorForEntry (CatalogEntry entry)
 		{
+			if (entry.References.Length == 0)
+				return missing;
 			return entry.IsFuzzy ? fuzzy : entry.IsTranslated ? translated : untranslated;
 		}
 			

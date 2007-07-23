@@ -32,6 +32,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 
+using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
@@ -55,7 +56,7 @@ namespace MonoDevelop.Gettext
 		{
 			Debug.Assert (!isInitialized);
 			isInitialized = true;
-			IdeApp.ProjectOperations.FileChangedInProject += new ProjectFileEventHandler (FileChangedInProject);
+//			IdeApp.ProjectOperations.FileChangedInProject += new ProjectFileEventHandler (FileChangedInProject);
 			IdeApp.ProjectOperations.CombineOpened += new CombineEventHandler (CombineOpened);
 			IdeApp.ProjectOperations.CombineClosed += delegate {
 				isTranslationEnabled = false;
@@ -125,7 +126,7 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
-		public static void UpdateTranslation (TranslationProject translationProject, string fileName, string isoCode)
+		public static void UpdateTranslation (TranslationProject translationProject, string fileName, IProgressMonitor monitor)
 		{
 			translationProject.BeginUpdate ();
 			try {
@@ -142,22 +143,23 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
-		static void FileChangedInProject (object sender, ProjectFileEventArgs e)
-		{
-			TranslationProject translationProject = GetTranslationProject (e.Project);
-			if (translationProject == null)
-				return;
-			translationProject.BeginUpdate ();
-			try {
-				UpdateTranslation (translationProject, e.ProjectFile.FilePath, null);
-				
-				ProjectFile steticFile = e.Project.GetProjectFile (Path.Combine (e.Project.BaseDirectory, "gtk-gui/gui.stetic"));
-				if (steticFile != null) 
-					UpdateSteticTranslations (translationProject, steticFile.FilePath);
-			} finally {
-				translationProject.EndUpdate ();
-			}
-		}
+// Currently de-activated due to performance reasons.
+//		static void FileChangedInProject (object sender, ProjectFileEventArgs e)
+//		{
+//			TranslationProject translationProject = GetTranslationProject (e.Project);
+//			if (translationProject == null)
+//				return;
+//			translationProject.BeginUpdate ();
+//			try {
+//				UpdateTranslation (translationProject, e.ProjectFile.FilePath, null);
+//				
+//				ProjectFile steticFile = e.Project.GetProjectFile (Path.Combine (e.Project.BaseDirectory, "gtk-gui/gui.stetic"));
+//				if (steticFile != null) 
+//					UpdateSteticTranslations (translationProject, steticFile.FilePath);
+//			} finally {
+//				translationProject.EndUpdate ();
+//			}
+//		}
 		
 		static void CombineOpened (object sender, CombineEventArgs e)
 		{

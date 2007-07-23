@@ -397,10 +397,11 @@ namespace MonoDevelop.Gettext
 		}
 
 		// Returns number of all, fuzzy, badtokens and untranslated items.
-		public void GetStatistics (out int all, out int fuzzy, out int badtokens, out int untranslated)
+		public void GetStatistics (out int all, out int fuzzy, out int missing, out int badtokens, out int untranslated)
 		{
 			all = 0;
 			fuzzy = 0;
+			missing = 0;
 			badtokens = 0;
 			untranslated = 0;
 			for (int i = 0; i < this.Count; i++)
@@ -408,6 +409,8 @@ namespace MonoDevelop.Gettext
 				all++;
 				if (this[i].IsFuzzy)
 					fuzzy++;
+				if (this[i].References.Length == 0)
+					missing++;
 				if (this[i].DataValidity == CatalogEntry.Validity.Invalid)
 					badtokens++;
 				if (! this[i].IsTranslated)

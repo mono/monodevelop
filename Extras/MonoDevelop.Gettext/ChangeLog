@@ -1,3 +1,11 @@
+2007-07-23  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs, Commands.cs,
+	  MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs,
+	  MonoDevelop.Gettext/TranslationService.cs,
+	  MonoDevelop.Gettext/Catalog.cs: Added manual udate command, missing
+	  messages are now recognized.
+
 2007-07-20  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Gettext/TranslationProject.cs: Worked on gettext

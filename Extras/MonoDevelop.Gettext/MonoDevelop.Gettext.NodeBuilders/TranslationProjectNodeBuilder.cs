@@ -142,6 +142,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 				TranslationProjectOptionsDialog options = new TranslationProjectOptionsDialog (project);
 				options.Show ();
 			}
+			
 			[CommandHandler (Commands.AddTranslation)]
 			public void OnAddTranslation ()
 			{
@@ -164,12 +165,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 						
 						using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (monitorTitle, "md-package", true, true)) {
 							project.AddNewTranslation (language, monitor);
-							
-							foreach (Project p in project.ParentCombine.GetAllProjects ()) {
-								foreach (ProjectFile file in p.ProjectFiles) {
-									TranslationService.UpdateTranslation (project, file.FilePath, language);
-								}
-							}
+							UpdateTranslations (project);
 						}
 					}
 					
@@ -177,6 +173,37 @@ namespace MonoDevelop.Gettext.NodeBuilders
 					chooser.Destroy ();
 				}
 			}
+			
+			void UpdateTranslations (TranslationProject project)
+			{
+				using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ()) {
+					int count = 0;
+					foreach (Project p in project.ParentCombine.GetAllProjects ()) 
+						count++;
+					monitor.BeginTask ("Updating Translations ", count);
+					
+					foreach (Project p in project.ParentCombine.GetAllProjects ()) {
+						monitor.BeginStepTask ("Scanning "  + p.Name, 1, 1);
+						foreach (ProjectFile file in p.ProjectFiles) {
+							TranslationService.UpdateTranslation (project, file.FilePath, monitor);
+						}
+					}
+					
+					monitor.EndTask ();
+					monitor.Log.WriteLine ();
+					monitor.Log.WriteLine (GettextCatalog.GetString ("---------------------- Done ----------------------"));
+				}
+			}
+			
+			[CommandHandler (Commands.UpdateTranslations)]
+			public void OnUpdateTranslations ()
+			{
+				TranslationProject project = CurrentNode.DataItem as TranslationProject;
+				if (project == null)
+					return;
+				UpdateTranslations (project);
+			}
+			
 		}
 	}
 }

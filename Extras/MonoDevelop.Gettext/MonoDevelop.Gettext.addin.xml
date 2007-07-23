@@ -39,6 +39,9 @@
 		         icon = "md-gettext-locale"
 		         _label = "Add Translation..."
 			     _description = "Add another translation (language) for a solution or project" />
+		<Command id   = "MonoDevelop.Gettext.Commands.UpdateTranslations"
+		         _label = "Update Translations"
+			     _description = "Updates all translation files." />
 	</Extension>	
 	
 	<Extension path = "/SharpDevelop/Workbench/StockIcons" extension-nodes = "StockIcon" description = "Stock icons|Available from MonoDevelop.Gettext.Resources.">
@@ -75,6 +78,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
 		<SeparatorItem />
 		<CommandItem id = "MonoDevelop.Gettext.Commands.AddTranslation" />
+		<CommandItem id = "MonoDevelop.Gettext.Commands.UpdateTranslations" />
 		<SeparatorItem />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
 		<SeparatorItem />
