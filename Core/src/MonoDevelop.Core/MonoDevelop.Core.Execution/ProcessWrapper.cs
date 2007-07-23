@@ -36,6 +36,9 @@ namespace MonoDevelop.Core.Execution
 		public void WaitForOutput ()
 		{
 			WaitForExit ();
+			lock (this) {
+				done = true;
+			}
 			WaitHandle.WaitAll (new WaitHandle[] {endEventOut, endEventErr});
 		}
 		
@@ -81,7 +84,11 @@ namespace MonoDevelop.Core.Execution
 		{
 			try {
 				if (!done) {
-					Kill ();
+					try {
+						Kill ();
+					} catch {
+						// Ignore
+					}
 					captureOutputThread.Abort ();
 					captureErrorThread.Abort ();
 				}

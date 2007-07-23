@@ -1,3 +1,9 @@
+2007-07-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Execution/ProcessWrapper.cs: Set the 'done' flag
+	  before exiting WaitForOutput. It fixes a race that was the cause of
+	  bug #82128.
+
 2007-07-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.mdp: Updated.
