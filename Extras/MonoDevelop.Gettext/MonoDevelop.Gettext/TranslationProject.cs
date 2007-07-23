@@ -133,7 +133,6 @@ namespace MonoDevelop.Gettext
 				}
 			}
 		}
-		
 		public void AddTranslationStrings (Translation translation, string fileName, List<TranslationProject.MatchLocation> matches)
 		{
 			string relativeFileName = MonoDevelop.Core.Runtime.FileService.AbsoluteToRelativePath (this.BaseDirectory, fileName);
@@ -223,6 +222,19 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
+		public void RemoveEntry (string msgstr)
+		{
+			foreach (Translation translation in this.Translations) {
+				string poFileName  = GetFileName (translation);
+				Catalog catalog = new Catalog (poFileName);
+				CatalogEntry entry   = catalog.FindItem (msgstr);
+				if (entry != null) {
+					catalog.RemoveItem (entry);
+					catalog.Save (poFileName);
+				}
+			}
+		}
+				
 		protected override ICompilerResult OnBuild (IProgressMonitor monitor)
 		{
 			CompilerResults results = new CompilerResults (null);

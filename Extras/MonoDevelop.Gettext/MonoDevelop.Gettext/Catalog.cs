@@ -605,7 +605,15 @@ namespace MonoDevelop.Gettext
 				entriesList.Add (data);
 			}
 		}
-
+		
+		public void RemoveItem (CatalogEntry data)
+		{
+			if (this.entriesDict.ContainsKey (data.String))
+				this.entriesDict.Remove (data.String);
+			if (this.entriesList.Contains (data))
+				this.entriesList.Remove (data);
+		}
+		
 		// Adds entry to the catalog (the catalog will take ownership of the object).
 		public void AddDeletedItem (CatalogDeletedEntry data)
 		{

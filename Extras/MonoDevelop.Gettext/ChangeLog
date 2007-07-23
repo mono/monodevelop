@@ -1,5 +1,13 @@
 2007-07-23  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Gettext.Editor/CatalogEditor.cs,
+	  MonoDevelop.Gettext.Editor/POEditorWidget.cs,
+	  MonoDevelop.Gettext/TranslationProject.cs,
+	  MonoDevelop.Gettext/Catalog.cs: added remove entry function to
+	  delete unused translation strings.
+
+2007-07-23  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs:
 	  updated some translation strings.
 

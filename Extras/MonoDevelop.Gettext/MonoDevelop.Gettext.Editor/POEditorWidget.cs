@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 using Gtk;
@@ -45,6 +46,8 @@ namespace MonoDevelop.Gettext
 		ListStore foundInStore;
 		Catalog catalog;
 		string  poFileName;
+		
+		static List<POEditorWidget> widgets = new List<POEditorWidget> (); 
 		
 		public Catalog Catalog {
 			get {
@@ -71,7 +74,7 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
-		public POEditorWidget()
+		public POEditorWidget ()
 		{
 			this.Build();
 			this.headersEditor = new CatalogHeadersWidget ();
@@ -123,27 +126,91 @@ namespace MonoDevelop.Gettext
 			this.textviewTranslated.Buffer.Changed += delegate {
 				if (this.isUpdating)
 					return;
-				this.currentEntry.SetTranslation (textviewTranslated.Buffer.Text, 0);
+				if (this.currentEntry != null)
+					this.currentEntry.SetTranslation (textviewTranslated.Buffer.Text, 0);
 				UpdateProgressBar ();
 			};
 			
 			this.textviewTranslatedPlural.Buffer.Changed += delegate {
 				if (this.isUpdating)
 					return;
-				this.currentEntry.SetTranslation (textviewTranslatedPlural.Buffer.Text, 1);
+				if (this.currentEntry != null)
+					this.currentEntry.SetTranslation (textviewTranslatedPlural.Buffer.Text, 1);
 				UpdateProgressBar ();
 			};
 			this.textviewComments.Buffer.Changed += delegate {
 				if (this.isUpdating)
 					return;
-				string[] lines = textviewComments.Buffer.Text.Split (new string[] { Environment.NewLine }, StringSplitOptions.None);
-				for (int i = 0; i < lines.Length; i++) {
-					if (!lines[i].StartsWith ("#"))
-						lines[i] = "# " + lines[i];
+				if (this.currentEntry != null) {
+					string[] lines = textviewComments.Buffer.Text.Split (new string[] { Environment.NewLine }, StringSplitOptions.None);
+					for (int i = 0; i < lines.Length; i++) {
+						if (!lines[i].StartsWith ("#"))
+							lines[i] = "# " + lines[i];
+					}
+					this.currentEntry.Comment = String.Join (Environment.NewLine, lines);
 				}
-				this.currentEntry.Comment = String.Join (Environment.NewLine, lines);
 				UpdateProgressBar ();
 			};
+			this.treeviewEntries.PopupMenu += delegate {
+				ShowPopup ();
+			};
+			this.treeviewEntries.ButtonReleaseEvent += delegate (object sender, Gtk.ButtonReleaseEventArgs e) {
+				if (e.Event.Button == 3)
+					ShowPopup ();
+			};
+			widgets.Add (this);
+		}
+		
+		void ShowPopup ()
+		{
+			Gtk.Menu contextMenu = CreateContextMenu ();
+			if (contextMenu != null)
+				contextMenu.Popup ();
+		}
+		
+		Gtk.Menu CreateContextMenu ()
+		{
+			CatalogEntry entry = SelectedEntry;
+			if (entry == null)
+				return null;
+
+			Gtk.Menu result = new Gtk.Menu ();
+			
+			Gtk.MenuItem item = new Gtk.MenuItem ("Delete");
+			item.Sensitive = entry.References.Length == 0;
+			item.Activated += delegate {
+				RemoveEntry (entry);
+			};
+			item.Show();
+			result.Append (item);
+			
+			return result;
+		}
+		
+		void RemoveEntryByString (string msgstr)
+		{
+			CatalogEntry entry = this.catalog.FindItem (msgstr);
+			if (entry != null) { 
+				if (currentEntry.String == msgstr) 
+					this.EditEntry (null);
+				this.catalog.RemoveItem (entry);
+				this.UpdateFromCatalog ();
+			}
+		}
+		
+		void RemoveEntry (CatalogEntry entry)
+		{
+			bool yes = MonoDevelop.Core.Gui.Services.MessageService.AskQuestion (GettextCatalog.GetString (
+				"Do you really want to remove the translation string {0} (It will be removed from all translations)?", entry.String));
+
+			if (yes) {
+				TranslationProject project = IdeApp.ProjectOperations.CurrentSelectedCombineEntry as TranslationProject;
+				if (project != null) {
+					foreach (POEditorWidget widget in widgets)
+						widget.RemoveEntryByString (entry.String);
+					project.RemoveEntry (entry.String);
+				}
+			}
 		}
 		
 		void UpdateProgressBar ()
@@ -182,33 +249,34 @@ namespace MonoDevelop.Gettext
 			this.isUpdating = true;
 			try {
 				currentEntry = entry;
-				this.textviewOriginal.Buffer.Text = entry.String;
-				this.textviewTranslated.Buffer.Text = entry.GetTranslation (0);
+				this.textviewOriginal.Buffer.Text = entry != null ? entry.String : "";
+				this.textviewTranslated.Buffer.Text = entry != null ? entry.GetTranslation (0) : "";
 				
-				frameOriginalPlural.Visible = frameTranslatedPlural.Visible = entry.HasPlural;
+				frameOriginalPlural.Visible = frameTranslatedPlural.Visible = entry != null ? entry.HasPlural : false;
 				
-				
-				if (entry.HasPlural) {
+				if (entry != null && entry.HasPlural) {
 					this.textviewOriginalPlural.Buffer.Text = entry.PluralString;
 					this.textviewTranslatedPlural.Buffer.Text = entry.GetTranslation (1);
 				}
 				
 				this.foundInStore.Clear ();
-				foreach (string reference in entry.References) {
-					string file;
-					string line;
-					int i = reference.IndexOf (':');
-					if (i >= 0) {
-						file = reference.Substring (0, i);
-						line = reference.Substring (i + 1);
-					} else {
-						file = reference;
-						line = "?";
+				if (entry != null) { 
+					foreach (string reference in entry.References) {
+						string file;
+						string line;
+						int i = reference.IndexOf (':');
+						if (i >= 0) {
+							file = reference.Substring (0, i);
+							line = reference.Substring (i + 1);
+						} else {
+							file = reference;
+							line = "?";
+						}
+						string fullName = System.IO.Path.Combine (System.IO.Path.GetDirectoryName (this.poFileName), file);
+						this.foundInStore.AppendValues (file, line, fullName);
 					}
-					string fullName = System.IO.Path.Combine (System.IO.Path.GetDirectoryName (this.poFileName), file);
-					this.foundInStore.AppendValues (file, line, fullName);
 				}
-				this.textviewComments.Buffer.Text = entry.Comment;
+				this.textviewComments.Buffer.Text = entry != null ? entry.Comment : null;
 			} finally {
 				this.isUpdating = false;
 			}
@@ -267,15 +335,20 @@ namespace MonoDevelop.Gettext
 				return missing;
 			return entry.IsFuzzy ? fuzzy : entry.IsTranslated ? translated : untranslated;
 		}
-			
+		CatalogEntry SelectedEntry {
+			get {
+				TreeIter iter;
+				if (treeviewEntries.Selection.GetSelected (out iter)) {
+					return store.GetValue (iter, (int)Columns.CatalogEntry) as CatalogEntry;
+				}
+				return null;
+			}
+		}
 		void OnEntrySelected (object sender, EventArgs args)
 		{			
-			TreeIter iter;
-			if (treeviewEntries.Selection.GetSelected (out iter)) {
-				CatalogEntry entry = store.GetValue (iter, (int)Columns.CatalogEntry) as CatalogEntry;
-				if (entry != null)
-					EditEntry (entry);
-			}
+			CatalogEntry entry = SelectedEntry;
+			if (entry != null)
+				EditEntry (entry);
 		}
 		
 		public void UpdateEntry (CatalogEntry entry)
@@ -350,6 +423,8 @@ namespace MonoDevelop.Gettext
 		
 		public override void Dispose ()
 		{
+			Console.WriteLine ("REMOVE !!!");
+			widgets.Remove (this);
 			this.headersEditor.Destroy ();
 			this.headersEditor = null;
 			
