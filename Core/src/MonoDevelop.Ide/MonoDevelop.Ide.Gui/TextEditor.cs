@@ -86,6 +86,16 @@ namespace MonoDevelop.Ide.Gui
 			textBuffer.Redo ();
 		}
 		
+		public void BeginAtomicUndo ()
+		{
+			textBuffer.BeginAtomicUndo ();
+		}
+		
+		public void EndAtomicUndo ()
+		{
+			textBuffer.EndAtomicUndo ();
+		}
+		
 		public string SelectedText {
 			get { return textBuffer.SelectedText; } 
 			set { textBuffer.SelectedText = value; }

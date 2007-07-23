@@ -19,6 +19,9 @@ namespace MonoDevelop.Ide.Gui.Content
 		void Undo();
 		void Redo();
 		
+		void BeginAtomicUndo ();
+		void EndAtomicUndo ();
+			
 		new string SelectedText { get; set; }
 		
 		event EventHandler TextChanged;

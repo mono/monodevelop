@@ -1,3 +1,11 @@
+2007-07-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Content/IEditable.cs,
+	  MonoDevelop.Ide.Gui/TextEditor.cs: Added methods for grouping
+	  editing operations in an atomic undo unit.
+	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: Keep cursor position when
+	  deleting a line. Fix some undo/redo issues. Fixes bug #82153.
+
 2007-07-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Commands/ViewCommands.cs: Minor fix.

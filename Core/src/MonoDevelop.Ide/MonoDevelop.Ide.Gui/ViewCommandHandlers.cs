@@ -483,8 +483,11 @@ namespace MonoDevelop.Ide.Gui
 		[CommandHandler (TextEditorCommands.DeleteLine)]
 		protected void OnDeleteLine ()
 		{
+			doc.TextEditor.BeginAtomicUndo ();
+			int col = doc.TextEditor.CursorColumn;
 			doc.TextEditor.DeleteLine (doc.TextEditor.CursorLine);
-			doc.TextEditor.ShowCursorPosition ();
+			doc.TextEditor.CursorColumn = col;
+			doc.TextEditor.EndAtomicUndo ();
 		}
 		
 		[CommandHandler (TextEditorCommands.DeleteToLineEnd)]
