@@ -37,7 +37,7 @@ namespace CSharpBinding
 			
 			string exe = configuration.CompiledOutputName;
 			string responseFileName = Path.GetTempFileName();
-			StreamWriter writer = new StreamWriter(responseFileName);
+			StringWriter writer = new StringWriter ();
 			bool hasWin32Res = false;
 			ArrayList gacRoots = new ArrayList ();
 
@@ -105,7 +105,7 @@ namespace CSharpBinding
 		
 			if (compilerparameters.Win32Icon != null && compilerparameters.Win32Icon.Length > 0 && File.Exists (compilerparameters.Win32Icon)) {
 				if (hasWin32Res)
-					Console.WriteLine ("Warning: Both Win32 icon and Win32 resource cannot be specified. Ignoring the icon.");
+					monitor.ReportWarning ("Both Win32 icon and Win32 resource cannot be specified. Ignoring the icon.");
 				else
 					writer.WriteLine("\"/win32icon:" + compilerparameters.Win32Icon + "\"");
 			}
@@ -176,6 +176,8 @@ namespace CSharpBinding
 			
 			string mcs = configuration.ClrVersion == ClrVersion.Net_1_1 ? "mcs" : "gmcs";
 			
+			File.WriteAllText (responseFileName, writer.ToString ());
+			
 			string compilerName = compilerparameters.CsharpCompiler == CsharpCompiler.Csc ? GetCompilerName (configuration.ClrVersion) : mcs;
 			string outstr = compilerName + " @" + responseFileName;
 			TempFileCollection tf = new TempFileCollection();
@@ -191,6 +193,8 @@ namespace CSharpBinding
 					workingDir = ".";
 			}
 
+			Runtime.LoggingService.Info (compilerName + " " + writer.ToString ());
+			
 			DoCompilation(outstr, tf, workingDir, gacRoots, ref output, ref error);
 
 			ICompilerResult result = ParseOutput(tf, output, error);
@@ -310,7 +314,7 @@ namespace CSharpBinding
 			StreamWriter outwr = new StreamWriter(output);
 			StreamWriter errwr = new StreamWriter(error);
 			string[] tokens = outstr.Split(' ');
-
+			
 			outstr = outstr.Substring(tokens[0].Length+1);
 
 			ProcessStartInfo pinfo = new ProcessStartInfo (tokens[0], "\"" + outstr + "\"");
