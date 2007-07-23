@@ -180,10 +180,10 @@ namespace MonoDevelop.Gettext.NodeBuilders
 					int count = 0;
 					foreach (Project p in project.ParentCombine.GetAllProjects ()) 
 						count++;
-					monitor.BeginTask ("Updating Translations ", count);
+					monitor.BeginTask (GettextCatalog.GetString ("Updating Translations "), count);
 					
 					foreach (Project p in project.ParentCombine.GetAllProjects ()) {
-						monitor.BeginStepTask ("Scanning "  + p.Name, 1, 1);
+						monitor.BeginStepTask (String.Format (GettextCatalog.GetString ("Scanning project {0}..."),  p.Name), 1, 1);
 						foreach (ProjectFile file in p.ProjectFiles) {
 							TranslationService.UpdateTranslation (project, file.FilePath, monitor);
 						}
