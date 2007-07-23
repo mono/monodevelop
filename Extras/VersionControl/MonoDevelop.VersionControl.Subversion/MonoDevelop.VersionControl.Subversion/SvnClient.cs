@@ -418,10 +418,10 @@ namespace MonoDevelop.VersionControl.Subversion {
 			}
 			
 			updatemonitor = monitor;
-			LibSvnClient.Rev revision;
+			IntPtr result_rev = IntPtr.Zero;
 			IntPtr localpool = newpool (pool);
 			try {
-				CheckError (svn.client_checkout (out revision, url, path, ref rev, (recurse ? 1 :0), ctx, localpool));
+				CheckError (svn.client_checkout (result_rev, url, path, ref rev, (recurse ? 1 :0), ctx, localpool));
 			} finally {
 				apr.pool_destroy (localpool);
 				updatemonitor = null;

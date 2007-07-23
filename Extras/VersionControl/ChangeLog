@@ -1,3 +1,10 @@
+2007-07-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/LibSvnClient.cs,
+	  MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:
+	  The result_rev parameter of svn_client_checkout is not a
+	  svn_opt_revision_t, but a svn_revnum_t. Might fix bug #81870.
+
 2007-07-19  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlProjectService.cs:

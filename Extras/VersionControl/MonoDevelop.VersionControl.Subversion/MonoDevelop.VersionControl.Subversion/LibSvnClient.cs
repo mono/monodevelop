@@ -94,7 +94,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 		public abstract IntPtr client_move (ref IntPtr commit_info_p, string srcPath, ref Rev rev,
 		                                    string destPath, int force, IntPtr ctx, IntPtr pool);
 		
-		public abstract IntPtr client_checkout (out Rev revision, string url, string path, ref Rev rev, 
+		public abstract IntPtr client_checkout (IntPtr result_rev, string url, string path, ref Rev rev, 
 		                                        int recurse, IntPtr ctx, IntPtr pool);
 		
 		public abstract IntPtr client_mkdir2 (ref IntPtr commit_info, IntPtr apr_array_paths, IntPtr ctx, IntPtr pool);
@@ -658,10 +658,10 @@ namespace MonoDevelop.VersionControl.Subversion {
 			return svn_client_move (ref commit_info_p, srcPath, ref rev, destPath, force, ctx, pool);
 		}
 		
-		public override IntPtr client_checkout (out Rev revision, string url, string path, ref Rev rev, 
+		public override IntPtr client_checkout (IntPtr result_rev, string url, string path, ref Rev rev, 
 		                                        int recurse, IntPtr ctx, IntPtr pool)
 		{
-			return svn_client_checkout (out revision, url, path, ref rev, recurse, ctx, pool);
+			return svn_client_checkout (result_rev, url, path, ref rev, recurse, ctx, pool);
 		}
 		
 		public override IntPtr client_mkdir2 (ref IntPtr commit_info, IntPtr apr_array_paths, IntPtr ctx, IntPtr pool)
@@ -745,7 +745,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_move (ref IntPtr commit_info_p, string srcPath, ref Rev rev,
 		                                                                string destPath, int force, IntPtr ctx, IntPtr pool);
 		
-		[DllImport(svnclientlib)] static extern IntPtr svn_client_checkout (out Rev revision, string url, string path, ref Rev rev, 
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_checkout (IntPtr result_rev, string url, string path, ref Rev rev, 
 		                                                                    int recurse, IntPtr ctx, IntPtr pool);
 		
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_mkdir2 (ref IntPtr commit_info, IntPtr apr_array_paths, IntPtr ctx, IntPtr pool);
@@ -925,10 +925,10 @@ namespace MonoDevelop.VersionControl.Subversion {
 			return svn_client_move (ref commit_info_p, srcPath, ref rev, destPath, force, ctx, pool);
 		}
 		
-		public override IntPtr client_checkout (out Rev revision, string url, string path, ref Rev rev, 
+		public override IntPtr client_checkout (IntPtr result_rev, string url, string path, ref Rev rev, 
 		                                        int recurse, IntPtr ctx, IntPtr pool)
 		{
-			return svn_client_checkout (out revision, url, path, ref rev, recurse, ctx, pool);
+			return svn_client_checkout (result_rev, url, path, ref rev, recurse, ctx, pool);
 		}
 		
 		public override IntPtr client_mkdir2 (ref IntPtr commit_info, IntPtr apr_array_paths, IntPtr ctx, IntPtr pool)
@@ -1012,7 +1012,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_move (ref IntPtr commit_info_p, string srcPath, ref Rev rev,
 		                                                                string destPath, int force, IntPtr ctx, IntPtr pool);
 		
-		[DllImport(svnclientlib)] static extern IntPtr svn_client_checkout (out Rev revision, string url, string path, ref Rev rev, 
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_checkout (IntPtr result_rev, string url, string path, ref Rev rev, 
 		                                                                    int recurse, IntPtr ctx, IntPtr pool);
 		
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_mkdir2 (ref IntPtr commit_info, IntPtr apr_array_paths, IntPtr ctx, IntPtr pool);
