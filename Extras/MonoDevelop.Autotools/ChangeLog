@@ -1,3 +1,9 @@
+2007-07-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Autotools.addin.xml, MonoDevelop.Autotools.mdp,
+	  gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs,
+	  gtk-gui/gui.stetic: Cosmetic fixes.
+
 2007-07-25  Ankit Jain  <jankit@novell.com>
 
 	* SimpleProjectMakefileHandler.cs (Deploy): 'chmod +x' exe-wrappers.

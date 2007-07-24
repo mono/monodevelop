@@ -1661,13 +1661,14 @@
       <placeholder />
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Autotools.GenerateMakefilesDialog" design-size="438 314">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Autotools.GenerateMakefilesDialog" design-size="614 337">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Generate Makefiles</property>
     <property name="WindowPosition">CenterOnParent</property>
+    <property name="Resizable">False</property>
+    <property name="AllowGrow">False</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
-    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
         <property name="MemberName" />
@@ -1681,7 +1682,7 @@
               <widget class="Gtk.Label" id="label2">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
-                <property name="LabelProp" translatable="yes">Select the kind of Makefile to generate:</property>
+                <property name="LabelProp" translatable="yes">Select the kind of Makefile you want to generate:</property>
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -1699,10 +1700,23 @@
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="Label" translatable="yes">Simple</property>
+                    <property name="Active">True</property>
                     <property name="DrawIndicator">True</property>
-                    <property name="HasLabel">True</property>
+                    <property name="HasLabel">False</property>
                     <property name="UseUnderline">True</property>
                     <property name="Group">groupKind</property>
+                    <child>
+                      <widget class="Gtk.Label" id="label4">
+                        <property name="MemberName" />
+                        <property name="WidthRequest">550</property>
+                        <property name="Xalign">0,25</property>
+                        <property name="Yalign">0,67</property>
+                        <property name="LabelProp" translatable="yes">&lt;b&gt;Simple Makefile&lt;/b&gt;
+Generates set of Makefiles with the most common targets, and a configuration script that does a basic check of package dependencies.</property>
+                        <property name="UseMarkup">True</property>
+                        <property name="Wrap">True</property>
+                      </widget>
+                    </child>
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -1717,9 +1731,19 @@
                     <property name="CanFocus">True</property>
                     <property name="Label" translatable="yes">Autotools based</property>
                     <property name="DrawIndicator">True</property>
-                    <property name="HasLabel">True</property>
+                    <property name="HasLabel">False</property>
                     <property name="UseUnderline">True</property>
                     <property name="Group">groupKind</property>
+                    <child>
+                      <widget class="Gtk.Label" id="label5">
+                        <property name="MemberName" />
+                        <property name="WidthRequest">550</property>
+                        <property name="LabelProp" translatable="yes">&lt;b&gt;Autotools based Makefile&lt;/b&gt;
+Generates a Makefile structure based on Autotools, with the standard targets and configuration scripts.</property>
+                        <property name="UseMarkup">True</property>
+                        <property name="Wrap">True</property>
+                      </widget>
+                    </child>
                   </widget>
                   <packing>
                     <property name="Position">1</property>
@@ -1750,24 +1774,13 @@
             <child>
               <widget class="Gtk.Label" id="label3">
                 <property name="MemberName" />
-                <property name="WidthRequest">400</property>
+                <property name="WidthRequest">580</property>
+                <property name="Xalign">0</property>
                 <property name="LabelProp" translatable="yes">Select the configuration that the Makefile will build by default. Other configurations can be selected via the '--config' option of the generated configure script.</property>
                 <property name="Wrap">True</property>
               </widget>
               <packing>
                 <property name="Position">3</property>
-                <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="Gtk.HSeparator" id="hseparator2">
-                <property name="MemberName" />
-              </widget>
-              <packing>
-                <property name="PackType">End</property>
-                <property name="Position">4</property>
                 <property name="AutoSize">True</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>
@@ -1780,7 +1793,7 @@
                 <child>
                   <widget class="Gtk.Label" id="label1">
                     <property name="MemberName" />
-                    <property name="LabelProp" translatable="yes">Default Configuration:</property>
+                    <property name="LabelProp" translatable="yes">Default configuration:</property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -1808,7 +1821,7 @@
               </widget>
               <packing>
                 <property name="PackType">End</property>
-                <property name="Position">5</property>
+                <property name="Position">4</property>
                 <property name="AutoSize">True</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>
@@ -1827,7 +1840,7 @@
     <child internal-child="ActionArea">
       <widget class="Gtk.HButtonBox" id="dialog1_ActionArea">
         <property name="MemberName" />
-        <property name="Spacing">6</property>
+        <property name="Spacing">10</property>
         <property name="BorderWidth">5</property>
         <property name="Size">2</property>
         <property name="LayoutStyle">End</property>

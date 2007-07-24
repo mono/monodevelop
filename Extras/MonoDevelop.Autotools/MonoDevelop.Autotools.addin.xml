@@ -42,7 +42,7 @@
 	<Extension path = "/SharpDevelop/Commands">
 		<Category _name = "Autotools" id = "Autotools">
 		<Command id = "MonoDevelop.Autotools.Commands.GenerateFiles"
-			_label = "Generate Makefiles"
+			_label = "Generate Makefiles..."
 			description="Generate Makefiles for a solution"/>
 		<Command id = "MonoDevelop.Autotools.Commands.SynchWithMakefile"
 			type="check"
@@ -54,6 +54,10 @@
 		<CommandItem id = "MonoDevelop.Autotools.Commands.GenerateFiles" insertafter="ExportListSeparator"/>
 	</Extension>
 
+	<Extension path = "/SharpDevelop/Workbench/MainMenu/Run">
+		<CommandItem id = "MonoDevelop.Autotools.Commands.GenerateFiles" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"/>
+	</Extension>
+	
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectFileNode/Include">
 		<CommandItem id = "MonoDevelop.Autotools.Commands.SynchWithMakefile" insertafter="Include"/>
 	</Extension>
