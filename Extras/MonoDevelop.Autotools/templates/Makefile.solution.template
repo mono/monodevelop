@@ -1,0 +1,63 @@
+all: all-recursive
+
+include config.make
+include rules.make
+
+%%MAKEFILE_SOLUTION_TOP%%
+
+all-recursive: config.make
+	@for dir in $(SUBDIRS); do \
+		case $$dir in \
+		.) make all-local ;; \
+		*) (cd $$dir && make) ;;\
+		esac \
+	done
+
+config.make:
+	echo "You must run configure first"
+	exit 1
+
+clean: clean-recursive
+
+clean-recursive:
+	-@for dir in $(SUBDIRS); do \
+		case $$dir in \
+		.) make clean-local ;; \
+		*) (cd $$dir && make clean) ;;\
+		esac \
+	done
+
+install: install-recursive
+
+install-recursive:
+	@for dir in $(SUBDIRS); do \
+		case $$dir in \
+		.) make install-local ;; \
+		*) (cd $$dir && make install) ;;\
+		esac \
+        done
+
+dist: config.make
+	rm -rf $(PACKAGE)-$(VERSION)
+	mkdir $(PACKAGE)-$(VERSION)
+	for dir in $(SUBDIRS); do \
+		mkdir $(PACKAGE)-$(VERSION)/$$dir || true; \
+		case $$dir in \
+		.) make distlocal distdir=$(PACKAGE)-$(VERSION);; \
+		*) (cd $$dir; make distlocal distdir=../$(PACKAGE)-$(VERSION)/$$dir); \
+		esac \
+	done
+	(make distlocal distdir=$(PACKAGE)-$(VERSION))
+	make
+	tar czvf $(PACKAGE)-$(VERSION).tar.gz $(PACKAGE)-$(VERSION)
+	rm -rf $(PACKAGE)-$(VERSION)
+	@echo "=========================================="
+	@echo "$(PACKAGE)-$(VERSION) has been packaged > $(PACKAGE)-$(VERSION).tar.gz"
+	@echo "=========================================="
+
+distcheck: dist
+	(mkdir test; cd test;  \
+	 tar xzvf ../$(PACKAGE)-$(VERSION).tar.gz; cd $(PACKAGE)-$(VERSION); \
+	 ./configure --prefix=$$(cd `pwd`/..; pwd); \
+	 make && make install && make dist);
+	rm -rf test

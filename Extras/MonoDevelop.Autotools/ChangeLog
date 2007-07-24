@@ -1,5 +1,13 @@
 2007-07-24  Ankit Jain  <jankit@novell.com>
 
+	* templates/Makefile.noauto.project.template:
+	* templates/Makefile.solution.template:
+	* templates/configure.template:
+	* templates/rules.make:
+	Missed these too :(
+
+2007-07-24  Ankit Jain  <jankit@novell.com>
+
 	* GenerateMakefilesDialog.cs:
 	* gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:
 	Oops, forgot to commit!

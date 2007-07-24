@@ -1,0 +1,35 @@
+# %%WARNING%%
+
+%%CONFIG_VARS%%
+
+FILES = %%FILES%%
+
+DATA_FILES = %%DATA_FILES%%
+
+RESOURCES = %%RESOURCES%%
+
+EXTRAS = %%EXTRAS%%
+
+REFERENCES = %%REFERENCES%%
+
+DLL_REFERENCES = %%DLL_REFERENCES%%
+
+%%COPY_DEPLOY_FILES_VARS%%
+
+CLEANFILES += %%CLEANFILES%%
+
+#Targets
+all-local: $(ASSEMBLY) %%DEPLOY_FILE_VARS%% $(top_srcdir)/config.make
+
+%%COPY_DEPLOY_FILES_TARGETS%%
+
+%%TEMPLATE_FILES_TARGETS%%
+
+$(build_resx_resources) : %.resources: %.resx
+	%%RESGEN%% '$<' '$@'
+
+$(ASSEMBLY) $(ASSEMBLY).mdb: $(build_sources) $(build_resources) $(build_datafiles) $(DLL_REFERENCES) $(PROJECT_REFERENCES)
+	mkdir -p $(dir $(ASSEMBLY))
+	$(ASSEMBLY_COMPILER_COMMAND) $(ASSEMBLY_COMPILER_FLAGS) -out:$@ -target:$(COMPILE_TARGET) $(build_sources_embed) $(build_resources_embed) $(build_references_ref)
+
+%%INSTALL_TARGET%%
