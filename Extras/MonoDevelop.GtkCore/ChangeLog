@@ -1,3 +1,8 @@
+2007-07-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs: Fix nullref
+	  when gtk support is not enabled. Patch by Chris Howie.
+
 2007-07-20  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs:

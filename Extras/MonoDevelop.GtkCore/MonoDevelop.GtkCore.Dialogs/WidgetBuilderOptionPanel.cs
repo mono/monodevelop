@@ -115,7 +115,10 @@ namespace MonoDevelop.GtkCore.Dialogs
 				comboVersions.RemoveText (0);
 				foreach (string v in GtkCoreService.SupportedGtkVersions)
 					comboVersions.AppendText (v);
-				comboVersions.Active = Array.IndexOf (GtkCoreService.SupportedGtkVersions, designInfo.TargetGtkVersion);
+
+				comboVersions.Active = (designInfo != null)
+					? Array.IndexOf (GtkCoreService.SupportedGtkVersions, designInfo.TargetGtkVersion)
+					: 0;
 				
 				checkWidgetLib.Clicked += delegate {
 					tree.Sensitive = checkWidgetLib.Active;
