@@ -1,3 +1,7 @@
+2007-07-24  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* configure.in, Extras/Makefile.am: Added MonoDevelop.Gettext.
+
 2007-06-29 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* configure.in: Added sv to ALL_LINGUAS.

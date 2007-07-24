@@ -490,6 +490,7 @@ Extras/MonoDevelop.WebReferences/Makefile
 Extras/Deployment/Makefile
 Extras/Deployment/MonoDevelop.Deployment/Makefile
 Extras/Deployment/MonoDevelop.Deployment.Linux/Makefile
+Extras/MonoDevelop.Gettext/Makefile
 Makefile
 monodevelop
 mdtool
