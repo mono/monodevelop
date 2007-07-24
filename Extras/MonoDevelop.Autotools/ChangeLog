@@ -1,3 +1,11 @@
+2007-07-25  Ankit Jain  <jankit@novell.com>
+
+	* GenerateMakefilesDialog.cs:
+	* gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:
+	* gtk-gui/gui.stetic:
+	Use radio buttons instead of a checkbox.
+	* templates/configure.template: Improve message.
+
 2007-07-24  Ankit Jain  <jankit@novell.com>
 
 	* templates/Makefile.noauto.project.template:

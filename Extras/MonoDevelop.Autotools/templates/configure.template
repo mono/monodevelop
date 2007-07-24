@@ -43,7 +43,7 @@ check_required_packages ()
 			echo " ERROR: Package named '$name' >= $version not found.\nTry adjusting your PKG_CONFIG_PATH environment variable." | tee -a config.log
 			return 1
 		fi
-		echo " found it."
+		echo " found."
 	done
 	return 0
 }

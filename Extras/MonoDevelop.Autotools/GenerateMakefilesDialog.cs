@@ -23,7 +23,7 @@ namespace MonoDevelop.Autotools
 		}
 
 		public bool GenerateAutotools {
-			get { return cbGenerateAutotools.Active; }
+			get { return rbAutotools.Active; }
 		}
 
 		public string DefaultConfiguration {

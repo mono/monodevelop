@@ -15,7 +15,19 @@ namespace MonoDevelop.Autotools {
         
         private Gtk.VBox vbox2;
         
-        private Gtk.CheckButton cbGenerateAutotools;
+        private Gtk.Label label2;
+        
+        private Gtk.VBox vbox3;
+        
+        private Gtk.RadioButton rbSimple;
+        
+        private Gtk.RadioButton rbAutotools;
+        
+        private Gtk.HSeparator hseparator1;
+        
+        private Gtk.Label label3;
+        
+        private Gtk.HSeparator hseparator2;
         
         private Gtk.HBox hbox1;
         
@@ -44,18 +56,76 @@ namespace MonoDevelop.Autotools {
             this.vbox2.Spacing = 12;
             this.vbox2.BorderWidth = ((uint)(12));
             // Container child vbox2.Gtk.Box+BoxChild
-            this.cbGenerateAutotools = new Gtk.CheckButton();
-            this.cbGenerateAutotools.CanFocus = true;
-            this.cbGenerateAutotools.Name = "cbGenerateAutotools";
-            this.cbGenerateAutotools.Label = Mono.Unix.Catalog.GetString("Generate autotools files");
-            this.cbGenerateAutotools.Active = true;
-            this.cbGenerateAutotools.DrawIndicator = true;
-            this.cbGenerateAutotools.UseUnderline = true;
-            this.vbox2.Add(this.cbGenerateAutotools);
-            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox2[this.cbGenerateAutotools]));
+            this.label2 = new Gtk.Label();
+            this.label2.Name = "label2";
+            this.label2.Xalign = 0F;
+            this.label2.LabelProp = Mono.Unix.Catalog.GetString("Select the kind of Makefile to generate:");
+            this.vbox2.Add(this.label2);
+            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox2[this.label2]));
             w2.Position = 0;
             w2.Expand = false;
             w2.Fill = false;
+            // Container child vbox2.Gtk.Box+BoxChild
+            this.vbox3 = new Gtk.VBox();
+            this.vbox3.Name = "vbox3";
+            this.vbox3.Spacing = 6;
+            // Container child vbox3.Gtk.Box+BoxChild
+            this.rbSimple = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("Simple"));
+            this.rbSimple.CanFocus = true;
+            this.rbSimple.Name = "rbSimple";
+            this.rbSimple.DrawIndicator = true;
+            this.rbSimple.UseUnderline = true;
+            this.rbSimple.Group = new GLib.SList(System.IntPtr.Zero);
+            this.vbox3.Add(this.rbSimple);
+            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox3[this.rbSimple]));
+            w3.Position = 0;
+            w3.Expand = false;
+            w3.Fill = false;
+            // Container child vbox3.Gtk.Box+BoxChild
+            this.rbAutotools = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("Autotools based"));
+            this.rbAutotools.CanFocus = true;
+            this.rbAutotools.Name = "rbAutotools";
+            this.rbAutotools.DrawIndicator = true;
+            this.rbAutotools.UseUnderline = true;
+            this.rbAutotools.Group = this.rbSimple.Group;
+            this.vbox3.Add(this.rbAutotools);
+            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.vbox3[this.rbAutotools]));
+            w4.Position = 1;
+            w4.Expand = false;
+            w4.Fill = false;
+            this.vbox2.Add(this.vbox3);
+            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox2[this.vbox3]));
+            w5.Position = 1;
+            w5.Expand = false;
+            w5.Fill = false;
+            // Container child vbox2.Gtk.Box+BoxChild
+            this.hseparator1 = new Gtk.HSeparator();
+            this.hseparator1.Name = "hseparator1";
+            this.vbox2.Add(this.hseparator1);
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox2[this.hseparator1]));
+            w6.Position = 2;
+            w6.Expand = false;
+            w6.Fill = false;
+            // Container child vbox2.Gtk.Box+BoxChild
+            this.label3 = new Gtk.Label();
+            this.label3.WidthRequest = 400;
+            this.label3.Name = "label3";
+            this.label3.LabelProp = Mono.Unix.Catalog.GetString("Select the configuration that the Makefile will build by default. Other configurations can be selected via the '--config' option of the generated configure script.");
+            this.label3.Wrap = true;
+            this.vbox2.Add(this.label3);
+            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox2[this.label3]));
+            w7.Position = 3;
+            w7.Expand = false;
+            w7.Fill = false;
+            // Container child vbox2.Gtk.Box+BoxChild
+            this.hseparator2 = new Gtk.HSeparator();
+            this.hseparator2.Name = "hseparator2";
+            this.vbox2.Add(this.hseparator2);
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox2[this.hseparator2]));
+            w8.PackType = ((Gtk.PackType)(1));
+            w8.Position = 4;
+            w8.Expand = false;
+            w8.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.hbox1 = new Gtk.HBox();
             this.hbox1.Name = "hbox1";
@@ -65,32 +135,35 @@ namespace MonoDevelop.Autotools {
             this.label1.Name = "label1";
             this.label1.LabelProp = Mono.Unix.Catalog.GetString("Default Configuration:");
             this.hbox1.Add(this.label1);
-            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.hbox1[this.label1]));
-            w3.Position = 0;
-            w3.Expand = false;
-            w3.Fill = false;
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.hbox1[this.label1]));
+            w9.Position = 0;
+            w9.Expand = false;
+            w9.Fill = false;
             // Container child hbox1.Gtk.Box+BoxChild
             this.comboConfigs = Gtk.ComboBox.NewText();
             this.comboConfigs.Name = "comboConfigs";
             this.hbox1.Add(this.comboConfigs);
-            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.hbox1[this.comboConfigs]));
-            w4.Position = 1;
-            w4.Expand = false;
-            w4.Fill = false;
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.hbox1[this.comboConfigs]));
+            w10.Position = 1;
+            w10.Expand = false;
+            w10.Fill = false;
             this.vbox2.Add(this.hbox1);
-            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
-            w5.Position = 1;
-            w5.Expand = false;
-            w5.Fill = false;
+            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+            w11.PackType = ((Gtk.PackType)(1));
+            w11.Position = 5;
+            w11.Expand = false;
+            w11.Fill = false;
             w1.Add(this.vbox2);
-            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(w1[this.vbox2]));
-            w6.Position = 0;
+            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(w1[this.vbox2]));
+            w12.Position = 0;
+            w12.Expand = false;
+            w12.Fill = false;
             // Internal child MonoDevelop.Autotools.GenerateMakefilesDialog.ActionArea
-            Gtk.HButtonBox w7 = this.ActionArea;
-            w7.Name = "dialog1_ActionArea";
-            w7.Spacing = 6;
-            w7.BorderWidth = ((uint)(5));
-            w7.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
+            Gtk.HButtonBox w13 = this.ActionArea;
+            w13.Name = "dialog1_ActionArea";
+            w13.Spacing = 6;
+            w13.BorderWidth = ((uint)(5));
+            w13.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonCancel = new Gtk.Button();
             this.buttonCancel.CanDefault = true;
@@ -100,9 +173,9 @@ namespace MonoDevelop.Autotools {
             this.buttonCancel.UseUnderline = true;
             this.buttonCancel.Label = "gtk-cancel";
             this.AddActionWidget(this.buttonCancel, -6);
-            Gtk.ButtonBox.ButtonBoxChild w8 = ((Gtk.ButtonBox.ButtonBoxChild)(w7[this.buttonCancel]));
-            w8.Expand = false;
-            w8.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w14 = ((Gtk.ButtonBox.ButtonBoxChild)(w13[this.buttonCancel]));
+            w14.Expand = false;
+            w14.Fill = false;
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonOk = new Gtk.Button();
             this.buttonOk.CanDefault = true;
@@ -112,15 +185,15 @@ namespace MonoDevelop.Autotools {
             this.buttonOk.UseUnderline = true;
             this.buttonOk.Label = "gtk-ok";
             this.AddActionWidget(this.buttonOk, -5);
-            Gtk.ButtonBox.ButtonBoxChild w9 = ((Gtk.ButtonBox.ButtonBoxChild)(w7[this.buttonOk]));
-            w9.Position = 1;
-            w9.Expand = false;
-            w9.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w15 = ((Gtk.ButtonBox.ButtonBoxChild)(w13[this.buttonOk]));
+            w15.Position = 1;
+            w15.Expand = false;
+            w15.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 400;
-            this.DefaultHeight = 190;
+            this.DefaultWidth = 438;
+            this.DefaultHeight = 314;
             this.Show();
         }
     }
