@@ -1,3 +1,11 @@
+2007-07-24  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: Workaround for bug in
+	  the compiler. Looks like gmcs gets confused when using anon
+	  delegates in a partial class, and it will fail unless classes are
+	  referenced using the full name.
+	* MonoDevelop.Gettext.mdp, Makefile.am: Added makefile.
+
 2007-07-23  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Gettext.Editor/CatalogEditor.cs,

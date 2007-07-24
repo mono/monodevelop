@@ -112,15 +112,15 @@ namespace MonoDevelop.Gettext
 			treeviewFoundIn.GetColumn (1).FixedWidth = 100;
 			
 			treeviewFoundIn.RowActivated += delegate (object sender, RowActivatedArgs e) {
-				TreeIter iter;
+				Gtk.TreeIter iter;
 				foundInStore.GetIter (out iter, e.Path); 				
 				string line = foundInStore.GetValue (iter, (int)FoundInColumns.Line) as string;
 				string file = foundInStore.GetValue (iter, (int)FoundInColumns.FullFileName) as string;
 				int lineNr = 1;
 				try {
-					lineNr = 1 + Int32.Parse (line);
-				} catch (Exception) {}
-				IdeApp.Workbench.OpenDocument (file, lineNr, 1, true);
+					lineNr = 1 + int.Parse (line);
+				} catch {}
+				MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (file, lineNr, 1, true);
 			};
 			
 			this.textviewTranslated.Buffer.Changed += delegate {
@@ -142,12 +142,12 @@ namespace MonoDevelop.Gettext
 				if (this.isUpdating)
 					return;
 				if (this.currentEntry != null) {
-					string[] lines = textviewComments.Buffer.Text.Split (new string[] { Environment.NewLine }, StringSplitOptions.None);
+					string[] lines = textviewComments.Buffer.Text.Split (new string[] { System.Environment.NewLine }, System.StringSplitOptions.None);
 					for (int i = 0; i < lines.Length; i++) {
 						if (!lines[i].StartsWith ("#"))
 							lines[i] = "# " + lines[i];
 					}
-					this.currentEntry.Comment = String.Join (Environment.NewLine, lines);
+					this.currentEntry.Comment = string.Join (System.Environment.NewLine, lines);
 				}
 				UpdateProgressBar ();
 			};
