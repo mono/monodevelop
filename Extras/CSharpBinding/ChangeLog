@@ -1,3 +1,13 @@
+2007-07-24  Jeffrey Stedfast  <fejj@novell.com>
+
+	Part of the fix for bug #82114.
+
+	* Parser/CodeGenerator.cs: Override a few more Visit() methods so
+	that we pick up class references in CastExpressions,
+	VariableDeclarations and ObjectCreateExpressions.
+	(AddUniqueReference): New method to add only unique references
+	to the collection.
+
 2007-07-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CSharpBindingCompilerManager.cs: Write the compiler command used to
