@@ -131,14 +131,16 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			col.PackStart (pixbufRenderer, false);
 			col.SetAttributes (pixbufRenderer,
 			                      "pixbuf", ToolboxStore.Columns.Icon,
-			                      "visible", ToolboxStore.Columns.IconVisible,
-			                      "cell-background-gdk", ToolboxStore.Columns.BackgroundColour);
+			                      "visible", ToolboxStore.Columns.IconVisible
+//			                   , "cell-background-gdk", ToolboxStore.Columns.BackgroundColour
+			                   );
 			
 			col.PackEnd (textRenderer, true);
 			col.SetAttributes (textRenderer,
 			                      "text", ToolboxStore.Columns.Label,
-			                      "weight", ToolboxStore.Columns.FontWeight,
-			                      "cell-background-gdk", ToolboxStore.Columns.BackgroundColour);
+			                      "weight", ToolboxStore.Columns.FontWeight
+//			                   ,  "cell-background-gdk", ToolboxStore.Columns.BackgroundColour
+			                   );
 			
 			nodeView.AppendColumn (col);
 			

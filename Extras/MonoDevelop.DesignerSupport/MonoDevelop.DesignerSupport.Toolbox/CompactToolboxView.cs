@@ -369,9 +369,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				layout.Wrap = Pango.WrapMode.Word;
 				layout.Alignment = Pango.Alignment.Left;
 				layout.FontDescription = Pango.FontDescription.FromString ("Ahafoni CLM Bold 10");
-				layout.SetMarkup ("<span color=\"black\">" + category.Name + "</span>");
+				layout.SetMarkup (category.Name);
 				xpos = spacing;
-				win.DrawLayout (Style.BaseGC (StateType.Normal), xpos, ypos, layout);
+				win.DrawLayout (Style.ForegroundGC (StateType.Normal), xpos, ypos, layout);
 			}, 
 			delegate (ToolboxObject item) {
 				if (item == selectedItem) {

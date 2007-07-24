@@ -1,3 +1,9 @@
+2007-07-24  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs,
+	  MonoDevelop.DesignerSupport.Toolbox/CompactToolboxView.cs: Fixed
+	  Bug 82104:Toolbox White Using Dark Theme.
+
 2007-07-19  Ben Motmans <ben.motmans@gmail.com>
 
 	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs: overwrite the
