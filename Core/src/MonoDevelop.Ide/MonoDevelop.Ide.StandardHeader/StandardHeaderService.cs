@@ -44,6 +44,7 @@ namespace MonoDevelop.Ide.StandardHeaders
 		
 		static string header;
 		static bool   generateComments = true;
+		static bool   emitStandardHeader = true;
 		
 		static List<KeyValuePair<string, string>> headerTemplates = new List<KeyValuePair<string, string>> ();
 		static List<KeyValuePair<string, string>> customTemplates = new List<KeyValuePair<string, string>> ();
@@ -82,6 +83,19 @@ namespace MonoDevelop.Ide.StandardHeaders
 			}
 		}
 		
+		public static bool EmitStandardHeader {
+			get {
+				return emitStandardHeader;
+			}
+			set {
+				if (emitStandardHeader != value) {
+					emitStandardHeader = value;
+				}
+			}
+		}
+		
+		
+		
 		static string ConfigLocation {
 			get {
 				PropertyService propertyService = (PropertyService) ServiceManager.GetService (typeof (PropertyService));
@@ -100,7 +114,7 @@ namespace MonoDevelop.Ide.StandardHeaders
 		
 		public static string GetHeader (string language)
 		{
-			if (Header == null || GetComment (language) == null) {
+			if (String.IsNullOrEmpty (Header) || GetComment (language) == null) {
 				return "";
 			}
 			StringBuilder result = new StringBuilder ();
@@ -141,16 +155,20 @@ namespace MonoDevelop.Ide.StandardHeaders
 		
 		static StandardHeaderService ()
 		{
-			LoadHeaderTemplates ();
-			
-			if (File.Exists (ConfigLocation)) {
-				if (Load (ConfigLocation))
-					return;
+			try {
+				LoadHeaderTemplates ();
+				
+				if (File.Exists (ConfigLocation)) {
+					if (Load (ConfigLocation))
+						return;
+				}
+				PropertyService propertyService = (PropertyService) ServiceManager.GetService (typeof (PropertyService));
+				string file = Path.Combine (Path.Combine (propertyService.DataDirectory, "options"), templateFileName);
+				if (File.Exists (file))
+					Load (file);
+			} catch (Exception ex) {
+				Runtime.LoggingService.Error (ex);
 			}
-			PropertyService propertyService = (PropertyService) ServiceManager.GetService (typeof (PropertyService));
-			string file = Path.Combine (Path.Combine (propertyService.DataDirectory, "options"), templateFileName);
-			if (File.Exists (file))
-				Load (file);
 		}
 		
 		public static void RemoveTemplate (string name)
@@ -181,6 +199,7 @@ namespace MonoDevelop.Ide.StandardHeaders
 		const string NameAttribute    = "_name";
 		const string VersionAttribute = "version";
 		const string GenerateCommentsAttribute = "generateComments";
+		const string EmitStandardHeaderAttribute = "emitStandardHeader";
 		
 		static bool Load (string fileName)
 		{
@@ -194,6 +213,10 @@ namespace MonoDevelop.Ide.StandardHeaders
 						case Node:
 							if (!String.IsNullOrEmpty (reader.GetAttribute (GenerateCommentsAttribute)))
 								generateComments = Boolean.Parse (reader.GetAttribute (GenerateCommentsAttribute));
+							
+							if (!String.IsNullOrEmpty (reader.GetAttribute (EmitStandardHeaderAttribute)))
+								emitStandardHeader = Boolean.Parse (reader.GetAttribute (EmitStandardHeaderAttribute));
+							
 							string fileVersion = reader.GetAttribute (VersionAttribute);
 							if (fileVersion != version) 
 								return false;
@@ -231,6 +254,8 @@ namespace MonoDevelop.Ide.StandardHeaders
 				writer.WriteStartElement (Node);
 				writer.WriteAttributeString (VersionAttribute, version);
 				writer.WriteAttributeString (GenerateCommentsAttribute, generateComments.ToString ());
+				writer.WriteAttributeString (EmitStandardHeaderAttribute, emitStandardHeader.ToString ());
+				
 				
 				writer.WriteStartElement (HeaderNode);
 				writer.WriteString (header);

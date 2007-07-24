@@ -50,6 +50,7 @@ namespace MonoDevelop.Ide.StandardHeaders
 		{
 			this.headerTextview.Buffer.Text         = StandardHeaderService.Header;
 			this.generateCommentsCheckbutton.Active = StandardHeaderService.GenerateComments;
+			this.emitstandardHeaderCheckbutton.Active = StandardHeaderService.EmitStandardHeader;
 			
 			foreach (KeyValuePair<string, string> header in StandardHeaderService.CustomTemplates) {
 				templateCombobox.AppendText (header.Key);
@@ -114,6 +115,7 @@ namespace MonoDevelop.Ide.StandardHeaders
 		{
 			StandardHeaderService.Header           = headerTextview.Buffer.Text;
 			StandardHeaderService.GenerateComments = generateCommentsCheckbutton.Active;
+			StandardHeaderService.EmitStandardHeader = emitstandardHeaderCheckbutton.Active;
 			StandardHeaderService.CommitChanges ();
 			return true;
 		}

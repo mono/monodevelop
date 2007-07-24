@@ -167,17 +167,19 @@ namespace MonoDevelop.Ide.Templates
 			content = sps.Parse (content, HashtableToStringArray (tags));
 			
 			MemoryStream ms = new MemoryStream ();
-			StringParserService stringParserService = (StringParserService) ServiceManager.GetService (typeof (StringParserService));
-			string header = stringParserService.Parse(StandardHeaderService.GetHeader(language), new string[,] { 
-				{ "FileName", Path.GetFileName (fileName) }, 
-				{ "FileNameWithoutExtension", Path.GetFileNameWithoutExtension (fileName) }, 
-				{ "Directory", Path.GetDirectoryName (fileName) }, 
-				{ "FullFileName", fileName },
-			
-			} );
-			
-			byte[] data = System.Text.Encoding.UTF8.GetBytes (header);
-			ms.Write (data, 0, data.Length);
+			byte[] data;
+			if (StandardHeaderService.EmitStandardHeader) { 
+				StringParserService stringParserService = (StringParserService) ServiceManager.GetService (typeof (StringParserService));
+				string header = stringParserService.Parse (StandardHeaderService.GetHeader(language), new string[,] { 
+					{ "FileName", Path.GetFileName (fileName) }, 
+					{ "FileNameWithoutExtension", Path.GetFileNameWithoutExtension (fileName) }, 
+					{ "Directory", Path.GetDirectoryName (fileName) }, 
+					{ "FullFileName", fileName },
+				
+				});
+				data = System.Text.Encoding.UTF8.GetBytes (header);
+				ms.Write (data, 0, data.Length);
+			}
 			
 			data = System.Text.Encoding.UTF8.GetBytes (content);
 			ms.Write (data, 0, data.Length);

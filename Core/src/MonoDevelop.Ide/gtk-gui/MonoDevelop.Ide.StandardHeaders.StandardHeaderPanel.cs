@@ -23,9 +23,13 @@ namespace MonoDevelop.Ide.StandardHeaders {
         
         private Gtk.TextView headerTextview;
         
+        private Gtk.HBox hbox1;
+        
         private Gtk.CheckButton generateCommentsCheckbutton;
         
-        private Gtk.HBox hbox1;
+        private Gtk.CheckButton emitstandardHeaderCheckbutton;
+        
+        private Gtk.HBox hbox2;
         
         private Gtk.Label label1;
         
@@ -35,7 +39,7 @@ namespace MonoDevelop.Ide.StandardHeaders {
         
         private Gtk.Button addButton;
         
-        private Gtk.Label GtkLabel3;
+        private Gtk.Label GtkLabel4;
         
         protected virtual void Build() {
             Stetic.Gui.Initialize();
@@ -71,75 +75,92 @@ namespace MonoDevelop.Ide.StandardHeaders {
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox2[this.scrolledwindow1]));
             w2.Position = 0;
             // Container child vbox2.Gtk.Box+BoxChild
+            this.hbox1 = new Gtk.HBox();
+            this.hbox1.Name = "hbox1";
+            this.hbox1.Spacing = 6;
+            // Container child hbox1.Gtk.Box+BoxChild
             this.generateCommentsCheckbutton = new Gtk.CheckButton();
             this.generateCommentsCheckbutton.CanFocus = true;
             this.generateCommentsCheckbutton.Name = "generateCommentsCheckbutton";
             this.generateCommentsCheckbutton.Label = Mono.Unix.Catalog.GetString("Generate Comments");
             this.generateCommentsCheckbutton.DrawIndicator = true;
             this.generateCommentsCheckbutton.UseUnderline = true;
-            this.vbox2.Add(this.generateCommentsCheckbutton);
-            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox2[this.generateCommentsCheckbutton]));
-            w3.Position = 1;
-            w3.Expand = false;
-            w3.Fill = false;
-            // Container child vbox2.Gtk.Box+BoxChild
-            this.hbox1 = new Gtk.HBox();
-            this.hbox1.Name = "hbox1";
-            this.hbox1.Spacing = 6;
+            this.hbox1.Add(this.generateCommentsCheckbutton);
+            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.hbox1[this.generateCommentsCheckbutton]));
+            w3.Position = 0;
             // Container child hbox1.Gtk.Box+BoxChild
+            this.emitstandardHeaderCheckbutton = new Gtk.CheckButton();
+            this.emitstandardHeaderCheckbutton.CanFocus = true;
+            this.emitstandardHeaderCheckbutton.Name = "emitstandardHeaderCheckbutton";
+            this.emitstandardHeaderCheckbutton.Label = Mono.Unix.Catalog.GetString("Emit Standard Header");
+            this.emitstandardHeaderCheckbutton.DrawIndicator = true;
+            this.emitstandardHeaderCheckbutton.UseUnderline = true;
+            this.hbox1.Add(this.emitstandardHeaderCheckbutton);
+            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.hbox1[this.emitstandardHeaderCheckbutton]));
+            w4.Position = 1;
+            this.vbox2.Add(this.hbox1);
+            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+            w5.Position = 1;
+            w5.Expand = false;
+            w5.Fill = false;
+            // Container child vbox2.Gtk.Box+BoxChild
+            this.hbox2 = new Gtk.HBox();
+            this.hbox2.Name = "hbox2";
+            this.hbox2.Spacing = 6;
+            // Container child hbox2.Gtk.Box+BoxChild
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
             this.label1.LabelProp = Mono.Unix.Catalog.GetString("Select Template:");
-            this.hbox1.Add(this.label1);
-            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.hbox1[this.label1]));
-            w4.Position = 0;
-            w4.Expand = false;
-            w4.Fill = false;
-            // Container child hbox1.Gtk.Box+BoxChild
+            this.hbox2.Add(this.label1);
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.hbox2[this.label1]));
+            w6.Position = 0;
+            w6.Expand = false;
+            w6.Fill = false;
+            // Container child hbox2.Gtk.Box+BoxChild
             this.templateCombobox = Gtk.ComboBox.NewText();
             this.templateCombobox.Name = "templateCombobox";
-            this.hbox1.Add(this.templateCombobox);
-            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.hbox1[this.templateCombobox]));
-            w5.Position = 1;
-            // Container child hbox1.Gtk.Box+BoxChild
+            this.hbox2.Add(this.templateCombobox);
+            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.hbox2[this.templateCombobox]));
+            w7.Position = 1;
+            // Container child hbox2.Gtk.Box+BoxChild
             this.removeButton = new Gtk.Button();
             this.removeButton.CanFocus = true;
             this.removeButton.Name = "removeButton";
             this.removeButton.UseStock = true;
             this.removeButton.UseUnderline = true;
             this.removeButton.Label = "gtk-remove";
-            this.hbox1.Add(this.removeButton);
-            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.hbox1[this.removeButton]));
-            w6.PackType = ((Gtk.PackType)(1));
-            w6.Position = 2;
-            w6.Expand = false;
-            w6.Fill = false;
-            // Container child hbox1.Gtk.Box+BoxChild
+            this.hbox2.Add(this.removeButton);
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.hbox2[this.removeButton]));
+            w8.PackType = ((Gtk.PackType)(1));
+            w8.Position = 2;
+            w8.Expand = false;
+            w8.Fill = false;
+            // Container child hbox2.Gtk.Box+BoxChild
             this.addButton = new Gtk.Button();
             this.addButton.CanFocus = true;
             this.addButton.Name = "addButton";
             this.addButton.UseStock = true;
             this.addButton.UseUnderline = true;
             this.addButton.Label = "gtk-add";
-            this.hbox1.Add(this.addButton);
-            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.hbox1[this.addButton]));
-            w7.PackType = ((Gtk.PackType)(1));
-            w7.Position = 3;
-            w7.Expand = false;
-            w7.Fill = false;
-            this.vbox2.Add(this.hbox1);
-            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
-            w8.PackType = ((Gtk.PackType)(1));
-            w8.Position = 2;
-            w8.Expand = false;
-            w8.Fill = false;
+            this.hbox2.Add(this.addButton);
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.hbox2[this.addButton]));
+            w9.PackType = ((Gtk.PackType)(1));
+            w9.Position = 3;
+            w9.Expand = false;
+            w9.Fill = false;
+            this.vbox2.Add(this.hbox2);
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox2]));
+            w10.PackType = ((Gtk.PackType)(1));
+            w10.Position = 2;
+            w10.Expand = false;
+            w10.Fill = false;
             this.GtkAlignment.Add(this.vbox2);
             this.frame1.Add(this.GtkAlignment);
-            this.GtkLabel3 = new Gtk.Label();
-            this.GtkLabel3.Name = "GtkLabel3";
-            this.GtkLabel3.LabelProp = Mono.Unix.Catalog.GetString("<b>Standard Header</b>");
-            this.GtkLabel3.UseMarkup = true;
-            this.frame1.LabelWidget = this.GtkLabel3;
+            this.GtkLabel4 = new Gtk.Label();
+            this.GtkLabel4.Name = "GtkLabel4";
+            this.GtkLabel4.LabelProp = Mono.Unix.Catalog.GetString("<b>Standard Header</b>");
+            this.GtkLabel4.UseMarkup = true;
+            this.frame1.LabelWidget = this.GtkLabel4;
             this.Add(this.frame1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

@@ -1,5 +1,13 @@
 2007-07-24  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs,
+	  MonoDevelop.Ide.StandardHeader/StandardHeaderPanel.cs,
+	  MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs,
+	  gtk-gui/MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel.cs:
+	  Worked on bug 82171: Unable to edit Standadr Headers contents.
+
+2007-07-24  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.Commands/FileCommands.cs,
 	  MonoDevelop.Ide.Commands/FileTabCommands.cs,
 	  MonoDevelop.Ide.addin.xml, MonoDevelop.Ide.Gui/Workbench.cs,
