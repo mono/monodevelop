@@ -1,3 +1,13 @@
+2007-07-24  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* icons/Icons.16x16.ReplaceInFiles, icons/Icons.16x16.NewFolderIcon,
+	  icons/Icons.16x16.ClosedResourceFolder,
+	  icons/Icons.16x16.ClosedFolderBitmap,
+	  icons/Icons.16x16.OpenResourceFolder,
+	  icons/Icons.16x16.ClosedReferenceFolder,
+	  icons/Icons.16x16.OpenFolderBitmap, icons/Icons.16x16.FindInFiles,
+	  icons/Icons.16x16.OpenReferenceFolder: Tangoified icons.
+
 2007-07-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.Codons/CommandCategoryCodon.cs: Translate
