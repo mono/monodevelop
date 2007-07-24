@@ -36,7 +36,13 @@ namespace MonoDevelop.Autotools
 	public class SimpleProjectMakefileHandler : IMakefileHandler
 	{
 		string resourcedir = "resources";
-		
+		bool generateAutotools = true;
+
+		public SimpleProjectMakefileHandler (bool generateAutotools)
+		{
+			this.generateAutotools = generateAutotools;
+		}
+
 		public bool CanDeploy ( CombineEntry entry )
 		{
 			Project project = entry as Project;
@@ -57,7 +63,9 @@ namespace MonoDevelop.Autotools
 
 		public Makefile Deploy ( AutotoolsContext ctx, CombineEntry entry, IProgressMonitor monitor )
 		{
-			monitor.BeginTask ( GettextCatalog.GetString ("Creating Makefile.am for Project {0}", entry.Name), 1 );
+			monitor.BeginTask ( GettextCatalog.GetString (
+						"Creating {0} for Project {1}",
+						generateAutotools ? "Makefile.am" : "Makefile", entry.Name), 1 );
 			
 			Makefile makefile = new Makefile ();
 			try
@@ -90,10 +98,14 @@ namespace MonoDevelop.Autotools
 							pkgs.Add(pkg);
 
 							references.WriteLine (" \\");
-							references.Write ("\t$(");
-							references.Write (AutotoolsContext.GetPkgConfigVariable(pkg.Name));
-							references.Write ("_LIBS)");
-							ctx.AddRequiredPackage (pkg.Name);
+							if (generateAutotools) {
+								references.Write ("\t$(");
+								references.Write (AutotoolsContext.GetPkgConfigVariable(pkg.Name));
+								references.Write ("_LIBS)");
+							} else {
+								references.Write ("\t-pkg:{0}", pkg.Name);
+							}
+							ctx.AddRequiredPackage (pkg);
 						} 
 						else 
 						{
@@ -189,9 +201,34 @@ namespace MonoDevelop.Autotools
 				Hashtable deployDirs = new Hashtable ();
 				Hashtable deployFileVars = new Hashtable ();
 				Dictionary<string, DeployFile> uniqueDeployFiles = new Dictionary<string, DeployFile> ();
-				StringBuilder deployFileCopy = new StringBuilder ();
 				ArrayList builtFiles = new ArrayList ();
 				
+				StringBuilder deployFileCopyVars = new StringBuilder ();
+				StringBuilder deployFileCopyTargets = new StringBuilder ();
+
+				//used only for simple makefile generation
+				StringBuilder templateFilesTargets = null;
+				StringBuilder installTarget = null;
+				StringBuilder installDeps = null;
+				List<string> installDirs = null;
+
+				if (!generateAutotools) {
+					templateFilesTargets = new StringBuilder ();
+					installTarget = new StringBuilder ();
+					installDeps = new StringBuilder ();
+					installDirs = new List<string> ();
+
+					string programFilesDir = ctx.DeployContext.GetDirectory (TargetDirectory.ProgramFiles);
+					//FIXME:temp
+					programFilesDir = programFilesDir.Replace ("@prefix@", "$(prefix)");
+					programFilesDir = programFilesDir.Replace ("@PACKAGE@", "$(PACKAGE)");
+					installDirs.Add (programFilesDir);
+					installTarget.AppendFormat ("\tmkdir -p {0}\n", programFilesDir);
+					installTarget.AppendFormat ("\tcp $(ASSEMBLY) $(ASSEMBLY).mdb {0}\n", programFilesDir);
+
+					installDeps.Append (" $(ASSEMBLY) $(ASSEMBLY).mdb");
+				}
+
 				DeployFileCollection deployFiles = DeployService.GetDeployFiles (ctx.DeployContext, new CombineEntry[] { project });
 				foreach (DeployFile dfile in deployFiles) {
 					if (dfile.SourcePath == project.GetOutputFileName ())
@@ -220,7 +257,16 @@ namespace MonoDevelop.Autotools
 						File.Copy (dfile.SourcePath, infname, true);
 						extras.AppendFormat ( "\\\n\t{0} ", Runtime.FileService.AbsoluteToRelativePath (project.BaseDirectory, infname));
 						ctx.AddAutoconfFile (fname);
+						ctx.AddGeneratedFile (fname + ".in");
 						fname = ctx.GetRelativePath (project, fname, true);
+
+						if (!generateAutotools) {
+							infname = fname + ".in";
+							templateFilesTargets.AppendFormat ("{0}: {1}\n", fname, infname);
+							templateFilesTargets.AppendFormat (
+								"\tsed -e \"s,@prefix@,$(prefix),\" -e \"s,@PACKAGE@,$(PACKAGE),\" < {1} > {0}\n",
+								fname, infname);
+						}
 					} else {
 						fname = Runtime.FileService.AbsoluteToRelativePath (
 								Path.GetFullPath (project.BaseDirectory),
@@ -230,13 +276,14 @@ namespace MonoDevelop.Autotools
 					string targetDeployFile = "$(BUILD_DIR)" + Path.DirectorySeparatorChar + Path.GetFileName (dfile.RelativeTargetPath); 
 					builtFiles.Add (Path.GetFileName (dfile.RelativeTargetPath));
 					string srcDeployFile = fname;
-					
-					deployFileCopy.AppendFormat ("{0} = {1}\n", deployVar, targetDeployFile);
-					deployFileCopy.AppendFormat ("$({0}): {1}\n", deployVar, srcDeployFile);
-					deployFileCopy.AppendFormat ("\tmkdir -p $(BUILD_DIR)\n");
-					deployFileCopy.AppendFormat ("\tcp '$<' '$@'\n");
-					deployFileCopy.Append ("\n");
-					
+
+					deployFileCopyVars.AppendFormat ("{0} = {1}\n", deployVar, targetDeployFile);
+					deployFileCopyVars.Append ("\n");
+					deployFileCopyTargets.AppendFormat ("$({0}): {1}\n", deployVar, srcDeployFile);
+					deployFileCopyTargets.AppendFormat ("\tmkdir -p $(BUILD_DIR)\n");
+					deployFileCopyTargets.AppendFormat ("\tcp '$<' '$@'\n");
+					deployFileCopyTargets.Append ("\n");
+
 					switch (dfile.TargetDirectoryID) {
 						case TargetDirectory.Gac:
 							// TODO
@@ -260,28 +307,66 @@ namespace MonoDevelop.Autotools
 							sb.AppendFormat ("\\\n\t$({0}) ", deployVar);
 							break;
 					}
+
+					if (!generateAutotools) {
+						string installDir = ctx.DeployContext.GetDirectory (dfile.TargetDirectoryID);
+						//FIXME: temp
+						installDir = installDir.Replace ("@prefix@", "$(prefix)");
+						installDir = installDir.Replace ("@PACKAGE@", "$(PACKAGE)");
+
+						if (!installDirs.Contains (installDir))
+							installTarget.AppendFormat ("\tmkdir -p {0}\n", installDir);
+
+						installTarget.AppendFormat ("\tcp $({0}) {1}\n", deployVar, installDir);
+						installDeps.AppendFormat (" $({0})", deployVar);
+					}
 				}
 				
+				if (!generateAutotools)
+					installTarget.Insert (0, String.Format ("install-local:{0}\n", installDeps.ToString ()));
+
 				string vars = "";
 				foreach (string s in deployDirs.Keys)
 					vars += "$(" + s + ") ";
 				
 				templateEngine.Variables["DEPLOY_FILE_VARS"] = vars;
-				templateEngine.Variables["COPY_DEPLOY_FILES"] = deployFileCopy.ToString();
+				templateEngine.Variables["COPY_DEPLOY_FILES_VARS"] = deployFileCopyVars.ToString();
+				templateEngine.Variables["COPY_DEPLOY_FILES_TARGETS"] = deployFileCopyTargets.ToString();
+
 				templateEngine.Variables["FILES"] = files.ToString();
 				templateEngine.Variables["RESOURCES"] = res_files.ToString();
 				templateEngine.Variables["EXTRAS"] = extras.ToString();
 				templateEngine.Variables["DATA_FILES"] = datafiles.ToString();
+
+				if (!generateAutotools) {
+					templateEngine.Variables["CLEANFILES"] = vars;
+					templateEngine.Variables["TEMPLATE_FILES_TARGETS"] = templateFilesTargets.ToString();
+					templateEngine.Variables["INSTALL_TARGET"] = installTarget.ToString();
+				}
 				
 				// handle configuration specific variables
 				StringBuilder conf_vars = new StringBuilder ();
+
+				if (!generateAutotools) {
+					conf_vars.AppendFormat ("srcdir=.\n");
+					conf_vars.AppendFormat ("top_srcdir={0}\n\n",
+						Runtime.FileService.AbsoluteToRelativePath (project.BaseDirectory, project.RootCombine.BaseDirectory));
+
+					conf_vars.AppendFormat ("include $(top_srcdir)/Makefile.include\n");
+					conf_vars.AppendFormat ("include $(top_srcdir)/config.make\n\n");
+				}
+
 				foreach (CombineConfiguration combineConfig in project.RootCombine.Configurations)
 				{
 					DotNetProjectConfiguration config = GetProjectConfig (combineConfig.Name, project) as DotNetProjectConfiguration;
 					if (config == null)
 						continue;
 
-					conf_vars.AppendFormat ("if ENABLE_{0}\n", ctx.EscapeAndUpperConfigName (combineConfig.Name));
+					if (generateAutotools)
+						conf_vars.AppendFormat ("if ENABLE_{0}\n", ctx.EscapeAndUpperConfigName (combineConfig.Name));
+					else
+						conf_vars.AppendFormat ("ifeq ($(CONFIG),{0})\n", ctx.EscapeAndUpperConfigName (combineConfig.Name));
+
 					string assembly = (PlatformID.Unix == Environment.OSVersion.Platform) ? project.GetRelativeChildPath ( config.CompiledOutputName ) : project.GetRelativeChildPath ( config.CompiledOutputName ).Replace("\\","/");
 
 					conf_vars.AppendFormat ("ASSEMBLY_COMPILER_COMMAND = {0}\n",
@@ -361,13 +446,14 @@ namespace MonoDevelop.Autotools
 //				if ( pkgconfig ) CreatePkgConfigFile ( project, pkgs, dlls, monitor, ctx );
 				
 				// Create project specific makefile
-				Stream stream = ctx.GetTemplateStream ("Makefile.am.project.template");
+				Stream stream = ctx.GetTemplateStream (
+						generateAutotools ? "Makefile.am.project.template" : "Makefile.noauto.project.template");
+
 				StreamReader reader = new StreamReader (stream);			                                          
 				string txt = templateEngine.Process ( reader );
 				reader.Close();
 
 				makefile.Append ( txt );
-
 				monitor.Step (1);
 			}
 			finally	{ monitor.EndTask (); }
@@ -405,7 +491,8 @@ namespace MonoDevelop.Autotools
 			hash [name] = name;
 			return name;
 		}
-		
+
+/*
 		static string GetExeWrapperFromAssembly ( string assembly )
 		{
 			string basename = assembly;
@@ -443,7 +530,6 @@ namespace MonoDevelop.Autotools
 			return wrapperName;
 		}
 
-/*
 		void CreatePkgConfigFile ( Project project, 
 				Set packages, 
 				Set dlls,
@@ -511,7 +597,6 @@ namespace MonoDevelop.Autotools
 			// add for autoconf processing
 			context.AddAutoconfFile ( Path.GetDirectoryName (project.FileName) + "/" + fileName );
 		}
-*/
 
 		// GetUniqueName: A way of getting a (hopefully) unique name for the pkg-config item
 		// Solution.[Solution].Project
@@ -530,7 +615,6 @@ namespace MonoDevelop.Autotools
 		}
 
 		// FIXME: makes assumption that the root combine is the top of the autotools setup
-/*
 		bool NeedsPCFile ( Project project ) 
 		{
 			//go up the chain and find the first non-null of the parm

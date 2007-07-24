@@ -62,23 +62,31 @@ namespace MonoDevelop.Autotools
 		protected void OnGenerate()
 		{
 			Combine combine = (Combine) CurrentNode.DataItem;
-			SolutionDeployer deployer = new SolutionDeployer();
-			
-			if ( deployer.HasGeneratedFiles ( combine ) )
-			{
-				string msg = GettextCatalog.GetString ( "Autotools files already exist for this solution.  Would you like to overwrite them?" );
-				if ( !MonoDevelop.Core.Gui.Services.MessageService.AskQuestion ( msg ) )
-					return;
-			}
+			DeployContext ctx = null;
+			IProgressMonitor monitor = null;
 
-			DeployContext ctx = new DeployContext (new TarballDeployTarget (), "Linux", null);
-			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ( GettextCatalog.GetString("Autotools Output"), "md-package", true, true);
+			GenerateMakefilesDialog dialog = new GenerateMakefilesDialog (combine);
 			try {
-				deployer.GenerateFiles (ctx, combine, monitor);
-			}
-			finally {
-				ctx.Dispose ();
-				monitor.Dispose ();
+				if (dialog.Run () != (int) Gtk.ResponseType.Ok)
+					return;
+
+				SolutionDeployer deployer = new SolutionDeployer (dialog.GenerateAutotools);
+				if ( deployer.HasGeneratedFiles ( combine ) )
+				{
+					string msg = GettextCatalog.GetString ( "{0} already exist for this solution.  Would you like to overwrite them?", dialog.GenerateAutotools ? "Autotools files" : "Makefiles" );
+					if ( !MonoDevelop.Core.Gui.Services.MessageService.AskQuestion ( msg ) )
+						return;
+				}
+
+				ctx = new DeployContext (new TarballDeployTarget (dialog.GenerateAutotools), "Linux", null);
+				monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ( GettextCatalog.GetString("Makefiles Output"), "md-package", true, true);
+				deployer.GenerateFiles (ctx, combine, dialog.DefaultConfiguration, monitor);
+			} finally {
+				dialog.Destroy ();
+				if (ctx != null)
+					ctx.Dispose ();
+				if (monitor != null)
+					monitor.Dispose ();
 			}
 		}
 	}

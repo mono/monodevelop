@@ -33,6 +33,12 @@ namespace MonoDevelop.Autotools {
         
         private Gtk.ComboBox comboConfigs;
         
+        private Gtk.HBox hbox2;
+        
+        private Gtk.Label label1;
+        
+        private Gtk.CheckButton cbGenerateAutotools;
+        
         protected virtual void Build() {
             Stetic.Gui.Initialize();
             // Widget MonoDevelop.Autotools.TarballBuilderEditorWidget
@@ -81,7 +87,7 @@ namespace MonoDevelop.Autotools {
             w4.Expand = false;
             w4.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
-            this.radioGenerate = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("Generate new Autotools files"));
+            this.radioGenerate = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("Generate new Makefiles"));
             this.radioGenerate.CanFocus = true;
             this.radioGenerate.Name = "radioGenerate";
             this.radioGenerate.DrawIndicator = true;
@@ -126,6 +132,35 @@ namespace MonoDevelop.Autotools {
             w9.Position = 3;
             w9.Expand = false;
             w9.Fill = false;
+            // Container child vbox2.Gtk.Box+BoxChild
+            this.hbox2 = new Gtk.HBox();
+            this.hbox2.Name = "hbox2";
+            this.hbox2.Spacing = 6;
+            // Container child hbox2.Gtk.Box+BoxChild
+            this.label1 = new Gtk.Label();
+            this.label1.WidthRequest = 24;
+            this.label1.Name = "label1";
+            this.label1.LabelProp = "";
+            this.hbox2.Add(this.label1);
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.hbox2[this.label1]));
+            w10.Position = 0;
+            w10.Expand = false;
+            w10.Fill = false;
+            // Container child hbox2.Gtk.Box+BoxChild
+            this.cbGenerateAutotools = new Gtk.CheckButton();
+            this.cbGenerateAutotools.CanFocus = true;
+            this.cbGenerateAutotools.Name = "cbGenerateAutotools";
+            this.cbGenerateAutotools.Label = Mono.Unix.Catalog.GetString("Autotools files");
+            this.cbGenerateAutotools.DrawIndicator = true;
+            this.cbGenerateAutotools.UseUnderline = true;
+            this.hbox2.Add(this.cbGenerateAutotools);
+            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.hbox2[this.cbGenerateAutotools]));
+            w11.Position = 1;
+            this.vbox2.Add(this.hbox2);
+            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox2]));
+            w12.Position = 4;
+            w12.Expand = false;
+            w12.Fill = false;
             this.Add(this.vbox2);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
@@ -135,6 +170,7 @@ namespace MonoDevelop.Autotools {
             this.radioUseExisting.Clicked += new System.EventHandler(this.OnRadioUseExistingClicked);
             this.radioGenerate.Clicked += new System.EventHandler(this.OnRadioGenerateClicked);
             this.comboConfigs.Changed += new System.EventHandler(this.OnComboConfigsChanged);
+            this.cbGenerateAutotools.Clicked += new System.EventHandler(this.OnCbGenerateAutotoolsClicked);
         }
     }
 }

@@ -35,13 +35,16 @@ namespace MonoDevelop.Autotools
 		DeployContext deployContext;
 		Hashtable deployDirs = new Hashtable ();
 		
-		string template_dir = Path.GetDirectoryName ( typeof ( AutotoolsContext ).Assembly.Location ) + "/";
+		string template_dir = Path.GetDirectoryName ( typeof ( AutotoolsContext ).Assembly.Location );
 		
 		Set<string> autoconfConfigFiles = new Set<string> ();
-		Set<string> referencedPackages = new Set<string>();
+		Set<SystemPackage> referencedPackages = new Set<SystemPackage>();
 		Set<string> globalFilesReferences = new Set<string>();
 		Set<string> compilers = new Set<string> ();
 		Set<string> builtProjects = new Set<string> ();
+
+		// Useful for cleaning up in case of a problem in generation
+		List<string> generatedFiles = new List<string> ();
 		
 		ArrayList builtFiles = new ArrayList ();
 		Dictionary<string, string> configNamesDict = new Dictionary<string, string> (StringComparer.InvariantCultureIgnoreCase);
@@ -63,6 +66,10 @@ namespace MonoDevelop.Autotools
 				return String.Format ( "{0}/{1}/", base_dir, libdir );
 			}
 		}
+
+		public string TemplateDir {
+			get { return template_dir; }
+		}
 		
 		string[] configurations;
 		public IEnumerable SupportedConfigurations {
@@ -77,6 +84,15 @@ namespace MonoDevelop.Autotools
 				configNamesDict [configName] = EscapeStringForAutoconf (configName).ToUpper ();
 
 			return configNamesDict [configName];
+		}
+
+		public ICollection<string> GetConfigurations ()
+		{
+			if (configNamesDict != null)
+				return configNamesDict.Values;
+
+			// return empty list
+			return new List<string> ();
 		}
 
 		public AutotoolsContext ( DeployContext deployContext, string base_directory, string[] configs )
@@ -105,9 +121,9 @@ namespace MonoDevelop.Autotools
 			return dir;
 		}
 		
-		public void AddRequiredPackage ( string pkg_name )
+		public void AddRequiredPackage (SystemPackage pkg)
 		{
-			referencedPackages.Add (pkg_name);
+			referencedPackages.Add (pkg);
 		}
 
 		public void AddAutoconfFile ( string file_name )
@@ -115,6 +131,11 @@ namespace MonoDevelop.Autotools
 			if ( autoconfConfigFiles.Contains ( file_name ) )
 				throw new Exception ( "file '" + file_name + "' has already been registered to be processed by configure. " );
 			autoconfConfigFiles.Add( file_name );
+		}
+
+		public void AddGeneratedFile (string file_name)
+		{
+			generatedFiles.Add (file_name);
 		}
 
 		public void AddCommandCheck ( string command_name )
@@ -154,7 +175,12 @@ namespace MonoDevelop.Autotools
 			return autoconfConfigFiles;
 		}
 
-		public IEnumerable GetRequiredPackages ()
+		public IEnumerable<string> GetGeneratedFiles ()
+		{
+			return generatedFiles;
+		}
+
+		public IEnumerable<SystemPackage> GetRequiredPackages ()
 		{
 			return referencedPackages;
 		}
@@ -207,12 +233,12 @@ namespace MonoDevelop.Autotools
 		
 		// TODO: add an extension point with which addins can implement 
 		// autotools functionality.
-		public static IMakefileHandler GetMakefileHandler ( CombineEntry entry )
+		public static IMakefileHandler GetMakefileHandler ( CombineEntry entry, bool generateAutotools )
 		{
 			if ( entry is Combine )
-				return new SolutionMakefileHandler ();
+				return new SolutionMakefileHandler (generateAutotools);
 			else if ( entry is Project )
-				return new SimpleProjectMakefileHandler ();
+				return new SimpleProjectMakefileHandler (generateAutotools);
 			else
 				return null;
 		}
@@ -233,7 +259,7 @@ namespace MonoDevelop.Autotools
 		public Stream GetTemplateStream ( string id )
 		{
 			//return GetType().Assembly.GetManifestResourceStream(id); 
-			return new FileStream (template_dir + id, FileMode.Open, FileAccess.Read );
+			return new FileStream (Path.Combine (template_dir, id), FileMode.Open, FileAccess.Read );
 		}
 
 		public static string EscapeStringForAutoconf ( string str )

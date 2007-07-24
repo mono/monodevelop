@@ -24,7 +24,9 @@ FILES =  \
 	Commands.cs \
 	CustomMakefile.cs \
 	FileNodeBuilderExtension.cs \
+	GenerateMakefilesDialog.cs \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs \
 	gtk-gui/MonoDevelop.Autotools.MakefileIntegrationFeatureWidget.cs \
 	gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs \
 	gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs \
@@ -57,10 +59,14 @@ RES =  \
 DATA_FILES =  \
 	templates/autogen.sh.template \
 	templates/configure.ac.template \
+	templates/configure.template \
 	templates/exe.wrapper.in.template \
 	templates/Makefile.am.project.template \
 	templates/Makefile.include \
-	templates/package.pc.template
+	templates/Makefile.noauto.project.template \
+	templates/Makefile.solution.template \
+	templates/package.pc.template \
+	templates/rules.make
 
 DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(notdir $(DATA_FILES)))
 

@@ -42,8 +42,8 @@
 	<Extension path = "/SharpDevelop/Commands">
 		<Category _name = "Autotools" id = "Autotools">
 		<Command id = "MonoDevelop.Autotools.Commands.GenerateFiles"
-			_label = "Generate Autotools Files"
-			description="Generate autotools files for a solution"/>
+			_label = "Generate Makefiles"
+			description="Generate Makefiles for a solution"/>
 		<Command id = "MonoDevelop.Autotools.Commands.SynchWithMakefile"
 			type="check"
 			_label = "Include in Synchronized Makefile" />

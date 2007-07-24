@@ -1,3 +1,39 @@
+2007-07-24  Ankit Jain  <jankit@novell.com>
+
+	Add support for generating non-autotools (simple) makefiles.
+
+	* SolutionDeployer.cs: Update to use new templates for simple
+	makefiles and generate those.
+	* SolutionMakefileHandler.cs: Likewise.
+	* SimpleProjectMakefileHandler.cs: Likewise.
+
+	* AutotoolsContext.cs (TemplateDir): New.
+	(GetConfigurations): New.
+	(AddGeneratedFile): New.
+	(GetGeneratedFiles): New.
+	* Commands.cs: Ask user whether to generate simple makefiles with
+	GenerateMakefilesDialog.
+	* Handler.cs (GenerateAutotools): New.
+
+	* GenerateMakefilesDialog.cs: New.
+	* gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs: New.
+	* TarballBuilderEditorWidget.cs: Add a checkbox for 'Autotools files'.
+	* gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs: New.
+	* gtk-gui/Gui.stetic: Updated.
+
+	* templates/Makefile.am.project.template: Update.
+	* templates/Makefile.noauto.project.template: New. Makefile template for
+	projects.
+	* templates/Makefile.solution.template: New. Simple makefile for top
+	level solution.
+	* templates/configure.template: New. Configure script.
+	* templates/rules.make: New.
+
+	* Makefile.am: Update to include the new files.
+	* MonoDevelop.Autotools.mdp: Likewise.
+	* MonoDevelop.Autotools.addin.xml: Update menu item from 'Generate
+	autotools files' to 'Generate makefiles'.
+
 2007-07-17  Ankit Jain  <jankit@novell.com>
 
 	* MakefileData.cs (PackagedAssemblyNames): Rename to ..

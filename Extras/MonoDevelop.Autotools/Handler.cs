@@ -23,7 +23,19 @@ namespace MonoDevelop.Autotools
 		
 		[ItemProperty ("GenerateFiles", DefaultValue=true)]
 		bool generateFiles = true;
+
+		[ItemProperty ("GenerateAutotools", DefaultValue = true)]
+		bool generateAutotools = true;
 		
+		public TarballDeployTarget ()
+		{
+		}
+
+		public TarballDeployTarget (bool generateAutotools)
+		{
+			this.generateAutotools = generateAutotools;
+		}
+
 		public override string Description {
 			get { return GettextCatalog.GetString ("Tarball"); }
 		}
@@ -35,6 +47,7 @@ namespace MonoDevelop.Autotools
 			targetDir = target.targetDir;
 			defaultConfig = target.defaultConfig;
 			generateFiles = target.generateFiles;
+			generateAutotools = target.generateAutotools;
 		}
 		
 		public bool GenerateFiles {
@@ -42,6 +55,11 @@ namespace MonoDevelop.Autotools
 			set { generateFiles = value; }
 		}
 		
+		public bool GenerateAutotools {
+			get { return generateAutotools; }
+			set { generateAutotools = value; }
+		}
+
 		public string TargetDir {
 			get { return targetDir; }
 			set { targetDir = value; }
@@ -54,7 +72,7 @@ namespace MonoDevelop.Autotools
 
 		public override bool CanBuild (CombineEntry entry)
 		{
-			SolutionDeployer deployer = new SolutionDeployer ();
+			SolutionDeployer deployer = new SolutionDeployer (generateAutotools);
 			return deployer.CanDeploy ( entry );
 		}
 		
@@ -115,7 +133,7 @@ namespace MonoDevelop.Autotools
 				if (monitor.IsCancelRequested || !monitor.AsyncOperation.Success)
 					return;
 			
-				SolutionDeployer deployer = new SolutionDeployer ();
+				SolutionDeployer deployer = new SolutionDeployer (generateAutotools);
 				
 				if (DefaultConfiguration == null || DefaultConfiguration == "")
 					deployer.Deploy ( ctx, combine, TargetDir, generateFiles, monitor );
@@ -131,17 +149,23 @@ namespace MonoDevelop.Autotools
 
 		protected override string OnResolveDirectory (DeployContext ctx, string folderId)
 		{
+			/*string prefix_var = generateAutotools ? "@prefix@" : "$(prefix)";
+			string package_var = generateAutotools ? "@PACKAGE@" : "$(PACKAGE)";*/
+			//FIXME: Temp till we find a proper solution
+			string prefix_var = "@prefix@";
+			string package_var = "@PACKAGE@";
+
 			switch (folderId) {
 			case TargetDirectory.ProgramFilesRoot:
-				return "@prefix@/lib";
+				return prefix_var + "/lib";
 			case TargetDirectory.ProgramFiles:
-				return "@prefix@/lib/@PACKAGE@";
+				return prefix_var + "/lib/" + package_var;
 			case TargetDirectory.Binaries:
-				return "@prefix@/bin";
+				return prefix_var + "/bin";
 			case TargetDirectory.CommonApplicationDataRoot:
-				return "@prefix@/share";
+				return prefix_var + "/share";
 			case TargetDirectory.CommonApplicationData:
-				return "@prefix@/share/@PACKAGE@";
+				return prefix_var + "/share/" + package_var;
 			}
 			return null;
 		}

@@ -16,7 +16,8 @@ REFERENCES = %%REFERENCES%%
 
 DLL_REFERENCES = %%DLL_REFERENCES%%
 
-%%COPY_DEPLOY_FILES%%
+%%COPY_DEPLOY_FILES_VARS%%
+%%COPY_DEPLOY_FILES_TARGETS%%
 
 $(build_resx_resources) : %.resources: %.resx
 	%%RESGEN%% '$<' '$@'

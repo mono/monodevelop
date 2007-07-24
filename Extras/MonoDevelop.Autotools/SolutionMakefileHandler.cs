@@ -30,6 +30,13 @@ namespace MonoDevelop.Autotools
 {
 	public class SolutionMakefileHandler : IMakefileHandler
 	{
+		bool generateAutotools = true;
+
+		public SolutionMakefileHandler (bool generateAutotools)
+		{
+			this.generateAutotools = generateAutotools;
+		}
+
 		// Recurses into children and tests if they are deployable.
 		public bool CanDeploy ( CombineEntry entry )
 		{
@@ -38,8 +45,12 @@ namespace MonoDevelop.Autotools
 
 		public Makefile Deploy ( AutotoolsContext ctx, CombineEntry entry, IProgressMonitor monitor )
 		{
-			monitor.BeginTask ( GettextCatalog.GetString  ("Creating Makefile.am for Solution {0}", entry.Name), 1 );			
-			Makefile mfile = new Makefile ();
+			monitor.BeginTask ( GettextCatalog.GetString (
+						"Creating {0} for Solution {1}",
+						generateAutotools ? "Makefile.am" : "Makefile", entry.Name), 1 );
+
+			Makefile solutionMakefile = new Makefile ();
+			StringBuilder solutionTop = new StringBuilder ();
 
 			try
 			{
@@ -56,7 +67,11 @@ namespace MonoDevelop.Autotools
 				{
 					if ( !ctx.IsSupportedConfiguration ( config.Name ) ) continue;
 					
-					subdirs.AppendFormat ( "if {0}\n", "ENABLE_" + ctx.EscapeAndUpperConfigName (config.Name));
+					if (generateAutotools)
+						subdirs.AppendFormat ( "if {0}\n", "ENABLE_" + ctx.EscapeAndUpperConfigName (config.Name));
+					else
+						subdirs.AppendFormat ( "ifeq ($(CONFIG),{0})\n", ctx.EscapeAndUpperConfigName (config.Name));
+
 					subdirs.Append (" SUBDIRS = ");
 					
 					foreach (CombineEntry ce in CalculateSubDirOrder (ctx, config))
@@ -81,14 +96,14 @@ namespace MonoDevelop.Autotools
 					}
 					subdirs.Append ( "\nendif\n" );
 				}
-				mfile.Append ( subdirs.ToString () );
+				solutionTop.Append ( subdirs.ToString () );
 
 				string includedProject = null;
 
 				// deploy recursively
 				foreach ( CombineEntry ce in children )
 				{
-					IMakefileHandler handler = AutotoolsContext.GetMakefileHandler ( ce );
+					IMakefileHandler handler = AutotoolsContext.GetMakefileHandler ( ce, generateAutotools );
 					Makefile makefile;
 					string outpath;
 					if ( handler != null && handler.CanDeploy ( ce ) )
@@ -102,13 +117,24 @@ namespace MonoDevelop.Autotools
 									"More than 1 project in the same directory as the top-level solution is not supported."));
 
 							// project is in the solution directory
-							includedProject = String.Format ("include {0}.make", ce.Name);
-							outpath = Path.Combine(Path.GetDirectoryName(ce.FileName), ce.Name + ".make");
+							string projectMakefileName = ce.Name + ".make";
+							includedProject = String.Format ("include {0}", projectMakefileName);
+							outpath = Path.Combine (Path.GetDirectoryName(ce.FileName), projectMakefileName);
+							ctx.AddGeneratedFile (outpath);
+
+							if (!generateAutotools)
+								solutionMakefile.SetVariable ("EXTRA_DIST", projectMakefileName);
 						} else {
-							makefile.SetVariable ("EXTRA_DIST", "");
-							outpath = Path.Combine(Path.GetDirectoryName(ce.FileName), "Makefile");
-							ctx.AddAutoconfFile (outpath);
-							outpath = outpath + ".am";
+							makefile.SetVariable ("EXTRA_DIST", generateAutotools ? "" : "Makefile");
+							outpath = Path.Combine (Path.GetDirectoryName(ce.FileName), "Makefile");
+							if (generateAutotools) {
+								ctx.AddAutoconfFile (outpath);
+								outpath = outpath + ".am";
+							} else {
+								makefile.Append ("install: install-local\n\nclean: clean-local\n");
+								makefile.Append ("include $(top_srcdir)/rules.make");
+							}
+							ctx.AddGeneratedFile (outpath);
 						}
 
 						StreamWriter writer = new StreamWriter (outpath);
@@ -121,8 +147,24 @@ namespace MonoDevelop.Autotools
 				}
 
 				if (includedProject != null) {
-					mfile.Append (GettextCatalog.GetString ("# Include project specific makefile"));
-					mfile.Append (includedProject);
+					solutionTop.Append (GettextCatalog.GetString ("\n# Include project specific makefile\n"));
+					solutionTop.Append (includedProject);
+				}
+
+				if (generateAutotools) {
+					solutionMakefile.Append (solutionTop.ToString ());
+				} else {
+					TemplateEngine templateEngine = new TemplateEngine ();
+					templateEngine.Variables ["MAKEFILE_SOLUTION_TOP"] = solutionTop.ToString ();
+
+					Stream stream = ctx.GetTemplateStream ("Makefile.solution.template");
+					StreamReader reader = new StreamReader (stream);
+					StringWriter sw = new StringWriter ();
+
+					templateEngine.Process (reader, sw);
+					reader.Close ();
+
+					solutionMakefile.Append (sw.ToString ());
 				}
 
 				monitor.Step (1);
@@ -131,7 +173,7 @@ namespace MonoDevelop.Autotools
 			{
 				monitor.EndTask ();
 			}
-			return mfile;
+			return solutionMakefile;
 		}
 
 		// utility function for finding the correct order to process directories

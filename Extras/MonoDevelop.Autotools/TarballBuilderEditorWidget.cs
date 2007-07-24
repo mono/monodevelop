@@ -31,6 +31,8 @@ namespace MonoDevelop.Autotools
 				radioGenerate.Active = true;
 			else
 				radioUseExisting.Active = true;
+
+			cbGenerateAutotools.Active = target.GenerateAutotools;
 			
 			UpdateControls ();
 		}
@@ -38,6 +40,7 @@ namespace MonoDevelop.Autotools
 		void UpdateControls ()
 		{
 			boxConfig.Sensitive = target.GenerateFiles;
+			cbGenerateAutotools.Sensitive = target.GenerateFiles;
 		}
 
 		protected virtual void OnRadioGenerateClicked(object sender, System.EventArgs e)
@@ -60,6 +63,11 @@ namespace MonoDevelop.Autotools
 		protected virtual void OnFolderEntryPathChanged(object sender, System.EventArgs e)
 		{
 			target.TargetDir = folderEntry.Path;
+		}
+
+		protected virtual void OnCbGenerateAutotoolsClicked (object sender, System.EventArgs e)
+		{
+			target.GenerateAutotools = cbGenerateAutotools.Active;
 		}
 	}
 }

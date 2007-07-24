@@ -41,35 +41,37 @@ namespace MonoDevelop.Autotools
 		string solution_version;
 
 		AutotoolsContext context;
+		bool generateAutotools;
+
+		public SolutionDeployer (bool generateAutotools)
+		{
+			this.generateAutotools = generateAutotools;
+		}
 
 		public bool HasGeneratedFiles ( Combine combine )
 		{
-			string dir = Path.GetDirectoryName(combine.FileName) + "/";
-
-			if ( File.Exists ( dir + "configure.ac" ) && File.Exists ( dir + "autogen.sh" ) )
-				return true;
-			return false;
+			string dir = Path.GetDirectoryName(combine.FileName);
+			if (generateAutotools) {
+				return File.Exists (Path.Combine (dir, "configure.ac")) &&
+						File.Exists (Path.Combine (dir, "autogen.sh"));
+			} else {
+				return File.Exists (Path.Combine (dir, "Makefile")) &&
+						File.Exists (Path.Combine (dir, "configure")) &&
+						File.Exists (Path.Combine (dir, "rules.make"));
+			}
 		}
 		
 		public bool CanDeploy (CombineEntry entry)
 		{
-			IMakefileHandler handler = AutotoolsContext.GetMakefileHandler (entry);
+			IMakefileHandler handler = AutotoolsContext.GetMakefileHandler (entry, generateAutotools);
 			if ( handler == null || !handler.CanDeploy (entry) ) return false;
 			return true;
 		}
-		
-		public bool GenerateFiles (DeployContext ctx, Combine combine, IProgressMonitor monitor )
-		{
-			if (combine.ActiveConfiguration != null)
-				return GenerateFiles ( ctx, combine, combine.ActiveConfiguration.Name, monitor );
-			else
-				// Indicate with a null argument that there is no active configuration
-				return GenerateFiles ( ctx, combine, null, monitor );
-		}
-		
+
 		public bool GenerateFiles (DeployContext ctx, Combine combine, string defaultConf, IProgressMonitor monitor )
 		{
-			monitor.BeginTask ( GettextCatalog.GetString ("Generating Autotools files for Solution {0}", combine.Name), 1 );
+			string filesString = generateAutotools ? "Autotools files" : "Makefiles";
+			monitor.BeginTask ( GettextCatalog.GetString ("Generating {0} for Solution {1}", filesString, combine.Name), 1 );
 
 			try
 			{
@@ -81,33 +83,45 @@ namespace MonoDevelop.Autotools
 					
 				context = new AutotoolsContext ( ctx, solution_dir, configs );
 				
-				IMakefileHandler handler = AutotoolsContext.GetMakefileHandler ( combine );
+				IMakefileHandler handler = AutotoolsContext.GetMakefileHandler ( combine, generateAutotools );
 				if ( handler == null || !handler.CanDeploy (combine) )
-					throw new Exception ( GettextCatalog.GetString ("MonoDevelop does not currently support generating autotools files for one (or more) child projects.") );
+					throw new Exception ( GettextCatalog.GetString ("MonoDevelop does not currently support generating {0} for one (or more) child projects.", filesString) );
 
 				solution_name = combine.Name;
 				solution_version = AutotoolsContext.EscapeStringForAutoconf (combine.Version, true);
 
 				Makefile makefile = handler.Deploy ( context, combine, monitor );
 				string path = Path.Combine (solution_dir, "Makefile");
-				context.AddAutoconfFile ( path );
+				if (generateAutotools) {
+					context.AddAutoconfFile (path);
+					CreateAutoGenDotSH (context, monitor);
+					CreateConfigureDotAC (combine, defaultConf, monitor, context);
+				} else {
+					CreateConfigureScript (combine, defaultConf, context, monitor);
 
-				CreateAutoGenDotSH ( monitor );
-				CreateConfigureDotAC ( combine, defaultConf, monitor, context );
-				CreateMakefileInclude ( monitor );
+					monitor.Log.WriteLine ( GettextCatalog.GetString ("Creating rules.make"));
+					string rules_make_path = Path.Combine (solution_dir, "rules.make");
+					File.Copy (Path.Combine (context.TemplateDir, "rules.make"), rules_make_path, true);
+					context.AddGeneratedFile (rules_make_path);
+				}
 
+				CreateMakefileInclude ( context, monitor );
 				AddTopLevelMakefileVars ( makefile, monitor );
 
-				StreamWriter writer = new StreamWriter ( path + ".am" );
+				if (generateAutotools)
+					path = path + ".am";
+				StreamWriter writer = new StreamWriter (path);
 				makefile.Write ( writer );
 				writer.Close ();
 
-				monitor.ReportSuccess ( GettextCatalog.GetString ("Autotools files were successfully generated.") );
+				context.AddGeneratedFile (path);
+
+				monitor.ReportSuccess ( GettextCatalog.GetString ("{0} were successfully generated.", filesString ) );
 				monitor.Step (1);
 			}
 			catch ( Exception e )
 			{
-				monitor.ReportError ( GettextCatalog.GetString ("Autotools files could not be generated: "), e );
+				monitor.ReportError ( GettextCatalog.GetString ("{0} could not be generated: ", filesString ), e );
 				DeleteGeneratedFiles ( context );
 				return false;
 			}
@@ -136,7 +150,7 @@ namespace MonoDevelop.Autotools
 				string baseDir = Path.GetDirectoryName ( combine.FileName);
 	
 				ProcessWrapper ag_process = Runtime.ProcessService.StartProcess ( "sh", 
-						"autogen.sh", 
+						generateAutotools ? "autogen.sh" : "configure",
 						baseDir, 
 						monitor.Log, 
 						monitor.Log, 
@@ -144,7 +158,7 @@ namespace MonoDevelop.Autotools
 				ag_process.WaitForOutput ();
 				
 				if ( ag_process.ExitCode > 0 )
-					throw new Exception ( GettextCatalog.GetString ("An unspecified error occurred while running '{0}'","autogen.sh") );
+					throw new Exception ( GettextCatalog.GetString ("An unspecified error occurred while running '{0}'", generateAutotools ? "autogen.sh" : "configure") );
 				
 				monitor.Step ( 1 );
 
@@ -171,9 +185,9 @@ namespace MonoDevelop.Autotools
 				int targz = output.LastIndexOf  ( "tar.gz" );
 				int begin = output.LastIndexOf ( '>', targz );
 
-				string filename = output.Substring ( begin + 1, (targz - begin) + 5 ); 
+				string filename = output.Substring ( begin + 1, (targz - begin) + 5 ).Trim ();
 				
-				Runtime.FileService.CopyFile ( baseDir + "/" + filename, targetDir + "/" + filename );
+				Runtime.FileService.CopyFile (Path.Combine (baseDir, filename), Path.Combine (targetDir, filename));
 				monitor.Step ( 1 );
 			}
 			catch ( Exception e )
@@ -190,23 +204,18 @@ namespace MonoDevelop.Autotools
 
 		void DeleteGeneratedFiles ( AutotoolsContext context )
 		{
-			foreach ( string file in context.GetAutoConfFiles () )
+			foreach (string file in context.GetGeneratedFiles ())
 				if ( File.Exists ( file ) ) Runtime.FileService.DeleteFile ( file );
-
-			string[] other_files = new string [] { "autogen.sh", "configure.ac", "Makefile.include" };
-
-			foreach ( string file in other_files )
-			{
-				string path = solution_dir + "/" + file;
-				if ( File.Exists ( path ) ) Runtime.FileService.DeleteFile ( path );
-			}
 		}
 
 		void AddTopLevelMakefileVars ( Makefile makefile, IProgressMonitor monitor)
 		{
-			monitor.Log.WriteLine ( GettextCatalog.GetString ("Adding variables to top-level Makefile.am") );
+			monitor.Log.WriteLine ( GettextCatalog.GetString ("Adding variables to top-level Makefile") );
 
 			StringBuilder sb = new StringBuilder ();
+			if (!generateAutotools)
+				sb.Append ("rules.make configure Makefile.include");
+
 			foreach ( string file in context.GetGlobalReferencedFiles() )
 				sb.Append (' ').Append (file);
 			
@@ -217,7 +226,7 @@ namespace MonoDevelop.Autotools
 //			makefile.AppendToVariable ( "pkglib_DATA", "$(DLL_REFERENCES)" );
 		}
 
-		void CreateAutoGenDotSH (IProgressMonitor monitor)
+		void CreateAutoGenDotSH (AutotoolsContext context, IProgressMonitor monitor)
 		{
 			monitor.Log.WriteLine ( GettextCatalog.GetString ("Creating autogen.sh") );
 
@@ -236,6 +245,8 @@ namespace MonoDevelop.Autotools
 
 			reader.Close();
 			writer.Close();
+
+			context.AddGeneratedFile (fileName);
 
 			// make autogen.sh executable
 			if (PlatformID.Unix == Environment.OSVersion.Platform)
@@ -307,13 +318,13 @@ namespace MonoDevelop.Autotools
 
 			// build list of pkgconfig checks we must make
 			StringWriter packageChecks = new StringWriter();
-			foreach ( string pkg in context.GetRequiredPackages () ) 
+			foreach (SystemPackage pkg in context.GetRequiredPackages ())
 			{
-				string pkgvar = AutotoolsContext.GetPkgConfigVariable (pkg); 
+				string pkgvar = AutotoolsContext.GetPkgConfigVariable (pkg.Name);
 				packageChecks.Write("PKG_CHECK_MODULES([");
 				packageChecks.Write(pkgvar);
 				packageChecks.Write("], [");
-				packageChecks.Write(pkg);
+				packageChecks.Write(pkg.Name);
 				packageChecks.WriteLine("])");
 			}
 			templateEngine.Variables["PACKAGE_CHECKS"] = packageChecks.ToString();
@@ -330,8 +341,52 @@ namespace MonoDevelop.Autotools
 
 			reader.Close();
 			writer.Close();
+			context.AddGeneratedFile (configureFileName);
 		}
-	
+
+		void CreateConfigureScript (Combine combine, string defaultConf, AutotoolsContext ctx, IProgressMonitor monitor)
+		{
+			monitor.Log.WriteLine ( GettextCatalog.GetString ("Creating configure script") );
+
+			TemplateEngine templateEngine = new TemplateEngine ();
+
+			// Build list of configurations
+			StringBuilder sbConfig = new StringBuilder ();
+			sbConfig.Append ("\"");
+			foreach (string config in ctx.GetConfigurations ())
+				sbConfig.AppendFormat (" {0}", config);
+			sbConfig.Append ("\"");
+
+			// Build list of required packages
+			StringBuilder sbPackages = new StringBuilder ();
+			sbPackages.Append ("\"");
+			foreach (SystemPackage pkg in ctx.GetRequiredPackages ())
+				sbPackages.AppendFormat (" {0};{1}", pkg.Name, pkg.Version);
+			sbPackages.Append ("\"");
+
+			templateEngine.Variables ["VERSION"] = solution_version;
+			templateEngine.Variables ["PACKAGE"] = AutotoolsContext.EscapeStringForAutoconf (combine.Name).ToLower ();
+			templateEngine.Variables ["DEFAULT_CONFIG"] = ctx.EscapeAndUpperConfigName (defaultConf);
+			templateEngine.Variables ["CONFIGURATIONS"] = sbConfig.ToString ();
+			templateEngine.Variables ["REQUIRED_PACKAGES"] = sbPackages.ToString ();
+
+
+			Stream stream = context.GetTemplateStream ("configure.template");
+
+			string filename = Path.Combine (solution_dir, "configure");
+			StreamReader reader = new StreamReader (stream);
+			StreamWriter writer = new StreamWriter (filename);
+			templateEngine.Process(reader, writer);
+			reader.Close ();
+			writer.Close ();
+
+			ctx.AddGeneratedFile (filename);
+
+			if (PlatformID.Unix == Environment.OSVersion.Platform)
+				Syscall.chmod ( filename , FilePermissions.S_IXOTH | FilePermissions.S_IROTH | FilePermissions.S_IRWXU | FilePermissions.S_IRWXG );
+		}
+
+
 /*		void AppendConfigVariables ( Combine combine, string config, StringBuilder options )
 		{
 			string name = config.ToLower();
@@ -372,7 +427,7 @@ namespace MonoDevelop.Autotools
 			options.AppendFormat ( "	AC_SUBST({0}_CONFIG_LIBS)\n", name.ToUpper() );
 		}
 */
-		void CreateMakefileInclude (IProgressMonitor monitor)
+		void CreateMakefileInclude (AutotoolsContext context, IProgressMonitor monitor)
 		{
 			monitor.Log.WriteLine ( GettextCatalog.GetString ("Creating Makefile.include") );
 			
@@ -405,7 +460,7 @@ namespace MonoDevelop.Autotools
 			templateEngine.Variables["DEPLOY_DIRS"] = deployDirs.ToString();
 			templateEngine.Variables["DEPLOY_FILES_CLEAN"] = deployDirVars;
 
-			string fileName = solution_dir + "/Makefile.include";
+			string fileName = Path.Combine (solution_dir, "Makefile.include");
 
 			Stream stream = context.GetTemplateStream ("Makefile.include");
 
@@ -416,6 +471,8 @@ namespace MonoDevelop.Autotools
 
 			reader.Close();
 			writer.Close();
+
+			context.AddGeneratedFile (fileName);
 		}
 
 /*
