@@ -108,10 +108,23 @@ namespace MonoDevelop.Projects.CodeGeneration
 
 			IEditableTextFile file = rctx.GetFile (fileName);
 			if (file != null) {
+				Console.WriteLine ("Replacing text \"{0}\" with \"{1}\" @ {2},{3}", name, newName, line, column);
 				file.DeleteText (position, name.Length);
 				file.InsertText (position, newName);
 				rctx.Save ();
 			}
+		}
+		
+		public override int GetHashCode ()
+		{
+			return (fileName + ":" + name + "@" + position).GetHashCode ();
+		}
+		
+		public override bool Equals (object o)
+		{
+			MemberReference mref = (MemberReference) o;
+			
+			return mref.FileName == FileName && mref.name == name && mref.Position == Position;
 		}
 	}
 	

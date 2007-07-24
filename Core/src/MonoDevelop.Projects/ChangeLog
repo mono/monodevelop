@@ -1,3 +1,10 @@
+2007-07-24  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs: Override
+	GetHashCode() and Equals() on class MemberReference, this is to
+	make it easier for implementations to only add unique references
+	to the collection as they are found.
+
 2007-07-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/ProjectReference.cs,
@@ -10,18 +17,22 @@
 
 2007-07-17  Jeffrey Stedfast  <fejj@novell.com>
 
-	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs (ImplementMember):
-	If we are implementing explicitly, don't set any access modifiers.
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs
+	(ImplementMember): If we are implementing explicitly, don't set
+	any access modifiers.
 
-	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs (ImplementMember): Now
-	takes an explicitly argument so we know to turn off access modifiers.
+	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs
+	(ImplementMember): Now takes an explicitly argument so we know to
+	turn off access modifiers.
 
-	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs (ImplementInterface):
-	When making sure we haven't already implemented the member, check Names
-	instead of FullyQualifiedNames.
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs
+	(ImplementInterface): When making sure we haven't already
+	implemented the member, check Names instead of
+	FullyQualifiedNames.
 
-	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: If the field
-	is static, set the property to be static too. Fixes bug #82121.
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: If the
+	field is static, set the property to be static too. Fixes bug
+	#82121.
 
 2007-07-12  Lluis Sanchez Gual <lluis@novell.com> 
 
