@@ -1,3 +1,15 @@
+2007-07-24  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Project/Src/Parser/AST/AbstractNode.cs (AddChild): Set the
+	Parent.
+
+	* Project/Src/Parser/CSharp/cs.ATG: Same fixes as below... just in
+	case we ever re-autogenerate Parser.cs
+
+	* Project/Src/Parser/CSharp/Parser.cs: Store the location of
+	VariableDeclarations and TypeReferences. Also make sure to set the
+	TypeReference on each VariableDeclaration.
+
 2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Makefile.am, NRefactory.mdp: Disabled building through makefile. Set

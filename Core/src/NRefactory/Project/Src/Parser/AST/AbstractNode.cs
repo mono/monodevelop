@@ -62,6 +62,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		public virtual void AddChild(INode childNode)
 		{
 			Debug.Assert(childNode != null);
+			childNode.Parent = this;
 			children.Add(childNode);
 		}
 		

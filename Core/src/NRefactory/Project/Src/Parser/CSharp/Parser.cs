@@ -720,7 +720,8 @@ DotAndIdent()) {
 #line  1050 "cs.ATG" 
 out TypeReference type) {
 
-#line  1052 "cs.ATG" 
+#line  1052 "cs.ATG"
+		Point startPos = la.Location;
 		string name;
 		int pointer = 0;
 		type = null;
@@ -758,7 +759,11 @@ IsPointer()) {
 		}
 
 #line  1067 "cs.ATG" 
-		if (type != null) { type.PointerNestingLevel = pointer; } 
+		if (type != null) {
+			type.PointerNestingLevel = pointer;
+			type.EndLocation = t.EndLocation;
+			type.StartLocation = startPos;
+		} 
 	}
 
 	void Attribute(
@@ -1973,36 +1978,44 @@ out type);
 #line  1209 "cs.ATG" 
 			FieldDeclaration fd = new FieldDeclaration(attributes, type, m.Modifier | Modifier.Const);
 			fd.StartLocation = m.GetDeclarationLocation(startPos);
-			VariableDeclaration f = new VariableDeclaration(t.val);
-			fd.Fields.Add(f);
+			VariableDeclaration var = new VariableDeclaration (t.val);
+			var.StartLocation = t.Location;
+			var.TypeReference = type;
+			fd.Fields.Add (var);
 			
 			Expect(3);
 			Expr(
 #line  1214 "cs.ATG" 
 out expr);
 
-#line  1214 "cs.ATG" 
-			f.Initializer = expr; 
+#line  1214 "cs.ATG"
+			var.EndLocation = t.EndLocation;
+			var.Initializer = expr;
 			while (la.kind == 14) {
+				var.EndLocation = t.Location;
 				lexer.NextToken();
 				Expect(1);
 
-#line  1215 "cs.ATG" 
-				f = new VariableDeclaration(t.val);
-				fd.Fields.Add(f);
+#line  1215 "cs.ATG"
+				var = new VariableDeclaration (t.val);
+				var.StartLocation = t.Location;
+				var.TypeReference = type;
+				fd.Fields.Add (var);
 				
 				Expect(3);
 				Expr(
 #line  1218 "cs.ATG" 
 out expr);
 
-#line  1218 "cs.ATG" 
-				f.Initializer = expr; 
+#line  1218 "cs.ATG"
+				var.EndLocation = t.EndLocation;
+				var.Initializer = expr;
 			}
 			Expect(11);
 
-#line  1219 "cs.ATG" 
-			fd.EndLocation = t.EndLocation; compilationUnit.AddChild(fd); 
+#line  1219 "cs.ATG"
+			fd.EndLocation = t.EndLocation;
+			compilationUnit.AddChild(fd); 
 		} else if (
 #line  1223 "cs.ATG" 
 NotVoidPointer()) {
@@ -2696,7 +2709,7 @@ out FieldDeclaration f) {
 		Expression expr = null;
 		List<AttributeSection> attributes = new List<AttributeSection>();
 		AttributeSection section = null;
-		VariableDeclaration varDecl = null;
+		VariableDeclaration var = null;
 		
 		while (la.kind == 18) {
 			AttributeSection(
@@ -2710,9 +2723,11 @@ out section);
 
 #line  1553 "cs.ATG" 
 		f = new FieldDeclaration(attributes);
-		varDecl         = new VariableDeclaration(t.val);
-		f.Fields.Add(varDecl);
+		var = new VariableDeclaration (t.val);
+		var.EndLocation = t.EndLocation;
+		var.StartLocation = t.Location;
 		f.StartLocation = t.Location;
+		f.Fields.Add (var);
 		
 		if (la.kind == 3) {
 			lexer.NextToken();
@@ -2720,8 +2735,9 @@ out section);
 #line  1558 "cs.ATG" 
 out expr);
 
-#line  1558 "cs.ATG" 
-			varDecl.Initializer = expr; 
+#line  1558 "cs.ATG"
+			var.EndLocation = t.EndLocation;
+			var.Initializer = expr; 
 		}
 	}
 
@@ -2729,7 +2745,8 @@ out expr);
 #line  1023 "cs.ATG" 
 out TypeReference type, bool allowNullable, bool canBeUnbound) {
 
-#line  1025 "cs.ATG" 
+#line  1025 "cs.ATG"
+		Point startPos = la.Location;
 		string name;
 		int pointer = 0;
 		type = null;
@@ -2790,9 +2807,11 @@ IsPointerOrDims()) {
 
 #line  1042 "cs.ATG" 
 		if (type != null) {
-		type.RankSpecifier = r.ToArray();
-		type.PointerNestingLevel = pointer;
-		  }
+			type.RankSpecifier = r.ToArray ();
+			type.PointerNestingLevel = pointer;
+			type.EndLocation = t.EndLocation;
+			type.StartLocation = startPos;
+		}
 		
 	}
 
@@ -3237,7 +3256,8 @@ List<VariableDeclaration> fieldDeclaration) {
 		Expect(1);
 
 #line  1679 "cs.ATG" 
-		VariableDeclaration f = new VariableDeclaration(t.val); 
+		VariableDeclaration var = new VariableDeclaration (t.val);
+		var.StartLocation = t.Location;
 		if (la.kind == 3) {
 			lexer.NextToken();
 			VariableInitializer(
@@ -3245,11 +3265,12 @@ List<VariableDeclaration> fieldDeclaration) {
 out expr);
 
 #line  1680 "cs.ATG" 
-			f.Initializer = expr; 
+			var.Initializer = expr; 
 		}
 
-#line  1680 "cs.ATG" 
-		fieldDeclaration.Add(f); 
+#line  1680 "cs.ATG"
+		var.EndLocation = t.EndLocation;
+		fieldDeclaration.Add (var); 
 	}
 
 	void AccessorDecls(
@@ -3590,36 +3611,51 @@ IsLabel()) {
 out type);
 
 #line  1857 "cs.ATG" 
-			LocalVariableDeclaration var = new LocalVariableDeclaration(type, Modifier.Const); string ident = null; var.StartLocation = t.Location; 
+			LocalVariableDeclaration vars = new LocalVariableDeclaration (type, Modifier.Const);
+			vars.StartLocation = t.Location;
+			VariableDeclaration var;
+			string ident = null;
+			Point varStart;
 			Expect(1);
 
-#line  1858 "cs.ATG" 
+#line  1858 "cs.ATG"
+			varStart = t.Location;
 			ident = t.val; 
 			Expect(3);
 			Expr(
 #line  1859 "cs.ATG" 
 out expr);
 
-#line  1859 "cs.ATG" 
-			var.Variables.Add(new VariableDeclaration(ident, expr)); 
+#line  1859 "cs.ATG"
+			var = new VariableDeclaration (ident, expr);
+			var.EndLocation = t.EndLocation;
+			var.StartLocation = varStart;
+			var.TypeReference = type;
+			vars.Variables.Add (var); 
 			while (la.kind == 14) {
 				lexer.NextToken();
 				Expect(1);
 
-#line  1860 "cs.ATG" 
+#line  1860 "cs.ATG"
+				varStart = t.Location;
 				ident = t.val; 
 				Expect(3);
 				Expr(
 #line  1860 "cs.ATG" 
 out expr);
 
-#line  1860 "cs.ATG" 
-				var.Variables.Add(new VariableDeclaration(ident, expr)); 
+#line  1860 "cs.ATG"
+				var = new VariableDeclaration (ident, expr);
+				var.EndLocation = t.EndLocation;
+				var.StartLocation = varStart;
+				var.TypeReference = type;
+				vars.Variables.Add (var);
 			}
 			Expect(11);
 
-#line  1861 "cs.ATG" 
-			compilationUnit.AddChild(var); 
+#line  1861 "cs.ATG"
+			vars.EndLocation = t.EndLocation;
+			compilationUnit.AddChild (vars);
 		} else if (
 #line  1863 "cs.ATG" 
 IsLocalVarDecl()) {
@@ -3641,8 +3677,8 @@ out stmt);
 
 #line  1870 "cs.ATG" 
 		if (stmt != null) {
-		stmt.StartLocation = startPos;
-		stmt.EndLocation = t.EndLocation;
+			stmt.StartLocation = startPos;
+			stmt.EndLocation = t.EndLocation;
 		}
 		
 	}
@@ -3786,33 +3822,38 @@ out Statement stmt) {
 
 #line  1819 "cs.ATG" 
 		TypeReference type;
-		VariableDeclaration      var = null;
+		VariableDeclaration var = null;
 		LocalVariableDeclaration localVariableDeclaration; 
+		Point startPos = t.Location;
 		
 		Type(
 #line  1824 "cs.ATG" 
 out type);
 
 #line  1824 "cs.ATG" 
-		localVariableDeclaration = new LocalVariableDeclaration(type); localVariableDeclaration.StartLocation = t.Location; 
+		localVariableDeclaration = new LocalVariableDeclaration(type);
+		localVariableDeclaration.StartLocation = startPos; 
 		LocalVariableDeclarator(
 #line  1825 "cs.ATG" 
 out var);
 
 #line  1825 "cs.ATG" 
-		localVariableDeclaration.Variables.Add(var); 
+		var.TypeReference = type;
+		localVariableDeclaration.Variables.Add(var);
 		while (la.kind == 14) {
 			lexer.NextToken();
 			LocalVariableDeclarator(
 #line  1826 "cs.ATG" 
 out var);
 
-#line  1826 "cs.ATG" 
-			localVariableDeclaration.Variables.Add(var); 
+#line  1826 "cs.ATG"
+			var.TypeReference = type;
+			localVariableDeclaration.Variables.Add(var);
 		}
 
 #line  1827 "cs.ATG" 
-		stmt = localVariableDeclaration; 
+		stmt = localVariableDeclaration;
+		stmt.EndLocation = t.EndLocation;
 	}
 
 	void LocalVariableDeclarator(
@@ -3824,14 +3865,17 @@ out VariableDeclaration var) {
 		Expect(1);
 
 #line  1834 "cs.ATG" 
-		var = new VariableDeclaration(t.val); 
+		var = new VariableDeclaration (t.val);
+		var.EndLocation = t.EndLocation;
+		var.StartLocation = t.Location;
 		if (la.kind == 3) {
 			lexer.NextToken();
 			VariableInitializer(
 #line  1834 "cs.ATG" 
 out expr);
 
-#line  1834 "cs.ATG" 
+#line  1834 "cs.ATG"
+			var.EndLocation = t.EndLocation;
 			var.Initializer = expr; 
 		}
 	}
@@ -4128,27 +4172,38 @@ out type);
 			Expect(1);
 
 #line  1954 "cs.ATG" 
-			string identifier = t.val; 
+			Point varStart = t.Location;
+			VariableDeclaration var;
+			string ident = t.val;
 			Expect(3);
 			Expr(
 #line  1955 "cs.ATG" 
 out expr);
 
-#line  1955 "cs.ATG" 
-			pointerDeclarators.Add(new VariableDeclaration(identifier, expr)); 
+#line  1955 "cs.ATG"
+			var = new VariableDeclaration (ident, expr);
+			var.EndLocation = t.EndLocation;
+			var.StartLocation = varStart;
+			var.TypeReference = type;
+			pointerDeclarators.Add (var);
 			while (la.kind == 14) {
 				lexer.NextToken();
 				Expect(1);
 
-#line  1957 "cs.ATG" 
-				identifier = t.val; 
+#line  1957 "cs.ATG"
+				varStart = t.Location;
+				ident = t.val; 
 				Expect(3);
 				Expr(
 #line  1958 "cs.ATG" 
 out expr);
 
-#line  1958 "cs.ATG" 
-				pointerDeclarators.Add(new VariableDeclaration(identifier, expr)); 
+#line  1958 "cs.ATG"
+				var = new VariableDeclaration (ident, expr);
+				var.EndLocation = t.EndLocation;
+				var.StartLocation = varStart;
+				var.TypeReference = type;
+				pointerDeclarators.Add (var);
 			}
 			Expect(21);
 			EmbeddedStatement(
@@ -4806,7 +4861,7 @@ out type);
 				lexer.NextToken();
 
 #line  2206 "cs.ATG" 
-				ObjectCreateExpression oce = new ObjectCreateExpression(type, parameters); 
+				ObjectCreateExpression oce = new ObjectCreateExpression(type, parameters);
 				if (StartOf(21)) {
 					Argument(
 #line  2207 "cs.ATG" 
