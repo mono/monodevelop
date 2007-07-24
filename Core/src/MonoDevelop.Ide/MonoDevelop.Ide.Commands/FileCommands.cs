@@ -67,7 +67,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run()
 		{
-			IdeApp.Workbench.CloseAllDocuments ();
+			IdeApp.Workbench.CloseAllDocuments (false);
 		}
 	}
 	

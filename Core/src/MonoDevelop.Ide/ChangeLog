@@ -1,3 +1,11 @@
+2007-07-24  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Commands/FileCommands.cs,
+	  MonoDevelop.Ide.Commands/FileTabCommands.cs,
+	  MonoDevelop.Ide.addin.xml, MonoDevelop.Ide.Gui/Workbench.cs,
+	  MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Added context menu for
+	  the open documents in the file notebook.
+
 2007-07-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Content/IEditable.cs,

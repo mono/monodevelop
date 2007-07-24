@@ -116,14 +116,14 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             w8.Name = "GtkAlignment";
             // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w9 = new Gtk.HBox();
-            w9.Name = "GtkHBox1";
+            w9.Name = "GtkHBox";
             w9.Spacing = 2;
-            // Container child GtkHBox1.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w10 = new Gtk.Image();
-            w10.Name = "image3";
+            w10.Name = "image1";
             w10.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-apply", 20);
             w9.Add(w10);
-            // Container child GtkHBox1.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w12 = new Gtk.Label();
             w12.Name = "GtkLabel";
             w12.LabelProp = Mono.Unix.Catalog.GetString("Apply");

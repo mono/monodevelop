@@ -234,7 +234,7 @@ namespace MonoDevelop.Ide.Gui
 				doc.Save ();
 		}
 		
-		public void CloseAllDocuments ()
+		public void CloseAllDocuments (bool leaveActiveDocumentOpen)
 		{
 			Document[] docs = new Document [Documents.Count];
 			Documents.CopyTo (docs, 0);
@@ -246,7 +246,7 @@ namespace MonoDevelop.Ide.Gui
 				if (doc != ActiveDocument)
 					doc.Close ();
 			}
-			if (ActiveDocument != null)
+			if (!leaveActiveDocumentOpen && ActiveDocument != null)
 				ActiveDocument.Close ();
 		}
 
@@ -368,6 +368,13 @@ namespace MonoDevelop.Ide.Gui
 			return WrapDocument (content.WorkbenchWindow);
 		}
 		
+		public void ToggleMaximize ()
+		{
+			SdiWorkbenchLayout sdiLayout = this.workbench.WorkbenchLayout as SdiWorkbenchLayout;
+			if (sdiLayout != null)
+				sdiLayout.ToggleFullViewMode ();
+		}
+
 		public Document NewDocument (string defaultName, string mimeType, string content)
 		{
 			MemoryStream ms = new MemoryStream ();
@@ -473,7 +480,6 @@ namespace MonoDevelop.Ide.Gui
 			
 			return active;
 		}
-		
 		void OnDocumentChanged (object s, EventArgs a)
 		{
 			if (ActiveDocumentChanged != null)

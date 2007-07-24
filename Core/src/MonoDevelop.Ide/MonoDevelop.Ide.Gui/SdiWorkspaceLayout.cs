@@ -116,8 +116,23 @@ namespace MonoDevelop.Ide.Gui
 			tabControl.SwitchPage += new SwitchPageHandler (ActiveMdiChanged);
 			
 			tabControl.ButtonPressEvent += delegate(object sender, ButtonPressEventArgs e) {
-				if (e.Event.Type == Gdk.EventType.TwoButtonPress && tabControl.FindTabAtPosition (e.Event.XRoot, e.Event.YRoot) >= 0)
+				int tab = tabControl.FindTabAtPosition (e.Event.XRoot, e.Event.YRoot);
+				if (tab < 0)
+					return;
+				tabControl.CurrentPage = tab;
+				if (e.Event.Type == Gdk.EventType.TwoButtonPress)
 					ToggleFullViewMode ();
+			};
+			
+			this.tabControl.PopupMenu += delegate {
+				ShowPopup ();
+			};
+			this.tabControl.ButtonReleaseEvent += delegate (object sender, Gtk.ButtonReleaseEventArgs e) {
+				int tab = tabControl.FindTabAtPosition (e.Event.XRoot, e.Event.YRoot);
+				if (tab < 0)
+					return;
+				if (e.Event.Button == 3)
+					ShowPopup ();
 			};
 			
 			tabControl.TabsReordered += new TabsReorderedHandler (OnTabsReordered);
@@ -154,9 +169,16 @@ namespace MonoDevelop.Ide.Gui
 			workbench.ContextChanged += contextChangedHandler;
 		}
 		
+		void ShowPopup ()
+		{
+			Gtk.Menu contextMenu = IdeApp.CommandService.CreateMenu ("/MonoDevelop/Workbench/ViewContextMenu");
+			if (contextMenu != null)
+				contextMenu.Popup ();
+		}
+		
 		bool isInFullViewMode = true;
 
-		void ToggleFullViewMode ()
+		public void ToggleFullViewMode ()
 		{
 			isInFullViewMode = !isInFullViewMode;
 			this.tabControl.LeaveDragMode (0);

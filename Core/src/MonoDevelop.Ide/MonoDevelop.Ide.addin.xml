@@ -170,6 +170,11 @@
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/Workbench/ViewContextMenu" name = "View Context Menu">
+		<Description>The context menu for all open files.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+		
 	<!-- Extensions -->
 
 
@@ -758,6 +763,20 @@
 				shortcut="Control|K" />
 				
 		</Category>
+		
+		<!-- FileTabCommands -->
+		<Category _name = "File Tab" id="FileTab">
+			<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAllButThis"
+			         defaultHandler = "MonoDevelop.Ide.Commands.CloseAllButThisHandler"
+					_label = "Close all but this"/>
+			<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.CopyPathName"
+			         defaultHandler = "MonoDevelop.Ide.Commands.CopyPathNameHandler"
+					_label = "Copy file path/name"/>
+			<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.ToggleMaximize"
+			         defaultHandler = "MonoDevelop.Ide.Commands.ToggleMaximizeHandler"
+					_label = "Switch maximize/normal view"/>
+		</Category>
+		
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/CombineBrowserNode">
@@ -1266,6 +1285,18 @@
 		<DialogPanel id = "CodeTemplates"
 		             _label = "Code Templates"
 		             class = "MonoDevelop.Ide.CodeTemplates.CodeTemplatePane"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Workbench/ViewContextMenu">
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseAllFiles" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAllButThis" />
+		<SeparatorItem id = "CloseSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Save" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAll" />
+		<SeparatorItem id = "SaveSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.CopyPathName" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.ToggleMaximize" />
 	</Extension>
 
 </Addin>
