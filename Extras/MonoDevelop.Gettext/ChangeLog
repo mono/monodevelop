@@ -1,5 +1,12 @@
 2007-07-24  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs,
+	  gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs: Add
+	  missing files.
+
+2007-07-24  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: Workaround for bug in
 	  the compiler. Looks like gmcs gets confused when using anon
 	  delegates in a partial class, and it will fail unless classes are
