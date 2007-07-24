@@ -262,7 +262,8 @@ namespace MonoDevelop.Autotools
 
 						if (!generateAutotools) {
 							infname = fname + ".in";
-							templateFilesTargets.AppendFormat ("{0}: {1}\n", fname, infname);
+							//FIXME: this should probably be done in configure script itself
+							templateFilesTargets.AppendFormat ("{0}: {1} $(top_srcdir)/config.make\n", fname, infname);
 							templateFilesTargets.AppendFormat (
 								"\tsed -e \"s,@prefix@,$(prefix),\" -e \"s,@PACKAGE@,$(PACKAGE),\" < {1} > {0}\n",
 								fname, infname);
@@ -282,6 +283,8 @@ namespace MonoDevelop.Autotools
 					deployFileCopyTargets.AppendFormat ("$({0}): {1}\n", deployVar, srcDeployFile);
 					deployFileCopyTargets.AppendFormat ("\tmkdir -p $(BUILD_DIR)\n");
 					deployFileCopyTargets.AppendFormat ("\tcp '$<' '$@'\n");
+					if (!generateAutotools && (dfile.FileAttributes & DeployFileAttributes.Executable) != 0)
+						deployFileCopyTargets.AppendFormat ("\tchmod u+x '$@'\n");
 					deployFileCopyTargets.Append ("\n");
 
 					switch (dfile.TargetDirectoryID) {

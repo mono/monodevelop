@@ -1,5 +1,10 @@
 2007-07-25  Ankit Jain  <jankit@novell.com>
 
+	* SimpleProjectMakefileHandler.cs (Deploy): 'chmod +x' exe-wrappers.
+	Ensure that .in files are regen'ed on configure.
+
+2007-07-25  Ankit Jain  <jankit@novell.com>
+
 	* GenerateMakefilesDialog.cs:
 	* gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:
 	* gtk-gui/gui.stetic:
