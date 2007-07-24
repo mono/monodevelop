@@ -1,5 +1,7 @@
 2007-07-24  Jeffrey Stedfast  <fejj@novell.com>
 
+	Part of the fix for bug #82114.
+
 	* Project/Src/Parser/AST/AbstractNode.cs (AddChild): Set the
 	Parent.
 
