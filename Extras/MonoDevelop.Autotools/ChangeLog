@@ -1,5 +1,11 @@
 2007-07-24  Ankit Jain  <jankit@novell.com>
 
+	* GenerateMakefilesDialog.cs:
+	* gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:
+	Oops, forgot to commit!
+
+2007-07-24  Ankit Jain  <jankit@novell.com>
+
 	Add support for generating non-autotools (simple) makefiles.
 
 	* SolutionDeployer.cs: Update to use new templates for simple
