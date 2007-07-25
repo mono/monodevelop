@@ -130,61 +130,61 @@ namespace MonoDevelop.Core
 		public void Debug (object message, Exception t)
 		{
 			GetLogger().Debug (message, t);
-			OnLogAppended ("Debug", message + t.ToString());
+			OnLogAppended ("Debug", message + (t != null ? t.ToString() : string.Empty));
 		}
 
 		public void Debug (string logger, object message, Exception t)
 		{
 			GetLogger(logger).Debug (message, t);
-			OnLogAppended ("Debug", message + t.ToString());
+			OnLogAppended ("Debug", message + (t != null ? t.ToString() : string.Empty));
 		}
 		
 		public void Info (object message, Exception t)
 		{
 			GetLogger().Info (message, t);
-			OnLogAppended ("Info", message + t.ToString());
+			OnLogAppended ("Info", message + (t != null ? t.ToString() : string.Empty));
 		}
 		
 		public void Info (string logger, object message, Exception t)
 		{
 			GetLogger(logger).Info (message, t);
-			OnLogAppended ("Info", message + t.ToString());
+			OnLogAppended ("Info", message + (t != null ? t.ToString() : string.Empty));
 		}
 		
 		public void Warn (object message, Exception t)
 		{
 			GetLogger().Warn (message, t);
-			OnLogAppended ("Warn", message + t.ToString());
+			OnLogAppended ("Warn", message + (t != null ? t.ToString() : string.Empty));
 		}
 
 		public void Warn (string logger, object message, Exception t)
 		{
 			GetLogger(logger).Warn (message, t);
-			OnLogAppended ("Warn", message + t.ToString());
+			OnLogAppended ("Warn", message + (t != null ? t.ToString() : string.Empty));
 		}
 
 		public void Error (object message, Exception t)
 		{
 			GetLogger().Error (message, t);
-			OnLogAppended ("Error", message + t.ToString());
+			OnLogAppended ("Error", message + (t != null ? t.ToString() : string.Empty));
 		}
 
 		public void Error (string logger, object message, Exception t)
 		{
 			GetLogger(logger).Error (message, t);
-			OnLogAppended ("Error", message + t.ToString());
+			OnLogAppended ("Error", message + (t != null ? t.ToString() : string.Empty));
 		}
 		
 		public void Fatal (object message, Exception t)
 		{
 			GetLogger().Fatal (message, t);
-			OnLogAppended ("Fatal", message + t.ToString());
+			OnLogAppended ("Fatal", message + (t != null ? t.ToString() : string.Empty));
 		}
 
 		public void Fatal (string logger, object message, Exception t)
 		{
 			GetLogger(logger).Fatal (message, t);
-			OnLogAppended ("Fatal", message + t.ToString());
+			OnLogAppended ("Fatal", message + (t != null ? t.ToString() : string.Empty));
 		}
 
 		public void DebugFormat (string format, params object[] args)
