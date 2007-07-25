@@ -1,0 +1,6 @@
+2007-07-25  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.RegexToolkit.addin.xml,
+	  MonoDevelop.RegexToolkit/RegexToolkit.cs,
+	  MonoDevelop.RegexToolkit/Commands.cs: Initial checkin.
+
