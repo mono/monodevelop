@@ -127,7 +127,6 @@ namespace JavaBinding.Parser
 		
 		public override object Visit(IdentifierExpression identifierExpression, object data)
 		{
-			Console.WriteLine("visiting IdentifierExpression");
 			if (identifierExpression == null) {
 				return null;
 			}

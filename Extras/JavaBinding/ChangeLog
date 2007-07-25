@@ -1,3 +1,7 @@
+2007-07-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Parser/Resolver.cs, Parser/TypeVisitor.cs: Remove debug code.
+
 2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* JavaBinding.mdp: Copy the .addins.xml file to the output dir.

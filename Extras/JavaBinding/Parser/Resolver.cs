@@ -803,7 +803,6 @@ namespace JavaBinding.Parser
 			IParseInformation parseInfo = parserService.GetParseInformation(fileName);
 			JRefactory.Parser.AST.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as JRefactory.Parser.AST.CompilationUnit;
 			if (fileCompilationUnit == null) {
-				Console.WriteLine("!Warning: no parseinformation!");
 				return null;
 			}
 			lookupTableVisitor = new LookupTableVisitor();
