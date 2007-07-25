@@ -1,3 +1,9 @@
+2007-07-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs: Update the message log
+	  only when it is visible.
+	* MonoDevelop.Ide.mdp, Makefile.am: Updated.
+
 2007-07-24  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs,

@@ -56,6 +56,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 		TreeModelFilter filter;
 		ToggleToolButton errorBtn, warnBtn, msgBtn, debugBtn;
 		Gtk.Tooltips tips = new Gtk.Tooltips ();
+		IPadWindow window;
+		bool needsReload;
 
 		Clipboard clipboard;
 
@@ -80,8 +82,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		void IPadContent.Initialize (IPadWindow window)
 		{
+			this.window = window;
 			window.Title = GettextCatalog.GetString ("Internal Message Log");
 			window.Icon = MonoDevelop.Core.Gui.Stock.OutputIcon;
+			window.PadShown += delegate {
+				if (needsReload)
+					Refresh ();
+			};
 		}
 		
 		public Gtk.Widget Control {
@@ -185,14 +192,22 @@ namespace MonoDevelop.Ide.Gui.Pads
 			toolbar.ShowArrow = false;
 			Control.ShowAll ();
 			
+			Refresh ();
+
+			store.SetSortFunc ((int)Columns.Time, TimeSortFunc);
+			((TreeModelSort)view.Model).SetSortColumnId ((int)Columns.Time, SortType.Descending);
+		}
+			
+		void Refresh ()
+		{
+			store.Clear ();
 			lock (InternalLog.Messages) {
 				// Load existing messages
 				foreach (LogAppendedArgs msg in InternalLog.Messages) {
 					AddMessage (msg);
 				}
 			}
-			store.SetSortFunc ((int)Columns.Time, TimeSortFunc);
-			((TreeModelSort)view.Model).SetSortColumnId ((int)Columns.Time, SortType.Descending);
+			needsReload = false;
 		}
 
 		void AddColumns ()
@@ -305,7 +320,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			if (args.Level == InternalLog.Debug)
 				return;
-			AddMessage (args);
+			if (window.Visible)
+				AddMessage (args);
+			else
+				needsReload = true;
 		}
 		
 		public void AddMessage (LogAppendedArgs args)
@@ -374,8 +392,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			SortType order;
 			int sid;
 			store.GetSortColumnId (out sid, out order);
-			
-			Console.WriteLine ("pp1: ");
 			
 			if (order == SortType.Ascending)
 				return DateTime.Compare (m1.Timestamp, m2.Timestamp);
