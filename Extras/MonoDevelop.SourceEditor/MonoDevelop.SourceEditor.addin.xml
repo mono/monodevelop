@@ -46,7 +46,7 @@
 		<Class id = "SourceViewService" class="MonoDevelop.SourceEditor.SourceViewService" />
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Commands">
+	<Extension path = "/SharpDevelop/Commands/TextEditor">
 		<Command id = "MonoDevelop.SourceEditor.EditorCommands.HighlightingTypeList"
 				type = "array|radio"
 				_label = "" />
