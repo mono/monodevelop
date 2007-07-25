@@ -1,3 +1,8 @@
+2007-07-25  Ankit Jain  <jankit@novell.com>
+
+	* templates/configure.template: Don't use "\n" or "\t" in echo-s, sh doesn't
+	seem to be able to handle them.
+
 2007-07-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Autotools.addin.xml, MonoDevelop.Autotools.mdp,

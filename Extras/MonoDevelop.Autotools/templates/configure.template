@@ -8,13 +8,14 @@ required_packages=%%REQUIRED_PACKAGES%%
 
 usage ()
 {
-	echo "\nUsage : configure [--prefix=PREFIX] [--config=CONFIG]"
-	echo "\nConfigurations available :"
+	echo "Usage : configure [--prefix=PREFIX] [--config=CONFIG]"
+	echo
+	echo "Configurations available :"
 	for c in $configurations; do
 		if [ "$c" = "$config" ]; then
-			echo "\t$c (Default)"
+			echo "        $c (Default)"
 		else
-			echo "\t$c"
+			echo "        $c"
 		fi
 	done
 }
@@ -40,7 +41,8 @@ check_required_packages ()
 		echo -n "Checking for package '$name'.." | tee -a config.log
 		pkg-config --atleast-version=$version $name
 		if [ $? -ne 0 ]; then
-			echo " ERROR: Package named '$name' >= $version not found.\nTry adjusting your PKG_CONFIG_PATH environment variable." | tee -a config.log
+			echo " ERROR: Package named '$name' >= $version not found." | tee -a config.log
+			echo "Try adjusting your PKG_CONFIG_PATH environment variable." | tee -a config.log
 			return 1
 		fi
 		echo " found."
@@ -91,7 +93,9 @@ echo "VERSION=$VERSION" >> config.make
 echo "PACKAGE=$PACKAGE" >> config.make
 echo "CONFIG=$config" >> config.make
 
-echo "\n$PACKAGE has been configured with "
-echo "\tprefix = $prefix"
-echo "\tconfig = $config\n"
+echo
+echo "$PACKAGE has been configured with "
+echo "        prefix = $prefix"
+echo "        config = $config"
+echo
 
