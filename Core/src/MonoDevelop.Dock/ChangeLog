@@ -1,3 +1,7 @@
+2007-07-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Dock.mdp: Update.
+
 2007-07-13  Mike Krüger <mkrueger@novell.com> 
 
 	* DragNotebook.cs: Worked on bug 81349:double-click src tab =>
