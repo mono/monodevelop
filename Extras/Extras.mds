@@ -23,6 +23,7 @@
       <Entry build="True" name="BooBinding" configuration="Debug" />
       <Entry build="True" name="MonoQuery" configuration="Debug" />
       <Entry build="True" name="CSharpBinding" configuration="" />
+      <Entry build="True" name="MonoDevelop.Gettext" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
@@ -47,6 +48,7 @@
       <Entry build="True" name="BooBinding" configuration="Release" />
       <Entry build="True" name="MonoQuery" configuration="Release" />
       <Entry build="True" name="CSharpBinding" configuration="" />
+      <Entry build="True" name="MonoDevelop.Gettext" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="MonoDevelop.NUnit" single="True">
@@ -74,6 +76,7 @@
     <Execute type="None" entry="BooBinding" />
     <Execute type="None" entry="MonoQuery" />
     <Execute type="None" entry="CSharpBinding" />
+    <Execute type="None" entry="MonoDevelop.Gettext" />
   </StartMode>
   <Entries>
     <Entry filename="./NUnit/MonoDevelop.NUnit.mdp" />
@@ -98,5 +101,6 @@
     <Entry filename="./BooBinding/BooBinding.mds" />
     <Entry filename="./MonoQuery/Mono.Data.Sql.mds" />
     <Entry filename="./CSharpBinding/CSharpBinding.mds" />
+    <Entry filename="./MonoDevelop.Gettext/MonoDevelop.Gettext.mdp" />
   </Entries>
 </Combine>

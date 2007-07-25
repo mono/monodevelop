@@ -7,8 +7,8 @@
        description = "Provides the core services of the MonoDevelop platform"
 	   category    = "MonoDevelop Core"
 	   isroot      = "true"
-       version     = "0.14.0"
-       compatVersion = "0.14.0">
+       version     = "0.15.0"
+       compatVersion = "0.15.0">
 
 	<Runtime>
 		<Import assembly="../bin/MonoDevelop.Core.dll"/>

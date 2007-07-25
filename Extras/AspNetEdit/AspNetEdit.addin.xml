@@ -6,21 +6,21 @@
        url         = "http://www.monodevelop.com/"
        description = "Visual Designer for ASP.NET Web Forms."
 	   category    = "IDE extensions"
-       version     = "0.0.3">
+       version     = "0.15.0">
 	
 	<Runtime>
 		<Import assembly = "AspNetEdit.dll"/>
 	</Runtime>
 
 	<Dependencies>
-	    <Addin id="Core" version="0.14.0"/>
-	    <Addin id="Core.Gui" version="0.14.0"/>
-    	<Addin id="Projects" version="0.14.0"/>
-		<Addin id="Projects.Gui" version="0.14.0"/>
-		<Addin id="Ide" version="0.14.0"/>
-		<Addin id="Deployment" version="0.14.0" />
-		<Addin id="SourceEditor" version="0.14.0"/>
-		<Addin id="AspNetAddIn" version="0.0.2" />
+	    <Addin id="Core" version="0.15.0"/>
+	    <Addin id="Core.Gui" version="0.15.0"/>
+    	<Addin id="Projects" version="0.15.0"/>
+		<Addin id="Projects.Gui" version="0.15.0"/>
+		<Addin id="Ide" version="0.15.0"/>
+		<Addin id="Deployment" version="0.15.0" />
+		<Addin id="SourceEditor" version="0.15.0"/>
+		<Addin id="AspNetAddIn" version="0.15.0" />
 	</Dependencies>
 	
 	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">

@@ -6,15 +6,15 @@
        url         = "http://www.monodevelop.com"
        description = "Provides support for loading and building MonoDevelop projects."
 	   category    = "MonoDevelop Core"
-       version     = "0.14.0"
-       compatVersion = "0.14.0">
+       version     = "0.15.0"
+       compatVersion = "0.15.0">
 
 	<Runtime>
 		<Import assembly="MonoDevelop.Projects.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="0.14.0"/>
+		<Addin id="Core" version="0.15.0"/>
 	</Dependencies>
 
 

@@ -6,19 +6,19 @@
        url         = "http://www.monodevelop.com"
        description = "Provides basic deployment services"
 	   category    = "Deployment"
-       version     = "0.14.0"
-       compatVersion = "0.14.0">
+       version     = "0.15.0"
+       compatVersion = "0.15.0">
 
 	<Runtime>
 		<Import assembly="MonoDevelop.Deployment.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="0.14.0"/>
-		<Addin id="Projects" version="0.14.0"/>
-		<Addin id="Projects.Gui" version="0.14.0"/>
-		<Addin id="Ide" version="0.14.0"/>
-		<Addin id="DesignerSupport" version="0.14.0"/>
+		<Addin id="Core" version="0.15.0"/>
+		<Addin id="Projects" version="0.15.0"/>
+		<Addin id="Projects.Gui" version="0.15.0"/>
+		<Addin id="Ide" version="0.15.0"/>
+		<Addin id="DesignerSupport" version="0.15.0"/>
 	</Dependencies>
 
 	<Extension path = "/SharpDevelop/Commands">
