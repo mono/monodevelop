@@ -102,15 +102,17 @@ namespace MonoDevelop.Projects
 					oper = Runtime.ProcessService.StartProcess (exe, args, entry.BaseDirectory, monitor.Log, monitor.Log, null, false);
 				}
 			}
-				
+			
 			monitor.CancelRequested += delegate {
 				if (!oper.IsCompleted)
 					oper.Cancel ();
 			};
 			
 			oper.WaitForCompleted ();
-			if (!oper.Success)
+			if (!oper.Success) {
+				monitor.ReportError ("Custom command failed (exit code: " + oper.ExitCode + ")", null);
 				monitor.AsyncOperation.Cancel ();
+			}
 		}
 	}
 }

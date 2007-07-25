@@ -1,3 +1,7 @@
+2007-07-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/CustomCommand.cs: Report custom command errors.
+
 2007-07-24  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs: Override
