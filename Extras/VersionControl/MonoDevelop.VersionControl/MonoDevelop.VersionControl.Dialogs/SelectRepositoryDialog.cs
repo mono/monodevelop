@@ -1,5 +1,6 @@
 
 using System;
+using System.Threading;
 using System.Collections;
 using MonoDevelop.Core;
 using Gtk;
@@ -18,6 +19,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 		ArrayList systems = new ArrayList ();
 		Gtk.TreeStore store;
 		SelectRepositoryMode mode;
+		ArrayList loadingRepos = new ArrayList ();
 		
 		const int RepositoryCol = 0;
 		const int RepoNameCol = 1;
@@ -218,25 +220,53 @@ namespace MonoDevelop.VersionControl.Dialogs
 				store.SetValue (args.Iter, FilledCol, true);
 				
 				// Remove the dummy child
-				TreeIter iter;
+				TreeIter iter, citer;
 				store.IterChildren (out iter, args.Iter);
 				store.Remove (ref iter);
-				
-				try {
-					// Add child repositories
-					foreach (Repository rep in parent.ChildRepositories)
-						LoadRepositories (rep, args.Iter);
-				} catch (Exception ex) {
-					store.AppendValues (args.Iter, null, "ERROR: " + ex.Message, "", true);
-					Runtime.LoggingService.Error (ex);
-				}
-					
-				// If after all there are no children, return false
-				if (!store.IterChildren (out iter, args.Iter)) {
-					args.RetVal = true;
-				}
+				citer = store.AppendValues (args.Iter, null, GettextCatalog.GetString ("Loading..."), "", true);
+
+				loadingRepos.Add (FindRootRepo (args.Iter));
+				UpdateControls ();
+
+				Thread t = new Thread (delegate () { LoadRepoInfo (parent, args.Iter, citer); });
+				t.IsBackground = true;
+				t.Start ();
 			} else
 				args.RetVal = false;
+		}
+			
+		Repository FindRootRepo (TreeIter iter)
+		{
+			TreeIter piter;
+			while (store.IterParent (out piter, iter)) {
+				iter = piter;
+			}
+			return (Repository) store.GetValue (iter, RepositoryCol);
+		}
+			
+		void LoadRepoInfo (Repository parent, TreeIter piter, TreeIter citer)
+		{
+			IEnumerable repos = null;
+			Exception ex = null;
+			try {
+				repos = parent.ChildRepositories;
+			} catch (Exception e) {
+				ex = e;
+			}
+				
+			Gtk.Application.Invoke (delegate {
+				if (ex != null) {
+					store.AppendValues (piter, null, "ERROR: " + ex.Message, "", true);
+					Runtime.LoggingService.Error (ex);
+				}
+				else {
+					foreach (Repository rep in repos)
+						LoadRepositories (rep, piter);
+				}
+				store.Remove (ref citer);
+				loadingRepos.Remove (FindRootRepo (piter));
+				UpdateControls ();
+			});
 		}
 		
 		protected virtual void OnRepoTreeCursorChanged(object sender, System.EventArgs e)
@@ -250,14 +280,18 @@ namespace MonoDevelop.VersionControl.Dialogs
 			TreeIter iter;
 			TreeModel model;
 			if (repoTree.Selection.GetSelected (out model, out iter)) {
-				if (store.IterParent (out iter, iter)) {
-					buttonRemove.Sensitive = false;
-					buttonEdit.Sensitive = false;
-					return;
+				TreeIter piter;
+				if (!store.IterParent (out piter, iter)) {
+					Repository repo = FindRootRepo (iter);
+					if (!loadingRepos.Contains (repo)) {
+						buttonRemove.Sensitive = true;
+						buttonEdit.Sensitive = true;
+						return;
+					}
 				}
 			}
-			buttonRemove.Sensitive = true;
-			buttonEdit.Sensitive = true;
+			buttonRemove.Sensitive = false;
+			buttonEdit.Sensitive = false;
 		}
 
 		protected virtual void OnButtonBrowseClicked(object sender, System.EventArgs e)
