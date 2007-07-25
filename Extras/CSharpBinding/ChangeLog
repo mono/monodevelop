@@ -1,3 +1,19 @@
+2007-07-25  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes for bug #82179.
+
+	* FormattingStrategy/CSharpIndentEngineStack.cs (Push): Added a
+	second Push() method allowing the caller to force a particular
+	indent.
+
+	* FormattingStrategy/CSharpIndentEngine.cs (PushOpenBrace): Trim
+	the indent level as we pop FoldedStatements and use
+	stack.PeekKeyword(0) instead of stack.PeekKeyword(1).
+	(PushFoldedStatement): We no longer stop pushing folded statements
+	for any reason, we simply push a folded statement with a set
+	indent in those cases (needed for keeping proper track of
+	keywords).
+
 2007-07-24  Jeffrey Stedfast  <fejj@novell.com>
 
 	Part of the fix for bug #82114.

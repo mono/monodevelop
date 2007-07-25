@@ -288,23 +288,36 @@ namespace CSharpBinding.FormattingStrategy {
 			return str == "default";
 		}
 		
+		bool Folded2LevelsNonSpecial ()
+		{
+			return stack.PeekInside (0) == Inside.FoldedStatement &&
+				stack.PeekInside (1) == Inside.FoldedStatement &&
+				!KeywordIsSpecial (stack.PeekKeyword (0)) &&
+				!KeywordIsSpecial (keyword);
+		}
+		
+		bool FoldedClassDeclaration ()
+		{
+			return stack.PeekInside (0) == Inside.FoldedStatement &&
+				(keyword == "base" || keyword == "class" || keyword == "interface");
+		}
+		
 		void PushFoldedStatement ()
 		{
-			// nesting of folded statements stops after 2 unless a "special" folded
-			// statement is introduced, in which case the cycle restarts
-			if (stack.PeekInside (0) == Inside.FoldedStatement &&
-			    stack.PeekInside (1) == Inside.FoldedStatement &&
-			    !KeywordIsSpecial (stack.PeekKeyword (0)) &&
-			    !KeywordIsSpecial (keyword)) {
-				keyword = String.Empty;
-				return;
-			} else if (stack.PeekInside (0) == Inside.FoldedStatement &&
-			           (keyword == "base" || keyword == "class" || keyword == "interface")) {
-				// don't push another folded statement in this case either...
-				return;
-			}
+			string indent = null;
 			
-			stack.Push (Inside.FoldedStatement, keyword, curLineNr, 0);
+			// Note: nesting of folded statements stops after 2 unless a "special" folded
+			// statement is introduced, in which case the cycle restarts
+			//
+			// Note: We also try to only fold class declarations once
+			
+			if (Folded2LevelsNonSpecial () || FoldedClassDeclaration ())
+				indent = stack.PeekIndent (0);
+			
+			if (indent != null)
+				stack.Push (Inside.FoldedStatement, keyword, curLineNr, 0, indent);
+			else
+				stack.Push (Inside.FoldedStatement, keyword, curLineNr, 0);
 			
 			keyword = String.Empty;
 		}
@@ -575,15 +588,18 @@ namespace CSharpBinding.FormattingStrategy {
 				string pKeyword;
 				
 				if (firstNonLwsp == -1) {
-					pKeyword = stack.PeekKeyword (1);
+					pKeyword = stack.PeekKeyword (0);
 					stack.Pop ();
-				} else
+				} else {
 					pKeyword = keyword;
+				}
 				
 				if (pKeyword == "base" || pKeyword == "this" || pKeyword == "class" || pKeyword == "interface") {
 					// folded ctor or class
-					while (stack.PeekInside (0) == Inside.FoldedStatement)
+					while (stack.PeekInside (0) == Inside.FoldedStatement) {
+						TrimIndent ();
 						stack.Pop ();
+					}
 				}
 				
 				if (firstNonLwsp == -1)

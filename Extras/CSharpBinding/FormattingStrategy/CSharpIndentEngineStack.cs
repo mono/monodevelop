@@ -207,6 +207,22 @@ namespace CSharpBinding.FormattingStrategy {
 				stack[size++] = node;
 			}
 			
+			public void Push (Inside inside, string keyword, int lineNr, int nSpaces, string indent)
+			{
+				Node node;
+				
+				node.indent = indent;
+				node.keyword = keyword;
+				node.nSpaces = nSpaces;
+				node.lineNr = lineNr;
+				node.inside = inside;
+				
+				if (size == stack.Length)
+					Array.Resize <Node> (ref stack, 2 * size);
+				
+				stack[size++] = node;
+			}
+			
 			public void Pop ()
 			{
 				if (size == 0)
