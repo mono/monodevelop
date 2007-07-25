@@ -1,3 +1,7 @@
+2007-07-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AspNetAddIn.mdp: Updated.
+
 2007-06-19  Michael Hutchinson <m.j.hutchinson@gmail.com> 
 
 	* Project/CodeBehind.cs: Oops, remove some development code in which 
