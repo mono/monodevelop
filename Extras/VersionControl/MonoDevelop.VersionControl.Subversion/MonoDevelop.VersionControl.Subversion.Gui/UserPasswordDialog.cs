@@ -10,6 +10,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 		public UserPasswordDialog (string user, string realm, bool mayRemember, bool showPassword)
 		{
 			Build ();
+			
 			if (user != null && user.Length > 0) {
 				entryUser.Text = user;
 				entryPwd.HasFocus = true;
@@ -19,8 +20,11 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			if (!mayRemember)
 				checkSavePwd.Visible = false;
 			
-			if (!showPassword)
+			if (!showPassword) {
+				entryUser.Activated += new EventHandler (OnPasswdActivated);
 				entryPwd.Visible = labelPwd.Visible = false;
+			} else
+				entryPwd.Activated += new EventHandler (OnPasswdActivated);
 		}
 		
 		public string User {
@@ -35,6 +39,10 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			get { return checkSavePwd.Visible && checkSavePwd.Active; }
 		}
 		
+		void OnPasswdActivated (object o, EventArgs e)
+		{
+			this.Respond ((int) Gtk.ResponseType.Ok);
+		}
 		
 		internal static bool Show (string realm, bool may_save, out LibSvnClient.svn_auth_cred_username_t data)
 		{
