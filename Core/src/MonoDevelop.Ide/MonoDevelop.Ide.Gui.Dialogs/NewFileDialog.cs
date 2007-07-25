@@ -382,9 +382,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		}
 		
 		public event EventHandler OnOked;	
-	
+		
 		void OpenEvent(object sender, EventArgs e)
 		{
+			if (!okButton.Sensitive)
+				return;
+			
 			//FIXME: we need to set this up
 			//PropertyService propertyService = (PropertyService)ServiceManager.Services.GetService(typeof(PropertyService));
 			//propertyService.SetProperty("Dialogs.NewProjectDialog.LargeImages", ((RadioButton)ControlDictionary["largeIconsRadioButton"]).Checked);
@@ -415,7 +418,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				Destroy ();
 			}
 		}
-
+		
 		/// <summary>
 		///  Represents a category
 		/// </summary>
