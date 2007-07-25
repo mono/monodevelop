@@ -778,6 +778,7 @@ Directory</property>
                           <widget class="Gtk.TreeView" id="treeCategories">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
+                            <property name="HeadersClickable">True</property>
                           </widget>
                         </child>
                       </widget>
@@ -941,6 +942,7 @@ Directory</property>
                       <widget class="Gtk.TreeView" id="treeEnvs">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
+                        <property name="HeadersClickable">True</property>
                       </widget>
                     </child>
                   </widget>
@@ -1023,6 +1025,7 @@ Directory</property>
                   <widget class="Gtk.TreeView" id="treeMimeTypes">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
+                    <property name="HeadersClickable">True</property>
                   </widget>
                 </child>
               </widget>
@@ -1129,6 +1132,7 @@ Directory</property>
                   <widget class="Gtk.TreeView" id="treeEntries">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
+                    <property name="HeadersClickable">True</property>
                   </widget>
                 </child>
               </widget>
@@ -1247,6 +1251,7 @@ Directory</property>
                   <widget class="Gtk.TreeView" id="tree">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
+                    <property name="HeadersClickable">True</property>
                   </widget>
                 </child>
               </widget>

@@ -1,3 +1,9 @@
+2007-07-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment.Linux.mdp,
+	  gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs,
+	  gtk-gui/gui.stetic: Updated.
+
 2007-07-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment.Linux/MenuCategorySelectorDialog.cs: Fix
