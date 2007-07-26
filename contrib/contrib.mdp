@@ -1,0 +1,27 @@
+<Project name="contrib" fileversion="2.0" ctype="GenericProject">
+  <Configurations active="Default">
+    <Configuration name="Default" ctype="GenericProjectConfiguration">
+      <Output directory="./" />
+      <Build debugmode="True" />
+      <Execution runwithwarnings="True" consolepause="True" />
+    </Configuration>
+  </Configurations>
+  <Contents>
+    <File name="./log4net.dll" subtype="Code" buildaction="Nothing" />
+    <File name="./Mono.Cecil.dll" subtype="Code" buildaction="Nothing" />
+    <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="./FirebirdSql.Data.Firebird.dll" subtype="Code" buildaction="Nothing" />
+    <File name="./FirebirdSql.Data.Firebird.license.txt" subtype="Code" buildaction="Nothing" />
+    <File name="./log4net.license.txt" subtype="Code" buildaction="Nothing" />
+  </Contents>
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am">
+    <BuildFilesVar />
+    <DeployFilesVar />
+    <ResourcesVar />
+    <OthersVar />
+    <GacRefVar />
+    <AsmRefVar />
+    <ProjectRefVar />
+  </MonoDevelop.Autotools.MakefileInfo>
+  <MonoDevelop.Gettext.TranslationInfo />
+</Project>
