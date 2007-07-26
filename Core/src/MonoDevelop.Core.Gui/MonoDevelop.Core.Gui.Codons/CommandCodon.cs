@@ -48,7 +48,7 @@ namespace MonoDevelop.Core.Gui.Codons
 		[NodeAttribute ("_description", "Description of the command")]
 		string _description;
 		
-		[NodeAttribute ("shortcut", "Key combination that triggers the command. Control, Alt and Shift modifiers can be specified using '+' as a separator. Multi-state key bindings can be specified using a '|' between the mode and accel. For example 'Control+d' or 'Control+x|Control+s'")]
+		[NodeAttribute ("shortcut", "Key combination that triggers the command. Control, Alt and Shift modifiers can be specified using '+' as a separator. Multi-state key bindings can be specified using a '|' between the mode and accel. For example 'Control+D' or 'Control+X|Control+S'")]
 		string shortcut;
 		
 		[NodeAttribute("icon", "Icon of the command. The provided value must be a registered stock icon. A resource icon can also be specified using 'res:' as prefix for the name, for example: 'res:customIcon.png'")]
