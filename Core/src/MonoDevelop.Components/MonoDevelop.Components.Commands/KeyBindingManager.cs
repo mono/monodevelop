@@ -494,6 +494,9 @@ namespace MonoDevelop.Components.Commands {
 			command.KeyBindingChanged -= OnKeyBindingChanged;
 			commands.Remove (command);
 			
+			if (string.IsNullOrEmpty (command.AccelKey))
+				return;
+
 			list = bindings[command.AccelKey];
 			list.Remove (command);
 			if (list.Count == 0)
