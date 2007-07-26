@@ -94,14 +94,10 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		public void SetSearchPattern ()
 		{
-			TextEditor editor = TextEditor.GetTextEditor (View.ParentEditor.DisplayBinding);
-			string searchPattern = SearchReplaceManager.SearchOptions.SearchPattern;
 			string selectedText = Buffer.GetSelectedText ();
 			
-			if (selectedText != String.Empty)
+			if (selectedText != null && selectedText != String.Empty)
 				SearchReplaceManager.SearchOptions.SearchPattern = selectedText.Split ('\n')[0];
-			else if (searchPattern == String.Empty && editor.CursorIsInWord)
-				SearchReplaceManager.SearchOptions.SearchPattern = editor.GetWordAtCursor ();
 		}
 		
 		public void AddMarker (string name, Gdk.Pixbuf image)
