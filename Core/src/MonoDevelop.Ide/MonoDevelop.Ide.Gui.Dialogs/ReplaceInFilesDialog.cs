@@ -228,7 +228,16 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			directoryTextBox.Text = SearchReplaceInFilesManager.SearchOptions.SearchDirectory;
 			fileMaskTextBox.Text = SearchReplaceInFilesManager.SearchOptions.FileMask;
 			includeSubdirectoriesCheckBox.Active = SearchReplaceInFilesManager.SearchOptions.SearchSubdirectories;
-			searchPatternEntry.Text = SearchReplaceInFilesManager.SearchOptions.SearchPattern;
+			
+			string searchText = IdeApp.Workbench.ActiveDocument.TextEditor.SelectedText;
+			if (searchText != String.Empty) {
+				// set search pattern to selected text
+				SearchReplaceInFilesManager.SearchOptions.SearchPattern = searchText;
+			} else
+				searchText = SearchReplaceInFilesManager.SearchOptions.SearchPattern;
+			
+			searchPatternEntry.Text = searchText;
+			
 			if (replacePatternEntry != null)
 				replacePatternEntry.Text = SearchReplaceInFilesManager.SearchOptions.ReplacePattern;
 		}
@@ -262,7 +271,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		void BrowseDirectoryEvent (object sender, EventArgs e)
 		{
-			PropertyService PropertyService = (PropertyService)ServiceManager.GetService (typeof (PropertyService));			
+			PropertyService PropertyService = (PropertyService)ServiceManager.GetService (typeof (PropertyService));
 			FolderDialog fd = new FolderDialog (GettextCatalog.GetString ("Select directory"));
 
 			try {

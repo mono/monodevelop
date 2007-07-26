@@ -1625,7 +1625,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 				
 				NodeAttributes ats = GetAttributes (chain, data);
 				UpdateNode (chain, ats, data);
-				
 			}
 			
 			public void ResetState ()
@@ -1643,7 +1642,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 					store.AppendNode (currentIter);	// Dummy node
 					store.SetValue (currentIter, TreeViewPad.FilledColumn, false);
 				}
-				
 			}
 			
 			public void UpdateChildren ()

@@ -138,7 +138,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			CellRendererText cr = new CellRendererText ();
 			specialSearchStrategyComboBox.PackStart (cr, true);
 			specialSearchStrategyComboBox.AddAttribute (cr, "text", 0);
-		
+			
 			int index = 0;
 			switch (SearchReplaceManager.SearchOptions.SearchStrategyType) {
 				case SearchStrategyType.Normal:
@@ -168,6 +168,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			searchLocationComboBox.Active = index;
 			
 			searchPatternEntry.Text = SearchReplaceManager.SearchOptions.SearchPattern;
+			
+			string searchText = IdeApp.Workbench.ActiveDocument.TextEditor.SelectedText;
+			if (searchText != String.Empty) {
+				// set search pattern to selected text
+				SearchReplaceManager.SearchOptions.SearchPattern = searchText;
+				searchPatternEntry.Text = searchText;
+			}
 			
 			// insert event handlers
 			findButton.Clicked  += new EventHandler(FindNextEvent);
