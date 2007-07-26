@@ -320,7 +320,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			if (args.Level == InternalLog.Debug)
 				return;
-			if (window.Visible)
+			if (window != null && window.Visible)
 				AddMessage (args);
 			else
 				needsReload = true;
