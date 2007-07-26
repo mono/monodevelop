@@ -1,3 +1,9 @@
+2007-07-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.DesignerSupport/DesignerSupportService.cs: When the
+	  property pad is show, initialize it with the data of the latest
+	  provider found. Fixes bug #82166.
+
 2007-07-24  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs,

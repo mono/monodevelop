@@ -66,6 +66,19 @@ namespace MonoDevelop.DesignerSupport
 		internal void SetPropertyPad (PropertyPad pad)
 		{
 			propertyPad = pad;
+			
+			if (lastPadProvider != null) {
+				object[] provs = GetPropertyProvidersForObject (lastComponent, lastPadProvider.GetPropertyProvider ());
+				if (provs.Length > 0)
+					propertyPad.PropertyGrid.SetCurrentObject (lastComponent, provs);
+				else
+					propertyPad.BlankPad ();
+				
+				propertyPad.PropertyGrid.Changed += OnPropertyGridChanged;		
+			}
+			else if (lastCustomProvider != null) {
+				propertyPad.UseCustomWidget (lastCustomProvider.GetCustomPropertyWidget ());
+			}
 		}
 		
 		void DisposePropertyPadProvider ()
