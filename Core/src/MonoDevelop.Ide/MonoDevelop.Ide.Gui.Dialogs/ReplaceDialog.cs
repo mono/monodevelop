@@ -164,17 +164,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			index = 0;
 			if (SearchReplaceManager.SearchOptions.DocumentIteratorType == DocumentIteratorType.AllOpenFiles)
 				index = 1;
-
+			
 			searchLocationComboBox.Active = index;
 			
 			searchPatternEntry.Text = SearchReplaceManager.SearchOptions.SearchPattern;
-			
-			string searchText = IdeApp.Workbench.ActiveDocument.TextEditor.SelectedText;
-			if (searchText != String.Empty) {
-				// set search pattern to selected text
-				SearchReplaceManager.SearchOptions.SearchPattern = searchText;
-				searchPatternEntry.Text = searchText;
-			}
 			
 			// insert event handlers
 			findButton.Clicked  += new EventHandler(FindNextEvent);

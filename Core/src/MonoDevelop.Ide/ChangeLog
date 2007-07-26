@@ -1,13 +1,3 @@
-2007-07-26  Jeffrey Stedfast  <fejj@novell.com>
-
-	Fix for bug #82031.
-
-	* MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs: If the
-	Editor.SelectedText is non-empty, default to the selected text as
-	the search pattern instead of the previous search pattern.
-
-	* MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs: Same.
-
 2007-07-26  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs: Fix nullref.

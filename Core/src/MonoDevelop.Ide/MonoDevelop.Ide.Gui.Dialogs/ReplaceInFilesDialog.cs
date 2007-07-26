@@ -229,14 +229,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			fileMaskTextBox.Text = SearchReplaceInFilesManager.SearchOptions.FileMask;
 			includeSubdirectoriesCheckBox.Active = SearchReplaceInFilesManager.SearchOptions.SearchSubdirectories;
 			
-			string searchText = IdeApp.Workbench.ActiveDocument.TextEditor.SelectedText;
-			if (searchText != String.Empty) {
-				// set search pattern to selected text
-				SearchReplaceInFilesManager.SearchOptions.SearchPattern = searchText;
-			} else
-				searchText = SearchReplaceInFilesManager.SearchOptions.SearchPattern;
-			
-			searchPatternEntry.Text = searchText;
+			searchPatternEntry.Text = SearchReplaceInFilesManager.SearchOptions.SearchPattern;
 			
 			if (replacePatternEntry != null)
 				replacePatternEntry.Text = SearchReplaceInFilesManager.SearchOptions.ReplacePattern;
