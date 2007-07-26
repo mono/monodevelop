@@ -502,7 +502,10 @@ namespace MonoDevelop.VersionControl.Views
 			// Nothing to commit
 			if (changeSet.IsEmpty)
 				return;
-				
+			
+			// Reset the global comment. It may be already set from previous commits.
+			changeSet.GlobalComment = string.Empty;
+			
 			if (!CommitCommand.Commit (vc, changeSet, false))
 				return;
 		}
