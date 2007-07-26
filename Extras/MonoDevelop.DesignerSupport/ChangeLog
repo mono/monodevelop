@@ -1,5 +1,9 @@
 2007-07-26  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.DesignerSupport/ToolboxService.cs: Sort toolbox items.
+
+2007-07-26  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.DesignerSupport/DesignerSupportService.cs: When the
 	  property pad is show, initialize it with the data of the latest
 	  provider found. Fixes bug #82166.

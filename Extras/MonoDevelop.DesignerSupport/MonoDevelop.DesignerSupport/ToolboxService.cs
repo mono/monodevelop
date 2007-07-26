@@ -335,6 +335,7 @@ namespace MonoDevelop.DesignerSupport
 				}
 			}
 			
+			arr.Sort ();
 			return arr;
 		}
 		
