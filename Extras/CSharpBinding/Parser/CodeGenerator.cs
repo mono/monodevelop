@@ -58,7 +58,7 @@ namespace CSharpBinding.Parser
 		public override RefactorOperations SupportedOperations {
 			get { return RefactorOperations.All; }
 		}
-	
+		
 		protected override ICodeGenerator GetGenerator ()
 		{
 			return csharpProvider.CreateGenerator ();

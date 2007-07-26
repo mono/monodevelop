@@ -174,6 +174,33 @@ namespace MonoDevelop.Ide.Gui
 			return textBuffer.GetCharAt (position);
 		}
 		
+		bool IsWordChar (char c)
+		{
+			return Char.IsLetterOrDigit (c) || c == '_';
+		}
+		
+		public bool CursorIsInWord {
+			get {
+				return IsWordChar (GetCharAt (CursorPosition));
+			}
+		}
+		
+		public string GetWordAtCursor ()
+		{
+			if (!CursorIsInWord)
+				return null;
+			
+			int start = CursorPosition;
+			while (start > 0 && IsWordChar (GetCharAt (start - 1)))
+				start--;
+			
+			int end = CursorPosition;
+			while (end < TextLength && IsWordChar (GetCharAt (end + 1)))
+				end++;
+			
+			return GetText (start, end + 1);
+		}
+		
 		public int GetPositionFromLineColumn (int line, int column)
 		{
 			return textBuffer.GetPositionFromLineColumn (line, column);

@@ -98,7 +98,7 @@ namespace MonoDevelop.Ide.Gui.Search
 			if (IdeApp.Workbench.ActiveDocument != null) {
 				IEditableTextBuffer editable = IdeApp.Workbench.ActiveDocument.GetContent<IEditableTextBuffer> ();
 				if (editable == null) return;
-					
+				
 				if (lastResult != null && find.DocumentIterator.CurrentFileName == lastResult.FileName) {
 					int s1 = editable.SelectionStartPosition;
 					int s2 = editable.SelectionEndPosition;
