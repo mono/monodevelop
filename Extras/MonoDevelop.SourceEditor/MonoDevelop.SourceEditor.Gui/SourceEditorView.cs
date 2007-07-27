@@ -494,11 +494,11 @@ namespace MonoDevelop.SourceEditor.Gui
 			buf.EndUserAction ();
 		}
 		
-		public int FindPrevWordStart (string doc, int offset)
+		int FindPrevWordStart (string doc, int offset)
 		{
-			for ( offset-- ; offset >= 0 ; offset--)
-			{
-				if (System.Char.IsWhiteSpace (doc, offset)) break;
+			for (offset--; offset >= 0; offset--) {
+				if (Char.IsWhiteSpace (doc, offset))
+					break;
 			}
 			return ++offset;
 		}
@@ -520,12 +520,13 @@ namespace MonoDevelop.SourceEditor.Gui
 			return start;
 		}
 
-		public string GetLeadingWhiteSpace (int line) {
+		public string GetLeadingWhiteSpace (int line)
+		{
 			string lineText = ThisEditor.GetLineText (line + 1);
 			int index = 0;
-			while (index < lineText.Length && System.Char.IsWhiteSpace (lineText[index])) {
-    				index++;
-    			}
+			while (index < lineText.Length && System.Char.IsWhiteSpace (lineText[index]))
+				index++;
+			
  	   		return index > 0 ? lineText.Substring (0, index) : "";
 		}
 
@@ -645,12 +646,15 @@ namespace MonoDevelop.SourceEditor.Gui
 		public void IndentLine ()
 		{
 			TextIter iter = buf.GetIterAtMark (buf.InsertMark);
-
+			
 			// preserve offset in line
-			int offset = 0;
-			int chars = fmtr.IndentLine (ThisEditor, iter.Line + 1, IndentString);
-			offset += chars;
-
+			int n, offset = 0;
+			
+			if ((n = fmtr.IndentLine (ThisEditor, iter.Line + 1, IndentString)) == 0)
+				return;
+			
+			offset += n;
+			
 			// FIXME: not quite right yet
 			// restore the offset
 			TextIter nl = buf.GetIterAtMark (buf.InsertMark);

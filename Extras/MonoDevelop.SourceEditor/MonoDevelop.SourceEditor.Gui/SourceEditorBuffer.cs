@@ -665,17 +665,9 @@ namespace MonoDevelop.SourceEditor.Gui
 
 		public char GetCharAt (int offset)
 		{
-			/*if (offset < 0)
-			  offset = 0;
-			  TextIter begin_iter = GetIterAtOffset (offset);
-			  TextIter next_iter = begin_iter;
-			  next_iter.ForwardChar ();
-			  string text = GetText (begin_iter, next_iter, true);
-			  if (text != null && text.Length >= 1)
-			  return text[0];*/
-			//New test implementation
 			if (offset < 0)
 				offset = 0;
+			
 			TextIter iter = GetIterAtOffset (offset);
 			if (iter.Equals (TextIter.Zero))
 				return ' ';

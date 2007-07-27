@@ -1,3 +1,9 @@
+2007-07-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs (IndentLine): If
+	no text was inserted, simply return instead of spending time
+	readjusting the cursor position unnecessarily.
+
 2007-07-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.addin.xml: Add commands to the TextEditor
