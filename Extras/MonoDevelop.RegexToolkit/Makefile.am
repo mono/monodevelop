@@ -27,7 +27,9 @@ FILES =  \
 	MonoDevelop.RegexToolkit/Commands.cs \
 	MonoDevelop.RegexToolkit/RegexToolkit.cs
 
-RES = gtk-gui/gui.stetic 
+RES =  \
+	gtk-gui/gui.stetic \
+	RegexElements.xml 
 
 
 

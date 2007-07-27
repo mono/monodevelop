@@ -1,3 +1,9 @@
+2007-07-27  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.RegexToolkit/RegexToolkit.cs, RegexElements.xml,
+	  gtk-gui/MonoDevelop.RegexToolkit.RegexToolkit.cs: Worked on regex
+	  toolkit.
+
 2007-07-25  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.RegexToolkit.addin.xml,
