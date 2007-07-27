@@ -32,8 +32,8 @@ namespace CSharpBinding.FormattingStrategy {
 			return 0;
 		}
 		
-		protected override int FormatLine (TextEditor d, int line, int cursorOffset, char ch,
-		                                   string indentString, bool autoInsertCurlyBracket)
+		public override int FormatLine (TextEditor d, int line, int cursorOffset, char ch,
+		                                string indentString, bool autoInsertCurlyBracket)
 		{
 			// no-op, only ever called on Enter key press which we handle elsewhere.
 			return 0;
