@@ -1,3 +1,8 @@
+2007-07-27  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Startup/MonoDevelopMain.cs: If MD fails to start, rebuild
+	  the add-in database and try again.
+
 2007-05-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Makefile.am: Reference shared assemblies from the correct location.
