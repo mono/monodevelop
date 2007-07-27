@@ -1,3 +1,8 @@
+2007-07-27  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.DesignerSupport/PropertyPad.cs: Assign the property pad
+	  to the service only when it is completely initialized.
+
 2007-07-26  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.DesignerSupport/ToolboxService.cs: Sort toolbox items.

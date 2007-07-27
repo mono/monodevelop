@@ -48,14 +48,13 @@ namespace MonoDevelop.DesignerSupport
 		
 		public PropertyPad ()
 		{
-			DesignerSupport.Service.SetPropertyPad (this);
-			
 			grid = new pg.PropertyGrid ();
 			frame = new Gtk.Frame ();
 			frame.Shadow = Gtk.ShadowType.None;
 			frame.Add (grid);
 			
 			frame.ShowAll ();
+			DesignerSupport.Service.SetPropertyPad (this);
 		}
 		
 		#region AbstractPadContent implementations
