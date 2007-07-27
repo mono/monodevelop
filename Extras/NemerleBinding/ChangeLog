@@ -1,3 +1,12 @@
+2007-07-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	* FormattingStrategy/NemerleFormattingStrategy.cs: This code was
+	pretty broken (as had been the original CSharpBinding code it was
+	copied verbatim from). Also don't think it would have compiled
+	because the FormatLine method signature did not match what it was
+	supposed to be overriding. Make it use the default formatter for
+	now.
+
 2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Gui/CodeGenerationPanel.cs, NemerleBinding.addin.xml: Migration to
