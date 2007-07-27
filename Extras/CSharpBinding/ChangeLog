@@ -1,3 +1,8 @@
+2007-07-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	* FormattingStrategy/CSharpFormattingStrategy.cs (FormatLine):
+	Fixed to be a no-op.
+
 2007-07-25  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fixes for bug #82179.
