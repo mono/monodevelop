@@ -497,7 +497,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		int FindPrevWordStart (string doc, int offset)
 		{
 			for (offset--; offset >= 0; offset--) {
-				if (Char.IsWhiteSpace (doc, offset))
+				if (System.Char.IsWhiteSpace (doc, offset))
 					break;
 			}
 			return ++offset;
