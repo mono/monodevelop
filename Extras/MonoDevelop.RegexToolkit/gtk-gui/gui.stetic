@@ -170,43 +170,18 @@
                         <property name="Yalign">0</property>
                         <property name="LeftPadding">12</property>
                         <child>
-                          <widget class="Gtk.VBox" id="vbox3">
+                          <widget class="Gtk.ScrolledWindow" id="elementsscrolledwindow">
                             <property name="MemberName" />
-                            <property name="Spacing">6</property>
+                            <property name="CanFocus">True</property>
+                            <property name="VscrollbarPolicy">Automatic</property>
+                            <property name="HscrollbarPolicy">Automatic</property>
+                            <property name="ShadowType">In</property>
                             <child>
-                              <widget class="Gtk.ScrolledWindow" id="scrolledwindow3">
+                              <widget class="Gtk.TreeView" id="elementsTreeview">
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
-                                <property name="VscrollbarPolicy">Automatic</property>
-                                <property name="HscrollbarPolicy">Automatic</property>
-                                <property name="ShadowType">In</property>
-                                <child>
-                                  <widget class="Gtk.TreeView" id="elementsTreeview">
-                                    <property name="MemberName" />
-                                    <property name="CanFocus">True</property>
-                                    <property name="HeadersClickable">True</property>
-                                  </widget>
-                                </child>
+                                <property name="HeadersClickable">True</property>
                               </widget>
-                              <packing>
-                                <property name="Position">0</property>
-                                <property name="AutoSize">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="Gtk.TextView" id="textview1">
-                                <property name="MemberName" />
-                                <property name="Sensitive">False</property>
-                                <property name="CanFocus">True</property>
-                                <property name="Editable">False</property>
-                                <property name="CursorVisible">False</property>
-                                <property name="Text" translatable="yes" />
-                                <property name="WrapMode">Word</property>
-                              </widget>
-                              <packing>
-                                <property name="Position">1</property>
-                                <property name="AutoSize">True</property>
-                              </packing>
                             </child>
                           </widget>
                         </child>

@@ -45,7 +45,7 @@ namespace MonoDevelop.RegexToolkit
 		{
 			this.Build();
 			optionsStore = new ListStore (typeof (bool), typeof (string), typeof (Options));
-			resultStore = new Gtk.TreeStore (typeof (Gdk.Pixbuf), typeof (string));
+			resultStore = new Gtk.TreeStore (typeof (Gdk.Pixbuf), typeof (string), typeof (int), typeof (int));
 			
 			FillOptionsBox ();
 			
@@ -73,10 +73,27 @@ namespace MonoDevelop.RegexToolkit
 			
 			this.resultsTreeview.Model = this.resultStore;
 			this.resultsTreeview.HeadersVisible = false;
-			
+			this.resultsTreeview.AppendColumn (String.Empty, new CellRendererPixbuf (), "stock_id", 0);
+				
 			cellRendText = new CellRendererText ();
 			cellRendText.Ellipsize = Pango.EllipsizeMode.End;
 			this.resultsTreeview.AppendColumn ("", cellRendText, "text", 1);
+			
+			this.resultsTreeview.RowActivated += delegate (object sender, RowActivatedArgs e) {
+				Gtk.TreeIter iter;
+				if (resultStore.GetIter (out iter, e.Path)) {
+					System.Console.WriteLine (resultStore.GetValue (iter, 2));
+					System.Console.WriteLine (resultStore.GetValue (iter, 3));
+					int index  = (int)resultStore.GetValue (iter, 2);
+					int length = (int)resultStore.GetValue (iter, 3);
+					if (index >= 0) {
+						this.inputTextview.Buffer.SelectRange (this.inputTextview.Buffer.GetIterAtOffset (index),
+						                                       this.inputTextview.Buffer.GetIterAtOffset (index + length));
+					} else {
+						this.inputTextview.Buffer.SelectRange (this.inputTextview.Buffer.GetIterAtOffset (0), this.inputTextview.Buffer.GetIterAtOffset (0));
+					}
+				}
+			};
 			
 			elementsStore = new Gtk.TreeStore (typeof (Gdk.Pixbuf), typeof (string), typeof (string), typeof (string));
 			this.elementsTreeview.Model = this.elementsStore;
@@ -84,42 +101,133 @@ namespace MonoDevelop.RegexToolkit
 			cellRendText = new CellRendererText ();
 			cellRendText.Ellipsize = Pango.EllipsizeMode.End;
 			this.elementsTreeview.AppendColumn ("", cellRendText, "text", 1);
-			this.elementsTreeview.Selection.Changed += new EventHandler (OnEntrySelected);
+			this.elementsTreeview.Selection.Changed += delegate {
+				ShowTooltipForSelectedEntry ();			
+			};
+			bool shouldUpdateTooltip = false;
+			this.elementsTreeview.ScrollEvent += delegate {
+				shouldUpdateTooltip = true;
+			}; 
+			this.elementsTreeview.WidgetEvent += delegate {
+				if (shouldUpdateTooltip) {
+					ShowTooltipForSelectedEntry ();
+					shouldUpdateTooltip = false;
+				}
+			};
+			this.elementsTreeview.RowActivated += delegate (object sender, RowActivatedArgs e) {
+				Gtk.TreeIter iter;
+				if (elementsStore.GetIter (out iter, e.Path)) {
+					string text = elementsStore.GetValue (iter, 3) as string;
+					if (!System.String.IsNullOrEmpty (text)) {
+						this.regExTextview.Buffer.InsertAtCursor (text);
+					}
+				}
+			};
+			
 			FillElementsBox ();
 		}
 		
-		void OnEntrySelected (object sender, EventArgs args)
-		{			
+		void ShowTooltipForSelectedEntry ()
+		{
 			TreeIter iter;
-			this.textview1.Visible = false;
 			if (elementsTreeview.Selection.GetSelected (out iter)) {
 				string description = elementsStore.GetValue (iter, 2) as string;
 				if (!String.IsNullOrEmpty (description)) {
-					this.textview1.Buffer.Text = description;
-					this.textview1.Visible = true;
+					Gdk.Rectangle rect = elementsTreeview.GetCellArea (elementsTreeview.Selection.GetSelectedRows () [0], elementsTreeview.GetColumn (0));
+					int wx, wy;
+					elementsTreeview.TranslateCoordinates (this, rect.X, rect.Bottom, out wx, out wy);
+					ShowTooltip (description, wx, wy);
+				} else {
+					HideTooltipWindow ();
 				}
+			} else {
+				HideTooltipWindow ();
 			}
 		}
 		
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			HideTooltipWindow ();
+		}
+
 		
+		CustomTooltipWindow tooltipWindow = null;
+		public void HideTooltipWindow ()
+		{
+			if (tooltipWindow != null) {
+				tooltipWindow.Destroy ();
+				tooltipWindow = null;
+			}
+		}
+		public void ShowTooltip (string text, int x, int y)
+		{
+			HideTooltipWindow (); 
+			tooltipWindow = new CustomTooltipWindow ();
+			tooltipWindow.Tooltip = text;
+			int ox, oy;
+			this.GdkWindow.GetOrigin (out ox, out oy);
+			tooltipWindow.Move (ox + x, oy + y);
+			tooltipWindow.ShowAll ();
+		}
+			
+		public class CustomTooltipWindow : Gtk.Window
+		{
+			string tooltip;
+			public string Tooltip {
+				get {
+					return tooltip;
+				}
+				set {
+					tooltip = value;
+					label.Markup = tooltip;
+				}
+			}
+			
+			Label label = new Label ();
+			public CustomTooltipWindow () : base (Gtk.WindowType.Popup)
+			{
+				Name = "gtk-tooltips";
+				label.Xalign = 0;
+				label.Xpad = 3;
+				label.Ypad = 3;
+				Add (label);
+			}
+			
+			protected override bool OnExposeEvent (Gdk.EventExpose ev)
+			{
+				base.OnExposeEvent (ev);
+				Gtk.Requisition req = SizeRequest ();
+				Gtk.Style.PaintFlatBox (this.Style, 
+				                        this.GdkWindow, 
+				                        Gtk.StateType.Normal, 
+				                        Gtk.ShadowType.Out, 
+				                        Gdk.Rectangle.Zero, 
+				                        this, "tooltip", 0, 0, req.Width, req.Height);
+				return true;
+			}
+		}	
+
+			
+			
 		void PerformQuery (string input, string pattern, RegexOptions options)
 		{
 			Regex regex = new Regex (pattern, options);
 			this.resultStore.Clear ();
 			Console.WriteLine (regex.GetGroupNumbers ().Length);
 			foreach (Match match in regex.Matches (input)) {
-				TreeIter iter = this.resultStore.AppendValues (null, String.Format ("Match '{0}'", match.Value) );
+				TreeIter iter = this.resultStore.AppendValues (Stock.Find, String.Format ("Match '{0}'", match.Value), match.Index, match.Length);
 				int i = 0;
 				foreach (Group group in match.Groups) {
 					if (i > 0) {
 						TreeIter groupIter;
 						if (group.Success) {
-							groupIter = this.resultStore.AppendValues (iter, null, String.Format ("Group '{0}':'{1}'", regex.GroupNameFromNumber (i), group.Value));
+							groupIter = this.resultStore.AppendValues (iter, Stock.Yes, String.Format ("Group '{0}':'{1}'", regex.GroupNameFromNumber (i), group.Value), group.Index, group.Length);
 							foreach (Capture capture in match.Captures) {
-								this.resultStore.AppendValues (groupIter, null, String.Format ("Capture '{0}'", capture.Value));
+								this.resultStore.AppendValues (groupIter, null, String.Format ("Capture '{0}'", capture.Value), capture.Index, capture.Length);
 							}
 						} else {
-							groupIter = this.resultStore.AppendValues (iter, null, String.Format ("Group '{0}' not found", regex.GroupNameFromNumber (i)));
+							groupIter = this.resultStore.AppendValues (iter, Stock.No, String.Format ("Group '{0}' not found", regex.GroupNameFromNumber (i)), -1, -1);
 						}
 
 					}
@@ -210,13 +318,9 @@ namespace MonoDevelop.RegexToolkit
 								break;
 						}
 					}
-					
 					break;
 				}
 			}
-			
-		
 		}
-		
 	}
 }
