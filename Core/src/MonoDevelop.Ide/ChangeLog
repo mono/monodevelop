@@ -1,3 +1,9 @@
+2007-07-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Leave dragging mode when
+	  changing the current layout, to avoid probles du to widget
+	  relocation.
+
 2007-07-26  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs: Fix nullref.

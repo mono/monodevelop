@@ -270,6 +270,9 @@ namespace MonoDevelop.Ide.Gui
 				return currentLayout.Substring (currentLayout.IndexOf (".") + 1);
 			}
 			set {
+				// Leave dragging mode, to avoid problems due to widget relocating
+				tabControl.LeaveDragMode (0);
+				
 				// Store a list of pads being shown
 				List<PadCodon> visible = new List<PadCodon> ();
 				foreach (PadCodon content in activePadCollection) {
