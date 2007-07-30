@@ -1,3 +1,8 @@
+2007-07-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Startup.glade, MonoDevelop.Startup.mdp: Removed unused
+	  file.
+
 2007-07-27  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Startup/MonoDevelopMain.cs: If MD fails to start, rebuild
