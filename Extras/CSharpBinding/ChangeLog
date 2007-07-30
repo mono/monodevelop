@@ -1,3 +1,8 @@
+2007-07-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* templates/CSharpSessionStateWebService.xft.xml,
+	  templates/CSharpWebService.xft.xml: Removed unused files.
+
 2007-07-30  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Parser/CodeGenerator.cs: Add ctor references too. Fixes bug
