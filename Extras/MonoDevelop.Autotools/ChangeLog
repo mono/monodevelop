@@ -1,3 +1,7 @@
+2007-07-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* SolutionOptionsPanel.cs: Removed unused file.
+
 2007-07-30  Ankit Jain  <jankit@novell.com>
 
 	* MakefileData.cs (ConfiguredPackagesManager.ReadPackagesList): Handle
