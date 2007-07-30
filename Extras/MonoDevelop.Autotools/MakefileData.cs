@@ -1675,10 +1675,18 @@ namespace MonoDevelop.Autotools
 
 				List<string> pkgs = new List<string> ();
 				string pkgId = match.Groups ["pkgId"].Value;
+				if (pkgId.Length > 2 && pkgId [0] == '[' && pkgId [pkgId.Length - 1] == ']')
+					// Remove [] used for quoting
+					pkgId = pkgId.Substring (1, pkgId.Length - 2);
+
 				foreach (Capture c in match.Groups ["content"].Captures) {
 					string s = c.Value.Trim ();
 					if (s.Length == 0)
 						continue;
+
+					if (s.Length > 2 && s [0] == '[' && s [s.Length - 1] == ']')
+						// Remove [] used for quoting
+						s = s.Substring (1, s.Length - 2);
 					pkgs.Add (s);
 					pkgNameToPkgVarName [s] = pkgId;
 				}

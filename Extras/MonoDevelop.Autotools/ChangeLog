@@ -1,5 +1,10 @@
 2007-07-30  Ankit Jain  <jankit@novell.com>
 
+	* MakefileData.cs (ConfiguredPackagesManager.ReadPackagesList): Handle
+	[] used for quoting m4 strings.
+
+2007-07-30  Ankit Jain  <jankit@novell.com>
+
 	* SimpleProjectMakefileHandler.cs (Deploy): Make prefix for REFERENCES
 	variable consistent with other ref variables.
 	Fix emitted path for DLL_REFERENCES to be compatible with makefile integration.
