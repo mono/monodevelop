@@ -125,6 +125,18 @@ namespace MonoDevelop.VersionControl.Views
 			btnCollapse.Clicked += new EventHandler (OnCollapseAll);
 			commandbar.Insert (btnCollapse, -1);
 			
+			commandbar.Insert (new Gtk.SeparatorToolItem (), -1);
+			
+			Gtk.ToolButton btnSelectAll = new Gtk.ToolButton (null, "Select All");
+			btnSelectAll.IsImportant = true;
+			btnSelectAll.Clicked += new EventHandler (OnSelectAll);
+			commandbar.Insert (btnSelectAll, -1);
+			
+			Gtk.ToolButton btnSelectNone = new Gtk.ToolButton (null, "Select None");
+			btnSelectNone.IsImportant = true;
+			btnSelectNone.Clicked += new EventHandler (OnSelectNone);
+			commandbar.Insert (btnSelectNone, -1);
+			
 			status = new Label("");
 			main.PackStart(status, false, false, 0);
 			
@@ -530,6 +542,35 @@ namespace MonoDevelop.VersionControl.Views
 		void OnCollapseAll (object s, EventArgs args)
 		{
 			filelist.CollapseAll ();
+		}
+		
+		void OnSelectAll (object s, EventArgs args)
+		{
+			TreeIter pos;
+			if (filestore.GetIterFirst (out pos)) {
+				do {
+					string localpath = (string) filestore.GetValue (pos, ColFullPath);
+					if (!changeSet.ContainsFile (localpath)) {
+						VersionInfo vi = GetVersionInfo (localpath);
+						changeSet.AddFile (vi);
+					} 
+					filestore.SetValue (pos, ColCommit, changeSet.ContainsFile (localpath));
+				} while (filestore.IterNext (ref pos));
+			}
+		}
+		
+		void OnSelectNone (object s, EventArgs args)
+		{
+			TreeIter pos;
+			if (filestore.GetIterFirst (out pos)) {
+				do {
+					string localpath = (string) filestore.GetValue (pos, ColFullPath);
+					if (changeSet.ContainsFile (localpath)) {
+						changeSet.RemoveFile (localpath);
+					} 
+					filestore.SetValue (pos, ColCommit, changeSet.ContainsFile (localpath));
+				} while (filestore.IterNext (ref pos));
+			}
 		}
 		
 		void OnRefresh (object s, EventArgs args)

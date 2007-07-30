@@ -1,3 +1,8 @@
+2007-07-29  Zach Lute <zach.lute@gmail.com>
+
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs: 
+	  Added Select All and Select None buttons to the commit/status view. (Bug #82146)
+
 2007-07-26  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:
