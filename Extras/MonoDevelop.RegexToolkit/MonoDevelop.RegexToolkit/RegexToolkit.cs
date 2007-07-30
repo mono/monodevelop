@@ -45,7 +45,7 @@ namespace MonoDevelop.RegexToolkit
 		{
 			this.Build();
 			optionsStore = new ListStore (typeof (bool), typeof (string), typeof (Options));
-			resultStore = new Gtk.TreeStore (typeof (Gdk.Pixbuf), typeof (string), typeof (int), typeof (int));
+			resultStore = new Gtk.TreeStore (typeof (string), typeof (string), typeof (int), typeof (int));
 			
 			FillOptionsBox ();
 			
@@ -82,8 +82,6 @@ namespace MonoDevelop.RegexToolkit
 			this.resultsTreeview.RowActivated += delegate (object sender, RowActivatedArgs e) {
 				Gtk.TreeIter iter;
 				if (resultStore.GetIter (out iter, e.Path)) {
-					System.Console.WriteLine (resultStore.GetValue (iter, 2));
-					System.Console.WriteLine (resultStore.GetValue (iter, 3));
 					int index  = (int)resultStore.GetValue (iter, 2);
 					int length = (int)resultStore.GetValue (iter, 3);
 					if (index >= 0) {
@@ -95,15 +93,17 @@ namespace MonoDevelop.RegexToolkit
 				}
 			};
 			
-			elementsStore = new Gtk.TreeStore (typeof (Gdk.Pixbuf), typeof (string), typeof (string), typeof (string));
+			elementsStore = new Gtk.TreeStore (typeof (string), typeof (string), typeof (string), typeof (string));
 			this.elementsTreeview.Model = this.elementsStore;
 			this.elementsTreeview.HeadersVisible = false;
+			this.elementsTreeview.AppendColumn (String.Empty, new CellRendererPixbuf (), "stock_id", 0);
 			cellRendText = new CellRendererText ();
 			cellRendText.Ellipsize = Pango.EllipsizeMode.End;
 			this.elementsTreeview.AppendColumn ("", cellRendText, "text", 1);
 			this.elementsTreeview.Selection.Changed += delegate {
 				ShowTooltipForSelectedEntry ();			
 			};
+			
 			bool shouldUpdateTooltip = false;
 			this.elementsTreeview.ScrollEvent += delegate {
 				shouldUpdateTooltip = true;
@@ -206,10 +206,8 @@ namespace MonoDevelop.RegexToolkit
 				                        this, "tooltip", 0, 0, req.Width, req.Height);
 				return true;
 			}
-		}	
-
-			
-			
+		}
+		
 		void PerformQuery (string input, string pattern, RegexOptions options)
 		{
 			Regex regex = new Regex (pattern, options);
@@ -222,12 +220,12 @@ namespace MonoDevelop.RegexToolkit
 					if (i > 0) {
 						TreeIter groupIter;
 						if (group.Success) {
-							groupIter = this.resultStore.AppendValues (iter, Stock.Yes, String.Format ("Group '{0}':'{1}'", regex.GroupNameFromNumber (i), group.Value), group.Index, group.Length);
+							groupIter = this.resultStore.AppendValues (iter, Stock.Apply, String.Format ("Group '{0}':'{1}'", regex.GroupNameFromNumber (i), group.Value), group.Index, group.Length);
 							foreach (Capture capture in match.Captures) {
 								this.resultStore.AppendValues (groupIter, null, String.Format ("Capture '{0}'", capture.Value), capture.Index, capture.Length);
 							}
 						} else {
-							groupIter = this.resultStore.AppendValues (iter, Stock.No, String.Format ("Group '{0}' not found", regex.GroupNameFromNumber (i)), -1, -1);
+							groupIter = this.resultStore.AppendValues (iter, Stock.Cancel, String.Format ("Group '{0}' not found", regex.GroupNameFromNumber (i)), -1, -1);
 						}
 
 					}
@@ -307,13 +305,12 @@ namespace MonoDevelop.RegexToolkit
 					continue;
 				switch (reader.LocalName) {
 				case "Group":
-					TreeIter groupIter = this.elementsStore.AppendValues (null, reader.GetAttribute ("_name"), null, null);
+					TreeIter groupIter = this.elementsStore.AppendValues (Stock.Info, reader.GetAttribute ("_name"), null, null);
 					while (reader.Read ()) {
 						if (reader.NodeType == XmlNodeType.EndElement && reader.LocalName == "Group") 
 							break;
 						switch (reader.LocalName) {
 							case "Element":
-								
 								this.elementsStore.AppendValues (groupIter, null, reader.GetAttribute ("_name"), reader.GetAttribute ("_description"), reader.ReadElementString ());
 								break;
 						}
