@@ -79,7 +79,6 @@ namespace MonoDevelop.Autotools
 		
 				// store all refs for easy access
 				Set<SystemPackage> pkgs = new Set<SystemPackage>();
-				Set<string> dlls = new Set<string>();
 				
 				// strings for variables
 				StringWriter references = new StringWriter();
@@ -110,9 +109,8 @@ namespace MonoDevelop.Autotools
 						else 
 						{
 							references.WriteLine (" \\");
-							references.Write ("\t-r:");
 							AssemblyName assembly = Runtime.SystemAssemblyService.ParseAssemblyName (reference.Reference);
-							references.Write (assembly.Name);
+							references.Write ("\t" + assembly.Name);
 							references.Write ("");
 						}
 					} 
@@ -120,15 +118,14 @@ namespace MonoDevelop.Autotools
 					{
 						string assemblyPath = Path.GetFullPath (reference.Reference);
 
-						dlls.Add ( Path.GetFileName (assemblyPath) );
-						
 						dllReferences.WriteLine (" \\");
 						dllReferences.Write ("\t");
 
 						ctx.AddGlobalReferencedFile (Runtime.FileService.AbsoluteToRelativePath (
 							Path.GetFullPath (ctx.BaseDirectory), assemblyPath));
-						dllReferences.Write ("$(BUILD_DIR)" + Path.DirectorySeparatorChar +
-								Path.GetFileName (assemblyPath));
+						dllReferences.Write (Runtime.FileService.AbsoluteToRelativePath (
+							entry.BaseDirectory, assemblyPath));
+
 					} 
 					else if (reference.ReferenceType == ReferenceType.Project)
 						continue; // handled elsewhere
@@ -446,8 +443,6 @@ namespace MonoDevelop.Autotools
 				
 				templateEngine.Variables["CONFIG_VARS"] = conf_vars.ToString ();
 
-//				if ( pkgconfig ) CreatePkgConfigFile ( project, pkgs, dlls, monitor, ctx );
-				
 				// Create project specific makefile
 				Stream stream = ctx.GetTemplateStream (
 						generateAutotools ? "Makefile.am.project.template" : "Makefile.noauto.project.template");

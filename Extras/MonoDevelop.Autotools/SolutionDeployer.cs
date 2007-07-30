@@ -264,7 +264,7 @@ namespace MonoDevelop.Autotools
 			foreach ( IConfiguration config in combine.Configurations )
 			{
 				string name = context.EscapeAndUpperConfigName (config.Name).ToLower();
-				string def = config == combine.ActiveConfiguration ? "YES" : "NO";
+				string def = config.Name == defaultConf ? "YES" : "NO";
 				string ac_var = "enable_" + name;
 
 				// test to see if a configuration was enabled

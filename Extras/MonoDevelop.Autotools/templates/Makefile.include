@@ -17,7 +17,7 @@ build_others_resources_embed = $(build_others_list:%='-resource:$(srcdir)/%')
 build_resources = $(build_resx_resources) $(build_others_resources)
 build_resources_embed = $(build_resx_resources_embed) $(build_others_resources_embed)
 
-build_references_ref = $(REFERENCES)
+build_references_ref = $(foreach ref, $(REFERENCES), $(if $(filter -pkg:%, $(ref)), $(ref), $(if $(filter -r:%, $(ref)), $(ref), -r:$(ref))))
 build_references_ref += $(foreach ref, $(DLL_REFERENCES), -r:$(ref))
 build_references_ref += $(foreach ref, $(PROJECT_REFERENCES), -r:$(ref))
 

@@ -45,7 +45,7 @@ check_required_packages ()
 			echo "Try adjusting your PKG_CONFIG_PATH environment variable." | tee -a config.log
 			return 1
 		fi
-		echo " found."
+		echo " found." | tee -a config.log
 	done
 	return 0
 }

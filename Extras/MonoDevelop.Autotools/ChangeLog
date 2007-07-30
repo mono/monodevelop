@@ -1,3 +1,12 @@
+2007-07-30  Ankit Jain  <jankit@novell.com>
+
+	* SimpleProjectMakefileHandler.cs (Deploy): Make prefix for REFERENCES
+	variable consistent with other ref variables.
+	Fix emitted path for DLL_REFERENCES to be compatible with makefile integration.
+	* SolutionDeployer.cs (CreateConfigureDotAC): Use @defaultConf.	
+	* templates/Makefile.include: Update to add prefix for REFERENCES (when required).
+	* templates/configure.template: Small fix.
+
 2007-07-25  Ankit Jain  <jankit@novell.com>
 
 	* templates/configure.template: Don't use "\n" or "\t" in echo-s, sh doesn't
