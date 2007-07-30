@@ -4,15 +4,15 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Gettext.dll
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:../../build/AddIns/MonoDevelop.Components.dll \
-	-r:../../build/AddIns/MonoDevelop.Core.Gui.dll \
-	-r:../../build/AddIns/MonoDevelop.Deployment.dll \
-	-r:../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
-	-r:../../build/AddIns/MonoDevelop.Ide.dll \
-	-r:../../build/AddIns/MonoDevelop.Projects.dll \
-	-r:../../build/AddIns/MonoDevelop.Projects.Gui.dll \
-	-r:../../build/bin/MonoDevelop.Core.dll \
-	-r:../../contrib/Mono.Addins.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml

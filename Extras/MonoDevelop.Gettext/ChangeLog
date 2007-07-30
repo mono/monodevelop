@@ -1,3 +1,7 @@
+2007-07-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Gettext.mdp, Makefile.am: Makefile fixes.
+
 2007-07-24  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/generated.cs,
