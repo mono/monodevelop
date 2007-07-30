@@ -1,3 +1,9 @@
+2007-07-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:
+	  Made some strings translatable. Update commit button after changing
+	  selection.
+
 2007-07-29  Zach Lute <zach.lute@gmail.com>
 
 	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs: 

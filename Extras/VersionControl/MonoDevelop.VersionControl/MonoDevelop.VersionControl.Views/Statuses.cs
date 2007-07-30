@@ -115,24 +115,24 @@ namespace MonoDevelop.VersionControl.Views
 			
 			commandbar.Insert (new Gtk.SeparatorToolItem (), -1);
 			
-			Gtk.ToolButton btnExpand = new Gtk.ToolButton (null, "Expand All");
+			Gtk.ToolButton btnExpand = new Gtk.ToolButton (null, GettextCatalog.GetString ("Expand All"));
 			btnExpand.IsImportant = true;
 			btnExpand.Clicked += new EventHandler (OnExpandAll);
 			commandbar.Insert (btnExpand, -1);
 			
-			Gtk.ToolButton btnCollapse = new Gtk.ToolButton (null, "Collapse All");
+			Gtk.ToolButton btnCollapse = new Gtk.ToolButton (null, GettextCatalog.GetString ("Collapse All"));
 			btnCollapse.IsImportant = true;
 			btnCollapse.Clicked += new EventHandler (OnCollapseAll);
 			commandbar.Insert (btnCollapse, -1);
 			
 			commandbar.Insert (new Gtk.SeparatorToolItem (), -1);
 			
-			Gtk.ToolButton btnSelectAll = new Gtk.ToolButton (null, "Select All");
+			Gtk.ToolButton btnSelectAll = new Gtk.ToolButton (null, GettextCatalog.GetString ("Select All"));
 			btnSelectAll.IsImportant = true;
 			btnSelectAll.Clicked += new EventHandler (OnSelectAll);
 			commandbar.Insert (btnSelectAll, -1);
 			
-			Gtk.ToolButton btnSelectNone = new Gtk.ToolButton (null, "Select None");
+			Gtk.ToolButton btnSelectNone = new Gtk.ToolButton (null, GettextCatalog.GetString ("Select None"));
 			btnSelectNone.IsImportant = true;
 			btnSelectNone.Clicked += new EventHandler (OnSelectNone);
 			commandbar.Insert (btnSelectNone, -1);
@@ -553,10 +553,11 @@ namespace MonoDevelop.VersionControl.Views
 					if (!changeSet.ContainsFile (localpath)) {
 						VersionInfo vi = GetVersionInfo (localpath);
 						changeSet.AddFile (vi);
-					} 
+					}
 					filestore.SetValue (pos, ColCommit, changeSet.ContainsFile (localpath));
 				} while (filestore.IterNext (ref pos));
 			}
+			UpdateSelectionStatus ();
 		}
 		
 		void OnSelectNone (object s, EventArgs args)
@@ -571,6 +572,7 @@ namespace MonoDevelop.VersionControl.Views
 					filestore.SetValue (pos, ColCommit, changeSet.ContainsFile (localpath));
 				} while (filestore.IterNext (ref pos));
 			}
+			UpdateSelectionStatus ();
 		}
 		
 		void OnRefresh (object s, EventArgs args)
