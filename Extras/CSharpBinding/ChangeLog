@@ -1,3 +1,8 @@
+2007-07-30  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Gui/CSharpTextEditorExtension.cs: Handle indent-region by
+	resetting state so that we don't get confused.
+
 2007-07-27  Jeffrey Stedfast  <fejj@novell.com>
 
 	* FormattingStrategy/CSharpFormattingStrategy.cs (FormatLine):

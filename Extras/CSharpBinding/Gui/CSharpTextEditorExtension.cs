@@ -47,11 +47,20 @@ namespace CSharpBinding
 			switch (key) {
 			case Gdk.Key.KP_Enter:
 			case Gdk.Key.Return:
+				if (Editor.SelectionEndPosition > Editor.SelectionStartPosition)
+					return base.KeyPress (key, modifier);
+				
 				reindent = true;
 				insert = false;
 				c = '\n';
 				break;
 			case Gdk.Key.Tab:
+				if (Editor.SelectionEndPosition > Editor.SelectionStartPosition) {
+					// user is conducting an "indent region"
+					engine.Reset ();
+					return base.KeyPress (key, modifier);
+				}
+				
 				c = '\t';
 				break;
 			default:
@@ -87,9 +96,6 @@ namespace CSharpBinding
 			}
 			
 			if (c == '\n') {
-				if (Editor.SelectionEndPosition > Editor.SelectionStartPosition)
-					return base.KeyPress (key, modifier);
-				
 				// Pass off to base.KeyPress() so the '\n' gets added to the Undo stack, etc
 				nInserted = 0;
 				if (base.KeyPress (key, modifier)) {
