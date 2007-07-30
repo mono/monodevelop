@@ -1,5 +1,5 @@
 <Project name="po" fileversion="2.0" ctype="GenericProject">
-  <Configurations active="Default">
+  <Configurations>
     <Configuration name="Default" ctype="GenericProjectConfiguration">
       <Output directory="./" />
       <Build debugmode="True" />
@@ -15,7 +15,6 @@
     <File name="./es.po" subtype="Code" buildaction="Nothing" />
     <File name="./fr.po" subtype="Code" buildaction="Nothing" />
     <File name="./it.po" subtype="Code" buildaction="Nothing" />
-    <File name="./ja_JP.po" subtype="Code" buildaction="Nothing" />
     <File name="./pl.po" subtype="Code" buildaction="Nothing" />
     <File name="./POTFILES.in" subtype="Code" buildaction="Nothing" />
     <File name="./POTFILES.skip" subtype="Code" buildaction="Nothing" />
@@ -27,6 +26,9 @@
     <File name="./zh_CN.po" subtype="Code" buildaction="Nothing" />
     <File name="./zh_TW.po" subtype="Code" buildaction="Nothing" />
     <File name="./gl.po" subtype="Code" buildaction="Nothing" />
+    <File name="./ja.po" subtype="Code" buildaction="Nothing" />
+    <File name="./pt.po" subtype="Code" buildaction="Nothing" />
+    <File name="./sv.po" subtype="Code" buildaction="Nothing" />
   </Contents>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile">
     <BuildFilesVar />

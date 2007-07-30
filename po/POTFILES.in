@@ -134,7 +134,6 @@ Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/
 Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs
 Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs
 Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs
-Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeployFileOptions.cs
 Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs
 Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs
 Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs
@@ -154,8 +153,6 @@ Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects/ProjectService.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects/UnknownCombineEntry.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects/UnknownProjectVersionException.cs
-Core/src/MonoDevelop.Startup/MonoDevelop.Startup.glade
-Core/src/MonoDevelop.Startup/MonoDevelop.Startup.glade
 Extras/AspNetAddIn/AspNetAddIn.addin.xml
 Extras/AspNetAddIn/AspNetAddIn.glade
 Extras/AspNetAddIn/Templates/CodeBehindWebControl.xft.xml
@@ -188,8 +185,6 @@ Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs
 Extras/CSharpBinding/gtk-gui/CSharpBinding.FormattingPanelWidget.cs
 Extras/CSharpBinding/Gui/CodeGenerationPanel.cs
 Extras/CSharpBinding/templates/ConsoleProject.xpt.xml
-Extras/CSharpBinding/templates/CSharpSessionStateWebService.xft.xml
-Extras/CSharpBinding/templates/CSharpWebService.xft.xml
 Extras/CSharpBinding/templates/EmptyCSharpFile.xft.xml
 Extras/CSharpBinding/templates/EmptyProject.xpt.xml
 Extras/CSharpBinding/templates/GladeSharp2Project.xpt.xml
@@ -275,7 +270,6 @@ Extras/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml
 Extras/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs
 Extras/MonoDevelop.Autotools/SolutionDeployer.cs
 Extras/MonoDevelop.Autotools/SolutionMakefileHandler.cs
-Extras/MonoDevelop.Autotools/SolutionOptionsPanel.cs
 Extras/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.addin.xml
 Extras/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.PropertyGrid/DefaultPropertyTab.cs
 Extras/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.PropertyGrid/EventPropertyTab.cs
@@ -367,16 +361,10 @@ Extras/NUnit/templates/NUnitTestClass.xft.xml
 Extras/prj2make-sharp-lib/MSBuildFileFormat.cs
 Extras/prj2make-sharp-lib/MSBuildSolution.cs
 Extras/prj2make-sharp-lib/MsPrjHelper.cs
-Extras/prj2make-sharp-lib/prj2make-sharp-lib-Commands.cs
 Extras/prj2make-sharp-lib/prj2make-sharp-lib.addin.xml
 Extras/prj2make-sharp-lib/SlnFileFormat.cs
 Extras/prj2make-sharp-lib/VS2003ProjectFileFormat.cs
 Extras/prj2make-sharp-lib/VS2003SlnFileFormat.cs
-Extras/PythonBinding/Gui/CompilerParametersPanel.cs
-Extras/PythonBinding/PythonBinding.addin.xml
-Extras/PythonBinding/templates/PythonConsoleProject.xpt.xml
-Extras/PythonBinding/templates/PythonGtkProject.xpt.xml
-Extras/VBNetBinding/Gui/ChooseRuntimePanel.cs
 Extras/VBNetBinding/Gui/CodeGenerationPanel.cs
 Extras/VBNetBinding/templates/EmptyVBFile.xft.xml
 Extras/VBNetBinding/templates/EmptyVBProject.xpt.xml
