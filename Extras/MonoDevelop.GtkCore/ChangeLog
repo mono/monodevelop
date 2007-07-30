@@ -1,3 +1,9 @@
+2007-07-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* lib/libsteticui.dll, lib/libstetic.dll: Updated.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Layout switch
+	  delay is not needed anymore.
+
 2007-07-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs: Fix nullref
