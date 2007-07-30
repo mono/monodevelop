@@ -636,9 +636,11 @@ namespace CSharpBinding.Parser
 		{
 			//Debug ("ObjectCreateExpression", objCreateExpression.ToString (), objCreateExpression);
 			string type = ReturnType.GetSystemType (objCreateExpression.CreateType.Type);
-			if (member is IClass && member.Name == GetNameWithoutPrefix (type)) {
-				int line = objCreateExpression.CreateType.StartLocation.Y;
-				int col = objCreateExpression.CreateType.StartLocation.X;
+			int line = objCreateExpression.CreateType.StartLocation.Y;
+			int col = objCreateExpression.CreateType.StartLocation.X;
+			
+			if ((member is IClass || (member is IMethod && ((IMethod) member).IsConstructor)) 
+			    && declaringType.Name == GetNameWithoutPrefix (type)) {
 				IClass cls = resolver.ResolveIdentifier (fileCompilationUnit, type, line, col) as IClass;
 				
 				if (cls != null && cls.FullyQualifiedName == declaringType.FullyQualifiedName) {

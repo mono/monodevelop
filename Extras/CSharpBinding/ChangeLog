@@ -1,5 +1,8 @@
 2007-07-30  Jeffrey Stedfast  <fejj@novell.com>
 
+	* Parser/CodeGenerator.cs: Add ctor references too. Fixes bug
+	#82204.
+
 	* Gui/CSharpTextEditorExtension.cs: Handle indent-region by
 	resetting state so that we don't get confused.
 
