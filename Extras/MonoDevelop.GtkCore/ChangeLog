@@ -1,5 +1,13 @@
 2007-07-31  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* lib/libsteticui.dll, lib/libstetic.dll,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: Fixed some
+	  problems with the target gtk version. It was not assigned to the
+	  stetic project. Also fixed some stock icon rendering issues in
+	  Stetic.
+
+2007-07-31  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* lib/libsteticui.dll, lib/libstetic.dll: Updated from stetic module.
 	  Includes a nullref fix.
 
