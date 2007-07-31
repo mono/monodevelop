@@ -503,6 +503,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (hasError || disposed || gproject == null)
 				return;
 
+			bool needsSave = false;
 			librariesUpdated = true;
 			
 			string[] oldLibs = gproject.WidgetLibraries;
@@ -518,6 +519,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			// If the project is a library, add itself as a widget source
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
+			
+			// Make sure the target gtk version is properly set
+			if (gproject.TargetGtkVersion != info.TargetGtkVersion) {
+				gproject.TargetGtkVersion = info.TargetGtkVersion;
+				needsSave = true;
+			}
+
 			if (info != null && info.IsWidgetLibrary)
 				internalLibs = new string [] { project.GetOutputFileName () };
 			else
@@ -526,25 +534,29 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			string[] newLibs = (string[]) libs.ToArray (typeof(string));
 			
 			// See if something has changed
+			if (LibrariesChanged (oldLibs, internalLibs, newLibs)) {
+				gproject.SetWidgetLibraries (newLibs, internalLibs);
+				needsSave = true;
+			}
+			
+			if (needsSave)
+				Save (true);
+		}
+		
+		bool LibrariesChanged (string[] oldLibs, string[] internalLibs, string[] newLibs)
+		{
 			if (oldLibs.Length == newLibs.Length + internalLibs.Length) {
-				bool found = false;
 				foreach (string s in newLibs) {
-					if (!((IList)oldLibs).Contains (s)) {
-						found = true;
-						break;
-					}
+					if (!((IList)oldLibs).Contains (s))
+						return true;
 				}
 				foreach (string s in internalLibs) {
-					if (!((IList)oldLibs).Contains (s)) {
-						found = true;
-						break;
-					}
+					if (!((IList)oldLibs).Contains (s))
+						return true;
 				}
-				if (!found)	// Arrays are the same
-					return;
-			}
-			gproject.SetWidgetLibraries (newLibs, internalLibs);
-			Save (true);
+				return false;
+			} else
+				return true;
 		}
 		
 		void NotifyChanged ()
