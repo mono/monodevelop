@@ -103,15 +103,19 @@ namespace MonoDevelop.RegexToolkit
 			this.elementsTreeview.Selection.Changed += delegate {
 				ShowTooltipForSelectedEntry ();			
 			};
-			
-			bool shouldUpdateTooltip = false;
-			this.elementsTreeview.ScrollEvent += delegate {
-				shouldUpdateTooltip = true;
-			}; 
+			int ox = -1 , oy = -1;
 			this.elementsTreeview.WidgetEvent += delegate {
-				if (shouldUpdateTooltip) {
+				if (elementsTreeview.Selection.GetSelectedRows ().Length == 0)
+					return;
+				Gdk.Rectangle rect = elementsTreeview.GetCellArea (elementsTreeview.Selection.GetSelectedRows () [0], elementsTreeview.GetColumn (0));
+				int x, y;
+				this.GdkWindow.GetOrigin (out x, out y);
+				x += rect.X;
+				y += rect.Y;
+				if (ox != x || oy != y) {
 					ShowTooltipForSelectedEntry ();
-					shouldUpdateTooltip = false;
+					ox = x;
+					oy = y;
 				}
 			};
 			this.elementsTreeview.RowActivated += delegate (object sender, RowActivatedArgs e) {
@@ -134,9 +138,10 @@ namespace MonoDevelop.RegexToolkit
 				string description = elementsStore.GetValue (iter, 2) as string;
 				if (!String.IsNullOrEmpty (description)) {
 					Gdk.Rectangle rect = elementsTreeview.GetCellArea (elementsTreeview.Selection.GetSelectedRows () [0], elementsTreeview.GetColumn (0));
-					int wx, wy;
+					int wx, wy, wy2;
 					elementsTreeview.TranslateCoordinates (this, rect.X, rect.Bottom, out wx, out wy);
-					ShowTooltip (description, wx, wy);
+					elementsTreeview.TranslateCoordinates (this, rect.X, rect.Y, out wx, out wy2);
+					ShowTooltip (description, wx, wy, wy2);
 				} else {
 					HideTooltipWindow ();
 				}
@@ -160,14 +165,20 @@ namespace MonoDevelop.RegexToolkit
 				tooltipWindow = null;
 			}
 		}
-		public void ShowTooltip (string text, int x, int y)
+		public void ShowTooltip (string text, int x, int y, int altY)
 		{
 			HideTooltipWindow (); 
 			tooltipWindow = new CustomTooltipWindow ();
 			tooltipWindow.Tooltip = text;
 			int ox, oy;
 			this.GdkWindow.GetOrigin (out ox, out oy);
-			tooltipWindow.Move (ox + x, oy + y);
+			int w = tooltipWindow.Child.SizeRequest().Width;
+			int h = tooltipWindow.Child.SizeRequest().Height;
+			if (ox + x + w >= this.GdkWindow.Screen.Width ||
+			    oy + y + h >= this.GdkWindow.Screen.Height) {
+				tooltipWindow.Move (ox + x - w, oy + altY - h);
+			} else 
+				tooltipWindow.Move (ox + x, oy + y);
 			tooltipWindow.ShowAll ();
 		}
 			
@@ -180,7 +191,7 @@ namespace MonoDevelop.RegexToolkit
 				}
 				set {
 					tooltip = value;
-					label.Markup = tooltip;
+					label.Text = tooltip;
 				}
 			}
 			
@@ -212,7 +223,6 @@ namespace MonoDevelop.RegexToolkit
 		{
 			Regex regex = new Regex (pattern, options);
 			this.resultStore.Clear ();
-			Console.WriteLine (regex.GetGroupNumbers ().Length);
 			foreach (Match match in regex.Matches (input)) {
 				TreeIter iter = this.resultStore.AppendValues (Stock.Find, String.Format ("Match '{0}'", match.Value), match.Index, match.Length);
 				int i = 0;
