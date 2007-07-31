@@ -22,7 +22,7 @@ using Glade;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
-	internal class ReplaceDialog
+	internal partial class ReplaceDialog: Gtk.Dialog
 	{
 		private const int historyLimit = 20;
 		private const char historySeparator = (char) 10;
@@ -34,28 +34,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		// services
 		static PropertyService propertyService = (PropertyService)ServiceManager.GetService(typeof(PropertyService));
 
-		// gtk widgets
-		[Glade.Widget] Gtk.Entry searchPatternEntry;
-		[Glade.Widget] Gtk.Entry replacePatternEntry;
-		[Glade.Widget] Gtk.Button findHelpButton;
-		[Glade.Widget] Gtk.Button findButton;
-		[Glade.Widget] Gtk.Button markAllButton;
-		[Glade.Widget] Gtk.Button closeButton;
-		[Glade.Widget] Gtk.Button replaceButton;
-		[Glade.Widget] Gtk.Button replaceAllButton;
-		[Glade.Widget] Gtk.Button replaceHelpButton;
-		[Glade.Widget] Gtk.CheckButton ignoreCaseCheckBox;
-		[Glade.Widget] Gtk.CheckButton searchWholeWordOnlyCheckBox;
-		[Glade.Widget] Gtk.CheckButton useSpecialSearchStrategyCheckBox;
-		[Glade.Widget] Gtk.ComboBox specialSearchStrategyComboBox;
-		[Glade.Widget] Gtk.ComboBox searchLocationComboBox;
-		[Glade.Widget] Gtk.Label label1;
-		[Glade.Widget] Gtk.Label label2;		
-		[Glade.Widget] Gtk.Label searchLocationLabel;
-		[Glade.Widget] Gtk.Dialog FindDialogWidget;
-		[Glade.Widget] Gtk.Dialog ReplaceDialogWidget;
-		Gtk.Dialog ReplaceDialogPointer;
-		
 		void InitDialog ()
 		{
 			findButton.UseUnderline = true;			
@@ -87,17 +65,17 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			// set replace dialog properties 
 			if (replaceMode)
 			{
+				markAllButton.Visible = false;
 				replacePatternEntry.Completion = new EntryCompletion ();
 				replacePatternEntry.Completion.Model = new ListStore (typeof (string));
 				replacePatternEntry.Completion.TextColumn = 0;
 
-				ReplaceDialogPointer = this.ReplaceDialogWidget;
 				// set the label properties
 				replaceButton.UseUnderline = true;
 				replaceAllButton.UseUnderline = true;
 				
 				// set te size groups to include the replace dialog
-				labels.AddWidget(label2);
+				labels.AddWidget(labelReplace);
 				combos.AddWidget(replacePatternEntry);
 				helpButtons.AddWidget(replaceHelpButton);
 				
@@ -105,21 +83,21 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 			else
 			{
-				ReplaceDialogPointer = this.FindDialogWidget;
+				labelReplace.Visible = replacePatternEntry.Visible = false;
+				replaceAllButton.Visible = replaceHelpButton.Visible = replaceButton.Visible = false;
 				markAllButton.UseUnderline = true;
 			}
-			ReplaceDialogPointer.TransientFor = IdeApp.Workbench.RootWindow;
+			this.Resize (500, 200);
+			TransientFor = IdeApp.Workbench.RootWindow;
 		}
 		
-		public ReplaceDialog(bool replaceMode)
+		public ReplaceDialog (bool replaceMode)
 		{
+			Build ();
+			
 			// some members needed to initialise this dialog based on replace mode
 			this.replaceMode = replaceMode;
-			string dialogName = (replaceMode) ? "ReplaceDialogWidget" : "FindDialogWidget";
 			
-			// we must do it from *here* otherwise, we get this assembly, not the caller
-			Glade.XML glade = new XML (null, "Base.glade", dialogName, null);
-			glade.Autoconnect (this);
 			InitDialog ();
 			
 			LoadHistoryValues();
@@ -172,16 +150,16 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			// insert event handlers
 			findButton.Clicked  += new EventHandler(FindNextEvent);
 			closeButton.Clicked += new EventHandler(CloseDialogEvent);
-			ReplaceDialogPointer.Close += new EventHandler(CloseDialogEvent);
-			ReplaceDialogPointer.DeleteEvent += new DeleteEventHandler (OnDeleted);
+			Close += new EventHandler(CloseDialogEvent);
+			DeleteEvent += new DeleteEventHandler (OnDeleted);
 			
 			if (replaceMode) {
-				ReplaceDialogPointer.Title = GettextCatalog.GetString ("Replace");
+				Title = GettextCatalog.GetString ("Replace");
 				replaceButton.Clicked    += new EventHandler(ReplaceEvent);
 				replaceAllButton.Clicked += new EventHandler(ReplaceAllEvent);
 				replacePatternEntry.Text = SearchReplaceManager.SearchOptions.ReplacePattern;
 			} else {
-				ReplaceDialogPointer.Title = GettextCatalog.GetString ("Find");
+				Title = GettextCatalog.GetString ("Find");
 				markAllButton.Clicked    += new EventHandler(MarkAllEvent);
 			}
 			searchPatternEntry.SelectRegion(0, searchPatternEntry.Text.Length);
@@ -296,7 +274,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		void CloseDialogEvent(object sender, EventArgs e)
 		{
-			ReplaceDialogPointer.Hide();
+			Hide();
 			OnClosed ();
 		}
 		
@@ -399,31 +377,17 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 		}
 		
-		#region code to pretend to be a dialog (cause we cant inherit Dialog and use glade)
-		public void Present()
-		{
-			ReplaceDialogPointer.Present();
-		}
-		
-		public void Destroy()
+		public new void Destroy()
 		{
 			// save the search and replace history to properties
 			OnClosed ();
-			ReplaceDialogPointer.Destroy();
+			base.Destroy();
 		}
 		
-		public void ShowAll()
+		public new void ShowAll()
 		{
-			ReplaceDialogPointer.ShowAll();
+			base.Show();
 			searchPatternEntry.SelectRegion (0, searchPatternEntry.Text.Length);
-		}
-		#endregion
-		
-		public Gtk.Dialog DialogPointer
-		{
-			get {
-				return ReplaceDialogPointer;
-			}
 		}
 	}
 }

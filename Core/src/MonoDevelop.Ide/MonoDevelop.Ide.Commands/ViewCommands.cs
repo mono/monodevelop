@@ -52,8 +52,13 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			using (NewLayoutDialog dlg = new NewLayoutDialog ()) {
-				dlg.Run ();
+			NewLayoutDialog dlg = new NewLayoutDialog ();
+			try {
+				Gtk.ResponseType response = (Gtk.ResponseType) dlg.Run ();
+				if (response == Gtk.ResponseType.Ok)
+					IdeApp.Workbench.CurrentLayout = dlg.LayoutName;
+			} finally {
+				dlg.Destroy ();
 			}
 		}
 	}

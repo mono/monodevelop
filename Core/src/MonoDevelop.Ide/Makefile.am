@@ -33,16 +33,32 @@ REFS =  \
 
 FILES =  \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.DeleteFileDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ExportProjectDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.IncludeFilesDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.RenameItemDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ReplaceDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ReplaceInFilesDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.CodeGenerationPanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.ExternalToolPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.SelectStylePanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.NewHeaderTemplateDialog.cs \
+	gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateGroup.cs \
@@ -299,7 +315,6 @@ FILES =  \
 	MonoDevelop.Ide/Services.cs
 
 RES =  \
-	Base.glade \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
 	icons/Icons.16x16.LinkOverlay.png \

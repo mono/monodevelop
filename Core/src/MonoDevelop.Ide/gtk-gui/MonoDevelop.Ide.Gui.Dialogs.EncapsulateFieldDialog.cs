@@ -47,15 +47,17 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.Name = "MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog";
             this.Title = Mono.Unix.Catalog.GetString("Encapsulate Field");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
+            this.BorderWidth = ((uint)(6));
             // Internal child MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";
+            w1.Spacing = 6;
             w1.BorderWidth = ((uint)(2));
             // Container child dialog1_VBox.Gtk.Box+BoxChild
             this.vbox = new Gtk.VBox();
             this.vbox.Name = "vbox";
             this.vbox.Spacing = 6;
-            this.vbox.BorderWidth = ((uint)(12));
+            this.vbox.BorderWidth = ((uint)(6));
             // Container child vbox.Gtk.Box+BoxChild
             this.tableName = new Gtk.Table(((uint)(2)), ((uint)(2)), false);
             this.tableName.Name = "tableName";
@@ -213,8 +215,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 400;
-            this.DefaultHeight = 235;
+            this.DefaultWidth = 413;
+            this.DefaultHeight = 247;
             this.Show();
         }
     }

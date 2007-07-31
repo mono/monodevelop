@@ -20,19 +20,8 @@ using Gtk;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
-	public class IncludeFilesDialog
+	internal partial class IncludeFilesDialog: Gtk.Dialog
 	{
-		// gtk widgets
-		[Glade.Widget] Button okbutton;
-		[Glade.Widget] Button cancelbutton;
-		[Glade.Widget] Button selectAllButton;
-		[Glade.Widget] Button deselectAllButton;
-		[Glade.Widget] RadioButton newFilesOnlyRadioButton;
-		[Glade.Widget] RadioButton allFilesRadioButton;
-//		[Glade.Widget] Label newFilesInProjectLabel;
-//		[Glade.Widget] Label viewLabel;
-		[Glade.Widget] TreeView IncludeFileListView;
-		[Glade.Widget] Dialog IncludeFilesDialogWidget;
 		public ListStore store;
 		
 		// regular members
@@ -41,13 +30,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		public IncludeFilesDialog(Project project, StringCollection newFiles)
 		{
-			Runtime.LoggingService.Debug ("*** Include files dialog ***");
-			// we must do it from *here* otherwise, we get this assembly, not the caller
-			Glade.XML glade = new Glade.XML (typeof (IncludeFilesDialog).Assembly, "Base.glade", "IncludeFilesDialogWidget", null);
-			glade.Autoconnect (this);
+			Build ();
 			
 			// set up dialog title
-			this.IncludeFilesDialogWidget.Title = GettextCatalog.GetString ("Found new files in {0}", project.Name);
+			Title = GettextCatalog.GetString ("Found new files in {0}", project.Name);
 			
 			newFilesOnlyRadioButton.Active = true;
 			this.newFiles = newFiles;
@@ -127,12 +113,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			IdeApp.ProjectOperations.SaveCombine ();
 			
-			IncludeFilesDialogWidget.Destroy();
+			Destroy();
 		}
 		
 		void CancelEvent(object sender, EventArgs e)
 		{
-			IncludeFilesDialogWidget.Destroy();
+			Destroy();
 		}
 		
 		void SelectAll(object sender, EventArgs e)
@@ -159,7 +145,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		public void ShowDialog()
 		{
-			this.IncludeFilesDialogWidget.Show ();
+			this.Show ();
 		}
 
 	}

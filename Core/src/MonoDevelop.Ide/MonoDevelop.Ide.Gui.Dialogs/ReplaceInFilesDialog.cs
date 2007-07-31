@@ -22,42 +22,11 @@ using Gtk;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
-	internal class ReplaceInFilesDialog
+	internal partial class ReplaceInFilesDialog: Gtk.Dialog
 	{
 		IMessageService messageService  = (IMessageService)ServiceManager.GetService(typeof(IMessageService));
 		public bool replaceMode;
 
-		[Glade.Widget] Gtk.Entry searchPatternEntry;
-		[Glade.Widget] Gtk.Entry replacePatternEntry;
-		[Glade.Widget] Gtk.Button findHelpButton;
-		[Glade.Widget] Gtk.Button findButton;
-//		[Glade.Widget] Gtk.Button markAllButton;
-		[Glade.Widget] Gtk.Button closeButton;
-//		[Glade.Widget] Gtk.Button replaceButton;
-		[Glade.Widget] Gtk.Button replaceAllButton;
-		[Glade.Widget] Gtk.Button replaceHelpButton;
-		[Glade.Widget] Gtk.CheckButton ignoreCaseCheckBox;
-		[Glade.Widget] Gtk.CheckButton searchWholeWordOnlyCheckBox;
-		[Glade.Widget] Gtk.CheckButton useSpecialSearchStrategyCheckBox;
-		[Glade.Widget] Gtk.ComboBox specialSearchStrategyComboBox;
-		[Glade.Widget] Gtk.ComboBox searchLocationComboBox;
-		[Glade.Widget] Gtk.Label label1;
-		[Glade.Widget] Gtk.Label label2;
-		[Glade.Widget] Gtk.Label searchLocationLabel;
-		[Glade.Widget] Gtk.Dialog FindInFilesDialogWidget;
-		[Glade.Widget] Gtk.Dialog ReplaceInFilesDialogWidget;
-
-		[Glade.Widget] Gtk.CheckButton includeSubdirectoriesCheckBox;
-		[Glade.Widget] Gtk.Entry fileMaskTextBox;
-		[Glade.Widget] Gtk.Entry directoryTextBox;
-		[Glade.Widget] Gtk.Button browseButton;
-		[Glade.Widget] Gtk.Label label6;
-		[Glade.Widget] Gtk.Label label7;
-		[Glade.Widget] Gtk.Button stopButton;
-
-		
-		Gtk.Dialog ReplaceDialogPointer;
-		
 		void InitDialog ()
 		{
 			findButton.UseUnderline = true;			
@@ -99,21 +68,21 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				replacePatternEntry.Completion.Model = new ListStore (typeof (string));
 				replacePatternEntry.Completion.TextColumn = 0;
 
-				label2.Text = GettextCatalog.GetString ("Replace in Files");
+				labelReplace.Text = GettextCatalog.GetString ("Replace in Files");
 				
 				// set the size groups to include the replace dialog
-				labels.AddWidget(label2);
+				labels.AddWidget(labelReplace);
 				combos.AddWidget(replacePatternEntry);
 				helpButtons.AddWidget(replaceHelpButton);
 				
 				replaceHelpButton.Sensitive = false;
-				ReplaceDialogPointer = this.ReplaceInFilesDialogWidget;
+			} else {
+				labelReplace.Visible = replaceAllButton.Visible = false;
+				replacePatternEntry.Visible = replaceHelpButton.Visible = false;
+				
 			}
-			else
-			{
-				ReplaceDialogPointer = this.FindInFilesDialogWidget;
-			}
-			ReplaceDialogPointer.TransientFor = IdeApp.Workbench.RootWindow;
+			this.Resize (500, 200);
+			TransientFor = IdeApp.Workbench.RootWindow;
 		}
 
 		protected void OnClosed()
@@ -128,35 +97,25 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			SearchReplaceInFilesManager.ReplaceDialog = null;
 		}
 
-		public void Present ()
-		{
-			ReplaceDialogPointer.Present ();
-		}
-
-		public void Destroy ()
-		{
-			ReplaceDialogPointer.Destroy ();
-		}
-
 		void CloseDialogEvent(object sender, EventArgs e)
 		{
-			ReplaceDialogPointer.Hide();
+			Hide();
 			OnClosed ();
 		}
 
-		public void ShowAll ()
+		public new void ShowAll ()
 		{
-			ReplaceDialogPointer.ShowAll ();
+			base.ShowAll ();
 			SearchReplaceInFilesManager.ReplaceDialog = this;
 			searchPatternEntry.SelectRegion (0, searchPatternEntry.Text.Length);
 		}
 
 		public ReplaceInFilesDialog (bool replaceMode)
 		{
+			Build ();
+			
 			this.replaceMode = replaceMode;
-			string dialogName = (replaceMode) ? "ReplaceInFilesDialogWidget" : "FindInFilesDialogWidget";
-			Glade.XML glade = new XML (null, "Base.glade", dialogName, null);
-			glade.Autoconnect (this);
+			
 			InitDialog ();
 
 			CellRendererText cr = new CellRendererText ();
@@ -191,9 +150,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				replaceAllButton.Clicked += new EventHandler(ReplaceEvent);
 			}
 			
-			ReplaceDialogPointer.Close += new EventHandler (CloseDialogEvent);
+			Close += new EventHandler (CloseDialogEvent);
 			closeButton.Clicked += new EventHandler (CloseDialogEvent);
-			ReplaceDialogPointer.DeleteEvent += new DeleteEventHandler (OnDeleted);
+			DeleteEvent += new DeleteEventHandler (OnDeleted);
 			
 			SearchLocationCheckBoxChangedEvent (null, null);
 			SpecialSearchStrategyCheckBoxChangedEvent (null, null);
@@ -389,12 +348,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					break;
 			}
 			return true;
-		}
-		
-		public Gtk.Dialog DialogPointer {
-			get {
-				return ReplaceDialogPointer;
-			}
 		}
 	}
 }

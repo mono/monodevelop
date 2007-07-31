@@ -231,10 +231,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		void EncodingChanged (object s, EventArgs args)
 		{
 			if (encodingMenu.History == selectOption) {
-				using (SelectEncodingsDialog dlg = new SelectEncodingsDialog ()) {
-					dlg.Run ();
-					FillEncodings ();
-				}
+				SelectEncodingsDialog dlg = new SelectEncodingsDialog ();
+				dlg.TransientFor = this;
+				dlg.Run ();
+				dlg.Destroy ();
+				FillEncodings ();
 			}
 		}
 		

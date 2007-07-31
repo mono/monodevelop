@@ -40,59 +40,49 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			bool succes = widget.Store();
 			return succes;
 		}
-		
-		class LoadSavePanelWidget : GladeWidgetExtract 
+	}
+
+	partial class LoadSavePanelWidget : Gtk.Bin
+	{
+		public LoadSavePanelWidget ()
 		{
-			//
-			// Gtk controls
-			//
-			[Glade.Widget] public Gnome.FileEntry projectLocationTextBox;
-			[Glade.Widget] public Gtk.CheckButton loadUserDataCheckButton;
-			[Glade.Widget] public Gtk.CheckButton createBackupCopyCheckButton;
-			[Glade.Widget] public Gtk.CheckButton loadPrevProjectCheckButton;
-			[Glade.Widget] public Gtk.Label loadLabel;		
-			[Glade.Widget] public Gtk.Label saveLabel;
-			[Glade.Widget] public Gtk.Label locationLabel;
+			Build ();
 			
-			public LoadSavePanelWidget () : base ("Base.glade", "LoadSavePanel")
-			{
-				//
-				// load the internationalized strings.
-				//
-				projectLocationTextBox.GtkEntry.Text = Runtime.Properties.GetProperty(
-					"MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", 
-					System.IO.Path.Combine(System.Environment.GetEnvironmentVariable ("HOME"),
-							"Projects")).ToString();
-				projectLocationTextBox.DirectoryEntry = true;
-				//
-				// setup the properties
-				//
-				loadUserDataCheckButton.Active = Runtime.Properties.GetProperty (
-					"SharpDevelop.LoadDocumentProperties", true);
-				createBackupCopyCheckButton.Active = Runtime.Properties.GetProperty (
-					"SharpDevelop.CreateBackupCopy", false);
-				loadPrevProjectCheckButton.Active = (bool) Runtime.Properties.GetProperty(
-					"SharpDevelop.LoadPrevProjectOnStartup", false);
-			}
+			//
+			// load the internationalized strings.
+			//
+			folderEntry.Path = Runtime.Properties.GetProperty(
+				"MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", 
+				System.IO.Path.Combine(System.Environment.GetEnvironmentVariable ("HOME"),
+						"Projects")).ToString();
+			//
+			// setup the properties
+			//
+			loadUserDataCheckButton.Active = Runtime.Properties.GetProperty (
+				"SharpDevelop.LoadDocumentProperties", true);
+			createBackupCopyCheckButton.Active = Runtime.Properties.GetProperty (
+				"SharpDevelop.CreateBackupCopy", false);
+			loadPrevProjectCheckButton.Active = (bool) Runtime.Properties.GetProperty(
+				"SharpDevelop.LoadPrevProjectOnStartup", false);
+		}
+		
+		public bool Store () 
+		{
+			Runtime.Properties.SetProperty("SharpDevelop.LoadPrevProjectOnStartup", loadPrevProjectCheckButton.Active);
+			Runtime.Properties.SetProperty ("SharpDevelop.LoadDocumentProperties",  loadUserDataCheckButton.Active);
+			Runtime.Properties.SetProperty ("SharpDevelop.CreateBackupCopy",        createBackupCopyCheckButton.Active);
 			
-			public bool Store () 
-			{
-				Runtime.Properties.SetProperty("SharpDevelop.LoadPrevProjectOnStartup", loadPrevProjectCheckButton.Active);
-				Runtime.Properties.SetProperty ("SharpDevelop.LoadDocumentProperties",  loadUserDataCheckButton.Active);
-				Runtime.Properties.SetProperty ("SharpDevelop.CreateBackupCopy",        createBackupCopyCheckButton.Active);
-				
-				// check for correct settings
-				string projectPath = projectLocationTextBox.GtkEntry.Text;
-				if (projectPath.Length > 0) {
-					if (!Runtime.FileService.IsValidFileName(projectPath)) {
-						Services.MessageService.ShowError("Invalid project path specified");
-						return false;
-					}
+			// check for correct settings
+			string projectPath = folderEntry.Path;
+			if (projectPath.Length > 0) {
+				if (!Runtime.FileService.IsValidFileName(projectPath)) {
+					Services.MessageService.ShowError("Invalid project path specified");
+					return false;
 				}
-				Runtime.Properties.SetProperty("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", projectPath);
-				
-				return true;
 			}
+			Runtime.Properties.SetProperty("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", projectPath);
+			
+			return true;
 		}
 	}
 }

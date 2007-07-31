@@ -34,20 +34,22 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.Name = "MonoDevelop.Ide.Gui.Dialogs.DeleteFileDialog";
             this.Title = Mono.Unix.Catalog.GetString("Delete File");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
+            this.BorderWidth = ((uint)(6));
             // Internal child MonoDevelop.Ide.Gui.Dialogs.DeleteFileDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Events = ((Gdk.EventMask)(256));
             w1.Name = "dialog_VBox";
+            w1.Spacing = 6;
             w1.BorderWidth = ((uint)(2));
             // Container child dialog_VBox.Gtk.Box+BoxChild
             this.hbox1 = new Gtk.HBox();
             this.hbox1.Name = "hbox1";
             this.hbox1.Spacing = 12;
-            this.hbox1.BorderWidth = ((uint)(12));
+            this.hbox1.BorderWidth = ((uint)(6));
             // Container child hbox1.Gtk.Box+BoxChild
             this.image1 = new Gtk.Image();
             this.image1.Name = "image1";
-            this.image1.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-dialog-question", 48);
+            this.image1.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-dialog-question", Gtk.IconSize.Dialog, 48);
             this.hbox1.Add(this.image1);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox1[this.image1]));
             w2.Position = 0;
@@ -123,8 +125,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 363;
-            this.DefaultHeight = 149;
+            this.DefaultWidth = 373;
+            this.DefaultHeight = 161;
             this.Show();
             this.NoButton.Clicked += new System.EventHandler(this.OnNoButtonClicked);
             this.YesButton.Clicked += new System.EventHandler(this.OnYesButtonClicked);

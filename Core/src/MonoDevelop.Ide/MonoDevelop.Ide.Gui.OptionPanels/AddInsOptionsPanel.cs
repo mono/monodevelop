@@ -56,58 +56,52 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			widget.Store ();
 			return true;
 		}
+	}
 		
-		public class AddInsPanelWidget :  GladeWidgetExtract 
+	internal partial class AddInsPanelWidget :  Gtk.Bin 
+	{
+		public  AddInsPanelWidget ()
 		{
-			//
-			// Gtk controls
-			//
-
-			[Glade.Widget] public Gtk.CheckButton lookCheck;
-			[Glade.Widget] public Gtk.SpinButton valueSpin;   
-			[Glade.Widget] public Gtk.ComboBox periodCombo;   
-
-			public  AddInsPanelWidget () : base ("Base.glade", "AddInsOptionsPanel")
-			{
-				bool checkForUpdates = Runtime.Properties.GetProperty ("MonoDevelop.Ide.AddinUpdater.CkeckForUpdates", true);
-				int updateSpan = Runtime.Properties.GetProperty ("MonoDevelop.Ide.AddinUpdater.UpdateSpanValue", 1);
-				string unit = Runtime.Properties.GetProperty ("MonoDevelop.Ide.AddinUpdater.UpdateSpanUnit", "D");
-				
-				lookCheck.Active = checkForUpdates;
-				valueSpin.Value = (double) updateSpan;
-				
-				if (unit == "D")
-					periodCombo.Active = 0;
-				else
-					periodCombo.Active = 1;
-				UpdateStatus ();
-			}
+			Build ();
+		
+			bool checkForUpdates = Runtime.Properties.GetProperty ("MonoDevelop.Ide.AddinUpdater.CkeckForUpdates", true);
+			int updateSpan = Runtime.Properties.GetProperty ("MonoDevelop.Ide.AddinUpdater.UpdateSpanValue", 1);
+			string unit = Runtime.Properties.GetProperty ("MonoDevelop.Ide.AddinUpdater.UpdateSpanUnit", "D");
 			
-			public void Store ()
-			{
-				if (periodCombo.Active == 0)
-					Runtime.Properties.SetProperty ("MonoDevelop.Ide.AddinUpdater.UpdateSpanUnit", "D");
-				else
-					Runtime.Properties.SetProperty ("MonoDevelop.Ide.AddinUpdater.UpdateSpanUnit", "M");
-				
-				Runtime.Properties.SetProperty ("MonoDevelop.Ide.AddinUpdater.UpdateSpanValue", (int) valueSpin.Value);
-				Runtime.Properties.SetProperty ("MonoDevelop.Ide.AddinUpdater.CkeckForUpdates", lookCheck.Active);
-			}
+			lookCheck.Active = checkForUpdates;
+			valueSpin.Value = (double) updateSpan;
 			
-			void UpdateStatus ()
-			{
-				valueSpin.Sensitive = periodCombo.Sensitive = lookCheck.Active;
-			}
+			if (unit == "D")
+				periodCombo.Active = 0;
+			else
+				periodCombo.Active = 1;
+			UpdateStatus ();
+		}
+		
+		public void Store ()
+		{
+			if (periodCombo.Active == 0)
+				Runtime.Properties.SetProperty ("MonoDevelop.Ide.AddinUpdater.UpdateSpanUnit", "D");
+			else
+				Runtime.Properties.SetProperty ("MonoDevelop.Ide.AddinUpdater.UpdateSpanUnit", "M");
 			
-			public void OnManageClicked (object s, EventArgs a)
-			{
-				AddinUpdateHandler.ShowManager ();
-			}
-			
-			public void OnCheckToggled (object s, EventArgs a)
-			{
-				UpdateStatus ();
-			}
+			Runtime.Properties.SetProperty ("MonoDevelop.Ide.AddinUpdater.UpdateSpanValue", (int) valueSpin.Value);
+			Runtime.Properties.SetProperty ("MonoDevelop.Ide.AddinUpdater.CkeckForUpdates", lookCheck.Active);
+		}
+		
+		void UpdateStatus ()
+		{
+			valueSpin.Sensitive = periodCombo.Sensitive = lookCheck.Active;
+		}
+		
+		public void OnManageClicked (object s, EventArgs a)
+		{
+			AddinUpdateHandler.ShowManager ();
+		}
+		
+		public void OnCheckToggled (object s, EventArgs a)
+		{
+			UpdateStatus ();
 		}
 	}
 }

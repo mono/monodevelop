@@ -36,10 +36,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.Name = "MonoDevelop.Ide.Gui.Dialogs.ExportProjectDialog";
             this.Title = Mono.Unix.Catalog.GetString("Export Project");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
+            this.BorderWidth = ((uint)(6));
             // Internal child MonoDevelop.Ide.Gui.Dialogs.ExportProjectDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Events = ((Gdk.EventMask)(256));
             w1.Name = "dialog_VBox";
+            w1.Spacing = 6;
             w1.BorderWidth = ((uint)(2));
             // Container child dialog_VBox.Gtk.Box+BoxChild
             this.vbox2 = new Gtk.VBox();
@@ -135,7 +137,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
                 this.Child.ShowAll();
             }
             this.DefaultWidth = 509;
-            this.DefaultHeight = 143;
+            this.DefaultHeight = 167;
             this.Show();
             this.folderEntry.PathChanged += new System.EventHandler(this.OnFolderEntryPathChanged);
         }

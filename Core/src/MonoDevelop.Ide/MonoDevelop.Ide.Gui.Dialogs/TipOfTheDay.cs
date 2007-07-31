@@ -17,32 +17,21 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
-	internal class TipOfTheDayWindow
+	internal partial class TipOfTheDayWindow: Gtk.Window
 	{
-//		[Glade.Widget] Label categoryLabel;
-		[Glade.Widget] TextView tipTextview;
-		[Glade.Widget] CheckButton noshowCheckbutton;
-		[Glade.Widget] Button nextButton;
-		[Glade.Widget] Button closeButton;
-		[Glade.Widget] Window tipOfTheDayWindow;
-
 		string[] tips;
 		int currentTip = 0;
 
-		public TipOfTheDayWindow ()
+		public TipOfTheDayWindow (): base (WindowType.Toplevel)
 		{
-			Glade.XML totdXml = new Glade.XML (null, "Base.glade",
-							   "tipOfTheDayWindow",
-							   null);
-			totdXml.Autoconnect (this);
-					
-			tipOfTheDayWindow.TypeHint = Gdk.WindowTypeHint.Dialog;
+			Build ();
+			TransientFor = IdeApp.Workbench.RootWindow;
 
 			noshowCheckbutton.Active = Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.Dialog.TipOfTheDayView.ShowTipsAtStartup", false);
 			noshowCheckbutton.Toggled += new EventHandler (OnNoshow);
 			nextButton.Clicked += new EventHandler (OnNext);
 			closeButton.Clicked += new EventHandler (OnClose);
-			tipOfTheDayWindow.DeleteEvent += new DeleteEventHandler (OnDelete);
+			DeleteEvent += new DeleteEventHandler (OnDelete);
 
  			XmlDocument doc = new XmlDocument();
  			doc.Load (Runtime.Properties.DataDirectory +
@@ -81,21 +70,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 		void OnClose (object obj, EventArgs args)
 		{
-			tipOfTheDayWindow.Hide ();
-			tipOfTheDayWindow.Dispose ();
+			Hide ();
+			Destroy ();
 		}
 
 		void OnDelete (object obj, DeleteEventArgs args)
 		{
-			tipOfTheDayWindow.Hide ();
-			tipOfTheDayWindow.Dispose ();
-		}
-
-		public void Show ()
-		{
-			tipOfTheDayWindow.TransientFor = IdeApp.Workbench.RootWindow;
-			tipOfTheDayWindow.WindowPosition = WindowPosition.CenterOnParent;
-			tipOfTheDayWindow.ShowAll ();
+			Hide ();
+			Destroy ();
 		}
 	}
 }

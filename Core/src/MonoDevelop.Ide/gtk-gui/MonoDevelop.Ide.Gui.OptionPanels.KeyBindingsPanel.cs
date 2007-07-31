@@ -120,8 +120,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             w9.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w10 = new Gtk.Image();
-            w10.Name = "image1";
-            w10.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-apply", 20);
+            w10.Name = "image293";
+            w10.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-apply", Gtk.IconSize.Button, 20);
             w9.Add(w10);
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w12 = new Gtk.Label();

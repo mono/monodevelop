@@ -36,58 +36,49 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			widget.Store ();
 			return true;
 		}
-		
-		public class BuildPanelWidget :  GladeWidgetExtract 
+	}
+	
+	internal partial class BuildPanelWidget :  Gtk.Bin 
+	{
+		public BuildPanelWidget ()
 		{
+			Build ();
+			
+		        //
+		        // getting internationalized strings
+		        //
+			// FIXME i8n the following line
 			//
-			// Gtk controls
+			// reading properties
 			//
-
-			[Glade.Widget] public Gtk.RadioButton saveChangesRadioButton;
-			[Glade.Widget] public Gtk.RadioButton promptChangesRadioButton; 
-			[Glade.Widget] public Gtk.RadioButton noSaveRadioButton;
-			[Glade.Widget] public Gtk.CheckButton showTaskListCheckBox;
-			[Glade.Widget] public Gtk.CheckButton showOutputCheckBox;
-			[Glade.Widget] public Gtk.Label buildAndRunOptionsLabel;   
-
-			public  BuildPanelWidget () : base ("Base.glade", "BuildPanel")
-			{
-			        //
-			        // getting internationalized strings
-			        //
-				// FIXME i8n the following line
-				//
-				// reading properties
-				//
-				BeforeCompileAction action = (BeforeCompileAction) Runtime.Properties.GetProperty(
-					"SharpDevelop.Services.DefaultParserService.BeforeCompileAction", 
-					BeforeCompileAction.SaveAllFiles);
-				saveChangesRadioButton.Active = action.Equals(BeforeCompileAction.SaveAllFiles);
-				promptChangesRadioButton.Active = action.Equals(BeforeCompileAction.PromptForSave);
-				noSaveRadioButton.Active = action.Equals(BeforeCompileAction.Nothing);
-				showTaskListCheckBox.Active = (bool)Runtime.Properties.GetProperty(
-					"SharpDevelop.ShowTaskListAfterBuild", true);
-				showOutputCheckBox.Active = (bool)Runtime.Properties.GetProperty(
-					"SharpDevelop.ShowOutputWindowAtBuild", true);
+			BeforeCompileAction action = (BeforeCompileAction) Runtime.Properties.GetProperty(
+				"SharpDevelop.Services.DefaultParserService.BeforeCompileAction", 
+				BeforeCompileAction.SaveAllFiles);
+			saveChangesRadioButton.Active = action.Equals(BeforeCompileAction.SaveAllFiles);
+			promptChangesRadioButton.Active = action.Equals(BeforeCompileAction.PromptForSave);
+			noSaveRadioButton.Active = action.Equals(BeforeCompileAction.Nothing);
+			showTaskListCheckBox.Active = (bool)Runtime.Properties.GetProperty(
+				"SharpDevelop.ShowTaskListAfterBuild", true);
+			showOutputCheckBox.Active = (bool)Runtime.Properties.GetProperty(
+				"SharpDevelop.ShowOutputWindowAtBuild", true);
+		}
+		
+		public void Store ()
+		{
+			// set properties
+			if (saveChangesRadioButton.Active) {
+				Runtime.Properties.SetProperty("SharpDevelop.Services.DefaultParserService.BeforeCompileAction", 
+						BeforeCompileAction.SaveAllFiles);
+			} else if (promptChangesRadioButton.Active) {
+				Runtime.Properties.SetProperty("SharpDevelop.Services.DefaultParserService.BeforeCompileAction", 
+						BeforeCompileAction.PromptForSave);
+			} else if (noSaveRadioButton.Active) {
+				Runtime.Properties.SetProperty("SharpDevelop.Services.DefaultParserService.BeforeCompileAction", 
+						BeforeCompileAction.Nothing);
 			}
 			
-			public void Store ()
-			{
-				// set properties
-				if (saveChangesRadioButton.Active) {
-					Runtime.Properties.SetProperty("SharpDevelop.Services.DefaultParserService.BeforeCompileAction", 
-							BeforeCompileAction.SaveAllFiles);
-				} else if (promptChangesRadioButton.Active) {
-					Runtime.Properties.SetProperty("SharpDevelop.Services.DefaultParserService.BeforeCompileAction", 
-							BeforeCompileAction.PromptForSave);
-				} else if (noSaveRadioButton.Active) {
-					Runtime.Properties.SetProperty("SharpDevelop.Services.DefaultParserService.BeforeCompileAction", 
-							BeforeCompileAction.Nothing);
-				}
-				
-				Runtime.Properties.SetProperty("SharpDevelop.ShowTaskListAfterBuild", showTaskListCheckBox.Active);
-				Runtime.Properties.SetProperty("SharpDevelop.ShowOutputWindowAtBuild", showOutputCheckBox.Active);
-			}
+			Runtime.Properties.SetProperty("SharpDevelop.ShowTaskListAfterBuild", showTaskListCheckBox.Active);
+			Runtime.Properties.SetProperty("SharpDevelop.ShowOutputWindowAtBuild", showOutputCheckBox.Active);
 		}
 	}
 }

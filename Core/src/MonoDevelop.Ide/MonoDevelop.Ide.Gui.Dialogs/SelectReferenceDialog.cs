@@ -19,15 +19,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	{
 	}
 	
-	internal class SelectReferenceDialog
+	internal partial class SelectReferenceDialog: Gtk.Dialog
 	{
 		ListStore refTreeStore;
-		[Widget] Dialog    AddReferenceDialog;
-		[Widget] TreeView  ReferencesTreeView;
-//		[Widget] Button    okbutton;
-//		[Widget] Button    cancelbutton;
-		[Widget] Button    RemoveReferenceButton;
-		[Widget] Notebook  mainBook;
 		
 		GacReferencePanel gacRefPanel;
 		ProjectReferencePanel projectRefPanel;
@@ -52,20 +46,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				} while (refTreeStore.IterNext (ref looping_iter));
 				return referenceInformations;
 			}
-		}
-
-		public int Run ()
-		{
-			return AddReferenceDialog.Run ();
-		}
-
-		public void Hide ()
-		{
-			AddReferenceDialog.Hide ();
-		}
-		
-		public Gtk.Window Window {
-			get { return AddReferenceDialog; }
 		}
 
 		public void SetProject (Project configureProject)
@@ -144,8 +124,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		public SelectReferenceDialog ()
 		{
-			Glade.XML refXML = new Glade.XML (null, "Base.glade", "AddReferenceDialog", null);
-			refXML.Autoconnect (this);
+			Build ();
 			
 			refTreeStore = new ListStore (typeof (string), typeof(string), typeof(string), typeof(ProjectReference), typeof(string));
 			ReferencesTreeView.Model = refTreeStore;
@@ -173,7 +152,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			mainBook.AppendPage (assemblyRefPanel, new Label (GettextCatalog.GetString (".Net Assembly")));
 			mainBook.Page = 0;
 			ReferencesTreeView.Selection.Changed += new EventHandler (OnChanged);
-			AddReferenceDialog.ShowAll ();
+			ShowAll ();
 			OnChanged (null, null);
 		}
 

@@ -33,39 +33,36 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			widget.Store ();
 			return true;
 		}
+	}
 
-		class SelectStylePanelWidget : GladeWidgetExtract 
+	partial class SelectStylePanelWidget : Gtk.Bin 
+	{
+		public SelectStylePanelWidget ()
 		{
-			[Glade.Widget] public Gtk.CheckButton extensionButton;
-			[Glade.Widget] public Gtk.CheckButton hiddenButton;
-			[Glade.Widget] public Gtk.CheckButton fontCheckbox;
-			[Glade.Widget] public Gtk.FontButton fontButton;
+			Build ();
 			
-			public SelectStylePanelWidget () : base ("Base.glade", "SelectStylePanel")
-			{
-				string name = fontButton.Style.FontDescription.ToString ();
-				
-				extensionButton.Active = Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.ProjectBrowser.ShowExtensions", true);
-				hiddenButton.Active = Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.FileScout.ShowHidden", false);
-				fontCheckbox.Active = Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.Pads.UseCustomFont", false);
-				fontButton.FontName = Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.Pads.CustomFont", name);
-				fontButton.Sensitive = fontCheckbox.Active;
-				
-				fontCheckbox.Toggled += new EventHandler (FontCheckboxToggled);
-			}
+			string name = fontButton.Style.FontDescription.ToString ();
 			
-			void FontCheckboxToggled (object sender, EventArgs e)
-			{
-				fontButton.Sensitive = fontCheckbox.Active;
-			}
+			extensionButton.Active = Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.ProjectBrowser.ShowExtensions", true);
+			hiddenButton.Active = Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.FileScout.ShowHidden", false);
+			fontCheckbox.Active = Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.Pads.UseCustomFont", false);
+			fontButton.FontName = Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.Pads.CustomFont", name);
+			fontButton.Sensitive = fontCheckbox.Active;
 			
-			public void Store()
-			{
-				Runtime.Properties.SetProperty ("MonoDevelop.Core.Gui.ProjectBrowser.ShowExtensions", extensionButton.Active);
-				Runtime.Properties.SetProperty ("MonoDevelop.Core.Gui.FileScout.ShowHidden", hiddenButton.Active);
-				Runtime.Properties.SetProperty ("MonoDevelop.Core.Gui.Pads.UseCustomFont", fontCheckbox.Active);
-				Runtime.Properties.SetProperty ("MonoDevelop.Core.Gui.Pads.CustomFont", fontButton.FontName);
-			}
+			fontCheckbox.Toggled += new EventHandler (FontCheckboxToggled);
+		}
+		
+		void FontCheckboxToggled (object sender, EventArgs e)
+		{
+			fontButton.Sensitive = fontCheckbox.Active;
+		}
+		
+		public void Store()
+		{
+			Runtime.Properties.SetProperty ("MonoDevelop.Core.Gui.ProjectBrowser.ShowExtensions", extensionButton.Active);
+			Runtime.Properties.SetProperty ("MonoDevelop.Core.Gui.FileScout.ShowHidden", hiddenButton.Active);
+			Runtime.Properties.SetProperty ("MonoDevelop.Core.Gui.Pads.UseCustomFont", fontCheckbox.Active);
+			Runtime.Properties.SetProperty ("MonoDevelop.Core.Gui.Pads.CustomFont", fontButton.FontName);
 		}
 	}
 }

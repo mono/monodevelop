@@ -31,15 +31,17 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.Name = "MonoDevelop.Ide.Gui.Dialogs.RenameItemDialog";
             this.Title = Mono.Unix.Catalog.GetString("Rename {0}");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
+            this.BorderWidth = ((uint)(6));
             // Internal child MonoDevelop.Ide.Gui.Dialogs.RenameItemDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";
+            w1.Spacing = 6;
             w1.BorderWidth = ((uint)(2));
             // Container child dialog1_VBox.Gtk.Box+BoxChild
             this.vbox = new Gtk.VBox();
             this.vbox.Name = "vbox";
             this.vbox.Spacing = 6;
-            this.vbox.BorderWidth = ((uint)(12));
+            this.vbox.BorderWidth = ((uint)(6));
             // Container child vbox.Gtk.Box+BoxChild
             this.hbox = new Gtk.HBox();
             this.hbox.Name = "hbox";
@@ -107,8 +109,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 360;
-            this.DefaultHeight = 125;
+            this.DefaultWidth = 358;
+            this.DefaultHeight = 137;
             this.Show();
         }
     }

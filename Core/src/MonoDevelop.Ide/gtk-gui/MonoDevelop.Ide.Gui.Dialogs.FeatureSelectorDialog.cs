@@ -29,15 +29,17 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.Name = "MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog";
             this.Title = Mono.Unix.Catalog.GetString("New Project Features");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
+            this.BorderWidth = ((uint)(6));
             // Internal child MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";
+            w1.Spacing = 6;
             w1.BorderWidth = ((uint)(2));
             // Container child dialog1_VBox.Gtk.Box+BoxChild
             this.vbox5 = new Gtk.VBox();
             this.vbox5.Name = "vbox5";
             this.vbox5.Spacing = 6;
-            this.vbox5.BorderWidth = ((uint)(12));
+            this.vbox5.BorderWidth = ((uint)(6));
             // Container child vbox5.Gtk.Box+BoxChild
             this.label3 = new Gtk.Label();
             this.label3.Name = "label3";
@@ -93,8 +95,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 594;
-            this.DefaultHeight = 443;
+            this.DefaultWidth = 585;
+            this.DefaultHeight = 435;
             this.Show();
             this.buttonOk.Clicked += new System.EventHandler(this.OnButtonOkClicked);
         }

@@ -28,10 +28,11 @@ namespace MonoDevelop.Ide {
             // Widget MonoDevelop.Ide.NewHeaderTemplateDialog
             this.WidthRequest = 320;
             this.Name = "MonoDevelop.Ide.NewHeaderTemplateDialog";
-            this.Title = Mono.Unix.Catalog.GetString("Add new standard header template");
+            this.Title = Mono.Unix.Catalog.GetString("Add New Standard Header Template");
             this.TypeHint = ((Gdk.WindowTypeHint)(1));
             this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.Modal = true;
+            this.BorderWidth = ((uint)(6));
             this.Resizable = false;
             this.AllowGrow = false;
             this.DefaultWidth = 320;
@@ -44,6 +45,7 @@ namespace MonoDevelop.Ide {
             this.hbox1 = new Gtk.HBox();
             this.hbox1.Name = "hbox1";
             this.hbox1.Spacing = 6;
+            this.hbox1.BorderWidth = ((uint)(6));
             // Container child hbox1.Gtk.Box+BoxChild
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
@@ -70,7 +72,7 @@ namespace MonoDevelop.Ide {
             // Internal child MonoDevelop.Ide.NewHeaderTemplateDialog.ActionArea
             Gtk.HButtonBox w5 = this.ActionArea;
             w5.Name = "dialog1_ActionArea";
-            w5.Spacing = 6;
+            w5.Spacing = 10;
             w5.BorderWidth = ((uint)(5));
             w5.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -101,7 +103,7 @@ namespace MonoDevelop.Ide {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultHeight = 106;
+            this.DefaultHeight = 123;
             this.Show();
         }
     }

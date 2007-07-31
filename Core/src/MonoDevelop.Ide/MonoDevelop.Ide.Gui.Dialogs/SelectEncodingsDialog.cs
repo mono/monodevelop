@@ -35,21 +35,15 @@ using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.Ide
 {
-	public class SelectEncodingsDialog: IDisposable
+	internal partial class SelectEncodingsDialog: Gtk.Dialog
 	{
-		[Widget ("SelectEncodingsDialog")] Dialog dialog;
-		[Widget] TreeView listAvail;
-		[Widget] TreeView listSelected;
-		
 		ListStore storeAvail;
 		ListStore storeSelected;
 		
 		public SelectEncodingsDialog ()
 		{
+			Build ();
 			try {
-				Glade.XML refXML = new Glade.XML (null, "Base.glade", "SelectEncodingsDialog", null);
-				refXML.Autoconnect (this);
-				
 				storeAvail = new ListStore (typeof(string), typeof(string));
 				listAvail.Model = storeAvail;
 				listAvail.AppendColumn ("Name", new Gtk.CellRendererText (), "text", 0);
@@ -70,16 +64,6 @@ namespace MonoDevelop.Ide
 			} catch (Exception  ex) {
 				Runtime.LoggingService.Error (ex);
 			}
-		}
-		
-		public void Run ()
-		{
-			dialog.Run ();
-		}
-		
-		public void Dispose ()
-		{
-			dialog.Destroy ();
 		}
 		
 		protected void OnRespond (object o, ResponseArgs args)

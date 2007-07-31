@@ -66,6 +66,7 @@ namespace MonoDevelop.Ide.StandardHeaders {
             this.scrolledwindow1.VscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow1.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow1.ShadowType = ((Gtk.ShadowType)(1));
+            this.scrolledwindow1.BorderWidth = ((uint)(6));
             // Container child scrolledwindow1.Gtk.Container+ContainerChild
             this.headerTextview = new Gtk.TextView();
             this.headerTextview.CanFocus = true;

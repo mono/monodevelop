@@ -223,14 +223,8 @@ namespace MonoDevelop.Ide.Gui.Search
 			find.Cancel ();
 		}
 
-		internal static Gtk.Dialog DialogPointer
-		{
-			get {
-				if ( ReplaceDialog != null ){ 
-					return ReplaceDialog.DialogPointer;
-				}
-				return null;
-			}
+		internal static Gtk.Dialog DialogPointer {
+			get { return ReplaceDialog; }
 		}
 		
 		static void SetSearchPattern ()
@@ -255,11 +249,11 @@ namespace MonoDevelop.Ide.Gui.Search
 				} else {
 					ReplaceDialog.Destroy ();
 					ReplaceInFilesDialog rd = new ReplaceInFilesDialog (false);
-					rd.ShowAll ();
+					rd.Show ();
 				}
 			} else {
 				ReplaceInFilesDialog rd = new ReplaceInFilesDialog(false);
-				rd.ShowAll();
+				rd.Show();
 			}
 		}
 		
@@ -274,11 +268,11 @@ namespace MonoDevelop.Ide.Gui.Search
 				} else {
 					ReplaceDialog.Destroy ();
 					ReplaceInFilesDialog rd = new ReplaceInFilesDialog (true);
-					rd.ShowAll ();
+					rd.Show ();
 				}
 			} else {
 				ReplaceInFilesDialog rd = new ReplaceInFilesDialog (true);
-				rd.ShowAll ();
+				rd.Show ();
 			}
 		}
 	}

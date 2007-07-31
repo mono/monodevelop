@@ -37,21 +37,11 @@ using Mono.Addins;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
-	internal class AddinLoadErrorDialog
+	internal partial class AddinLoadErrorDialog: Gtk.Dialog
 	{
-		[Glade.Widget] Button noButton;
-		[Glade.Widget] Button yesButton;
-		[Glade.Widget] Button closeButton;
-		[Glade.Widget] Label labelContinue;
-		[Glade.Widget] Label labelFatal;
-		[Glade.Widget] Label labelWarning;
-		[Glade.Widget] Dialog addinLoadErrorDialog;
-		[Glade.Widget] Gtk.TreeView errorTree;
-		
 		public AddinLoadErrorDialog (AddinError[] errors, bool warning)
 		{
-			XML glade = new XML (null, "Base.glade", "addinLoadErrorDialog", null);
-			glade.Autoconnect (this);
+			Build ();
 			
 			TreeStore store = new TreeStore (typeof(string));
 			errorTree.AppendColumn ("Addin", new CellRendererText (), "text", 0);
@@ -63,7 +53,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				string msg = err.Message;
 				if (string.IsNullOrEmpty (msg) && err.Exception != null)
 					msg = err.Exception.Message;
-				string name = Path.GetFileNameWithoutExtension (err.AddinFile);
+				string name = System.IO.Path.GetFileNameWithoutExtension (err.AddinFile);
 				if (err.Fatal) name += " (Fatal error)";
 				TreeIter it = store.AppendValues (name);
 				store.AppendValues (it, "Full Path: " + err.AddinFile);
@@ -90,11 +80,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 		}
 		
-		public bool Run ()
+		public new bool Run ()
 		{
-			addinLoadErrorDialog.Show ();
-			bool res = (((ResponseType)addinLoadErrorDialog.Run ()) == ResponseType.Yes);
-			addinLoadErrorDialog.Destroy ();
+			Show ();
+			bool res = (((ResponseType)base.Run ()) == ResponseType.Yes);
+			Destroy ();
 			return res;
 		}
 	}

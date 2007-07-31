@@ -85,11 +85,11 @@ namespace MonoDevelop.Ide.Gui.Search
 				} else {
 					ReplaceDialog.Destroy ();
 					ReplaceDialog rd = new ReplaceDialog (mode);
-					rd.ShowAll ();
+					rd.Show ();
 				}
 			} else {
 				ReplaceDialog rd = new ReplaceDialog (mode);
-				rd.ShowAll();
+				rd.Show();
 			}
 		}
 		
@@ -249,14 +249,8 @@ namespace MonoDevelop.Ide.Gui.Search
 				return null;
 		}
 		
-		internal static Gtk.Dialog DialogPointer 
-		{
-			get {
-				if ( ReplaceDialog != null ) { 
-					return ReplaceDialog.DialogPointer;
-				}
-				return null;
-			}
+		internal static Gtk.Dialog DialogPointer {
+			get { return ReplaceDialog; }
 		}
 		
 	}	

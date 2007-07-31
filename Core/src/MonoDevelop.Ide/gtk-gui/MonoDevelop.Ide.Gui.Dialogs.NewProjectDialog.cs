@@ -87,11 +87,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.Title = "New Solution";
             this.TypeHint = ((Gdk.WindowTypeHint)(1));
             this.WindowPosition = ((Gtk.WindowPosition)(1));
+            this.BorderWidth = ((uint)(6));
             this.DestroyWithParent = true;
             this.HasSeparator = false;
             // Internal child MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog-vbox1";
+            w1.Spacing = 6;
             w1.BorderWidth = ((uint)(2));
             // Container child dialog-vbox1.Gtk.Box+BoxChild
             this.notebook = new Gtk.Notebook();
@@ -103,7 +105,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.vbox1 = new Gtk.VBox();
             this.vbox1.Name = "vbox1";
             this.vbox1.Spacing = 7;
-            this.vbox1.BorderWidth = ((uint)(12));
+            this.vbox1.BorderWidth = ((uint)(6));
             // Container child vbox1.Gtk.Box+BoxChild
             this.vbox2 = new Gtk.VBox();
             this.vbox2.Name = "vbox2";
@@ -391,7 +393,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Container child dialog-action_area1.Gtk.ButtonBox+ButtonBoxChild
             this.btn_new = new Gtk.Button();
             this.btn_new.CanDefault = true;
-            this.btn_new.HasDefault = true;
             this.btn_new.Name = "btn_new";
             this.btn_new.UseStock = true;
             this.btn_new.UseUnderline = true;
@@ -403,7 +404,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
                 this.Child.ShowAll();
             }
             this.DefaultWidth = 708;
-            this.DefaultHeight = 496;
+            this.DefaultHeight = 501;
+            this.btn_new.HasDefault = true;
             this.Show();
             this.txt_subdirectory.Changed += new System.EventHandler(this.PathChanged);
             this.txt_name.Changed += new System.EventHandler(this.NameChanged);
