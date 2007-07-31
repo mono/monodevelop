@@ -43,6 +43,7 @@ FILES =  \
 	MakefileProject.cs \
 	MakefileProjectServiceExtension.cs \
 	MakefileReaderExtension.cs \
+	MakefileGeneratorTool.cs \
 	MakefileVar.cs \
 	PropertyProvider.cs \
 	Set.cs \

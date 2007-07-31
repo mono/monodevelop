@@ -92,6 +92,10 @@
 		<Class class = "MonoDevelop.Autotools.PropertyProvider"/>
 	</Extension>
 	
+	<Extension path = "/System/Applications">
+		<Application id = "generate-makefiles" class = "MonoDevelop.Autotools.MakefileGeneratorTool" description = "Makefile generator tool"/>
+	</Extension>
+
 <!--
 	<Extension path = "/MonoDevelop/Workbench/ProjectFeatures">
 		<Class class = "MonoDevelop.Autotools.MakefileIntegrationFeature" />

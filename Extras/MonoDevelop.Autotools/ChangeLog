@@ -2,6 +2,13 @@
 
 	* SolutionOptionsPanel.cs: Removed unused file.
 
+2007-07-31  Ankit Jain  <jankit@novell.com>
+
+       * MakefileGeneratorTool.cs:
+       * MonoDevelop.Autotools.addin.xml: New. Tool for generating makefiles.
+       * Makefile.am: Update.
+       * MonoDevelop.Autotools.mdp: Update.
+
 2007-07-30  Ankit Jain  <jankit@novell.com>
 
 	* MakefileData.cs (ConfiguredPackagesManager.ReadPackagesList): Handle
