@@ -2,12 +2,13 @@
 <stetic-interface>
   <configuration>
     <images-root-path>../</images-root-path>
+    <target-gtk-version>2.8.3</target-gtk-version>
   </configuration>
   <import>
     <widget-library name="../../../../build/AddIns/MonoDevelop.Components.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Projects.Gui.dll" />
   </import>
-  <widget class="Gtk.Bin" id="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget" design-size="418 152">
+  <widget class="Gtk.Bin" id="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget" design-size="492 170">
     <property name="MemberName" />
     <property name="CanFocus">True</property>
     <property name="Events">FocusChangeMask</property>
@@ -66,7 +67,6 @@ Custom Command</property>
                 <property name="UseStock">True</property>
                 <property name="Type">StockItem</property>
                 <property name="StockId">gtk-remove</property>
-                <property name="IsDialogButton">False</property>
                 <signal name="Clicked" handler="OnButtonRemoveClicked" />
                 <property name="label">gtk-remove</property>
               </widget>
@@ -89,10 +89,13 @@ Custom Command</property>
         <child>
           <widget class="Gtk.Table" id="tableData">
             <property name="MemberName" />
-            <property name="NRows">2</property>
+            <property name="NRows">3</property>
             <property name="NColumns">3</property>
             <property name="RowSpacing">6</property>
             <property name="ColumnSpacing">6</property>
+            <child>
+              <placeholder />
+            </child>
             <child>
               <widget class="Gtk.Button" id="buttonBrowse">
                 <property name="MemberName" />
@@ -100,7 +103,6 @@ Custom Command</property>
                 <property name="Type">TextOnly</property>
                 <property name="Label" translatable="yes">Browse...</property>
                 <property name="UseUnderline">True</property>
-                <property name="IsDialogButton">False</property>
                 <signal name="Clicked" handler="OnButtonBrowseClicked" />
               </widget>
               <packing>
@@ -108,11 +110,11 @@ Custom Command</property>
                 <property name="BottomAttach">2</property>
                 <property name="LeftAttach">2</property>
                 <property name="RightAttach">3</property>
-                <property name="AutoSize">False</property>
-                <property name="XOptions">0</property>
+                <property name="AutoSize">True</property>
+                <property name="XOptions">Fill</property>
                 <property name="YOptions">Fill</property>
                 <property name="XExpand">False</property>
-                <property name="XFill">False</property>
+                <property name="XFill">True</property>
                 <property name="XShrink">False</property>
                 <property name="YExpand">False</property>
                 <property name="YFill">True</property>
@@ -152,7 +154,7 @@ Custom Command</property>
               </widget>
               <packing>
                 <property name="LeftAttach">1</property>
-                <property name="RightAttach">3</property>
+                <property name="RightAttach">2</property>
                 <property name="AutoSize">True</property>
                 <property name="YOptions">Fill</property>
                 <property name="XExpand">True</property>
@@ -164,7 +166,62 @@ Custom Command</property>
               </packing>
             </child>
             <child>
+              <widget class="Gtk.HBox" id="hbox2">
+                <property name="MemberName" />
+                <property name="Spacing">6</property>
+                <child>
+                  <widget class="Gtk.Button" id="workingdirQuickInsertButton">
+                    <property name="MemberName" />
+                    <property name="Type">TextOnly</property>
+                    <property name="Label"> &gt; </property>
+                    <property name="UseUnderline">True</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">0</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+              </widget>
+              <packing>
+                <property name="TopAttach">2</property>
+                <property name="BottomAttach">3</property>
+                <property name="LeftAttach">2</property>
+                <property name="RightAttach">3</property>
+                <property name="AutoSize">True</property>
+                <property name="XOptions">Fill</property>
+                <property name="YOptions">Fill</property>
+                <property name="XExpand">False</property>
+                <property name="XFill">True</property>
+                <property name="XShrink">False</property>
+                <property name="YExpand">False</property>
+                <property name="YFill">True</property>
+                <property name="YShrink">False</property>
+              </packing>
+            </child>
+            <child>
               <widget class="Gtk.Label" id="label1">
+                <property name="MemberName" />
+                <property name="Xalign">0</property>
+                <property name="LabelProp" translatable="yes">Working Directory:</property>
+              </widget>
+              <packing>
+                <property name="TopAttach">2</property>
+                <property name="BottomAttach">3</property>
+                <property name="AutoSize">True</property>
+                <property name="XOptions">Fill</property>
+                <property name="YOptions">Fill</property>
+                <property name="XExpand">False</property>
+                <property name="XFill">True</property>
+                <property name="XShrink">False</property>
+                <property name="YExpand">False</property>
+                <property name="YFill">True</property>
+                <property name="YShrink">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Label" id="label3">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
                 <property name="LabelProp" translatable="yes">Command:</property>
@@ -194,6 +251,29 @@ Custom Command</property>
                 <property name="XOptions">Fill</property>
                 <property name="YOptions">Fill</property>
                 <property name="XExpand">False</property>
+                <property name="XFill">True</property>
+                <property name="XShrink">False</property>
+                <property name="YExpand">False</property>
+                <property name="YFill">True</property>
+                <property name="YShrink">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Entry" id="workingdirEntry">
+                <property name="MemberName" />
+                <property name="CanFocus">True</property>
+                <property name="IsEditable">True</property>
+                <property name="InvisibleChar">●</property>
+                <signal name="Changed" handler="OnWorkingdirEntryChanged" />
+              </widget>
+              <packing>
+                <property name="TopAttach">2</property>
+                <property name="BottomAttach">3</property>
+                <property name="LeftAttach">1</property>
+                <property name="RightAttach">2</property>
+                <property name="AutoSize">True</property>
+                <property name="YOptions">Fill</property>
+                <property name="XExpand">True</property>
                 <property name="XFill">True</property>
                 <property name="XShrink">False</property>
                 <property name="YExpand">False</property>

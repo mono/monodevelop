@@ -51,7 +51,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.scrolledwindow1.HscrollbarPolicy = ((Gtk.PolicyType)(2));
             // Container child scrolledwindow1.Gtk.Container+ContainerChild
             Gtk.Viewport w2 = new Gtk.Viewport();
-            w2.Name = "GtkViewport";
             w2.ShadowType = ((Gtk.ShadowType)(0));
             // Container child GtkViewport.Gtk.Container+ContainerChild
             this.vboxCommands = new Gtk.VBox();

@@ -1,6 +1,7 @@
 
 using System;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Projects;
 using MonoDevelop.Components;
 
@@ -12,6 +13,44 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		CombineEntry entry;
 		bool updating;
 		
+		// snatched from MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs
+//		static string[,] argumentQuickInsertMenu = new string[,] {
+//			{GettextCatalog.GetString ("Item Path"), "${ItemPath}"},
+//			{GettextCatalog.GetString ("_Item Directory"), "${ItemDir}"},
+//			{GettextCatalog.GetString ("Item file name"), "${ItemFileName}"},
+//			{GettextCatalog.GetString ("Item extension"), "${ItemExt}"},
+//			{"-", ""},
+//			{GettextCatalog.GetString ("Current line"), "${CurLine}"},
+//			{GettextCatalog.GetString ("Current column"), "${CurCol}"},
+//			{GettextCatalog.GetString ("Current text"), "${CurText}"},
+//			{"-", ""},
+//			{GettextCatalog.GetString ("Target Path"), "${TargetPath}"},
+//			{GettextCatalog.GetString ("_Target Directory"), "${TargetDir}"},
+//			{GettextCatalog.GetString ("Target Name"), "${TargetName}"},
+//			{GettextCatalog.GetString ("Target Extension"), "${TargetExt}"},
+//			{"-", ""},
+//			{GettextCatalog.GetString ("_Project Directory"), "${ProjectDir}"},
+//			{GettextCatalog.GetString ("Project file name"), "${ProjectFileName}"},
+//			{"-", ""},
+//			{GettextCatalog.GetString ("_Solution Directory"), "${CombineDir}"},
+//			{GettextCatalog.GetString ("Solution File Name"), "${CombineFileName}"},
+//			{"-", ""},
+//			{GettextCatalog.GetString ("MonoDevelop Startup Directory"), "${StartupPath}"},
+//		};
+
+		static string[,] workingDirInsertMenu = new string[,] {
+			{GettextCatalog.GetString ("_Item Directory"), "${ItemDir}"},
+			{"-", ""},
+			{GettextCatalog.GetString ("_Target Directory"), "${TargetDir}"},
+			{GettextCatalog.GetString ("Target Name"), "${TargetName}"},
+			{"-", ""},
+			{GettextCatalog.GetString ("_Project Directory"), "${ProjectDir}"},
+			{"-", ""},
+			{GettextCatalog.GetString ("_Solution Directory"), "${CombineDir}"},
+			{"-", ""},
+			{GettextCatalog.GetString ("MonoDevelop Startup Directory"), "${StartupPath}"},
+		};
+		
 		public CustomCommandWidget (CombineEntry entry, CustomCommand cmd)
 		{
 			this.Build();
@@ -21,9 +60,12 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				comboType.RemoveText (0);
 				updating = false;
 			}
+			
 			this.entry = entry;
 			UpdateControls ();
 			this.WidgetFlags |= Gtk.WidgetFlags.NoShowAll;
+			
+			new MenuButtonEntry (workingdirEntry, workingdirQuickInsertButton, workingDirInsertMenu);
 		}
 		
 		public CustomCommand CustomCommand {
@@ -48,6 +90,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				checkExternalCons.Active = cmd.ExternalConsole;
 				checkPauseCons.Active = cmd.PauseExternalConsole;
 				checkPauseCons.Sensitive = cmd.ExternalConsole;
+				workingdirEntry.Text = cmd.WorkingDir;
 			}
 			updating = false;
 		}
@@ -120,6 +163,14 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		{
 			if (CommandRemoved != null)
 				CommandRemoved (this, EventArgs.Empty);
+		}
+		
+		protected virtual void OnWorkingdirEntryChanged (object sender, System.EventArgs e)
+		{
+			if (!updating) {
+				cmd.WorkingDir = workingdirEntry.Text;
+				UpdateControls ();
+			}
 		}
 
 		public event EventHandler CommandCreated;
