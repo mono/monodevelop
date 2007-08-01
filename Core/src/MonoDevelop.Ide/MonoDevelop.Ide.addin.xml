@@ -761,6 +761,12 @@
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DeleteToLineEnd"
 				_label = "Delete to end of line"
 				shortcut="Control|K" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.MoveBlockUp"
+				_label = "Move the line or highlighted selection up"
+				shortcut="Alt|Up" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.MoveBlockDown"
+				_label = "Move the line or highlighted selection down"
+				shortcut="Alt|Down" />
 				
 		</Category>
 		

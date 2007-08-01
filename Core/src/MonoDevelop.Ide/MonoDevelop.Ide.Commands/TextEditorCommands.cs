@@ -22,6 +22,8 @@ namespace MonoDevelop.Ide.Commands
 		ScrollLineUp,
 		ScrollLineDown,
 		DeleteLine,
-		DeleteToLineEnd
+		DeleteToLineEnd,
+		MoveBlockUp,
+		MoveBlockDown
 	}
 }

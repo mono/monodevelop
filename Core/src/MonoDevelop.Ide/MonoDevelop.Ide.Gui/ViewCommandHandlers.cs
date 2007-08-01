@@ -397,7 +397,9 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (TextEditorCommands.DocumentStart)]
 		[CommandUpdateHandler (TextEditorCommands.DocumentEnd)]
 		[CommandUpdateHandler (TextEditorCommands.DeleteLine)]
-		[CommandUpdateHandler (TextEditorCommands.DeleteToLineEnd)]		
+		[CommandUpdateHandler (TextEditorCommands.DeleteToLineEnd)]
+		[CommandUpdateHandler (TextEditorCommands.MoveBlockUp)]		
+		[CommandUpdateHandler (TextEditorCommands.MoveBlockDown)]		
 		protected void OnUpdateLineEnd (CommandInfo info)
 		{
 			// If the current document is not an editor, just ignore the text
@@ -501,6 +503,87 @@ namespace MonoDevelop.Ide.Gui
 			} else {
 				doc.TextEditor.DeleteText (doc.TextEditor.CursorPosition, len - col + 1);
 			}
+		}
+		
+		[CommandHandler (TextEditorCommands.MoveBlockUp)]
+		protected void OnMoveBlockUp ()
+		{
+			int lineStart = -1, lineEnd = -1, colStart = -1, colEnd = -1;
+			doc.TextEditor.GetLineColumnFromPosition (doc.TextEditor.SelectionStartPosition, out lineStart, out colStart);
+			doc.TextEditor.GetLineColumnFromPosition (doc.TextEditor.SelectionEndPosition, out lineEnd, out colEnd);
+			
+			// Full line selection behaves oddly, in that the end position will be reported as
+			// the first column of the next line.  We don't want that behavior.
+			if(lineStart != lineEnd && colEnd == 1)
+				lineEnd--;
+			
+			if(lineStart == 1)
+				return;
+			
+			// We don't want to do partial lines.  If any part of a line is selected,
+			// we move the entire line.
+
+			doc.TextEditor.BeginAtomicUndo ();
+			int oldSelStart = doc.TextEditor.SelectionStartPosition;
+			int oldSelEnd = doc.TextEditor.SelectionEndPosition;
+			
+			int startPos = doc.TextEditor.GetPositionFromLineColumn (lineStart, 1);
+			int endPos = doc.TextEditor.GetPositionFromLineColumn (lineEnd, doc.TextEditor.GetLineLength(lineEnd) + 1) + 1;  // Include \n
+			
+			string text = doc.TextEditor.GetText(startPos, endPos);
+			doc.TextEditor.DeleteText(startPos, endPos - startPos);
+			int newStartPos = doc.TextEditor.GetPositionFromLineColumn(lineStart - 1, 1);
+			doc.TextEditor.InsertText(newStartPos, text);
+			
+			// Now we either reset the selection or the cursor, depending
+			// on what the case was when we started.
+			int selStart = newStartPos + colStart - 1;
+			int selEnd = selStart + (oldSelEnd - oldSelStart);
+			doc.TextEditor.Select(selStart, selEnd);
+
+			doc.TextEditor.EndAtomicUndo ();
+		}
+		
+		[CommandHandler (TextEditorCommands.MoveBlockDown)]
+		protected void OnMoveBlockDown ()
+		{
+			int lineStart = -1, lineEnd = -1, colStart = -1, colEnd = -1;
+			doc.TextEditor.GetLineColumnFromPosition (doc.TextEditor.SelectionStartPosition, out lineStart, out colStart);
+			doc.TextEditor.GetLineColumnFromPosition (doc.TextEditor.SelectionEndPosition, out lineEnd, out colEnd);
+			
+			// Full line selection behaves oddly, in that the end position will be reported as
+			// the first column of the next line.  We don't want that behavior.
+			if(lineStart != lineEnd && colEnd == 1)
+				lineEnd--;
+			
+			if(doc.TextEditor.GetPositionFromLineColumn (lineEnd + 1, 1) == -1)
+				return;
+			
+			// We don't want to do partial lines.  If any part of a line is selected,
+			// we move the entire line.
+
+			doc.TextEditor.BeginAtomicUndo ();
+			int oldSelStart = doc.TextEditor.SelectionStartPosition;
+			int oldSelEnd = doc.TextEditor.SelectionEndPosition;
+
+			int startPos = doc.TextEditor.GetPositionFromLineColumn (lineStart, 1);
+			int endPos = doc.TextEditor.GetPositionFromLineColumn (lineEnd, doc.TextEditor.GetLineLength(lineEnd) + 1) + 1;  // Include \n
+
+			// If the next line is the last line, don't add 1 for the \n or we'll end up adding an extra line.
+			if (doc.TextEditor.GetPositionFromLineColumn (lineEnd + 2, 1) == -1)
+				endPos--;
+			
+			string text = doc.TextEditor.GetText(startPos, endPos);
+			doc.TextEditor.DeleteText(startPos, endPos - startPos);
+			int newStartPos = doc.TextEditor.GetPositionFromLineColumn(lineStart + 1, 1);
+			doc.TextEditor.InsertText(newStartPos, text);
+			
+			// Now we either reset the selection or the cursor, depending
+			// on what the case was when we started.
+			int selStart = newStartPos + colStart - 1;
+			int selEnd = selStart + (oldSelEnd - oldSelStart);
+			doc.TextEditor.Select(selStart, selEnd);
+			doc.TextEditor.EndAtomicUndo ();
 		}
 	}
 }

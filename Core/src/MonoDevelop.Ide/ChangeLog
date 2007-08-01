@@ -1,3 +1,10 @@
+2007-07-29  Zach Lute <zach.lute@gmail.com>
+
+	* MonoDevelop.Ide.addin.xml,
+	  MonoDevelop.Ide.Commands/TextEditorCommands.cs,
+	  MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:
+	  Added MoveBlockUp and MoveBlockDown commands.
+
 2007-07-30  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs:
