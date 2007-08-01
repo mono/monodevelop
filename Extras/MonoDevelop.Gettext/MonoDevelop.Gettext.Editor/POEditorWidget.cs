@@ -250,11 +250,22 @@ namespace MonoDevelop.Gettext
 				this.textviewOriginal.Buffer.Text = entry != null ? entry.String : "";
 				this.textviewTranslated.Buffer.Text = entry != null ? entry.GetTranslation (0) : "";
 				
+			
+				if (GtkSpell.IsSupported && !gtkSpellSet.ContainsKey (this.textviewOriginal)) {
+					GtkSpell.Attach (this.textviewOriginal, "en");
+					this.gtkSpellSet[this.textviewOriginal] = true;
+				} 
+				
 				frameOriginalPlural.Visible = frameTranslatedPlural.Visible = entry != null ? entry.HasPlural : false;
 				
 				if (entry != null && entry.HasPlural) {
 					this.textviewOriginalPlural.Buffer.Text = entry.PluralString;
 					this.textviewTranslatedPlural.Buffer.Text = entry.GetTranslation (1);
+
+					if (GtkSpell.IsSupported && !gtkSpellSet.ContainsKey (this.textviewOriginalPlural)) {
+						GtkSpell.Attach (this.textviewOriginalPlural, "en");
+						this.gtkSpellSet[this.textviewOriginalPlural] = true;
+					}
 				}
 				
 				this.foundInStore.Clear ();
@@ -278,17 +289,16 @@ namespace MonoDevelop.Gettext
 				this.textviewComments.Buffer.Text = entry != null ? entry.Comment : null;
 				
 				if (GtkSpell.IsSupported) {
-					try {
-						if (!gtkSpellSet.ContainsKey (this.textviewTranslated)) {
-							GtkSpell.Attach (this.textviewTranslated, catalog.LocaleCode);
-							this.gtkSpellSet[this.textviewTranslated] = true;
-						}
-						if (frameOriginalPlural.Visible && !gtkSpellSet.ContainsKey (this.textviewTranslatedPlural)) {
-							GtkSpell.Attach (this.textviewTranslatedPlural, catalog.LocaleCode);
-							this.gtkSpellSet[this.textviewTranslatedPlural] = true;
-						}
-					} catch {
+					if (!gtkSpellSet.ContainsKey (this.textviewTranslated)) {
+						GtkSpell.Attach (this.textviewTranslated, catalog.LocaleCode);
+						this.gtkSpellSet[this.textviewTranslated] = true;
 					}
+					if (frameOriginalPlural.Visible && !gtkSpellSet.ContainsKey (this.textviewTranslatedPlural)) {
+						GtkSpell.Attach (this.textviewTranslatedPlural, catalog.LocaleCode);
+						this.gtkSpellSet[this.textviewTranslatedPlural] = true;
+					}
+					foreach (TextView view in this.gtkSpellSet.Keys)
+						GtkSpell.Recheck (view);
 				}
 			} finally {
 				this.isUpdating = false;

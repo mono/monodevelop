@@ -49,6 +49,9 @@ namespace MonoDevelop.Gettext.Editor
 		static extern void gtkspell_recheck_all (IntPtr ptr);
 		
 		[DllImport ("libgtkspell")]
+		static extern IntPtr gtkspell_get_from_text_view (IntPtr textView);
+		
+		[DllImport ("libgtkspell")]
 		static extern bool gtkspell_set_language (IntPtr spell, string lang, IntPtr error);
 #endregion
 		
@@ -71,13 +74,22 @@ namespace MonoDevelop.Gettext.Editor
 			}
 		}
 		
-		public static IntPtr Attach (TextView tv, string locale)
+		public static void Recheck (TextView tv)
 		{
+			Debug.Assert (IsSupported);
 			Debug.Assert (tv != null);
 			Debug.Assert (tv.Handle != IntPtr.Zero);
-			IntPtr gtkSpell = gtkspell_new_attach (tv.Handle, locale, IntPtr.Zero);
-//			gtkspell_set_language (gtkSpell, locale, IntPtr.Zero);
-			return gtkSpell;
+			IntPtr ptr = gtkspell_get_from_text_view (tv.Handle);
+			if (ptr != IntPtr.Zero)
+				gtkspell_recheck_all (ptr);
+		}
+		
+		public static IntPtr Attach (TextView tv, string locale)
+		{
+			Debug.Assert (IsSupported);
+			Debug.Assert (tv != null);
+			Debug.Assert (tv.Handle != IntPtr.Zero);
+			return gtkspell_new_attach (tv.Handle, locale, IntPtr.Zero);
 		}
 		
 		public static void Detach (TextView tv)

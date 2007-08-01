@@ -1,6 +1,14 @@
 2007-08-01  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Gettext.Editor/GtkSpell.cs,
+	  MonoDevelop.Gettext.Editor/POEditorWidget.cs: Added spellchecking
+	  to original string (hardcoded currently to "en" - maybe shoul add
+	  an option to the translationproject for this ?). Fixed spellcheck
+	  updating bug.
+
+2007-08-01  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Gettext.Editor/GtkSpell.cs,
 	  MonoDevelop.Gettext.Editor/POEditorWidget.cs: Fixed gtk spell
 	  support.
 
