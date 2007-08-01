@@ -1,3 +1,9 @@
+2007-08-01  Marcos David Marín Amador <MarcosMarin@gmail.com>
+
+	* MonoDevelop.Projects/CustomCommand.cs: Added the working directory
+	  property which is now parsed to support variables. The arguments 
+	  int the command entry are also now parsed.
+
 2007-07-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/CustomCommand.cs: Report custom command errors.

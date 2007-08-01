@@ -18,6 +18,9 @@ namespace MonoDevelop.Projects
 		[ItemProperty ()]
 		string command;
 		
+		[ItemProperty ()]
+		string workingdir;
+		
 		[ItemProperty (DefaultValue = false)]
 		bool externalConsole;
 		
@@ -32,6 +35,11 @@ namespace MonoDevelop.Projects
 		public string Command {
 			get { return command; }
 			set { command = value; }
+		}
+		
+		public string WorkingDir {
+			get { return workingdir; }
+			set { workingdir = value; }
 		}
 		
 		public string Name {
@@ -53,6 +61,7 @@ namespace MonoDevelop.Projects
 		{
 			CustomCommand cmd = new CustomCommand ();
 			cmd.command = command;
+			cmd.workingdir = workingdir;
 			cmd.name = name;
 			cmd.externalConsole = externalConsole;
 			cmd.pauseExternalConsole = pauseExternalConsole;
@@ -66,19 +75,22 @@ namespace MonoDevelop.Projects
 		}
 		
 		public void Execute (IProgressMonitor monitor, CombineEntry entry, ExecutionContext context)
-		{
-			monitor.Log.WriteLine (GettextCatalog.GetString ("Executing: {0}", command));
-			
+		{			
 			int i = command.IndexOf (' ');
 			string exe;
-			string args = "";
+			string args = string.Empty;
 			if (i == -1) {
 				exe = command;
 				args = string.Empty;
 			} else {
 				exe = command.Substring (0, i);
-				args = command.Substring (i + 1);
+				args = Runtime.StringParserService.Parse (command.Substring (i + 1));
 			}
+			
+			monitor.Log.WriteLine (GettextCatalog.GetString ("Executing: {0} {1}", exe, args));
+
+			string dir = (string.IsNullOrEmpty (workingdir) ? entry.BaseDirectory : Runtime.StringParserService.Parse (workingdir));
+			
 			string localPath = Path.Combine (entry.BaseDirectory, exe);
 			if (File.Exists (localPath))
 				exe = localPath;
@@ -92,14 +104,14 @@ namespace MonoDevelop.Projects
 				else
 					console = context.ConsoleFactory.CreateConsole (!pauseExternalConsole);
 				IExecutionHandler handler = context.ExecutionHandlerFactory.CreateExecutionHandler ("Native");
-				oper = handler.Execute (exe, args, entry.BaseDirectory, console);
+				oper = handler.Execute (exe, args, dir, console);
 			}
 			else {
 				if (externalConsole) {
 					IConsole console = ExternalConsoleFactory.Instance.CreateConsole (!pauseExternalConsole);
-					oper = Runtime.ProcessService.StartConsoleProcess (exe, args, entry.BaseDirectory, console, null);
+					oper = Runtime.ProcessService.StartConsoleProcess (exe, args, dir, console, null);
 				} else {
-					oper = Runtime.ProcessService.StartProcess (exe, args, entry.BaseDirectory, monitor.Log, monitor.Log, null, false);
+					oper = Runtime.ProcessService.StartProcess (exe, args, dir, monitor.Log, monitor.Log, null, false);
 				}
 			}
 			
