@@ -84,17 +84,17 @@ namespace MonoDevelop.VersionControl.Dialogs {
             this.Name = "MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog";
             this.Title = Mono.Unix.Catalog.GetString("Select Repository");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
-            this.HasSeparator = false;
+            this.BorderWidth = ((uint)(6));
             // Internal child MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Events = ((Gdk.EventMask)(256));
             w1.Name = "dialog_VBox";
-            w1.BorderWidth = ((uint)(2));
+            w1.Spacing = 6;
             // Container child dialog_VBox.Gtk.Box+BoxChild
             this.vbox1 = new Gtk.VBox();
             this.vbox1.Name = "vbox1";
             this.vbox1.Spacing = 12;
-            this.vbox1.BorderWidth = ((uint)(9));
+            this.vbox1.BorderWidth = ((uint)(6));
             // Container child vbox1.Gtk.Box+BoxChild
             this.notebook = new Gtk.Notebook();
             this.notebook.CanFocus = true;
@@ -168,6 +168,7 @@ namespace MonoDevelop.VersionControl.Dialogs {
             this.repoTree = new Gtk.TreeView();
             this.repoTree.CanFocus = true;
             this.repoTree.Name = "repoTree";
+            this.repoTree.HeadersClickable = true;
             this.scrolledwindow2.Add(this.repoTree);
             this.hbox2.Add(this.scrolledwindow2);
             Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.hbox2[this.scrolledwindow2]));

@@ -11,7 +11,7 @@
 namespace MonoDevelop.VersionControl.Dialogs {
     
     
-    public partial class CommitDialog {
+    internal partial class CommitDialog {
         
         private Gtk.VBox mainBox;
         
@@ -40,17 +40,18 @@ namespace MonoDevelop.VersionControl.Dialogs {
             this.Name = "MonoDevelop.VersionControl.Dialogs.CommitDialog";
             this.Title = Mono.Unix.Catalog.GetString("Commit Files");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
-            this.HasSeparator = false;
+            this.BorderWidth = ((uint)(6));
             // Internal child MonoDevelop.VersionControl.Dialogs.CommitDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Events = ((Gdk.EventMask)(256));
             w1.Name = "dialog_VBox";
+            w1.Spacing = 6;
             w1.BorderWidth = ((uint)(2));
             // Container child dialog_VBox.Gtk.Box+BoxChild
             this.mainBox = new Gtk.VBox();
             this.mainBox.Name = "mainBox";
             this.mainBox.Spacing = 6;
-            this.mainBox.BorderWidth = ((uint)(12));
+            this.mainBox.BorderWidth = ((uint)(6));
             // Container child mainBox.Gtk.Box+BoxChild
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
@@ -72,6 +73,7 @@ namespace MonoDevelop.VersionControl.Dialogs {
             this.fileList = new Gtk.TreeView();
             this.fileList.CanFocus = true;
             this.fileList.Name = "fileList";
+            this.fileList.HeadersClickable = true;
             this.scrolledwindow1.Add(this.fileList);
             this.mainBox.Add(this.scrolledwindow1);
             Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.mainBox[this.scrolledwindow1]));

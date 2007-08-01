@@ -39,13 +39,13 @@ namespace MonoDevelop.VersionControl.Dialogs {
             this.Name = "MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog";
             this.Title = Mono.Unix.Catalog.GetString("Repository Configuration");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
+            this.BorderWidth = ((uint)(6));
             this.DefaultWidth = 500;
-            this.HasSeparator = false;
             // Internal child MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Events = ((Gdk.EventMask)(256));
             w1.Name = "dialog-vbox3";
-            w1.BorderWidth = ((uint)(2));
+            w1.Spacing = 6;
             // Container child dialog-vbox3.Gtk.Box+BoxChild
             this.vbox1 = new Gtk.VBox();
             this.vbox1.Name = "vbox1";

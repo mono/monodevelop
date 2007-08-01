@@ -2,6 +2,7 @@
 <stetic-interface>
   <configuration>
     <images-root-path>../</images-root-path>
+    <target-gtk-version>2.8.3</target-gtk-version>
   </configuration>
   <import>
     <widget-library name="../../../../build/AddIns/MonoDevelop.Components.dll" />
@@ -19,19 +20,19 @@
     <property name="Events">ButtonPressMask</property>
     <property name="Title" translatable="yes">Select Repository</property>
     <property name="WindowPosition">CenterOnParent</property>
+    <property name="BorderWidth">6</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
-    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog_VBox">
         <property name="MemberName" />
         <property name="Events">ButtonPressMask</property>
-        <property name="BorderWidth">2</property>
+        <property name="Spacing">6</property>
         <child>
           <widget class="Gtk.VBox" id="vbox1">
             <property name="MemberName" />
             <property name="Spacing">12</property>
-            <property name="BorderWidth">9</property>
+            <property name="BorderWidth">6</property>
             <child>
               <widget class="Gtk.Notebook" id="notebook">
                 <property name="MemberName">notebook</property>
@@ -156,7 +157,6 @@
                             <property name="UseStock">True</property>
                             <property name="Type">StockItem</property>
                             <property name="StockId">gtk-add</property>
-                            <property name="IsDialogButton">False</property>
                             <signal name="Clicked" handler="OnButtonAddClicked" />
                             <property name="label">gtk-add</property>
                           </widget>
@@ -172,7 +172,6 @@
                             <property name="UseStock">True</property>
                             <property name="Type">StockItem</property>
                             <property name="StockId">gtk-remove</property>
-                            <property name="IsDialogButton">False</property>
                             <signal name="Clicked" handler="OnButtonRemoveClicked" />
                             <property name="label">gtk-remove</property>
                           </widget>
@@ -189,7 +188,6 @@
                             <property name="UseStock">True</property>
                             <property name="Type">StockItem</property>
                             <property name="StockId">gtk-edit</property>
-                            <property name="IsDialogButton">False</property>
                             <signal name="Clicked" handler="OnButtonEditClicked" />
                             <property name="label">gtk-edit</property>
                           </widget>
@@ -258,7 +256,6 @@
                         <property name="CanFocus">True</property>
                         <property name="Type">TextOnly</property>
                         <property name="Label" translatable="yes">Browse...</property>
-                        <property name="IsDialogButton">False</property>
                         <signal name="Clicked" handler="OnButtonBrowseClicked" />
                       </widget>
                       <packing>
@@ -308,7 +305,6 @@
                         <property name="UseStock">True</property>
                         <property name="Type">StockItem</property>
                         <property name="StockId">gtk-edit</property>
-                        <property name="IsDialogButton">False</property>
                         <property name="label">gtk-edit</property>
                       </widget>
                       <packing>
@@ -487,7 +483,6 @@
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-cancel</property>
-            <property name="IsDialogButton">True</property>
             <property name="ResponseId">-6</property>
             <property name="label">gtk-cancel</property>
           </widget>
@@ -504,7 +499,6 @@
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-ok</property>
-            <property name="IsDialogButton">True</property>
             <property name="ResponseId">-5</property>
             <property name="label">gtk-ok</property>
           </widget>
@@ -521,15 +515,15 @@
     <property name="MemberName" />
     <property name="Title" translatable="yes">Repository Configuration</property>
     <property name="WindowPosition">CenterOnParent</property>
+    <property name="BorderWidth">6</property>
     <property name="DefaultWidth">500</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
-    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog-vbox3">
         <property name="MemberName" />
         <property name="Events">ButtonPressMask</property>
-        <property name="BorderWidth">2</property>
+        <property name="Spacing">6</property>
         <child>
           <widget class="Gtk.VBox" id="vbox1">
             <property name="MemberName" />
@@ -679,7 +673,6 @@
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-cancel</property>
-            <property name="IsDialogButton">True</property>
             <property name="ResponseId">-6</property>
             <property name="label">gtk-cancel</property>
           </widget>
@@ -696,7 +689,6 @@
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-ok</property>
-            <property name="IsDialogButton">True</property>
             <property name="ResponseId">-5</property>
             <property name="label">gtk-ok</property>
           </widget>
@@ -1093,21 +1085,23 @@
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Dialogs.CommitDialog" design-size="628 481">
     <property name="MemberName" />
     <property name="Events">ButtonPressMask</property>
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Commit Files</property>
     <property name="WindowPosition">CenterOnParent</property>
+    <property name="BorderWidth">6</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
-    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog_VBox">
         <property name="MemberName" />
         <property name="Events">ButtonPressMask</property>
+        <property name="Spacing">6</property>
         <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.VBox" id="mainBox">
             <property name="MemberName" />
             <property name="Spacing">6</property>
-            <property name="BorderWidth">12</property>
+            <property name="BorderWidth">6</property>
             <child>
               <widget class="Gtk.Label" id="label1">
                 <property name="MemberName" />
@@ -1223,7 +1217,6 @@
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-cancel</property>
-            <property name="IsDialogButton">True</property>
             <property name="ResponseId">-6</property>
             <property name="label">gtk-cancel</property>
           </widget>
@@ -1240,7 +1233,6 @@
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-ok</property>
-            <property name="IsDialogButton">True</property>
             <property name="ResponseId">-5</property>
             <property name="label">gtk-ok</property>
           </widget>
