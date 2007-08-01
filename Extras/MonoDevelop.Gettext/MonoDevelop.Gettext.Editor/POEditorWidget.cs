@@ -56,10 +56,7 @@ namespace MonoDevelop.Gettext
 			set {
 				catalog = value;
 				headersEditor.CatalogHeaders = catalog.Headers;
-				if (GtkSpell.IsSupported) {
-					GtkSpell.Attach (this.textviewOriginal, catalog.LocaleCode);
-					GtkSpell.Attach (this.textviewOriginalPlural, catalog.LocaleCode);
-				}
+				
 				UpdateFromCatalog ();
 				UpdateProgressBar ();
 			}
@@ -243,7 +240,8 @@ namespace MonoDevelop.Gettext
 		
 #region EntryEditor handling
 		CatalogEntry currentEntry;
-		
+		Dictionary<TextView, bool> gtkSpellSet = new Dictionary<TextView, bool> (); 
+			
 		void EditEntry (CatalogEntry entry)
 		{
 			this.isUpdating = true;
@@ -276,7 +274,22 @@ namespace MonoDevelop.Gettext
 						this.foundInStore.AppendValues (file, line, fullName);
 					}
 				}
+				
 				this.textviewComments.Buffer.Text = entry != null ? entry.Comment : null;
+				
+				if (GtkSpell.IsSupported) {
+					try {
+						if (!gtkSpellSet.ContainsKey (this.textviewTranslated)) {
+							GtkSpell.Attach (this.textviewTranslated, catalog.LocaleCode);
+							this.gtkSpellSet[this.textviewTranslated] = true;
+						}
+						if (frameOriginalPlural.Visible && !gtkSpellSet.ContainsKey (this.textviewTranslatedPlural)) {
+							GtkSpell.Attach (this.textviewTranslatedPlural, catalog.LocaleCode);
+							this.gtkSpellSet[this.textviewTranslatedPlural] = true;
+						}
+					} catch {
+					}
+				}
 			} finally {
 				this.isUpdating = false;
 			}
@@ -423,7 +436,6 @@ namespace MonoDevelop.Gettext
 		
 		public override void Dispose ()
 		{
-			Console.WriteLine ("REMOVE !!!");
 			widgets.Remove (this);
 			this.headersEditor.Destroy ();
 			this.headersEditor = null;

@@ -27,6 +27,7 @@
 // 
 
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Gtk;
 
@@ -37,16 +38,27 @@ namespace MonoDevelop.Gettext.Editor
 	{
 		static bool isSupported;
 		
+#region Native methods
 		[DllImport ("libgtkspell")]
 		static extern IntPtr gtkspell_new_attach (IntPtr textView, string locale, IntPtr error);
 
 		[DllImport ("libgtkspell")]
 		static extern void gtkspell_detach (IntPtr ptr);
 		
+		[DllImport ("libgtkspell")]
+		static extern void gtkspell_recheck_all (IntPtr ptr);
+		
+		[DllImport ("libgtkspell")]
+		static extern bool gtkspell_set_language (IntPtr spell, string lang, IntPtr error);
+#endregion
+		
+		public static bool IsSupported {
+			get { return isSupported; }
+		}
+		
 		static GtkSpell ()
 		{
-			try
-			{
+			try {
 				TextView tv = new TextView ();
 				IntPtr ptr = gtkspell_new_attach (tv.Handle, null, IntPtr.Zero);
 				if (ptr != IntPtr.Zero)
@@ -54,21 +66,18 @@ namespace MonoDevelop.Gettext.Editor
 				tv.Destroy ();
 				tv = null;
 				isSupported = true;
-			}
-			catch
-			{
+			} catch {
 				isSupported = false;
 			}
 		}
 		
-		public static bool IsSupported
-		{
-			get { return isSupported; }
-		}
-		
 		public static IntPtr Attach (TextView tv, string locale)
 		{
-			return gtkspell_new_attach (tv.Handle, locale, IntPtr.Zero);
+			Debug.Assert (tv != null);
+			Debug.Assert (tv.Handle != IntPtr.Zero);
+			IntPtr gtkSpell = gtkspell_new_attach (tv.Handle, locale, IntPtr.Zero);
+//			gtkspell_set_language (gtkSpell, locale, IntPtr.Zero);
+			return gtkSpell;
 		}
 		
 		public static void Detach (TextView tv)

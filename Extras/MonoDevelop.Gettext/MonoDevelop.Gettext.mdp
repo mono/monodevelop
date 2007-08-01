@@ -73,13 +73,6 @@
     <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Deployment" />
   </References>
-  <GtkDesignInfo partialTypes="True">
-    <ExportedWidgets>
-      <Widget>MonoDevelop.Gettext.POEditorWidget</Widget>
-      <Widget>MonoDevelop.Gettext.EntrySelectionTree</Widget>
-    </ExportedWidgets>
-  </GtkDesignInfo>
-  <Deployment.LinuxDeployData scriptName="monodevelop.gettext" generatePcFile="False" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />
@@ -89,5 +82,12 @@
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
+  <Deployment.LinuxDeployData scriptName="monodevelop.gettext" generatePcFile="False" />
+  <GtkDesignInfo partialTypes="True">
+    <ExportedWidgets>
+      <Widget>MonoDevelop.Gettext.POEditorWidget</Widget>
+      <Widget>MonoDevelop.Gettext.EntrySelectionTree</Widget>
+    </ExportedWidgets>
+  </GtkDesignInfo>
   <MonoDevelop.Gettext.TranslationInfo />
 </Project>
