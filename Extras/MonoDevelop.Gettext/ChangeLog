@@ -1,5 +1,11 @@
 2007-08-01  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs: Editor now supports
+	  n plural forms instead of 2.
+
+2007-08-01  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Gettext.Editor/GtkSpell.cs,
 	  MonoDevelop.Gettext.Editor/POEditorWidget.cs: Added spellchecking
 	  to original string (hardcoded currently to "en" - maybe shoul add

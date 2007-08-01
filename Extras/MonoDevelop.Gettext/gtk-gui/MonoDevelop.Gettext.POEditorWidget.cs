@@ -77,21 +77,9 @@ namespace MonoDevelop.Gettext {
         
         private Gtk.Alignment GtkAlignment1;
         
-        private Gtk.VBox vbox6;
+        private Gtk.Notebook notebookTranslated;
         
-        private Gtk.ScrolledWindow scrolledwindow4;
-        
-        private Gtk.TextView textviewTranslated;
-        
-        private Gtk.Frame frameTranslatedPlural;
-        
-        private Gtk.Alignment GtkAlignment6;
-        
-        private Gtk.ScrolledWindow scrolledwindow5;
-        
-        private Gtk.TextView textviewTranslatedPlural;
-        
-        private Gtk.Label GtkLabel6;
+        private Gtk.Label label1;
         
         private Gtk.Label GtkLabel3;
         
@@ -301,55 +289,19 @@ namespace MonoDevelop.Gettext {
             this.GtkAlignment1.Name = "GtkAlignment1";
             this.GtkAlignment1.LeftPadding = ((uint)(12));
             // Container child GtkAlignment1.Gtk.Container+ContainerChild
-            this.vbox6 = new Gtk.VBox();
-            this.vbox6.Name = "vbox6";
-            this.vbox6.Spacing = 6;
-            // Container child vbox6.Gtk.Box+BoxChild
-            this.scrolledwindow4 = new Gtk.ScrolledWindow();
-            this.scrolledwindow4.CanFocus = true;
-            this.scrolledwindow4.Name = "scrolledwindow4";
-            this.scrolledwindow4.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow4.HscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow4.ShadowType = ((Gtk.ShadowType)(1));
-            // Container child scrolledwindow4.Gtk.Container+ContainerChild
-            this.textviewTranslated = new Gtk.TextView();
-            this.textviewTranslated.CanFocus = true;
-            this.textviewTranslated.Name = "textviewTranslated";
-            this.scrolledwindow4.Add(this.textviewTranslated);
-            this.vbox6.Add(this.scrolledwindow4);
-            Gtk.Box.BoxChild w24 = ((Gtk.Box.BoxChild)(this.vbox6[this.scrolledwindow4]));
-            w24.Position = 0;
-            // Container child vbox6.Gtk.Box+BoxChild
-            this.frameTranslatedPlural = new Gtk.Frame();
-            this.frameTranslatedPlural.Name = "frameTranslatedPlural";
-            this.frameTranslatedPlural.LabelXalign = 0F;
-            // Container child frameTranslatedPlural.Gtk.Container+ContainerChild
-            this.GtkAlignment6 = new Gtk.Alignment(0F, 0F, 1F, 1F);
-            this.GtkAlignment6.Name = "GtkAlignment6";
-            this.GtkAlignment6.LeftPadding = ((uint)(12));
-            // Container child GtkAlignment6.Gtk.Container+ContainerChild
-            this.scrolledwindow5 = new Gtk.ScrolledWindow();
-            this.scrolledwindow5.CanFocus = true;
-            this.scrolledwindow5.Name = "scrolledwindow5";
-            this.scrolledwindow5.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow5.HscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow5.ShadowType = ((Gtk.ShadowType)(1));
-            // Container child scrolledwindow5.Gtk.Container+ContainerChild
-            this.textviewTranslatedPlural = new Gtk.TextView();
-            this.textviewTranslatedPlural.CanFocus = true;
-            this.textviewTranslatedPlural.Name = "textviewTranslatedPlural";
-            this.scrolledwindow5.Add(this.textviewTranslatedPlural);
-            this.GtkAlignment6.Add(this.scrolledwindow5);
-            this.frameTranslatedPlural.Add(this.GtkAlignment6);
-            this.GtkLabel6 = new Gtk.Label();
-            this.GtkLabel6.Name = "GtkLabel6";
-            this.GtkLabel6.LabelProp = Mono.Unix.Catalog.GetString("plural:");
-            this.GtkLabel6.UseMarkup = true;
-            this.frameTranslatedPlural.LabelWidget = this.GtkLabel6;
-            this.vbox6.Add(this.frameTranslatedPlural);
-            Gtk.Box.BoxChild w28 = ((Gtk.Box.BoxChild)(this.vbox6[this.frameTranslatedPlural]));
-            w28.Position = 1;
-            this.GtkAlignment1.Add(this.vbox6);
+            this.notebookTranslated = new Gtk.Notebook();
+            this.notebookTranslated.CanFocus = true;
+            this.notebookTranslated.Name = "notebookTranslated";
+            this.notebookTranslated.CurrentPage = 0;
+            // Notebook tab
+            Gtk.Label w23 = new Gtk.Label();
+            w23.Visible = true;
+            this.notebookTranslated.Add(w23);
+            this.label1 = new Gtk.Label();
+            this.label1.Name = "label1";
+            this.label1.LabelProp = Mono.Unix.Catalog.GetString("page1");
+            this.notebookTranslated.SetTabLabel(w23, this.label1);
+            this.GtkAlignment1.Add(this.notebookTranslated);
             this.frame4.Add(this.GtkAlignment1);
             this.GtkLabel3 = new Gtk.Label();
             this.GtkLabel3.Name = "GtkLabel3";
@@ -357,25 +309,25 @@ namespace MonoDevelop.Gettext {
             this.GtkLabel3.UseMarkup = true;
             this.frame4.LabelWidget = this.GtkLabel3;
             this.table1.Add(this.frame4);
-            Gtk.Table.TableChild w31 = ((Gtk.Table.TableChild)(this.table1[this.frame4]));
-            w31.TopAttach = ((uint)(1));
-            w31.BottomAttach = ((uint)(2));
-            w31.XOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w26 = ((Gtk.Table.TableChild)(this.table1[this.frame4]));
+            w26.TopAttach = ((uint)(1));
+            w26.BottomAttach = ((uint)(2));
+            w26.XOptions = ((Gtk.AttachOptions)(4));
             this.vpaned2.Add(this.table1);
             this.vbox7.Add(this.vpaned2);
-            Gtk.Box.BoxChild w33 = ((Gtk.Box.BoxChild)(this.vbox7[this.vpaned2]));
-            w33.Position = 0;
+            Gtk.Box.BoxChild w28 = ((Gtk.Box.BoxChild)(this.vbox7[this.vpaned2]));
+            w28.Position = 0;
             this.notebookPages.Add(this.vbox7);
-            Gtk.Notebook.NotebookChild w34 = ((Gtk.Notebook.NotebookChild)(this.notebookPages[this.vbox7]));
-            w34.TabExpand = false;
+            Gtk.Notebook.NotebookChild w29 = ((Gtk.Notebook.NotebookChild)(this.notebookPages[this.vbox7]));
+            w29.TabExpand = false;
             // Notebook tab
             this.label5 = new Gtk.Label();
             this.label5.Name = "label5";
             this.label5.LabelProp = Mono.Unix.Catalog.GetString("page1");
             this.notebookPages.SetTabLabel(this.vbox7, this.label5);
             this.vbox2.Add(this.notebookPages);
-            Gtk.Box.BoxChild w35 = ((Gtk.Box.BoxChild)(this.vbox2[this.notebookPages]));
-            w35.Position = 0;
+            Gtk.Box.BoxChild w30 = ((Gtk.Box.BoxChild)(this.vbox2[this.notebookPages]));
+            w30.Position = 0;
             // Container child vbox2.Gtk.Box+BoxChild
             this.hbox1 = new Gtk.HBox();
             this.hbox1.Name = "hbox1";
@@ -387,19 +339,19 @@ namespace MonoDevelop.Gettext {
             this.toolbarPages.ShowArrow = false;
             this.toolbarPages.ToolbarStyle = ((Gtk.ToolbarStyle)(0));
             this.hbox1.Add(this.toolbarPages);
-            Gtk.Box.BoxChild w36 = ((Gtk.Box.BoxChild)(this.hbox1[this.toolbarPages]));
-            w36.Position = 0;
+            Gtk.Box.BoxChild w31 = ((Gtk.Box.BoxChild)(this.hbox1[this.toolbarPages]));
+            w31.Position = 0;
             // Container child hbox1.Gtk.Box+BoxChild
             this.progressbar1 = new Gtk.ProgressBar();
             this.progressbar1.Name = "progressbar1";
             this.hbox1.Add(this.progressbar1);
-            Gtk.Box.BoxChild w37 = ((Gtk.Box.BoxChild)(this.hbox1[this.progressbar1]));
-            w37.Position = 1;
+            Gtk.Box.BoxChild w32 = ((Gtk.Box.BoxChild)(this.hbox1[this.progressbar1]));
+            w32.Position = 1;
             this.vbox2.Add(this.hbox1);
-            Gtk.Box.BoxChild w38 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
-            w38.Position = 1;
-            w38.Expand = false;
-            w38.Fill = false;
+            Gtk.Box.BoxChild w33 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+            w33.Position = 1;
+            w33.Expand = false;
+            w33.Fill = false;
             this.Add(this.vbox2);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

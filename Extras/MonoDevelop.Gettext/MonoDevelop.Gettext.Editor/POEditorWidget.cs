@@ -119,22 +119,17 @@ namespace MonoDevelop.Gettext
 				} catch {}
 				MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (file, lineNr, 1, true);
 			};
+			this.notebookTranslated.RemovePage (0);
+			AddTextview (GettextCatalog.GetString ("Singular"), 0);
 			
-			this.textviewTranslated.Buffer.Changed += delegate {
-				if (this.isUpdating)
-					return;
-				if (this.currentEntry != null)
-					this.currentEntry.SetTranslation (textviewTranslated.Buffer.Text, 0);
-				UpdateProgressBar ();
-			};
-			
-			this.textviewTranslatedPlural.Buffer.Changed += delegate {
-				if (this.isUpdating)
-					return;
-				if (this.currentEntry != null)
-					this.currentEntry.SetTranslation (textviewTranslatedPlural.Buffer.Text, 1);
-				UpdateProgressBar ();
-			};
+//			this.textviewTranslatedPlural.Buffer.Changed += delegate {
+//				if (this.isUpdating)
+//					return;
+//				if (this.currentEntry != null)
+//					this.currentEntry.SetTranslation (textviewTranslatedPlural.Buffer.Text, 1);
+//				UpdateProgressBar ();
+//			};
+//			
 			this.textviewComments.Buffer.Changed += delegate {
 				if (this.isUpdating)
 					return;
@@ -156,6 +151,34 @@ namespace MonoDevelop.Gettext
 					ShowPopup ();
 			};
 			widgets.Add (this);
+		}
+		
+		TextView GetTextView (int index)
+		{
+			ScrolledWindow window = this.notebookTranslated.GetNthPage (index) as ScrolledWindow;
+			if (window != null)
+				return window.Child as TextView;
+			return null;
+		}
+		
+		void AddTextview (string text, int index)
+		{
+			ScrolledWindow window = new ScrolledWindow ();
+			TextView textView = new TextView ();
+			window.Child = textView;
+			
+			textView.Buffer.Changed += delegate {
+				if (this.isUpdating)
+					return;
+				if (this.currentEntry != null)
+					this.currentEntry.SetTranslation (textView.Buffer.Text, index);
+				UpdateProgressBar ();
+			};
+			
+			Label label = new Label ();
+			label.Text = text;
+			window.ShowAll ();
+			this.notebookTranslated.AppendPage (window, label);
 		}
 		
 		void ShowPopup ()
@@ -241,30 +264,56 @@ namespace MonoDevelop.Gettext
 #region EntryEditor handling
 		CatalogEntry currentEntry;
 		Dictionary<TextView, bool> gtkSpellSet = new Dictionary<TextView, bool> (); 
-			
+		void RemoveTextViewsFrom (int index)
+		{
+			for (int i = this.notebookTranslated.NPages - 1; i >= index ; i--) {
+				TextView view = GetTextView (i);
+				if (view == null)
+					continue;
+				if (gtkSpellSet.ContainsKey (view)) {
+//					GtkSpell.Detach (view);
+					gtkSpellSet.Remove (view);
+				}
+				this.notebookTranslated.RemovePage (i);
+			}
+		}
 		void EditEntry (CatalogEntry entry)
 		{
 			this.isUpdating = true;
 			try {
 				currentEntry = entry;
+					
 				this.textviewOriginal.Buffer.Text = entry != null ? entry.String : "";
-				this.textviewTranslated.Buffer.Text = entry != null ? entry.GetTranslation (0) : "";
-				
-			
+					
 				if (GtkSpell.IsSupported && !gtkSpellSet.ContainsKey (this.textviewOriginal)) {
 					GtkSpell.Attach (this.textviewOriginal, "en");
 					this.gtkSpellSet[this.textviewOriginal] = true;
-				} 
+				}
 				
-				frameOriginalPlural.Visible = frameTranslatedPlural.Visible = entry != null ? entry.HasPlural : false;
+				this.frameOriginalPlural.Visible = entry != null && entry.HasPlural;
+				this.notebookTranslated.ShowTabs = entry != null && entry.HasPlural;
 				
 				if (entry != null && entry.HasPlural) {
 					this.textviewOriginalPlural.Buffer.Text = entry.PluralString;
-					this.textviewTranslatedPlural.Buffer.Text = entry.GetTranslation (1);
-
 					if (GtkSpell.IsSupported && !gtkSpellSet.ContainsKey (this.textviewOriginalPlural)) {
 						GtkSpell.Attach (this.textviewOriginalPlural, "en");
 						this.gtkSpellSet[this.textviewOriginalPlural] = true;
+					}
+				}
+				RemoveTextViewsFrom (entry.NumberOfTranslations);
+				
+				for (int i = this.notebookTranslated.NPages; i < entry.NumberOfTranslations; i++) {
+					AddTextview (String.Format (GettextCatalog.GetString ("Plural {0}"), i), i);
+				}
+				
+				for (int i = 0; i < entry.NumberOfTranslations; i++) {
+					TextView textView = GetTextView (i);
+					if (textView == null)
+						continue;
+					textView.Buffer.Text = entry != null ? entry.GetTranslation (i) : "";
+					if (GtkSpell.IsSupported && !gtkSpellSet.ContainsKey (textView)) {
+						GtkSpell.Attach (textView, "en");
+						this.gtkSpellSet[textView] = true;
 					}
 				}
 				
@@ -289,14 +338,6 @@ namespace MonoDevelop.Gettext
 				this.textviewComments.Buffer.Text = entry != null ? entry.Comment : null;
 				
 				if (GtkSpell.IsSupported) {
-					if (!gtkSpellSet.ContainsKey (this.textviewTranslated)) {
-						GtkSpell.Attach (this.textviewTranslated, catalog.LocaleCode);
-						this.gtkSpellSet[this.textviewTranslated] = true;
-					}
-					if (frameOriginalPlural.Visible && !gtkSpellSet.ContainsKey (this.textviewTranslatedPlural)) {
-						GtkSpell.Attach (this.textviewTranslatedPlural, catalog.LocaleCode);
-						this.gtkSpellSet[this.textviewTranslatedPlural] = true;
-					}
 					foreach (TextView view in this.gtkSpellSet.Keys)
 						GtkSpell.Recheck (view);
 				}
