@@ -53,12 +53,23 @@ namespace MonoDevelop.RegexToolkit
 				this.Destroy ();
 			};
 			
-			this.buttonOk.Clicked += delegate {
+			this.buttonSearch.Clicked += delegate {
 				PerformQuery (this.inputTextview.Buffer.Text,
 				              this.regExTextview.Buffer.Text,
+				              null,
 				              GetOptions ());
+				SetFindMode (true);
 			};
 			
+			this.buttonSearchReplace.Clicked += delegate {
+				PerformQuery (this.inputTextview.Buffer.Text,
+				              this.regExTextview.Buffer.Text,
+				              this.replaceTextview.Buffer.Text,
+				              GetOptions ());
+				SetFindMode (false);
+			};
+			
+			SetFindMode (true);
 			this.optionsTreeview.Model = this.optionsStore;
 			this.optionsTreeview.HeadersVisible = false;
 			
@@ -130,7 +141,12 @@ namespace MonoDevelop.RegexToolkit
 			
 			FillElementsBox ();
 		}
-		
+		void SetFindMode (bool findMode)
+		{
+			this.notebook2.ShowTabs = !findMode;
+			if (findMode)
+				this.notebook2.Page = 0;
+		}
 		void ShowTooltipForSelectedEntry ()
 		{
 			TreeIter iter;
@@ -138,7 +154,7 @@ namespace MonoDevelop.RegexToolkit
 				string description = elementsStore.GetValue (iter, 2) as string;
 				if (!String.IsNullOrEmpty (description)) {
 					Gdk.Rectangle rect = elementsTreeview.GetCellArea (elementsTreeview.Selection.GetSelectedRows () [0], elementsTreeview.GetColumn (0));
-					int wx, wy, wy2;
+					int wx, wy, wy2; 
 					elementsTreeview.TranslateCoordinates (this, rect.X, rect.Bottom, out wx, out wy);
 					elementsTreeview.TranslateCoordinates (this, rect.X, rect.Y, out wx, out wy2);
 					ShowTooltip (description, wx, wy, wy2);
@@ -165,6 +181,7 @@ namespace MonoDevelop.RegexToolkit
 				tooltipWindow = null;
 			}
 		}
+		const int tooltipXOffset = 100;
 		public void ShowTooltip (string text, int x, int y, int altY)
 		{
 			HideTooltipWindow (); 
@@ -174,11 +191,11 @@ namespace MonoDevelop.RegexToolkit
 			this.GdkWindow.GetOrigin (out ox, out oy);
 			int w = tooltipWindow.Child.SizeRequest().Width;
 			int h = tooltipWindow.Child.SizeRequest().Height;
-			if (ox + x + w >= this.GdkWindow.Screen.Width ||
+			if (ox + x + w + tooltipXOffset >= this.GdkWindow.Screen.Width ||
 			    oy + y + h >= this.GdkWindow.Screen.Height) {
 				tooltipWindow.Move (ox + x - w, oy + altY - h);
 			} else 
-				tooltipWindow.Move (ox + x, oy + y);
+				tooltipWindow.Move (ox + x + tooltipXOffset, oy + y);
 			tooltipWindow.ShowAll ();
 		}
 			
@@ -219,10 +236,11 @@ namespace MonoDevelop.RegexToolkit
 			}
 		}
 		
-		void PerformQuery (string input, string pattern, RegexOptions options)
+		void PerformQuery (string input, string pattern, string replacement, RegexOptions options)
 		{
 			Regex regex = new Regex (pattern, options);
 			this.resultStore.Clear ();
+			
 			foreach (Match match in regex.Matches (input)) {
 				TreeIter iter = this.resultStore.AppendValues (Stock.Find, String.Format ("Match '{0}'", match.Value), match.Index, match.Length);
 				int i = 0;
@@ -241,6 +259,9 @@ namespace MonoDevelop.RegexToolkit
 					}
 					i++;
 				}
+			}
+			if (!String.IsNullOrEmpty (replacement)) {
+				this.replaceResultTextview.Buffer.Text = regex.Replace (input, replacement);
 			}
 		}
 		
@@ -295,8 +316,11 @@ namespace MonoDevelop.RegexToolkit
 		void FillOptionsBox ()
 		{
 			Options[] options = {
+				new Options (RegexOptions.IgnorePatternWhitespace, "Ignore Whitespace"),
 				new Options (RegexOptions.IgnoreCase, "Ignore case"),
+				new Options (RegexOptions.Singleline, "Single line"),
 				new Options (RegexOptions.Multiline, "Multi line"),
+				new Options (RegexOptions.ExplicitCapture, "Explicit Capture"),
 				new Options (RegexOptions.RightToLeft, "Right to left")
 			};
 			foreach (Options option in options) {

@@ -1,3 +1,9 @@
+2007-08-01  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.RegexToolkit/RegexToolkit.cs,
+	  gtk-gui/MonoDevelop.RegexToolkit.RegexToolkit.cs: Regex toolkit now
+	  supports replacement expressions.
+
 2007-07-31  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.RegexToolkit/RegexToolkit.cs, RegexElements.xml: Worked
