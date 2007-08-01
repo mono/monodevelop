@@ -33,8 +33,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			// this should only allow dll's and exe's
 			FileFilter filter = new FileFilter ();
 			filter.Name = GettextCatalog.GetString ("Assemblies");
-			filter.AddPattern ("*.dll");
-			filter.AddPattern ("*.exe");
+			filter.AddPattern ("*.[Dd][Ll][Ll]");
+			filter.AddPattern ("*.[Ee][Xx][Ee]");
 			chooser.AddFilter (filter);
 			chooser.FileActivated += new EventHandler (SelectReferenceDialog);
 

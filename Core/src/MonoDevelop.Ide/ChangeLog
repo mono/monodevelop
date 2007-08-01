@@ -1,3 +1,9 @@
+2007-07-30  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs:
+	Changed assembly filters to match mixed-case extensions
+	e.g. Dll, eXe
+
 2007-08-01  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs, MonoDevelop.Ide.mdp,
