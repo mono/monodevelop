@@ -67,7 +67,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog-vbox2";
             w1.Spacing = 6;
-            w1.BorderWidth = ((uint)(2));
             // Container child dialog-vbox2.Gtk.Box+BoxChild
             this.vbox15 = new Gtk.VBox();
             this.vbox15.Name = "vbox15";
@@ -254,19 +253,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.replaceAllButton.UseUnderline = true;
             // Container child replaceAllButton.Gtk.Container+ContainerChild
             Gtk.Alignment w21 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            w21.Name = "GtkAlignment1";
             // Container child GtkAlignment1.Gtk.Container+ContainerChild
             Gtk.HBox w22 = new Gtk.HBox();
-            w22.Name = "GtkHBox3";
             w22.Spacing = 2;
             // Container child GtkHBox3.Gtk.Container+ContainerChild
             Gtk.Image w23 = new Gtk.Image();
-            w23.Name = "image295";
             w23.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-find-and-replace", Gtk.IconSize.Button, 20);
             w22.Add(w23);
             // Container child GtkHBox3.Gtk.Container+ContainerChild
             Gtk.Label w25 = new Gtk.Label();
-            w25.Name = "GtkLabel7";
             w25.LabelProp = Mono.Unix.Catalog.GetString("R_eplace All");
             w25.UseUnderline = true;
             w22.Add(w25);
@@ -281,19 +276,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.replaceButton.UseUnderline = true;
             // Container child replaceButton.Gtk.Container+ContainerChild
             Gtk.Alignment w30 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            w30.Name = "GtkAlignment2";
             // Container child GtkAlignment2.Gtk.Container+ContainerChild
             Gtk.HBox w31 = new Gtk.HBox();
-            w31.Name = "GtkHBox4";
             w31.Spacing = 2;
             // Container child GtkHBox4.Gtk.Container+ContainerChild
             Gtk.Image w32 = new Gtk.Image();
-            w32.Name = "image296";
             w32.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-find-and-replace", Gtk.IconSize.Button, 20);
             w31.Add(w32);
             // Container child GtkHBox4.Gtk.Container+ContainerChild
             Gtk.Label w34 = new Gtk.Label();
-            w34.Name = "GtkLabel8";
             w34.LabelProp = Mono.Unix.Catalog.GetString("_Replace");
             w34.UseUnderline = true;
             w31.Add(w34);
@@ -315,8 +306,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 642;
-            this.DefaultHeight = 305;
+            this.DefaultWidth = 638;
+            this.DefaultHeight = 299;
             this.findButton.HasDefault = true;
             this.Show();
         }

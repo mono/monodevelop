@@ -40,7 +40,7 @@ namespace MonoDevelop.Ide {
             // Internal child MonoDevelop.Ide.NewHeaderTemplateDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";
-            w1.BorderWidth = ((uint)(2));
+            w1.Spacing = 6;
             // Container child dialog1_VBox.Gtk.Box+BoxChild
             this.hbox1 = new Gtk.HBox();
             this.hbox1.Name = "hbox1";
@@ -73,7 +73,7 @@ namespace MonoDevelop.Ide {
             Gtk.HButtonBox w5 = this.ActionArea;
             w5.Name = "dialog1_ActionArea";
             w5.Spacing = 10;
-            w5.BorderWidth = ((uint)(5));
+            w5.BorderWidth = ((uint)(6));
             w5.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonCancel = new Gtk.Button();
@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultHeight = 123;
+            this.DefaultHeight = 127;
             this.Show();
         }
     }

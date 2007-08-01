@@ -94,13 +94,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog-vbox1";
             w1.Spacing = 6;
-            w1.BorderWidth = ((uint)(2));
             // Container child dialog-vbox1.Gtk.Box+BoxChild
             this.notebook = new Gtk.Notebook();
             this.notebook.CanFocus = true;
             this.notebook.Name = "notebook";
             this.notebook.CurrentPage = 0;
             this.notebook.ShowBorder = false;
+            this.notebook.BorderWidth = ((uint)(6));
             // Container child notebook.Gtk.Notebook+NotebookChild
             this.vbox1 = new Gtk.VBox();
             this.vbox1.Name = "vbox1";
@@ -381,7 +381,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             Gtk.HButtonBox w31 = this.ActionArea;
             w31.Name = "dialog-action_area1";
             w31.Spacing = 10;
-            w31.BorderWidth = ((uint)(5));
+            w31.BorderWidth = ((uint)(6));
             w31.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog-action_area1.Gtk.ButtonBox+ButtonBoxChild
             this.btn_close = new Gtk.Button();

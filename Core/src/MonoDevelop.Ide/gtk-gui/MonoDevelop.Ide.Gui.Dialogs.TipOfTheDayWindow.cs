@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Container child MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.Gtk.Container+ContainerChild
             this.vbox2 = new Gtk.VBox();
             this.vbox2.Name = "vbox2";
-            this.vbox2.BorderWidth = ((uint)(5));
+            this.vbox2.Spacing = 6;
             // Container child vbox2.Gtk.Box+BoxChild
             this.vbox3 = new Gtk.VBox();
             this.vbox3.Name = "vbox3";
@@ -130,19 +130,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.nextButton.UseUnderline = true;
             // Container child nextButton.Gtk.Container+ContainerChild
             Gtk.Alignment w8 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            w8.Name = "GtkAlignment";
             // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w9 = new Gtk.HBox();
-            w9.Name = "GtkHBox";
             w9.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w10 = new Gtk.Image();
-            w10.Name = "image294";
             w10.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-go-forward", Gtk.IconSize.Button, 20);
             w9.Add(w10);
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w12 = new Gtk.Label();
-            w12.Name = "GtkLabel";
             w12.LabelProp = Mono.Unix.Catalog.GetString("_Next Tip");
             w12.UseUnderline = true;
             w9.Add(w12);
@@ -171,7 +167,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
                 this.Child.ShowAll();
             }
             this.DefaultWidth = 500;
-            this.DefaultHeight = 271;
+            this.DefaultHeight = 285;
             this.closeButton.HasDefault = true;
             this.Show();
         }

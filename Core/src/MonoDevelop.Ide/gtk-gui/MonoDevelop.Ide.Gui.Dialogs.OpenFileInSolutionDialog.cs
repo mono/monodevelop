@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             Gtk.VBox w1 = this.VBox;
             w1.Events = ((Gdk.EventMask)(256));
             w1.Name = "dialog_VBox";
-            w1.BorderWidth = ((uint)(2));
+            w1.Spacing = 6;
             // Container child dialog_VBox.Gtk.Box+BoxChild
             this.vbox2 = new Gtk.VBox();
             this.vbox2.Name = "vbox2";
@@ -138,7 +138,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             w11.Events = ((Gdk.EventMask)(256));
             w11.Name = "MonoDevelop.Ide.OpenFileInSolutionDialog_ActionArea";
             w11.Spacing = 10;
-            w11.BorderWidth = ((uint)(5));
+            w11.BorderWidth = ((uint)(6));
             w11.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child MonoDevelop.Ide.OpenFileInSolutionDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.cancelButton = new Gtk.Button();

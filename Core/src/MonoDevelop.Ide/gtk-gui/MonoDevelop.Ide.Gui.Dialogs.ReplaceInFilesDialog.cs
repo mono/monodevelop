@@ -77,7 +77,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog-vbox2";
             w1.Spacing = 6;
-            w1.BorderWidth = ((uint)(2));
             // Container child dialog-vbox2.Gtk.Box+BoxChild
             this.vbox15 = new Gtk.VBox();
             this.vbox15.Name = "vbox15";
@@ -334,19 +333,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.replaceAllButton.UseUnderline = true;
             // Container child replaceAllButton.Gtk.Container+ContainerChild
             Gtk.Alignment w27 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            w27.Name = "GtkAlignment2";
             // Container child GtkAlignment2.Gtk.Container+ContainerChild
             Gtk.HBox w28 = new Gtk.HBox();
-            w28.Name = "GtkHBox4";
             w28.Spacing = 2;
             // Container child GtkHBox4.Gtk.Container+ContainerChild
             Gtk.Image w29 = new Gtk.Image();
-            w29.Name = "image297";
             w29.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-find-and-replace", Gtk.IconSize.Button, 20);
             w28.Add(w29);
             // Container child GtkHBox4.Gtk.Container+ContainerChild
             Gtk.Label w31 = new Gtk.Label();
-            w31.Name = "GtkLabel9";
             w31.LabelProp = Mono.Unix.Catalog.GetString("R_eplace All");
             w31.UseUnderline = true;
             w28.Add(w31);
@@ -368,8 +363,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 518;
-            this.DefaultHeight = 397;
+            this.DefaultWidth = 514;
+            this.DefaultHeight = 393;
             this.findButton.HasDefault = true;
             this.Show();
         }

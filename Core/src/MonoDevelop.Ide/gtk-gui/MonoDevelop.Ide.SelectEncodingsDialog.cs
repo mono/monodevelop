@@ -65,7 +65,6 @@ namespace MonoDevelop.Ide {
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog-vbox5";
             w1.Spacing = 6;
-            w1.BorderWidth = ((uint)(2));
             // Container child dialog-vbox5.Gtk.Box+BoxChild
             this.table5 = new Gtk.Table(((uint)(2)), ((uint)(4)), false);
             this.table5.Name = "table5";
@@ -143,19 +142,15 @@ namespace MonoDevelop.Ide {
             this.btnAdd.UseUnderline = true;
             // Container child btnAdd.Gtk.Container+ContainerChild
             Gtk.Alignment w9 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            w9.Name = "GtkAlignment";
             // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w10 = new Gtk.HBox();
-            w10.Name = "GtkHBox";
             w10.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w11 = new Gtk.Image();
-            w11.Name = "image98";
             w11.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-go-forward", Gtk.IconSize.Button, 20);
             w10.Add(w11);
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w13 = new Gtk.Label();
-            w13.Name = "GtkLabel";
             w13.LabelProp = "";
             w10.Add(w13);
             w9.Add(w10);
@@ -170,19 +165,15 @@ namespace MonoDevelop.Ide {
             this.btnRemove.Name = "btnRemove";
             // Container child btnRemove.Gtk.Container+ContainerChild
             Gtk.Alignment w18 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            w18.Name = "GtkAlignment1";
             // Container child GtkAlignment1.Gtk.Container+ContainerChild
             Gtk.HBox w19 = new Gtk.HBox();
-            w19.Name = "GtkHBox1";
             w19.Spacing = 2;
             // Container child GtkHBox1.Gtk.Container+ContainerChild
             Gtk.Image w20 = new Gtk.Image();
-            w20.Name = "image99";
             w20.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-go-back", Gtk.IconSize.SmallToolbar, 18);
             w19.Add(w20);
             // Container child GtkHBox1.Gtk.Container+ContainerChild
             Gtk.Label w22 = new Gtk.Label();
-            w22.Name = "GtkLabel1";
             w22.LabelProp = "";
             w19.Add(w22);
             w18.Add(w19);
@@ -260,7 +251,7 @@ namespace MonoDevelop.Ide {
             Gtk.HButtonBox w35 = this.ActionArea;
             w35.Name = "dialog-action_area5";
             w35.Spacing = 10;
-            w35.BorderWidth = ((uint)(5));
+            w35.BorderWidth = ((uint)(6));
             w35.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog-action_area5.Gtk.ButtonBox+ButtonBoxChild
             this.cancelbutton1 = new Gtk.Button();

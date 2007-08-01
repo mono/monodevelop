@@ -19,9 +19,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
         
         private MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector featureList;
         
-        private Gtk.Button buttonCancel;
+        private Gtk.Button button1547;
         
-        private Gtk.Button buttonOk;
+        private Gtk.Button button1548;
         
         protected virtual void Build() {
             Stetic.Gui.Initialize();
@@ -63,32 +63,26 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             w4.Position = 0;
             // Internal child MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog.ActionArea
             Gtk.HButtonBox w5 = this.ActionArea;
-            w5.Name = "dialog1_ActionArea";
-            w5.Spacing = 10;
-            w5.BorderWidth = ((uint)(5));
+            w5.Name = "GtkDialog_ActionArea";
             w5.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
-            // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
-            this.buttonCancel = new Gtk.Button();
-            this.buttonCancel.CanDefault = true;
-            this.buttonCancel.CanFocus = true;
-            this.buttonCancel.Name = "buttonCancel";
-            this.buttonCancel.UseStock = true;
-            this.buttonCancel.UseUnderline = true;
-            this.buttonCancel.Label = "gtk-cancel";
-            this.AddActionWidget(this.buttonCancel, -6);
-            Gtk.ButtonBox.ButtonBoxChild w6 = ((Gtk.ButtonBox.ButtonBoxChild)(w5[this.buttonCancel]));
+            // Container child GtkDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
+            this.button1547 = new Gtk.Button();
+            this.button1547.CanFocus = true;
+            this.button1547.Name = "button1547";
+            this.button1547.UseUnderline = true;
+            this.button1547.Label = Mono.Unix.Catalog.GetString("button1547");
+            this.AddActionWidget(this.button1547, 0);
+            Gtk.ButtonBox.ButtonBoxChild w6 = ((Gtk.ButtonBox.ButtonBoxChild)(w5[this.button1547]));
             w6.Expand = false;
             w6.Fill = false;
-            // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
-            this.buttonOk = new Gtk.Button();
-            this.buttonOk.CanDefault = true;
-            this.buttonOk.CanFocus = true;
-            this.buttonOk.Name = "buttonOk";
-            this.buttonOk.UseStock = true;
-            this.buttonOk.UseUnderline = true;
-            this.buttonOk.Label = "gtk-ok";
-            w5.Add(this.buttonOk);
-            Gtk.ButtonBox.ButtonBoxChild w7 = ((Gtk.ButtonBox.ButtonBoxChild)(w5[this.buttonOk]));
+            // Container child GtkDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
+            this.button1548 = new Gtk.Button();
+            this.button1548.CanFocus = true;
+            this.button1548.Name = "button1548";
+            this.button1548.UseUnderline = true;
+            this.button1548.Label = Mono.Unix.Catalog.GetString("button1548");
+            this.AddActionWidget(this.button1548, 0);
+            Gtk.ButtonBox.ButtonBoxChild w7 = ((Gtk.ButtonBox.ButtonBoxChild)(w5[this.button1548]));
             w7.Position = 1;
             w7.Expand = false;
             w7.Fill = false;
@@ -98,7 +92,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.DefaultWidth = 585;
             this.DefaultHeight = 435;
             this.Show();
-            this.buttonOk.Clicked += new System.EventHandler(this.OnButtonOkClicked);
         }
     }
 }

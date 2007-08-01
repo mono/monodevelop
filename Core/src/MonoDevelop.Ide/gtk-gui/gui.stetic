@@ -23,7 +23,7 @@
       <widget class="Gtk.VBox" id="dialog_VBox">
         <property name="MemberName" />
         <property name="Events">ButtonPressMask</property>
-        <property name="BorderWidth">2</property>
+        <property name="Spacing">6</property>
         <child>
           <widget class="Gtk.VBox" id="vbox2">
             <property name="MemberName" />
@@ -151,7 +151,7 @@
         <property name="MemberName" />
         <property name="Events">ButtonPressMask</property>
         <property name="Spacing">10</property>
-        <property name="BorderWidth">5</property>
+        <property name="BorderWidth">6</property>
         <property name="Size">2</property>
         <property name="LayoutStyle">End</property>
         <child>
@@ -204,7 +204,6 @@
         <property name="MemberName" />
         <property name="Events">ButtonPressMask</property>
         <property name="Spacing">6</property>
-        <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.VBox" id="vbox2">
             <property name="MemberName" />
@@ -369,7 +368,6 @@
         <property name="MemberName" />
         <property name="Events">ButtonPressMask</property>
         <property name="Spacing">6</property>
-        <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.HBox" id="hbox1">
             <property name="MemberName" />
@@ -518,13 +516,13 @@
       <widget class="Gtk.VBox" id="dialog-vbox1">
         <property name="MemberName" />
         <property name="Spacing">6</property>
-        <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.Notebook" id="notebook">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
             <property name="CurrentPage">0</property>
             <property name="ShowBorder">False</property>
+            <property name="BorderWidth">6</property>
             <child>
               <widget class="Gtk.VBox" id="vbox1">
                 <property name="MemberName" />
@@ -970,7 +968,7 @@
       <widget class="Gtk.HButtonBox" id="dialog-action_area1">
         <property name="MemberName" />
         <property name="Spacing">10</property>
-        <property name="BorderWidth">5</property>
+        <property name="BorderWidth">6</property>
         <property name="Size">2</property>
         <property name="LayoutStyle">End</property>
         <child>
@@ -1090,7 +1088,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.RenameItemDialog" design-size="358 137">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.RenameItemDialog" design-size="375 133">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Rename {0}</property>
     <property name="WindowPosition">CenterOnParent</property>
@@ -1101,7 +1099,6 @@
       <widget class="Gtk.VBox" id="dialog1_VBox">
         <property name="MemberName" />
         <property name="Spacing">6</property>
-        <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.VBox" id="vbox">
             <property name="MemberName" />
@@ -1209,7 +1206,6 @@
       <widget class="Gtk.VBox" id="dialog1_VBox">
         <property name="MemberName" />
         <property name="Spacing">6</property>
-        <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.VBox" id="vbox">
             <property name="MemberName" />
@@ -1614,7 +1610,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.NewHeaderTemplateDialog" design-size="400 123">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.NewHeaderTemplateDialog" design-size="400 127">
     <property name="MemberName" />
     <property name="WidthRequest">320</property>
     <property name="Title" translatable="yes">Add New Standard Header Template</property>
@@ -1631,7 +1627,7 @@
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
         <property name="MemberName" />
-        <property name="BorderWidth">2</property>
+        <property name="Spacing">6</property>
         <child>
           <widget class="Gtk.HBox" id="hbox1">
             <property name="MemberName" />
@@ -1675,7 +1671,7 @@
       <widget class="Gtk.HButtonBox" id="dialog1_ActionArea">
         <property name="MemberName" />
         <property name="Spacing">10</property>
-        <property name="BorderWidth">5</property>
+        <property name="BorderWidth">6</property>
         <property name="Size">2</property>
         <property name="LayoutStyle">End</property>
         <child>
@@ -2592,7 +2588,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Window" id="MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow" design-size="500 271">
+  <widget class="Gtk.Window" id="MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow" design-size="500 285">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <property name="Title">Tip of the Day</property>
@@ -2601,7 +2597,7 @@
     <child>
       <widget class="Gtk.VBox" id="vbox2">
         <property name="MemberName" />
-        <property name="BorderWidth">5</property>
+        <property name="Spacing">6</property>
         <child>
           <widget class="Gtk.VBox" id="vbox3">
             <property name="MemberName" />
@@ -3322,7 +3318,6 @@
       <widget class="Gtk.VBox" id="dialog-vbox4">
         <property name="MemberName" />
         <property name="Spacing">6</property>
-        <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.HBox" id="hbox45">
             <property name="MemberName" />
@@ -3402,7 +3397,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.ReplaceDialog" design-size="642 305">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.ReplaceDialog" design-size="638 299">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <property name="Title">Replace</property>
@@ -3415,7 +3410,6 @@
       <widget class="Gtk.VBox" id="dialog-vbox2">
         <property name="MemberName" />
         <property name="Spacing">6</property>
-        <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.VBox" id="vbox15">
             <property name="MemberName" />
@@ -3745,7 +3739,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.ReplaceInFilesDialog" design-size="518 397">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.ReplaceInFilesDialog" design-size="514 393">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <property name="Title">Replace in Files</property>
@@ -3758,7 +3752,6 @@
       <widget class="Gtk.VBox" id="dialog-vbox2">
         <property name="MemberName" />
         <property name="Spacing">6</property>
-        <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.VBox" id="vbox15">
             <property name="MemberName" />
@@ -4714,7 +4707,6 @@ Months</property>
       <widget class="Gtk.VBox" id="dialog-vbox5">
         <property name="MemberName" />
         <property name="Spacing">6</property>
-        <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.Table" id="table5">
             <property name="MemberName" />
@@ -4969,7 +4961,7 @@ Months</property>
       <widget class="Gtk.HButtonBox" id="dialog-action_area5">
         <property name="MemberName" />
         <property name="Spacing">10</property>
-        <property name="BorderWidth">5</property>
+        <property name="BorderWidth">6</property>
         <property name="Size">2</property>
         <property name="LayoutStyle">End</property>
         <child>
@@ -5016,7 +5008,6 @@ Months</property>
       <widget class="Gtk.VBox" id="dialog-vbox2">
         <property name="MemberName" />
         <property name="Spacing">6</property>
-        <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.VBox" id="vbox5">
             <property name="MemberName" />
@@ -5025,7 +5016,7 @@ Months</property>
             <child>
               <widget class="Gtk.VPaned" id="vpaned1">
                 <property name="MemberName" />
-                <property name="Position">284</property>
+                <property name="Position">256</property>
                 <child>
                   <widget class="Gtk.Notebook" id="mainBook">
                     <property name="MemberName" />
@@ -5201,7 +5192,6 @@ Months</property>
       <widget class="Gtk.VBox" id="dialog-vbox3">
         <property name="MemberName" />
         <property name="Spacing">6</property>
-        <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.VBox" id="vbox62">
             <property name="MemberName" />
@@ -5611,7 +5601,7 @@ Months</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
         <property name="MemberName" />
-        <property name="BorderWidth">2</property>
+        <property name="Spacing">6</property>
         <child>
           <widget class="Gtk.VBox" id="vbox2">
             <property name="MemberName" />

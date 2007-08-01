@@ -60,7 +60,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog-vbox3";
             w1.Spacing = 6;
-            w1.BorderWidth = ((uint)(2));
             // Container child dialog-vbox3.Gtk.Box+BoxChild
             this.vbox62 = new Gtk.VBox();
             this.vbox62.Name = "vbox62";

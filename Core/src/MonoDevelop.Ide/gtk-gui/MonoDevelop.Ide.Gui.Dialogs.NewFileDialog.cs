@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Internal child MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";
-            w1.BorderWidth = ((uint)(2));
+            w1.Spacing = 6;
             // Container child dialog1_VBox.Gtk.Box+BoxChild
             this.vbox2 = new Gtk.VBox();
             this.vbox2.Name = "vbox2";

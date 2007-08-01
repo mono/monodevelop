@@ -60,7 +60,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog-vbox2";
             w1.Spacing = 6;
-            w1.BorderWidth = ((uint)(2));
             // Container child dialog-vbox2.Gtk.Box+BoxChild
             this.vbox5 = new Gtk.VBox();
             this.vbox5.Name = "vbox5";
@@ -69,7 +68,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Container child vbox5.Gtk.Box+BoxChild
             this.vpaned1 = new Gtk.VPaned();
             this.vpaned1.Name = "vpaned1";
-            this.vpaned1.Position = 284;
+            this.vpaned1.Position = 256;
             // Container child vpaned1.Gtk.Paned+PanedChild
             this.mainBook = new Gtk.Notebook();
             this.mainBook.Name = "mainBook";
