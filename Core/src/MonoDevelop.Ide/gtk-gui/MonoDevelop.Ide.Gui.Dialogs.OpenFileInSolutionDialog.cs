@@ -97,6 +97,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.tree = new Gtk.TreeView();
             this.tree.CanFocus = true;
             this.tree.Name = "tree";
+            this.tree.HeadersClickable = true;
             this.scrolledwindow2.Add(this.tree);
             this.vbox2.Add(this.scrolledwindow2);
             Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox2[this.scrolledwindow2]));

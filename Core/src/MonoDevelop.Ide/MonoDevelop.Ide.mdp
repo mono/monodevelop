@@ -323,6 +323,7 @@
     <File name="./gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="./gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="./gtk-gui/MonoDevelop.Ide.Gui.Dialogs.IncludeFilesDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="./gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="gecko-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=ccf7d78a55e9f021" />
@@ -371,7 +372,7 @@
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
-  <GtkDesignInfo partialTypes="True">
+  <GtkDesignInfo partialTypes="True" isWidgetLibrary="True">
     <ExportedWidgets>
       <Widget>MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector</Widget>
       <Widget>MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel</Widget>

@@ -78,6 +78,7 @@ namespace MonoDevelop.Ide {
             this.label106.Xalign = 0F;
             this.label106.Yalign = 0F;
             this.label106.LabelProp = Mono.Unix.Catalog.GetString("Available encodings:");
+            this.label106.WidthChars = 20;
             this.table5.Add(this.label106);
             Gtk.Table.TableChild w2 = ((Gtk.Table.TableChild)(this.table5[this.label106]));
             w2.XOptions = ((Gtk.AttachOptions)(4));
@@ -88,6 +89,7 @@ namespace MonoDevelop.Ide {
             this.label107.Xalign = 0F;
             this.label107.Yalign = 0F;
             this.label107.LabelProp = Mono.Unix.Catalog.GetString("Encodings shown in menu:");
+            this.label107.WidthChars = 20;
             this.table5.Add(this.label107);
             Gtk.Table.TableChild w3 = ((Gtk.Table.TableChild)(this.table5[this.label107]));
             w3.LeftAttach = ((uint)(2));
@@ -101,6 +103,7 @@ namespace MonoDevelop.Ide {
             // Container child scrolledwindow10.Gtk.Container+ContainerChild
             this.listAvail = new Gtk.TreeView();
             this.listAvail.Name = "listAvail";
+            this.listAvail.HeadersClickable = true;
             this.scrolledwindow10.Add(this.listAvail);
             this.table5.Add(this.scrolledwindow10);
             Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.table5[this.scrolledwindow10]));
@@ -113,6 +116,7 @@ namespace MonoDevelop.Ide {
             // Container child scrolledwindow11.Gtk.Container+ContainerChild
             this.listSelected = new Gtk.TreeView();
             this.listSelected.Name = "listSelected";
+            this.listSelected.HeadersClickable = true;
             this.scrolledwindow11.Add(this.listSelected);
             this.table5.Add(this.scrolledwindow11);
             Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.table5[this.scrolledwindow11]));
@@ -146,7 +150,7 @@ namespace MonoDevelop.Ide {
             w10.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w11 = new Gtk.Image();
-            w11.Name = "image298";
+            w11.Name = "image98";
             w11.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-go-forward", Gtk.IconSize.Button, 20);
             w10.Add(w11);
             // Container child GtkHBox.Gtk.Container+ContainerChild
@@ -173,7 +177,7 @@ namespace MonoDevelop.Ide {
             w19.Spacing = 2;
             // Container child GtkHBox1.Gtk.Container+ContainerChild
             Gtk.Image w20 = new Gtk.Image();
-            w20.Name = "image299";
+            w20.Name = "image99";
             w20.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-go-back", Gtk.IconSize.SmallToolbar, 18);
             w19.Add(w20);
             // Container child GtkHBox1.Gtk.Container+ContainerChild

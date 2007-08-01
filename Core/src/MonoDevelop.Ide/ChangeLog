@@ -1,3 +1,21 @@
+2007-08-01  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs, MonoDevelop.Ide.mdp,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.cs,
+	  gtk-gui/gui.stetic, Makefile.am: Implemented the New File dialog
+	  using Stetic.
+	* gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.IncludeFilesDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.ExternalToolPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs: Updated.
+
 2007-07-31  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs,

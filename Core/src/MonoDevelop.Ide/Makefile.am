@@ -41,6 +41,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ExportProjectDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.IncludeFilesDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.cs \

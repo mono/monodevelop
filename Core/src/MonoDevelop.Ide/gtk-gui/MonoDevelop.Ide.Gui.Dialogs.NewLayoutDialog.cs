@@ -19,7 +19,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
         
         private Gtk.Entry layoutName;
         
-        private Gtk.Button cancelButton;
+        private Gtk.Button button309;
         
         private Gtk.Button newButton;
         
@@ -67,33 +67,38 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             w4.Position = 0;
             // Internal child MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.ActionArea
             Gtk.HButtonBox w5 = this.ActionArea;
-            w5.Name = "dialog-action_area4";
+            w5.Name = "GtkDialog_ActionArea";
             w5.Spacing = 10;
             w5.BorderWidth = ((uint)(5));
             w5.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
-            // Container child dialog-action_area4.Gtk.ButtonBox+ButtonBoxChild
-            this.cancelButton = new Gtk.Button();
-            this.cancelButton.Name = "cancelButton";
-            this.cancelButton.UseStock = true;
-            this.cancelButton.UseUnderline = true;
-            this.cancelButton.Label = "gtk-cancel";
-            this.AddActionWidget(this.cancelButton, -6);
-            // Container child dialog-action_area4.Gtk.ButtonBox+ButtonBoxChild
+            // Container child GtkDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
+            this.button309 = new Gtk.Button();
+            this.button309.CanFocus = true;
+            this.button309.Name = "button309";
+            this.button309.UseStock = true;
+            this.button309.UseUnderline = true;
+            this.button309.Label = "gtk-cancel";
+            this.AddActionWidget(this.button309, -6);
+            Gtk.ButtonBox.ButtonBoxChild w6 = ((Gtk.ButtonBox.ButtonBoxChild)(w5[this.button309]));
+            w6.Expand = false;
+            w6.Fill = false;
+            // Container child GtkDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.newButton = new Gtk.Button();
-            this.newButton.CanDefault = true;
+            this.newButton.CanFocus = true;
             this.newButton.Name = "newButton";
             this.newButton.UseStock = true;
             this.newButton.UseUnderline = true;
             this.newButton.Label = "gtk-new";
-            this.AddActionWidget(this.newButton, -5);
+            this.AddActionWidget(this.newButton, 0);
             Gtk.ButtonBox.ButtonBoxChild w7 = ((Gtk.ButtonBox.ButtonBoxChild)(w5[this.newButton]));
             w7.Position = 1;
+            w7.Expand = false;
+            w7.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
             this.DefaultWidth = 363;
             this.DefaultHeight = 131;
-            this.newButton.HasDefault = true;
             this.Show();
         }
     }

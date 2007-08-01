@@ -28,7 +28,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	/// <summary>
 	///  This class is for creating a new "empty" file
 	/// </summary>
-	internal class NewFileDialog : Dialog
+	internal partial class NewFileDialog : Dialog
 	{
 		ArrayList alltemplates = new ArrayList ();
 		ArrayList categories   = new ArrayList ();
@@ -38,20 +38,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		PixbufList cat_imglist;
 
 		TreeStore catStore;
-		Gtk.TreeView catView;
-		IconView iconView;
-		Button okButton;
-		Button cancelButton;
-		Label infoLabel;
-		Entry nameEntry;
 		
 		// Add To Project widgets
 		Combine solution;
 		string[] projectNames;
-		CheckButton projectAddCheckbox;
-		ComboBox projectAddCombo;
-		FolderEntry projectFolderEntry;
-		Label projectPathLabel;
 		
 		Project parentProject;
 		string basePath;
@@ -60,6 +50,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		public NewFileDialog (Project parentProject, string basePath) : base ()
 		{
+			Build ();
 			this.parentProject = parentProject;
 			this.basePath = basePath;
 			
@@ -69,7 +60,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			InitializeDialog (false);
 			InitializeComponents ();
-			ShowAll ();
 			
 			nameEntry.GrabFocus ();
 		}
@@ -86,7 +76,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			Project project = null;
 			
-			if (projectAddCheckbox == null || projectAddCheckbox.Active)
+			if (!boxProject.Visible || projectAddCheckbox.Active)
 			    project = parentProject;
 			
 			// if there's a parent project, check whether it wants to filter languages, else use defaults
@@ -172,7 +162,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			do {
 				foreach (TemplateItem item in (ArrayList)(catStore.GetValue (iter, 2))) {
 					if (item.Template.Id == id) {
+						catView.ExpandToPath (catStore.GetPath (iter));
 						catView.Selection.SelectIter (iter);
+						CategoryChange (null,null);
 						iconView.CurrentlySelected = item;
 						return true;
 					}
@@ -211,7 +203,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			Project project = null;
 			
-			if (projectAddCheckbox == null || projectAddCheckbox.Active)
+			if (!boxProject.Visible || projectAddCheckbox.Active)
 				project = parentProject;
 			
 			foreach (FileTemplate template in FileTemplate.GetFileTemplates (project)) {
@@ -273,7 +265,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			Project project = null;
 			Category cat = null;
 			
-			if (projectAddCheckbox == null || projectAddCheckbox.Active)
+			if (!boxProject.Visible || projectAddCheckbox.Active)
 				project = parentProject;
 			
 			if (project != null) {
@@ -328,7 +320,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			TreeModel mdl;
 			TreeIter iter;
-			
 			if (catView.Selection.GetSelected (out mdl, out iter)) {
 				FillCategoryTemplates (iter);
 				okButton.Sensitive = false;
@@ -358,8 +349,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			try {
 				TemplateItem sel = (TemplateItem) iconView.CurrentlySelected;
-				if (sel == null)
+				if (sel == null) {
+					okButton.Sensitive = false;
 					return;
+				}
 				
 				FileTemplate item = sel.Template;
 
@@ -399,7 +392,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				Project project = null;
 				string path = null;
 				
-				if (projectAddCheckbox == null || projectAddCheckbox.Active) {
+				if (!boxProject.Visible || projectAddCheckbox.Active) {
 					project = parentProject;
 					path = basePath;
 				}
@@ -499,7 +492,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			projectPathLabel.Sensitive = projectAddCheckbox.Active;
 			projectFolderEntry.Sensitive = projectAddCheckbox.Active;
 			
+			TemplateItem titem = (TemplateItem) iconView.CurrentlySelected;
+			
 			InitializeDialog (true);
+			
+			if (titem != null)
+				SelectTemplate (titem.Template.Id);
 		}
 		
 		void AddToProjectComboChanged (object o, EventArgs e)
@@ -531,14 +529,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			catStore = new Gtk.TreeStore (typeof(string), typeof(ArrayList), typeof(ArrayList), typeof(Gdk.Pixbuf));
 			catStore.SetSortColumnId (0, SortType.Ascending);
 			
-			ScrolledWindow swindow1 = new ScrolledWindow();
-			swindow1.VscrollbarPolicy = PolicyType.Automatic;
-			swindow1.HscrollbarPolicy = PolicyType.Automatic;
-			swindow1.ShadowType = ShadowType.In;
-			catView = new Gtk.TreeView (catStore);
-			catView.WidthRequest = 160;
-			catView.HeadersVisible = false;
-			iconView = new IconView();
+			catView.Model = catStore;
 
 			TreeViewColumn catColumn = new TreeViewColumn ();
 			catColumn.Title = "categories";
@@ -549,34 +540,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 			catView.AppendColumn (catColumn);
 
-			okButton = new Button (Gtk.Stock.New);
 			okButton.Clicked += new EventHandler (OpenEvent);
-
-			cancelButton = new Button (Gtk.Stock.Close);
 			cancelButton.Clicked += new EventHandler (cancelClicked);
 
-			infoLabel = new Label ("");
-			Frame infoLabelFrame = new Frame();
-			infoLabelFrame.Add(infoLabel);
-
-			HBox viewbox = new HBox (false, 6);
-			swindow1.Add(catView);
-			viewbox.PackStart (swindow1,false,true,0);
-			viewbox.PackStart(iconView, true, true,0);
-
-			this.AddActionWidget (cancelButton, (int)Gtk.ResponseType.Cancel);
-			this.AddActionWidget (okButton, (int)Gtk.ResponseType.Ok);
-
-			this.VBox.PackStart (viewbox);
-			this.VBox.PackStart (infoLabelFrame, false, false, 6);
-			
-			HBox nameBox = new HBox ();
-			nameBox.PackStart (new Label (GettextCatalog.GetString ("Name:")), false, false, 0);
-			nameEntry = new Entry ();
-			nameBox.PackStart (nameEntry, true, true, 6);
 			nameEntry.Changed += new EventHandler (NameChanged);
 			nameEntry.Activated += new EventHandler (OpenEvent);
-			this.VBox.PackStart (nameBox, false, false, 6);
 			
 			CombineEntryCollection projects = null;
 			if (parentProject == null) {
@@ -586,11 +554,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 			
 			if (projects != null) {
-				HBox hbox = new HBox (false, 0);
-				
-				projectAddCheckbox = new CheckButton ("_Add to project:");
+				boxProject.Visible = true;
 				projectAddCheckbox.Toggled += new EventHandler (AddToProjectToggled);
-				hbox.PackStart (projectAddCheckbox, false, false, 6);
 				
 				Project curProject = IdeApp.ProjectOperations.CurrentSelectedProject;
 				projectNames = new string [projects.Count];
@@ -607,33 +572,26 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					}
 				}
 				
-				projectAddCombo = new ComboBox (projectNames);
+				foreach (string pn in projectNames)
+					projectAddCombo.AppendText (pn);
+				
 				projectAddCombo.Active = i;
 				projectAddCombo.Sensitive = false;
 				projectAddCombo.Changed += new EventHandler (AddToProjectComboChanged);
-				hbox.PackStart (projectAddCombo, false, false, 6);
 				
-				this.VBox.PackStart (hbox, false, false, 6);
-				
-				hbox = new HBox (false, 0);
-				
-				projectPathLabel = new Label ("Path:");
 				projectPathLabel.Sensitive = false;
-				hbox.PackStart (projectPathLabel, false, false, 6);
-				
-				projectFolderEntry = new FolderEntry ();
 				projectFolderEntry.Sensitive = false;
 				if (curProject != null)
 					projectFolderEntry.Path = curProject.BaseDirectory;
 				projectFolderEntry.PathChanged += new EventHandler (AddToProjectPathChanged);
-				hbox.PackStart (projectFolderEntry, true, true, 6);
-				
-				this.VBox.PackStart (hbox, true, true, 6);
 				
 				if (curProject != null) {
 					basePath = curProject.BaseDirectory;
 					parentProject = curProject;
 				}
+			}
+			else {
+				boxProject.Visible = false;
 			}
 			
 			cat_imglist = new PixbufList();
@@ -644,6 +602,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			iconView.IconSelected += new EventHandler(SelectedIndexChange);
 			iconView.IconDoubleClicked += new EventHandler(OpenEvent);
 			InitializeView ();
+			UpdateOkStatus ();
 		}
 	}
 }

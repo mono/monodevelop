@@ -80,6 +80,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.keyTreeView = new Gtk.TreeView();
             this.keyTreeView.CanFocus = true;
             this.keyTreeView.Name = "keyTreeView";
+            this.keyTreeView.HeadersClickable = true;
             this.scrolledwindow.Add(this.keyTreeView);
             this.vbox.Add(this.scrolledwindow);
             Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox[this.scrolledwindow]));
@@ -120,7 +121,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             w9.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w10 = new Gtk.Image();
-            w10.Name = "image293";
+            w10.Name = "image93";
             w10.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-apply", Gtk.IconSize.Button, 20);
             w9.Add(w10);
             // Container child GtkHBox.Gtk.Container+ContainerChild
