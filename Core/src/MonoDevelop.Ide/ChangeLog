@@ -1,3 +1,14 @@
+2007-08-02  Ben Motmans <ben.motmans@gmail.com>
+
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs,
+	MonoDevelop.Ide.Gui.Pads.ClassPad/CombineNodeBuilder.cs,
+	MonoDevelop.Ide.Gui.Pads.ClassPad/EventNodeBuilder.cs,
+	MonoDevelop.Ide.Gui.Pads.ClassPad/FieldNodeBuilder.cs,
+	MonoDevelop.Ide.Gui.Pads.ClassPad/MethodNodeBuilder.cs,
+	MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceNodeBuilder.cs,
+	MonoDevelop.Ide.Gui.Pads.ClassPad/PropertyNodeBuilder.cs,
+	MonoDevelop.Ide.addin.xml: added context menu extension points
+
 2007-08-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Commands/ToolsCommands.cs,

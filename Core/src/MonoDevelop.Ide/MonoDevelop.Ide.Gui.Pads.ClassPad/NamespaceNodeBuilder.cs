@@ -44,6 +44,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override Type NodeDataType {
 			get { return typeof(NamespaceData); }
 		}
+
+		public override string ContextMenuAddinPath {
+			get { return "/SharpDevelop/Views/ClassBrowser/ContextMenu/NamespaceNode"; }
+		}
 		
 		protected override void Initialize ()
 		{

@@ -49,6 +49,41 @@
 			<ExtensionNode name="Command" type="MonoDevelop.Core.Gui.Codons.CommandCodon" />
 		</ExtensionNode>
 	</ExtensionPoint>
+
+	<ExtensionPoint path = "/SharpDevelop/Views/ClassBrowser/ContextMenu/NamespaceNode" name = "Namespace node context menu in the class pad">
+		<Description>Context menu for namespaces in the class pad.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/SharpDevelop/Views/ClassBrowser/ContextMenu/MethodNode" name = "Method node context menu in the class pad">
+		<Description>Context menu for methods in the class pad.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/SharpDevelop/Views/ClassBrowser/ContextMenu/FieldNode" name = "Field node context menu in the class pad">
+		<Description>Context menu for fields in the class pad.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/SharpDevelop/Views/ClassBrowser/ContextMenu/EventNode" name = "Event node context menu in the class pad">
+		<Description>Context menu for events in the class pad.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/SharpDevelop/Views/ClassBrowser/ContextMenu/CombineNode" name = "Combine node context menu in the class pad">
+		<Description>Context menu for combines in the class pad.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/SharpDevelop/Views/ClassBrowser/ContextMenu/ClassNode" name = "Class node context menu in the class pad">
+		<Description>Context menu for classes in the class pad.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/SharpDevelop/Views/ClassBrowser/ContextMenu/PropertyNode" name = "Property node context menu in the class pad">
+		<Description>Context menu for properties in the class pad.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/SharpDevelop/Views/ClassBrowser/ContextMenu/ProjectBrowserNode" name = "Project node context menu in the class pad">
 		<Description>Context menu for projects in the class pad.</Description>

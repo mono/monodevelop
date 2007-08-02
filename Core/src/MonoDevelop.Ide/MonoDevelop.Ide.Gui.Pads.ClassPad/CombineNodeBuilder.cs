@@ -51,6 +51,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override Type NodeDataType {
 			get { return typeof(Combine); }
 		}
+
+		public override string ContextMenuAddinPath {
+			get { return "/SharpDevelop/Views/ClassBrowser/ContextMenu/CombineNode"; }
+		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{

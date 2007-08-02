@@ -41,6 +41,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override Type NodeDataType {
 			get { return typeof(IEvent); }
 		}
+
+		public override string ContextMenuAddinPath {
+			get { return "/SharpDevelop/Views/ClassBrowser/ContextMenu/EventNode"; }
+		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{

@@ -48,6 +48,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			get { return typeof(ClassNodeCommandHandler); }
 		}
 
+		public override string ContextMenuAddinPath {
+			get { return "/SharpDevelop/Views/ClassBrowser/ContextMenu/ClassNode"; }
+		}
+
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
 			return GetNameWithGenericParameters(((ClassData)dataObject).Class);
