@@ -5,6 +5,7 @@ using System.Threading;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Autotools
 {
@@ -36,7 +37,7 @@ namespace MonoDevelop.Autotools
 
 			MakefileProject project = new MakefileProject ();
 			
-			if (!IdeApp.Services.DispatchService.IsGuiThread) {
+			if (!DispatchService.IsGuiThread) {
 				lock (project) {
 					Gtk.Application.Invoke (delegate {
 						ImportProject (project, monitor, fileName);

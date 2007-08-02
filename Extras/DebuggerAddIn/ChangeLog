@@ -1,3 +1,9 @@
+2007-08-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DebuggingService.cs, Gui/Pads/ThreadPad.cs, Gui/Pads/LocalsPad.cs,
+	  Gui/Pads/StackTracePad.cs, Services.cs: Converted DispatchService to a
+	  static class.
+
 2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* DebuggingService.cs, MonoDevelopDebugger.addin.xml: Migration to

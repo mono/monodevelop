@@ -1,3 +1,35 @@
+2007-08-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Commands/ToolsCommands.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/CombineNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectSolutionPad.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceFolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/OpenFileInSolutionDialog.cs,
+	  MonoDevelop.Ide.Gui.Pads/FileList.cs,
+	  MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs,
+	  MonoDevelop.Ide.Gui.Pads/FileScout.cs,
+	  MonoDevelop.Ide.Gui.Pads/SolutionPad.cs,
+	  MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs,
+	  MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs,
+	  MonoDevelop.Ide.Gui/ConfigurationComboBox.cs,
+	  MonoDevelop.Ide.Gui/LayoutComboBox.cs,
+	  MonoDevelop.Ide.Gui/ProjectOperations.cs,
+	  MonoDevelop.Ide.Gui/AddinUpdateHandler.cs,
+	  MonoDevelop.Ide.Gui/StatusProgressMonitor.cs,
+	  MonoDevelop.Ide.Gui/Workbench.cs,
+	  MonoDevelop.Ide.Gui/DefaultWorkbench.cs, MonoDevelop.Ide.Gui/Ide.cs,
+	  MonoDevelop.Ide.Tasks/UserTasksView.cs,
+	  MonoDevelop.Ide.Tasks/TaskService.cs,
+	  MonoDevelop.Ide.Tasks/CommentTasksView.cs,
+	  MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs: Converted
+	  DispatchService to a static class.
+
 2007-08-01  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/gui.stetic,

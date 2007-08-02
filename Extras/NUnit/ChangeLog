@@ -1,3 +1,10 @@
+2007-08-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Services/NUnitService.cs,
+	  Gui/NUnitAssemblyGroupConfigurationNodeBuilder.cs,
+	  Gui/NUnitAssemblyGroupNodeBuilder.cs, Gui/TestNodeBuilder.cs,
+	  Gui/TestPad.cs: Converted DispatchService to a static class.
+
 2007-07-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.NUnit.mdp, MonoDevelopNUnit.addin.xml, Gui/nunit.png,

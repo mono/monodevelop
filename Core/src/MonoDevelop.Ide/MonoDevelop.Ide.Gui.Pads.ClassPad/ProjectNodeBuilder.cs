@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 
 		public ProjectNodeBuilder ()
 		{
-			projectNameChanged = (CombineEntryRenamedEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryRenamedEventHandler (OnProjectRenamed));
+			projectNameChanged = (CombineEntryRenamedEventHandler) DispatchService.GuiDispatch (new CombineEntryRenamedEventHandler (OnProjectRenamed));
 		}
 		
 		public override Type NodeDataType {

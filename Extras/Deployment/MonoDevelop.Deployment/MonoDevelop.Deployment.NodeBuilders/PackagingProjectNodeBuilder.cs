@@ -47,7 +47,7 @@ namespace MonoDevelop.Deployment.NodeBuilders
 		
 		public PackagingProjectNodeBuilder ()
 		{
-			configsChanged = (EventHandler) GuiServices.DispatchService.GuiDispatch (new EventHandler (OnConfigurationsChanged));
+			configsChanged = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnConfigurationsChanged));
 		}
 		
 		public override Type CommandHandlerType {

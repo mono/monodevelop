@@ -14,6 +14,7 @@ using System.IO;
 using System.Diagnostics;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
@@ -154,10 +155,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 			sw.ShadowType = ShadowType.In;
 			sw.Add (view);
 			
-			Services.TaskService.TasksCleared     += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (ShowResults));
-			Services.TaskService.TaskAdded        += (TaskEventHandler) Services.DispatchService.GuiDispatch (new TaskEventHandler (TaskAdded));
-			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCombineOpen));
-			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCombineClosed));
+			Services.TaskService.TasksCleared     += (EventHandler) DispatchService.GuiDispatch (new EventHandler (ShowResults));
+			Services.TaskService.TaskAdded        += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (TaskAdded));
+			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (OnCombineOpen));
+			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (OnCombineClosed));
 			view.RowActivated            += new RowActivatedHandler (OnRowActivated);
 						
 			iconWarning = sw.RenderIcon (Gtk.Stock.DialogWarning, Gtk.IconSize.Menu, "");
@@ -509,7 +510,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				if ((n++ % 100) == 0) {
 					// Adding many tasks is a bit slow, so refresh the
 					// ui at every block of 100.
-					IdeApp.Services.DispatchService.RunPendingEvents ();
+					DispatchService.RunPendingEvents ();
 				}
 			}
 			filter.Refilter ();

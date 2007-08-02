@@ -13,16 +13,7 @@ namespace MonoDevelop.Debugger
 		static ResourceService resourceService;
 		static IconService icons;
 		static AmbienceService ambienceService;
-		static DispatchService dispatchService;
 		
-		public static DispatchService DispatchService {
-			get {
-				if (dispatchService == null)
-					dispatchService = (DispatchService) ServiceManager.GetService (typeof(DispatchService));
-				return dispatchService;
-			}
-		}
-
 		public static IconService Icons {
 			get {
 				if (icons == null)

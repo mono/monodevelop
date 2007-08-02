@@ -43,9 +43,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		public CombineNodeBuilder ()
 		{
-			combineEntryAdded = (CombineEntryChangeEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryChangeEventHandler (OnEntryAdded));
-			combineEntryRemoved = (CombineEntryChangeEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryChangeEventHandler (OnEntryRemoved));
-			combineNameChanged = (CombineEntryRenamedEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryRenamedEventHandler (OnCombineRenamed));
+			combineEntryAdded = (CombineEntryChangeEventHandler) DispatchService.GuiDispatch (new CombineEntryChangeEventHandler (OnEntryAdded));
+			combineEntryRemoved = (CombineEntryChangeEventHandler) DispatchService.GuiDispatch (new CombineEntryChangeEventHandler (OnEntryRemoved));
+			combineNameChanged = (CombineEntryRenamedEventHandler) DispatchService.GuiDispatch (new CombineEntryRenamedEventHandler (OnCombineRenamed));
 		}
 			
 		public override Type NodeDataType {
@@ -116,7 +116,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		void OnEntryAdded (object sender, CombineEntryEventArgs e)
 		{
-			IdeApp.Services.DispatchService.GuiDispatch (OnAddEntry, e.CombineEntry);
+			DispatchService.GuiDispatch (OnAddEntry, e.CombineEntry);
 		}
 		
 		void OnAddEntry (object newEntry)

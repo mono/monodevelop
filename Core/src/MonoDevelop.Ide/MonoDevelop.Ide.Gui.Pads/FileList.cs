@@ -75,10 +75,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 				watcher.NotifyFilter = NotifyFilters.FileName;
 				watcher.EnableRaisingEvents = false;
 				
-				watcher.Renamed += (RenamedEventHandler) IdeApp.Services.DispatchService.GuiDispatch (new RenamedEventHandler(fileRenamed));
-				watcher.Deleted += (FileSystemEventHandler) IdeApp.Services.DispatchService.GuiDispatch (new FileSystemEventHandler(fileDeleted));
-				watcher.Created += (FileSystemEventHandler) IdeApp.Services.DispatchService.GuiDispatch (new FileSystemEventHandler(fileCreated));
-				watcher.Changed += (FileSystemEventHandler) IdeApp.Services.DispatchService.GuiDispatch (new FileSystemEventHandler(fileChanged));
+				watcher.Renamed += (RenamedEventHandler) DispatchService.GuiDispatch (new RenamedEventHandler(fileRenamed));
+				watcher.Deleted += (FileSystemEventHandler) DispatchService.GuiDispatch (new FileSystemEventHandler(fileDeleted));
+				watcher.Created += (FileSystemEventHandler) DispatchService.GuiDispatch (new FileSystemEventHandler(fileCreated));
+				watcher.Changed += (FileSystemEventHandler) DispatchService.GuiDispatch (new FileSystemEventHandler(fileChanged));
 			}
 		}
 		

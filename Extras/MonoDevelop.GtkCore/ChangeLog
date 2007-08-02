@@ -1,3 +1,10 @@
+2007-08-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.NodeBuilders/WindowsFolderNodeBuilder.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: Converted
+	  DispatchService to a static class.
+
 2007-08-01  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* lib/libstetic.dll: Updated.

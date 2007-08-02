@@ -42,6 +42,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
+using MonoDevelop.Core.Gui;
 
 using Gtk;
 
@@ -180,7 +181,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			sw.ShadowType = ShadowType.In;
 			sw.Add (view);
 			
-			Runtime.LoggingService.LogAppended += (LogAppendedHandler) Services.DispatchService.GuiDispatch (new LogAppendedHandler (MessageAdded));
+			Runtime.LoggingService.LogAppended += (LogAppendedHandler) DispatchService.GuiDispatch (new LogAppendedHandler (MessageAdded));
 						
 			iconWarning = sw.RenderIcon (Gtk.Stock.DialogWarning, Gtk.IconSize.Menu, "");
 			iconError = sw.RenderIcon (Gtk.Stock.DialogError, Gtk.IconSize.Menu, "");

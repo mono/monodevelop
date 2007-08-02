@@ -37,6 +37,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.Tasks
 {	
@@ -119,20 +120,20 @@ namespace MonoDevelop.Ide.Tasks
 			col.Resizable = true;
 			col.Clicked += new EventHandler (UserTaskDescResort);
 			
-			newButton = new ToolButton (new Gtk.Image (Stock.New, IconSize.Button), GettextCatalog.GetString ("New Task"));
+			newButton = new ToolButton (new Gtk.Image (Gtk.Stock.New, IconSize.Button), GettextCatalog.GetString ("New Task"));
 			newButton.IsImportant = true;
 			newButton.Clicked += new EventHandler (NewUserTaskClicked); 
 			newButton.SetTooltip (tips, GettextCatalog.GetString ("Create New Task"), GettextCatalog.GetString ("Create New Task"));
 			
-			delButton = new ToolButton (new Gtk.Image (Stock.Delete, IconSize.Button), GettextCatalog.GetString ("Delete Task"));
+			delButton = new ToolButton (new Gtk.Image (Gtk.Stock.Delete, IconSize.Button), GettextCatalog.GetString ("Delete Task"));
 			delButton.IsImportant = true;
 			delButton.Clicked += new EventHandler (DeleteUserTaskClicked); 
 			delButton.SetTooltip (tips, GettextCatalog.GetString ("Delete Task"), GettextCatalog.GetString ("Delete Task"));
 
-			Services.TaskService.UserTasksChanged += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (UserTasksChanged));
-			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (CombineOpened));
-			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (CombineClosed));
-			Runtime.Properties.PropertyChanged += (EventHandler<PropertyEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<PropertyEventArgs> (OnPropertyUpdated));	
+			Services.TaskService.UserTasksChanged += (EventHandler) DispatchService.GuiDispatch (new EventHandler (UserTasksChanged));
+			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (CombineOpened));
+			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (CombineClosed));
+			Runtime.Properties.PropertyChanged += (EventHandler<PropertyEventArgs>) DispatchService.GuiDispatch (new EventHandler<PropertyEventArgs> (OnPropertyUpdated));	
 			ValidateButtons ();
 		}
 		

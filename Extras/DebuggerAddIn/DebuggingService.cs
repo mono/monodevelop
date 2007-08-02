@@ -258,7 +258,7 @@ namespace MonoDevelop.Debugger
 			// It's prolly a synchronization issue that does not show when the call
 			// is delayed by the dispatcher
 			Console.WriteLine ("p2");
-			Services.DispatchService.GuiDispatch (new StatefulMessageHandler (ChangeState), null);
+			DispatchService.GuiDispatch (new StatefulMessageHandler (ChangeState), null);
 			}
 			catch (Exception ex) {
 				Console.WriteLine (ex);

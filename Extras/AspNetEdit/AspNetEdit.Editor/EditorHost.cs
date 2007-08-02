@@ -80,7 +80,7 @@ namespace AspNetEdit.Editor
 		
 		public void Initialise (string document, string fileName)
 		{
-			MonoDevelop.Core.Gui.Services.DispatchService.AssertGuiThread ();
+			DispatchService.AssertGuiThread ();
 			
 			System.Diagnostics.Trace.WriteLine ("Loading document into DesignerHost");
 			if (document != null)
@@ -175,7 +175,7 @@ namespace AspNetEdit.Editor
 		
 		public string GetDocument ()
 		{
-			MonoDevelop.Core.Gui.Services.DispatchService.AssertGuiThread ();
+			DispatchService.AssertGuiThread ();
 			string doc = "";
 			
 			System.Diagnostics.Trace.WriteLine ("Persisting document.");

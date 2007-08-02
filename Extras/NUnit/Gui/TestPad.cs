@@ -77,8 +77,8 @@ namespace MonoDevelop.NUnit
 		{
 			base.Initialize (builders, options);
 			
-			testChangedHandler = (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnDetailsTestChanged));
-			testService.TestSuiteChanged += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnTestSuiteChanged));
+			testChangedHandler = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnDetailsTestChanged));
+			testService.TestSuiteChanged += (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnTestSuiteChanged));
 			
 			paned = new VPaned ();
 			paned.Pack1 (base.Control, true, true);
@@ -376,7 +376,7 @@ namespace MonoDevelop.NUnit
 			UnitTest test = (UnitTest) nav.DataItem;
 			
 			runningTestOperation = testService.RunTest (test);
-			runningTestOperation.Completed += (OperationHandler) Services.DispatchService.GuiDispatch (new OperationHandler (TestSessionCompleted));
+			runningTestOperation.Completed += (OperationHandler) DispatchService.GuiDispatch (new OperationHandler (TestSessionCompleted));
 		}
 		
 		void TestSessionCompleted (IAsyncOperation op)

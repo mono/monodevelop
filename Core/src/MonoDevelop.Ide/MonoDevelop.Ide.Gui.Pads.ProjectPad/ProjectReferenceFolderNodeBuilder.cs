@@ -62,8 +62,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		protected override void Initialize ()
 		{
-			addedHandler = (ProjectReferenceEventHandler) Services.DispatchService.GuiDispatch (new ProjectReferenceEventHandler (OnAddReference));
-			removedHandler = (ProjectReferenceEventHandler) Services.DispatchService.GuiDispatch (new ProjectReferenceEventHandler (OnRemoveReference));
+			addedHandler = (ProjectReferenceEventHandler) DispatchService.GuiDispatch (new ProjectReferenceEventHandler (OnAddReference));
+			removedHandler = (ProjectReferenceEventHandler) DispatchService.GuiDispatch (new ProjectReferenceEventHandler (OnRemoveReference));
 
 			IdeApp.ProjectOperations.ReferenceAddedToProject += addedHandler;
 			IdeApp.ProjectOperations.ReferenceRemovedFromProject += removedHandler;

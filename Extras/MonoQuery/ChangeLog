@@ -1,3 +1,12 @@
+2007-08-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoQuery/Gui/NodeBuilders/DatabaseNodeBuilder.cs,
+	  MonoQuery/Gui/NodeBuilders/TablesNodeBuilder.cs,
+	  MonoQuery/Gui/NodeBuilders/ProceduresNodeBuilder.cs,
+	  MonoQuery/Gui/NodeBuilders/TableNodeBuilder.cs,
+	  MonoQuery/Gui/SqlQueryView.cs: Converted DispatchService to a static
+	  class.
+
 2007-07-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoQuery/MonoQuery.addin.xml: Fix pad icon.

@@ -1,3 +1,11 @@
+2007-08-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui/DispatchService.cs,
+	  MonoDevelop.Core.Gui/GuiSyncContext.cs,
+	  MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs,
+	  MonoDevelop.Core.Gui.ProgressMonitoring/BaseProgressMonitor.cs:
+	  Converted DispatchService to a static class.
+
 2007-07-24  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* icons/Icons.16x16.ReplaceInFiles, icons/Icons.16x16.NewFolderIcon,

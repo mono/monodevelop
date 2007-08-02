@@ -8,17 +8,17 @@ namespace MonoDevelop.Core.Gui
 {
 	public class DispatchService : AbstractService
 	{
-		ArrayList arrBackgroundQueue;
-		ArrayList arrGuiQueue;
-		Thread thrBackground;
-		uint iIdle = 0;
-		GLib.IdleHandler handler;
-		int guiThreadId;
-		GuiSyncContext guiContext;
+		static ArrayList arrBackgroundQueue;
+		static ArrayList arrGuiQueue;
+		static Thread thrBackground;
+		static uint iIdle = 0;
+		static GLib.IdleHandler handler;
+		static int guiThreadId;
+		static GuiSyncContext guiContext;
+		static internal bool DispatchDebug;
 		const string errormsg = "An exception was thrown while dispatching a method call in the UI thread.";
-		internal bool DispatchDebug;
 
-		public override void InitializeService ()
+		static DispatchService ()
 		{
 			guiContext = new GuiSyncContext ();
 			
@@ -34,17 +34,17 @@ namespace MonoDevelop.Core.Gui
 			DispatchDebug = Environment.GetEnvironmentVariable ("MONODEVELOP_DISPATCH_DEBUG") != null;
 		}
 
-		public void GuiDispatch (MessageHandler cb)
+		public static void GuiDispatch (MessageHandler cb)
 		{
 			QueueMessage (new GenericMessageContainer (cb, false));
 		}
 
-		public void GuiDispatch (StatefulMessageHandler cb, object state)
+		public static void GuiDispatch (StatefulMessageHandler cb, object state)
 		{
 			QueueMessage (new StatefulMessageContainer (cb, state, false));
 		}
 
-		public void GuiSyncDispatch (MessageHandler cb)
+		public static void GuiSyncDispatch (MessageHandler cb)
 		{
 			if (IsGuiThread) {
 				cb ();
@@ -60,7 +60,7 @@ namespace MonoDevelop.Core.Gui
 				throw new Exception (errormsg, mc.Exception);
 		}
 		
-		public void GuiSyncDispatch (StatefulMessageHandler cb, object state)
+		public static void GuiSyncDispatch (StatefulMessageHandler cb, object state)
 		{
 			if (IsGuiThread) {
 				cb (state);
@@ -76,14 +76,14 @@ namespace MonoDevelop.Core.Gui
 				throw new Exception (errormsg, mc.Exception);
 		}
 		
-		public void RunPendingEvents ()
+		public static void RunPendingEvents ()
 		{
 			while (Gtk.Application.EventsPending ())
 				Gtk.Application.RunIteration ();
 			guiDispatcher ();
 		}
 		
-		void QueueMessage (object msg)
+		static void QueueMessage (object msg)
 		{
 			lock (arrGuiQueue) {
 				arrGuiQueue.Add (msg);
@@ -92,34 +92,34 @@ namespace MonoDevelop.Core.Gui
 			}
 		}
 		
-		public bool IsGuiThread
+		public static bool IsGuiThread
 		{
 			get { return guiThreadId == Thread.CurrentThread.ManagedThreadId; }
 		}
 		
-		public void AssertGuiThread ()
+		public static void AssertGuiThread ()
 		{
 			if (guiThreadId != Thread.CurrentThread.ManagedThreadId)
 				throw new InvalidOperationException ("This method can only be called in the GUI thread");
 		}
 		
-		public Delegate GuiDispatch (Delegate del)
+		public static Delegate GuiDispatch (Delegate del)
 		{
 			return guiContext.CreateSynchronizedDelegate (del);
 		}
 		
-		public void BackgroundDispatch (MessageHandler cb)
+		public static void BackgroundDispatch (MessageHandler cb)
 		{
 			arrBackgroundQueue.Add (new GenericMessageContainer (cb, false));
 		}
 
-		public void BackgroundDispatch (StatefulMessageHandler cb, object state)
+		public static void BackgroundDispatch (StatefulMessageHandler cb, object state)
 		{
 			arrBackgroundQueue.Add (new StatefulMessageContainer (cb, state, false));
 			//thrBackground.Resume ();
 		}
 		
-		public void ThreadDispatch (StatefulMessageHandler cb, object state)
+		public static void ThreadDispatch (StatefulMessageHandler cb, object state)
 		{
 			StatefulMessageContainer smc = new StatefulMessageContainer (cb, state, false);
 			Thread t = new Thread (new ThreadStart (smc.Run));
@@ -127,7 +127,7 @@ namespace MonoDevelop.Core.Gui
 			t.Start ();
 		}
 
-		private bool guiDispatcher ()
+		static bool guiDispatcher ()
 		{
 			GenericMessageContainer msg;
 			int iterCount;
@@ -167,7 +167,7 @@ namespace MonoDevelop.Core.Gui
 			}
 		}
 
-		private void backgroundDispatcher ()
+		static void backgroundDispatcher ()
 		{
 			// FIXME: use an event to avoid active wait
 			while (true) {
@@ -189,7 +189,7 @@ namespace MonoDevelop.Core.Gui
 			}
 		}
 		
-		private void HandlerError (GenericMessageContainer msg)
+		static void HandlerError (GenericMessageContainer msg)
 		{
 			Runtime.LoggingService.Error (errormsg);
 			Runtime.LoggingService.Error (msg.Exception);
@@ -218,7 +218,7 @@ namespace MonoDevelop.Core.Gui
 		{
 			callback = cb;
 			this.isSynchronous = isSynchronous;
-			if (Services.DispatchService.DispatchDebug) callerStack = Environment.StackTrace;
+			if (DispatchService.DispatchDebug) callerStack = Environment.StackTrace;
 		}
 
 		public virtual void Run ()
@@ -257,7 +257,7 @@ namespace MonoDevelop.Core.Gui
 			data = state;
 			callback = cb;
 			this.isSynchronous = isSynchronous;
-			if (Services.DispatchService.DispatchDebug) callerStack = Environment.StackTrace;
+			if (DispatchService.DispatchDebug) callerStack = Environment.StackTrace;
 		}
 		
 		public override void Run ()

@@ -61,12 +61,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		protected override void Initialize ()
 		{
-			fileAddedHandler = (ProjectFileEventHandler) Services.DispatchService.GuiDispatch (new ProjectFileEventHandler (OnAddFile));
-			fileRemovedHandler = (ProjectFileEventHandler) Services.DispatchService.GuiDispatch (new ProjectFileEventHandler (OnRemoveFile));
+			fileAddedHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (OnAddFile));
+			fileRemovedHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (OnRemoveFile));
 			
-			createdHandler = (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (OnSystemFileAdded));
-			deletedHandler = (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (OnSystemFileDeleted));
-			renamedHandler = (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (OnSystemFileRenamed));
+			createdHandler = (FileEventHandler) DispatchService.GuiDispatch (new FileEventHandler (OnSystemFileAdded));
+			deletedHandler = (FileEventHandler) DispatchService.GuiDispatch (new FileEventHandler (OnSystemFileDeleted));
+			renamedHandler = (FileEventHandler) DispatchService.GuiDispatch (new FileEventHandler (OnSystemFileRenamed));
 			
 			IdeApp.ProjectOperations.FileAddedToProject += fileAddedHandler;
 			IdeApp.ProjectOperations.FileRemovedFromProject += fileRemovedHandler;

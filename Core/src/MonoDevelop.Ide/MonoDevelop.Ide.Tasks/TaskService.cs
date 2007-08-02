@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.Tasks
 			IdeApp.ProjectOperations.FileRenamedInProject += new ProjectFileRenamedEventHandler (ProjectFileRenamed);
 			IdeApp.ProjectOperations.FileRemovedFromProject += new ProjectFileEventHandler (ProjectFileRemoved);
 
-			Runtime.Properties.PropertyChanged += (EventHandler<PropertyEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<PropertyEventArgs> (OnPropertyUpdated));
+			Runtime.Properties.PropertyChanged += (EventHandler<PropertyEventArgs>) DispatchService.GuiDispatch (new EventHandler<PropertyEventArgs> (OnPropertyUpdated));
 		}
 
 		void ProjectServiceSolutionOpened (object sender, CombineEventArgs e)
@@ -389,7 +389,7 @@ namespace MonoDevelop.Ide.Tasks
 		
 		public void ShowErrors ()
 		{
-			Services.DispatchService.GuiDispatch (new MessageHandler (ShowErrorsCallback));
+			DispatchService.GuiDispatch (new MessageHandler (ShowErrorsCallback));
 		}
 		
 		void ShowErrorsCallback ()

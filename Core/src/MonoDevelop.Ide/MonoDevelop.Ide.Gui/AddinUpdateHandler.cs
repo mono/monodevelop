@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.Gui
 					Runtime.AddinSetupService.Repositories.UpdateAllRepositories (pm);
 					updates = Runtime.AddinSetupService.Repositories.GetAvailableUpdates ();
 					if (updates.Length > 0)
-						Services.DispatchService.GuiDispatch (new MessageHandler (WarnAvailableUpdates));
+						DispatchService.GuiDispatch (new MessageHandler (WarnAvailableUpdates));
 				}
 			}
 		}

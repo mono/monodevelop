@@ -13,7 +13,6 @@ namespace MonoDevelop.SourceEditor
 		static MessageService messageService;
 		static ResourceService resourceService;
 		static LanguageBindingService languageBindingService;
-		static DispatchService dispatchService;
 
 		public static MessageService MessageService {
 			get {
@@ -44,14 +43,6 @@ namespace MonoDevelop.SourceEditor
 				if (languageBindingService == null)
 					languageBindingService = (LanguageBindingService) ServiceManager.GetService (typeof(LanguageBindingService));
 				return languageBindingService;
-			}
-		}
-	
-		public static DispatchService DispatchService {
-			get {
-				if (dispatchService == null)
-					dispatchService = (DispatchService) ServiceManager.GetService (typeof(DispatchService));
-				return dispatchService;
 			}
 		}
 	}

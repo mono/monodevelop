@@ -124,7 +124,7 @@ namespace MonoQuery
 		{
 			TableSchema table = CurrentNode.DataItem as TableSchema;
 			string query = String.Format ("SELECT * FROM {0}", table.Name);
-			table.Provider.ExecuteSQL (query, (SQLCallback) Services.DispatchService.GuiDispatch (new SQLCallback (ActivateSQLCallback)));
+			table.Provider.ExecuteSQL (query, (SQLCallback) DispatchService.GuiDispatch (new SQLCallback (ActivateSQLCallback)));
 		}
 		
 		protected void ActivateSQLCallback (object sender, object res)

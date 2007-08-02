@@ -5,14 +5,14 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Autotools.dll
 REFS =  \
 	$(GNOME_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_srcdir)/build/AddIns/MonoDevelop.Components.dll \
+	-r:$(top_srcdir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_srcdir)/build/AddIns/MonoDevelop.Ide.dll \
+	-r:$(top_srcdir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_srcdir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
+	-r:$(top_srcdir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_srcdir)/contrib/log4net.dll \
 	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
 	-r:Mono.Posix \
@@ -61,8 +61,8 @@ DATA_FILES =  \
 	templates/autogen.sh.template \
 	templates/configure.ac.template \
 	templates/configure.template \
-	templates/make-dist.targets \
 	templates/exe.wrapper.in.template \
+	templates/make-dist.targets \
 	templates/Makefile.am.project.template \
 	templates/Makefile.include \
 	templates/Makefile.noauto.project.template \

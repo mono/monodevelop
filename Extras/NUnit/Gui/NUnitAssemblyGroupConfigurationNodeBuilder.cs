@@ -47,7 +47,7 @@ namespace MonoDevelop.NUnit
 		
 		public NUnitAssemblyGroupConfigurationNodeBuilder ()
 		{
-			assembliesChanged = (EventHandler) GuiServices.DispatchService.GuiDispatch (new EventHandler (OnAssembliesChanged));
+			assembliesChanged = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnAssembliesChanged));
 		}
 		
 		public override Type CommandHandlerType {

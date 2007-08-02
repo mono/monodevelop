@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		protected override void Initialize ()
 		{
-			changeClassInformationHandler = (ClassInformationEventHandler) Services.DispatchService.GuiDispatch (new ClassInformationEventHandler (OnClassInformationChanged));
+			changeClassInformationHandler = (ClassInformationEventHandler) DispatchService.GuiDispatch (new ClassInformationEventHandler (OnClassInformationChanged));
 			IdeApp.ProjectOperations.ParserDatabase.ClassInformationChanged += changeClassInformationHandler;
 		}
 		

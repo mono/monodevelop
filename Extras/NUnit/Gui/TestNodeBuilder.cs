@@ -36,7 +36,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.NUnit.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
-using GuiServices = MonoDevelop.Core.Gui.Services;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.NUnit
 {
@@ -47,8 +47,8 @@ namespace MonoDevelop.NUnit
 		
 		public TestNodeBuilder ()
 		{
-			testChanged = (EventHandler) GuiServices.DispatchService.GuiDispatch (new EventHandler (OnTestChanged));
-			testStatusChanged = (EventHandler) GuiServices.DispatchService.GuiDispatch (new EventHandler (OnTestStatusChanged));
+			testChanged = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnTestChanged));
+			testStatusChanged = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnTestStatusChanged));
 		}
 		
 		public override Type CommandHandlerType {

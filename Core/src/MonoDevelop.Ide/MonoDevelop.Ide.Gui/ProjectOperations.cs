@@ -88,19 +88,19 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal ProjectOperations ()
 		{
-			fileAddedToProjectHandler = (ProjectFileEventHandler) Services.DispatchService.GuiDispatch (new ProjectFileEventHandler (NotifyFileAddedToProject));
-			fileRemovedFromProjectHandler = (ProjectFileEventHandler) Services.DispatchService.GuiDispatch (new ProjectFileEventHandler (NotifyFileRemovedFromProject));
-			fileRenamedInProjectHandler = (ProjectFileRenamedEventHandler) Services.DispatchService.GuiDispatch (new ProjectFileRenamedEventHandler (NotifyFileRenamedInProject));
-			fileChangedInProjectHandler = (ProjectFileEventHandler) Services.DispatchService.GuiDispatch (new ProjectFileEventHandler (NotifyFileChangedInProject));
-			filePropertyChangedInProjectHandler = (ProjectFileEventHandler) Services.DispatchService.GuiDispatch (new ProjectFileEventHandler (NotifyFilePropertyChangedInProject));
-			referenceAddedToProjectHandler = (ProjectReferenceEventHandler) Services.DispatchService.GuiDispatch (new ProjectReferenceEventHandler (NotifyReferenceAddedToProject));
-			referenceRemovedFromProjectHandler = (ProjectReferenceEventHandler) Services.DispatchService.GuiDispatch (new ProjectReferenceEventHandler (NotifyReferenceRemovedFromProject));
+			fileAddedToProjectHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (NotifyFileAddedToProject));
+			fileRemovedFromProjectHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (NotifyFileRemovedFromProject));
+			fileRenamedInProjectHandler = (ProjectFileRenamedEventHandler) DispatchService.GuiDispatch (new ProjectFileRenamedEventHandler (NotifyFileRenamedInProject));
+			fileChangedInProjectHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (NotifyFileChangedInProject));
+			filePropertyChangedInProjectHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (NotifyFilePropertyChangedInProject));
+			referenceAddedToProjectHandler = (ProjectReferenceEventHandler) DispatchService.GuiDispatch (new ProjectReferenceEventHandler (NotifyReferenceAddedToProject));
+			referenceRemovedFromProjectHandler = (ProjectReferenceEventHandler) DispatchService.GuiDispatch (new ProjectReferenceEventHandler (NotifyReferenceRemovedFromProject));
 		
-			entryAddedToCombineHandler = (CombineEntryChangeEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryChangeEventHandler (NotifyEntryAddedToCombine));
-			entryRemovedFromCombineHandler = (CombineEntryChangeEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryChangeEventHandler (NotifyEntryRemovedFromCombine));
+			entryAddedToCombineHandler = (CombineEntryChangeEventHandler) DispatchService.GuiDispatch (new CombineEntryChangeEventHandler (NotifyEntryAddedToCombine));
+			entryRemovedFromCombineHandler = (CombineEntryChangeEventHandler) DispatchService.GuiDispatch (new CombineEntryChangeEventHandler (NotifyEntryRemovedFromCombine));
 			
-			Runtime.FileService.FileRemoved += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (CheckFileRemove));
-			Runtime.FileService.FileRenamed += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (CheckFileRename));
+			Runtime.FileService.FileRemoved += (FileEventHandler) DispatchService.GuiDispatch (new FileEventHandler (CheckFileRemove));
+			Runtime.FileService.FileRenamed += (FileEventHandler) DispatchService.GuiDispatch (new FileEventHandler (CheckFileRename));
 			
 			parserDatabase = Services.ParserService.CreateParserDatabase ();
 			parserDatabase.TrackFileChanges = true;
@@ -325,7 +325,7 @@ namespace MonoDevelop.Ide.Gui
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true);
 			
 			object[] data = new object[] { filename, monitor };
-			Services.DispatchService.BackgroundDispatch (new StatefulMessageHandler (backgroundLoadCombine), data);
+			DispatchService.BackgroundDispatch (new StatefulMessageHandler (backgroundLoadCombine), data);
 			return monitor.AsyncOperation;
 		}
 		
@@ -520,7 +520,7 @@ namespace MonoDevelop.Ide.Gui
 						project.ProjectFiles.Add(newFile);
 					}
 				} else {
-					Services.DispatchService.GuiDispatch (new MessageHandler (new IncludeFilesDialog (project, newFiles).ShowDialog));
+					DispatchService.GuiDispatch (new MessageHandler (new IncludeFilesDialog (project, newFiles).ShowDialog));
 				}
 			}
 		}
@@ -829,7 +829,7 @@ namespace MonoDevelop.Ide.Gui
 				foreach (Document document in IdeApp.Workbench.Documents) {
 					if (document.FileName != null &&
 						document.FileName == name) {
-						Services.DispatchService.GuiDispatch (new MessageHandler (document.Select));
+						DispatchService.GuiDispatch (new MessageHandler (document.Select));
 						break;
 					}
 				}
@@ -913,7 +913,7 @@ namespace MonoDevelop.Ide.Gui
 
 			IProgressMonitor monitor = new MessageDialogProgressMonitor ();
 
-			Services.DispatchService.ThreadDispatch (new StatefulMessageHandler (ExecuteCombineEntryAsync), new object[] {entry, monitor, context});
+			DispatchService.ThreadDispatch (new StatefulMessageHandler (ExecuteCombineEntryAsync), new object[] {entry, monitor, context});
 			currentRunOperation = monitor.AsyncOperation;
 			return currentRunOperation;
 		}
@@ -947,7 +947,7 @@ namespace MonoDevelop.Ide.Gui
 			IProgressMonitor monitor = new MessageDialogProgressMonitor ();
 			ExecutionContext context = new ExecutionContext (Services.DebuggingService.GetExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
 			
-			Services.DispatchService.ThreadDispatch (new StatefulMessageHandler (DebugCombineEntryAsync), new object[] {entry, monitor, context});
+			DispatchService.ThreadDispatch (new StatefulMessageHandler (DebugCombineEntryAsync), new object[] {entry, monitor, context});
 			currentRunOperation = monitor.AsyncOperation;
 			return currentRunOperation;
 		}
@@ -1079,7 +1079,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			BeginBuild (monitor);
 
-			Services.DispatchService.ThreadDispatch (new StatefulMessageHandler (BuildCombineEntryAsync), new object[] {entry, monitor});
+			DispatchService.ThreadDispatch (new StatefulMessageHandler (BuildCombineEntryAsync), new object[] {entry, monitor});
 			currentBuildOperation = monitor.AsyncOperation;
 			return currentBuildOperation;
 		}
@@ -1095,7 +1095,7 @@ namespace MonoDevelop.Ide.Gui
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Build failed."), ex);
 			}
-			Services.DispatchService.GuiDispatch (
+			DispatchService.GuiDispatch (
 				delegate {
 					BuildDone (monitor, result);	// BuildDone disposes the monitor
 			});

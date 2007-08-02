@@ -78,11 +78,11 @@ namespace MonoDevelop.Ide.Gui
 				Runtime.Properties.PropertyChanged += new EventHandler<PropertyEventArgs> (TrackPropertyChanges);
 				
 				if (Services.DebuggingService != null) {
-					Services.DebuggingService.PausedEvent += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnDebuggerPaused));
+					Services.DebuggingService.PausedEvent += (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnDebuggerPaused));
 				}
 				
-				Runtime.FileService.FileRemoved += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (IdeApp.Workbench.RecentOpen.FileRemoved));
-				Runtime.FileService.FileRenamed += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (IdeApp.Workbench.RecentOpen.FileRenamed));
+				Runtime.FileService.FileRemoved += (FileEventHandler) DispatchService.GuiDispatch (new FileEventHandler (IdeApp.Workbench.RecentOpen.FileRemoved));
+				Runtime.FileService.FileRenamed += (FileEventHandler) DispatchService.GuiDispatch (new FileEventHandler (IdeApp.Workbench.RecentOpen.FileRenamed));
 				
 				pads = null;	// Make sure we get an up to date pad list.
 				monitor.Step (1);

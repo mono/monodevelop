@@ -61,8 +61,8 @@ namespace MonoDevelop.NUnit
 		
 		public override void InitializeService ()
 		{
-			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new CombineEventHandler (OnOpenCombine));
-			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCloseCombine));
+			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (OnOpenCombine));
+			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (OnCloseCombine));
 			IdeApp.ProjectOperations.ReferenceAddedToProject += new ProjectReferenceEventHandler (OnReferenceAddedToProject);
 			IdeApp.ProjectOperations.ReferenceRemovedFromProject += new ProjectReferenceEventHandler (OnReferenceRemovedFromProject);
 			
@@ -266,7 +266,7 @@ namespace MonoDevelop.NUnit
 		{
 			if (IsCompleted) return;
 			
-			if (GuiServices.DispatchService.IsGuiThread) {
+			if (DispatchService.IsGuiThread) {
 				while (!IsCompleted) {
 					while (Gtk.Application.EventsPending ())
 						Gtk.Application.RunIteration ();

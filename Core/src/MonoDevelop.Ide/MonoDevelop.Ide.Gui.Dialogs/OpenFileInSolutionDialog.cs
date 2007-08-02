@@ -244,7 +244,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 			// Queuing this seems to prevent things getting
 			// added from queued events after the clear.
-			Services.DispatchService.GuiDispatch (list.Clear);
+			DispatchService.GuiDispatch (list.Clear);
 			
 			ThreadStart start = new ThreadStart (SearchThread);
 			searchThread = new Thread (start);

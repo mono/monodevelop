@@ -50,7 +50,7 @@ namespace MonoDeveloper
 		{
 			MonoProject p = IdeApp.ProjectOperations.CurrentSelectedProject as MonoProject;
 			if (p != null)
-				MonoDevelop.Core.Gui.Services.DispatchService.BackgroundDispatch (new StatefulMessageHandler (Install), p);
+				DispatchService.BackgroundDispatch (new StatefulMessageHandler (Install), p);
 		}
 		
 		protected override void Update (CommandInfo info)

@@ -38,6 +38,7 @@ using Mono.Data.Sql;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Gui;
 
 namespace MonoQuery
 {
@@ -147,7 +148,7 @@ namespace MonoQuery
 			service = (MonoQueryService)
 				ServiceManager.GetService (typeof (MonoQueryService));
 			changedHandler
-				 = (EventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (
+				 = (EventHandler) DispatchService.GuiDispatch (
 					new EventHandler (OnProvidersChanged));
 			service.Providers.Changed += changedHandler;
 			
@@ -228,7 +229,7 @@ namespace MonoQuery
 				IdeApp.Workbench.StatusBar.SetProgressFraction (0.5);
 
 				SQLCallback callback = (SQLCallback)
-					MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (
+					DispatchService.GuiDispatch (
 					new SQLCallback (OnExecuteReturn));
 
 				buf.MoveMark (buf.InsertMark, iter);
@@ -265,7 +266,7 @@ namespace MonoQuery
 				IdeApp.Workbench.StatusBar.SetProgressFraction (0.5);
 
 				SQLCallback callback = (SQLCallback)
-					MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (
+					DispatchService.GuiDispatch (
 					new SQLCallback (OnExecuteReturn));
 
 				buf.MoveMark (buf.InsertMark, iter);
@@ -300,7 +301,7 @@ namespace MonoQuery
 					string query = GetNextSqlStatement (buf, ref iter);
 					if (query.Trim ().Length > 0) {
 						SQLCallback callback = (SQLCallback)
-							MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (
+							DispatchService.GuiDispatch (
 							new SQLCallback (OnExecuteReturn));
 
 						// move insert mark to end of SQL statement to be executed
@@ -472,7 +473,7 @@ namespace MonoQuery
 			
 			string query = sourceView.Buffer.Text;
 			SQLCallback callback = (SQLCallback)
-				MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (
+				DispatchService.GuiDispatch (
 				new SQLCallback (OnExecuteReturn));
 			
 			IdeApp.Workbench.StatusBar.SetMessage (

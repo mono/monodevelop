@@ -53,8 +53,8 @@ namespace MonoQuery
 		
 		public TablesNodeBuilder()
 		{
-			AddTable += (AddTableHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new AddTableHandler (OnTableAdd));
-			RefreshHandler = (EventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new EventHandler (OnRefreshEvent));
+			AddTable += (AddTableHandler) DispatchService.GuiDispatch (new AddTableHandler (OnTableAdd));
+			RefreshHandler = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnRefreshEvent));
 		}
 		
 		public override Type NodeDataType {

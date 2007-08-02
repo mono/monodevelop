@@ -71,7 +71,7 @@ namespace MonoDevelop.Core.Gui.ProgressMonitoring
 				dialog.Message = "";
 				dialog.Show ();
 				dialog.AsyncOperation = AsyncOperation;
-				Services.DispatchService.RunPendingEvents ();
+				DispatchService.RunPendingEvents ();
 				this.hideWhenDone = hideWhenDone;
 				this.showDetails = showDetails;
 			}
@@ -81,7 +81,7 @@ namespace MonoDevelop.Core.Gui.ProgressMonitoring
 		{
 			if (dialog != null) {
 				dialog.WriteText (text);
-				Services.DispatchService.RunPendingEvents ();
+				DispatchService.RunPendingEvents ();
 			}
 		}
 		
@@ -90,7 +90,7 @@ namespace MonoDevelop.Core.Gui.ProgressMonitoring
 			if (dialog != null) {
 				dialog.Message = CurrentTask;
 				dialog.Progress = GlobalWork;
-				Services.DispatchService.RunPendingEvents ();
+				DispatchService.RunPendingEvents ();
 			}
 		}
 		
@@ -116,14 +116,14 @@ namespace MonoDevelop.Core.Gui.ProgressMonitoring
 				dialog.EndTask ();
 			}
 			base.EndTask ();
-			Services.DispatchService.RunPendingEvents ();
+			DispatchService.RunPendingEvents ();
 		}
 						
 		public override void ReportWarning (string message)
 		{
 			if (dialog != null) {
 				dialog.WriteText (GettextCatalog.GetString ("WARNING: ") + message + "\n");
-				Services.DispatchService.RunPendingEvents ();
+				DispatchService.RunPendingEvents ();
 			}
 			warningMessages.Add (message);
 		}
@@ -145,13 +145,13 @@ namespace MonoDevelop.Core.Gui.ProgressMonitoring
 			
 			if (dialog != null) {
 				dialog.WriteText (GettextCatalog.GetString ("ERROR: ") + message + "\n");
-				Services.DispatchService.RunPendingEvents ();
+				DispatchService.RunPendingEvents ();
 			}
 		}
 		
 		protected override void OnCompleted ()
 		{
-			Services.DispatchService.GuiDispatch (new MessageHandler (ShowDialogs));
+			DispatchService.GuiDispatch (new MessageHandler (ShowDialogs));
 			base.OnCompleted ();
 		}
 		

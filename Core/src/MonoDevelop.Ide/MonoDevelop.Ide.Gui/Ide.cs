@@ -150,7 +150,7 @@ namespace MonoDevelop.Ide.Gui
 
 			workbench.Show ("SharpDevelop.Workbench.WorkbenchMemento");
 			monitor.Step (1);
-			Services.DispatchService.RunPendingEvents ();
+			DispatchService.RunPendingEvents ();
 			
 			Services.MessageService.RootWindow = workbench.RootWindow;
 		

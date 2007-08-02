@@ -255,20 +255,20 @@ namespace MonoDevelop.SourceEditor.Gui
 			
 			CaretModeChanged (null, null);
 			
-			propertyHandler = (EventHandler<PropertyEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<PropertyEventArgs> (PropertiesChanged));
+			propertyHandler = (EventHandler<PropertyEventArgs>) DispatchService.GuiDispatch (new EventHandler<PropertyEventArgs> (PropertiesChanged));
 			PropertyService propertyService = (PropertyService) ServiceManager.GetService (typeof (PropertyService));
 			properties = ((IProperties) propertyService.GetProperty("MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new DefaultProperties()));
 			properties.PropertyChanged += propertyHandler;
 			fsw = new FileSystemWatcher ();
-			fsw.Created += (FileSystemEventHandler) Services.DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));	
-			fsw.Changed += (FileSystemEventHandler) Services.DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));
+			fsw.Created += (FileSystemEventHandler) DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));	
+			fsw.Changed += (FileSystemEventHandler) DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));
 			UpdateFSW (null, null);
 			mainBox.PackStart (se, true, true, 0);
 			
 			if (Services.DebuggingService != null) {
-				breakpointAddedHandler = (BreakpointEventHandler) Services.DispatchService.GuiDispatch (new BreakpointEventHandler (OnBreakpointAdded));
-				breakpointRemovedHandler = (BreakpointEventHandler) Services.DispatchService.GuiDispatch (new BreakpointEventHandler (OnBreakpointRemoved));
-				executionChangedHandler = (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnExecutionLocationChanged));
+				breakpointAddedHandler = (BreakpointEventHandler) DispatchService.GuiDispatch (new BreakpointEventHandler (OnBreakpointAdded));
+				breakpointRemovedHandler = (BreakpointEventHandler) DispatchService.GuiDispatch (new BreakpointEventHandler (OnBreakpointRemoved));
+				executionChangedHandler = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnExecutionLocationChanged));
 				
 				Services.DebuggingService.BreakpointAdded += breakpointAddedHandler;
 				Services.DebuggingService.BreakpointRemoved += breakpointRemovedHandler;

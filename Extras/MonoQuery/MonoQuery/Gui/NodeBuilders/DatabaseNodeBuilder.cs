@@ -57,12 +57,12 @@ namespace MonoQuery
 		
 		public DatabaseNodeBuilder ()
 		{
-			providerNameChanged = (DbProviderChangedEventHandler) Services.DispatchService.GuiDispatch (new DbProviderChangedEventHandler (OnProviderNameChanged));
-			connectionStateChanged = (DbProviderChangedEventHandler) Services.DispatchService.GuiDispatch (new DbProviderChangedEventHandler (OnProviderStateChanged));
-			providerRefreshed = (DbProviderChangedEventHandler) Services.DispatchService.GuiDispatch (new DbProviderChangedEventHandler (OnProviderRefreshed));
+			providerNameChanged = (DbProviderChangedEventHandler) DispatchService.GuiDispatch (new DbProviderChangedEventHandler (OnProviderNameChanged));
+			connectionStateChanged = (DbProviderChangedEventHandler) DispatchService.GuiDispatch (new DbProviderChangedEventHandler (OnProviderStateChanged));
+			providerRefreshed = (DbProviderChangedEventHandler) DispatchService.GuiDispatch (new DbProviderChangedEventHandler (OnProviderRefreshed));
 			
-			ExpandToNode += (ExpandToNodeHandler) Services.DispatchService.GuiDispatch (new ExpandToNodeHandler (OnExpandToNode));
-			AddChildEvent += (AddChildHandler) Services.DispatchService.GuiDispatch (new AddChildHandler (OnAddChild));
+			ExpandToNode += (ExpandToNodeHandler) DispatchService.GuiDispatch (new ExpandToNodeHandler (OnExpandToNode));
+			AddChildEvent += (AddChildHandler) DispatchService.GuiDispatch (new AddChildHandler (OnAddChild));
 		}
 		
 		public override Type NodeDataType {

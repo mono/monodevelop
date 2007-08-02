@@ -1,3 +1,8 @@
+2007-08-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AspNetEdit.Editor/EditorHost.cs: Converted DispatchService to a static
+	  class.
+
 2007-07-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AspNetEdit.mdp, Makefile.am, data, data/WebControlsToolbox.xml:

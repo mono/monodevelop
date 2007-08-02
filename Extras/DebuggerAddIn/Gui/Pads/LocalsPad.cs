@@ -92,8 +92,8 @@ namespace MonoDevelop.Debugger
 			Add (tree);
 			ShowAll ();
 
-			Services.DebuggingService.PausedEvent += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnPausedEvent));
-			Services.DebuggingService.StoppedEvent += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnStoppedEvent));
+			Services.DebuggingService.PausedEvent += (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnPausedEvent));
+			Services.DebuggingService.StoppedEvent += (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnStoppedEvent));
 		}
 		
 		void IPadContent.Initialize (IPadWindow window)

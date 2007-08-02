@@ -94,7 +94,7 @@ namespace MonoDevelop.SourceEditor.Gui
 				underlineErrors = value;
 				/* still too broken to leave on
 				if (underlineErrors) {
-					ps.ParseInformationChanged += (ParseInformationEventHandler) Services.DispatchService.GuiDispatch (new ParseInformationEventHandler (ParseChanged));
+					ps.ParseInformationChanged += (ParseInformationEventHandler) DispatchService.GuiDispatch (new ParseInformationEventHandler (ParseChanged));
 				}
 				else {
 					ps.ParseInformationChanged -= ParseChanged;

@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.Gui.Search
 			cancelled = false;
 			
 			searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true);
-			searchMonitor.CancelRequested += (MonitorHandler) Services.DispatchService.GuiDispatch (new MonitorHandler (OnCancelRequested));
+			searchMonitor.CancelRequested += (MonitorHandler) DispatchService.GuiDispatch (new MonitorHandler (OnCancelRequested));
 			
 			InitializeDocumentIterator(null, null);
 			InitializeSearchStrategy(null, null);
@@ -140,7 +140,7 @@ namespace MonoDevelop.Ide.Gui.Search
 			searchMonitor.ReportResult (null, 0, 0, msg);
 			
 			timer = DateTime.Now;
-			Services.DispatchService.BackgroundDispatch (new MessageHandler(ReplaceAllThread));
+			DispatchService.BackgroundDispatch (new MessageHandler(ReplaceAllThread));
 		}
 		
 		static void ReplaceAllThread()
@@ -186,7 +186,7 @@ namespace MonoDevelop.Ide.Gui.Search
 			searchMonitor.ReportResult (null, 0, 0, msg);
 			
 			timer = DateTime.Now;
-			Services.DispatchService.BackgroundDispatch (new MessageHandler(FindAllThread));
+			DispatchService.BackgroundDispatch (new MessageHandler(FindAllThread));
 		}
 		
 		static void FindAllThread()

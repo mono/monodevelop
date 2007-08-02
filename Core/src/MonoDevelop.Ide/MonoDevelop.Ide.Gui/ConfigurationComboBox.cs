@@ -29,6 +29,7 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -47,11 +48,11 @@ namespace MonoDevelop.Ide.Gui
 			Add (combo);
 			ShowAll ();
 			
-			onActiveConfigurationChanged = (ConfigurationEventHandler) Services.DispatchService.GuiDispatch (new ConfigurationEventHandler (OnActiveConfigurationChanged));
-			onConfigurationsChanged = (ConfigurationEventHandler) Services.DispatchService.GuiDispatch (new ConfigurationEventHandler (OnConfigurationsChanged));
+			onActiveConfigurationChanged = (ConfigurationEventHandler) DispatchService.GuiDispatch (new ConfigurationEventHandler (OnActiveConfigurationChanged));
+			onConfigurationsChanged = (ConfigurationEventHandler) DispatchService.GuiDispatch (new ConfigurationEventHandler (OnConfigurationsChanged));
 			
-			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OpenCombine));
-			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (CloseCombine));
+			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (OpenCombine));
+			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (CloseCombine));
 			Reset ();
 		}
 		

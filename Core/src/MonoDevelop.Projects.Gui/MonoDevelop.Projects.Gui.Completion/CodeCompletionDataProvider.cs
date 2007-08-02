@@ -48,8 +48,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 			this.parserContext = parserContext;
 			this.ambience = ambience;
 			
-			onStartedParsing = (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnStartedParsing));
-			onFinishedParsing = (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnFinishedParsing));
+			onStartedParsing = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnStartedParsing));
+			onFinishedParsing = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnFinishedParsing));
 			
 			if (parserContext != null) {
 				parserContext.ParserDatabase.ParseOperationStarted += onStartedParsing;

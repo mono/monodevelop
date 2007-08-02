@@ -12,28 +12,20 @@ namespace MonoDevelop.Core.Gui
 {
 	public class GuiSyncContext: SyncContext
 	{
-		DispatchService dispatcher;
-		
 		public override void Dispatch (StatefulMessageHandler cb, object ob)
 		{
-			if (dispatcher == null)
-				dispatcher = Services.DispatchService;
-				
-			if (dispatcher.IsGuiThread)
+			if (DispatchService.IsGuiThread)
 				cb (ob);
 			else
-				dispatcher.GuiSyncDispatch (cb, ob);
+				DispatchService.GuiSyncDispatch (cb, ob);
 		}
 		
 		public override void AsyncDispatch (StatefulMessageHandler cb, object ob)
 		{
-			if (dispatcher == null)
-				dispatcher = Services.DispatchService;
-				
-			if (dispatcher.IsGuiThread)
+			if (DispatchService.IsGuiThread)
 				cb (ob);
 			else
-				dispatcher.GuiDispatch (cb, ob);
+				DispatchService.GuiDispatch (cb, ob);
 		}
 	}
 }

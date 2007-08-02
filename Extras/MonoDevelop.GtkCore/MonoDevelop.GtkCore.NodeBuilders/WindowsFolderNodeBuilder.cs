@@ -47,7 +47,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		
 		public WindowsFolderNodeBuilder ()
 		{
-			updateDelegate = (EventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new EventHandler (OnUpdateFiles));
+			updateDelegate = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnUpdateFiles));
 		}
 		
 		public override Type NodeDataType {

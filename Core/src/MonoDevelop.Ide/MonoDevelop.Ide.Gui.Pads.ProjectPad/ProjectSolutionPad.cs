@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		void OnWindowChanged (object ob, EventArgs args)
 		{
-			Services.DispatchService.GuiDispatch (new MessageHandler (SelectActiveFile));
+			DispatchService.GuiDispatch (new MessageHandler (SelectActiveFile));
 		}
 		
 		void SelectActiveFile ()

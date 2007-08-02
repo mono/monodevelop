@@ -37,6 +37,7 @@ using MonoDevelop.Core.Properties;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.Tasks
 {
@@ -110,11 +111,11 @@ namespace MonoDevelop.Ide.Tasks
 
 			LoadColumnsVisibility ();
 
-			Services.TaskService.TasksCleared += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (GeneratedTasksCleared));
-			Services.TaskService.TaskAdded += (TaskEventHandler) Services.DispatchService.GuiDispatch (new TaskEventHandler (GeneratedTaskAdded));
-			Services.TaskService.TaskRemoved += (TaskEventHandler) Services.DispatchService.GuiDispatch (new TaskEventHandler (GeneratedTaskRemoved));
+			Services.TaskService.TasksCleared += (EventHandler) DispatchService.GuiDispatch (new EventHandler (GeneratedTasksCleared));
+			Services.TaskService.TaskAdded += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (GeneratedTaskAdded));
+			Services.TaskService.TaskRemoved += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (GeneratedTaskRemoved));
 
-			Runtime.Properties.PropertyChanged += (EventHandler<PropertyEventArgs>) Services.DispatchService.GuiDispatch (new EventHandler<PropertyEventArgs> (OnPropertyUpdated));
+			Runtime.Properties.PropertyChanged += (EventHandler<PropertyEventArgs>) DispatchService.GuiDispatch (new EventHandler<PropertyEventArgs> (OnPropertyUpdated));
 
 			CreateMenu ();
 		}

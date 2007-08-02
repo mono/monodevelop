@@ -38,7 +38,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
-
+using MonoDevelop.Core.Gui;
 using MonoDevelop.DesignerSupport;
 
 namespace MonoDevelop.DesignerSupport.CodeBehind
@@ -51,11 +51,11 @@ namespace MonoDevelop.DesignerSupport.CodeBehind
 		protected override void Initialize ()
 		{	
 			classChangeHandler = (CodeBehindService.CodeBehindClassEventHandler)
-				IdeApp.Services.DispatchService.GuiDispatch (new CodeBehindService.CodeBehindClassEventHandler (onClassChanged));
+				DispatchService.GuiDispatch (new CodeBehindService.CodeBehindClassEventHandler (onClassChanged));
 			DesignerSupport.Service.CodeBehindService.CodeBehindClassUpdated += classChangeHandler;
 			
 			fileChangeHandler = (CodeBehindService.CodeBehindFileEventHandler)
-				IdeApp.Services.DispatchService.GuiDispatch (new CodeBehindService.CodeBehindFileEventHandler (onFileChanged));
+				DispatchService.GuiDispatch (new CodeBehindService.CodeBehindFileEventHandler (onFileChanged));
 			DesignerSupport.Service.CodeBehindService.CodeBehindFileUpdated += fileChangeHandler;
 		}
 		

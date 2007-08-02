@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Run (object tool)
 		{
-			Services.DispatchService.BackgroundDispatch (new StatefulMessageHandler (RunTool), tool);
+			DispatchService.BackgroundDispatch (new StatefulMessageHandler (RunTool), tool);
 		}
 
 		private void RunTool (object ob)

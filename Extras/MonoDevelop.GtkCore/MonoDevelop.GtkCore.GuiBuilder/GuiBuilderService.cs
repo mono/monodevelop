@@ -69,7 +69,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnActiveDocumentChanged);
 			IdeApp.ProjectOperations.StartBuild += OnBeforeCompile;
 			IdeApp.ProjectOperations.EndBuild += OnProjectCompiled;
-			IdeApp.ProjectOperations.ParserDatabase.AssemblyInformationChanged += (AssemblyInformationEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new AssemblyInformationEventHandler (OnAssemblyInfoChanged));
+			IdeApp.ProjectOperations.ParserDatabase.AssemblyInformationChanged += (AssemblyInformationEventHandler) DispatchService.GuiDispatch (new AssemblyInformationEventHandler (OnAssemblyInfoChanged));
 			
 			IdeApp.Exited += delegate {
 				if (steticApp != null) {
@@ -431,7 +431,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			});
 			
 			while (generating) {
-				IdeApp.Services.DispatchService.RunPendingEvents ();
+				DispatchService.RunPendingEvents ();
 				System.Threading.Thread.Sleep (100);
 			}
 			

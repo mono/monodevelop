@@ -28,6 +28,7 @@
 
 using System;
 using MonoDevelop.Ide;
+using MonoDevelop.Core.Gui;
 using Gtk;
 
 namespace MonoDevelop.Ide.Gui
@@ -47,7 +48,7 @@ namespace MonoDevelop.Ide.Gui
 			Add (combo);
 			ShowAll ();
 			
-			IdeApp.Workbench.LayoutChanged += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnConfigurationsChanged));
+			IdeApp.Workbench.LayoutChanged += (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnConfigurationsChanged));
 		}
 		
 		void OnConfigurationsChanged (object sender, EventArgs e)

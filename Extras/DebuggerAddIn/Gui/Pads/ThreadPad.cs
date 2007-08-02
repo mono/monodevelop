@@ -79,7 +79,7 @@ namespace MonoDevelop.Debugger
 			Add (tree);
 			ShowAll ();
 
-			((DebuggingService)Services.DebuggingService).ThreadStateEvent += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnThreadEvent));
+			((DebuggingService)Services.DebuggingService).ThreadStateEvent += (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnThreadEvent));
 		}
 		
 		void IPadContent.Initialize (IPadWindow window)

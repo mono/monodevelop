@@ -186,10 +186,10 @@ namespace MonoDevelop.Ide.Gui
 		public void InitializeWorkspace()
 		{
 			// FIXME: GTKize
-			IdeApp.ProjectOperations.CurrentProjectChanged += (ProjectEventHandler) Services.DispatchService.GuiDispatch (new ProjectEventHandler(SetProjectTitle));
+			IdeApp.ProjectOperations.CurrentProjectChanged += (ProjectEventHandler) DispatchService.GuiDispatch (new ProjectEventHandler(SetProjectTitle));
 
-			Runtime.FileService.FileRemoved += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler(CheckRemovedFile));
-			Runtime.FileService.FileRenamed += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler(CheckRenamedFile));
+			Runtime.FileService.FileRemoved += (FileEventHandler) DispatchService.GuiDispatch (new FileEventHandler(CheckRemovedFile));
+			Runtime.FileService.FileRenamed += (FileEventHandler) DispatchService.GuiDispatch (new FileEventHandler(CheckRenamedFile));
 			
 //			TopMenu.Selected   += new CommandHandler(OnTopMenuSelected);
 //			TopMenu.Deselected += new CommandHandler(OnTopMenuDeselected);

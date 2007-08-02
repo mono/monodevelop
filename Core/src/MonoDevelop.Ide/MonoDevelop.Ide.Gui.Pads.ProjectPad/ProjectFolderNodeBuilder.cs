@@ -76,8 +76,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			folderOpenIcon = Context.GetIcon (Stock.OpenFolder);
 			folderClosedIcon = Context.GetIcon (Stock.ClosedFolder);
 			
-			fileRenamedHandler = (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (OnFolderRenamed));
-			fileRemovedHandler = (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (OnFolderRemoved));
+			fileRenamedHandler = (FileEventHandler) DispatchService.GuiDispatch (new FileEventHandler (OnFolderRenamed));
+			fileRemovedHandler = (FileEventHandler) DispatchService.GuiDispatch (new FileEventHandler (OnFolderRemoved));
 		}
 		
 		public override void OnNodeAdded (object dataObject)

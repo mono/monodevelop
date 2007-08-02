@@ -177,9 +177,9 @@ namespace MonoDevelop.Core.Gui.ProgressMonitoring
 		{
 			if (IsCompleted) return;
 			
-			if (Services.DispatchService.IsGuiThread) {
+			if (DispatchService.IsGuiThread) {
 				while (!IsCompleted) {
-					Services.DispatchService.RunPendingEvents ();
+					DispatchService.RunPendingEvents ();
 					Thread.Sleep (100);
 				}
 			} else {

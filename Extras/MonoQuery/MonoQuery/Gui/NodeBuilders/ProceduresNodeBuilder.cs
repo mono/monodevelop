@@ -47,7 +47,7 @@ namespace MonoQuery
 		
 		public ProceduresNodeBuilder()
 		{
-			AddProcedure += (AddProcedureHandler) Services.DispatchService.GuiDispatch (new AddProcedureHandler (OnProcedureAdd));
+			AddProcedure += (AddProcedureHandler) DispatchService.GuiDispatch (new AddProcedureHandler (OnProcedureAdd));
 		}
 		
 		public override Type NodeDataType {
