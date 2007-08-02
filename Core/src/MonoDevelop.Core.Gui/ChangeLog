@@ -1,5 +1,9 @@
 2007-08-02  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Core.Gui.addin.xml: DispatchServices is now a static class.
+
+2007-08-02  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Core.Gui/DispatchService.cs,
 	  MonoDevelop.Core.Gui/GuiSyncContext.cs,
 	  MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs,

@@ -44,8 +44,6 @@
 	<!-- Extensions -->
 	
 	<Extension path = "/Workspace/Services">
-		<Class id    = "DispatchService"
-		       class = "MonoDevelop.Core.Gui.DispatchService"/>
 		<Class id    = "ResourceService"
 		       class = "MonoDevelop.Core.Gui.ResourceService"/>
 		<Class id    = "MessageService"
