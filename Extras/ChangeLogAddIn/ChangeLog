@@ -1,5 +1,10 @@
 2007-08-02  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs: Added
+	  missing file.
+
+2007-08-02  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* ProjectOptionPanel.cs, ChangeLogData.cs, ProjectOptionPanelWidget.cs,
 	  ChangeLogAddInOptionsPanel.cs, ChangeLogAddIn.cs, AddLogEntryDialog.cs,
 	  ChangeLogAddIn.addin.xml, ChangeLogAddIn.mdp, gtk-gui/generated.cs,
