@@ -1,3 +1,14 @@
+2007-08-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* ProjectOptionPanel.cs, ChangeLogData.cs, ProjectOptionPanelWidget.cs,
+	  ChangeLogAddInOptionsPanel.cs, ChangeLogAddIn.cs, AddLogEntryDialog.cs,
+	  ChangeLogAddIn.addin.xml, ChangeLogAddIn.mdp, gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs,
+	  gtk-gui/gui.stetic, ChangeLogAddInOptionPanelWidget.cs, Makefile.am,
+	  ChangeLogService.cs, CommitDialogExtensionWidget.cs: Allow updating
+	  multiple changelog files at the same time. Updated licenses. Based on a
+	  patch by Jacob Ilsø Christensen.
+
 2007-07-03  Mike Krüger <mkrueger@novell.com> 
 
 	* ChangeLogAddIn.cs: Changed a bit because of the removal of custom

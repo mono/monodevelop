@@ -1,5 +1,32 @@
+// CommitDialogExtensionWidget.cs
+//
+// Author:
+//   Lluis Sanchez Gual
+//
+// Copyright (c) 2007 Novell, Inc (http://www.novell.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
+//
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Gtk;
 using MonoDevelop.VersionControl;
@@ -17,10 +44,11 @@ namespace MonoDevelop.ChangeLogAddIn
 		Button optionsButton;
 		string message;
 		ChangeSet cset;
-		string tmpFile;
 		Label msgLabel;
 		Label pathLabel;
 		bool notConfigured;
+		Dictionary<string,ChangeLogEntry> entries;
+		int unknownFileCount;
 		
 		public CommitDialogExtensionWidget()
 		{
@@ -62,6 +90,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			vbox.PackStart (msgLabel, false, false, 0);
 			vbox.PackStart (pathLabel, false, false, 3);
 			ShowAll ();
+			GenerateLogEntries ();
 			UpdateStatus ();
 		}
 		
@@ -72,7 +101,6 @@ namespace MonoDevelop.ChangeLogAddIn
 
 			string name = Runtime.Properties.GetProperty ("ChangeLogAddIn.Name", "");
 			string email = Runtime.Properties.GetProperty ("ChangeLogAddIn.Email", "");
-			string logf = GetChangelogFile (cset.BaseLocalPath);
 			
 			if (name.Length == 0 || email.Length == 0) {
 				msgLabel.Markup = "<b><span foreground='red'>" + GettextCatalog.GetString ("ChangeLog entries can't be generated.") + "</span></b>";
@@ -84,17 +112,18 @@ namespace MonoDevelop.ChangeLogAddIn
 			}
 			
 			optionsButton.Visible = true;
-			logButton.Label = GettextCatalog.GetString ("View ChangeLog...");
-			if (logf == null) {
-				msgLabel.Markup = "<b><span foreground='red'>" + GettextCatalog.GetString ("There is no ChangeLog file in the path:") + "</span></b>";
-				pathLabel.Text = cset.BaseLocalPath;
-				logButton.Sensitive = false;
-			} else if (!cset.Repository.CanCommit (logf)){
-				msgLabel.Markup = GettextCatalog.GetString ("The following ChangeLog file (<b><span foreground='red'>not versioned</span></b>) will be updated:");
-				pathLabel.Text = logf;
+			logButton.Label = GettextCatalog.GetString ("Details...");
+			if (unknownFileCount > 0) {
+				string fc = GettextCatalog.GetPluralString ("{0} ChangeLog file not found. Some changes will not be logged.","{0} ChangeLog files not found. Some changes will not be logged.", unknownFileCount, unknownFileCount);
+				msgLabel.Markup = "<b><span foreground='red'>" + fc + "</span></b>";
+				pathLabel.Text = GettextCatalog.GetString ("Click on the 'Details' button for more info.");
+			} else if (entries.Count == 1) {
+				msgLabel.Markup = "<b>" + GettextCatalog.GetString ("The following ChangeLog file will be updated:") + "</b>";
+				foreach (ChangeLogEntry e in entries.Values)
+					pathLabel.Text = e.File;
 			} else {
-				msgLabel.Markup = GettextCatalog.GetString ("The following ChangeLog file will be updated:");
-				pathLabel.Text = logf;
+				msgLabel.Markup = "<b>" + GettextCatalog.GetString ("{0} ChangeLog files will be updated.", entries.Count) + "</b>";
+				pathLabel.Text = GettextCatalog.GetString ("Click on the 'Details' button for more info.");
 			}
 			notConfigured = false;
 		}
@@ -103,36 +132,75 @@ namespace MonoDevelop.ChangeLogAddIn
 		{
 			if (!IntegrationEnabled)
 				return true;
-				
-			string logf = GetChangelogFile (changeSet.BaseLocalPath);
-			if (logf == null)
-				return true;
 
-			if (!changeSet.ContainsFile (logf) && changeSet.Repository.CanCommit (logf))
-				changeSet.AddFile (logf);
-				
-			if (message == null)
-				message = GetCommitMessage ();
-			
-			message = message.Trim ('\n');
-			message += "\n\n";
-			
-			// Make a backup copy of the log file
-			string auxf = System.IO.Path.GetTempFileName ();
-			Runtime.FileService.CopyFile (logf, auxf);
-			tmpFile = auxf;
-			
-			// Read the log file and add the new entry
 			try {
-				TextFile tf = TextFile.ReadFile (logf);
-				tf.InsertText (0, message);
-				tf.Save ();
-			} catch {
-				// Restore the log file
-				Runtime.FileService.CopyFile (auxf, logf);
+				foreach (ChangeLogEntry ce in entries.Values) {
+					if (ce.CantGenerate)
+						continue;
+
+					// Make a backup copy of the log file
+					if (!ce.IsNew) {
+						ce.BackupFile = System.IO.Path.GetTempFileName ();
+						Runtime.FileService.CopyFile (ce.File, ce.BackupFile);
+						
+						// Read the log file and add the new entry
+						TextFile tf = TextFile.ReadFile (ce.File);
+						tf.InsertText (0, ce.Message);
+						tf.Save ();
+					} else {
+						File.WriteAllText (ce.File, ce.Message);
+					}
+					if (!cset.ContainsFile (ce.File)) {
+						if (!cset.Repository.IsVersioned (ce.File))
+							cset.Repository.Add (ce.File, false, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
+						cset.AddFile (ce.File);
+					}
+				}
+				return true;
+			}
+			catch (Exception e) {
+				// Restore the makefiles
+				Runtime.LoggingService.Error (e);
+				RollbackMakefiles ();
 				throw;
 			}
-			return true;
+		}
+		
+		void RollbackMakefiles ()
+		{
+			foreach (ChangeLogEntry ce in entries.Values) {
+				if (ce.BackupFile != null && File.Exists (ce.BackupFile)) {
+					try {
+						Runtime.FileService.CopyFile (ce.BackupFile, ce.File);
+						Runtime.FileService.DeleteFile (ce.BackupFile);
+						ce.BackupFile = null;
+					} catch (Exception ex) {
+						Runtime.LoggingService.Error (ex);
+					}
+				}
+				else if (ce.IsNew && File.Exists (ce.File)) {
+					// Remove generated files
+					try {
+						Runtime.FileService.DeleteFile (ce.File);
+					} catch (Exception ex) {
+						Runtime.LoggingService.Error (ex);
+					}
+				}
+			}
+		}
+		
+		void DeleteBackupFiles ()
+		{
+			foreach (ChangeLogEntry ce in entries.Values) {
+				if (ce.BackupFile != null && File.Exists (ce.BackupFile)) {
+					try {
+						Runtime.FileService.DeleteFile (ce.BackupFile);
+						ce.BackupFile = null;
+					} catch (Exception ex) {
+						Runtime.LoggingService.Error (ex);
+					}
+				}
+			}
 		}
 		
 		public override void OnEndCommit (ChangeSet changeSet, bool success)
@@ -140,14 +208,58 @@ namespace MonoDevelop.ChangeLogAddIn
 			if (!IntegrationEnabled)
 				return;
 				
-			if (!success) {
-				if (tmpFile != null && File.Exists (tmpFile)) {
-					string logf = GetChangelogFile (changeSet.BaseLocalPath);
-					Runtime.FileService.CopyFile (tmpFile, logf);
+			if (!success)
+				RollbackMakefiles ();
+			else
+				DeleteBackupFiles ();
+		}
+		
+		void GenerateLogEntries ()
+		{
+			entries = new Dictionary<string,ChangeLogEntry> ();
+			unknownFileCount = 0;
+			
+			foreach (ChangeSetItem item in cset.Items) {
+				string logf = ChangeLogService.GetChangeLogForFile (cset.BaseLocalPath, item.LocalPath);
+				if (logf == string.Empty)
+					continue;
+				
+				bool cantGenerate = false;
+				
+				if (logf == null) {
+					cantGenerate = true;
+					logf = System.IO.Path.GetDirectoryName (item.LocalPath);
+					logf = System.IO.Path.Combine (logf, "ChangeLog");
 				}
+				
+				ChangeLogEntry entry;
+				if (!entries.TryGetValue (logf, out entry)) {
+					entry = new ChangeLogEntry ();
+					entry.CantGenerate = cantGenerate;
+					entry.File = logf;
+					if (cantGenerate)
+						unknownFileCount++;
+				
+					if (!File.Exists (logf))
+						entry.IsNew = true;
+				
+					entries [logf] = entry;
+				}
+				entry.Items.Add (item);
 			}
-			if (tmpFile != null && File.Exists (tmpFile))
-				Runtime.FileService.DeleteFile (tmpFile);
+			
+			foreach (ChangeLogEntry entry in entries.Values) {
+				string path = System.IO.Path.GetDirectoryName (entry.File);
+				string msg = cset.GeneratePathComment (path, entry.Items, 75);
+
+				string name = Runtime.Properties.GetProperty ("ChangeLogAddIn.Name", "");
+				string email = Runtime.Properties.GetProperty ("ChangeLogAddIn.Email", "");
+				string date = DateTime.Now.ToString("yyyy-MM-dd");
+				string text = date + "  " + name + " <" + email + "> " + Environment.NewLine + Environment.NewLine;
+				
+				msg = msg.Trim ('\n');
+				entry.Message = text + "\t" + msg.Replace ("\n", "\n\t") + "\n\n";
+			}
 		}
 		
 		void OnClickButton (object s, EventArgs args)
@@ -158,17 +270,10 @@ namespace MonoDevelop.ChangeLogAddIn
 				return;
 			}
 			
-			using (AddLogEntryDialog dlg = new AddLogEntryDialog ()) {
-				if (message != null)
-					dlg.Message = message;
-				else
-					dlg.Message = GetCommitMessage ();
-
-				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
-					if (message != null || dlg.Message != GetCommitMessage ())
-						message = dlg.Message;
-				}
-			}
+			AddLogEntryDialog dlg = new AddLogEntryDialog (entries);
+			dlg.TransientFor = Toplevel as Gtk.Window;
+			dlg.Run ();
+			dlg.Destroy ();
 		}
 		
 		void OnClickOptions (object s, EventArgs args)
@@ -176,31 +281,15 @@ namespace MonoDevelop.ChangeLogAddIn
 			IdeApp.Workbench.ShowGlobalPreferencesDialog (Toplevel as Gtk.Window, "ChangeLogAddInOptions");
 			UpdateStatus ();
 		}
-		
-		string GetChangelogFile (string basePath)
-		{
-			string logfile = System.IO.Path.Combine (basePath, "ChangeLog");
-			if (File.Exists (logfile))
-				return logfile;
-			else
-				return null;
-		}
-		
-		string GetCommitMessage ()
-		{
-			string msg = cset.GlobalComment;
-			if (msg.Length == 0)
-				msg = cset.GenerateGlobalComment (75);
-
-			string name = Runtime.Properties.GetProperty ("ChangeLogAddIn.Name", "");
-			string email = Runtime.Properties.GetProperty ("ChangeLogAddIn.Email", "");
-			string date = DateTime.Now.ToString("yyyy-MM-dd");
-			string text = date + "  " + name + " <" + email + "> " + Environment.NewLine + Environment.NewLine;
-			
-			msg = msg.Trim ('\n');
-			text += "\t" + msg.Replace ("\n", "\n\t");
-
-			return text;
-		}
+	}
+	
+	class ChangeLogEntry
+	{
+		public string File;
+		public string BackupFile;
+		public string Message;
+		public bool CantGenerate;
+		public bool IsNew;
+		public List<ChangeSetItem> Items = new List<ChangeSetItem> ();
 	}
 }

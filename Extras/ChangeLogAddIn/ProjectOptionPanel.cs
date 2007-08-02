@@ -1,9 +1,9 @@
-// ChangeLogAddInOptionPanel.cs
+// ProjectOptionPanel.cs
 //
 // Author:
 //   Jacob Ilsø Christensen
 //
-// Copyright (C) 2006  Jacob Ilsø Christensen
+// Copyright (C) 2007  Jacob Ilsø Christensen
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,27 +25,29 @@
 //
 //
 
+using System;
 using Gtk;
-
-using MonoDevelop.Core;
+using MonoDevelop.Projects;
 using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Core.Properties;
 
 namespace MonoDevelop.ChangeLogAddIn
-{
-	public class ChangeLogAddInOptionPanel : AbstractOptionPanel
+{		
+	public class ProjectOptionPanel : AbstractOptionPanel
 	{
-		ChangeLogAddInOptionPanelWidget widget;
+		ProjectOptionPanelWidget widget;
 		
-		public override void LoadPanelContents()
-		{
-			widget = new ChangeLogAddInOptionPanelWidget ();
+		public override void LoadPanelContents ()
+		{						
+			CombineEntry entry = (CombineEntry)((IProperties)CustomizationObject).GetProperty ("CombineEntry");
+			widget = new ProjectOptionPanelWidget(entry);
 			Add (widget);
-			widget.LoadPanelContents ();
 		}
 		
 		public override bool StorePanelContents()
-		{
-			return widget.StorePanelContents ();
+		{			
+			return widget.Store ();
 		}
 	}
 }
+		

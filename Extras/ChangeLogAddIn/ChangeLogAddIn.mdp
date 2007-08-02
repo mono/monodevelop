@@ -27,6 +27,12 @@
     <File name="./gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="./gtk-gui/MonoDevelop.ChangeLogAddIn.ChangeLogAddInOptionPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="./ProjectOptionPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="./ProjectOptionPanelWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="./gtk-gui/objects.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="./ChangeLogData.cs" subtype="Code" buildaction="Compile" />
+    <File name="./ChangeLogService.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />
@@ -42,7 +48,6 @@
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Assembly" localcopy="False" refto="../../contrib/Mono.Addins.dll" />
   </References>
-  <GtkDesignInfo partialTypes="True" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />
@@ -52,4 +57,5 @@
     <AsmRefVar Name="REFS" Prefix="-r:" />
     <ProjectRefVar Name="REFS" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
+  <GtkDesignInfo partialTypes="True" />
 </Project>

@@ -1,20 +1,29 @@
-/*
-Copyright (C) 2006  Jacob Ilsø Christensen
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
+// ChangeLogAddIn.cs
+//
+// Author:
+//   Jacob Ilsø Christensen
+//
+// Copyright (C) 2006  Jacob Ilsø Christensen
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
+//
 
 using System;
 using System.IO;
@@ -37,7 +46,7 @@ namespace MonoDevelop.ChangeLogAddIn
 	{
 		protected override void Run()
 		{
-			Document document = GetActiveChangeLogDocument(true);
+			Document document = GetActiveChangeLogDocument();
 			if (document == null) return;
 			
 			InsertHeader(document);
@@ -46,21 +55,20 @@ namespace MonoDevelop.ChangeLogAddIn
 
 		protected override void Update(CommandInfo info)
 		{
-			info.Enabled = GetSelectedProjectFile() != null;
+			string file = GetSelectedFile ();
+			if (file != null) {
+				string clog = ChangeLogService.GetChangeLogForFile (null, file);
+				info.Enabled = !string.IsNullOrEmpty (clog);
+			} else
+				info.Enabled = false;
 		}
 
-        private ProjectFile GetSelectedProjectFile()
+        private string GetSelectedFile()
 		{
-			Pad pad = IdeApp.Workbench.GetPad<SolutionPad> ();
-			if (pad == null) return null;
-
-			SolutionPad solutionPad = pad.Content as SolutionPad;
-			if (solutionPad == null) return null;
-
-			ITreeNavigator navigator = solutionPad.GetSelectedNode();
-			if (navigator == null) return null;
-
-			return navigator.DataItem as ProjectFile;			
+			if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.FileName != null)
+				return IdeApp.Workbench.ActiveDocument.FileName;
+			else
+				return null;
 		}
 		
 		private void InsertEntry(Document document)
@@ -68,12 +76,9 @@ namespace MonoDevelop.ChangeLogAddIn
 			IEditableTextBuffer textBuffer = document.GetContent<IEditableTextBuffer>();					
 			if (textBuffer == null) return;
 
-			ProjectFile projectFile = GetSelectedProjectFile();
-			if (projectFile == null) return;
-
 			string changeLogFileName = document.FileName;
 			string changeLogFileNameDirectory = Path.GetDirectoryName(changeLogFileName);
-			string selectedFileName = projectFile.Name;
+			string selectedFileName = document.FileName;
 			string selectedFileNameDirectory = Path.GetDirectoryName(selectedFileName);
 	
 	        int pos = GetHeaderEndPosition(document);
@@ -95,7 +100,7 @@ namespace MonoDevelop.ChangeLogAddIn
 		private void InsertHeader(Document document)
 		{
 			IEditableTextBuffer textBuffer = document.GetContent<IEditableTextBuffer>();					
-			if (textBuffer == null)	return;
+			if (textBuffer == null) return;
 		
 			string name = Runtime.Properties.GetProperty("ChangeLogAddIn.Name", "Full Name");
 			string email = Runtime.Properties.GetProperty("ChangeLogAddIn.Email", "Email Address");
@@ -116,7 +121,7 @@ namespace MonoDevelop.ChangeLogAddIn
         private int GetHeaderEndPosition(Document document)
         {
 			IEditableTextBuffer textBuffer = document.GetContent<IEditableTextBuffer>();					
-			if (textBuffer == null)	return 0;
+			if (textBuffer == null) return 0;
 			
 			// This is less than optimal, we simply read 1024 chars hoping to
 			// find a newline there: if we don't find it we just return 0.
@@ -125,45 +130,26 @@ namespace MonoDevelop.ChangeLogAddIn
             return pos >= 0 ? pos : 0;
         }
         
-		private Document GetActiveChangeLogDocument(bool create)
+		private Document GetActiveChangeLogDocument()
 		{
-		    // We look for the ChangeLog file in different places: first of all
-		    // at the top-level directory of the current Project and then at
-		    // the top-level directory of the enclosing combine, going up to
-		    // the topmost one.
-		    
-            Document document = null;
-            
-            Project project = IdeApp.ProjectOperations.CurrentSelectedProject;
-		    if (project != null && project.BaseDirectory != null) {
-    		    string changelog = Path.Combine(project.BaseDirectory, "ChangeLog");
-    		    if (File.Exists(changelog))
-    		        document = IdeApp.Workbench.OpenDocument(changelog, false);
-            }
-                        
-            if (document == null && project != null) {
-                Combine combine = project.ParentCombine;
-                while (combine != null && combine.BaseDirectory != null) {
-                    string changelog = Path.Combine(combine.BaseDirectory, "ChangeLog");
-        		    if (File.Exists(changelog)) {
-                        document = IdeApp.Workbench.OpenDocument(changelog, false);
-                        break;
-                    }
-                    combine = combine.ParentCombine;
-                }
-            }
-            
-            // If no ChangeLog has been found, we create one in the current
-            // project's base directory.
-            
-			if (document == null && create && project != null && project.BaseDirectory != null) {
-    		    string changelog = Path.Combine(project.BaseDirectory, "ChangeLog");
-                document = IdeApp.Workbench.NewDocument(changelog, "text/plain", "");
-                document.Save();
-			}
+			string file = GetSelectedFile ();
+			if (file == null)
+				return null;
 			
-			return document;		
-		}			
+			string clog = ChangeLogService.GetChangeLogForFile (null, file);
+			if (string.IsNullOrEmpty (clog))
+				return null;
+			
+			Project project = IdeApp.ProjectOperations.CurrentSelectedProject;			
+			if (project == null)
+				return null;
+			
+			if (File.Exists (clog))
+				return IdeApp.Workbench.OpenDocument (clog, false);
+			
+			Document document = IdeApp.Workbench.NewDocument (clog, "text/plain", "");
+			document.Save();
+			return document;				
+		}
 	}
 }
-	

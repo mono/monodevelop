@@ -1,9 +1,10 @@
-// ChangeLogAddInOptionPanelWidget.cs
+// ChangeLogData.cs
 //
 // Author:
 //   Jacob Ilsø Christensen
+//   Lluis Sanchez Gual
 //
-// Copyright (C) 2006  Jacob Ilsø Christensen
+// Copyright (C) 2007  Jacob Ilsø Christensen
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,32 +27,64 @@
 //
 
 using System;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Serialization;
 
 namespace MonoDevelop.ChangeLogAddIn
-{
-	public partial class ChangeLogAddInOptionPanelWidget : Gtk.Bin
+{	
+	public enum ChangeLogPolicy
 	{
-		public ChangeLogAddInOptionPanelWidget()
+		NoChangeLog,
+		UseParentPolicy,
+		UpdateNearestChangeLog,
+		OneChangeLogInProjectRootDirectory,
+		OneChangeLogInEachDirectory		
+	}
+	
+	[DataItem ("ChangeLogInfo")]
+	public class ChangeLogData
+	{
+		[ItemProperty]
+		ChangeLogPolicy policy = ChangeLogPolicy.UseParentPolicy;
+		
+		CombineEntry entry;
+		
+		internal ChangeLogData ()
 		{
-			Build ();
 		}
 		
-		public void LoadPanelContents()
+		internal ChangeLogData (CombineEntry entry)
 		{
-			nameEntry.Text = Runtime.Properties.GetProperty ("ChangeLogAddIn.Name", "Full Name");
-			emailEntry.Text = Runtime.Properties.GetProperty ("ChangeLogAddIn.Email", "Email Address");
-			integrationCheck.Active = Runtime.Properties.GetProperty ("ChangeLogAddIn.VersionControlIntegration", true);
+			this.entry = entry;
 		}
 		
-		public bool StorePanelContents()
+		internal void Bind (CombineEntry entry)
 		{
-			Runtime.Properties.SetProperty("ChangeLogAddIn.Name", nameEntry.Text);
-			Runtime.Properties.SetProperty("ChangeLogAddIn.Email", emailEntry.Text);
-			Runtime.Properties.SetProperty("ChangeLogAddIn.VersionControlIntegration", integrationCheck.Active);
-			Runtime.Properties.SaveProperties ();
-			return true;
+			this.entry = entry;
+		}
+		
+		void UpdateData ()
+		{
+			if (entry != null) {
+				entry.ExtendedProperties ["MonoDevelop.ChangeLogAddIn.ChangeLogInfo"] = this;
+				entry.ExtendedProperties.Remove ("Temp.MonoDevelop.ChangeLogAddIn.ChangeLogInfo");
+			}
+		}
+		
+		public ChangeLogPolicy Policy
+		{
+			get {
+				if (policy == ChangeLogPolicy.UseParentPolicy && entry.ParentCombine == null)
+					return ChangeLogPolicy.UpdateNearestChangeLog;
+				else
+					return policy; 
+			}
+			set {
+				if (value != policy) {
+					policy = value; 
+					UpdateData ();
+				}
+			}
 		}
 	}
 }

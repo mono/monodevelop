@@ -15,6 +15,7 @@
 		<Addin id="Core" version="0.15.0"/>
 		<Addin id="Core.Gui" version="0.15.0"/>
 	    <Addin id="Projects" version="0.15.0"/>
+	    <Addin id="Projects.Gui" version="0.15.0"/>
 		<Addin id="Ide" version="0.15.0"/>
 		<Addin id="VersionControl" version="0.15.0"/>
 	</Dependencies>
@@ -42,5 +43,17 @@
 				class = "MonoDevelop.ChangeLogAddIn.ChangeLogAddInOptionPanel" />
 		</DialogPanel>
 	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/Serialization/ExtendedProperties">
+		<ItemProperty class = "MonoDevelop.Projects.CombineEntry"
+			name = "MonoDevelop.ChangeLogAddIn.ChangeLogInfo" type = "MonoDevelop.ChangeLogAddIn.ChangeLogData" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/GeneralOptions/Common">
+		<DialogPanel id = "ChangeLogIntegration" _label = "ChangeLog Integration" class="MonoDevelop.ChangeLogAddIn.ProjectOptionPanel"/>
+	</Extension>
 
+	<Extension path = "/SharpDevelop/Workbench/CombineOptions/GeneralOptions/Common">
+		<DialogPanel id = "ChangeLogIntegration" _label = "ChangeLog Integration" class="MonoDevelop.ChangeLogAddIn.ProjectOptionPanel"/>
+	</Extension>
 </Addin>
