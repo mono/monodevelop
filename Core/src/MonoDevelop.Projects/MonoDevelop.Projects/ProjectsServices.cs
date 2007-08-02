@@ -16,7 +16,7 @@ namespace MonoDevelop.Projects
 		public static AmbienceService Ambience {
 			get {
 				if (ambienceService == null)
-					ambienceService = (AmbienceService) ServiceManager.GetService (typeof(AmbienceService));
+					ambienceService = new AmbienceService ();
 				return ambienceService;
 			}
 		}
@@ -24,7 +24,7 @@ namespace MonoDevelop.Projects
 		public static LanguageBindingService Languages {
 			get {
 				if (languageBindingService == null)
-					languageBindingService = (LanguageBindingService) ServiceManager.GetService (typeof(LanguageBindingService));
+					languageBindingService = new LanguageBindingService ();
 				return languageBindingService;
 			}
 		}
@@ -32,7 +32,7 @@ namespace MonoDevelop.Projects
 		public static ProjectService ProjectService {
 			get {
 				if (projectService == null)
-					projectService = (ProjectService) ServiceManager.GetService (typeof(ProjectService));
+					projectService = new ProjectService ();
 				return projectService;
 			}
 		}
@@ -40,7 +40,7 @@ namespace MonoDevelop.Projects
 		public static IParserService ParserService {
 			get {
 				if (parserService == null)
-					parserService = (IParserService) ServiceManager.GetService (typeof(IParserService));
+					parserService = new DefaultParserService ();
 				return parserService;
 			}
 		}

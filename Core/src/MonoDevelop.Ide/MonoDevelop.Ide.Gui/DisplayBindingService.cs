@@ -26,11 +26,17 @@ namespace MonoDevelop.Ide.Gui
 	/// This class handles the installed display bindings
 	/// and provides a simple access point to these bindings.
 	/// </summary>
-	public class DisplayBindingService : AbstractService
+	public class DisplayBindingService
 	{
 		readonly static string displayBindingPath = "/SharpDevelop/Workbench/DisplayBindings";
 		List<DisplayBindingCodon> bindings = null;
 
+		public DisplayBindingService ()
+		{
+			bindings = new List<DisplayBindingCodon> ();
+			AddinManager.AddExtensionNodeHandler (displayBindingPath, OnExtensionChanged);
+		}
+		
 		public IDisplayBinding LastBinding {
 			get {
 				return bindings[0].DisplayBinding;
@@ -94,12 +100,6 @@ namespace MonoDevelop.Ide.Gui
 					workbenchWindow.AttachSecondaryViewContent(binding.SecondaryDisplayBinding.CreateSecondaryViewContent(workbenchWindow.ViewContent));
 				}
 			}
-		}
-		
-		public override void InitializeService ()
-		{
-			bindings = new List<DisplayBindingCodon> ();
-			AddinManager.AddExtensionNodeHandler (displayBindingPath, OnExtensionChanged);
 		}
 		
 		void OnExtensionChanged (object s, ExtensionNodeEventArgs args)

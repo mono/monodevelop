@@ -31,12 +31,8 @@ using MonoDevelop.Projects.Parser;
 
 namespace MonoDevelop.Projects.Parser
 {
-	public class DefaultParserService : AbstractService, IParserService
+	public class DefaultParserService : IParserService
 	{
-		public override void InitializeService()
-		{
-		}
-		
 		public IParserDatabase CreateParserDatabase ()
 		{
 			ParserDatabase c = new ParserDatabase (this);

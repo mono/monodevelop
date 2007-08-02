@@ -219,17 +219,6 @@
 		       class = "MonoDevelop.Ide.Gui.IdeStartup"/>
 	</Extension>
 	
-	<Extension path = "/Workspace/Services">
-		<Class id    = "TaskService"
-		       class = "MonoDevelop.Ide.Tasks.TaskService"/>
-		<Class id    = "StatusBarService"
-		       class = "MonoDevelop.Ide.Gui.DefaultStatusBarService"/>
-		<Class id    = "DisplayBindingService"
-		       class = "MonoDevelop.Ide.Gui.DisplayBindingService"/>
-		<!--<Class id    = "NavigationService"
-		       class = "MonoDevelop.Ide.Gui.NavigationService"/>-->
-	</Extension>
-	
 	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id    = "DefaultDisplayBinding"
 		                class = "MonoDevelop.Ide.Gui.DefaultDisplayBinding"/>

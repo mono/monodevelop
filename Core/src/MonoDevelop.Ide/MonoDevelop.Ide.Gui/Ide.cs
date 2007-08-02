@@ -208,48 +208,16 @@ namespace MonoDevelop.Ide.Gui
 	
 	public class IdeServices
 	{
-		MessageService messageService;
-		DisplayBindingService displayBindingService;
-		ResourceService resourceService;
-		IStatusBarService statusBarService;
 		IconService icons;
 		IDocumentationService documentationService;
 		IDebuggingService debuggingService;
-		TaskService taskService;
-		IParserService parserService;
-		DispatchService dispatchService;
-		IProjectService projectService;
-
-		public IStatusBarService StatusBar {
-			get {
-				if (statusBarService == null)
-					statusBarService = (IStatusBarService) ServiceManager.GetService (typeof(IStatusBarService));
-				return statusBarService;
-			}
-		}
 
 		public MessageService MessageService {
-			get {
-				if (messageService == null)
-					messageService = (MessageService) ServiceManager.GetService (typeof(MessageService));
-				return messageService;
-			}
+			get { return MonoDevelop.Core.Gui.Services.MessageService; }
 		}
 
-		internal DisplayBindingService DisplayBindings {
-			get {
-				if (displayBindingService == null)
-					displayBindingService = (DisplayBindingService) ServiceManager.GetService (typeof(DisplayBindingService));
-				return displayBindingService;
-			}
-		}
-	
 		public ResourceService Resources {
-			get {
-				if (resourceService == null)
-					resourceService = (ResourceService) ServiceManager.GetService (typeof(ResourceService));
-				return resourceService;
-			}
+			get { return MonoDevelop.Core.Gui.Services.Resources; }
 		}
 	
 		public IconService Icons {
@@ -277,35 +245,15 @@ namespace MonoDevelop.Ide.Gui
 		}
 	
 		public TaskService TaskService {
-			get {
-				if (taskService == null)
-					taskService = (TaskService) ServiceManager.GetService (typeof(TaskService));
-				return taskService;
-			}
+			get { return MonoDevelop.Ide.Services.TaskService; }
 		}
 	
 		public IParserService ParserService {
-			get {
-				if (parserService == null)
-					parserService = (IParserService) ServiceManager.GetService (typeof(IParserService));
-				return parserService;
-			}
-		}
-	
-		public DispatchService DispatchService {
-			get {
-				if (dispatchService == null)
-					dispatchService = (DispatchService) ServiceManager.GetService (typeof(DispatchService));
-				return dispatchService;
-			}
+			get { return MonoDevelop.Projects.Services.ParserService; }
 		}
 	
 		public IProjectService ProjectService {
-			get {
-				if (projectService == null)
-					projectService = (IProjectService) ServiceManager.GetService (typeof(IProjectService));
-				return projectService;
-			}
+			get { return MonoDevelop.Projects.Services.ProjectService; }
 		}
 	}
 	

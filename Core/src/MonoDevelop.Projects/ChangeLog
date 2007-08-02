@@ -1,3 +1,13 @@
+2007-08-03  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/ProjectService.cs,
+	  MonoDevelop.Projects/ProjectsServices.cs,
+	  MonoDevelop.Projects/LanguageBindingService.cs,
+	  MonoDevelop.Projects/LanguageService.cs, MonoDevelop.Projects.addin.xml,
+	  MonoDevelop.Projects.mdp, Makefile.am,
+	  MonoDevelop.Projects.Parser/DefaultParserService.cs: API cleanup.
+	  Converted core services into regular classes.
+
 2007-08-01  Marcos David Marín Amador <MarcosMarin@gmail.com>
 
 	* MonoDevelop.Projects/CustomCommand.cs: Added the working directory

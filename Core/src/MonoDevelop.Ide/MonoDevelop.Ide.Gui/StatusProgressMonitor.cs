@@ -48,8 +48,8 @@ namespace MonoDevelop.Ide.Gui
 			this.showErrorDialogs = showErrorDialogs;
 			this.showTaskTitles = showTaskTitles;
 			icon = Services.Resources.GetImage (iconName, Gtk.IconSize.Menu);
-			Services.StatusBar.BeginProgress (title);
-			Services.StatusBar.SetMessage (icon, title);
+			IdeApp.Workbench.StatusBar.BeginProgress (title);
+			IdeApp.Workbench.StatusBar.SetMessage (icon, title);
 			if (lockGui)
 				IdeApp.Workbench.LockGui ();
 		}
@@ -57,9 +57,9 @@ namespace MonoDevelop.Ide.Gui
 		protected override void OnProgressChanged ()
 		{
 			if (showTaskTitles)
-				Services.StatusBar.SetMessage (icon, CurrentTask);
+				IdeApp.Workbench.StatusBar.SetMessage (icon, CurrentTask);
 			if (!UnknownWork)
-				Services.StatusBar.SetProgressFraction (GlobalWork);
+				IdeApp.Workbench.StatusBar.SetProgressFraction (GlobalWork);
 			DispatchService.RunPendingEvents ();
 		}
 		
@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide.Gui
 			if (lockGui)
 				IdeApp.Workbench.UnlockGui ();
 				
-			Services.StatusBar.EndProgress ();
+			IdeApp.Workbench.StatusBar.EndProgress ();
 
 			if (Errors.Count > 0) {
 				if (showErrorDialogs) {
@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide.Gui
 					Services.MessageService.ShowError (ErrorException, s);
 				}
 				Gtk.Image img = Services.Resources.GetImage (Stock.Error, Gtk.IconSize.Menu);
-				Services.StatusBar.SetMessage (img, Errors [Errors.Count - 1]);
+				IdeApp.Workbench.StatusBar.SetMessage (img, Errors [Errors.Count - 1]);
 				base.OnCompleted ();
 				return;
 			}
@@ -93,16 +93,16 @@ namespace MonoDevelop.Ide.Gui
 				
 				if (SuccessMessages.Count == 0) {
 					Gtk.Image img = Services.Resources.GetImage (Stock.Warning, Gtk.IconSize.Menu);
-					Services.StatusBar.SetMessage (img, Warnings [Warnings.Count - 1]);
+					IdeApp.Workbench.StatusBar.SetMessage (img, Warnings [Warnings.Count - 1]);
 					base.OnCompleted ();
 					return;
 				}
 			}
 			
 			if (SuccessMessages.Count > 0)
-				Services.StatusBar.SetMessage (SuccessMessages [SuccessMessages.Count - 1]);
+				IdeApp.Workbench.StatusBar.SetMessage (SuccessMessages [SuccessMessages.Count - 1]);
 			else
-				Services.StatusBar.SetMessage (GettextCatalog.GetString ("Ready"));
+				IdeApp.Workbench.StatusBar.SetMessage (GettextCatalog.GetString ("Ready"));
 				
 			base.OnCompleted ();
 		}

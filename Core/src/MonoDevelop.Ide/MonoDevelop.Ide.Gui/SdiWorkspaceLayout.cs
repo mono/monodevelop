@@ -146,9 +146,9 @@ namespace MonoDevelop.Ide.Gui
 
 			workbench.Add (fullViewVBox);
 			
-			fullViewVBox.PackEnd (Services.StatusBar.Control, false, true, 0);
+			fullViewVBox.PackEnd (IdeApp.Workbench.StatusBar.Control, false, true, 0);
 			fullViewVBox.ShowAll ();
-			Services.StatusBar.Control.ShowAll ();
+			IdeApp.Workbench.StatusBar.Control.ShowAll ();
 			
 			foreach (IViewContent content in workbench.ViewContentCollection)
 				ShowView (content);

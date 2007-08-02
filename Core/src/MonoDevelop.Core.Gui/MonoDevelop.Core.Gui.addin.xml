@@ -43,13 +43,6 @@
 
 	<!-- Extensions -->
 	
-	<Extension path = "/Workspace/Services">
-		<Class id    = "ResourceService"
-		       class = "MonoDevelop.Core.Gui.ResourceService"/>
-		<Class id    = "MessageService"
-		       class = "MonoDevelop.Core.Gui.MessageService"/>
-	</Extension>
-
 	<Extension path = "/System/Applications">
 		<Application id    = "gsetup"
 		       description = "Graphical add-in setup utility"

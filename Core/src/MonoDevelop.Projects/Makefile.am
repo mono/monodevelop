@@ -211,7 +211,6 @@ FILES =  \
 	MonoDevelop.Projects/IProjectService.cs \
 	MonoDevelop.Projects/Language.cs \
 	MonoDevelop.Projects/LanguageBindingService.cs \
-	MonoDevelop.Projects/LanguageService.cs \
 	MonoDevelop.Projects/MonoDevelopFileFormat.cs \
 	MonoDevelop.Projects/NoStartupCombineDefinedException.cs \
 	MonoDevelop.Projects/PrjxFileFormat.cs \

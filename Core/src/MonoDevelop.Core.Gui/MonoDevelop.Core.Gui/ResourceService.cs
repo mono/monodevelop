@@ -42,19 +42,16 @@ namespace MonoDevelop.Core.Gui.Dialogs
 	
 namespace MonoDevelop.Core.Gui
 {
-	public class ResourceService : AbstractService
+	public class ResourceService
 	{
 		Gtk.IconFactory iconFactory = null;
 		Hashtable stockMappings = null;
 		
 		ArrayList addinIcons = new ArrayList ();
 		ArrayList addins = new ArrayList ();
-		static ResourceService instance;
 		
-		public override void InitializeService ()
+		public ResourceService ()
 		{
-			base.InitializeService();
-			
 			iconFactory = new Gtk.IconFactory ();
 
 			// FIXME: remove this when all MonoDevelop is using Gtk+
@@ -80,11 +77,7 @@ namespace MonoDevelop.Core.Gui
 		}
 		
 		static ResourceService Instance {
-			get {
-				if (instance == null)
-					instance = (ResourceService) ServiceManager.GetService (typeof(ResourceService));
-				return instance;
-			}
+			get { return MonoDevelop.Core.Gui.Services.Resources; }
 		}
 		
 		/// <summary>

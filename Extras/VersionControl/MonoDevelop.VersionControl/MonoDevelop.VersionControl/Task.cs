@@ -28,8 +28,6 @@ namespace MonoDevelop.VersionControl
 		protected Task() {
 			threadnotify = new ThreadNotify(new ReadyEvent(Wakeup));
 			
-			/*tracker = ((TaskService)ServiceManager.GetService(typeof(TaskService)))
-				.GetVersionInfoProgressMonitor("Version Control", null, true);*/
 			tracker = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor("Version Control", null, true, true);
 		}
 		

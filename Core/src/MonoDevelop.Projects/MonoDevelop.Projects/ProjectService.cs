@@ -34,7 +34,7 @@ namespace MonoDevelop.Projects
 		PromptForSave,
 	}
 	
-	public class ProjectService : AbstractService, IProjectService
+	public class ProjectService : IProjectService
 	{
 		DataContext dataContext = new DataContext ();
 		ArrayList projectBindings = new ArrayList ();
@@ -43,6 +43,16 @@ namespace MonoDevelop.Projects
 		
 		FileFormatManager formatManager = new FileFormatManager ();
 		IFileFormat defaultFormat = new MonoDevelopFileFormat ();
+		
+		public ProjectService ()
+		{
+			AddinManager.AddExtensionNodeHandler ("/SharpDevelop/Workbench/ProjectFileFormats", OnFormatExtensionChanged);
+			AddinManager.AddExtensionNodeHandler ("/SharpDevelop/Workbench/SerializableClasses", OnSerializableExtensionChanged);
+			AddinManager.AddExtensionNodeHandler ("/SharpDevelop/Workbench/Serialization/ExtendedProperties", OnPropertiesExtensionChanged);
+			AddinManager.AddExtensionNodeHandler ("/SharpDevelop/Workbench/ProjectBindings", OnProjectsExtensionChanged);
+			UpdateExtensions ();
+			AddinManager.ExtensionChanged += OnExtensionChanged;
+		}
 		
 		public DataContext DataContext {
 			get { return dataContext; }
@@ -292,18 +302,6 @@ namespace MonoDevelop.Projects
 				filename = new Uri(filename).LocalPath;
 				
 			return formatManager.GetFileFormats (filename).Length > 0;
-		}
-
-		public override void InitializeService()
-		{
-			base.InitializeService();
-
-			AddinManager.AddExtensionNodeHandler ("/SharpDevelop/Workbench/ProjectFileFormats", OnFormatExtensionChanged);
-			AddinManager.AddExtensionNodeHandler ("/SharpDevelop/Workbench/SerializableClasses", OnSerializableExtensionChanged);
-			AddinManager.AddExtensionNodeHandler ("/SharpDevelop/Workbench/Serialization/ExtendedProperties", OnPropertiesExtensionChanged);
-			AddinManager.AddExtensionNodeHandler ("/SharpDevelop/Workbench/ProjectBindings", OnProjectsExtensionChanged);
-			UpdateExtensions ();
-			AddinManager.ExtensionChanged += OnExtensionChanged;
 		}
 		
 		void OnFormatExtensionChanged (object s, ExtensionNodeEventArgs args)

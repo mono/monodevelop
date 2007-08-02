@@ -10,9 +10,7 @@ namespace MonoDevelop.Debugger
 	public class Services
 	{
 		static IDebuggingService debuggingService;
-		static ResourceService resourceService;
 		static IconService icons;
-		static AmbienceService ambienceService;
 		
 		public static IconService Icons {
 			get {
@@ -31,19 +29,11 @@ namespace MonoDevelop.Debugger
 		}
 	
 		internal static ResourceService Resources {
-			get {
-				if (resourceService == null)
-					resourceService = (ResourceService) ServiceManager.GetService (typeof(ResourceService));
-				return resourceService;
-			}
+			get { return MonoDevelop.Core.Gui.Services.Resources; }
 		}
 
 		public static AmbienceService Ambience {
-			get {
-				if (ambienceService == null)
-					ambienceService = (AmbienceService) ServiceManager.GetService (typeof(AmbienceService));
-				return ambienceService;
-			}
+			get { return MonoDevelop.Projects.Services.Ambience; }
 		}
 	}
 }

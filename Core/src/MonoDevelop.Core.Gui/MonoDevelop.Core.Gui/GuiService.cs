@@ -15,7 +15,7 @@ namespace MonoDevelop.Core.Gui
 		public static ResourceService Resources {
 			get {
 				if (resourceService == null)
-					resourceService = (ResourceService) ServiceManager.GetService (typeof(ResourceService));
+					resourceService = new ResourceService ();
 				return resourceService;
 			}
 		}
@@ -23,7 +23,7 @@ namespace MonoDevelop.Core.Gui
 		public static MessageService MessageService {
 			get {
 				if (messageService == null)
-					messageService = (MessageService) ServiceManager.GetService (typeof(MessageService));
+					messageService = new MessageService ();
 				return messageService;
 			}
 		}

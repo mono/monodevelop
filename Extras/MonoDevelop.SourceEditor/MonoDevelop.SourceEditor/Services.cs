@@ -10,24 +10,13 @@ namespace MonoDevelop.SourceEditor
 	class Services
 	{
 		static IDebuggingService debuggingService;
-		static MessageService messageService;
-		static ResourceService resourceService;
-		static LanguageBindingService languageBindingService;
 
 		public static MessageService MessageService {
-			get {
-				if (messageService == null)
-					messageService = (MessageService) ServiceManager.GetService (typeof(MessageService));
-				return messageService;
-			}
+			get { return MonoDevelop.Core.Gui.Services.MessageService; }
 		}
 	
 		public static ResourceService Resources {
-			get {
-				if (resourceService == null)
-					resourceService = (ResourceService) ServiceManager.GetService (typeof(ResourceService));
-				return resourceService;
-			}
+			get { return MonoDevelop.Core.Gui.Services.Resources; }
 		}
 	
 		public static IDebuggingService DebuggingService {
@@ -39,11 +28,7 @@ namespace MonoDevelop.SourceEditor
 		}
 	
 		public static LanguageBindingService Languages {
-			get {
-				if (languageBindingService == null)
-					languageBindingService = (LanguageBindingService) ServiceManager.GetService (typeof(LanguageBindingService));
-				return languageBindingService;
-			}
+			get { return MonoDevelop.Projects.Services.Languages; }
 		}
 	}
 }

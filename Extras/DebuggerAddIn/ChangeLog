@@ -1,3 +1,7 @@
+2007-08-03  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Services.cs: API cleanup. Converted core services into regular classes.
+
 2007-08-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* DebuggingService.cs, Gui/Pads/ThreadPad.cs, Gui/Pads/LocalsPad.cs,

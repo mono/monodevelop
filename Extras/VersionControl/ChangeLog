@@ -1,3 +1,8 @@
+2007-08-03  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/Task.cs: API
+	  cleanup. Converted core services into regular classes.
+
 2007-08-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/ChangeSet.cs: New

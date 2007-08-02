@@ -21,7 +21,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Tasks
 {
-	public class TaskService : GuiSyncAbstractService
+	public class TaskService : GuiSyncObject
 	{
 		
 		List<Task> tasks  = new List<Task> ();
@@ -32,13 +32,7 @@ namespace MonoDevelop.Ide.Tasks
 		Combine combine;
 		
 		public TaskService ()
-			: base ()
 		{
-		}
-		
-		public override void InitializeService ()
-		{
-			base.InitializeService ();
 			ReloadPriories ();
 			
 			IdeApp.ProjectOperations.CombineOpened += new CombineEventHandler (ProjectServiceSolutionOpened);

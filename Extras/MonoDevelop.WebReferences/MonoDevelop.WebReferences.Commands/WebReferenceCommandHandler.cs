@@ -87,7 +87,7 @@ namespace MonoDevelop.WebReferences.Commands
 		{
 			WebReferenceItem item = (WebReferenceItem) CurrentNode.DataItem;
 			item.Update();
-			IdeApp.Services.StatusBar.SetMessage("Updated Web Reference " + item.Name);
+			IdeApp.Workbench.StatusBar.SetMessage("Updated Web Reference " + item.Name);
 		}
 		
 		/// <summary>Execute the command for updating all web reference in a project.</summary>
@@ -99,9 +99,9 @@ namespace MonoDevelop.WebReferences.Commands
 			for (int index = 0; index < items.AllKeys.Length; index ++)
 			{
 				items[items.AllKeys[index]].Update();
-				IdeApp.Services.StatusBar.SetMessage("Updated Web Reference " + items.AllKeys[index]);
+				IdeApp.Workbench.StatusBar.SetMessage("Updated Web Reference " + items.AllKeys[index]);
 			}
-			IdeApp.Services.StatusBar.SetMessage("Updated all Web References");
+			IdeApp.Workbench.StatusBar.SetMessage("Updated all Web References");
 		}
 		
 		/// <summary>Execute the command for removing a web reference from a project.</summary>
@@ -112,7 +112,7 @@ namespace MonoDevelop.WebReferences.Commands
 			Project project = item.ProxyFile.Project;
 			item.Delete();
 			IdeApp.ProjectOperations.SaveProject(project);
-			IdeApp.Services.StatusBar.SetMessage("Deleted Web Reference " + item.Name);
+			IdeApp.Workbench.StatusBar.SetMessage("Deleted Web Reference " + item.Name);
 		}
 		
 		/// <summary>Execute the command for removing all web references from a project.</summary>
@@ -124,10 +124,10 @@ namespace MonoDevelop.WebReferences.Commands
 			for (int index = 0; index < items.AllKeys.Length; index ++)
 			{
 				items[items.AllKeys[index]].Delete();
-				IdeApp.Services.StatusBar.SetMessage("Deleted Web Reference " + items.AllKeys[index]);
+				IdeApp.Workbench.StatusBar.SetMessage("Deleted Web Reference " + items.AllKeys[index]);
 			}
 			IdeApp.ProjectOperations.SaveProject(project);
-			IdeApp.Services.StatusBar.SetMessage("Deleted all Web References");
+			IdeApp.Workbench.StatusBar.SetMessage("Deleted all Web References");
 		}
 	}	
 }

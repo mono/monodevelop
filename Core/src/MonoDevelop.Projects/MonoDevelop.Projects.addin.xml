@@ -81,19 +81,6 @@
 
 	<!-- Extensions -->
 
-	<Extension path = "/Workspace/Services">
-		<Class id    = "ProjectService"
-		       class = "MonoDevelop.Projects.ProjectService"/>
-		<Class id    = "ParserService"
-		       class = "MonoDevelop.Projects.Parser.DefaultParserService"/>
-		<Class id    = "LanguageService"
-		       class = "MonoDevelop.Projects.LanguageService"/>
-		<Class id    = "LanguageBindingService"
-		       class = "MonoDevelop.Projects.LanguageBindingService"/>
-		<Class id    = "AmbienceService"
-		       class = "MonoDevelop.Projects.Ambience.AmbienceService"/>
-	</Extension>
-	
 	<Extension path = "/System/Applications">
 		<Application id = "build" class = "MonoDevelop.Projects.BuildTool" description = "Project build tool"/>
 		<Application id = "dbgen" class = "MonoDevelop.Projects.Parser.DatabaseGeneratorTool" description = "Parser database generation tool"/>

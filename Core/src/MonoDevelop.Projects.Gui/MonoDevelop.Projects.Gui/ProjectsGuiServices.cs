@@ -11,60 +11,27 @@ namespace MonoDevelop.Projects.Gui
 	internal class Services
 	{
 		static AmbienceService ambienceService;
-		static DispatchService dispatchService;
 		static IProjectService projectService;
-		static LanguageBindingService languageBindingService;
-		static MessageService messageService;
-		static ResourceService resourceService;
 		static IconService icons;
 
 		internal static AmbienceService Ambience {
-			get {
-				if (ambienceService == null)
-					ambienceService = (AmbienceService) ServiceManager.GetService (typeof(AmbienceService));
-				return ambienceService;
-			}
+			get { return MonoDevelop.Projects.Services.Ambience; }
 		}
 	
 		internal static LanguageBindingService Languages {
-			get {
-				if (languageBindingService == null)
-					languageBindingService = (LanguageBindingService) ServiceManager.GetService (typeof(LanguageBindingService));
-				return languageBindingService;
-			}
+			get { return MonoDevelop.Projects.Services.Languages; }
 		}
-	
-		internal static DispatchService DispatchService {
-			get {
-				if (dispatchService == null)
-					dispatchService = (DispatchService) ServiceManager.GetService (typeof(DispatchService));
-				return dispatchService;
-			}
-		}
-	
 	
 		internal static IProjectService ProjectService {
-			get {
-				if (projectService == null)
-					projectService = (IProjectService) ServiceManager.GetService (typeof(IProjectService));
-				return projectService;
-			}
+			get { return MonoDevelop.Projects.Services.ProjectService; }
 		}
 	
 		internal static MessageService MessageService {
-			get {
-				if (messageService == null)
-					messageService = (MessageService) ServiceManager.GetService (typeof(MessageService));
-				return messageService;
-			}
+			get { return MonoDevelop.Core.Gui.Services.MessageService; }
 		}
 	
 		internal static ResourceService Resources {
-			get {
-				if (resourceService == null)
-					resourceService = (ResourceService) ServiceManager.GetService (typeof(ResourceService));
-				return resourceService;
-			}
+			get { return MonoDevelop.Core.Gui.Services.Resources; }
 		}
 	
 		public static IconService Icons {

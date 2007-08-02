@@ -16,18 +16,13 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Gui
 {
-	internal class DefaultStatusBarService : GuiSyncAbstractService, IStatusBarService
+	internal class DefaultStatusBarService : GuiSyncObject, IStatusBarService
 	{
 		SdStatusBar statusBar = null;
 		StringParserService stringParserService = Runtime.StringParserService;
 		
 		public DefaultStatusBarService()
 		{
-		}
-		
-		protected override void OnInitialize (EventArgs e)
-		{
-			base.OnInitialize (e);
 			statusBar = new SdStatusBar ();
 			IdeApp.ProjectOperations.CombineClosed += new CombineEventHandler (OnCombineClosed);
 		}

@@ -19,7 +19,6 @@
     <File name="./MonoDevelop.Projects.Ambience/IAmbience.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Ambience/NetAmbience.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/Language.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/LanguageService.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/LanguageBindingService.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/AssemblyInformationEventHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs" subtype="Code" buildaction="Compile" />

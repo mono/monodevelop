@@ -1004,8 +1004,6 @@ namespace MonoDevelop.SourceEditor.Gui
 #endregion
 		
 #region Status Bar Handling
-		IStatusBarService statusBarService = (IStatusBarService) ServiceManager.GetService (typeof (IStatusBarService));
-		
 		void OnMarkSet (object o, MarkSetArgs args)
 		{
 			if (args.Mark == se.Buffer.InsertMark) {
@@ -1056,14 +1054,14 @@ namespace MonoDevelop.SourceEditor.Gui
 				iter.ForwardChar ();
 			}
 			
-			statusBarService.SetCaretPosition (iter.Line + 1, col, chr);
+			IdeApp.Workbench.StatusBar.SetCaretPosition (iter.Line + 1, col, chr);
 		}
 		
 		// This is false because we at first `toggle' it to set it to true
 		bool insert_mode = false; // TODO: is this always the default
 		void CaretModeChanged (object sender, EventArgs e)
 		{
-			statusBarService.SetInsertMode (insert_mode = ! insert_mode);
+			IdeApp.Workbench.StatusBar.SetInsertMode (insert_mode = ! insert_mode);
 		}
 #endregion
 #region ICodeStyleOperations

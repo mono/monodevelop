@@ -23,10 +23,16 @@ using Mono.Addins;
 
 namespace MonoDevelop.Projects
 {
-	public class LanguageBindingService : AbstractService
+	public class LanguageBindingService
 	{
 		List<LanguageBindingCodon> bindings = null;
 		ILanguageBinding[] langs;
+		
+		public LanguageBindingService ()
+		{
+			bindings = new List<LanguageBindingCodon> ();
+			AddinManager.AddExtensionNodeHandler ("/SharpDevelop/Workbench/LanguageBindings", OnExtensionChanged);
+		}
 		
 		public ILanguageBinding GetBindingPerLanguageName(string languagename)
 		{
@@ -113,13 +119,6 @@ namespace MonoDevelop.Projects
 			XmlDocument doc = new XmlDocument();
 			doc.Load(filename);
 			return GetCodonPerLanguageName(doc.DocumentElement.Attributes["projecttype"].InnerText);
-		}
-		
-		public override void InitializeService ()
-		{
-			base.InitializeService ();
-			bindings = new List<LanguageBindingCodon> ();
-			AddinManager.AddExtensionNodeHandler ("/SharpDevelop/Workbench/LanguageBindings", OnExtensionChanged);
 		}
 		
 		void OnExtensionChanged (object s, ExtensionNodeEventArgs args)

@@ -20,7 +20,7 @@ namespace MonoDevelop.Core.Gui
 	/// <summary>
 	/// This interface must be implemented by all services.
 	/// </summary>
-	public class MessageService : GuiSyncAbstractService, IMessageService
+	public class MessageService : GuiSyncObject, IMessageService
 	{
 		StringParserService stringParserService = Runtime.StringParserService;
 		Window rootWindow;

@@ -155,7 +155,7 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 		{
 			Shadow = Gtk.ShadowType.In;
 			VBox mainbox = new VBox (false, 2);
-			status = (SdStatusBar) Services.StatusBar.Control;
+			status = (SdStatusBar) IdeApp.Workbench.StatusBar.Control;
 			
 			if (showNavigation) {
 				
@@ -197,7 +197,7 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 
 		private void OnNetStart (object o, EventArgs args)
 		{
-			Services.StatusBar.SetMessage (GettextCatalog.GetString ("Loading..."));
+			IdeApp.Workbench.StatusBar.SetMessage (GettextCatalog.GetString ("Loading..."));
 			loading = true;
 			GLib.Idle.Add (new GLib.IdleHandler (Pulse));
 		}
@@ -210,7 +210,7 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 				return true;
 			}
 			status.EndProgress ();
-			Services.StatusBar.SetMessage (GettextCatalog.GetString ("Done."));
+			IdeApp.Workbench.StatusBar.SetMessage (GettextCatalog.GetString ("Done."));
 			return false;
 		}
 

@@ -46,9 +46,9 @@ namespace MonoDevelop.Ide.Gui
 		void OnUrl (object sender, OnUrlArgs args)
 		{
 			if (args.Url == null)
-				Services.StatusBar.SetMessage ("");
+				IdeApp.Workbench.StatusBar.SetMessage ("");
 			else
-				Services.StatusBar.SetMessage (args.Url);
+				IdeApp.Workbench.StatusBar.SetMessage (args.Url);
 		}
 
 		void UrlRequested (object sender, UrlRequestedArgs args)

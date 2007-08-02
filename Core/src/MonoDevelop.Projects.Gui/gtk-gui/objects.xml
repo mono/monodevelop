@@ -5,7 +5,7 @@
     <signals>
     </signals>
   </object>
-  <object type="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
+  <object type="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin" internal="true">
     <itemgroups>
     </itemgroups>
     <signals>

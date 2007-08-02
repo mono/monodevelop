@@ -56,6 +56,7 @@ namespace MonoDevelop.Ide.Gui
 		DefaultWorkbench workbench;
 		RecentOpen recentOpen = null;
 		IStatusBarService statusBarService;
+		DisplayBindingService displayBindingService;
 		
 		public event EventHandler ActiveDocumentChanged;
 		public event EventHandler LayoutChanged;
@@ -194,13 +195,17 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		public DisplayBindingService DisplayBindings {
-			get { return Services.DisplayBindings; }
+			get {
+				if (displayBindingService == null)
+					displayBindingService = new DisplayBindingService ();
+				return displayBindingService; 
+			}
 		}
 		
 		public IStatusBarService StatusBar {
 			get {
 				if (statusBarService == null)
-					statusBarService = (IStatusBarService) ServiceManager.GetService (typeof(IStatusBarService));
+					statusBarService = new DefaultStatusBarService ();
 				return statusBarService;
 			}
 		}
@@ -267,7 +272,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			string mimeType = Gnome.Vfs.MimeType.GetMimeTypeForUri (fileName);
 
-			IDisplayBinding[] bindings = Services.DisplayBindings.GetBindingsForMimeType (mimeType);
+			IDisplayBinding[] bindings = DisplayBindings.GetBindingsForMimeType (mimeType);
 			foreach (IDisplayBinding bin in bindings)
 				list.Add (new FileViewer (bin));
 
@@ -386,7 +391,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public Document NewDocument (string defaultName, string mimeType, Stream content)
 		{
-			IDisplayBinding binding = Services.DisplayBindings.GetBindingForMimeType (mimeType);
+			IDisplayBinding binding = DisplayBindings.GetBindingForMimeType (mimeType);
 			IViewContent newContent;
 			
 			if (binding != null) {
@@ -403,7 +408,7 @@ namespace MonoDevelop.Ide.Gui
 				newContent.IsDirty = true;
 				workbench.ShowView(newContent, true);
 				
-				Services.DisplayBindings.AttachSubWindows(newContent.WorkbenchWindow);
+				DisplayBindings.AttachSubWindows(newContent.WorkbenchWindow);
 			} else {
 				throw new ApplicationException("Can't create display binding for mime type: " + mimeType);				
 			}
@@ -622,7 +627,7 @@ namespace MonoDevelop.Ide.Gui
 				if (oFileInfo.DisplayBinding != null)
 					binding = oFileInfo.DisplayBinding;
 				else
-					binding = Services.DisplayBindings.GetBindingPerFileName(fileName);
+					binding = DisplayBindings.GetBindingPerFileName(fileName);
 				
 				if (binding != null) {
 					Project project = null;
@@ -651,7 +656,7 @@ namespace MonoDevelop.Ide.Gui
 							Gnome.Url.Show ("file://" + fileName);
 						//}
 					} catch {
-						LoadFileWrapper fw = new LoadFileWrapper (workbench, Services.DisplayBindings.LastBinding, null, oFileInfo);
+						LoadFileWrapper fw = new LoadFileWrapper (workbench, DisplayBindings.LastBinding, null, oFileInfo);
 						fw.Invoke (fileName);
 						RecentOpen.AddLastFile (fileName, null);
 					}
@@ -758,7 +763,7 @@ namespace MonoDevelop.Ide.Gui
 				newContent.Project = project;
 
 			workbench.ShowView (newContent, fileInfo.BringToFront);
-			Services.DisplayBindings.AttachSubWindows(newContent.WorkbenchWindow);
+			IdeApp.Workbench.DisplayBindings.AttachSubWindows(newContent.WorkbenchWindow);
 			
 			IPositionable ipos = (IPositionable) newContent.GetContent (typeof(IPositionable));
 			if (fileInfo.Line != -1 && ipos != null) {
