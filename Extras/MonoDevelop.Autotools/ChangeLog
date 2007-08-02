@@ -5,6 +5,10 @@
 
 2007-08-02  Ankit Jain  <jankit@novell.com>
 
+	* templates/make-dist.targets: Forgot to commit this!
+
+2007-08-02  Ankit Jain  <jankit@novell.com>
+
 	* AutotoolsContext.cs (TargetCombine): New. Combine on which 'Generate
 	makefiles' command was invoked.
 	* SolutionDeployer.cs: Set TargetCombine.

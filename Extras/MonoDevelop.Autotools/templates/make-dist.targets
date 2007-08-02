@@ -1,0 +1,24 @@
+dist: $(CONFIG_MAKE)
+	rm -rf $(PACKAGE)-$(VERSION)
+	mkdir $(PACKAGE)-$(VERSION)
+	for dir in $(SUBDIRS); do \
+		mkdir $(PACKAGE)-$(VERSION)/$$dir || true; \
+		case $$dir in \
+		.) make distlocal distdir=$(PACKAGE)-$(VERSION);; \
+		*) (cd $$dir; make distlocal distdir=../$(PACKAGE)-$(VERSION)/$$dir); \
+		esac \
+	done
+	(make distlocal distdir=$(PACKAGE)-$(VERSION))
+	make
+	tar czvf $(PACKAGE)-$(VERSION).tar.gz $(PACKAGE)-$(VERSION)
+	rm -rf $(PACKAGE)-$(VERSION)
+	@echo "=========================================="
+	@echo "$(PACKAGE)-$(VERSION) has been packaged > $(PACKAGE)-$(VERSION).tar.gz"
+	@echo "=========================================="
+
+distcheck: dist
+	(mkdir test; cd test;  \
+	 tar xzvf ../$(PACKAGE)-$(VERSION).tar.gz; cd $(PACKAGE)-$(VERSION); \
+	 ./configure --prefix=$$(cd `pwd`/..; pwd); \
+	 make && make install && make dist);
+	rm -rf test
