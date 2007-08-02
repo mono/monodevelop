@@ -43,7 +43,6 @@ FILES =  \
 	MonoDevelop.Core.Gui.Dialogs/IDialogPanelDescriptor.cs \
 	MonoDevelop.Core.Gui.Dialogs/IWizardPanel.cs \
 	MonoDevelop.Core.Gui.Dialogs/ProgressDialog.cs \
-	MonoDevelop.Core.Gui.Dialogs/ResourceService.cs \
 	MonoDevelop.Core.Gui.Dialogs/SetupApp.cs \
 	MonoDevelop.Core.Gui.Dialogs/StatusPanel.cs \
 	MonoDevelop.Core.Gui.Dialogs/TreeViewOptions.cs \
@@ -69,6 +68,7 @@ FILES =  \
 	MonoDevelop.Core.Gui/PixbufList.cs \
 	MonoDevelop.Core.Gui/RecentOpen.cs \
 	MonoDevelop.Core.Gui/ResourceNotFoundException.cs \
+	MonoDevelop.Core.Gui/ResourceService.cs \
 	MonoDevelop.Core.Gui/StockIcons.cs \
 	MonoDevelop.Core.Gui/SyncContext.cs \
 	MonoDevelop.Core.Gui/SyncContextAttribute.cs \

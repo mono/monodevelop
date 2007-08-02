@@ -1,5 +1,13 @@
 2007-08-02  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Core.Gui.mdp, MonoDevelop.Core.Gui.Dialogs/ResourceService.cs,
+	  MonoDevelop.Core.Gui/ResourceService.cs, Makefile.am: Moved
+	  ResourceService to the correct location.
+	* MonoDevelop.Core.Gui/DispatchService.cs: DispatchService is not a service
+	  anymore.
+
+2007-08-02  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Core.Gui.addin.xml: DispatchServices is now a static class.
 
 2007-08-02  Lluis Sanchez Gual <lluis@novell.com> 

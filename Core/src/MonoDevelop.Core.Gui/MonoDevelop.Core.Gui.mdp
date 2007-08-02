@@ -114,7 +114,6 @@
     <File name="./MonoDevelop.Core.Gui.Utils/FileIconLoader.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui/MessageService.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui/ResourceNotFoundException.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Gui.Dialogs/ResourceService.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui/StockIcons.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui/AsyncDispatchAttribute.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui/DispatchService.cs" subtype="Code" buildaction="Compile" />
@@ -178,6 +177,7 @@
     <File name="./Freedesktop.RecentFiles/RecentItem.cs" subtype="Code" buildaction="Compile" />
     <File name="./Freedesktop.RecentFiles/RecentFileStorage.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui.Codons/CommandCategoryCodon.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Core.Gui/ResourceService.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="gecko-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=ccf7d78a55e9f021" />

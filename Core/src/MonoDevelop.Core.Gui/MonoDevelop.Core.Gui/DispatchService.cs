@@ -6,7 +6,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Core.Gui
 {
-	public class DispatchService : AbstractService
+	public class DispatchService
 	{
 		static ArrayList arrBackgroundQueue;
 		static ArrayList arrGuiQueue;
