@@ -145,18 +145,19 @@ namespace AspNetAddIn
 			DeployFileCollection files = new DeployFileCollection ();
 			
 			//add files that are marked to 'deploy'
+			//ASP.NET files etc all go relative to the application root
 			foreach (ProjectFile pf in ProjectFiles)
 				if (pf.BuildAction == BuildAction.FileCopy)
-					files.Add (new DeployFile (pf));
+					files.Add (new DeployFile (this, pf.FilePath, pf.RelativePath, TargetDirectory.ProgramFilesRoot));
 			
 			//add referenced libraries
 			foreach (string refFile in GetReferenceDeployFiles (false))
-				files.Add (new DeployFile (this, refFile, Path.Combine ("bin", Path.GetFileName (refFile)), TargetDirectory.ProgramFiles));
+				files.Add (new DeployFile (this, refFile, Path.GetFileName (refFile), TargetDirectory.ProgramFiles));
 			
 			//add the compiled output file
 			string outputFile = this.GetOutputFileName ();
 			if (!string.IsNullOrEmpty (outputFile))
-				files.Add (new DeployFile (this, outputFile, Path.Combine ("bin", Path.GetFileName (outputFile)), TargetDirectory.ProgramFiles));
+				files.Add (new DeployFile (this, outputFile, Path.GetFileName (outputFile), TargetDirectory.ProgramFiles));
 			
 			return files;
 		}

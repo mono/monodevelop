@@ -1,3 +1,9 @@
+2007-08-01  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* AspNetAppProject.cs: Fix the IDeployable implementation. The target
+	  directory names should be handled by an ASP.NET-specific
+	  IDirectoryResolver, not the GetDeployFiles method.
+
 2007-07-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AspNetAddIn.mdp: Updated.
