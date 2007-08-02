@@ -39,26 +39,21 @@ public class MonoDevelopProcessHost
 {
 	public static int Main (string[] args)
 	{
-		if (args.Length == 0 || args [0] == "--help") {
-			Console.WriteLine ("MonoDevelop Application Runner");
-			Console.WriteLine ("Usage: mdtool <applicationId> ... : Runs an application.");
-			Console.WriteLine ("       mdtool setup ... : Runs the setup utility.");
-			Console.WriteLine ("       mdtool -q : Lists available applications.");
-			return 0;
-		}
-		
 		try {
 			Runtime.Initialize (false);
 			
+			if (args.Length == 0 || args [0] == "--help") {
+				Console.WriteLine ("MonoDevelop Application Runner");
+				Console.WriteLine ("Usage: mdtool <applicationId> ... : Runs an application.");
+				Console.WriteLine ("       mdtool setup ... : Runs the setup utility.");
+				Console.WriteLine ("       mdtool -q : Lists available applications.");
+				Console.WriteLine ();
+				ShowAvailableApps ();
+				return 0;
+			}
+
 			if (args [0] == "-q") {
-				Console.WriteLine ("Available applications:");
-				foreach (IApplicationInfo ainfo in Runtime.ApplicationService.GetApplications ()) {
-					Console.Write ("- " + ainfo.Id);
-					if (ainfo.Description != null && ainfo.Description.Length > 0)
-						Console.WriteLine (": " + ainfo.Description);
-					else
-						Console.WriteLine ();
-				}
+				ShowAvailableApps ();
 				return 0;
 			}
 			
@@ -95,4 +90,17 @@ public class MonoDevelopProcessHost
 		setupTool.VerboseOutput = verbose;
 		return setupTool.Run (args);
 	}
+
+	static void ShowAvailableApps ()
+	{
+		Console.WriteLine ("Available applications:");
+		foreach (IApplicationInfo ainfo in Runtime.ApplicationService.GetApplications ()) {
+			Console.Write ("- " + ainfo.Id);
+			if (ainfo.Description != null && ainfo.Description.Length > 0)
+				Console.WriteLine (": " + ainfo.Description);
+			else
+				Console.WriteLine ();
+		}
+	}
+
 }
