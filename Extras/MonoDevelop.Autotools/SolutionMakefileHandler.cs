@@ -62,6 +62,13 @@ namespace MonoDevelop.Autotools
 				StringBuilder subdirs = new StringBuilder();
 				subdirs.Append ("#Warning: This is an automatically generated file, do not edit!\n");
 
+				if (!generateAutotools) {
+					solutionTop.AppendFormat ("top_srcdir={0}\n", Runtime.FileService.AbsoluteToRelativePath (
+							entry.BaseDirectory, ctx.TargetCombine.BaseDirectory));
+					solutionTop.Append ("include $(top_srcdir)/config.make\n");
+					solutionTop.Append ("include $(top_srcdir)/rules.make\n\n");
+				}
+
 				ArrayList children = new ArrayList ();
 				foreach ( CombineConfiguration config in combine.Configurations )
 				{
@@ -132,7 +139,11 @@ namespace MonoDevelop.Autotools
 								outpath = outpath + ".am";
 							} else {
 								makefile.Append ("install: install-local\n\nclean: clean-local\n");
-								makefile.Append ("include $(top_srcdir)/rules.make");
+								if (ce is Combine)
+									//non TargetCombine
+									makefile.Append ("distlocal: distlocal-recursive\n");
+								else
+									makefile.Append ("include $(top_srcdir)/rules.make\n");
 							}
 							ctx.AddGeneratedFile (outpath);
 						}
@@ -165,6 +176,13 @@ namespace MonoDevelop.Autotools
 					reader.Close ();
 
 					solutionMakefile.Append (sw.ToString ());
+
+					if (entry == ctx.TargetCombine) {
+						// Emit dist and distcheck targets only for TargetCombine
+						reader = new StreamReader (Path.Combine (ctx.TemplateDir, "make-dist.targets"));
+						solutionMakefile.Append (reader.ReadToEnd ());
+						reader.Close ();
+					}
 				}
 
 				monitor.Step (1);

@@ -350,13 +350,13 @@ namespace MonoDevelop.Autotools
 				if (!generateAutotools) {
 					conf_vars.AppendFormat ("srcdir=.\n");
 					conf_vars.AppendFormat ("top_srcdir={0}\n\n",
-						Runtime.FileService.AbsoluteToRelativePath (project.BaseDirectory, project.RootCombine.BaseDirectory));
+						Runtime.FileService.AbsoluteToRelativePath (project.BaseDirectory, ctx.TargetCombine.BaseDirectory));
 
 					conf_vars.AppendFormat ("include $(top_srcdir)/Makefile.include\n");
 					conf_vars.AppendFormat ("include $(top_srcdir)/config.make\n\n");
 				}
 
-				foreach (CombineConfiguration combineConfig in project.RootCombine.Configurations)
+				foreach (CombineConfiguration combineConfig in ctx.TargetCombine.Configurations)
 				{
 					DotNetProjectConfiguration config = GetProjectConfig (combineConfig.Name, project) as DotNetProjectConfiguration;
 					if (config == null)
@@ -407,7 +407,7 @@ namespace MonoDevelop.Autotools
 					{
 						if (reference.ReferenceType == ReferenceType.Project) 
 						{
-							Project refp = GetProjectFromName ( reference.Reference, project );
+							Project refp = GetProjectFromName (reference.Reference, ctx.TargetCombine);
 
 							DotNetProjectConfiguration dnpc = GetProjectConfig (combineConfig.Name, refp) as DotNetProjectConfiguration;
 							if ( dnpc == null )
@@ -633,12 +633,10 @@ namespace MonoDevelop.Autotools
 */
 
 		// FIXME: makes assumption that the root combine is the top of the autotools setup
-		Project GetProjectFromName ( string name, Project project )
+		Project GetProjectFromName ( string name, Combine targetCombine)
 		{
 			Project refp = null;
-			Combine c = project.RootCombine;
-
-			if (c != null) refp = c.FindProject (name);
+			if (targetCombine != null) refp = targetCombine.FindProject (name);
 
 			if (refp == null)
 				throw new Exception ( GettextCatalog.GetString ("Couldn't find referenced project '{0}'", 

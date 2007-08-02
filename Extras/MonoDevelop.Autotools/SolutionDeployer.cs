@@ -82,6 +82,7 @@ namespace MonoDevelop.Autotools
 					configs [ii] = combine.Configurations[ii].Name;
 					
 				context = new AutotoolsContext ( ctx, solution_dir, configs );
+				context.TargetCombine = combine;
 				
 				IMakefileHandler handler = AutotoolsContext.GetMakefileHandler ( combine, generateAutotools );
 				if ( handler == null || !handler.CanDeploy (combine) )

@@ -1,11 +1,10 @@
 all: all-recursive
 
-include config.make
-include rules.make
-
 %%MAKEFILE_SOLUTION_TOP%%
 
-all-recursive: config.make
+CONFIG_MAKE=$(top_srcdir)/config.make
+
+all-recursive: $(CONFIG_MAKE)
 	@for dir in $(SUBDIRS); do \
 		case $$dir in \
 		.) make all-local ;; \
@@ -13,7 +12,7 @@ all-recursive: config.make
 		esac \
 	done
 
-config.make:
+$(CONFIG_MAKE):
 	echo "You must run configure first"
 	exit 1
 
@@ -37,27 +36,3 @@ install-recursive:
 		esac \
         done
 
-dist: config.make
-	rm -rf $(PACKAGE)-$(VERSION)
-	mkdir $(PACKAGE)-$(VERSION)
-	for dir in $(SUBDIRS); do \
-		mkdir $(PACKAGE)-$(VERSION)/$$dir || true; \
-		case $$dir in \
-		.) make distlocal distdir=$(PACKAGE)-$(VERSION);; \
-		*) (cd $$dir; make distlocal distdir=../$(PACKAGE)-$(VERSION)/$$dir); \
-		esac \
-	done
-	(make distlocal distdir=$(PACKAGE)-$(VERSION))
-	make
-	tar czvf $(PACKAGE)-$(VERSION).tar.gz $(PACKAGE)-$(VERSION)
-	rm -rf $(PACKAGE)-$(VERSION)
-	@echo "=========================================="
-	@echo "$(PACKAGE)-$(VERSION) has been packaged > $(PACKAGE)-$(VERSION).tar.gz"
-	@echo "=========================================="
-
-distcheck: dist
-	(mkdir test; cd test;  \
-	 tar xzvf ../$(PACKAGE)-$(VERSION).tar.gz; cd $(PACKAGE)-$(VERSION); \
-	 ./configure --prefix=$$(cd `pwd`/..; pwd); \
-	 make && make install && make dist);
-	rm -rf test

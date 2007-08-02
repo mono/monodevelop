@@ -36,6 +36,7 @@ FILES =  \
 	ISimpleAutotoolsSetup.cs \
 	Makefile.cs \
 	MakefileData.cs \
+	MakefileGeneratorTool.cs \
 	MakefileIntegrationFeature.cs \
 	MakefileIntegrationFeatureWidget.cs \
 	MakefileOptionPanel.cs \
@@ -43,7 +44,6 @@ FILES =  \
 	MakefileProject.cs \
 	MakefileProjectServiceExtension.cs \
 	MakefileReaderExtension.cs \
-	MakefileGeneratorTool.cs \
 	MakefileVar.cs \
 	PropertyProvider.cs \
 	Set.cs \
@@ -61,6 +61,7 @@ DATA_FILES =  \
 	templates/autogen.sh.template \
 	templates/configure.ac.template \
 	templates/configure.template \
+	templates/make-dist.targets \
 	templates/exe.wrapper.in.template \
 	templates/Makefile.am.project.template \
 	templates/Makefile.include \

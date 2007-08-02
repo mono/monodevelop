@@ -1,3 +1,17 @@
+2007-08-02  Ankit Jain  <jankit@novell.com>
+
+	* AutotoolsContext.cs (TargetCombine): New. Combine on which 'Generate
+	makefiles' command was invoked.
+	* SolutionDeployer.cs: Set TargetCombine.
+	* SimpleProjectMakefileHandler.cs: Update to use TargetCombine instead
+	of RootCombine.
+
+	Fixes to handle nested solutions.
+	* SolutionMakefileHandler.cs (Deploy):
+	* templates/Makefile.solution.template:
+	* templates/rules.make:
+	* templates/make-dist.targets: New.
+
 2007-07-30  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* SolutionOptionsPanel.cs: Removed unused file.

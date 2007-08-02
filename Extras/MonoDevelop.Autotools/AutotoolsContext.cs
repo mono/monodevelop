@@ -78,6 +78,12 @@ namespace MonoDevelop.Autotools
 			}
 		}
 
+		Combine targetCombine;
+		public Combine TargetCombine {
+			get { return targetCombine; }
+			set { targetCombine = value; }
+		}
+
 		public string EscapeAndUpperConfigName (string configName)
 		{
 			if (!configNamesDict.ContainsKey (configName))
