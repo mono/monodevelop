@@ -1,3 +1,9 @@
+2007-08-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/ChangeSet.cs: New
+	  GeneratePathComment method which allows generating comments for a
+	  specific set of files.
+
 2007-08-01  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.mdp,

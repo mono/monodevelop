@@ -25,14 +25,21 @@ namespace MonoDevelop.VersionControl
 		
 		public string GenerateGlobalComment (int maxColumns)
 		{
+			return GeneratePathComment (basePath, items, maxColumns);
+		}
+		
+		public string GeneratePathComment (string path, IEnumerable<ChangeSetItem> its, int maxColumns)
+		{
 			ArrayList comms = new ArrayList ();
-			foreach (ChangeSetItem it in items) {
+			foreach (ChangeSetItem it in its) {
+				if (!it.LocalPath.StartsWith (path))
+					continue;
 				bool found = false;
 				string relPath;
-				if (it.LocalPath == basePath)
+				if (it.LocalPath == path)
 					relPath = ".";
 				else
-					relPath = it.LocalPath.Substring (basePath.Length + 1);
+					relPath = it.LocalPath.Substring (path.Length + 1);
 				if (it.Comment.Length > 0) {
 					foreach (object[] com in comms) {
 						if (((string)com[0]) == it.Comment) {
