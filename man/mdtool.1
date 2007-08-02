@@ -1,0 +1,54 @@
+.TH "mdtool" 1
+.SH NAME
+mdtool \- MonoDevelop Application Runner
+.SH SYNOPSIS
+.B mdtool
+<applicationId> ...
+.PP
+.B mdtool
+setup ...
+.PP
+.B mdtool
+-q
+.SH DESCRIPTION
+mdtool is the MonoDevelop Application Runner.
+.PP
+.B \/<applicationId> ...
+Runs the specified application.
+.TP
+.B \/setup
+Runs the setup utility.
+.TP
+.B \/-q
+Lists available applications.
+.PP
+.SH Available Applications
+.PP
+The list of applications returned by the option -q might be different depending on which add-ins are installed.
+
+.B \/gsetup
+Graphical add-in setup utility.
+
+.B \/build
+Project build tool.
+
+.B \/dbgen
+Parser database generation tool.
+
+.B \/project-export
+Project conversion tool.
+
+.B \/IDE
+The MonoDevelop IDE.
+
+.B \/generate-makefiles
+Makefile generator tool. This can be used to generate makefiles from any project supported by MonoDevelop.
+
+.SH SEE ALSO
+.BR
+.SH COPYRIGHT
+Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+.SH MAILING LISTS
+Visit http://lists.ximian.com/mailman/listinfo/monodevelop-list for details.
+.SH WEB SITE
+Visit http://www.monodevelop.com for details
