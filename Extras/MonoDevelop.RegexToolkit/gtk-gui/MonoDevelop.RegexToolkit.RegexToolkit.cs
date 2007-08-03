@@ -87,6 +87,8 @@ namespace MonoDevelop.RegexToolkit {
         
         private Gtk.Button buttonCancel;
         
+        private Gtk.Button buttonLibrary;
+        
         private Gtk.Button buttonSearch;
         
         private Gtk.Button buttonSearchReplace;
@@ -356,11 +358,23 @@ namespace MonoDevelop.RegexToolkit {
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.UseStock = true;
             this.buttonCancel.UseUnderline = true;
-            this.buttonCancel.Label = "gtk-cancel";
-            this.AddActionWidget(this.buttonCancel, -6);
+            this.buttonCancel.Label = "gtk-close";
+            this.AddActionWidget(this.buttonCancel, -7);
             Gtk.ButtonBox.ButtonBoxChild w34 = ((Gtk.ButtonBox.ButtonBoxChild)(w33[this.buttonCancel]));
             w34.Expand = false;
             w34.Fill = false;
+            // Container child GtkDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
+            this.buttonLibrary = new Gtk.Button();
+            this.buttonLibrary.CanDefault = true;
+            this.buttonLibrary.CanFocus = true;
+            this.buttonLibrary.Name = "buttonLibrary";
+            this.buttonLibrary.UseUnderline = true;
+            this.buttonLibrary.Label = Mono.Unix.Catalog.GetString("Regex Library");
+            this.AddActionWidget(this.buttonLibrary, 0);
+            Gtk.ButtonBox.ButtonBoxChild w35 = ((Gtk.ButtonBox.ButtonBoxChild)(w33[this.buttonLibrary]));
+            w35.Position = 1;
+            w35.Expand = false;
+            w35.Fill = false;
             // Container child GtkDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonSearch = new Gtk.Button();
             this.buttonSearch.CanDefault = true;
@@ -370,10 +384,10 @@ namespace MonoDevelop.RegexToolkit {
             this.buttonSearch.UseUnderline = true;
             this.buttonSearch.Label = "gtk-find";
             this.AddActionWidget(this.buttonSearch, 0);
-            Gtk.ButtonBox.ButtonBoxChild w35 = ((Gtk.ButtonBox.ButtonBoxChild)(w33[this.buttonSearch]));
-            w35.Position = 1;
-            w35.Expand = false;
-            w35.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w36 = ((Gtk.ButtonBox.ButtonBoxChild)(w33[this.buttonSearch]));
+            w36.Position = 2;
+            w36.Expand = false;
+            w36.Fill = false;
             // Container child GtkDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonSearchReplace = new Gtk.Button();
             this.buttonSearchReplace.CanDefault = true;
@@ -383,14 +397,14 @@ namespace MonoDevelop.RegexToolkit {
             this.buttonSearchReplace.UseUnderline = true;
             this.buttonSearchReplace.Label = "gtk-find-and-replace";
             this.AddActionWidget(this.buttonSearchReplace, 0);
-            Gtk.ButtonBox.ButtonBoxChild w36 = ((Gtk.ButtonBox.ButtonBoxChild)(w33[this.buttonSearchReplace]));
-            w36.Position = 2;
-            w36.Expand = false;
-            w36.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w37 = ((Gtk.ButtonBox.ButtonBoxChild)(w33[this.buttonSearchReplace]));
+            w37.Position = 3;
+            w37.Expand = false;
+            w37.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 694;
+            this.DefaultWidth = 802;
             this.DefaultHeight = 603;
             this.Show();
         }

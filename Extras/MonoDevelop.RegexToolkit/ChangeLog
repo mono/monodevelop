@@ -1,3 +1,13 @@
+2007-08-03  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.RegexToolkit/RegexLibrary.cs,
+	  MonoDevelop.RegexToolkit/RegexToolkit.cs,
+	  MonoDevelop.RegexToolkit/Commands.cs,
+	  MonoDevelop.RegexToolkit/Webservices.cs,
+	  gtk-gui/MonoDevelop.RegexToolkit.RegexLibrary.cs,
+	  gtk-gui/MonoDevelop.RegexToolkit.RegexToolkit.cs: Added regular
+	  expression library to the regex toolkit.
+
 2007-08-01  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.RegexToolkit/RegexToolkit.cs,

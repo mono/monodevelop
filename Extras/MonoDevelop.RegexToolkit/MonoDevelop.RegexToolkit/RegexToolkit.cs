@@ -69,6 +69,13 @@ namespace MonoDevelop.RegexToolkit
 				SetFindMode (false);
 			};
 			
+			this.buttonLibrary.Clicked  += delegate {
+				if (!RegexLibrary.IsOpen) {
+					RegexLibrary regexLib = new RegexLibrary ();
+					regexLib.Show ();
+				}
+			};
+			
 			SetFindMode (true);
 			this.optionsTreeview.Model = this.optionsStore;
 			this.optionsTreeview.HeadersVisible = false;

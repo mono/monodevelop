@@ -17,15 +17,21 @@ REFS =  \
 	../../contrib/Mono.Addins.dll \
 	Mono.Posix \
 	System \
+	System.Data \
+	System.Web \
+	System.Web.Services \
 	System.Xml
 	
 FILES =  \
 	AssemblyInfo.cs \
 	ChangeLog \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.RegexToolkit.RegexLibrary.cs \
 	gtk-gui/MonoDevelop.RegexToolkit.RegexToolkit.cs \
 	MonoDevelop.RegexToolkit/Commands.cs \
-	MonoDevelop.RegexToolkit/RegexToolkit.cs
+	MonoDevelop.RegexToolkit/RegexLibrary.cs \
+	MonoDevelop.RegexToolkit/RegexToolkit.cs \
+	MonoDevelop.RegexToolkit/Webservices.cs
 
 RES =  \
 	gtk-gui/gui.stetic \

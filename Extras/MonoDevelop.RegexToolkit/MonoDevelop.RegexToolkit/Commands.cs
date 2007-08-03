@@ -42,6 +42,7 @@ namespace MonoDevelop.RegexToolkit
 		{
 			RegexToolkit regexToolkit = new RegexToolkit ();
 			regexToolkit.Show ();
+			
 		}
 	}
 	
