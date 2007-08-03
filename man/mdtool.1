@@ -11,7 +11,7 @@ setup ...
 .B mdtool
 -q
 .SH DESCRIPTION
-.B mdtool 
+.B mdtool
 is a tool that can execute head-less MonoDevelop applications, this
 can be used for example to do batch compilations without starting up
 the MonoDevelop GUI.
@@ -31,23 +31,59 @@ depending on which add-ins are installed.
 .B gsetup
 Graphical add-in setup utility.
 .TP
-.B build
-Project build tool.   Use this tool to build a solution in the current
-directory (this will pull the first file in the directory with the
-.mds extension). 
-.PP
+.B build [options] [project-file]
+Project build tool. Use this tool to build any solution supported by MonoDevelop
+(eg. .mds, .sln). If no solution/project is specified then it will pull the
+first file in the directory with the .mds extension).
 You would use this option to build packages in a head-less or batch
-fashion. 
+fashion.
+.RS
+.ne 8
+
+.B Options
+.RS
+.ne 8
+.B --f , --buildfile:FILE
+Filename of the Project or the solution to build.
+
+.B --p , --project:PROJECT
+Name of the project to build.
+.RE
+
+.RE
 .TP
 .B dbgen
 Parser database generation tool.
-.TP 
+.TP
 .B project-export
 Project conversion tool.
-.TP IDE
+
+.TP
+.B IDE
 The MonoDevelop IDE.
-.TP generate-makefiles
+
+.TP
+.B generate-makefiles <solution-file> [--simple-makefiles] [-d:default-config]
 Makefile generator tool. This can be used to generate makefiles from any project supported by MonoDevelop.
+
+.RS
+.ne 8
+.B Options
+.RS
+.ne 8
+.B --simple-makefiles
+Generates set of Makefiles with the most common targets, and a
+configuration script that does a basic check of package
+dependencies. Default is to generate Makefile structure based
+on Autotools with the standard targets and configuration scripts.
+
+.B -d:default-config
+Configuration that the Makefile will build by default. Other
+configurations can be selected via the '--config' or '--enable-*'
+option of the generated configure script.
+.RE
+.RE
+
 .TP
 .B  setup command [arg1, .., argn2]
 Runs the MonoDevelop add-in setup command.  You must specify a command
