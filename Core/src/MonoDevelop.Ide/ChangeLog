@@ -1,5 +1,12 @@
 2007-08-03  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Templates/CombineDescriptor.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs,
+	  MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs: Avoid using the
+	  ServiceManager for classes that are not registered as services.
+
+2007-08-03  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide/Services.cs, MonoDevelop.Ide.addin.xml,
 	  MonoDevelop.Ide.Gui/DisplayBindingService.cs,
 	  MonoDevelop.Ide.Gui/DefaultStatusBarService.cs,

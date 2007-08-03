@@ -24,7 +24,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	internal partial class ReplaceInFilesDialog: Gtk.Dialog
 	{
-		IMessageService messageService  = (IMessageService)ServiceManager.GetService(typeof(IMessageService));
 		public bool replaceMode;
 
 		void InitDialog ()
@@ -285,29 +284,29 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 
 			if (searchPattern == string.Empty) {
-				messageService.ShowError(GettextCatalog.GetString ("Empty search pattern"));
+				Services.MessageService.ShowError(GettextCatalog.GetString ("Empty search pattern"));
 				return false;
 			}
 			
 			if (searchLocationComboBox.Active == 0) {
 				
 				if (directoryName == string.Empty) {
-					messageService.ShowError(GettextCatalog.GetString ("Empty directory name"));
+					Services.MessageService.ShowError(GettextCatalog.GetString ("Empty directory name"));
 					return false;
 				}
 
 				if (!Runtime.FileService.IsValidFileName(directoryName)) {
-					messageService.ShowErrorFormatted(GettextCatalog.GetString ("Invalid directory name: {0}"), directoryName);
+					Services.MessageService.ShowErrorFormatted(GettextCatalog.GetString ("Invalid directory name: {0}"), directoryName);
 					return false;
 				}
 				
 				if (!Directory.Exists(directoryName)) {
-					messageService.ShowErrorFormatted (GettextCatalog.GetString ("Invalid directory name: {0}"), directoryName);
+					Services.MessageService.ShowErrorFormatted (GettextCatalog.GetString ("Invalid directory name: {0}"), directoryName);
 					return false;
 				}
 				
 				if (!Runtime.FileService.IsValidFileName(fileMask) || fileMask.IndexOf('\\') >= 0) {
-					messageService.ShowErrorFormatted(GettextCatalog.GetString ("Invalid file mask: {0}"), fileMask);
+					Services.MessageService.ShowErrorFormatted(GettextCatalog.GetString ("Invalid file mask: {0}"), fileMask);
 					return false;
 				}
 			}

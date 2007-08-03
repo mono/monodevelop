@@ -37,7 +37,6 @@ namespace MonoDevelop.Core.Gui.Components
 		private Gtk.ScrolledWindow scrolledwindow;
 		private Gtk.ToolButton goUp, goHome;
 		private ToolbarEntry entry;
-		private IMessageService messageService;
 		private Gtk.CellRendererText text_render;
 		private ListStore store;
 		private string currentDir;
@@ -52,8 +51,6 @@ namespace MonoDevelop.Core.Gui.Components
 
 		public FileBrowser ()
 		{
-			messageService = (IMessageService) ServiceManager.GetService (typeof (IMessageService));
-
 			scrolledwindow = new ScrolledWindow ();
 			scrolledwindow.VscrollbarPolicy = PolicyType.Automatic;
 			scrolledwindow.HscrollbarPolicy = PolicyType.Automatic;
@@ -319,7 +316,7 @@ namespace MonoDevelop.Core.Gui.Components
 			} catch (Exception ex) {
 				error = ex;
 			}
-   			messageService.ShowError (error, GettextCatalog.GetString ("Cannot enter '{0}' folder", entry.Text));
+   			Services.MessageService.ShowError (error, GettextCatalog.GetString ("Cannot enter '{0}' folder", entry.Text));
 		}
 
 		private void OnDirRename (object o, EventArgs args)
@@ -354,7 +351,7 @@ namespace MonoDevelop.Core.Gui.Components
     					}
     					catch (Exception ex)
     					{
-    						messageService.ShowError (ex, GettextCatalog.GetString ("Could not rename folder '{0}' to '{1}'", oldpath, args.NewText));
+    						Services.MessageService.ShowError (ex, GettextCatalog.GetString ("Could not rename folder '{0}' to '{1}'", oldpath, args.NewText));
     					}
     					finally
     					{
@@ -372,7 +369,7 @@ namespace MonoDevelop.Core.Gui.Components
 					}
 					catch (Exception ex)
 					{
-    					messageService.ShowError (ex, GettextCatalog.GetString ("Could not create new folder '{0}'", args.NewText));
+    					Services.MessageService.ShowError (ex, GettextCatalog.GetString ("Could not create new folder '{0}'", args.NewText));
 					}
 					finally
 					{
@@ -394,7 +391,7 @@ namespace MonoDevelop.Core.Gui.Components
 			TreeIter iter;
 			TreeModel model;
 
-			if (messageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to delete this folder?"), GettextCatalog.GetString ("Delete folder")))
+			if (Services.MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to delete this folder?"), GettextCatalog.GetString ("Delete folder")))
 			{
 				if (tv.Selection.GetSelected (out model, out iter))
 				{
@@ -404,7 +401,7 @@ namespace MonoDevelop.Core.Gui.Components
 					}
 					catch (Exception ex)
 					{
-						messageService.ShowError (ex, GettextCatalog.GetString ("Could not delete folder '{0}'", System.IO.Path.Combine (CurrentDir, (string) store.GetValue (iter, 1))));
+						Services.MessageService.ShowError (ex, GettextCatalog.GetString ("Could not delete folder '{0}'", System.IO.Path.Combine (CurrentDir, (string) store.GetValue (iter, 1))));
 					}
 					finally
 					{

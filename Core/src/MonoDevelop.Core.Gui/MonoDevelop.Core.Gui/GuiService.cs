@@ -10,7 +10,6 @@ namespace MonoDevelop.Core.Gui
 	{
 		static ResourceService resourceService;
 		static MessageService messageService;
-		static DispatchService dispatchService;
 
 		public static ResourceService Resources {
 			get {
@@ -28,14 +27,6 @@ namespace MonoDevelop.Core.Gui
 			}
 		}
 	
-		public static DispatchService DispatchService {
-			get {
-				if (dispatchService == null)
-					dispatchService = (DispatchService) ServiceManager.GetService (typeof(DispatchService));
-				return dispatchService;
-			}
-		}
-		
 		public static void RunAddinManager (Gtk.Window parent)
 		{
 			AddinManagerWindow.Run (parent);

@@ -34,6 +34,7 @@ using System.Collections.ObjectModel;
 using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.StandardHeaders
 {
@@ -105,7 +106,7 @@ namespace MonoDevelop.Ide.StandardHeaders
 		
 		static string GetComment (string language)
 		{
-			LanguageBindingService languageBindingService = (LanguageBindingService) ServiceManager.GetService (typeof (LanguageBindingService));
+			LanguageBindingService languageBindingService = MonoDevelop.Projects.Services.Languages;
 			ILanguageBinding binding = languageBindingService.GetBindingPerLanguageName (language);
 			if (binding != null)
 				return binding.CommentTag;

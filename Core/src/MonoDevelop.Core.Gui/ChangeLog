@@ -1,5 +1,11 @@
 2007-08-03  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Core.Gui.Components/FileBrowser.cs,
+	  MonoDevelop.Core.Gui/GuiService.cs: Avoid using the ServiceManager for
+	  classes that are not registered as services.
+
+2007-08-03  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Core.Gui/MessageService.cs,
 	  MonoDevelop.Core.Gui/GuiService.cs,
 	  MonoDevelop.Core.Gui/ResourceService.cs, MonoDevelop.Core.Gui.addin.xml:

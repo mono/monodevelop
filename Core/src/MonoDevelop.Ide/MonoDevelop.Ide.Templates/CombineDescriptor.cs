@@ -90,8 +90,7 @@ namespace MonoDevelop.Ide.Templates
 			using (IProgressMonitor monitor = new NullProgressMonitor ()) {
 				string combineLocation = Runtime.FileService.GetDirectoryNameWithSeparator(projectCreateInformation.CombinePath) + newCombineName + ".mds";
 				if (File.Exists(combineLocation)) {
-					IMessageService messageService =(IMessageService)ServiceManager.GetService(typeof(IMessageService));
-					if (messageService.AskQuestion (GettextCatalog.GetString ("Solution file {0} already exists, do you want to overwrite\nthe existing file?", combineLocation))) {
+					if (Services.MessageService.AskQuestion (GettextCatalog.GetString ("Solution file {0} already exists, do you want to overwrite\nthe existing file?", combineLocation))) {
 						newCombine.Save (combineLocation, monitor);
 					}
 				} else {
