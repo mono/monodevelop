@@ -1,6 +1,12 @@
 2007-08-03  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.RegexToolkit/RegexLibrary.cs,
+	  MonoDevelop.RegexToolkit/RegexToolkit.cs: Regex library closing
+	  behavior now is connected with the regex toolkit.
+
+2007-08-03  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.RegexToolkit/RegexLibrary.cs,
 	  MonoDevelop.RegexToolkit/RegexToolkit.cs,
 	  MonoDevelop.RegexToolkit/Commands.cs,
 	  MonoDevelop.RegexToolkit/Webservices.cs,

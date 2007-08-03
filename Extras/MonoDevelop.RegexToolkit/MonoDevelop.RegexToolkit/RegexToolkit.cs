@@ -40,6 +40,7 @@ namespace MonoDevelop.RegexToolkit
 		ListStore optionsStore;
 		TreeStore resultStore;
 		TreeStore elementsStore;
+		RegexLibrary regexLib;
 		
 		public RegexToolkit()
 		{
@@ -70,8 +71,13 @@ namespace MonoDevelop.RegexToolkit
 			};
 			
 			this.buttonLibrary.Clicked  += delegate {
-				if (!RegexLibrary.IsOpen) {
-					RegexLibrary regexLib = new RegexLibrary ();
+				if (regexLib == null) {
+					regexLib = new RegexLibrary ();
+				    regexLib.DestroyWithParent = true;
+				    regexLib.Parent = this;
+					regexLib.Destroyed += delegate {
+						regexLib = null;
+					};
 					regexLib.Show ();
 				}
 			};
@@ -177,6 +183,10 @@ namespace MonoDevelop.RegexToolkit
 		{
 			base.Dispose ();
 			HideTooltipWindow ();
+			if (regexLib != null) {
+				regexLib.Destroy ();
+				regexLib = null;
+			}
 		}
 
 		

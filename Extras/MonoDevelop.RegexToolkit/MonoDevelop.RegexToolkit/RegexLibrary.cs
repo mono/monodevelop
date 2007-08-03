@@ -45,7 +45,6 @@ namespace MonoDevelop.RegexToolkit
 	{
 		ListStore store;
 		Expression[] expressions;
-		public static bool IsOpen = false;
 		
 		public RegexLibrary()
 		{
@@ -60,8 +59,8 @@ namespace MonoDevelop.RegexToolkit
 			store = new ListStore (typeof (string), typeof (string), typeof (Expression));
 			expressionsTreeview.Model = store;
 			
-			this.expressionsTreeview.AppendColumn ("Title", new CellRendererText (), "text", 0);
-			this.expressionsTreeview.AppendColumn ("Rating", new CellRendererText (), "text", 1);
+			this.expressionsTreeview.AppendColumn (GettextCatalog.GetString ("Title"), new CellRendererText (), "text", 0);
+			this.expressionsTreeview.AppendColumn (GettextCatalog.GetString ("Rating"), new CellRendererText (), "text", 1);
 
 			this.expressionsTreeview.Selection.Changed += delegate {
 				ShowSelectedEntry ();			
@@ -71,13 +70,11 @@ namespace MonoDevelop.RegexToolkit
 			};
 			LoadRegexes ();
 			UpdateExpressions ();
-			IsOpen = true;
 		}
 		
 		public override void Dispose ()
 		{
 			base.Dispose ();
-			IsOpen = false;
 		}
 		
 		void ShowSelectedEntry ()
