@@ -1,4 +1,4 @@
-SUBDIRS = contrib Core build po Extras
+SUBDIRS = contrib Core build po Extras man
 
 bin_SCRIPTS = monodevelop mdtool
 

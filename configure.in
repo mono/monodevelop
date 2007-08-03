@@ -496,6 +496,7 @@ monodevelop
 mdtool
 monodevelop.pc
 po/Makefile.in
+man/Makefile
 ])
 
 echo ""
