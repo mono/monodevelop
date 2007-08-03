@@ -1,5 +1,9 @@
 2007-08-03  Ankit Jain  <jankit@novell.com>
 
+	* mdtool.1: Small fix.
+
+2007-08-03  Ankit Jain  <jankit@novell.com>
+
 	* Makefile.am: New.
 
 2007-08-03  Ankit Jain  <jankit@novell.com>
