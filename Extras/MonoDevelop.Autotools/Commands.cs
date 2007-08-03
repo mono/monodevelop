@@ -48,7 +48,7 @@ namespace MonoDevelop.Autotools
 	{
 		public override bool CanBuildNode (Type dataType)
 		{
-			return typeof (Combine).IsAssignableFrom (dataType);
+			return typeof (CombineEntry).IsAssignableFrom (dataType);
 		}
 		
 		public override Type CommandHandlerType {
@@ -61,7 +61,18 @@ namespace MonoDevelop.Autotools
 		[CommandHandler (Commands.GenerateFiles)]
 		protected void OnGenerate()
 		{
-			Combine combine = (Combine) CurrentNode.DataItem;
+			CombineEntry entry = (CombineEntry) CurrentNode.DataItem;
+			Combine combine = entry as Combine;
+			if (combine == null) {
+				if (MonoDevelop.Core.Gui.Services.MessageService.AskQuestion (
+						GettextCatalog.GetString ("Generating Makefiles is not supported for single projects. Do you want " +
+							"to generate them for the full solution - '{0}' ?", entry.RootCombine.Name),
+						GettextCatalog.GetString ("Generate Makefiles...")))
+					combine = entry.RootCombine;
+				else
+					return;
+			}
+
 			DeployContext ctx = null;
 			IProgressMonitor monitor = null;
 

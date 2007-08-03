@@ -1,3 +1,11 @@
+2007-08-03  Ankit Jain  <jankit@novell.com>
+
+	Fix bug#82254.
+	* Commands.cs (NodeExtension.CanBuildNode): Allow for CombineEntry also.
+	(AutotoolsCommandHandler.OnGenerate): Handle command for projects.
+	* MonoDevelop.Autotools.addin.xml: Add GenerateFiles to project's context
+	menu.
+
 2007-08-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MakefileReaderExtension.cs, Makefile.am: Converted DispatchService to a
