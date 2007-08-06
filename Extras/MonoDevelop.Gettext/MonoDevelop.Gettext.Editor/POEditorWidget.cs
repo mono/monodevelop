@@ -56,7 +56,9 @@ namespace MonoDevelop.Gettext
 			set {
 				catalog = value;
 				headersEditor.CatalogHeaders = catalog.Headers;
-				
+				ClearTextview ();
+				AddTextview (0);
+
 				UpdateFromCatalog ();
 				UpdateProgressBar ();
 			}
@@ -120,7 +122,6 @@ namespace MonoDevelop.Gettext
 				MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (file, lineNr, 1, true);
 			};
 			this.notebookTranslated.RemovePage (0);
-			AddTextview (GettextCatalog.GetString ("Singular"), 0);
 			
 //			this.textviewTranslatedPlural.Buffer.Changed += delegate {
 //				if (this.isUpdating)
@@ -161,7 +162,13 @@ namespace MonoDevelop.Gettext
 			return null;
 		}
 		
-		void AddTextview (string text, int index)
+		void ClearTextview ()
+		{
+			while (this.notebookTranslated.NPages > 0)
+				this.notebookTranslated.RemovePage (0);
+		}
+		
+		void AddTextview (int index)
 		{
 			ScrolledWindow window = new ScrolledWindow ();
 			TextView textView = new TextView ();
@@ -176,7 +183,7 @@ namespace MonoDevelop.Gettext
 			};
 			
 			Label label = new Label ();
-			label.Text = text;
+			label.Text = this.Catalog.PluralFormsDescriptions [index];
 			window.ShowAll ();
 			this.notebookTranslated.AppendPage (window, label);
 		}
@@ -300,25 +307,27 @@ namespace MonoDevelop.Gettext
 						this.gtkSpellSet[this.textviewOriginalPlural] = true;
 					}
 				}
-				RemoveTextViewsFrom (entry.NumberOfTranslations);
-				
-				for (int i = this.notebookTranslated.NPages; i < entry.NumberOfTranslations; i++) {
-					AddTextview (String.Format (GettextCatalog.GetString ("Plural {0}"), i), i);
-				}
-				
-				for (int i = 0; i < entry.NumberOfTranslations; i++) {
-					TextView textView = GetTextView (i);
-					if (textView == null)
-						continue;
-					textView.Buffer.Text = entry != null ? entry.GetTranslation (i) : "";
-					if (GtkSpell.IsSupported && !gtkSpellSet.ContainsKey (textView)) {
-						GtkSpell.Attach (textView, "en");
-						this.gtkSpellSet[textView] = true;
-					}
-				}
 				
 				this.foundInStore.Clear ();
+				
 				if (entry != null) { 
+					RemoveTextViewsFrom (entry.NumberOfTranslations);
+					
+					for (int i = this.notebookTranslated.NPages; i < entry.NumberOfTranslations; i++) {
+						AddTextview (i);
+					}
+					
+					for (int i = 0; i < entry.NumberOfTranslations; i++) {
+						TextView textView = GetTextView (i);
+						if (textView == null)
+							continue;
+						textView.Buffer.Text = entry != null ? entry.GetTranslation (i) : "";
+						if (GtkSpell.IsSupported && !gtkSpellSet.ContainsKey (textView)) {
+							GtkSpell.Attach (textView, "en");
+							this.gtkSpellSet[textView] = true;
+						}
+					}
+					
 					foreach (string reference in entry.References) {
 						string file;
 						string line;
