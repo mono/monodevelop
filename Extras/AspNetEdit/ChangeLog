@@ -1,3 +1,7 @@
+2007-08-06  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* Makefile.am: Add libs/JSCall.js to EXTRA_DIST.
+
 2007-08-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AspNetEdit.Editor/EditorHost.cs: Converted DispatchService to a static
