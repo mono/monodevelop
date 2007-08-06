@@ -108,7 +108,7 @@ endif
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD) $(LOCAL_LIBS_BUILD)
 
-EXTRA_DIST = $(FILES) $(ADDIN) $(RES) $(DATA_FILES) $(LOCAL_LIBS)
+EXTRA_DIST = $(FILES) $(ADDIN) $(RES) $(DATA_FILES) $(LOCAL_LIBS) libs/JSCall.js
 
 include $(top_srcdir)/Makefile.include
 
