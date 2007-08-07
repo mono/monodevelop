@@ -1,3 +1,8 @@
+2007-08-07  Ankit Jain  <jankit@novell.com>
+
+	* StringParserService.cs (Replace): Update to use TryGetValue with
+	Dictionary objects, indexer throws for non-existant keys.
+
 2007-07-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core/DefaultLoggingService.cs: Added some null checks.

@@ -111,10 +111,9 @@ namespace MonoDevelop.Core
 					}
 					
 					if (propertyValue == null) {
-						IStringTagProvider stringTagProvider = stringTagProviders[propertyName.ToUpper()] as IStringTagProvider;
-						if (stringTagProvider != null) {
+						IStringTagProvider stringTagProvider;
+						if (stringTagProviders.TryGetValue (propertyName.ToUpper (), out stringTagProvider))
 							propertyValue = stringTagProvider.Convert(propertyName.ToUpper());
-						}
 					}
 					
 					if (propertyValue == null) {
