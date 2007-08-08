@@ -45,7 +45,7 @@ namespace MonoDevelop.Gettext {
         
         private Gtk.VBox vbox4;
         
-        private Gtk.Label label5;
+        private Gtk.Label label4;
         
         private Gtk.Frame frame3;
         
@@ -206,11 +206,12 @@ namespace MonoDevelop.Gettext {
             this.vbox4.Name = "vbox4";
             this.vbox4.Spacing = 6;
             // Container child vbox4.Gtk.Box+BoxChild
-            this.label5 = new Gtk.Label();
-            this.label5.Name = "label5";
-            this.label5.LabelProp = Mono.Unix.Catalog.GetString("The Catalog initialization should look like:");
-            this.vbox4.Add(this.label5);
-            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.vbox4[this.label5]));
+            this.label4 = new Gtk.Label();
+            this.label4.Name = "label4";
+            this.label4.Xalign = 0F;
+            this.label4.LabelProp = Mono.Unix.Catalog.GetString("The catalog initialization string should look like:");
+            this.vbox4.Add(this.label4);
+            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.vbox4[this.label4]));
             w12.Position = 0;
             w12.Expand = false;
             w12.Fill = false;
@@ -226,8 +227,8 @@ namespace MonoDevelop.Gettext {
             // Container child GtkAlignment4.Gtk.Container+ContainerChild
             this.labelInitString = new Gtk.Label();
             this.labelInitString.Name = "labelInitString";
+            this.labelInitString.Xalign = 0F;
             this.labelInitString.LabelProp = Mono.Unix.Catalog.GetString("Mono.Unix.Catalog.Init (\"i8n1\", \"./locale\");");
-            this.labelInitString.Selectable = true;
             this.GtkAlignment4.Add(this.labelInitString);
             this.frame3.Add(this.GtkAlignment4);
             this.vbox4.Add(this.frame3);
@@ -262,6 +263,7 @@ namespace MonoDevelop.Gettext {
             this.scrolledwindow1.VscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow1.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow1.ShadowType = ((Gtk.ShadowType)(1));
+            this.scrolledwindow1.BorderWidth = ((uint)(6));
             // Container child scrolledwindow1.Gtk.Container+ContainerChild
             this.treeviewProjectList = new Gtk.TreeView();
             this.treeviewProjectList.CanFocus = true;

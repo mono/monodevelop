@@ -40,7 +40,6 @@ namespace MonoDevelop.Gettext
 		{
 			this.project = project;
 			this.Build();
-			label5.Justify = Justification.Left;
 			
 			TranslationProjectConfiguration config = this.project.ActiveConfiguration as TranslationProjectConfiguration;
 			entryPackageName.Text        = config.PackageName;

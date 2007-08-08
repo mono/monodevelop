@@ -1,5 +1,9 @@
 2007-08-08  Mike Krüger <mkrueger@novell.com> 
 
+	
+
+2007-08-08  Mike Krüger <mkrueger@novell.com> 
+
 	* gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs,
 	  MonoDevelop.Gettext/TranslationProjectOptionsDialog.cs: Fixed
 	  82336:Gettext addin: Translation project options dialog not HIG
