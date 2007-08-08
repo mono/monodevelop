@@ -1,3 +1,10 @@
+2007-08-08  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs,
+	  MonoDevelop.Gettext/TranslationProjectOptionsDialog.cs,
+	  MonoDevelop.Gettext/TranslationProject.cs: Fixed 82335: Gettext
+	  addin: can't choose which projects to translate.
+
 2007-08-06  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: added bugfix from

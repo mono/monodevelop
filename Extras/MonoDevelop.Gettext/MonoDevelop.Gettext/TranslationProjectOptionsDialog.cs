@@ -27,6 +27,9 @@
 //
 
 using System;
+using Gtk;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Gettext
 {
@@ -67,6 +70,78 @@ namespace MonoDevelop.Gettext
 			this.buttonCancel.Clicked += delegate {
 				this.Destroy ();
 			};
+			
+			store = new TreeStore (typeof(string), typeof(bool), typeof(string), typeof(CombineEntry));
+			treeviewProjectList.Model = store;
+			treeviewProjectList.HeadersVisible = false;
+			
+			this.treeviewProjectList.AppendColumn ("", new CellRendererPixbuf (), "stock_id", 0);
+			
+			CellRendererToggle cellRendererToggle = new CellRendererToggle ();
+			cellRendererToggle.Toggled += new ToggledHandler (ActiveToggled);
+			cellRendererToggle.Activatable = true;
+			this.treeviewProjectList.AppendColumn ("", cellRendererToggle, "active", 1);
+			
+			this.treeviewProjectList.AppendColumn ("", new CellRendererText (), "text", 2);
+			
+			FillTree (TreeIter.Zero, project.ParentCombine);
+			
+		}
+		
+		void ActiveToggled (object sender, ToggledArgs e)
+		{
+			TreeIter iter;
+			if (store.GetIterFromString (out iter, e.Path)) {
+				bool         isTogglod = (bool)store.GetValue (iter, 1);
+				CombineEntry entry     = (CombineEntry)store.GetValue (iter, 3);
+				if (entry is Project) {
+					TranslationProjectInformation info = project.GetProjectInformation (entry, true);
+					info.IsIncluded = !isTogglod;
+					store.SetValue (iter, 1, !isTogglod);
+				}
+			}
+		}
+		
+		TreeStore store;
+		string GetIcon (CombineEntry entry)
+		{
+			if (entry is Combine)
+				return MonoDevelop.Core.Gui.Stock.CombineIcon;
+			
+			if (entry is Project)
+				return IdeApp.Services.Icons.GetImageForProjectType (((Project)entry).ProjectType);
+			
+			return MonoDevelop.Core.Gui.Stock.SolutionIcon;
+		}
+		
+		bool IsIncluded (CombineEntry entry)
+		{
+			if (entry is Combine) {
+				foreach (CombineEntry childEntry in ((Combine)entry).Entries)
+					if (!IsIncluded (childEntry))
+						return false;
+				return true;
+			}
+			
+			TranslationProjectInformation info = project.GetProjectInformation (entry, false);
+			if (info != null)
+				return info.IsIncluded;
+			return true;
+		}
+			
+		void FillTree (TreeIter iter, CombineEntry entry)
+		{
+			TreeIter curIter;
+			if (!iter.Equals (TreeIter.Zero)) {
+				curIter = store.AppendValues (iter, GetIcon (entry), entry is Combine ? false : IsIncluded (entry), entry.Name, entry);
+			} else {
+				curIter = store.AppendValues (GetIcon (entry), entry is Combine ? false : IsIncluded (entry), entry.Name, entry);
+			}
+			if (entry is Combine) {
+				foreach (CombineEntry childEntry in ((Combine)entry).Entries)
+					if (!(childEntry is TranslationProject) && (childEntry is Project || childEntry is Combine))
+						FillTree (curIter, childEntry);
+			}
 		}
 		
 		void UpdateInitString (object sender, EventArgs e)

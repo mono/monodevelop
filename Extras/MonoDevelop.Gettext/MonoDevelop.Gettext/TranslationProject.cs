@@ -41,20 +41,49 @@ using MonoDevelop.Gettext.Editor;
 using MonoDevelop.Deployment;
 
 namespace MonoDevelop.Gettext
-{
+{	
 	public class TranslationProject : CombineEntry, IDeployable
 	{
 		[ItemProperty]
 		List<Translation> translations = new List<Translation> ();
 		
+		[ItemProperty]
+		List<TranslationProjectInformation> projectInformations = new List<TranslationProjectInformation> ();
+		
 		public ReadOnlyCollection<Translation> Translations {
 			get { return translations.AsReadOnly (); }
+		}
+		
+		public ReadOnlyCollection<TranslationProjectInformation> TranslationProjectInformations {
+			get { return projectInformations.AsReadOnly (); }
 		}
 		
 		public TranslationProject ()
 		{
 			this.NeedsBuilding = true;
 			isDirty = true;
+		}
+		
+		public TranslationProjectInformation GetProjectInformation (CombineEntry entry, bool force)
+		{
+			foreach (TranslationProjectInformation info in this.projectInformations) {
+				if (info.ProjectName == entry.Name)
+					return info;
+			}
+			if (force) {
+				TranslationProjectInformation newInfo = new TranslationProjectInformation (entry.Name);
+				this.projectInformations.Add (newInfo);
+				return newInfo;
+			}
+			return null;
+		}
+		
+		public bool IsIncluded (CombineEntry entry)
+		{
+			TranslationProjectInformation info = GetProjectInformation (entry, false);
+			if (info != null)
+				return info.IsIncluded;
+			return true;
 		}
 		
 		public override void InitializeFromTemplate (XmlElement template)
@@ -397,4 +426,39 @@ namespace MonoDevelop.Gettext
 		{
 		}
 	}
+	
+	public class TranslationProjectInformation
+	{
+		[ItemProperty]
+		string projectName;
+		
+		[ItemProperty]
+		bool isIncluded;
+		
+		[ItemProperty]
+		List<string> excludedFiles = new List<string> ();
+		
+		public string ProjectName {
+			get { return projectName; }
+			set { projectName = value; }
+		}
+		
+		public bool IsIncluded {
+			get { return isIncluded; }
+			set { isIncluded = value; }
+		}
+		
+		public ReadOnlyCollection<string> ExcludedFiles {
+			get { return excludedFiles.AsReadOnly (); }
+		}
+		
+		public TranslationProjectInformation ()
+		{
+		}
+		
+		public TranslationProjectInformation (string projectName)
+		{
+			this.projectName = projectName;
+		}
+	}	
 }

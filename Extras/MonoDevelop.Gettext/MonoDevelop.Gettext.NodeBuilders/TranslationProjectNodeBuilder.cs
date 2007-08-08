@@ -140,7 +140,8 @@ namespace MonoDevelop.Gettext.NodeBuilders
 				if (project == null)
 					return;
 				TranslationProjectOptionsDialog options = new TranslationProjectOptionsDialog (project);
-				options.Show ();
+				options.Run ();
+				IdeApp.ProjectOperations.SaveCombine ();
 			}
 			
 			[CommandHandler (Commands.AddTranslation)]
@@ -178,12 +179,18 @@ namespace MonoDevelop.Gettext.NodeBuilders
 			{
 				using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ()) {
 					int count = 0;
-					foreach (Project p in project.ParentCombine.GetAllProjects ()) 
+					foreach (Project p in project.ParentCombine.GetAllProjects ()) {
+						if (!project.IsIncluded (p))
+							continue;
 						count++;
+					}
 					monitor.BeginTask (GettextCatalog.GetString ("Updating Translations "), count);
 					
 					foreach (Project p in project.ParentCombine.GetAllProjects ()) {
-						monitor.BeginStepTask (String.Format (GettextCatalog.GetString ("Scanning project {0}..."),  p.Name), 1, 1);
+						if (!project.IsIncluded (p))
+							continue;
+						monitor.Log.WriteLine (String.Format (GettextCatalog.GetString ("Scanning project {0}..."),  p.Name));
+						monitor.Step (1);
 						foreach (ProjectFile file in p.ProjectFiles) {
 							TranslationService.UpdateTranslation (project, file.FilePath, monitor);
 						}
