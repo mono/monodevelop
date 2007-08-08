@@ -965,6 +965,7 @@
     <property name="MemberName" />
     <property name="Title" translatable="yes">Translation Options</property>
     <property name="WindowPosition">CenterOnParent</property>
+    <property name="BorderWidth">6</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
     <property name="HasSeparator">False</property>
@@ -977,10 +978,12 @@
             <property name="MemberName" />
             <property name="CanFocus">True</property>
             <property name="CurrentPage">1</property>
+            <property name="BorderWidth">6</property>
             <child>
               <widget class="Gtk.VBox" id="vbox2">
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
+                <property name="BorderWidth">6</property>
                 <child>
                   <widget class="Gtk.HBox" id="hbox4">
                     <property name="MemberName" />
@@ -988,7 +991,7 @@
                     <child>
                       <widget class="Gtk.Label" id="label3">
                         <property name="MemberName" />
-                        <property name="LabelProp" translatable="yes">_Package Name:</property>
+                        <property name="LabelProp" translatable="yes">_Package name:</property>
                         <property name="UseUnderline">True</property>
                       </widget>
                       <packing>
@@ -1013,17 +1016,6 @@
                   </widget>
                   <packing>
                     <property name="Position">0</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.HSeparator" id="hseparator1">
-                    <property name="MemberName" />
-                  </widget>
-                  <packing>
-                    <property name="Position">1</property>
                     <property name="AutoSize">True</property>
                     <property name="Expand">False</property>
                     <property name="Fill">False</property>
@@ -1057,10 +1049,9 @@
                               <packing>
                                 <property name="LeftAttach">1</property>
                                 <property name="RightAttach">2</property>
-                                <property name="AutoSize">True</property>
-                                <property name="XOptions">Fill</property>
+                                <property name="AutoSize">False</property>
                                 <property name="YOptions">Fill</property>
-                                <property name="XExpand">False</property>
+                                <property name="XExpand">True</property>
                                 <property name="XFill">True</property>
                                 <property name="XShrink">False</property>
                                 <property name="YExpand">False</property>
@@ -1099,9 +1090,10 @@
                                 <property name="Group">group1</property>
                               </widget>
                               <packing>
-                                <property name="AutoSize">True</property>
+                                <property name="AutoSize">False</property>
+                                <property name="XOptions">Fill</property>
                                 <property name="YOptions">Fill</property>
-                                <property name="XExpand">True</property>
+                                <property name="XExpand">False</property>
                                 <property name="XFill">True</property>
                                 <property name="XShrink">False</property>
                                 <property name="YExpand">False</property>
@@ -1123,8 +1115,9 @@
                                 <property name="TopAttach">1</property>
                                 <property name="BottomAttach">2</property>
                                 <property name="AutoSize">True</property>
+                                <property name="XOptions">Fill</property>
                                 <property name="YOptions">Fill</property>
-                                <property name="XExpand">True</property>
+                                <property name="XExpand">False</property>
                                 <property name="XFill">True</property>
                                 <property name="XShrink">False</property>
                                 <property name="YExpand">False</property>
@@ -1148,7 +1141,7 @@
                     </child>
                   </widget>
                   <packing>
-                    <property name="Position">2</property>
+                    <property name="Position">1</property>
                     <property name="AutoSize">True</property>
                     <property name="Expand">False</property>
                     <property name="Fill">False</property>
@@ -1170,9 +1163,10 @@
                             <property name="MemberName" />
                             <property name="Spacing">6</property>
                             <child>
-                              <widget class="Gtk.Label" id="label5">
+                              <widget class="Gtk.Label" id="label4">
                                 <property name="MemberName" />
-                                <property name="LabelProp" translatable="yes">The Catalog initialization should look like:</property>
+                                <property name="Xalign">0</property>
+                                <property name="LabelProp" translatable="yes">The catalog initialization string should look like:</property>
                               </widget>
                               <packing>
                                 <property name="Position">0</property>
@@ -1195,8 +1189,8 @@
                                     <child>
                                       <widget class="Gtk.Label" id="labelInitString">
                                         <property name="MemberName" />
+                                        <property name="Xalign">0</property>
                                         <property name="LabelProp" translatable="yes">Mono.Unix.Catalog.Init ("i8n1", "./locale");</property>
-                                        <property name="Selectable">True</property>
                                       </widget>
                                     </child>
                                   </widget>
@@ -1225,7 +1219,7 @@
                     </child>
                   </widget>
                   <packing>
-                    <property name="Position">3</property>
+                    <property name="Position">2</property>
                     <property name="AutoSize">True</property>
                     <property name="Expand">False</property>
                     <property name="Fill">False</property>
@@ -1246,66 +1240,19 @@
               </packing>
             </child>
             <child>
-              <widget class="Gtk.VBox" id="pageSelectProject">
+              <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
                 <property name="MemberName" />
-                <property name="Spacing">6</property>
+                <property name="CanFocus">True</property>
+                <property name="VscrollbarPolicy">Automatic</property>
+                <property name="HscrollbarPolicy">Automatic</property>
+                <property name="ShadowType">In</property>
+                <property name="BorderWidth">6</property>
                 <child>
-                  <widget class="Gtk.Label" id="labelTitle1">
-                    <property name="MemberName" />
-                    <property name="Xalign">0</property>
-                    <property name="LabelProp" translatable="yes">&lt;big&gt;&lt;b&gt;Select Projects&lt;/b&gt;&lt;/big&gt;</property>
-                    <property name="UseMarkup">True</property>
-                  </widget>
-                  <packing>
-                    <property name="Position">0</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.HSeparator" id="hseparator4">
-                    <property name="MemberName" />
-                  </widget>
-                  <packing>
-                    <property name="Position">1</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.Label" id="label4">
-                    <property name="MemberName" />
-                    <property name="Xalign">0</property>
-                    <property name="LabelProp" translatable="yes">Select the projects which you want to create translations for::</property>
-                  </widget>
-                  <packing>
-                    <property name="Position">2</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
+                  <widget class="Gtk.TreeView" id="treeviewProjectList">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="VscrollbarPolicy">Automatic</property>
-                    <property name="HscrollbarPolicy">Automatic</property>
-                    <property name="ShadowType">In</property>
-                    <child>
-                      <widget class="Gtk.TreeView" id="treeviewProjectList">
-                        <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="HeadersClickable">True</property>
-                      </widget>
-                    </child>
+                    <property name="HeadersClickable">True</property>
                   </widget>
-                  <packing>
-                    <property name="Position">3</property>
-                    <property name="AutoSize">True</property>
-                  </packing>
                 </child>
               </widget>
               <packing>
@@ -1326,6 +1273,18 @@
           <packing>
             <property name="Position">0</property>
             <property name="AutoSize">True</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.HSeparator" id="hseparator1">
+            <property name="MemberName" />
+          </widget>
+          <packing>
+            <property name="PackType">End</property>
+            <property name="Position">2</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
           </packing>
         </child>
       </widget>
