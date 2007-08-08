@@ -1,3 +1,7 @@
+2007-08-06  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* ChangeLogAddin.cs: Fixed #82322. 
+
 2007-08-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs: Added

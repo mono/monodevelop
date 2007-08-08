@@ -78,7 +78,7 @@ namespace MonoDevelop.ChangeLogAddIn
 
 			string changeLogFileName = document.FileName;
 			string changeLogFileNameDirectory = Path.GetDirectoryName(changeLogFileName);
-			string selectedFileName = document.FileName;
+			string selectedFileName = GetSelectedFile();
 			string selectedFileNameDirectory = Path.GetDirectoryName(selectedFileName);
 	
 	        int pos = GetHeaderEndPosition(document);
