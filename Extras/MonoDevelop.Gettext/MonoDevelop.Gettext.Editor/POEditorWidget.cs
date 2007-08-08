@@ -106,8 +106,9 @@ namespace MonoDevelop.Gettext
 			foundInStore = new ListStore (typeof (string), typeof (string), typeof (string));
 			this.treeviewFoundIn.Model = foundInStore;
 			
-			treeviewFoundIn.AppendColumn (GettextCatalog.GetString ("File"), new CellRendererText (), "text", FoundInColumns.File);
-			treeviewFoundIn.AppendColumn (GettextCatalog.GetString ("Line"), new CellRendererText (), "text", FoundInColumns.Line);
+			treeviewFoundIn.AppendColumn ("", new CellRendererText (), "text", FoundInColumns.File);
+			treeviewFoundIn.AppendColumn ("", new CellRendererText (), "text", FoundInColumns.Line);
+			this.treeviewFoundIn.HeadersVisible = false;
 			treeviewFoundIn.GetColumn (1).FixedWidth = 100;
 			
 			treeviewFoundIn.RowActivated += delegate (object sender, RowActivatedArgs e) {
@@ -173,7 +174,7 @@ namespace MonoDevelop.Gettext
 			ScrolledWindow window = new ScrolledWindow ();
 			TextView textView = new TextView ();
 			window.Child = textView;
-			
+			textView.AcceptsTab = false;	
 			textView.Buffer.Changed += delegate {
 				if (this.isUpdating)
 					return;
@@ -297,7 +298,7 @@ namespace MonoDevelop.Gettext
 					this.gtkSpellSet[this.textviewOriginal] = true;
 				}
 				
-				this.frameOriginalPlural.Visible = entry != null && entry.HasPlural;
+				this.vbox8.Visible = entry != null && entry.HasPlural;
 				this.notebookTranslated.ShowTabs = entry != null && entry.HasPlural;
 				
 				if (entry != null && entry.HasPlural) {

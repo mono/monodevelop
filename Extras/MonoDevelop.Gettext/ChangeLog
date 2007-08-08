@@ -1,6 +1,15 @@
 2007-08-08  Mike Krüger <mkrueger@novell.com> 
 
-	
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs,
+	  gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs,
+	  gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:
+	  Fixed 82337: Gettext addin: usability issues in the PO editor
+
+2007-08-08  Mike Krüger <mkrueger@novell.com> 
+   * MonoDevelop.Gettext/TranslationProjectOptionsDialog.cs: Removed
+   some debug code.
 
 2007-08-08  Mike Krüger <mkrueger@novell.com> 
 

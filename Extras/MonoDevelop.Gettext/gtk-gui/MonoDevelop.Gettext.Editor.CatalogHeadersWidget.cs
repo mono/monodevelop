@@ -61,19 +61,17 @@ namespace MonoDevelop.Gettext.Editor {
         
         private Gtk.Entry entryPluralsForms;
         
-        private Gtk.Button buttonPluralsHelp;
-        
         private Gtk.Label label10;
         
         private Gtk.Label label11;
         
         private Gtk.Label label12;
         
+        private Gtk.Label label13;
+        
         private Gtk.Label label14;
         
         private Gtk.Label label15;
-        
-        private Gtk.Label label16;
         
         private Gtk.Label label2;
         
@@ -86,7 +84,7 @@ namespace MonoDevelop.Gettext.Editor {
             this.notebook1 = new Gtk.Notebook();
             this.notebook1.CanFocus = true;
             this.notebook1.Name = "notebook1";
-            this.notebook1.CurrentPage = 1;
+            this.notebook1.CurrentPage = 0;
             this.notebook1.TabPos = ((Gtk.PositionType)(0));
             this.notebook1.BorderWidth = ((uint)(8));
             // Container child notebook1.Gtk.Notebook+NotebookChild
@@ -140,66 +138,65 @@ namespace MonoDevelop.Gettext.Editor {
             // Container child table1.Gtk.Table+TableChild
             this.label4 = new Gtk.Label();
             this.label4.Name = "label4";
-            this.label4.Xalign = 1F;
-            this.label4.Yalign = 0F;
-            this.label4.LabelProp = Mono.Unix.Catalog.GetString("Comments:");
+            this.label4.Xalign = 0F;
+            this.label4.LabelProp = Mono.Unix.Catalog.GetString("Last modification:");
             this.table1.Add(this.label4);
             Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.table1[this.label4]));
+            w4.TopAttach = ((uint)(5));
+            w4.BottomAttach = ((uint)(6));
             w4.XOptions = ((Gtk.AttachOptions)(4));
             w4.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
             this.label5 = new Gtk.Label();
             this.label5.Name = "label5";
-            this.label5.Xalign = 1F;
-            this.label5.LabelProp = Mono.Unix.Catalog.GetString("Project name:");
+            this.label5.Xalign = 0F;
+            this.label5.LabelProp = Mono.Unix.Catalog.GetString("Comments:");
             this.table1.Add(this.label5);
             Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.table1[this.label5]));
-            w5.TopAttach = ((uint)(1));
-            w5.BottomAttach = ((uint)(2));
             w5.XOptions = ((Gtk.AttachOptions)(4));
             w5.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
             this.label6 = new Gtk.Label();
             this.label6.Name = "label6";
-            this.label6.Xalign = 1F;
-            this.label6.LabelProp = Mono.Unix.Catalog.GetString("Project version:");
+            this.label6.Xalign = 0F;
+            this.label6.LabelProp = Mono.Unix.Catalog.GetString("Project name:");
             this.table1.Add(this.label6);
             Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.table1[this.label6]));
-            w6.TopAttach = ((uint)(2));
-            w6.BottomAttach = ((uint)(3));
+            w6.TopAttach = ((uint)(1));
+            w6.BottomAttach = ((uint)(2));
             w6.XOptions = ((Gtk.AttachOptions)(4));
             w6.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
             this.label7 = new Gtk.Label();
             this.label7.Name = "label7";
-            this.label7.Xalign = 1F;
-            this.label7.LabelProp = Mono.Unix.Catalog.GetString("Bugzilla URL:");
+            this.label7.Xalign = 0F;
+            this.label7.LabelProp = Mono.Unix.Catalog.GetString("Project version:");
             this.table1.Add(this.label7);
             Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.table1[this.label7]));
-            w7.TopAttach = ((uint)(3));
-            w7.BottomAttach = ((uint)(4));
+            w7.TopAttach = ((uint)(2));
+            w7.BottomAttach = ((uint)(3));
             w7.XOptions = ((Gtk.AttachOptions)(4));
             w7.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
             this.label8 = new Gtk.Label();
             this.label8.Name = "label8";
-            this.label8.Xalign = 1F;
-            this.label8.LabelProp = Mono.Unix.Catalog.GetString("POT File creation date:");
+            this.label8.Xalign = 0F;
+            this.label8.LabelProp = Mono.Unix.Catalog.GetString("Bugzilla URL:");
             this.table1.Add(this.label8);
             Gtk.Table.TableChild w8 = ((Gtk.Table.TableChild)(this.table1[this.label8]));
-            w8.TopAttach = ((uint)(4));
-            w8.BottomAttach = ((uint)(5));
+            w8.TopAttach = ((uint)(3));
+            w8.BottomAttach = ((uint)(4));
             w8.XOptions = ((Gtk.AttachOptions)(4));
             w8.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
             this.label9 = new Gtk.Label();
             this.label9.Name = "label9";
-            this.label9.Xalign = 1F;
-            this.label9.LabelProp = Mono.Unix.Catalog.GetString("PO File last modification date:");
+            this.label9.Xalign = 0F;
+            this.label9.LabelProp = Mono.Unix.Catalog.GetString("Creation date:");
             this.table1.Add(this.label9);
             Gtk.Table.TableChild w9 = ((Gtk.Table.TableChild)(this.table1[this.label9]));
-            w9.TopAttach = ((uint)(5));
-            w9.BottomAttach = ((uint)(6));
+            w9.TopAttach = ((uint)(4));
+            w9.BottomAttach = ((uint)(5));
             w9.XOptions = ((Gtk.AttachOptions)(4));
             w9.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
@@ -339,95 +336,82 @@ namespace MonoDevelop.Gettext.Editor {
             this.hbox2.Add(this.entryPluralsForms);
             Gtk.Box.BoxChild w20 = ((Gtk.Box.BoxChild)(this.hbox2[this.entryPluralsForms]));
             w20.Position = 0;
-            // Container child hbox2.Gtk.Box+BoxChild
-            this.buttonPluralsHelp = new Gtk.Button();
-            this.buttonPluralsHelp.CanFocus = true;
-            this.buttonPluralsHelp.Name = "buttonPluralsHelp";
-            this.buttonPluralsHelp.UseStock = true;
-            this.buttonPluralsHelp.UseUnderline = true;
-            this.buttonPluralsHelp.Relief = ((Gtk.ReliefStyle)(2));
-            this.buttonPluralsHelp.Label = "gtk-help";
-            this.hbox2.Add(this.buttonPluralsHelp);
-            Gtk.Box.BoxChild w21 = ((Gtk.Box.BoxChild)(this.hbox2[this.buttonPluralsHelp]));
-            w21.Position = 1;
-            w21.Expand = false;
-            w21.Fill = false;
             this.table2.Add(this.hbox2);
-            Gtk.Table.TableChild w22 = ((Gtk.Table.TableChild)(this.table2[this.hbox2]));
-            w22.TopAttach = ((uint)(5));
-            w22.BottomAttach = ((uint)(6));
-            w22.LeftAttach = ((uint)(1));
-            w22.RightAttach = ((uint)(2));
-            w22.XOptions = ((Gtk.AttachOptions)(4));
-            w22.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w21 = ((Gtk.Table.TableChild)(this.table2[this.hbox2]));
+            w21.TopAttach = ((uint)(5));
+            w21.BottomAttach = ((uint)(6));
+            w21.LeftAttach = ((uint)(1));
+            w21.RightAttach = ((uint)(2));
+            w21.XOptions = ((Gtk.AttachOptions)(4));
+            w21.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table2.Gtk.Table+TableChild
             this.label10 = new Gtk.Label();
             this.label10.Name = "label10";
-            this.label10.Xalign = 1F;
+            this.label10.Xalign = 0F;
             this.label10.LabelProp = Mono.Unix.Catalog.GetString("Translator name:");
             this.table2.Add(this.label10);
-            Gtk.Table.TableChild w23 = ((Gtk.Table.TableChild)(this.table2[this.label10]));
-            w23.XOptions = ((Gtk.AttachOptions)(4));
-            w23.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w22 = ((Gtk.Table.TableChild)(this.table2[this.label10]));
+            w22.XOptions = ((Gtk.AttachOptions)(4));
+            w22.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table2.Gtk.Table+TableChild
             this.label11 = new Gtk.Label();
             this.label11.Name = "label11";
-            this.label11.Xalign = 1F;
-            this.label11.LabelProp = Mono.Unix.Catalog.GetString("Translator email:");
+            this.label11.Xalign = 0F;
+            this.label11.LabelProp = Mono.Unix.Catalog.GetString("Translator e-mail::");
             this.table2.Add(this.label11);
-            Gtk.Table.TableChild w24 = ((Gtk.Table.TableChild)(this.table2[this.label11]));
-            w24.TopAttach = ((uint)(1));
-            w24.BottomAttach = ((uint)(2));
-            w24.XOptions = ((Gtk.AttachOptions)(4));
-            w24.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w23 = ((Gtk.Table.TableChild)(this.table2[this.label11]));
+            w23.TopAttach = ((uint)(1));
+            w23.BottomAttach = ((uint)(2));
+            w23.XOptions = ((Gtk.AttachOptions)(4));
+            w23.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table2.Gtk.Table+TableChild
             this.label12 = new Gtk.Label();
             this.label12.Name = "label12";
-            this.label12.Xalign = 1F;
-            this.label12.LabelProp = Mono.Unix.Catalog.GetString("Lanuage group:");
+            this.label12.Xalign = 0F;
+            this.label12.LabelProp = Mono.Unix.Catalog.GetString("Language group:");
             this.table2.Add(this.label12);
-            Gtk.Table.TableChild w25 = ((Gtk.Table.TableChild)(this.table2[this.label12]));
-            w25.TopAttach = ((uint)(2));
-            w25.BottomAttach = ((uint)(3));
+            Gtk.Table.TableChild w24 = ((Gtk.Table.TableChild)(this.table2[this.label12]));
+            w24.TopAttach = ((uint)(2));
+            w24.BottomAttach = ((uint)(3));
+            w24.XOptions = ((Gtk.AttachOptions)(4));
+            w24.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child table2.Gtk.Table+TableChild
+            this.label13 = new Gtk.Label();
+            this.label13.Name = "label13";
+            this.label13.Xalign = 0F;
+            this.label13.LabelProp = Mono.Unix.Catalog.GetString("Language group e-mail:");
+            this.table2.Add(this.label13);
+            Gtk.Table.TableChild w25 = ((Gtk.Table.TableChild)(this.table2[this.label13]));
+            w25.TopAttach = ((uint)(3));
+            w25.BottomAttach = ((uint)(4));
             w25.XOptions = ((Gtk.AttachOptions)(4));
             w25.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table2.Gtk.Table+TableChild
             this.label14 = new Gtk.Label();
             this.label14.Name = "label14";
-            this.label14.Xalign = 1F;
-            this.label14.LabelProp = Mono.Unix.Catalog.GetString("Language group email:");
+            this.label14.Xalign = 0F;
+            this.label14.LabelProp = Mono.Unix.Catalog.GetString("Charset:");
             this.table2.Add(this.label14);
             Gtk.Table.TableChild w26 = ((Gtk.Table.TableChild)(this.table2[this.label14]));
-            w26.TopAttach = ((uint)(3));
-            w26.BottomAttach = ((uint)(4));
+            w26.TopAttach = ((uint)(4));
+            w26.BottomAttach = ((uint)(5));
             w26.XOptions = ((Gtk.AttachOptions)(4));
             w26.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table2.Gtk.Table+TableChild
             this.label15 = new Gtk.Label();
             this.label15.Name = "label15";
-            this.label15.Xalign = 1F;
-            this.label15.LabelProp = Mono.Unix.Catalog.GetString("Charset:");
+            this.label15.Xalign = 0F;
+            this.label15.LabelProp = Mono.Unix.Catalog.GetString("Plural forms:");
             this.table2.Add(this.label15);
             Gtk.Table.TableChild w27 = ((Gtk.Table.TableChild)(this.table2[this.label15]));
-            w27.TopAttach = ((uint)(4));
-            w27.BottomAttach = ((uint)(5));
+            w27.TopAttach = ((uint)(5));
+            w27.BottomAttach = ((uint)(6));
             w27.XOptions = ((Gtk.AttachOptions)(4));
             w27.YOptions = ((Gtk.AttachOptions)(4));
-            // Container child table2.Gtk.Table+TableChild
-            this.label16 = new Gtk.Label();
-            this.label16.Name = "label16";
-            this.label16.Xalign = 1F;
-            this.label16.LabelProp = Mono.Unix.Catalog.GetString("Plural forms:");
-            this.table2.Add(this.label16);
-            Gtk.Table.TableChild w28 = ((Gtk.Table.TableChild)(this.table2[this.label16]));
-            w28.TopAttach = ((uint)(5));
-            w28.BottomAttach = ((uint)(6));
-            w28.XOptions = ((Gtk.AttachOptions)(4));
-            w28.YOptions = ((Gtk.AttachOptions)(4));
             this.notebook1.Add(this.table2);
-            Gtk.Notebook.NotebookChild w29 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.table2]));
-            w29.Position = 1;
-            w29.TabExpand = false;
+            Gtk.Notebook.NotebookChild w28 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.table2]));
+            w28.Position = 1;
+            w28.TabExpand = false;
             // Notebook tab
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
@@ -442,7 +426,6 @@ namespace MonoDevelop.Gettext.Editor {
             this.entryProjectName.Changed += new System.EventHandler(this.OnHeaderChanged);
             this.entryBugzilla.Changed += new System.EventHandler(this.OnHeaderChanged);
             this.entryPluralsForms.Changed += new System.EventHandler(this.OnHeaderChanged);
-            this.buttonPluralsHelp.Clicked += new System.EventHandler(this.OnButtonPluralsHelpClicked);
             this.entryTranslatorName.Changed += new System.EventHandler(this.OnHeaderChanged);
             this.entryTranslatorEmail.Changed += new System.EventHandler(this.OnHeaderChanged);
             this.entryLanguageGroupName.Changed += new System.EventHandler(this.OnHeaderChanged);

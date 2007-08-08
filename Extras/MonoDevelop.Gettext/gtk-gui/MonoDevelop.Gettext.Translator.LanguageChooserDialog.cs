@@ -115,9 +115,7 @@ namespace MonoDevelop.Gettext.Translator {
             this.vbox3.Spacing = 8;
             // Container child vbox3.Gtk.Box+BoxChild
             this.frame1 = new Gtk.Frame();
-            this.frame1.Name = "frame1";
             this.frame1.ShadowType = ((Gtk.ShadowType)(0));
-            this.frame1.LabelXalign = 0F;
             // Container child frame1.Gtk.Container+ContainerChild
             this.GtkAlignment2 = new Gtk.Alignment(0F, 0F, 1F, 1F);
             this.GtkAlignment2.Name = "GtkAlignment2";
@@ -197,7 +195,6 @@ namespace MonoDevelop.Gettext.Translator {
             this.frame2 = new Gtk.Frame();
             this.frame2.Name = "frame2";
             this.frame2.ShadowType = ((Gtk.ShadowType)(0));
-            this.frame2.LabelXalign = 0F;
             // Container child frame2.Gtk.Container+ContainerChild
             this.GtkAlignment3 = new Gtk.Alignment(0F, 0F, 1F, 1F);
             this.GtkAlignment3.Name = "GtkAlignment3";
