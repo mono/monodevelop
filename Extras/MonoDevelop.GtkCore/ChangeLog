@@ -1,3 +1,8 @@
+2007-08-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Improved error
+	  reporting.
+
 2007-08-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.NodeBuilders/WindowsFolderNodeBuilder.cs,
