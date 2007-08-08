@@ -132,6 +132,7 @@
     <ExportedWidgets>
       <Widget>MonoDevelop.Components.FileEntry</Widget>
       <Widget>MonoDevelop.Components.FolderEntry</Widget>
+      <Widget>MonoDevelop.Components.IconView</Widget>
     </ExportedWidgets>
   </GtkDesignInfo>
   <MonoDevelop.Gettext.TranslationInfo />

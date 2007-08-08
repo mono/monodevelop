@@ -27,4 +27,13 @@
       </itemgroup>
     </signals>
   </object>
+  <object type="MonoDevelop.Components.IconView" palette-category="widget" allow-children="false" base-type="Gtk.ScrolledWindow">
+    <itemgroups />
+    <signals>
+      <itemgroup label="IconView Signals">
+        <signal name="IconSelected" />
+        <signal name="IconDoubleClicked" />
+      </itemgroup>
+    </signals>
+  </object>
 </objects>

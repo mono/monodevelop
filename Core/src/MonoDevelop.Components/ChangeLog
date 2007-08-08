@@ -1,3 +1,8 @@
+2007-08-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/objects.xml, MonoDevelop.Components.mdp: Inclide IconView to the
+	  exported widget list.
+
 2007-07-26  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Components.Commands/KeyBindingManager.cs: Added missing
