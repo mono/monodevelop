@@ -1,3 +1,14 @@
+2007-08-10  Ankit Jain  <jankit@novell.com>
+
+	* SlnFileFormat.cs: Allow version 10.00 also.
+	* MSBuildFileFormat.cs (ReadItemGroup): Handle SilverlightPage
+	ItemGroup.
+	* MSBuildProjectServiceExtension.cs: New. Handle generation of partial
+	classes for SilverlightPages.
+	* prj2make-sharp-lib.addin.xml: Add the ProjectServiceExtension.
+	* Makefile.am: Update.
+	* prj2make-sharp-lib.mdp: Update.
+
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* prj2make-sharp-lib.addin.xml, Makefile.am, prj2make-sharp-lib.mdp:

@@ -1,3 +1,7 @@
+2007-08-10  Ankit Jain  <jankit@novell.com>
+
+	* templates/*: Update to support generating partial classes with xamlg.
+
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Autotools.mdp, Makefile.am: Don't exclude the addin.xml file

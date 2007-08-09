@@ -56,8 +56,9 @@ namespace MonoDevelop.Prj2Make
 		
 		public bool CanReadFile (string file)
 		{
+			string version = GetSlnFileVersion (file);
 			return (String.Compare (Path.GetExtension (file), ".sln", true) == 0 &&
-				GetSlnFileVersion (file) == "9.00");
+				(version == "9.00" || version == "10.00"));
 		}
 		
 		public bool CanWriteFile (object obj)
@@ -373,7 +374,7 @@ namespace MonoDevelop.Prj2Make
 		Combine LoadSolution (string fileName, IProgressMonitor monitor)
 		{
 			string version = GetSlnFileVersion (fileName);
-			if (version != "9.00")
+			if (version != "9.00" && version != "10.00")
 				throw new UnknownProjectVersionException (fileName, version);
 
 			ListDictionary globals = null;
@@ -871,7 +872,7 @@ namespace MonoDevelop.Prj2Make
 		internal static Regex SlnVersionRegex {
 			get {
 				if (slnVersionRegex == null)
-					slnVersionRegex = new Regex (@"Microsoft Visual Studio Solution File, Format Version (\d.\d\d)");
+					slnVersionRegex = new Regex (@"Microsoft Visual Studio Solution File, Format Version (\d?\d.\d\d)");
 				return slnVersionRegex;
 			}
 		}

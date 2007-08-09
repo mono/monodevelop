@@ -23,6 +23,7 @@ FILES =  \
 	MSBuildData.cs \
 	MSBuildFileFormat.cs \
 	MSBuildProject.cs \
+	MSBuildProjectServiceExtension.cs \
 	MSBuildSolution.cs \
 	MsPrjHelper.cs \
 	pkgconfiginvoker.cs \

@@ -38,5 +38,10 @@
 		            _label = "Visual Studio Project"
 		            extensions = "*.csproj,*.vbproj"/>
 	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
+		<Class class = "MonoDevelop.Prj2Make.MSBuildProjectServiceExtension" id="MSBuildProjectServiceExtension" insertafter="InitialStep"/>
+	</Extension>
+
 </Addin>
 

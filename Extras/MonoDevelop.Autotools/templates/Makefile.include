@@ -4,6 +4,7 @@ build_sources_embed = $(build_sources:%='$(srcdir)/%')
 comma__=,
 build_resx_list = $(foreach res, $(RESOURCES), $(if $(filter %.resx, $(firstword $(subst $(comma__), ,$(res)))),$(res),))
 build_others_list = $(foreach res, $(RESOURCES), $(if $(filter %.resx, $(firstword $(subst $(comma__), ,$(res)))), ,$(res)))
+build_xamlg_list = $(filter %.xaml.g.cs, $(FILES))
 
 build_resx_files = $(foreach res, $(build_resx_list), $(firstword $(subst $(comma__), ,$(res))))
 build_resx_resources = $(build_resx_files:.resx=.resources)

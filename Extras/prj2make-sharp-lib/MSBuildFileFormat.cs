@@ -298,6 +298,10 @@ namespace MonoDevelop.Prj2Make
 
 			if (newdoc) {
 				foreach (ProjectFile pfile in project.ProjectFiles) {
+					if (pfile.ExtendedProperties ["MonoDevelop.MSBuildFileFormat.SilverlightGeneratedFile"] != null)
+						//Ignore the generated %.xaml.g.cs files
+						continue;
+
 					XmlElement xe = FileToXmlElement (data, project, pfile);
 					if (xe != null)
 						data.ProjectFileElements [pfile] = xe;
@@ -970,6 +974,26 @@ namespace MonoDevelop.Prj2Make
 						//FIXME: Keep nodes for each import? List of imports?
 						//This will probably have to be written back in WriteFile
 						importsBuilder.AppendFormat ("{0},", include);
+						break;
+					case "SilverlightPage":
+						//FIXME: this should be available only for 
+						//<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+						//
+						//This tag also has a
+						//	<Generator>MSBuild:Compile</Generator>
+						path = GetValidPath (monitor, basePath, include);
+						if (path == null)
+							continue;
+
+						pf = project.AddFile (path, BuildAction.EmbedAsResource);
+						pf.ExtendedProperties ["MonoDevelop.MSBuildFileFormat.SilverlightPage"] = "";
+						data.ProjectFileElements [pf] = (XmlElement) node;
+
+						// Add the corresponding %.g.cs to the project, we'll skip this
+						// when saving the project file
+						pf = project.AddFile (path + ".g.cs", BuildAction.Compile);
+						pf.ExtendedProperties ["MonoDevelop.MSBuildFileFormat.SilverlightGeneratedFile"] = "";
+						data.ProjectFileElements [pf] = (XmlElement) node;
 						break;
 					default:
 						Console.WriteLine ("Unrecognised ItemGroup element '{0}', Include = '{1}'. Ignoring.", node.LocalName, include);
