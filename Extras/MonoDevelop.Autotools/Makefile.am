@@ -53,9 +53,9 @@ FILES =  \
 	TemplateEngine.cs
 
 RES =  \
-	MonoDevelop.Autotools.addin.xml \
 	gtk-gui/gui.stetic \
-	gtk-gui/objects.xml
+	gtk-gui/objects.xml \
+	MonoDevelop.Autotools.addin.xml
 
 DATA_FILES =  \
 	templates/autogen.sh.template \

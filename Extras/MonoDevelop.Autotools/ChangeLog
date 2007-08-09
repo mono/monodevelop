@@ -1,5 +1,10 @@
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Autotools.mdp, Makefile.am: Don't exclude the addin.xml file
+	  from the makefile.
+
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* IMakefileHandler.cs, MonoDevelop.Autotools.addin.xml,
 	  MonoDevelop.Autotools.mdp, SolutionMakefileHandler.cs,
 	  SimpleProjectMakefileHandler.cs, SolutionDeployer.cs,
