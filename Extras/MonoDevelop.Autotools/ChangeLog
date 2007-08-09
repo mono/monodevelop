@@ -1,5 +1,14 @@
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* IMakefileHandler.cs, MonoDevelop.Autotools.addin.xml,
+	  MonoDevelop.Autotools.mdp, SolutionMakefileHandler.cs,
+	  SimpleProjectMakefileHandler.cs, SolutionDeployer.cs,
+	  AutotoolsContext.cs, Makefile.am: Added an extension point for
+	  registering new IMakefileHandlers.
+	* TemplateEngine.cs: Removed log4net dependency.
+
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Makefile.am: Add missing resoruce.
 
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 

@@ -13,7 +13,6 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
-	-r:$(top_srcdir)/contrib/log4net.dll \
 	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
 	-r:Mono.Posix \
 	-r:System 

@@ -38,12 +38,7 @@ namespace MonoDevelop.Autotools
 		string resourcedir = "resources";
 		bool generateAutotools = true;
 
-		public SimpleProjectMakefileHandler (bool generateAutotools)
-		{
-			this.generateAutotools = generateAutotools;
-		}
-
-		public bool CanDeploy ( CombineEntry entry )
+		public bool CanDeploy (CombineEntry entry, MakefileType type)
 		{
 			Project project = entry as Project;
 			if ( project == null ) return false;
@@ -63,6 +58,8 @@ namespace MonoDevelop.Autotools
 
 		public Makefile Deploy ( AutotoolsContext ctx, CombineEntry entry, IProgressMonitor monitor )
 		{
+			generateAutotools = ctx.MakefileType == MakefileType.AutotoolsMakefile;
+			
 			monitor.BeginTask ( GettextCatalog.GetString (
 						"Creating {0} for Project {1}",
 						generateAutotools ? "Makefile.am" : "Makefile", entry.Name), 1 );
@@ -70,7 +67,7 @@ namespace MonoDevelop.Autotools
 			Makefile makefile = new Makefile ();
 			try
 			{
-				if ( !CanDeploy ( entry ) ) 
+				if ( !CanDeploy (entry, generateAutotools ? MakefileType.AutotoolsMakefile : MakefileType.SimpleMakefile) ) 
 					throw new Exception ( GettextCatalog.GetString ("Not a deployable project.") );
 
 				Project project = entry as Project;

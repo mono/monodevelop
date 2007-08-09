@@ -32,19 +32,16 @@ namespace MonoDevelop.Autotools
 	{
 		bool generateAutotools = true;
 
-		public SolutionMakefileHandler (bool generateAutotools)
-		{
-			this.generateAutotools = generateAutotools;
-		}
-
 		// Recurses into children and tests if they are deployable.
-		public bool CanDeploy ( CombineEntry entry )
+		public bool CanDeploy (CombineEntry entry, MakefileType type)
 		{
 			return entry is Combine;
 		}
 
 		public Makefile Deploy ( AutotoolsContext ctx, CombineEntry entry, IProgressMonitor monitor )
 		{
+			generateAutotools = ctx.MakefileType == MakefileType.AutotoolsMakefile;
+			
 			monitor.BeginTask ( GettextCatalog.GetString (
 						"Creating {0} for Solution {1}",
 						generateAutotools ? "Makefile.am" : "Makefile", entry.Name), 1 );
@@ -54,9 +51,6 @@ namespace MonoDevelop.Autotools
 
 			try
 			{
-				if ( !CanDeploy ( entry ) )
-					throw new Exception ( GettextCatalog.GetString ("Not a deployable solution.") );
-
 				Combine combine = entry as Combine;
 
 				StringBuilder subdirs = new StringBuilder();
@@ -110,10 +104,10 @@ namespace MonoDevelop.Autotools
 				// deploy recursively
 				foreach ( CombineEntry ce in children )
 				{
-					IMakefileHandler handler = AutotoolsContext.GetMakefileHandler ( ce, generateAutotools );
+					IMakefileHandler handler = AutotoolsContext.GetMakefileHandler ( ce, ctx.MakefileType );
 					Makefile makefile;
 					string outpath;
-					if ( handler != null && handler.CanDeploy ( ce ) )
+					if ( handler != null && handler.CanDeploy ( ce, ctx.MakefileType ) )
 					{
 						if (ce is Project)
 							ctx.RegisterBuiltProject (ce.Name);
@@ -234,7 +228,11 @@ namespace MonoDevelop.Autotools
 						if ( cc == null ) continue;
 						GetAllProjects ( cc, out provides, out references);
 					}
-					else continue;
+					else {
+						if (!resultOrder.Contains (entry))
+							resultOrder.Add (entry);
+						continue;
+					}
 
 					if (dependenciesMet.ContainsSet (references) ) 
 					{
@@ -245,7 +243,7 @@ namespace MonoDevelop.Autotools
 					} 
 					else notMet = entry.Name;
 				}
-			} while (added == true);
+			} while (added);
 
 			if (notMet != null) 
 				throw new Exception("Impossible to find a solution order that satisfies project references for '" + notMet + "'");

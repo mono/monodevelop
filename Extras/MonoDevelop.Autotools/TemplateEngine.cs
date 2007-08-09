@@ -22,6 +22,7 @@ using System;
 using System.Text;
 using System.Collections;
 using System.IO;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Autotools
 {
@@ -33,7 +34,6 @@ namespace MonoDevelop.Autotools
 	 */
 	public class TemplateEngine
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);		
 		public Hashtable Variables = new Hashtable();
 		
 		public TemplateEngine()
@@ -71,7 +71,7 @@ namespace MonoDevelop.Autotools
 					
 					string val = (string) Variables[varname.ToString()];
 					if(val == null) {
-						log.Warn("No replacement for variable %%" +
+						Runtime.LoggingService.Warn("No replacement for variable %%" +
 						                  varname + "%% defined");
 					} else {
 						result.Append(val);

@@ -31,6 +31,11 @@
 		<ExtensionNode name ="Class" />
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/Autotools/MakefileHandlers">
+		<Description>Makefile handlers. Specified classes must implement IMakefileHandler</Description>
+		<ExtensionNode name ="Class" />
+	</ExtensionPoint>
+	
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder id = "AutotoolNodeExtension" class = "MonoDevelop.Autotools.NodeExtension"/>
 	</Extension>
@@ -100,6 +105,11 @@
 		<Application id = "generate-makefiles" class = "MonoDevelop.Autotools.MakefileGeneratorTool" description = "Makefile generator tool"/>
 	</Extension>
 
+	<Extension path = "/MonoDevelop/Autotools/MakefileHandlers">
+		<Class class = "MonoDevelop.Autotools.SolutionMakefileHandler"/>
+		<Class class = "MonoDevelop.Autotools.SimpleProjectMakefileHandler"/>
+	</Extension>
+	
 <!--
 	<Extension path = "/MonoDevelop/Ide/ProjectFeatures">
 		<Class class = "MonoDevelop.Autotools.MakefileIntegrationFeature" />

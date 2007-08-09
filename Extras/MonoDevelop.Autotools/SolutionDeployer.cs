@@ -63,9 +63,9 @@ namespace MonoDevelop.Autotools
 		
 		public bool CanDeploy (CombineEntry entry)
 		{
-			IMakefileHandler handler = AutotoolsContext.GetMakefileHandler (entry, generateAutotools);
-			if ( handler == null || !handler.CanDeploy (entry) ) return false;
-			return true;
+			MakefileType mt = generateAutotools ? MakefileType.AutotoolsMakefile : MakefileType.SimpleMakefile;
+			IMakefileHandler handler = AutotoolsContext.GetMakefileHandler (entry, mt);
+			return handler != null;
 		}
 
 		public bool GenerateFiles (DeployContext ctx, Combine combine, string defaultConf, IProgressMonitor monitor )
@@ -81,11 +81,13 @@ namespace MonoDevelop.Autotools
 				for (int ii=0; ii < configs.Length; ii++ )
 					configs [ii] = combine.Configurations[ii].Name;
 					
-				context = new AutotoolsContext ( ctx, solution_dir, configs );
+				MakefileType mt = generateAutotools ? MakefileType.AutotoolsMakefile : MakefileType.SimpleMakefile;
+				
+				context = new AutotoolsContext ( ctx, solution_dir, configs, mt );
 				context.TargetCombine = combine;
 				
-				IMakefileHandler handler = AutotoolsContext.GetMakefileHandler ( combine, generateAutotools );
-				if ( handler == null || !handler.CanDeploy (combine) )
+				IMakefileHandler handler = AutotoolsContext.GetMakefileHandler (combine, mt);
+				if (handler == null)
 					throw new Exception ( GettextCatalog.GetString ("MonoDevelop does not currently support generating {0} for one (or more) child projects.", filesString) );
 
 				solution_name = combine.Name;
