@@ -33,7 +33,6 @@ namespace MonoDevelop.Gettext.Translator
 {
 	public partial class LanguageChooserDialog : Gtk.Dialog
 	{
-		
 		ListStore languagesStore, countriesStore;
 		
 		public LanguageChooserDialog ()
@@ -47,7 +46,7 @@ namespace MonoDevelop.Gettext.Translator
 			FillCountries ();
 			this.languageTreeView.GrabFocus ();
 		}
-				
+		
 		void FillLanguages ()
 		{
 			languagesStore = new ListStore (typeof (string), typeof (string));
@@ -108,38 +107,47 @@ namespace MonoDevelop.Gettext.Translator
 				return String.Empty;
 			}
 		}
-		
-		public bool HasCountry
-		{
-			get
-			{
+
+		public string LanguageLong {
+			get {
+				if (this.radiobuttonKnown.Active) {
+					TreeIter iter;
+					if (this.languageTreeView.Selection.GetSelected (out iter)) {
+						return (string)languagesStore.GetValue (iter, 0);
+					}
+				} else {
+					string str = this.entryLocale.Text;
+					if (!String.IsNullOrEmpty (str)) {
+						int index = str.IndexOf ('_');
+						if (index != -1) 
+							return str.Substring (0, index);
+						return str;
+					}
+				}
+				return String.Empty;
+			}
+		}
+
+		public bool HasCountry {
+			get {
 				return 
 					(this.radiobuttonKnown.Active && this.checkbuttonUseCoutry.Active) ||
 					(this.radiobuttonCustom.Active && this.entryLocale.Text.IndexOf ('_') != -1);
 			}
 		}
 		
-		public string Country
-		{
-			get
-			{
-				if (this.radiobuttonKnown.Active)
-				{
+		public string Country {
+			get {
+				if (this.radiobuttonKnown.Active) {
 					TreeIter iter;
 					if (this.countryTreeView.Selection.GetSelected (out iter))
-					{
 						return (string)countriesStore.GetValue (iter, 1);
-					}
-				} else
-				{
+				} else {
 					string str = this.entryLocale.Text;
-					if (! String.IsNullOrEmpty (str))
-					{
+					if (! String.IsNullOrEmpty (str)) {
 						int index = str.IndexOf ('_');
 						if (index != -1)
-						{
 							return str.Substring (index + 1);
-						}
 					}
 				}
 				return String.Empty;

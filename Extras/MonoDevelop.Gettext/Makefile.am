@@ -23,6 +23,7 @@ FILES =  \
 	Commands.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs \
+	gtk-gui/MonoDevelop.Gettext.GettextFeatureWidget.cs \
 	gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs \
 	gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs \
 	gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs \
@@ -39,6 +40,8 @@ FILES =  \
 	MonoDevelop.Gettext/CatalogEntry.cs \
 	MonoDevelop.Gettext/CatalogHeaders.cs \
 	MonoDevelop.Gettext/CatalogParser.cs \
+	MonoDevelop.Gettext/GettextFeature.cs \
+	MonoDevelop.Gettext/GettextFeatureWidget.cs \
 	MonoDevelop.Gettext/IsoCodes.cs \
 	MonoDevelop.Gettext/PluralForms.cs \
 	MonoDevelop.Gettext/PropertyProvider.cs \

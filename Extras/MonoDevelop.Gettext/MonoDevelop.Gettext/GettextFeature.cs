@@ -1,5 +1,5 @@
 //
-// PropertyProvider.cs
+// GettextFeature.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -27,52 +27,44 @@
 //
 
 using System;
-using System.ComponentModel;
 
+using Gtk;
+
+using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
-using MonoDevelop.DesignerSupport;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Gettext
 {
-	public class PropertyProvider : IPropertyProvider
+	public class GettextFeature : ICombineEntryFeature
 	{
-		public bool SupportsObject (object o)
+		public string Title {
+			get { return GettextCatalog.GetString ("Translation"); }
+		}
+		
+		public bool SupportsCombineEntry (Combine parentCombine, CombineEntry entry)
 		{
-			return o is ProjectFile;
+			return (entry is Project) && parentCombine != null;
+		}
+		
+		public Widget CreateFeatureEditor (Combine parentCombine, CombineEntry entry)
+		{
+			return new GettextFeatureWidget ();
 		}
 
-		public object CreateProvider (object o)
+		public void ApplyFeature (Combine parentCombine, CombineEntry entry, Widget editor)
 		{
-			return new ProjectFileWrapper ((ProjectFile)o);
+			((GettextFeatureWidget)editor).ApplyFeature (parentCombine, (Project)entry);
 		}
 		
-		public class ProjectFileWrapper: CustomDescriptor
+		public string Validate (Combine parentCombine, CombineEntry entry, Gtk.Widget editor)
 		{
-			ProjectFile file;
-			
-			public ProjectFileWrapper (ProjectFile file)
-			{
-				this.file = file;
-			}
-			
-			const string scanForTranslationsProperty = "Gettext.ScanForTranslations";
-			[Category ("Gettext translation")]
-			[DisplayName ("Scan for translations")]
-			[Description ("Include this file in the translation scan.")]
-			public bool ScanForTranslations {
-				get {
-					object result = file.ExtendedProperties [scanForTranslationsProperty];
-					return result == null ? true : (bool)result;
-				}
-				set {
-					if (value) {
-						file.ExtendedProperties.Remove (scanForTranslationsProperty);
-					} else {
-						file.ExtendedProperties [scanForTranslationsProperty] = value;
-					}
-				}
-			}
+			return null;
 		}
 		
+		public bool IsEnabled (Combine parentCombine, CombineEntry entry) 
+		{
+			return false;
+		}
 	}
 }

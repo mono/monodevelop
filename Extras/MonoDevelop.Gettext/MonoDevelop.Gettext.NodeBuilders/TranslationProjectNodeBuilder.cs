@@ -163,7 +163,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 					
 					if (response == (int)ResponseType.Ok) {
 						string language = chooser.Language + (chooser.HasCountry ? "_" + chooser.Country : "");
-						
+					
 						using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (monitorTitle, "md-package", true, true)) {
 							project.AddNewTranslation (language, monitor);
 							UpdateTranslations (project);
