@@ -58,7 +58,8 @@ namespace MonoDevelop.Components {
 			}
 			set {
 				TreeIter foundIter = TreeIter.Zero, iter;
-				store.GetIterFirst (out iter);
+				if (!store.GetIterFirst (out iter))
+					return;
 				
 				do {
 					if (value == store.GetValue (iter, 2)) {

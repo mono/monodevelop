@@ -1,3 +1,8 @@
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Components/IconView.cs: Avoid crash in CurrentlySelected when
+	  there are no items in the IconView.
+
 2007-07-29  Zach Lute <zach.lute@gmail.com>
 
 	* KeyBindingSchemes.xml: Added MoveBlockUp and MoveBlockDown bindings.
