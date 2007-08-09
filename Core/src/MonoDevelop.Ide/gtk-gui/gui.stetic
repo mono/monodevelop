@@ -516,6 +516,7 @@
       <widget class="Gtk.VBox" id="dialog-vbox1">
         <property name="MemberName" />
         <property name="Spacing">6</property>
+        <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.Notebook" id="notebook">
             <property name="MemberName" />
@@ -691,24 +692,23 @@
                               </packing>
                             </child>
                             <child>
-                              <widget class="Gtk.HBox" id="hbox_for_browser">
+                              <widget class="MonoDevelop.Components.FolderEntry" id="entry_location">
                                 <property name="MemberName" />
-                                <child>
-                                  <placeholder />
-                                </child>
+                                <property name="BrowserTitle">Solution Location</property>
                               </widget>
                               <packing>
                                 <property name="TopAttach">1</property>
                                 <property name="BottomAttach">2</property>
                                 <property name="LeftAttach">1</property>
                                 <property name="RightAttach">2</property>
-                                <property name="AutoSize">False</property>
-                                <property name="YOptions">0</property>
-                                <property name="XExpand">True</property>
+                                <property name="AutoSize">True</property>
+                                <property name="XOptions">Fill</property>
+                                <property name="YOptions">Fill</property>
+                                <property name="XExpand">False</property>
                                 <property name="XFill">True</property>
                                 <property name="XShrink">False</property>
                                 <property name="YExpand">False</property>
-                                <property name="YFill">False</property>
+                                <property name="YFill">True</property>
                                 <property name="YShrink">False</property>
                               </packing>
                             </child>
@@ -841,6 +841,7 @@
                               <widget class="Gtk.Entry" id="txt_name">
                                 <property name="MemberName" />
                                 <property name="IsEditable">True</property>
+                                <property name="ActivatesDefault">True</property>
                                 <property name="InvisibleChar">●</property>
                                 <signal name="Changed" handler="NameChanged" />
                               </widget>
@@ -861,6 +862,7 @@
                               <widget class="Gtk.Entry" id="txt_subdirectory">
                                 <property name="MemberName" />
                                 <property name="IsEditable">True</property>
+                                <property name="ActivatesDefault">True</property>
                                 <property name="InvisibleChar">●</property>
                                 <signal name="Changed" handler="PathChanged" />
                               </widget>
@@ -968,7 +970,7 @@
       <widget class="Gtk.HButtonBox" id="dialog-action_area1">
         <property name="MemberName" />
         <property name="Spacing">10</property>
-        <property name="BorderWidth">6</property>
+        <property name="BorderWidth">5</property>
         <property name="Size">2</property>
         <property name="LayoutStyle">End</property>
         <child>

@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
         
         private Gtk.CheckButton chk_combine_directory;
         
-        private Gtk.HBox hbox_for_browser;
+        private MonoDevelop.Components.FolderEntry entry_location;
         
         private Gtk.HSeparator hseparator;
         
@@ -94,6 +94,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog-vbox1";
             w1.Spacing = 6;
+            w1.BorderWidth = ((uint)(2));
             // Container child dialog-vbox1.Gtk.Box+BoxChild
             this.notebook = new Gtk.Notebook();
             this.notebook.CanFocus = true;
@@ -224,15 +225,17 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             w13.RightAttach = ((uint)(2));
             w13.YOptions = ((Gtk.AttachOptions)(0));
             // Container child table1.Gtk.Table+TableChild
-            this.hbox_for_browser = new Gtk.HBox();
-            this.hbox_for_browser.Name = "hbox_for_browser";
-            this.table1.Add(this.hbox_for_browser);
-            Gtk.Table.TableChild w14 = ((Gtk.Table.TableChild)(this.table1[this.hbox_for_browser]));
+            this.entry_location = new MonoDevelop.Components.FolderEntry();
+            this.entry_location.Name = "entry_location";
+            this.entry_location.BrowserTitle = "Solution Location";
+            this.table1.Add(this.entry_location);
+            Gtk.Table.TableChild w14 = ((Gtk.Table.TableChild)(this.table1[this.entry_location]));
             w14.TopAttach = ((uint)(1));
             w14.BottomAttach = ((uint)(2));
             w14.LeftAttach = ((uint)(1));
             w14.RightAttach = ((uint)(2));
-            w14.YOptions = ((Gtk.AttachOptions)(0));
+            w14.XOptions = ((Gtk.AttachOptions)(4));
+            w14.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
             this.hseparator = new Gtk.HSeparator();
             this.hseparator.Name = "hseparator";
@@ -306,6 +309,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.txt_name = new Gtk.Entry();
             this.txt_name.Name = "txt_name";
             this.txt_name.IsEditable = true;
+            this.txt_name.ActivatesDefault = true;
             this.txt_name.InvisibleChar = '●';
             this.table1.Add(this.txt_name);
             Gtk.Table.TableChild w21 = ((Gtk.Table.TableChild)(this.table1[this.txt_name]));
@@ -316,6 +320,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.txt_subdirectory = new Gtk.Entry();
             this.txt_subdirectory.Name = "txt_subdirectory";
             this.txt_subdirectory.IsEditable = true;
+            this.txt_subdirectory.ActivatesDefault = true;
             this.txt_subdirectory.InvisibleChar = '●';
             this.table1.Add(this.txt_subdirectory);
             Gtk.Table.TableChild w22 = ((Gtk.Table.TableChild)(this.table1[this.txt_subdirectory]));
@@ -381,7 +386,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             Gtk.HButtonBox w31 = this.ActionArea;
             w31.Name = "dialog-action_area1";
             w31.Spacing = 10;
-            w31.BorderWidth = ((uint)(6));
+            w31.BorderWidth = ((uint)(5));
             w31.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog-action_area1.Gtk.ButtonBox+ButtonBoxChild
             this.btn_close = new Gtk.Button();

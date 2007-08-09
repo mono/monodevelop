@@ -35,7 +35,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		ArrayList categories   = new ArrayList();
 		
 		IconView TemplateView;
-		FolderEntry entry_location;
 		TreeStore catStore;
 		
 		bool openCombine;
@@ -461,10 +460,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			TemplateView = new IconView ();
 			hbox_template.PackStart (TemplateView, true, true, 0);
 
-			entry_location = new FolderEntry (GettextCatalog.GetString ("Solution Location"));
-			hbox_for_browser.PackStart (entry_location, true, true, 0);
-			
-			
 			if (basePath == null)
 				basePath = Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", Runtime.FileService.GetDirectoryNameWithSeparator (Environment.GetEnvironmentVariable ("HOME")) + "Projects").ToString ();
 				
