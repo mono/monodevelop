@@ -40,6 +40,7 @@ FILES =  \
 	MonoDevelop.Gettext/CatalogParser.cs \
 	MonoDevelop.Gettext/IsoCodes.cs \
 	MonoDevelop.Gettext/PluralForms.cs \
+	MonoDevelop.Gettext/PropertyProvider.cs \
 	MonoDevelop.Gettext/Translation.cs \
 	MonoDevelop.Gettext/TranslationProject.cs \
 	MonoDevelop.Gettext/TranslationProjectOptionsDialog.cs \

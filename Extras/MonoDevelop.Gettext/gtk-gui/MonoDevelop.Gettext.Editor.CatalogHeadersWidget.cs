@@ -84,7 +84,7 @@ namespace MonoDevelop.Gettext.Editor {
             this.notebook1 = new Gtk.Notebook();
             this.notebook1.CanFocus = true;
             this.notebook1.Name = "notebook1";
-            this.notebook1.CurrentPage = 1;
+            this.notebook1.CurrentPage = 0;
             this.notebook1.TabPos = ((Gtk.PositionType)(0));
             this.notebook1.BorderWidth = ((uint)(8));
             // Container child notebook1.Gtk.Notebook+NotebookChild

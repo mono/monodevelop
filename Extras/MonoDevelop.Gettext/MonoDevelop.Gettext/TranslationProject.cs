@@ -435,9 +435,6 @@ namespace MonoDevelop.Gettext
 		[ItemProperty]
 		bool isIncluded;
 		
-		[ItemProperty]
-		List<string> excludedFiles = new List<string> ();
-		
 		public string ProjectName {
 			get { return projectName; }
 			set { projectName = value; }
@@ -446,10 +443,6 @@ namespace MonoDevelop.Gettext
 		public bool IsIncluded {
 			get { return isIncluded; }
 			set { isIncluded = value; }
-		}
-		
-		public ReadOnlyCollection<string> ExcludedFiles {
-			get { return excludedFiles.AsReadOnly (); }
 		}
 		
 		public TranslationProjectInformation ()

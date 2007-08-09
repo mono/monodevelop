@@ -192,7 +192,9 @@ namespace MonoDevelop.Gettext.NodeBuilders
 						monitor.Log.WriteLine (String.Format (GettextCatalog.GetString ("Scanning project {0}..."),  p.Name));
 						monitor.Step (1);
 						foreach (ProjectFile file in p.ProjectFiles) {
-							TranslationService.UpdateTranslation (project, file.FilePath, monitor);
+							PropertyProvider.ProjectFileWrapper wrapper = new PropertyProvider.ProjectFileWrapper (file);
+							if (wrapper.ScanForTranslations)
+								TranslationService.UpdateTranslation (project, file.FilePath, monitor);
 						}
 					}
 					

@@ -103,4 +103,14 @@
 	<Extension path = "/MonoDevelop/IDE/StartupHandlers">
 		<Class class = "MonoDevelop.Gettext.TranslationServiceStartupCommand"/>
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/DesignerSupport/PropertyProviders">
+		<Class class = "MonoDevelop.Gettext.PropertyProvider"/>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/Serialization/ExtendedProperties">
+		<ItemProperty class = "MonoDevelop.Projects.ProjectFile"
+			name = "Gettext.ScanForTranslations" type = "System.Boolean" />
+	</Extension>
+	
 </Addin>
