@@ -1,5 +1,9 @@
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Makefile.am: Copy the config file to the correct location.
+
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects.addin.xml: Removed obsolete extension points.
 
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
