@@ -49,20 +49,6 @@
 		</ExtensionNode>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/SharpDevelop/Workbench/DeployHandlers" name = "Deployment handlers">
-		<Description>Deployment handlers. Specified classes must implement IDeployHandler.</Description>
-		<ExtensionNode name="Class">
-			<Description>A class which implements IDeployHandler.</Description>
-		</ExtensionNode>
-	</ExtensionPoint>
-
-	<ExtensionPoint path = "/MonoDevelop/Deployment/DeployFileCopiers" name = "File copiers">
-		<Description>File copiers for deployment handlers. Specified classes must implement IDeployFileCopier.</Description>
-		<ExtensionNode name="Class">
-			<Description>A class which implements IDeployFileCopier.</Description>
-		</ExtensionNode>
-	</ExtensionPoint>
-
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions" name = "Project service extensions">
 		<Description>Project service extensions. Specified classes must be a subclass of ProjectServiceExtension</Description>
 		<ExtensionNode name="Class">
