@@ -53,15 +53,15 @@ namespace MonoDevelop.Gettext
 			this.treeviewTranslations.HeadersVisible = false;
 			
 			this.buttonAdd.Clicked += delegate {
-				LanguageChooserDialog chooser = new LanguageChooserDialog ();
+				MonoDevelop.Gettext.Translator.LanguageChooserDialog chooser = new MonoDevelop.Gettext.Translator.LanguageChooserDialog ();
 
 				int response = 0;
-				chooser.Response += delegate(object o, ResponseArgs args) {
+				chooser.Response += delegate(object o, Gtk.ResponseArgs args) {
 					response = (int)args.ResponseId;
 				};
 				chooser.Run ();
 				
-				if (response == (int)ResponseType.Ok) {
+				if (response == (int)Gtk.ResponseType.Ok) {
 					string language = chooser.Language + (chooser.HasCountry ? "_" + chooser.Country : "");
 					store.AppendValues (chooser.LanguageLong, language);
 				}
@@ -70,11 +70,11 @@ namespace MonoDevelop.Gettext
 			};
 			this.buttonRemove.Sensitive = false;
 			treeviewTranslations.Selection.Changed += delegate {
-				TreeIter iter;
+				Gtk.TreeIter iter;
 				this.buttonRemove.Sensitive = treeviewTranslations.Selection.GetSelected (out iter);
 			};
 			this.buttonRemove.Clicked += delegate {
-				TreeIter iter;
+				Gtk.TreeIter iter;
 				if (treeviewTranslations.Selection.GetSelected (out iter)) {
 					this.store.Remove (ref iter);
 				}
