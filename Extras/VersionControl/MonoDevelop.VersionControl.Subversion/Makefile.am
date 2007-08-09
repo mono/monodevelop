@@ -1,15 +1,14 @@
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/VersionControl
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.VersionControl.Subversion.dll
-ADDIN = MonoDevelop.VersionControl.Subversion.addin.xml
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/AddIns/VersionControl/VersionControlAddIn.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:Mono.Posix
 
 FILES =  \
@@ -30,28 +29,25 @@ FILES =  \
 
 RES =  \
 	gtk-gui/gui.stetic \
-	gtk-gui/objects.xml
-
-$(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/$(ADDIN)
+	gtk-gui/objects.xml \
+	MonoDevelop.VersionControl.Subversion.addin.xml
 
 $(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) --unsafe $(build_sources) $(REFS) $(build_resources:%=/resource:%) -out:$@ -target:library
 
-CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(ADDIN_BUILD)/$(ADDIN)
-EXTRA_DIST = $(FILES) $(ADDIN) $(RES)
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
+EXTRA_DIST = $(FILES) $(RES)
 
 if ENABLE_SUBVERSION
-all: $(ADDIN_BUILD)/$(ADDIN) $(ASSEMBLY)
+all: $(ASSEMBLY)
 else
 all:
 endif
 
 if ENABLE_SUBVERSION
 addindir = $(MD_ADDIN_DIR)/VersionControl
-addin_DATA = $(srcdir)/$(ADDIN) $(ASSEMBLY)
+addin_DATA = $(ASSEMBLY)
 endif
 
 include $(top_srcdir)/Makefile.include

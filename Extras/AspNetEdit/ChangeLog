@@ -1,3 +1,8 @@
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AspNetEdit.mdp, Makefile.am, AspNetEdit.addin.xml: Reorganized the
+	  extension point hierarchy. Embedded all add-in manifests as resources.
+
 2007-08-06  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* Makefile.am: Add libs/JSCall.js to EXTRA_DIST.

@@ -12,6 +12,7 @@ all: $(ASSEMBLY) $(ASSEMBLY).config
 
 REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	-r:$(top_srcdir)/contrib/Mono.Addins.dll
 
 $(ASSEMBLY): $(build_sources) $(build_resources)

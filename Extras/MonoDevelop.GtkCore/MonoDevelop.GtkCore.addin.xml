@@ -22,26 +22,26 @@
 	    <Addin id="Projects" version="0.15.0"/>
 	    <Addin id="Projects.Gui" version="0.15.0"/>
 		<Addin id="Ide" version="0.15.0"/>
-		<AddIn id="DesignerSupport" version="0.15.0"/>
+		<Addin id="DesignerSupport" version="0.15.0"/>
 	</Dependencies>
 	
-	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ActionGroupNode">
+	<ExtensionPoint path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad/ActionGroup">
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/WidgetsNode">
+	<ExtensionPoint path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad/UserInterfaceFolder">
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/WidgetNode">
+	<ExtensionPoint path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad/Component">
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/StockIconsNode">
+	<ExtensionPoint path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad/StockIcons">
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 	
-	<Extension path = "/SharpDevelop/Workbench/Pads">
+	<Extension path = "/MonoDevelop/Ide/Pads">
 		<Pad id = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderProjectPad" 
 			class = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderProjectPad" 
 			_label="Widget Tree"
@@ -49,11 +49,11 @@
 			/>
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/Contexts/Edit">
+	<Extension path = "/MonoDevelop/Ide/WorkbenchContexts/Edit">
 		<ContextPad id = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderProjectPad" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
+	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder class = "MonoDevelop.GtkCore.NodeBuilders.ProjectFolderNodeBuilderExtension"/>
 		<NodeBuilder class = "MonoDevelop.GtkCore.NodeBuilders.ProjectNodeBuilder"/>
 		<NodeBuilder class = "MonoDevelop.GtkCore.NodeBuilders.WidgetNodeBuilder"/>
@@ -62,7 +62,7 @@
 		<NodeBuilder class = "MonoDevelop.GtkCore.NodeBuilders.StockIconsNodeBuilder"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/FileTemplates">
+	<Extension path = "/MonoDevelop/Ide/FileTemplates">
 		<FileTemplate id = "DialogFileTemplate" resource = "Dialog.xft.xml"/>
 		<FileTemplate id = "WindowFileTemplate" resource = "Window.xft.xml"/>
 		<FileTemplate id = "WidgetFileTemplate" resource = "Widget.xft.xml"/>
@@ -73,7 +73,7 @@
 		<FileTemplate id = "PartialActionGroupFileTemplate" resource = "ActionGroupPartial.xft.xml"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">
+	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding insertbefore = "NewText"
 		       supportedformats = "Text Files,Source Files"
 		       class = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderDisplayBinding" />
@@ -82,7 +82,7 @@
 		       class = "MonoDevelop.GtkCore.GuiBuilder.ActionGroupDisplayBinding" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Commands">
+	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Category _name = "Gtk Core" id = "GtkCore">
 		<Command id = "MonoDevelop.GtkCore.GtkCommands.AddNewDialog"
 				icon = "md-gtkcore-dialog"
@@ -105,7 +105,7 @@
 		</Category>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectBrowserNode/Add">
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Project/Add">
 		<SeparatorItem insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" />
 		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewDialog" />
 		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewWindow" />
@@ -113,7 +113,7 @@
 		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewActionGroup" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/DefaultDirectoryNode/Add">
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Folder/Add">
 		<SeparatorItem insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" />
 		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewDialog" />
 		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewWindow" />
@@ -121,7 +121,7 @@
 		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewActionGroup" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/WidgetsNode">
+	<Extension path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad/UserInterfaceFolder">
 		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewDialog" />
 		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewWindow" />
 		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewWidget" />
@@ -133,31 +133,31 @@
 		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.GtkSettings" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/WidgetNode">
+	<Extension path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad/Component">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.Open" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ActionGroupNode">
+	<Extension path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad/ActionGroup">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.Open" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/StockIconsNode">
+	<Extension path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad/StockIcons">
 		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.EditIcons" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/Serialization/ExtendedProperties">
+	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
 		<ItemProperty class = "MonoDevelop.Projects.Project"
 		              name = "GtkDesignInfo"
 		              type = "MonoDevelop.GtkCore.GtkDesignInfo" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/IDE/StartupHandlers">
+	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
 		<Class class="MonoDevelop.GtkCore.GtkCoreStartupCommand" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/GeneralOptions/Common">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/GeneralOptions/Common">
 		<Condition id="activeproject" value ="DotNet">
 			<DialogPanel id = "SteticOptionsPanel"
 			             _label = "GTK# Settings"
@@ -165,18 +165,18 @@
 		</Condition>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/FileTemplateTypes">
+	<Extension path = "/MonoDevelop/Ide/FileTemplateTypes">
 		<FileTemplateType name = "Widget" class = "MonoDevelop.GtkCore.WidgetFileDescriptionTemplate"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/StockIcons">
+	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "md-gtkcore-window" resource = "window.png" />
 		<StockIcon stockid = "md-gtkcore-dialog" resource = "dialog.png" />
 		<StockIcon stockid = "md-gtkcore-widget" resource = "widget.png" />
 		<StockIcon stockid = "md-gtkcore-actiongroup" resource = "actiongroup.png" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/ProjectServiceExtensions">
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
 		<Class class = "MonoDevelop.GtkCore.GuiBuilder.GtkProjectServiceExtension"  insertafter="MidStep"/>
 	</Extension>
 	
@@ -188,11 +188,11 @@
 		<Class id="ToolboxItemLoader" class="MonoDevelop.GtkCore.GuiBuilder.ToolboxLoader"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
+	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "MonoDevelop.GtkCore.GuiBuilder.ComponentToolboxNode" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Workbench/ProjectFeatures">
+	<Extension path = "/MonoDevelop/Ide/ProjectFeatures">
 		<Class class = "MonoDevelop.GtkCore.Dialogs.GtkProjectFeature" />
 	</Extension>
 

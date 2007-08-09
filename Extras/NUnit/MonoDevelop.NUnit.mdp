@@ -63,7 +63,7 @@
     <File name="./templates/NUnitTestClass.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
-    <File name="./MonoDevelopNUnit.addin.xml" subtype="Code" buildaction="FileCopy" />
+    <File name="./MonoDevelopNUnit.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./templates/NUnitProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./Gui/nunit.png" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>

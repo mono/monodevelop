@@ -29,7 +29,7 @@ namespace MonoDevelop.Projects.Gui
 		public override void InitializeService()
 		{
 			base.InitializeService();
-			InitializeIcons ("/Workspace/Icons");
+			InitializeIcons ("/MonoDevelop/ProjectModel/Gui/Icons");
 		}
 		
 		public string GetImageForProjectType (string projectType)

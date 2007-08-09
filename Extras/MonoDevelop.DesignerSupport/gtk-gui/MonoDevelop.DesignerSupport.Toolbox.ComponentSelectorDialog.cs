@@ -86,19 +86,15 @@ namespace MonoDevelop.DesignerSupport.Toolbox {
             this.button24.UseUnderline = true;
             // Container child button24.Gtk.Container+ContainerChild
             Gtk.Alignment w5 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            w5.Name = "GtkAlignment";
             // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w6 = new Gtk.HBox();
-            w6.Name = "GtkHBox1";
             w6.Spacing = 2;
             // Container child GtkHBox1.Gtk.Container+ContainerChild
             Gtk.Image w7 = new Gtk.Image();
-            w7.Name = "image12";
-            w7.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-add", 16);
+            w7.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-add", Gtk.IconSize.Menu, 16);
             w6.Add(w7);
             // Container child GtkHBox1.Gtk.Container+ContainerChild
             Gtk.Label w9 = new Gtk.Label();
-            w9.Name = "GtkLabel";
             w9.LabelProp = Mono.Unix.Catalog.GetString("Add Assembly...");
             w9.UseUnderline = true;
             w6.Add(w9);

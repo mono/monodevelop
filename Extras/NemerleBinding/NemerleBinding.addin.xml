@@ -19,34 +19,34 @@
 		<Addin id="Ide" version="0.15.0"/>
 	</Dependencies>
 	
-  <Extension path = "/SharpDevelop/Workbench/Ambiences">
+  <Extension path = "/MonoDevelop/ProjectModel/Ambiences">
 	<Class id    = "Nemerle"
 	       class = "NemerleBinding.NemerleAmbience" />
   </Extension>	
 	
-  <Extension path = "/SharpDevelop/Workbench/FileFilter">
+  <Extension path = "/MonoDevelop/Ide/FileFilters">
     <FileFilter id = "Nemerle"
                 insertbefore = "AllFiles"
                 _label = "Nemerle Files"
                 extensions = "*.n" />
   </Extension>
 
-  <Extension path = "/MonoDevelop/FileTemplates">
+  <Extension path = "/MonoDevelop/Ide/FileTemplates">
     <FileTemplate id = "EmptyNemerleFile" resource = "EmptyNemerleFile.xft.xml"/>
     <FileTemplate id = "NemerleGtkSharpWindow" resource = "NemerleGtkSharpWindow.xft.xml"/>
   </Extension>
 
-  <Extension path = "/MonoDevelop/ProjectTemplates">
+  <Extension path = "/MonoDevelop/Ide/ProjectTemplates">
     <ProjectTemplate id = "EmptyNemerleProject" resource = "NemerleEmptyProject.xpt.xml"/>
     <ProjectTemplate id = "NemerleGtkSharpProject" resource = "NemerleGtkSharpProject.xpt.xml"/>
     <ProjectTemplate id = "NemerleGnomeSharpProject" resource = "NemerleGnomeSharpProject.xpt.xml"/>
   </Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
+	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "NemerleBinding.NemerleParameters" />
 	</Extension>
 	
-  <Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
+  <Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions">
     <Condition id="activelanguage" value = "Nemerle">
       <DialogPanel id = "NemerleCodeGenerationPanel"
                    _label = "Code Generation"
@@ -57,7 +57,7 @@
     </Condition>
   </Extension>
 
-  <Extension path = "/Workspace/Icons">
+  <Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
     <Icon id = "NemerlePrj"
           language = "Nemerle"
           resource = "res:Nemerle.ProjectIcon"/>
@@ -66,7 +66,7 @@
           resource = "res:Nemerle.FileIcon"/>
   </Extension>
 
-  <Extension path = "/SharpDevelop/Workbench/LanguageBindings">
+  <Extension path = "/MonoDevelop/ProjectModel/LanguageBindings">
     <LanguageBinding id = "Nemerle"
                      supportedextensions = ".n"
                      class = "NemerleBinding.NemerleLanguageBinding" />

@@ -15,20 +15,20 @@
 		<AddIn id="MonoDevelop.Ide" version="0.9.0"/>
 	</Dependencies>
 	
-	<Extension path = "/SharpDevelop/Workbench/FileFilter">
+	<Extension path = "/MonoDevelop/Ide/FileFilters">
 		<FileFilter id = "Python"
 		            _label = "Python Files"
 		            extensions = "*.py"/>
 	</Extension>
 	
-  <Extension path = "/MonoDevelop/ProjectTemplates">
+  <Extension path = "/MonoDevelop/Ide/ProjectTemplates">
     <ProjectTemplate id = "PythonConsoleProject"
                      resource = "templates/PythonConsoleProject.xpt.xml"/>
     <ProjectTemplate id = "PythonGtkProject"
                      resource = "templates/PythonGtkProject.xpt.xml"/>
   </Extension>
 
-  <Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
+  <Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions">
     <Conditional activeproject = "Python">
       <DialogPanel id = "PythonCompilerParametersPanel"
                    _label = "Compiler"
@@ -36,7 +36,7 @@
     </Conditional>
   </Extension>
 
-  <Extension path = "/SharpDevelop/Workbench/LanguageBindings">
+  <Extension path = "/MonoDevelop/ProjectModel/LanguageBindings">
     <LanguageBinding id = "Python"
                      supportedextensions = ".py"
                      class = "PythonBinding.PythonLanguageBinding"/>

@@ -1,3 +1,9 @@
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Components.addin.xml, Makefile.am, MonoDevelop.Components.mdp:
+	  Reorganized the extension point hierarchy. Embedded all add-in manifests
+	  as resources.
+
 2007-08-08  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/objects.xml, MonoDevelop.Components.mdp: Inclide IconView to the

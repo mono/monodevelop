@@ -23,7 +23,7 @@
 		<Addin id="Deployment" version="0.15.0"/>
 	</Dependencies>
 
-	<Extension path = "/MonoDevelop/FileTemplates">
+	<Extension path = "/MonoDevelop/Ide/FileTemplates">
 		<FileTemplate id = "EmptyWebForm" resource = "EmptyWebForm.xft.xml"/>
 		<FileTemplate id = "EmptyWebHandler" resource = "EmptyWebHandler.xft.xml"/>
 		<FileTemplate id = "EmptyWebControl" resource = "EmptyWebControl.xft.xml"/>
@@ -36,31 +36,31 @@
 		<FileTemplate id = "CodeBehindWebHandler" resource = "CodeBehindWebHandler.xft.xml"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/FileTemplateTypes">
+	<Extension path = "/MonoDevelop/Ide/FileTemplateTypes">
 		<FileTemplateType name = "AspNetFile" class = "AspNetAddIn.AspNetFileDescriptionTemplate"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectTemplates">
+	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
 		<ProjectTemplate id = "WebApplication" resource = "WebApplication.xpt.xml"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/FileFilter">
+	<Extension path = "/MonoDevelop/Ide/FileFilters">
 		<FileFilter	id = "AspNetWebFiles"
 				insertbefore = "AllFiles"
 				_label = "ASP.NET Files"
 				extensions = "*.aspx,*.ashx,*.asmx,*.ascx,*.master" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/ProjectBindings">
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">
 		<ProjectBinding id = "AspNetApplication" class = "AspNetAddIn.AspNetAppProjectBinding" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
+	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "AspNetAddIn.AspNetAppProject" />
 		<DataType class = "AspNetAddIn.AspNetAppProjectConfiguration" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/GeneralOptions/Common">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/GeneralOptions/Common">
 		<Condition id="activeproject" value="AspNetApp">
 			<DialogPanel id = "XspOptions"
 			             _label = "XSP Web Server"
@@ -68,7 +68,7 @@
 		</Condition>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions">
 		<Condition id="activeproject" value="AspNetApp">
 			<DialogPanel id = "AspNetConfiguration"
 			             _label = "ASP.NET Options"
@@ -80,13 +80,13 @@
 		<Class id="AspNetCodeBehindProvider" class="AspNetAddIn.AspNetCodeBehindProvider"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">
+	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding id    = "AspNetDisplayBinding"
 		                supportedformats = "Source Code"
 		                class = "AspNetAddIn.AspNetDisplayBinding"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/ProjectServiceExtensions">
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
 		<Class class = "AspNetAddIn.VerifyCodeBehindBuildStep" />
 	</Extension>
 	

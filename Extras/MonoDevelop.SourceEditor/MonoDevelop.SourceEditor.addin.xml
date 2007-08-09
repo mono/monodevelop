@@ -24,17 +24,17 @@
 
 	<!-- Extension points -->
 	
-	<ExtensionPoint path = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu" name = "Editor context menu">
+	<ExtensionPoint path = "/MonoDevelop/SourceEditor/ContextMenu/Editor" name = "Editor context menu">
 		<Description>Context menu for the editor.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet" />
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/AddIns/DefaultTextEditor/EditActions" name = "Custom edit actions">
+	<ExtensionPoint path = "/MonoDevelop/SourceEditor/EditActions" name = "Custom edit actions">
 		<Description>Custom edit actions for the editor.</Description>
 		<ExtensionNode name="EditAction" type="MonoDevelop.SourceEditor.Codons.EditActionCodon"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/AddIns/DefaultTextEditor/Formatters" name = "Formatters">
+	<ExtensionPoint path = "/MonoDevelop/SourceEditor/Formatters" name = "Formatters">
 		<Description>Custom edit actions for the editor.</Description>
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
@@ -42,11 +42,11 @@
 	
 	<!-- Extensions -->
 	
-	<Extension path = "/Workspace/Services">
+	<Extension path = "/MonoDevelop/Core/Services">
 		<Class id = "SourceViewService" class="MonoDevelop.SourceEditor.SourceViewService" />
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Commands/TextEditor">
+	<Extension path = "/MonoDevelop/Ide/Commands/TextEditor">
 		<Command id = "MonoDevelop.SourceEditor.EditorCommands.HighlightingTypeList"
 				type = "array|radio"
 				_label = "" />
@@ -93,7 +93,7 @@
 				shortcut = "Shift|Control|P" />
 	</Extension>
 
-	<Extension path = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
+	<Extension path = "/MonoDevelop/SourceEditor/ContextMenu/Editor">
 		<CommandItem id = "MonoDevelop.Ide.Commands.RefactoryCommands.CurrentRefactoryOperations" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Save" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAs" />
@@ -109,7 +109,7 @@
 		</ItemSet>
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/ToolBar">
+	<Extension path = "/MonoDevelop/Ide/Toolbar">
 		<ItemSet id = "Search" insertafter = "Standard" insertbefore = "Build" _label="Search">
 			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.Find" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindNext" />
@@ -123,7 +123,7 @@
 	</Extension>
 	
 	
-	<Extension path = "/SharpDevelop/Workbench/MainMenu/Search">
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Search">
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.Find" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindPrevious" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindNext" />
@@ -146,7 +146,7 @@
 		<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.GotoMatchingBrace" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/MainMenu/File">
+	<Extension path = "/MonoDevelop/Ide/MainMenu/File">
 			<SeparatorItem id = "PrintSeparator"  insertafter = "SaveSeparator" />
 			<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.PrintPreviewDocument"
 						 insertafter = "SaveSeparator"
@@ -155,12 +155,12 @@
 						 insertafter = "MonoDevelop.SourceEditor.EditorCommands.PrintPreviewDocument" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/ToolBar/Standard">
+	<Extension path = "/MonoDevelop/Ide/Toolbar/Standard">
 		<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.PrintDocument"
 					 insertafter = "MonoDevelop.Ide.Commands.FileCommands.SaveAll" />
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Dialogs/OptionsDialog">
+	<Extension path = "/MonoDevelop/Ide/OptionsDialogPanels">
 		<DialogPanel id    = "TextEditorOptions"
 		             insertafter = "CodingOptions"
 		             insertbefore = "ToolsOptions"
@@ -181,14 +181,14 @@
 	</Extension>
 
 	
-	<Extension path = "/AddIns/DefaultTextEditor/EditActions" extension-nodes="EditAction" description="Custom edit actions.">
+	<Extension path = "/MonoDevelop/SourceEditor/EditActions" extension-nodes="EditAction" description="Custom edit actions.">
 		<!-- these are the default editor actions -->
 		<EditAction id = "ShiftTab" class = "MonoDevelop.SourceEditor.Actions.ShiftTab" keys = "Shift|ISO_Left_Tab"/>
 		<EditAction id = "Tab" class = "MonoDevelop.SourceEditor.Actions.Tab" keys = "Tab"/>
 		<EditAction id = "Return" class = "MonoDevelop.SourceEditor.Actions.Return" keys = "Return"/>
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">
+	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding id    = "NewText" insertafter="DefaultDisplayBinding"
 		       supportedformats = "Text Files,Source Files"
 		       class = "MonoDevelop.SourceEditor.Gui.SourceEditorDisplayBinding" />

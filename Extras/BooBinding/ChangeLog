@@ -1,3 +1,9 @@
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* BooBinding.addin.xml, BooBinding.mdp, BooShell/Makefile.am, Makefile.am:
+	  Reorganized the extension point hierarchy. Embedded all add-in manifests
+	  as resources.
+
 2007-07-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* BooBinding.addin.xml, BooShellPadContent.boo: Updated pad icons.

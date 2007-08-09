@@ -26,20 +26,20 @@
 		<Addin id="DesignerSupport" version="0.15.0"/>
 	</Dependencies>
 	
-	<ExtensionPoint path = "/Autotools/SimpleSetups">
+	<ExtensionPoint path = "/MonoDevelop/Autotools/SimpleSetups">
 		<Description>Simple autotools setups. Specified classes must implement ISimpleAutotoolsSetup</Description>
 		<ExtensionNode name ="Class" />
 	</ExtensionPoint>
 	
-	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
+	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder id = "AutotoolNodeExtension" class = "MonoDevelop.Autotools.NodeExtension"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/ProjectServiceExtensions">
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
 		<Class class = "MonoDevelop.Autotools.MakefileProjectServiceExtension" id="MakefileProjectServiceExtension" insertafter="FinalStep"/>
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Commands">
+	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Category _name = "Autotools" id = "Autotools">
 		<Command id = "MonoDevelop.Autotools.Commands.GenerateFiles"
 			_label = "Generate Makefiles..."
@@ -50,23 +50,23 @@
 		</Category>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/CombineBrowserNode/Tools">
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Combine/Tools">
 		<CommandItem id = "MonoDevelop.Autotools.Commands.GenerateFiles" insertafter="ExportListSeparator"/>
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectBrowserNode/Tools">
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Project/Tools">
 		<CommandItem id = "MonoDevelop.Autotools.Commands.GenerateFiles" insertafter="ExportListSeparator"/>
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/MainMenu/Run">
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Run">
 		<CommandItem id = "MonoDevelop.Autotools.Commands.GenerateFiles" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectFileNode/Include">
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/ProjectFile/Include">
 		<CommandItem id = "MonoDevelop.Autotools.Commands.SynchWithMakefile" insertafter="Include"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
+	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder class = "MonoDevelop.Autotools.FileNodeBuilderExtension"/>
 	</Extension>
 	
@@ -74,20 +74,20 @@
 		<Class class="MonoDevelop.Autotools.TarballDeployTarget" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/DeployService/PackageBuilderEditors">
+	<Extension path = "/MonoDevelop/Deployment/PackageBuilderEditors">
 		<Class class="MonoDevelop.Autotools.TarballTargetEditor" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
+	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "MonoDevelop.Autotools.TarballDeployTarget" />
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/GeneralOptions/Common">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/GeneralOptions/Common">
 		<DialogPanel id= "Makefile" _label = "Makefile Integration"
 			class = "MonoDevelop.Autotools.MakefileOptionPanel" />
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/Serialization/ExtendedProperties">
+	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
 		<ItemProperty class = "MonoDevelop.Projects.Project"
 			name = "MonoDevelop.Autotools.MakefileInfo" type = "MonoDevelop.Autotools.MakefileData" />
 	</Extension>
@@ -96,12 +96,12 @@
 		<Class class = "MonoDevelop.Autotools.PropertyProvider"/>
 	</Extension>
 	
-	<Extension path = "/System/Applications">
+	<Extension path = "/MonoDevelop/Core/Applications">
 		<Application id = "generate-makefiles" class = "MonoDevelop.Autotools.MakefileGeneratorTool" description = "Makefile generator tool"/>
 	</Extension>
 
 <!--
-	<Extension path = "/MonoDevelop/Workbench/ProjectFeatures">
+	<Extension path = "/MonoDevelop/Ide/ProjectFeatures">
 		<Class class = "MonoDevelop.Autotools.MakefileIntegrationFeature" />
 	</Extension>
 -->

@@ -7,19 +7,25 @@
        description = "Provides basic GUI services"
 	   category    = "MonoDevelop Core"
        version     = "0.15.0"
+	   isroot      = "true"
        compatVersion = "0.15.0">
 
-	<Runtime>
-		<Import assembly="MonoDevelop.Components.dll"/>
-		<Import assembly="MonoDevelop.Core.Gui.dll"/>
-	</Runtime>
-
 	<Dependencies>
-		<Addin id="Core" version="0.15.0"/>
+		<Addin id="Components" version="0.15.0"/>
 	</Dependencies>
-	
+
 	<!-- Extension points -->
 
+	<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet">
+		<ExtensionNode name="CommandItem" type="MonoDevelop.Core.Gui.Codons.CommandItemCodon" />
+		<ExtensionNode name="SeparatorItem" type="MonoDevelop.Core.Gui.Codons.SeparatorItemCodon" />
+		<ExtensionNode name="ItemSet" type="MonoDevelop.Core.Gui.Codons.ItemSetCodon" nodeset="Origin.Commands.ItemSet" >
+			<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet" />
+		</ExtensionNode>
+		<ExtensionNode name="LinkItem" type="MonoDevelop.Core.Gui.Codons.LinkItemCodon" />
+		<ExtensionNode name="LocalCommandItem" type="MonoDevelop.Core.Gui.Codons.LocalCommandItemCodon" />
+	</ExtensionNodeSet>
+	
 	<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet">
 		<ExtensionNode name="CommandItem" type="MonoDevelop.Core.Gui.Codons.CommandItemCodon" />
 		<ExtensionNode name="SeparatorItem" type="MonoDevelop.Core.Gui.Codons.SeparatorItemCodon" />
@@ -36,20 +42,21 @@
 		</ExtensionNode>
 	</ExtensionNodeSet>
 	
-	<ExtensionPoint path = "/SharpDevelop/Workbench/StockIcons" name = "Stock icons">
+	<ExtensionPoint path = "/MonoDevelop/Core/StockIcons" name = "Stock icons">
 		<Description>Available from MonoDevelop.Core.Gui.Services.Resources.</Description>
 		<ExtensionNode name="StockIcon" type="MonoDevelop.Core.Gui.Codons.StockIconCodon" />
 	</ExtensionPoint>
 
 	<!-- Extensions -->
 	
-	<Extension path = "/System/Applications">
+<!--	<Extension path = "/MonoDevelop/Core/Applications">
 		<Application id    = "gsetup"
 		       description = "Graphical add-in setup utility"
 		       class = "MonoDevelop.Core.Gui.Dialogs.SetupApp"/>
 	</Extension>
+-->
 
-	<Extension path = "/SharpDevelop/Workbench/StockIcons">
+	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "md-break-point" resource = "BreakPoint.png" />
 		<StockIcon stockid = "md-build-combine" resource = "Icons.16x16.BuildCombine" />
 		<StockIcon stockid = "md-build-current-selected-project" resource = "Icons.16x16.BuildCurrentSelectedProject" />

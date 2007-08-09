@@ -24,51 +24,51 @@
 	
 	<!-- Extension Points -->
 
-	<ExtensionPoint path = "/Services/NUnit/TestProviders" name = "Test providers">
+	<ExtensionPoint path = "/MonoDevelop/NUnit/TestProviders" name = "Test providers">
 		<Description>Test providers. Specified classes must implement ITestProvider.</Description>
 		<ExtensionNode name ="Class" />
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/SharpDevelop/Views/TestChart/ContextMenu">
+	<ExtensionPoint path = "/MonoDevelop/NUnit/ContextMenu/TestChart">
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/SharpDevelop/Views/TestPad/ContextMenu">
+	<ExtensionPoint path = "/MonoDevelop/NUnit/ContextMenu/TestPad">
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/SharpDevelop/Views/TestResultsPad/ContextMenu">
+	<ExtensionPoint path = "/MonoDevelop/NUnit/ContextMenu/TestResultsPad">
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/NUnitAssemblyGroup">
+	<ExtensionPoint path = "/MonoDevelop/NUnit/ContextMenu/ProjectPad/NUnitAssemblyGroup">
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/TestAssembly">
+	<ExtensionPoint path = "/MonoDevelop/NUnit/ContextMenu/ProjectPad/TestAssembly">
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/NUnitAssemblyGroupConfiguration">
+	<ExtensionPoint path = "/MonoDevelop/NUnit/ContextMenu/ProjectPad/NUnitAssemblyGroupConfiguration">
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/SharpDevelop/Workbench/UnitTestOptions/GeneralOptions">
+	<ExtensionPoint path = "/MonoDevelop/NUnit/UnitTestOptions/GeneralOptions">
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.DialogPanel" />
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/SharpDevelop/Workbench/UnitTestOptions/ConfigurationProperties">
+	<ExtensionPoint path = "/MonoDevelop/NUnit/UnitTestOptions/ConfigurationOptions">
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.DialogPanel" />
 	</ExtensionPoint>
 
 
 	<!-- Extensions -->
 
-	<Extension path="/Workspace/Services">
+	<Extension path="/MonoDevelop/Core/Services">
 		<Class id = "NUnitService" class = "MonoDevelop.NUnit.NUnitService" insertafter = "CommandService"/>
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/Pads">
+	<Extension path = "/MonoDevelop/Ide/Pads">
 		<SolutionPad id = "MonoDevelop.NUnit.TestPad" defaultPlacement = "Left" _label = "Unit Tests" icon = "nunit-pad-icon" class = "MonoDevelop.NUnit.TestPad">
 			<PadOption id = "ShowTestTime" _label = "Show Test Time" defaultValue = "False" />
 			<PadOption id = "ShowTestCounters" _label = "Show Test Counters" defaultValue = "False" />
@@ -76,17 +76,17 @@
 		</SolutionPad>
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
+	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder id = "NUnitAssemblyGroupNodeBuilder" class = "MonoDevelop.NUnit.NUnitAssemblyGroupNodeBuilder"/>
 		<NodeBuilder id = "NUnitAssemblyGroupConfigurationNodeBuilder" class = "MonoDevelop.NUnit.NUnitAssemblyGroupConfigurationNodeBuilder"/>
 		<NodeBuilder id = "TestAssemblyNodeBuilder" class = "MonoDevelop.NUnit.TestAssemblyNodeBuilder"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/Contexts/Edit">
+	<Extension path = "/MonoDevelop/Ide/WorkbenchContexts/Edit">
 		<ContextPad id = "MonoDevelop.NUnit.TestPad" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Commands">
+	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Category _name = "NUnit" id = "NUnit">
 		<Command id = "MonoDevelop.NUnit.Commands.TestCommands.RunTest" _label = "Run Test" />
 		<Command id = "MonoDevelop.NUnit.Commands.TestCommands.ShowTestCode" _label = "Show test source code" />
@@ -103,19 +103,19 @@
 		</Category>
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/NUnitAssemblyGroup">
+	<Extension path = "/MonoDevelop/NUnit/ContextMenu/ProjectPad/NUnitAssemblyGroup">
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/NUnitAssemblyGroupConfiguration">
+	<Extension path = "/MonoDevelop/NUnit/ContextMenu/ProjectPad/NUnitAssemblyGroupConfiguration">
 		<CommandItem id = "MonoDevelop.NUnit.Commands.NUnitProjectCommands.AddAssembly" />
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/TestAssembly">
+	<Extension path = "/MonoDevelop/NUnit/ContextMenu/ProjectPad/TestAssembly">
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Views/TestPad/ContextMenu">
+	<Extension path = "/MonoDevelop/NUnit/ContextMenu/TestPad">
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.RunTest" />
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.ShowTestCode" />
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.ShowTestDetails" />
@@ -123,12 +123,12 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Views/TestResultsPad/ContextMenu">
+	<Extension path = "/MonoDevelop/NUnit/ContextMenu/TestResultsPad">
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.ShowTestCode" />
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.SelectTestInTree" />
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Views/TestChart/ContextMenu">
+	<Extension path = "/MonoDevelop/NUnit/ContextMenu/TestChart">
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestChartCommands.ShowResults" />
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestChartCommands.ShowTime" />
 		<SeparatorItem id = "s1" />
@@ -140,36 +140,36 @@
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestChartCommands.SingleDayResult" />
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/UnitTestOptions/GeneralOptions">
+	<Extension path = "/MonoDevelop/NUnit/UnitTestOptions/GeneralOptions">
 		<DialogPanel id = "Configurations"
 					 _label = "Configurations" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/UnitTestOptions/ConfigurationProperties">
+	<Extension path = "/MonoDevelop/NUnit/UnitTestOptions/ConfigurationOptions">
 		<DialogPanel id = "NUnitOptionsPanel"
 					 _label = "NUnit Categories"
 					 class = "MonoDevelop.NUnit.NUnitOptionsPanel"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectTemplates">
+	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
 		<ProjectTemplate id = "NUnitAssemblyGroup" resource = "NUnitAssemblyGroup.xpt.xml"/>
 		<ProjectTemplate id = "NUnitProject" resource = "NUnitProject.xpt.xml"/>
 	</Extension>
 
-  	<Extension path = "/MonoDevelop/FileTemplates">
+  	<Extension path = "/MonoDevelop/Ide/FileTemplates">
 		<FileTemplate id = "NUnitTestClass" resource = "NUnitTestClass.xft.xml"/>
 	</Extension>
   
-	<Extension path = "/SharpDevelop/Workbench/ProjectFileFormats">
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectFileFormats">
 		<FileFormat id="NUnitAssemblyGroupFileFormat"
 		            class="MonoDevelop.NUnit.NUnitAssemblyGroupFileFormat, MonoDevelop.NUnit"/>
 	</Extension>
 
-	<Extension path = "/Services/NUnit/TestProviders">
+	<Extension path = "/MonoDevelop/NUnit/TestProviders">
 		<Class id="SystemTestProvider" class="MonoDevelop.NUnit.SystemTestProvider" />
 	</Extension>
   
-	<Extension path = "/SharpDevelop/Workbench/StockIcons">
+	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "nunit-pad-icon" resource = "nunit.png" />
 	</Extension>
 

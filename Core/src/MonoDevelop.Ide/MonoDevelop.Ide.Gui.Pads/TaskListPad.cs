@@ -94,7 +94,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			switcherComboList = new ListStore (typeof (string), typeof (ITaskListView), typeof (string));
 			try
 			{
-				ExtensionNodeList viewCodons = AddinManager.GetExtensionNodes ("/MonoDevelop/TaskList/View", typeof (TaskListViewCodon));
+				ExtensionNodeList viewCodons = AddinManager.GetExtensionNodes ("/MonoDevelop/Ide/TaskList/View", typeof (TaskListViewCodon));
 				foreach (TaskListViewCodon codon in viewCodons)
 				{
 					switcherComboList.AppendValues (codon.Label, codon.View, codon.Class);

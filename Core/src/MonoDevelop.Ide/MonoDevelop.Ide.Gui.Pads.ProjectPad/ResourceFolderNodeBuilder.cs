@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		public override string ContextMenuAddinPath {
-			get { return "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ResourceFolderNode"; }
+			get { return "/MonoDevelop/Ide/ContextMenu/ProjectPad/ResourceFolder"; }
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)

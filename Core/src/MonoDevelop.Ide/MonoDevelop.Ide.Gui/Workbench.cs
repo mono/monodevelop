@@ -429,7 +429,7 @@ namespace MonoDevelop.Ide.Gui
 			TreeViewOptions ops = new TreeViewOptions (
 				parentWindow,
 				(IProperties)Runtime.Properties.GetProperty("MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new DefaultProperties()),
-				AddinManager.GetExtensionNode ("/SharpDevelop/Dialogs/OptionsDialog"));
+				AddinManager.GetExtensionNode ("/MonoDevelop/Ide/OptionsDialogPanels"));
 
 			if (panelId != null)
 				ops.SelectPanel (panelId);

@@ -1,0 +1,16 @@
+<Addin id          = "Components"
+       namespace   = "MonoDevelop"
+       name        = "MonoDevelop Components"
+       author      = "Lluis Sanchez, Todd Berman, John Luke, Mike Krueger"
+       copyright   = "GPL"
+       url         = "http://www.monodevelop.com"
+       description = "Provides basic GUI components"
+	   category    = "MonoDevelop Core"
+       version     = "0.15.0"
+	   isroot      = "true"
+       compatVersion = "0.15.0">
+
+	<!-- Extension points -->
+
+
+</Addin>

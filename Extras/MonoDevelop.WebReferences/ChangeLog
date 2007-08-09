@@ -1,3 +1,11 @@
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.WebReferences.addin.xml,
+	  MonoDevelop.WebReferences.NodeBuilders/WebReferenceFolderNodeBuilder.cs,
+	  MonoDevelop.WebReferences.NodeBuilders/WebReferenceNodeBuilder.cs,
+	  MonoDevelop.WebReferences.mdp, Makefile.am: Reorganized the extension
+	  point hierarchy. Embedded all add-in manifests as resources.
+
 2007-08-03  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs: API

@@ -1,13 +1,13 @@
 
 FILES =  \
-	MonoDevelop.VersionControl.Dialogs/CommitDialog.cs \
-	MonoDevelop.VersionControl.Dialogs/EditRepositoryDialog.cs \
-	MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs \
+	MonoDevelop.VersionControl.Dialogs/CommitDialog.cs \
+	MonoDevelop.VersionControl.Dialogs/EditRepositoryDialog.cs \
+	MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs \
 	MonoDevelop.VersionControl.Views/CellRendererDiff.cs \
 	MonoDevelop.VersionControl.Views/Diffs.cs \
 	MonoDevelop.VersionControl.Views/Logs.cs \
@@ -42,14 +42,14 @@ FILES =  \
 REFS =  \
 	$(GCONF_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/AddIns/VersionControl/Diff.dll \
-	-r:$(top_builddir)/build/AddIns/VersionControl/DiffWidget.dll \
-	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:../../../build/AddIns/VersionControl/Diff.dll \
+	-r:../../../build/AddIns/VersionControl/DiffWidget.dll \
+	-r:../../../build/bin/MonoDevelop.Components.dll \
+	-r:../../../build/bin/MonoDevelop.Core.dll \
+	-r:../../../build/bin/MonoDevelop.Core.Gui.dll \
+	-r:../../../build/bin/MonoDevelop.Ide.dll \
+	-r:../../../build/bin/MonoDevelop.Projects.dll \
+	-r:../../../contrib/Mono.Addins.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Data \
@@ -75,36 +75,31 @@ RES =  \
 	overlay_normal.png \
 	overlay_removed.png \
 	overlay_unversioned.png \
-	repository.png
-
-ADDIN = VersionControl.addin.xml
+	repository.png \
+	VersionControl.addin.xml
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/VersionControl
 
 DLL = $(ADDIN_BUILD)/VersionControlAddIn.dll
 
 if ENABLE_VERSIONCONTROL
-all: $(ADDIN_BUILD)/$(ADDIN) $(DLL)
+all: $(DLL)
 else
 all:
 endif
 
 if ENABLE_VERSIONCONTROL
 addindir = $(MD_ADDIN_DIR)/VersionControl
-addin_DATA = $(srcdir)/$(ADDIN) $(DLL)
+addin_DATA = $(DLL)
 endif
-
-$(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/$(ADDIN)
 
 $(DLL): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -target:library -out:$@ $(REFS) $(build_sources) $(build_resources:%=/resource:%)
 
-CLEANFILES = $(DLL) $(DLL).mdb $(ADDIN_BUILD)/$(ADDIN)
+CLEANFILES = $(DLL) $(DLL).mdb
 
-EXTRA_DIST = $(build_sources) $(ADDIN) $(RES)
+EXTRA_DIST = $(build_sources) $(RES)
 
 include $(top_srcdir)/Makefile.include
 

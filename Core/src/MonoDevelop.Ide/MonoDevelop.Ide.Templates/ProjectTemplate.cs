@@ -268,7 +268,7 @@ namespace MonoDevelop.Ide.Templates
 
 		static ProjectTemplate()
 		{
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectTemplates", OnExtensionChanged);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/ProjectTemplates", OnExtensionChanged);
 		}
 
 		static void OnExtensionChanged (object s, ExtensionNodeEventArgs args)

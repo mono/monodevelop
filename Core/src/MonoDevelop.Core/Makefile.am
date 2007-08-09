@@ -5,7 +5,6 @@ FILES =  \
 	MonoDevelop.Core.AddIns/ApplicationExtensionNode.cs \
 	MonoDevelop.Core.AddIns/AssemblyExtensionNode.cs \
 	MonoDevelop.Core.AddIns/ExecutionHandlerCodon.cs \
-	MonoDevelop.Core.AddIns/IconCodon.cs \
 	MonoDevelop.Core.AddIns/PackageExtensionNode.cs \
 	MonoDevelop.Core.AddIns/ServiceExtensionNode.cs \
 	MonoDevelop.Core.Execution/AddinDependencyAttribute.cs \
@@ -74,7 +73,7 @@ FILES =  \
 GENERATED_FILES = MonoDevelop.Core/GettextCatalog.cs \
 		  AssemblyInfo.cs
 
-RES =                                                          
+RES = MonoDevelop.Core.addin.xml                                                          
 
 REFS =  \
 	-r:$(top_srcdir)/contrib/log4net.dll \
@@ -86,26 +85,15 @@ REFS =  \
 	-r:System.Runtime.Remoting \
 	-r:System.Xml
 
-all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
+all: $(ASSEMBLY)
 
 MonoDevelop.Core/GettextCatalog.cs: $(srcdir)/MonoDevelop.Core/GettextCatalog.cs.in
 	mkdir -p MonoDevelop.Core
 	sed -e 's,@''prefix@,$(prefix),g' $(srcdir)/$@.in > $@.tmp
 	mv $@.tmp $@
 
-ADDIN = MonoDevelop.Core.addin.xml
-
-ADDIN_BUILD = $(top_builddir)/build/AddIns
-
-$(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/.
-
 $(ASSEMBLY): $(build_sources) $(RES)
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(RES:%=/resource:%) $(build_sources) 
-
-addindir = $(MD_ADDIN_DIR)
-addin_DATA = $(ADDIN)
 
 assemblydir = $(MD_ASSEMBLY_DIR)
 assembly_DATA = $(ASSEMBLY)
@@ -113,6 +101,6 @@ assembly_DATA = $(ASSEMBLY)
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 DISTCLEANFILES = MonoDevelop.Core/GettextCatalog.cs
 
-EXTRA_DIST = $(FILES) $(ADDIN) MonoDevelop.Core/GettextCatalog.cs.in
+EXTRA_DIST = $(FILES) MonoDevelop.Core/GettextCatalog.cs.in
 
 include $(top_srcdir)/Makefile.include

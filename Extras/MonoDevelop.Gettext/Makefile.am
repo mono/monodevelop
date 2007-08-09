@@ -1,17 +1,18 @@
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.Gettext
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Gettext.dll
+
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
 	-r:Mono.Posix \
 	-r:System \
@@ -56,16 +57,10 @@ RES =  \
 	icons/md-gettext-project_16.png \
 	icons/md-gettext-project_22.png \
 	icons/md-gettext-project_32.png \
+	MonoDevelop.Gettext.addin.xml \
 	templates/TranslationProject.xpt.xml
 
-
-ADDIN = MonoDevelop.Gettext.addin.xml
-
-all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
-
-$(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/.
+all: $(ASSEMBLY)
 
 $(ADDIN_BUILD)/%: $(srcdir)/lib/%
 	mkdir -p $(ADDIN_BUILD)
@@ -77,9 +72,9 @@ $(ASSEMBLY): $(FILES) $(build_resources)
 
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.Gettext
-assembly_DATA = $(ASSEMBLY) $(ADDIN)
+assembly_DATA = $(ASSEMBLY)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
-EXTRA_DIST = $(FILES) $(ADDIN) $(RES)
+EXTRA_DIST = $(FILES) $(RES)
 
 include $(top_srcdir)/Makefile.include

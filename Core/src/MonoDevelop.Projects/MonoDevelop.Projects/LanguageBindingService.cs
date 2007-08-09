@@ -31,7 +31,7 @@ namespace MonoDevelop.Projects
 		public LanguageBindingService ()
 		{
 			bindings = new List<LanguageBindingCodon> ();
-			AddinManager.AddExtensionNodeHandler ("/SharpDevelop/Workbench/LanguageBindings", OnExtensionChanged);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/LanguageBindings", OnExtensionChanged);
 		}
 		
 		public ILanguageBinding GetBindingPerLanguageName(string languagename)

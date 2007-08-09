@@ -1,3 +1,11 @@
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs,
+	  MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs, Makefile.am,
+	  MonoDevelop.SourceEditor.addin.xml, MonoDevelop.SourceEditor.mdp:
+	  Reorganized the extension point hierarchy. Embedded all add-in manifests
+	  as resources.
+
 2007-08-03  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs,

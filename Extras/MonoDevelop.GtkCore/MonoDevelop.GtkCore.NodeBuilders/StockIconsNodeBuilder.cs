@@ -33,7 +33,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		}
 		
 		public override string ContextMenuAddinPath {
-			get { return "/SharpDevelop/Views/ProjectBrowser/ContextMenu/StockIconsNode"; }
+			get { return "/MonoDevelop/GtkCore/ContextMenu/ProjectPad/StockIcons"; }
 		}
 
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)

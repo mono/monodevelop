@@ -58,7 +58,7 @@ namespace MonoDevelop.Deployment.Gui
 		
 		static IPackageBuilderEditor GetEditor (PackageBuilder builder)
 		{
-			foreach (IPackageBuilderEditor editor in AddinManager.GetExtensionObjects ("/MonoDevelop/DeployService/PackageBuilderEditors", false)) {
+			foreach (IPackageBuilderEditor editor in AddinManager.GetExtensionObjects ("/MonoDevelop/Deployment/PackageBuilderEditors", false)) {
 				if (editor.CanEdit (builder))
 					return editor;
 			}

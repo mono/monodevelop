@@ -6,10 +6,10 @@ REFS = -r:System \
        -r:System.Xml \
 	-r:System.Drawing \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	$(GTK_SHARP_LIBS) \
 	$(GLADE_SHARP_LIBS) \
 	$(NEMERLE_LIBS)
@@ -36,6 +36,7 @@ Parser/ExpressionFinder.cs \
 Parser/CodeGeneration.cs
 
 RES = \
+NemerleBinding.addin.xml \
 Nemerle.glade \
 NemerleEmptyProject.xpt.xml \
 NemerleGnomeSharpProject.xpt.xml \
@@ -49,17 +50,11 @@ icons/Nemerle.Project.EmptyProject \
 icons/Nemerle.Project.Form \
 icons/Nemerle.ProjectIcon
 
-ADDIN = NemerleBinding.addin.xml
-
 if ENABLE_NEMERLE
-all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
+all: $(ASSEMBLY)
 else
 all:
 endif
-
-$(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/.
 
 $(ASSEMBLY): $(FILES) $(RES)
 	mkdir -p $(ADDIN_BUILD)
@@ -68,11 +63,11 @@ $(ASSEMBLY): $(FILES) $(RES)
 
 if ENABLE_NEMERLE
 assemblydir = $(MD_ADDIN_DIR)/BackendBindings/
-assembly_DATA = $(ASSEMBLY) $(ADDIN)
+assembly_DATA = $(ASSEMBLY)
 
 endif
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
-EXTRA_DIST = $(FILES) $(ADDIN) $(RES)
+EXTRA_DIST = $(FILES) $(RES)
 include $(top_srcdir)/Makefile.include
 

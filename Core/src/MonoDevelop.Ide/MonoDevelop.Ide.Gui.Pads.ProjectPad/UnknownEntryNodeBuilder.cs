@@ -16,7 +16,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		public override string ContextMenuAddinPath {
-			get { return "/SharpDevelop/Views/ProjectBrowser/ContextMenu/UnknownEntryNode"; }
+			get { return "/MonoDevelop/Ide/ContextMenu/ProjectPad/UnknownEntry"; }
 		}
 		
 		public override Type CommandHandlerType {

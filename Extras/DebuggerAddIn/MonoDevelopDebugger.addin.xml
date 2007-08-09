@@ -15,18 +15,18 @@
 		<Addin id="MonoDevelop.Ide" version="0.10.0"/>
 	</Dependencies>
 	
-	<Extension path="/Workspace/Services">
+	<Extension path="/MonoDevelop/Core/Services">
 		<Class id = "DebuggingService"
 		    class = "MonoDevelop.Debugger.DebuggingService"/>
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/Pads">
+	<Extension path = "/MonoDevelop/Ide/Pads">
 		<Pad id = "MonoDevelop.Debugger.LocalsPad"     class = "MonoDevelop.Debugger.LocalsPad"/>
 		<Pad id = "MonoDevelop.Debugger.StackTracePad" class = "MonoDevelop.Debugger.StackTracePad"/>
 		<Pad id = "MonoDevelop.Debugger.ThreadPad"     class = "MonoDevelop.Debugger.ThreadPad"/>
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/Contexts/Debug">
+	<Extension path = "/MonoDevelop/Ide/WorkbenchContexts/Debug">
 		<ContextPad id = "MonoDevelop.Debugger.LocalsPad" />
 		<ContextPad id = "MonoDevelop.Debugger.StackTracePad" />
 		<ContextPad id = "MonoDevelop.Debugger.ThreadPad" />

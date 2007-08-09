@@ -58,7 +58,7 @@ namespace MonoDevelop.Deployment.Gui
 		
 		static IFileCopyConfigurationEditor GetEditor (FileCopyConfiguration config)
 		{
-			foreach (IFileCopyConfigurationEditor editor in AddinManager.GetExtensionObjects ("/SharpDevelop/Workbench/FileCopyConfigurationEditors", false)) {
+			foreach (IFileCopyConfigurationEditor editor in AddinManager.GetExtensionObjects ("/MonoDevelop/Deployment/FileCopyConfigurationEditors", false)) {
 				if (editor.CanEdit (config))
 					return editor;
 			}

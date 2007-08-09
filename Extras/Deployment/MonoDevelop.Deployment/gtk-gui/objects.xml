@@ -29,7 +29,7 @@
     <signals>
     </signals>
   </object>
-  <object type="MonoDevelop.Deployment.DeployFileListWidget" palette-category="widget" allow-children="false" base-type="Gtk.Widget">
+  <object type="MonoDevelop.Deployment.DeployFileListWidget" palette-category="widget" allow-children="false" base-type="Gtk.Widget" internal="true">
     <itemgroups>
     </itemgroups>
     <signals>

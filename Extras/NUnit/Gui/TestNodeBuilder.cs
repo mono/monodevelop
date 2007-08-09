@@ -56,7 +56,7 @@ namespace MonoDevelop.NUnit
 		}
 		
 		public override string ContextMenuAddinPath {
-			get { return "/SharpDevelop/Views/TestPad/ContextMenu"; }
+			get { return "/MonoDevelop/NUnit/ContextMenu/TestPad"; }
 		}
 			
 		public override Type NodeDataType {

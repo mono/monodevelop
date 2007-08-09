@@ -268,6 +268,7 @@ namespace MonoDevelop.Gettext {
             this.treeviewProjectList = new Gtk.TreeView();
             this.treeviewProjectList.CanFocus = true;
             this.treeviewProjectList.Name = "treeviewProjectList";
+            this.treeviewProjectList.HeadersClickable = true;
             this.scrolledwindow1.Add(this.treeviewProjectList);
             this.notebook1.Add(this.scrolledwindow1);
             Gtk.Notebook.NotebookChild w21 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.scrolledwindow1]));

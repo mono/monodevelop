@@ -1,19 +1,18 @@
 
-ADDIN = MonoDevelop.RegexToolkit.addin.xml
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.RegexToolkit
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.RegexToolkit.dll
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	../../build/AddIns/MonoDevelop.Components.dll \
-	../../build/AddIns/MonoDevelop.Core.Gui.dll \
 	../../build/AddIns/MonoDevelop.Deployment.dll \
 	../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
-	../../build/AddIns/MonoDevelop.Ide.dll \
-	../../build/AddIns/MonoDevelop.Projects.dll \
-	../../build/AddIns/MonoDevelop.Projects.Gui.dll \
+	../../build/bin/MonoDevelop.Components.dll \
 	../../build/bin/MonoDevelop.Core.dll \
+	../../build/bin/MonoDevelop.Core.Gui.dll \
+	../../build/bin/MonoDevelop.Ide.dll \
+	../../build/bin/MonoDevelop.Projects.dll \
+	../../build/bin/MonoDevelop.Projects.Gui.dll \
 	../../contrib/Mono.Addins.dll \
 	Mono.Posix \
 	System \
@@ -35,15 +34,12 @@ FILES =  \
 
 RES =  \
 	gtk-gui/gui.stetic \
+	MonoDevelop.RegexToolkit.addin.xml \
 	RegexElements.xml 
 
 
 
-all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
-
-$(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/$(ADDIN)
+all: $(ASSEMBLY)
 
 $(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
@@ -51,11 +47,11 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 		$(build_resources:%=/resource:%) $(build_sources)
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.RegexToolkit
-assembly_DATA = $(ASSEMBLY) $(ADDIN)
+assembly_DATA = $(ASSEMBLY)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 
-EXTRA_DIST = $(FILES) $(ADDIN) $(RES)
+EXTRA_DIST = $(FILES) $(RES)
 
 include $(top_srcdir)/Makefile.include
 

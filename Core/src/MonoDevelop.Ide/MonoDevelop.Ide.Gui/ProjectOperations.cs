@@ -618,8 +618,8 @@ namespace MonoDevelop.Ide.Gui
 			if (entry is Project) {
 				Project selectedProject = (Project) entry;
 				
-				ExtensionNode generalOptionsNode = AddinManager.GetExtensionNode ("/SharpDevelop/Workbench/ProjectOptions/GeneralOptions");
-				ExtensionNode configurationPropertiesNode = AddinManager.GetExtensionNode ("/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties");
+				ExtensionNode generalOptionsNode = AddinManager.GetExtensionNode ("/MonoDevelop/ProjectModel/Gui/ProjectOptions/GeneralOptions");
+				ExtensionNode configurationPropertiesNode = AddinManager.GetExtensionNode ("/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions");
 				
 				ProjectOptionsDialog optionsDialog = new ProjectOptionsDialog (IdeApp.Workbench.RootWindow, selectedProject, generalOptionsNode, configurationPropertiesNode);
 				if (panelId != null)
@@ -632,8 +632,8 @@ namespace MonoDevelop.Ide.Gui
 			} else if (entry is Combine) {
 				Combine combine = (Combine) entry;
 				
-				ExtensionNode generalOptionsNode = AddinManager.GetExtensionNode ("/SharpDevelop/Workbench/CombineOptions/GeneralOptions");
-				ExtensionNode configurationPropertiesNode = AddinManager.GetExtensionNode ("/SharpDevelop/Workbench/CombineOptions/ConfigurationProperties");
+				ExtensionNode generalOptionsNode = AddinManager.GetExtensionNode ("/MonoDevelop/ProjectModel/Gui/CombineOptions/GeneralOptions");
+				ExtensionNode configurationPropertiesNode = AddinManager.GetExtensionNode ("/MonoDevelop/ProjectModel/Gui/CombineOptions/ConfigurationOptions");
 				
 				CombineOptionsDialog optionsDialog = new CombineOptionsDialog (IdeApp.Workbench.RootWindow, combine, generalOptionsNode, configurationPropertiesNode);
 				if (panelId != null)

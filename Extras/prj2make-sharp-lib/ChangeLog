@@ -1,3 +1,9 @@
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* prj2make-sharp-lib.addin.xml, Makefile.am, prj2make-sharp-lib.mdp:
+	  Reorganized the extension point hierarchy. Embedded all add-in manifests
+	  as resources.
+
 2007-07-30  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* prj2make-sharp-lib-Commands.cs: Removed unused file.

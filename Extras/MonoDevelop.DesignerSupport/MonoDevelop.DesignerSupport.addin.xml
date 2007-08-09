@@ -18,7 +18,6 @@
     	<Addin id="Projects" version="0.15.0"/>
 		<Addin id="Projects.Gui" version="0.15.0"/>
 		<Addin id="Ide" version="0.15.0"/>
-		<Addin id="SourceEditor" version="0.15.0"/>
 	</Dependencies>
 
 	<!-- Extension points -->
@@ -49,7 +48,7 @@
 	
 	<!-- Extensions -->
 
-	<Extension path = "/Workspace/Services">
+	<Extension path = "/MonoDevelop/Core/Services">
 		<Class id    = "DesignerSupportService"
 		       class = "MonoDevelop.DesignerSupport.DesignerSupportService"/>
 	</Extension>
@@ -62,20 +61,20 @@
 		<Class class = "MonoDevelop.DesignerSupport.Projects.ProjectsPropertyProvider"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">
+	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding id    = "CodeBehindView"
 		                supportedformats = "Source Code"
 		                class = "MonoDevelop.DesignerSupport.CodeBehind.CodeBehindDisplayBinding"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
+	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "MonoDevelop.DesignerSupport.Toolbox.ToolboxItemToolboxNode" />
 		<DataType class = "MonoDevelop.DesignerSupport.Toolbox.TextToolboxNode" />
 		<DataType class = "MonoDevelop.DesignerSupport.Toolbox.TypeToolboxNode" />
 		<DataType class = "MonoDevelop.DesignerSupport.Toolbox.ItemToolboxNode" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/Pads">
+	<Extension path = "/MonoDevelop/Ide/Pads">
 		<Pad id = "MonoDevelop.DesignerSupport.ToolboxPad" 
 			class = "MonoDevelop.DesignerSupport.ToolboxPad" 
 			_label="Toolbox" 
@@ -86,32 +85,32 @@
 			defaultPlacement="MonoDevelop.DesignerSupport.ToolboxPad/bottom; right" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/Contexts/Edit">
+	<Extension path = "/MonoDevelop/Ide/WorkbenchContexts/Edit">
 		<ContextPad id = "MonoDevelop.DesignerSupport.ToolboxPad" />
 		<ContextPad id = "MonoDevelop.DesignerSupport.PropertyPad" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
+	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<PadOption id = "ShowCodeBehindClasses" _label = "Show CodeBehind classes with parent files" defaultValue = "True" />
 		<PadOption id = "ShowCodeBehindFiles" _label = "Show CodeBehind files" defaultValue = "False" />
 		<NodeBuilder id = "CodeBehindProjectFileExtension" class = "MonoDevelop.DesignerSupport.CodeBehind.CodeBehindProjectFileExtension"/>
 		<NodeBuilder id = "CodeBehindClassBuilder" class = "MonoDevelop.DesignerSupport.CodeBehind.CodeBehindClassBuilder"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/StockIcons">
+	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "md-design-categorise" resource = "group-by-category.png" />
 		<StockIcon stockid = "md-design-listboxtoggle" resource = "md-design-listboxtoggle.png" />
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
+	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder class = "MonoDevelop.DesignerSupport.Projects.ComponentNodeBuilder"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ClassPad">
+	<Extension path = "/MonoDevelop/Ide/Pads/ClassPad">
 		<NodeBuilder class = "MonoDevelop.DesignerSupport.Projects.ComponentNodeBuilder"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Commands">
+	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Command id = "MonoDevelop.DesignerSupport.Commands.SelectItems"
 				defaultHandler = "MonoDevelop.DesignerSupport.SelectItemsCommandHandler"
 				_label = "Add Items..." />

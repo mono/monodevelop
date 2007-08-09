@@ -16,17 +16,18 @@
 	    <Addin id="Core" version="0.15.0"/>
 	    <Addin id="Core.Gui" version="0.15.0"/>
 	    <Addin id="Projects" version="0.15.0"/>
+		<Addin id="Projects.Gui" version="0.15.0"/>
 		<Addin id="Ide" version="0.15.0"/>
 	</Dependencies>
 	
-  <Extension path = "/SharpDevelop/Workbench/FileFilter">
+  <Extension path = "/MonoDevelop/Ide/FileFilters">
     <FileFilter id = "Java"
                 insertbefore = "AllFiles"
                 _label = "Java Files"
                 extensions = "*.java"/>
   </Extension>
 
-  <Extension path = "/MonoDevelop/FileTemplates">
+  <Extension path = "/MonoDevelop/Ide/FileTemplates">
     <FileTemplate id = "JavaApplet" resource = "JavaApplet.xft.xml"/>
     <FileTemplate id = "JavaApplication" resource = "JavaApplication.xft.xml"/>
     <FileTemplate id = "JavaDialog" resource = "JavaDialog.xft.xml"/>
@@ -36,7 +37,7 @@
     <FileTemplate id = "EmptyJavaFile" resource = "EmptyJavaFile.xft.xml"/>
   </Extension>
 
-  <Extension path = "/MonoDevelop/ProjectTemplates">
+  <Extension path = "/MonoDevelop/Ide/ProjectTemplates">
     <ProjectTemplate id = "EmptyJavaProject" resource = "EmptyJavaProject.xpt.xml"/>
     <ProjectTemplate id = "IkvmConsoleApplicationProject" resource = "IkvmConsoleApplicationProject.xpt.xml"/>
     <ProjectTemplate id = "IkvmGladeApplicationProject" resource = "IkvmGladeApplicationProject.xpt.xml"/>
@@ -47,7 +48,7 @@
     <ProjectTemplate id = "IkvmLibraryProject" resource = "IkvmLibraryProject.xpt.xml"/>
   </Extension>
 
-  <Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
+  <Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions">
     <Condition id="activelanguage" value = "Java">
       <DialogPanel id = "JavaProjectPanel"
                    _label = "Code Generation"
@@ -58,7 +59,7 @@
     </Condition>
   </Extension>
 
-  <Extension path = "/SharpDevelop/Dialogs/OptionsDialog">
+  <Extension path = "/MonoDevelop/Ide/OptionsDialogPanels">
 	<DialogPanel id    = "JavaOptions"
 		     insertafter = "ToolsOptions"
 		     _label = "Java">
@@ -68,7 +69,7 @@
 	</DialogPanel>
   </Extension>
 
-  <Extension path = "/Workspace/Icons">
+  <Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
     <Icon id = "JavaPrj"
           language = "Java"
           resource = "res:Java.ProjectIcon"/>
@@ -77,13 +78,13 @@
           resource = "res:Java.FileIcon"/>
   </Extension>
 
-  <Extension path = "/SharpDevelop/Workbench/LanguageBindings">
+  <Extension path = "/MonoDevelop/ProjectModel/LanguageBindings">
     <LanguageBinding id = "Java"
                      supportedextensions = ".java"
                      class = "JavaBinding.JavaLanguageBinding" />
   </Extension>
   
-	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
+	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "JavaBinding.JavaCompilerParameters" />
 	</Extension>
 

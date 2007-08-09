@@ -4,12 +4,12 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.NUnit.dll
 REFS =  \
 	$(GLADE_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
 	-r:$(top_srcdir)/Extras/NUnit/lib/nunit.core.dll \
 	-r:$(top_srcdir)/Extras/NUnit/lib/nunit.framework.dll \
@@ -64,6 +64,7 @@ RES =  \
 	Gui/NUnit.Running.png \
 	Gui/NUnit.Success.png \
 	Gui/NUnit.SuccessAndFailed.png \
+	MonoDevelopNUnit.addin.xml \
 	nunit.glade \
 	templates/NUnitAssemblyGroup.xpt.xml \
 	templates/NUnitProject.xpt.xml \
@@ -77,13 +78,7 @@ nunit.framework.dll
 SRC_NUNIT_FILES = $(addprefix $(srcdir)/lib/, $(NUNIT_FILES))
 BUILD_NUNIT_FILES = $(addprefix $(ADDIN_BUILD)/, $(NUNIT_FILES))
 
-ADDIN = MonoDevelopNUnit.addin.xml
-
-all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN) $(BUILD_NUNIT_FILES)
-
-$(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/.
+all: $(ASSEMBLY) $(BUILD_NUNIT_FILES)
 
 $(ADDIN_BUILD)/%: $(srcdir)/lib/%
 	mkdir -p $(ADDIN_BUILD)
@@ -95,9 +90,9 @@ $(ASSEMBLY): $(FILES) $(build_resources)
 
 
 assemblydir = $(MD_ADDIN_DIR)/NUnit
-assembly_DATA = $(ASSEMBLY) $(ADDIN) $(SRC_NUNIT_FILES)
+assembly_DATA = $(ASSEMBLY) $(SRC_NUNIT_FILES)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(BUILD_NUNIT_FILES)
-EXTRA_DIST = $(FILES) $(ADDIN) $(RES) $(SRC_NUNIT_FILES)
+EXTRA_DIST = $(FILES) $(RES) $(SRC_NUNIT_FILES)
 
 include $(top_srcdir)/Makefile.include

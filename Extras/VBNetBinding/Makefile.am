@@ -5,11 +5,11 @@ ASSEMBLY = $(ADDIN_BUILD)/VBNetBinding.dll
 REFS =  \
 	$(GLADE_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/bin/NRefactory.dll \
 	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
 	-r:System \
@@ -54,15 +54,10 @@ RES =  \
 	templates/VBConsoleApplicationProject.xpt.xml \
 	templates/VBGtkSharp2Project.xpt.xml \
 	templates/VBGtkSharpProject.xpt.xml \
-	VB.glade
+	VB.glade \
+	VBNetBinding.addin.xml
 
-ADDIN = VBNetBinding.addin.xml
-
-all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
-
-$(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/.
+all: $(ASSEMBLY)
 
 $(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
@@ -71,12 +66,12 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 		$(build_sources)
 
 vbnetbindinglibdir = $(MD_ADDIN_DIR)/BackendBindings
-vbnetbindinglib_DATA = $(ASSEMBLY) $(ADDIN)
+vbnetbindinglib_DATA = $(ASSEMBLY)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 DISTCLEANFILES =
 
-EXTRA_DIST = $(FILES) $(ADDIN) $(RES)
+EXTRA_DIST = $(FILES) $(RES)
 include $(top_srcdir)/Makefile.include
 

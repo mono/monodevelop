@@ -1,14 +1,15 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.DesignerSupport.dll
+
 REFS =  \
 	$(GLADE_SHARP_LIBS) \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
 	-r:Mono.Posix \
 	-r:System \
@@ -94,16 +95,10 @@ RES =  \
 	icons/md-design-listboxtoggle.png \
 	icons/MonoDevelop.DesignerSupport.PropertyGrid.DefaultPropertyTab.bmp \
 	icons/MonoDevelop.DesignerSupport.PropertyGrid.EventPropertyTab.bmp \
-	icons/MonoDevelop.DesignerSupport.PropertyGrid.SortByCat.png
+	icons/MonoDevelop.DesignerSupport.PropertyGrid.SortByCat.png \
+	MonoDevelop.DesignerSupport.addin.xml
 
-
-ADDIN = MonoDevelop.DesignerSupport.addin.xml
-
-all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
-
-$(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/$(ADDIN)
+all: $(ASSEMBLY)
 
 $(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
@@ -111,11 +106,11 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 		$(build_resources:%=/resource:%) $(build_sources)
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.DesignerSupport
-assembly_DATA = $(ASSEMBLY) $(ADDIN)
+assembly_DATA = $(ASSEMBLY)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 
-EXTRA_DIST = $(FILES) $(ADDIN) $(RES)
+EXTRA_DIST = $(FILES) $(RES)
 
 include $(top_srcdir)/Makefile.include
 

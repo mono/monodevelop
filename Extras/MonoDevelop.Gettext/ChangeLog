@@ -1,3 +1,12 @@
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs,
+	  gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs,
+	  gtk-gui/gui.stetic, MonoDevelop.Gettext.addin.xml,
+	  MonoDevelop.Gettext.mdp, Makefile.am: Reorganized the extension point
+	  hierarchy. Embedded all add-in manifests as resources.
+
 2007-08-09  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Gettext.addin.xml,

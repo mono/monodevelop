@@ -257,7 +257,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			Gtk.Application.Invoke (delegate {
 				if (ex != null) {
 					store.AppendValues (piter, null, "ERROR: " + ex.Message, "", true);
-					Runtime.LoggingService.Error (ex);
+					MonoDevelop.Core.Runtime.LoggingService.Error (ex);
 				}
 				else {
 					foreach (Repository rep in repos)

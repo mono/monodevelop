@@ -7,6 +7,7 @@
        description = "Integrates the Mono documentation browser (Monodoc) into the MonoDevelop IDE"
 	   category    = "IDE extensions"
        version     = "0.15.0"
+       isroot      = "true"
        compatVersion = "0.15.0">
 
 	<Runtime>
@@ -15,10 +16,9 @@
 
 	<Dependencies>
 		<Addin id="Core" version="0.15.0"/>
-		<Addin id="Projects" version="0.15.0"/>
 	</Dependencies>
 
-	<Extension path = "/Workspace/Services">
+	<Extension path = "/MonoDevelop/Core/Services">
 		<Class id    = "DocumentationService"
 		       class = "MonoDevelop.Documentation.DocumentationService"/>
 	</Extension>

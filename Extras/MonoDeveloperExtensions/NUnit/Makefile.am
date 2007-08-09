@@ -1,10 +1,10 @@
 FILES = MonoTestProvider.cs
 
 REFS =  \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDeveloperExtensions/MonoDeveloperExtensions.dll \
 	-r:$(top_builddir)/build/AddIns/NUnit/MonoDevelop.NUnit.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:System
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDeveloperExtensions

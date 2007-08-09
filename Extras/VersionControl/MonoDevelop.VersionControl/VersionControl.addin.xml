@@ -35,16 +35,16 @@
 		</ExtensionNode>	
 	</ExtensionPoint>
 
-	<Extension path = "/Workspace/FileSystemExtensions" extension-nodes="Class" description="File system extensions|File system extensions which can provide specific behavior when handling files. Specified classes must implement MonoDevelop.Core.FileSystem.FileSystemExtension.">
+	<Extension path = "/MonoDevelop/Core/FileSystemExtensions" extension-nodes="Class" description="File system extensions|File system extensions which can provide specific behavior when handling files. Specified classes must implement MonoDevelop.Core.FileSystem.FileSystemExtension.">
 		<Class class = "MonoDevelop.VersionControl.VersionControlFileSystemExtension" />
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
+	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<PadOption id = "ShowVersionControlOverlays" _label = "Show version control overlay icons" defaultValue = "True" />
 		<NodeBuilder id = "VersionControlNodeExtension" class = "MonoDevelop.VersionControl.VersionControlNodeExtension"/>
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/StockIcons">
+	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "vc-add" resource = "overlay_added.png" />
 		<StockIcon stockid = "vc-remove" resource = "overlay_removed.png" />
 		<StockIcon stockid = "vc-add-command" resource = "menu_add.png" />
@@ -59,7 +59,7 @@
 		<StockIcon stockid = "vc-comment" resource = "comment.png" />
 	</Extension>
     
-	<Extension path = "/SharpDevelop/Commands">
+	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Category _name = "Version Control" id = "VersionControl">
 		<Command id = "MonoDevelop.VersionControl.Commands.Add" 
 			_label = "Add"
@@ -104,12 +104,12 @@
 		</Category>
 	</Extension>
 	
-	<Extension path="/SharpDevelop/Workbench/MainMenu/File">
+	<Extension path="/MonoDevelop/Ide/MainMenu/File">
 		<CommandItem id="MonoDevelop.VersionControl.Commands.Checkout" 
 			insertafter="MonoDevelop.Ide.Commands.FileCommands.OpenFile" />
 	</Extension>	
 
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectFileNode">
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/ProjectFile">
 		<ItemSet id = "VersionControl" _label = "Version Control" insertafter = "IncludeSeparator">
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Add"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Remove"/>
@@ -121,7 +121,7 @@
 		</ItemSet>
 		<SeparatorItem />
 	</Extension>
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/SystemFileNode">
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/SystemFile">
 		<ItemSet id = "VersionControl" _label = "Version Control" insertafter = "IncludeToProjectSeparator">
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Add"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Remove"/>
@@ -133,7 +133,7 @@
 		</ItemSet>
 		<SeparatorItem />
 	</Extension>
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/DefaultDirectoryNode">
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Folder">
 		<ItemSet id = "VersionControl" _label = "Version Control" insertafter = "AddSeparator">
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Add"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Remove"/>
@@ -146,7 +146,7 @@
 		</ItemSet>
 		<SeparatorItem />
 	</Extension>
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectBrowserNode">
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Project">
 		<ItemSet id = "VersionControl" _label = "Version Control" insertafter = "AddSeparator">
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Publish"/>
 			<SeparatorItem id = "CommandSeparator1" />
@@ -159,7 +159,7 @@
 		</ItemSet>
 		<SeparatorItem />
 	</Extension>
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/CombineBrowserNode">
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Combine">
 		<ItemSet id = "VersionControl" _label = "Version Control" insertafter = "AddSeparator">
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Publish"/>
 			<SeparatorItem id = "CommandSeparator1" />

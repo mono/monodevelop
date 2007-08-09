@@ -24,17 +24,17 @@
 		<Class class="MonoDevelop.ChangeLogAddIn.CommitDialogExtensionWidget" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Commands">
+	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Command id = "MonoDevelop.ChangeLogAddIn.ChangeLogCommands.InsertEntry"
 			defaultHandler = "MonoDevelop.ChangeLogAddIn.InsertEntryHandler"
 			_label = "Insert ChangeLog Entry" />
 	</Extension>
 
-	<Extension path="/SharpDevelop/Workbench/MainMenu/Edit">
+	<Extension path="/MonoDevelop/Ide/MainMenu/Edit">
 		<CommandItem id="MonoDevelop.ChangeLogAddIn.ChangeLogCommands.InsertEntry" insertafter="Separator5"/>
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Dialogs/OptionsDialog">
+	<Extension path = "/MonoDevelop/Ide/OptionsDialogPanels">
 		<DialogPanel id    = "ChangeLogAddInOptions"
 			insertafter = "ToolsOptions"
 			_label = "ChangeLog Add-in">
@@ -44,16 +44,16 @@
 		</DialogPanel>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/Serialization/ExtendedProperties">
+	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
 		<ItemProperty class = "MonoDevelop.Projects.CombineEntry"
 			name = "MonoDevelop.ChangeLogAddIn.ChangeLogInfo" type = "MonoDevelop.ChangeLogAddIn.ChangeLogData" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/GeneralOptions/Common">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/GeneralOptions/Common">
 		<DialogPanel id = "ChangeLogIntegration" _label = "ChangeLog Integration" class="MonoDevelop.ChangeLogAddIn.ProjectOptionPanel"/>
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/CombineOptions/GeneralOptions/Common">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/CombineOptions/GeneralOptions/Common">
 		<DialogPanel id = "ChangeLogIntegration" _label = "ChangeLog Integration" class="MonoDevelop.ChangeLogAddIn.ProjectOptionPanel"/>
 	</Extension>
 </Addin>

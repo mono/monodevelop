@@ -196,7 +196,7 @@ namespace MonoDevelop.Deployment
 		
 		internal static DeployServiceExtension GetExtensionChain ()
 		{
-			DeployServiceExtension[] extensions = (DeployServiceExtension[]) AddinManager.GetExtensionObjects ("/MonoDevelop/DeployService/DeployServiceExtensions", typeof(DeployServiceExtension), false);
+			DeployServiceExtension[] extensions = (DeployServiceExtension[]) AddinManager.GetExtensionObjects ("/MonoDevelop/Deployment/DeployServiceExtensions", typeof(DeployServiceExtension), false);
 			for (int n=0; n<extensions.Length - 1; n++)
 				extensions [n].Next = extensions [n+1];
 			return extensions [0];
@@ -262,7 +262,7 @@ namespace MonoDevelop.Deployment
 			if (copiers != null)
 				return;
 			copiers = new List<FileCopyHandler> ();
-			AddinManager.RemoveExtensionNodeHandler ("/SharpDevelop/Workbench/DeployFileCopiers", OnCopierExtensionChanged);
+			AddinManager.RemoveExtensionNodeHandler ("/MonoDevelop/Deployment/DeployFileCopiers", OnCopierExtensionChanged);
 		}
 		
 		static void OnCopierExtensionChanged (object s, ExtensionNodeEventArgs args)

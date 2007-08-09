@@ -1,3 +1,9 @@
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.RegexToolkit.addin.xml, MonoDevelop.RegexToolkit.mdp,
+	  Makefile.am: Reorganized the extension point hierarchy. Embedded all
+	  add-in manifests as resources.
+
 2007-08-03  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.RegexToolkit/RegexLibrary.cs,

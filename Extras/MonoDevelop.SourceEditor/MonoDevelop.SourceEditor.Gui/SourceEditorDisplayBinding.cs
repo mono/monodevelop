@@ -853,7 +853,7 @@ namespace MonoDevelop.SourceEditor.Gui
 
 			if (ext.Length > 0) {
 				string id = ext.Substring (1);
-				TypeExtensionNode node = AddinManager.GetExtensionNode ("/AddIns/DefaultTextEditor/Formatters/" + id) as TypeExtensionNode;
+				TypeExtensionNode node = AddinManager.GetExtensionNode ("/MonoDevelop/SourceEditor/Formatters/" + id) as TypeExtensionNode;
 				if (node != null) {
 					se.View.fmtr = (IFormattingStrategy) node.CreateInstance (typeof(IFormattingStrategy));
 					return;

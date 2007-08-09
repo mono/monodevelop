@@ -55,7 +55,7 @@ namespace MonoDevelop.NUnit
 		}
 		
 		public override string ContextMenuAddinPath {
-			get { return "/SharpDevelop/Views/ProjectBrowser/ContextMenu/NUnitAssemblyGroup"; }
+			get { return "/MonoDevelop/NUnit/ContextMenu/ProjectPad/NUnitAssemblyGroup"; }
 		}
 
 		public override Type NodeDataType {

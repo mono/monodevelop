@@ -1,3 +1,9 @@
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Debugger.mdp, Makefile.am, MonoDevelopDebugger.addin.xml:
+	  Reorganized the extension point hierarchy. Embedded all add-in manifests
+	  as resources.
+
 2007-08-03  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Services.cs: API cleanup. Converted core services into regular classes.

@@ -16,28 +16,29 @@
 	    <Addin id="Core" version="0.15.0"/>
 	    <Addin id="Core.Gui" version="0.15.0"/>
 	    <Addin id="Projects" version="0.15.0"/>
+		<Addin id="Projects.Gui" version="0.15.0"/>
 		<Addin id="Ide" version="0.15.0"/>
 	</Dependencies>
 	
-  <Extension path = "/SharpDevelop/Workbench/FileFilter">
+  <Extension path = "/MonoDevelop/Ide/FileFilters">
     <FileFilter id = "VBNet"
                 insertbefore = "AllFiles"
                 _label = "VB.NET Files"
                 extensions = "*.vb"/>
   </Extension>
 
-  <Extension path = "/MonoDevelop/FileTemplates">
+  <Extension path = "/MonoDevelop/Ide/FileTemplates">
     <FileTemplate id = "EmptyVBFile" resource = "EmptyVBFile.xft.xml"/>
   </Extension>
 
-  <Extension path = "/MonoDevelop/ProjectTemplates">
+  <Extension path = "/MonoDevelop/Ide/ProjectTemplates">
     <ProjectTemplate id = "EmptyVBProject" resource = "EmptyVBProject.xpt.xml"/>
     <ProjectTemplate id = "VBConsoleApplicationProject" resource = "VBConsoleApplicationProject.xpt.xml"/>
     <ProjectTemplate id = "VBGtkSharpProject" resource = "VBGtkSharpProject.xpt.xml"/>
     <ProjectTemplate id = "VBGtkSharp2Project" resource = "VBGtkSharp2Project.xpt.xml"/>
   </Extension>
   
-  <Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
+  <Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions">
     <Condition id="activelanguage" value = "VBNet">
       <DialogPanel id = "VBNetCodeGenerationPanel"
                    _label = "Code Generation"
@@ -45,7 +46,7 @@
     </Condition>
   </Extension>
   
-  <Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
+  <Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions">
     <Condition id="activelanguage" value = "VBNet">
       <DialogPanel id = "VBNetOutputOptionsPanel"
                    _label = "Output Options"
@@ -53,7 +54,7 @@
     </Condition>
   </Extension>
 
-  <!-- <Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
+  <!-- <Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions">
     <Condition id="activelanguage" value = "VBNet">
       <DialogPanel id = "VBNetChooseRuntimePanel"
                    _label = "Choose Runtime"
@@ -62,7 +63,7 @@
   </Extension> -->
 
 
-  <Extension path = "/Workspace/Icons">
+  <Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
     <Icon id = "VBPrj"
           language = "VBNet"
           resource = "res:VB.ProjectIcon"/>
@@ -77,18 +78,18 @@
 		</Condition>
 	</Extension> -->
 
-  <Extension path = "/SharpDevelop/Workbench/LanguageBindings">
+  <Extension path = "/MonoDevelop/ProjectModel/LanguageBindings">
     <LanguageBinding id = "VBNet"
                      supportedextensions = ".vb"
                      class = "VBBinding.VBLanguageBinding" />
   </Extension>
   
-	<Extension path = "/SharpDevelop/Workbench/Ambiences">
+	<Extension path = "/MonoDevelop/ProjectModel/Ambiences">
 		<Class id    = "VBNet"
 		       class = "MonoDevelop.Core.VBAmbience"/>
 	</Extension>
   
-	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
+	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "VBBinding.VBCompilerParameters" />
 	</Extension>
 	

@@ -1,5 +1,5 @@
 
-ASSEMBLY = $(top_builddir)/build/AddIns/MonoDevelop.Components.dll
+ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.Components.dll
 
 REFS =  \
 	$(GECKO_SHARP_LIBS) \
@@ -98,7 +98,8 @@ RES =  \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
 	icons/MonoDevelop.Close.png \
-	KeyBindingSchemes.xml
+	KeyBindingSchemes.xml \
+	MonoDevelop.Components.addin.xml
 
 GENERATED_FILES = \
 AssemblyInfo.cs
@@ -108,7 +109,7 @@ all: $(ASSEMBLY)
 $(ASSEMBLY): $(build_sources) $(build_resources)
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(build_resources:%=/resource:%) $(build_sources)
 
-assemblydir = $(MD_ADDIN_DIR)
+assemblydir = $(MD_ASSEMBLY_DIR)
 assembly_DATA = $(ASSEMBLY)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb

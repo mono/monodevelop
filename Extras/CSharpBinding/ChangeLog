@@ -1,3 +1,9 @@
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* CSharpBinding.addin.xml, Autotools/Makefile.am, CSharpBinding.mdp,
+	  Makefile.am: Reorganized the extension point hierarchy. Embedded all
+	  add-in manifests as resources.
+
 2007-07-30  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* templates/CSharpSessionStateWebService.xft.xml,

@@ -1,3 +1,14 @@
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.Subversion/Makefile.am,
+	  MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.mdp,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl.mdp,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs,
+	  MonoDevelop.VersionControl/VersionControl.addin.xml,
+	  MonoDevelop.VersionControl/gtk-gui/gui.stetic,
+	  MonoDevelop.VersionControl/Makefile.am: Reorganized the extension point
+	  hierarchy. Embedded all add-in manifests as resources.
+
 2007-08-03  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/Task.cs: API

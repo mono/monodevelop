@@ -46,10 +46,10 @@ namespace MonoDevelop.Projects
 		
 		public ProjectService ()
 		{
-			AddinManager.AddExtensionNodeHandler ("/SharpDevelop/Workbench/ProjectFileFormats", OnFormatExtensionChanged);
-			AddinManager.AddExtensionNodeHandler ("/SharpDevelop/Workbench/SerializableClasses", OnSerializableExtensionChanged);
-			AddinManager.AddExtensionNodeHandler ("/SharpDevelop/Workbench/Serialization/ExtendedProperties", OnPropertiesExtensionChanged);
-			AddinManager.AddExtensionNodeHandler ("/SharpDevelop/Workbench/ProjectBindings", OnProjectsExtensionChanged);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/ProjectFileFormats", OnFormatExtensionChanged);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/SerializableClasses", OnSerializableExtensionChanged);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/ExtendedProperties", OnPropertiesExtensionChanged);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/ProjectBindings", OnProjectsExtensionChanged);
 			UpdateExtensions ();
 			AddinManager.ExtensionChanged += OnExtensionChanged;
 		}
@@ -346,13 +346,13 @@ namespace MonoDevelop.Projects
 		
 		void OnExtensionChanged (object s, ExtensionEventArgs args)
 		{
-			if (args.PathChanged ("/SharpDevelop/Workbench/ProjectServiceExtensions"))
+			if (args.PathChanged ("/MonoDevelop/ProjectModel/ProjectServiceExtensions"))
 				UpdateExtensions ();
 		}
 		
 		void UpdateExtensions ()
 		{
-			ProjectServiceExtension[] extensions = (ProjectServiceExtension[]) AddinManager.GetExtensionObjects ("/SharpDevelop/Workbench/ProjectServiceExtensions", typeof(ProjectServiceExtension));
+			ProjectServiceExtension[] extensions = (ProjectServiceExtension[]) AddinManager.GetExtensionObjects ("/MonoDevelop/ProjectModel/ProjectServiceExtensions", typeof(ProjectServiceExtension));
 			for (int n=0; n<extensions.Length - 1; n++)
 				extensions [n].Next = extensions [n + 1];
 

@@ -28,7 +28,7 @@ namespace MonoDevelop.Ide.Gui
 	/// </summary>
 	public class DisplayBindingService
 	{
-		readonly static string displayBindingPath = "/SharpDevelop/Workbench/DisplayBindings";
+		readonly static string displayBindingPath = "/MonoDevelop/Ide/DisplayBindings";
 		List<DisplayBindingCodon> bindings = null;
 
 		public DisplayBindingService ()

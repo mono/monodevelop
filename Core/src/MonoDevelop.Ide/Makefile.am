@@ -10,13 +10,13 @@ REFS =  \
 	$(GTK_SHARP_LIBS) \
 	$(GTKHTML_SHARP_LIBS) \
 	$(MONODOC_LIBS) \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Dock.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Documentation.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Dock.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:$(top_srcdir)/contrib/log4net.dll \
 	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
 	-r:$(top_srcdir)/contrib/Mono.Addins.Gui.dll \
@@ -328,6 +328,7 @@ RES =  \
 	icons/pinup.png \
 	icons/SplashScreen.png \
 	icons/system-file-manager.png \
+	MonoDevelop.Ide.addin.xml \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderTemplates.xml \
 	templates/AppConfigFile.xft.xml \
 	templates/BlankCombine.xpt.xml \
@@ -355,37 +356,26 @@ options/TipsOfTheDay.xml
 
 build_OPTIONS = $(addprefix $(top_builddir)/build/data/options/, $(notdir $(OPTIONS)))
 
-ASSEMBLY = $(top_builddir)/build/AddIns/MonoDevelop.Ide.dll
+ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.Ide.dll
 
-ADDIN = MonoDevelop.Ide.addin.xml
-
-ADDIN_BUILD = $(top_builddir)/build/AddIns
-
-all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN) $(build_OPTIONS)
+all: $(ASSEMBLY) $(build_OPTIONS)
 
 $(build_OPTIONS): $(top_builddir)/build/data/options/%.xml: $(srcdir)/options/%.xml
 	mkdir -p $(top_builddir)/build/data/options
 	cp $(srcdir)/options/$(notdir $@) $@
 
-$(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/.
-
 $(ASSEMBLY): $(build_sources) $(build_resources)
 	$(CSC) $(CSC_FLAGS) -debug -codepage:utf8 -out:$@ -target:library $(REFS) \
 		$(monodoc_libflags) $(build_resources:%=/resource:%) $(build_sources)
 
-assemblydir = $(MD_ADDIN_DIR)
+assemblydir = $(MD_ASSEMBLY_DIR)
 assembly_DATA = $(ASSEMBLY)
-
-addindir = $(MD_ADDIN_DIR)
-addin_DATA = $(ADDIN)
 
 optionsdir = $(MD_DIR)/data/options
 options_DATA = $(OPTIONS)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(build_OPTIONS)
 
-EXTRA_DIST = $(FILES) $(RES) $(ADDIN) $(OPTIONS)
+EXTRA_DIST = $(FILES) $(RES) $(OPTIONS)
 
 include $(top_srcdir)/Makefile.include

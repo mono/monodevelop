@@ -171,7 +171,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		void ShowPopup ()
 		{
-			Gtk.Menu contextMenu = IdeApp.CommandService.CreateMenu ("/MonoDevelop/Workbench/ViewContextMenu");
+			Gtk.Menu contextMenu = IdeApp.CommandService.CreateMenu ("/MonoDevelop/Ide/ContextMenu/DocumentTab");
 			if (contextMenu != null)
 				contextMenu.Popup ();
 		}
@@ -377,7 +377,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		void CreateDefaultLayout()
 		{
-			AddinManager.AddExtensionNodeHandler ("/SharpDevelop/Workbench/Contexts", OnExtensionChanged);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/WorkbenchContexts", OnExtensionChanged);
 			
 			dockLayout = new DockLayout (dock);
 			if (System.IO.File.Exists (configFile)) {

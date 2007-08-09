@@ -1,6 +1,7 @@
 
 using System;
 
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using Mono.Addins;
 
@@ -15,7 +16,8 @@ namespace MonoDevelop.Startup
 			
 			do {
 				try {
-					return Runtime.ApplicationService.StartApplication ("IDE", args);
+					IdeStartup app = new IdeStartup ();
+					return app.Run (args);
 				} catch (Exception ex) {
 					if (!retry) {
 						AddinManager.Registry.Rebuild (new Mono.Addins.ConsoleProgressStatus (true));

@@ -55,7 +55,7 @@ namespace MonoDevelop.Deployment.NodeBuilders
 		}
 		
 		public override string ContextMenuAddinPath {
-			get { return "/MonoDevelop/Deployment/ProjectBrowser/ContextMenu/PackagingProject"; }
+			get { return "/MonoDevelop/Deployment/ContextMenu/ProjectPad/PackagingProject"; }
 		}
 
 		public override Type NodeDataType {

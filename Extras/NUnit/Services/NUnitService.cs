@@ -70,7 +70,7 @@ namespace MonoDevelop.NUnit
 			ps.DataContext.IncludeType (typeof(UnitTestOptionsSet));
 			ps.DataContext.RegisterProperty (typeof(AbstractConfiguration), "UnitTestInformation", typeof(UnitTestOptionsSet));
 			
-			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/Services/NUnit/TestProviders", OnExtensionChange);
+			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/MonoDevelop/NUnit/TestProviders", OnExtensionChange);
 			
 			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
 				rootTest = BuildTest (IdeApp.ProjectOperations.CurrentOpenCombine);

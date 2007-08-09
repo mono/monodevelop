@@ -194,7 +194,7 @@ namespace MonoDevelop.Ide.Templates
 		
 		static FileTemplate()
 		{
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/FileTemplates", OnExtensionChanged);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/FileTemplates", OnExtensionChanged);
 		}
 
 		static void OnExtensionChanged (object s, ExtensionNodeEventArgs args)

@@ -29,11 +29,11 @@ uninstall-hook:
 endif # ENABLE_UPDATE_MIMEDB
 
 PACKAGES = \
-	build/AddIns/MonoDevelop.Core.Gui.addin.xml \
+	build/bin/MonoDevelop.Core.Gui.addin.xml \
 	build/AddIns/MonoDevelop.Documentation.addin.xml \
-	build/AddIns/MonoDevelop.Ide.addin.xml \
-	build/AddIns/MonoDevelop.Projects.addin.xml \
-	build/AddIns/MonoDevelop.Projects.Gui.addin.xml \
+	build/bin/MonoDevelop.Ide.addin.xml \
+	build/bin/MonoDevelop.Projects.addin.xml \
+	build/bin/MonoDevelop.Projects.Gui.addin.xml \
 	build/AddIns/MonoDevelop.SourceEditor.addin.xml \
 	build/AddIns/BackendBindings/BooBinding.addin.xml \
 	build/AddIns/BackendBindings/CSharpBinding.addin.xml \
@@ -54,12 +54,12 @@ PACKAGES = \
 
 DOCFILES = \
 	build/bin/MonoDevelop.Core.dll \
-	build/AddIns/MonoDevelop.Components.dll \
-	build/AddIns/MonoDevelop.Core.Gui.dll \
+	build/bin/MonoDevelop.Components.dll \
+	build/bin/MonoDevelop.Core.Gui.dll \
 	build/AddIns/MonoDevelop.Documentation.dll \
-	build/AddIns/MonoDevelop.Ide.dll \
-	build/AddIns/MonoDevelop.Projects.dll \
-	build/AddIns/MonoDevelop.Projects.Gui.dll
+	build/bin/MonoDevelop.Ide.dll \
+	build/bin/MonoDevelop.Projects.dll \
+	build/bin/MonoDevelop.Projects.Gui.dll
 
 mpacks: $(PACKAGES)
 	test -z "packages" || mkdir -p packages

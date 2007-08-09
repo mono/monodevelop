@@ -1,3 +1,15 @@
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment.addin.xml,
+	  MonoDevelop.Deployment.NodeBuilders/PackageNodeBuilder.cs,
+	  MonoDevelop.Deployment.NodeBuilders/PackagingProjectNodeBuilder.cs,
+	  MonoDevelop.Deployment.mdp, MonoDevelop.Deployment/DeployService.cs,
+	  gtk-gui/objects.xml,
+	  MonoDevelop.Deployment.Gui/FileCopyConfigurationSelector.cs,
+	  MonoDevelop.Deployment.Gui/PackageBuilderEditor.cs, Makefile.am:
+	  Reorganized the extension point hierarchy. Embedded all add-in manifests
+	  as resources.
+
 2007-08-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment.NodeBuilders/PackageNodeBuilder.cs,

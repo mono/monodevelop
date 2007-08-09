@@ -5,47 +5,42 @@
        url         = "http://www.icsharpcode.net"
        description = "Provides GUI resources for managing MonoDevelop projects"
 	   category    = "MonoDevelop Core"
+	   isroot      = "true"
        version     = "0.15.0">
 
 	<Runtime>
 		<Import assembly="MonoDevelop.Projects.Gui.dll"/>
 	</Runtime>
 
-	<Dependencies>
-		<Addin id="MonoDevelop.Core" version="0.15.0"/>
-		<Addin id="MonoDevelop.Core.Gui" version="0.15.0"/>
-		<Addin id="MonoDevelop.Projects" version="0.15.0"/>
-	</Dependencies>
-
 	<!-- Extension points -->
 	
-	<ExtensionPoint path = "/SharpDevelop/Workbench/ProjectOptions/GeneralOptions">
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/GeneralOptions">
 		<Description>Dialog panels for project options.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.DialogPanel" />
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions">
 		<Description>Dialog panels for project configuration options.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.DialogPanel" />
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/SharpDevelop/Workbench/CombineOptions/GeneralOptions">
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/Gui/CombineOptions/GeneralOptions">
 		<Description>Dialog panels for solution options.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.DialogPanel" />
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/SharpDevelop/Workbench/CombineOptions/ConfigurationProperties">
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/Gui/CombineOptions/ConfigurationOptions">
 		<Description>Dialog panels for solution configuration options.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.DialogPanel" />
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/Workspace/Icons" name="Project service icons">
-		<ExtensionNode name="Icon" type="MonoDevelop.Core.Addins.IconCodon"/>
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/Gui/Icons" name="Project service icons">
+		<ExtensionNode name="Icon" type="MonoDevelop.Projects.Gui.IconCodon"/>
 	</ExtensionPoint>
 
 	<!-- Extensions points -->
 	
-	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/GeneralOptions">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/GeneralOptions">
 		<DialogPanel id    = "Common"
 		             _label = "General">
 			<DialogPanel id = "GeneralProjectPanel"
@@ -57,7 +52,7 @@
 		</DialogPanel>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions">
 			<DialogPanel id = "CustomCommands"
 			             _label = "Custom Commands"
 			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanel"/>
@@ -68,7 +63,7 @@
 			</Condition>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/CombineOptions/GeneralOptions">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/CombineOptions/GeneralOptions">
 		<DialogPanel id    = "Common"
 		             _label = "Common">
 			<DialogPanel id = "Information"
@@ -87,7 +82,7 @@
 			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineEntryConfigurationsPanel"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/CombineOptions/ConfigurationProperties">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/CombineOptions/ConfigurationOptions">
 		<DialogPanel id = "EntryConfigurations"
 			             _label = "Configurations"
 			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineConfigurationPanel"/>

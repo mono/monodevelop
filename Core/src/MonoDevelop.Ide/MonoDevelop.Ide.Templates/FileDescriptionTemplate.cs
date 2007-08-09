@@ -25,7 +25,7 @@ namespace MonoDevelop.Ide.Templates
 		{
 			if (templates == null) {
 				templates = new List<FileTemplateTypeCodon> ();
-				AddinManager.AddExtensionNodeHandler ("/MonoDevelop/FileTemplateTypes", OnExtensionChanged);
+				AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/FileTemplateTypes", OnExtensionChanged);
 			}
 			
 			foreach (FileTemplateTypeCodon template in templates) {

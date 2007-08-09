@@ -21,7 +21,7 @@
 		<Addin id="VBBinding" version="0.15.0"/>
 	</Dependencies>
 	
-	<Extension path = "/SharpDevelop/Workbench/ProjectFileFormats">
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectFileFormats">
 		<FileFormat id="MSBuildFileFormat"
 		            class="MonoDevelop.Prj2Make.MSBuildFileFormat"/>
 		<FileFormat id="VS2003SlnFileFormat"
@@ -30,7 +30,7 @@
 		            class="MonoDevelop.Prj2Make.VS2003ProjectFileFormat"/>
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/Combine/FileFilter">
+	<Extension path = "/MonoDevelop/Ide/ProjectFileFilters">
 		<FileFilter id = "SlnCombine"
 		            _label = "Visual Studio Solution"
 		            extensions = "*.sln"/>

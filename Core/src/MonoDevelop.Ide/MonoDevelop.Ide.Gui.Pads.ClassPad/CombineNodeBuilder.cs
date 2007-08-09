@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		}
 
 		public override string ContextMenuAddinPath {
-			get { return "/SharpDevelop/Views/ClassBrowser/ContextMenu/CombineNode"; }
+			get { return "/MonoDevelop/Ide/ContextMenu/ClassPad/Combine"; }
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)

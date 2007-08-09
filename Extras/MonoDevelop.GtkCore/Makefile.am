@@ -1,5 +1,4 @@
 
-ADDIN = MonoDevelop.GtkCore.addin.xml
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.GtkCore
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.GtkCore.dll
 
@@ -8,14 +7,14 @@ REFS =  \
 	$(GLADE_SHARP_LIBS) \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
 	-r:$(top_srcdir)/contrib/Mono.Cecil.dll \
 	-r:$(top_srcdir)/Extras/MonoDevelop.GtkCore/lib/libstetic.dll \
@@ -65,6 +64,7 @@ RES =  \
 	icons/actiongroup.png \
 	icons/image-x-generic.png \
 	icons/widget.png \
+	MonoDevelop.GtkCore.addin.xml \
 	templates/ActionGroup.xft.xml \
 	templates/ActionGroupPartial.xft.xml \
 	templates/Dialog.xft.xml \
@@ -86,17 +86,13 @@ LIBDIR_STETIC_FILES = $(addprefix $(STETIC_LIBDIR), $(STETIC_FILES))
 SRC_STETIC_FILES = $(addprefix lib/, $(STETIC_FILES))
 BUILD_STETIC_FILES = $(addprefix $(ADDIN_BUILD)/, $(STETIC_FILES))
 
-EXTRA_DIST = $(FILES) $(ADDIN) $(RES) $(SRC_STETIC_FILES)
+EXTRA_DIST = $(FILES) $(RES) $(SRC_STETIC_FILES)
 
-all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN) $(BUILD_STETIC_FILES)
+all: $(ASSEMBLY) $(BUILD_STETIC_FILES)
 
 update-stetic:
 	mkdir -p lib
 	cp $(LIBDIR_STETIC_FILES) lib 
-
-$(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/$(ADDIN) $@
 
 $(ADDIN_BUILD)/%: $(srcdir)/lib/%
 	mkdir -p $(ADDIN_BUILD)
@@ -108,8 +104,8 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 	$(build_resources:%=/resource:%) $(build_sources) $(REFS)
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.GtkCore
-assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(ADDIN) $(SRC_STETIC_FILES) 
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(SRC_STETIC_FILES) 
 
-CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(ADDIN_BUILD)/$(ADDIN) $(BUILD_STETIC_FILES)
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(BUILD_STETIC_FILES)
 
 include $(top_srcdir)/Makefile.include

@@ -615,7 +615,7 @@ namespace MonoDevelop.NUnit
 		void OnChartPopupMenu (object o, Gtk.ButtonReleaseEventArgs args)
 		{
 			if (args.Event.Button == 3) {
-				IdeApp.CommandService.ShowContextMenu ("/SharpDevelop/Views/TestChart/ContextMenu");
+				IdeApp.CommandService.ShowContextMenu ("/MonoDevelop/NUnit/ContextMenu/TestChart");
 			}
 		}
 		

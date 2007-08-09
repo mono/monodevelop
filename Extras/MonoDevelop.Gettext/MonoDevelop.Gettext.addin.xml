@@ -34,7 +34,7 @@
 
 	<!-- Extensions -->
 
-	<Extension path = "/SharpDevelop/Commands">
+	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Command id   = "MonoDevelop.Gettext.Commands.AddTranslation"
 		         icon = "md-gettext-locale"
 		         _label = "Add Translation..."
@@ -44,7 +44,7 @@
 			     _description = "Updates all translation files." />
 	</Extension>	
 	
-	<Extension path = "/SharpDevelop/Workbench/StockIcons" extension-nodes = "StockIcon" description = "Stock icons|Available from MonoDevelop.Gettext.Resources.">
+	<Extension path = "/MonoDevelop/Core/StockIcons" extension-nodes = "StockIcon" description = "Stock icons|Available from MonoDevelop.Gettext.Resources.">
 		<StockIcon stockid = "md-gettext-locale" resource = "locale_22x22.png.png" />
 		<StockIcon stockid = "md-gettext-locale" resource = "locale_16x16.png" size = "Menu" />
 		<StockIcon stockid = "md-gettext-locale" resource = "locale_22x22.png" size = "Button" />
@@ -55,19 +55,19 @@
 		<StockIcon stockid = "md-gettext-project" resource = "md-gettext-project_32.png" size = "Dialog" />
 	</Extension>
 	
-	<Extension path = "/Workspace/Icons">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
 		<Icon id = "C#File" extensions = ".po" resource = "res:locale.svg"/>
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/FileFilter">
+	<Extension path = "/MonoDevelop/Ide/FileFilters">
 		<FileFilter id = "PoFiles" _label = "PO Files" extensions = "*.po"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">
+	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding id = "GettextEditor" supportedextensions = ".po" class = "MonoDevelop.Gettext.GettextEditorDisplayBinding"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
+	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "MonoDevelop.Gettext.TranslationProject" />
 		<DataType class = "MonoDevelop.Gettext.TranslationProjectConfiguration" />
 	</Extension>
@@ -91,16 +91,16 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectTemplates">
+	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
 		<ProjectTemplate id = "MonoDevelop.Gettext.TranslationInfo" resource = "TranslationProject.xpt.xml" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
+	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder class = "MonoDevelop.Gettext.NodeBuilders.TranslationProjectNodeBuilder"/>
 		<NodeBuilder class = "MonoDevelop.Gettext.NodeBuilders.TranslationNodeBuilder"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/IDE/StartupHandlers">
+	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
 		<Class class = "MonoDevelop.Gettext.TranslationServiceStartupCommand"/>
 	</Extension>
 	
@@ -108,7 +108,7 @@
 		<Class class = "MonoDevelop.Gettext.PropertyProvider"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/Serialization/ExtendedProperties">
+	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
 		<ItemProperty class = "MonoDevelop.Projects.ProjectFile"
 			name = "Gettext.ScanForTranslations" type = "System.Boolean" />
 	</Extension>

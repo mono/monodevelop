@@ -11,14 +11,14 @@ REFS =  \
 	$(GNOME_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	-r:$(top_builddir)/build/AddIns/AspNetAddIn/AspNetAddIn.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:$(top_srcdir)/build/AddIns/AspNetEdit/jscall.dll \
 	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
 	-r:System \
@@ -67,7 +67,7 @@ FILES =	\
 	AspNetEdit.Integration/EditorProcess.cs
 
 
-RES = #
+RES = AspNetEdit.addin.xml
 
 LOCAL_LIBS = \
 	libs/jscall.dll
@@ -76,17 +76,11 @@ DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(notdir $(DATA_FILES)))
 
 LOCAL_LIBS_BUILD = $(addprefix $(ADDIN_BUILD)/, $(notdir $(LOCAL_LIBS)))
 
-ADDIN = AspNetEdit.addin.xml
-
 if ENABLE_ASPNETEDIT
-  all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN) $(DATA_FILE_BUILD) $(LOCAL_LIBS_BUILD)
+  all: $(ASSEMBLY) $(DATA_FILE_BUILD) $(LOCAL_LIBS_BUILD)
 else
   all:
 endif
-
-$(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/$(ADDIN)
 
 $(ASSEMBLY): $(build_sources) $(RES) $(LOCAL_LIBS_BUILD)
 	mkdir -p $(ADDIN_BUILD)
@@ -103,12 +97,12 @@ $(LOCAL_LIBS_BUILD): $(srcdir)/libs/$(notdir $@)
 
 if ENABLE_ASPNETEDIT
   aspneteditlibdir = $(MD_ADDIN_DIR)/AspNetEdit
-  aspneteditlib_DATA = $(ASSEMBLY) $(ADDIN) $(DATA_FILES) $(LOCAL_LIBS)
+  aspneteditlib_DATA = $(ASSEMBLY) $(DATA_FILES) $(LOCAL_LIBS)
 endif
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD) $(LOCAL_LIBS_BUILD)
 
-EXTRA_DIST = $(FILES) $(ADDIN) $(RES) $(DATA_FILES) $(LOCAL_LIBS) libs/JSCall.js
+EXTRA_DIST = $(FILES) $(RES) $(DATA_FILES) $(LOCAL_LIBS) libs/JSCall.js
 
 include $(top_srcdir)/Makefile.include
 

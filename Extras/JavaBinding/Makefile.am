@@ -5,11 +5,11 @@ REFS =  \
 	$(GLADE_SHARP_LIBS) \
 	$(GNOME_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:System \
 	-r:System.Drawing \
 	-r:System.Xml
@@ -39,6 +39,7 @@ RES =  \
 	icons/Java.Project.WebProject \
 	icons/Java.ProjectIcon \
 	Java.glade \
+	JavaBinding.addin.xml \
 	templates/EmptyJavaFile.xft.xml \
 	templates/EmptyJavaProject.xpt.xml \
 	templates/IkvmConsoleApplicationProject.xpt.xml \
@@ -55,18 +56,11 @@ RES =  \
 	templates/JavaOKDialog.xft.xml \
 	templates/JavaPanel.xft.xml
 
-
-ADDIN = JavaBinding.addin.xml
-
 if ENABLE_JAVA
-all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
+all: $(ASSEMBLY)
 else
 all:
 endif
-
-$(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/.
 
 $(ASSEMBLY): $(FILES) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
@@ -74,11 +68,11 @@ $(ASSEMBLY): $(FILES) $(build_resources)
 
 if ENABLE_JAVA
 assemblydir = $(MD_ADDIN_DIR)/BackendBindings
-assembly_DATA = $(ASSEMBLY) $(ADDIN)
+assembly_DATA = $(ASSEMBLY)
 
 endif
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
-EXTRA_DIST = $(FILES) $(ADDIN) $(RES)
+EXTRA_DIST = $(FILES) $(RES)
 
 include $(top_srcdir)/Makefile.include

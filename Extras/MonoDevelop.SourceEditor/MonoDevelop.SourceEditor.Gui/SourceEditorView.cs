@@ -231,7 +231,7 @@ namespace MonoDevelop.SourceEditor.Gui
 
 		void LoadEditActions ()
 		{
-			string editactionsPath = "/AddIns/DefaultTextEditor/EditActions";
+			string editactionsPath = "/MonoDevelop/SourceEditor/EditActions";
 			IEditAction[] actions = (IEditAction[]) AddinManager.GetExtensionObjects (editactionsPath, typeof(IEditAction));
 			foreach (IEditAction action in actions)
 				editactions.Add (action);
@@ -294,7 +294,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		{
 			HideLanguageItemWindow ();
 			
-			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet ("/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu");
+			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/SourceEditor/ContextMenu/Editor");
 			if (cset.Count > 0) {
 				cset.AddItem (Command.Separator);
 				IdeApp.CommandService.InsertOptions (menu, cset, 0);

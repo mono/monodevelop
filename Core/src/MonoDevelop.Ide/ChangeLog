@@ -1,3 +1,39 @@
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Templates/FileTemplate.cs,
+	  MonoDevelop.Ide.Templates/FileDescriptionTemplate.cs,
+	  MonoDevelop.Ide.Templates/ICombineEntryFeature.cs,
+	  MonoDevelop.Ide.Templates/ProjectTemplate.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/MethodNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/EventNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/FieldNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/PropertyNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/CombineNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceFolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs,
+	  MonoDevelop.Ide.Gui.Pads/TaskListPad.cs, MonoDevelop.Ide.addin.xml,
+	  MonoDevelop.Ide.mdp, gtk-gui/gui.stetic, Makefile.am,
+	  MonoDevelop.Ide.Gui/Document.cs,
+	  MonoDevelop.Ide.Gui/DisplayBindingService.cs,
+	  MonoDevelop.Ide.Gui/ProjectOperations.cs,
+	  MonoDevelop.Ide.Gui/Workbench.cs,
+	  MonoDevelop.Ide.Gui/DefaultWorkbench.cs,
+	  MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs, MonoDevelop.Ide.Gui/Ide.cs:
+	  Reorganized the extension point hierarchy. Embedded all add-in manifests
+	  as resources.
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs: Updated.
+
 2007-08-03  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Templates/CombineDescriptor.cs,

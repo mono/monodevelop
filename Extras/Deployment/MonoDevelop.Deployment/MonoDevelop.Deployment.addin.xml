@@ -15,13 +15,14 @@
 
 	<Dependencies>
 		<Addin id="Core" version="0.15.0"/>
+		<Addin id="Core.Gui" version="0.15.0"/>
 		<Addin id="Projects" version="0.15.0"/>
 		<Addin id="Projects.Gui" version="0.15.0"/>
 		<Addin id="Ide" version="0.15.0"/>
 		<Addin id="DesignerSupport" version="0.15.0"/>
 	</Dependencies>
 
-	<Extension path = "/SharpDevelop/Commands">
+	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Category _name = "Deployment" id = "Deployment">
 		<Command id = "MonoDevelop.Deployment.Commands.CreatePackage"
 				defaultHandler = "MonoDevelop.Deployment.CreatePackageHandler"
@@ -43,30 +44,30 @@
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/SharpDevelop/Workbench/DeployFileCopiers" name = "File copiers">
+	<ExtensionPoint path = "/MonoDevelop/Deployment/DeployFileCopiers" name = "File copiers">
 		<Description>File copiers for deployment handlers. Specified classes must implement IDeployFileCopier.</Description>
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/DeployService/DeployServiceExtensions" name="Deploy service extensions">
+	<ExtensionPoint path = "/MonoDevelop/Deployment/DeployServiceExtensions" name="Deploy service extensions">
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/DeployService/PackageBuilderEditors" description="Package builder editors">
+	<ExtensionPoint path = "/MonoDevelop/Deployment/PackageBuilderEditors" description="Package builder editors">
 		<Description>Editors for package builders. Specified classes must implement IPackageBuilderEditor.</Description>
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/SharpDevelop/Workbench/FileCopyConfigurationEditors" name = "Editors for file copy congigurations">
+	<ExtensionPoint path = "/MonoDevelop/Deployment/FileCopyConfigurationEditors" name = "Editors for file copy congigurations">
 		<Description>Editors for file copy congigurations. Specified classes must implement IFileCopyConfigurationEditor.</Description>
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/Deployment/ProjectBrowser/ContextMenu/Package" name="Package context menu">
+	<ExtensionPoint path = "/MonoDevelop/Deployment/ContextMenu/ProjectPad/Package" name="Package context menu">
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/Deployment/ProjectBrowser/ContextMenu/PackagingProject" name="Packaging project context menu">
+	<ExtensionPoint path = "/MonoDevelop/Deployment/ContextMenu/ProjectPad/PackagingProject" name="Packaging project context menu">
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 
@@ -78,27 +79,27 @@
 		<ExtensionNode name="DeployPlatform" type="MonoDevelop.Deployment.DeployPlatformNodeType" />
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/DeployService/DeployDirectoryResolvers" name="Deploy directory resolvers">
+	<ExtensionPoint path = "/MonoDevelop/Deployment/DeployDirectoryResolvers" name="Deploy directory resolvers">
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
 
 	<!-- Extensions -->
 
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/CombineBrowserNode/Tools">
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Combine/Tools">
 		<CommandItem id = "MonoDevelop.Deployment.Commands.CreatePackage" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"/>
 		<CommandItem id = "MonoDevelop.Deployment.Commands.Install" insertafter="ExportSeparator"/>
 	</Extension>	
 
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectBrowserNode/Tools">
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Project/Tools">
 		<CommandItem id = "MonoDevelop.Deployment.Commands.CreatePackage" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"/>
 		<CommandItem id = "MonoDevelop.Deployment.Commands.Install" insertafter="ExportSeparator"/>
 	</Extension>	
 
-	<Extension path = "/SharpDevelop/Workbench/MainMenu/Run">
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Run">
 		<CommandItem id = "MonoDevelop.Deployment.Commands.CreatePackage" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"/>
 	</Extension>	
 
-	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
+	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "MonoDevelop.Deployment.LocalFileCopyConfiguration" />
 		<DataType class = "MonoDevelop.Deployment.PackagingProject" />
 		<DataType class = "MonoDevelop.Deployment.BinariesZipPackageBuilder" />
@@ -110,21 +111,21 @@
 		<Class class = "MonoDevelop.Deployment.BinariesZipPackageBuilder" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/DeployFileCopiers" extension-nodes="Class" description="File copiers for deployment handlers. Specified classes must implement IDeployFileCopier.">
+	<Extension path = "/MonoDevelop/Deployment/DeployFileCopiers" extension-nodes="Class" description="File copiers for deployment handlers. Specified classes must implement IDeployFileCopier.">
 		<Class class = "MonoDevelop.Deployment.LocalFileCopyHandler" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/DeployService/DeployServiceExtensions" extension-nodes="Class">
+	<Extension path = "/MonoDevelop/Deployment/DeployServiceExtensions" extension-nodes="Class">
 		<Class id="PrepareDeploy" class = "MonoDevelop.Deployment.DeployServiceExtension" />
 		<Class id="DefaultDeploy" class = "MonoDevelop.Deployment.DefaultDeployServiceExtension" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/DeployService/PackageBuilderEditors" extension-nodes="Class" description="Editors for deployment targets. Specified classes must implement IPackageBuilderEditor.">
+	<Extension path = "/MonoDevelop/Deployment/PackageBuilderEditors" extension-nodes="Class" description="Editors for deployment targets. Specified classes must implement IPackageBuilderEditor.">
 		<Class class = "MonoDevelop.Deployment.Gui.SourcesZipDeployEditor" />
 		<Class class = "MonoDevelop.Deployment.Gui.BinariesZipDeployEditor" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/FileCopyConfigurationEditors" extension-nodes="Class" description="Editors for file copy congigurations. Specified classes must implement IFileCopyConfigurationEditor.">
+	<Extension path = "/MonoDevelop/Deployment/FileCopyConfigurationEditors" extension-nodes="Class" description="Editors for file copy congigurations. Specified classes must implement IFileCopyConfigurationEditor.">
 		<Class class = "MonoDevelop.Deployment.Gui.LocalFileCopyConfigurationEditor" />
 	</Extension>
 	
@@ -132,7 +133,7 @@
 		<Class class = "MonoDevelop.Deployment.Gui.PropertyProvider"/>
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/Serialization/ExtendedProperties">
+	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
 		<ItemProperty class = "MonoDevelop.Projects.ProjectFile"
 			name = "DeployService.TargetDirectoryId" type = "System.String" />
 		<ItemProperty class = "MonoDevelop.Projects.ProjectFile"
@@ -143,16 +144,16 @@
 			name = "DeployService.UseProjectRelativePath" type = "System.Boolean" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectTemplates">
+	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
 		<ProjectTemplate id = "PackagingProject" resource = "PackagingProject.xpt.xml"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
+	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder class = "MonoDevelop.Deployment.NodeBuilders.PackagingProjectNodeBuilder"/>
 		<NodeBuilder class = "MonoDevelop.Deployment.NodeBuilders.PackageNodeBuilder"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Deployment/ProjectBrowser/ContextMenu/Package">
+	<Extension path = "/MonoDevelop/Deployment/ContextMenu/ProjectPad/Package">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 		<SeparatorItem />
@@ -160,27 +161,27 @@
 		<SeparatorItem />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Deployment/ProjectBrowser/ContextMenu/PackagingProject">
+	<Extension path = "/MonoDevelop/Deployment/ContextMenu/ProjectPad/PackagingProject">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
 		<CommandItem id = "MonoDevelop.Deployment.Commands.AddPackage" />
 		<SeparatorItem />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/StockIcons">
+	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "md-packaging-project" resource = "packaging-project-32.png" />
 		<StockIcon stockid = "md-packaging-project" resource = "packaging-project-16.png" size = "Menu" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/CombineOptions/GeneralOptions">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/CombineOptions/GeneralOptions">
 		<DialogPanel id = "Deployment" _label = "Deployment" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/GeneralOptions">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/GeneralOptions">
 		<DialogPanel id = "Deployment" _label = "Deployment" />
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/ProjectServiceExtensions">
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
 		<Class class = "MonoDevelop.Deployment.DeployProjectServiceExtension" insertbefore="FinalStep"/>
 	</Extension>
 	
@@ -198,7 +199,7 @@
 		<DeployPlatform id="Windows" _label="Windows" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Workbench/ProjectFeatures">
+	<Extension path = "/MonoDevelop/Ide/ProjectFeatures">
 		<Class class = "MonoDevelop.Deployment.Gui.PackagingFeature" />
 	</Extension>
 </Addin>

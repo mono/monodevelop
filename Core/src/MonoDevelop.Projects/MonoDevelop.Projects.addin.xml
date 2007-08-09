@@ -6,47 +6,43 @@
        url         = "http://www.monodevelop.com"
        description = "Provides support for loading and building MonoDevelop projects."
 	   category    = "MonoDevelop Core"
+	   isroot      = "true"
        version     = "0.15.0"
        compatVersion = "0.15.0">
-
-	<Runtime>
-		<Import assembly="MonoDevelop.Projects.dll"/>
-	</Runtime>
 
 	<Dependencies>
 		<Addin id="Core" version="0.15.0"/>
 	</Dependencies>
-
-
+	
 	<!-- Extension points -->
 	
-	<ExtensionPoint path = "/SharpDevelop/Workbench/Ambiences" name = "Language ambiences">
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/Ambiences" name = "Language ambiences">
 		<Description>Language ambiences. Specified classes must implement IAmbience.</Description>
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/SharpDevelop/Workbench/ProjectBindings" name = "Project bindings">
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/ProjectBindings" name = "Project bindings">
 		<Description>Project bindings</Description>
 		<ExtensionNode name="ProjectBinding" type="MonoDevelop.Projects.Extensions.ProjectBindingCodon">
 			<Description>A project binding. The specified class must implement MonoDevelop.Projects.IProjectBinding.</Description>
 		</ExtensionNode>	
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/SharpDevelop/Workbench/ProjectFileFormats" name = "File format handlers">
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/ProjectFileFormats" name = "File format handlers">
 		<Description>File format handlers for projects and solutions</Description>
 		<ExtensionNode name="FileFormat">
 			<Description>A file format handler. The specified class must implement MonoDevelop.Projects.IFileFormat.</Description>
 		</ExtensionNode>	
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/SharpDevelop/Workbench/SerializableClasses" name = "Serializable classes">
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/SerializableClasses" name = "Serializable classes">
 		<Description>Classes to be registered for serialization.</Description>
 		<ExtensionNode name="DataType" type="MonoDevelop.Projects.Extensions.DataTypeCodon">
 			<Description>A type name.</Description>
 		</ExtensionNode>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/SharpDevelop/Workbench/Serialization/ExtendedProperties" name = "Serializable classes">
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/ExtendedProperties" name = "Serializable classes">
 		<Description>Custom properties for projects and other types.</Description>
 		<ExtensionNode name="ItemProperty" type="MonoDevelop.Projects.Extensions.ItemPropertyCodon">
 			<Description>A custom property. The type specified in the 'class' property is the type to which the property has to be added. Only types which implement IExtendedDataItem can be extended in this way.</Description>
@@ -60,51 +56,51 @@
 		</ExtensionNode>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/SharpDevelop/Workbench/DeployFileCopiers" name = "File copiers">
+	<ExtensionPoint path = "/MonoDevelop/Deployment/DeployFileCopiers" name = "File copiers">
 		<Description>File copiers for deployment handlers. Specified classes must implement IDeployFileCopier.</Description>
 		<ExtensionNode name="Class">
 			<Description>A class which implements IDeployFileCopier.</Description>
 		</ExtensionNode>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/SharpDevelop/Workbench/ProjectServiceExtensions" name = "Project service extensions">
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions" name = "Project service extensions">
 		<Description>Project service extensions. Specified classes must be a subclass of ProjectServiceExtension</Description>
 		<ExtensionNode name="Class">
 			<Description>A subclass of ProjectServiceExtension.</Description>
 		</ExtensionNode>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/SharpDevelop/Workbench/LanguageBindings" name = "Language bindings">
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/LanguageBindings" name = "Language bindings">
 		<Description>Language bindings.</Description>
 		<ExtensionNode name="LanguageBinding" type="MonoDevelop.Projects.Extensions.LanguageBindingCodon"/>
 	</ExtensionPoint>
 
 	<!-- Extensions -->
 
-	<Extension path = "/System/Applications">
+	<Extension path = "/MonoDevelop/Core/Applications">
 		<Application id = "build" class = "MonoDevelop.Projects.BuildTool" description = "Project build tool"/>
 		<Application id = "dbgen" class = "MonoDevelop.Projects.Parser.DatabaseGeneratorTool" description = "Parser database generation tool"/>
 		<Application id = "project-export" class = "MonoDevelop.Projects.ProjectConvertTool" description = "Project conversion tool"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/Ambiences">
+	<Extension path = "/MonoDevelop/ProjectModel/Ambiences">
 		<Class id    = ".NET"
 		       class = "MonoDevelop.Projects.Ambience.NetAmbience"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/ProjectBindings">
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">
 		<ProjectBinding id = "DotNet" class = "MonoDevelop.Projects.DotNetProjectBinding" />
 		<ProjectBinding id = "GenericProject" class = "MonoDevelop.Projects.GenericProjectBinding" />
 	</Extension>
 	  
-	<Extension path = "/SharpDevelop/Workbench/ProjectFileFormats">
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectFileFormats">
 		<FileFormat id="MonoDevelopFileFormat"
 		            class="MonoDevelop.Projects.MonoDevelopFileFormat"/>
 		<FileFormat id="SharpDevelopFileFormat"
 		            class="MonoDevelop.Projects.SharpDevelopFileFormat"/>
 	</Extension>
 	  
-	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
+	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "MonoDevelop.Projects.Combine" />
 		<DataType class = "MonoDevelop.Projects.Project" />
 		<DataType class = "MonoDevelop.Projects.DotNetProject" />
@@ -112,10 +108,10 @@
 		<DataType class = "MonoDevelop.Projects.GenericProjectConfiguration" />
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/Serialization/ExtendedProperties">
+	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/ProjectServiceExtensions">
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
 		<Class id="InitialStep" class = "MonoDevelop.Projects.ProjectServiceExtension" />
 		<Class id="MidStep" class = "MonoDevelop.Projects.ProjectServiceExtension" />
 		<Class id="FinalStep" class = "MonoDevelop.Projects.ProjectServiceExtension" />

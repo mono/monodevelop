@@ -22,50 +22,50 @@
 		<Addin id="Deployment" version="0.15.0"/>
 	</Dependencies>
 
-	<Extension path = "/SharpDevelop/Commands">
+	<Extension path = "/MonoDevelop/Ide/Commands">
 	</Extension>	
 
-	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
+	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 	</Extension>
 
-	<Extension path = "/MonoDevelop/DeployService/DeployDirectoryResolvers">
+	<Extension path = "/MonoDevelop/Deployment/DeployDirectoryResolvers">
 	</Extension>
 
-	<Extension path = "/MonoDevelop/DeployService/DeployServiceExtensions">
+	<Extension path = "/MonoDevelop/Deployment/DeployServiceExtensions">
 		<Class id="Deployment.Linux" insertbefore="PrepareDeploy" class = "MonoDevelop.Deployment.Linux.LinuxDeployExtension" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/Serialization/ExtendedProperties">
+	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
 <!--		<ItemProperty class = "MonoDevelop.Projects.ProjectFile"
 			name = "DeployService.TargetDirectoryId" type = "System.String" />
 -->	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
+	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 <!--		<NodeBuilder class = "MonoDevelop.Deployment.NodeBuilders.PackagingProjectNodeBuilder"/>
 		<NodeBuilder class = "MonoDevelop.Deployment.NodeBuilders.PackageNodeBuilder"/>
 -->	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/StockIcons" extension-nodes="StockIcon" description="Stock icons|Available from MonoDevelop.Core.Gui.Services.Resources.">
+	<Extension path = "/MonoDevelop/Core/StockIcons" extension-nodes="StockIcon" description="Stock icons|Available from MonoDevelop.Core.Gui.Services.Resources.">
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">
+	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding id    = "Desktop Entry" insertbefore="DefaultDisplayBinding"
 		                class = "MonoDevelop.Deployment.Linux.DotDesktopDisplayBinding"/>
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/CombineOptions/GeneralOptions/Deployment">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/CombineOptions/GeneralOptions/Deployment">
 		<DialogPanel id = "LinuxDeployment" _label = "Linux Deployment Settings" class="MonoDevelop.Deployment.Linux.BasicOptionPanel"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/GeneralOptions/Deployment">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/GeneralOptions/Deployment">
 		<DialogPanel id = "LinuxDeployment" _label = "Linux Deployment Settings" class="MonoDevelop.Deployment.Linux.BasicOptionPanel"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/DeployService/DeployDirectoryResolvers">
+	<Extension path = "/MonoDevelop/Deployment/DeployDirectoryResolvers">
 		<Class class = "MonoDevelop.Deployment.Linux.LinuxDirectoryResolver" />
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/Serialization/ExtendedProperties">
+	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
 		<ItemProperty class = "MonoDevelop.Projects.CombineEntry"
 			name = "Deployment.LinuxDeployData" type = "MonoDevelop.Deployment.Linux.LinuxDeployData" />
 	</Extension>
@@ -75,7 +75,7 @@
 		<DeployDirectory id="Linux.DesktopApplications" _label=".desktop application folder" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Workbench/ProjectFeatures">
+	<Extension path = "/MonoDevelop/Ide/ProjectFeatures">
 		<Class class = "MonoDevelop.Deployment.Linux.LinuxIntegrationProjectFeature" />
 	</Extension>
 </Addin>

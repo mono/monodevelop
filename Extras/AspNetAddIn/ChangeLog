@@ -1,3 +1,8 @@
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AspNetAddIn.addin.xml, AspNetAddIn.mdp, Makefile.am: Reorganized the
+	  extension point hierarchy. Embedded all add-in manifests as resources.
+
 2007-08-01  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* AspNetAppProject.cs: Fix the IDeployable implementation. The target

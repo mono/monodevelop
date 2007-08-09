@@ -20,7 +20,7 @@ namespace MonoDevelop.Core
 	public class FileService
 	{
 		FileServiceErrorHandler errorHandler;
-		const string FileSystemExtensionPath = "/Workspace/FileSystemExtensions";
+		const string FileSystemExtensionPath = "/MonoDevelop/Core/FileSystemExtensions";
 		
 		FileSystemExtension fileSystemChain;
 		FileSystemExtension defaultExtension = new DefaultFileSystemExtension ();

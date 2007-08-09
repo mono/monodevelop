@@ -1,5 +1,4 @@
 
-ADDIN = prj2make-sharp-lib.addin.xml
 ADDIN_BUILD = $(top_builddir)/build/AddIns/prj2makesharp
 ASSEMBLY = $(ADDIN_BUILD)/prj2make-sharp-lib.dll
 
@@ -7,11 +6,11 @@ REFS =  \
 	$(GTK_SHARP_LIBS) \
 	-r:$(top_builddir)/build/AddIns/BackendBindings/CSharpBinding.dll \
 	-r:$(top_builddir)/build/AddIns/BackendBindings/VBNetBinding.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:System \
 	-r:System.Xml
 
@@ -37,23 +36,21 @@ FILES =  \
 	VS2003ProjectFileFormat.cs \
 	VS2003SlnFileFormat.cs
 
+RES = prj2make-sharp-lib.addin.xml
+
 GENERATED_FILES = \
 AssemblyInfo.cs
 
-EXTRA_DIST = $(FILES) $(ADDIN)
+EXTRA_DIST = $(FILES)
 
-all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
+all: $(ASSEMBLY)
 
-$(ADDIN_BUILD)/$(ADDIN):
+$(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/.
-
-$(ASSEMBLY): $(build_sources)
-	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) -out:$@ -target:library $(build_sources) $(REFS)
+	$(CSC) $(CSC_FLAGS) -out:$@ -target:library $(build_resources:%=/resource:%) $(build_sources) $(REFS)
 
 assemblydir = $(MD_ADDIN_DIR)
-assembly_DATA = $(ASSEMBLY) $(ADDIN)
+assembly_DATA = $(ASSEMBLY)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 

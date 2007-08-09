@@ -14,22 +14,22 @@
 		<Import assembly="../bin/MonoDevelop.Core.dll"/>
 	</Runtime>
 	
-	<ExtensionPoint path = "/Workspace/Services" name = "Services">
+	<ExtensionPoint path = "/MonoDevelop/Core/Services" name = "Services">
 		<Description>Services to be initialized by the runtime. Specified classes must implement MonoDevelop.Core.IService</Description>
 		<ExtensionNode name="Class" type="MonoDevelop.Core.Addins.ServiceExtensionNode" />
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/SharpDevelop/Workbench/ExecutionHandlers" name = "Execution handlers">
+	<ExtensionPoint path = "/MonoDevelop/Core/ExecutionHandlers" name = "Execution handlers">
 		<Description>Default execution handlers.</Description>
 		<ExtensionNode name="ExecutionHandler" type="MonoDevelop.Core.Addins.ExecutionHandlerCodon" />
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/Workspace/FileSystemExtensions" name = "File system extensions">
+	<ExtensionPoint path = "/MonoDevelop/Core/FileSystemExtensions" name = "File system extensions">
 		<Description>File system extensions which can provide specific behavior when handling files. Specified classes must implement MonoDevelop.Core.FileSystem.FileSystemExtension.</Description>
 		<ExtensionNode name="Class" objectType="MonoDevelop.Core.FileSystem.FileSystemExtension"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/System/Applications" name = "Applications">
+	<ExtensionPoint path = "/MonoDevelop/Core/Applications" name = "Applications">
 		<Description>MonoDevelop tools.</Description>
 		<ExtensionNode name="Application" type="MonoDevelop.Core.AddIns.ApplicationExtensionNode"/>
 	</ExtensionPoint>
@@ -38,14 +38,14 @@
 		<ExtensionNode name="Package" type="MonoDevelop.Core.AddIns.PackageExtensionNode"/>
 	</ExtensionPoint>
 
-	<Extension path = "/Workspace/Services">
+	<Extension path = "/MonoDevelop/Core/Services">
 		<Class id    = "SystemAssemblyService"
 		       class = "MonoDevelop.Core.SystemAssemblyService"/>
 		<Class id    = "ProcessService"
 		       class = "MonoDevelop.Core.Execution.ProcessService"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/ExecutionHandlers">
+	<Extension path = "/MonoDevelop/Core/ExecutionHandlers">
 		<ExecutionHandler id="Mono"
 					platform = "Mono"
 		            class = "MonoDevelop.Core.Execution.MonoPlatformExecutionHandler"/>

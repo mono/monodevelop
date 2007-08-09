@@ -7,12 +7,12 @@ REFS =  \
 	$(GTK_SHARP_LIBS) \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
-	-r:$(top_srcdir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_srcdir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	-r:$(top_srcdir)/build/AddIns/MonoDevelop.Ide.dll \
-	-r:$(top_srcdir)/build/AddIns/MonoDevelop.Projects.dll \
-	-r:$(top_srcdir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
-	-r:$(top_srcdir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:$(top_srcdir)/contrib/log4net.dll \
 	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
 	-r:Mono.Posix \
@@ -72,13 +72,7 @@ DATA_FILES =  \
 
 DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(notdir $(DATA_FILES)))
 
-ADDIN = MonoDevelop.Autotools.addin.xml
-
-all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN) $(DATA_FILE_BUILD)
-
-$(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/.
+all: $(ASSEMBLY) $(DATA_FILE_BUILD)
 
 $(DATA_FILE_BUILD): $(srcdir)$(subst $(ADDIN_BUILD),, $@)
 	mkdir -p $(ADDIN_BUILD)
@@ -89,9 +83,9 @@ $(ASSEMBLY): $(FILES) $(build_resources)
 	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.Autotools
-assembly_DATA = $(ASSEMBLY) $(ADDIN) $(DATA_FILES)
+assembly_DATA = $(ASSEMBLY) $(DATA_FILES)
 
-CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD) $(ADDIN_BUILD)/$(ADDIN)
-EXTRA_DIST = $(FILES) $(ADDIN) $(RES) $(DATA_FILES)
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD)
+EXTRA_DIST = $(FILES) $(RES) $(DATA_FILES)
 
 include $(top_srcdir)/Makefile.include

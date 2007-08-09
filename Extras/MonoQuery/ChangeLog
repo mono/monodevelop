@@ -1,3 +1,9 @@
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Data.Sql/Mono.Data.Sql.mdp, MonoQuery/Makefile.am,
+	  MonoQuery/MonoQuery.addin.xml, MonoQuery/MonoQuery.mdp: Reorganized the
+	  extension point hierarchy. Embedded all add-in manifests as resources.
+
 2007-08-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoQuery/Gui/NodeBuilders/DatabaseNodeBuilder.cs,

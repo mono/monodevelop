@@ -35,12 +35,12 @@
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 	
-	<Extension path = "/Workspace/Services">
+	<Extension path = "/MonoDevelop/Core/Services">
 		<Class id    = "MonoQueryService"
 		       class = "MonoQuery.MonoQueryService"/>
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/Pads">
+	<Extension path = "/MonoDevelop/Ide/Pads">
 		<SolutionPad id = "MonoQuery.DatabasePad" class = "MonoQuery.DatabasePad" defaultPlacement = "Left" _label = "Database Browser" icon = "md-mono-query-view">
 			<PadOption id = "ShowSystemObjects" _label = "Show System Objects" defaultValue = "False"/>
 			<NodeBuilder id = "ProviderCollectionNodeBuilder" class = "MonoQuery.ProviderCollectionNodeBuilder"/>
@@ -72,12 +72,12 @@
 		<Pad id = "MonoQuery.SqlDefinitionPad" class = "MonoQuery.SqlDefinitionPad" defaultPlacement = "Bottom"  _label = "SQL Definition" icon = "md-mono-query-view"/>
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/Contexts/Edit">
+	<Extension path = "/MonoDevelop/Ide/WorkbenchContexts/Edit">
 		<ContextPad id = "MonoQuery.DatabasePad"/>
 		<ContextPad id = "MonoQuery.SqlDefinitionPad"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Commands">
+	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Category _name = "MonoQuery" id = "MonoQuery">
 		<Command id = "MonoQuery.Commands.MonoQueryCommands.AddConnection"
 			defaultHandler = "MonoQuery.Commands.AddConnection"
@@ -138,7 +138,7 @@
 		<CommandItem id = "MonoQuery.Commands.MonoQueryCommands.QueryCommand"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/StockIcons">
+	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "md-mono-query-addconnection" resource = "MonoQuery.Addconnection" />
 		<StockIcon stockid = "md-mono-query-column" resource = "MonoQuery.Column" />
 		<StockIcon stockid = "md-mono-query-column-f-k" resource = "MonoQuery.ColumnFK" />

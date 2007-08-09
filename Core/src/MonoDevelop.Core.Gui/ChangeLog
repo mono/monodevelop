@@ -1,3 +1,9 @@
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.mdp, MonoDevelop.Core.Gui/ResourceService.cs,
+	  Makefile.am, MonoDevelop.Core.Gui.addin.xml: Reorganized the extension
+	  point hierarchy. Embedded all add-in manifests as resources.
+
 2007-08-03  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.Components/FileBrowser.cs,

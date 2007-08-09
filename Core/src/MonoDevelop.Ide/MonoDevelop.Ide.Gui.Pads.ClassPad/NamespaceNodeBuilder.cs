@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		}
 
 		public override string ContextMenuAddinPath {
-			get { return "/SharpDevelop/Views/ClassBrowser/ContextMenu/NamespaceNode"; }
+			get { return "/MonoDevelop/Ide/ContextMenu/ClassPad/Namespace"; }
 		}
 		
 		protected override void Initialize ()

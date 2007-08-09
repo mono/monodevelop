@@ -23,13 +23,13 @@
 	
 	<!-- Extensions -->
 	
-	<Extension path = "/SharpDevelop/Commands">
+	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Command id = "MonoDevelop.RegexToolkit.Commands.ShowRegexToolkit"
 		         defaultHandler = "MonoDevelop.RegexToolkit.ShowRegexToolkitHandler"
 		         _label = "_Regex Toolkit" />
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/MainMenu/Tools">
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Tools">
 		<CommandItem id = "MonoDevelop.RegexToolkit.Commands.ShowRegexToolkit" />
 	</Extension>
 

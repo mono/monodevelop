@@ -123,6 +123,7 @@ namespace MonoDevelop.Gettext {
             this.treeviewEntries = new Gtk.TreeView();
             this.treeviewEntries.CanFocus = true;
             this.treeviewEntries.Name = "treeviewEntries";
+            this.treeviewEntries.HeadersClickable = true;
             this.scrolledwindow1.Add(this.treeviewEntries);
             this.vpaned2.Add(this.scrolledwindow1);
             Gtk.Paned.PanedChild w5 = ((Gtk.Paned.PanedChild)(this.vpaned2[this.scrolledwindow1]));
@@ -279,6 +280,7 @@ namespace MonoDevelop.Gettext {
             this.treeviewFoundIn = new Gtk.TreeView();
             this.treeviewFoundIn.CanFocus = true;
             this.treeviewFoundIn.Name = "treeviewFoundIn";
+            this.treeviewFoundIn.HeadersClickable = true;
             this.scrolledwindow2.Add(this.treeviewFoundIn);
             this.vbox6.Add(this.scrolledwindow2);
             Gtk.Box.BoxChild w22 = ((Gtk.Box.BoxChild)(this.vbox6[this.scrolledwindow2]));
@@ -316,6 +318,7 @@ namespace MonoDevelop.Gettext {
             this.toolbarPages.Name = "toolbarPages";
             this.toolbarPages.ShowArrow = false;
             this.toolbarPages.ToolbarStyle = ((Gtk.ToolbarStyle)(0));
+            this.toolbarPages.IconSize = ((Gtk.IconSize)(3));
             this.hbox1.Add(this.toolbarPages);
             Gtk.Box.BoxChild w28 = ((Gtk.Box.BoxChild)(this.hbox1[this.toolbarPages]));
             w28.Position = 0;

@@ -63,10 +63,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			LocalOnly = true;
 			
 			ArrayList filters = new ArrayList ();
-			filters.AddRange (AddinManager.GetExtensionObjects ("/SharpDevelop/Workbench/Combine/FileFilter"));
+			filters.AddRange (AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/ProjectFileFilters"));
 			try
 			{
-				filters.AddRange (AddinManager.GetExtensionObjects ("/SharpDevelop/Workbench/FileFilter"));
+				filters.AddRange (AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/FileFilters"));
 			}
 			catch
 			{

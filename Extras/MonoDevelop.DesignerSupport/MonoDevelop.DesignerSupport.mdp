@@ -31,7 +31,7 @@
     <File name="./MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxNode.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.DesignerSupport.Toolbox/ToolboxStore.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.addin.xml" subtype="Code" buildaction="FileCopy" />
+    <File name="./MonoDevelop.DesignerSupport.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/MonoDevelop.DesignerSupport.PropertyGrid.DefaultPropertyTab.bmp" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/MonoDevelop.DesignerSupport.PropertyGrid.EventPropertyTab.bmp" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/MonoDevelop.DesignerSupport.PropertyGrid.SortByCat.png" subtype="Code" buildaction="EmbedAsResource" />
@@ -113,7 +113,6 @@
     <ProjectReference type="Gac" localcopy="True" refto="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </References>
-  <GtkDesignInfo partialTypes="True" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />
@@ -123,6 +122,7 @@
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
+  <GtkDesignInfo partialTypes="True" />
   <MonoDevelop.Gettext.TranslationInfo />
   <DeploymentInformation strategy="File">
     <excludeFiles />

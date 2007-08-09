@@ -1,3 +1,8 @@
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* ChangeLogAddIn.addin.xml, ChangeLogAddIn.mdp, Makefile.am: Reorganized the
+	  extension point hierarchy. Embedded all add-in manifests as resources.
+
 2007-08-06  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* ChangeLogAddin.cs: Fixed #82322. 

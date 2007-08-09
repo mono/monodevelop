@@ -38,9 +38,9 @@ namespace MonoDevelop.Ide.Gui
 	/// </summary>
 	internal class DefaultWorkbench : Gtk.Window, IWorkbench
 	{
-		readonly static string mainMenuPath    = "/SharpDevelop/Workbench/MainMenu";
-		readonly static string viewContentPath = "/SharpDevelop/Workbench/Pads";
-		readonly static string toolbarsPath = "/SharpDevelop/Workbench/ToolBar";
+		readonly static string mainMenuPath    = "/MonoDevelop/Ide/MainMenu";
+		readonly static string viewContentPath = "/MonoDevelop/Ide/Pads";
+		readonly static string toolbarsPath = "/MonoDevelop/Ide/Toolbar";
 		
 		List<PadCodon> padContentCollection      = new List<PadCodon> ();
 		List<IViewContent> viewContentCollection = new List<IViewContent> ();

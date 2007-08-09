@@ -1,3 +1,10 @@
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml, MonoDevelop.Projects.Gui.mdp,
+	  MonoDevelop.Projects.Gui/IconCodon.cs,
+	  MonoDevelop.Projects.Gui/IconService.cs, Makefile.am: Reorganized the
+	  extension point hierarchy. Embedded all add-in manifests as resources.
+
 2007-08-03  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui/ProjectsGuiServices.cs, gtk-gui/objects.xml: API

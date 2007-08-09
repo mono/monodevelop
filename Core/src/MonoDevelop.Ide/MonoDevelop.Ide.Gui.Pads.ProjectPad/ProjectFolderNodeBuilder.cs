@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		public override string ContextMenuAddinPath {
-			get { return "/SharpDevelop/Views/ProjectBrowser/ContextMenu/DefaultDirectoryNode"; }
+			get { return "/MonoDevelop/Ide/ContextMenu/ProjectPad/Folder"; }
 		}
 		
 		protected override void Initialize ()

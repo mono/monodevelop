@@ -53,7 +53,7 @@ namespace MonoDevelop.Projects.Ambience
 		
 		public string[] AvailableAmbiences {
 			get {
-				ExtensionNodeList ambiencesNodes = AddinManager.GetExtensionNodes ("/SharpDevelop/Workbench/Ambiences");
+				ExtensionNodeList ambiencesNodes = AddinManager.GetExtensionNodes ("/MonoDevelop/ProjectModel/Ambiences");
 				string[] availableAmbiences = new string [ambiencesNodes.Count];
 				int index = 0;
 				foreach (ExtensionNode node in ambiencesNodes)
@@ -68,7 +68,7 @@ namespace MonoDevelop.Projects.Ambience
 			Ambience amb = (Ambience) ambiences [name];
 			
 			if (amb == null) {
-				TypeExtensionNode node = (TypeExtensionNode) AddinManager.GetExtensionNode ("/SharpDevelop/Workbench/Ambiences/" + name);
+				TypeExtensionNode node = (TypeExtensionNode) AddinManager.GetExtensionNode ("/MonoDevelop/ProjectModel/Ambiences/" + name);
 				if (node != null) {
 					amb = (Ambience) node.CreateInstance ();
 				} else {

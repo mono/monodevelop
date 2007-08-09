@@ -1,5 +1,5 @@
 
-ASSEMBLY = $(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll
+ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll
 
 REFS =  \
 	$(GECKO_SHARP_LIBS) \
@@ -7,7 +7,7 @@ REFS =  \
 	$(GNOME_SHARP_LIBS) \
 	$(GNOME_VFS_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
 	-r:$(top_srcdir)/contrib/Mono.Addins.Gui.dll \
@@ -179,31 +179,22 @@ RES =  \
 	icons/user-package.png \
 	icons/view-fullscreen.png \
 	icons/view-fullscreen_22.png \
-	icons/visual-studio.png
+	icons/visual-studio.png \
+	MonoDevelop.Core.Gui.addin.xml
 
 GENERATED_FILES = \
 AssemblyInfo.cs
 
-all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
-
-ADDIN = MonoDevelop.Core.Gui.addin.xml
-ADDIN_BUILD = $(top_builddir)/build/AddIns
-
-$(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/.
+all: $(ASSEMBLY)
 
 $(ASSEMBLY): $(build_sources) $(build_resources)
 	$(CSC) $(CSC_FLAGS) -out:$@ -target:library $(REFS) $(build_resources:%=/resource:%) $(build_sources)
 
-addindir = $(MD_ADDIN_DIR)
-addin_DATA = $(ADDIN)
-
-assemblydir = $(MD_ADDIN_DIR)
+assemblydir = $(MD_ASSEMBLY_DIR)
 assembly_DATA = $(ASSEMBLY)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 
-EXTRA_DIST = $(FILES) $(RES) $(ADDIN)
+EXTRA_DIST = $(FILES) $(RES)
 
 include $(top_srcdir)/Makefile.include

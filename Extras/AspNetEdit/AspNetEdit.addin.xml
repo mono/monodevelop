@@ -23,7 +23,7 @@
 		<Addin id="AspNetAddIn" version="0.15.0" />
 	</Dependencies>
 	
-	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">
+	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding id    = "AspNetEditDisplayBinding"
 		                supportedformats = "Source Code"
 		                class = "AspNetEdit.Integration.AspNetEditDisplayBinding"/>

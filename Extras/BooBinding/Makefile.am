@@ -10,13 +10,13 @@ REFS =  \
 	$(GTK_SHARP_LIBS) \
 	$(GTKSOURCEVIEW_SHARP_LIBS) \
 	-r:$(top_builddir)/build/AddIns/BackendBindings/BooShell.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
 	-r:$(top_srcdir)/contrib/Mono.Addins.Setup.dll \
 	-r:$(top_srcdir)/contrib/Mono.Cecil.dll \
@@ -52,6 +52,7 @@ FILES =  \
 	Properties/ShellProperties.boo
 
 RES =  \
+	BooBinding.addin.xml \
 	icons/Boo.File.EmptyFile \
 	icons/Boo.File.Form \
 	icons/Boo.FileIcon \
@@ -65,17 +66,11 @@ RES =  \
 	templates/EmptyBooFile.xft.xml \
 	templates/EmptyBooProject.xpt.xml
 
-ADDIN = BooBinding.addin.xml
-
 if ENABLE_BOO
-all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
+all: $(ASSEMBLY)
 else
 all:
 endif
-
-$(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/.
 
 $(ASSEMBLY): $(FILES) $(RES)
 	mkdir -p $(ADDIN_BUILD)
@@ -83,10 +78,10 @@ $(ASSEMBLY): $(FILES) $(RES)
 
 if ENABLE_BOO
 assemblydir = $(MD_ADDIN_DIR)/BackendBindings
-assembly_DATA = $(ASSEMBLY) $(ADDIN)
+assembly_DATA = $(ASSEMBLY)
 
 endif
 
 CLEANFILES = $(ASSEMBLY)
-EXTRA_DIST = $(FILES) $(ADDIN) $(RES)
+EXTRA_DIST = $(FILES) $(RES)
 include $(top_srcdir)/Makefile.include

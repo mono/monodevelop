@@ -59,7 +59,7 @@ namespace MonoDevelop.Core.Gui
 			stockMappings = new Hashtable ();
 			iconFactory.AddDefault ();
 
-			AddinManager.AddExtensionNodeHandler ("/SharpDevelop/Workbench/StockIcons", OnExtensionChange);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Core/StockIcons", OnExtensionChange);
 		}
 		
 		void OnExtensionChange (object sender, ExtensionNodeEventArgs args)

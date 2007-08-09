@@ -53,7 +53,7 @@ namespace MonoDevelop.Autotools
 
 		ISimpleAutotoolsSetup FindSetupForProject ( Project project )
 		{
-			object[] items = AddinManager.GetExtensionObjects ("/Autotools/SimpleSetups", typeof(ISimpleAutotoolsSetup));
+			object[] items = AddinManager.GetExtensionObjects ("/MonoDevelop/Autotools/SimpleSetups", typeof(ISimpleAutotoolsSetup));
 			foreach ( ISimpleAutotoolsSetup setup in items)
 			{
 				if ( setup.CanDeploy ( project ) ) return setup;

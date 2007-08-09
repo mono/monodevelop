@@ -106,7 +106,7 @@ namespace MonoDevelop.Ide.Gui
 		
 			monitor.BeginTask (GettextCatalog.GetString("Loading Workbench"), 6);
 			
-			commandService.LoadCommands ("/SharpDevelop/Commands");
+			commandService.LoadCommands ("/MonoDevelop/Ide/Commands");
 			monitor.Step (1);
 
 			workbench.Initialize (monitor);
@@ -156,7 +156,7 @@ namespace MonoDevelop.Ide.Gui
 		
 			commandService.EnableUpdate ();
 			
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/IDE/StartupHandlers", OnExtensionChanged);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/StartupHandlers", OnExtensionChanged);
 			monitor.EndTask ();
 		}
 		

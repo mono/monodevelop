@@ -1,7 +1,7 @@
 <Project name="MonoDevelop.Components" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
-      <Output directory="../../../build/AddIns/" assembly="MonoDevelop.Components" />
+      <Output directory="../../../build/bin" assembly="MonoDevelop.Components" />
       <Build debugmode="True" target="Library" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
@@ -99,6 +99,7 @@
     <File name="./MonoDevelop.Components.Commands/KeyBindingManager.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Components.Commands/KeyBindingService.cs" subtype="Code" buildaction="Compile" />
     <File name="./KeyBindingSchemes.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./MonoDevelop.Components.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="gecko-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=ccf7d78a55e9f021" />

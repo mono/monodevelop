@@ -1,5 +1,5 @@
 RUNTIME = mono
-ASSEMBLY = $(top_builddir)/build/AddIns/MonoDevelop.Dock.dll
+ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.Dock.dll
 TEST = $(top_builddir)/build/AddIns/dock-test.exe
 
 RES =  \

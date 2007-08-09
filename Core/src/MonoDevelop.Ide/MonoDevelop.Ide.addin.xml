@@ -6,6 +6,7 @@
        url         = "http://www.monodevelop.com"
        description = "The MonoDevelop IDE application."
 	   category    = "MonoDevelop Core"
+	   isroot      = "true"
        version     = "0.15.0"
        compatVersion = "0.15.0">
 
@@ -13,12 +14,9 @@
 	<Runtime>
 		<Import assembly="MonoDevelop.Ide.dll"/>
 	</Runtime>
-
+	
 	<Dependencies>
-		<Addin id="Core" version="0.15.0"/>
 		<Addin id="Core.Gui" version="0.15.0"/>
-		<Addin id="Projects" version="0.15.0"/>
-		<Addin id="Projects.Gui" version="0.15.0"/>
 		<Addin id="Documentation" version="0.15.0"/>
 	</Dependencies>
 
@@ -30,19 +28,19 @@
 	<ConditionType id="activewindow" type="MonoDevelop.Ide.Codons.WindowActiveCondition" />
 	<ConditionType id="activecontext" type="MonoDevelop.Ide.Codons.WorkbenchContextCondition" />
 	
-	<ExtensionPoint path = "/SharpDevelop/Workbench/DisplayBindings" name = "Display bindings">
+	<ExtensionPoint path = "/MonoDevelop/Ide/DisplayBindings" name = "Display bindings">
 		<Description>Display bindings.</Description>
 		<ExtensionNode name="DisplayBinding" type="MonoDevelop.Ide.Codons.DisplayBindingCodon" />
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/IDE/StartupHandlers" name = "Startup handlers">
+	<ExtensionPoint path = "/MonoDevelop/Ide/StartupHandlers" name = "Startup handlers">
 		<Description>Commands to be automatically executed when the IDE starts.</Description>
 		<ExtensionNode name="Class">
 			<Description>A subclass of MonoDevelop.Components.Commands.CommandHandler</Description>
 		</ExtensionNode>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/SharpDevelop/Commands" name = "User interface commands">
+	<ExtensionPoint path = "/MonoDevelop/Ide/Commands" name = "User interface commands">
 		<Description>User interface commands.</Description>
 		<ExtensionNode name="Command" type="MonoDevelop.Core.Gui.Codons.CommandCodon" />
 		<ExtensionNode name="Category" type="MonoDevelop.Core.Gui.Codons.CommandCategoryCodon">
@@ -50,97 +48,97 @@
 		</ExtensionNode>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/SharpDevelop/Views/ClassBrowser/ContextMenu/NamespaceNode" name = "Namespace node context menu in the class pad">
+	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ClassPad/Namespace" name = "Namespace node context menu in the class pad">
 		<Description>Context menu for namespaces in the class pad.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/SharpDevelop/Views/ClassBrowser/ContextMenu/MethodNode" name = "Method node context menu in the class pad">
+	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ClassPad/Method" name = "Method node context menu in the class pad">
 		<Description>Context menu for methods in the class pad.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/SharpDevelop/Views/ClassBrowser/ContextMenu/FieldNode" name = "Field node context menu in the class pad">
+	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ClassPad/Field" name = "Field node context menu in the class pad">
 		<Description>Context menu for fields in the class pad.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/SharpDevelop/Views/ClassBrowser/ContextMenu/EventNode" name = "Event node context menu in the class pad">
+	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ClassPad/Event" name = "Event node context menu in the class pad">
 		<Description>Context menu for events in the class pad.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/SharpDevelop/Views/ClassBrowser/ContextMenu/CombineNode" name = "Combine node context menu in the class pad">
+	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ClassPad/Combine" name = "Combine node context menu in the class pad">
 		<Description>Context menu for combines in the class pad.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/SharpDevelop/Views/ClassBrowser/ContextMenu/ClassNode" name = "Class node context menu in the class pad">
+	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ClassPad/Class" name = "Class node context menu in the class pad">
 		<Description>Context menu for classes in the class pad.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/SharpDevelop/Views/ClassBrowser/ContextMenu/PropertyNode" name = "Property node context menu in the class pad">
+	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ClassPad/Property" name = "Property node context menu in the class pad">
 		<Description>Context menu for properties in the class pad.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/SharpDevelop/Views/ClassBrowser/ContextMenu/ProjectBrowserNode" name = "Project node context menu in the class pad">
+	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ClassPad/Project" name = "Project node context menu in the class pad">
 		<Description>Context menu for projects in the class pad.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/CombineBrowserNode" name = "Solution context menu">
+	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Combine" name = "Solution context menu">
 		<Description>Context menu for solutions in the solution pad.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ResourceFolderNode" name = "Resource folder context menu">
+	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/ResourceFolder" name = "Resource folder context menu">
 		<Description>Context menu for the resource folder in the solution pad.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ReferenceFolderNode" name = "References folder context menu">
+	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/ReferenceFolder" name = "References folder context menu">
 		<Description>Context menu for the references folder in the solution pad.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ReferenceNode" name = "Reference context menu">
+	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Reference" name = "Reference context menu">
 		<Description>Context menu for a reference in the solution pad.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectFileNode" name = "Project file context menu">
+	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/ProjectFile" name = "Project file context menu">
 		<Description>Context menu for a project file in the solution pad.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/SystemFileNode" name = "File context menu">
+	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/SystemFile" name = "File context menu">
 		<Description>Context menu for a file (not belonging to a project) in the solution pad.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/DefaultDirectoryNode" name = "Folder context menu">
+	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Folder" name = "Folder context menu">
 		<Description>Context menu for a folder in the solution pad.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectBrowserNode" name = "Project context menu">
+	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Project" name = "Project context menu">
 		<Description>Context menu for a project in the solution pad.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/UnknownEntryNode" name = "Unknown entry context menu">
+	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/UnknownEntry" name = "Unknown entry context menu">
 		<Description>Context menu for unknown entries in the solution pad.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/TaskList/View" name = "Task list views">
+	<ExtensionPoint path = "/MonoDevelop/Ide/TaskList/View" name = "Task list views">
 		<Description>Task list views to be shown in the task list pad.</Description>
 		<ExtensionNode name="TaskListView" type="MonoDevelop.Ide.Codons.TaskListViewCodon"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/SharpDevelop/Workbench/Pads" name = "Workbench pads">
+	<ExtensionPoint path = "/MonoDevelop/Ide/Pads" name = "Workbench pads">
 		<Description>Pads shown in the workbench.</Description>
 		<ExtensionNode name="Pad" type="MonoDevelop.Ide.Codons.PadCodon"/>
 		<ExtensionNode name="SolutionPad" type="MonoDevelop.Ide.Codons.SolutionPadCodon">
@@ -149,77 +147,70 @@
 		</ExtensionNode>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/SharpDevelop/Workbench/Contexts" name = "Workbench contexts">
+	<ExtensionPoint path = "/MonoDevelop/Ide/WorkbenchContexts" name = "Workbench contexts">
 		<Description>Workbench contexts.</Description>
 		<ExtensionNode name="WorkbenchContext" type="MonoDevelop.Ide.Codons.WorkbenchContextCodon">
 			<ExtensionNode name ="ContextPad" type="MonoDevelop.Ide.Codons.ContextPadCodon" />
 		</ExtensionNode>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/SharpDevelop/Dialogs/OptionsDialog" name = "Global options panels">
+	<ExtensionPoint path = "/MonoDevelop/Ide/OptionsDialogPanels" name = "Global options panels">
 		<Description>Dialog panels for global MonoDevelop options.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.DialogPanel"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/SharpDevelop/Workbench/Combine/FileFilter" name = "Combine file filters">
+	<ExtensionPoint path = "/MonoDevelop/Ide/ProjectFileFilters" name = "Combine file filters">
 		<Description>File filters to be shown in the Project Open dialog.</Description>
 		<ExtensionNode name="FileFilter" type="MonoDevelop.Projects.Extensions.FileFilterCodon"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/SharpDevelop/Workbench/FileFilter" name = "File filters">
+	<ExtensionPoint path = "/MonoDevelop/Ide/FileFilters" name = "File filters">
 		<Description>File filters to be shown in the File Open dialog.</Description>
 		<ExtensionNode name="FileFilter" type="MonoDevelop.Projects.Extensions.FileFilterCodon"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/SharpDevelop/Workbench/ToolBar" name = "Main toolbar">
+	<ExtensionPoint path = "/MonoDevelop/Ide/Toolbar" name = "Main toolbar">
 		<Description>Main toolbar items.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/SharpDevelop/Workbench/MainMenu" name = "Main menu">
+	<ExtensionPoint path = "/MonoDevelop/Ide/MainMenu" name = "Main menu">
 		<Description>Main menu items.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/FileTemplates" name = "File templates">
+	<ExtensionPoint path = "/MonoDevelop/Ide/FileTemplates" name = "File templates">
 		<Description>File templates to be shown in the New File dialog.</Description>
 		<ExtensionNode name="FileTemplate" type="MonoDevelop.Ide.Codons.ProjectTemplateCodon"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/FileTemplateTypes" name = "File template types">
+	<ExtensionPoint path = "/MonoDevelop/Ide/FileTemplateTypes" name = "File template types">
 		<Description>Template types which can be used to create file templates.</Description>
 		<ExtensionNode name="FileTemplateType" type="MonoDevelop.Ide.Codons.FileTemplateTypeCodon"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/ProjectTemplates" name = "File template types">
+	<ExtensionPoint path = "/MonoDevelop/Ide/ProjectTemplates" name = "File template types">
 		<Description>Project templates to be shown in the New Project dialog.</Description>
 		<ExtensionNode name="ProjectTemplate" type="MonoDevelop.Ide.Codons.ProjectTemplateCodon"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/Workbench/TextEditorExtensions" name = "Text editor extensions">
+	<ExtensionPoint path = "/MonoDevelop/Ide/TextEditorExtensions" name = "Text editor extensions">
 		<Description>Extensions to the text editor. Classes must be a subclass of TextEditorExtension.</Description>
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/Workbench/ProjectFeatures" name = "Project feature editors">
+	<ExtensionPoint path = "/MonoDevelop/Ide/ProjectFeatures" name = "Project feature editors">
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/Workbench/ViewContextMenu" name = "View Context Menu">
+	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/DocumentTab" name = "View Context Menu">
 		<Description>The context menu for all open files.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 		
 	<!-- Extensions -->
 
-
-	<Extension path = "/System/Applications">
-		<Application id    = "IDE"
-		       description = "The MonoDevelop IDE"
-		       class = "MonoDevelop.Ide.Gui.IdeStartup"/>
-	</Extension>
-	
-	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">
+	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding id    = "DefaultDisplayBinding"
 		                class = "MonoDevelop.Ide.Gui.DefaultDisplayBinding"/>
 		<DisplayBinding id    = "Browser"
@@ -227,12 +218,12 @@
 		                class = "MonoDevelop.Ide.Gui.BrowserDisplayBinding.BrowserDisplayBinding"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/IDE/StartupHandlers">
+	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
 		<Class class = "MonoDevelop.Ide.Gui.AddinUpdateHandler"/>
 		<Class class = "MonoDevelop.Ide.Gui.TipOfTheDayStartupHandler"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Commands">
+	<Extension path = "/MonoDevelop/Ide/Commands">
 	
 		<!-- EditCommands -->
 		<Category _name = "Edit" id="Edit">
@@ -809,7 +800,7 @@
 		
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/CombineBrowserNode">
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Combine">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
@@ -839,23 +830,23 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ResourceFolderNode">
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/ResourceFolder">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddResource" />
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ReferenceFolderNode">
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/ReferenceFolder">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Paste" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ReferenceNode">
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Reference">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.LocalCopyReference" />
 		<SeparatorItem id = "CopySeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
         
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectFileNode">
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/ProjectFile">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.Open" />
 		<ItemSet id = "OpenWith" _label = "Open With">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.OpenWithList" />
@@ -873,7 +864,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename" />
 	</Extension>
 		
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/SystemFileNode">
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/SystemFile">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.Open" />
 		<ItemSet id = "OpenWith" _label = "Open With">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.OpenWithList" />
@@ -887,7 +878,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename" />
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/DefaultDirectoryNode">
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Folder">
 		<ItemSet id = "Add" _label = "Add">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewFiles" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" />
@@ -905,7 +896,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles" />
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectBrowserNode">
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Project">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild"/>
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
@@ -942,30 +933,30 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/UnknownEntryNode">
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/UnknownEntry">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Reload" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
 
-	<!--<Extension path = "/SharpDevelop/Workbench/FileFilter">
+	<!--<Extension path = "/MonoDevelop/Ide/FileFilters">
 		<FileFilter id = "AllFiles"
 		            _label = "All Files"
 		            extensions = "*.*"/>
 	</Extension>-->
 	
-	<Extension path = "/MonoDevelop/TaskList/View">
+	<Extension path = "/MonoDevelop/Ide/TaskList/View">
 		<TaskListView _label = "Comments" class = "MonoDevelop.Ide.Tasks.CommentTasksView" />
 		<TaskListView _label = "User Tasks" class = "MonoDevelop.Ide.Tasks.UserTasksView" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/Pads">
+	<Extension path = "/MonoDevelop/Ide/Pads">
 		<Pad id = "MonoDevelop.Ide.Gui.Pads.FileScout" _label = "Files" icon="system-file-manager" class = "MonoDevelop.Ide.Gui.Pads.FileScout"/>
 		<Pad id = "MonoDevelop.Ide.Gui.Pads.ErrorListPad" defaultPlacement = "Bottom" _label = "Error List" icon="gtk-dialog-error" class = "MonoDevelop.Ide.Gui.Pads.ErrorListPad"/>
 		<Pad id = "MonoDevelop.Ide.Gui.Pads.InternalLogPad" defaultPlacement = "Bottom" _label = "Message Log" class = "MonoDevelop.Ide.Gui.Pads.InternalLogPad"/>
 		<Pad id = "MonoDevelop.Ide.Gui.Pads.TaskListPad" defaultPlacement = "Bottom" _label = "Task List" icon="md-task-list-icon" class = "MonoDevelop.Ide.Gui.Pads.TaskListPad"/>
 		<Pad id = "MonoDevelop.Ide.Gui.Pads.HelpTree" defaultPlacement = "Left" _label = "Help" icon="gtk-help" class = "MonoDevelop.Ide.Gui.Pads.HelpTree"/>
 
-		<SolutionPad id = "MonoDevelop.Ide.Gui.Pads.ProjectPad" defaultPlacement = "Left" _label = "Solution" icon = "md-combine-icon" class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectSolutionPad">
+		<SolutionPad id = "ProjectPad" defaultPlacement = "Left" _label = "Solution" icon = "md-combine-icon" class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectSolutionPad">
 			<PadOption id = "ShowAllFiles" _label = "Show All Files" defaultValue = "False" />
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.CombineNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.LinkedFilesFolderNodeBuilder"/>
@@ -980,7 +971,7 @@
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.UnknownEntryNodeBuilder"/>
 		</SolutionPad>
 
-		<SolutionPad id = "MonoDevelop.Ide.Gui.Pads.ClassPad" defaultPlacement = "Left" _label = "Classes" icon = "md-class">
+		<SolutionPad id = "ClassPad" defaultPlacement = "Left" _label = "Classes" icon = "md-class">
 			<PadOption id = "NestedNamespaces" _label = "Nested namespaces" defaultValue = "True" />
 			<PadOption id = "ShowProjects" _label = "Show project structure" defaultValue = "True" />
 			<PadOption id = "GroupByAccess" _label = "Group members by access" defaultValue = "False" />
@@ -1003,10 +994,10 @@
 -->			 
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/Contexts">
+	<Extension path = "/MonoDevelop/Ide/WorkbenchContexts">
 		<WorkbenchContext id = "Edit">
-			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.ProjectPad" />
-			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.ClassPad" />
+			<ContextPad id = "ProjectPad" />
+			<ContextPad id = "ClassPad" />
 			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.FileScout" />
 			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.HelpTree" />
 			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.ErrorListPad"/>
@@ -1014,8 +1005,8 @@
 			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.TaskListPad"/>
 		</WorkbenchContext>
 		<WorkbenchContext id = "Debug">
-			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.ProjectPad"/>
-			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.ClassPad" defaultVisible = "False"/>
+			<ContextPad id = "ProjectPad"/>
+			<ContextPad id = "ClassPad" defaultVisible = "False"/>
 			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.FileScout" defaultVisible = "False"/>
 			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.HelpTree" defaultVisible = "False"/>
 			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.ErrorListPad"/>
@@ -1024,7 +1015,7 @@
 		</WorkbenchContext>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Dialogs/OptionsDialog">
+	<Extension path = "/MonoDevelop/Ide/OptionsDialogPanels">
 		<DialogPanel id    = "UIOptions"
 		             _label = "MonoDevelop Preferences">
 <!--			<DialogPanel id = "SelectCulture"
@@ -1071,7 +1062,7 @@
 		</DialogPanel>
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/Combine/FileFilter">
+	<Extension path = "/MonoDevelop/Ide/ProjectFileFilters">
 		<FileFilter id = "Combine"
 		            _label = "MonoDevelop Solution Files"
 		            extensions = "*.mds"/>
@@ -1085,7 +1076,7 @@
 	
 	<!-- Main Toolbar -->
 	
-	<Extension path = "/SharpDevelop/Workbench/ToolBar">
+	<Extension path = "/MonoDevelop/Ide/Toolbar">
 		<ItemSet id = "Standard" _label = "Standard">
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewFile" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenFile" />
@@ -1121,7 +1112,7 @@
 
 	<!-- Main Menu -->
 
-	<Extension path = "/SharpDevelop/Workbench/MainMenu">
+	<Extension path = "/MonoDevelop/Ide/MainMenu">
 		<ItemSet id = "File" _label = "_File">
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewFile" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewProject" />
@@ -1272,7 +1263,7 @@
 		</ItemSet>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/FileTemplates">
+	<Extension path = "/MonoDevelop/Ide/FileTemplates">
 		<FileTemplate resource = "EmptyClass.xft.xml"/>
 		<FileTemplate resource = "EmptyEnum.xft.xml"/>
 		<FileTemplate resource = "EmptyInterface.xft.xml"/>
@@ -1284,25 +1275,25 @@
 		<FileTemplate id = "EmptyXMLFile" resource = "EmptyXMLFile.xft.xml"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/FileTemplateTypes">
+	<Extension path = "/MonoDevelop/Ide/FileTemplateTypes">
 		<FileTemplateType name = "File" class = "MonoDevelop.Ide.Templates.TextFileDescriptionTemplate"/>
 		<FileTemplateType name = "CodeDomFile" class = "MonoDevelop.Ide.Templates.CodeDomFileDescriptionTemplate"/>
 		<FileTemplateType name = "ProjectResource" class = "MonoDevelop.Ide.Templates.ResourceFileDescriptionTemplate"/>
 		<FileTemplateType name = "CodeTranslationFile" class = "MonoDevelop.Ide.Templates.CodeTranslationFileDescriptionTemplate"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectTemplates">
+	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
 		<ProjectTemplate id = "MonoDevelop.BlankSolution" resource = "BlankCombine.xpt.xml"/>
 		<ProjectTemplate id = "MonoDevelop.GenericProject" resource = "GenericProject.xpt.xml"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Workbench/TextEditorExtensions">
+	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class id="InitialStep" class = "MonoDevelop.Ide.Gui.Content.TextEditorExtensionMarker" />
 		<Class id="MidStep" class = "MonoDevelop.Ide.Gui.Content.TextEditorExtensionMarker" />
 		<Class id="FinalStep" class = "MonoDevelop.Ide.Gui.Content.TextEditorExtensionMarker" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/StockIcons">
+	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "md-parser" resource = "parsing.png" />
 		<StockIcon stockid = "md-navigate-next" resource = "navigate-next.png" />
 		<StockIcon stockid = "md-navigate-previous" resource = "navigate-previous.png" />
@@ -1311,13 +1302,13 @@
 		<StockIcon stockid = "system-file-manager" resource = "system-file-manager.png" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Dialogs/OptionsDialog/CodingOptions">
+	<Extension path = "/MonoDevelop/Ide/OptionsDialogPanels/CodingOptions">
 		<DialogPanel id = "CodeTemplates"
 		             _label = "Code Templates"
 		             class = "MonoDevelop.Ide.CodeTemplates.CodeTemplatePane"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Workbench/ViewContextMenu">
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/DocumentTab">
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseAllFiles" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAllButThis" />

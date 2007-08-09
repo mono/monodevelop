@@ -1,5 +1,5 @@
 
-ASSEMBLY = $(top_builddir)/build/AddIns/MonoDevelop.Projects.dll
+ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.Projects.dll
 CONFIG = MonoDevelop.Projects.dll.config
   
 
@@ -234,32 +234,23 @@ FILES =  \
 	MonoDevelop.Projects/UnknownCombineEntry.cs \
 	MonoDevelop.Projects/UnknownProjectVersionException.cs
 
+RES = MonoDevelop.Projects.addin.xml 
+
 GENERATED_FILES = \
 AssemblyInfo.cs
 
-ADDIN = MonoDevelop.Projects.addin.xml
-
-ADDIN_BUILD = $(top_builddir)/build/AddIns
-
-all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
-
-$(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/.
+all: $(ASSEMBLY)
 
 $(ASSEMBLY): $(build_sources)
-	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(build_sources) \
+	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(RES:%=/resource:%) $(build_sources) \
 	&& cp $(CONFIG) $(top_builddir)/build/AddIns/.
 
-addindir = $(MD_ADDIN_DIR)
-addin_DATA = $(ADDIN)
-
-assemblydir = $(MD_ADDIN_DIR)
+assemblydir = $(MD_ASSEMBLY_DIR)
 assembly_DATA = $(ASSEMBLY) $(CONFIG)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 DISTCLEANFILES = $(CONFIG)
 
-EXTRA_DIST = $(FILES) $(CONFIG).in $(ADDIN)
+EXTRA_DIST = $(FILES) $(CONFIG).in
 
 include $(top_srcdir)/Makefile.include

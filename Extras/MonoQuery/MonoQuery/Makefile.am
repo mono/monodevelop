@@ -62,48 +62,45 @@ RES =  \
 	icons/MonoQuery.Tables \
 	icons/MonoQuery.User \
 	icons/MonoQuery.View \
+	MonoQuery.addin.xml \
 	monoquery.glade
 
 ASSEMBLY = $(ADDIN_BUILD)/MonoQuery.dll
-ADDIN = MonoQuery.addin.xml
+
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoQuery
 
 REFS =  \
 	$(GLADE_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(GTKSOURCEVIEW_SHARP_LIBS) \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/AddIns/MonoQuery/Mono.Data.Sql.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
 	-r:System \
 	-r:System.Data \
 	-r:System.Xml
 
 if ENABLE_MONOQUERY
-all: $(ADDIN_BUILD)/$(ADDIN) $(ASSEMBLY)
+all: $(ASSEMBLY)
 else
 all:
 endif
-
-$(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/$(ADDIN)
 
 $(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -target:library -out:$@ $(build_sources) $(REFS) \
 	$(build_resources:%=/resource:%)
 
-CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(ADDIN_BUILD)/$(ADDIN)
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 
-EXTRA_DIST = $(FILES) $(ADDIN) $(RES) Gui/DbProviderCollection.cs.in
+EXTRA_DIST = $(FILES) $(RES) Gui/DbProviderCollection.cs.in
 
 if ENABLE_MONOQUERY
 monoquerydir = $(MD_ADDIN_DIR)/MonoQuery
-monoquery_DATA = $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
+monoquery_DATA = $(ASSEMBLY)
 endif
 
 include $(top_srcdir)/Makefile.include

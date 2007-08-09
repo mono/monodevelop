@@ -5,14 +5,14 @@ REFS =  \
 	$(GLADE_SHARP_LIBS) \
 	$(GNOME_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
 	-r:System \
 	-r:System.Design \
@@ -61,6 +61,7 @@ FILES =  \
 	Project/XspParameters.cs
 
 RES =  \
+	AspNetAddIn.addin.xml \
 	AspNetAddIn.glade \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
@@ -76,8 +77,6 @@ RES =  \
 	Templates/MasterPageWithNoCodeBehind.xft.xml \
 	Templates/WebApplication.xpt.xml
 	
-ADDIN = AspNetAddIn.addin.xml
-
 TESTFILES = \
 	Test/Test.cs
 
@@ -88,14 +87,10 @@ TESTASSEMBLY = $(top_builddir)/build/bin/AspNetAddIn.Test.dll
 
 
 if ENABLE_ASPNET
-all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
+all: $(ASSEMBLY)
 else
 all:
 endif
-
-$(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/$(ADDIN)
 
 $(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
@@ -111,12 +106,12 @@ $(TESTASSEMBLY) : $(build_test_sources) $(build_resources)
 
 if ENABLE_ASPNET
 csharpbindinglibdir = $(MD_ADDIN_DIR)/AspNetAddIn
-csharpbindinglib_DATA = $(ASSEMBLY) $(ADDIN)
+csharpbindinglib_DATA = $(ASSEMBLY)
 endif
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 
-EXTRA_DIST = $(FILES) $(ADDIN) $(RES)
+EXTRA_DIST = $(FILES) $(RES)
 
 include $(top_srcdir)/Makefile.include
 

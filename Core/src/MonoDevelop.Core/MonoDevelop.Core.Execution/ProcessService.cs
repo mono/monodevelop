@@ -152,7 +152,7 @@ namespace MonoDevelop.Core.Execution
 		{
 			if (executionHandlers == null) {
 				executionHandlers = new List<ExtensionNode> ();
-				AddinManager.AddExtensionNodeHandler ("/SharpDevelop/Workbench/ExecutionHandlers", OnExtensionChange);
+				AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Core/ExecutionHandlers", OnExtensionChange);
 			}
 			
 			foreach (ExecutionHandlerCodon codon in executionHandlers)

@@ -22,7 +22,7 @@ namespace MonoDevelop.Ide.Templates
 		public static ICombineEntryFeature[] GetFeatures (Combine parentCombine, CombineEntry entry)
 		{
 			List<ICombineEntryFeature> list = new List<ICombineEntryFeature> ();
-			foreach (ICombineEntryFeature e in AddinManager.GetExtensionObjects ("/MonoDevelop/Workbench/ProjectFeatures", typeof(ICombineEntryFeature), true)) {
+			foreach (ICombineEntryFeature e in AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/ProjectFeatures", typeof(ICombineEntryFeature), true)) {
 				if (e.SupportsCombineEntry (parentCombine, entry))
 					list.Add (e);
 			}

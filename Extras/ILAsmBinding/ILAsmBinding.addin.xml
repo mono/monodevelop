@@ -16,21 +16,22 @@
 	    <Addin id="Core" version="0.15.0"/>
 	    <Addin id="Core.Gui" version="0.15.0"/>
 	    <Addin id="Projects" version="0.15.0"/>
+		<Addin id="Projects.Gui" version="0.15.0"/>
 		<Addin id="Ide" version="0.15.0"/>
 	</Dependencies>
 	
-  <Extension path = "/MonoDevelop/ProjectTemplates">
+  <Extension path = "/MonoDevelop/Ide/ProjectTemplates">
     <ProjectTemplate id = "ILAsmConsoleProject"
                      resource = "ILAsmConsoleProject.xpt.xml"/>
   </Extension>
   
-  <Extension path = "/SharpDevelop/Workbench/FileFilter">
+  <Extension path = "/MonoDevelop/Ide/FileFilters">
 		<FileFilter id = "ILAsm Files"
 		            _label = "ILAsm Files"
 		            extensions = "*.il"/>
 	</Extension>
 
-  <Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
+  <Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions">
     <Condition id="activelanguage" value = "ILAsm">
       <DialogPanel id = "ILAsmCompilerParametersPanel"
                    _label = "Compiler"
@@ -38,13 +39,13 @@
     </Condition>
   </Extension>
 
-  <Extension path = "/SharpDevelop/Workbench/LanguageBindings">
+  <Extension path = "/MonoDevelop/ProjectModel/LanguageBindings">
     <LanguageBinding id = "ILAsm"
                      supportedextensions = ".il"
                      class = "ILAsmBinding.ILAsmLanguageBinding"/>
   </Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
+	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "ILAsmBinding.ILAsmCompilerParameters" />
 	</Extension>
 	

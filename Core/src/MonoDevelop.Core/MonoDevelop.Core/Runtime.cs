@@ -66,11 +66,6 @@ namespace MonoDevelop.Core
 			string configDir = System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), ".config");
 			configDir = System.IO.Path.Combine (configDir, "MonoDevelop");
 			
-			if ("build" == new System.IO.DirectoryInfo (System.AppDomain.CurrentDomain.BaseDirectory).Parent.Name) {
-				Console.WriteLine ("Using debug add-in registry: " + System.AppDomain.CurrentDomain.BaseDirectory);
-				configDir = ".";
-			}
-				
 			AddinManager.Initialize (configDir);
 			if (updateAddinRegistry)
 				AddinManager.Registry.Update (null);
@@ -173,7 +168,7 @@ namespace MonoDevelop.Core
 	{
 		public int StartApplication (string appId, string[] parameters)
 		{
-			ExtensionNode node = AddinManager.GetExtensionNode ("/System/Applications/" + appId);
+			ExtensionNode node = AddinManager.GetExtensionNode ("/MonoDevelop/Core/Applications/" + appId);
 			if (node == null)
 				throw new InstallException ("Application not found: " + appId);
 			
@@ -193,7 +188,7 @@ namespace MonoDevelop.Core
 		
 		public IApplicationInfo[] GetApplications ()
 		{
-			ExtensionNodeList nodes = AddinManager.GetExtensionNodes ("/System/Applications");
+			ExtensionNodeList nodes = AddinManager.GetExtensionNodes ("/MonoDevelop/Core/Applications");
 			IApplicationInfo[] apps = new IApplicationInfo [nodes.Count];
 			for (int n=0; n<nodes.Count; n++)
 				apps [n] = (ApplicationExtensionNode) nodes [n];

@@ -131,6 +131,7 @@ namespace MonoDevelop.Gettext.Translator {
             this.languageTreeView.CanFocus = true;
             this.languageTreeView.Name = "languageTreeView";
             this.languageTreeView.HeadersVisible = false;
+            this.languageTreeView.HeadersClickable = true;
             this.scrolledwindow1.Add(this.languageTreeView);
             this.vbox4.Add(this.scrolledwindow1);
             Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.vbox4[this.scrolledwindow1]));
@@ -170,6 +171,7 @@ namespace MonoDevelop.Gettext.Translator {
             this.countryTreeView.CanFocus = true;
             this.countryTreeView.Name = "countryTreeView";
             this.countryTreeView.HeadersVisible = false;
+            this.countryTreeView.HeadersClickable = true;
             this.scrolledwindow2.Add(this.countryTreeView);
             this.vbox5.Add(this.scrolledwindow2);
             Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox5[this.scrolledwindow2]));

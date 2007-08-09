@@ -1,7 +1,7 @@
 <Project name="MonoDevelop.Projects.Gui" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
-      <Output directory="../../../build/AddIns/" assembly="MonoDevelop.Projects.Gui" />
+      <Output directory="../../../build/bin" assembly="MonoDevelop.Projects.Gui" />
       <Build debugmode="True" target="Library" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
@@ -40,7 +40,7 @@
     <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
-    <File name="./MonoDevelop.Projects.Gui.addin.xml" subtype="Code" buildaction="FileCopy" />
+    <File name="./MonoDevelop.Projects.Gui.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./gtk-gui/gui.stetic" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./gtk-gui/generated.cs" subtype="Code" buildaction="Compile" />
     <File name="./gtk-gui/objects.xml" subtype="Code" buildaction="EmbedAsResource" />
@@ -52,11 +52,11 @@
     <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineInformationPanel.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="./gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="./gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CommonAssemblySigningPreferences.cs" subtype="Code" buildaction="Compile" />
     <File name="./gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui/IconCodon.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -75,9 +75,6 @@
     <ProjectReference type="Gac" localcopy="True" refto="gnome-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
-    <ExcludedFiles>
-      <File>./AssemblyInfo.cs</File>
-    </ExcludedFiles>
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />
     <ResourcesVar Sync="True" Name="RES" />

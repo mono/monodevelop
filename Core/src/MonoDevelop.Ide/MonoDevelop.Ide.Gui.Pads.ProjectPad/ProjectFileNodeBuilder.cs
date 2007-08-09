@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		public override string ContextMenuAddinPath {
-			get { return "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectFileNode"; }
+			get { return "/MonoDevelop/Ide/ContextMenu/ProjectPad/ProjectFile"; }
 		}
 		
 		public override void GetNodeAttributes (ITreeNavigator treeNavigator, object dataObject, ref NodeAttributes attributes)

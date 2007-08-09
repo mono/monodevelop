@@ -18,7 +18,7 @@
     <File name="./gtk-gui/gui.stetic" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./gtk-gui/generated.cs" subtype="Code" buildaction="Compile" />
     <File name="./gtk-gui/objects.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./MonoDevelop.Gettext.addin.xml" subtype="Code" buildaction="FileCopy" />
+    <File name="./MonoDevelop.Gettext.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./MonoDevelop.Gettext.Editor/CatalogEditor.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Gettext.Editor/GtkSpell.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Gettext.Editor/CatalogHeadersWidget.cs" subtype="Code" buildaction="Compile" />
@@ -83,12 +83,12 @@
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
-  <Deployment.LinuxDeployData scriptName="monodevelop.gettext" generatePcFile="False" />
   <GtkDesignInfo partialTypes="True">
     <ExportedWidgets>
       <Widget>MonoDevelop.Gettext.POEditorWidget</Widget>
       <Widget>MonoDevelop.Gettext.EntrySelectionTree</Widget>
     </ExportedWidgets>
   </GtkDesignInfo>
+  <Deployment.LinuxDeployData scriptName="monodevelop.gettext" generatePcFile="False" />
   <MonoDevelop.Gettext.TranslationInfo />
 </Project>

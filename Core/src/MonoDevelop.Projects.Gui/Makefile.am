@@ -1,14 +1,14 @@
 
-ASSEMBLY = $(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll
+ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll
 
 REFS =  \
 	$(GLADE_SHARP_LIBS) \
 	$(GNOME_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
 	-r:Mono.Posix \
 	-r:System \
@@ -49,38 +49,29 @@ FILES =  \
 	MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/ConfigurationManager.cs \
 	MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs \
+	MonoDevelop.Projects.Gui/IconCodon.cs \
 	MonoDevelop.Projects.Gui/IconService.cs \
 	MonoDevelop.Projects.Gui/ProjectsGuiServices.cs
 
 RES =  \
 	Base.glade \
 	gtk-gui/gui.stetic \
-	gtk-gui/objects.xml
+	gtk-gui/objects.xml \
+	MonoDevelop.Projects.Gui.addin.xml
 
 GENERATED_FILES = \
 AssemblyInfo.cs
 
-ADDIN = MonoDevelop.Projects.Gui.addin.xml
-
-ADDIN_BUILD = $(top_builddir)/build/AddIns
-
-all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
-
-$(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/.
+all: $(ASSEMBLY)
 
 $(ASSEMBLY): $(build_sources) $(build_resources)
 	$(CSC) $(CSC_FLAGS) -out:$@ -target:library $(REFS) $(build_resources:%=/resource:%) $(build_sources)
 
-addindir = $(MD_ADDIN_DIR)
-addin_DATA = $(ADDIN)
-
-assemblydir = $(MD_ADDIN_DIR)
+assemblydir = $(MD_ASSEMBLY_DIR)
 assembly_DATA = $(ASSEMBLY)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 
-EXTRA_DIST = $(FILES) $(ADDIN) $(RES)
+EXTRA_DIST = $(FILES) $(RES)
 
 include $(top_srcdir)/Makefile.include

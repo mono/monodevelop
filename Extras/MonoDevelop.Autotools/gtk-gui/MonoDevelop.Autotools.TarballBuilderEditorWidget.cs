@@ -77,7 +77,6 @@ namespace MonoDevelop.Autotools {
             this.radioUseExisting = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("Use existing Autotools files"));
             this.radioUseExisting.CanFocus = true;
             this.radioUseExisting.Name = "radioUseExisting";
-            this.radioUseExisting.Active = true;
             this.radioUseExisting.DrawIndicator = true;
             this.radioUseExisting.UseUnderline = true;
             this.radioUseExisting.Group = new GLib.SList(System.IntPtr.Zero);

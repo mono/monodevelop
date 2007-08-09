@@ -13,10 +13,10 @@ using Mono.Addins;
 
 using MonoDevelop.Core.Properties;
 
-namespace MonoDevelop.Core.Addins
+namespace MonoDevelop.Projects.Gui
 {
 	[ExtensionNode ("Icon", "An icon bound to a language or file extension")]
-	public class IconCodon : ExtensionNode
+	internal class IconCodon : ExtensionNode
 	{
 		[NodeAttribute("language", "Name of the language represented by this icon. Optional.")]
 		string language  = null;

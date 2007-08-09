@@ -59,7 +59,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		}
 		
 		public override string ContextMenuAddinPath {
-			get { return "/SharpDevelop/Views/ProjectBrowser/ContextMenu/WidgetsNode"; }
+			get { return "/MonoDevelop/GtkCore/ContextMenu/ProjectPad/UserInterfaceFolder"; }
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)

@@ -28,6 +28,7 @@ FILES =  \
 RES =  \
 	bookmark.png \
 	EditorBindings.glade \
+	MonoDevelop.SourceEditor.addin.xml \
 	texteditoraddin.glade
 
 GENERATED_FILES = \
@@ -40,27 +41,21 @@ REFS =  \
 	$(GNOME_VFS_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(GTKSOURCEVIEW_SHARP_LIBS) \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
 	-r:Mono.Cairo \
 	-r:System \
 	-r:System.Drawing \
 	-r:System.Xml
 
-ADDIN = MonoDevelop.SourceEditor.addin.xml
-
 ADDIN_BUILD = $(top_builddir)/build/AddIns
 
-all : $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
-
-$(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/$(ADDIN)
+all : $(ASSEMBLY)
 
 $(ASSEMBLY) : $(build_sources) $(build_resources)
 	mkdir -p $(top_builddir)/build/bin
@@ -70,13 +65,10 @@ $(ASSEMBLY) : $(build_sources) $(build_resources)
 assemblydir = $(MD_ADDIN_DIR)
 assembly_DATA = $(ASSEMBLY) $(CONFIG)
 
-addindir = $(MD_ADDIN_DIR)
-addin_DATA = $(ADDIN)
-
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 DISTCLEANFILES = $(CONFIG)
 
-EXTRA_DIST = $(FILES) $(CONFIG).in $(RES) $(ADDIN)
+EXTRA_DIST = $(FILES) $(CONFIG).in $(RES)
 
 include $(top_srcdir)/Makefile.include
 
