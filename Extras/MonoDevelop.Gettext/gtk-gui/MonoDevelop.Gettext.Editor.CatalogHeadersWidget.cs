@@ -84,7 +84,7 @@ namespace MonoDevelop.Gettext.Editor {
             this.notebook1 = new Gtk.Notebook();
             this.notebook1.CanFocus = true;
             this.notebook1.Name = "notebook1";
-            this.notebook1.CurrentPage = 0;
+            this.notebook1.CurrentPage = 1;
             this.notebook1.TabPos = ((Gtk.PositionType)(0));
             this.notebook1.BorderWidth = ((uint)(8));
             // Container child notebook1.Gtk.Notebook+NotebookChild
@@ -357,7 +357,7 @@ namespace MonoDevelop.Gettext.Editor {
             this.label11 = new Gtk.Label();
             this.label11.Name = "label11";
             this.label11.Xalign = 0F;
-            this.label11.LabelProp = Mono.Unix.Catalog.GetString("Translator e-mail::");
+            this.label11.LabelProp = Mono.Unix.Catalog.GetString("Translator e-mail:");
             this.table2.Add(this.label11);
             Gtk.Table.TableChild w23 = ((Gtk.Table.TableChild)(this.table2[this.label11]));
             w23.TopAttach = ((uint)(1));

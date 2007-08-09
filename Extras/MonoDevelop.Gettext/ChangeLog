@@ -1,3 +1,8 @@
+2007-08-09  Mike Krüger <mkrueger@novell.com> 
+
+	* gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs:
+	  Fixed Bug 82341: Gettext addin: Language selection combo too big.
+
 2007-08-08  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Gettext.Editor/POEditorWidget.cs,
