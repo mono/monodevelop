@@ -464,7 +464,7 @@ msgstr "Crea sempre una còpia de seguretat"
 
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:16
 msgid "Available encodings:"
-msgstr "<b>Codificacions disponibles</b>"
+msgstr "Codificacions disponibles"
 
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:17
 msgid "Build and run options"
@@ -485,8 +485,8 @@ msgid ""
 "Days\n"
 "Months"
 msgstr ""
-"dies\n"
-"mesos"
+"Dies\n"
+"Mesos"
 
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:22
 msgid "Default _Solution location"
