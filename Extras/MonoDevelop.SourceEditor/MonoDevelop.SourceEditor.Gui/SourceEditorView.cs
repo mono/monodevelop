@@ -982,6 +982,7 @@ namespace MonoDevelop.SourceEditor.Gui
 						if (! iter.ForwardChar ())
 							break;
 					}
+					((IDisposable)cntx).Dispose ();
 				}
 			}
 		}
