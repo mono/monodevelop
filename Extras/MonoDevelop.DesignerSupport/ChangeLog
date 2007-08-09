@@ -1,5 +1,10 @@
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.DesignerSupport/DesignerSupportService.cs: Add missing null
+	  check.
+
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.DesignerSupport.addin.xml,
 	  MonoDevelop.DesignerSupport/DesignerSupportService.cs: Removed the
 	  CommandService class. Everything is done directly with CommandManager.

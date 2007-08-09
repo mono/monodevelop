@@ -67,17 +67,19 @@ namespace MonoDevelop.DesignerSupport
 		{
 			propertyPad = pad;
 			
-			if (lastPadProvider != null) {
-				object[] provs = GetPropertyProvidersForObject (lastComponent, lastPadProvider.GetPropertyProvider ());
-				if (provs.Length > 0)
-					propertyPad.PropertyGrid.SetCurrentObject (lastComponent, provs);
-				else
-					propertyPad.BlankPad ();
-				
-				propertyPad.PropertyGrid.Changed += OnPropertyGridChanged;		
-			}
-			else if (lastCustomProvider != null) {
-				propertyPad.UseCustomWidget (lastCustomProvider.GetCustomPropertyWidget ());
+			if (propertyPad != null) {
+				if (lastPadProvider != null) {
+					object[] provs = GetPropertyProvidersForObject (lastComponent, lastPadProvider.GetPropertyProvider ());
+					if (provs.Length > 0)
+						propertyPad.PropertyGrid.SetCurrentObject (lastComponent, provs);
+					else
+						propertyPad.BlankPad ();
+					
+					propertyPad.PropertyGrid.Changed += OnPropertyGridChanged;		
+				}
+				else if (lastCustomProvider != null) {
+					propertyPad.UseCustomWidget (lastCustomProvider.GetCustomPropertyWidget ());
+				}
 			}
 		}
 		
