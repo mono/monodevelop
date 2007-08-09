@@ -54,6 +54,7 @@ FILES =  \
 	TemplateEngine.cs
 
 RES =  \
+	MonoDevelop.Autotools.addin.xml \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml
 
