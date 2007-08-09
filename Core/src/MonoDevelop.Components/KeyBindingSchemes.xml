@@ -107,6 +107,8 @@
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLine" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteRightChar" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteToLineEnd" shortcut="Control+K" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.MoveBlockUp" shortcut="Alt+Up" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.MoveBlockDown" shortcut="Alt+Down" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DocumentEnd" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DocumentStart" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.LineDown" shortcut="" />
@@ -293,6 +295,8 @@
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLine" shortcut="Control+U" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteRightChar" shortcut="Control+D" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteToLineEnd" shortcut="Control+K" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.MoveBlockUp" shortcut="Alt+Up" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.MoveBlockDown" shortcut="Alt+Down" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DocumentEnd" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DocumentStart" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.LineDown" shortcut="Control+N" />
@@ -479,6 +483,8 @@
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLine" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteRightChar" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteToLineEnd" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.MoveBlockUp" shortcut="Alt+Up" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.MoveBlockDown" shortcut="Alt+Down" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DocumentEnd" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DocumentStart" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.LineDown" shortcut="" />
