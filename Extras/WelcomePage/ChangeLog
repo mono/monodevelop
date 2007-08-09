@@ -1,5 +1,9 @@
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Makefile.am: Yet another missing resource.
+
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* WelcomePage.addin.xml, WelcomePage.mdp, Makefile.am: Reorganized the
 	  extension point hierarchy. Embedded all add-in manifests as resources.
 

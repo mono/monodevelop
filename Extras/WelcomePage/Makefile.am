@@ -19,7 +19,7 @@ FILES =  \
 	WelcomePageOptionPanel.cs \
 	WelcomePageView.cs
 
-RES =
+RES = WelcomePage.addin.xml
  
 DATA_FILES =  \
 	mono-bg.png \
