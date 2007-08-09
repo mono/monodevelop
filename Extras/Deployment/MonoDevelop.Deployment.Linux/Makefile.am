@@ -41,6 +41,7 @@ FILES =  \
 RES =  \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
+	MonoDevelop.Deployment.Linux.addin.xml \
 	MonoDevelop.Deployment.Linux/DesktopInfo.xml
 
 DATA_FILES = 
