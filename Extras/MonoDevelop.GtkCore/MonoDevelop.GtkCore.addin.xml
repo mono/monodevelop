@@ -23,22 +23,23 @@
 	    <Addin id="Projects.Gui" version="0.15.0"/>
 		<Addin id="Ide" version="0.15.0"/>
 		<Addin id="DesignerSupport" version="0.15.0"/>
+		<Addin id="Components" version="0.15.0"/>
 	</Dependencies>
 	
 	<ExtensionPoint path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad/ActionGroup">
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad/UserInterfaceFolder">
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad/Component">
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad/StockIcons">
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
 	<Extension path = "/MonoDevelop/Ide/Pads">

@@ -25,6 +25,13 @@ FILES =  \
 	MonoDevelop.Components.Chart/IntegerAxis.cs \
 	MonoDevelop.Components.Chart/Serie.cs \
 	MonoDevelop.Components.Chart/TickEnumerator.cs \
+	MonoDevelop.Components.Commands.ExtensionNodes/CommandCategoryCodon.cs \
+	MonoDevelop.Components.Commands.ExtensionNodes/CommandCodon.cs \
+	MonoDevelop.Components.Commands.ExtensionNodes/CommandItemCodon.cs \
+	MonoDevelop.Components.Commands.ExtensionNodes/ItemSetCodon.cs \
+	MonoDevelop.Components.Commands.ExtensionNodes/LinkItemCodon.cs \
+	MonoDevelop.Components.Commands.ExtensionNodes/LocalCommandItemCodon.cs \
+	MonoDevelop.Components.Commands.ExtensionNodes/SeparatorItemCodon.cs \
 	MonoDevelop.Components.Commands/ActionCommand.cs \
 	MonoDevelop.Components.Commands/ActionType.cs \
 	MonoDevelop.Components.Commands/Command.cs \

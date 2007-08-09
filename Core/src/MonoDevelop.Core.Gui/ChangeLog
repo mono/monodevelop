@@ -1,5 +1,20 @@
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Core.Gui.mdp,
+	  MonoDevelop.Core.Gui.Codons/LocalCommandItemCodon.cs,
+	  MonoDevelop.Core.Gui.Codons/ItemSetCodon.cs,
+	  MonoDevelop.Core.Gui.Codons/LinkItemCodon.cs,
+	  MonoDevelop.Core.Gui.Codons/CommandCategoryCodon.cs,
+	  MonoDevelop.Core.Gui.Codons/CommandItemCodon.cs,
+	  MonoDevelop.Core.Gui.Codons/CommandCodon.cs,
+	  MonoDevelop.Core.Gui.Codons/SeparatorItemCodon.cs,
+	  MonoDevelop.Core.Gui/CommandService.cs, Makefile.am,
+	  MonoDevelop.Core.Gui.addin.xml: Removed the CommandService class.
+	  Everything is done directly with CommandManager. Moved all extension
+	  node types to MD.Components.
+
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Core.Gui.mdp, MonoDevelop.Core.Gui/ResourceService.cs,
 	  Makefile.am, MonoDevelop.Core.Gui.addin.xml: Reorganized the extension
 	  point hierarchy. Embedded all add-in manifests as resources.

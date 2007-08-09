@@ -16,26 +16,6 @@
 
 	<!-- Extension points -->
 
-	<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet">
-		<ExtensionNode name="CommandItem" type="MonoDevelop.Core.Gui.Codons.CommandItemCodon" />
-		<ExtensionNode name="SeparatorItem" type="MonoDevelop.Core.Gui.Codons.SeparatorItemCodon" />
-		<ExtensionNode name="ItemSet" type="MonoDevelop.Core.Gui.Codons.ItemSetCodon" nodeset="Origin.Commands.ItemSet" >
-			<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet" />
-		</ExtensionNode>
-		<ExtensionNode name="LinkItem" type="MonoDevelop.Core.Gui.Codons.LinkItemCodon" />
-		<ExtensionNode name="LocalCommandItem" type="MonoDevelop.Core.Gui.Codons.LocalCommandItemCodon" />
-	</ExtensionNodeSet>
-	
-	<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet">
-		<ExtensionNode name="CommandItem" type="MonoDevelop.Core.Gui.Codons.CommandItemCodon" />
-		<ExtensionNode name="SeparatorItem" type="MonoDevelop.Core.Gui.Codons.SeparatorItemCodon" />
-		<ExtensionNode name="ItemSet" type="MonoDevelop.Core.Gui.Codons.ItemSetCodon" nodeset="Origin.Commands.ItemSet" >
-			<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet" />
-		</ExtensionNode>
-		<ExtensionNode name="LinkItem" type="MonoDevelop.Core.Gui.Codons.LinkItemCodon" />
-		<ExtensionNode name="LocalCommandItem" type="MonoDevelop.Core.Gui.Codons.LocalCommandItemCodon" />
-	</ExtensionNodeSet>
-
 	<ExtensionNodeSet id="MonoDevelop.Core.Gui.DialogPanel">
 		<ExtensionNode name="DialogPanel" type="MonoDevelop.Core.Gui.Codons.DialogPanelCodon">
 			<ExtensionNodeSet id="MonoDevelop.Core.Gui.DialogPanel" />

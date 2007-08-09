@@ -225,12 +225,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void LockGui ()
 		{
-			IdeApp.CommandService.CommandManager.LockAll ();
+			IdeApp.CommandService.LockAll ();
 		}
 		
 		public void UnlockGui ()
 		{
-			IdeApp.CommandService.CommandManager.UnlockAll ();
+			IdeApp.CommandService.UnlockAll ();
 		}
 		
 		public void SaveAll ()

@@ -1,5 +1,21 @@
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Components.Commands.ExtensionNodes,
+	  MonoDevelop.Components.Commands.ExtensionNodes/LocalCommandItemCodon.cs,
+	  MonoDevelop.Components.Commands.ExtensionNodes/ItemSetCodon.cs,
+	  MonoDevelop.Components.Commands.ExtensionNodes/CommandCategoryCodon.cs,
+	  MonoDevelop.Components.Commands.ExtensionNodes/LinkItemCodon.cs,
+	  MonoDevelop.Components.Commands.ExtensionNodes/CommandItemCodon.cs,
+	  MonoDevelop.Components.Commands.ExtensionNodes/CommandCodon.cs,
+	  MonoDevelop.Components.Commands.ExtensionNodes/SeparatorItemCodon.cs,
+	  MonoDevelop.Components.addin.xml, Makefile.am,
+	  MonoDevelop.Components.mdp,
+	  MonoDevelop.Components.Commands/CommandManager.cs: Removed the
+	  CommandService class. Everything is done directly with CommandManager.
+	  Moved all extension node types to MD.Components.
+
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Components/IconView.cs: Avoid crash in CurrentlySelected when
 	  there are no items in the IconView.
 

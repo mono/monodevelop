@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.Gui
 		static Workbench workbench;
 		static ProjectOperations projectOperations;
 		static HelpOperations helpOperations;
-		static CommandService commandService;
+		static CommandManager commandService;
 		static IdeServices ideServices;
 		
 		public static event ExitEventHandler Exiting;
@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.Gui
 			get { return helpOperations; }
 		}
 		
-		public static CommandService CommandService {
+		public static CommandManager CommandService {
 			get { return commandService; }
 		}
 		
@@ -99,8 +99,12 @@ namespace MonoDevelop.Ide.Gui
 			workbench = new Workbench ();
 			projectOperations = new ProjectOperations ();
 			helpOperations = new HelpOperations ();
-			commandService = new CommandService ();
+			commandService = new CommandManager ();
 			ideServices = new IdeServices ();
+			
+			commandService.CommandError += delegate (object sender, CommandErrorArgs args) {
+				Services.MessageService.ShowError (args.Exception, args.ErrorMessage);
+			};
 			
 			Runtime.FileService.ErrorHandler = FileServiceErrorHandler;
 		
@@ -154,7 +158,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			Services.MessageService.RootWindow = workbench.RootWindow;
 		
-			commandService.EnableUpdate ();
+			commandService.EnableIdleUpdate = true;
 			
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/StartupHandlers", OnExtensionChanged);
 			monitor.EndTask ();

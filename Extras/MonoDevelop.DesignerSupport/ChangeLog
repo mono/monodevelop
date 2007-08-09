@@ -1,5 +1,12 @@
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.DesignerSupport.addin.xml,
+	  MonoDevelop.DesignerSupport/DesignerSupportService.cs: Removed the
+	  CommandService class. Everything is done directly with CommandManager.
+	  Moved all extension node types to MD.Components.
+
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.DesignerSupport.addin.xml, MonoDevelop.DesignerSupport.mdp,
 	  gtk-gui/generated.cs,
 	  gtk-gui/MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog.cs,

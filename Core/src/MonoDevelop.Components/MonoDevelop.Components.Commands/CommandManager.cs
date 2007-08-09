@@ -31,6 +31,8 @@ using System;
 using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
+using MonoDevelop.Components.Commands.ExtensionNodes;
+using Mono.Addins;
 
 namespace MonoDevelop.Components.Commands
 {
@@ -65,6 +67,73 @@ namespace MonoDevelop.Components.Commands
 			ActionCommand c = new ActionCommand (CommandSystemCommands.ToolbarList, "Toolbar List", null, null, ActionType.Check);
 			c.CommandArray = true;
 			RegisterCommand (c);
+		}
+		
+		public void LoadCommands (string addinPath)
+		{
+			AddinManager.AddExtensionNodeHandler (addinPath, OnExtensionChange);
+		}
+		
+		void OnExtensionChange (object s, ExtensionNodeEventArgs args)
+		{
+			if (args.Change == ExtensionChange.Add) {
+				if (args.ExtensionNode is CommandCodon)
+					RegisterCommand ((Command) args.ExtensionObject);
+				else
+					// It's a category node. Track changes in the category.
+					args.ExtensionNode.ExtensionNodeChanged += OnExtensionChange;
+			}
+			else {
+				if (args.ExtensionNode is CommandCodon)
+					UnregisterCommand ((Command)args.ExtensionObject);
+				else
+					args.ExtensionNode.ExtensionNodeChanged -= OnExtensionChange;
+			}
+		}
+		
+		public Gtk.MenuBar CreateMenuBar (string addinPath)
+		{
+			CommandEntrySet cset = CreateCommandEntrySet (addinPath);
+			return CreateMenuBar (addinPath, cset);
+		}
+		
+		public Gtk.Toolbar[] CreateToolbarSet (string addinPath)
+		{
+			ArrayList bars = new ArrayList ();
+			
+			CommandEntrySet cset = CreateCommandEntrySet (addinPath);
+			foreach (CommandEntry ce in cset) {
+				CommandEntrySet ces = ce as CommandEntrySet;
+				if (ces != null)
+					bars.Add (CreateToolbar (addinPath + "/" + ces.Name, ces));
+			}
+			return (Gtk.Toolbar[]) bars.ToArray (typeof(Gtk.Toolbar));
+		}
+		
+		public Gtk.Toolbar CreateToolbar (string addinPath)
+		{
+			CommandEntrySet cset = CreateCommandEntrySet (addinPath);
+			return CreateToolbar (addinPath, cset);
+		}
+		
+		public Gtk.Menu CreateMenu (string addinPath)
+		{
+			CommandEntrySet cset = CreateCommandEntrySet (addinPath);
+			return CreateMenu (cset);
+		}
+		
+		public void ShowContextMenu (string addinPath)
+		{
+			ShowContextMenu (CreateCommandEntrySet (addinPath));
+		}
+		
+		public CommandEntrySet CreateCommandEntrySet (string addinPath)
+		{
+			CommandEntrySet cset = new CommandEntrySet ();
+			object[] items = AddinManager.GetExtensionObjects (addinPath, false);
+			foreach (CommandEntry e in items)
+				cset.Add (e);
+			return cset;
 		}
 		
 		bool CanUseBinding (string mode, string binding)
@@ -278,8 +347,7 @@ namespace MonoDevelop.Components.Commands
 		public void ShowContextMenu (CommandEntrySet entrySet, object initialTarget)
 		{
 			CommandMenu menu = (CommandMenu) CreateMenu (entrySet);
-			menu.InitialCommandTarget = initialTarget;
-			ShowContextMenu (menu);
+			ShowContextMenu (menu, initialTarget);
 		}
 		
 		public void ShowContextMenu (Gtk.Menu menu)
@@ -290,6 +358,14 @@ namespace MonoDevelop.Components.Commands
 				// can't handle accelerators
 				menu.Destroy ();
 			};
+		}
+		
+		public void ShowContextMenu (Gtk.Menu menu, object initialCommandTarget)
+		{
+			if (menu is CommandMenu) {
+				((CommandMenu)menu).InitialCommandTarget = initialCommandTarget;
+			}
+			ShowContextMenu (menu);
 		}
 		
 		public Gtk.Toolbar CreateToolbar (string id, CommandEntrySet entrySet)

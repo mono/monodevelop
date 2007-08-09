@@ -1,5 +1,5 @@
 //
-// LocalCommandItemCodon.cs
+// CommandItemCodon.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -32,20 +32,18 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
 using Mono.Addins;
 
-namespace MonoDevelop.Core.Gui.Codons
+namespace MonoDevelop.Components.Commands.ExtensionNodes
 {
-	[ExtensionNode (Description="Allows the definition of a complete command item inside a menu or toolbar description")]
-	internal class LocalCommandItemCodon : CommandCodon
+	[ExtensionNode (Description="A command menu or toolbar item. The id of the element must match the id of a registered command.")]
+	internal class CommandItemCodon : InstanceExtensionNode
 	{
 		public override object CreateInstance ()
 		{
-			Command cmd = (Command) base.CreateInstance ();
-			return new LocalCommandEntry (cmd);
+			object id = CommandCodon.ParseCommandId (this);
+			return new CommandEntry (id);
 		}
 	}
 }

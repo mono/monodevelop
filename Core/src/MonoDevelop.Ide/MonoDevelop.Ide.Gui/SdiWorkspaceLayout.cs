@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.Gui
 
 			fullViewVBox.PackStart (workbench.TopMenu, false, false, 0);
 			
-			toolbarFrame = new CommandFrame (IdeApp.CommandService.CommandManager);
+			toolbarFrame = new CommandFrame (IdeApp.CommandService);
 			fullViewVBox.PackStart (toolbarFrame, true, true, 0);
 			
 			if (workbench.ToolBars != null) {

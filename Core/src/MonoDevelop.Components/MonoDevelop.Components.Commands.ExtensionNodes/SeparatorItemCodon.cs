@@ -1,5 +1,5 @@
 //
-// LinkItemCodon.cs
+// SeparatorItemCodon.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -33,27 +33,16 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using Mono.Addins;
 
-namespace MonoDevelop.Core.Gui.Codons
+namespace MonoDevelop.Components.Commands.ExtensionNodes
 {
-	[ExtensionNode (Description="A menu or toolbar item that opens an URL when activated")]
-	internal class LinkItemCodon : InstanceExtensionNode
+	[ExtensionNode (Description="A separator menu or toolbar item")]
+	internal class SeparatorItemCodon : InstanceExtensionNode
 	{
-		[NodeAttribute ("_label", "Label of the item.")]
-		string label;
-		
-		[NodeAttribute ("link", "URL to open.")]
-		string link;
-		
-//		[XmlMemberAttribute("description")]
-//		string description;
-		
 		public override object CreateInstance ()
 		{
-			return new LinkCommandEntry (label, link, ResourceService.GetStockId ("md-web-search-icon"));
+			return new CommandEntry (Command.Separator);
 		}
 	}
 }

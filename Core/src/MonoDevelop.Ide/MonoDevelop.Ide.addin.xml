@@ -18,6 +18,7 @@
 	<Dependencies>
 		<Addin id="Core.Gui" version="0.15.0"/>
 		<Addin id="Documentation" version="0.15.0"/>
+		<Addin id="Components" version="0.15.0"/>
 	</Dependencies>
 
 	<!-- Extension points -->
@@ -42,95 +43,92 @@
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/Commands" name = "User interface commands">
 		<Description>User interface commands.</Description>
-		<ExtensionNode name="Command" type="MonoDevelop.Core.Gui.Codons.CommandCodon" />
-		<ExtensionNode name="Category" type="MonoDevelop.Core.Gui.Codons.CommandCategoryCodon">
-			<ExtensionNode name="Command" type="MonoDevelop.Core.Gui.Codons.CommandCodon" />
-		</ExtensionNode>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.CommandSet"/>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ClassPad/Namespace" name = "Namespace node context menu in the class pad">
 		<Description>Context menu for namespaces in the class pad.</Description>
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ClassPad/Method" name = "Method node context menu in the class pad">
 		<Description>Context menu for methods in the class pad.</Description>
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ClassPad/Field" name = "Field node context menu in the class pad">
 		<Description>Context menu for fields in the class pad.</Description>
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ClassPad/Event" name = "Event node context menu in the class pad">
 		<Description>Context menu for events in the class pad.</Description>
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ClassPad/Combine" name = "Combine node context menu in the class pad">
 		<Description>Context menu for combines in the class pad.</Description>
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ClassPad/Class" name = "Class node context menu in the class pad">
 		<Description>Context menu for classes in the class pad.</Description>
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ClassPad/Property" name = "Property node context menu in the class pad">
 		<Description>Context menu for properties in the class pad.</Description>
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ClassPad/Project" name = "Project node context menu in the class pad">
 		<Description>Context menu for projects in the class pad.</Description>
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Combine" name = "Solution context menu">
 		<Description>Context menu for solutions in the solution pad.</Description>
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/ResourceFolder" name = "Resource folder context menu">
 		<Description>Context menu for the resource folder in the solution pad.</Description>
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/ReferenceFolder" name = "References folder context menu">
 		<Description>Context menu for the references folder in the solution pad.</Description>
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Reference" name = "Reference context menu">
 		<Description>Context menu for a reference in the solution pad.</Description>
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/ProjectFile" name = "Project file context menu">
 		<Description>Context menu for a project file in the solution pad.</Description>
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/SystemFile" name = "File context menu">
 		<Description>Context menu for a file (not belonging to a project) in the solution pad.</Description>
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Folder" name = "Folder context menu">
 		<Description>Context menu for a folder in the solution pad.</Description>
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Project" name = "Project context menu">
 		<Description>Context menu for a project in the solution pad.</Description>
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/UnknownEntry" name = "Unknown entry context menu">
 		<Description>Context menu for unknown entries in the solution pad.</Description>
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/TaskList/View" name = "Task list views">
@@ -171,12 +169,12 @@
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/Toolbar" name = "Main toolbar">
 		<Description>Main toolbar items.</Description>
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/MainMenu" name = "Main menu">
 		<Description>Main menu items.</Description>
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/FileTemplates" name = "File templates">
@@ -205,7 +203,7 @@
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/DocumentTab" name = "View Context Menu">
 		<Description>The context menu for all open files.</Description>
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 		
 	<!-- Extensions -->

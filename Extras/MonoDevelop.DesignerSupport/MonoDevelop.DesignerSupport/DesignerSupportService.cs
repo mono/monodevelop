@@ -211,7 +211,7 @@ namespace MonoDevelop.DesignerSupport
 		{
 			base.InitializeService ();
 			codeBehindService.Initialise ();
-			IdeApp.CommandService.CommandManager.RegisterCommandTargetVisitor (new PropertyPadVisitor ());
+			IdeApp.CommandService.RegisterCommandTargetVisitor (new PropertyPadVisitor ());
 			AddinManager.ExtensionChanged += OnExtensionChanged;
 		}
 		

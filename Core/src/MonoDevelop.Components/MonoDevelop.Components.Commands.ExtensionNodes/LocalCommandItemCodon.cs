@@ -1,12 +1,12 @@
 //
-// CommandCategoryCodon.cs
+// LocalCommandItemCodon.cs
 //
 // Author:
 //   Lluis Sanchez Gual
 //
 
 //
-// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2005 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -30,20 +30,21 @@
 
 
 using System;
+using System.Collections;
+using System.ComponentModel;
+using MonoDevelop.Core;
+using MonoDevelop.Components.Commands;
 using Mono.Addins;
 
-namespace MonoDevelop.Core.Gui.Codons
+namespace MonoDevelop.Components.Commands.ExtensionNodes
 {
-	[ExtensionNode (Description="A command category")]
-	public class CommandCategoryCodon : ExtensionNode
+	[ExtensionNode (Description="Allows the definition of a complete command item inside a menu or toolbar description")]
+	internal class LocalCommandItemCodon : CommandCodon
 	{
-		[NodeAttribute ("_name", true, "Name")]
-		string name;
-		
-		public string Name {
-			get {
-				return GettextCatalog.GetString (name);
-			}
+		public override object CreateInstance ()
+		{
+			Command cmd = (Command) base.CreateInstance ();
+			return new LocalCommandEntry (cmd);
 		}
 	}
 }

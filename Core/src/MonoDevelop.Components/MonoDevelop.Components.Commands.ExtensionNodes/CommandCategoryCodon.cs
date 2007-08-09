@@ -1,12 +1,12 @@
 //
-// CommandItemCodon.cs
+// CommandCategoryCodon.cs
 //
 // Author:
 //   Lluis Sanchez Gual
 //
 
 //
-// Copyright (C) 2005 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -30,20 +30,20 @@
 
 
 using System;
-using System.Collections;
-using System.ComponentModel;
-using MonoDevelop.Components.Commands;
 using Mono.Addins;
 
-namespace MonoDevelop.Core.Gui.Codons
+namespace MonoDevelop.Components.Commands.ExtensionNodes
 {
-	[ExtensionNode (Description="A command menu or toolbar item. The id of the element must match the id of a registered command.")]
-	internal class CommandItemCodon : InstanceExtensionNode
+	[ExtensionNode (Description="A command category")]
+	public class CommandCategoryCodon : ExtensionNode
 	{
-		public override object CreateInstance ()
-		{
-			object id = CommandCodon.ParseCommandId (this);
-			return new CommandEntry (id);
+		[NodeAttribute ("_name", true, "Name")]
+		string name;
+		
+		public string Name {
+			get {
+				return Mono.Unix.Catalog.GetString (name);
+			}
 		}
 	}
 }

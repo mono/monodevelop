@@ -130,7 +130,6 @@
     <File name="./MonoDevelop.Core.Gui.Dialogs/IDialogPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui.Dialogs/IDialogPanelDescriptor.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui.ProgressMonitoring/BaseProgressMonitor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Gui/CommandService.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui/GuiService.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui/IMementoCapable.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui/PixbufList.cs" subtype="Code" buildaction="Compile" />
@@ -149,13 +148,7 @@
     <File name="./MonoDevelop.Core.Gui.ErrorHandlers/CombineLoadError.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui.ErrorHandlers/GenericError.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui/ITextBufferStrategy.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Gui.Codons/CommandCodon.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Gui.Codons/CommandItemCodon.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Gui.Codons/ItemSetCodon.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Gui.Codons/LinkItemCodon.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Gui.Codons/SeparatorItemCodon.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui.Components/MenuButtonEntry.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Gui.Codons/LocalCommandItemCodon.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui.Codons/StockIconCodon.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui.Utils/DesktopApplication.cs" subtype="Code" buildaction="Compile" />
@@ -176,7 +169,6 @@
     <File name="./MonoDevelop.Core.Gui.Dialogs/SetupApp.cs" subtype="Code" buildaction="Compile" />
     <File name="./Freedesktop.RecentFiles/RecentItem.cs" subtype="Code" buildaction="Compile" />
     <File name="./Freedesktop.RecentFiles/RecentFileStorage.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Gui.Codons/CommandCategoryCodon.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui/ResourceService.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>

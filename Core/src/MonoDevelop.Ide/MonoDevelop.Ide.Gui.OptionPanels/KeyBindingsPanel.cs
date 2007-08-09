@@ -118,7 +118,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
 			SortedDictionary<string, Command> commands = new SortedDictionary<string, Command> ();
 			List<string> catNames = new List<string> ();
 			
-			foreach (object c in IdeApp.CommandService.CommandManager.GetCommands ()) {
+			foreach (object c in IdeApp.CommandService.GetCommands ()) {
 				ActionCommand cmd = c as ActionCommand;
 				if (cmd == null || cmd.CommandArray)
 					continue;

@@ -33,11 +33,10 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
 using Mono.Addins;
 
-namespace MonoDevelop.Core.Gui.Codons
+namespace MonoDevelop.Components.Commands.ExtensionNodes
 {
 	[ExtensionNode (Description="A submenu")]
 	internal class ItemSetCodon : InstanceExtensionNode
@@ -53,7 +52,7 @@ namespace MonoDevelop.Core.Gui.Codons
 			if (label == null) label = Id;
 
 			label = Runtime.StringParserService.Parse (GettextCatalog.GetString (label));
-			if (icon != null) icon = ResourceService.GetStockId (Addin, icon);
+			if (icon != null) icon = CommandCodon.GetStockId (Addin, icon);
 			CommandEntrySet cset = new CommandEntrySet (label, icon);
 			foreach (InstanceExtensionNode e in ChildNodes) {
 				CommandEntry ce = e.CreateInstance () as CommandEntry;

@@ -4,13 +4,26 @@
        author      = "Lluis Sanchez, Todd Berman, John Luke, Mike Krueger"
        copyright   = "GPL"
        url         = "http://www.monodevelop.com"
-       description = "Provides basic GUI components"
 	   category    = "MonoDevelop Core"
-       version     = "0.15.0"
 	   isroot      = "true"
-       compatVersion = "0.15.0">
+       version     = "0.15.0">
 
-	<!-- Extension points -->
+	<!-- This item set can be used to define extension points for extensible menus and toolbars -->
+	
+	<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet">
+		<ExtensionNode name="CommandItem" type="MonoDevelop.Components.Commands.ExtensionNodes.CommandItemCodon" />
+		<ExtensionNode name="SeparatorItem" type="MonoDevelop.Components.Commands.ExtensionNodes.SeparatorItemCodon" />
+		<ExtensionNode name="ItemSet" type="MonoDevelop.Components.Commands.ExtensionNodes.ItemSetCodon">
+			<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
+		</ExtensionNode>
+		<ExtensionNode name="LinkItem" type="MonoDevelop.Components.Commands.ExtensionNodes.LinkItemCodon" />
+		<ExtensionNode name="LocalCommandItem" type="MonoDevelop.Components.Commands.ExtensionNodes.LocalCommandItemCodon" />
+	</ExtensionNodeSet>
 
-
+	<ExtensionNodeSet id="MonoDevelop.Components.Commands.CommandSet">
+		<ExtensionNode name="Command" type="MonoDevelop.Components.Commands.ExtensionNodes.CommandCodon" />
+		<ExtensionNode name="Category" type="MonoDevelop.Components.Commands.ExtensionNodes.CommandCategoryCodon">
+			<ExtensionNode name="Command" type="MonoDevelop.Components.Commands.ExtensionNodes.CommandCodon" />
+		</ExtensionNode>
+	</ExtensionNodeSet>
 </Addin>

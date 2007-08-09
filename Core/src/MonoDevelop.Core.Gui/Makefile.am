@@ -20,14 +20,7 @@ REFS =  \
 FILES =  \
 	Freedesktop.RecentFiles/RecentFileStorage.cs \
 	Freedesktop.RecentFiles/RecentItem.cs \
-	MonoDevelop.Core.Gui.Codons/CommandCategoryCodon.cs \
-	MonoDevelop.Core.Gui.Codons/CommandCodon.cs \
-	MonoDevelop.Core.Gui.Codons/CommandItemCodon.cs \
 	MonoDevelop.Core.Gui.Codons/DialogPanelCodon.cs \
-	MonoDevelop.Core.Gui.Codons/ItemSetCodon.cs \
-	MonoDevelop.Core.Gui.Codons/LinkItemCodon.cs \
-	MonoDevelop.Core.Gui.Codons/LocalCommandItemCodon.cs \
-	MonoDevelop.Core.Gui.Codons/SeparatorItemCodon.cs \
 	MonoDevelop.Core.Gui.Codons/StockIconCodon.cs \
 	MonoDevelop.Core.Gui.Components/FileBrowser.cs \
 	MonoDevelop.Core.Gui.Components/LocalizedObject.cs \
@@ -54,7 +47,6 @@ FILES =  \
 	MonoDevelop.Core.Gui.Utils/DesktopApplication.cs \
 	MonoDevelop.Core.Gui.Utils/FileIconLoader.cs \
 	MonoDevelop.Core.Gui/AsyncDispatchAttribute.cs \
-	MonoDevelop.Core.Gui/CommandService.cs \
 	MonoDevelop.Core.Gui/DispatchService.cs \
 	MonoDevelop.Core.Gui/FreeDispatchAttribute.cs \
 	MonoDevelop.Core.Gui/GuiService.cs \

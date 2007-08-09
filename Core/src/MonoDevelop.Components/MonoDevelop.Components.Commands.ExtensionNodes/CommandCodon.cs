@@ -31,13 +31,12 @@
 
 using System;
 using System.Collections;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
 using Mono.Addins;
 using System.ComponentModel;
 
-namespace MonoDevelop.Core.Gui.Codons
+namespace MonoDevelop.Components.Commands.ExtensionNodes
 {
 	[ExtensionNode (Description="A user interface command. The 'id' of the command must match the full name of an existing enumeration. An arbitrary string can also be used as an id for the command by just using '@' as prefix for the string.")]
 	public class CommandCodon : TypeExtensionNode
@@ -151,7 +150,7 @@ namespace MonoDevelop.Core.Gui.Codons
 			cmd.Description = GettextCatalog.GetString(cmd.Description);
 			
 			if (icon != null)
-				cmd.Icon = ResourceService.GetStockId (Addin, icon);
+				cmd.Icon = GetStockId (Addin, icon);
 			
 			cmd.AccelKey = KeyBindingManager.CanonicalizeBinding (shortcut);
 			
@@ -194,6 +193,11 @@ namespace MonoDevelop.Core.Gui.Codons
 			} catch {
 				throw new InvalidOperationException ("Could not find an enum value for the command '" + id + "'.");
 			}
+		}
+		
+		internal static string GetStockId (RuntimeAddin addin, string icon)
+		{
+			return icon;
 		}
 	}
 }

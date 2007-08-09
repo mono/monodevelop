@@ -177,10 +177,10 @@ namespace MonoDevelop.WelcomePage
 				switch (URI.Substring(14))
 				{
 					case "NewProject":
-						IdeApp.CommandService.CommandManager.DispatchCommand(FileCommands.NewProject);
+						IdeApp.CommandService.DispatchCommand(FileCommands.NewProject);
 						break;
 					case "OpenFile":
-						IdeApp.CommandService.CommandManager.DispatchCommand(FileCommands.OpenFile);
+						IdeApp.CommandService.DispatchCommand(FileCommands.OpenFile);
 						break;
 				}
 			}

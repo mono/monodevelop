@@ -20,6 +20,7 @@
 		<Addin id="Projects" version="0.15.0"/>
 		<Addin id="Projects.Gui" version="0.15.0"/>
 		<Addin id="Ide" version="0.15.0"/>
+		<Addin id="Components" version="0.15.0"/>
 	</Dependencies>
 	
 	<!-- Extension Points -->
@@ -30,27 +31,27 @@
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/NUnit/ContextMenu/TestChart">
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/NUnit/ContextMenu/TestPad">
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/NUnit/ContextMenu/TestResultsPad">
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/NUnit/ContextMenu/ProjectPad/NUnitAssemblyGroup">
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/NUnit/ContextMenu/ProjectPad/TestAssembly">
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/NUnit/ContextMenu/ProjectPad/NUnitAssemblyGroupConfiguration">
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/NUnit/UnitTestOptions/GeneralOptions">
