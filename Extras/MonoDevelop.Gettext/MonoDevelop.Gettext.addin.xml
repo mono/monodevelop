@@ -114,7 +114,7 @@
 			name = "Gettext.ScanForTranslations" type = "System.Boolean" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Workbench/ProjectFeatures">
+	<Extension path = "/MonoDevelop/Ide/ProjectFeatures">
 		<Class class = "MonoDevelop.Gettext.GettextFeature" />
 	</Extension>
 	

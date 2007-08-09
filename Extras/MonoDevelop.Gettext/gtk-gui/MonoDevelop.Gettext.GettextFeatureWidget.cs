@@ -72,6 +72,7 @@ namespace MonoDevelop.Gettext {
             this.treeviewTranslations = new Gtk.TreeView();
             this.treeviewTranslations.CanFocus = true;
             this.treeviewTranslations.Name = "treeviewTranslations";
+            this.treeviewTranslations.HeadersClickable = true;
             this.scrolledwindow1.Add(this.treeviewTranslations);
             this.vbox3.Add(this.scrolledwindow1);
             Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox3[this.scrolledwindow1]));

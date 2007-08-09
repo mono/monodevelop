@@ -318,7 +318,6 @@ namespace MonoDevelop.Gettext {
             this.toolbarPages.Name = "toolbarPages";
             this.toolbarPages.ShowArrow = false;
             this.toolbarPages.ToolbarStyle = ((Gtk.ToolbarStyle)(0));
-            this.toolbarPages.IconSize = ((Gtk.IconSize)(3));
             this.hbox1.Add(this.toolbarPages);
             Gtk.Box.BoxChild w28 = ((Gtk.Box.BoxChild)(this.hbox1[this.toolbarPages]));
             w28.Position = 0;
