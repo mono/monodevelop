@@ -1,3 +1,8 @@
+2007-08-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs: Make the search results list
+	  sortable. Fixes bug #82375.
+
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs,

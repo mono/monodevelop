@@ -96,6 +96,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			view = new Gtk.TreeView (store);
 			view.RulesHint = true;
+			view.HeadersClickable = true;
 			AddColumns ();
 			
 			sw = new Gtk.ScrolledWindow ();
@@ -266,13 +267,20 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			TreeViewColumn col;
 			col = view.AppendColumn ("", iconRender, "pixbuf", COL_TYPE);
-			view.AppendColumn (GettextCatalog.GetString ("Line"), line, "text", COL_LINE, "weight", COL_READ_WEIGHT, "visible", COL_ISFILE);
+			col = view.AppendColumn (GettextCatalog.GetString ("Line"), line, "text", COL_LINE, "weight", COL_READ_WEIGHT, "visible", COL_ISFILE);
+			col.SortColumnId = COL_LINE;
 			col = view.AppendColumn (GettextCatalog.GetString ("File"), file, "text", COL_FILE, "weight", COL_READ_WEIGHT, "visible", COL_ISFILE);
+			col.SortColumnId = COL_FILE;
 			col.Resizable = true;
 			col = view.AppendColumn (GettextCatalog.GetString ("Text"), desc, "text", COL_DESC, "weight", COL_READ_WEIGHT);
+			col.SortColumnId = COL_DESC;
 			col.Resizable = true;
 			col = view.AppendColumn (GettextCatalog.GetString ("Path"), path, "text", COL_PATH, "weight", COL_READ_WEIGHT, "visible", COL_ISFILE);
+			col.SortColumnId = COL_FULLPATH;
 			col.Resizable = true;
+
+			store.SetSortFunc (COL_FULLPATH, PathFunc);
+			store.SetSortFunc (COL_FILE, FileFunc);
 		}
 		
 		public void Dispose ()
@@ -392,5 +400,22 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 		}
 		
+		int PathFunc (TreeModel model, TreeIter iter1, TreeIter iter2)
+		{
+			string s1 = (string) model.GetValue (iter1, COL_FULLPATH);
+			string s2 = (string) model.GetValue (iter2, COL_FULLPATH);
+			s1 += ((int) model.GetValue (iter1, COL_LINE)).ToString ("000000");
+			s2 += ((int) model.GetValue (iter2, COL_LINE)).ToString ("000000");
+			return s1.CompareTo (s2);
+		}
+		
+		int FileFunc (TreeModel model, TreeIter iter1, TreeIter iter2)
+		{
+			string s1 = (string) model.GetValue (iter1, COL_FILE);
+			string s2 = (string) model.GetValue (iter2, COL_FILE);
+			s1 += ((int) model.GetValue (iter1, COL_LINE)).ToString ("000000");
+			s2 += ((int) model.GetValue (iter2, COL_LINE)).ToString ("000000");
+			return s1.CompareTo (s2);
+		}
 	}
 }
