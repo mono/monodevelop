@@ -1,3 +1,12 @@
+2007-08-10  Ankit Jain  <jankit@novell.com>
+
+	Fix bug #82394.
+	* CSharpBindingCompilerManager.cs (Compile): Abort build if error while
+	generating resources.
+	(GetResourceId): Refactor slightly to report error. Also, parse
+	the line/col number for the CompilerError.
+	(RegexErrorLinePos): New.
+
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CSharpBinding.addin.xml, Autotools/Makefile.am, CSharpBinding.mdp,

@@ -1,5 +1,14 @@
 2007-08-10  Ankit Jain  <jankit@novell.com>
 
+	Fix bug #82394.
+	* MSBuildProjectServiceExtension.cs (Build): Abort build if error in
+	generating partial classes with xamlg.
+	(GenerateXamlPartialClass): Report any errors with CompilerError. Parse
+	line/col numbers also.
+	(RegexErrorLinePos): New.
+
+2007-08-10  Ankit Jain  <jankit@novell.com>
+
 	* SlnFileFormat.cs: Allow version 10.00 also.
 	* MSBuildFileFormat.cs (ReadItemGroup): Handle SilverlightPage
 	ItemGroup.
