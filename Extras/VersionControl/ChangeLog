@@ -1,3 +1,11 @@
+2007-08-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl/ChangeSet.cs: When
+	  going to commit, clone the changeset since commit extensions may change
+	  it (e.g. changelog extension). Allow setting messages to files not
+	  marked for commit. Should fix bug #82172.
+
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.Subversion/Makefile.am,

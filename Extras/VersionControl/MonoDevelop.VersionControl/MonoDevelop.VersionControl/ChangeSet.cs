@@ -161,6 +161,23 @@ namespace MonoDevelop.VersionControl
 				}
 			}
 		}
+		
+		public ChangeSet Clone ()
+		{
+			ChangeSet cs = (ChangeSet) MemberwiseClone ();
+			cs.CopyFrom (this);
+			return cs;
+		}
+		
+		public virtual void CopyFrom (ChangeSet other)
+		{
+			globalComment = other.globalComment;
+			repo = other.repo;
+			basePath = other.basePath;
+			items = new List<ChangeSetItem> ();
+			foreach (ChangeSetItem cit in other.items)
+				items.Add (cit.Clone ());
+		}
 	}
 	
 	public class ChangeSetItem
@@ -190,6 +207,18 @@ namespace MonoDevelop.VersionControl
 		
 		public bool IsDirectory {
 			get { return versionInfo.IsDirectory; }
+		}
+		
+		public ChangeSetItem Clone ()
+		{
+			ChangeSetItem cs = (ChangeSetItem) MemberwiseClone ();
+			cs.CopyFrom (this);
+			return cs;
+		}
+		
+		public virtual void CopyFrom (ChangeSetItem other)
+		{
+			versionInfo = other.versionInfo;
 		}
 	}
 }

@@ -454,22 +454,29 @@ namespace MonoDevelop.VersionControl.Views
 				bool curv = (bool) filestore.GetValue (iter, ColShowComment);
 				if (curv != (msg.Length > 0))
 					filestore.SetValue (iter, ColShowComment, msg.Length > 0);
+
+				string fp = (string) filestore.GetValue (iter, ColFullPath);
+				filestore.SetValue (iter, ColCommit, changeSet.ContainsFile (fp));
 			}
+			UpdateSelectionStatus ();
 		}
 		
 		string GetCommitMessage (string file)
 		{
-			ChangeSetItem item = changeSet.GetFileItem (file);
-			string txt = item != null ? item.Comment : null;
+			string txt = VersionControlProjectService.GetCommitComment (file);
 			return txt != null ? txt : "";
 		}
 		
 		void SetCommitMessage (string file, string text)
 		{
-			ChangeSetItem item = changeSet.GetFileItem (file);
-			if (item == null)
-				item = changeSet.AddFile (file);
-			item.Comment = text;
+			if (text.Length > 0) {
+				ChangeSetItem item = changeSet.GetFileItem (file);
+				if (item == null)
+					item = changeSet.AddFile (file);
+				item.Comment = text;
+			} else {
+				VersionControlProjectService.SetCommitComment (file, text, true);
+			}
 		}
 		
 		void OnRowActivated(object o, RowActivatedArgs args) {
@@ -518,7 +525,7 @@ namespace MonoDevelop.VersionControl.Views
 			// Reset the global comment. It may be already set from previous commits.
 			changeSet.GlobalComment = string.Empty;
 			
-			if (!CommitCommand.Commit (vc, changeSet, false))
+			if (!CommitCommand.Commit (vc, changeSet.Clone (), false))
 				return;
 		}
 
@@ -659,9 +666,9 @@ namespace MonoDevelop.VersionControl.Views
 			}
 			else {
 				if (FileVisible (newInfo)) {
-					AppendFileInfo (newInfo);
 					statuses.Add (newInfo);
 					changeSet.AddFile (newInfo);
+					AppendFileInfo (newInfo);
 				}
 			}
 			UpdateControlStatus ();
