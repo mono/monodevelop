@@ -5,6 +5,7 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Gettext.dll
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
@@ -43,6 +44,7 @@ FILES =  \
 	MonoDevelop.Gettext/GettextFeature.cs \
 	MonoDevelop.Gettext/GettextFeatureWidget.cs \
 	MonoDevelop.Gettext/IsoCodes.cs \
+	MonoDevelop.Gettext/MakefileHandler.cs \
 	MonoDevelop.Gettext/PluralForms.cs \
 	MonoDevelop.Gettext/PropertyProvider.cs \
 	MonoDevelop.Gettext/Translation.cs \
@@ -61,6 +63,8 @@ RES =  \
 	icons/md-gettext-project_22.png \
 	icons/md-gettext-project_32.png \
 	MonoDevelop.Gettext.addin.xml \
+	templates/Makefile.am.template \
+	templates/Makefile.template \
 	templates/TranslationProject.xpt.xml
 
 all: $(ASSEMBLY)

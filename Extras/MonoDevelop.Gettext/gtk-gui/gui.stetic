@@ -10,6 +10,7 @@
     <widget-library name="../../../build/AddIns/MonoDevelop.Ide.dll" />
     <widget-library name="../../../build/AddIns/MonoDevelop.Deployment.dll" />
     <widget-library name="../../../build/AddIns/MonoDevelop.Gettext/MonoDevelop.Gettext.dll" internal="true" />
+    <widget-library name="../../../build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.Gettext.Editor.CatalogHeadersWidget" design-size="672 613">
     <property name="MemberName" />
@@ -754,7 +755,6 @@
                       <widget class="Gtk.RadioButton" id="radiobuttonKnown">
                         <property name="MemberName" />
                         <property name="Label" translatable="yes">_Known Language</property>
-                        <property name="Active">True</property>
                         <property name="DrawIndicator">True</property>
                         <property name="HasLabel">True</property>
                         <property name="UseUnderline">True</property>
@@ -1721,7 +1721,6 @@
                     <property name="UseStock">True</property>
                     <property name="Type">StockItem</property>
                     <property name="StockId">gtk-add</property>
-                    <property name="IsDialogButton">False</property>
                     <property name="label">gtk-add</property>
                   </widget>
                   <packing>
@@ -1738,7 +1737,6 @@
                     <property name="UseStock">True</property>
                     <property name="Type">StockItem</property>
                     <property name="StockId">gtk-remove</property>
-                    <property name="IsDialogButton">False</property>
                     <property name="label">gtk-remove</property>
                   </widget>
                   <packing>

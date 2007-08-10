@@ -21,6 +21,7 @@
 		<Addin id="Ide" version="0.15.0"/>
 		<Addin id="Components" version="0.15.0"/>
 		<Addin id="DesignerSupport" version="0.15.0"/>
+		<Addin id="Autotools" version="0.15.0"/>
 	</Dependencies>
 	
 	<!-- Extension Points -->
@@ -116,6 +117,10 @@
 	
 	<Extension path = "/MonoDevelop/Ide/ProjectFeatures">
 		<Class class = "MonoDevelop.Gettext.GettextFeature" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Autotools/MakefileHandlers">
+		<Class class = "MonoDevelop.Gettext.MakefileHandler"/>
 	</Extension>
 	
 </Addin>
