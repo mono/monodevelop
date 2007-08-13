@@ -238,9 +238,10 @@ namespace MonoDevelop.Prj2Make
 
 				EnsureChildValue (configElement, "OutputType", ns, config.CompileTarget);
 				EnsureChildValue (configElement, "AssemblyName", ns, CanonicalizePath (config.OutputAssembly));
+				// VS2005 emits trailing \\ for folders
 				EnsureChildValue (configElement, "OutputPath", ns, 
 					CanonicalizePath (Runtime.FileService.AbsoluteToRelativePath (
-						project.BaseDirectory, config.OutputDirectory)));
+						project.BaseDirectory, config.OutputDirectory)) + "\\");
 				EnsureChildValue (configElement, "DebugSymbols", ns, config.DebugMode);
 
 				if (project.LanguageName == "VBNet") {
@@ -622,6 +623,11 @@ namespace MonoDevelop.Prj2Make
 			string reference = projectRef.Reference;
 			switch (refType) {
 			case ReferenceType.Gac:
+				SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (projectRef.Reference);
+				if (pkg != null && pkg.IsCorePackage && pkg.TargetVersion == ClrVersion.Net_2_0)
+					// For core references like System.Data, emit only "System.Data" instead
+					// of full names
+					reference = reference.Substring (0, reference.IndexOf (','));
 				break;
 			case ReferenceType.Assembly:
 				reference = AssemblyName.GetAssemblyName (reference).ToString ();
@@ -1181,6 +1187,11 @@ namespace MonoDevelop.Prj2Make
 					return n;
 
 			return null;
+		}
+
+		internal static void EnsureChildValue (XmlNode node, string localName, string ns, bool val)
+		{
+			EnsureChildValue (node, localName, ns, val.ToString ().ToLower ());
 		}
 
 		internal static void EnsureChildValue (XmlNode node, string localName, string ns, object val)
