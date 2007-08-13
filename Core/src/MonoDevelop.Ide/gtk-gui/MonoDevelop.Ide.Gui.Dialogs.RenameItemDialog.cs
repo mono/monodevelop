@@ -21,6 +21,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
         
         private Gtk.Entry entry;
         
+        private Gtk.CheckButton renameFileFlag;
+        
         private Gtk.Button buttonCancel;
         
         private Gtk.Button buttonOk;
@@ -69,17 +71,30 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             w4.Position = 0;
             w4.Expand = false;
             w4.Fill = false;
-            w1.Add(this.vbox);
-            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(w1[this.vbox]));
-            w5.Position = 0;
+            // Container child vbox.Gtk.Box+BoxChild
+            this.renameFileFlag = new Gtk.CheckButton();
+            this.renameFileFlag.CanFocus = true;
+            this.renameFileFlag.Name = "renameFileFlag";
+            this.renameFileFlag.Label = Mono.Unix.Catalog.GetString("Rename file that contains public class");
+            this.renameFileFlag.Active = true;
+            this.renameFileFlag.DrawIndicator = true;
+            this.renameFileFlag.UseUnderline = true;
+            this.vbox.Add(this.renameFileFlag);
+            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox[this.renameFileFlag]));
+            w5.Position = 1;
             w5.Expand = false;
             w5.Fill = false;
+            w1.Add(this.vbox);
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(w1[this.vbox]));
+            w6.Position = 0;
+            w6.Expand = false;
+            w6.Fill = false;
             // Internal child MonoDevelop.Ide.Gui.Dialogs.RenameItemDialog.ActionArea
-            Gtk.HButtonBox w6 = this.ActionArea;
-            w6.Name = "dialog1_ActionArea";
-            w6.Spacing = 10;
-            w6.BorderWidth = ((uint)(5));
-            w6.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
+            Gtk.HButtonBox w7 = this.ActionArea;
+            w7.Name = "dialog1_ActionArea";
+            w7.Spacing = 10;
+            w7.BorderWidth = ((uint)(5));
+            w7.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonCancel = new Gtk.Button();
             this.buttonCancel.CanDefault = true;
@@ -89,9 +104,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.buttonCancel.UseUnderline = true;
             this.buttonCancel.Label = "gtk-cancel";
             this.AddActionWidget(this.buttonCancel, -6);
-            Gtk.ButtonBox.ButtonBoxChild w7 = ((Gtk.ButtonBox.ButtonBoxChild)(w6[this.buttonCancel]));
-            w7.Expand = false;
-            w7.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w8 = ((Gtk.ButtonBox.ButtonBoxChild)(w7[this.buttonCancel]));
+            w8.Expand = false;
+            w8.Fill = false;
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonOk = new Gtk.Button();
             this.buttonOk.CanDefault = true;
@@ -101,15 +116,16 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.buttonOk.UseUnderline = true;
             this.buttonOk.Label = "gtk-ok";
             this.AddActionWidget(this.buttonOk, -5);
-            Gtk.ButtonBox.ButtonBoxChild w8 = ((Gtk.ButtonBox.ButtonBoxChild)(w6[this.buttonOk]));
-            w8.Position = 1;
-            w8.Expand = false;
-            w8.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w9 = ((Gtk.ButtonBox.ButtonBoxChild)(w7[this.buttonOk]));
+            w9.Position = 1;
+            w9.Expand = false;
+            w9.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
             this.DefaultWidth = 375;
-            this.DefaultHeight = 133;
+            this.DefaultHeight = 139;
+            this.renameFileFlag.Hide();
             this.Show();
         }
     }

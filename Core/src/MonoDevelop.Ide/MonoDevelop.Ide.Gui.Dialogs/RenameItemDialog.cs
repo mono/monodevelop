@@ -15,8 +15,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			this.item = item;
 			
 			this.Build ();
-			
+
 			if (item is IClass) {
+				if ((((IClass)item).Modifiers & ModifierEnum.Public) == ModifierEnum.Public) {
+					this.renameFileFlag.Visible = true;
+					this.renameFileFlag.Active = true;
+				}
 				if (((IClass) item).ClassType == ClassType.Interface)
 					this.Title = GettextCatalog.GetString ("Rename Interface");
 				else
@@ -79,6 +83,19 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				refactorer.RenameMember (monitor, member.DeclaringType, member, name, RefactoryScope.Solution);
 			} else if (item is IClass) {
 				refactorer.RenameClass (monitor, (IClass) item, name, RefactoryScope.Solution);
+				if (this.renameFileFlag.Active) {
+					IClass cls = ((IClass) item);
+					if ((cls.Modifiers & ModifierEnum.Public) == ModifierEnum.Public) {
+						foreach (IClass part in cls.Parts) {
+							if (System.IO.Path.GetFileNameWithoutExtension(part.Region.FileName) == cls.Name) {
+								string newFileName = System.IO.Path.HasExtension(part.Region.FileName) ? name + System.IO.Path.GetExtension(part.Region.FileName) : name;
+								newFileName = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(part.Region.FileName), newFileName);
+								Runtime.FileService.RenameFile(part.Region.FileName, newFileName);
+							}
+						}
+						IdeApp.ProjectOperations.SaveProject(IdeApp.ProjectOperations.CurrentSelectedProject);
+					}
+				}
 			} else if (item is LocalVariable) {
 				refactorer.RenameVariable (monitor, (LocalVariable) item, name);
 			} else if (item is IParameter) {
