@@ -3417,7 +3417,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.ReplaceDialog" design-size="638 299">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.ReplaceDialog" design-size="642 303">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <property name="Title">Replace</property>
@@ -3430,6 +3430,7 @@
       <widget class="Gtk.VBox" id="dialog-vbox2">
         <property name="MemberName" />
         <property name="Spacing">6</property>
+        <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.VBox" id="vbox15">
             <property name="MemberName" />
@@ -3525,18 +3526,17 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.Entry" id="replacePatternEntry">
+                  <widget class="Gtk.ComboBoxEntry" id="replacePatternEntry">
                     <property name="MemberName" />
-                    <property name="IsEditable">True</property>
-                    <property name="ActivatesDefault">True</property>
-                    <property name="InvisibleChar">●</property>
+                    <property name="IsTextCombo">False</property>
+                    <property name="Items" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="TopAttach">1</property>
                     <property name="BottomAttach">2</property>
                     <property name="LeftAttach">1</property>
                     <property name="RightAttach">2</property>
-                    <property name="AutoSize">True</property>
+                    <property name="AutoSize">False</property>
                     <property name="YOptions">Fill</property>
                     <property name="XExpand">True</property>
                     <property name="XFill">True</property>
@@ -3547,16 +3547,15 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.Entry" id="searchPatternEntry">
+                  <widget class="Gtk.ComboBoxEntry" id="searchPatternEntry">
                     <property name="MemberName" />
-                    <property name="IsEditable">True</property>
-                    <property name="ActivatesDefault">True</property>
-                    <property name="InvisibleChar">●</property>
+                    <property name="IsTextCombo">False</property>
+                    <property name="Items" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="LeftAttach">1</property>
                     <property name="RightAttach">2</property>
-                    <property name="AutoSize">True</property>
+                    <property name="AutoSize">False</property>
                     <property name="YOptions">Fill</property>
                     <property name="XExpand">True</property>
                     <property name="XFill">True</property>
@@ -3759,7 +3758,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.ReplaceInFilesDialog" design-size="514 393">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.ReplaceInFilesDialog" design-size="518 397">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <property name="Title">Replace in Files</property>
@@ -3772,6 +3771,7 @@
       <widget class="Gtk.VBox" id="dialog-vbox2">
         <property name="MemberName" />
         <property name="Spacing">6</property>
+        <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.VBox" id="vbox15">
             <property name="MemberName" />
@@ -3823,8 +3823,9 @@
                     <property name="LeftAttach">1</property>
                     <property name="RightAttach">2</property>
                     <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
                     <property name="YOptions">Fill</property>
-                    <property name="XExpand">True</property>
+                    <property name="XExpand">False</property>
                     <property name="XFill">True</property>
                     <property name="XShrink">False</property>
                     <property name="YExpand">False</property>
@@ -3845,8 +3846,9 @@
                     <property name="LeftAttach">1</property>
                     <property name="RightAttach">2</property>
                     <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
                     <property name="YOptions">Fill</property>
-                    <property name="XExpand">True</property>
+                    <property name="XExpand">False</property>
                     <property name="XFill">True</property>
                     <property name="XShrink">False</property>
                     <property name="YExpand">False</property>
@@ -3977,18 +3979,17 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.Entry" id="replacePatternEntry">
+                  <widget class="Gtk.ComboBoxEntry" id="replacePatternEntry">
                     <property name="MemberName" />
-                    <property name="IsEditable">True</property>
-                    <property name="ActivatesDefault">True</property>
-                    <property name="InvisibleChar">●</property>
+                    <property name="IsTextCombo">False</property>
+                    <property name="Items" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="TopAttach">1</property>
                     <property name="BottomAttach">2</property>
                     <property name="LeftAttach">1</property>
                     <property name="RightAttach">2</property>
-                    <property name="AutoSize">True</property>
+                    <property name="AutoSize">False</property>
                     <property name="YOptions">Fill</property>
                     <property name="XExpand">True</property>
                     <property name="XFill">True</property>
@@ -3999,16 +4000,15 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.Entry" id="searchPatternEntry">
+                  <widget class="Gtk.ComboBoxEntry" id="searchPatternEntry">
                     <property name="MemberName" />
-                    <property name="IsEditable">True</property>
-                    <property name="ActivatesDefault">True</property>
-                    <property name="InvisibleChar">●</property>
+                    <property name="IsTextCombo">False</property>
+                    <property name="Items" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="LeftAttach">1</property>
                     <property name="RightAttach">2</property>
-                    <property name="AutoSize">True</property>
+                    <property name="AutoSize">False</property>
                     <property name="YOptions">Fill</property>
                     <property name="XExpand">True</property>
                     <property name="XFill">True</property>

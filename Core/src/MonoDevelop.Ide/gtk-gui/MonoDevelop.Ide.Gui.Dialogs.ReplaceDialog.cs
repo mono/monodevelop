@@ -25,9 +25,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
         
         private Gtk.Button replaceHelpButton;
         
-        private Gtk.Entry replacePatternEntry;
+        private Gtk.ComboBoxEntry replacePatternEntry;
         
-        private Gtk.Entry searchPatternEntry;
+        private Gtk.ComboBoxEntry searchPatternEntry;
         
         private Gtk.CheckButton ignoreCaseCheckBox;
         
@@ -67,6 +67,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog-vbox2";
             w1.Spacing = 6;
+            w1.BorderWidth = ((uint)(2));
             // Container child dialog-vbox2.Gtk.Box+BoxChild
             this.vbox15 = new Gtk.VBox();
             this.vbox15.Name = "vbox15";
@@ -122,11 +123,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             w5.XOptions = ((Gtk.AttachOptions)(4));
             w5.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
-            this.replacePatternEntry = new Gtk.Entry();
+            this.replacePatternEntry = new Gtk.ComboBoxEntry();
             this.replacePatternEntry.Name = "replacePatternEntry";
-            this.replacePatternEntry.IsEditable = true;
-            this.replacePatternEntry.ActivatesDefault = true;
-            this.replacePatternEntry.InvisibleChar = '●';
             this.table1.Add(this.replacePatternEntry);
             Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.table1[this.replacePatternEntry]));
             w6.TopAttach = ((uint)(1));
@@ -135,11 +133,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             w6.RightAttach = ((uint)(2));
             w6.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
-            this.searchPatternEntry = new Gtk.Entry();
+            this.searchPatternEntry = new Gtk.ComboBoxEntry();
             this.searchPatternEntry.Name = "searchPatternEntry";
-            this.searchPatternEntry.IsEditable = true;
-            this.searchPatternEntry.ActivatesDefault = true;
-            this.searchPatternEntry.InvisibleChar = '●';
             this.table1.Add(this.searchPatternEntry);
             Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.table1[this.searchPatternEntry]));
             w7.LeftAttach = ((uint)(1));
@@ -256,11 +251,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Container child GtkAlignment1.Gtk.Container+ContainerChild
             Gtk.HBox w22 = new Gtk.HBox();
             w22.Spacing = 2;
-            // Container child GtkHBox3.Gtk.Container+ContainerChild
+            // Container child GtkHBox5.Gtk.Container+ContainerChild
             Gtk.Image w23 = new Gtk.Image();
             w23.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-find-and-replace", Gtk.IconSize.Button, 20);
             w22.Add(w23);
-            // Container child GtkHBox3.Gtk.Container+ContainerChild
+            // Container child GtkHBox5.Gtk.Container+ContainerChild
             Gtk.Label w25 = new Gtk.Label();
             w25.LabelProp = Mono.Unix.Catalog.GetString("R_eplace All");
             w25.UseUnderline = true;
@@ -279,11 +274,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Container child GtkAlignment2.Gtk.Container+ContainerChild
             Gtk.HBox w31 = new Gtk.HBox();
             w31.Spacing = 2;
-            // Container child GtkHBox4.Gtk.Container+ContainerChild
+            // Container child GtkHBox6.Gtk.Container+ContainerChild
             Gtk.Image w32 = new Gtk.Image();
             w32.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-find-and-replace", Gtk.IconSize.Button, 20);
             w31.Add(w32);
-            // Container child GtkHBox4.Gtk.Container+ContainerChild
+            // Container child GtkHBox6.Gtk.Container+ContainerChild
             Gtk.Label w34 = new Gtk.Label();
             w34.LabelProp = Mono.Unix.Catalog.GetString("_Replace");
             w34.UseUnderline = true;
@@ -306,8 +301,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 638;
-            this.DefaultHeight = 299;
+            this.DefaultWidth = 642;
+            this.DefaultHeight = 303;
             this.findButton.HasDefault = true;
             this.Show();
         }

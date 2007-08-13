@@ -25,7 +25,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	internal partial class ReplaceDialog: Gtk.Dialog
 	{
 		private const int historyLimit = 20;
-		private const char historySeparator = (char) 10;
+		private const char historySeparator = '\n';
 		// regular members
 		public bool replaceMode;
 		StringCollection findHistory = new StringCollection();
@@ -55,9 +55,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			options.AddWidget(specialSearchStrategyComboBox);
 			options.AddWidget(searchLocationComboBox);
 
-			searchPatternEntry.Completion = new EntryCompletion ();
-			searchPatternEntry.Completion.Model = new ListStore (typeof (string));
-			searchPatternEntry.Completion.TextColumn = 0;
+ 			searchPatternEntry.Entry.Completion = new EntryCompletion ();
+ 			searchPatternEntry.Entry.Completion.Model = new ListStore (typeof (string));
+ 			searchPatternEntry.Entry.Completion.TextColumn = 0;
+			searchPatternEntry.Entry.ActivatesDefault = true;
+  			
+ 			searchPatternEntry.Model = new ListStore(typeof(string));
+ 			searchPatternEntry.TextColumn = 0;
 			
 			// set button sensitivity
 			findHelpButton.Sensitive = false;
@@ -66,9 +70,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (replaceMode)
 			{
 				markAllButton.Visible = false;
-				replacePatternEntry.Completion = new EntryCompletion ();
-				replacePatternEntry.Completion.Model = new ListStore (typeof (string));
-				replacePatternEntry.Completion.TextColumn = 0;
+				replacePatternEntry.Entry.Completion = new EntryCompletion ();
+				replacePatternEntry.Entry.Completion.Model = new ListStore (typeof (string));
+				replacePatternEntry.Entry.Completion.TextColumn = 0;
+				replacePatternEntry.Entry.ActivatesDefault = true;
+				
+				replacePatternEntry.Model = new ListStore(typeof(string));
+				replacePatternEntry.TextColumn = 0;
 
 				// set the label properties
 				replaceButton.UseUnderline = true;
@@ -145,7 +153,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			searchLocationComboBox.Active = index;
 			
-			searchPatternEntry.Text = SearchReplaceManager.SearchOptions.SearchPattern;
+			searchPatternEntry.Entry.Text = SearchReplaceManager.SearchOptions.SearchPattern;
 			
 			// insert event handlers
 			findButton.Clicked  += new EventHandler(FindNextEvent);
@@ -157,12 +165,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				Title = GettextCatalog.GetString ("Replace");
 				replaceButton.Clicked    += new EventHandler(ReplaceEvent);
 				replaceAllButton.Clicked += new EventHandler(ReplaceAllEvent);
-				replacePatternEntry.Text = SearchReplaceManager.SearchOptions.ReplacePattern;
+				replacePatternEntry.Entry.Text = SearchReplaceManager.SearchOptions.ReplacePattern;
 			} else {
 				Title = GettextCatalog.GetString ("Find");
 				markAllButton.Clicked    += new EventHandler(MarkAllEvent);
 			}
-			searchPatternEntry.SelectRegion(0, searchPatternEntry.Text.Length);
+			searchPatternEntry.Entry.SelectRegion(0, searchPatternEntry.ActiveText.Length);
 			
 			SpecialSearchStrategyCheckBoxChangedEvent(null, null);
 			SearchReplaceManager.ReplaceDialog     = this;
@@ -183,7 +191,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 		public void SetSearchPattern(string pattern)
 		{
-			searchPatternEntry.Text  = pattern;
+			searchPatternEntry.Entry.Text = pattern;
 		}
 
 		void OnSpecialSearchStrategyChanged (object o, EventArgs e)
@@ -197,9 +205,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		void SetupSearchReplaceManager()
 		{
-			SearchReplaceManager.SearchOptions.SearchPattern  = searchPatternEntry.Text;
+			SearchReplaceManager.SearchOptions.SearchPattern  = searchPatternEntry.ActiveText;
 			if (replaceMode) {
-				SearchReplaceManager.SearchOptions.ReplacePattern = replacePatternEntry.Text;
+				SearchReplaceManager.SearchOptions.ReplacePattern = replacePatternEntry.ActiveText;
 			}
 			
 			SearchReplaceManager.SearchOptions.IgnoreCase          = !ignoreCaseCheckBox.Active;
@@ -230,46 +238,46 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		void FindNextEvent(object sender, EventArgs e)
 		{
-			if (searchPatternEntry.Text.Length == 0)
+			if (searchPatternEntry.ActiveText.Length == 0)
 				return;
 			
 			SetupSearchReplaceManager();
 			SearchReplaceManager.FindNext();
 			
-			AddSearchHistoryItem(findHistory, searchPatternEntry.Text);
+			AddSearchHistoryItem(findHistory, searchPatternEntry.ActiveText);
 		}
 		
 		void ReplaceEvent(object sender, EventArgs e)
 		{
-			if (searchPatternEntry.Text.Length == 0)
+			if (searchPatternEntry.ActiveText.Length == 0)
 				return;
 			
 			SetupSearchReplaceManager();
 			SearchReplaceManager.Replace();
 			
-			AddSearchHistoryItem(replaceHistory, replacePatternEntry.Text);
+			AddSearchHistoryItem(replaceHistory, replacePatternEntry.ActiveText);
 		}
 		
 		void ReplaceAllEvent(object sender, EventArgs e)
 		{
-			if (searchPatternEntry.Text.Length == 0)
+			if (searchPatternEntry.ActiveText.Length == 0)
 				return;
 			
 			SetupSearchReplaceManager();
 			SearchReplaceManager.ReplaceAll();
 			
-			AddSearchHistoryItem(replaceHistory, replacePatternEntry.Text);
+			AddSearchHistoryItem(replaceHistory, replacePatternEntry.ActiveText);
 		}
 		
 		void MarkAllEvent(object sender, EventArgs e)
 		{
-			if (searchPatternEntry.Text.Length == 0)
+			if (searchPatternEntry.ActiveText.Length == 0)
 				return;
 			
 			SetupSearchReplaceManager();
 			SearchReplaceManager.MarkAll();			
 			
-			AddSearchHistoryItem(findHistory, searchPatternEntry.Text);
+			AddSearchHistoryItem(findHistory, searchPatternEntry.ActiveText);
 		}
 		
 		void CloseDialogEvent(object sender, EventArgs e)
@@ -311,10 +319,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			for (int i = 0; i < history.Count; i ++)
 				store.AppendValues (history[i]);
 
-			if (history == findHistory)
-				searchPatternEntry.Completion.Model = store;
-			else if( history == replaceHistory)
-				replacePatternEntry.Completion.Model = store;
+			if (history == findHistory) {
+				searchPatternEntry.Entry.Completion.Model = store;
+				searchPatternEntry.Model = store;
+			}
+			else if( history == replaceHistory) {
+				replacePatternEntry.Entry.Completion.Model = store;
+				replacePatternEntry.Model = store;
+			}
 		}
 		
 		// loads the history arrays from the property service
@@ -336,7 +348,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					}
 				}
 
-				searchPatternEntry.Completion.Model = store;
+				searchPatternEntry.Entry.Completion.Model = store;
+				searchPatternEntry.Model = store;
 			}
 			
 			// now do the replace history
@@ -354,7 +367,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 						}
 					}
 					
-					replacePatternEntry.Completion.Model = store;
+					replacePatternEntry.Entry.Completion.Model = store;
+					replacePatternEntry.Model = store;
 				}
 			}
 		}
@@ -387,7 +401,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		public new void ShowAll()
 		{
 			base.Show();
-			searchPatternEntry.SelectRegion (0, searchPatternEntry.Text.Length);
+			searchPatternEntry.Entry.SelectRegion (0, searchPatternEntry.ActiveText.Length);
 		}
 	}
 }

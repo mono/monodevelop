@@ -9,6 +9,7 @@ using System;
 using System.IO;
 using System.Drawing;
 using System.ComponentModel;
+using System.Collections.Specialized;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
@@ -24,7 +25,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	internal partial class ReplaceInFilesDialog: Gtk.Dialog
 	{
-		public bool replaceMode;
+ 		public bool replaceMode;
+ 		private const int historyLimit = 20;
+ 		private const char historySeparator = '\n';
+ 		StringCollection findHistory = new StringCollection();
+ 		StringCollection replaceHistory = new StringCollection();
+ 		
+ 		// services
+ 		static PropertyService propertyService = (PropertyService)ServiceManager.GetService(typeof(PropertyService));
 
 		void InitDialog ()
 		{
@@ -53,9 +61,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			options.AddWidget(specialSearchStrategyComboBox);
 			options.AddWidget(searchLocationComboBox);
 
-			searchPatternEntry.Completion = new EntryCompletion ();
-			searchPatternEntry.Completion.Model = new ListStore (typeof (string));
-			searchPatternEntry.Completion.TextColumn = 0;
+			searchPatternEntry.Entry.Completion = new EntryCompletion ();
+			searchPatternEntry.Entry.Completion.Model = new ListStore (typeof (string));
+			searchPatternEntry.Entry.Completion.TextColumn = 0;
+			searchPatternEntry.Entry.ActivatesDefault = true;
+			
+			searchPatternEntry.Model = new ListStore(typeof (string));
+			searchPatternEntry.TextColumn = 0;
 			
 			// set button sensitivity
 			findHelpButton.Sensitive = false;
@@ -63,9 +75,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			// set replace dialog properties 
 			if (replaceMode)
 			{
-				replacePatternEntry.Completion = new EntryCompletion ();
-				replacePatternEntry.Completion.Model = new ListStore (typeof (string));
-				replacePatternEntry.Completion.TextColumn = 0;
+				replacePatternEntry.Entry.Completion = new EntryCompletion ();
+				replacePatternEntry.Entry.Completion.Model = new ListStore (typeof (string));
+				replacePatternEntry.Entry.Completion.TextColumn = 0;
+				replacePatternEntry.Entry.ActivatesDefault = true;
+				
+				replacePatternEntry.Model = new ListStore(typeof (string));
+				replacePatternEntry.TextColumn = 0;
 
 				labelReplace.Text = GettextCatalog.GetString ("Replace in Files");
 				
@@ -86,7 +102,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 		protected void OnClosed()
 		{
-			//SaveHistoryValues();
+			SaveHistoryValues();
 		}
 		
 		void OnDeleted (object o, DeleteEventArgs args)
@@ -106,7 +122,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			base.ShowAll ();
 			SearchReplaceInFilesManager.ReplaceDialog = this;
-			searchPatternEntry.SelectRegion (0, searchPatternEntry.Text.Length);
+			searchPatternEntry.Entry.SelectRegion (0, searchPatternEntry.ActiveText.Length);
 		}
 
 		public ReplaceInFilesDialog (bool replaceMode)
@@ -116,6 +132,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.replaceMode = replaceMode;
 			
 			InitDialog ();
+			LoadHistoryValues();
 
 			CellRendererText cr = new CellRendererText ();
 			Gtk.ListStore store = new ListStore (typeof (string));
@@ -187,16 +204,17 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			fileMaskTextBox.Text = SearchReplaceInFilesManager.SearchOptions.FileMask;
 			includeSubdirectoriesCheckBox.Active = SearchReplaceInFilesManager.SearchOptions.SearchSubdirectories;
 			
-			searchPatternEntry.Text = SearchReplaceInFilesManager.SearchOptions.SearchPattern;
+			searchPatternEntry.Entry.Text = SearchReplaceInFilesManager.SearchOptions.SearchPattern;
 			
 			if (replacePatternEntry != null)
-				replacePatternEntry.Text = SearchReplaceInFilesManager.SearchOptions.ReplacePattern;
+				replacePatternEntry.Entry.Text = SearchReplaceInFilesManager.SearchOptions.ReplacePattern;
 		}
 		
 		void FindEvent (object sender, EventArgs e)
 		{
 			if (SetupSearchReplaceInFilesManager ())
 				SearchReplaceInFilesManager.FindAll ();
+			AddSearchHistoryItem(findHistory, searchPatternEntry.ActiveText);
 		}
 
 		void StopEvent (object sender, EventArgs e)
@@ -270,14 +288,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		public void SetSearchPattern(string pattern)
 		{
-			searchPatternEntry.Text  = pattern;
+			searchPatternEntry.Entry.Text  = pattern;
 		}
 
 		bool SetupSearchReplaceInFilesManager()
 		{
 			string directoryName = directoryTextBox.Text;
 			string fileMask      = fileMaskTextBox.Text;
-			string searchPattern = searchPatternEntry.Text;
+			string searchPattern = searchPatternEntry.ActiveText;
 
 			if (fileMask == null || fileMask.Length == 0) {
 				fileMask = "*";
@@ -317,7 +335,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			SearchReplaceInFilesManager.SearchOptions.SearchPattern  = searchPattern;
 			if (replaceMode)
-				SearchReplaceInFilesManager.SearchOptions.ReplacePattern = replacePatternEntry.Text;
+				SearchReplaceInFilesManager.SearchOptions.ReplacePattern = replacePatternEntry.ActiveText;
 			
 			SearchReplaceInFilesManager.SearchOptions.IgnoreCase          = !ignoreCaseCheckBox.Active;
 			SearchReplaceInFilesManager.SearchOptions.SearchWholeWordOnly = searchWholeWordOnlyCheckBox.Active;
@@ -347,6 +365,99 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					break;
 			}
 			return true;
+		}
+		
+		// generic method to add a string to a history item
+		private void AddSearchHistoryItem (StringCollection history, string toAdd)
+		{
+			// add the item to the find history
+			if (history.Contains(toAdd)) {
+				// remove it so it gets added at the top
+				history.Remove(toAdd);
+			}
+			// make sure there is only 20
+			if (history.Count == historyLimit) {
+				history.RemoveAt(historyLimit - 1);
+			}
+			history.Insert(0, toAdd);
+			
+			// update the drop down for the combobox
+			ListStore store = new ListStore (typeof (string));
+			for (int i = 0; i < history.Count; i ++)
+				store.AppendValues (history[i]);
+
+			if (history == findHistory) {
+				searchPatternEntry.Entry.Completion.Model = store;
+				searchPatternEntry.Model = store;
+			}
+			else if( history == replaceHistory) {
+				replacePatternEntry.Entry.Completion.Model = store;
+				replacePatternEntry.Model = store;
+			}
+		}
+		
+		
+		// loads the history arrays from the property service
+		// NOTE: a newline character separates the search history strings
+		private void LoadHistoryValues()
+		{
+			object stringArray;
+			// set the history in properties
+			stringArray = propertyService.GetProperty("MonoDevelop.FindReplaceDialogs.FindHistory");
+		
+			if (stringArray != null) {
+				string[] items = stringArray.ToString ().Split (historySeparator);
+				ListStore store = new ListStore (typeof (string));
+
+				if(items != null) {
+					findHistory.AddRange (items);
+					foreach (string i in items) {
+						store.AppendValues (i);
+					}
+				}
+
+				searchPatternEntry.Entry.Completion.Model = store;
+				searchPatternEntry.Model = store;
+			}
+						
+			// now do the replace history
+			stringArray = propertyService.GetProperty ("MonoDevelop.FindReplaceDialogs.ReplaceHistory");
+			
+			if (replaceMode) {
+				if (stringArray != null) {
+					string[] items = stringArray.ToString ().Split (historySeparator);
+					ListStore store = new ListStore (typeof (string));
+					
+					if(items != null) {
+						replaceHistory.AddRange (items);
+						foreach (string i in items) {
+							store.AppendValues (i);
+						}
+					}
+					
+					replacePatternEntry.Entry.Completion.Model = store;
+					replacePatternEntry.Model = store;
+				}
+			}
+		}
+		
+				
+		// saves the history arrays to the property service
+		// NOTE: a newline character separates the search history strings
+		private void SaveHistoryValues()
+		{
+			string[] stringArray;
+			// set the history in properties
+			stringArray = new string[findHistory.Count];
+			findHistory.CopyTo (stringArray, 0);			
+			propertyService.SetProperty ("MonoDevelop.FindReplaceDialogs.FindHistory", string.Join(historySeparator.ToString(), stringArray));
+			
+			// now do the replace history
+			if (replaceMode)	{
+				stringArray = new string[replaceHistory.Count];
+				replaceHistory.CopyTo (stringArray, 0);				
+				propertyService.SetProperty ("MonoDevelop.FindReplaceDialogs.ReplaceHistory", string.Join(historySeparator.ToString(), stringArray));
+			}
 		}
 	}
 }

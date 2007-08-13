@@ -1,3 +1,9 @@
+2007-08-08  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs, 
+	  MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs, 
+	  gtk-gui/gui.stetic: Change Entry for Find/Replace dialogs to ComboBoxEntry. 
+
 2007-08-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Dialogs/RenameItemDialog.cs, gtk-gui/gui.stetic,
