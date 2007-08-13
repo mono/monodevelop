@@ -1,3 +1,9 @@
+2007-08-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* contrib/Mono.Addins.dll, contrib/Mono.Addins.Gui.dll,
+	  contrib/Mono.Addins.Setup.dll: Updated from Mono.Addins module. Fixes
+	  issue with add-in loading.
+
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* contrib/Mono.Addins.Setup.dll, contrib/Mono.Addins.dll,

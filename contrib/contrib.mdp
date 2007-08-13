@@ -1,5 +1,5 @@
 <Project name="contrib" fileversion="2.0" ctype="GenericProject">
-  <Configurations active="Default">
+  <Configurations>
     <Configuration name="Default" ctype="GenericProjectConfiguration">
       <Output directory="./" />
       <Build debugmode="True" />
