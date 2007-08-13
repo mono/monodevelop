@@ -1,5 +1,9 @@
 2007-08-13  Ankit Jain  <jankit@novell.com>
 
+	* MSBuildProjectServiceExtension.cs: Add missing copyright/license.
+
+2007-08-13  Ankit Jain  <jankit@novell.com>
+
 	* MSBuildFileFormat.cs: Small compatibility fixes.
 
 2007-08-10  Ankit Jain  <jankit@novell.com>
