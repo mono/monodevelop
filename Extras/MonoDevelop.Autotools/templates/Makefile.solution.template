@@ -36,3 +36,12 @@ install-recursive:
 		esac \
         done
 
+uninstall: uninstall-recursive
+
+uninstall-recursive:
+	@for dir in $(SUBDIRS); do \
+		case $$dir in \
+		.) make uninstall-local ;; \
+		*) (cd $$dir && make uninstall) ;;\
+		esac \
+        done

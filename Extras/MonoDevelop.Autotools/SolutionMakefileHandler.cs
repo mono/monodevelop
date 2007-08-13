@@ -132,7 +132,7 @@ namespace MonoDevelop.Autotools
 								ctx.AddAutoconfFile (outpath);
 								outpath = outpath + ".am";
 							} else {
-								makefile.Append ("install: install-local\n\nclean: clean-local\n");
+								makefile.Append ("install: install-local\nuninstall: uninstall-local\nclean: clean-local\n");
 								if (ce is Combine)
 									//non TargetCombine
 									makefile.Append ("distlocal: distlocal-recursive\n");

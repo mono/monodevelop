@@ -206,9 +206,12 @@ namespace MonoDevelop.Autotools
 				StringBuilder installDeps = null;
 				List<string> installDirs = null;
 
+				StringBuilder uninstallTarget = null;
+
 				if (!generateAutotools) {
 					templateFilesTargets = new StringBuilder ();
 					installTarget = new StringBuilder ();
+					uninstallTarget = new StringBuilder ();
 					installDeps = new StringBuilder ();
 					installDirs = new List<string> ();
 
@@ -219,6 +222,10 @@ namespace MonoDevelop.Autotools
 					installDirs.Add (programFilesDir);
 					installTarget.AppendFormat ("\tmkdir -p {0}\n", programFilesDir);
 					installTarget.AppendFormat ("\tcp $(ASSEMBLY) $(ASSEMBLY).mdb {0}\n", programFilesDir);
+
+					//remove dir?
+					uninstallTarget.AppendFormat ("\trm -f {0}/$(notdir $(ASSEMBLY))\n", programFilesDir);
+					uninstallTarget.AppendFormat ("\trm -f {0}/$(notdir $(ASSEMBLY)).mdb\n", programFilesDir);
 
 					installDeps.Append (" $(ASSEMBLY) $(ASSEMBLY).mdb");
 				}
@@ -273,7 +280,6 @@ namespace MonoDevelop.Autotools
 					string srcDeployFile = fname;
 
 					deployFileCopyVars.AppendFormat ("{0} = {1}\n", deployVar, targetDeployFile);
-					deployFileCopyVars.Append ("\n");
 					deployFileCopyTargets.AppendFormat ("$({0}): {1}\n", deployVar, srcDeployFile);
 					deployFileCopyTargets.AppendFormat ("\tmkdir -p $(BUILD_DIR)\n");
 					deployFileCopyTargets.AppendFormat ("\tcp '$<' '$@'\n");
@@ -316,11 +322,15 @@ namespace MonoDevelop.Autotools
 
 						installTarget.AppendFormat ("\tcp $({0}) {1}\n", deployVar, installDir);
 						installDeps.AppendFormat (" $({0})", deployVar);
+
+						uninstallTarget.AppendFormat ("\trm -f {0}/$(notdir $({1}))\n", installDir, deployVar);
 					}
 				}
 				
-				if (!generateAutotools)
+				if (!generateAutotools) {
 					installTarget.Insert (0, String.Format ("install-local:{0}\n", installDeps.ToString ()));
+					uninstallTarget.Insert (0, String.Format ("uninstall-local:{0}\n", installDeps.ToString ()));
+				}
 
 				string vars = "";
 				foreach (string s in deployDirs.Keys)
@@ -339,6 +349,7 @@ namespace MonoDevelop.Autotools
 					templateEngine.Variables["CLEANFILES"] = vars;
 					templateEngine.Variables["TEMPLATE_FILES_TARGETS"] = templateFilesTargets.ToString();
 					templateEngine.Variables["INSTALL_TARGET"] = installTarget.ToString();
+					templateEngine.Variables["UNINSTALL_TARGET"] = uninstallTarget.ToString();
 				}
 				
 				// handle configuration specific variables
