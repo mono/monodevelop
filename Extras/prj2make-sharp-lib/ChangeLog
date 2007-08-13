@@ -1,5 +1,12 @@
 2007-08-13  Ankit Jain  <jankit@novell.com>
 
+	Fix bug #82389
+	* MSBuildFileFormat.cs (ReadItemGroups): Handle "CopyToOutputDirectory"
+	tag. We support this only for non-build files currently.
+	(FileToXmlElement): Emit CopyToOutputDirectory for FileCopy files.
+
+2007-08-13  Ankit Jain  <jankit@novell.com>
+
 	Fix bug #82343.
 	* MSBuildFileFormat.cs (WriteFileInternal): Use "\r\n" as new line chars
 	to stay compatible with vs2005 project files.

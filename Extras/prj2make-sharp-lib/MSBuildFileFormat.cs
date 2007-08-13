@@ -753,6 +753,9 @@ namespace MonoDevelop.Prj2Make
 							Path.GetDirectoryName (projectFile.Name), projectFile.DependsOn)));
 			}
 
+			if (projectFile.BuildAction == BuildAction.FileCopy)
+				EnsureChildValue (elem, "CopyToOutputDirectory", ns, "Always");
+
 			if (projectFile.IsExternalToProject)
 				EnsureChildValue (elem, "Link", ns, Path.GetFileName (projectFile.Name));
 			
@@ -953,17 +956,16 @@ namespace MonoDevelop.Prj2Make
 						data.ProjectFileElements [pf] = (XmlElement) node;
 						break;
 					case "None":
-						path = GetValidPath (monitor, basePath, include);
-						if (path == null)
-							continue;
-						pf = project.AddFile (path, BuildAction.Nothing);
-						data.ProjectFileElements [pf] = (XmlElement) node;
-						break;
 					case "Content":
+						//FIXME: We don't support "CopyToOutputDirectory" for
+						//other BuildActions
 						path = GetValidPath (monitor, basePath, include);
 						if (path == null)
 							continue;
-						pf = project.AddFile (path, BuildAction.FileCopy);
+						if (ReadAsString (node, "CopyToOutputDirectory", ref str_tmp, false))
+							pf = project.AddFile (path, BuildAction.FileCopy);
+						else
+							pf = project.AddFile (path, BuildAction.Nothing);
 						data.ProjectFileElements [pf] = (XmlElement) node;
 						break;
 					case "EmbeddedResource":
@@ -1021,7 +1023,8 @@ namespace MonoDevelop.Prj2Make
 							//DependentUpon is relative to the basedir of the 'pf' (resource file)
 							pf.DependsOn = Unescape (MapAndResolvePath (Path.GetDirectoryName (pf.Name), str_tmp));
 
-						if (String.Compare (node.LocalName, "Content", true) != 0 && 
+						if (String.Compare (node.LocalName, "Content", true) != 0 &&
+							String.Compare (node.LocalName, "None", true) != 0 &&
 							ReadAsString (node, "CopyToOutputDirectory", ref str_tmp, false))
 							Console.WriteLine ("Warning: CopyToOutputDirectory not supported for BuildAction '{0}', Include = '{1}'", node.LocalName, include);
 					}
