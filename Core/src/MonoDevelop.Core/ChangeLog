@@ -1,3 +1,8 @@
+2007-08-14  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Core.ProgressMonitoring/ConsoleProgressMonitor.cs
+	(ReportError): Show exception also in the emitted message.
+
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.AddIns/IconCodon.cs: Moved to MD.Projects.Gui.

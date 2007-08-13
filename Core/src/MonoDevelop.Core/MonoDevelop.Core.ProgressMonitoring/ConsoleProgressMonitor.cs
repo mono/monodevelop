@@ -99,10 +99,14 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		
 		public override void ReportError (string message, Exception ex)
 		{
-			if (message != null)
-				WriteText ("ERROR: " + message + "\n");
-			else if (ex != null)
-				WriteText ("ERROR: " + ex.Message + "\n");
+			if (message == null && ex != null)
+				message = ex.Message;
+			else if (message != null && ex != null) {
+				if (!message.EndsWith (".")) message += ".";
+				message += " " + ex.Message;
+			}
+
+			WriteText ("ERROR: " + message + "\n");
 		}
 		
 		void WriteText (string text)
