@@ -33,6 +33,59 @@ namespace CSharpBinding
 			return System.IO.Path.GetExtension (doc.Title) == ".cs";
 		}
 		
+		IClass LookupClass (ICompilationUnit unit, int line)
+		{
+			int classStartLine = int.MaxValue;
+			IClass result = null;
+			foreach (IClass c in unit.Classes) {
+				if (c.Region.BeginLine < classStartLine && c.Region.BeginLine < line) {
+					classStartLine = c.Region.BeginLine;
+					result = c;
+				}
+			}
+			return result;
+		}
+		
+		IMethod LookupMethod (IClass c, int line)
+		{
+			int methodStartLine = int.MaxValue;
+			IMethod result = null;
+			Console.WriteLine ("methods:" + c.Methods.Count);
+			
+			foreach (IMethod m in c.Methods) {
+				if (m.Region.BeginLine < methodStartLine && m.Region.BeginLine > line) {
+					methodStartLine = m.Region.BeginLine;
+					result = m;
+					Console.WriteLine ("found:" + m);
+					
+				}
+			}
+			return result;
+		}
+		bool MayNeedComment (int line, int cursor)
+		{
+			bool inComment = Editor.GetCharAt (cursor - 1) == '/' && Editor.GetCharAt (cursor - 2) == '/';
+			
+			if (inComment) {
+				for (int l = line - 1; l >= 0; l--) {
+					string text = Editor.GetLineText (l).Trim (); 
+					if (text.StartsWith ("///"))
+						return false;
+					if (!String.IsNullOrEmpty (text))
+						break;
+				}
+				for (int l = line + 1; l < line + 100; l++) {
+					string text = Editor.GetLineText (l).Trim (); 
+					if (text.StartsWith ("///"))
+						return false;
+					if (!String.IsNullOrEmpty (text))
+						break;
+				}
+				return true;
+			}
+			return false;
+		}
+		
 		public override bool KeyPress (Gdk.Key key, Gdk.ModifierType modifier)
 		{
 			bool reindent = false, insert = true;
@@ -45,6 +98,51 @@ namespace CSharpBinding
 				return base.KeyPress (key, modifier);
 			
 			switch (key) {
+			case Gdk.Key.KP_Divide:
+			case Gdk.Key.slash:
+				cursor = Editor.SelectionStartPosition;
+				c = '/';
+				if (cursor < 2)
+					break;
+				int lin, col;
+				Editor.GetLineColumnFromPosition (Editor.CursorPosition, out lin, out col);
+				
+				if (MayNeedComment (lin, cursor)) {
+					
+					StringBuilder generatedComment = new StringBuilder ();
+					generatedComment.Append ("/ <summary>\n");
+					generatedComment.Append (engine.ThisLineIndent);
+					generatedComment.Append ("/// </summary>");
+					IParserContext pctx = GetParserContext ();
+					ICompilationUnit unit = pctx.GetParseInformation (this.FileName).BestCompilationUnit as ICompilationUnit;
+					if (unit != null) {
+						IClass insideClass = LookupClass (unit, lin);
+						if (insideClass != null) {
+							IMethod method = LookupMethod (insideClass, lin);
+							if (method != null) {
+								if (method.Parameters != null) {
+									foreach (IParameter para in method.Parameters) {
+										generatedComment.Append (Environment.NewLine);
+										generatedComment.Append (engine.ThisLineIndent);
+										generatedComment.Append ("/// <param name=\"");
+										generatedComment.Append (para.Name);
+										generatedComment.Append ("\"></param>");
+									}
+								}
+								if (method.ReturnType != null && method.ReturnType.FullyQualifiedName != "System.Void") {
+									generatedComment.Append (Environment.NewLine);
+									generatedComment.Append (engine.ThisLineIndent);
+									generatedComment.Append("/// <returns></returns>");
+								}
+							}
+						}
+					}
+					
+					Editor.InsertText (cursor, generatedComment.ToString ());
+					reindent = true; 
+					insert = false;
+				}
+				break;
 			case Gdk.Key.KP_Enter:
 			case Gdk.Key.Return:
 				if (Editor.SelectionEndPosition > Editor.SelectionStartPosition)
@@ -367,6 +465,7 @@ namespace CSharpBinding
 				
 				IParserContext pctx = GetParserContext ();
 				Resolver res = new Resolver (pctx);
+							
 				IClass cls = res.GetCallingClass (line, column, FileName, true);
 				if (cls != null) {
 					string typedModifiers = Editor.GetText (firstMod, ctx.TriggerOffset);
