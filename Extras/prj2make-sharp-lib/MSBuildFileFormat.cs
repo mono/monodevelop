@@ -324,7 +324,17 @@ namespace MonoDevelop.Prj2Make
 				elem.SetAttribute ("Project", @"$(MSBuildBinPath)\Microsoft.CSharp.Targets");
 			}
 
-			doc.Save (file);
+			XmlWriterSettings settings = new XmlWriterSettings ();
+			settings.OmitXmlDeclaration = true;
+			settings.NewLineChars = "\r\n";
+			settings.NewLineHandling = NewLineHandling.Replace;
+			settings.Encoding = Encoding.UTF8;
+			settings.Indent = true;
+
+			using (XmlWriter xw = XmlWriter.Create (file, settings)) {
+				doc.Save (xw);
+				xw.Close ();
+			}
 
 			return;
 		}

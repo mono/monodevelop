@@ -1,5 +1,12 @@
 2007-08-13  Ankit Jain  <jankit@novell.com>
 
+	Fix bug #82343.
+	* MSBuildFileFormat.cs (WriteFileInternal): Use "\r\n" as new line chars
+	to stay compatible with vs2005 project files.
+	* SlnFileFormat.cs (WriteFileInternal): Small compatibility fixes.
+
+2007-08-13  Ankit Jain  <jankit@novell.com>
+
 	* MSBuildProjectServiceExtension.cs: Add missing copyright/license.
 
 2007-08-13  Ankit Jain  <jankit@novell.com>

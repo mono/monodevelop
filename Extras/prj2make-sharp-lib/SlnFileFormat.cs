@@ -119,11 +119,13 @@ namespace MonoDevelop.Prj2Make
 		void WriteFileInternal (string file, Combine c, IProgressMonitor monitor)
 		{
 			using (StreamWriter sw = new StreamWriter (file, false, Encoding.UTF8)) {
+				sw.NewLine = "\r\n";
+
+				sw.WriteLine ();
 				//Write Header
 				sw.WriteLine ("Microsoft Visual Studio Solution File, Format Version 9.00");
 
-				//FIXME: Write md version
-				sw.WriteLine ("#MonoDevelop");
+				sw.WriteLine ("# Visual Studio 2005");
 
 				//Write the projects
 				WriteProjects (c, c.BaseDirectory, sw, monitor);
