@@ -70,6 +70,9 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 
+		public virtual bool IsRootType {
+			get { return FullyQualifiedName == "System.Object"; }
+		}
 
 /*
 		string name;

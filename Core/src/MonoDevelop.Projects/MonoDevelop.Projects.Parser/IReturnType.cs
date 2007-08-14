@@ -47,5 +47,7 @@ namespace MonoDevelop.Projects.Parser
 		ReturnTypeList GenericArguments {
 			get;
 		}
+		
+		bool IsRootType { get; }
 	}
 }

@@ -148,17 +148,31 @@ namespace MonoDevelop.Projects.Parser
 			genericParamters = null;
 			Attributes.Clear();
 			
+			bool nonRootBaseClassFound = false;
+			IReturnType rootType = null;
+			
 			foreach (IClass part in parts) {
+				
 				if ((part.Modifiers & ModifierEnum.VisibilityMask) != defaultClassVisibility) {
 					modifier |= part.Modifiers;
 				} else {
 					modifier |= part.Modifiers &~ ModifierEnum.VisibilityMask;
 				}
+				
+				bool rootClassFound = false;
 				foreach (IReturnType rt in part.BaseTypes) {
+					if (rt.IsRootType) {
+						rootClassFound = true;
+						rootType = rt;
+						continue;
+					}
 					if (!BaseTypes.Contains (rt)) {
 						this.BaseTypes.Add(rt);
 					}
 				}
+				if (!rootClassFound)
+					nonRootBaseClassFound = true;
+				
 				if (part.GenericParameters != null) {
 					if (genericParamters == null)
 						genericParamters = new GenericParameterList ();
@@ -170,6 +184,11 @@ namespace MonoDevelop.Projects.Parser
 					this.Attributes.Add(attribute);
 				}
 			}
+			
+			if (!nonRootBaseClassFound && rootType != null) {
+				BaseTypes.Add (rootType);
+			}
+			
 			if ((modifier & ModifierEnum.VisibilityMask) == ModifierEnum.None) {
 				modifier |= defaultClassVisibility;
 			}
