@@ -106,6 +106,10 @@ namespace CSharpBinding.FormattingStrategy {
 			get { return stack.PeekInside (0) == Inside.MultiLineComment; }
 		}
 		
+		public bool IsInsideDocLineComment {
+			get { return stack.PeekInside (0) == Inside.DocComment; }
+		}
+		
 		public bool LineBeganInsideVerbatimString {
 			get { return beganInside == Inside.VerbatimString; }
 		}
@@ -342,10 +346,12 @@ namespace CSharpBinding.FormattingStrategy {
 		void PushSlash (Inside inside)
 		{
 			// ignore these
-			if ((inside & (Inside.PreProcessor | Inside.LineComment | Inside.StringOrChar)) != 0)
+			if ((inside & (Inside.PreProcessor | Inside.StringOrChar )) != 0)
 				return;
-			
-			if (inside == Inside.MultiLineComment) {
+			if (inside == Inside.LineComment) {
+				stack.Pop (); // pop line comment
+				stack.Push (Inside.DocComment, keyword, curLineNr, 0);
+			} else if (inside == Inside.MultiLineComment) {
 				// check for end of multi-line comment block
 				if (pc == '*') {
 					// restore the keyword and pop the multiline comment
@@ -353,6 +359,7 @@ namespace CSharpBinding.FormattingStrategy {
 					stack.Pop ();
 				}
 			} else {
+				
 				// FoldedStatement, Block, Attribute or ParenList
 				// check for the start of a single-line comment
 				if (pc == '/') {
@@ -672,6 +679,7 @@ namespace CSharpBinding.FormattingStrategy {
 			case Inside.MultiLineComment:
 				// nothing to do
 				break;
+			case Inside.DocComment:
 			case Inside.LineComment:
 				// pop the line comment
 				keyword = stack.PeekKeyword (0);

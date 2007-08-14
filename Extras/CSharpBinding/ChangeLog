@@ -1,3 +1,19 @@
+2007-08-14  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CSharpTextEditorExtension.cs,
+	  FormattingStrategy/CSharpIndentEngineStack.cs,
+	  FormattingStrategy/CSharpIndentEngine.cs: Added support for
+	  documentation comments 
+	
+	  (fixes bug 78578: Add XML Comment support to MonoDevelop and
+	  integrate with tooltips).
+	
+	  + Auto complete of /// tags
+	
+	  + code completion for the xml documentation tags
+	
+	  + auto generation of a header body
+
 2007-08-13  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/CSharpTextEditorExtension.cs: Started to work on xml comment tag
