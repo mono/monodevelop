@@ -231,10 +231,11 @@ namespace CSharpBinding
 					"Compiling resource {0} with {1}", fname, resgen));
 				ProcessWrapper pw = null;
 				try {
-					pw = Runtime.ProcessService.StartProcess (
-						resgen, String.Format ("/compile \"{0}\"", fname),
-						Path.GetDirectoryName (fname),
-						sw, sw, null);
+					ProcessStartInfo info = Runtime.ProcessService.CreateProcessStartInfo (
+									resgen, String.Format ("/compile \"{0}\"", fname),
+									Path.GetDirectoryName (fname), false);
+					info.EnvironmentVariables ["MONO_IOMAP"] = "all";
+					pw = Runtime.ProcessService.StartProcess (info, sw, sw, null);
 				} catch (System.ComponentModel.Win32Exception ex) {
 					Console.WriteLine (GettextCatalog.GetString (
 						"Error while trying to invoke '{0}' to compile resource '{1}' :\n {2}", resgen, fname, ex.ToString ()));

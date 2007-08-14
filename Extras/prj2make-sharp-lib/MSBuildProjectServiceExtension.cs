@@ -33,6 +33,7 @@ using MonoDevelop.Projects;
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -79,10 +80,11 @@ namespace MonoDevelop.Prj2Make
 					"Generating partial classes for {0} with {1}", fname, "xamlg"));
 				ProcessWrapper pw = null;
 				try {
-					pw = Runtime.ProcessService.StartProcess (
-						"xamlg", String.Format ("\"{0}\"", fname),
-						Path.GetDirectoryName (fname),
-						sw, sw, null);
+					ProcessStartInfo info = Runtime.ProcessService.CreateProcessStartInfo (
+									"xamlg", String.Format ("\"{0}\"", fname),
+									Path.GetDirectoryName (fname), false);
+					info.EnvironmentVariables ["MONO_IOMAP"] = "all";
+					pw = Runtime.ProcessService.StartProcess (info, sw, sw, null);
 				} catch (System.ComponentModel.Win32Exception ex) {
 					Console.WriteLine (GettextCatalog.GetString (
 						"Error while trying to invoke '{0}' to generate partial classes for '{1}' :\n {2}", "xamlg", fname, ex.ToString ()));

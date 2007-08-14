@@ -1,3 +1,8 @@
+2007-08-14  Ankit Jain  <jankit@novell.com>
+
+	* MSBuildProjectServiceExtension.cs (GenerateXamlPartialClass): Run with
+	xamlg with MONO_IOMAP=all.
+
 2007-08-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* SlnFileFormat.cs: Small performance improvement in CanReadFile. Added
