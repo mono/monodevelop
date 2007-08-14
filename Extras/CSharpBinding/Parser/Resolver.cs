@@ -450,7 +450,7 @@ namespace CSharpBinding.Parser
 				}
 			}
 			IClass baseClass = BaseClass(curType);
-			if (baseClass != null) {
+			if (baseClass != null && baseClass != curType) {
 				return SearchMethod(methods, qualifierClass, baseClass, memberName);
 			}
 			showStatic = false;

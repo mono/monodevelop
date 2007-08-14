@@ -1,5 +1,9 @@
 2007-08-14  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Parser/Resolver.cs: Fix possible infinite recursion (bug #82303).
+
+2007-08-14  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Parser/Resolver.cs: Properly set the showStatic flag after finding a
 	  member in SearchMember. Fixes a problem with nested classes and enums:
 	  members were not properly shown.
