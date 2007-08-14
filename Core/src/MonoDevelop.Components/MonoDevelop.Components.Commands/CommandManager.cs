@@ -74,6 +74,11 @@ namespace MonoDevelop.Components.Commands
 			AddinManager.AddExtensionNodeHandler (addinPath, OnExtensionChange);
 		}
 		
+		public void LoadKeyBindingSchemes (string addinPath)
+		{
+			KeyBindingService.LoadBindingsFromExtensionPath (addinPath);
+		}
+		
 		void OnExtensionChange (object s, ExtensionNodeEventArgs args)
 		{
 			if (args.Change == ExtensionChange.Add) {

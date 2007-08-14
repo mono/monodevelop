@@ -29,20 +29,21 @@ using System.Xml;
 using System.Text;
 using System.Collections;
 using System.Collections.Generic;
+using Mono.Addins;
 
 using Unix = Mono.Unix.Native;
 
 using MonoDevelop.Core;
+using MonoDevelop.Components.Commands.ExtensionNodes;
 
 namespace MonoDevelop.Components.Commands {
 	public class KeyBindingService {
-		const string schemesFileName = "KeyBindingSchemes.xml";
 		const string configFileName = "KeyBindings.xml";
 		const string version = "1.0";
 		
 		static SortedDictionary<string, string> current;
 		static SortedDictionary<string, string> scheme;
-		static List<string> schemes;
+		static SortedDictionary<string, SchemeExtensionNode> schemes;
 		static string schemeName;
 		
 		static KeyBindingService ()
@@ -51,8 +52,7 @@ namespace MonoDevelop.Components.Commands {
 			LoadCurrentBindings ();
 			
 			scheme = new SortedDictionary<string, string> ();
-			schemes = new List<string> ();
-			LoadSchemes ();
+			schemes = new SortedDictionary<string,SchemeExtensionNode> ();
 		}
 		
 		static string ConfigFileName {
@@ -62,8 +62,25 @@ namespace MonoDevelop.Components.Commands {
 			}
 		}
 		
-		public static List<string> SchemeNames {
-			get { return schemes; }
+		public static IEnumerable<string> SchemeNames {
+			get { return schemes.Keys; }
+		}
+		
+		public static void LoadBindingsFromExtensionPath (string path)
+		{
+			AddinManager.AddExtensionNodeHandler (path, OnBindingExtensionChanged);
+		}
+		
+		static void OnBindingExtensionChanged (object s, ExtensionNodeEventArgs args)
+		{
+			if (args.Change == ExtensionChange.Add) {
+				SchemeExtensionNode node = (SchemeExtensionNode) args.ExtensionNode;
+				schemes.Add (node.Name, node);
+			}
+			else {
+				SchemeExtensionNode node = (SchemeExtensionNode) args.ExtensionNode;
+				schemes.Remove (node.Name);
+			}
 		}
 		
 		public static void LoadBinding (Command cmd)
@@ -129,40 +146,6 @@ namespace MonoDevelop.Components.Commands {
 			return SchemeBinding (cmd);
 		}
 		
-		static void LoadSchemes ()
-		{
-			Stream stream = typeof (KeyBindingService).Assembly.GetManifestResourceStream (schemesFileName);
-			bool inSchemes = false;
-			string name;
-			
-			if (stream != null) {
-				XmlTextReader reader = new XmlTextReader (stream);
-				try {
-					while (reader.Read ()) {
-						if (reader.IsStartElement ()) {
-							switch (reader.LocalName) {
-							case "schemes":
-								if (reader.GetAttribute ("version") != version)
-									return;
-								inSchemes = true;
-								break;
-							case "scheme":
-								if (inSchemes) {
-									name = reader.GetAttribute ("name");
-									schemes.Add (name);
-								}
-								break;
-							default:
-								break;
-							}
-						}
-					}
-				} finally {
-					reader.Close ();
-				}
-			}
-		}
-		
 		const string commandAttr = "command";
 		const string shortcutAttr = "shortcut";
 		
@@ -174,7 +157,7 @@ namespace MonoDevelop.Components.Commands {
 			string binding;
 			
 			while (reader.Read ()) {
-				if (reader.IsStartElement ("schemes")) {
+				if (reader.IsStartElement ("schemes") || reader.IsStartElement ("scheme")) {
 					foundSchemes = true;
 					break;
 				}
@@ -183,15 +166,16 @@ namespace MonoDevelop.Components.Commands {
 			if (!foundSchemes || reader.GetAttribute ("version") != version)
 				return false;
 			
-			while (reader.Read ()) {
-				if (reader.IsStartElement ("scheme") && reader.GetAttribute ("name") == name) {
-					foundScheme = true;
-					break;
+			if (reader.IsStartElement ("schemes")) {
+				while (reader.Read ()) {
+					if (reader.IsStartElement ("scheme") && reader.GetAttribute ("name") == name) {
+						foundScheme = true;
+						break;
+					}
 				}
+				if (!foundScheme)
+					return false;
 			}
-			
-			if (!foundScheme)
-				return false;
 			
 			while (reader.Read ()) {
 				if (reader.IsStartElement ()) {
@@ -240,18 +224,20 @@ namespace MonoDevelop.Components.Commands {
 			if (name == null)
 				return;
 			
-			stream = typeof (KeyBindingService).Assembly.GetManifestResourceStream (schemesFileName);
-			if (stream != null) {
-				try {
+			SchemeExtensionNode node = schemes [name];
+			
+			try {
+				stream = node.GetKeyBindingsSchemeStream ();
+				if (stream != null) {
 					reader = new XmlTextReader (stream);
 					Load (reader, name, ref scheme);
 					schemeName = name;
-				} catch (Exception e) {
-					Runtime.LoggingService.Error (e);
-				} finally {
-					if (reader != null)
-						reader.Close ();
 				}
+			} catch (Exception e) {
+				Runtime.LoggingService.Error (e);
+			} finally {
+				if (reader != null)
+					reader.Close ();
 			}
 		}
 		

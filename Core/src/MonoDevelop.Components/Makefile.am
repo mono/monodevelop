@@ -31,6 +31,7 @@ FILES =  \
 	MonoDevelop.Components.Commands.ExtensionNodes/ItemSetCodon.cs \
 	MonoDevelop.Components.Commands.ExtensionNodes/LinkItemCodon.cs \
 	MonoDevelop.Components.Commands.ExtensionNodes/LocalCommandItemCodon.cs \
+	MonoDevelop.Components.Commands.ExtensionNodes/SchemeExtensionNode.cs \
 	MonoDevelop.Components.Commands.ExtensionNodes/SeparatorItemCodon.cs \
 	MonoDevelop.Components.Commands/ActionCommand.cs \
 	MonoDevelop.Components.Commands/ActionType.cs \
@@ -105,7 +106,6 @@ RES =  \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
 	icons/MonoDevelop.Close.png \
-	KeyBindingSchemes.xml \
 	MonoDevelop.Components.addin.xml
 
 GENERATED_FILES = \

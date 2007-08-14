@@ -26,4 +26,8 @@
 			<ExtensionNode name="Command" type="MonoDevelop.Components.Commands.ExtensionNodes.CommandCodon" />
 		</ExtensionNode>
 	</ExtensionNodeSet>
+
+	<ExtensionNodeSet id="MonoDevelop.Components.Commands.KeyBindingScheme">
+		<ExtensionNode name="Scheme" type="MonoDevelop.Components.Commands.ExtensionNodes.SchemeExtensionNode" />
+	</ExtensionNodeSet>
 </Addin>

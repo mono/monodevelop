@@ -1,5 +1,14 @@
 2007-08-14  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Components.Commands.ExtensionNodes/SchemeExtensionNode.cs,
+	  MonoDevelop.Components.addin.xml, Makefile.am,
+	  MonoDevelop.Components.mdp, KeyBindingSchemes.xml,
+	  MonoDevelop.Components.Commands/KeyBindingService.cs,
+	  MonoDevelop.Components.Commands/CommandManager.cs: Added support for
+	  loading key binding schemes from extension points.
+
+2007-08-14  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Components.Commands/KeyBindingManager.cs: Added missing null
 	  check. Fixes bug #82430.
 
