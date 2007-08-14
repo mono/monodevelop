@@ -938,6 +938,17 @@ namespace CSharpBinding.Parser
 					i++;
 				}
 				while (i < namespaces.Length);
+			
+				// It may be an inner class
+				
+				IClass parentc = callingClass;
+				do {
+					c = parserContext.GetClass (parentc.FullyQualifiedName + "." + name, genericArguments);
+					if (c != null && (c.IsPublic || c.IsProtected || c.IsInternal))
+						return c;
+					parentc = BaseClass (parentc);
+				}
+				while (parentc != null);
 			}
 			
 			// Now try to find the class using the included namespaces

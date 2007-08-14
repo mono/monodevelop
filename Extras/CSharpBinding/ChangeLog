@@ -1,5 +1,10 @@
 2007-08-14  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Parser/Resolver.cs: Properly resolve inner class names. Fixes part of
+	  #82414.
+
+2007-08-14  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Parser/Resolver.cs: When resolving a var name, parameters have priority
 	  over fields.
 
