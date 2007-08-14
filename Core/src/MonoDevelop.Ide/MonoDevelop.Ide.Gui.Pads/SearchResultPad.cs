@@ -12,9 +12,11 @@ using System.CodeDom.Compiler;
 using System.IO;
 using System.Diagnostics;
 
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Commands;
 
 using Gtk;
 
@@ -32,9 +34,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 		int matchCount;
 		string statusText;
 		int instanceNum;
+
+		Clipboard clipboard;
 		
 		const int COL_TYPE = 0, COL_LINE = 1, COL_COLUMN = 2, COL_DESC = 3, COL_FILE = 4, COL_PATH = 5, COL_FULLPATH = 6, COL_READ = 7, COL_READ_WEIGHT = 8, COL_ISFILE = 9;
-		
+
 		Gtk.TextBuffer logBuffer;
 		Gtk.TextView logTextView;
 		Gtk.ScrolledWindow logScroller;
@@ -96,7 +100,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			view = new Gtk.TreeView (store);
 			view.RulesHint = true;
+			view.PopupMenu += new PopupMenuHandler (OnPopupMenu);
+			view.ButtonPressEvent += new ButtonPressEventHandler (OnButtonPressed);
 			view.HeadersClickable = true;
+			view.Selection.Mode = SelectionMode.Multiple;
 			AddColumns ();
 			
 			sw = new Gtk.ScrolledWindow ();
@@ -238,7 +245,63 @@ namespace MonoDevelop.Ide.Gui.Pads
 			else
 				buttonPin.StockId = "md-pin-up";
 		}
-		
+
+		[GLib.ConnectBefore]
+		void OnButtonPressed (object o, ButtonPressEventArgs args)
+		{
+			if (args.Event.Button == 3) {
+				OnPopupMenu (null, null);
+				args.RetVal = view.Selection.GetSelectedRows ().Length > 1;
+			}
+		}
+
+		void OnPopupMenu (object o, PopupMenuArgs args)
+		{
+			CommandEntrySet opset = new CommandEntrySet ();
+			opset.AddItem (ViewCommands.Open);
+			opset.AddItem (EditCommands.Copy);
+			opset.AddItem (EditCommands.SelectAll);
+			IdeApp.CommandService.ShowContextMenu (opset, this);
+		}
+
+		[CommandHandler (ViewCommands.Open)]
+		internal void OnOpen ()
+		{
+			TreeModel model;
+			foreach (Gtk.TreePath p in view.Selection.GetSelectedRows (out model))
+				OpenFile (p);
+		}
+
+		[CommandHandler (EditCommands.Copy)]
+		internal void OnCopy ()
+		{
+			TreeModel model;
+			StringBuilder txt = new StringBuilder ();
+			foreach (Gtk.TreePath p in view.Selection.GetSelectedRows (out model)) {
+				TreeIter it;
+				if (!model.GetIter (out it, p))
+					continue;
+				string file = (string) model.GetValue (it, COL_FILE);
+				string path = (string) model.GetValue (it, COL_PATH);
+				int line = (int) model.GetValue (it, COL_LINE);
+				string text = (string) model.GetValue (it, COL_DESC);
+
+				if (txt.Length > 0)
+					txt.Append ("\n");
+				txt.AppendFormat ("{0} ({1}):{2}", Path.Combine (path, file), line, text);
+			}
+			clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+			clipboard.Text = txt.ToString ();
+			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
+			clipboard.Text = txt.ToString ();
+		}
+
+		[CommandHandler (EditCommands.SelectAll)]
+		internal void OnSelectAll ()
+		{
+			view.Selection.SelectAll ();
+		}
+
 		public int InstanceNum {
 			get {
 				return instanceNum;
@@ -289,21 +352,27 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		void OnRowActivated (object o, RowActivatedArgs args)
 		{
-			Gtk.TreeIter iter;
-			if (store.GetIter (out iter, args.Path)) {
-				if (!(bool) store.GetValue (iter, COL_ISFILE))
-					return;
-				store.SetValue (iter, COL_READ, true);
-				store.SetValue (iter, COL_READ_WEIGHT, (int) Pango.Weight.Normal);
-				
-				string path = (string) store.GetValue (iter, COL_FULLPATH);
-				int line = (int) store.GetValue (iter, COL_LINE);
-				/*int line = (int)*/ store.GetValue (iter, COL_COLUMN);
-
-				IdeApp.Workbench.OpenDocument (path, line, 1, true);
-			}
+			OpenFile (args.Path);
 		}
-		
+
+		void OpenFile (Gtk.TreePath tree_path)
+		{
+			Gtk.TreeIter iter;
+			if (!store.GetIter (out iter, tree_path))
+				return;
+
+			if (!(bool) store.GetValue (iter, COL_ISFILE))
+				return;
+			store.SetValue (iter, COL_READ, true);
+			store.SetValue (iter, COL_READ_WEIGHT, (int) Pango.Weight.Normal);
+
+			string path = (string) store.GetValue (iter, COL_FULLPATH);
+			int line = (int) store.GetValue (iter, COL_LINE);
+			/*int line = (int)*/ store.GetValue (iter, COL_COLUMN);
+
+			IdeApp.Workbench.OpenDocument (path, line, 1, true);
+		}
+
 		public void AddResult (string file, int line, int column, string text)
 		{
 			if (file == null) {
