@@ -491,18 +491,22 @@ namespace CSharpBinding.Parser
 				return null;
 			
 			if (member is IField) {
+				showStatic = false;
 				if (curType.ClassType == ClassType.Enum)
 					return type; // enum members have the type of the enum
 				else
 					return ((IField)member).ReturnType;
 			}
 			else if (member is IClass) {
+				showStatic = true;
 				return new ReturnType (((IClass)member).FullyQualifiedName);
 			}
 			else if (member is IProperty) {
+				showStatic = false;
 				return ((IProperty)member).ReturnType;
 			}
 			else if (member is IEvent) {
+				showStatic = false;
 				return ((IEvent)member).ReturnType;
 			}
 			
@@ -767,21 +771,18 @@ namespace CSharpBinding.Parser
 //			Console.WriteLine("No nonstatic member found");
 			
 			// try if there exists a static member named typeName
+			// SearchMember will reset the showStatic flag if necessary
 			showStatic = true;
 			t = SearchMember(callingClass == null ? null : new ReturnType(callingClass.FullyQualifiedName), typeName);
-			if (t != null) {
-				showStatic = false;
+			if (t != null)
 				return t;
-			}
 //			Console.WriteLine("No static member found");
 			
 			// try if there exists a static member in outer classes named typeName
 			foreach (IClass c in GetOuterClasses()) {
 				t = SearchMember(callingClass == null ? null : new ReturnType(c.FullyQualifiedName), typeName);
-				if (t != null) {
-					showStatic = false;
+				if (t != null)
 					return t;
-				}
 			}
 //			Console.WriteLine("No static member in outer classes found");
 //			Console.WriteLine("DynamicLookUp resultless");
