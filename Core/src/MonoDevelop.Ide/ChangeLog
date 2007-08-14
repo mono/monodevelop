@@ -1,3 +1,13 @@
+2007-08-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs,
+	  options/KeyBindingSchemeEmacs.xml,
+	  options/KeyBindingSchemeVisualStudio.xml,
+	  options/KeyBindingSchemeDefault.xml, MonoDevelop.Ide.addin.xml,
+	  MonoDevelop.Ide.mdp, Makefile.am, MonoDevelop.Ide.Gui/Ide.cs: Load key
+	  bindings from an extension point. Moved key bindings files from
+	  MD.Components to here.
+
 2007-08-08  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs, 

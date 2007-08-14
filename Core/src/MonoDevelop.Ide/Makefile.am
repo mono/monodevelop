@@ -330,6 +330,9 @@ RES =  \
 	icons/system-file-manager.png \
 	MonoDevelop.Ide.addin.xml \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderTemplates.xml \
+	options/KeyBindingSchemeDefault.xml \
+	options/KeyBindingSchemeEmacs.xml \
+	options/KeyBindingSchemeVisualStudio.xml \
 	templates/AppConfigFile.xft.xml \
 	templates/BlankCombine.xpt.xml \
 	templates/EmptyClass.xft.xml \

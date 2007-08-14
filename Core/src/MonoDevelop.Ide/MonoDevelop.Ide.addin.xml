@@ -46,6 +46,11 @@
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.CommandSet"/>
 	</ExtensionPoint>
 
+	<ExtensionPoint path = "/MonoDevelop/Ide/KeyBindingSchemes" name = "Key binding schemes">
+		<Description>Key binding schemes.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.KeyBindingScheme"/>
+	</ExtensionPoint>
+
 	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ClassPad/Namespace" name = "Namespace node context menu in the class pad">
 		<Description>Context menu for namespaces in the class pad.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
@@ -796,6 +801,12 @@
 					_label = "Switch maximize/normal view"/>
 		</Category>
 		
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/KeyBindingSchemes">
+		<Scheme _name = "Default" resource="KeyBindingSchemeDefault.xml"/>
+		<Scheme _name = "GNU/Emacs" resource="KeyBindingSchemeEmacs.xml"/>
+		<Scheme _name = "Visual Studio" resource="KeyBindingSchemeVisualStudio.xml"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Combine">

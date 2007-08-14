@@ -111,6 +111,7 @@ namespace MonoDevelop.Ide.Gui
 			monitor.BeginTask (GettextCatalog.GetString("Loading Workbench"), 6);
 			
 			commandService.LoadCommands ("/MonoDevelop/Ide/Commands");
+			commandService.LoadKeyBindingSchemes ("/MonoDevelop/Ide/KeyBindingSchemes");
 			monitor.Step (1);
 
 			workbench.Initialize (monitor);

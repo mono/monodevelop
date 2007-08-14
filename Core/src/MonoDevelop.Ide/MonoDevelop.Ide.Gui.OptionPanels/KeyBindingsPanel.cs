@@ -81,9 +81,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
 			updateButton.Clicked += new EventHandler (OnUpdateButtonClick);
 			
 			schemeCombo.AppendText ("Current");
-			List<string> schemes = KeyBindingService.SchemeNames;
-			for (int i = 0; i < schemes.Count; i++)
-				schemeCombo.AppendText (schemes[i]);
+			foreach (string s in KeyBindingService.SchemeNames)
+				schemeCombo.AppendText (s);
 			
 			schemeCombo.Active = 0;
 			schemeCombo.Changed += new EventHandler (OnKeyBindingSchemeChanged);
