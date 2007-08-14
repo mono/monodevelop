@@ -26,7 +26,7 @@ Gui/Pads/ThreadPad.cs
 RES = MonoDevelopDebugger.addin.xml
 
 GENERATED_FILES = DebuggerPaths.cs
-EXTRA_DIST = $(FILES) $(ADDIN) DebuggerPaths.cs.in
+EXTRA_DIST = $(FILES) $(ADDIN) DebuggerPaths.cs.in $(RES)
 
 if ENABLE_DEBUGGER
 

@@ -250,6 +250,6 @@ assembly_DATA = $(ASSEMBLY) $(CONFIG)
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 DISTCLEANFILES = $(CONFIG)
 
-EXTRA_DIST = $(FILES) $(CONFIG).in
+EXTRA_DIST = $(FILES) $(CONFIG).in $(RES)
 
 include $(top_srcdir)/Makefile.include

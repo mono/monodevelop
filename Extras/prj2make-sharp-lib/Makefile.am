@@ -42,7 +42,7 @@ RES = prj2make-sharp-lib.addin.xml
 GENERATED_FILES = \
 AssemblyInfo.cs
 
-EXTRA_DIST = $(FILES)
+EXTRA_DIST = $(FILES) $(RES)
 
 all: $(ASSEMBLY)
 

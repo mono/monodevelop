@@ -101,6 +101,6 @@ assembly_DATA = $(ASSEMBLY)
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 DISTCLEANFILES = MonoDevelop.Core/GettextCatalog.cs
 
-EXTRA_DIST = $(FILES) MonoDevelop.Core/GettextCatalog.cs.in
+EXTRA_DIST = $(FILES) MonoDevelop.Core/GettextCatalog.cs.in $(RES)
 
 include $(top_srcdir)/Makefile.include
