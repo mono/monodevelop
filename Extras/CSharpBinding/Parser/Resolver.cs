@@ -1172,7 +1172,19 @@ namespace CSharpBinding.Parser
 				callingClass = GetInnermostClass();
 				Console.WriteLine("CallingClass is " + (callingClass == null ? "null" : callingClass.Name));
 			}
+
+			IMethod met = GetMethod ();
+			Hashtable vars = new Hashtable ();
+			if (met != null) {
+				foreach (IParameter par in met.Parameters) {
+					result.Add(par);
+					vars [par.Name] = par;
+				}
+			}
+			
 			foreach (string name in lookupTableVisitor.Variables.Keys) {
+				if (vars.Contains (name))
+					continue;
 				ICollection variables = lookupTableVisitor.Variables[name];
 				if (variables != null && variables.Count > 0) {
 					foreach (LocalLookupVariable v in variables) {

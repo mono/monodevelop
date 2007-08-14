@@ -1,3 +1,8 @@
+2007-08-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Parser/Resolver.cs: Include arguments in the resolve list for CtrlSpace.
+	  Fixes bug #82391.
+
 2007-08-14  Ankit Jain  <jankit@novell.com>
 
 	Fix bug #82398.
