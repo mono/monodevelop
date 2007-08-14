@@ -1,5 +1,10 @@
 2007-08-14  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* AddLogEntryDialog.cs: When changing selection, get the text from the
+	  changes table, if it has changed. Fixes bug #82437.
+
+2007-08-14  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* ChangeLogAddIn.mdp, gtk-gui/gui.stetic, Makefile.am: Updated.
 	* ChangeLogService.cs: Fix nullref exception.
 	* CommitDialogExtensionWidget.cs: Fix warning.

@@ -86,7 +86,11 @@ namespace MonoDevelop.ChangeLogAddIn
 				boxNewFile.Visible = ce.IsNew && !ce.CantGenerate;
 				boxNoFile.Visible = ce.CantGenerate;
 				loading = true;
-				textview.Buffer.Text = ce.Message;
+				string msg;
+				if (changes.TryGetValue (ce, out msg))
+					textview.Buffer.Text = msg;
+				else
+					textview.Buffer.Text = ce.Message;
 				int eoffset = textview.Buffer.EndIter.Offset;
 				if (!ce.IsNew && File.Exists (ce.File)) {
 					textview.Buffer.Text += File.ReadAllText (ce.File);
