@@ -56,9 +56,10 @@ namespace MonoDevelop.Prj2Make
 		
 		public bool CanReadFile (string file)
 		{
+			if (String.Compare (Path.GetExtension (file), ".sln", true) != 0)
+				return false;
 			string version = GetSlnFileVersion (file);
-			return (String.Compare (Path.GetExtension (file), ".sln", true) == 0 &&
-				(version == "9.00" || version == "10.00"));
+			return version == "9.00" || version == "10.00";
 		}
 		
 		public bool CanWriteFile (object obj)
@@ -835,10 +836,16 @@ namespace MonoDevelop.Prj2Make
 			StreamReader reader = new StreamReader(strInSlnFile);
 			
 			strInput = reader.ReadLine();
+			if (strInput == null)
+				return null;
 
 			match = SlnVersionRegex.Match(strInput);
-			if (!match.Success)
-				match = SlnVersionRegex.Match (reader.ReadLine ());
+			if (!match.Success) {
+				strInput = reader.ReadLine();
+				if (strInput == null)
+					return null;
+				match = SlnVersionRegex.Match (strInput);
+			}
 
 			if (match.Success)
 			{

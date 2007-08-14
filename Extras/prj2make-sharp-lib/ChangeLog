@@ -1,3 +1,8 @@
+2007-08-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* SlnFileFormat.cs: Small performance improvement in CanReadFile. Added
+	  missing null checks in GetSlnFileVersion.
+
 2007-08-13  Ankit Jain  <jankit@novell.com>
 
 	Fix bug #82389
