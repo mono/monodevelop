@@ -30,6 +30,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
@@ -135,12 +136,22 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public List<Document> Documents {
-			get { return documents; }
+		public ReadOnlyCollection<Document> Documents {
+			get { return documents.AsReadOnly (); }
 		}
 
 		public Document ActiveDocument {
 			get { return WrapDocument (workbench.ActiveWorkbenchWindow); }
+		}
+		
+		public Document GetDocument (string fileName)
+		{
+			fileName = Runtime.FileService.GetFullPath (fileName);
+			foreach (Document doc in documents) {
+				if (Runtime.FileService.GetFullPath (doc.FileName) == fileName)
+					return doc;
+			}
+			return null;
 		}
 		
 		public List<Pad> Pads {
@@ -501,7 +512,7 @@ namespace MonoDevelop.Ide.Gui
 			doc = new Document (window);
 			window.Closing += new WorkbenchWindowEventHandler (OnWindowClosing);
 			window.Closed += new EventHandler (OnWindowClosed);
-			Documents.Add (doc);
+			documents.Add (doc);
 			
 			doc.OnDocumentAttached ();
 			
@@ -562,7 +573,7 @@ namespace MonoDevelop.Ide.Gui
 		void OnWindowClosed (object sender, EventArgs args)
 		{
 			IWorkbenchWindow window = (IWorkbenchWindow) sender;
-			Documents.Remove (FindDocument (window)); 
+			documents.Remove (FindDocument (window)); 
 		}
 		
 		void RealOpenFile (object openFileInfo)

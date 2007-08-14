@@ -34,6 +34,7 @@ using System.IO;
 using Gtk;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Properties;
 using MonoDevelop.Components;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
@@ -132,6 +133,19 @@ namespace MonoDevelop.Ide.Gui
 		
 		public bool IsViewOnly {
 			get { return Window.ViewContent.IsViewOnly; }
+		}
+		
+		public void Reload ()
+		{
+			IXmlConvertable memento = null;
+			IMementoCapable mc = GetContent<IMementoCapable> ();
+			if (mc != null) {
+				memento = mc.CreateMemento();
+			}
+			window.ViewContent.Load (window.ViewContent.ContentName);
+			if (memento != null) {
+				mc.SetMemento(memento);
+			}
 		}
 		
 		public virtual void Save ()

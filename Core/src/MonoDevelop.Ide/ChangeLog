@@ -1,5 +1,14 @@
 2007-08-14  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui/Document.cs,
+	  MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: Implemented Reload command
+	  in Document.
+	* MonoDevelop.Ide.Gui/Workbench.cs: Added helper method for getting a
+	  document from a file name. The documents collection must be read-only in
+	  the client api.
+
+2007-08-14  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.addin.xml, MonoDevelop.Ide.mdp, Makefile.am,
 	  MonoDevelop.Ide.Codons/FileFilterCodon.cs: Moved FileFilterCodon from
 	  MD.Projects to MD.Ide (where the extension point is actually defined).

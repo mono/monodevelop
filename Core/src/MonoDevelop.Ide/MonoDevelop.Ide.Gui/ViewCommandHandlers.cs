@@ -126,17 +126,8 @@ namespace MonoDevelop.Ide.Gui
 		[CommandHandler (FileCommands.ReloadFile)]
 		protected void OnReloadFile ()
 		{
-			if (Services.MessageService.AskQuestion(GettextCatalog.GetString ("Are you sure that you want to reload the file?"))) {
-				IXmlConvertable memento = null;
-				IMementoCapable mc = GetContent<IMementoCapable> ();
-				if (mc != null) {
-					memento = mc.CreateMemento();
-				}
-				window.ViewContent.Load (window.ViewContent.ContentName);
-				if (memento != null) {
-					mc.SetMemento(memento);
-				}
-			}
+			if (Services.MessageService.AskQuestion(GettextCatalog.GetString ("Are you sure that you want to reload the file?")))
+				doc.Reload ();
 		}
 		
 		[CommandUpdateHandler (FileCommands.ReloadFile)]
