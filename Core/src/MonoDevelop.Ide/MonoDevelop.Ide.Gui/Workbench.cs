@@ -221,6 +221,8 @@ namespace MonoDevelop.Ide.Gui
 		public void DeleteLayout (string name)
 		{
 			workbench.WorkbenchLayout.DeleteLayout (name);
+			if (LayoutChanged != null)
+				LayoutChanged (this, EventArgs.Empty);
 		}
 		
 		public void LockGui ()

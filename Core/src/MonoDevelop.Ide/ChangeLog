@@ -1,5 +1,13 @@
 2007-08-14  Ankit Jain  <jankit@novell.com>
 
+	Fix bug #82253.
+	* MonoDevelop.Ide.Gui/Workbench.cs (DeleteLayout): Invoke event handlers
+	for LayoutChanged.
+	* gtk-gui/gui.stetic: Set ResponseId to OK for New button of NewLayoutDialog.
+	* gtk-gui/*: Update.
+
+2007-08-14  Ankit Jain  <jankit@novell.com>
+
 	Fix bug #82280.
 	* MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs: Add context menu with
 	Open, Copy and SelectAll commands.
