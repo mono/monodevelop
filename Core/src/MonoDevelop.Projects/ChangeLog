@@ -1,5 +1,10 @@
 2007-08-14  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects.Parser/ClassWrapper.cs: Added protection against
+	  exceptions thrown when reading class info from the database.
+
+2007-08-14  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects.Parser/CompoundClass.cs: Don't add System.Object as
 	  base class if one of the parts has a different base class.
 	* MonoDevelop.Projects.Parser/IReturnType.cs,

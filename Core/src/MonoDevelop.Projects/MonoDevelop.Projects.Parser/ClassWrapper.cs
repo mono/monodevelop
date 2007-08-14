@@ -1,5 +1,6 @@
 
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Parser
 {
@@ -21,6 +22,7 @@ namespace MonoDevelop.Projects.Parser
 		string ns;
 		string name;
 		IClass wrapped;
+		bool loaded;
 		
 		public ClassWrapper (CodeCompletionDatabase db, ClassEntry entry)
 		{
@@ -35,9 +37,14 @@ namespace MonoDevelop.Projects.Parser
 				// If the wrapper is required, it means that the user is trying to get some
 				// information not available in ClassEntry. In this case, read the full
 				// clas from the database.
-				if (wrapped == null) {
-					wrapped = db.ReadClass (entry);
-					entry.AttachClass (wrapped);
+				if (!loaded) {
+					loaded = true;
+					try {
+						wrapped = db.ReadClass (entry);
+						entry.AttachClass (wrapped);
+					} catch (Exception ex) {
+						Runtime.LoggingService.Error (ex);
+					}
 				}
 				return wrapped;
 			}
@@ -66,7 +73,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public ICompilationUnit CompilationUnit {
 			get {
-				if ((entry.ContentFlags & ContentFlags.HasCompilationUnit) != 0)
+				if (Wrapped != null && (entry.ContentFlags & ContentFlags.HasCompilationUnit) != 0)
 					return Wrapped.CompilationUnit;
 				else
 					return null;
@@ -84,7 +91,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public IRegion Region {
 			get {
-				if ((entry.ContentFlags & ContentFlags.HasRegion) != 0)
+				if (Wrapped != null && (entry.ContentFlags & ContentFlags.HasRegion) != 0)
 					return Wrapped.Region;
 				else
 					return null;
@@ -93,7 +100,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public IRegion BodyRegion {
 			get {
-				if ((entry.ContentFlags & ContentFlags.HasBodyRegion) != 0)
+				if (Wrapped != null && (entry.ContentFlags & ContentFlags.HasBodyRegion) != 0)
 					return Wrapped.BodyRegion;
 				else
 					return null;
@@ -103,7 +110,7 @@ namespace MonoDevelop.Projects.Parser
 		// For classes composed by several files, returns all parts of the class
 		public IClass[] Parts {
 			get {
-				if ((entry.ContentFlags & ContentFlags.HasParts) != 0)
+				if (Wrapped != null && (entry.ContentFlags & ContentFlags.HasParts) != 0)
 					return Wrapped.Parts;
 				else
 					return new IClass [0];
@@ -112,7 +119,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public GenericParameterList GenericParameters {
 			get {
-				if ((entry.ContentFlags & ContentFlags.HasGenericParams) != 0)
+				if (Wrapped != null && (entry.ContentFlags & ContentFlags.HasGenericParams) != 0)
 					return Wrapped.GenericParameters;
 				else
 					return null;
@@ -121,7 +128,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public ReturnTypeList BaseTypes {
 			get {
-				if ((entry.ContentFlags & ContentFlags.HasBaseTypes) != 0)
+				if (Wrapped != null && (entry.ContentFlags & ContentFlags.HasBaseTypes) != 0)
 					return Wrapped.BaseTypes;
 				else
 					return new ReturnTypeList ();
@@ -130,7 +137,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public ClassCollection InnerClasses {
 			get {
-				if ((entry.ContentFlags & ContentFlags.HasInnerClasses) != 0)
+				if (Wrapped != null && (entry.ContentFlags & ContentFlags.HasInnerClasses) != 0)
 					return Wrapped.InnerClasses;
 				else
 					return new ClassCollection ();
@@ -139,7 +146,7 @@ namespace MonoDevelop.Projects.Parser
 
 		public FieldCollection Fields {
 			get {
-				if ((entry.ContentFlags & ContentFlags.HasFields) != 0)
+				if (Wrapped != null && (entry.ContentFlags & ContentFlags.HasFields) != 0)
 					return Wrapped.Fields;
 				else
 					return new FieldCollection (this);
@@ -148,7 +155,7 @@ namespace MonoDevelop.Projects.Parser
 
 		public PropertyCollection Properties {
 			get {
-				if ((entry.ContentFlags & ContentFlags.HasProperties) != 0)
+				if (Wrapped != null && (entry.ContentFlags & ContentFlags.HasProperties) != 0)
 					return Wrapped.Properties;
 				else
 					return new PropertyCollection (this);
@@ -157,7 +164,7 @@ namespace MonoDevelop.Projects.Parser
 
 		public IndexerCollection Indexer {
 			get {
-				if ((entry.ContentFlags & ContentFlags.HasIndexers) != 0)
+				if (Wrapped != null && (entry.ContentFlags & ContentFlags.HasIndexers) != 0)
 					return Wrapped.Indexer;
 				else
 					return new IndexerCollection (this);
@@ -166,7 +173,7 @@ namespace MonoDevelop.Projects.Parser
 
 		public MethodCollection Methods {
 			get {
-				if ((entry.ContentFlags & ContentFlags.HasMethods) != 0)
+				if (Wrapped != null && (entry.ContentFlags & ContentFlags.HasMethods) != 0)
 					return Wrapped.Methods;
 				else
 					return new MethodCollection (this);
@@ -175,7 +182,7 @@ namespace MonoDevelop.Projects.Parser
 
 		public EventCollection Events {
 			get {
-				if ((entry.ContentFlags & ContentFlags.HasEvents) != 0)
+				if (Wrapped != null && (entry.ContentFlags & ContentFlags.HasEvents) != 0)
 					return Wrapped.Events;
 				else
 					return new EventCollection (this);
@@ -188,7 +195,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public AttributeSectionCollection Attributes {
 			get {
-				if ((entry.ContentFlags & ContentFlags.HasAttributes) != 0)
+				if (Wrapped != null && (entry.ContentFlags & ContentFlags.HasAttributes) != 0)
 					return Wrapped.Attributes;
 				else
 					return new AttributeSectionCollection ();
@@ -197,7 +204,7 @@ namespace MonoDevelop.Projects.Parser
 
 		public string Documentation {
 			get {
-				if ((entry.ContentFlags & ContentFlags.HasDocumentation) != 0)
+				if (Wrapped != null && (entry.ContentFlags & ContentFlags.HasDocumentation) != 0)
 					return Wrapped.Documentation;
 				else
 					return string.Empty;
@@ -306,7 +313,10 @@ namespace MonoDevelop.Projects.Parser
 		
 		public int CompareTo (object ob)
 		{
-			return Wrapped.CompareTo (ob);
+			if (Wrapped != null)
+				return Wrapped.CompareTo (ob);
+			else
+				return 1;
 		}
 	}
 }
