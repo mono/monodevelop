@@ -1,7 +1,7 @@
 2007-08-14  Ankit Jain  <jankit@novell.com>
 
 	Fix bug #82398.
-	* CSharpBindingCompilerManager.cs (GetResourceId): Run with resgen with
+	* CSharpBindingCompilerManager.cs (GetResourceId): Run resgen with
 	MONO_IOMAP=all.
 
 2007-08-14  Mike Krüger <mkrueger@novell.com> 

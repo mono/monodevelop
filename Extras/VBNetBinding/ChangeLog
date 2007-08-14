@@ -1,3 +1,8 @@
+2007-08-14  Ankit Jain  <jankit@novell.com>
+
+	* VBBindingCompilerServices.cs (GetResourceId): Run resgen with
+	MONO_IOMAP=all. See bug #82398.
+
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* VBNetBinding.addin.xml, VBNetBinding.mdp, Makefile.am: Reorganized the
