@@ -729,15 +729,7 @@ namespace CSharpBinding.Parser
 			if (callingClass == null) {
 				return null;
 			}
-			//// somehow search in callingClass fields is not returning anything, so I am searching here once again
-			foreach (IField f in callingClass.Fields) {
-				if (f.Name == typeName) {
-//					Console.WriteLine("Field found " + f.Name);
-					return f.ReturnType;
-				}
-			}
-			//// end of mod for search in Fields
-		
+			
 			// try if typeName is a method parameter
 			IParameter p = SearchMethodParameter(typeName);
 			if (p != null) {
@@ -747,6 +739,15 @@ namespace CSharpBinding.Parser
 			}
 //			Console.WriteLine("No Parameter found");
 			
+			//// somehow search in callingClass fields is not returning anything, so I am searching here once again
+			foreach (IField f in callingClass.Fields) {
+				if (f.Name == typeName) {
+//					Console.WriteLine("Field found " + f.Name);
+					return f.ReturnType;
+				}
+			}
+			//// end of mod for search in Fields
+		
 			// check if typeName == value in set method of a property
 			if (typeName == "value") {
 				IProperty pr = SearchProperty();

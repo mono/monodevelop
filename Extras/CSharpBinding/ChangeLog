@@ -1,5 +1,10 @@
 2007-08-14  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Parser/Resolver.cs: When resolving a var name, parameters have priority
+	  over fields.
+
+2007-08-14  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Parser/Resolver.cs: Include arguments in the resolve list for CtrlSpace.
 	  Fixes bug #82391.
 
