@@ -503,7 +503,7 @@ namespace MonoDevelop.Components.Commands {
 				bindings.Remove (command.AccelKey);
 			
 			mode = BindingMode (command.AccelKey);
-			if (modes.ContainsKey (mode)) {
+			if (mode != null && modes.ContainsKey (mode)) {
 				if ((refs = modes[mode] - 1) == 0)
 					modes.Remove (mode);
 				else
