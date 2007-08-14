@@ -1,3 +1,8 @@
+2007-08-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Make sure the
+	  correct lastSaveTime is stored when the file is reloaded in the editor.
+
 2007-08-09  David Makovský (Yakeen) <yakeen@sannyas-on.net> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Properly dispose
