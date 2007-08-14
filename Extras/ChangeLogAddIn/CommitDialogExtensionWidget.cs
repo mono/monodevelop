@@ -42,7 +42,6 @@ namespace MonoDevelop.ChangeLogAddIn
 		VBox vbox = new VBox ();
 		Button logButton;
 		Button optionsButton;
-		string message;
 		ChangeSet cset;
 		Label msgLabel;
 		Label pathLabel;

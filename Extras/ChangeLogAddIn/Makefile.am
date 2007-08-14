@@ -28,7 +28,9 @@ FILES =  \
 	ProjectOptionPanel.cs \
 	ProjectOptionPanelWidget.cs
 
-RES = ChangeLogAddIn.addin.xml
+RES =  \
+	ChangeLogAddIn.addin.xml \
+	gtk-gui/gui.stetic
 
 if ENABLE_VERSIONCONTROL
 all: $(ASSEMBLY) 

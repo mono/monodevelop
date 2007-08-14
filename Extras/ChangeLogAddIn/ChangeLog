@@ -1,3 +1,9 @@
+2007-08-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* ChangeLogAddIn.mdp, gtk-gui/gui.stetic, Makefile.am: Updated.
+	* ChangeLogService.cs: Fix nullref exception.
+	* CommitDialogExtensionWidget.cs: Fix warning.
+
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ChangeLogAddIn.addin.xml, ChangeLogAddIn.mdp, Makefile.am: Reorganized the

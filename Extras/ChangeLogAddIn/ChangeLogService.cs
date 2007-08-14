@@ -54,6 +54,9 @@ namespace MonoDevelop.ChangeLogAddIn
 		// Returns an empty string if changes don't have to be logged.
 		public static string GetChangeLogForFile (string baseCommitPath, string file)
 		{
+			if (IdeApp.ProjectOperations.CurrentOpenCombine == null)
+				return null;
+			
 			// Find the project that contains the file. If none is found
 			// find a combine entry at the file location
 			CombineEntry entry = null;
