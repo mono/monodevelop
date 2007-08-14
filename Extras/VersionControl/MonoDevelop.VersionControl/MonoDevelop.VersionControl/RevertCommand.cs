@@ -77,8 +77,13 @@ namespace MonoDevelop.VersionControl
 				}
 				
 				Gtk.Application.Invoke (delegate {
-					foreach (string s in files)
+					foreach (string s in files) {
+						// Reload reverted files
+						Document doc = IdeApp.Workbench.GetDocument (s);
+						if (doc != null)
+							doc.Reload ();
 						VersionControlProjectService.NotifyFileStatusChanged (vc, s, false);
+					}
 					foreach (string s in dirs)
 						VersionControlProjectService.NotifyFileStatusChanged (vc, s, true);
 				});
