@@ -167,6 +167,15 @@ namespace MonoDevelop.Projects.Gui.Completion
 			this.image = image;
 		}
 		
+		public CodeCompletionData (string s, string image, string description)
+		{
+			description = pango_description = description; 
+			documentation = String.Empty;
+			text = s;
+			completionString = s;
+			this.image = image;
+		}
+		
 		public CodeCompletionData (IClass c, Ambience_ ambience)
 		{
 			FillCodeCompletionData (c, ambience);

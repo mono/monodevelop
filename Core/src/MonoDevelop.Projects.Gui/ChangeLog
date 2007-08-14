@@ -1,3 +1,9 @@
+2007-08-14  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs: Added a
+	  new constructor for the code completion data (used for
+	  XmlDocComments).
+
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.addin.xml, MonoDevelop.Projects.Gui.mdp,
