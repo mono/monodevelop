@@ -27,7 +27,6 @@ FILES =  \
 	MonoDevelop.Projects.CodeGeneration/XmlCodeDomReader.cs \
 	MonoDevelop.Projects.Documentation/IDocumentationService.cs \
 	MonoDevelop.Projects.Extensions/DataTypeCodon.cs \
-	MonoDevelop.Projects.Extensions/FileFilterCodon.cs \
 	MonoDevelop.Projects.Extensions/ItemPropertyCodon.cs \
 	MonoDevelop.Projects.Extensions/LanguageBindingCodon.cs \
 	MonoDevelop.Projects.Extensions/ProjectBindingCodon.cs \

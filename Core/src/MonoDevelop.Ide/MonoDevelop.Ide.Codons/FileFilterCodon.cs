@@ -13,7 +13,7 @@ using MonoDevelop.Core.Properties;
 using Mono.Addins;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Projects.Extensions
+namespace MonoDevelop.Ide.Codons
 {
 	[ExtensionNode (Description="A file filter to be used in the Open File dialog.")]
 	internal class FileFilterCodon : TypeExtensionNode

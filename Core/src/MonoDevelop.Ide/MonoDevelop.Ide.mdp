@@ -327,6 +327,7 @@
     <File name="./options/KeyBindingSchemeDefault.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./options/KeyBindingSchemeEmacs.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./options/KeyBindingSchemeVisualStudio.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./MonoDevelop.Ide.Codons/FileFilterCodon.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="gecko-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=ccf7d78a55e9f021" />

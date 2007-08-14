@@ -1,3 +1,9 @@
+2007-08-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.addin.xml, MonoDevelop.Ide.mdp, Makefile.am,
+	  MonoDevelop.Ide.Codons/FileFilterCodon.cs: Moved FileFilterCodon from
+	  MD.Projects to MD.Ide (where the extension point is actually defined).
+
 2007-08-14  Ankit Jain  <jankit@novell.com>
 
 	Fix bug #82253.

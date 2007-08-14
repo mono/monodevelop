@@ -186,7 +186,6 @@
     <File name="./MonoDevelop.Projects/ProjectCreateInformation.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/IProjectBinding.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/DefaultCompilerResult.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Extensions/FileFilterCodon.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/ICompilerResult.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/ILanguageBinding.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/IDotNetLanguageBinding.cs" subtype="Code" buildaction="Compile" />

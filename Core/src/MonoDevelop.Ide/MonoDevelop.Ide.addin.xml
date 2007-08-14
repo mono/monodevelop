@@ -164,12 +164,12 @@
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/ProjectFileFilters" name = "Combine file filters">
 		<Description>File filters to be shown in the Project Open dialog.</Description>
-		<ExtensionNode name="FileFilter" type="MonoDevelop.Projects.Extensions.FileFilterCodon"/>
+		<ExtensionNode name="FileFilter" type="MonoDevelop.Ide.Codons.FileFilterCodon"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/FileFilters" name = "File filters">
 		<Description>File filters to be shown in the File Open dialog.</Description>
-		<ExtensionNode name="FileFilter" type="MonoDevelop.Projects.Extensions.FileFilterCodon"/>
+		<ExtensionNode name="FileFilter" type="MonoDevelop.Ide.Codons.FileFilterCodon"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/Toolbar" name = "Main toolbar">
