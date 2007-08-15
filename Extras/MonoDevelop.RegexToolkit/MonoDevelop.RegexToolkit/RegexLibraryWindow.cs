@@ -1,5 +1,5 @@
 //
-// RegexLibrary.cs
+// RegexLibraryWindow.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -41,14 +41,16 @@ namespace MonoDevelop.RegexToolkit
 {
 	
 	
-	public partial class RegexLibrary : Gtk.Dialog
+	public partial class RegexLibraryWindow : Gtk.Window
 	{
 		ListStore store;
 		Expression[] expressions;
 		
-		public RegexLibrary()
+		public RegexLibraryWindow() : base(Gtk.WindowType.Toplevel)
 		{
 			this.Build();
+			this.TransientFor = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;
+			
 			this.buttonCancel.Clicked += delegate {
 				Destroy ();
 			};
@@ -115,10 +117,14 @@ namespace MonoDevelop.RegexToolkit
 		
 		void SynchronizeExpressions ()
 		{
-			Webservices services = new Webservices ();
-			this.expressions = services.ListAllAsXml (Int32.MaxValue);
-			WriteRegexes ();
-			UpdateExpressions ();
+			UpdateInProgressDialog updateDialog = new UpdateInProgressDialog ();
+			updateDialog.Parent = this;
+			updateDialog.Run ();
+			if (updateDialog.Expressions != null) {
+				this.expressions = updateDialog.Expressions;
+				WriteRegexes ();
+				UpdateExpressions ();
+			}
 		}
 		
 #region I/O

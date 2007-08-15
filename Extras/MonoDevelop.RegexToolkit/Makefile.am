@@ -24,11 +24,13 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
-	gtk-gui/MonoDevelop.RegexToolkit.RegexLibrary.cs \
-	gtk-gui/MonoDevelop.RegexToolkit.RegexToolkit.cs \
+	gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs \
+	gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs \
+	gtk-gui/MonoDevelop.RegexToolkit.UpdateInProgressDialog.cs \
 	MonoDevelop.RegexToolkit/Commands.cs \
-	MonoDevelop.RegexToolkit/RegexLibrary.cs \
-	MonoDevelop.RegexToolkit/RegexToolkit.cs \
+	MonoDevelop.RegexToolkit/RegexLibraryWindow.cs \
+	MonoDevelop.RegexToolkit/RegexToolkitWindow.cs \
+	MonoDevelop.RegexToolkit/UpdateInProgressDialog.cs \
 	MonoDevelop.RegexToolkit/Webservices.cs
 
 RES =  \

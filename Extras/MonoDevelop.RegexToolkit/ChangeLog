@@ -1,5 +1,12 @@
 2007-08-15  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.RegexToolkit/UpdateInProgressDialog.cs,
+	  MonoDevelop.RegexToolkit/RegexLibraryWindow.cs,
+	  MonoDevelop.RegexToolkit/RegexToolkitWindow.cs: Made the dialogs
+	  more HID compliant.
+
+2007-08-15  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.RegexToolkit.mdp: Added prefixes for makefile support.
 
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 

@@ -1,5 +1,5 @@
 //
-// Commands.cs
+// UpdateInProgressDialog.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -27,24 +27,46 @@
 //
 
 using System;
-using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.RegexToolkit
 {
-	public enum Commands
+	public partial class UpdateInProgressDialog : Gtk.Dialog
 	{
-		ShowRegexToolkit
-	}
-	
-	public class ShowRegexToolkitHandler : CommandHandler
-	{
-		protected override void Run ()
+		Expression[] expressions;
+		
+		public Expression[] Expressions {
+			get {
+				return expressions;
+			}
+		}
+		bool cancled = false;
+		public UpdateInProgressDialog() 
 		{
-			RegexToolkitWindow regexToolkit = new RegexToolkitWindow ();
-			regexToolkit.Show ();
+			this.Build();
+			this.TransientFor = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;
 			
+			this.buttonOk.Sensitive = false;
+			this.buttonOk.Clicked += delegate {
+				Destroy ();
+			};
+			this.buttonCancel.Clicked += delegate {
+				cancled = true;
+				this.expressions = null;
+				Destroy ();
+			}; 
+			
+			DispatchService.BackgroundDispatch (
+				delegate {
+				Webservices services = new Webservices ();
+				this.expressions = services.ListAllAsXml (Int32.MaxValue);
+				if (!cancled) {
+					this.buttonCancel.Sensitive = false;
+					this.label.Text = GettextCatalog.GetString ("Update done.");
+					this.buttonOk.Sensitive = true;
+				}
+			});
 		}
 	}
-	
-	
 }

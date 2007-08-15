@@ -1,5 +1,5 @@
 //
-// RegexToolkit.cs
+// RegexToolkitWindow.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -35,16 +35,17 @@ using Gtk;
 
 namespace MonoDevelop.RegexToolkit
 {
-	public partial class RegexToolkit : Gtk.Dialog
+	public partial class RegexToolkitWindow : Gtk.Window
 	{
 		ListStore optionsStore;
 		TreeStore resultStore;
 		TreeStore elementsStore;
-		RegexLibrary regexLib;
+		RegexLibraryWindow regexLib;
 		
-		public RegexToolkit()
+		public RegexToolkitWindow() : base (Gtk.WindowType.Toplevel)
 		{
 			this.Build();
+			this.TransientFor = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;
 			optionsStore = new ListStore (typeof (bool), typeof (string), typeof (Options));
 			resultStore = new Gtk.TreeStore (typeof (string), typeof (string), typeof (int), typeof (int));
 			
@@ -72,7 +73,7 @@ namespace MonoDevelop.RegexToolkit
 			
 			this.buttonLibrary.Clicked  += delegate {
 				if (regexLib == null) {
-					regexLib = new RegexLibrary ();
+					regexLib = new RegexLibraryWindow ();
 				    regexLib.DestroyWithParent = true;
 				    regexLib.Parent = this;
 					regexLib.Destroyed += delegate {
@@ -347,7 +348,7 @@ namespace MonoDevelop.RegexToolkit
 		
 		void FillElementsBox ()
 		{
-			Stream stream = typeof (RegexToolkit).Assembly.GetManifestResourceStream ("RegexElements.xml");
+			Stream stream = typeof (RegexToolkitWindow).Assembly.GetManifestResourceStream ("RegexElements.xml");
 			if (stream == null)
 				return;
 			XmlReader reader = new XmlTextReader (stream);
