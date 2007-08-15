@@ -80,6 +80,7 @@ namespace MonoDevelop.RegexToolkit {
             // Widget MonoDevelop.RegexToolkit.RegexLibrary
             this.Name = "MonoDevelop.RegexToolkit.RegexLibrary";
             this.Title = Mono.Unix.Catalog.GetString("RegExLib.com Regular Expression Library");
+            this.TypeHint = ((Gdk.WindowTypeHint)(1));
             this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.HasSeparator = false;
             // Internal child MonoDevelop.RegexToolkit.RegexLibrary.VBox

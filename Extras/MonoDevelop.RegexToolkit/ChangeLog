@@ -1,3 +1,7 @@
+2007-08-15  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.RegexToolkit.mdp: Added prefixes for makefile support.
+
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.RegexToolkit.addin.xml, MonoDevelop.RegexToolkit.mdp,

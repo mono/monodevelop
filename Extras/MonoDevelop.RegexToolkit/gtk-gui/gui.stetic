@@ -3,12 +3,6 @@
   <configuration>
     <images-root-path>../</images-root-path>
   </configuration>
-  <import>
-    <widget-library name="../../../build/AddIns/MonoDevelop.Components.dll" />
-    <widget-library name="../../../build/AddIns/MonoDevelop.Ide.dll" />
-    <widget-library name="../../../build/AddIns/MonoDevelop.Projects.Gui.dll" />
-    <widget-library name="../../../build/AddIns/MonoDevelop.Deployment.dll" />
-  </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.RegexToolkit.RegexToolkit" design-size="802 603">
     <action-group name="Default">
       <action id="Replace">
@@ -442,6 +436,7 @@
   <widget class="Gtk.Dialog" id="MonoDevelop.RegexToolkit.RegexLibrary" design-size="506 473">
     <property name="MemberName" />
     <property name="Title" translatable="yes">RegExLib.com Regular Expression Library</property>
+    <property name="TypeHint">Dialog</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
