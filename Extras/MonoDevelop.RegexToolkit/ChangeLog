@@ -1,3 +1,9 @@
+2007-08-15  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* MonoDevelop.RegexToolkit/UpdateInProgressDialog.cs: Use fully 
+	  qualified type names inside anonymous delegates as a workaround 
+	  for gmcs 1.2.4 bug.
+
 2007-08-15  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.RegexToolkit/UpdateInProgressDialog.cs,

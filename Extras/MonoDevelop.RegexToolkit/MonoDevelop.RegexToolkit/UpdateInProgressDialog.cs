@@ -60,10 +60,10 @@ namespace MonoDevelop.RegexToolkit
 			DispatchService.BackgroundDispatch (
 				delegate {
 				Webservices services = new Webservices ();
-				this.expressions = services.ListAllAsXml (Int32.MaxValue);
+				this.expressions = services.ListAllAsXml (System.Int32.MaxValue);
 				if (!cancled) {
 					this.buttonCancel.Sensitive = false;
-					this.label.Text = GettextCatalog.GetString ("Update done.");
+					this.label.Text = MonoDevelop.Core.GettextCatalog.GetString ("Update done.");
 					this.buttonOk.Sensitive = true;
 				}
 			});
