@@ -491,6 +491,7 @@ Extras/Deployment/Makefile
 Extras/Deployment/MonoDevelop.Deployment/Makefile
 Extras/Deployment/MonoDevelop.Deployment.Linux/Makefile
 Extras/MonoDevelop.Gettext/Makefile
+Extras/MonoDevelop.RegexToolkit/Makefile
 Makefile
 monodevelop
 mdtool

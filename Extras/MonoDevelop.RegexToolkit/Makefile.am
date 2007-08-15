@@ -5,25 +5,24 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.RegexToolkit.dll
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	../../build/AddIns/MonoDevelop.Deployment.dll \
-	../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
-	../../build/bin/MonoDevelop.Components.dll \
-	../../build/bin/MonoDevelop.Core.dll \
-	../../build/bin/MonoDevelop.Core.Gui.dll \
-	../../build/bin/MonoDevelop.Ide.dll \
-	../../build/bin/MonoDevelop.Projects.dll \
-	../../build/bin/MonoDevelop.Projects.Gui.dll \
-	../../contrib/Mono.Addins.dll \
-	Mono.Posix \
-	System \
-	System.Data \
-	System.Web \
-	System.Web.Services \
-	System.Xml
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
+	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
+	-r:Mono.Posix \
+	-r:System \
+	-r:System.Data \
+	-r:System.Web \
+	-r:System.Web.Services \
+	-r:System.Xml
 	
 FILES =  \
 	AssemblyInfo.cs \
-	ChangeLog \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.RegexToolkit.RegexLibrary.cs \
 	gtk-gui/MonoDevelop.RegexToolkit.RegexToolkit.cs \
