@@ -1,11 +1,11 @@
 <objects>
-  <object type="MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector" palette-category="widget" allow-children="false" base-type="Gtk.Widget">
+  <object type="MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector" palette-category="MonoDevelop.Ide" allow-children="false" base-type="Gtk.Widget">
     <itemgroups>
     </itemgroups>
     <signals>
     </signals>
   </object>
-  <object type="MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
+  <object type="MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel" palette-category="MonoDevelop.Ide" allow-children="false" base-type="Gtk.Bin">
     <itemgroups>
       <itemgroup label="StandardHeaderPanel Properties">
         <property name="EnableFinish" />
@@ -18,7 +18,7 @@
       </itemgroup>
     </signals>
   </object>
-  <object type="MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
+  <object type="MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel" palette-category="MonoDevelop.Ide" allow-children="false" base-type="Gtk.Bin">
     <itemgroups>
       <itemgroup label="KeyBindingsPanel Properties">
         <property name="EnableFinish" />

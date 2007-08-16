@@ -1,5 +1,9 @@
 2007-08-16  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* gtk-gui/objects.xml: Assigned a better category to custom widgets.
+
+2007-08-16  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs,
 	  MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs,
 	  MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Redirection to the
