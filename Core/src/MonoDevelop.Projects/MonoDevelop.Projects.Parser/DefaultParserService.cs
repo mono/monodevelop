@@ -560,7 +560,7 @@ namespace MonoDevelop.Projects.Parser
 		{
 			CodeCompletionDatabase pdb = GetProjectDatabase (project);
 			if (pdb == null)
-				throw new InvalidOperationException ("Project not found in parser database");
+				throw new InvalidOperationException ("Project '" + project.Name + "' not found in parser database");
 			return new ProjectParserContext (parserService, this, pdb);
 		}
 		
@@ -908,11 +908,12 @@ namespace MonoDevelop.Projects.Parser
 		{
 			lock (databases)
 			{
-				ProjectCodeCompletionDatabase db = GetProjectDatabase ((Project) args.CombineEntry);
+				string pn = "Project:" + args.OldName;
+				ProjectCodeCompletionDatabase db = (ProjectCodeCompletionDatabase) databases [pn];
 				if (db == null) return;
 				
 				db.Rename (args.NewName);
-				databases.Remove ("Project:" + args.OldName);
+				databases.Remove (pn);
 				databases ["Project:" + args.NewName] = db;
 				RefreshProjectDatabases ();
 				CleanUnusedDatabases ();
