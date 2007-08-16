@@ -331,10 +331,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 				{
 					selection = value;
 						
-					if (selection < page)
-						page = selection;
-					else if (selection >= page + VisibleRows) {
-						page = selection - VisibleRows + 1;
+					if (selection < page || selection >= page + VisibleRows) {
+						page = selection - (VisibleRows / 2);
 						if (page < 0) page = 0;
 					}
 					

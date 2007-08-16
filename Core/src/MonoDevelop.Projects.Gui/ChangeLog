@@ -1,3 +1,11 @@
+2007-08-16  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Fixed 80813:Code
+	  completion should show the best match in the middle of the combo
+	  box.
+	
+	  (applied patch from Levi Bard)
+
 2007-08-14  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs: Added a
