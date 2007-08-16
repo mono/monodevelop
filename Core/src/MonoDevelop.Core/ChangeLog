@@ -1,3 +1,9 @@
+2007-08-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.ProgressMonitoring/ProgressTracker.cs: The Global work
+	  may be known even if the last task has an unknown amount of work, so we
+	  need to check all tasks.
+
 2007-08-14  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Core.ProgressMonitoring/ConsoleProgressMonitor.cs

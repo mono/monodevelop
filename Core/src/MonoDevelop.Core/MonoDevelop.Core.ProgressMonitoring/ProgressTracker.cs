@@ -117,7 +117,11 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		public bool UnknownWork {
 			get {
 				if (tasks.Count == 0) return false;
-				return LastTask.TotalWork <= 1;
+				for (int n = tasks.Count - 1; n >= 0; n--) {
+					if (tasks [n].TotalWork != 1)
+						return false;
+				}
+				return true;
 			}
 		}
 		
