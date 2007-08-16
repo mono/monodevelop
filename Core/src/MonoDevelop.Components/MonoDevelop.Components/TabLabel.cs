@@ -17,6 +17,12 @@ namespace MonoDevelop.Components
 		private Gtk.Image icon;
 		private EventBox titleBox;
 		private Tooltips tips;
+		private static Gdk.Pixbuf closeImage;
+		
+		static TabLabel ()
+		{
+			closeImage = Gdk.Pixbuf.LoadFromResource ("MonoDevelop.Close.png");
+		}
 		
 		protected TabLabel (IntPtr p): base (p)
 		{
@@ -38,7 +44,7 @@ namespace MonoDevelop.Components
 			this.PackStart (titleBox, true, true, 0);
 			
 			Button button = new Button ();
-			button.Add (new Gtk.Image (GetType().Assembly, "MonoDevelop.Close.png"));
+			button.Add (new Gtk.Image (closeImage));
 			button.Relief = ReliefStyle.None;
 			button.SetSizeRequest (18, 18);
 			button.Clicked += new EventHandler(ButtonClicked);
