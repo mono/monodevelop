@@ -1,3 +1,9 @@
+2007-08-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui/StatusProgressMonitor.cs: Properly update the status
+	  bar when multiple status progress monitors are running at the same time.
+	  Fixes bug #82251.
+
 2007-08-16  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Commands/FileCommands.cs,

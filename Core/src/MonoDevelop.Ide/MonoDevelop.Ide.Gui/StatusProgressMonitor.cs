@@ -28,6 +28,7 @@
 
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.ProgressMonitoring;
@@ -41,21 +42,28 @@ namespace MonoDevelop.Ide.Gui
 		bool showErrorDialogs;
 		bool showTaskTitles;
 		bool lockGui;
+		string title;
+		
+		static List<StatusProgressMonitor> monitorQueue = new List<StatusProgressMonitor> ();
 		
 		public StatusProgressMonitor (string title, string iconName, bool showErrorDialogs, bool showTaskTitles, bool lockGui)
 		{
 			this.lockGui = lockGui;
 			this.showErrorDialogs = showErrorDialogs;
 			this.showTaskTitles = showTaskTitles;
+			this.title = title;
 			icon = Services.Resources.GetImage (iconName, Gtk.IconSize.Menu);
 			IdeApp.Workbench.StatusBar.BeginProgress (title);
 			IdeApp.Workbench.StatusBar.SetMessage (icon, title);
 			if (lockGui)
 				IdeApp.Workbench.LockGui ();
+			monitorQueue.Add (this);
 		}
 		
 		protected override void OnProgressChanged ()
 		{
+			if (monitorQueue [monitorQueue.Count - 1] != this)
+				return;
 			if (showTaskTitles)
 				IdeApp.Workbench.StatusBar.SetMessage (icon, CurrentTask);
 			if (!UnknownWork)
@@ -63,12 +71,32 @@ namespace MonoDevelop.Ide.Gui
 			DispatchService.RunPendingEvents ();
 		}
 		
+		public void UpdateStatusBar ()
+		{
+			if (showTaskTitles)
+				IdeApp.Workbench.StatusBar.SetMessage (icon, CurrentTask);
+			else
+				IdeApp.Workbench.StatusBar.SetMessage (icon, title);
+			if (!UnknownWork)
+				IdeApp.Workbench.StatusBar.SetProgressFraction (GlobalWork);
+			else
+				IdeApp.Workbench.StatusBar.SetProgressFraction (0);
+		}
+		
 		protected override void OnCompleted ()
 		{
 			if (lockGui)
 				IdeApp.Workbench.UnlockGui ();
-				
-			IdeApp.Workbench.StatusBar.EndProgress ();
+			
+			int i = monitorQueue.IndexOf (this);
+			bool uniqueMonitor = monitorQueue.Count == 1;
+			
+			if (uniqueMonitor)
+				IdeApp.Workbench.StatusBar.EndProgress ();
+			else if (i == monitorQueue.Count - 1)
+				monitorQueue [i - 1].UpdateStatusBar ();
+			
+			monitorQueue.RemoveAt (i);
 
 			if (Errors.Count > 0) {
 				if (showErrorDialogs) {
@@ -77,8 +105,10 @@ namespace MonoDevelop.Ide.Gui
 						s += m + "\n";
 					Services.MessageService.ShowError (ErrorException, s);
 				}
-				Gtk.Image img = Services.Resources.GetImage (Stock.Error, Gtk.IconSize.Menu);
-				IdeApp.Workbench.StatusBar.SetMessage (img, Errors [Errors.Count - 1]);
+				if (uniqueMonitor) {
+					Gtk.Image img = Services.Resources.GetImage (Stock.Error, Gtk.IconSize.Menu);
+					IdeApp.Workbench.StatusBar.SetMessage (img, Errors [Errors.Count - 1]);
+				}
 				base.OnCompleted ();
 				return;
 			}
@@ -92,18 +122,22 @@ namespace MonoDevelop.Ide.Gui
 				}
 				
 				if (SuccessMessages.Count == 0) {
-					Gtk.Image img = Services.Resources.GetImage (Stock.Warning, Gtk.IconSize.Menu);
-					IdeApp.Workbench.StatusBar.SetMessage (img, Warnings [Warnings.Count - 1]);
+					if (uniqueMonitor) {
+						Gtk.Image img = Services.Resources.GetImage (Stock.Warning, Gtk.IconSize.Menu);
+						IdeApp.Workbench.StatusBar.SetMessage (img, Warnings [Warnings.Count - 1]);
+					}
 					base.OnCompleted ();
 					return;
 				}
 			}
+
+			if (uniqueMonitor) {
+				if (SuccessMessages.Count > 0)
+					IdeApp.Workbench.StatusBar.SetMessage (SuccessMessages [SuccessMessages.Count - 1]);
+				else
+					IdeApp.Workbench.StatusBar.SetMessage (GettextCatalog.GetString ("Ready"));
+			}
 			
-			if (SuccessMessages.Count > 0)
-				IdeApp.Workbench.StatusBar.SetMessage (SuccessMessages [SuccessMessages.Count - 1]);
-			else
-				IdeApp.Workbench.StatusBar.SetMessage (GettextCatalog.GetString ("Ready"));
-				
 			base.OnCompleted ();
 		}
 	}
