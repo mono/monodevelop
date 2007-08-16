@@ -668,6 +668,12 @@ namespace CSharpBinding.Parser
 				return null;
 			}
 			
+			// try if typeName is a method parameter
+			IParameter p = SearchMethodParameter (id);
+			if (p != null) {
+				return p;
+			}
+			
 			//// somehow search in callingClass fields is not returning anything, so I am searching here once again
 			foreach (IField f in callingClass.Fields) {
 				if (f.Name == id) {
@@ -675,12 +681,6 @@ namespace CSharpBinding.Parser
 				}
 			}
 		
-			// try if typeName is a method parameter
-			IParameter p = SearchMethodParameter (id);
-			if (p != null) {
-				return p;
-			}
-			
 			// check if typeName == value in set method of a property
 			if (id == "value") {
 				IProperty pr = SearchProperty();

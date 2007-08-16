@@ -1,3 +1,8 @@
+2007-08-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Parser/Resolver.cs: Method parameters must be resolved before class
+	  members. Fixes bug #82391.
+
 2007-08-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Parser/Resolver.cs: Fix possible infinite recursion (bug #82303).
