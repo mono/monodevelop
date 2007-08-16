@@ -1,3 +1,9 @@
+2007-08-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: In FindClass, make
+	  sure the getUserClass parameter is taken into account when the found
+	  class is not a multi-part class. Fixes bug #82258.
+
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.addin.xml: Removed the CommandService class.

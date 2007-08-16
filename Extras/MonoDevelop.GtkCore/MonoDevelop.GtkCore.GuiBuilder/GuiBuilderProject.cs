@@ -480,7 +480,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 							if (!part.Region.FileName.StartsWith (info.GtkGuiFolder))
 								return part;
 						}
+						return null;
 					}
+					if (getUserClass && cls.Region.FileName.StartsWith (info.GtkGuiFolder))
+						return null;
 					else
 						return cls;
 				}
