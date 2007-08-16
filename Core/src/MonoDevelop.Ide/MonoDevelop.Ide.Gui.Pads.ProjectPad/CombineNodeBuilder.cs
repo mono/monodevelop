@@ -282,6 +282,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			nav.Selected = true;
 			nav.Expanded = true;
 		}
+		[CommandHandler (FileCommands.OpenContainingFolder)]
+		public void OnOpenFolder ()
+		{
+			Combine combine = (Combine) CurrentNode.DataItem;
+			System.Diagnostics.Process.Start ("file://" + combine.BaseDirectory);
+		}
 		
 		[CommandHandler (SearchCommands.FindInFiles)]
 		public void OnFindInFiles ()

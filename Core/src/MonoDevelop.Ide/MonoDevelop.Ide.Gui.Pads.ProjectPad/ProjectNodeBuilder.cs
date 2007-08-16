@@ -340,6 +340,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				IdeApp.ProjectOperations.SaveCombine();
 			}
 		}
+		[CommandHandler (FileCommands.OpenContainingFolder)]
+		public void OnOpenFolder ()
+		{
+			Project prj = CurrentNode.DataItem as Project;
+			System.Diagnostics.Process.Start ("file://" + prj.BaseDirectory);
+		}
 		
 		[CommandHandler (ProjectCommands.AddReference)]
 		public void AddReferenceToProject ()

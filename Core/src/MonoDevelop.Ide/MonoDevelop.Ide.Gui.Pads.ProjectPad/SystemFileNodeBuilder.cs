@@ -169,6 +169,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			SystemFile file = CurrentNode.DataItem as SystemFile;
 			((FileViewer)ob).OpenFile (file.Path);
 		}
+		[CommandHandler (FileCommands.OpenContainingFolder)]
+		public void OnOpenFolder ()
+		{
+			SystemFile file = CurrentNode.DataItem as SystemFile;
+			string path = System.IO.Path.GetDirectoryName (file.Path);
+			System.Diagnostics.Process.Start ("file://" + path);
+		}
 		
 		[CommandUpdateHandler (ViewCommands.OpenWithList)]
 		public void OnOpenWithUpdate (CommandArrayInfo info)

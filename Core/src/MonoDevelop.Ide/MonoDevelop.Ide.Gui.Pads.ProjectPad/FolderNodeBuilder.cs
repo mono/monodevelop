@@ -27,13 +27,16 @@
 //
 
 using System;
-using System.IO;
 using System.Collections;
+using System.Diagnostics;
+using System.IO;
 using System.Text;
+
 using Gtk;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui;
@@ -307,6 +310,27 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			string path = GetFolderPath (CurrentNode.DataItem);
 			SearchReplaceInFilesManager.SearchOptions.SearchDirectory = path;
 			SearchReplaceInFilesManager.ShowFindDialog ();
+		}
+		
+		public static string TerminalCommand {
+			get {
+				return Runtime.Properties.GetProperty ("MonoDevelop.Shell", "gnome-terminal");
+			}
+		}
+		
+		[CommandHandler (FileCommands.OpenInTerminal)]
+		public void OnOpenInTerminal ()
+		{
+			string path = GetFolderPath (CurrentNode.DataItem);
+			string terminal = TerminalCommand;
+			Runtime.ProcessService.StartProcess (terminal, "", path, null);
+		}
+		
+		[CommandHandler (FileCommands.OpenFolder)]
+		public void OnOpenFolder ()
+		{
+			string path = GetFolderPath (CurrentNode.DataItem);
+			System.Diagnostics.Process.Start ("file://" + path);
 		}
 	}	
 }

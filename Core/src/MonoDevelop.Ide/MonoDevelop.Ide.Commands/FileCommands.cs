@@ -43,7 +43,10 @@ namespace MonoDevelop.Ide.Commands
 		ClearRecentProjects,
 		Exit,
 		ClearCombine,
-		OpenFileInSolution
+		OpenFileInSolution,
+		OpenInTerminal,
+		OpenFolder,
+		OpenContainingFolder
 	}
 	
 	internal class NewProjectHandler : CommandHandler

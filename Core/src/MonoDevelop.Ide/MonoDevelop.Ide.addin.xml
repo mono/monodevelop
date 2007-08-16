@@ -537,6 +537,15 @@
 				icon = "gtk-quit" 
 				description = "Quit MonoDevelop"
 				shortcut = "Control|Q" />
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenInTerminal"
+				_label = "_Open in Terminal" 
+				description = "Opens a terminal in this folder"/>
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenFolder"
+				_label = "_Open Folder" 
+				description = "Opens the folder in a file manager."/>
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder"
+				_label = "_Open Containing Folder" 
+				description = "Opens the folder that contains this file."/>
 		</Category>
 				
 		<!-- ViewCommands -->
@@ -835,6 +844,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename" />
 		<SeparatorItem id = "FindInFilesSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder" />
 		<SeparatorItem id = "CombineOptionsSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
 	</Extension>
@@ -860,6 +870,7 @@
 		<ItemSet id = "OpenWith" _label = "Open With">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.OpenWithList" />
 		</ItemSet>
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder" />
 		<SeparatorItem id = "OpenSeparator" />
 		<ItemSet id = "Include" _label = "Include">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeInBuild" />
@@ -878,6 +889,8 @@
 		<ItemSet id = "OpenWith" _label = "Open With">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.OpenWithList" />
 		</ItemSet>
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder" />
+		<SeparatorItem id = "OpenSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeToProject" />
 		<SeparatorItem id = "IncludeToProjectSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
@@ -903,6 +916,8 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename" />
 		<SeparatorItem id = "FindInFilesSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenFolder" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenInTerminal" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Project">
@@ -938,6 +953,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.SetAsStartupProject" />
 		<SeparatorItem id = "FindInFilesSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder" />
 		<SeparatorItem id = "OptionsSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
 	</Extension>

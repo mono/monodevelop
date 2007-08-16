@@ -140,6 +140,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 		}
 		
+		[CommandHandler (FileCommands.OpenContainingFolder)]
+		public void OnOpenFolder ()
+		{
+			ProjectFile file = CurrentNode.DataItem as ProjectFile;
+			string path = System.IO.Path.GetDirectoryName (file.FilePath);
+			System.Diagnostics.Process.Start ("file://" + path);
+		}
+
 		[CommandHandler (EditCommands.Delete)]
 		public void RemoveItem ()
 		{
