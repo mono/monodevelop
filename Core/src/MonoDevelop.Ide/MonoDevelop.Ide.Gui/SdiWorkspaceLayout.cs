@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.Gui
 		DockToolbarFrame toolbarFrame;
 		Dock dock;
 		DockLayout dockLayout;
-		DragNotebook tabControl;
+		SdiDragNotebook tabControl;
 		EventHandler contextChangedHandler;
 		Dictionary<PadCodon, IPadWindow> padWindows = new Dictionary<PadCodon, IPadWindow> ();
 		Dictionary<IPadWindow, PadCodon> padCodons = new Dictionary<IPadWindow, PadCodon> ();
@@ -111,7 +111,7 @@ namespace MonoDevelop.Ide.Gui
 			toolbarFrame.AddContent (dockBox);
 
 			// Create the notebook for the various documents.
-			tabControl = new DragNotebook ();
+			tabControl = new SdiDragNotebook ();
 			tabControl.Scrollable = true;
 			tabControl.SwitchPage += new SwitchPageHandler (ActiveMdiChanged);
 			
@@ -847,5 +847,22 @@ namespace MonoDevelop.Ide.Gui
 			return base.GetDelegatedCommandTarget ();
 		}
 
+	}
+	
+	// The SdiDragNotebook class allows redirecting the command route to the ViewCommandHandler
+	// object of the selected document, which implement some default commands.
+	
+	class SdiDragNotebook: DragNotebook, ICommandDelegatorRouter
+	{
+		public object GetNextCommandTarget ()
+		{
+			return Parent;
+		}
+
+		public object GetDelegatedCommandTarget ()
+		{
+			SdiWorkspaceWindow win = (SdiWorkspaceWindow) CurrentPageWidget;
+			return win.CommandHandler;
+		}
 	}
 }

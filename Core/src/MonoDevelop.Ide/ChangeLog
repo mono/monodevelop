@@ -1,5 +1,15 @@
 2007-08-16  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs,
+	  MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs,
+	  MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Redirection to the
+	  ViewCommandHandlers object is now done in the notebook instead of in
+	  SdiWorkspaceWindow. In this way those commands will be enabled even if
+	  the focus is not in the editor (it can be in the notebook label). Fixes
+	  bug #82217.
+
+2007-08-16  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui/StatusProgressMonitor.cs: Properly update the status
 	  bar when multiple status progress monitors are running at the same time.
 	  Fixes bug #82251.

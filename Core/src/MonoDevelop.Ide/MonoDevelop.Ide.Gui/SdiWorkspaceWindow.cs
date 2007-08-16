@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide.Gui
 			content.Control.Show ();
 			Show ();
 			SetTitleEvent(null, null);
-
+			
 			commandHandler = new ViewCommandHandlers (this);
 		}
 		
@@ -153,6 +153,12 @@ namespace MonoDevelop.Ide.Gui
 			}
 			set {
 				content = value;
+			}
+		}
+
+		public MonoDevelop.Ide.Gui.ViewCommandHandlers CommandHandler {
+			get {
+				return commandHandler;
 			}
 		}
 		
@@ -356,8 +362,7 @@ namespace MonoDevelop.Ide.Gui
 
 		object ICommandDelegatorRouter.GetNextCommandTarget ()
 		{
-			commandHandler.SetNextCommandTarget (Parent); 
-			return commandHandler;
+			return Parent;
 		}
 		
 		object ICommandDelegatorRouter.GetDelegatedCommandTarget ()

@@ -48,10 +48,9 @@ using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public class ViewCommandHandlers: ICommandDelegatorRouter
+	public class ViewCommandHandlers: ICommandRouter
 	{
 		IWorkbenchWindow window;
-		object nextTarget;
 		Document doc;
 
 		public ViewCommandHandlers (IWorkbenchWindow window)
@@ -65,19 +64,9 @@ namespace MonoDevelop.Ide.Gui
 			return (T) window.ActiveViewContent.GetContent (typeof(T));
 		}
 		
-		object ICommandDelegatorRouter.GetNextCommandTarget ()
-		{
-			return nextTarget;
-		}
-		
-		object ICommandDelegatorRouter.GetDelegatedCommandTarget ()
+		object ICommandRouter.GetNextCommandTarget ()
 		{
 			return doc.ExtendedCommandTargetChain;
-		}
-		
-		public void SetNextCommandTarget (object nextTarget)
-		{
-			this.nextTarget = nextTarget;
 		}
 		
 		[CommandHandler (FileCommands.CloseFile)]
