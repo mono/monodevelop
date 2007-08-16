@@ -1,5 +1,11 @@
 2007-08-16  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Parser/Resolver.cs: When listing the members of an enum, return enum
+	  members only (it is correct to call static methods using an enum type
+	  reference, but it doesn't make much sense). Fixes bug #82250.
+
+2007-08-16  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Parser/Resolver.cs: Method parameters must be resolved before class
 	  members. Fixes bug #82391.
 

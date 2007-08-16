@@ -326,7 +326,20 @@ namespace CSharpBinding.Parser
 //			Console.WriteLine(curType.Methods.Count + " methods");
 //			Console.WriteLine(curType.Events.Count + " events");
 //			Console.WriteLine(curType.Fields.Count + " fields");
+			
 			if (showStatic) {
+				if (curType.ClassType == ClassType.Enum) {
+					// If the type is an enum, show the enum members only.
+					// (it is correct to call static methods using an enum type reference,
+					// but it doesn't make much sense)
+					foreach (IField f in curType.Fields) {
+						if (MustBeShowen (qualifierClass, curType, f)) {
+							members.Add(f);
+						}
+					}
+					return members;
+				}
+				
 				foreach (IClass c in curType.InnerClasses) {
 					if (IsAccessible(qualifierClass, curType, c)) {
 						members.Add(c);
