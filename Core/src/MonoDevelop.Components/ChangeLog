@@ -1,5 +1,9 @@
 2007-08-16  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* gtk-gui/objects.xml: Assigned a better category to custom widgets.
+
+2007-08-16  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Components/TabLabel.cs: Reuse the button close image.
 
 2007-08-14  Lluis Sanchez Gual <lluis@novell.com> 

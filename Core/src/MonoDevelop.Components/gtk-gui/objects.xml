@@ -1,5 +1,5 @@
 <objects>
-  <object type="MonoDevelop.Components.FileEntry" palette-category="widget" allow-children="false" base-type="Gtk.Container">
+  <object type="MonoDevelop.Components.FileEntry" palette-category="MonoDevelop.Components" allow-children="false" base-type="Gtk.Container">
     <itemgroups>
       <itemgroup label="BaseFileEntry Properties">
         <property name="BrowserTitle" />
@@ -13,7 +13,7 @@
       </itemgroup>
     </signals>
   </object>
-  <object type="MonoDevelop.Components.FolderEntry" palette-category="widget" allow-children="false" base-type="Gtk.Container">
+  <object type="MonoDevelop.Components.FolderEntry" palette-category="MonoDevelop.Components" allow-children="false" base-type="Gtk.Container">
     <itemgroups>
       <itemgroup label="BaseFileEntry Properties">
         <property name="DefaultPath" />
@@ -27,7 +27,7 @@
       </itemgroup>
     </signals>
   </object>
-  <object type="MonoDevelop.Components.IconView" palette-category="widget" allow-children="false" base-type="Gtk.ScrolledWindow">
+  <object type="MonoDevelop.Components.IconView" palette-category="MonoDevelop.Components" allow-children="false" base-type="Gtk.ScrolledWindow">
     <itemgroups />
     <signals>
       <itemgroup label="IconView Signals">
