@@ -1,5 +1,14 @@
 2007-08-16  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs,
+	  MonoDevelop.GtkCore/GtkCoreService.cs: By default use the project name
+	  as category name for new custom widgets.
+	* lib/libsteticui.dll, lib/libstetic.dll: Updated from stetic module.
+	* MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs: Don't show the full
+	  name of widgets in the toolbar.
+
+2007-08-16  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: In FindClass, make
 	  sure the getUserClass parameter is taken into account when the found
 	  class is not a multi-part class. Fixes bug #82258.

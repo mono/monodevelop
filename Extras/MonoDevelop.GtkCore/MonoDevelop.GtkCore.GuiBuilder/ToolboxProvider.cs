@@ -95,7 +95,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public ComponentToolboxNode (ComponentType type)
 		{
-			Name = type.Description.Length > 0 ? type.Description : type.Name;
+			if (type.Description.Length > 0)
+				Name = type.Description;
+			else {
+				int i = type.Name.LastIndexOf ('.');
+				if (i == -1)
+					Name = type.Name;
+				else
+					Name = type.Name.Substring (i+1);
+			}
+			
 			componentType = type;
 			className = type.ClassName;
 			Category = GetCategoryName (type.Category);

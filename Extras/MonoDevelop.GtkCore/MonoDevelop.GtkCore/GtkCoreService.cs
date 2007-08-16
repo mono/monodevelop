@@ -202,6 +202,31 @@ namespace MonoDevelop.GtkCore
 			doc.Save (info.ObjectsFile);
 		}
 		
+		internal static void UpdateProjectName (Project project, string oldName, string newName)
+		{
+			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
+			if (info == null) return;
+
+			XmlDocument doc = new XmlDocument ();
+			if (!File.Exists (info.ObjectsFile))
+				return;
+			
+			doc.Load (info.ObjectsFile);
+			
+			bool modified = false;
+			
+			foreach (XmlElement elem in doc.SelectNodes ("objects/object")) {
+				string cat = elem.GetAttribute ("palette-category");
+				if (cat == oldName) {
+					elem.SetAttribute ("palette-category", newName);
+					modified = true;
+				}
+			}
+			
+			if (modified)
+				doc.Save (info.ObjectsFile);
+		}
+		
 		static void UpdateObjectsFile (Project project, IClass widgetClass, IClass wrapperClass)
 		{
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
@@ -227,7 +252,7 @@ namespace MonoDevelop.GtkCore
 				// The widget class is not yet in the XML file. Create an element for it.
 				objectElem = doc.CreateElement ("object");
 				objectElem.SetAttribute ("type", typeName);
-				objectElem.SetAttribute ("palette-category", "widget");
+				objectElem.SetAttribute ("palette-category", project.Name);
 				objectElem.SetAttribute ("allow-children", "false");
 				if (wrapperClass != null)
 					objectElem.SetAttribute ("wrapper", wrapperClass.FullyQualifiedName);

@@ -89,6 +89,7 @@ namespace MonoDevelop.GtkCore
 		{
 			this.project = project;
 			binding = Services.Languages.GetBindingPerLanguageName (project.LanguageName) as IDotNetLanguageBinding;
+			project.NameChanged += OnProjectRenamed;
 		}
 		
 		public void Dispose ()
@@ -97,6 +98,8 @@ namespace MonoDevelop.GtkCore
 				System.Runtime.Remoting.RemotingServices.Disconnect (resourceProvider);
 			if (builderProject != null)
 				builderProject.Dispose ();
+			if (project != null)
+				project.NameChanged -= OnProjectRenamed;
 		}
 		
 		public GuiBuilderProject GuiBuilderProject {
@@ -388,6 +391,11 @@ namespace MonoDevelop.GtkCore
 			if (provider == null)
 				throw new UserException ("Code generation not supported in language: " + project.LanguageName);
 			return provider;
+		}
+		
+		void OnProjectRenamed (object s, CombineEntryRenamedEventArgs a)
+		{
+			GtkCoreService.UpdateProjectName (project, a.OldName, a.NewName);
 		}
 	}	
 }
