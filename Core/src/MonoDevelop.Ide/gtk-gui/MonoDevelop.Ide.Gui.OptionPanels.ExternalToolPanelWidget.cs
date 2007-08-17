@@ -59,9 +59,11 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
         
         private Gtk.Label workingDirLabel;
         
-        private Gtk.VBox vbox36;
+        private Gtk.Table table1;
         
         private Gtk.CheckButton promptArgsCheckBox;
+        
+        private Gtk.CheckButton saveCurrentFileCheckBox;
         
         private Gtk.CheckButton useOutputPadCheckBox;
         
@@ -89,7 +91,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.toolListBox.WidthRequest = 200;
             this.toolListBox.HeightRequest = 150;
             this.toolListBox.Name = "toolListBox";
-            this.toolListBox.HeadersClickable = true;
             this.scrolledwindow4.Add(this.toolListBox);
             this.hbox21.Add(this.scrolledwindow4);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox21[this.scrolledwindow4]));
@@ -289,7 +290,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.workingDirLabel.Name = "workingDirLabel";
             this.workingDirLabel.Xalign = 0F;
             this.workingDirLabel.Yalign = 0F;
-            this.workingDirLabel.LabelProp = Mono.Unix.Catalog.GetString("_Working Directory:");
+            this.workingDirLabel.LabelProp = Mono.Unix.Catalog.GetString("_Working directory:");
             this.workingDirLabel.UseUnderline = true;
             this.table2.Add(this.workingDirLabel);
             Gtk.Table.TableChild w21 = ((Gtk.Table.TableChild)(this.table2[this.workingDirLabel]));
@@ -303,36 +304,47 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             w22.Expand = false;
             w22.Fill = false;
             // Container child vbox32.Gtk.Box+BoxChild
-            this.vbox36 = new Gtk.VBox();
-            this.vbox36.Name = "vbox36";
-            this.vbox36.Spacing = 6;
-            // Container child vbox36.Gtk.Box+BoxChild
+            this.table1 = new Gtk.Table(((uint)(2)), ((uint)(2)), false);
+            this.table1.Name = "table1";
+            this.table1.RowSpacing = ((uint)(6));
+            this.table1.ColumnSpacing = ((uint)(6));
+            // Container child table1.Gtk.Table+TableChild
             this.promptArgsCheckBox = new Gtk.CheckButton();
             this.promptArgsCheckBox.Name = "promptArgsCheckBox";
             this.promptArgsCheckBox.Label = Mono.Unix.Catalog.GetString("_Prompt for arguments");
             this.promptArgsCheckBox.DrawIndicator = true;
             this.promptArgsCheckBox.UseUnderline = true;
-            this.vbox36.Add(this.promptArgsCheckBox);
-            Gtk.Box.BoxChild w23 = ((Gtk.Box.BoxChild)(this.vbox36[this.promptArgsCheckBox]));
-            w23.Position = 0;
-            w23.Expand = false;
-            w23.Fill = false;
-            // Container child vbox36.Gtk.Box+BoxChild
+            this.table1.Add(this.promptArgsCheckBox);
+            Gtk.Table.TableChild w23 = ((Gtk.Table.TableChild)(this.table1[this.promptArgsCheckBox]));
+            w23.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child table1.Gtk.Table+TableChild
+            this.saveCurrentFileCheckBox = new Gtk.CheckButton();
+            this.saveCurrentFileCheckBox.CanFocus = true;
+            this.saveCurrentFileCheckBox.Name = "saveCurrentFileCheckBox";
+            this.saveCurrentFileCheckBox.Label = Mono.Unix.Catalog.GetString("_Save current file");
+            this.saveCurrentFileCheckBox.DrawIndicator = true;
+            this.saveCurrentFileCheckBox.UseUnderline = true;
+            this.table1.Add(this.saveCurrentFileCheckBox);
+            Gtk.Table.TableChild w24 = ((Gtk.Table.TableChild)(this.table1[this.saveCurrentFileCheckBox]));
+            w24.LeftAttach = ((uint)(1));
+            w24.RightAttach = ((uint)(2));
+            w24.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child table1.Gtk.Table+TableChild
             this.useOutputPadCheckBox = new Gtk.CheckButton();
             this.useOutputPadCheckBox.Name = "useOutputPadCheckBox";
-            this.useOutputPadCheckBox.Label = Mono.Unix.Catalog.GetString("Use _Output Window");
+            this.useOutputPadCheckBox.Label = Mono.Unix.Catalog.GetString("Use _output window");
             this.useOutputPadCheckBox.DrawIndicator = true;
             this.useOutputPadCheckBox.UseUnderline = true;
-            this.vbox36.Add(this.useOutputPadCheckBox);
-            Gtk.Box.BoxChild w24 = ((Gtk.Box.BoxChild)(this.vbox36[this.useOutputPadCheckBox]));
-            w24.Position = 1;
-            w24.Expand = false;
-            w24.Fill = false;
-            this.vbox32.Add(this.vbox36);
-            Gtk.Box.BoxChild w25 = ((Gtk.Box.BoxChild)(this.vbox32[this.vbox36]));
-            w25.Position = 2;
-            w25.Expand = false;
-            w25.Fill = false;
+            this.table1.Add(this.useOutputPadCheckBox);
+            Gtk.Table.TableChild w25 = ((Gtk.Table.TableChild)(this.table1[this.useOutputPadCheckBox]));
+            w25.TopAttach = ((uint)(1));
+            w25.BottomAttach = ((uint)(2));
+            w25.YOptions = ((Gtk.AttachOptions)(4));
+            this.vbox32.Add(this.table1);
+            Gtk.Box.BoxChild w26 = ((Gtk.Box.BoxChild)(this.vbox32[this.table1]));
+            w26.Position = 2;
+            w26.Expand = false;
+            w26.Fill = false;
             this.Add(this.vbox32);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

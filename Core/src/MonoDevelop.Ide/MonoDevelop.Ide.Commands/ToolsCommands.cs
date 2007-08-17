@@ -41,10 +41,10 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
-			for (int i = 0; i < ToolLoader.Tool.Count; ++i) {
-				CommandInfo cmd = new CommandInfo (ToolLoader.Tool[i].ToString());
-				cmd.Description = GettextCatalog.GetString ("Start tool") + " " + String.Join(String.Empty, ToolLoader.Tool[i].ToString().Split('&'));
-				info.Add (cmd, ToolLoader.Tool[i]);
+			for (int i = 0; i < ExternalToolService.Tools.Count; ++i) {
+				CommandInfo cmd = new CommandInfo (ExternalToolService.Tools[i].MenuCommand);
+				cmd.Description = GettextCatalog.GetString ("Start tool") + " " + String.Join(String.Empty, ExternalToolService.Tools[i].MenuCommand.Split('&'));
+				info.Add (cmd, ExternalToolService.Tools[i]);
 			}
 		}
 		
@@ -73,6 +73,8 @@ namespace MonoDevelop.Ide.Commands
 					args = stringParserService.Parse(tool.Arguments);
 				}
 			}
+			if (tool.SaveCurrentFile && MonoDevelop.Ide.Gui.IdeApp.Workbench.ActiveDocument != null)
+				MonoDevelop.Ide.Gui.IdeApp.Workbench.ActiveDocument.Save ();
 			
 			// create the process
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();

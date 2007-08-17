@@ -106,7 +106,6 @@ namespace MonoDevelop.Ide.CodeTemplates
 			result.shortcut    = reader.GetAttribute (shortcutAttribute);
 			result.description = reader.GetAttribute (descriptionAttribute);
 			result.text        = reader.ReadString ();
-			Console.WriteLine (result);
 			return result;
 		}
 #endregion

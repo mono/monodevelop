@@ -248,15 +248,19 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.replaceAllButton.UseUnderline = true;
             // Container child replaceAllButton.Gtk.Container+ContainerChild
             Gtk.Alignment w21 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            w21.Name = "GtkAlignment1";
             // Container child GtkAlignment1.Gtk.Container+ContainerChild
             Gtk.HBox w22 = new Gtk.HBox();
+            w22.Name = "GtkHBox5";
             w22.Spacing = 2;
             // Container child GtkHBox5.Gtk.Container+ContainerChild
             Gtk.Image w23 = new Gtk.Image();
-            w23.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-find-and-replace", Gtk.IconSize.Button, 20);
+            w23.Name = "image17";
+            w23.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-find-and-replace", 20);
             w22.Add(w23);
             // Container child GtkHBox5.Gtk.Container+ContainerChild
             Gtk.Label w25 = new Gtk.Label();
+            w25.Name = "GtkLabel7";
             w25.LabelProp = Mono.Unix.Catalog.GetString("R_eplace All");
             w25.UseUnderline = true;
             w22.Add(w25);
@@ -271,15 +275,19 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.replaceButton.UseUnderline = true;
             // Container child replaceButton.Gtk.Container+ContainerChild
             Gtk.Alignment w30 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            w30.Name = "GtkAlignment2";
             // Container child GtkAlignment2.Gtk.Container+ContainerChild
             Gtk.HBox w31 = new Gtk.HBox();
+            w31.Name = "GtkHBox6";
             w31.Spacing = 2;
             // Container child GtkHBox6.Gtk.Container+ContainerChild
             Gtk.Image w32 = new Gtk.Image();
-            w32.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-find-and-replace", Gtk.IconSize.Button, 20);
+            w32.Name = "image18";
+            w32.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-find-and-replace", 20);
             w31.Add(w32);
             // Container child GtkHBox6.Gtk.Container+ContainerChild
             Gtk.Label w34 = new Gtk.Label();
+            w34.Name = "GtkLabel8";
             w34.LabelProp = Mono.Unix.Catalog.GetString("_Replace");
             w34.UseUnderline = true;
             w31.Add(w34);
@@ -291,6 +299,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Container child dialog-action_area2.Gtk.ButtonBox+ButtonBoxChild
             this.findButton = new Gtk.Button();
             this.findButton.CanDefault = true;
+            this.findButton.HasDefault = true;
             this.findButton.Name = "findButton";
             this.findButton.UseStock = true;
             this.findButton.UseUnderline = true;
@@ -303,7 +312,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             }
             this.DefaultWidth = 642;
             this.DefaultHeight = 303;
-            this.findButton.HasDefault = true;
             this.Show();
         }
     }

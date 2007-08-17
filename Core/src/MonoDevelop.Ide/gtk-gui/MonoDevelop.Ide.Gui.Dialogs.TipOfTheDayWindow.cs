@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.image5.Name = "image5";
             this.image5.Xalign = 0F;
             this.image5.Yalign = 0F;
-            this.image5.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-dialog-info", Gtk.IconSize.Dialog, 48);
+            this.image5.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-dialog-info", 48);
             this.hbox7.Add(this.image5);
             Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.hbox7[this.image5]));
             w1.Position = 0;
@@ -129,15 +129,19 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.nextButton.UseUnderline = true;
             // Container child nextButton.Gtk.Container+ContainerChild
             Gtk.Alignment w8 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            w8.Name = "GtkAlignment";
             // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w9 = new Gtk.HBox();
+            w9.Name = "GtkHBox";
             w9.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w10 = new Gtk.Image();
-            w10.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-go-forward", Gtk.IconSize.Button, 20);
+            w10.Name = "image16";
+            w10.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-go-forward", 20);
             w9.Add(w10);
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w12 = new Gtk.Label();
+            w12.Name = "GtkLabel";
             w12.LabelProp = Mono.Unix.Catalog.GetString("_Next Tip");
             w12.UseUnderline = true;
             w9.Add(w12);
@@ -147,6 +151,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Container child hbuttonbox1.Gtk.ButtonBox+ButtonBoxChild
             this.closeButton = new Gtk.Button();
             this.closeButton.CanDefault = true;
+            this.closeButton.HasDefault = true;
             this.closeButton.Name = "closeButton";
             this.closeButton.UseStock = true;
             this.closeButton.UseUnderline = true;
@@ -167,7 +172,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             }
             this.DefaultWidth = 500;
             this.DefaultHeight = 285;
-            this.closeButton.HasDefault = true;
             this.Show();
         }
     }

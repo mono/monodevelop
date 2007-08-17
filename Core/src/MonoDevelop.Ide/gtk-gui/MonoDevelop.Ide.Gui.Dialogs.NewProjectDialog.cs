@@ -399,11 +399,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Container child dialog-action_area1.Gtk.ButtonBox+ButtonBoxChild
             this.btn_new = new Gtk.Button();
             this.btn_new.CanDefault = true;
+            this.btn_new.HasDefault = true;
             this.btn_new.Name = "btn_new";
             this.btn_new.UseStock = true;
             this.btn_new.UseUnderline = true;
             this.btn_new.Label = "gtk-go-forward";
-            w31.Add(this.btn_new);
+            this.AddActionWidget(this.btn_new, 0);
             Gtk.ButtonBox.ButtonBoxChild w33 = ((Gtk.ButtonBox.ButtonBoxChild)(w31[this.btn_new]));
             w33.Position = 1;
             if ((this.Child != null)) {
@@ -411,7 +412,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             }
             this.DefaultWidth = 708;
             this.DefaultHeight = 501;
-            this.btn_new.HasDefault = true;
             this.Show();
             this.txt_subdirectory.Changed += new System.EventHandler(this.PathChanged);
             this.txt_name.Changed += new System.EventHandler(this.NameChanged);

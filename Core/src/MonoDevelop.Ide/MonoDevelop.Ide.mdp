@@ -53,7 +53,6 @@
     <File name="./MonoDevelop.Ide.Codons/WindowActiveCondition.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Codons/WorkbenchContextCondition.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.ExternalTools/ExternalTool.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Ide.ExternalTools/ToolLoader.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui.Dialogs/IncludeFilesDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.CodeTemplates/CodeTemplateGroup.cs" subtype="Code" buildaction="Compile" />
@@ -328,6 +327,7 @@
     <File name="./options/KeyBindingSchemeEmacs.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./options/KeyBindingSchemeVisualStudio.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./MonoDevelop.Ide.Codons/FileFilterCodon.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.ExternalTools/ExternalToolService.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="gecko-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=ccf7d78a55e9f021" />

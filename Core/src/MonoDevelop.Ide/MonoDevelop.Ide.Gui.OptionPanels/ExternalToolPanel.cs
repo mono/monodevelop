@@ -8,6 +8,7 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.Components;
 
@@ -101,8 +102,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				workingDirLabel, browseButton, argumentQuickInsertButton, 
 				workingDirQuickInsertButton, moveUpButton, moveDownButton};
 			 
-			foreach (object o in ToolLoader.Tool) {
-				toolListBoxStore.AppendValues (((ExternalTool) o).MenuCommand, (ExternalTool) o);
+			foreach (ExternalTool o in ExternalToolService.Tools) {
+				toolListBoxStore.AppendValues (o.MenuCommand, o);
 				toolListBoxItemCount ++;
 			}
 
@@ -185,6 +186,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				selectedItem.InitialDirectory = workingDirTextBox.Text;
 				selectedItem.PromptForArguments = promptArgsCheckBox.Active;
 				selectedItem.UseOutputPad = useOutputPadCheckBox.Active;
+				selectedItem.SaveCurrentFile = saveCurrentFileCheckBox.Active;
 			}
 		}
 			 
@@ -198,6 +200,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			workingDirTextBox.Changed -= new EventHandler (setToolValues);
 			promptArgsCheckBox.Toggled -= new EventHandler (setToolValues);
 			useOutputPadCheckBox.Toggled -= new EventHandler (setToolValues);
+			saveCurrentFileCheckBox.Toggled -= new EventHandler (setToolValues);
 			 
 			if (toolListBox.Selection.CountSelectedRows () == 1) {				
 				TreeIter selectedIter;
@@ -215,6 +218,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				workingDirTextBox.Text = selectedItem.InitialDirectory;
 				promptArgsCheckBox.Active = selectedItem.PromptForArguments;
 				useOutputPadCheckBox.Active = selectedItem.UseOutputPad;
+				saveCurrentFileCheckBox.Active = selectedItem.SaveCurrentFile;
 			} else {
 				SetEnabledStatus (false, dependendControls);
 				titleTextBox.Text = String.Empty;
@@ -223,6 +227,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				workingDirTextBox.Text = String.Empty;
 				promptArgsCheckBox.Active = false;
 				useOutputPadCheckBox.Active = false;
+				saveCurrentFileCheckBox.Active = false;
 			}
 			 
 			browseButton.PathChanged += new EventHandler (setToolValues);
@@ -231,6 +236,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			workingDirTextBox.Changed += new EventHandler (setToolValues);
 			promptArgsCheckBox.Toggled += new EventHandler (setToolValues);
 			useOutputPadCheckBox.Toggled += new EventHandler (setToolValues);
+			saveCurrentFileCheckBox.Toggled += new EventHandler (setToolValues);
 		}
 		 
 		void removeEvent (object sender, EventArgs e)
@@ -313,7 +319,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 		public bool Store ()
 		{
-			ArrayList newlist = new ArrayList ();
+			List<ExternalTool> newlist = new List<ExternalTool> ();
 			TreeIter first;
 			if (toolListBox.Model.GetIterFirst (out first))
 			{
@@ -342,8 +348,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				while (toolListBox.Model.IterNext (ref current));
 			}
 			
-			ToolLoader.Tool = newlist;
-			ToolLoader.SaveTools ();
+			ExternalToolService.Tools = newlist;
+			ExternalToolService.SaveTools ();
 			return true;
 		}
 	}

@@ -1,5 +1,5 @@
 //
-// CodeTemplateService.cs
+// ExternalToolService.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -29,58 +29,44 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Xml;
 
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Ide.CodeTemplates
+namespace MonoDevelop.Ide.ExternalTools
 {
-	public static class CodeTemplateService
+	public static class ExternalToolService
 	{
-		static string FileName = "MonoDevelop-templates.xml";
+		static string FileName = "MonoDevelop-tools.xml";
 		static string Version  = "2.0";
 		
-		static List<CodeTemplateGroup> groups = new List<CodeTemplateGroup> ();
+		static List<ExternalTool> tools;
 		
-		public static List<CodeTemplateGroup> TemplateGroups {
+		public static List<ExternalTool> Tools {
 			get {
-				return groups;
+				return tools;
 			}
 			set {
-				groups = value;
+				tools = value;
 			}
 		}
 		
-		static CodeTemplateService ()
+		static ExternalToolService ()
 		{
 			try {
-				groups = LoadTemplates ();			
+				tools = LoadTools ();
 			} catch (Exception e) {
-				Runtime.LoggingService.Error ("CodeTemplateService: Exception while loading templates.\n" + e);
-				groups = new List<CodeTemplateGroup> ();
+				Runtime.LoggingService.Error ("ExternalToolService: Exception while loading tools.\n" + e);
+				tools = new List<ExternalTool> ();
 			}
 		}
 		
-		public static CodeTemplateGroup GetTemplateGroupPerFilename (string fileName)
-		{
-			return GetTemplateGroupPerExtension (Path.GetExtension (fileName));
-		}
-		
-		public static CodeTemplateGroup GetTemplateGroupPerExtension (string extension)
-		{
-			foreach (CodeTemplateGroup group in groups) {
-				if (group.Extensions.Contains (extension)) 
-					return group;
-			}
-			return null;
-		}
-
 #region I/O
-		const string Node             = "CodeTemplates";
+		const string Node             = "Tools";
 		const string VersionAttribute = "version";
-		static void SaveTemplates (string fileName)
+		
+		static void SaveTools (string fileName)
 		{
 			XmlWriter writer = XmlTextWriter.Create (fileName);
 			writer.Settings.Indent = true;
@@ -89,8 +75,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 				writer.WriteStartElement (Node);
 				writer.WriteAttributeString (VersionAttribute, Version);
 			
-				foreach (CodeTemplateGroup group in groups)
-					group.Write (writer);
+				foreach (ExternalTool tool in tools)
+					tool.Write (writer);
 				
 				writer.WriteEndElement (); // Node 
 			} finally {
@@ -98,16 +84,16 @@ namespace MonoDevelop.Ide.CodeTemplates
 			}
 		}
 		
-		public static void SaveTemplates ()
+		public static void SaveTools ()
 		{
-			SaveTemplates (Path.Combine (Runtime.Properties.ConfigDirectory, FileName));
+			SaveTools (Path.Combine (Runtime.Properties.ConfigDirectory, FileName));
 		}
 		
-		static List<CodeTemplateGroup> LoadTemplates (string fileName)
+		static List<ExternalTool> LoadTools (string fileName)
 		{
 			if (!File.Exists (fileName))
 				return null;
-			List<CodeTemplateGroup> result = new List<CodeTemplateGroup> ();
+			List<ExternalTool> result = new List<ExternalTool> ();
 			XmlReader reader = XmlTextReader.Create (fileName);
 			try {
 				while (reader.Read ()) {
@@ -118,8 +104,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 							if (fileVersion != Version) 
 								return null;
 							break;
-						case CodeTemplateGroup.Node:
-							result.Add (CodeTemplateGroup.Read (reader));
+						case ExternalTool.Node:
+							result.Add (ExternalTool.Read (reader));
 							break;
 						}
 					}
@@ -130,15 +116,19 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return result;
 		}
 		
-		static List<CodeTemplateGroup> LoadTemplates ()
+		static List<ExternalTool> LoadTools ()
 		{
-			List<CodeTemplateGroup> result = LoadTemplates (Path.Combine (Runtime.Properties.ConfigDirectory, FileName));
+			List<ExternalTool> result = LoadTools (Path.Combine (Runtime.Properties.ConfigDirectory, FileName));
 			if (result == null) {
-				Runtime.LoggingService.Info ("CodeTemplateService: No user templates, reading default templates.");
-				result = LoadTemplates( Path.Combine (Path.Combine (Runtime.Properties.DataDirectory, "options"), FileName));
+				Runtime.LoggingService.Info ("ExternalToolService: No user templates, reading default templates.");
+				result = LoadTools (Path.Combine (Path.Combine (Runtime.Properties.DataDirectory, "options"), FileName));
 			}
+			
+			if (result == null)
+				return new List<ExternalTool> ();
+			
 			return result;
 		}
-#endregion
+#endregion		
 	}
 }

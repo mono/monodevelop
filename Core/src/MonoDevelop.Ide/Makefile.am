@@ -101,7 +101,7 @@ FILES =  \
 	MonoDevelop.Ide.Commands/ViewCommands.cs \
 	MonoDevelop.Ide.Commands/WindowCommands.cs \
 	MonoDevelop.Ide.ExternalTools/ExternalTool.cs \
-	MonoDevelop.Ide.ExternalTools/ToolLoader.cs \
+	MonoDevelop.Ide.ExternalTools/ExternalToolService.cs \
 	MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs \
 	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HTMLInterfaces.cs \
 	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs \

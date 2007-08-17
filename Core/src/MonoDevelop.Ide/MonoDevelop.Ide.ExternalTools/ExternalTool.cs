@@ -1,49 +1,64 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version value="$version"/>
-// </file>
+//
+// ExternalTool.cs
+//
+// Author:
+//   Mike Krüger <mkrueger@novell.com>
+//
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
 
 using System;
 using System.Diagnostics;
 using System.Xml;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.ExternalTools
 {
-	/// <summary>
-	/// This class describes an external tool, which is a external program
-	/// that can be launched from the toolmenu inside Sharp Develop.
-	/// </summary>
-	internal class ExternalTool
+	public class ExternalTool
 	{
-		string menuCommand       = GettextCatalog.GetString ("New Tool");
-		string command           = "";
-		string arguments         = "";
-		string initialDirectory  = "";
-		bool   promptForArguments = false;
-		bool   useOutputPad       = false;
-		
+		string menuCommand;
+		string command;
+		string arguments;
+		string initialDirectory;
+		bool   promptForArguments;
+		bool   useOutputPad;
+		bool   saveCurrentFile;
+
 		public string MenuCommand {
 			get {
 				return menuCommand;
 			}
 			set {
 				menuCommand = value;
-				Debug.Assert(menuCommand != null, "MonoDevelop.Internal.ExternalTool.ExternalTool : string MenuCommand == null");
 			}
 		}
-		
+
 		public string Command {
 			get {
 				return command;
 			}
 			set {
 				command = value;
-				Debug.Assert(command != null, "MonoDevelop.Internal.ExternalTool.ExternalTool : string Command == null");
 			}
 		}
 		
@@ -53,20 +68,18 @@ namespace MonoDevelop.Ide.ExternalTools
 			}
 			set {
 				arguments = value;
-				Debug.Assert(arguments != null, "MonoDevelop.Internal.ExternalTool.ExternalTool : string Arguments == null");
 			}
 		}
-		
+
 		public string InitialDirectory {
 			get {
 				return initialDirectory;
 			}
 			set {
 				initialDirectory = value;
-				Debug.Assert(initialDirectory != null, "MonoDevelop.Internal.ExternalTool.ExternalTool : string InitialDirectory == null");
 			}
 		}
-		
+
 		public bool PromptForArguments {
 			get {
 				return promptForArguments;
@@ -75,7 +88,7 @@ namespace MonoDevelop.Ide.ExternalTools
 				promptForArguments = value;
 			}
 		}
-		
+
 		public bool UseOutputPad {
 			get {
 				return useOutputPad;
@@ -84,74 +97,66 @@ namespace MonoDevelop.Ide.ExternalTools
 				useOutputPad = value;
 			}
 		}
-		
-		public ExternalTool() 
-		{
-		}
-		
-		public ExternalTool(XmlElement el)
-		{
-			if (el == null) {
-				throw new ArgumentNullException("ExternalTool(XmlElement el) : el can't be null");
-			}
-			
-			if (el["INITIALDIRECTORY"] == null ||
-				el["ARGUMENTS"] == null ||
-				el["COMMAND"] == null ||
-				el["MENUCOMMAND"] == null || 
-				el["PROMPTFORARGUMENTS"] == null ||
-				el["USEOUTPUTPAD"] == null) {
-				throw new Exception("ExternalTool(XmlElement el) : INITIALDIRECTORY and ARGUMENTS and COMMAND and MENUCOMMAND and PROMPTFORARGUMENTS and USEOUTPUTPAD attributes must exist.(check the ExternalTool XML)");
-			}
-			
-			InitialDirectory  = el["INITIALDIRECTORY"].InnerText;
-			Arguments         = el["ARGUMENTS"].InnerText;
-			Command           = el["COMMAND"].InnerText;
-			MenuCommand       = el["MENUCOMMAND"].InnerText;
-						
-			PromptForArguments = Boolean.Parse(el["PROMPTFORARGUMENTS"].InnerText);
-			UseOutputPad       = Boolean.Parse(el["USEOUTPUTPAD"].InnerText);
-			
-		}
-		
-		public override string ToString()
-		{
-			return menuCommand;
-		}
-		
-		public XmlElement ToXmlElement(XmlDocument doc)
-		{
-			if (doc == null) {
-				throw new ArgumentNullException("ExternalTool.ToXmlElement(XmlDocument doc) : doc can not be null");
-			}
-			
-			XmlElement el = doc.CreateElement("TOOL");
-			
-			XmlElement x = doc.CreateElement("INITIALDIRECTORY");
-			x.InnerText = InitialDirectory;
-			el.AppendChild(x);
-			
-			x = doc.CreateElement("ARGUMENTS");
-			x.InnerText = Arguments;
-			el.AppendChild(x);
-			
-			x = doc.CreateElement("COMMAND");
-			x.InnerText = command;
-			el.AppendChild(x);
-			
-			x = doc.CreateElement("MENUCOMMAND");
-			x.InnerText = MenuCommand;
-			el.AppendChild(x);
-			
-			x = doc.CreateElement("PROMPTFORARGUMENTS");
-			x.InnerText = PromptForArguments.ToString();
-			el.AppendChild(x);
 
-			x = doc.CreateElement("USEOUTPUTPAD");
-			x.InnerText = UseOutputPad.ToString();
-			el.AppendChild(x);
-			
-			return el;
+		public bool SaveCurrentFile {
+			get {
+				return saveCurrentFile;
+			}
+			set {
+				saveCurrentFile = value;
+			}
 		}
+		
+		public ExternalTool ()
+		{
+			this.menuCommand = GettextCatalog.GetString ("New Tool");
+		}
+		
+#region I/O
+		public const string Node = "ExternalTool";
+		
+		const string menuCommandAttribute        = "menuCommand";
+		const string commandAttribute            = "command";
+		const string argumentsAttribute          = "arguments";
+		const string initialDirectoryAttribute   = "initialDirectory";
+		const string promptForArgumentsAttribute = "promptForArguments";
+		const string useOutputPadAttribute       = "useOutputPad";
+		const string saveCurrentFileAttribute    = "saveCurrentFile";
+		
+		public void Write (XmlWriter writer)
+		{
+			writer.WriteStartElement (Node);
+			writer.WriteAttributeString (menuCommandAttribute, this.menuCommand);
+			writer.WriteAttributeString (commandAttribute, this.command);
+			writer.WriteAttributeString (argumentsAttribute, this.arguments);
+			writer.WriteAttributeString (initialDirectoryAttribute, this.initialDirectory);
+			writer.WriteAttributeString (promptForArgumentsAttribute, this.promptForArguments.ToString ());
+			writer.WriteAttributeString (useOutputPadAttribute, this.useOutputPad.ToString ());
+			writer.WriteAttributeString (saveCurrentFileAttribute, this.saveCurrentFile.ToString ());
+			writer.WriteEndElement (); // Node
+		}
+		
+		public static ExternalTool Read (XmlReader reader)
+		{
+			Debug.Assert (reader.LocalName == Node);
+			
+			ExternalTool result = new ExternalTool ();
+			result.menuCommand      = reader.GetAttribute (menuCommandAttribute);
+			result.command          = reader.GetAttribute (commandAttribute);
+			result.arguments        = reader.GetAttribute (argumentsAttribute);
+			result.initialDirectory = reader.GetAttribute (initialDirectoryAttribute);
+			result.menuCommand      = reader.GetAttribute (menuCommandAttribute);
+			
+			if (!String.IsNullOrEmpty (reader.GetAttribute (promptForArgumentsAttribute)))
+			    result.promptForArguments = Boolean.Parse (reader.GetAttribute (promptForArgumentsAttribute));
+			if (!String.IsNullOrEmpty (reader.GetAttribute (useOutputPadAttribute)))
+			    result.useOutputPad = Boolean.Parse (reader.GetAttribute (useOutputPadAttribute));
+			if (!String.IsNullOrEmpty (reader.GetAttribute (saveCurrentFileAttribute)))
+			    result.saveCurrentFile = Boolean.Parse (reader.GetAttribute (saveCurrentFileAttribute));
+			
+			return result;
+		}
+#endregion
+		
 	}
 }
