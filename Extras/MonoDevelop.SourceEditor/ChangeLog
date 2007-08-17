@@ -1,3 +1,11 @@
+2007-08-16  Wade Berrier  <wberrier@novell.com> 
+
+	* Makefile.am:
+	Removed MonoDevelop.SourceEditor.dll.config.in.  AFAICT MD runs without it.
+	This will enable mono-find-requires script to not generate deps on 
+	gtksourceview so that the md rpm can be used on all distros.  (Otherwise
+	we would need to build MD for all distros, since 10.3 has gtksourceview18)
+
 2007-08-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Make sure the

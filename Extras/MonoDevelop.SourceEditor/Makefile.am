@@ -1,5 +1,4 @@
 DLLNAME = MonoDevelop.SourceEditor.dll
-CONFIG = $(DLLNAME).config
 ASSEMBLY = $(top_builddir)/build/AddIns/$(DLLNAME)
 
 FILES =  \
@@ -59,16 +58,14 @@ all : $(ASSEMBLY)
 
 $(ASSEMBLY) : $(build_sources) $(build_resources)
 	mkdir -p $(top_builddir)/build/bin
-	$(CSC) $(CSC_FLAGS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -t:library $(REFS) \
-	&& cp $(CONFIG) $(top_builddir)/build/AddIns/.
+	$(CSC) $(CSC_FLAGS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -t:library $(REFS)
 
 assemblydir = $(MD_ADDIN_DIR)
-assembly_DATA = $(ASSEMBLY) $(CONFIG)
+assembly_DATA = $(ASSEMBLY)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
-DISTCLEANFILES = $(CONFIG)
 
-EXTRA_DIST = $(FILES) $(CONFIG).in $(RES)
+EXTRA_DIST = $(FILES) $(RES)
 
 include $(top_srcdir)/Makefile.include
 
