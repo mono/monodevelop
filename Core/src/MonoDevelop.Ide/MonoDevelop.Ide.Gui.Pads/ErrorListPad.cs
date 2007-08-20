@@ -157,6 +157,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			Services.TaskService.TasksCleared     += (EventHandler) DispatchService.GuiDispatch (new EventHandler (ShowResults));
 			Services.TaskService.TaskAdded        += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (TaskAdded));
+			Services.TaskService.TaskChanged      += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (TaskChanged));
+			
 			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (OnCombineOpen));
 			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (OnCombineClosed));
 			view.RowActivated            += new RowActivatedHandler (OnRowActivated);
@@ -495,6 +497,23 @@ namespace MonoDevelop.Ide.Gui.Pads
 			UpdateErrorsNum ();
 			UpdateWarningsNum ();
 			UpdateMessagesNum ();
+		}
+		
+				
+		void TaskChanged (object sender, TaskEventArgs e)
+		{
+			TreeIter iter;
+			if (store.GetIterFirst (out iter)) {
+				do {
+					Task curTask = (Task)store.GetValue (iter, 6);
+					foreach (Task task in e.Tasks) {
+						if (task == curTask) {
+							store.SetValue (iter, 2, task.Line);
+						}
+					}
+					
+				} while (store.IterNext (ref iter));
+			}
 		}
 		
 		void TaskAdded (object sender, TaskEventArgs e)

@@ -60,11 +60,17 @@ namespace MonoDevelop.Ide.Tasks
 			get {
 				return line;
 			}
+			set {
+				this.line = value;
+			}
 		}
 		
 		public int Column {
 			get {
 				return column;
+			}
+			set {
+				this.column = value;
 			}
 		}
 		
