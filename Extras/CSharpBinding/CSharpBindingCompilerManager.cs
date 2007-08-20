@@ -149,8 +149,7 @@ namespace CSharpBinding
 
 				switch (finfo.BuildAction) {
 					case BuildAction.Compile:
-						if (CanCompile (finfo.Name))
-							writer.WriteLine('"' + finfo.Name + '"');
+						writer.WriteLine('"' + finfo.Name + '"');
 						break;
 					case BuildAction.EmbedAsResource:
 						//FIXME: Rationalize the use of monitor!

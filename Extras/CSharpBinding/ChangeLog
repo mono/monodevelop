@@ -1,3 +1,8 @@
+2007-08-20  Ankit Jain  <jankit@novell.com>
+
+	* CSharpBindingCompilerManager.cs (Compile): Add all build files to the
+	list of files to be compiled. Don't filter with CanCompile.
+
 2007-08-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Parser/Resolver.cs: When listing the members of an enum, return enum
