@@ -243,6 +243,9 @@ namespace MonoDevelop.SourceEditor.Gui
 			se.Buffer.MarkSet += new MarkSetHandler (OnMarkSet);
 			se.Buffer.Changed += new EventHandler (OnChanged);
 			se.View.ToggleOverwrite += new EventHandler (CaretModeChanged);
+			se.Buffer.LineCountChanged += delegate (int line, int count, int column) {
+				TextFileService.FireLineCountChanged (this, line, count, column);
+			};
 			ContentNameChanged += new EventHandler (UpdateFSW);
 			
 			// setup a focus chain so that the editor widget gets focus when

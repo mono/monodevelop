@@ -111,6 +111,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		public SourceEditorBuffer (SourceEditorView view) : this ()
 		{
 			this.view = view;
+
 		}
 		
 		public SourceEditorBuffer () : base (new SourceTagTable ())
@@ -133,6 +134,32 @@ namespace MonoDevelop.SourceEditor.Gui
 			TagTable.Add (highlightLineTag);
 			
 			MaxUndoLevels = 1000;
+			
+			base.InsertText += delegate (object sender, InsertTextArgs args) {
+				int lines = 0;
+				for (int i = 0; i < args.Text.Length; i++) {
+					if (args.Text [i] == '\n')
+						lines++;
+				}
+				TextIter iter = this.GetIterAtOffset (args.Pos.Offset - args.Length);
+				OnLineCountChanged (iter.Line, lines, iter.LineOffset);
+//				OnLineCountChanged (args.Pos.Line, lines, args.Pos.LineOffset);
+			};
+		}
+		
+		public delegate void LineCountChange (int line, int count, int column);
+		public event LineCountChange LineCountChanged;
+		protected virtual void OnLineCountChanged (int line, int count, int column)
+		{
+			if (LineCountChanged != null)
+				LineCountChanged (line, count, column);
+		}
+
+		
+		protected override void OnDeleteRange (TextIter start, TextIter end)
+		{
+			OnLineCountChanged (start.Line, start.Line - end.Line, start.LineOffset);
+			base.OnDeleteRange (start, end);
 		}
 		
 		public override void Dispose ()

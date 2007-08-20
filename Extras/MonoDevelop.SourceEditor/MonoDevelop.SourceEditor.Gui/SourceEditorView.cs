@@ -947,7 +947,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			}
 
 			static void Draw (Gdk.Drawable drawable, TextView view, TextIter start, TextIter end)
-			{
+			{/*
 				if (HighlightSpacesEnabled || HighlightTabsEnabled || HighlightNewlinesEnabled)
 				{
 					Cairo.Context cntx = Gdk.CairoHelper.Create (drawable);
@@ -983,7 +983,7 @@ namespace MonoDevelop.SourceEditor.Gui
 							break;
 					}
 					((IDisposable)cntx).Dispose ();
-				}
+				}*/
 			}
 		}
 #endregion
