@@ -165,6 +165,7 @@ FILES =  \
 	MonoDevelop.Projects.Text/TextEncoding.cs \
 	MonoDevelop.Projects.Text/TextFile.cs \
 	MonoDevelop.Projects.Text/TextFileReader.cs \
+	MonoDevelop.Projects.Text/TextFileService.cs \
 	MonoDevelop.Projects.Utility/Comparers.cs \
 	MonoDevelop.Projects.Utility/DiffUtility.cs \
 	MonoDevelop.Projects.Utility/PriorityQueue.cs \
@@ -225,9 +226,9 @@ FILES =  \
 	MonoDevelop.Projects/ProjectReferenceCollection.cs \
 	MonoDevelop.Projects/ProjectReferenceEventArgs.cs \
 	MonoDevelop.Projects/ProjectRenameEventArgs.cs \
+	MonoDevelop.Projects/ProjectsServices.cs \
 	MonoDevelop.Projects/ProjectService.cs \
 	MonoDevelop.Projects/ProjectServiceExtension.cs \
-	MonoDevelop.Projects/ProjectsServices.cs \
 	MonoDevelop.Projects/SharpDevelopFileFormat.cs \
 	MonoDevelop.Projects/TypelibImporter.cs \
 	MonoDevelop.Projects/UnknownCombineEntry.cs \
