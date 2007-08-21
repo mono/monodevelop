@@ -60,7 +60,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.image1.Name = "image1";
             this.image1.Xalign = 0F;
             this.image1.Yalign = 0F;
-            this.image1.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-dialog-error", 48);
+            this.image1.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-dialog-error", Gtk.IconSize.Dialog, 48);
             this.hbox1.Add(this.image1);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox1[this.image1]));
             w2.Position = 0;

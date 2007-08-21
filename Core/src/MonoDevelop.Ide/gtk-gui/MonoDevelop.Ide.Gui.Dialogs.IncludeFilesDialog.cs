@@ -203,7 +203,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Container child dialog-action_area3.Gtk.ButtonBox+ButtonBoxChild
             this.okbutton = new Gtk.Button();
             this.okbutton.CanDefault = true;
-            this.okbutton.HasDefault = true;
             this.okbutton.Name = "okbutton";
             this.okbutton.UseStock = true;
             this.okbutton.UseUnderline = true;
@@ -216,6 +215,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             }
             this.DefaultWidth = 475;
             this.DefaultHeight = 489;
+            this.okbutton.HasDefault = true;
             this.Show();
         }
     }

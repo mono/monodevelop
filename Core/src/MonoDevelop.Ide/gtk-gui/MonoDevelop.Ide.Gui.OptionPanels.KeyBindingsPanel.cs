@@ -114,19 +114,15 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.updateButton.UseUnderline = true;
             // Container child updateButton.Gtk.Container+ContainerChild
             Gtk.Alignment w8 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            w8.Name = "GtkAlignment";
             // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w9 = new Gtk.HBox();
-            w9.Name = "GtkHBox";
             w9.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w10 = new Gtk.Image();
-            w10.Name = "image15";
-            w10.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-apply", 20);
+            w10.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-apply", Gtk.IconSize.Button, 20);
             w9.Add(w10);
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w12 = new Gtk.Label();
-            w12.Name = "GtkLabel";
             w12.LabelProp = Mono.Unix.Catalog.GetString("Apply");
             w12.UseUnderline = true;
             w9.Add(w12);

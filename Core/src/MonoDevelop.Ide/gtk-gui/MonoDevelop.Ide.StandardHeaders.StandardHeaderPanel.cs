@@ -13,10 +13,6 @@ namespace MonoDevelop.Ide.StandardHeaders {
     
     public partial class StandardHeaderPanel {
         
-        private Gtk.Frame frame1;
-        
-        private Gtk.Alignment GtkAlignment;
-        
         private Gtk.VBox vbox2;
         
         private Gtk.ScrolledWindow scrolledwindow1;
@@ -39,23 +35,12 @@ namespace MonoDevelop.Ide.StandardHeaders {
         
         private Gtk.Button addButton;
         
-        private Gtk.Label GtkLabel4;
-        
         protected virtual void Build() {
             Stetic.Gui.Initialize();
             // Widget MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel
             Stetic.BinContainer.Attach(this);
             this.Name = "MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel";
             // Container child MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel.Gtk.Container+ContainerChild
-            this.frame1 = new Gtk.Frame();
-            this.frame1.Name = "frame1";
-            this.frame1.ShadowType = ((Gtk.ShadowType)(0));
-            this.frame1.LabelXalign = 0F;
-            // Container child frame1.Gtk.Container+ContainerChild
-            this.GtkAlignment = new Gtk.Alignment(0F, 0F, 1F, 1F);
-            this.GtkAlignment.Name = "GtkAlignment";
-            this.GtkAlignment.LeftPadding = ((uint)(12));
-            // Container child GtkAlignment.Gtk.Container+ContainerChild
             this.vbox2 = new Gtk.VBox();
             this.vbox2.Name = "vbox2";
             this.vbox2.Spacing = 6;
@@ -155,14 +140,7 @@ namespace MonoDevelop.Ide.StandardHeaders {
             w10.Position = 2;
             w10.Expand = false;
             w10.Fill = false;
-            this.GtkAlignment.Add(this.vbox2);
-            this.frame1.Add(this.GtkAlignment);
-            this.GtkLabel4 = new Gtk.Label();
-            this.GtkLabel4.Name = "GtkLabel4";
-            this.GtkLabel4.LabelProp = Mono.Unix.Catalog.GetString("<b>Standard Header</b>");
-            this.GtkLabel4.UseMarkup = true;
-            this.frame1.LabelWidget = this.GtkLabel4;
-            this.Add(this.frame1);
+            this.Add(this.vbox2);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }

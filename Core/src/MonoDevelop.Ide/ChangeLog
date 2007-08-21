@@ -1,5 +1,10 @@
 2007-08-21  Mike Krüger <mkrueger@novell.com> 
 
+	* gtk-gui/MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel.cs: Changed
+	  standard header panel.
+
+2007-08-21  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.Tasks/TaskService.cs: Fixed 82496: Opening files causes
 	  sigabrt.
 

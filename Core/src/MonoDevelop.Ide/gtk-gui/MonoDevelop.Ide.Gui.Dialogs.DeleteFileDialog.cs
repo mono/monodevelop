@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Container child hbox1.Gtk.Box+BoxChild
             this.image1 = new Gtk.Image();
             this.image1.Name = "image1";
-            this.image1.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-dialog-question", 48);
+            this.image1.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-dialog-question", Gtk.IconSize.Dialog, 48);
             this.hbox1.Add(this.image1);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox1[this.image1]));
             w2.Position = 0;

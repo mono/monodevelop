@@ -142,19 +142,15 @@ namespace MonoDevelop.Ide {
             this.btnAdd.UseUnderline = true;
             // Container child btnAdd.Gtk.Container+ContainerChild
             Gtk.Alignment w9 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            w9.Name = "GtkAlignment";
             // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w10 = new Gtk.HBox();
-            w10.Name = "GtkHBox";
             w10.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w11 = new Gtk.Image();
-            w11.Name = "image20";
-            w11.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-go-forward", 20);
+            w11.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-go-forward", Gtk.IconSize.Button, 20);
             w10.Add(w11);
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w13 = new Gtk.Label();
-            w13.Name = "GtkLabel";
             w13.LabelProp = "";
             w10.Add(w13);
             w9.Add(w10);
@@ -169,19 +165,15 @@ namespace MonoDevelop.Ide {
             this.btnRemove.Name = "btnRemove";
             // Container child btnRemove.Gtk.Container+ContainerChild
             Gtk.Alignment w18 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            w18.Name = "GtkAlignment1";
             // Container child GtkAlignment1.Gtk.Container+ContainerChild
             Gtk.HBox w19 = new Gtk.HBox();
-            w19.Name = "GtkHBox1";
             w19.Spacing = 2;
             // Container child GtkHBox1.Gtk.Container+ContainerChild
             Gtk.Image w20 = new Gtk.Image();
-            w20.Name = "image21";
-            w20.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-go-back", 18);
+            w20.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-go-back", Gtk.IconSize.SmallToolbar, 18);
             w19.Add(w20);
             // Container child GtkHBox1.Gtk.Container+ContainerChild
             Gtk.Label w22 = new Gtk.Label();
-            w22.Name = "GtkLabel1";
             w22.LabelProp = "";
             w19.Add(w22);
             w18.Add(w19);
@@ -220,7 +212,7 @@ namespace MonoDevelop.Ide {
             this.image9.Name = "image9";
             this.image9.Xalign = 0F;
             this.image9.Yalign = 0F;
-            this.image9.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-go-up", 20);
+            this.image9.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-go-up", Gtk.IconSize.Button, 20);
             this.btnUp.Add(this.image9);
             this.btnUp.Label = null;
             this.vbox75.Add(this.btnUp);
@@ -236,7 +228,7 @@ namespace MonoDevelop.Ide {
             this.image10.Name = "image10";
             this.image10.Xalign = 0F;
             this.image10.Yalign = 0F;
-            this.image10.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-go-down", 20);
+            this.image10.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-go-down", Gtk.IconSize.Button, 20);
             this.btnDown.Add(this.image10);
             this.btnDown.Label = null;
             this.vbox75.Add(this.btnDown);

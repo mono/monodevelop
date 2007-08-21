@@ -330,19 +330,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.replaceAllButton.UseUnderline = true;
             // Container child replaceAllButton.Gtk.Container+ContainerChild
             Gtk.Alignment w27 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            w27.Name = "GtkAlignment2";
             // Container child GtkAlignment2.Gtk.Container+ContainerChild
             Gtk.HBox w28 = new Gtk.HBox();
-            w28.Name = "GtkHBox6";
             w28.Spacing = 2;
             // Container child GtkHBox6.Gtk.Container+ContainerChild
             Gtk.Image w29 = new Gtk.Image();
-            w29.Name = "image19";
-            w29.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-find-and-replace", 20);
+            w29.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-find-and-replace", Gtk.IconSize.Button, 20);
             w28.Add(w29);
             // Container child GtkHBox6.Gtk.Container+ContainerChild
             Gtk.Label w31 = new Gtk.Label();
-            w31.Name = "GtkLabel9";
             w31.LabelProp = Mono.Unix.Catalog.GetString("R_eplace All");
             w31.UseUnderline = true;
             w28.Add(w31);
@@ -354,7 +350,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Container child dialog-action_area2.Gtk.ButtonBox+ButtonBoxChild
             this.findButton = new Gtk.Button();
             this.findButton.CanDefault = true;
-            this.findButton.HasDefault = true;
             this.findButton.Name = "findButton";
             this.findButton.UseStock = true;
             this.findButton.UseUnderline = true;
@@ -367,6 +362,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             }
             this.DefaultWidth = 518;
             this.DefaultHeight = 397;
+            this.findButton.HasDefault = true;
             this.Show();
         }
     }

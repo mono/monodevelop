@@ -399,7 +399,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Container child dialog-action_area1.Gtk.ButtonBox+ButtonBoxChild
             this.btn_new = new Gtk.Button();
             this.btn_new.CanDefault = true;
-            this.btn_new.HasDefault = true;
             this.btn_new.Name = "btn_new";
             this.btn_new.UseStock = true;
             this.btn_new.UseUnderline = true;
@@ -412,6 +411,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             }
             this.DefaultWidth = 708;
             this.DefaultHeight = 501;
+            this.btn_new.HasDefault = true;
             this.Show();
             this.txt_subdirectory.Changed += new System.EventHandler(this.PathChanged);
             this.txt_name.Changed += new System.EventHandler(this.NameChanged);
