@@ -236,16 +236,19 @@ namespace MonoDevelop.Projects
 				if ((projectReference.LocalCopy || force) && projectReference.ReferenceType != ReferenceType.Gac) {
 					foreach (string referenceFileName in projectReference.GetReferencedFileNames ()) {
 						deployFiles.Add (referenceFileName);
-						if (File.Exists (referenceFileName + ".mdb"))
-							deployFiles.Add (referenceFileName + ".mdb");
 						if (File.Exists (referenceFileName + ".config"))
 							deployFiles.Add (referenceFileName + ".config");
 					}
 				}
 				if (projectReference.ReferenceType == ReferenceType.Project && projectReference.LocalCopy && RootCombine != null) {
 					Project p = RootCombine.FindProject (projectReference.Reference);
-					if (p != null)
+					if (p != null) {
+						AbstractProjectConfiguration config = p.ActiveConfiguration as AbstractProjectConfiguration;
+						if (config != null && config.DebugMode)
+							deployFiles.Add (p.GetOutputFileName () + ".mdb");
+
 						deployFiles.AddRange (p.GetReferenceDeployFiles (force));
+					}
 				}
 			}
 			return (string[]) deployFiles.ToArray (typeof(string));
