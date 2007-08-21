@@ -1,5 +1,12 @@
+2007-08-21  AndrÃ©s G. Aragoneses  <knocte@gmail.com>
+
+	Improve fix for bug #82398.
+	* CSharpBindingCompilerManager.cs (GetResourceId): Use MONO_IOMAP=drive,
+	and only on Unix.
+
 2007-08-14  Ankit Jain  <jankit@novell.com>
 
+	Fix bug #82398.
 	* MSBuildProjectServiceExtension.cs (GenerateXamlPartialClass): Run with
 	xamlg with MONO_IOMAP=all.
 

@@ -1,3 +1,9 @@
+2007-08-21  AndrÃ©s G. Aragoneses  <knocte@gmail.com>
+
+	Improve fix for bug #82398.
+	* CSharpBindingCompilerManager.cs (GetResourceId): Use MONO_IOMAP=drive,
+	and only on Unix.
+
 2007-08-20  Ankit Jain  <jankit@novell.com>
 
 	* CSharpBindingCompilerManager.cs (Compile): Add all build files to the

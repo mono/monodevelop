@@ -83,7 +83,10 @@ namespace MonoDevelop.Prj2Make
 					ProcessStartInfo info = Runtime.ProcessService.CreateProcessStartInfo (
 									"xamlg", String.Format ("\"{0}\"", fname),
 									Path.GetDirectoryName (fname), false);
-					info.EnvironmentVariables ["MONO_IOMAP"] = "all";
+
+					if (PlatformID.Unix == Environment.OSVersion.Platform)
+						info.EnvironmentVariables ["MONO_IOMAP"] = "drive";
+
 					pw = Runtime.ProcessService.StartProcess (info, sw, sw, null);
 				} catch (System.ComponentModel.Win32Exception ex) {
 					Console.WriteLine (GettextCatalog.GetString (
