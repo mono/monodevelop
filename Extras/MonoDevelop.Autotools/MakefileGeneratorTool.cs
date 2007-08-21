@@ -23,7 +23,7 @@ namespace MonoDevelop.Autotools
 
 			// Parse arguments
 			foreach (string s in arguments) {
-				if (s == "--simple-makefiles") {
+				if (s == "--simple-makefiles" || s == "-s") {
 					generateAutotools = false;
 				} else if (s.StartsWith ("-d:")) {
 					if (s.Length > 3)
@@ -129,7 +129,7 @@ namespace MonoDevelop.Autotools
 			Console.WriteLine ("generate-makefiles <solution-file> [--simple-makefiles] [-d:default-config]");
 			Console.WriteLine ();
 			Console.WriteLine ("Options");
-			Console.WriteLine (" --simple-makefiles\n\tGenerates set of Makefiles with the most common targets, and a configuration script that does a basic check of package dependencies. Default is to generate Makefile structure based on Autotools with the standard targets and configuration scripts.");
+			Console.WriteLine (" --simple-makefiles -s\n\tGenerates set of Makefiles with the most common targets, and a configuration script that does a basic check of package dependencies. Default is to generate Makefile structure based on Autotools with the standard targets and configuration scripts.");
 			Console.WriteLine ();
 			Console.WriteLine (" -d:default-config\n\tConfiguration that the Makefile will build by default. Other configurations can be selected via the '--config' or '--enable-*' option of the generated configure script.");
 			Console.WriteLine ();
