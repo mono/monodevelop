@@ -8,7 +8,7 @@ all-recursive: $(CONFIG_MAKE)
 	@for dir in $(SUBDIRS); do \
 		case $$dir in \
 		.) make all-local ;; \
-		*) (cd $$dir && make) ;;\
+		*) (cd $$dir && make) || exit 1;;\
 		esac \
 	done
 
@@ -32,7 +32,7 @@ install-recursive:
 	@for dir in $(SUBDIRS); do \
 		case $$dir in \
 		.) make install-local ;; \
-		*) (cd $$dir && make install) ;;\
+		*) (cd $$dir && make install) || exit 1;;\
 		esac \
         done
 

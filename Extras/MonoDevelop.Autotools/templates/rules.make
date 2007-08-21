@@ -2,6 +2,7 @@ clean-local:
 	-rm -f $(CLEANFILES)
 
 install-local:
+uninstall-local:
 
 distlocal:
 	list='$(EXTRA_DIST)'; \
@@ -14,9 +15,9 @@ distlocal:
 
 distlocal-recursive:
 	for dir in $(SUBDIRS); do \
-		mkdir $(distdir)/$$dir || true; \
+		mkdir -p $(distdir)/$$dir || true; \
 		case $$dir in \
 		.) make distlocal distdir=$(distdir);; \
-		*) (cd $$dir; make distlocal distdir=../$(distdir)/$$dir); \
+		*) (cd $$dir; make distlocal distdir=$(distdir)/$$dir); \
 		esac \
 	done

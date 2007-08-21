@@ -21,6 +21,7 @@ FILES =  \
 	AssemblyInfo.cs \
 	AutotoolsContext.cs \
 	Commands.cs \
+	ConfigSection.cs \
 	CustomMakefile.cs \
 	FileNodeBuilderExtension.cs \
 	GenerateMakefilesDialog.cs \

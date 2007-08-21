@@ -125,6 +125,7 @@ namespace MonoDevelop.Autotools
 			catch ( Exception e )
 			{
 				monitor.ReportError ( GettextCatalog.GetString ("{0} could not be generated: ", filesString ), e );
+				Console.WriteLine (e.ToString ());
 				DeleteGeneratedFiles ( context );
 				return false;
 			}

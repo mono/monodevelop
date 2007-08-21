@@ -21,6 +21,7 @@ Boston, MA 02111-1307, USA.
 using System;
 using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using MonoDevelop.Core;
 
@@ -34,7 +35,7 @@ namespace MonoDevelop.Autotools
 	 */
 	public class TemplateEngine
 	{
-		public Hashtable Variables = new Hashtable();
+		public Dictionary<string, string> Variables = new Dictionary<string, string> ();
 		
 		public TemplateEngine()
 		{
@@ -69,14 +70,12 @@ namespace MonoDevelop.Autotools
 						varname.Append(input[i]);
 					}
 					
-					string val = (string) Variables[varname.ToString()];
-					if(val == null) {
+					string val;
+					if (Variables.TryGetValue (varname.ToString (), out val))
+						result.Append (val);
+					else
 						Runtime.LoggingService.Warn("No replacement for variable %%" +
 						                  varname + "%% defined");
-					} else {
-						result.Append(val);
-					}
-					
 					continue;
 				}
 				

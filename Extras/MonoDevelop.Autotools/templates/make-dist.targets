@@ -2,10 +2,11 @@ dist: $(CONFIG_MAKE)
 	rm -rf $(PACKAGE)-$(VERSION)
 	mkdir $(PACKAGE)-$(VERSION)
 	for dir in $(SUBDIRS); do \
-		mkdir $(PACKAGE)-$(VERSION)/$$dir || true; \
+		PACKAGE_DIR=`pwd`/$(PACKAGE)-$(VERSION); \
+		mkdir $$PACKAGE_DIR/$$dir || true; \
 		case $$dir in \
-		.) make distlocal distdir=$(PACKAGE)-$(VERSION);; \
-		*) (cd $$dir; make distlocal distdir=../$(PACKAGE)-$(VERSION)/$$dir); \
+		.) make distlocal distdir=$$PACKAGE_DIR;; \
+		*) (cd $$dir; make distlocal distdir=$$PACKAGE_DIR/$$dir); \
 		esac \
 	done
 	(make distlocal distdir=$(PACKAGE)-$(VERSION))

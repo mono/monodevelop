@@ -1,5 +1,24 @@
 2007-08-21  Ankit Jain  <jankit@novell.com>
 
+	* ConfigSection.cs: New.
+	* SimpleProjectMakefileHandler.cs: Refactor to support correctly
+	building multiple configurations. Referenced assembly names/paths can depend
+	on the config (Eg. for project references).
+	* TemplateEngine.cs: Update to use typed Dictionary instead of
+	hashtable.
+	* templates/Makefile.am.project.template: 
+	* templates/Makefile.noauto.project.template: $(ASSEMBLY).mdb might not
+	be available in all configs.
+	* templates/Makefile.solution.template: Exit if build/install for a
+	subdir fails.
+	* templates/make-dist.targets: Subdir could be multilevel, so use
+	absolute paths for 'dist'.
+	* templates/rules.make: Likewise.
+
+	* SolutionDeployer.cs (GenerateFiles): Emit exception stack trace also.
+
+2007-08-21  Ankit Jain  <jankit@novell.com>
+
 	* MakefileGeneratorTool.cs: Add short option "-s" for
 	--simple-makefiles.
 
