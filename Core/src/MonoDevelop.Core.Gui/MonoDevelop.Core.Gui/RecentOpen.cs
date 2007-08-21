@@ -69,10 +69,15 @@ namespace MonoDevelop.Core.Gui
 			OnRecentFileChange();
 			OnRecentProjectChange();
 		}
+
+		string ToUri (string fileName)
+		{
+			return "file://" + fileName;
+		}
 		
 		public void AddLastFile (string name, string project)
 		{
-			RecentItem ri = new RecentItem (new Uri (name), MimeType.GetMimeTypeForUri (name), "MonoDevelop Files");
+			RecentItem ri = new RecentItem (ToUri (name), MimeType.GetMimeTypeForUri (name), "MonoDevelop Files");
 			if (project == null)
 				ri.Private = Path.GetFileName (name);
 			else
@@ -96,7 +101,7 @@ namespace MonoDevelop.Core.Gui
 		
 		public void AddLastProject (string name, string projectName)
 		{
-			RecentItem ri = new RecentItem (new Uri (name), MimeType.GetMimeTypeForUri (name), "MonoDevelop Projects");
+			RecentItem ri = new RecentItem (ToUri (name), MimeType.GetMimeTypeForUri (name), "MonoDevelop Projects");
 			ri.Private = projectName;
 			recentFiles.AddWithLimit (ri, "MonoDevelop Projects", MAX_LENGTH);
 			OnRecentProjectChange();
@@ -107,7 +112,7 @@ namespace MonoDevelop.Core.Gui
 			if (e.IsDirectory)
 				return;
 			
-			recentFiles.RemoveItem (new Uri (e.FileName));
+			recentFiles.RemoveItem (ToUri (e.FileName));
 			OnRecentFileChange();
 		}
 		
@@ -117,9 +122,9 @@ namespace MonoDevelop.Core.Gui
 				return;
 			
 			if (e.FileName == null)
-				recentFiles.RenameItem (new Uri (e.SourceFile), new Uri (e.TargetFile));
+				recentFiles.RenameItem (ToUri (e.SourceFile), ToUri (e.TargetFile));
 			else
-				recentFiles.RenameItem (new Uri (e.FileName), new Uri (e.TargetFile));
+				recentFiles.RenameItem (ToUri (e.FileName), ToUri (e.TargetFile));
 			OnRecentFileChange();
 		}
 

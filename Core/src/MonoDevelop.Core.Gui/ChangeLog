@@ -1,3 +1,9 @@
+2007-08-21  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Core.Gui/RecentOpen.cs, Freedesktop.RecentFiles/RecentItem.cs,
+	  Freedesktop.RecentFiles/RecentFileStorage.cs: Fixed 82458: unable to
+	  open files that have a colon in the path.
+
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.mdp,

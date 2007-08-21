@@ -147,12 +147,12 @@ namespace Freedesktop.RecentFiles
 		{
 			FilterOut (delegate(RecentItem item) {
 				return item.IsInGroup (group) &&
-					   item.Uri.IsFile &&
-					   !File.Exists (item.Uri.LocalPath);
+					   item.IsFile &&
+					   !File.Exists (item.LocalPath);
 			});
 		}
 		
-		public void RemoveItem (Uri uri)
+		public void RemoveItem (string uri)
 		{
 			if (uri == null)
 				return;
@@ -167,15 +167,19 @@ namespace Freedesktop.RecentFiles
 				RemoveItem (item.Uri);
 		}
 		
-		public void RenameItem (Uri oldUri, Uri newUri)
+		public void RenameItem (string oldUri, string newUri)
 		{
 			if (oldUri == null || newUri == null)
 				return;
 			RunOperation (true, delegate(RecentItem item) {
 				if (item.Uri == null)
 					return;
-				if (item.Uri.Equals (oldUri)) {
-					item.Uri = new Uri (newUri.ToString ());
+				if (item.Uri == oldUri) {
+					string oldName = Path.GetFileName (item.LocalPath);
+					item.Uri = newUri;
+					if (item.Private.Contains (oldName)) {
+						item.Private = item.Private.Replace (oldName, Path.GetFileName (item.LocalPath));
+					}
 					item.NewTimeStamp ();
 				}
 			});

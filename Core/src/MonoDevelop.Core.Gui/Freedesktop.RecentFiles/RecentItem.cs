@@ -40,13 +40,13 @@ namespace Freedesktop.RecentFiles
 	/// </summary>
     public class RecentItem : IComparable
 	{
-        Uri          uri;
+        string       uri;
         string       mimeType;
         DateTime     timestamp;
         string       privateData;
 		List<string> groups = new List<string> ();
 
-		public Uri Uri {
+		public string Uri {
 			get {
 				return uri; 
 			}			
@@ -88,15 +88,29 @@ namespace Freedesktop.RecentFiles
 			}
 		}
 		
+		public bool IsFile {
+			get {
+				return this.uri != null && this.uri.StartsWith ("file://");
+			}
+		}
+		
+		public string LocalPath {
+			get {
+				if (uri.StartsWith ("file://"))
+					return uri.Substring ("file://".Length);
+				return this.uri;
+			}
+		}
+		
 		RecentItem ()
 		{
 		}
 		
-		public RecentItem (Uri uri, string mimetype) : this (uri, mimetype, null)
+		public RecentItem (string uri, string mimetype) : this (uri, mimetype, null)
 		{
 		}
 
-		public RecentItem (Uri uri, string mimetype, string group)
+		public RecentItem (string uri, string mimetype, string group)
 		{
 			Debug.Assert (uri != null);
 			this.uri       = uri;
@@ -151,7 +165,7 @@ namespace Freedesktop.RecentFiles
 		
 		public override string ToString ()
 		{
-			return this.Uri != null ? this.Uri.LocalPath : "";
+			return LocalPath;
 		}
 
 #region Unix Time functions
@@ -199,10 +213,7 @@ namespace Freedesktop.RecentFiles
 					switch (reader.LocalName) {
 					case "Uri":
 					case UriNode:
-						string uriString = reader.ReadElementString ();
-						if (!String.IsNullOrEmpty (uriString)) {
-							result.uri = new Uri (uriString);
-						}
+						result.uri = reader.ReadElementString ();
 						break;
 					case "MimeType":
 					case MimeTypeNode:
@@ -229,7 +240,7 @@ namespace Freedesktop.RecentFiles
 		public void Write (XmlWriter writer)
 		{
 			writer.WriteStartElement (Node);
-			writer.WriteElementString (UriNode, this.uri != null ? this.uri.ToString () : "");
+			writer.WriteElementString (UriNode, this.uri);
 			writer.WriteElementString (MimeTypeNode, this.mimeType);
 			writer.WriteElementString (TimestampNode, ToUnixTime (this.timestamp).ToString ());
 			if (!String.IsNullOrEmpty (this.privateData))
