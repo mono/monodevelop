@@ -42,10 +42,12 @@ namespace MonoDevelop.Ide.Tasks
 
 			Runtime.Properties.PropertyChanged += (EventHandler<PropertyEventArgs>) DispatchService.GuiDispatch (new EventHandler<PropertyEventArgs> (OnPropertyUpdated));
 			MonoDevelop.Projects.Text.TextFileService.LineCountChanged += delegate (object sender, MonoDevelop.Projects.Text.LineCountEventArgs args) {
+				if (args.TextFile == null || String.IsNullOrEmpty (args.TextFile.Name))
+					return;
 				List<Task> tasks = new List<Task> ();
-				Console.WriteLine (args);
 				foreach (Task task in this.Tasks) {
-					Console.WriteLine ("   "  + task);
+					if (String.IsNullOrEmpty (task.FileName))
+						continue;
 					if (Path.GetFullPath (task.FileName) == Path.GetFullPath (args.TextFile.Name) && task.Line - 1 > args.LineNumber || (task.Line - 1 == args.LineNumber && task.Column - 1 >= args.Column)) {
 						task.Line += args.LineCount;
 						tasks.Add (task);

@@ -1,3 +1,8 @@
+2007-08-21  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Tasks/TaskService.cs: Fixed 82496: Opening files causes
+	  sigabrt.
+
 2007-08-20  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs, MonoDevelop.Ide.Tasks/Task.cs,
