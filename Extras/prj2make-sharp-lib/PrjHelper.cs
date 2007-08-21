@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using MonoDevelop.Prj2Make.Schema.Prjx;
 using MonoDevelop.Prj2Make.Schema.Csproj;
 using MonoDevelop.Core;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Prj2Make
 {
@@ -68,16 +69,17 @@ namespace MonoDevelop.Prj2Make
     	{
     		SlnMaker mk1Obj = null;
     		CmbxMaker mk2Obj = null;
+		IProgressMonitor monitor = new NullProgressMonitor ();
             // Test to see what kind if file we got
             // sln, csproj, cmbx, prjx
             switch(DetermineFileType(slnFile))
             {
             case TypeOfFile.sln:
             	mk1Obj = new SlnMaker();
-            	return mk1Obj.MsSlnHelper (isUnixMode, isMcsMode, true, slnFile);
+                return mk1Obj.MsSlnHelper (isUnixMode, isMcsMode, true, slnFile, monitor);
             case TypeOfFile.csproj:
             	mk1Obj = new SlnMaker();
-            	return mk1Obj.MsSlnHelper (isUnixMode, isMcsMode, false, slnFile);
+                return mk1Obj.MsSlnHelper (isUnixMode, isMcsMode, false, slnFile, monitor);
             case TypeOfFile.cmbx:
             	mk2Obj = new CmbxMaker();
             	return mk2Obj.MdCmbxHelper (isUnixMode, isMcsMode, true, slnFile);

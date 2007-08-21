@@ -38,14 +38,13 @@ namespace MonoDevelop.Prj2Make
 		// Project desirialization
 		protected MonoDevelop.Prj2Make.Schema.Csproj.VisualStudioProject LoadPrjFromFile (string strIn)
 		{
-			FileStream fs = new FileStream (strIn, FileMode.Open);
+			using (FileStream fs = new FileStream (strIn, FileMode.Open)) {
 	    
-			XmlSerializer xmlSer = new XmlSerializer (typeof(MonoDevelop.Prj2Make.Schema.Csproj.VisualStudioProject));
-			MonoDevelop.Prj2Make.Schema.Csproj.VisualStudioProject prjObj = (MonoDevelop.Prj2Make.Schema.Csproj.VisualStudioProject) xmlSer.Deserialize (fs);
-	    
-			fs.Close();
-	    
-			return (prjObj);
+				XmlSerializer xmlSer = new XmlSerializer (typeof(MonoDevelop.Prj2Make.Schema.Csproj.VisualStudioProject));
+				MonoDevelop.Prj2Make.Schema.Csproj.VisualStudioProject prjObj = (MonoDevelop.Prj2Make.Schema.Csproj.VisualStudioProject) xmlSer.Deserialize (fs);
+				fs.Close();
+				return (prjObj);
+			}
 		}
 
 		public CsprojInfo(bool isUnixMode, bool isMcsMode, string name, string guid, string csprojpath)
@@ -72,9 +71,9 @@ namespace MonoDevelop.Prj2Make
 				Console.WriteLine (
 					String.Format ("Could not load the file {0}\nException: {1}",
 					csprojpath,
-					exc.Message)
+					exc.ToString ())
 					);
-				return;			
+				throw;
 			}
 
 			// Establish if the allow unsafe code flag is true

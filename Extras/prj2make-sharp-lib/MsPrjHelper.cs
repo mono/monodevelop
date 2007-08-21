@@ -134,7 +134,7 @@ namespace MonoDevelop.Prj2Make
 			projGuidInfo[projectGuid] = pi;
 		}
     	
-		protected void ParseSolution(string fname)
+		protected void ParseSolution(string fname, IProgressMonitor monitor)
 		{
 			FileStream fis = new FileStream(fname,FileMode.Open, FileAccess.Read, FileShare.Read);
 			using (StreamReader reader = new StreamReader(fis)) {
@@ -150,14 +150,19 @@ namespace MonoDevelop.Prj2Make
 						string csprojPath = match.Groups[3].Value;
 						string projectGuid = match.Groups[4].Value;
 
-						if (csprojPath.EndsWith (".csproj") && !csprojPath.StartsWith("http://"))
-						{
-							csprojPath = MapPath (Path.GetDirectoryName (fname), csprojPath);
-
-							CsprojInfo pi = new CsprojInfo (m_bIsUnix, m_bIsMcs, projectName, projectGuid, csprojPath);
-
-							projNameInfo[projectName] = pi;
-							projGuidInfo[projectGuid] = pi;
+						try {
+							if (csprojPath.EndsWith (".csproj") && !csprojPath.StartsWith("http://"))
+							{
+								csprojPath = MapPath (Path.GetDirectoryName (fname), csprojPath);
+								CsprojInfo pi = new CsprojInfo (m_bIsUnix, m_bIsMcs, projectName, projectGuid, csprojPath);
+								projNameInfo[projectName] = pi;
+								projGuidInfo[projectGuid] = pi;
+							}
+						} catch (Exception ex) {
+							Console.WriteLine (GettextCatalog.GetString ("Could not import project:") + csprojPath);
+							Console.WriteLine (ex.ToString ());
+							monitor.ReportError (GettextCatalog.GetString ("Could not import project:") + csprojPath, ex);
+							throw;
 						}
 					}
 
@@ -169,7 +174,7 @@ namespace MonoDevelop.Prj2Make
 			}
 		}
     
-		public string MsSlnHelper(bool isUnixMode, bool isMcsMode, bool isSln, string slnFile)
+		public string MsSlnHelper(bool isUnixMode, bool isMcsMode, bool isSln, string slnFile, IProgressMonitor monitor)
 		{
 			bool noCommonTargets = false;
 			bool noProjectTargets = false;
@@ -207,7 +212,7 @@ namespace MonoDevelop.Prj2Make
 
 					// We invoke the ParseSolution 
 					// by passing the file obtained
-					ParseSolution (slnFile);
+					ParseSolution (slnFile, monitor);
 				} 
 				else 
 				{
@@ -530,7 +535,7 @@ namespace MonoDevelop.Prj2Make
 			{
 				// We invoke the ParseSolution 
 				// by passing the file obtained
-				ParseSolution (slnFileName);
+				ParseSolution (slnFileName, monitor);
 
 				// Create all of the prjx files form the csproj files
 				monitor.BeginTask (null, projNameInfo.Values.Count * 2);
