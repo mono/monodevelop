@@ -226,11 +226,11 @@ namespace MonoDevelop.WelcomePage
 					projectList.AppendChild(project);
 					// Uri
 					element = xml.CreateElement("Uri");
-					element.InnerText = ri.Uri.LocalPath;
+					element.InnerText = ri.LocalPath;
 					project.AppendChild(element);
 					// Name
 					element = xml.CreateElement("Name");
-					element.InnerText = (ri.Private != null && ri.Private.Length > 0) ? ri.Private : Path.GetFileNameWithoutExtension(ri.Uri.LocalPath);
+					element.InnerText = (ri.Private != null && ri.Private.Length > 0) ? ri.Private : Path.GetFileNameWithoutExtension(ri.LocalPath);
 					project.AppendChild(element);
 					// Date Modified
 					element = xml.CreateElement("DateModified");

@@ -1,3 +1,8 @@
+2007-08-21  Mike Krüger <mkrueger@novell.com> 
+
+	* WelcomePageView.cs: Fixed 82458: unable to open files that have a colon in
+	  the path.
+
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* WelcomePage.mdp: Don't exclude the .addin file from the makefile.
