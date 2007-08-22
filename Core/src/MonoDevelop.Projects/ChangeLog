@@ -1,3 +1,8 @@
+2007-08-23  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Projects/DotNetProject.cs (OnClean): New. Clean .resources
+	files.
+
 2007-08-21  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Projects/Project.cs (GetReferenceDeployFiles): Add .mdb

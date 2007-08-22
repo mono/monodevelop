@@ -310,6 +310,20 @@ namespace MonoDevelop.Projects
 				return "Application";
 		}
 		
+		internal protected override void OnClean (IProgressMonitor monitor)
+		{
+			base.OnClean (monitor);
+			monitor.Log.WriteLine (GettextCatalog.GetString ("Removing all .resources files"));
+			foreach (ProjectFile pfile in ProjectFiles) {
+				if (pfile.BuildAction == BuildAction.EmbedAsResource &&
+					Path.GetExtension (pfile.Name) == ".resx") {
+					string resFilename = Path.ChangeExtension (pfile.Name, ".resources");
+					if (File.Exists (resFilename))
+						File.Delete (resFilename);
+				}
+			}
+		}
+
 		// Make sure that the project references are valid for the target clr version.
 		void UpdateSystemReferences ()
 		{
