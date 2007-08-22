@@ -1,3 +1,7 @@
+2007-08-22  Ankit Jain  <jankit@novell.com>
+
+	* templates/*: Improve generated makefiles to support '-k'.
+
 2007-08-21  Ankit Jain  <jankit@novell.com>
 
 	* ConfigSection.cs: New.

@@ -5,12 +5,16 @@ all: all-recursive
 CONFIG_MAKE=$(top_srcdir)/config.make
 
 all-recursive: $(CONFIG_MAKE)
-	@for dir in $(SUBDIRS); do \
+	@set . $$MAKEFLAGS; final_exit=:; \
+	case $$2 in --unix) shift ;; esac; \
+	case $$2 in *=*) dk="exit 1" ;; *k*) dk=: ;; *) dk="exit 1" ;; esac; \
+	for dir in $(SUBDIRS); do \
 		case $$dir in \
-		.) make all-local ;; \
-		*) (cd $$dir && make) || exit 1;;\
+		.) make all-local || { final_exit="exit 1"; $$dk; };;\
+		*) (cd $$dir && make) || { final_exit="exit 1"; $$dk; };;\
 		esac \
 	done
+	$$final_exit
 
 $(CONFIG_MAKE):
 	echo "You must run configure first"
@@ -19,29 +23,43 @@ $(CONFIG_MAKE):
 clean: clean-recursive
 
 clean-recursive:
-	-@for dir in $(SUBDIRS); do \
+	@set . $$MAKEFLAGS; final_exit=:; \
+	case $$2 in --unix) shift ;; esac; \
+	case $$2 in *=*) dk="exit 1" ;; *k*) dk=: ;; *) dk="exit 1" ;; esac; \
+	for dir in $(SUBDIRS); do \
 		case $$dir in \
-		.) make clean-local ;; \
-		*) (cd $$dir && make clean) ;;\
+		.) make clean-local || { final_exit="exit 1"; $$dk; };;\
+		*) (cd $$dir && make clean) || { final_exit="exit 1"; $$dk; };;\
 		esac \
 	done
+	$$final_exit
 
 install: install-recursive
 
 install-recursive:
-	@for dir in $(SUBDIRS); do \
+	@set . $$MAKEFLAGS; final_exit=:; \
+	case $$2 in --unix) shift ;; esac; \
+	case $$2 in *=*) dk="exit 1" ;; *k*) dk=: ;; *) dk="exit 1" ;; esac; \
+	for dir in $(SUBDIRS); do \
 		case $$dir in \
-		.) make install-local ;; \
-		*) (cd $$dir && make install) || exit 1;;\
+		.) make install-local || { final_exit="exit 1"; $$dk; };;\
+		*) (cd $$dir && make install) || { final_exit="exit 1"; $$dk; };;\
 		esac \
-        done
+	done
+	$$final_exit
+
 
 uninstall: uninstall-recursive
 
 uninstall-recursive:
-	@for dir in $(SUBDIRS); do \
+	@set . $$MAKEFLAGS; final_exit=:; \
+	case $$2 in --unix) shift ;; esac; \
+	case $$2 in *=*) dk="exit 1" ;; *k*) dk=: ;; *) dk="exit 1" ;; esac; \
+	for dir in $(SUBDIRS); do \
 		case $$dir in \
-		.) make uninstall-local ;; \
-		*) (cd $$dir && make uninstall) ;;\
+		.) make uninstall-local || { final_exit="exit 1"; $$dk; };;\
+		*) (cd $$dir && make uninstall) || { final_exit="exit 1"; $$dk; };;\
 		esac \
-        done
+	done
+	$$final_exit
+
