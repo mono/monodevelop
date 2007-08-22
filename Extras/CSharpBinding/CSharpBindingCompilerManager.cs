@@ -224,6 +224,12 @@ namespace CSharpBinding
 			if (String.Compare (Path.GetExtension (fname), ".resx", true) != 0)
 				return null;
 
+			//Check whether resgen required
+			FileInfo finfo_resx = new FileInfo (fname);
+			FileInfo finfo_resources = new FileInfo (Path.ChangeExtension (fname, ".resources"));
+			if (finfo_resx.LastWriteTime < finfo_resources.LastWriteTime)
+				return null;
+
 			using (StringWriter sw = new StringWriter ()) {
 				Console.WriteLine ("Compiling resources\n{0}$ {1} /compile {2}", Path.GetDirectoryName (fname), resgen, fname);
 				monitor.Log.WriteLine (GettextCatalog.GetString (

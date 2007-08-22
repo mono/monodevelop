@@ -1,3 +1,9 @@
+2007-08-23  Ankit Jain  <jankit@novell.com>
+
+	Fix bug #82533.
+	* CSharpBindingCompilerManager.cs (GetResourceId): Generate .resources
+	with resgen only if required.
+
 2007-08-21  AndrÃ©s G. Aragoneses  <knocte@gmail.com>
 
 	Improve fix for bug #82398.
