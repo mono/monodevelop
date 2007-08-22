@@ -1,3 +1,9 @@
+2007-08-23  Ankit Jain  <jankit@novell.com>
+	    AndrÃ©s G. Aragoneses  <knocte@gmail.com>
+
+	* VBBindingCompilerServices.cs (GetResourceId): Use MONO_IOMAP=drive and
+	only on unix.
+
 2007-08-14  Ankit Jain  <jankit@novell.com>
 
 	* VBBindingCompilerServices.cs (GetResourceId): Run resgen with
