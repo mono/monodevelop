@@ -1,3 +1,8 @@
+2007-08-22  Mike Krüger <mkrueger@novell.com> 
+
+	* Project/Src/Lexer/CSharp/Lexer.cs: Fixed 82529:TaskList doesn't update
+	  when using comments: /**/.
+
 2007-07-24  Jeffrey Stedfast  <fejj@novell.com>
 
 	Part of the fix for bug #82114.

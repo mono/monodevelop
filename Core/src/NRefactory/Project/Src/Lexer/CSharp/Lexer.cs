@@ -738,6 +738,59 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			return sb.ToString();
 		}
 		
+		void ReadMultiLineComment()
+		{
+			int nextChar;
+			if (this.SkipAllComments) {
+				while ((nextChar = ReaderRead()) != -1) {
+					char ch = (char)nextChar;
+					if (ch == '*' && ReaderPeek() == '/') {
+						ReaderRead();
+						return;
+					} else {
+						HandleLineEnd(ch);
+					}
+				}
+			} else {
+				// sc* = special comment handling (TO DO markers)
+				string scTag = null; // is set to non-null value when we are inside a comment marker
+				StringBuilder scCurWord = new StringBuilder(); // current word, (scTag == null) or comment (when scTag != null)
+				
+				while ((nextChar = ReaderRead()) != -1) {
+					char ch = (char)nextChar;
+					
+					if (HandleLineEnd(ch)) {
+						if (scTag != null) {
+							this.TagComments.Add(new TagComment(scTag, scCurWord.ToString(), new Point(Col, Line), new Point(Col, Line)));
+							scTag = null;
+						}
+						scCurWord.Length = 0;
+						specialTracker.AddString(Environment.NewLine);
+						continue;
+					}
+					
+					// End of multiline comment reached ?
+					if (ch == '*' && ReaderPeek() == '/') {
+						if (scTag != null) {
+							this.TagComments.Add(new TagComment(scTag, scCurWord.ToString(), new Point(Col, Line), new Point(Col, Line)));
+						}
+						ReaderRead();
+						return;
+					}
+					specialTracker.AddChar(ch);
+					if (scTag != null || IsIdentifierPart(ch)) {
+						scCurWord.Append(ch);
+					} else {
+						if (specialCommentHash != null && specialCommentHash.ContainsKey(scCurWord.ToString())) {
+							scTag = scCurWord.ToString();
+						}
+						scCurWord.Length = 0;
+					}
+				}
+			}
+			// Reached EOF before end of multiline comment.
+			errors.Error(Line, Col, String.Format("Reached EOF before the end of a multiline comment"));
+		}		
 		void ReadSingleLineComment(CommentType commentType)
 		{
 			if (skipAllComments) {
@@ -749,40 +802,6 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			}
 		}
 		
-		void ReadMultiLineComment()
-		{
-			int nextChar;
-			if (skipAllComments) {
-				while ((nextChar = ReaderRead()) != -1) {
-					char ch = (char)nextChar;
-					if (ch == '*' && ReaderPeek() == '/') {
-						ReaderRead();
-						return;
-					}
-				}
-			} else {
-				specialTracker.StartComment(CommentType.Block, new Point(Col, Line));
-				while ((nextChar = ReaderRead()) != -1) {
-					char ch = (char)nextChar;
-					
-					if (HandleLineEnd(ch)) {
-						specialTracker.AddChar('\n');
-						continue;
-					}
-					
-					// End of multiline comment reached ?
-					if (ch == '*' && ReaderPeek() == '/') {
-						ReaderRead();
-						specialTracker.FinishComment(new Point(Col, Line));
-						return;
-					}
-					specialTracker.AddChar(ch);
-				}
-				specialTracker.FinishComment(new Point(Col, Line));
-			}
-			// Reached EOF before end of multiline comment.
-			errors.Error(Line, Col, String.Format("Reached EOF before the end of a multiline comment"));
-		}
 		
 		/// <summary>
 		/// Skips to the end of the current code block.
