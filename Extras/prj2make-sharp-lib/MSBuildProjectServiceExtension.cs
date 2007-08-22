@@ -74,6 +74,13 @@ namespace MonoDevelop.Prj2Make
 		CompilerError GenerateXamlPartialClass (string fname, out string generated_file_name, IProgressMonitor monitor)
 		{
 			generated_file_name = fname + ".g.cs";
+
+			//Check whether resgen required
+			FileInfo finfo_resx = new FileInfo (fname);
+			FileInfo finfo_resources = new FileInfo (generated_file_name);
+			if (finfo_resx.LastWriteTime < finfo_resources.LastWriteTime)
+				return null;
+
 			using (StringWriter sw = new StringWriter ()) {
 				Console.WriteLine ("Generating partial classes for\n{0}$ {1} {2}", Path.GetDirectoryName (fname), "xamlg", fname);
 				monitor.Log.WriteLine (GettextCatalog.GetString (
