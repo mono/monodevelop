@@ -1,5 +1,12 @@
 2007-08-22  Ankit Jain  <jankit@novell.com>
 
+	* templates/Makefile.solution.template: Replace all *-recursive targets
+	with a single %-recursive target.
+	* templates/*: minor updates.
+	* SimpleProjectMakefileHandler.cs: Update.
+
+2007-08-22  Ankit Jain  <jankit@novell.com>
+
 	* templates/*: Improve generated makefiles to support '-k'.
 
 2007-08-21  Ankit Jain  <jankit@novell.com>

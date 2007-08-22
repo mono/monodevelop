@@ -381,6 +381,7 @@ namespace MonoDevelop.Autotools
 				templateEngine.Variables["DEPLOY_FILE_VARS"] = vars.ToString ();
 				templateEngine.Variables["COPY_DEPLOY_FILES_VARS"] = deployFileCopyVars.ToString();
 				templateEngine.Variables["COPY_DEPLOY_FILES_TARGETS"] = deployFileCopyTargets.ToString();
+				templateEngine.Variables["ALL_TARGET"] = (ctx.TargetCombine.BaseDirectory == project.BaseDirectory) ? "all-local" : "all";
 
 				templateEngine.Variables["FILES"] = files.ToString();
 				templateEngine.Variables["RESOURCES"] = res_files.ToString();
@@ -584,7 +585,7 @@ namespace MonoDevelop.Autotools
 				installTarget.AppendFormat ("\ttest -z '$({0})' || cp $({0}) {1}\n", targetDeployVar, installDir);
 				installDeps.AppendFormat (" $({0})", targetDeployVar);
 
-				uninstallTarget.AppendFormat ("\trm -f {0}/$(notdir $({1}))\n", installDir, targetDeployVar);
+				uninstallTarget.AppendFormat ("\ttest -z '$({1})' || rm -f {0}/$(notdir $({1}))\n", installDir, targetDeployVar);
 			}
 		}
 

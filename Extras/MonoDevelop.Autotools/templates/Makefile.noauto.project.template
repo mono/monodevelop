@@ -19,7 +19,7 @@ DLL_REFERENCES = %%DLL_REFERENCES%%
 CLEANFILES += %%CLEANFILES%%
 
 #Targets
-all-local: $(ASSEMBLY) %%DEPLOY_FILE_VARS%% $(top_srcdir)/config.make
+%%ALL_TARGET%%: $(ASSEMBLY) %%DEPLOY_FILE_VARS%% $(top_srcdir)/config.make
 
 %%COPY_DEPLOY_FILES_TARGETS%%
 
