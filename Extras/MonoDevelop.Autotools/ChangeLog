@@ -1,5 +1,12 @@
 2007-08-22  Ankit Jain  <jankit@novell.com>
 
+	* templates/*: Add invocation for various hooks.
+	* SimpleProjectMakefileHandler.cs: Include custom-hooks.make .
+	* SolutionMakefileHandler.cs: Include custom-hooks.make . Emit
+	invocation for hooks.
+
+2007-08-22  Ankit Jain  <jankit@novell.com>
+
 	* templates/Makefile.solution.template: Replace all *-recursive targets
 	with a single %-recursive target.
 	* templates/*: minor updates.

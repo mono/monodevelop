@@ -189,10 +189,12 @@ namespace MonoDevelop.Autotools
 					programFilesDir = programFilesDir.Replace ("@prefix@", "$(prefix)");
 					programFilesDir = programFilesDir.Replace ("@PACKAGE@", "$(PACKAGE)");
 					installDirs.Add (programFilesDir);
+					installTarget.Append ("\tmake pre-install-local-hook prefix=$(prefix)\n");
 					installTarget.AppendFormat ("\tmkdir -p {0}\n", programFilesDir);
 					installTarget.AppendFormat ("\tcp $(ASSEMBLY) $(ASSEMBLY_MDB) {0}\n", programFilesDir);
 
 					//remove dir?
+					uninstallTarget.Append ("\tmake pre-uninstall-local-hook prefix=$(prefix)\n");
 					uninstallTarget.AppendFormat ("\trm -f {0}/$(notdir $(ASSEMBLY))\n", programFilesDir);
 					uninstallTarget.AppendFormat ("\ttest -z '$(ASSEMBLY_MDB)' || rm -f {0}/$(notdir $(ASSEMBLY_MDB))\n", programFilesDir);
 
@@ -204,6 +206,10 @@ namespace MonoDevelop.Autotools
 
 					conf_vars.AppendFormat ("include $(top_srcdir)/Makefile.include\n");
 					conf_vars.AppendFormat ("include $(top_srcdir)/config.make\n\n");
+					if (ctx.TargetCombine.BaseDirectory != project.BaseDirectory)
+						//Don't emit for top level project makefile(eg. pdn.make), as it would be
+						//included by top level solution makefile
+						conf_vars.AppendFormat ("#include $(srcdir)/custom-hooks.make\n\n");
 				}
 
 				List<ConfigSection> configSections = new List<ConfigSection> ();
@@ -374,7 +380,10 @@ namespace MonoDevelop.Autotools
 
 				if (!generateAutotools) {
 					installTarget.Insert (0, String.Format ("install-local:{0}\n", installDeps.ToString ()));
+					installTarget.Append ("\tmake post-install-local-hook prefix=$(prefix)\n");
+
 					uninstallTarget.Insert (0, String.Format ("uninstall-local:{0}\n", installDeps.ToString ()));
+					uninstallTarget.Append ("\tmake post-uninstall-local-hook prefix=$(prefix)\n");
 				}
 
 				templateEngine.Variables["CONFIG_VARS"] = conf_vars.ToString ();

@@ -1,10 +1,13 @@
 clean-local:
+	make pre-clean-local-hook
 	-rm -f $(CLEANFILES)
+	make post-clean-local-hook
 
 install-local:
 uninstall-local:
 
-distlocal:
+dist-local:
+	make pre-dist-local-hook distdir=$$distdir
 	list='$(EXTRA_DIST)'; \
 	for f in Makefile $$list; do \
 		d=`dirname "$$f"`; \
@@ -12,12 +15,18 @@ distlocal:
 			mkdir -p "$(distdir)/$$d"; \
 		cp -p "$$f" "$(distdir)/$$d" || exit 1; \
 	done
+	make post-dist-local-hook distdir=$$distdir
 
-distlocal-recursive:
+dist-local-recursive:
 	for dir in $(SUBDIRS); do \
 		mkdir -p $(distdir)/$$dir || true; \
 		case $$dir in \
-		.) make distlocal distdir=$(distdir) || exit 1;; \
-		*) (cd $$dir; make distlocal distdir=$(distdir)/$$dir) || exit 1; \
+		.) make dist-local distdir=$(distdir) || exit 1;; \
+		*) (cd $$dir; make dist-local distdir=$(distdir)/$$dir) || exit 1; \
 		esac \
 	done
+
+#hooks: Available hooks - all, clean, install, uninstall and dist
+#	and their *-local variants
+pre-%-hook: ; @:
+post-%-hook: ; @:

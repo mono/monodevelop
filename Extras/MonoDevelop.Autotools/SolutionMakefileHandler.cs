@@ -61,6 +61,7 @@ namespace MonoDevelop.Autotools
 							entry.BaseDirectory, ctx.TargetCombine.BaseDirectory));
 					solutionTop.Append ("include $(top_srcdir)/config.make\n");
 					solutionTop.Append ("include $(top_srcdir)/rules.make\n\n");
+					solutionTop.Append ("#include $(top_srcdir)/custom-hooks.make\n\n");
 				}
 
 				ArrayList children = new ArrayList ();
@@ -135,7 +136,7 @@ namespace MonoDevelop.Autotools
 								makefile.Append ("install: install-local\nuninstall: uninstall-local\nclean: clean-local\n");
 								if (ce is Combine)
 									//non TargetCombine
-									makefile.Append ("distlocal: distlocal-recursive\n");
+									makefile.Append ("dist-local: dist-local-recursive\n");
 								else
 									makefile.Append ("include $(top_srcdir)/rules.make\n");
 							}
