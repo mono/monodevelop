@@ -39,11 +39,11 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 				SetArrayDimensions (arrayDimensions);
 		}
 		
-		public ReturnType (ICSharpCode.NRefactory.Parser.AST.TypeReference type): this (type, null)
+		public ReturnType (ICSharpCode.NRefactory.Ast.TypeReference type): this (type, null)
 		{
 		}
 		
-		public ReturnType (ICSharpCode.NRefactory.Parser.AST.TypeReference type, IClass resolvedClass)
+		public ReturnType (ICSharpCode.NRefactory.Ast.TypeReference type, IClass resolvedClass)
 		{
 			this.FullyQualifiedName  = resolvedClass != null ? resolvedClass.FullyQualifiedName : GetSystemType (type.Type);
 			this.pointerNestingLevel = type.PointerNestingLevel;
@@ -58,13 +58,13 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 					this.FullyQualifiedName = string.Concat (this.FullyQualifiedName, "`", type.GenericTypes.Count);
 
 				// Now go get them!
-				foreach (ICSharpCode.NRefactory.Parser.AST.TypeReference tr in type.GenericTypes) {
+				foreach (ICSharpCode.NRefactory.Ast.TypeReference tr in type.GenericTypes) {
 					this.genericArguments.Add (new ReturnType(tr));
 				}
 			}
 		}
 		
-		public static string GetFullTypeName (ICSharpCode.NRefactory.Parser.AST.TypeReference type)
+		public static string GetFullTypeName (ICSharpCode.NRefactory.Ast.TypeReference type)
 		{
 			if (type.GenericTypes != null && type.GenericTypes.Count > 0)
 				return string.Concat (GetSystemType (type.Type), "`", type.GenericTypes.Count);

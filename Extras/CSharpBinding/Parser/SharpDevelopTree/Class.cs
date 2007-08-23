@@ -5,13 +5,15 @@ using System.Diagnostics;
 
 using MonoDevelop.Projects.Parser;
 using ICSharpCode.NRefactory.Parser;
-using ModifierFlags = ICSharpCode.NRefactory.Parser.AST.Modifier;
+using ICSharpCode.NRefactory.Ast;
+using Modifier = ICSharpCode.NRefactory.Ast.Modifiers;
+using ClassType = MonoDevelop.Projects.Parser.ClassType;
 
 namespace CSharpBinding.Parser.SharpDevelopTree
 {
 	public class Class : DefaultClass
 	{
-		public Class (DefaultCompilationUnit cu, ClassType t, ModifierFlags m, IRegion region, IRegion bodyRegion): base (cu)
+		public Class (DefaultCompilationUnit cu, MonoDevelop.Projects.Parser.ClassType t, Modifier m, IRegion region, IRegion bodyRegion): base (cu)
 		{
 			classType = t;
 			this.region = region;

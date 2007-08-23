@@ -5,13 +5,13 @@ using System.Diagnostics;
 using System.Collections;
 using System.CodeDom;
 
-using RefParser = ICSharpCode.NRefactory.Parser;
-using AST = ICSharpCode.NRefactory.Parser.AST;
 using MonoDevelop.Projects.Parser;
 using CSharpBinding.Parser.SharpDevelopTree;
-using ModifierFlags = ICSharpCode.NRefactory.Parser.AST.Modifier;
-using ClassType = MonoDevelop.Projects.Parser.ClassType;
-using CSGenericParameter = CSharpBinding.Parser.SharpDevelopTree.GenericParameter;
+
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Visitors;
 
 namespace CSharpBinding.Parser
 {
@@ -19,12 +19,12 @@ namespace CSharpBinding.Parser
 	{
 	}
 	
-	public class CSharpVisitor : RefParser.AbstractAstVisitor
+	public class CSharpVisitor : AbstractAstVisitor
 	{
 		DefaultCompilationUnit cu = new DefaultCompilationUnit();
 		Stack currentNamespace = new Stack();
 		Stack currentClass = new Stack();
-		static ICSharpCode.NRefactory.Parser.CodeDOMVisitor domVisitor = new ICSharpCode.NRefactory.Parser.CodeDOMVisitor ();
+		static CodeDomVisitor domVisitor = new  CodeDomVisitor ();
 		
 		public DefaultCompilationUnit Cu {
 			get {
@@ -32,14 +32,14 @@ namespace CSharpBinding.Parser
 			}
 		}
 		
-		public override object Visit(AST.CompilationUnit compilationUnit, object data)
+		public override object VisitCompilationUnit(CompilationUnit compilationUnit, object data)
 		{
 			//TODO: usings, Comments
 			compilationUnit.AcceptChildren(this, data);
 			return cu;
 		}
 		
-		public override object Visit(AST.Using usingDeclaration, object data)
+		public override object VisitUsing(ICSharpCode.NRefactory.Ast.Using usingDeclaration, object data)
 		{
 			Using u = new Using();
 			if (usingDeclaration.IsAlias)
@@ -81,9 +81,9 @@ namespace CSharpBinding.Parser
 		void FillAttributes (IDecoration decoration, IEnumerable attributes)
 		{
 			// TODO Expressions???
-			foreach (AST.AttributeSection section in attributes) {
+			foreach (AttributeSection section in attributes) {
 				DefaultAttributeSection resultSection = new DefaultAttributeSection (GetAttributeTarget (section.AttributeTarget), GetRegion (section.StartLocation, section.EndLocation));
-				foreach (AST.Attribute attribute in section.Attributes)
+				foreach (ICSharpCode.NRefactory.Ast.Attribute attribute in section.Attributes)
 				{
 					CodeExpression[] positionals = new CodeExpression [attribute.PositionalArguments.Count];
 					for (int n=0; n<attribute.PositionalArguments.Count; n++) {
@@ -92,7 +92,7 @@ namespace CSharpBinding.Parser
 					
 					NamedAttributeArgument[] named = new NamedAttributeArgument [attribute.NamedArguments.Count];
 					for (int n=0; n<attribute.NamedArguments.Count; n++) {
-						ICSharpCode.NRefactory.Parser.AST.NamedArgumentExpression arg = (ICSharpCode.NRefactory.Parser.AST.NamedArgumentExpression) attribute.NamedArguments [n];
+						ICSharpCode.NRefactory.Ast.NamedArgumentExpression arg = (ICSharpCode.NRefactory.Ast.NamedArgumentExpression) attribute.NamedArguments [n];
 						named [n] = new NamedAttributeArgument (arg.Name, GetDomExpression (arg.Expression));
 					}
 					
@@ -106,7 +106,7 @@ namespace CSharpBinding.Parser
 		
 		CodeExpression GetDomExpression (object ob)
 		{
-			return (CodeExpression) ((ICSharpCode.NRefactory.Parser.AST.Expression)ob).AcceptVisitor (domVisitor, null);
+			return (CodeExpression) ((ICSharpCode.NRefactory.Ast.Expression)ob).AcceptVisitor (domVisitor, null);
 		}
 		
 //		ModifierEnum VisitModifier(ICSharpCode.NRefactory.Parser.Modifier m)
@@ -114,7 +114,7 @@ namespace CSharpBinding.Parser
 //			return (ModifierEnum)m;
 //		}
 		
-		public override object Visit(AST.NamespaceDeclaration namespaceDeclaration, object data)
+		public override object VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, object data)
 		{
 			string name;
 			if (currentNamespace.Count == 0) {
@@ -128,26 +128,26 @@ namespace CSharpBinding.Parser
 			return ret;
 		}
 		
-		ClassType TranslateClassType(RefParser.AST.ClassType type)
+		MonoDevelop.Projects.Parser.ClassType TranslateClassType(ICSharpCode.NRefactory.Ast.ClassType type)
 		{
 			switch (type) {
-				case RefParser.AST.ClassType.Class:
-					return ClassType.Class;
-				case RefParser.AST.ClassType.Enum:
-					return ClassType.Enum;
-				case RefParser.AST.ClassType.Interface:
-					return ClassType.Interface;
-				case RefParser.AST.ClassType.Struct:
-					return ClassType.Struct;
+				case ICSharpCode.NRefactory.Ast.ClassType.Class:
+					return MonoDevelop.Projects.Parser.ClassType.Class;
+				case ICSharpCode.NRefactory.Ast.ClassType.Enum:
+					return MonoDevelop.Projects.Parser.ClassType.Enum;
+				case ICSharpCode.NRefactory.Ast.ClassType.Interface:
+					return MonoDevelop.Projects.Parser.ClassType.Interface;
+				case ICSharpCode.NRefactory.Ast.ClassType.Struct:
+					return MonoDevelop.Projects.Parser.ClassType.Struct;
 			}
-			return ClassType.Class;
+			return MonoDevelop.Projects.Parser.ClassType.Class;
 		}
 		
-		public override object Visit(AST.TypeDeclaration typeDeclaration, object data)
+		public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
 		{
 			DefaultRegion bodyRegion = GetRegion(typeDeclaration.StartLocation, typeDeclaration.EndLocation);
 			DefaultRegion declarationRegion = bodyRegion; //GetRegion (typeDeclaration.DeclarationStartLocation, typeDeclaration.DeclarationEndLocation);
-			ModifierFlags mf = typeDeclaration.Modifier;
+			Modifiers mf = typeDeclaration.Modifier;
 			Class c = new Class(cu, TranslateClassType(typeDeclaration.Type), mf, declarationRegion, bodyRegion);
 			
 			FillAttributes (c, typeDeclaration.Attributes);
@@ -165,11 +165,11 @@ namespace CSharpBinding.Parser
 			
 			// Get base classes (with generic arguments et al)
 			if (typeDeclaration.BaseTypes != null) {
-				foreach (ICSharpCode.NRefactory.Parser.AST.TypeReference type in typeDeclaration.BaseTypes) {
+				foreach (ICSharpCode.NRefactory.Ast.TypeReference type in typeDeclaration.BaseTypes) {
 					c.BaseTypes.Add(new ReturnType(type));
 				}
 			}
-			if (c.ClassType == ClassType.Enum) {
+			if (c.ClassType == MonoDevelop.Projects.Parser.ClassType.Enum) {
 				c.BaseTypes.Add (new ReturnType ("System.Enum"));
 			}
 			
@@ -177,8 +177,8 @@ namespace CSharpBinding.Parser
 			if (typeDeclaration.Templates != null && typeDeclaration.Templates.Count > 0) {
 				c.GenericParameters = new GenericParameterList();
 				c.Name = String.Concat (c.Name, "`", typeDeclaration.Templates.Count.ToString());
-				foreach (AST.TemplateDefinition td in typeDeclaration.Templates) {
-					c.GenericParameters.Add (new CSGenericParameter(td));
+				foreach (TemplateDefinition td in typeDeclaration.Templates) {
+					c.GenericParameters.Add (new CSharpBinding.Parser.SharpDevelopTree.GenericParameter(td));
 				}
 			}
 			
@@ -189,11 +189,11 @@ namespace CSharpBinding.Parser
 			return ret;
 		}
 		
-		public override object Visit(AST.DelegateDeclaration typeDeclaration, object data)
+		public override object VisitDelegateDeclaration(DelegateDeclaration typeDeclaration, object data)
 		{
 			DefaultRegion declarationRegion = GetRegion (typeDeclaration.StartLocation, typeDeclaration.EndLocation);
-			ModifierFlags mf = typeDeclaration.Modifier;
-			Class c = new Class (cu, ClassType.Delegate, mf, declarationRegion, null);
+			Modifiers mf = typeDeclaration.Modifier;
+			Class c = new Class (cu, MonoDevelop.Projects.Parser.ClassType.Delegate, mf, declarationRegion, null);
 			
 			FillAttributes (c, typeDeclaration.Attributes);
 			
@@ -213,11 +213,11 @@ namespace CSharpBinding.Parser
 				
 			ReturnType type = new ReturnType (typeDeclaration.ReturnType);
 			
-			mf = ModifierFlags.None;
+			mf = Modifiers.None;
 			Method method = new Method ("Invoke", type, mf, null, null);
 			ParameterCollection parameters = new ParameterCollection();
 			if (typeDeclaration.Parameters != null) {
-				foreach (AST.ParameterDeclarationExpression par in typeDeclaration.Parameters) {
+				foreach (ParameterDeclarationExpression par in typeDeclaration.Parameters) {
 					parameters.Add (CreateParameter (par, method));
 				}
 			}
@@ -228,30 +228,30 @@ namespace CSharpBinding.Parser
 			return c;
 		}
 		
-		DefaultRegion GetRegion(Point start, Point end)
+		DefaultRegion GetRegion(Location start, Location end)
 		{
 			return new DefaultRegion(start.Y, start.X, end.Y, end.X);
 		}
 		
-		public override object Visit(AST.MethodDeclaration methodDeclaration, object data)
+		public override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
 		{
 			VisitMethod (methodDeclaration, data);
 			return null;
 		}
 		
-		Method VisitMethod (AST.MethodDeclaration methodDeclaration, object data)
+		Method VisitMethod (MethodDeclaration methodDeclaration, object data)
 		{
 			DefaultRegion region     = GetRegion(methodDeclaration.StartLocation, methodDeclaration.EndLocation);
-			DefaultRegion bodyRegion = GetRegion(methodDeclaration.EndLocation, methodDeclaration.Body != null ? methodDeclaration.Body.EndLocation : new Point(-1, -1));
+			DefaultRegion bodyRegion = GetRegion(methodDeclaration.EndLocation, methodDeclaration.Body != null ? methodDeclaration.Body.EndLocation : new Location (-1, -1));
 
 			ReturnType type = new ReturnType(methodDeclaration.TypeReference);
 			Class c       = (Class)currentClass.Peek();
 			
-			ModifierFlags mf = methodDeclaration.Modifier;
+			Modifiers mf = methodDeclaration.Modifier;
 			Method method = new Method (String.Concat(methodDeclaration.Name), type, mf, region, bodyRegion);
 			ParameterCollection parameters = method.Parameters;
 			if (methodDeclaration.Parameters != null) {
-				foreach (AST.ParameterDeclarationExpression par in methodDeclaration.Parameters) {
+				foreach (ParameterDeclarationExpression par in methodDeclaration.Parameters) {
 					parameters.Add (CreateParameter (par, method));
 				}
 			}
@@ -259,8 +259,8 @@ namespace CSharpBinding.Parser
 			// Get generic parameters for this type
 			if (methodDeclaration.Templates != null && methodDeclaration.Templates.Count > 0) {
 				method.GenericParameters = new GenericParameterList();
-				foreach (AST.TemplateDefinition td in methodDeclaration.Templates) {
-					method.GenericParameters.Add (new CSGenericParameter(td));
+				foreach (TemplateDefinition td in methodDeclaration.Templates) {
+					method.GenericParameters.Add (new CSharpBinding.Parser.SharpDevelopTree.GenericParameter(td));
 				}
 			}
 			
@@ -270,115 +270,115 @@ namespace CSharpBinding.Parser
 			return method;
 		}
 		
-		IParameter CreateParameter (AST.ParameterDeclarationExpression par, IMember declaringMember)
+		IParameter CreateParameter (ParameterDeclarationExpression par, IMember declaringMember)
 		{
 			ReturnType parType = new ReturnType (par.TypeReference);
 			DefaultParameter p = new DefaultParameter (declaringMember, par.ParameterName, parType);
-			if ((par.ParamModifier & AST.ParamModifier.Out) != 0)
+			if ((par.ParamModifier & ParameterModifiers.Out) != 0)
 				p.Modifier |= ParameterModifier.Out;
-			if ((par.ParamModifier & AST.ParamModifier.Ref) != 0)
+			if ((par.ParamModifier & ParameterModifiers.Ref) != 0)
 				p.Modifier |= ParameterModifier.Ref;
-			if ((par.ParamModifier & AST.ParamModifier.Params) != 0)
+			if ((par.ParamModifier & ParameterModifiers.Params) != 0)
 				p.Modifier |= ParameterModifier.Params;
 			return p;
 		}
 		
-		public override object Visit(AST.OperatorDeclaration operatorDeclaration, object data)
+		public override object VisitOperatorDeclaration(OperatorDeclaration operatorDeclaration, object data)
 		{
 			string name = null;
 			bool binary = operatorDeclaration.Parameters.Count == 2;
 			
 			switch (operatorDeclaration.OverloadableOperator) {
-				case AST.OverloadableOperatorType.Add:
+				case OverloadableOperatorType.Add:
 					if (binary)
 						name = "op_Addition";
 					else
 						name = "op_UnaryPlus";
 					break;
-				case AST.OverloadableOperatorType.Subtract:
+				case OverloadableOperatorType.Subtract:
 					if (binary)
 						name = "op_Subtraction";
 					else
 						name = "op_UnaryNegation";
 					break;
-				case AST.OverloadableOperatorType.Multiply:
+				case OverloadableOperatorType.Multiply:
 					if (binary)
 						name = "op_Multiply";
 					break;
-				case AST.OverloadableOperatorType.Divide:
+				case OverloadableOperatorType.Divide:
 					if (binary)
 						name = "op_Division";
 					break;
-				case AST.OverloadableOperatorType.Modulus:
+				case OverloadableOperatorType.Modulus:
 					if (binary)
 						name = "op_Modulus";
 					break;
 				
-				case AST.OverloadableOperatorType.Not:
+				case OverloadableOperatorType.Not:
 					name = "op_LogicalNot";
 					break;
-				case AST.OverloadableOperatorType.BitNot:
+				case OverloadableOperatorType.BitNot:
 					name = "op_OnesComplement";
 					break;
 				
-				case AST.OverloadableOperatorType.BitwiseAnd:
+				case OverloadableOperatorType.BitwiseAnd:
 					if (binary)
 						name = "op_BitwiseAnd";
 					break;
-				case AST.OverloadableOperatorType.BitwiseOr:
+				case OverloadableOperatorType.BitwiseOr:
 					if (binary)
 						name = "op_BitwiseOr";
 					break;
-				case AST.OverloadableOperatorType.ExclusiveOr:
+				case OverloadableOperatorType.ExclusiveOr:
 					if (binary)
 						name = "op_ExclusiveOr";
 					break;
 				
-				case AST.OverloadableOperatorType.ShiftLeft:
+				case OverloadableOperatorType.ShiftLeft:
 					if (binary)
 						name = "op_LeftShift";
 					break;
-				case AST.OverloadableOperatorType.ShiftRight:
+				case OverloadableOperatorType.ShiftRight:
 					if (binary)
 						name = "op_RightShift";
 					break;
 				
-				case AST.OverloadableOperatorType.GreaterThan:
+				case OverloadableOperatorType.GreaterThan:
 					if (binary)
 						name = "op_GreaterThan";
 					break;
-				case AST.OverloadableOperatorType.GreaterThanOrEqual:
+				case OverloadableOperatorType.GreaterThanOrEqual:
 					if (binary)
 						name = "op_GreaterThanOrEqual";
 					break;
-				case AST.OverloadableOperatorType.Equality:
+				case OverloadableOperatorType.Equality:
 					if (binary)
 						name = "op_Equality";
 					break;
-				case AST.OverloadableOperatorType.InEquality:
+				case OverloadableOperatorType.InEquality:
 					if (binary)
 						name = "op_Inequality";
 					break;
-				case AST.OverloadableOperatorType.LessThan:
+				case OverloadableOperatorType.LessThan:
 					if (binary)
 						name = "op_LessThan";
 					break;
-				case AST.OverloadableOperatorType.LessThanOrEqual:
+				case OverloadableOperatorType.LessThanOrEqual:
 					if (binary)
 						name = "op_LessThanOrEqual";
 					break;
 				
-				case AST.OverloadableOperatorType.Increment:
+				case OverloadableOperatorType.Increment:
 					name = "op_Increment";
 					break;
-				case AST.OverloadableOperatorType.Decrement:
+				case OverloadableOperatorType.Decrement:
 					name = "op_Decrement";
 					break;
 				
-				case AST.OverloadableOperatorType.True:
+				case OverloadableOperatorType.IsTrue:
 					name = "op_True";
 					break;
-				case AST.OverloadableOperatorType.False:
+				case OverloadableOperatorType.IsFalse:
 					name = "op_False";
 					break;
 			}
@@ -387,21 +387,21 @@ namespace CSharpBinding.Parser
 				method.Name = name;
 				method.Modifiers = method.Modifiers | ModifierEnum.SpecialName;
 				return null;
-			} else
-				return base.Visit (operatorDeclaration, data);
+			} 
+			return null;
 		}
 		
-		public override object Visit(AST.ConstructorDeclaration constructorDeclaration, object data)
+		public override object VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data)
 		{
 			DefaultRegion region     = GetRegion(constructorDeclaration.StartLocation, constructorDeclaration.EndLocation);
-			DefaultRegion bodyRegion = GetRegion(constructorDeclaration.EndLocation, constructorDeclaration.Body != null ? constructorDeclaration.Body.EndLocation : new Point(-1, -1));
+			DefaultRegion bodyRegion = GetRegion(constructorDeclaration.EndLocation, constructorDeclaration.Body != null ? constructorDeclaration.Body.EndLocation : new Location (-1, -1));
 			Class c       = (Class)currentClass.Peek();
 			
-			ModifierFlags mf = constructorDeclaration.Modifier;
+			Modifiers mf = constructorDeclaration.Modifier;
 			Constructor constructor = new Constructor (mf, region, bodyRegion);
 			ParameterCollection parameters = new ParameterCollection();
 			if (constructorDeclaration.Parameters != null) {
-				foreach (AST.ParameterDeclarationExpression par in constructorDeclaration.Parameters) {
+				foreach (ParameterDeclarationExpression par in constructorDeclaration.Parameters) {
 					parameters.Add (CreateParameter (par, constructor));
 				}
 			}
@@ -413,14 +413,14 @@ namespace CSharpBinding.Parser
 			return null;
 		}
 		
-		public override object Visit(AST.DestructorDeclaration destructorDeclaration, object data)
+		public override object VisitDestructorDeclaration(DestructorDeclaration destructorDeclaration, object data)
 		{
 			DefaultRegion region     = GetRegion(destructorDeclaration.StartLocation, destructorDeclaration.EndLocation);
-			DefaultRegion bodyRegion = GetRegion(destructorDeclaration.EndLocation, destructorDeclaration.Body != null ? destructorDeclaration.Body.EndLocation : new Point(-1, -1));
+			DefaultRegion bodyRegion = GetRegion(destructorDeclaration.EndLocation, destructorDeclaration.Body != null ? destructorDeclaration.Body.EndLocation : new Location (-1, -1));
 			
 			Class c       = (Class)currentClass.Peek();
 			
-			ModifierFlags mf = destructorDeclaration.Modifier;
+			Modifiers mf = destructorDeclaration.Modifier;
 			Destructor destructor = new Destructor (c.Name, mf, region, bodyRegion);
 			
 			FillAttributes (destructor, destructorDeclaration.Attributes);
@@ -430,21 +430,21 @@ namespace CSharpBinding.Parser
 		}
 		
 		// No attributes?
-		public override object Visit(AST.FieldDeclaration fieldDeclaration, object data)
+		public override object VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data)
 		{
 			DefaultRegion region     = GetRegion(fieldDeclaration.StartLocation, fieldDeclaration.EndLocation);
 			Class c = (Class)currentClass.Peek();
 			ReturnType type = null;
 			if (fieldDeclaration.TypeReference == null) {
-				Debug.Assert(c.ClassType == ClassType.Enum);
+				Debug.Assert(c.ClassType == MonoDevelop.Projects.Parser.ClassType.Enum);
 			} else {
 				type = new ReturnType(fieldDeclaration.TypeReference);
 			}
 			if (currentClass.Count > 0) {
-				foreach (AST.VariableDeclaration field in fieldDeclaration.Fields) {
+				foreach (VariableDeclaration field in fieldDeclaration.Fields) {
 					DefaultField f;
 					f = new DefaultField (type, field.Name, (ModifierEnum) fieldDeclaration.Modifier, region);	
-					if (c.ClassType == ClassType.Enum)
+					if (c.ClassType == MonoDevelop.Projects.Parser.ClassType.Enum)
 						f.AddModifier (ModifierEnum.Const);
 					c.Fields.Add(f);
 					FillAttributes (f, fieldDeclaration.Attributes);
@@ -454,7 +454,7 @@ namespace CSharpBinding.Parser
 			return null;
 		}
 		
-		public override object Visit(AST.PropertyDeclaration propertyDeclaration, object data)
+		public override object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
 		{
 			DefaultRegion region     = GetRegion(propertyDeclaration.StartLocation, propertyDeclaration.EndLocation);
 			DefaultRegion bodyRegion = GetRegion(propertyDeclaration.BodyStart,     propertyDeclaration.BodyEnd);
@@ -462,7 +462,7 @@ namespace CSharpBinding.Parser
 			ReturnType type = new ReturnType(propertyDeclaration.TypeReference);
 			Class c = (Class)currentClass.Peek();
 			
-			ModifierFlags mf = propertyDeclaration.Modifier;
+			Modifiers mf = propertyDeclaration.Modifier;
 			DefaultProperty property = new DefaultProperty (propertyDeclaration.Name, type, (ModifierEnum)mf, region, bodyRegion);
 			
 			FillAttributes (property, propertyDeclaration.Attributes);
@@ -476,7 +476,7 @@ namespace CSharpBinding.Parser
 			return null;
 		}
 		
-		public override object Visit(AST.EventDeclaration eventDeclaration, object data)
+		public override object VisitEventDeclaration(EventDeclaration eventDeclaration, object data)
 		{
 			DefaultRegion region     = GetRegion(eventDeclaration.StartLocation, eventDeclaration.EndLocation);
 			DefaultRegion bodyRegion = GetRegion(eventDeclaration.BodyStart,     eventDeclaration.BodyEnd);
@@ -485,14 +485,14 @@ namespace CSharpBinding.Parser
 			DefaultEvent e = null;
 			
 /*			if (eventDeclaration.VariableDeclarators != null) {
-				foreach (ICSharpCode.NRefactory.Parser.AST.VariableDeclaration varDecl in eventDeclaration.VariableDeclarators) {
+				foreach (ICSharpCode.NRefactory.Ast.VariableDeclaration varDecl in eventDeclaration.VariableDeclarators) {
 					ModifierFlags mf = eventDeclaration.Modifier;
 					e = new DefaultEvent (c, varDecl.Name, type, mf, region, bodyRegion);
 					FillAttributes (e, eventDeclaration.Attributes);
 					c.Events.Add(e);
 				}
 			} else {
-*/				ModifierFlags mf = eventDeclaration.Modifier;
+*/				Modifiers mf = eventDeclaration.Modifier;
 				e = new DefaultEvent (eventDeclaration.Name, type, (ModifierEnum)mf, region, bodyRegion);
 				FillAttributes (e, eventDeclaration.Attributes);
 				c.Events.Add(e);
@@ -500,16 +500,16 @@ namespace CSharpBinding.Parser
 			return null;
 		}
 		
-		public override object Visit(AST.IndexerDeclaration indexerDeclaration, object data)
+		public override object VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data)
 		{
 			DefaultRegion region     = GetRegion(indexerDeclaration.StartLocation, indexerDeclaration.EndLocation);
 			DefaultRegion bodyRegion = GetRegion(indexerDeclaration.BodyStart,     indexerDeclaration.BodyEnd);
 			ParameterCollection parameters = new ParameterCollection();
 			Class c = (Class)currentClass.Peek();
-			ModifierFlags mf = indexerDeclaration.Modifier;
+			Modifiers mf = indexerDeclaration.Modifier;
 			DefaultIndexer i = new DefaultIndexer (new ReturnType(indexerDeclaration.TypeReference), parameters, (ModifierEnum)mf, region, bodyRegion);
 			if (indexerDeclaration.Parameters != null) {
-				foreach (AST.ParameterDeclarationExpression par in indexerDeclaration.Parameters) {
+				foreach (ParameterDeclarationExpression par in indexerDeclaration.Parameters) {
 					parameters.Add (CreateParameter (par, i));
 				}
 			}

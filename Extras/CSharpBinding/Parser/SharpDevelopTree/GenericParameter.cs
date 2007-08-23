@@ -33,7 +33,7 @@
 using SDReturnType = CSharpBinding.Parser.SharpDevelopTree.ReturnType;
 using MDGenericParameter = MonoDevelop.Projects.Parser.GenericParameter;
 using System;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Ast;
 using MonoDevelop.Projects.Parser;
 
 namespace CSharpBinding.Parser.SharpDevelopTree

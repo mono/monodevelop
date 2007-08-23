@@ -3,11 +3,15 @@
 using System;
 using System.Collections;
 
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
 using CSharpBinding.Parser.SharpDevelopTree;
 
 using MonoDevelop.Projects.Parser;
+
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Visitors;
+
 
 namespace CSharpBinding.Parser
 {
@@ -20,18 +24,18 @@ namespace CSharpBinding.Parser
 			this.resolver = resolver;
 		}
 		
-		public override object Visit(PrimitiveExpression primitiveExpression, object data)
+		public override object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
 		{
 			return null;
 		}
 		
-		public override object Visit(BinaryOperatorExpression binaryOperatorExpression, object data)
+		public override object VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
 		{
 			// TODO : Operators 
 			return binaryOperatorExpression.Left.AcceptVisitor(this, data);
 		}
 		
-		public override object Visit(ParenthesizedExpression parenthesizedExpression, object data)
+		public override object VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)
 		{
 			if (parenthesizedExpression == null) {
 				return null;
@@ -39,7 +43,7 @@ namespace CSharpBinding.Parser
 			return parenthesizedExpression.Expression.AcceptVisitor(this, data);
 		}
 		
-		public override object Visit(InvocationExpression invocationExpression, object data)
+		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
 		{
 			if (invocationExpression.TargetObject is FieldReferenceExpression) {
 				FieldReferenceExpression field = (FieldReferenceExpression)invocationExpression.TargetObject;
@@ -133,7 +137,7 @@ namespace CSharpBinding.Parser
 			return (IMethod) methods [0];
 		}
 		
-		public override object Visit(FieldReferenceExpression fieldReferenceExpression, object data)
+		public override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
 		{
 			if (fieldReferenceExpression == null) {
 				return null;
@@ -172,7 +176,7 @@ namespace CSharpBinding.Parser
 			return null;
 		}
 		
-		public override object Visit(PointerReferenceExpression pointerReferenceExpression, object data)
+		public override object VisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data)
 		{
 			ReturnType type = pointerReferenceExpression.TargetObject.AcceptVisitor(this, data) as ReturnType;
 			if (type == null) {
@@ -186,7 +190,7 @@ namespace CSharpBinding.Parser
 			return resolver.SearchClassMember (type, pointerReferenceExpression.Identifier, true);
 		}
 		
-		public override object Visit(IdentifierExpression identifierExpression, object data)
+		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
 			if (identifierExpression == null) {
 				return null;
@@ -203,52 +207,52 @@ namespace CSharpBinding.Parser
 			return resolver.IdentifierLookup (identifierExpression.Identifier);
 		}
 		
-		public override object Visit(TypeReferenceExpression typeReferenceExpression, object data)
+		public override object VisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression, object data)
 		{
 			return resolver.SearchType (new ReturnType (typeReferenceExpression.TypeReference), resolver.CompilationUnit);
 		}
 		
-		public override object Visit(UnaryOperatorExpression unaryOperatorExpression, object data)
+		public override object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
 			return null;
 		}
 		
-		public override object Visit(AssignmentExpression assignmentExpression, object data)
+		public override object VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
 		{
 			return assignmentExpression.Left.AcceptVisitor(this, data);
 		}
 		
-		public override object Visit(SizeOfExpression sizeOfExpression, object data)
+		public override object VisitSizeOfExpression(SizeOfExpression sizeOfExpression, object data)
 		{
 			return null;
 		}
 		
-		public override object Visit(TypeOfExpression typeOfExpression, object data)
+		public override object VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
 		{
 			return null;
 		}
 		
-		public override object Visit(CheckedExpression checkedExpression, object data)
+		public override object VisitCheckedExpression(CheckedExpression checkedExpression, object data)
 		{
 			return checkedExpression.Expression.AcceptVisitor(this, data);
 		}
 		
-		public override object Visit(UncheckedExpression uncheckedExpression, object data)
+		public override object VisitUncheckedExpression(UncheckedExpression uncheckedExpression, object data)
 		{
 			return uncheckedExpression.Expression.AcceptVisitor(this, data);
 		}
 		
-		public override object Visit(CastExpression castExpression, object data)
+		public override object VisitCastExpression(CastExpression castExpression, object data)
 		{
 			return null;
 		}
 		
-		public override object Visit(StackAllocExpression stackAllocExpression, object data)
+		public override object VisitStackAllocExpression(StackAllocExpression stackAllocExpression, object data)
 		{
 			return null;
 		}
 		
-		public override object Visit(IndexerExpression indexerExpression, object data)
+		public override object VisitIndexerExpression(IndexerExpression indexerExpression, object data)
 		{
 			object ob = indexerExpression.TargetObject.AcceptVisitor(this, data);
 			IReturnType type = ob as IReturnType;
@@ -270,12 +274,12 @@ namespace CSharpBinding.Parser
 			return ob;
 		}
 		
-		public override object Visit(ThisReferenceExpression thisReferenceExpression, object data)
+		public override object VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data)
 		{
 			return null;
 		}
 		
-		public override object Visit(BaseReferenceExpression baseReferenceExpression, object data)
+		public override object VisitBaseReferenceExpression(BaseReferenceExpression baseReferenceExpression, object data)
 		{
 			if (resolver.CallingClass == null) {
 				return null;
@@ -287,23 +291,23 @@ namespace CSharpBinding.Parser
 			return baseClass;
 		}
 		
-		public override object Visit(ObjectCreateExpression objectCreateExpression, object data)
+		public override object VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)
 		{
 			return resolver.SearchType (new ReturnType (objectCreateExpression.CreateType), resolver.CompilationUnit);
 		}
 		
-		public override object Visit(ArrayCreateExpression arrayCreateExpression, object data)
+		public override object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
 		{
 			return resolver.SearchType (new ReturnType (arrayCreateExpression.CreateType), resolver.CompilationUnit);
 		}
 		
-		public override object Visit(DirectionExpression directionExpression, object data)
+		public override object VisitDirectionExpression(DirectionExpression directionExpression, object data)
 		{
 			// no calls allowed !!!
 			return null;
 		}
 		
-		public override object Visit(ArrayInitializerExpression arrayInitializerExpression, object data)
+		public override object VisitArrayInitializerExpression(ArrayInitializerExpression arrayInitializerExpression, object data)
 		{
 			// no calls allowed !!!
 			return null;

@@ -2,7 +2,7 @@
 using System;
 using MonoDevelop.Projects.Parser;
 using ICSharpCode.NRefactory.Parser;
-using ModifierFlags = ICSharpCode.NRefactory.Parser.AST.Modifier;
+using ModifierFlags = ICSharpCode.NRefactory.Ast.Modifiers;
 
 namespace CSharpBinding.Parser.SharpDevelopTree
 {

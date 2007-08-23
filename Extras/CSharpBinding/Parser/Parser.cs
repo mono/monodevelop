@@ -13,6 +13,7 @@ using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects;
 using CSharpBinding.Parser.SharpDevelopTree;
 using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory;
 
 namespace CSharpBinding.Parser
 {
@@ -42,12 +43,12 @@ namespace CSharpBinding.Parser
 		void RetrieveRegions (DefaultCompilationUnit cu, SpecialTracker tracker)
 		{
 			for (int i = 0; i < tracker.CurrentSpecials.Count; ++i) {
-				PreProcessingDirective directive = tracker.CurrentSpecials[i] as PreProcessingDirective;
+				PreprocessingDirective directive = tracker.CurrentSpecials[i] as PreprocessingDirective;
 				if (directive != null) {
 					if (directive.Cmd == "#region") {
 						int deep = 1; 
 						for (int j = i + 1; j < tracker.CurrentSpecials.Count; ++j) {
-							PreProcessingDirective nextDirective = tracker.CurrentSpecials[j] as PreProcessingDirective;
+							PreprocessingDirective nextDirective = tracker.CurrentSpecials[j] as PreprocessingDirective;
 							if (nextDirective != null) {
 								switch (nextDirective.Cmd) {
 									case "#region":
@@ -56,7 +57,7 @@ namespace CSharpBinding.Parser
 									case "#endregion":
 										--deep;
 										if (deep == 0) {
-											cu.FoldingRegions.Add(new FoldingRegion(directive.Arg.Trim(), new DefaultRegion(directive.StartPosition, new Point(nextDirective.EndPosition.X - 2, nextDirective.EndPosition.Y))));
+											cu.FoldingRegions.Add(new FoldingRegion(directive.Arg.Trim(), new DefaultRegion(directive.StartPosition.ToPoint (), new Point(nextDirective.EndPosition.X - 2, nextDirective.EndPosition.Y))));
 											goto end;
 										}
 										break;
@@ -71,26 +72,26 @@ namespace CSharpBinding.Parser
 		
 		public ICompilationUnitBase Parse(string fileName)
 		{
-			using (ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StreamReader(fileName))) {
+			using (ICSharpCode.NRefactory.IParser p = ICSharpCode.NRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StreamReader(fileName))) {
             	return Parse (p, fileName);
             }
 		}
 		
 		public ICompilationUnitBase Parse(string fileName, string fileContent)
 		{
-			using (ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader(fileContent))) {
+			using (ICSharpCode.NRefactory.IParser p = ICSharpCode.NRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader(fileContent))) {
             	return Parse (p, fileName);
             }
 		}
 		
-		ICompilationUnit Parse (ICSharpCode.NRefactory.Parser.IParser p, string fileName)
+		ICompilationUnit Parse (ICSharpCode.NRefactory.IParser p, string fileName)
 		{
         	p.Lexer.SpecialCommentTags = lexerTags;
             p.Parse ();
             
             CSharpVisitor visitor = new CSharpVisitor();
-			visitor.Visit(p.CompilationUnit, null);
-			visitor.Cu.ErrorsDuringCompile = p.Errors.count > 0;
+			visitor.VisitCompilationUnit (p.CompilationUnit, null);
+			visitor.Cu.ErrorsDuringCompile = p.Errors.Count > 0;
 			visitor.Cu.Tag = p.CompilationUnit;
 			// FIXME: track api changes
 			//visitor.Cu.ErrorInformation = p.Errors.ErrorInformation;

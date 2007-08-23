@@ -34,7 +34,9 @@ using System.IO;
 using System.CodeDom;
 using System.CodeDom.Compiler;
 using Microsoft.CSharp;
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory.Visitors;
 
 namespace CSharpBinding
 {
@@ -58,14 +60,14 @@ namespace CSharpBinding
 		{
 			public CodeCompileUnit Parse (TextReader codeStream)
 			{
-				CodeDOMVisitor cdv = new CodeDOMVisitor ();
+				CodeDomVisitor cdv = new CodeDomVisitor ();
 				IParser parser = ParserFactory.CreateParser (
 					SupportedLanguage.CSharp,
 					codeStream);
 				parser.ParseMethodBodies = true;
 				parser.Parse ();
 				
-				if (parser.Errors.count > 0)
+				if (parser.Errors.Count > 0)
 					throw new ArgumentException (parser.Errors.ErrorOutput);
 				
 				parser.CompilationUnit.AcceptVisitor (cdv, null);

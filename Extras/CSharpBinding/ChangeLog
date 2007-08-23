@@ -1,3 +1,15 @@
+2007-08-23  Mike Krüger <mkrueger@novell.com> 
+
+	* CSharpEnhancedCodeProvider.cs, Parser/Parser.cs, Parser/CSharpVisitor.cs,
+	  Parser/CodeGenerator.cs, Parser/Resolver.cs, Parser/TypeVisitor.cs,
+	  Parser/LanguageItemVisitor.cs,
+	  Parser/SharpDevelopTree/GenericParameter.cs,
+	  Parser/SharpDevelopTree/Destructor.cs,
+	  Parser/SharpDevelopTree/Method.cs,
+	  Parser/SharpDevelopTree/ReturnType.cs, Parser/SharpDevelopTree/Class.cs,
+	  Parser/SharpDevelopTree/Constructor.cs: Changed to the latest NRefactory
+	  version.
+
 2007-08-23  Ankit Jain  <jankit@novell.com>
 
 	* CSharpBindingCompilerManager.cs (GetResourceId): Set the resource id

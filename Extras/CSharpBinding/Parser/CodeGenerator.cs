@@ -42,8 +42,10 @@ using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.CodeGeneration;
 
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Visitors;
 
 using CSharpBinding.Parser.SharpDevelopTree;
 
@@ -449,7 +451,7 @@ namespace CSharpBinding.Parser
 			
 			fileCompilationUnit = pi.MostRecentCompilationUnit.Tag as CompilationUnit;
 			if (fileCompilationUnit != null)
-				Visit (fileCompilationUnit, null);
+				VisitCompilationUnit (fileCompilationUnit, null);
 		}
 		
 		bool IsExpectedClass (IClass type)
@@ -483,7 +485,7 @@ namespace CSharpBinding.Parser
 			                   node.StartLocation.Y, node.StartLocation.X);
 		}
 		
-		public override object Visit (FieldDeclaration fieldDeclaration, object data)
+		public override object VisitFieldDeclaration (FieldDeclaration fieldDeclaration, object data)
 		{
 			//Debug ("FieldDeclaration", fieldDeclaration.ToString (), fieldDeclaration);
 			string type = ReturnType.GetSystemType (fieldDeclaration.TypeReference.Type);
@@ -498,10 +500,10 @@ namespace CSharpBinding.Parser
 				}
 			}
 			
-			return base.Visit (fieldDeclaration, data);
+			return base.VisitFieldDeclaration (fieldDeclaration, data);
 		}
 		
-		public override object Visit (FieldReferenceExpression fieldExp, object data)
+		public override object VisitFieldReferenceExpression (FieldReferenceExpression fieldExp, object data)
 		{
 			//Debug ("FieldReferenceExpression", fieldExp.FieldName, fieldExp);
 			if (fieldExp.FieldName == member.Name) {
@@ -516,10 +518,10 @@ namespace CSharpBinding.Parser
 				}
 			}
 			
-			return base.Visit (fieldExp, data);
+			return base.VisitFieldReferenceExpression (fieldExp, data);
 		}
 		
-		public override object Visit (InvocationExpression invokeExp, object data)
+		public override object VisitInvocationExpression (InvocationExpression invokeExp, object data)
 		{
 			//Debug ("InvocationExpression", invokeExp.ToString (), invokeExp);
 			if (member is IMethod && invokeExp.TargetObject is FieldReferenceExpression) {
@@ -533,10 +535,10 @@ namespace CSharpBinding.Parser
 				}
 			}
 			
-			return base.Visit (invokeExp, data);
+			return base.VisitInvocationExpression (invokeExp, data);
 		}
 		
-		public override object Visit (IdentifierExpression idExp, object data)
+		public override object VisitIdentifierExpression (IdentifierExpression idExp, object data)
 		{
 			//Debug ("IdentifierExpression", idExp.Identifier, idExp);
 			if (idExp.Identifier == member.Name) {
@@ -576,10 +578,10 @@ namespace CSharpBinding.Parser
 				}
 			}
 			
-			return base.Visit (idExp, data);
+			return base.VisitIdentifierExpression (idExp, data);
 		}
 
-		public override object Visit (PropertyDeclaration propertyDeclaration, object data)
+		public override object VisitPropertyDeclaration (PropertyDeclaration propertyDeclaration, object data)
 		{
 			//Debug ("PropertyDeclaration", propertyDeclaration.Name, propertyDeclaration);
 			string type = ReturnType.GetSystemType (propertyDeclaration.TypeReference.Type);
@@ -594,7 +596,7 @@ namespace CSharpBinding.Parser
 				}
 			}
 			
-			return base.Visit (propertyDeclaration, data);
+			return base.VisitPropertyDeclaration (propertyDeclaration, data);
 		}
 		
 		bool ClassNamesMatch (string fqName, string name)
@@ -614,7 +616,7 @@ namespace CSharpBinding.Parser
 			return false;
 		}
 		
-		public override object Visit (CastExpression castExpression, object data)
+		public override object VisitCastExpression (CastExpression castExpression, object data)
 		{
 			//Debug ("CastExpression", castExpression.ToString (), castExpression);
 			string type = ReturnType.GetSystemType (castExpression.CastTo.Type);
@@ -629,10 +631,10 @@ namespace CSharpBinding.Parser
 				}
 			}
 			
-			return base.Visit (castExpression, data);
+			return base.VisitCastExpression (castExpression, data);
 		}
 		
-		public override object Visit (ObjectCreateExpression objCreateExpression, object data)
+		public override object VisitObjectCreateExpression (ObjectCreateExpression objCreateExpression, object data)
 		{
 			//Debug ("ObjectCreateExpression", objCreateExpression.ToString (), objCreateExpression);
 			string type = ReturnType.GetSystemType (objCreateExpression.CreateType.Type);
@@ -649,10 +651,10 @@ namespace CSharpBinding.Parser
 				}
 			}
 			
-			return base.Visit (objCreateExpression, data);
+			return base.VisitObjectCreateExpression (objCreateExpression, data);
 		}
 		
-		public override object Visit (VariableDeclaration varDeclaration, object data)
+		public override object VisitVariableDeclaration (VariableDeclaration varDeclaration, object data)
 		{
 			//Debug ("VariableDeclaration", varDeclaration.ToString (), varDeclaration);
 			string type = ReturnType.GetSystemType (varDeclaration.TypeReference.Type);
@@ -669,10 +671,10 @@ namespace CSharpBinding.Parser
 				}
 			}
 			
-			return base.Visit (varDeclaration, data);
+			return base.VisitVariableDeclaration (varDeclaration, data);
 		}
 		
-		public override object Visit (TypeDeclaration typeDeclaration, object data)
+		public override object VisitTypeDeclaration (TypeDeclaration typeDeclaration, object data)
 		{
 			//Debug ("TypeDeclaration", typeDeclaration.Name, typeDeclaration);
 			if (member is IClass && typeDeclaration.BaseTypes != null) {
@@ -733,7 +735,7 @@ namespace CSharpBinding.Parser
 				}
 			}
 			
-			return base.Visit (typeDeclaration, data);
+			return base.VisitTypeDeclaration (typeDeclaration, data);
 		}
 		
 		MemberReference CreateReference (int line, int col, string name)
