@@ -2,11 +2,10 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 915 $</version>
+//     <version>$Revision: 1581 $</version>
 // </file>
 
 using System;
-using System.Drawing;
 
 namespace ICSharpCode.NRefactory.Parser
 {
@@ -21,14 +20,14 @@ namespace ICSharpCode.NRefactory.Parser
 		public string val;
 		public Token  next;
 		
-		public Point EndLocation {
+		public Location EndLocation {
 			get {
-				return new Point(val == null ? col + 1 : col + val.Length, line);
+				return new Location(val == null ? col + 1 : col + val.Length, line);
 			}
 		}
-		public Point Location {
+		public Location Location {
 			get {
-				return new Point(col, line);
+				return new Location(col, line);
 			}
 		}
 		

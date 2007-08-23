@@ -2,16 +2,12 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="none" email=""/>
-//     <version>$Revision: 915 $</version>
+//     <version>$Revision: 1965 $</version>
 // </file>
 
 using System;
-using System.Text;
-using System.CodeDom;
-using System.Collections;
-using System.Drawing;
 
-namespace ICSharpCode.NRefactory.Parser
+namespace ICSharpCode.NRefactory
 {
 	public class Comment : AbstractSpecial
 	{
@@ -36,7 +32,7 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 		}
 		
-		public Comment(CommentType commentType, string comment, Point startPosition, Point endPosition)
+		public Comment(CommentType commentType, string comment, Location startPosition, Location endPosition)
 			: base(startPosition, endPosition)
 		{
 			this.commentType   = commentType;

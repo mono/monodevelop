@@ -1,18 +1,17 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 915 $</version>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
+//     <version>$Revision: 1965 $</version>
 // </file>
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser
 {
 	/// <summary>
-	/// Description of IParser.
+	/// Lexer interface
 	/// </summary>
 	public interface ILexer : IDisposable
 	{
@@ -76,12 +75,12 @@ namespace ICSharpCode.NRefactory.Parser
 		/// <returns>An <see cref="Token"/> object.</returns>
 		Token NextToken();
 		
-		/// <summary>
+				/// <summary>
 		/// Skips to the end of the current code block.
 		/// For this, the lexer must have read the next token AFTER the token opening the
 		/// block (so that Lexer.Token is the block-opening token, not Lexer.LookAhead).
 		/// After the call, Lexer.LookAhead will be the block-closing token.
 		/// </summary>
-		void SkipCurrentBlock();
+		void SkipCurrentBlock(int targetToken);
 	}
 }

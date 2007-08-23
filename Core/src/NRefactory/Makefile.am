@@ -9,6 +9,20 @@ REFS =  \
 
 FILES =  \
 	Project/Configuration/AssemblyInfo.cs \
+	Project/Src/Ast/AbstractNode.cs \
+	Project/Src/Ast/Enums.cs \
+	Project/Src/Ast/General/BlockStatement.cs \
+	Project/Src/Ast/General/CompilationUnit.cs \
+	Project/Src/Ast/General/Expression.cs \
+	Project/Src/Ast/General/LocalVariableDeclaration.cs \
+	Project/Src/Ast/General/PrimitiveExpression.cs \
+	Project/Src/Ast/General/Statement.cs \
+	Project/Src/Ast/Generated.cs \
+	Project/Src/Ast/INode.cs \
+	Project/Src/Ast/INullable.cs \
+	Project/Src/Ast/TypeReference.cs \
+	Project/Src/EnvironmentInformationProvider.cs \
+	Project/Src/IAstVisitor.cs \
 	Project/Src/Lexer/AbstractLexer.cs \
 	Project/Src/Lexer/CSharp/Keywords.cs \
 	Project/Src/Lexer/CSharp/Lexer.cs \
@@ -26,51 +40,42 @@ FILES =  \
 	Project/Src/Lexer/VBNet/Keywords.cs \
 	Project/Src/Lexer/VBNet/Lexer.cs \
 	Project/Src/Lexer/VBNet/Tokens.cs \
-	Project/Src/Output/AbstractOutputFormatter.cs \
-	Project/Src/Output/AbstractPrettyPrintOptions.cs \
-	Project/Src/Output/CodeDOM/CodeDOMOutputVisitor.cs \
-	Project/Src/Output/CodeDOM/CodeDOMVerboseOutputGenerator.cs \
-	Project/Src/Output/CSharp/CSharpOutputVisitor.cs \
-	Project/Src/Output/CSharp/OutputFormatter.cs \
-	Project/Src/Output/CSharp/PrettyPrintOptions.cs \
-	Project/Src/Output/EnvironmentInformationProvider.cs \
-	Project/Src/Output/IOutputASTVisitor.cs \
-	Project/Src/Output/NodeInformVisitor.cs \
-	Project/Src/Output/SpecialNodesInserter.cs \
-	Project/Src/Output/VBNet/VBNetOutputFormatter.cs \
-	Project/Src/Output/VBNet/VBNetOutputVisitor.cs \
-	Project/Src/Output/VBNet/VBNetPrettyPrintOptions.cs \
+	Project/Src/Location.cs \
 	Project/Src/Parser/AbstractParser.cs \
-	Project/Src/Parser/AST/AbstractNode.cs \
-	Project/Src/Parser/AST/Enums.cs \
-	Project/Src/Parser/AST/General/BlockStatement.cs \
-	Project/Src/Parser/AST/General/CompilationUnit.cs \
-	Project/Src/Parser/AST/General/Expression.cs \
-	Project/Src/Parser/AST/General/LocalVariableDeclaration.cs \
-	Project/Src/Parser/AST/General/PrimitiveExpression.cs \
-	Project/Src/Parser/AST/General/Statement.cs \
-	Project/Src/Parser/AST/Generated.cs \
-	Project/Src/Parser/AST/INode.cs \
-	Project/Src/Parser/AST/INullable.cs \
-	Project/Src/Parser/AST/TypeReference.cs \
+	Project/Src/Parser/CSharp/CSharpParser.cs \
 	Project/Src/Parser/CSharp/Parser.cs \
 	Project/Src/Parser/Errors.cs \
 	Project/Src/Parser/IParser.cs \
-	Project/Src/Parser/Modifiers.cs \
-	Project/Src/Parser/ParserFactory.cs \
-	Project/Src/Parser/VBNet/ParamModifier.cs \
+	Project/Src/Parser/ModifierList.cs \
+	Project/Src/Parser/VBNet/ParamModifierList.cs \
 	Project/Src/Parser/VBNet/Parser.cs \
-	Project/Src/Parser/Visitors/AbstractAstTransformer.cs \
-	Project/Src/Parser/Visitors/AbstractASTVisitor.cs \
-	Project/Src/Parser/Visitors/CSharpConstructsVisitor.cs \
-	Project/Src/Parser/Visitors/CSharpToVBNetConvertVisitor.cs \
-	Project/Src/Parser/Visitors/IASTVisitor.cs \
-	Project/Src/Parser/Visitors/LookupTableVisitor.cs \
-	Project/Src/Parser/Visitors/PrefixFieldsVisitor.cs \
-	Project/Src/Parser/Visitors/ToCSharpConvertVisitor.cs \
-	Project/Src/Parser/Visitors/ToVBNetConvertVisitor.cs \
-	Project/Src/Parser/Visitors/VBNetConstructsConvertVisitor.cs \
-	Project/Src/Parser/Visitors/VBNetToCSharpConvertVisitor.cs
+	Project/Src/Parser/VBNet/VBNetParser.cs \
+	Project/Src/ParserFactory.cs \
+	Project/Src/PrettyPrinter/AbstractOutputFormatter.cs \
+	Project/Src/PrettyPrinter/AbstractPrettyPrintOptions.cs \
+	Project/Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs \
+	Project/Src/PrettyPrinter/CSharp/OutputFormatter.cs \
+	Project/Src/PrettyPrinter/CSharp/PrettyPrintOptions.cs \
+	Project/Src/PrettyPrinter/IOutputAstVisitor.cs \
+	Project/Src/PrettyPrinter/NodeInformVisitor.cs \
+	Project/Src/PrettyPrinter/SpecialNodesInserter.cs \
+	Project/Src/PrettyPrinter/VBNet/VBNetOutputFormatter.cs \
+	Project/Src/PrettyPrinter/VBNet/VBNetOutputVisitor.cs \
+	Project/Src/PrettyPrinter/VBNet/VBNetPrettyPrintOptions.cs \
+	Project/Src/SnippetParser.cs \
+	Project/Src/Visitors/AbstractAstTransformer.cs \
+	Project/Src/Visitors/AbstractASTVisitor.cs \
+	Project/Src/Visitors/CodeDOMOutputVisitor.cs \
+	Project/Src/Visitors/CodeDOMVerboseOutputGenerator.cs \
+	Project/Src/Visitors/CSharpConstructsVisitor.cs \
+	Project/Src/Visitors/CSharpToVBNetConvertVisitor.cs \
+	Project/Src/Visitors/LookupTableVisitor.cs \
+	Project/Src/Visitors/NodeTrackingAstVisitor.cs \
+	Project/Src/Visitors/PrefixFieldsVisitor.cs \
+	Project/Src/Visitors/ToCSharpConvertVisitor.cs \
+	Project/Src/Visitors/ToVBNetConvertVisitor.cs \
+	Project/Src/Visitors/VBNetConstructsConvertVisitor.cs \
+	Project/Src/Visitors/VBNetToCSharpConvertVisitor.cs
 
 all: $(ASSEMBLY)
 

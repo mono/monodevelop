@@ -2,14 +2,12 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="none" email=""/>
-//     <version>$Revision: 915 $</version>
+//     <version>$Revision: 1965 $</version>
 // </file>
 
 using System;
-using System.Text;
-using System.CodeDom;
 using System.Collections.Generic;
-using System.Drawing;
+using System.Text;
 
 namespace ICSharpCode.NRefactory.Parser
 {
@@ -19,7 +17,7 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		CommentType   currentCommentType;
 		StringBuilder sb = new StringBuilder();
-		Point         startPosition;
+		Location         startPosition;
 		
 		public List<ISpecial> CurrentSpecials {
 			get {
@@ -42,18 +40,18 @@ namespace ICSharpCode.NRefactory.Parser
 			return tmp;
 		}
 		
-		public void AddEndOfLine(Point point)
+		public void AddEndOfLine(Location point)
 		{
 			currentSpecials.Add(new BlankLine(point));
 		}
 		
-		public void AddPreProcessingDirective(string cmd, string arg, Point start, Point end)
+		public void AddPreprocessingDirective(string cmd, string arg, Location start, Location end)
 		{
-			currentSpecials.Add(new PreProcessingDirective(cmd, arg, start, end));
+			currentSpecials.Add(new PreprocessingDirective(cmd, arg, start, end));
 		}
 		
 		// used for comment tracking
-		public void StartComment(CommentType commentType, Point startPosition)
+		public void StartComment(CommentType commentType, Location startPosition)
 		{
 			this.currentCommentType = commentType;
 			this.startPosition      = startPosition;
@@ -70,7 +68,7 @@ namespace ICSharpCode.NRefactory.Parser
 			sb.Append(s);
 		}
 		
-		public void FinishComment(Point endPosition)
+		public void FinishComment(Location endPosition)
 		{
 			currentSpecials.Add(new Comment(currentCommentType, sb.ToString(), startPosition, endPosition));
 		}

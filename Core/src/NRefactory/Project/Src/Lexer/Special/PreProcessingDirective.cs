@@ -2,62 +2,60 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="none" email=""/>
-//     <version>$Revision: 988 $</version>
+//     <version>$Revision: 1965 $</version>
 // </file>
 
 using System;
-using System.Drawing;
 using System.Collections.Generic;
-using System.Globalization;
 
-namespace ICSharpCode.NRefactory.Parser
+namespace ICSharpCode.NRefactory
 {
-	public class PreProcessingDirective : AbstractSpecial
+	public class PreprocessingDirective : AbstractSpecial
 	{
 		public static void VBToCSharp(IList<ISpecial> list)
 		{
 			for (int i = 0; i < list.Count; ++i) {
-				if (list[i] is PreProcessingDirective)
-					list[i] = VBToCSharp((PreProcessingDirective)list[i]);
+				if (list[i] is PreprocessingDirective)
+					list[i] = VBToCSharp((PreprocessingDirective)list[i]);
 			}
 		}
 		
-		public static PreProcessingDirective VBToCSharp(PreProcessingDirective dir)
+		public static PreprocessingDirective VBToCSharp(PreprocessingDirective dir)
 		{
-			string cmd = dir.Cmd.ToLowerInvariant();
+			string cmd = dir.Cmd;
 			string arg = dir.Arg;
-			switch (cmd) {
-				case "#end":
-					if (arg.ToLowerInvariant().StartsWith("region")) {
-						cmd = "#endregion";
-						arg = "";
-					} else if ("if".Equals(arg, StringComparison.InvariantCultureIgnoreCase)) {
-						cmd = "#endif";
-						arg = "";
-					}
-					break;
-				case "#if":
-					if (arg.ToLowerInvariant().EndsWith(" then"))
-						arg = arg.Substring(0, arg.Length - 5);
-					break;
+			if (cmd.Equals("#End", StringComparison.InvariantCultureIgnoreCase)) {
+				if (arg.ToLowerInvariant().StartsWith("region")) {
+					cmd = "#endregion";
+					arg = "";
+				} else if ("if".Equals(arg, StringComparison.InvariantCultureIgnoreCase)) {
+					cmd = "#endif";
+					arg = "";
+				}
+			} else if (cmd.Equals("#Region", StringComparison.InvariantCultureIgnoreCase)) {
+				cmd = "#region";
+			} else if (cmd.Equals("#If", StringComparison.InvariantCultureIgnoreCase)) {
+				if (arg.ToLowerInvariant().EndsWith(" then"))
+					arg = arg.Substring(0, arg.Length - 5);
 			}
-			return new PreProcessingDirective(cmd, arg, dir.StartPosition, dir.EndPosition);
+			return new PreprocessingDirective(cmd, arg, dir.StartPosition, dir.EndPosition);
 		}
 		
 		public static void CSharpToVB(List<ISpecial> list)
 		{
 			for (int i = 0; i < list.Count; ++i) {
-				if (list[i] is PreProcessingDirective)
-					list[i] = CSharpToVB((PreProcessingDirective)list[i]);
+				if (list[i] is PreprocessingDirective)
+					list[i] = CSharpToVB((PreprocessingDirective)list[i]);
 			}
 		}
 		
-		public static PreProcessingDirective CSharpToVB(PreProcessingDirective dir)
+		public static PreprocessingDirective CSharpToVB(PreprocessingDirective dir)
 		{
 			string cmd = dir.Cmd;
 			string arg = dir.Arg;
 			switch (cmd) {
 				case "#region":
+					cmd = "#Region";
 					if (!arg.StartsWith("\"")) {
 						arg = "\"" + arg.Trim() + "\"";
 					}
@@ -77,7 +75,7 @@ namespace ICSharpCode.NRefactory.Parser
 			if (cmd.Length > 1) {
 				cmd = cmd.Substring(0, 2).ToUpperInvariant() + cmd.Substring(2);
 			}
-			return new PreProcessingDirective(cmd, arg, dir.StartPosition, dir.EndPosition);
+			return new PreprocessingDirective(cmd, arg, dir.StartPosition, dir.EndPosition);
 		}
 		
 		string cmd;
@@ -108,7 +106,7 @@ namespace ICSharpCode.NRefactory.Parser
 			                     Arg);
 		}
 		
-		public PreProcessingDirective(string cmd, string arg, Point start, Point end)
+		public PreprocessingDirective(string cmd, string arg, Location start, Location end)
 			: base(start, end)
 		{
 			this.cmd = cmd;

@@ -2,14 +2,14 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="none" email=""/>
-//     <version>$Revision: 1139 $</version>
+//     <version>$Revision: 1618 $</version>
 // </file>
 
 using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-[assembly: CLSCompliant(false)]
+[assembly: CLSCompliant(true)]
 [assembly: StringFreezing()]
 
 // Information about this assembly is defined by the following

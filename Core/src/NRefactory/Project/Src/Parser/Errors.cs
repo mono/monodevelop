@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="none" email=""/>
-//     <version>$Revision: 915 $</version>
+//     <version>$Revision: 1609 $</version>
 // </file>
 
 using System;
@@ -15,7 +15,7 @@ namespace ICSharpCode.NRefactory.Parser
 	
 	public class Errors
 	{
-		public int count = 0;                                               // number of errors detected
+		int count = 0;  // number of errors detected
 		public ErrorCodeProc SynErr;
 		public ErrorCodeProc SemErr;
 		public ErrorMsgProc  Error;
@@ -32,6 +32,12 @@ namespace ICSharpCode.NRefactory.Parser
 			SynErr = new ErrorCodeProc(DefaultCodeError);  // syntactic errors
 			SemErr = new ErrorCodeProc(DefaultCodeError);  // semantic errors
 			Error  = new ErrorMsgProc(DefaultMsgError);    // user defined string based errors
+		}
+		
+		public int Count {
+			get {
+				return count;
+			}
 		}
 		
 	//	public void Exception (string s)

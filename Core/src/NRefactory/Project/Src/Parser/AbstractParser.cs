@@ -2,30 +2,30 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 915 $</version>
+//     <version>$Revision: 2517 $</version>
 // </file>
 
 using System;
-using ICSharpCode.NRefactory.Parser.AST;
+using System.Collections.Generic;
+using ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.NRefactory.Parser
 {
-	/// <summary>
-	/// Description of AbstractParser.
-	/// </summary>
 	public abstract class AbstractParser : IParser
 	{
-		protected const  int    minErrDist   = 2;
-		protected const  string errMsgFormat = "-- line {0} col {1}: {2}";  // 0=line, 1=column, 2=text
+		protected const int    MinErrDist   = 2;
+		protected const string ErrMsgFormat = "-- line {0} col {1}: {2}";  // 0=line, 1=column, 2=text
 		
-		protected Errors errors;
-		protected ILexer lexer;
 		
-		protected int    errDist = minErrDist;
+		private Errors errors;
+		private ILexer lexer;
 		
+		protected int    errDist = MinErrDist;
+		
+		[CLSCompliant(false)]
 		protected CompilationUnit compilationUnit;
 		
-		protected bool parseMethodContents = true;
+		bool parseMethodContents = true;
 		
 		public bool ParseMethodBodies {
 			get {
@@ -54,7 +54,7 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 		}
 		
-		public AbstractParser(ILexer lexer)
+		internal AbstractParser(ILexer lexer)
 		{
 			this.errors = lexer.Errors;
 			this.lexer  = lexer;
@@ -64,12 +64,14 @@ namespace ICSharpCode.NRefactory.Parser
 		public abstract void Parse();
 		
 		public abstract Expression ParseExpression();
+		public abstract BlockStatement ParseBlock();
+		public abstract List<INode> ParseTypeMembers();
 		
 		protected abstract void SynErr(int line, int col, int errorNumber);
-			
+		
 		protected void SynErr(int n)
 		{
-			if (errDist >= minErrDist) {
+			if (errDist >= MinErrDist) {
 				errors.SynErr(lexer.LookAhead.line, lexer.LookAhead.col, n);
 			}
 			errDist = 0;
@@ -77,7 +79,7 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		protected void SemErr(string msg)
 		{
-			if (errDist >= minErrDist) {
+			if (errDist >= MinErrDist) {
 				errors.Error(lexer.Token.line, lexer.Token.col, msg);
 			}
 			errDist = 0;
@@ -93,10 +95,13 @@ namespace ICSharpCode.NRefactory.Parser
 		}
 		
 		#region System.IDisposable interface implementation
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly")]
 		public void Dispose()
 		{
 			errors = null;
-			lexer.Dispose();
+			if (lexer != null) {
+				lexer.Dispose();
+			}
 			lexer = null;
 		}
 		#endregion

@@ -2,17 +2,16 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="none" email=""/>
-//     <version>$Revision: 915 $</version>
+//     <version>$Revision: 1609 $</version>
 // </file>
 
 using System;
-using System.Drawing;
 
-namespace ICSharpCode.NRefactory.Parser
+namespace ICSharpCode.NRefactory
 {
 	public class BlankLine : AbstractSpecial
 	{
-		public BlankLine(Point point) : base(point)
+		public BlankLine(Location point) : base(point)
 		{
 		}
 		

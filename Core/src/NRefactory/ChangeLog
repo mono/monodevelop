@@ -1,3 +1,7 @@
+2007-08-23  Mike Krüger <mkrueger@novell.com> 
+
+	* NRefactory.mdp: Updated to the latest .NET 2.0 version.
+
 2007-08-22  Mike Krüger <mkrueger@novell.com> 
 
 	* Project/Src/Lexer/CSharp/Lexer.cs: Fixed 82529:TaskList doesn't update

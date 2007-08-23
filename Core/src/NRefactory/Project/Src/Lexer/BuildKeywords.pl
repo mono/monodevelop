@@ -174,7 +174,7 @@ sub write_tokensfile {
 	print DAT "\n";
 	print DAT "namespace " . $properties{'Namespace'} . "\n";
 	print DAT "{\n";
-	print DAT "\tpublic sealed class Tokens\n";
+	print DAT "\tpublic static class Tokens\n";
 	print DAT "\t{\n";
 	$tokenValue = 0;
 	
@@ -197,13 +197,13 @@ sub write_tokensfile {
 	}
 	print DAT "\n";
 	
-	print DAT "\t\tpublic const int maxToken = " . $tokenValue . ";\n";
+	print DAT "\t\tpublic const int MaxToken = " . $tokenValue . ";\n";
 	
 	#write sets.
 	if ($#sets > 0) {
 		print DAT "\t\tstatic BitArray NewSet(params int[] values)\n";
 		print DAT "\t\t{\n";
-		print DAT "\t\t\tBitArray bitArray = new BitArray(maxToken);\n";
+		print DAT "\t\t\tBitArray bitArray = new BitArray(MaxToken);\n";
 		print DAT "\t\t\tforeach (int val in values) {\n";
 		print DAT "\t\t\tbitArray[val] = true;\n";
 		print DAT "\t\t\t}\n";

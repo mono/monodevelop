@@ -155,13 +155,13 @@ Pointer = "->"
 
 #Sets
 
-OverloadableUnaryOp("+", "!", "~", "++", "--", "true", "false")
+OverloadableUnaryOp("-", "!", "~", "++", "--", "true", "false")
 OverloadableBinaryOp("+", "-", "*", "/", "%", "&", "|", "^", "<<", "==", "!=", ">", "<", ">=", "<=")
 
 TypeKW("char", "bool", "object", "string", "sbyte", "byte", "short", "ushort", "int", "uint", "long", "ulong", "float", "double", "decimal")
 UnaryHead("+", "-", "!", "~", "*", "++", "--", "&")
 AssnStartOp("+", "-", "!", "~", "*")
-CastFollower(Identifier, Literal, "(", "new", "this", "base", "null", "checked", "unchecked", "typeof", "sizeof", "delegate", @OverloadableUnaryOp)
+CastFollower(Identifier, Literal, "(", "new", "this", "base", "null", "checked", "unchecked", "typeof", "sizeof", "delegate", @OverloadableUnaryOp, @UnaryOp)
 AssgnOps("=", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "<<=")
 UnaryOp("+", "-", "!", "~", "*", "++", "--", "&")
 TypeDeclarationKW("class", "interface", "struct", "enum", "delegate")

@@ -2,26 +2,28 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 915 $</version>
+//     <version>$Revision: 1965 $</version>
 // </file>
 
 using System;
-using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace ICSharpCode.NRefactory.Parser
 {
 	/// <summary>
 	/// This is the base class for the C# and VB.NET lexer
 	/// </summary>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1708:IdentifiersShouldDifferByMoreThanCase")]
 	public abstract class AbstractLexer : ILexer
 	{
 		TextReader reader;
 		int col  = 1;
 		int line = 1;
 		
+		[CLSCompliant(false)]
 		protected Errors errors = new Errors();
 		
 		protected Token lastToken = null;
@@ -30,14 +32,15 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		string[]  specialCommentTags = null;
 		protected Hashtable specialCommentHash  = null;
-		protected List<TagComment> tagComments  = new List<TagComment>();
+		List<TagComment> tagComments  = new List<TagComment>();
 		protected StringBuilder sb              = new StringBuilder();
+		[CLSCompliant(false)]
 		protected SpecialTracker specialTracker = new SpecialTracker();
 		
 		// used for the original value of strings (with escape sequences).
 		protected StringBuilder originalValue = new StringBuilder();
 		
-		protected bool skipAllComments = false;
+		bool skipAllComments = false;
 		
 		public bool SkipAllComments {
 			get {
@@ -131,7 +134,7 @@ namespace ICSharpCode.NRefactory.Parser
 		/// <summary>
 		/// Constructor for the abstract lexer class.
 		/// </summary>
-		public AbstractLexer(TextReader reader)
+		protected AbstractLexer(TextReader reader)
 		{
 			this.reader = reader;
 		}
@@ -201,25 +204,14 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		protected abstract Token Next();
 		
-		/// <summary>
-		/// Skips to the end of the current code block.
-		/// For this, the lexer must have read the next token AFTER the token opening the
-		/// block (so that Lexer.Token is the block-opening token, not Lexer.LookAhead).
-		/// After the call, Lexer.LookAhead will be the block-closing token.
-		/// </summary>
-		public virtual void SkipCurrentBlock()
-		{
-			throw new NotSupportedException();
-		}
-		
-		protected bool IsIdentifierPart(int ch)
+		protected static bool IsIdentifierPart(int ch)
 		{
 			if (ch == 95) return true;  // 95 = '_'
 			if (ch == -1) return false;
 			return char.IsLetterOrDigit((char)ch); // accept unicode letters
 		}
 		
-		protected bool IsHex(char digit)
+		protected static bool IsHex(char digit)
 		{
 			return Char.IsDigit(digit) || ('A' <= digit && digit <= 'F') || ('a' <= digit && digit <= 'f');
 		}
@@ -263,7 +255,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return false;
 		}
 		
-		protected void SkipToEOL()
+		protected void SkipToEndOfLine()
 		{
 			int nextChar;
 			while ((nextChar = reader.Read()) != -1) {
@@ -273,7 +265,7 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 		}
 		
-		protected string ReadToEOL()
+		protected string ReadToEndOfLine()
 		{
 			sb.Length = 0;
 			int nextChar;
@@ -293,5 +285,13 @@ namespace ICSharpCode.NRefactory.Parser
 			col += retStr.Length;
 			return retStr;
 		}
+		
+		/// <summary>
+		/// Skips to the end of the current code block.
+		/// For this, the lexer must have read the next token AFTER the token opening the
+		/// block (so that Lexer.Token is the block-opening token, not Lexer.LookAhead).
+		/// After the call, Lexer.LookAhead will be the block-closing token.
+		/// </summary>
+		public abstract void SkipCurrentBlock(int targetToken);
 	}
 }

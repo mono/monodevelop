@@ -235,4 +235,4 @@ Null("Nothing")
 BlockSucc("Case", "Catch", "Else", "ElseIf", "End", "Finally", "Loop", "Next")
 
 # List of unreserved keywords, must be the same as the "Identifier" production in VBNET.ATG
-Unreserved("Text", "Binary", "Compare", "Assembly", "Ansi", "Auto", "Preserve", "Unicode", "Until")
+Unreserved("Text", "Binary", "Compare", "Assembly", "Ansi", "Auto", "Preserve", "Unicode", "Until", "Explicit", "Off")
