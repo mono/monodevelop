@@ -6,11 +6,12 @@ using System.Collections.Generic;
 using System.CodeDom;
 
 using RefParser = ICSharpCode.NRefactory.Parser;
-using AST = ICSharpCode.NRefactory.Parser.AST;
 using MonoDevelop.Projects.Parser;
 using VBBinding.Parser.SharpDevelopTree;
-using ModifierFlags = ICSharpCode.NRefactory.Parser.AST.Modifier;
-using ClassType = MonoDevelop.Projects.Parser.ClassType;
+using ModifierFlags = ICSharpCode.NRefactory.Ast.Modifiers;
+using ICSharpCode.NRefactory.Visitors;
+using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory;
 
 namespace VBBinding.Parser
 {
@@ -18,27 +19,27 @@ namespace VBBinding.Parser
 	{
 	}
 	
-	public class VBNetVisitor : RefParser.AbstractAstVisitor
+	public class VBNetVisitor : AbstractAstVisitor
 	{
-		CompilationUnit cu = new CompilationUnit();
+		VBBinding.Parser.SharpDevelopTree.CompilationUnit cu = new VBBinding.Parser.SharpDevelopTree.CompilationUnit();
 		Stack<string> currentNamespace = new Stack<string> ();
 		Stack<Class> currentClass = new Stack<Class> ();
-		static ICSharpCode.NRefactory.Parser.CodeDOMVisitor domVisitor = new ICSharpCode.NRefactory.Parser.CodeDOMVisitor ();
+		static ICSharpCode.NRefactory.Visitors.CodeDomVisitor domVisitor = new ICSharpCode.NRefactory.Visitors.CodeDomVisitor ();
 		
-		public CompilationUnit Cu {
+		public VBBinding.Parser.SharpDevelopTree.CompilationUnit Cu {
 			get {
 				return cu;
 			}
 		}
 		
-		public override object Visit(AST.CompilationUnit compilationUnit, object data)
+		public override object VisitCompilationUnit(ICSharpCode.NRefactory.Ast.CompilationUnit compilationUnit, object data)
 		{
 			//TODO: Imports, Comments
 			compilationUnit.AcceptChildren(this, data);
 			return cu;
 		}
 		
-		public override object Visit(AST.Using usingDeclaration, object data)
+		public override object VisitUsing(ICSharpCode.NRefactory.Ast.Using usingDeclaration, object data)
 		{
 			Using u = new Using();
 			if (usingDeclaration.IsAlias)
@@ -54,7 +55,7 @@ namespace VBBinding.Parser
 //			return (ModifierEnum)m;
 //		}
 		
-		public override object Visit(AST.NamespaceDeclaration namespaceDeclaration, object data)
+		public override object VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, object data)
 		{
 			string name;
 			if (currentNamespace.Count == 0) {
@@ -68,22 +69,22 @@ namespace VBBinding.Parser
 			return ret;
 		}
 		
-		ClassType TranslateClassType(RefParser.AST.ClassType type)
+		MonoDevelop.Projects.Parser.ClassType TranslateClassType(ICSharpCode.NRefactory.Ast.ClassType type)
 		{
 			switch (type) {
-				case RefParser.AST.ClassType.Class:
-					return ClassType.Class;
-				case RefParser.AST.ClassType.Enum:
-					return ClassType.Enum;
-				case RefParser.AST.ClassType.Interface:
-					return ClassType.Interface;
-				case RefParser.AST.ClassType.Struct:
-					return ClassType.Struct;
+				case ICSharpCode.NRefactory.Ast.ClassType.Class:
+					return MonoDevelop.Projects.Parser.ClassType.Class;
+				case ICSharpCode.NRefactory.Ast.ClassType.Enum:
+					return MonoDevelop.Projects.Parser.ClassType.Enum;
+				case ICSharpCode.NRefactory.Ast.ClassType.Interface:
+					return MonoDevelop.Projects.Parser.ClassType.Interface;
+				case ICSharpCode.NRefactory.Ast.ClassType.Struct:
+					return MonoDevelop.Projects.Parser.ClassType.Struct;
 			}
-			return ClassType.Class;
+			return MonoDevelop.Projects.Parser.ClassType.Class;
 		}
 		
-		public override object Visit(AST.TypeDeclaration typeDeclaration, object data)
+		public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
 		{
 			DefaultRegion region = GetRegion(typeDeclaration.StartLocation, typeDeclaration.EndLocation);
 			Class c = new Class(cu, TranslateClassType (typeDeclaration.Type), typeDeclaration.Modifier, region);
@@ -100,7 +101,7 @@ namespace VBBinding.Parser
 				cu.Classes.Add(c);
 			}
 			if (typeDeclaration.BaseTypes != null) {
-				foreach (AST.TypeReference type in typeDeclaration.BaseTypes) {
+				foreach (TypeReference type in typeDeclaration.BaseTypes) {
 					c.BaseTypes.Add(new ReturnType (type.Type));
 				}
 			}
@@ -111,15 +112,15 @@ namespace VBBinding.Parser
 			return ret;
 		}
 		
-		DefaultRegion GetRegion(Point start, Point end)
+		DefaultRegion GetRegion(Location start, Location end)
 		{
 			return new DefaultRegion(start.Y, start.X, end.Y, end.X);
 		}
 		
-		public override object Visit(AST.MethodDeclaration methodDeclaration, object data)
+		public override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
 		{
 			DefaultRegion region     = GetRegion(methodDeclaration.StartLocation, methodDeclaration.EndLocation);
-			DefaultRegion bodyRegion = GetRegion(methodDeclaration.EndLocation,   methodDeclaration.Body != null ? methodDeclaration.Body.EndLocation : new Point(-1, -1));
+			DefaultRegion bodyRegion = GetRegion(methodDeclaration.EndLocation,   methodDeclaration.Body != null ? methodDeclaration.Body.EndLocation : new Location(-1, -1));
 			
 			ReturnType type = methodDeclaration.TypeReference == null ? new ReturnType("System.Void") : new ReturnType(methodDeclaration.TypeReference);
 			Class c       = (Class)currentClass.Peek();
@@ -128,7 +129,7 @@ namespace VBBinding.Parser
 			DefaultMethod method = new DefaultMethod (String.Concat(methodDeclaration.Name), type, (ModifierEnum)methodDeclaration.Modifier, region, bodyRegion);
 			ParameterCollection parameters = new ParameterCollection();
 			if (methodDeclaration.Parameters != null) {
-				foreach (AST.ParameterDeclarationExpression par in methodDeclaration.Parameters) {
+				foreach (ParameterDeclarationExpression par in methodDeclaration.Parameters) {
 					ReturnType parType = new ReturnType(par.TypeReference);
 					DefaultParameter p = new DefaultParameter (method, par.ParameterName, parType);
 					parameters.Add(p);
@@ -139,17 +140,17 @@ namespace VBBinding.Parser
 			return null;
 		}
 		
-		public override object Visit(AST.ConstructorDeclaration constructorDeclaration, object data)
+		public override object VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data)
 		{
 			DefaultRegion region     = GetRegion(constructorDeclaration.StartLocation, constructorDeclaration.EndLocation);
-			DefaultRegion bodyRegion = GetRegion(constructorDeclaration.EndLocation, constructorDeclaration.Body != null ? constructorDeclaration.Body.EndLocation : new Point(-1, -1));
+			DefaultRegion bodyRegion = GetRegion(constructorDeclaration.EndLocation, constructorDeclaration.Body != null ? constructorDeclaration.Body.EndLocation : new Location (-1, -1));
 			
 			Class c       = (Class)currentClass.Peek();
 			
 			Constructor constructor = new Constructor(constructorDeclaration.Modifier, region, bodyRegion);
 			ParameterCollection parameters = new ParameterCollection();
 			if (constructorDeclaration.Parameters != null) {
-				foreach (AST.ParameterDeclarationExpression par in constructorDeclaration.Parameters) {
+				foreach (ParameterDeclarationExpression par in constructorDeclaration.Parameters) {
 					ReturnType parType = new ReturnType(par.TypeReference);
 					DefaultParameter p = new DefaultParameter (constructor, par.ParameterName, parType);
 					parameters.Add(p);
@@ -161,12 +162,12 @@ namespace VBBinding.Parser
 		}
 		
 		
-		public override object Visit(AST.FieldDeclaration fieldDeclaration, object data)
+		public override object VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data)
 		{
 			DefaultRegion region     = GetRegion(fieldDeclaration.StartLocation, fieldDeclaration.EndLocation);
 			Class c = (Class)currentClass.Peek();
 			if (currentClass.Count > 0) {
-				foreach (AST.VariableDeclaration field in fieldDeclaration.Fields) {
+				foreach (VariableDeclaration field in fieldDeclaration.Fields) {
 					ReturnType type = null;
 					if (field.TypeReference != null) {
 						type = new ReturnType(field.TypeReference);
@@ -181,7 +182,7 @@ namespace VBBinding.Parser
 			return null;
 		}
 		
-		public override object Visit(AST.PropertyDeclaration propertyDeclaration, object data)
+		public override object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
 		{
 			DefaultRegion region     = GetRegion(propertyDeclaration.StartLocation, propertyDeclaration.EndLocation);
 			DefaultRegion bodyRegion = GetRegion(propertyDeclaration.BodyStart,     propertyDeclaration.BodyEnd);
@@ -194,7 +195,7 @@ namespace VBBinding.Parser
 			return null;
 		}
 		
-		public override object Visit(AST.EventDeclaration eventDeclaration, object data)
+		public override object VisitEventDeclaration(EventDeclaration eventDeclaration, object data)
 		{
 			DefaultRegion region     = GetRegion(eventDeclaration.StartLocation, eventDeclaration.EndLocation);
 			DefaultRegion bodyRegion = null;

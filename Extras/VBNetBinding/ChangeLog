@@ -1,3 +1,11 @@
+2007-08-23  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/Parser.cs, Parser/VBNetVisitor.cs, Parser/Resolver.cs,
+	  Parser/TypeVisitor.cs, Parser/SharpDevelopTree/ReturnType.cs,
+	  Parser/SharpDevelopTree/Class.cs,
+	  Parser/SharpDevelopTree/Constructor.cs: Changed to the latest NRefactory
+	  version.
+
 2007-08-23  Ankit Jain  <jankit@novell.com>
 
 	* VBBindingCompilerServices.cs (GetResourceId): Generate .resources

@@ -4,7 +4,8 @@ using System;
 using System.Collections.Generic;
 
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Visitors;
 using VBBinding.Parser.SharpDevelopTree;
 
 using MonoDevelop.Projects.Parser;
@@ -22,7 +23,7 @@ namespace VBBinding.Parser
 			this.resolver = resolver;
 		}
 		
-		public override object Visit(PrimitiveExpression primitiveExpression, object data)
+		public override object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
 		{
 			if (primitiveExpression.Value != null) {
 //				Console.WriteLine("Visiting " + primitiveExpression.Value);
@@ -31,13 +32,13 @@ namespace VBBinding.Parser
 			return null;
 		}
 		
-		public override object Visit(BinaryOperatorExpression binaryOperatorExpression, object data)
+		public override object VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
 		{
 			// TODO : Operators 
 			return binaryOperatorExpression.Left.AcceptVisitor(this, data);
 		}
 		
-		public override object Visit(ParenthesizedExpression parenthesizedExpression, object data)
+		public override object VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)
 		{
 			if (parenthesizedExpression == null) {
 				return null;
@@ -45,7 +46,7 @@ namespace VBBinding.Parser
 			return parenthesizedExpression.Expression.AcceptVisitor(this, data);
 		}
 		
-		public override object Visit(InvocationExpression invocationExpression, object data)
+		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
 		{
 			/*if (invocationExpression.TargetObject is FieldReferenceOrInvocationExpression) {
 				FieldReferenceOrInvocationExpression field = (FieldReferenceOrInvocationExpression)invocationExpression.TargetObject;
@@ -89,7 +90,7 @@ namespace VBBinding.Parser
 		
 		
 		//TODO - Verify logic; did a lot of "just make it work" hacking in this method
-		public override object Visit(FieldReferenceExpression fieldReferenceExpression, object data)
+		public override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
 		{
 			if (fieldReferenceExpression == null) {
 				return null;
@@ -127,7 +128,7 @@ namespace VBBinding.Parser
 			return null;
 		}
 		
-		public override object Visit(IdentifierExpression identifierExpression, object data)
+		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
 			//Console.WriteLine("visiting IdentifierExpression");
 			if (identifierExpression == null) {
@@ -148,12 +149,12 @@ namespace VBBinding.Parser
 			return resolver.DynamicLookup(identifierExpression.Identifier);
 		}
 		
-		public override object Visit(TypeReferenceExpression typeReferenceExpression, object data)
+		public override object VisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression, object data)
 		{
 			return new ReturnType(typeReferenceExpression.TypeReference);
 		}
 		
-		public override object Visit(UnaryOperatorExpression unaryOperatorExpression, object data)
+		public override object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
 			if (unaryOperatorExpression == null) {
 				return null;
@@ -188,7 +189,7 @@ namespace VBBinding.Parser
 			return expressionType;
 		}
 		
-		public override object Visit(AssignmentExpression assignmentExpression, object data)
+		public override object VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
 		{
 			return assignmentExpression.Left.AcceptVisitor(this, data);
 		}
@@ -198,23 +199,23 @@ namespace VBBinding.Parser
 			return new ReturnType("System.Type");
 		}*/
 		
-		public override object Visit(TypeOfExpression typeOfExpression, object data)
+		public override object VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
 		{
 			return new ReturnType("System.Type");
 		}
 		
-		public override object Visit(AddressOfExpression addressOfExpression, object data)
+		public override object VisitAddressOfExpression(AddressOfExpression addressOfExpression, object data)
 		{
 			// no calls allowed !!!
 			return null;
 		}
 		
-		public override object Visit(CastExpression castExpression, object data)
+		public override object VisitCastExpression(CastExpression castExpression, object data)
 		{
 			return new ReturnType(castExpression.CastTo.Type);
 		}
 		
-		public override object Visit(ThisReferenceExpression thisReferenceExpression, object data)
+		public override object VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data)
 		{
 			if (resolver.CallingClass == null) {
 				return null;
@@ -222,7 +223,7 @@ namespace VBBinding.Parser
 			return new ReturnType(resolver.CallingClass.FullyQualifiedName);
 		}
 		
-		public override object Visit(ClassReferenceExpression classReferenceExpression, object data)
+		public override object VisitClassReferenceExpression(ClassReferenceExpression classReferenceExpression, object data)
 		{
 			if (resolver.CallingClass == null) {
 				return null;
@@ -230,7 +231,7 @@ namespace VBBinding.Parser
 			return new ReturnType(resolver.CallingClass.FullyQualifiedName);
 		}
 		
-		public override object Visit(BaseReferenceExpression baseReferenceExpression, object data)
+		public override object VisitBaseReferenceExpression(BaseReferenceExpression baseReferenceExpression, object data)
 		{
 			if (resolver.CallingClass == null) {
 				return null;
@@ -242,13 +243,13 @@ namespace VBBinding.Parser
 			return new ReturnType(baseClass.FullyQualifiedName);
 		}
 		
-		public override object Visit(ObjectCreateExpression objectCreateExpression, object data)
+		public override object VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)
 		{
 			string name = resolver.SearchType(objectCreateExpression.CreateType.Type, resolver.CallingClass, resolver.CompilationUnit).FullyQualifiedName;
 			return new ReturnType(name, objectCreateExpression.CreateType.RankSpecifier, 0);
 		}
 		
-		public override object Visit(ArrayCreateExpression arrayCreateExpression, object data)
+		public override object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
 		{
 			ReturnType type = new ReturnType(arrayCreateExpression.CreateType);
 			if (arrayCreateExpression.Arguments != null && arrayCreateExpression.Arguments.Count > 0) {
@@ -263,7 +264,7 @@ namespace VBBinding.Parser
 			return type;
 		}
 		
-		public override object Visit(ArrayInitializerExpression arrayInitializerExpression, object data)
+		public override object VisitArrayInitializerExpression(ArrayInitializerExpression arrayInitializerExpression, object data)
 		{
 			// no calls allowed !!!
 			return null;

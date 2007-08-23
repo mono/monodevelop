@@ -13,6 +13,7 @@ using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects;
 using VBBinding.Parser.SharpDevelopTree;
 
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Parser;
 
 
@@ -50,12 +51,12 @@ namespace VBBinding.Parser
 		void RetrieveRegions(CompilationUnit cu, SpecialTracker tracker)
 		{
 			for (int i = 0; i < tracker.CurrentSpecials.Count; ++i) {
-				PreProcessingDirective directive = tracker.CurrentSpecials[i] as PreProcessingDirective;
+				PreprocessingDirective directive = tracker.CurrentSpecials[i] as PreprocessingDirective;
 				if (directive != null) {
 					if (directive.Cmd.ToLower() == "#region") {
 						int deep = 1; 
 						for (int j = i + 1; j < tracker.CurrentSpecials.Count; ++j) {
-							PreProcessingDirective nextDirective = tracker.CurrentSpecials[j] as PreProcessingDirective;
+							PreprocessingDirective nextDirective = tracker.CurrentSpecials[j] as PreprocessingDirective;
 							if(nextDirective != null) {
 								switch (nextDirective.Cmd.ToLower()) {
 									case "#region":
@@ -65,7 +66,7 @@ namespace VBBinding.Parser
 										if (nextDirective.Arg.ToLower() == "region") {
 											--deep;
 											if (deep == 0) {
-												cu.FoldingRegions.Add(new FoldingRegion(directive.Arg.Trim('"'), new DefaultRegion(directive.StartPosition, nextDirective.EndPosition)));
+												cu.FoldingRegions.Add(new FoldingRegion(directive.Arg.Trim('"'), new DefaultRegion(new Point (directive.StartPosition.X, directive.StartPosition.Y) , new Point (nextDirective.EndPosition.X, nextDirective.EndPosition.Y))));
 												goto end;
 											}
 										}
@@ -81,14 +82,14 @@ namespace VBBinding.Parser
 		
 		public ICompilationUnitBase Parse(string fileName)
 		{
-			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser (SupportedLanguage.VBNet, new StreamReader(fileName));
+			ICSharpCode.NRefactory.IParser p = ICSharpCode.NRefactory.ParserFactory.CreateParser (SupportedLanguage.VBNet, new StreamReader(fileName));
 			
 			p.Parse();
 			
 			VBNetVisitor visitor = new VBNetVisitor();
-			visitor.Visit(p.CompilationUnit, null);
+			visitor.VisitCompilationUnit(p.CompilationUnit, null);
 			//visitor.Cu.FileName = fileName;
-			visitor.Cu.ErrorsDuringCompile = p.Errors.count > 0;
+			visitor.Cu.ErrorsDuringCompile = p.Errors.Count > 0;
 			RetrieveRegions(visitor.Cu, p.Lexer.SpecialTracker);
 			
 			AddCommentTags(visitor.Cu, p.Lexer.TagComments);
@@ -97,14 +98,14 @@ namespace VBBinding.Parser
 		
 		public ICompilationUnitBase Parse(string fileName, string fileContent)
 		{
-			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser (SupportedLanguage.VBNet, new StringReader(fileContent));
+			ICSharpCode.NRefactory.IParser p = ICSharpCode.NRefactory.ParserFactory.CreateParser (SupportedLanguage.VBNet, new StringReader(fileContent));
 			
 			p.Parse();
 			
 			VBNetVisitor visitor = new VBNetVisitor();
-			visitor.Visit(p.CompilationUnit, null);
+			visitor.VisitCompilationUnit (p.CompilationUnit, null);
 			//visitor.Cu.FileName = fileName;
-			visitor.Cu.ErrorsDuringCompile = p.Errors.count > 0;
+			visitor.Cu.ErrorsDuringCompile = p.Errors.Count > 0;
 			visitor.Cu.Tag = p.CompilationUnit;
 			RetrieveRegions(visitor.Cu, p.Lexer.SpecialTracker);
 			AddCommentTags(visitor.Cu, p.Lexer.TagComments);

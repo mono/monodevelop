@@ -1,13 +1,13 @@
 // created on 06.08.2003 at 12:35
 
 using MonoDevelop.Projects.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Ast;
 
 namespace VBBinding.Parser.SharpDevelopTree
 {
 	public class Constructor : DefaultMethod
 	{
-		public Constructor(Modifier m, IRegion region, IRegion bodyRegion)
+		public Constructor(Modifiers m, IRegion region, IRegion bodyRegion)
 		{
 			Name = "#ctor";
 			this.region     = region;

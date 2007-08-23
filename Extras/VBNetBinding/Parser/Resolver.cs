@@ -16,8 +16,10 @@ using MonoDevelop.Projects;
 using VBBinding.Parser.SharpDevelopTree;
 
 using ClassType = MonoDevelop.Projects.Parser.ClassType;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory;
 
 namespace VBBinding.Parser
 {
@@ -83,9 +85,9 @@ namespace VBBinding.Parser
 			this.caretColumn   = caretColumn;
 			
 			IParseInformation parseInfo = parserContext.GetParseInformation(fileName);
-			ICSharpCode.NRefactory.Parser.AST.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Parser.AST.CompilationUnit;
+			ICSharpCode.NRefactory.Ast.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Ast.CompilationUnit;
 			if (fileCompilationUnit == null) {
-				ICSharpCode.NRefactory.Parser.IParser fileParser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader (fileContent));
+				ICSharpCode.NRefactory.IParser fileParser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader (fileContent));
 				fileParser.Parse();
 				//Console.WriteLine("!Warning: no parseinformation!");
 				return null;
@@ -116,21 +118,21 @@ namespace VBBinding.Parser
 			//// here last subexpression should be fixed in expr
 			if it should be changed in expressionfinder don't fix it here
 			*/
-			ICSharpCode.NRefactory.Parser.IParser p = ParserFactory.CreateParser (SupportedLanguage.VBNet, new StringReader(expression));
+			ICSharpCode.NRefactory.IParser p = ParserFactory.CreateParser (SupportedLanguage.VBNet, new StringReader(expression));
 			Expression expr = p.ParseExpression();
 			if (expr == null) {
 				return null;
 			//}else{
 				//Console.WriteLine(expr.ToString());
 			}
-			lookupTableVisitor = new LookupTableVisitor(StringComparer.InvariantCulture);
-			lookupTableVisitor.Visit(fileCompilationUnit, null);
+			lookupTableVisitor = new LookupTableVisitor(SupportedLanguage.VBNet);
+			lookupTableVisitor.VisitCompilationUnit (fileCompilationUnit, null);
 			//Console.WriteLine("Visited lookup table");
 			
 			TypeVisitor typeVisitor = new TypeVisitor(this);
 			
 			VBNetVisitor vbVisitor = new VBNetVisitor();
-			cu = (ICompilationUnit)vbVisitor.Visit(fileCompilationUnit, null);
+			cu = (ICompilationUnit)vbVisitor.VisitCompilationUnit(fileCompilationUnit, null);
 			//Console.WriteLine("Visited VBNetVisitor");
 			if (cu != null) {
 				callingClass = GetInnermostClass();
@@ -150,11 +152,11 @@ namespace VBBinding.Parser
 				
 				//// when type is null might be file needs to be reparsed - some vars were lost
 				fileCompilationUnit=parserContext.ParseFile(fileName, fileContent).MostRecentCompilationUnit.Tag 
-					as ICSharpCode.NRefactory.Parser.AST.CompilationUnit;
-				lookupTableVisitor.Visit(fileCompilationUnit,null);
+					as ICSharpCode.NRefactory.Ast.CompilationUnit;
+				lookupTableVisitor.VisitCompilationUnit(fileCompilationUnit,null);
 				//Console.WriteLine("Lookup table visited again");
 				
-				cu = (ICompilationUnit)vbVisitor.Visit(fileCompilationUnit, null);
+				cu = (ICompilationUnit)vbVisitor.VisitCompilationUnit(fileCompilationUnit, null);
 				if (cu != null) {
 					callingClass = GetInnermostClass();
 					//Console.WriteLine("Got new cu, calling class = " + callingClass.FullyQualifiedName);
@@ -222,30 +224,30 @@ namespace VBBinding.Parser
 			this.caretColumn = caretColumn;
 			
 			IParseInformation parseInfo = parserContext.GetParseInformation (fileName);
-			ICSharpCode.NRefactory.Parser.AST.CompilationUnit fcu = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Parser.AST.CompilationUnit;
+			ICSharpCode.NRefactory.Ast.CompilationUnit fcu = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Ast.CompilationUnit;
 			if (fcu == null)
 				return null;
-			ICSharpCode.NRefactory.Parser.IParser p = ParserFactory.CreateParser (SupportedLanguage.VBNet, new StringReader (expression));
+			ICSharpCode.NRefactory.IParser p = ParserFactory.CreateParser (SupportedLanguage.VBNet, new StringReader (expression));
 			Expression expr = p.ParseExpression();
 			if (expr == null)
 				return null;
 
-			lookupTableVisitor = new LookupTableVisitor (StringComparer.InvariantCulture);
-			lookupTableVisitor.Visit (fcu, null);
+			lookupTableVisitor = new LookupTableVisitor (SupportedLanguage.VBNet);
+			lookupTableVisitor.VisitCompilationUnit (fcu, null);
 
 			TypeVisitor typeVisitor = new TypeVisitor (this);
 
 			VBNetVisitor vbVisitor = new VBNetVisitor ();
-			cu = (ICompilationUnit)vbVisitor.Visit (fcu, null);
+			cu = (ICompilationUnit)vbVisitor.VisitCompilationUnit (fcu, null);
 			if (cu != null) {
 				callingClass = GetInnermostClass ();
 			}
 
 			IReturnType type = expr.AcceptVisitor (typeVisitor, null) as IReturnType;
 			if (type == null || type.PointerNestingLevel != 0) {
-				fcu = parserContext.ParseFile (fileName, fileContent).MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Parser.AST.CompilationUnit;
-				lookupTableVisitor.Visit (fcu, null);
-				cu = (ICompilationUnit)vbVisitor.Visit (fcu, null);
+				fcu = parserContext.ParseFile (fileName, fileContent).MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Ast.CompilationUnit;
+				lookupTableVisitor.VisitCompilationUnit (fcu, null);
+				cu = (ICompilationUnit)vbVisitor.VisitCompilationUnit (fcu, null);
 
 				if (cu != null) {
 					callingClass = GetInnermostClass ();
@@ -289,7 +291,7 @@ namespace VBBinding.Parser
 			this.caretColumn   = caretColumn;
 			this.parserContext = parserContext;
 			IParseInformation parseInfo = parserContext.GetParseInformation(fileName);
-			ICSharpCode.NRefactory.Parser.AST.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Parser.AST.CompilationUnit;
+			ICSharpCode.NRefactory.Ast.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Ast.CompilationUnit;
 			if (fileCompilationUnit == null) {
 				ICSharpCode.NRefactory.Parser.Parser fileParser = new ICSharpCode.NRefactory.Parser.Parser();
 				fileParser.Parse(new Lexer(new StringReader(fileContent)));
@@ -597,7 +599,7 @@ namespace VBBinding.Parser
 				//Console.WriteLine("{0} WithStatements", lookupTableVisitor.WithStatements.Count);
 				foreach (WithStatement with in lookupTableVisitor.WithStatements) {
 //					Console.WriteLine("Position: ({0}/{1})", with.StartLocation, with.EndLocation);
-					if (IsInside(new Point(caretColumn, caretLine), with.StartLocation, with.EndLocation)) {
+					if (IsInside(new Location(caretColumn, caretLine), with.StartLocation, with.EndLocation)) {
 						expr = with.Expression;
 					}
 				}
@@ -793,7 +795,7 @@ namespace VBBinding.Parser
 			return null;
 		}
 		
-		bool IsInside(Point between, Point start, Point end)
+		bool IsInside(Location between, Location start, Location end)
 		{
 			if (between.Y < start.Y || between.Y > end.Y) {
 //				Console.WriteLine("Y = {0} not between {1} and {2}", between.Y, start.Y, end.Y);
@@ -838,7 +840,7 @@ namespace VBBinding.Parser
 			if (variables != null) {
 				foreach (LocalLookupVariable v in variables) {
 //					Console.WriteLine("Position: ({0}/{1})", v.StartPos, v.EndPos);
-					if (IsInside(new Point(caretColumn, caretLine), v.StartPos, v.EndPos)) {
+					if (IsInside(new Location(caretColumn, caretLine), v.StartPos, v.EndPos)) {
 						found = new ReturnType(v.TypeRef);
 //						Console.WriteLine("Variable found");
 						break;
@@ -1080,19 +1082,19 @@ namespace VBBinding.Parser
 		{
 			//Console.WriteLine("Entering CtrlSpace for " + caretLine + ":" + caretColumn + " in " + fileName);
 			LanguageItemCollection result = new LanguageItemCollection();
-			foreach (KeyValuePair<string, string> pt in TypeReference.GetPrimitiveTypesVB ())
+			foreach (KeyValuePair<string, string> pt in TypeReference.PrimitiveTypesVB)
 				result.Add (new Namespace (pt.Key));
 				
 			IParseInformation parseInfo = parserContext.GetParseInformation(fileName);
-			ICSharpCode.NRefactory.Parser.AST.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Parser.AST.CompilationUnit;
+			ICSharpCode.NRefactory.Ast.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Ast.CompilationUnit;
 			if (fileCompilationUnit == null) {
 				//Console.WriteLine("!Warning: no parseinformation!");
 				return null;
 			}
-			LookupTableVisitor lookupTableVisitor = new LookupTableVisitor(StringComparer.InvariantCulture);
-			lookupTableVisitor.Visit(fileCompilationUnit, null);
+			LookupTableVisitor lookupTableVisitor = new LookupTableVisitor(SupportedLanguage.VBNet);
+			lookupTableVisitor.VisitCompilationUnit (fileCompilationUnit, null);
 			VBNetVisitor vBNetVisitor = new VBNetVisitor();
-			cu = (ICompilationUnit)vBNetVisitor.Visit(fileCompilationUnit, null);
+			cu = (ICompilationUnit)vBNetVisitor.VisitCompilationUnit(fileCompilationUnit, null);
 			if (cu != null) {
 				callingClass = GetInnermostClass();
 				//Console.WriteLine("CallingClass is " + callingClass == null ? "null" : callingClass.Name);
@@ -1101,7 +1103,7 @@ namespace VBBinding.Parser
 				List<LocalLookupVariable> variables = lookupTableVisitor.Variables[name.ToLower()];
 				if (variables != null && variables.Count > 0) {
 					foreach (LocalLookupVariable v in variables) {
-						if (IsInside(new Point(caretColumn, caretLine), v.StartPos, v.EndPos)) {
+						if (IsInside(new Location(caretColumn, caretLine), v.StartPos, v.EndPos)) {
 							result.Add(new DefaultParameter (null, name, new ReturnType (v.TypeRef.SystemType)));
 							break;
 						}
