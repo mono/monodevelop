@@ -1,3 +1,11 @@
+2007-08-23  Marcos David Marín Amador <MarcosMarin@gmail.com>
+
+	* MonoDevelop.Deployment/InstallResolver.cs: Added support for
+	  targets Include and IncludeRoot.
+
+	* MonoDevelop.Deployment/TargetDirectory.cs: Added targets Include
+	  and IncludeRoot.
+
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment.addin.xml: Removed the CommandService class.

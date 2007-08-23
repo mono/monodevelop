@@ -11,5 +11,7 @@ namespace MonoDevelop.Deployment
 		public const string Gac = "Gac";
 		public const string CommonApplicationData = "CommonApplicationData";
 		public const string CommonApplicationDataRoot = "CommonApplicationDataRoot";
+		public const string Include = "Include";
+		public const string IncludeRoot = "IncludeRoot";
 	}
 }

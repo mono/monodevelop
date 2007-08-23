@@ -111,6 +111,10 @@ namespace MonoDevelop.Deployment
 					return Path.Combine (prefix, "share");
 				case TargetDirectory.Binaries:
 					return Path.Combine (prefix, "bin");
+				case TargetDirectory.IncludeRoot:
+					return Path.Combine (prefix, "include");
+				case TargetDirectory.Include:
+					return Path.Combine (ctx.GetDirectory (TargetDirectory.IncludeRoot), appName);
 				}
 			}
 			else if (ctx.Platform == "Windows") {
