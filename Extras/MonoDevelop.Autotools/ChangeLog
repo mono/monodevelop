@@ -1,3 +1,7 @@
+2007-08-23  Marcos David Marín Amador <MarcosMarin@gmail.com>
+
+	* Handler.cs: Added support for Include and IncludeRoot targets.
+
 2007-08-22  Ankit Jain  <jankit@novell.com>
 
 	* templates/*: Add invocation for various hooks.

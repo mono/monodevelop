@@ -166,6 +166,10 @@ namespace MonoDevelop.Autotools
 				return prefix_var + "/share";
 			case TargetDirectory.CommonApplicationData:
 				return prefix_var + "/share/" + package_var;
+			case TargetDirectory.IncludeRoot:
+				return prefix_var + "/include";
+			case TargetDirectory.Include:
+				return prefix_var + "/include/" + package_var;
 			}
 			return null;
 		}
