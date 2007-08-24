@@ -1,3 +1,8 @@
+2007-08-24  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs: Fixed 82554: Creating new
+	  project doesn't open it.
+
 2007-08-21  Mike Krüger <mkrueger@novell.com> 
 
 	* gtk-gui/MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel.cs: Changed

@@ -270,7 +270,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		{
 			if (!btn_new.Sensitive)
 				return;
-			
 			if (notebook.Page == 0) {
 				
 				if (!CreateProject ())

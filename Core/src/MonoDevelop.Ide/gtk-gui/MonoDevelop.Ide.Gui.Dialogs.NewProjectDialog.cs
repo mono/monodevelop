@@ -385,7 +385,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Internal child MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.ActionArea
             Gtk.HButtonBox w31 = this.ActionArea;
             w31.Name = "dialog-action_area1";
-            w31.Spacing = 10;
+            w31.Spacing = 6;
             w31.BorderWidth = ((uint)(5));
             w31.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog-action_area1.Gtk.ButtonBox+ButtonBoxChild
@@ -403,7 +403,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.btn_new.UseStock = true;
             this.btn_new.UseUnderline = true;
             this.btn_new.Label = "gtk-go-forward";
-            this.AddActionWidget(this.btn_new, 0);
+            w31.Add(this.btn_new);
             Gtk.ButtonBox.ButtonBoxChild w33 = ((Gtk.ButtonBox.ButtonBoxChild)(w31[this.btn_new]));
             w33.Position = 1;
             if ((this.Child != null)) {

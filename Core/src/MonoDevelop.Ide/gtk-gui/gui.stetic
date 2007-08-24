@@ -969,7 +969,7 @@
     <child internal-child="ActionArea">
       <widget class="Gtk.HButtonBox" id="dialog-action_area1">
         <property name="MemberName" />
-        <property name="Spacing">10</property>
+        <property name="Spacing">6</property>
         <property name="BorderWidth">5</property>
         <property name="Size">2</property>
         <property name="LayoutStyle">End</property>
@@ -993,7 +993,7 @@
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-go-forward</property>
-            <property name="ResponseId">0</property>
+            <property name="ResponseId">-1</property>
             <signal name="Clicked" handler="OpenEvent" />
             <property name="label">gtk-go-forward</property>
           </widget>
