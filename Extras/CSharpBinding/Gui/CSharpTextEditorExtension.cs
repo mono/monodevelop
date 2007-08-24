@@ -35,12 +35,12 @@ namespace CSharpBinding
 			return System.IO.Path.GetExtension (doc.Title) == ".cs";
 		}
 		
-		IClass LookupClass (ICompilationUnit unit, int line)
+		IClass LookupClass (ICompilationUnit unit, int line, int column)
 		{
 			int classStartLine = int.MaxValue;
 			IClass result = null;
 			foreach (IClass c in unit.Classes) {
-				if (c.Region.BeginLine < classStartLine && c.Region.BeginLine < line) {
+				if (c.BodyRegion.IsInside (line, column)) {
 					classStartLine = c.Region.BeginLine;
 					result = c;
 				}
@@ -98,6 +98,27 @@ namespace CSharpBinding
 			}
 			
 			return builder.ToString ();
+		}
+		
+		bool IsInsideClassBody (IClass insideClass, int line, int column)
+		{
+			foreach (IMethod m in insideClass.Methods) {
+				if (m.BodyRegion.IsInside (line, column)) {
+					return false;
+				}
+			}
+			
+			foreach (IProperty p in insideClass.Properties) {
+				if (p.BodyRegion.IsInside (line, column)) {
+					return false;
+				}
+			}
+			foreach (IIndexer p in insideClass.Indexer) {
+				if (p.BodyRegion.IsInside (line, column)) {
+					return false;
+				}
+			}
+			return true;
 		}
 		
 		bool MayNeedComment (int line, int cursor)
@@ -183,8 +204,10 @@ namespace CSharpBinding
 					IParserContext pctx = GetParserContext ();
 					ICompilationUnit unit = pctx.GetParseInformation (this.FileName).BestCompilationUnit as ICompilationUnit;
 					if (unit != null) {
-						IClass insideClass = LookupClass (unit, lin);
+						IClass insideClass = LookupClass (unit, lin, col);
 						if (insideClass != null) {
+							if (!IsInsideClassBody (insideClass, lin, col))
+								break;
 							string body = GenerateBody (insideClass, lin);
 							if (!String.IsNullOrEmpty (body)) {
 								generatedComment.Append (body);
