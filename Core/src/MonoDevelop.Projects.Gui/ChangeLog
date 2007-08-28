@@ -1,3 +1,9 @@
+2007-08-28  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs,
+	  MonoDevelop.Projects.Gui.Completion/ICompletionWidget.cs: Fixed 82207:
+	  Incorrect autocomplete insertion.
+
 2007-08-16  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Fixed 80813:Code

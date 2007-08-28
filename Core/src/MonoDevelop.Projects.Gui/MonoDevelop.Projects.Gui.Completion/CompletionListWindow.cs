@@ -63,10 +63,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 					text = provider.DefaultCompletionString;
 					if (text != null && text.Length > 0)
 						wnd.SelectEntry (text);
+					wnd.initialWordLength = wnd.completionWidget.SelectedLength;
 					return;
 				}
 				
-				wnd.initialWordLength = text.Length;
+				wnd.initialWordLength = text.Length + wnd.completionWidget.SelectedLength;
 				wnd.PartialWord = text; 
 				//if there is only one matching result we take it by default
 				if (wnd.IsUniqueMatch && !wnd.IsChanging)
@@ -87,7 +88,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				mutableProvider.CompletionDataChanged -= OnCompletionDataChanged;
 			}
 			
-			initialWordLength = 0;
+			//initialWordLength = 0;
 			this.provider = provider;
 			this.completionContext = completionContext;
 			this.closedDelegate = closedDelegate;
@@ -185,6 +186,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		void UpdateWord ()
 		{
 			string word = wnd.CompleteWord;
+			
 			if (word != null) {
 				if (wnd.Selection != -1) {
 					IActionCompletionData ac = completionData [wnd.Selection] as IActionCompletionData;
@@ -195,6 +197,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				}
 				int replaceLen = completionContext.TriggerWordLength + wnd.PartialWord.Length - initialWordLength;
 				string pword = completionWidget.GetText (completionContext.TriggerOffset, completionContext.TriggerOffset + replaceLen);
+				
 				completionWidget.SetCompletionText (completionContext, pword, word);
 			}
 		}

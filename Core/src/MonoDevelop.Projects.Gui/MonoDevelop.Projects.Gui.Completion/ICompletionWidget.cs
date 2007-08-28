@@ -8,6 +8,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 	public interface ICompletionWidget
 	{
 		int TextLength { get; }
+		int SelectedLength { get; }
 		string GetText (int startOffset, int endOffset);
 		char GetChar (int offset);
 		Gtk.Style GtkStyle { get; }
