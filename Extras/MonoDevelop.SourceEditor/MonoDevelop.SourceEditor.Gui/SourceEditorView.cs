@@ -757,9 +757,13 @@ namespace MonoDevelop.SourceEditor.Gui
 		{
 			return Buffer.GetText (Buffer.GetIterAtOffset (ctx.TriggerOffset), Buffer.GetIterAtMark (Buffer.InsertMark), false);
 		}
-
+		int ICompletionWidget.SelectedLength { get { return buf.GetSelectedText ().Length; } }
 		void ICompletionWidget.SetCompletionText (ICodeCompletionContext ctx, string partial_word, string complete_word)
 		{
+			TextIter iter1, iter2;
+			if (buf.GetSelectionBounds (out iter1, out iter2)) {
+				buf.Delete (ref iter1, ref iter2);
+			}
 			TextIter offsetIter = buf.GetIterAtOffset (ctx.TriggerOffset);
 			TextIter endIter = buf.GetIterAtOffset (offsetIter.Offset + partial_word.Length);
 			buf.MoveMark (buf.InsertMark, offsetIter);
@@ -947,7 +951,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			}
 
 			static void Draw (Gdk.Drawable drawable, TextView view, TextIter start, TextIter end)
-			{/*
+			{
 				if (HighlightSpacesEnabled || HighlightTabsEnabled || HighlightNewlinesEnabled)
 				{
 					Cairo.Context cntx = Gdk.CairoHelper.Create (drawable);
@@ -983,7 +987,7 @@ namespace MonoDevelop.SourceEditor.Gui
 							break;
 					}
 					((IDisposable)cntx).Dispose ();
-				}*/
+				}
 			}
 		}
 #endregion
