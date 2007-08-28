@@ -18,8 +18,8 @@
     <File name="./WelcomePageOptionPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="./WelcomePageView.cs" subtype="Code" buildaction="Compile" />
     <File name="./WelcomePage.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./WelcomePage.xsl" subtype="Code" buildaction="FileCopy" />
-    <File name="./WelcomePageContent.xml" subtype="Code" buildaction="FileCopy" />
+    <File name="./WelcomePage.xsl" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./WelcomePageContent.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./mono-bg.png" subtype="Code" buildaction="FileCopy" />
     <File name="./mono-logo.png" subtype="Code" buildaction="FileCopy" />
     <File name="./WelcomePage.css" subtype="Code" buildaction="FileCopy" />

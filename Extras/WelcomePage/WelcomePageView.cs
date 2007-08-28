@@ -23,6 +23,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE. 
 */
 using System;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -56,20 +57,17 @@ namespace MonoDevelop.Core
 }
 
 namespace MonoDevelop.WelcomePage
-{
-	
-	
+{	
 	public class WelcomePageView : AbstractViewContent
 	{
-		protected Frame control;
-		protected MozillaControl htmlControl;
+		MozillaControl htmlControl;
 		bool loadingProject;
 		
 		string datadir;
 		
 		public override Gtk.Widget Control {
 			get {
-				return control;
+				return htmlControl;
 			}
 		}
 		
@@ -79,30 +77,24 @@ namespace MonoDevelop.WelcomePage
 			}
 		}
 		
-		public override void Load(string fileName) 
+		public override void Load (string fileName) 
 		{
-			//Initialize(null);
 		}
 
-		public WelcomePageView() : base()
+		public WelcomePageView () : base ()
 		{
-			this.ContentName = GettextCatalog.GetString("Welcome");
-			
-			control = new Frame();
-			control.Show();
-			
-			htmlControl = new MozillaControl();
-			control.Add(htmlControl);
-			htmlControl.Show();
-			htmlControl.OpenUri += new OpenUriHandler (CatchUri);
-			htmlControl.LinkMsg += new EventHandler (LinkMessage);
+			this.ContentName = GettextCatalog.GetString ("Welcome");
+			this.IsViewOnly = true;
+
+			htmlControl = new MozillaControl ();
+			htmlControl.Show ();
+			htmlControl.OpenUri += CatchUri;
+			htmlControl.LinkMsg += LinkMessage;
 			
 			datadir = "file://" + Path.GetDirectoryName (typeof(ShowWelcomePageHandler).Assembly.Location) + "/";
 
 			if (PlatformID.Unix != Environment.OSVersion.Platform)
 				datadir = datadir.Replace("\\","/");
-
-			this.IsViewOnly = true;
 
 			LoadContent ();
 
@@ -112,36 +104,33 @@ namespace MonoDevelop.WelcomePage
 		void LoadContent ()
 		{
 			// Get the Xml
-			XmlDocument inxml = BuildXmlDocument();
+			XmlDocument inxml = BuildXmlDocument ();
 			
-			XsltArgumentList arg = new XsltArgumentList();
-			arg.AddExtensionObject("urn:MonoDevelop.Core.XslGettextCatalog", new MonoDevelop.Core.XslGettextCatalog());
+			XsltArgumentList arg = new XsltArgumentList ();
+			arg.AddExtensionObject ("urn:MonoDevelop.Core.XslGettextCatalog", new MonoDevelop.Core.XslGettextCatalog ());
 			
 			XslTransform xslt = new XslTransform();
-            		xslt.Load(datadir + "WelcomePage.xsl");
-			StringWriter fs = new StringWriter();
-			xslt.Transform(inxml, arg, fs, null);
+           	xslt.Load (new XmlTextReader (Assembly.GetExecutingAssembly().GetManifestResourceStream ("WelcomePage.xsl")));
+			StringWriter fs = new StringWriter ();
+			xslt.Transform (inxml, arg, fs, null);
 			
-			htmlControl.Html = fs.ToString();
-			//Initialize(null);
+			htmlControl.Html = fs.ToString ();
 		}
 
-		void RecentChangesHandler ( object sender, EventArgs e )
+		void RecentChangesHandler (object sender, EventArgs e)
 		{
 			LoadContent ();
-			Initialize (null);
+			Initialize ();
 		}
 		
 		void LinkMessage (object sender, EventArgs e)
 		{
-			if (htmlControl.LinkMessage == null || htmlControl.LinkMessage == String.Empty
-				|| htmlControl.LinkMessage.IndexOf ("monodevelop://") != -1)
-			{
+			if (String.IsNullOrEmpty (htmlControl.LinkMessage) || htmlControl.LinkMessage.IndexOf ("monodevelop://") != -1) {
 				IdeApp.Workbench.StatusBar.SetMessage (null);
-			} else
-			{
+			} else {
 				string message = htmlControl.LinkMessage;
-				if (message.IndexOf ("project://") != -1) message = message.Substring (10);
+				if (message.IndexOf ("project://") != -1) 
+					message = message.Substring (10);
 				IdeApp.Workbench.StatusBar.SetMessage (message);
 			}
 		}
@@ -156,31 +145,28 @@ namespace MonoDevelop.WelcomePage
 			if (PlatformID.Unix != Environment.OSVersion.Platform)
 				Console.WriteLine ("WelcomePage: Handling URI: " + URI);
 
-			if (URI.StartsWith("project://"))
-			{
+			if (URI.StartsWith ("project://")) {
 				if (loadingProject)
 					return;
 					
-				string projectUri = URI.Substring(10);			
-				Uri fileuri = new Uri ( projectUri );
+				string projectUri = URI.Substring (10);			
+				Uri fileuri = new Uri (projectUri);
 				try {
 					loadingProject = true;
-					IAsyncOperation oper = IdeApp.ProjectOperations.OpenCombine ( fileuri.LocalPath );
+					IAsyncOperation oper = IdeApp.ProjectOperations.OpenCombine (fileuri.LocalPath);
 					oper.WaitForCompleted ();
 				} finally {
 					loadingProject = false;
 				}
-			}
-			else if (URI.StartsWith("monodevelop://"))
-			{
+			} else if (URI.StartsWith ("monodevelop://")) {
 				// Launch MonoDevelop Gui Commands
-				switch (URI.Substring(14))
+				switch (URI.Substring (14))
 				{
 					case "NewProject":
-						IdeApp.CommandService.DispatchCommand(FileCommands.NewProject);
+						IdeApp.CommandService.DispatchCommand (FileCommands.NewProject);
 						break;
 					case "OpenFile":
-						IdeApp.CommandService.DispatchCommand(FileCommands.OpenFile);
+						IdeApp.CommandService.DispatchCommand (FileCommands.OpenFile);
 						break;
 				}
 			}
@@ -205,75 +191,64 @@ namespace MonoDevelop.WelcomePage
 		private XmlDocument BuildXmlDocument()
 		{
 			XmlDocument xml = new XmlDocument();
-			xml.Load(datadir + "WelcomePageContent.xml");
+			xml.Load (new XmlTextReader (Assembly.GetExecutingAssembly().GetManifestResourceStream ("WelcomePageContent.xml")));
 			
 			// Get the Parent node
-			XmlNode parent = xml.SelectSingleNode("/WelcomePage");
+			XmlNode parent = xml.SelectSingleNode ("/WelcomePage");
 			
 			// Resource Path
-			XmlElement element = xml.CreateElement("ResourcePath");
+			XmlElement element = xml.CreateElement ("ResourcePath");
 			element.InnerText = datadir;
 			parent.AppendChild(element);
 			
 			RecentOpen recentOpen = IdeApp.Workbench.RecentOpen;
 			if (recentOpen.RecentProject != null && recentOpen.RecentProject.Length > 0)
 			{
-				XmlElement projectList  = xml.CreateElement("RecentProjects");
+				XmlElement projectList  = xml.CreateElement ("RecentProjects");
 				parent.AppendChild(projectList);
 				foreach (RecentItem ri in recentOpen.RecentProject)
 				{
-					XmlElement project = xml.CreateElement("Project");
+					XmlElement project = xml.CreateElement ("Project");
 					projectList.AppendChild(project);
 					// Uri
-					element = xml.CreateElement("Uri");
+					element = xml.CreateElement ("Uri");
 					element.InnerText = ri.LocalPath;
-					project.AppendChild(element);
+					project.AppendChild (element);
 					// Name
-					element = xml.CreateElement("Name");
+					element = xml.CreateElement ("Name");
 					element.InnerText = (ri.Private != null && ri.Private.Length > 0) ? ri.Private : Path.GetFileNameWithoutExtension(ri.LocalPath);
-					project.AppendChild(element);
+					project.AppendChild (element);
 					// Date Modified
-					element = xml.CreateElement("DateModified");
-					element.InnerText = TimeSinceEdited(ri.Timestamp);
-					project.AppendChild(element);
+					element = xml.CreateElement ("DateModified");
+					element.InnerText = TimeSinceEdited (ri.Timestamp);
+					project.AppendChild (element);
 				}
 			} 
 			return xml;
 		}
 
-		public void Initialize(object obj)
+		public void Initialize()
 		{
-			htmlControl.DelayedInitialize();
+			htmlControl.DelayedInitialize ();
 		}
 
 		public override void Dispose ()
 		{
-			base.Dispose ();
-
 			IdeApp.Workbench.RecentOpen.RecentProjectChanged -= RecentChangesHandler;
-			htmlControl.Dispose ();
 		}
 		
-		public static string TimeSinceEdited(DateTime prjtime)
+		public static string TimeSinceEdited (DateTime prjtime)
 		{
 			TimeSpan sincelast = DateTime.UtcNow - prjtime;
 
 			if (sincelast.Days >= 1)
-			{
-				return GettextCatalog.GetPluralString("{0} day", "{0} days", sincelast.Days, sincelast.Days);
-			}
-			else if (sincelast.Hours >= 1)
-			{
-				return GettextCatalog.GetPluralString("{0} hour", "{0} hours", sincelast.Hours, sincelast.Hours);
-			}
-			else if (sincelast.Minutes > 0)
-			{
-				return GettextCatalog.GetPluralString("{0} minute", "{0} minutes", sincelast.Minutes, sincelast.Minutes);
-			}
-			else
-			{
-				return GettextCatalog.GetString("Less than a minute");
-			}
+				return GettextCatalog.GetPluralString ("{0} day", "{0} days", sincelast.Days, sincelast.Days);
+			if (sincelast.Hours >= 1)
+				return GettextCatalog.GetPluralString ("{0} hour", "{0} hours", sincelast.Hours, sincelast.Hours);
+			if (sincelast.Minutes > 0)
+				return GettextCatalog.GetPluralString ("{0} minute", "{0} minutes", sincelast.Minutes, sincelast.Minutes);
+			
+			return GettextCatalog.GetString ("Less than a minute");
 		}
 	}
 }

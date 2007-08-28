@@ -11,7 +11,6 @@
 	<Runtime>
 		<Import assembly="WelcomePage.dll"/>
 		<Import file="WelcomePage.css"/>		
-		<Import file="WelcomePage.xsl"/>		
 		<Import file="mono-bg.png"/>		
 		<Import file="mono-logo.png"/>		
 	</Runtime>

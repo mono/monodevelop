@@ -47,7 +47,7 @@ namespace MonoDevelop.WelcomePage
 			IdeApp.Workbench.OpenDocument(wpv, true);
 
 			// Html must be rendered after the widget has been drawn
-			wpv.Initialize(null);
+			wpv.Initialize ();
 		}
 	}
 
@@ -55,20 +55,17 @@ namespace MonoDevelop.WelcomePage
 	{
 		protected override void Run()
 		{
-			foreach (Document d in IdeApp.Workbench.Documents)
-			{
-				if (d.GetContent<WelcomePageView>() != null)
-				{
+			foreach (Document d in IdeApp.Workbench.Documents) {
+				if (d.GetContent<WelcomePageView>() != null) {
 					d.Select();
 					return;
 				}
 			}
-			
 			WelcomePageView wpv = new WelcomePageView();
-			IdeApp.Workbench.OpenDocument(wpv, true);
-
+			Document doc = IdeApp.Workbench.OpenDocument(wpv, true);
+			
 			// Html must be rendered after the widget has been drawn
-			wpv.Initialize(null);
+			wpv.Initialize ();
 		}
 	}
 }

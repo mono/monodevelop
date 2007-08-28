@@ -1,3 +1,8 @@
+2007-08-28  Mike Krüger <mkrueger@novell.com> 
+
+	* WelcomePageView.cs, WelcomePageCommands.cs: Fixed 81660+82491: Crash when
+	  opening the Welcome-Page manually.
+
 2007-08-21  Mike Krüger <mkrueger@novell.com> 
 
 	* WelcomePageView.cs: Fixed 82458: unable to open files that have a colon in
