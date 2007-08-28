@@ -1,3 +1,9 @@
+2007-08-28  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui/AbstractBaseViewContent.cs,
+	  MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Fixed 81660+82491: Crash when
+	  opening the Welcome-Page manually.
+
 2007-08-24  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs: Fixed 82554: Creating new

@@ -42,6 +42,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		public virtual void Dispose()
 		{
+			if (Control != null)
+				Control.Dispose ();				
 		}
 		
 		public virtual bool CanReuseView (string fileName)

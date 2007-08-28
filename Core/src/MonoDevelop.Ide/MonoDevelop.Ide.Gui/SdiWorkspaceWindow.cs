@@ -237,7 +237,6 @@ namespace MonoDevelop.Ide.Gui
 			content.ContentChanged     -= new EventHandler (OnContentChanged);
 			content.WorkbenchWindow = null;
 			
-			
 			if (subViewContents != null) {
 				foreach (ISecondaryViewContent sv in subViewContents) {
 					subViewNotebook.Remove (sv.Control);
@@ -245,6 +244,8 @@ namespace MonoDevelop.Ide.Gui
 				}
 				this.subViewContents = null;
 				subViewNotebook.Remove (content.Control);
+			} else {
+				this.Remove (content.Control);
 			}
 			content.Dispose ();
 			tabLabel.Dispose ();
