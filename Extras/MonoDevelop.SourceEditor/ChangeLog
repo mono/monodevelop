@@ -1,3 +1,8 @@
+2007-08-29  Mike Krüger <mkrueger@novell.com> 
+
+	* Makefile.am, MonoDevelop.SourceEditor.mdp: Applied the patch from ankit to
+	  use Mono.Cairo version 2.0.0.0 instead of the older 1.0 version.
+
 2007-08-28  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Fixed 82207: Incorrect
