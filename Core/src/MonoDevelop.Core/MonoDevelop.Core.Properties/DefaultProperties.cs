@@ -6,7 +6,9 @@
 // </file>
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Diagnostics;
 using System.Xml;
@@ -23,182 +25,60 @@ namespace MonoDevelop.Core.Properties
 	{
 		Dictionary<string, object> properties = new Dictionary<string, object> ();
 		
-		/// <summary>
-		/// Gets a property out of the collection.
-		/// </summary>
-		/// <returns>
-		/// The property, or <code>defaultvalue</code>, if the property wasn't found.
-		/// </returns>
-		/// <param name="key">
-		/// The name of the property.
-		/// </param>
-		/// <param name="defaultvalue">
-		/// The default value of the property.
-		/// </param>
-		public object GetProperty (string key, object defaultvalue)
-		{
-			if (!properties.ContainsKey(key)) {
-				if (defaultvalue != null) {
-					properties[key] = defaultvalue;
-				}
-				return defaultvalue;
-			}
-			
-			object obj = properties [key];
-			
-			// stored an XmlElement in properties node ->
-			// set a FromXmlElement of the defaultvalue type at this propertyposition.
-			if (defaultvalue is IXmlConvertable && obj is XmlElement) {
-				obj = properties[key] = ((IXmlConvertable)defaultvalue).FromXmlElement((XmlElement)((XmlElement)obj).FirstChild);
-			}
-			return obj;
-		}
-		
-		/// <summary>
-		/// Gets a property out of the collection.
-		/// </summary>
-		/// <returns>
-		/// The property, or <code>null</code>, if the property wasn't found.
-		/// </returns>
-		/// <param name="key">
-		/// The name of the property.
-		/// </param>
 		public object GetProperty (string key)
 		{
 			return GetProperty(key, (object)null);
 		}
 		
-		/// <summary>
-		/// Gets a <code>int</code> property out of the collection.
-		/// </summary>
-		/// <returns>
-		/// The property, or <code>defaultvalue</code>, if the property wasn't found.
-		/// </returns>
-		/// <param name="key">
-		/// The name of the property.
-		/// </param>
-		/// <param name="defaultvalue">
-		/// The default value of the property.
-		/// </param>
-		public int GetProperty(string key, int defaultvalue)
+		public T GetProperty<T>(string property, T defaultValue)
 		{
-			return int.Parse(GetProperty(key, (object)defaultvalue).ToString());
+			if (!properties.ContainsKey(property)) {
+				properties.Add(property, defaultValue);
+				return defaultValue;
+			}
+			object o = properties[property];
+			if (defaultValue is IXmlConvertable && o is XmlElement) {
+				o = properties[property] = ((IXmlConvertable)defaultValue).FromXmlElement ((XmlElement)((XmlElement)o).FirstChild);
+			} else if (o is string && typeof(T) != typeof(string)) {
+				TypeConverter c = TypeDescriptor.GetConverter(typeof(T));
+				try {
+					o = c.ConvertFromInvariantString(o.ToString());
+				} catch (Exception ex) {
+					o = defaultValue;
+				}
+				properties[property] = o; // store for future look up
+			} else if (o is ArrayList && typeof(T).IsArray) {
+				ArrayList list = (ArrayList)o;
+				Type elementType = typeof(T).GetElementType();
+				Array arr = System.Array.CreateInstance(elementType, list.Count);
+				TypeConverter c = TypeDescriptor.GetConverter(elementType);
+				try {
+					for (int i = 0; i < arr.Length; ++i) {
+						if (list[i] != null) {
+							arr.SetValue(c.ConvertFromInvariantString(list[i].ToString()), i);
+						}
+					}
+					o = arr;
+				} catch (Exception ex) {
+					o = defaultValue;
+				}
+				properties[property] = o; // store for future look up
+			} else if (!(o is string) && typeof(T) == typeof(string)) {
+				TypeConverter c = TypeDescriptor.GetConverter(typeof(T));
+				if (c.CanConvertTo(typeof(string))) {
+					o = c.ConvertToInvariantString(o);
+				} else {
+					o = o.ToString();
+				}
+			}
+			try {
+				return (T)o;
+			} catch (NullReferenceException) {
+				// can happen when configuration is invalid -> o is null and a value type is expected
+				return defaultValue;
+			}
 		}
 		
-		/// <summary>
-		/// Gets a <code>bool</code> property out of the collection.
-		/// </summary>
-		/// <returns>
-		/// The property, or <code>defaultvalue</code>, if the property wasn't found.
-		/// </returns>
-		/// <param name="key">
-		/// The name of the property.
-		/// </param>
-		/// <param name="defaultvalue">
-		/// The default value of the property.
-		/// </param>
-		public bool GetProperty(string key, bool defaultvalue)
-		{
-			return bool.Parse(GetProperty(key, (object)defaultvalue).ToString());
-		}
-
-		/// <summary>
-		/// Gets a <code>short</code> property out of the collection.
-		/// </summary>
-		/// <returns>
-		/// The property, or <code>defaultvalue</code>, if the property wasn't found.
-		/// </returns>
-		/// <param name="key">
-		/// The name of the property.
-		/// </param>
-		/// <param name="defaultvalue">
-		/// The default value of the property.
-		/// </param>
-		public short GetProperty(string key, short defaultvalue)
-		{
-			return short.Parse(GetProperty(key, (object)defaultvalue).ToString());
-		}
-
-		/// <summary>
-		/// Gets a <code>byte</code> property out of the collection.
-		/// </summary>
-		/// <returns>
-		/// The property, or <code>defaultvalue</code>, if the property wasn't found.
-		/// </returns>
-		/// <param name="key">
-		/// The name of the property.
-		/// </param>
-		/// <param name="defaultvalue">
-		/// The default value of the property.
-		/// </param>
-		public byte GetProperty(string key, byte defaultvalue)
-		{
-			return byte.Parse(GetProperty(key, (object)defaultvalue).ToString());
-		}
-		
-		/// <summary>
-		/// Gets a <code>string</code> property out of the collection.
-		/// </summary>
-		/// <returns>
-		/// The property, or <code>defaultvalue</code>, if the property wasn't found.
-		/// </returns>
-		/// <param name="key">
-		/// The name of the property.
-		/// </param>
-		/// <param name="defaultvalue">
-		/// The default value of the property.
-		/// </param>
-		public string GetProperty(string key, string defaultvalue)
-		{
-			return GetProperty(key, (object)defaultvalue).ToString();
-		}
-		
-		/// <summary>
-		/// Gets a <code>enum</code> property out of the collection.
-		/// </summary>
-		/// <returns>
-		/// The property, or <code>defaultvalue</code>, if the property wasn't found.
-		/// </returns>
-		/// <param name="key">
-		/// The name of the property.
-		/// </param>
-		/// <param name="defaultvalue">
-		/// The default value of the property.
-		/// </param>
-		public System.Enum GetProperty(string key, System.Enum defaultvalue)
-		{
-			return (System.Enum)Enum.Parse(defaultvalue.GetType(), GetProperty(key, (object)defaultvalue).ToString());
-		}
-		
-		public DateTime GetProperty (string key, DateTime defaultvalue)
-		{
-			object ob = GetProperty (key);
-			if (ob == null)
-				return defaultvalue;
-			else
-				return DateTime.ParseExact ((string)ob, "s", CultureInfo.InvariantCulture);
-		}
-		
-		public TimeSpan GetProperty (string key, TimeSpan defaultvalue)
-		{
-			object ob = GetProperty (key);
-			if (ob == null)
-				return defaultvalue;
-			else
-				return TimeSpan.Parse ((string)ob);
-		}
-		
-		/// <summary>
-		/// Sets the property <code>key</code> to the value <code>val</code>.
-		/// If <code>val</code> is null, the property will be taken out from the
-		/// properties.
-		/// </summary>
-		/// <param name="key">
-		/// The name of the property.
-		/// </param>
-		/// <param name="val">
-		/// The value of the property.
-		/// </param>
 		public void SetProperty(string key, object val)
 		{
 			object oldValue = GetProperty (key, val);

@@ -1,3 +1,9 @@
+2007-08-29   <> 
+
+	* MonoDevelop.Core.Properties/DefaultProperties.cs: Fixed 82621: Crash while
+	  building moon.mds.
+	* MonoDevelop.Core.Properties/IProperties.cs: Fi
+
 2007-08-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.ProgressMonitoring/ProgressTracker.cs: The Global work

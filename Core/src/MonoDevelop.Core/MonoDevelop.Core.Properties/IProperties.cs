@@ -34,7 +34,7 @@ namespace MonoDevelop.Core.Properties
 		/// <param name="defaultvalue">
 		/// The default value of the property.
 		/// </param>
-		object GetProperty(string key, object defaultvalue);
+		T GetProperty<T>(string property, T defaultValue);
 		
 		/// <summary>
 		/// Gets a property out of the collection.
@@ -47,99 +47,6 @@ namespace MonoDevelop.Core.Properties
 		/// The name of the property.
 		/// </param>
 		object GetProperty(string key);
-		
-		/// <summary>
-		/// Gets a <code>int</code> property out of the collection.
-		/// </summary>
-		/// <returns>
-		/// The property, or <code>defaultvalue</code>, if the property wasn't
-		/// found.
-		/// </returns>
-		/// <param name="key">
-		/// The name of the property.
-		/// </param>
-		/// <param name="defaultvalue">
-		/// The default value of the property.
-		/// </param>
-		int GetProperty(string key, int defaultvalue);
-		
-		/// <summary>
-		/// Gets a <code>bool</code> property out of the collection.
-		/// </summary>
-		/// <returns>
-		/// The property, or <code>defaultvalue</code>, if the property wasn't
-		/// found.
-		/// </returns>
-		/// <param name="key">
-		/// The name of the property.
-		/// </param>
-		/// <param name="defaultvalue">
-		/// The default value of the property.
-		/// </param>
-		bool GetProperty(string key, bool defaultvalue);
-
-		/// <summary>
-		/// Gets a <code>short</code> property out of the collection.
-		/// </summary>
-		/// <returns>
-		/// The property, or <code>defaultvalue</code>, if the property wasn't
-		/// found.
-		/// </returns>
-		/// <param name="key">
-		/// The name of the property.
-		/// </param>
-		/// <param name="defaultvalue">
-		/// The default value of the property.
-		/// </param>
-		short GetProperty(string key, short defaultvalue);
-
-		/// <summary>
-		/// Gets a <code>byte</code> property out of the collection.
-		/// </summary>
-		/// <returns>
-		/// The property, or <code>defaultvalue</code>, if the property wasn't
-		/// found.
-		/// </returns>
-		/// <param name="key">
-		/// The name of the property.
-		/// </param>
-		/// <param name="defaultvalue">
-		/// The default value of the property.
-		/// </param>
-		byte GetProperty(string key, byte defaultvalue);
-
-		/// <summary>
-		/// Gets a <code>string</code> property out of the collection.
-		/// </summary>
-		/// <returns>
-		/// The property, or <code>defaultvalue</code>, if the property wasn't
-		/// found.
-		/// </returns>
-		/// <param name="key">
-		/// The name of the property.
-		/// </param>
-		/// <param name="defaultvalue">
-		/// The default value of the property.
-		/// </param>
-		string GetProperty(string key, string defaultvalue);
-		
-		/// <summary>
-		/// Gets a <code>enum</code> property out of the collection.
-		/// </summary>
-		/// <returns>
-		/// The property, or <code>defaultvalue</code>, if the property wasn't found.
-		/// </returns>
-		/// <param name="key">
-		/// The name of the property.
-		/// </param>
-		/// <param name="defaultvalue">
-		/// The default value of the property.
-		/// </param>
-		System.Enum GetProperty(string key, System.Enum defaultvalue);
-		
-		DateTime GetProperty (string key, DateTime defaultvalue);
-		
-		TimeSpan GetProperty (string key, TimeSpan defaultvalue);
 		
 		/// <summary>
 		/// Sets the property <code>key</code> to the value <code>val</code>.
