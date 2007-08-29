@@ -1,6 +1,0 @@
-static class Foo
-{
-	Foo ()
-	{
-	}
-}
