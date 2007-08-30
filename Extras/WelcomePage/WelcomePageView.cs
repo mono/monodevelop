@@ -110,7 +110,9 @@ namespace MonoDevelop.WelcomePage
 			arg.AddExtensionObject ("urn:MonoDevelop.Core.XslGettextCatalog", new MonoDevelop.Core.XslGettextCatalog ());
 			
 			XslTransform xslt = new XslTransform();
-           	xslt.Load (new XmlTextReader (Assembly.GetExecutingAssembly().GetManifestResourceStream ("WelcomePage.xsl")));
+			using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream ("WelcomePage.xsl")) {
+				xslt.Load (new XmlTextReader (stream));
+			}		
 			StringWriter fs = new StringWriter ();
 			xslt.Transform (inxml, arg, fs, null);
 			
@@ -191,7 +193,9 @@ namespace MonoDevelop.WelcomePage
 		private XmlDocument BuildXmlDocument()
 		{
 			XmlDocument xml = new XmlDocument();
-			xml.Load (new XmlTextReader (Assembly.GetExecutingAssembly().GetManifestResourceStream ("WelcomePageContent.xml")));
+			using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream ("WelcomePageContent.xml")) {
+				xml.Load (new XmlTextReader (stream));
+			}
 			
 			// Get the Parent node
 			XmlNode parent = xml.SelectSingleNode ("/WelcomePage");

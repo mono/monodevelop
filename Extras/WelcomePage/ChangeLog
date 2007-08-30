@@ -1,3 +1,8 @@
+2007-08-31  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* WelcomePageView.cs: Dispose resource streams, to avoid an exception in 
+	  RecentChangesHandler that prevented opening projects.
+
 2007-08-28  Mike Krüger <mkrueger@novell.com> 
 
 	* WelcomePageView.cs, WelcomePageCommands.cs: Fixed 81660+82491: Crash when
