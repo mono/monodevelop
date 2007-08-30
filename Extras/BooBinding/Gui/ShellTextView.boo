@@ -505,7 +505,16 @@ class ShellTextView (SourceView, ICompletionWidget):
 		ctx.TriggerTextHeight = rect.Height;
 		return ctx;
 		
-
+	
+	ICompletionWidget.SelectedLength:
+		get:
+			select1 as TextIter
+			select2 as TextIter
+			if Buffer.GetSelectionBounds (select1, select2):
+				return Buffer.GetText (select1, select2, true).Length
+			else:
+				return 0
+	
 	ICompletionWidget.TextLength:
 		get:
 			return Buffer.EndIter.Offset

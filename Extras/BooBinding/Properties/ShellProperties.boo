@@ -14,7 +14,7 @@ import MonoDevelop.Core
 
 class ShellProperties:
 	private propertyService = cast (PropertyService, ServiceManager.GetService (typeof(PropertyService)))
-	private properties = cast (IProperties, propertyService.GetProperty (PropertyName, DefaultProperties()))
+	private properties = propertyService.GetProperty of IProperties (PropertyName, DefaultProperties())
 
 	public abstract PropertyName as string:
 		get:

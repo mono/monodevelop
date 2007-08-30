@@ -1,3 +1,8 @@
+2007-08-31  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* Gui/ShellTextView.boo, Properties/ShellProperties.boo: Track API 
+	  changes.
+
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* BooBinding.addin.xml, BooBinding.mdp, BooShell/Makefile.am, Makefile.am:
