@@ -14,7 +14,7 @@ using System.Text;
 using MonoDevelop.SourceEditor;
 using MonoDevelop.SourceEditor.Document;
 using MonoDevelop.SourceEditor.FormattingStrategy;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Core;
 
 namespace NemerleBinding.FormattingStrategy {

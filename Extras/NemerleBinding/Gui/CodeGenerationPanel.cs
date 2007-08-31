@@ -5,7 +5,7 @@ using System.Drawing;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using Mono.Addins;
 
 using Gtk;
@@ -28,9 +28,9 @@ namespace NemerleBinding
 			NemerleParameters compilerParameters = null;
 			DotNetProjectConfiguration configuration;
 
- 			public  CodeGenerationPanelWidget(IProperties CustomizationObject) : base ("Nemerle.glade", "CodeGenerationPanel")
+ 			public  CodeGenerationPanelWidget(Properties CustomizationObject) : base ("Nemerle.glade", "CodeGenerationPanel")
  			{
-				configuration = (DotNetProjectConfiguration) ((IProperties)CustomizationObject).GetProperty("Config");
+				configuration = (DotNetProjectConfiguration) ((Properties)CustomizationObject).Get("Config");
 				compilerParameters = (NemerleParameters) configuration.CompilationParameters;
 				
 				target.Active = (int) configuration.CompileTarget;
@@ -60,7 +60,7 @@ namespace NemerleBinding
 		
 		public override void LoadPanelContents()
 		{
-			Add (widget = new  CodeGenerationPanelWidget ((IProperties) CustomizationObject));
+			Add (widget = new  CodeGenerationPanelWidget ((Properties) CustomizationObject));
 		}
 		
 		public override bool StorePanelContents()

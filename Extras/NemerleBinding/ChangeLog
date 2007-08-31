@@ -1,3 +1,9 @@
+2007-08-31  Mike Krüger <mkrueger@novell.com> 
+
+	* NemerleAmbience.cs, Gui/CodeGenerationPanel.cs,
+	  FormattingStrategy/NemerleFormattingStrategy.cs: Changes due to new
+	  property infrastructure.
+
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* NemerleBinding.addin.xml, NemerleBinding.mdp, Makefile.am: Reorganized the
