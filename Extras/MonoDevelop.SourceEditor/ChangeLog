@@ -1,3 +1,15 @@
+2007-08-31  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs,
+	  MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs,
+	  MonoDevelop.SourceEditor.Codons/EditActionCodon.cs,
+	  MonoDevelop.SourceEditor.Gui.OptionPanels/BehaviorTextEditorPanel.cs,
+	  MonoDevelop.SourceEditor.Gui.OptionPanels/SyntaxHighlightingPanel.cs,
+	  MonoDevelop.SourceEditor.Gui.OptionPanels/MarkersTextEditorPanel.cs,
+	  MonoDevelop.SourceEditor.Gui.OptionPanels/GeneralTextEditorPanel.cs,
+	  MonoDevelop.SourceEditor.Gui.Dialogs/GotoLineNumberDialog.cs: Changes
+	  due to new property infrastructure.
+
 2007-08-29  Mike Krüger <mkrueger@novell.com> 
 
 	* Makefile.am, MonoDevelop.SourceEditor.mdp: Applied the patch from ankit to

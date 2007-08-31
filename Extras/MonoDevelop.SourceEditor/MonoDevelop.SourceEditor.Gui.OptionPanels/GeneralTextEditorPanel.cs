@@ -14,7 +14,7 @@ using Gtk;
 using Pango;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Dialogs;
 
 using MonoDevelop.Components;
@@ -94,7 +94,7 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 // 				try {
 // 					Console.WriteLine("Getting encoding Property");
 // 					i = CharacterEncodings.GetEncodingIndex(
-// 						(Int32)((IProperties) CustomizationObject).GetProperty("Encoding", encoding));
+// 						(Int32)((Properties) CustomizationObject).Get("Encoding", encoding));
 // 				} catch {
 // 					Console.WriteLine("Getting encoding Default");
 // 					i = CharacterEncodings.GetEncodingIndex(encoding);
@@ -121,7 +121,7 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 				}
 				
 // 				Console.WriteLine (CharacterEncodings.GetEncodingByIndex (selectedIndex).CodePage);
-// 				((IProperties) CustomizationObject).SetProperty (
+// 				((Properties) CustomizationObject).Set (
 // 					"Encoding",CharacterEncodings.GetEncodingByIndex (selectedIndex).CodePage);
 			}
 			

@@ -14,7 +14,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Utils;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Search;
@@ -104,7 +104,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		ListStore memberStore;
 		bool classBrowserVisible = true;
 		internal FileSystemWatcher fsw;
-		IProperties properties;
+		Properties properties;
 		IParseInformation memberParseInfo;
 		bool handlingParseEvent = false;
 		bool disposed;
@@ -121,7 +121,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		DateTime lastSaveTime;
 		bool warnOverwrite = false;
 		
-		EventHandler<PropertyEventArgs> propertyHandler;
+		EventHandler<PropertyChangedEventArgs> propertyHandler;
 		
 		void UpdateFSW (object o, EventArgs e)
 		{
@@ -258,9 +258,8 @@ namespace MonoDevelop.SourceEditor.Gui
 			
 			CaretModeChanged (null, null);
 			
-			propertyHandler = (EventHandler<PropertyEventArgs>) DispatchService.GuiDispatch (new EventHandler<PropertyEventArgs> (PropertiesChanged));
-			PropertyService propertyService = (PropertyService) ServiceManager.GetService (typeof (PropertyService));
-			properties = ((IProperties) propertyService.GetProperty("MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new DefaultProperties()));
+			propertyHandler = (EventHandler<PropertyChangedEventArgs>) DispatchService.GuiDispatch (new EventHandler<PropertyChangedEventArgs> (PropertiesChanged));
+			properties = PropertyService.Get("MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties());
 			properties.PropertyChanged += propertyHandler;
 			fsw = new FileSystemWatcher ();
 			fsw.Created += (FileSystemEventHandler) DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));	
@@ -1228,7 +1227,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			se.View.WrapMode = TextEditorProperties.WrapMode;
 		}
 		
-		void PropertiesChanged (object sender, PropertyEventArgs e)
+		void PropertiesChanged (object sender, PropertyChangedEventArgs e)
  		{
 			switch (e.Key) {
 				case "DefaultFont":

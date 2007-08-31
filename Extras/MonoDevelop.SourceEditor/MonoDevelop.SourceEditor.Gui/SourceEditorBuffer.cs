@@ -4,7 +4,7 @@ using GLib;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Parser;

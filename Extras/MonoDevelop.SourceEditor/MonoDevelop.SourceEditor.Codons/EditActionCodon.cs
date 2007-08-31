@@ -11,7 +11,7 @@ using System.Reflection;
 using System.ComponentModel;
 
 using Mono.Addins;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.SourceEditor.Actions;
 

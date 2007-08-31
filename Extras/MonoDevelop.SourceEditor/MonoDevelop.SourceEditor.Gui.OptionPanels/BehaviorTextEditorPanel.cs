@@ -12,7 +12,7 @@ using System.Collections;
 using Gtk;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Dialogs;
 
 using MonoDevelop.Components;
