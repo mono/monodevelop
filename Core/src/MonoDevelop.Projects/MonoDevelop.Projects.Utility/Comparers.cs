@@ -32,8 +32,8 @@ namespace MonoDevelop.Projects.Utility {
 			
 			for(int i=0; i < Properties.Length; i++) {
 				string p = Properties[i];
-				IComparable pvalx = (IComparable)(typex.GetProperty(p).GetValue(x, null));
-				object pvaly = typey.GetProperty(p).GetValue(y, null);
+				IComparable pvalx = (IComparable)(typex.GetProperty (p).GetValue(x, null));
+				object pvaly = typey.GetProperty (p).GetValue(y, null);
 				cmp = pvalx.CompareTo(pvaly);
 				if (cmp != 0) {
 					return cmp;

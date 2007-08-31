@@ -20,7 +20,7 @@ using Mono.Unix.Native;
 using FileMode = Mono.Unix.Native.FilePermissions;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Serialization;

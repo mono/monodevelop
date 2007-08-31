@@ -14,7 +14,7 @@ using System.Reflection;
 using System.Diagnostics;
 using System.CodeDom.Compiler;
 
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Serialization;

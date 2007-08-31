@@ -10,7 +10,7 @@ using System.Collections;
 
 using MonoDevelop.Core;
 using Mono.Addins;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Ambience
 {
@@ -21,27 +21,27 @@ namespace MonoDevelop.Projects.Ambience
 		
 		Hashtable ambiences = new Hashtable ();
 
-		public IProperties CodeGenerationProperties {
+		public Properties CodeGenerationProperties {
 			get {
-				return (IProperties) Runtime.Properties.GetProperty (codeGenerationProperty, new DefaultProperties());
+				return PropertyService.Get (codeGenerationProperty, new Properties());
 			}
 		}
 		
 		public bool GenerateDocumentComments {
 			get {
-				return CodeGenerationProperties.GetProperty("GenerateDocumentComments", true);
+				return CodeGenerationProperties.Get("GenerateDocumentComments", true);
 			}
 		}
 		
 		public bool GenerateAdditionalComments {
 			get {
-				return CodeGenerationProperties.GetProperty("GenerateAdditionalComments", true);
+				return CodeGenerationProperties.Get("GenerateAdditionalComments", true);
 			}
 		}
 		
 		public bool UseFullyQualifiedNames {
 			get {
-				return CodeGenerationProperties.GetProperty("UseFullyQualifiedNames", true);
+				return CodeGenerationProperties.Get("UseFullyQualifiedNames", true);
 			}
 		}
 		
@@ -92,12 +92,12 @@ namespace MonoDevelop.Projects.Ambience
 		
 		public Ambience CurrentAmbience {
 			get {
-				string language = Runtime.Properties.GetProperty(ambienceProperty, ".NET");
+				string language = PropertyService.Get (ambienceProperty, ".NET");
 				return AmbienceFromName(language);
 			}
 		}
 		
-		/*void PropertyChanged(object sender, PropertyEventArgs e)
+		/*void PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.Key == ambienceProperty) {
 				OnAmbienceChanged(EventArgs.Empty);
@@ -106,12 +106,12 @@ namespace MonoDevelop.Projects.Ambience
 		
 		public override void InitializeService()
 		{
-			Runtime.Properties.PropertyChanged += new PropertyEventHandler(PropertyChanged);
+			PropertyService.PropertyChanged += new PropertyEventHandler(PropertyChanged);
 		}
 		
 		public override void UnloadService()
 		{
-			Runtime.Properties.PropertyChanged -= new PropertyEventHandler(PropertyChanged);
+			PropertyService.PropertyChanged -= new PropertyEventHandler(PropertyChanged);
 		}
 		
 		protected virtual void OnAmbienceChanged(EventArgs e)

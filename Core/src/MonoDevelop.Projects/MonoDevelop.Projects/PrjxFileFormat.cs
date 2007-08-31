@@ -71,7 +71,7 @@ namespace MonoDevelop.Projects
 				string tempFile = Path.GetTempFileName();
 				
 				ConvertXml.Convert(fileName,
-				                   Runtime.Properties.DataDirectory + Path.DirectorySeparatorChar +
+				                   PropertyService.DataPath + Path.DirectorySeparatorChar +
 				                   "ConversionStyleSheets" + Path.DirectorySeparatorChar +
 				                   "ConvertPrjx10to11.xsl",
 				                   tempFile);

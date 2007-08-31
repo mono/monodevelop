@@ -12,7 +12,7 @@ using System.CodeDom.Compiler;
 using System.Text;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Ambience
 {
@@ -23,15 +23,15 @@ namespace MonoDevelop.Projects.Ambience
 		public static CodeGeneratorOptions CodeGeneratorOptions {
 			get {
 				CodeGeneratorOptions options = new CodeGeneratorOptions();
-				options.BlankLinesBetweenMembers = ambienceService.CodeGenerationProperties.GetProperty("BlankLinesBetweenMembers", true);
-				options.BracingStyle             = ambienceService.CodeGenerationProperties.GetProperty("StartBlockOnSameLine", true) ? "Block" : "C";
-				options.ElseOnClosing            = ambienceService.CodeGenerationProperties.GetProperty("ElseOnClosing", true);
+				options.BlankLinesBetweenMembers = ambienceService.CodeGenerationProperties.Get("BlankLinesBetweenMembers", true);
+				options.BracingStyle             = ambienceService.CodeGenerationProperties.Get("StartBlockOnSameLine", true) ? "Block" : "C";
+				options.ElseOnClosing            = ambienceService.CodeGenerationProperties.Get("ElseOnClosing", true);
 				
-				IProperties docProperties = ((IProperties)Runtime.Properties.GetProperty("MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new DefaultProperties()));
+				Properties docProperties = PropertyService.Get("MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties());
 				
-				if ((bool)docProperties.GetProperty("TabsToSpaces", false)) {
+				if ((bool)docProperties.Get("TabsToSpaces", false)) {
 					StringBuilder indentationString = new StringBuilder();
-					for (int i = 0; i < (int)docProperties.GetProperty("IndentationSize", 4); ++i) {
+					for (int i = 0; i < (int)docProperties.Get("IndentationSize", 4); ++i) {
 						indentationString.Append(' ');
 					}
 					options.IndentString = indentationString.ToString();

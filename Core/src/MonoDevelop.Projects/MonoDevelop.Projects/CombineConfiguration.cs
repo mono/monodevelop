@@ -16,7 +16,7 @@ using System.CodeDom.Compiler;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Serialization;
 
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {

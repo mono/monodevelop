@@ -9,7 +9,7 @@ using System;
 using System.Collections;
 
 using MonoDevelop.Projects.Parser;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Ambience

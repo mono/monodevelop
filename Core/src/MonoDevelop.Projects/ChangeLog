@@ -1,3 +1,22 @@
+2007-08-31  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects/ConfigurationCollection.cs,
+	  MonoDevelop.Projects/ProjectService.cs,
+	  MonoDevelop.Projects/CombineEntry.cs,
+	  MonoDevelop.Projects/MonoDevelopFileFormat.cs,
+	  MonoDevelop.Projects/Combine.cs, MonoDevelop.Projects/PrjxFileFormat.cs,
+	  MonoDevelop.Projects/CombineConfiguration.cs,
+	  MonoDevelop.Projects/Project.cs,
+	  MonoDevelop.Projects.Ambience/IAmbience.cs,
+	  MonoDevelop.Projects.Ambience/AmbienceService.cs,
+	  MonoDevelop.Projects.Ambience/CodeDOMGeneratorUtility.cs,
+	  MonoDevelop.Projects.Ambience/NetAmbience.cs,
+	  MonoDevelop.Projects.Utility/Comparers.cs,
+	  MonoDevelop.Projects.Text/TextEncoding.cs,
+	  MonoDevelop.Projects.Parser/DefaultParserService.cs,
+	  MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Changes due to
+	  new property infrastructure.
+
 2007-08-23  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Projects/DotNetProject.cs (OnClean): New. Clean .resources

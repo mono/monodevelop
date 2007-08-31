@@ -87,7 +87,7 @@ namespace MonoDevelop.Projects.Text
 		public static TextEncoding[] ConversionEncodings {
 			get {
 				if (conversion == null) {
-					string str = Runtime.Properties.GetProperty ("MonoDevelop.Projects.Text.ConversionEncodings", "");
+					string str = PropertyService.Get ("MonoDevelop.Projects.Text.ConversionEncodings", "");
 					if (str.Length == 0) {
 						// Add some default encodings
 						str = DefaultEncoding;
@@ -113,8 +113,8 @@ namespace MonoDevelop.Projects.Text
 				string s = "";
 				foreach (TextEncoding e in conversion)
 					s += e.Id + " ";
-				Runtime.Properties.SetProperty ("MonoDevelop.Projects.Text.ConversionEncodings", s.Trim());
-				Runtime.Properties.SaveProperties ();
+				PropertyService.Set ("MonoDevelop.Projects.Text.ConversionEncodings", s.Trim());
+				PropertyService.SaveProperties ();
 			}
 		}
 		

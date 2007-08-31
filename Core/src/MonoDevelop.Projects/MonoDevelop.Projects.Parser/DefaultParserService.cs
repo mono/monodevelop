@@ -21,7 +21,7 @@ using System.Security.Policy;
 using System.Xml;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using Mono.Addins;
 using MonoDevelop.Projects;
@@ -607,14 +607,13 @@ namespace MonoDevelop.Projects.Parser
 		
 		void SetDefaultCompletionFileLocation()
 		{
-			PropertyService propertyService = Runtime.Properties;
-			string path = propertyService.GetProperty("SharpDevelop.CodeCompletion.DataDirectory", String.Empty).ToString();
+			string path = PropertyService.Get<string> ("SharpDevelop.CodeCompletion.DataDirectory", String.Empty);
 			if (path == String.Empty) {
-				path = Path.Combine (Runtime.FileService.GetDirectoryNameWithSeparator(propertyService.ConfigDirectory), "CodeCompletionData");
-				propertyService.SetProperty ("SharpDevelop.CodeCompletion.DataDirectory", path);
-				propertyService.SaveProperties ();
+				path = Path.Combine (PropertyService.ConfigPath, "CodeCompletionData");
+				PropertyService.Set ("SharpDevelop.CodeCompletion.DataDirectory", path);
+				PropertyService.SaveProperties ();
 			}
-			path = Path.Combine (Runtime.FileService.GetDirectoryNameWithSeparator(propertyService.ConfigDirectory), "CodeCompletionData");
+			path = Path.Combine (PropertyService.ConfigPath, "CodeCompletionData");
 			if (!Directory.Exists (path))
 				Directory.CreateDirectory (path);
 
@@ -1612,10 +1611,10 @@ namespace MonoDevelop.Projects.Parser
 				return null;
 			}
 			
-			string rawTags = (string)Runtime.Properties.GetProperty ("Monodevelop.TaskListTokens", "FIXME:2;TODO:1;HACK:1;UNDONE:0");
+			string rawTags = (string)PropertyService.Get ("Monodevelop.TaskListTokens", "FIXME:2;TODO:1;HACK:1;UNDONE:0");
 			if (String.IsNullOrEmpty (rawTags))
 			{
-				Runtime.Properties.SetProperty ("Monodevelop.TaskListTokens", "FIXME:2;TODO:1;HACK:1;UNDONE:0");
+				PropertyService.Set ("Monodevelop.TaskListTokens", "FIXME:2;TODO:1;HACK:1;UNDONE:0");
 				rawTags = "FIXME:2;TODO:1;HACK:1;UNDONE:0";
 			}
 			

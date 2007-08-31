@@ -38,7 +38,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Projects;
@@ -92,12 +92,12 @@ namespace MonoDevelop.Projects.Parser
 			references = new ArrayList ();
 			headers = new Hashtable ();
 			
-			Runtime.Properties.PropertyChanged += new EventHandler<PropertyEventArgs> (OnPropertyUpdated);	
+			PropertyService.PropertyChanged += new EventHandler<PropertyChangedEventArgs> (OnPropertyUpdated);	
 		}
 		
 		public virtual void Dispose ()
 		{
-			Runtime.Properties.PropertyChanged -= new EventHandler<PropertyEventArgs> (OnPropertyUpdated);
+			PropertyService.PropertyChanged -= new EventHandler<PropertyChangedEventArgs> (OnPropertyUpdated);
 			disposed = true;
 		}
 		
@@ -202,7 +202,7 @@ namespace MonoDevelop.Projects.Parser
 			}
 			
 			// Update comments if needed...
-			PropertyEventArgs args = new PropertyEventArgs (null, "Monodevelop.TaskListTokens", LastValidTaskListTokens, Runtime.Properties.GetProperty ("Monodevelop.TaskListTokens", ""));
+			PropertyChangedEventArgs args = new PropertyChangedEventArgs ("Monodevelop.TaskListTokens", LastValidTaskListTokens, PropertyService.Get ("Monodevelop.TaskListTokens", ""));
 			this.OnPropertyUpdated (null, args);
 		}
 		
@@ -224,7 +224,7 @@ namespace MonoDevelop.Projects.Parser
 				
 				modified = false;
 				headers["Version"] = FORMAT_VERSION;
-				headers["LastValidTaskListTokens"] = (string)Runtime.Properties.GetProperty ("Monodevelop.TaskListTokens", "");
+				headers["LastValidTaskListTokens"] = (string)PropertyService.Get ("Monodevelop.TaskListTokens", "");
 
 				Runtime.LoggingService.Debug ("Writing " + dataFile);
 				
@@ -491,7 +491,7 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
-		void OnPropertyUpdated (object sender, PropertyEventArgs e)
+		void OnPropertyUpdated (object sender, PropertyChangedEventArgs e)
 		{
 			if (e.Key == "Monodevelop.TaskListTokens")
 			{
