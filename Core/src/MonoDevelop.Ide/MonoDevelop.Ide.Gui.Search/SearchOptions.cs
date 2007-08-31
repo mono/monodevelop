@@ -10,60 +10,58 @@ using System.IO;
 using System.Drawing;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Ide.Gui.Undo;
 
 namespace MonoDevelop.Ide.Gui.Search
 {
 	public class SearchOptions
 	{
-		static PropertyService propertyService = (PropertyService)ServiceManager.GetService(typeof(PropertyService));
-		IProperties properties;
+		Properties properties;
 		
 		public bool IgnoreCase {
 			get {
-				return properties.GetProperty("IgnoreCase", false);
+				return properties.Get("IgnoreCase", false);
 			}
 			set {
-				properties.SetProperty("IgnoreCase", value);
+				properties.Set("IgnoreCase", value);
 			}
 		}
 		
 		public bool SearchWholeWordOnly {
 			get {
-				return properties.GetProperty("SearchWholeWordOnly", false);
+				return properties.Get("SearchWholeWordOnly", false);
 			}
 			
 			set {
-				properties.SetProperty("SearchWholeWordOnly", value);
+				properties.Set("SearchWholeWordOnly", value);
 			}
 		}
 		
 		public string SearchPattern {
 			get {
-				return properties.GetProperty("SearchPattern", String.Empty);
+				return properties.Get("SearchPattern", String.Empty);
 			}
 			set {
-				properties.SetProperty("SearchPattern", value);
+				properties.Set("SearchPattern", value);
 			}
 		}
 		
 		public string ReplacePattern {
 			get {
-				return properties.GetProperty("ReplacePattern", String.Empty);
+				return properties.Get("ReplacePattern", String.Empty);
 			}
 			set {
-				properties.SetProperty("ReplacePattern", value);
+				properties.Set("ReplacePattern", value);
 			}
 		}
 		
 		public DocumentIteratorType DocumentIteratorType {
 			get {
-				return (DocumentIteratorType)properties.GetProperty("DocumentIteratorType", DocumentIteratorType.CurrentDocument);
+				return (DocumentIteratorType)properties.Get("DocumentIteratorType", DocumentIteratorType.CurrentDocument);
 			}
 			set {
 				if (DocumentIteratorType != value) {
-					properties.SetProperty("DocumentIteratorType", value);
+					properties.Set("DocumentIteratorType", value);
 					OnDocumentIteratorTypeChanged(EventArgs.Empty);
 				}
 			}
@@ -71,11 +69,11 @@ namespace MonoDevelop.Ide.Gui.Search
 		
 		public SearchStrategyType SearchStrategyType {
 			get {
-				return (SearchStrategyType)properties.GetProperty("SearchStrategyType", SearchStrategyType.Normal);
+				return (SearchStrategyType)properties.Get("SearchStrategyType", SearchStrategyType.Normal);
 			}
 			set {
 				if (SearchStrategyType != value) {
-					properties.SetProperty("SearchStrategyType", value);
+					properties.Set("SearchStrategyType", value);
 					OnSearchStrategyTypeChanged(EventArgs.Empty);
 				}
 			}
@@ -83,42 +81,42 @@ namespace MonoDevelop.Ide.Gui.Search
 		
 		public string FileMask {
 			get {
-				return properties.GetProperty("FileMask", String.Empty);
+				return properties.Get("FileMask", String.Empty);
 			}
 			set {
-				properties.SetProperty("FileMask", value);
+				properties.Set("FileMask", value);
 			}
 		}
 
 		public string SearchDirectory {
 			get {
-				return properties.GetProperty("SearchDirectory", String.Empty);
+				return properties.Get("SearchDirectory", String.Empty);
 			}
 			set {
-				properties.SetProperty("SearchDirectory", value);
+				properties.Set("SearchDirectory", value);
 			}
 		}
 		
 		public bool SearchSubdirectories {
 			get {
-				return properties.GetProperty("SearchSubdirectories", true);
+				return properties.Get("SearchSubdirectories", true);
 			}
 			set {
-				properties.SetProperty("SearchSubdirectories", value);
+				properties.Set("SearchSubdirectories", value);
 			}
 		}
 		
 		/// <remarks>
 		/// For unit testing purposes
 		/// </remarks>
-		public SearchOptions(IProperties properties)
+		public SearchOptions (Properties properties)
 		{
 			this.properties = properties;
 		}
 		
 		public SearchOptions(string propertyName)
 		{
-			properties = (IProperties)propertyService.GetProperty(propertyName, new DefaultProperties());
+			properties = (Properties)PropertyService.Get (propertyName, new Properties());
 		}
 		
 		protected void OnDocumentIteratorTypeChanged(EventArgs e)

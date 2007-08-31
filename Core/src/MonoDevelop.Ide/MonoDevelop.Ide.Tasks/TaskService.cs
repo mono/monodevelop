@@ -11,9 +11,8 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 
-using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Parser;
@@ -40,7 +39,7 @@ namespace MonoDevelop.Ide.Tasks
 			IdeApp.ProjectOperations.FileRenamedInProject += new ProjectFileRenamedEventHandler (ProjectFileRenamed);
 			IdeApp.ProjectOperations.FileRemovedFromProject += new ProjectFileEventHandler (ProjectFileRemoved);
 
-			Runtime.Properties.PropertyChanged += (EventHandler<PropertyEventArgs>) DispatchService.GuiDispatch (new EventHandler<PropertyEventArgs> (OnPropertyUpdated));
+			PropertyService.PropertyChanged += (EventHandler<PropertyChangedEventArgs>) DispatchService.GuiDispatch (new EventHandler<PropertyChangedEventArgs> (OnPropertyUpdated));
 			MonoDevelop.Projects.Text.TextFileService.LineCountChanged += delegate (object sender, MonoDevelop.Projects.Text.LineCountEventArgs args) {
 				if (args.TextFile == null || String.IsNullOrEmpty (args.TextFile.Name))
 					return;
@@ -121,7 +120,7 @@ namespace MonoDevelop.Ide.Tasks
 				UserTasksChanged (this, EventArgs.Empty);
 		}
 		
-		void OnPropertyUpdated (object sender, PropertyEventArgs e)
+		void OnPropertyUpdated (object sender, PropertyChangedEventArgs e)
 		{
 			if (e.Key == "Monodevelop.TaskListTokens" && e.NewValue != e.OldValue)
 			{
@@ -188,7 +187,7 @@ namespace MonoDevelop.Ide.Tasks
 		void ReloadPriories ()
 		{
 			priorities.Clear ();
-				string tokens = (string)Runtime.Properties.GetProperty ("Monodevelop.TaskListTokens", "FIXME:2;TODO:1;HACK:1;UNDONE:0");
+				string tokens = (string)PropertyService.Get ("Monodevelop.TaskListTokens", "FIXME:2;TODO:1;HACK:1;UNDONE:0");
 				foreach (string token in tokens.Split (new char[] {';'}, StringSplitOptions.RemoveEmptyEntries))
 				{
 					int pos = token.IndexOf (':');

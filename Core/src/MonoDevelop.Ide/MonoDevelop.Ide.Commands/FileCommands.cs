@@ -10,7 +10,6 @@ using System.IO;
 using System.Collections;
 
 using Mono.Addins;
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Gui;

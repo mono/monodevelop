@@ -11,7 +11,7 @@
 namespace MonoDevelop.Ide.Gui.OptionPanels {
     
     
-    public partial class CodeGenerationPanelWidget {
+    internal partial class CodeGenerationPanelWidget {
         
         private Gtk.VBox vbox8;
         

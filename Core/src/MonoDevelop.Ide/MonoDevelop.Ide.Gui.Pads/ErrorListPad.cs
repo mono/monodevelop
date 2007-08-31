@@ -13,9 +13,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
 
-using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Tasks;
@@ -95,7 +94,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			errorBtn = new ToggleToolButton ();
 			UpdateErrorsNum();
-			errorBtn.Active = (bool)Runtime.Properties.GetProperty (showErrorsPropertyName, true);
+			errorBtn.Active = (bool)PropertyService.Get (showErrorsPropertyName, true);
 			errorBtn.IconWidget = new Gtk.Image (Gtk.Stock.DialogError, Gtk.IconSize.Button);
 			errorBtn.IsImportant = true;
 			errorBtn.Toggled += new EventHandler (FilterChanged);
@@ -106,7 +105,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			warnBtn = new ToggleToolButton ();
 			UpdateWarningsNum();
-			warnBtn.Active = (bool)Runtime.Properties.GetProperty (showWarningsPropertyName, true);
+			warnBtn.Active = (bool)PropertyService.Get (showWarningsPropertyName, true);
 			warnBtn.IconWidget = new Gtk.Image (Gtk.Stock.DialogWarning, Gtk.IconSize.Button);
 			warnBtn.IsImportant = true;
 			warnBtn.Toggled += new EventHandler (FilterChanged);
@@ -117,7 +116,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			msgBtn = new ToggleToolButton ();
 			UpdateMessagesNum();
-			msgBtn.Active = (bool)Runtime.Properties.GetProperty (showMessagesPropertyName, true);
+			msgBtn.Active = (bool)PropertyService.Get (showMessagesPropertyName, true);
 			msgBtn.IconWidget = new Gtk.Image (Gtk.Stock.DialogInfo, Gtk.IconSize.Button);
 			msgBtn.IsImportant = true;
 			msgBtn.Toggled += new EventHandler (FilterChanged);
@@ -183,7 +182,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		void LoadColumnsVisibility ()
 		{
-			string columns = (string)Runtime.Properties.GetProperty ("Monodevelop.ErrorListColumns", "TRUE;TRUE;TRUE;TRUE;TRUE;TRUE");
+			string columns = (string)PropertyService.Get ("Monodevelop.ErrorListColumns", "TRUE;TRUE;TRUE;TRUE;TRUE;TRUE");
 			string[] tokens = columns.Split (new char[] {';'}, StringSplitOptions.RemoveEmptyEntries);
 			if (tokens.Length == 6 && view != null && view.Columns.Length == 6)
 			{
@@ -205,7 +204,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			                                view.Columns[(int)Columns.Description].Visible,
 			                                view.Columns[(int)Columns.File].Visible,
 			                                view.Columns[(int)Columns.Path].Visible);
-			Runtime.Properties.SetProperty ("Monodevelop.ErrorListColumns", columns);
+			PropertyService.Set ("Monodevelop.ErrorListColumns", columns);
 		}
 
 		void CreateMenu ()
@@ -436,7 +435,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				try {
 					if (window.Visible)
 						window.Activate ();
-					else if ((bool) Runtime.Properties.GetProperty ("SharpDevelop.ShowTaskListAfterBuild", true)) {
+					else if ((bool) PropertyService.Get ("SharpDevelop.ShowTaskListAfterBuild", true)) {
 						window.Visible = true;
 						window.Activate ();
 					}
@@ -454,9 +453,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void FilterChanged (object sender, EventArgs e)
 		{
 			
-			Runtime.Properties.SetProperty (showErrorsPropertyName, errorBtn.Active);
-			Runtime.Properties.SetProperty (showWarningsPropertyName, warnBtn.Active);
-			Runtime.Properties.SetProperty (showMessagesPropertyName, msgBtn.Active);
+			PropertyService.Set (showErrorsPropertyName, errorBtn.Active);
+			PropertyService.Set (showWarningsPropertyName, warnBtn.Active);
+			PropertyService.Set (showMessagesPropertyName, msgBtn.Active);
 			
 			filter.Refilter ();
 		}

@@ -11,7 +11,6 @@ using Gecko;
 
 using MonoDevelop.Ide.Gui.Undo;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Components;

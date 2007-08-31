@@ -61,13 +61,13 @@ namespace MonoDevelop.Ide.Gui
 		
 		protected override void Run ()
 		{
-			bool checkForUpdates = Runtime.Properties.GetProperty ("MonoDevelop.Ide.AddinUpdater.CkeckForUpdates", true);
+			bool checkForUpdates = PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.CkeckForUpdates", true);
 			if (!checkForUpdates)
 				return;
 			
-			DateTime lastUpdate = Runtime.Properties.GetProperty ("MonoDevelop.Ide.AddinUpdater.LastCheck", DateTime.MinValue);
-			int updateSpan = Runtime.Properties.GetProperty ("MonoDevelop.Ide.AddinUpdater.UpdateSpanValue", 1);
-			string unit = Runtime.Properties.GetProperty ("MonoDevelop.Ide.AddinUpdater.UpdateSpanUnit", "D");
+			DateTime lastUpdate = PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.LastCheck", DateTime.MinValue);
+			int updateSpan = PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.UpdateSpanValue", 1);
+			string unit = PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.UpdateSpanUnit", "D");
 			
 			bool check = false;
 			if (unit == "D") {
@@ -93,7 +93,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		void UpdateAddins ()
 		{
-			Runtime.Properties.SetProperty ("MonoDevelop.Ide.AddinUpdater.LastCheck", DateTime.Now);
+			PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.LastCheck", DateTime.Now);
 			using (UpdateMonitor) {
 				using (ProgressStatusMonitor pm = new ProgressStatusMonitor (UpdateMonitor)) {
 					Runtime.AddinSetupService.Repositories.UpdateAllRepositories (pm);

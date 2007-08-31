@@ -2056,6 +2056,7 @@
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.Ide.Gui.OptionPanels.CodeGenerationPanelWidget">
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox8">
         <property name="MemberName" />
@@ -2274,6 +2275,7 @@
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.Ide.Gui.OptionPanels.SelectStylePanelWidget">
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox13">
         <property name="MemberName" />

@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IProgressMonitor GetBuildProgressMonitor ()
 		{
-			bool front = (bool) Runtime.Properties.GetProperty ("SharpDevelop.ShowOutputWindowAtBuild", true);
+			bool front = (bool) PropertyService.Get ("SharpDevelop.ShowOutputWindowAtBuild", true);
 			AggregatedProgressMonitor mon = new AggregatedProgressMonitor (GetOutputProgressMonitor (GettextCatalog.GetString ("Build Output"), MonoDevelop.Core.Gui.Stock.BuildCombine, front, true));
 			mon.AddSlaveMonitor (GetStatusProgressMonitor (GettextCatalog.GetString ("Building..."), MonoDevelop.Core.Gui.Stock.BuildCombine, false));
 			return mon;

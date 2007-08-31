@@ -11,7 +11,6 @@ using System.IO;
 using System.Collections;
 using Gtk;
 
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;

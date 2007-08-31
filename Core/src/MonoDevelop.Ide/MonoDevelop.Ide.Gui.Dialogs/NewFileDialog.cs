@@ -9,11 +9,10 @@ using System;
 using System.Collections;
 using System.IO;
 
-using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Ide.Gui;
@@ -127,9 +126,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			icons = tmp;
 			
 			InsertCategories(TreeIter.Zero, categories);
-			//PropertyService propertyService = (PropertyService)ServiceManager.Services.GetService(typeof(PropertyService));
+			//PropertyService PropertyService = (PropertyService)ServiceManager.Services.GetService(typeof(PropertyService));
 			/*for (int j = 0; j < categories.Count; ++j) {
-				if (((Category)categories[j]).Name == propertyService.GetProperty("Dialogs.NewFileDialog.LastSelectedCategory", "C#")) {
+				if (((Category)categories[j]).Name == PropertyService.Get("Dialogs.NewFileDialog.LastSelectedCategory", "C#")) {
 					((TreeView)ControlDictionary["categoryTreeView"]).SelectedNode = (TreeNode)((TreeView)ControlDictionary["categoryTreeView"]).Nodes[j];
 					break;
 				}
@@ -382,9 +381,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				return;
 			
 			//FIXME: we need to set this up
-			//PropertyService propertyService = (PropertyService)ServiceManager.Services.GetService(typeof(PropertyService));
-			//propertyService.SetProperty("Dialogs.NewProjectDialog.LargeImages", ((RadioButton)ControlDictionary["largeIconsRadioButton"]).Checked);
-			//propertyService.SetProperty("Dialogs.NewFileDialog.LastSelectedCategory", ((TreeView)ControlDictionary["categoryTreeView"]).SelectedNode.Text);
+			//PropertyService PropertyService = (PropertyService)ServiceManager.Services.GetService(typeof(PropertyService));
+			//PropertyService.Set("Dialogs.NewProjectDialog.LargeImages", ((RadioButton)ControlDictionary["largeIconsRadioButton"]).Checked);
+			//PropertyService.Set("Dialogs.NewFileDialog.LastSelectedCategory", ((TreeView)ControlDictionary["categoryTreeView"]).SelectedNode.Text);
 			
 			if (iconView.CurrentlySelected != null && nameEntry.Text.Length > 0) {
 				TemplateItem titem = (TemplateItem) iconView.CurrentlySelected;

@@ -33,7 +33,6 @@ using System.Collections.Generic;
 using Gtk;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
@@ -67,9 +66,9 @@ namespace MonoDevelop.Ide.Tasks
 
 		public CommentTasksView ()
 		{
-			highPrioColor = StringToColor ((string)Runtime.Properties.GetProperty ("Monodevelop.UserTasksHighPrioColor", ""));
-			normalPrioColor = StringToColor ((string)Runtime.Properties.GetProperty ("Monodevelop.UserTasksNormalPrioColor", ""));
-			lowPrioColor = StringToColor ((string)Runtime.Properties.GetProperty ("Monodevelop.UserTasksLowPrioColor", ""));
+			highPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksHighPrioColor", ""));
+			normalPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksNormalPrioColor", ""));
+			lowPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksLowPrioColor", ""));
 
 			store = new Gtk.ListStore (
 				typeof (int),        // line
@@ -115,14 +114,14 @@ namespace MonoDevelop.Ide.Tasks
 			Services.TaskService.TaskAdded += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (GeneratedTaskAdded));
 			Services.TaskService.TaskRemoved += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (GeneratedTaskRemoved));
 
-			Runtime.Properties.PropertyChanged += (EventHandler<PropertyEventArgs>) DispatchService.GuiDispatch (new EventHandler<PropertyEventArgs> (OnPropertyUpdated));
+			PropertyService.PropertyChanged += (EventHandler<PropertyChangedEventArgs>) DispatchService.GuiDispatch (new EventHandler<PropertyChangedEventArgs> (OnPropertyUpdated));
 
 			CreateMenu ();
 		}
 
 		void LoadColumnsVisibility ()
 		{
-			string columns = (string)Runtime.Properties.GetProperty ("Monodevelop.CommentTasksColumns", "TRUE;TRUE;TRUE;TRUE");
+			string columns = (string)PropertyService.Get ("Monodevelop.CommentTasksColumns", "TRUE;TRUE;TRUE;TRUE");
 			string[] tokens = columns.Split (new char[] {';'}, StringSplitOptions.RemoveEmptyEntries);
 			if (tokens.Length == 4 && view != null && view.Columns.Length == 4)
 			{
@@ -142,7 +141,7 @@ namespace MonoDevelop.Ide.Tasks
 			                                view.Columns[(int)Columns.Description].Visible,
 			                                view.Columns[(int)Columns.File].Visible,
 			                                view.Columns[(int)Columns.Path].Visible);
-			Runtime.Properties.SetProperty ("Monodevelop.CommentTasksColumns", columns);
+			PropertyService.Set ("Monodevelop.CommentTasksColumns", columns);
 		}
 
 		void GeneratedTasksCleared (object sender, EventArgs e)
@@ -440,7 +439,7 @@ namespace MonoDevelop.Ide.Tasks
 			return color;
 		}
 		
-		void OnPropertyUpdated (object sender, PropertyEventArgs e)
+		void OnPropertyUpdated (object sender, PropertyChangedEventArgs e)
 		{
 			bool change = false;
 			if (e.Key == "Monodevelop.UserTasksHighPrioColor" && e.NewValue != e.OldValue)

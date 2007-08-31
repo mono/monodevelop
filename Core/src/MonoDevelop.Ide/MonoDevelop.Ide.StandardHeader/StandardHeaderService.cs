@@ -99,8 +99,7 @@ namespace MonoDevelop.Ide.StandardHeaders
 		
 		static string ConfigLocation {
 			get {
-				PropertyService propertyService = (PropertyService) ServiceManager.GetService (typeof (PropertyService));
-				return Path.Combine (propertyService.ConfigDirectory, templateFileName);
+				return Path.Combine (PropertyService.ConfigPath, templateFileName);
 			}
 		}
 		
@@ -163,8 +162,7 @@ namespace MonoDevelop.Ide.StandardHeaders
 					if (Load (ConfigLocation))
 						return;
 				}
-				PropertyService propertyService = (PropertyService) ServiceManager.GetService (typeof (PropertyService));
-				string file = Path.Combine (Path.Combine (propertyService.DataDirectory, "options"), templateFileName);
+				string file = Path.Combine (Path.Combine (PropertyService.DataPath, "options"), templateFileName);
 				if (File.Exists (file))
 					Load (file);
 			} catch (Exception ex) {

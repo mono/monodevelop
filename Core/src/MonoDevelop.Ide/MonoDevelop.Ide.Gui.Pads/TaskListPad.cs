@@ -129,7 +129,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			control.ShowAll ();
 			
 			// Load from preferences which one was used last time
-			string className =(string)Runtime.Properties.GetProperty ("Monodevelop.TaskList.ActiveView", "");
+			string className =(string)PropertyService.Get ("Monodevelop.TaskList.ActiveView", "");
 			int pos = 0, i = 0;
 			foreach (object[] row in switcherComboList)
 			{
@@ -171,7 +171,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				control.ShowAll ();
 				
 				string className = (string)switcherCombo.Model.GetValue (iter, 2);
-				Runtime.Properties.SetProperty ("Monodevelop.TaskList.ActiveView", className);
+				PropertyService.Set ("Monodevelop.TaskList.ActiveView", className);
 			}
 		}
 	}

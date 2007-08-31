@@ -34,7 +34,6 @@ using System.IO;
 using Gtk;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Components;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
@@ -137,7 +136,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void Reload ()
 		{
-			IXmlConvertable memento = null;
+			Properties memento = null;
 			IMementoCapable mc = GetContent<IMementoCapable> ();
 			if (mc != null) {
 				memento = mc.CreateMemento();
@@ -168,7 +167,7 @@ namespace MonoDevelop.Ide.Gui
 				} else {						
 					string fileName = Window.ViewContent.ContentName;
 					// save backup first						
-					if((bool) Runtime.Properties.GetProperty ("SharpDevelop.CreateBackupCopy", false)) {
+					if((bool) PropertyService.Get ("SharpDevelop.CreateBackupCopy", false)) {
 						Window.ViewContent.Save (fileName + "~");
 						Runtime.FileService.NotifyFileChanged (fileName);
 					}
@@ -238,7 +237,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			// save backup first
-			if((bool) Runtime.Properties.GetProperty ("SharpDevelop.CreateBackupCopy", false)) {
+			if((bool) PropertyService.Get ("SharpDevelop.CreateBackupCopy", false)) {
 				if (tbuffer != null && encoding != null)
 					tbuffer.Save (filename + "~", encoding);
 				else

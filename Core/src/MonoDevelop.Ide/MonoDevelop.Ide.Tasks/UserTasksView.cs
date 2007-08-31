@@ -32,7 +32,6 @@ using System.Collections;
 using Gtk;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
@@ -71,9 +70,9 @@ namespace MonoDevelop.Ide.Tasks
 		public UserTasksView ()
 		{
 			
-			highPrioColor = StringToColor ((string)Runtime.Properties.GetProperty ("Monodevelop.UserTasksHighPrioColor", ""));
-			normalPrioColor = StringToColor ((string)Runtime.Properties.GetProperty ("Monodevelop.UserTasksNormalPrioColor", ""));
-			lowPrioColor = StringToColor ((string)Runtime.Properties.GetProperty ("Monodevelop.UserTasksLowPrioColor", ""));
+			highPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksHighPrioColor", ""));
+			normalPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksNormalPrioColor", ""));
+			lowPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksLowPrioColor", ""));
 			
 			store = new ListStore (
 				typeof (string),     // priority
@@ -133,7 +132,7 @@ namespace MonoDevelop.Ide.Tasks
 			Services.TaskService.UserTasksChanged += (EventHandler) DispatchService.GuiDispatch (new EventHandler (UserTasksChanged));
 			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (CombineOpened));
 			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (CombineClosed));
-			Runtime.Properties.PropertyChanged += (EventHandler<PropertyEventArgs>) DispatchService.GuiDispatch (new EventHandler<PropertyEventArgs> (OnPropertyUpdated));	
+			PropertyService.PropertyChanged += (EventHandler<PropertyChangedEventArgs>) DispatchService.GuiDispatch (new EventHandler<PropertyChangedEventArgs> (OnPropertyUpdated));	
 			ValidateButtons ();
 		}
 		
@@ -159,7 +158,7 @@ namespace MonoDevelop.Ide.Tasks
 			ValidateButtons ();
 		}
 		
-		void OnPropertyUpdated (object sender, PropertyEventArgs e)
+		void OnPropertyUpdated (object sender, PropertyChangedEventArgs e)
 		{
 			bool change = false;
 			if (e.Key == "Monodevelop.UserTasksHighPrioColor" && e.NewValue != e.OldValue)

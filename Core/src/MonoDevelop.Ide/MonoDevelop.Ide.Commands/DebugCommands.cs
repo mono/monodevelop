@@ -2,7 +2,6 @@
 using System;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
 using Mono.Addins;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui;

@@ -43,7 +43,6 @@ using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using Mono.Addins;
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Gui;
@@ -779,125 +778,133 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
+		const string UserCombinePreferencesNode = "UserCombinePreferences";
+		const string VersionAttribute           = "version";
+		const string Version                    = "1.0";
+		const string FilesNode                  = "Files";
+		const string FileNode                   = "File";
+		const string FileNameAttribute          = "name";
+		const string ViewsNode                  = "Views";
+		const string ViewMementoNode            = "ViewMemento";
+		const string IdAttribute                = "id";
+
 		void RestoreCombinePreferences (object data)
 		{
 			Combine combine = (Combine) data;
-			string combinefilename = combine.FileName;
-			string combinepath = Path.GetDirectoryName(combinefilename);
-			string preferencesFileName = Path.Combine(combinepath, Path.GetFileNameWithoutExtension(combinefilename) + ".userprefs");
-	
+			string preferencesFileName = GetPreferencesFileName (combine);
 			if (!File.Exists(preferencesFileName))
 				return;
-			
-			XmlDocument doc = new XmlDocument();
+			XmlTextReader reader = new XmlTextReader (preferencesFileName);
 			try {
-				doc.Load(preferencesFileName);
-			} catch (Exception) {
-				return;
-			}
-
-			XmlElement root = doc.DocumentElement;
-			if (root["Files"] != null) {
-				foreach (XmlNode node in root["Files"].ChildNodes) {
-					XmlElement el = node as XmlElement;
-					if (el == null)
-						continue;
-					string fileName = Runtime.FileService.RelativeToAbsolutePath(combinepath, el.Attributes["filename"].InnerText);
-					if (File.Exists(fileName)) {
-						IdeApp.Workbench.OpenDocument (fileName, false);
-					}
-				}
-			}
-				
-			if (root["Views"] != null) {
-				foreach (XmlNode node in root["Views"].ChildNodes) {
-					XmlElement el = node as XmlElement;
-					if (el == null)
-						continue;
-					foreach (Pad pad in IdeApp.Workbench.Pads) {
-						if (el.GetAttribute ("Id") == pad.Id && pad.Content is IMementoCapable && el.ChildNodes.Count > 0) {
-							IMementoCapable m = (IMementoCapable) pad.Content; 
-							m.SetMemento((IXmlConvertable)m.CreateMemento().FromXmlElement((XmlElement)el.ChildNodes[0]));
+				bool invalid = false;
+				XmlReadHelper.ReadList (reader, UserCombinePreferencesNode, delegate() {
+					if (invalid)
+						return true;
+					switch (reader.LocalName) {
+						case UserCombinePreferencesNode:
+							if (reader.GetAttribute (VersionAttribute) != Version)
+								invalid = true;
+							return true;
+						case FilesNode:
+							XmlReadHelper.ReadList (reader, FilesNode, delegate() {
+								switch (reader.LocalName) {
+								case FileNode:
+									string fileName = Runtime.FileService.RelativeToAbsolutePath (Path.GetDirectoryName (combine.FileName), reader.GetAttribute (FileNameAttribute));
+									if (File.Exists(fileName)) {
+										IdeApp.Workbench.OpenDocument (fileName, false);
+									}
+									return true;
+								}
+								return false;
+							});
+							return true;
+						case ViewsNode:
+							XmlReadHelper.ReadList (reader, ViewsNode, delegate() {
+								switch (reader.LocalName) {
+								case ViewMementoNode:
+									string id = reader.GetAttribute (IdAttribute);
+									foreach (Pad pad in IdeApp.Workbench.Pads) {
+										if (id == pad.Id && pad.Content is IMementoCapable) {
+											IMementoCapable m = (IMementoCapable) pad.Content; 
+											m.SetMemento (Properties.Read (reader));
+										}
+									}
+									return true;
+								}
+								return false;
+							});
+							return true;
+						case Properties.Node:
+							Properties properties = Properties.Read (reader);
+							string name = properties.Get ("ActiveWindow", "");
+							foreach (Document document in IdeApp.Workbench.Documents) {
+								if (document.FileName != null &&
+									document.FileName == name) {
+									DispatchService.GuiDispatch (new MessageHandler (document.Select));
+									break;
+								}
+							}
+							name = properties.Get ("ActiveConfiguration", "");
+							IConfiguration conf = combine.GetConfiguration (name);
+							if (conf != null)
+								combine.ActiveConfiguration = conf;
+							return true;
 						}
-					}
-				}
-			}
-				
-			if (root["Properties"] != null) {
-				IProperties properties = (IProperties)new DefaultProperties().FromXmlElement((XmlElement)root["Properties"].ChildNodes[0]);
-				string name = properties.GetProperty("ActiveWindow", "");
-				foreach (Document document in IdeApp.Workbench.Documents) {
-					if (document.FileName != null &&
-						document.FileName == name) {
-						DispatchService.GuiDispatch (new MessageHandler (document.Select));
-						break;
-					}
-				}
-				name = properties.GetProperty("ActiveConfiguration", "");
-				IConfiguration conf = combine.GetConfiguration (name);
-				if (conf != null)
-					combine.ActiveConfiguration = conf;
+						return false;
+				});
+			} catch (Exception e) {
+				Runtime.LoggingService.Error ((object)"Exception while loading user combine preferences.", e);
+			} finally {
+				reader.Close ();
 			}
 		} 
 		
+		string GetPreferencesFileName (Combine combine)
+		{
+			return Path.Combine (Path.GetDirectoryName (combine.FileName), Path.ChangeExtension (combine.FileName, ".userprefs"));
+		}
+		
 		void SaveCombinePreferences (Combine combine)
 		{
-			string combinefilename = combine.FileName;
-			string combinepath = Path.GetDirectoryName(combinefilename);
-
-			XmlDocument doc = new XmlDocument();
-			doc.LoadXml("<?xml version=\"1.0\"?>\n<UserCombinePreferences/>");
-			
-			XmlAttribute fileNameAttribute = doc.CreateAttribute("filename");
-			fileNameAttribute.InnerText = combinefilename;
-			doc.DocumentElement.Attributes.Append(fileNameAttribute);
-			
-			XmlElement filesnode = doc.CreateElement("Files");
-			doc.DocumentElement.AppendChild(filesnode);
-			
-			foreach (Document document in IdeApp.Workbench.Documents) {
-				if (document.FileName != null) {
-					XmlElement el = doc.CreateElement("File");
-					
-					XmlAttribute attr = doc.CreateAttribute("filename");
-					attr.InnerText = Runtime.FileService.AbsoluteToRelativePath (combinepath, document.FileName);
-					el.Attributes.Append(attr);
-					
-					filesnode.AppendChild (el);
+			XmlTextWriter writer = new XmlTextWriter (GetPreferencesFileName (combine), System.Text.Encoding.UTF8);
+			writer.Formatting = Formatting.Indented;
+			try {
+				writer.WriteStartElement (UserCombinePreferencesNode);
+				writer.WriteAttributeString (VersionAttribute, Version); 
+				writer.WriteAttributeString ("filename", combine.FileName); 
+				
+				writer.WriteStartElement (FilesNode);
+				foreach (Document document in IdeApp.Workbench.Documents) {
+					if (!String.IsNullOrEmpty (document.FileName)) {
+						writer.WriteStartElement (FileNode);
+						writer.WriteAttributeString (FileNameAttribute, Runtime.FileService.AbsoluteToRelativePath (Path.GetDirectoryName (combine.FileName), document.FileName)); 
+						writer.WriteEndElement (); // File
+					}
 				}
-			}
-			
-			XmlElement viewsnode = doc.CreateElement("Views");
-			doc.DocumentElement.AppendChild(viewsnode);
-			
-			foreach (Pad pad in IdeApp.Workbench.Pads) {
-				if (pad.Content is IMementoCapable) {
-					XmlElement el = doc.CreateElement("ViewMemento");
-					el.SetAttribute ("Id", pad.Id);
-					el.AppendChild(((IMementoCapable)pad.Content).CreateMemento().ToXmlElement(doc));
-					viewsnode.AppendChild(el);
+				writer.WriteEndElement (); // FilesNode
+				
+				writer.WriteStartElement (ViewsNode);
+				foreach (Pad pad in IdeApp.Workbench.Pads) {
+					if (pad.Content is IMementoCapable) {
+						writer.WriteStartElement (ViewMementoNode);
+						writer.WriteAttributeString (IdAttribute, pad.Id); 
+						((IMementoCapable)pad.Content).CreateMemento ().Write (writer);
+					}
 				}
-			}
+				writer.WriteEndElement (); // Views
+				
+				Properties properties = new Properties ();
+				string name = IdeApp.Workbench.ActiveDocument == null ? String.Empty : IdeApp.Workbench.ActiveDocument.FileName;
+				properties.Set ("ActiveWindow", name == null ? String.Empty : name);
+				properties.Set ("ActiveConfiguration", combine.ActiveConfiguration == null ? String.Empty : combine.ActiveConfiguration.Name);
 			
-			IProperties properties = new DefaultProperties();
-			string name = IdeApp.Workbench.ActiveDocument == null ? String.Empty : IdeApp.Workbench.ActiveDocument.FileName;
-			properties.SetProperty("ActiveWindow", name == null ? String.Empty : name);
-			properties.SetProperty("ActiveConfiguration", combine.ActiveConfiguration == null ? String.Empty : combine.ActiveConfiguration.Name);
-		
-			XmlElement propertynode = doc.CreateElement("Properties");
-			doc.DocumentElement.AppendChild(propertynode);
-			
-			propertynode.AppendChild(properties.ToXmlElement(doc));
-			
-			string fileToSave = combinepath + Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(combinefilename) + ".userprefs";
-
-			try
-			{
-				doc.Save (fileToSave);
-			}
-			catch (Exception e)
-			{
-				Runtime.LoggingService.Warn("Could not save solution preferences: " + fileToSave as object, e);
+				properties.Write (writer);
+				
+				writer.WriteEndElement (); // UserCombinePreferencesNode
+			} catch (Exception e) {
+				Runtime.LoggingService.Warn("Could not save solution preferences: " + GetPreferencesFileName (combine) as object, e);
+			} finally {
+				writer.Close ();
 			}
 		}
 		
@@ -1103,7 +1110,7 @@ namespace MonoDevelop.Ide.Gui
 
 		void DoBeforeCompileAction ()
 		{
-			BeforeCompileAction action = (BeforeCompileAction)Runtime.Properties.GetProperty("SharpDevelop.Services.DefaultParserService.BeforeCompileAction", BeforeCompileAction.SaveAllFiles);
+			BeforeCompileAction action = (BeforeCompileAction)PropertyService.Get("SharpDevelop.Services.DefaultParserService.BeforeCompileAction", BeforeCompileAction.SaveAllFiles);
 			
 			switch (action) {
 				case BeforeCompileAction.Nothing:
@@ -1177,7 +1184,7 @@ namespace MonoDevelop.Ide.Gui
 			if (tasks != null && tasks.Length > 0) {
 				try {
 					Pad errorsPad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ();
-					if ((bool) Runtime.Properties.GetProperty ("SharpDevelop.ShowTaskListAfterBuild", true)) {
+					if ((bool) PropertyService.Get ("SharpDevelop.ShowTaskListAfterBuild", true)) {
 						errorsPad.Visible = true;
 						errorsPad.BringToFront ();
 					}

@@ -9,7 +9,6 @@ using System;
 using System.IO;
 using System.Collections;
 
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core;
@@ -22,19 +21,17 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 {
 	partial class CodeGenerationPanelWidget : Gtk.Bin
 	{
-		PropertyService p = Runtime.Properties;
-	
 		public CodeGenerationPanelWidget ()
 		{
 			Build ();
 			
-			chk_blk_on_same_line.Active   = p.GetProperty("StartBlockOnSameLine", true);
-			chk_else_on_same_line.Active  = p.GetProperty("ElseOnClosing", true);
-			chk_blank_lines.Active        = p.GetProperty("BlankLinesBetweenMembers", true);
-			chk_full_type_names.Active    = p.GetProperty("UseFullyQualifiedNames", true);
+			chk_blk_on_same_line.Active   = PropertyService.Get("StartBlockOnSameLine", true);
+			chk_else_on_same_line.Active  = PropertyService.Get("ElseOnClosing", true);
+			chk_blank_lines.Active        = PropertyService.Get("BlankLinesBetweenMembers", true);
+			chk_full_type_names.Active    = PropertyService.Get("UseFullyQualifiedNames", true);
 		
-			chk_doc_comments.Active       = p.GetProperty("GenerateDocumentComments", true);
-			chk_other_comments.Active     = p.GetProperty("GenerateAdditionalComments", true);
+			chk_doc_comments.Active       = PropertyService.Get("GenerateDocumentComments", true);
+			chk_other_comments.Active     = PropertyService.Get("GenerateAdditionalComments", true);
 			
 			chk_blk_on_same_line.Sensitive = false;
 			chk_else_on_same_line.Sensitive = false;
@@ -46,13 +43,13 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		public void Store ()
 		{
-			p.SetProperty ("StartBlockOnSameLine",       chk_blk_on_same_line.Active);
-			p.SetProperty ("ElseOnClosing",              chk_else_on_same_line.Active);
-			p.SetProperty ("BlankLinesBetweenMembers",   chk_blank_lines.Active);
-			p.SetProperty ("UseFullyQualifiedNames",     chk_full_type_names.Active);
+			PropertyService.Set ("StartBlockOnSameLine",       chk_blk_on_same_line.Active);
+			PropertyService.Set ("ElseOnClosing",              chk_else_on_same_line.Active);
+			PropertyService.Set ("BlankLinesBetweenMembers",   chk_blank_lines.Active);
+			PropertyService.Set ("UseFullyQualifiedNames",     chk_full_type_names.Active);
 			
-			p.SetProperty ("GenerateDocumentComments",   chk_doc_comments.Active);
-			p.SetProperty ("GenerateAdditionalComments", chk_other_comments.Active);
+			PropertyService.Set ("GenerateDocumentComments",   chk_doc_comments.Active);
+			PropertyService.Set ("GenerateAdditionalComments", chk_other_comments.Active);
 		}
 	}
 	

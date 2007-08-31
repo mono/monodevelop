@@ -3,7 +3,6 @@ using System.IO;
 
 using MonoDevelop.Core.Gui.Utils;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {

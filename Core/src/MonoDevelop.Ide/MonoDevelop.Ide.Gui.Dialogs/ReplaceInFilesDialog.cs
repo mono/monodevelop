@@ -11,9 +11,8 @@ using System.Drawing;
 using System.ComponentModel;
 using System.Collections.Specialized;
 
-using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui.Search;
 using MonoDevelop.Ide.Gui;
@@ -31,8 +30,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
  		StringCollection findHistory = new StringCollection();
  		StringCollection replaceHistory = new StringCollection();
  		
- 		// services
- 		static PropertyService propertyService = (PropertyService)ServiceManager.GetService(typeof(PropertyService));
 
 		void InitDialog ()
 		{
@@ -240,7 +237,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		void BrowseDirectoryEvent (object sender, EventArgs e)
 		{
-			PropertyService PropertyService = (PropertyService)ServiceManager.GetService (typeof (PropertyService));
 			FolderDialog fd = new FolderDialog (GettextCatalog.GetString ("Select directory"));
 
 			try {
@@ -248,7 +244,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				string defaultFolder = this.directoryTextBox.Text;	
 				if (defaultFolder == string.Empty || defaultFolder == null) {
 					// only use the bew project default path if there is no path set
-					defaultFolder =	PropertyService.GetProperty (
+					defaultFolder =	PropertyService.Get (
 							"MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", 
 							System.IO.Path.Combine (
 								System.Environment.GetEnvironmentVariable ("HOME"),
@@ -401,9 +397,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		// NOTE: a newline character separates the search history strings
 		private void LoadHistoryValues()
 		{
-			object stringArray;
+			string stringArray;
 			// set the history in properties
-			stringArray = propertyService.GetProperty("MonoDevelop.FindReplaceDialogs.FindHistory");
+			stringArray = PropertyService.Get<string> ("MonoDevelop.FindReplaceDialogs.FindHistory");
 		
 			if (stringArray != null) {
 				string[] items = stringArray.ToString ().Split (historySeparator);
@@ -421,7 +417,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 						
 			// now do the replace history
-			stringArray = propertyService.GetProperty ("MonoDevelop.FindReplaceDialogs.ReplaceHistory");
+			stringArray = PropertyService.Get<string> ("MonoDevelop.FindReplaceDialogs.ReplaceHistory");
 			
 			if (replaceMode) {
 				if (stringArray != null) {
@@ -450,13 +446,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			// set the history in properties
 			stringArray = new string[findHistory.Count];
 			findHistory.CopyTo (stringArray, 0);			
-			propertyService.SetProperty ("MonoDevelop.FindReplaceDialogs.FindHistory", string.Join(historySeparator.ToString(), stringArray));
+			PropertyService.Set ("MonoDevelop.FindReplaceDialogs.FindHistory", string.Join(historySeparator.ToString(), stringArray));
 			
 			// now do the replace history
 			if (replaceMode)	{
 				stringArray = new string[replaceHistory.Count];
 				replaceHistory.CopyTo (stringArray, 0);				
-				propertyService.SetProperty ("MonoDevelop.FindReplaceDialogs.ReplaceHistory", string.Join(historySeparator.ToString(), stringArray));
+				PropertyService.Set ("MonoDevelop.FindReplaceDialogs.ReplaceHistory", string.Join(historySeparator.ToString(), stringArray));
 			}
 		}
 	}

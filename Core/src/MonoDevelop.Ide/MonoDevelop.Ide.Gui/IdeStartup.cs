@@ -41,7 +41,6 @@ using System.Diagnostics;
 using Mono.Unix;
 using Mono.GetOptions;
 
-using MonoDevelop.Core.Properties;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Dialogs;

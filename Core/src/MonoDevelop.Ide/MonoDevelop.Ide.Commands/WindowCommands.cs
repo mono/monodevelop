@@ -8,9 +8,8 @@
 using System;
 using System.Collections;
 using System.CodeDom.Compiler;
-using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 

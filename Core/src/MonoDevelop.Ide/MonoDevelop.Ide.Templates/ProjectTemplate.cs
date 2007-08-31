@@ -14,7 +14,6 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Reflection;
 
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Core.Gui.Dialogs;

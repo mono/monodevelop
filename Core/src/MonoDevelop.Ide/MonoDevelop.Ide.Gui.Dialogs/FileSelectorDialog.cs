@@ -33,7 +33,6 @@ using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
 using Mono.Addins;
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Projects.Text;
 using Gtk;
 
@@ -95,7 +94,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			AddFilter (allFilter);
 			
 			// Load last used filter
-			string lastPattern = (string)Runtime.Properties.GetProperty ("Monodevelop.FileSelector.LastPattern", "*");
+			string lastPattern = (string)PropertyService.Get ("Monodevelop.FileSelector.LastPattern", "*");
 			foreach (FileFilter filter in this.Filters)
 			{
 				string pattern = filterPairs[filter.Name] as string;
@@ -307,7 +306,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			// Save active filter
 			string pattern = filterPairs[this.Filter.Name] as string;
 			if (pattern != null)
-				Runtime.Properties.SetProperty ("Monodevelop.FileSelector.LastPattern", pattern);
+				PropertyService.Set ("Monodevelop.FileSelector.LastPattern", pattern);
 
 			base.Dispose ();
 		}

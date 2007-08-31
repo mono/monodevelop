@@ -51,26 +51,26 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			//
 			// load the internationalized strings.
 			//
-			folderEntry.Path = Runtime.Properties.GetProperty(
+			folderEntry.Path = PropertyService.Get(
 				"MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", 
 				System.IO.Path.Combine(System.Environment.GetEnvironmentVariable ("HOME"),
 						"Projects")).ToString();
 			//
 			// setup the properties
 			//
-			loadUserDataCheckButton.Active = Runtime.Properties.GetProperty (
+			loadUserDataCheckButton.Active = PropertyService.Get (
 				"SharpDevelop.LoadDocumentProperties", true);
-			createBackupCopyCheckButton.Active = Runtime.Properties.GetProperty (
+			createBackupCopyCheckButton.Active = PropertyService.Get (
 				"SharpDevelop.CreateBackupCopy", false);
-			loadPrevProjectCheckButton.Active = (bool) Runtime.Properties.GetProperty(
+			loadPrevProjectCheckButton.Active = (bool) PropertyService.Get(
 				"SharpDevelop.LoadPrevProjectOnStartup", false);
 		}
 		
 		public bool Store () 
 		{
-			Runtime.Properties.SetProperty("SharpDevelop.LoadPrevProjectOnStartup", loadPrevProjectCheckButton.Active);
-			Runtime.Properties.SetProperty ("SharpDevelop.LoadDocumentProperties",  loadUserDataCheckButton.Active);
-			Runtime.Properties.SetProperty ("SharpDevelop.CreateBackupCopy",        createBackupCopyCheckButton.Active);
+			PropertyService.Set("SharpDevelop.LoadPrevProjectOnStartup", loadPrevProjectCheckButton.Active);
+			PropertyService.Set ("SharpDevelop.LoadDocumentProperties",  loadUserDataCheckButton.Active);
+			PropertyService.Set ("SharpDevelop.CreateBackupCopy",        createBackupCopyCheckButton.Active);
 			
 			// check for correct settings
 			string projectPath = folderEntry.Path;
@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 					return false;
 				}
 			}
-			Runtime.Properties.SetProperty("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", projectPath);
+			PropertyService.Set("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", projectPath);
 			
 			return true;
 		}

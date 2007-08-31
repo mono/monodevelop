@@ -30,7 +30,7 @@ namespace MonoDevelop.Ide.Gui
 	{
 		protected override void Run ()
 		{
-			if (Runtime.Properties.GetProperty("MonoDevelop.Core.Gui.Dialog.TipOfTheDayView.ShowTipsAtStartup", false))
+			if (PropertyService.Get("MonoDevelop.Core.Gui.Dialog.TipOfTheDayView.ShowTipsAtStartup", false))
 			{
 				new TipOfTheDayWindow().Show();
 			}

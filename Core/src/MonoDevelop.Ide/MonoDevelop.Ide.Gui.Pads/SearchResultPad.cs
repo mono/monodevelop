@@ -14,7 +14,6 @@ using System.Diagnostics;
 
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Commands;
 

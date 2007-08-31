@@ -59,8 +59,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 				groups = LoadTemplates ();			
 			} catch (Exception e) {
 				Runtime.LoggingService.Error ("CodeTemplateService: Exception while loading templates.\n" + e);
-				groups = new List<CodeTemplateGroup> ();
 			}
+			if (groups == null)
+				groups = new List<CodeTemplateGroup> ();
 		}
 		
 		public static CodeTemplateGroup GetTemplateGroupPerFilename (string fileName)
@@ -80,9 +81,10 @@ namespace MonoDevelop.Ide.CodeTemplates
 #region I/O
 		const string Node             = "CodeTemplates";
 		const string VersionAttribute = "version";
+		
 		static void SaveTemplates (string fileName)
 		{
-			XmlWriter writer = XmlTextWriter.Create (fileName);
+			XmlTextWriter writer = new XmlTextWriter (fileName, System.Text.Encoding.UTF8);
 			writer.Settings.Indent = true;
 			try {
 				writer.WriteStartDocument ();
@@ -100,7 +102,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public static void SaveTemplates ()
 		{
-			SaveTemplates (Path.Combine (Runtime.Properties.ConfigDirectory, FileName));
+			SaveTemplates (Path.Combine (PropertyService.ConfigPath, FileName));
 		}
 		
 		static List<CodeTemplateGroup> LoadTemplates (string fileName)
@@ -132,10 +134,10 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		static List<CodeTemplateGroup> LoadTemplates ()
 		{
-			List<CodeTemplateGroup> result = LoadTemplates (Path.Combine (Runtime.Properties.ConfigDirectory, FileName));
+			List<CodeTemplateGroup> result = LoadTemplates (Path.Combine (PropertyService.ConfigPath, FileName));
 			if (result == null) {
 				Runtime.LoggingService.Info ("CodeTemplateService: No user templates, reading default templates.");
-				result = LoadTemplates( Path.Combine (Path.Combine (Runtime.Properties.DataDirectory, "options"), FileName));
+				result = LoadTemplates (Path.Combine (Path.Combine (PropertyService.DataPath, "options"), FileName));
 			}
 			return result;
 		}

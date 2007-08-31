@@ -30,9 +30,8 @@ using System;
 using System.Resources;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Gui.Pads
@@ -43,7 +42,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (OnOpenCombine));
 			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (OnCloseCombine));
-			Runtime.Properties.PropertyChanged += (EventHandler<PropertyEventArgs>) DispatchService.GuiDispatch (new EventHandler<PropertyEventArgs> (TrackPropertyChange));
+			PropertyService.PropertyChanged += (EventHandler<PropertyChangedEventArgs>) DispatchService.GuiDispatch (new EventHandler<PropertyChangedEventArgs> (TrackPropertyChange));
 		}
 		
 		public override void Initialize (NodeBuilder[] builders, TreePadOption[] options)
@@ -53,7 +52,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				LoadTree (IdeApp.ProjectOperations.CurrentOpenCombine);
 		}
 		
-		void TrackPropertyChange (object o, MonoDevelop.Core.Properties.PropertyEventArgs e)
+		void TrackPropertyChange (object o, MonoDevelop.Core.PropertyChangedEventArgs e)
 		{
 			if (e.OldValue != e.NewValue && e.Key == "MonoDevelop.Core.Gui.ProjectBrowser.ShowExtensions") {
 				RedrawContent ();

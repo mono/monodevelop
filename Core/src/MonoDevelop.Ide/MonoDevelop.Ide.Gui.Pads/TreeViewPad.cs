@@ -38,7 +38,6 @@ using System.Xml;
 using System.Resources;
 using System.Text;
 
-using MonoDevelop.Core.Properties;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
@@ -141,7 +140,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			this.window = window;
 		}
 		
-		void PropertyChanged (object sender, PropertyEventArgs prop)
+		void PropertyChanged (object sender, MonoDevelop.Core.PropertyChangedEventArgs prop)
 		{
 			string name;
 			
@@ -150,13 +149,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 				name = tree.Style.FontDescription.ToString ();
 				
 				if ((bool) prop.NewValue)
-					name = Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.Pads.CustomFont", name);
+					name = PropertyService.Get ("MonoDevelop.Core.Gui.Pads.CustomFont", name);
 				
 				text_render.FontDesc = Pango.FontDescription.FromString (name);
 				tree.ColumnsAutosize ();
 				break;
 			case "MonoDevelop.Core.Gui.Pads.CustomFont":
-				if (!((bool) Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.Pads.UseCustomFont")))
+				if (!(PropertyService.Get<bool> ("MonoDevelop.Core.Gui.Pads.UseCustomFont")))
 					break;
 				
 				name = (string) prop.NewValue;
@@ -203,13 +202,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 			complete_column.AddAttribute (pix_render, "pixbuf-expander-closed", ClosedIconColumn);
 			
 			text_render = new Gtk.CellRendererText ();
-			if (Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.Pads.UseCustomFont", false)) {
+			if (PropertyService.Get ("MonoDevelop.Core.Gui.Pads.UseCustomFont", false)) {
 				string name = tree.Style.FontDescription.ToString ();
-				name = Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.Pads.CustomFont", name);
+				name = PropertyService.Get ("MonoDevelop.Core.Gui.Pads.CustomFont", name);
 				text_render.FontDesc = Pango.FontDescription.FromString (name);
 			}
 			text_render.Ypad = 1;
-			Runtime.Properties.PropertyChanged += new EventHandler<PropertyEventArgs> (PropertyChanged);
+			PropertyService.PropertyChanged += new EventHandler<MonoDevelop.Core.PropertyChangedEventArgs> (PropertyChanged);
 			text_render.Edited += new Gtk.EditedHandler (HandleOnEdit);
 			text_render.EditingCanceled += new EventHandler (HandleOnEditCancelled);
 			
@@ -767,24 +766,23 @@ namespace MonoDevelop.Ide.Gui.Pads
 			builder.Update ();
 		}
 		
-		public void SaveTreeState (XmlElement el)
+		public Properties SaveTreeState ()
 		{
 			ITreeNavigator root = GetRootNode ();
-			if (root == null) return;
+			if (root == null) 
+				return new Properties ();
 
 			NodeState state = root.SaveState ();
-			XmlElement child = state.ToXml (el.OwnerDocument);
-			el.AppendChild (child);
+			return state.ToXml ();
 		}
 		
-		public void RestoreTreeState (XmlElement parent)
+		public void RestoreTreeState (Properties properties)
 		{
 			ITreeNavigator nav = GetRootNode ();
 			if (nav == null)
 				return;
-			XmlElement rootNode = parent ["Node"];
-			if (rootNode != null) {
-				NodeState state = NodeState.FromXml (rootNode);
+			if (properties != null) {
+				NodeState state = NodeState.FromXml (properties);
 				nav.RestoreState (state);
 			}
 		}
@@ -1191,14 +1189,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 		}
 		
-		public IXmlConvertable CreateMemento ()
+		public Properties CreateMemento ()
 		{
-			return new TreeViewPadMemento (this);
+			return this.SaveTreeState ();
 		}
 
-		public void SetMemento (IXmlConvertable memento)
+		public void SetMemento (Properties memento)
 		{
-			((TreeViewPadMemento)memento).Restore (this);
+			this.RestoreTreeState (memento);
 		}
 
 		// ********* Own events
@@ -1821,7 +1819,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 		}
 		
-		internal class TreeOptions: Hashtable, ITreeOptions
+		public class TreeOptions: Hashtable, ITreeOptions
 		{
 			TreeViewPad pad;
 			Gtk.TreeIter iter;
@@ -1866,41 +1864,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 					ops [de.Key] = de.Value;
 				return ops;
 			}
-		}
-	}
-	
-	internal class TreeViewPadMemento : IXmlConvertable
-	{
-		TreeViewPad treeView = null;
-		XmlElement parent = null;
-		
-		public TreeViewPadMemento()
-		{
-		}
-		
-		public TreeViewPadMemento (TreeViewPad treeView)
-		{
-			this.treeView = treeView;
-		}
-		
-		public void Restore (TreeViewPad view)
-		{
-			view.RestoreTreeState (parent);
-		}
-		
-		public object FromXmlElement (XmlElement element)
-		{
-			this.parent = element;
-			return this;
-		}
-		
-		public XmlElement ToXmlElement (XmlDocument doc)
-		{
-			Debug.Assert(treeView != null);
-			
-			XmlElement treenode  = doc.CreateElement ("TreeView");
-			treeView.SaveTreeState (treenode);
-			return treenode;
 		}
 	}
 	

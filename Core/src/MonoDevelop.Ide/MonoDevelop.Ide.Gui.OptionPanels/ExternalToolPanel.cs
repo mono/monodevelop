@@ -13,7 +13,6 @@ using Gtk;
 using MonoDevelop.Components;
 
 using MonoDevelop.Ide.ExternalTools;
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Core.Gui.Dialogs;

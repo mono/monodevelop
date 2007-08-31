@@ -10,7 +10,6 @@ using System.IO;
 using System.Collections.Generic;
 using Gtk;
 
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;

@@ -32,7 +32,6 @@ using System.Resources;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad

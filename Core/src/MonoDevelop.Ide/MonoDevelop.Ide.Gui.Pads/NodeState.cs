@@ -28,82 +28,129 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Xml;
+using System.Xml.Serialization;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
 	public class NodeState
 	{
-		string NodeName;
-		bool Expanded;
-		bool Selected;
-		TreeViewPad.TreeOptions Options;
-		ArrayList ChildrenState;
+		string nodeName;
 		
-		public XmlElement ToXml (XmlDocument doc)
-		{
-			return ToXml (doc, null);
+		bool expanded;
+		bool selected;
+		TreeViewPad.TreeOptions options;
+		
+		List<NodeState> childrenState;
+		
+		public string NodeName {
+			get {
+				return nodeName;
+			}
+			set {
+				nodeName = value;
+			}
+		}
+
+		public bool Expanded {
+			get {
+				return expanded;
+			}
+			set {
+				expanded = value;
+			}
+		}
+
+		public bool Selected {
+			get {
+				return selected;
+			}
+			set {
+				selected = value;
+			}
+		}
+
+		public MonoDevelop.Ide.Gui.Pads.TreeViewPad.TreeOptions Options {
+			get {
+				return options;
+			}
+			set {
+				options = value;
+			}
+		}
+
+		public System.Collections.Generic.List<MonoDevelop.Ide.Gui.Pads.NodeState> ChildrenState {
+			get {
+				return childrenState;
+			}
+			set {
+				childrenState = value;
+			}
 		}
 		
-		public static NodeState FromXml (XmlElement elem)
+		public Properties ToXml ()
 		{
-			return FromXml (elem, null);
+			return ToXml (null);
 		}
 		
-		XmlElement ToXml (XmlDocument doc, TreeViewPad.TreeOptions parentOptions)
+		public static NodeState FromXml (Properties state)
 		{
-			XmlElement el = doc.CreateElement ("Node");
+			return FromXml (state, null);
+		}
+		
+		Properties  ToXml (TreeViewPad.TreeOptions parentOptions)
+		{
+			Properties result = new Properties();
+			
 			if (NodeName != null)
-				el.SetAttribute ("name", NodeName);
-			el.SetAttribute ("expanded", Expanded.ToString ());
+				result.Set ("name", NodeName);
+			if (Expanded)
+				result.Set ("expanded", bool.TrueString);
 			if (Selected)
-				el.SetAttribute ("selected", "True");
+				result.Set ("selected", bool.TrueString);
+
+			Properties optionProperties = new Properties();
+			result.Set ("Options", optionProperties);
 			
 			TreeViewPad.TreeOptions ops = Options;
 			if (ops != null) {
 				foreach (DictionaryEntry de in ops) {
 					object parentVal = parentOptions != null ? parentOptions [de.Key] : null;
 					if (parentVal != null && !parentVal.Equals (de.Value) || (parentVal == null && de.Value != null) || parentOptions == null) {
-						XmlElement eop = doc.CreateElement ("Option");
-						eop.SetAttribute ("id", de.Key.ToString());
-						eop.SetAttribute ("value", de.Value.ToString ());
-						el.AppendChild (eop);
+						optionProperties.Set (de.Key.ToString(), de.Value.ToString ()); 
 					}
 				}
 			}
 			
-			if (ChildrenState == null) return el;
+			if (ChildrenState == null) 
+				return result;
+			
+			Properties nodeProperties = new Properties();
+			result.Set ("Nodes", nodeProperties);
 			foreach (NodeState ces in ChildrenState) {
-				XmlElement child = ces.ToXml (doc, ops != null ? ops : parentOptions);
-				el.AppendChild (child);
+				nodeProperties.Set (ces.NodeName, ces.ToXml (ops != null ? ops : parentOptions));
 			}
 			
-			return el;
+			return result;
 		}
 
-		static NodeState FromXml (XmlElement elem, TreeViewPad.TreeOptions parentOptions)
+		static NodeState FromXml (Properties state, TreeViewPad.TreeOptions parentOptions)
 		{
 			NodeState ns = new NodeState ();
-			ns.NodeName = elem.GetAttribute ("name");
-			string expanded = elem.GetAttribute ("expanded");
-			ns.Expanded = (expanded == "" || bool.Parse (expanded));
-			ns.Selected = elem.GetAttribute ("selected") == "True";
+			ns.NodeName = state.Get ("name", "");
+			ns.Expanded = state.Get ("expanded", false);
+			ns.Selected = state.Get ("selected", false);
 			
-			XmlNodeList nodelist = elem.ChildNodes;
-			foreach (XmlNode nod in nodelist) {
-				XmlElement el = nod as XmlElement;
-				if (el == null) continue;
-				if (el.LocalName == "Option") {
-					if (ns.Options == null) {
-						if (parentOptions != null) ns.Options = parentOptions.CloneOptions (Gtk.TreeIter.Zero);
-						else ns.Options = new TreeViewPad.TreeOptions ();
-					}
-					ns.Options [el.GetAttribute ("id")] = bool.Parse (el.GetAttribute ("value"));
-				}
-				else if (el.LocalName == "Node") {
-					if (ns.ChildrenState == null) ns.ChildrenState = new ArrayList ();
-					ns.ChildrenState.Add (FromXml (el, ns.Options != null ? ns.Options : parentOptions));
-				}
+			Properties optionProperties = state.Get ("Options", new Properties ());
+			foreach (string key in optionProperties.Keys) {
+				ns.Options [key] = optionProperties.Get<string> (key);
+			}
+			
+			Properties nodeProperties = state.Get ("Nodes", new Properties ());
+			foreach (string key in nodeProperties.Keys) {
+				ns.ChildrenState.Add (FromXml (optionProperties.Get (key, new Properties ()), ns.Options != null ? ns.Options : parentOptions));
 			}
 			return ns;
 		}
@@ -111,7 +158,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 		internal static NodeState SaveState (TreeViewPad pad, ITreeNavigator nav)
 		{
 			NodeState state = SaveStateRec (pad, nav);
-			if (state == null) return new NodeState ();
+			if (state == null) 
+				return new NodeState ();
 			else return state;
 		}
 		
@@ -119,14 +167,15 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			Gtk.TreeIter it = nav.CurrentPosition._iter;
 			
-			ArrayList childrenState = null;
+			List<NodeState> childrenState = null;
 
 			if (nav.Filled && nav.MoveToFirstChild ()) {
 				do {
 					NodeState cs = SaveStateRec (pad, nav);
 					if (cs != null) {
 						cs.NodeName = nav.NodeName;
-						if (childrenState == null) childrenState = new ArrayList ();
+						if (childrenState == null) 
+							childrenState = new List<NodeState> ();
 						childrenState.Add (cs);
 					}
 				} while (nav.MoveNext ());

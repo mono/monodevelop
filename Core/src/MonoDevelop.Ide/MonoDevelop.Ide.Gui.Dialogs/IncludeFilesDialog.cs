@@ -10,7 +10,6 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.ComponentModel;
 
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects;

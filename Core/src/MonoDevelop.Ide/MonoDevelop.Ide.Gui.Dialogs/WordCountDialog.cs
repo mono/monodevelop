@@ -13,7 +13,6 @@ using System.Collections;
 using System.Collections.Generic;
 
 using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;

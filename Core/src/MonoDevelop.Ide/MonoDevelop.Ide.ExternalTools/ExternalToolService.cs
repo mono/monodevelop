@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide.ExternalTools
 		
 		static void SaveTools (string fileName)
 		{
-			XmlWriter writer = XmlTextWriter.Create (fileName);
+			XmlTextWriter writer = new XmlTextWriter (fileName, System.Text.Encoding.UTF8);
 			writer.Settings.Indent = true;
 			try {
 				writer.WriteStartDocument ();
@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.ExternalTools
 		
 		public static void SaveTools ()
 		{
-			SaveTools (Path.Combine (Runtime.Properties.ConfigDirectory, FileName));
+			SaveTools (Path.Combine (PropertyService.ConfigPath, FileName));
 		}
 		
 		static List<ExternalTool> LoadTools (string fileName)
@@ -118,10 +118,10 @@ namespace MonoDevelop.Ide.ExternalTools
 		
 		static List<ExternalTool> LoadTools ()
 		{
-			List<ExternalTool> result = LoadTools (Path.Combine (Runtime.Properties.ConfigDirectory, FileName));
+			List<ExternalTool> result = LoadTools (Path.Combine (PropertyService.ConfigPath, FileName));
 			if (result == null) {
 				Runtime.LoggingService.Info ("ExternalToolService: No user templates, reading default templates.");
-				result = LoadTools (Path.Combine (Path.Combine (Runtime.Properties.DataDirectory, "options"), FileName));
+				result = LoadTools (Path.Combine (Path.Combine (PropertyService.DataPath, "options"), FileName));
 			}
 			
 			if (result == null)

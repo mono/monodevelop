@@ -11,7 +11,7 @@
 namespace MonoDevelop.Ide.Gui.OptionPanels {
     
     
-    public partial class SelectStylePanelWidget {
+    internal partial class SelectStylePanelWidget {
         
         private Gtk.VBox vbox13;
         

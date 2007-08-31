@@ -9,7 +9,6 @@ using System;
 using System.IO;
 using System.Collections;
 
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Core.Gui.Utils;

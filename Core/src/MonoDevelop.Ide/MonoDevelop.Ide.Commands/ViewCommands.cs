@@ -11,7 +11,6 @@ using System.CodeDom.Compiler;
 
 using MonoDevelop.Core;
 using Mono.Addins;
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Components.Commands;
 
 using MonoDevelop.Core.Gui;

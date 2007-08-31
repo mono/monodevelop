@@ -12,7 +12,6 @@ using System.CodeDom.Compiler;
 using System.IO;
 using System.Diagnostics;
 
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Pads;

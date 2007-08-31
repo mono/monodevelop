@@ -30,7 +30,6 @@ using System;
 using System.IO;
 using System.Collections;
 
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core;
@@ -64,9 +63,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		{
 			Build ();
 		
-			bool checkForUpdates = Runtime.Properties.GetProperty ("MonoDevelop.Ide.AddinUpdater.CkeckForUpdates", true);
-			int updateSpan = Runtime.Properties.GetProperty ("MonoDevelop.Ide.AddinUpdater.UpdateSpanValue", 1);
-			string unit = Runtime.Properties.GetProperty ("MonoDevelop.Ide.AddinUpdater.UpdateSpanUnit", "D");
+			bool checkForUpdates = PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.CkeckForUpdates", true);
+			int updateSpan = PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.UpdateSpanValue", 1);
+			string unit = PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.UpdateSpanUnit", "D");
 			
 			lookCheck.Active = checkForUpdates;
 			valueSpin.Value = (double) updateSpan;
@@ -81,12 +80,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		public void Store ()
 		{
 			if (periodCombo.Active == 0)
-				Runtime.Properties.SetProperty ("MonoDevelop.Ide.AddinUpdater.UpdateSpanUnit", "D");
+				PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.UpdateSpanUnit", "D");
 			else
-				Runtime.Properties.SetProperty ("MonoDevelop.Ide.AddinUpdater.UpdateSpanUnit", "M");
+				PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.UpdateSpanUnit", "M");
 			
-			Runtime.Properties.SetProperty ("MonoDevelop.Ide.AddinUpdater.UpdateSpanValue", (int) valueSpin.Value);
-			Runtime.Properties.SetProperty ("MonoDevelop.Ide.AddinUpdater.CkeckForUpdates", lookCheck.Active);
+			PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.UpdateSpanValue", (int) valueSpin.Value);
+			PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.CkeckForUpdates", lookCheck.Active);
 		}
 		
 		void UpdateStatus ()

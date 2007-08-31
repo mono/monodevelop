@@ -11,7 +11,6 @@ using System.IO;
 using System.Text;
 
 using Mono.Addins;
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects;
@@ -103,7 +102,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		{
 			InsertCategories (TreeIter.Zero, categories);
 			/*for (int j = 0; j < categories.Count; ++j) {
-				if (((Category)categories[j]).Name == propertyService.GetProperty("Dialogs.NewProjectDialog.LastSelectedCategory", "C#")) {
+				if (((Category)categories[j]).Name == PropertyService.Get("Dialogs.NewProjectDialog.LastSelectedCategory", "C#")) {
 					((TreeView)ControlDictionary["categoryTreeView"]).SelectedNode = (TreeNode)((TreeView)ControlDictionary["categoryTreeView"]).Nodes[j];
 					break;
 				}
@@ -324,8 +323,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		bool CreateProject ()
 		{
 			if (TemplateView.CurrentlySelected != null) {
-				Runtime.Properties.SetProperty("Dialogs.NewProjectDialog.LastSelectedCategory", ((ProjectTemplate)TemplateView.CurrentlySelected).Name);
-				//Runtime.Properties.SetProperty("Dialogs.NewProjectDialog.LargeImages", ((RadioButton)ControlDictionary["largeIconsRadioButton"]).Checked);
+				PropertyService.Set("Dialogs.NewProjectDialog.LastSelectedCategory", ((ProjectTemplate)TemplateView.CurrentlySelected).Name);
+				//PropertyService.Set("Dialogs.NewProjectDialog.LargeImages", ((RadioButton)ControlDictionary["largeIconsRadioButton"]).Checked);
 			}
 			
 			string solution = txt_subdirectory.Text;
@@ -353,7 +352,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				return false;
 			}
 			
-			Runtime.Properties.SetProperty (
+			PropertyService.Set (
 				"MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.AutoCreateProjectSubdir",
 				CreateSolutionDirectory);
 			
@@ -460,7 +459,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			hbox_template.PackStart (TemplateView, true, true, 0);
 
 			if (basePath == null)
-				basePath = Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", Runtime.FileService.GetDirectoryNameWithSeparator (Environment.GetEnvironmentVariable ("HOME")) + "Projects").ToString ();
+				basePath = PropertyService.Get ("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", Runtime.FileService.GetDirectoryNameWithSeparator (Environment.GetEnvironmentVariable ("HOME")) + "Projects").ToString ();
 				
 			entry_location.Path = basePath;
 			

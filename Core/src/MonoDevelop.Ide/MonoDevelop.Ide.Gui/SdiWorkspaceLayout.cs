@@ -12,7 +12,6 @@ using System.Drawing;
 using System.Xml;
 using System.Xml.Serialization;
 
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
 
 using Gtk;
@@ -33,7 +32,7 @@ namespace MonoDevelop.Ide.Gui
 	/// </summary>
 	internal class SdiWorkbenchLayout : IWorkbenchLayout
 	{
-		static string configFile = Path.Combine (Runtime.Properties.ConfigDirectory, "DefaultEditingLayout.xml");
+		static string configFile = Path.Combine (PropertyService.ConfigPath, "DefaultEditingLayout.xml");
 
 		// contains the fully qualified name of the current layout (ie. Edit.Default)
 		string currentLayout = "";
@@ -194,15 +193,15 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public IXmlConvertable CreateMemento()
+		public Properties CreateMemento()
 		{
-			return new SdiWorkbenchLayoutMemento (initialized ? toolbarFrame.GetStatus () : new DockToolbarFrameStatus ());
+			return new SdiWorkbenchLayoutMemento (initialized ? toolbarFrame.GetStatus () : new DockToolbarFrameStatus ()).ToProperties ();
 		}
 		
-		public void SetMemento(IXmlConvertable memento)
+		public void SetMemento(Properties memento)
 		{
 			initialized = true;
-			SdiWorkbenchLayoutMemento m = (SdiWorkbenchLayoutMemento) memento;
+			SdiWorkbenchLayoutMemento m = new SdiWorkbenchLayoutMemento (memento);
 			toolbarFrame.SetStatus (m.Status);
 		}
 		
@@ -246,7 +245,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			// get the default layout for the new context from the property service
-			CurrentLayout = Runtime.Properties.GetProperty
+			CurrentLayout = PropertyService.Get
 				("MonoDevelop.Core.Gui.SdiWorkbenchLayout." + ctxt.Id, "Default");
 			
 			// make sure invalid pads for the new context are not visible
@@ -317,7 +316,7 @@ namespace MonoDevelop.Ide.Gui
 				toolbarFrame.CurrentLayout = newLayout;
 
 				// persist the selected layout for the current context
-				Runtime.Properties.SetProperty ("MonoDevelop.Core.Gui.SdiWorkbenchLayout." +
+				PropertyService.Set ("MonoDevelop.Core.Gui.SdiWorkbenchLayout." +
 				                                workbenchContext.Id, 
 				                                value);
 				// Notify hide/show events
@@ -796,37 +795,31 @@ namespace MonoDevelop.Ide.Gui
 		public event EventHandler ActiveWorkbenchWindowChanged;
 		
 		
-		internal class SdiWorkbenchLayoutMemento: IXmlConvertable
+		internal class SdiWorkbenchLayoutMemento
 		{
-			public DockToolbarFrameStatus Status;
+			Properties properties = new Properties ();
 			
+			public DockToolbarFrameStatus Status {
+				get {
+					return properties.Get ("status", new DockToolbarFrameStatus ());
+				}
+				set {
+					properties.Set ("status", value);
+				}
+			}
+
+			public Properties ToProperties ()
+			{
+				return properties;
+			}
+			
+			public SdiWorkbenchLayoutMemento (Properties properties)
+			{
+				this.properties = properties;
+			}
 			public SdiWorkbenchLayoutMemento (DockToolbarFrameStatus status)
 			{
 				Status = status;
-			}
-			
-			public object FromXmlElement (XmlElement element)
-			{
-				try {
-					StringReader r = new StringReader (element.OuterXml);
-					XmlSerializer s = new XmlSerializer (typeof(DockToolbarFrameStatus));
-					Status = (DockToolbarFrameStatus) s.Deserialize (r);
-				} catch {
-					Status = new DockToolbarFrameStatus ();
-				}
-				return this;
-			}
-			
-			public XmlElement ToXmlElement (XmlDocument doc)
-			{
-				StringWriter w = new StringWriter ();
-				XmlSerializer s = new XmlSerializer (typeof(DockToolbarFrameStatus));
-				s.Serialize (w, Status);
-				w.Close ();
-				
-				XmlDocumentFragment docFrag = doc.CreateDocumentFragment ();
-				docFrag.InnerXml = w.ToString ();
-				return docFrag ["DockToolbarFrameStatus"];
 			}
 		}
 	}

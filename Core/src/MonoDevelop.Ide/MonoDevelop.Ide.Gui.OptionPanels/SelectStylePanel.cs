@@ -8,7 +8,6 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core;
@@ -43,10 +42,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			string name = fontButton.Style.FontDescription.ToString ();
 			
-			extensionButton.Active = Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.ProjectBrowser.ShowExtensions", true);
-			hiddenButton.Active = Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.FileScout.ShowHidden", false);
-			fontCheckbox.Active = Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.Pads.UseCustomFont", false);
-			fontButton.FontName = Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.Pads.CustomFont", name);
+			extensionButton.Active = PropertyService.Get ("MonoDevelop.Core.Gui.ProjectBrowser.ShowExtensions", true);
+			hiddenButton.Active = PropertyService.Get ("MonoDevelop.Core.Gui.FileScout.ShowHidden", false);
+			fontCheckbox.Active = PropertyService.Get ("MonoDevelop.Core.Gui.Pads.UseCustomFont", false);
+			fontButton.FontName = PropertyService.Get ("MonoDevelop.Core.Gui.Pads.CustomFont", name);
 			fontButton.Sensitive = fontCheckbox.Active;
 			
 			fontCheckbox.Toggled += new EventHandler (FontCheckboxToggled);
@@ -59,10 +58,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		public void Store()
 		{
-			Runtime.Properties.SetProperty ("MonoDevelop.Core.Gui.ProjectBrowser.ShowExtensions", extensionButton.Active);
-			Runtime.Properties.SetProperty ("MonoDevelop.Core.Gui.FileScout.ShowHidden", hiddenButton.Active);
-			Runtime.Properties.SetProperty ("MonoDevelop.Core.Gui.Pads.UseCustomFont", fontCheckbox.Active);
-			Runtime.Properties.SetProperty ("MonoDevelop.Core.Gui.Pads.CustomFont", fontButton.FontName);
+			PropertyService.Set ("MonoDevelop.Core.Gui.ProjectBrowser.ShowExtensions", extensionButton.Active);
+			PropertyService.Set ("MonoDevelop.Core.Gui.FileScout.ShowHidden", hiddenButton.Active);
+			PropertyService.Set ("MonoDevelop.Core.Gui.Pads.UseCustomFont", fontCheckbox.Active);
+			PropertyService.Set ("MonoDevelop.Core.Gui.Pads.CustomFont", fontButton.FontName);
 		}
 	}
 }

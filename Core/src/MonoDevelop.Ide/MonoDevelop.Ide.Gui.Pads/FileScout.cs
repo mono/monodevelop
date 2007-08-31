@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		public FileScout()
 		{
-			string path = Runtime.Properties.GetProperty("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", 
+			string path = PropertyService.Get("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", 
 									System.Environment.GetEnvironmentVariable("HOME")).ToString();
 
 			if (Directory.Exists(path))
@@ -71,7 +71,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			filelister.Clear ();
 
-			bool ignoreHidden = !Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.FileScout.ShowHidden", false);
+			bool ignoreHidden = !PropertyService.Get ("MonoDevelop.Core.Gui.FileScout.ShowHidden", false);
 			fb.IgnoreHidden = ignoreHidden;
 
 			foreach (string f in fb.Files)

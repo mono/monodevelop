@@ -11,7 +11,6 @@ using System.Xml;
 
 using Gtk;
 using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 
@@ -27,14 +26,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			Build ();
 			TransientFor = IdeApp.Workbench.RootWindow;
 
-			noshowCheckbutton.Active = Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.Dialog.TipOfTheDayView.ShowTipsAtStartup", false);
+			noshowCheckbutton.Active = PropertyService.Get ("MonoDevelop.Core.Gui.Dialog.TipOfTheDayView.ShowTipsAtStartup", false);
 			noshowCheckbutton.Toggled += new EventHandler (OnNoshow);
 			nextButton.Clicked += new EventHandler (OnNext);
 			closeButton.Clicked += new EventHandler (OnClose);
 			DeleteEvent += new DeleteEventHandler (OnDelete);
 
  			XmlDocument doc = new XmlDocument();
- 			doc.Load (Runtime.Properties.DataDirectory +
+ 			doc.Load (PropertyService.DataPath +
 				  System.IO.Path.DirectorySeparatorChar + "options" +
 				  System.IO.Path.DirectorySeparatorChar + "TipsOfTheDay.xml");
 			ParseTips (doc.DocumentElement);
@@ -57,7 +56,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 		void OnNoshow (object obj, EventArgs args)
 		{
-			Runtime.Properties.SetProperty ("MonoDevelop.Core.Gui.Dialog.TipOfTheDayView.ShowTipsAtStartup",
+			PropertyService.Set ("MonoDevelop.Core.Gui.Dialog.TipOfTheDayView.ShowTipsAtStartup",
 						    noshowCheckbutton.Active);
 		}
 

@@ -9,7 +9,6 @@ using System;
 using System.IO;
 using System.Collections;
 
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core;
@@ -51,15 +50,15 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			//
 			// reading properties
 			//
-			BeforeCompileAction action = (BeforeCompileAction) Runtime.Properties.GetProperty(
+			BeforeCompileAction action = (BeforeCompileAction) PropertyService.Get(
 				"SharpDevelop.Services.DefaultParserService.BeforeCompileAction", 
 				BeforeCompileAction.SaveAllFiles);
 			saveChangesRadioButton.Active = action.Equals(BeforeCompileAction.SaveAllFiles);
 			promptChangesRadioButton.Active = action.Equals(BeforeCompileAction.PromptForSave);
 			noSaveRadioButton.Active = action.Equals(BeforeCompileAction.Nothing);
-			showTaskListCheckBox.Active = (bool)Runtime.Properties.GetProperty(
+			showTaskListCheckBox.Active = (bool)PropertyService.Get(
 				"SharpDevelop.ShowTaskListAfterBuild", true);
-			showOutputCheckBox.Active = (bool)Runtime.Properties.GetProperty(
+			showOutputCheckBox.Active = (bool)PropertyService.Get(
 				"SharpDevelop.ShowOutputWindowAtBuild", true);
 		}
 		
@@ -67,18 +66,18 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		{
 			// set properties
 			if (saveChangesRadioButton.Active) {
-				Runtime.Properties.SetProperty("SharpDevelop.Services.DefaultParserService.BeforeCompileAction", 
+				PropertyService.Set("SharpDevelop.Services.DefaultParserService.BeforeCompileAction", 
 						BeforeCompileAction.SaveAllFiles);
 			} else if (promptChangesRadioButton.Active) {
-				Runtime.Properties.SetProperty("SharpDevelop.Services.DefaultParserService.BeforeCompileAction", 
+				PropertyService.Set("SharpDevelop.Services.DefaultParserService.BeforeCompileAction", 
 						BeforeCompileAction.PromptForSave);
 			} else if (noSaveRadioButton.Active) {
-				Runtime.Properties.SetProperty("SharpDevelop.Services.DefaultParserService.BeforeCompileAction", 
+				PropertyService.Set("SharpDevelop.Services.DefaultParserService.BeforeCompileAction", 
 						BeforeCompileAction.Nothing);
 			}
 			
-			Runtime.Properties.SetProperty("SharpDevelop.ShowTaskListAfterBuild", showTaskListCheckBox.Active);
-			Runtime.Properties.SetProperty("SharpDevelop.ShowOutputWindowAtBuild", showOutputCheckBox.Active);
+			PropertyService.Set("SharpDevelop.ShowTaskListAfterBuild", showTaskListCheckBox.Active);
+			PropertyService.Set("SharpDevelop.ShowOutputWindowAtBuild", showOutputCheckBox.Active);
 		}
 	}
 }

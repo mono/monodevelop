@@ -9,7 +9,6 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 
-using MonoDevelop.Core.Properties;
 using Mono.Addins;
 using MonoDevelop.Core;
 

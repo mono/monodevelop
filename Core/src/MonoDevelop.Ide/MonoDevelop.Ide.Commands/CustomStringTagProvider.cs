@@ -16,7 +16,6 @@ using System.Diagnostics;
 
 using Mono.Addins;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Projects;

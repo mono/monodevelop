@@ -32,10 +32,9 @@ using System.IO;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui.Content;
@@ -77,7 +76,7 @@ namespace MonoDevelop.Ide.Gui
 				
 				((Gtk.Window)workbench).Visible = false;
 				workbench.ActiveWorkbenchWindowChanged += new EventHandler (OnDocumentChanged);
-				Runtime.Properties.PropertyChanged += new EventHandler<PropertyEventArgs> (TrackPropertyChanges);
+				PropertyService.PropertyChanged += new EventHandler<PropertyChangedEventArgs> (TrackPropertyChanges);
 				
 				if (Services.DebuggingService != null) {
 					Services.DebuggingService.PausedEvent += (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnDebuggerPaused));
@@ -96,7 +95,7 @@ namespace MonoDevelop.Ide.Gui
 		/// <remarks>
 		/// This method handles the redraw all event for specific changed IDE properties
 		/// </remarks>
-		void TrackPropertyChanges(object sender, MonoDevelop.Core.Properties.PropertyEventArgs e)
+		void TrackPropertyChanges(object sender, MonoDevelop.Core.PropertyChangedEventArgs e)
 		{
 			if (e.OldValue != e.NewValue) {
 				switch (e.Key) {
@@ -111,7 +110,7 @@ namespace MonoDevelop.Ide.Gui
 		internal void Show (string workbenchMemento)
 		{
 			RootWindow.Realize ();
-			workbench.SetMemento ((IXmlConvertable)Runtime.Properties.GetProperty (workbenchMemento, workbench.CreateMemento()));
+			workbench.SetMemento (PropertyService.Get (workbenchMemento, new Properties ()));
 			RootWindow.Visible = true;
 			workbench.Context = WorkbenchContext.Edit;
 			
@@ -441,7 +440,7 @@ namespace MonoDevelop.Ide.Gui
 
 			TreeViewOptions ops = new TreeViewOptions (
 				parentWindow,
-				(IProperties)Runtime.Properties.GetProperty("MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new DefaultProperties()),
+				(Properties)PropertyService.Get("MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties()),
 				AddinManager.GetExtensionNode ("/MonoDevelop/Ide/OptionsDialogPanels"));
 
 			if (panelId != null)

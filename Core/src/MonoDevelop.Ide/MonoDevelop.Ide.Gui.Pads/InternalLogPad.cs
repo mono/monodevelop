@@ -36,7 +36,6 @@ using System.IO;
 using System.Diagnostics;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Tasks;
@@ -117,7 +116,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			errorBtn = new ToggleToolButton ();
 			UpdateErrorsNum();
-			errorBtn.Active = (bool)Runtime.Properties.GetProperty (showErrorsPropertyName, true);
+			errorBtn.Active = (bool)PropertyService.Get (showErrorsPropertyName, true);
 			errorBtn.IconWidget = new Gtk.Image (Gtk.Stock.DialogError, Gtk.IconSize.Button);
 			errorBtn.IsImportant = true;
 			errorBtn.Toggled += new EventHandler (FilterChanged);
@@ -126,7 +125,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			warnBtn = new ToggleToolButton ();
 			UpdateWarningsNum();
-			warnBtn.Active = (bool)Runtime.Properties.GetProperty (showWarningsPropertyName, true);
+			warnBtn.Active = (bool)PropertyService.Get (showWarningsPropertyName, true);
 			warnBtn.IconWidget = new Gtk.Image (Gtk.Stock.DialogWarning, Gtk.IconSize.Button);
 			warnBtn.IsImportant = true;
 			warnBtn.Toggled += new EventHandler (FilterChanged);
@@ -135,7 +134,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			msgBtn = new ToggleToolButton ();
 			UpdateMessagesNum();
-			msgBtn.Active = (bool)Runtime.Properties.GetProperty (showMessagesPropertyName, true);
+			msgBtn.Active = (bool)PropertyService.Get (showMessagesPropertyName, true);
 			msgBtn.IconWidget = new Gtk.Image (Gtk.Stock.DialogInfo, Gtk.IconSize.Button);
 			msgBtn.IsImportant = true;
 			msgBtn.Toggled += new EventHandler (FilterChanged);
@@ -144,7 +143,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			debugBtn = new ToggleToolButton ();
 			UpdateDebugNum();
-			debugBtn.Active = (bool)Runtime.Properties.GetProperty (showDebugPropertyName, true);
+			debugBtn.Active = (bool)PropertyService.Get (showDebugPropertyName, true);
 			debugBtn.IconWidget = new Gtk.Image (Gtk.Stock.DialogQuestion, Gtk.IconSize.Button);
 			debugBtn.IsImportant = true;
 			debugBtn.Toggled += new EventHandler (FilterChanged);
@@ -279,10 +278,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		void FilterChanged (object sender, EventArgs e)
 		{
-			Runtime.Properties.SetProperty (showErrorsPropertyName, errorBtn.Active);
-			Runtime.Properties.SetProperty (showWarningsPropertyName, warnBtn.Active);
-			Runtime.Properties.SetProperty (showMessagesPropertyName, msgBtn.Active);
-			Runtime.Properties.SetProperty (showDebugPropertyName, debugBtn.Active);
+			PropertyService.Set (showErrorsPropertyName, errorBtn.Active);
+			PropertyService.Set (showWarningsPropertyName, warnBtn.Active);
+			PropertyService.Set (showMessagesPropertyName, msgBtn.Active);
+			PropertyService.Set (showDebugPropertyName, debugBtn.Active);
 			
 			filter.Refilter ();
 		}

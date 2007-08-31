@@ -10,7 +10,7 @@ using System.Drawing;
 using System.Reflection;
 using System.Collections;
 
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using Stock = MonoDevelop.Core.Gui.Stock;
 using MonoDevelop.Projects.Gui.Completion;

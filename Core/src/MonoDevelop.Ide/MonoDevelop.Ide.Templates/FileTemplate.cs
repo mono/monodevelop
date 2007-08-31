@@ -233,9 +233,9 @@ namespace MonoDevelop.Ide.Templates
 		public virtual bool Create (Project project, string directory, string language, string name)
 		{
 			if (WizardPath != null) {
-				//IProperties customizer = new DefaultProperties();
-				//customizer.SetProperty("Template", item);
-				//customizer.SetProperty("Creator",  this);
+				//Properties customizer = new Properties();
+				//customizer.Set("Template", item);
+				//customizer.Set("Creator",  this);
 				//WizardDialog wizard = new WizardDialog("File Wizard", customizer, item.WizardPath);
 				//if (wizard.ShowDialog() == DialogResult.OK) {
 					//DialogResult = DialogResult.OK;

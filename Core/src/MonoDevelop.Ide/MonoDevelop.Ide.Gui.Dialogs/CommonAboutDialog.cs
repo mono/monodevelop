@@ -9,7 +9,6 @@ using System;
 using System.Text;
 
 using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 

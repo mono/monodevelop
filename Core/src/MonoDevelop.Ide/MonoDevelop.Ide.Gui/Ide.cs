@@ -125,7 +125,7 @@ namespace MonoDevelop.Ide.Gui
 			InternalLog.EnableErrorNotification ();
 			
 			// load previous combine
-			if ((bool)Runtime.Properties.GetProperty("SharpDevelop.LoadPrevProjectOnStartup", false)) {
+			if ((bool)PropertyService.Get("SharpDevelop.LoadPrevProjectOnStartup", false)) {
 				RecentOpen recentOpen = Workbench.RecentOpen;
 
 				if (recentOpen.RecentProject != null && recentOpen.RecentProject.Length > 0) { 

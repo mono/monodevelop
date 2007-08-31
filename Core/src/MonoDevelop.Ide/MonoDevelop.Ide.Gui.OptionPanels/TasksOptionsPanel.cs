@@ -165,7 +165,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		public void Load ()
 		{
-			tokens = (string)Runtime.Properties.GetProperty ("Monodevelop.TaskListTokens", "FIXME:2;TODO:1;HACK:1;UNDONE:0");
+			tokens = (string)PropertyService.Get ("Monodevelop.TaskListTokens", "FIXME:2;TODO:1;HACK:1;UNDONE:0");
 			foreach (string token in tokens.Split (';'))
 			{
 				int pos = token.IndexOf (':');
@@ -180,9 +180,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 					tokensStore.AppendValues (token, TaskPriority.Normal);
 				}
 			}
-			colorbuttonHighPrio.Color = StringToColor ((string)Runtime.Properties.GetProperty ("Monodevelop.UserTasksHighPrioColor", ""));
-			colorbuttonNormalPrio.Color = StringToColor ((string)Runtime.Properties.GetProperty ("Monodevelop.UserTasksNormalPrioColor", ""));
-			colorbuttonLowPrio.Color = StringToColor ((string)Runtime.Properties.GetProperty ("Monodevelop.UserTasksLowPrioColor", ""));
+			colorbuttonHighPrio.Color = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksHighPrioColor", ""));
+			colorbuttonNormalPrio.Color = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksNormalPrioColor", ""));
+			colorbuttonLowPrio.Color = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksLowPrioColor", ""));
 		}
 		
 		public bool Store ()
@@ -196,11 +196,11 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				sb.Append ((int)row[1]);
 			}
 			string newTokens = sb.ToString ();
-			Runtime.Properties.SetProperty ("Monodevelop.TaskListTokens", newTokens);
+			PropertyService.Set ("Monodevelop.TaskListTokens", newTokens);
 			
-			Runtime.Properties.SetProperty ("Monodevelop.UserTasksHighPrioColor", ColorToString (colorbuttonHighPrio.Color));
-			Runtime.Properties.SetProperty ("Monodevelop.UserTasksNormalPrioColor", ColorToString (colorbuttonNormalPrio.Color));
-			Runtime.Properties.SetProperty ("Monodevelop.UserTasksLowPrioColor", ColorToString (colorbuttonLowPrio.Color));
+			PropertyService.Set ("Monodevelop.UserTasksHighPrioColor", ColorToString (colorbuttonHighPrio.Color));
+			PropertyService.Set ("Monodevelop.UserTasksNormalPrioColor", ColorToString (colorbuttonNormalPrio.Color));
+			PropertyService.Set ("Monodevelop.UserTasksLowPrioColor", ColorToString (colorbuttonLowPrio.Color));
 
 			return true;
 		}

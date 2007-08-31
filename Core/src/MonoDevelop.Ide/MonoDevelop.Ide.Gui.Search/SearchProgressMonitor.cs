@@ -33,7 +33,6 @@ using System.IO;
 using System.Diagnostics;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.ProgressMonitoring;
 using MonoDevelop.Ide.Gui.Pads;

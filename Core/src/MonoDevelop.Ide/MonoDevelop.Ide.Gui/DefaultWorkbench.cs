@@ -18,8 +18,6 @@ using System.Xml;
 
 using MonoDevelop.Projects;
 using Mono.Addins;
-using MonoDevelop.Core.Properties;
-
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Components;
@@ -224,7 +222,7 @@ namespace MonoDevelop.Ide.Gui
 				
 		public void CloseContent(IViewContent content)
 		{
-			if (Runtime.Properties.GetProperty("SharpDevelop.LoadDocumentProperties", true) && content is IMementoCapable) {
+			if (PropertyService.Get("SharpDevelop.LoadDocumentProperties", true) && content is IMementoCapable) {
 				StoreMemento(content);
 			}
 			if (viewContentCollection.Contains(content)) {
@@ -251,9 +249,9 @@ namespace MonoDevelop.Ide.Gui
 		{
 			Debug.Assert(layout != null);
 			viewContentCollection.Add(content);
-			if (Runtime.Properties.GetProperty("SharpDevelop.LoadDocumentProperties", true) && content is IMementoCapable) {
+			if (PropertyService.Get("SharpDevelop.LoadDocumentProperties", true) && content is IMementoCapable) {
 				try {
-					IXmlConvertable memento = GetStoredMemento(content);
+					Properties memento = GetStoredMemento(content);
 					if (memento != null) {
 						((IMementoCapable)content).SetMemento(memento);
 					}
@@ -312,10 +310,10 @@ namespace MonoDevelop.Ide.Gui
 			//statusBarManager.RedrawStatusbar();
 		}
 		
-		public IXmlConvertable GetStoredMemento(IViewContent content)
+		public Properties GetStoredMemento(IViewContent content)
 		{
 			if (content != null && content.ContentName != null) {
-				string directory = Runtime.Properties.ConfigDirectory + "temp";
+				string directory = System.IO.Path.Combine (PropertyService.ConfigPath, "temp");
 				if (!Directory.Exists(directory)) {
 					Directory.CreateDirectory(directory);
 				}
@@ -323,11 +321,7 @@ namespace MonoDevelop.Ide.Gui
 				string fullFileName = directory + System.IO.Path.DirectorySeparatorChar + fileName;
 				// check the file name length because it could be more than the maximum length of a file name
 				if (Runtime.FileService.IsValidFileName(fullFileName) && File.Exists(fullFileName)) {
-					IXmlConvertable prototype = ((IMementoCapable)content).CreateMemento();
-					XmlDocument doc = new XmlDocument();
-					doc.Load (File.OpenRead (fullFileName));
-					
-					return (IXmlConvertable)prototype.FromXmlElement((XmlElement)doc.DocumentElement.ChildNodes[0]);
+					return Properties.Load (fullFileName);
 				}
 			}
 			return null;
@@ -338,34 +332,36 @@ namespace MonoDevelop.Ide.Gui
 			if (content.ContentName == null) {
 				return;
 			}
-			string directory = Runtime.Properties.ConfigDirectory + "temp";
+			string directory = System.IO.Path.Combine (PropertyService.ConfigPath, "temp");
 			if (!Directory.Exists(directory)) {
 				Directory.CreateDirectory(directory);
 			}
 			
-			XmlDocument doc = new XmlDocument();
-			doc.LoadXml("<?xml version=\"1.0\"?>\n<Mementoable/>");
+//			XmlDocument doc = new XmlDocument();
+//			doc.LoadXml("<?xml version=\"1.0\"?>\n<Mementoable/>");
+//			
+//			XmlAttribute fileAttribute = doc.CreateAttribute("file");
+//			fileAttribute.InnerText = content.ContentName;
+//			doc.DocumentElement.Attributes.Append(fileAttribute);
+//			
+			Properties memento = ((IMementoCapable)content).CreateMemento();
 			
-			XmlAttribute fileAttribute = doc.CreateAttribute("file");
-			fileAttribute.InnerText = content.ContentName;
-			doc.DocumentElement.Attributes.Append(fileAttribute);
-			
-			IXmlConvertable memento = ((IMementoCapable)content).CreateMemento();
-			
-			doc.DocumentElement.AppendChild(memento.ToXmlElement(doc));
-			
+//			doc.DocumentElement.AppendChild(memento.ToXmlElement(doc));
+//			
 			string fileName = content.ContentName.Substring(3).Replace('/', '.').Replace('\\', '.').Replace(System.IO.Path.DirectorySeparatorChar, '.');
 			// check the file name length because it could be more than the maximum length of a file name
-			string fullFileName = directory + System.IO.Path.DirectorySeparatorChar + fileName;
+			string fullFileName = System.IO.Path.Combine (directory, fileName);
 			if (Runtime.FileService.IsValidFileName(fullFileName)) {
-				doc.Save (fullFileName);
+				memento.Save (fullFileName);
+//				doc.Save (fullFileName);
 			}
+			
 		}
 		
 		// interface IMementoCapable
-		public IXmlConvertable CreateMemento()
+		public Properties CreateMemento()
 		{
-			WorkbenchMemento memento   = new WorkbenchMemento();
+			WorkbenchMemento memento   = new WorkbenchMemento (new Properties ());
 			int x, y, width, height;
 			GetPosition (out x, out y);
 			GetSize (out width, out height);
@@ -379,17 +375,20 @@ namespace MonoDevelop.Ide.Gui
 			memento.FullScreen  = fullscreen;
 			if (layout != null)
 				memento.LayoutMemento = layout.CreateMemento ();
-			return memento;
+			return memento.ToProperties ();
 		}
 		
-		public void SetMemento(IXmlConvertable xmlMemento)
+		public void SetMemento(Properties xmlMemento)
 		{
+			Console.WriteLine ("Set MEMENTO !!!\n" + Environment.StackTrace);
+			Console.WriteLine (xmlMemento);
 			if (xmlMemento != null) {
-				WorkbenchMemento memento = (WorkbenchMemento)xmlMemento;
+				WorkbenchMemento memento = new WorkbenchMemento (xmlMemento);
 				
 				normalBounds = memento.Bounds;
 				Move (normalBounds.X, normalBounds.Y);
 				Resize (normalBounds.Width, normalBounds.Height);
+				Console.WriteLine (memento.WindowState);
 				if (memento.WindowState == Gdk.WindowState.Maximized) {
 					Maximize ();
 				} else if (memento.WindowState == Gdk.WindowState.Iconified) {
@@ -501,7 +500,7 @@ namespace MonoDevelop.Ide.Gui
 			CloseAllViews ();
 			
 			IdeApp.ProjectOperations.CloseCombine (false);
-			Runtime.Properties.SetProperty("SharpDevelop.Workbench.WorkbenchMemento", CreateMemento());
+			PropertyService.Set ("SharpDevelop.Workbench.WorkbenchMemento", CreateMemento());
 			IdeApp.OnExited ();
 			OnClosed (null);
 			return true;

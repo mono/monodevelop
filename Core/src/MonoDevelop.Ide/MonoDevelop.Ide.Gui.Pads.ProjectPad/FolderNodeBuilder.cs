@@ -314,7 +314,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public static string TerminalCommand {
 			get {
-				return Runtime.Properties.GetProperty ("MonoDevelop.Shell", "gnome-terminal");
+				return PropertyService.Get ("MonoDevelop.Shell", "gnome-terminal");
 			}
 		}
 		

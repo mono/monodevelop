@@ -4,7 +4,6 @@ using System.Text;
 using Pango;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
 
 namespace MonoDevelop.Ide.Gui.Content {
 	public enum LineViewerStyle {
@@ -47,224 +46,223 @@ namespace MonoDevelop.Ide.Gui.Content {
 	}
 	
 	public class TextEditorProperties {
-		static PropertyService propertyService = (PropertyService)ServiceManager.GetService(typeof(PropertyService));
-		static IProperties properties = ((IProperties) propertyService.GetProperty (
+		static Properties properties = ((Properties) PropertyService.Get (
 			"MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties",
-			new DefaultProperties()));
+			new Properties()));
 		
 		public static int TabIndent {
 			get {
-				return properties.GetProperty ("TabIndent", 4);
+				return properties.Get ("TabIndent", 4);
 			}
 			set {
-				properties.SetProperty ("TabIndent", value);
+				properties.Set ("TabIndent", value);
 			}
 		}
 		
 		public static bool SyntaxHighlight {
 			get {
-				return properties.GetProperty ("SyntaxHighlight", true);
+				return properties.Get ("SyntaxHighlight", true);
 			}
 			set {
-				properties.SetProperty ("SyntaxHighlight", value);
+				properties.Set ("SyntaxHighlight", value);
 			}
 		}
 		
 		public static bool EnableCodeCompletion {
 			get {
-				return properties.GetProperty ("EnableCodeCompletion", true);
+				return properties.Get ("EnableCodeCompletion", true);
 			}
 			set {
-				properties.SetProperty ("EnableCodeCompletion", value);
+				properties.Set ("EnableCodeCompletion", value);
 			}
 		}
 		
 		public static IndentStyle IndentStyle {
 			get {
-				return (IndentStyle)properties.GetProperty ("IndentStyle", IndentStyle.Smart);
+				return (IndentStyle)properties.Get ("IndentStyle", IndentStyle.Smart);
 			}
 			set {
-				properties.SetProperty ("IndentStyle", value);
+				properties.Set ("IndentStyle", value);
 			}
 		}
 		
 		public static DocumentSelectionMode DocumentSelectionMode {
 			get {
-				return (DocumentSelectionMode) properties.GetProperty ("DocumentSelectionMode", DocumentSelectionMode.Normal);
+				return (DocumentSelectionMode) properties.Get ("DocumentSelectionMode", DocumentSelectionMode.Normal);
 			}
 			set {
-				properties.SetProperty ("DocumentSelectionMode", value);
+				properties.Set ("DocumentSelectionMode", value);
 			}
 		}
 		
 		public static bool AllowCaretBeyondEOL {
 			get {
-				return properties.GetProperty ("CursorBehindEOL", false);
+				return properties.Get ("CursorBehindEOL", false);
 			}
 			set {
-				properties.SetProperty ("CursorBehindEOL", value);
+				properties.Set ("CursorBehindEOL", value);
 			}
 		}
 		
 		public static bool ShowMatchingBracket {
 			get {
-				return properties.GetProperty ("ShowBracketHighlight", true);
+				return properties.Get ("ShowBracketHighlight", true);
 			}
 			set {
-				properties.SetProperty ("ShowBracketHighlight", value);
+				properties.Set ("ShowBracketHighlight", value);
 			}
 		}
 		
 		public static bool ShowLineNumbers {
 			get {
-				return properties.GetProperty ("ShowLineNumbers", true);
+				return properties.Get ("ShowLineNumbers", true);
 			}
 			set {
-				properties.SetProperty ("ShowLineNumbers", value);
+				properties.Set ("ShowLineNumbers", value);
 			}
 		}
 		
 		public static bool ShowSpaces {
 			get {
-				return properties.GetProperty ("ShowSpaces", false);
+				return properties.Get ("ShowSpaces", false);
 			}
 			set {
-				properties.SetProperty ("ShowSpaces", value);
+				properties.Set ("ShowSpaces", value);
 			}
 		}
 		
 		public static bool ShowTabs {
 			get {
-				return properties.GetProperty ("ShowTabs", false);
+				return properties.Get ("ShowTabs", false);
 			}
 			set {
-				properties.GetProperty ("ShowTabs", value);
+				properties.Get ("ShowTabs", value);
 			}
 		}
 		
 		public static bool ShowEOLMarker {
 			get {
-				return properties.GetProperty ("ShowEOLMarkers", false);
+				return properties.Get ("ShowEOLMarkers", false);
 			}
 			set {
-				properties.SetProperty ("ShowEOLMarkers", value);
+				properties.Set ("ShowEOLMarkers", value);
 			}
 		}
 		
 		public static bool ShowInvalidLines {
 			get {
-				return properties.GetProperty ("ShowInvalidLines", false);
+				return properties.Get ("ShowInvalidLines", false);
 			}
 			set {
-				properties.SetProperty ("ShowInvalidLines", value);
+				properties.Set ("ShowInvalidLines", value);
 			}
 		}
 		
 		public static bool IsIconBarVisible {
 			get {
-				return properties.GetProperty ("IconBarVisible", true);
+				return properties.Get ("IconBarVisible", true);
 			}
 			set {
-				properties.SetProperty ("IconBarVisible", value);
+				properties.Set ("IconBarVisible", value);
 			}
 		}
 		
 		public static bool EnableFolding {
 			get {
-				return properties.GetProperty ("EnableFolding", true);
+				return properties.Get ("EnableFolding", true);
 			}
 			set {
-				properties.SetProperty ("EnableFolding", value);
+				properties.Set ("EnableFolding", value);
 			}
 		}
 		
 		public static bool ShowHorizontalRuler {
 			get {
-				return properties.GetProperty ("ShowHRuler", false);
+				return properties.Get ("ShowHRuler", false);
 			}
 			set {
-				properties.SetProperty ("ShowHRuler", value);
+				properties.Set ("ShowHRuler", value);
 			}
 		}
 		
 		public static bool ShowVerticalRuler {
 			get {
-				return properties.GetProperty ("ShowVRuler", false);
+				return properties.Get ("ShowVRuler", false);
 			}
 			set {
-				properties.SetProperty ("ShowVRuler", value);
+				properties.Set ("ShowVRuler", value);
 			}
 		}
 		
 		public static bool ConvertTabsToSpaces {
 			get {
-				return properties.GetProperty ("TabsToSpaces", false);
+				return properties.Get ("TabsToSpaces", false);
 			}
 			set {
-				properties.SetProperty ("TabsToSpaces", value);
+				properties.Set ("TabsToSpaces", value);
 			}
 		}
 		
 		public static bool UseAntiAliasedFont {
 			get {
-				return properties.GetProperty ("UseAntiAliasFont", false);
+				return properties.Get ("UseAntiAliasFont", false);
 			}
 			set {
-				properties.SetProperty ("UseAntiAliasFont", value);
+				properties.Set ("UseAntiAliasFont", value);
 			}
 		}
 		
 		public static bool CreateBackupCopy {
 			get {
-				return properties.GetProperty ("CreateBackupCopy", false);
+				return properties.Get ("CreateBackupCopy", false);
 			}
 			set {
-				properties.SetProperty ("CreateBackupCopy", value);
+				properties.Set ("CreateBackupCopy", value);
 			}
 		}
 		
 		public static bool MouseWheelScrollDown {
 			get {
-				return properties.GetProperty ("MouseWheelScrollDown", false);
+				return properties.Get ("MouseWheelScrollDown", false);
 			}
 			set {
-				properties.SetProperty ("MouseWheelScrollDown", value);
+				properties.Set ("MouseWheelScrollDown", value);
 			}
 		}
 		
 		public static bool HideMouseCursor {
 			get {
-				return properties.GetProperty ("HideMouseCursor", false);
+				return properties.Get ("HideMouseCursor", false);
 			}
 			set {
-				properties.SetProperty ("HideMouseCursor", value);
+				properties.Set ("HideMouseCursor", value);
 			}
 		}
 		
 		public static Encoding Encoding {
 			get {
-				return Encoding.GetEncoding (properties.GetProperty ("Encoding", 1252));
+				return Encoding.GetEncoding (properties.Get ("Encoding", 1252));
 			}
 			set {
-				properties.SetProperty ("Encoding", value.CodePage);
+				properties.Set ("Encoding", value.CodePage);
 			}
 		}
 		
 		public static int VerticalRulerRow {
 			get {
-				return properties.GetProperty ("VRulerRow", 80);
+				return properties.Get ("VRulerRow", 80);
 			}
 			set {
-				properties.SetProperty ("VRulerRow", value);
+				properties.Set ("VRulerRow", value);
 			}
 		}
 		
 		public static LineViewerStyle LineViewerStyle {
 			get {
-				return (LineViewerStyle) properties.GetProperty ("LineViewerStyle", LineViewerStyle.None);
+				return (LineViewerStyle) properties.Get ("LineViewerStyle", LineViewerStyle.None);
 			}
 			set {
-				properties.SetProperty ("LineViewerStyle", value);
+				properties.Set ("LineViewerStyle", value);
 			}
 		}
 		
@@ -279,37 +277,37 @@ namespace MonoDevelop.Ide.Gui.Content {
 		
 		public static bool AutoInsertCurlyBracket {
 			get {
-				return properties.GetProperty("AutoInsertCurlyBracket", true);
+				return properties.Get("AutoInsertCurlyBracket", true);
 			}
 			set {
-				properties.SetProperty("AutoInsertCurlyBracket", value);
+				properties.Set("AutoInsertCurlyBracket", value);
 			}
 		}
 		
 		public static bool AutoInsertTemplates {
 			get {
-				return properties.GetProperty("AutoInsertTemplates", true);
+				return properties.Get("AutoInsertTemplates", true);
 			}
 			set {
-				properties.SetProperty("AutoInsertTemplates", value);
+				properties.Set("AutoInsertTemplates", value);
 			}
 		}
 		
 		public static bool UnderlineErrors {
 			get {
-				return properties.GetProperty("ShowErrors", true);
+				return properties.Get("ShowErrors", true);
 			}
 			set {
-				properties.SetProperty("ShowErrors", value);
+				properties.Set("ShowErrors", value);
 			}
 		}
 		
 		public static Gtk.WrapMode WrapMode {
 			get {
-				return (Gtk.WrapMode) properties.GetProperty ("WrapMode", Gtk.WrapMode.None);
+				return (Gtk.WrapMode) properties.Get ("WrapMode", Gtk.WrapMode.None);
 			}
 			set {
-				properties.SetProperty ("WrapMode", value);
+				properties.Set ("WrapMode", value);
 			}
 		}
 		
@@ -343,10 +341,10 @@ namespace MonoDevelop.Ide.Gui.Content {
 		
 		public static string FontName {
 			get {
-				return properties.GetProperty ("DefaultFont", "__default_monospace");
+				return properties.Get ("DefaultFont", "__default_monospace");
 			}
 			set {
-				properties.SetProperty ("DefaultFont", value != null ? value : "__default_monospace");
+				properties.Set ("DefaultFont", value != null ? value : "__default_monospace");
 			}
 		}
 		
@@ -368,52 +366,52 @@ namespace MonoDevelop.Ide.Gui.Content {
 				}
 			}
 			set {
-				properties.SetProperty ("DefaultFont", value.ToString ());
+				properties.Set ("DefaultFont", value.ToString ());
 			}
 		}
 		
 		public static bool ShowClassBrowser {
 			get {
-				return properties.GetProperty("ShowClassBrowser", true);
+				return properties.Get("ShowClassBrowser", true);
 			}
 			set {
-				properties.SetProperty("ShowClassBrowser", value);
+				properties.Set("ShowClassBrowser", value);
 			}
 		}
 		
 		public static bool HighlightCurrentLine {
 			get {
-				return properties.GetProperty ("HighlightCurrentLine", true);
+				return properties.Get ("HighlightCurrentLine", true);
 			}
 			set {
-				properties.SetProperty ("HighlightCurrentLine", value);
+				properties.Set ("HighlightCurrentLine", value);
 			}
 		}
 		
 		public static bool HighlightSpaces {
 			get {
-				return properties.GetProperty ("HighlightSpaces", false);
+				return properties.Get ("HighlightSpaces", false);
 			}
 			set {
-				properties.SetProperty ("HighlightSpaces", value);
+				properties.Set ("HighlightSpaces", value);
 			}
 		}
 
 		public static bool HighlightTabs {
 			get {
-				return properties.GetProperty ("HighlightTabs", false);
+				return properties.Get ("HighlightTabs", false);
 			}
 			set {
-				properties.SetProperty ("HighlightTabs", value);
+				properties.Set ("HighlightTabs", value);
 			}
 		}
 	
 		public static bool HighlightNewlines {
 			get {
-				return properties.GetProperty ("HighlightNewlines", false);
+				return properties.Get ("HighlightNewlines", false);
 			}
 			set {
-				properties.SetProperty ("HighlightNewlines", value);
+				properties.Set ("HighlightNewlines", value);
 			}
 		}
 	}
