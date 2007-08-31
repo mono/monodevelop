@@ -28,7 +28,6 @@
 using System;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
 
 namespace CSharpBinding.FormattingStrategy.Properties {
 	public enum GotoLabelIndentStyle {
@@ -43,32 +42,28 @@ namespace CSharpBinding.FormattingStrategy.Properties {
 	}
 	
 	public class FormattingProperties {
-		static PropertyService propertyService;
-		static IProperties properties;
+		static MonoDevelop.Core.Properties properties;
 		
 		static FormattingProperties ()
 		{
-			propertyService = (PropertyService) ServiceManager.GetService (typeof (PropertyService));
-			properties = ((IProperties) propertyService.GetProperty ("CSharpBinding.FormattingProperties",
-			                                                         new DefaultProperties ()));
+			properties = PropertyService.Get ("CSharpBinding.FormattingProperties", new MonoDevelop.Core.Properties ());
 		}
 		
 		public static bool IndentCaseLabels {
 			get {
-				return (bool) properties.GetProperty ("IndentCaseLabels", false);
+				return properties.Get ("IndentCaseLabels", false);
 			}
 			set {
-				properties.SetProperty ("IndentCaseLabels", value);
+				properties.Set ("IndentCaseLabels", value);
 			}
 		}
 		
 		public static GotoLabelIndentStyle GotoLabelIndentStyle {
 			get {
-				return (GotoLabelIndentStyle)
-					properties.GetProperty ("GotoLabelIndentStyle", GotoLabelIndentStyle.OneLess);
+				return properties.Get ("GotoLabelIndentStyle", GotoLabelIndentStyle.OneLess);
 			}
 			set {
-				properties.SetProperty ("GotoLabelIndentStyle", value);
+				properties.Set ("GotoLabelIndentStyle", value);
 			}
 		}
 	}

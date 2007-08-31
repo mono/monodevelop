@@ -10,7 +10,7 @@ using System.IO;
 using System.Collections;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core;
@@ -33,7 +33,7 @@ namespace CSharpBinding
 		
 		public override void LoadPanelContents()
 		{
-			config = (DotNetProjectConfiguration)((IProperties)CustomizationObject).GetProperty("Config");
+			config = ((Properties)CustomizationObject).Get<DotNetProjectConfiguration> ("Config");
 			parameters = (CSharpCompilerParameters) config.CompilationParameters;
 			
 			msnetRadioButton.Active = config.NetRuntime == NetRuntime.MsNet;

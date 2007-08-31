@@ -13,7 +13,7 @@ using System.Drawing;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Text;
@@ -33,12 +33,12 @@ namespace CSharpBinding
 		bool classListFilled;
 
 		public 
-		CodeGenerationPanelWidget (IProperties CustomizationObject)
+		CodeGenerationPanelWidget (Properties CustomizationObject)
 		{
 			Build ();
 			
-			configuration = (DotNetProjectConfiguration)((IProperties)CustomizationObject).GetProperty("Config");
-			project = (Project)((IProperties)CustomizationObject).GetProperty("Project");
+			configuration = ((Properties)CustomizationObject).Get<DotNetProjectConfiguration> ("Config");
+			project = ((Properties)CustomizationObject).Get<Project> ("Project");
 			compilerParameters = (CSharpCompilerParameters) configuration.CompilationParameters;
 			
 			ListStore store = new ListStore (typeof (string));
@@ -178,7 +178,7 @@ namespace CSharpBinding
 		
 		public override void LoadPanelContents()
 		{
-			Add (widget = new  CodeGenerationPanelWidget ((IProperties) CustomizationObject));
+			Add (widget = new  CodeGenerationPanelWidget ((Properties) CustomizationObject));
 		}
 		
 		public override bool StorePanelContents()

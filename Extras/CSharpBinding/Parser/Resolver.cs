@@ -804,7 +804,7 @@ namespace CSharpBinding.Parser
 			return null;
 		}
 		
-		IProperty GetProperty()
+		IProperty Get()
 		{
 			foreach (IProperty property in callingClass.Properties) {
 				if (property.BodyRegion != null && property.BodyRegion.IsInside(caretLine, caretColumn)) {
@@ -829,7 +829,7 @@ namespace CSharpBinding.Parser
 		
 		IProperty SearchProperty ()
 		{
-			IProperty property = GetProperty();
+			IProperty property = Get();
 			if (property == null) {
 				return null;
 			}

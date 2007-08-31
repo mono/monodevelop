@@ -1,3 +1,13 @@
+2007-08-31  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/ChooseRuntimePanel.cs, Gui/CodeGenerationPanel.cs,
+	  Gui/FormattingPanel.cs, Parser/Resolver.cs,
+	  FormattingStrategy/CSharpFormattingStrategy.cs,
+	  FormattingStrategy/CSharpFormattingProperties.cs,
+	  gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs,
+	  gtk-gui/CSharpBinding.FormattingPanelWidget.cs, CSharpAmbience.cs:
+	  Changes due to new property infrastructure.
+
 2007-08-24  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/CSharpTextEditorExtension.cs: Fixed 82555: Xml comments activating
