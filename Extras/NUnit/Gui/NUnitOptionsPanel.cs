@@ -31,7 +31,7 @@ using System;
 using System.IO;
 using System.Collections;
 
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Core;
 
 using MonoDevelop.Core.Gui.Components;
@@ -61,10 +61,10 @@ namespace MonoDevelop.NUnit
 			NUnitCategoryOptions options;
 			NUnitCategoryOptions localOptions;
 
-			public NUnitOptionsWidget (IProperties customizationObject) : base ("nunit.glade", "NUnitOptions")
+			public NUnitOptionsWidget (Properties customizationObject) : base ("nunit.glade", "NUnitOptions")
 			{
-				test = (UnitTest) ((IProperties)customizationObject).GetProperty ("UnitTest");
-				config = (string) ((IProperties)customizationObject).GetProperty ("Config");
+				test =  ((Properties)customizationObject).Get<UnitTest> ("UnitTest");
+				config =  ((Properties)customizationObject).Get<string> ("Config");
 				options = localOptions = (NUnitCategoryOptions) test.GetOptions (typeof(NUnitCategoryOptions), config);
 				
 				store = new TreeStore (typeof(string));
@@ -180,7 +180,7 @@ namespace MonoDevelop.NUnit
 				}
 			}
 
-			public void Store (IProperties customizationObject)
+			public void Store (Properties customizationObject)
 			{
 				if (useParentCheck.Active)
 					test.ResetOptions (typeof(NUnitCategoryOptions), config);
@@ -193,12 +193,12 @@ namespace MonoDevelop.NUnit
 
 		public override void LoadPanelContents()
 		{
-			Add (widget = new NUnitOptionsWidget ((IProperties) CustomizationObject));
+			Add (widget = new NUnitOptionsWidget ((Properties) CustomizationObject));
 		}
 		
 		public override bool StorePanelContents()
 		{
-			widget.Store ((IProperties) CustomizationObject);
+			widget.Store ((Properties) CustomizationObject);
  			return true;
 		}
 	}

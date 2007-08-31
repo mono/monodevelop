@@ -32,7 +32,7 @@ using System.Collections;
 
 using Mono.Addins;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Dialogs;
 
 namespace MonoDevelop.NUnit {
@@ -51,8 +51,8 @@ namespace MonoDevelop.NUnit {
 			this.test = test;
 			this.Title = GettextCatalog.GetString ("Unit Test Options");
 			
-			properties = new DefaultProperties();
-			properties.SetProperty ("UnitTest", test);
+			properties = new Properties();
+			properties.Set ("UnitTest", test);
 			AddNodes (properties, Gtk.TreeIter.Zero, node.GetChildObjects ());			
 			SelectFirstNode ();	
 		}
@@ -60,9 +60,9 @@ namespace MonoDevelop.NUnit {
 		void FillConfigurations (Gtk.TreeIter configIter)
 		{
 			foreach (string name in test.GetConfigurations ()) {
-				DefaultProperties configNodeProperties = new DefaultProperties();
-				configNodeProperties.SetProperty("UnitTest", test);
-				configNodeProperties.SetProperty("Config", name);
+				Properties configNodeProperties = new Properties();
+				configNodeProperties.Set ("UnitTest", test);
+				configNodeProperties.Set ("Config", name);
 				
 				object[] list = configurationNode.GetChildObjects ();
 				if (list.Length > 1) {
