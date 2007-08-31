@@ -1,3 +1,8 @@
+2007-08-31  Mike Krüger <mkrueger@novell.com> 
+
+	* WelcomePageOptionPanel.cs, WelcomePageCommands.cs: Changes due to new
+	  property infrastructure.
+
 2007-08-31  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* WelcomePageView.cs: Dispose resource streams, to avoid an exception in 

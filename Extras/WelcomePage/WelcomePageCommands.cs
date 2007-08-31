@@ -40,7 +40,7 @@ namespace MonoDevelop.WelcomePage
 	{
 		protected override void Run()
 		{
-			if (!Runtime.Properties.GetProperty("WelcomePage.ShowOnStartup", true))
+			if (!PropertyService.Get("WelcomePage.ShowOnStartup", true))
 				return;
 			
 			WelcomePageView wpv = new WelcomePageView();
