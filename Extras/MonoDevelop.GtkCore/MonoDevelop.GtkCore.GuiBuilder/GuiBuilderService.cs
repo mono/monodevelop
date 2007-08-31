@@ -89,7 +89,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				if (steticApp == null) {
 					steticApp = new Stetic.Application (IsolationMode);
 					steticApp.AllowInProcLibraries = false;
-					steticApp.ShowNonContainerWarning = Runtime.Properties.GetProperty ("MonoDevelop.GtkCore.ShowNonContainerWarning", true);
+					steticApp.ShowNonContainerWarning = PropertyService.Get ("MonoDevelop.GtkCore.ShowNonContainerWarning", true);
 				}
 				return steticApp;
 			}
@@ -97,8 +97,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		internal static void StoreConfiguration ()
 		{
-			Runtime.Properties.SetProperty ("MonoDevelop.GtkCore.ShowNonContainerWarning", steticApp.ShowNonContainerWarning);
-			Runtime.Properties.SaveProperties ();
+			PropertyService.Set ("MonoDevelop.GtkCore.ShowNonContainerWarning", steticApp.ShowNonContainerWarning);
+			PropertyService.SaveProperties ();
 		}
 
 		

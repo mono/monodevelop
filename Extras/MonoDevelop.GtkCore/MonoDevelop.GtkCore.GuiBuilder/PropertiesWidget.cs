@@ -79,7 +79,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	
 /*	public class GuiBuilderPropertiesPad: AbstractPadContent
 	{
-		Stetic.WidgetPropertyTree grid;
+		Stetic.WidGetTree grid;
 		Stetic.SignalsEditor signalsEditor;
 		Gtk.EventBox infoBox;
 		Gtk.Widget widget;

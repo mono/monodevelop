@@ -34,7 +34,7 @@ using Gtk;
 using Gdk;
 using Glade;
 	
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Ide.Gui;
@@ -65,7 +65,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 			ArrayList selection;
 			GtkDesignInfo designInfo;
 			
-			public WidgetBuilderOptionPanelWidget (IProperties customizationObject) : base ("gui.glade", "WidgetBuilderOptions")
+			public WidgetBuilderOptionPanelWidget (Properties customizationObject) : base ("gui.glade", "WidgetBuilderOptions")
 			{
 				store = new ListStore (typeof(bool), typeof(Pixbuf), typeof(string), typeof(object));
 				tree.Model = store;
@@ -89,7 +89,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 				
 				tree.AppendColumn (column);
 				
-				this.project = (Project)((IProperties)customizationObject).GetProperty("Project");
+				this.project = ((Properties)customizationObject).Get<Project> ("Project");
 				designInfo = GtkCoreService.GetGtkInfo (project);
 				
 				selection = new ArrayList ();
@@ -149,7 +149,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 				}
 			}
 		
-			public void Store (IProperties customizationObject)
+			public void Store (Properties customizationObject)
 			{
 				if (checkGtkEnabled.Active) {
 					if (designInfo == null)
@@ -183,7 +183,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 		public override void LoadPanelContents()
 		{
 			try {
-				Add (widget = new WidgetBuilderOptionPanelWidget ((IProperties) CustomizationObject));
+				Add (widget = new WidgetBuilderOptionPanelWidget ((Properties) CustomizationObject));
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
 			}
@@ -191,7 +191,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 		
 		public override bool StorePanelContents()
 		{
-			widget.Store ((IProperties) CustomizationObject);
+			widget.Store ((Properties) CustomizationObject);
  			return true;
 		}
 	}

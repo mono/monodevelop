@@ -1,3 +1,10 @@
+2007-08-31  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/PropertiesWidget.cs: Changes due to new
+	  property infrastructure.
+
 2007-08-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore/GtkDesignInfo.cs,
