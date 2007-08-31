@@ -8,7 +8,6 @@ namespace MonoDevelop.Components
 	public class FileSelector : FileChooserDialog
 	{
 		const string LastPathProperty = "MonoDevelop.FileSelector.LastPath";
-		PropertyService propertyService = (PropertyService) ServiceManager.GetService (typeof (PropertyService));
 
 		public FileSelector () : this (GettextCatalog.GetString ("Open file..."), FileChooserAction.Open)
 		{
@@ -43,14 +42,14 @@ namespace MonoDevelop.Components
 		void CommonSetup ()
 		{
 			// Restore the last active directory
-			string last = (string) propertyService.GetProperty (LastPathProperty);
+			string last = PropertyService.Get<string> (LastPathProperty);
 			if (last != null && last.Length > 0)
 				this.SetCurrentFolder (last);
 			else
 				this.SetCurrentFolder (Environment.GetFolderPath (Environment.SpecialFolder.Personal));
 
 			// add default project path as a MD bookmark
-			string pathName = propertyService.GetProperty ("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", Runtime.FileService.GetDirectoryNameWithSeparator (Environment.GetFolderPath (Environment.SpecialFolder.Personal))).ToString ();
+			string pathName = PropertyService.Get ("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", Runtime.FileService.GetDirectoryNameWithSeparator (Environment.GetFolderPath (Environment.SpecialFolder.Personal))).ToString ();
 
 			if (Runtime.FileService.IsDirectory (pathName)) {
 				try {
@@ -68,7 +67,7 @@ namespace MonoDevelop.Components
 
 		void OnCurrentFolderChanged (object o, EventArgs args)
 		{
-			propertyService.SetProperty (LastPathProperty, this.CurrentFolder);
+			PropertyService.Set (LastPathProperty, this.CurrentFolder);
 		}
 		
 		public override void Dispose ()

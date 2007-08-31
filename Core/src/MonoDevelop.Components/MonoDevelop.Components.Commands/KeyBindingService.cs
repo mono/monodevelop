@@ -57,8 +57,7 @@ namespace MonoDevelop.Components.Commands {
 		
 		static string ConfigFileName {
 			get {
-				PropertyService propertyService = (PropertyService) ServiceManager.GetService (typeof (PropertyService));
-				return Path.Combine (propertyService.ConfigDirectory, configFileName);
+				return Path.Combine (PropertyService.ConfigPath, configFileName);
 			}
 		}
 		

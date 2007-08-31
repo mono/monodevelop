@@ -1,3 +1,9 @@
+2007-08-31  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Components/FileSelector.cs,
+	  MonoDevelop.Components.Commands/KeyBindingService.cs: Changes due to new
+	  property system.
+
 2007-08-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/objects.xml: Assigned a better category to custom widgets.
