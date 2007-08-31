@@ -33,7 +33,7 @@
 using System;
 using Gtk;
 using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 
 namespace AspNetAddIn
 {
@@ -44,7 +44,7 @@ namespace AspNetAddIn
 		
 		public override void LoadPanelContents ()
 		{
-			panel = new AspNetConfigurationPanelWidget ((IProperties) this.CustomizationObject);
+			panel = new AspNetConfigurationPanelWidget ((Properties) this.CustomizationObject);
 			this.Child = panel;
 		}
 		

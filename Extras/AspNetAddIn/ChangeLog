@@ -1,3 +1,8 @@
+2007-08-31  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/AspNetConfigurationPanel.cs, Gui/AspNetConfigurationPanelWidget.cs,
+	  Gui/XspOptionsPanel.cs: Changes due to new property infrastructure.
+
 2007-08-31  Ankit Jain  <jankit@novell.com>
 
 	* Templates/WebApplication.xpt.xml: Set BuildAction for aspx file to

@@ -32,7 +32,7 @@
 using System;
 using Gtk;
 using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 
 namespace AspNetAddIn
 {
@@ -47,13 +47,13 @@ namespace AspNetAddIn
 		
 		public override void LoadPanelContents ()
 		{
-			panel = new XspOptionsPanelWidget ((IProperties) this.CustomizationObject);
+			panel = new XspOptionsPanelWidget ((Properties) this.CustomizationObject);
 			this.Child = panel;
 		}
 		
 		public override bool StorePanelContents ()
 		{
-			panel.Store ((IProperties) CustomizationObject);
+			panel.Store ((Properties) CustomizationObject);
  			return true;
 		}
 	}
@@ -72,9 +72,9 @@ namespace AspNetAddIn
 		[Glade.Widget] ComboBox passwordOptions;
 		[Glade.Widget] Entry passwordEntry;
 			
-		public XspOptionsPanelWidget  (IProperties customizationObject) : base ("AspNetAddIn.glade", "XspOptionsPanel")
+		public XspOptionsPanelWidget  (Properties customizationObject) : base ("AspNetAddIn.glade", "XspOptionsPanel")
 		{
-			AspNetAppProject project = (AspNetAppProject)((IProperties)customizationObject).GetProperty("Project");
+			AspNetAppProject project = ((Properties)customizationObject).Get<AspNetAppProject> ("Project");
 			XspParameters xPar = project.XspParameters;
 			
 			//index should be equivalent to XspSslMode enum
@@ -132,9 +132,9 @@ namespace AspNetAddIn
 				passwordEntry.Text = "";
 		}
 		
-		public void Store (IProperties customizationObject)
+		public void Store (Properties customizationObject)
 		{
-			AspNetAppProject project = (AspNetAppProject)((IProperties)customizationObject).GetProperty("Project");
+			AspNetAppProject project = ((Properties)customizationObject).Get<AspNetAppProject> ("Project");
 			XspParameters xPar = project.XspParameters;
 			
 			xPar.Address = ipAddress.Text;

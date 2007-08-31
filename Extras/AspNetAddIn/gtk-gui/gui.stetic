@@ -2,10 +2,11 @@
 <stetic-interface>
   <configuration>
     <images-root-path>../</images-root-path>
+    <target-gtk-version>2.10.0</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../../../build/AddIns/MonoDevelop.Components.dll" />
-    <widget-library name="../../../build/AddIns/MonoDevelop.Ide.dll" />
+    <widget-library name="../../../build/bin/MonoDevelop.Components.dll" />
+    <widget-library name="../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../build/AddIns/MonoDevelop.Deployment.dll" />
   </import>
   <widget class="Gtk.Bin" id="AspNetAddIn.AspNetConfigurationPanelWidget" design-size="436 300">
