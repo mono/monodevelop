@@ -27,7 +27,7 @@
 
 using System;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.ChangeLogAddIn
 {
@@ -40,17 +40,17 @@ namespace MonoDevelop.ChangeLogAddIn
 		
 		public void LoadPanelContents()
 		{
-			nameEntry.Text = Runtime.Properties.GetProperty ("ChangeLogAddIn.Name", "Full Name");
-			emailEntry.Text = Runtime.Properties.GetProperty ("ChangeLogAddIn.Email", "Email Address");
-			integrationCheck.Active = Runtime.Properties.GetProperty ("ChangeLogAddIn.VersionControlIntegration", true);
+			nameEntry.Text = PropertyService.Get ("ChangeLogAddIn.Name", "Full Name");
+			emailEntry.Text = PropertyService.Get ("ChangeLogAddIn.Email", "Email Address");
+			integrationCheck.Active = PropertyService.Get ("ChangeLogAddIn.VersionControlIntegration", true);
 		}
 		
 		public bool StorePanelContents()
 		{
-			Runtime.Properties.SetProperty("ChangeLogAddIn.Name", nameEntry.Text);
-			Runtime.Properties.SetProperty("ChangeLogAddIn.Email", emailEntry.Text);
-			Runtime.Properties.SetProperty("ChangeLogAddIn.VersionControlIntegration", integrationCheck.Active);
-			Runtime.Properties.SaveProperties ();
+			PropertyService.Set("ChangeLogAddIn.Name", nameEntry.Text);
+			PropertyService.Set("ChangeLogAddIn.Email", emailEntry.Text);
+			PropertyService.Set("ChangeLogAddIn.VersionControlIntegration", integrationCheck.Active);
+			PropertyService.SaveProperties ();
 			return true;
 		}
 	}

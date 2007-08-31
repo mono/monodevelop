@@ -29,7 +29,7 @@ using System;
 using Gtk;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.ChangeLogAddIn
 {		
@@ -39,7 +39,7 @@ namespace MonoDevelop.ChangeLogAddIn
 		
 		public override void LoadPanelContents ()
 		{						
-			CombineEntry entry = (CombineEntry)((IProperties)CustomizationObject).GetProperty ("CombineEntry");
+			CombineEntry entry = ((Properties)CustomizationObject).Get<CombineEntry> ("CombineEntry");
 			widget = new ProjectOptionPanelWidget(entry);
 			Add (widget);
 		}

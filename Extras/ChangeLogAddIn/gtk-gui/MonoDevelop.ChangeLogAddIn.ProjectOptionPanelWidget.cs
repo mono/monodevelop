@@ -60,7 +60,6 @@ namespace MonoDevelop.ChangeLogAddIn {
             this.parentRadioButton = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("radiobutton2"));
             this.parentRadioButton.CanFocus = true;
             this.parentRadioButton.Name = "parentRadioButton";
-            this.parentRadioButton.Active = true;
             this.parentRadioButton.DrawIndicator = true;
             this.parentRadioButton.UseUnderline = true;
             this.parentRadioButton.Group = new GLib.SList(System.IntPtr.Zero);

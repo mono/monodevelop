@@ -73,7 +73,7 @@ namespace MonoDevelop.ChangeLogAddIn
 		}
 		
 		public static bool IntegrationEnabled {
-			get { return Runtime.Properties.GetProperty ("ChangeLogAddIn.VersionControlIntegration", true); }
+			get { return PropertyService.Get ("ChangeLogAddIn.VersionControlIntegration", true); }
 		}
 		
 		public override void Initialize (ChangeSet cset)
@@ -98,8 +98,8 @@ namespace MonoDevelop.ChangeLogAddIn
 			if (!IntegrationEnabled)
 				Remove (box);
 
-			string name = Runtime.Properties.GetProperty ("ChangeLogAddIn.Name", "");
-			string email = Runtime.Properties.GetProperty ("ChangeLogAddIn.Email", "");
+			string name = PropertyService.Get ("ChangeLogAddIn.Name", "");
+			string email = PropertyService.Get ("ChangeLogAddIn.Email", "");
 			
 			if (name.Length == 0 || email.Length == 0) {
 				msgLabel.Markup = "<b><span foreground='red'>" + GettextCatalog.GetString ("ChangeLog entries can't be generated.") + "</span></b>";
@@ -251,8 +251,8 @@ namespace MonoDevelop.ChangeLogAddIn
 				string path = System.IO.Path.GetDirectoryName (entry.File);
 				string msg = cset.GeneratePathComment (path, entry.Items, 75);
 
-				string name = Runtime.Properties.GetProperty ("ChangeLogAddIn.Name", "");
-				string email = Runtime.Properties.GetProperty ("ChangeLogAddIn.Email", "");
+				string name = PropertyService.Get ("ChangeLogAddIn.Name", "");
+				string email = PropertyService.Get ("ChangeLogAddIn.Email", "");
 				string date = DateTime.Now.ToString("yyyy-MM-dd");
 				string text = date + "  " + name + " <" + email + "> " + Environment.NewLine + Environment.NewLine;
 				

@@ -102,8 +102,8 @@ namespace MonoDevelop.ChangeLogAddIn
 			IEditableTextBuffer textBuffer = document.GetContent<IEditableTextBuffer>();					
 			if (textBuffer == null) return;
 		
-			string name = Runtime.Properties.GetProperty("ChangeLogAddIn.Name", "Full Name");
-			string email = Runtime.Properties.GetProperty("ChangeLogAddIn.Email", "Email Address");
+			string name = PropertyService.Get("ChangeLogAddIn.Name", "Full Name");
+			string email = PropertyService.Get("ChangeLogAddIn.Email", "Email Address");
 			string date = DateTime.Now.ToString("yyyy-MM-dd");
 			string text = date + "  " + name + " <" + email + ">" 
 			    + Environment.NewLine + Environment.NewLine;

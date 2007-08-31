@@ -1,3 +1,10 @@
+2007-08-31  Mike Krüger <mkrueger@novell.com> 
+
+	* ProjectOptionPanel.cs, ChangeLogAddIn.cs,
+	  gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs,
+	  ChangeLogAddInOptionPanelWidget.cs, CommitDialogExtensionWidget.cs:
+	  Changes due to new property infrastructure.
+
 2007-08-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AddLogEntryDialog.cs: When changing selection, get the text from the
