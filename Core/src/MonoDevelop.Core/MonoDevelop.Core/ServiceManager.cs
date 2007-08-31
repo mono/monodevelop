@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 
 using Mono.Addins;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Core
 {
@@ -51,7 +51,6 @@ namespace MonoDevelop.Core
 		static ServiceManager()
 		{
 			// add 'core' services
-			AddService (new PropertyService());
 			AddService (new StringParserService());
 		}
 		

@@ -1,172 +1,111 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version value="$version"/>
-// </file>
+//
+// PropertyService.cs
+//
+// Author:
+//   Mike Krüger <mkrueger@novell.com>
+//
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
 
 using System;
-using System.IO;
 using System.Diagnostics;
-using System.Text;
-using System.Xml;
+using System.IO;
 using System.Reflection;
-using MonoDevelop.Core.Properties;
 
 namespace MonoDevelop.Core
-{ 
-	/// <summary>
-	/// This class handles the Global Properties for the IDE, all what can be configured should be
-	/// loaded/saved by this class. It is a bit like a Singleton with static delegation instead
-	/// of returning a static reference to a <code>IProperties</code> object.
-	/// </summary>
-	public class PropertyService : DefaultProperties, IService
+{
+	public static class PropertyService
 	{
+		readonly static string FileName = "MonoDevelopProperties.xml";
+		static Properties properties;
 		
-		readonly static string propertyFileName    = "MonoDevelopProperties.xml";
-		readonly static string propertyFileVersion = "1.1";
-		
-		readonly static string propertyXmlRootNodeName  = "SharpDevelopProperties";
-		
-		static string dataDirectory;
-		
-		static PropertyService()
-		{
-			string confDataDirectory = System.Configuration.ConfigurationSettings.AppSettings["DataDirectory"];
-			
-			if (confDataDirectory != null) {
-				dataDirectory = confDataDirectory;
-			} else {				
-				dataDirectory = EntryAssemblyDirectory + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar + "data";
-			}
-
-			configDirectory = Environment.GetEnvironmentVariable ("XDG_CONFIG_HOME");
-			if (String.IsNullOrEmpty (configDirectory))
-				configDirectory = System.IO.Path.Combine (Environment.GetEnvironmentVariable ("HOME"), ".config");
-
-			configDirectory = System.IO.Path.Combine (configDirectory, "MonoDevelop");
-			configDirectory += System.IO.Path.DirectorySeparatorChar;
-		}
-
-		static string configDirectory;
-		/// <summary>
-		/// returns the path of the default application configuration directory
-		/// </summary>
-		public string ConfigDirectory {
+		public static string EntryAssemblyPath {
 			get {
-				return configDirectory;
-			}
-		}
-		
-		public string DataDirectory {
-			get {
-				return dataDirectory;
-			}
-		}
-		
-		public static string EntryAssemblyDirectory
-		{
-			get
-			{
-				if (Assembly.GetEntryAssembly() != null)
-					return Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-
+				if (Assembly.GetEntryAssembly () != null)
+					return Path.GetDirectoryName (Assembly.GetEntryAssembly ().Location);
 				return AppDomain.CurrentDomain.BaseDirectory;
 			}
 		}
-
-		public PropertyService()
-		{
-			try {
-				LoadProperties();
-			} catch (PropertyFileLoadException) {
-				//System.Windows.Forms.MessageBox.Show("Can't load property file", "Warning"); // don't use message service --> cyclic dependency
+		
+		public static string ConfigPath {
+			get {
+				string configPath = Environment.GetEnvironmentVariable ("XDG_CONFIG_HOME");
+				if (String.IsNullOrEmpty (configPath))
+					configPath = Path.Combine (Environment.GetEnvironmentVariable ("HOME"), ".config");
+				return Path.Combine (configPath, "MonoDevelop");
 			}
 		}
 		
-		void WritePropertiesToFile(string fileName)
-		{
-			XmlDocument doc = new XmlDocument();
-			doc.LoadXml("<?xml version=\"1.0\"?>\n<" + propertyXmlRootNodeName + " fileversion = \"" + propertyFileVersion + "\" />");
-			
-			doc.DocumentElement.AppendChild(ToXmlElement(doc));
-			doc.Save (fileName);
-		}
-		
-		bool LoadPropertiesFromStream(string filename)
-		{
-			try {
-				XmlDocument doc = new XmlDocument();
-				doc.Load(filename);
-				
-				if (doc.DocumentElement.Attributes["fileversion"].InnerText != propertyFileVersion) {
-					return false;
-				}
-				SetValueFromXmlElement(doc.DocumentElement["Properties"]);
-			} catch {
-				//Console.WriteLine("Exception while load properties from stream :\n " + e.ToString());
-				return false;
-			}
-			return true;
-		}
-		
-		/// <summary>
-		/// Loads the global properties from the current users application data folder, or
-		/// if it doesn't exist or couldn't read them it reads the default properties out
-		/// of the application folder.
-		/// </summary>
-		/// <exception cref="PropertyFileLoadException">
-		/// Is thrown when no property file could be loaded.
-		/// </exception>
-		void LoadProperties()
-		{
-			if (!Directory.Exists(configDirectory)) {
-				Directory.CreateDirectory(configDirectory);
-			}
-			
-			if (!LoadPropertiesFromStream(configDirectory + propertyFileName)) {
-				if (!LoadPropertiesFromStream(DataDirectory + Path.DirectorySeparatorChar + "options" + Path.DirectorySeparatorChar + propertyFileName)) {
-					throw new PropertyFileLoadException();
-				}
+		public static string DataPath {
+			get {
+				string result = System.Configuration.ConfigurationSettings.AppSettings ["DataDirectory"];
+				if (String.IsNullOrEmpty (result)) 
+					result = Path.Combine (EntryAssemblyPath, Path.Combine ("..", "data"));
+				return result;
 			}
 		}
 		
-		/// <summary>
-		/// Saves the current global property state to a file in the users application data folder.
-		/// </summary>
-		public void SaveProperties()
+		static PropertyService ()
 		{
-			WritePropertiesToFile(configDirectory + propertyFileName);
-		}
-		
-		// IService implementation:
-		public virtual void InitializeService()
-		{
-			OnInitialize(EventArgs.Empty);
-		}
-		
-		public virtual void UnloadService()
-		{
-			// save properties on exit
-			SaveProperties();
-			OnUnload(EventArgs.Empty);
-		}
-		
-		protected virtual void OnInitialize(EventArgs e)
-		{
-			if (Initialize != null) {
-				Initialize(this, e);
+			if (!LoadProperties (Path.Combine (ConfigPath, FileName))) {
+				if (!LoadProperties (Path.Combine (DataPath, FileName))) 
+					properties = new Properties ();
 			}
+			properties.PropertyChanged += delegate(object sender, PropertyChangedEventArgs args) {
+				if (PropertyChanged != null)
+					PropertyChanged (sender, args);
+			};
 		}
 		
-		protected virtual void OnUnload(EventArgs e)
+		static bool LoadProperties (string fileName)
 		{
-			if (Unload != null) {
-				Unload(this, e);
+			properties = null;
+			if (File.Exists (fileName)) {
+				properties = Properties.Load (fileName);
 			}
+			return properties != null;
 		}
 		
-		public event EventHandler Initialize;
-		public event EventHandler Unload;			
+		public static void SaveProperties()
+		{
+			Debug.Assert (properties != null);
+			properties.Save (Path.Combine (ConfigPath, FileName));
+		}
+		
+		public static T Get<T> (string property, T defaultValue)
+		{
+			return properties.Get (property, defaultValue);
+		}
+		
+		public static T Get<T> (string property)
+		{
+			return properties.Get<T> (property);
+		}
+		
+		public static void Set (string key, object val)
+		{
+			properties.Set (key, val);
+		}
+		
+		public static event EventHandler<PropertyChangedEventArgs> PropertyChanged;
 	}
 }

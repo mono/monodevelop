@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Globalization;
 
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Core
 {
@@ -123,8 +123,7 @@ namespace MonoDevelop.Core
 								case "RES":
 									throw new Exception ("This syntax is deprecated and needs to be removed from the offending consumer");
 								case "PROPERTY":
-									PropertyService propertyService = (PropertyService)ServiceManager.GetService(typeof(PropertyService));
-									propertyValue = propertyService.GetProperty(propertyName.Substring(k + 1)).ToString();
+									propertyValue = PropertyService.Get<string> (propertyName.Substring (k + 1));
 									break;
 							}
 						}

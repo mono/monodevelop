@@ -39,13 +39,6 @@ FILES =  \
 	MonoDevelop.Core.ProgressMonitoring/NullProgressMonitor.cs \
 	MonoDevelop.Core.ProgressMonitoring/ProgressTracker.cs \
 	MonoDevelop.Core.ProgressMonitoring/SynchronizedProgressMonitor.cs \
-	MonoDevelop.Core.Properties/CharacterEncodings.cs \
-	MonoDevelop.Core.Properties/DefaultProperties.cs \
-	MonoDevelop.Core.Properties/IProperties.cs \
-	MonoDevelop.Core.Properties/IXmlConvertable.cs \
-	MonoDevelop.Core.Properties/PropertyEventArgs.cs \
-	MonoDevelop.Core.Properties/PropertyFileLoadException.cs \
-	MonoDevelop.Core.Properties/UnknownPropertyNodeException.cs \
 	MonoDevelop.Core.Utils.DirectoryArchive/Bz2Support.cs \
 	MonoDevelop.Core.Utils.DirectoryArchive/Decompressor.cs \
 	MonoDevelop.Core.Utils.DirectoryArchive/GzSupport.cs \
@@ -53,6 +46,7 @@ FILES =  \
 	MonoDevelop.Core.Utils.DirectoryArchive/ZipDecompressor.cs \
 	MonoDevelop.Core.Utils.ReportingStream/ReportingStream.cs \
 	MonoDevelop.Core/AbstractService.cs \
+	MonoDevelop.Core/CharacterEncodings.cs \
 	MonoDevelop.Core/ClrVersion.cs \
 	MonoDevelop.Core/DefaultLoggingService.cs \
 	MonoDevelop.Core/FileEventArgs.cs \
@@ -62,13 +56,16 @@ FILES =  \
 	MonoDevelop.Core/IProgressMonitor.cs \
 	MonoDevelop.Core/IService.cs \
 	MonoDevelop.Core/IStringTagProvider.cs \
+	MonoDevelop.Core/Properties.cs \
+	MonoDevelop.Core/PropertyChangedEventArgs.cs \
 	MonoDevelop.Core/PropertyService.cs \
 	MonoDevelop.Core/Runtime.cs \
 	MonoDevelop.Core/ServiceManager.cs \
 	MonoDevelop.Core/StringParserService.cs \
 	MonoDevelop.Core/SystemAssemblyService.cs \
 	MonoDevelop.Core/SystemPackage.cs \
-	MonoDevelop.Core/UserException.cs
+	MonoDevelop.Core/UserException.cs \
+	MonoDevelop.Core/XmlReadHelper.cs
 
 GENERATED_FILES = MonoDevelop.Core/GettextCatalog.cs \
 		  AssemblyInfo.cs

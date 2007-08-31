@@ -40,7 +40,6 @@ namespace MonoDevelop.Core
 	public class Runtime
 	{
 		static ProcessService processService;
-		static PropertyService propertyService;
 		static StringParserService stringParserService;
 		static SystemAssemblyService systemAssemblyService;
 		static FileService fileService;
@@ -98,6 +97,7 @@ namespace MonoDevelop.Core
 		public static void Shutdown ()
 		{
 			ServiceManager.UnloadAllServices ();
+			PropertyService.SaveProperties ();
 		}
 	
 		public static ProcessService ProcessService {
@@ -107,14 +107,6 @@ namespace MonoDevelop.Core
 				return processService;
 			}
 		}
-	
-		public static PropertyService Properties {
-			get {
-				if (propertyService == null)
-					propertyService = (PropertyService) ServiceManager.GetService (typeof(PropertyService));
-				return propertyService ;
-			}
-		}	
 	
 		public static FileService FileService {
 			get {

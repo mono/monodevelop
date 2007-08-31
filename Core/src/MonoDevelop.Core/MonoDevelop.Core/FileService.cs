@@ -30,7 +30,7 @@ namespace MonoDevelop.Core
 		
 		public FileService()
 		{
-			sharpDevelopRootPath = PropertyService.EntryAssemblyDirectory + Path.DirectorySeparatorChar + "..";
+			sharpDevelopRootPath = Path.Combine (PropertyService.EntryAssemblyPath, "..");
 			AddinManager.ExtensionChanged += delegate (object s, ExtensionEventArgs args) {
 				if (args.PathChanged (FileSystemExtensionPath))
 					UpdateExtensions ();

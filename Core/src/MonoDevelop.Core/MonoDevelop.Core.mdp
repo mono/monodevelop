@@ -17,17 +17,9 @@
     <File name="./MonoDevelop.Core/AbstractService.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core/IService.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core/IStringTagProvider.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core/PropertyService.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core/ServiceManager.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core/StringParserService.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core/UserException.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Properties/CharacterEncodings.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Properties/DefaultProperties.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Properties/IProperties.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Properties/IXmlConvertable.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Properties/PropertyEventArgs.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Properties/PropertyFileLoadException.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Properties/UnknownPropertyNodeException.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Utils.ReportingStream/ReportingStream.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Utils.DirectoryArchive/Bz2Support.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Utils.DirectoryArchive/Decompressor.cs" subtype="Code" buildaction="Compile" />
@@ -86,6 +78,11 @@
     <File name="./MonoDevelop.Core.AddIns/PackageExtensionNode.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.AddIns/ApplicationExtensionNode.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.ProgressMonitoring/FilteredProgressMonitor.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Core/Properties.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Core/CharacterEncodings.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Core/PropertyChangedEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Core/PropertyService.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Core/XmlReadHelper.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

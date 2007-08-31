@@ -1,3 +1,22 @@
+2007-08-31   <> 
+
+	* MonoDevelop.Core.Properties/IXmlConvertable.cs,
+	  MonoDevelop.Core.Properties/DefaultProperties.cs,
+	  MonoDevelop.Core.Properties/PropertyEventArgs.cs,
+	  MonoDevelop.Core.Properties/IProperties.cs,
+	  MonoDevelop.Core.Properties/CharacterEncodings.cs,
+	  MonoDevelop.Core/PropertyChangedEventArgs.cs,
+	  MonoDevelop.Core/Runtime.cs, MonoDevelop.Core/AbstractService.cs,
+	  MonoDevelop.Core/IStringTagProvider.cs,
+	  MonoDevelop.Core/CharacterEncodings.cs,
+	  MonoDevelop.Core/ServiceManager.cs, MonoDevelop.Core/XmlReadHelper.cs,
+	  MonoDevelop.Core/Properties.cs, MonoDevelop.Core/FileService.cs,
+	  MonoDevelop.Core/StringParserService.cs,
+	  MonoDevelop.Core/PropertyService.cs, MonoDevelop.Core/IService.cs:
+	  Rewrote property infrastructure. Faster (no XmlDom), smaller Xml (No
+	  write back of defaultValues), easier to use (only one property class,
+	  better to use interface).
+
 2007-08-29   <> 
 
 	* MonoDevelop.Core.Properties/DefaultProperties.cs: Fixed 82621: Crash while

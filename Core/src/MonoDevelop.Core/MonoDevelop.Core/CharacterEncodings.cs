@@ -9,8 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MonoDevelop.Core.Properties {
-	
+namespace MonoDevelop.Core
+{
 	/// <summary>
 	/// Contains supported character encodings.
 	/// </summary>

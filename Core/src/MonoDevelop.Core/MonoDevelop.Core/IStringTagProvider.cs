@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 using System.Collections;
 using System.Collections.Specialized;
 
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Core
 {
