@@ -1,3 +1,8 @@
+2007-08-31  Mike Krüger <mkrueger@novell.com> 
+
+	* MakefileOptionPanelWidget.cs, MakefileOptionPanel.cs: Changes due to new
+	  property infrastructure.
+
 2007-08-23  Marcos David Marín Amador <MarcosMarin@gmail.com>
 
 	* Handler.cs: Added support for Include and IncludeRoot targets.

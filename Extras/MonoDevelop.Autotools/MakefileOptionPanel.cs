@@ -3,7 +3,7 @@ using System.IO;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 
@@ -22,7 +22,7 @@ namespace MonoDevelop.Autotools
 		public override void LoadPanelContents()
 		{
 			try {
-				Project project = (Project) ((IProperties) CustomizationObject).GetProperty ("Project");
+				Project project = ((Properties) CustomizationObject).Get<Project> ("Project");
 				MakefileData data = project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
 
 				MakefileData tmpData = null;
@@ -37,7 +37,7 @@ namespace MonoDevelop.Autotools
 		
 		public override bool StorePanelContents()
 		{
-			Project project = (Project) ((IProperties) CustomizationObject).GetProperty ("Project");
+			Project project = ((Properties) CustomizationObject).Get<Project> ("Project");
 			return widget.Store (project);
 		}
 	}
