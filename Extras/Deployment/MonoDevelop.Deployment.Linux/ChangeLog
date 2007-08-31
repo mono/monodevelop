@@ -1,3 +1,9 @@
+2007-08-31  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Deployment.Linux/BasicOptionPanel.cs,
+	  gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs: Changes
+	  due to new property infrastructure.
+
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Makefile.am, MonoDevelop.Deployment.Linux.mdp: Don't exclude the .addin

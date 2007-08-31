@@ -1,6 +1,6 @@
 
 using System;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Projects;
@@ -20,8 +20,8 @@ namespace MonoDevelop.Deployment.Linux
 		
 		public override void LoadPanelContents ()
 		{
-			IProperties props = (IProperties) CustomizationObject;
-			entry = (CombineEntry) props.GetProperty ("CombineEntry");
+			Properties props = (Properties) CustomizationObject;
+			entry = props.Get<CombineEntry> ("CombineEntry");
 			Add (widget = new BasicOptionPanelWidget (entry, false));
 		}
 		

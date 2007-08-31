@@ -170,7 +170,6 @@ namespace MonoDevelop.Deployment.Linux {
             // Container child scrolledwindow1.Gtk.Container+ContainerChild
             Gtk.Viewport w1 = new Gtk.Viewport();
             w1.CanFocus = true;
-            w1.Name = "GtkViewport";
             w1.ShadowType = ((Gtk.ShadowType)(0));
             // Container child GtkViewport.Gtk.Container+ContainerChild
             this.vbox4 = new Gtk.VBox();
@@ -616,7 +615,6 @@ namespace MonoDevelop.Deployment.Linux {
             this.radioAlwaysShow = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("Always show"));
             this.radioAlwaysShow.CanFocus = true;
             this.radioAlwaysShow.Name = "radioAlwaysShow";
-            this.radioAlwaysShow.Active = true;
             this.radioAlwaysShow.DrawIndicator = true;
             this.radioAlwaysShow.Group = new GLib.SList(System.IntPtr.Zero);
             this.boxMenu.Add(this.radioAlwaysShow);
