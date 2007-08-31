@@ -168,7 +168,7 @@ namespace MonoDevelop.VersionControl
 			if (comments != null)
 				return comments;
 			
-			string file = Path.Combine (Runtime.Properties.ConfigDirectory, "version-control-commit-msg");
+			string file = Path.Combine (PropertyService.ConfigPath, "version-control-commit-msg");
 			if (File.Exists (file)) {
 				FileStream stream = null;
 				try {
@@ -210,15 +210,15 @@ namespace MonoDevelop.VersionControl
 				
 			FileStream stream = null;
 			try {
-				string file = Path.Combine (Runtime.Properties.ConfigDirectory, "version-control-commit-msg");
+				string file = Path.Combine (PropertyService.ConfigPath, "version-control-commit-msg");
 				if (comments.Count == 0) {
 					if (File.Exists (file))
 						Runtime.FileService.DeleteFile (file);
 					return;
 				}
 			
-				if (!Directory.Exists (Runtime.Properties.ConfigDirectory))
-					Directory.CreateDirectory (Runtime.Properties.ConfigDirectory);
+				if (!Directory.Exists (PropertyService.ConfigPath))
+					Directory.CreateDirectory (PropertyService.ConfigPath);
 				stream = new FileStream (file, FileMode.Create, FileAccess.Write);
 				BinaryFormatter formatter = new BinaryFormatter ();
 				formatter.Serialize (stream, comments);

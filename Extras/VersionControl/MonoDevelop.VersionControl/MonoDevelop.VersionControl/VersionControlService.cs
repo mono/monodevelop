@@ -38,7 +38,7 @@ namespace MonoDevelop.VersionControl
 		
 		static string ConfigFile {
 			get {
-				return Path.Combine (Runtime.Properties.ConfigDirectory, "VersionControl.config");
+				return Path.Combine (PropertyService.ConfigPath, "VersionControl.config");
 			}
 		}
 		

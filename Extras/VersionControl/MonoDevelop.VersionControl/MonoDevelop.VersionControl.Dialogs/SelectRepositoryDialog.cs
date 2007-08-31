@@ -60,7 +60,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				entryName.Visible = false;
 				boxMessage.Visible = false;
 				labelMessage.Visible = false;
-				string pathName = MonoDevelop.Core.Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", Environment.GetFolderPath (Environment.SpecialFolder.Personal)).ToString ();
+				string pathName = MonoDevelop.Core.PropertyService.Get ("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", Environment.GetFolderPath (Environment.SpecialFolder.Personal)).ToString ();
 				entryFolder.Text = pathName;
 			} else {
 				labelTargetDir.Visible = false;
