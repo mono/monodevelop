@@ -1,3 +1,8 @@
+2007-08-31  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CompilerParametersPanel.cs: Changes due to new property
+	  infrastructure.
+
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ILAsmBinding.mdp, Makefile.am, ILAsmBinding.addin.xml: Reorganized the
