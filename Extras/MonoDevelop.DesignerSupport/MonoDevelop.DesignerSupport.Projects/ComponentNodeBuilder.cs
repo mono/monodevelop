@@ -27,7 +27,7 @@ namespace MonoDevelop.DesignerSupport.Projects
 			return CurrentNode.DataItem;
 		}
 		
-		public object GetPropertyProvider ()
+		public object GetProvider ()
 		{
 			return null;
 		}

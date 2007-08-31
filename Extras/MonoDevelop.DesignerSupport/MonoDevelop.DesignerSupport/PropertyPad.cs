@@ -54,7 +54,7 @@ namespace MonoDevelop.DesignerSupport
 			frame.Add (grid);
 			
 			frame.ShowAll ();
-			DesignerSupport.Service.SetPropertyPad (this);
+			DesignerSupport.Service.SetPad (this);
 		}
 		
 		#region AbstractPadContent implementations
@@ -65,7 +65,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		public override void Dispose()
 		{
-			DesignerSupport.Service.SetPropertyPad (null);
+			DesignerSupport.Service.SetPad (null);
 		}
 		
 		#endregion

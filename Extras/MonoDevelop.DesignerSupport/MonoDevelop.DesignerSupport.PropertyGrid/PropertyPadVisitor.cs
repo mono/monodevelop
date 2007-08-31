@@ -36,7 +36,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 		public bool Visit (object ob)
 		{
 			if (ob == null) {
-				DesignerSupport.Service.ResetPropertyPad ();
+				DesignerSupport.Service.ReSetPad ();
 				return true;
 			}
 			else if (ob is PropertyPad) {
@@ -44,11 +44,11 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 				return true;
 			}
 			else if (ob is IPropertyPadProvider) {
-				DesignerSupport.Service.SetPropertyPadContent ((IPropertyPadProvider)ob);
+				DesignerSupport.Service.SetPadContent ((IPropertyPadProvider)ob);
 				return true;
 			}
 			else if (ob is ICustomPropertyPadProvider) {
-				DesignerSupport.Service.SetPropertyPadContent ((ICustomPropertyPadProvider)ob);
+				DesignerSupport.Service.SetPadContent ((ICustomPropertyPadProvider)ob);
 				return true;
 			}
 			else

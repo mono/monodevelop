@@ -73,7 +73,7 @@ namespace MonoDevelop.DesignerSupport
 		}
 		
 		static string ToolboxConfigFile {
-			get { return System.IO.Path.Combine (Runtime.Properties.ConfigDirectory, "Toolbox.xml"); }
+			get { return System.IO.Path.Combine (PropertyService.ConfigPath, "Toolbox.xml"); }
 		}
 		
 		#region Extension loading
@@ -555,7 +555,7 @@ namespace MonoDevelop.DesignerSupport
 		List<ComponentIndexFile> files = new List<ComponentIndexFile> ();
 		
 		static string ToolboxIndexFile {
-			get { return Path.Combine (Runtime.Properties.ConfigDirectory, "ToolboxIndex.xml"); }
+			get { return Path.Combine (PropertyService.ConfigPath, "ToolboxIndex.xml"); }
 		}
 		
 		internal static ComponentIndex Load ()

@@ -63,13 +63,13 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 		
-		internal void SetPropertyPad (PropertyPad pad)
+		internal void SetPad (PropertyPad pad)
 		{
 			propertyPad = pad;
 			
 			if (propertyPad != null) {
 				if (lastPadProvider != null) {
-					object[] provs = GetPropertyProvidersForObject (lastComponent, lastPadProvider.GetPropertyProvider ());
+					object[] provs = GetProvidersForObject (lastComponent, lastPadProvider.GetProvider ());
 					if (provs.Length > 0)
 						propertyPad.PropertyGrid.SetCurrentObject (lastComponent, provs);
 					else
@@ -102,7 +102,7 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 		
-		internal void ResetPropertyPad ()
+		internal void ReSetPad ()
 		{
 			DisposePropertyPadProvider ();
 			DisposeCustomPropertyPadProvider ();
@@ -110,7 +110,7 @@ namespace MonoDevelop.DesignerSupport
 				propertyPad.BlankPad ();
 		}
 		
-		public void SetPropertyPadContent (IPropertyPadProvider provider)
+		public void SetPadContent (IPropertyPadProvider provider)
 		{
 			if (provider != null) {
 				// If there was a custom provider, reset it now
@@ -128,7 +128,7 @@ namespace MonoDevelop.DesignerSupport
 				if (propertyPad == null)
 					return;
 					
-				object[] provs = GetPropertyProvidersForObject (comp, provider.GetPropertyProvider ());
+				object[] provs = GetProvidersForObject (comp, provider.GetProvider ());
 				if (provs.Length > 0)
 					propertyPad.PropertyGrid.SetCurrentObject (comp, provs);
 				else
@@ -137,11 +137,11 @@ namespace MonoDevelop.DesignerSupport
 				propertyPad.PropertyGrid.Changed += OnPropertyGridChanged;
 			}
 			else {
-				ResetPropertyPad ();
+				ReSetPad ();
 			}
 		}
 		
-		public void SetPropertyPadContent (ICustomPropertyPadProvider provider)
+		public void SetPadContent (ICustomPropertyPadProvider provider)
 		{
 			if (provider != null) {
 				
@@ -158,11 +158,11 @@ namespace MonoDevelop.DesignerSupport
 					propertyPad.UseCustomWidget (provider.GetCustomPropertyWidget ());
 			}
 			else {
-				ResetPropertyPad ();
+				ReSetPad ();
 			}
 		}
 		
-		internal object[] GetPropertyProvidersForObject (object obj, object firstProvider)
+		internal object[] GetProvidersForObject (object obj, object firstProvider)
 		{
 			if (providers == null)
 				providers = (IPropertyProvider[]) AddinManager.GetExtensionObjects ("/MonoDevelop/DesignerSupport/PropertyProviders", typeof(IPropertyProvider), true);
@@ -221,7 +221,7 @@ namespace MonoDevelop.DesignerSupport
 		{
 			if (args.PathChanged ("MonoDevelop/DesignerSupport/PropertyProviders")) {
 				providers = null;
-				ResetPropertyPad ();
+				ReSetPad ();
 			}
 		}
 		

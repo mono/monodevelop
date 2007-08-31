@@ -1,3 +1,13 @@
+2007-08-31  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.DesignerSupport/DesignerSupportService.cs,
+	  MonoDevelop.DesignerSupport/ToolboxService.cs,
+	  MonoDevelop.DesignerSupport/PropertyPad.cs,
+	  MonoDevelop.DesignerSupport.Projects/ComponentNodeBuilder.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid/IPropertyPadProvider.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid/PropertyPadVisitor.cs: Changes
+	  due to new property infrastructure.
+
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.DesignerSupport/DesignerSupportService.cs: Add missing null
