@@ -44,12 +44,18 @@ namespace MonoDevelop.Ide.Templates
 		string defaultName;
 		string defaultExtension;
 		string generatedFile;
+		BuildAction buildAction;
 		
 		public override void Load (XmlElement filenode)
 		{
 			name = filenode.GetAttribute ("name");
 			defaultName = filenode.GetAttribute ("DefaultName");
 			defaultExtension = filenode.GetAttribute ("DefaultExtension");
+			buildAction = BuildAction.Compile;
+			try {
+				buildAction = (BuildAction) Enum.Parse (typeof (BuildAction), filenode.GetAttribute ("BuildAction"), true);
+			} catch (ArgumentException) {
+			}
 		}
 		
 		public override string Name {
@@ -69,7 +75,7 @@ namespace MonoDevelop.Ide.Templates
 			
 			generatedFile = SaveFile (project, language, directory, name);
 			if (generatedFile != null) {
-				project.AddFile (generatedFile, BuildAction.Compile);
+				project.AddFile (generatedFile, buildAction);
 				return project.GetProjectFile (generatedFile);
 			} else
 				return null;
