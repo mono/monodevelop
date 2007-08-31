@@ -1,3 +1,9 @@
+2007-08-31  Mike Krüger <mkrueger@novell.com> 
+
+	* JavaLanguageBinding.cs, Gui/GlobalOptionsPanel.cs,
+	  Gui/ProjectConfigurationPropertyPanel.cs: Changes due to new property
+	  infrastructure.
+
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* JavaBinding.addin.xml, JavaBinding.mdp, Makefile.am: Reorganized the

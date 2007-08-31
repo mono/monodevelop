@@ -12,7 +12,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 
 namespace JavaBinding
 {
@@ -41,9 +41,9 @@ namespace JavaBinding
 			JavaCompilerParameters compilerParameters = null;
 			DotNetProjectConfiguration configuration;
 			
- 			public CodeGenerationPanelWidget (IProperties CustomizationObject) : base ("Java.glade", "CodeGenerationPanel")
+ 			public CodeGenerationPanelWidget (Properties CustomizationObject) : base ("Java.glade", "CodeGenerationPanel")
  			{	
-				configuration = (DotNetProjectConfiguration)((IProperties)CustomizationObject).GetProperty("Config");
+				configuration = ((Properties)CustomizationObject).Get<DotNetProjectConfiguration> ("Config");
 				compilerParameters = (JavaCompilerParameters) configuration.CompilationParameters;
 				
 				ListStore store = new ListStore (typeof (string));
@@ -112,7 +112,7 @@ namespace JavaBinding
 		
 		public override void LoadPanelContents()
 		{
-			Add (widget = new  CodeGenerationPanelWidget ((IProperties) CustomizationObject));
+			Add (widget = new  CodeGenerationPanelWidget ((Properties) CustomizationObject));
 		}
 		
 		public override bool StorePanelContents()

@@ -17,7 +17,7 @@ using System.CodeDom.Compiler;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 
@@ -114,26 +114,26 @@ namespace JavaBinding
 	
 	public class GlobalProperties
 	{
-		IProperties props = (IProperties) Runtime.Properties.GetProperty ("JavaBinding.GlobalProps", new DefaultProperties ());
+		Properties props = (Properties) PropertyService.Get ("JavaBinding.GlobalProps", new Properties ());
 		
 		public string IkvmPath {
-			get { return props.GetProperty ("IkvmPath", ""); }
-			set { props.SetProperty ("IkvmPath", value != null ? value : ""); }
+			get { return props.Get ("IkvmPath", ""); }
+			set { props.Set ("IkvmPath", value != null ? value : ""); }
 		}
 		
 		public string CompilerCommand {
-			get { return props.GetProperty ("CompilerCommand", ""); }
-			set { props.SetProperty ("CompilerCommand", value != null ? value : "javac"); }
+			get { return props.Get ("CompilerCommand", ""); }
+			set { props.Set ("CompilerCommand", value != null ? value : "javac"); }
 		}
 		
 		public JavaCompiler CompilerType {
-			get { return (JavaCompiler) props.GetProperty ("CompilerType", 0); }
-			set { props.SetProperty ("CompilerType", (int)value); }
+			get { return (JavaCompiler) props.Get ("CompilerType", 0); }
+			set { props.Set ("CompilerType", (int)value); }
 		}
 		
 		public string Classpath {
-			get { return props.GetProperty ("Classpath", ""); }
-			set { props.SetProperty ("Classpath", value != null ? value : ""); }
+			get { return props.Get ("Classpath", ""); }
+			set { props.Set ("Classpath", value != null ? value : ""); }
 		}
 	}
 }
