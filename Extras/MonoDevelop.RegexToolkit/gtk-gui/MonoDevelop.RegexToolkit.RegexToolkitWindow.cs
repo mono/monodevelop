@@ -142,12 +142,12 @@ namespace MonoDevelop.RegexToolkit {
             this.scrolledwindow5.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow5.Gtk.Container+ContainerChild
             Gtk.Viewport w3 = new Gtk.Viewport();
-            w3.Name = "GtkViewport";
             w3.ShadowType = ((Gtk.ShadowType)(0));
             // Container child GtkViewport.Gtk.Container+ContainerChild
             this.optionsTreeview = new Gtk.TreeView();
             this.optionsTreeview.CanFocus = true;
             this.optionsTreeview.Name = "optionsTreeview";
+            this.optionsTreeview.HeadersClickable = true;
             w3.Add(this.optionsTreeview);
             this.scrolledwindow5.Add(w3);
             this.notebook1.Add(this.scrolledwindow5);
@@ -254,6 +254,7 @@ namespace MonoDevelop.RegexToolkit {
             this.elementsTreeview = new Gtk.TreeView();
             this.elementsTreeview.CanFocus = true;
             this.elementsTreeview.Name = "elementsTreeview";
+            this.elementsTreeview.HeadersClickable = true;
             this.elementsscrolledwindow.Add(this.elementsTreeview);
             this.vbox5.Add(this.elementsscrolledwindow);
             Gtk.Box.BoxChild w19 = ((Gtk.Box.BoxChild)(this.vbox5[this.elementsscrolledwindow]));
@@ -278,6 +279,7 @@ namespace MonoDevelop.RegexToolkit {
             this.resultsTreeview = new Gtk.TreeView();
             this.resultsTreeview.CanFocus = true;
             this.resultsTreeview.Name = "resultsTreeview";
+            this.resultsTreeview.HeadersClickable = true;
             this.scrolledwindow2.Add(this.resultsTreeview);
             this.notebook2.Add(this.scrolledwindow2);
             Gtk.Notebook.NotebookChild w23 = ((Gtk.Notebook.NotebookChild)(this.notebook2[this.scrolledwindow2]));

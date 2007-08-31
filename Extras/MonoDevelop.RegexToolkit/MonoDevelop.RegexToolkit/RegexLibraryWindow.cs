@@ -133,8 +133,7 @@ namespace MonoDevelop.RegexToolkit
 		
 		static string LibraryLocation {
 			get {
-				PropertyService propertyService = (PropertyService) ServiceManager.GetService (typeof (PropertyService));
-				return System.IO.Path.Combine (propertyService.ConfigDirectory, libraryFileName);
+				return System.IO.Path.Combine (PropertyService.ConfigPath, libraryFileName);
 			}
 		}
 		const string Node = "RegexLibrary";

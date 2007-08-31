@@ -140,12 +140,12 @@ namespace MonoDevelop.RegexToolkit {
             this.scrolledwindow2.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow2.Gtk.Container+ContainerChild
             Gtk.Viewport w5 = new Gtk.Viewport();
-            w5.Name = "GtkViewport";
             w5.ShadowType = ((Gtk.ShadowType)(0));
             // Container child GtkViewport.Gtk.Container+ContainerChild
             this.expressionsTreeview = new Gtk.TreeView();
             this.expressionsTreeview.CanFocus = true;
             this.expressionsTreeview.Name = "expressionsTreeview";
+            this.expressionsTreeview.HeadersClickable = true;
             w5.Add(this.expressionsTreeview);
             this.scrolledwindow2.Add(w5);
             this.vbox6.Add(this.scrolledwindow2);

@@ -1,3 +1,10 @@
+2007-08-31  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.RegexToolkit/RegexLibraryWindow.cs,
+	  gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs,
+	  gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs: Changes due to
+	  new property infrastructure.
+
 2007-08-15  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* MonoDevelop.RegexToolkit/UpdateInProgressDialog.cs: Use fully 
