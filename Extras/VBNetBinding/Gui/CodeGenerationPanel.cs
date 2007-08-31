@@ -12,7 +12,7 @@ using System.Drawing;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Components;
 
@@ -54,7 +54,7 @@ namespace VBBinding
 		
 		void SetValues(object sender, EventArgs e)
 		{
-			this.compilerParameters = (VBCompilerParameters)((IProperties)CustomizationObject).GetProperty("Config");
+			this.compilerParameters = (VBCompilerParameters)((Properties)CustomizationObject).Get("Config");
 			
 			ControlDictionary["symbolsTextBox"].Text = compilerParameters.DefineSymbols;
 			ControlDictionary["mainClassTextBox"].Text = compilerParameters.MainClass;
@@ -71,8 +71,8 @@ namespace VBBinding
 			((CheckBox)ControlDictionary["optionStrictCheckBox"]).Checked = compilerParameters.OptionStrict;
 		}
 		
-		static PropertyService propertyService = (PropertyService)ServiceManager.Services.GetService(typeof(PropertyService));
-		public CodeGenerationPanel() : base(propertyService.DataDirectory + @"\resources\panels\ProjectOptions\VBNetCodeGenerationPanel.xfrm")
+		static PropertyService PropertyService = (PropertyService)ServiceManager.Services.GetService(typeof(PropertyService));
+		public CodeGenerationPanel() : base(PropertyService.DataDirectory + @"\resources\panels\ProjectOptions\VBNetCodeGenerationPanel.xfrm")
 		{
 			CustomizationObjectChanged += new EventHandler(SetValues);
 			
@@ -124,19 +124,19 @@ namespace VBBinding
 			DotNetProjectConfiguration configuration;
 			VBCompilerParameters compilerParameters = null;
 			
-			//static PropertyService propertyService = (PropertyService)ServiceManager.Services.GetService(typeof(PropertyService));
+			//static PropertyService PropertyService = (PropertyService)ServiceManager.Services.GetService(typeof(PropertyService));
 			
 
- 			public  CodeGenerationPanelWidget(IProperties CustomizationObject) : base ("VB.glade", "CodeGenerationPanel")
+ 			public  CodeGenerationPanelWidget(Properties CustomizationObject) : base ("VB.glade", "CodeGenerationPanel")
  			{	
-				configuration = (DotNetProjectConfiguration)((IProperties)CustomizationObject).GetProperty("Config");
+				configuration = ((Properties)CustomizationObject).Get<DotNetProjectConfiguration> ("Config");
 				compilerParameters = (VBCompilerParameters) configuration.CompilationParameters;
 				SetValues();
 				//CustomizationObjectChanged += new EventHandler(SetValues);
  			}
  			
 			public void SetValues(){
-				//this.compilerParameters = (VBCompilerParameters)((IProperties)CustomizationObject).GetProperty("Config");
+				//this.compilerParameters = (VBCompilerParameters)((Properties)CustomizationObject).Get("Config");
 
 				// FIXME: Enable when mbas has this feature
 				generateXmlOutputCheckButton.Sensitive = false;
@@ -194,7 +194,7 @@ namespace VBBinding
 		
 		public override void LoadPanelContents()
 		{
-			Add (widget = new  CodeGenerationPanelWidget ((IProperties) CustomizationObject));
+			Add (widget = new  CodeGenerationPanelWidget ((Properties) CustomizationObject));
 		}
 		
 		public override bool StorePanelContents()

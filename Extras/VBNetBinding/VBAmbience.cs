@@ -10,7 +10,7 @@ using System.Collections;
 using System.Text;
 
 using MonoDevelop.Projects.Parser;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Ambience;
 

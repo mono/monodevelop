@@ -30,8 +30,6 @@ namespace VBBinding {
 		static Regex regexError = new Regex (@"^(\s*(?<file>.*)\((?<line>\d*)(,(?<column>\d*))?\)\s+)*(?<level>\w+)\s*(?<number>.*):\s(?<message>.*)",
 		RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
-		PropertyService propertyService       = (PropertyService)ServiceManager.GetService(typeof(PropertyService));
-		
 		public bool CanCompile(string fileName)
 		{
 			return Path.GetExtension(fileName) == ".vb";

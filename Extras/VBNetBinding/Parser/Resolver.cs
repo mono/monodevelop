@@ -640,7 +640,7 @@ namespace VBBinding.Parser
 		
 		bool InStatic()
 		{
-			IProperty property = GetProperty();
+			IProperty property = Get();
 			if (property != null) {
 				return property.IsStatic;
 			}
@@ -932,7 +932,7 @@ namespace VBBinding.Parser
 			return null;
 		}
 		
-		IProperty GetProperty()
+		IProperty Get()
 		{
 			foreach (IProperty property in callingClass.Properties) {
 				if (property.BodyRegion != null && property.BodyRegion.IsInside(caretLine, caretColumn)) {
@@ -954,7 +954,7 @@ namespace VBBinding.Parser
 		
 		IReturnType SearchProperty()
 		{
-			IProperty property = GetProperty();
+			IProperty property = Get();
 			if (property == null) {
 				return null;
 			}

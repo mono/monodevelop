@@ -1,3 +1,9 @@
+2007-08-31  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CodeGenerationPanel.cs, Parser/Resolver.cs, VBAmbience.cs,
+	  VBBindingCompilerServices.cs: Changes due to new property
+	  infrastructure.
+
 2007-08-23  Mike Krüger <mkrueger@novell.com> 
 
 	* Parser/Parser.cs, Parser/VBNetVisitor.cs, Parser/Resolver.cs,
