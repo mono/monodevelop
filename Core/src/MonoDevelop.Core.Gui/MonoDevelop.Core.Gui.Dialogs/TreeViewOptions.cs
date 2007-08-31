@@ -12,7 +12,7 @@ using System.Collections.Generic;
 
 using MonoDevelop.Core;
 using Mono.Addins;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Codons;
 using MonoDevelop.Components.Commands;
 
@@ -24,7 +24,7 @@ namespace MonoDevelop.Core.Gui.Dialogs {
 	/// </summary>
 	public class TreeViewOptions {
 		List<IDialogPanel> optionPanels = new List<IDialogPanel> ();
-		protected IProperties properties = null;
+		protected Properties properties = null;
 		CommandManager cmdManager;
 		Dictionary<string, Gtk.TreeIter> descriptors = new Dictionary<string, Gtk.TreeIter> ();
 
@@ -38,7 +38,7 @@ namespace MonoDevelop.Core.Gui.Dialogs {
 		[Glade.Widget] Gtk.Image     panelImage;
 		[Glade.Widget] Gtk.Dialog    TreeViewOptionDialog;
 		
-		public IProperties Properties {
+		public Properties Properties {
 			get {
 				return properties;
 			}
@@ -186,7 +186,7 @@ namespace MonoDevelop.Core.Gui.Dialogs {
 				SelectSpecificNode ((Gtk.TreeIter) it);
 		}
 		
-		public TreeViewOptions (Gtk.Window parentWindow, IProperties properties, ExtensionNode node)
+		public TreeViewOptions (Gtk.Window parentWindow, Properties properties, ExtensionNode node)
 		{
 			this.properties = properties;
 			

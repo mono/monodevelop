@@ -11,7 +11,7 @@ using System.Collections;
 
 using MonoDevelop.Core;
 using Mono.Addins;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Codons;
 
 using Gtk;

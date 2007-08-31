@@ -13,7 +13,7 @@ using System.IO;
 using Vfs = Gnome.Vfs.Vfs;
 using MimeType = Gnome.Vfs.MimeType;
 
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Utils;
 using MonoDevelop.Core;
 using Freedesktop.RecentFiles;

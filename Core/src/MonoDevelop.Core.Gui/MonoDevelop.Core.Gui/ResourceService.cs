@@ -16,7 +16,7 @@ using System.Reflection;
 using System.Xml;
 using System.Runtime.InteropServices;
 
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Codons;
 using Mono.Addins;

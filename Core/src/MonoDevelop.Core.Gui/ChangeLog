@@ -1,3 +1,20 @@
+2007-08-31  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Core.Gui.Dialogs/WizardDialog.cs,
+	  MonoDevelop.Core.Gui.Dialogs/CurrentPanelPanel.cs,
+	  MonoDevelop.Core.Gui.Dialogs/DefaultDialogPanelDescriptor.cs,
+	  MonoDevelop.Core.Gui.Dialogs/StatusPanel.cs,
+	  MonoDevelop.Core.Gui.Dialogs/TreeViewOptions.cs,
+	  MonoDevelop.Core.Gui.Dialogs/IDialogPanel.cs,
+	  MonoDevelop.Core.Gui.Dialogs/IWizardPanel.cs,
+	  MonoDevelop.Core.Gui.Components/FileBrowser.cs,
+	  MonoDevelop.Core.Gui/IMessageService.cs,
+	  MonoDevelop.Core.Gui/IMementoCapable.cs,
+	  MonoDevelop.Core.Gui/RecentOpen.cs,
+	  MonoDevelop.Core.Gui/MessageService.cs,
+	  MonoDevelop.Core.Gui/ResourceService.cs: Changes due to new property
+	  system.
+
 2007-08-21  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Core.Gui/RecentOpen.cs, Freedesktop.RecentFiles/RecentItem.cs,

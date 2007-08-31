@@ -11,7 +11,7 @@ using System.CodeDom.Compiler;
 using Gtk;
 
 using Mono.Addins;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Codons;
 
 namespace MonoDevelop.Core.Gui.Dialogs

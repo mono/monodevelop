@@ -16,7 +16,7 @@ using System.Xml;
 using MonoDevelop.Core;
 using Mono.Addins;
 
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Core.Gui.Dialogs
 {

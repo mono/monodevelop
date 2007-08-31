@@ -12,7 +12,7 @@ using System.Diagnostics;
 using System.IO;
 using Gtk;
 
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Utils;
 using MonoDevelop.Core.Gui;
@@ -47,8 +47,6 @@ namespace MonoDevelop.Core.Gui.Components
 		private ArrayList files = new ArrayList ();
 		private ArrayList hiddenfolders = new ArrayList ();
 
-		PropertyService PropertyService = (PropertyService) ServiceManager.GetService (typeof (PropertyService));
-
 		public FileBrowser ()
 		{
 			scrolledwindow = new ScrolledWindow ();
@@ -76,8 +74,8 @@ namespace MonoDevelop.Core.Gui.Components
 			toolbar.ShowAll ();
 			this.PackStart (toolbar, false, true, 0);
 
-			IProperties p = (IProperties) PropertyService.GetProperty ("SharpDevelop.UI.SelectStyleOptions", new DefaultProperties ());
-			ignoreHidden = !p.GetProperty ("MonoDevelop.Core.Gui.FileScout.ShowHidden", false);
+			Properties p = PropertyService.Get ("SharpDevelop.UI.SelectStyleOptions", new Properties ());
+			ignoreHidden = !p.Get ("MonoDevelop.Core.Gui.FileScout.ShowHidden", false);
 
 			tv = new Gtk.TreeView ();
 			tv.RulesHint = true;
