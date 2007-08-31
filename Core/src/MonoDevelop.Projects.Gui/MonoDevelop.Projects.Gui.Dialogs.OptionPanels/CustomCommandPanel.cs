@@ -2,7 +2,7 @@
 using System;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Projects;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
@@ -13,10 +13,10 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		
 		public override void LoadPanelContents ()
 		{
-			IProperties props = (IProperties) CustomizationObject;
-			configuration = props.GetProperty("Config") as AbstractConfiguration;
+			Properties props = (Properties) CustomizationObject;
+			configuration = props.Get<AbstractConfiguration> ("Config");
 			if (configuration != null) {
-				CombineEntry entry = (CombineEntry) props.GetProperty("CombineEntry");
+				CombineEntry entry = props.Get<CombineEntry> ("CombineEntry");
 				commands = configuration.CustomCommands.Clone ();
 				Add (new CustomCommandPanelWidget (entry, commands));
 			}

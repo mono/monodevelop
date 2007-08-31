@@ -11,7 +11,7 @@ using System.ComponentModel;
 
 using Mono.Addins;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.Gui.Dialogs;
@@ -36,9 +36,9 @@ namespace MonoDevelop.Projects.Gui.Dialogs {
 			this.configurationNode = configurationNode;
 			this.Title = GettextCatalog.GetString ("Project Options") + " - " + project.Name;
 			
-			properties = new DefaultProperties();
-			properties.SetProperty("Project", project);
-			properties.SetProperty("CombineEntry", project);
+			properties = new Properties();
+			properties.Set("Project", project);
+			properties.Set("CombineEntry", project);
 			
 			AddNodes(properties, Gtk.TreeIter.Zero, node.GetChildObjects (false));			
 			
@@ -67,10 +67,10 @@ namespace MonoDevelop.Projects.Gui.Dialogs {
 					//newNode.NodeFont = plainFont;
 				}
 				
-				DefaultProperties configNodeProperties = new DefaultProperties();
-				configNodeProperties.SetProperty("Project", project);
-				configNodeProperties.SetProperty("CombineEntry", project);
-				configNodeProperties.SetProperty("Config", config);
+				Properties configNodeProperties = new Properties();
+				configNodeProperties.Set("Project", project);
+				configNodeProperties.Set("CombineEntry", project);
+				configNodeProperties.Set("Config", config);
 				AddNodes(configNodeProperties, newNode, configurationNode.GetChildObjects (false));
 			}
 			TreeView.ExpandRow (treeStore.GetPath (configurationTreeNode), false);
@@ -135,7 +135,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs {
 			
 			// add the config to the project
 			project.Configurations.Add (newConfig);
-			properties.SetProperty ("Config", newConfig);
+			properties.Set ("Config", newConfig);
 			
 			// add the child nodes to this new config
 			AddNodes (properties, newNode, configurationNode.GetChildObjects (false));			

@@ -11,7 +11,7 @@ using System.Reflection;
 using System.ComponentModel;
 using Mono.Addins;
 
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Gui
 {

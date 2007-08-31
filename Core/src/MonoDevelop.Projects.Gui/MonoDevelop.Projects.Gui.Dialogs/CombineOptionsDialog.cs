@@ -32,7 +32,7 @@ using System.ComponentModel;
 
 using Mono.Addins;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Gui.Dialogs;
 
@@ -55,10 +55,10 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			configData = ConfigurationData.Build (combine);
 			configData.ConfigurationsChanged += new EventHandler (OnConfigChanged);
 			
-			properties = new DefaultProperties();
-			properties.SetProperty ("Combine", combine);
-			properties.SetProperty ("CombineEntry", combine);
-			properties.SetProperty ("CombineConfigData", configData);
+			properties = new Properties();
+			properties.Set ("Combine", combine);
+			properties.Set ("CombineEntry", combine);
+			properties.Set ("CombineConfigData", configData);
 			
 			AddNodes (properties, Gtk.TreeIter.Zero, node.GetChildObjects (false));
 			
@@ -86,11 +86,11 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		void FillConfigurations ()
 		{
 			foreach (IConfiguration config in configData.Configurations) {
-				DefaultProperties configNodeProperties = new DefaultProperties();
-				configNodeProperties.SetProperty("Combine", combine);
-				configNodeProperties.SetProperty("CombineEntry", combine);
-				configNodeProperties.SetProperty("Config", config);
-				configNodeProperties.SetProperty ("CombineConfigData", configData);
+				Properties configNodeProperties = new Properties();
+				configNodeProperties.Set("Combine", combine);
+				configNodeProperties.Set("CombineEntry", combine);
+				configNodeProperties.Set("Config", config);
+				configNodeProperties.Set ("CombineConfigData", configData);
 				
 				object[] list = configurationNode.GetChildObjects (false);
 				if (list.Length > 1) {

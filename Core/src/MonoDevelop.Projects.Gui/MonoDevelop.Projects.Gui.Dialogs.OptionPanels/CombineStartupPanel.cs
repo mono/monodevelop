@@ -9,7 +9,7 @@ using System.Collections;
 using System.ComponentModel;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Gui;
@@ -39,10 +39,10 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 
 			Combine combine;
 
-			public  CombineStartupPanelWidget(IProperties CustomizationObject) : 
+			public  CombineStartupPanelWidget(Properties CustomizationObject) : 
 				base ("Base.glade", "CombineStartupPanel")
 			{
-				this.combine = (Combine)((IProperties)CustomizationObject).GetProperty("Combine");
+				this.combine = ((Properties)CustomizationObject).Get<Combine> ("Combine");
 
 
 				singleRadioButton.Active = combine.SingleStartupProject;
@@ -260,7 +260,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 
 		public override void LoadPanelContents()
 		{
-			Add (widget = new  CombineStartupPanelWidget ((IProperties) CustomizationObject));
+			Add (widget = new  CombineStartupPanelWidget ((Properties) CustomizationObject));
 		}
 
 		public override bool StorePanelContents()

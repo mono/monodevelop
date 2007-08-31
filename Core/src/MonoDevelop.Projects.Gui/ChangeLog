@@ -1,3 +1,24 @@
+2007-08-31  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui/IconCodon.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/ConfigurationManager.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs,
+	  MonoDevelop.Projects.Gui.Completion/CommentCompletionDataProvider.cs,
+	  MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineInformationPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineBuildOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CommonAssemblySigningPreferences.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanel.cs:
+	  Changes due to new property infrastructure.
+
 2007-08-28  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs,

@@ -29,7 +29,7 @@ using System.Collections;
 using System.ComponentModel;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Core;
 
 using MonoDevelop.Core.Gui.Components;
@@ -52,10 +52,10 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 
 			Combine combine;
 
-			public CombineInformationWidget (IProperties CustomizationObject) : 
+			public CombineInformationWidget (Properties CustomizationObject) : 
 				base ("Base.glade", "CombineInformationPanel")
 			{
-				this.combine = (Combine) ((IProperties)CustomizationObject).GetProperty("Combine");
+				this.combine =  ((Properties)CustomizationObject).Get<Combine> ("Combine");
 
 				versLabel.UseUnderline = true;
 				descLabel.UseUnderline = true;
@@ -64,7 +64,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				descView.Buffer.Text = combine.Description;
 			}			
 			
-			public void Store (IProperties CustomizationObject)
+			public void Store (Properties CustomizationObject)
 			{
 				combine.Version = versEntry.Text;
 				combine.Description = descView.Buffer.Text;
@@ -73,12 +73,12 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 
 		public override void LoadPanelContents()
 		{
-			Add ( widget = new  CombineInformationWidget ((IProperties) CustomizationObject));
+			Add ( widget = new  CombineInformationWidget ((Properties) CustomizationObject));
 		}
 		
 		public override bool StorePanelContents()
 		{
-			widget.Store ((IProperties) CustomizationObject);
+			widget.Store ((Properties) CustomizationObject);
  			return true;
 		}
 	}

@@ -9,7 +9,7 @@ using System.Collections;
 using System.ComponentModel;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Gui.Dialogs
 {
@@ -39,7 +39,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 		
-		PropertyService propertyService = (PropertyService)ServiceManager.Services.GetService(typeof(PropertyService));
+		PropertyService PropertyService = (PropertyService)ServiceManager.Services.GetService(typeof(PropertyService));
 		public ConfigurationManager()
 		{
 			//
@@ -72,7 +72,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		/// </summary>
 		private void InitializeComponent()
 		{
-			bool flat = Crownwood.Magic.Common.VisualStyle.IDE == (Crownwood.Magic.Common.VisualStyle)propertyService.GetProperty("MonoDevelop.Core.Gui.VisualStyle", Crownwood.Magic.Common.VisualStyle.IDE);
+			bool flat = Crownwood.Magic.Common.VisualStyle.IDE == (Crownwood.Magic.Common.VisualStyle)PropertyService.Get("MonoDevelop.Core.Gui.VisualStyle", Crownwood.Magic.Common.VisualStyle.IDE);
 			
 			this.treeView1 = new System.Windows.Forms.TreeView();
 			this.label1 = new System.Windows.Forms.Label();

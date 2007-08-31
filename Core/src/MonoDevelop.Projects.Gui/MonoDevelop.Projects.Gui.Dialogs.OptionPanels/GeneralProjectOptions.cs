@@ -11,7 +11,7 @@ using System.Collections;
 using System.ComponentModel;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Core;
 
 using MonoDevelop.Core.Gui.Components;
@@ -44,10 +44,10 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 
 
 
-			public GeneralProjectOptionsWidget (IProperties CustomizationObject) : base ("Base.glade", "GeneralProjectOptionsPanel")
+			public GeneralProjectOptionsWidget (Properties CustomizationObject) : base ("Base.glade", "GeneralProjectOptionsPanel")
 			{
-				this.project = (Project)((IProperties)CustomizationObject).GetProperty("Project");
-
+				this.project = ((Properties)CustomizationObject).Get<Project> ("Project");
+				
 				nameLabel.UseUnderline = true;
 				
 				descriptionLabel.UseUnderline = true;
@@ -86,7 +86,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		}
 
 			
-			public void  Store (IProperties CustomizationObject)
+			public void  Store (Properties CustomizationObject)
 			{
 				project.Name                 = projectNameEntry.Text;
 				project.Description          = projectDescriptionTextView.Buffer.Text;
@@ -104,12 +104,12 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 
 		public override void LoadPanelContents()
 		{
-			Add (widget = new  GeneralProjectOptionsWidget ((IProperties) CustomizationObject));
+			Add (widget = new  GeneralProjectOptionsWidget ((Properties) CustomizationObject));
 		}
 		
 		public override bool StorePanelContents()
 		{
-			widget.Store ((IProperties) CustomizationObject);
+			widget.Store ((Properties) CustomizationObject);
  			return true;
 		}
 		

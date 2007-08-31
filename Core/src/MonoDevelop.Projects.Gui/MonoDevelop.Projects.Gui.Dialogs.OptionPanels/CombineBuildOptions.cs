@@ -8,7 +8,7 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Projects;
@@ -29,10 +29,10 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			
 			Combine combine;
 
-			public  CombineBuildOptionsWidget(IProperties CustomizationObject) : 
+			public  CombineBuildOptionsWidget(Properties CustomizationObject) : 
 				base ("Base.glade", "CombineBuildOptions")
 			{
-				this.combine = (Combine)((IProperties)CustomizationObject).GetProperty("Combine");
+				this.combine = ((Properties)CustomizationObject).Get<Combine> ("Combine");
 				outputDirButton.Filename = combine.OutputDirectory + System.IO.Path.DirectorySeparatorChar;
 			}
 
@@ -45,7 +45,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 
 		public override void LoadPanelContents()
 		{
-			Add (widget = new  CombineBuildOptionsWidget ((IProperties) CustomizationObject));
+			Add (widget = new  CombineBuildOptionsWidget ((Properties) CustomizationObject));
 		}
 
 		public override bool StorePanelContents()

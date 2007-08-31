@@ -31,7 +31,7 @@ using System.Collections;
 using System.Reflection;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Core.Gui;
@@ -56,10 +56,10 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			TreeStore store;
 			ConfigurationData configData;
 			
-			public CombineEntryConfigurationsPanelWidget (IProperties CustomizationObject): base ("Base.glade", "CombineEntryConfigurationsPanel")
+			public CombineEntryConfigurationsPanelWidget (Properties CustomizationObject): base ("Base.glade", "CombineEntryConfigurationsPanel")
 			{
-//				combine = (Combine)((IProperties)CustomizationObject).GetProperty("Combine");
-				configData = (ConfigurationData)((IProperties)CustomizationObject).GetProperty("CombineConfigData");
+//				combine = (Combine)((Properties)CustomizationObject).Get("Combine");
+				configData = ((Properties)CustomizationObject).Get<ConfigurationData>("CombineConfigData");
 				
 				store = new TreeStore (typeof(object), typeof(string));
 				configsList.Model = store;
@@ -187,7 +187,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 
 		public override void LoadPanelContents()
 		{
-			Add (widget = new CombineEntryConfigurationsPanelWidget ((IProperties) CustomizationObject));
+			Add (widget = new CombineEntryConfigurationsPanelWidget ((Properties) CustomizationObject));
 		}
 
 		public override bool StorePanelContents()

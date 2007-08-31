@@ -29,7 +29,7 @@
 using System;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Projects;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
@@ -44,9 +44,9 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		
 		public void LoadPanelContents ()
 		{
-			IProperties props = (IProperties) CustomizationObject;
-			configuration = props.GetProperty("Config") as AbstractProjectConfiguration;
-			project = (Project)((IProperties)CustomizationObject).GetProperty("Project");
+			Properties props = (Properties) CustomizationObject;
+			configuration = props.Get<AbstractProjectConfiguration> ("Config");
+			project = ((Properties)CustomizationObject).Get<Project> ("Project");
 			this.signAssemblyCheckbutton.Toggled += new EventHandler (SignAssemblyCheckbuttonActivated);
 			if (configuration != null) {
 				this.signAssemblyCheckbutton.Active = configuration.SignAssembly;

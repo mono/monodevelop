@@ -9,7 +9,7 @@ using System;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Core.Gui.Dialogs;
@@ -30,10 +30,10 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			
 			Project project;
 
-			public CompileFileOptionsWidget (IProperties CustomizationObject) : 
+			public CompileFileOptionsWidget (Properties CustomizationObject) : 
 				base ("Base.glade", "CompileFileOptionsPanel")
 			{
-				this.project = (Project)((IProperties)CustomizationObject).GetProperty("Project");	
+				this.project = ((Properties)CustomizationObject).Get<Project> ("Project");	
 				
 				includeLabel.UseUnderline = true;
 				store = new ListStore (typeof(bool), typeof(string));
@@ -97,7 +97,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		
 		public override void LoadPanelContents()
 		{
-			Add (widget = new  CompileFileOptionsWidget ((IProperties) CustomizationObject));
+			Add (widget = new  CompileFileOptionsWidget ((Properties) CustomizationObject));
 		}
 		
 		public override bool StorePanelContents()

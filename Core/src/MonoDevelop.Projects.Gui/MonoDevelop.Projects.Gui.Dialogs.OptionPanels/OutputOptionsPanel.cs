@@ -12,7 +12,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 
 using Gtk;
 
@@ -34,10 +34,10 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			DotNetProjectConfiguration configuration;
 			Project project;
 
-			public  OutputOptionsPanelWidget(IProperties CustomizationObject) : base ("Base.glade", "OutputOptionsPanel")
+			public  OutputOptionsPanelWidget(Properties CustomizationObject) : base ("Base.glade", "OutputOptionsPanel")
  			{			
-				configuration = (DotNetProjectConfiguration)((IProperties)CustomizationObject).GetProperty("Config");
-				project = (Project)((IProperties)CustomizationObject).GetProperty("Project");
+				configuration = ((Properties)CustomizationObject).Get<DotNetProjectConfiguration>("Config");
+				project = ((Properties)CustomizationObject).Get<Project>("Project");
 				externalConsoleCheckButton.Toggled += new EventHandler (ExternalConsoleToggle);
 				
 				assemblyNameEntry.Text = configuration.OutputAssembly;
@@ -89,7 +89,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		OutputOptionsPanelWidget  widget;
 		public override void LoadPanelContents()
 		{
-			Add (widget = new  OutputOptionsPanelWidget ((IProperties) CustomizationObject));
+			Add (widget = new  OutputOptionsPanelWidget ((Properties) CustomizationObject));
 		}
 		
 		public override bool StorePanelContents()

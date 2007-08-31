@@ -34,7 +34,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 
 using Gtk;
 
@@ -52,9 +52,9 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			DotNetProject project;
 			ArrayList supportedVersions = new ArrayList (); 
 
-			public RuntimeOptionsPanelWidget (IProperties CustomizationObject) : base ("Base.glade", "RuntimeOptionsPanel")
+			public RuntimeOptionsPanelWidget (Properties CustomizationObject) : base ("Base.glade", "RuntimeOptionsPanel")
  			{
-				project = ((IProperties)CustomizationObject).GetProperty("Project") as DotNetProject;
+				project = ((Properties)CustomizationObject).Get<DotNetProject>("Project") ;
 				if (project != null) {
 					// Get the list of available versions, and add only those supported by the target language.
 					ClrVersion[] langSupported = project.LanguageBinding.GetSupportedClrVersions ();
@@ -88,7 +88,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		
 		public override void LoadPanelContents()
 		{
-			Add (widget = new RuntimeOptionsPanelWidget ((IProperties) CustomizationObject));
+			Add (widget = new RuntimeOptionsPanelWidget ((Properties) CustomizationObject));
 		}
 		
 		public override bool StorePanelContents()
