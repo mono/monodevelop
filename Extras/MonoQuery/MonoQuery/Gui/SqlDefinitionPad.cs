@@ -30,7 +30,6 @@ using System;
 using System.Resources;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Core.Gui;
