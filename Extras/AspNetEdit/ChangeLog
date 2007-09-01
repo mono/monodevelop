@@ -1,3 +1,9 @@
+2007-09-01  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* AspNetEdit.Editor/EditorHost.cs: Fix ambiguous reference with  
+	  System.ComponentModel.Design.EventBindingService, which is now 
+	  implemented in Mono SVN class library.
+
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AspNetEdit.mdp, Makefile.am, AspNetEdit.addin.xml: Reorganized the

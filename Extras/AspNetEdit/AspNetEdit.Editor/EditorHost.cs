@@ -61,7 +61,7 @@ namespace AspNetEdit.Editor
 			services.AddService (typeof (INameCreationService), new NameCreationService ());
 			services.AddService (typeof (ISelectionService), new SelectionService ());
 			services.AddService (typeof (ITypeResolutionService), new TypeResolutionService ());
-			services.AddService (typeof (IEventBindingService), new EventBindingService (proxy));
+			services.AddService (typeof (IEventBindingService), new AspNetEdit.Editor.ComponentModel.EventBindingService (proxy));
 			ExtenderListService extListServ = new ExtenderListService ();
 			services.AddService (typeof (IExtenderListService), extListServ);
 			services.AddService (typeof (IExtenderProviderService), extListServ);
