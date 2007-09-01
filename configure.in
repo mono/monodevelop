@@ -131,7 +131,7 @@ AC_ARG_ENABLE(java,
 		enable_java=no)
 AM_CONDITIONAL(ENABLE_JAVA, test x$enable_java = xyes)
 
-BOO_REQUIRED_VERSION=0.7.5.2013
+BOO_REQUIRED_VERSION=0.7.9.2659
 AC_ARG_ENABLE(boo,
 	AC_HELP_STRING([--enable-boo],
 		[enable support for boo [default=no]]),
