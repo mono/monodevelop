@@ -81,7 +81,7 @@ class ExpressionTypeVisitor(DepthFirstVisitor):
 		else:
 			Log ("${node.ToString()} - ${node.GetType().FullName}")
 	
-	override def OnCallableBlockExpression(node as CallableBlockExpression):
+	override def OnBlockExpression(node as BlockExpression):
 		Debug(node)
 		CreateReturnType("System.Delegate")
 	

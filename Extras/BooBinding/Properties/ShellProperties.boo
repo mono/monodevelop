@@ -9,26 +9,31 @@ import Gdk
 import Pango
 
 import MonoDevelop.Components
-import MonoDevelop.Core.Properties
 import MonoDevelop.Core
 
 class ShellProperties:
-	private propertyService = cast (PropertyService, ServiceManager.GetService (typeof(PropertyService)))
-	private properties = propertyService.GetProperty of IProperties (PropertyName, DefaultProperties())
-
+	//FIXME: BOO COMPILER CAN'T RESOLVE OVERLOADS OF GENERIC METHODS
+	//private properties = PropertyService.Get [of Properties] (PropertyName)
+	private properties as Properties
+	public def constructor ():
+		properties = PropertyService.Get [of Properties] (PropertyName, null)
+		if properties == null:
+			raise InvalidOperationException ("Invalid program state as a result of Boo compiler bug http://jira.codehaus.org/browse/BOO-856")
+	//END FIXME
+	
 	public abstract PropertyName as string:
 		get:
 			pass
 
-	public InternalProperties as IProperties:
+	public InternalProperties as Properties:
 		get:
 			return properties
 	
 	FontName as string:
 		get:
-			return properties.GetProperty ("Font", "__default_monospace")
+			return properties.Get [of string] ("Font", "__default_monospace")
 		set:
-			properties.SetProperty ("Font", value)
+			properties.Set ("Font", value)
 	
 	Font as FontDescription:
 		get:
@@ -40,24 +45,24 @@ class ShellProperties:
 	
 	AutoIndentBlocks as bool:
 		get:
-			return properties.GetProperty ("AutoIndentBlocks", true)
+			return properties.Get [of bool] ("AutoIndentBlocks", true)
 		set:
-			properties.SetProperty ("AutoIndentBlocks", value)
+			properties.Set ("AutoIndentBlocks", value)
 	
 	ResetClearsScrollback as bool:
 		get:
-			return properties.GetProperty ("ResetClearsScrollback", true)
+			return properties.Get [of bool] ("ResetClearsScrollback", true)
 		set:
-			properties.SetProperty ("ResetClearsScrollback", value)
+			properties.Set ("ResetClearsScrollback", value)
 
 	ResetClearsHistory as bool:
 		get:
-			return properties.GetProperty ("ResetClearsHistory", true)
+			return properties.Get [of bool] ("ResetClearsHistory", true)
 		set:
-			properties.SetProperty ("ResetClearsHistory", value)
+			properties.Set ("ResetClearsHistory", value)
 
 	LoadAssemblyAfterBuild as bool:
 		get:
-			return properties.GetProperty ("LoadAssemblyAfterBuild", true)
+			return properties.Get [of bool] ("LoadAssemblyAfterBuild", true)
 		set:
-			properties.SetProperty ("LoadAssemblyAfterBuild", value)
+			properties.Set ("LoadAssemblyAfterBuild", value)

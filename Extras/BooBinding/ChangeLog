@@ -1,3 +1,13 @@
+2007-09-01  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* Gui/ShellTextView.boo, Properties/ShellProperties.boo, 
+	  Gui/OptionPanels/CodeCompilationPanel.boo: Track Properties API 
+	  changes. May have unavoidably introduced some instability in working 
+	  around Boo compiler bug http://jira.codehaus.org/browse/BOO-856 
+	  (incorrect resolution of overloaded generic methods).
+	  
+	* Parser/ExpressionTypeVisitor.boo: Track Boo AST library API change. 
+
 2007-08-31  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* Gui/ShellTextView.boo, Properties/ShellProperties.boo: Track API 

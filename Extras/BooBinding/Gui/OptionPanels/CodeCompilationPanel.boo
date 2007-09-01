@@ -28,7 +28,6 @@ import MonoDevelop.Projects
 import MonoDevelop.Core.Gui.Dialogs
 import MonoDevelop.Components
 import MonoDevelop.Core
-import MonoDevelop.Core.Properties
 
 public class CodeGenerationPanel(AbstractOptionPanel):
 	private codeGenerationLabel as Gtk.Label = Gtk.Label ()
@@ -123,7 +122,13 @@ public class CodeGenerationPanel(AbstractOptionPanel):
 
 	
 	public override def LoadPanelContents() as void:
-		configuration = cast(DotNetProjectConfiguration,(cast(IProperties,CustomizationObject)).GetProperty("Config"))
+		//FIXME: BOO COMPILER CAN'T RESOLVE OVERLOADS OF GENERIC METHODS
+		//configuration = (cast(MonoDevelop.Core.Properties,CustomizationObject)).Get [of DotNetProjectConfiguration] ("Config")
+		configuration = (cast(MonoDevelop.Core.Properties,CustomizationObject)).Get [of DotNetProjectConfiguration] ("Config", null)
+		if configuration == null:
+			raise InvalidOperationException ("Invalid program state as a result of Boo compiler bug http://jira.codehaus.org/browse/BOO-856")
+		//END FIXME
+		
 		compilerParameters = cast (BooCompilerParameters, configuration.CompilationParameters)
 
 		checkDebug.Active = configuration.DebugMode

@@ -33,7 +33,6 @@ import GtkSourceView
 import MonoDevelop.Components
 import MonoDevelop.Projects.Gui.Completion
 import MonoDevelop.Core
-import MonoDevelop.Core.Properties
 import MonoDevelop.Projects
 import MonoDevelop.Ide.Gui
 import MonoDevelop.Projects.Parser
@@ -464,7 +463,7 @@ class ShellTextView (SourceView, ICompletionWidget):
 		else:
 			_sel.Hide()
 	
-	def OnPropertyChanged (obj as object, e as PropertyEventArgs):
+	def OnPropertyChanged (obj as object, e as PropertyChangedEventArgs):
 		if e.Key == "Font":
 			self.ModifyFont(Model.Properties.Font)
 		elif e.Key == "AutoIndentBlocks":
