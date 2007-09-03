@@ -1,3 +1,9 @@
+2007-09-03  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:
+	  Changed location of revert button, to avoid confusion with the commit
+	  button (see bug #82542).
+
 2007-08-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:

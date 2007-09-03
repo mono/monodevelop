@@ -91,6 +91,11 @@ namespace MonoDevelop.VersionControl.Views
 			buttonCommit.Clicked += new EventHandler(OnCommitClicked);
 			commandbar.Insert (buttonCommit, -1);
 			
+			Gtk.ToolButton btnRefresh = new Gtk.ToolButton (Gtk.Stock.Refresh);
+			btnRefresh.IsImportant = true;
+			btnRefresh.Clicked += new EventHandler (OnRefresh);
+			commandbar.Insert (btnRefresh, -1);
+			
 			buttonRevert = new Gtk.ToolButton (new Gtk.Image ("vc-revert-command", Gtk.IconSize.Menu), GettextCatalog.GetString ("Revert"));
 			buttonRevert.IsImportant = true;
 			buttonRevert.Clicked += new EventHandler (OnRevert);
@@ -100,11 +105,6 @@ namespace MonoDevelop.VersionControl.Views
 			showRemoteStatus.IsImportant = true;
 			showRemoteStatus.Clicked += new EventHandler(OnShowRemoteStatusClicked);
 			commandbar.Insert (showRemoteStatus, -1);
-			
-			Gtk.ToolButton btnRefresh = new Gtk.ToolButton (Gtk.Stock.Refresh);
-			btnRefresh.IsImportant = true;
-			btnRefresh.Clicked += new EventHandler (OnRefresh);
-			commandbar.Insert (btnRefresh, -1);
 			
 			commandbar.Insert (new Gtk.SeparatorToolItem (), -1);
 			
