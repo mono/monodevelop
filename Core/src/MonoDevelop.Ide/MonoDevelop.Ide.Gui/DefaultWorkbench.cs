@@ -380,15 +380,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void SetMemento(Properties xmlMemento)
 		{
-			Console.WriteLine ("Set MEMENTO !!!\n" + Environment.StackTrace);
-			Console.WriteLine (xmlMemento);
 			if (xmlMemento != null) {
 				WorkbenchMemento memento = new WorkbenchMemento (xmlMemento);
 				
 				normalBounds = memento.Bounds;
 				Move (normalBounds.X, normalBounds.Y);
 				Resize (normalBounds.Width, normalBounds.Height);
-				Console.WriteLine (memento.WindowState);
 				if (memento.WindowState == Gdk.WindowState.Maximized) {
 					Maximize ();
 				} else if (memento.WindowState == Gdk.WindowState.Iconified) {
