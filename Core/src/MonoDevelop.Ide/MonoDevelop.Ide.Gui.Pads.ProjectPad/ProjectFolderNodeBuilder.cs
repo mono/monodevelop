@@ -121,7 +121,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			base.BuildNode (treeBuilder, dataObject, ref label, ref icon, ref closedIcon);
 
 			ProjectFolder folder = (ProjectFolder) dataObject;
+
 			label = folder.Name;
+			if (!Directory.Exists (folder.Path)) {
+				label = "<span foreground='red'>" + label + "</span>";
+			}
+
 			icon = folderOpenIcon;
 			closedIcon = folderClosedIcon;
 		}

@@ -69,7 +69,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			ProjectFile file = (ProjectFile) dataObject;
+
 			label = Path.GetFileName (file.FilePath);
+			if (!File.Exists (file.FilePath)) {
+				label = "<span foreground='red'>" + label + "</span>";
+			}
+
 			string ic = Services.Icons.GetImageForFile (file.FilePath);
 			if (ic != Stock.MiscFiles || !File.Exists (file.FilePath))
 				icon = Context.GetIcon (ic);

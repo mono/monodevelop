@@ -1,3 +1,9 @@
+2007-09-03  Eric Butler <eric@extremeboredom.net>
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:
+	  Highlight missing files and directories
+
 2007-09-03  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Removed some debug code.
