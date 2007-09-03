@@ -410,8 +410,6 @@ namespace MonoDevelop.Projects
 			if (file != null) {
 				if (File.Exists (file))
 					Runtime.FileService.DeleteFile (file);
-				if (File.Exists (file + ".mdb"))
-					Runtime.FileService.DeleteFile (file + ".mdb");
 			}
 
 			// Delete referenced assemblies

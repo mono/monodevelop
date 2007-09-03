@@ -1,3 +1,8 @@
+2007-09-03  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/DotNetProject.cs, MonoDevelop.Projects/Project.cs:
+	  Handle mdb files in DotNetProject.
+
 2007-08-31  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects/ConfigurationCollection.cs,

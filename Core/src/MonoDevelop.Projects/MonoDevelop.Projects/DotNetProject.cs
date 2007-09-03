@@ -313,6 +313,14 @@ namespace MonoDevelop.Projects
 		internal protected override void OnClean (IProgressMonitor monitor)
 		{
 			base.OnClean (monitor);
+			
+			// Delete the generated debug info
+			string file = GetOutputFileName ();
+			if (file != null) {
+				if (File.Exists (file + ".mdb"))
+					Runtime.FileService.DeleteFile (file + ".mdb");
+			}
+
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Removing all .resources files"));
 			foreach (ProjectFile pfile in ProjectFiles) {
 				if (pfile.BuildAction == BuildAction.EmbedAsResource &&
