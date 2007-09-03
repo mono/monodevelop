@@ -855,7 +855,7 @@ namespace MonoDevelop.Ide.Gui
 		public object GetDelegatedCommandTarget ()
 		{
 			SdiWorkspaceWindow win = (SdiWorkspaceWindow) CurrentPageWidget;
-			return win.CommandHandler;
+			return win != null ? win.CommandHandler : null;
 		}
 	}
 }

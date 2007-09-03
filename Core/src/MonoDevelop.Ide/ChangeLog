@@ -1,3 +1,8 @@
+2007-09-03  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Added null check. Should fix
+	  bug #82553.
+
 2007-08-31  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs,
