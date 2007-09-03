@@ -1,3 +1,8 @@
+2007-09-03  Michael Hutchinson <MHutchinson@novell.com>
+
+	* Properties/ShellProperties.boo: better workaround for Boo compiler 
+	  bug.
+
 2007-09-01  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* Gui/ShellTextView.boo, Properties/ShellProperties.boo, 

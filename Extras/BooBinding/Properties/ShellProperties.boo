@@ -14,11 +14,7 @@ import MonoDevelop.Core
 class ShellProperties:
 	//FIXME: BOO COMPILER CAN'T RESOLVE OVERLOADS OF GENERIC METHODS
 	//private properties = PropertyService.Get [of Properties] (PropertyName)
-	private properties as Properties
-	public def constructor ():
-		properties = PropertyService.Get [of Properties] (PropertyName, null)
-		if properties == null:
-			raise InvalidOperationException ("Invalid program state as a result of Boo compiler bug http://jira.codehaus.org/browse/BOO-856")
+	private properties = PropertyService.Get [of Properties] (PropertyName, Properties())
 	//END FIXME
 	
 	public abstract PropertyName as string:
