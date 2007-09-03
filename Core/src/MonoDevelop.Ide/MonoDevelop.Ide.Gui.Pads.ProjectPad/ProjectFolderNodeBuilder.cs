@@ -29,6 +29,7 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
@@ -203,7 +204,27 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				IdeApp.ProjectOperations.SaveCombine();
 			}
 		}
-		
+
+		[CommandHandler (ProjectCommands.IncludeToProject)]
+		public void IncludeToProject ()
+		{
+			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
+			if (CurrentNode.HasChildren ()) {
+				List<SystemFile> filesToAdd = new List<SystemFile> ();
+				ITreeNavigator nav = CurrentNode.Clone ();
+				GetFiles (nav, filesToAdd);
+
+				foreach (SystemFile file in filesToAdd) {
+					if (project.IsCompileable (file.Path))
+						project.AddFile (file.Path, BuildAction.Compile);
+					else
+						project.AddFile (file.Path, BuildAction.Nothing);
+				}
+
+				IdeApp.ProjectOperations.SaveProject (project);
+			}
+		}
+
 		public override DragOperation CanDragNode ()
 		{
 			return DragOperation.Move | DragOperation.Copy;
@@ -218,5 +239,37 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			base.OnNodeDrop (dataObject, operation);
 		}
+
+		[CommandUpdateHandler (ProjectCommands.IncludeToProject)]
+		protected void IncludeToProjectUpdate (CommandInfo item)
+		{
+			Project project = CurrentNode.GetParentDataItem (typeof (Project), true) as Project;
+			string thisPath = GetFolderPath (CurrentNode.DataItem);
+			item.Visible = !HasProjectFiles (project, thisPath);
+		}
+
+		private void GetFiles (ITreeNavigator nav, List<SystemFile> filesToAdd)
+		{
+			nav.MoveToFirstChild ();
+			do {
+				if (nav.HasChildren ()) {
+					ITreeNavigator newNav = nav.Clone ();
+					GetFiles (newNav, filesToAdd);
+				} else if (nav.DataItem is SystemFile) {
+					filesToAdd.Add ((SystemFile) nav.DataItem);
+				}
+			} while (nav.MoveNext ());
+			nav.MoveToParent ();
+		}
+		
+		bool HasProjectFiles (Project project, string path)
+		{
+			string basePath = path + Path.DirectorySeparatorChar;
+			foreach (ProjectFile f in project.ProjectFiles)
+				if (f.Name.StartsWith (basePath))
+					return true;
+			return false;
+		}
+		
 	}
 }

@@ -908,6 +908,8 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.NewFolder" />
 		</ItemSet>
 		<SeparatorItem id = "AddSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeToProject" />
+		<SeparatorItem id = "IncludeToProjectSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Paste" />

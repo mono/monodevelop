@@ -1,5 +1,12 @@
 2007-09-03  Eric Butler <eric@extremeboredom.net>
 
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs,
+	  MonoDevelop.Ide.addin.xml:
+	  Add "Include To Project" menu item to Folders that recursively adds
+	  files.
+
+2007-09-03  Eric Butler <eric@extremeboredom.net>
+
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs,
 	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:
 	  Highlight missing files and directories
