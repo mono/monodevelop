@@ -1,3 +1,7 @@
+2007-09-04  Michael Hutchinson <MHutchinson@novell.com> 
+
+	* Gui/CodeGenerationPanel.cs, VBAmbience.cs: Fix some compiler warnings.
+
 2007-08-31  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/CodeGenerationPanel.cs, Parser/Resolver.cs, VBAmbience.cs,

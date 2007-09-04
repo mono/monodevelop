@@ -11,7 +11,6 @@ using System.Text;
 
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Core;
-using MonoDevelop.Core;
 using MonoDevelop.Projects.Ambience;
 
 namespace MonoDevelop.Core
