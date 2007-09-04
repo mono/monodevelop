@@ -147,7 +147,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			foreach (string key in optionProperties.Keys) {
 				if (result.Options == null) 
 					result.Options = parentOptions != null ? parentOptions.CloneOptions (Gtk.TreeIter.Zero) : new TreeViewPad.TreeOptions ();   
-				result.Options [key] = optionProperties.Get<string> (key);
+				result.Options [key] = bool.Parse (optionProperties.Get<string> (key));
 			}
 			
 			Properties nodeProperties = state.Get ("Nodes", new Properties ());
