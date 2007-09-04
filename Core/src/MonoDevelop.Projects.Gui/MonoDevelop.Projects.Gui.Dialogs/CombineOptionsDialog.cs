@@ -32,7 +32,6 @@ using System.ComponentModel;
 
 using Mono.Addins;
 using MonoDevelop.Core;
-using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Gui.Dialogs;
 

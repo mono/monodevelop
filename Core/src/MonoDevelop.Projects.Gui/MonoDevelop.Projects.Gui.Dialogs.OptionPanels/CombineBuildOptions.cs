@@ -9,7 +9,6 @@ using System.Collections;
 using System.ComponentModel;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Projects;
 

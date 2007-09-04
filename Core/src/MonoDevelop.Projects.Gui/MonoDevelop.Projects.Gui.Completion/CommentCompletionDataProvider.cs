@@ -10,7 +10,6 @@ using System.Reflection;
 using System.Collections;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 
 using MonoDevelop.Projects.Parser;

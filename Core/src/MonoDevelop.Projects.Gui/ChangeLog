@@ -1,3 +1,22 @@
+2007-09-04  Michael Hutchinson <MHutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Gui/ProjectsGuiServices.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/ConfigurationManager.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs,
+	  MonoDevelop.Projects.Gui.Completion/CommentCompletionDataProvider.cs,
+	  MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineInformationPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineBuildOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:
+	  Fix some compile warnings.
+
 2007-08-31  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Gui/IconCodon.cs,

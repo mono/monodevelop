@@ -10,8 +10,6 @@ namespace MonoDevelop.Projects.Gui
 {
 	internal class Services
 	{
-		static AmbienceService ambienceService;
-		static IProjectService projectService;
 		static IconService icons;
 
 		internal static AmbienceService Ambience {

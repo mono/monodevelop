@@ -13,7 +13,6 @@ using System.Collections.Specialized;
 using System.Xml;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects;
