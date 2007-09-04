@@ -158,6 +158,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			codeTypeDeclaration.IsEnum      = typeDeclaration.Type == ClassType.Enum;
 			codeTypeDeclaration.IsInterface = typeDeclaration.Type == ClassType.Interface;
 			codeTypeDeclaration.IsStruct    = typeDeclaration.Type == ClassType.Struct;
+			codeTypeDeclaration.IsPartial   = ((typeDeclaration.Modifier & Modifiers.Partial) !=0);
 			
 			if (typeDeclaration.BaseTypes != null) {
 				foreach (TypeReference typeRef in typeDeclaration.BaseTypes) {

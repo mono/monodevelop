@@ -1,3 +1,8 @@
+2007-09-04  Michael Hutchinson <MHutchinson@novell.com> 
+
+	* Project/Src/Visitors/CodeDOMOutputVisitor.cs: Respect "partial" modifier
+	  when building CodeDOM types.
+
 2007-08-23  Mike Krüger <mkrueger@novell.com> 
 
 	* NRefactory.mdp: Updated to the latest .NET 2.0 version.
