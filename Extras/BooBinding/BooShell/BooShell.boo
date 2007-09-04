@@ -91,7 +91,10 @@ class BooShell (RemoteProcessObject):
 	def ThreadRun():
 		Application.Init()
 		GLib.Idle.Add(ProcessCommands)
-		Application.Run()
+		try:
+			Application.Run()
+		except e as System.Threading.ThreadAbortException:
+			return
 
 	private def ProcessCommands() as bool:
 		com as ShellCommand
