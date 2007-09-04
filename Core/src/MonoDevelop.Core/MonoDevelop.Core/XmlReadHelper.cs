@@ -57,6 +57,9 @@ namespace MonoDevelop.Core
 				return;
 			}
 			ReadCallbackData data = new ReadCallbackData ();
+			if (reader.LocalName == endNode) {
+				reader.Read();
+			}
 			while (reader.Read()) {
 			 skip:
 				data.SkipNextRead = false;
