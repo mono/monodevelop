@@ -1,3 +1,8 @@
+2007-09-04  Michael Hutchinson <MHutchinson@novell.com>
+
+	* MonoDevelop.Core/Properties.cs: Fix compiler warnings. Note: one is 
+	  clearly a typo, but the fix changes the logic.
+
 2007-09-04  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Core/XmlReadHelper.cs: Changed the XmlReadHelper behavior - it

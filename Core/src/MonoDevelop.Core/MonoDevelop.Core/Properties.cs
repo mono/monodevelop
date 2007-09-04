@@ -67,7 +67,7 @@ namespace MonoDevelop.Core
 			if (o is string) {
 				try {
 					return (T)converter.ConvertFromInvariantString (o.ToString ());
-				} catch (Exception e) {
+				} catch (Exception) {
 					return default(T);
 				}
 			}
@@ -109,7 +109,7 @@ namespace MonoDevelop.Core
 		{
 			object old = Get<object> (key);
 			properties[key] = val;
-			if (!val.GetType ().IsClass || (val.GetType () is typeof(string)) {
+			if (!val.GetType ().IsClass || (val is string)) {
 				if (defaultValues.ContainsKey (key)) {
 					if (defaultValues[key] == val)
 						properties.Remove (key);
