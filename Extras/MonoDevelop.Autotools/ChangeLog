@@ -1,3 +1,8 @@
+2007-09-04  Michael Hutchinson <MHutchinson@novell.com> 
+
+	* MakefileOptionPanelWidget.cs, MakefileOptionPanel.cs: Fix some compile
+	  warnings.
+
 2007-08-31  Mike Krüger <mkrueger@novell.com> 
 
 	* MakefileOptionPanelWidget.cs, MakefileOptionPanel.cs: Changes due to new

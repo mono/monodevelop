@@ -1,5 +1,4 @@
 using MonoDevelop.Core;
-using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 
