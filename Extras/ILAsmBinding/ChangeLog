@@ -1,3 +1,7 @@
+2007-09-04  Michael Hutchinson <MHutchinson@novell.com> 
+
+	* Gui/CompilerParametersPanel.cs: Fix compiler warning.
+
 2007-08-31  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/CompilerParametersPanel.cs: Changes due to new property
