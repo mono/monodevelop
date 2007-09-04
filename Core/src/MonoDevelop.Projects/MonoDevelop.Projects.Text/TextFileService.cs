@@ -34,14 +34,27 @@ namespace MonoDevelop.Projects.Text
 	{
 		public static void FireLineCountChanged (ITextFile textFile, int lineNumber, int lineCount, int column)
 		{
-			Console.WriteLine (textFile.Name + " -- line:" + lineNumber + " count:" + lineCount);
 			if (LineCountChanged != null)
 				LineCountChanged (textFile, new LineCountEventArgs (textFile, lineNumber, lineCount, column));
 		}
 		
+		public static void FireResetCountChanges (ITextFile textFile)
+		{
+			if (ResetCountChanges != null)
+				ResetCountChanges (textFile, new TextFileEventArgs (textFile));
+		}
+		
+		public static void FireCommitCountChanges (ITextFile textFile)
+		{
+			if (CommitCountChanges != null)
+				CommitCountChanges (textFile, new TextFileEventArgs (textFile));
+		}
+		
 		public static event EventHandler<LineCountEventArgs> LineCountChanged;
+		public static event EventHandler<TextFileEventArgs> ResetCountChanges;
+		public static event EventHandler<TextFileEventArgs> CommitCountChanges;
 	}
-	
+
 	public class TextFileEventArgs : EventArgs
 	{
 		ITextFile textFile;
