@@ -44,7 +44,7 @@ namespace MonoDevelop.WelcomePage
 				return;
 			
 			WelcomePageView wpv = new WelcomePageView();
-			IdeApp.Workbench.OpenDocument(wpv, true);
+			IdeApp.Workbench.OpenDocument (wpv, true);
 
 			// Html must be rendered after the widget has been drawn
 			wpv.Initialize ();
@@ -62,7 +62,7 @@ namespace MonoDevelop.WelcomePage
 				}
 			}
 			WelcomePageView wpv = new WelcomePageView();
-			Document doc = IdeApp.Workbench.OpenDocument(wpv, true);
+			IdeApp.Workbench.OpenDocument(wpv, true);
 			
 			// Html must be rendered after the widget has been drawn
 			wpv.Initialize ();
