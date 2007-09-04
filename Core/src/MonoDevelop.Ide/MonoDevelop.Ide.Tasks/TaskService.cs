@@ -40,6 +40,33 @@ namespace MonoDevelop.Ide.Tasks
 			IdeApp.ProjectOperations.FileRemovedFromProject += new ProjectFileEventHandler (ProjectFileRemoved);
 
 			PropertyService.PropertyChanged += (EventHandler<PropertyChangedEventArgs>) DispatchService.GuiDispatch (new EventHandler<PropertyChangedEventArgs> (OnPropertyUpdated));
+			
+			MonoDevelop.Projects.Text.TextFileService.CommitCountChanges += delegate (object sender, MonoDevelop.Projects.Text.TextFileEventArgs args) {
+				foreach (Task task in this.Tasks) {
+					if (String.IsNullOrEmpty (task.FileName))
+						continue;
+					if (Path.GetFullPath (task.FileName) == Path.GetFullPath (args.TextFile.Name)) {
+						task.SavedLine = -1;
+					}
+				}
+			};
+			
+			MonoDevelop.Projects.Text.TextFileService.ResetCountChanges += delegate (object sender, MonoDevelop.Projects.Text.TextFileEventArgs args) {
+				List<Task> tasks = new List<Task> ();
+				foreach (Task task in this.Tasks) {
+					if (String.IsNullOrEmpty (task.FileName))
+						continue;
+					if (Path.GetFullPath (task.FileName) == Path.GetFullPath (args.TextFile.Name)) {
+						if (task.SavedLine != -1) {
+							task.Line = task.SavedLine;
+							task.SavedLine = -1;
+							tasks.Add (task);
+						}
+					}
+				}
+				OnTaskChanged (new TaskEventArgs (tasks));
+			};
+			
 			MonoDevelop.Projects.Text.TextFileService.LineCountChanged += delegate (object sender, MonoDevelop.Projects.Text.LineCountEventArgs args) {
 				if (args.TextFile == null || String.IsNullOrEmpty (args.TextFile.Name))
 					return;
@@ -48,6 +75,8 @@ namespace MonoDevelop.Ide.Tasks
 					if (String.IsNullOrEmpty (task.FileName))
 						continue;
 					if (Path.GetFullPath (task.FileName) == Path.GetFullPath (args.TextFile.Name) && task.Line - 1 > args.LineNumber || (task.Line - 1 == args.LineNumber && task.Column - 1 >= args.Column)) {
+						if (task.SavedLine == -1)
+							task.SavedLine = task.Line;
 						task.Line += args.LineCount;
 						tasks.Add (task);
 						

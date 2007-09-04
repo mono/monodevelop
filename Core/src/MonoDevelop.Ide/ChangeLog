@@ -1,3 +1,10 @@
+2007-09-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Userpref errors are now catched
+	  silently.
+	* MonoDevelop.Ide.Tasks/Task.cs, MonoDevelop.Ide.Tasks/TaskService.cs: Fixed
+	  remaining issue with bug 82282.
+
 2007-09-03  Eric Butler <eric@extremeboredom.net>
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs,

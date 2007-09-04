@@ -31,8 +31,11 @@ namespace MonoDevelop.Ide.Tasks
 		Project project;
 		int      line;
 		int      column;
-		string errorNumber;
 
+		int      savedLine = -1;
+		
+		string errorNumber;
+		
 		public override string ToString ()
 		{
 			return String.Format ("[Task:File={0}, Line={1}, Column={2}, Type={3}, Priority={4}, Description={5}]",
@@ -54,6 +57,19 @@ namespace MonoDevelop.Ide.Tasks
 		{
 			get { return priority; }
 			set { priority = value; }
+		}
+		
+		/// <value>
+		/// Used for temporarly line changes (e.g. editing a file) to set back to a default
+		/// value when not saving the file and reverting the changes.
+		/// </value>
+		internal int SavedLine {
+			get {
+				return savedLine;
+			}
+			set {
+				this.savedLine = value;
+			}
 		}
 		
 		public int Line {
