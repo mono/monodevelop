@@ -32,7 +32,6 @@ using System.Collections;
 
 using Mono.Addins;
 using MonoDevelop.Core;
-using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Dialogs;
 
 namespace MonoDevelop.NUnit {

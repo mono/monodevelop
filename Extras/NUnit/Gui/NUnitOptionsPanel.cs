@@ -32,8 +32,6 @@ using System.IO;
 using System.Collections;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core;
-
 using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Components;
 using MonoDevelop.Core.Gui.Dialogs;
