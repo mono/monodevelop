@@ -1,3 +1,10 @@
+2007-09-04  Michael Hutchinson <MHutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Templates/CodeTranslationFileDescriptionTemplate.cs: Use
+	  non-deprecated CodeDom parse API. Some refactoring.
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs: Updated.
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Show warnings.
+
 2007-09-04  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads/NodeState.cs,

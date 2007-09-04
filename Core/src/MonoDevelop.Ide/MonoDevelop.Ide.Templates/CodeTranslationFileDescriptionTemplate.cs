@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.Templates
 	public class CodeTranslationFileDescriptionTemplate : SingleFileDescriptionTemplate
 	{
 		string content;
-		ICodeParser parser;
+		CodeDomProvider parserProvider;
 		string tempSubstitutedContent;
 		
 		public override void Load (XmlElement filenode)
@@ -60,16 +60,7 @@ namespace MonoDevelop.Ide.Templates
 			if ((sourceLang == null) || (sourceLang.Length == 0))
 				sourceLang = "C#";
 			
-			CodeDomProvider provider = null;
-			IDotNetLanguageBinding sourceBinding = GetLanguageBinding (sourceLang) as IDotNetLanguageBinding;
-			if (sourceBinding != null)
-				provider = sourceBinding.GetCodeDomProvider ();
-			if (provider == null)
-				throw new InvalidOperationException ("Invalid Code Translation template: the source language '" + sourceLang + "' does not have support for CodeDom.");
-			
-			parser = provider.CreateParser ();
-			if (parser == null)
-				throw new InvalidOperationException ("Invalid Code Translation template: the CodeDomProvider of the source language '" + sourceLang + "' has not implemented the CreateParser () method.");
+			parserProvider = getProvider (sourceLang);
 		}
 		
 		//Adapted from CodeDomFileDescriptionTemplate.cs
@@ -80,20 +71,21 @@ namespace MonoDevelop.Ide.Templates
 			if (language == null || language == "")
 				throw new InvalidOperationException ("Language not defined in CodeDom based template.");
 			
-			CodeDomProvider provider = null;
-			IDotNetLanguageBinding binding = GetLanguageBinding (language) as IDotNetLanguageBinding;
-			if (binding != null)
-				provider = binding.GetCodeDomProvider ();
-			if (provider == null)
-				throw new InvalidOperationException ("The language '" + language + "' does not have support for CodeDom.");
+			CodeDomProvider provider = getProvider (language);
 			
 			//parse the source code
 			if (tempSubstitutedContent == null)
 				throw new Exception ("Expected ModifyTags to be called before CreateContent");
 			
-			StringReader sr = new StringReader (tempSubstitutedContent);
-			CodeCompileUnit ccu = parser.Parse (sr);
-			sr.Close ();
+			CodeCompileUnit ccu;
+			using (StringReader sr = new StringReader (tempSubstitutedContent)) {
+				try {
+					ccu = parserProvider.Parse (sr);
+				} catch (NotImplementedException nie) {
+					throw new InvalidOperationException ("Invalid Code Translation template: the CodeDomProvider of the source language '"
+					                                     + language + "' has not implemented the Parse method.");
+				}
+			}
 			
 			tempSubstitutedContent = null;
 			
@@ -116,6 +108,19 @@ namespace MonoDevelop.Ide.Templates
 			if (i == -1) return txt;
 			
 			return txt.Substring (i+1);
+		}
+		
+		CodeDomProvider getProvider (string language)
+		{
+			CodeDomProvider provider = null;
+			IDotNetLanguageBinding binding = GetLanguageBinding (language) as IDotNetLanguageBinding;
+			if (binding == null)
+				throw new InvalidOperationException ("No LanguageBinding was found for the language '" + language + "'.");
+			
+			provider = binding.GetCodeDomProvider ();
+			if (provider == null)
+				throw new InvalidOperationException ("No CodeDomProvider was found for the language '" + language + "'.");
+			return provider;
 		}
 		
 		public override void ModifyTags (Project project, string language, string identifier, string fileName, ref Hashtable tags)

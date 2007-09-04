@@ -854,7 +854,7 @@ namespace MonoDevelop.Ide.Gui
 						return true;
 				});
 			} catch (Exception e) {
-				//Runtime.LoggingService.Error ((object)"Exception while loading user combine preferences.", e);
+				Runtime.LoggingService.Error ((object)"Exception while loading user combine preferences.", e);
 			} finally {
 				reader.Close ();
 			}
