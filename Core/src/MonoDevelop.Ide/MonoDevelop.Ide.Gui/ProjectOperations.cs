@@ -823,10 +823,11 @@ namespace MonoDevelop.Ide.Gui
 								switch (reader.LocalName) {
 								case ViewMementoNode:
 									string id = reader.GetAttribute (IdAttribute);
+									Properties memento = Properties.Read (reader);
 									foreach (Pad pad in IdeApp.Workbench.Pads) {
 										if (id == pad.Id && pad.Content is IMementoCapable) {
 											IMementoCapable m = (IMementoCapable) pad.Content; 
-											m.SetMemento (Properties.Read (reader));
+											m.SetMemento (memento);
 										}
 									}
 									return true;
@@ -850,7 +851,7 @@ namespace MonoDevelop.Ide.Gui
 								combine.ActiveConfiguration = conf;
 							return true;
 						}
-						return false;
+						return true;
 				});
 			} catch (Exception e) {
 				//Runtime.LoggingService.Error ((object)"Exception while loading user combine preferences.", e);
@@ -889,6 +890,7 @@ namespace MonoDevelop.Ide.Gui
 						writer.WriteStartElement (ViewMementoNode);
 						writer.WriteAttributeString (IdAttribute, pad.Id); 
 						((IMementoCapable)pad.Content).CreateMemento ().Write (writer);
+						writer.WriteEndElement (); // ViewMementoNode
 					}
 				}
 				writer.WriteEndElement (); // Views

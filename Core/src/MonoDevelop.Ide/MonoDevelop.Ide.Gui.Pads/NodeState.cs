@@ -138,21 +138,24 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		static NodeState FromXml (Properties state, TreeViewPad.TreeOptions parentOptions)
 		{
-			NodeState ns = new NodeState ();
-			ns.NodeName = state.Get ("name", "");
-			ns.Expanded = state.Get ("expanded", false);
-			ns.Selected = state.Get ("selected", false);
+			NodeState result = new NodeState ();
+			result.NodeName = state.Get ("name", "");
+			result.Expanded = state.Get ("expanded", false);
+			result.Selected = state.Get ("selected", false);
 			
 			Properties optionProperties = state.Get ("Options", new Properties ());
 			foreach (string key in optionProperties.Keys) {
-				ns.Options [key] = optionProperties.Get<string> (key);
+				if (result.Options == null) 
+					result.Options = parentOptions != null ? parentOptions.CloneOptions (Gtk.TreeIter.Zero) : new TreeViewPad.TreeOptions ();   
+				result.Options [key] = optionProperties.Get<string> (key);
 			}
 			
 			Properties nodeProperties = state.Get ("Nodes", new Properties ());
+			result.ChildrenState = new List<MonoDevelop.Ide.Gui.Pads.NodeState> ();
 			foreach (string key in nodeProperties.Keys) {
-				ns.ChildrenState.Add (FromXml (optionProperties.Get (key, new Properties ()), ns.Options != null ? ns.Options : parentOptions));
+				result.ChildrenState.Add (FromXml (nodeProperties.Get (key, new Properties ()), result.Options != null ? result.Options : parentOptions));
 			}
-			return ns;
+			return result;
 		}
 		
 		internal static NodeState SaveState (TreeViewPad pad, ITreeNavigator nav)

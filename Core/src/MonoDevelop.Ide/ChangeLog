@@ -1,5 +1,11 @@
 2007-09-04  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Pads/NodeState.cs,
+	  MonoDevelop.Ide.Gui/ProjectOperations.cs: Fixed a bug in user
+	  preferences file persistence.
+
+2007-09-04  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Userpref errors are now catched
 	  silently.
 	* MonoDevelop.Ide.Tasks/Task.cs, MonoDevelop.Ide.Tasks/TaskService.cs: Fixed
