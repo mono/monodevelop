@@ -10,7 +10,6 @@ using System.Text;
 
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Core;
-using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Ambience
 {

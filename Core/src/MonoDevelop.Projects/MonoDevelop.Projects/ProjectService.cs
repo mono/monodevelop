@@ -19,7 +19,6 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Serialization;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Execution;

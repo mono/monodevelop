@@ -12,7 +12,6 @@ using System.CodeDom.Compiler;
 using System.Text;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Ambience
 {

@@ -39,7 +39,6 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Parser;

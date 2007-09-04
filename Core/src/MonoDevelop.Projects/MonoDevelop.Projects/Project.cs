@@ -18,7 +18,6 @@ using System.CodeDom.Compiler;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Projects.Ambience;
 using MonoDevelop.Projects.Serialization;

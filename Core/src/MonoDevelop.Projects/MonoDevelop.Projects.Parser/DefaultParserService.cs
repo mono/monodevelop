@@ -21,7 +21,6 @@ using System.Security.Policy;
 using System.Xml;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using Mono.Addins;
 using MonoDevelop.Projects;

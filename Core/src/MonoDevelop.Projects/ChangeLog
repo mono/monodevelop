@@ -1,3 +1,16 @@
+2007-09-04  Michael Hutchinson <MHutchinson@novell.com> 
+
+	* MonoDevelop.Projects/ProjectService.cs,
+	  MonoDevelop.Projects/CombineEntry.cs, MonoDevelop.Projects/Combine.cs,
+	  MonoDevelop.Projects/Project.cs,
+	  MonoDevelop.Projects.Ambience/IAmbience.cs,
+	  MonoDevelop.Projects.Ambience/AmbienceService.cs,
+	  MonoDevelop.Projects.Ambience/CodeDOMGeneratorUtility.cs,
+	  MonoDevelop.Projects.Ambience/NetAmbience.cs,
+	  MonoDevelop.Projects.Parser/DefaultParserService.cs,
+	  MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Fix some compile
+	  warnings.
+
 2007-09-03  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/DotNetProject.cs, MonoDevelop.Projects/Project.cs:

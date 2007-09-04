@@ -8,7 +8,6 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Core;
 
