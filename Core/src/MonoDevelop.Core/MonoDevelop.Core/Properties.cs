@@ -131,7 +131,13 @@ namespace MonoDevelop.Core
 		
 		public void Write (XmlWriter writer)
 		{
-			writer.WriteStartElement (Node);
+				Write (writer, true);
+		}
+		
+		public void Write (XmlWriter writer, bool createPropertyParent)
+		{
+			if (createPropertyParent)
+					writer.WriteStartElement (Node);
 
 			foreach (KeyValuePair<string, object> property in this.properties) {
 				writer.WriteStartElement (PropertyNode);
@@ -157,8 +163,9 @@ namespace MonoDevelop.Core
 				}
 				writer.WriteEndElement (); // PropertyNode
 			}
-			
-			writer.WriteEndElement (); // Node
+				
+			if (createPropertyParent)
+					writer.WriteEndElement (); // Node
 		}
 		
 		public void Save (string fileName)
@@ -168,7 +175,7 @@ namespace MonoDevelop.Core
 			try {
 				writer.WriteStartElement (PropertiesRootNode);
 				writer.WriteAttributeString (PropertiesVersionAttribute, PropertiesVersion);
-				Write (writer);
+				Write (writer, false);
 				writer.WriteEndElement (); // PropertiesRootNode
 			} finally {
 				writer.Close ();

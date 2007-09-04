@@ -1,3 +1,8 @@
+2007-09-04   <> 
+
+	* MonoDevelop.Core/Properties.cs: Changed the md property file format output
+	  (no unknown node:Properties message anymore).
+
 2007-08-31   <> 
 
 	* MonoDevelop.Core.Properties/IXmlConvertable.cs,
