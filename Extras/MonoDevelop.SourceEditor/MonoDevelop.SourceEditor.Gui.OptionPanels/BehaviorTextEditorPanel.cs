@@ -12,7 +12,6 @@ using System.Collections;
 using Gtk;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Dialogs;
 
 using MonoDevelop.Components;

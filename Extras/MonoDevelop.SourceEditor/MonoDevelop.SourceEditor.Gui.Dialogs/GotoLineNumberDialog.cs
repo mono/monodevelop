@@ -10,7 +10,6 @@ using System.IO;
 using System.Resources;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 
