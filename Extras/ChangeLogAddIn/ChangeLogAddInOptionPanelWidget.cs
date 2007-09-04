@@ -27,7 +27,6 @@
 
 using System;
 using MonoDevelop.Core;
-using MonoDevelop.Core;
 
 namespace MonoDevelop.ChangeLogAddIn
 {
