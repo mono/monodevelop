@@ -339,7 +339,7 @@ namespace Mono.Data.Sql
 					view.Definition = r.GetString(2);
 					view.IsSystemView = IsSystem (view.OwnerName);
 					view.Comment = "";
-				} catch (Exception e) {
+				} catch {
 				}
 				
 				collection.Add(view);

@@ -378,7 +378,7 @@ namespace Mono.Data.Sql
 					sb.AppendFormat ("  {0}\n);", source);
 					view.Definition = sb.ToString ();
 					//view.Comment = r.GetString(5);
-				} catch (Exception e) {
+				} catch {
 				}
 				
 				collection.Add(view);

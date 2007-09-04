@@ -87,7 +87,7 @@ namespace Mono.Data.Sql
 			try {
 				Connection.Open ();
 				OnOpen ();
-			} catch (Exception e) {
+			} catch {
 				isConnectionStringWrong = true;
 			}
 			

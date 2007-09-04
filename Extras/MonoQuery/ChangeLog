@@ -1,3 +1,15 @@
+2007-09-04  Michael Hutchinson <MHutchinson@novell.com> 
+
+	* Mono.Data.Sql/Providers/SqlDbProvider.cs,
+	  Mono.Data.Sql/Providers/SqliteDbProvider.cs,
+	  Mono.Data.Sql/Providers/NpgsqlDbProvider.cs,
+	  Mono.Data.Sql/Providers/MySqlDbProvider.cs,
+	  Mono.Data.Sql/Providers/OracleDbProvider.cs,
+	  Mono.Data.Sql/Providers/SybaseDbProvider.cs,
+	  MonoQuery/MonoQueryService.cs: Fix some compile warnings.
+	* Mono.Data.Sql/Mono.Data.Sql.mdp: Add optional providers to project, but
+	  build using autotools in order to compile only the valid/detected ones.
+
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoQuery/MonoQuery.addin.xml: Removed the CommandService class.

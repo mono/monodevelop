@@ -94,7 +94,7 @@ namespace MonoQuery
 						providers
 							= (DbProviderCollection) serializer.Deserialize (fs);
 					}
-				} catch (Exception e) {
+				} catch {
 					Runtime.LoggingService.Error ("Invalid monoquery file.");
 					Runtime.FileService.DeleteFile (serializedFile);
 				}
