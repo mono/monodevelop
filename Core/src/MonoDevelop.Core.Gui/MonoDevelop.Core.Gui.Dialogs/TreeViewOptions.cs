@@ -10,7 +10,6 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 
-using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Codons;

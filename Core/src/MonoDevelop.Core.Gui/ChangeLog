@@ -1,3 +1,14 @@
+2007-09-04  Michael Hutchinson <MHutchinson@novell.com>
+
+	* MonoDevelop.Core.Gui.Dialogs/WizardDialog.cs,
+	  MonoDevelop.Core.Gui.Dialogs/CurrentPanelPanel.cs,
+	  MonoDevelop.Core.Gui.Dialogs/StatusPanel.cs,
+	  MonoDevelop.Core.Gui.Dialogs/TreeViewOptions.cs,
+	  MonoDevelop.Core.Gui.Components/FileBrowser.cs,
+	  MonoDevelop.Core.Gui/RecentOpen.cs,
+	  MonoDevelop.Core.Gui/MessageService.cs,
+	  MonoDevelop.Core.Gui/ResourceService.cs: Remove some warnings.
+
 2007-08-31  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Core.Gui.Dialogs/WizardDialog.cs,

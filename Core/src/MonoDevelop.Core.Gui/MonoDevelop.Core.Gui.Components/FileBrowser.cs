@@ -13,7 +13,6 @@ using System.IO;
 using Gtk;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Utils;
 using MonoDevelop.Core.Gui;
 

@@ -9,7 +9,6 @@ using System;
 using System.Diagnostics;
 using System.Collections;
 
-using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Codons;

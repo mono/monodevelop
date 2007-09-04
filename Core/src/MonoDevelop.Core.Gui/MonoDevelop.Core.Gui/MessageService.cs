@@ -12,7 +12,6 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 using Mono.Addins;
 using MonoDevelop.Core;
-using MonoDevelop.Core;
 using Gtk;
 
 namespace MonoDevelop.Core.Gui

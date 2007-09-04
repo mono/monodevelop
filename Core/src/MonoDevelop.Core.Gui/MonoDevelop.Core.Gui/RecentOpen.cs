@@ -15,7 +15,6 @@ using MimeType = Gnome.Vfs.MimeType;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Utils;
-using MonoDevelop.Core;
 using Freedesktop.RecentFiles;
 
 namespace MonoDevelop.Core.Gui
