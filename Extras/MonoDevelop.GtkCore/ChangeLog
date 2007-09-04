@@ -1,3 +1,8 @@
+2007-09-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* lib/libsteticui.dll, lib/libstetic.dll: Updated from stetic module.
+	  Includes fixes for bugs #82671, #82527, #82476, #81763 and #81238.
+
 2007-08-31  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs,
