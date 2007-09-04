@@ -3,7 +3,6 @@ using System.Collections;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 
 using MonoDevelop.VersionControl.Dialogs;
