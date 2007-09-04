@@ -334,6 +334,7 @@ namespace MonoDevelop.SourceEditor.Gui
 				Services.DebuggingService.BreakpointRemoved -= breakpointRemovedHandler;
 				Services.DebuggingService.ExecutionLocationChanged -= executionChangedHandler;
 			}
+			TextFileService.FireResetCountChanges (this);
 
 			mainBox.Remove (se);
 			properties.PropertyChanged -= propertyHandler;
@@ -402,6 +403,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			}
 			if (encoding != null)
 				se.Buffer.SourceEncoding = encoding;
+			TextFileService.FireCommitCountChanges (this);
 			ContentName = fileName;
 			InitializeFormatter ();
 		}

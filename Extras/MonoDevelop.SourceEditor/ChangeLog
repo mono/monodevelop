@@ -1,3 +1,8 @@
+2007-09-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Fixed
+	  remaining issue with bug 82282.
+
 2007-08-31  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs,
