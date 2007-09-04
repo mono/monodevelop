@@ -17,7 +17,6 @@ using System.CodeDom.Compiler;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
-using MonoDevelop.Core;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 

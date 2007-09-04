@@ -6,7 +6,6 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
-using MonoDevelop.Core;
 
 namespace JavaBinding
 {

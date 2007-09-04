@@ -1,3 +1,8 @@
+2007-09-04  Michael Hutchinson <MHutchinson@novell.com> 
+
+	* JavaLanguageBinding.cs, Gui/GlobalOptionsPanel.cs,
+	  Gui/ProjectConfigurationPropertyPanel.cs: Fix some compiler warnings.
+
 2007-08-31  Mike Krüger <mkrueger@novell.com> 
 
 	* JavaLanguageBinding.cs, Gui/GlobalOptionsPanel.cs,
