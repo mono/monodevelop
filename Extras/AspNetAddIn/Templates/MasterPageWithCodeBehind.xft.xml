@@ -14,9 +14,9 @@
 	
 	<!-- Template Content -->
 	<TemplateFiles>
-		<AspNetFile name="${Name}.master">
+		<AspNetFile name="${Name}.master" BuildAction="FileCopy">
 			<FileText>
-				<![CDATA[<%@ Master Language="${Language}" CodeFile="${Name}.master.${LanguageExtension}" Inherits="Master" %>
+				<![CDATA[<%@ Master Language="${Language}" Inherits="${Namespace}.${Name}" %>
 ${Doctype}
 <html>
 <head>
@@ -37,12 +37,23 @@ ${Doctype}
 <![CDATA[using System;
 using System.Web;
 using System.Web.UI;
-
-public partial class ${Name} : System.Web.UI.MasterPage 
-{
+namespace ${Namespace} {
+	public partial class ${Name} : System.Web.UI.MasterPage 
+	{
+	}
 }
 ]]>
 		</CodeTranslationFile>
-	</TemplateFiles>
+		<CodeTranslationFile name="${Name}.master.designer.${LanguageExtension}" ShowAutogenerationNotice="True">
+<![CDATA[using System;
+using System.Web;
+using System.Web.UI;
+namespace ${Namespace} {
+	public partial class ${Name} 
+	{
+	}
+}
+]]>
+		</CodeTranslationFile></TemplateFiles>
 	<FileOptions/>
 </Template>

@@ -78,7 +78,7 @@ namespace AspNetAddIn
 			set {
 				try {
 					port = System.Convert.ToUInt16 (value);
-				} catch (InvalidCastException e) {
+				} catch (InvalidCastException) {
 					throw new ArgumentException ("The port value is outside the permitted range");
 				}
 			}
@@ -90,7 +90,7 @@ namespace AspNetAddIn
 				try {
 					System.Net.IPAddress tempAdd = System.Net.IPAddress.Parse (value);
 					address = tempAdd.ToString ();
-				} catch(FormatException e) {
+				} catch(FormatException) {
 					throw new ArgumentException ("The IP address is invalid.");
 				}
 			}

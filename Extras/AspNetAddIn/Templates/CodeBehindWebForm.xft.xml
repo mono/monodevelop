@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Template	Originator="Michael Hutchinson"
 			Created="2006/06/09"
-			LastModified="2006/06/18">
+			LastModified="2007/09/05">
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
@@ -14,7 +14,7 @@
 	
 	<!-- Template Content -->
 	<TemplateFiles>
-		<AspNetFile name="${Name}.aspx">
+		<AspNetFile name="${Name}.aspx" DefaultExtension=".aspx" BuildAction="FileCopy">
 			<FileText>
 				<![CDATA[<%@ Page Language="${Language}" Inherits="${Namespace}.${Name}" %>
 ${Doctype}
@@ -24,8 +24,6 @@ ${Doctype}
 </head>
 <body>
 	<form id="form1" runat="server">
-		<asp:TextBox id="textBox1" runat="server"/>
-		<asp:Button id="button1" runat="server" OnClick="onButtonClick"/> 
 	</form>
 </body>
 </html>]]>
@@ -39,12 +37,22 @@ using System.Web.UI;
 
 namespace ${Namespace} {
 	
-	public class ${Name} : Page
+	public partial class ${Name} : System.Web.UI.Page
 	{
-		public void onButtonClick (object sender, EventArgs e)
-		{
-			textBox1.Text ="Hello World";
-		}
+		
+	}
+}]]>
+		</CodeTranslationFile>
+		<CodeTranslationFile name="${Name}.aspx.designer.${LanguageExtension}" ShowAutogenerationNotice="True">
+<![CDATA[using System;
+using System.Web;
+using System.Web.UI;
+
+namespace ${Namespace} {
+	
+	public partial class ${Name}
+	{
+		
 	}
 }]]>
 		</CodeTranslationFile>

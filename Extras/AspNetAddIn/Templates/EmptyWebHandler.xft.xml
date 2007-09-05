@@ -14,7 +14,7 @@
 	
 	<!-- Template Content -->
 	<TemplateFiles>
-		<AspNetFile name="${Name}.ashx">
+		<AspNetFile name="${Name}.ashx" BuildAction="FileCopy">
 			<FileText>
 <![CDATA[<%@ WebHandler Language="${Language}" Class="${Namespace}.${Name}" %>
 ${CodeRegion:script1}
@@ -23,13 +23,14 @@ ${CodeRegion:script1}
 <![CDATA[using System;
 using System.Web;
 
-namespace ${Namespace} {
+namespace ${Namespace}
+{
 
-	public class ${Name} : IHttpHandler {
+	public class ${Name} : System.Web.IHttpHandler
+	{
 	
-		public void ProcessRequest (HttpContext context) {
-			context.Response.ContentType = "text/plain";
-			context.Response.Write("Hello World");
+		public void ProcessRequest (HttpContext context)
+		{
 		}
 	
 		public bool IsReusable {

@@ -1,3 +1,18 @@
+2007-09-05  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Project/XspParameters.cs: Fix some compile warnings.
+	* Templates/CodeBehindWebHandler.xft.xml, Templates/EmptyWebForm.xft.xml,
+	  Templates/CodeBehindWebControl.xft.xml,
+	  Templates/CodeBehindWebService.xft.xml,
+	  Templates/CodeBehindWebForm.xft.xml,
+	  Templates/MasterPageWithNoCodeBehind.xft.xml,
+	  Templates/MasterPageWithCodeBehind.xft.xml,
+	  Templates/EmptyWebHandler.xft.xml, Templates/WebApplication.xpt.xml,
+	  Templates/EmptyWebControl.xft.xml, Templates/EmptyWebService.xft.xml:
+	  Use partial classes where possible. Default to deploying ASP.NET files
+	  rather than building them. Remove "Hello world" code. Default to 2.0
+	  runtime.
+
 2007-08-31  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/AspNetConfigurationPanel.cs, Gui/AspNetConfigurationPanelWidget.cs,

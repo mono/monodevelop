@@ -14,26 +14,26 @@
 	
 	<!-- Template Content -->
 	<TemplateFiles>
-		<AspNetFile name="${Name}.ashx">
+		<AspNetFile name="${Name}.ashx" BuildAction="FileCopy">
 			<FileText>
 <![CDATA[<%@ WebHandler Language="${Language}" Class="${Namespace}.${Name}" %>]]>
 			</FileText>
 		</AspNetFile>
 		
-		<AspNetFile name="${Name}.ashx.${LanguageExtension}">
-			<FileText>${CodeRegion:script1}</FileText>
-			<CodeTranslationFile TagName="script1">
+		<CodeTranslationFile name="${Name}.ashx.${LanguageExtension}">
 <![CDATA[using System;
 using System.Web;
 using System.Web.UI;
 
-namespace ${Namespace} {	
+namespace ${Namespace}
+{	
 	
-	public class ${Name} : IHttpHandler {
+	public class ${Name} : System.Web.IHttpHandler
+	{
 	
-		public void ProcessRequest (HttpContext context) {
-			context.Response.ContentType = "text/plain";
-			context.Response.Write("Hello World");
+		public void ProcessRequest (HttpContext context)
+		{
+			
 		}
 	
 		public bool IsReusable {
@@ -43,8 +43,7 @@ namespace ${Namespace} {
 		}
 	}
 }]]>
-			</CodeTranslationFile>
-		</AspNetFile>
+		</CodeTranslationFile>
 	</TemplateFiles>
 	
 	<FileOptions/>

@@ -14,7 +14,7 @@
 
 	<!-- Template Content -->
 	<TemplateFiles>
-		<AspNetFile DefaultExtension=".ascx" name="${Name}.ascx">
+		<AspNetFile DefaultExtension=".ascx" name="${Name}.ascx" BuildAction="FileCopy">
 			<FileText>
 <![CDATA[<%@ Control Language="${Language}" Inherits="${Namespace}.${Name}" %>]]>
 			</FileText>
@@ -27,12 +27,20 @@ using System.Web.UI;
 
 namespace ${Namespace} {
 
-	public class ${Name} : UserControl
+	public partial class ${Name} : System.Web.UI.UserControl
 	{
-		public void ButtonClick (object sender, EventArgs e)
-		{
-			textBox1.Text ="Hello World";
-		}
+	}
+}]]>
+		</CodeTranslationFile>
+		<CodeTranslationFile name="${Name}.ascx.designer.${LanguageExtension}" ShowAutogenerationNotice="True">
+<![CDATA[using System;
+using System.Web;
+using System.Web.UI;
+
+namespace ${Namespace} {
+
+	public partial class ${Name}
+	{
 	}
 }]]>
 		</CodeTranslationFile>

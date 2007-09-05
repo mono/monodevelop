@@ -14,7 +14,7 @@
 
 	<!-- Template Content -->
 	<TemplateFiles>
-		<AspNetFile name="${Name}.asmx">
+		<AspNetFile name="${Name}.asmx" BuildAction="FileCopy">
 			<FileText>
 <![CDATA[<%@ WebService Language="C#" Class="${Namespace}.${Name}" %>]]>
 			</FileText>
@@ -22,18 +22,14 @@
 		
 		<CodeTranslationFile name="${Name}.asmx.${LanguageExtension}">
 <![CDATA[using System;
+using System.Web;
 using System.Web.Services;
 
 namespace ${Namespace}
 {
-	class ${Name}
+	public class ${Name} : System.Web.Services.WebService
 	{
-	
-		[WebMethod]
-		public string SayHello()
-		{
-			return "Hello World";
-		}
+		
 	}
 }]]>
 		</CodeTranslationFile>
