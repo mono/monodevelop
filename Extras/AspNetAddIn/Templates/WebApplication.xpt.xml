@@ -32,48 +32,7 @@
 				<Reference type="Gac" refto="System.Web.Services, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
 			</References>
 			<Files>
-				<AspNetFile name="Default.aspx" BuildAction="FileCopy">
-					<FileText>
-						<![CDATA[<%@ Page Language="${Language}" Inherits="${Namespace}.${Name}" %>
-${Doctype}
-<html>
-<head>
-	<title>${Name}</title>
-</head>
-<body>
-	<form id="form1" runat="server"> 
-	</form>
-</body>
-</html>]]>
-					</FileText>
-				</AspNetFile>
-		
-				<CodeTranslationFile name="Default.aspx.${LanguageExtension}">
-<![CDATA[using System;
-using System.Web;
-using System.Web.UI;
-	
-namespace ${Namespace}
-{
-
-	public partial class ${Name} : System.Web.UI.Page
-	{
-	}
-}]]>
-				</CodeTranslationFile>
-				<CodeTranslationFile name="Default.aspx.designer.${LanguageExtension}" ShowAutogenerationNotice="True">
-<![CDATA[using System;
-using System.Web;
-using System.Web.UI;
-	
-namespace ${Namespace}
-{
-
-	public partial class ${Name}
-	{
-	}
-}]]>
-				</CodeTranslationFile>
+				<FileTemplateReference TemplateID="CodeBehindWebForm" name="Default" />
 			</Files>
 		</Project>
 	</Combine>

@@ -1,5 +1,10 @@
 2007-09-05  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* Templates/WebApplication.xpt.xml: Use new FileReferenceTemplate to
+	  reference CodeBehindWebForm instead of duplicating whole template.
+
+2007-09-05  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* Project/XspParameters.cs: Fix some compile warnings.
 	* Templates/CodeBehindWebHandler.xft.xml, Templates/EmptyWebForm.xft.xml,
 	  Templates/CodeBehindWebControl.xft.xml,
