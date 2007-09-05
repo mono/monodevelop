@@ -40,7 +40,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Core
 {
-	public class Properties
+	public class Properties : ICustomXmlSerializer
 	{
 		Dictionary<string, object> properties    = new Dictionary<string, object> ();
 		Dictionary<string, object> defaultValues = new Dictionary<string, object> ();
@@ -57,12 +57,12 @@ namespace MonoDevelop.Core
 		
 		T Convert<T> (object o)
 		{
-			if (o is T) {
+			if (o is T) 
 				return (T)o;
-			}
-			if (o is LazyXmlDeserializer) {
-				return (T)((LazyXmlDeserializer)o).Deserialize ();
-			}
+			
+			if (o is LazyXmlDeserializer) 
+				return (T)((LazyXmlDeserializer)o).Deserialize<T> ();
+			
 			TypeConverter converter = TypeDescriptor.GetConverter (typeof(T));
 			if (o is string) {
 				try {
@@ -124,40 +124,43 @@ namespace MonoDevelop.Core
 		public const string KeyAttribute   = "key";
 		public const string ValueAttribute = "value";
 		public const string XmlSerialized  = "XmlSerialized";
-		public const string TypeAttribute  = "type";
 		
 		public const string PropertiesRootNode = "MonoDevelopProperties";
 		public const string PropertiesVersionAttribute  = "version";
 		public const string PropertiesVersion  = "2.0";
-		
+
+		void ICustomXmlSerializer.WriteTo (XmlWriter writer)
+		{
+			Write (writer, false);
+		}
+			
+		ICustomXmlSerializer ICustomXmlSerializer.ReadFrom (XmlReader reader)
+		{
+			return Read (reader);
+		}
+			
 		public void Write (XmlWriter writer)
 		{
-				Write (writer, true);
+			Write (writer, true);
 		}
 		
 		public void Write (XmlWriter writer, bool createPropertyParent)
 		{
 			if (createPropertyParent)
-					writer.WriteStartElement (Node);
+				writer.WriteStartElement (Node);
 
 			foreach (KeyValuePair<string, object> property in this.properties) {
 				writer.WriteStartElement (PropertyNode);
 				writer.WriteAttributeString (KeyAttribute, property.Key);
 				
 				if (property.Value is LazyXmlDeserializer) {
-					writer.WriteStartElement (XmlSerialized);
-					writer.WriteAttributeString (TypeAttribute, ((LazyXmlDeserializer)property.Value).Type);
 					writer.WriteRaw (((LazyXmlDeserializer)property.Value).Xml);
-					writer.WriteEndElement (); // XmlSerialized
-				} else if (property.Value is Properties) {
-					((Properties)property.Value).Write (writer);
+				} else if (property.Value is ICustomXmlSerializer) {
+					((ICustomXmlSerializer)property.Value).WriteTo (writer);
 				} else {
 					if (property.Value.GetType () != typeof(string) && property.Value.GetType ().IsClass) {
-						writer.WriteStartElement (XmlSerialized);
-						writer.WriteAttributeString (TypeAttribute, property.Value.GetType ().FullName);
 						XmlSerializer serializer = new XmlSerializer (property.Value.GetType ());
 						serializer.Serialize (writer, property.Value);
-						writer.WriteEndElement (); // XmlSerialized
 					} else {
 						writer.WriteAttributeString (ValueAttribute, ConvertToString (property.Value));
 					}
@@ -185,44 +188,38 @@ namespace MonoDevelop.Core
 		
 		class LazyXmlDeserializer
 		{
-			string type;
 			string xml;
 			
-			public string Type {
-				get {
-					return type;
-				}
-			}
-				
 			public string Xml {
 				get {
 					return xml;
 				}
 			}
 			
-			public LazyXmlDeserializer (string type, string xml)
+			public LazyXmlDeserializer (string xml)
 			{
-				this.type = type;
 				this.xml  = xml;
 			}
 			
-			static System.Type Lookup (string type)
+			public T Deserialize<T> ()
 			{
-				System.Type result = System.Type.GetType (type);
-				if (result == null) {
-					foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies ()) {
-						result = asm.GetType (type);
-						if (result != null)
-							break;
+				try {
+					if (typeof(ICustomXmlSerializer).IsAssignableFrom (typeof(T))) {
+						XmlReader reader = new XmlTextReader (new MemoryStream (System.Text.Encoding.UTF8.GetBytes (xml)));
+						// set cursor on the first element.
+						while (reader.Read () && reader.NodeType != XmlNodeType.Element)
+							;
+						object result = ((ICustomXmlSerializer)typeof(T).Assembly.CreateInstance (typeof(T).FullName)).ReadFrom (reader);
+						reader.Close ();
+						return (T)result;
 					}
+						    
+					XmlSerializer serializer = new XmlSerializer (typeof(T));
+					return (T)serializer.Deserialize (new StreamReader(new MemoryStream(System.Text.Encoding.UTF8.GetBytes (xml))));
+				} catch (Exception e) {
+					Runtime.LoggingService.Warn ((object)("Caught exception while deserializing:" + typeof(T)), e);
+					return default(T);
 				}
-				return result;
-			}
-			
-			public object Deserialize ()
-			{
-				XmlSerializer serializer = new XmlSerializer (Lookup (type));
-				return serializer.Deserialize (new StreamReader(new MemoryStream(System.Text.Encoding.UTF8.GetBytes (xml))));
 			}
 		}
 		
@@ -234,16 +231,7 @@ namespace MonoDevelop.Core
 				case PropertyNode:
 					string key = reader.GetAttribute (KeyAttribute);
 					if (!reader.IsEmptyElement) {
-						while (reader.Read () && reader.NodeType != XmlNodeType.Element)
-							;  
-						switch (reader.LocalName) {
-						case Node:
-							result.Set (key, Read (reader));
-							break;
-						case XmlSerialized:
-							result.Set (key, new LazyXmlDeserializer(reader.GetAttribute (TypeAttribute), reader.ReadInnerXml ()));
-							break;
-						}
+						result.Set (key, new LazyXmlDeserializer (reader.ReadInnerXml ()));
 					} else {
 						result.Set (key, reader.GetAttribute (ValueAttribute));
 					}

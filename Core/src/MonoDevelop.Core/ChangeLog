@@ -1,3 +1,9 @@
+2007-09-05  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Core/Properties.cs, MonoDevelop.Core/ICustomXmlSerializer.cs:
+	  Worked on property infrastructure - serialization can now be customized
+	  using the ICustomXmlSerializer interface.
+
 2007-09-04  Michael Hutchinson <MHutchinson@novell.com>
 
 	* MonoDevelop.Core/Properties.cs: Fix compiler warnings. Note: one is 
