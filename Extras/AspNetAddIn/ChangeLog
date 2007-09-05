@@ -1,5 +1,10 @@
 2007-09-05  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* Project/AspNetAppProject.cs: Set correct BuildAction for added ASP.NET
+	  files. Convert cachedDocuments to generic collection.
+
+2007-09-05  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* AspNetAddIn.addin.xml, AspNetAddIn.mdp, Makefile.am,
 	  Templates/CodeBehindWebControl.xft.xml,
 	  Templates/CodeBehindWebForm.xft.xml,

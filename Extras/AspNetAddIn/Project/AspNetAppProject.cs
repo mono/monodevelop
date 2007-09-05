@@ -32,7 +32,7 @@
 using System;
 using System.IO;
 using System.Xml;
-using System.Collections;
+using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
@@ -51,7 +51,7 @@ namespace AspNetAddIn
 	{
 		//caching to avoid too much reparsing
 		//may have to drop at some point to avoid memory issues
-		private Hashtable cachedDocuments = new Hashtable ();
+		private Dictionary<ProjectFile, Document> cachedDocuments = new Dictionary<ProjectFile, Document> ();
 		
 		[ItemProperty("XspParameters")]
 		protected XspParameters xspParameters = new XspParameters ();
@@ -213,9 +213,8 @@ namespace AspNetAddIn
 		
 		public Document GetDocument (ProjectFile file)
 		{
-			Document doc = this.cachedDocuments [file] as Document;
-			
-			if (doc != null)
+			Document doc = null;
+			if (cachedDocuments.TryGetValue (file, out doc))
 				return doc;
 			
 			switch (DetermineWebSubtype (file)) {
@@ -328,32 +327,34 @@ namespace AspNetAddIn
 		
 		protected override void OnFileAddedToProject (ProjectFileEventArgs e)
 		{
-			OnFileEvent (e);
+			SetDefaultBuildAction (e.ProjectFile);
+			InvalidateDocumentCache (e.ProjectFile);
 			base.OnFileAddedToProject (e);
 		}
 		
 		protected override void OnFileChangedInProject (ProjectFileEventArgs e)
 		{
-			OnFileEvent (e);
+			InvalidateDocumentCache (e.ProjectFile);
 			base.OnFileChangedInProject (e);
 		}
 		
-		protected override void OnFilePropertyChangedInProject (ProjectFileEventArgs e)
+		//protected override void OnFilePropertyChangedInProject (ProjectFileEventArgs e)
+		//{
+		//	base.OnFilePropertyChangedInProject (e);
+		//}
+		
+		void InvalidateDocumentCache (ProjectFile file)
 		{
-			OnFileEvent (e);
-			base.OnFilePropertyChangedInProject (e);
+			if (cachedDocuments.ContainsKey (file))
+				cachedDocuments.Remove (file);
 		}
 		
-		void OnFileEvent (ProjectFileEventArgs e)
+		void SetDefaultBuildAction (ProjectFile file)
 		{
-			this.cachedDocuments [e.ProjectFile] = null;
-			
-			//WebSubtype type = DetermineWebSubtype (e.ProjectFile);
-			
-			//switch (type)
-			//{
-				//special actions for various types
-			//}
+			//make sure web files are deployed, not built
+			WebSubtype type = DetermineWebSubtype (file);
+			if (type != WebSubtype.None)
+				file.BuildAction = BuildAction.FileCopy;
 		}
 		
 		#endregion
