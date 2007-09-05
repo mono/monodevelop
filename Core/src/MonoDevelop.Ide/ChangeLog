@@ -1,5 +1,10 @@
 2007-09-05  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs: Add a property
+	  to enable suppressing auto-opening the file (for CodeBehind).
+
+2007-09-05  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.Ide.Templates/FileTemplate.cs: Add GetTemplateByID internal
 	  method. Convert to generic collections.
 	* MonoDevelop.Ide.Templates/FileTemplateReference.cs: New file template

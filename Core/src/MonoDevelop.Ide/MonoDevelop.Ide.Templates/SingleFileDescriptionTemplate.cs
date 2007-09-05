@@ -44,6 +44,7 @@ namespace MonoDevelop.Ide.Templates
 		string defaultName;
 		string defaultExtension;
 		string generatedFile;
+		bool suppressAutoOpen = false;
 		BuildAction buildAction;
 		
 		public override void Load (XmlElement filenode)
@@ -55,6 +56,15 @@ namespace MonoDevelop.Ide.Templates
 			try {
 				buildAction = (BuildAction) Enum.Parse (typeof (BuildAction), filenode.GetAttribute ("BuildAction"), true);
 			} catch (ArgumentException) {
+			}
+			
+			string suppressAutoOpenStr = filenode.GetAttribute ("SuppressAutoOpen");
+			if ((suppressAutoOpenStr != null) && (suppressAutoOpenStr.Length > 0)) {
+				try {
+					suppressAutoOpen = bool.Parse (suppressAutoOpenStr.ToLower());
+				} catch (FormatException) {
+					throw new InvalidOperationException ("Invalid value for SuppressAutoOpen in template.");
+				}
 			}
 		}
 		
@@ -83,7 +93,8 @@ namespace MonoDevelop.Ide.Templates
 		
 		public override void Show ()
 		{
-			IdeApp.Workbench.OpenDocument (generatedFile);
+			if (!suppressAutoOpen)
+				IdeApp.Workbench.OpenDocument (generatedFile);
 		}
 		
 		// Creates a file and saves it to disk. Returns the path to the new file
