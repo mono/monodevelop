@@ -1,5 +1,12 @@
 2007-09-05  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* Templates/CodeBehindWebControl.xft.xml,
+	  Templates/CodeBehindWebForm.xft.xml,
+	  Templates/MasterPageWithCodeBehind.xft.xml: Use SuppressAutoOpen to stop
+	  designer CodeBehind files from opening automatically when created.
+
+2007-09-05  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* Templates/WebApplication.xpt.xml: Use new FileReferenceTemplate to
 	  reference CodeBehindWebForm instead of duplicating whole template.
 

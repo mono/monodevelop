@@ -43,7 +43,7 @@ namespace ${Namespace} {
 	}
 }]]>
 		</CodeTranslationFile>
-		<CodeTranslationFile name="${Name}.aspx.designer.${LanguageExtension}" ShowAutogenerationNotice="True">
+		<CodeTranslationFile name="${Name}.aspx.designer.${LanguageExtension}" ShowAutogenerationNotice="True" SuppressAutoOpen="True">
 <![CDATA[using System;
 using System.Web;
 using System.Web.UI;
