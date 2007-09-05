@@ -65,17 +65,17 @@ RES =  \
 	AspNetAddIn.glade \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
-	Templates/CodeBehindWebControl.xft.xml \
-	Templates/CodeBehindWebForm.xft.xml \
-	Templates/CodeBehindWebHandler.xft.xml \
-	Templates/CodeBehindWebService.xft.xml \
-	Templates/EmptyWebControl.xft.xml \
-	Templates/EmptyWebForm.xft.xml \
-	Templates/EmptyWebHandler.xft.xml \
-	Templates/EmptyWebService.xft.xml \
-	Templates/MasterPageWithCodeBehind.xft.xml \
-	Templates/MasterPageWithNoCodeBehind.xft.xml \
-	Templates/WebApplication.xpt.xml
+	Templates/MasterPage-CodeBehind.xft.xml \
+	Templates/MasterPage-Empty.xft.xml \
+	Templates/WebApplication.xpt.xml \
+	Templates/WebControl-CodeBehind.xft.xml \
+	Templates/WebControl-Empty.xft.xml \
+	Templates/WebForm-CodeBehind.xft.xml \
+	Templates/WebForm-Empty.xft.xml \
+	Templates/WebHandler-CodeBehind.xft.xml \
+	Templates/WebHandler-Empty.xft.xml \
+	Templates/WebService-CodeBehind.xft.xml \
+	Templates/WebService-Empty.xft.xml
 	
 TESTFILES = \
 	Test/Test.cs

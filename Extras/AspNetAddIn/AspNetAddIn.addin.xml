@@ -24,16 +24,30 @@
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
-		<FileTemplate id = "EmptyWebForm" resource = "EmptyWebForm.xft.xml"/>
-		<FileTemplate id = "EmptyWebHandler" resource = "EmptyWebHandler.xft.xml"/>
-		<FileTemplate id = "EmptyWebControl" resource = "EmptyWebControl.xft.xml"/>
-		<FileTemplate id = "EmptyWebService" resource = "EmptyWebService.xft.xml"/>
-		<FileTemplate id = "EmptyMasterPage" resource = "MasterPageWithNoCodeBehind.xft.xml" />
-		<FileTemplate id = "EmptyMasterPageWithCodeBehind" resource = "MasterPageWithCodeBehind.xft.xml" />
-		<FileTemplate id = "CodeBehindWebControl" resource = "CodeBehindWebControl.xft.xml"/>
-		<FileTemplate id = "CodeBehindWebService" resource = "CodeBehindWebService.xft.xml"/>
-		<FileTemplate id = "CodeBehindWebForm" resource = "CodeBehindWebForm.xft.xml"/>
-		<FileTemplate id = "CodeBehindWebHandler" resource = "CodeBehindWebHandler.xft.xml"/>
+		<FileTemplate id       = "WebForm-Empty"
+		              resource = "WebForm-Empty.xft.xml"/>
+		<FileTemplate id       = "WebForm-CodeBehind"
+		              resource = "WebForm-CodeBehind.xft.xml"/>
+		
+		<FileTemplate id       = "WebHandler-Empty"
+		              resource = "WebHandler-Empty.xft.xml"/>
+		<FileTemplate id       = "WebHandler-CodeBehind"
+		              resource = "WebHandler-Empty.xft.xml"/>
+		
+		<FileTemplate id       = "WebControl-Empty"
+		              resource = "WebControl-Empty.xft.xml"/>
+		<FileTemplate id       = "WebControl-CodeBehind"
+		              resource = "WebControl-CodeBehind.xft.xml"/>
+		
+		<FileTemplate id       = "WebService-Empty"
+		              resource = "WebService-Empty.xft.xml"/>
+		<FileTemplate id       = "WebService-CodeBehind"
+		              resource = "WebService-CodeBehind.xft.xml"/>
+		
+		<FileTemplate id       = "MasterPage-Empty"
+		              resource = "MasterPage-Empty.xft.xml" />
+		<FileTemplate id       = "MasterPage-CodeBehind"
+		              resource = "MasterPage-CodeBehind.xft.xml" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/FileTemplateTypes">
@@ -48,7 +62,7 @@
 		<FileFilter	id = "AspNetWebFiles"
 				insertbefore = "AllFiles"
 				_label = "ASP.NET Files"
-				extensions = "*.aspx,*.ashx,*.asmx,*.ascx,*.master" />
+				extensions = "*.aspx,*.ashx,*.asmx,*.ascx,*.master,*.asax" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">

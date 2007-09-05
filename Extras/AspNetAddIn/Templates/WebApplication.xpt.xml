@@ -32,7 +32,7 @@
 				<Reference type="Gac" refto="System.Web.Services, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
 			</References>
 			<Files>
-				<FileTemplateReference TemplateID="CodeBehindWebForm" name="Default" />
+				<FileTemplateReference TemplateID="WebForm-CodeBehind" name="Default" />
 			</Files>
 		</Project>
 	</Combine>

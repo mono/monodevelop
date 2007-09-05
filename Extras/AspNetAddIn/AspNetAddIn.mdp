@@ -20,12 +20,12 @@
     <File name="./Project/AspNetAppProjectConfiguration.cs" subtype="Code" buildaction="Compile" />
     <File name="./Project/AspNetFileDescriptionTemplate.cs" subtype="Code" buildaction="Compile" />
     <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
-    <File name="./Templates/EmptyWebForm.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./Templates/EmptyWebHandler.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./Templates/EmptyWebControl.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./Templates/CodeBehindWebControl.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./Templates/CodeBehindWebForm.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./Templates/CodeBehindWebHandler.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./Templates/WebForm-Empty.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./Templates/WebHandler-Empty.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./Templates/WebControl-Empty.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./Templates/WebControl-CodeBehind.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./Templates/WebForm-CodeBehind.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./Templates/WebHandler-CodeBehind.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./Templates/WebApplication.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./Parser/Internal/AspParser.cs" subtype="Code" buildaction="Compile" />
     <File name="./Parser/Internal/AspTokenizer.cs" subtype="Code" buildaction="Compile" />
@@ -52,15 +52,15 @@
     <File name="./Parser/Document.cs" subtype="Code" buildaction="Compile" />
     <File name="./Project/XspParameters.cs" subtype="Code" buildaction="Compile" />
     <File name="./Gui/XspOptionsPanel.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Templates/EmptyWebService.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./Templates/CodeBehindWebService.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./Templates/WebService-Empty.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./Templates/WebService-CodeBehind.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./Project/AspNetDisplayBinding.cs" subtype="Code" buildaction="Compile" />
     <File name="./Project/AspNetCodeBehindProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="./Project/VerifyCodeBehindBuildStep.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetAddIn.glade" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./Gui/AspNetConfigurationPanel.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Templates/MasterPageWithCodeBehind.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./Templates/MasterPageWithNoCodeBehind.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./Templates/MasterPage-CodeBehind.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./Templates/MasterPage-Empty.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./gtk-gui/generated.cs" subtype="Code" buildaction="Compile" />
     <File name="./Project/CodeBehind.cs" subtype="Code" buildaction="Compile" />
     <File name="./gtk-gui/gui.stetic" subtype="Code" buildaction="EmbedAsResource" />

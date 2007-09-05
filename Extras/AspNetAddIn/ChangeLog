@@ -1,5 +1,27 @@
 2007-09-05  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* AspNetAddIn.addin.xml, AspNetAddIn.mdp, Makefile.am,
+	  Templates/CodeBehindWebControl.xft.xml,
+	  Templates/CodeBehindWebForm.xft.xml,
+	  Templates/CodeBehindWebHandler.xft.xml,
+	  Templates/CodeBehindWebService.xft.xml,
+	  Templates/EmptyWebControl.xft.xml, Templates/EmptyWebForm.xft.xml,
+	  Templates/EmptyWebHandler.xft.xml, Templates/EmptyWebService.xft.xml,
+	  Templates/MasterPage-CodeBehind.xft.xml,
+	  Templates/MasterPage-Empty.xft.xml,
+	  Templates/MasterPageWithCodeBehind.xft.xml,
+	  Templates/MasterPageWithNoCodeBehind.xft.xml,
+	  Templates/WebControl-CodeBehind.xft.xml,
+	  Templates/WebControl-Empty.xft.xml,
+	  Templates/WebForm-CodeBehind.xft.xml, Templates/WebForm-Empty.xft.xml,
+	  Templates/WebHandler-CodeBehind.xft.xml,
+	  Templates/WebHandler-Empty.xft.xml,
+	  Templates/WebService-CodeBehind.xft.xml,
+	  Templates/WebService-Empty.xft.xml, Templates/WebApplication.xpt.xml:
+	  Rename template files.
+
+2007-09-05  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* Templates/CodeBehindWebControl.xft.xml,
 	  Templates/CodeBehindWebForm.xft.xml,
 	  Templates/MasterPageWithCodeBehind.xft.xml: Use SuppressAutoOpen to stop
