@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		TreeViewPad.TreeOptions options;
 		
 		List<NodeState> childrenState;
-		
+
 		public string NodeName {
 			get {
 				return nodeName;
@@ -155,6 +155,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 					result.Options [reader.GetAttribute ("id")] = bool.Parse (reader.GetAttribute ("value"));
 					return true;
 				case "Node":
+					if (result.ChildrenState == null)
+						result.ChildrenState = new List<MonoDevelop.Ide.Gui.Pads.NodeState> ();
 					result.ChildrenState.Add ((NodeState)ReadFrom (reader, result.Options != null ? result.Options : parentOptions));
 					return true;
 				}
@@ -203,14 +205,25 @@ namespace MonoDevelop.Ide.Gui.Pads
 				return null;
 		}
 		
+		public override string ToString ()
+		{
+			return String.Format ("[NodeState: NodeName={0}, Expanded={1}, Selected={2}, Options={3}, #ChildrenState={4}]",
+			                      this.nodeName,
+			                      this.expanded,
+			                      this.selected,
+			                      this.options != null ? this.options : "null",
+			                      this.childrenState != null ? this.childrenState.Count.ToString () : "null");
+		}
+		 
 		internal static void RestoreState (TreeViewPad pad, ITreeNavigator nav, NodeState es)
 		{
-			if (es == null) return;
-
+			if (es == null) 
+				return;
+			
 			Gtk.TreeIter it = nav.CurrentPosition._iter;
-			if (es.Options != null) {
+			if (es.Options != null) 
 				pad.SetIterOptions (it, es.Options);
-			}
+			
 			pad.ResetState (it);
 			nav.Expanded = es.Expanded;
 			

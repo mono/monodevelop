@@ -1,5 +1,9 @@
 2007-09-05  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Pads/NodeState.cs: Fixed little issue in NodeState.
+
+2007-09-05  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs,
 	  MonoDevelop.Ide.Gui.Pads/NodeState.cs, MonoDevelop.Ide.Gui/Document.cs,
 	  MonoDevelop.Ide.Gui/ProjectOperations.cs,
