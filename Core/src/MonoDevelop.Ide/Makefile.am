@@ -305,6 +305,7 @@ FILES =  \
 	MonoDevelop.Ide.Templates/CombineEntryDescriptor.cs \
 	MonoDevelop.Ide.Templates/FileDescriptionTemplate.cs \
 	MonoDevelop.Ide.Templates/FileTemplate.cs \
+	MonoDevelop.Ide.Templates/FileTemplateReference.cs \
 	MonoDevelop.Ide.Templates/ICombineEntryDescriptor.cs \
 	MonoDevelop.Ide.Templates/ICombineEntryFeature.cs \
 	MonoDevelop.Ide.Templates/INewFileCreator.cs \

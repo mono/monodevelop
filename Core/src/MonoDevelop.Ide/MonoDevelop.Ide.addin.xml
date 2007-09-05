@@ -1307,6 +1307,7 @@
 		<FileTemplateType name = "CodeDomFile" class = "MonoDevelop.Ide.Templates.CodeDomFileDescriptionTemplate"/>
 		<FileTemplateType name = "ProjectResource" class = "MonoDevelop.Ide.Templates.ResourceFileDescriptionTemplate"/>
 		<FileTemplateType name = "CodeTranslationFile" class = "MonoDevelop.Ide.Templates.CodeTranslationFileDescriptionTemplate"/>
+		<FileTemplateType name = "FileTemplateReference" class = "MonoDevelop.Ide.Templates.FileTemplateReference"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">

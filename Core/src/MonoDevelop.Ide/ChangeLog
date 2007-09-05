@@ -1,5 +1,14 @@
 2007-09-05  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.Ide.Templates/FileTemplate.cs: Add GetTemplateByID internal
+	  method. Convert to generic collections.
+	* MonoDevelop.Ide.Templates/FileTemplateReference.cs: New file template
+	  class which allows project and file templates to reference existing file
+	  templates by ID.
+	* MonoDevelop.Ide.addin.xml, MonoDevelop.Ide.mdp, Makefile.am: Updated.
+
+2007-09-05  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads/NodeState.cs: Fix build.
 
 2007-09-05  Mike Krüger <mkrueger@novell.com> 

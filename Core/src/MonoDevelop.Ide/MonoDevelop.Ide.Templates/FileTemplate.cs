@@ -9,6 +9,7 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Reflection;
@@ -30,7 +31,7 @@ namespace MonoDevelop.Ide.Templates
 	/// </summary>
 	public class FileTemplate
 	{
-		public static ArrayList fileTemplates = new ArrayList();
+		public static List<FileTemplate> fileTemplates = new List<FileTemplate> ();
 		
 		string    id;
 		string    originator   = null;
@@ -45,7 +46,7 @@ namespace MonoDevelop.Ide.Templates
 		
 		string    wizardpath   = null;
 		
-		ArrayList files        = new ArrayList(); // contains FileDescriptionTemplate classes
+		List<FileDescriptionTemplate> files = new List<FileDescriptionTemplate> ();
 		
 		XmlElement fileoptions = null;
 		
@@ -121,7 +122,7 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 		
-		public ArrayList Files {
+		public List<FileDescriptionTemplate> Files {
 			get {
 				return files;
 			}
@@ -228,6 +229,15 @@ namespace MonoDevelop.Ide.Templates
 					list.Add (t);
 			}
 			return list;
+		}
+		
+		internal static FileTemplate GetFileTemplateByID (string templateID)
+		{
+			foreach (FileTemplate t in fileTemplates)
+				if (t.Id == templateID)
+					return t;
+			
+			return null;
 		}
 		
 		public virtual bool Create (Project project, string directory, string language, string name)
