@@ -1,3 +1,9 @@
+2007-09-05  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Templates/CodeTranslationFileDescriptionTemplate.cs: Add
+	  support for displaying the CodeDom autogeneration notice (useful for
+	  designer-maintained partial classes).
+
 2007-09-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads/NodeState.cs: Option values must be loaded as
