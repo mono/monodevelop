@@ -35,7 +35,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
-	public class NodeState
+	public class NodeState : ICustomXmlSerializer
 	{
 		string nodeName;
 		
@@ -90,71 +90,76 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 		}
 		
-		public Properties ToXml ()
+		void ICustomXmlSerializer.WriteTo (XmlWriter writer)
 		{
-			return ToXml (null);
+			WriteTo (writer, null);
 		}
 		
-		public static NodeState FromXml (Properties state)
+		ICustomXmlSerializer ICustomXmlSerializer.ReadFrom (XmlReader reader)
 		{
-			return FromXml (state, null);
+			return ReadFrom (reader, null);
 		}
 		
-		Properties  ToXml (TreeViewPad.TreeOptions parentOptions)
-		{
-			Properties result = new Properties();
-			
-			if (NodeName != null)
-				result.Set ("name", NodeName);
-			if (Expanded)
-				result.Set ("expanded", bool.TrueString);
-			if (Selected)
-				result.Set ("selected", bool.TrueString);
+		const string Node              = "Node";
+		const string nameAttribute     = "name";
+		const string expandedAttribute = "expanded";
+		const string selectedAttribute = "selected";
 
-			Properties optionProperties = new Properties();
-			result.Set ("Options", optionProperties);
-			
+		void WriteTo (XmlWriter writer, TreeViewPad.TreeOptions parentOptions)
+		{
+			writer.WriteStartElement (Node);
+			if (NodeName != null)
+				writer.WriteAttributeString (nameAttribute, NodeName);
+			if (Expanded)
+				writer.WriteAttributeString (expandedAttribute, bool.TrueString);
+			if (Selected)
+				writer.WriteAttributeString (selectedAttribute, bool.TrueString);
+
 			TreeViewPad.TreeOptions ops = Options;
 			if (ops != null) {
 				foreach (DictionaryEntry de in ops) {
 					object parentVal = parentOptions != null ? parentOptions [de.Key] : null;
 					if (parentVal != null && !parentVal.Equals (de.Value) || (parentVal == null && de.Value != null) || parentOptions == null) {
-						optionProperties.Set (de.Key.ToString(), de.Value.ToString ()); 
+						writer.WriteStartElement ("Option");
+						writer.WriteAttributeString ("id", de.Key.ToString());
+						writer.WriteAttributeString ("value", de.Value.ToString ());
+						writer.WriteEndElement (); // Option
 					}
 				}
 			}
 			
-			if (ChildrenState == null) 
-				return result;
-			
-			Properties nodeProperties = new Properties();
-			result.Set ("Nodes", nodeProperties);
-			foreach (NodeState ces in ChildrenState) {
-				nodeProperties.Set (ces.NodeName, ces.ToXml (ops != null ? ops : parentOptions));
+			if (ChildrenState != null) { 
+				Properties nodeProperties = new Properties();
+				foreach (NodeState ces in ChildrenState) {
+					ces.WriteTo (writer, Options != null ? Options : parentOptions);
+				}
 			}
 			
-			return result;
+			writer.WriteEndElement (); // NodeState
 		}
 
-		static NodeState FromXml (Properties state, TreeViewPad.TreeOptions parentOptions)
+		ICustomXmlSerializer ReadFrom (XmlReader reader, TreeViewPad.TreeOptions parentOptions)
 		{
 			NodeState result = new NodeState ();
-			result.NodeName = state.Get ("name", "");
-			result.Expanded = state.Get ("expanded", false);
-			result.Selected = state.Get ("selected", false);
+			result.NodeName = reader.GetAttribute (nameAttribute);
+			if (!String.IsNullOrEmpty (reader.GetAttribute (expandedAttribute)))
+				result.Expanded = Boolean.Parse (reader.GetAttribute (expandedAttribute));
+			if (!String.IsNullOrEmpty (reader.GetAttribute (selectedAttribute)))
+				result.Selected = Boolean.Parse (reader.GetAttribute (selectedAttribute));
 			
-			Properties optionProperties = state.Get ("Options", new Properties ());
-			foreach (string key in optionProperties.Keys) {
-				if (result.Options == null) 
-					result.Options = parentOptions != null ? parentOptions.CloneOptions (Gtk.TreeIter.Zero) : new TreeViewPad.TreeOptions ();   
-				result.Options [key] = bool.Parse (optionProperties.Get<string> (key));
-			}
-			
-			Properties nodeProperties = state.Get ("Nodes", new Properties ());
-			result.ChildrenState = new List<MonoDevelop.Ide.Gui.Pads.NodeState> ();
-			foreach (string key in nodeProperties.Keys) {
-				result.ChildrenState.Add (FromXml (nodeProperties.Get (key, new Properties ()), result.Options != null ? result.Options : parentOptions));
-			}
+			XmlReadHelper.ReadList (reader, Node, delegate () {
+				switch (reader.LocalName) {
+				case "Option":
+					if (result.Options == null) 
+						result.Options = parentOptions != null ? parentOptions.CloneOptions (Gtk.TreeIter.Zero) : new TreeViewPad.TreeOptions ();   
+					result.Options [reader.GetAttribute ("id")] = bool.Parse (reader.GetAttribute ("value"));
+					return true;
+				case "Node":
+					result.ChildrenState.Add ((NodeState)ReadFrom (reader, result.Options != null ? result.Options : parentOptions));
+					return true;
+				}
+				return false;
+			});
 			return result;
 		}
 		

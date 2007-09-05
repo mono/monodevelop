@@ -766,23 +766,21 @@ namespace MonoDevelop.Ide.Gui.Pads
 			builder.Update ();
 		}
 		
-		public Properties SaveTreeState ()
+		public NodeState SaveTreeState ()
 		{
 			ITreeNavigator root = GetRootNode ();
 			if (root == null) 
-				return new Properties ();
+				return null;
 
-			NodeState state = root.SaveState ();
-			return state.ToXml ();
+			return root.SaveState ();
 		}
 		
-		public void RestoreTreeState (Properties properties)
+		public void RestoreTreeState (NodeState state)
 		{
 			ITreeNavigator nav = GetRootNode ();
 			if (nav == null)
 				return;
-			if (properties != null) {
-				NodeState state = NodeState.FromXml (properties);
+			if (state != null) {
 				nav.RestoreState (state);
 			}
 		}
@@ -1189,14 +1187,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 		}
 		
-		public Properties CreateMemento ()
+		public ICustomXmlSerializer CreateMemento ()
 		{
 			return this.SaveTreeState ();
 		}
 
-		public void SetMemento (Properties memento)
+		public void SetMemento (ICustomXmlSerializer memento)
 		{
-			this.RestoreTreeState (memento);
+			this.RestoreTreeState ((NodeState)memento);
 		}
 
 		// ********* Own events

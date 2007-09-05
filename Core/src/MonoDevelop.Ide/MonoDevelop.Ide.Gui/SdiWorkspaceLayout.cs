@@ -193,15 +193,15 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public Properties CreateMemento()
+		public ICustomXmlSerializer CreateMemento()
 		{
 			return new SdiWorkbenchLayoutMemento (initialized ? toolbarFrame.GetStatus () : new DockToolbarFrameStatus ()).ToProperties ();
 		}
 		
-		public void SetMemento(Properties memento)
+		public void SetMemento (ICustomXmlSerializer memento)
 		{
 			initialized = true;
-			SdiWorkbenchLayoutMemento m = new SdiWorkbenchLayoutMemento (memento);
+			SdiWorkbenchLayoutMemento m = new SdiWorkbenchLayoutMemento ((Properties)memento);
 			toolbarFrame.SetStatus (m.Status);
 		}
 		

@@ -136,7 +136,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void Reload ()
 		{
-			Properties memento = null;
+			ICustomXmlSerializer memento = null;
 			IMementoCapable mc = GetContent<IMementoCapable> ();
 			if (mc != null) {
 				memento = mc.CreateMemento();

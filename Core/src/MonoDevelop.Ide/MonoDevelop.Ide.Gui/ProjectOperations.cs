@@ -823,11 +823,18 @@ namespace MonoDevelop.Ide.Gui
 								switch (reader.LocalName) {
 								case ViewMementoNode:
 									string id = reader.GetAttribute (IdAttribute);
-									Properties memento = Properties.Read (reader);
+									string raw = reader.ReadInnerXml ();
 									foreach (Pad pad in IdeApp.Workbench.Pads) {
 										if (id == pad.Id && pad.Content is IMementoCapable) {
 											IMementoCapable m = (IMementoCapable) pad.Content; 
-											m.SetMemento (memento);
+											XmlReader innerReader = new XmlTextReader (new MemoryStream (System.Text.Encoding.UTF8.GetBytes (raw)));
+											try {
+												while (innerReader.Read () && innerReader.NodeType != XmlNodeType.Element) 
+													;
+												m.SetMemento ((ICustomXmlSerializer)m.CreateMemento ().ReadFrom (innerReader));
+											} finally {
+												innerReader.Close ();
+											}
 										}
 									}
 									return true;
@@ -889,7 +896,8 @@ namespace MonoDevelop.Ide.Gui
 					if (pad.Content is IMementoCapable) {
 						writer.WriteStartElement (ViewMementoNode);
 						writer.WriteAttributeString (IdAttribute, pad.Id); 
-						((IMementoCapable)pad.Content).CreateMemento ().Write (writer);
+						
+						((ICustomXmlSerializer)((IMementoCapable)pad.Content).CreateMemento ()).WriteTo (writer);
 						writer.WriteEndElement (); // ViewMementoNode
 					}
 				}

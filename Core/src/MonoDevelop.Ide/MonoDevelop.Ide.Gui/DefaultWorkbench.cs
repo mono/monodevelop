@@ -344,7 +344,7 @@ namespace MonoDevelop.Ide.Gui
 //			fileAttribute.InnerText = content.ContentName;
 //			doc.DocumentElement.Attributes.Append(fileAttribute);
 //			
-			Properties memento = ((IMementoCapable)content).CreateMemento();
+			object memento = ((IMementoCapable)content).CreateMemento();
 			
 //			doc.DocumentElement.AppendChild(memento.ToXmlElement(doc));
 //			
@@ -352,14 +352,14 @@ namespace MonoDevelop.Ide.Gui
 			// check the file name length because it could be more than the maximum length of a file name
 			string fullFileName = System.IO.Path.Combine (directory, fileName);
 			if (Runtime.FileService.IsValidFileName(fullFileName)) {
-				memento.Save (fullFileName);
+				((Properties)memento).Save (fullFileName);
 //				doc.Save (fullFileName);
 			}
 			
 		}
 		
 		// interface IMementoCapable
-		public Properties CreateMemento()
+		public ICustomXmlSerializer CreateMemento()
 		{
 			WorkbenchMemento memento   = new WorkbenchMemento (new Properties ());
 			int x, y, width, height;
@@ -374,14 +374,14 @@ namespace MonoDevelop.Ide.Gui
 
 			memento.FullScreen  = fullscreen;
 			if (layout != null)
-				memento.LayoutMemento = layout.CreateMemento ();
+				memento.LayoutMemento = (Properties)layout.CreateMemento ();
 			return memento.ToProperties ();
 		}
 		
-		public void SetMemento(Properties xmlMemento)
+		public void SetMemento (ICustomXmlSerializer xmlMemento)
 		{
 			if (xmlMemento != null) {
-				WorkbenchMemento memento = new WorkbenchMemento (xmlMemento);
+				WorkbenchMemento memento = new WorkbenchMemento ((Properties)xmlMemento);
 				
 				normalBounds = memento.Bounds;
 				Move (normalBounds.X, normalBounds.Y);
