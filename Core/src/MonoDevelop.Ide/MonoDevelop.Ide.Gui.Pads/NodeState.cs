@@ -129,7 +129,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 			
 			if (ChildrenState != null) { 
-				Properties nodeProperties = new Properties();
 				foreach (NodeState ces in ChildrenState) {
 					ces.WriteTo (writer, Options != null ? Options : parentOptions);
 				}
@@ -211,7 +210,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			                      this.nodeName,
 			                      this.expanded,
 			                      this.selected,
-			                      this.options != null ? this.options : "null",
+			                      this.options != null ? this.options.ToString () : "null",
 			                      this.childrenState != null ? this.childrenState.Count.ToString () : "null");
 		}
 		 
