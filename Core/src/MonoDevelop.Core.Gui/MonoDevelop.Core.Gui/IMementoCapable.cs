@@ -20,11 +20,11 @@ namespace MonoDevelop.Core.Gui
 		/// <summary>
 		/// Creates a new memento from the state.
 		/// </summary>
-		Properties CreateMemento ();
+		ICustomXmlSerializer CreateMemento ();
 		
 		/// <summary>
 		/// Sets the state to the given memento.
 		/// </summary>
-		void SetMemento (Properties memento);
+		void SetMemento (ICustomXmlSerializer memento);
 	}
 }
