@@ -82,6 +82,8 @@
     <File name="./Project/Src/Parser/CSharp/CSharpParser.cs" subtype="Code" buildaction="Compile" />
     <File name="./Project/Src/Parser/VBNet/ParamModifierList.cs" subtype="Code" buildaction="Compile" />
     <File name="./Project/Src/Parser/VBNet/VBNetParser.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Project/Src/Parser/CSharp/cs.ATG" subtype="Code" buildaction="Nothing" />
+    <File name="./Project/Src/Parser/VBNet/VBNET.ATG" subtype="Code" buildaction="Nothing" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

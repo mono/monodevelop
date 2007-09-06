@@ -522,6 +522,7 @@ Type<out TypeReference type>
 
 TypeWithRestriction<out TypeReference type, bool allowNullable, bool canBeUnbound>
 (.
+	Location startPos = la.Location;
 	string name;
 	int pointer = 0;
 	type = null;
@@ -542,6 +543,8 @@ TypeWithRestriction<out TypeReference type, bool allowNullable, bool canBeUnboun
 	(. if (type != null) {
 		type.RankSpecifier = r.ToArray();
 		type.PointerNestingLevel = pointer;
+		type.EndLocation = t.EndLocation;
+		type.StartLocation = startPos;
 	   }
 	.)
 .
@@ -552,6 +555,7 @@ NonArrayType<out TypeReference type>
 	string name;
 	int pointer = 0;
 	type = null;
+	Location startPos = la.Location;
 .)
 =
 	( ClassType<out type, false>
@@ -564,7 +568,12 @@ NonArrayType<out TypeReference type>
 	{ IF (IsPointer())
 		"*" (. ++pointer; .)
 	}
-	(. if (type != null) { type.PointerNestingLevel = pointer; } .)
+	(. if (type != null) { 
+		type.PointerNestingLevel = pointer; 
+	   	type.EndLocation = t.EndLocation;
+	   	type.StartLocation = startPos;
+		} 
+	.)
 .
 
 SimpleType<out string name>
@@ -706,17 +715,21 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 .)
 =
 	/*--- constant declaration: */         (. m.Check(Modifiers.Constants); .)
-	"const"                                (.Location startPos = t.Location; .)
+	"const"                                (. Location startPos = t.Location; .)
 	Type<out type> ident                   (. FieldDeclaration fd = new FieldDeclaration(attributes, type, m.Modifier | Modifiers.Const);
 	                                          fd.StartLocation = m.GetDeclarationLocation(startPos);
 	                                          VariableDeclaration f = new VariableDeclaration(t.val);
+	                                          f.StartLocation = t.Location;
+	                                          f.TypeReference = type;
 	                                          fd.Fields.Add(f);
 	                                       .)
 	"=" Expr<out expr>                     (. f.Initializer = expr; .)
 	{ "," ident                            (. f = new VariableDeclaration(t.val);
+	                                          f.StartLocation = t.Location;
+	                                          f.TypeReference = type;
 	                                          fd.Fields.Add(f);
 	                                       .)
-		"=" Expr<out expr>                 (. f.Initializer = expr; .)
+		"=" Expr<out expr>                 (. f.EndLocation = t.EndLocation; f.Initializer = expr; .)
 	} ";"                                  (. fd.EndLocation = t.EndLocation; compilationUnit.AddChild(fd); .)
 	
 	
@@ -1069,11 +1082,13 @@ EnumMemberDecl<out FieldDeclaration f>
 =
 	{ AttributeSection<out section> (. attributes.Add(section); .) }
 	ident                           (. f = new FieldDeclaration(attributes);
-	                                   varDecl         = new VariableDeclaration(t.val);
-	                                   f.Fields.Add(varDecl);
+	                                   varDecl = new VariableDeclaration(t.val);
+	                                   varDecl.StartLocation = t.Location;	                                   f.Fields.Add(varDecl);
+									   varDecl.EndLocation = t.EndLocation;
 	                                   f.StartLocation = t.Location;
+	                                   f.Fields.Add(varDecl);
 	                                .)
-	[ "=" Expr<out expr> (. varDecl.Initializer = expr; .) ]
+	[ "=" Expr<out expr> (. varDecl.EndLocation = t.EndLocation;  varDecl.Initializer = expr; .) ]
 .
 
 
@@ -1194,8 +1209,8 @@ InterfaceAccessors<out PropertyGetRegion getBlock, out PropertySetRegion setBloc
 VariableDeclarator<List<VariableDeclaration> fieldDeclaration>
 (. Expression expr = null; .)
 =
-	ident                                 (. VariableDeclaration f = new VariableDeclaration(t.val); .)
-	[ "=" VariableInitializer<out expr>   (. f.Initializer = expr; .) ] (. fieldDeclaration.Add(f); .)
+	ident                                 (. VariableDeclaration f = new VariableDeclaration(t.val); f.StartLocation = t.Location; .)
+	[ "=" VariableInitializer<out expr>   (. f.Initializer = expr; .) ] (. f.EndLocation = t.EndLocation;  fieldDeclaration.Add(f); .)
 .
 
 Block<out Statement stmt> /* not BlockStatement because of EmbeddedStatement */
@@ -1333,21 +1348,25 @@ ArrayInitializer<out Expression outExpr>
 LocalVariableDecl<out Statement stmt>
 (.
 	TypeReference type;
-	VariableDeclaration      var = null;
+	VariableDeclaration var = null;
 	LocalVariableDeclaration localVariableDeclaration; 
+	Location startPos = t.Location;
 .)
 =
-	Type<out type> (. localVariableDeclaration = new LocalVariableDeclaration(type); localVariableDeclaration.StartLocation = t.Location; .)
-	LocalVariableDeclarator<out var> (. localVariableDeclaration.Variables.Add(var); .)
-	{ "," LocalVariableDeclarator<out var> (. localVariableDeclaration.Variables.Add(var); .) }
-	(. stmt = localVariableDeclaration; .)
+	Type<out type> (. 
+		localVariableDeclaration = new LocalVariableDeclaration(type); 
+		localVariableDeclaration.StartLocation = startPos; 
+	.)
+	LocalVariableDeclarator<out var> (. var.TypeReference = type; localVariableDeclaration.Variables.Add(var); .)
+	{ "," LocalVariableDeclarator<out var> (. var.TypeReference = type; localVariableDeclaration.Variables.Add(var); .) }
+	(. stmt = localVariableDeclaration; stmt.EndLocation = t.EndLocation; .)
 .
 
 LocalVariableDeclarator<out VariableDeclaration var>
 (. Expression expr = null; .)
 =
 /*	ident (. var = new VariableDeclaration(t.val); .) [ "=" LocalVariableInitializer<out expr> (. var.Initializer = expr; .) ]*/
-	ident (. var = new VariableDeclaration(t.val); .) [ "=" VariableInitializer<out expr> (. var.Initializer = expr; .) ]
+	ident (. var = new VariableDeclaration(t.val); var.EndLocation = t.EndLocation; var.StartLocation = t.Location; .) [ "=" VariableInitializer<out expr> (. var.EndLocation = t.EndLocation;  var.Initializer = expr; .) ]
 .
 /*
 LocalVariableInitializer<out Expression expr>
@@ -1371,10 +1390,17 @@ Statement
 		":" Statement
 		/*--- local constant declaration: */
 		| "const" Type<out type> (. LocalVariableDeclaration var = new LocalVariableDeclaration(type, Modifiers.Const); string ident = null; var.StartLocation = t.Location; .) 
-		  ident (. ident = t.val; .)
+		  ident (. ident = t.val; Location varStart = t.Location;   .)
 		  "=" Expr<out expr> (. var.Variables.Add(new VariableDeclaration(ident, expr)); .)
-		  { "," ident (. ident = t.val; .) "=" Expr<out expr> (. var.Variables.Add(new VariableDeclaration(ident, expr)); .) }
-		  ";" (. compilationUnit.AddChild(var); .)
+		  { "," ident (. ident = t.val; .) "=" Expr<out expr> 
+		  (. 
+		  	VariableDeclaration newVar = new VariableDeclaration (ident, expr);
+		  	newVar.StartLocation = varStart;
+		  	newVar.EndLocation = t.EndLocation;
+		  	newVar.TypeReference = type; 
+		  	var.Variables.Add(newVar); 
+		  .) }
+		  ";" (. var.EndLocation = t.EndLocation; compilationUnit.AddChild(var); .)
 		/*--- local variable declaration: */
 		| IF (IsLocalVarDecl()) LocalVariableDecl<out stmt> ";" (. compilationUnit.AddChild(stmt); .)
 		| EmbeddedStatement<out stmt> (. compilationUnit.AddChild(stmt); .)
@@ -1467,8 +1493,12 @@ EmbeddedStatement<out Statement statement>
 	"(" Type<out type>     (. if (type.PointerNestingLevel == 0) Error("can only fix pointer types");
 	                          List<VariableDeclaration> pointerDeclarators = new List<VariableDeclaration>(1);
 	                       .)
-	ident                  (. string identifier = t.val; .)
-	"=" Expr<out expr>     (. pointerDeclarators.Add(new VariableDeclaration(identifier, expr)); .)
+	ident                  (. Location varStart = t.Location; string identifier = t.val; .)
+	"=" Expr<out expr>     (. VariableDeclaration var = new VariableDeclaration(identifier, expr);
+							  var.StartLocation = varStart; 
+							  var.EndLocation = t.EndLocation; 
+							  var.TypeReference = type;
+	                          pointerDeclarators.Add(var); .)
 	{
 		"," ident          (. identifier = t.val; .)
 		"=" Expr<out expr> (. pointerDeclarators.Add(new VariableDeclaration(identifier, expr)); .)
@@ -1691,6 +1721,7 @@ PrimaryExpr<out Expression pexpr>
 	bool isArrayCreation = false;
 	Expression expr;
 	pexpr = null;
+	Location startPos = t.Location;
 .)
 =
 	(
@@ -1703,7 +1734,7 @@ PrimaryExpr<out Expression pexpr>
 			"::"  (. pexpr = new TypeReferenceExpression(type); .)
 			ident (. if (type.Type == "global") { type.IsGlobal = true; type.Type = (t.val ?? "?"); } else type.Type += "." + (t.val ?? "?"); .)
 		/*--- simple name: */
-		| ident (. pexpr = new IdentifierExpression(t.val); .)
+		| ident (. pexpr = new IdentifierExpression(t.val); pexpr.StartLocation = t.Location;  .)
 		/*--- parenthesized expression: */
 		| "(" Expr<out expr> ")" (. pexpr = new ParenthesizedExpression(expr); .)
 		| /*--- predefined type member access: */
@@ -1724,13 +1755,13 @@ PrimaryExpr<out Expression pexpr>
 			| "uint"  (. val = "uint"; .)
 			| "ulong"    (. val = "ulong"; .)
 			| "ushort" (. val = "ushort"; .)
-		) (. t.val = ""; .) "." ident (. pexpr = new FieldReferenceExpression(new TypeReferenceExpression(val), t.val); .)
+		) (. t.val = ""; .) "." ident (. pexpr = new FieldReferenceExpression(new TypeReferenceExpression(val), t.val); pexpr.StartLocation = t.Location; .)
 		/*--- this access: */
-		| "this"                              (. pexpr = new ThisReferenceExpression(); .)
+		| "this"                              (. pexpr = new ThisReferenceExpression(); pexpr.StartLocation = t.Location; .)
 		/*--- base access: */
 		| "base"                              (. Expression retExpr = new BaseReferenceExpression(); .)
 		(
-			"." ident                         (. retExpr = new FieldReferenceExpression(retExpr, t.val); .)
+			"." ident                         (. retExpr = new FieldReferenceExpression(retExpr, t.val); retExpr.StartLocation = t.Location; .)
 			| "[" Expr<out expr>              (. List<Expression> indices = new List<Expression>(); if (expr != null) { indices.Add(expr); } .)
 			{ "," Expr<out expr>              (. if (expr != null) { indices.Add(expr); } .) }
 			"]"                               (. retExpr = new IndexerExpression(retExpr, indices); .)
@@ -1783,8 +1814,8 @@ PrimaryExpr<out Expression pexpr>
 			| "--" (. pexpr = new UnaryOperatorExpression(pexpr, UnaryOperatorType.PostDecrement); .)
 		)
 		/*--- member access */
-		| "->" ident (. pexpr = new PointerReferenceExpression(pexpr, t.val); .)
-		| "." ident  (. pexpr = new FieldReferenceExpression(pexpr, t.val);.)
+		| "->" ident (. pexpr = new PointerReferenceExpression(pexpr, t.val); pexpr.StartLocation = t.Location;  .)
+		| "." ident  (. pexpr = new FieldReferenceExpression(pexpr, t.val); pexpr.StartLocation = t.Location; .)
 		/* member access on generic type */
 		|   ( IF (IsGenericFollowedBy(Tokens.Dot) && IsTypeReferenceExpression(pexpr))
 				TypeArgumentList<out typeList, false> )
@@ -1808,6 +1839,11 @@ PrimaryExpr<out Expression pexpr>
 		{ "," Expr<out expr> (. if (expr != null) { indices.Add(expr); } .)
 		} "]" (. pexpr = new IndexerExpression(pexpr, indices); .)
 	}
+	(. if (pexpr != null) {
+		pexpr.StartLocation = startPos;
+		pexpr.EndLocation = t.Location;
+	   }
+	.) 
 .
 
 AnonymousMethodExpr<out Expression outExpr>

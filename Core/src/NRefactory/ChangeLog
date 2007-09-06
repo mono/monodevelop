@@ -1,3 +1,13 @@
+2007-09-06  Mike Krüger <mkrueger@novell.com> 
+
+	* Project/Src/Parser/CSharp/cs.ATG, Project/Src/Parser/gen.sh: Applied some
+	  patches to the new NRefartory from the former monodevelop nrefactory
+	  version.
+	
+	  Added a parser generation script for linux which can be used to generate
+	  the parser out of the ATG files. The Parser.cs files should never be
+	  patched directly.
+
 2007-09-04  Michael Hutchinson <MHutchinson@novell.com> 
 
 	* Project/Src/Visitors/CodeDOMOutputVisitor.cs: Respect "partial" modifier
