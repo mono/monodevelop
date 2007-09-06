@@ -27,6 +27,7 @@
 //
 
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
@@ -42,7 +43,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 		internal void SetContext (ITreeBuilderContext context)
 		{
 			this.context = context;
-			Initialize ();
+			try {
+				Initialize ();
+			} catch (Exception ex) {
+				Runtime.LoggingService.Error (ex);
+			}
 		}
 		
 		internal NodeCommandHandler CommandHandler {

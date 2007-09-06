@@ -1,3 +1,9 @@
+2007-09-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs,
+	  MonoDevelop.Ide.Gui.Pads/NodeBuilder.cs: Made the tree view pad safer
+	  against exceptions thrown by node builders implemented in add-ins.
+
 2007-09-05  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs: Add a property

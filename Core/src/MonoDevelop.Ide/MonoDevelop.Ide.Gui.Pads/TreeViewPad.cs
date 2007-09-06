@@ -367,12 +367,16 @@ namespace MonoDevelop.Ide.Gui.Pads
 			DragOperation oper = ctx.Action == Gdk.DragAction.Copy ? DragOperation.Copy : DragOperation.Move;
 			
 			foreach (NodeBuilder nb in chain) {
-				NodeCommandHandler handler = nb.CommandHandler;
-				handler.SetCurrentNode (nav);
-				if (handler.CanDropNode (obj, oper)) {
-					foundHandler = true;
-					if (drop)
-						handler.OnNodeDrop (obj, oper);
+				try {
+					NodeCommandHandler handler = nb.CommandHandler;
+					handler.SetCurrentNode (nav);
+					if (handler.CanDropNode (obj, oper)) {
+						foundHandler = true;
+						if (drop)
+							handler.OnNodeDrop (obj, oper);
+					}
+				} catch (Exception ex) {
+					Runtime.LoggingService.Error (ex);
 				}
 			}
 			return foundHandler;
@@ -382,8 +386,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 		public virtual void Dispose ()
 		{
 			Clear ();
-			foreach (NodeBuilder nb in builders)
-				nb.Dispose ();
+			foreach (NodeBuilder nb in builders) {
+				try {
+					nb.Dispose ();
+				} catch (Exception ex) {
+					Runtime.LoggingService.Error (ex);
+				}
+			}
 		}
 		
 		protected NodeBuilder[] NodeBuilders {
@@ -406,11 +415,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 			object[] obs = new object [nodeHash.Count];
 			nodeHash.Keys.CopyTo (obs, 0);
 			
-			foreach (object dataObject in obs) {
-				NodeBuilder[] chain = GetBuilderChain (dataObject.GetType());
-				foreach (NodeBuilder nb in chain)
-					nb.OnNodeRemoved (dataObject);
-			}
+			foreach (object dataObject in obs)
+				NotifyNodeRemoved (dataObject, null);
 
 			nodeHash = new Hashtable ();
 			nodeOptions = new Hashtable ();
@@ -589,13 +595,17 @@ namespace MonoDevelop.Ide.Gui.Pads
 				NodeBuilder[] chain = node.NodeBuilderChain;
 				NodePosition pos = node.CurrentPosition;
 				foreach (NodeBuilder b in chain) {
-					NodeCommandHandler handler = b.CommandHandler;
-					handler.SetCurrentNode (node);
-					if ((handler.CanDragNode () & oper) != 0) {
-						node.MoveToPosition (pos);
-						copyObject = node.DataItem;
-						currentTransferOperation = oper;
-						break;
+					try {
+						NodeCommandHandler handler = b.CommandHandler;
+						handler.SetCurrentNode (node);
+						if ((handler.CanDragNode () & oper) != 0) {
+							node.MoveToPosition (pos);
+							copyObject = node.DataItem;
+							currentTransferOperation = oper;
+							break;
+						}
+					} catch (Exception ex) {
+						Runtime.LoggingService.Error (ex);
 					}
 					node.MoveToPosition (pos);
 				}
@@ -609,10 +619,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 				NodeBuilder[] chain = node.NodeBuilderChain;
 				NodePosition pos = node.CurrentPosition;
 				foreach (NodeBuilder b in chain) {
-					NodeCommandHandler handler = b.CommandHandler;
-					handler.SetCurrentNode (node);
-					if ((handler.CanDragNode () & oper) != 0)
-						return true;
+					try {
+						NodeCommandHandler handler = b.CommandHandler;
+						handler.SetCurrentNode (node);
+						if ((handler.CanDragNode () & oper) != 0)
+							return true;
+					} catch (Exception ex) {
+						Runtime.LoggingService.Error (ex);
+					}
 					node.MoveToPosition (pos);
 				}
 			}
@@ -699,7 +713,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 			NodePosition pos = parentNode.CurrentPosition;
 			
 			foreach (NodeBuilder b in node.NodeBuilderChain) {
-				b.GetNodeAttributes (parentNode, dataObject, ref attributes);
+				try {
+					b.GetNodeAttributes (parentNode, dataObject, ref attributes);
+				} catch (Exception ex) {
+					Runtime.LoggingService.Error (ex);
+				}
 				parentNode.MoveToPosition (pos);
 			}
 			
@@ -732,9 +750,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 					NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (iter, BuilderChainColumn);
 					foreach (NodeBuilder b in chain) {
-						NodeCommandHandler handler = b.CommandHandler;
-						handler.SetCurrentNode (nav);
-						handler.RenameItem (e.NewText);
+						try {
+							NodeCommandHandler handler = b.CommandHandler;
+							handler.SetCurrentNode (nav);
+							handler.RenameItem (e.NewText);
+						} catch (Exception ex) {
+							Runtime.LoggingService.Error (ex);
+						}
 						nav.MoveToPosition (pos);
 					}
 				}
@@ -803,8 +825,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 						if (((TypeNodeBuilder)nb).NodeDataType.IsAssignableFrom (type))
 							list.Insert (0, nb);
 					}
-					else if (((NodeBuilderExtension)nb).CanBuildNode (type))
-						list.Add (nb);
+					else {
+						try {
+							if (((NodeBuilderExtension)nb).CanBuildNode (type))
+								list.Add (nb);
+						} catch (Exception ex) {
+							Runtime.LoggingService.Error (ex);
+						}
+					}
 				}
 				
 				chain = (NodeBuilder[]) list.ToArray (typeof(NodeBuilder));
@@ -872,8 +900,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 			if (currentIt == null) {
 				nodeHash [dataObject] = it;
 				if (chain == null) chain = GetBuilderChain (dataObject.GetType());
-				foreach (NodeBuilder nb in chain)
-					nb.OnNodeAdded (dataObject);
+				foreach (NodeBuilder nb in chain) {
+					try {
+						nb.OnNodeAdded (dataObject);
+					} catch (Exception ex) {
+						Runtime.LoggingService.Error (ex);
+					}
+				}
 			} else {
 				if (currentIt is Gtk.TreeIter[]) {
 					Gtk.TreeIter[] arr = (Gtk.TreeIter[]) currentIt;
@@ -909,9 +942,20 @@ namespace MonoDevelop.Ide.Gui.Pads
 				}
 			} else {
 				nodeHash.Remove (dataObject);
-				if (chain == null) chain = GetBuilderChain (dataObject.GetType());
-				foreach (NodeBuilder nb in chain)
+				NotifyNodeRemoved (dataObject, chain);
+			}
+		}
+				
+		void NotifyNodeRemoved (object dataObject, NodeBuilder[] chain)
+		{
+			if (chain == null)
+				chain = GetBuilderChain (dataObject.GetType());
+			foreach (NodeBuilder nb in chain) {
+				try {
 					nb.OnNodeRemoved (dataObject);
+				} catch (Exception ex) {
+					Runtime.LoggingService.Error (ex);
+				}
 			}
 		}
 		
@@ -1179,9 +1223,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 				NodeBuilder[] chain = node.NodeBuilderChain;
 				NodePosition pos = node.CurrentPosition;
 				foreach (NodeBuilder b in chain) {
-					NodeCommandHandler handler = b.CommandHandler;
-					handler.SetCurrentNode (node);
-					handler.OnItemSelected ();
+					try {
+						NodeCommandHandler handler = b.CommandHandler;
+						handler.SetCurrentNode (node);
+						handler.OnItemSelected ();
+					} catch (Exception ex) {
+						Runtime.LoggingService.Error (ex);
+					}
 					node.MoveToPosition (pos);
 				}
 			}
@@ -1697,7 +1745,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 				NodeAttributes ats = NodeAttributes.None;
 				
 				foreach (NodeBuilder nb in chain) {
-					nb.GetNodeAttributes (this, dataObject, ref ats);
+					try {
+						nb.GetNodeAttributes (this, dataObject, ref ats);
+					} catch (Exception ex) {
+						Runtime.LoggingService.Error (ex);
+					}
 					currentIter = oldIter;
 				}
 				return ats;
@@ -1760,9 +1812,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 			{
 				Gtk.TreeIter citer = currentIter;
 				foreach (NodeBuilder nb in chain) {
-					bool res = nb.HasChildNodes (this, dataObject);
+					try {
+						bool res = nb.HasChildNodes (this, dataObject);
+						if (res) return true;
+					} catch (Exception ex) {
+						Runtime.LoggingService.Error (ex);
+					}
 					currentIter = citer;
-					if (res) return true;
 				}
 				return false;
 			}
@@ -1775,7 +1831,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 				Gtk.TreeIter citer = currentIter;
 				
 				foreach (NodeBuilder builder in chain) {
-					builder.BuildNode (this, dataObject, ref text, ref icon, ref closedIcon);
+					try {
+						builder.BuildNode (this, dataObject, ref text, ref icon, ref closedIcon);
+					} catch (Exception ex) {
+						Runtime.LoggingService.Error (ex);
+					}
 					currentIter = citer;
 				}
 					
@@ -1811,7 +1871,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 			{
 				Gtk.TreeIter it = currentIter;
 				foreach (NodeBuilder builder in chain) {
-					builder.BuildChildNodes (this, dataObject);
+					try {
+						builder.BuildChildNodes (this, dataObject);
+					} catch (Exception ex) {
+						Runtime.LoggingService.Error (ex);
+					}
 					currentIter = it;
 				}
 			}
