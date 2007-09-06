@@ -9,8 +9,13 @@
 		<Icon>md-html-file-icon</Icon>
 		<Category>ASP.NET</Category>
 		<LanguageName>*</LanguageName>
+		<ProjectType>AspNetApp</ProjectType>
 		<_Description>Creates an ASP.NET MasterPage without a CodeBehind class.</_Description>
 	</TemplateConfiguration>
+	
+	<Conditions>
+		<ClrVersion Condition="GreaterThanOrEqual" ClrVersion="Net_2_0" />
+	</Conditions>
 	
 	<!-- Template Content -->
 	<TemplateFiles>

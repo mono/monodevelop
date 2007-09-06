@@ -9,6 +9,7 @@
 		<Icon>md-html-file-icon</Icon>
 		<Category>ASP.NET</Category>
 		<LanguageName>*</LanguageName>
+		<ProjectType>AspNetApp</ProjectType>
 		<_Description>Creates an ASP.NET Web Handler with a CodeBehind class.</_Description>
 	</TemplateConfiguration>
 	

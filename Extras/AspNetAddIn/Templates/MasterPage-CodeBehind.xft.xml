@@ -10,7 +10,13 @@
 		<Category>ASP.NET</Category>
 		<LanguageName>*</LanguageName>
 		<_Description>Creates an ASP.NET MasterPage with a CodeBehind class.</_Description>
+		<ProjectType>AspNetApp</ProjectType>
 	</TemplateConfiguration>
+	
+	<Conditions>
+		<ClrVersion Condition="GreaterThanOrEqual" ClrVersion="Net_2_0" />
+		<PartialTypeSupport Requirement="Enabled" />
+	</Conditions>
 	
 	<!-- Template Content -->
 	<TemplateFiles>
