@@ -120,6 +120,7 @@ namespace MonoDevelop.Core
 
 #region I/O
 		public const string Node           = "Properties";
+		public const string SerializedNode = "Serialized";
 		public const string PropertyNode   = "Property";
 		public const string KeyAttribute   = "key";
 		public const string ValueAttribute = "value";
@@ -205,15 +206,12 @@ namespace MonoDevelop.Core
 			{
 				try {
 					if (typeof(ICustomXmlSerializer).IsAssignableFrom (typeof(T))) {
-						XmlReader reader = new XmlTextReader (new MemoryStream (System.Text.Encoding.UTF8.GetBytes (xml)));
-						// set cursor on the first element.
-						while (reader.Read () && reader.NodeType != XmlNodeType.Element)
-							;
+						XmlReader reader = new XmlTextReader (new MemoryStream (System.Text.Encoding.UTF8.GetBytes ("<" + Properties.SerializedNode + ">" + xml + "</" + Properties.SerializedNode + ">" )));
 						object result = ((ICustomXmlSerializer)typeof(T).Assembly.CreateInstance (typeof(T).FullName)).ReadFrom (reader);
 						reader.Close ();
 						return (T)result;
 					}
-						    
+					
 					XmlSerializer serializer = new XmlSerializer (typeof(T));
 					return (T)serializer.Deserialize (new StreamReader(new MemoryStream(System.Text.Encoding.UTF8.GetBytes (xml))));
 				} catch (Exception e) {
@@ -226,7 +224,7 @@ namespace MonoDevelop.Core
 		public static Properties Read (XmlReader reader)
 		{
 			Properties result = new Properties ();
-			XmlReadHelper.ReadList (reader, Node, delegate() {
+			XmlReadHelper.ReadList (reader, new string [] { Node, SerializedNode }, delegate() {
 				switch (reader.LocalName) {
 				case PropertyNode:
 					string key = reader.GetAttribute (KeyAttribute);

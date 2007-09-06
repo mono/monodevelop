@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Xml;
 
 namespace MonoDevelop.Core
@@ -46,18 +47,26 @@ namespace MonoDevelop.Core
 		
 		public static void ReadList (XmlReader reader, string endNode, ReaderCallback callback)
 		{
-			ReadList (reader, endNode, delegate(ReadCallbackData data) { 
+			ReadList (reader, new string[] { endNode }, callback);
+		}
+		public static void ReadList (XmlReader reader, ICollection<string> endNodes, ReaderCallback callback)
+		{
+			ReadList (reader, endNodes, delegate(ReadCallbackData data) { 
 				return callback ();
 			});
 		}
 			
 		public static void ReadList (XmlReader reader, string endNode, ReaderCallbackWithData callback)
 		{
+			ReadList (reader, new string[] { endNode }, callback);		
+		}
+		public static void ReadList (XmlReader reader, ICollection<string> endNodes, ReaderCallbackWithData callback)
+		{
 			if (reader.IsEmptyElement) {
 				return;
 			}
 			ReadCallbackData data = new ReadCallbackData ();
-			if (reader.LocalName == endNode) {
+			if (endNodes.Contains (reader.LocalName)) {
 				reader.Read();
 			}
 			while (reader.Read()) {
@@ -65,17 +74,15 @@ namespace MonoDevelop.Core
 				data.SkipNextRead = false;
 				switch (reader.NodeType) {
 				case XmlNodeType.EndElement:
-					if (reader.LocalName == endNode) {
+					if (endNodes.Contains (reader.LocalName)) {
 						return;
 					}
-					// TODO: Logging system ...
-					//System.Console.WriteLine ("unknown end node: " + reader.LocalName);
+					Runtime.LoggingService.Warn ("Unknown end node: " + reader.LocalName);
 					break;
 				case XmlNodeType.Element:
 					bool validNode = callback (data);
 					if (!validNode) {
-						// TODO: Logging system ...
-						System.Console.WriteLine ("unknown Node: " + reader.LocalName);
+						Runtime.LoggingService.Warn ("Unknown node: " + reader.LocalName);
 					}
 					if (data.SkipNextRead) {
 						goto skip;

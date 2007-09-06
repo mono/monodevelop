@@ -1,3 +1,14 @@
+2007-09-06  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Core/Properties.cs, MonoDevelop.Core/XmlReadHelper.cs: It's
+	  now possible to specifiy more than one possible end node in the
+	  XmlReadHelper class. 
+	
+	  The Properties class now generates root node called "Serialized"
+	  (Properties.SerializedNode) for the custom xml serialized documents -
+	  they do not need to generate an own root node anymore (therefore saving
+	  some space).
+
 2007-09-05  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Core/Properties.cs, MonoDevelop.Core/ICustomXmlSerializer.cs:
