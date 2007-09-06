@@ -72,6 +72,7 @@ FILES =  \
 	MonoDevelop.Ide.Codons/ContextPadCodon.cs \
 	MonoDevelop.Ide.Codons/DisplayBindingCodon.cs \
 	MonoDevelop.Ide.Codons/FileFilterCodon.cs \
+	MonoDevelop.Ide.Codons/FileTemplateConditionTypeCodon.cs \
 	MonoDevelop.Ide.Codons/FileTemplateTypeCodon.cs \
 	MonoDevelop.Ide.Codons/IDisplayBinding.cs \
 	MonoDevelop.Ide.Codons/ISubDisplayBinding.cs \
@@ -299,16 +300,19 @@ FILES =  \
 	MonoDevelop.Ide.Tasks/TaskService.cs \
 	MonoDevelop.Ide.Tasks/UserTask.cs \
 	MonoDevelop.Ide.Tasks/UserTasksView.cs \
+	MonoDevelop.Ide.Templates/ClrVersionFileTemplateCondition.cs \
 	MonoDevelop.Ide.Templates/CodeDomFileDescriptionTemplate.cs \
 	MonoDevelop.Ide.Templates/CodeTranslationFileDescriptionTemplate.cs \
 	MonoDevelop.Ide.Templates/CombineDescriptor.cs \
 	MonoDevelop.Ide.Templates/CombineEntryDescriptor.cs \
 	MonoDevelop.Ide.Templates/FileDescriptionTemplate.cs \
 	MonoDevelop.Ide.Templates/FileTemplate.cs \
+	MonoDevelop.Ide.Templates/FileTemplateCondition.cs \
 	MonoDevelop.Ide.Templates/FileTemplateReference.cs \
 	MonoDevelop.Ide.Templates/ICombineEntryDescriptor.cs \
 	MonoDevelop.Ide.Templates/ICombineEntryFeature.cs \
 	MonoDevelop.Ide.Templates/INewFileCreator.cs \
+	MonoDevelop.Ide.Templates/PartialTypeFileTemplateCondition.cs \
 	MonoDevelop.Ide.Templates/ProjectDescriptor.cs \
 	MonoDevelop.Ide.Templates/ProjectTemplate.cs \
 	MonoDevelop.Ide.Templates/ResourceFileDescriptionTemplate.cs \

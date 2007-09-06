@@ -47,6 +47,7 @@ namespace MonoDevelop.Ide.Templates
 		string    wizardpath   = null;
 		
 		List<FileDescriptionTemplate> files = new List<FileDescriptionTemplate> ();
+		List<FileTemplateCondition> conditions = new List<FileTemplateCondition> ();
 		
 		XmlElement fileoptions = null;
 		
@@ -128,6 +129,12 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 		
+		public List<FileTemplateCondition> Conditions {
+			get {
+				return conditions;
+			}
+		}
+		
 		static FileTemplate LoadFileTemplate (RuntimeAddin addin, ProjectTemplateCodon codon)
 		{
 			XmlDocument doc = codon.GetTemplate ();
@@ -190,6 +197,20 @@ namespace MonoDevelop.Ide.Templates
 				FileDescriptionTemplate template = FileDescriptionTemplate.CreateTemplate (fileelem);
 				fileTemplate.files.Add(template);
 			}
+			
+			//load the conditions
+			XmlElement conditions  = doc.DocumentElement["Conditions"];
+			if (conditions != null) {
+				XmlNodeList conditionNodes = conditions.ChildNodes;
+				foreach (XmlNode node in conditionNodes) {
+					XmlElement elem = node as XmlElement;
+					if (elem == null)
+						continue;
+					FileTemplateCondition condition = FileTemplateCondition.CreateCondition (elem);
+					fileTemplate.conditions.Add (condition);
+				}
+			}
+			
 			return fileTemplate;
 		}
 		
@@ -305,13 +326,103 @@ namespace MonoDevelop.Ide.Templates
 		protected virtual bool IsValidForProject (Project project)
 		{
 			// When there is no project, only single template files can be created.
-			
 			if (project == null) {
 				foreach (FileDescriptionTemplate f in files)
 					if (!(f is SingleFileDescriptionTemplate))
 						return false;
 			}
+			
+			//filter on conditions
+			if (project != null) {
+				if (!string.IsNullOrEmpty(projecttype) && (projecttype != project.ProjectType))
+					return false;
+				
+				foreach (FileTemplateCondition condition in conditions)
+					if (!condition.ShouldEnableFor (project))
+						return false;
+			}
+			
 			return true;
+		}
+		
+		public virtual List<string> GetCompatibleLanguages (Project project)
+		{
+			if (project == null)
+				return SupportedLanguages;
+			
+			//find the languages that both the template and the project support
+			List<string> langMatches = MatchLanguagesWithProject (project);
+			
+			//filter on conditions
+			List<string> filtered = new List<string> ();
+			foreach (string lang in langMatches) {
+				bool shouldEnable = true;
+				foreach (FileTemplateCondition condition in conditions) {
+					if (!condition.ShouldEnableFor (project, lang)) {
+						shouldEnable = false;
+						break;
+					}
+				}
+				if (shouldEnable)
+					filtered.Add (lang);
+			}
+			
+			return filtered;
+		}
+		
+		//The languages that the template supports
+		//FIXME: would it be memory-effective to cache this?
+		List<string> SupportedLanguages {
+			get {
+				List<string> templateLangs = new List<string> ();
+				foreach (string s in this.LanguageName.Split (','))
+					templateLangs.Add (s.Trim ());
+				ExpandLanguageWildcards (templateLangs);
+				return templateLangs;
+			}
+		}
+		
+		List<string> MatchLanguagesWithProject (Project project)
+		{
+			//The languages that the project supports
+			List<string> projectLangs = new List<string> (project.SupportedLanguages);
+			ExpandLanguageWildcards (projectLangs);
+			
+			List<string> templateLangs = SupportedLanguages;
+			
+			//Find all matches between the language strings of project and template
+			List<string> langMatches = new List<string> ();
+				
+			foreach (string templLang in templateLangs)
+				foreach (string projLang in projectLangs)
+					if (templLang == projLang)
+						langMatches.Add (projLang);
+				
+			//Eliminate duplicates
+			int pos = 0;
+			while (pos < langMatches.Count) {
+				int next = langMatches.IndexOf (langMatches [pos], pos +1);
+				if (next != -1)
+					langMatches.RemoveAt (next);
+				else
+					pos++;
+			}
+			
+			return langMatches;
+		}
+		
+		void ExpandLanguageWildcards (List<string> list)
+		{
+			//Template can match all CodeDom .NET languages with a "*"
+			if (list.Contains ("*")) {
+				ILanguageBinding [] bindings = MonoDevelop.Projects.Services.Languages.GetLanguageBindings ();
+				foreach (ILanguageBinding lb in bindings) {
+					IDotNetLanguageBinding dnlang = lb as IDotNetLanguageBinding;
+					if (dnlang != null && dnlang.GetCodeDomProvider () != null)
+						list.Add (dnlang.Language);
+					list.Remove ("*");
+				}
+			}
 		}
 	}
 }

@@ -256,7 +256,6 @@
     <File name="./gtk-gui/gui.stetic" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui.Pads/TreeViewItem.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui.Dialogs/OpenFileInSolutionDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui/TextEditor.cs" subtype="Code" buildaction="Compile" />
@@ -329,6 +328,11 @@
     <File name="./MonoDevelop.Ide.Codons/FileFilterCodon.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.ExternalTools/ExternalToolService.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Templates/FileTemplateReference.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Codons/FileTemplateConditionTypeCodon.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Templates/ClrVersionFileTemplateCondition.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Templates/FileTemplateCondition.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Templates/PartialTypeFileTemplateCondition.cs" subtype="Code" buildaction="Compile" />
+    <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="gecko-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=ccf7d78a55e9f021" />

@@ -192,6 +192,11 @@
 		<ExtensionNode name="FileTemplateType" type="MonoDevelop.Ide.Codons.FileTemplateTypeCodon"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/Ide/FileTemplateConditionTypes" name = "File template condition types">
+		<Description>Condition types which can be used to limit when file templates can be created.</Description>
+		<ExtensionNode name="FileTemplateConditionType" type="MonoDevelop.Ide.Codons.FileTemplateConditionTypeCodon"/>
+	</ExtensionPoint>
+	
 	<ExtensionPoint path = "/MonoDevelop/Ide/ProjectTemplates" name = "File template types">
 		<Description>Project templates to be shown in the New Project dialog.</Description>
 		<ExtensionNode name="ProjectTemplate" type="MonoDevelop.Ide.Codons.ProjectTemplateCodon"/>
@@ -1308,6 +1313,11 @@
 		<FileTemplateType name = "ProjectResource" class = "MonoDevelop.Ide.Templates.ResourceFileDescriptionTemplate"/>
 		<FileTemplateType name = "CodeTranslationFile" class = "MonoDevelop.Ide.Templates.CodeTranslationFileDescriptionTemplate"/>
 		<FileTemplateType name = "FileTemplateReference" class = "MonoDevelop.Ide.Templates.FileTemplateReference"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/FileTemplateConditionTypes">
+		<FileTemplateConditionType name = "ClrVersion" class = "MonoDevelop.Ide.Templates.ClrVersionFileTemplateCondition"/>
+		<FileTemplateConditionType name = "PartialTypeSupport" class = "MonoDevelop.Ide.Templates.PartialTypeFileTemplateCondition"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">

@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 
 using MonoDevelop.Core.Gui.Components;
@@ -29,14 +30,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	/// </summary>
 	internal partial class NewFileDialog : Dialog
 	{
-		ArrayList alltemplates = new ArrayList ();
-		ArrayList categories   = new ArrayList ();
-		Hashtable icons        = new Hashtable ();
-		ArrayList projectLangs = new ArrayList ();
+		List<TemplateItem> alltemplates      = new List<TemplateItem> ();
+		List<Category> categories            = new List<Category> ();
+		Hashtable icons                      = new Hashtable ();
+		Dictionary<string, bool> activeLangs = new Dictionary<string, bool> ();
 
 		PixbufList cat_imglist;
 
 		TreeStore catStore;
+		const string defaultSelectedCategory = "General";
 		
 		// Add To Project widgets
 		Combine solution;
@@ -44,8 +46,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		Project parentProject;
 		string basePath;
-		
-		string currentProjectType = string.Empty;
 		
 		public NewFileDialog (Project parentProject, string basePath) : base ()
 		{
@@ -67,26 +67,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			if (update) {
 				alltemplates.Clear ();
-				projectLangs.Clear ();
 				categories.Clear ();
 				catStore.Clear ();
 				icons.Clear ();
+				activeLangs.Clear ();
 			}
-			
-			Project project = null;
-			
-			if (!boxProject.Visible || projectAddCheckbox.Active)
-			    project = parentProject;
-			
-			// if there's a parent project, check whether it wants to filter languages, else use defaults
-			if ((project != null) && (project.SupportedLanguages != null) && (project.SupportedLanguages.Length > 0)) {
-				projectLangs.AddRange (project.SupportedLanguages);
-			} else {
-				projectLangs.Add ("");  // match all non-filtered templates
-				projectLangs.Add ("*");	// match all .NET langs with CodeDom
-			}
-			
-			ExpandLanguageWildcards (projectLangs);
 			
 			InitializeTemplates ();
 			
@@ -126,16 +111,31 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			icons = tmp;
 			
 			InsertCategories(TreeIter.Zero, categories);
-			//PropertyService PropertyService = (PropertyService)ServiceManager.Services.GetService(typeof(PropertyService));
-			/*for (int j = 0; j < categories.Count; ++j) {
-				if (((Category)categories[j]).Name == PropertyService.Get("Dialogs.NewFileDialog.LastSelectedCategory", "C#")) {
-					((TreeView)ControlDictionary["categoryTreeView"]).SelectedNode = (TreeNode)((TreeView)ControlDictionary["categoryTreeView"]).Nodes[j];
-					break;
-				}
-			}*/
+			
+			//select the most recently selected category (with a few fallbacks)
+			string lastSelected = PropertyService.Get<string> ("Dialogs.NewFileDialog.LastSelectedCategory", defaultSelectedCategory);
+			TreeIter iterToSelect = FindIterMatchingString (catStore, lastSelected);
+			if (TreeIter.Zero.Equals (iterToSelect))
+				iterToSelect = FindIterMatchingString (catStore, defaultSelectedCategory);
+			if (TreeIter.Zero.Equals (iterToSelect))
+				catStore.GetIterFirst (out iterToSelect);
+			if (catStore.IterIsValid (iterToSelect))
+				catView.Selection.SelectIter (iterToSelect);
 		}
 		
-		void InsertCategories(TreeIter node, ArrayList catarray)
+		TreeIter FindIterMatchingString (TreeModel model, string firstColStringMatch)
+		{
+			TreeIter iter;
+			model.GetIterFirst (out iter);
+			do {
+				if (((string)model.GetValue (iter, 0)) == firstColStringMatch) {
+					return iter;
+				}
+			} while (model.IterNext (ref iter));
+			return TreeIter.Zero;
+		}
+		
+		void InsertCategories(TreeIter node, List<Category> catarray)
 		{
 			foreach (Category cat in catarray) {
 				TreeIter cnode;
@@ -159,7 +159,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		public bool SelectTemplate (TreeIter iter, string id)
 		{
 			do {
-				foreach (TemplateItem item in (ArrayList)(catStore.GetValue (iter, 2))) {
+				foreach (TemplateItem item in (List<TemplateItem>)(catStore.GetValue (iter, 2))) {
 					if (item.Template.Id == id) {
 						catView.ExpandToPath (catStore.GetPath (iter));
 						catView.Selection.SelectIter (iter);
@@ -186,7 +186,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			return GetCategory (categories, categoryname);
 		}
 		
-		Category GetCategory (ArrayList catList, string categoryname)
+		Category GetCategory (List<Category> catList, string categoryname)
 		{
 			foreach (Category category in catList) {
 				if (category.Name == categoryname) {
@@ -209,53 +209,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				if (template.Icon != null) {
 					icons[template.Icon] = 0; // "create template icon"
 				}
-				
-				// Ignore templates not supported by this project
-				if (template.ProjectType != "" && template.ProjectType != currentProjectType)
-					continue;
-				
-				//Find the languages that the template supports
-				ArrayList templateLangs = new ArrayList ();
-				foreach (string s in template.LanguageName.Split (','))
-					templateLangs.Add (s.Trim ());
-				ExpandLanguageWildcards (templateLangs);
-				
-				//Find all matches between the language strings of project and template
-				ArrayList langMatches = new ArrayList ();
-				
-				foreach (string templLang in templateLangs)
-					foreach (string projLang in projectLangs)
-						if (templLang == projLang)
-							langMatches.Add (projLang);
-				
-				//Eliminate duplicates
-				int pos = 0;
-				while (pos < langMatches.Count) {
-					int next = langMatches.IndexOf (langMatches [pos], pos +1);
-					if (next != -1)
-						langMatches.RemoveAt (next);
-					else
-						pos++;
+				List<string> langs = template.GetCompatibleLanguages (project);
+				if (langs != null) {
+					foreach (string language in langs) {					
+						AddTemplate (new TemplateItem (template, language), language);
+						//count the number of active languages
+						activeLangs[language] = true; 
+					}
 				}
 				
-				//Add all the possible templates
-				foreach (string match in langMatches) {
-					AddTemplate (new TemplateItem (template, match), match);	
-				}
-			}
-		}
-		
-		void ExpandLanguageWildcards (ArrayList list)
-		{
-			//Template can match all CodeDom .NET languages with a "*"
-			if (list.Contains ("*")) {
-				ILanguageBinding [] bindings = MonoDevelop.Projects.Services.Languages.GetLanguageBindings ();
-				foreach (ILanguageBinding lb in bindings) {
-					IDotNetLanguageBinding dnlang = lb as IDotNetLanguageBinding;
-					if (dnlang != null && dnlang.GetCodeDomProvider () != null)
-						list.Add (dnlang.Language);
-					list.Remove ("*");
-				}
 			}
 		}
 		
@@ -268,7 +230,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				project = parentProject;
 			
 			if (project != null) {
-				if ((templateLanguage != "") && (projectLangs.Count != 2) ) {
+				if ((templateLanguage != "") && (activeLangs.Count > 2) ) {
 					// The template requires a language, but the project does not have a single fixed
 					// language type (plus empty match), so create a language category
 					cat = GetCategory (templateLanguage);
@@ -328,7 +290,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		void FillCategoryTemplates (TreeIter iter)
 		{
 			iconView.Clear ();
-			foreach (TemplateItem item in (ArrayList)(catStore.GetValue (iter, 2))) {
+			foreach (TemplateItem item in (List<TemplateItem>)(catStore.GetValue (iter, 2))) {
 				iconView.AddIcon (new Gtk.Image (Services.Resources.GetBitmap (item.Template.Icon, Gtk.IconSize.Dnd)), item.Name, item);
 			}
 		}
@@ -381,9 +343,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				return;
 			
 			//FIXME: we need to set this up
-			//PropertyService PropertyService = (PropertyService)ServiceManager.Services.GetService(typeof(PropertyService));
 			//PropertyService.Set("Dialogs.NewProjectDialog.LargeImages", ((RadioButton)ControlDictionary["largeIconsRadioButton"]).Checked);
-			//PropertyService.Set("Dialogs.NewFileDialog.LastSelectedCategory", ((TreeView)ControlDictionary["categoryTreeView"]).SelectedNode.Text);
+			TreeIter selectedIter;
+			if (catView.Selection.GetSelected (out selectedIter))
+				PropertyService.Set("Dialogs.NewFileDialog.LastSelectedCategory", (string)catStore.GetValue (selectedIter, 0));
 			
 			if (iconView.CurrentlySelected != null && nameEntry.Text.Length > 0) {
 				TemplateItem titem = (TemplateItem) iconView.CurrentlySelected;
@@ -414,10 +377,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		/// <summary>
 		///  Represents a category
 		/// </summary>
-		internal class Category
+		class Category
 		{
-			ArrayList categories = new ArrayList();
-			ArrayList templates  = new ArrayList();
+			List<Category> categories = new List<Category>();
+			List<TemplateItem> templates  = new List<TemplateItem>();
 			string name;
 			
 			public bool Selected = false;
@@ -435,13 +398,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				}
 			}
 			
-			public ArrayList Categories {
+			public List<Category> Categories {
 				get {
 					return categories;
 				}
 			}
 			
-			public ArrayList Templates {
+			public List<TemplateItem> Templates {
 				get {
 					return templates;
 				}
@@ -525,7 +488,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		void InitializeComponents()
 		{
-			catStore = new Gtk.TreeStore (typeof(string), typeof(ArrayList), typeof(ArrayList), typeof(Gdk.Pixbuf));
+			catStore = new Gtk.TreeStore (typeof(string), typeof(List<Category>), typeof(List<TemplateItem>), typeof(Gdk.Pixbuf));
 			catStore.SetSortColumnId (0, SortType.Ascending);
 			
 			catView.Model = catStore;
