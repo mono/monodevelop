@@ -239,10 +239,14 @@ namespace MonoDevelop.Gettext
 		
 		string OutputDirectory {
 			get {
-				TranslationProjectConfiguration config = (TranslationProjectConfiguration)this.ActiveConfiguration;
+				TranslationProjectConfiguration config = this.ActiveConfiguration as TranslationProjectConfiguration;
+				if (config == null) 
+					return null;
 				if (config.OutputType == TranslationOutputType.SystemPath) {
 					return config.AbsPath;
 				} else {
+					if (this.ParentCombine.StartupEntry == null) 
+						return null;
 					if (this.ParentCombine.StartupEntry is DotNetProject) {
 						return Path.Combine (Path.GetDirectoryName (((DotNetProject)ParentCombine.StartupEntry).GetOutputFileName ()), config.RelPath);
 					}
@@ -269,31 +273,33 @@ namespace MonoDevelop.Gettext
 			CompilerResults results = new CompilerResults (null);
 			TranslationProjectConfiguration config = (TranslationProjectConfiguration)this.ActiveConfiguration;
 			string outputDirectory = OutputDirectory;
-			foreach (Translation translation in this.Translations) {
-				string poFileName  = GetFileName (translation);
-				string moDirectory = Path.Combine (Path.Combine (outputDirectory, translation.IsoCode), "LC_MESSAGES");
-				if (!Directory.Exists (moDirectory))
-					Directory.CreateDirectory (moDirectory);
-				string moFileName  = Path.Combine (moDirectory, config.PackageName + ".mo");
-				
-				System.Diagnostics.Process process = new System.Diagnostics.Process ();
-				process.StartInfo.FileName = "msgfmt";
-				process.StartInfo.Arguments = poFileName + " -o " + moFileName;
-				process.StartInfo.UseShellExecute = false;
-				process.StartInfo.RedirectStandardError = true;
-				process.Start ();
-				process.WaitForExit ();
-				if (process.ExitCode == 0) {
-					monitor.Log.WriteLine (GettextCatalog.GetString ("Translation {0}: Compilation succeeded.", translation.IsoCode));
-				} else {
-					string error   = process.StandardError.ReadToEnd ();
-					string message = String.Format (GettextCatalog.GetString ("Translation {0}: Compilation failed. Reason: {1}"), translation.IsoCode, error);
-					monitor.Log.WriteLine (message);
-					results.Errors.Add (new CompilerError (this.Name, 0, 0, null, message));
+			if (!string.IsNullOrEmpty (outputDirectory)) {
+				foreach (Translation translation in this.Translations) {
+					string poFileName  = GetFileName (translation);
+					string moDirectory = Path.Combine (Path.Combine (outputDirectory, translation.IsoCode), "LC_MESSAGES");
+					if (!Directory.Exists (moDirectory))
+						Directory.CreateDirectory (moDirectory);
+					string moFileName  = Path.Combine (moDirectory, config.PackageName + ".mo");
+					
+					System.Diagnostics.Process process = new System.Diagnostics.Process ();
+					process.StartInfo.FileName = "msgfmt";
+					process.StartInfo.Arguments = poFileName + " -o " + moFileName;
+					process.StartInfo.UseShellExecute = false;
+					process.StartInfo.RedirectStandardError = true;
+					process.Start ();
+					process.WaitForExit ();
+					if (process.ExitCode == 0) {
+						monitor.Log.WriteLine (GettextCatalog.GetString ("Translation {0}: Compilation succeeded.", translation.IsoCode));
+					} else {
+						string error   = process.StandardError.ReadToEnd ();
+						string message = String.Format (GettextCatalog.GetString ("Translation {0}: Compilation failed. Reason: {1}"), translation.IsoCode, error);
+						monitor.Log.WriteLine (message);
+						results.Errors.Add (new CompilerError (this.Name, 0, 0, null, message));
+					}
 				}
+				isDirty = false;
+				this.NeedsBuilding = false;
 			}
-			isDirty = false;
-			this.NeedsBuilding = false;
 			return new DefaultCompilerResult (results, "");
 		}
 		
@@ -304,6 +310,8 @@ namespace MonoDevelop.Gettext
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Removing all .mo files."));
 			TranslationProjectConfiguration config = (TranslationProjectConfiguration)this.ActiveConfiguration;
 			string outputDirectory = OutputDirectory;
+			if (string.IsNullOrEmpty (outputDirectory))
+				return;
 			foreach (Translation translation in this.Translations) {
 				string moDirectory = Path.Combine (Path.Combine (outputDirectory, translation.IsoCode), "LC_MESSAGES");
 				string moFileName  = Path.Combine (moDirectory, config.PackageName + ".mo");

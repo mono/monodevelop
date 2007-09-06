@@ -1,3 +1,13 @@
+2007-09-06  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Gettext/TranslationProject.cs: Fixed 82693: Rebuild not
+	  working.
+
+2007-09-06  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Gettext/TranslationProject.cs: Fixed 82693: Rebuild not
+	  working.
+
 2007-08-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/gui.stetic, MonoDevelop.Gettext.addin.xml,
