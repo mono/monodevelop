@@ -85,7 +85,8 @@ namespace MonoDevelop.VersionControl.Subversion
 		
 		public bool IsDiffAvailable (Repository repo, string sourcefile) {
 			try {
-				return File.Exists(GetTextBase(sourcefile))
+				// Directory check is needed since directory links may look like versioned files
+				return File.Exists(GetTextBase(sourcefile)) && !Directory.Exists (sourcefile)
 					&& IsVersioned(sourcefile)
 					&& GetVersionInfo (repo, sourcefile, false).Status == VersionStatus.Modified;
 			} catch {
@@ -189,10 +190,11 @@ namespace MonoDevelop.VersionControl.Subversion
 		
 		public VersionInfo GetVersionInfo (Repository repo, string localPath, bool getRemoteStatus)
 		{
-			if (File.Exists (GetTextBase(localPath)) || File.Exists (localPath))
-				return GetFileStatus (repo, localPath, getRemoteStatus);
-			else if (Directory.Exists (GetDirectoryDotSvn (localPath)) || Directory.Exists (localPath))
+			// Check for directory before checking for file, since directory links may appear as files
+			if (Directory.Exists (GetDirectoryDotSvn (localPath)) || Directory.Exists (localPath))
 				return GetDirStatus (repo, localPath, getRemoteStatus);
+			else if (File.Exists (GetTextBase(localPath)) || File.Exists (localPath))
+				return GetFileStatus (repo, localPath, getRemoteStatus);
 			else
 				return null;
 		}

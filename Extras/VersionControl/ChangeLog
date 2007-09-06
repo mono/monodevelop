@@ -1,3 +1,9 @@
+2007-09-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs:
+	  In GetVersionInfo, check for directory before checking for file, since
+	  directory links may appear as files.
+
 2007-09-04  Michael Hutchinson <MHutchinson@novell.com> 
 
 	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/Publish.cs: Fix a
