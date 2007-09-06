@@ -27,6 +27,7 @@ namespace MonoDevelop.Projects
 		[ItemProperty]
 		string language;
 		ClrVersion clrVersion = ClrVersion.Net_1_1;
+		bool usePartialTypes = true;
 		
 		IDotNetLanguageBinding languageBinding;
 		
@@ -72,6 +73,12 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		[ItemProperty (DefaultValue=true)]
+		public bool UsePartialTypes {
+			get { return usePartialTypes; }
+			set { usePartialTypes = value; }
+		}
+		
 		public DotNetProject ()
 		{
 		}
@@ -80,6 +87,7 @@ namespace MonoDevelop.Projects
 		{
 			language = languageName;
 			languageBinding = FindLanguage (language);
+			this.usePartialTypes = SupportsPartialTypes;
 		}
 		
 		public DotNetProject (string languageName, ProjectCreateInformation info, XmlElement projectOptions)
@@ -119,12 +127,32 @@ namespace MonoDevelop.Projects
 					}
 				}
 			}
+			
+			this.usePartialTypes = SupportsPartialTypes;
+		}
+		
+		public virtual bool SupportsPartialTypes {
+			get {
+				if (languageBinding == null)
+					return false;
+				System.CodeDom.Compiler.CodeDomProvider provider = languageBinding.GetCodeDomProvider ();
+				if (provider == null)
+					return false;
+				return provider.Supports ( System.CodeDom.Compiler.GeneratorSupport.PartialTypes);
+			}
 		}
 		
 		public override void Deserialize (ITypeSerializer handler, DataCollection data)
 		{
 			base.Deserialize (handler, data);
 			languageBinding = FindLanguage (language);
+			
+			//older projects may not have this property but may not support partial types
+			//so need to verify that the default attribute is OK
+			if (UsePartialTypes && !SupportsPartialTypes) {
+				Runtime.LoggingService.WarnFormat ("Project '{0}' has been set to use partial types but does not support them.", Name);
+				UsePartialTypes = false;
+			}
 		}
 		
 		IDotNetLanguageBinding FindLanguage (string name)
