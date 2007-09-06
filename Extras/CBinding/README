@@ -1,0 +1,7 @@
+The following icons might be under the GPL licence and might have to be replaced.
+
+C.Project.ConsoleProject, C.Project.SharedLibrary: These icons were taken and
+slightly modified from the CSharpBinding.
+
+C.Project.StaticLibrary: This icon was taken with no modifications from
+MonoDevelop.Core.Gui

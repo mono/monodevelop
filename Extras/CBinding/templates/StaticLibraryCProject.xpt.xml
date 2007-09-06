@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<Template
+	originator   = "Marcos David Marin Amador" 
+    created      = "08/16/2007"
+    lastModified = "08/16/2007">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>Static Library</_Name>
+		<Category>C</Category>
+		<Icon>res:C.Project.StaticLibrary</Icon>
+		<LanguageName>C</LanguageName>
+		<_Description>Creates simple static library C project.</_Description>
+	</TemplateConfiguration>
+	
+	<!-- Template Content -->
+	<Combine name = "${ProjectName}" directory = ".">
+		<Project name = "${ProjectName}" directory = "." type = "C/C++">
+			<Options
+				Target = "StaticLibrary"
+				PauseConsoleOutput = "True"
+				CompilerArgs = ""
+				LinkerArgs = ""/>
+			
+			<Files>
+				<File name = "main.h"><![CDATA[/* project created on ${Date} at ${Time} */
+#ifndef __MAIN_H__
+#define __MAIN_H__
+
+/* Add function prototypes here */
+
+#endif
+]]></File>
+				<File name = "main.c"><![CDATA[#include "main.h"
+
+/* Add function definitions here */
+]]></File>
+			</Files>
+		</Project>
+	</Combine>
+</Template>
+
