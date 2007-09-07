@@ -6,22 +6,13 @@ REFS =  \
 	-pkg:glib-sharp-2.0 \
 	-pkg:gtk-sharp-2.0 \
 	-r:../../build/AddIns/MonoDevelop.Deployment.dll \
-	-r:../../build/AddIns/MonoDevelop.Deployment.dll \
-	-r:../../build/AddIns/MonoDevelop.Deployment.Linux.dll \
 	-r:../../build/AddIns/MonoDevelop.Deployment.Linux.dll \
 	-r:../../build/AddIns/MonoDevelop.SourceEditor.dll \
-	-r:../../build/AddIns/MonoDevelop.SourceEditor.dll \
-	-r:../../build/bin/MonoDevelop.Components.dll \
 	-r:../../build/bin/MonoDevelop.Components.dll \
 	-r:../../build/bin/MonoDevelop.Core.dll \
-	-r:../../build/bin/MonoDevelop.Core.dll \
-	-r:../../build/bin/MonoDevelop.Core.Gui.dll \
 	-r:../../build/bin/MonoDevelop.Core.Gui.dll \
 	-r:../../build/bin/MonoDevelop.Ide.dll \
-	-r:../../build/bin/MonoDevelop.Ide.dll \
 	-r:../../build/bin/MonoDevelop.Projects.dll \
-	-r:../../build/bin/MonoDevelop.Projects.dll \
-	-r:../../build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:../../build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:../../contrib/Mono.Addins.dll \
 	-r:Mono.Posix \
@@ -141,15 +132,21 @@ RES =  \
 	templates/StaticLibraryCppProject.xpt.xml \
 	templates/StaticLibraryCProject.xpt.xml
 
+if ENABLE_C
 all: $(ASSEMBLY)
+else
+all:
+endif
 
 $(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) \
 		$(build_resources:%=/resource:%) $(build_sources)
 
+if ENABLE_C
 cbindinglibdir = $(MD_ADDIN_DIR)/BackendBindings
 cbindinglib_DATA = $(ASSEMBLY)
+endif
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 
