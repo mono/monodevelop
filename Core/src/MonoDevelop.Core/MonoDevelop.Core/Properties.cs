@@ -212,7 +212,6 @@ namespace MonoDevelop.Core
 				try {
 					if (typeof(ICustomXmlSerializer).IsAssignableFrom (typeof(T))) {
 						XmlReader reader = new XmlTextReader (new MemoryStream (System.Text.Encoding.UTF8.GetBytes ("<" + Properties.SerializedNode + ">" + xml + "</" + Properties.SerializedNode + ">" )));
-						Console.WriteLine ("<" + Properties.SerializedNode + ">" + xml + "</" + Properties.SerializedNode + ">" ); 
 						object result = ((ICustomXmlSerializer)typeof(T).Assembly.CreateInstance (typeof(T).FullName)).ReadFrom (reader);
 						reader.Close ();
 						return (T)result;

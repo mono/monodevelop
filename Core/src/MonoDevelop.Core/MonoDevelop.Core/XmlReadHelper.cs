@@ -88,7 +88,6 @@ namespace MonoDevelop.Core
 					}
 					bool validNode = callback (data);
 					if (!validNode) {
-						Console.WriteLine (Environment.StackTrace);
 						Runtime.LoggingService.Warn ("Unknown node: " + reader.LocalName);
 					}
 					if (data.SkipNextRead) {
