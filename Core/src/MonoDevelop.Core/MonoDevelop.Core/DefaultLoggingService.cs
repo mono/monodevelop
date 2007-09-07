@@ -18,8 +18,10 @@ namespace MonoDevelop.Core
 		{
 			if (Assembly.GetEntryAssembly() != null && File.Exists(Assembly.GetEntryAssembly().Location + ".config"))
 				XmlConfigurator.Configure ();
-			else
+			else {
 				BasicConfigurator.Configure ();
+				LogManager.GetRepository().Threshold = log4net.Core.Level.Warn;
+			}
 		}
 		
 		public override void InitializeService()
