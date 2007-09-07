@@ -1,5 +1,10 @@
 2007-09-07  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* templates/Window.xft.xml: Oops, PartialTypeSupport should be set to
+	  Disabled for non-partial window.
+
+2007-09-07  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.GtkCore.mdp, Makefile.am: Updated.
 	* MonoDevelop.GtkCore/GtkDesignInfo.cs,
 	  MonoDevelop.GtkCore/GtkCoreService.cs: Use DotNetProject.UsePartialTypes

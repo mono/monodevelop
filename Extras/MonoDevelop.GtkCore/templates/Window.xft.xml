@@ -10,7 +10,7 @@
 	</TemplateConfiguration>
 	
 	<Conditions>
-		<PartialTypeSupport Requirement="Enabled" />
+		<PartialTypeSupport Requirement="Disabled" />
 	</Conditions>
 	
 	<TemplateFiles>
