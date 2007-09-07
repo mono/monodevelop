@@ -66,6 +66,8 @@ namespace MonoDevelop.Ide.Templates
 				return (supported == false);
 			case PartialTypeRequirement.Supported:
 				return (supported == true);
+			case PartialTypeRequirement.Disabled:
+				return (enabled == false);	
 			case PartialTypeRequirement.Enabled:
 				return (enabled == true);
 			}
@@ -78,7 +80,8 @@ namespace MonoDevelop.Ide.Templates
 			None = 0,
 			Unsupported = 1,
 			Supported = 2,
-			Enabled = 3,
+			Disabled = 3,
+			Enabled = 4,
 		}
 	}
 }

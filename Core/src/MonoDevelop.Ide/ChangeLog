@@ -1,5 +1,10 @@
 2007-09-07  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.Ide.Templates/PartialTypeFileTemplateCondition.cs: Add a
+	  "Disabled" option to PartialTypeRequirement.
+
+2007-09-07  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.Ide.Templates/FileTemplate.cs,
 	  MonoDevelop.Ide.Templates/FileTemplateCondition.cs,
 	  MonoDevelop.Ide.Templates/ParentProjectFileTemplateCondition.cs,
