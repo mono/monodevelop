@@ -7,8 +7,11 @@
 		<Category>Gtk</Category>
 		<LanguageName>*</LanguageName>
 		<_Description>Creates a global Action Group.</_Description>
-		<Type>MonoDevelop.GtkCore.WidgetFileTemplatePartialClass</Type>
 	</TemplateConfiguration>
+	
+	<Conditions>
+		<PartialTypeSupport Requirement="Enabled" />
+	</Conditions>
 	
 	<TemplateFiles>
 		<Widget DefaultName="${Name}">

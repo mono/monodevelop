@@ -58,9 +58,6 @@ namespace MonoDevelop.GtkCore
 			"gnome-vfs-sharp", "gtk-dotnet", "gtkhtml-sharp", "gtk-sharp", "pango-sharp", "rsvg-sharp", "vte-sharp"
 		};
 		
-		[ItemProperty (DefaultValue=false)]
-		bool partialTypes;
-		
 		[ItemProperty (DefaultValue=true)]
 		bool generateGettext = true;
 		
@@ -79,7 +76,6 @@ namespace MonoDevelop.GtkCore
 		
 		public GtkDesignInfo (DotNetProject project)
 		{
-			partialTypes = GtkCoreService.SupportsPartialTypes (project);
 			IExtendedDataItem item = (IExtendedDataItem) project;
 			item.ExtendedProperties ["GtkDesignInfo"] = this;
 			Bind (project);
@@ -152,7 +148,7 @@ namespace MonoDevelop.GtkCore
 		}
 		
 		public bool GeneratePartialClasses {
-			get { return partialTypes; }
+			get { return GtkCoreService.SupportsPartialTypes (project); }
 		}
 		
 		public bool GenerateGettext {

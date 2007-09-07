@@ -7,8 +7,11 @@
 		<Category>Gtk</Category>
 		<LanguageName>*</LanguageName>
 		<_Description>Creates a Gtk dialog.</_Description>
-		<Type>MonoDevelop.GtkCore.WidgetFileTemplateFullClass</Type>
 	</TemplateConfiguration>
+	
+	<Conditions>
+		<PartialTypeSupport Requirement="Disabled" />
+	</Conditions>
 	
 	<TemplateFiles>
 		<Widget DefaultName="${Name}">

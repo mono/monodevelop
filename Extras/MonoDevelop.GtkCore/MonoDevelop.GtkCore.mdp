@@ -51,8 +51,6 @@
     <File name="./MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs" subtype="Code" buildaction="Compile" />
     <File name="./templates/ActionGroup.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./gui.glade" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./MonoDevelop.GtkCore/WidgetFileTemplatePartialClass.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.GtkCore/WidgetFileTemplateFullClass.cs" subtype="Code" buildaction="Compile" />
     <File name="./templates/ActionGroupPartial.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./templates/DialogPartial.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./templates/WidgetPartial.xft.xml" subtype="Code" buildaction="EmbedAsResource" />

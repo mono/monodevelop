@@ -1,3 +1,17 @@
+2007-09-07  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.GtkCore.mdp, Makefile.am: Updated.
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs,
+	  MonoDevelop.GtkCore/GtkCoreService.cs: Use DotNetProject.UsePartialTypes
+	  instead of custom setting.
+	* MonoDevelop.GtkCore/WidgetFileTemplatePartialClass.cs,
+	  MonoDevelop.GtkCore/WidgetFileTemplateFullClass.cs: No longer needed.
+	* templates/WidgetPartial.xft.xml, templates/Widget.xft.xml,
+	  templates/WindowPartial.xft.xml, templates/Window.xft.xml,
+	  templates/ActionGroupPartial.xft.xml, templates/ActionGroup.xft.xml,
+	  templates/DialogPartial.xft.xml, templates/Dialog.xft.xml: Use
+	  PartialTypes condition instead of custom file template.
+
 2007-09-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* lib/libsteticui.dll, lib/libstetic.dll: Updated from stetic module.

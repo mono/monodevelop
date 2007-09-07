@@ -55,9 +55,7 @@ FILES =  \
 	MonoDevelop.GtkCore/GtkCoreService.cs \
 	MonoDevelop.GtkCore/GtkDesignInfo.cs \
 	MonoDevelop.GtkCore/ProjectResourceProvider.cs \
-	MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs \
-	MonoDevelop.GtkCore/WidgetFileTemplateFullClass.cs \
-	MonoDevelop.GtkCore/WidgetFileTemplatePartialClass.cs
+	MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs
 
 RES =  \
 	gui.glade \

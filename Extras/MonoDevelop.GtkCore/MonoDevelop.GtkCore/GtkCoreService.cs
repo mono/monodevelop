@@ -136,15 +136,7 @@ namespace MonoDevelop.GtkCore
 		
 		internal static bool SupportsPartialTypes (DotNetProject project)
 		{
-			GtkDesignInfo info = GetGtkInfo (project);
-			if (info != null)
-				return info.GeneratePartialClasses;
-
-			if (project.LanguageBinding == null)
-				return false;
-
-			CodeDomProvider provider = project.LanguageBinding.GetCodeDomProvider ();
-			return provider.Supports (GeneratorSupport.PartialTypes);
+			return project.UsePartialTypes;
 		}
 		
 		static void OnFileChanged (object s, FileEventArgs args)
