@@ -108,11 +108,16 @@ namespace MonoDevelop.Core
 		public void Set (string key, object val)
 		{
 			object old = Get<object> (key);
-			properties[key] = val;
-			if (!val.GetType ().IsClass || (val is string)) {
-				if (defaultValues.ContainsKey (key)) {
-					if (defaultValues[key] == val)
-						properties.Remove (key);
+			if (val == null) {
+				if (properties.ContainsKey (key)) 
+					properties.Remove (key);
+			} else {
+				properties[key] = val;
+				if (!val.GetType ().IsClass ||(val is string)) {
+					if (defaultValues.ContainsKey (key)) {
+						if (defaultValues[key] == val)
+							properties.Remove (key);
+					}
 				}
 			}
 			OnPropertyChanged (new PropertyChangedEventArgs (key, old, val));
@@ -207,6 +212,7 @@ namespace MonoDevelop.Core
 				try {
 					if (typeof(ICustomXmlSerializer).IsAssignableFrom (typeof(T))) {
 						XmlReader reader = new XmlTextReader (new MemoryStream (System.Text.Encoding.UTF8.GetBytes ("<" + Properties.SerializedNode + ">" + xml + "</" + Properties.SerializedNode + ">" )));
+						Console.WriteLine ("<" + Properties.SerializedNode + ">" + xml + "</" + Properties.SerializedNode + ">" ); 
 						object result = ((ICustomXmlSerializer)typeof(T).Assembly.CreateInstance (typeof(T).FullName)).ReadFrom (reader);
 						reader.Close ();
 						return (T)result;
@@ -224,7 +230,7 @@ namespace MonoDevelop.Core
 		public static Properties Read (XmlReader reader)
 		{
 			Properties result = new Properties ();
-			XmlReadHelper.ReadList (reader, new string [] { Node, SerializedNode }, delegate() {
+			XmlReadHelper.ReadList (reader, new string [] { Node, SerializedNode, PropertiesRootNode }, delegate() {
 				switch (reader.LocalName) {
 				case PropertyNode:
 					string key = reader.GetAttribute (KeyAttribute);

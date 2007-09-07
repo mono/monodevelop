@@ -66,9 +66,7 @@ namespace MonoDevelop.Core
 				return;
 			}
 			ReadCallbackData data = new ReadCallbackData ();
-			if (endNodes.Contains (reader.LocalName)) {
-				reader.Read();
-			}
+			bool didReadStartNode = false;
 			while (reader.Read()) {
 			 skip:
 				data.SkipNextRead = false;
@@ -77,11 +75,20 @@ namespace MonoDevelop.Core
 					if (endNodes.Contains (reader.LocalName)) {
 						return;
 					}
-					Runtime.LoggingService.Warn ("Unknown end node: " + reader.LocalName);
+					string[] endNodesArr = new string[endNodes.Count];
+					endNodes.CopyTo (endNodesArr, 0);
+					Runtime.LoggingService.Warn ("Unknown end node: " + reader.LocalName + " valid end nodes are: " + String.Join (",", endNodesArr));
 					break;
 				case XmlNodeType.Element:
+					if (endNodes.Contains (reader.LocalName)) {
+						if (didReadStartNode)
+							Runtime.LoggingService.Warn ("Already read starting node.");
+						didReadStartNode = true;
+						break;
+					}
 					bool validNode = callback (data);
 					if (!validNode) {
+						Console.WriteLine (Environment.StackTrace);
 						Runtime.LoggingService.Warn ("Unknown node: " + reader.LocalName);
 					}
 					if (data.SkipNextRead) {

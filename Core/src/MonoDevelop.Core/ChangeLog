@@ -1,3 +1,9 @@
+2007-09-07   <> 
+
+	* MonoDevelop.Core/Properties.cs, MonoDevelop.Core/XmlReadHelper.cs: Fixed
+	  bug in properties. Made XmlReadHelper more verbose on some possible
+	  errors.
+
 2007-09-07  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Core/DefaultLoggingService.cs: Change default log level to
