@@ -1,5 +1,15 @@
 2007-09-07  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs,
+	  MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs, MonoDevelop.Ide.mdp,
+	  Makefile.am: Split TextEditorExtension in two. All code related to code
+	  completion has been moved to the new subclass
+	  CompletionTextEditorExtension.
+	* MonoDevelop.Ide.Templates/CodeTranslationFileDescriptionTemplate.cs: Fix
+	  warning.
+
+2007-09-07  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs: Set the correct title
 	  when not in replace mode. Fixes bug #82698.
 

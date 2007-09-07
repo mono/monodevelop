@@ -91,7 +91,7 @@ namespace MonoDevelop.Ide.Templates
 			using (StringReader sr = new StringReader (tempSubstitutedContent)) {
 				try {
 					ccu = parserProvider.Parse (sr);
-				} catch (NotImplementedException nie) {
+				} catch (NotImplementedException) {
 					throw new InvalidOperationException ("Invalid Code Translation template: the CodeDomProvider of the source language '"
 					                                     + language + "' has not implemented the Parse method.");
 				}
