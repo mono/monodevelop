@@ -28,6 +28,7 @@
 //
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Drawing;
 using System.CodeDom;
@@ -769,6 +770,11 @@ namespace CSharpBinding.Parser
 		
 		void AddUniqueReference (int line, int col, string name)
 		{
+			if (line < 0 || col < 0) {
+				MonoDevelop.Core.Runtime.LoggingService.Warn ("AddUniqueReference called with invalid position line:" + line + " col: " + col + " name:" + name + ".");
+				return;
+			}
+			
 			MemberReference mref = CreateReference (line, col, name);
 			
 			if (unique.ContainsKey (mref))
