@@ -2,6 +2,8 @@
 
 	* configure.in: Added a configure option to enable C/C++ project
 	  support. By default it is not enabled.
+	* Extras/Extras.mds: Added Extras/CBinding/CBinding.mds to the solution.
+	* Extras/Makefile.am: Added CBinding to SUBDIRS.
 
 2007-09-01  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
