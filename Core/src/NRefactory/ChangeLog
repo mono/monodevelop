@@ -1,3 +1,8 @@
+2007-09-07  Mike Krüger <mkrueger@novell.com> 
+
+	* Project/Src/Parser/CSharp/cs.ATG, Project/Src/Parser/CSharp/Parser.cs:
+	  Worked on bug 82720: Null ref when autocomplete activated
+
 2007-09-06  Mike Krüger <mkrueger@novell.com> 
 
 	* Project/Src/Parser/CSharp/cs.ATG, Project/Src/Parser/gen.sh: Applied some

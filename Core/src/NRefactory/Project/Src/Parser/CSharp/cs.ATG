@@ -1721,7 +1721,7 @@ PrimaryExpr<out Expression pexpr>
 	bool isArrayCreation = false;
 	Expression expr;
 	pexpr = null;
-	Location startPos = t.Location;
+	Location startPos = la.Location;
 .)
 =
 	(

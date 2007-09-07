@@ -4160,7 +4160,7 @@ out Expression pexpr) {
 		bool isArrayCreation = false;
 		Expression expr;
 		pexpr = null;
-		Location startPos = t.Location;
+		Location startPos = la.Location;
 		
 		if (la.kind == 112) {
 			lexer.NextToken();
