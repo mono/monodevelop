@@ -1,5 +1,10 @@
 2007-09-07  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.DesignerSupport.PropertyGrid/IPropertyPadProvider.cs: Added
+	  some documentation.
+
+2007-09-07  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.DesignerSupport.addin.xml, MonoDevelop.DesignerSupport.mdp,
 	  Makefile.am,
 	  MonoDevelop.DesignerSupport.Projects/PropertyPadTextEditorExtension.cs:

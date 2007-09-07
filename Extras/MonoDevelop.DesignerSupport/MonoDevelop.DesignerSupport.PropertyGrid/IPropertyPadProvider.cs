@@ -30,14 +30,34 @@ using System;
 
 namespace MonoDevelop.DesignerSupport.PropertyGrid
 {
+	// The property pad service looks for objects implementing IPropertyPadProvider
+	// and ICustomPropertyPadProvider in the active command route. 
+	// The command route is a chain of objects that starts at the
+	// object having the focus and goes up to the widget hierarchy (this route can be
+	// modified by the objects in it, but that's basically it).
+	
+	// When one of those interfaces is found, the property pad will be updated to show
+	// the information provided by them.
+	
 	public interface IPropertyPadProvider
 	{
+		// Returns the component represented by this PadProvider
 		object GetActiveComponent ();
+		
+		// Returns the object which will be used to fill the property grid.
+		// It may be different from the object returned by GetActiveComponent.
+		// If null, the value of GetActiveComponent is used.
 		object GetProvider ();
+		
+		// Called when all editing in the object has finished
 		void OnEndEditing (object obj);
+		
+		// Called when there is a change in the property grid
 		void OnChanged (object obj);
 	}
 	
+	// Use this interface to completely replace the property pad by a custom
+	// properties widget.
 	public interface ICustomPropertyPadProvider
 	{
 		Gtk.Widget GetCustomPropertyWidget ();
