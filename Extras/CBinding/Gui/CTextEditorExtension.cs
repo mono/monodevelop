@@ -41,7 +41,7 @@ using CBinding.Parser;
 
 namespace CBinding
 {
-	public class CTextEditorExtension : TextEditorExtension
+	public class CTextEditorExtension : CompletionTextEditorExtension
 	{
 		// Allowed chars to be next to an identifier
 		private static char[] allowedChars = new char[] {

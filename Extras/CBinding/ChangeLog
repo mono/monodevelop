@@ -1,3 +1,8 @@
+2007-09-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/CTextEditorExtension.cs: Track api changes.
+	* CBinding.mdp: Use gtk# 2.8.
+
 2007-09-07   <> 
 
 	* Makefile.am: Check ENABLE_C to find out if assembly should be compiled or
