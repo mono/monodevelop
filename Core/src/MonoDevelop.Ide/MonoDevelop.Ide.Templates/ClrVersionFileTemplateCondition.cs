@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 		
-		public override bool ShouldEnableFor (Project proj)
+		public override bool ShouldEnableFor (Project proj, string creationPath)
 		{
 			if (condition == ClrVersionCondition.None)
 				return true;

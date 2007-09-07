@@ -44,12 +44,13 @@ namespace MonoDevelop.Ide.Templates
 		string    description  = null;
 		string    icon         = null;
 		
+		string    defaultFilename = null;
+		bool      isFixedFilename = false;
+		
 		string    wizardpath   = null;
 		
 		List<FileDescriptionTemplate> files = new List<FileDescriptionTemplate> ();
 		List<FileTemplateCondition> conditions = new List<FileTemplateCondition> ();
-		
-		XmlElement fileoptions = null;
 		
 		public string Id {
 			get {
@@ -117,9 +118,15 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 		
-		public XmlElement FileOptions {
+		public string DefaultFilename {
 			get {
-				return fileoptions;
+				return defaultFilename;
+			}
+		}
+		
+		public bool IsFixedFilename {
+			get {
+				return isFixedFilename;
 			}
 		}
 		
@@ -185,7 +192,17 @@ namespace MonoDevelop.Ide.Templates
 				fileTemplate.wizardpath = config["Wizard"].Attributes["path"].InnerText;
 			}
 			
-			fileTemplate.fileoptions = doc.DocumentElement["FileOptions"];
+			if (config["DefaultFilename"] != null) {
+				fileTemplate.defaultFilename = config["DefaultFilename"].InnerText;
+				if (config["DefaultFilename"].Attributes["IsFixed"] != null) {
+					string isFixedStr = config["DefaultFilename"].Attributes["IsFixed"].InnerText;
+					try {
+						fileTemplate.isFixedFilename = bool.Parse (isFixedStr);
+					} catch (FormatException) {
+						throw new InvalidOperationException ("Invalid value for IsFixed in template.");
+					}
+				}
+			}
 			
 			// load the files
 			XmlElement files  = doc.DocumentElement["TemplateFiles"];
@@ -242,11 +259,11 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 		
-		internal static ArrayList GetFileTemplates (Project project)
+		internal static ArrayList GetFileTemplates (Project project, string projectPath)
 		{
 			ArrayList list = new ArrayList ();
 			foreach (FileTemplate t in fileTemplates) {
-				if (t.IsValidForProject (project))
+				if (t.IsValidForProject (project, projectPath))
 					list.Add (t);
 			}
 			return list;
@@ -323,7 +340,7 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 		
-		protected virtual bool IsValidForProject (Project project)
+		protected virtual bool IsValidForProject (Project project, string projectPath)
 		{
 			// When there is no project, only single template files can be created.
 			if (project == null) {
@@ -338,14 +355,14 @@ namespace MonoDevelop.Ide.Templates
 					return false;
 				
 				foreach (FileTemplateCondition condition in conditions)
-					if (!condition.ShouldEnableFor (project))
+					if (!condition.ShouldEnableFor (project, projectPath))
 						return false;
 			}
 			
 			return true;
 		}
 		
-		public virtual List<string> GetCompatibleLanguages (Project project)
+		public virtual List<string> GetCompatibleLanguages (Project project, string projectPath)
 		{
 			if (project == null)
 				return SupportedLanguages;
@@ -358,7 +375,7 @@ namespace MonoDevelop.Ide.Templates
 			foreach (string lang in langMatches) {
 				bool shouldEnable = true;
 				foreach (FileTemplateCondition condition in conditions) {
-					if (!condition.ShouldEnableFor (project, lang)) {
+					if (!condition.ShouldEnableFor (project, projectPath, lang)) {
 						shouldEnable = false;
 						break;
 					}

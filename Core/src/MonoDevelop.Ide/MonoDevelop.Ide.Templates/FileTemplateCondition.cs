@@ -72,15 +72,15 @@ namespace MonoDevelop.Ide.Templates
 		
 		public abstract void Load (XmlElement element);
 		
-		//restricts whether the template should be shown for a given project 
-		public virtual bool ShouldEnableFor (Project proj)
+		//restricts whether the template should be shown for a given path within a given project 
+		public virtual bool ShouldEnableFor (Project proj, string projectPath)
 		{
 			return true;
 		}
 		
 		//restricts whether a given language should be available for a given project
 		//called after ShouldEnableFor (Project proj)
-		public virtual bool ShouldEnableFor (Project proj, string language)
+		public virtual bool ShouldEnableFor (Project proj, string projectPath, string language)
 		{
 			return true;
 		}

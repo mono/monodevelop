@@ -47,6 +47,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		Project parentProject;
 		string basePath;
 		
+		string userEditedEntryText = null;
+		string previousDefaultEntryText = null;
+		
 		public NewFileDialog (Project parentProject, string basePath) : base ()
 		{
 			Build ();
@@ -205,11 +208,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (!boxProject.Visible || projectAddCheckbox.Active)
 				project = parentProject;
 			
-			foreach (FileTemplate template in FileTemplate.GetFileTemplates (project)) {
+			foreach (FileTemplate template in FileTemplate.GetFileTemplates (project, basePath)) {
 				if (template.Icon != null) {
 					icons[template.Icon] = 0; // "create template icon"
 				}
-				List<string> langs = template.GetCompatibleLanguages (project);
+				List<string> langs = template.GetCompatibleLanguages (project, basePath);
 				if (langs != null) {
 					foreach (string language in langs) {					
 						AddTemplate (new TemplateItem (template, language), language);
@@ -319,8 +322,31 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 				if (item != null) {
 					infoLabel.Text = item.Description;
+					
+					//desensitise the text entry if the name is fixed
+					//careful to store user-entered text so we can replace it if they change their selection
+					if (item.IsFixedFilename) {
+						if (userEditedEntryText == null)
+							userEditedEntryText = nameEntry.Text;
+						nameEntry.Text = item.DefaultFilename;
+						nameEntry.Sensitive = false;
+					} else {
+						if (userEditedEntryText != null)
+							nameEntry.Text = userEditedEntryText;
+						nameEntry.Sensitive = true;
+					}
+					
+					//fill in a default name if text entry is empty or contains a default name
+					if ((string.IsNullOrEmpty (nameEntry.Text) || (previousDefaultEntryText == nameEntry.Text))
+					    && !string.IsNullOrEmpty (item.DefaultFilename) ) {
+						nameEntry.Text = item.DefaultFilename;
+						previousDefaultEntryText = item.DefaultFilename;
+					}
+					   
+					
 					okButton.Sensitive = item.IsValidName (nameEntry.Text, sel.Language);
 				} else {
+					nameEntry.Sensitive = true;
 					okButton.Sensitive = false;
 				}
 			} catch (Exception ex) {

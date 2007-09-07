@@ -1,11 +1,11 @@
 //
-// PartialTypeFileTemplateCondition.cs
-//
+// ParentProjectFileTemplateCondition.cs
+// 
 // Author:
 //   Michael Hutchinson <mhutchinson@novell.com>
-//
+// 
 // Copyright (C) 2007 Novell, Inc (http://www.novell.com)
-//
+// 
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -24,61 +24,59 @@
 // LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-//
-
 
 using System;
-using System.Collections.Generic;
 using System.Xml;
+using System.IO;
 
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Templates
 {
 	
-	public class PartialTypeFileTemplateCondition : FileTemplateCondition
+	public class ParentProjectFileTemplateCondition : FileTemplateCondition
 	{
-		PartialTypeRequirement filter = PartialTypeRequirement.None;
-
+		bool requireExists = false;
+		string relativePath = null;
+		string projectType = null;
+		
 		public override void Load (XmlElement element)
 		{
-			filter = PartialTypeRequirement.None;
-			try {
-				filter = (PartialTypeRequirement) Enum.Parse (typeof (PartialTypeRequirement), element.GetAttribute ("Requirement"), true);
-			} catch (ArgumentException) {
-				new InvalidOperationException ("Invalid value for PartialTypeRequirement condition in template.");
+			//GetAttribute returns String.Empty even if the attr does not exist
+			//but we want null (empty attribute is significant), so do an extra check
+			if (element.HasAttribute ("RelativePath"))
+				relativePath = element.GetAttribute("RelativePath");
+			
+			if (element.HasAttribute ("ProjectType"))
+				projectType = element.GetAttribute("ProjectType");
+			
+			string requireExistsStr = element.GetAttribute ("RequireExists");
+			if (!string.IsNullOrEmpty (requireExistsStr)) {
+				try {
+					requireExists = bool.Parse (requireExistsStr);
+				} catch (FormatException) {
+					throw new InvalidOperationException ("Invalid value for RequireExists in template.");
+				}
 			}
 		}
 		
-		public override bool ShouldEnableFor (Project proj, string creationPath, string language)
+		public override bool ShouldEnableFor (Project proj, string projectPath)
 		{
-			DotNetProject dnp = proj as DotNetProject;
-			if (dnp == null)
-				return false;
-
-			bool supported = dnp.SupportsPartialTypes;
-			bool enabled = dnp.UsePartialTypes;
+			if (proj == null)
+				return !requireExists;
 			
-			switch (filter) {
-			case PartialTypeRequirement.None:
-				return true;
-			case PartialTypeRequirement.Unsupported:
-				return (supported == false);
-			case PartialTypeRequirement.Supported:
-				return (supported == true);
-			case PartialTypeRequirement.Enabled:
-				return (enabled == true);
+			if (projectType != null && proj.ProjectType != projectType)
+				return false;
+			
+			if (relativePath != null) {
+				if (projectPath == null)
+					return false;
+				string ppath = Path.Combine (proj.BaseDirectory, relativePath);
+				if (Path.GetFullPath (ppath) != Path.GetFullPath (projectPath))
+					return false;
 			}
 			
 			return true;
-		}
-		
-		enum PartialTypeRequirement
-		{
-			None = 0,
-			Unsupported = 1,
-			Supported = 2,
-			Enabled = 3,
 		}
 	}
 }

@@ -313,6 +313,7 @@ FILES =  \
 	MonoDevelop.Ide.Templates/ICombineEntryDescriptor.cs \
 	MonoDevelop.Ide.Templates/ICombineEntryFeature.cs \
 	MonoDevelop.Ide.Templates/INewFileCreator.cs \
+	MonoDevelop.Ide.Templates/ParentProjectFileTemplateCondition.cs \
 	MonoDevelop.Ide.Templates/PartialTypeFileTemplateCondition.cs \
 	MonoDevelop.Ide.Templates/ProjectDescriptor.cs \
 	MonoDevelop.Ide.Templates/ProjectTemplate.cs \
