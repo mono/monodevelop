@@ -335,7 +335,7 @@ namespace CSharpBinding.Parser
 					// (it is correct to call static methods using an enum type reference,
 					// but it doesn't make much sense)
 					foreach (IField f in curType.Fields) {
-						if (MustBeShowen (qualifierClass, curType, f)) {
+						if (MustBeShown (qualifierClass, curType, f)) {
 							members.Add(f);
 						}
 					}
@@ -349,23 +349,23 @@ namespace CSharpBinding.Parser
 				}
 			}
 			foreach (IProperty p in curType.Properties) {
-				if (MustBeShowen (qualifierClass, curType, p)) {
+				if (MustBeShown (qualifierClass, curType, p)) {
 					members.Add(p);
 				}
 			}
 			foreach (IMethod m in curType.Methods) {
-				if (MustBeShowen (qualifierClass, curType, m)) {
+				if (MustBeShown (qualifierClass, curType, m)) {
 					members.Add(m);
 				}
 			}
 			
 			foreach (IEvent e in curType.Events) {
-				if (MustBeShowen (qualifierClass, curType, e)) {
+				if (MustBeShown (qualifierClass, curType, e)) {
 					members.Add(e);
 				}
 			}
 			foreach (IField f in curType.Fields) {
-				if (MustBeShowen (qualifierClass, curType, f)) {
+				if (MustBeShown (qualifierClass, curType, f)) {
 					members.Add(f);
 				}
 			}
@@ -419,7 +419,7 @@ namespace CSharpBinding.Parser
 			return c.FullyQualifiedName == callingClass.FullyQualifiedName;
 		}
 		
-		bool MustBeShowen (IClass qualifierClass, IClass c, IDecoration member)
+		bool MustBeShown (IClass qualifierClass, IClass c, IDecoration member)
 		{
 			if (c.ClassType == ClassType.Enum && (member is IField))
 				return showStatic;
@@ -459,7 +459,7 @@ namespace CSharpBinding.Parser
 		{
 			foreach (IMethod m in curType.Methods) {
 				if (m.Name == memberName &&
-				    MustBeShowen (qualifierClass, curType, m) &&
+				    MustBeShown (qualifierClass, curType, m) &&
 				    !((m.Modifiers & ModifierEnum.Override) == ModifierEnum.Override)) {
 					methods.Add(m);
 				}
@@ -484,7 +484,7 @@ namespace CSharpBinding.Parser
 		public ArrayList SearchIndexer (ArrayList indexer, IClass qualifierClass, IClass curType)
 		{
 			foreach (IIndexer i in curType.Indexer) {
-				if (MustBeShowen(qualifierClass, curType, i) && !((i.Modifiers & ModifierEnum.Override) == ModifierEnum.Override)) {
+				if (MustBeShown(qualifierClass, curType, i) && !((i.Modifiers & ModifierEnum.Override) == ModifierEnum.Override)) {
 					indexer.Add(i);
 				}
 			}
@@ -565,7 +565,7 @@ namespace CSharpBinding.Parser
 			
 			if (curType.ClassType == ClassType.Enum) {
 				foreach (IField f in curType.Fields) {
-					if (f.Name == memberName && MustBeShowen (qualifierClass, curType, f)) {
+					if (f.Name == memberName && MustBeShown (qualifierClass, curType, f)) {
 						showStatic = false;
 						member = f; // enum members have the type of the enum
 						return true;
@@ -581,21 +581,21 @@ namespace CSharpBinding.Parser
 				}
 			}
 			foreach (IProperty p in curType.Properties) {
-				if (p.Name == memberName && MustBeShowen (qualifierClass, curType, p)) {
+				if (p.Name == memberName && MustBeShown (qualifierClass, curType, p)) {
 					showStatic = false;
 					member = p;
 					return true;
 				}
 			}
 			foreach (IField f in curType.Fields) {
-				if (f.Name == memberName && MustBeShowen (qualifierClass, curType, f)) {
+				if (f.Name == memberName && MustBeShown (qualifierClass, curType, f)) {
 					showStatic = false;
 					member = f;
 					return true;
 				}
 			}
 			foreach (IEvent e in curType.Events) {
-				if (e.Name == memberName && MustBeShowen (qualifierClass, curType, e)) {
+				if (e.Name == memberName && MustBeShown (qualifierClass, curType, e)) {
 					showStatic = false;
 					member = e;
 					return true;
@@ -603,7 +603,7 @@ namespace CSharpBinding.Parser
 			}
 			if (includeMethods) {
 				foreach (IMethod m in curType.Methods) {
-					if (m.Name == memberName && MustBeShowen (qualifierClass, curType, m)) {
+					if (m.Name == memberName && MustBeShown (qualifierClass, curType, m)) {
 						showStatic = false;
 						member = m;
 						return true;
@@ -804,7 +804,7 @@ namespace CSharpBinding.Parser
 			return null;
 		}
 		
-		IProperty Get()
+		IProperty GetProperty()
 		{
 			foreach (IProperty property in callingClass.Properties) {
 				if (property.BodyRegion != null && property.BodyRegion.IsInside(caretLine, caretColumn)) {
@@ -827,9 +827,19 @@ namespace CSharpBinding.Parser
 			return null;
 		}
 		
+		IIndexer GetIndexer()
+		{
+			foreach (IIndexer indexer in callingClass.Indexer) {
+				if (indexer.BodyRegion != null && indexer.BodyRegion.IsInside(caretLine, caretColumn)) {
+					return indexer;
+				}
+			}
+			return null;
+		}
+		
 		IProperty SearchProperty ()
 		{
-			IProperty property = Get();
+			IProperty property = GetProperty ();
 			if (property == null) {
 				return null;
 			}
@@ -1224,7 +1234,20 @@ namespace CSharpBinding.Parser
 				}
 			}
 			if (callingClass != null) {
+				showStatic = true;
 				ListMembers (result, callingClass, callingClass);
+				IProperty prop = GetProperty ();
+				
+				if (prop != null && prop.SetterRegion != null && prop.SetterRegion.IsInside (caretLine, caretColumn)) {
+					result.Add (new DefaultParameter (null, "value", prop.ReturnType));					           
+				}
+				IIndexer indexer = GetIndexer();
+				if ((met != null && !met.IsStatic) || (prop != null && !prop.IsStatic) || (indexer != null)) { 
+					result.Add (new DefaultParameter (null, "this", new ReturnType(callingClass.FullyQualifiedName)));					            
+					result.Add (new DefaultParameter (null, "base", new ReturnType(callingClass.BaseTypes.Count > 0 ? callingClass.BaseTypes[0].FullyQualifiedName : "object")));					            
+					showStatic = false;
+					ListMembers (result, callingClass, callingClass);
+				}
 				
 				// Add classes from calling namespace
 				if (callingClass.Namespace.Length > 0)

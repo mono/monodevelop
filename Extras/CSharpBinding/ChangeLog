@@ -1,5 +1,11 @@
 2007-09-07  Mike Krüger <mkrueger@novell.com> 
 
+	* Parser/Resolver.cs: Fixed 82505: No autocomplete for static members. Fixed
+	  some other resolve cases too. (non static members only in non static
+	  methods)
+
+2007-09-07  Mike Krüger <mkrueger@novell.com> 
+
 	* Parser/CodeGenerator.cs: Handled bug 82714: Invalid offset in text editor.
 
 2007-08-31  Mike Krüger <mkrueger@novell.com> 
