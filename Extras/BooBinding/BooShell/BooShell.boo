@@ -142,6 +142,9 @@ class BooShell (RemoteProcessObject):
 				_processing = "false"
 				Monitor.Pulse (_outputQueue)
 				Monitor.Exit (_outputQueue)
+		except e as ThreadAbortException:
+			System.Threading.Thread.ResetAbort ()
+			return false
 		ensure:
 			Monitor.Exit (_commandQueue)
 

@@ -1,3 +1,8 @@
+2007-09-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/BooTextEditorExtension.boo: Track api changes.
+	* BooShell/BooShell.boo: Don't propagate abort exception to the gtk thread.
+
 2007-09-04  Michael Hutchinson <MHutchinson@novell.com>
 
 	* BooShell/BooShell.boo: Catch ThreadAbortException when killing 

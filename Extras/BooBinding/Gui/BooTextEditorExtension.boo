@@ -28,7 +28,7 @@ import MonoDevelop.Projects.Gui.Completion
 
 import BooBinding.Parser
 
-public class BooTextEditorExtension (TextEditorExtension):
+public class BooTextEditorExtension (CompletionTextEditorExtension):
 
 	override def ExtendsEditor (doc as Document, editor as IEditableTextBuffer) as bool:
 		return System.IO.Path.GetExtension (doc.Title) == ".boo";
