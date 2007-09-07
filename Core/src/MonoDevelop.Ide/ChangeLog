@@ -1,3 +1,8 @@
+2007-09-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs: Set the correct title
+	  when not in replace mode. Fixes bug #82698.
+
 2007-09-06  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Templates/FileTemplate.cs,

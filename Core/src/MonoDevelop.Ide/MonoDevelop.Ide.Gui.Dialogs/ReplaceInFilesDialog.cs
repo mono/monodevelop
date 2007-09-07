@@ -80,8 +80,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				replacePatternEntry.Model = new ListStore(typeof (string));
 				replacePatternEntry.TextColumn = 0;
 
-				labelReplace.Text = GettextCatalog.GetString ("Replace in Files");
-				
 				// set the size groups to include the replace dialog
 				labels.AddWidget(labelReplace);
 				combos.AddWidget(replacePatternEntry);
@@ -89,6 +87,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				
 				replaceHelpButton.Sensitive = false;
 			} else {
+				Title = GettextCatalog.GetString ("Find in Files");
 				labelReplace.Visible = replaceAllButton.Visible = false;
 				replacePatternEntry.Visible = replaceHelpButton.Visible = false;
 				
