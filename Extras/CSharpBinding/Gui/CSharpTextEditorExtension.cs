@@ -21,7 +21,7 @@ using Ambience_ = MonoDevelop.Projects.Ambience.Ambience;
 
 namespace CSharpBinding
 {
-	public class CSharpTextEditorExtension: TextEditorExtension
+	public class CSharpTextEditorExtension: CompletionTextEditorExtension
 	{
 		CSharpIndentEngine engine;
 		
