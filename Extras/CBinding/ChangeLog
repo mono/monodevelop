@@ -1,3 +1,8 @@
+2007-09-07  Marcos David Marín Amador <MarcosMarin@gmail.com>
+
+	* CBinding.Autotools: Set svn:ignore property on
+	  CBinding.Autotools.pidb
+
 2007-09-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Gui/CTextEditorExtension.cs: Track api changes.
