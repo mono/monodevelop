@@ -95,6 +95,10 @@ namespace MonoDevelop.VersionControl
 		protected override void Run ()
 		{
 			vc.Publish (moduleName, path, files, message, GetProgressMonitor ());
+			
+			Gtk.Application.Invoke (delegate {
+				VersionControlProjectService.NotifyFileStatusChanged (vc, path, true);
+			});
 		}
 	}
 }

@@ -1,3 +1,8 @@
+2007-09-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/Publish.cs: Notify a
+	  directory status change after publishing a project. Fixes bug #82275.
+
 2007-09-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs:
