@@ -1,3 +1,11 @@
+2007-09-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.DesignerSupport.addin.xml, MonoDevelop.DesignerSupport.mdp,
+	  Makefile.am,
+	  MonoDevelop.DesignerSupport.Projects/PropertyPadTextEditorExtension.cs:
+	  When the focus is in the text editor, show the properties of the file in
+	  the property pad. Fixes bug #82255.
+
 2007-08-31  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.DesignerSupport/DesignerSupportService.cs,

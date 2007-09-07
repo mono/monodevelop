@@ -30,6 +30,7 @@ FILES =  \
 	MonoDevelop.DesignerSupport.CodeBehind/ICodeBehindProvider.cs \
 	MonoDevelop.DesignerSupport.Projects/ComponentNodeBuilder.cs \
 	MonoDevelop.DesignerSupport.Projects/ProjectsPropertyProvider.cs \
+	MonoDevelop.DesignerSupport.Projects/PropertyPadTextEditorExtension.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid.Editors/BooleanEditorCell.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid.Editors/CharPropertyEditor.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid.Editors/CollectionEditor.cs \
