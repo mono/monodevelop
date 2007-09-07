@@ -309,7 +309,6 @@ fi
 
 AM_CONDITIONAL(ENABLE_ASPNET, [test x$enable_aspnet = xyes]) 
 
-
 #We need to know where Mozilla is for launch scripts and possible for AspNetEdit
 #Check pkg-config first
 MOZILLA_HOME="`$PKG_CONFIG --variable=libdir mozilla-gtkmozembed`"
@@ -380,6 +379,29 @@ fi
 AM_CONDITIONAL(MOZILLA_EXTENSION_TYPE_TEXTFILE, test -f "$MOZILLA_HOME/chrome/installed-chrome.txt")
 AM_CONDITIONAL(ENABLE_ASPNETEDIT, test x$enable_aspnetedit = xyes)
 
+dnl C/C++ project addin
+GCC_VERSION=4.1.2
+CTAGS_VERSION=5.5
+AC_ARG_ENABLE(c, AC_HELP_STRING([--enable-c], [enable C/C++ project support [default=no]]), enable_c=yes, enable_c=no)
+
+if test "x$enable_c" = "xyes"; then
+	AC_PATH_PROG(GCC, gcc)
+	if test "x$GCC" = "x"; then
+		AC_MSG_ERROR([Please install gcc version $GCC_VERSION or later.])
+	fi
+
+	AC_PATH_PROG(GPP, g++)
+	if test "x$GPP" = "x"; then
+		AC_MSG_WARN([Without g++ ($GCC_VERSION or later) you won't be able to compile C++ projects.])
+	fi
+
+	AC_PATH_PROG(CTAGS, ctags)
+	if test "x$CTAGS" = "x"; then
+		AC_MSG_WARN([Without ctags you won't get class pad and completion support for C/C++ projects.])
+	fi
+fi
+
+AM_CONDITIONAL(ENABLE_C, [test x$enable_c = xyes])
 
 AC_ARG_ENABLE(update-mimedb,
    AC_HELP_STRING([--disable-update-mimedb],
@@ -491,6 +513,7 @@ Extras/Deployment/MonoDevelop.Deployment/Makefile
 Extras/Deployment/MonoDevelop.Deployment.Linux/Makefile
 Extras/MonoDevelop.Gettext/Makefile
 Extras/MonoDevelop.RegexToolkit/Makefile
+Extras/CBinding/Makefile
 Makefile
 monodevelop
 mdtool
@@ -528,4 +551,5 @@ echo "   *     Subversion: $enable_subversion"
 echo "   * ASP.NET project support: $enable_aspnet"
 echo "   * ASP.NET Visual Designer: $enable_aspnetedit"
 echo "   * Web References: yes"
+echo "   * C/C++ project support: $enable_c"
 echo ""

@@ -1,3 +1,8 @@
+2007-09-07  Marcos David Marín Amador <MarcosMarin@gmail.com>
+
+	* configure.in: Added a configure option to enable C/C++ project
+	  support. By default it is not enabled.
+
 2007-09-01  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* configure.in: Update Boo version (Boo AST library API change breaks 
