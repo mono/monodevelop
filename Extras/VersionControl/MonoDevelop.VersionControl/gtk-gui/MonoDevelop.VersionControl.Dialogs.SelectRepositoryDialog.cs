@@ -78,7 +78,7 @@ namespace MonoDevelop.VersionControl.Dialogs {
         private Gtk.Button buttonOk;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog
             this.Events = ((Gdk.EventMask)(256));
             this.Name = "MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog";
@@ -152,6 +152,7 @@ namespace MonoDevelop.VersionControl.Dialogs {
             this.label1.Name = "label1";
             this.label1.LabelProp = Mono.Unix.Catalog.GetString("Connect to Repository");
             this.notebook.SetTabLabel(this.vbox2, this.label1);
+            this.label1.ShowAll();
             // Container child notebook.Gtk.Notebook+NotebookChild
             this.hbox2 = new Gtk.HBox();
             this.hbox2.Name = "hbox2";
@@ -227,6 +228,7 @@ namespace MonoDevelop.VersionControl.Dialogs {
             this.label2.Name = "label2";
             this.label2.LabelProp = Mono.Unix.Catalog.GetString("Registered Repositories");
             this.notebook.SetTabLabel(this.hbox2, this.label2);
+            this.label2.ShowAll();
             this.vbox1.Add(this.notebook);
             Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.vbox1[this.notebook]));
             w15.Position = 0;

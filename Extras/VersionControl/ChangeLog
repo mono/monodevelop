@@ -1,5 +1,15 @@
 2007-09-08  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs,
+	  MonoDevelop.VersionControl/gtk-gui/generated.cs,
+	  MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog.cs,
+	  MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs,
+	  MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs,
+	  MonoDevelop.VersionControl/gtk-gui/gui.stetic: Increase range of port
+	  selector in the repository information widget.
+
+2007-09-08  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Diffs.cs:
 	  Dispose the file watchers when disposing the view. Fixes bug #82721.
 

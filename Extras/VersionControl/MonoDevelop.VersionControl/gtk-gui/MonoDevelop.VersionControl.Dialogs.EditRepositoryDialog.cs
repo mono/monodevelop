@@ -34,7 +34,7 @@ namespace MonoDevelop.VersionControl.Dialogs {
         private Gtk.Button button24;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog
             this.Name = "MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog";
             this.Title = Mono.Unix.Catalog.GetString("Repository Configuration");

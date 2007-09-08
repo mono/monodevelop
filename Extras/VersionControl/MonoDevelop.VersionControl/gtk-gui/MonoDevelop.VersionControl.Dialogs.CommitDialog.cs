@@ -34,7 +34,7 @@ namespace MonoDevelop.VersionControl.Dialogs {
         private Gtk.Button button31;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.VersionControl.Dialogs.CommitDialog
             this.Events = ((Gdk.EventMask)(256));
             this.Name = "MonoDevelop.VersionControl.Dialogs.CommitDialog";

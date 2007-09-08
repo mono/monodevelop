@@ -52,7 +52,7 @@ namespace MonoDevelop.VersionControl {
         private Gtk.Entry repositoryUserEntry;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.VersionControl.UrlBasedRepositoryEditor
             Stetic.BinContainer.Attach(this);
             this.Events = ((Gdk.EventMask)(256));
@@ -87,7 +87,7 @@ namespace MonoDevelop.VersionControl {
             this.hbox2 = new Gtk.HBox();
             this.hbox2.Name = "hbox2";
             // Container child hbox2.Gtk.Box+BoxChild
-            this.repositoryPortSpin = new Gtk.SpinButton(0, 100, 1);
+            this.repositoryPortSpin = new Gtk.SpinButton(0, 99999, 1);
             this.repositoryPortSpin.CanFocus = true;
             this.repositoryPortSpin.Name = "repositoryPortSpin";
             this.repositoryPortSpin.Adjustment.PageIncrement = 10;

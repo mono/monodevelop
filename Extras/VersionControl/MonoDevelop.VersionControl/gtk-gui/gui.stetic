@@ -754,7 +754,7 @@
               <widget class="Gtk.SpinButton" id="repositoryPortSpin">
                 <property name="MemberName">repositoryPortSpin</property>
                 <property name="CanFocus">True</property>
-                <property name="Upper">100</property>
+                <property name="Upper">99999</property>
                 <property name="PageIncrement">10</property>
                 <property name="PageSize">10</property>
                 <property name="StepIncrement">1</property>
