@@ -1,3 +1,8 @@
+2007-09-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Diffs.cs:
+	  Dispose the file watchers when disposing the view. Fixes bug #82721.
+
 2007-09-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/Publish.cs: Notify a

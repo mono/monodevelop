@@ -74,6 +74,14 @@ namespace MonoDevelop.VersionControl.Views
 			Refresh();
 		}
 		
+		public override void Dispose ()
+		{
+			leftwatcher.Dispose ();
+			rightwatcher.Dispose ();
+			base.Dispose ();
+		}
+
+		
 		void filechanged(object src, FileSystemEventArgs args) {
 			threadnotify.WakeupMain();			
 		}
