@@ -9,6 +9,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Reflection;
@@ -1617,14 +1618,17 @@ namespace MonoDevelop.Projects.Parser
 				rawTags = "FIXME:2;TODO:1;HACK:1;UNDONE:0";
 			}
 			
-			string[] tags = rawTags.Split (new char[] {';'}, StringSplitOptions.RemoveEmptyEntries);
-			for (int i = 0; i < tags.Length; i++)
-			{
-				int pos = tags[i].IndexOf (':');
+			List<string> tags = new List<string> ();
+			foreach (string s in rawTags.Split (';')) {
+				string t = s;
+				int pos = s.IndexOf (':');
 				if (pos != -1)
-					tags[i] = tags[i].Substring (0, pos);
+					t = s.Substring (0, pos);
+				t = t.Trim ();
+				if (t.Length > 0)
+					tags.Add (t);
 			}
-			parser.LexerTags = tags;
+			parser.LexerTags = tags.ToArray ();
 			
 			ICompilationUnitBase parserOutput = null;
 			

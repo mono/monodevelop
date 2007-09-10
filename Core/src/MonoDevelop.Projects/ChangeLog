@@ -1,3 +1,8 @@
+2007-09-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs: Ignore empty comment
+	  tags. Fixes bug #82703.
+
 2007-09-06  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Projects/DotNetProject.cs: Add UsePartialTypes setting to
