@@ -1,3 +1,11 @@
+2007-09-10  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* templates/WidgetPartial.xft.xml, templates/Widget.xft.xml,
+	  templates/WindowPartial.xft.xml, templates/Window.xft.xml,
+	  templates/ActionGroupPartial.xft.xml, templates/ActionGroup.xft.xml,
+	  templates/DialogPartial.xft.xml, templates/Dialog.xft.xml: Remove
+	  deprecated FileOptions element from templates.
+
 2007-09-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* lib/libsteticui.dll, lib/libstetic.dll,
