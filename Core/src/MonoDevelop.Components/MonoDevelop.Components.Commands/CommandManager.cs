@@ -616,13 +616,17 @@ namespace MonoDevelop.Components.Commands
 			ArrayList handlers = new ArrayList ();
 			ArrayList updaters = new ArrayList ();
 			
-			MethodInfo[] methods = type.GetMethods (BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-			foreach (MethodInfo method in methods) {
-				foreach (CommandHandlerAttribute attr in method.GetCustomAttributes (typeof(CommandHandlerAttribute), true))
-					handlers.Add (new CommandHandlerInfo (method, (CommandHandlerAttribute) attr));
+			Type curType = type;
+			while (curType != null && curType.Assembly != typeof(Gtk.Widget).Assembly && curType.Assembly != typeof(object).Assembly) {
+				MethodInfo[] methods = curType.GetMethods (BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+				foreach (MethodInfo method in methods) {
+					foreach (CommandHandlerAttribute attr in method.GetCustomAttributes (typeof(CommandHandlerAttribute), true))
+						handlers.Add (new CommandHandlerInfo (method, (CommandHandlerAttribute) attr));
 
-				foreach (CommandUpdateHandlerAttribute attr in method.GetCustomAttributes (typeof(CommandUpdateHandlerAttribute), true))
-					updaters.Add (new CommandUpdaterInfo (method, (CommandUpdateHandlerAttribute) attr));
+					foreach (CommandUpdateHandlerAttribute attr in method.GetCustomAttributes (typeof(CommandUpdateHandlerAttribute), true))
+						updaters.Add (new CommandUpdaterInfo (method, (CommandUpdateHandlerAttribute) attr));
+				}
+				curType = curType.BaseType;
 			}
 			
 			if (handlers.Count > 0)
