@@ -20,72 +20,72 @@
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core" version="0.14.0"/>
-		<Addin id="GtkCore" version="0.14.0"/>
+		<Addin id="Core" version="0.15.0"/>
+		<Addin id="GtkCore" version="0.15.0"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Core/SupportPackages">
-		<Package id="art-sharp-2.0" gacRoot="true">
+		<Package name="art-sharp-2.0" gacRoot="true">
 		    <xsl:attribute name="version"><xsl:value-of select="/files/gtkversion"/></xsl:attribute>
 			<xsl:for-each select="/files/dll[contains(.,'/art-sharp')]">
 				<xsl:element name="Assembly"><xsl:attribute name="file"><xsl:value-of select="." /></xsl:attribute></xsl:element>
 			</xsl:for-each>
 		</Package>
-		<Package id="gtk-sharp-2.0" gacRoot="true">
+		<Package name="gtk-sharp-2.0" gacRoot="true">
 		    <xsl:attribute name="version"><xsl:value-of select="/files/gtkversion"/></xsl:attribute>
 			<xsl:for-each select="/files/dll[contains(.,'/atk-sharp') or contains(.,'/pango-sharp') or contains(.,'/gdk-sharp') or contains(.,'/gtk-sharp')]">
 				<xsl:element name="Assembly"><xsl:attribute name="file"><xsl:value-of select="." /></xsl:attribute></xsl:element>
 			</xsl:for-each>
 		</Package>
-		<Package id="vte-sharp-2.0" gacRoot="true">
+		<Package name="vte-sharp-2.0" gacRoot="true">
 		    <xsl:attribute name="version"><xsl:value-of select="/files/gtkversion"/></xsl:attribute>
 			<xsl:for-each select="/files/dll[contains(.,'/vte-sharp')]">
 				<xsl:element name="Assembly"><xsl:attribute name="file"><xsl:value-of select="." /></xsl:attribute></xsl:element>
 			</xsl:for-each>
 		</Package>
-		<Package id="glib-sharp-2.0" gacRoot="true">
+		<Package name="glib-sharp-2.0" gacRoot="true">
 		    <xsl:attribute name="version"><xsl:value-of select="/files/gtkversion"/></xsl:attribute>
 			<xsl:for-each select="/files/dll[contains(.,'/glib-sharp')]">
 				<xsl:element name="Assembly"><xsl:attribute name="file"><xsl:value-of select="." /></xsl:attribute></xsl:element>
 			</xsl:for-each>
 		</Package>
-		<Package id="rsvg-sharp-2.0" gacRoot="true">
+		<Package name="rsvg-sharp-2.0" gacRoot="true">
 		    <xsl:attribute name="version"><xsl:value-of select="/files/gtkversion"/></xsl:attribute>
 			<xsl:for-each select="/files/dll[contains(.,'/rsvg-sharp')]">
 				<xsl:element name="Assembly"><xsl:attribute name="file"><xsl:value-of select="." /></xsl:attribute></xsl:element>
 			</xsl:for-each>
 		</Package>
-		<Package id="gtk-dotnet-2.0" gacRoot="true">
+		<Package name="gtk-dotnet-2.0" gacRoot="true">
 		    <xsl:attribute name="version"><xsl:value-of select="/files/gtkversion"/></xsl:attribute>
 			<xsl:for-each select="/files/dll[contains(.,'/gtk-dotnet')]">
 				<xsl:element name="Assembly"><xsl:attribute name="file"><xsl:value-of select="." /></xsl:attribute></xsl:element>
 			</xsl:for-each>
 		</Package>
-		<Package id="gconf-sharp-2.0" gacRoot="true">
+		<Package name="gconf-sharp-2.0" gacRoot="true">
 		    <xsl:attribute name="version"><xsl:value-of select="/files/gtkversion"/></xsl:attribute>
 			<xsl:for-each select="/files/dll[contains(.,'/gconf-sharp')]">
 				<xsl:element name="Assembly"><xsl:attribute name="file"><xsl:value-of select="." /></xsl:attribute></xsl:element>
 			</xsl:for-each>
 		</Package>
-		<Package id="glade-sharp-2.0" gacRoot="true">
+		<Package name="glade-sharp-2.0" gacRoot="true">
 		    <xsl:attribute name="version"><xsl:value-of select="/files/gtkversion"/></xsl:attribute>
 			<xsl:for-each select="/files/dll[contains(.,'/glade-sharp')]">
 				<xsl:element name="Assembly"><xsl:attribute name="file"><xsl:value-of select="." /></xsl:attribute></xsl:element>
 			</xsl:for-each>
 		</Package>
-		<Package id="gnome-sharp-2.0" gacRoot="true">
+		<Package name="gnome-sharp-2.0" gacRoot="true">
 		    <xsl:attribute name="version"><xsl:value-of select="/files/gtkversion"/></xsl:attribute>
 			<xsl:for-each select="/files/dll[contains(.,'/gnome-sharp')]">
 				<xsl:element name="Assembly"><xsl:attribute name="file"><xsl:value-of select="." /></xsl:attribute></xsl:element>
 			</xsl:for-each>
 		</Package>
-		<Package id="gnome-vfs-sharp-2.0" gacRoot="true">
+		<Package name="gnome-vfs-sharp-2.0" gacRoot="true">
 		    <xsl:attribute name="version"><xsl:value-of select="/files/gtkversion"/></xsl:attribute>
 			<xsl:for-each select="/files/dll[contains(.,'/gnome-vfs-sharp')]">
 				<xsl:element name="Assembly"><xsl:attribute name="file"><xsl:value-of select="." /></xsl:attribute></xsl:element>
 			</xsl:for-each>
 		</Package>
-		<Package id="gtkhtml-sharp-2.0" gacRoot="true">
+		<Package name="gtkhtml-sharp-2.0" gacRoot="true">
 		    <xsl:attribute name="version"><xsl:value-of select="/files/gtkversion"/></xsl:attribute>
 			<xsl:for-each select="/files/dll[contains(.,'/gtkhtml-sharp')]">
 				<xsl:element name="Assembly"><xsl:attribute name="file"><xsl:value-of select="." /></xsl:attribute></xsl:element>
