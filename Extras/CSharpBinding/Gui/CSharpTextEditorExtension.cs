@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Text;
 using System.Collections;
 using System.Collections.Generic;
@@ -48,6 +49,16 @@ namespace CSharpBinding
 			return result;
 		}
 		
+		void AppendSummary (StringBuilder sb)
+		{
+			Debug.Assert (sb != null);
+			sb.Append ("/ <summary>\n");
+			sb.Append (engine.ThisLineIndent);
+			sb.Append ("/// \n");
+			sb.Append (engine.ThisLineIndent);
+			sb.Append ("/// </summary>");
+		}
+		
 		string GenerateBody (IClass c, int line)
 		{
 			int startLine = int.MaxValue;
@@ -70,9 +81,7 @@ namespace CSharpBinding
 			
 			IMethod method = result as IMethod;
 			if (method != null) {
-				builder.Append ("/ <summary>\n");
-				builder.Append (engine.ThisLineIndent);
-				builder.Append ("/// </summary>");
+				AppendSummary (builder);
 				
 				if (method.Parameters != null) {
 					foreach (IParameter para in method.Parameters) {
@@ -80,19 +89,33 @@ namespace CSharpBinding
 						builder.Append (engine.ThisLineIndent);
 						builder.Append ("/// <param name=\"");
 						builder.Append (para.Name);
-						builder.Append ("\"></param>");
+						builder.Append ("\">\n");
+						builder.Append (engine.ThisLineIndent);
+						builder.Append ("/// A <see cref=\"");
+						builder.Append (para.ReturnType.FullyQualifiedName);
+						builder.Append ("\"/>\n");
+						builder.Append (engine.ThisLineIndent);
+						builder.Append ("///</param>");
 					}
 				}
 				if (method.ReturnType != null && method.ReturnType.FullyQualifiedName != "System.Void") {
 					builder.Append (Environment.NewLine);
 					builder.Append (engine.ThisLineIndent);
-					builder.Append("/// <returns></returns>");
+					builder.Append("/// <returns>\n");
+					builder.Append (engine.ThisLineIndent);
+					builder.Append ("/// A <see cref=\"");
+					builder.Append (method.ReturnType.FullyQualifiedName);
+					builder.Append ("\"/>\n");
+					builder.Append (engine.ThisLineIndent);
+					builder.Append ("///</returns>");
 				}
 
 			}
 			IProperty property = result as IProperty;
 			if (property != null) {
 				builder.Append ("/ <value>\n");
+				builder.Append (engine.ThisLineIndent);
+				builder.Append ("/// \n");
 				builder.Append (engine.ThisLineIndent);
 				builder.Append ("/// </value>");
 			}
@@ -216,9 +239,7 @@ namespace CSharpBinding
 						}
 					}
 					if (generateStandardComment) {
-						generatedComment.Append ("/ <summary>\n");
-						generatedComment.Append (engine.ThisLineIndent);
-						generatedComment.Append ("/// </summary>");
+						AppendSummary (generatedComment);
 					}
 					
 					Editor.InsertText (cursor, generatedComment.ToString ());
