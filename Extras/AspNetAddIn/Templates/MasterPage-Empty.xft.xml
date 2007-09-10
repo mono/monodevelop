@@ -38,5 +38,4 @@ ${Doctype}
 			</FileText>
 		</AspNetFile>
 	</TemplateFiles>
-	<FileOptions/>
 </Template>

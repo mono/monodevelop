@@ -34,7 +34,4 @@ namespace ${Namespace}
 			</CodeTranslationFile>
 		</AspNetFile>
 	</TemplateFiles>
-
-	<FileOptions />
-
 </Template>

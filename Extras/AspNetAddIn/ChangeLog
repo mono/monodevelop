@@ -1,3 +1,24 @@
+2007-09-10  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* AspNetAddIn.addin.xml, AspNetAddIn.mdp, Makefile.am: Updated.
+	* Templates/WebService-CodeBehind.xft.xml,
+	  Templates/WebForm-CodeBehind.xft.xml,
+	  Templates/MasterPage-Empty.xft.xml, Templates/WebService-Empty.xft.xml,
+	  Templates/WebForm-Empty.xft.xml,
+	  Templates/WebHandler-CodeBehind.xft.xml,
+	  Templates/WebControl-CodeBehind.xft.xml,
+	  Templates/WebHandler-Empty.xft.xml,
+	  Templates/MasterPage-CodeBehind.xft.xml,
+	  Templates/WebControl-Empty.xft.xml, Templates/WebApplication.xpt.xml:
+	  Remove deprecated FileOptions node.
+	* Templates/WebControl-CodeBehindNonPartial.xft.xml,
+	  Templates/MasterPage-CodeBehindNonPartial.xft.xml,
+	  Templates/WebForm-CodeBehindNonPartial.xft.xml: Add non-partial-type
+	  templates.
+	* Templates/GlobalAsax-CodeBehind.xft.xml,
+	  Templates/GlobalAsax-Empty.xft.xml: Add Global.asax templates.
+	* Templates/WebApplication-Empty.xpt.xml: Add empty project template.
+
 2007-09-06  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Templates/WebService-CodeBehind.xft.xml,

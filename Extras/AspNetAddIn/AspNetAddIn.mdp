@@ -68,6 +68,12 @@
     <File name="./gtk-gui/AspNetAddIn.AspNetConfigurationPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="./Gui/AspNetConfigurationPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="./Templates/GlobalAsax-CodeBehind.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./Templates/GlobalAsax-Empty.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./Templates/MasterPage-CodeBehindNonPartial.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./Templates/WebControl-CodeBehindNonPartial.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./Templates/WebForm-CodeBehindNonPartial.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./Templates/WebApplication-Empty.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />
@@ -101,7 +107,7 @@
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
-  <GtkDesignInfo partialTypes="True" gettextClass="MonoDevelop.Core.GettextCatalog" />
+  <GtkDesignInfo gettextClass="MonoDevelop.Core.GettextCatalog" />
   <DeploymentInformation strategy="File">
     <excludeFiles>
       <ExcludeFile file="./Makefile.am" />

@@ -15,7 +15,7 @@
 	
 	<Conditions>
 		<ClrVersion Condition="GreaterThanOrEqual" ClrVersion="Net_2_0" />
-		<PartialTypeSupport Requirement="Enabled" />
+		<PartialTypeSupport Requirement="Disabled" />
 	</Conditions>
 	
 	<!-- Template Content -->
@@ -44,18 +44,7 @@ ${Doctype}
 using System.Web;
 using System.Web.UI;
 namespace ${Namespace} {
-	public partial class ${Name} : System.Web.UI.MasterPage 
-	{
-	}
-}
-]]>
-		</CodeTranslationFile>
-		<CodeTranslationFile name="${Name}.master.designer.${LanguageExtension}" ShowAutogenerationNotice="True"  SuppressAutoOpen="True">
-<![CDATA[using System;
-using System.Web;
-using System.Web.UI;
-namespace ${Namespace} {
-	public partial class ${Name} 
+	public class ${Name} : System.Web.UI.MasterPage 
 	{
 	}
 }

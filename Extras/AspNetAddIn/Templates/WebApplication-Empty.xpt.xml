@@ -5,16 +5,15 @@
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<_Name>Web Application</_Name>
+		<_Name>Empty Web Application</_Name>
 		<Category>ASP.NET</Category>
 		<Icon>md-html-file-icon</Icon>
 		<LanguageName>*</LanguageName>
-		<_Description>Creates a new ASP.NET Web Application project.</_Description>
+		<_Description>Creates an empty ASP.NET Web Application project.</_Description>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
 	<Actions>
-		<Open filename = "Default.aspx"/>
 	</Actions>
 	
 	<!-- Template Content -->
@@ -32,8 +31,6 @@
 				<Reference type="Gac" refto="System.Web.Services, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
 			</References>
 			<Files>
-				<FileTemplateReference TemplateID="WebForm-CodeBehind" name="Default" />
-				<FileTemplateReference TemplateID="GlobalAsax-CodeBehind" name="Global.asax" />
 			</Files>
 		</Project>
 	</Combine>

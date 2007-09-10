@@ -65,12 +65,18 @@ RES =  \
 	AspNetAddIn.glade \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
+	Templates/GlobalAsax-CodeBehind.xft.xml \
+	Templates/GlobalAsax-Empty.xft.xml \
 	Templates/MasterPage-CodeBehind.xft.xml \
+	Templates/MasterPage-CodeBehindNonPartial.xft.xml \
 	Templates/MasterPage-Empty.xft.xml \
 	Templates/WebApplication.xpt.xml \
+	Templates/WebApplication-Empty.xpt.xml \
 	Templates/WebControl-CodeBehind.xft.xml \
+	Templates/WebControl-CodeBehindNonPartial.xft.xml \
 	Templates/WebControl-Empty.xft.xml \
 	Templates/WebForm-CodeBehind.xft.xml \
+	Templates/WebForm-CodeBehindNonPartial.xft.xml \
 	Templates/WebForm-Empty.xft.xml \
 	Templates/WebHandler-CodeBehind.xft.xml \
 	Templates/WebHandler-Empty.xft.xml \

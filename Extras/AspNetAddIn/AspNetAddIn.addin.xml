@@ -28,6 +28,8 @@
 		              resource = "WebForm-Empty.xft.xml"/>
 		<FileTemplate id       = "WebForm-CodeBehind"
 		              resource = "WebForm-CodeBehind.xft.xml"/>
+		<FileTemplate id       = "WebForm-CodeBehindNonPartial"
+		              resource = "WebForm-CodeBehindNonPartial.xft.xml"/>
 		
 		<FileTemplate id       = "WebHandler-Empty"
 		              resource = "WebHandler-Empty.xft.xml"/>
@@ -38,6 +40,8 @@
 		              resource = "WebControl-Empty.xft.xml"/>
 		<FileTemplate id       = "WebControl-CodeBehind"
 		              resource = "WebControl-CodeBehind.xft.xml"/>
+		<FileTemplate id       = "WebControl-CodeBehindNonPartial"
+		              resource = "WebControl-CodeBehindNonPartial.xft.xml"/
 		
 		<FileTemplate id       = "WebService-Empty"
 		              resource = "WebService-Empty.xft.xml"/>
@@ -48,6 +52,13 @@
 		              resource = "MasterPage-Empty.xft.xml" />
 		<FileTemplate id       = "MasterPage-CodeBehind"
 		              resource = "MasterPage-CodeBehind.xft.xml" />
+		<FileTemplate id       = "MasterPage-CodeBehindNonPartial"
+		              resource = "MasterPage-CodeBehindNonPartial.xft.xml" />
+		
+		<FileTemplate id       = "GlobalAsax-Empty"
+		              resource = "GlobalAsax-Empty.xft.xml" />
+		<FileTemplate id       = "GlobalAsax-CodeBehind"
+		              resource = "GlobalAsax-CodeBehind.xft.xml" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/FileTemplateTypes">
@@ -56,6 +67,7 @@
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
 		<ProjectTemplate id = "WebApplication" resource = "WebApplication.xpt.xml"/>
+		<ProjectTemplate id = "WebApplication-Empty" resource = "WebApplication-Empty.xpt.xml"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/FileFilters">

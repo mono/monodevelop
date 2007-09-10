@@ -35,7 +35,4 @@ namespace ${Namespace}
 }]]>
 		</CodeTranslationFile>
 	</TemplateFiles>
-
-	<FileOptions />
-
 </Template>
