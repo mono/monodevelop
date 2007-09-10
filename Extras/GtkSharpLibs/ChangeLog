@@ -1,0 +1,6 @@
+2007-09-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* md-gtk-sharp-2.4/*,
+	* md-gtk-sharp-2.6/*,
+	* md-gtk-sharp-2.8/*: New add-ins which provide support for
+	  targeting several gtk# versions in MD.
