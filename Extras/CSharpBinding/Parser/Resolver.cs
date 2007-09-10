@@ -806,9 +806,11 @@ namespace CSharpBinding.Parser
 		
 		IProperty GetProperty()
 		{
-			foreach (IProperty property in callingClass.Properties) {
-				if (property.BodyRegion != null && property.BodyRegion.IsInside(caretLine, caretColumn)) {
-					return property;
+			if (callingClass != null && callingClass.Properties != null) { 
+				foreach (IProperty property in callingClass.Properties) {
+					if (property.BodyRegion != null && property.BodyRegion.IsInside(caretLine, caretColumn)) {
+						return property;
+					}
 				}
 			}
 			return null;
@@ -816,12 +818,14 @@ namespace CSharpBinding.Parser
 		
 		IMethod GetMethod()
 		{
-			foreach (IMethod method in callingClass.Methods) {
-				if (method.Region != null && method.Region.IsInside (caretLine, caretColumn))
-					return method;
-				
-				if (method.BodyRegion != null && method.BodyRegion.IsInside(caretLine, caretColumn))
-					return method;
+			if (callingClass != null && callingClass.Methods != null) { 
+				foreach (IMethod method in callingClass.Methods) {
+					if (method.Region != null && method.Region.IsInside (caretLine, caretColumn))
+						return method;
+					
+					if (method.BodyRegion != null && method.BodyRegion.IsInside(caretLine, caretColumn))
+						return method;
+				}
 			}
 			
 			return null;
@@ -829,9 +833,11 @@ namespace CSharpBinding.Parser
 		
 		IIndexer GetIndexer()
 		{
-			foreach (IIndexer indexer in callingClass.Indexer) {
-				if (indexer.BodyRegion != null && indexer.BodyRegion.IsInside(caretLine, caretColumn)) {
-					return indexer;
+			if (callingClass != null && callingClass.Indexer != null) { 
+				foreach (IIndexer indexer in callingClass.Indexer) {
+					if (indexer.BodyRegion != null && indexer.BodyRegion.IsInside(caretLine, caretColumn)) {
+						return indexer;
+					}
 				}
 			}
 			return null;
