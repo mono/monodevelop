@@ -134,6 +134,8 @@ namespace MonoDevelop.Ide.Tasks
 			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (CombineClosed));
 			PropertyService.PropertyChanged += (EventHandler<PropertyChangedEventArgs>) DispatchService.GuiDispatch (new EventHandler<PropertyChangedEventArgs> (OnPropertyUpdated));	
 			ValidateButtons ();
+			// Initialize with existing tags.
+			UserTasksChanged (this, EventArgs.Empty);
 		}
 		
 		void CombineOpened (object sender, CombineEventArgs e)

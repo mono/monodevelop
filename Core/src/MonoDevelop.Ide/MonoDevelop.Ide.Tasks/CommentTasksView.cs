@@ -117,6 +117,10 @@ namespace MonoDevelop.Ide.Tasks
 			PropertyService.PropertyChanged += (EventHandler<PropertyChangedEventArgs>) DispatchService.GuiDispatch (new EventHandler<PropertyChangedEventArgs> (OnPropertyUpdated));
 
 			CreateMenu ();
+			
+			// Initialize with existing tags.
+			foreach (Task t in Services.TaskService.CommentTasks) 
+				AddGeneratedTask (t);
 		}
 
 		void LoadColumnsVisibility ()

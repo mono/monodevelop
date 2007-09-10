@@ -1,3 +1,9 @@
+2007-09-10   <> 
+
+	* MonoDevelop.Ide.Tasks/UserTasksView.cs,
+	  MonoDevelop.Ide.Tasks/CommentTasksView.cs: Worked on 82733: Tasklist
+	  showing empty.
+
 2007-09-07  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Templates/PartialTypeFileTemplateCondition.cs: Add a
