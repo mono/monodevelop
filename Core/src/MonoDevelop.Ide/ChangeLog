@@ -1,3 +1,10 @@
+2007-09-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: When restoring the active file
+	  after opening a solution, make sure the document is not already
+	  disposed. Should fix bug #82538. Also, store line/column information of
+	  open files in the solution user preferences. 
+
 2007-09-10   <> 
 
 	* MonoDevelop.Ide.Tasks/UserTasksView.cs,

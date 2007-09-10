@@ -784,6 +784,8 @@ namespace MonoDevelop.Ide.Gui
 		const string FilesNode                  = "Files";
 		const string FileNode                   = "File";
 		const string FileNameAttribute          = "name";
+		const string FileLineAttribute          = "line";
+		const string FileColumnAttribute        = "column";
 		const string ViewsNode                  = "Views";
 		const string ViewMementoNode            = "ViewMemento";
 		const string IdAttribute                = "id";
@@ -810,9 +812,11 @@ namespace MonoDevelop.Ide.Gui
 								switch (reader.LocalName) {
 								case FileNode:
 									string fileName = Runtime.FileService.RelativeToAbsolutePath (Path.GetDirectoryName (combine.FileName), reader.GetAttribute (FileNameAttribute));
-									if (File.Exists(fileName)) {
-										IdeApp.Workbench.OpenDocument (fileName, false);
-									}
+									int lin=0, col=0;
+									int.TryParse (reader.GetAttribute (FileLineAttribute), out lin);
+									int.TryParse (reader.GetAttribute (FileColumnAttribute), out col);
+									if (File.Exists(fileName))
+										IdeApp.Workbench.OpenDocument (fileName, lin, col, false);
 									return true;
 								}
 								return false;
@@ -845,15 +849,17 @@ namespace MonoDevelop.Ide.Gui
 						case Properties.Node:
 							Properties properties = Properties.Read (reader);
 							string name = properties.Get ("ActiveWindow", "");
-							foreach (Document document in IdeApp.Workbench.Documents) {
-								if (document.FileName != null &&
-									document.FileName == name) {
-									DispatchService.GuiDispatch (new MessageHandler (document.Select));
-									break;
+							Gtk.Application.Invoke (delegate {
+								foreach (Document document in IdeApp.Workbench.Documents) {
+									if (document.FileName != null &&
+										document.FileName == name) {
+										DispatchService.GuiDispatch (new MessageHandler (document.Select));
+										break;
+									}
 								}
-							}
-							name = properties.Get ("ActiveConfiguration", "");
-							IConfiguration conf = combine.GetConfiguration (name);
+							});
+							string cname = properties.Get ("ActiveConfiguration", "");
+							IConfiguration conf = combine.GetConfiguration (cname);
 							if (conf != null)
 								combine.ActiveConfiguration = conf;
 							return true;
@@ -886,6 +892,10 @@ namespace MonoDevelop.Ide.Gui
 					if (!String.IsNullOrEmpty (document.FileName)) {
 						writer.WriteStartElement (FileNode);
 						writer.WriteAttributeString (FileNameAttribute, Runtime.FileService.AbsoluteToRelativePath (Path.GetDirectoryName (combine.FileName), document.FileName)); 
+						if (document.TextEditor != null) {
+							writer.WriteAttributeString (FileLineAttribute, document.TextEditor.CursorLine.ToString ());
+							writer.WriteAttributeString (FileColumnAttribute, document.TextEditor.CursorColumn.ToString ());
+						}
 						writer.WriteEndElement (); // File
 					}
 				}
