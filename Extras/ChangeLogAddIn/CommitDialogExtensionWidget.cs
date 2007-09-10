@@ -266,6 +266,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			if (notConfigured) {
 				IdeApp.Workbench.ShowGlobalPreferencesDialog (Toplevel as Gtk.Window, "ChangeLogAddInOptions");
 				UpdateStatus ();
+				GenerateLogEntries ();
 				return;
 			}
 			
@@ -279,6 +280,7 @@ namespace MonoDevelop.ChangeLogAddIn
 		{
 			IdeApp.Workbench.ShowGlobalPreferencesDialog (Toplevel as Gtk.Window, "ChangeLogAddInOptions");
 			UpdateStatus ();
+			GenerateLogEntries ();
 		}
 	}
 	

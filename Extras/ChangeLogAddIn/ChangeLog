@@ -1,3 +1,8 @@
+2007-09-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* CommitDialogExtensionWidget.cs: Regenerate changelog entries after
+	  changing the user name and mail options. Fixes bug #82745.
+
 2007-09-04  Michael Hutchinson <MHutchinson@novell.com>
 
 	* ChangeLogAddInOptionPanelWidget.cs: Fix compiler warning.
