@@ -463,11 +463,11 @@ namespace CSharpBinding
 				int lin, col;
 				Editor.GetLineColumnFromPosition (Editor.CursorPosition, out lin, out col);
 				int lineStart = Editor.GetPositionFromLineColumn (lin, 1);
-				string line = Editor.GetText (lineStart, Editor.CursorPosition - 1);
+				string textToCursor = Editor.GetText (0, Editor.CursorPosition - 1);
 				
 				// Find the expression before the '('
 				ExpressionFinder expressionFinder = new ExpressionFinder (null);
-				string ex = expressionFinder.FindExpression (line, line.Length - 1).Expression;
+				string ex = expressionFinder.FindExpression (textToCursor, textToCursor.Length - 1).Expression;
 				if (ex == null)
 					return null;
 
