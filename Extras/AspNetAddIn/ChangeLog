@@ -1,5 +1,20 @@
 2007-09-10  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* Project/AspNetAppProject.cs: Fire SetDefaultBuildAction only when adding
+	  new files, not when deserialising the project. Add a "Code" WebSubtype.
+	* AspNetAddIn.addin.xml, AspNetAddIn.mdp, Makefile.am,
+	  Templates/WebConfig-SubDir.xft.xml,
+	  Templates/WebConfig-Application.xft.xml: Add Web.config templates.
+	* Templates/WebForm-CodeBehind.xft.xml,
+	  Templates/GlobalAsax-CodeBehind.xft.xml,
+	  Templates/WebControl-CodeBehind.xft.xml,
+	  Templates/GlobalAsax-Empty.xft.xml,
+	  Templates/MasterPage-CodeBehind.xft.xml: More tweaks to templates.
+	* Templates/WebApplication.xpt.xml: Add web.config to default project
+	  template.
+
+2007-09-10  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* AspNetAddIn.addin.xml, AspNetAddIn.mdp, Makefile.am: Updated.
 	* Templates/WebService-CodeBehind.xft.xml,
 	  Templates/WebForm-CodeBehind.xft.xml,

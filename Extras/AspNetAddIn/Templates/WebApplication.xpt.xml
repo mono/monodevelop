@@ -34,6 +34,7 @@
 			<Files>
 				<FileTemplateReference TemplateID="WebForm-CodeBehind" name="Default" />
 				<FileTemplateReference TemplateID="GlobalAsax-CodeBehind" name="Global.asax" />
+				<FileTemplateReference TemplateID="WebConfig-Application" name="web.config" />
 			</Files>
 		</Project>
 	</Combine>

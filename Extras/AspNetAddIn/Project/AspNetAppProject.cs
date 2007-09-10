@@ -62,6 +62,9 @@ namespace AspNetAddIn
 		[ItemProperty ("VerifyCodeBehindEvents")]
 		protected bool verifyCodeBehindEvents = true;
 		
+		//used true while the project is being loaded
+		bool loading = false;
+		
 		#region properties
 		
 		public override string ProjectType {
@@ -112,6 +115,13 @@ namespace AspNetAddIn
 				AspNetAppProjectConfiguration conf = (AspNetAppProjectConfiguration) args.Configuration;
 				conf.SourceDirectory = BaseDirectory;
 			};
+		}
+		
+		public override void Deserialize (ITypeSerializer handler, DataCollection data)
+		{
+			loading = true;
+			base.Deserialize (handler, data);
+			loading = false;
 		}
 		
 		//AspNetAppProjectConfiguration needs SourceDirectory set so it can append "bin" to determine the output path
@@ -234,13 +244,18 @@ namespace AspNetAddIn
 		
 		public WebSubtype DetermineWebSubtype (ProjectFile file)
 		{
+			if (LanguageBinding.IsSourceCodeFile (file.FilePath))
+				return WebSubtype.Code;
+			
 			return DetermineWebSubtype (System.IO.Path.GetExtension (file.Name));
 		}
 		
 		public static WebSubtype DetermineWebSubtype (string extension)
 		{
-			//determine file type
-			switch (extension.ToLower ().TrimStart ('.'))
+			extension = extension.ToLower ().TrimStart ('.');
+			
+			//FIXME: No way to identify WebSubtype.Code
+			switch (extension)
 			{
 				case "aspx":
 					return WebSubtype.WebForm;
@@ -260,6 +275,8 @@ namespace AspNetAddIn
 					return WebSubtype.WebImage;
 				case "skin":
 					return WebSubtype.WebSkin;
+			case "config":
+					return WebSubtype.Config;
 				default:
 					return WebSubtype.None;
 			}
@@ -327,14 +344,19 @@ namespace AspNetAddIn
 		
 		protected override void OnFileAddedToProject (ProjectFileEventArgs e)
 		{
-			SetDefaultBuildAction (e.ProjectFile);
-			InvalidateDocumentCache (e.ProjectFile);
+			//this doesn't need to be triggered while the project is being deserialised
+			if (!loading) {
+				SetDefaultBuildAction (e.ProjectFile);
+				InvalidateDocumentCache (e.ProjectFile);
+			}
 			base.OnFileAddedToProject (e);
 		}
 		
 		protected override void OnFileChangedInProject (ProjectFileEventArgs e)
 		{
-			InvalidateDocumentCache (e.ProjectFile);
+			if (!loading) {
+				InvalidateDocumentCache (e.ProjectFile);
+			}
 			base.OnFileChangedInProject (e);
 		}
 		
@@ -353,7 +375,7 @@ namespace AspNetAddIn
 		{
 			//make sure web files are deployed, not built
 			WebSubtype type = DetermineWebSubtype (file);
-			if (type != WebSubtype.None)
+			if (type != WebSubtype.None && type != WebSubtype.Code)
 				file.BuildAction = BuildAction.FileCopy;
 		}
 		
@@ -362,6 +384,8 @@ namespace AspNetAddIn
 	
 	public enum WebSubtype
 	{
+		None = 0,
+		Code,
 		WebForm,
 		WebService,
 		WebControl,
@@ -370,7 +394,7 @@ namespace AspNetAddIn
 		WebSkin,
 		WebImage,
 		Global,
-		None
+		Config,
 	}
 	
 	public enum SpecialFiles

@@ -74,6 +74,8 @@
     <File name="./Templates/WebControl-CodeBehindNonPartial.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./Templates/WebForm-CodeBehindNonPartial.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./Templates/WebApplication-Empty.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./Templates/WebConfig-Application.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./Templates/WebConfig-SubDir.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />

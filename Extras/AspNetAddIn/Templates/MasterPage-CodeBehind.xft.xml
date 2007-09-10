@@ -50,7 +50,7 @@ namespace ${Namespace} {
 }
 ]]>
 		</CodeTranslationFile>
-		<CodeTranslationFile name="${Name}.master.designer.${LanguageExtension}" ShowAutogenerationNotice="True"  SuppressAutoOpen="True">
+		<CodeTranslationFile name="${Name}.master.designer.${LanguageExtension}" ShowAutogenerationNotice="True" AddStandardHeader="False" SuppressAutoOpen="True">
 <![CDATA[using System;
 using System.Web;
 using System.Web.UI;

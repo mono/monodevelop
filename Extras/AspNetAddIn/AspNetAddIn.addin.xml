@@ -41,7 +41,7 @@
 		<FileTemplate id       = "WebControl-CodeBehind"
 		              resource = "WebControl-CodeBehind.xft.xml"/>
 		<FileTemplate id       = "WebControl-CodeBehindNonPartial"
-		              resource = "WebControl-CodeBehindNonPartial.xft.xml"/
+		              resource = "WebControl-CodeBehindNonPartial.xft.xml"/>
 		
 		<FileTemplate id       = "WebService-Empty"
 		              resource = "WebService-Empty.xft.xml"/>
@@ -59,6 +59,11 @@
 		              resource = "GlobalAsax-Empty.xft.xml" />
 		<FileTemplate id       = "GlobalAsax-CodeBehind"
 		              resource = "GlobalAsax-CodeBehind.xft.xml" />
+		
+		<FileTemplate id       = "WebConfig-Application"
+		              resource = "WebConfig-Application.xft.xml" />
+		<FileTemplate id       = "WebConfig-SubDir"
+		              resource = "WebConfig-SubDir.xft.xml" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/FileTemplateTypes">

@@ -15,12 +15,12 @@
 	</TemplateConfiguration>
 	
 	<Conditions>
-		<ParentProject RelativePath="" />
+		<ParentProject PermittedCreationPaths="" ExcludedFiles="/Global.asax" />
 	</Conditions>
 
 	<!-- Template Content -->
 	<TemplateFiles>
-		<AspNetFile name="Global.asax">
+		<AspNetFile name="Global.asax" BuildAction="FileCopy">
 			<FileText>
 <![CDATA[<%@ Application Language="${Language}" %>
 <script runat="server">

@@ -72,6 +72,8 @@ RES =  \
 	Templates/MasterPage-Empty.xft.xml \
 	Templates/WebApplication.xpt.xml \
 	Templates/WebApplication-Empty.xpt.xml \
+	Templates/WebConfig-Application.xft.xml \
+	Templates/WebConfig-SubDir.xft.xml \
 	Templates/WebControl-CodeBehind.xft.xml \
 	Templates/WebControl-CodeBehindNonPartial.xft.xml \
 	Templates/WebControl-Empty.xft.xml \
