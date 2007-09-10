@@ -331,8 +331,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 						nameEntry.Text = item.DefaultFilename;
 						nameEntry.Sensitive = false;
 					} else {
-						if (userEditedEntryText != null)
+						if (userEditedEntryText != null) {
 							nameEntry.Text = userEditedEntryText;
+							userEditedEntryText = null;
+						}
 						nameEntry.Sensitive = true;
 					}
 					
@@ -342,10 +344,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 						nameEntry.Text = item.DefaultFilename;
 						previousDefaultEntryText = item.DefaultFilename;
 					}
-					   
 					
 					okButton.Sensitive = item.IsValidName (nameEntry.Text, sel.Language);
-				} else {
+				} else {				
 					nameEntry.Sensitive = true;
 					okButton.Sensitive = false;
 				}

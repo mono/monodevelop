@@ -49,6 +49,10 @@ namespace MonoDevelop.Ide.Templates
 			domContent = filenode ["CompileUnit"];
 			if (domContent == null)
 				throw new InvalidOperationException ("Invalid CodeDom template. CompileUnit element not found.");
+			
+			//this is a code template, so unless told otherwise, default to adding the standard header
+			if (string.IsNullOrEmpty (filenode.GetAttribute ("AddStandardHeader")))
+				AddStandardHeader = true;
 		}
 		
 		public override string CreateContent (string language)

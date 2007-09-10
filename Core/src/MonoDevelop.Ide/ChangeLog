@@ -1,3 +1,23 @@
+2007-09-10  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Templates/FileTemplate.cs: Add additional check to
+	  IsValidName.
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs: Add some more
+	  substitution tags. New AddStandardHeader attribute can be used to enable
+	  stanadrd headers; it defaults to disabled.
+	* MonoDevelop.Ide.Templates/ParentProjectFileTemplateCondition.cs: Replace
+	  RelativePath filter with ExcludedCreationPaths, PermittedCreationPaths,
+	  RequiredFiles and ExcludedFiles filters.
+	* MonoDevelop.Ide.Templates/CodeTranslationFileDescriptionTemplate.cs,
+	  MonoDevelop.Ide.Templates/CodeDomFileDescriptionTemplate.cs: Set
+	  AddStandardHeader to true if unset (these templates are always code
+	  files).
+	* MonoDevelop.Ide.Templates/PartialTypeFileTemplateCondition.cs: Add a FIXME
+	  note.
+	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs: Fix missing null assignment
+	  bug that made text field uneditable after selecting template with
+	  IsFixedName set to true.
+
 2007-09-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs: When restoring the active file

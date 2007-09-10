@@ -52,6 +52,10 @@ namespace MonoDevelop.Ide.Templates
 		
 		public override bool ShouldEnableFor (Project proj, string creationPath, string language)
 		{
+			if (proj == null)
+				//FIXME: check the language's capabilities
+				return false;
+			
 			DotNetProject dnp = proj as DotNetProject;
 			if (dnp == null)
 				return false;

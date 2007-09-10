@@ -45,6 +45,7 @@ namespace MonoDevelop.Ide.Templates
 		string defaultExtension;
 		string generatedFile;
 		bool suppressAutoOpen = false;
+		bool addStandardHeader = false;
 		BuildAction buildAction;
 		
 		public override void Load (XmlElement filenode)
@@ -59,17 +60,31 @@ namespace MonoDevelop.Ide.Templates
 			}
 			
 			string suppressAutoOpenStr = filenode.GetAttribute ("SuppressAutoOpen");
-			if ((suppressAutoOpenStr != null) && (suppressAutoOpenStr.Length > 0)) {
+			if (!string.IsNullOrEmpty (suppressAutoOpenStr)) {
 				try {
-					suppressAutoOpen = bool.Parse (suppressAutoOpenStr.ToLower());
+					suppressAutoOpen = bool.Parse (suppressAutoOpenStr);
 				} catch (FormatException) {
 					throw new InvalidOperationException ("Invalid value for SuppressAutoOpen in template.");
+				}
+			}
+			
+			string addStandardHeaderStr = filenode.GetAttribute ("AddStandardHeader");
+			if (!string.IsNullOrEmpty (addStandardHeaderStr)) {
+				try {
+					addStandardHeader = bool.Parse (addStandardHeaderStr);
+				} catch (FormatException) {
+					throw new InvalidOperationException ("Invalid value for AddStandardHeader in template.");
 				}
 			}
 		}
 		
 		public override string Name {
 			get { return name; } 
+		}
+		
+		public bool AddStandardHeader {
+			get { return addStandardHeader; }
+			set { addStandardHeader = value; }
 		}
 		
 		public sealed override void AddToProject (Project project, string language, string directory, string name)
@@ -185,7 +200,7 @@ namespace MonoDevelop.Ide.Templates
 			
 			MemoryStream ms = new MemoryStream ();
 			byte[] data;
-			if (StandardHeaderService.EmitStandardHeader) { 
+			if (StandardHeaderService.EmitStandardHeader && AddStandardHeader) { 
 				StringParserService stringParserService = (StringParserService) ServiceManager.GetService (typeof (StringParserService));
 				string header = stringParserService.Parse (StandardHeaderService.GetHeader(language), new string[,] { 
 					{ "FileName", Path.GetFileName (fileName) }, 
@@ -252,7 +267,18 @@ namespace MonoDevelop.Ide.Templates
 				tags ["Language"] = language;
 			if (languageExtension.Length > 0)
 				tags ["LanguageExtension"] = languageExtension;
-			tags ["FileName"] = fileName;
+			
+			if (fileName != null) {
+				string fileDirectory = Path.GetDirectoryName (fileName);
+				if (project != null && project.BaseDirectory != null && fileDirectory.Substring (0, project.BaseDirectory.Length) == fileDirectory )
+					tags ["ProjectRelativeDirectory"] = fileDirectory.Substring (project.BaseDirectory.Length);
+				else
+					tags ["ProjectRelativeDirectory"] = fileDirectory;
+				
+				tags ["FileNameWithoutExtension"] = Path.GetFileNameWithoutExtension (fileName); 
+				tags ["Directory"] = fileDirectory;
+				tags ["FileName"] = fileName;
+			}
 		}
 		
 		protected ILanguageBinding GetLanguageBinding (string language)

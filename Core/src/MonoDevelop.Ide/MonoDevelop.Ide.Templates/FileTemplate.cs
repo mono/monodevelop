@@ -298,6 +298,9 @@ namespace MonoDevelop.Ide.Templates
 		
 		public virtual bool IsValidName (string name, string language)
 		{
+			if (isFixedFilename)
+				return (name == defaultFilename);
+			
 			bool valid = true;
 			foreach (FileDescriptionTemplate templ in Files)
 				if (!templ.IsValidName (name, language))

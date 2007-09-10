@@ -70,6 +70,10 @@ namespace MonoDevelop.Ide.Templates
 				}
 			}
 			
+			//this is a code template, so unless told otherwise, default to adding the standard header
+			if (string.IsNullOrEmpty (filenode.GetAttribute ("AddStandardHeader")))
+				AddStandardHeader = true;
+			
 			parserProvider = getProvider (sourceLang);
 		}
 		
