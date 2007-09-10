@@ -1,3 +1,14 @@
+2007-09-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* lib/libsteticui.dll, lib/libstetic.dll,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs: Changed the way to
+	  set the active designer (the api changed). Fixed some renaming issues.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProjectPad.cs: Track api changes.
+
 2007-09-07  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* templates/Window.xft.xml: Oops, PartialTypeSupport should be set to

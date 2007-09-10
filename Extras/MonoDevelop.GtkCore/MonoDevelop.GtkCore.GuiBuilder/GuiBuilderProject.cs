@@ -229,11 +229,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			Unload ();
 		}
 		
-		public bool IsActive ()
-		{
-			return GuiBuilderService.SteticApp.ActiveProject == SteticProject && !disposed;
-		}
-		
 		public Stetic.WidgetInfo AddNewComponent (Stetic.ComponentType type, string name)
 		{
 			Stetic.WidgetInfo c = SteticProject.AddNewComponent (type, name);

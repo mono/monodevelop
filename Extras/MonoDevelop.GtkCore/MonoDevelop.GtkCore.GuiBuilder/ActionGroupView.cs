@@ -101,6 +101,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			project.Reloaded += OnReloadProject;
 		}
 		
+		public override Stetic.Designer Designer {
+			get { return designer; }
+		}
+		
 		void OnDisposeProject (object s, EventArgs args)
 		{
 			RemoveButton (1);

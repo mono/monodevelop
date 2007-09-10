@@ -88,6 +88,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnActiveDocumentChanged);
 		}
 		
+		public virtual Stetic.Designer Designer {
+			get { return null; }
+		}
+		
 		protected ToggleToolButton AddButton (string label, Gtk.Widget page)
 		{
 			updating = true;

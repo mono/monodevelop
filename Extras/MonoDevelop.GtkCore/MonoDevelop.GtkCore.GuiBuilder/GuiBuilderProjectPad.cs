@@ -38,11 +38,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 {
 	public class GuiBuilderProjectPad: AbstractPadContent, ICustomPropertyPadProvider
 	{
-		Stetic.ProjectView pview;
+		Stetic.WidgetTree pview;
 		
 		public GuiBuilderProjectPad ()
 		{
-			pview = GuiBuilderService.SteticApp.ProjectWidget;
+			pview = GuiBuilderService.SteticApp.WidgetTreeWidget;
 			pview.ShowAll ();
 		}
 		

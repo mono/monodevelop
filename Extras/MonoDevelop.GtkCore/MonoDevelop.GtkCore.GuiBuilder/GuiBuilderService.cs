@@ -133,28 +133,22 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		static void OnActiveDocumentChanged (object s, EventArgs args)
 		{
 			if (IdeApp.Workbench.ActiveDocument == null) {
-				if (SteticApp.ActiveProject != null) {
-					SteticApp.ActiveProject = null;
+				if (SteticApp.ActiveDesigner != null) {
+					SteticApp.ActiveDesigner = null;
 					RestoreLayout ();
 				}
 				return;
 			}
 
-			GuiBuilderView view = IdeApp.Workbench.ActiveDocument.GetContent<GuiBuilderView> ();
+			CombinedDesignView view = IdeApp.Workbench.ActiveDocument.GetContent<CombinedDesignView> ();
 			if (view != null) {
-				view.SetActive ();
+				SteticApp.ActiveDesigner = view.Designer;
 				SetDesignerLayout ();
+				return;
 			}
-			else if (IdeApp.Workbench.ActiveDocument.GetContent<ActionGroupView> () != null) {
-				if (SteticApp.ActiveProject != null) {
-					SteticApp.ActiveProject = null;
-					SetDesignerLayout ();
-				}
-			} else {
-				if (SteticApp.ActiveProject != null) {
-					SteticApp.ActiveProject = null;
-					RestoreLayout ();
-				}
+			else if (SteticApp.ActiveDesigner != null) {
+				SteticApp.ActiveDesigner = null;
+				RestoreLayout ();
 			}
 		}
 		

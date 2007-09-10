@@ -131,7 +131,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				actionsButtonVisible = false;
 			
 			designer.ShowAll ();
-			designer.SetActive ();
+			GuiBuilderService.SteticApp.ActiveDesigner = designer;
+		}
+		
+		public override Stetic.Designer Designer {
+			get { return designer; }
 		}
 		
 		void OnDisposeProject (object s, EventArgs args)
@@ -150,12 +154,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public GuiBuilderWindow Window {
 			get { return window; }
-		}
-		
-		public void SetActive ()
-		{
-			if (designer != null)
-				designer.SetActive ();
 		}
 		
 		void CloseDesigner ()
@@ -293,7 +291,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			string oldName = window.RootWidget.Name;
 			string oldBuildFile = GuiBuilderService.GetBuildCodeFileName (gproject.Project, window.RootWidget.Name);
- 
+			
 			codeBinder.UpdateBindings (fileName);
 			if (!ErrorMode) {
 				if (designer != null)
@@ -304,8 +302,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			string newBuildFile = GuiBuilderService.GetBuildCodeFileName (gproject.Project, window.RootWidget.Name);
 			
-			if (oldBuildFile != newBuildFile)
+			if (oldBuildFile != newBuildFile) {
+				if (System.IO.File.Exists (newBuildFile))
+					Runtime.FileService.DeleteFile (newBuildFile);
 				Runtime.FileService.MoveFile (oldBuildFile, newBuildFile);
+			}
 			
 			gproject.Save (true);
 			
