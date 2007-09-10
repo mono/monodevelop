@@ -1,3 +1,7 @@
+2007-09-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment.addin.xml: Cosmetic fix in command label.
+
 2007-08-23  Marcos David Marín Amador <MarcosMarin@gmail.com>
 
 	* MonoDevelop.Deployment/InstallResolver.cs: Added support for

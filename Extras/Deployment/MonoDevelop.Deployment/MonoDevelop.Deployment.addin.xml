@@ -32,7 +32,7 @@
 				_label = "Add Package..." />
 		<Command id = "MonoDevelop.Deployment.Commands.Install"
 				defaultHandler = "MonoDevelop.Deployment.InstallHandler"
-				_label = "Install" />
+				_label = "Install..." />
 		</Category>
 	</Extension>	
 
