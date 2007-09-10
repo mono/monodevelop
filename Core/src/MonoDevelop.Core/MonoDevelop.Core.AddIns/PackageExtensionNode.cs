@@ -10,6 +10,9 @@ namespace MonoDevelop.Core.AddIns
 	[ExtensionNodeChild (typeof(AssemblyExtensionNode))]
 	public class PackageExtensionNode: TypeExtensionNode
 	{
+		[NodeAttribute ("name", Required=true)]
+		string name;
+		
 		[NodeAttribute ("version", Required=true)]
 		string version;
 		
@@ -33,6 +36,10 @@ namespace MonoDevelop.Core.AddIns
 				}
 				return assemblies; 
 			}
+		}
+		
+		public string Name {
+			get { return name; }
 		}
 		
 		public string Version {

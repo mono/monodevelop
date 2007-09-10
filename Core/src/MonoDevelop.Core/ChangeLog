@@ -1,3 +1,10 @@
+2007-09-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.AddIns/PackageExtensionNode.cs,
+	  MonoDevelop.Core/SystemAssemblyService.cs: Don't use the extension node
+	  Id to identify packages because that Id must be unique, but there can be
+	  several packages with the same name but different version.
+
 2007-09-07  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Core/XmlReadHelper.cs, MonoDevelop.Core/Properties.cs: Removed

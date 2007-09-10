@@ -356,9 +356,9 @@ namespace MonoDevelop.Core
 		{
 			PackageExtensionNode node = (PackageExtensionNode) args.ExtensionNode;
 			if (args.Change == ExtensionChange.Add)
-				RegisterPackage (node.Id, node.Version, node.Id, node.TargetClrVersion, node.GacRoot, node.Assemblies);
+				RegisterPackage (node.Name, node.Version, node.Name, node.TargetClrVersion, node.GacRoot, node.Assemblies);
 			else
-				UnregisterPackage (node.Id, node.Version);
+				UnregisterPackage (node.Name, node.Version);
 		}
 
 		void RegisterSystemAssemblies (string prefix, string version, ClrVersion ver)
