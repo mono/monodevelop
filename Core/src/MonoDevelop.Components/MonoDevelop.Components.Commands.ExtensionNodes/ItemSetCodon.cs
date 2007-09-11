@@ -47,6 +47,9 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 		[NodeAttribute("icon", "Icon of the submenu. The provided value must be a registered stock icon. A resource icon can also be specified using 'res:' as prefix for the name, for example: 'res:customIcon.png'")]
 		string icon;
 		
+		[NodeAttribute("autohide", "Whether the submenu should be hidden when it contains no items.")]
+		bool autohide;
+		
 		public override object CreateInstance ()
 		{
 			if (label == null) label = Id;
@@ -54,6 +57,7 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 			label = Runtime.StringParserService.Parse (GettextCatalog.GetString (label));
 			if (icon != null) icon = CommandCodon.GetStockId (Addin, icon);
 			CommandEntrySet cset = new CommandEntrySet (label, icon);
+			cset.AutoHide = autohide;
 			foreach (InstanceExtensionNode e in ChildNodes) {
 				CommandEntry ce = e.CreateInstance () as CommandEntry;
 				if (ce != null)

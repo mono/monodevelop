@@ -60,6 +60,7 @@ namespace MonoDevelop.Components.Commands
 		
 		// If true, the set will be automatically hidden if all
 		// items it contains are hidden or disabled
+		//FIXME: FUNCTIONALITY NOT IMPLEMENTED
 		public bool AutoHide {
 			get { return autoHide; }
 			set { autoHide = value; }
