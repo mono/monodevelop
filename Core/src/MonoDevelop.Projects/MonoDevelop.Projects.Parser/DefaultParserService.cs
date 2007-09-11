@@ -559,8 +559,10 @@ namespace MonoDevelop.Projects.Parser
 		public IProjectParserContext GetProjectParserContext (Project project)
 		{
 			CodeCompletionDatabase pdb = GetProjectDatabase (project);
-			if (pdb == null)
-				throw new InvalidOperationException ("Project '" + project.Name + "' not found in parser database");
+			if (pdb == null) {
+				Runtime.LoggingService.Error ("Project '" + project.Name + "' not found in parser database");
+				return null;
+			}
 			return new ProjectParserContext (parserService, this, pdb);
 		}
 		

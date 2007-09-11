@@ -1,3 +1,9 @@
+2007-09-11  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs: Little change in
+	  parser service - it logs now an error instead of generating an
+	  exception, when a project database isn't found.
+
 2007-09-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Parser/DefaultParserService.cs: Ignore empty comment
