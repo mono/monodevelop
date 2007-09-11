@@ -232,23 +232,32 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		public void RemoveMember (IClass cls, IMember member)
 		{
-			RefactorerContext gctx = GetGeneratorContext (cls);
-			IRefactorer gen = GetGeneratorForClass (cls);
-			gen.RemoveMember (gctx, cls, member);
-			gctx.Save ();
+			try {
+				RefactorerContext gctx = GetGeneratorContext (cls);
+				IRefactorer gen = GetGeneratorForClass (cls);
+				gen.RemoveMember (gctx, cls, member);
+				gctx.Save ();
+			} catch (Exception e) {
+				Runtime.LoggingService.Error (GettextCatalog.GetString ("Error while removing member {0}:{1}", member, e.ToString ()));
+			}
 		}
 		
 		public IMember RenameMember (IProgressMonitor monitor, IClass cls, IMember member, string newName, RefactoryScope scope)
 		{
-			MemberReferenceCollection refs = new MemberReferenceCollection ();
-			Refactor (monitor, cls, scope, new RefactorDelegate (new RefactorFindMemberReferences (cls, member, refs).Refactor));
-			refs.RenameAll (newName);
+			try {
+				MemberReferenceCollection refs = new MemberReferenceCollection ();
+				Refactor (monitor, cls, scope, new RefactorDelegate (new RefactorFindMemberReferences (cls, member, refs).Refactor));
+				refs.RenameAll (newName);
 			
-			RefactorerContext gctx = GetGeneratorContext (cls);
-			IRefactorer gen = GetGeneratorForClass (cls);
-			IMember m = gen.RenameMember (gctx, cls, member, newName);
-			gctx.Save ();
-			return m;
+				RefactorerContext gctx = GetGeneratorContext (cls);
+				IRefactorer gen = GetGeneratorForClass (cls);
+				IMember m = gen.RenameMember (gctx, cls, member, newName);
+				gctx.Save ();
+				return m;
+			} catch (Exception e) {
+				Runtime.LoggingService.Error (GettextCatalog.GetString ("Error while renaming member {0} to {1}: {2}",  member, newName, e.ToString ()));
+				return null;
+			}
 		}
 		
 		public MemberReferenceCollection FindMemberReferences (IProgressMonitor monitor, IClass cls, IMember member, RefactoryScope scope)

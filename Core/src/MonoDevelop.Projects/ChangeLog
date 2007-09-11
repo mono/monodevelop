@@ -1,5 +1,10 @@
 2007-09-11  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Added some error
+	  handling code to make it easier to track refactoring bugs.
+
+2007-09-11  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Parser/DefaultParserService.cs: Little change in
 	  parser service - it logs now an error instead of generating an
 	  exception, when a project database isn't found.
