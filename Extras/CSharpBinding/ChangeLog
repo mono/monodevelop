@@ -1,3 +1,8 @@
+2007-09-11  Ankit Jain  <jankit@novell.com>
+
+	* CSharpBindingCompilerManager.cs (Compile): Pass /warn: command line
+	param.
+
 2007-09-11  Mike Krüger <mkrueger@novell.com> 
 
 	* Parser/CodeGenerator.cs: Fixed 82500: Rename refactoring enum value
