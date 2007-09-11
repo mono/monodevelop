@@ -64,16 +64,21 @@ namespace AspNetAddIn
 
 				//if (File.GetLastWriteTime (cls.Region.FileName) >= File.GetLastWriteTime (file.FilePath)) {
 				
+				Document doc = null; 
+				try {
+					doc = aspProject.GetDocument (file);
+				} catch (Exception e) {
+					monitor.ReportWarning (string.Format("Parser failed on {0} with error {1}. Codebehind members for this file will not be added.", file, e.ToString ()));
+				}
 				
-				
-				Document doc = aspProject.GetDocument (file);
-				
-				foreach (System.CodeDom.CodeMemberField member in doc.MemberList.List.Values) {
+				if (doc != null) {
+					foreach (System.CodeDom.CodeMemberField member in doc.MemberList.List.Values) {
 						MonoDevelop.Projects.Parser.IMember existingMember = BindingService.GetCompatibleMemberInClass (cls, member);
 						if (existingMember == null) {
 							classesForMembers.Add (cls);
 							membersToAdd.Add (member);
 						}
+					}
 				}
 			}
 			

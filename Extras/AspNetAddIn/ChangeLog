@@ -1,3 +1,14 @@
+2007-09-11  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Project/ProjectFolderNodeBuilderExtension.cs, Project/AspNetCommands.cs,
+	  AspNetAddIn.addin.xml, AspNetAddIn.mdp, Makefile.am: Add a command/menu
+	  for creating ASP.NET special directories.
+	* Project/AspNetAppProject.cs: Add more WebSubtypes. Use GettextCatalog for
+	  MessageService call. Add method for discovering non-existent special
+	  ASP.NET directories.
+	* Project/VerifyCodeBehindBuildStep.cs: Don't prevent compilation if
+	  documents can't be parsed.
+
 2007-09-10  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Project/AspNetAppProject.cs: Fire SetDefaultBuildAction only when adding

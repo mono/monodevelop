@@ -121,4 +121,26 @@
 		<Class class = "AspNetAddIn.VerifyCodeBehindBuildStep" />
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/Ide/Commands">
+		<Category _name = "ASP.NET" id = "AspNet">
+		<Command id = "AspNetAddIn.AspNetCommands.AddAspNetDirectory"
+				_label = "ASP.NET Directory"
+				type="array" />
+		</Category>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Project/Add">
+		<Condition id="activeproject" value="AspNetApp">
+			<ItemSet id = "AspNetDirectories" _label = "ASP.NET Directory" insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.NewFolder" autohide="True">
+				<CommandItem
+					id = "AspNetAddIn.AspNetCommands.AddAspNetDirectory"
+					/>
+				</ItemSet>
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
+		<NodeBuilder id="AspNetAddIn.ProjectFolderNodeBuilderExtension" class = "AspNetAddIn.ProjectFolderNodeBuilderExtension"/>
+	</Extension>
+	
 </Addin>

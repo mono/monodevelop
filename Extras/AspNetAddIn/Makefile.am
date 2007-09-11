@@ -54,9 +54,11 @@ FILES =  \
 	Project/AspNetAppProjectBinding.cs \
 	Project/AspNetAppProjectConfiguration.cs \
 	Project/AspNetCodeBehindProvider.cs \
+	Project/AspNetCommands.cs \
 	Project/AspNetDisplayBinding.cs \
 	Project/AspNetFileDescriptionTemplate.cs \
 	Project/CodeBehind.cs \
+	Project/ProjectFolderNodeBuilderExtension.cs \
 	Project/VerifyCodeBehindBuildStep.cs \
 	Project/XspParameters.cs
 

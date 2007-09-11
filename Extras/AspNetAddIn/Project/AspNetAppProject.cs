@@ -275,8 +275,14 @@ namespace AspNetAddIn
 					return WebSubtype.WebImage;
 				case "skin":
 					return WebSubtype.WebSkin;
-			case "config":
+				case "config":
 					return WebSubtype.Config;
+				case "browser":
+					return WebSubtype.BrowserDefinition;
+				case "axd":
+					return WebSubtype.Axd;
+				case "sitemap":
+					return WebSubtype.Sitemap;
 				default:
 					return WebSubtype.None;
 			}
@@ -319,7 +325,7 @@ namespace AspNetAddIn
 						
 					//last request has failed so show user the error
 					} else if (i >= (noOfRequests - 1)) {
-						string message = String.Format ("Could not connect to webserver {0}", url);
+						string message = GettextCatalog.GetString ("Could not connect to webserver {0}", url);
 						MonoDevelop.Ide.Gui.IdeApp.Services.MessageService.ShowError (exp, message);
 						
 					//we still have requests to go, so cancel the current one and sleep for a bit
@@ -380,6 +386,29 @@ namespace AspNetAddIn
 		}
 		
 		#endregion
+		
+		public List<string> GetNotPresentSpecialDirectories ()
+		{
+			List<string> notPresent = new List<string> ();
+			
+			if (ClrVersion == MonoDevelop.Core.ClrVersion.Net_2_0)
+				foreach (string dir in specialDirs20)
+					if (ProjectFiles.GetFile (Path.Combine (BaseDirectory, dir)) == null)
+						notPresent.Add (dir);
+			
+			return notPresent;
+		}
+	
+		static readonly string [] specialDirs20 = new string [] {
+			"App_Code",
+			"App_Themes",
+			"App_Browsers",
+			"App_Data",
+			"App_WebReferences",
+			"App_Resources",
+			"App_LocalResources",
+			"App_GlobalResources",		
+		};
 	}
 	
 	public enum WebSubtype
@@ -393,15 +422,12 @@ namespace AspNetAddIn
 		WebHandler,
 		WebSkin,
 		WebImage,
+		BrowserDefinition,
+		Sitemap,
 		Global,
 		Config,
+		Axd,
 	}
 	
-	public enum SpecialFiles
-	{
-	}
 	
-	public enum SpecialFiles20
-	{
-	}
 }

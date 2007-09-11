@@ -76,6 +76,8 @@
     <File name="./Templates/WebApplication-Empty.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./Templates/WebConfig-Application.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./Templates/WebConfig-SubDir.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./Project/ProjectFolderNodeBuilderExtension.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Project/AspNetCommands.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />
