@@ -640,17 +640,19 @@ namespace MonoDevelop.SourceEditor.Gui
 			{
 				pix = IdeApp.Services.Resources.GetIcon(IdeApp.Services.Icons.GetIcon (mem), IconSize.Menu); 
 				string name;
-					
-				if (mem is IMethod) {
-					IMethod method = (IMethod) mem;
+				
+				IMethod method = mem as IMethod;
+				if (method != null) {
 					// For methods we append their parameter types too. This is a nice feature,
 					// and it is also necessay to avoid problems with overloaded methods having
 					// the same name
 					StringBuilder methodName = new StringBuilder();
 					methodName.Append(method.Name + " (");
-					for (int i = 0; i < method.Parameters.Count; i++) {
-						methodName.Append(method.Parameters [i].ReturnType.Name);
-						if (i < method.Parameters.Count - 1) methodName.Append (", ");
+					if (method.Parameters != null) {
+						for (int i = 0; i < method.Parameters.Count; i++) {
+							methodName.Append(method.Parameters [i].ReturnType.Name);
+							if (i < method.Parameters.Count - 1) methodName.Append (", ");
+						}
 					}
 					methodName.Append(")"); 
 					name = methodName.ToString ();
