@@ -71,21 +71,26 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		public void RenameClass (IProgressMonitor monitor, IClass cls, string newName, RefactoryScope scope)
 		{
-			MemberReferenceCollection refs = new MemberReferenceCollection ();
-			Refactor (monitor, cls, scope, new RefactorDelegate (new RefactorFindClassReferences (cls, refs).Refactor));
-			refs.RenameAll (newName);
-			
-			RefactorerContext gctx = GetGeneratorContext (cls);
-			IRefactorer r = GetGeneratorForClass (cls);
-			
-			foreach (IMethod method in cls.Methods) {
-				if (method.IsConstructor)
-					r.RenameMember (gctx, cls, (IMember) method, newName);
+			try {
+				MemberReferenceCollection refs = new MemberReferenceCollection ();
+				Refactor (monitor, cls, scope, new RefactorDelegate (new RefactorFindClassReferences (cls, refs).Refactor));
+				refs.RenameAll (newName);
+				
+				RefactorerContext gctx = GetGeneratorContext (cls);
+				IRefactorer r = GetGeneratorForClass (cls);
+				
+				foreach (IMethod method in cls.Methods) {
+					if (method.IsConstructor)
+						r.RenameMember (gctx, cls, (IMember) method, newName);
+				}
+				
+				r.RenameClass (gctx, cls, newName);
+				
+				gctx.Save ();
+			} catch (Exception e) {
+				Runtime.LoggingService.Error (GettextCatalog.GetString ("Error while renaming {0} to {1}: {2}",  cls, newName, e.ToString ()));
+				return null;
 			}
-			
-			r.RenameClass (gctx, cls, newName);
-			
-			gctx.Save ();
 		}
 		
 		public MemberReferenceCollection FindClassReferences (IProgressMonitor monitor, IClass cls, RefactoryScope scope)
@@ -238,7 +243,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				gen.RemoveMember (gctx, cls, member);
 				gctx.Save ();
 			} catch (Exception e) {
-				Runtime.LoggingService.Error (GettextCatalog.GetString ("Error while removing member {0}:{1}", member, e.ToString ()));
+				Runtime.LoggingService.Error (GettextCatalog.GetString ("Error while removing {0}:{1}", member, e.ToString ()));
 			}
 		}
 		
@@ -255,7 +260,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				gctx.Save ();
 				return m;
 			} catch (Exception e) {
-				Runtime.LoggingService.Error (GettextCatalog.GetString ("Error while renaming member {0} to {1}: {2}",  member, newName, e.ToString ()));
+				Runtime.LoggingService.Error (GettextCatalog.GetString ("Error while renaming {0} to {1}: {2}",  member, newName, e.ToString ()));
 				return null;
 			}
 		}
@@ -269,40 +274,55 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		public IMember ReplaceMember (IClass cls, IMember oldMember, CodeTypeMember member)
 		{
-			RefactorerContext gctx = GetGeneratorContext (cls);
-			IRefactorer gen = GetGeneratorForClass (cls);
-			IMember m = gen.ReplaceMember (gctx, cls, oldMember, member);
-			gctx.Save ();
-			return m;
+			try {
+				RefactorerContext gctx = GetGeneratorContext (cls);
+				IRefactorer gen = GetGeneratorForClass (cls);
+				IMember m = gen.ReplaceMember (gctx, cls, oldMember, member);
+				gctx.Save ();
+				return m;
+			} catch (Exception e) {
+				Runtime.LoggingService.Error (GettextCatalog.GetString ("Error while replacing {0}: {1}",  member, e.ToString ()));
+				return null;
+			}
 		}
 		
 		public bool RenameVariable (IProgressMonitor monitor, LocalVariable var, string newName)
 		{
-			MemberReferenceCollection refs = new MemberReferenceCollection ();
-			Refactor (monitor, var, new RefactorDelegate (new RefactorFindVariableReferences (var, refs).Refactor));
-			refs.RenameAll (newName);
-			
-			RefactorerContext gctx = GetGeneratorContext (var);
-			IRefactorer r = GetGeneratorForVariable (var);
-			bool rv = r.RenameVariable (gctx, var, newName);
-			gctx.Save ();
-			
-			return rv;
+			try {
+				MemberReferenceCollection refs = new MemberReferenceCollection ();
+				Refactor (monitor, var, new RefactorDelegate (new RefactorFindVariableReferences (var, refs).Refactor));
+				refs.RenameAll (newName);
+				
+				RefactorerContext gctx = GetGeneratorContext (var);
+				IRefactorer r = GetGeneratorForVariable (var);
+				bool rv = r.RenameVariable (gctx, var, newName);
+				gctx.Save ();
+				
+				return rv;
+			} catch (Exception e) {
+				Runtime.LoggingService.Error (GettextCatalog.GetString ("Error while renaming {0} to {1}: {2}",  var, newName, e.ToString ()));
+				return false;
+			}
 		}
 		
 		public bool RenameParameter (IProgressMonitor monitor, IParameter param, string newName)
 		{
-			MemberReferenceCollection refs = new MemberReferenceCollection ();
-			Refactor (monitor, param, new RefactorDelegate (new RefactorFindParameterReferences (param, refs).Refactor));
-			refs.RenameAll (newName);
-			
-			IMember member = param.DeclaringMember;
-			RefactorerContext gctx = GetGeneratorContext (member.DeclaringType);
-			IRefactorer r = GetGeneratorForClass (member.DeclaringType);
-			bool rv = r.RenameParameter (gctx, param, newName);
-			gctx.Save ();
-			
-			return rv;
+			try {
+				MemberReferenceCollection refs = new MemberReferenceCollection ();
+				Refactor (monitor, param, new RefactorDelegate (new RefactorFindParameterReferences (param, refs).Refactor));
+				refs.RenameAll (newName);
+				
+				IMember member = param.DeclaringMember;
+				RefactorerContext gctx = GetGeneratorContext (member.DeclaringType);
+				IRefactorer r = GetGeneratorForClass (member.DeclaringType);
+				bool rv = r.RenameParameter (gctx, param, newName);
+				gctx.Save ();
+				
+				return rv;
+			} catch (Exception e) {
+				Runtime.LoggingService.Error (GettextCatalog.GetString ("Error while renaming {0} to {1}: {2}",  cls, newName, e.ToString ()));
+				return null;
+			}
 		}
 		
 		public IMember EncapsulateField (IProgressMonitor monitor, IClass cls, IField field, string propName, bool updateInternalRefs)
