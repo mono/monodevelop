@@ -1086,7 +1086,7 @@ namespace MonoDevelop.Prj2Make
 				config.OutputAssembly = Unescape (str_tmp);
 
 			if (ReadAsString (nav, "OutputPath", ref str_tmp, false))
-				config.OutputDirectory = MapAndResolvePath (basePath, str_tmp);
+				config.OutputDirectory = MapAndResolvePath (basePath, Unescape (str_tmp));
 
 			if (ReadAsBool (nav, "DebugSymbols", ref bool_tmp))
 				//FIXME: <DebugType>?
