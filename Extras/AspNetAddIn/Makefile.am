@@ -2,7 +2,6 @@ ADDIN_BUILD = $(top_builddir)/build/AddIns/AspNetAddIn
 ASSEMBLY = $(ADDIN_BUILD)/AspNetAddIn.dll
 
 REFS =  \
-	$(GLADE_SHARP_LIBS) \
 	$(GNOME_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment.dll \
@@ -23,10 +22,12 @@ REFS =  \
 
 FILES =  \
 	gtk-gui/AspNetAddIn.AspNetConfigurationPanelWidget.cs \
+	gtk-gui/AspNetAddIn.XspOptionsPanelWidget.cs \
 	gtk-gui/generated.cs \
 	Gui/AspNetConfigurationPanel.cs \
 	Gui/AspNetConfigurationPanelWidget.cs \
 	Gui/XspOptionsPanel.cs \
+	Gui/XspOptionsPanelWidget.cs \
 	Parser/Document.cs \
 	Parser/Internal/AspParser.cs \
 	Parser/Internal/AspTokenizer.cs \
@@ -64,7 +65,6 @@ FILES =  \
 
 RES =  \
 	AspNetAddIn.addin.xml \
-	AspNetAddIn.glade \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
 	Templates/GlobalAsax-CodeBehind.xft.xml \

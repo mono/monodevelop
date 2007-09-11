@@ -1,5 +1,16 @@
 2007-09-11  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* Gui/XspOptionsPanel.cs, Gui/XspOptionsPanelWidget.cs, AspNetAddIn.glade,
+	  gtk-gui/generated.cs,
+	  gtk-gui/AspNetAddIn.AspNetConfigurationPanelWidget.cs,
+	  gtk-gui/AspNetAddIn.XspOptionsPanelWidget.cs, gtk-gui/gui.stetic,
+	  AspNetAddIn.mdp, Makefile.am: Migrate XspOptionsPanel from glade to
+	  stetic.
+	* Gui/AspNetConfigurationPanelWidget.cs,
+	  Project/AspNetFileDescriptionTemplate.cs: Remove unused fields.
+
+2007-09-11  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* Project/ProjectFolderNodeBuilderExtension.cs, Project/AspNetCommands.cs,
 	  AspNetAddIn.addin.xml, AspNetAddIn.mdp, Makefile.am: Add a command/menu
 	  for creating ASP.NET special directories.

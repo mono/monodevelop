@@ -26,7 +26,7 @@ namespace AspNetAddIn {
         private Gtk.CheckButton autoGenerateNonPartialCodeBehind;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget AspNetAddIn.AspNetConfigurationPanelWidget
             Stetic.BinContainer.Attach(this);
             this.Name = "AspNetAddIn.AspNetConfigurationPanelWidget";

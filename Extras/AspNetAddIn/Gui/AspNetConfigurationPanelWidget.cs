@@ -15,15 +15,11 @@ namespace AspNetAddIn
 	public partial class AspNetConfigurationPanelWidget : Gtk.Bin
 	{
 		AspNetAppProjectConfiguration configuration;
-		AspNetAppProject project;
 		
 		public AspNetConfigurationPanelWidget (Properties customizationObject)
 		{
 			this.Build();
-			
 			configuration = ((Properties)customizationObject).Get<AspNetAppProjectConfiguration> ("Config");
-			project = ((Properties)customizationObject).Get<AspNetAppProject> ("Project");
-				
 			autoGenerateNonPartialCodeBehind.Active = configuration.GenerateNonPartialCodeBehindMembers;
 		}
 		

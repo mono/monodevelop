@@ -48,7 +48,6 @@ namespace AspNetAddIn
 	public class AspNetFileDescriptionTemplate : SingleFileDescriptionTemplate
 	{
 		string content;
-		string entryName;
 		Hashtable codeAreas = new Hashtable ();
 		
 		public override void Load (XmlElement filenode)
