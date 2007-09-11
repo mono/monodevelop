@@ -1086,6 +1086,7 @@ EnumMemberDecl<out FieldDeclaration f>
 	                                   varDecl.StartLocation = t.Location;	                                   f.Fields.Add(varDecl);
 									   varDecl.EndLocation = t.EndLocation;
 	                                   f.StartLocation = t.Location;
+	                                   f.EndLocation = t.EndLocation;
 	                                   f.Fields.Add(varDecl);
 	                                .)
 	[ "=" Expr<out expr> (. varDecl.EndLocation = t.EndLocation;  varDecl.Initializer = expr; .) ]
@@ -1141,11 +1142,16 @@ SetAccessorDecl<out PropertySetRegion setBlock, List<AttributeSection> attribute
 (. Statement stmt = null; .)
 =
 	ident /* "set" is not a keyword! */
-	(. if (t.val != "set") Error("set expected"); .)
-	(. Location startLocation = t.Location; .)
+	(. 
+	   if (t.val != "set") Error("set expected");
+	   Location startLocation = t.Location; 
+	.)
 	( Block<out stmt> | ";" )
-	(. setBlock = new PropertySetRegion((BlockStatement)stmt, attributes); .)
-	(. setBlock.StartLocation = startLocation; setBlock.EndLocation = t.EndLocation; .)
+	(. 
+	   setBlock = new PropertySetRegion((BlockStatement)stmt, attributes);
+	   setBlock.StartLocation = startLocation; 
+	   setBlock.EndLocation   = t.EndLocation; 
+	.)
 .
 
 EventAccessorDecls<out EventAddRegion addBlock, out EventRemoveRegion removeBlock>

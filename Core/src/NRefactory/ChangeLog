@@ -1,3 +1,7 @@
+2007-09-11  Mike Krüger <mkrueger@novell.com> 
+
+	* Project/Src/Parser/CSharp/cs.ATG: Corrected enum field end location. 
+
 2007-09-07  Mike Krüger <mkrueger@novell.com> 
 
 	* Project/Src/Parser/CSharp/cs.ATG, Project/Src/Parser/CSharp/Parser.cs:
