@@ -1,3 +1,8 @@
+2007-09-11  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/CodeGenerator.cs: Fixed 82500: Rename refactoring enum value
+	  crashes MonoDevelop.
+
 2007-09-10  Mike Krüger <mkrueger@novell.com> 
 
 	* Parser/Resolver.cs: Fixed 82760: Nul ref enableing autocomplete.

@@ -236,16 +236,18 @@ namespace CSharpBinding.Parser
 		
 		bool IsMatchedField (string txt, string field, int index)
 		{
-			char c = txt[index - 1];
-			
-			if (Char.IsLetterOrDigit (c) || c == '_')
-				return false;
-			
-			c = txt[index + field.Length];
-			
-			if (Char.IsLetterOrDigit (c) || c == '_')
-				return false;
-			
+			char c;
+			if (index > 0) {
+				c = txt[index - 1];			
+				if (Char.IsLetterOrDigit (c) || c == '_')
+					return false;
+			}
+			if (index + field.Length < txt.Length) {
+				c = txt[index + field.Length];
+				
+				if (Char.IsLetterOrDigit (c) || c == '_')
+					return false;
+			}
 			return true;
 		}
 		
@@ -261,12 +263,10 @@ namespace CSharpBinding.Parser
 			string name = member.Name;
 			int len = txt.Length;
 			int pos = -1;
-			
 			if (member is IField) {
 				// Fields are different because multiple fields can be declared
 				// in the same region and might even reference each other
 				// e.g. "public int fu, bar = 1, baz = bar;"
-				
 				do {
 					if ((pos = txt.IndexOf (member.Name, pos + 1)) == -1)
 						return -1;
