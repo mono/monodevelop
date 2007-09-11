@@ -308,6 +308,28 @@ namespace MonoDevelop.Projects
 			ProjectFiles.Add (projectFile);
 		}
 		
+		public ProjectFile AddDirectory (string relativePath)
+		{
+			string newPath = Path.Combine (BaseDirectory, relativePath);
+			
+			foreach (ProjectFile fInfo in ProjectFiles)
+				if (fInfo.Name == newPath && fInfo.Subtype == Subtype.Directory)
+					return fInfo;
+			
+			if (!Directory.Exists (newPath)) {
+				if (File.Exists (newPath)) {
+					string message = GettextCatalog.GetString ("Cannot create directory {0}, as a file with that name exists.", newPath);
+					throw new InvalidOperationException (message);
+				}
+				Runtime.FileService.CreateDirectory (newPath);
+			}
+			
+			ProjectFile newDir = new ProjectFile (newPath);
+			newDir.Subtype = Subtype.Directory;
+			AddFile (newDir);
+			return newDir;
+		}
+		
 		public ICompilerResult Build (IProgressMonitor monitor, bool buildReferences)
 		{
 			return InternalBuild (monitor, buildReferences);

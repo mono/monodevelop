@@ -1,3 +1,8 @@
+2007-09-11  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects/Project.cs: Add a utility method to Project for
+	  adding directories.
+
 2007-09-11  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: fixed compilation
