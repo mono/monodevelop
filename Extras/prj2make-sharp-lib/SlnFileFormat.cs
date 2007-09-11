@@ -538,6 +538,56 @@ namespace MonoDevelop.Prj2Make
 					combine.Entries.Add (ce);
 			}
 
+			//Resolve project references
+			List<ProjectReference> toRemove = new List<ProjectReference> ();
+			List<ProjectReference> toAdd = new List<ProjectReference> ();
+			foreach (Project p in combine.GetAllProjects ()) {
+				toRemove.Clear ();
+				toAdd.Clear ();
+				MSBuildData msbuildData = p.ExtendedProperties [typeof (MSBuildFileFormat)] as MSBuildData;
+				if (msbuildData == null)
+					continue;
+
+				foreach (ProjectReference pref in p.ProjectReferences) {
+					if (pref.ReferenceType != ReferenceType.Project)
+						continue;
+
+					Project rp = combine.FindProject (pref.Reference);
+					if (rp != null)
+						continue;
+
+					//Unresolved
+					XmlElement elem = msbuildData.ProjectReferenceElements [pref];
+					if (elem == null)
+						//Should not happen
+						continue;
+
+					if (elem ["Project"] == null)
+						continue;
+
+					string guid = elem ["Project"].InnerText.Trim (new char [] {'{', '}'});
+					if (!combine.ProjectsByGuid.ContainsKey (guid))
+						continue;
+
+					toRemove.Add (pref);
+					rp = combine.ProjectsByGuid [guid];
+					ProjectReference newRef = new ProjectReference (ReferenceType.Project, rp.Name);
+					toAdd.Add (newRef);
+
+					XmlElement clonedElement = (XmlElement) elem.Clone ();
+					elem.ParentNode.InsertAfter (clonedElement, elem);
+					msbuildData.ProjectReferenceElements [newRef] = clonedElement;
+				}
+
+				foreach (ProjectReference pref in toRemove) {
+					p.ProjectReferences.Remove (pref);
+					msbuildData.ProjectReferenceElements.Remove (pref);
+				}
+
+				foreach (ProjectReference pref in toAdd)
+					p.ProjectReferences.Add (pref);
+			}
+
 			//FIXME: This can be just SolutionConfiguration also!
 			if (globals != null) {
 				if (globals.Contains ("SolutionConfigurationPlatforms")) {

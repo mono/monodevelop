@@ -1,3 +1,11 @@
+2007-09-12  Ankit Jain  <jankit@novell.com>
+
+	Fix bug#82688.
+	* MSBuildFileFormat.cs (ReferenceToXmlElement): Set Name for project
+	reference only when creating a new element.
+	* SlnFileFormat.cs (LoadSolution): Resolve any unresolved project
+	references using the project guids.
+
 2007-09-11  Ankit Jain  <jankit@novell.com>
 
 	Fix bug#82736.

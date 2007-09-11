@@ -608,6 +608,7 @@ namespace MonoDevelop.Prj2Make
 		{
 			ReferenceType refType = projectRef.ReferenceType;
 
+			bool newElement = false;
 			XmlDocument doc = d.Document;
 			XmlElement elem;
 			if (!d.ProjectReferenceElements.TryGetValue (projectRef, out elem)) {
@@ -618,6 +619,7 @@ namespace MonoDevelop.Prj2Make
 					elemName = "Reference";
 
 				elem = doc.CreateElement (elemName, ns);
+				newElement = true;
 
 				//Add the element to the document
 				XmlNode node = doc.SelectSingleNode (String.Format ("/tns:Project/tns:ItemGroup/tns:{0}", elemName), NamespaceManager);
@@ -671,7 +673,10 @@ namespace MonoDevelop.Prj2Make
 							EnsureChildValue (elem, "Project", ns, String.Concat ("{", data.Guid, "}"));
 					}
 
-					EnsureChildValue (elem, "Name", ns, Escape (p.Name));
+					if (newElement)
+						//Set Name only for newly created elements, this could be
+						//different from referenced project's Name
+						EnsureChildValue (elem, "Name", ns, Escape (p.Name));
 				}
 				break;
 			case ReferenceType.Custom:
