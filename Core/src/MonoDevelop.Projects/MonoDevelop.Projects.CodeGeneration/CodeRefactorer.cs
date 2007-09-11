@@ -89,7 +89,6 @@ namespace MonoDevelop.Projects.CodeGeneration
 				gctx.Save ();
 			} catch (Exception e) {
 				Runtime.LoggingService.Error (GettextCatalog.GetString ("Error while renaming {0} to {1}: {2}",  cls, newName, e.ToString ()));
-				return null;
 			}
 		}
 		
@@ -320,8 +319,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 				
 				return rv;
 			} catch (Exception e) {
-				Runtime.LoggingService.Error (GettextCatalog.GetString ("Error while renaming {0} to {1}: {2}",  cls, newName, e.ToString ()));
-				return null;
+				Runtime.LoggingService.Error (GettextCatalog.GetString ("Error while renaming {0} to {1}: {2}",  param, newName, e.ToString ()));
+				return false;
 			}
 		}
 		
