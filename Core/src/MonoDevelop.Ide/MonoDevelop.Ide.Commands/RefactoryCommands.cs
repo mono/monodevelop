@@ -288,10 +288,13 @@ namespace MonoDevelop.Ide.Commands
 			} else if (item is IMethod) {
 				IMethod method = item as IMethod;
 				
-				if (method.IsConstructor)
+				if (method.IsConstructor) {
 					txt = GettextCatalog.GetString ("Constructor <b>{0}</b>", EscapeName (method.DeclaringType.Name));
-				else
+				} else {
 					txt = GettextCatalog.GetString ("Method <b>{0}</b>", itemName);
+					if (method.IsOverride) 
+						ciset.CommandInfos.Add (GettextCatalog.GetString ("Go to _base"), new RefactoryOperation (refactorer.GoToBase));
+				}
 			} else if (item is IIndexer) {
 				txt = GettextCatalog.GetString ("Indexer <b>{0}</b>", itemName);
 			} else if (item is IParameter) {
@@ -385,10 +388,8 @@ namespace MonoDevelop.Ide.Commands
 		
 		public void GoToBase ()
 		{
-			IClass cls = (IClass) item;
-			if (cls == null) return;
-			
-			if (cls.BaseTypes != null) {
+			IClass cls = item as IClass;
+			if (cls != null && cls.BaseTypes != null) {
 				foreach (IReturnType bc in cls.BaseTypes) {
 					IClass bcls = ctx.GetClass (bc.FullyQualifiedName, true, true);
 					if (bcls != null && bcls.ClassType != ClassType.Interface && bcls.Region != null) {
@@ -396,6 +397,26 @@ namespace MonoDevelop.Ide.Commands
 						return;
 					}
 				}
+				return;
+			}
+			IMethod method = item as IMethod;
+			if (method != null) {
+				foreach (IReturnType bc in method.DeclaringType.BaseTypes) {
+					IClass bcls = ctx.GetClass (bc.FullyQualifiedName, true, true);
+					if (bcls != null && bcls.ClassType != ClassType.Interface && bcls.Region != null) {
+						IMethod baseMethod = null;
+						foreach (IMethod m in bcls.Methods) {
+							if (m.Name == method.Name && m.Parameters.Count == m.Parameters.Count) {
+								baseMethod = m;
+								break;
+							}
+						}
+						if (baseMethod != null)
+							IdeApp.Workbench.OpenDocument (bcls.Region.FileName, baseMethod.Region.BeginLine, baseMethod.Region.BeginColumn, true);
+						return;
+					}
+				}
+				return;
 			}
 		}
 		

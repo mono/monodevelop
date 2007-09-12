@@ -1,3 +1,8 @@
+2007-09-12  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Implemented 82241: Can't
+	  navigate to the base method.
+
 2007-09-10  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Templates/FileTemplate.cs: Add additional check to
