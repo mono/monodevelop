@@ -11,7 +11,7 @@
 namespace CSharpBinding {
     
     
-    public partial class FormattingPanelWidget {
+    internal partial class FormattingPanelWidget {
         
         private Gtk.VBox container;
         
@@ -130,6 +130,7 @@ namespace CSharpBinding {
             this.indentGotoLabelsLeftJustify = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("Place goto labels in leftmost column"));
             this.indentGotoLabelsLeftJustify.CanFocus = true;
             this.indentGotoLabelsLeftJustify.Name = "indentGotoLabelsLeftJustify";
+            this.indentGotoLabelsLeftJustify.Active = true;
             this.indentGotoLabelsLeftJustify.DrawIndicator = true;
             this.indentGotoLabelsLeftJustify.UseUnderline = true;
             this.indentGotoLabelsLeftJustify.Group = new GLib.SList(System.IntPtr.Zero);

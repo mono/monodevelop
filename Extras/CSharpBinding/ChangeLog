@@ -1,3 +1,14 @@
+2007-09-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/CSharpTextEditorExtension.cs: Allow showing intrinsic names only when
+	  resolving is, as or new.
+	* Gui/FormattingPanel.cs, CSharpBinding.mdp,
+	  gtk-gui/CSharpBinding.FormattingPanelWidget.cs, gtk-gui/gui.stetic:
+	  Updated.
+	* Parser/Resolver.cs: The text editor extension needs internalResolve to
+	  return the real array types, not only System.Array. Fixes bug #82831.
+	* CSharpAmbience.cs: Add support for the new UseIntrinsicNames flag.
+
 2007-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Gui/CSharpTextEditorExtension.cs: Don't include abstract classes in the

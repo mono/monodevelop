@@ -556,6 +556,8 @@ namespace CSharpBinding
 				
 					IParserContext pctx = GetParserContext ();
 					CodeCompletionDataProvider cp = new CodeCompletionDataProvider (pctx, GetAmbience ());
+					cp.AllowInstrinsicNames = true;
+					
 					Resolver res = new Resolver (pctx);
 					
 					IReturnType rt;
@@ -582,7 +584,7 @@ namespace CSharpBinding
 					IClass cls = pctx.GetClass (rt.FullyQualifiedName, rt.GenericArguments);
 					if (cls != null && cls.ClassType != ClassType.Interface && !cls.IsAbstract) {
 						cp.AddResolveResult (cls);
-						cp.DefaultCompletionString = GetAmbience ().Convert (cls, ConversionFlags.None);
+						cp.DefaultCompletionString = GetAmbience ().Convert (cls, ConversionFlags.UseIntrinsicTypeNames);
 					}
 					
 					return cp;
@@ -646,6 +648,7 @@ namespace CSharpBinding
 				completionProvider.AddResolveResults (new ResolveResult(namespaces));
 			} else if (charTyped == ' ') {
 				if (expression == "is" || expression == "as") {
+					completionProvider.AllowInstrinsicNames = true;
 					string expr = expressionFinder.FindExpression (Editor.GetText (0, ctx.TriggerOffset), ctx.TriggerOffset - 5).Expression;
 					Resolver res = new Resolver (parserContext);
 					completionProvider.AddResolveResults (res.IsAsResolve (expr, caretLineNumber, caretColumn, FileName, Editor.Text, false));

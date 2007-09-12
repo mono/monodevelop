@@ -501,6 +501,7 @@
   </widget>
   <widget class="Gtk.Bin" id="CSharpBinding.FormattingPanelWidget" design-size="320 240">
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="container">
         <property name="MemberName" />

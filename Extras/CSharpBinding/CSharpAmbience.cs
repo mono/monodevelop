@@ -99,9 +99,9 @@ namespace CSharpBinding
 		{
 			int p = typeName.IndexOf ('`');
 			if (p == -1)
-				return GetIntrinsicTypeName (typeName);
+				return GetIntrinsicTypeName (typeName, conversionFlags);
 
-			StringBuilder res = new StringBuilder (GetIntrinsicTypeName (typeName.Substring (0, p)));
+			StringBuilder res = new StringBuilder (GetIntrinsicTypeName (typeName.Substring (0, p), conversionFlags));
 			int i = typeName.IndexOf ('[', p);
 			if (i == -1)
 				return typeName.Substring (0, p);
@@ -119,7 +119,7 @@ namespace CSharpBinding
 			if (p == -1)
 				return false;
 			
-			res.Append (GetIntrinsicTypeName (str.Substring (i, p - i)));
+			res.Append (GetIntrinsicTypeName (str.Substring (i, p - i), conversionFlags));
 			while (true) {
 				char c = str [p];
 				if (c == '`') {
@@ -232,10 +232,13 @@ namespace CSharpBinding
 					builder.Append(Convert(m.ReturnType, conversionFlags));
 					builder.Append(' ');
 				}
-			} else if (UseFullyQualifiedMemberNames(conversionFlags)) {
-				AppendPangoHtmlTag (builder, ConvertTypeName (c.FullyQualifiedName, conversionFlags), "b", conversionFlags);
 			} else {
-				AppendPangoHtmlTag (builder, ConvertTypeName (c.Name, conversionFlags), "b", conversionFlags);
+				string name;
+				if (UseFullyQualifiedMemberNames (conversionFlags) || (UseIntrinsicTypeNames (conversionFlags) && typeConversionTable.Contains (c.FullyQualifiedName)))
+					name = c.FullyQualifiedName;
+				else
+					name = c.Name;
+				AppendPangoHtmlTag (builder, ConvertTypeName (name, conversionFlags), "b", conversionFlags);
 			}
 			
 			// Display generic parameters only if told so
@@ -571,8 +574,8 @@ namespace CSharpBinding
 				//}
 			//}
 			
-			if (typeConversionTable[returnType.FullyQualifiedName] != null) {
-				builder.Append(typeConversionTable[returnType.FullyQualifiedName].ToString());
+			if (UseIntrinsicTypeNames (conversionFlags) && typeConversionTable.Contains (returnType.FullyQualifiedName)) {
+				builder.Append (typeConversionTable[returnType.FullyQualifiedName].ToString());
 			} else {
 				if (UseFullyQualifiedMemberNames(conversionFlags)) {
 					builder.Append (ConvertTypeName (returnType.FullyQualifiedName, conversionFlags));
@@ -670,12 +673,13 @@ namespace CSharpBinding
 			return "// " + comment;
 		}
 
-		public override string GetIntrinsicTypeName(string dotNetTypeName)
+		public override string GetIntrinsicTypeName (string dotNetTypeName)
 		{
-			if (typeConversionTable[dotNetTypeName] != null) {
-				return (string)typeConversionTable[dotNetTypeName];
-			}
-			return dotNetTypeName;
+			string tn = typeConversionTable [dotNetTypeName] as string;
+			if (tn != null)
+				return tn;
+			else
+				return dotNetTypeName;
 		}
 		
 	}

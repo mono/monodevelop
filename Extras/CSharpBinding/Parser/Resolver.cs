@@ -160,9 +160,6 @@ namespace CSharpBinding.Parser
 				type=expr.AcceptVisitor(typeVisitor,null) as IReturnType;
 				if (type==null)	return null;
 			}
-			if (type.ArrayDimensions != null && type.ArrayDimensions.Length > 0) {
-				type = new ReturnType("System.Array");
-			}
 			//Console.WriteLine("Here: Type is " + type.FullyQualifiedName);
 			return type;
 		}
@@ -298,6 +295,10 @@ namespace CSharpBinding.Parser
 			if (type == null)
 				return null;
 
+			// Needed to be able to find the array members
+			if (type.ArrayDimensions != null && type.ArrayDimensions.Length > 0)
+				type = new ReturnType("System.Array");
+			
 			IClass returnClass = SearchType (type, currentUnit);
 			if (returnClass == null) {
 				// Try if type is Namespace:
