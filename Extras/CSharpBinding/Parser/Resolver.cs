@@ -134,6 +134,11 @@ namespace CSharpBinding.Parser
 				callingClass = GetInnermostClass();
 //				Console.WriteLine("CallingClass is " + callingClass == null ? "null" : callingClass.Name);
 			}
+			
+			// No completion inside enums
+			if (callingClass != null && callingClass.ClassType == ClassType.Enum)
+				return null;
+			
 			//Console.WriteLine("expression = " + expr.ToString());
 			IReturnType type = expr.AcceptVisitor(typeVisitor, null) as IReturnType;
 			//Console.WriteLine("type visited");
@@ -255,16 +260,13 @@ namespace CSharpBinding.Parser
 				return null;
 			}
 			expression = expression.TrimStart(null);
-			if (expression == "") {
+			if (expression.Length == 0)
 				return null;
-			}
+
 			// disable the code completion for numbers like 3.47
-			try {
-				int.Parse(expression);
-//				Console.WriteLine(expression);
+			int nn;
+			if (int.TryParse (expression, out nn))
 				return null;
-			} catch (Exception) {
-			}
 			
 			if (expression.StartsWith("using ")) {
 				// expression[expression.Length - 1] != '.'

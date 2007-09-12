@@ -13,7 +13,6 @@ using System.Drawing;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core;
-using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Text;

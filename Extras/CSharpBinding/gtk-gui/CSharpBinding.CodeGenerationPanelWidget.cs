@@ -11,7 +11,7 @@
 namespace CSharpBinding {
     
     
-    public partial class CodeGenerationPanelWidget {
+    internal partial class CodeGenerationPanelWidget {
         
         private Gtk.VBox vbox62;
         
@@ -76,7 +76,7 @@ namespace CSharpBinding {
         private Gtk.CheckButton generateXmlOutputCheckButton;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget CSharpBinding.CodeGenerationPanelWidget
             Stetic.BinContainer.Attach(this);
             this.Name = "CSharpBinding.CodeGenerationPanelWidget";

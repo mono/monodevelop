@@ -38,15 +38,11 @@ namespace CSharpBinding
 		
 		IClass LookupClass (ICompilationUnit unit, int line, int column)
 		{
-			int classStartLine = int.MaxValue;
-			IClass result = null;
 			foreach (IClass c in unit.Classes) {
-				if (c.BodyRegion.IsInside (line, column)) {
-					classStartLine = c.Region.BeginLine;
-					result = c;
-				}
+				if (c.BodyRegion.IsInside (line, column))
+					return c;
 			}
-			return result;
+			return null;
 		}
 		
 		void AppendSummary (StringBuilder sb)
@@ -490,7 +486,6 @@ namespace CSharpBinding
 				// Get the text from the begining of the line
 				int lin, col;
 				Editor.GetLineColumnFromPosition (Editor.CursorPosition, out lin, out col);
-				int lineStart = Editor.GetPositionFromLineColumn (lin, 1);
 				string textToCursor = Editor.GetText (0, Editor.CursorPosition - 1);
 				
 				// Find the expression before the '('
@@ -619,7 +614,7 @@ namespace CSharpBinding
 				Resolver res = new Resolver (pctx);
 							
 				IClass cls = res.GetCallingClass (line, column, FileName, true);
-				if (cls != null) {
+				if (cls != null && (cls.ClassType == ClassType.Class || cls.ClassType == ClassType.Struct)) {
 					string typedModifiers = Editor.GetText (firstMod, ctx.TriggerOffset);
 					return GetOverridablesCompletionData (pctx, ctx, cls, firstMod, typedModifiers);
 				}

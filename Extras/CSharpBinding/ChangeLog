@@ -1,3 +1,15 @@
+2007-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/ChooseRuntimePanel.cs, Gui/CodeGenerationPanel.cs,
+	  FormattingStrategy/CSharpFormattingStrategy.cs, CSharpAmbience.cs: Fix
+	  warnings.
+	* Gui/CSharpTextEditorExtension.cs, Parser/Resolver.cs: Disable code
+	  completion inside enum declarations. Fixes bug #82541. Removed some
+	  warnings.
+	* gtk-gui/generated.cs, gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs,
+	  gtk-gui/CSharpBinding.FormattingPanelWidget.cs, gtk-gui/gui.stetic:
+	  Updated.
+
 2007-09-12  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/CSharpTextEditorExtension.cs: Fixed 82770: MonoDevelop should keep in

@@ -14,7 +14,6 @@ using System.Text;
 using MonoDevelop.SourceEditor;
 using MonoDevelop.SourceEditor.FormattingStrategy;
 using MonoDevelop.Core;
-using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 
 namespace CSharpBinding.FormattingStrategy {
