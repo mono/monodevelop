@@ -1,5 +1,10 @@
 2007-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Parser/TypeVisitor.cs: Use the fully qualified name when returning the
+	  type for array items. Fixes bug #82830.
+
+2007-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Parser/Resolver.cs, Parser/TypeVisitor.cs: The 'this' reference is not
 	  valid outside of a class member. Fix for bug #82743.
 

@@ -423,7 +423,7 @@ namespace CSharpBinding.Parser
 			}
 			int[] newArray = new int[type.ArrayDimensions.Length - 1];
 			Array.Copy(type.ArrayDimensions, 1, newArray, 0, type.ArrayDimensions.Length - 1);
-			return new ReturnType(type.Name, newArray, type.PointerNestingLevel, type.GenericArguments, false);
+			return new ReturnType(type.FullyQualifiedName, newArray, type.PointerNestingLevel, type.GenericArguments, false);
 		}
 		
 		public override object VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data)
