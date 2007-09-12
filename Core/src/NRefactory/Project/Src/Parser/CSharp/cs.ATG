@@ -1761,13 +1761,13 @@ PrimaryExpr<out Expression pexpr>
 			| "uint"  (. val = "uint"; .)
 			| "ulong"    (. val = "ulong"; .)
 			| "ushort" (. val = "ushort"; .)
-		) (. t.val = ""; .) "." ident (. pexpr = new FieldReferenceExpression(new TypeReferenceExpression(val), t.val); pexpr.StartLocation = t.Location; .)
+		) (. t.val = ""; .) "." ident (. pexpr = new FieldReferenceExpression(new TypeReferenceExpression(val), t.val); pexpr.StartLocation = t.Location; pexpr.EndLocation = t.EndLocation; .)
 		/*--- this access: */
 		| "this"                              (. pexpr = new ThisReferenceExpression(); pexpr.StartLocation = t.Location; .)
 		/*--- base access: */
 		| "base"                              (. Expression retExpr = new BaseReferenceExpression(); .)
 		(
-			"." ident                         (. retExpr = new FieldReferenceExpression(retExpr, t.val); retExpr.StartLocation = t.Location; .)
+			"." ident                         (. retExpr = new FieldReferenceExpression(retExpr, t.val); retExpr.StartLocation = t.Location; retExpr.EndLocation = t.EndLocation; .)
 			| "[" Expr<out expr>              (. List<Expression> indices = new List<Expression>(); if (expr != null) { indices.Add(expr); } .)
 			{ "," Expr<out expr>              (. if (expr != null) { indices.Add(expr); } .) }
 			"]"                               (. retExpr = new IndexerExpression(retExpr, indices); .)
@@ -1820,13 +1820,13 @@ PrimaryExpr<out Expression pexpr>
 			| "--" (. pexpr = new UnaryOperatorExpression(pexpr, UnaryOperatorType.PostDecrement); .)
 		)
 		/*--- member access */
-		| "->" ident (. pexpr = new PointerReferenceExpression(pexpr, t.val); pexpr.StartLocation = t.Location;  .)
-		| "." ident  (. pexpr = new FieldReferenceExpression(pexpr, t.val); pexpr.StartLocation = t.Location; .)
+		| "->" ident (. pexpr = new PointerReferenceExpression(pexpr, t.val); pexpr.StartLocation = t.Location; pexpr.EndLocation = t.EndLocation; .)
+		| "." ident  (. pexpr = new FieldReferenceExpression(pexpr, t.val); pexpr.StartLocation = t.Location; pexpr.EndLocation = t.EndLocation; .)
 		/* member access on generic type */
 		|   ( IF (IsGenericFollowedBy(Tokens.Dot) && IsTypeReferenceExpression(pexpr))
 				TypeArgumentList<out typeList, false> )
 				"." ident
-				(. pexpr = new FieldReferenceExpression(GetTypeReferenceExpression(pexpr, typeList), t.val);.)
+				(. pexpr = new FieldReferenceExpression(GetTypeReferenceExpression(pexpr, typeList), t.val); pexpr.StartLocation = t.Location; pexpr.EndLocation = t.EndLocation;.)
 		/*--- invocation expression: */
 		| "("                        (. List<Expression> parameters = new List<Expression>(); .)
 			[ Argument<out expr>     (. if (expr != null) {parameters.Add(expr);} .)
@@ -1846,8 +1846,10 @@ PrimaryExpr<out Expression pexpr>
 		} "]" (. pexpr = new IndexerExpression(pexpr, indices); .)
 	}
 	(. if (pexpr != null) {
-		pexpr.StartLocation = startPos;
-		pexpr.EndLocation = t.Location;
+		if (pexpr.StartLocation.IsEmpty)
+			pexpr.StartLocation = startPos;
+		if (pexpr.EndLocation.IsEmpty)
+			pexpr.EndLocation = t.EndLocation;
 	   }
 	.) 
 .
