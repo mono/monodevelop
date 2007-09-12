@@ -452,6 +452,9 @@ build/data/resources/css/Makefile
 build/data/resources/Makefile
 build/Makefile
 contrib/Makefile
+contrib/Mono.Addins/Makefile
+contrib/log4net/Makefile
+contrib/Mono.Cecil/Makefile
 Core/Makefile
 Core/src/NRefactory/Makefile
 Core/src/Makefile

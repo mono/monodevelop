@@ -1,3 +1,11 @@
+2007-09-13  Michael Hutchinson <mhutchinson@novell.com>
+
+	* contrib/*: Rework build code so that Mono.Addins, Mono.Cecil 
+	  and log4net libraries are included via svn:externals and built 
+	  from source.
+	
+	* configure.in: Updated.
+
 2007-09-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	

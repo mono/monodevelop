@@ -1,0 +1,2 @@
+/^DATA_FILES/!d
+s/DATA_FILES = //

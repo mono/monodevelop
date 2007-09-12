@@ -1,0 +1,2 @@
+/^REFERENCES/!d
+s/REFERENCES = //
