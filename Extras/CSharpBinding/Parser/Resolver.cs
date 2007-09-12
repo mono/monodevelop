@@ -806,6 +806,19 @@ namespace CSharpBinding.Parser
 			return null;
 		}
 		
+		public IMember GetMember ()
+		{
+			if (callingClass == null)
+				return null;
+			IMember mem = GetMethod ();
+			if (mem != null)
+				return mem;
+			mem = GetProperty ();
+			if (mem != null)
+				return mem;
+			return GetIndexer ();
+		}
+		
 		IProperty GetProperty()
 		{
 			if (callingClass != null && callingClass.Properties != null) { 

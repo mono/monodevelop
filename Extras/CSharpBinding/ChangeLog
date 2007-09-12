@@ -1,5 +1,10 @@
 2007-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Parser/Resolver.cs, Parser/TypeVisitor.cs: The 'this' reference is not
+	  valid outside of a class member. Fix for bug #82743.
+
+2007-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Gui/ChooseRuntimePanel.cs, Gui/CodeGenerationPanel.cs,
 	  FormattingStrategy/CSharpFormattingStrategy.cs, CSharpAmbience.cs: Fix
 	  warnings.

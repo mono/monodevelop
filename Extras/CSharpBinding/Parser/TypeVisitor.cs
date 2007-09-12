@@ -428,9 +428,10 @@ namespace CSharpBinding.Parser
 		
 		public override object VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data)
 		{
-			if (resolver.CallingClass == null) {
+			// The 'this' reference is invalid outside of a member
+			if (resolver.GetMember () == null)
 				return null;
-			}
+
 			return new ReturnType(resolver.CallingClass.FullyQualifiedName);
 		}
 		
