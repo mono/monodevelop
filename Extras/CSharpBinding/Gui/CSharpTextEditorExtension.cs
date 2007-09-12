@@ -57,6 +57,7 @@ namespace CSharpBinding
 			sb.Append ("/// \n");
 			sb.Append (engine.ThisLineIndent);
 			sb.Append ("/// </summary>");
+			newCursorOffset = ("/ <summary>\n/// " + engine.ThisLineIndent).Length;
 		}
 		
 		string GenerateBody (IClass c, int line)
@@ -95,7 +96,7 @@ namespace CSharpBinding
 						builder.Append (para.ReturnType.FullyQualifiedName);
 						builder.Append ("\"/>\n");
 						builder.Append (engine.ThisLineIndent);
-						builder.Append ("///</param>");
+						builder.Append ("/// </param>");
 					}
 				}
 				if (method.ReturnType != null && method.ReturnType.FullyQualifiedName != "System.Void") {
@@ -107,7 +108,7 @@ namespace CSharpBinding
 					builder.Append (method.ReturnType.FullyQualifiedName);
 					builder.Append ("\"/>\n");
 					builder.Append (engine.ThisLineIndent);
-					builder.Append ("///</returns>");
+					builder.Append ("/// </returns>");
 				}
 
 			}
@@ -118,6 +119,7 @@ namespace CSharpBinding
 				builder.Append ("/// \n");
 				builder.Append (engine.ThisLineIndent);
 				builder.Append ("/// </value>");
+				newCursorOffset = ("/ <value>\n/// " + engine.ThisLineIndent).Length;
 			}
 			
 			return builder.ToString ();
@@ -168,9 +170,11 @@ namespace CSharpBinding
 			return false;
 		}
 		
+		int newCursorOffset;
 		public override bool KeyPress (Gdk.Key key, Gdk.ModifierType modifier)
 		{
 			bool reindent = false, insert = true;
+			bool setCursor = true;
 			int nInserted, bufLen, cursor;
 			string newIndent;
 			char ch, c;
@@ -243,6 +247,8 @@ namespace CSharpBinding
 					}
 					
 					Editor.InsertText (cursor, generatedComment.ToString ());
+					Editor.CursorPosition = cursor + newCursorOffset; 
+					setCursor = false;
 					reindent = true; 
 					insert = false;
 				}
@@ -403,7 +409,9 @@ namespace CSharpBinding
 				if (!(reindent || engine.NeedsReindent))
 					return true;
 			}
-			
+			if (!setCursor) {
+				return true;
+			}
 			// Get more context but w/o changing our IndentEngine state
 			CSharpIndentEngine ctx = (CSharpIndentEngine) engine.Clone ();
 			string line = Editor.GetLineText (ctx.LineNumber);
