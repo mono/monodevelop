@@ -90,8 +90,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			string dir = Path.GetDirectoryName (file.FilePath);
 			if (dir == file.Project.BaseDirectory)
 				return file.Project;
+			else if (file.IsExternalToProject)
+				return new LinkedFilesFolder (file.Project);
 			else
-				return new ProjectFolder (dir, file.Project, null);
+			    return new ProjectFolder (dir, file.Project, null);
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)

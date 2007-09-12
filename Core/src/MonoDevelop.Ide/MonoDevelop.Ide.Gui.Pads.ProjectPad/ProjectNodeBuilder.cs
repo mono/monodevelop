@@ -341,7 +341,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 		}
 		[CommandHandler (FileCommands.OpenContainingFolder)]
-		public void OnOpenFolder ()
+		public void OpenContainingFolder ()
 		{
 			Project prj = CurrentNode.DataItem as Project;
 			System.Diagnostics.Process.Start ("file://" + prj.BaseDirectory);

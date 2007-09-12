@@ -98,5 +98,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			else
 				return 1;
 		}
+		
+		public override object GetParentObject (object dataObject)
+		{
+			return ((LinkedFilesFolder) dataObject).Project;
+		}
 	}
 }

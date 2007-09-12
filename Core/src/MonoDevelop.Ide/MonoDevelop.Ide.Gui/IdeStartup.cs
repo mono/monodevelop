@@ -118,7 +118,7 @@ namespace MonoDevelop.Ide.Gui
 				Runtime.ProcessService.ExternalProcessRemotingChannel = "tcp";
 				// Remoting check
 				try {
-					Dns.GetHostByName (Dns.GetHostName ());
+					Dns.GetHostEntry (Dns.GetHostName ());
 				} catch {
 					using (ErrorDialog dialog = new ErrorDialog (null)) {
 						dialog.Message = GettextCatalog.GetString ("MonoDevelop failed to start. Local hostname cannot be resolved.");
