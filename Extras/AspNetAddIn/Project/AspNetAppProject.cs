@@ -174,46 +174,69 @@ namespace AspNetAddIn
 		
 		#region build/prebuild/execute
 		
+		IProcessAsyncOperation StartXsp (IProgressMonitor monitor, ExecutionContext context, IConsole console)
+		{
+			AspNetAppProjectConfiguration configuration = (AspNetAppProjectConfiguration) ActiveConfiguration;
+			
+			string xsp = (configuration.ClrVersion == ClrVersion.Net_1_1)? "xsp" : "xsp2";
+			string xspOptions = XspParameters.GetXspParameters ();
+			
+			IExecutionHandler handler = context.ExecutionHandlerFactory.CreateExecutionHandler ("Native");
+			if (handler == null)
+				throw new Exception ("Could not obtain platform handler.");
+			
+			string exports = string.Empty;
+			if (configuration.DebugMode)
+				exports = string.Format ("export MONO_OPTIONS=\"--debug\"");
+			
+			//construct a sh command so that we can do things like environment variables
+			exports = exports.Replace ("\"", "\\\"");
+			xspOptions = xspOptions.Replace ("\"", "\\\"");
+			string shOptions = string.Format ("-c \"{0}; '{1}' {2}\"", exports, xsp, xspOptions);
+			
+			try {
+				return handler.Execute ("sh", shOptions, configuration.SourceDirectory, console);
+			} catch (Exception ex) {
+				throw new Exception ("Could not execute 'sh " + shOptions + "'.", ex);
+			}
+		}
+		
 		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context)
 		{
 			CopyReferencesToOutputPath (true);
 			
-			AspNetAppProjectConfiguration configuration = (AspNetAppProjectConfiguration) ActiveConfiguration;
-			monitor.Log.WriteLine ("Running " + configuration.CompiledOutputName + " ...");
-			
-			IConsole console;
-			if (configuration.ExternalConsole)
-				console = context.ExternalConsoleFactory.CreateConsole (!configuration.PauseConsoleOutput);
-			else
-				console = context.ConsoleFactory.CreateConsole (!configuration.PauseConsoleOutput);
-			
+			IConsole console = null;
 			AggregatedOperationMonitor operationMonitor = new AggregatedOperationMonitor (monitor);
-			
-			string xsp = (configuration.ClrVersion == ClrVersion.Net_1_1)? "xsp" : "xsp2";
-			string xspOptions = this.XspParameters.GetXspParameters ();
-			string url = String.Format ("http://{0}:{1}", this.XspParameters.Address, this.XspParameters.Port);
+			AspNetAppProjectConfiguration configuration = (AspNetAppProjectConfiguration) ActiveConfiguration;
 			
 			try {
-				IExecutionHandler handler = context.ExecutionHandlerFactory.CreateExecutionHandler ("Native");
-				if (handler == null) {
-					monitor.ReportError ("Error launching web server: cannot obtain platform handler.", null);
-					return;
-				}
 				
-				IProcessAsyncOperation op = handler.Execute (xsp, xspOptions, configuration.SourceDirectory, console);
+				if (configuration.ExternalConsole)
+					console = context.ExternalConsoleFactory.CreateConsole (!configuration.PauseConsoleOutput);
+				else
+					console = context.ConsoleFactory.CreateConsole (!configuration.PauseConsoleOutput);
+			
+				monitor.Log.WriteLine ("Running web server...");
+				
+				IProcessAsyncOperation op = StartXsp (monitor, context, console);
 				monitor.CancelRequested += delegate {op.Cancel ();};
 				operationMonitor.AddOperation (op);
 				
+				//launch a separate thread to detect te running server and launch a web browser
 				System.Threading.Thread t = new System.Threading.Thread (new System.Threading.ParameterizedThreadStart (LaunchWebBrowser));
-				t.Start (url);
+				op.Completed += delegate (IAsyncOperation dummy) {t.Abort ();};
+				string url = String.Format ("http://{0}:{1}", this.XspParameters.Address, this.XspParameters.Port);
+				if (!op.IsCompleted)
+					t.Start (url);
 				
 				op.WaitForCompleted ();
 				monitor.Log.WriteLine ("The web server exited with code: {0}", op.ExitCode);
 			} catch (Exception ex) {
-				monitor.ReportError ("Error launching web server: cannot execute \"" + xsp + "\".", ex);
+				monitor.ReportError ("Could not launch web server.", ex);
 			} finally {
 				operationMonitor.Dispose ();
-				console.Dispose ();
+				if (console != null)
+					console.Dispose ();
 			}
 		}
 		
@@ -299,49 +322,51 @@ namespace AspNetAddIn
 		//confirm we can connect to server before opening browser; wait up to ten seconds
 		private static void LaunchWebBrowser (object o)
 		{
-			string url = (string) o;
-			
-			//wait a bit for server to start
-			System.Threading.Thread.Sleep (2000);
-			
-			//try to contact web server several times, because server may take a while to start
-			int noOfRequests = 5;
-			int timeout = 8000; //ms
-			int wait = 1000; //ms
-			
-			for (int i = 0; i < noOfRequests; i++) {
-				System.Net.WebRequest req = null;
-				System.Net.WebResponse resp = null;
+			try {
+				string url = (string) o;
 				
-				try {
-					req = System.Net.HttpWebRequest.Create (url);
-					req.Timeout = timeout;
-					resp = req.GetResponse ();
-				} catch (System.Net.WebException exp) {
+				//wait a bit for server to start
+				System.Threading.Thread.Sleep (2000);
+				
+				//try to contact web server several times, because server may take a while to start
+				int noOfRequests = 5;
+				int timeout = 8000; //ms
+				int wait = 1000; //ms
+				
+				for (int i = 0; i < noOfRequests; i++) {
+					System.Net.WebRequest req = null;
+					System.Net.WebResponse resp = null;
 					
-					// server has returned 404, 500 etc, which user will still want to see
-					if (exp.Status == System.Net.WebExceptionStatus.ProtocolError) {
-						resp = exp.Response;
+					try {
+						req = System.Net.HttpWebRequest.Create (url);
+						req.Timeout = timeout;
+						resp = req.GetResponse ();
+					} catch (System.Net.WebException exp) {
 						
-					//last request has failed so show user the error
-					} else if (i >= (noOfRequests - 1)) {
-						string message = GettextCatalog.GetString ("Could not connect to webserver {0}", url);
-						MonoDevelop.Ide.Gui.IdeApp.Services.MessageService.ShowError (exp, message);
-						
-					//we still have requests to go, so cancel the current one and sleep for a bit
-					} else {
-						req.Abort ();
-						System.Threading.Thread.Sleep (wait);
-						continue;
+						// server has returned 404, 500 etc, which user will still want to see
+						if (exp.Status == System.Net.WebExceptionStatus.ProtocolError) {
+							resp = exp.Response;
+							
+						//last request has failed so show user the error
+						} else if (i >= (noOfRequests - 1)) {
+							string message = GettextCatalog.GetString ("Could not connect to webserver {0}", url);
+							MonoDevelop.Ide.Gui.IdeApp.Services.MessageService.ShowError (exp, message);
+							
+						//we still have requests to go, so cancel the current one and sleep for a bit
+						} else {
+							req.Abort ();
+							System.Threading.Thread.Sleep (wait);
+							continue;
+						}
+					}
+				
+					if (resp != null) {
+						//TODO: a choice of browsers
+						Gnome.Url.Show (url);
+						break;
 					}
 				}
-			
-				if (resp != null) {
-					//TODO: a choice of browsers
-					Gnome.Url.Show (url);
-					break;
-				}
-			}
+			} catch (System.Threading.ThreadAbortException) {}
 		}
 		
 		#endregion

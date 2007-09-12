@@ -428,6 +428,9 @@ namespace AspNetAddIn {
                 this.Child.ShowAll();
             }
             this.Show();
+            this.sslProtocol.Changed += new System.EventHandler(this.updateSensitivity);
+            this.sslMode.Changed += new System.EventHandler(this.updateSensitivity);
+            this.passwordOptions.Changed += new System.EventHandler(this.updateSensitivity);
             this.keyType.Changed += new System.EventHandler(this.updateSensitivity);
         }
     }

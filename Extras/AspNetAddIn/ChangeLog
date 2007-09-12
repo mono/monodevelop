@@ -1,3 +1,13 @@
+2007-09-12  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Gui/XspOptionsPanelWidget.cs,
+	  gtk-gui/AspNetAddIn.XspOptionsPanelWidget.cs, gtk-gui/gui.stetic: Fix
+	  bugs from stetic conversion: panel status update handler and permissible
+	  port range setting.
+	* Project/AspNetAppProject.cs: Restructure execution code to handle errors
+	  better and make it possible to set MONO_OPTIONS="--debug" when calling
+	  xsp.
+
 2007-09-11  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Gui/XspOptionsPanel.cs, Gui/XspOptionsPanelWidget.cs, AspNetAddIn.glade,

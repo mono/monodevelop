@@ -9,14 +9,14 @@
     <widget-library name="../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../build/AddIns/MonoDevelop.Deployment.dll" />
   </import>
-  <widget class="Gtk.Bin" id="AspNetAddIn.AspNetConfigurationPanelWidget" design-size="436 300">
+  <widget class="Gtk.Bin" id="AspNetAddIn.AspNetConfigurationPanelWidget" undoId="70" design-size="436 300">
     <property name="MemberName" />
-    <child>
-      <widget class="Gtk.VBox" id="vbox1">
+    <child undoId="86">
+      <widget class="Gtk.VBox" id="vbox1" undoId="71">
         <property name="MemberName" />
         <property name="Spacing">6</property>
-        <child>
-          <widget class="Gtk.Label" id="label1">
+        <child undoId="73">
+          <widget class="Gtk.Label" id="label1" undoId="72">
             <property name="MemberName" />
             <property name="Xalign">0</property>
             <property name="LabelProp" translatable="yes">Code Generation</property>
@@ -28,12 +28,97 @@
             <property name="Fill">False</property>
           </packing>
         </child>
-        <child>
-          <widget class="Gtk.HBox" id="hbox1">
+        <child undoId="84">
+          <widget class="Gtk.HBox" id="hbox1" undoId="74">
             <property name="MemberName" />
             <property name="Spacing">6</property>
+            <child undoId="76">
+              <widget class="Gtk.Label" id="label2" undoId="75">
+                <property name="MemberName" />
+                <property name="WidthRequest">18</property>
+                <property name="LabelProp" translatable="yes" />
+              </widget>
+              <packing>
+                <property name="Position">0</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child undoId="82">
+              <widget class="Gtk.VBox" id="vbox2" undoId="77">
+                <property name="MemberName" />
+                <property name="Spacing">6</property>
+                <child undoId="79">
+                  <widget class="Gtk.CheckButton" id="autoGenerateNonPartialCodeBehind" undoId="78">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="Label" translatable="yes">Autogenerate CodeBehind members for non-partial classes</property>
+                    <property name="DrawIndicator">True</property>
+                    <property name="HasLabel">True</property>
+                    <property name="UseUnderline">True</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">0</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+                <child undoId="80">
+                  <placeholder />
+                </child>
+                <child undoId="81">
+                  <placeholder />
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">False</property>
+              </packing>
+            </child>
+            <child undoId="83">
+              <placeholder />
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">1</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child undoId="85">
+          <placeholder />
+        </child>
+      </widget>
+    </child>
+  </widget>
+  <widget class="Gtk.Bin" id="AspNetAddIn.XspOptionsPanelWidget" design-size="358 387">
+    <property name="MemberName" />
+    <child>
+      <widget class="Gtk.VBox" id="vbox1">
+        <property name="MemberName" />
+        <property name="Spacing">12</property>
+        <child>
+          <widget class="Gtk.Label" id="label1">
+            <property name="MemberName" />
+            <property name="Xalign">0.01</property>
+            <property name="LabelProp" translatable="yes">&lt;b&gt;General Options&lt;/b&gt;</property>
+            <property name="UseMarkup">True</property>
+          </widget>
+          <packing>
+            <property name="Position">0</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.HBox" id="hbox2">
+            <property name="MemberName" />
             <child>
-              <widget class="Gtk.Label" id="label2">
+              <widget class="Gtk.Label" id="label4">
                 <property name="MemberName" />
                 <property name="WidthRequest">18</property>
                 <property name="LabelProp" translatable="yes" />
@@ -50,99 +135,14 @@
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
                 <child>
-                  <widget class="Gtk.CheckButton" id="autoGenerateNonPartialCodeBehind">
-                    <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="Label" translatable="yes">Autogenerate CodeBehind members for non-partial classes</property>
-                    <property name="DrawIndicator">True</property>
-                    <property name="HasLabel">True</property>
-                    <property name="UseUnderline">True</property>
-                  </widget>
-                  <packing>
-                    <property name="Position">0</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <placeholder />
-                </child>
-                <child>
-                  <placeholder />
-                </child>
-              </widget>
-              <packing>
-                <property name="Position">1</property>
-                <property name="AutoSize">False</property>
-              </packing>
-            </child>
-            <child>
-              <placeholder />
-            </child>
-          </widget>
-          <packing>
-            <property name="Position">1</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <placeholder />
-        </child>
-      </widget>
-    </child>
-  </widget>
-  <widget class="Gtk.Bin" id="AspNetAddIn.XspOptionsPanelWidget" undoId="17" design-size="358 387">
-    <property name="MemberName" />
-    <child undoId="86">
-      <widget class="Gtk.VBox" id="vbox1" undoId="18">
-        <property name="MemberName" />
-        <property name="Spacing">12</property>
-        <child undoId="20">
-          <widget class="Gtk.Label" id="label1" undoId="19">
-            <property name="MemberName" />
-            <property name="Xalign">0.01</property>
-            <property name="LabelProp" translatable="yes">&lt;b&gt;General Options&lt;/b&gt;</property>
-            <property name="UseMarkup">True</property>
-          </widget>
-          <packing>
-            <property name="Position">0</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child undoId="38">
-          <widget class="Gtk.HBox" id="hbox2" undoId="21">
-            <property name="MemberName" />
-            <child undoId="23">
-              <widget class="Gtk.Label" id="label4" undoId="22">
-                <property name="MemberName" />
-                <property name="WidthRequest">18</property>
-                <property name="LabelProp" translatable="yes" />
-              </widget>
-              <packing>
-                <property name="Position">0</property>
-                <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
-            </child>
-            <child undoId="37">
-              <widget class="Gtk.VBox" id="vbox2" undoId="24">
-                <property name="MemberName" />
-                <property name="Spacing">6</property>
-                <child undoId="34">
-                  <widget class="Gtk.Table" id="table2" undoId="25">
+                  <widget class="Gtk.Table" id="table2">
                     <property name="MemberName" />
                     <property name="NRows">2</property>
                     <property name="NColumns">2</property>
                     <property name="RowSpacing">6</property>
                     <property name="ColumnSpacing">6</property>
-                    <child undoId="27">
-                      <widget class="Gtk.Entry" id="ipAddress" undoId="26">
+                    <child>
+                      <widget class="Gtk.Entry" id="ipAddress">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="IsEditable">True</property>
@@ -162,8 +162,8 @@
                         <property name="YShrink">False</property>
                       </packing>
                     </child>
-                    <child undoId="29">
-                      <widget class="Gtk.Label" id="label7" undoId="28">
+                    <child>
+                      <widget class="Gtk.Label" id="label7">
                         <property name="MemberName" />
                         <property name="Xalign">0</property>
                         <property name="LabelProp" translatable="yes">Port number:</property>
@@ -182,8 +182,8 @@
                         <property name="YShrink">False</property>
                       </packing>
                     </child>
-                    <child undoId="31">
-                      <widget class="Gtk.Label" id="label8" undoId="30">
+                    <child>
+                      <widget class="Gtk.Label" id="label8">
                         <property name="MemberName" />
                         <property name="Xalign">0</property>
                         <property name="LabelProp" translatable="yes">IP address:</property>
@@ -200,11 +200,11 @@
                         <property name="YShrink">False</property>
                       </packing>
                     </child>
-                    <child undoId="33">
-                      <widget class="Gtk.SpinButton" id="portNumber" undoId="32">
+                    <child>
+                      <widget class="Gtk.SpinButton" id="portNumber">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="Upper">100</property>
+                        <property name="Upper">32767</property>
                         <property name="PageIncrement">10</property>
                         <property name="StepIncrement">1</property>
                         <property name="ClimbRate">1</property>
@@ -234,8 +234,8 @@
                     <property name="Fill">False</property>
                   </packing>
                 </child>
-                <child undoId="36">
-                  <widget class="Gtk.CheckButton" id="verboseCheck" undoId="35">
+                <child>
+                  <widget class="Gtk.CheckButton" id="verboseCheck">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="Label" translatable="yes">Verbose console output</property>
@@ -266,8 +266,8 @@
             <property name="Fill">False</property>
           </packing>
         </child>
-        <child undoId="40">
-          <widget class="Gtk.Label" id="label2" undoId="39">
+        <child>
+          <widget class="Gtk.Label" id="label2">
             <property name="MemberName" />
             <property name="Xalign">0.01</property>
             <property name="LabelProp" translatable="yes">&lt;b&gt;Security&lt;/b&gt;</property>
@@ -280,11 +280,11 @@
             <property name="Fill">False</property>
           </packing>
         </child>
-        <child undoId="54">
-          <widget class="Gtk.HBox" id="hbox3" undoId="41">
+        <child>
+          <widget class="Gtk.HBox" id="hbox3">
             <property name="MemberName" />
-            <child undoId="43">
-              <widget class="Gtk.Label" id="label5" undoId="42">
+            <child>
+              <widget class="Gtk.Label" id="label5">
                 <property name="MemberName" />
                 <property name="WidthRequest">18</property>
                 <property name="LabelProp" translatable="yes" />
@@ -296,15 +296,15 @@
                 <property name="Fill">False</property>
               </packing>
             </child>
-            <child undoId="53">
-              <widget class="Gtk.Table" id="table3" undoId="44">
+            <child>
+              <widget class="Gtk.Table" id="table3">
                 <property name="MemberName" />
                 <property name="NRows">2</property>
                 <property name="NColumns">2</property>
                 <property name="RowSpacing">6</property>
                 <property name="ColumnSpacing">6</property>
-                <child undoId="46">
-                  <widget class="Gtk.Label" id="label10" undoId="45">
+                <child>
+                  <widget class="Gtk.Label" id="label10">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
                     <property name="LabelProp" translatable="yes">SSL mode:</property>
@@ -321,8 +321,8 @@
                     <property name="YShrink">False</property>
                   </packing>
                 </child>
-                <child undoId="48">
-                  <widget class="Gtk.Label" id="label9" undoId="47">
+                <child>
+                  <widget class="Gtk.Label" id="label9">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
                     <property name="LabelProp" translatable="yes">SSL protocol:</property>
@@ -341,11 +341,12 @@
                     <property name="YShrink">False</property>
                   </packing>
                 </child>
-                <child undoId="50">
-                  <widget class="Gtk.ComboBox" id="sslMode" undoId="49">
+                <child>
+                  <widget class="Gtk.ComboBox" id="sslMode">
                     <property name="MemberName" />
                     <property name="IsTextCombo">True</property>
                     <property name="Items" translatable="yes" />
+                    <signal name="Changed" handler="updateSensitivity" />
                   </widget>
                   <packing>
                     <property name="LeftAttach">1</property>
@@ -361,11 +362,12 @@
                     <property name="YShrink">False</property>
                   </packing>
                 </child>
-                <child undoId="52">
-                  <widget class="Gtk.ComboBox" id="sslProtocol" undoId="51">
+                <child>
+                  <widget class="Gtk.ComboBox" id="sslProtocol">
                     <property name="MemberName" />
                     <property name="IsTextCombo">True</property>
                     <property name="Items" translatable="yes" />
+                    <signal name="Changed" handler="updateSensitivity" />
                   </widget>
                   <packing>
                     <property name="TopAttach">1</property>
@@ -399,8 +401,8 @@
             <property name="Fill">False</property>
           </packing>
         </child>
-        <child undoId="56">
-          <widget class="Gtk.Label" id="label3" undoId="55">
+        <child>
+          <widget class="Gtk.Label" id="label3">
             <property name="MemberName" />
             <property name="Xalign">0.01</property>
             <property name="LabelProp" translatable="yes">&lt;b&gt;SSL Key&lt;/b&gt;</property>
@@ -413,11 +415,11 @@
             <property name="Fill">False</property>
           </packing>
         </child>
-        <child undoId="85">
-          <widget class="Gtk.HBox" id="hbox4" undoId="57">
+        <child>
+          <widget class="Gtk.HBox" id="hbox4">
             <property name="MemberName" />
-            <child undoId="59">
-              <widget class="Gtk.Label" id="label6" undoId="58">
+            <child>
+              <widget class="Gtk.Label" id="label6">
                 <property name="MemberName" />
                 <property name="WidthRequest">18</property>
                 <property name="LabelProp" translatable="yes" />
@@ -429,15 +431,15 @@
                 <property name="Fill">False</property>
               </packing>
             </child>
-            <child undoId="84">
-              <widget class="Gtk.Table" id="table4" undoId="60">
+            <child>
+              <widget class="Gtk.Table" id="table4">
                 <property name="MemberName" />
                 <property name="NRows">4</property>
                 <property name="NColumns">2</property>
                 <property name="RowSpacing">6</property>
                 <property name="ColumnSpacing">6</property>
-                <child undoId="62">
-                  <widget class="MonoDevelop.Components.FileEntry" id="certLocation" undoId="61">
+                <child>
+                  <widget class="MonoDevelop.Components.FileEntry" id="certLocation">
                     <property name="MemberName" />
                   </widget>
                   <packing>
@@ -456,12 +458,12 @@
                     <property name="YShrink">False</property>
                   </packing>
                 </child>
-                <child undoId="67">
-                  <widget class="Gtk.HBox" id="hbox5" undoId="63">
+                <child>
+                  <widget class="Gtk.HBox" id="hbox5">
                     <property name="MemberName" />
                     <property name="Spacing">6</property>
-                    <child undoId="65">
-                      <widget class="Gtk.ComboBox" id="keyType" undoId="64">
+                    <child>
+                      <widget class="Gtk.ComboBox" id="keyType">
                         <property name="MemberName" />
                         <property name="IsTextCombo">True</property>
                         <property name="Items" translatable="yes" />
@@ -474,7 +476,7 @@
                         <property name="Fill">False</property>
                       </packing>
                     </child>
-                    <child undoId="66">
+                    <child>
                       <placeholder />
                     </child>
                   </widget>
@@ -492,15 +494,16 @@
                     <property name="YShrink">False</property>
                   </packing>
                 </child>
-                <child undoId="73">
-                  <widget class="Gtk.HBox" id="hbox6" undoId="68">
+                <child>
+                  <widget class="Gtk.HBox" id="hbox6">
                     <property name="MemberName" />
                     <property name="Spacing">6</property>
-                    <child undoId="70">
-                      <widget class="Gtk.ComboBox" id="passwordOptions" undoId="69">
+                    <child>
+                      <widget class="Gtk.ComboBox" id="passwordOptions">
                         <property name="MemberName" />
                         <property name="IsTextCombo">True</property>
                         <property name="Items" translatable="yes" />
+                        <signal name="Changed" handler="updateSensitivity" />
                       </widget>
                       <packing>
                         <property name="Position">0</property>
@@ -509,8 +512,8 @@
                         <property name="Fill">False</property>
                       </packing>
                     </child>
-                    <child undoId="72">
-                      <widget class="Gtk.Entry" id="passwordEntry" undoId="71">
+                    <child>
+                      <widget class="Gtk.Entry" id="passwordEntry">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="IsEditable">True</property>
@@ -537,8 +540,8 @@
                     <property name="YShrink">False</property>
                   </packing>
                 </child>
-                <child undoId="75">
-                  <widget class="MonoDevelop.Components.FileEntry" id="keyLocation" undoId="74">
+                <child>
+                  <widget class="MonoDevelop.Components.FileEntry" id="keyLocation">
                     <property name="MemberName" />
                   </widget>
                   <packing>
@@ -557,8 +560,8 @@
                     <property name="YShrink">False</property>
                   </packing>
                 </child>
-                <child undoId="77">
-                  <widget class="Gtk.Label" id="label11" undoId="76">
+                <child>
+                  <widget class="Gtk.Label" id="label11">
                     <property name="MemberName" />
                     <property name="Xalign">0.01</property>
                     <property name="LabelProp" translatable="yes">Key type:</property>
@@ -575,8 +578,8 @@
                     <property name="YShrink">False</property>
                   </packing>
                 </child>
-                <child undoId="79">
-                  <widget class="Gtk.Label" id="label12" undoId="78">
+                <child>
+                  <widget class="Gtk.Label" id="label12">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
                     <property name="LabelProp" translatable="yes">Key location:</property>
@@ -595,8 +598,8 @@
                     <property name="YShrink">False</property>
                   </packing>
                 </child>
-                <child undoId="81">
-                  <widget class="Gtk.Label" id="label13" undoId="80">
+                <child>
+                  <widget class="Gtk.Label" id="label13">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
                     <property name="LabelProp" translatable="yes">Certificate location:</property>
@@ -615,8 +618,8 @@
                     <property name="YShrink">False</property>
                   </packing>
                 </child>
-                <child undoId="83">
-                  <widget class="Gtk.Label" id="label14" undoId="82">
+                <child>
+                  <widget class="Gtk.Label" id="label14">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
                     <property name="LabelProp" translatable="yes">Password:</property>

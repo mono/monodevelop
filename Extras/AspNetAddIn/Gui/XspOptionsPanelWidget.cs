@@ -67,6 +67,9 @@ namespace AspNetAddIn
 			passwordOptions.AppendText (GettextCatalog.GetString ("Ask"));
 			passwordOptions.AppendText (GettextCatalog.GetString ("Store (insecure)"));
 			
+			//set to valid port range
+			portNumber.SetRange (0, UInt16.MaxValue);
+			
 			//load all options
 			ipAddress.Text = xPar.Address;
 			portNumber.Value = xPar.Port;
@@ -86,7 +89,7 @@ namespace AspNetAddIn
 			XspParameters xPar = project.XspParameters;
 			
 			xPar.Address = ipAddress.Text;
-			xPar.Port = System.Convert.ToInt16 (portNumber.Value);
+			xPar.Port = System.Convert.ToUInt16 (portNumber.Value);
 			xPar.Verbose = verboseCheck.Active;
 			xPar.SslMode = (XspSslMode) sslMode.Active;
 			xPar.SslProtocol = (XspSslProtocol) sslProtocol.Active;
