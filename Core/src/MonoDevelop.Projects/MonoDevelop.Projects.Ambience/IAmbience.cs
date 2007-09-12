@@ -17,23 +17,25 @@ namespace MonoDevelop.Projects.Ambience
 	public enum ConversionFlags {
 		None                   = 0,
 		ShowParameterNames     = 1,
-		ShowAccessibility      = 16,
-		UseFullyQualifiedNames = 2,
-		ShowMemberModifiers          = 4,
-		ShowInheritanceList    = 8,
-		IncludeHTMLMarkup      = 32,
-		UseLinkArrayList       = 64,
-		QualifiedNamesOnlyForReturnTypes = 128,
-		IncludeBodies          = 256,
-		IncludePangoMarkup     = 512,
-		ShowClassModifiers     = 1024,
-		ShowGenericParameters  = 2048,
+		UseFullyQualifiedNames = 1<<1,
+		ShowMemberModifiers    = 1<<2,
+		ShowInheritanceList    = 1<<3,
+		ShowAccessibility      = 1<<4,
+		IncludeHTMLMarkup      = 1<<5,
+		UseLinkArrayList       = 1<<6,
+		QualifiedNamesOnlyForReturnTypes = 1<<7,
+		IncludeBodies          = 1<<8,
+		IncludePangoMarkup     = 1<<9,
+		ShowClassModifiers     = 1<<10,
+		ShowGenericParameters  = 1<<11,
+		UseIntrinsicTypeNames  = 1<<12,
 		
 		StandardConversionFlags = ShowParameterNames | 
 		                          UseFullyQualifiedNames | 
 		                          ShowMemberModifiers |
 		                          ShowClassModifiers |
-		                          ShowGenericParameters,
+		                          ShowGenericParameters |
+		                          UseIntrinsicTypeNames,
 		                          
 		All = ShowParameterNames | 
 		      ShowAccessibility | 
@@ -41,7 +43,8 @@ namespace MonoDevelop.Projects.Ambience
 		      ShowMemberModifiers |
 		      ShowClassModifiers |
 		      ShowInheritanceList |
-		      ShowGenericParameters,
+              ShowGenericParameters |
+              UseIntrinsicTypeNames,
 
 		      
 		AssemblyScoutDefaults = StandardConversionFlags |

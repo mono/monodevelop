@@ -22,6 +22,11 @@ namespace MonoDevelop.Projects.Ambience
 			return (conversionFlags & ConversionFlags.UseFullyQualifiedNames) == ConversionFlags.UseFullyQualifiedNames;
 		}
 		
+		public static bool UseIntrinsicTypeNames(ConversionFlags conversionFlags)
+		{
+			return (conversionFlags & ConversionFlags.UseIntrinsicTypeNames) == ConversionFlags.UseIntrinsicTypeNames;
+		}
+		
 		public static bool ShowMemberModifiers(ConversionFlags conversionFlags)
 		{
 			return (conversionFlags & ConversionFlags.ShowMemberModifiers) == ConversionFlags.ShowMemberModifiers;
@@ -152,6 +157,13 @@ namespace MonoDevelop.Projects.Ambience
 			return Convert(localVariable, ConversionFlags.StandardConversionFlags);
 		}
 
+		protected string GetIntrinsicTypeName (string dotNetTypeName, ConversionFlags flags)
+		{
+			if (UseIntrinsicTypeNames (flags))
+				return GetIntrinsicTypeName (dotNetTypeName);
+			else
+				return dotNetTypeName;
+		}
 		
 		public abstract string Convert(IClass c, ConversionFlags flags);
 		public abstract string ConvertEnd(IClass c, ConversionFlags flags);

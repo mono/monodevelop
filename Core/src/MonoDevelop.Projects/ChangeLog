@@ -1,3 +1,9 @@
+2007-09-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Ambience/IAmbience.cs,
+	  MonoDevelop.Projects.Ambience/Ambience.cs: Added new ambience flag to
+	  allow use of intrinsic type names.
+
 2007-09-11  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Projects/Project.cs: Add a utility method to Project for
