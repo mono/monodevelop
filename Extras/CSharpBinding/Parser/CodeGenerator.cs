@@ -451,6 +451,7 @@ namespace CSharpBinding.Parser
 			IParseInformation pi = pctx.ParseFile (file);
 			
 			fileCompilationUnit = pi.MostRecentCompilationUnit.Tag as CompilationUnit;
+			
 			if (fileCompilationUnit != null)
 				VisitCompilationUnit (fileCompilationUnit, null);
 		}
@@ -486,6 +487,8 @@ namespace CSharpBinding.Parser
 			                   node.StartLocation.Y, node.StartLocation.X);
 		}
 		
+		 
+		
 		public override object VisitFieldDeclaration (FieldDeclaration fieldDeclaration, object data)
 		{
 			//Debug ("FieldDeclaration", fieldDeclaration.ToString (), fieldDeclaration);
@@ -511,7 +514,8 @@ namespace CSharpBinding.Parser
 				IClass cls = resolver.ResolveExpressionType (fileCompilationUnit, fieldExp.TargetObject, fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
 				if (cls != null && IsExpectedClass (cls)) {
 					int pos = file.GetPositionFromLineColumn (fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
-					string txt = file.GetText (pos, pos + member.Name.Length);
+					int endpos = file.GetPositionFromLineColumn (fieldExp.EndLocation.Y, fieldExp.EndLocation.X);
+					string txt = file.GetText (pos, endpos);
 					if (txt == member.Name) {
 						//Debug ("adding FieldReferenceExpression", member.Name, fieldExp);
 						AddUniqueReference (fieldExp.StartLocation.Y, fieldExp.StartLocation.X, member.Name);
