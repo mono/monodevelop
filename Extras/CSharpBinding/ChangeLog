@@ -1,5 +1,10 @@
 2007-09-12  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/CSharpTextEditorExtension.cs: Fixed 82770: MonoDevelop should keep in
+	  comments when return is pressed.
+
+2007-09-12  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/CSharpTextEditorExtension.cs: Fixed 82768: Move cursor after new
 	  summary comment.
 

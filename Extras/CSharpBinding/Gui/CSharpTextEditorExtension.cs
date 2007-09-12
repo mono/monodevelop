@@ -184,6 +184,7 @@ namespace CSharpBinding
 				return base.KeyPress (key, modifier);
 			
 			switch (key) {
+			
 			case Gdk.Key.greater:
 				
 				cursor = Editor.SelectionStartPosition;
@@ -271,6 +272,9 @@ namespace CSharpBinding
 				
 				c = '\t';
 				break;
+			case Gdk.Key.BackSpace:
+				c = '\0';
+				break;
 			default:
 				if ((c = (char) Gdk.Keyval.ToUnicode ((uint) key)) == 0) {
 					cursor = Editor.SelectionStartPosition;
@@ -302,7 +306,15 @@ namespace CSharpBinding
 				
 				engine.Push (ch);
 			}
-			
+			if (key == Gdk.Key.BackSpace) {
+				bool emptyDocComment = engine.IsInsideDocLineComment && Editor.GetLineText (engine.LineNumber).Trim ().Length == 3;
+				bool emptyMutlilineComment = engine.IsInsideMultiLineComment && (Editor.GetLineText (engine.LineNumber).Trim ().Length <= 1 ||Editor.GetLineText (engine.LineNumber).Trim () == "/*"||Editor.GetLineText (engine.LineNumber).Trim () == "/**");
+				if (emptyDocComment || emptyMutlilineComment) {
+					Editor.InsertText (cursor, "\n");
+					Editor.DeleteLine (engine.LineNumber);
+				}
+				return base.KeyPress (key, modifier);
+			}
 			if (c == '\n') {
 				// Pass off to base.KeyPress() so the '\n' gets added to the Undo stack, etc
 				nInserted = 0;
@@ -315,7 +327,7 @@ namespace CSharpBinding
 				}
 				
 				bool inDoc = engine.IsInsideDocLineComment;
-				bool emptyDocComment = inDoc && Editor.GetLineText (engine.LineNumber).Trim ().Length == 3;
+				//bool emptyDocComment = inDoc && Editor.GetLineText (engine.LineNumber).Trim ().Length == 3;
 				engine.Push ('\n');
 				nInserted--;
 				cursor++;
@@ -325,6 +337,27 @@ namespace CSharpBinding
 					Editor.DeleteText (cursor, nInserted);
 				}
 				
+				if (inDoc) {
+					Editor.InsertText (cursor, engine.ThisLineIndent + "/// ");
+					return true;
+				}
+				
+				if (engine.IsInsideMultiLineComment) {
+					string indent = engine.ThisLineIndent;
+					if (engine.LineNumber > 0) {
+						string text = Editor.GetLineText (engine.LineNumber - 1);
+						if (text.Trim ().StartsWith ("*")) {
+							indent = text.Substring (0, text.IndexOf ('*'));
+						} else if (text.Trim ().StartsWith ("/**")) {
+							indent = text.Substring (0, text.IndexOf ("/**")) + "  ";
+						}
+					}
+					Editor.InsertText (cursor, indent + "* ");
+					engine.Push ('*');
+					engine.Push (' ');
+					return true;
+				}
+			
 				ch = Editor.GetCharAt (cursor);
 				if (ch == 0 || ch == '\n') {
 					// the simple case
@@ -334,23 +367,10 @@ namespace CSharpBinding
 						engine.Push (newIndent[i]);
 					cursor += newIndent.Length;
 					
-					if (engine.IsInsideMultiLineComment) {
-						Editor.InsertText (cursor, "* ");
-						engine.Push ('*');
-						engine.Push (' ');
-					}
-					
-					if (inDoc && !emptyDocComment) {
-						Editor.InsertText (cursor, "/// ");
-						engine.Push ('/');
-						engine.Push ('/');
-						engine.Push ('/');
-						engine.Push (' ');
-					}
-					
 					// we handled the <Return>
 					return true;
 				}
+					
 				
 				// need more context... fall thru
 			} else {
