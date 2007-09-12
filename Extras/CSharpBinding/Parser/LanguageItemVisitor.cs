@@ -276,7 +276,7 @@ namespace CSharpBinding.Parser
 		
 		public override object VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data)
 		{
-			return null;
+			return resolver.CallingClass;
 		}
 		
 		public override object VisitBaseReferenceExpression(BaseReferenceExpression baseReferenceExpression, object data)
@@ -284,11 +284,7 @@ namespace CSharpBinding.Parser
 			if (resolver.CallingClass == null) {
 				return null;
 			}
-			IClass baseClass = resolver.BaseClass(resolver.CallingClass);
-			if (baseClass == null) {
-				return null;
-			}
-			return baseClass;
+			return resolver.BaseClass (resolver.CallingClass);
 		}
 		
 		public override object VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)

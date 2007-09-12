@@ -1,5 +1,9 @@
 2007-09-13  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Parser/LanguageItemVisitor.cs: Properly resolve "this". Fixes bug #82503.
+
+2007-09-13  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Gui/CSharpTextEditorExtension.cs: Allow showing intrinsic names only when
 	  resolving is, as or new.
 	* Gui/FormattingPanel.cs, CSharpBinding.mdp,
