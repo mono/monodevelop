@@ -580,7 +580,7 @@ namespace CSharpBinding
 					
 					// Add the variable type itself to the results list (IsAsResolve only returns subclasses)
 					IClass cls = pctx.GetClass (rt.FullyQualifiedName, rt.GenericArguments);
-					if (cls != null && cls.ClassType != ClassType.Interface) {
+					if (cls != null && cls.ClassType != ClassType.Interface && !cls.IsAbstract) {
 						cp.AddResolveResult (cls);
 						cp.DefaultCompletionString = GetAmbience ().Convert (cls, ConversionFlags.None);
 					}
