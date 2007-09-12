@@ -642,7 +642,22 @@ namespace MonoDevelop.Prj2Make
 					reference = reference.Substring (0, reference.IndexOf (','));
 				break;
 			case ReferenceType.Assembly:
-				reference = AssemblyName.GetAssemblyName (reference).ToString ();
+				string asmname = null;
+				try {
+					asmname = AssemblyName.GetAssemblyName (reference).ToString ();
+					reference = asmname;
+				} catch (FileNotFoundException) {
+				} catch (BadImageFormatException) {
+				} catch (ArgumentException) {
+				}
+
+				if (asmname == null) {
+					//Couldn't get assembly name
+					if (!newElement && elem.Attributes ["Include"] != null)
+						reference = elem.Attributes ["Include"].Value;
+					else
+						reference = Path.GetFileNameWithoutExtension (reference);
+				}
 
 				EnsureChildValue (elem, "HintPath", ns, 
 					CanonicalizePath (Runtime.FileService.AbsoluteToRelativePath (project.BaseDirectory, projectRef.Reference)));
