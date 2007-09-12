@@ -124,8 +124,15 @@ namespace MonoDevelop.Core.Execution
 				string additionalCommands = "";
 				if (!console.CloseOnDispose)
 					additionalCommands = @"echo; read -p 'Press any key to continue...' -n1;";
-				ProcessStartInfo psi = new ProcessStartInfo("xterm",
-					String.Format (@"-e ""cd {3} ; '{0}' {1} ; {2}""", command, arguments, additionalCommands, workingDirectory.Replace (" ", "\\ ")));
+				string xtermCommand = String.Format (
+					@" -title ""{4}"" -e ""cd {3} ; '{0}' {1} ; {2}""",
+					command,
+					arguments.Replace ("\\", "\\\\").Replace ("\"", "\\\""),
+					additionalCommands,
+					workingDirectory.Replace (" ", "\\ "),
+				    GettextCatalog.GetString ("MonoDevelop External Console")
+				);
+				ProcessStartInfo psi = new ProcessStartInfo("xterm",xtermCommand);
 				psi.UseShellExecute = false;
 				
 				if (workingDirectory != null)

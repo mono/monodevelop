@@ -1,3 +1,9 @@
+2007-09-12  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Core.Execution/ProcessService.cs: Escape arguments to xterm
+	  external console. Set xterm title so it doesn't display the 'internal'
+	  commands.
+
 2007-09-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.AddIns/PackageExtensionNode.cs,
