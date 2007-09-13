@@ -46,7 +46,7 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
-	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
+	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
 	-r:Mono.Cairo \
 	-r:System \
 	-r:System.Drawing \

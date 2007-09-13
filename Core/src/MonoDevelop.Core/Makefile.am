@@ -74,9 +74,9 @@ GENERATED_FILES = MonoDevelop.Core/GettextCatalog.cs \
 RES = MonoDevelop.Core.addin.xml                                                          
 
 REFS =  \
-	-r:$(top_srcdir)/contrib/log4net.dll \
-	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
-	-r:$(top_srcdir)/contrib/Mono.Addins.Setup.dll \
+	-r:$(top_builddir)/build/bin/log4net.dll \
+	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
+	-r:$(top_builddir)/build/bin/Mono.Addins.Setup.dll \
 	-r:ICSharpCode.SharpZipLib \
 	-r:Mono.Posix \
 	-r:System \

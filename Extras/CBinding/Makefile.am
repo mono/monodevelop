@@ -5,16 +5,16 @@ ASSEMBLY = $(ADDIN_BUILD)/CBinding.dll
 REFS =  \
 	-pkg:glib-sharp-2.0 \
 	-pkg:gtk-sharp-2.0 \
-	-r:../../build/AddIns/MonoDevelop.Deployment.dll \
-	-r:../../build/AddIns/MonoDevelop.Deployment.Linux.dll \
-	-r:../../build/AddIns/MonoDevelop.SourceEditor.dll \
-	-r:../../build/bin/MonoDevelop.Components.dll \
-	-r:../../build/bin/MonoDevelop.Core.dll \
-	-r:../../build/bin/MonoDevelop.Core.Gui.dll \
-	-r:../../build/bin/MonoDevelop.Ide.dll \
-	-r:../../build/bin/MonoDevelop.Projects.dll \
-	-r:../../build/bin/MonoDevelop.Projects.Gui.dll \
-	-r:../../contrib/Mono.Addins.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment.Linux.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
+	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml

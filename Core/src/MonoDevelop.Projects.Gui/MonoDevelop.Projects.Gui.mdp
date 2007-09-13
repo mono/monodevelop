@@ -67,7 +67,7 @@
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core.Gui" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects" />
-    <ProjectReference type="Assembly" localcopy="False" refto="../../../contrib/Mono.Addins.dll" />
+    <ProjectReference type="Assembly" localcopy="False" refto="../../../build/bin/Mono.Addins.dll" />
     <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
@@ -83,7 +83,7 @@
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
-  <GtkDesignInfo partialTypes="True" isWidgetLibrary="True" gettextClass="MonoDevelop.Core.GettextCatalog">
+  <GtkDesignInfo isWidgetLibrary="True" gettextClass="MonoDevelop.Core.GettextCatalog">
     <ExportedWidgets>
       <Widget>MonoDevelop.Projects.Gui.Deployment.DirectoryDeployEditorWidget</Widget>
       <Widget>MonoDevelop.Projects.Gui.Deployment.InstallDeployEditorWidget</Widget>

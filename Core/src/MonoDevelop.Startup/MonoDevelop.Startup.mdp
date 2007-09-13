@@ -22,7 +22,7 @@
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />
-    <ProjectReference type="Assembly" localcopy="True" refto="../../../contrib/Mono.Addins.dll" />
+    <ProjectReference type="Assembly" localcopy="True" refto="../../../build/bin/Mono.Addins.dll" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Ide" />
   </References>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">

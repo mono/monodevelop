@@ -17,9 +17,9 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
-	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
-	-r:$(top_srcdir)/contrib/Mono.Addins.Setup.dll \
-	-r:$(top_srcdir)/contrib/Mono.Cecil.dll \
+	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
+	-r:$(top_builddir)/build/bin/Mono.Addins.Setup.dll \
+	-r:$(top_builddir)/build/bin/Mono.Cecil.dll \
 	-r:System.Drawing \
 	-r:System.Runtime.Remoting \
 	-r:System.Xml

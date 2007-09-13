@@ -19,6 +19,7 @@ all: $(ASSEMBLY)
 ADDIN_BUILD = $(top_builddir)/build/AddIns
 
 $(ASSEMBLY): $(build_sources) $(build_resources)
+	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -out:$@ -target:library $(REFS) $(build_resources:%=/resource:%) $(build_sources)
 
 assemblydir = $(MD_ASSEMBLY_DIR)

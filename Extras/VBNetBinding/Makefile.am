@@ -11,7 +11,7 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/bin/NRefactory.dll \
-	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
+	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
 	-r:System \
 	-r:System.Drawing \
 	-r:System.Xml

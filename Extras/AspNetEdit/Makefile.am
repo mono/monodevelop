@@ -20,7 +20,7 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:$(top_srcdir)/build/AddIns/AspNetEdit/jscall.dll \
-	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
+	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
 	-r:System \
 	-r:System.Design \
 	-r:System.Drawing \

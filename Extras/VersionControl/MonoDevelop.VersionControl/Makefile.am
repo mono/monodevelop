@@ -42,14 +42,14 @@ FILES =  \
 REFS =  \
 	$(GCONF_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:../../../build/AddIns/VersionControl/Diff.dll \
-	-r:../../../build/AddIns/VersionControl/DiffWidget.dll \
-	-r:../../../build/bin/MonoDevelop.Components.dll \
-	-r:../../../build/bin/MonoDevelop.Core.dll \
-	-r:../../../build/bin/MonoDevelop.Core.Gui.dll \
-	-r:../../../build/bin/MonoDevelop.Ide.dll \
-	-r:../../../build/bin/MonoDevelop.Projects.dll \
-	-r:../../../contrib/Mono.Addins.dll \
+	-r:$(top_builddir)/build/AddIns/VersionControl/Diff.dll \
+	-r:$(top_builddir)/build/AddIns/VersionControl/DiffWidget.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Data \

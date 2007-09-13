@@ -356,10 +356,10 @@
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Dock" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core.Gui" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects" />
-    <ProjectReference type="Assembly" localcopy="False" refto="../../../contrib/Mono.Addins.dll" />
-    <ProjectReference type="Assembly" localcopy="False" refto="../../../contrib/log4net.dll" />
-    <ProjectReference type="Assembly" localcopy="False" refto="../../../contrib/Mono.Addins.Gui.dll" />
-    <ProjectReference type="Assembly" localcopy="False" refto="../../../contrib/Mono.Addins.Setup.dll" />
+    <ProjectReference type="Assembly" localcopy="False" refto="../../../build/bin/Mono.Addins.dll" />
+    <ProjectReference type="Assembly" localcopy="False" refto="../../../build/bin/log4net.dll" />
+    <ProjectReference type="Assembly" localcopy="False" refto="../../../build/bin/Mono.Addins.Gui.dll" />
+    <ProjectReference type="Assembly" localcopy="False" refto="../../../build/bin/Mono.Addins.Setup.dll" />
     <ProjectReference type="Gac" localcopy="True" refto="gconf-sharp-peditors, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />

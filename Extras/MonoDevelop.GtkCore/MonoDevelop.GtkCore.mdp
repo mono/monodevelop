@@ -84,8 +84,8 @@
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
-    <ProjectReference type="Assembly" localcopy="False" refto="../../contrib/Mono.Addins.dll" />
-    <ProjectReference type="Assembly" localcopy="False" refto="../../contrib/Mono.Cecil.dll" />
+    <ProjectReference type="Assembly" localcopy="False" refto="../../build/bin/Mono.Addins.dll" />
+    <ProjectReference type="Assembly" localcopy="False" refto="../../build/bin/Mono.Cecil.dll" />
     <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Deployment" />
   </References>
