@@ -73,7 +73,7 @@ $(libsteticui_DATAFILES_BUILD): $(BUILD_DIR)/% : $(addprefix $(libsteticui_DIR)/
 
 ### Dist ###
 
-assemblydir = $(MD_ASSEMBLY_DIR)/MonoDevelop.GtkCore
+assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.GtkCore
 assembly_DATA = $(libstetic) $(libsteticui) $(libstetic).mdb $(libsteticui).mdb $(libstetic_DATAFILES_BUILD) $(libsteticui_DATAFILES_BUILD)
 
 CLEANFILES = $(assembly_DATA)
