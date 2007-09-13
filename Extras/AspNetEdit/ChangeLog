@@ -1,3 +1,14 @@
+2007-09-13  Michael Hutchinson <mhutchinson@novell.com> 
+
+	Move (now trivial) JSCall# library into MD SVN rather than 
+	distributing binary.
+	
+	* AspNetEdit.mdp, Makefile.am, chrome/Makefile.am: Updated.
+	* AspNetEdit.JSCall/InvalidJSArgumentException.cs, 
+	  AspNetEdit.JSCall/CommandManager.cs,
+	  chrome/content/aspdesigner/JSCall.js: Added.
+	* libs/jscall.dll, libs/JSCall.js: Removed.
+
 2007-09-05  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* AspNetEdit.addin.xml: Add missing dependency.

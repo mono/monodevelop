@@ -63,6 +63,8 @@
     <File name="./AspNetEdit.Editor.ComponentModel/EventBindingService.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Integration/ToolboxProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="./chrome/aspdesigner.manifest.in" subtype="Code" buildaction="Nothing" />
+    <File name="./AspNetEdit.JSCall/CommandManager.cs" subtype="Code" buildaction="Compile" />
+    <File name="./AspNetEdit.JSCall/InvalidJSArgumentException.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="gecko-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=ccf7d78a55e9f021" />
@@ -87,7 +89,6 @@
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Deployment" />
-    <ProjectReference type="Assembly" localcopy="True" refto="../../build/AddIns/AspNetEdit/jscall.dll" />
     <ProjectReference type="Assembly" localcopy="False" refto="../../build/bin/Mono.Addins.dll" />
   </References>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../">

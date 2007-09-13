@@ -3,7 +3,6 @@ extension_guid="{d7d824a2-030d-11db-9804-b622a1ef5492}"
 packagedir=$(MD_ADDIN_DIR)/AspNetEdit
 chromedir = $(MOZILLA_HOME)/chrome
 installed_chrome_txt = $(chromedir)/installed-chrome.txt
-JSCALL_SCRIPT = ../libs/JSCall.js
 
 ### Build the JAR ###
 
@@ -15,13 +14,10 @@ local_jar_files = \
 		content/aspdesigner/clipboard.js \
 		content/aspdesigner/constants.js \
 		content/aspdesigner/xpcom.js \
+		content/aspdesigner/JSCall.js \
 		locale/en-US/aspdesigner/contents.rdf
 
-jar_files =	$(local_jar_files) \
-		content/aspdesigner/JSCall.js
-
-content/aspdesigner/JSCall.js: $(JSCALL_SCRIPT)
-	cp $^ $@
+jar_files =	$(local_jar_files)
 
 $(packagename).jar: $(jar_files)
 	$(ZIP) -q9 $@ $^
@@ -90,5 +86,4 @@ uninstall-chrome-text:
 EXTRA_DIST = $(local_jar_files) aspdesigner.manifest.in
 
 CLEANFILES =			\
-	$(packagename).jar	\
-	content/JSCall.js
+	$(packagename).jar

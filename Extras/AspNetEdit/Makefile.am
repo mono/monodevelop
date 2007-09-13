@@ -19,7 +19,6 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
-	-r:$(top_srcdir)/build/AddIns/AspNetEdit/jscall.dll \
 	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
 	-r:System \
 	-r:System.Design \
@@ -64,7 +63,10 @@ FILES =	\
 	AspNetEdit.Integration/AspNetEditViewContent.cs \
 	AspNetEdit.Integration/MonoDevelopProxy.cs \
 	AspNetEdit.Integration/ToolboxProvider.cs \
-	AspNetEdit.Integration/EditorProcess.cs
+	AspNetEdit.Integration/EditorProcess.cs \
+	\
+	AspNetEdit.JSCall/CommandManager.cs \
+	AspNetEdit.JSCall/InvalidJSArgumentException.cs
 
 
 RES = AspNetEdit.addin.xml
