@@ -1,4 +1,5 @@
 
+SUBDIRS = lib
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.GtkCore
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.GtkCore.dll
 
@@ -17,8 +18,8 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
 	-r:$(top_builddir)/build/bin/Mono.Cecil.dll \
-	-r:$(top_srcdir)/Extras/MonoDevelop.GtkCore/lib/libstetic.dll \
-	-r:$(top_srcdir)/Extras/MonoDevelop.GtkCore/lib/libsteticui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.GtkCore/libstetic.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.GtkCore/libsteticui.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml
@@ -72,25 +73,10 @@ RES =  \
 	templates/Window.xft.xml \
 	templates/WindowPartial.xft.xml
 
-STETIC_FILES = \
-libstetic.dll \
-libsteticui.dll \
-libstetic.dll.config \
-libsteticui.dll.config
 
-STETIC_LIBDIR := $(shell pkg-config --variable=libdir stetic)/stetic/
+EXTRA_DIST = $(FILES) $(RES)
 
-LIBDIR_STETIC_FILES = $(addprefix $(STETIC_LIBDIR), $(STETIC_FILES))
-SRC_STETIC_FILES = $(addprefix lib/, $(STETIC_FILES))
-BUILD_STETIC_FILES = $(addprefix $(ADDIN_BUILD)/, $(STETIC_FILES))
-
-EXTRA_DIST = $(FILES) $(RES) $(SRC_STETIC_FILES)
-
-all: $(ASSEMBLY) $(BUILD_STETIC_FILES)
-
-update-stetic:
-	mkdir -p lib
-	cp $(LIBDIR_STETIC_FILES) lib 
+all: $(ASSEMBLY)
 
 $(ADDIN_BUILD)/%: $(srcdir)/lib/%
 	mkdir -p $(ADDIN_BUILD)
@@ -102,8 +88,8 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 	$(build_resources:%=/resource:%) $(build_sources) $(REFS)
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.GtkCore
-assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(SRC_STETIC_FILES) 
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 
-CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(BUILD_STETIC_FILES)
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 include $(top_srcdir)/Makefile.include

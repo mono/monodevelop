@@ -1,3 +1,10 @@
+2007-09-13  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* lib/stetic, Makefile.am, lib/Makefile.am: Build stetic from 
+	  svn:externals.
+	* lib/libsteticui.dll.config, lib/libstetic.dll.config,
+	  lib/libstetic.dll, lib/libsteticui.dll: Removed.
+
 2007-09-10  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* templates/WidgetPartial.xft.xml, templates/Widget.xft.xml,
