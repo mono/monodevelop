@@ -1,3 +1,9 @@
+2007-09-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* CSharpAmbience.cs: The name of a delegate is the name of the class, not
+	  the return type of the invoke method. Don't show the delegate parameters
+	  unless the 'show class modifiers' flag is set.
+
 2007-09-13  Mike Krüger <mkrueger@novell.com> 
 
 	* Parser/CodeGenerator.cs: Fixed re opened 82311: Rename fails when we have

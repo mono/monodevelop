@@ -225,21 +225,12 @@ namespace CSharpBinding
 				builder.Append(' ');
 			}
 			
-			if (c.ClassType == ClassType.Delegate && c.Methods.Count > 0) {
-				foreach(IMethod m in c.Methods) {
-					if (m.Name != "Invoke") continue;
-					
-					builder.Append(Convert(m.ReturnType, conversionFlags));
-					builder.Append(' ');
-				}
-			} else {
-				string name;
-				if (UseFullyQualifiedMemberNames (conversionFlags) || (UseIntrinsicTypeNames (conversionFlags) && typeConversionTable.Contains (c.FullyQualifiedName)))
-					name = c.FullyQualifiedName;
-				else
-					name = c.Name;
-				AppendPangoHtmlTag (builder, ConvertTypeName (name, conversionFlags), "b", conversionFlags);
-			}
+			string name;
+			if (UseFullyQualifiedMemberNames (conversionFlags) || (UseIntrinsicTypeNames (conversionFlags) && typeConversionTable.Contains (c.FullyQualifiedName)))
+				name = c.FullyQualifiedName;
+			else
+				name = c.Name;
+			AppendPangoHtmlTag (builder, ConvertTypeName (name, conversionFlags), "b", conversionFlags);
 			
 			// Display generic parameters only if told so
 			if (ShowGenericParameters(conversionFlags) && c.GenericParameters != null && c.GenericParameters.Count > 0) {
@@ -257,7 +248,7 @@ namespace CSharpBinding
 				builder.Append ((includeMarkup) ? "&gt;" : ">");
 			}
 			
-			if (c.ClassType == ClassType.Delegate) {
+			if (c.ClassType == ClassType.Delegate && ShowClassModifiers (conversionFlags)) {
 				builder.Append(" (");
 				if (IncludeHTMLMarkup(conversionFlags)) builder.Append("<br>");
 				
