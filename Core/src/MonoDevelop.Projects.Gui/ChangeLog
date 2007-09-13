@@ -1,5 +1,10 @@
 2007-09-13  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs: Properly format
+	  delegate names.
+
+2007-09-13  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Close the
 	  completion window when pressing the cursor keys with shift or control.
 	  Fixes bug #82475.

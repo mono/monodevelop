@@ -234,15 +234,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 			cls = c;
 			this.ambience = ambience;
 			image = Services.Icons.GetIcon(c);
-			if (c.ClassType != ClassType.Delegate) {
-				ConversionFlags flags = allowInstrinsicNames ? ConversionFlags.UseIntrinsicTypeNames : ConversionFlags.None;
-				text = ambience.Convert (c, flags | ConversionFlags.ShowGenericParameters);
-				completionString = ambience.Convert (c, flags);
-			}
-			else {
-				text = c.Name;
-				completionString = text;
-			}
+			ConversionFlags flags = allowInstrinsicNames ? ConversionFlags.UseIntrinsicTypeNames : ConversionFlags.None;
+			text = ambience.Convert (c, flags | ConversionFlags.ShowGenericParameters);
+			completionString = ambience.Convert (c, flags);
 		}
 		
 		protected void FillCodeCompletionData (IMethod method, Ambience_ ambience)
