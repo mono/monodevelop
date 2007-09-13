@@ -71,20 +71,16 @@ FILES =	\
 
 RES = AspNetEdit.addin.xml
 
-LOCAL_LIBS = \
-	libs/jscall.dll
 
 DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(notdir $(DATA_FILES)))
 
-LOCAL_LIBS_BUILD = $(addprefix $(ADDIN_BUILD)/, $(notdir $(LOCAL_LIBS)))
-
 if ENABLE_ASPNETEDIT
-  all: $(ASSEMBLY) $(DATA_FILE_BUILD) $(LOCAL_LIBS_BUILD)
+  all: $(ASSEMBLY) $(DATA_FILE_BUILD)
 else
   all:
 endif
 
-$(ASSEMBLY): $(build_sources) $(RES) $(LOCAL_LIBS_BUILD)
+$(ASSEMBLY): $(build_sources) $(RES)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -debug -d:TRACE -out:$@ -target:library $(REFS) \
 		$(RES:%=/resource:%) $(build_sources)
@@ -93,18 +89,14 @@ $(DATA_FILE_BUILD): $(srcdir)/data/$(notdir $@)
 	mkdir -p $(ADDIN_BUILD)
 	cp $(srcdir)/data/$(notdir $@) $(ADDIN_BUILD)/.
 
-$(LOCAL_LIBS_BUILD): $(srcdir)/libs/$(notdir $@)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/libs/$(notdir $@) $(ADDIN_BUILD)/.
-
 if ENABLE_ASPNETEDIT
   aspneteditlibdir = $(MD_ADDIN_DIR)/AspNetEdit
-  aspneteditlib_DATA = $(ASSEMBLY) $(DATA_FILES) $(LOCAL_LIBS)
+  aspneteditlib_DATA = $(ASSEMBLY) $(DATA_FILES)
 endif
 
-CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD) $(LOCAL_LIBS_BUILD)
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD)
 
-EXTRA_DIST = $(FILES) $(RES) $(DATA_FILES) $(LOCAL_LIBS) libs/JSCall.js
+EXTRA_DIST = $(FILES) $(RES) $(DATA_FILES)
 
 include $(top_srcdir)/Makefile.include
 
