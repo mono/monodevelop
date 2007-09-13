@@ -1,5 +1,12 @@
 2007-09-13  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects.Parser/ProjectCodeCompletionDatabase.cs: Use the most
+	  recent compilation info to update the parser database, even when it has
+	  compilation errors. Code completion may not correctly work if parse
+	  information does not have the latest info.
+
+2007-09-13  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects.Ambience/IAmbience.cs,
 	  MonoDevelop.Projects.Ambience/Ambience.cs: Added new ambience flag to
 	  allow use of intrinsic type names.

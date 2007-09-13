@@ -253,7 +253,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public ClassUpdateInformation UpdateFromParseInfo (IParseInformation parserInfo, string fileName)
 		{
-			ICompilationUnit cu = (ICompilationUnit)parserInfo.BestCompilationUnit;
+			ICompilationUnit cu = (ICompilationUnit)parserInfo.MostRecentCompilationUnit;
 
 			ClassCollection resolved;
 			bool allResolved = parserDatabase.ResolveTypes (this, cu, cu.Classes, out resolved);
