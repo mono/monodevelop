@@ -37,16 +37,16 @@ namespace MonoDevelop.GtkCore.Dialogs
 {
 	public class BindDesignDialog: IDisposable
 	{
-		[Glade.Widget ("BindDesignDialog")] Gtk.Dialog dialog;
-		[Glade.Widget] Gtk.Label labelMessage;
-		[Glade.Widget] Gtk.ComboBox comboClasses;
-		[Glade.Widget] Gtk.Entry entryClassName;
-		[Glade.Widget] Gtk.Entry entryNamespace;
-		[Glade.Widget] Gtk.RadioButton radioSelect;
-		[Glade.Widget] Gtk.RadioButton radioCreate;
-		[Glade.Widget] Gtk.Table tableNewClass;
-		[Glade.Widget] Gnome.FileEntry fileEntry;
-		[Glade.Widget] Gtk.Button okButton;
+		[Glade.Widget ("BindDesignDialog")] protected Gtk.Dialog dialog;
+		[Glade.Widget] protected Gtk.Label labelMessage;
+		[Glade.Widget] protected Gtk.ComboBox comboClasses;
+		[Glade.Widget] protected Gtk.Entry entryClassName;
+		[Glade.Widget] protected Gtk.Entry entryNamespace;
+		[Glade.Widget] protected Gtk.RadioButton radioSelect;
+		[Glade.Widget] protected Gtk.RadioButton radioCreate;
+		[Glade.Widget] protected Gtk.Table tableNewClass;
+		[Glade.Widget] protected Gnome.FileEntry fileEntry;
+		[Glade.Widget] protected Gtk.Button okButton;
 		
 		ListStore store;
 		static string lastNamespace = "";

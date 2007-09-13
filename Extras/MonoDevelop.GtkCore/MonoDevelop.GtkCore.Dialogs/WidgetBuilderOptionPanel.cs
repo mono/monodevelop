@@ -50,13 +50,13 @@ namespace MonoDevelop.GtkCore.Dialogs
 	{
 		class WidgetBuilderOptionPanelWidget : GladeWidgetExtract
 		{
-			[Glade.Widget] Gtk.TreeView tree;
-			[Glade.Widget] Gtk.CheckButton checkWidgetLib;
-			[Glade.Widget] Gtk.CheckButton checkGettext;
-			[Glade.Widget] Gtk.CheckButton checkGtkEnabled;
-			[Glade.Widget] Gtk.Entry entryGettext;
-			[Glade.Widget] Gtk.Notebook notebook;
-			[Glade.Widget] Gtk.ComboBox comboVersions;
+			[Glade.Widget] protected Gtk.TreeView tree;
+			[Glade.Widget] protected Gtk.CheckButton checkWidgetLib;
+			[Glade.Widget] protected Gtk.CheckButton checkGettext;
+			[Glade.Widget] protected Gtk.CheckButton checkGtkEnabled;
+			[Glade.Widget] protected Gtk.Entry entryGettext;
+			[Glade.Widget] protected Gtk.Notebook notebook;
+			[Glade.Widget] protected Gtk.ComboBox comboVersions;
 			
 			ListStore store;
 			TreeViewColumn column;

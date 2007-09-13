@@ -37,8 +37,8 @@ namespace MonoDevelop.GtkCore.Dialogs
 {
 	public class SelectRenamedClassDialog: IDisposable
 	{
-		[Glade.Widget ("SelectRenamedClassDialog")] Gtk.Dialog dialog;
-		[Glade.Widget] Gtk.TreeView treeClasses;
+		[Glade.Widget ("SelectRenamedClassDialog")] protected Gtk.Dialog dialog;
+		[Glade.Widget] protected Gtk.TreeView treeClasses;
 		ListStore store;
 		
 		public SelectRenamedClassDialog (ClassCollection classes)

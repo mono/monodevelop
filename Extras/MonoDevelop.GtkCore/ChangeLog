@@ -1,3 +1,10 @@
+2007-09-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.Dialogs/SelectRenamedClassDialog.cs,
+	  MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs,
+	  MonoDevelop.GtkCore.Dialogs/BindDesignDialog.cs,
+	  MonoDevelop.GtkCore.Dialogs/ConfirmWindowDeleteDialog.cs: Fix warnings.
+
 2007-09-13  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* lib/stetic, Makefile.am, lib/Makefile.am: Build stetic from 

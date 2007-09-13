@@ -35,9 +35,9 @@ namespace MonoDevelop.GtkCore.Dialogs
 {
 	public class ConfirmWindowDeleteDialog: IDisposable
 	{
-		[Glade.Widget ("ConfirmWindowDeleteDialog")] Gtk.Dialog dialog;
-		[Glade.Widget] Gtk.Label label;
-		[Glade.Widget] Gtk.CheckButton checkbox;
+		[Glade.Widget ("ConfirmWindowDeleteDialog")] protected Gtk.Dialog dialog;
+		[Glade.Widget] protected Gtk.Label label;
+		[Glade.Widget] protected Gtk.CheckButton checkbox;
 		
 		public ConfirmWindowDeleteDialog (string windowName, string fileName, Stetic.ProjectItemInfo obj)
 		{
