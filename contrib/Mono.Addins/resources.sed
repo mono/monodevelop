@@ -1,2 +1,0 @@
-/^RESOURCES/!d
-s/RESOURCES = //

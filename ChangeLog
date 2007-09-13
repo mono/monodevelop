@@ -1,5 +1,18 @@
 2007-09-13  Michael Hutchinson <mhutchinson@novell.com>
 
+	* contrib/extract_makefile_variable.sh, contrib/Makefile.am, 
+	  contrib/Mono.Addins/Makefile.am: Refactor makefile variable 
+	  extraction, deploy Mono.Addins data files correctly.
+	
+	* contrib/log4net/Makefile.am: Use better file listing.
+	
+	* contrib/Mono.Addins/references.sed, contrib/Mono.Addins/files.sed,
+	  contrib/Mono.Addins/singlelinevars.sed,
+	  contrib/Mono.Addins/resources.sed, 
+	  contrib/Mono.Addins/data_files.sed: Removed, no longer needed.
+
+2007-09-13  Michael Hutchinson <mhutchinson@novell.com>
+
 	* contrib/*: Rework build code so that Mono.Addins, Mono.Cecil 
 	  and log4net libraries are included via svn:externals and built 
 	  from source.

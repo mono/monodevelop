@@ -1,2 +1,0 @@
-/^FILES/!d
-s/FILES = //
