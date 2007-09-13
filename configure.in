@@ -511,6 +511,7 @@ Extras/prj2make-sharp-lib/Makefile
 Extras/WelcomePage/Makefile
 Extras/ChangeLogAddIn/Makefile
 Extras/MonoDevelop.GtkCore/Makefile
+Extras/MonoDevelop.GtkCore/lib/Makefile
 Extras/AspNetAddIn/Makefile
 Extras/MonoDevelop.Autotools/Makefile
 Extras/MonoDevelop.DesignerSupport/Makefile

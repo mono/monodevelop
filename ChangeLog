@@ -1,5 +1,9 @@
 2007-09-13  Michael Hutchinson <mhutchinson@novell.com>
 
+	* configure.in: Add Makefile for building stetic from svn.
+
+2007-09-13  Michael Hutchinson <mhutchinson@novell.com>
+
 	* contrib/extract_makefile_variable.sh, contrib/Makefile.am, 
 	  contrib/Mono.Addins/Makefile.am: Refactor makefile variable 
 	  extraction, deploy Mono.Addins data files correctly.
