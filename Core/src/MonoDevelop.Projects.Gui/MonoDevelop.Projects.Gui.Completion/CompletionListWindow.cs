@@ -165,15 +165,16 @@ namespace MonoDevelop.Projects.Gui.Completion
 				return true;
 
 			if ((ka & ListWindow.KeyAction.Process) != 0) {
-				if (key == Gdk.Key.Left) {
-					if (wnd.declarationviewwindow.Multiple) {
-						wnd.declarationviewwindow.OverloadLeft ();
-						wnd.UpdateDeclarationView ();
+				if (key == Gdk.Key.Left || key == Gdk.Key.Right) {
+					if (modifier != 0) {
+						wnd.Hide ();
+						return false;
 					}
-					return true;
-				} else if (key == Gdk.Key.Right) {
 					if (wnd.declarationviewwindow.Multiple) {
-						wnd.declarationviewwindow.OverloadRight ();
+						if (key == Gdk.Key.Left)
+							wnd.declarationviewwindow.OverloadLeft ();
+						else
+							wnd.declarationviewwindow.OverloadRight ();
 						wnd.UpdateDeclarationView ();
 					}
 					return true;
