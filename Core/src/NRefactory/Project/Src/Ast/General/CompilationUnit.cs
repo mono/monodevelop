@@ -54,7 +54,8 @@ namespace ICSharpCode.NRefactory.Ast
 		
 		public override string ToString()
 		{
-			return String.Format("[CompilationUnit]");
+			return String.Format("[CompilationUnit: Children={0}]",
+			                     GetCollectionString(base.Children));
 		}
 	}
 }
