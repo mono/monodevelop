@@ -510,7 +510,7 @@ namespace CSharpBinding.Parser
 		public override object VisitFieldReferenceExpression (FieldReferenceExpression fieldExp, object data)
 		{
 			//Debug ("FieldReferenceExpression", fieldExp.FieldName, fieldExp);
-			if (fieldExp.FieldName == member.Name) {
+			if (!(member is IParameter) && fieldExp.FieldName == member.Name) {
 				IClass cls = resolver.ResolveExpressionType (fileCompilationUnit, fieldExp.TargetObject, fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
 				if (cls != null && IsExpectedClass (cls)) {
 					int pos = file.GetPositionFromLineColumn (fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
