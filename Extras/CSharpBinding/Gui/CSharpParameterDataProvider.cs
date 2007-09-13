@@ -29,7 +29,7 @@ namespace CSharpBinding
 		public override string GetParameterMarkup (int overload, int paramIndex)
 		{
 			IParameter p = GetParameter (overload, paramIndex);
-			return ambience.Convert (p, ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters | ConversionFlags.IncludePangoMarkup);
+			return ambience.Convert (p, ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters | ConversionFlags.IncludePangoMarkup | ConversionFlags.UseIntrinsicTypeNames);
 		}
 		
 		public override string GetMethodMarkup (int overload, string[] parameters)
@@ -38,9 +38,9 @@ namespace CSharpBinding
 			
 			string paramTxt = string.Join (", ", parameters);
 			if (met.IsConstructor)
-				return "<b>" + GLib.Markup.EscapeText (ambience.Convert (met.DeclaringType, ConversionFlags.None)) + "</b> (" + paramTxt + ")";
+				return "<b>" + GLib.Markup.EscapeText (ambience.Convert (met.DeclaringType, ConversionFlags.UseIntrinsicTypeNames)) + "</b> (" + paramTxt + ")";
 			else
-				return GLib.Markup.EscapeText (ambience.Convert (met.ReturnType, ConversionFlags.ShowGenericParameters)) + " <b>" + met.Name + "</b> (" + paramTxt + ")";
+				return GLib.Markup.EscapeText (ambience.Convert (met.ReturnType, ConversionFlags.ShowGenericParameters|ConversionFlags.UseIntrinsicTypeNames)) + " <b>" + met.Name + "</b> (" + paramTxt + ")";
 		}
 		
 		public override int GetCurrentParameterIndex (ICodeCompletionContext ctx)

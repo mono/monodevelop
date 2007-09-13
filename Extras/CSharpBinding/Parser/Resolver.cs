@@ -28,8 +28,19 @@ namespace CSharpBinding.Parser
 		IParserContext parserContext;
 		ICompilationUnit currentUnit;
 		string currentFile;
+		
 		IClass callingClass;
+		IMethod callingMethod;
+		IIndexer callingIndexer;
+		IProperty callingProperty;
+		bool callingClassChecked;
+		bool callingMethodChecked;
+		bool callingIndexerChecked;
+		bool callingPropertyChecked;
+		
 		LookupTableVisitor lookupTableVisitor;
+		int caretLine;
+		int caretColumn;
 		
 		public Resolver (IParserContext parserContext)
 		{
@@ -66,8 +77,16 @@ namespace CSharpBinding.Parser
 			}
 		}
 		
-		int caretLine;
-		int caretColumn;
+		void SetCursorPosition (int caretLineNumber, int caretColumn)
+		{
+			this.caretLine = caretLineNumber;
+			this.caretColumn = caretColumn;
+			callingClass = null;
+			callingMethod = null;
+			callingIndexer = null;
+			callingProperty = null;
+			callingClassChecked = callingPropertyChecked = callingMethodChecked = callingIndexerChecked = false;
+		}
 		
 		public IReturnType internalResolve (string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent)
 		{
@@ -79,8 +98,8 @@ namespace CSharpBinding.Parser
 			if (expression == "") {
 				return null;
 			}
-			this.caretLine     = caretLineNumber;
-			this.caretColumn   = caretColumn;
+			
+			SetCursorPosition (caretLineNumber, caretColumn);
 			
 			IParseInformation parseInfo = parserContext.GetParseInformation(fileName);
 			ICSharpCode.NRefactory.Ast.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Ast.CompilationUnit;
@@ -155,6 +174,8 @@ namespace CSharpBinding.Parser
 				lookupTableVisitor.VisitCompilationUnit (fileCompilationUnit,null);
 				currentUnit = (ICompilationUnit)cSharpVisitor.VisitCompilationUnit (fileCompilationUnit, null);
 				if (currentUnit != null) {
+					// Reset cursor position data
+					SetCursorPosition (caretLineNumber, caretColumn);
 					callingClass = GetInnermostClass();
 				}
 				type=expr.AcceptVisitor(typeVisitor,null) as IReturnType;
@@ -176,8 +197,7 @@ namespace CSharpBinding.Parser
 			
 			currentFile = fileName;
 		
-			this.caretLine = line;
-			this.caretColumn = col;
+			SetCursorPosition (line, col);
 			
 			callingClass = GetInnermostClass();
 			if (callingClass == null)
@@ -195,8 +215,7 @@ namespace CSharpBinding.Parser
 			currentUnit = (ICompilationUnit)cSharpVisitor.VisitCompilationUnit (fileCompilationUnit, null);
 			currentFile = null;
 			
-			this.caretLine = line;
-			this.caretColumn = col;
+			SetCursorPosition (line, col);
 			
 			callingClass = GetInnermostClass();
 			
@@ -231,8 +250,7 @@ namespace CSharpBinding.Parser
 			CSharpVisitor cSharpVisitor = new CSharpVisitor();
 			currentUnit = (ICompilationUnit)cSharpVisitor.VisitCompilationUnit (fileCompilationUnit, null);
 			
-			this.caretLine = line;
-			this.caretColumn = col;
+			SetCursorPosition (line, col);
 			
 			callingClass = GetInnermostClass();
 			
@@ -822,10 +840,14 @@ namespace CSharpBinding.Parser
 		
 		IProperty GetProperty()
 		{
+			if (callingPropertyChecked)
+				return callingProperty;
+			
+			callingPropertyChecked = true;
 			if (callingClass != null && callingClass.Properties != null) { 
 				foreach (IProperty property in callingClass.Properties) {
 					if (property.BodyRegion != null && property.BodyRegion.IsInside(caretLine, caretColumn)) {
-						return property;
+						return callingProperty = property;
 					}
 				}
 			}
@@ -834,13 +856,17 @@ namespace CSharpBinding.Parser
 		
 		IMethod GetMethod()
 		{
+			if (callingMethodChecked)
+				return callingMethod;
+			
+			callingMethodChecked = true;
 			if (callingClass != null && callingClass.Methods != null) { 
 				foreach (IMethod method in callingClass.Methods) {
 					if (method.Region != null && method.Region.IsInside (caretLine, caretColumn))
-						return method;
+						return callingMethod = method;
 					
 					if (method.BodyRegion != null && method.BodyRegion.IsInside(caretLine, caretColumn))
-						return method;
+						return callingMethod = method;
 				}
 			}
 			
@@ -849,10 +875,14 @@ namespace CSharpBinding.Parser
 		
 		IIndexer GetIndexer()
 		{
+			if (callingIndexerChecked)
+				return callingIndexer;
+			
+			callingIndexerChecked = true;
 			if (callingClass != null && callingClass.Indexer != null) { 
 				foreach (IIndexer indexer in callingClass.Indexer) {
 					if (indexer.BodyRegion != null && indexer.BodyRegion.IsInside(caretLine, caretColumn)) {
-						return indexer;
+						return callingIndexer = indexer;
 					}
 				}
 			}
@@ -936,6 +966,18 @@ namespace CSharpBinding.Parser
 			
 			IClass c;
 			
+			// Check if the name matches a type parameter of the enclosing method
+			IMethod met = GetMethod ();
+			if (met != null && met.GenericParameters != null) {
+				c = FindTypeParameter (met.GenericParameters, name, unit);
+				if (c != null) return c;
+			}
+			
+			if (callingClass != null && callingClass.GenericParameters != null) {
+				c = FindTypeParameter (callingClass.GenericParameters, name, unit);
+				if (c != null) return c;
+			}
+			
 			// If the name matches an alias, try using the alias first.
 			if (unit != null) {
 				string aname;
@@ -1011,6 +1053,19 @@ namespace CSharpBinding.Parser
 				}
 			}
 			
+			return null;
+		}
+		
+		IClass FindTypeParameter (GenericParameterList gparams, string name, ICompilationUnit unit)
+		{
+			foreach (MonoDevelop.Projects.Parser.GenericParameter gp in gparams) {
+				if (gp.Name == name) {
+					if (gp.BaseTypes != null)
+						return CreateParameterTypeClass (gp.Name, gp.BaseTypes, unit);
+					else
+						return parserContext.GetClass ("System.Object", null);
+				}
+			}
 			return null;
 		}
 		
@@ -1133,8 +1188,7 @@ namespace CSharpBinding.Parser
 		public LanguageItemCollection IsAsResolve (string expression, int caretLine, int caretColumn, string fileName, string fileContent, bool excludeInterfaces)
 		{
 			LanguageItemCollection result = new LanguageItemCollection ();
-			this.caretLine = caretLine;
-			this.caretColumn = caretColumn;
+			SetCursorPosition (caretLine, caretColumn);
 			
 			IParseInformation parseInfo = parserContext.GetParseInformation (fileName);
 			ICSharpCode.NRefactory.Ast.CompilationUnit fcu = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Ast.CompilationUnit;
@@ -1202,11 +1256,49 @@ namespace CSharpBinding.Parser
 					result.Add (iclass);
 			}
 			
+			IMethod met = GetMethod ();
+			if (met != null && met.GenericParameters != null)
+				FindTypeParameterSubclasses (result, met.GenericParameters, returnClass, currentUnit);
+			
+			if (callingClass != null && callingClass.GenericParameters != null)
+				FindTypeParameterSubclasses (result, callingClass.GenericParameters, returnClass, currentUnit);
+			
 			// Include all namespaces as well
 			foreach (string nss in parserContext.GetNamespaceList ("", true, true))
 				result.Add (new Namespace (nss));
 			
 			return result;
+		}
+		
+		void FindTypeParameterSubclasses (LanguageItemCollection result, GenericParameterList gparams, IClass baseClass, ICompilationUnit unit)
+		{
+			foreach (MonoDevelop.Projects.Parser.GenericParameter gp in gparams) {
+				if (gp.BaseTypes != null) {
+					foreach (IReturnType rt in gp.BaseTypes) {
+						IClass cls = SearchType (rt, unit);
+						if (IsClassInInheritanceTree (baseClass, cls)) {
+							result.Add (CreateParameterTypeClass (gp.Name, gp.BaseTypes, unit));
+							break;
+						}
+					}
+				}
+				else {
+					IClass cls = parserContext.GetClass ("System.Object", null);
+					if (IsClassInInheritanceTree (baseClass, cls)) {
+						result.Add (CreateParameterTypeClass (gp.Name, null, unit));
+						break;
+					}
+				}
+			}
+		}
+		
+		IClass CreateParameterTypeClass (string name, ReturnTypeList btypes, ICompilationUnit unit)
+		{
+			DefaultClass c = new DefaultClass (unit);
+			c.FullyQualifiedName = name;
+			if (btypes != null)
+				c.BaseTypes.AddRange (btypes);
+			return c;
 		}
 		
 		public LanguageItemCollection CtrlSpace (int caretLine, int caretColumn, string fileName)
@@ -1215,8 +1307,7 @@ namespace CSharpBinding.Parser
 			foreach (System.Collections.Generic.KeyValuePair<string, string> pt in TypeReference.PrimitiveTypesCSharp)
 				result.Add (new Namespace (pt.Key));
 
-			this.caretLine = caretLine;
-			this.caretColumn = caretColumn;
+			SetCursorPosition (caretLine, caretColumn);
 			IParseInformation parseInfo = parserContext.GetParseInformation (fileName);
 			ICSharpCode.NRefactory.Ast.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Ast.CompilationUnit;
 			if (fileCompilationUnit == null) {
@@ -1229,6 +1320,7 @@ namespace CSharpBinding.Parser
 			currentUnit = (ICompilationUnit)cSharpVisitor.VisitCompilationUnit (fileCompilationUnit, null);
 			currentFile = fileName;
 			if (currentUnit != null) {
+				SetCursorPosition (caretLine, caretColumn);
 				callingClass = GetInnermostClass();
 				Console.WriteLine("CallingClass is " + (callingClass == null ? "null" : callingClass.Name));
 			}

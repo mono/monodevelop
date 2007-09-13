@@ -1,5 +1,12 @@
 2007-09-13  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Gui/CSharpParameterDataProvider.cs: Improved method formatting.
+	* Gui/CSharpTextEditorExtension.cs, Parser/Resolver.cs: When resolving a
+	  type, take into account parameter types for methods and classes. Fixes
+	  bug #82209.
+
+2007-09-13  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* CSharpAmbience.cs: The name of a delegate is the name of the class, not
 	  the return type of the invoke method. Don't show the delegate parameters
 	  unless the 'show class modifiers' flag is set.
