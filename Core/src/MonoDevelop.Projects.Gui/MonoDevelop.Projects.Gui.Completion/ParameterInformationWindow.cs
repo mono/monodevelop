@@ -38,7 +38,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			this.Add (mainBox);
 		}
 		
-		public void ShowParameterInfo (IParameterDataProvider provider, int overload, int currentParam)
+		public Gtk.Requisition ShowParameterInfo (IParameterDataProvider provider, int overload, int currentParam)
 		{
 			int numParams = provider.GetParameterCount (overload);
 			
@@ -65,6 +65,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 			Gtk.Requisition req = mainBox.SizeRequest ();
 			Resize (req.Width, req.Height);
+			return req;
 		}
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose args)

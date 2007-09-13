@@ -1,3 +1,9 @@
+2007-09-13  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindow.cs,
+	  MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs:
+	  Fixed 82205: Can't read autocomplete.
+
 2007-09-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs: Properly format

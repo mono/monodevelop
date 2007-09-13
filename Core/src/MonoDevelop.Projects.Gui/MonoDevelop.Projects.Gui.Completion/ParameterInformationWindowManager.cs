@@ -143,10 +143,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 			// Updates the parameter information window from the information
 			// of the current method overload
 			
-			if (window == null) {
+			if (window == null) 
 				window = new ParameterInformationWindow ();
-				window.Show ();
-			}
+			
 			if (methods.Count == 0) {
 				window.Hide ();
 				return;
@@ -155,22 +154,20 @@ namespace MonoDevelop.Projects.Gui.Completion
 			MethodData md = methods [methods.Count - 1];
 			int cparam = md.MethodProvider.GetCurrentParameterIndex (md.CompletionContext);
 			
-			window.ShowParameterInfo (md.MethodProvider, md.CurrentOverload, cparam - 1);
+			Gtk.Requisition reqSize = window.ShowParameterInfo (md.MethodProvider, md.CurrentOverload, cparam - 1);
 			
 			int x = md.CompletionContext.TriggerXCoord;
 			int y = md.CompletionContext.TriggerYCoord;
 			
-			int w, h;
-			window.GetSize (out w, out h);
+			if (x + reqSize.Width > window.Screen.Width)
+				x = window.Screen.Width - reqSize.Width;
 			
-			if ((x + w) > window.Screen.Width)
-				x = window.Screen.Width - w;
+			if (y + reqSize.Height > window.Screen.Height)
+				y = y - md.CompletionContext.TriggerTextHeight - reqSize.Height;
 			
-			if ((y + h) > window.Screen.Height)
-				y = y - md.CompletionContext.TriggerTextHeight - h;
-
 			window.Move (x, y);
 			window.Show ();
+			
 		}
 	}
 	
