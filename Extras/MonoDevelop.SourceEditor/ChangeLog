@@ -1,5 +1,10 @@
 2007-09-13  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs: changed libglib
+	  reference.
+
+2007-09-13  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs: Removed
 	  MonoDevelop.SourceEditor.dll.config - changed DllImports.
 
