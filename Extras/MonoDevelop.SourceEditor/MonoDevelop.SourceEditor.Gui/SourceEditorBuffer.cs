@@ -438,28 +438,28 @@ namespace MonoDevelop.SourceEditor.Gui
 		//
 		// http://bugzilla.gnome.org/show_bug.cgi?id=132525
 		//
-		[DllImport("gtksourceview-1.0")]
+		[DllImport("libgtksourceview-1.0.so.0")]
 		static extern IntPtr gtk_source_buffer_get_markers_in_region (IntPtr raw, ref Gtk.TextIter begin, ref Gtk.TextIter end);
 		
-		[DllImport("gtksourceview-1.0")]
+		[DllImport("libgtksourceview-1.0.so.0")]
 		static extern IntPtr gtk_source_buffer_create_marker(IntPtr raw, string name, string type, ref Gtk.TextIter where);
 
-		[DllImport("gtksourceview-1.0")]
+		[DllImport("libgtksourceview-1.0.so.0")]
 		static extern void gtk_source_buffer_delete_marker(IntPtr raw, IntPtr marker);
 		
-		[DllImport("glibsharpglue-2")]
+		[DllImport("libglibsharpglue-2.so")]
 		static extern IntPtr gtksharp_slist_get_data (IntPtr l);
 
-		[DllImport("glibsharpglue-2")]
+		[DllImport("libglibsharpglue-2.so")]
 		static extern IntPtr gtksharp_slist_get_next (IntPtr l);
 		
-		[DllImport("gtksourceview-1.0")]
+		[DllImport("libgtksourceview-1.0.so.0")]
 		static extern IntPtr gtk_source_marker_get_marker_type(IntPtr raw);
 		
-		[DllImport("libglib-2.0-0.dll")]
+		[DllImport("libglib-2.0.so.0")]
 		static extern void g_slist_free (IntPtr l);
 		
-		[DllImport("gtksourceview-1.0")]
+		[DllImport("libgtksourceview-1.0.so.0")]
 		static extern void gtk_source_buffer_get_iter_at_marker (IntPtr raw, ref Gtk.TextIter iter, IntPtr marker);
 		
 		public void ToggleBookmark ()
@@ -568,13 +568,13 @@ namespace MonoDevelop.SourceEditor.Gui
 			gtk_source_buffer_create_marker (Handle, null, type.ToString (), ref begin_line);
 		}
 		
-		[DllImport("gtksourceview-1.0")]
+		[DllImport("libgtksourceview-1.0.so.0")]
 		static extern IntPtr gtk_source_buffer_get_prev_marker(IntPtr raw, ref Gtk.TextIter iter);
 		
-		[DllImport("gtksourceview-1.0")]
+		[DllImport("libgtksourceview-1.0.so.0")]
 		static extern IntPtr gtk_source_buffer_get_last_marker(IntPtr raw);
 		
-		[DllImport("gtksourceview-1.0")]
+		[DllImport("libgtksourceview-1.0.so.0")]
 		static extern IntPtr gtk_source_marker_prev (IntPtr raw);
 		
 		public void PrevBookmark ()
@@ -611,13 +611,13 @@ namespace MonoDevelop.SourceEditor.Gui
 			PlaceCursor (loc);
 		}
 		
-		[DllImport("gtksourceview-1.0")]
+		[DllImport("libgtksourceview-1.0.so.0")]
 		static extern IntPtr gtk_source_buffer_get_first_marker (IntPtr raw);
 		
-		[DllImport("gtksourceview-1.0")]
+		[DllImport("libgtksourceview-1.0.so.0")]
 		static extern IntPtr gtk_source_buffer_get_next_marker(IntPtr raw, ref Gtk.TextIter iter);
 		
-		[DllImport("gtksourceview-1.0")]
+		[DllImport("libgtksourceview-1.0.so.0")]
 		static extern IntPtr gtk_source_marker_next(IntPtr raw);
 		
 		public void NextBookmark ()
