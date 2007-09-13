@@ -168,6 +168,15 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		
+		public ICompletionData GetCompletionData (string completionString)
+		{
+			foreach (ICompletionData data in completionData) {
+				if (data.CompletionString == completionString)
+					return data;
+			}
+			return null;
+		}
+		
 		void OnStartedParsing (object s, EventArgs args)
 		{
 			OnCompletionDataChanging ();
