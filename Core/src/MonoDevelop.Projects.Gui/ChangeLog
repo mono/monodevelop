@@ -1,3 +1,10 @@
+2007-09-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs,
+	  MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs: Added
+	  a flag in CodeCompletionData to allow or disallow use of intrinsic type
+	  names.
+
 2007-09-04  Michael Hutchinson <MHutchinson@novell.com> 
 
 	* MonoDevelop.Projects.Gui/ProjectsGuiServices.cs,

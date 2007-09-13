@@ -40,6 +40,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		EventHandler onFinishedParsing;
 
 		string defaultCompletionString;
+		bool allowInstrinsicNames;
 		ArrayList completionData = new ArrayList ();
 		
 		public CodeCompletionDataProvider (IParserContext parserContext, Ambience_ ambience) 
@@ -110,7 +111,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			} else if (o is IClass) {
 				IClass iclass = (IClass) o;
 				if (iclass.Name != null && insertedClasses[iclass.Name] == null) {
-					completionData.Add(new CodeCompletionData(iclass, ambience));
+					completionData.Add(new CodeCompletionData(iclass, ambience, allowInstrinsicNames));
 					insertedClasses[iclass.Name] = iclass;
 				}
 			} else if (o is IProperty) {
@@ -149,13 +150,22 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public void AddResolveResults (ResolveResult results)
 		{
 			if (results != null) {
-				AddResolveResults(results.Namespaces);
-				AddResolveResults(results.Members);
+				AddResolveResults (results.Namespaces);
+				AddResolveResults (results.Members);
 			}
 		}
 		
 		public bool IsChanging { 
 			get { return parserContext != null && parserContext.ParserDatabase.IsParsing; } 
+		}
+
+		public bool AllowInstrinsicNames {
+			get {
+				return allowInstrinsicNames;
+			}
+			set {
+				allowInstrinsicNames = value;
+			}
 		}
 		
 		void OnStartedParsing (object s, EventArgs args)
