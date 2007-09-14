@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide {
         private Gtk.Button okbutton1;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Ide.SelectEncodingsDialog
             this.Name = "MonoDevelop.Ide.SelectEncodingsDialog";
             this.Title = "Select Text Encodings";

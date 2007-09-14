@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
         private Gtk.Button okbutton;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Ide.Gui.Dialogs.IncludeFilesDialog
             this.Name = "MonoDevelop.Ide.Gui.Dialogs.IncludeFilesDialog";
             this.Title = "Include Found Files";

@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.CodeTemplates {
         private Gtk.TextView templateTextView;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget
             Stetic.BinContainer.Attach(this);
             this.Name = "MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget";

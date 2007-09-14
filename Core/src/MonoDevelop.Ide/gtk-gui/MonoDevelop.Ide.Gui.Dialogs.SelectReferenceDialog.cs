@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
         private Gtk.Button okbutton;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog
             this.WidthRequest = 640;
             this.HeightRequest = 520;
@@ -89,6 +89,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.label6.Yalign = 0F;
             this.label6.LabelProp = "label6";
             this.mainBook.SetTabLabel(this.label7, this.label6);
+            this.label6.ShowAll();
             this.vpaned1.Add(this.mainBook);
             Gtk.Paned.PanedChild w3 = ((Gtk.Paned.PanedChild)(this.vpaned1[this.mainBook]));
             w3.Resize = false;

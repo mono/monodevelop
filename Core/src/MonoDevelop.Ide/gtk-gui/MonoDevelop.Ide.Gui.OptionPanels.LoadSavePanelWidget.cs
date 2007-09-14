@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
         private Gtk.CheckButton createBackupCopyCheckButton;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget
             Stetic.BinContainer.Attach(this);
             this.Name = "MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget";

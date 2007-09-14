@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
         private Gtk.Button okButton;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Ide.Gui.Dialogs.NewFileDialog
             this.Name = "MonoDevelop.Ide.Gui.Dialogs.NewFileDialog";
             this.WindowPosition = ((Gtk.WindowPosition)(4));

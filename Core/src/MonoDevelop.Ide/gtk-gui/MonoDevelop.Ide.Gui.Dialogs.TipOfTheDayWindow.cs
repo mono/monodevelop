@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
         private Gtk.Button closeButton;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow
             this.Name = "MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow";
             this.Title = "Tip of the Day";
@@ -121,6 +121,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             w7.Fill = false;
             // Container child hbox5.Gtk.Box+BoxChild
             this.hbuttonbox1 = new Gtk.HButtonBox();
+            this.hbuttonbox1.Name = "hbuttonbox1";
             this.hbuttonbox1.Spacing = 10;
             this.hbuttonbox1.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child hbuttonbox1.Gtk.ButtonBox+ButtonBoxChild

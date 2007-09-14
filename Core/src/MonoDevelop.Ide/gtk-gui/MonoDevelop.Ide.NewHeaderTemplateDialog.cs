@@ -24,7 +24,7 @@ namespace MonoDevelop.Ide {
         private Gtk.Button buttonOk;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Ide.NewHeaderTemplateDialog
             this.WidthRequest = 320;
             this.Name = "MonoDevelop.Ide.NewHeaderTemplateDialog";

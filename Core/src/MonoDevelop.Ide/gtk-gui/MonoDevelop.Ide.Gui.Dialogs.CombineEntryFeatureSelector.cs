@@ -16,7 +16,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
         private Gtk.ScrolledWindow scrolled;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector
             Stetic.BinContainer.Attach(this);
             this.Name = "MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector";

@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
         private Gtk.Label label9;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget
             Stetic.BinContainer.Attach(this);
             this.Name = "MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget";

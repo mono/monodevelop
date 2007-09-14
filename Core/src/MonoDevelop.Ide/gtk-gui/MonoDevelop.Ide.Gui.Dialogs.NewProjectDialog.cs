@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
         private Gtk.Button btn_new;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog
             this.WidthRequest = 630;
             this.Name = "MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog";
@@ -347,6 +347,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.label1.Name = "label1";
             this.label1.LabelProp = Mono.Unix.Catalog.GetString("page1");
             this.notebook.SetTabLabel(this.vbox1, this.label1);
+            this.label1.ShowAll();
             // Container child notebook.Gtk.Notebook+NotebookChild
             this.vbox5 = new Gtk.VBox();
             this.vbox5.Name = "vbox5";
@@ -379,6 +380,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.label2.Name = "label2";
             this.label2.LabelProp = Mono.Unix.Catalog.GetString("page2");
             this.notebook.SetTabLabel(this.vbox5, this.label2);
+            this.label2.ShowAll();
             w1.Add(this.notebook);
             Gtk.Box.BoxChild w30 = ((Gtk.Box.BoxChild)(w1[this.notebook]));
             w30.Position = 0;

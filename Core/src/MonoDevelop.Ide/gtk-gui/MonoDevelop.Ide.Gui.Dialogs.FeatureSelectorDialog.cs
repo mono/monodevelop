@@ -24,7 +24,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
         private Gtk.Button button1548;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog
             this.Name = "MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog";
             this.Title = Mono.Unix.Catalog.GetString("New Project Features");

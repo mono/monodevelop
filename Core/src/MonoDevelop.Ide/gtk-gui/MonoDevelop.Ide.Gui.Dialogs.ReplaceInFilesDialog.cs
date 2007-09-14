@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
         private Gtk.Button findButton;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Ide.Gui.Dialogs.ReplaceInFilesDialog
             this.Name = "MonoDevelop.Ide.Gui.Dialogs.ReplaceInFilesDialog";
             this.Title = "Replace in Files";

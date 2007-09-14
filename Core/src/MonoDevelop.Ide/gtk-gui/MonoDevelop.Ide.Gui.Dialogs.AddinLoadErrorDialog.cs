@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
         private Gtk.Button closeButton;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog
             this.Name = "MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog";
             this.Title = "MonoDevelop";

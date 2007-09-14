@@ -36,7 +36,7 @@ namespace MonoDevelop.Ide.StandardHeaders {
         private Gtk.Button addButton;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel
             Stetic.BinContainer.Attach(this);
             this.Name = "MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel";

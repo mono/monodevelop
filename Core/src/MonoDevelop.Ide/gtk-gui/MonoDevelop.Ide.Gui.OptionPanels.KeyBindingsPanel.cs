@@ -34,7 +34,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
         private Gtk.Button updateButton;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel
             Stetic.BinContainer.Attach(this);
             this.Name = "MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel";

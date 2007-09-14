@@ -28,7 +28,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
         private Gtk.Button buttonOk;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Ide.Gui.Dialogs.RenameItemDialog
             this.Name = "MonoDevelop.Ide.Gui.Dialogs.RenameItemDialog";
             this.Title = Mono.Unix.Catalog.GetString("Rename {0}");

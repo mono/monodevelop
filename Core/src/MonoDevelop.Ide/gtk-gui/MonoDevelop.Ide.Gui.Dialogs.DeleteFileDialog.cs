@@ -28,7 +28,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
         private Gtk.Button YesButton;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Ide.Gui.Dialogs.DeleteFileDialog
             this.Events = ((Gdk.EventMask)(256));
             this.Name = "MonoDevelop.Ide.Gui.Dialogs.DeleteFileDialog";

@@ -24,7 +24,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
         private Gtk.Button newButton;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog
             this.Name = "MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog";
             this.Title = "New Layout";
