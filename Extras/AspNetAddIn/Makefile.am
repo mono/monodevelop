@@ -86,14 +86,6 @@ RES =  \
 	Templates/WebHandler-Empty.xft.xml \
 	Templates/WebService-CodeBehind.xft.xml \
 	Templates/WebService-Empty.xft.xml
-	
-TESTFILES = \
-	Test/Test.cs
-
-TESTDLLS = \
-	$(NUNIT_LIBS)
-
-TESTASSEMBLY = $(top_builddir)/build/bin/AspNetAddIn.Test.dll
 
 
 if ENABLE_ASPNET
@@ -107,12 +99,7 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) \
 		$(build_resources:%=/resource:%) $(build_sources)
 
-check: all $(TESTASSEMBLY)	
-	MONO_PATH=../../build/AddIns nunit-console $(TESTASSEMBLY)
-
-$(TESTASSEMBLY) : $(build_test_sources) $(build_resources)
-	$(CSC) $(CSC_FLAGS) -debug -codepage:utf8 -out:$@ -target:library $(DLLS) $(TESTDLLS) /r:$(ASSEMBLY) \
-	$(monodoc_libflags) $(build_resources:%=/resource:%) $(build_test_sources)
+check: all
 
 if ENABLE_ASPNET
 csharpbindinglibdir = $(MD_ADDIN_DIR)/AspNetAddIn

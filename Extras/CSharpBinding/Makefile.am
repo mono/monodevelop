@@ -134,11 +134,12 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) \
 		$(build_resources:%=/resource:%) $(build_sources)
 
-check: all $(TESTASSEMBLY)	
-	MONO_PATH=../../build/AddIns nunit-console $(TESTASSEMBLY)
+check: all $(TESTASSEMBLY)
+	MONO_PATH=$(top_builddir)/build/AddIns nunit-console $(TESTASSEMBLY)
+
 
 $(TESTASSEMBLY) : $(build_test_sources) $(build_resources)
-	$(CSC) $(CSC_FLAGS) -debug -codepage:utf8 -out:$@ -target:library $(DLLS) $(TESTDLLS) /r:$(ASSEMBLY) \
+	$(CSC) $(CSC_FLAGS) -debug -codepage:utf8 -out:$@ -target:library $(DLLS) $(TESTDLLS) $(REFS) /r:$(ASSEMBLY) \
 	$(monodoc_libflags) $(build_resources:%=/resource:%) $(build_test_sources)
 
 parse: $(PARSE)
@@ -147,7 +148,7 @@ $(PARSE): parse.cs $(ASSEMBLY)
 	$(CSC) -out:$@ parse.cs $(REFS) -r:$(ASSEMBLY)
 
 run-parse-test: $(PARSE)
-	MONO_PATH=../../../../../build/AddIns/BackendBindings/:../../../../../build/bin/ mono $(PARSE) .
+	MONO_PATH=$(top_builddir)/build/AddIns/BackendBindings/:$(top_builddir)/build/bin/ mono $(PARSE) .
 
 csharpbindinglibdir = $(MD_ADDIN_DIR)/BackendBindings
 csharpbindinglib_DATA = $(ASSEMBLY)

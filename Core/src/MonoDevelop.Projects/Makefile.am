@@ -241,8 +241,8 @@ AssemblyInfo.cs
 
 all: $(ASSEMBLY)
 
-$(ASSEMBLY): $(build_sources)
-	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(RES:%=/resource:%) $(build_sources) \
+$(ASSEMBLY): $(build_sources) $(build_resources)
+	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(build_resources:%=/resource:%) $(build_sources) \
 	&& cp $(CONFIG) $(top_builddir)/build/bin
 
 assemblydir = $(MD_ASSEMBLY_DIR)

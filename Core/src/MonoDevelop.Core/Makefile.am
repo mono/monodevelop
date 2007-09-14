@@ -90,8 +90,8 @@ MonoDevelop.Core/GettextCatalog.cs: $(srcdir)/MonoDevelop.Core/GettextCatalog.cs
 	sed -e 's,@''prefix@,$(prefix),g' $(srcdir)/$@.in > $@.tmp
 	mv $@.tmp $@
 
-$(ASSEMBLY): $(build_sources) $(RES)
-	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(RES:%=/resource:%) $(build_sources) 
+$(ASSEMBLY): $(build_sources) $(build_resources)
+	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(build_resources:%=/resource:%) $(build_sources) 
 
 assemblydir = $(MD_ASSEMBLY_DIR)
 assembly_DATA = $(ASSEMBLY)
