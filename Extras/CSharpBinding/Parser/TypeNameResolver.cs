@@ -57,7 +57,7 @@ namespace CSharpBinding
 			string res;
 			if (names.TryGetValue (ns, out res)) {
 				if (res.Length > 0)
-					return res + "." + typeName;
+					return res + "." + typeName.Substring (i+1);
 				else
 					return typeName.Substring (i+1);
 			}

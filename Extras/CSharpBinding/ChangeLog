@@ -1,3 +1,10 @@
+2007-09-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/OverrideCompletionData.cs, Gui/CSharpTextEditorExtension.cs,
+	  CSharpAmbience.cs: Make proper use of ITypeNameResolver everywhere to
+	  resolve type names of parameters, methods, etc. Fixes bug #82854.
+	* Parser/TypeNameResolver.cs: Fix name resolution for aliases.
+
 2007-09-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* FormattingStrategy/CSharpIndentEngine.cs (PushColon): Handle the

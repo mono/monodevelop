@@ -23,21 +23,24 @@ namespace CSharpBinding
 		string typedModifiers;
 		int insertOffset;
 		string indent;
+		ITypeNameResolver resolver;
 		
-		public OverrideCompletionData (TextEditor editor, ILanguageItem item, int insertOffset, string typedModifiers, CSharpAmbience amb)
+		public OverrideCompletionData (TextEditor editor, ILanguageItem item, int insertOffset, string typedModifiers, CSharpAmbience amb, ITypeNameResolver resolver)
 		{
 			this.typedModifiers = typedModifiers;
 			this.insertOffset = insertOffset;
 			this.ambience = amb;
 			this.editor = editor;
 			this.item = item;
-			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters;
+			this.resolver = resolver;
+			
+			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters | ConversionFlags.UseIntrinsicTypeNames;
 			
 			if (item is IIndexer) {
 				IIndexer ind = (IIndexer) item;
 				Image = IdeApp.Services.Icons.GetIcon (ind);
 				StringBuilder sb = new StringBuilder ("this [");
-				ambience.Convert (ind.Parameters, sb, flags);
+				ambience.Convert (ind.Parameters, sb, flags, resolver);
 				sb.Append ("]");
 				Text = new string[] { sb.ToString () };
 				Description = ambience.Convert(item);
@@ -49,7 +52,7 @@ namespace CSharpBinding
 				IMethod met = (IMethod) item;
 				Image = IdeApp.Services.Icons.GetIcon (met);
 				StringBuilder sb = new StringBuilder (met.Name + " (");
-				ambience.Convert (met.Parameters, sb, flags);
+				ambience.Convert (met.Parameters, sb, flags, resolver);
 				sb.Append (")");
 				Text = new string[] { sb.ToString () };
 				Description = ambience.Convert (met);
@@ -87,11 +90,12 @@ namespace CSharpBinding
 		
 		void InsertMethod (IMethod method, string modifiers)
 		{
-			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters;
+			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters | ConversionFlags.UseFullyQualifiedNames | ConversionFlags.UseIntrinsicTypeNames;
 			StringBuilder textBuilder = new StringBuilder ();
+			Console.WriteLine ("ppres: " + resolver);
 			
 			textBuilder.Append (modifiers);
-			textBuilder.Append (ambience.Convert (method, flags));
+			textBuilder.Append (ambience.Convert (method, flags, resolver));
 			textBuilder.Append ('\n');
 			textBuilder.Append (indent);
 			textBuilder.Append ("{\n");
@@ -116,12 +120,12 @@ namespace CSharpBinding
 		
 		void InsertProperty (IProperty prop, string modifiers)
 		{
-			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters;
+			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters | ConversionFlags.UseFullyQualifiedNames | ConversionFlags.UseIntrinsicTypeNames;
 			StringBuilder textBuilder = new StringBuilder ();
 			int cpos = -1;
 			
 			textBuilder.Append (modifiers);
-			textBuilder.Append (ambience.Convert (prop.ReturnType, flags));
+			textBuilder.Append (ambience.Convert (prop.ReturnType, flags, resolver));
 			textBuilder.Append (' ');
 			textBuilder.Append (prop.Name);
 			textBuilder.Append (" {\n");
@@ -167,12 +171,12 @@ namespace CSharpBinding
 		
 		void InsertEvent (IEvent ev, string modifiers)
 		{
-			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters;
+			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters | ConversionFlags.UseFullyQualifiedNames | ConversionFlags.UseIntrinsicTypeNames;
 			StringBuilder textBuilder = new StringBuilder ();
 			
 			textBuilder.Append (modifiers);
 			textBuilder.Append ("event ");
-			textBuilder.Append (ambience.Convert (ev.ReturnType, flags));
+			textBuilder.Append (ambience.Convert (ev.ReturnType, flags, resolver));
 			textBuilder.Append (' ');
 			textBuilder.Append (ev.Name);
 			textBuilder.Append (" {\n");
@@ -207,14 +211,14 @@ namespace CSharpBinding
 		
 		void InsertIndexer (IIndexer indexer, string modifiers)
 		{
-			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters;
+			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters | ConversionFlags.UseFullyQualifiedNames | ConversionFlags.UseIntrinsicTypeNames;
 			StringBuilder textBuilder = new StringBuilder ();
 			
 			textBuilder.Append (modifiers);
-			textBuilder.Append (ambience.Convert (indexer.ReturnType));
+			textBuilder.Append (ambience.Convert (indexer.ReturnType, flags, resolver));
 			textBuilder.Append (" this [");
 			
-			ambience.Convert (indexer.Parameters, textBuilder, flags);
+			ambience.Convert (indexer.Parameters, textBuilder, flags, resolver);
 			
 			textBuilder.Append ("] {\n");
 			

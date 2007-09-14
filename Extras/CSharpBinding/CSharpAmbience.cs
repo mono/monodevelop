@@ -57,7 +57,7 @@ namespace CSharpBinding
 			return (modifier & query) == query;
 		}
 		
-		public override string Convert(ModifierEnum modifier, ConversionFlags conversionFlags)
+		public override string Convert (ModifierEnum modifier, ConversionFlags conversionFlags)
 		{
 			if (ShowAccessibility(conversionFlags)) {
 				if (ModifierIsSet(modifier, ModifierEnum.Public)) {
@@ -175,7 +175,7 @@ namespace CSharpBinding
 		{
 			StringBuilder builder = new StringBuilder();
 			
-			builder.Append(Convert(c.Modifiers, conversionFlags));
+			builder.Append (Convert (c.Modifiers, conversionFlags));
 			
 			if (ShowClassModifiers(conversionFlags)) {
 				if (c.IsSealed) {
@@ -205,7 +205,7 @@ namespace CSharpBinding
 							foreach(IMethod m in c.Methods) {
 								if (m.Name != "Invoke") continue;
 								builder.Append (' ');
-								builder.Append (Convert(m.ReturnType));
+								builder.Append (Convert (m.ReturnType, ConversionFlags.None, resolver));
 							}
 						}
 						break;
@@ -258,7 +258,7 @@ namespace CSharpBinding
 					for (int i = 0; i < m.Parameters.Count; ++i) {
 						if (IncludeHTMLMarkup(conversionFlags)) builder.Append("&nbsp;&nbsp;&nbsp;");
 						
-						builder.Append(Convert(m.Parameters[i], conversionFlags));
+						builder.Append (Convert (m.Parameters[i], conversionFlags, resolver));
 						if (i + 1 < m.Parameters.Count) builder.Append(", ");
 						
 						if (IncludeHTMLMarkup(conversionFlags)) builder.Append("<br>");
@@ -269,10 +269,10 @@ namespace CSharpBinding
 			} else if (ShowInheritanceList(conversionFlags) && c.ClassType != ClassType.Enum) {
 				if (c.BaseTypes.Count > 0) {
 					builder.Append (" : ");
-					builder.Append (Convert(c.BaseTypes[0]));
+					builder.Append (Convert (c.BaseTypes[0], ConversionFlags.None, resolver));
 					for (int i = 1; i < c.BaseTypes.Count; ++i) {
 						builder.Append (", ");
-						builder.Append (Convert(c.BaseTypes[i]));
+						builder.Append (Convert (c.BaseTypes[i], ConversionFlags.None, resolver));
 					}
 				}
 			}
@@ -289,11 +289,11 @@ namespace CSharpBinding
 			return "}";
 		}
 		
-		public override string Convert(IField field, ConversionFlags conversionFlags, ITypeNameResolver resolver)
+		public override string Convert (IField field, ConversionFlags conversionFlags, ITypeNameResolver resolver)
 		{
 			StringBuilder builder = new StringBuilder();
 			
-			builder.Append(Convert(field.Modifiers, conversionFlags));
+			builder.Append (Convert (field.Modifiers, conversionFlags));
 			
 			if (ShowMemberModifiers(conversionFlags)) {
 				if (field.IsStatic && field.IsLiteral)
@@ -307,8 +307,8 @@ namespace CSharpBinding
 			}
 			
 			if (field.ReturnType != null) {
-				builder.Append(Convert(field.ReturnType, conversionFlags));
-				builder.Append(' ');
+				builder.Append (Convert (field.ReturnType, conversionFlags, resolver));
+				builder.Append (' ');
 			}
 			
 			if (UseFullyQualifiedMemberNames(conversionFlags))
@@ -322,18 +322,18 @@ namespace CSharpBinding
 			return builder.ToString();			
 		}
 		
-		public override string Convert(IProperty property, ConversionFlags conversionFlags, ITypeNameResolver resolver)
+		public override string Convert (IProperty property, ConversionFlags conversionFlags, ITypeNameResolver resolver)
 		{
 			StringBuilder builder = new StringBuilder();
 			
-			builder.Append(Convert(property.Modifiers, conversionFlags));
+			builder.Append (Convert (property.Modifiers, conversionFlags));
 			
 			if (ShowMemberModifiers(conversionFlags)) {
 				builder.Append(GetModifier(property, conversionFlags));
 			}
 			
 			if (property.ReturnType != null) {
-				builder.Append(Convert(property.ReturnType, conversionFlags));
+				builder.Append (Convert (property.ReturnType, conversionFlags, resolver));
 				builder.Append(' ');
 			}
 			
@@ -346,12 +346,12 @@ namespace CSharpBinding
 				builder.Append(" (");
 
 			if (IncludeHTMLMarkup(conversionFlags)) builder.Append("<br>&nbsp;&nbsp;&nbsp;");
-			builder.Append (Convert (property.Parameters[0], conversionFlags));
+			builder.Append (Convert (property.Parameters[0], conversionFlags, resolver));
 			
 				for (int i = 0; i < property.Parameters.Count; ++i) {
 					if (IncludeHTMLMarkup(conversionFlags)) builder.Append("<br>&nbsp;&nbsp;&nbsp;");
 					builder.Append(", ");
-					builder.Append(Convert(property.Parameters[i], conversionFlags));
+					builder.Append (Convert (property.Parameters[i], conversionFlags, resolver));
 				}
 				if (IncludeHTMLMarkup(conversionFlags)) builder.Append("<br>");
 				
@@ -372,19 +372,19 @@ namespace CSharpBinding
 			return builder.ToString();
 		}
 		
-		public override string Convert(IEvent e, ConversionFlags conversionFlags, ITypeNameResolver resolver)
+		public override string Convert (IEvent e, ConversionFlags conversionFlags, ITypeNameResolver resolver)
 		{
 			StringBuilder builder = new StringBuilder();
 			
-			builder.Append(Convert(e.Modifiers, conversionFlags));
+			builder.Append (Convert (e.Modifiers, conversionFlags));
 			
 			if (ShowMemberModifiers(conversionFlags)) {
 				builder.Append(GetModifier(e, conversionFlags));
 			}
 			
 			if (e.ReturnType != null) {
-				builder.Append(Convert(e.ReturnType, conversionFlags));
-				builder.Append(' ');
+				builder.Append (Convert (e.ReturnType, conversionFlags, resolver));
+				builder.Append (' ');
 			}
 			
 			if (UseFullyQualifiedMemberNames(conversionFlags))
@@ -397,16 +397,16 @@ namespace CSharpBinding
 			return builder.ToString();
 		}
 		
-		public override string Convert(IIndexer m, ConversionFlags conversionFlags, ITypeNameResolver resolver)
+		public override string Convert (IIndexer m, ConversionFlags conversionFlags, ITypeNameResolver resolver)
 		{
 			StringBuilder builder = new StringBuilder();
-			builder.Append(Convert(m.Modifiers, conversionFlags));
+			builder.Append (Convert (m.Modifiers, conversionFlags));
 			
 			if (ShowMemberModifiers(conversionFlags) && m.IsStatic)
 				AppendPangoHtmlTag (builder, "static", "i", conversionFlags);
 			
 			if (m.ReturnType != null) {
-				builder.Append(Convert(m.ReturnType, conversionFlags));
+				builder.Append (Convert (m.ReturnType, conversionFlags, resolver));
 				builder.Append(' ');
 			}
 			
@@ -417,7 +417,7 @@ namespace CSharpBinding
 			
 			builder.Append(" [");
 			
-			Convert (m.Parameters, builder, conversionFlags);
+			Convert (m.Parameters, builder, conversionFlags, resolver);
 			
 			builder.Append(']');
 			
@@ -428,30 +428,35 @@ namespace CSharpBinding
 		
 		public void Convert (ParameterCollection parameters, StringBuilder builder, ConversionFlags conversionFlags)
 		{
+			Convert (parameters, builder, conversionFlags, null);
+		}
+		
+		public void Convert (ParameterCollection parameters, StringBuilder builder, ConversionFlags conversionFlags, ITypeNameResolver resolver)
+		{
 			if (parameters.Count > 0) {
 				if (IncludeHTMLMarkup(conversionFlags)) builder.Append ("<br>&nbsp;&nbsp;&nbsp;");
-				builder.Append (Convert (parameters[0], conversionFlags));
+				builder.Append (Convert (parameters[0], conversionFlags, resolver));
 				for (int i = 1; i < parameters.Count; ++i) {
 					builder.Append (", ");
 					if (IncludeHTMLMarkup(conversionFlags)) builder.Append("<br>&nbsp;&nbsp;&nbsp;");
-					builder.Append(Convert(parameters[i], conversionFlags));
+					builder.Append (Convert (parameters[i], conversionFlags, resolver));
 				}
 				if (IncludeHTMLMarkup(conversionFlags)) builder.Append("<br>");
 			}
 		}
 		
-		public override string Convert(IMethod m, ConversionFlags conversionFlags, ITypeNameResolver resolver)
+		public override string Convert (IMethod m, ConversionFlags conversionFlags, ITypeNameResolver resolver)
 		{
 			bool includeMarkup = IncludeHTMLMarkup(conversionFlags) || IncludePangoMarkup(conversionFlags);
 			
 			StringBuilder builder = new StringBuilder();
-			builder.Append(Convert(m.Modifiers, conversionFlags));
+			builder.Append (Convert (m.Modifiers, conversionFlags));
 			if (ShowMemberModifiers(conversionFlags)) {
 				builder.Append(GetModifier(m, conversionFlags));
 			}
 			
 			if (m.ReturnType != null) {
-				builder.Append(Convert(m.ReturnType, conversionFlags));
+				builder.Append (Convert (m.ReturnType, conversionFlags, resolver));
 				builder.Append(' ');
 			}
 			
@@ -494,7 +499,7 @@ namespace CSharpBinding
 			}
 			
 			builder.Append(" (");
-			Convert (m.Parameters, builder, conversionFlags);
+			Convert (m.Parameters, builder, conversionFlags, resolver);
 			builder.Append(')');
 			
 			if (IncludeBodies(conversionFlags)) {
@@ -546,7 +551,7 @@ namespace CSharpBinding
 			return "}";
 		}
 		
-		public override string Convert(IReturnType returnType, ConversionFlags conversionFlags, ITypeNameResolver resolver)
+		public override string Convert (IReturnType returnType, ConversionFlags conversionFlags, ITypeNameResolver resolver)
 		{
 			if (returnType == null) {
 				return String.Empty;
@@ -582,11 +587,11 @@ namespace CSharpBinding
 				// Since we know that there is at least one generic argument in
 				// the list, we can add it outside the loop - so, we don't have
 				// to check whether we may append a comma or not
-				builder.Append (Convert(returnType.GenericArguments[0], conversionFlags));
+				builder.Append (Convert (returnType.GenericArguments[0], conversionFlags, resolver));
 				// Now continue with the others, if there are any
 				for (int i = 1; i < returnType.GenericArguments.Count; i++) {
 					builder.Append (", ");
-					builder.Append ( Convert(returnType.GenericArguments[i], conversionFlags));
+					builder.Append (Convert (returnType.GenericArguments[i], conversionFlags, resolver));
 				}
 				builder.Append ((includeMarkup) ? "&gt;" : ">");
 			}
@@ -610,7 +615,7 @@ namespace CSharpBinding
 			return builder.ToString();
 		}
 		
-		public override string Convert(IParameter param, ConversionFlags conversionFlags, ITypeNameResolver resolver)
+		public override string Convert (IParameter param, ConversionFlags conversionFlags, ITypeNameResolver resolver)
 		{
 			StringBuilder builder = new StringBuilder();
 			
@@ -621,7 +626,7 @@ namespace CSharpBinding
 			else if (param.IsParams)
 				AppendPangoHtmlTag (builder, "params ", "i", conversionFlags);
 			
-			builder.Append(Convert(param.ReturnType, conversionFlags));
+			builder.Append (Convert (param.ReturnType, conversionFlags, resolver));
 			
 			if (ShowParameterNames(conversionFlags)) {
 				builder.Append(' ');
@@ -630,11 +635,11 @@ namespace CSharpBinding
 			return builder.ToString();
 		}
 
-		public override string Convert(LocalVariable localVariable, ConversionFlags conversionFlags, ITypeNameResolver resolver)
+		public override string Convert (LocalVariable localVariable, ConversionFlags conversionFlags, ITypeNameResolver resolver)
 		{
 			StringBuilder builder = new StringBuilder();						
 			
-			builder.Append(Convert(localVariable.ReturnType, conversionFlags));						
+			builder.Append (Convert (localVariable.ReturnType, conversionFlags, resolver));						
 			builder.Append(' ');
 			AppendPangoHtmlTag (builder, localVariable.Name, "b", conversionFlags);
 			

@@ -630,7 +630,7 @@ namespace CSharpBinding
 				IClass cls = res.GetCallingClass (line, column, FileName, true);
 				if (cls != null && (cls.ClassType == ClassType.Class || cls.ClassType == ClassType.Struct)) {
 					string typedModifiers = Editor.GetText (firstMod, ctx.TriggerOffset);
-					return GetOverridablesCompletionData (pctx, ctx, cls, firstMod, typedModifiers);
+					return GetOverridablesCompletionData (pctx, ctx, cls, firstMod, typedModifiers, res.CreateTypeNameResolver ());
 				}
 			}
 			
@@ -732,7 +732,7 @@ namespace CSharpBinding
 			return Editor.GetText (i, endOffset);
 		}
 		
-		ICompletionDataProvider GetOverridablesCompletionData (IParserContext pctx, ICodeCompletionContext ctx, IClass cls, int insertPos, string typedModifiers)
+		ICompletionDataProvider GetOverridablesCompletionData (IParserContext pctx, ICodeCompletionContext ctx, IClass cls, int insertPos, string typedModifiers, ITypeNameResolver resolver)
 		{
 			ArrayList classMembers = new ArrayList ();
 			ArrayList interfaceMembers = new ArrayList ();
@@ -745,7 +745,7 @@ namespace CSharpBinding
 			CSharpAmbience amb = new CSharpAmbience ();
 			CodeCompletionDataProvider completionProvider = new CodeCompletionDataProvider (pctx, GetAmbience ());
 			foreach (ILanguageItem mem in classMembers) {
-				completionProvider.AddCompletionData (new OverrideCompletionData (Editor, mem, insertPos, typedModifiers, amb));
+				completionProvider.AddCompletionData (new OverrideCompletionData (Editor, mem, insertPos, typedModifiers, amb, resolver));
 			}
 			return completionProvider;
 		}
