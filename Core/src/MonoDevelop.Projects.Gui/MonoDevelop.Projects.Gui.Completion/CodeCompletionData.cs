@@ -176,9 +176,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 			this.image = image;
 		}
 		
-		public CodeCompletionData (IClass c, Ambience_ ambience, bool allowInstrinsicNames)
+		public CodeCompletionData (IClass c, Ambience_ ambience, bool allowInstrinsicNames, ITypeNameResolver resolver)
 		{
-			FillCodeCompletionData (c, ambience, allowInstrinsicNames);
+			FillCodeCompletionData (c, ambience, allowInstrinsicNames, resolver);
 		}
 		
 		public CodeCompletionData (IMethod method, Ambience_ ambience)
@@ -214,7 +214,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		protected void FillCodeCompletionData (ILanguageItem item, Ambience_ ambience)
 		{
 			if (item is IClass)
-				FillCodeCompletionData ((IClass)item, ambience, false);
+				FillCodeCompletionData ((IClass)item, ambience, false, null);
 			else if (item is IMethod)
 				FillCodeCompletionData ((IMethod)item, ambience);
 			else if (item is IField)
@@ -229,14 +229,15 @@ namespace MonoDevelop.Projects.Gui.Completion
 				throw new InvalidOperationException ("Unsupported language item type");
 		}
 		
-		protected void FillCodeCompletionData (IClass c, Ambience_ ambience, bool allowInstrinsicNames)
+		protected void FillCodeCompletionData (IClass c, Ambience_ ambience, bool allowInstrinsicNames, ITypeNameResolver resolver)
 		{
 			cls = c;
 			this.ambience = ambience;
 			image = Services.Icons.GetIcon(c);
 			ConversionFlags flags = allowInstrinsicNames ? ConversionFlags.UseIntrinsicTypeNames : ConversionFlags.None;
 			text = ambience.Convert (c, flags | ConversionFlags.ShowGenericParameters);
-			completionString = ambience.Convert (c, flags);
+			if (allowInstrinsicNames) flags |= ConversionFlags.UseFullyQualifiedNames;
+			completionString = ambience.Convert (c, flags, resolver);
 		}
 		
 		protected void FillCodeCompletionData (IMethod method, Ambience_ ambience)

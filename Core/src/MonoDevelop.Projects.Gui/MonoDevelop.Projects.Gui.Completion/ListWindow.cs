@@ -123,7 +123,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			get
 			{
 				int pos = list.Selection + 1;
-				if (provider.ItemCount > pos && provider.GetCompletionText (pos).ToLower ().StartsWith (PartialWord.ToLower ()) || !(provider.GetCompletionText (list.Selection).ToLower ().StartsWith (PartialWord.ToLower ())))
+				if (provider.ItemCount > pos && provider.GetText (pos).ToLower ().StartsWith (PartialWord.ToLower ()) || !(provider.GetText (list.Selection).ToLower ().StartsWith (PartialWord.ToLower ())))
 					return false;
 				
 				return true;	
@@ -222,7 +222,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			int bestMatch = -1;
 			for (int n=0; n<max; n++) 
 			{
-				string txt = provider.GetCompletionText (n);
+				string txt = provider.GetText (n);
 				if (txt.StartsWith (s)) {
 					list.Selection = n;
 					return;

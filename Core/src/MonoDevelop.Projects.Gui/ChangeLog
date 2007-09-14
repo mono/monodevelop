@@ -1,3 +1,15 @@
+2007-09-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp: Fix warning level.
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs,
+	  MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs: Add
+	  support for ITypeNameResolver.
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Use the Text not the
+	  CompletionText to find entries in the completion window. For example,
+	  the completion window may show "ArrayList", while the completion string
+	  may be "System.Collections.ArrayList". If the user types 'a', the window
+	  should select the ArrayLsit entry.
+
 2007-09-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs: Added

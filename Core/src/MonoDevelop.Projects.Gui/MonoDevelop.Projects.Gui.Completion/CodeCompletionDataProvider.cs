@@ -40,7 +40,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 		EventHandler onFinishedParsing;
 
 		string defaultCompletionString;
-		bool allowInstrinsicNames;
 		ArrayList completionData = new ArrayList ();
 		
 		public CodeCompletionDataProvider (IParserContext parserContext, Ambience_ ambience) 
@@ -95,15 +94,25 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		public void AddResolveResults (LanguageItemCollection list) 
 		{
+			AddResolveResults (list, true, null);
+		}
+		
+		public void AddResolveResults (LanguageItemCollection list, bool allowInstrinsicNames) 
+		{
+			AddResolveResults (list, allowInstrinsicNames, null);
+		}
+		
+		public void AddResolveResults (LanguageItemCollection list, bool allowInstrinsicNames, MonoDevelop.Projects.Ambience.ITypeNameResolver typeNameResolver) 
+		{
 			if (list == null) {
 				return;
 			}
 			completionData.Capacity += list.Count;
 			foreach (ILanguageItem o in list)
-				AddResolveResult (o);
+				AddResolveResult (o, allowInstrinsicNames, typeNameResolver);
 		}
 		
-		public void AddResolveResult (ILanguageItem o) 
+		public void AddResolveResult (ILanguageItem o, bool allowInstrinsicNames, MonoDevelop.Projects.Ambience.ITypeNameResolver typeNameResolver) 
 		{
 			if (o is Namespace) {
 				Namespace ns = (Namespace) o;
@@ -111,7 +120,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			} else if (o is IClass) {
 				IClass iclass = (IClass) o;
 				if (iclass.Name != null && insertedClasses[iclass.Name] == null) {
-					completionData.Add(new CodeCompletionData(iclass, ambience, allowInstrinsicNames));
+					completionData.Add(new CodeCompletionData(iclass, ambience, allowInstrinsicNames, typeNameResolver));
 					insertedClasses[iclass.Name] = iclass;
 				}
 			} else if (o is IProperty) {
@@ -149,9 +158,19 @@ namespace MonoDevelop.Projects.Gui.Completion
 			
 		public void AddResolveResults (ResolveResult results)
 		{
+			AddResolveResults (results, true, null);
+		}
+		
+		public void AddResolveResults (ResolveResult results, bool allowInstrinsicNames)
+		{
+			AddResolveResults (results, allowInstrinsicNames, null);
+		}
+		
+		public void AddResolveResults (ResolveResult results, bool allowInstrinsicNames, MonoDevelop.Projects.Ambience.ITypeNameResolver typeNameResolver)
+		{
 			if (results != null) {
-				AddResolveResults (results.Namespaces);
-				AddResolveResults (results.Members);
+				AddResolveResults (results.Namespaces, allowInstrinsicNames, typeNameResolver);
+				AddResolveResults (results.Members, allowInstrinsicNames, typeNameResolver);
 			}
 		}
 		
@@ -159,15 +178,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 			get { return parserContext != null && parserContext.ParserDatabase.IsParsing; } 
 		}
 
-		public bool AllowInstrinsicNames {
-			get {
-				return allowInstrinsicNames;
-			}
-			set {
-				allowInstrinsicNames = value;
-			}
-		}
-		
 		public ICompletionData GetCompletionData (string completionString)
 		{
 			foreach (ICompletionData data in completionData) {
