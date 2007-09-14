@@ -1,3 +1,8 @@
+2007-09-15  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Ide.Gui/Ide.cs (IdeApp.Initialized): Rename this property
+	to IsInitialized. And add new event named Initialized.
+
 2007-09-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.DeleteFileDialog.cs,

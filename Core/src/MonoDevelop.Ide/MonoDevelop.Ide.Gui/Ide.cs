@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Gui
 {
 	public abstract class IdeApp
 	{
-		static bool initialized;
+		static bool isInitialized;
 		static Workbench workbench;
 		static ProjectOperations projectOperations;
 		static HelpOperations helpOperations;
@@ -63,6 +63,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public static event ExitEventHandler Exiting;
 		public static event EventHandler Exited;
+		public static event EventHandler Initialized;
 		
 		IdeApp ()
 		{
@@ -88,9 +89,9 @@ namespace MonoDevelop.Ide.Gui
 			get { return ideServices; }
 		}
 
-		public static bool Initialized {
+		public static bool IsInitialized {
 			get {
-				return initialized;
+				return isInitialized;
 			}
 		}
 		
@@ -119,8 +120,6 @@ namespace MonoDevelop.Ide.Gui
 			
 			// register string tag provider (TODO: move to add-in tree :)
 			Runtime.StringParserService.RegisterStringTagProvider(new MonoDevelop.Ide.Commands.SharpDevelopStringTagProvider());
-			
-			initialized = true;
 			
 			InternalLog.EnableErrorNotification ();
 			
@@ -163,6 +162,10 @@ namespace MonoDevelop.Ide.Gui
 			
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/StartupHandlers", OnExtensionChanged);
 			monitor.EndTask ();
+
+			isInitialized = true;
+			if (Initialized != null)
+				Initialized (null, EventArgs.Empty);
 		}
 		
 		static bool FileServiceErrorHandler (string message, Exception ex)
