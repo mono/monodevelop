@@ -596,7 +596,7 @@ namespace CSharpBinding
 					IClass cls = res.SearchType (rt, res.CompilationUnit);
 					if (cls != null && cls.ClassType != ClassType.Interface && !cls.IsAbstract) {
 						cp.AddResolveResult (cls, true, resolver);
-						cp.DefaultCompletionString = GetAmbience ().Convert (cls, ConversionFlags.UseIntrinsicTypeNames | ConversionFlags.UseFullyQualifiedNames, resolver);
+						cp.DefaultCompletionString = GetAmbience ().Convert (cls, ConversionFlags.UseIntrinsicTypeNames, null);
 					}
 					
 					return cp;

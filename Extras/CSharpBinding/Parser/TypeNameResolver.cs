@@ -43,7 +43,6 @@ namespace CSharpBinding
 		
 		public void AddName (string name, string resolved)
 		{
-			Console.WriteLine ("pp1: " + name + " = " + resolved);
 			names [name] = resolved;
 		}
 		

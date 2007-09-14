@@ -1,5 +1,10 @@
 2007-09-14  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Gui/CSharpTextEditorExtension.cs: Minor fix.
+	* Parser/TypeNameResolver.cs: Remove debug code.
+
+2007-09-14  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Gui/CSharpTextEditorExtension.cs, Parser/Resolver.cs,
 	  Parser/TypeNameResolver.cs: Implement support for ITypeResolver. Add
 	  parameter completion support for delegate invocations. Fixes bug #82264
