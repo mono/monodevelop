@@ -1,3 +1,8 @@
+2007-09-14  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/CodeGenerator.cs: Fixed 82425:Renaming a base method doesn't rename
+	  overrides. (Fixed for properties too).
+
 2007-09-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Gui/CSharpParameterDataProvider.cs: Improved method formatting.

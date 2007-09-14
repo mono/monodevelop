@@ -526,6 +526,18 @@ namespace CSharpBinding.Parser
 			return base.VisitFieldReferenceExpression (fieldExp, data);
 		}
 		
+		public override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data) 
+		{
+			// find override references.
+			if (member is IMethod && (methodDeclaration.Modifier & Modifiers.Override) == Modifiers.Override && methodDeclaration.Name == member.Name) {
+				IMember m = resolver.ResolveIdentifier (fileCompilationUnit, member.Name, methodDeclaration.StartLocation.Y, methodDeclaration.StartLocation.X) as IMember;
+				if (IsExpectedClass (m.DeclaringType)) {
+					AddUniqueReference (methodDeclaration.StartLocation.Y, methodDeclaration.StartLocation.X, member.Name);
+				}
+			}
+			return base.VisitMethodDeclaration (methodDeclaration, data);
+		}
+		
 		public override object VisitInvocationExpression (InvocationExpression invokeExp, object data)
 		{
 			//Debug ("InvocationExpression", invokeExp.ToString (), invokeExp);
@@ -589,6 +601,14 @@ namespace CSharpBinding.Parser
 		public override object VisitPropertyDeclaration (PropertyDeclaration propertyDeclaration, object data)
 		{
 			//Debug ("PropertyDeclaration", propertyDeclaration.Name, propertyDeclaration);
+			// find override references.
+			if (member is IProperty && (propertyDeclaration.Modifier & Modifiers.Override) == Modifiers.Override && propertyDeclaration.Name == member.Name) {
+				IMember m = resolver.ResolveIdentifier (fileCompilationUnit, member.Name, propertyDeclaration.StartLocation.Y, propertyDeclaration.StartLocation.X) as IMember;
+				if (IsExpectedClass (m.DeclaringType)) {
+					AddUniqueReference (propertyDeclaration.StartLocation.Y, propertyDeclaration.StartLocation.X, member.Name);
+				}
+			}
+			
 			string type = ReturnType.GetSystemType (propertyDeclaration.TypeReference.Type);
 			if (member is IClass && member.Name == GetNameWithoutPrefix (type)) {
 				int line = propertyDeclaration.StartLocation.Y;
