@@ -92,7 +92,7 @@ namespace MonoDevelop.Ide.Commands
 					ILanguageItem item = ctx.ResolveIdentifier (id, line, column, editor.Name, null);
 					ILanguageItem eitem = ctx.GetEnclosingLanguageItem (line, column, editor);
 					
-					if (item != null && eitem != null && eitem.Name == item.Name) {
+					if (item != null && eitem != null && eitem.Name == item.Name && !(eitem is IProperty) && !(eitem is IMethod)) {
 						// If this occurs, then @item is the base-class version of @eitem
 						// in which case we don't want to show the base-class @item, we'd
 						// rather show the item the user /actually/ requested, @eitem.
@@ -196,7 +196,6 @@ namespace MonoDevelop.Ide.Commands
 			string itemName = EscapeName (item.Name);
 			bool canRename = false;
 			string txt;
-			
 			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item))
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Go to declaration"), new RefactoryOperation (refactorer.GoToDeclaration));
 			
@@ -218,7 +217,7 @@ namespace MonoDevelop.Ide.Commands
 				// Defer adding this item for Classes until later
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Rename"), new RefactoryOperation (refactorer.Rename));
 			}
-			
+
 			if (item is IClass) {
 				IClass cls = (IClass) item;
 				
@@ -304,8 +303,9 @@ namespace MonoDevelop.Ide.Commands
 				LocalVariable var = (LocalVariable) item;
 				AddRefactoryMenuForClass (ctx, pinfo, ciset, var.ReturnType.FullyQualifiedName);
 				txt = GettextCatalog.GetString ("Variable <b>{0}</b>", itemName);
-			} else
+			} else {
 				return null;
+			}
 			
 			ciset.Text = txt;
 			ciset.UseMarkup = true;
