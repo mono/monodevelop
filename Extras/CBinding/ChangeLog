@@ -1,3 +1,8 @@
+2007-09-14  Martin Dederer <martindederer@gmx.de>
+
+	* Compiler/GNUCompiler.cs: Added method to expand backticked portions
+	in compiler-/ linker-arguments
+
 2007-09-07  Marcos David Marín Amador <MarcosMarin@gmail.com>
 
 	* CBinding.Autotools: Set svn:ignore property on

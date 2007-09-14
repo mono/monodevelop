@@ -141,7 +141,7 @@ namespace CBinding
 			args.Append ("-O" + cp.OptimizationLevel + " ");
 			
 			if (cp.ExtraCompilerArguments != null && cp.ExtraCompilerArguments.Length > 0) {
-				string extraCompilerArgs = cp.ExtraCompilerArguments.Replace ('\n', ' ');
+				string extraCompilerArgs = ExpandBacktickedParameters(cp.ExtraCompilerArguments.Replace ('\n', ' '));
 				args.Append (extraCompilerArgs + " ");
 			}
 			
@@ -288,7 +288,7 @@ namespace CBinding
 				(CCompilationParameters)configuration.CompilationParameters;
 			
 			if (cp.ExtraLinkerArguments != null && cp.ExtraLinkerArguments.Length > 0) {
-				string extraLinkerArgs = cp.ExtraLinkerArguments.Replace ('\n', ' ');
+				string extraLinkerArgs = ExpandBacktickedParameters(cp.ExtraLinkerArguments.Replace ('\n', ' '));
 				args.Append (extraLinkerArgs + " ");
 			}
 			
@@ -359,7 +359,7 @@ namespace CBinding
 				(CCompilationParameters)configuration.CompilationParameters;
 			
 			if (cp.ExtraLinkerArguments != null && cp.ExtraLinkerArguments.Length > 0) {
-				string extraLinkerArgs = cp.ExtraLinkerArguments.Replace ('\n', ' ');
+				string extraLinkerArgs = ExpandBacktickedParameters(cp.ExtraLinkerArguments.Replace ('\n', ' '));
 				args.Append (extraLinkerArgs + " ");
 			}
 			
@@ -571,6 +571,22 @@ namespace CBinding
 			error.ErrorText = errorString;
 			
 			return error;
+		}
+
+		// expands backticked portions of the parameter-list using "sh" and "echo"
+		public string ExpandBacktickedParameters(string tmp)
+		{
+			string parameters = "-c \"echo -n " + tmp + "\"";
+			Process p = new Process();
+			
+			p.StartInfo.FileName = "sh";
+			p.StartInfo.Arguments = parameters;
+			p.StartInfo.UseShellExecute = false;
+			p.StartInfo.RedirectStandardOutput = true;
+			p.Start();
+			p.WaitForExit();
+
+			return p.StandardOutput.ReadToEnd();
 		}
 	}
 }
