@@ -1086,6 +1086,35 @@ namespace CSharpBinding.Parser
 			return null;
 		}
 		
+		public TypeNameResolver CreateTypeNameResolver ()
+		{
+			TypeNameResolver res = new TypeNameResolver ();
+
+			if (callingClass != null) {
+				res.AddName (callingClass.Namespace, "");
+				// For inner classes:
+				res.AddName (callingClass.FullyQualifiedName, "");
+			}
+			
+			if (currentUnit != null) {
+				foreach (IUsing u in currentUnit.Usings) {
+					if (u != null && (u.Region == null || u.Region.IsInside(caretLine, caretColumn))) {
+						foreach (string us in u.Usings)
+							res.AddName (us, "");
+					}
+				}
+				
+				// Namespace aliases
+				foreach (IUsing u in currentUnit.Usings) {
+					if (u != null && (u.Region == null || u.Region.IsInside(caretLine, caretColumn))) {
+						foreach (DictionaryEntry e in u.Aliases)
+							res.AddName ((string)e.Key, (string)e.Value);
+					}
+				}
+			}
+			return res;
+		}
+		
 		/// <remarks>
 		/// Returns true, if class possibleBaseClass is in the inheritance tree from c
 		/// </remarks>

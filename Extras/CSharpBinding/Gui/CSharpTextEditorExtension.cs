@@ -512,6 +512,16 @@ namespace CSharpBinding
 					else
 						return new CSharpParameterDataProvider (Editor, met.DeclaringType, met.Name);
 				}
+				else if (it is IEvent) {
+					IEvent ev = (IEvent) it;
+					IClass cls = pctx.GetClass (ev.ReturnType.FullyQualifiedName, ev.ReturnType.GenericArguments, true, false);
+					if (cls != null) {
+						foreach(IMethod m in cls.Methods) {
+							if (m.Name == "Invoke")
+								return new CSharpParameterDataProvider (Editor, cls, "Invoke");
+						}
+					}
+				}
 				else if (it is IClass) {
 					return new CSharpParameterDataProvider (Editor, (IClass)it);
 				}
@@ -556,7 +566,6 @@ namespace CSharpBinding
 				
 					IParserContext pctx = GetParserContext ();
 					CodeCompletionDataProvider cp = new CodeCompletionDataProvider (pctx, GetAmbience ());
-					cp.AllowInstrinsicNames = true;
 					
 					Resolver res = new Resolver (pctx);
 					
@@ -578,13 +587,16 @@ namespace CSharpBinding
 							return null;
 						}
 					}
-					cp.AddResolveResults (res.IsAsResolve (ex, caretLineNumber, caretColumn, FileName, Editor.Text, true));
+					
+					LanguageItemCollection items = res.IsAsResolve (ex, caretLineNumber, caretColumn, FileName, Editor.Text, true);
+					TypeNameResolver resolver = res.CreateTypeNameResolver ();
+					cp.AddResolveResults (items, true, resolver);
 					
 					// Add the variable type itself to the results list (IsAsResolve only returns subclasses)
 					IClass cls = res.SearchType (rt, res.CompilationUnit);
 					if (cls != null && cls.ClassType != ClassType.Interface && !cls.IsAbstract) {
-						cp.AddResolveResult (cls);
-						cp.DefaultCompletionString = GetAmbience ().Convert (cls, ConversionFlags.UseIntrinsicTypeNames);
+						cp.AddResolveResult (cls, true, resolver);
+						cp.DefaultCompletionString = GetAmbience ().Convert (cls, ConversionFlags.UseIntrinsicTypeNames | ConversionFlags.UseFullyQualifiedNames, resolver);
 					}
 					
 					return cp;
@@ -648,15 +660,16 @@ namespace CSharpBinding
 				completionProvider.AddResolveResults (new ResolveResult(namespaces));
 			} else if (charTyped == ' ') {
 				if (expression == "is" || expression == "as") {
-					completionProvider.AllowInstrinsicNames = true;
 					string expr = expressionFinder.FindExpression (Editor.GetText (0, ctx.TriggerOffset), ctx.TriggerOffset - 5).Expression;
 					Resolver res = new Resolver (parserContext);
-					completionProvider.AddResolveResults (res.IsAsResolve (expr, caretLineNumber, caretColumn, FileName, Editor.Text, false));
+					LanguageItemCollection items = res.IsAsResolve (expr, caretLineNumber, caretColumn, FileName, Editor.Text, false);
+					completionProvider.AddResolveResults (items, true, res.CreateTypeNameResolver ());
 				}
 			} else {
 				/* '.' */
-				ResolveResult results = parserContext.Resolve (expression, caretLineNumber, caretColumn, FileName, Editor.Text);
-				completionProvider.AddResolveResults (results);
+				Resolver res = new Resolver (parserContext);
+				ResolveResult results = res.Resolve (expression, caretLineNumber, caretColumn, FileName, Editor.Text);
+				completionProvider.AddResolveResults (results, false, res.CreateTypeNameResolver ());
 			}
 			
 			if (completionProvider.IsEmpty)

@@ -1,3 +1,13 @@
+2007-09-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/CSharpTextEditorExtension.cs, Parser/Resolver.cs,
+	  Parser/TypeNameResolver.cs: Implement support for ITypeResolver. Add
+	  parameter completion support for delegate invocations. Fixes bug #82264
+	  and #82238.
+	* CSharpBinding.mdp: Fix warning level. Added new file.
+	* CSharpAmbience.cs: Track API changes.
+	* Makefile.am: Updated.
+
 2007-09-14  Mike Krüger <mkrueger@novell.com> 
 
 	* Parser/CodeGenerator.cs: Fixed 82425:Renaming a base method doesn't rename

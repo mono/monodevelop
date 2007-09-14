@@ -17,45 +17,46 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:$(top_builddir)/build/bin/NRefactory.dll \
-	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
+	-r:$(top_srcdir)/build/bin/Mono.Addins.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Drawing \
 	-r:System.Xml
 
-FILES = \
-Gui/FormattingPanel.cs \
-Gui/ChooseRuntimePanel.cs \
-Gui/CodeGenerationPanel.cs \
-Gui/CSharpTextEditorExtension.cs \
-Gui/CSharpParameterDataProvider.cs \
-Gui/OverrideCompletionData.cs \
-Parser/SharpDevelopTree/Destructor.cs \
-Parser/SharpDevelopTree/Constructor.cs \
-Parser/SharpDevelopTree/Method.cs \
-Parser/SharpDevelopTree/Class.cs \
-Parser/SharpDevelopTree/AttributeSection.cs \
-Parser/SharpDevelopTree/ReturnType.cs \
-Parser/SharpDevelopTree/GenericParameter.cs \
-Parser/TypeVisitor.cs \
-Parser/CSharpVisitor.cs \
-Parser/LanguageItemVisitor.cs \
-Parser/Resolver.cs \
-Parser/Parser.cs \
-Parser/CodeGenerator.cs \
-Parser/ExpressionFinder.cs \
-CSharpAmbience.cs \
-Project/CSharpCompilerParameters.cs \
-CSharpLanguageBinding.cs \
-FormattingStrategy/CSharpFormattingProperties.cs \
-FormattingStrategy/CSharpFormattingStrategy.cs \
-FormattingStrategy/CSharpIndentEngineStack.cs \
-FormattingStrategy/CSharpIndentEngine.cs \
-CSharpBindingCompilerManager.cs \
-CSharpEnhancedCodeProvider.cs \
-gtk-gui/generated.cs \
-gtk-gui/CSharpBinding.FormattingPanelWidget.cs \
-gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs
+FILES =  \
+	CSharpAmbience.cs \
+	CSharpBindingCompilerManager.cs \
+	CSharpEnhancedCodeProvider.cs \
+	CSharpLanguageBinding.cs \
+	FormattingStrategy/CSharpFormattingProperties.cs \
+	FormattingStrategy/CSharpFormattingStrategy.cs \
+	FormattingStrategy/CSharpIndentEngine.cs \
+	FormattingStrategy/CSharpIndentEngineStack.cs \
+	gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs \
+	gtk-gui/CSharpBinding.FormattingPanelWidget.cs \
+	gtk-gui/generated.cs \
+	Gui/ChooseRuntimePanel.cs \
+	Gui/CodeGenerationPanel.cs \
+	Gui/CSharpParameterDataProvider.cs \
+	Gui/CSharpTextEditorExtension.cs \
+	Gui/FormattingPanel.cs \
+	Gui/OverrideCompletionData.cs \
+	Parser/CodeGenerator.cs \
+	Parser/CSharpVisitor.cs \
+	Parser/ExpressionFinder.cs \
+	Parser/LanguageItemVisitor.cs \
+	Parser/Parser.cs \
+	Parser/Resolver.cs \
+	Parser/SharpDevelopTree/AttributeSection.cs \
+	Parser/SharpDevelopTree/Class.cs \
+	Parser/SharpDevelopTree/Constructor.cs \
+	Parser/SharpDevelopTree/Destructor.cs \
+	Parser/SharpDevelopTree/GenericParameter.cs \
+	Parser/SharpDevelopTree/Method.cs \
+	Parser/SharpDevelopTree/ReturnType.cs \
+	Parser/TypeNameResolver.cs \
+	Parser/TypeVisitor.cs \
+	Project/CSharpCompilerParameters.cs
 
 RES =  \
 	CSharpBinding.addin.xml \
@@ -119,6 +120,7 @@ TESTFILES =  \
 	Parser/SharpDevelopTree/GenericParameter.cs \
 	Parser/SharpDevelopTree/Method.cs \
 	Parser/SharpDevelopTree/ReturnType.cs \
+	Parser/TypeNameResolver.cs \
 	Parser/TypeVisitor.cs \
 	Project/CSharpCompilerParameters.cs
 
