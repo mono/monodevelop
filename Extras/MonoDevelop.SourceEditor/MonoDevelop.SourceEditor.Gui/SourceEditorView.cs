@@ -250,21 +250,20 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		protected override bool OnButtonPressEvent (Gdk.EventButton e)
 		{
-			if (extension != null)
-				extension.CursorPositionChanged ();
-
+			bool result;
+			
 			NotifyCompletionContextChanged ();
 			HideLanguageItemWindow ();
 			
 			if (!ShowLineMarkers)
-				return base.OnButtonPressEvent (e);
+				goto done;
 			
 			if (e.Window == GetWindow (Gtk.TextWindowType.Left)) {
 				int x, y;
 				WindowToBufferCoords (Gtk.TextWindowType.Left, (int) e.X, (int) e.Y, out x, out y);
 				TextIter line;
 				int top;
-
+				
 				GetLineAtY (out line, y, out top);
 				buf.PlaceCursor (line);		
 				
@@ -287,7 +286,14 @@ namespace MonoDevelop.SourceEditor.Gui
 				buf.PlaceCursor (GetIterAtLocation (x, y));		
 			}
 			
-			return base.OnButtonPressEvent (e);
+		 done:
+			
+			result = base.OnButtonPressEvent (e);
+			
+			if (extension != null)
+				extension.CursorPositionChanged ();
+			
+			return result;
 		}
 		
 		protected override void OnPopulatePopup (Menu menu)
@@ -466,9 +472,10 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		protected override void OnMoveCursor (MovementStep step, int count, bool extend_selection)
 		{
+			base.OnMoveCursor (step, count, extend_selection);
+			
 			if (extension != null)
 				extension.CursorPositionChanged ();
-			base.OnMoveCursor (step, count, extend_selection);
 		}
 		
 		void ITextEditorExtension.CursorPositionChanged ()

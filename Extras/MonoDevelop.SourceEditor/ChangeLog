@@ -1,3 +1,17 @@
+2007-09-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes bug #82865
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs (OnMoveCursor):
+	Move the cursor, /then/ call
+	ITextEditorExtension.CursorPositionChanged().
+	(OnButtonPressEvent): Same.
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs
+	(GetLineTextAtOffset): If the cursor is at the end of a line,
+	don't advance thru the next line (this returning 2 lines of text
+	rather than the 1).
+
 2007-09-13  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs: changed libglib
@@ -10,9 +24,11 @@
 
 2007-09-11  Michael Hutchinson <mhutchinson@novell.com> 
 
-	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Add a null
-	  check to defend against unexpected parser output.
-	* MonoDevelop.SourceEditor.mdp: Commit a minor automatic formatting change.
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Add
+	  a null check to defend against unexpected parser output.
+
+	* MonoDevelop.SourceEditor.mdp: Commit a minor automatic
+	  formatting change.
 
 2007-09-04  Michael Hutchinson <MHutchinson@novell.com> 
 
