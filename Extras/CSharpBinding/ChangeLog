@@ -1,3 +1,8 @@
+2007-09-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* FormattingStrategy/CSharpIndentEngine.cs (PushColon): Handle the
+	:: operator. Fixes bug #82316.
+
 2007-09-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Gui/CSharpTextEditorExtension.cs: Minor fix.

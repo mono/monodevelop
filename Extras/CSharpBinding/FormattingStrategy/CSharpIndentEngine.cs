@@ -508,6 +508,12 @@ namespace CSharpBinding.FormattingStrategy {
 				default:
 					break;
 				}
+				
+				canBeLabel = false;
+			} else if (pc == ':') {
+				// :: operator, need to undo the "unindent label" operation we did for the previous ':'
+				curIndent = stack.PeekIndent (0);
+				needsReindent = true;
 			}
 		}
 		
