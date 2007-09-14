@@ -105,7 +105,7 @@ class BooAmbience(Ambience):
 		
 		return ret
 	
-	override def Convert(c as IClass, conversionFlags as ConversionFlags) as string:
+	override def Convert(c as IClass, conversionFlags as ConversionFlags, resolver as ITypeNameResolver) as string:
 		builder as StringBuilder = StringBuilder()
 		builder.Append(Convert(c.Modifiers, conversionFlags))
 
@@ -181,7 +181,7 @@ class BooAmbience(Ambience):
 	override def ConvertEnd(c as IClass, conversionFlags as ConversionFlags) as string:
 		return ''
 	
-	override def Convert(field as IField, conversionFlags as ConversionFlags) as string:
+	override def Convert(field as IField, conversionFlags as ConversionFlags, resolver as ITypeNameResolver) as string:
 		builder as StringBuilder = StringBuilder()
 		builder.Append(Convert(field.Modifiers, conversionFlags))
 		
@@ -204,7 +204,7 @@ class BooAmbience(Ambience):
 		
 		return builder.ToString()
 	
-	override def Convert(property as IProperty, conversionFlags as ConversionFlags) as string:
+	override def Convert(property as IProperty, conversionFlags as ConversionFlags, resolver as ITypeNameResolver) as string:
 		builder as StringBuilder = StringBuilder()
 		builder.Append(Convert(property.Modifiers, conversionFlags))
 		if ShowMemberModifiers(conversionFlags):
@@ -247,7 +247,7 @@ class BooAmbience(Ambience):
 		
 		return builder.ToString()
 	
-	override def Convert(e as IEvent, conversionFlags as ConversionFlags) as string:
+	override def Convert(e as IEvent, conversionFlags as ConversionFlags, resolver as ITypeNameResolver) as string:
 		builder as StringBuilder = StringBuilder()
 		builder.Append(Convert(e.Modifiers, conversionFlags))
 		if ShowMemberModifiers(conversionFlags):
@@ -264,7 +264,7 @@ class BooAmbience(Ambience):
 		
 		return builder.ToString()
 	
-	override def Convert(m as IIndexer, conversionFlags as ConversionFlags) as string:
+	override def Convert(m as IIndexer, conversionFlags as ConversionFlags, resolver as ITypeNameResolver) as string:
 		builder as StringBuilder = StringBuilder()
 		builder.Append(Convert(m.Modifiers, conversionFlags))
 		
@@ -299,7 +299,7 @@ class BooAmbience(Ambience):
 		
 		return builder.ToString()
 	
-	override def Convert(m as IMethod, conversionFlags as ConversionFlags) as string:
+	override def Convert(m as IMethod, conversionFlags as ConversionFlags, resolver as ITypeNameResolver) as string:
 		builder as StringBuilder = StringBuilder()
 		builder.Append(Convert(m.Modifiers, conversionFlags))
 		if ShowMemberModifiers(conversionFlags):
@@ -350,7 +350,7 @@ class BooAmbience(Ambience):
 	override def ConvertEnd(m as IMethod, conversionFlags as ConversionFlags) as string:
 		return ''
 	
-	override def Convert(returnType as IReturnType, conversionFlags as ConversionFlags) as string:
+	override def Convert(returnType as IReturnType, conversionFlags as ConversionFlags, resolver as ITypeNameResolver) as string:
 		if returnType == null:
 			return ''
 		
@@ -394,7 +394,7 @@ class BooAmbience(Ambience):
 		
 		return builder.ToString()
 	
-	override def Convert(param as IParameter, conversionFlags as ConversionFlags) as string:
+	override def Convert(param as IParameter, conversionFlags as ConversionFlags, resolver as ITypeNameResolver) as string:
 		builder as StringBuilder = StringBuilder()
 		
 		if param.IsRef:
@@ -411,7 +411,7 @@ class BooAmbience(Ambience):
 		
 		return builder.ToString()
 
-	override def Convert(localVariable as LocalVariable, conversionFlags as ConversionFlags) as string:
+	override def Convert(localVariable as LocalVariable, conversionFlags as ConversionFlags, resolver as ITypeNameResolver) as string:
 		builder as StringBuilder = StringBuilder()
 					
 		builder.Append(localVariable.Name)
