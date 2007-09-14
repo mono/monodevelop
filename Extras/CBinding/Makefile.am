@@ -3,8 +3,8 @@ ADDIN_BUILD = $(top_builddir)/build/AddIns/BackendBindings
 ASSEMBLY = $(ADDIN_BUILD)/CBinding.dll
 
 REFS =  \
-	-pkg:glib-sharp-2.0 \
-	-pkg:gtk-sharp-2.0 \
+	$(GLIB_SHARP_LIBS) \
+	$(GTK_SHARP_LIBS) \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment.Linux.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor.dll \
@@ -14,7 +14,7 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
-	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
+	-r:$(top_srcdir)/build/bin/Mono.Addins.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml

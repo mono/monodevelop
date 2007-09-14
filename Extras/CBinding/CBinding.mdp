@@ -140,23 +140,13 @@
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects.Gui" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Deployment" />
-    <ProjectReference type="Assembly" localcopy="True" refto="../../build/bin/MonoDevelop.Core.Gui.dll" />
-    <ProjectReference type="Assembly" localcopy="True" refto="../../build/AddIns/MonoDevelop.SourceEditor.dll" />
-    <ProjectReference type="Assembly" localcopy="True" refto="../../build/AddIns/MonoDevelop.Deployment.dll" />
-    <ProjectReference type="Assembly" localcopy="True" refto="../../build/bin/MonoDevelop.Projects.dll" />
-    <ProjectReference type="Assembly" localcopy="True" refto="../../build/bin/MonoDevelop.Projects.Gui.dll" />
-    <ProjectReference type="Assembly" localcopy="True" refto="../../build/bin/MonoDevelop.Components.dll" />
-    <ProjectReference type="Assembly" localcopy="True" refto="../../build/bin/MonoDevelop.Core.dll" />
-    <ProjectReference type="Assembly" localcopy="True" refto="../../build/bin/MonoDevelop.Ide.dll" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Deployment.Linux" />
-    <ProjectReference type="Assembly" localcopy="True" refto="../../build/AddIns/MonoDevelop.Deployment.Linux.dll" />
     <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
-  <Deployment.LinuxDeployData scriptName="cbinding" />
-  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" SyncReferences="True">
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />
     <ResourcesVar Sync="True" Name="RES" />
@@ -165,5 +155,6 @@
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
+  <Deployment.LinuxDeployData scriptName="cbinding" />
   <GtkDesignInfo />
 </Project>

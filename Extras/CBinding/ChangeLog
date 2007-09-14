@@ -1,3 +1,7 @@
+2007-09-14  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
+	* CBinding.mdp: Set path to configure.in in Makefile integration.
+
 2007-09-14  Martin Dederer <martindederer@gmx.de>
 
 	* Compiler/GNUCompiler.cs: Added method to expand backticked portions
