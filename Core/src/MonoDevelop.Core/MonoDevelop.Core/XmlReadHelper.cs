@@ -60,6 +60,14 @@ namespace MonoDevelop.Core
 		{
 			ReadList (reader, new string[] { endNode }, callback);		
 		}
+		
+		static string ConcatString (ICollection<string> strings)
+		{
+			string[] stringArray = new string [strings.Count];
+			strings.CopyTo (stringArray, 0);
+			return String.Join (",", stringArray);
+		}
+		
 		public static void ReadList (XmlReader reader, ICollection<string> endNodes, ReaderCallbackWithData callback)
 		{
 			if (reader.IsEmptyElement) {
@@ -75,14 +83,13 @@ namespace MonoDevelop.Core
 					if (endNodes.Contains (reader.LocalName)) {
 						return;
 					}
-					string[] endNodesArr = new string[endNodes.Count];
-					endNodes.CopyTo (endNodesArr, 0);
-					Runtime.LoggingService.Warn ("Unknown end node: " + reader.LocalName + " valid end nodes are: " + String.Join (",", endNodesArr));
+					Runtime.LoggingService.Warn ("Unknown end node: " + reader.LocalName + " valid end nodes are: " + ConcatString (endNodes));
 					break;
 				case XmlNodeType.Element:
 					if (endNodes.Contains (reader.LocalName)) {
-						if (didReadStartNode)
-							Runtime.LoggingService.Warn ("Already read starting node.");
+						if (didReadStartNode) {
+							Runtime.LoggingService.Warn ("Already read starting node. Valid starting nodes are:" + ConcatString (endNodes));
+						}
 						didReadStartNode = true;
 						break;
 					}

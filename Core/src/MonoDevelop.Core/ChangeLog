@@ -1,3 +1,8 @@
+2007-09-14  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Core/XmlReadHelper.cs: XmlReadHelper - already read starting
+	  node message is now more verbose.
+
 2007-09-12  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Core.Execution/ProcessService.cs: Escape arguments to xterm
