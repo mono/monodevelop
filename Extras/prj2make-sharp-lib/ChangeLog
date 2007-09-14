@@ -1,3 +1,28 @@
+2007-09-15  Ankit Jain  <jankit@novell.com>
+
+	* MSBuildProject.cs: Remove.
+	* MSBuildSolution.cs: Remove.
+
+	* MSBuildFileFormat.cs (GetMSBuildData): New.
+	Update to track changes.
+	* SlnFileFormat.cs (.cctor): Add handler for HandleAddEntry.
+	(GetSlnData): New.
+	(HandleAddEntry):
+	(SetHandlers):
+	(HandleCombineEntryAdded):
+	(ConvertToMSBuild): Move here from MSBuildSolution.
+	Update to track changes.
+	* SlnData.cs (ProjectsByGuid): Move here from MSBuildSolution.
+	* MSBuildProjectServiceExtension.cs (GetDefaultResourceId): Override.
+	Moved from MSBuildProject to here.
+
+	* MsPrjHelper.cs: Update to use ProjectService.GetDefaultResourceId .
+	* VS2003ProjectFileFormat.cs: Update.
+	* VS2003SlnFileFormat.cs: Update.
+
+	* Makefile.am: Update.
+	* prj2make-sharp-lib.mdp: Update.
+
 2007-09-13  Ankit Jain  <jankit@novell.com>
 
 	* MSBuildFileFormat.cs (ReferenceToXmlElement): Handle invalid assembly

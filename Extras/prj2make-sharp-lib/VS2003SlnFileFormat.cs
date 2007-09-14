@@ -130,7 +130,7 @@ namespace MonoDevelop.Prj2Make
 		internal static Combine ImportSlnAsMSBuild (string fileName)
 		{
 			Combine combine = ImportSln (fileName, false);
-			MSBuildSolution.ConvertToMSBuild (combine);
+			SlnFileFormat.ConvertToMSBuild (combine);
 			combine.Save (new NullProgressMonitor ());
 
 			return combine;

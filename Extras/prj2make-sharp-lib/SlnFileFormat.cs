@@ -49,6 +49,13 @@ namespace MonoDevelop.Prj2Make
 		static string folderTypeGuid = "2150E333-8FDC-42A3-9474-1A3956D46DE8";
 		static Dictionary<string, string> projectTypeGuids = null;
 
+		static SlnFileFormat ()
+		{
+			IdeApp.Initialized += delegate (object sender, EventArgs args) {
+				IdeApp.ProjectOperations.AddingEntryToCombine += new AddEntryEventHandler (HandleAddEntry);
+			};
+		}
+
 		public string GetValidFormatName (object obj, string fileName)
 		{
 			return Path.ChangeExtension (fileName, ".sln");
@@ -131,7 +138,7 @@ namespace MonoDevelop.Prj2Make
 				//Write the projects
 				WriteProjects (c, c.BaseDirectory, sw, monitor);
 
-				SlnData slnData = (SlnData) c.ExtendedProperties [typeof (SlnFileFormat)];
+				SlnData slnData = GetSlnData (c);
 				if (slnData == null) {
 					// If a non-msbuild project is being converted by just
 					// changing the fileformat, then create the SlnData for it
@@ -219,7 +226,7 @@ namespace MonoDevelop.Prj2Make
 
 					project.Save (monitor);
 
-					MSBuildData msbData = (MSBuildData) project.ExtendedProperties [typeof (MSBuildFileFormat)];
+					MSBuildData msbData = MSBuildFileFormat.GetMSBuildData (project);
 					if (msbData == null)
 						//This should not happen as project.Save would've added this
 						throw new Exception (String.Format (
@@ -236,7 +243,7 @@ namespace MonoDevelop.Prj2Make
 						msbData.Guid);
 				} else {
 					//Solution
-					SlnData slnData = (SlnData) c.ExtendedProperties [typeof (SlnFileFormat)];
+					SlnData slnData = GetSlnData (c);
 					if (slnData == null) {
 						// Solution folder
 						slnData = new SlnData ();
@@ -271,7 +278,7 @@ namespace MonoDevelop.Prj2Make
 					continue;
 
 				foreach (CombineConfigurationEntry cce in cc.Entries) {
-					MSBuildProject p = cce.Entry as MSBuildProject;
+					DotNetProject p = cce.Entry as DotNetProject;
 					if (p == null) {
 						Combine combine = cce.Entry as Combine;
 						if (combine == null)
@@ -304,12 +311,13 @@ namespace MonoDevelop.Prj2Make
 
 					/* Project */
 
+					MSBuildData data = MSBuildFileFormat.GetMSBuildData (p);
 					list.Add (String.Format (
-						"\t\t{{{0}}}.{1}.ActiveCfg = {2}", p.Data.Guid, cc.Name, cce.ConfigurationName));
+						"\t\t{{{0}}}.{1}.ActiveCfg = {2}", data.Guid, cc.Name, cce.ConfigurationName));
 
 					if (cce.Build)
 						list.Add (String.Format (
-							"\t\t{{{0}}}.{1}.Build.0 = {2}", p.Data.Guid, cc.Name, cce.ConfigurationName));
+							"\t\t{{{0}}}.{1}.Build.0 = {2}", data.Guid, cc.Name, cce.ConfigurationName));
 				}
 			}
 		}
@@ -324,7 +332,7 @@ namespace MonoDevelop.Prj2Make
 				WriteNestedProjects (c, root, writer);
 			}
 
-			SlnData data = (SlnData) combine.ExtendedProperties [typeof (SlnFileFormat)];
+			SlnData data = GetSlnData (combine);
 			if (data == null)
 				throw new Exception (String.Format (
 					"INTERNAL ERROR: Solution named '{0}', filename = {1}, does not have a 'data' object.", 
@@ -337,10 +345,10 @@ namespace MonoDevelop.Prj2Make
 
 				string containeeGuid = null;
 				if (ce is Combine) {
-					SlnData slnData = (SlnData) ce.ExtendedProperties [typeof (SlnFileFormat)];
+					SlnData slnData = GetSlnData (ce);
 					containeeGuid = slnData.Guid;
 				} else {
-					MSBuildData msbData = (MSBuildData) ce.ExtendedProperties [typeof (MSBuildFileFormat)];
+					MSBuildData msbData = MSBuildFileFormat.GetMSBuildData (ce);
 					containeeGuid = msbData.Guid;
 				}
 
@@ -358,7 +366,7 @@ namespace MonoDevelop.Prj2Make
 			try {
 				monitor.BeginTask (string.Format (GettextCatalog.GetString ("Loading solution: {0}"), fileName), 1);
 				combine = LoadSolution (fileName, monitor);
-				MSBuildSolution.SetHandlers (combine, true);
+				SetHandlers (combine, true);
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Could not load solution: {0}", fileName), ex);
 				throw;
@@ -381,14 +389,14 @@ namespace MonoDevelop.Prj2Make
 				throw new UnknownProjectVersionException (fileName, version);
 
 			ListDictionary globals = null;
-			MSBuildSolution combine = null;
+			Combine combine = null;
 			SlnData data = null;
 			List<Section> projectSections = null;
 			List<string> lines = null;
 
 			//Parse the .sln file
 			using (StreamReader reader = new StreamReader(fileName)) {
-				combine = new MSBuildSolution ();
+				combine = new Combine ();
 				combine.Name = Path.GetFileNameWithoutExtension (fileName);
 				combine.FileName = fileName;
 				combine.Version = "0.1"; //FIXME:
@@ -454,7 +462,7 @@ namespace MonoDevelop.Prj2Make
 
 				if (projTypeGuid == folderTypeGuid) {
 					//Solution folder
-					MSBuildSolution folder = new MSBuildSolution ();
+					Combine folder = new Combine ();
 					folder.Name = projectName;
 					folder.FileName = projectPath;
 					folder.Version = "0.1"; //FIXME:
@@ -485,7 +493,7 @@ namespace MonoDevelop.Prj2Make
 				if (!projectPath.StartsWith("http://") &&
 					(projectPath.EndsWith (".csproj") || projectPath.EndsWith (".vbproj")))
 				{
-					MSBuildProject project = null;
+					DotNetProject project = null;
 					string path = SlnMaker.MapPath (Path.GetDirectoryName (fileName), projectPath);
 					if (String.IsNullOrEmpty (path)) {
 						monitor.ReportWarning (GettextCatalog.GetString (
@@ -498,17 +506,18 @@ namespace MonoDevelop.Prj2Make
 
 					projectPath = Path.GetFullPath (path);
 					try {
-						project = Services.ProjectService.ReadCombineEntry (projectPath, monitor) as MSBuildProject;
+						project = Services.ProjectService.ReadCombineEntry (projectPath, monitor) as DotNetProject;
 						if (project == null) {
-							Console.WriteLine ("Internal Error: Didn't get the expected MSBuildProject for {0} project.",
+							Console.WriteLine ("Internal Error: Didn't get the expected DotNetProject for {0} project.",
 								projectPath);
 							continue;
 						}
 
+						MSBuildData msdata = MSBuildFileFormat.GetMSBuildData (project);
 						entries [projectGuid] = project;
-						combine.ProjectsByGuid [project.Data.Guid] = project;
+						data.ProjectsByGuid [msdata.Guid] = project;
 
-						project.Data.Extra = lines.GetRange (sec.Start + 1, sec.Count - 2);
+						msdata.Extra = lines.GetRange (sec.Start + 1, sec.Count - 2);
 					} catch (Exception e) {
 						Console.WriteLine ("Error while trying to load the project {0}", projectPath);
 						Console.WriteLine (e);
@@ -544,7 +553,7 @@ namespace MonoDevelop.Prj2Make
 			foreach (Project p in combine.GetAllProjects ()) {
 				toRemove.Clear ();
 				toAdd.Clear ();
-				MSBuildData msbuildData = p.ExtendedProperties [typeof (MSBuildFileFormat)] as MSBuildData;
+				MSBuildData msbuildData = MSBuildFileFormat.GetMSBuildData (p);
 				if (msbuildData == null)
 					continue;
 
@@ -566,11 +575,11 @@ namespace MonoDevelop.Prj2Make
 						continue;
 
 					string guid = elem ["Project"].InnerText.Trim (new char [] {'{', '}'});
-					if (!combine.ProjectsByGuid.ContainsKey (guid))
+					if (!data.ProjectsByGuid.ContainsKey (guid))
 						continue;
 
 					toRemove.Add (pref);
-					rp = combine.ProjectsByGuid [guid];
+					rp = data.ProjectsByGuid [guid];
 					ProjectReference newRef = new ProjectReference (ReferenceType.Project, rp.Name);
 					toAdd.Add (newRef);
 
@@ -637,7 +646,7 @@ namespace MonoDevelop.Prj2Make
 			}
 		}
 
-		void LoadProjectConfigurationMappings (Section sec, List<string> lines, MSBuildSolution sln, IProgressMonitor monitor)
+		void LoadProjectConfigurationMappings (Section sec, List<string> lines, Combine sln, IProgressMonitor monitor)
 		{
 			if (sec == null || String.Compare (sec.Val, "postSolution", true) != 0)
 				return;
@@ -645,6 +654,7 @@ namespace MonoDevelop.Prj2Make
 			List<CombineConfigurationEntry> noBuildList = new List<CombineConfigurationEntry> ();
 			Dictionary<string, CombineConfigurationEntry> cache = new Dictionary<string, CombineConfigurationEntry> ();
 			Dictionary<string, string> ignoredProjects = new Dictionary<string, string> ();
+			SlnData slnData = GetSlnData (sln);
 			
 			List<string> extras = new List<string> ();
 
@@ -689,7 +699,7 @@ namespace MonoDevelop.Prj2Make
 				string projGuid = t [0].Trim (new char [] {'{', '}'});
 				string slnConfig = t [1];
 
-				if (!sln.ProjectsByGuid.ContainsKey (projGuid)) {
+				if (!slnData.ProjectsByGuid.ContainsKey (projGuid)) {
 					if (ignoredProjects.ContainsKey (projGuid))
 						// already warned
 						continue;
@@ -700,7 +710,7 @@ namespace MonoDevelop.Prj2Make
 					continue;
 				}
 
-				DotNetProject project = sln.ProjectsByGuid [projGuid];
+				DotNetProject project = slnData.ProjectsByGuid [projGuid];
 
 				string key = projGuid + "." + slnConfig;
 				CombineConfigurationEntry combineConfigEntry = null;
@@ -730,7 +740,7 @@ namespace MonoDevelop.Prj2Make
 				extras.RemoveAt (extras.Count - 1);
 			}
 
-			sln.Data.SectionExtras ["ProjectConfigurationPlatforms"] = extras;
+			slnData.SectionExtras ["ProjectConfigurationPlatforms"] = extras;
 
 			foreach (CombineConfigurationEntry e in noBuildList) {
 				//Mark (build=false) of all projects for which 
@@ -906,6 +916,122 @@ namespace MonoDevelop.Prj2Make
 			reader.Close();
 
 			return strVersion;
+		}
+
+		static SlnData GetSlnData (CombineEntry entry)
+		{
+			if (entry.ExtendedProperties.Contains (typeof (SlnFileFormat)))
+				return entry.ExtendedProperties [typeof (SlnFileFormat)] as SlnData;
+			return null;
+		}
+
+		// Event handlers
+		public static void HandleAddEntry (object s, AddEntryEventArgs args)
+		{
+			if (GetSlnData (args.Combine) == null)
+				return;
+
+			string extn = Path.GetExtension (args.FileName);
+
+			IFileFormat msformat = new MSBuildFileFormat ();
+
+			if (!msformat.CanReadFile (args.FileName)) {
+				if (!IdeApp.Services.MessageService.AskQuestion (GettextCatalog.GetString (
+					"The project file {0} must be converted to msbuild format to be added " +
+					"to a msbuild solution. Convert?", args.FileName), "Conversion required")) {
+					args.Cancel = true;
+					return;
+				}
+			} else {
+				// vs2005 solution/project
+				return;
+			}
+
+			IProgressMonitor monitor = new NullProgressMonitor ();
+			IFileFormat slnff = new VS2003SlnFileFormat ();
+			IFileFormat prjff = new VS2003ProjectFileFormat ();
+
+			if (slnff.CanReadFile (args.FileName)) {
+				// VS2003 solution
+				Combine c = VS2003SlnFileFormat.ImportSlnAsMSBuild (args.FileName);
+				c.Save (monitor);
+
+				args.FileName = c.FileName;
+			} else if (prjff.CanReadFile (args.FileName)) {
+				// VS2003 project
+
+				DotNetProject proj = VS2003ProjectFileFormat.ImportCsprojAsMSBuild (args.FileName);
+				args.FileName = proj.FileName;
+			} else {
+				CombineEntry ce = Services.ProjectService.ReadCombineEntry (args.FileName, monitor);
+				ConvertToMSBuild (ce);
+				args.FileName = ce.FileName;
+				ce.Save (monitor);
+			}
+		}
+
+		internal static void SetHandlers (Combine combine, bool setEntries)
+		{
+			if (setEntries) {
+				foreach (CombineEntry ce in combine.Entries) {
+					Combine c = ce as Combine;
+					if (c == null)
+						continue;
+
+					SetHandlers (c, setEntries);
+				}
+			}
+
+			combine.EntryAdded += HandleCombineEntryAdded;
+		}
+
+		static void HandleCombineEntryAdded (object sender, CombineEntryEventArgs e)
+		{
+			try {
+				// ReadFile for Sln/MSBuildFileFormat set the handlers
+				ConvertToMSBuild (e.CombineEntry);
+
+				Combine rootSln = e.CombineEntry.RootCombine;
+				SlnData rootSlnData = GetSlnData (rootSln);
+				SlnData slnData = GetSlnData (e.CombineEntry);
+				if (slnData != null) {
+					foreach (KeyValuePair<string, DotNetProject> pair in slnData.ProjectsByGuid)
+						rootSlnData.ProjectsByGuid [pair.Key] = pair.Value;
+				} else {
+					//Add guid for the new project
+					MSBuildData msdata = MSBuildFileFormat.GetMSBuildData (e.CombineEntry);
+					DotNetProject project = e.CombineEntry as DotNetProject;
+					if (project != null && msdata != null)
+						//msbuild project
+						rootSlnData.ProjectsByGuid [msdata.Guid] = project;
+				}
+
+				//FIXME: Can't call this now as we don't extend Combine :/
+				//rootSln.NotifyModified ();
+				//Need some other solution, for now, hack -
+				rootSln.FileName = rootSln.FileName;
+			} catch (Exception ex) {
+				Runtime.LoggingService.DebugFormat ("{0}", ex.Message);
+				Console.WriteLine ("HandleCombineEntryAdded : {0}", ex.ToString ());
+			}
+		}
+
+		internal static void ConvertToMSBuild (CombineEntry ce)
+		{
+			MSBuildFileFormat msformat = new MSBuildFileFormat ();
+			if (!msformat.CanReadFile (ce.FileName)) {
+				// Convert
+				ce.FileFormat = msformat;
+				ce.FileName = msformat.GetValidFormatName (ce, ce.FileName);
+
+				// Save will create the required SlnData, MSBuildData
+				// objects, create the new guids for the projects _and_ the
+				// solution folders
+				ce.Save (new NullProgressMonitor ());
+				// Writing out again might be required to fix
+				// project references which have changed (filenames
+				// changed due to the conversion)
+			}
 		}
 
 		// static regexes

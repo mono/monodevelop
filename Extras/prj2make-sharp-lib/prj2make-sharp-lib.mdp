@@ -25,9 +25,7 @@
     <File name="./csproj_ver2003.cs" subtype="Code" buildaction="Compile" />
     <File name="./prj2make-sharp-lib.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./MSBuildFileFormat.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MSBuildProject.cs" subtype="Code" buildaction="Compile" />
     <File name="./MSBuildProjectServiceExtension.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MSBuildSolution.cs" subtype="Code" buildaction="Compile" />
     <File name="./MSBuildData.cs" subtype="Code" buildaction="Compile" />
     <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="./SlnData.cs" subtype="Code" buildaction="Compile" />

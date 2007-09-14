@@ -141,6 +141,26 @@ namespace MonoDevelop.Prj2Make
 			return null;
 		}
 
+		public override string GetDefaultResourceId (ProjectFile pf)
+		{
+			if (MSBuildFileFormat.GetMSBuildData (pf.Project) == null)
+				return base.GetDefaultResourceId (pf);
+
+			IResourceIdBuilder rb;
+			DotNetProject project = (DotNetProject) pf.Project;
+
+			if (project.LanguageName == "C#") {
+				rb = new CSharpResourceIdBuilder ();
+			} else if (project.LanguageName == "VBNet") {
+				rb = new VBNetResourceIdBuilder ();
+			} else {
+				Console.WriteLine ("Language '{0}' not supported for building resource ids.", project.LanguageName);
+				return null;
+			}
+
+			return rb.GetResourceId (pf);
+		}
+
 		// Used for parsing "Line 123, position 5" errors from tools
 		// like resgen, xamlg
 		static Regex regexErrorLinePos;

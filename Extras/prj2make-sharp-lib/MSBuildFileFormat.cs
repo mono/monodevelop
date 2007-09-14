@@ -178,13 +178,12 @@ namespace MonoDevelop.Prj2Make
 			bool newdoc = false;
 			XmlDocument doc = null;
 
-			MSBuildData data = (MSBuildData) project.ExtendedProperties [typeof (MSBuildFileFormat)];
+			MSBuildData data = GetMSBuildData (project);
 			if (data == null) {
 				//Create a new XmlDocument
 				doc = new XmlDocument ();
 				data = new MSBuildData ();
 				data.Document = doc;
-				project.ExtendedProperties [typeof (MSBuildFileFormat)] = data;
 				newdoc = true;
 
 				XmlElement e = doc.CreateElement ("Project", ns);
@@ -322,6 +321,10 @@ namespace MonoDevelop.Prj2Make
 				elem = doc.CreateElement ("Import", ns);
 				doc.DocumentElement.InsertAfter (elem, doc.DocumentElement.LastChild);
 				elem.SetAttribute ("Project", @"$(MSBuildBinPath)\Microsoft.CSharp.Targets");
+
+				// Do this at the end, so that it can be detected that this is
+				// a non-msbuild project being converted
+				project.ExtendedProperties [typeof (MSBuildFileFormat)] = data;
 			}
 
 			XmlWriterSettings settings = new XmlWriterSettings ();
@@ -445,7 +448,7 @@ namespace MonoDevelop.Prj2Make
 			string basePath = Path.GetDirectoryName (fname);
 
 			//Create the project
-			MSBuildProject project = new MSBuildProject (lang);
+			DotNetProject project = new DotNetProject (lang);
 			project.FileName = fname;
 			project.Version = "0.1"; //FIXME:
 			//Default project name
@@ -566,7 +569,7 @@ namespace MonoDevelop.Prj2Make
 		static void HandleConfigurationRemoved (object sender, ConfigurationEventArgs e)
 		{
 			DotNetProject project = (DotNetProject) sender;
-			MSBuildData d = (MSBuildData) project.ExtendedProperties [typeof (MSBuildFileFormat)];
+			MSBuildData d = GetMSBuildData (project);
 			if (d == null || !d.ConfigElements.ContainsKey ((DotNetProjectConfiguration) e.Configuration))
 				return;
 
@@ -579,7 +582,7 @@ namespace MonoDevelop.Prj2Make
 
 		static void HandleReferenceRemoved (object sender, ProjectReferenceEventArgs e)
 		{
-			MSBuildData d = (MSBuildData) e.Project.ExtendedProperties [typeof (MSBuildFileFormat)];
+			MSBuildData d = GetMSBuildData (e.Project);
 			if (d == null || !d.ProjectReferenceElements.ContainsKey (e.ProjectReference))
 				return;
 
@@ -591,7 +594,7 @@ namespace MonoDevelop.Prj2Make
 		static void HandleReferenceAdded (object sender, ProjectReferenceEventArgs e)
 		{
 			try {
-				MSBuildData d = (MSBuildData) e.Project.ExtendedProperties [typeof (MSBuildFileFormat)];
+				MSBuildData d = GetMSBuildData (e.Project);
 				if (d == null)
 					return;
 
@@ -707,7 +710,7 @@ namespace MonoDevelop.Prj2Make
 
 		static void HandleFileRemoved (object sender, ProjectFileEventArgs e)
 		{
-			MSBuildData d = (MSBuildData) e.Project.ExtendedProperties [typeof (MSBuildFileFormat)];
+			MSBuildData d = GetMSBuildData (e.Project);
 			if (d == null || !d.ProjectFileElements.ContainsKey (e.ProjectFile))
 				return;
 
@@ -718,7 +721,7 @@ namespace MonoDevelop.Prj2Make
 
 		static void HandleFileAdded (object sender, ProjectFileEventArgs e)
 		{
-			MSBuildData d = (MSBuildData) e.Project.ExtendedProperties [typeof (MSBuildFileFormat)];
+			MSBuildData d = GetMSBuildData (e.Project);
 			if (d == null)
 				return;
 
@@ -757,9 +760,8 @@ namespace MonoDevelop.Prj2Make
 			}
 
 			if (projectFile.BuildAction == BuildAction.EmbedAsResource) {
-				MSBuildProject msproj = project as MSBuildProject;
-				if (msproj == null || 
-					MSBuildProject.GetDefaultResourceIdInternal (projectFile) != projectFile.ResourceId)
+				if (GetMSBuildData (project) == null ||
+					Services.ProjectService.GetDefaultResourceId (projectFile) != projectFile.ResourceId)
 					//Emit LogicalName if we are writing elements for a Non-MSBuidProject,
 					//(eg. when converting a gtk-sharp project, it might depend on non-vs
 					// style resource naming)
@@ -784,7 +786,7 @@ namespace MonoDevelop.Prj2Make
 
 		static void HandleFileRenamed (object sender, ProjectFileRenamedEventArgs e)
 		{
-			MSBuildData d = (MSBuildData) e.Project.ExtendedProperties [typeof (MSBuildFileFormat)];
+			MSBuildData d = GetMSBuildData (e.Project);
 			if (d == null || !d.ProjectFileElements.ContainsKey (e.ProjectFile))
 				return;
 
@@ -797,7 +799,7 @@ namespace MonoDevelop.Prj2Make
 		{
 			//Subtype, BuildAction, DependsOn, Data
 
-			MSBuildData d = (MSBuildData) e.Project.ExtendedProperties [typeof (MSBuildFileFormat)];
+			MSBuildData d = GetMSBuildData (e.Project);
 			if (d == null || !d.ProjectFileElements.ContainsKey (e.ProjectFile))
 				return;
 
@@ -1446,6 +1448,13 @@ namespace MonoDevelop.Prj2Make
 			}
 			
 			return sb.ToString ();
+		}
+
+		internal static MSBuildData GetMSBuildData (CombineEntry entry)
+		{
+			if (entry.ExtendedProperties.Contains (typeof (MSBuildFileFormat)))
+				return entry.ExtendedProperties [typeof (MSBuildFileFormat)] as MSBuildData;
+			return null;
 		}
 
 		static Regex conditionRegex = null;

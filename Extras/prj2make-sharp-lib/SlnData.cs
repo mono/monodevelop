@@ -40,6 +40,7 @@ namespace MonoDevelop.Prj2Make
 		Dictionary<string, List<string>> sectionExtras;
 		List<string> extra; //used by solution folders..
 		List<string> unknownProjects;
+		Dictionary<string, DotNetProject> projectsByGuidTable;
 
 		public SlnData ()
 		{ 
@@ -90,6 +91,14 @@ namespace MonoDevelop.Prj2Make
 				if (sectionExtras == null)
 					sectionExtras = new Dictionary<string, List<string>> ();
 				return sectionExtras;
+			}
+		}
+
+		public Dictionary<string, DotNetProject> ProjectsByGuid {
+			get {
+				if (projectsByGuidTable == null)
+					projectsByGuidTable = new Dictionary<string, DotNetProject> ();
+				return projectsByGuidTable;
 			}
 		}
 
