@@ -96,7 +96,7 @@ namespace MonoDevelop.Core
 			return builder.ToString();
 		}
 		
-		public override string Convert(IClass c, ConversionFlags conversionFlags)
+		public override string Convert(IClass c, ConversionFlags conversionFlags, ITypeNameResolver resolver)
 		{
 			StringBuilder builder = new StringBuilder();
 			
@@ -241,7 +241,7 @@ namespace MonoDevelop.Core
 			return builder.ToString();
 		}
 		
-		public override string Convert(IField field, ConversionFlags conversionFlags)
+		public override string Convert(IField field, ConversionFlags conversionFlags, ITypeNameResolver resolver)
 		{
 			StringBuilder builder = new StringBuilder();
 			
@@ -282,7 +282,7 @@ namespace MonoDevelop.Core
 			return builder.ToString();			
 		}
 		
-		public override string Convert(IProperty property, ConversionFlags conversionFlags)
+		public override string Convert(IProperty property, ConversionFlags conversionFlags, ITypeNameResolver resolver)
 		{
 			StringBuilder builder = new StringBuilder();
 			
@@ -338,7 +338,7 @@ namespace MonoDevelop.Core
 			return builder.ToString();
 		}
 		
-		public override string Convert(IEvent e, ConversionFlags conversionFlags)
+		public override string Convert(IEvent e, ConversionFlags conversionFlags, ITypeNameResolver resolver)
 		{
 			StringBuilder builder = new StringBuilder();
 			
@@ -370,7 +370,7 @@ namespace MonoDevelop.Core
 			return builder.ToString();
 		}
 		
-		public override string Convert(IIndexer m, ConversionFlags conversionFlags)
+		public override string Convert(IIndexer m, ConversionFlags conversionFlags, ITypeNameResolver resolver)
 		{
 			StringBuilder builder = new StringBuilder();
 			builder.Append(Convert(m.Modifiers, conversionFlags));
@@ -417,7 +417,7 @@ namespace MonoDevelop.Core
 			return builder.ToString();
 		}
 		
-		public override string Convert(IMethod m, ConversionFlags conversionFlags)
+		public override string Convert(IMethod m, ConversionFlags conversionFlags, ITypeNameResolver resolver)
 		{
 			StringBuilder builder = new StringBuilder();
 			builder.Append(Convert(m.Modifiers, conversionFlags));
@@ -479,7 +479,7 @@ namespace MonoDevelop.Core
 			}
 		}
 		
-		public override string Convert(IReturnType returnType, ConversionFlags conversionFlags)
+		public override string Convert(IReturnType returnType, ConversionFlags conversionFlags, ITypeNameResolver resolver)
 		{
 			if (returnType == null) {
 				return String.Empty;
@@ -523,7 +523,7 @@ namespace MonoDevelop.Core
 			return builder.ToString();
 		}
 		
-		public override string Convert(IParameter param, ConversionFlags conversionFlags)
+		public override string Convert(IParameter param, ConversionFlags conversionFlags, ITypeNameResolver resolver)
 		{
 			StringBuilder builder = new StringBuilder();
 			if (ShowParameterNames(conversionFlags)) {
@@ -552,7 +552,7 @@ namespace MonoDevelop.Core
 			return builder.ToString();
 		}
 
-		public override string Convert(LocalVariable localVariable, ConversionFlags conversionFlags)
+		public override string Convert(LocalVariable localVariable, ConversionFlags conversionFlags, ITypeNameResolver resolver)
 		{
 			StringBuilder builder = new StringBuilder();
 										

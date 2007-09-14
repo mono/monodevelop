@@ -1,3 +1,7 @@
+2007-09-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* VBAmbience.cs: Track API changes.
+
 2007-09-04  Michael Hutchinson <MHutchinson@novell.com> 
 
 	* Gui/CodeGenerationPanel.cs, VBAmbience.cs: Fix some compiler warnings.
