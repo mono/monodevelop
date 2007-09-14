@@ -54,7 +54,7 @@
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-    <ProjectReference type="Assembly" localcopy="False" refto="../../../contrib/FirebirdSql.Data.Firebird.dll" />
+    <ProjectReference type="Assembly" localcopy="False" refto="../../../contrib/Firebird/FirebirdSql.Data.Firebird.dll" />
   </References>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <ExcludedFiles>

@@ -64,7 +64,7 @@ FILES =  \
 
 REFS =  \
 	$(COND_REFS) \
-	-r:$(top_srcdir)/contrib/FirebirdSql.Data.Firebird.dll \
+	-r:$(top_srcdir)/contrib/Firebird/FirebirdSql.Data.Firebird.dll \
 	-r:System \
 	-r:System.Data
 
