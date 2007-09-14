@@ -174,6 +174,17 @@ namespace MonoDevelop.Projects.CodeGeneration
 			IMember newMember;
 			int i, j;
 			
+			IParserContext ctx = GetParserContext (klass);
+			foreach (IReturnType rType in iface.BaseTypes) {
+				IClass baseClass = ctx.GetClass (rType.FullyQualifiedName);
+				if (baseClass == null)
+					Runtime.LoggingService.Error (GettextCatalog.GetString
+						("Error while implementing interface '{0}' in '{1}': base type '{2}' was not found.", klass, iface, baseClass)
+					);
+				else
+					ImplementInterface (pinfo, klass, baseClass, explicitly);
+			}
+			
 			if (explicitly)
 				prefix = ExplicitNamePrefix (pinfo, klass, iface);
 			

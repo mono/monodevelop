@@ -1,3 +1,8 @@
+2007-09-14  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: ImplementInterface
+	  should implement inherited interfaces. Fixes Bugzilla #82791.
+
 2007-09-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Ambience/IAmbience.cs,
