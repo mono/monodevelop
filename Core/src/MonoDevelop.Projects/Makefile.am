@@ -6,8 +6,8 @@ CONFIG = MonoDevelop.Projects.dll.config
 REFS =  \
 	$(MONODOC_LIBS) \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
-	-r:$(top_builddir)/build/bin/Mono.Cecil.dll \
+	-r:$(top_srcdir)/build/bin/Mono.Addins.dll \
+	-r:$(top_srcdir)/build/bin/Mono.Cecil.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Drawing \
@@ -17,7 +17,8 @@ FILES =  \
 	MonoDevelop.Projects.Ambience/Ambience.cs \
 	MonoDevelop.Projects.Ambience/AmbienceService.cs \
 	MonoDevelop.Projects.Ambience/CodeDOMGeneratorUtility.cs \
-	MonoDevelop.Projects.Ambience/IAmbience.cs \
+	MonoDevelop.Projects.Ambience/ConversionFlags.cs \
+	MonoDevelop.Projects.Ambience/ITypeNameResolver.cs \
 	MonoDevelop.Projects.Ambience/NetAmbience.cs \
 	MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs \
 	MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs \

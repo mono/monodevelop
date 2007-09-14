@@ -1,10 +1,10 @@
 <Project name="MonoDevelop.Projects" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
-      <Output directory="../../../build/bin" assembly="MonoDevelop.Projects" />
+      <Output directory="../../../build/bin" assemblyKeyFile="./" assembly="MonoDevelop.Projects" />
       <Build debugmode="True" target="Library" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
-      <CodeGeneration compiler="Csc" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+      <CodeGeneration compiler="Csc" warninglevel="3" optimize="False" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
       <Output directory="../../../build/AddIns/" assembly="MonoDevelop.Projects" />
@@ -16,7 +16,7 @@
   <Contents>
     <File name="./MonoDevelop.Projects.Ambience/AmbienceService.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Ambience/CodeDOMGeneratorUtility.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Ambience/IAmbience.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Ambience/ConversionFlags.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Ambience/NetAmbience.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/Language.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/LanguageBindingService.cs" subtype="Code" buildaction="Compile" />
@@ -237,6 +237,7 @@
     <File name="./MonoDevelop.Projects.Parser.Cecil/SymbolWriterImpl.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./MonoDevelop.Projects.Text/TextFileService.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Ambience/ITypeNameResolver.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />

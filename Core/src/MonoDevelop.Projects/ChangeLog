@@ -1,3 +1,13 @@
+2007-09-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Ambience/IAmbience.cs,
+	  MonoDevelop.Projects.Ambience/ConversionFlags.cs: Renamed file.
+	* MonoDevelop.Projects.Ambience/ITypeNameResolver.cs,
+	  MonoDevelop.Projects.Ambience/Ambience.cs,
+	  MonoDevelop.Projects.Ambience/NetAmbience.cs, MonoDevelop.Projects.mdp,
+	  Makefile.am: Added support for ITypeNameResolver, which allows properly
+	  formating type names in different namespace scopes.
+
 2007-09-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Parser/ProjectCodeCompletionDatabase.cs: Use the most
