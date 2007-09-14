@@ -1,5 +1,10 @@
 2007-09-14  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Core/XmlReadHelper.cs: Fixed XmlReadHelper behavior - starting
+	  nodes are only read once.
+
+2007-09-14  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Core/XmlReadHelper.cs: XmlReadHelper - already read starting
 	  node message is now more verbose.
 

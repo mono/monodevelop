@@ -70,9 +70,8 @@ namespace MonoDevelop.Core
 		
 		public static void ReadList (XmlReader reader, ICollection<string> endNodes, ReaderCallbackWithData callback)
 		{
-			if (reader.IsEmptyElement) {
+			if (reader.IsEmptyElement) 
 				return;
-			}
 			ReadCallbackData data = new ReadCallbackData ();
 			bool didReadStartNode = false;
 			while (reader.Read()) {
@@ -80,26 +79,20 @@ namespace MonoDevelop.Core
 				data.SkipNextRead = false;
 				switch (reader.NodeType) {
 				case XmlNodeType.EndElement:
-					if (endNodes.Contains (reader.LocalName)) {
+					if (endNodes.Contains (reader.LocalName)) 
 						return;
-					}
 					Runtime.LoggingService.Warn ("Unknown end node: " + reader.LocalName + " valid end nodes are: " + ConcatString (endNodes));
 					break;
 				case XmlNodeType.Element:
-					if (endNodes.Contains (reader.LocalName)) {
-						if (didReadStartNode) {
-							Runtime.LoggingService.Warn ("Already read starting node. Valid starting nodes are:" + ConcatString (endNodes));
-						}
+					if (!didReadStartNode && endNodes.Contains (reader.LocalName)) {
 						didReadStartNode = true;
 						break;
 					}
 					bool validNode = callback (data);
-					if (!validNode) {
+					if (!validNode) 
 						Runtime.LoggingService.Warn ("Unknown node: " + reader.LocalName);
-					}
-					if (data.SkipNextRead) {
+					if (data.SkipNextRead) 
 						goto skip;
-					}
 					break;
 				}
 			}
