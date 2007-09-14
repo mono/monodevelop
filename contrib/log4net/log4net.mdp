@@ -1,0 +1,241 @@
+<Project name="log4net" fileversion="2.0" newfilesearch="OnLoad" language="C#" clr-version="Net_1_1" ctype="DotNetProject">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="DotNetProjectConfiguration">
+      <Output directory="../../build/bin" assemblyKeyFile="./" assembly="log4net" />
+      <Build debugmode="True" target="Library" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_1_1" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+    <Configuration name="Release" ctype="DotNetProjectConfiguration">
+      <Output directory="../../build/bin" assembly="log4net" />
+      <Build debugmode="False" target="Library" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_1_1" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+  </Configurations>
+  <Contents>
+    <File name="./src/AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/AssemblyVersionInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/GlobalContext.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/ILog.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/LogicalThreadContext.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/LogManager.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/MDC.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/NDC.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/ThreadContext.cs" subtype="Code" buildaction="Compile" />
+    <File name="./log4net.license.txt" subtype="Code" buildaction="Nothing" />
+    <File name="./src/AssemblyVersionInfo.cpp" subtype="Code" buildaction="Exclude" />
+    <File name="./src/AssemblyVersionInfo.js" subtype="Code" buildaction="Exclude" />
+    <File name="./src/AssemblyVersionInfo.vb" subtype="Code" buildaction="Exclude" />
+    <File name="./src/log4net.csproj" subtype="Code" buildaction="Exclude" />
+    <File name="./src/log4net.sln" subtype="Code" buildaction="Exclude" />
+    <File name="./src/Appender/AdoNetAppender.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Appender/AnsiColorTerminalAppender.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Appender/AppenderCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Appender/AppenderSkeleton.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Appender/AspNetTraceAppender.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Appender/BufferingAppenderSkeleton.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Appender/BufferingForwardingAppender.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Appender/ColoredConsoleAppender.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Appender/ConsoleAppender.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Appender/DebugAppender.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Appender/EventLogAppender.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Appender/FileAppender.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Appender/ForwardingAppender.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Appender/IAppender.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Appender/IBulkAppender.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Appender/LocalSyslogAppender.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Appender/MemoryAppender.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Appender/NetSendAppender.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Appender/OutputDebugStringAppender.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Appender/RemoteSyslogAppender.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Appender/RemotingAppender.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Appender/RollingFileAppender.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Appender/SmtpAppender.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Appender/SmtpPickupDirAppender.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Appender/TelnetAppender.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Appender/TextWriterAppender.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Appender/TraceAppender.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Appender/UdpAppender.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Config/AliasDomainAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Config/AliasRepositoryAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Config/BasicConfigurator.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Config/ConfiguratorAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Config/DOMConfigurator.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Config/DOMConfiguratorAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Config/DomainAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Config/Log4NetConfigurationSectionHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Config/PluginAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Config/RepositoryAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Config/SecurityContextProviderAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Config/XmlConfigurator.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Config/XmlConfiguratorAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Core/CompactRepositorySelector.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Core/DefaultRepositorySelector.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Core/ErrorCode.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Core/IAppenderAttachable.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Core/IErrorHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Core/IFixingRequired.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Core/ILogger.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Core/ILoggerWrapper.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Core/IOptionHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Core/IRepositorySelector.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Core/ITriggeringEventEvaluator.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Core/Level.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Core/LevelCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Core/LevelEvaluator.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Core/LevelMap.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Core/LocationInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Core/LogException.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Core/LogImpl.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Core/LoggerManager.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Core/LoggerWrapperImpl.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Core/LoggingEvent.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Core/SecurityContext.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Core/SecurityContextProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Core/WrapperMap.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/DateFormatter/AbsoluteTimeDateFormatter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/DateFormatter/DateTimeDateFormatter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/DateFormatter/IDateFormatter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/DateFormatter/Iso8601DateFormatter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/DateFormatter/SimpleDateFormatter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Filter/DenyAllFilter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Filter/FilterDecision.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Filter/FilterSkeleton.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Filter/IFilter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Filter/LevelMatchFilter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Filter/LevelRangeFilter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Filter/LoggerMatchFilter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Filter/MdcFilter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Filter/NdcFilter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Filter/PropertyFilter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Filter/StringMatchFilter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/ExceptionLayout.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/ILayout.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/IRawLayout.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/Layout2RawLayoutAdapter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/LayoutSkeleton.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/PatternLayout.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/RawLayoutConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/RawPropertyLayout.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/RawTimeStampLayout.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/RawUtcTimeStampLayout.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/SimpleLayout.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/XMLLayout.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/XMLLayoutBase.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/XmlLayoutSchemaLog4j.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/Pattern/AppDomainPatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/Pattern/DatePatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/Pattern/ExceptionPatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/Pattern/FileLocationPatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/Pattern/FullLocationPatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/Pattern/IdentityPatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/Pattern/LevelPatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/Pattern/LineLocationPatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/Pattern/LoggerPatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/Pattern/MessagePatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/Pattern/MethodLocationPatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/Pattern/NamedPatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/Pattern/NdcPatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/Pattern/PatternLayoutConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/Pattern/PropertyPatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/Pattern/RelativeTimePatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/Pattern/ThreadPatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/Pattern/TypeNamePatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/Pattern/UserNamePatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Layout/Pattern/UtcDatePatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/ObjectRenderer/DefaultRenderer.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/ObjectRenderer/IObjectRenderer.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/ObjectRenderer/RendererMap.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Plugin/IPlugin.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Plugin/IPluginFactory.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Plugin/PluginCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Plugin/PluginMap.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Plugin/PluginSkeleton.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Plugin/RemoteLoggingServerPlugin.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Repository/IBasicRepositoryConfigurator.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Repository/ILoggerRepository.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Repository/IXmlRepositoryConfigurator.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Repository/LoggerRepositorySkeleton.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Repository/Hierarchy/DefaultLoggerFactory.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Repository/Hierarchy/Hierarchy.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Repository/Hierarchy/ILoggerFactory.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Repository/Hierarchy/Logger.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Repository/Hierarchy/LoggerKey.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Repository/Hierarchy/ProvisionNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Repository/Hierarchy/RootLogger.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Repository/Hierarchy/XmlHierarchyConfigurator.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/AppenderAttachedImpl.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/CompositeProperties.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/ContextPropertiesBase.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/CountingQuietTextWriter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/CyclicBuffer.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/EmptyCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/EmptyDictionary.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/FormattingInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/GlobalContextProperties.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/LevelMapping.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/LevelMappingEntry.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/LogLog.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/LogicalThreadContextProperties.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/NativeError.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/NullDictionaryEnumerator.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/NullEnumerator.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/NullSecurityContext.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/OnlyOnceErrorHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/OptionConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/PatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/PatternParser.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/PatternString.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/PropertiesDictionary.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/ProtectCloseTextWriter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/QuietTextWriter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/ReadOnlyPropertiesDictionary.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/ReaderWriterLock.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/ReusableStringWriter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/SystemInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/SystemStringFormat.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/TextWriterAdapter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/ThreadContextProperties.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/ThreadContextStack.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/ThreadContextStacks.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/Transform.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/WindowsSecurityContext.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/PatternStringConverters/AppDomainPatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/PatternStringConverters/DatePatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/PatternStringConverters/EnvironmentPatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/PatternStringConverters/IdentityPatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/PatternStringConverters/LiteralPatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/PatternStringConverters/NewLinePatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/PatternStringConverters/ProcessIdPatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/PatternStringConverters/PropertyPatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/PatternStringConverters/RandomStringPatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/PatternStringConverters/UserNamePatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/PatternStringConverters/UtcDatePatternConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/TypeConverters/BooleanConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/TypeConverters/ConversionNotSupportedException.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/TypeConverters/ConverterRegistry.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/TypeConverters/EncodingConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/TypeConverters/IConvertFrom.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/TypeConverters/IConvertTo.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/TypeConverters/IPAddressConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/TypeConverters/PatternLayoutConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/TypeConverters/PatternStringConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/TypeConverters/TypeConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Util/TypeConverters/TypeConverterAttribute.cs" subtype="Code" buildaction="Compile" />
+  </Contents>
+  <References>
+    <ProjectReference type="Gac" localcopy="True" refto="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Data, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Web, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  </References>
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../">
+    <BuildFilesVar />
+    <DeployFilesVar />
+    <ResourcesVar />
+    <OthersVar />
+    <GacRefVar Sync="True" Name="LOG4NET_REFS" Prefix="/r:" />
+    <AsmRefVar Sync="True" Name="LOG4NET_REFS" Prefix="/r:" />
+    <ProjectRefVar Sync="True" Name="LOG4NET_REFS" Prefix="/r:" />
+  </MonoDevelop.Autotools.MakefileInfo>
+</Project>

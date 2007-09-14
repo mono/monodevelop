@@ -3,14 +3,14 @@
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="True" name="Core" configuration="Debug" />
       <Entry build="True" name="Extras" configuration="Debug" />
-      <Entry build="True" name="contrib" configuration="Debug" />
       <Entry build="True" name="po" configuration="Debug" />
+      <Entry build="True" name="contrib" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="Core" configuration="Release" />
       <Entry build="True" name="Extras" configuration="Release" />
-      <Entry build="True" name="contrib" configuration="Release" />
       <Entry build="True" name="po" configuration="Release" />
+      <Entry build="True" name="contrib" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="Core" single="True">
@@ -18,12 +18,13 @@
     <Execute type="None" entry="Extras" />
     <Execute type="None" entry="contrib" />
     <Execute type="None" entry="po" />
+    <Execute type="None" entry="contrib" />
   </StartMode>
   <DeployTargets />
   <Entries>
     <Entry filename="./Core/src/Core.mds" />
     <Entry filename="./Extras/Extras.mds" />
-    <Entry filename="./contrib/contrib.mdp" />
     <Entry filename="./po/po.mdp" />
+    <Entry filename="./contrib/contrib.mds" />
   </Entries>
 </Combine>

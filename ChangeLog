@@ -1,3 +1,26 @@
+2007-09-14  Michael Hutchinson <mhutchinson@novell.com>
+
+	* configure.in,
+	  MonoDevelop.mds,
+	  contrib/contrib.mdp, 
+	  contrib/contrib.mds,
+	  contrib/Mono.Cecil/Mono.Cecil.mdp,
+	  contrib/Makefile.am,
+	  contrib/Firebird/FirebirdSql.Data.Firebird.license.txt, 
+	  contrib/Firebird/Firebird.mdp,
+	  contrib/Firebird/Makefile.am,
+	  contrib/Firebird/FirebirdSql.Data.Firebird.dll, 
+	  contrib/Mono.Addins/Mono.Addins.Setup.mdp, 
+	  contrib/Mono.Addins/Mono.Addins.mdp,
+	  contrib/Mono.Addins/Makefile.am,
+	  contrib/Mono.Addins/Mono.Addins.Gui.mdp,
+	  contrib/log4net/Makefile.am,
+	  contrib/log4net/log4net.mdp: Add projects for contrib dlls so that 
+	  they can be referenced correctly from other MD projects.
+	  
+	* contrib/FirebirdSql.Data.Firebird.dll, 
+	  contrib/FirebirdSql.Data.Firebird.license.txt: moved.
+
 2007-09-13  Michael Hutchinson <mhutchinson@novell.com>
 
 	* configure.in: Add Makefile for building stetic from svn.

@@ -1,0 +1,12 @@
+<Project name="Firebird" fileversion="2.0" ctype="GenericProject">
+  <Configurations active="Default">
+    <Configuration name="Default" ctype="GenericProjectConfiguration">
+      <CustomCommands>
+        <Command type="Build" command="make all" workingdir="${ProjectDir}" />
+      </CustomCommands>
+      <Output directory="./" />
+      <Build debugmode="True" />
+      <Execution runwithwarnings="True" consolepause="True" />
+    </Configuration>
+  </Configurations>
+</Project>
