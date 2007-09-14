@@ -555,11 +555,6 @@ namespace MonoDevelop.Projects
 			projectFileWatcher.Path = BaseDirectory;
 			projectFileWatcher.EnableRaisingEvents = true;
 		}
-
-		internal protected virtual string GetDefaultResourceId (ProjectFile pf)
-		{
-			return Path.GetFileName (pf.Name);
-		}
 		
 		void OnFileChanged (object source, FileSystemEventArgs e)
 		{

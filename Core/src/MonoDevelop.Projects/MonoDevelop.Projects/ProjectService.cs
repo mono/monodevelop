@@ -303,6 +303,11 @@ namespace MonoDevelop.Projects
 			return formatManager.GetFileFormats (filename).Length > 0;
 		}
 		
+		public string GetDefaultResourceId (ProjectFile pf)
+		{
+			return ExtensionChain.GetDefaultResourceId (pf);
+		}
+
 		void OnFormatExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
 			if (args.Change == ExtensionChange.Add)
@@ -443,6 +448,11 @@ namespace MonoDevelop.Projects
 		public override void SetNeedsBuilding (CombineEntry entry, bool value)
 		{
 			entry.OnSetNeedsBuilding (value);
+		}
+
+		public override string GetDefaultResourceId (ProjectFile pf)
+		{
+			return Path.GetFileName (pf.Name);
 		}
 	}	
 }

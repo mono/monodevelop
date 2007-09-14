@@ -54,5 +54,10 @@ namespace MonoDevelop.Projects
 		{
 			Next.SetNeedsBuilding (entry, val);
 		}
+
+		public virtual string GetDefaultResourceId (ProjectFile pf)
+		{
+			return Next.GetDefaultResourceId (pf);
+		}
 	}
 }

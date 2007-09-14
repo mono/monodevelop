@@ -1,3 +1,13 @@
+2007-09-15  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Projects/Project.cs (GetDefaultResourceId): Remove.
+	* MonoDevelop.Projects/ProjectServiceExtension.cs
+	(ProjectServiceExtension.GetDefaultResourceId): New.
+	* MonoDevelop.Projects/ProjectService.cs (ProjectService.GetDefaultResourceId): New.
+	(DefaultProjectServiceExtension.GetDefaultResourceId): Override.
+	* MonoDevelop.Projects/ProjectFile.cs (ResourceId): Update to use the
+	ProjectService.GetDefaultResourceId .
+
 2007-09-14  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: ImplementInterface

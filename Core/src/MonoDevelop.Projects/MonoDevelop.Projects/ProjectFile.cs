@@ -170,7 +170,7 @@ namespace MonoDevelop.Projects
 		public string ResourceId {
 			get {
 				if ((resourceId == null || resourceId.Length == 0) && project != null)
-					return project.GetDefaultResourceId (this);
+					return Services.ProjectService.GetDefaultResourceId (this);
 
 				return resourceId;
 			}
