@@ -2784,7 +2784,7 @@ namespace ICSharpCode.NRefactory.Ast {
 		}
 		
 		public override string ToString() {
-			return string.Format("[NamespaceDeclaration Name={0}]", Name);
+			return string.Format("[NamespaceDeclaration Name={0}, Children={1}]", Name, GetCollectionString(Children));
 		}
 	}
 	
@@ -3939,7 +3939,7 @@ namespace ICSharpCode.NRefactory.Ast {
 		
 		public override string ToString() {
 			return string.Format("[TypeDeclaration Name={0} Type={1} BaseTypes={2} Templates={3} BodyStartLocation=" +
-					"{4} Attributes={5} Modifier={6}]", Name, Type, GetCollectionString(BaseTypes), GetCollectionString(Templates), BodyStartLocation, GetCollectionString(Attributes), Modifier);
+					"{4} Attributes={5} Modifier={6}, Children={7}]", Name, Type, GetCollectionString(BaseTypes), GetCollectionString(Templates), BodyStartLocation, GetCollectionString(Attributes), Modifier, GetCollectionString(Children));
 		}
 	}
 	

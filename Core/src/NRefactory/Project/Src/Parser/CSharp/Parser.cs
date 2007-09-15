@@ -2264,7 +2264,7 @@ out section);
 #line  1084 "cs.ATG" 
 		f = new FieldDeclaration(attributes);
 		varDecl = new VariableDeclaration(t.val);
-		varDecl.StartLocation = t.Location;	                                   f.Fields.Add(varDecl);
+		varDecl.StartLocation = t.Location;	                                   
 		varDecl.EndLocation = t.EndLocation;
 		                        f.StartLocation = t.Location;
 		                        f.EndLocation = t.EndLocation;

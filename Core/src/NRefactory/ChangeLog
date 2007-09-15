@@ -1,3 +1,8 @@
+2007-09-15  Mike Krüger <mkrueger@novell.com> 
+
+	* Project/Src/Parser/CSharp/cs.ATG, Project/Src/Parser/CSharp/Parser.cs:
+	  Fixed 82841: Enum members appear twice in autocomplete.
+
 2007-09-13  Mike Krüger <mkrueger@novell.com> 
 
 	* Project/Src/Ast/General/CompilationUnit.cs: Compilation unit ToString
