@@ -1,3 +1,9 @@
+2007-09-17  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: It's now possible to set
+	  the caret positon in the code completion data (using the | char in the
+	  data text). Required for bug 325438.
+
 2007-09-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fixes bug #82865

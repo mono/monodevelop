@@ -775,7 +775,12 @@ namespace MonoDevelop.SourceEditor.Gui
 			TextIter endIter = buf.GetIterAtOffset (offsetIter.Offset + partial_word.Length);
 			buf.MoveMark (buf.InsertMark, offsetIter);
 			buf.Delete (ref offsetIter, ref endIter);
+			int idx = complete_word.IndexOf ('|'); // | in the completion text now marks the caret position
+			if (idx >= 0) 
+				complete_word = complete_word.Remove (idx, 1);
 			buf.InsertAtCursor (complete_word);
+			if (idx >= 0)
+				buf.PlaceCursor (buf.GetIterAtOffset (buf.CursorPosition - complete_word.Length + idx));
 			ScrollMarkOnscreen (buf.InsertMark);
 		}
 
