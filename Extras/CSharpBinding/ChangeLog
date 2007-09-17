@@ -1,3 +1,7 @@
+2007-09-15  Jérémie Laval <jeremie.laval@gmail.com>
+
+	* Parser/Parser.cs: Added support for parsing error retrieval from NRefactory.
+
 2007-09-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Gui/OverrideCompletionData.cs, Gui/CSharpTextEditorExtension.cs,

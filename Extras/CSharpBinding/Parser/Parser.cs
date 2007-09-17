@@ -8,6 +8,7 @@ using System;
 using System.IO;
 using System.Drawing;
 using System.Collections;
+using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects;
@@ -86,15 +87,23 @@ namespace CSharpBinding.Parser
 		
 		ICompilationUnit Parse (ICSharpCode.NRefactory.IParser p, string fileName)
 		{
-        	p.Lexer.SpecialCommentTags = lexerTags;
-            p.Parse ();
+			p.Lexer.SpecialCommentTags = lexerTags;
+			
+			List<ErrorInfo> errors = new List<ErrorInfo>();
+			p.Errors.Error += delegate (int line, int col, string message) {
+				errors.Add(new ErrorInfo(line, col, message));
+			};
+			
+			p.Parse ();
             
-            CSharpVisitor visitor = new CSharpVisitor();
+			CSharpVisitor visitor = new CSharpVisitor();
 			visitor.VisitCompilationUnit (p.CompilationUnit, null);
 			visitor.Cu.ErrorsDuringCompile = p.Errors.Count > 0;
 			visitor.Cu.Tag = p.CompilationUnit;
-			// FIXME: track api changes
-			//visitor.Cu.ErrorInformation = p.Errors.ErrorInformation;
+			visitor.Cu.ErrorInformation = errors.ToArray();
+			
+			System.Diagnostics.Debug.Assert(p.Errors.Count == errors.Count);
+			
 			RetrieveRegions (visitor.Cu, p.Lexer.SpecialTracker);
 			foreach (IClass c in visitor.Cu.Classes)
 				c.Region.FileName = fileName;
