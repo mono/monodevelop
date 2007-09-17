@@ -72,7 +72,6 @@
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.DesignerSupport" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Ide" />
-    <ProjectReference type="Assembly" localcopy="False" refto="../../build/bin/Mono.Addins.dll" />
     <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
@@ -80,8 +79,8 @@
     <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Deployment" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Autotools" />
+    <ProjectReference type="Project" localcopy="False" refto="Mono.Addins" />
   </References>
-  <Deployment.LinuxDeployData scriptName="monodevelop.gettext" generatePcFile="False" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />
@@ -98,5 +97,6 @@
       <Widget>MonoDevelop.Gettext.GettextFeatureWidget</Widget>
     </ExportedWidgets>
   </GtkDesignInfo>
+  <Deployment.LinuxDeployData scriptName="monodevelop.gettext" generatePcFile="False" />
   <MonoDevelop.Gettext.TranslationInfo />
 </Project>

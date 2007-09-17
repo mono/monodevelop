@@ -10,6 +10,7 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor.dll \
+	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
@@ -17,7 +18,6 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:$(top_builddir)/build/bin/NRefactory.dll \
-	-r:$(top_srcdir)/build/bin/Mono.Addins.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Drawing \

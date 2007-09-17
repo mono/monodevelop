@@ -5,9 +5,9 @@ CONFIG = MonoDevelop.Projects.dll.config
 
 REFS =  \
 	$(MONODOC_LIBS) \
+	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
+	-r:$(top_builddir)/build/bin/Mono.Cecil.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_srcdir)/build/bin/Mono.Addins.dll \
-	-r:$(top_srcdir)/build/bin/Mono.Cecil.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Drawing \

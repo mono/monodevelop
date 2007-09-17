@@ -11,16 +11,16 @@ REFS =  \
 	$(GTKHTML_SHARP_LIBS) \
 	$(MONODOC_LIBS) \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Documentation.dll \
+	-r:$(top_builddir)/build/bin/log4net.dll \
+	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
+	-r:$(top_builddir)/build/bin/Mono.Addins.Gui.dll \
+	-r:$(top_builddir)/build/bin/Mono.Addins.Setup.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Dock.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
-	-r:$(top_builddir)/build/bin/log4net.dll \
-	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
-	-r:$(top_builddir)/build/bin/Mono.Addins.Gui.dll \
-	-r:$(top_builddir)/build/bin/Mono.Addins.Setup.dll \
 	-r:ICSharpCode.SharpZipLib \
 	-r:Mono.GetOptions \
 	-r:Mono.Posix \

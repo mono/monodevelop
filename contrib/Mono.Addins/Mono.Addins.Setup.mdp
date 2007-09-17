@@ -55,7 +55,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-    <ProjectReference type="Project" localcopy="True" refto="Mono.Addins" />
+    <ProjectReference type="Project" localcopy="False" refto="Mono.Addins" />
   </References>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./src/Mono.Addins.Setup/Makefile.am" BuildTargetName="" CleanTargetName="" RelativeConfigureInPath="../../../../">
     <BuildFilesVar Sync="True" Name="FILES" />

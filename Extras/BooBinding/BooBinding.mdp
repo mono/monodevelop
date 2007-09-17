@@ -73,15 +73,15 @@
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <ProjectReference type="Assembly" localcopy="False" refto="../../build/bin/Mono.Addins.dll" />
     <ProjectReference type="Gac" localcopy="True" refto="Boo.Lang, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
     <ProjectReference type="Gac" localcopy="True" refto="Boo.Lang.Useful, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
     <ProjectReference type="Gac" localcopy="True" refto="Boo.Lang.CodeDom, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
     <ProjectReference type="Gac" localcopy="True" refto="Boo.Lang.Compiler, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
     <ProjectReference type="Gac" localcopy="True" refto="Boo.Lang.Parser, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
     <ProjectReference type="Gac" localcopy="True" refto="Boo.Lang.Interpreter, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
-    <ProjectReference type="Assembly" localcopy="False" refto="../../build/bin/Mono.Addins.Setup.dll" />
-    <ProjectReference type="Assembly" localcopy="False" refto="../../build/bin/Mono.Cecil.dll" />
+    <ProjectReference type="Project" localcopy="False" refto="Mono.Addins" />
+    <ProjectReference type="Project" localcopy="False" refto="Mono.Addins.Setup" />
+    <ProjectReference type="Project" localcopy="False" refto="Mono.Cecil" />
   </References>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../">
     <BuildFilesVar Sync="True" Name="FILES" />
