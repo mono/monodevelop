@@ -1,3 +1,9 @@
+2007-09-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Removed access to
+	  Component object.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: Remove unused method.
+
 2007-09-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.Dialogs/SelectRenamedClassDialog.cs,

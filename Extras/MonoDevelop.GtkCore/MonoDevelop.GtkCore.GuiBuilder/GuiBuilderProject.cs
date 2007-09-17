@@ -385,15 +385,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			dialog.Destroy ();
 		}
 		
-		public GuiBuilderWindow GetWindowForWidget (Stetic.Component w)
-		{
-			foreach (GuiBuilderWindow form in Windows) {
-				if (form.RootWidget.Name == w.Name)
-					return form;
-			}
-			return null;
-		}
-		
 		public GuiBuilderWindow GetWindowForClass (string className)
 		{
 			foreach (GuiBuilderWindow form in Windows) {

@@ -303,7 +303,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					// When a component is being renamed, we have to generate the 
 					// corresponding field using the old name, since it will be renamed
 					// later using refactory
-					string nname = args != null && args.Component.Name == binfo.Name ? args.OldName : binfo.Name;
+					string nname = args != null && args.NewName == binfo.Name ? args.OldName : binfo.Name;
 					type.Members.Add (
 						new CodeMemberField (
 							binfo.TypeName,
