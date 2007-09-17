@@ -1,3 +1,9 @@
+2007-09-15  Andrés G. Aragoneses <knocte@gmail.com>
+
+	* MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.ClientCertificatePasswordDialog.cs:
+	* MonoDevelop.VersionControl.Subversion/gtk-gui/gui.stetic:
+	Use a normal title for the window.
+
 2007-09-08  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs,

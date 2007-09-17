@@ -38,7 +38,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui {
             // Widget MonoDevelop.VersionControl.Subversion.Gui.ClientCertificatePasswordDialog
             this.Events = ((Gdk.EventMask)(256));
             this.Name = "MonoDevelop.VersionControl.Subversion.Gui.ClientCertificatePasswordDialog";
-            this.Title = Mono.Unix.Catalog.GetString("ClientCertificatePasswordDialog");
+            this.Title = Mono.Unix.Catalog.GetString("Password for client certificate");
             // Internal child MonoDevelop.VersionControl.Subversion.Gui.ClientCertificatePasswordDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Events = ((Gdk.EventMask)(256));

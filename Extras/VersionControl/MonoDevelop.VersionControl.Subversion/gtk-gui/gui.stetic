@@ -870,7 +870,7 @@
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Subversion.Gui.ClientCertificatePasswordDialog" design-size="414 217">
     <property name="MemberName" />
     <property name="Events">ButtonPressMask</property>
-    <property name="Title" translatable="yes">ClientCertificatePasswordDialog</property>
+    <property name="Title" translatable="yes">Password for client certificate</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
     <child internal-child="VBox">
