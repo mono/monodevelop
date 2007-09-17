@@ -48,7 +48,6 @@ namespace CBinding.Navigation
 {
 	public class ProjectNodeBuilderExtension : NodeBuilderExtension
 	{
-//		public static event ClassPadEventHandler FinishedBuildingTree;
 		public ClassPadEventHandler finishedBuildingTreeHandler;
 		
 		public override bool CanBuildNode (Type dataType)
@@ -63,7 +62,7 @@ namespace CBinding.Navigation
 		protected override void Initialize ()
 		{
 			finishedBuildingTreeHandler = (ClassPadEventHandler)DispatchService.GuiDispatch (new ClassPadEventHandler (OnFinishedBuildingTree));
-//			FinishedBuildingTree += finishedBuildingTreeHandler;
+
 			TagDatabaseManager.Instance.FileUpdated += finishedBuildingTreeHandler;
 		}
 		
@@ -81,7 +80,6 @@ namespace CBinding.Navigation
 		
 		public override void Dispose ()
 		{
-//			FinishedBuildingTree -= finishedBuildingTreeHandler;
 			TagDatabaseManager.Instance.FileUpdated -= finishedBuildingTreeHandler;
 		}
 		
@@ -99,8 +97,6 @@ namespace CBinding.Navigation
 				IdeApp.Services.MessageService.ShowError (ex);
 				return;
 			}
-			
-//			FinishedBuildingTree (new ClassPadEventArgs (p));
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
@@ -139,7 +135,8 @@ namespace CBinding.Navigation
 		private void OnFinishedBuildingTree (ClassPadEventArgs e)
 		{
 			ITreeBuilder builder = Context.GetTreeBuilder (e.Project);
-			builder.UpdateChildren ();
+			if (null != builder)
+				builder.UpdateChildren ();
 		}
 	}
 	

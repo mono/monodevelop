@@ -208,16 +208,18 @@ namespace CBinding.Parser
 			
 			try {
 				p = Runtime.ProcessService.StartProcess ("ctags", ctags_options, null, null);
-				p.WaitForExit ();
+				p.WaitForExit (10000);	//If no return detected in 10s, kill anyway
 			} catch (Exception ex) {
 				throw new IOException ("Could not create tags database (You must have exuberant ctags installed).", ex);
 			}
+
+			string ctags_output = p.StandardOutput.ReadToEnd ();
+			p.Close ();
 			
 			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
 			string tagEntry;
 			
-			string ctags_output = p.StandardOutput.ReadToEnd ();
-			p.Close ();
+
 			
 			using (StringReader reader = new StringReader (ctags_output)) {
 				while ((tagEntry = reader.ReadLine ()) != null) {
@@ -349,12 +351,17 @@ namespace CBinding.Parser
 			foreach (string field in fields) {
 				index = field.IndexOf (':');
 				
+				// TODO: Support friend modifier
 				if (index > 0) {
 					string key = field.Substring (0, index);
 					string val = field.Substring (index + 1);
 					switch (key) {
 					case "access":
-						access = (AccessModifier)System.Enum.Parse (typeof(AccessModifier), val, true);
+						try {
+							access = (AccessModifier)System.Enum.Parse (typeof(AccessModifier), val, true);
+						} catch (ArgumentException ae) {
+							//This modifier (e.g. "friend") not supported by parser
+						}
 						break;
 					case "class":
 						_class = val;

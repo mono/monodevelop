@@ -83,6 +83,8 @@ namespace CBinding.Parser
 		
 		private void ParseSignature (string signature)
 		{
+			if (null == signature) return;
+			
 			string sig = signature;
 			
 			if (signature.EndsWith ("const")) {
@@ -116,9 +118,9 @@ namespace CBinding.Parser
 			Function other = o as Function;
 			
 			if (other != null &&
-			    other.FullName.Equals (FullName) &&
-			    other.Project.Equals (Project) &&
-				other.Signature.Equals (signature))
+			    FullName == other.FullName &&
+			    Project.Equals(other.Project) &&
+				Signature == other.Signature)
 				return true;
 			
 			return false;

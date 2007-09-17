@@ -1,3 +1,9 @@
+2007-09-17  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com> 
+
+	* Parser/Function.cs, Parser/TagDatabaseManager.cs,
+	  Navigation/ProjectNodeBuilderExtension.cs: Make sure ctags process exits
+	  and fixed several null pointer exceptions.
+
 2007-09-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/generated.cs, gtk-gui/CBinding.EditPackagesDialog.cs,
