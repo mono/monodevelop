@@ -1,3 +1,9 @@
+2007-09-15  Andrés G. Aragoneses <knocte@gmail.com>
+
+	* MonoDevelop.Deployment.Linux/DesktopInfo.xml: fix typo.
+	* gtk-gui/MonoDevelop.Deployment.Linux.DesktopPanelWidget.cs:
+	* gtk-gui/gui.stetic: Don't translate "page#" texts.
+
 2007-08-31  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Deployment.Linux/BasicOptionPanel.cs,

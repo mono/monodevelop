@@ -158,7 +158,7 @@
           <widget class="Gtk.Label" id="label6">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="LabelProp" translatable="yes">page1</property>
+            <property name="LabelProp">page1</property>
           </widget>
           <packing>
             <property name="type">tab</property>

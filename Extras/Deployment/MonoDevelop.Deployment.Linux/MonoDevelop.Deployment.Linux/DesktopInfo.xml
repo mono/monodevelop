@@ -42,7 +42,7 @@
 	<Category name="Photography" _label="Camera tools, etc." related="Graphics;Office"/>
 	<Category name="Publishing" _label="Desktop Publishing applications and Color Management tools" related="Graphics;Office"/>
 	<Category name="Viewer" _label="Tool to view e.g. a graphic or pdf file" related="Graphics;Office"/>
-	<Category name="TextTools" _label="A text tool utiliy" related="Utility"/>
+	<Category name="TextTools" _label="A text tool utility" related="Utility"/>
 	<Category name="DesktopSettings" _label="Configuration tool for the GUI" related="Settings"/>
 	<Category name="HardwareSettings" _label="A tool to manage hardware components, like sound cards, video cards or printers" related="Settings"/>
 	<Category name="Printing" _label="A tool to manage printers" related="HardwareSettings;Settings"/>
