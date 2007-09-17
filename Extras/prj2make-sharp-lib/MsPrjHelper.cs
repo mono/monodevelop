@@ -746,7 +746,7 @@ namespace MonoDevelop.Prj2Make
 						break;
 					case MonoDevelop.Prj2Make.Schema.Csproj.FileBuildAction.EmbeddedResource:
 						flOut.BuildAction = BuildAction.EmbedAsResource;
-						flOut.ResourceId = Services.ProjectService.GetDefaultResourceId (flOut);
+						flOut.ResourceId = MSBuildProjectServiceExtension.GetDefaultResourceIdInternal (flOut);
 						break;
 					case MonoDevelop.Prj2Make.Schema.Csproj.FileBuildAction.None:
 						flOut.BuildAction = BuildAction.Nothing;

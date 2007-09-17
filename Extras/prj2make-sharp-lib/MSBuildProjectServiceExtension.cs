@@ -146,6 +146,11 @@ namespace MonoDevelop.Prj2Make
 			if (MSBuildFileFormat.GetMSBuildData (pf.Project) == null)
 				return base.GetDefaultResourceId (pf);
 
+			return GetDefaultResourceIdInternal (pf);
+		}
+
+		internal static string GetDefaultResourceIdInternal (ProjectFile pf)
+		{
 			IResourceIdBuilder rb;
 			DotNetProject project = (DotNetProject) pf.Project;
 
