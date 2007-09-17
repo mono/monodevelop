@@ -50,6 +50,12 @@ namespace MonoDevelop.Ide.Gui.Content {
 			"MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties",
 			new Properties()));
 		
+		public static Properties Properties {
+			get {
+				return properties;
+			}
+		}
+		
 		public static int TabIndent {
 			get {
 				return properties.Get ("TabIndent", 4);
@@ -74,6 +80,15 @@ namespace MonoDevelop.Ide.Gui.Content {
 			}
 			set {
 				properties.Set ("EnableCodeCompletion", value);
+			}
+		}
+		
+		public static bool EnableAutoCorrection {
+			get {
+				return properties.Get ("EnableAutoCorrection", true);
+			}
+			set {
+				properties.Set ("EnableAutoCorrection", value);
 			}
 		}
 		

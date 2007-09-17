@@ -1,3 +1,9 @@
+2007-09-15  Jérémie Laval <jeremie.laval@gmail.com>
+ 
+	* MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs: Added Properties property
+	  that return the private Properties object to allow other class to suscribe to 
+	  the PropertyChanged event.
+ 
 2007-09-15  Andrés G. Aragoneses <knocte@gmail.com>
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs: align
