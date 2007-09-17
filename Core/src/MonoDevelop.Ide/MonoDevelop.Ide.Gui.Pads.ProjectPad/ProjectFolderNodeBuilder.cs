@@ -185,7 +185,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 			}
 			else {
-				bool yes = Services.MessageService.AskQuestion (GettextCatalog.GetString ("Do you want to remove folder {0}?", folder.Name));
+				bool yes = Services.MessageService.AskQuestion (GettextCatalog.GetString ("Do you really want to remove folder {0}?", folder.Name));
 				if (!yes) return;
 				
 				ProjectFile[] inParentFolder = project.ProjectFiles.GetFilesInPath (Path.GetDirectoryName (folder.Path));

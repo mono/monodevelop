@@ -597,7 +597,7 @@
 				_label = "Collapse All Nodes" />
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.OpenWithList"
 				type = "array"
-				_label = "OpenWithList" />
+				_label = "List of programs to open with" />
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ShowNext"
 				defaultHandler = "MonoDevelop.Ide.Commands.ShowNextHandler"
 				_label = "Browse Next" 

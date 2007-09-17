@@ -392,7 +392,7 @@
                 <child>
                   <widget class="Gtk.Label" id="QuestionLabel">
                     <property name="MemberName" />
-                    <property name="LabelProp" translatable="yes">Are you sure you want to delete from project ?</property>
+                    <property name="LabelProp" translatable="yes">Are you sure you want to delete the file from project?</property>
                     <property name="Wrap">True</property>
                   </widget>
                   <packing>
@@ -651,7 +651,7 @@
                             <property name="MemberName" />
                             <property name="Xalign">0</property>
                             <property name="Yalign">0</property>
-                            <property name="LabelProp" translatable="yes">    </property>
+                            <property name="LabelProp">    </property>
                           </widget>
                           <packing>
                             <property name="Position">0</property>
@@ -908,7 +908,7 @@
             <child>
               <widget class="Gtk.Label" id="label1">
                 <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">page1</property>
+                <property name="LabelProp">page1</property>
               </widget>
               <packing>
                 <property name="type">tab</property>
@@ -952,7 +952,7 @@
             <child>
               <widget class="Gtk.Label" id="label2">
                 <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">page2</property>
+                <property name="LabelProp">page2</property>
               </widget>
               <packing>
                 <property name="type">tab</property>
@@ -1063,7 +1063,7 @@
             <property name="MemberName" />
             <property name="CanFocus">True</property>
             <property name="Type">TextOnly</property>
-            <property name="Label" translatable="yes">button1547</property>
+            <property name="Label">button1547</property>
             <property name="UseUnderline">True</property>
             <property name="ResponseId">0</property>
           </widget>
@@ -1077,7 +1077,7 @@
             <property name="MemberName" />
             <property name="CanFocus">True</property>
             <property name="Type">TextOnly</property>
-            <property name="Label" translatable="yes">button1548</property>
+            <property name="Label">button1548</property>
             <property name="UseUnderline">True</property>
             <property name="ResponseId">0</property>
           </widget>
@@ -1350,7 +1350,7 @@
                   <widget class="Gtk.Label" id="labelSpacer">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
-                    <property name="LabelProp" translatable="yes">    </property>
+                    <property name="LabelProp">    </property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -2088,7 +2088,7 @@
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
                     <property name="Yalign">0</property>
-                    <property name="LabelProp" translatable="yes">    </property>
+                    <property name="LabelProp">    </property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -2208,7 +2208,7 @@
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
                     <property name="Yalign">0</property>
-                    <property name="LabelProp" translatable="yes">    </property>
+                    <property name="LabelProp">    </property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -2331,7 +2331,7 @@
             <child>
               <widget class="Gtk.Label" id="label115">
                 <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">      </property>
+                <property name="LabelProp">      </property>
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -2434,7 +2434,7 @@
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
                     <property name="Yalign">0</property>
-                    <property name="LabelProp" translatable="yes">    </property>
+                    <property name="LabelProp">    </property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -2536,7 +2536,7 @@
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
                     <property name="Yalign">0</property>
-                    <property name="LabelProp" translatable="yes">    </property>
+                    <property name="LabelProp">    </property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -2793,7 +2793,7 @@
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
                 <property name="Yalign">0</property>
-                <property name="LabelProp" translatable="yes">    </property>
+                <property name="LabelProp">    </property>
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -2940,7 +2940,7 @@
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
                     <property name="Yalign">0</property>
-                    <property name="LabelProp" translatable="yes">    </property>
+                    <property name="LabelProp">    </property>
                   </widget>
                   <packing>
                     <property name="Position">2</property>
@@ -5296,7 +5296,7 @@ Months</property>
                             <property name="MemberName" />
                             <property name="Xalign">0</property>
                             <property name="Yalign">0</property>
-                            <property name="LabelProp" translatable="yes">   </property>
+                            <property name="LabelProp">   </property>
                           </widget>
                           <packing>
                             <property name="Position">0</property>

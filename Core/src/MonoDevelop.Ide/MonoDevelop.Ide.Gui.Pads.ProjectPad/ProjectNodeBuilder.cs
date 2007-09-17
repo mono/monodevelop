@@ -332,7 +332,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			Project prj = CurrentNode.DataItem as Project;
 			
 			bool yes = Services.MessageService.AskQuestion (GettextCatalog.GetString (
-				"Do you really want to remove project {0} from solution {1}", prj.Name, cmb.Name));
+				"Do you really want to remove project {0} from solution {1}?", prj.Name, cmb.Name));
 
 			if (yes) {
 				cmb.RemoveEntry (prj);

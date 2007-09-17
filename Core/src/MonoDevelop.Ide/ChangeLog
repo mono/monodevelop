@@ -1,3 +1,13 @@
+2007-09-15  Andrés G. Aragoneses <knocte@gmail.com>
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs: align
+	message style with rest of similar messages.
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs: fix typo.
+	* MonoDevelop.Ide.addin.xml: corrected bogus label, for l10n.
+	* gtk-gui/gui.stetic: Fix typo in message, don't translate "page#" or "button#"
+	texts, removed bogus labels from l10n.
+	* MonoDevelop.Ide.mdp: Replace Gtk#2.10 with 2.8 references.
+
 2007-09-15  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Ide.Gui/Ide.cs (IdeApp.Initialized): Rename this property
