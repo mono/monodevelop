@@ -91,7 +91,7 @@
     <Entry filename="./JavaBinding/JavaBinding.mdp" />
     <Entry filename="./MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.mdp" />
     <Entry filename="./NemerleBinding/NemerleBinding.mdp" />
-    <Entry filename="./MonoDevelop.GtkCore/MonoDevelop.GtkCore.mdp" />
+    <Entry filename="./MonoDevelop.GtkCore/MonoDevelop.GtkCore.mds" />
     <Entry filename="./WelcomePage/WelcomePage.mdp" />
     <Entry filename="./prj2make-sharp-lib/prj2make-sharp-lib.mdp" />
     <Entry filename="./VBNetBinding/VBNetBinding.mds" />
