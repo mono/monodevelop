@@ -1,3 +1,8 @@
+2007-09-15  Andrés G. Aragoneses <knocte@gmail.com>
+
+	* gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:
+	* gtk-gui/gui.stetic: Don't translate "page#" texts.
+
 2007-09-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment.addin.xml: Cosmetic fix in command label.

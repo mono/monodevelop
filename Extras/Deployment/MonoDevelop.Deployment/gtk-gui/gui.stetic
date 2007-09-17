@@ -338,7 +338,7 @@
                 <child>
                   <widget class="Gtk.Label" id="label2">
                     <property name="MemberName" />
-                    <property name="LabelProp" translatable="yes">page5</property>
+                    <property name="LabelProp">page5</property>
                   </widget>
                   <packing>
                     <property name="type">tab</property>
@@ -405,7 +405,7 @@
                 <child>
                   <widget class="Gtk.Label" id="label3">
                     <property name="MemberName" />
-                    <property name="LabelProp" translatable="yes">page3</property>
+                    <property name="LabelProp">page3</property>
                   </widget>
                   <packing>
                     <property name="type">tab</property>
@@ -501,7 +501,7 @@
                 <child>
                   <widget class="Gtk.Label" id="label6">
                     <property name="MemberName" />
-                    <property name="LabelProp" translatable="yes">page2</property>
+                    <property name="LabelProp">page2</property>
                   </widget>
                   <packing>
                     <property name="type">tab</property>
@@ -850,7 +850,7 @@
                 <child>
                   <widget class="Gtk.Label" id="label8">
                     <property name="MemberName" />
-                    <property name="LabelProp" translatable="yes">page4</property>
+                    <property name="LabelProp">page4</property>
                   </widget>
                   <packing>
                     <property name="type">tab</property>

@@ -215,7 +215,7 @@ namespace MonoDevelop.Deployment.Gui {
             // Notebook tab
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
-            this.label2.LabelProp = Mono.Unix.Catalog.GetString("page5");
+            this.label2.LabelProp = "page5";
             this.notebook.SetTabLabel(this.vbox3, this.label2);
             // Container child notebook.Gtk.Notebook+NotebookChild
             this.pageSelectProject = new Gtk.VBox();
@@ -264,7 +264,7 @@ namespace MonoDevelop.Deployment.Gui {
             // Notebook tab
             this.label3 = new Gtk.Label();
             this.label3.Name = "label3";
-            this.label3.LabelProp = Mono.Unix.Catalog.GetString("page3");
+            this.label3.LabelProp = "page3";
             this.notebook.SetTabLabel(this.pageSelectProject, this.label3);
             // Container child notebook.Gtk.Notebook+NotebookChild
             this.vbox4 = new Gtk.VBox();
@@ -331,7 +331,7 @@ namespace MonoDevelop.Deployment.Gui {
             // Notebook tab
             this.label6 = new Gtk.Label();
             this.label6.Name = "label6";
-            this.label6.LabelProp = Mono.Unix.Catalog.GetString("page2");
+            this.label6.LabelProp = "page2";
             this.notebook.SetTabLabel(this.vbox4, this.label6);
             // Container child notebook.Gtk.Notebook+NotebookChild
             this.pageSave = new Gtk.VBox();
@@ -569,7 +569,7 @@ namespace MonoDevelop.Deployment.Gui {
             // Notebook tab
             this.label8 = new Gtk.Label();
             this.label8.Name = "label8";
-            this.label8.LabelProp = Mono.Unix.Catalog.GetString("page4");
+            this.label8.LabelProp = "page4";
             this.notebook.SetTabLabel(this.pageSave, this.label8);
             this.hbox1.Add(this.notebook);
             Gtk.Box.BoxChild w46 = ((Gtk.Box.BoxChild)(this.hbox1[this.notebook]));
