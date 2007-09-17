@@ -779,8 +779,10 @@ namespace MonoDevelop.SourceEditor.Gui
 			if (idx >= 0) 
 				complete_word = complete_word.Remove (idx, 1);
 			buf.InsertAtCursor (complete_word);
-			if (idx >= 0)
-				buf.PlaceCursor (buf.GetIterAtOffset (buf.CursorPosition - complete_word.Length + idx));
+			if (idx >= 0) {
+				TextIter it = buf.GetIterAtMark (buf.InsertMark);
+				buf.PlaceCursor (buf.GetIterAtOffset (it.Offset - complete_word.Length + idx));
+			}
 			ScrollMarkOnscreen (buf.InsertMark);
 		}
 
