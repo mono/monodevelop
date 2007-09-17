@@ -1197,6 +1197,8 @@ namespace MonoDevelop.SourceEditor.Gui
 			TextIter resultIter = se.Buffer.GetIterAtOffset (offset);
 			TextIter start_line = resultIter, end_line = resultIter;
 			start_line.LineOffset = 0;
+			if (end_line.Char.Length == 0)
+				return string.Empty;
 			while (end_line.Char[0] != '\n' && end_line.ForwardChar ())
 				;
 			return se.Buffer.GetText (start_line.Offset, end_line.Offset - start_line.Offset);

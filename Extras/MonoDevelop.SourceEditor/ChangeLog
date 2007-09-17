@@ -1,5 +1,10 @@
 2007-09-17  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Added missing
+	  length check. Fixes bug #325675.
+
+2007-09-17  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: CursorPosition property
 	  not available in gtk# 2.8.
 
