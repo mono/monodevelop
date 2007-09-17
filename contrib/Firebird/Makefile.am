@@ -15,4 +15,4 @@ assemblydir = $(MD_ASSEMBLY_DIR)
 assembly_DATA = $(FIREBIRD)
 
 CLEANFILES = $(FIREBIRD)
-EXTRA_DIST = $(srcdir)/$(FIREBIRD_DLL) $(srcdir)/FirebirdSql.Data.Firebird.license.txt $(srcdir)/extract_makefile_variable.sh
+EXTRA_DIST = $(srcdir)/$(FIREBIRD_DLL) $(srcdir)/FirebirdSql.Data.Firebird.license.txt
