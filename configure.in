@@ -322,21 +322,21 @@ fi
 #if MOZILLA_HOME is still empty, try to detect without pkg_config
 #(NOTE: any changes to this block should be kept in sync with the one in monodevelop.in)
 if !(test -n "$MOZILLA_HOME"); then
-	mozilla_script=`which mozilla 2> /dev/null`
-	firefox_script=`which firefox 2> /dev/null`
+	mozilla_script=$(which mozilla 2> /dev/null)
+	firefox_script=$(which firefox 2> /dev/null)
 	if test -n "$MOZILLA_FIVE_HOME"; then
 		MOZILLA_HOME=$MOZILLA_FIVE_HOME
 	elif grep GRE_PATH /etc/gre.d/*.conf > /dev/null 2>&1 ; then
 		MOZILLA_HOME=$(grep -h GRE_PATH= /etc/gre.d/*.conf | cut -d '"' -f 2 -d = | head -n 1) #"
 	elif test -n "$mozilla_script"  && grep "MOZILLA_FIVE_HOME=" $mozilla_script > /dev/null ; then
-		MOZILLA_HOME=`grep "MOZILLA_FIVE_HOME=" $mozilla_script | cut -d '"' -f 2 | cut -d '=' -f 2`
+		MOZILLA_HOME=$(grep "MOZILLA_FIVE_HOME=" $mozilla_script | cut -d '"' -f 2 | cut -d '=' -f 2)
 	elif test -n "$firefox_script" ; then
 		if grep "MOZILLA_FIVE_HOME=" $firefox_script > /dev/null ; then
-			MOZILLA_HOME=`grep "MOZILLA_FIVE_HOME=" $firefox_script | cut -d '"' -f 2 | cut -d '=' -f 2`
+			MOZILLA_HOME=$(grep "MOZILLA_FIVE_HOME=" $firefox_script | cut -d '"' -f 2 | cut -d '=' -f 2)
 		elif grep "MOZILLA_LIBDIR=" $firefox_script > /dev/null ; then
-			MOZILLA_HOME=`grep "MOZILLA_LIBDIR=" $firefox_script | cut -d '"' -f 2 | cut -d '=' -f 2`
+			MOZILLA_HOME=$(grep "MOZILLA_LIBDIR=" $firefox_script | cut -d '"' -f 2 | cut -d '=' -f 2)
 		elif grep "moz_libdir=" $firefox_script > /dev/null ; then
-			MOZILLA_HOME=`grep "moz_libdir=" $firefox_script | cut -d '"' -f 2 | cut -d '=' -f 2`
+			MOZILLA_HOME=$(grep "moz_libdir=" $firefox_script | cut -d '"' -f 2 | cut -d '=' -f 2)
 		fi
 	fi
 	if test -z "$MOZILLA_HOME"; then
