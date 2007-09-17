@@ -40,7 +40,7 @@ namespace CBinding {
         private Gtk.CheckButton pauseCheckbox;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget CBinding.OutputOptionsPanel
             Stetic.BinContainer.Attach(this);
             this.Name = "CBinding.OutputOptionsPanel";

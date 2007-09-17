@@ -20,7 +20,7 @@ namespace CBinding {
         private Gtk.Button buttonOk;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget CBinding.AddPathDialog
             this.Name = "CBinding.AddPathDialog";
             this.Title = Mono.Unix.Catalog.GetString("Add Path");

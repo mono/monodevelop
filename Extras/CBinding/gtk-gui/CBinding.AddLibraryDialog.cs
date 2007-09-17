@@ -20,7 +20,7 @@ namespace CBinding {
         private Gtk.Button buttonOk;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget CBinding.AddLibraryDialog
             this.Name = "CBinding.AddLibraryDialog";
             this.Title = Mono.Unix.Catalog.GetString("Add Library");

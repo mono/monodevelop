@@ -1,3 +1,12 @@
+2007-09-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/generated.cs, gtk-gui/CBinding.EditPackagesDialog.cs,
+	  gtk-gui/CBinding.AddPathDialog.cs,
+	  gtk-gui/CBinding.CodeGenerationPanel.cs,
+	  gtk-gui/CBinding.CompilerPanel.cs,
+	  gtk-gui/CBinding.OutputOptionsPanel.cs,
+	  gtk-gui/CBinding.AddLibraryDialog.cs: Updated.
+
 2007-09-14  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* CBinding.mdp: Set path to configure.in in Makefile integration.

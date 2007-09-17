@@ -126,7 +126,7 @@ namespace CBinding {
         private Gtk.Label label3;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget CBinding.CodeGenerationPanel
             Stetic.BinContainer.Attach(this);
             this.Name = "CBinding.CodeGenerationPanel";
@@ -382,6 +382,7 @@ namespace CBinding {
             this.label1.Name = "label1";
             this.label1.LabelProp = Mono.Unix.Catalog.GetString("Code Generation");
             this.notebook1.SetTabLabel(this.vbox6, this.label1);
+            this.label1.ShowAll();
             // Container child notebook1.Gtk.Notebook+NotebookChild
             this.table2 = new Gtk.Table(((uint)(2)), ((uint)(3)), false);
             this.table2.Name = "table2";
@@ -482,6 +483,7 @@ namespace CBinding {
             this.label2.Name = "label2";
             this.label2.LabelProp = Mono.Unix.Catalog.GetString("Libraries");
             this.notebook1.SetTabLabel(this.table2, this.label2);
+            this.label2.ShowAll();
             // Container child notebook1.Gtk.Notebook+NotebookChild
             this.vbox7 = new Gtk.VBox();
             this.vbox7.Name = "vbox7";
@@ -682,6 +684,7 @@ namespace CBinding {
             this.label3.Name = "label3";
             this.label3.LabelProp = Mono.Unix.Catalog.GetString("Paths");
             this.notebook1.SetTabLabel(this.vbox7, this.label3);
+            this.label3.ShowAll();
             this.Add(this.notebook1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

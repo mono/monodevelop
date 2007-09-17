@@ -46,7 +46,7 @@ namespace CBinding {
         private Gtk.Button buttonOk;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget CBinding.EditPackagesDialog
             this.Name = "CBinding.EditPackagesDialog";
             this.Title = Mono.Unix.Catalog.GetString("Edit packages");
@@ -87,6 +87,7 @@ namespace CBinding {
             this.label1.Name = "label1";
             this.label1.LabelProp = Mono.Unix.Catalog.GetString("System Packages");
             this.notebook1.SetTabLabel(this.scrolledwindow1, this.label1);
+            this.label1.ShowAll();
             // Container child notebook1.Gtk.Notebook+NotebookChild
             this.scrolledwindow3 = new Gtk.ScrolledWindow();
             this.scrolledwindow3.CanFocus = true;
@@ -109,6 +110,7 @@ namespace CBinding {
             this.label2.Name = "label2";
             this.label2.LabelProp = Mono.Unix.Catalog.GetString("Project Packages");
             this.notebook1.SetTabLabel(this.scrolledwindow3, this.label2);
+            this.label2.ShowAll();
             this.vpaned1.Add(this.notebook1);
             Gtk.Paned.PanedChild w6 = ((Gtk.Paned.PanedChild)(this.vpaned1[this.notebook1]));
             w6.Resize = false;

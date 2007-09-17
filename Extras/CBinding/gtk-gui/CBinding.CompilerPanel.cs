@@ -20,7 +20,7 @@ namespace CBinding {
         private Gtk.CheckButton useCcacheCheckBox;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget CBinding.CompilerPanel
             Stetic.BinContainer.Attach(this);
             this.Name = "CBinding.CompilerPanel";
