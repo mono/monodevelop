@@ -1,5 +1,10 @@
 2007-09-17  Ankit Jain  <jankit@novell.com>
 
+	* MSBuildFileFormat.cs (WriteFileInternal): Emit RootNamespace for
+	global config element.
+
+2007-09-17  Ankit Jain  <jankit@novell.com>
+
 	* MSBuildFileFormat.cs (WriteFileInternal): Emit RootNamespace for C#
 	also. Derived from patch by Eric Butler <eric@extremeboredom.net>
 

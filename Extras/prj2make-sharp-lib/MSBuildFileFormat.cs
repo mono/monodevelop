@@ -210,6 +210,7 @@ namespace MonoDevelop.Prj2Make
 
 			EnsureChildValue (globalConfigElement, "ProjectGuid", ns, 
 				String.Concat ("{", data.Guid, "}"));
+			EnsureChildValue (globalConfigElement, "RootNamespace", ns, project.DefaultNamespace);
 
 			//Default Config and platform
 			//Note: Ignoring this, not relevant for MD, but might be useful for prj2make
