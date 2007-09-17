@@ -331,7 +331,9 @@ if !(test -n "$MOZILLA_HOME"); then
 	elif test -n "$mozilla_script"  && grep "MOZILLA_FIVE_HOME=" $mozilla_script > /dev/null ; then
 		MOZILLA_HOME=$(grep "MOZILLA_FIVE_HOME=" $mozilla_script | cut -d '"' -f 2 | cut -d '=' -f 2)
 	elif test -n "$firefox_script" ; then
-		if grep "MOZILLA_FIVE_HOME=" $firefox_script > /dev/null ; then
+		if grep "MOZ_DIST_LIB=" $firefox_script > /dev/null; then
+			MOZILLA_HOME=$(grep "MOZ_DIST_LIB=" $firefox_script | cut -d '"' -f 2 | cut -d '=' -f 2)
+		elif grep "MOZILLA_FIVE_HOME=" $firefox_script > /dev/null ; then
 			MOZILLA_HOME=$(grep "MOZILLA_FIVE_HOME=" $firefox_script | cut -d '"' -f 2 | cut -d '=' -f 2)
 		elif grep "MOZILLA_LIBDIR=" $firefox_script > /dev/null ; then
 			MOZILLA_HOME=$(grep "MOZILLA_LIBDIR=" $firefox_script | cut -d '"' -f 2 | cut -d '=' -f 2)
