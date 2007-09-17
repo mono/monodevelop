@@ -1,6 +1,12 @@
 2007-09-17  Lluis Sanchez Gual <lluis@novell.com> 
 
-	
+	* ChangeLog: CursorPosition property not available in gtk# 2.8. Forgot
+	  changelog entry.
+
+2007-09-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: CursorPosition property
+	  not available in gtk# 2.8.
 
 2007-09-17  Mike Krüger <mkrueger@novell.com> 
 
