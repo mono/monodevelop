@@ -1,3 +1,9 @@
+2007-09-17  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.GtkCore.mdp, lib/libsteticui.mdp, lib/libstetic.mdp,
+	  lib/Makefile.am, MonoDevelop.GtkCore.mds, Makefile.am: Use projects for
+	  imported stetic libraries.
+
 2007-09-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Removed access to

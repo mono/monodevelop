@@ -2,6 +2,9 @@ BUILD_DIR=$(top_builddir)/build/AddIns/MonoDevelop.GtkCore
 
 all: $(libstetic) $(libsteticui)
 
+libstetic: $(libstetic)
+libsteticui: $(libsteticui)
+
 ### Common settings ###
 MCS = gmcs
 EXTRACT_VARS = $(top_srcdir)/contrib/extract_makefile_variable.sh

@@ -10,6 +10,8 @@ REFS =  \
 	$(GTK_SHARP_LIBS) \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.GtkCore/libstetic.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.GtkCore/libsteticui.dll \
 	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
 	-r:$(top_builddir)/build/bin/Mono.Cecil.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
@@ -18,8 +20,6 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
-	-r:$(top_srcdir)/build/AddIns/MonoDevelop.GtkCore/libstetic.dll \
-	-r:$(top_srcdir)/build/AddIns/MonoDevelop.GtkCore/libsteticui.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml
