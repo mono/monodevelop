@@ -1,5 +1,13 @@
 2007-09-17  Ankit Jain  <jankit@novell.com>
 
+	* MSBuildProjectServiceExtension.cs (GetDefaultResourceId): Split into
+	this and ...
+	(GetDefaultResourceIdInternal): this. static method.
+	* MsPrjHelper.cs (SlnMaker.GetContents): Set resource id using vs.net
+	rules.
+
+2007-09-17  Ankit Jain  <jankit@novell.com>
+
 	* MSBuildFileFormat.cs (WriteFileInternal): Emit RootNamespace for
 	global config element.
 
