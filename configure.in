@@ -328,8 +328,12 @@ if !(test -n "$MOZILLA_HOME"); then
 		MOZILLA_HOME=$MOZILLA_FIVE_HOME
 	elif grep GRE_PATH /etc/gre.d/*.conf > /dev/null 2>&1 ; then
 		MOZILLA_HOME=$(grep -h GRE_PATH= /etc/gre.d/*.conf | cut -d '"' -f 2 -d = | head -n 1) #"
-	elif test -n "$mozilla_script"  && grep "MOZILLA_FIVE_HOME=" $mozilla_script > /dev/null ; then
-		MOZILLA_HOME=$(grep "MOZILLA_FIVE_HOME=" $mozilla_script | cut -d '"' -f 2 | cut -d '=' -f 2)
+	elif test -n "$mozilla_script" ; then
+		if grep "MOZ_DIST_LIB=" $mozilla_script > /dev/null; then
+			MOZILLA_HOME=$(grep "MOZ_DIST_LIB=" $mozilla_script | cut -d '"' -f 2 | cut -d '=' -f 2)
+		elif grep "MOZILLA_FIVE_HOME=" $mozilla_script > /dev/null ; then
+			MOZILLA_HOME=$(grep "MOZILLA_FIVE_HOME=" $mozilla_script | cut -d '"' -f 2 | cut -d '=' -f 2)
+		fi
 	elif test -n "$firefox_script" ; then
 		if grep "MOZ_DIST_LIB=" $firefox_script > /dev/null; then
 			MOZILLA_HOME=$(grep "MOZ_DIST_LIB=" $firefox_script | cut -d '"' -f 2 | cut -d '=' -f 2)
