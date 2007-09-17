@@ -272,6 +272,7 @@ namespace MonoDevelop.Prj2Make
 					CSharpCompilerParameters csparams =
 						(CSharpCompilerParameters) config.CompilationParameters;
 
+					EnsureChildValue (configElement, "RootNamespace", ns, project.DefaultNamespace);
 					EnsureChildValue (configElement, "AllowUnsafeBlocks", ns, csparams.UnsafeCode);
 					EnsureChildValue (configElement, "Optimize", ns, csparams.Optimize);
 					EnsureChildValue (configElement, "CheckForOverflowUnderflow", ns, csparams.GenerateOverflowChecks);

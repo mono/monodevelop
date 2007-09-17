@@ -1,3 +1,10 @@
+2007-09-16  Eric Butler <eric@extremeboredom.net>
+
+	* Base.glade,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs:
+	  Add Default Namespace option
+	  Fix some formatting issues in GeneralProjectOptions.cs
+
 2007-09-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.mdp: Fix warning level.

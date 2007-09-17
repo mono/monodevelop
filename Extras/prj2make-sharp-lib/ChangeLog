@@ -1,3 +1,8 @@
+2007-09-17  Ankit Jain  <jankit@novell.com>
+
+	* MSBuildFileFormat.cs (WriteFileInternal): Emit RootNamespace for C#
+	also. Derived from patch by Eric Butler <eric@extremeboredom.net>
+
 2007-09-15  Ankit Jain  <jankit@novell.com>
 
 	* MSBuildProject.cs: Remove.

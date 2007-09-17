@@ -1,3 +1,11 @@
+2007-09-16  Eric Butler <eric@extremeboredom.net>
+
+	* MonoDevelop.Projects/Project.cs (DefaultNamespace): Call
+	NotifyModified() on set.
+
+	* MonoDevelop.Projects/ProjectFile.cs (ResourceId): Call
+	NotifyFilePropertyChangedInProject() on set.
+
 2007-09-15  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Projects/Project.cs (GetDefaultResourceId): Remove.

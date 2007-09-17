@@ -174,7 +174,11 @@ namespace MonoDevelop.Projects
 
 				return resourceId;
 			}
-			set { resourceId = value; }
+			set {
+				resourceId = value;
+				if (project != null)
+					project.NotifyFilePropertyChangedInProject (this);
+			}
 		}
 
 		public bool IsExternalToProject {

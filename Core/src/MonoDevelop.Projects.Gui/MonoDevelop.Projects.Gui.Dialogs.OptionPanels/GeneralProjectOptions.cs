@@ -34,14 +34,13 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			[Glade.Widget] Label nameLabel;
 			[Glade.Widget] Label descriptionLabel;
 			[Glade.Widget] Entry projectNameEntry;
+			[Glade.Widget] Entry projectDefaultNamespaceEntry;
 			[Glade.Widget] TextView projectDescriptionTextView;
 			[Glade.Widget] CheckButton newFilesOnLoadCheckButton;
  			[Glade.Widget] CheckButton autoInsertNewFilesCheckButton;
  			[Glade.Widget] CheckButton enableViewStateCheckButton;
 
 			Project project;
-
-
 
 			public GeneralProjectOptionsWidget (Properties CustomizationObject) : base ("Base.glade", "GeneralProjectOptionsPanel")
 			{
@@ -52,6 +51,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				descriptionLabel.UseUnderline = true;
 
 				projectNameEntry.Text = project.Name;
+				projectDefaultNamespaceEntry.Text = project.DefaultNamespace;
 				projectDescriptionTextView.Buffer.Text = project.Description;
 				enableViewStateCheckButton.Active = project.EnableViewState;
 				
@@ -73,21 +73,20 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				
 				newFilesOnLoadCheckButton.Clicked += new EventHandler(AutoLoadCheckBoxCheckedChangeEvent);
 				AutoLoadCheckBoxCheckedChangeEvent(null, null);
-			
 			}			
-		void AutoLoadCheckBoxCheckedChangeEvent(object sender, EventArgs e)
-		{
-			autoInsertNewFilesCheckButton.Sensitive = newFilesOnLoadCheckButton.Active;
-			if (newFilesOnLoadCheckButton.Active == false) 
-			{
-				autoInsertNewFilesCheckButton.Active = false;
-			}			
-		}
 
-			
+			void AutoLoadCheckBoxCheckedChangeEvent(object sender, EventArgs e)
+			{
+				autoInsertNewFilesCheckButton.Sensitive = newFilesOnLoadCheckButton.Active;
+				if (newFilesOnLoadCheckButton.Active == false) {
+					autoInsertNewFilesCheckButton.Active = false;
+				}
+			}
+
 			public void  Store (Properties CustomizationObject)
 			{
 				project.Name                 = projectNameEntry.Text;
+				project.DefaultNamespace     = projectDefaultNamespaceEntry.Text;
 				project.Description          = projectDescriptionTextView.Buffer.Text;
 				project.EnableViewState      = enableViewStateCheckButton.Active;
 				
@@ -103,7 +102,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 
 		public override void LoadPanelContents()
 		{
-			Add (widget = new  GeneralProjectOptionsWidget ((Properties) CustomizationObject));
+			Add (widget = new GeneralProjectOptionsWidget ((Properties) CustomizationObject));
 		}
 		
 		public override bool StorePanelContents()

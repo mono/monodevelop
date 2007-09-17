@@ -80,7 +80,10 @@ namespace MonoDevelop.Projects
 
 		public string DefaultNamespace {
 			get { return defaultNamespace; }
-		        set { defaultNamespace = value; }
+		        set {
+				defaultNamespace = value;
+				NotifyModified ();
+			}
 		}
 		
 		[Browsable(false)]
