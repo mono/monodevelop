@@ -30,5 +30,15 @@ namespace MonoDevelop.Projects.Parser
 	
 	public class ErrorInfo
 	{
+		public int Line;
+		public int Col;
+		public string Message;
+		
+		public ErrorInfo(int line, int col, string message)
+		{
+			Line = line;
+			Col = col;
+			Message = message;
+		}
 	}
 }

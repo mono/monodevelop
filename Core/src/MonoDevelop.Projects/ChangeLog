@@ -1,3 +1,8 @@
+2007-09-15  Jérémie Laval <jeremie.laval@gmail.com>
+
+	* MonoDevelop.Projects.Parser/ICompilationUnitBase.cs:
+	  Implemented ErrorInfo stub.
+
 2007-09-16  Eric Butler <eric@extremeboredom.net>
 
 	* MonoDevelop.Projects/Project.cs (DefaultNamespace): Call
