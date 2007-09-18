@@ -1,3 +1,8 @@
+2007-09-18  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CSharpTextEditorExtension.cs: Fixed Bug 325438 - New doc completion
+	  slowing me down.
+
 2007-09-15  Jérémie Laval <jeremie.laval@gmail.com>
 
 	* Parser/Parser.cs: Added support for parsing error retrieval from NRefactory.
