@@ -90,7 +90,7 @@ namespace CSharpBinding
 		
 		void InsertMethod (IMethod method, string modifiers)
 		{
-			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters | ConversionFlags.UseFullyQualifiedNames | ConversionFlags.UseIntrinsicTypeNames;
+			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters | ConversionFlags.UseFullyQualifiedNames | ConversionFlags.UseIntrinsicTypeNames | ConversionFlags.QualifiedNamesOnlyForReturnTypes;
 			StringBuilder textBuilder = new StringBuilder ();
 			Console.WriteLine ("ppres: " + resolver);
 			
@@ -104,6 +104,24 @@ namespace CSharpBinding
 				textBuilder.Append (' ', TextEditorProperties.TabIndent);
 			else
 				textBuilder.Append ('\t');
+			
+			// Include call to base
+
+			if (method.ReturnType != null && method.ReturnType.FullyQualifiedName != "System.Void")
+				textBuilder.Append ("return ");
+			
+			textBuilder.Append ("base.").Append (method.Name).Append (" (");
+			for (int n=0; n<method.Parameters.Count; n++) {
+				IParameter par = method.Parameters [n];
+				if (n > 0)
+					textBuilder.Append (", ");
+				if (par.IsOut)
+					textBuilder.Append ("out ");
+				else if (par.IsRef)
+					textBuilder.Append ("ref ");
+				textBuilder.Append (method.Parameters [n].Name);
+			}
+			textBuilder.Append (");");
 			
 			int cpos = insertOffset + textBuilder.Length;
 			
@@ -120,7 +138,7 @@ namespace CSharpBinding
 		
 		void InsertProperty (IProperty prop, string modifiers)
 		{
-			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters | ConversionFlags.UseFullyQualifiedNames | ConversionFlags.UseIntrinsicTypeNames;
+			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters | ConversionFlags.UseFullyQualifiedNames | ConversionFlags.UseIntrinsicTypeNames | ConversionFlags.QualifiedNamesOnlyForReturnTypes;
 			StringBuilder textBuilder = new StringBuilder ();
 			int cpos = -1;
 			
@@ -171,7 +189,7 @@ namespace CSharpBinding
 		
 		void InsertEvent (IEvent ev, string modifiers)
 		{
-			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters | ConversionFlags.UseFullyQualifiedNames | ConversionFlags.UseIntrinsicTypeNames;
+			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters | ConversionFlags.UseFullyQualifiedNames | ConversionFlags.UseIntrinsicTypeNames | ConversionFlags.QualifiedNamesOnlyForReturnTypes;
 			StringBuilder textBuilder = new StringBuilder ();
 			
 			textBuilder.Append (modifiers);
@@ -211,7 +229,7 @@ namespace CSharpBinding
 		
 		void InsertIndexer (IIndexer indexer, string modifiers)
 		{
-			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters | ConversionFlags.UseFullyQualifiedNames | ConversionFlags.UseIntrinsicTypeNames;
+			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters | ConversionFlags.UseFullyQualifiedNames | ConversionFlags.UseIntrinsicTypeNames | ConversionFlags.QualifiedNamesOnlyForReturnTypes;
 			StringBuilder textBuilder = new StringBuilder ();
 			
 			textBuilder.Append (modifiers);

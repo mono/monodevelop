@@ -1,3 +1,8 @@
+2007-09-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/OverrideCompletionData.cs: Generate call to base class when overriding
+	  method. Fixes bug #325524.
+
 2007-09-18  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/CSharpTextEditorExtension.cs: Fixed Bug 325438 - New doc completion
