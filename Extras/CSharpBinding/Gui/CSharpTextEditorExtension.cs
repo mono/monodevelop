@@ -755,7 +755,7 @@ namespace CSharpBinding
 		{
 			foreach (IReturnType rt in cls.BaseTypes)
 			{
-				if (rt.FullyQualifiedName == "System.Object" && cls.ClassType == ClassType.Interface)
+				if (cls.ClassType == ClassType.Interface)
 					continue;
 
 				IClass baseCls = pctx.GetClass (rt.FullyQualifiedName, rt.GenericArguments, true, true);

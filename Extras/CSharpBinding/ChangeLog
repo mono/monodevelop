@@ -1,5 +1,10 @@
 2007-09-18  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Gui/CSharpTextEditorExtension.cs: When completing 'override', show
+	  overridables for System.Object.
+
+2007-09-18  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Gui/OverrideCompletionData.cs: Generate call to base class when overriding
 	  method. Fixes bug #325524.
 
