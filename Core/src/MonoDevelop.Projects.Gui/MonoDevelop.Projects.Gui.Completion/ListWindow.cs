@@ -182,6 +182,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 				case Gdk.Key.Escape:
 					return KeyAction.CloseWindow | KeyAction.Ignore;
 					
+				case Gdk.Key.KP_Divide:
+				case Gdk.Key.slash:
 				case Gdk.Key.Home:
 				case Gdk.Key.End:
 					return KeyAction.CloseWindow | KeyAction.Process;
@@ -202,8 +204,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				word.Insert (curPos++, c);
 				UpdateWordSelection ();
 				return KeyAction.Process;
-			}
-			else if ((System.Char.IsPunctuation (c) || c == ' ') && !list.SelectionDisabled) {
+			} else if ((System.Char.IsPunctuation (c) || c == ' ') && !list.SelectionDisabled) {
 				return KeyAction.Complete | KeyAction.Process | KeyAction.CloseWindow;
 			}
 			

@@ -1,3 +1,9 @@
+2007-09-18  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs,
+	  MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Added some changes
+	  for bug 325438.
+
 2007-09-16  Eric Butler <eric@extremeboredom.net>
 
 	* Base.glade,
