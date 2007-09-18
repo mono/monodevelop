@@ -1,3 +1,18 @@
+2007-09-19  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.DesignerSupport.addin.xml,
+	  MonoDevelop.DesignerSupport/CodeBehindService.cs,
+	  MonoDevelop.DesignerSupport.CodeBehind/CodeBehindMissingClassBuilder.cs,
+	  MonoDevelop.DesignerSupport.CodeBehind/CodeBehindClassBuilder.cs,
+	  MonoDevelop.DesignerSupport.CodeBehind/CodeBehindProjectFileExtension.cs:
+	  Audit and restructure the CodeBehind grouping so that it updates
+	  correctly and handles partial classes.
+	* MonoDevelop.DesignerSupport.mdp, Makefile.am, gtk-gui/gui.stetic: Updated
+	  & fix GTK# version at 2.8.
+	* MonoDevelop.DesignerSupport.CodeBehind/CodeBehindDisplayBinding.cs:
+	  Disable fully, as it doesn't work properly. Needs some core work to make
+	  it workable.
+
 2007-09-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.DesignerSupport.PropertyGrid/IPropertyPadProvider.cs: Added

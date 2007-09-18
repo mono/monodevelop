@@ -2,9 +2,10 @@
 // CodeBehindService.cs: Links codebehind classes to their parent files.
 //
 // Authors:
-//   Michael Hutchinson <m.j.hutchinson@gmail.com>
+//   Michael Hutchinson <mhutchinson@novell.com>
 //
 // Copyright (C) 2006 Michael Hutchinson
+// Copyright (C) 2007 Novell, Inc.
 //
 //
 // This source code is licenced under The MIT License:
@@ -63,6 +64,7 @@ namespace MonoDevelop.DesignerSupport
 			IdeApp.ProjectOperations.FileAddedToProject += onFileEvent;
 			IdeApp.ProjectOperations.FileChangedInProject += onFileEvent;
 			IdeApp.ProjectOperations.FileRemovedFromProject += onFileEvent;
+			//IdeApp.ProjectOperations.FileRenamedInProject -=
 			
 			IdeApp.ProjectOperations.CombineClosed += onCombineClosed;
 			IdeApp.ProjectOperations.CombineOpened += onCombineOpened;
@@ -101,7 +103,6 @@ namespace MonoDevelop.DesignerSupport
 			
 			IdeApp.ProjectOperations.CombineClosed -= onCombineClosed;
 			IdeApp.ProjectOperations.CombineOpened -= onCombineOpened;
-			
 			IdeApp.ProjectOperations.ParserDatabase.ClassInformationChanged -= onClassInformationChanged;
 		}
 		
@@ -120,7 +121,9 @@ namespace MonoDevelop.DesignerSupport
 			List<KeyValuePair<ProjectFile, IClass>> updates = new List<KeyValuePair<ProjectFile, IClass>> ();
 			
 			//build a list of all relevant class changes
-			foreach (KeyValuePair<ProjectFile, IClass> kvp in codeBehindBindings) {				
+			foreach (KeyValuePair<ProjectFile, IClass> kvp in codeBehindBindings) {		
+				//codebehind must be in same project as file
+				if (e.Project != kvp.Key.Project) continue;
 				
 				foreach (IClass cls in e.ClassInformation.Removed) {
 					if (cls.FullyQualifiedName == kvp.Value.FullyQualifiedName) {
@@ -152,20 +155,17 @@ namespace MonoDevelop.DesignerSupport
 				IClass oldCB = codeBehindBindings[update.Key];
 				IClass newCB = update.Value;
 				
-				//skip on if no change in class
-				if ( !(oldCB is NotFoundClass ^ newCB is NotFoundClass)) continue;
+				if (oldCB == newCB && oldCB.Parts.Length == newCB.Parts.Length)
+					//skip on if no change in class
+					continue;
 				
 				codeBehindBindings[update.Key] = newCB;
 				
 				if (CodeBehindClassUpdated != null) {
-					if ( !(oldCB is NotFoundClass))
 						CodeBehindClassUpdated (oldCB);
-					
-					if ( !(newCB is NotFoundClass))
 						CodeBehindClassUpdated (newCB);
 				}
 			}
-			
 		}
 		
 		void onCombineOpened (object sender, CombineEventArgs e)
@@ -218,9 +218,8 @@ namespace MonoDevelop.DesignerSupport
 			}
 			
 			bool containsKey = this.codeBehindBindings.ContainsKey (file);
-			bool nullCB = (newCodeBehind == null);
 			
-			if (nullCB) {
+			if (newCodeBehind == null) {
 				if (containsKey) {
 					//was codebehind, but no longer
 					oldCodeBehind = this.codeBehindBindings[file];
@@ -252,11 +251,45 @@ namespace MonoDevelop.DesignerSupport
 		
 		#region public API for finding CodeBehind files
 		
-		public IClass GetCodeBehind (ProjectFile file)
+		public bool HasChildren (ProjectFile file)
 		{
-			if (codeBehindBindings.ContainsKey (file))
-				return codeBehindBindings[file];
-			return null;
+			IClass cls = GetChildClass (file);
+			if (cls == null) return false;
+			if (cls is NotFoundClass) return true;
+			IList<ProjectFile> children = GetProjectFileChildren (file, cls);
+			return children != null && children.Count > 0;
+		}
+		
+		public IClass GetChildClass (ProjectFile file)
+		{
+			IClass cls = null;
+			if (file != null)
+				codeBehindBindings.TryGetValue (file, out cls);
+			return cls;
+		}
+		
+		internal IList<ProjectFile> GetProjectFileChildren (ProjectFile parent, IClass child)
+		{
+			List<ProjectFile> files = new List<ProjectFile> ();
+			
+			//IClass.SourceProject is sometimes null (not sure why), so special-case it
+			Project proj = child.SourceProject as Project;
+			if (proj == null)
+				proj = parent.Project;
+			if (proj == null) {
+				Runtime.LoggingService.WarnFormat ("CodeBehind grouping: Could not find project for class {0}", child.FullyQualifiedName);
+				return files;
+			}
+			
+			foreach (IClass part in child.Parts) {
+				ProjectFile partFile = proj.ProjectFiles.GetFile (part.Region.FileName);
+				if (partFile == parent)
+					continue;
+				if (partFile == null)
+					Runtime.LoggingService.WarnFormat ("CodeBehind grouping: The file {0} for IClass {1} was not found in the project.",  part.Region.FileName, part.FullyQualifiedName);
+				files.Add (partFile);
+			}
+			return files;
 		}
 		
 		public bool IsCodeBehind (IClass cls)
@@ -265,7 +298,7 @@ namespace MonoDevelop.DesignerSupport
 		}
 		
 		//determines whether a file contains only codebehind classes
-		public bool ContainsOnlyCodeBehind (ProjectFile file)
+		public bool ContainsCodeBehind (ProjectFile file)
 		{
 			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (file.Project);
 			if (ctx == null)
@@ -275,27 +308,13 @@ namespace MonoDevelop.DesignerSupport
 			if ((classes == null) || (classes.Length == 0))
 				return false;
 			
-			bool allClassesAreCodeBehind = true;
 			foreach (IClass cls in classes)
-				if (codeBehindBindings.ContainsValue (cls) == false) {
-					allClassesAreCodeBehind = false;
-					break;
-				}
+				if (cls.SourceProject == file.Project)
+					foreach (IClass boundCls in codeBehindBindings.Values)
+						if (cls.FullyQualifiedName == boundCls.FullyQualifiedName)
+							return true;
 			
-			return allClassesAreCodeBehind;
-		}
-		
-		public IList<IClass> GetAllCodeBehindClasses (Project project)
-		{
-			List<IClass> matches = new List<IClass> ();
-			 
-			foreach (ProjectFile pf in project.ProjectFiles){
-				IClass match = codeBehindBindings[pf];
-				if (match == null)
-					matches.Add (match);
-			}
-			
-			return matches;
+			return false;
 		}
 		
 		//fired when a CodeBehind class is updated 
@@ -309,9 +328,11 @@ namespace MonoDevelop.DesignerSupport
 		#endregion
 		
 		//used for references to classes not found in the parse database
-		private class NotFoundClass : DefaultClass
+		internal class NotFoundClass : DefaultClass
 		{
-		}
-		
+			public override IClass[] Parts {
+				get { return new IClass[] { }; }
+			}
+		}		
 	}
 }

@@ -29,7 +29,10 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+//FIXME: disabled, this whole thing is fundamentally broken where it hooks into the core
+/*
 using System;
+using System.Collections.Generic;
 
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Codons;
@@ -44,8 +47,8 @@ namespace MonoDevelop.DesignerSupport.CodeBehind
 	{		
 		public bool CanAttachTo (IViewContent content)
 		{
-			//FIXME: disabled, this whole thing is fundamentally broken
-/*			
+			
+			
 			IClass cls = GetCodeBehindClass (content);
 			
 			if (cls != null) {
@@ -58,25 +61,26 @@ namespace MonoDevelop.DesignerSupport.CodeBehind
 				if (db != null)
 					return true;
 			}
-*/
+
 			return false;
 		}
 		
 		public ISecondaryViewContent CreateSecondaryViewContent (IViewContent viewContent)
 		{
-			IClass cls = GetCodeBehindClass (viewContent);
+			return null;
+			IList<ProjectFile> files = GetCodeBehindClass (viewContent);
 			
-			if (cls == null)
+			if (files == null || files.Count < 1)
 				throw new Exception ("Cannot create CodeBehind binding for " + viewContent.ContentName + ".");
 			
-			IDisplayBinding db = IdeApp.Workbench.DisplayBindings.GetBindingPerFileName (cls.Region.FileName);
-			IViewContent vc = db.CreateContentForFile (cls.Region.FileName);
-			vc.Load (cls.Region.FileName);
+			IDisplayBinding db = IdeApp.Workbench.DisplayBindings.GetBindingPerFileName (files[0].FilePath);
+			IViewContent vc = db.CreateContentForFile (files[0].FilePath);
+			vc.Load (files[0].FilePath);
 			
 			return new CodeBehindViewContent (vc);
 		}
 		
-		IClass GetCodeBehindClass (IViewContent content)
+		IList<ProjectFile> GetCodeBehindClass (IViewContent content)
 		{
 			if (content.Project == null)
 				return null;
@@ -88,4 +92,4 @@ namespace MonoDevelop.DesignerSupport.CodeBehind
 			return MonoDevelop.DesignerSupport.DesignerSupport.Service.CodeBehindService.GetCodeBehind (file);
 		}
 	}
-}
+}*/

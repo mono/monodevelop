@@ -3,9 +3,10 @@
 // 		Pad, and hides CodeBehind files. 
 //
 // Authors:
-//   Michael Hutchinson <m.j.hutchinson@gmail.com>
+//   Michael Hutchinson <mhutchinson@novell.com>
 //
 // Copyright (C) 2006 Michael Hutchinson
+// Copyright (C) 2007 Novell, Inc.
 //
 //
 // This source code is licenced under The MIT License:
@@ -67,27 +68,20 @@ namespace MonoDevelop.DesignerSupport.CodeBehind
 		
 		void onFileChanged (ProjectFile file)
 		{
-			ITreeBuilder builder = Context.GetTreeBuilder (file);
-			if (builder != null)
-				builder.UpdateAll ();
+			if (file.Project != null) {
+				ITreeBuilder builder = Context.GetTreeBuilder (file.Project);
+				if (builder != null)
+					builder.UpdateAll ();
+			}
 		}
 		
 		void onClassChanged (IClass cls)
 		{
-			ITreeBuilder builder = Context.GetTreeBuilder (cls);
-			if (builder != null)
-				builder.UpdateAll ();
-			
 			//refresh the file containing the class to make it hidden/visible
-			//FIXME: can we locate the node in the tree more efficiently than looking up its parent project
-			//       and updating it and all its children? Direct lookup won't work with hidden nodes.
-			if (cls.Region == null) return;
-			string filename = cls.Region.FileName;
-			if (filename == null) return;
-			Project proj = IdeApp.ProjectOperations.CurrentOpenCombine.GetProjectContainingFile (filename);
-			if (proj == null) return;
-			
-			builder = Context.GetTreeBuilder (proj);
+			//we can't locate the node in the tree more efficiently than looking up its parent project
+			if (cls.SourceProject == null)
+				return;
+			ITreeBuilder builder = Context.GetTreeBuilder (cls.SourceProject);
 			if (builder != null)
 				builder.UpdateAll ();
 		}
@@ -99,38 +93,31 @@ namespace MonoDevelop.DesignerSupport.CodeBehind
 	
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			if (builder.Options ["ShowCodeBehindClasses"]) {
+			if (builder.Options ["GroupCodeBehind"]) {
 				ProjectFile file = (ProjectFile) dataObject;
-				if (file.Project != null) {
-					IClass cls = DesignerSupport.Service.CodeBehindService.GetCodeBehind (file);
-					if (cls != null)
-						builder.AddChild (cls);
+				IClass cls = DesignerSupport.Service.CodeBehindService.GetChildClass (file);
+				if (cls is MonoDevelop.DesignerSupport.CodeBehindService.NotFoundClass) {
+					builder.AddChild (cls);
+				} else {
+					IList<ProjectFile> children = DesignerSupport.Service.CodeBehindService.GetProjectFileChildren (file, cls);
+					foreach (ProjectFile child in children)
+						builder.AddChild (child);
 				}
 			}
 		}
 		
 		public override void GetNodeAttributes (ITreeNavigator parentNode, object dataObject, ref NodeAttributes attributes)
 		{
-			if (! (parentNode.Options ["ShowCodeBehindFiles"] || parentNode.Options ["ShowAllFiles"])) {
-				ProjectFile file = (ProjectFile) dataObject;
-				
-				if (file.Project != null){					
-					//only hide the file if all the classes it contains are codebehind classes
-					if (DesignerSupport.Service.CodeBehindService.ContainsOnlyCodeBehind(file))
-						attributes |= NodeAttributes.Hidden;
-				}
-			}
+			if (parentNode.Options ["GroupCodeBehind"] && !parentNode.Options ["ShowAllFiles"] && !(parentNode.DataItem is ProjectFile))
+				if (DesignerSupport.Service.CodeBehindService.ContainsCodeBehind ((ProjectFile) dataObject))
+					attributes |= NodeAttributes.Hidden;
 		}
 	
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			if (builder.Options ["ShowCodeBehindClasses"]) {
-				ProjectFile file = (ProjectFile) dataObject;
-				if (file.Project != null) {
-					IClass cls = DesignerSupport.Service.CodeBehindService.GetCodeBehind (file);
-					return (cls != null);
-				}
-			}
+			if (builder.Options ["GroupCodeBehind"])
+				return DesignerSupport.Service.CodeBehindService.HasChildren ((ProjectFile) dataObject);
+			
 			return false;
 		}
 

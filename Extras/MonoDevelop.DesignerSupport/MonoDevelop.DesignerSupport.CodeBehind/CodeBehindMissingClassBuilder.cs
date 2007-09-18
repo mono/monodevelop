@@ -1,10 +1,12 @@
 //
-// CodeBehindClassBuilder.cs : Displays CodeBehind classes in the Solution Pad
+// CodeBehindMissingClassBuilder.cs : Displays missing CodeBehind classes in 
+//   the Solution Pad
 //
 // Authors:
-//   Michael Hutchinson <m.j.hutchinson@gmail.com>
+//   Michael Hutchinson <mhutchinson@novell.com>
 //
 // Copyright (C) 2006 Michael Hutchinson
+// Copyright (C) 2007 Novell, Inc.
 //
 //
 // This source code is licenced under The MIT License:
@@ -36,45 +38,22 @@ using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 
 namespace MonoDevelop.DesignerSupport.CodeBehind
 {
-	class CodeBehindClassBuilder: TypeNodeBuilder
+	class CodeBehindMissingClassBuilder: TypeNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof (IClass); }
-		}
-		
-		public override Type CommandHandlerType {
-			get { return typeof (ClassCommandHandler); }
+			get { return typeof (MonoDevelop.DesignerSupport.CodeBehindService.NotFoundClass); }
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return ((IClass) dataObject).Name;
+			return ((IClass) dataObject).FullyQualifiedName;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			IClass cls = (IClass) dataObject;
 			icon = Context.GetIcon (MonoDevelop.Ide.Gui.IdeApp.Services.Icons.GetIcon (cls));
-			
-			if (cls.Region != null && cls.Region.FileName != null) {
-				string filename = System.IO.Path.GetFileName (cls.Region.FileName);
-				label = String.Format ("Inherits {0} in {1}", cls.Name, filename);
-			} else {
-				label = String.Format ("Inherits {0}, which cannot be found", cls.Name);
-			}
-		}
-	}
-	
-	class ClassCommandHandler: NodeCommandHandler
-	{
-		public override void ActivateItem ()
-		{
-			IClass cls = (IClass) CurrentNode.DataItem;
-			if (cls.Region != null && cls.Region.FileName != null) {
-				int line = cls.Region.BeginLine;
-				string file = cls.Region.FileName;
-				MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (file, Math.Max (1, line), 1, true);
-			}
+			label = "<span foreground='red'>" + MonoDevelop.Core.GettextCatalog.GetString("Missing CodeBehind class {0}", cls.FullyQualifiedName) + "</span>";
 		}
 	}
 }

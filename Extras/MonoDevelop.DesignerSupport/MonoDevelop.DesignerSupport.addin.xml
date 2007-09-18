@@ -63,11 +63,11 @@
 		<Class class = "MonoDevelop.DesignerSupport.Projects.ProjectsPropertyProvider"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
+<!--	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding id    = "CodeBehindView"
 		                supportedformats = "Source Code"
 		                class = "MonoDevelop.DesignerSupport.CodeBehind.CodeBehindDisplayBinding"/>
-	</Extension>
+	</Extension>-->
 	
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "MonoDevelop.DesignerSupport.Toolbox.ToolboxItemToolboxNode" />
@@ -93,10 +93,9 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
-		<PadOption id = "ShowCodeBehindClasses" _label = "Show CodeBehind classes with parent files" defaultValue = "True" />
-		<PadOption id = "ShowCodeBehindFiles" _label = "Show CodeBehind files" defaultValue = "False" />
+		<PadOption id = "GroupCodeBehind" _label = "Group CodeBehind files" defaultValue = "True" />
 		<NodeBuilder id = "CodeBehindProjectFileExtension" class = "MonoDevelop.DesignerSupport.CodeBehind.CodeBehindProjectFileExtension"/>
-		<NodeBuilder id = "CodeBehindClassBuilder" class = "MonoDevelop.DesignerSupport.CodeBehind.CodeBehindClassBuilder"/>
+		<NodeBuilder id = "CodeBehindMissingClassBuilder" class = "MonoDevelop.DesignerSupport.CodeBehind.CodeBehindMissingClassBuilder"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
