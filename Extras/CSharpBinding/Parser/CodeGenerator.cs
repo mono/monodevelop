@@ -80,11 +80,12 @@ namespace CSharpBinding.Parser
 				return null;
 			
 			for (int i = 0; i < classes.Length; i++) {
-				if ((file = ctx.GetFile (classes[i].Region.FileName)) == null)
+				IClass pclass = classes[i];
+				if (pclass.Region == null || (file = ctx.GetFile (pclass.Region.FileName)) == null)
 					continue;
 				
-				begin = file.GetPositionFromLineColumn (cls.Region.BeginLine, cls.Region.BeginColumn);
-				end = file.GetPositionFromLineColumn (cls.Region.EndLine, cls.Region.EndColumn);
+				begin = file.GetPositionFromLineColumn (pclass.Region.BeginLine, pclass.Region.BeginColumn);
+				end = file.GetPositionFromLineColumn (pclass.Region.EndLine, pclass.Region.EndColumn);
 				
 				if (begin == -1 || end == -1)
 					continue;
