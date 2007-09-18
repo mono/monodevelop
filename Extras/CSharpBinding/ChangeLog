@@ -1,5 +1,10 @@
 2007-09-18  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Parser/CodeGenerator.cs: Fix regex in RenameClass. Class name may end with
+	  ":".
+
+2007-09-18  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Parser/CodeGenerator.cs: Fix renaming of partial classes. It was using the
 	  wrong IClass to get the line and column.
 

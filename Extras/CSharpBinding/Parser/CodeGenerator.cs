@@ -94,16 +94,16 @@ namespace CSharpBinding.Parser
 				
 				switch (cls.ClassType) {
 				case ClassType.Interface:
-					expr = new Regex (@"\sinterface\s*(" + cls.Name + @")\s", RegexOptions.Multiline);
+					expr = new Regex (@"\sinterface\s*(" + cls.Name + @")(\s|:)", RegexOptions.Multiline);
 					break;
 				case ClassType.Struct:
-					expr = new Regex (@"\sstruct\s*(" + cls.Name + @")\s", RegexOptions.Multiline);
+					expr = new Regex (@"\sstruct\s*(" + cls.Name + @")(\s|:)", RegexOptions.Multiline);
 					break;
 				case ClassType.Enum:
-					expr = new Regex (@"\senum\s*(" + cls.Name + @")\s", RegexOptions.Multiline);
+					expr = new Regex (@"\senum\s*(" + cls.Name + @")(\s|:)", RegexOptions.Multiline);
 					break;
 				default:
-					expr = new Regex (@"\sclass\s*(" + cls.Name + @")\s", RegexOptions.Multiline);
+					expr = new Regex (@"\sclass\s*(" + cls.Name + @")(\s|:)", RegexOptions.Multiline);
 					break;
 				}
 				
