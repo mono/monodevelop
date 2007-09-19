@@ -14,6 +14,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		bool updating;
 		
 		// snatched from MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs
+		// a lot of these probably don't apply to custom build commands (e.g. ItemPath -- path of current open doc)
 //		static string[,] argumentQuickInsertMenu = new string[,] {
 //			{GettextCatalog.GetString ("Item Path"), "${ItemPath}"},
 //			{GettextCatalog.GetString ("_Item Directory"), "${ItemDir}"},
@@ -38,17 +39,19 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 //			{GettextCatalog.GetString ("MonoDevelop Startup Directory"), "${StartupPath}"},
 //		};
 
-		static string[,] workingDirInsertMenu = new string[,] {
-			{GettextCatalog.GetString ("_Item Directory"), "${ItemDir}"},
-			{"-", ""},
+		static string[,] projectWorkingDirInsertMenu = new string[,] {
 			{GettextCatalog.GetString ("_Target Directory"), "${TargetDir}"},
 			{GettextCatalog.GetString ("Target Name"), "${TargetName}"},
 			{"-", ""},
 			{GettextCatalog.GetString ("_Project Directory"), "${ProjectDir}"},
 			{"-", ""},
-			{GettextCatalog.GetString ("_Solution Directory"), "${CombineDir}"},
+			{GettextCatalog.GetString ("_Root Solution Directory"), "${CombineDir}"},
+		};
+		
+		static string[,] entryWorkingDirInsertMenu = new string[,] {
+			{GettextCatalog.GetString ("_Project Directory"), "${ProjectDir}"},
 			{"-", ""},
-			{GettextCatalog.GetString ("MonoDevelop Startup Directory"), "${StartupPath}"},
+			{GettextCatalog.GetString ("_Root Solution Directory"), "${CombineDir}"},
 		};
 		
 		public CustomCommandWidget (CombineEntry entry, CustomCommand cmd)
@@ -65,6 +68,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			UpdateControls ();
 			this.WidgetFlags |= Gtk.WidgetFlags.NoShowAll;
 			
+			string[,] workingDirInsertMenu = entry is Project? projectWorkingDirInsertMenu : entryWorkingDirInsertMenu;
 			new MenuButtonEntry (workingdirEntry, workingdirQuickInsertButton, workingDirInsertMenu);
 		}
 		

@@ -1,3 +1,8 @@
+2007-09-19  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs: Only
+	  display relevant substitution tags for solutions and projects.
+
 2007-09-18  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs,
