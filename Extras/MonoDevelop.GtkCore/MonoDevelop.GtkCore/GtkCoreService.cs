@@ -79,7 +79,7 @@ namespace MonoDevelop.GtkCore
 				foreach (SystemPackage p in Runtime.SystemAssemblyService.GetPackages ()) {
 					if (p.Name == "gtk-sharp-2.0") {
 						versions.Add (p.Version);
-						if (p.Version.StartsWith ("2.4"))
+						if (p.Version.StartsWith ("2.8"))
 							defaultGtkVersion = p.Version;
 					}
 				}
@@ -113,6 +113,7 @@ namespace MonoDevelop.GtkCore
 				return info;
 
 			info = new GtkDesignInfo ((DotNetProject) project);
+			info.TargetGtkVersion = GtkCoreService.DefaultGtkVersion;
 			info.UpdateGtkFolder ();
 			
 			if (GtkSupportChanged != null)

@@ -175,10 +175,7 @@ namespace MonoDevelop.GtkCore
 			}
 			set {
 				if (TargetGtkVersion != value) {
-					if (value != GtkCoreService.DefaultGtkVersion)
-						gtkVersion = value;
-					else
-						gtkVersion = null;
+					gtkVersion = value;
 					GuiBuilderProject.SteticProject.TargetGtkVersion = TargetGtkVersion;
 					GuiBuilderProject.Save (false);
 				}
@@ -330,14 +327,16 @@ namespace MonoDevelop.GtkCore
 			
 			string gtkAsmVersion = "";
 			
-			foreach (SystemPackage p in Runtime.SystemAssemblyService.GetPackages ()) {
-				if (p.Name == "gtk-sharp-2.0" && p.Version == TargetGtkVersion) {
-					string fn = Runtime.SystemAssemblyService.GetAssemblyFullName (p.Assemblies[0]);
-					int i = fn.IndexOf (',');
-					gtkAsmVersion = fn.Substring (i+1).Trim ();
-					break;
+			if (gtkVersion != null) {
+				foreach (SystemPackage p in Runtime.SystemAssemblyService.GetPackages ()) {
+					if (p.Name == "gtk-sharp-2.0" && p.Version == TargetGtkVersion) {
+						string fn = Runtime.SystemAssemblyService.GetAssemblyFullName (p.Assemblies[0]);
+						int i = fn.IndexOf (',');
+						gtkAsmVersion = fn.Substring (i+1).Trim ();
+						break;
+					}
 				}
-			}
+			}	
 			
 			bool gtk=false, gdk=false, posix=false;
 			foreach (ProjectReference r in new ArrayList (project.ProjectReferences)) {
@@ -359,8 +358,8 @@ namespace MonoDevelop.GtkCore
 				if (Array.IndexOf (GtkSharpAssemblies, aname) == -1)
 					continue;
 				
-				// Correct version?
-				if (r.Reference.Substring (i+1).Trim() != gtkAsmVersion) {
+				// Check and correct the assembly version only if a version is set
+				if (!string.IsNullOrEmpty (gtkAsmVersion) && r.Reference.Substring (i+1).Trim() != gtkAsmVersion) {
 					project.ProjectReferences.Remove (r);
 					project.ProjectReferences.Add (new ProjectReference (ReferenceType.Gac, aname + ", " + gtkAsmVersion));
 				}
