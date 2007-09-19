@@ -1,5 +1,15 @@
 2007-09-19  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs: Make ILocationListPad
+	  implementation work again. GetSelected doesn't work for multi-selection
+	  lists.
+	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs: Make sure GetNextLocation
+	  returns the first row after a compilation. Looks like when the pad is
+	  focused, the first row is automatically selected, so we need a flag to
+	  ignore that selection if the list has been cleared out.
+
+2007-09-19  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.DeleteFileDialog.cs,
 	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs,
 	  gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.CodeGenerationPanelWidget.cs,

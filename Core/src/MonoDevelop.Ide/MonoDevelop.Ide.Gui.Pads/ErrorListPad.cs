@@ -34,6 +34,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		Gtk.Tooltips tips = new Gtk.Tooltips ();
 		Hashtable tasks = new Hashtable ();
 		IPadWindow window;
+		bool initializeLocation = true;
 
 		Menu menu;
 		Dictionary<ToggleAction, int> columnsActions = new Dictionary<ToggleAction, int> ();
@@ -179,7 +180,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				AddTask (t);
 			}
 		}
-
+		
 		void LoadColumnsVisibility ()
 		{
 			string columns = (string)PropertyService.Get ("Monodevelop.ErrorListColumns", "TRUE;TRUE;TRUE;TRUE;TRUE;TRUE");
@@ -496,6 +497,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			UpdateErrorsNum ();
 			UpdateWarningsNum ();
 			UpdateMessagesNum ();
+			initializeLocation = true;
 		}
 		
 				
@@ -538,6 +540,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			AddTaskInternal (t);
 			filter.Refilter ();
+			Console.WriteLine (Environment.StackTrace);
 		}
 		
 		void AddTaskInternal (Task t)
@@ -678,11 +681,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 			TreeIter iter;
 			TreeModel model;
 			
-			if (view.Selection.GetSelected (out model, out iter))
+			if (!initializeLocation && view.Selection.GetSelected (out model, out iter)) {
 				hasNext = model.IterNext (ref iter);
-			else {
+			} else {
 				model = view.Model;
 				hasNext = model.GetIterFirst (out iter);
+				initializeLocation = false;
 			}
 			
 			if (!hasNext) {
@@ -713,8 +717,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 			TreeIter selIter;
 			TreeIter prevIter = TreeIter.Zero;
 			
-			hasSel = view.Selection.GetSelected (out selIter);
+			hasSel = !initializeLocation && view.Selection.GetSelected (out selIter);
 			hasNext = view.Model.GetIterFirst (out iter);
+			initializeLocation = false;
 			
 			while (hasNext) {
 				if (hasSel && iter.Equals (selIter))

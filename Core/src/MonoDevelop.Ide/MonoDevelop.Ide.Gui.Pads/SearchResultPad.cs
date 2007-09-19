@@ -406,7 +406,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 			bool hasNext;
 			TreeIter iter;
 			
-			if (view.Selection.GetSelected (out iter))
+			TreePath[] rows = view.Selection.GetSelectedRows ();
+			if (rows.Length > 0 && store.GetIter (out iter, rows[0]))
 				hasNext = store.IterNext (ref iter);
 			else
 				hasNext = store.GetIterFirst (out iter);
@@ -418,6 +419,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				view.Selection.UnselectAll ();
 				return false;
 			} else {
+				view.Selection.UnselectAll ();
 				view.Selection.SelectIter (iter);
 				file = (string) store.GetValue (iter, COL_FULLPATH);
 				if (file == null)
@@ -438,7 +440,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 			TreeIter selIter;
 			TreeIter prevIter = TreeIter.Zero;
 			
-			hasSel = view.Selection.GetSelected (out selIter);
+			TreePath[] rows = view.Selection.GetSelectedRows ();
+			hasSel = rows.Length > 0 && store.GetIter (out selIter, rows[0]);
 			hasNext = store.GetIterFirst (out iter);
 			
 			while (hasNext) {
@@ -455,6 +458,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				view.Selection.UnselectAll ();
 				return false;
 			} else {
+				view.Selection.UnselectAll ();
 				view.Selection.SelectIter (prevIter);
 				file = (string) store.GetValue (prevIter, COL_FULLPATH);
 				if (file == null)
