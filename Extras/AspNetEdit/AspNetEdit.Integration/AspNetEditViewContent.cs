@@ -150,8 +150,12 @@ namespace AspNetEdit.Integration
 			MonoDevelop.Projects.Parser.IClass codeBehind = null;
 			if (viewContent.Project != null) {
 				MonoDevelop.Projects.ProjectFile pf = viewContent.Project.GetProjectFile (viewContent.ContentName);
-				if (pf != null)
-					codeBehind = DesignerSupport.Service.CodeBehindService.GetCodeBehind (pf);
+				if (pf != null) {
+					MonoDevelop.DesignerSupport.CodeBehind.CodeBehindClass cc = 
+						DesignerSupport.Service.CodeBehindService.GetChildClass (pf);
+					if (cc != null)
+						codeBehind = cc.IClass;
+				}
 			}
 			proxy = new MonoDevelopProxy (codeBehind);
 			

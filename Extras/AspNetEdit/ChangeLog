@@ -1,3 +1,7 @@
+2007-09-19  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* AspNetEdit.Integration/AspNetEditViewContent.cs: Track API changes.
+
 2007-09-13  Michael Hutchinson <mhutchinson@novell.com> 
 
 	Move (now trivial) JSCall# library into MD SVN rather than 
