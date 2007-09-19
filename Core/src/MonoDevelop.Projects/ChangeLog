@@ -1,3 +1,10 @@
+2007-09-19  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects/CustomCommand.cs: Implement custom substitution tag
+	  array for custom commands so that the tags are for the project being
+	  compiled rather than the project selected in the IDE. Bonus is that it
+	  no longer depends on the tags provider in MonoDevelop.Ide.
+
 2007-09-15  Jérémie Laval <jeremie.laval@gmail.com>
 
 	* MonoDevelop.Projects.Parser/ICompilationUnitBase.cs:

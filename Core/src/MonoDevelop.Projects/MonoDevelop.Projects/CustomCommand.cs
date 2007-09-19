@@ -75,7 +75,25 @@ namespace MonoDevelop.Projects
 		}
 		
 		public void Execute (IProgressMonitor monitor, CombineEntry entry, ExecutionContext context)
-		{			
+		{
+			string [,] customtags = null;
+			
+			Project project = entry as Project;
+			if (project != null) {
+				string outputname = project.GetOutputFileName();
+				customtags = new string [,] {
+					{"ProjectDir", entry.BaseDirectory},
+					{"TargetName", Path.GetFileName (outputname)},
+					{"TargetDir", Path.GetDirectoryName (outputname)},
+					{"CombineDir", entry.RootCombine.BaseDirectory},
+				};
+			} else {
+				customtags = new string [,] {
+					{"ProjectDir", entry.BaseDirectory},
+					{"CombineDir", entry.RootCombine.BaseDirectory},
+				};
+			}
+			
 			int i = command.IndexOf (' ');
 			string exe;
 			string args = string.Empty;
@@ -84,12 +102,12 @@ namespace MonoDevelop.Projects
 				args = string.Empty;
 			} else {
 				exe = command.Substring (0, i);
-				args = Runtime.StringParserService.Parse (command.Substring (i + 1));
+				args = Runtime.StringParserService.Parse (command.Substring (i + 1), customtags);
 			}
 			
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Executing: {0} {1}", exe, args));
 
-			string dir = (string.IsNullOrEmpty (workingdir) ? entry.BaseDirectory : Runtime.StringParserService.Parse (workingdir));
+			string dir = (string.IsNullOrEmpty (workingdir) ? entry.BaseDirectory : Runtime.StringParserService.Parse (workingdir, customtags));
 			
 			string localPath = Path.Combine (entry.BaseDirectory, exe);
 			if (File.Exists (localPath))
