@@ -174,7 +174,7 @@ namespace MonoDevelop.GtkCore
 					return GtkCoreService.DefaultGtkVersion;
 			}
 			set {
-				if (TargetGtkVersion != value) {
+				if (gtkVersion != value) {
 					gtkVersion = value;
 					GuiBuilderProject.SteticProject.TargetGtkVersion = TargetGtkVersion;
 					GuiBuilderProject.Save (false);
