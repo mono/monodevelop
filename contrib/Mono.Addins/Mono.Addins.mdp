@@ -3,6 +3,7 @@
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <CustomCommands>
         <Command type="Build" command="make Mono.Addins" workingdir="${ProjectDir}" />
+        <Command type="Clean" command="rm Mono.Addins.dll*" workingdir="${TargetDir}" />
       </CustomCommands>
       <Output directory="../../build/bin" signAssembly="True" assemblyKeyFile="./src/mono-addins.snk" assembly="Mono.Addins.dll" />
       <Build debugmode="True" target="Exe" />
@@ -11,7 +12,8 @@
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
       <CustomCommands>
-        <Command type="Build" command="make Mono.Addins" workingdir="${ProjectDir}" />
+        <Command type="Build" command="make Mono.Addins.dll" workingdir="${ProjectDir}" />
+        <Command type="Clean" command="rm Mono.Addins.dll*" workingdir="${TargetDir}" />
       </CustomCommands>
       <Output directory="../../build/bin" signAssembly="True" assemblyKeyFile="./src/mono-addins.snk" assembly="Mono.Addins.dll" />
       <Build debugmode="False" target="Exe" />

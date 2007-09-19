@@ -1,5 +1,13 @@
 2007-09-20  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* contrib/Mono.Addins/Mono.Addins.Setup.mdp,
+	  contrib/Mono.Addins/Mono.Addins.mdp,
+	  contrib/Mono.Addins/Mono.Addins.Gui.mdp: Update targets for custom
+	  build.
+	* contrib/Firebird/Firebird.mdp: Add files.
+
+2007-09-20  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* configure.in, monodevelop.in: Mozilla detection script now checks paths
 	  for gtkembedmoz.so so that MD doesn't end up with an invalid Mozilla
 	  path.
