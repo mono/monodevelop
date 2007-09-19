@@ -1,16 +1,10 @@
-//
-// CodeBehindMissingClassBuilder.cs : Displays missing CodeBehind classes in 
-//   the Solution Pad
-//
-// Authors:
+// CodeBehindClass.cs
+// 
+// Author:
 //   Michael Hutchinson <mhutchinson@novell.com>
-//
-// Copyright (C) 2006 Michael Hutchinson
-// Copyright (C) 2007 Novell, Inc.
-//
-//
-// This source code is licenced under The MIT License:
-//
+// 
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+// 
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -29,30 +23,37 @@
 // LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-//
 
 using System;
+
 using MonoDevelop.Projects.Parser;
-using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 
 namespace MonoDevelop.DesignerSupport.CodeBehind
 {
-	class CodeBehindMissingClassBuilder: TypeNodeBuilder
+	
+	
+	public class CodeBehindClass
 	{
-		public override Type NodeDataType {
-			get { return typeof (CodeBehindClass); }
+		string fullyQualifiedName;
+		IClass cls;
+		
+		public CodeBehindClass (string name)
+		{
+			fullyQualifiedName = name;
 		}
 		
-		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
+		public CodeBehindClass (IClass cls)
 		{
-			return ((IClass) dataObject).FullyQualifiedName;
+			fullyQualifiedName = cls.FullyQualifiedName;
+			this.cls = cls;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
-		{
-			CodeBehindClass cls = (CodeBehindClass) dataObject;
-			label = "<span foreground='red'>" + MonoDevelop.Core.GettextCatalog.GetString("Missing CodeBehind class {0}", cls.FullyQualifiedName) + "</span>";
+		public string FullyQualifiedName {
+			get { return fullyQualifiedName; }
 		}
-	}
+		
+		public IClass IClass {
+			get { return cls; }
+		}
+	}	
 }

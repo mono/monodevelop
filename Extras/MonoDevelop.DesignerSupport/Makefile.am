@@ -23,6 +23,8 @@ REFS =  \
 FILES =  \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog.cs \
+	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindClass.cs \
+	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindClassEventArgs.cs \
 	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindDisplayBinding.cs \
 	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindMissingClassBuilder.cs \
 	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindProjectFileExtension.cs \

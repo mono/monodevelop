@@ -1,16 +1,10 @@
-//
-// CodeBehindMissingClassBuilder.cs : Displays missing CodeBehind classes in 
-//   the Solution Pad
-//
-// Authors:
+// CodeBehindClassEventArgs.cs
+// 
+// Author:
 //   Michael Hutchinson <mhutchinson@novell.com>
-//
-// Copyright (C) 2006 Michael Hutchinson
-// Copyright (C) 2007 Novell, Inc.
-//
-//
-// This source code is licenced under The MIT License:
-//
+// 
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+// 
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -29,30 +23,45 @@
 // LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-//
 
 using System;
-using MonoDevelop.Projects.Parser;
-using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Ide.Gui.Pads.ProjectPad;
+using System.Collections.Generic;
+
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.DesignerSupport.CodeBehind
 {
-	class CodeBehindMissingClassBuilder: TypeNodeBuilder
+	
+	
+	public class CodeBehindClassEventArgs
 	{
-		public override Type NodeDataType {
-			get { return typeof (CodeBehindClass); }
+		ICollection<ProjectFile> childFiles;
+		ICollection<ProjectFile> parentFiles;
+		Project project;
+		
+		public CodeBehindClassEventArgs (Project affectedProject, IList<ProjectFile> parentFiles, IList<ProjectFile> childFiles)
+		{
+			this.project = affectedProject;
+			this.childFiles = childFiles;
+			this.parentFiles = parentFiles;
 		}
 		
-		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
-		{
-			return ((IClass) dataObject).FullyQualifiedName;
+		public ICollection<ProjectFile> ChildFiles {
+			get {
+				return childFiles;
+			}
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
-		{
-			CodeBehindClass cls = (CodeBehindClass) dataObject;
-			label = "<span foreground='red'>" + MonoDevelop.Core.GettextCatalog.GetString("Missing CodeBehind class {0}", cls.FullyQualifiedName) + "</span>";
+		public ICollection<ProjectFile> ParentFiles {
+			get {
+				return parentFiles;
+			}
+		}
+		
+		public Project Project {
+			get {
+				return project;
+			}
 		}
 	}
 }

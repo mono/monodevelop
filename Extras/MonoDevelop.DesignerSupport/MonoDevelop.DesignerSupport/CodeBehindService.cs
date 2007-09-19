@@ -30,6 +30,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+//#define DEBUGCODEBEHINDGROUPING
+
 using System;
 using System.Collections.Generic;
 
@@ -47,7 +49,7 @@ namespace MonoDevelop.DesignerSupport
 	public class CodeBehindService
 	{
 		
-		Dictionary<ProjectFile, IClass> codeBehindBindings = new Dictionary<ProjectFile, IClass> ();
+		Dictionary<ProjectFile, string> codeBehindBindings = new Dictionary<ProjectFile, string> ();
 		
 		#region Extension loading
 		
@@ -64,7 +66,6 @@ namespace MonoDevelop.DesignerSupport
 			IdeApp.ProjectOperations.FileAddedToProject += onFileEvent;
 			IdeApp.ProjectOperations.FileChangedInProject += onFileEvent;
 			IdeApp.ProjectOperations.FileRemovedFromProject += onFileEvent;
-			//IdeApp.ProjectOperations.FileRenamedInProject -=
 			
 			IdeApp.ProjectOperations.CombineClosed += onCombineClosed;
 			IdeApp.ProjectOperations.CombineOpened += onCombineOpened;
@@ -117,53 +118,64 @@ namespace MonoDevelop.DesignerSupport
 		
 		void onClassInformationChanged (object sender, ClassInformationEventArgs e)
 		{
-			//have to queue up operations outside the foreaches or the collections get out of synch
-			List<KeyValuePair<ProjectFile, IClass>> updates = new List<KeyValuePair<ProjectFile, IClass>> ();
+#if DEBUGCODEBEHINDGROUPING
+			System.Console.WriteLine("onClassInformationChanged");
+			foreach (IClass cls in e.ClassInformation.Added)
+				System.Console.WriteLine("Added:{0}", cls.FullyQualifiedName);
+			foreach (IClass cls in e.ClassInformation.Modified)
+				System.Console.WriteLine("Modified:{0}", cls.FullyQualifiedName);
+			foreach (IClass cls in e.ClassInformation.Removed)
+				System.Console.WriteLine("Removed:{0}", cls.FullyQualifiedName);
+#endif
+			if (e.Project == null)
+				return;
 			
-			//build a list of all relevant class changes
-			foreach (KeyValuePair<ProjectFile, IClass> kvp in codeBehindBindings) {		
+			//have to queue up operations outside the foreaches or the collections get out of synch
+			List<ProjectFile> affectedChildren = new List<ProjectFile> ();
+			List<ProjectFile> affectedParents = new List<ProjectFile> ();
+			
+			//find all ProjectFiles affected by the relevant class updates
+			foreach (KeyValuePair<ProjectFile, string> kvp in codeBehindBindings) {		
 				//codebehind must be in same project as file
 				if (e.Project != kvp.Key.Project) continue;
+				bool affected = false;
 				
 				foreach (IClass cls in e.ClassInformation.Removed) {
-					if (cls.FullyQualifiedName == kvp.Value.FullyQualifiedName) {
-						//if class has gone missing, create a dummy one						
-						NotFoundClass dummy = new NotFoundClass ();
-						dummy.FullyQualifiedName = cls.FullyQualifiedName;
-						updates.Add (new KeyValuePair<ProjectFile, IClass> (kvp.Key, dummy));
-						break;
+					if (cls.FullyQualifiedName == kvp.Value) {
+						AddAffectedFilesFromClass (e.Project, cls, affectedChildren);
+						affected = true;
 					}
 				}
 				
 				foreach (IClass cls in e.ClassInformation.Added) {
-					if (cls.FullyQualifiedName == kvp.Value.FullyQualifiedName) {
-						updates.Add (new KeyValuePair<ProjectFile, IClass> (kvp.Key, cls));
-						break;
+					if (cls.FullyQualifiedName == kvp.Value) {
+						AddAffectedFilesFromClass (e.Project, cls, affectedChildren);
+						affected = true;
 					}
 				}
 				
-				foreach (IClass cls in e.ClassInformation.Modified) {
-					if (cls.FullyQualifiedName == kvp.Value.FullyQualifiedName) {
-						updates.Add (new KeyValuePair<ProjectFile, IClass> (kvp.Key, cls));
-						break;
-					}
+				if (affected) {
+#if DEBUGCODEBEHINDGROUPING
+					System.Console.WriteLine("File affected {0}", kvp.Key.FilePath);
+#endif
+					affectedParents.Add (kvp.Key);
 				}
 			}
 			
-			//apply class changes to the codeBehindBindings collection
-			foreach (KeyValuePair<ProjectFile, IClass> update in updates) {
-				IClass oldCB = codeBehindBindings[update.Key];
-				IClass newCB = update.Value;
-				
-				if (oldCB == newCB && oldCB.Parts.Length == newCB.Parts.Length)
-					//skip on if no change in class
-					continue;
-				
-				codeBehindBindings[update.Key] = newCB;
-				
-				if (CodeBehindClassUpdated != null) {
-						CodeBehindClassUpdated (oldCB);
-						CodeBehindClassUpdated (newCB);
+			if (CodeBehindClassUpdated != null && affectedParents.Count > 0)
+				CodeBehindClassUpdated (this, new CodeBehindClassEventArgs (e.Project, affectedParents, affectedChildren));
+			
+		}
+		
+		void AddAffectedFilesFromClass (Project project, IClass cls, List<ProjectFile> list)
+		{
+			foreach (IClass part in cls.Parts) {
+				ProjectFile pf = project.ProjectFiles.GetFile (part.Region.FileName);
+				if (pf != null && !list.Contains (pf)) {
+					list.Add (pf);
+#if DEBUGCODEBEHINDGROUPING
+					System.Console.WriteLine("Added affected file {0}", pf.FilePath);
+#endif					
 				}
 			}
 		}
@@ -195,77 +207,85 @@ namespace MonoDevelop.DesignerSupport
 		
 		void updateCodeBehind (ProjectFile file)
 		{
-			IClass newCodeBehind = null;
-			IClass oldCodeBehind = null;
+			if (file.Project == null)
+				return;
 			
+			string newCodeBehind = null;
+			string oldCodeBehind = null;
+			
+			codeBehindBindings.TryGetValue (file, out oldCodeBehind);
+			
+			//get the fully-qualified name of the codebehind class if present
 			foreach (ICodeBehindProvider provider in providers) {
-				//get the fully-qualified name of the codebehind class if present
 				string name = provider.GetCodeBehindClassName (file);
-				
 				if (name != null) {
-					//look it up in the parser database
-					IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (file.Project);
-					newCodeBehind = ctx.GetClass (name);
-					
-					//if class was not found, create a dummy one
-					if (newCodeBehind == null) {
-						NotFoundClass dummy = new NotFoundClass ();
-						dummy.FullyQualifiedName = name;
-						newCodeBehind = dummy;
-					}
+					newCodeBehind = name;
 					break;
 				}
 			}
 			
-			bool containsKey = this.codeBehindBindings.ContainsKey (file);
+			//if no changes have happened, bail early
+			if (newCodeBehind == oldCodeBehind)
+				return;
 			
-			if (newCodeBehind == null) {
-				if (containsKey) {
-					//was codebehind, but no longer
-					oldCodeBehind = this.codeBehindBindings[file];
-					this.codeBehindBindings.Remove (file);
-				} else {
-					//not codebehind, no updates
-					return;
-				}	
-			} else {
-				if (containsKey) {
-					//updating an existing binding
-					oldCodeBehind = this.codeBehindBindings[file];
-					
-					//if no changes have happened, bail early
-					if (oldCodeBehind == newCodeBehind) return;
-				}
-				
-				this.codeBehindBindings[file] = newCodeBehind;
-				if (CodeBehindClassUpdated != null)
-					CodeBehindClassUpdated (newCodeBehind);
+			//update the bindings list
+			if (newCodeBehind == null)
+				codeBehindBindings.Remove (file);
+			else
+				codeBehindBindings[file] = newCodeBehind;
+			
+			//build a list of affected "child" files
+			List<ProjectFile> affectedChildren = new List<ProjectFile> ();
+			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (file.Project);
+			if (newCodeBehind != null) {
+				IClass cls = ctx.GetClass (newCodeBehind);
+				if (cls != null)
+					AddAffectedFilesFromClass (file.Project, cls, affectedChildren);
+			}
+			if (oldCodeBehind != null) {
+				IClass cls = ctx.GetClass (newCodeBehind);
+				if (cls != null)
+					AddAffectedFilesFromClass (file.Project, cls, affectedChildren);
 			}
 			
-			if (CodeBehindFileUpdated != null)
-				CodeBehindFileUpdated (file);
-				
-			if (oldCodeBehind != null && CodeBehindClassUpdated != null)
-				CodeBehindClassUpdated (oldCodeBehind);
+			if (CodeBehindClassUpdated != null)
+				CodeBehindClassUpdated (this, new CodeBehindClassEventArgs (file.Project, new ProjectFile[] { file } , affectedChildren));
 		}
 		
 		#region public API for finding CodeBehind files
 		
 		public bool HasChildren (ProjectFile file)
 		{
-			IClass cls = GetChildClass (file);
+#if DEBUGCODEBEHINDGROUPING
+			System.Console.WriteLine("Checking whether {0} has children",file.FilePath);
+#endif
+			CodeBehindClass cls = GetChildClass (file);
 			if (cls == null) return false;
-			if (cls is NotFoundClass) return true;
-			IList<ProjectFile> children = GetProjectFileChildren (file, cls);
+			if (cls.IClass == null) return true;
+			IList<ProjectFile> children = GetProjectFileChildren (file, cls.IClass);
 			return children != null && children.Count > 0;
 		}
 		
-		public IClass GetChildClass (ProjectFile file)
+		public CodeBehindClass GetChildClass (ProjectFile file)
 		{
+#if DEBUGCODEBEHINDGROUPING
+			System.Console.WriteLine("Getting child class for {0}", file.FilePath);
+#endif
 			IClass cls = null;
-			if (file != null)
-				codeBehindBindings.TryGetValue (file, out cls);
-			return cls;
+			if (file != null && file.Project != null) {
+				string clsName = null;
+				codeBehindBindings.TryGetValue (file, out clsName);
+				if (clsName != null) {
+					IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (file.Project);
+					cls = ctx.GetClass (clsName);
+					if (cls != null) {
+						return new CodeBehindClass (cls);
+					} else {
+						return new CodeBehindClass (clsName);
+					}
+				}
+			}
+			return null;
 		}
 		
 		internal IList<ProjectFile> GetProjectFileChildren (ProjectFile parent, IClass child)
@@ -292,11 +312,6 @@ namespace MonoDevelop.DesignerSupport
 			return files;
 		}
 		
-		public bool IsCodeBehind (IClass cls)
-		{
-			return codeBehindBindings.ContainsValue (cls);
-		}
-		
 		//determines whether a file contains only codebehind classes
 		public bool ContainsCodeBehind (ProjectFile file)
 		{
@@ -309,30 +324,17 @@ namespace MonoDevelop.DesignerSupport
 				return false;
 			
 			foreach (IClass cls in classes)
-				if (cls.SourceProject == file.Project)
-					foreach (IClass boundCls in codeBehindBindings.Values)
-						if (cls.FullyQualifiedName == boundCls.FullyQualifiedName)
-							return true;
+				foreach (KeyValuePair<ProjectFile, string> kvp in codeBehindBindings)
+					if (kvp.Key.Project == file.Project && kvp.Value == cls.FullyQualifiedName)
+						return true;
 			
 			return false;
 		}
 		
-		//fired when a CodeBehind class is updated 
+		//fired when a CodeBehind association is updated 
 		public event CodeBehindClassEventHandler CodeBehindClassUpdated;
-		public delegate void CodeBehindClassEventHandler (IClass cls);
-		
-		//fired when a codebehind 'host' file is updated
-		public event CodeBehindFileEventHandler CodeBehindFileUpdated;
-		public delegate void CodeBehindFileEventHandler (ProjectFile file);
+		public delegate void CodeBehindClassEventHandler (object sender, CodeBehindClassEventArgs e);
 		
 		#endregion
-		
-		//used for references to classes not found in the parse database
-		internal class NotFoundClass : DefaultClass
-		{
-			public override IClass[] Parts {
-				get { return new IClass[] { }; }
-			}
-		}		
 	}
 }

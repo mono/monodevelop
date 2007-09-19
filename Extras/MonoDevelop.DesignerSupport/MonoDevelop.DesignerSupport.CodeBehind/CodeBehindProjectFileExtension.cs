@@ -47,43 +47,32 @@ namespace MonoDevelop.DesignerSupport.CodeBehind
 	public class CodeBehindProjectFileExtension : NodeBuilderExtension
 	{
 		CodeBehindService.CodeBehindClassEventHandler classChangeHandler;
-		CodeBehindService.CodeBehindFileEventHandler fileChangeHandler;
 		
 		protected override void Initialize ()
 		{	
 			classChangeHandler = (CodeBehindService.CodeBehindClassEventHandler)
 				DispatchService.GuiDispatch (new CodeBehindService.CodeBehindClassEventHandler (onClassChanged));
 			DesignerSupport.Service.CodeBehindService.CodeBehindClassUpdated += classChangeHandler;
-			
-			fileChangeHandler = (CodeBehindService.CodeBehindFileEventHandler)
-				DispatchService.GuiDispatch (new CodeBehindService.CodeBehindFileEventHandler (onFileChanged));
-			DesignerSupport.Service.CodeBehindService.CodeBehindFileUpdated += fileChangeHandler;
 		}
 		
 		public override void Dispose ()
 		{
 			DesignerSupport.Service.CodeBehindService.CodeBehindClassUpdated -= classChangeHandler;
-			DesignerSupport.Service.CodeBehindService.CodeBehindFileUpdated -= fileChangeHandler;
 		}
 		
-		void onFileChanged (ProjectFile file)
+		void onClassChanged (object sender, CodeBehindClassEventArgs e)
 		{
-			if (file.Project != null) {
-				ITreeBuilder builder = Context.GetTreeBuilder (file.Project);
+			if (e.ChildFiles.Count > 0) {
+				ITreeBuilder builder = Context.GetTreeBuilder (e.Project);
 				if (builder != null)
 					builder.UpdateAll ();
+			} else {
+				foreach (ProjectFile affected in e.ParentFiles) {
+					ITreeBuilder builder = Context.GetTreeBuilder (affected);
+					if (builder != null)
+						builder.UpdateAll ();
+				}
 			}
-		}
-		
-		void onClassChanged (IClass cls)
-		{
-			//refresh the file containing the class to make it hidden/visible
-			//we can't locate the node in the tree more efficiently than looking up its parent project
-			if (cls.SourceProject == null)
-				return;
-			ITreeBuilder builder = Context.GetTreeBuilder (cls.SourceProject);
-			if (builder != null)
-				builder.UpdateAll ();
 		}
 		
 		public override bool CanBuildNode (Type dataType)
@@ -95,11 +84,11 @@ namespace MonoDevelop.DesignerSupport.CodeBehind
 		{
 			if (builder.Options ["GroupCodeBehind"]) {
 				ProjectFile file = (ProjectFile) dataObject;
-				IClass cls = DesignerSupport.Service.CodeBehindService.GetChildClass (file);
-				if (cls is MonoDevelop.DesignerSupport.CodeBehindService.NotFoundClass) {
+				CodeBehindClass cls = DesignerSupport.Service.CodeBehindService.GetChildClass (file);
+				if (cls.IClass == null) {
 					builder.AddChild (cls);
 				} else {
-					IList<ProjectFile> children = DesignerSupport.Service.CodeBehindService.GetProjectFileChildren (file, cls);
+					IList<ProjectFile> children = DesignerSupport.Service.CodeBehindService.GetProjectFileChildren (file, cls.IClass);
 					foreach (ProjectFile child in children)
 						builder.AddChild (child);
 				}

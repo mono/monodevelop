@@ -1,5 +1,20 @@
 2007-09-19  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.DesignerSupport.mdp,
+	  MonoDevelop.DesignerSupport/CodeBehindService.cs,
+	  MonoDevelop.DesignerSupport.CodeBehind/CodeBehindMissingClassBuilder.cs,
+	  MonoDevelop.DesignerSupport.CodeBehind/CodeBehindProjectFileExtension.cs,
+	  MonoDevelop.DesignerSupport.CodeBehind/CodeBehindClassEventArgs.cs,
+	  MonoDevelop.DesignerSupport.CodeBehind/CodeBehindClass.cs, Makefile.am:
+	  In CodeBehind service, track class names rather than IClasses, as
+	  IClasses can change. Now much more careful to trigger only the
+	  rebuilding of nodes which need to be rebuilt. May still be some
+	  performance issues on large projects (from linear lookups of class
+	  names, and requirement for CodeBehind parent parsing to happen at
+	  project load time).
+
+2007-09-19  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.DesignerSupport.addin.xml,
 	  MonoDevelop.DesignerSupport/CodeBehindService.cs,
 	  MonoDevelop.DesignerSupport.CodeBehind/CodeBehindMissingClassBuilder.cs,
