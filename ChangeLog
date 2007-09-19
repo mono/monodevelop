@@ -1,3 +1,9 @@
+2007-09-20  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* configure.in, monodevelop.in: Mozilla detection script now checks paths
+	  for gtkembedmoz.so so that MD doesn't end up with an invalid Mozilla
+	  path.
+
 2007-09-14  Michael Hutchinson <mhutchinson@novell.com>
 
 	* configure.in,

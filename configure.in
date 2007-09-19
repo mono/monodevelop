@@ -312,45 +312,47 @@ AM_CONDITIONAL(ENABLE_ASPNET, [test x$enable_aspnet = xyes])
 #We need to know where Mozilla is for launch scripts and possible for AspNetEdit
 #Check pkg-config first
 MOZILLA_HOME="`$PKG_CONFIG --variable=libdir mozilla-gtkmozembed`"
-if !(test -n "$MOZILLA_HOME"); then
+if test ! -e "$MOZILLA_HOME/libgtkembedmoz.so"; then
 	MOZILLA_HOME="`$PKG_CONFIG --variable=libdir firefox-gtkmozembed`"
 fi
-if !(test -n "$MOZILLA_HOME"); then
+if test ! -e "$MOZILLA_HOME/libgtkembedmoz.so"; then
 	MOZILLA_HOME="`$PKG_CONFIG --variable=libdir xulrunner-gtkmozembed`"
 fi
 
 #if MOZILLA_HOME is still empty, try to detect without pkg_config
 #(NOTE: any changes to this block should be kept in sync with the one in monodevelop.in)
-if !(test -n "$MOZILLA_HOME"); then
+MOZFILE="libgtkembedmoz.so"
+find_libgtkembedmoz ()
+{
+	MOZDIR=$MOZILLA_FIVE_HOME
+	if test -e "$MOZDIR/$MOZFILE"; then echo $MOZDIR; return; fi
+	
+	MOZDIR=$(grep -h GRE_PATH= /etc/gre.d/*.conf | cut -d '"' -f 2 -d = | head -n 1) #"
+	if test -e "$MOZDIR/$MOZFILE"; then echo $MOZDIR; return; fi
+	
 	mozilla_script=$(which mozilla 2> /dev/null)
 	firefox_script=$(which firefox 2> /dev/null)
-	if test -n "$MOZILLA_FIVE_HOME"; then
-		MOZILLA_HOME=$MOZILLA_FIVE_HOME
-	elif grep GRE_PATH /etc/gre.d/*.conf > /dev/null 2>&1 ; then
-		MOZILLA_HOME=$(grep -h GRE_PATH= /etc/gre.d/*.conf | cut -d '"' -f 2 -d = | head -n 1) #"
-	elif test -n "$mozilla_script" ; then
-		if grep "MOZ_DIST_LIB=" $mozilla_script > /dev/null; then
-			MOZILLA_HOME=$(grep "MOZ_DIST_LIB=" $mozilla_script | cut -d '"' -f 2 | cut -d '=' -f 2)
-		elif grep "MOZILLA_FIVE_HOME=" $mozilla_script > /dev/null ; then
-			MOZILLA_HOME=$(grep "MOZILLA_FIVE_HOME=" $mozilla_script | cut -d '"' -f 2 | cut -d '=' -f 2)
-		fi
-	elif test -n "$firefox_script" ; then
-		if grep "MOZ_DIST_LIB=" $firefox_script > /dev/null; then
-			MOZILLA_HOME=$(grep "MOZ_DIST_LIB=" $firefox_script | cut -d '"' -f 2 | cut -d '=' -f 2)
-		elif grep "MOZILLA_FIVE_HOME=" $firefox_script > /dev/null ; then
-			MOZILLA_HOME=$(grep "MOZILLA_FIVE_HOME=" $firefox_script | cut -d '"' -f 2 | cut -d '=' -f 2)
-		elif grep "MOZILLA_LIBDIR=" $firefox_script > /dev/null ; then
-			MOZILLA_HOME=$(grep "MOZILLA_LIBDIR=" $firefox_script | cut -d '"' -f 2 | cut -d '=' -f 2)
-		elif grep "moz_libdir=" $firefox_script > /dev/null ; then
-			MOZILLA_HOME=$(grep "moz_libdir=" $firefox_script | cut -d '"' -f 2 | cut -d '=' -f 2)
-		fi
-	fi
-	if test -z "$MOZILLA_HOME"; then
-		if test "x$enable_aspnetedit" = "xyes"; then
-			AC_MSG_ERROR([Cannot detect Mozilla library directory. AspNetEdit addin cannot be built.])
-		else
-			AC_MSG_WARN([Cannot detect Mozilla library directory. WelcomePage addin may not be able to function.])
-		fi
+	
+	for runtime in "$mozilla_script $firefox_script"; do
+		if test ! -e "$runtime_script"; then continue; fi
+		MOZDIR=$(grep "MOZ_DIST_LIB=" $runtime_script | cut -d '"' -f 2 | cut -d '=' -f 2)
+		if test -e "$MOZDIR/$MOZFILE"; then echo $MOZDIR; return; fi
+		MOZDIR=$(grep "MOZILLA_FIVE_HOME=" $runtime_script | cut -d '"' -f 2 | cut -d '=' -f 2)
+		if test -e "$MOZDIR/$MOZFILE"; then echo $MOZDIR; return; fi
+		MOZDIR=$(grep "MOZILLA_LIBDIR=" $runtime_script | cut -d '"' -f 2 | cut -d '=' -f 2)
+		if test -e "$MOZDIR/$MOZFILE"; then echo $MOZDIR; return; fi
+		MOZDIR=$(grep "moz_libdir=" $runtime_script | cut -d '"' -f 2 | cut -d '=' -f 2)
+		if test -e "$MOZDIR/$MOZFILE"; then echo $MOZDIR; return; fi
+	done
+}
+
+MOZILLA_HOME=`find_libgtkembedmoz`
+
+if test -z "$MOZILLA_HOME"; then
+	if test "x$enable_aspnetedit" = "xyes"; then
+		AC_MSG_ERROR([Cannot detect Mozilla library directory. AspNetEdit addin cannot be built.])
+	else
+		AC_MSG_WARN([Cannot detect Mozilla library directory. WelcomePage addin may not be able to function.])
 	fi
 fi
 	

@@ -16,29 +16,40 @@ reWrite() {
     echo "$ret"
 }
 
+
 #(NOTE: any changes to this block should be kept in sync with the one in configure.in)
-mozilla_script=`which mozilla 2> /dev/null`
-firefox_script=`which firefox 2> /dev/null`
-if test -n "$MOZILLA_FIVE_HOME"; then
-	MOZILLA_HOME=$MOZILLA_FIVE_HOME
-elif grep GRE_PATH /etc/gre.d/*.conf > /dev/null 2>&1 ; then
-	MOZILLA_HOME=$(grep -h GRE_PATH= /etc/gre.d/*.conf | cut -d '"' -f 2 -d = | head -n 1)
-elif test -f @MOZILLA_HOME@/chrome/comm.jar ; then
+MOZFILE="libgtkembedmoz.so"
+find_libgtkembedmoz ()
+{
+	MOZDIR=$MOZILLA_FIVE_HOME
+	if test -e "$MOZDIR/$MOZFILE"; then echo $MOZDIR; return; fi
+	
+	MOZDIR=$(grep -h GRE_PATH= /etc/gre.d/*.conf | cut -d '"' -f 2 -d = | head -n 1) #"
+	if test -e "$MOZDIR/$MOZFILE"; then echo $MOZDIR; return; fi
+	
+	mozilla_script=$(which mozilla 2> /dev/null)
+	firefox_script=$(which firefox 2> /dev/null)
+	
+	for runtime in "$mozilla_script $firefox_script"; do
+		if test ! -e "$runtime_script"; then continue; fi
+		MOZDIR=$(grep "MOZ_DIST_LIB=" $runtime_script | cut -d '"' -f 2 | cut -d '=' -f 2)
+		if test -e "$MOZDIR/$MOZFILE"; then echo $MOZDIR; return; fi
+		MOZDIR=$(grep "MOZILLA_FIVE_HOME=" $runtime_script | cut -d '"' -f 2 | cut -d '=' -f 2)
+		if test -e "$MOZDIR/$MOZFILE"; then echo $MOZDIR; return; fi
+		MOZDIR=$(grep "MOZILLA_LIBDIR=" $runtime_script | cut -d '"' -f 2 | cut -d '=' -f 2)
+		if test -e "$MOZDIR/$MOZFILE"; then echo $MOZDIR; return; fi
+		MOZDIR=$(grep "moz_libdir=" $runtime_script | cut -d '"' -f 2 | cut -d '=' -f 2)
+		if test -e "$MOZDIR/$MOZFILE"; then echo $MOZDIR; return; fi
+	done
+}
+
+if test -e "@MOZILLA_HOME@/$MOZFILE"; then
 	MOZILLA_HOME=@MOZILLA_HOME@
-elif test -n "$mozilla_script"  && grep "MOZILLA_FIVE_HOME=" $mozilla_script > /dev/null ; then
-	MOZILLA_HOME=`grep "MOZILLA_FIVE_HOME=" $mozilla_script | cut -d '"' -f 2 | cut -d '=' -f 2`
-elif test -n "$firefox_script" ; then
-	if grep "MOZILLA_FIVE_HOME=" $firefox_script > /dev/null ; then
-		MOZILLA_HOME=`grep "MOZILLA_FIVE_HOME=" $firefox_script | cut -d '"' -f 2 | cut -d '=' -f 2`
-	elif grep "MOZILLA_LIBDIR=" $firefox_script > /dev/null ; then
-		MOZILLA_HOME=`grep "MOZILLA_LIBDIR=" $firefox_script | cut -d '"' -f 2 | cut -d '=' -f 2`
-	elif grep "moz_libdir=" $firefox_script > /dev/null ; then
-		MOZILLA_HOME=`grep "moz_libdir=" $firefox_script | cut -d '"' -f 2 | cut -d '=' -f 2`
+else
+	MOZILLA_HOME=`find_libgtkembedmoz`
+	if test ! -e "$MOZILLA_HOME/$MOZFILE"; then
+		echo "WARNING: Cannot find Mozilla directory containing $MOZFILE. Some Addins may not be able to function. Please set MOZILLA_FIVE_HOME to your Mozilla directory."
 	fi
-fi
-if test -z "$MOZILLA_HOME"; then
-	echo "Cannot find mozilla installation directory. Please set MOZILLA_FIVE_HOME to your mozilla directory"
-	exit 1
 fi
 
 MD_BIN_PATH=@prefix@/lib/monodevelop/bin
