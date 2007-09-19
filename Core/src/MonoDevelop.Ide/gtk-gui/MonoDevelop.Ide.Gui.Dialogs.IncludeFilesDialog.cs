@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.labelSpacer1.Name = "labelSpacer1";
             this.labelSpacer1.Xalign = 0F;
             this.labelSpacer1.Yalign = 0F;
-            this.labelSpacer1.LabelProp = Mono.Unix.Catalog.GetString("   ");
+            this.labelSpacer1.LabelProp = "   ";
             this.hbox42.Add(this.labelSpacer1);
             Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.hbox42[this.labelSpacer1]));
             w6.Position = 0;

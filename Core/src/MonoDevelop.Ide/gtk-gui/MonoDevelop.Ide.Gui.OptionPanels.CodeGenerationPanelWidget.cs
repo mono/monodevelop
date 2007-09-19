@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.label27.Name = "label27";
             this.label27.Xalign = 0F;
             this.label27.Yalign = 0F;
-            this.label27.LabelProp = Mono.Unix.Catalog.GetString("    ");
+            this.label27.LabelProp = "    ";
             this.hbox6.Add(this.label27);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox6[this.label27]));
             w2.Position = 0;
@@ -169,7 +169,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.label15.Name = "label15";
             this.label15.Xalign = 0F;
             this.label15.Yalign = 0F;
-            this.label15.LabelProp = Mono.Unix.Catalog.GetString("    ");
+            this.label15.LabelProp = "    ";
             this.hbox7.Add(this.label15);
             Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.hbox7[this.label15]));
             w11.Position = 0;

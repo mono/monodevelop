@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Container child vbox3.Gtk.Box+BoxChild
             this.QuestionLabel = new Gtk.Label();
             this.QuestionLabel.Name = "QuestionLabel";
-            this.QuestionLabel.LabelProp = Mono.Unix.Catalog.GetString("Are you sure you want to delete from project ?");
+            this.QuestionLabel.LabelProp = Mono.Unix.Catalog.GetString("Are you sure you want to delete the file from project?");
             this.QuestionLabel.Wrap = true;
             this.vbox3.Add(this.QuestionLabel);
             Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox3[this.QuestionLabel]));

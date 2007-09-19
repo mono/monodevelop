@@ -1,3 +1,22 @@
+2007-09-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.DeleteFileDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.CodeGenerationPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.IncludeFilesDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.ExternalToolPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.SelectStylePanelWidget.cs:
+	  Updated.
+	* MonoDevelop.Ide.Gui/Workbench.cs: In SaveAll, make a copy of the documents
+	  list, since it may change.
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: Registered exception handler in
+	  GLib.ExceptionManager.
+
 2007-09-15  Jérémie Laval <jeremie.laval@gmail.com>
  
 	* MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs: Added Properties property

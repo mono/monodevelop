@@ -61,6 +61,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		public int Run (string[] args)
 		{
+			SetupExceptionManager ();
+			
 			Gnome.Vfs.Vfs.Initialize ();
 			InternalLog.Initialize ();
 			MonoDevelopOptions options = new MonoDevelopOptions ();
@@ -330,6 +332,32 @@ namespace MonoDevelop.Ide.Gui
 				Console.WriteLine (ex);
 				return true;
 			}
+		}
+		
+		void SetupExceptionManager ()
+		{
+			Type t = typeof(GLib.Object).Assembly.GetType ("GLib.ExceptionManager");
+			if (t == null)
+				return;
+			
+			EventInfo ev = t.GetEvent ("UnhandledException");
+			Type delType = typeof(GLib.Object).Assembly.GetType ("GLib.UnhandledExceptionHandler");
+			MethodInfo met = GetType().GetMethod ("OnUnhandledException", BindingFlags.Instance | BindingFlags.NonPublic);
+			Delegate del = Delegate.CreateDelegate (delType, this, met);
+			ev.AddEventHandler (this, del);
+		}
+		
+		void OnUnhandledException (UnhandledExceptionEventArgs args)
+		{
+			Gtk.Window[] wins = Gtk.Window.ListToplevels ();
+			Gtk.Window win = IdeApp.Workbench != null && IdeApp.Workbench.RootWindow != null ? IdeApp.Workbench.RootWindow : null;
+			foreach (Gtk.Window w in wins) {
+				if (w.IsActive && w.Visible && w.Type == Gtk.WindowType.Toplevel) {
+					win = w;
+					break;
+				}
+			}
+			Services.MessageService.ShowError ((Exception) args.ExceptionObject, "Unhandled Exception", win, true);
 		}
 	}
 	

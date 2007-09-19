@@ -247,7 +247,11 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void SaveAll ()
 		{
-			foreach (Document doc in Documents)
+			// Make a copy of the list, since it may change during save
+			Document[] docs = new Document [Documents.Count];
+			Documents.CopyTo (docs, 0);
+			
+			foreach (Document doc in docs)
 				doc.Save ();
 		}
 		

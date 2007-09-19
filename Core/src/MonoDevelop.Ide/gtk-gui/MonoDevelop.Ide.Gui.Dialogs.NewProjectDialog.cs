@@ -200,7 +200,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.spacer2.Name = "spacer2";
             this.spacer2.Xalign = 0F;
             this.spacer2.Yalign = 0F;
-            this.spacer2.LabelProp = Mono.Unix.Catalog.GetString("    ");
+            this.spacer2.LabelProp = "    ";
             this.hbox3.Add(this.spacer2);
             Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.hbox3[this.spacer2]));
             w12.Position = 0;
@@ -345,7 +345,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Notebook tab
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
-            this.label1.LabelProp = Mono.Unix.Catalog.GetString("page1");
+            this.label1.LabelProp = "page1";
             this.notebook.SetTabLabel(this.vbox1, this.label1);
             this.label1.ShowAll();
             // Container child notebook.Gtk.Notebook+NotebookChild
@@ -378,7 +378,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Notebook tab
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
-            this.label2.LabelProp = Mono.Unix.Catalog.GetString("page2");
+            this.label2.LabelProp = "page2";
             this.notebook.SetTabLabel(this.vbox5, this.label2);
             this.label2.ShowAll();
             w1.Add(this.notebook);

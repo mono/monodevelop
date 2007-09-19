@@ -75,7 +75,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             // Container child hbox50.Gtk.Box+BoxChild
             this.label115 = new Gtk.Label();
             this.label115.Name = "label115";
-            this.label115.LabelProp = Mono.Unix.Catalog.GetString("      ");
+            this.label115.LabelProp = "      ";
             this.hbox50.Add(this.label115);
             Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.hbox50[this.label115]));
             w4.Position = 0;

@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.button1547.CanFocus = true;
             this.button1547.Name = "button1547";
             this.button1547.UseUnderline = true;
-            this.button1547.Label = Mono.Unix.Catalog.GetString("button1547");
+            this.button1547.Label = "button1547";
             this.AddActionWidget(this.button1547, 0);
             Gtk.ButtonBox.ButtonBoxChild w6 = ((Gtk.ButtonBox.ButtonBoxChild)(w5[this.button1547]));
             w6.Expand = false;
@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.button1548.CanFocus = true;
             this.button1548.Name = "button1548";
             this.button1548.UseUnderline = true;
-            this.button1548.Label = Mono.Unix.Catalog.GetString("button1548");
+            this.button1548.Label = "button1548";
             this.AddActionWidget(this.button1548, 0);
             Gtk.ButtonBox.ButtonBoxChild w7 = ((Gtk.ButtonBox.ButtonBoxChild)(w5[this.button1548]));
             w7.Position = 1;
