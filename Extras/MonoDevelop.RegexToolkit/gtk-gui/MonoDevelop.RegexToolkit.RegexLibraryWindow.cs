@@ -74,7 +74,7 @@ namespace MonoDevelop.RegexToolkit {
         private Gtk.Button buttonOk;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.RegexToolkit.RegexLibraryWindow
             this.Name = "MonoDevelop.RegexToolkit.RegexLibraryWindow";
             this.Title = Mono.Unix.Catalog.GetString("RegexLibraryWindow");

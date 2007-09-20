@@ -84,7 +84,7 @@ namespace MonoDevelop.RegexToolkit {
         private Gtk.Button buttonSearchReplace;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.RegexToolkit.RegexToolkitWindow
             this.Name = "MonoDevelop.RegexToolkit.RegexToolkitWindow";
             this.Title = Mono.Unix.Catalog.GetString("Regular Expression Toolkit");
@@ -133,6 +133,7 @@ namespace MonoDevelop.RegexToolkit {
             this.label1.Name = "label1";
             this.label1.LabelProp = Mono.Unix.Catalog.GetString("Regular Expression");
             this.notebook1.SetTabLabel(this.scrolledwindow7, this.label1);
+            this.label1.ShowAll();
             // Container child notebook1.Gtk.Notebook+NotebookChild
             this.scrolledwindow5 = new Gtk.ScrolledWindow();
             this.scrolledwindow5.CanFocus = true;
@@ -159,6 +160,7 @@ namespace MonoDevelop.RegexToolkit {
             this.label2.Name = "label2";
             this.label2.LabelProp = Mono.Unix.Catalog.GetString("Options");
             this.notebook1.SetTabLabel(this.scrolledwindow5, this.label2);
+            this.label2.ShowAll();
             this.vbox6.Add(this.notebook1);
             Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox6[this.notebook1]));
             w7.Position = 0;
@@ -289,6 +291,7 @@ namespace MonoDevelop.RegexToolkit {
             this.label3.Name = "label3";
             this.label3.LabelProp = Mono.Unix.Catalog.GetString("Matches");
             this.notebook2.SetTabLabel(this.scrolledwindow2, this.label3);
+            this.label3.ShowAll();
             // Container child notebook2.Gtk.Notebook+NotebookChild
             this.scrolledwindow4 = new Gtk.ScrolledWindow();
             this.scrolledwindow4.CanFocus = true;
@@ -312,6 +315,7 @@ namespace MonoDevelop.RegexToolkit {
             this.label4.Name = "label4";
             this.label4.LabelProp = Mono.Unix.Catalog.GetString("Replace");
             this.notebook2.SetTabLabel(this.scrolledwindow4, this.label4);
+            this.label4.ShowAll();
             this.vpaned1.Add(this.notebook2);
             this.vbox2.Add(this.vpaned1);
             Gtk.Box.BoxChild w27 = ((Gtk.Box.BoxChild)(this.vbox2[this.vpaned1]));

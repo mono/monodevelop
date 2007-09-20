@@ -20,7 +20,7 @@ namespace MonoDevelop.RegexToolkit {
         private Gtk.Button buttonOk;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.RegexToolkit.UpdateInProgressDialog
             this.Name = "MonoDevelop.RegexToolkit.UpdateInProgressDialog";
             this.Title = Mono.Unix.Catalog.GetString("Update in progress");
