@@ -34,7 +34,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui {
         private Gtk.Button button24;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.VersionControl.Subversion.Gui.ClientCertificateDialog
             this.Events = ((Gdk.EventMask)(256));
             this.Name = "MonoDevelop.VersionControl.Subversion.Gui.ClientCertificateDialog";

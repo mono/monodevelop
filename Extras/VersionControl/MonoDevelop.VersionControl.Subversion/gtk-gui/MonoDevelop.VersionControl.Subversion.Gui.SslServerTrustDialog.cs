@@ -68,7 +68,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui {
         private Gtk.Button button104;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.VersionControl.Subversion.Gui.SslServerTrustDialog
             this.Events = ((Gdk.EventMask)(256));
             this.Name = "MonoDevelop.VersionControl.Subversion.Gui.SslServerTrustDialog";
@@ -90,7 +90,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui {
             // Container child vbox2.Gtk.Box+BoxChild
             this.image1 = new Gtk.Image();
             this.image1.Name = "image1";
-            this.image1.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-dialog-warning", 48);
+            this.image1.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-dialog-warning", Gtk.IconSize.Dialog, 48);
             this.vbox2.Add(this.image1);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox2[this.image1]));
             w2.Position = 0;
@@ -313,7 +313,6 @@ namespace MonoDevelop.VersionControl.Subversion.Gui {
             this.radioAccept = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("Accept this certificate permanently"));
             this.radioAccept.CanFocus = true;
             this.radioAccept.Name = "radioAccept";
-            this.radioAccept.Active = true;
             this.radioAccept.DrawIndicator = true;
             this.radioAccept.UseUnderline = true;
             this.radioAccept.Group = new GLib.SList(System.IntPtr.Zero);
