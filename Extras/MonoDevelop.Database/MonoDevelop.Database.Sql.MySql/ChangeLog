@@ -1,0 +1,89 @@
+2007-09-16  Ben Motmans <ben.motmans@gmail.com> 
+
+	* Makefile.am: link to the correct Mono.Addins dll
+
+2007-09-07  Ben Motmans <ben.motmans@gmail.com> 
+
+	* MySqlSchemaProvider.cs, MySqlDbFactory.cs,
+	  MonoDevelop.Database.Sql.MySql.addin.xml: improved capabilities system
+
+2007-08-28  Ben Motmans <ben.motmans@gmail.com> 
+
+	* Makefile.am, MonoDevelop.Database.Sql.MySql.mdp: use project references
+	  instead of assembly references
+
+2007-08-28  Ben Motmans <ben.motmans@gmail.com> 
+
+	* Makefile.am: updated makefile
+
+2007-08-03  Ben Motmans <ben.motmans@gmail.com>
+
+	* MySqlConnectionProvider.cs: added support for an error message
+
+2007-08-02  Ben Motmans <ben.motmans@gmail.com>
+
+	* MySqlSchemaProvider.cs: also create triggers in the create table method
+
+2007-08-01  Ben Motmans <ben.motmans@gmail.com>
+
+	* MySqlSchemaProvider.cs: Catch exceptions and notify the user and various
+	small bugfixes
+
+2007-07-31  Ben Motmans <ben.motmans@gmail.com>
+
+	* MySqlDbFactory.cs, MySqlGuiProvider.cs: Added a GuiProvider
+	* MySqlSchemaProvider.cs: Implemented CreateTable
+
+2007-07-25  Ben Motmans <ben.motmans@gmail.com>
+
+	* MySqlPooledDbConnection.cs: expose the GetSchema method of the internal connection
+	* MySqlDbFactory.cs, MySqlSchemaProvider.cs: improved metadata support
+
+2007-07-18  Ben Motmans <ben.motmans@gmail.com>
+
+	* MySqlSchemaProvider.cs: SupportsSchemaOperation implementation, use of strongly typed
+	collections, Drop* and Rename* implementations
+
+2007-07-17  Ben Motmans <ben.motmans@gmail.com>
+
+	* Makefile.am: initial makefile
+	* MySqlDbFactory.cs: implemented methods required for the connection settings dialog
+	* MySqlSchemaProvider.cs: implemented GetDataType method
+
+2007-07-15  Ben Motmans <ben.motmans@gmail.com>
+
+	* MySqlDialect.cs: dialect implementation with keyword detection
+	* MySqlDbFactory.cs: use MySqlDialect instead of the obsolete Sql99Dialect
+
+2007-07-14  Ben Motmans <ben.motmans@gmail.com>
+
+	* MySqlConnectionProvider.cs, MySqlDbFactory.cs, MySqlSchemaProvider.cs: small changes
+	to reflect API changes
+	* MySqlPooledDbConnection.cs: implementation of ConnectionPool aware connection
+	
+
+2007-07-10  Ben Motmans <ben.motmans@gmail.com>
+
+	* MySqlConnectionProvider.cs: set IsConnectionError property
+
+2007-07-05  Ben Motmans <ben.motmans@gmail.com>
+
+	* MySqlConnectionProvider.cs: ExecuteQueryAsDataSet and ExecuteQueryAsDataTable implementation
+	* MySqlDbFactory.cs: specified the ISqlDialect and added default connection settings
+	* Mono.Data.Sql.MySql.mdp: switched from the old ByteFX.Data provider to the new MySql.Data
+
+2007-07-02  Ben Motmans <ben.motmans@gmail.com>
+
+	* MySqlSchemaProvider.cs: 
+	Fixed several compilation issues
+	Added Close () statements when the IDataReader is no longer needed
+
+2007-07-01  Ben Motmans <ben.motmans@gmail.com>
+
+	* MySqlSchemaProvider.cs: 
+	* MySqlDbFactory.cs: 
+	* MySqlConnectionProvider.cs: 
+	Imported original code and splitted in 3 classes
+	GetDatabases, GetTableConstraints, GetViews, GetProcedures, GetViewColumns, GetProcedureColumns implementation
+	improved support for MySql 5.x for the GetTables method
+	updated sql statements to allow lazy loading

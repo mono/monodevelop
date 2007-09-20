@@ -1,0 +1,29 @@
+<Project name="MonoDevelop.Database.Sql.Oracle" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="DotNetProjectConfiguration">
+      <Output directory="../../../build/AddIns/MonoDevelop.Database" assembly="MonoDevelop.Database.Sql.Oracle" />
+      <Build debugmode="True" target="Library" />
+      <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+    <Configuration name="Release" ctype="DotNetProjectConfiguration">
+      <Output directory="../../../build/AddIns/MonoDevelop.Database" assembly="MonoDevelop.Database.Sql.Oracle" />
+      <Build debugmode="False" target="Library" />
+      <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+  </Configurations>
+  <Contents>
+    <File name="./OracleConnectionProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="./OracleSchemaProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Database.Sql.Oracle.addin.xml" subtype="Code" buildaction="FileCopy" />
+    <File name="./OracleDbFactory.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Schema" subtype="Directory" buildaction="Compile" />
+  </Contents>
+  <References>
+    <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Data.OracleClient, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Database.Sql" />
+  </References>
+</Project>

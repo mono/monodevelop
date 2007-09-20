@@ -1,0 +1,20 @@
+2007-07-10  Ben Motmans <ben.motmans@gmail.com>
+
+	* SybaseConnectionProvider.cs: set IsConnectionError property
+
+2007-07-05  Ben Motmans <ben.motmans@gmail.com>
+
+	* SybaseConnectionProvider.cs: ExecuteQueryAsDataSet and ExecuteQueryAsDataTable implementation
+	* SybaseDbFactory.cs: specified the ISqlDialect and added default connection settings
+
+2007-07-02  Ben Motmans <ben.motmans@gmail.com>
+
+	* SybaseSchemaProvider.cs: 
+	Imported the old DbProvider and updated all to code to use the new API
+
+2007-07-01  Ben Motmans <ben.motmans@gmail.com>
+
+	* SybaseSchemaProvider.cs: 
+	* SybaseDbFactory.cs: 
+	* SybaseConnectionProvider.cs: 
+	Imported original code and splitted in 3 classes

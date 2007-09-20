@@ -1,0 +1,41 @@
+<Addin	id		= "Database.Sql"
+	namespace	= "MonoDevelop"
+	name		= "Mono Data Sql"
+	author		= "Christian Hergert, Ben Motmans"
+	copyright	= "MIT X11"
+	url		= "http://www.monodevelop.com"
+	description	= "Database Module"
+	version		= "0.15.0">
+    
+	<Runtime>
+		<Import assembly="MonoDevelop.Database.Sql.dll"/>
+	</Runtime>
+	
+	<ExtensionPoint path = "/MonoDevelop/Database/Sql" name = "MonoDevelop database providers">
+		<Description>MonoDevelop database factory addins.</Description>
+		<ExtensionNode name="DatabaseFactory" type="MonoDevelop.Database.Sql.DbFactoryCodon">
+			<ExtensionNode name="Actions" type="MonoDevelop.Database.Sql.ActionCodon"/>
+			<ExtensionNode name="Capabilities" type="MonoDevelop.Database.Sql.CapabilitiesCodon"/>
+		</ExtensionNode>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/Database/Capabilities" name = "Capability flags">
+		<ExtensionNode name="CapabilityFlags" type="MonoDevelop.Database.Sql.CapabilityFlagsCodon"/>
+	</ExtensionPoint>
+	
+	<Extension path = "/MonoDevelop/Database/Capabilities">
+		<CapabilityFlags category="ConnectionSettings" class="MonoDevelop.Database.Sql.ConnectionSettingsCapabilities" />
+		<CapabilityFlags category="CheckConstraint" class="MonoDevelop.Database.Sql.CheckConstraintCapabilities" />
+		<CapabilityFlags category="TableColumn" class="MonoDevelop.Database.Sql.ColumnCapabilities" />
+		<CapabilityFlags category="ForeignKeyConstraint" class="MonoDevelop.Database.Sql.ForeignKeyConstraintCapabilities" />
+		<CapabilityFlags category="Index" class="MonoDevelop.Database.Sql.IndexCapabilities" />
+		<CapabilityFlags category="Parameter" class="MonoDevelop.Database.Sql.ParameterCapabilities" />
+		<CapabilityFlags category="PrimaryKeyConstraint" class="MonoDevelop.Database.Sql.PrimaryKeyConstraintCapabilities" />
+		<CapabilityFlags category="Procedure" class="MonoDevelop.Database.Sql.ProcedureCapabilities" />
+		<CapabilityFlags category="Table" class="MonoDevelop.Database.Sql.TableCapabilities" />
+		<CapabilityFlags category="Trigger" class="MonoDevelop.Database.Sql.TriggerCapabilities" />
+		<CapabilityFlags category="UniqueConstraint" class="MonoDevelop.Database.Sql.UniqueConstraintCapabilities" />
+		<CapabilityFlags category="View" class="MonoDevelop.Database.Sql.ViewCapabilities" />
+		<CapabilityFlags category="User" class="MonoDevelop.Database.Sql.UserCapabilities" />
+	</Extension>
+</Addin>

@@ -1,0 +1,77 @@
+<Project name="MonoDevelop.Database.ConnectionManager" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="DotNetProjectConfiguration">
+      <Output directory="../../../build/AddIns/MonoDevelop.Database" assembly="MonoDevelop.Database.ConnectionManager" />
+      <Build debugmode="True" target="Library" />
+      <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+    <Configuration name="Release" ctype="DotNetProjectConfiguration">
+      <Output directory="../../../build/AddIns/MonoDevelop.Database" assembly="MonoDevelop.Database.ConnectionManager" />
+      <Build debugmode="False" target="Library" />
+      <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+  </Configurations>
+  <Contents>
+    <File name="./ConnectionManagerPad.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Database.ConnectionManager.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./NodeBuilders/ConnectionContextCollectionNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./NodeBuilders/ConnectionContextNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./NodeBuilders/TablesNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./NodeBuilders/ViewsNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./NodeBuilders/ProceduresNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./NodeBuilders/UsersNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./NodeBuilders/ConstraintsNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./FakeNodes.cs" subtype="Code" buildaction="Compile" />
+    <File name="./ConnectionManagerCommands.cs" subtype="Code" buildaction="Compile" />
+    <File name="./NodeBuilders/TableNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./NodeBuilders/UserNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./NodeBuilders/ProcedureNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./NodeBuilders/ViewNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./NodeBuilders/ColumnNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./NodeBuilders/ColumnsNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./NodeBuilders/ConstraintNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./NodeBuilders/AggregatesNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./NodeBuilders/GroupsNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./NodeBuilders/LanguagesNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./NodeBuilders/OperatorsNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./NodeBuilders/RolesNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./NodeBuilders/RulesNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./NodeBuilders/SequencesNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./NodeBuilders/TriggersNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./NodeBuilders/TypesNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./NodeBuilders/ParametersNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./NodeBuilders/ParameterNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+  </Contents>
+  <References>
+    <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Database.Components" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Database.Designer" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Database.Sql" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Database.Query" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core.Gui" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Components" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Ide" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects" />
+    <ProjectReference type="Project" localcopy="True" refto="Mono.Addins" />
+  </References>
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
+    <BuildFilesVar Sync="True" Name="FILES" />
+    <DeployFilesVar Sync="True" Name="EXTRA_DIST" />
+    <ResourcesVar Sync="True" Name="RES" />
+    <OthersVar />
+    <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
+  </MonoDevelop.Autotools.MakefileInfo>
+</Project>

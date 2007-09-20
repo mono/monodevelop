@@ -1,0 +1,20 @@
+2007-07-10  Ben Motmans <ben.motmans@gmail.com>
+
+	* OdbcConnectionProvider.cs: set IsConnectionError property
+
+2007-07-05  Ben Motmans <ben.motmans@gmail.com>
+
+	* OdbcConnectionProvider.cs: ExecuteQueryAsDataSet and ExecuteQueryAsDataTable implementation
+	* OdbcDbFactory.cs: specified the ISqlDialect and added default connection settings
+
+2007-07-02  Ben Motmans <ben.motmans@gmail.com>
+
+	* OdbcSchemaProvider.cs: 
+	Imported the old DbProvider and updated all to code to use the new API
+
+2007-07-01  Ben Motmans <ben.motmans@gmail.com>
+
+	* OdbcSchemaProvider.cs: 
+	* OdbcDbFactory.cs: 
+	* OdbcConnectionProvider.cs: 
+	Imported original code and splitted in 3 classes

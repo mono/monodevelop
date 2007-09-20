@@ -1,0 +1,91 @@
+2007-09-19  Ben Motmans <ben.motmans@gmail.com> 
+
+	* MonoDevelop.Database.Sql.Sqlite.addin.xml: temporarily disabled the Create
+	  table command due to a bug in the database provider
+
+2007-09-16  Ben Motmans <ben.motmans@gmail.com> 
+
+	* Makefile.am: link to the correct Mono.Addins dll
+
+2007-09-07  Ben Motmans <ben.motmans@gmail.com> 
+
+	* SqliteSchemaProvider.cs, SqliteDbFactory.cs,
+	  MonoDevelop.Database.Sql.Sqlite.addin.xml: improved capabilities system
+
+2007-08-28  Ben Motmans <ben.motmans@gmail.com> 
+
+	* MonoDevelop.Database.Sql.Sqlite.mdp, Makefile.am: use project references
+	  instead of assembly references
+
+2007-08-28  Ben Motmans <ben.motmans@gmail.com> 
+
+	* Makefile.am: updated makefile
+
+2007-08-03  Ben Motmans <ben.motmans@gmail.com>
+
+	* SqliteConnectionProvider.cs: added support for an error message
+	* SqliteSchemaProvider.cs: fixed a bug in the CreateTable method
+
+2007-08-02  Ben Motmans <ben.motmans@gmail.com>
+
+	* SqliteSchemaProvider.cs: CreateTrigger implementation
+
+2007-08-01  Ben Motmans <ben.motmans@gmail.com>
+
+	* SqliteSchemaProvider.cs: Catch exceptions and notify the user and various
+	small bugfixes
+
+2007-07-31  Ben Motmans <ben.motmans@gmail.com>
+
+	* SqliteDbFactory.cs, SqliteGuiProvider.cs: Added a GuiProvider
+	* SqliteSchemaProvider.cs: small api changes
+
+2007-07-25  Ben Motmans <ben.motmans@gmail.com>
+
+	* SqliteDbFactory.cs: Added support for a save database dialog
+	* SqliteConnectionProvider.cs, SqlitePooledDbConnection.cs: moved from
+	Mono.Data.SqliteClient to Mono.Data.Sqlite
+	* SqliteSchemaProvider.cs: added meta data information, support for GetDataTypes,
+	CreateTable, DropDatabase and CreateDatabase
+
+2007-07-18  Ben Motmans <ben.motmans@gmail.com>
+
+	* SqliteSchemaProvider.cs: SupportsSchemaOperation implementation, use of strongly typed
+	collections, Drop* and Rename* implementations
+
+2007-07-17  Ben Motmans <ben.motmans@gmail.com>
+
+	* Makefile.am: initial makefile
+	* SqliteDbFactory.cs: implemented methods required for the connection settings dialog
+
+2007-07-15  Ben Motmans <ben.motmans@gmail.com>
+
+	* SqliteDialect.cs: dialect implementation with keyword detection
+	* SqliteDbFactory.cs: use SqliteDialect instead of the obsolete Sql99Dialect
+
+2007-07-14  Ben Motmans <ben.motmans@gmail.com>
+
+	* SqliteConnectionProvider.cs, SqliteDbFactory.cs, SqliteSchemaProvider.cs: small changes
+	to reflect API changes
+	* SqlitePooledDbConnection.cs: implementation of ConnectionPool aware connection
+
+2007-07-10  Ben Motmans <ben.motmans@gmail.com>
+
+	* SqliteConnectionProvider.cs: set IsConnectionError property
+
+2007-07-05  Ben Motmans <ben.motmans@gmail.com>
+
+	* SqliteConnectionProvider.cs: ExecuteQueryAsDataSet and ExecuteQueryAsDataTable implementation
+	* SqliteDbFactory.cs: specified the ISqlDialect and added default connection settings
+
+2007-07-02  Ben Motmans <ben.motmans@gmail.com>
+
+	* SqliteSchemaProvider.cs: 
+	Imported the old DbProvider and updated all to code to use the new API
+
+2007-07-01  Ben Motmans <ben.motmans@gmail.com>
+
+	* SqliteSchemaProvider.cs: 
+	* SqliteDbFactory.cs: 
+	* SqliteConnectionProvider.cs: 
+	Imported original code and splitted in 3 classes
