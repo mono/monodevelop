@@ -1,3 +1,8 @@
+2007-09-20  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* ChangeLogAddIn.addin.xml: Added an Other section in the MD property dialog
+	  and moved some options there to avoid too many branches.
+
 2007-09-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CommitDialogExtensionWidget.cs: Regenerate changelog entries after
