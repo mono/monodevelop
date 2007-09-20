@@ -48,8 +48,6 @@ namespace MonoDevelop.DesignerSupport
 		//TODO: currently case-sensitive, so some languages may not like this
 		const bool ignoreCase = false;
 		
-		private static ITextFileProvider openedFileProvider = new OpenDocumentFileProvider ();
-		
 		private BindingService ()
 		{
 		}
@@ -137,24 +135,8 @@ namespace MonoDevelop.DesignerSupport
 		public static CodeRefactorer GetCodeGenerator ()
 		{			
 			CodeRefactorer cr = new CodeRefactorer (IdeApp.ProjectOperations.CurrentOpenCombine, IdeApp.ProjectOperations.ParserDatabase);
-			cr.TextFileProvider = openedFileProvider;
+			cr.TextFileProvider = OpenDocumentFileProvider.Instance;
 			return cr;
-		}
-		
-		//copied from MonoDevelop.GtkCore.GuiBuilder
-		private class OpenDocumentFileProvider: ITextFileProvider
-		{
-			public IEditableTextFile GetEditableTextFile (string filePath)
-			{
-				foreach (Document doc in IdeApp.Workbench.Documents) {
-					//FIXME: look in other views
-					if (doc.FileName == filePath) {
-						IEditableTextFile ef = doc.GetContent<IEditableTextFile> ();
-						if (ef != null) return ef;
-					}
-				}
-				return null;
-			}
 		}
 		
 		//TODO: check accessibility

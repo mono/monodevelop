@@ -86,6 +86,7 @@ FILES =  \
 	MonoDevelop.DesignerSupport/DesignerSupportService.cs \
 	MonoDevelop.DesignerSupport/IPropertyProvider.cs \
 	MonoDevelop.DesignerSupport/MemberExistsException.cs \
+	MonoDevelop.DesignerSupport/OpenDocumentFileProvider.cs \
 	MonoDevelop.DesignerSupport/PropertyPad.cs \
 	MonoDevelop.DesignerSupport/RemoteDesignerProcess.cs \
 	MonoDevelop.DesignerSupport/ToolboxPad.cs \
