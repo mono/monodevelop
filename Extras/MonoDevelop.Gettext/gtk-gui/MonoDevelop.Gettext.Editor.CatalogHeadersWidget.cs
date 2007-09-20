@@ -76,7 +76,7 @@ namespace MonoDevelop.Gettext.Editor {
         private Gtk.Label label2;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Gettext.Editor.CatalogHeadersWidget
             Stetic.BinContainer.Attach(this);
             this.Name = "MonoDevelop.Gettext.Editor.CatalogHeadersWidget";
@@ -253,6 +253,7 @@ namespace MonoDevelop.Gettext.Editor {
             this.label3.Name = "label3";
             this.label3.LabelProp = Mono.Unix.Catalog.GetString("Project settings");
             this.notebook1.SetTabLabel(this.table1, this.label3);
+            this.label3.ShowAll();
             // Container child notebook1.Gtk.Notebook+NotebookChild
             this.table2 = new Gtk.Table(((uint)(6)), ((uint)(2)), false);
             this.table2.Name = "table2";
@@ -417,6 +418,7 @@ namespace MonoDevelop.Gettext.Editor {
             this.label2.Name = "label2";
             this.label2.LabelProp = Mono.Unix.Catalog.GetString("Language settings");
             this.notebook1.SetTabLabel(this.table2, this.label2);
+            this.label2.ShowAll();
             this.Add(this.notebook1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

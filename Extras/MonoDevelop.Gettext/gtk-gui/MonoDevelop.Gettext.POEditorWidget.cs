@@ -76,7 +76,7 @@ namespace MonoDevelop.Gettext {
         private Gtk.ProgressBar progressbar1;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Gettext.POEditorWidget
             Stetic.BinContainer w1 = Stetic.BinContainer.Attach(this);
             Gtk.UIManager w2 = new Gtk.UIManager();
@@ -198,6 +198,7 @@ namespace MonoDevelop.Gettext {
             this.label1.Name = "label1";
             this.label1.LabelProp = Mono.Unix.Catalog.GetString("page1");
             this.notebookTranslated.SetTabLabel(w11, this.label1);
+            this.label1.ShowAll();
             this.vbox4.Add(this.notebookTranslated);
             Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.vbox4[this.notebookTranslated]));
             w12.Position = 1;
@@ -305,6 +306,7 @@ namespace MonoDevelop.Gettext {
             this.label5.Name = "label5";
             this.label5.LabelProp = Mono.Unix.Catalog.GetString("page1");
             this.notebookPages.SetTabLabel(this.vbox7, this.label5);
+            this.label5.ShowAll();
             this.vbox2.Add(this.notebookPages);
             Gtk.Box.BoxChild w27 = ((Gtk.Box.BoxChild)(this.vbox2[this.notebookPages]));
             w27.Position = 0;
@@ -318,6 +320,7 @@ namespace MonoDevelop.Gettext {
             this.toolbarPages.Name = "toolbarPages";
             this.toolbarPages.ShowArrow = false;
             this.toolbarPages.ToolbarStyle = ((Gtk.ToolbarStyle)(0));
+            this.toolbarPages.IconSize = ((Gtk.IconSize)(3));
             this.hbox1.Add(this.toolbarPages);
             Gtk.Box.BoxChild w28 = ((Gtk.Box.BoxChild)(this.hbox1[this.toolbarPages]));
             w28.Position = 0;

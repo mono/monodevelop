@@ -70,7 +70,7 @@ namespace MonoDevelop.Gettext {
         private Gtk.Button buttonOk;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Gettext.TranslationProjectOptionsDialog
             this.Name = "MonoDevelop.Gettext.TranslationProjectOptionsDialog";
             this.Title = Mono.Unix.Catalog.GetString("Translation Options");
@@ -256,6 +256,7 @@ namespace MonoDevelop.Gettext {
             this.label1.Name = "label1";
             this.label1.LabelProp = Mono.Unix.Catalog.GetString("Settings");
             this.notebook1.SetTabLabel(this.vbox2, this.label1);
+            this.label1.ShowAll();
             // Container child notebook1.Gtk.Notebook+NotebookChild
             this.scrolledwindow1 = new Gtk.ScrolledWindow();
             this.scrolledwindow1.CanFocus = true;
@@ -279,6 +280,7 @@ namespace MonoDevelop.Gettext {
             this.label2.Name = "label2";
             this.label2.LabelProp = Mono.Unix.Catalog.GetString("Include in Projects");
             this.notebook1.SetTabLabel(this.scrolledwindow1, this.label2);
+            this.label2.ShowAll();
             w1.Add(this.notebook1);
             Gtk.Box.BoxChild w22 = ((Gtk.Box.BoxChild)(w1[this.notebook1]));
             w22.Position = 0;

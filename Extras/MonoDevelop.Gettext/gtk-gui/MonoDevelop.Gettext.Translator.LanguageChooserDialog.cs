@@ -60,7 +60,7 @@ namespace MonoDevelop.Gettext.Translator {
         private Gtk.Button buttonOK;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Gettext.Translator.LanguageChooserDialog
             this.Events = ((Gdk.EventMask)(256));
             this.Name = "MonoDevelop.Gettext.Translator.LanguageChooserDialog";

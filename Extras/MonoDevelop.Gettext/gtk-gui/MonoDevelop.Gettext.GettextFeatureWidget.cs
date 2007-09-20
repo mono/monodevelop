@@ -32,7 +32,7 @@ namespace MonoDevelop.Gettext {
         private Gtk.Button buttonRemove;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Gettext.GettextFeatureWidget
             Stetic.BinContainer.Attach(this);
             this.Name = "MonoDevelop.Gettext.GettextFeatureWidget";
