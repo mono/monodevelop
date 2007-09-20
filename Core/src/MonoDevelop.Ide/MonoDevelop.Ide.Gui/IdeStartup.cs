@@ -349,6 +349,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		void OnUnhandledException (UnhandledExceptionEventArgs args)
 		{
+			Console.WriteLine ("Unhandled Exception: ");
+			Console.WriteLine (args.ExceptionObject);
 			Gtk.Window[] wins = Gtk.Window.ListToplevels ();
 			Gtk.Window win = IdeApp.Workbench != null && IdeApp.Workbench.RootWindow != null ? IdeApp.Workbench.RootWindow : null;
 			foreach (Gtk.Window w in wins) {

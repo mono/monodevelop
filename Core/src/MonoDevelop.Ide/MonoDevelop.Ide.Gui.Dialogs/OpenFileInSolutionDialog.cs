@@ -282,15 +282,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 						CheckFile (file.FilePath, toMatch);
 					}
 				} else {
-					
 					string toMatch;
 					lock (matchLock) {
 						toMatch = matchString;
 					}
 					
 					IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (p);
-					foreach (IClass c in ctx.GetProjectContents())
+					foreach (IClass c in ctx.GetProjectContents()) {
 						CheckType (c, toMatch);
+					}
 				}
 			}
 		}
@@ -301,7 +301,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (toMatch.Length > 0 && !name.ToLower ().Contains (toMatch))
 				return;
 					
-			Pixbuf icon = GetIcon (Services.Icons.GetImageForFile (path));
+			string icon = Services.Icons.GetImageForFile (path);
 						
 			object[] data = new object[] { icon, name, path, path, -1, -1 };
 			AddItem (data);
@@ -315,7 +315,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (c.Region == null)
 				return;
 			
-			Pixbuf icon = GetIcon (Services.Icons.GetIcon (c));
+			string icon = Services.Icons.GetIcon (c);
 			
 			object[] data = new object [] { icon, c.Name, c.FullyQualifiedName, c.Region.FileName, c.Region.BeginLine, c.Region.BeginColumn };
 			AddItem (data);
@@ -341,7 +341,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			lock (searchResult) {
 				int max = Math.Min (50, searchResult.Count);
 				for (int n=0; n<max; n++) {
-					list.AppendValues ((object[]) searchResult [n]);
+					object[] data = (object[]) searchResult [n];
+					Pixbuf icon = GetIcon ((string)data[0]);
+					data[0] = icon;
+					list.AppendValues (data);
 				}
 				SelectFirstItem ();
 				searchResult.RemoveRange (0, max);
@@ -442,7 +445,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			toggleFiles.Active = searchFiles;
 			toggleTypes.Active = !searchFiles;
 			updating = false;
-			PerformSearch ();
+			if (Visible)
+				PerformSearch ();
 		}
 
 		protected virtual void OnToggleFilesClicked(object sender, System.EventArgs e)

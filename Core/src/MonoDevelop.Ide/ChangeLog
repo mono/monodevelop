@@ -1,5 +1,14 @@
 2007-09-20  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Dialogs/OpenFileInSolutionDialog.cs: Make sure icons
+	  are constructed in the gui thread (just in case). UpdateList doesn't
+	  need to perform the search if the dialog is not visible. Fixes a crash
+	  when hidding and showing the dialog.
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: Print unhandled exception to the
+	  output.
+
+2007-09-20  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.addin.xml: Added an Other section in the MD property
 	  dialog and moved some options there to avoid too many branches.
 
