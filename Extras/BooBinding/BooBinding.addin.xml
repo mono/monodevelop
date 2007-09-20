@@ -88,14 +88,9 @@
   <Extension path = "/MonoDevelop/Ide/WorkbenchContexts/Edit">
  	<ContextPad id = "BooBinding.Pads.BooShellPadContent" />
   </Extension>
-  <Extension path = "/MonoDevelop/Ide/OptionsDialogPanels">
-	<DialogPanel id    = "BooShellOptions"
-		     insertafter = "ToolsOptions"
-		     _label = "Boo Shell">
-		<DialogPanel    id = "General"
-				_label = "General"
-				class = "BooBinding.Gui.OptionPanels.GeneralBooShellPanel" />
-	</DialogPanel>
+  
+  <Extension path = "/MonoDevelop/Ide/OptionsDialogPanels/Other">
+		<DialogPanel _label = "Boo Shell" class = "BooBinding.Gui.OptionPanels.GeneralBooShellPanel" />
   </Extension>
   
 	<Extension path = "/MonoDevelop/Core/StockIcons">
