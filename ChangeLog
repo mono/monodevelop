@@ -1,3 +1,7 @@
+2007-09-20  Michael Hutchinson <mhutchinson@novell.com>
+
+	* configure.in, monodevelop.in: Fix Mozilla detection script.
+
 2007-09-20  Ben Motmans <ben.motmans@gmail.com>
 
 	* configure.in: detection of database providers

@@ -24,21 +24,20 @@ find_libgtkembedmoz ()
 	MOZDIR=$MOZILLA_FIVE_HOME
 	if test -e "$MOZDIR/$MOZFILE"; then echo $MOZDIR; return; fi
 	
-	MOZDIR=$(grep -h GRE_PATH= /etc/gre.d/*.conf | cut -d '"' -f 2 -d = | head -n 1) #"
+	MOZDIR=$(grep -h GRE_PATH= /etc/gre.d/*.conf 2>/dev/null | cut -d '"' -f 2 -d = | head -n 1) #"
 	if test -e "$MOZDIR/$MOZFILE"; then echo $MOZDIR; return; fi
 	
 	mozilla_script=$(which mozilla 2> /dev/null)
 	firefox_script=$(which firefox 2> /dev/null)
 	
-	for runtime in "$mozilla_script $firefox_script"; do
-		if test ! -e "$runtime_script"; then continue; fi
-		MOZDIR=$(grep "MOZ_DIST_LIB=" $runtime_script | cut -d '"' -f 2 | cut -d '=' -f 2)
+	for runtime_script in "$firefox_script $mozilla_script"; do
+		MOZDIR=$(grep "MOZ_DIST_LIB=" $runtime_script 2> /dev/null | cut -d '"' -f 2 | cut -d '=' -f 2)
 		if test -e "$MOZDIR/$MOZFILE"; then echo $MOZDIR; return; fi
-		MOZDIR=$(grep "MOZILLA_FIVE_HOME=" $runtime_script | cut -d '"' -f 2 | cut -d '=' -f 2)
+		MOZDIR=$(grep "MOZILLA_FIVE_HOME=" $runtime_script 2> /dev/null | cut -d '"' -f 2 | cut -d '=' -f 2)
 		if test -e "$MOZDIR/$MOZFILE"; then echo $MOZDIR; return; fi
-		MOZDIR=$(grep "MOZILLA_LIBDIR=" $runtime_script | cut -d '"' -f 2 | cut -d '=' -f 2)
+		MOZDIR=$(grep "MOZILLA_LIBDIR=" $runtime_script 2> /dev/null | cut -d '"' -f 2 | cut -d '=' -f 2)
 		if test -e "$MOZDIR/$MOZFILE"; then echo $MOZDIR; return; fi
-		MOZDIR=$(grep "moz_libdir=" $runtime_script | cut -d '"' -f 2 | cut -d '=' -f 2)
+		MOZDIR=$(grep "moz_libdir=" $runtime_script 2> /dev/null | cut -d '"' -f 2 | cut -d '=' -f 2)
 		if test -e "$MOZDIR/$MOZFILE"; then echo $MOZDIR; return; fi
 	done
 }
@@ -48,6 +47,7 @@ if test -e "@MOZILLA_HOME@/$MOZFILE"; then
 else
 	MOZILLA_HOME=`find_libgtkembedmoz`
 	if test ! -e "$MOZILLA_HOME/$MOZFILE"; then
+		MOZILLA_HOME=
 		echo "WARNING: Cannot find Mozilla directory containing $MOZFILE. Some Addins may not be able to function. Please set MOZILLA_FIVE_HOME to your Mozilla directory."
 	fi
 fi
