@@ -34,7 +34,7 @@ namespace MonoDevelop.Deployment.Linux {
         private Gtk.CheckButton checkPcFile;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Deployment.Linux.BasicOptionPanelWidget
             Stetic.BinContainer.Attach(this);
             this.Events = ((Gdk.EventMask)(256));

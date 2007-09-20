@@ -18,7 +18,7 @@ namespace MonoDevelop.Deployment.Linux {
         private Gtk.Label label6;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Deployment.Linux.DesktopPanelWidget
             Stetic.BinContainer.Attach(this);
             this.CanFocus = true;
@@ -37,6 +37,7 @@ namespace MonoDevelop.Deployment.Linux {
             this.label6.Name = "label6";
             this.label6.LabelProp = "page1";
             this.notebook2.SetTabLabel(w1, this.label6);
+            this.label6.ShowAll();
             this.Add(this.notebook2);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

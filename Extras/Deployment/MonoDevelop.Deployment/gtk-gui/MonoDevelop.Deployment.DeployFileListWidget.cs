@@ -24,7 +24,7 @@ namespace MonoDevelop.Deployment {
         private Gtk.HBox hbox2;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Deployment.DeployFileListWidget
             Stetic.BinContainer.Attach(this);
             this.Name = "MonoDevelop.Deployment.DeployFileListWidget";

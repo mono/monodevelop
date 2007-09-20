@@ -41,14 +41,14 @@ namespace MonoDevelop.Deployment.Gui {
         
         private MonoDevelop.Deployment.DeployFileListWidget fileListView;
         
-        private Gtk.Label label3;
+        private Gtk.Label label5;
         
         private Gtk.Button buttonCancel;
         
         private Gtk.Button okbutton;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Deployment.Gui.EditPackageDialog
             this.Name = "MonoDevelop.Deployment.Gui.EditPackageDialog";
             this.WindowPosition = ((Gtk.WindowPosition)(4));
@@ -118,6 +118,7 @@ namespace MonoDevelop.Deployment.Gui {
             this.label2.Name = "label2";
             this.label2.LabelProp = Mono.Unix.Catalog.GetString("Package Settings");
             this.notebook.SetTabLabel(this.targetBox, this.label2);
+            this.label2.ShowAll();
             // Container child notebook.Gtk.Notebook+NotebookChild
             this.vbox4 = new Gtk.VBox();
             this.vbox4.Name = "vbox4";
@@ -149,6 +150,7 @@ namespace MonoDevelop.Deployment.Gui {
             this.label1.Name = "label1";
             this.label1.LabelProp = Mono.Unix.Catalog.GetString("Projects/Solutions");
             this.notebook.SetTabLabel(this.vbox4, this.label1);
+            this.label1.ShowAll();
             // Container child notebook.Gtk.Notebook+NotebookChild
             this.pageFiles = new Gtk.HBox();
             this.pageFiles.Name = "pageFiles";
@@ -166,10 +168,11 @@ namespace MonoDevelop.Deployment.Gui {
             w11.Position = 2;
             w11.TabExpand = false;
             // Notebook tab
-            this.label3 = new Gtk.Label();
-            this.label3.Name = "label3";
-            this.label3.LabelProp = Mono.Unix.Catalog.GetString("Files");
-            this.notebook.SetTabLabel(this.pageFiles, this.label3);
+            this.label5 = new Gtk.Label();
+            this.label5.Name = "label5";
+            this.label5.LabelProp = Mono.Unix.Catalog.GetString("Files");
+            this.notebook.SetTabLabel(this.pageFiles, this.label5);
+            this.label5.ShowAll();
             this.vbox2.Add(this.notebook);
             Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.vbox2[this.notebook]));
             w12.Position = 0;

@@ -20,7 +20,7 @@ namespace MonoDevelop.Deployment.Gui {
         private MonoDevelop.Components.FolderEntry folderEntry;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Deployment.Gui.LocalFileCopyConfigurationEditorWidget
             Stetic.BinContainer.Attach(this);
             this.Events = ((Gdk.EventMask)(256));

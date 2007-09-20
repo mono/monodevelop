@@ -120,7 +120,7 @@ namespace MonoDevelop.Deployment.Gui {
         private Gtk.Button buttonNext;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Deployment.Gui.DeployDialog
             this.Events = ((Gdk.EventMask)(256));
             this.Name = "MonoDevelop.Deployment.Gui.DeployDialog";
@@ -217,6 +217,7 @@ namespace MonoDevelop.Deployment.Gui {
             this.label2.Name = "label2";
             this.label2.LabelProp = "page5";
             this.notebook.SetTabLabel(this.vbox3, this.label2);
+            this.label2.ShowAll();
             // Container child notebook.Gtk.Notebook+NotebookChild
             this.pageSelectProject = new Gtk.VBox();
             this.pageSelectProject.Name = "pageSelectProject";
@@ -266,6 +267,7 @@ namespace MonoDevelop.Deployment.Gui {
             this.label3.Name = "label3";
             this.label3.LabelProp = "page3";
             this.notebook.SetTabLabel(this.pageSelectProject, this.label3);
+            this.label3.ShowAll();
             // Container child notebook.Gtk.Notebook+NotebookChild
             this.vbox4 = new Gtk.VBox();
             this.vbox4.Name = "vbox4";
@@ -333,6 +335,7 @@ namespace MonoDevelop.Deployment.Gui {
             this.label6.Name = "label6";
             this.label6.LabelProp = "page2";
             this.notebook.SetTabLabel(this.vbox4, this.label6);
+            this.label6.ShowAll();
             // Container child notebook.Gtk.Notebook+NotebookChild
             this.pageSave = new Gtk.VBox();
             this.pageSave.Name = "pageSave";
@@ -424,6 +427,7 @@ namespace MonoDevelop.Deployment.Gui {
             this.radioCreateProject = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("Save in a new Packaging Project"));
             this.radioCreateProject.CanFocus = true;
             this.radioCreateProject.Name = "radioCreateProject";
+            this.radioCreateProject.Active = true;
             this.radioCreateProject.DrawIndicator = true;
             this.radioCreateProject.UseUnderline = true;
             this.radioCreateProject.Group = new GLib.SList(System.IntPtr.Zero);
@@ -571,6 +575,7 @@ namespace MonoDevelop.Deployment.Gui {
             this.label8.Name = "label8";
             this.label8.LabelProp = "page4";
             this.notebook.SetTabLabel(this.pageSave, this.label8);
+            this.label8.ShowAll();
             this.hbox1.Add(this.notebook);
             Gtk.Box.BoxChild w46 = ((Gtk.Box.BoxChild)(this.hbox1[this.notebook]));
             w46.Position = 1;

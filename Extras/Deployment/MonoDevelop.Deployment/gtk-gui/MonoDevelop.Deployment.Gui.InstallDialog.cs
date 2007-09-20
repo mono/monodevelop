@@ -30,7 +30,7 @@ namespace MonoDevelop.Deployment.Gui {
         private Gtk.Button buttonOk;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Deployment.Gui.InstallDialog
             this.Events = ((Gdk.EventMask)(256));
             this.Name = "MonoDevelop.Deployment.Gui.InstallDialog";

@@ -26,7 +26,7 @@ namespace MonoDevelop.Deployment.Linux {
         private Gtk.Button buttonOk;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Deployment.Linux.MenuCategorySelectorDialog
             this.CanFocus = true;
             this.Name = "MonoDevelop.Deployment.Linux.MenuCategorySelectorDialog";

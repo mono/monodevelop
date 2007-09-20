@@ -16,7 +16,7 @@ namespace MonoDevelop.Deployment.Gui {
         private Gtk.VBox box;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Deployment.Gui.PackagingFeatureWidget
             Stetic.BinContainer.Attach(this);
             this.Name = "MonoDevelop.Deployment.Gui.PackagingFeatureWidget";

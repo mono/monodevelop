@@ -26,7 +26,7 @@ namespace MonoDevelop.Deployment.Gui {
         private Gtk.EventBox editorBox;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Deployment.Gui.FileCopyConfigurationSelector
             Stetic.BinContainer.Attach(this);
             this.Events = ((Gdk.EventMask)(256));

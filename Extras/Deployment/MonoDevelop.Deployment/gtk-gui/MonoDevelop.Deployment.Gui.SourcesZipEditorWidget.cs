@@ -36,7 +36,7 @@ namespace MonoDevelop.Deployment.Gui {
         private Gtk.Label label3;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Deployment.Gui.SourcesZipEditorWidget
             Stetic.BinContainer.Attach(this);
             this.Name = "MonoDevelop.Deployment.Gui.SourcesZipEditorWidget";

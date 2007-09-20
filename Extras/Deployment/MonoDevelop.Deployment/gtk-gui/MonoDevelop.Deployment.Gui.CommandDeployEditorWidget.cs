@@ -28,7 +28,7 @@ namespace MonoDevelop.Deployment.Gui {
         private Gtk.CheckButton checkDisposeExternal;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Deployment.Gui.CommandDeployEditorWidget
             Stetic.BinContainer.Attach(this);
             this.Events = ((Gdk.EventMask)(256));

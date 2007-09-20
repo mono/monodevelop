@@ -152,7 +152,7 @@ namespace MonoDevelop.Deployment.Linux {
         private Gtk.Label label5;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Deployment.Linux.DotDesktopViewWidget
             Stetic.BinContainer.Attach(this);
             this.CanFocus = true;
@@ -493,6 +493,7 @@ namespace MonoDevelop.Deployment.Linux {
             this.label7.Name = "label7";
             this.label7.LabelProp = Mono.Unix.Catalog.GetString("Header");
             this.notebook.SetTabLabel(this.scrolledwindow1, this.label7);
+            this.label7.ShowAll();
             // Container child notebook.Gtk.Notebook+NotebookChild
             this.boxMenu = new Gtk.VBox();
             this.boxMenu.Name = "boxMenu";
@@ -673,6 +674,7 @@ namespace MonoDevelop.Deployment.Linux {
             this.label2.Name = "label2";
             this.label2.LabelProp = Mono.Unix.Catalog.GetString("Menu entry");
             this.notebook.SetTabLabel(this.boxMenu, this.label2);
+            this.label2.ShowAll();
             // Container child notebook.Gtk.Notebook+NotebookChild
             this.tableMimeTypes = new Gtk.Table(((uint)(2)), ((uint)(2)), false);
             this.tableMimeTypes.Name = "tableMimeTypes";
@@ -757,6 +759,7 @@ namespace MonoDevelop.Deployment.Linux {
             this.label8.Name = "label8";
             this.label8.LabelProp = Mono.Unix.Catalog.GetString("Mime types");
             this.notebook.SetTabLabel(this.tableMimeTypes, this.label8);
+            this.label8.ShowAll();
             // Container child notebook.Gtk.Notebook+NotebookChild
             this.hbox4 = new Gtk.HBox();
             this.hbox4.Name = "hbox4";
@@ -819,6 +822,7 @@ namespace MonoDevelop.Deployment.Linux {
             this.label5.Name = "label5";
             this.label5.LabelProp = Mono.Unix.Catalog.GetString("Other entries");
             this.notebook.SetTabLabel(this.hbox4, this.label5);
+            this.label5.ShowAll();
             this.Add(this.notebook);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
