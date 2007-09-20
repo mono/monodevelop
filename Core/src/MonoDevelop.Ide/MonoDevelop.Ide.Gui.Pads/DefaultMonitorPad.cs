@@ -36,6 +36,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		TextTag tag;
 		TextTag bold;
+		TextTag errorTag;
 		int ident = 0;
 		ArrayList tags = new ArrayList ();
 		Stack indents = new Stack ();
@@ -90,6 +91,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 			bold = new TextTag ("bold");
 			bold.Weight = Pango.Weight.Bold;
 			buffer.TagTable.Add (bold);
+			
+			errorTag = new TextTag ("error");
+			errorTag.Foreground = "red";
+			errorTag.Weight = Pango.Weight.Bold;
+			buffer.TagTable.Add (errorTag);
 			
 			tag = new TextTag ("0");
 			tag.LeftMargin = 10;
@@ -180,7 +186,17 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		public void WriteText (string text)
 		{
-			AddText (text);
+			WriteText (text, null);
+		}
+		
+		public void WriteError (string text)
+		{
+			WriteText (text, errorTag);
+		}
+		
+		void WriteText (string text, TextTag extraTag)
+		{
+			AddText (text, extraTag);
 //			buffer.MoveMark (buffer.InsertMark, buffer.EndIter);
 			if (text.EndsWith ("\n"))
 				textEditorControl.ScrollMarkOnscreen (buffer.InsertMark);
@@ -217,10 +233,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 			buttonStop.Sensitive = false;
 		}
 		
-		void AddText (string s)
+		void AddText (string s, TextTag extraTag)
 		{
 			TextIter it = buffer.EndIter;
-			buffer.InsertWithTags (ref it, s, tag);
+			if (extraTag != null)
+				buffer.InsertWithTags (ref it, s, tag, extraTag);
+			else
+				buffer.InsertWithTags (ref it, s, tag);
 		}
 		
 		void Indent ()

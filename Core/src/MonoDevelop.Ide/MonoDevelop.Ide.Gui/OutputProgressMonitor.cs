@@ -69,7 +69,7 @@ namespace MonoDevelop.Ide.Gui
 				outputPad.WriteText (msg + "\n");
 			
 			foreach (string msg in Errors)
-				outputPad.WriteText (msg + "\n");
+				outputPad.WriteError (msg + "\n");
 			
 			outputPad.EndProgress ();
 			base.OnCompleted ();

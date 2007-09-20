@@ -1,3 +1,9 @@
+2007-09-20  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui/OutputProgressMonitor.cs,
+	  MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs: Show output errors in
+	  red.
+
 2007-09-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs: Make ILocationListPad
