@@ -180,120 +180,50 @@ AC_ARG_ENABLE(subversion,
 
 AM_CONDITIONAL(ENABLE_SUBVERSION, test x$enable_subversion = xyes)
 
-dnl *********************************************************
-dnl *** The following hunk of script-fu is to detect the  ***
-dnl *** available MonoQuery database providers...         ***
-dnl *********************************************************
-AC_ARG_ENABLE(monoquery,
-	AC_HELP_STRING([--enable-monoquery],
-		[enable MonoQuery support [default=auto]]),
-		enable_monoquery=${enableval}, enable_monoquery=yes)
+dnl *************************************************************
+dnl *** The following hunk of script-fu is to detect the      ***
+dnl *** available MonoDevelop.Database database providers...  ***
+dnl *************************************************************
+AC_ARG_ENABLE(database,
+	AC_HELP_STRING([--enable-database],
+		[enable MonoDevelop.Database support [default=auto]]),
+		enable_database=${enableval}, enable_database=yes)
 
-SQL_PROVIDER_ATTRIBUTES="[[XmlInclude (typeof (FirebirdDbProvider))]\n\t[XmlInclude (typeof (OdbcDbProvider))]]"
-monoquery_avail=0
-enable_postgres=no
-enable_mysql=no
-enable_sqlite=no
-enable_oracle=no
-enable_sqlserv=no
-enable_sybase=no
+AM_CONDITIONAL(ENABLE_DATABASE, [test x$enable_database = xyes])
 
-if test "x$enable_monoquery" = "xyes"; then
-   monoquery_try_compile () {
-      cat <<EOF | sed -e "s/\${Dbase}/${Dbase}/g" -e "s/\${Using}/${Using}/g" > myconftest.cs
-using System;
-using System.Data;
-using System.Collections;
+test_sqlite=$(gacutil -l | grep "Mono.Data.SqliteClient, Version=2")
+test_sqlserver=$(gacutil -l | grep "System.Data, Version=2")
+test_postgres=$(gacutil -l | grep "Npgsql, Version=2")
+test_mysql=$(gacutil -l | grep "MySql.Data")
 
-using ${Using};
-
-namespace Autoconf.Try.Compile {
-	public class Program {
-		public static void Main (string [[]] args)
-		{
-			${Dbase}Connection connection = new ${Dbase}Connection ();
-			connection.Open ();
-		}
-	}
-}
-EOF
-      $CSC myconftest.cs -r:System.Data $ExtraDbAssemblies > /dev/null 2>&1
-      if test $? -eq 0; then
-	 my_ac_conftest_result="yes"
-	 monoquery_avail=`expr $monoquery_avail + 1`
-	 SQL_PROVIDER_ATTRIBUTES="[$SQL_PROVIDER_ATTRIBUTES\n\t[XmlInclude (typeof (${Dbase}DbProvider))]]"
-      else
-         my_ac_conftest_result="no"
-      fi
-      rm -f myconftest.cs myconftest.exe
-   }
-   
-   AC_MSG_CHECKING([for PostgreSQL support])
-   ExtraDbAssemblies="-r:Npgsql"
-   Using="Npgsql"
-   Dbase="Npgsql"
-   monoquery_try_compile
-   enable_postgres=$my_ac_conftest_result
-   AC_MSG_RESULT($my_ac_conftest_result)
-   
-   AC_MSG_CHECKING([for MySQL support])
-   ExtraDbAssemblies="-r:ByteFX.Data"
-   Using="ByteFX.Data.MySqlClient"
-   Dbase="MySql"
-   monoquery_try_compile
-   enable_mysql=$my_ac_conftest_result
-   AC_MSG_RESULT($my_ac_conftest_result)
-   
-   AC_MSG_CHECKING([for SQLite support])
-   ExtraDbAssemblies="-r:Mono.Data.SqliteClient"
-   Using="Mono.Data.SqliteClient"
-   Dbase="Sqlite"
-   monoquery_try_compile
-   enable_sqlite=$my_ac_conftest_result
-   AC_MSG_RESULT($my_ac_conftest_result)
-   
-   AC_MSG_CHECKING([for Oracle support])
-   ExtraDbAssemblies="-r:System.Data.OracleClient"
-   Using="System.Data.OracleClient"
-   Dbase="Oracle"
-   monoquery_try_compile
-   enable_oracle=$my_ac_conftest_result
-   AC_MSG_RESULT($my_ac_conftest_result)
-   
-   AC_MSG_CHECKING([for SQL Server support])
-   ExtraDbAssemblies=""
-   Using="System.Data.SqlClient"
-   Dbase="Sql"
-   monoquery_try_compile
-   enable_sqlserv=$my_ac_conftest_result
-   AC_MSG_RESULT($my_ac_conftest_result)
-   
-   AC_MSG_CHECKING([for Sybase support])
-   ExtraDbAssemblies="-r:Mono.Data.SybaseClient"
-   Using="Mono.Data.SybaseClient"
-   Dbase="Sybase"
-   monoquery_try_compile
-   enable_sybase=$my_ac_conftest_result
-   AC_MSG_RESULT($my_ac_conftest_result)
-   
-   dnl If no providers are available, disable MonoQuery support
-   if test $monoquery_avail -eq 0; then
-      enable_monoquery="no"
-   fi
+if test "x$test_sqlite" != "x"; then
+	enable_sqlite="yes"
+else
+	enable_sqlite="no (missing Mono.Data.SqliteClient)"
 fi
 
-AM_CONDITIONAL(ENABLE_MONOQUERY, [test $enable_monoquery = yes])
-AM_CONDITIONAL(ENABLE_POSTGRES, [test $enable_postgres = yes])
-AM_CONDITIONAL(ENABLE_MYSQL, [test $enable_mysql = yes])
-AM_CONDITIONAL(ENABLE_SQLITE, [test $enable_sqlite = yes])
-AM_CONDITIONAL(ENABLE_ORACLE, [test $enable_oracle = yes])
-AM_CONDITIONAL(ENABLE_SQLSERV, [test $enable_sqlserv = yes])
-AM_CONDITIONAL(ENABLE_SYBASE, [test $enable_sybase = yes])
+if test "x$test_sqlserver" != "x"; then
+	enable_sqlserver="yes"
+else
+	enable_sqlserver="no (missing System.Data, Version 2)"
+fi
 
-sed -e "s/@SQLProviderAttributes@/$SQL_PROVIDER_ATTRIBUTES/" \
-    $srcdir/Extras/MonoQuery/MonoQuery/Gui/DbProviderCollection.cs.in \
-    > $srcdir/Extras/MonoQuery/MonoQuery/Gui/DbProviderCollection.cs
+if test "x$test_postgres" != "x"; then
+	enable_postgres="yes"
+else
+	enable_postgres="no (missing Npgsql, Version 2)"
+fi
 
+if test "x$test_mysql" != "x"; then
+	enable_mysql="yes"
+else
+	enable_mysql="no (missing MySql.Data)"
+fi
+
+AM_CONDITIONAL(ENABLE_POSTGRES, [test x$enable_postgres = xyes])
+AM_CONDITIONAL(ENABLE_MYSQL, [test x$enable_mysql = xyes])
+AM_CONDITIONAL(ENABLE_SQLITE, [test x$enable_sqlite = xyes])
+AM_CONDITIONAL(ENABLE_SQLSERVER, [test x$enable_sqlserver = xyes])
 
 dnl ASP.NET project addin
 XSP_VERSION=0.1
@@ -496,9 +426,16 @@ Extras/JavaBinding/Makefile
 Extras/Makefile
 Extras/MonoDeveloperExtensions/Makefile
 Extras/MonoDeveloperExtensions/NUnit/Makefile
-Extras/MonoQuery/Makefile
-Extras/MonoQuery/Mono.Data.Sql/Makefile
-Extras/MonoQuery/MonoQuery/Makefile
+Extras/MonoDevelop.Database/Makefile
+Extras/MonoDevelop.Database/MonoDevelop.Database.Sql/Makefile
+Extras/MonoDevelop.Database/MonoDevelop.Database.Sql.MySql/Makefile
+Extras/MonoDevelop.Database/MonoDevelop.Database.Sql.Npgsql/Makefile
+Extras/MonoDevelop.Database/MonoDevelop.Database.Sql.Sqlite/Makefile
+Extras/MonoDevelop.Database/MonoDevelop.Database.Sql.SqlServer/Makefile
+Extras/MonoDevelop.Database/MonoDevelop.Database.Components/Makefile
+Extras/MonoDevelop.Database/MonoDevelop.Database.Query/Makefile
+Extras/MonoDevelop.Database/MonoDevelop.Database.Designer/Makefile
+Extras/MonoDevelop.Database/MonoDevelop.Database.ConnectionManager/Makefile
 Extras/NUnit/Makefile
 Extras/VersionControl/Diff/Makefile
 Extras/VersionControl/DiffWidget/Makefile
@@ -549,16 +486,14 @@ echo "   * Installation prefix = $prefix"
 echo "   * C# compiler = $CSC"
 echo "   * Mozilla home: $MOZILLA_HOME"
 echo "   * mono-debugger: $enable_debugger"
-echo "   * MonoQuery support: $enable_monoquery"
+echo "   * MonoDevelop.Database support: $enable_database"
 
-if test "x$enable_monoquery" = "xyes"; then
+if test "x$enable_database" = "xyes"; then
 echo "   *   Providers:"
 echo "   *     PostgreSQL:   $enable_postgres"
 echo "   *     MySQL:        $enable_mysql"
 echo "   *     SQLite:       $enable_sqlite"
-echo "   *     Oracle:       $enable_oracle"
-echo "   *     SQL Server:   $enable_sqlserv"
-echo "   *     Sybase:       $enable_sybase"
+echo "   *     SQL Server:   $enable_sqlserver"
 fi
 
 echo "   * java support: $enable_java"

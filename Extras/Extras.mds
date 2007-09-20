@@ -21,7 +21,7 @@
       <Entry build="True" name="MonoDevelop.WebReferences" configuration="Debug" />
       <Entry build="True" name="Deployment" configuration="" />
       <Entry build="True" name="BooBinding" configuration="Debug" />
-      <Entry build="True" name="MonoQuery" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.Database" configuration="Debug" />
       <Entry build="True" name="CSharpBinding" configuration="" />
       <Entry build="True" name="MonoDevelop.Gettext" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.RegexToolkit" configuration="Debug" />
@@ -48,7 +48,7 @@
       <Entry build="True" name="MonoDevelop.WebReferences" configuration="Release" />
       <Entry build="True" name="Deployment" configuration="" />
       <Entry build="True" name="BooBinding" configuration="Release" />
-      <Entry build="True" name="MonoQuery" configuration="Release" />
+      <Entry build="True" name="MonoDevelop.Database" configuration="Release" />
       <Entry build="True" name="CSharpBinding" configuration="" />
       <Entry build="True" name="MonoDevelop.Gettext" configuration="Release" />
       <Entry build="True" name="MonoDevelop.RegexToolkit" configuration="Release" />
@@ -76,9 +76,9 @@
     <Execute type="None" entry="MonoDevelop.Autotools" />
     <Execute type="None" entry="MonoDevelop.WebReferences" />
     <Execute type="None" entry="Deployment" />
-    <Execute type="None" entry="MonoQuery" />
+    <Execute type="None" entry="MonoDevelop.Database" />
     <Execute type="None" entry="BooBinding" />
-    <Execute type="None" entry="MonoQuery" />
+    <Execute type="None" entry="MonoDevelop.Database" />
     <Execute type="None" entry="CSharpBinding" />
     <Execute type="None" entry="MonoDevelop.Gettext" />
     <Execute type="None" entry="MonoDevelop.RegexToolkit" />
@@ -105,7 +105,7 @@
     <Entry filename="./MonoDevelop.WebReferences/MonoDevelop.WebReferences.mdp" />
     <Entry filename="./Deployment/Deployment.mds" />
     <Entry filename="./BooBinding/BooBinding.mds" />
-    <Entry filename="./MonoQuery/Mono.Data.Sql.mds" />
+    <Entry filename="./MonoDevelop.Database/MonoDevelop.Database.mds" />
     <Entry filename="./CSharpBinding/CSharpBinding.mds" />
     <Entry filename="./MonoDevelop.Gettext/MonoDevelop.Gettext.mdp" />
     <Entry filename="./MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit.mdp" />

@@ -24,7 +24,7 @@
 		<DatabaseFactory id = "Sqlite" class = "MonoDevelop.Database.Sql.SqliteDbFactory">
 			<!-- action flags -->
 			<Actions category="Database" flags="Create,Drop,Schema" />
-			<Actions category="Table" flags="Create,Drop,Rename,Schema" />
+			<Actions category="Table" flags="Drop,Rename,Schema" />
 			<Actions category="View" flags="Create,Drop,Schema" />
 			<Actions category="TableColumn" flags="All" />
 			<Actions category="Parameter" flags="Schema" />
