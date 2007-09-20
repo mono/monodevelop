@@ -1085,12 +1085,12 @@
 		
 		<DialogPanel id    = "ToolsOptions"
 		             _label = "Tools">
-		<DialogPanel id = "ExternalTools"
-		             _label = "External Tools"
-		             class = "MonoDevelop.Ide.Gui.OptionPanels.ExternalToolPane"/>
-		     <!-- ORIGINAL #D COMMENT			<DialogPanel id = "HtmlHelp"
-			             _label = "${res:Dialog.Options.IDEOptions.HelpGeneratingPanelText}"
-				     class = "MonoDevelop.Gui.Dialogs.OptionPanels.HelpGeneratingPanel"/>-->
+			<DialogPanel id = "ExternalTools"
+			             _label = "External Tools"
+			             class = "MonoDevelop.Ide.Gui.OptionPanels.ExternalToolPane"/>
+		</DialogPanel>
+		<DialogPanel id = "Other"
+		             _label = "Other Settings">
 		</DialogPanel>
 	</Extension>
 

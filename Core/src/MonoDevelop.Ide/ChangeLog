@@ -1,5 +1,10 @@
 2007-09-20  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.addin.xml: Added an Other section in the MD property
+	  dialog and moved some options there to avoid too many branches.
+
+2007-09-20  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui/OutputProgressMonitor.cs,
 	  MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs: Show output errors in
 	  red.
