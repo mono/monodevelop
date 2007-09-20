@@ -5778,7 +5778,7 @@ msgstr "No s'ha pogut reanomenar el nom al fitxer {0}"
 #: ../Extras/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/BinariesZipPackageBuilder.cs:109
 #, csharp-format
 msgid "{0} Binaries"
-msgstr "{0} Binaris"
+msgstr "Binaris {0}"
 
 #
 #: ../Extras/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/CommandPackageBuilder.cs:48
@@ -5841,7 +5841,7 @@ msgstr ""
 #: ../Extras/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/SourcesZipPackageBuilder.cs:127
 #, csharp-format
 msgid "{0} Sources"
-msgstr "{0} Fonts"
+msgstr "Fonts {0}"
 
 #: ../Extras/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment/DeployProjectServiceExtension.cs:35
 #, csharp-format
@@ -5859,7 +5859,7 @@ msgstr ""
 #
 #: ../Extras/Deployment/MonoDevelop.Deployment/templates/PackagingProject.xpt.xml.h:2
 msgid "Packaging project"
-msgstr "S'està empaquetant el projecte"
+msgstr "Projecte d'empaquetat"
 
 #: ../Extras/ILAsmBinding/Gui/CompilerParametersPanel.cs:29
 #: ../Extras/PythonBinding/Gui/CompilerParametersPanel.cs:21
