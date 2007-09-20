@@ -116,7 +116,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			typeof (ToolboxStore).GetField ("node_hash", BindingFlags.Instance | BindingFlags.NonPublic).SetValue (store, new Hashtable ());
 			
 			//initialise view
-			nodeView = new NodeView (store);
+			nodeView = new InternalNodeView (store);
 			nodeView.Selection.Mode = SelectionMode.Single;
 			nodeView.HeadersVisible = false;
 			
@@ -154,7 +154,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			nodeView.NodeSelection.Changed += OnSelectionChanged;
 			nodeView.RowActivated  += OnRowActivated;
 			nodeView.DragBegin += OnDragBegin;
-			nodeView.DragDataDelete += OnDragDataDelete;
 
 			
 			//update view when toolbox service updated
@@ -336,10 +335,19 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				MonoDevelop.Core.Runtime.LoggingService.Error (ex);
 			}
 		}
-		
-		void OnDragDataDelete (object o, Gtk.DragDataDeleteArgs arg)
+		#endregion	
+	}
+
+	class InternalNodeView: NodeView
+	{
+		public InternalNodeView (NodeStore store): base (store)
 		{
 		}
-		#endregion	
+		
+		protected override void OnDragDataDelete (Gdk.DragContext context)
+		{
+			// This method is necessary to avoid a GTK warning about the
+			// need to override drag_data_delete.
+		}
 	}
 }

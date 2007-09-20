@@ -36,7 +36,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox {
         private Gtk.Button buttonOk;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog
             this.Name = "MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog";
             this.Title = Mono.Unix.Catalog.GetString("Toolbox Item Selector");
@@ -121,6 +121,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox {
             this.listView = new Gtk.TreeView();
             this.listView.CanFocus = true;
             this.listView.Name = "listView";
+            this.listView.HeadersClickable = true;
             this.scrolledwindow1.Add(this.listView);
             this.vbox2.Add(this.scrolledwindow1);
             Gtk.Box.BoxChild w16 = ((Gtk.Box.BoxChild)(this.vbox2[this.scrolledwindow1]));

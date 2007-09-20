@@ -1,3 +1,12 @@
+2007-09-20  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog.cs,
+	  gtk-gui/gui.stetic: Regenerated GUI files.
+	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs: Added NodeView subclass
+	  and overrided OnDragDataDelete. This is necessary to avoid a GTK warning
+	  about the need to override drag_data_delete.
+
 2007-09-20  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.DesignerSupport.mdp,
