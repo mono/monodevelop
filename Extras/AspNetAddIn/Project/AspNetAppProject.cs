@@ -371,15 +371,176 @@ namespace AspNetAddIn
 		
 		#endregion
 		
+		#region Reference handling
+		
+		protected override void OnReferenceAddedToProject (ProjectReferenceEventArgs e)
+		{
+			//short-circuit if the project is being deserialised
+			if (loading) {
+				base.OnReferenceAddedToProject (e);
+				return;
+			}
+			
+			UpdateWebConfigRefs ();
+
+			base.OnReferenceAddedToProject (e);
+		}
+		
+		protected override void OnReferenceRemovedFromProject (ProjectReferenceEventArgs e)
+		{
+			UpdateWebConfigRefs ();
+			base.OnReferenceRemovedFromProject (e);
+		}
+		
+		void UpdateWebConfigRefs ()
+		{
+			List<string> refs = new List<string> ();
+			foreach (ProjectReference reference in ProjectReferences) {
+				//local copied assemblies are copied to the bin directory so ASP.NET references them automatically
+				if (reference.LocalCopy && (reference.ReferenceType == ReferenceType.Project || reference.ReferenceType == ReferenceType.Assembly))
+					continue;
+				if (string.IsNullOrEmpty (reference.Reference))
+					continue;
+				//these assemblies are referenced automatically by ASP.NET
+				if (IsSystemReference (reference.Reference))
+				    continue;
+				refs.Add (reference.Reference);
+			}
+						
+			string webConfigPath = WebConfigPath;
+			if (!File.Exists (webConfigPath))
+				return;
+			
+			MonoDevelop.Projects.Text.IEditableTextFile textFile = 
+				MonoDevelop.DesignerSupport.OpenDocumentFileProvider.Instance.GetEditableTextFile (webConfigPath);
+			
+			//can't use System.Web.Configuration.WebConfigurationManager, as it can only access virtual paths within an app
+			//so need full manual handling
+			try {
+				System.Xml.XmlDocument doc = new XmlDocument ();
+				
+				//FIXME: PreserveWhitespace doesn't handle whitespace in attribute lists
+				//doc.PreserveWhitespace = true;
+				
+				if (textFile != null)
+					doc.LoadXml (textFile.Text);
+				else
+					doc.Load (webConfigPath);
+				
+				//hunt our way to the assemblies element, creating elements if necessary
+				XmlElement configElement = doc.DocumentElement;
+				if (configElement == null || string.Compare (configElement.Name, "configuration", StringComparison.InvariantCultureIgnoreCase) != 0) {
+					configElement = (XmlElement) doc.AppendChild (doc.CreateNode (XmlNodeType.Document, "configuration", null));
+				}
+				XmlElement webElement = GetNamedXmlElement (doc, configElement, "system.web");			
+				XmlElement compilationNode = GetNamedXmlElement (doc, webElement, "compilation");
+				XmlElement assembliesNode = GetNamedXmlElement (doc, compilationNode, "assemblies");
+				
+				List<XmlNode> existingAdds = new List<XmlNode> ();
+				foreach (XmlNode node in assembliesNode)
+					if (string.Compare (node.Name, "add", StringComparison.InvariantCultureIgnoreCase) == 0)
+					    existingAdds.Add (node);
+				
+				//add refs to the doc if they're not in it
+				foreach (string reference in refs) {
+					int index = 0;
+					bool found = false;
+					while (index < existingAdds.Count) {
+						XmlNode node = existingAdds[index];
+						XmlAttribute att = (XmlAttribute) node.Attributes.GetNamedItem ("assembly");
+						if (att == null)
+							continue;
+						string refAtt = att.Value;
+						if (refAtt != null && refAtt == reference) {
+							existingAdds.RemoveAt (index);
+							found = true;
+							break;
+						} else {
+							index++;
+						}
+					}
+					if (!found) {
+						XmlElement newAdd = doc.CreateElement ("add");
+						XmlAttribute newAtt = doc.CreateAttribute ("assembly");
+						newAtt.Value = reference;
+						newAdd.Attributes.Append (newAtt);
+						assembliesNode.AppendChild (newAdd);
+					}
+				}
+				
+				//any nodes that weren't removed from the existingAdds list are old/redundant, so remove from doc
+				foreach (XmlNode node in existingAdds)
+					assembliesNode.RemoveChild (node);				
+				
+				if (textFile != null)
+					textFile.Text = doc.ToString ();
+				else
+					doc.Save (webConfigPath);
+			} catch (Exception e) {
+				Runtime.LoggingService.Warn ((object) ("Could not modify application web.config in project " + this.Name), e); 
+			}
+		}
+		
+		
+		XmlElement GetNamedXmlElement (XmlDocument doc, XmlElement parent, string name)
+		{
+			XmlElement result = null;
+			foreach (XmlNode node in parent.ChildNodes) {
+				XmlElement elem = node as XmlElement;
+				if (elem != null && string.Compare (elem.Name, name, StringComparison.InvariantCultureIgnoreCase) == 0) {
+					result = elem;
+					break;
+				}
+			}
+			if (result == null) {
+				result = (XmlElement) parent.AppendChild (doc.CreateElement (name));
+			}
+			return result;
+		}
+		
+		string WebConfigPath {
+			get { return Path.Combine (this.BaseDirectory, "web.config"); }
+		}
+		
+		bool IsSystemReference (string reference)
+		{
+			foreach (string defaultPrefix in defaultAssemblyRefPrefixes)
+				if (reference.StartsWith (defaultPrefix))
+					return true;
+			return false;
+		}
+		
+		static string[] defaultAssemblyRefPrefixes = new string[] {
+			"mscorlib", 
+			"System,",
+			"System.Configuration,",
+			"System.Web,",
+			"System.Data,",
+			"System.Web.Services,",
+			"System.Xml,",
+			"System.Drawing,",
+			"System.EnterpriseServices,",
+			"System.Web.Mobile,",
+		};
+		
+		#endregion
+		
 		#region File event handlers
 		
 		protected override void OnFileAddedToProject (ProjectFileEventArgs e)
 		{
-			//this doesn't need to be triggered while the project is being deserialised
-			if (!loading) {
-				SetDefaultBuildAction (e.ProjectFile);
-				InvalidateDocumentCache (e.ProjectFile);
+			//short-circuit if the project is being deserialised
+			if (loading) {
+				base.OnFileAddedToProject (e);
+				return;
 			}
+			
+			SetDefaultBuildAction (e.ProjectFile);
+			InvalidateDocumentCache (e.ProjectFile);
+			
+			if (Path.GetFullPath (e.ProjectFile.FilePath) == Path.GetFullPath (WebConfigPath))
+				UpdateWebConfigRefs ();
+			
 			base.OnFileAddedToProject (e);
 		}
 		

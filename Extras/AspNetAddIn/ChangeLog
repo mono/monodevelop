@@ -1,3 +1,8 @@
+2007-09-20  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Project/AspNetAppProject.cs: Added reference change handlers to update the
+	  referenced assembly list in web.config.
+
 2007-09-12  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Gui/XspOptionsPanelWidget.cs,
