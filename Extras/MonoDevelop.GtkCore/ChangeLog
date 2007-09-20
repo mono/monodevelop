@@ -1,3 +1,12 @@
+2007-09-20  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: Implemented an
+	  assembly resolver for the stetic app, so assembly widgets registered
+	  with .pc files can be found.
+	* MonoDevelop.GtkCore.GuiBuilder/ToolboxLoader.cs: If a widget dll belongs
+	  to a package, store it as a package reference in the toolbox index.
+
 2007-09-19  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.GtkCore/GtkDesignInfo.cs: Allow setting TargetGtkVersion to

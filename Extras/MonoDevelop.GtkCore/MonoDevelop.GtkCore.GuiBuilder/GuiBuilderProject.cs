@@ -359,10 +359,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					if (info != null && info.IsWidgetLibrary)
 						path = p.GetOutputFileName ();
 				}
-			} else if (pref.ReferenceType == ReferenceType.Gac || 
-					pref.ReferenceType == ReferenceType.Assembly) {
-				
+			} else if (pref.ReferenceType == ReferenceType.Assembly) {
 				// Assume everything is a widget library. Stetic will discard it if it is not.
+				path = pref.Reference;
+			} else if (pref.ReferenceType == ReferenceType.Gac) {
+				// Use the assembly name. It will be resolved later to a file.
 				path = pref.Reference;
 			}
 			if (path != null && GuiBuilderService.SteticApp.IsWidgetLibrary (path))

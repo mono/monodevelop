@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.DesignerSupport.Toolbox;
 using MonoDevelop.Projects;
+using MonoDevelop.Core;
 using Stetic;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
@@ -47,13 +48,25 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 		public virtual IList<ItemToolboxNode> Load (string filename)
 		{
+			SystemPackage sp = Runtime.SystemAssemblyService.GetPackageFromPath (filename);
+			ReferenceType rt;
+			string rname;
+			
+			if (sp != null) {
+				rt = ReferenceType.Gac;
+				rname = Runtime.SystemAssemblyService.GetAssemblyFullName (filename);
+			} else {
+				rt = ReferenceType.Assembly;
+				rname = filename;
+			}
+			
 			List<ItemToolboxNode> list = new List<ItemToolboxNode> ();
 			foreach (ComponentType ct in GuiBuilderService.SteticApp.GetComponentTypes (filename)) {
 				if (ct.Category == "window")
 					continue;
 				ComponentToolboxNode cn = new ComponentToolboxNode (ct);
-				cn.ReferenceType = ReferenceType.Assembly;
-				cn.Reference = filename;
+				cn.ReferenceType = rt;
+				cn.Reference = rname;
 				list.Add (cn);
 			}
 			return list;

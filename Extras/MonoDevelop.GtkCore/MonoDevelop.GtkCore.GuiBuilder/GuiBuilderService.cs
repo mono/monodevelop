@@ -90,9 +90,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					steticApp = new Stetic.Application (IsolationMode);
 					steticApp.AllowInProcLibraries = false;
 					steticApp.ShowNonContainerWarning = PropertyService.Get ("MonoDevelop.GtkCore.ShowNonContainerWarning", true);
+					steticApp.WidgetLibraryResolver = OnAssemblyResolve;
 				}
 				return steticApp;
 			}
+		}
+		
+		static string OnAssemblyResolve (string assemblyName)
+		{
+			return Runtime.SystemAssemblyService.GetAssemblyLocation (assemblyName);
 		}
 		
 		internal static void StoreConfiguration ()
