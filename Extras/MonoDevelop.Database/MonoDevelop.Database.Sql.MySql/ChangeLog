@@ -1,5 +1,9 @@
 2007-09-20 Ben Motmans <ben.motmans@gmail.com> 
 
+	* Makefile.am: removed incorrect references
+
+2007-09-20 Ben Motmans <ben.motmans@gmail.com> 
+
 	* Makefile.am: changed reference to contrib/MySql
 
 2007-09-16  Ben Motmans <ben.motmans@gmail.com> 
