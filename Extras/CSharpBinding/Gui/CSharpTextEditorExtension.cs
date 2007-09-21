@@ -473,8 +473,10 @@ namespace CSharpBinding
 			}
 			
 			pos += offset;
-			Editor.CursorPosition = pos;
-			Editor.Select (pos, pos);
+			if (pos != Editor.CursorPosition) {
+				Editor.CursorPosition = pos;
+				Editor.Select (pos, pos);
+			}
 			
 			return true;
 		}
