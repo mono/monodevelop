@@ -342,11 +342,11 @@ namespace MonoDevelop.GtkCore
 			foreach (ProjectReference r in new ArrayList (project.ProjectReferences)) {
 				if (r.ReferenceType != ReferenceType.Gac)
 					continue;
-				int i = r.Reference.IndexOf (',');
+				int i = r.StoredReference.IndexOf (',');
 				if (i == -1)
 					continue;
 
-				string aname = r.Reference.Substring (0,i).Trim ();
+				string aname = r.StoredReference.Substring (0,i).Trim ();
 				if (aname == "gtk-sharp")
 					gtk = true;
 				else if (aname == "gdk-sharp")
@@ -359,7 +359,7 @@ namespace MonoDevelop.GtkCore
 					continue;
 				
 				// Check and correct the assembly version only if a version is set
-				if (!string.IsNullOrEmpty (gtkAsmVersion) && r.Reference.Substring (i+1).Trim() != gtkAsmVersion) {
+				if (!string.IsNullOrEmpty (gtkAsmVersion) && r.StoredReference.Substring (i+1).Trim() != gtkAsmVersion) {
 					project.ProjectReferences.Remove (r);
 					project.ProjectReferences.Add (new ProjectReference (ReferenceType.Gac, aname + ", " + gtkAsmVersion));
 				}
