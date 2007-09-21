@@ -1,3 +1,9 @@
+2007-09-21  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* POTFILES.in : fix for intltool-update: removed old
+	  files and Updated AspNetAddin/Template/*.xml entries.
+	* ja.po : updated.
+
 2007-09-20  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ca.po: Minor fixes.
