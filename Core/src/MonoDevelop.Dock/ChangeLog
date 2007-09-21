@@ -1,3 +1,8 @@
+2007-09-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DockItem.cs: Restore style attachment when realizing the window. Fixes bug
+	  #309204 although reopens #319478.
+
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Dock.mdp, Makefile.am: Reorganized the extension point
