@@ -85,6 +85,17 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		[ReadOnly(true)]
+		public string StoredReference {
+			get {
+				if (loadedReference != null)
+					return loadedReference;
+				else {
+					System.Console.WriteLine ("loadedReference is null");
+					return reference;}
+			}
+		}
+		
 		[DefaultValue(true)]
 		public bool LocalCopy {
 			get {
