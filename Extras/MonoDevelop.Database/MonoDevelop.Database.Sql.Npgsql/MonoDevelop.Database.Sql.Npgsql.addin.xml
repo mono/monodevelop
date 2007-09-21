@@ -5,19 +5,19 @@
 	copyright	= "MIT X11"
 	url		= "http://www.monodevelop.com"
 	description	= "Database Module"
-	version		= "0.15.0">
+	version		= "0.16.0">
     
 	<Runtime>
 		<Import assembly="MonoDevelop.Database.Sql.Npgsql.dll"/>
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core" version="0.15.0"/>
-		<Addin id="Core.Gui" version="0.15.0"/>
-		<Addin id="Ide" version="0.15.0"/>
-		<Addin id="Database.Sql" version="0.15.0"/>
-		<Addin id="Database.Components" version="0.15.0"/>
-		<Addin id="Database.Designer" version="0.15.0"/>
+		<Addin id="Core" version="0.16.0"/>
+		<Addin id="Core.Gui" version="0.16.0"/>
+		<Addin id="Ide" version="0.16.0"/>
+		<Addin id="Database.Sql" version="0.16.0"/>
+		<Addin id="Database.Components" version="0.16.0"/>
+		<Addin id="Database.Designer" version="0.16.0"/>
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/Database/Sql">

@@ -1,3 +1,7 @@
+2007-09-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* prj2make-sharp-lib.addin.xml: Bump MD version.
+
 2007-09-17  Ankit Jain  <jankit@novell.com>
 
 	* MSBuildProjectServiceExtension.cs (GetDefaultResourceId): Split into

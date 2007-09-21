@@ -1,11 +1,11 @@
-AC_INIT([monodevelop], 0.15, [monodevelop-list@lists.ximian.com])
+AC_INIT([monodevelop], 0.16, [monodevelop-list@lists.ximian.com])
 AC_PREREQ(2.53)
 AM_INIT_AUTOMAKE([1.9 tar-ustar])
 AM_MAINTAINER_MODE
 
 AC_PROG_INTLTOOL([0.25])
 
-ASSEMBLY_VERSION=0.15.0.0
+ASSEMBLY_VERSION=0.16.0.0
 
 AC_PATH_PROG(MONO, mono)
 AC_PATH_PROG(MCS, gmcs)

@@ -1,5 +1,9 @@
 2007-09-21  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* CSharpBinding.addin.xml: Bump MD version.
+
+2007-09-21  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Gui/CSharpTextEditorExtension.cs: Don't set the Editor.CursorPosition
 	  property if position hasn't really changed, since it will raise the
 	  completion context change event, which closes the completion window.

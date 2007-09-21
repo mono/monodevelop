@@ -1,3 +1,7 @@
+2007-09-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Database.Sql.SqlServer.addin.xml: Bump MD version.
+
 2007-09-19  Ben Motmans <ben.motmans@gmail.com> 
 
 	* SqlServerConnectionProvider.cs: commented the NetworkLibrary property in

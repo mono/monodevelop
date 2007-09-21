@@ -6,16 +6,16 @@
        url         = "http://www.monodevelop.com"
        description = "Integrates the Mono documentation browser (Monodoc) into the MonoDevelop IDE"
 	   category    = "IDE extensions"
-       version     = "0.15.0"
+       version     = "0.16.0"
        isroot      = "true"
-       compatVersion = "0.15.0">
+       compatVersion = "0.16.0">
 
 	<Runtime>
 		<Import assembly="MonoDevelop.Documentation.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="0.15.0"/>
+		<Addin id="Core" version="0.16.0"/>
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/Core/Services">

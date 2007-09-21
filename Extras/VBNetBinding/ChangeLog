@@ -1,3 +1,7 @@
+2007-09-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* VBNetBinding.addin.xml: Bump MD version.
+
 2007-09-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* VBAmbience.cs: Track API changes.

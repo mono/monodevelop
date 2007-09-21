@@ -1,3 +1,7 @@
+2007-09-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelopNUnit.addin.xml: Bump MD version.
+
 2007-09-04  Michael Hutchinson <MHutchinson@novell.com>
 
 	* Gui/UnitTestOptionsDialog.cs,

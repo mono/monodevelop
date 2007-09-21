@@ -1,3 +1,7 @@
+2007-09-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.addin.xml: Bump MD version.
+
 2007-09-20  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs,

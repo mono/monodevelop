@@ -1,5 +1,9 @@
 2007-09-21  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.addin.xml: Bump MD version.
+
+2007-09-21  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs: Revert last change, it's causing
 	  a regression.
 

@@ -6,12 +6,13 @@
        url         = "http://www.monodevelop.com"
        description = "Provides basic GUI services"
 	   category    = "MonoDevelop Core"
-       version     = "0.15.0"
+       version     = "0.16.0"
 	   isroot      = "true"
-       compatVersion = "0.15.0">
+       compatVersion = "0.16.0">
 
 	<Dependencies>
-		<Addin id="Components" version="0.15.0"/>
+		<Addin id="Core" version="0.16.0"/>
+		<Addin id="Components" version="0.16.0"/>
 	</Dependencies>
 
 	<!-- Extension points -->
@@ -29,12 +30,12 @@
 
 	<!-- Extensions -->
 	
-<!--	<Extension path = "/MonoDevelop/Core/Applications">
-		<Application id    = "gsetup"
+	<Extension path = "/MonoDevelop/Core/Applications">
+		<Application id = "gsetup"
 		       description = "Graphical add-in setup utility"
 		       class = "MonoDevelop.Core.Gui.Dialogs.SetupApp"/>
 	</Extension>
--->
+
 
 	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "md-break-point" resource = "BreakPoint.png" />
