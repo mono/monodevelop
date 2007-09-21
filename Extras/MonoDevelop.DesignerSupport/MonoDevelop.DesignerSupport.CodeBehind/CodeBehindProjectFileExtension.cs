@@ -85,7 +85,9 @@ namespace MonoDevelop.DesignerSupport.CodeBehind
 			if (builder.Options ["GroupCodeBehind"]) {
 				ProjectFile file = (ProjectFile) dataObject;
 				CodeBehindClass cls = DesignerSupport.Service.CodeBehindService.GetChildClass (file);
-				if (cls.IClass == null) {
+				if (cls == null) {
+					return;
+				} else if (cls.IClass == null) {
 					builder.AddChild (cls);
 				} else {
 					IList<ProjectFile> children = DesignerSupport.Service.CodeBehindService.GetProjectFileChildren (file, cls.IClass);
