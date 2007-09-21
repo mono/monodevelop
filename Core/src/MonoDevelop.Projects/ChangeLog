@@ -1,5 +1,9 @@
 2007-09-21  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.Projects/ProjectReference.cs: Remove debug code.
+
+2007-09-21  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.Projects/ProjectReference.cs: Add StoredReference property
 	  that can be used to access the stored internal reference string, because
 	  if that version's not in the GAC then the Reference property will have

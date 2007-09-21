@@ -90,9 +90,8 @@ namespace MonoDevelop.Projects
 			get {
 				if (loadedReference != null)
 					return loadedReference;
-				else {
-					System.Console.WriteLine ("loadedReference is null");
-					return reference;}
+				else
+					return reference;
 			}
 		}
 		
