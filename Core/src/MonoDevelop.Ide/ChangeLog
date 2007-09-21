@@ -1,3 +1,9 @@
+2007-09-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs: Always check HasChildNodes before
+	  calling BuildChildNodes. Notice that extensions may add new nodes, even
+	  if the original node builder returns HasChildNodes=false.
+
 2007-09-20  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Dialogs/OpenFileInSolutionDialog.cs: Make sure icons
