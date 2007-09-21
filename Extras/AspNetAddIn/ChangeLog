@@ -1,3 +1,8 @@
+2007-09-21  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Project/AspNetAppProject.cs: Make write-safe by using TextFile API rather
+	  than direct save.
+
 2007-09-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AspNetAddIn.addin.xml: Bump MD version.

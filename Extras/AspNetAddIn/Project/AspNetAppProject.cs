@@ -413,7 +413,10 @@ namespace AspNetAddIn
 			
 			MonoDevelop.Projects.Text.IEditableTextFile textFile = 
 				MonoDevelop.DesignerSupport.OpenDocumentFileProvider.Instance.GetEditableTextFile (webConfigPath);
-			
+			//use textfile API because it's write safe (writes out to another file then moves)
+			if (textFile == null)
+				textFile = MonoDevelop.Projects.Text.TextFile.ReadFile (webConfigPath);
+				
 			//can't use System.Web.Configuration.WebConfigurationManager, as it can only access virtual paths within an app
 			//so need full manual handling
 			try {
@@ -421,11 +424,7 @@ namespace AspNetAddIn
 				
 				//FIXME: PreserveWhitespace doesn't handle whitespace in attribute lists
 				//doc.PreserveWhitespace = true;
-				
-				if (textFile != null)
-					doc.LoadXml (textFile.Text);
-				else
-					doc.Load (webConfigPath);
+				doc.LoadXml (textFile.Text);
 				
 				//hunt our way to the assemblies element, creating elements if necessary
 				XmlElement configElement = doc.DocumentElement;
@@ -470,12 +469,15 @@ namespace AspNetAddIn
 				
 				//any nodes that weren't removed from the existingAdds list are old/redundant, so remove from doc
 				foreach (XmlNode node in existingAdds)
-					assembliesNode.RemoveChild (node);				
+					assembliesNode.RemoveChild (node);
 				
-				if (textFile != null)
-					textFile.Text = doc.ToString ();
-				else
-					doc.Save (webConfigPath);
+				using (StringWriter writer = new StringWriter ()) {
+					doc.Save (writer);
+					textFile.Text = writer.ToString ();
+				}
+				MonoDevelop.Projects.Text.TextFile tf = textFile as MonoDevelop.Projects.Text.TextFile;
+				if (tf != null)
+					tf.Save ();
 			} catch (Exception e) {
 				Runtime.LoggingService.Warn ((object) ("Could not modify application web.config in project " + this.Name), e); 
 			}
