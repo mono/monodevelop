@@ -1,3 +1,11 @@
+2007-09-22  Michael Hutchinson <mhutchinson@novell.com>
+
+	* configure.in: Enable ASP.NET project support by default, and fix 
+	  quoting in database provider detection.
+	  
+	* Extras/MonoDevelop.GtkCore/lib, contrib/Mono.Addins: Freeze 
+	  externals versions for the 0.16 tagged branch.
+
 2007-09-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* configure.in: Bump MD version.
