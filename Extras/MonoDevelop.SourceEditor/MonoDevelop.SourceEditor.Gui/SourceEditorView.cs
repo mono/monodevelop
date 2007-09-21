@@ -56,6 +56,148 @@ namespace MonoDevelop.SourceEditor.Gui
 		int langTipX, langTipY;
 		uint tipTimeoutId;
 
+		IParserDatabase db = IdeApp.ProjectOperations.ParserDatabase;
+		TextTag synErrorTag = new TextTag ("synError");
+		bool resetTimerStarted = false;
+		uint resetTimerId;
+		ICompilationUnitBase lastCu = null;
+		int tiItem = -1;
+		
+		Dictionary<int, ErrorInfo> errors = new Dictionary<int,ErrorInfo> ();
+		
+		void InitAutoCorrectionValues ()
+		{
+			synErrorTag.Underline = Pango.Underline.Error;
+			buf.TagTable.Add (synErrorTag);
+			synErrorTag.Priority = buf.TagTable.Size - 1;
+			
+			buf.Changed += OnBufferChanged;
+			TextEditorProperties.Properties.PropertyChanged += OnPropertyChanged;
+			if (TextEditorProperties.EnableAutoCorrection)
+				db.ParseInformationChanged += OnParseInformationChanged;
+		}
+		
+		void CleanAutoCorrectionValues ()
+		{
+			db.ParseInformationChanged -= OnParseInformationChanged;
+			buf.Changed -= OnBufferChanged;
+			TextEditorProperties.Properties.PropertyChanged -= OnPropertyChanged;
+		}
+		
+		void OnParseInformationChanged (object sender, ParseInformationEventArgs e)
+		{
+			// To prevent some NullReferenceException (possibly when the user switch between editors)
+			if (this.ParentEditor == null || this.ParentEditor.DisplayBinding == null || e == null)
+				return;
+			if (this.ParentEditor.DisplayBinding.ContentName != e.FileName)
+				return;
+			
+			lastCu = e.ParseInformation.MostRecentCompilationUnit;
+			UpdateAutocorTimer ();
+		}
+		
+		void OnBufferChanged (object sender, EventArgs e)
+		{
+			ResetUnderlineChangement ();
+		}
+		
+		void OnPropertyChanged (object sender, PropertyChangedEventArgs e) {
+			if (e.Key != "EnableAutoCorrection")
+				return;
+			if (!(e.NewValue is bool) || !(e.OldValue is bool))
+				return;
+			
+			bool newValue = (bool)e.NewValue;
+			bool oldValue = (bool)e.OldValue;
+			
+			if (newValue && !oldValue) {
+				db.ParseInformationChanged += OnParseInformationChanged;
+			} else if (!newValue && oldValue) {
+				ResetUnderlineChangement ();
+				db.ParseInformationChanged -= OnParseInformationChanged;
+			}
+		}
+		
+		void ParseCompilationUnit (ICompilationUnitBase cu)
+		{
+			// No new errors
+			if (!cu.ErrorsDuringCompile)
+				return;
+			
+			// We replace the error tags at the highest priority
+			synErrorTag.Priority = buf.TagTable.Size - 1;
+			// Else we underline the error
+			foreach (ErrorInfo info in cu.ErrorInformation)
+				UnderLineError (info);
+		}
+		
+		void UnderLineError (ErrorInfo info)
+		{
+			// Adjust the line to Gtk line representation
+			info.Line -= 1;
+			
+			// If the line is already underlined
+			if (errors.ContainsKey (info.Line))
+				return;
+			
+			TextIter startIter = buf.GetIterAtLine (info.Line);
+			while (startIter.Char == "\t" || startIter.Char == " ")
+				startIter.ForwardChar ();
+			
+			TextIter endIter = buf.GetIterAtLine (info.Line);
+			endIter.ForwardToLineEnd ();
+			
+			errors [info.Line] = info;
+			
+			UnderlineErrorAt (ref startIter, ref endIter);
+		}
+		
+		void UnderlineErrorAt (ref TextIter start, ref TextIter end)
+		{
+			buf.ApplyTag ("synError", start, end);
+		}
+		
+		void ResetUnderlineChangement ()
+		{
+			if (errors.Count > 0) {
+				buf.RemoveTag ("synError", buf.StartIter, buf.EndIter);
+				errors.Clear ();
+			}
+		}
+		
+		string GetErrorInformationAt (TextIter iter)
+		{
+			ErrorInfo info;
+			if (errors.TryGetValue (iter.Line, out info))
+				return "<b>" + GettextCatalog.GetString ("Parser Error:") + "</b> " + info.Message;
+			else
+				return null;
+		}
+		
+		bool AutocorrResetMeth ()
+		{
+			ResetUnderlineChangement ();
+			ParseCompilationUnit (lastCu);
+			resetTimerStarted = false;
+			return false;
+		}
+
+		void UpdateAutocorTimer ()
+		{
+			uint timeout = 900;
+			
+			if (resetTimerStarted) {
+				// Reset the timer
+				GLib.Source.Remove (resetTimerId);
+				resetTimerId = GLib.Timeout.Add (timeout, AutocorrResetMeth);
+			} else {
+				// Start the timer for the first time
+				resetTimerStarted = true;
+				resetTimerId = GLib.Timeout.Add (timeout, AutocorrResetMeth);
+			}
+		}
+		
+
 		public bool EnableCodeCompletion {
 			get { return codeCompleteEnabled; }
 			set { codeCompleteEnabled = value; }
@@ -106,6 +248,8 @@ namespace MonoDevelop.SourceEditor.Gui
 			buf.Changed += new EventHandler (BufferChanged);
 			LoadEditActions ();
 			this.Events = this.Events | EventMask.PointerMotionMask | EventMask.LeaveNotifyMask | EventMask.ExposureMask;
+			
+			InitAutoCorrectionValues();
 		}
 		
 		public new void Dispose ()
@@ -114,6 +258,8 @@ namespace MonoDevelop.SourceEditor.Gui
 			HideLanguageItemWindow ();
 			buf.MarkSet -= new MarkSetHandler (BufferMarkSet);
 			buf.Changed -= new EventHandler (BufferChanged);
+			CleanAutoCorrectionValues();
+			
 			base.Dispose ();
 		}
 		
@@ -160,6 +306,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		{
 			ModifierType mask; // ignored
 			int xloc, yloc;
+			string errorInfo;
 
 			showTipScheduled = false;
 				
@@ -183,17 +330,33 @@ namespace MonoDevelop.SourceEditor.Gui
 				if (pctx == null)
 					return false;
 
-				languageItemWindow = new LanguageItemWindow (tipItem, pctx, GetAmbience ());
+				DoShowTooltip (new LanguageItemWindow (tipItem, pctx, GetAmbience (), 
+				                                        GetErrorInformationAt (ti)), langTipX, langTipY);
 				
-				int ox, oy;
-				this.GetWindow (TextWindowType.Text).GetOrigin (out ox, out oy);
-				int w = languageItemWindow.Child.SizeRequest().Width;
-				languageItemWindow.Move (langTipX + ox - (w/2), langTipY + oy + 20);
-				languageItemWindow.ShowAll ();
+				
+			} else if (!string.IsNullOrEmpty ((errorInfo = GetErrorInformationAt(ti)))) {
+				// Error tooltip already shown
+				if (languageItemWindow != null && tiItem == ti.Line)
+					return false;
+				tiItem = ti.Line;
+				
+				HideLanguageItemWindow ();
+				DoShowTooltip (new LanguageItemWindow (null, null, null, errorInfo), xloc, yloc);
 			} else
 				HideLanguageItemWindow ();
 			
 			return false;
+		}
+		
+		void DoShowTooltip (LanguageItemWindow liw, int xloc, int yloc)
+		{
+			languageItemWindow = liw;
+			
+			int ox, oy;
+			this.GetWindow (TextWindowType.Text).GetOrigin (out ox, out oy);
+			int w = languageItemWindow.Child.SizeRequest ().Width;
+			languageItemWindow.Move (xloc + ox - (w/2), yloc + oy + 20);
+			languageItemWindow.ShowAll ();
 		}
 		
 

@@ -18,39 +18,65 @@ namespace MonoDevelop.SourceEditor
 	{
 		static ConversionFlags WindowConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.IncludePangoMarkup;
 		
-		public LanguageItemWindow (ILanguageItem item, IParserContext ctx, Ambience ambience) : base (WindowType.Popup)
+		static string paramStr = GettextCatalog.GetString ("Parameter");
+		static string localStr = GettextCatalog.GetString ("Local variable");
+		static string fieldStr = GettextCatalog.GetString ("Field");
+		static string propertyStr = GettextCatalog.GetString ("Property");
+		
+		public LanguageItemWindow (ILanguageItem item, IParserContext ctx, Ambience ambience,
+		                           string errorInformations) : base (WindowType.Popup)
 		{
 			Name = "gtk-tooltips";
 			
-			string s;
+			// Approximate value for usual case
+			StringBuilder s = new StringBuilder(150);
 			
-			if (item is IParameter) {
-				s = "<small><i>" + GettextCatalog.GetString ("Parameter") + "</i></small>\n";
-				s += ambience.Convert((IParameter)item, WindowConversionFlags);
+			if (item != null) {
+				if (item is IParameter) {
+					s.Append ("<small><i>");
+					s.Append (paramStr);
+					s.Append ("</i></small>\n");
+					s.Append (ambience.Convert ((IParameter)item, WindowConversionFlags));
+				} else if (item is LocalVariable) {
+					s.Append ("<small><i>");
+					s.Append (localStr);
+					s.Append ("</i></small>\n");
+					s.Append (ambience.Convert ((LocalVariable)item, WindowConversionFlags));
+				} else if (item is IField) {				
+					s.Append ("<small><i>");
+					s.Append (fieldStr);
+					s.Append ("</i></small>\n");
+					s.Append (ambience.Convert ((IField)item, WindowConversionFlags));
+				} else if (item is IProperty) {				
+					s.Append ("<small><i>");
+					s.Append (propertyStr);
+					s.Append ("</i></small>\n");
+					s.Append (ambience.Convert ((IProperty)item, WindowConversionFlags));
+				} else if (item is Namespace) {
+					s.Append ("namespace <b>");
+					s.Append (item.Name);
+					s.Append ("</b>");
+				} else
+					s.Append (ambience.Convert (item, WindowConversionFlags));
+				
+				string doc = GetDocumentation (item.Documentation).Trim ('\n');
+				if (!string.IsNullOrEmpty (doc)) {
+					s.Append ("\n<small>");
+					s.Append (doc);
+					s.Append ("</small>");
+				}
+			}			
+			
+			if (!string.IsNullOrEmpty (errorInformations)) {
+				if (s.Length != 0)
+					s.Append ("\n\n");
+				s.Append ("<small>");
+				s.Append (errorInformations);
+				s.Append ("</small>");
 			}
-			else if (item is LocalVariable) {
-				s = "<small><i>" + GettextCatalog.GetString ("Local variable") + "</i></small>\n";
-				s += ambience.Convert((LocalVariable)item, WindowConversionFlags);
-			}
-			else if (item is IField) {				
-				s = "<small><i>" + GettextCatalog.GetString ("Field") + "</i></small>\n";
-				s += ambience.Convert((IField)item, WindowConversionFlags);
-			}
-			else if (item is IProperty) {				
-				s = "<small><i>" + GettextCatalog.GetString ("Property") + "</i></small>\n";
-				s += ambience.Convert((IProperty)item, WindowConversionFlags);
-			}
-			else if (item is Namespace)
-				s = "namespace " + "<b>" + item.Name + "</b>";
-			else
-				s = ambience.Convert(item, WindowConversionFlags);
-
-			string doc = GetDocumentation (item.Documentation).Trim ('\n');
-			if (doc.Length > 0)
-				s += "\n<small>" + doc + "</small>";
 			
 			Label lab = new Label ();
-			lab.Markup = s;
+			lab.Markup = s.ToString ();
 			lab.Xalign = 0;
 			lab.Xpad = 3;
 			lab.Ypad = 3;
@@ -69,7 +95,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			System.IO.StringReader reader = new System.IO.StringReader("<docroot>" + doc + "</docroot>");
 			XmlTextReader xml   = new XmlTextReader(reader);
-			StringBuilder ret   = new StringBuilder();
+			StringBuilder ret   = new StringBuilder(70);
 			
 			try {
 				xml.Read();

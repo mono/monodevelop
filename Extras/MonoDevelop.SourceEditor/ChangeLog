@@ -1,3 +1,12 @@
+2007-09-21  Jérémie Laval <jeremie.laval@gmail.com>
+
+	* MonoDevelop.SourceEditor.Gui/LanguageItemWindow.cs: Added support
+	  for on-the-fly parsing errors visually with a red underline and
+	  error informations in the tooltip. Tuned LanguageItemWindow
+	  constructor to use a StringBuilder instead of repetititive string
+	  concatenation. Added the associated AutoCorrection option in
+	  GeneralTextEditorPanel and the glade file.
+
 2007-09-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.addin.xml: Bump MD version.

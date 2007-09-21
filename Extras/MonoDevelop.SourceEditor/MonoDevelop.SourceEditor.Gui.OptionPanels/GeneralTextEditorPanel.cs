@@ -43,6 +43,7 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 		class GeneralTextEditorPanelWidget : GladeWidgetExtract 
 		{	
 			[Glade.Widget] CheckButton enableCodeCompletionCheckBox;
+			[Glade.Widget] CheckButton enableAutoCorrectionCheckBox;
 			[Glade.Widget] CheckButton enableFoldingCheckBox;
 			[Glade.Widget] CheckButton showClassMethodCheckBox;
 			[Glade.Widget] FontButton fontNameDisplayTextBox;
@@ -55,7 +56,7 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 			{
 				encodingBox.Destroy(); // this is a really dirty way of hiding encodingBox, but Hide() doesn't work
 				enableCodeCompletionCheckBox.Active = TextEditorProperties.EnableCodeCompletion;
-				
+				enableAutoCorrectionCheckBox.Active = TextEditorProperties.EnableAutoCorrection;
  				enableFoldingCheckBox.Active = TextEditorProperties.EnableFolding;
  				
  				showClassMethodCheckBox.Active = TextEditorProperties.ShowClassBrowser;
@@ -108,6 +109,7 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 			public void Store ()
 			{
 				TextEditorProperties.EnableCodeCompletion = enableCodeCompletionCheckBox.Active;
+				TextEditorProperties.EnableAutoCorrection = enableAutoCorrectionCheckBox.Active;
 				TextEditorProperties.EnableFolding = enableFoldingCheckBox.Active;
 				TextEditorProperties.ShowClassBrowser = showClassMethodCheckBox.Active;
 				
