@@ -1872,10 +1872,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				Gtk.TreeIter it = currentIter;
 				foreach (NodeBuilder builder in chain) {
 					try {
-						if (builder.HasChildNodes (this, dataObject)) {
-							currentIter = it;
-							builder.BuildChildNodes (this, dataObject);
-						}
+						builder.BuildChildNodes (this, dataObject);
 					} catch (Exception ex) {
 						Runtime.LoggingService.Error (ex);
 					}

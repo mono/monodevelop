@@ -1,5 +1,10 @@
 2007-09-21  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs: Revert last change, it's causing
+	  a regression.
+
+2007-09-21  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs: Always check HasChildNodes before
 	  calling BuildChildNodes. Notice that extensions may add new nodes, even
 	  if the original node builder returns HasChildNodes=false.
