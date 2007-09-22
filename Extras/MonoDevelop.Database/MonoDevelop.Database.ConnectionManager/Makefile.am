@@ -77,6 +77,6 @@ assembly_DATA = $(ASSEMBLY) $(ADDIN)
 endif
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
-EXTRA_DIST =
+EXTRA_DIST = $(FILES) $(RES)
 
 include $(top_srcdir)/Makefile.include
