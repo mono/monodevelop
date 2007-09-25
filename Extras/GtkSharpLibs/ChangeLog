@@ -1,3 +1,10 @@
+2007-09-25  Lluis Sanchez Gual <lluis@novell.com>
+
+	* md-gtk-sharp-2.4/md-gtk-sharp.addin.xml.xsl,
+	  md-gtk-sharp-2.6/md-gtk-sharp.addin.xml.xsl,
+	  md-gtk-sharp-2.8/md-gtk-sharp.addin.xml.xsl: Fix dependency version
+	  numbers.
+
 2007-09-10  Lluis Sanchez Gual <lluis@novell.com>
 
 	* md-gtk-sharp-2.4/md-gtk-sharp.addin.xml.xsl,
