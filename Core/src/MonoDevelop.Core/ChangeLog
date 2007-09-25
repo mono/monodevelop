@@ -1,3 +1,8 @@
+2007-09-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core/PropertyService.cs: In SaveProperties, create the
+	  configuration path if it doesn't exist.
+
 2007-09-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.addin.xml: Bump MD version.
