@@ -88,6 +88,8 @@ namespace MonoDevelop.Core
 		public static void SaveProperties()
 		{
 			Debug.Assert (properties != null);
+			if (!Directory.Exists (ConfigPath))
+				Directory.CreateDirectory (ConfigPath);
 			properties.Save (Path.Combine (ConfigPath, FileName));
 		}
 		
