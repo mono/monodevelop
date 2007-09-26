@@ -174,6 +174,17 @@ namespace AspNetAddIn
 		
 		#region build/prebuild/execute
 		
+		static bool CheckXsp (string command)
+		{
+			try {
+				ProcessWrapper p = Runtime.ProcessService.StartProcess (command, "--version", null, null);
+				p.WaitForOutput ();
+				return true;
+			} catch {
+				return false;
+			}
+		}
+		
 		IProcessAsyncOperation StartXsp (IProgressMonitor monitor, ExecutionContext context, IConsole console)
 		{
 			AspNetAppProjectConfiguration configuration = (AspNetAppProjectConfiguration) ActiveConfiguration;
@@ -203,6 +214,14 @@ namespace AspNetAddIn
 		
 		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context)
 		{
+			//check XSP is available
+			ClrVersion clrVersion = ((AspNetAppProjectConfiguration) ActiveConfiguration).ClrVersion;
+			string xspVersion = (clrVersion == ClrVersion.Net_1_1)? "xsp" : "xsp2";
+			if (!CheckXsp (xspVersion)) {
+				monitor.ReportError (string.Format ("The \"{0}\" web server cannot be started. Please ensure that it is installed.",xspVersion), null);
+				return;
+			}
+			
 			CopyReferencesToOutputPath (true);
 			
 			IConsole console = null;

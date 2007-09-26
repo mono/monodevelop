@@ -1,3 +1,7 @@
+2007-09-26  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Project/AspNetAppProject.cs: Check for XSP before running it.
+
 2007-09-21  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Project/AspNetAppProject.cs: Make write-safe by using TextFile API rather
