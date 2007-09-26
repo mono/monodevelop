@@ -444,12 +444,13 @@ namespace MonoDevelop.Ide.Gui
 
 			TreeViewOptions ops = new TreeViewOptions (
 				parentWindow,
-				(Properties)PropertyService.Get("MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties()),
+				TextEditorProperties.Properties,
 				AddinManager.GetExtensionNode ("/MonoDevelop/Ide/OptionsDialogPanels"));
 
 			if (panelId != null)
 				ops.SelectPanel (panelId);
-			ops.Run ();
+			if (ops.Run () == (int) Gtk.ResponseType.Ok)
+				PropertyService.SaveProperties ();
 		}
 		
 		internal void ShowNext ()
