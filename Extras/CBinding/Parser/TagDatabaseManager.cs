@@ -90,8 +90,14 @@ namespace CBinding.Parser
 		internal string[] Headers (string filename, bool with_system)
 		{
 			string option = (with_system ? "-M" : "-MM");
-			ProcessWrapper p = Runtime.ProcessService.StartProcess ("gcc", option + " -MG " + filename, null, null);
-			p.WaitForExit ();
+			ProcessWrapper p;
+			try {
+				p = Runtime.ProcessService.StartProcess ("gcc", option + " -MG " + filename, null, null);
+				p.WaitForExit ();
+			} catch (Exception ex) {
+				Runtime.LoggingService.Error (ex);
+				return new string [0];
+			}
 			
 			StringBuilder output = new StringBuilder ();
 			string line;

@@ -50,12 +50,34 @@ namespace CBinding
 {
 	public abstract class GNUCompiler : CCompiler
 	{
+		bool appsChecked;
+		bool compilerFound;
+		bool linkerFound;
+		
 		public override ICompilerResult Compile (
 			ProjectFileCollection projectFiles,
 		    ProjectPackageCollection packages,
 		    CProjectConfiguration configuration,
 		    IProgressMonitor monitor)
 		{
+			if (!appsChecked) {
+				appsChecked = true;
+				compilerFound = CheckApp (compilerCommand);
+				linkerFound = CheckApp (linkerCommand);
+			}
+				
+			if (!compilerFound) {
+				DefaultCompilerResult cres = new DefaultCompilerResult ();
+				cres.AddError ("Compiler not found: " + compilerCommand);
+				return cres;
+			}
+			
+			if (!linkerFound) {
+				DefaultCompilerResult cres = new DefaultCompilerResult ();
+				cres.AddError ("Linker not found: " + linkerCommand);
+				return cres;
+			}
+			
 			CompilerResults cr = new CompilerResults (new TempFileCollection ());
 			bool res = true;
 			string args = GetCompilerFlags (configuration);
@@ -587,6 +609,17 @@ namespace CBinding
 			p.WaitForExit();
 
 			return p.StandardOutput.ReadToEnd();
+		}
+		
+		bool CheckApp (string app)
+		{
+			try {
+				ProcessWrapper p = Runtime.ProcessService.StartProcess (linkerCommand, "--version", null, null);
+				p.WaitForOutput ();
+				return true;
+			} catch {
+				return false;
+			}
 		}
 	}
 }
