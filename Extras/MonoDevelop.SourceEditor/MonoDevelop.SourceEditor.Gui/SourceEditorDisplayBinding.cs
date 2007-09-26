@@ -258,7 +258,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			CaretModeChanged (null, null);
 			
 			propertyHandler = (EventHandler<PropertyChangedEventArgs>) DispatchService.GuiDispatch (new EventHandler<PropertyChangedEventArgs> (PropertiesChanged));
-			properties = PropertyService.Get("MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties());
+			properties = TextEditorProperties.Properties;
 			properties.PropertyChanged += propertyHandler;
 			fsw = new FileSystemWatcher ();
 			fsw.Created += (FileSystemEventHandler) DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));	
