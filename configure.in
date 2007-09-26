@@ -242,10 +242,10 @@ AM_CONDITIONAL(ENABLE_ASPNET, [test x$enable_aspnet = xyes])
 #We need to know where Mozilla is for launch scripts and possible for AspNetEdit
 #Check pkg-config first
 MOZILLA_HOME="`$PKG_CONFIG --variable=libdir mozilla-gtkmozembed`"
-if test ! -e "$MOZILLA_HOME/libgtkembedmoz.so"; then
+if test -z "$MOZILLA_HOME"; then
 	MOZILLA_HOME="`$PKG_CONFIG --variable=libdir firefox-gtkmozembed`"
 fi
-if test ! -e "$MOZILLA_HOME/libgtkembedmoz.so"; then
+if test -z "$MOZILLA_HOME"; then
 	MOZILLA_HOME="`$PKG_CONFIG --variable=libdir xulrunner-gtkmozembed`"
 fi
 
@@ -275,7 +275,9 @@ find_libgtkembedmoz ()
 	done
 }
 
-MOZILLA_HOME=`find_libgtkembedmoz`
+if test -z "$MOZILLA_HOME"; then
+	MOZILLA_HOME=`find_libgtkembedmoz`
+fi
 
 if test -z "$MOZILLA_HOME"; then
 	MOZILLA_HOME=
