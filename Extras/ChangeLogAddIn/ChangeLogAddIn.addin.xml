@@ -35,7 +35,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/OptionsDialogPanels/Other">
-		<DialogPanel _label = "ChangeLog Add-in" class = "MonoDevelop.ChangeLogAddIn.ChangeLogAddInOptionPanel" />
+		<DialogPanel id = "ChangeLogAddInOptions" _label = "ChangeLog Add-in" class = "MonoDevelop.ChangeLogAddIn.ChangeLogAddInOptionPanel" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
