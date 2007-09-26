@@ -60,9 +60,6 @@ namespace MonoDevelop.Core
 			if (o is T) 
 				return (T)o;
 			
-			if (o is LazyXmlDeserializer) 
-				return (T)((LazyXmlDeserializer)o).Deserialize<T> ();
-			
 			TypeConverter converter = TypeDescriptor.GetConverter (typeof(T));
 			if (o is string) {
 				try {
@@ -90,19 +87,37 @@ namespace MonoDevelop.Core
 		public T Get<T> (string property, T defaultValue)
 		{
 			defaultValues[property] = defaultValue;
-			if (properties.ContainsKey (property))
-				return Convert<T> (properties[property]);
+			object val;
+			if (GetPropertyValue<T> (property, out val))
+				return Convert<T> (val);
 			properties[property] = defaultValue;
 			return defaultValue;
 		}
 		
 		public T Get<T> (string property)
 		{
-			if (properties.ContainsKey (property))
-				return Convert<T> (properties[property]);
-			if (defaultValues.ContainsKey (property))
-				return Convert<T> (defaultValues[property]);
+			object val;
+			if (GetPropertyValue<T> (property, out val))
+				return Convert<T> (val);
+			if (defaultValues.TryGetValue (property, out val))
+				return Convert<T> (val);
 			return default(T);
+		}
+		
+		bool GetPropertyValue<T> (string property, out object val)
+		{
+			if (properties.TryGetValue (property, out val)) {
+				if (val is LazyXmlDeserializer) {
+					// Deserialize the data and store it in the dictionary, so
+					// following calls return the same object
+					val = ((LazyXmlDeserializer)val).Deserialize<T> ();
+					properties[property] = val;
+				}
+				return true;
+			} else {
+				val = null;
+				return false;
+			}
 		}
 		
 		public void Set (string key, object val)

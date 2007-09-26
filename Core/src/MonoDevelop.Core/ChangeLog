@@ -1,3 +1,12 @@
+2007-09-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.mdp: Fix warning level.
+	* MonoDevelop.Core/Properties.cs: When getting the value of a property, if
+	  it is a LazyXmlDeserializer, deserialize it and store the deserialized
+	  value in the internal dictionary. In this way the next time the property
+	  is requested, the same object will be returned, insted of deserializing
+	  the data every time.
+
 2007-09-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core/PropertyService.cs: In SaveProperties, create the
