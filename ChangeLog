@@ -1,3 +1,8 @@
+2007-09-26  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* configure.in: Another Mozilla detection tweak: don't ignore pkg-config
+	  results.
+
 2007-09-26  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* monodevelop.png: New logo.
