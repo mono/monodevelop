@@ -1,3 +1,9 @@
+2007-09-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Use the
+	  TextEditorProperties class to get the properties object to which
+	  subscribe for events.
+
 2007-09-21  Jérémie Laval <jeremie.laval@gmail.com>
 
 	* MonoDevelop.SourceEditor.Gui/LanguageItemWindow.cs: Added support
