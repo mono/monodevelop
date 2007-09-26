@@ -1,3 +1,8 @@
+2007-09-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* ChangeLogAddIn.addin.xml: Add missing identifier for the add-in
+	  preferences dialog.
+
 2007-09-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ChangeLogAddIn.addin.xml: Bump MD version.
