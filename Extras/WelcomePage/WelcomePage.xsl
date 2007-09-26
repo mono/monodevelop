@@ -18,7 +18,7 @@
 					@import "<xsl:value-of select="ResourcePath" />WelcomePage.css"; 
 
 					body {
-					background: #fff url('<xsl:value-of select="ResourcePath" />mono-bg.png') repeat-x top;
+					background: #fff url('<xsl:value-of select="ResourcePath" />mono-bg.png') no-repeat top left;
 					}
 					
 					#p-logo {
@@ -33,7 +33,7 @@
 					/* Wiki logo, part 2 */
 					display: block;
 					width: 266px;
-					height: 50px;
+					height: 53px;
 					}
 				</style>
 			</head>
@@ -45,7 +45,7 @@
 								title="{gtc:GetString(@_title)}"></a>
 						</div>
 						<div id="caption">
-							<xsl:value-of select="gtc:GetString(@_desc)"/>
+							
 						</div>
 						<div id="column-content">
 							<div>
