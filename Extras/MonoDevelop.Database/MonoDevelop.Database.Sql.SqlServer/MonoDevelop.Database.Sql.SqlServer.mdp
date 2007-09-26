@@ -21,6 +21,7 @@
     <File name="./SqlServerDialect.cs" subtype="Code" buildaction="Compile" />
     <File name="./SqlServerGuiProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Database.Sql.SqlServer.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -29,19 +30,19 @@
     <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Database.Sql" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Database.Components" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Database.Designer" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core.Gui" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Ide" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Components" />
-    <ProjectReference type="Project" localcopy="True" refto="Mono.Addins" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Database.Sql" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Database.Components" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Database.Designer" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core.Gui" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Ide" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />
+    <ProjectReference type="Project" localcopy="False" refto="Mono.Addins" />
   </References>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <BuildFilesVar Sync="True" Name="FILES" />
-    <DeployFilesVar Sync="True" Name="EXTRA_DIST" />
+    <DeployFilesVar />
     <ResourcesVar Sync="True" Name="RES" />
     <OthersVar />
     <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />

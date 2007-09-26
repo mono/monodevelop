@@ -24,21 +24,11 @@ FILES =  \
 
 RES = MonoDevelop.Database.Sql.SqlServer.addin.xml
 
-ADDIN = MonoDevelop.Database.Sql.SqlServer.addin.xml
-
 if ENABLE_SQLSERVER
-all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
+all: $(ASSEMBLY)
 else
 all:
 endif
-
-$(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/.
-
-$(ADDIN_BUILD)/%: $(srcdir)/lib/%
-	mkdir -p $(ADDIN_BUILD)
-	cp $< $@
 
 $(ASSEMBLY): $(FILES) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
@@ -47,7 +37,7 @@ $(ASSEMBLY): $(FILES) $(build_resources)
 
 if ENABLE_DATABASE
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.Database
-assembly_DATA = $(ASSEMBLY) $(ADDIN)
+assembly_DATA = $(ASSEMBLY)
 endif
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb

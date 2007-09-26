@@ -25,6 +25,6 @@
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Data.SybaseClient, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Database.Sql" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Database.Sql" />
   </References>
 </Project>

@@ -31,17 +31,7 @@ RES = MonoDevelop.Database.Sql.MySql.addin.xml
 SRC_MYSQL_FILES = $(addprefix $(top_srcdir)/contrib/MySql/, $(MYSQL_FILES))
 BUILD_MYSQL_FILES = $(addprefix $(ADDIN_BUILD)/, $(notdir $(MYSQL_FILES)))
 
-ADDIN = MonoDevelop.Database.Sql.MySql.addin.xml
-
-all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN) $(BUILD_MYSQL_FILES)
-
-$(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/.
-
-$(ADDIN_BUILD)/%: $(srcdir)/lib/%
-	mkdir -p $(ADDIN_BUILD)
-	cp $< $@
+all: $(ASSEMBLY) $(BUILD_MYSQL_FILES)
 
 $(BUILD_MYSQL_FILES): $(SRC_MYSQL_FILES)
 	mkdir -p $(ADDIN_BUILD)
@@ -53,9 +43,9 @@ $(ASSEMBLY): $(FILES) $(build_resources)
 
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.Database
-assembly_DATA = $(ASSEMBLY) $(ADDIN) $(BUILD_MYSQL_FILES)
+assembly_DATA = $(ASSEMBLY) $(BUILD_MYSQL_FILES)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(BUILD_MYSQL_FILES)
-EXTRA_DIST = $(SRC_MYSQL_FILES) $(FILES) $(RES)
+EXTRA_DIST = $(FILES) $(RES) $(SRC_MYSQL_FILES)
 
 include $(top_srcdir)/Makefile.include

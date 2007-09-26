@@ -32,17 +32,7 @@ SQLITE_FILES = \
 SRC_SQLITE_FILES = $(addprefix $(top_srcdir)/contrib/Sqlite/, $(SQLITE_FILES))
 BUILD_SQLITE_FILES = $(addprefix $(ADDIN_BUILD)/, $(notdir $(SQLITE_FILES)))
 
-ADDIN = MonoDevelop.Database.Sql.Sqlite.addin.xml
-
-all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN) $(BUILD_SQLITE_FILES)
-
-$(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/.
-
-$(ADDIN_BUILD)/%: $(srcdir)/lib/%
-	mkdir -p $(ADDIN_BUILD)
-	cp $< $@
+all: $(ASSEMBLY) $(BUILD_SQLITE_FILES)
 
 $(BUILD_SQLITE_FILES): $(SRC_SQLITE_FILES)
 	mkdir -p $(ADDIN_BUILD)
@@ -54,9 +44,9 @@ $(ASSEMBLY): $(FILES) $(build_resources)
 
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.Database
-assembly_DATA = $(ASSEMBLY) $(ADDIN) $(BUILD_SQLITE_FILES)
+assembly_DATA = $(ASSEMBLY) $(BUILD_SQLITE_FILES)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(BUILD_SQLITE_FILES)
-EXTRA_DIST = $(SRC_SQLITE_FILES) $(FILES) $(RES)
+EXTRA_DIST = $(FILES) $(RES) $(SRC_SQLITE_FILES)
 
 include $(top_srcdir)/Makefile.include

@@ -1,3 +1,10 @@
+2007-09-26  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Makefile.am: Don't deploy .addin.xml file.
+	* MonoDevelop.Database.Components.mdp: Don't unnecessarily local-copy
+	  project references. Don't sync EXTRA_DIST with deploy files. Add
+	  Makefile.am to file list.
+
 2007-09-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Database.Components.addin.xml: Bump MD version.
