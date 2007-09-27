@@ -21,6 +21,7 @@
 		<Addin id="SourceEditor" version="0.16.0"/>
 		<Addin id="DesignerSupport" version="0.16.0"/>
 		<Addin id="Deployment" version="0.16.0"/>
+		<Addin id="Prj2Make" version="0.16.0" />
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
@@ -120,7 +121,11 @@
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
 		<Class class = "AspNetAddIn.VerifyCodeBehindBuildStep" />
 	</Extension>
-	
+
+	<Extension path = "/MonoDevelop/Prj2Make/MSBuildProjectExtension">
+		<Class class="AspNetAddIn.AspNetMSBuildProjectExtension" />
+	</Extension>
+
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Category _name = "ASP.NET" id = "AspNet">
 		<Command id = "AspNetAddIn.AspNetCommands.AddAspNetDirectory"

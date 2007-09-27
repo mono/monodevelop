@@ -7,6 +7,7 @@ REFS =  \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor.dll \
+	-r:$(top_builddir)/build/AddIns/prj2makesharp/prj2make-sharp-lib.dll \
 	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
@@ -58,6 +59,7 @@ FILES =  \
 	Project/AspNetCommands.cs \
 	Project/AspNetDisplayBinding.cs \
 	Project/AspNetFileDescriptionTemplate.cs \
+	Project/AspNetMSBuildProjectExtension.cs \
 	Project/CodeBehind.cs \
 	Project/ProjectFolderNodeBuilderExtension.cs \
 	Project/VerifyCodeBehindBuildStep.cs \
