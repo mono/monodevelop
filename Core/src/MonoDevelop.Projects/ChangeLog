@@ -1,3 +1,9 @@
+2007-09-27  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Thread safety
+	  fixes. The references collection may be accessed from outside the class,
+	  so it can't be directly changed.
+
 2007-09-21  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Projects/ProjectReference.cs: Remove debug code.
