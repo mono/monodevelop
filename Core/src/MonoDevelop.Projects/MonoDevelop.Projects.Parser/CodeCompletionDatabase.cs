@@ -690,8 +690,11 @@ namespace MonoDevelop.Projects.Parser
 		{
 			lock (rwlock)
 			{
+				// Create a new list because the reference list is accessible through a public property
 				ReferenceEntry re = new ReferenceEntry (uri);
-				references.Add (re);
+				ArrayList list = (ArrayList) references.Clone ();
+				list.Add (re);
+				references = list;
 				modified = true;
 			}
 		}
@@ -703,7 +706,9 @@ namespace MonoDevelop.Projects.Parser
 				for (int n=0; n<references.Count; n++)
 				{
 					if (((ReferenceEntry)references[n]).Uri == uri) {
-						references.RemoveAt (n);
+						ArrayList list = (ArrayList) references.Clone ();
+						list.RemoveAt (n);
+						references = list;
 						modified = true;
 						return;
 					}
