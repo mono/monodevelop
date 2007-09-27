@@ -1,3 +1,9 @@
+2007-09-27  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Dialogs/CombineEntryFeatureSelector.cs: Make sure
+	  project features enabled by default are properly applied.
+	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs: Remove debug code.
+
 2007-09-26  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.mdp: Fix warning level.

@@ -38,8 +38,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 			// Show enabled features at the beginning
 			foreach (ICombineEntryFeature feature in features)
-				if (feature.IsEnabled (parentCombine, entry))
-					AddFeature (feature);
+				if (feature.IsEnabled (parentCombine, entry)) {
+					Gtk.Widget editor = AddFeature (feature);
+					selectedFeatures.Add (feature);
+					selectedEditors.Add (editor);
+				}
 			foreach (ICombineEntryFeature feature in features)
 				if (!feature.IsEnabled (parentCombine, entry))
 					AddFeature (feature);
@@ -55,7 +58,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			scrolled.AddWithViewport (box);
 		}
 		
-		void AddFeature (ICombineEntryFeature feature)
+		Gtk.Widget AddFeature (ICombineEntryFeature feature)
 		{
 			Gtk.HBox cbox = new Gtk.HBox ();
 			CheckButton check = null;
@@ -97,6 +100,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			} else {
 				fbox.ShowAll ();
 			}
+			return editor;
 		}
 		
 		void OnClickFeature (ICombineEntryFeature feature, CheckButton check, HBox fbox, Gtk.Widget editor)

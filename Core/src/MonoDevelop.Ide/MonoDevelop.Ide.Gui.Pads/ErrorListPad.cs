@@ -540,7 +540,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			AddTaskInternal (t);
 			filter.Refilter ();
-			Console.WriteLine (Environment.StackTrace);
 		}
 		
 		void AddTaskInternal (Task t)
