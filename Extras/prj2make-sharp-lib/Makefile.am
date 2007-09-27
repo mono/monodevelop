@@ -6,6 +6,7 @@ REFS =  \
 	$(GTK_SHARP_LIBS) \
 	-r:$(top_builddir)/build/AddIns/BackendBindings/CSharpBinding.dll \
 	-r:$(top_builddir)/build/AddIns/BackendBindings/VBNetBinding.dll \
+	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
@@ -15,13 +16,16 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
+	CSharpMSBuildProjectExtension.cs \
 	CSharpResourceIdBuilder.cs \
 	csproj_ver2003.cs \
 	CsprojInfo.cs \
+	DefaultMSBuildProjectExtension.cs \
 	IResourceIdBuilder.cs \
 	MdPrjHelper.cs \
 	MSBuildData.cs \
 	MSBuildFileFormat.cs \
+	MSBuildProjectExtension.cs \
 	MSBuildProjectServiceExtension.cs \
 	MsPrjHelper.cs \
 	pkgconfiginvoker.cs \
@@ -29,8 +33,11 @@ FILES =  \
 	PrjxInfo.cs \
 	sharp_d_cmbx.cs \
 	sharp_d_prjx.cs \
+	SilverlightMSBuildProjectExtension.cs \
 	SlnData.cs \
 	SlnFileFormat.cs \
+	Utils.cs \
+	VBNetMSBuildProjectExtension.cs \
 	VBNetResourceIdBuilder.cs \
 	VS2003ProjectFileFormat.cs \
 	VS2003SlnFileFormat.cs

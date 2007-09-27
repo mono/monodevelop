@@ -1,3 +1,24 @@
+2007-09-27  Ankit Jain  <jankit@novell.com>
+
+	* MSBuildProjectExtension.cs: New.
+	* DefaultMSBuildProjectExtension.cs: New.
+
+	Move language specific stuff from MSBuildFileFormat into the respective extensions.
+	* CSharpMSBuildProjectExtension.cs: New.
+	* VBNetMSBuildProjectExtension.cs: New.
+	* SilverlightMSBuildProjectExtension.cs: New.
+
+	* Utils.cs: New. Move utility methods from MSBuildFileFormat to here.
+	* MSBuildData.cs (ExtensionChain): New.
+	(FlavorPropertiesParent): New.
+	(TypeGuids): New.
+
+	* SlnFileFormat.cs: Track api changes.
+
+	* Makefile.am: Update.
+	* prj2make-sharp-lib.addin.xml: Update. Add new ExtensionPoint for
+	MSBuildProjectExtension.
+
 2007-09-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* prj2make-sharp-lib.addin.xml: Bump MD version.

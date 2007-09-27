@@ -36,6 +36,12 @@
     <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="./VS2003SlnFileFormat.cs" subtype="Code" buildaction="Compile" />
     <File name="./VS2003ProjectFileFormat.cs" subtype="Code" buildaction="Compile" />
+    <File name="./SilverlightMSBuildProjectExtension.cs" subtype="Code" buildaction="Compile" />
+    <File name="./VBNetMSBuildProjectExtension.cs" subtype="Code" buildaction="Compile" />
+    <File name="./CSharpMSBuildProjectExtension.cs" subtype="Code" buildaction="Compile" />
+    <File name="./DefaultMSBuildProjectExtension.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MSBuildProjectExtension.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Utils.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -50,6 +56,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Project" localcopy="False" refto="Mono.Addins" />
     <ProjectReference type="Project" localcopy="False" refto="CSharpBinding" />
   </References>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../">

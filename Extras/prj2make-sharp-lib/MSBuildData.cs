@@ -33,17 +33,20 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Prj2Make
 {
-	class MSBuildData
+	public class MSBuildData
 	{
 		XmlDocument doc;
 		XmlElement globalConfigElement;
 		string guid;
 		List<string> extra;
+		string type_guids;
 
 		Dictionary<DotNetProjectConfiguration, XmlElement> configElements;
 
 		Dictionary<ProjectFile, XmlElement> projectFileElements;
 		Dictionary<ProjectReference, XmlElement> projectReferenceElements;
+		MSBuildProjectExtension extensionChain;
+		XmlElement flavorPropertiesParent;
 
 		public MSBuildData ()
 		{
@@ -59,7 +62,7 @@ namespace MonoDevelop.Prj2Make
 			set { globalConfigElement = value; }
 		}
 
-		/* Guid w/o enclosing {} */
+		/* Guid with the enclosing {} */
 		public string Guid {
 			get { return guid; }
 			set { guid = value; }
@@ -72,7 +75,7 @@ namespace MonoDevelop.Prj2Make
 				return configElements;
 			}
 		}
-		
+
 		public Dictionary<ProjectFile, XmlElement> ProjectFileElements {
 			get {
 				if (projectFileElements == null)
@@ -87,6 +90,25 @@ namespace MonoDevelop.Prj2Make
 					projectReferenceElements = new Dictionary<ProjectReference, XmlElement> ();
 				return projectReferenceElements;
 			}
+		}
+
+		public MSBuildProjectExtension ExtensionChain {
+			get { return extensionChain; }
+			set { extensionChain = value; }
+		}
+
+		public XmlElement FlavorPropertiesParent {
+			get {
+				if (flavorPropertiesParent == null)
+					flavorPropertiesParent = Utils.GetXmlElement (Document, Document, "/Project/ProjectExtensions/VisualStudio", false);
+				return flavorPropertiesParent;
+			}
+			set { flavorPropertiesParent = value; }
+		}
+
+		public string TypeGuids {
+			get { return type_guids; }
+			set { type_guids = value; }
 		}
 
 		public List<string> Extra {

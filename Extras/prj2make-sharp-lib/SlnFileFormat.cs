@@ -46,8 +46,7 @@ namespace MonoDevelop.Prj2Make
 {
 	internal class SlnFileFormat
 	{
-		static string folderTypeGuid = "2150E333-8FDC-42A3-9474-1A3956D46DE8";
-		static Dictionary<string, string> projectTypeGuids = null;
+		static string folderTypeGuid = "{2150E333-8FDC-42A3-9474-1A3956D46DE8}";
 
 		static SlnFileFormat ()
 		{
@@ -210,7 +209,7 @@ namespace MonoDevelop.Prj2Make
 						continue;
 					}
 
-					if (!ProjectTypeGuids.ContainsKey (project.LanguageName)) {
+					if (!MSBuildFileFormat.ProjectTypeGuids.ContainsKey (project.LanguageName)) {
 						// FIXME: Should not happen, temp
 						monitor.ReportWarning (GettextCatalog.GetString ("Saving for project {0} not supported. Ignoring.",
 							ce.FileName));
@@ -226,7 +225,7 @@ namespace MonoDevelop.Prj2Make
 
 					project.Save (monitor);
 
-					MSBuildData msbData = MSBuildFileFormat.GetMSBuildData (project);
+					MSBuildData msbData = Utils.GetMSBuildData (project);
 					if (msbData == null)
 						//This should not happen as project.Save would've added this
 						throw new Exception (String.Format (
@@ -235,8 +234,8 @@ namespace MonoDevelop.Prj2Make
 
 					l = msbData.Extra;
 
-					writer.WriteLine (@"Project(""{{{0}}}"") = ""{1}"", ""{2}"", ""{{{3}}}""",
-						ProjectTypeGuids [project.LanguageName],
+					writer.WriteLine (@"Project(""{0}"") = ""{1}"", ""{2}"", ""{3}""",
+						MSBuildFileFormat.ProjectTypeGuids [project.LanguageName],
 						project.Name, 
 						Runtime.FileService.NormalizeRelativePath (Runtime.FileService.AbsoluteToRelativePath (
 							baseDirectory, project.FileName)).Replace ('/', '\\'),
@@ -252,7 +251,7 @@ namespace MonoDevelop.Prj2Make
 
 					l = slnData.Extra;
 					
-					writer.WriteLine (@"Project(""{{{0}}}"") = ""{1}"", ""{2}"", ""{{{3}}}""",
+					writer.WriteLine (@"Project(""{0}"") = ""{1}"", ""{2}"", ""{3}""",
 						folderTypeGuid,
 						ce.Name, 
 						ce.Name,
@@ -311,13 +310,13 @@ namespace MonoDevelop.Prj2Make
 
 					/* Project */
 
-					MSBuildData data = MSBuildFileFormat.GetMSBuildData (p);
+					MSBuildData data = Utils.GetMSBuildData (p);
 					list.Add (String.Format (
-						"\t\t{{{0}}}.{1}.ActiveCfg = {2}", data.Guid, cc.Name, cce.ConfigurationName));
+						"\t\t{0}.{1}.ActiveCfg = {2}", data.Guid, cc.Name, cce.ConfigurationName));
 
 					if (cce.Build)
 						list.Add (String.Format (
-							"\t\t{{{0}}}.{1}.Build.0 = {2}", data.Guid, cc.Name, cce.ConfigurationName));
+							"\t\t{0}.{1}.Build.0 = {2}", data.Guid, cc.Name, cce.ConfigurationName));
 				}
 			}
 		}
@@ -348,11 +347,11 @@ namespace MonoDevelop.Prj2Make
 					SlnData slnData = GetSlnData (ce);
 					containeeGuid = slnData.Guid;
 				} else {
-					MSBuildData msbData = MSBuildFileFormat.GetMSBuildData (ce);
+					MSBuildData msbData = Utils.GetMSBuildData (ce);
 					containeeGuid = msbData.Guid;
 				}
 
-				writer.WriteLine (@"{0}{{{1}}} = {{{2}}}", "\t\t", containeeGuid, containerGuid);
+				writer.WriteLine (@"{0}{1} = {2}", "\t\t", containeeGuid, containerGuid);
 			}
 		}
 
@@ -468,8 +467,7 @@ namespace MonoDevelop.Prj2Make
 					folder.Version = "0.1"; //FIXME:
 					folder.FileFormat = new MSBuildFileFormat ();
 
-					SlnData slnData = new SlnData (
-						projectGuid.Trim (new char [] {'{', '}'}));
+					SlnData slnData = new SlnData (projectGuid);
 					folder.ExtendedProperties [typeof (SlnFileFormat)] = slnData;
 
 					slnData.Extra = lines.GetRange (sec.Start + 1, sec.Count - 2);
@@ -479,7 +477,7 @@ namespace MonoDevelop.Prj2Make
 					continue;
 				}
 
-				if (!ProjectTypeGuids.ContainsValue (projTypeGuid)) {
+				if (!MSBuildFileFormat.ProjectTypeGuids.ContainsValue (projTypeGuid)) {
 					Runtime.LoggingService.Debug (GettextCatalog.GetString (
 						"Unknown project type guid '{0}' on line #{1}. Ignoring.",
 						projTypeGuid,
@@ -513,7 +511,7 @@ namespace MonoDevelop.Prj2Make
 							continue;
 						}
 
-						MSBuildData msdata = MSBuildFileFormat.GetMSBuildData (project);
+						MSBuildData msdata = Utils.GetMSBuildData (project);
 						entries [projectGuid] = project;
 						data.ProjectsByGuid [msdata.Guid] = project;
 
@@ -553,7 +551,7 @@ namespace MonoDevelop.Prj2Make
 			foreach (Project p in combine.GetAllProjects ()) {
 				toRemove.Clear ();
 				toAdd.Clear ();
-				MSBuildData msbuildData = MSBuildFileFormat.GetMSBuildData (p);
+				MSBuildData msbuildData = Utils.GetMSBuildData (p);
 				if (msbuildData == null)
 					continue;
 
@@ -574,7 +572,7 @@ namespace MonoDevelop.Prj2Make
 					if (elem ["Project"] == null)
 						continue;
 
-					string guid = elem ["Project"].InnerText.Trim (new char [] {'{', '}'});
+					string guid = elem ["Project"].InnerText.Trim ();
 					if (!data.ProjectsByGuid.ContainsKey (guid))
 						continue;
 
@@ -696,7 +694,7 @@ namespace MonoDevelop.Prj2Make
 					continue;
 				}
 
-				string projGuid = t [0].Trim (new char [] {'{', '}'});
+				string projGuid = t [0];
 				string slnConfig = t [1];
 
 				if (!slnData.ProjectsByGuid.ContainsKey (projGuid)) {
@@ -931,8 +929,6 @@ namespace MonoDevelop.Prj2Make
 			if (GetSlnData (args.Combine) == null)
 				return;
 
-			string extn = Path.GetExtension (args.FileName);
-
 			IFileFormat msformat = new MSBuildFileFormat ();
 
 			if (!msformat.CanReadFile (args.FileName)) {
@@ -999,7 +995,7 @@ namespace MonoDevelop.Prj2Make
 						rootSlnData.ProjectsByGuid [pair.Key] = pair.Value;
 				} else {
 					//Add guid for the new project
-					MSBuildData msdata = MSBuildFileFormat.GetMSBuildData (e.CombineEntry);
+					MSBuildData msdata = Utils.GetMSBuildData (e.CombineEntry);
 					DotNetProject project = e.CombineEntry as DotNetProject;
 					if (project != null && msdata != null)
 						//msbuild project
@@ -1039,7 +1035,7 @@ namespace MonoDevelop.Prj2Make
 		internal static Regex ProjectRegex {
 			get {
 				if (projectRegex == null)
-					projectRegex = new Regex(@"Project\(""\{(.*)\}""\) = ""(.*)"", ""(.*)"", ""(\{.*\})""");
+					projectRegex = new Regex(@"Project\(""(\{[^}]*\})""\) = ""(.*)"", ""(.*)"", ""(\{[^{]*\})""");
 				return projectRegex;
 			}
 		}
@@ -1062,17 +1058,6 @@ namespace MonoDevelop.Prj2Make
 			}
 		}
 
-		static Dictionary<string, string> ProjectTypeGuids {
-			get {
-				if (projectTypeGuids == null) {
-					projectTypeGuids = new Dictionary<string, string> ();
-					// values must be in UpperCase
-					projectTypeGuids ["C#"] = "FAE04EC0-301F-11D3-BF4B-00C04F79EFBC";
-					projectTypeGuids ["VBNet"] = "F184B08F-C81C-45F6-A57F-5ABD9991F28F";
-				}
-				return projectTypeGuids;
-			}
-		}
 	}
 
 	class Section {

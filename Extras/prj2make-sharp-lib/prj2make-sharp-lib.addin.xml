@@ -21,6 +21,11 @@
 		<Addin id="VBBinding" version="0.16.0"/>
 	</Dependencies>
 	
+	<ExtensionPoint path = "/MonoDevelop/Prj2Make/MSBuildProjectExtension">
+		<Description>Extensions to msbuild project support</Description>
+		<ExtensionNode name ="Class" />
+	</ExtensionPoint>
+
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectFileFormats">
 		<FileFormat id="MSBuildFileFormat"
 		            class="MonoDevelop.Prj2Make.MSBuildFileFormat"/>
@@ -37,6 +42,12 @@
 		<FileFilter id = "MSBuildProject"
 		            _label = "Visual Studio Project"
 		            extensions = "*.csproj,*.vbproj"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Prj2Make/MSBuildProjectExtension">
+		<Class class="MonoDevelop.Prj2Make.CSharpMSBuildProjectExtension"/>
+		<Class class="MonoDevelop.Prj2Make.VBNetMSBuildProjectExtension"/>
+		<Class class="MonoDevelop.Prj2Make.SilverlightMSBuildProjectExtension"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">

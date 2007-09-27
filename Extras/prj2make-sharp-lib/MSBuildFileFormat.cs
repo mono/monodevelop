@@ -28,8 +28,8 @@
 
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using VBBinding;
-using CSharpBinding;
+
+using Mono.Addins;
 
 using System;
 using System.Collections;
@@ -46,10 +46,10 @@ namespace MonoDevelop.Prj2Make
 {
 	public class MSBuildFileFormat : IFileFormat
 	{
-		internal const string ns = "http://schemas.microsoft.com/developer/msbuild/2003";
-
 		static XmlNamespaceManager manager;
 		SlnFileFormat solutionFormat = new SlnFileFormat ();
+
+		static List<MSBuildProjectExtension> extensions;
 
 		public MSBuildFileFormat ()
 		{
@@ -80,7 +80,7 @@ namespace MonoDevelop.Prj2Make
 			if (solutionFormat.CanReadFile (file))
 				return true;
 			
-			if (GetLanguage (file) == null)
+			if (Utils.GetLanguage (file) == null)
 				return false;
 
 			//FIXME: Need a better way to check the rootelement
@@ -90,7 +90,7 @@ namespace MonoDevelop.Prj2Make
 				xr.MoveToContent ();
 
 				if (xr.NodeType == XmlNodeType.Element && String.Compare (xr.LocalName, "Project") == 0 &&
-					String.Compare (xr.NamespaceURI, ns) == 0)
+					String.Compare (xr.NamespaceURI, Utils.ns) == 0)
 					return true;
 
 			} catch (FileNotFoundException fex) {
@@ -119,11 +119,11 @@ namespace MonoDevelop.Prj2Make
 			return null;
 		}
 		
-		static XmlNamespaceManager NamespaceManager {
+		public static XmlNamespaceManager NamespaceManager {
 			get {
 				if (manager == null) {
 					manager = new XmlNamespaceManager (new NameTable ());
-					manager.AddNamespace ("tns", ns);
+					manager.AddNamespace ("tns", Utils.ns);
 				}
 
 				return manager;
@@ -178,7 +178,7 @@ namespace MonoDevelop.Prj2Make
 			bool newdoc = false;
 			XmlDocument doc = null;
 
-			MSBuildData data = GetMSBuildData (project);
+			MSBuildData data = Utils.GetMSBuildData (project);
 			if (data == null) {
 				//Create a new XmlDocument
 				doc = new XmlDocument ();
@@ -186,7 +186,23 @@ namespace MonoDevelop.Prj2Make
 				data.Document = doc;
 				newdoc = true;
 
-				XmlElement e = doc.CreateElement ("Project", ns);
+				string type_guid;
+				string type_guids = String.Empty;
+				string longest_guid = String.Empty;
+				foreach (MSBuildProjectExtension extn in GuidToExtensions) {
+					string g = extn.GetGuidChain (project);
+					if (g == null)
+						continue;
+					//HACK HACK
+					if (g.Length > longest_guid.Length)
+						longest_guid = g;
+				}
+				type_guids = longest_guid;
+				MSBuildProjectExtension chain = GetExtensionChainFromTypeGuid (ref type_guids, out type_guid, project.LanguageName, file);
+				data.ExtensionChain = chain;
+				data.TypeGuids = type_guids;
+
+				XmlElement e = doc.CreateElement ("Project", Utils.ns);
 				doc.AppendChild (e);
 				e.SetAttribute ("DefaultTargets", "Build");
 			} else {
@@ -198,19 +214,21 @@ namespace MonoDevelop.Prj2Make
 			//instead just writing out everything in the individual configs
 			XmlElement globalConfigElement = data.GlobalConfigElement;
 			if (globalConfigElement == null) {
-				globalConfigElement = doc.CreateElement ("PropertyGroup", ns);
+				globalConfigElement = doc.CreateElement ("PropertyGroup", Utils.ns);
 				doc.DocumentElement.AppendChild (globalConfigElement);
 
 				data.GlobalConfigElement = globalConfigElement;
-				data.Guid = Guid.NewGuid ().ToString ().ToUpper ();
+				data.Guid = String.Format ("{{{0}}}", Guid.NewGuid ().ToString ().ToUpper ());
+
+				if (newdoc)
+					Utils.EnsureChildValue (globalConfigElement, "ProjectTypeGuids", data.TypeGuids);
 
 				//FIXME: EnsureChildValue for AssemblyName <-> OutputAssembly
 				//	Get this from where? different configs could have different ones.. 
 			}
 
-			EnsureChildValue (globalConfigElement, "ProjectGuid", ns, 
-				String.Concat ("{", data.Guid, "}"));
-			EnsureChildValue (globalConfigElement, "RootNamespace", ns, project.DefaultNamespace);
+			Utils.EnsureChildValue (globalConfigElement, "ProjectGuid", data.Guid);
+			Utils.EnsureChildValue (globalConfigElement, "RootNamespace", project.DefaultNamespace);
 
 			//Default Config and platform
 			//Note: Ignoring this, not relevant for MD, but might be useful for prj2make
@@ -227,103 +245,50 @@ namespace MonoDevelop.Prj2Make
 					configElement = data.ConfigElements [config];
 				} else {
 					//Create node for new configuration
-					configElement = doc.CreateElement ("PropertyGroup", ns);
+					configElement = doc.CreateElement ("PropertyGroup", Utils.ns);
 					doc.DocumentElement.AppendChild (configElement);
 
+					//string configname = config.Name;
 					string [] t = GetConfigPlatform (config.Name);
+					//if (configname != config.Name)
+					//	config.Name = configname;
 					configElement.SetAttribute ("Condition", 
 						String.Format (" '$(Configuration)|$(Platform)' == '{0}|{1}' ", t [0], t [1]));
 					data.ConfigElements [config] = configElement;
 				}
 
-				EnsureChildValue (configElement, "OutputType", ns, config.CompileTarget);
-				EnsureChildValue (configElement, "AssemblyName", ns, CanonicalizePath (config.OutputAssembly));
-				// VS2005 emits trailing \\ for folders
-				EnsureChildValue (configElement, "OutputPath", ns, 
-					CanonicalizePath (Runtime.FileService.AbsoluteToRelativePath (
-						project.BaseDirectory, config.OutputDirectory)) + "\\");
-				EnsureChildValue (configElement, "DebugSymbols", ns, config.DebugMode);
-
-				if (project.LanguageName == "VBNet") {
-					VBCompilerParameters vbparams = 
-						(VBCompilerParameters) config.CompilationParameters;
-
-					EnsureChildValue (configElement, "RootNamespace", ns, vbparams.RootNamespace);
-					EnsureChildValue (configElement, "AllowUnsafeBlocks", ns, vbparams.UnsafeCode);
-					EnsureChildValue (configElement, "Optimize", ns, vbparams.Optimize);
-					EnsureChildValue (configElement, "CheckForOverflowUnderflow", ns, vbparams.GenerateOverflowChecks);
-					EnsureChildValue (configElement, "DefineConstants", ns, vbparams.DefineSymbols);
-					EnsureChildValue (configElement, "WarningLevel", ns, vbparams.WarningLevel);
-					EnsureChildValue (configElement, "OptionExplicit", ns, vbparams.OptionExplicit ? "On" : "Off");
-					EnsureChildValue (configElement, "OptionStrict", ns, vbparams.OptionStrict ? "On" : "Off");
-					if (vbparams.Win32Icon != null && vbparams.Win32Icon.Length > 0)
-						EnsureChildValue (configElement, "ApplicationIcon", ns,
-							CanonicalizePath (Runtime.FileService.AbsoluteToRelativePath (
-								project.BaseDirectory, vbparams.Win32Icon)));
-
-					if (vbparams.Win32Resource != null && vbparams.Win32Resource.Length > 0)
-						EnsureChildValue (configElement, "Win32Resource", ns,
-							CanonicalizePath (Runtime.FileService.AbsoluteToRelativePath (
-								project.BaseDirectory, vbparams.Win32Resource)));
-
-					//FIXME: VB.net Imports
-				}
-
-				if (project.LanguageName == "C#") {
-					CSharpCompilerParameters csparams =
-						(CSharpCompilerParameters) config.CompilationParameters;
-
-					EnsureChildValue (configElement, "RootNamespace", ns, project.DefaultNamespace);
-					EnsureChildValue (configElement, "AllowUnsafeBlocks", ns, csparams.UnsafeCode);
-					EnsureChildValue (configElement, "Optimize", ns, csparams.Optimize);
-					EnsureChildValue (configElement, "CheckForOverflowUnderflow", ns, csparams.GenerateOverflowChecks);
-					EnsureChildValue (configElement, "DefineConstants", ns, csparams.DefineSymbols);
-					EnsureChildValue (configElement, "WarningLevel", ns, csparams.WarningLevel);
-					if (csparams.Win32Icon != null && csparams.Win32Icon.Length > 0)
-						EnsureChildValue (configElement, "ApplicationIcon", ns,
-							CanonicalizePath (Runtime.FileService.AbsoluteToRelativePath (
-								project.BaseDirectory, csparams.Win32Icon)));
-
-					if (csparams.Win32Resource != null && csparams.Win32Resource.Length > 0)
-						EnsureChildValue (configElement, "Win32Resource", ns,
-							CanonicalizePath (Runtime.FileService.AbsoluteToRelativePath (
-								project.BaseDirectory, csparams.Win32Resource)));
-				}
+				data.ExtensionChain.WriteConfig (project, config, configElement, monitor);
 			}
 
 			// Always update the project references
 			foreach (ProjectReference pref in project.ProjectReferences)
-				data.ProjectReferenceElements [pref] = ReferenceToXmlElement (data, project, pref);
+				data.ProjectReferenceElements [pref] = data.ExtensionChain.ReferenceToXmlElement (data, project, pref);
 		
 			//FIXME: Set ActiveConfiguration
 			CleanUpEmptyItemGroups (doc);
 
 			if (newdoc) {
 				foreach (ProjectFile pfile in project.ProjectFiles) {
-					if (pfile.ExtendedProperties ["MonoDevelop.MSBuildFileFormat.SilverlightGeneratedFile"] != null)
-						//Ignore the generated %.xaml.g.cs files
-						continue;
-
-					XmlElement xe = FileToXmlElement (data, project, pfile);
+					XmlElement xe = data.ExtensionChain.FileToXmlElement (data, project, pfile);
 					if (xe != null)
 						data.ProjectFileElements [pfile] = xe;
 				}
 
-				XmlElement elem = doc.CreateElement ("Configuration", ns);
+				XmlElement elem = doc.CreateElement ("Configuration", Utils.ns);
 				data.GlobalConfigElement.AppendChild (elem);
 				elem.InnerText = "Debug";
 				elem.SetAttribute ("Condition", " '$(Configuration)' == '' ");
 
-				elem = doc.CreateElement ("Platform", ns);
+				elem = doc.CreateElement ("Platform", Utils.ns);
 				data.GlobalConfigElement.AppendChild (elem);
 				elem.InnerText = "AnyCPU";
 				elem.SetAttribute ("Condition", " '$(Platform)' == '' ");
 
-				//MUST go at the end.. 
-				elem = doc.CreateElement ("Import", ns);
-				doc.DocumentElement.InsertAfter (elem, doc.DocumentElement.LastChild);
-				elem.SetAttribute ("Project", @"$(MSBuildBinPath)\Microsoft.CSharp.Targets");
+			}
 
+			data.ExtensionChain.OnFinishWrite (data, project);
+
+			if (newdoc) {
 				// Do this at the end, so that it can be detected that this is
 				// a non-msbuild project being converted
 				project.ExtendedProperties [typeof (MSBuildFileFormat)] = data;
@@ -359,7 +324,7 @@ namespace MonoDevelop.Prj2Make
 			}
 
 			//Add new xml element for active config
-			XmlElement elem = doc.CreateElement (elementName, ns);
+			XmlElement elem = doc.CreateElement (elementName, Utils.ns);
 			configElement.AppendChild (elem);
 			elem.InnerText = value;
 
@@ -441,16 +406,27 @@ namespace MonoDevelop.Prj2Make
 			while (! (nav.UnderlyingObject is XmlElement))
 				nav.MoveToNext ();
 
-			if (nav.NamespaceURI != ns)
+			if (nav.NamespaceURI != Utils.ns)
 				throw new UnknownProjectVersionException (fname, nav.NamespaceURI);
 
 			//Resolve ../'s 
 			fname = Path.GetFullPath (fname);
-			string lang = GetLanguage (fname);
+			string lang = Utils.GetLanguage (fname);
 			string basePath = Path.GetDirectoryName (fname);
 
+			//try to get type guid
+			string type_guid;
+			string type_guids = String.Empty;
+			XmlNode node = doc.SelectSingleNode ("/tns:Project/tns:PropertyGroup/tns:ProjectTypeGuids", NamespaceManager);
+			if (node != null) {
+				if (node.NodeType == XmlNodeType.Element)
+					type_guids = ((XmlElement) node).InnerText;
+			}
+
+			MSBuildProjectExtension extensionChain = GetExtensionChainFromTypeGuid (ref type_guids, out type_guid, lang, fname);
+
 			//Create the project
-			DotNetProject project = new DotNetProject (lang);
+			DotNetProject project = extensionChain.CreateProject (type_guid, fname, type_guids);
 			project.FileName = fname;
 			project.Version = "0.1"; //FIXME:
 			//Default project name
@@ -460,6 +436,7 @@ namespace MonoDevelop.Prj2Make
 
 			MSBuildData data = new MSBuildData ();
 			data.Document = doc;
+			data.ExtensionChain = extensionChain;
 			project.ExtendedProperties [typeof (MSBuildFileFormat)] = data;
 
 			//Read the global config
@@ -469,39 +446,37 @@ namespace MonoDevelop.Prj2Make
 			globalConfig.ClrVersion = ClrVersion.Net_2_0;
 
 			string str_tmp = String.Empty;
-			string default_config = String.Empty;
-			string default_platform = "AnyCPU";
 			string guid = null;
 			string rootNamespace = String.Empty;
 			while (iter.MoveNext ()) {
 				if (guid == null && 
-					ReadAsString (iter.Current, "ProjectGuid", ref str_tmp, false))
+					Utils.ReadAsString (iter.Current, "ProjectGuid", ref str_tmp, false))
 					guid = str_tmp;
 
-				ReadConfig (iter.Current, globalConfig, project.LanguageName, basePath, ref default_config, ref default_platform);
+				//FIXME: Add basePath to list of params
+				extensionChain.ReadConfig (project, globalConfig, iter.Current, basePath, monitor);
+
 				//FIXME: Handle case when >1 global PropertyGroups exist,
 				data.GlobalConfigElement = (XmlElement) iter.Current.UnderlyingObject;
 
 				//FIXME: RootNamespace can be specified per-config, but we are 
 				//taking the first occurrence
 				if (rootNamespace == String.Empty &&
-					ReadAsString (iter.Current, "RootNamespace", ref str_tmp, false)) {
+					Utils.ReadAsString (iter.Current, "RootNamespace", ref str_tmp, false)) {
 					rootNamespace = str_tmp;
 				}
 			}
 			project.DefaultNamespace = rootNamespace;
 
 			if (guid != null)
-				data.Guid = guid.Trim (new char [] {'{', '}'});
+				data.Guid = guid;
 
 			//ReadItemGroups : References, Source files etc
-			ReadItemGroups (data, project, globalConfig, basePath, monitor);
+			extensionChain.ReadItemGroups (data, project, globalConfig, basePath, monitor);
 
 			//Load configurations
 			iter = nav.Select ("/tns:Project/tns:PropertyGroup[@Condition]", NamespaceManager);
 			while (iter.MoveNext ()) {
-				string tmp = String.Empty;
-				string tmp2 = String.Empty;
 				StringDictionary dic = ParseCondition (
 						iter.Current.GetAttribute ("Condition", NamespaceManager.DefaultNamespace));
 
@@ -519,9 +494,21 @@ namespace MonoDevelop.Prj2Make
 					project.Configurations.Add (config);
 				}
 
-				ReadConfig (iter.Current, config, project.LanguageName, basePath, ref tmp, ref tmp2);
-
+				extensionChain.ReadConfig (project, config, iter.Current, basePath, monitor);
 				data.ConfigElements [config] = (XmlElement) iter.Current.UnderlyingObject;
+			}
+
+			//Read project-type specific FlavorProperties
+			if (data.FlavorPropertiesParent != null) {
+				foreach (XmlNode n in data.FlavorPropertiesParent.ChildNodes) {
+					if (!n.HasChildNodes || n.Attributes ["GUID"] == null)
+						//nothing to read
+						continue;
+					string tguid = n.Attributes ["GUID"].Value;
+					if (String.IsNullOrEmpty (tguid))
+						continue;
+					extensionChain.ReadFlavorProperties (data, project, n, tguid);
+				}
 			}
 
 			/* Note: Ignoring this, not required for MD, but might be useful in prj2make
@@ -529,9 +516,42 @@ namespace MonoDevelop.Prj2Make
 			if (project.Configurations [confname] != null)
 				project.ActiveConfiguration = project.Configurations [confname]; */
 
+			extensionChain.OnFinishRead (data, project);
 			SetupHandlers (project);
 
 			return project;
+		}
+
+		// Tries to get an extension chain for a @type_guids chain.
+		// If @type_guids is null, then tries to determine type_guid from
+		// the language
+		MSBuildProjectExtension GetExtensionChainFromTypeGuid (ref string type_guids, out string type_guid, string lang, string fname)
+		{
+			if (String.IsNullOrEmpty (type_guids)) {
+				if (!MSBuildFileFormat.ProjectTypeGuids.ContainsKey (lang))
+					throw new Exception (String.Format ("Unknown project type : {0}", fname));
+				type_guids = type_guid = MSBuildFileFormat.ProjectTypeGuids [lang];
+			}
+			type_guid = type_guids.Split (';') [0];
+
+			string [] type_guid_list = type_guids.Split (new char [] {';'}, StringSplitOptions.RemoveEmptyEntries);
+			MSBuildProjectExtension [] extensions = new MSBuildProjectExtension [type_guid_list.Length + 1];
+			for (int i = 0; i < type_guid_list.Length; i ++) {
+				foreach (MSBuildProjectExtension extn in GuidToExtensions) {
+					if (extn.Supports (type_guid_list [i], fname, type_guids)) {
+						extensions [i] = extn;
+						break;
+					}
+				}
+				if (extensions [i] == null)
+					throw new Exception (String.Format ("Unsupported Project type, guid : {0}", type_guid_list [i]));
+			}
+			extensions [type_guid_list.Length] = new DefaultMSBuildProjectExtension ();
+
+			for (int i = 0; i < extensions.Length - 1; i ++)
+				extensions [i].Next = extensions [i + 1];
+
+			return extensions [0];
 		}
 
 		static void SetupHandlers (DotNetProject project)
@@ -571,7 +591,7 @@ namespace MonoDevelop.Prj2Make
 		static void HandleConfigurationRemoved (object sender, ConfigurationEventArgs e)
 		{
 			DotNetProject project = (DotNetProject) sender;
-			MSBuildData d = GetMSBuildData (project);
+			MSBuildData d = Utils.GetMSBuildData (project);
 			if (d == null || !d.ConfigElements.ContainsKey ((DotNetProjectConfiguration) e.Configuration))
 				return;
 
@@ -584,7 +604,7 @@ namespace MonoDevelop.Prj2Make
 
 		static void HandleReferenceRemoved (object sender, ProjectReferenceEventArgs e)
 		{
-			MSBuildData d = GetMSBuildData (e.Project);
+			MSBuildData d = Utils.GetMSBuildData (e.Project);
 			if (d == null || !d.ProjectReferenceElements.ContainsKey (e.ProjectReference))
 				return;
 
@@ -596,12 +616,12 @@ namespace MonoDevelop.Prj2Make
 		static void HandleReferenceAdded (object sender, ProjectReferenceEventArgs e)
 		{
 			try {
-				MSBuildData d = GetMSBuildData (e.Project);
+				MSBuildData d = Utils.GetMSBuildData (e.Project);
 				if (d == null)
 					return;
 
 				d.ProjectReferenceElements [e.ProjectReference] = 
-					ReferenceToXmlElement (d, e.Project, e.ProjectReference);
+					d.ExtensionChain.ReferenceToXmlElement (d, e.Project, e.ProjectReference);
 			} catch (Exception ex) {
 				Runtime.LoggingService.ErrorFormat ("{0}", ex.Message);
 				Console.WriteLine ("{0}", ex.ToString ());
@@ -609,110 +629,11 @@ namespace MonoDevelop.Prj2Make
 			}
 		}
 
-		internal static XmlElement ReferenceToXmlElement (MSBuildData d, Project project, ProjectReference projectRef)
-		{
-			ReferenceType refType = projectRef.ReferenceType;
-
-			bool newElement = false;
-			XmlDocument doc = d.Document;
-			XmlElement elem;
-			if (!d.ProjectReferenceElements.TryGetValue (projectRef, out elem)) {
-				string elemName;
-				if (refType == ReferenceType.Project)
-					elemName = "ProjectReference";
-				else
-					elemName = "Reference";
-
-				elem = doc.CreateElement (elemName, ns);
-				newElement = true;
-
-				//Add the element to the document
-				XmlNode node = doc.SelectSingleNode (String.Format ("/tns:Project/tns:ItemGroup/tns:{0}", elemName), NamespaceManager);
-				if (node == null) {
-					node = doc.CreateElement ("ItemGroup", ns);
-					doc.DocumentElement.AppendChild (node);
-					node.AppendChild (elem);
-				} else {
-					node.ParentNode.AppendChild (elem);
-				}
-			}
-
-			string reference = projectRef.Reference;
-			switch (refType) {
-			case ReferenceType.Gac:
-				SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (projectRef.Reference);
-				if (pkg != null && pkg.IsCorePackage && pkg.TargetVersion == ClrVersion.Net_2_0)
-					// For core references like System.Data, emit only "System.Data" instead
-					// of full names
-					reference = reference.Substring (0, reference.IndexOf (','));
-				break;
-			case ReferenceType.Assembly:
-				string asmname = null;
-				try {
-					asmname = AssemblyName.GetAssemblyName (reference).ToString ();
-					reference = asmname;
-				} catch (FileNotFoundException) {
-				} catch (BadImageFormatException) {
-				} catch (ArgumentException) {
-				}
-
-				if (asmname == null) {
-					//Couldn't get assembly name
-					if (!newElement && elem.Attributes ["Include"] != null)
-						reference = elem.Attributes ["Include"].Value;
-					else
-						reference = Path.GetFileNameWithoutExtension (reference);
-				}
-
-				EnsureChildValue (elem, "HintPath", ns, 
-					CanonicalizePath (Runtime.FileService.AbsoluteToRelativePath (project.BaseDirectory, projectRef.Reference)));
-				EnsureChildValue (elem, "SpecificVersion", ns, "False");
-				break;
-			case ReferenceType.Project:
-				Combine c = project.RootCombine;
-				if (c != null) {
-					Project p = c.FindProject (projectRef.Reference);
-					if (p == null) {
-						Runtime.LoggingService.WarnFormat (GettextCatalog.GetString (
-							"The project '{0}' referenced from '{1}' could not be found.",
-							projectRef.Reference, project.Name));
-						
-						Console.WriteLine (GettextCatalog.GetString (
-							"The project '{0}' referenced from '{1}' could not be found.",
-							projectRef.Reference, project.Name));
-
-						return elem;
-					}
-
-					reference = CanonicalizePath (Runtime.FileService.AbsoluteToRelativePath (
-						project.BaseDirectory, p.FileName));
-
-					if (p.ExtendedProperties.Contains (typeof (MSBuildFileFormat))) {
-						MSBuildData data = (MSBuildData) p.ExtendedProperties [typeof (MSBuildFileFormat)];
-						if (data.Guid != null & data.Guid.Length != 0)
-							EnsureChildValue (elem, "Project", ns, String.Concat ("{", data.Guid, "}"));
-					}
-
-					if (newElement)
-						//Set Name only for newly created elements, this could be
-						//different from referenced project's Name
-						EnsureChildValue (elem, "Name", ns, Escape (p.Name));
-				}
-				break;
-			case ReferenceType.Custom:
-				break;
-			}
-
-			elem.SetAttribute ("Include", Escape (reference));
-
-			return elem;
-		}
-
 		//ProjectFile-s
 
 		static void HandleFileRemoved (object sender, ProjectFileEventArgs e)
 		{
-			MSBuildData d = GetMSBuildData (e.Project);
+			MSBuildData d = Utils.GetMSBuildData (e.Project);
 			if (d == null || !d.ProjectFileElements.ContainsKey (e.ProjectFile))
 				return;
 
@@ -723,85 +644,31 @@ namespace MonoDevelop.Prj2Make
 
 		static void HandleFileAdded (object sender, ProjectFileEventArgs e)
 		{
-			MSBuildData d = GetMSBuildData (e.Project);
+			MSBuildData d = Utils.GetMSBuildData (e.Project);
 			if (d == null)
 				return;
 
-			XmlElement xe = FileToXmlElement (d, e.Project, e.ProjectFile);
+			XmlElement xe = d.ExtensionChain.FileToXmlElement (d, e.Project, e.ProjectFile);
 			if (xe != null)
 				d.ProjectFileElements [e.ProjectFile] = xe;
 		}
 
-		static XmlElement FileToXmlElement (MSBuildData d, Project project, ProjectFile projectFile)
-		{
-			if (projectFile.BuildAction == BuildAction.Compile && projectFile.Subtype != Subtype.Code)
-				return null;
-
-			string name = BuildActionToString (projectFile.BuildAction);
-			if (name == null) {
-				Runtime.LoggingService.WarnFormat ("BuildAction.{0} not supported!", projectFile.BuildAction);
-				Console.WriteLine ("BuildAction.{0} not supported!", projectFile.BuildAction);
-				return null;
-			}
-
-			//FIXME: Subtype
-
-			XmlDocument doc = d.Document;
-			XmlElement elem = doc.CreateElement (name, ns);
-			elem.SetAttribute ("Include", CanonicalizePath (projectFile.RelativePath));
-
-			XmlNode n = doc.SelectSingleNode (String.Format (
-					"/tns:Project/tns:ItemGroup/tns:{0}", name), NamespaceManager);
-
-			if (n == null) {
-				n = doc.CreateElement ("ItemGroup", ns);
-				doc.DocumentElement.AppendChild (n);
-				n.AppendChild (elem);
-			} else {
-				n.ParentNode.AppendChild (elem);
-			}
-
-			if (projectFile.BuildAction == BuildAction.EmbedAsResource) {
-				if (GetMSBuildData (project) == null ||
-					Services.ProjectService.GetDefaultResourceId (projectFile) != projectFile.ResourceId)
-					//Emit LogicalName if we are writing elements for a Non-MSBuidProject,
-					//(eg. when converting a gtk-sharp project, it might depend on non-vs
-					// style resource naming)
-					//Or when the resourceId is different from the default one
-					EnsureChildValue (elem, "LogicalName", ns, Escape (projectFile.ResourceId));
-				
-				//DependentUpon is relative to the basedir of the 'pf' (resource file)
-				if (!String.IsNullOrEmpty (projectFile.DependsOn))
-					EnsureChildValue (elem, "DependentUpon", ns,
-						CanonicalizePath (Runtime.FileService.AbsoluteToRelativePath (
-							Path.GetDirectoryName (projectFile.Name), projectFile.DependsOn)));
-			}
-
-			if (projectFile.BuildAction == BuildAction.FileCopy)
-				EnsureChildValue (elem, "CopyToOutputDirectory", ns, "Always");
-
-			if (projectFile.IsExternalToProject)
-				EnsureChildValue (elem, "Link", ns, Path.GetFileName (projectFile.Name));
-			
-			return elem;
-		}
-
 		static void HandleFileRenamed (object sender, ProjectFileRenamedEventArgs e)
 		{
-			MSBuildData d = GetMSBuildData (e.Project);
+			MSBuildData d = Utils.GetMSBuildData (e.Project);
 			if (d == null || !d.ProjectFileElements.ContainsKey (e.ProjectFile))
 				return;
 
 			//FIXME: Check whether this file is a ApplicationIcon and accordingly update that?
 			XmlElement elem = d.ProjectFileElements [e.ProjectFile];
-			elem.SetAttribute ("Include", CanonicalizePath (e.ProjectFile.RelativePath));
+			elem.SetAttribute ("Include", Utils.CanonicalizePath (e.ProjectFile.RelativePath));
 		}
 
 		static void HandleFilePropertyChanged (object sender, ProjectFileEventArgs e)
 		{
 			//Subtype, BuildAction, DependsOn, Data
 
-			MSBuildData d = GetMSBuildData (e.Project);
+			MSBuildData d = Utils.GetMSBuildData (e.Project);
 			if (d == null || !d.ProjectFileElements.ContainsKey (e.ProjectFile))
 				return;
 
@@ -816,7 +683,7 @@ namespace MonoDevelop.Prj2Make
 			}
 
 			if (elem.LocalName != buildAction) {
-				XmlElement newElem = d.Document.CreateElement (buildAction, ns);
+				XmlElement newElem = d.Document.CreateElement (buildAction, Utils.ns);
 				XmlNode parent = elem.ParentNode;
 
 				List<XmlNode> list = new List<XmlNode> ();
@@ -840,13 +707,13 @@ namespace MonoDevelop.Prj2Make
 
 			//DependentUpon is relative to the basedir of the 'pf' (resource file)
 			if (!String.IsNullOrEmpty (e.ProjectFile.DependsOn))
-				EnsureChildValue (d.ProjectFileElements [e.ProjectFile], "DependentUpon", ns,
-					CanonicalizePath (Runtime.FileService.AbsoluteToRelativePath (
+				Utils.EnsureChildValue (d.ProjectFileElements [e.ProjectFile], "DependentUpon",
+					Utils.CanonicalizePath (Runtime.FileService.AbsoluteToRelativePath (
 						Path.GetDirectoryName (e.ProjectFile.Name), e.ProjectFile.DependsOn)));
 			//FIXME: Subtype, Data
 		}
 
-		static string BuildActionToString (BuildAction ba)
+		internal static string BuildActionToString (BuildAction ba)
 		{
 			switch (ba) {
 			case BuildAction.Nothing:
@@ -866,318 +733,6 @@ namespace MonoDevelop.Prj2Make
 		}
 
 		//Reading
-
-		void ReadItemGroups (MSBuildData data, DotNetProject project, 
-				DotNetProjectConfiguration globalConfig, string basePath, IProgressMonitor monitor)
-		{
-			//FIXME: This can also be Config/Platform specific
-			XmlNodeList itemList = data.Document.SelectNodes ("/tns:Project/tns:ItemGroup", NamespaceManager);
-
-			StringBuilder importsBuilder = null;
-			if (project.LanguageName == "VBNet")
-				importsBuilder = new StringBuilder ();
-
-			ProjectFile pf;
-			ProjectReference pr;
-			foreach (XmlNode itemGroup in itemList) {
-				foreach (XmlNode node in itemGroup.ChildNodes) {
-					if (node.NodeType != XmlNodeType.Element)
-						continue;
-
-					if (node.Attributes ["Include"] == null) {
-						Console.WriteLine ("Warning: Expected 'Include' attribute not found for ItemGroup '{0}'",
-							node.LocalName);
-						continue;
-					}
-
-					string path = null;
-					string include = node.Attributes ["Include"].Value;
-					pf = null;
-					pr = null;
-					if (include.Length == 0)
-						//FIXME: Ignore, error??
-						continue;
-
-					include = Unescape (include);
-
-					string str_tmp = String.Empty;
-					switch (node.LocalName) {
-					case "Reference":
-						string hintPath = String.Empty;
-						string fullname = Runtime.SystemAssemblyService.GetAssemblyFullName (include);
-						if (fullname == null) {
-							// Check if the case of the assembly name might be incorrect
-							// Eg. System.XML
-							int commaPos = include.IndexOf (',');
-							string asmname = include;
-							string rest = String.Empty;
-
-							if (commaPos >= 0) {
-								asmname = include.Substring (0, commaPos).Trim ();
-								rest = include.Substring (commaPos);
-							}
-
-							if (AssemblyNamesTable.ContainsKey (asmname) && asmname != AssemblyNamesTable [asmname]) {
-								// assembly name is in the table and case is different
-								fullname = Runtime.SystemAssemblyService.GetAssemblyFullName (
-									AssemblyNamesTable [asmname] + rest);
-							}
-						}
-						if ((fullname != null && 
-							Runtime.SystemAssemblyService.FindInstalledAssembly (fullname) != null) ||
-							!ReadAsString (node, "HintPath", ref hintPath, false)) {
-
-							//If the assembly is from a package file
-							//Or has _no_ HintPath, then add it as a Gac entry
-							pr = new ProjectReference (ReferenceType.Gac, fullname ?? include);
-							project.ProjectReferences.Add (pr);
-						} else {
-							//Not in the Gac, has HintPath
-							hintPath = Unescape (hintPath);
-							path = MapAndResolvePath (basePath, hintPath);
-							if (path == null) {
-								Console.WriteLine (GettextCatalog.GetString (
-									"HintPath ({0}) for Reference '{1}' is invalid. Ignoring.",
-									hintPath, include));
-								monitor.ReportWarning (GettextCatalog.GetString (
-									"HintPath ({0}) for Reference '{1}' is invalid. Ignoring.",
-									hintPath, include));
-
-								continue;
-							}
-	
-							pr = project.AddReference (path);
-						}
-						data.ProjectReferenceElements [pr] = (XmlElement) node;
-
-						break;
-					case "ProjectReference":
-						//Not using @Include currently, instead using the Name
-						string projGuid = null;
-						string projName = null;
-
-						if (node ["Project"] != null)
-							projGuid = node ["Project"].InnerText;
-						if (node ["Name"] != null)
-							projName = Unescape (node ["Name"].InnerText);
-
-						if (String.IsNullOrEmpty (projName)) {
-							//FIXME: Add support to load the project file from here
-							Console.WriteLine ("Expected element <Name> for ProjectReference '{0}'", include);
-							continue;
-						}
-
-						pr = new ProjectReference (ReferenceType.Project, projName);
-						project.ProjectReferences.Add (pr);
-						data.ProjectReferenceElements [pr] = (XmlElement) node;
-
-						break;
-					case "Compile":
-						path = GetValidPath (monitor, basePath, include);
-						if (path == null)
-							continue;
-						pf = project.AddFile (path, BuildAction.Compile);
-						data.ProjectFileElements [pf] = (XmlElement) node;
-						break;
-					case "None":
-					case "Content":
-						//FIXME: We don't support "CopyToOutputDirectory" for
-						//other BuildActions
-						path = GetValidPath (monitor, basePath, include);
-						if (path == null)
-							continue;
-						if (ReadAsString (node, "CopyToOutputDirectory", ref str_tmp, false))
-							pf = project.AddFile (path, BuildAction.FileCopy);
-						else
-							pf = project.AddFile (path, BuildAction.Nothing);
-						data.ProjectFileElements [pf] = (XmlElement) node;
-						break;
-					case "EmbeddedResource":
-						path = GetValidPath (monitor, basePath, include);
-						if (path == null)
-							continue;
-
-						/* IResourceBuilder, in this case will use just the
-						 * filename to build the resource id. Ignoring <Link> here
-						 *
-						 * if (!path.StartsWith (project.BaseDirectory)) {
-							monitor.ReportWarning (GettextCatalog.GetString (
-								"The specified path '{0}' for the EmbeddedResource is outside the project directory. Ignoring.", include));
-							Console.WriteLine ("The specified path '{0}' for the EmbeddedResource is outside the project directory. Ignoring.", include);
-							continue;
-						}*/
-
-						pf = project.AddFile (path, BuildAction.EmbedAsResource);
-						if (ReadAsString (node, "LogicalName", ref str_tmp, false))
-							pf.ResourceId = Unescape (str_tmp);
-						data.ProjectFileElements [pf] = (XmlElement) node;
-						break;
-					case "Import":
-						//FIXME: Keep nodes for each import? List of imports?
-						//This will probably have to be written back in WriteFile
-						importsBuilder.AppendFormat ("{0},", include);
-						break;
-					case "SilverlightPage":
-						//FIXME: this should be available only for 
-						//<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-						//
-						//This tag also has a
-						//	<Generator>MSBuild:Compile</Generator>
-						path = GetValidPath (monitor, basePath, include);
-						if (path == null)
-							continue;
-
-						pf = project.AddFile (path, BuildAction.EmbedAsResource);
-						pf.ExtendedProperties ["MonoDevelop.MSBuildFileFormat.SilverlightPage"] = "";
-						data.ProjectFileElements [pf] = (XmlElement) node;
-
-						// Add the corresponding %.g.cs to the project, we'll skip this
-						// when saving the project file
-						pf = project.AddFile (path + ".g.cs", BuildAction.Compile);
-						pf.ExtendedProperties ["MonoDevelop.MSBuildFileFormat.SilverlightGeneratedFile"] = "";
-						data.ProjectFileElements [pf] = (XmlElement) node;
-						break;
-					default:
-						Console.WriteLine ("Unrecognised ItemGroup element '{0}', Include = '{1}'. Ignoring.", node.LocalName, include);
-						break;
-					}
-
-					if (pf != null) {
-						if (ReadAsString (node, "DependentUpon", ref str_tmp, false))
-							//DependentUpon is relative to the basedir of the 'pf' (resource file)
-							pf.DependsOn = Unescape (MapAndResolvePath (Path.GetDirectoryName (pf.Name), str_tmp));
-
-						if (String.Compare (node.LocalName, "Content", true) != 0 &&
-							String.Compare (node.LocalName, "None", true) != 0 &&
-							ReadAsString (node, "CopyToOutputDirectory", ref str_tmp, false))
-							Console.WriteLine ("Warning: CopyToOutputDirectory not supported for BuildAction '{0}', Include = '{1}'", node.LocalName, include);
-					}
-				}
-			}
-
-			if (project.LanguageName == "VBNet") {
-				if (importsBuilder.Length > 0) {
-					importsBuilder.Length --;
-					VBCompilerParameters vbparams = (VBCompilerParameters) globalConfig.CompilationParameters;
-					vbparams.Imports = importsBuilder.ToString ();
-				}
-			}
-		}
-
-		string GetValidPath (IProgressMonitor monitor, string basePath, string relPath)
-		{
-			string path = MapAndResolvePath (basePath, relPath);
-			if (path != null)
-				return path;
-
-			Console.WriteLine (GettextCatalog.GetString ("File name '{0}' is invalid. Ignoring.", relPath));
-			monitor.ReportWarning (GettextCatalog.GetString ("File name '{0}' is invalid. Ignoring.", relPath));
-			return null;
-		}
-
-		//FIXME: Too many params ?
-		void ReadConfig (XPathNavigator nav, DotNetProjectConfiguration config,
-				string lang, string basePath, ref string default_config, ref string default_platform)
-		{
-			if (nav.MoveToChild ("OutputType", ns)) {
-				try {
-					config.CompileTarget = (CompileTarget) Enum.Parse (typeof (CompileTarget), nav.Value, true);
-				} catch (ArgumentException) {
-					//Ignore
-				}
-				nav.MoveToParent ();
-			}
-
-			if (nav.MoveToChild ("Configuration", ns)) {
-				if (CheckNullCondition (nav.UnderlyingObject as XmlElement, "Configuration"))
-					default_config = nav.Value;
-
-				nav.MoveToParent ();
-			}
-			
-			if (nav.MoveToChild ("Platform", ns)) {
-				if (CheckNullCondition (nav.UnderlyingObject as XmlElement, "Platform"))
-					default_platform = nav.Value;
-
-				nav.MoveToParent ();
-			}
-
-			string str_tmp = String.Empty;
-			int int_tmp = 0;
-			bool bool_tmp = false;
-
-			if (ReadAsString (nav, "AssemblyName", ref str_tmp, false))
-				config.OutputAssembly = Unescape (str_tmp);
-
-			if (ReadAsString (nav, "OutputPath", ref str_tmp, false))
-				config.OutputDirectory = MapAndResolvePath (basePath, Unescape (str_tmp));
-
-			if (ReadAsBool (nav, "DebugSymbols", ref bool_tmp))
-				//FIXME: <DebugType>?
-				config.DebugMode = bool_tmp;
-
-			if (lang == "VBNet") {
-				VBCompilerParameters vbparams = 
-					(VBCompilerParameters) config.CompilationParameters;
-
-				if (ReadAsString (nav, "RootNamespace", ref str_tmp, false))
-					vbparams.RootNamespace = str_tmp;
-
-				if (ReadAsBool (nav, "AllowUnsafeBlocks", ref bool_tmp))
-					vbparams.UnsafeCode = bool_tmp;
-
-				if (ReadAsBool (nav, "Optimize", ref bool_tmp))
-					vbparams.Optimize = bool_tmp;
-
-				if (ReadAsBool (nav, "CheckForOverflowUnderflow", ref bool_tmp))
-					vbparams.GenerateOverflowChecks = bool_tmp;
-
-				if (ReadAsString (nav, "DefineConstants", ref str_tmp, true))
-					vbparams.DefineSymbols = str_tmp;
-
-				if (ReadAsInt (nav, "WarningLevel", ref int_tmp))
-					vbparams.WarningLevel = int_tmp;
-
-				if (ReadOffOnAsBool (nav, "OptionExplicit", ref bool_tmp))
-					vbparams.OptionExplicit = bool_tmp;
-
-				if (ReadOffOnAsBool (nav, "OptionStrict", ref bool_tmp))
-					vbparams.OptionStrict = bool_tmp;
-
-				if (ReadAsString (nav, "ApplicationIcon", ref str_tmp, false))
-					vbparams.Win32Icon = Unescape (MapAndResolvePath (basePath, str_tmp));
-
-				if (ReadAsString (nav, "Win32Resource", ref str_tmp, false))
-					vbparams.Win32Resource = Unescape (MapAndResolvePath (basePath, str_tmp));
-				//FIXME: OptionCompare, add support to VBnet binding, params etc
-			}
-
-			if (lang == "C#") {
-				CSharpCompilerParameters csparams =
-					(CSharpCompilerParameters) config.CompilationParameters;
-
-				if (ReadAsBool (nav, "AllowUnsafeBlocks", ref bool_tmp))
-					csparams.UnsafeCode = bool_tmp;
-
-				if (ReadAsBool (nav, "Optimize", ref bool_tmp))
-					csparams.Optimize = bool_tmp;
-
-				if (ReadAsBool (nav, "CheckForOverflowUnderflow", ref bool_tmp))
-					csparams.GenerateOverflowChecks = bool_tmp;
-
-				if (ReadAsString (nav, "DefineConstants", ref str_tmp, true))
-					csparams.DefineSymbols = str_tmp;
-
-				if (ReadAsInt (nav, "WarningLevel", ref int_tmp))
-					csparams.WarningLevel = int_tmp;
-
-				if (ReadAsString (nav, "ApplicationIcon", ref str_tmp, false))
-					csparams.Win32Icon = Unescape (MapAndResolvePath (basePath, str_tmp));
-				
-				if (ReadAsString (nav, "Win32Resource", ref str_tmp, false))
-					csparams.Win32Resource = Unescape (MapAndResolvePath (basePath, str_tmp));
-			}
-		}
 
 		StringDictionary ParseCondition (string condition)
 		{
@@ -1214,144 +769,6 @@ namespace MonoDevelop.Prj2Make
 
 		//Utility methods
 
-		static XmlNode MoveToChild (XmlNode node, string localName)
-		{
-			if (!node.HasChildNodes)
-				return null;
-
-			foreach (XmlNode n in node.ChildNodes)
-				if (n.LocalName == localName)
-					return n;
-
-			return null;
-		}
-
-		internal static void EnsureChildValue (XmlNode node, string localName, string ns, bool val)
-		{
-			EnsureChildValue (node, localName, ns, val.ToString ().ToLower ());
-		}
-
-		internal static void EnsureChildValue (XmlNode node, string localName, string ns, object val)
-		{
-			XmlNode n = MoveToChild (node, localName);
-			if (n == null) {
-				//Child not found, create it
-				XmlElement e = node.OwnerDocument.CreateElement (localName, ns);
-				e.InnerText = val.ToString ();
-
-				node.AppendChild (e);
-			} else {
-				n.InnerText = val.ToString ();
-			}
-		}
-
-		bool ReadAsString (XmlNode node, string localName, ref string val, bool allowEmpty)
-		{
-			//Assumption: Number of child nodes is small enough
-			//that xpath query would be more expensive than
-			//linear traversal
-			if (node == null || !node.HasChildNodes)
-				return false;
-
-			foreach (XmlNode n in node.ChildNodes) {
-				//Case sensitive compare
-				if (n.LocalName != localName)
-					continue;
-
-				//FIXME: Use XmlChar.WhitespaceChars ?
-				string s= n.InnerText.Trim ();
-				if (s.Length == 0 && !allowEmpty)
-					return false;
-
-				val = s;
-				return true;
-			}
-
-			return false;
-		}
-
-		bool ReadAsString (XPathNavigator nav, string localName, ref string val, bool allowEmpty)
-		{
-			if (!nav.MoveToChild (localName, ns))
-				return false;
-
-			//FIXME: Use XmlChar.WhitespaceChars ?
-			string s = nav.Value.Trim ();
-			nav.MoveToParent ();
-
-			if (s.Length == 0 && !allowEmpty)
-				return false;
-
-			val = s;
-			return true;
-		}
-
-		bool ReadAsBool (XPathNavigator nav, string localName, ref bool val)
-		{
-			string str = String.Empty;
-			if (!ReadAsString (nav, localName, ref str, false))
-				return false;
-
-			switch (str.ToUpper ()) {
-			case "TRUE":
-				val = true;
-				break;
-			case "FALSE":
-				val = false;
-				break;
-			default:
-				return false;
-			}
-
-			return true;
-		}
-
-		bool ReadOffOnAsBool (XPathNavigator nav, string localName, ref bool val)
-		{
-			string str = String.Empty;
-			if (!ReadAsString (nav, localName, ref str, false))
-				return false;
-
-			switch (str.ToUpper ()) {
-			case "ON":
-				val = true;
-				break;
-			case "OFF":
-				val = false;
-				break;
-			default:
-				return false;
-			}
-
-			return true;
-		}
-
-		bool ReadAsInt (XPathNavigator nav, string localName, ref int val)
-		{
-			if (!nav.MoveToChild (localName, ns))
-				return false;
-
-			try {
-				val = nav.ValueAsInt;
-			} catch {
-				return false;
-			} finally {
-				nav.MoveToParent ();
-			}
-
-			return true;
-		}
-
-		//Creates a <localName>Value</localName>
-		internal static XmlElement AppendChild (XmlElement e, string localName, string ns, string value)
-		{
-			XmlElement elem = e.OwnerDocument.CreateElement (localName, ns);
-			elem.InnerText = value;
-			e.AppendChild (elem);
-
-			return elem;
-		}
-
 		static string GetConfigName (StringDictionary dic)
 		{
 			if (!dic.ContainsKey ("CONFIGURATION") || 
@@ -1377,86 +794,62 @@ namespace MonoDevelop.Prj2Make
 			string [] tmp = name.Split (new char [] {'|'}, 2);
 			string [] ret = new string [2];
 			ret [0] = tmp [0];
-			if (tmp.Length < 2)
+			if (tmp.Length < 2) {
 				ret [1] = "AnyCPU";
-			else
+				//name = String.Format ("{0}|{1}", ret [0], ret [1]);
+			} else {
 				ret [1] = tmp [1];
+			}
 
 			return ret;
 		}
 
-		internal static string MapAndResolvePath (string basePath, string relPath)
+		public static XmlElement GetFlavorPropertiesElement (MSBuildData data, string guid, bool create)
 		{
-			string ret = SlnMaker.MapPath (basePath, relPath);
-			if (ret == null)
-				return ret;
-			return Path.GetFullPath (ret);
-		}
+			XmlElement parent = data.FlavorPropertiesParent;
+			if (parent == null) {
+				if (!create)
+					return null;
 
-		string GetLanguage (string fileName)
-		{
-			string extn = Path.GetExtension (fileName);
-			if (String.Compare (extn, ".csproj", true) == 0)
-				return "C#";
-			if (String.Compare (extn, ".vbproj", true) == 0)
-				return "VBNet";
-
-			return null;
-		}
-
-		static string CanonicalizePath (string path)
-		{
-			if (String.IsNullOrEmpty (path))
-				return path;
-
-			string ret = Runtime.FileService.NormalizeRelativePath (path);
-			if (ret.Length == 0)
-				return ".";
-
-			return Escape (ret).Replace ('/', '\\');
-		}
-
-		static char [] charToEscapeArray = {'$', '%', '\'', '(', ')', '*', ';', '?', '@'};
-		static string charsToEscapeString = "$%'()*;?@";
-
-		// Escape and Unescape taken from : class/Microsoft.Build.Engine/Microsoft.Build.BuildEngine/Utilities.cs
-		static string Escape (string unescapedExpression)
-		{
-			if (unescapedExpression.IndexOfAny (charToEscapeArray) < 0)
-				return unescapedExpression;
-
-			StringBuilder sb = new StringBuilder ();
-			
-			foreach (char c in unescapedExpression) {
-				if (charsToEscapeString.IndexOf (c) < 0)
-					sb.Append (c);
-				else
-					sb.AppendFormat ("%{0:x2}", (int) c);
+				parent = Utils.GetXmlElement (data.Document, data.Document, "/Project/ProjectExtensions/VisualStudio", create);
 			}
-			
-			return sb.ToString ();
-		}
-		
-		static string Unescape (string escapedExpression)
-		{
-			if (escapedExpression.IndexOf ('%') < 0)
-				return escapedExpression;
 
-			StringBuilder sb = new StringBuilder ();
-			
-			int i = 0;
-			while (i < escapedExpression.Length) {
-				sb.Append (Uri.HexUnescape (escapedExpression, ref i));
+			foreach (XmlNode node in parent.ChildNodes) {
+					if (node.NodeType != XmlNodeType.Element || node.LocalName != "FlavorProperties")
+						continue;
+					if (node.Attributes ["GUID"] != null && String.Compare (node.Attributes ["GUID"].Value, guid, true) == 0)
+						return (XmlElement) node;
 			}
-			
-			return sb.ToString ();
+
+			//FlavorProperties not found
+			if (!create)
+				return null;
+
+			XmlElement flavor_properties_element = data.Document.CreateElement ("FlavorProperties", Utils.ns);
+			flavor_properties_element.SetAttribute ("GUID", guid);
+			data.FlavorPropertiesParent.AppendChild (flavor_properties_element);
+			return flavor_properties_element;
 		}
 
-		internal static MSBuildData GetMSBuildData (CombineEntry entry)
+		static List<MSBuildProjectExtension> GuidToExtensions {
+			get {
+				if (extensions == null) {
+					extensions = new List<MSBuildProjectExtension> ();
+					OnProjectExtensionsChanged (null, null);
+					AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Prj2Make/MSBuildProjectExtension", OnProjectExtensionsChanged);
+				}
+				return extensions;
+			}
+		}
+
+		static void OnProjectExtensionsChanged (object s, ExtensionNodeEventArgs args)
 		{
-			if (entry.ExtendedProperties.Contains (typeof (MSBuildFileFormat)))
-				return entry.ExtendedProperties [typeof (MSBuildFileFormat)] as MSBuildData;
-			return null;
+			extensions.Clear ();
+			foreach (MSBuildProjectExtension extn in
+				AddinManager.GetExtensionObjects ("/MonoDevelop/Prj2Make/MSBuildProjectExtension", typeof (MSBuildProjectExtension))) {
+				extensions.Add (extn);
+			}
+			extensions.Add (new DefaultMSBuildProjectExtension ());
 		}
 
 		static Regex conditionRegex = null;
@@ -1472,7 +865,7 @@ namespace MonoDevelop.Prj2Make
 		// used to get the correct case of assembly names,
 		// like System.XML
 		static Dictionary<string, string> assemblyNamesTable = null;
-		static Dictionary<string, string> AssemblyNamesTable {
+		internal static Dictionary<string, string> AssemblyNamesTable {
 			get {
 				if (assemblyNamesTable == null) {
 					assemblyNamesTable = new Dictionary<string, string> (StringComparer.InvariantCultureIgnoreCase);
@@ -1488,6 +881,19 @@ namespace MonoDevelop.Prj2Make
 			}
 
 		}
-	}
 
+		static Dictionary<string, string> projectTypeGuids = null;
+		public static Dictionary<string, string> ProjectTypeGuids {
+			get {
+				if (projectTypeGuids == null) {
+					projectTypeGuids = new Dictionary<string, string> ();
+					// values must be in UpperCase
+					projectTypeGuids ["C#"] = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}";
+					projectTypeGuids ["VBNet"] = "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}";
+				}
+				return projectTypeGuids;
+			}
+		}
+
+	}
 }
