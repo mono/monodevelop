@@ -45,6 +45,10 @@ namespace MonoDevelop.GtkCore.Dialogs
 		public bool IsWidgetLibrary {
 			get { return libCheck != null && libCheck.Active; }
 		}
+		
+		public string SelectedVersion {
+			get { return versionCombo.ActiveText; }
+		}
 	}
 	
 	class GtkProjectFeature: ICombineEntryFeature
@@ -66,7 +70,10 @@ namespace MonoDevelop.GtkCore.Dialogs
 		public void ApplyFeature (Combine parentCombine, CombineEntry entry, Widget editor)
 		{
 			GtkDesignInfo info = GtkCoreService.EnableGtkSupport ((DotNetProject) entry);
-			info.IsWidgetLibrary = ((GtkFeatureWidget)editor).IsWidgetLibrary;
+			GtkFeatureWidget fw = (GtkFeatureWidget) editor;
+			info.IsWidgetLibrary = fw.IsWidgetLibrary;
+			info.TargetGtkVersion = fw.SelectedVersion;
+			info.UpdateGtkFolder ();
 		}
 		
 		public string Validate (Combine parentCombine, CombineEntry entry, Gtk.Widget editor)
