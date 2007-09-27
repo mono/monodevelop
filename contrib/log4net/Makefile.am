@@ -5,7 +5,7 @@ all: $(LOG4NET)
 LOG4NET_DLL=log4net.dll
 LOG4NET = $(BINDIR)/$(LOG4NET_DLL)
 LOG4NET_DIR=$(srcdir)/src
-LOG4NET_CSFILES=$(addprefix $(srcdir)/, $(shell find $(LOG4NET_DIR) -name *.cs))
+LOG4NET_CSFILES=$(shell find $(LOG4NET_DIR)/ -name *.cs)
 LOG4NET_DIST= $(LOG4NET_CSFILES)
 LOG4NET_REFS =  \
 	/r:System \

@@ -1,3 +1,10 @@
+2007-09-27  Raja R Harinath  <rharinath@novell.com>
+
+	* contrib/log4net/Makefile.am (LOG4NET_CSFILES): Don't prepend
+	$(scrdir), 'find' already does it for us.  Append a '/' after the
+	directory name to allow using symlinks (some svn wrappers don't
+	support svn:externals).
+
 2007-09-26  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* configure.in: Another Mozilla detection tweak: don't ignore pkg-config
