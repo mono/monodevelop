@@ -1,3 +1,13 @@
+2007-09-27  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Core.Gui.mdp, Makefile.am: Updated.
+	* MonoDevelop.Core.Gui.Dialogs/MultiTaskProgressDialog.cs, gtk-gui,
+	  gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.Core.Gui.Dialogs.MultiTaskProgressDialog.cs,
+	  gtk-gui/gui.stetic,
+	  MonoDevelop.Core.Gui.ProgressMonitoring/MultiTaskDialogProgressMonitor.cs:
+	  New IProgressMonitor that shows a GUI for multiple tasks.
+
 2007-09-26  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* icons/Icons.SharpDevelopIcon, icons/Icons.SharpDevelopIcon-22.png: New

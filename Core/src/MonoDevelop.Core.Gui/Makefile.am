@@ -13,6 +13,7 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:ICSharpCode.SharpZipLib \
+	-r:Mono.Posix \
 	-r:System \
 	-r:System.Drawing \
 	-r:System.Xml
@@ -20,6 +21,8 @@ REFS =  \
 FILES =  \
 	Freedesktop.RecentFiles/RecentFileStorage.cs \
 	Freedesktop.RecentFiles/RecentItem.cs \
+	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.Core.Gui.Dialogs.MultiTaskProgressDialog.cs \
 	MonoDevelop.Core.Gui.Codons/DialogPanelCodon.cs \
 	MonoDevelop.Core.Gui.Codons/StockIconCodon.cs \
 	MonoDevelop.Core.Gui.Components/FileBrowser.cs \
@@ -35,6 +38,7 @@ FILES =  \
 	MonoDevelop.Core.Gui.Dialogs/IDialogPanel.cs \
 	MonoDevelop.Core.Gui.Dialogs/IDialogPanelDescriptor.cs \
 	MonoDevelop.Core.Gui.Dialogs/IWizardPanel.cs \
+	MonoDevelop.Core.Gui.Dialogs/MultiTaskProgressDialog.cs \
 	MonoDevelop.Core.Gui.Dialogs/ProgressDialog.cs \
 	MonoDevelop.Core.Gui.Dialogs/SetupApp.cs \
 	MonoDevelop.Core.Gui.Dialogs/StatusPanel.cs \
@@ -44,6 +48,7 @@ FILES =  \
 	MonoDevelop.Core.Gui.ErrorHandlers/GenericError.cs \
 	MonoDevelop.Core.Gui.ProgressMonitoring/BaseProgressMonitor.cs \
 	MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs \
+	MonoDevelop.Core.Gui.ProgressMonitoring/MultiTaskDialogProgressMonitor.cs \
 	MonoDevelop.Core.Gui.Utils/DesktopApplication.cs \
 	MonoDevelop.Core.Gui.Utils/FileIconLoader.cs \
 	MonoDevelop.Core.Gui/AsyncDispatchAttribute.cs \
@@ -68,6 +73,7 @@ FILES =  \
 
 RES =  \
 	Base.glade \
+	gtk-gui/gui.stetic \
 	icons/BreakPoint.png \
 	icons/comment.png \
 	icons/edit-select-all.png \
