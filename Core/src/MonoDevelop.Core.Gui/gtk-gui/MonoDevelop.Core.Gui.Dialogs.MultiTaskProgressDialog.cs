@@ -140,9 +140,9 @@ namespace MonoDevelop.Core.Gui.Dialogs {
             this.DefaultHeight = 418;
             this.title.Hide();
             this.Show();
-            this.DeleteEvent += new Gtk.DeleteEventHandler(this.OnCloseWindowButton);
-            this.buttonCancel.Released += new System.EventHandler(this.OnCancel);
-            this.buttonClose.Released += new System.EventHandler(this.OnClose);
+            this.DeleteEvent += new Gtk.DeleteEventHandler(this.DeleteActivated);
+            this.buttonCancel.Clicked += new System.EventHandler(this.OnCancel);
+            this.buttonClose.Clicked += new System.EventHandler(this.OnClose);
         }
     }
 }

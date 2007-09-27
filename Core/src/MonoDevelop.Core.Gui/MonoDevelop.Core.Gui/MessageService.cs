@@ -220,6 +220,23 @@ namespace MonoDevelop.Core.Gui
 			}
 		}
 		
+		public int ShowCustomDialog (System.Type dialogType, object[] args)
+		{
+			Gtk.Dialog dialog = null;
+			try {
+				dialog = (Gtk.Dialog) System.Activator.CreateInstance (dialogType, args);
+				dialog.Modal = true;
+				dialog.TransientFor = rootWindow;
+				dialog.DestroyWithParent = true;
+				
+				int response = dialog.Run ();
+				return response;
+			} finally {
+				if (dialog != null)
+					dialog.Destroy ();
+			}
+		}
+		
 		public void ShowMessage(string message)
 		{
 			ShowMessage(message, "MonoDevelop");

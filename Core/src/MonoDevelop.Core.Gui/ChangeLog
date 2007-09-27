@@ -1,5 +1,14 @@
 2007-09-27  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.Core.Gui.mdp: Remove duplicate gtk-sharp reference.
+	* MonoDevelop.Core.Gui.Dialogs/MultiTaskProgressDialog.cs,
+	  gtk-gui/MonoDevelop.Core.Gui.Dialogs.MultiTaskProgressDialog.cs,
+	  gtk-gui/gui.stetic: Juggle some close/cancel event handling.
+	* MonoDevelop.Core.Gui/MessageService.cs: Add a method for showing custom
+	  GTK dialogs types in the GUI thread.
+
+2007-09-27  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.Core.Gui.mdp, Makefile.am: Updated.
 	* MonoDevelop.Core.Gui.Dialogs/MultiTaskProgressDialog.cs, gtk-gui,
 	  gtk-gui/generated.cs,

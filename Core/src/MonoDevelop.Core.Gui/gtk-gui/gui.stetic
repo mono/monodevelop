@@ -16,7 +16,7 @@
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
     <property name="HasSeparator">False</property>
-    <signal name="DeleteEvent" handler="OnCloseWindowButton" />
+    <signal name="DeleteEvent" handler="DeleteActivated" />
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
         <property name="MemberName" />
@@ -115,7 +115,7 @@
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-cancel</property>
             <property name="ResponseId">-6</property>
-            <signal name="Released" handler="OnCancel" />
+            <signal name="Clicked" handler="OnCancel" />
             <property name="label">gtk-cancel</property>
           </widget>
           <packing>
@@ -132,7 +132,7 @@
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-close</property>
             <property name="ResponseId">-7</property>
-            <signal name="Released" handler="OnClose" />
+            <signal name="Clicked" handler="OnClose" />
             <property name="label">gtk-close</property>
           </widget>
           <packing>

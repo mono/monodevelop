@@ -55,11 +55,13 @@ namespace MonoDevelop.Core.Gui.Dialogs
 		IDictionary<string, string> taskLabelAliases = null;
 		
 		bool completed = false;
+		bool allowCancel;
 		                                
 		public MultiTaskProgressDialog (bool allowCancel, bool showDetails, IDictionary<string, string> taskLabelAliases)
 		{
 			MonoDevelop.Core.Gui.DispatchService.AssertGuiThread ();
 			this.Build();
+			this.allowCancel = allowCancel;
 			
 			this.taskLabelAliases = taskLabelAliases;
 			detailsScroll.Visible = showDetails;
@@ -232,12 +234,14 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			}
 		}
 		
-		void OnCloseWindowButton (object sender, EventArgs args)
+		[GLib.ConnectBefore]
+		protected virtual void DeleteActivated (object o, DeleteEventArgs args)
 		{
+			args.RetVal = true;
 			if (completed)
-				OnCancel (null, null);
-			else
 				OnClose (null, null);
+			else if (allowCancel)
+				OnCancel (null, null);
 		}
 	}
 }
