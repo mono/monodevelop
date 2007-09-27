@@ -1,3 +1,8 @@
+2007-09-27  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.Dialogs/GtkFeatureWidget.cs: Assign the selected
+	  target gtk# version to the new project.
+
 2007-09-21  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.GtkCore/GtkDesignInfo.cs: Use ProjectReference.StoredReference
