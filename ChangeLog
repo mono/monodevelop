@@ -1,5 +1,10 @@
 2007-09-27  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* configure.in: Enable the C/C++ Addin by default. Remove gcc/g++/ctags
+	  checks.
+
+2007-09-27  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* configure.in: Don't check for xsp/xsp2 at configure time.
 
 2007-09-26  Michael Hutchinson <mhutchinson@novell.com> 
