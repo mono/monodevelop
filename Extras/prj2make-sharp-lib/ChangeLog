@@ -1,3 +1,13 @@
+2007-09-28  Ankit Jain  <jankit@novell.com>
+
+	* DefaultMSBuildProjectExtension.cs (FileToXmlElement): Handle existing
+	XmlElements. Update LogicalName and DependentUpon correctly.
+	* MSBuildFileFormat.cs (WriteFileInternal): Always update XmlElements for
+	project files.
+	(HandleFileRenamed): Use FileToXmlElement to correctly update the xml
+	element.
+	* Utils.cs (RemoveChild): New.
+
 2007-09-27  Ankit Jain  <jankit@novell.com>
 
 	* MSBuildProjectExtension.cs: New.

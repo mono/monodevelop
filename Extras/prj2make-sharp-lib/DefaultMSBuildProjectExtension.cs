@@ -301,42 +301,68 @@ namespace MonoDevelop.Prj2Make
 
 			//FIXME: Subtype
 
+			bool newElement = false;
 			XmlDocument doc = data.Document;
-			XmlElement elem = doc.CreateElement (name, Utils.ns);
-			elem.SetAttribute ("Include", Utils.CanonicalizePath (projectFile.RelativePath));
-
-			XmlNode n = doc.SelectSingleNode (String.Format (
+			XmlElement elem;
+			if (!data.ProjectFileElements.TryGetValue (projectFile, out elem)) {
+				newElement = true;
+				elem = doc.CreateElement (name, Utils.ns);
+				XmlNode n = doc.SelectSingleNode (String.Format (
 					"/tns:Project/tns:ItemGroup/tns:{0}", name), MSBuildFileFormat.NamespaceManager);
 
-			if (n == null) {
-				n = doc.CreateElement ("ItemGroup", Utils.ns);
-				doc.DocumentElement.AppendChild (n);
-				n.AppendChild (elem);
-			} else {
-				n.ParentNode.AppendChild (elem);
-			}
+				if (n == null) {
+					n = doc.CreateElement ("ItemGroup", Utils.ns);
+					doc.DocumentElement.AppendChild (n);
+					n.AppendChild (elem);
+				} else {
+					n.ParentNode.AppendChild (elem);
+				}
 
-			if (projectFile.BuildAction == BuildAction.EmbedAsResource) {
-				if (Utils.GetMSBuildData (project) == null ||
-					Services.ProjectService.GetDefaultResourceId (projectFile) != projectFile.ResourceId)
+				bool notMSBuild = (Utils.GetMSBuildData (project) == null);
+				if (projectFile.BuildAction == BuildAction.EmbedAsResource &&
+					(notMSBuild || Services.ProjectService.GetDefaultResourceId (projectFile) != projectFile.ResourceId)) {
 					//Emit LogicalName if we are writing elements for a Non-MSBuidProject,
-					//(eg. when converting a gtk-sharp project, it might depend on non-vs
-					// style resource naming)
+					//  (eg. when converting a gtk-sharp project, it might depend on non-vs
+					//  style resource naming )
 					//Or when the resourceId is different from the default one
 					Utils.EnsureChildValue (elem, "LogicalName", Utils.Escape (projectFile.ResourceId));
 
+					if (notMSBuild)
+						// explicitly set the resourceId, as once when it becomes a
+						// msbuild project, .ResourceId will give resourceId by msbuild
+						// rules, but we want to retain this value
+						projectFile.ResourceId = projectFile.ResourceId;
+				}
+
+				if (projectFile.BuildAction == BuildAction.FileCopy)
+					Utils.EnsureChildValue (elem, "CopyToOutputDirectory", "Always");
+
+				if (projectFile.IsExternalToProject)
+					Utils.EnsureChildValue (elem, "Link", Path.GetFileName (projectFile.Name));
+			}
+
+			elem.SetAttribute ("Include", Utils.CanonicalizePath (projectFile.RelativePath));
+
+			if (projectFile.BuildAction == BuildAction.EmbedAsResource) {
+				string projectResourceId = projectFile.ResourceId;
+
+				if (!newElement) {
+					if (Services.ProjectService.GetDefaultResourceId (projectFile) == projectResourceId)
+						Utils.RemoveChild (elem, "LogicalName");
+					else
+						Utils.EnsureChildValue (elem, "LogicalName", Utils.Escape (projectResourceId));
+				}
+
 				//DependentUpon is relative to the basedir of the 'pf' (resource file)
-				if (!String.IsNullOrEmpty (projectFile.DependsOn))
+				if (String.IsNullOrEmpty (projectFile.DependsOn)) {
+					if (!newElement)
+						Utils.RemoveChild (elem, "DependentUpon");
+				} else {
 					Utils.EnsureChildValue (elem, "DependentUpon",
 						Utils.CanonicalizePath (Runtime.FileService.AbsoluteToRelativePath (
 							Path.GetDirectoryName (projectFile.Name), projectFile.DependsOn)));
+				}
 			}
-
-			if (projectFile.BuildAction == BuildAction.FileCopy)
-				Utils.EnsureChildValue (elem, "CopyToOutputDirectory", "Always");
-
-			if (projectFile.IsExternalToProject)
-				Utils.EnsureChildValue (elem, "Link", Path.GetFileName (projectFile.Name));
 
 			return elem;
 		}

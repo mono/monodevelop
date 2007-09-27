@@ -64,6 +64,13 @@ namespace MonoDevelop.Prj2Make
 			return null;
 		}
 
+		public static void RemoveChild (XmlNode parent, string localName)
+		{
+			XmlNode child = MoveToChild (parent, localName);
+			if (child != null)
+				parent.RemoveChild (child);
+		}
+
 		public static void EnsureChildValue (XmlNode node, string localName, bool val)
 		{
 			EnsureChildValue (node, localName, val.ToString ().ToLower ());

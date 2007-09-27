@@ -264,16 +264,16 @@ namespace MonoDevelop.Prj2Make
 			foreach (ProjectReference pref in project.ProjectReferences)
 				data.ProjectReferenceElements [pref] = data.ExtensionChain.ReferenceToXmlElement (data, project, pref);
 		
+			foreach (ProjectFile pfile in project.ProjectFiles) {
+				XmlElement xe = data.ExtensionChain.FileToXmlElement (data, project, pfile);
+				if (xe != null)
+					data.ProjectFileElements [pfile] = xe;
+			}
+
 			//FIXME: Set ActiveConfiguration
 			CleanUpEmptyItemGroups (doc);
 
 			if (newdoc) {
-				foreach (ProjectFile pfile in project.ProjectFiles) {
-					XmlElement xe = data.ExtensionChain.FileToXmlElement (data, project, pfile);
-					if (xe != null)
-						data.ProjectFileElements [pfile] = xe;
-				}
-
 				XmlElement elem = doc.CreateElement ("Configuration", Utils.ns);
 				data.GlobalConfigElement.AppendChild (elem);
 				elem.InnerText = "Debug";
@@ -660,8 +660,9 @@ namespace MonoDevelop.Prj2Make
 				return;
 
 			//FIXME: Check whether this file is a ApplicationIcon and accordingly update that?
-			XmlElement elem = d.ProjectFileElements [e.ProjectFile];
-			elem.SetAttribute ("Include", Utils.CanonicalizePath (e.ProjectFile.RelativePath));
+			XmlElement elem = d.ExtensionChain.FileToXmlElement (d, e.Project, e.ProjectFile);
+			if (elem != null)
+				d.ProjectFileElements [e.ProjectFile] = elem;
 		}
 
 		static void HandleFilePropertyChanged (object sender, ProjectFileEventArgs e)
