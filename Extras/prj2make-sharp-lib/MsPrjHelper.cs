@@ -752,7 +752,8 @@ namespace MonoDevelop.Prj2Make
 						flOut.BuildAction = BuildAction.Nothing;
 						break;				
 				}
-				flOut.DependsOn = fl.DependentUpon;
+				// DependentUpon is relative to flOut
+				flOut.DependsOn = MapPath (Path.GetDirectoryName (flOut.Name), fl.DependentUpon);
 				flOut.Data = "";
 			}
 		}

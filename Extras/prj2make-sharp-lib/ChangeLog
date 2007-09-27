@@ -1,5 +1,9 @@
 2007-09-28  Ankit Jain  <jankit@novell.com>
 
+	* MsPrjHelper.cs (GetContents): Set DependsOn to its absolute path.
+
+2007-09-28  Ankit Jain  <jankit@novell.com>
+
 	* DefaultMSBuildProjectExtension.cs (FileToXmlElement): Handle existing
 	XmlElements. Update LogicalName and DependentUpon correctly.
 	* MSBuildFileFormat.cs (WriteFileInternal): Always update XmlElements for
