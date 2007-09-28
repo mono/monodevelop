@@ -490,9 +490,9 @@ namespace MonoDevelop.Autotools
 			
 			compilerMessageRegex ["gcc"] = new string [2];
 			compilerMessageRegex ["gcc"][0] = 
-				@"^\s*(?<file>.*):(?<line>\d*){1}\s*:\s*error\s*:\s(?<message>.*)";
+				@"^\s*(?<file>[^:]*):(?<line>\d*){1}(:(?<column>\d*))?\s*:\s*error\s*:\s(?<message>.*)";
 			compilerMessageRegex ["gcc"][1] = 
-				@"^\s*(?<file>.*):(?<line>\d*){1}\s*:\s*warning\s*:\s(?<message>.*)";
+				@"^\s*(?<file>[^:]*):(?<line>\d*){1}(:(?<column>\d*))?\s*:\s*warning\s*:\s(?<message>.*)";
 		}
 
 		void InitBuildVars ()
