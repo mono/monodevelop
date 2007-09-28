@@ -1,3 +1,9 @@
+2007-09-28  Ankit Jain  <jankit@novell.com>
+
+	Fix bug #325674.
+	* MakefileOptionPanelWidget.cs: Use FocusChildSet event instead of
+	FocusoutEvent for the makefile entry widget.
+
 2007-09-28  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* MakefileData.cs (InitCompilerMessageRegex): Cosmetic fix.

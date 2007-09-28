@@ -105,7 +105,7 @@ namespace MonoDevelop.Autotools
 
 			HandleComboMessageTypeChanged (comboMessageType);
 
-			this.fileEntryMakefilePath.FocusOutEvent += new FocusOutEventHandler (OnMakefilePathFocusOut);
+			this.fileEntryMakefilePath.FocusChildSet += new FocusChildSetHandler (OnMakefilePathFocusChildSet);
 			
 			((Gtk.Container) comboAssemblyName.Parent).Remove (comboAssemblyName);
 			((Gtk.Container) lblAssemblyNameVar.Parent).Remove (lblAssemblyNameVar);
@@ -671,7 +671,7 @@ namespace MonoDevelop.Autotools
 			this.fileEntryConfigureInPath.Sensitive = state;
 		}
 
-		void OnMakefilePathFocusOut (object sender, FocusOutEventArgs e)
+		void OnMakefilePathFocusChildSet (object sender, FocusChildSetArgs e)
 		{
 			if (data.AbsoluteMakefileName != fileEntryMakefilePath.Path) {
 				ResetAll ();
