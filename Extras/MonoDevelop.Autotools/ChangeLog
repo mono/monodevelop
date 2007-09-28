@@ -1,5 +1,9 @@
 2007-09-28  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
+	* MakefileData.cs (InitCompilerMessageRegex): Cosmetic fix.
+
+2007-09-28  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
 	* MakefileData.cs: Update standard gcc regex to also match column info.
 
 2007-09-21  Lluis Sanchez Gual <lluis@novell.com> 

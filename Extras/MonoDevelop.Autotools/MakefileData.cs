@@ -482,17 +482,15 @@ namespace MonoDevelop.Autotools
 		static void InitCompilerMessageRegex ()
 		{
 			compilerMessageRegex = new Dictionary<string, string[]> ();
-			compilerMessageRegex ["C# (mcs)"] = new string [2];
-			compilerMessageRegex ["C# (mcs)"][0] = 
-				@"(^\s*(?<file>.*)\((?<line>\d*){1}(,(?<column>\d*[\+]*))?\)(:|)\s+)*error\s*(?<number>.*):\s(?<message>.*)";
-			compilerMessageRegex ["C# (mcs)"][1] = 
-				@"(^\s*(?<file>.*)\((?<line>\d*){1}(,(?<column>\d*[\+]*))?\)(:|)\s+)*warning\s*(?<number>.*):\s(?<message>.*)";
+			compilerMessageRegex ["C# (mcs)"] = new string [] {
+				@"(^\s*(?<file>.*)\((?<line>\d*){1}(,(?<column>\d*[\+]*))?\)(:|)\s+)*error\s*(?<number>.*):\s(?<message>.*)",
+				@"(^\s*(?<file>.*)\((?<line>\d*){1}(,(?<column>\d*[\+]*))?\)(:|)\s+)*warning\s*(?<number>.*):\s(?<message>.*)"
+			};
 			
-			compilerMessageRegex ["gcc"] = new string [2];
-			compilerMessageRegex ["gcc"][0] = 
-				@"^\s*(?<file>[^:]*):(?<line>\d*){1}(:(?<column>\d*))?\s*:\s*error\s*:\s(?<message>.*)";
-			compilerMessageRegex ["gcc"][1] = 
-				@"^\s*(?<file>[^:]*):(?<line>\d*){1}(:(?<column>\d*))?\s*:\s*warning\s*:\s(?<message>.*)";
+			compilerMessageRegex ["gcc"] = new string [] {
+				@"^\s*(?<file>[^:]*):(?<line>\d*){1}(:(?<column>\d*))?\s*:\s*error\s*:\s(?<message>.*)",
+				@"^\s*(?<file>[^:]*):(?<line>\d*){1}(:(?<column>\d*))?\s*:\s*warning\s*:\s(?<message>.*)"
+			};
 		}
 
 		void InitBuildVars ()
