@@ -156,7 +156,7 @@ namespace AspNetAddIn {
             w5.XOptions = ((Gtk.AttachOptions)(4));
             w5.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table2.Gtk.Table+TableChild
-            this.portNumber = new Gtk.SpinButton(0, 100, 1);
+            this.portNumber = new Gtk.SpinButton(0, 32767, 1);
             this.portNumber.CanFocus = true;
             this.portNumber.Name = "portNumber";
             this.portNumber.Adjustment.PageIncrement = 10;

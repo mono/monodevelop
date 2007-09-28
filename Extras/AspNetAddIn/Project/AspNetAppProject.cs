@@ -43,6 +43,7 @@ using MonoDevelop.Deployment;
 
 using AspNetAddIn.Parser.Tree;
 using AspNetAddIn.Parser;
+using MonoDevelop.AspNet.Deployment;
 
 namespace AspNetAddIn
 {
@@ -61,6 +62,10 @@ namespace AspNetAddIn
 		
 		[ItemProperty ("VerifyCodeBehindEvents")]
 		protected bool verifyCodeBehindEvents = true;
+		
+		[ItemProperty("WebDeployTargets")]
+		[ItemProperty ("Target", ValueType=typeof(WebDeployTarget), Scope=1)]
+		protected WebDeployTargetCollection webDeployTargets = new WebDeployTargetCollection ();
 		
 		//used true while the project is being loaded
 		bool loading = false;
@@ -84,6 +89,10 @@ namespace AspNetAddIn
 		public bool VerifyCodeBehindEvents {
 			get { return verifyCodeBehindEvents; }
 			set { verifyCodeBehindEvents = value; }
+		}
+		
+		public WebDeployTargetCollection WebDeployTargets {
+			get { return webDeployTargets; }
 		}
 		
 		#endregion
@@ -158,16 +167,16 @@ namespace AspNetAddIn
 			//ASP.NET files etc all go relative to the application root
 			foreach (ProjectFile pf in ProjectFiles)
 				if (pf.BuildAction == BuildAction.FileCopy)
-					files.Add (new DeployFile (this, pf.FilePath, pf.RelativePath, TargetDirectory.ProgramFilesRoot));
+					files.Add (new DeployFile (this, pf.FilePath, pf.RelativePath, WebTargetDirectory.SiteRoot));
 			
 			//add referenced libraries
 			foreach (string refFile in GetReferenceDeployFiles (false))
-				files.Add (new DeployFile (this, refFile, Path.GetFileName (refFile), TargetDirectory.ProgramFiles));
+				files.Add (new DeployFile (this, refFile, Path.GetFileName (refFile), WebTargetDirectory.AspNetBin));
 			
 			//add the compiled output file
 			string outputFile = this.GetOutputFileName ();
 			if (!string.IsNullOrEmpty (outputFile))
-				files.Add (new DeployFile (this, outputFile, Path.GetFileName (outputFile), TargetDirectory.ProgramFiles));
+				files.Add (new DeployFile (this, outputFile, Path.GetFileName (outputFile), WebTargetDirectory.AspNetBin));
 			
 			return files;
 		}
@@ -267,7 +276,7 @@ namespace AspNetAddIn
 		
 		public WebSubtype DetermineWebSubtype (ProjectFile file)
 		{
-			if (LanguageBinding.IsSourceCodeFile (file.FilePath))
+			if (LanguageBinding != null && LanguageBinding.IsSourceCodeFile (file.FilePath))
 				return WebSubtype.Code;
 			
 			return DetermineWebSubtype (System.IO.Path.GetExtension (file.Name));

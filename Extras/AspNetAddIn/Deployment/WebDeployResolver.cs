@@ -1,14 +1,10 @@
-//
-// XspOptionsPanel.cs: Edits XSP options of an AspNetAppProject
-//
-// Authors:
-//   Michael Hutchinson <m.j.hutchinson@gmail.com>
-//
-// Copyright (C) 2006 Michael Hutchinson
-//
-//
-// This source code is licenced under The MIT License:
-//
+// WebDeployResolver.cs
+// 
+// Author:
+//   Michael Hutchinson <mhutchinson@novell.com>
+// 
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+// 
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -27,30 +23,46 @@
 // LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-//
 
 using System;
-using Gtk;
-using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.Core;
+using System.IO;
 
-namespace AspNetAddIn
+using MonoDevelop.Deployment;
+
+namespace MonoDevelop.AspNet.Deployment
 {
 	
-	public class XspOptionsPanel : AbstractOptionPanel
+	public class WebDeployResolver : IDirectoryResolver
 	{
-		XspOptionsPanelWidget panel;
 		
-		public override void LoadPanelContents ()
+		public string GetDirectory (DeployContext context, string folderId)
 		{
-			panel = new XspOptionsPanelWidget ((Properties) this.CustomizationObject);
-			this.Child = panel;
-		}
-		
-		public override bool StorePanelContents ()
-		{
-			panel.Store ((Properties) CustomizationObject);
- 			return true;
+			string directory;
+			
+			switch (folderId) {
+			case WebTargetDirectory.AspNetBin:
+				directory = "bin";
+				break;
+			case WebTargetDirectory.SiteRoot:
+				directory = string.Empty;
+				break;
+			default:
+				return null;
+			}
+			
+			// While this would seem to be what the deploy API expects, for a web deploy it could 
+			// produces results the user wouldn't expect
+			//if (context.Prefix != null)
+			//	directory = Path.Combine (context.Prefix, directory);
+			
+			return directory;
 		}
 	}
+	
+	public static class WebTargetDirectory
+	{
+		public const string AspNetBin = "Web.AspNet.Bin";
+		public const string SiteRoot  = "Web.SiteRoot";
+	}
+	
 }

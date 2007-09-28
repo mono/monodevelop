@@ -100,6 +100,14 @@
 		</Condition>
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/GeneralOptions/Deployment">
+		<Condition id="activeproject" value="AspNetApp">
+			<DialogPanel id = "AspNetAddin.Deployment"
+			             _label = "Web Deployment Targets"
+			             class = "MonoDevelop.AspNet.Deployment.WebDeployOptionsPanel"/>
+		</Condition>
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions">
 		<Condition id="activeproject" value="AspNetApp">
 			<DialogPanel id = "AspNetConfiguration"
@@ -131,6 +139,9 @@
 		<Command id = "AspNetAddIn.AspNetCommands.AddAspNetDirectory"
 				_label = "ASP.NET Directory"
 				type="array" />
+		<Command id = "MonoDevelop.AspNet.Deployment.WebDeployCommands.DeployProject"
+				defaultHandler = "MonoDevelop.AspNet.Deployment.ProjectDeployHandler"
+				_label = "Deploy to Web..." />
 		</Category>
 	</Extension>
 	
@@ -146,6 +157,14 @@
 	
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder id="AspNetAddIn.ProjectFolderNodeBuilderExtension" class = "AspNetAddIn.ProjectFolderNodeBuilderExtension"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Project/Tools">
+		<CommandItem id = "MonoDevelop.AspNet.Deployment.WebDeployCommands.DeployProject" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Run">
+		<CommandItem id = "MonoDevelop.AspNet.Deployment.WebDeployCommands.DeployProject" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"/>
 	</Extension>
 	
 </Addin>

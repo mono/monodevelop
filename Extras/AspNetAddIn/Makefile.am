@@ -2,6 +2,7 @@ ADDIN_BUILD = $(top_builddir)/build/AddIns/AspNetAddIn
 ASSEMBLY = $(ADDIN_BUILD)/AspNetAddIn.dll
 
 REFS =  \
+	$(GLIB_SHARP_LIBS) \
 	$(GNOME_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment.dll \
@@ -22,9 +23,23 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
+	Deployment/WebDeployCommands.cs \
+	Deployment/WebDeployLaunchDialog.cs \
+	Deployment/WebDeployOptionsPanel.cs \
+	Deployment/WebDeployOptionsPanelWidget.cs \
+	Deployment/WebDeployResolver.cs \
+	Deployment/WebDeployService.cs \
+	Deployment/WebDeployTarget.cs \
+	Deployment/WebDeployTargetCollection.cs \
+	Deployment/WebDeployTargetEditor.cs \
+	Deployment/WebTargetEditor.cs \
 	gtk-gui/AspNetAddIn.AspNetConfigurationPanelWidget.cs \
 	gtk-gui/AspNetAddIn.XspOptionsPanelWidget.cs \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployLaunchDialog.cs \
+	gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployOptionsPanelWidget.cs \
+	gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployTargetEditor.cs \
+	gtk-gui/MonoDevelop.AspNet.Deployment.WebTargetEditor.cs \
 	Gui/AspNetConfigurationPanel.cs \
 	Gui/AspNetConfigurationPanelWidget.cs \
 	Gui/XspOptionsPanel.cs \

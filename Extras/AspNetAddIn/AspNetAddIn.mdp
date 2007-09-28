@@ -79,7 +79,21 @@
     <File name="./Project/AspNetCommands.cs" subtype="Code" buildaction="Compile" />
     <File name="./gtk-gui/AspNetAddIn.XspOptionsPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="./Gui/XspOptionsPanelWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Deployment/WebDeployOptionsPanelWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Deployment/WebDeployOptionsPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="./gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployOptionsPanelWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Deployment/WebDeployTargetCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Deployment/WebDeployTarget.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Deployment/WebTargetEditor.cs" subtype="Code" buildaction="Compile" />
+    <File name="./gtk-gui/MonoDevelop.AspNet.Deployment.WebTargetEditor.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Deployment/WebDeployTargetEditor.cs" subtype="Code" buildaction="Compile" />
+    <File name="./gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployTargetEditor.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Deployment/WebDeployLaunchDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="./gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployLaunchDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Deployment/WebDeployService.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Deployment/WebDeployCommands.cs" subtype="Code" buildaction="Compile" />
     <File name="./Project/AspNetMSBuildProjectExtension.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Deployment/WebDeployResolver.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />
@@ -94,15 +108,16 @@
     <ProjectReference type="Gac" localcopy="False" refto="System.Drawing.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <ProjectReference type="Gac" localcopy="False" refto="System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.DesignerSupport" />
-    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Deployment" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <ProjectReference type="Project" localcopy="False" refto="Mono.Addins" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Deployment" />
+    <ProjectReference type="Project" localcopy="False" refto="prj2make-sharp-lib" />
+    <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gnome-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Project" localcopy="False" refto="Mono.Addins" />
-    <ProjectReference type="Project" localcopy="False" refto="prj2make-sharp-lib" />
   </References>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../">
     <BuildFilesVar Sync="True" Name="FILES" />

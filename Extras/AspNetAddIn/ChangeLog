@@ -1,3 +1,24 @@
+2007-09-28  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Deployment/WebTargetEditor.cs, Deployment/WebDeployService.cs,
+	  Deployment/WebDeployCommands.cs, Deployment/WebDeployResolver.cs,
+	  Deployment/WebDeployTargetCollection.cs, Deployment/WebDeployTarget.cs,
+	  Deployment/WebDeployWindow.cs, Deployment/WebDeployLaunchDialog.cs,
+	  Deployment/WebDeployOptionsPanel.cs,
+	  Deployment/WebDeployTargetEditor.cs,
+	  Deployment/WebDeployOptionsPanelWidget.cs, AspNetAddIn.addin.xml,
+	  gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployLaunchDialog.cs,
+	  gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployTargetEditor.cs,
+	  gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployOptionsPanelWidget.cs,
+	  gtk-gui/MonoDevelop.AspNet.Deployment.WebTargetEditor.cs: Add new web
+	  deployment UI and services.
+	* Project/AspNetAppProject.cs: Add WebDeployTargets property. Use new web
+	  targets when returning DeployFiles.  Fix NRE when language binding not
+	  recognised.
+	* gtk-gui/generated.cs, gtk-gui/AspNetAddIn.XspOptionsPanelWidget.cs,
+	  gtk-gui/objects.xml, gtk-gui/gui.stetic, AspNetAddIn.mdp, Makefile.am,
+	  Gui/XspOptionsPanel.cs: Updated.
+
 2007-09-27  Ankit Jain  <jankit@novell.com>
 
 	Add support for VS2005 WebApplication projects.
