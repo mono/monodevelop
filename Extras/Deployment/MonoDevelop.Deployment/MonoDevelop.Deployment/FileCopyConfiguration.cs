@@ -37,7 +37,7 @@ namespace MonoDevelop.Deployment
 {
 	
 	[DataItem (FallbackType=typeof(UnknownFileCopierConfiguration))]
-	public class FileCopyConfiguration
+	abstract public class FileCopyConfiguration
 	{
 		FileCopyHandler handler;
 		
@@ -63,9 +63,15 @@ namespace MonoDevelop.Deployment
 			}
 		}
 		
-		public void CopyFiles (IProgressMonitor monitor, IFileReplacePolicy replacePolicy, DeployFileCollection files)
+		//user-readable location string
+		//null or empty value indicates that the location is not configured 
+		public abstract string FriendlyLocation {
+			get;
+		}
+		
+		public void CopyFiles (IProgressMonitor monitor, IFileReplacePolicy replacePolicy, DeployFileCollection files, DeployContext context)
 		{
-			Handler.CopyFiles (monitor, replacePolicy, this, files);
+			Handler.CopyFiles (monitor, replacePolicy, this, files, context);
 		}
 		
 		public virtual void CopyFrom (FileCopyConfiguration other)

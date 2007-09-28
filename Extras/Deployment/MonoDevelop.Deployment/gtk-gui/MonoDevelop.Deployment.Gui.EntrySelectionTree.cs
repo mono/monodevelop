@@ -33,6 +33,7 @@ namespace MonoDevelop.Deployment.Gui {
             this.tree = new Gtk.TreeView();
             this.tree.CanFocus = true;
             this.tree.Name = "tree";
+            this.tree.HeadersClickable = true;
             this.scrolledwindow1.Add(this.tree);
             this.Add(this.scrolledwindow1);
             if ((this.Child != null)) {

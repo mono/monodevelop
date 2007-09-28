@@ -40,7 +40,7 @@ namespace MonoDevelop.Deployment
 		string targetDirectory = "";
 		
 		[ItemProperty]
-		public string TargetDirectory {
+		public virtual string TargetDirectory {
 			get { return targetDirectory; }
 			set { targetDirectory = value; }
 		}
@@ -51,6 +51,10 @@ namespace MonoDevelop.Deployment
 			LocalFileCopyConfiguration conf = other as LocalFileCopyConfiguration;
 			if (conf != null)
 				targetDirectory = conf.targetDirectory;
+		}
+		
+		public override string FriendlyLocation {
+			get { return TargetDirectory; }
 		}
 	}
 }

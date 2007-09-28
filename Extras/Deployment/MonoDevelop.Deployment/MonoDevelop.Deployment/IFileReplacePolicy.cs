@@ -33,6 +33,7 @@ namespace MonoDevelop.Deployment
 {
 	public enum FileReplaceMode
 	{
+		NotSet = 0,
 		Abort,
 		Skip,
 		Replace,

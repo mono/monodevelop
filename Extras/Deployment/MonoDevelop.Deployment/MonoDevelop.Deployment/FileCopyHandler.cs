@@ -59,9 +59,9 @@ namespace MonoDevelop.Deployment
 			return c;
 		}
 		
-		internal void CopyFiles (IProgressMonitor monitor, IFileReplacePolicy replacePolicy, FileCopyConfiguration copyConfig, DeployFileCollection files)
+		internal void CopyFiles (IProgressMonitor monitor, IFileReplacePolicy replacePolicy, FileCopyConfiguration copyConfig, DeployFileCollection files, DeployContext context)
 		{
-			handler.CopyFiles (monitor, replacePolicy, copyConfig, files);
+			handler.CopyFiles (monitor, replacePolicy, copyConfig, files, context);
 		}
 	}
 }

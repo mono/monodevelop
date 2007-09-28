@@ -1,3 +1,39 @@
+2007-09-28  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Deployment.mdp,
+	  gtk-gui/MonoDevelop.Deployment.Gui.EntrySelectionTree.cs,
+	  gtk-gui/objects.xml, gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.Deployment.DeployFileListWidget.cs,
+	  gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs,
+	  gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs,
+	  gtk-gui/gui.stetic, Makefile.am: Updated.
+	* MonoDevelop.Deployment/DeployService.cs: Actually register to handle file
+	  copier extensions.
+	* MonoDevelop.Deployment/IFileCopyHandler.cs,
+	  MonoDevelop.Deployment/FileCopyHandler.cs: Pass DeployContext in
+	  CopyFiles operation so that directories can be resolved.
+	* MonoDevelop.Deployment/UnknownFileCopyConfiguration.cs: New
+	  FriendlyLocation property that specifies how the location should be
+	  shown to the user.
+	* MonoDevelop.Deployment/FileCopyConfiguration.cs: Implement
+	  FriendlyLocation. Track API change in CopyFiles.
+	* MonoDevelop.Deployment/IFileReplacePolicy.cs: Name FileReplaceMode = 0 as
+	  NotSet.
+	* gtk-gui/MonoDevelop.Deployment.Gui.FileCopyConfigurationSelector.cs,
+	  MonoDevelop.Deployment.Gui/FileCopyConfigurationSelector.cs: Make
+	  public.
+	* gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs,
+	  MonoDevelop.Deployment.Gui/DialogFileReplacePolicy.cs,
+	  MonoDevelop.Deployment.Gui/FileReplaceDialog.cs: Much, much better
+	  dialog IFileReplacePolicy implementation.
+	* MonoDevelop.Deployment.Targets/LocalFileCopyConfiguration.cs: Implement
+	  FriendlyLocation. Make TargetLocation virtual so that inheriting classes
+	  can override it in order that it's handled correctly by the
+	  LocalFileCopyHandler.
+	* MonoDevelop.Deployment.Targets/LocalFileCopyHandler.cs: Update handler so
+	  it can report progress to monitor, and also gives much better feedback
+	  on problems. Use DeployContext to look up target directories.
+
 2007-09-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment.addin.xml, gtk-gui/gui.stetic: Bump MD version.

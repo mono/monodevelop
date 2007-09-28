@@ -4,6 +4,7 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Deployment.dll
 
 REFS =  \
 	$(GLADE_SHARP_LIBS) \
+	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
@@ -22,6 +23,7 @@ FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Deployment.DeployFileListWidget.cs \
+	gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs \
 	gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs \
 	gtk-gui/MonoDevelop.Deployment.Gui.CommandDeployEditorWidget.cs \
 	gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs \
@@ -43,6 +45,7 @@ FILES =  \
 	MonoDevelop.Deployment.Gui/EditPackageDialog.cs \
 	MonoDevelop.Deployment.Gui/EntrySelectionTree.cs \
 	MonoDevelop.Deployment.Gui/FileCopyConfigurationSelector.cs \
+	MonoDevelop.Deployment.Gui/FileReplaceDialog.cs \
 	MonoDevelop.Deployment.Gui/IFileCopyConfigurationEditor.cs \
 	MonoDevelop.Deployment.Gui/InstallDialog.cs \
 	MonoDevelop.Deployment.Gui/IPackageBuilderEditor.cs \

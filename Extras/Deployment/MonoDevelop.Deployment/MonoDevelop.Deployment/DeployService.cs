@@ -262,7 +262,7 @@ namespace MonoDevelop.Deployment
 			if (copiers != null)
 				return;
 			copiers = new List<FileCopyHandler> ();
-			AddinManager.RemoveExtensionNodeHandler ("/MonoDevelop/Deployment/DeployFileCopiers", OnCopierExtensionChanged);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Deployment/DeployFileCopiers", OnCopierExtensionChanged);
 		}
 		
 		static void OnCopierExtensionChanged (object s, ExtensionNodeEventArgs args)

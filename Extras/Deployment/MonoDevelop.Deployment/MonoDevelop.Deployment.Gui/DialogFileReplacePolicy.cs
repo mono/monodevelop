@@ -36,17 +36,11 @@ namespace MonoDevelop.Deployment.Gui
 	
 	public class DialogFileReplacePolicy : IFileReplacePolicy
 	{
-		FileReplaceMode persistentMode;
-		bool ask;
-		
-		public DialogFileReplacePolicy (FileReplaceMode mode)
-		{
-			persistentMode = mode;
-		}
+		FileReplaceMode persistentMode = FileReplaceMode.NotSet;
+		FileReplaceDialog.ReplaceResponse response = FileReplaceDialog.ReplaceResponse.ReplaceOlder;
 		
 		public DialogFileReplacePolicy ()
 		{
-			ask = true;
 		}
 		
 		public FileReplaceMode ReplaceAction {
@@ -57,7 +51,7 @@ namespace MonoDevelop.Deployment.Gui
 		
 		public FileReplaceMode GetReplaceAction (string source, DateTime sourceModified, string target, DateTime targetModified)
 		{
-			if (!ask)
+			if (persistentMode != FileReplaceMode.NotSet)
 				return persistentMode;
 
 			string[] buttons = new string[] {
@@ -69,31 +63,36 @@ namespace MonoDevelop.Deployment.Gui
 				GettextCatalog.GetString ("_Abort deployment")
 			};
 			
-			string message = GettextCatalog.GetString ("The target file {0} already exists, and was last modified at {1}. The replacement file, {2}, was modified on {3}. What would you like to do?", target, targetModified, source, sourceModified);
+			response = (FileReplaceDialog.ReplaceResponse)
+				MonoDevelop.Core.Gui.Services.MessageService.ShowCustomDialog (typeof (FileReplaceDialog), new object[] {response, source, sourceModified.ToString (), target, targetModified.ToString ()});
 			
-			int answer = MonoDevelop.Core.Gui.Services.MessageService.ShowCustomDialog (GettextCatalog.GetString ("File already exists"), message, buttons);
+			switch (response) {
+			case FileReplaceDialog.ReplaceResponse.Replace:
+				return FileReplaceMode.Replace;
 			
-			switch (answer) {
-				case 0: //replace this file
-					return FileReplaceMode.Replace;
-				
-				case 1: //replace all
-					persistentMode = FileReplaceMode.Replace;
-					return FileReplaceMode.Replace;
-				
-				case 2: //replace all older
-					persistentMode = FileReplaceMode.ReplaceOlder;
-					return FileReplaceMode.ReplaceOlder;
-				
-				case 3: //skip this file
-					return FileReplaceMode.Skip;
-				
-				case 4: //skip all
-					persistentMode = FileReplaceMode.Skip;
-					return FileReplaceMode.Skip;
-				
-				default: //case 5, abort
-					return FileReplaceMode.Abort;
+			case FileReplaceDialog.ReplaceResponse.ReplaceAll:
+				persistentMode = FileReplaceMode.Replace;
+				return FileReplaceMode.Replace;
+			
+			case FileReplaceDialog.ReplaceResponse.ReplaceOlder:
+				return FileReplaceMode.ReplaceOlder;
+			
+			case FileReplaceDialog.ReplaceResponse.ReplaceOlderAll:	
+				persistentMode = FileReplaceMode.ReplaceOlder;
+				return FileReplaceMode.ReplaceOlder;
+			
+			case FileReplaceDialog.ReplaceResponse.Skip:
+				return FileReplaceMode.Skip;
+			
+			case FileReplaceDialog.ReplaceResponse.SkipAll:
+				persistentMode = FileReplaceMode.Skip;
+				return FileReplaceMode.Skip;
+			
+			case FileReplaceDialog.ReplaceResponse.Abort:			
+				return FileReplaceMode.Abort;
+			
+			default:
+				throw new Exception ("Unexpected ReplaceResponse value");
 			}
 			
 		}

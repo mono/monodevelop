@@ -11,7 +11,7 @@
 namespace MonoDevelop.Deployment.Gui {
     
     
-    internal partial class FileCopyConfigurationSelector {
+    public partial class FileCopyConfigurationSelector {
         
         private Gtk.VBox vbox1;
         

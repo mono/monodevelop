@@ -49,5 +49,9 @@ namespace MonoDevelop.Deployment
 				return properties;
 			}
 		}
+		
+		public override string FriendlyLocation {
+			get { return null; }
+		}
 	}
 }

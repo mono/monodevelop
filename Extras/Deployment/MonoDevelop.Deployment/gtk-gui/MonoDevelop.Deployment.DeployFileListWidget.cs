@@ -54,6 +54,7 @@ namespace MonoDevelop.Deployment {
             this.fileList.CanFocus = true;
             this.fileList.Name = "fileList";
             this.fileList.RulesHint = true;
+            this.fileList.HeadersClickable = true;
             this.scrolledwindow1.Add(this.fileList);
             this.vbox2.Add(this.scrolledwindow1);
             Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox2[this.scrolledwindow1]));
