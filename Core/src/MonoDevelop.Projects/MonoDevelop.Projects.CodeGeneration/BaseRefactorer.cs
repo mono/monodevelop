@@ -141,6 +141,9 @@ namespace MonoDevelop.Projects.CodeGeneration
 				m = (CodeMemberMethod) mMethod;
 				
 				mMethod.ReturnType = ReturnTypeToDom (member.ReturnType);
+				CodeExpression nieReference = new CodeObjectCreateExpression (typeof (NotImplementedException));
+				CodeStatement throwExpression = new CodeThrowExceptionStatement (nieReference);
+				mMethod.Statements.Add (throwExpression);
 				
 				foreach (IParameter param in method.Parameters) {
 					CodeParameterDeclarationExpression par;

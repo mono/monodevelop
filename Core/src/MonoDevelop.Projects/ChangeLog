@@ -1,3 +1,10 @@
+2007-09-29  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: Stub out generated
+	  "implemented" methods with NotImplementedException.
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Don't recurse into
+	  System.Object when implementing base types for interfaces.
+
 2007-09-27  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Thread safety

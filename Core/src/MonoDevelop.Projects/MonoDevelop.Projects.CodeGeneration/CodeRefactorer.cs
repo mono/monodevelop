@@ -176,6 +176,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 			
 			IParserContext ctx = GetParserContext (klass);
 			foreach (IReturnType rType in iface.BaseTypes) {
+				if (rType.FullyQualifiedName == "System.Object")
+					continue;
 				IClass baseClass = ctx.GetClass (rType.FullyQualifiedName);
 				if (baseClass == null)
 					Runtime.LoggingService.Error (GettextCatalog.GetString
