@@ -1,3 +1,8 @@
+2007-10-01  Raja R Harinath  <rharinath@novell.com>
+
+	* Makefile.am (FILES, REFS): Remove $(srcdir) prefix.  It's added
+	automatically by Makefile.include.
+
 2007-09-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.WebReferences.addin.xml: Bump MD version.

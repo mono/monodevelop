@@ -18,33 +18,32 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
-	$(srcdir)/AssemblyInfo.cs \
-	$(srcdir)/gtk-gui/generated.cs \
-	$(srcdir)/gtk-gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs \
-	$(srcdir)/MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs \
-	$(srcdir)/MonoDevelop.WebReferences.Commands/WebReferenceCommands.cs \
-	$(srcdir)/MonoDevelop.WebReferences.Dialogs/WebReferenceDialog.cs \
-	$(srcdir)/MonoDevelop.WebReferences.NodeBuilders/ProjectFolderNodeBuilderExtension.cs \
-	$(srcdir)/MonoDevelop.WebReferences.NodeBuilders/ProjectNodeBuilder.cs \
-	$(srcdir)/MonoDevelop.WebReferences.NodeBuilders/WebReferenceFolderNodeBuilder.cs \
-	$(srcdir)/MonoDevelop.WebReferences.NodeBuilders/WebReferenceNodeBuilder.cs \
-	$(srcdir)/MonoDevelop.WebReferences/CodeGenerator.cs \
-	$(srcdir)/MonoDevelop.WebReferences/DiscoveryNetworkCredential.cs \
-	$(srcdir)/MonoDevelop.WebReferences/DiscoveryProtocol.cs \
-	$(srcdir)/MonoDevelop.WebReferences/Library.cs \
-	$(srcdir)/MonoDevelop.WebReferences/WebReferenceFolder.cs \
-	$(srcdir)/MonoDevelop.WebReferences/WebReferenceItem.cs \
-	$(srcdir)/MonoDevelop.WebReferences/WebReferenceItemCollection.cs
+	AssemblyInfo.cs \
+	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs \
+	MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs \
+	MonoDevelop.WebReferences.Commands/WebReferenceCommands.cs \
+	MonoDevelop.WebReferences.Dialogs/WebReferenceDialog.cs \
+	MonoDevelop.WebReferences.NodeBuilders/ProjectFolderNodeBuilderExtension.cs \
+	MonoDevelop.WebReferences.NodeBuilders/ProjectNodeBuilder.cs \
+	MonoDevelop.WebReferences.NodeBuilders/WebReferenceFolderNodeBuilder.cs \
+	MonoDevelop.WebReferences.NodeBuilders/WebReferenceNodeBuilder.cs \
+	MonoDevelop.WebReferences/CodeGenerator.cs \
+	MonoDevelop.WebReferences/DiscoveryNetworkCredential.cs \
+	MonoDevelop.WebReferences/DiscoveryProtocol.cs \
+	MonoDevelop.WebReferences/Library.cs \
+	MonoDevelop.WebReferences/WebReferenceFolder.cs \
+	MonoDevelop.WebReferences/WebReferenceItem.cs \
+	MonoDevelop.WebReferences/WebReferenceItemCollection.cs
 
 RES =  \
-	$(srcdir)/MonoDevelop.WebReferences.addin.xml \
-	$(srcdir)/MonoDevelop.WebReferences.Resources/disco.html \
-	$(srcdir)/MonoDevelop.WebReferences.Resources/WebReference.File.Disco.png \
-	$(srcdir)/MonoDevelop.WebReferences.Resources/WebReference.File.Wsdl.png \
-	$(srcdir)/MonoDevelop.WebReferences.Resources/WebReference.Service.png \
-	$(srcdir)/MonoDevelop.WebReferences.Resources/WebReferenceItem.png \
-	$(srcdir)/MonoDevelop.WebReferences.Resources/wsdl.html
-
+	MonoDevelop.WebReferences.addin.xml \
+	MonoDevelop.WebReferences.Resources/disco.html \
+	MonoDevelop.WebReferences.Resources/WebReference.File.Disco.png \
+	MonoDevelop.WebReferences.Resources/WebReference.File.Wsdl.png \
+	MonoDevelop.WebReferences.Resources/WebReference.Service.png \
+	MonoDevelop.WebReferences.Resources/WebReferenceItem.png \
+	MonoDevelop.WebReferences.Resources/wsdl.html
 
 all: $(ASSEMBLY)
 
