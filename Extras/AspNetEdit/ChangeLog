@@ -1,3 +1,7 @@
+2007-10-01  Raja R Harinath  <rharinath@novell.com>
+
+	* Makefile.am ($(ASSEMBLY)): Use $(build_resources) not $(RES).
+
 2007-09-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AspNetEdit.addin.xml: Bump MD version.

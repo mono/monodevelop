@@ -83,7 +83,7 @@ endif
 $(ASSEMBLY): $(build_sources) $(RES)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -debug -d:TRACE -out:$@ -target:library $(REFS) \
-		$(RES:%=/resource:%) $(build_sources)
+		$(build_resources:%=/resource:%) $(build_sources)
 
 $(DATA_FILE_BUILD): $(srcdir)/data/$(notdir $@)
 	mkdir -p $(ADDIN_BUILD)
