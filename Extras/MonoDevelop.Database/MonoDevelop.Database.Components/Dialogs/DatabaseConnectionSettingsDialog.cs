@@ -310,7 +310,6 @@ namespace MonoDevelop.Database.Components
 				ok = entryName.Text.Length > 0
 					&& (entryServer.Text.Length > 0 || !enableServerEntry)
 					&& (entryUsername.Text.Length > 0 || !enableUsernameEntry)
-					&& (entryPassword.Text.Length > 0 || !enablePasswordEntry)
 					&& (comboDatabase.Entry.Text.Length > 0 || isCreateDbMode)
 					&& comboProvider.GetActiveIter (out iter);
 			}

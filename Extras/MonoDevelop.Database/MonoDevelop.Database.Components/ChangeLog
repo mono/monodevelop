@@ -1,3 +1,7 @@
+2007-10-02  Ben Motmans <ben.motmans@gmail.com> 
+
+	* Dialogs/DatabaseConnectionSettingsDialog.cs: Allow empty passwords
+
 2007-09-26  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Makefile.am: Don't deploy .addin.xml file.
