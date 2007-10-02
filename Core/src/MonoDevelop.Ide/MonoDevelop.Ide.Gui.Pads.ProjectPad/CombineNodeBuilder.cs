@@ -221,6 +221,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 		}
 		
+		[CommandUpdateHandler (EditCommands.Delete)]
+		public void OnUpdateRemoveItem (CommandInfo info)
+		{
+			Combine parent = CurrentNode.GetParentDataItem (typeof(Combine), false) as Combine;
+			info.Enabled = parent != null;
+		}
+		
 		[CommandHandler (ProjectCommands.AddNewProject)]
 		public void AddNewProjectToCombine()
 		{

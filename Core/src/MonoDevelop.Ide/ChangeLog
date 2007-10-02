@@ -1,3 +1,8 @@
+2007-10-02  Ben Motmans <ben.motmans@gmail.com>
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs: Disable the
+	Delete command if the root combine is selected
+
 2007-10-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs: Never insert
