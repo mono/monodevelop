@@ -121,7 +121,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		void ParseCompilationUnit (ICompilationUnitBase cu)
 		{
 			// No new errors
-			if (!cu.ErrorsDuringCompile)
+			if (!cu.ErrorsDuringCompile || cu.ErrorInformation == null)
 				return;
 			
 			// We replace the error tags at the highest priority

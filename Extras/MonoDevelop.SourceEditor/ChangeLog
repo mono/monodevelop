@@ -1,3 +1,8 @@
+2007-10-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Don't crash if the
+	  parser does not provide error information. Fixes bug #330025.
+
 2007-09-26  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Use the
