@@ -1,3 +1,9 @@
+2007-10-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/CSharpParameterDataProvider.cs, Gui/CSharpTextEditorExtension.cs:
+	  Implemented support for the Show Parameter List command. Also, show the
+	  parameter list when typing a comma. Fixes bug #324876.
+
 2007-09-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CSharpBinding.addin.xml: Bump MD version.

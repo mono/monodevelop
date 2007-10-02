@@ -45,8 +45,13 @@ namespace CSharpBinding
 		
 		public override int GetCurrentParameterIndex (ICodeCompletionContext ctx)
 		{
+			return GetCurrentParameterIndex (editor, ctx.TriggerOffset);
+		}
+		
+		public static int GetCurrentParameterIndex (TextEditor editor, int triggerOffset)
+		{
 			int cursor = editor.CursorPosition;
-			int i = ctx.TriggerOffset;
+			int i = triggerOffset;
 			
 			if (i > cursor)
 				return -1;

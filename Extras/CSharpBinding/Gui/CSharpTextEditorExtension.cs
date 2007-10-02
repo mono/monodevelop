@@ -175,6 +175,11 @@ namespace CSharpBinding
 			string newIndent;
 			char ch, c;
 			
+			if ((char)(uint)key == ',') {
+				// Parameter completion
+				RunParameterCompletionCommand ();
+			}
+			
 			// This code is for Smart Indent, no-op for any other indent style
 			if (TextEditorProperties.IndentStyle != IndentStyle.Smart)
 				return base.KeyPress (key, modifier);
@@ -485,11 +490,12 @@ namespace CSharpBinding
 		{
 			if (completionChar == '(') {
 				IParserContext pctx = GetParserContext ();
+				int curPos = completionContext.TriggerOffset;
 				
 				// Get the text from the begining of the line
 				int lin, col;
-				Editor.GetLineColumnFromPosition (Editor.CursorPosition, out lin, out col);
-				string textToCursor = Editor.GetText (0, Editor.CursorPosition - 1);
+				Editor.GetLineColumnFromPosition (curPos, out lin, out col);
+				string textToCursor = Editor.GetText (0, curPos - 1);
 				
 				// Find the expression before the '('
 				ExpressionFinder expressionFinder = new ExpressionFinder (null);
@@ -499,7 +505,7 @@ namespace CSharpBinding
 
 				// This is a bit of a hack, but for the resolver to properly resolve a constructor
 				// call needs the new keyword and the brackets, so let's provide them
-				int i = Editor.CursorPosition - 2 - ex.Length;
+				int i = curPos - 2 - ex.Length;
 				if (GetPreviousToken ("new", ref i, true))
 					ex = "new " + ex + "()";
 				
@@ -532,6 +538,24 @@ namespace CSharpBinding
 			return null;
 		}
 		
+		public override bool GetParameterCompletionCommandOffset (out int cpos)
+		{
+			cpos = Editor.CursorPosition - 1;
+			while (cpos > 0) {
+				char c = Editor.GetCharAt (cpos);
+				if (c == '(') {
+					int p = CSharpParameterDataProvider.GetCurrentParameterIndex (Editor, cpos + 1);
+					if (p != -1) {
+						cpos++;
+						return true;
+					}
+				}
+				cpos--;
+			}
+			return false;
+		}
+
+		
 		bool IsInsideDocumentationComment (int cursor)
 		{
 			int lin, col;
@@ -551,7 +575,7 @@ namespace CSharpBinding
 			// Xml documentation code completion.
 			if (charTyped == '<' && IsInsideDocumentationComment (Editor.CursorPosition)) 
 				return GetXmlDocumentationCompletionData ();
-			
+
 			if (charTyped != '.' && charTyped != ' ')
 				return null;
 			
