@@ -1,5 +1,11 @@
 2007-10-02  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* Deployment/WebDeployService.cs: Build before deploying.
+	* Deployment/WebDeployTargetEditor.cs: Catch errors if file copy handler
+	  can't be found.
+
+2007-10-02  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* Project/VerifyCodeBehindBuildStep.cs: Make errors in Codebehind generation
 	  into warnings rather than preventing build.
 

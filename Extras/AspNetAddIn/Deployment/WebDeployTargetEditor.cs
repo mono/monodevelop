@@ -26,6 +26,7 @@
 
 using System;
 
+using MonoDevelop.Deployment;
 using MonoDevelop.Deployment.Gui;
 
 namespace MonoDevelop.AspNet.Deployment
@@ -45,7 +46,12 @@ namespace MonoDevelop.AspNet.Deployment
 		public void Load (WebDeployTarget target)
 		{
 			nameEntry.Text = target.Name;
-			selector.Configuration = target.FileCopier == null? null : target.FileCopier.Clone ();
+			FileCopyConfiguration fConfig = null;
+			try {
+				fConfig = target.FileCopier == null? null : target.FileCopier.Clone ();
+			} catch (InvalidOperationException) {// if the handler can't be found
+			}
+			selector.Configuration = fConfig;
 		}
 		
 		public void Save (WebDeployTarget target)

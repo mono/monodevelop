@@ -51,6 +51,9 @@ namespace MonoDevelop.AspNet.Deployment
 		
 		static public void Deploy (AspNetAppProject project, ICollection<WebDeployTarget> targets)
 		{
+			//project needs to be built before it can be deployed
+			MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.Build (project);
+			
 			//set up and launch a copying thread
 			DeployThreadParams threadParams = new DeployThreadParams (); 
 			threadParams.Files = project.GetDeployFiles ();
