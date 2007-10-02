@@ -76,7 +76,7 @@ namespace MonoDevelop.Database.Sql
 					GettextCatalog.GetString ("Enter Password")
 				);
 				
-				if (String.IsNullOrEmpty (password)) {
+				if (password == null) {
 					callback (context, false, state);
 					return;
 				} else {
