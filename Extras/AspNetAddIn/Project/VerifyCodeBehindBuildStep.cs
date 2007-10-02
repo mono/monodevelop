@@ -68,17 +68,21 @@ namespace AspNetAddIn
 				try {
 					doc = aspProject.GetDocument (file);
 				} catch (Exception e) {
-					monitor.ReportWarning (string.Format("Parser failed on {0} with error {1}. Codebehind members for this file will not be added.", file, e.ToString ()));
+					monitor.ReportWarning (string.Format ("Parser failed on {0} with error {1}. CodeBehind members for this file will not be added.", file, e.ToString ()));
 				}
 				
-				if (doc != null) {
-					foreach (System.CodeDom.CodeMemberField member in doc.MemberList.List.Values) {
-						MonoDevelop.Projects.Parser.IMember existingMember = BindingService.GetCompatibleMemberInClass (cls, member);
-						if (existingMember == null) {
-							classesForMembers.Add (cls);
-							membersToAdd.Add (member);
+				try {
+					if (doc != null) {
+						foreach (System.CodeDom.CodeMemberField member in doc.MemberList.List.Values) {
+							MonoDevelop.Projects.Parser.IMember existingMember = BindingService.GetCompatibleMemberInClass (cls, member);
+							if (existingMember == null) {
+								classesForMembers.Add (cls);
+								membersToAdd.Add (member);
+							}
 						}
 					}
+				} catch (Exception e) {
+					monitor.ReportWarning (string.Format ("CodeBehind member generation failed on {0} with error {1}. Further CodeBehind members for this file will not be added.", file, e.ToString ()));
 				}
 			}
 			
