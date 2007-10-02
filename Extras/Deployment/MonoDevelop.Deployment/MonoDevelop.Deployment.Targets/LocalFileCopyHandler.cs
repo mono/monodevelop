@@ -39,19 +39,24 @@ namespace MonoDevelop.Deployment
 	public class LocalFileCopyHandler : IFileCopyHandler
 	{
 		public virtual string Id {
-			get { return "MonoDevelop.LocalFileCopyHandler"; }
+			get { return "MonoDevelop.Deployment.LocalFileCopyHandler"; }
 		}
 		
 		public virtual string Name {
 			get { return GettextCatalog.GetString ("Local Filesystem"); }
 		}
 
-		public FileCopyConfiguration CreateConfiguration ()
+		public virtual FileCopyConfiguration CreateConfiguration ()
 		{
 			return new LocalFileCopyConfiguration ();
 		}
 		
 		public virtual void CopyFiles (IProgressMonitor monitor, IFileReplacePolicy replacePolicy, FileCopyConfiguration copyConfig, DeployFileCollection deployFiles, DeployContext context)
+		{
+			InternalCopyFiles (monitor, replacePolicy, copyConfig, deployFiles, context, null);
+		}
+		
+		internal void InternalCopyFiles (IProgressMonitor monitor, IFileReplacePolicy replacePolicy, FileCopyConfiguration copyConfig, DeployFileCollection deployFiles, DeployContext context, string realPrefix)
 		{
 			string targetDirectory = ((LocalFileCopyConfiguration) copyConfig).TargetDirectory;
 			
@@ -75,10 +80,18 @@ namespace MonoDevelop.Deployment
 				if (dfc.TargetFile == null)
 					throw new InvalidOperationException (GettextCatalog.GetString ("Could not resolve target directory ID \"{0}\"", df.TargetDirectoryID));
 				
+				//this is a bit hacky; it's an internal hook to the BaseFuseFileCopyHandler implementation a level up the inheritance heirarchy
+				//Essentailly we are aliasing the path so that  BaseFuseFileCopyHandler can use LocalFileCopyHandler to do the local copying 
+				//after the temp FUSE directory is mounted
+				if (!string.IsNullOrEmpty (realPrefix)) {
+					dfc.InternalTargetFile = Path.Combine (realPrefix, context.GetResolvedPath (df.TargetDirectoryID, df.RelativeTargetPath));
+				} else {
+					dfc.InternalTargetFile = dfc.TargetFile;
+				}
 				
-				if (FileExists (dfc.TargetFile)) {
+				if (FileExists (dfc.InternalTargetFile)) {
 					dfc.SourceModified = File.GetLastWriteTime (dfc.SourceFile);
-					dfc.TargetModified = GetTargetModificationTime (dfc.TargetFile);
+					dfc.TargetModified = GetTargetModificationTime (dfc.InternalTargetFile);
 					dfc.ReplaceMode = replacePolicy.GetReplaceAction (dfc.SourceFile, dfc.SourceModified, dfc.TargetFile, dfc.TargetModified);
 					if (dfc.ReplaceMode == FileReplaceMode.Abort) {
 						monitor.Log.WriteLine (GettextCatalog.GetString ("Deployment aborted: target file {0} already exists.", dfc.TargetFile));
@@ -104,7 +117,8 @@ namespace MonoDevelop.Deployment
 					steps += 1;
 					carry -= stepSize;
 				}
-				monitor.Step (steps);
+				if (steps > 0)
+					monitor.Step (steps);
 				return true;
 			};
 			
@@ -114,7 +128,7 @@ namespace MonoDevelop.Deployment
 				if (monitor.IsCancelRequested)
 					break;
 				
-				EnsureDirectoryExists (Path.GetDirectoryName (file.TargetFile));
+				EnsureDirectoryExists (Path.GetDirectoryName (file.InternalTargetFile));
 				
 				if (file.ReplaceMode != FileReplaceMode.NotSet) {
 					switch (file.ReplaceMode) {
@@ -145,7 +159,7 @@ namespace MonoDevelop.Deployment
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Deployed file {0}.", file.TargetFile));
 				}
 				
-				CopyFile (file.SourceFile, file.TargetFile, copyCallback);
+				CopyFile (file.SourceFile, file.InternalTargetFile, copyCallback);
 			}
 			
 			monitor.EndTask ();
@@ -156,6 +170,7 @@ namespace MonoDevelop.Deployment
 			public FileReplaceMode ReplaceMode = FileReplaceMode.NotSet;
 			public long FileSize;
 			public string TargetFile = null;
+			public string InternalTargetFile = null;
 			public DateTime TargetModified;
 			public string SourceFile = null;
 			public DateTime SourceModified;
@@ -164,10 +179,6 @@ namespace MonoDevelop.Deployment
 		// These simple access routines are used by the base implementation of CopyFiles.
 		// They can be overridden so that CopyFiles works with other filesystems.
 		// They can be ignored if CopyFiles is overridden.
-		
-		protected virtual void SetPrefix ()
-		{
-		}
 		
 		protected virtual bool FileExists (string file)
 		{
@@ -180,10 +191,33 @@ namespace MonoDevelop.Deployment
 			return fInfo.Length;
 		}
 		
+		//this is a buffered manual copy rather than File.Copy, so that we can get progress callbacks
+		//for a smoother progress bar
 		protected virtual void CopyFile (string source, string target, CopyReportCallback report)
 		{
-			File.Copy (source, target, true);
-			report (FileSize (source));
+			FileStream inStream = null;
+			FileStream outStream = null;
+			try{
+				inStream = File.Open (source, FileMode.Open, FileAccess.Read);
+				outStream = File.Open (target, FileMode.Create, FileAccess.Write);
+				
+				int bytesPerLoop = 1024;
+				byte[] buffer = new byte [bytesPerLoop];
+				int count = 0;
+				
+				do {
+					count = inStream.Read (buffer, 0, bytesPerLoop);
+					outStream.Write (buffer, 0, count);
+					File.Copy (source, target, true);
+					report (count);
+				} while (count > 0);
+			} finally {
+				if (inStream != null)
+					inStream.Dispose ();
+				if (outStream != null)
+					outStream.Dispose ();
+			}
+			
 		}
 		 
 		protected virtual DateTime GetTargetModificationTime (string targetFile)

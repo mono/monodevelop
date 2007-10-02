@@ -1,12 +1,10 @@
-//
-// LocalFileCopyConfiguration.cs
-//
+// SshFuseFileCopyConfigurationEditor.cs
+// 
 // Author:
-//   Michael Hutchinson <m.j.hutchinson@gmail.com>
-//   Lluis Sanchez Gual <lluis@novell.com>
-//
-// Copyright (C) 2006 Michael Hutchinson
-//
+//   Michael Hutchinson <mhutchinson@novell.com>
+// 
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+// 
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -25,36 +23,23 @@
 // LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-//
 
 using System;
-using System.IO;
 
-using MonoDevelop.Core;
-using MonoDevelop.Projects.Serialization;
-
-namespace MonoDevelop.Deployment
+namespace MonoDevelop.Deployment.Gui
 {
-	public class LocalFileCopyConfiguration: FileCopyConfiguration
+	
+	
+	public class SshFuseFileCopyConfigurationEditor : IFileCopyConfigurationEditor
 	{
-		string targetDirectory = string.Empty;
-		
-		[ItemProperty]
-		public virtual string TargetDirectory {
-			get { return targetDirectory; }
-			set { targetDirectory = value; }
-		}
-		
-		public override void CopyFrom (FileCopyConfiguration other)
+		public bool CanEdit (FileCopyConfiguration config)
 		{
-			base.CopyFrom (other);
-			LocalFileCopyConfiguration conf = other as LocalFileCopyConfiguration;
-			if (conf != null)
-				targetDirectory = conf.targetDirectory;
+			return config != null && config.GetType () == typeof (SshFuseFileCopyConfiguration);
 		}
 		
-		public override string FriendlyLocation {
-			get { return TargetDirectory; }
+		public Gtk.Widget CreateEditor (FileCopyConfiguration config)
+		{
+			return new SshFuseFileCopyConfigurationEditorWidget ((SshFuseFileCopyConfiguration) config);
 		}
 	}
 }

@@ -1,12 +1,10 @@
-//
-// LocalFileCopyConfiguration.cs
-//
+// SshFuseFileCopyConfigurationEditorWidget.cs
+// 
 // Author:
-//   Michael Hutchinson <m.j.hutchinson@gmail.com>
-//   Lluis Sanchez Gual <lluis@novell.com>
-//
-// Copyright (C) 2006 Michael Hutchinson
-//
+//   Michael Hutchinson <mhutchinson@novell.com>
+// 
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+// 
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -25,36 +23,44 @@
 // LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-//
 
 using System;
-using System.IO;
 
-using MonoDevelop.Core;
-using MonoDevelop.Projects.Serialization;
-
-namespace MonoDevelop.Deployment
+namespace MonoDevelop.Deployment.Gui
 {
-	public class LocalFileCopyConfiguration: FileCopyConfiguration
+	
+	
+	public partial class SshFuseFileCopyConfigurationEditorWidget : Gtk.Bin
 	{
-		string targetDirectory = string.Empty;
+		SshFuseFileCopyConfiguration config;
 		
-		[ItemProperty]
-		public virtual string TargetDirectory {
-			get { return targetDirectory; }
-			set { targetDirectory = value; }
-		}
-		
-		public override void CopyFrom (FileCopyConfiguration other)
+		public SshFuseFileCopyConfigurationEditorWidget (SshFuseFileCopyConfiguration config)
 		{
-			base.CopyFrom (other);
-			LocalFileCopyConfiguration conf = other as LocalFileCopyConfiguration;
-			if (conf != null)
-				targetDirectory = conf.targetDirectory;
+			this.Build();
+			
+			this.config = config;
+			
+			if (config.Directory != null)
+				entryDirectory.Text =  config.Directory;
+			if (config.UserName != null)
+				entryUserName.Text = config.UserName;
+			if (config.HostName != null)
+				entryHostName.Text = config.HostName;
 		}
-		
-		public override string FriendlyLocation {
-			get { return TargetDirectory; }
+
+		void HostnameChanged (object sender, System.EventArgs e)
+		{
+			config.HostName = entryHostName.Text;
+		}
+
+		void DirectoryChanged (object sender, System.EventArgs e)
+		{
+			config.Directory = entryDirectory.Text;
+		}
+
+		void UserNameChanged (object sender, System.EventArgs e)
+		{
+			config.UserName = entryUserName.Text;
 		}
 	}
 }

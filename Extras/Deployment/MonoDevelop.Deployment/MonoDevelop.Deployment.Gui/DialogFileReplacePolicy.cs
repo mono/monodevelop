@@ -53,15 +53,6 @@ namespace MonoDevelop.Deployment.Gui
 		{
 			if (persistentMode != FileReplaceMode.NotSet)
 				return persistentMode;
-
-			string[] buttons = new string[] {
-				GettextCatalog.GetString ("_Replace file"),
-				GettextCatalog.GetString ("Replace all files"),
-				GettextCatalog.GetString ("Replace all _older files"),
-				GettextCatalog.GetString ("_Skip file"),
-				GettextCatalog.GetString ("Skip all files"),
-				GettextCatalog.GetString ("_Abort deployment")
-			};
 			
 			response = (FileReplaceDialog.ReplaceResponse)
 				MonoDevelop.Core.Gui.Services.MessageService.ShowCustomDialog (typeof (FileReplaceDialog), new object[] {response, source, sourceModified.ToString (), target, targetModified.ToString ()});

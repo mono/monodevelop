@@ -8,7 +8,7 @@ namespace MonoDevelop.Deployment.Gui
 	{
 		public bool CanEdit (FileCopyConfiguration config)
 		{
-			return config is LocalFileCopyConfiguration;
+			return config != null && config.GetType () == typeof (LocalFileCopyConfiguration);
 		}
 		
 		public Gtk.Widget CreateEditor (FileCopyConfiguration config)

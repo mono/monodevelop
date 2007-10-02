@@ -34,6 +34,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Deployment.Gui.LocalFileCopyConfigurationEditorWidget.cs \
 	gtk-gui/MonoDevelop.Deployment.Gui.PackagingFeatureWidget.cs \
 	gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs \
+	gtk-gui/MonoDevelop.Deployment.Gui.SshFuseFileCopyConfigurationEditorWidget.cs \
 	MonoDevelop.Deployment.Commands/Commands.cs \
 	MonoDevelop.Deployment.Gui/BinariesZipEditorWidget.cs \
 	MonoDevelop.Deployment.Gui/CommandDeployEditorWidget.cs \
@@ -56,13 +57,18 @@ FILES =  \
 	MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs \
 	MonoDevelop.Deployment.Gui/PropertyProvider.cs \
 	MonoDevelop.Deployment.Gui/SourcesZipEditorWidget.cs \
+	MonoDevelop.Deployment.Gui/SshFuseFileCopyConfigurationEditor.cs \
+	MonoDevelop.Deployment.Gui/SshFuseFileCopyConfigurationEditorWidget.cs \
 	MonoDevelop.Deployment.NodeBuilders/PackageNodeBuilder.cs \
 	MonoDevelop.Deployment.NodeBuilders/PackagingProjectNodeBuilder.cs \
+	MonoDevelop.Deployment.Targets/BaseFuseFileCopyConfiguration.cs \
+	MonoDevelop.Deployment.Targets/BaseFuseFileCopyHandler.cs \
 	MonoDevelop.Deployment.Targets/BinariesZipPackageBuilder.cs \
 	MonoDevelop.Deployment.Targets/CommandPackageBuilder.cs \
 	MonoDevelop.Deployment.Targets/LocalFileCopyConfiguration.cs \
 	MonoDevelop.Deployment.Targets/LocalFileCopyHandler.cs \
 	MonoDevelop.Deployment.Targets/SourcesZipPackageBuilder.cs \
+	MonoDevelop.Deployment.Targets/SshFuseFileCopyHandler.cs \
 	MonoDevelop.Deployment/DefaultDeployServiceExtension.cs \
 	MonoDevelop.Deployment/DeployContext.cs \
 	MonoDevelop.Deployment/DeployData.cs \

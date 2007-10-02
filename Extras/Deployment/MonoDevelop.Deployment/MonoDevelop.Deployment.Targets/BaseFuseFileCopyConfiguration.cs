@@ -1,12 +1,10 @@
-//
-// LocalFileCopyConfiguration.cs
-//
+// BaseFuseFileCopyConfiguration.cs
+// 
 // Author:
-//   Michael Hutchinson <m.j.hutchinson@gmail.com>
-//   Lluis Sanchez Gual <lluis@novell.com>
-//
-// Copyright (C) 2006 Michael Hutchinson
-//
+//   Michael Hutchinson <mhutchinson@novell.com>
+// 
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+// 
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -25,7 +23,6 @@
 // LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-//
 
 using System;
 using System.IO;
@@ -35,26 +32,24 @@ using MonoDevelop.Projects.Serialization;
 
 namespace MonoDevelop.Deployment
 {
-	public class LocalFileCopyConfiguration: FileCopyConfiguration
+	
+	
+	public abstract class BaseFuseFileCopyConfiguration : LocalFileCopyConfiguration
 	{
-		string targetDirectory = string.Empty;
+		string extraMountArguments = string.Empty;
 		
 		[ItemProperty]
-		public virtual string TargetDirectory {
-			get { return targetDirectory; }
-			set { targetDirectory = value; }
+		public string ExtraMountArguments {
+			set { extraMountArguments = value; }
+			get { return extraMountArguments; }
 		}
 		
 		public override void CopyFrom (FileCopyConfiguration other)
 		{
 			base.CopyFrom (other);
-			LocalFileCopyConfiguration conf = other as LocalFileCopyConfiguration;
+			BaseFuseFileCopyConfiguration conf = other as BaseFuseFileCopyConfiguration;
 			if (conf != null)
-				targetDirectory = conf.targetDirectory;
-		}
-		
-		public override string FriendlyLocation {
-			get { return TargetDirectory; }
+				extraMountArguments= conf.extraMountArguments;
 		}
 	}
 }

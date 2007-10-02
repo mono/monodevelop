@@ -1,3 +1,22 @@
+2007-10-02  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Deployment.addin.xml, MonoDevelop.Deployment.mdp,
+	  gtk-gui/objects.xml, gtk-gui/gui.stetic, Makefile.am: Updated.
+	* gtk-gui/MonoDevelop.Deployment.Gui.SshFuseFileCopyConfigurationEditorWidget.cs,
+	  MonoDevelop.Deployment.Gui/SshFuseFileCopyConfigurationEditorWidget.cs,
+	  MonoDevelop.Deployment.Gui/SshFuseFileCopyConfigurationEditor.cs: New
+	  widget for editing SSH FUSE copy config.
+	* MonoDevelop.Deployment.Gui/DialogFileReplacePolicy.cs: Remove old code.
+	* MonoDevelop.Deployment.Gui/LocalFileCopyConfigurationEditor.cs,
+	  MonoDevelop.Deployment.Targets/LocalFileCopyConfiguration.cs,
+	  MonoDevelop.Deployment.Targets/BaseFuseFileCopyConfiguration.cs,
+	  MonoDevelop.Deployment.Targets/LocalFileCopyHandler.cs,
+	  MonoDevelop.Deployment.Targets/BaseFuseFileCopyHandler.cs: Base work to
+	  support FUSE file copiers.
+	* MonoDevelop.Deployment.Targets/SshFuseFileCopyHandler.cs: New file deploy
+	  handler that copies files over an SSH FUSE connection to a remote
+	  computer.
+
 2007-09-28  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Deployment.mdp,
