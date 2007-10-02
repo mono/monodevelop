@@ -193,7 +193,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			IParserContext ctx = GetParserContext();
 			if (ctx != null) {
 				CodeCompletionDataProvider completionProvider = new CodeCompletionDataProvider (ctx, GetAmbience ());
-				completionProvider.AddResolveResults (ctx.CtrlSpace (completionContext.TriggerLine + 1, completionContext.TriggerLineOffset + 1, FileName));
+				completionProvider.AddResolveResults (ctx.CtrlSpace (completionContext.TriggerLine + 1, completionContext.TriggerLineOffset + 1, FileName), true, SimpleTypeNameResolver.Instance);
 				if (!completionProvider.IsEmpty)
 					return completionProvider;
 			}
@@ -207,6 +207,24 @@ namespace MonoDevelop.Ide.Gui.Content
 			completionWidget = Document.GetContent <ICompletionWidget> ();
 			if (completionWidget != null)
 				completionWidget.CompletionContextChanged += OnCompletionContextChanged;
+		}
+	}
+	
+	class SimpleTypeNameResolver: ITypeNameResolver
+	{
+		// This simple resolver removes the namespace from all class names.
+		// Used in ctrl+space, since all classes shown in the completion list
+		// are in scope
+		
+		public static SimpleTypeNameResolver Instance = new SimpleTypeNameResolver ();
+		
+		public string ResolveName (string typeName)
+		{
+			int i = typeName.LastIndexOf ('.');
+			if (i == -1)
+				return typeName;
+			else
+				return typeName.Substring (i+1);
 		}
 	}
 }

@@ -1,3 +1,9 @@
+2007-10-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs: Never insert
+	  the namespace name of the class when completing a class from the
+	  ctrl+space list. Fixes bug #328804.
+
 2007-09-27  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Dialogs/CombineEntryFeatureSelector.cs: Make sure
