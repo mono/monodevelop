@@ -114,6 +114,12 @@ namespace MonoDevelop.Ide.Gui.Content
 			info.Bypass = !CanRunCompletionCommand ();
 		}
 		
+		[CommandUpdateHandler (TextEditorCommands.ShowParameterCompletionWindow)]
+		internal void OnUpdateParameterCompletionCommand (CommandInfo info)
+		{
+			info.Bypass = !CanRunParameterCompletionCommand ();
+		}
+		
 		[CommandHandler (TextEditorCommands.ShowCompletionWindow)]
 		public virtual void RunCompletionCommand ()
 		{
@@ -133,9 +139,28 @@ namespace MonoDevelop.Ide.Gui.Content
 				currentCompletionContext = null;
 		}
 		
+		[CommandHandler (TextEditorCommands.ShowParameterCompletionWindow)]
+		public virtual void RunParameterCompletionCommand ()
+		{
+			IParameterDataProvider cp = null;
+			int cpos;
+			if (!GetParameterCompletionCommandOffset (out cpos))
+				cpos = Editor.CursorPosition;
+			ICodeCompletionContext ctx = completionWidget.CreateCodeCompletionContext (cpos);
+			cp = ParameterCompletionCommand (ctx);
+
+			if (cp != null)
+				ParameterInformationWindowManager.ShowWindow (ctx, cp);
+		}
+		
 		public virtual bool CanRunCompletionCommand ()
 		{
 			return (completionWidget != null && currentCompletionContext == null);
+		}
+		
+		public virtual bool CanRunParameterCompletionCommand ()
+		{
+			return (completionWidget != null && !ParameterInformationWindowManager.IsWindowVisible);
 		}
 		
 		public virtual ICompletionDataProvider HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar)
@@ -148,7 +173,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			return null;
 		}
 		
-		// return -1 if completion can't be shown
+		// return false if completion can't be shown
 		public virtual bool GetCompletionCommandOffset (out int cpos, out int wlen)
 		{
 			cpos = wlen = 0;
@@ -176,6 +201,12 @@ namespace MonoDevelop.Ide.Gui.Content
 			return true;
 		}
 
+		public virtual bool GetParameterCompletionCommandOffset (out int cpos)
+		{
+			cpos = 0;
+			return false;
+		}
+
 		public virtual ICompletionDataProvider CodeCompletionCommand (ICodeCompletionContext completionContext)
 		{
 			// This default implementation of CodeCompletionCommand calls HandleCodeCompletion providing
@@ -196,6 +227,21 @@ namespace MonoDevelop.Ide.Gui.Content
 				completionProvider.AddResolveResults (ctx.CtrlSpace (completionContext.TriggerLine + 1, completionContext.TriggerLineOffset + 1, FileName), true, SimpleTypeNameResolver.Instance);
 				if (!completionProvider.IsEmpty)
 					return completionProvider;
+			}
+			return null;
+		}
+		
+		public virtual IParameterDataProvider ParameterCompletionCommand (ICodeCompletionContext completionContext)
+		{
+			// This default implementation of ParameterCompletionCommand calls HandleParameterCompletion providing
+			// the char at the cursor position. If it returns a provider, just return it.
+			
+			int pos = completionContext.TriggerOffset;
+			string txt = Editor.GetText (pos - 1, pos);
+			if (txt.Length > 0) {
+				IParameterDataProvider cp = HandleParameterCompletion (completionContext, txt[0]);
+				if (cp != null)
+					return cp;
 			}
 			return null;
 		}

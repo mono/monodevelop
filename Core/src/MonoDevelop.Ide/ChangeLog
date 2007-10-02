@@ -1,3 +1,12 @@
+2007-10-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs,
+	  MonoDevelop.Ide.Commands/TextEditorCommands.cs,
+	  MonoDevelop.Ide.addin.xml: Implemented the "Show Parameter List"
+	  command. Added some overridables to CompletionTextEditorExtension to
+	  support it.
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: Fix warning.
+
 2007-10-02  Ben Motmans <ben.motmans@gmail.com>
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs: Disable the

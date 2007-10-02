@@ -347,7 +347,7 @@ namespace MonoDevelop.Ide.Gui
 			ev.AddEventHandler (this, del);
 		}
 		
-		void OnUnhandledException (UnhandledExceptionEventArgs args)
+		internal void OnUnhandledException (UnhandledExceptionEventArgs args)
 		{
 			Console.WriteLine ("Unhandled Exception: ");
 			Console.WriteLine (args.ExceptionObject);

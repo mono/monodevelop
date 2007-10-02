@@ -799,6 +799,9 @@
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.MoveBlockDown"
 				_label = "Move the line or highlighted selection down"
 				shortcut="Alt|Down" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow"
+				_label = "Show Parameter List"
+				shortcut = "Control|Shift|space" />
 				
 		</Category>
 		
@@ -1197,6 +1200,7 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow" />
 			<ItemSet id = "Advanced" _label = "_Advanced">
 				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UppercaseSelection" />
 				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection" />

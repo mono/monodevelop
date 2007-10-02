@@ -24,6 +24,7 @@ namespace MonoDevelop.Ide.Commands
 		DeleteLine,
 		DeleteToLineEnd,
 		MoveBlockUp,
-		MoveBlockDown
+		MoveBlockDown,
+		ShowParameterCompletionWindow
 	}
 }
