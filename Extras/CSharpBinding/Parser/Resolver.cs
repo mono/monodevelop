@@ -8,6 +8,7 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Drawing;
 
@@ -923,11 +924,11 @@ namespace CSharpBinding.Parser
 		{
 			// If the name matches an alias, try using the alias first.
 			if (unit != null) {
-				string aliasResult = FindAlias (name, unit);
+				IReturnType aliasResult = FindAlias (name, unit);
 				if (aliasResult != null) {
 					// Don't provide the compilation unit when trying to resolve the alias,
 					// since aliases are not affected by other 'using' directives.
-					string ns = SearchNamespace (aliasResult, null);
+					string ns = SearchNamespace (aliasResult.FullyQualifiedName, null);
 					if (ns != null)
 						return ns;
 				}
@@ -980,26 +981,28 @@ namespace CSharpBinding.Parser
 			
 			// If the name matches an alias, try using the alias first.
 			if (unit != null) {
-				string aname;
-				string apostfix;
 				
 				// If the type name has a namespace name, try to find an alias for the namespace
 				int i = name.IndexOf ('.');
+				c = null;
 				if (i != -1) {
-					aname = name.Substring (0,i);
-					apostfix = name.Substring (i);
+					string aname = name.Substring (0,i);
+					string clsName = name.Substring (i);
+					IReturnType aliasResult = FindAlias (aname, unit);
+					if (aliasResult != null) {
+						// Don't provide the compilation unit when trying to resolve the alias,
+						// since aliases are not affected by other 'using' directives.
+						c = SearchType (aliasResult.FullyQualifiedName + clsName, genericArguments, null);
+					}
 				} else {
-					aname = name;
-					apostfix = string.Empty;
+					// If it is a type alias, there is no need to look further
+					IReturnType aliasResult = FindAlias (name, unit);
+					if (aliasResult != null) {
+						c = SearchType (aliasResult, null);
+					}
 				}
-				string aliasResult = FindAlias (aname, unit);
-				if (aliasResult != null) {
-					// Don't provide the compilation unit when trying to resolve the alias,
-					// since aliases are not affected by other 'using' directives.
-					c = SearchType (aliasResult + apostfix, genericArguments, null);
-					if (c != null)
-						return c;
-				}
+				if (c != null)
+					return c;
 			}
 			
 			// Look for an exact match
@@ -1069,7 +1072,7 @@ namespace CSharpBinding.Parser
 			return null;
 		}
 		
-		string FindAlias (string name, ICompilationUnit unit)
+		IReturnType FindAlias (string name, ICompilationUnit unit)
 		{
 			// If the name matches an alias, try using the alias first.
 			if (unit == null)
@@ -1077,10 +1080,9 @@ namespace CSharpBinding.Parser
 				
 			foreach (IUsing u in unit.Usings) {
 				if (u != null && (u.Region == null || u.Region.IsInside(caretLine, caretColumn))) {
-					foreach (DictionaryEntry e in u.Aliases) {
-						if ((string)e.Value == name)
-							return (string)e.Key;
-					}
+					IReturnType rt = u.GetAlias (name);
+					if (rt != null)
+						return rt;
 				}
 			}
 			return null;
@@ -1107,8 +1109,9 @@ namespace CSharpBinding.Parser
 				// Namespace aliases
 				foreach (IUsing u in currentUnit.Usings) {
 					if (u != null && (u.Region == null || u.Region.IsInside(caretLine, caretColumn))) {
-						foreach (DictionaryEntry e in u.Aliases)
-							res.AddName ((string)e.Key, (string)e.Value);
+						foreach (string e in u.Aliases) {
+							res.AddName (u.GetAlias (e).FullyQualifiedName, e);
+						}
 					}
 				}
 			}
@@ -1263,7 +1266,7 @@ namespace CSharpBinding.Parser
 				
 			// Get the list of namespaces where subclasses have to be searched.
 			// Include all namespaces for which there is an "using".
-			ArrayList ns = new ArrayList ();
+			List<string> ns = new List<string> ();
 			if (currentUnit != null && currentUnit.Usings != null) {
 				foreach (IUsing us in currentUnit.Usings)
 					ns.AddRange (us.Usings);
@@ -1280,7 +1283,7 @@ namespace CSharpBinding.Parser
 				}
 			}
 
-			foreach (IClass iclass in parserContext.GetSubclassesTree (returnClass, (string[]) ns.ToArray (typeof(string)))) {
+			foreach (IClass iclass in parserContext.GetSubclassesTree (returnClass, ns.ToArray ())) {
 				if (!result.Contains (iclass) && !(excludeInterfaces && (iclass.ClassType == ClassType.Interface || iclass.IsAbstract)))
 					result.Add (iclass);
 			}
@@ -1407,7 +1410,7 @@ namespace CSharpBinding.Parser
 					foreach (string name in u.Usings) {
 						result.AddRange(parserContext.GetNamespaceContents (name, true));
 					}
-					foreach (string alias in u.Aliases.Keys) {
+					foreach (string alias in u.Aliases) {
 						result.Add(new Namespace (alias));
 					}
 				}

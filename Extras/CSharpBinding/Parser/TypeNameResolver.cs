@@ -48,13 +48,19 @@ namespace CSharpBinding
 		
 		public string ResolveName (string typeName)
 		{
+			// Resolve complete class names (aliases replace complete class names)
+			string res;
+			if (names.TryGetValue (typeName, out res))
+				return res;
+			
+			// Try replacing the namespace
+			
 			int i = typeName.LastIndexOf ('.');
 			if (i == -1)
 				return typeName;
 			
 			string ns = typeName.Substring (0, i);
 			
-			string res;
 			if (names.TryGetValue (ns, out res)) {
 				if (res.Length > 0)
 					return res + "." + typeName.Substring (i+1);

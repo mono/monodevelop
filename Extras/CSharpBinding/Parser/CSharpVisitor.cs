@@ -15,10 +15,6 @@ using ICSharpCode.NRefactory.Visitors;
 
 namespace CSharpBinding.Parser
 {
-	public class Using : AbstractUsing
-	{
-	}
-	
 	public class CSharpVisitor : AbstractAstVisitor
 	{
 		DefaultCompilationUnit cu = new DefaultCompilationUnit();
@@ -41,9 +37,9 @@ namespace CSharpBinding.Parser
 		
 		public override object VisitUsing(ICSharpCode.NRefactory.Ast.Using usingDeclaration, object data)
 		{
-			Using u = new Using();
+			DefaultUsing u = new DefaultUsing();
 			if (usingDeclaration.IsAlias)
-				u.Aliases[usingDeclaration.Alias.Type] = usingDeclaration.Name;
+				u.Aliases [usingDeclaration.Name] = new ReturnType (usingDeclaration.Alias);
 			else
 				u.Usings.Add(usingDeclaration.Name);
 			cu.Usings.Add(u);
