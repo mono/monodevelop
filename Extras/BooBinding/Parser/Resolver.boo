@@ -198,7 +198,7 @@ class Resolver:
 				if u != null and (u.Region == null or u.Region.IsInside(caretLine, caretColumn)):
 					for name as string in u.Usings:
 						result.AddRange(_parserContext.GetNamespaceContents(name, true, true))
-					for alias as string in u.Aliases.Keys:
+					for alias as string in u.Aliases:
 						result.Add(Namespace (alias))
 			member = self.CurrentMember
 			if member != null:

@@ -34,9 +34,6 @@ import Boo.Lang.Compiler.Ast as AST
 import Boo.Lang.Compiler.IO
 import Boo.Lang.Compiler.Steps
 
-class Using(AbstractUsing):
-	pass
-
 class Visitor(AbstractVisitorCompilerStep):
 	[Getter(Cu)]
 	_cu as DefaultCompilationUnit = DefaultCompilationUnit()
@@ -112,11 +109,11 @@ class Visitor(AbstractVisitorCompilerStep):
 		return DefaultRegion(l.Line, GetLineEnd(l.Line), l2.Line, GetLineEnd(l2.Line))
 	
 	override def OnImport(p as AST.Import):
-		u = Using()
+		u = DefaultUsing()
 		if p.Alias == null:
 			u.Usings.Add(p.Namespace)
 		else:
-			u.Aliases[p.Alias.Name] = p.Namespace
+			u.Aliases[p.Alias.Name] = ReturnType(p.Namespace)
 		_cu.Usings.Add(u)
 	
 	override def OnCallableDefinition(node as AST.CallableDefinition):
