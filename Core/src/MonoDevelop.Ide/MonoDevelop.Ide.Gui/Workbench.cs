@@ -463,8 +463,10 @@ namespace MonoDevelop.Ide.Gui
 				ILocationListPad loc = (ILocationListPad) pad.Content;
 				string file;
 				int lin, col;
-				if (loc.GetNextLocation (out file, out lin, out col))
-					OpenDocument (file, lin, col, true);
+				if (loc.GetNextLocation (out file, out lin, out col)) {
+					if (!string.IsNullOrEmpty (file))
+						OpenDocument (file, lin, col, true);
+				}
 			}
 		}
 		
@@ -478,8 +480,10 @@ namespace MonoDevelop.Ide.Gui
 				ILocationListPad loc = (ILocationListPad) pad.Content;
 				string file;
 				int lin, col;
-				if (loc.GetPreviousLocation (out file, out lin, out col))
-					OpenDocument (file, lin, col, true);
+				if (loc.GetPreviousLocation (out file, out lin, out col)) {
+					if (!string.IsNullOrEmpty (file))
+						OpenDocument (file, lin, col, true);
+				}
 			}
 		}
 		

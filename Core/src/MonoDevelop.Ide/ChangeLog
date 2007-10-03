@@ -1,3 +1,8 @@
+2007-10-03  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui/Workbench.cs: Avoid crash in ShowNext/Previous when
+	  the provided location does not have a valid file name.
+
 2007-10-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs,
