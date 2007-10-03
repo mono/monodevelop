@@ -1,3 +1,13 @@
+2007-10-03  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Project/AspNetAppProject.cs: Launch xsp directly rather than via SH. Made
+	  possible by changes to IExecutionHandler/ProcessService allowing setting
+	  environment variables on new console processes. Fixes xsp shutdown (xsp
+	  instances were not closes and were blocking ports). Hopefully fixes
+	  #330327.
+	
+	  Also, don't force copy output refs.
+
 2007-10-02  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Deployment/WebDeployService.cs: Build before deploying.

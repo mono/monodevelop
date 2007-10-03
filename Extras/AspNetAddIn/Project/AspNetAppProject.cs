@@ -194,33 +194,6 @@ namespace AspNetAddIn
 			}
 		}
 		
-		IProcessAsyncOperation StartXsp (IProgressMonitor monitor, ExecutionContext context, IConsole console)
-		{
-			AspNetAppProjectConfiguration configuration = (AspNetAppProjectConfiguration) ActiveConfiguration;
-			
-			string xsp = (configuration.ClrVersion == ClrVersion.Net_1_1)? "xsp" : "xsp2";
-			string xspOptions = XspParameters.GetXspParameters ();
-			
-			IExecutionHandler handler = context.ExecutionHandlerFactory.CreateExecutionHandler ("Native");
-			if (handler == null)
-				throw new Exception ("Could not obtain platform handler.");
-			
-			string exports = string.Empty;
-			if (configuration.DebugMode)
-				exports = string.Format ("export MONO_OPTIONS=\"--debug\"");
-			
-			//construct a sh command so that we can do things like environment variables
-			exports = exports.Replace ("\"", "\\\"");
-			xspOptions = xspOptions.Replace ("\"", "\\\"");
-			string shOptions = string.Format ("-c \"{0}; '{1}' {2}\"", exports, xsp, xspOptions);
-			
-			try {
-				return handler.Execute ("sh", shOptions, configuration.SourceDirectory, console);
-			} catch (Exception ex) {
-				throw new Exception ("Could not execute 'sh " + shOptions + "'.", ex);
-			}
-		}
-		
 		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context)
 		{
 			//check XSP is available
@@ -231,13 +204,16 @@ namespace AspNetAddIn
 				return;
 			}
 			
-			CopyReferencesToOutputPath (true);
+			CopyReferencesToOutputPath (false);
 			
 			IConsole console = null;
 			AggregatedOperationMonitor operationMonitor = new AggregatedOperationMonitor (monitor);
 			AspNetAppProjectConfiguration configuration = (AspNetAppProjectConfiguration) ActiveConfiguration;
 			
 			try {
+				IExecutionHandler handler = context.ExecutionHandlerFactory.CreateExecutionHandler ("Native");
+				if (handler == null)
+					throw new Exception ("Could not obtain platform handler.");
 				
 				if (configuration.ExternalConsole)
 					console = context.ExternalConsoleFactory.CreateConsole (!configuration.PauseConsoleOutput);
@@ -246,13 +222,18 @@ namespace AspNetAddIn
 			
 				monitor.Log.WriteLine ("Running web server...");
 				
-				IProcessAsyncOperation op = StartXsp (monitor, context, console);
-				monitor.CancelRequested += delegate {op.Cancel ();};
+				//set mono debug mode if project's in debug mode
+				Dictionary<string, string> envVars = new Dictionary<string,string> (); 
+				if (configuration.DebugMode)
+					envVars ["MONO_OPTIONS"] = "--debug";
+				
+				IProcessAsyncOperation op = handler.Execute ("xsp", XspParameters.GetXspParameters (), configuration.SourceDirectory, envVars, console);
+				monitor.CancelRequested += delegate {  op.Cancel (); };
 				operationMonitor.AddOperation (op);
 				
-				//launch a separate thread to detect te running server and launch a web browser
+				//launch a separate thread to detect the running server and launch a web browser
 				System.Threading.Thread t = new System.Threading.Thread (new System.Threading.ParameterizedThreadStart (LaunchWebBrowser));
-				op.Completed += delegate (IAsyncOperation dummy) {t.Abort ();};
+				op.Completed += delegate (IAsyncOperation dummy) {if (t.IsAlive) t.Abort ();};
 				string url = String.Format ("http://{0}:{1}", this.XspParameters.Address, this.XspParameters.Port);
 				if (!op.IsCompleted)
 					t.Start (url);
