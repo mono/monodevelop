@@ -1,3 +1,7 @@
+2007-10-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AUTHORS: Updated.
+
 2007-09-28  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* configure.in: Remove xsp/xsp2 checks for ASP.NET project addin and
