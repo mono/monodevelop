@@ -1121,7 +1121,7 @@ namespace VBBinding.Parser
 					foreach (string name in u.Usings) {
 						result.AddRange(parserContext.GetNamespaceContents(name,true, false));
 					}
-					foreach (string alias in u.Aliases.Keys) {
+					foreach (string alias in u.Aliases) {
 						result.Add (new Namespace (alias));
 					}
 				}
