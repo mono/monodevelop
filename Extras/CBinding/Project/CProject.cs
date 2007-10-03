@@ -317,7 +317,7 @@ namespace CBinding
 					return;
 				}
 				
-				IProcessAsyncOperation op = handler.Execute (Path.Combine (dir, command), args, dir, console);
+				IProcessAsyncOperation op = handler.Execute (Path.Combine (dir, command), args, dir, null, console);
 				
 				operationMonitor.AddOperation (op);
 				op.WaitForCompleted ();

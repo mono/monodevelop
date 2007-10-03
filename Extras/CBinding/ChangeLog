@@ -1,3 +1,8 @@
+2007-10-03  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* CBinding.mdp, gtk-gui/gui.stetic: Target GTK# 2.8.
+	* Project/CProject.cs: Track execution API changes.
+
 2007-09-27  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CBinding.mdp: Don't local copy references.
