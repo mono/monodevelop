@@ -12,7 +12,7 @@ using System.Reflection;
 namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	public abstract class AbstractDecoration : MarshalByRefObject, IDecoration
+	public abstract class AbstractDecoration : IDecoration
 	{
 		protected ModifierEnum               modifiers     = ModifierEnum.None;
 		protected AttributeSectionCollection attributes    = null;

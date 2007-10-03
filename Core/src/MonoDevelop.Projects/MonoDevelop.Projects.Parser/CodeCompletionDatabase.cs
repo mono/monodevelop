@@ -414,7 +414,11 @@ namespace MonoDevelop.Projects.Parser
 					return res;
 				}
 				
-//				Runtime.LoggingService.Debug ("GET CLASS " + typeName + " in " + dataFile);
+				// It may be an instantiated generic type 
+				IClass igt = (IClass) instantiatedGenericTypes [typeName];
+				if (igt != null)
+					return igt;
+				
 				string[] path = typeName.Split ('.');
 				int len = path.Length - 1;
 				

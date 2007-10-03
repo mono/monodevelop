@@ -1,3 +1,16 @@
+2007-10-03  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs,
+	  MonoDevelop.Projects.Parser/AbstractDecoration.cs,
+	  MonoDevelop.Projects.Parser/IUsing.cs,
+	  MonoDevelop.Projects.Parser/AbstractUsing.cs,
+	  MonoDevelop.Projects.Parser/DefaultParserService.cs: Changed the
+	  implementation of IUsing. It now supports aliases to generic types.
+	  That's why an alias value is now a IReturnType instead of a string.
+	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: When looking for a
+	  class, always check the instantiated generic class cache, since the
+	  provided class name may contain generic parameters.
+
 2007-09-29  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: Stub out generated

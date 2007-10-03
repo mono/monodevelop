@@ -1352,8 +1352,9 @@ namespace MonoDevelop.Projects.Parser
 			}
 			
 			// search for partitial namespaces
-			string declaringNamespace = (string)usin.Aliases[""];
-			if (declaringNamespace != null) {
+			IReturnType alias = usin.GetAlias ("");
+			if (alias != null) {
+				string declaringNamespace = alias.FullyQualifiedName;
 				while (declaringNamespace.Length > 0) {
 					if ((caseSensitive ? declaringNamespace.EndsWith(partitialNamespaceName) : declaringNamespace.ToLower().EndsWith(partitialNamespaceName.ToLower()) ) && NamespaceExists (db, declaringNamespace, caseSensitive)) {
 						return declaringNamespace;
@@ -1370,11 +1371,10 @@ namespace MonoDevelop.Projects.Parser
 			// Remember:
 			//     Each namespace has an own using object
 			//     The namespace name is an alias which has the key ""
-			foreach (DictionaryEntry entry in usin.Aliases) {
-				string aliasString = entry.Key.ToString();
-				if (caseSensitive ? partitialNamespaceName.StartsWith(aliasString) : partitialNamespaceName.ToLower().StartsWith(aliasString.ToLower())) {
-					if (aliasString.Length >= 0) {
-						string nsName = String.Concat(entry.Value.ToString(), partitialNamespaceName.Remove(0, aliasString.Length));
+			foreach (string aliasString in usin.Aliases) {
+				if (caseSensitive ? partitialNamespaceName.StartsWith (aliasString) : partitialNamespaceName.ToLower().StartsWith(aliasString.ToLower())) {
+					if (aliasString.Length > 0) {
+						string nsName = String.Concat (usin.GetAlias (aliasString), partitialNamespaceName.Remove(0, aliasString.Length));
 						if (NamespaceExists (db, nsName, caseSensitive)) {
 							return nsName;
 						}
@@ -1399,11 +1399,11 @@ namespace MonoDevelop.Projects.Parser
 
 			// If the name matches an alias, try using the alias first.
 			if (unit != null) {
-				string aliasResult = FindAlias (name, unit);
-				if (aliasResult != null) {
+				IReturnType ualias = FindAlias (name, unit.Usings);
+				if (ualias != null) {
 					// Don't provide the compilation unit when trying to resolve the alias,
 					// since aliases are not affected by other 'using' directives.
-					c = GetClass (db, aliasResult, null, false, true);
+					c = GetClass (db, ualias.FullyQualifiedName, ualias.GenericArguments, false, true);
 					if (c != null)
 						return c;
 				}
@@ -1445,18 +1445,17 @@ namespace MonoDevelop.Projects.Parser
 			return null;
 		}
 		
-		string FindAlias (string name, ICompilationUnit unit)
+		IReturnType FindAlias (string name, IUsingCollection usings)
 		{
 			// If the name matches an alias, try using the alias first.
-			if (unit == null)
+			if (usings == null)
 				return null;
 				
-			foreach (IUsing u in unit.Usings) {
+			foreach (IUsing u in usings) {
 				if (u != null) {
-					foreach (DictionaryEntry e in u.Aliases) {
-						if ((string)e.Value == name)
-							return (string)e.Key;
-					}
+					IReturnType a = u.GetAlias (name);
+					if (a != null)
+						return a;
 				}
 			}
 			return null;
@@ -1475,10 +1474,11 @@ namespace MonoDevelop.Projects.Parser
 				if (c != null)
 					return c;
 			}
-			
+
+			IReturnType alias = iusing.GetAlias ("");
 			// search class in partitial namespaces
-			string declaringNamespace = (string)iusing.Aliases[""];
-			if (declaringNamespace != null) {
+			if (alias != null) {
+				string declaringNamespace = alias.FullyQualifiedName;
 				while (declaringNamespace.Length > 0) {
 					string className = String.Concat(declaringNamespace, ".", partitialTypeName);
 					c = GetClass (db, className, genericArguments, false, caseSensitive);
@@ -1493,12 +1493,12 @@ namespace MonoDevelop.Projects.Parser
 				}
 			}
 			
-			foreach (DictionaryEntry entry in iusing.Aliases) {
-				string aliasString = entry.Key.ToString();
+			foreach (string aliasString in iusing.Aliases) {
 				if (caseSensitive ? partitialTypeName.StartsWith(aliasString) : partitialTypeName.ToLower().StartsWith(aliasString.ToLower())) {
 					string className = null;
 					if (aliasString.Length > 0) {
-						className = String.Concat(entry.Value.ToString(), partitialTypeName.Remove(0, aliasString.Length));
+						IReturnType rt = iusing.GetAlias (aliasString);
+						className = String.Concat (rt.FullyQualifiedName, partitialTypeName.Remove (0, aliasString.Length));
 						c = GetClass (db, className, genericArguments, false, caseSensitive);
 						if (c != null)
 							return c;

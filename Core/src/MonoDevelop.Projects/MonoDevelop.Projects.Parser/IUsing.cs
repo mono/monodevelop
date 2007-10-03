@@ -1,13 +1,13 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version value="$version"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
+//     <version>$Revision: 2066 $</version>
 // </file>
 
 using System;
 using System.Collections;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Parser
 {
@@ -17,12 +17,10 @@ namespace MonoDevelop.Projects.Parser
 			get;
 		}
 
-		StringCollection Usings {
-			get;
-		}
-
-		SortedList Aliases {
-			get;
-		}
+		IEnumerable<string> Usings { get; }
+		
+		IEnumerable<string> Aliases { get; }
+		
+		IReturnType GetAlias (string name);
 	}
 }

@@ -136,16 +136,14 @@ namespace MonoDevelop.Projects.CodeGeneration
 			if (pinfo != null && pinfo.BestCompilationUnit != null) {
 				ICompilationUnit compilationUnit = (ICompilationUnit) pinfo.BestCompilationUnit;
 				bool found = false;
-				string prefix;
 				IUsing use;
-				int i, j;
+				int i;
 				
 				for (i = 0; i < compilationUnit.Usings.Count && !found; i++) {
 					if ((use = compilationUnit.Usings[i]) == null)
 						continue;
 					
-					for (j = 0; j < use.Usings.Count; j++) {
-						prefix = use.Usings[j];
+					foreach (string prefix in use.Usings) {
 						if (name.StartsWith (prefix + ".")) {
 							if (longestMatch == null || prefix.Length > longestMatch.Length) {
 								longestMatch = prefix;

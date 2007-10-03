@@ -7,18 +7,18 @@
 using System;
 using System.Text;
 using System.Collections;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	public abstract class AbstractUsing : MarshalByRefObject, IUsing
+	public class DefaultUsing : IUsing
 	{
 		protected IRegion region;
 		
-		protected StringCollection usings  = new StringCollection();
-		protected SortedList       aliases = new SortedList();
+		List<string> usings  = new List<string>();
+		SortedList<string, IReturnType> aliases;
 		
 		public IRegion Region {
 			get {
@@ -26,16 +26,43 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
-		public StringCollection Usings {
+		public List<string> Usings {
 			get {
+				if (usings == null)
+					usings = new List<string> ();
 				return usings;
 			}
 		}
 		
-		public SortedList Aliases {
+		public SortedList<string, IReturnType> Aliases {
 			get {
+				if (aliases == null)
+					aliases = new SortedList<string, IReturnType> ();
 				return aliases;
 			}
+		}
+		
+		IEnumerable<string> IUsing.Usings {
+			get {
+				return usings;
+			}
+		}
+
+		IEnumerable<string> IUsing.Aliases {
+			get {
+				if (aliases == null)
+					return new string[0];
+				return aliases.Keys;
+			}
+		}
+		
+		public IReturnType GetAlias (string name)
+		{
+			IReturnType rt;
+			if (aliases != null && aliases.TryGetValue (name, out rt))
+				return rt;
+			else
+				return null;
 		}
 		
 		public override string ToString()
