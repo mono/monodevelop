@@ -27,11 +27,12 @@
 //
 
 using System;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Core.Execution
 {
 	public interface IExecutionHandler
 	{
-		IProcessAsyncOperation Execute (string command, string arguments, string workingDirectory, IConsole console);
+		IProcessAsyncOperation Execute (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, IConsole console);
 	}
 }

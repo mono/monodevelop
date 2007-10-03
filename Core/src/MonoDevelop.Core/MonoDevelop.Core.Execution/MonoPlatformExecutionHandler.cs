@@ -27,15 +27,16 @@
 //
 
 using System;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Core.Execution
 {
 	public class MonoPlatformExecutionHandler: NativePlatformExecutionHandler
 	{
-		public override IProcessAsyncOperation Execute (string command, string arguments, string workingDirectory, IConsole console)
+		public override IProcessAsyncOperation Execute (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, IConsole console)
 		{
 			string args = string.Format ("--debug \"{0}\" {1}", command, arguments);
-			return base.Execute ("mono", args, workingDirectory, console);
+			return base.Execute ("mono", args, workingDirectory, environmentVariables, console);
 
 // Old method - workaround should no longer be necessary.
 //			string args = string.Format (@"--debug {0} {1}", command.Replace (" ", "\\ "), arguments);

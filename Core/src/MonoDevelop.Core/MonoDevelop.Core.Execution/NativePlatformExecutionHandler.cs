@@ -27,15 +27,16 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace MonoDevelop.Core.Execution
 {
 	public class NativePlatformExecutionHandler: IExecutionHandler
 	{
-		public virtual IProcessAsyncOperation Execute (string command, string arguments, string workingDirectory, IConsole console)
+		public virtual IProcessAsyncOperation Execute (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, IConsole console)
 		{
-			return Runtime.ProcessService.StartConsoleProcess (command, arguments, workingDirectory, console, null);
+			return Runtime.ProcessService.StartConsoleProcess (command, arguments, workingDirectory, environmentVariables, console, null);
 		}
 	}
 }

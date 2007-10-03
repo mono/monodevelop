@@ -1,3 +1,13 @@
+2007-10-03  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Core.Execution/NativePlatformExecutionHandler.cs,
+	  MonoDevelop.Core.Execution/MintPlatformExecutionHandler.cs,
+	  MonoDevelop.Core.Execution/MonoPlatformExecutionHandler.cs,
+	  MonoDevelop.Core.Execution/IExecutionHandler.cs: Allow setting
+	  environment variables when processes via an IExecutionHandler.
+	* MonoDevelop.Core.Execution/ProcessService.cs: Allow setting environment
+	  variables when starting console processes.
+
 2007-09-26  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.mdp: Fix warning level.

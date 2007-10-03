@@ -120,6 +120,11 @@ namespace MonoDevelop.Core.Execution
 		
 		public ProcessWrapper StartConsoleProcess (string command, string arguments, string workingDirectory, IConsole console, EventHandler exited)
 		{
+			return StartConsoleProcess (command, arguments, workingDirectory, null, console, exited);
+		}
+		
+		public ProcessWrapper StartConsoleProcess (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, IConsole console, EventHandler exited)
+		{
 			if (console == null || (console is ExternalConsole)) {
 				string additionalCommands = "";
 				if (!console.CloseOnDispose)
@@ -140,6 +145,10 @@ namespace MonoDevelop.Core.Execution
 
 				psi.UseShellExecute  =  false;
 				
+				if (environmentVariables != null)
+					foreach (KeyValuePair<string, string> kvp in environmentVariables)
+						psi.EnvironmentVariables [kvp.Key] = kvp.Value;
+				
 				ProcessWrapper p = new ProcessWrapper();
 				
 				if (exited != null)
@@ -149,7 +158,11 @@ namespace MonoDevelop.Core.Execution
 				p.Start();
 				return p;
 			} else {
-				ProcessWrapper pw = StartProcess (command, arguments, workingDirectory, console.Out, console.Error, null);
+				ProcessStartInfo psi = CreateProcessStartInfo (command, arguments, workingDirectory, false);
+				if (environmentVariables != null)
+					foreach (KeyValuePair<string, string> kvp in environmentVariables)
+						psi.EnvironmentVariables [kvp.Key] = kvp.Value;
+				ProcessWrapper pw = StartProcess (psi, console.Out, console.Error, null);
 				new ProcessMonitor (console, pw, exited);
 				return pw;
 			}
