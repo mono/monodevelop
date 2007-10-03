@@ -44,7 +44,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 {
 	[DataItem (Name = "item", FallbackType = typeof(UnknownToolboxNode))]
 	[Serializable]
-	public abstract class ItemToolboxNode : BaseToolboxNode, ICustomDataItem
+	public abstract class ItemToolboxNode : BaseToolboxNode, ICustomDataItem, IComparable<ItemToolboxNode>
 	{
 		[NonSerialized]
 		Gdk.Pixbuf icon;
@@ -122,6 +122,15 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public bool Equals (ItemToolboxNode node)
 		{
 			return (node != null) && (node.Name == this.Name) && (node.Category == this.Category) && (node.Description == this.Description);
+		}
+		
+		public virtual int CompareTo (ItemToolboxNode other)
+		{
+			if (other == null) return -1;
+			if (Category == other.Category)
+				return Name.CompareTo (other.Name);
+			else
+				return Category.CompareTo (other.Category);
 		}
 		
 		#endregion Behaviours

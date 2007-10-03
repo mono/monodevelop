@@ -1,3 +1,9 @@
+2007-10-03  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.DesignerSupport.Toolbox/ItemToolboxNode.cs: Implement
+	  IComparable so that the ToolboxService's array sort doesn't break on
+	  non-GTK#-component toolbox nodes. Fixes AspNetEdit.
+
 2007-09-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.DesignerSupport.addin.xml: Bump MD version.
