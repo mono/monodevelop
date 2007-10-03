@@ -70,7 +70,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public event EventHandler ItemsChanged;
 	}
 	
-	class ComponentToolboxNode: ItemToolboxNode, IComparable
+	class ComponentToolboxNode: ItemToolboxNode
 	{
 		public ComponentType componentType;
 		
@@ -160,16 +160,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return GettextCatalog.GetString ("Widgets");
 			else
 				return cat;
-		}
-		
-		public int CompareTo (object obj)
-		{
-			ComponentToolboxNode other = obj as ComponentToolboxNode;
-			if (other == null) return -1;
-			if (Category == other.Category)
-				return Name.CompareTo (other.Name);
-			else
-				return Category.CompareTo (other.Category);
 		}
 
 		public override string ItemDomain {
