@@ -122,7 +122,7 @@ namespace MonoDevelop.Projects
 				else
 					console = context.ConsoleFactory.CreateConsole (!pauseExternalConsole);
 				IExecutionHandler handler = context.ExecutionHandlerFactory.CreateExecutionHandler ("Native");
-				oper = handler.Execute (exe, args, dir, console);
+				oper = handler.Execute (exe, args, dir, null, console);
 			}
 			else {
 				if (externalConsole) {

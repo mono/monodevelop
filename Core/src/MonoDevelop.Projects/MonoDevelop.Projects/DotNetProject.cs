@@ -150,7 +150,7 @@ namespace MonoDevelop.Projects
 			//older projects may not have this property but may not support partial types
 			//so need to verify that the default attribute is OK
 			if (UsePartialTypes && !SupportsPartialTypes) {
-				Runtime.LoggingService.WarnFormat ("Project '{0}' has been set to use partial types but does not support them.", Name);
+				Runtime.LoggingService.WarnFormat ("Project '{0}' has been set to use partial types but does not support them.", (object) Name);
 				UsePartialTypes = false;
 			}
 		}
@@ -305,7 +305,7 @@ namespace MonoDevelop.Projects
 					return;
 				}
 			
-				IProcessAsyncOperation op = handler.Execute (configuration.CompiledOutputName, configuration.CommandLineParameters, Path.GetDirectoryName (configuration.CompiledOutputName), console);
+				IProcessAsyncOperation op = handler.Execute (configuration.CompiledOutputName, configuration.CommandLineParameters, Path.GetDirectoryName (configuration.CompiledOutputName), null, console);
 				
 				operationMonitor.AddOperation (op);
 				op.WaitForCompleted ();
