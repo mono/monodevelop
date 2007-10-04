@@ -42,6 +42,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	public class ToolboxItemToolboxLoader : IToolboxLoader
 	{
 		static string[] fileTypes = new string[] {"dll"};
+		bool initialized;
 		
 		public bool ShouldIsolate {
 			get { return true; }
@@ -60,6 +61,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		public IList<ItemToolboxNode> Load (System.Reflection.Assembly assem)
 		{
+			if (!initialized) {
+				Gtk.Application.Init ();
+				initialized = true;
+			}
+			
 			List<ItemToolboxNode> nodes = new List<ItemToolboxNode> ();
 			
 			Type[] types = assem.GetTypes ();

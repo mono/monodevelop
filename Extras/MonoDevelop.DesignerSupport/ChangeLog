@@ -1,3 +1,9 @@
+2007-10-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxLoader.cs:
+	  Initialize Gtk before trying to load the toolbox item. Needed since this
+	  is done out of process.
+
 2007-10-03  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.DesignerSupport.Toolbox/ItemToolboxNode.cs: Implement
