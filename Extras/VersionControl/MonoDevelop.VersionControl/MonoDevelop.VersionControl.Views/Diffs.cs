@@ -76,8 +76,10 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public override void Dispose ()
 		{
-			leftwatcher.Dispose ();
-			rightwatcher.Dispose ();
+			if(leftwatcher != null)
+				leftwatcher.Dispose ();
+			if(rightwatcher != null)
+				rightwatcher.Dispose ();
 			base.Dispose ();
 		}
 
