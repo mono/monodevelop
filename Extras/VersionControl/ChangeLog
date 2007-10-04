@@ -1,3 +1,10 @@
+2007-10-03  Grzegorz Sobański <silk@boktor.net>
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:
+	  Changed the order of password and certs providers to first use the
+	  subversion ones - to use the same credentials that command line client
+	  (from ~/.subversion directory). It fixes bug #325538 too.
+
 2007-10-03  Zach Lute <zach.lute@gmail.com>
 
 	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Diffs.cs:  Only dispose of

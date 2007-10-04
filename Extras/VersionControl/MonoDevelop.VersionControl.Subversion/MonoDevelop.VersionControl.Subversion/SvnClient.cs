@@ -68,25 +68,16 @@ namespace MonoDevelop.VersionControl.Subversion {
 			IntPtr item;
 			
 			item = apr.array_push (providers);
-			svn.client_get_simple_prompt_provider (item, new LibSvnClient.svn_auth_simple_prompt_func_t (OnAuthSimplePrompt), IntPtr.Zero, 2, pool);
-			
-			item = apr.array_push (providers);
-			svn.client_get_username_prompt_provider (item, new LibSvnClient.svn_auth_username_prompt_func_t (OnAuthUsernamePrompt), IntPtr.Zero, 2, pool);
-			
-			item = apr.array_push (providers);
-			svn.client_get_ssl_server_trust_prompt_provider (item, new LibSvnClient.svn_auth_ssl_server_trust_prompt_func_t (OnAuthSslServerTrustPrompt), IntPtr.Zero, pool);
-			
-			item = apr.array_push (providers);
-			svn.client_get_ssl_client_cert_prompt_provider (item, new LibSvnClient.svn_auth_ssl_client_cert_prompt_func_t (OnAuthSslClientCertPrompt), IntPtr.Zero, 2, pool);
-			
-			item = apr.array_push (providers);
-			svn.client_get_ssl_client_cert_pw_prompt_provider (item, new LibSvnClient.svn_auth_ssl_client_cert_pw_prompt_func_t (OnAuthSslClientCertPwPrompt), IntPtr.Zero, 2, pool);
-			
-			item = apr.array_push (providers);
 			svn.client_get_simple_provider (item, pool);
 			
 			item = apr.array_push (providers);
 			svn.client_get_username_provider (item, pool);
+			
+			item = apr.array_push (providers);
+			svn.client_get_simple_prompt_provider (item, new LibSvnClient.svn_auth_simple_prompt_func_t (OnAuthSimplePrompt), IntPtr.Zero, 2, pool);
+			
+			item = apr.array_push (providers);
+			svn.client_get_username_prompt_provider (item, new LibSvnClient.svn_auth_username_prompt_func_t (OnAuthUsernamePrompt), IntPtr.Zero, 2, pool);
 			
 			item = apr.array_push (providers);
 			svn.client_get_ssl_client_cert_file_provider (item, pool);
@@ -96,6 +87,15 @@ namespace MonoDevelop.VersionControl.Subversion {
 			
 			item = apr.array_push (providers);
 			svn.client_get_ssl_server_trust_file_provider (item, pool);
+			
+			item = apr.array_push (providers);
+			svn.client_get_ssl_server_trust_prompt_provider (item, new LibSvnClient.svn_auth_ssl_server_trust_prompt_func_t (OnAuthSslServerTrustPrompt), IntPtr.Zero, pool);
+			
+			item = apr.array_push (providers);
+			svn.client_get_ssl_client_cert_prompt_provider (item, new LibSvnClient.svn_auth_ssl_client_cert_prompt_func_t (OnAuthSslClientCertPrompt), IntPtr.Zero, 2, pool);
+			
+			item = apr.array_push (providers);
+			svn.client_get_ssl_client_cert_pw_prompt_provider (item, new LibSvnClient.svn_auth_ssl_client_cert_pw_prompt_func_t (OnAuthSslClientCertPwPrompt), IntPtr.Zero, 2, pool);
 			
 			svn.auth_open (out auth_baton, providers, pool); 
 			ctxstruct.auth_baton = auth_baton;
