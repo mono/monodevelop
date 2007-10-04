@@ -71,8 +71,9 @@ public class BooTextEditorExtension (CompletionTextEditorExtension):
 		if typed_char == char(' '):
 			if expr in ("is", "as"):
 				expr = expr_finder.FindExpression (Editor.GetText (0, ctx.TriggerOffset), ctx.TriggerOffset - 5).Expression
-				res = Resolver (p_ctx)
-				completion_prov.AddResolveResults (res.IsAsResolve (expr, caret_line, caret_col, FileName, Editor.Text, false))
+				if expr.Length > 0:
+					res = Resolver (p_ctx)
+					completion_prov.AddResolveResults (res.IsAsResolve (expr, caret_line, caret_col, FileName, Editor.Text, false))
 			elif expr == "import" or expr.EndsWith (" import") or expr.EndsWith ("\timport") or expr.EndsWith ("\nimport") or expr.EndsWith ("\rimport"):
 				namespaces = p_ctx.GetNamespaceList ("", true, true)
 				completion_prov.AddResolveResults (ResolveResult(namespaces))
