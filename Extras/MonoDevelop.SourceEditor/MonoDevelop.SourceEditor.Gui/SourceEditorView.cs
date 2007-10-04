@@ -863,7 +863,7 @@ namespace MonoDevelop.SourceEditor.Gui
 					int cnt = 0;
 					int max = (int) TabsWidth;
 					
-					while (cnt <= max && end.Char[0] == ' ' && ! end.EndsLine ()) {
+					while (cnt < max && end.Char[0] == ' ' && ! end.EndsLine ()) {
 						cnt ++;
 						end.ForwardChar ();
 					}

@@ -1,3 +1,8 @@
+2007-10-02  Zach Lute <zach.lute@gmail.com>
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Fixed error causing
+	  an extra space to be unindented. (Bug #328776)
+
 2007-10-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Don't crash if the
