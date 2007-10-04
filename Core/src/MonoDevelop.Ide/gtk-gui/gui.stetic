@@ -3353,6 +3353,7 @@
       <widget class="Gtk.VBox" id="dialog-vbox4">
         <property name="MemberName" />
         <property name="Spacing">6</property>
+        <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.HBox" id="hbox45">
             <property name="MemberName" />
@@ -3420,7 +3421,7 @@
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-new</property>
-            <property name="ResponseId">0</property>
+            <property name="ResponseId">-5</property>
             <property name="label">gtk-new</property>
           </widget>
           <packing>

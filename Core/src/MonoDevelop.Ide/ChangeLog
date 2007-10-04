@@ -1,3 +1,9 @@
+2007-10-03  Zach Lute <zach.lute@gmail.com>
+
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs, 
+	  gtk-gui/gui.stetic: "New" button now returns "OK" response so new
+	  layout will actually be created. (Bug #330104)
+
 2007-10-03  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui/Workbench.cs: Avoid crash in ShowNext/Previous when

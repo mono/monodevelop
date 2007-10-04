@@ -37,6 +37,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog-vbox4";
             w1.Spacing = 6;
+            w1.BorderWidth = ((uint)(2));
             // Container child dialog-vbox4.Gtk.Box+BoxChild
             this.hbox45 = new Gtk.HBox();
             this.hbox45.Name = "hbox45";
@@ -88,7 +89,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.newButton.UseStock = true;
             this.newButton.UseUnderline = true;
             this.newButton.Label = "gtk-new";
-            this.AddActionWidget(this.newButton, 0);
+            this.AddActionWidget(this.newButton, -5);
             Gtk.ButtonBox.ButtonBoxChild w7 = ((Gtk.ButtonBox.ButtonBoxChild)(w5[this.newButton]));
             w7.Position = 1;
             w7.Expand = false;
