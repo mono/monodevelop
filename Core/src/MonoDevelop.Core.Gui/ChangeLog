@@ -1,3 +1,9 @@
+2007-10-04  Mike Krüger <mkrueger@novell.com> 
+
+	* Freedesktop.RecentFiles/RecentFileStorage.cs: Made recent file storage
+	  more robust - should fix Bug 330419 - Exception reading the recent file
+	  list.
+
 2007-09-27  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Core.Gui.mdp: Remove duplicate gtk-sharp reference.

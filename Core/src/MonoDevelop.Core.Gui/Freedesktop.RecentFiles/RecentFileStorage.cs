@@ -107,17 +107,19 @@ namespace Freedesktop.RecentFiles
 			ObtainLock ();
 			try {
 				bool filteredSomething = false;
-				List<RecentItem> store = ReadStore ();
-				for (int i = 0; i < store.Count; ++i) {
-					if (pred (store[i])) {
-						store.RemoveAt (i);
-						filteredSomething = true;
-						--i;
-						continue;
+				List<RecentItem> store = ReadStore (0);
+				if (store != null) {
+					for (int i = 0; i < store.Count; ++i) {
+						if (pred (store[i])) {
+							store.RemoveAt (i);
+							filteredSomething = true;
+							--i;
+							continue;
+						}
 					}
+					if (filteredSomething) 
+						WriteStore (store);
 				}
-				if (filteredSomething) 
-					WriteStore (store);				
 			} finally {
 				ReleaseLock ();
 			}
@@ -126,11 +128,13 @@ namespace Freedesktop.RecentFiles
 		{
 			ObtainLock ();
 			try {
-				List<RecentItem> store = ReadStore ();
-				for (int i = 0; i < store.Count; ++i) 
-					operation (store[i]);
-				if (writeBack) 
-					WriteStore (store);
+				List<RecentItem> store = ReadStore (0);
+				if (store != null) {
+					for (int i = 0; i < store.Count; ++i) 
+						operation (store[i]);
+					if (writeBack) 
+						WriteStore (store);
+				}
 			} finally {
 				ReleaseLock ();
 			}
@@ -209,18 +213,18 @@ namespace Freedesktop.RecentFiles
 			ObtainLock ();
 			try {
 				RemoveItem (item.Uri);
-				
-				List<RecentItem> store = ReadStore ();
-				store.Add (item);
-				WriteStore (store);
-				
-				CheckLimit (group, limit);
+				List<RecentItem> store = ReadStore (0);
+				if (store != null) {
+					store.Add (item);
+					WriteStore (store);
+					CheckLimit (group, limit);
+				}
 			} finally {
 				ReleaseLock ();
 			}
 		}
-		
-		List<RecentItem> ReadStore ()
+		const int MAX_TRIES = 5;
+		List<RecentItem> ReadStore (int numberOfTry)
 		{
 			Debug.Assert (IsLocked);
 			List<RecentItem> result = new List<RecentItem> ();
@@ -241,6 +245,13 @@ namespace Freedesktop.RecentFiles
 					if (reader.IsStartElement () && reader.LocalName == RecentItem.Node)
 						result.Add (RecentItem.Read (reader));
 				}
+			} catch (Exception e) {
+				MonoDevelop.Core.Runtime.LoggingService.Error ((object)"Exception while reading the store", e);
+				if (numberOfTry < MAX_TRIES) {
+					Thread.Sleep (200);
+					return ReadStore (numberOfTry + 1);
+				}
+				return null;
 			} finally {
 				if (reader != null)
 					reader.Close ();
