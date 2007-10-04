@@ -374,21 +374,23 @@ namespace MonoDevelop.Ide.Tasks
 
 		public void UpdateCommentTags (string fileName, TagCollection tagComments)
 		{
-			if (fileName == null || tagComments == null) {
+			if (fileName == null) {
 				return;
 			}
 			
 			List<Task> newTasks = new List<Task> ();
-			foreach (MonoDevelop.Projects.Parser.Tag tag in tagComments) {
-				if (!priorities.ContainsKey (tag.Key))
-					continue;
-				newTasks.Add (new Task (fileName,
-				                      tag.Key + tag.CommentString,
-				                      tag.Region.BeginColumn - 1,
-				                      tag.Region.BeginLine,
-				                      TaskType.Comment, priorities[tag.Key]));
+			if (tagComments != null) {  
+				foreach (MonoDevelop.Projects.Parser.Tag tag in tagComments) {
+					if (!priorities.ContainsKey (tag.Key))
+						continue;
+					newTasks.Add (new Task (fileName,
+					                      tag.Key + tag.CommentString,
+					                      tag.Region.BeginColumn - 1,
+					                      tag.Region.BeginLine,
+					                      TaskType.Comment, priorities[tag.Key]));
+				}
 			}
-			List<Task> oldTasks = new List<Task>();
+			List<Task> oldTasks = new List<Task> ();
 			
 			foreach (Task task in CommentTasks) {
 				if (Path.GetFullPath (task.FileName) == Path.GetFullPath (fileName)) {

@@ -1,3 +1,8 @@
+2007-10-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Tasks/TaskService.cs: Fixed bug 325537 - Task Pad not
+	  clearing
+
 2007-10-03  Zach Lute <zach.lute@gmail.com>
 
 	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs, 
