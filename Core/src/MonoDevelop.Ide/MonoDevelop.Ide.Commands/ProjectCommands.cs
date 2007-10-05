@@ -425,7 +425,7 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.ProjectOperations.CurrentOpenCombine != null;
+			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedCombineEntry != null;
 		}
 
 	}

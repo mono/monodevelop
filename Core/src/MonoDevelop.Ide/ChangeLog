@@ -1,3 +1,9 @@
+2007-10-05  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Ide.Commands/ProjectCommands.cs
+	(ExportProjectHandler.Update): Use CurrentSelectedCombineEntry instead
+	of CurrentOpenCombine.
+
 2007-10-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Show 'go to base' command
