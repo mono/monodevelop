@@ -42,14 +42,27 @@ namespace CSharpBinding.Autotools
 				writer.Write(" -unsafe");
 			}
 			writer.Write(" -warn:" + parameters.WarningLevel);
-			if(!parameters.Optimize) {
+			if(parameters.Optimize)
+				writer.Write(" -optimize+");
+			else
 				writer.Write(" -optimize-");
-			}
+
 			if(parameters.NoWarnings != null && parameters.NoWarnings != "") {
 				writer.Write(" \"-nowarn:" + parameters.NoWarnings + '"');
 			}
+
 			if(config.DebugMode) {
-				writer.Write(" -debug -d:DEBUG");	
+				writer.Write(" -debug");
+				//Check whether we have a DEBUG define
+				bool hasDebugDefine = false;
+				foreach (string define in parameters.DefineSymbols.Split (';')) {
+					if (String.Compare (define, "DEBUG") == 0) {
+						hasDebugDefine = true;
+						break;
+					}
+				}
+				if (!hasDebugDefine)
+					writer.Write (" -define:DEBUG");
 			}
 			
 			// TODO check path and add to extradist...

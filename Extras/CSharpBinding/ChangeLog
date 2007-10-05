@@ -1,3 +1,9 @@
+2007-10-05  Ankit Jain  <jankit@novell.com>
+
+	* Autotools/CSharpAutotoolsSetup.cs (GetCompilerFlags): Correctly emit
+	flag for optimization. Don't emit -define:DEBUG if its already defined
+	in DefineSymbols.
+
 2007-10-05  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/CSharpTextEditorExtension.cs: fixed Bug 325523 - MD override
