@@ -1,3 +1,11 @@
+2007-10-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/LibSvnClient.cs:
+	  Fix formatting.
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:
+	  Error objects returned by authentification handlers must be allocated in
+	  its own memory pool. Fixes bug #328035.
+
 2007-10-03  Grzegorz Sobański <silk@boktor.net>
 
 	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:

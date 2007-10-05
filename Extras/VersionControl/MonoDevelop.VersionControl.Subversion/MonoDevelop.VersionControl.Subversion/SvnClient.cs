@@ -30,7 +30,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 			svn = LibSvnClient.GetLib ();
 		}
 		
-		private IntPtr newpool (IntPtr parent)
+		private static IntPtr newpool (IntPtr parent)
 		{
 			IntPtr p;
 			apr.pool_create_ex (out p, parent, IntPtr.Zero, IntPtr.Zero);
@@ -108,13 +108,17 @@ namespace MonoDevelop.VersionControl.Subversion {
 			apr.pool_destroy(pool);
 		}
 		
-		static IntPtr GetCancelError (IntPtr pool)
+		static IntPtr GetCancelError ()
 		{
 			LibSvnClient.svn_error_t error = new LibSvnClient.svn_error_t ();
 			error.apr_err = LibApr.APR_OS_START_USEERR;
 			error.message = "Operation cancelled.";
-			error.pool = pool;
-			return apr.pcalloc (pool, error);
+			
+			// Subversion destroys the error pool to dispose the error object,
+			// so we need to use a non-shared pool.
+			IntPtr localpool = newpool (IntPtr.Zero);
+			error.pool = localpool;
+			return apr.pcalloc (localpool, error);
 		}
 		
 		static IntPtr OnAuthSimplePrompt (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, [MarshalAs (UnmanagedType.LPStr)] string user_name, [MarshalAs (UnmanagedType.SysInt)] int may_save, IntPtr pool)
@@ -128,7 +132,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 				data.username = "";
 				data.may_save = 0;
 				cred = apr.pcalloc (pool, data);
-				return GetCancelError (pool);
+				return GetCancelError ();
 			}
 		}
 		
@@ -142,7 +146,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 				data.username = "";
 				data.may_save = 0;
 				cred = apr.pcalloc (pool, data);
-				return GetCancelError (pool);
+				return GetCancelError ();
 			}
 		}
 		
@@ -164,7 +168,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 				data.cert_file = "";
 				data.may_save = 0;
 				cred = apr.pcalloc (pool, data);
-				return GetCancelError (pool);
+				return GetCancelError ();
 			}
 		}
 		
@@ -178,7 +182,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 				data.password = "";
 				data.may_save = 0;
 				cred = apr.pcalloc (pool, data);
-				return GetCancelError (pool);
+				return GetCancelError ();
 			}
 		}
 		
