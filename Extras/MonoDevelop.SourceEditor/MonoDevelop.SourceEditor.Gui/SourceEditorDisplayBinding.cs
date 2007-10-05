@@ -1279,6 +1279,9 @@ namespace MonoDevelop.SourceEditor.Gui
 					else
 						se.View.TabsWidth = (uint) 4;
 					break;
+				case "TabsToSpaces":
+					se.View.InsertSpacesInsteadOfTabs = TextEditorProperties.ConvertTabsToSpaces;
+					break;
 				case "EnableFolding":
 					// TODO
 					break;
