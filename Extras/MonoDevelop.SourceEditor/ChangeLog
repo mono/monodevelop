@@ -1,5 +1,10 @@
 2007-10-05  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Bug 328817 - New created
+	  file use Tab with Convert Tab to spaces enabled
+
+2007-10-05  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Fixed bug
 	  330265 - Tab to spaces not used if indent type is none or automatic.
 

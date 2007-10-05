@@ -799,16 +799,11 @@ namespace MonoDevelop.SourceEditor.Gui
 			return true;
 		}
 
-		string IndentString
-		{
-			get { return !InsertSpacesInsteadOfTabs ? "\t" : new string (' ', (int) TabsWidth); }
-		}
-		
 		public void FormatLine ()
 		{
 			if (TextEditorProperties.IndentStyle == IndentStyle.Smart) {
 				TextIter iter = buf.GetIterAtMark (buf.InsertMark);
-				fmtr.FormatLine (ThisEditor, iter.Line + 1, iter.Offset, '\n', IndentString, TextEditorProperties.AutoInsertCurlyBracket);
+				fmtr.FormatLine (ThisEditor, iter.Line + 1, iter.Offset, '\n', TextEditorProperties.IndentString, TextEditorProperties.AutoInsertCurlyBracket);
 			}
 			IndentLine ();
 		}
@@ -820,7 +815,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			// preserve offset in line
 			int n, offset = 0;
 			
-			if ((n = fmtr.IndentLine (ThisEditor, iter.Line + 1, IndentString)) == 0)
+			if ((n = fmtr.IndentLine (ThisEditor, iter.Line + 1, TextEditorProperties.IndentString)) == 0)
 				return;
 			
 			offset += n;
