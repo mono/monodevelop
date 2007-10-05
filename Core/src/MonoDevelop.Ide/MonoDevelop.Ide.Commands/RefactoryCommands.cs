@@ -230,11 +230,12 @@ namespace MonoDevelop.Ide.Commands
 				else
 					txt = GettextCatalog.GetString ("Class <b>{0}</b>", itemName);
 				
-				if (cls.BaseTypes.Count > 0) {
+				if (cls.BaseTypes.Count > 0 && cls.ClassType == ClassType.Class) {
 					foreach (IReturnType rt in cls.BaseTypes) {
 						IClass bc = ctx.GetClass (rt.FullyQualifiedName, null, true, true);
 						if (bc != null && bc.ClassType != ClassType.Interface && IdeApp.ProjectOperations.CanJumpToDeclaration (bc)) {
 							ciset.CommandInfos.Add (GettextCatalog.GetString ("Go to _base"), new RefactoryOperation (refactorer.GoToBase));
+							break;
 						}
 					}
 				}

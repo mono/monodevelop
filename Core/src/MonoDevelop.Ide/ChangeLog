@@ -1,5 +1,10 @@
 2007-10-05  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Show 'go to base' command
+	  only for classes. Fixes bug #325461.
+
+2007-10-05  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs: Save the project
 	  after adding a folder. Fixes bug #325467.
 
