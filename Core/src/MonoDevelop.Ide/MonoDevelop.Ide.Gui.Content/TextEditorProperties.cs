@@ -429,5 +429,11 @@ namespace MonoDevelop.Ide.Gui.Content {
 				properties.Set ("HighlightNewlines", value);
 			}
 		}
+		
+		public static string IndentString {
+			get { 
+				return ConvertTabsToSpaces ? new string(' ', TabIndent) : "\t"; 
+			}
+		}
 	}
 }

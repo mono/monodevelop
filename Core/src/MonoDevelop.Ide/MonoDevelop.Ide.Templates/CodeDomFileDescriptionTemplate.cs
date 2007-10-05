@@ -73,11 +73,7 @@ namespace MonoDevelop.Ide.Templates
 			CodeCompileUnit cu = xcd.ReadCompileUnit (domContent);
 			
 			CodeGeneratorOptions options = new CodeGeneratorOptions();
-			if (TextEditorProperties.ConvertTabsToSpaces) {
-				options.IndentString = new String (' ', TextEditorProperties.TabIndent);
-			} else {
-				options.IndentString = "\t";
-			}
+			options.IndentString = TextEditorProperties.IndentString;
 			options.BracingStyle = "C";
 			
 			StringWriter sw = new StringWriter ();

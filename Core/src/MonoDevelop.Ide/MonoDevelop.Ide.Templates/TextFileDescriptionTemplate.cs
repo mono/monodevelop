@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Templates
 		
 		public override string CreateContent (string language)
 		{
-			return content;
+			return content.Replace ("\t", MonoDevelop.Ide.Gui.Content.TextEditorProperties.IndentString);
 		}
 	}
 }

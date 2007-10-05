@@ -1,3 +1,10 @@
+2007-10-05  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs,
+	  MonoDevelop.Ide.Templates/TextFileDescriptionTemplate.cs,
+	  MonoDevelop.Ide.Templates/CodeDomFileDescriptionTemplate.cs: fixed bug
+	  328817 - New created file use Tab with Convert Tab to spaces enabled.
+
 2007-10-05  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Ide.Commands/ProjectCommands.cs
