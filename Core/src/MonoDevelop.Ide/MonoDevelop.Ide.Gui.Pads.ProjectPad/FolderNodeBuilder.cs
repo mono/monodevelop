@@ -299,6 +299,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			ProjectFile newFolder = new ProjectFile (directoryName);
 			newFolder.Subtype = Subtype.Directory;
 			project.ProjectFiles.Add (newFolder);
+			IdeApp.ProjectOperations.SaveProject (project);
 
 			CurrentNode.Expanded = true;
 			Tree.AddNodeInsertCallback (new ProjectFolder (directoryName, project), new TreeNodeCallback (OnFileInserted));

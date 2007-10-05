@@ -1,3 +1,8 @@
+2007-10-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs: Save the project
+	  after adding a folder. Fixes bug #325467.
+
 2007-10-04  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Tasks/TaskService.cs: Fixed bug 325537 - Task Pad not
