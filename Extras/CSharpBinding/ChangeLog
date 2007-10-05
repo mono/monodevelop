@@ -1,3 +1,8 @@
+2007-10-05  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CSharpTextEditorExtension.cs: fixed Bug 330793 - Delegate
+	  autocommenting crashes.
+
 2007-10-03  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Parser/CSharpVisitor.cs, Parser/Resolver.cs: Properly resolve aliases

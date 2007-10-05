@@ -38,9 +38,18 @@ namespace CSharpBinding
 		
 		IClass LookupClass (ICompilationUnit unit, int line, int column)
 		{
-			foreach (IClass c in unit.Classes) {
-				if (c.BodyRegion.IsInside (line, column))
-					return c;
+			if (unit.Classes != null) {
+				int startLine = int.MaxValue;
+				IClass result = null;
+				foreach (IClass c in unit.Classes) {
+					if (c.Region.BeginLine < startLine && c.Region.BeginLine > line) { 
+						startLine = c.Region.BeginLine;						
+						result = c.ClassType == ClassType.Delegate ? c : null;
+					}
+					if (c.BodyRegion != null && c.BodyRegion.IsInside (line, column))
+						return c;
+				}
+				return result;
 			}
 			return null;
 		}
@@ -56,6 +65,35 @@ namespace CSharpBinding
 			newCursorOffset = ("/ <summary>\n/// " + engine.ThisLineIndent).Length;
 		}
 		
+		void AppendMethodComment (StringBuilder builder, IMethod method)
+		{
+			if (method.Parameters != null) {
+				foreach (IParameter para in method.Parameters) {
+					builder.Append (Environment.NewLine);
+					builder.Append (engine.ThisLineIndent);
+					builder.Append ("/// <param name=\"");
+					builder.Append (para.Name);
+					builder.Append ("\">\n");
+					builder.Append (engine.ThisLineIndent);
+					builder.Append ("/// A <see cref=\"");
+					builder.Append (para.ReturnType.FullyQualifiedName);
+					builder.Append ("\"/>\n");
+					builder.Append (engine.ThisLineIndent);
+					builder.Append ("/// </param>");
+				}
+			}
+			if (method.ReturnType != null && method.ReturnType.FullyQualifiedName != "System.Void") {
+				builder.Append (Environment.NewLine);
+				builder.Append (engine.ThisLineIndent);
+				builder.Append("/// <returns>\n");
+				builder.Append (engine.ThisLineIndent);
+				builder.Append ("/// A <see cref=\"");
+				builder.Append (method.ReturnType.FullyQualifiedName);
+				builder.Append ("\"/>\n");
+				builder.Append (engine.ThisLineIndent);
+				builder.Append ("/// </returns>");
+			}
+		}
 		string GenerateBody (IClass c, int line)
 		{
 			int startLine = int.MaxValue;
@@ -79,33 +117,7 @@ namespace CSharpBinding
 			IMethod method = result as IMethod;
 			if (method != null) {
 				AppendSummary (builder);
-				
-				if (method.Parameters != null) {
-					foreach (IParameter para in method.Parameters) {
-						builder.Append (Environment.NewLine);
-						builder.Append (engine.ThisLineIndent);
-						builder.Append ("/// <param name=\"");
-						builder.Append (para.Name);
-						builder.Append ("\">\n");
-						builder.Append (engine.ThisLineIndent);
-						builder.Append ("/// A <see cref=\"");
-						builder.Append (para.ReturnType.FullyQualifiedName);
-						builder.Append ("\"/>\n");
-						builder.Append (engine.ThisLineIndent);
-						builder.Append ("/// </param>");
-					}
-				}
-				if (method.ReturnType != null && method.ReturnType.FullyQualifiedName != "System.Void") {
-					builder.Append (Environment.NewLine);
-					builder.Append (engine.ThisLineIndent);
-					builder.Append("/// <returns>\n");
-					builder.Append (engine.ThisLineIndent);
-					builder.Append ("/// A <see cref=\"");
-					builder.Append (method.ReturnType.FullyQualifiedName);
-					builder.Append ("\"/>\n");
-					builder.Append (engine.ThisLineIndent);
-					builder.Append ("/// </returns>");
-				}
+				AppendMethodComment (builder, method);
 
 			}
 			IProperty property = result as IProperty;
@@ -123,20 +135,27 @@ namespace CSharpBinding
 		
 		bool IsInsideClassBody (IClass insideClass, int line, int column)
 		{
-			foreach (IMethod m in insideClass.Methods) {
-				if (m.BodyRegion.IsInside (line, column)) {
-					return false;
+			if (insideClass.Methods != null) {
+				foreach (IMethod m in insideClass.Methods) {
+					if (m.BodyRegion.IsInside (line, column)) {
+						return false;
+					}
 				}
 			}
 			
-			foreach (IProperty p in insideClass.Properties) {
-				if (p.BodyRegion.IsInside (line, column)) {
-					return false;
+			if (insideClass.Properties != null) {
+				foreach (IProperty p in insideClass.Properties) {
+					if (p.BodyRegion.IsInside (line, column)) {
+						return false;
+					}
 				}
 			}
-			foreach (IIndexer p in insideClass.Indexer) {
-				if (p.BodyRegion.IsInside (line, column)) {
-					return false;
+			
+			if (insideClass.Indexer != null) {
+				foreach (IIndexer p in insideClass.Indexer) {
+					if (p.BodyRegion.IsInside (line, column)) {
+						return false;
+					}
 				}
 			}
 			return true;
@@ -236,12 +255,18 @@ namespace CSharpBinding
 						
 						IClass insideClass = LookupClass (unit, lin, col);
 						if (insideClass != null) {
-							if (!IsInsideClassBody (insideClass, lin, col))
-								break;
-							string body = GenerateBody (insideClass, lin);
-							if (!String.IsNullOrEmpty (body)) {
-								generatedComment.Append (body);
+							if (insideClass.ClassType == ClassType.Delegate) {
+								AppendSummary (generatedComment);
+								AppendMethodComment (generatedComment, insideClass.Methods[0]);
 								generateStandardComment = false;
+							} else {
+								if (!IsInsideClassBody (insideClass, lin, col))
+									break;
+								string body = GenerateBody (insideClass, lin);
+								if (!String.IsNullOrEmpty (body)) {
+									generatedComment.Append (body);
+									generateStandardComment = false;
+								}
 							}
 						}
 					}
@@ -482,7 +507,6 @@ namespace CSharpBinding
 				Editor.CursorPosition = pos;
 				Editor.Select (pos, pos);
 			}
-			
 			return true;
 		}
 		
