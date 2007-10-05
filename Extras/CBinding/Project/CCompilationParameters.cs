@@ -52,6 +52,9 @@ namespace CBinding
 		[ItemProperty ("WarningLevel")]
 		private WarningLevel warning_level = WarningLevel.Normal;
 		
+		[ItemProperty ("WarningsAsErrors")]
+		private bool warnings_as_errors = false;
+		
 		[ItemProperty ("OptimizationLevel")]
 		private int optimization = 0;
 		
@@ -72,6 +75,11 @@ namespace CBinding
 		public WarningLevel WarningLevel {
 			get { return warning_level; }
 			set { warning_level = value; }
+		}
+		
+		public bool WarningsAsErrors {
+			get { return warnings_as_errors; }
+			set { warnings_as_errors = value; }
 		}
 		
 		public int OptimizationLevel {

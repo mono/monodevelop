@@ -160,6 +160,9 @@ namespace CBinding
 				break;
 			}
 			
+			if (cp.WarningsAsErrors)
+				args.Append ("-Werror ");
+			
 			args.Append ("-O" + cp.OptimizationLevel + " ");
 			
 			if (cp.ExtraCompilerArguments != null && cp.ExtraCompilerArguments.Length > 0) {
@@ -614,7 +617,7 @@ namespace CBinding
 		bool CheckApp (string app)
 		{
 			try {
-				ProcessWrapper p = Runtime.ProcessService.StartProcess (linkerCommand, "--version", null, null);
+				ProcessWrapper p = Runtime.ProcessService.StartProcess (app, "--version", null, null);
 				p.WaitForOutput ();
 				return true;
 			} catch {

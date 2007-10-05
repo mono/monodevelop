@@ -82,6 +82,8 @@ namespace CBinding
 				break;
 			}
 			
+			warningsAsErrorsCheckBox.Active = compilationParameters.WarningsAsErrors;
+			
 			optimizationSpinButton.Value = compilationParameters.OptimizationLevel;
 			
 			switch (configuration.CompileTarget)
@@ -193,6 +195,8 @@ namespace CBinding
 				compilationParameters.WarningLevel = WarningLevel.Normal;
 			else
 				compilationParameters.WarningLevel = WarningLevel.All;
+			
+			compilationParameters.WarningsAsErrors = warningsAsErrorsCheckBox.Active;
 			
 			compilationParameters.OptimizationLevel = (int)optimizationSpinButton.Value;
 			

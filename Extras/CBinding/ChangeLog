@@ -1,3 +1,12 @@
+2007-10-05  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
+	* Gui/CodeGenerationPanel.cs, Project/CCompilationParameters.cs,
+	  gtk-gui/CBinding.CodeGenerationPanel.cs, gtk-gui/gui.stetic,
+	  Compiler/GNUCompiler.cs: Added "Treat warnings as errors" option to code
+	  generation panel and implemented it for gcc and g++.
+	* Parser/TagDatabaseManager.cs: Suppressed unused variable warning and added
+	  checks for faulty ctags tags.
+
 2007-10-03  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* CBinding.mdp, gtk-gui/gui.stetic: Target GTK# 2.8.

@@ -195,7 +195,8 @@ namespace CBinding.Parser
 					
 					Tag tag = ParseTag (tagEntry);
 					
-					AddInfo (fileInfo, tag, ctags_output);
+					if (tag != null)
+						AddInfo (fileInfo, tag, ctags_output);
 				}
 			}
 			
@@ -233,7 +234,8 @@ namespace CBinding.Parser
 					
 					Tag tag = ParseTag (tagEntry);
 					
-					AddInfo (info, tag, ctags_output);
+					if (tag != null)
+						AddInfo (info, tag, ctags_output);
 				}
 			}			
 			
@@ -344,6 +346,10 @@ namespace CBinding.Parser
 			i1 = i2 + 2;
 			i2 = tagEntry.IndexOf (delimiter, i1) - 1;
 			
+			// apparentlty sometimes ctags will create faulty tags, make sure this is not one of them
+			if (i2 < 0 || i1 < 0)
+				return null;
+			
 			pattern = tagEntry.Substring (i1 + 1, i2 - i1 - 1);
 			
 			tagField = tagEntry.Substring (i2 + 5);
@@ -361,12 +367,12 @@ namespace CBinding.Parser
 				if (index > 0) {
 					string key = field.Substring (0, index);
 					string val = field.Substring (index + 1);
+					
 					switch (key) {
 					case "access":
 						try {
 							access = (AccessModifier)System.Enum.Parse (typeof(AccessModifier), val, true);
-						} catch (ArgumentException ae) {
-							//This modifier (e.g. "friend") not supported by parser
+						} catch (ArgumentException) {
 						}
 						break;
 					case "class":
@@ -512,7 +518,7 @@ namespace CBinding.Parser
 					if (tagEntry.Substring (0, tagEntry.IndexOf ('\t')).Equals (name)) {
 						tag = ParseTag (tagEntry);
 						
-						if (tag.Kind == kind)
+						if (tag != null && tag.Kind == kind)
 							return tag;
 					}
 				}
@@ -539,7 +545,7 @@ namespace CBinding.Parser
 					if (tagEntry.Substring (0, tagEntry.IndexOf ('\t')).Equals (name)) {
 						tag = ParseTag (tagEntry);
 						
-						if (tag.Kind == kind)
+						if (tag != null && tag.Kind == kind)
 							return tag;
 					}
 				}

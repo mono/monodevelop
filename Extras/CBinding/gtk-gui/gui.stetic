@@ -9,14 +9,9 @@
     <widget-library name="../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../build/bin/MonoDevelop.Projects.Gui.dll" />
     <widget-library name="../../../build/AddIns/MonoDevelop.Deployment.dll" />
-    <widget-library name="../../../build/AddIns/MonoDevelop.Deployment.dll" />
-    <widget-library name="../../../build/bin/MonoDevelop.Projects.Gui.dll" />
-    <widget-library name="../../../build/bin/MonoDevelop.Components.dll" />
-    <widget-library name="../../../build/bin/MonoDevelop.Ide.dll" />
-    <widget-library name="../../../build/AddIns/MonoDevelop.Deployment.Linux.dll" />
     <widget-library name="../../../build/AddIns/MonoDevelop.Deployment.Linux.dll" />
   </import>
-  <widget class="Gtk.Bin" id="CBinding.CodeGenerationPanel" design-size="578 360">
+  <widget class="Gtk.Bin" id="CBinding.CodeGenerationPanel" design-size="611 396">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.Notebook" id="notebook1">
@@ -155,7 +150,6 @@ Shared Object</property>
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="Label" translatable="yes">no warnings</property>
-                        <property name="Active">True</property>
                         <property name="DrawIndicator">True</property>
                         <property name="HasLabel">True</property>
                         <property name="UseUnderline">True</property>
@@ -197,6 +191,22 @@ Shared Object</property>
                       </widget>
                       <packing>
                         <property name="Position">2</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.CheckButton" id="warningsAsErrorsCheckBox">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="Label" translatable="yes">Treat warnings as errors</property>
+                        <property name="DrawIndicator">True</property>
+                        <property name="HasLabel">True</property>
+                        <property name="UseUnderline">True</property>
+                      </widget>
+                      <packing>
+                        <property name="Position">3</property>
                         <property name="AutoSize">True</property>
                         <property name="Expand">False</property>
                         <property name="Fill">False</property>
@@ -315,7 +325,7 @@ Shared Object</property>
                             <property name="LabelProp" translatable="yes">Extra Compiler Options</property>
                           </widget>
                           <packing>
-                            <property name="AutoSize">True</property>
+                            <property name="AutoSize">False</property>
                             <property name="XOptions">Fill</property>
                             <property name="YOptions">Fill</property>
                             <property name="XExpand">False</property>
@@ -386,10 +396,11 @@ Example:
                             <property name="LeftAttach">1</property>
                             <property name="RightAttach">2</property>
                             <property name="AutoSize">False</property>
+                            <property name="YOptions">Fill</property>
                             <property name="XExpand">True</property>
                             <property name="XFill">True</property>
                             <property name="XShrink">False</property>
-                            <property name="YExpand">True</property>
+                            <property name="YExpand">False</property>
                             <property name="YFill">True</property>
                             <property name="YShrink">False</property>
                           </packing>
