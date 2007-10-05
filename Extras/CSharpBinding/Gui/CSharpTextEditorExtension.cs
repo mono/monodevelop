@@ -788,7 +788,7 @@ namespace CSharpBinding
 			ArrayList classMembers = new ArrayList ();
 			ArrayList interfaceMembers = new ArrayList ();
 			
-			FindOverridables (pctx, cls, classMembers, interfaceMembers);
+			FindOverridables (pctx, cls, cls, classMembers, interfaceMembers);
 			foreach (object mem in interfaceMembers)
 				if (!classMembers.Contains (mem))
 					classMembers.Add (mem);
@@ -801,7 +801,45 @@ namespace CSharpBinding
 			return completionProvider;
 		}
 		
-		void FindOverridables (IParserContext pctx, IClass cls, ArrayList classMembers, ArrayList interfaceMembers)
+		bool IsEqual (ParameterCollection c1, ParameterCollection c2)
+		{
+			if (c1.Count != c2.Count)
+				return false;
+			for (int i = 0; i < c1.Count; i++) {
+				if (c1[i].ReturnType.FullyQualifiedName != c2[i].ReturnType.FullyQualifiedName)
+					return false;
+			}
+			return true;
+		}
+		
+		bool CanOverrideMethod (IClass cls, IMethod method)
+		{
+			foreach (IMethod m in cls.Methods) {
+				if (method.Name == m.Name && IsEqual (method.Parameters, m.Parameters))
+					return false;
+			}
+			return true;
+		}
+		
+		bool CanOverrideProperty (IClass cls, IProperty prop)
+		{
+			foreach (IProperty p in cls.Properties) {
+				if (prop.Name == p.Name)
+					return false;
+			}
+			return true;
+		}
+		
+		bool CanOverrideIndexer (IClass cls, IIndexer idx)
+		{
+			foreach (IProperty i in cls.Indexer) {
+				if (idx.Name == i.Name && IsEqual (idx.Parameters, i.Parameters))
+					return false;
+			}
+			return true;
+		}
+		
+		void FindOverridables (IParserContext pctx, IClass motherClass, IClass cls, ArrayList classMembers, ArrayList interfaceMembers)
 		{
 			foreach (IReturnType rt in cls.BaseTypes)
 			{
@@ -818,15 +856,15 @@ namespace CSharpBinding
 				ArrayList list = isInterface ? interfaceMembers : classMembers;
 				
 				foreach (IMethod m in baseCls.Methods) {
-					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed)
+					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && CanOverrideMethod (motherClass, m))
 						list.Add (m);
 				}
 				foreach (IProperty m in baseCls.Properties) {
-					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed)
+					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && CanOverrideProperty (motherClass, m))
 						list.Add (m);
 				}
 				foreach (IIndexer m in baseCls.Indexer) {
-					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed)
+					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && CanOverrideIndexer (motherClass, m))
 						list.Add (m);
 				}
 				foreach (IEvent m in baseCls.Events) {
@@ -834,7 +872,7 @@ namespace CSharpBinding
 						list.Add (m);
 				}
 				
-				FindOverridables (pctx, baseCls, classMembers, isInterface ? interfaceMembers : null);
+				FindOverridables (pctx, motherClass, baseCls, classMembers, isInterface ? interfaceMembers : null);
 			}
 		}
 		

@@ -1,5 +1,10 @@
 2007-10-05  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/CSharpTextEditorExtension.cs: fixed Bug 325523 - MD override
+	  auto-implementation ignores existing implementations.
+
+2007-10-05  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/CSharpTextEditorExtension.cs: fixed Bug 330793 - Delegate
 	  autocommenting crashes.
 
