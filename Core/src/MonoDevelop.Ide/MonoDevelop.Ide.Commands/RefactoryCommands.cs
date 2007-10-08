@@ -188,12 +188,46 @@ namespace MonoDevelop.Ide.Commands
 			
 			return sb.ToString ();
 		}
+		string GetName (IReturnType c, bool markup)
+		{
+			StringBuilder result = new StringBuilder ();
+			result.Append (CodeRefactorer.RemoveGenericParamSuffix (c.Name));
+			if (c.GenericArguments != null && c.GenericArguments.Count > 0) {
+				result.Append (markup ? "&lt;" : "<");
+				for (int i = 0; i < c.GenericArguments.Count; i++)  {
+					result.Append (GetName (c.GenericArguments[i], markup));
+					if (i + 1 < c.GenericArguments.Count)
+						result.Append (", ");
+				}
+				result.Append (markup ? "&gt;" : ">");
+			}
+			return result.ToString ();
+		}
+		
+		string GetName (ILanguageItem item, bool markup)
+		{
+			StringBuilder result = new StringBuilder ();
+			if (item is IClass) {
+				IClass c = (IClass)item;
+				result.Append (CodeRefactorer.RemoveGenericParamSuffix (item.Name));
+				if (c.GenericParameters != null) {
+					for (int i = 0; i < c.GenericParameters.Count; i++)  {
+						result.Append (c.GenericParameters[i].Name);
+						if (i + 1 < c.GenericParameters.Count)
+							result.Append (", ");
+					}
+				}
+			} else {
+				result.Append (CodeRefactorer.RemoveGenericParamSuffix (item.Name));
+			}
+			return result.ToString ();
+		}
 		
 		CommandInfo BuildRefactoryMenuForItem (IParserContext ctx, IParseInformation pinfo, IClass eclass, ILanguageItem item)
 		{
-			Refactorer refactorer = new Refactorer (ctx, pinfo, eclass, item);
+			Refactorer refactorer = new Refactorer (ctx, pinfo, eclass, item, null);
 			CommandInfoSet ciset = new CommandInfoSet ();
-			string itemName = EscapeName (item.Name);
+			string itemName = EscapeName (GetName (item, true));
 			bool canRename = false;
 			string txt;
 			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item))
@@ -259,10 +293,10 @@ namespace MonoDevelop.Ide.Commands
 					foreach (IReturnType rt in cls.BaseTypes) {
 						IClass iface = ctx.GetClass (rt.FullyQualifiedName, null, true, true);
 						if (iface != null && iface.ClassType == ClassType.Interface) {
-							Refactorer ifaceRefactorer = new Refactorer (ctx, pinfo, cls, iface);
+							Refactorer ifaceRefactorer = new Refactorer (ctx, pinfo, cls, iface, rt);
 							
-							impset.CommandInfos.Add (iface.Name, new RefactoryOperation (ifaceRefactorer.ImplementImplicitInterface));
-							expset.CommandInfos.Add (iface.Name, new RefactoryOperation (ifaceRefactorer.ImplementExplicitInterface));
+							impset.CommandInfos.Add (this.GetName (rt, false), new RefactoryOperation (ifaceRefactorer.ImplementImplicitInterface));
+							expset.CommandInfos.Add (this.GetName (rt, false), new RefactoryOperation (ifaceRefactorer.ImplementExplicitInterface));
 							added = true;
 						}
 					}
@@ -334,13 +368,15 @@ namespace MonoDevelop.Ide.Commands
 		IParserContext ctx;
 		ILanguageItem item;
 		IClass klass;
+		IReturnType hintReturnType;
 		
-		public Refactorer (IParserContext ctx, IParseInformation pinfo, IClass klass, ILanguageItem item)
+		public Refactorer (IParserContext ctx, IParseInformation pinfo, IClass klass, ILanguageItem item, IReturnType hintReturnType)
 		{
 			this.pinfo = pinfo;
 			this.klass = klass;
 			this.item = item;
 			this.ctx = ctx;
+			this.hintReturnType = hintReturnType;
 		}
 		
 		public void GoToDeclaration ()
@@ -454,7 +490,7 @@ namespace MonoDevelop.Ide.Commands
 			if (iface == null)
 				return;
 			
-			refactorer.ImplementInterface (pinfo, klass, iface, explicitly);
+			refactorer.ImplementInterface (pinfo, klass, iface, explicitly, iface, this.hintReturnType);
 		}
 		
 		public void ImplementImplicitInterface ()

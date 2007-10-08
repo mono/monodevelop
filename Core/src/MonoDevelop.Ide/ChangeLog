@@ -1,5 +1,10 @@
 2007-10-08  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Fixed Bug 325223 -
+	  Interface refactory doesn't implement correctly (4 bugs).
+
+2007-10-08  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.StandardHeader/StandardHeaderPanel.cs: Overworked the
 	  standard header panel, fixing issue "Bug 331657 - Standard header
 	  settings are not saved".
