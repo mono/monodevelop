@@ -221,7 +221,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Internal child MonoDevelop.Ide.Gui.Dialogs.ReplaceDialog.ActionArea
             Gtk.HButtonBox w18 = this.ActionArea;
             w18.Name = "dialog-action_area2";
-            w18.Spacing = 10;
+            w18.Spacing = 6;
             w18.BorderWidth = ((uint)(5));
             w18.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog-action_area2.Gtk.ButtonBox+ButtonBoxChild
@@ -302,7 +302,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
                 this.Child.ShowAll();
             }
             this.DefaultWidth = 642;
-            this.DefaultHeight = 303;
+            this.DefaultHeight = 309;
             this.findButton.HasDefault = true;
             this.Show();
         }

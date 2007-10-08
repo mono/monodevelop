@@ -51,14 +51,8 @@ namespace MonoDevelop.Ide.StandardHeaders
 			this.headerTextview.Buffer.Text         = StandardHeaderService.Header;
 			this.generateCommentsCheckbutton.Active = StandardHeaderService.GenerateComments;
 			this.emitstandardHeaderCheckbutton.Active = StandardHeaderService.EmitStandardHeader;
-			
-			foreach (KeyValuePair<string, string> header in StandardHeaderService.CustomTemplates) {
-				templateCombobox.AppendText (header.Key);
-			}
-			foreach (KeyValuePair<string, string> header in StandardHeaderService.HeaderTemplates) {
-				templateCombobox.AppendText (header.Key);
-			}
-			
+			FillTemplateCombobox ();
+			ClearTemplateComboBox (this, EventArgs.Empty);
 			this.headerTextview.Buffer.Changed += new EventHandler (ClearTemplateComboBox);
 			
 			this.addButton.Clicked += delegate {
@@ -66,7 +60,8 @@ namespace MonoDevelop.Ide.StandardHeaders
 				Gtk.ResponseType response = (Gtk.ResponseType)newHeaderTemplateDialog.Run ();
 				if (response == Gtk.ResponseType.Ok) {
 					StandardHeaderService.AddTemplate (newHeaderTemplateDialog.HeaderName, this.headerTextview.Buffer.Text);
-					templateCombobox.AppendText (newHeaderTemplateDialog.HeaderName);
+					FillTemplateCombobox ();
+					templateCombobox.Active = StandardHeaderService.CustomTemplates.Count - 1; 
 				}
 				newHeaderTemplateDialog.Destroy ();
 			};
@@ -79,36 +74,57 @@ namespace MonoDevelop.Ide.StandardHeaders
 					templateCombobox.RemoveText (templateCombobox.Active);
 				}
 			};
-			
-			templateCombobox.Changed += delegate {
+			this.setHeaderButton.Clicked += delegate {
 				if (templateCombobox.Active < 0)
 					return;
-				this.headerTextview.Buffer.Changed -= new System.EventHandler (ClearTemplateComboBox);
-				this.addButton.Sensitive = false;
-				foreach (System.Collections.Generic.KeyValuePair<string, string> header in StandardHeaderService.CustomTemplates) {
-					if (header.Key == templateCombobox.ActiveText) {
-						this.headerTextview.Buffer.Text = header.Value;
-						this.removeButton.Sensitive = true;
-						break;
-					}
-				}
-							
-				foreach (System.Collections.Generic.KeyValuePair<string, string> header in StandardHeaderService.HeaderTemplates) {
-					if (header.Key == templateCombobox.ActiveText) {
-						this.headerTextview.Buffer.Text = header.Value;
-						this.removeButton.Sensitive = false;
-						break;
-					}
-				}
-				this.headerTextview.Buffer.Changed += new System.EventHandler (ClearTemplateComboBox);
+				this.headerTextview.Buffer.Text = GetSelectedTemplateText (); 
 			};
+			this.templateCombobox.Changed += delegate {
+				this.setHeaderButton.Sensitive = this.headerTextview.Buffer.Text != GetSelectedTemplateText ();
+				this.addButton.Sensitive    = templateCombobox.Active < 0;
+				this.removeButton.Sensitive = !addButton.Sensitive && templateCombobox.Active < StandardHeaderService.CustomTemplates.Count;
+			};
+		}
+		int textCount = 0;
+		void FillTemplateCombobox ()
+		{
+			while (textCount > 0) 
+				templateCombobox.RemoveText (--textCount);
+			foreach (KeyValuePair<string, string> header in StandardHeaderService.CustomTemplates) 
+				templateCombobox.InsertText (textCount++, header.Key);
+			foreach (KeyValuePair<string, string> header in StandardHeaderService.HeaderTemplates) 
+				templateCombobox.InsertText (textCount++, header.Key);
+		}
+		string GetSelectedTemplateText ()
+		{
+			if (templateCombobox.Active < 0)
+				return null;
+			if (templateCombobox.Active < StandardHeaderService.CustomTemplates.Count)
+				return StandardHeaderService.CustomTemplates [templateCombobox.Active].Value;
+			return StandardHeaderService.HeaderTemplates [templateCombobox.Active - StandardHeaderService.CustomTemplates.Count].Value;
 		}
 		
 		void ClearTemplateComboBox (object sender, EventArgs e)
 		{
-			templateCombobox.Active     = -1;
-			this.removeButton.Sensitive = false;
-			this.addButton.Sensitive    = true;
+			int i = 0, active = -1;
+			foreach (KeyValuePair<string, string> header in StandardHeaderService.CustomTemplates) {
+				if (header.Value == this.headerTextview.Buffer.Text)
+					active = i;
+				i++;
+			}
+			foreach (KeyValuePair<string, string> header in StandardHeaderService.HeaderTemplates) {
+				if (header.Value == this.headerTextview.Buffer.Text)
+					active = i;
+				i++;
+			}
+			if (active >= 0) {
+				templateCombobox.Active = active; 
+			} else {
+				templateCombobox.Active  = -1;
+			}
+			this.addButton.Sensitive    = templateCombobox.Active < 0;
+			this.removeButton.Sensitive = !addButton.Sensitive && templateCombobox.Active < StandardHeaderService.CustomTemplates.Count;
+			this.setHeaderButton.Sensitive = false;
 		}
 		
 		public bool StorePanelContents()

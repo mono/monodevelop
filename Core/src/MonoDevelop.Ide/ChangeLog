@@ -1,3 +1,9 @@
+2007-10-08  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderPanel.cs: Overworked the
+	  standard header panel, fixing issue "Bug 331657 - Standard header
+	  settings are not saved".
+
 2007-10-05  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs,
