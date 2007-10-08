@@ -29,6 +29,7 @@
 using System;
 using System.CodeDom;
 using System.Collections;
+using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Parser;
@@ -108,25 +109,54 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return m;
 		}
 		
-		public IMember ImplementMember (IClass cls, string prefix, bool explicitly, IMember member)
+		public IMember ImplementMember (IClass cls, string prefix, bool explicitly, IMember member, IClass declaringClass, IReturnType hintReturnType)
 		{
 			RefactorerContext gctx = GetGeneratorContext (cls);
 			IRefactorer gen = GetGeneratorForClass (cls);
-			IMember m = gen.ImplementMember (gctx, cls, prefix, explicitly, member);
+			IMember m = gen.ImplementMember (gctx, cls, prefix, explicitly, member, declaringClass, hintReturnType);
 			gctx.Save ();
 			return m;
 		}
+
 		
-		string ExplicitNamePrefix (IParseInformation pinfo, IClass klass, IClass iface)
+		string GenerateGenerics (IRefactorer gen, IClass iface, IReturnType hintReturnType)
 		{
+			StringBuilder result = new StringBuilder ();
+			if (iface != null && iface.GenericParameters != null && iface.GenericParameters.Count > 0) {
+				if (hintReturnType != null && hintReturnType.GenericArguments != null) {
+					result.Append ("<");
+					for (int i = 0; i < hintReturnType.GenericArguments.Count; i++)  {
+						result.Append (gen.ConvertToLanguageTypeName (RemoveGenericParamSuffix (hintReturnType.GenericArguments[i].FullyQualifiedName)));
+						result.Append (GenerateGenerics (gen, iface, hintReturnType.GenericArguments[i]));
+						if (i + 1 < hintReturnType.GenericArguments.Count)
+							result.Append (", ");
+					}
+					result.Append (">");
+				}
+			}
+			return result.ToString ();
+		}
+		
+		public static string RemoveGenericParamSuffix (string name)
+		{
+			int idx = name.IndexOf('`');
+			if (idx > 0)
+				return name.Substring (0, idx);
+			return name;
+		}
+
+		string ExplicitNamePrefix (IParseInformation pinfo, IClass klass, IClass iface, IReturnType hintReturnType)
+		{
+//			RefactorerContext gctx = GetGeneratorContext (klass);
+			IRefactorer gen = GetGeneratorForClass (klass);
 			if (iface.Namespace == klass.Namespace)
-				return iface.Name + ".";
+				return RemoveGenericParamSuffix (iface.Name) + GenerateGenerics (gen, iface, hintReturnType) + ".";
 			
 			string name = iface.FullyQualifiedName;
 			int maxLen = name.LastIndexOf ('.') - 1;
 			
 			if (maxLen < 0)
-				return iface.Name + ".";
+				return RemoveGenericParamSuffix (iface.Name) + GenerateGenerics (gen, iface, hintReturnType) + ".";
 			
 			string longestMatch = null;
 			
@@ -158,12 +188,12 @@ namespace MonoDevelop.Projects.CodeGeneration
 			}
 			
 			if (longestMatch != null)
-				return name.Substring (longestMatch.Length + 1) + ".";
+				return RemoveGenericParamSuffix (name.Substring (longestMatch.Length + 1)) + GenerateGenerics (gen, iface, hintReturnType) + ".";
 			
-			return name + ".";
+			return RemoveGenericParamSuffix (name) + GenerateGenerics (gen, iface, hintReturnType) + ".";
 		}
 		
-		public void ImplementInterface (IParseInformation pinfo, IClass klass, IClass iface, bool explicitly)
+		public void ImplementInterface (IParseInformation pinfo, IClass klass, IClass iface, bool explicitly, IClass declaringClass, IReturnType hintReturnType)
 		{
 			RefactorerContext gctx = GetGeneratorContext (klass);
 			IRefactorer gen = GetGeneratorForClass (klass);
@@ -182,11 +212,11 @@ namespace MonoDevelop.Projects.CodeGeneration
 						("Error while implementing interface '{0}' in '{1}': base type '{2}' was not found.", klass, iface, baseClass)
 					);
 				else
-					ImplementInterface (pinfo, klass, baseClass, explicitly);
+					ImplementInterface (pinfo, klass, baseClass, explicitly, declaringClass, hintReturnType);
 			}
 			
 			if (explicitly)
-				prefix = ExplicitNamePrefix (pinfo, klass, iface);
+				prefix = ExplicitNamePrefix (pinfo, klass, iface, hintReturnType);
 			
 			// Stub out non-implemented events defined by @iface
 			for (i = 0; i < iface.Events.Count; i++) {
@@ -202,7 +232,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				if (alreadyImplemented)
 					continue;
 				
-				if ((newMember = gen.ImplementMember (gctx, klass, prefix, explicitly, ev)) != null)
+				if ((newMember = gen.ImplementMember (gctx, klass, prefix, explicitly, ev, declaringClass, hintReturnType)) != null)
 					klass = newMember.DeclaringType;
 			}
 			
@@ -220,7 +250,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				if (alreadyImplemented)
 					continue;
 				
-				if ((newMember = gen.ImplementMember (gctx, klass, prefix, explicitly, method)) != null)
+				if ((newMember = gen.ImplementMember (gctx, klass, prefix, explicitly, method, iface, hintReturnType)) != null)
 					klass = newMember.DeclaringType;
 			}
 			
@@ -238,7 +268,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				if (alreadyImplemented)
 					continue;
 				
-				if ((newMember = gen.ImplementMember (gctx, klass, prefix, explicitly, prop)) != null)
+				if ((newMember = gen.ImplementMember (gctx, klass, prefix, explicitly, prop, declaringClass, hintReturnType)) != null)
 					klass = newMember.DeclaringType;
 			}
 			

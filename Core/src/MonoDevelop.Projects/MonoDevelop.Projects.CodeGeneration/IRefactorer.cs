@@ -43,7 +43,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		MemberReferenceCollection FindClassReferences (RefactorerContext ctx, string fileName, IClass cls);
 		
 		IMember AddMember (RefactorerContext ctx, IClass cls, CodeTypeMember memberInfo);
-		IMember ImplementMember (RefactorerContext ctx, IClass cls, string prefix, bool explicitly, IMember member);
+		IMember ImplementMember (RefactorerContext ctx, IClass cls, string prefix, bool explicitly, IMember member, IClass declaringClass, IReturnType hintReturnType);
 		void RemoveMember (RefactorerContext ctx, IClass cls, IMember member);
 		IMember RenameMember (RefactorerContext ctx, IClass cls, IMember member, string newName);
 		IMember ReplaceMember (RefactorerContext ctx, IClass cls, IMember oldMember, CodeTypeMember memberInfo);
@@ -56,6 +56,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 		MemberReferenceCollection FindParameterReferences (RefactorerContext ctx, string fileName, IParameter param);
 		
 		IMember EncapsulateField (RefactorerContext ctx, IClass cls, IField field, string propName);
+		
+		string ConvertToLanguageTypeName (string netTypeName);
 	}
 	
 	public class MemberReference
