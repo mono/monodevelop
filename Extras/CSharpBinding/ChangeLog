@@ -1,5 +1,10 @@
 2007-10-08  Mike Krüger <mkrueger@novell.com> 
 
+	* Parser/CodeGenerator.cs: fixed "Bug 325223 - Interface refactory doesn't
+	  implement correctly (4 bugs)".
+
+2007-10-08  Mike Krüger <mkrueger@novell.com> 
+
 	* Parser/ExpressionFinder.cs: Worked on "Bug 330717 - Error while updating
 	  status of command. CurrentRefactoryOperations". Need to get reply, if
 	  this bug is fixed (couldn't reproduce the problem).

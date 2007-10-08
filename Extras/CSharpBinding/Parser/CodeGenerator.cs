@@ -66,6 +66,14 @@ namespace CSharpBinding.Parser
 		{
 			return csharpProvider.CreateGenerator ();
 		}
+		public override string ConvertToLanguageTypeName (string netTypeName)
+		{
+			Console.WriteLine ("Convert : '{0}'", netTypeName);
+			string result = CSharpAmbience.TypeConversionTable[netTypeName] as string;
+			if (result != null)
+				return result;
+			return netTypeName;
+		}
 		
 		public override IClass RenameClass (RefactorerContext ctx, IClass cls, string newName)
 		{
@@ -818,5 +826,6 @@ namespace CSharpBinding.Parser
 			else
 				return fullName.Substring (i+1);
 		}
+		
 	}
 }
