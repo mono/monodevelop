@@ -227,7 +227,7 @@ namespace AspNetAddIn
 				if (configuration.DebugMode)
 					envVars ["MONO_OPTIONS"] = "--debug";
 				
-				IProcessAsyncOperation op = handler.Execute ("xsp", XspParameters.GetXspParameters (), configuration.SourceDirectory, envVars, console);
+				IProcessAsyncOperation op = handler.Execute (xspVersion, XspParameters.GetXspParameters (), configuration.SourceDirectory, envVars, console);
 				monitor.CancelRequested += delegate {  op.Cancel (); };
 				operationMonitor.AddOperation (op);
 				
