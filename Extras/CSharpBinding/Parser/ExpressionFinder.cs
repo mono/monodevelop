@@ -214,6 +214,8 @@ namespace CSharpBinding.Parser
 		#region FindFullExpression
 		public ExpressionResult FindFullExpression(string inText, int offset)
 		{
+			if (inText == null)
+				return new ExpressionResult (null);
 			int offsetWithoutComments = offset;
 			string textWithoutComments = FilterComments(inText, ref offsetWithoutComments);
 			string expressionBeforeOffset = FindExpressionInternal(textWithoutComments, offsetWithoutComments);
@@ -394,10 +396,10 @@ namespace CSharpBinding.Parser
 		int initialOffset;
 		public string FilterComments(string text, ref int offset)
 		{
-			if (text.Length <= offset)
+			if (text == null || text.Length <= offset)
 				return null;
 			this.initialOffset = offset;
-			StringBuilder outText = new StringBuilder();
+			StringBuilder result = new StringBuilder();
 			int curOffset = 0;
 			
 			while (curOffset <= initialOffset) {
@@ -406,27 +408,27 @@ namespace CSharpBinding.Parser
 				switch (ch) {
 					case '@':
 						if (curOffset + 1 < text.Length && text[curOffset + 1] == '"') {
-							outText.Append(text[curOffset++]); // @
-							outText.Append(text[curOffset++]); // "
-							if (!ReadVerbatimString(outText, text, ref curOffset)) {
+							result.Append(text[curOffset++]); // @
+							result.Append(text[curOffset++]); // "
+							if (!ReadVerbatimString(result, text, ref curOffset)) {
 								return null;
 							}
 						}else{
-							outText.Append(ch);
+							result.Append(ch);
 							++curOffset;
 						}
 						break;
 					case '\'':
-						outText.Append(ch);
+						result.Append(ch);
 						curOffset++;
-						if(! ReadChar(outText, text, ref curOffset)) {
+						if(! ReadChar(result, text, ref curOffset)) {
 							return null;
 						}
 						break;
 					case '"':
-						outText.Append(ch);
+						result.Append(ch);
 						curOffset++;
-						if (!ReadString(outText, text, ref curOffset)) {
+						if (!ReadString(result, text, ref curOffset)) {
 							return null;
 						}
 						break;
@@ -453,13 +455,13 @@ namespace CSharpBinding.Parser
 						}
 						break;
 					default:
-						outText.Append(ch);
+						result.Append(ch);
 						++curOffset;
 						break;
 				}
 			}
 			
-			return outText.ToString();
+			return result.ToString();
 		}
 		
 		bool ReadToEOL(string text, ref int curOffset, ref int offset)
