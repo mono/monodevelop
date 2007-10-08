@@ -1,3 +1,9 @@
+2007-10-09  Ankit Jain  <jankit@novell.com>
+
+	* CSharpResourceIdBuilder.cs: Handle localized resources.
+	* VBNetResourceIdBuilder.cs: Handle localized resources.
+	* Utils.cs (TrySplitResourceName): New.
+
 2007-09-28  Ankit Jain  <jankit@novell.com>
 
 	* MsPrjHelper.cs (GetContents): Set DependsOn to its absolute path.

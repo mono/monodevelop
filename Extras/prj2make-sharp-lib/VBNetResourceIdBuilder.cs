@@ -40,8 +40,16 @@ namespace MonoDevelop.Prj2Make
 			if (String.IsNullOrEmpty (pf.DependsOn)) {
 				string fname = pf.Name;
 
-				if (String.Compare (Path.GetExtension (fname), ".resx", true) == 0)
+				if (String.Compare (Path.GetExtension (fname), ".resx", true) == 0) {
 					fname = Path.ChangeExtension (fname, ".resources");
+				} else {
+					string only_filename, culture, extn;
+					if (Utils.TrySplitResourceName (fname, out only_filename, out culture, out extn)) {
+						//remove the culture from fname
+						//foo.it.bmp -> foo.bmp
+						fname = only_filename + "." + extn;
+					}
+				}
 
 				string rname = Path.GetFileName (fname);
 
@@ -83,11 +91,17 @@ namespace MonoDevelop.Prj2Make
 					return null;
 				}
 
+				string culture, extn, only_filename;
+				if (Utils.TrySplitResourceName (pf.RelativePath, out only_filename, out culture, out extn))
+					extn = "." + culture + ".resources";
+				else
+					extn = ".resources";
+
 				string rname;
 				if (ns == null)
-					rname = classname + ".resources";
+					rname = classname + extn;
 				else
-					rname = ns + '.' + classname + ".resources";
+					rname = ns + '.' + classname + extn;
 				
 				if (String.IsNullOrEmpty (pf.Project.DefaultNamespace))
 					return rname; 

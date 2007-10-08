@@ -29,6 +29,8 @@
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -45,8 +47,16 @@ namespace MonoDevelop.Prj2Make
 				else
 					fname = Runtime.FileService.NormalizeRelativePath (fname);
 
-				if (String.Compare (Path.GetExtension (fname), ".resx", true) == 0)
+				if (String.Compare (Path.GetExtension (fname), ".resx", true) == 0) {
 					fname = Path.ChangeExtension (fname, ".resources");
+				} else {
+					string only_filename, culture, extn;
+					if (Utils.TrySplitResourceName (fname, out only_filename, out culture, out extn)) {
+						//remove the culture from fname
+						//foo.it.bmp -> foo.bmp
+						fname = only_filename + "." + extn;
+					}
+				}
 
 				string rname = fname.Replace ('/', '.');
 
@@ -95,10 +105,16 @@ namespace MonoDevelop.Prj2Make
 					return null;
 				}
 
-				if (ns == null)
-					return classname + ".resources";
+				string culture, extn, only_filename;
+				if (Utils.TrySplitResourceName (pf.RelativePath, out only_filename, out culture, out extn))
+					extn = "." + culture + ".resources";
 				else
-					return ns + '.' + classname + ".resources";
+					extn = ".resources";
+
+				if (ns == null)
+					return classname + extn;
+				else
+					return ns + '.' + classname + extn;
 			}
 		}
 
@@ -194,5 +210,6 @@ namespace MonoDevelop.Prj2Make
 
 			return sb.ToString ();
 		}
+
 	}
 }

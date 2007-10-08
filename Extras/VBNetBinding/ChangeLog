@@ -1,3 +1,8 @@
+2007-10-09  Ankit Jain  <jankit@novell.com>
+
+	* VBBindingCompilerServices.cs: Removed code for building resources. Its
+	done by DotNetProject now.
+
 2007-10-03  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* VBNetBinding.mdp: Fix warning level.

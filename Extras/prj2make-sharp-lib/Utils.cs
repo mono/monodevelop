@@ -30,6 +30,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -303,5 +305,60 @@ namespace MonoDevelop.Prj2Make
 
 			return null;
 		}
+
+		//Given a filename like foo.it.resx, splits it into - foo, it, resx
+		//Returns true only if a valid culture is found
+		//Note: hand-written as this can get called lotsa times
+		//Note: code duplicated in DotNetProject.GetCulture
+		public static bool TrySplitResourceName (string fname, out string only_filename, out string culture, out string extn)
+		{
+			only_filename = culture = extn = null;
+
+			int last_dot = -1;
+			int culture_dot = -1;
+			int i = fname.Length - 1;
+			while (i >= 0) {
+				if (fname [i] == '.') {
+					last_dot = i;
+					break;
+				}
+				i --;
+			}
+			if (i < 0)
+				return false;
+
+			i--;
+			while (i >= 0) {
+				if (fname [i] == '.') {
+					culture_dot = i;
+					break;
+				}
+				i --;
+			}
+			if (culture_dot < 0)
+				return false;
+
+			culture = fname.Substring (culture_dot + 1, last_dot - culture_dot - 1);
+			if (!CultureNamesTable.ContainsKey (culture))
+				return false;
+
+			only_filename = fname.Substring (0, culture_dot);
+			extn = fname.Substring (last_dot + 1);
+			return true;
+		}
+
+		static Dictionary<string, string> cultureNamesTable;
+		static Dictionary<string, string> CultureNamesTable {
+			get {
+				if (cultureNamesTable == null) {
+					cultureNamesTable = new Dictionary<string, string> ();
+					foreach (CultureInfo ci in CultureInfo.GetCultures (CultureTypes.AllCultures))
+						cultureNamesTable [ci.Name] = ci.Name;
+				}
+
+				return cultureNamesTable;
+			}
+		}
+
 	}
 }

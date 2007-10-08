@@ -7,8 +7,10 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.CodeDom.Compiler;
@@ -138,11 +140,6 @@ namespace CSharpBinding
 					break;
 			}
 			
-			string resgen = "resgen";
-			//ClrVersion.Default ?
-			if (configuration.ClrVersion == ClrVersion.Net_2_0)
-				resgen = "resgen2";
-
 			foreach (ProjectFile finfo in projectFiles) {
 				if (finfo.Subtype == Subtype.Directory)
 					continue;
@@ -152,17 +149,11 @@ namespace CSharpBinding
 						writer.WriteLine('"' + finfo.Name + '"');
 						break;
 					case BuildAction.EmbedAsResource:
-						//FIXME: Rationalize the use of monitor!
 						string fname = finfo.Name;
-						string resourceId;
-						CompilerError ce = GetResourceId (finfo, ref fname, resgen, out resourceId, monitor);
-						if (ce != null) {
-							CompilerResults cr = new CompilerResults (new TempFileCollection ());
-							cr.Errors.Add (ce);
+						if (String.Compare (Path.GetExtension (fname), ".resx", true) == 0)
+							fname = Path.ChangeExtension (fname, ".resources");
 
-							return new DefaultCompilerResult (cr, String.Empty);
-						}
-						writer.WriteLine(@"""/res:{0},{1}""", fname, resourceId);
+						writer.WriteLine(@"""/res:{0},{1}""", fname, finfo.ResourceId);
 						break;
 					default:
 						continue;
@@ -203,93 +194,11 @@ namespace CSharpBinding
 			ICompilerResult result = ParseOutput(tf, output, error);
 			if (result.CompilerOutput.Trim () != "")
 				monitor.Log.WriteLine (result.CompilerOutput);
-			
+
 			Runtime.FileService.DeleteFile (responseFileName);
 			Runtime.FileService.DeleteFile (output);
 			Runtime.FileService.DeleteFile (error);
 			return result;
-		}
-
-		CompilerError GetResourceId (ProjectFile finfo, ref string fname, string resgen, out string resourceId, IProgressMonitor monitor)
-		{
-			resourceId = finfo.ResourceId;
-			if (resourceId == null) {
-				Console.WriteLine (GettextCatalog.GetString ("Error: Unable to build ResourceId for {0}.", fname));
-				monitor.Log.WriteLine (GettextCatalog.GetString ("Error: Unable to build ResourceId for {0}.", fname));
-
-				return new CompilerError (fname, 0, 0, String.Empty,
-						GettextCatalog.GetString ("Unable to build ResourceId for {0}.", fname));
-			}
-
-			if (String.Compare (Path.GetExtension (fname), ".resx", true) != 0)
-				return null;
-
-			//Check whether resgen required
-			FileInfo finfo_resx = new FileInfo (fname);
-			FileInfo finfo_resources = new FileInfo (Path.ChangeExtension (fname, ".resources"));
-			if (finfo_resx.LastWriteTime < finfo_resources.LastWriteTime) {
-				fname = Path.ChangeExtension (fname, ".resources");
-				return null;
-			}
-
-			using (StringWriter sw = new StringWriter ()) {
-				Console.WriteLine ("Compiling resources\n{0}$ {1} /compile {2}", Path.GetDirectoryName (fname), resgen, fname);
-				monitor.Log.WriteLine (GettextCatalog.GetString (
-					"Compiling resource {0} with {1}", fname, resgen));
-				ProcessWrapper pw = null;
-				try {
-					ProcessStartInfo info = Runtime.ProcessService.CreateProcessStartInfo (
-									resgen, String.Format ("/compile \"{0}\"", fname),
-									Path.GetDirectoryName (fname), false);
-
-					if (PlatformID.Unix == Environment.OSVersion.Platform)
-						info.EnvironmentVariables ["MONO_IOMAP"] = "drive";
-
-					pw = Runtime.ProcessService.StartProcess (info, sw, sw, null);
-				} catch (System.ComponentModel.Win32Exception ex) {
-					Console.WriteLine (GettextCatalog.GetString (
-						"Error while trying to invoke '{0}' to compile resource '{1}' :\n {2}", resgen, fname, ex.ToString ()));
-					monitor.Log.WriteLine (GettextCatalog.GetString (
-						"Error while trying to invoke '{0}' to compile resource '{1}' :\n {2}", resgen, fname, ex.Message));
-
-					return new CompilerError (fname, 0, 0, String.Empty, ex.Message);
-				}
-
-				//FIXME: Handle exceptions
-				pw.WaitForOutput ();
-
-				if (pw.ExitCode == 0) {
-					fname = Path.ChangeExtension (fname, ".resources");
-				} else {
-					string output = sw.ToString ();
-					Console.WriteLine (GettextCatalog.GetString (
-						"Unable to compile ({0}) {1} to .resources. \nReason: \n{2}\n",
-						resgen, fname, output));
-					monitor.Log.WriteLine (GettextCatalog.GetString (
-						"Unable to compile ({0}) {1} to .resources. \nReason: \n{2}\n",
-						resgen, fname, output));
-
-					//Try to get the line/pos
-					int line = 0;
-					int pos = 0;
-					Match match = RegexErrorLinePos.Match (output);
-					if (match.Success && match.Groups.Count == 3) {
-						try {
-							line = int.Parse (match.Groups [1].Value);
-						} catch (FormatException){
-						}
-
-						try {
-							pos = int.Parse (match.Groups [2].Value);
-						} catch (FormatException){
-						}
-					}
-
-					return new CompilerError (fname, line, pos, String.Empty, output);
-				}
-			}
-
-			return null;
 		}
 
 		string GetCompilerName (ClrVersion version)
@@ -372,21 +281,11 @@ namespace CSharpBinding
 			errwr.Close();
 		}
 
+
 		// Snatched from our codedom code :-).
 		static Regex regexError = new Regex (@"^(\s*(?<file>.*)\((?<line>\d*)(,(?<column>\d*[\+]*))?\)(:|)\s+)*(?<level>\w+)\s*(?<number>.*):\s(?<message>.*)",
 			RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
-		// Used for parsing "Line 123, position 5" errors from tools
-		// like resgen, xamlg
-		static Regex regexErrorLinePos;
-		static Regex RegexErrorLinePos {
-			get {
-				if (regexErrorLinePos == null)
-					regexErrorLinePos = new Regex (@"Line (\d*), position (\d*)");
-				return regexErrorLinePos;
-			}
-		}
-		
 		private static CompilerError CreateErrorFromString(string error_string)
 		{
 			// When IncludeDebugInformation is true, prevents the debug symbols stats from braeking this.
@@ -416,5 +315,6 @@ namespace CSharpBinding
 			error.ErrorText=match.Result("${message}");
 			return error;
 		}
+
 	}
 }

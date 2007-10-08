@@ -142,11 +142,6 @@ namespace VBBinding {
 					writer.WriteLine(String.Concat("-r:", fileName));
 			}
 			
-			string resgen = "resgen";
-			//ClrVersion.Default ?
-			if (configuration.ClrVersion == ClrVersion.Net_2_0)
-				resgen = "resgen2";
-
 			// write source files and embedded resources
 			foreach (ProjectFile finfo in projectFiles) {
 				if (finfo.Subtype != Subtype.Directory) {
@@ -156,13 +151,11 @@ namespace VBBinding {
 						break;
 						
 						case BuildAction.EmbedAsResource:
-							//FIXME: Duplicate of code from CSharpBindingCompilerManager
 							string fname = finfo.Name;
-							string resourceId = GetResourceId (finfo, ref fname, resgen, monitor);
-							if (resourceId == null)
-								continue;
+							if (String.Compare (Path.GetExtension (fname), ".resx", true) == 0)
+								fname = Path.ChangeExtension (fname, ".resources");
 
-							writer.WriteLine(@"""-resource:{0},{1}""", fname, resourceId);
+							writer.WriteLine(@"""-resource:{0},{1}""", fname, finfo.ResourceId);
 							break;
 						default:
 							continue;
@@ -197,67 +190,6 @@ namespace VBBinding {
 			return result;
 		}
 		
-		string GetResourceId (ProjectFile finfo, ref string fname, string resgen, IProgressMonitor monitor)
-		{
-			string resourceId = finfo.ResourceId;
-			if (resourceId == null) {
-				Console.WriteLine ("Warning: Unable to build ResourceId for {0}. Ignoring.", fname);
-				monitor.Log.WriteLine ("Warning: Unable to build ResourceId for {0}. Ignoring.", fname);
-				return null;
-			}
-
-			if (String.Compare (Path.GetExtension (fname), ".resx", true) != 0)
-				return resourceId;
-
-			//Check whether resgen required
-			FileInfo finfo_resx = new FileInfo (fname);
-			FileInfo finfo_resources = new FileInfo (Path.ChangeExtension (fname, ".resources"));
-			if (finfo_resx.LastWriteTime < finfo_resources.LastWriteTime) {
-				fname = Path.ChangeExtension (fname, ".resources");
-				return null;
-			}
-
-			using (StringWriter sw = new StringWriter ()) {
-				Console.WriteLine ("Compiling resources\n{0}$ {1} /compile {2}", Path.GetDirectoryName (fname), resgen, fname);
-				monitor.Log.WriteLine (GettextCatalog.GetString (
-					"Compiling resource {0} with {1}", fname, resgen));
-				ProcessWrapper pw = null;
-				try {
-					ProcessStartInfo info = Runtime.ProcessService.CreateProcessStartInfo (
-									resgen, String.Format ("/compile \"{0}\"", fname),
-									Path.GetDirectoryName (fname), false);
-					if (PlatformID.Unix == Environment.OSVersion.Platform)
-						info.EnvironmentVariables ["MONO_IOMAP"] = "drive";
-					pw = Runtime.ProcessService.StartProcess (info, sw, sw, null);
-				} catch (System.ComponentModel.Win32Exception ex) {
-					Console.WriteLine (GettextCatalog.GetString (
-						"Error while trying to invoke '{0}' to compile resource '{1}' :\n {2}", resgen, fname, ex.ToString ()));
-					monitor.Log.WriteLine (GettextCatalog.GetString (
-						"Error while trying to invoke '{0}' to compile resource '{1}' :\n {2}", resgen, fname, ex.Message));
-
-					return null;
-				}
-
-				//FIXME: Handle exceptions
-				pw.WaitForOutput ();
-
-				if (pw.ExitCode == 0) {
-					fname = Path.ChangeExtension (fname, ".resources");
-				} else {
-					Console.WriteLine (GettextCatalog.GetString (
-						"Unable to compile ({0}) {1} to .resources. Ignoring. \nReason: \n{2}\n",
-						resgen, fname, sw.ToString ()));
-					monitor.Log.WriteLine (GettextCatalog.GetString (
-						"Unable to compile ({0}) {1} to .resources. Ignoring. \nReason: \n{2}\n",
-						resgen, fname, sw.ToString ()));
-
-					return null;
-				}
-			}
-
-			return resourceId;
-		}
-
 		// code duplication: see C# backend : CSharpBindingCompilerManager
 		void WriteManifestFile(string fileName)
 		{

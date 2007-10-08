@@ -1,3 +1,13 @@
+2007-10-09  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Projects/DotNetProject.cs (BuildResources): New. Moved
+	code for building resources from language bindings, to here.
+	(GetResourceId): Likewise.
+	(RegexErrorLinePos): Likewise.
+	(GenerateSatelliteAssemblies): New. For localized resources.
+	(GetCulture): New.
+	(CultureNamesTable): New.
+
 2007-10-08  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs,
