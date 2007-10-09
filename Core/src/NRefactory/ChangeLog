@@ -1,5 +1,9 @@
 2007-10-09  Mike Krüger <mkrueger@novell.com> 
 
+	* Project/Src/Lexer/CSharp/Lexer.cs: fixed compilation error.
+
+2007-10-09  Mike Krüger <mkrueger@novell.com> 
+
 	* Project/Src/Lexer/CSharp/Lexer.cs: Fixed "Bug 331772 - Unable to handle
 	  conditional class definition".
 

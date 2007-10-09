@@ -49,11 +49,13 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			bool canBeKeyword;
 			string directive = ReadIdent('#', out canBeKeyword);
 			string argument  = ReadToEndOfLine();
+			string define;
+			int idx;
 			switch (directive) {
 			case "#if":
 				readIf    = true;
-				string define = argument.Trim ();
-				int idx = define.IndexOfAny (new char [] { ' ', '\t' });
+				define = argument.Trim ();
+				idx = define.IndexOfAny (new char [] { ' ', '\t' });
 				if (idx > 0)
 					define = define.Substring (0, idx);
 				skipToken = !IsDefined (define);
@@ -61,8 +63,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			case "#elif":
 				if (!readIf)
 					break;
-				string define = argument.Trim ();
-				int idx = define.IndexOfAny (new char [] { ' ', '\t' });
+				define = argument.Trim ();
+				idx = define.IndexOfAny (new char [] { ' ', '\t' });
 				if (idx > 0)
 					define = define.Substring (0, idx);
 				skipToken = !IsDefined (define);
