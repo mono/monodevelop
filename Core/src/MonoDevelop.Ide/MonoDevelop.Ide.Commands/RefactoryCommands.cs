@@ -35,8 +35,10 @@ using System.Threading;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Ambience;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui.Search;
 using MonoDevelop.Projects.CodeGeneration;
@@ -188,46 +190,18 @@ namespace MonoDevelop.Ide.Commands
 			
 			return sb.ToString ();
 		}
-		string GetName (IReturnType c, bool markup)
-		{
-			StringBuilder result = new StringBuilder ();
-			result.Append (CodeRefactorer.RemoveGenericParamSuffix (c.Name));
-			if (c.GenericArguments != null && c.GenericArguments.Count > 0) {
-				result.Append (markup ? "&lt;" : "<");
-				for (int i = 0; i < c.GenericArguments.Count; i++)  {
-					result.Append (GetName (c.GenericArguments[i], markup));
-					if (i + 1 < c.GenericArguments.Count)
-						result.Append (", ");
-				}
-				result.Append (markup ? "&gt;" : ">");
-			}
-			return result.ToString ();
-		}
-		
-		string GetName (ILanguageItem item, bool markup)
-		{
-			StringBuilder result = new StringBuilder ();
-			if (item is IClass) {
-				IClass c = (IClass)item;
-				result.Append (CodeRefactorer.RemoveGenericParamSuffix (item.Name));
-				if (c.GenericParameters != null) {
-					for (int i = 0; i < c.GenericParameters.Count; i++)  {
-						result.Append (c.GenericParameters[i].Name);
-						if (i + 1 < c.GenericParameters.Count)
-							result.Append (", ");
-					}
-				}
-			} else {
-				result.Append (CodeRefactorer.RemoveGenericParamSuffix (item.Name));
-			}
-			return result.ToString ();
-		}
 		
 		CommandInfo BuildRefactoryMenuForItem (IParserContext ctx, IParseInformation pinfo, IClass eclass, ILanguageItem item)
 		{
 			Refactorer refactorer = new Refactorer (ctx, pinfo, eclass, item, null);
 			CommandInfoSet ciset = new CommandInfoSet ();
-			string itemName = EscapeName (GetName (item, true));
+			Ambience ambience = null;
+			Project project = IdeApp.Workbench.ActiveDocument.Project;
+			if (project != null) {
+				ambience = project.Ambience;
+			} else 
+				ambience = new NetAmbience ();
+			string itemName = EscapeName (ambience.Convert (item, ConversionFlags.ShowGenericParameters | ConversionFlags.IncludeHTMLMarkup));
 			bool canRename = false;
 			string txt;
 			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item))
@@ -291,12 +265,11 @@ namespace MonoDevelop.Ide.Commands
 					bool added = false;
 					
 					foreach (IReturnType rt in cls.BaseTypes) {
-						IClass iface = ctx.GetClass (rt.FullyQualifiedName, null, true, true);
+						IClass iface = ctx.GetClass (rt.FullyQualifiedName, rt.GenericArguments, true, true);
 						if (iface != null && iface.ClassType == ClassType.Interface) {
 							Refactorer ifaceRefactorer = new Refactorer (ctx, pinfo, cls, iface, rt);
-							
-							impset.CommandInfos.Add (this.GetName (rt, false), new RefactoryOperation (ifaceRefactorer.ImplementImplicitInterface));
-							expset.CommandInfos.Add (this.GetName (rt, false), new RefactoryOperation (ifaceRefactorer.ImplementExplicitInterface));
+							impset.CommandInfos.Add (ambience.Convert (rt, ConversionFlags.ShowGenericParameters), new RefactoryOperation (ifaceRefactorer.ImplementImplicitInterface));
+							expset.CommandInfos.Add (ambience.Convert (rt, ConversionFlags.ShowGenericParameters), new RefactoryOperation (ifaceRefactorer.ImplementExplicitInterface));
 							added = true;
 						}
 					}

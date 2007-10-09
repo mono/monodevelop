@@ -1,5 +1,10 @@
 2007-10-09  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Refactory commands are now
+	  using ambiences.
+
+2007-10-09  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs: added method to project
 	  operations.
 
