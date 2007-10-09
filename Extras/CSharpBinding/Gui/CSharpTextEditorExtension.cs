@@ -250,7 +250,7 @@ namespace CSharpBinding
 					StringBuilder generatedComment = new StringBuilder ();
 					bool generateStandardComment = true;
 					IParserContext pctx = GetParserContext ();
-					ICompilationUnit unit = pctx.GetParseInformation (this.FileName).BestCompilationUnit as ICompilationUnit;
+					ICompilationUnit unit = pctx.ParseFile (this.FileName, this.Editor.Text).MostRecentCompilationUnit as ICompilationUnit;
 					if (unit != null) {
 						
 						IClass insideClass = LookupClass (unit, lin, col);
