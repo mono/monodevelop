@@ -1,3 +1,11 @@
+2007-10-09  Mike Krüger <mkrueger@novell.com> 
+
+	* Project/Src/Lexer/CSharp/Lexer.cs: C# lexer can now handle #if ... #else
+	  ... #endif pre processing directives.
+	
+	  (Needed to fix bug 331772 - Unable to handle conditional class
+	  definition)
+
 2007-09-15  Mike Krüger <mkrueger@novell.com> 
 
 	* Project/Src/Parser/CSharp/cs.ATG, Project/Src/Parser/CSharp/Parser.cs:

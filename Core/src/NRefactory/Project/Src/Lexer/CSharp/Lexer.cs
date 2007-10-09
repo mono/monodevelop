@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -14,8 +15,32 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 {
 	internal sealed class Lexer : AbstractLexer
 	{
+		bool skipToken = false;
+		bool readIf    = false;
+		Dictionary<string, bool> defines = new Dictionary<string,bool> (); 
 		public Lexer(TextReader reader) : base(reader)
 		{
+		}
+		
+		public void ClearDefinedSymbols ()
+		{
+			defines.Clear ();
+		}
+		
+		public void AddDefinedSymbol (string symbol)
+		{
+			defines[symbol] = true;
+		}
+		
+		public void RemoveDefinedSymbol (string symbol)
+		{
+			if (defines.ContainsKey (symbol))
+				defines.Remove (symbol);
+		}
+		
+		public bool IsDefined (string symbol)
+		{
+			return defines.ContainsKey (symbol);
 		}
 		
 		void ReadPreProcessingDirective()
@@ -24,6 +49,24 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			bool canBeKeyword;
 			string directive = ReadIdent('#', out canBeKeyword);
 			string argument  = ReadToEndOfLine();
+			switch (directive) {
+			case "#if":
+				readIf    = true;
+				string define = argument.Trim ();
+				int idx = define.IndexOfAny (new char [] { ' ', '\t' });
+				if (idx > 0)
+					define = define.Substring (0, idx);
+				skipToken = !IsDefined (define);
+				break;
+			case "#endif":
+				skipToken = false;
+				readIf    = false;
+				break;
+			case "#else":
+				if (readIf)
+					skipToken = !skipToken;
+				break;
+			}
 			this.specialTracker.AddPreprocessingDirective(directive, argument.Trim(), start, new Location(start.X + directive.Length + argument.Length, start.Y));
 		}
 		
@@ -99,10 +142,11 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 							if (canBeKeyword) {
 								int keyWordToken = Keywords.GetToken(s);
 								if (keyWordToken >= 0) {
-									return new Token(keyWordToken, x, y);
+									token =  new Token(keyWordToken, x, y);
+									break;
 								}
 							}
-							return new Token(Tokens.Identifier, x, y, s);
+							token = new Token(Tokens.Identifier, x, y, s);
 						} else if (Char.IsDigit(ch)) {
 							token = ReadDigit(ch, Col - 1);
 						} else {
@@ -113,6 +157,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				
 				// try error recovery (token = null -> continue with next char)
 				if (token != null) {
+					if (skipToken)
+						continue;
 					return token;
 				}
 			}
