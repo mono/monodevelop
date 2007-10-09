@@ -29,15 +29,18 @@ set -- $ARGS
 
 case x$1 in
 	x--profile)
+		shift
 		exec @RUNTIME@ --profile $MD_BIN_PATH/mdrun.exe $@
 		exit 0
 		;;
 	x--debug)
+		shift
 		export MONODEVELOP_DISPATCH_DEBUG=yes
 		exec @RUNTIME@ --debug $MD_BIN_PATH/mdrun.exe $@
 		exit 0
 		;;
 	x--trace)
+		shift
 		exec @RUNTIME@ --trace $MD_BIN_PATH/mdrun.exe $@
 		exit 0;
 		;;

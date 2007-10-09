@@ -1,3 +1,9 @@
+2007-10-09  Ankit Jain  <jankit@novell.com>
+
+	* monodevelop.in: Discard wrapper script args before invoking
+	MonoDevelop.exe .
+	* mdtool.in: Likewise.
+
 2007-10-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AUTHORS: Updated.

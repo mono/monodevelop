@@ -77,15 +77,18 @@ cd $MD_BIN_PATH
 
 case x$1 in
 	x--profile)
+		shift
 		exec @RUNTIME@ --profile ./MonoDevelop.exe $@
 		exit 0
 		;;
 	x--debug)
+		shift
 		export MONODEVELOP_DISPATCH_DEBUG=yes
 		exec @RUNTIME@ --debug ./MonoDevelop.exe $@
 		exit 0
 		;;
 	x--trace)
+		shift
 		exec @RUNTIME@ --trace ./MonoDevelop.exe $@
 		exit 0;
 		;;
