@@ -1,3 +1,10 @@
+2007-10-09  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Ambience/ConversionFlags.cs,
+	  MonoDevelop.Projects.Ambience/Ambience.cs,
+	  MonoDevelop.Projects.Ambience/NetAmbience.cs: Added some ambience
+	  functionality used by the refactory commands.
+
 2007-10-09  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Projects/DotNetProject.cs (BuildResources): New. Moved

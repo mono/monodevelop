@@ -118,7 +118,7 @@ namespace MonoDevelop.Projects.Ambience
 				builder.Append(field.Name);
 			}
 			
-			if (field.ReturnType != null) {
+			if (field.ReturnType != null && ShowReturnType (conversionFlags)) {
 				builder.Append(" : ");
 				builder.Append(Convert(field.ReturnType));
 			}
@@ -139,20 +139,21 @@ namespace MonoDevelop.Projects.Ambience
 			} else {
 				builder.Append(property.Name);
 			}
-
-			if (property.Parameters.Count > 0) builder.Append('(');
+			if (ShowParameters (conversionFlags)) {
+				if (property.Parameters.Count > 0) builder.Append('(');
 			
-			for (int i = 0; i < property.Parameters.Count; ++i) {
-				builder.Append(Convert(property.Parameters[i]));
-				if (i + 1 < property.Parameters.Count) {
-					builder.Append(", ");
+				for (int i = 0; i < property.Parameters.Count; ++i) {
+					builder.Append(Convert(property.Parameters[i]));
+					if (i + 1 < property.Parameters.Count) {
+						builder.Append(", ");
+					}
 				}
+				
+				if (property.Parameters.Count > 0) builder.Append(')');
 			}
 			
-			if (property.Parameters.Count > 0) builder.Append(')');
 			
-			
-			if (property.ReturnType != null) {
+			if (property.ReturnType != null && ShowReturnType (conversionFlags)) {
 				builder.Append(" : ");
 				builder.Append(Convert(property.ReturnType));
 			}
@@ -171,7 +172,7 @@ namespace MonoDevelop.Projects.Ambience
 			} else {
 				builder.Append(e.Name);
 			}
-			if (e.ReturnType != null) {
+			if (e.ReturnType != null && ShowReturnType (conversionFlags)) {
 				builder.Append(" : ");
 				builder.Append(Convert(e.ReturnType));
 			}
@@ -199,7 +200,7 @@ namespace MonoDevelop.Projects.Ambience
 			}
 			
 			builder.Append("]");
-			if (m.ReturnType != null) {
+			if (m.ReturnType != null && ShowReturnType (conversionFlags)) {
 				builder.Append(" : ");
 				builder.Append(Convert(m.ReturnType));
 			}
@@ -218,16 +219,18 @@ namespace MonoDevelop.Projects.Ambience
 			} else {
 				builder.Append(m.Name);
 			}
-			builder.Append('(');
-			for (int i = 0; i < m.Parameters.Count; ++i) {
-				builder.Append(Convert(m.Parameters[i]));
-				if (i + 1 < m.Parameters.Count) {
-					builder.Append(", ");
+			if (ShowParameters (conversionFlags)) {			
+				builder.Append('(');
+				for (int i = 0; i < m.Parameters.Count; ++i) {
+					builder.Append(Convert(m.Parameters[i]));
+					if (i + 1 < m.Parameters.Count) {
+						builder.Append(", ");
+					}
 				}
+				
+				builder.Append(")");
 			}
-			
-			builder.Append(")");
-			if (m.ReturnType != null) {
+			if (m.ReturnType != null && ShowReturnType (conversionFlags)) {
 				builder.Append(" : ");
 				builder.Append(Convert(m.ReturnType));
 			}
@@ -293,9 +296,11 @@ namespace MonoDevelop.Projects.Ambience
 			StringBuilder builder = new StringBuilder();
 			if (ShowParameterNames(conversionFlags)) {
 				builder.Append(param.Name);
-				builder.Append(" : ");
 			}
-			builder.Append(Convert(param.ReturnType));
+			if (ShowReturnType (conversionFlags)) {
+				builder.Append(" : ");
+				builder.Append(Convert(param.ReturnType));
+			}
 			if (param.IsRef) {
 				builder.Append("&amp;");
 			}
@@ -307,8 +312,10 @@ namespace MonoDevelop.Projects.Ambience
 			StringBuilder builder = new StringBuilder();
 
 			builder.Append(localVariable.Name);
-			builder.Append(" : ");
-			builder.Append(Convert(localVariable.ReturnType));
+			if (ShowReturnType (conversionFlags)) {
+				builder.Append(" : ");
+				builder.Append(Convert(localVariable.ReturnType));
+			}
 
 			return builder.ToString();
 		}

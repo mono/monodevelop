@@ -11,6 +11,16 @@ namespace MonoDevelop.Projects.Ambience
 		{
 			return (conversionFlags & ConversionFlags.ShowAccessibility) == ConversionFlags.ShowAccessibility;
 		}
+		
+		public static bool ShowReturnType (ConversionFlags conversionFlags)
+		{
+			return (conversionFlags & ConversionFlags.ShowReturnType) == ConversionFlags.ShowReturnType;
+		}
+		public static bool ShowParameters (ConversionFlags conversionFlags)
+		{
+			return (conversionFlags & ConversionFlags.ShowParameters) == ConversionFlags.ShowParameters;
+		}
+		
 
 		public static bool ShowParameterNames(ConversionFlags conversionFlags)
 		{

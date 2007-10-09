@@ -29,12 +29,16 @@ namespace MonoDevelop.Projects.Ambience
 		ShowClassModifiers     = 1<<10,
 		ShowGenericParameters  = 1<<11,
 		UseIntrinsicTypeNames  = 1<<12,
+		ShowReturnType         = 1<<13,
+		ShowParameters         = 1<<14,
 		
 		StandardConversionFlags = ShowParameterNames | 
 		                          UseFullyQualifiedNames | 
 		                          ShowMemberModifiers |
 		                          ShowClassModifiers |
 		                          ShowGenericParameters |
+		                          ShowReturnType |
+		                          ShowParameters |
 		                          UseIntrinsicTypeNames,
 		                          
 		All = ShowParameterNames | 
@@ -44,6 +48,8 @@ namespace MonoDevelop.Projects.Ambience
 		      ShowClassModifiers |
 		      ShowInheritanceList |
               ShowGenericParameters |
+              ShowReturnType |
+              ShowParameters |
               UseIntrinsicTypeNames,
 
 		      
@@ -52,6 +58,8 @@ namespace MonoDevelop.Projects.Ambience
 		                        QualifiedNamesOnlyForReturnTypes |
 		                        IncludeHTMLMarkup |
 		                        UseLinkArrayList |
+		                        ShowReturnType |
+  	                            ShowParameters |
 		                        ShowGenericParameters,
 	}
 }
