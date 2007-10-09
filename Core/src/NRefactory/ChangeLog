@@ -1,5 +1,10 @@
 2007-10-09  Mike Krüger <mkrueger@novell.com> 
 
+	* Project/Src/Lexer/CSharp/Lexer.cs: Fixed "Bug 331772 - Unable to handle
+	  conditional class definition".
+
+2007-10-09  Mike Krüger <mkrueger@novell.com> 
+
 	* Project/Src/Lexer/CSharp/Lexer.cs: C# lexer can now handle #if ... #else
 	  ... #endif pre processing directives.
 	

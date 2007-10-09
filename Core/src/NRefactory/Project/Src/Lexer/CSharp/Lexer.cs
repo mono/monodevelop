@@ -13,7 +13,7 @@ using System.Text;
 
 namespace ICSharpCode.NRefactory.Parser.CSharp
 {
-	internal sealed class Lexer : AbstractLexer
+	public sealed class Lexer : AbstractLexer
 	{
 		bool skipToken = false;
 		bool readIf    = false;
@@ -52,6 +52,15 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			switch (directive) {
 			case "#if":
 				readIf    = true;
+				string define = argument.Trim ();
+				int idx = define.IndexOfAny (new char [] { ' ', '\t' });
+				if (idx > 0)
+					define = define.Substring (0, idx);
+				skipToken = !IsDefined (define);
+				break;
+			case "#elif":
+				if (!readIf)
+					break;
 				string define = argument.Trim ();
 				int idx = define.IndexOfAny (new char [] { ' ', '\t' });
 				if (idx > 0)
