@@ -188,6 +188,17 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
+		public Project GetProjectContaining (string fileName)
+		{
+			if (this.openCombine == null)
+				return null;
+			foreach (Project p in openCombine.GetAllProjects ())
+				if (p.GetProjectFile (fileName) != null)
+					return p;
+			return null;
+		}
+			
+		
 		public IAsyncOperation CurrentBuildOperation {
 			get { return currentBuildOperation; }
 		}
