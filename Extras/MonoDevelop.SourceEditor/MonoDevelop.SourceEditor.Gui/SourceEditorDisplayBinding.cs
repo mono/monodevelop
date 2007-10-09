@@ -61,6 +61,8 @@ namespace MonoDevelop.SourceEditor.Gui
 				return true;
 			if (mimetype == "application/x-ascx")
 				return true;
+			if (mimetype == "application/x-web-config")
+				return true;
 
 			// If gedit can open the file, this editor also can do it
 			foreach (DesktopApplication app in DesktopApplication.GetApplications (mimetype))
