@@ -87,6 +87,23 @@ namespace CSharpBinding.Parser
 		
 		ICompilationUnit Parse (ICSharpCode.NRefactory.IParser p, string fileName)
 		{
+			// HACK: Better way would to pass the project to the Parse method, but works for now. (Refactoring should be done)
+			DotNetProject project = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.GetProjectContaining (fileName) as DotNetProject;
+			if (project != null) {
+				DotNetProjectConfiguration config = project.ActiveConfiguration as DotNetProjectConfiguration;
+				if (config != null) { 
+					CSharpCompilerParameters para = config.CompilationParameters as CSharpCompilerParameters;
+					if (para != null && !String.IsNullOrEmpty (para.DefineSymbols)) {
+						string[] symbols = para.DefineSymbols.Split (';');
+						if (symbols != null) {
+							((ICSharpCode.NRefactory.Parser.CSharp.Lexer)p.Lexer).ClearDefinedSymbols ();
+							foreach (string symbol in symbols) {
+								((ICSharpCode.NRefactory.Parser.CSharp.Lexer)p.Lexer).AddDefinedSymbol (symbol);
+							}
+						}
+					}
+				}
+			}
 			p.Lexer.SpecialCommentTags = lexerTags;
 			
 			List<ErrorInfo> errors = new List<ErrorInfo>();
