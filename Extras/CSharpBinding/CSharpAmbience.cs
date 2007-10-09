@@ -306,7 +306,7 @@ namespace CSharpBinding
 				}
 			}
 			
-			if (field.ReturnType != null) {
+			if (field.ReturnType != null && ShowReturnType (conversionFlags)) {
 				builder.Append (Convert (field.ReturnType, conversionFlags, resolver));
 				builder.Append (' ');
 			}
@@ -332,7 +332,7 @@ namespace CSharpBinding
 				builder.Append(GetModifier(property, conversionFlags));
 			}
 			
-			if (property.ReturnType != null) {
+			if (property.ReturnType != null && ShowReturnType (conversionFlags)) {
 				builder.Append (Convert (property.ReturnType, conversionFlags, resolver));
 				builder.Append(' ');
 			}
@@ -342,7 +342,7 @@ namespace CSharpBinding
 			else
 				AppendPangoHtmlTag (builder, property.Name, "b", conversionFlags);
 			
-			if (property.Parameters.Count > 0) {
+			if (property.Parameters.Count > 0 && ShowParameters (conversionFlags)) {
 				builder.Append(" (");
 
 			if (IncludeHTMLMarkup(conversionFlags)) builder.Append("<br>&nbsp;&nbsp;&nbsp;");
@@ -358,17 +358,18 @@ namespace CSharpBinding
 				builder.Append(')');
 			}
 			
-			builder.Append(" { ");
-			
-			if (property.CanGet) {
-				builder.Append("get; ");
+			if (IncludeBodies(conversionFlags)) {
+				builder.Append(" { ");
+				
+				if (property.CanGet) {
+					builder.Append("get; ");
+				}
+				if (property.CanSet) {
+					builder.Append("set; ");
+				}
+				
+				builder.Append(" } ");
 			}
-			if (property.CanSet) {
-				builder.Append("set; ");
-			}
-			
-			builder.Append(" } ");
-			
 			return builder.ToString();
 		}
 		
@@ -382,7 +383,7 @@ namespace CSharpBinding
 				builder.Append(GetModifier(e, conversionFlags));
 			}
 			
-			if (e.ReturnType != null) {
+			if (e.ReturnType != null && ShowReturnType (conversionFlags)) {
 				builder.Append (Convert (e.ReturnType, conversionFlags, resolver));
 				builder.Append (' ');
 			}
@@ -405,7 +406,7 @@ namespace CSharpBinding
 			if (ShowMemberModifiers(conversionFlags) && m.IsStatic)
 				AppendPangoHtmlTag (builder, "static", "i", conversionFlags);
 			
-			if (m.ReturnType != null) {
+			if (m.ReturnType != null && ShowReturnType (conversionFlags)) {
 				builder.Append (Convert (m.ReturnType, conversionFlags, resolver));
 				builder.Append(' ');
 			}
@@ -455,7 +456,7 @@ namespace CSharpBinding
 				builder.Append(GetModifier(m, conversionFlags));
 			}
 			
-			if (m.ReturnType != null) {
+			if (m.ReturnType != null && ShowReturnType(conversionFlags)) {
 				builder.Append (Convert (m.ReturnType, conversionFlags, resolver));
 				builder.Append(' ');
 			}
@@ -498,9 +499,11 @@ namespace CSharpBinding
 				builder.Append ((includeMarkup) ? "&gt;" : ">");
 			}
 			
-			builder.Append(" (");
-			Convert (m.Parameters, builder, conversionFlags, resolver);
-			builder.Append(')');
+			if (ShowParameters (conversionFlags)) {
+				builder.Append(" (");
+				Convert (m.Parameters, builder, conversionFlags, resolver);
+				builder.Append(')');
+			}
 			
 			if (IncludeBodies(conversionFlags)) {
 				if (m.DeclaringType != null) {
@@ -625,11 +628,13 @@ namespace CSharpBinding
 				AppendPangoHtmlTag (builder, "out ", "i", conversionFlags);
 			else if (param.IsParams)
 				AppendPangoHtmlTag (builder, "params ", "i", conversionFlags);
-			
-			builder.Append (Convert (param.ReturnType, conversionFlags, resolver));
+			if (ShowReturnType (conversionFlags)) {
+				builder.Append (Convert (param.ReturnType, conversionFlags, resolver));
+			}
 			
 			if (ShowParameterNames(conversionFlags)) {
-				builder.Append(' ');
+				if (ShowReturnType (conversionFlags))
+					builder.Append(' ');
 				AppendPangoHtmlTag (builder, param.Name, "b", conversionFlags);
 			}
 			return builder.ToString();
@@ -638,9 +643,10 @@ namespace CSharpBinding
 		public override string Convert (LocalVariable localVariable, ConversionFlags conversionFlags, ITypeNameResolver resolver)
 		{
 			StringBuilder builder = new StringBuilder();						
-			
-			builder.Append (Convert (localVariable.ReturnType, conversionFlags, resolver));						
-			builder.Append(' ');
+			if (ShowReturnType (conversionFlags)) {
+				builder.Append (Convert (localVariable.ReturnType, conversionFlags, resolver));						
+				builder.Append(' ');
+			}
 			AppendPangoHtmlTag (builder, localVariable.Name, "b", conversionFlags);
 			
 			return builder.ToString();
