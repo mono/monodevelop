@@ -2,7 +2,7 @@
 <stetic-interface>
   <configuration>
     <images-root-path>../</images-root-path>
-    <target-gtk-version>2.10.0</target-gtk-version>
+    <target-gtk-version>2.8.3</target-gtk-version>
   </configuration>
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
@@ -2451,9 +2451,10 @@
               <widget class="Gtk.ComboBox" id="toolbarCombobox">
                 <property name="MemberName" />
                 <property name="IsTextCombo">True</property>
-                <property name="Items" translatable="yes">Small
+                <property name="Items" translatable="yes">Menu
+Small
 Large</property>
-                <property name="Active">1</property>
+                <property name="Active">2</property>
               </widget>
               <packing>
                 <property name="Position">1</property>

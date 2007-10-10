@@ -36,6 +36,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 	partial class SelectStylePanelWidget : Gtk.Bin 
 	{
+		readonly Gtk.IconSize[] sizes = new Gtk.IconSize [] { Gtk.IconSize.Menu, Gtk.IconSize.SmallToolbar, Gtk.IconSize.LargeToolbar };
+		
 		public SelectStylePanelWidget ()
 		{
 			Build ();
@@ -49,8 +51,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			fontButton.Sensitive = fontCheckbox.Active;
 			
 			fontCheckbox.Toggled += new EventHandler (FontCheckboxToggled);
-			
-			toolbarCombobox.Active = PropertyService.Get <Gtk.IconSize> ("MonoDevelop.ToolbarSize", Gtk.IconSize.LargeToolbar) == Gtk.IconSize.LargeToolbar ? 1 : 0;
+
+			Gtk.IconSize curSize = PropertyService.Get <Gtk.IconSize> ("MonoDevelop.ToolbarSize", Gtk.IconSize.LargeToolbar);
+			toolbarCombobox.Active = Array.IndexOf (sizes, curSize);
 		}
 		
 		void FontCheckboxToggled (object sender, EventArgs e)
@@ -65,7 +68,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			PropertyService.Set ("MonoDevelop.Core.Gui.Pads.UseCustomFont", fontCheckbox.Active);
 			PropertyService.Set ("MonoDevelop.Core.Gui.Pads.CustomFont", fontButton.FontName);
 			
-			PropertyService.Set("MonoDevelop.ToolbarSize", toolbarCombobox.Active == 1 ? Gtk.IconSize.LargeToolbar : Gtk.IconSize.SmallToolbar);
+			PropertyService.Set("MonoDevelop.ToolbarSize", sizes [toolbarCombobox.Active]);
 		}
 	}
 }

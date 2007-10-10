@@ -1,3 +1,9 @@
+2007-10-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.OptionPanels/SelectStylePanel.cs, gtk-gui/gui.stetic,
+	  gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.SelectStylePanelWidget.cs:
+	  Allow selecting Menu size for toolbars.
+
 2007-10-10  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui.OptionPanels/SelectStylePanel.cs,

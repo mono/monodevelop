@@ -116,10 +116,11 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             w7.Fill = false;
             // Container child hbox1.Gtk.Box+BoxChild
             this.toolbarCombobox = Gtk.ComboBox.NewText();
+            this.toolbarCombobox.AppendText(Mono.Unix.Catalog.GetString("Menu"));
             this.toolbarCombobox.AppendText(Mono.Unix.Catalog.GetString("Small"));
             this.toolbarCombobox.AppendText(Mono.Unix.Catalog.GetString("Large"));
             this.toolbarCombobox.Name = "toolbarCombobox";
-            this.toolbarCombobox.Active = 1;
+            this.toolbarCombobox.Active = 2;
             this.hbox1.Add(this.toolbarCombobox);
             Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.hbox1[this.toolbarCombobox]));
             w8.Position = 1;
