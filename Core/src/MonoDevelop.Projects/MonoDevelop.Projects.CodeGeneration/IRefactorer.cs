@@ -43,7 +43,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		MemberReferenceCollection FindClassReferences (RefactorerContext ctx, string fileName, IClass cls);
 		
 		IMember AddMember (RefactorerContext ctx, IClass cls, CodeTypeMember memberInfo);
-		IMember ImplementMember (RefactorerContext ctx, IClass cls, string prefix, bool explicitly, IMember member, IClass declaringClass, IReturnType hintReturnType);
+		IMember ImplementMember (RefactorerContext ctx, IClass cls, string prefix, bool explicitly, IMember member);
 		void RemoveMember (RefactorerContext ctx, IClass cls, IMember member);
 		IMember RenameMember (RefactorerContext ctx, IClass cls, IMember member, string newName);
 		IMember ReplaceMember (RefactorerContext ctx, IClass cls, IMember oldMember, CodeTypeMember memberInfo);

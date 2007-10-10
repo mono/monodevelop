@@ -1,3 +1,10 @@
+2007-10-10  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs,
+	  MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs,
+	  MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Refactored the
+	  IRefactorer a bit (removed the hintreturntype).
+
 2007-10-09  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Ambience/ConversionFlags.cs,

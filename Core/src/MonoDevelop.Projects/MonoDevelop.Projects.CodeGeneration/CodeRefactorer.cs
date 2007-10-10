@@ -109,11 +109,11 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return m;
 		}
 		
-		public IMember ImplementMember (IClass cls, string prefix, bool explicitly, IMember member, IClass declaringClass, IReturnType hintReturnType)
+		public IMember ImplementMember (IClass cls, string prefix, bool explicitly, IMember member)
 		{
 			RefactorerContext gctx = GetGeneratorContext (cls);
 			IRefactorer gen = GetGeneratorForClass (cls);
-			IMember m = gen.ImplementMember (gctx, cls, prefix, explicitly, member, declaringClass, hintReturnType);
+			IMember m = gen.ImplementMember (gctx, cls, prefix, explicitly, member);
 			gctx.Save ();
 			return m;
 		}
@@ -122,17 +122,15 @@ namespace MonoDevelop.Projects.CodeGeneration
 		string GenerateGenerics (IRefactorer gen, IClass iface, IReturnType hintReturnType)
 		{
 			StringBuilder result = new StringBuilder ();
-			if (iface != null && iface.GenericParameters != null && iface.GenericParameters.Count > 0) {
-				if (hintReturnType != null && hintReturnType.GenericArguments != null) {
-					result.Append ("<");
-					for (int i = 0; i < hintReturnType.GenericArguments.Count; i++)  {
-						result.Append (gen.ConvertToLanguageTypeName (RemoveGenericParamSuffix (hintReturnType.GenericArguments[i].FullyQualifiedName)));
-						result.Append (GenerateGenerics (gen, iface, hintReturnType.GenericArguments[i]));
-						if (i + 1 < hintReturnType.GenericArguments.Count)
-							result.Append (", ");
-					}
-					result.Append (">");
+			if (hintReturnType != null && hintReturnType.GenericArguments != null) {
+				result.Append ("<");
+				for (int i = 0; i < hintReturnType.GenericArguments.Count; i++)  {
+					result.Append (gen.ConvertToLanguageTypeName (RemoveGenericParamSuffix (hintReturnType.GenericArguments[i].FullyQualifiedName)));
+					result.Append (GenerateGenerics (gen, iface, hintReturnType.GenericArguments[i]));
+					if (i + 1 < hintReturnType.GenericArguments.Count)
+						result.Append (", ");
 				}
+				result.Append (">");
 			}
 			return result.ToString ();
 		}
@@ -232,7 +230,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				if (alreadyImplemented)
 					continue;
 				
-				if ((newMember = gen.ImplementMember (gctx, klass, prefix, explicitly, ev, declaringClass, hintReturnType)) != null)
+				if ((newMember = gen.ImplementMember (gctx, klass, prefix, explicitly, ev)) != null)
 					klass = newMember.DeclaringType;
 			}
 			
@@ -250,7 +248,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				if (alreadyImplemented)
 					continue;
 				
-				if ((newMember = gen.ImplementMember (gctx, klass, prefix, explicitly, method, iface, hintReturnType)) != null)
+				if ((newMember = gen.ImplementMember (gctx, klass, prefix, explicitly, method)) != null)
 					klass = newMember.DeclaringType;
 			}
 			
@@ -268,7 +266,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				if (alreadyImplemented)
 					continue;
 				
-				if ((newMember = gen.ImplementMember (gctx, klass, prefix, explicitly, prop, declaringClass, hintReturnType)) != null)
+				if ((newMember = gen.ImplementMember (gctx, klass, prefix, explicitly, prop)) != null)
 					klass = newMember.DeclaringType;
 			}
 			

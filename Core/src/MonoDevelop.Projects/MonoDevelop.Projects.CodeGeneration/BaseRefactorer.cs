@@ -97,7 +97,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			
 			return FindGeneratedMember (ctx, buffer, cls, member);
 		}
-		
+		/*
 		IReturnType GetGenericArgument (IClass type, IReturnType rtype, IReturnType hintType)
 		{
 			if (hintType != null && type != null && rtype != null && type.GenericParameters != null)  {
@@ -108,18 +108,18 @@ namespace MonoDevelop.Projects.CodeGeneration
 				}
 			}
 			return null;
-		}
-		protected CodeTypeReference ReturnTypeToDom (IReturnType declaredType, IClass type, IReturnType hintType)
+		}*/
+		protected CodeTypeReference ReturnTypeToDom (IReturnType declaredType)
 		{
 			CodeTypeReference [] argTypes = null;
-			IReturnType rtype = GetGenericArgument (type, declaredType, hintType) ?? declaredType;
+			IReturnType rtype = declaredType;
 			if (rtype == null)
 				return null;
 			ReturnTypeList genericArgs = rtype.GenericArguments;
 			if (genericArgs != null && genericArgs.Count > 0) {
 				argTypes = new CodeTypeReference [genericArgs.Count];
 				for (int i = 0; i < genericArgs.Count; i++) {
-					argTypes[i] = ReturnTypeToDom (genericArgs[i], type, hintType);
+					argTypes[i] = ReturnTypeToDom (genericArgs[i]);
 				}
 			}
 			string name = rtype.FullyQualifiedName;
@@ -133,7 +133,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return typeRef;
 		}
 		
-		public virtual IMember ImplementMember (RefactorerContext ctx, IClass cls, string prefix, bool explicitly, IMember member, IClass declaringClass, IReturnType hintReturnType)
+		public virtual IMember ImplementMember (RefactorerContext ctx, IClass cls, string prefix, bool explicitly, IMember member)
 		{
 			CodeTypeMember m;
 			
@@ -141,20 +141,20 @@ namespace MonoDevelop.Projects.CodeGeneration
 				CodeMemberEvent mEvent = new CodeMemberEvent ();
 				m = (CodeTypeMember) mEvent;
 				
-				mEvent.Type = ReturnTypeToDom (member.ReturnType, declaringClass, hintReturnType);
+				mEvent.Type = ReturnTypeToDom (member.ReturnType);
 			} else if (member is IMethod) {
 				CodeMemberMethod mMethod = new CodeMemberMethod ();
 				IMethod method = (IMethod) member;
 				m = (CodeMemberMethod) mMethod;
 				
-				mMethod.ReturnType = ReturnTypeToDom (member.ReturnType, declaringClass, hintReturnType);
+				mMethod.ReturnType = ReturnTypeToDom (member.ReturnType);
 				CodeExpression nieReference = new CodeObjectCreateExpression (typeof (NotImplementedException));
 				CodeStatement throwExpression = new CodeThrowExceptionStatement (nieReference);
 				mMethod.Statements.Add (throwExpression);
 				
 				foreach (IParameter param in method.Parameters) {
 					CodeParameterDeclarationExpression par;
-					par = new CodeParameterDeclarationExpression (ReturnTypeToDom (param.ReturnType, declaringClass, hintReturnType), param.Name);
+					par = new CodeParameterDeclarationExpression (ReturnTypeToDom (param.ReturnType), param.Name);
 					mMethod.Parameters.Add (par);
 				}
 			} else if (member is IProperty) {
@@ -165,7 +165,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				mProperty.HasGet = property.CanGet;
 				mProperty.HasSet = property.CanSet;
 				
-				mProperty.Type = ReturnTypeToDom (member.ReturnType, cls, hintReturnType);
+				mProperty.Type = ReturnTypeToDom (member.ReturnType);
 			} else {
 				return null;
 			}
@@ -357,7 +357,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			CodeMemberProperty prop = new CodeMemberProperty ();
 			prop.Name = propName;
 			
-			prop.Type = ReturnTypeToDom (field.ReturnType, null, null);
+			prop.Type = ReturnTypeToDom (field.ReturnType);
 			prop.Attributes = MemberAttributes.Public | MemberAttributes.Final;
 			if (field.IsStatic)
 				prop.Attributes |= MemberAttributes.Static;
