@@ -457,32 +457,44 @@ namespace CSharpBinding
 				builder.Append(GetModifier(m, conversionFlags));
 			}
 			
-			if (m.ReturnType != null && ShowReturnType(conversionFlags)) {
-				builder.Append (Convert (m.ReturnType, conversionFlags, resolver));
-				builder.Append(' ');
-			}
-			
 			string name = m.Name;
-			if (m.IsSpecialName) {
-				name = GetSpecialMethodName (name);
-				if (includeMarkup) {
-					name = name.Replace ("<", "&lt;");
-					name = name.Replace (">", "&gt;");
-				}
-			}
 			
-			if (m.IsConstructor) {
-				if (m.DeclaringType != null)
-					AppendPangoHtmlTag (builder, ConvertTypeName (m.DeclaringType.Name, conversionFlags, null), "b", conversionFlags);
+			if (m.IsSpecialName && (name == "op_Implicit" || name == "op_Explicit")) {
+				// Conversion operators have a special signature
+				if (name == "op_Implicit")
+					builder.Append("implicit operator ");
 				else
-					AppendPangoHtmlTag (builder, name, "b", conversionFlags);
-			} else {
-				if (UseFullyQualifiedMemberNames(conversionFlags)) {
-					string fq = m.DeclaringType.FullyQualifiedName + "." + name;
-					AppendPangoHtmlTag (builder, ConvertTypeName (fq, conversionFlags, resolver), "b", conversionFlags);
+					builder.Append("explicit operator ");
+				AppendPangoHtmlTag (builder, Convert (m.ReturnType, conversionFlags, resolver), "b", conversionFlags);
+			}
+			else {
+			
+				if (m.ReturnType != null && ShowReturnType(conversionFlags)) {
+					builder.Append (Convert (m.ReturnType, conversionFlags, resolver));
+					builder.Append(' ');
 				}
-				else
-					AppendPangoHtmlTag (builder, name, "b", conversionFlags);
+				
+				if (m.IsSpecialName) {
+					name = GetSpecialMethodName (name);
+					if (includeMarkup) {
+						name = name.Replace ("<", "&lt;");
+						name = name.Replace (">", "&gt;");
+					}
+				}
+				
+				if (m.IsConstructor) {
+					if (m.DeclaringType != null)
+						AppendPangoHtmlTag (builder, ConvertTypeName (m.DeclaringType.Name, conversionFlags, null), "b", conversionFlags);
+					else
+						AppendPangoHtmlTag (builder, name, "b", conversionFlags);
+				} else {
+					if (UseFullyQualifiedMemberNames(conversionFlags)) {
+						string fq = m.DeclaringType.FullyQualifiedName + "." + name;
+						AppendPangoHtmlTag (builder, ConvertTypeName (fq, conversionFlags, resolver), "b", conversionFlags);
+					}
+					else
+						AppendPangoHtmlTag (builder, name, "b", conversionFlags);
+				}
 			}
 			
 			// Display generic parameters only if told so

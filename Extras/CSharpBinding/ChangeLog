@@ -1,3 +1,7 @@
+2007-10-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* CSharpAmbience.cs: Properly show the method name for conversion operators.
+
 2007-10-04  Zach Lute <zach.lute@gmail.com>
 
 	* Parser/CSharpVisitor.cs: Added support for implicit/explicit operators as
