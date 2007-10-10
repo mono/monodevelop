@@ -377,6 +377,19 @@ namespace CSharpBinding.Parser
 				case OverloadableOperatorType.IsFalse:
 					name = "op_False";
 					break;
+				
+				// Handle the non-overloadable case
+				case OverloadableOperatorType.None:
+					switch(operatorDeclaration.ConversionType)
+					{
+						case ConversionType.Implicit:
+							name = "op_Implicit";
+							break;
+						case ConversionType.Explicit:
+							name = "op_Explicit";
+							break;
+					}
+					break;
 			}
 			if (name != null) {
 				Method method = VisitMethod (operatorDeclaration, data);
