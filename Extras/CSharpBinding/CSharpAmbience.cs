@@ -345,8 +345,8 @@ namespace CSharpBinding
 			if (property.Parameters.Count > 0 && ShowParameters (conversionFlags)) {
 				builder.Append(" (");
 
-			if (IncludeHTMLMarkup(conversionFlags)) builder.Append("<br>&nbsp;&nbsp;&nbsp;");
-			builder.Append (Convert (property.Parameters[0], conversionFlags, resolver));
+				if (IncludeHTMLMarkup(conversionFlags)) builder.Append("<br>&nbsp;&nbsp;&nbsp;");
+				builder.Append (Convert (property.Parameters[0], conversionFlags, resolver));
 			
 				for (int i = 0; i < property.Parameters.Count; ++i) {
 					if (IncludeHTMLMarkup(conversionFlags)) builder.Append("<br>&nbsp;&nbsp;&nbsp;");
@@ -435,14 +435,15 @@ namespace CSharpBinding
 		public void Convert (ParameterCollection parameters, StringBuilder builder, ConversionFlags conversionFlags, ITypeNameResolver resolver)
 		{
 			if (parameters.Count > 0) {
-				if (IncludeHTMLMarkup(conversionFlags)) builder.Append ("<br>&nbsp;&nbsp;&nbsp;");
-				builder.Append (Convert (parameters[0], conversionFlags, resolver));
-				for (int i = 1; i < parameters.Count; ++i) {
-					builder.Append (", ");
-					if (IncludeHTMLMarkup(conversionFlags)) builder.Append("<br>&nbsp;&nbsp;&nbsp;");
+				for (int i = 0; i < parameters.Count; ++i) {
+					if (i > 0)
+						builder.Append (", ");
+					if (IncludeHTMLMarkup(conversionFlags))
+						builder.Append("<br>&nbsp;&nbsp;&nbsp;");
 					builder.Append (Convert (parameters[i], conversionFlags, resolver));
 				}
-				if (IncludeHTMLMarkup(conversionFlags)) builder.Append("<br>");
+				if (IncludeHTMLMarkup(conversionFlags))
+					builder.Append("<br>");
 			}
 		}
 		

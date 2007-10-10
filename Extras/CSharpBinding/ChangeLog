@@ -1,3 +1,7 @@
+2007-10-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* CSharpAmbience.cs: Formatting fixes.
+
 2007-10-09  Mike Krüger <mkrueger@novell.com> 
 
 	* CSharpAmbience.cs: Changed the C# ambience to recognize the new conversion
