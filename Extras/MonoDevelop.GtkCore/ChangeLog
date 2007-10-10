@@ -1,3 +1,11 @@
+2007-10-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs: In Bind(), don't subscribe the
+	  NameChanged event at every call.
+	* MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: The designer needs to
+	  be explicitely destroyed.
+
 2007-10-03  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs: No need to implement

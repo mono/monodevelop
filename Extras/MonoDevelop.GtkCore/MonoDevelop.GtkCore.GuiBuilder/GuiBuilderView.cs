@@ -179,7 +179,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				actionsBox = null;
 				actionsPage = null;
 			}
-			// designer.Dispose() will be called when the designer is destroyed.
+			designer.Destroy ();
 			designer = null;
 			gproject.Reloaded += OnReloadProject;
 		}

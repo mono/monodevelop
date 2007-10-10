@@ -95,7 +95,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			designer.ModifiedChanged -= OnGroupModified;
 			designer.SignalAdded -= OnSignalAdded;
 			designer.SignalChanged -= OnSignalChanged;
-			designer.Dispose ();
+			designer.Destroy ();
 			designer = null;
 			
 			project.Reloaded += OnReloadProject;

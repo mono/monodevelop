@@ -83,9 +83,11 @@ namespace MonoDevelop.GtkCore
 		
 		public void Bind (DotNetProject project)
 		{
-			this.project = project;
-			binding = Services.Languages.GetBindingPerLanguageName (project.LanguageName) as IDotNetLanguageBinding;
-			project.NameChanged += OnProjectRenamed;
+			if (this.project == null) {
+				this.project = project;
+				binding = Services.Languages.GetBindingPerLanguageName (project.LanguageName) as IDotNetLanguageBinding;
+				project.NameChanged += OnProjectRenamed;
+			}
 		}
 		
 		public void Dispose ()
