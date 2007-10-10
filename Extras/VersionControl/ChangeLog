@@ -1,3 +1,15 @@
+2007-10-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/LibSvnClient.cs:
+	  Added some new pinvokes.
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs,
+	  MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/SslServerTrustDialog.cs:
+	  Call config_ensure when initializing the svn client to make sure all
+	  config directories are properly created, and that authentication data
+	  can be saved. Handle the case when the user cancels the server
+	  certificate validation. Based on a patch by Grzegorz Sobanski. Fixes bug
+	  #324640.
+
 2007-10-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/LibSvnClient.cs:

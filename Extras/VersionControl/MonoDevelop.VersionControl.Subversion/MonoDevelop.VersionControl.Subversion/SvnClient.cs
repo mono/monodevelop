@@ -43,6 +43,12 @@ namespace MonoDevelop.VersionControl.Subversion {
 		{
 			// Allocate the APR pool and the SVN client context.
 			pool = newpool (IntPtr.Zero);
+
+			// Make sure the config directory is properly created.
+			// If the config directory and specifically the subdirectories
+			// for the authentication providers don't exist, authentication
+			// data won't be saved and no error is given.
+			svn.config_ensure (null, pool);
 			
 			if (svn.client_create_context (out ctx, pool) != IntPtr.Zero)
 				throw new InvalidOperationException ("Could not create a Subversion client context.");
@@ -67,26 +73,36 @@ namespace MonoDevelop.VersionControl.Subversion {
 			IntPtr providers = apr.array_make (pool, 1, IntPtr.Size);
 			IntPtr item;
 			
+		    // The main disk-caching auth providers, for both
+		    // 'username/password' creds and 'username' creds.
+			
 			item = apr.array_push (providers);
 			svn.client_get_simple_provider (item, pool);
 			
 			item = apr.array_push (providers);
 			svn.client_get_username_provider (item, pool);
 			
-			item = apr.array_push (providers);
-			svn.client_get_simple_prompt_provider (item, new LibSvnClient.svn_auth_simple_prompt_func_t (OnAuthSimplePrompt), IntPtr.Zero, 2, pool);
+			// The server-cert, client-cert, and client-cert-password providers
 			
 			item = apr.array_push (providers);
-			svn.client_get_username_prompt_provider (item, new LibSvnClient.svn_auth_username_prompt_func_t (OnAuthUsernamePrompt), IntPtr.Zero, 2, pool);
+			svn.client_get_ssl_server_trust_file_provider (item, pool);
 			
 			item = apr.array_push (providers);
 			svn.client_get_ssl_client_cert_file_provider (item, pool);
 			
 			item = apr.array_push (providers);
 			svn.client_get_ssl_client_cert_pw_file_provider (item, pool);
+
+			// Two basic prompt providers: username/password, and just username.
+
+			item = apr.array_push (providers);
+			svn.client_get_simple_prompt_provider (item, new LibSvnClient.svn_auth_simple_prompt_func_t (OnAuthSimplePrompt), IntPtr.Zero, 2, pool);
 			
 			item = apr.array_push (providers);
-			svn.client_get_ssl_server_trust_file_provider (item, pool);
+			svn.client_get_username_prompt_provider (item, new LibSvnClient.svn_auth_username_prompt_func_t (OnAuthUsernamePrompt), IntPtr.Zero, 2, pool);
+			
+			// Three ssl prompt providers, for server-certs, client-certs,
+			// and client-cert-passphrases.
 			
 			item = apr.array_push (providers);
 			svn.client_get_ssl_server_trust_prompt_provider (item, new LibSvnClient.svn_auth_ssl_server_trust_prompt_func_t (OnAuthSslServerTrustPrompt), IntPtr.Zero, pool);
@@ -96,6 +112,8 @@ namespace MonoDevelop.VersionControl.Subversion {
 			
 			item = apr.array_push (providers);
 			svn.client_get_ssl_client_cert_pw_prompt_provider (item, new LibSvnClient.svn_auth_ssl_client_cert_pw_prompt_func_t (OnAuthSslClientCertPwPrompt), IntPtr.Zero, 2, pool);
+			
+			// Create the authentication baton			
 			
 			svn.auth_open (out auth_baton, providers, pool); 
 			ctxstruct.auth_baton = auth_baton;
@@ -153,9 +171,15 @@ namespace MonoDevelop.VersionControl.Subversion {
 		static IntPtr OnAuthSslServerTrustPrompt (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, uint failures, ref LibSvnClient.svn_auth_ssl_server_cert_info_t cert_info, [MarshalAs (UnmanagedType.SysInt)] int may_save, IntPtr pool)
 		{
 			LibSvnClient.svn_auth_cred_ssl_server_trust_t data;
-			SslServerTrustDialog.Show (realm, failures, may_save, cert_info, out data);
-			cred = apr.pcalloc (pool, data);
-			return IntPtr.Zero;
+			if (SslServerTrustDialog.Show (realm, failures, may_save, cert_info, out data) && data.accepted_failures != 0) {
+				cred = apr.pcalloc (pool, data);
+				return IntPtr.Zero;
+			} else {
+				data.accepted_failures = 0;
+				data.may_save = 0;
+				cred = apr.pcalloc (pool, data);
+				return GetCancelError ();
+			}
 		}
 		
 		static IntPtr OnAuthSslClientCertPrompt (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, [MarshalAs (UnmanagedType.SysInt)] int may_save, IntPtr pool)

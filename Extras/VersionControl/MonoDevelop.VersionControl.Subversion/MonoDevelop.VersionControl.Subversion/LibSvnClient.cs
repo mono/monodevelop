@@ -28,7 +28,10 @@ namespace MonoDevelop.VersionControl.Subversion {
 			return new LibSvnClient1 ();
 		}
 		
+		public abstract void config_ensure (string config_dir, IntPtr pool);
 		public abstract void auth_open (out IntPtr auth_baton, IntPtr providers, IntPtr pool);
+		public abstract void auth_set_parameter (IntPtr auth_baton, string name, IntPtr value);
+		public abstract IntPtr auth_get_parameter (IntPtr auth_baton, string name);
 		public abstract void client_get_simple_provider (IntPtr item, IntPtr pool);
 		public abstract void client_get_simple_prompt_provider (IntPtr item, svn_auth_simple_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool);
 		public abstract void client_get_username_provider (IntPtr item, IntPtr pool);
@@ -497,9 +500,24 @@ namespace MonoDevelop.VersionControl.Subversion {
 	public class LibSvnClient0 : LibSvnClient {
 		private const string svnclientlib = "libsvn_client-1.so.0";
 		
+		public override void config_ensure (string config_dir, IntPtr pool)
+		{
+			svn_config_ensure (config_dir, pool);
+		}
+		
 		public override void auth_open (out IntPtr auth_baton, IntPtr providers, IntPtr pool)	
 		{
 			svn_auth_open (out auth_baton, providers, pool);
+		}
+		
+		public override void auth_set_parameter (IntPtr auth_baton, string name, IntPtr value)
+		{
+			svn_auth_set_parameter (auth_baton, name, value);
+		}
+		
+		public override IntPtr auth_get_parameter (IntPtr auth_baton, string name)
+		{
+			return svn_auth_get_parameter (auth_baton, name);
 		}
 		
 		public override void client_get_simple_provider (IntPtr item, IntPtr pool)
@@ -679,7 +697,10 @@ namespace MonoDevelop.VersionControl.Subversion {
 			                        no_diff_deleted, outfile, errfile, ctx, pool);
 		}
 		
+		[DllImport(svnclientlib)] static extern void svn_config_ensure (string config_dir, IntPtr pool);
 		[DllImport(svnclientlib)] static extern void svn_auth_open (out IntPtr auth_baton, IntPtr providers, IntPtr pool);
+		[DllImport(svnclientlib)] static extern void svn_auth_set_parameter (IntPtr auth_baton, string name, IntPtr value);
+		[DllImport(svnclientlib)] static extern IntPtr svn_auth_get_parameter (IntPtr auth_baton, string name);
 		[DllImport(svnclientlib)] static extern void svn_client_get_simple_provider (IntPtr item, IntPtr pool);
 		[DllImport(svnclientlib)] static extern void svn_client_get_simple_prompt_provider (IntPtr item, svn_auth_simple_prompt_func_t prompt_func, IntPtr prompt_batton, [MarshalAs (UnmanagedType.SysInt)] int retry_limit, IntPtr pool);
 		[DllImport(svnclientlib)] static extern void svn_client_get_username_provider (IntPtr item, IntPtr pool);
@@ -764,9 +785,24 @@ namespace MonoDevelop.VersionControl.Subversion {
 	public class LibSvnClient1 : LibSvnClient {
 		private const string svnclientlib = "libsvn_client-1.so.1";
 		
+		public override void config_ensure (string config_dir, IntPtr pool)
+		{
+			svn_config_ensure (config_dir, pool);
+		}
+		
 		public override void auth_open (out IntPtr auth_baton, IntPtr providers, IntPtr pool)	
 		{
 			svn_auth_open (out auth_baton, providers, pool);
+		}
+		
+		public override void auth_set_parameter (IntPtr auth_baton, string name, IntPtr value)
+		{
+			svn_auth_set_parameter (auth_baton, name, value);
+		}
+		
+		public override IntPtr auth_get_parameter (IntPtr auth_baton, string name)
+		{
+			return svn_auth_get_parameter (auth_baton, name);
 		}
 		
 		public override void client_get_simple_provider (IntPtr item, IntPtr pool)
@@ -946,7 +982,10 @@ namespace MonoDevelop.VersionControl.Subversion {
 			                        no_diff_deleted, outfile, errfile, ctx, pool);
 		}
 		
+		[DllImport(svnclientlib)] static extern void svn_config_ensure (string config_dir, IntPtr pool);
 		[DllImport(svnclientlib)] static extern void svn_auth_open (out IntPtr auth_baton, IntPtr providers, IntPtr pool);
+		[DllImport(svnclientlib)] static extern void svn_auth_set_parameter (IntPtr auth_baton, string name, IntPtr value);
+		[DllImport(svnclientlib)] static extern IntPtr svn_auth_get_parameter (IntPtr auth_baton, string name);
 		[DllImport(svnclientlib)] static extern void svn_client_get_simple_provider (IntPtr item, IntPtr pool);
 		[DllImport(svnclientlib)] static extern void svn_client_get_simple_prompt_provider (IntPtr item, svn_auth_simple_prompt_func_t prompt_func, IntPtr prompt_batton, [MarshalAs (UnmanagedType.SysInt)] int retry_limit, IntPtr pool);
 		[DllImport(svnclientlib)] static extern void svn_client_get_username_provider (IntPtr item, IntPtr pool);

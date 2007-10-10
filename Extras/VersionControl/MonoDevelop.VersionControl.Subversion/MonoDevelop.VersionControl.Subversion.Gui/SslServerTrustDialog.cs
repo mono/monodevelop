@@ -67,7 +67,6 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 						} else {
 							data.may_save = 0;
 							data.accepted_failures = 0;
-							res = true;
 						}
 					
 						dlg.Destroy ();
