@@ -194,8 +194,17 @@ namespace MonoDevelop.Ide.Gui
 
 			TopMenu = IdeApp.CommandService.CreateMenuBar (mainMenuPath);
 			toolbars = IdeApp.CommandService.CreateToolbarSet (toolbarsPath);
-			foreach (Gtk.Toolbar t in toolbars)
+			foreach (Gtk.Toolbar t in toolbars) {
 				t.ToolbarStyle = Gtk.ToolbarStyle.Icons;
+				t.IconSize = PropertyService.Get <Gtk.IconSize> ("MonoDevelop.ToolbarSize", Gtk.IconSize.LargeToolbar);
+			}
+			PropertyService.PropertyChanged += delegate (object sender, MonoDevelop.Core.PropertyChangedEventArgs args) {
+				if (args.Key == "MonoDevelop.ToolbarSize") {
+					foreach (Gtk.Toolbar t in toolbars) {
+						t.IconSize = PropertyService.Get <Gtk.IconSize> ("MonoDevelop.ToolbarSize", Gtk.IconSize.LargeToolbar);
+					}
+				}
+			};
 				
 			AddinManager.ExtensionChanged += OnExtensionChanged;
 		}

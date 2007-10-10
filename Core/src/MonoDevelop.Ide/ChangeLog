@@ -1,3 +1,9 @@
+2007-10-10  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui.OptionPanels/SelectStylePanel.cs,
+	  MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Fixed "bug 324758 -
+	  Configurable size of toolbar icons".
+
 2007-10-09  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Refactory commands are now

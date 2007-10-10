@@ -27,6 +27,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
         
         private Gtk.FontButton fontButton;
         
+        private Gtk.HBox hbox1;
+        
+        private Gtk.Label label1;
+        
+        private Gtk.ComboBox toolbarCombobox;
+        
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Ide.Gui.OptionPanels.SelectStylePanelWidget
@@ -94,6 +100,36 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             w6.Position = 3;
             w6.Expand = false;
             w6.Fill = false;
+            // Container child vbox13.Gtk.Box+BoxChild
+            this.hbox1 = new Gtk.HBox();
+            this.hbox1.Name = "hbox1";
+            this.hbox1.Spacing = 6;
+            // Container child hbox1.Gtk.Box+BoxChild
+            this.label1 = new Gtk.Label();
+            this.label1.Name = "label1";
+            this.label1.LabelProp = Mono.Unix.Catalog.GetString("Toolbar icon size:");
+            this.label1.UseUnderline = true;
+            this.hbox1.Add(this.label1);
+            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.hbox1[this.label1]));
+            w7.Position = 0;
+            w7.Expand = false;
+            w7.Fill = false;
+            // Container child hbox1.Gtk.Box+BoxChild
+            this.toolbarCombobox = Gtk.ComboBox.NewText();
+            this.toolbarCombobox.AppendText(Mono.Unix.Catalog.GetString("Small"));
+            this.toolbarCombobox.AppendText(Mono.Unix.Catalog.GetString("Large"));
+            this.toolbarCombobox.Name = "toolbarCombobox";
+            this.toolbarCombobox.Active = 1;
+            this.hbox1.Add(this.toolbarCombobox);
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.hbox1[this.toolbarCombobox]));
+            w8.Position = 1;
+            w8.Expand = false;
+            w8.Fill = false;
+            this.vbox13.Add(this.hbox1);
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.vbox13[this.hbox1]));
+            w9.Position = 4;
+            w9.Expand = false;
+            w9.Fill = false;
             this.Add(this.vbox13);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
