@@ -641,13 +641,11 @@ namespace CSharpBinding
 				AppendPangoHtmlTag (builder, "out ", "i", conversionFlags);
 			else if (param.IsParams)
 				AppendPangoHtmlTag (builder, "params ", "i", conversionFlags);
-			if (ShowReturnType (conversionFlags)) {
-				builder.Append (Convert (param.ReturnType, conversionFlags, resolver));
-			}
+
+			builder.Append (Convert (param.ReturnType, conversionFlags, resolver));
 			
 			if (ShowParameterNames(conversionFlags)) {
-				if (ShowReturnType (conversionFlags))
-					builder.Append(' ');
+				builder.Append(' ');
 				AppendPangoHtmlTag (builder, param.Name, "b", conversionFlags);
 			}
 			return builder.ToString();
