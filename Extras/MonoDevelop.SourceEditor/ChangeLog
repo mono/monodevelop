@@ -1,3 +1,9 @@
+2007-10-02  Grzegorz Sobański <silk@boktor.net>
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Use the
+	  Ambience to render names for class and memebers combos in source 
+	  editors.
+	  
 2007-10-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs: There is no need to

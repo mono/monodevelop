@@ -568,10 +568,11 @@ namespace MonoDevelop.SourceEditor.Gui
 				classes.AddRange (cls);
 				classes.Sort (new LanguageItemComparer ());
 
+				MonoDevelop.Projects.Ambience.Ambience am = se.View.GetAmbience ();
 				foreach (IClass c in classes) {
 					// Get the appropriate icon from the Icon service for the current IClass.
 					Gdk.Pixbuf pix = IdeApp.Services.Resources.GetIcon (IdeApp.Services.Icons.GetIcon (c), IconSize.Menu);
-					classStore.AppendValues (pix, c.Name, c);
+					classStore.AppendValues (pix, am.Convert (c, MonoDevelop.Projects.Ambience.ConversionFlags.ShowGenericParameters), c);
 				}
 				
 				// find out where the current cursor position is and set the combos.
@@ -640,42 +641,14 @@ namespace MonoDevelop.SourceEditor.Gui
 			foreach (IMember mem in members)
 			{
 				pix = IdeApp.Services.Resources.GetIcon(IdeApp.Services.Icons.GetIcon (mem), IconSize.Menu); 
-				string name;
-				
-				IMethod method = mem as IMethod;
-				if (method != null) {
-					// For methods we append their parameter types too. This is a nice feature,
-					// and it is also necessay to avoid problems with overloaded methods having
-					// the same name
-					StringBuilder methodName = new StringBuilder();
-					methodName.Append(method.Name + " (");
-					if (method.Parameters != null) {
-						for (int i = 0; i < method.Parameters.Count; i++) {
-							methodName.Append(method.Parameters [i].ReturnType.Name);
-							if (i < method.Parameters.Count - 1) methodName.Append (", ");
-						}
-					}
-					methodName.Append(")"); 
-					name = methodName.ToString ();
-				}
-				else if (mem is IProperty) {
-					IProperty property = (IProperty) mem;
-					if (methodMap [property.Name] != null) {
-						// The unlikely case that two properties have the same name has occured.
-						// We use the fully qualified name for each subsequent property to avoid
-						// problems.
-						name = property.FullyQualifiedName;
-					}
-					else {
-						name = property.Name;
-					}
-				}
-				else {
-					name = mem.Name;
-				}
 				
 				// Add the member to the list
-				memberStore.AppendValues (pix, name, mem);
+				MonoDevelop.Projects.Ambience.Ambience am = se.View.GetAmbience ();
+				string displayName = am.Convert (mem, MonoDevelop.Projects.Ambience.ConversionFlags.UseIntrinsicTypeNames |
+				                                      MonoDevelop.Projects.Ambience.ConversionFlags.ShowParameters |
+				                                      MonoDevelop.Projects.Ambience.ConversionFlags.ShowParameterNames |
+				                                      MonoDevelop.Projects.Ambience.ConversionFlags.ShowGenericParameters);
+				memberStore.AppendValues (pix, displayName, mem);
 				
 				// Check if the current cursor position in inside this member
 				if (IsMemberSelected (mem, line, column)) {
