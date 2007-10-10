@@ -337,7 +337,6 @@ namespace MonoDevelop.SourceEditor.Gui
 			}
 			TextFileService.FireResetCountChanges (this);
 
-			mainBox.Remove (se);
 			properties.PropertyChanged -= propertyHandler;
 			se.Buffer.ModifiedChanged -= new EventHandler (OnModifiedChanged);
 			se.Buffer.MarkSet -= new MarkSetHandler (OnMarkSet);
@@ -346,7 +345,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			ContentNameChanged -= new EventHandler (UpdateFSW);
    			membersCombo.Changed -= new EventHandler (MemberChanged);
 			classCombo.Changed -= new EventHandler (ClassChanged);
-			
+				
 			classStore.Dispose ();
 			memberStore.Dispose ();
 			
@@ -354,7 +353,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			classCombo.Model = null;
 			
 			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged -= new ParseInformationEventHandler(UpdateClassBrowser);
-			se.Dispose ();
+			mainBox.Destroy ();
 			fsw.Dispose ();
 			se = null;
 			base.Dispose ();
@@ -1218,7 +1217,6 @@ namespace MonoDevelop.SourceEditor.Gui
 			se.View.AutoIndent = (TextEditorProperties.IndentStyle == IndentStyle.Auto);
 			se.View.AutoInsertTemplates = TextEditorProperties.AutoInsertTemplates;
 			se.View.HighlightCurrentLine = TextEditorProperties.HighlightCurrentLine;
-			se.Buffer.UnderlineErrors = TextEditorProperties.UnderlineErrors;
 			se.Buffer.Highlight = TextEditorProperties.SyntaxHighlight;
 			se.DisplayBinding.ClassBrowserVisible = TextEditorProperties.ShowClassBrowser;
 
@@ -1262,9 +1260,6 @@ namespace MonoDevelop.SourceEditor.Gui
 					break;
 				case "AutoInsertTemplates":
 					se.View.AutoInsertTemplates = TextEditorProperties.AutoInsertTemplates;
-					break;
-				case "ShowErrors":
-					se.Buffer.UnderlineErrors = TextEditorProperties.UnderlineErrors;
 					break;
 				case "SyntaxHighlight":
 					se.Buffer.Highlight = TextEditorProperties.SyntaxHighlight;

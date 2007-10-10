@@ -59,14 +59,9 @@ namespace MonoDevelop.SourceEditor.Gui
 			Add (View);
 		}
 		
-		public new void Dispose ()
+		public override void Dispose ()
 		{
 			Buffer.Dispose ();
-			Buffer = null;
-			Remove (View);
-			View.Dispose ();
-			View = null;
-			DisplayBinding = null;
 			base.Dispose ();
 		}
 

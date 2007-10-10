@@ -252,8 +252,10 @@ namespace MonoDevelop.SourceEditor.Gui
 			InitAutoCorrectionValues();
 		}
 		
-		public new void Dispose ()
+		public override void Dispose ()
 		{
+			if (showTipScheduled)
+				GLib.Source.Remove (tipTimeoutId);
 			controlsDrawer.Detach ();
 			HideLanguageItemWindow ();
 			buf.MarkSet -= new MarkSetHandler (BufferMarkSet);
@@ -309,7 +311,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			string errorInfo;
 
 			showTipScheduled = false;
-				
+			
 			this.GetWindow (TextWindowType.Text).GetPointer (out xloc, out yloc, out mask);
 
 			TextIter ti = this.GetIterAtLocation (xloc + this.VisibleRect.X, yloc + this.VisibleRect.Y);
@@ -358,6 +360,16 @@ namespace MonoDevelop.SourceEditor.Gui
 			languageItemWindow.Move (xloc + ox - (w/2), yloc + oy + 20);
 			languageItemWindow.ShowAll ();
 		}
+		
+		protected override void OnUnrealized ()
+		{
+			if (showTipScheduled) {
+				GLib.Source.Remove (tipTimeoutId);
+				showTipScheduled = false;
+			}
+			base.OnUnrealized ();
+		}
+
 		
 
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)		

@@ -1,3 +1,16 @@
+2007-10-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs: There is no need to
+	  manually dispose the child view. It will be disposed when the parent is
+	  destroyed.
+	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs: Removed old error
+	  underlining code. Avoid leak caused by event subscription.
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Don't try to show the
+	  tooltip after the window has been disposed.
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Destroy the
+	  main widget when the view is disposed. Removed some old error
+	  underlining code.
+
 2007-10-09  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Fixed "Bug

@@ -74,7 +74,6 @@ namespace MonoDevelop.SourceEditor.Gui
 		AtomicUndo atomic_undo;
 		SourceEditorView view;
 		int highlightLine = -1;
-		bool underlineErrors = true;
 		string sourceEncoding;
 		
 		protected SourceEditorBuffer (IntPtr ptr): base (ptr)
@@ -85,21 +84,6 @@ namespace MonoDevelop.SourceEditor.Gui
 		{
 			get { return view; }
 			set { view = value; }
-		}
-
-		public bool UnderlineErrors {
-			get { return underlineErrors; }
-			set {
-				underlineErrors = value;
-				/* still too broken to leave on
-				if (underlineErrors) {
-					ps.ParseInformationChanged += (ParseInformationEventHandler) DispatchService.GuiDispatch (new ParseInformationEventHandler (ParseChanged));
-				}
-				else {
-					ps.ParseInformationChanged -= ParseChanged;
-				}
-				*/
-			}
 		}
 
 		public string SourceEncoding {
@@ -134,16 +118,18 @@ namespace MonoDevelop.SourceEditor.Gui
 			
 			MaxUndoLevels = 1000;
 			
-			base.InsertText += delegate (object sender, InsertTextArgs args) {
-				int lines = 0;
-				for (int i = 0; i < args.Text.Length; i++) {
-					if (args.Text [i] == '\n')
-						lines++;
-				}
-				TextIter iter = this.GetIterAtOffset (args.Pos.Offset - args.Length);
-				OnLineCountChanged (iter.Line, lines, iter.LineOffset);
-//				OnLineCountChanged (args.Pos.Line, lines, args.Pos.LineOffset);
-			};
+			base.InsertText += OnInsertText;
+		}
+		
+		void OnInsertText (object sender, InsertTextArgs args)
+		{
+			int lines = 0;
+			for (int i = 0; i < args.Text.Length; i++) {
+				if (args.Text [i] == '\n')
+					lines++;
+			}
+			TextIter iter = this.GetIterAtOffset (args.Pos.Offset - args.Length);
+			OnLineCountChanged (iter.Line, lines, iter.LineOffset);
 		}
 		
 		public delegate void LineCountChange (int line, int count, int column);
@@ -163,55 +149,11 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		public override void Dispose ()
 		{
+			base.InsertText -= OnInsertText;
+			
 			Language = null;
 			base.Dispose ();
 		}
-
-		/*
-		void ParseChanged (object o, ParseInformationEventArgs e)
-		{
-			if (view != null && view.ParentEditor.DisplayBinding.ContentName == e.FileName)
-			{
-				RemoveTag (compilation_error, StartIter, EndIter);
-
-				if (e.ParseInformation.MostRecentCompilationUnit.ErrorsDuringCompile)
-					DrawErrors (e.ParseInformation.MostRecentCompilationUnit.ErrorInformation);
-			}
-		}
-
-		void DrawErrors (ErrorInfo[] errors)
-		{
-			foreach (ErrorInfo error in errors)
-				DrawError (error.Line - 1, error.Column - 1);
-		}
-
-		// FIXME: underlines under keywords get ignored
-		// because we class with gtksourceview
-		void DrawError (int line, int column)
-		{
-			TextIter start = GetIterAtLine (line);
-
-			// FIXME: why is this necessary
-			if (column < start.CharsInLine) {
-				start.LineOffset = column;
-			}
-			else {
-				start.LineOffset = start.CharsInLine;
-			}
-
-			// FIXME: sometimes this is wrong
-			start.BackwardWordStart ();
-
-			TextIter end = start;
-			end.ForwardWordEnd ();
-
-			//Console.WriteLine ("underline error: {0}", GetText (start, end, false));
-			//if (GetText (start, end, false).Trim () != "")
-				ApplyTag (compilation_error, start, end);
-			//else
-			//	Console.WriteLine ("something didn't work");
-		}
-		*/		
 		
 		public void MarkupLine (int linenumber)
 		{
