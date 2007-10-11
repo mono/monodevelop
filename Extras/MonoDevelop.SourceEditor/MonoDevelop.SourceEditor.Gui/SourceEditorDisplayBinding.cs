@@ -31,8 +31,6 @@ namespace MonoDevelop.SourceEditor.Gui
 {
 	public class SourceEditorDisplayBinding : IDisplayBinding
 	{
-		StringParserService sps = (StringParserService) ServiceManager.GetService (typeof (StringParserService));
-		
 		static SourceEditorDisplayBinding ()
 		{
 			GtkSourceViewManager.Init ();
@@ -85,7 +83,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			sr.Close ();
 			
 			SourceEditorDisplayBindingWrapper w = new SourceEditorDisplayBindingWrapper ();
-			w.LoadString (mimeType, sps.Parse (text));
+			w.LoadString (mimeType, StringParserService.Parse (text));
 			return w;
 		}	
 	}
