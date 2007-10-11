@@ -50,8 +50,6 @@ namespace MonoDevelop.Core
 		/// </summary>
 		static ServiceManager()
 		{
-			// add 'core' services
-			AddService (new StringParserService());
 		}
 		
 		/// <remarks>

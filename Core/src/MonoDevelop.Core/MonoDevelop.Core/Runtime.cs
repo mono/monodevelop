@@ -40,7 +40,6 @@ namespace MonoDevelop.Core
 	public class Runtime
 	{
 		static ProcessService processService;
-		static StringParserService stringParserService;
 		static SystemAssemblyService systemAssemblyService;
 		static FileService fileService;
 		static ILoggingService loggingService;
@@ -113,14 +112,6 @@ namespace MonoDevelop.Core
 				if (fileService == null)
 					fileService = new FileService ();
 				return fileService; 
-			}
-		}
-		
-		public static StringParserService StringParserService {
-			get {
-				if (stringParserService == null)
-					stringParserService = (StringParserService) ServiceManager.GetService (typeof(StringParserService));
-				return stringParserService; 
 			}
 		}
 		

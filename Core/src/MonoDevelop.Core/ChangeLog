@@ -1,3 +1,9 @@
+2007-10-11  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Core/Runtime.cs, MonoDevelop.Core/ServiceManager.cs,
+	  MonoDevelop.Core/StringParserService.cs: StringParserService is now a
+	  singleton and re-wrote under MIT.
+
 2007-10-03  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Core.Execution/NativePlatformExecutionHandler.cs,

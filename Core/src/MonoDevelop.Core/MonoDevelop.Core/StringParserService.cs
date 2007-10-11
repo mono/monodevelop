@@ -1,184 +1,156 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version value="$version"/>
-// </file>
+//
+// StringParserService.cs
+//
+// Author:
+//   Mike Krüger <mkrueger@novell.com>
+//
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using System.Globalization;
 
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Core
 {
-	/// <summary>
-	/// this class parses internal ${xyz} tags of sd.
-	/// All environment variables are avaible under the name env.[NAME]
-	/// where [NAME] represents the string under which it is avaiable in
-	/// the environment.
-	/// </summary>
-	public class StringParserService : AbstractService
+
+	public static class StringParserService
 	{
-		Dictionary<string, string> properties = new Dictionary<string, string> ();
-		Dictionary<string, IStringTagProvider> stringTagProviders = new Dictionary<string, IStringTagProvider> ();
+		static Dictionary<string, string> properties = new Dictionary<string, string> ();
+		static Dictionary<string, GenerateString> stringTagProviders = new Dictionary<string, GenerateString> ();
 		
-		public Dictionary<string, string> Properties {
+		delegate string GenerateString (string propertyName);
+		
+		public static Dictionary<string, string> Properties {
 			get {
 				return properties;
 			}
 		}
 		
-		public StringParserService()
+		static StringParserService ()
 		{
-			System.Collections.IDictionary variables = Environment.GetEnvironmentVariables();
-			foreach (string name in variables.Keys) {
-				properties.Add("env:" + name, (string)variables[name]);
+			stringTagProviders.Add ("DATE", delegate (string pn) { return DateTime.Today.ToShortDateString (); });
+			stringTagProviders.Add ("YEAR", delegate (string pn) { return DateTime.Today.Year.ToString (); });
+			stringTagProviders.Add ("MONTH", delegate (string pn) { return DateTime.Today.Month.ToString (); });
+			stringTagProviders.Add ("DAY", delegate (string pn) { return DateTime.Today.Day.ToString (); });
+			stringTagProviders.Add ("TIME", delegate (string pn) { return DateTime.Now.ToShortTimeString (); });
+			stringTagProviders.Add ("HOUR", delegate (string pn) { return DateTime.Now.Hour.ToString (); });
+			stringTagProviders.Add ("MINUTE", delegate (string pn) { return DateTime.Now.Minute.ToString (); });
+			stringTagProviders.Add ("SECOND", delegate (string pn) { return DateTime.Now.Second.ToString (); });
+			stringTagProviders.Add ("USER", delegate (string pn) { return Environment.UserName; });
+		}
+		
+		public static string Parse (string input)
+		{
+			return Parse (input, null);
+		}
+		
+		public static void Parse (ref string[] inputs)
+		{
+			for (int i = inputs.GetLowerBound (0); i <= inputs.GetUpperBound (0); ++i) 
+				inputs[i] = Parse (inputs[i], null);
+		}
+		
+		public static void RegisterStringTagProvider (IStringTagProvider tagProvider)
+		{
+			foreach (string tag in tagProvider.Tags) { 
+				stringTagProviders [tag.ToUpper ()] = delegate (string propertyName) {
+					return tagProvider.Convert (propertyName);
+				};
 			}
 		}
 		
-		public string Parse(string input)
+		static string Replace (string tag, string[,] customTags)
 		{
-			return Parse(input, null);
-		}
-		
-		/// <summary>
-		/// Parses an array and replaces the elements
-		/// </summary>
-		public void Parse(ref string[] inputs)
-		{
-			for (int i = inputs.GetLowerBound(0); i <= inputs.GetUpperBound(0); ++i) {
-				inputs[i] = Parse(inputs[i], null);
+			if (customTags != null) {
+				for (int i = 0; i < customTags.GetLength (0); ++i) {
+					if (tag.ToUpper () == customTags[i, 0].ToUpper ()) 
+						return customTags[i, 1];
+				}
 			}
-		}
+			
+			if (properties.ContainsKey (tag.ToUpper ()))
+				return properties [tag.ToUpper ()];
 		
-		public void RegisterStringTagProvider(IStringTagProvider tagProvider)
-		{
-			foreach (string str in tagProvider.Tags) {
-				stringTagProviders[str.ToUpper()] = tagProvider;
-			}
-		}
-		
-		string Replace (string[,] customTags, string propertyName)
-		{
-			string propertyValue = null;
-			switch (propertyName.ToUpper (CultureInfo.InvariantCulture)) {
-				case "DATE": // current date
-					propertyValue = DateTime.Today.ToShortDateString();
+			GenerateString genString;
+			if (stringTagProviders.TryGetValue (tag.ToUpper (), out genString))
+				return genString (tag);
+			
+			int idx = tag.IndexOf (':');
+			if (idx > 0) {
+				string descriptor = tag.Substring (0, idx);
+				string value      = tag.Substring (idx + 1);
+				switch (descriptor.ToUpper()) {
+				case "ENV":
+					foreach (DictionaryEntry variable in Environment.GetEnvironmentVariables ()) {
+						if (variable.Key.ToString ().ToUpper () == value.ToUpper ())
+							return variable.Value.ToString ();
+					}
 					break;
-				case "YEAR": // current year
-					propertyValue = DateTime.Today.Year.ToString ();
-					break;
-				case "MONTH": // current month
-					propertyValue = DateTime.Today.Month.ToString ();
-					break;
-				case "DAY": // current day
-					propertyValue = DateTime.Today.Day.ToString ();
-					break;
-				
-				case "TIME": // current time
-					propertyValue = DateTime.Now.ToShortTimeString();
-					break;
-				case "HOUR": // current hour
-					propertyValue = DateTime.Now.Hour.ToString ();
-					break;
-				case "MINUTE": // current minute
-					propertyValue = DateTime.Now.Minute.ToString ();
-					break;
-				case "SECOND": // current second
-					propertyValue = DateTime.Now.Second.ToString ();
-					break;
-				
-				case "USER": // current time
-					propertyValue = Environment.UserName;
-					break;
-				
+				case "PROPERTY":
+					return PropertyService.Get<string> (value);
 				default:
-					propertyValue = null;
-					if (customTags != null) {
-						for (int j = 0; j < customTags.GetLength(0); ++j) {
-							if (propertyName.ToUpper() == customTags[j, 0].ToUpper()) {
-								propertyValue = customTags[j, 1];
-								break;
-							}
-						}
-					}
-					
-					if (propertyValue == null && properties.ContainsKey (propertyName.ToUpper())) {
-						propertyValue = properties [propertyName.ToUpper()];
-					}
-					
-					if (propertyValue == null) {
-						IStringTagProvider stringTagProvider;
-						if (stringTagProviders.TryGetValue (propertyName.ToUpper (), out stringTagProvider))
-							propertyValue = stringTagProvider.Convert(propertyName.ToUpper());
-					}
-					
-					if (propertyValue == null) {
-						int k = propertyName.IndexOf(':');
-						if (k > 0) {
-							switch (propertyName.Substring(0, k).ToUpper()) {
-								case "RES":
-									throw new Exception ("This syntax is deprecated and needs to be removed from the offending consumer");
-								case "PROPERTY":
-									propertyValue = PropertyService.Get<string> (propertyName.Substring (k + 1));
-									break;
-							}
-						}
-					}
-					break;
+					throw new Exception (String.Format ("Descriptor '{0}' unknown. Valid is 'env', 'property'.", descriptor));
+				}
 			}
-			
-			return propertyValue;
+			return null;
 		}
 			
-		/// <summary>
-		/// Expands ${xyz} style property values.
-		/// </summary>
-		public string Parse(string input, string [,] customTags)
+		public static string Parse (string input, string [,] customTags)
 		{
-			StringBuilder sb = new StringBuilder (input.Length);
-			for (int i = 0; i < input.Length; i++) {
-				if (input [i] != '$') {
-					sb.Append (input [i]);
-					continue;
+			StringBuilder result = new StringBuilder (input.Length);
+			int i = 0;
+			while (i < input.Length) {
+				if (input [i] == '$') {
+					i++;
+					if (i >= input.Length || input[i] != '{') {
+						result.Append ('$');
+						continue;
+					}
+					i++;
+					int start = i;
+					while (i < input.Length && input [i] != '}')
+						i++;
+					string tag      = input.Substring (start, i - start);
+					string tagValue = Replace (tag, customTags) ?? "${" + tag + (i < input.Length ? "}" : "");
+					result.Append (tagValue);
+				} else {
+					result.Append (input [i]);
 				}
-				
-				int start = i;
-				
-				if (++i >= input.Length)
-					break;
-				
-				if (input [i] != '{') {
-					sb.Append ('$');
-					sb.Append (input [i]);
-					continue;
-				}
-				
-				int end;
-				for (end = ++i; end < input.Length; end++) {
-					if (input [end] == '}')
-						break;
-				}
-				
-				string replacement;
-				if (end == input.Length || (replacement = Replace (customTags, input.Substring (i, end - i))) == null) {
-					sb.Append (input.Substring (start, end - start + 1));
-					i = end;
-					continue;
-				}
-				
-				sb.Append (replacement);
-				i = end;
+				i++;
 			}
-			
-			sb.Replace (@"\&", "||!|");
-			sb.Replace ("&", "_");
-			sb.Replace ("||!|", "&");
-			
-			return sb.ToString ();
+			return result.ToString ();
+		}
+		
+		public interface IStringTagProvider 
+		{
+			IEnumerable<string> Tags {
+				get;
+			}
+			string Convert (string tag);
 		}
 	}
 }

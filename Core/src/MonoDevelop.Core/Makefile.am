@@ -46,7 +46,6 @@ FILES =  \
 	MonoDevelop.Core.Utils.DirectoryArchive/ZipDecompressor.cs \
 	MonoDevelop.Core.Utils.ReportingStream/ReportingStream.cs \
 	MonoDevelop.Core/AbstractService.cs \
-	MonoDevelop.Core/CharacterEncodings.cs \
 	MonoDevelop.Core/ClrVersion.cs \
 	MonoDevelop.Core/DefaultLoggingService.cs \
 	MonoDevelop.Core/FileEventArgs.cs \
@@ -56,7 +55,6 @@ FILES =  \
 	MonoDevelop.Core/ILoggingService.cs \
 	MonoDevelop.Core/IProgressMonitor.cs \
 	MonoDevelop.Core/IService.cs \
-	MonoDevelop.Core/IStringTagProvider.cs \
 	MonoDevelop.Core/Properties.cs \
 	MonoDevelop.Core/PropertyChangedEventArgs.cs \
 	MonoDevelop.Core/PropertyService.cs \
