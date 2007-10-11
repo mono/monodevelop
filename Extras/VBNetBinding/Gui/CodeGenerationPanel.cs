@@ -117,9 +117,6 @@ namespace VBBinding
 			//
 			// services needed
 			//
-			StringParserService StringParserService = (StringParserService)ServiceManager.GetService (
-				typeof (StringParserService));
-
 			DotNetProjectConfiguration configuration;
 			VBCompilerParameters compilerParameters = null;
 			

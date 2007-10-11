@@ -1,3 +1,7 @@
+2007-10-11  Mike Krüger <mkrueger@novell.com> 
+
+	
+
 2007-10-09  Ankit Jain  <jankit@novell.com>
 
 	* VBBindingCompilerServices.cs: Removed code for building resources. Its
