@@ -1,5 +1,10 @@
 2007-10-11  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Core/StringParserService.cs: Renamed some variables in the
+	  stringparser service.
+
+2007-10-11  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Core/Runtime.cs, MonoDevelop.Core/ServiceManager.cs,
 	  MonoDevelop.Core/StringParserService.cs: StringParserService is now a
 	  singleton and re-wrote under MIT.

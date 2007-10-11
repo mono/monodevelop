@@ -36,13 +36,12 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Core
 {
-
 	public static class StringParserService
 	{
 		static Dictionary<string, string> properties = new Dictionary<string, string> ();
-		static Dictionary<string, GenerateString> stringTagProviders = new Dictionary<string, GenerateString> ();
+		static Dictionary<string, GenerateString> stringGenerators = new Dictionary<string, GenerateString> ();
 		
-		delegate string GenerateString (string propertyName);
+		delegate string GenerateString (string tag);
 		
 		public static Dictionary<string, string> Properties {
 			get {
@@ -52,15 +51,15 @@ namespace MonoDevelop.Core
 		
 		static StringParserService ()
 		{
-			stringTagProviders.Add ("DATE", delegate (string pn) { return DateTime.Today.ToShortDateString (); });
-			stringTagProviders.Add ("YEAR", delegate (string pn) { return DateTime.Today.Year.ToString (); });
-			stringTagProviders.Add ("MONTH", delegate (string pn) { return DateTime.Today.Month.ToString (); });
-			stringTagProviders.Add ("DAY", delegate (string pn) { return DateTime.Today.Day.ToString (); });
-			stringTagProviders.Add ("TIME", delegate (string pn) { return DateTime.Now.ToShortTimeString (); });
-			stringTagProviders.Add ("HOUR", delegate (string pn) { return DateTime.Now.Hour.ToString (); });
-			stringTagProviders.Add ("MINUTE", delegate (string pn) { return DateTime.Now.Minute.ToString (); });
-			stringTagProviders.Add ("SECOND", delegate (string pn) { return DateTime.Now.Second.ToString (); });
-			stringTagProviders.Add ("USER", delegate (string pn) { return Environment.UserName; });
+			stringGenerators.Add ("DATE", delegate (string tag) { return DateTime.Today.ToShortDateString (); });
+			stringGenerators.Add ("YEAR", delegate (string tag) { return DateTime.Today.Year.ToString (); });
+			stringGenerators.Add ("MONTH", delegate (string tag) { return DateTime.Today.Month.ToString (); });
+			stringGenerators.Add ("DAY", delegate (string tag) { return DateTime.Today.Day.ToString (); });
+			stringGenerators.Add ("TIME", delegate (string tag) { return DateTime.Now.ToShortTimeString (); });
+			stringGenerators.Add ("HOUR", delegate (string tag) { return DateTime.Now.Hour.ToString (); });
+			stringGenerators.Add ("MINUTE", delegate (string tag) { return DateTime.Now.Minute.ToString (); });
+			stringGenerators.Add ("SECOND", delegate (string tag) { return DateTime.Now.Second.ToString (); });
+			stringGenerators.Add ("USER", delegate (string tag) { return Environment.UserName; });
 		}
 		
 		public static string Parse (string input)
@@ -76,9 +75,9 @@ namespace MonoDevelop.Core
 		
 		public static void RegisterStringTagProvider (IStringTagProvider tagProvider)
 		{
-			foreach (string tag in tagProvider.Tags) { 
-				stringTagProviders [tag.ToUpper ()] = delegate (string propertyName) {
-					return tagProvider.Convert (propertyName);
+			foreach (string providedTag in tagProvider.Tags) { 
+				stringGenerators [providedTag.ToUpper ()] = delegate (string tag) {
+					return tagProvider.Convert (tag);
 				};
 			}
 		}
@@ -96,7 +95,7 @@ namespace MonoDevelop.Core
 				return properties [tag.ToUpper ()];
 		
 			GenerateString genString;
-			if (stringTagProviders.TryGetValue (tag.ToUpper (), out genString))
+			if (stringGenerators.TryGetValue (tag.ToUpper (), out genString))
 				return genString (tag);
 			
 			int idx = tag.IndexOf (':');
