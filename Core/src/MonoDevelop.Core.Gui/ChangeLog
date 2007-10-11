@@ -1,3 +1,9 @@
+2007-10-11  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Core.Gui.Components/LocalizedPropertyDescriptor.cs,
+	  MonoDevelop.Core.Gui/MessageService.cs: Changed calls for the new
+	  StringParser.
+
 2007-10-04  Mike Krüger <mkrueger@novell.com> 
 
 	* Freedesktop.RecentFiles/RecentFileStorage.cs: Made recent file storage

@@ -14,8 +14,6 @@ namespace MonoDevelop.Core.Gui.Components
 	/// </summary>
 	public class LocalizedPropertyDescriptor : PropertyDescriptor
 	{
-		static StringParserService stringParserService = Runtime.StringParserService;
-		
 		PropertyDescriptor basePropertyDescriptor; 
 		
 		string localizedName        = String.Empty;
@@ -48,19 +46,19 @@ namespace MonoDevelop.Core.Gui.Components
 		
 		public override string DisplayName {
 			get  {
-				return stringParserService.Parse(localizedName);
+				return StringParserService.Parse(localizedName);
 			}
 		}
 		
 		public override string Description {
 			get {
-				return stringParserService.Parse(localizedDescription);
+				return StringParserService.Parse(localizedDescription);
 			}
 		}
 		
 		public override string Category {
 			get {
-				return stringParserService.Parse(localizedCategory);
+				return StringParserService.Parse(localizedCategory);
 			}
 		}
 		

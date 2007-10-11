@@ -21,7 +21,6 @@ namespace MonoDevelop.Core.Gui
 	/// </summary>
 	public class MessageService : GuiSyncObject, IMessageService
 	{
-		StringParserService stringParserService = Runtime.StringParserService;
 		Window rootWindow;
 		
 		public object RootWindow {
@@ -46,7 +45,7 @@ namespace MonoDevelop.Core.Gui
 		
 		public void ShowErrorFormatted(string formatstring, params string[] formatitems)
 		{
-			ShowError(null, String.Format(stringParserService.Parse(formatstring), formatitems), rootWindow);
+			ShowError(null, String.Format(StringParserService.Parse(formatstring), formatitems), rootWindow);
 		}
 
 		private struct ErrorContainer
@@ -123,7 +122,7 @@ namespace MonoDevelop.Core.Gui
 		
 		public void ShowWarningFormatted(string formatstring, params string[] formatitems)
 		{
-			ShowWarning(String.Format(stringParserService.Parse(formatstring), formatitems));
+			ShowWarning(String.Format(StringParserService.Parse(formatstring), formatitems));
 		}
 		
 		public bool AskQuestion(string question, string caption)
@@ -144,17 +143,17 @@ namespace MonoDevelop.Core.Gui
 		
 		public bool AskQuestionFormatted(string caption, string formatstring, params string[] formatitems)
 		{
-			return AskQuestion(String.Format(stringParserService.Parse(formatstring), formatitems), caption);
+			return AskQuestion(String.Format(StringParserService.Parse(formatstring), formatitems), caption);
 		}
 		
 		public bool AskQuestionFormatted(string formatstring, params string[] formatitems)
 		{
-			return AskQuestion(String.Format(stringParserService.Parse(formatstring), formatitems));
+			return AskQuestion(String.Format(StringParserService.Parse(formatstring), formatitems));
 		}
 		
 		public bool AskQuestion(string question)
 		{
-			return AskQuestion(stringParserService.Parse(question), GettextCatalog.GetString ("Question"));
+			return AskQuestion(StringParserService.Parse(question), GettextCatalog.GetString ("Question"));
 		}
 
 		public QuestionResponse AskQuestionWithCancel(string question, string caption)
@@ -189,17 +188,17 @@ namespace MonoDevelop.Core.Gui
 		
 		public QuestionResponse AskQuestionFormattedWithCancel(string caption, string formatstring, params string[] formatitems)
 		{
-			return AskQuestionWithCancel(String.Format(stringParserService.Parse(formatstring), formatitems), caption);
+			return AskQuestionWithCancel(String.Format(StringParserService.Parse(formatstring), formatitems), caption);
 		}
 		
 		public QuestionResponse AskQuestionFormattedWithCancel(string formatstring, params string[] formatitems)
 		{
-			return AskQuestionWithCancel(String.Format(stringParserService.Parse(formatstring), formatitems));
+			return AskQuestionWithCancel(String.Format(StringParserService.Parse(formatstring), formatitems));
 		}
 		
 		public QuestionResponse AskQuestionWithCancel(string question)
 		{
-			return AskQuestionWithCancel(stringParserService.Parse(question), GettextCatalog.GetString ("Question"));
+			return AskQuestionWithCancel(StringParserService.Parse(question), GettextCatalog.GetString ("Question"));
 		}
 		
 		public int ShowCustomDialog(string caption, string dialogText, params string[] buttontexts)
@@ -244,12 +243,12 @@ namespace MonoDevelop.Core.Gui
 		
 		public void ShowMessageFormatted(string formatstring, params string[] formatitems)
 		{
-			ShowMessage(String.Format(stringParserService.Parse(formatstring), formatitems));
+			ShowMessage(String.Format(StringParserService.Parse(formatstring), formatitems));
 		}
 		
 		public void ShowMessageFormatted(string caption, string formatstring, params string[] formatitems)
 		{
-			ShowMessage(String.Format(stringParserService.Parse(formatstring), formatitems), caption);
+			ShowMessage(String.Format(StringParserService.Parse(formatstring), formatitems), caption);
 		}
 		
 		public void ShowMessage(string message, string caption)
