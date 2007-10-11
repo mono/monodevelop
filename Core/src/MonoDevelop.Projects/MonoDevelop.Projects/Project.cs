@@ -408,7 +408,7 @@ namespace MonoDevelop.Projects
 				throw new ApplicationException("Can't create project output directory " + outputDir + " original exception:\n" + e.ToString());
 			}
 		
-			Runtime.StringParserService.Properties["Project"] = Name;
+			StringParserService.Properties["Project"] = Name;
 			
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Performing main compilation..."));
 			ICompilerResult res = DoBuild (monitor);

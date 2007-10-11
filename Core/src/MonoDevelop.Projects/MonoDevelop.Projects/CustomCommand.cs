@@ -102,12 +102,12 @@ namespace MonoDevelop.Projects
 				args = string.Empty;
 			} else {
 				exe = command.Substring (0, i);
-				args = Runtime.StringParserService.Parse (command.Substring (i + 1), customtags);
+				args = StringParserService.Parse (command.Substring (i + 1), customtags);
 			}
 			
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Executing: {0} {1}", exe, args));
 
-			string dir = (string.IsNullOrEmpty (workingdir) ? entry.BaseDirectory : Runtime.StringParserService.Parse (workingdir, customtags));
+			string dir = (string.IsNullOrEmpty (workingdir) ? entry.BaseDirectory : StringParserService.Parse (workingdir, customtags));
 			
 			string localPath = Path.Combine (entry.BaseDirectory, exe);
 			if (File.Exists (localPath))
