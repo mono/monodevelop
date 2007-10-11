@@ -68,7 +68,6 @@ namespace MonoDevelop.Ide.Templates
 		
 		public string CreateEntry (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
 		{
-			StringParserService stringParserService = Runtime.StringParserService;
 			
 			if (projectOptions.GetAttribute ("language") == "") {
 /*				if (defaultLanguage == null || defaultLanguage == "")
@@ -83,7 +82,7 @@ namespace MonoDevelop.Ide.Templates
 				return String.Empty;
 			}
 			
-			string newProjectName = stringParserService.Parse(name, new string[,] { 
+			string newProjectName = StringParserService.Parse(name, new string[,] { 
 				{"ProjectName", projectCreateInformation.ProjectName}
 			});
 			

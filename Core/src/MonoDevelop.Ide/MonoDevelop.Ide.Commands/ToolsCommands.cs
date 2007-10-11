@@ -54,13 +54,12 @@ namespace MonoDevelop.Ide.Commands
 
 		private void RunTool (object ob)
 		{
-			StringParserService stringParserService = Runtime.StringParserService;
 			ExternalTool tool = (ExternalTool) ob;
 			
 			// set the command
 			string command = tool.Command;
 			// set the args
-			string args = stringParserService.Parse(tool.Arguments);
+			string args = StringParserService.Parse(tool.Arguments);
 			// prompt for args if needed
 			if (tool.PromptForArguments) {
 				args = Services.MessageService.GetTextResponse (
@@ -69,7 +68,7 @@ namespace MonoDevelop.Ide.Commands
 					
 				// if user selected cancel string will be null
 				if (args == null) {
-					args = stringParserService.Parse(tool.Arguments);
+					args = StringParserService.Parse(tool.Arguments);
 				}
 			}
 			if (tool.SaveCurrentFile && MonoDevelop.Ide.Gui.IdeApp.Workbench.ActiveDocument != null)
@@ -82,7 +81,7 @@ namespace MonoDevelop.Ide.Commands
 			
 			try {
 				ProcessWrapper p;
-				string workingDirectory = stringParserService.Parse(tool.InitialDirectory);
+				string workingDirectory = StringParserService.Parse(tool.InitialDirectory);
 				if (tool.UseOutputPad)
 					p = Runtime.ProcessService.StartProcess (command, args, workingDirectory, monitor.Log, monitor.Log, null);
 				else

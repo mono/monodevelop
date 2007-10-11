@@ -1,3 +1,19 @@
+2007-10-11  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Templates/CombineDescriptor.cs,
+	  MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs,
+	  MonoDevelop.Ide.Templates/CodeTranslationFileDescriptionTemplate.cs,
+	  MonoDevelop.Ide.Templates/CombineEntryDescriptor.cs,
+	  MonoDevelop.Ide.Templates/ProjectDescriptor.cs,
+	  MonoDevelop.Ide.Commands/ToolsCommands.cs,
+	  MonoDevelop.Ide.Commands/CustomStringTagProvider.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/TipOfTheDay.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs,
+	  MonoDevelop.Ide.Gui/DefaultStatusBarService.cs,
+	  MonoDevelop.Ide.Gui/ProjectOperations.cs, MonoDevelop.Ide.Gui/Ide.cs,
+	  MonoDevelop.Ide.Codons/FileFilterCodon.cs: Changed calls for the new
+	  StringParser.
+
 2007-10-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.OptionPanels/SelectStylePanel.cs, gtk-gui/gui.stetic,

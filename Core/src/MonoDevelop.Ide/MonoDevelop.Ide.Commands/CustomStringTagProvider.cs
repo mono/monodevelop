@@ -10,7 +10,7 @@ using System.IO;
 using System.Threading;
 using System.Drawing;
 using System.Drawing.Printing;
-using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 
@@ -23,9 +23,9 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Commands
 {
-	internal class SharpDevelopStringTagProvider :  IStringTagProvider 
+	internal class SharpDevelopStringTagProvider :  StringParserService.IStringTagProvider 
 	{
-		public string[] Tags {
+		public IEnumerable<string> Tags {
 			get {
 				return new string[] { "ITEMPATH", "ITEMDIR", "ITEMFILENAME", "ITEMEXT",
 				                      "CURLINE", "CURCOL", "CURTEXT",
@@ -59,7 +59,7 @@ namespace MonoDevelop.Ide.Commands
 		
 		public string Convert(string tag)
 		{
-			switch (tag) {
+			switch (tag.ToUpper ()) {
 				case "ITEMPATH":
 					try {
 						return GetCurrentItemPath();

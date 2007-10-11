@@ -157,10 +157,9 @@ namespace MonoDevelop.Ide.Templates
 			
 			//substitute tags
 			if ((name != null) && (name.Length > 0)) {
-				StringParserService sps = (StringParserService) ServiceManager.GetService (typeof (StringParserService));
 				Hashtable tags = new Hashtable ();
 				ModifyTags (project, language, entryName, null, ref tags);
-				fileName = sps.Parse (name, HashtableToStringArray (tags));
+				fileName = StringParserService.Parse (name, HashtableToStringArray (tags));
 			}
 			
 			if (fileName == null)
@@ -187,7 +186,6 @@ namespace MonoDevelop.Ide.Templates
 		// project and language parameters are optional
 		public virtual Stream CreateFile (Project project, string language, string fileName)
 		{
-			StringParserService sps = (StringParserService) ServiceManager.GetService (typeof (StringParserService));
 			
 			if (project != null && project.IsFileInProject (fileName))
 				throw new UserException (GettextCatalog.GetString ("The file '{0}' already exists in the project.", Path.GetFileName (fileName)));
@@ -196,13 +194,12 @@ namespace MonoDevelop.Ide.Templates
 			ModifyTags (project, language, null, fileName, ref tags);
 			
 			string content = CreateContent (language);
-			content = sps.Parse (content, HashtableToStringArray (tags));
+			content = StringParserService.Parse (content, HashtableToStringArray (tags));
 			
 			MemoryStream ms = new MemoryStream ();
 			byte[] data;
 			if (StandardHeaderService.EmitStandardHeader && AddStandardHeader) { 
-				StringParserService stringParserService = (StringParserService) ServiceManager.GetService (typeof (StringParserService));
-				string header = stringParserService.Parse (StandardHeaderService.GetHeader(language), new string[,] { 
+				string header = StringParserService.Parse (StandardHeaderService.GetHeader(language), new string[,] { 
 					{ "FileName", Path.GetFileName (fileName) }, 
 					{ "FileNameWithoutExtension", Path.GetFileNameWithoutExtension (fileName) }, 
 					{ "Directory", Path.GetDirectoryName (fileName) }, 

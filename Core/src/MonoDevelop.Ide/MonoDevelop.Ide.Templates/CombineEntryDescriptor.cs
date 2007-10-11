@@ -60,8 +60,6 @@ namespace MonoDevelop.Ide.Templates
 		
 		public string CreateEntry (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
 		{
-			StringParserService stringParserService = Runtime.StringParserService;
-			
 			Type type = Type.GetType (typeName);
 			
 			if (type == null) {
@@ -72,7 +70,7 @@ namespace MonoDevelop.Ide.Templates
 			CombineEntry entry = (CombineEntry) Activator.CreateInstance (type);
 			entry.InitializeFromTemplate (template);
 			
-			string newProjectName = stringParserService.Parse (name, new string[,] { 
+			string newProjectName = StringParserService.Parse (name, new string[,] { 
 				{"ProjectName", projectCreateInformation.ProjectName}
 			});
 			

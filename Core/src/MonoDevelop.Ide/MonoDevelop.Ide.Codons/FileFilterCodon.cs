@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Codons
 		
 		public override object CreateInstance ()
 		{
-			return Runtime.StringParserService.Parse (filtername) + "|" + String.Join(";", extensions);
+			return StringParserService.Parse (filtername) + "|" + String.Join(";", extensions);
 		}
 	}
 }

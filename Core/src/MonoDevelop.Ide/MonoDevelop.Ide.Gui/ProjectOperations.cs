@@ -1598,7 +1598,7 @@ namespace MonoDevelop.Ide.Gui
 		protected virtual void OnCurrentProjectChanged(ProjectEventArgs e)
 		{
 			if (CurrentSelectedProject != null) {
-				Runtime.StringParserService.Properties["PROJECTNAME"] = CurrentSelectedProject.Name;
+				StringParserService.Properties["PROJECTNAME"] = CurrentSelectedProject.Name;
 			}
 			if (CurrentProjectChanged != null) {
 				CurrentProjectChanged(this, e);

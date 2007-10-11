@@ -59,7 +59,7 @@ namespace MonoDevelop.Ide.Templates
 			} else
 				newCombine = new Combine();
 
-			string  newCombineName = Runtime.StringParserService.Parse(name, new string[,] { 
+			string  newCombineName = StringParserService.Parse(name, new string[,] { 
 				{"ProjectName", projectCreateInformation.CombineName}
 			});
 			

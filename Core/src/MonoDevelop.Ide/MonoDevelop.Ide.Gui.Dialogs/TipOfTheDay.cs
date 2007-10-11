@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
  			tips = new string[nodes.Count];
 			
  			for (int i = 0; i < nodes.Count; i++) {
- 				tips[i] = Runtime.StringParserService.Parse (nodes[i].InnerText);
+ 				tips[i] = StringParserService.Parse (nodes[i].InnerText);
  			}
 			
  			currentTip = (new Random ().Next ()) % nodes.Count;

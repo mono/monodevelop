@@ -19,7 +19,6 @@ namespace MonoDevelop.Ide.Gui
 	internal class DefaultStatusBarService : GuiSyncObject, IStatusBarService
 	{
 		SdStatusBar statusBar = null;
-		StringParserService stringParserService = Runtime.StringParserService;
 		
 		public DefaultStatusBarService()
 		{
@@ -94,7 +93,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			Debug.Assert(statusBar != null);
 			if (message == null) message = "";
-			statusBar.ShowErrorMessage(stringParserService.Parse(message));
+			statusBar.ShowErrorMessage(StringParserService.Parse(message));
 		}
 		
 		[AsyncDispatch]
@@ -102,7 +101,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			Debug.Assert(statusBar != null);
 			if (message == null) message = "";
-			statusBar.SetMessage(stringParserService.Parse(message));
+			statusBar.SetMessage(StringParserService.Parse(message));
 		}
 		
 		[AsyncDispatch]
@@ -110,7 +109,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			Debug.Assert(statusBar != null);
 			if (message == null) message = "";
-			statusBar.SetMessage(image, stringParserService.Parse(message));
+			statusBar.SetMessage(image, StringParserService.Parse(message));
 		}
 
 		void OnCombineClosed (object sender, CombineEventArgs e)

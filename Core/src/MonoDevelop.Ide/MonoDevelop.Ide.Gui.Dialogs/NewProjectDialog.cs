@@ -254,11 +254,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			project.ProjectFiles.Add (new ProjectFile(filename));
 			
 			StreamWriter sr = System.IO.File.CreateText (filename);
-			sr.Write (Runtime.StringParserService.Parse(content, new string[,] { {"PROJECT", txt_name.Text}, {"FILE", System.IO.Path.GetFileName(filename)}}));
+			sr.Write (StringParserService.Parse(content, new string[,] { {"PROJECT", txt_name.Text}, {"FILE", System.IO.Path.GetFileName(filename)}}));
 			sr.Close();
 			
 			if (showFile) {
-				string longfilename = Runtime.FileService.GetDirectoryNameWithSeparator (ProjectLocation) + Runtime.StringParserService.Parse(filename, new string[,] { {"PROJECT", txt_name.Text}});
+				string longfilename = Runtime.FileService.GetDirectoryNameWithSeparator (ProjectLocation) + StringParserService.Parse(filename, new string[,] { {"PROJECT", txt_name.Text}});
 				IdeApp.Workbench.OpenDocument (longfilename);
 			}
 		}
@@ -404,7 +404,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		{
 			if (TemplateView.CurrentlySelected != null) {
 				ProjectTemplate ptemplate = (ProjectTemplate) TemplateView.CurrentlySelected;
-				lbl_template_descr.Text = Runtime.StringParserService.Parse (ptemplate.Description);
+				lbl_template_descr.Text = StringParserService.Parse (ptemplate.Description);
 				
 				if (ptemplate.CombineDescriptor.EntryDescriptors.Length == 0) {
 					txt_subdirectory.Sensitive = false;
@@ -512,7 +512,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			
 			public TemplateItem (ProjectTemplate template)
 			{
-				name = Runtime.StringParserService.Parse(template.Name);
+				name = StringParserService.Parse(template.Name);
 				this.template = template;
 			}
 			
