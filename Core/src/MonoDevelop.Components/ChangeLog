@@ -1,3 +1,9 @@
+2007-10-11  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Components.Commands.ExtensionNodes/ItemSetCodon.cs,
+	  MonoDevelop.Components.Commands.ExtensionNodes/CommandCodon.cs: Changed
+	  calls for the new StringParser.
+
 2007-10-03  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Components.mdp: Fix warning level.

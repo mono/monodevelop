@@ -143,7 +143,7 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 			}
 			
 			cmd.Id = ParseCommandId (this);
-			cmd.Text = Runtime.StringParserService.Parse (GettextCatalog.GetString (label));
+			cmd.Text = StringParserService.Parse (GettextCatalog.GetString (label));
 			if ((_description != null) && (_description.Length > 0)){
 				cmd.Description = _description;				
 			}

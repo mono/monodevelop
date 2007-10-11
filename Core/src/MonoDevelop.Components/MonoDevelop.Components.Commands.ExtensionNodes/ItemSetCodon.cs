@@ -54,7 +54,7 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 		{
 			if (label == null) label = Id;
 
-			label = Runtime.StringParserService.Parse (GettextCatalog.GetString (label));
+			label = StringParserService.Parse (GettextCatalog.GetString (label));
 			if (icon != null) icon = CommandCodon.GetStockId (Addin, icon);
 			CommandEntrySet cset = new CommandEntrySet (label, icon);
 			cset.AutoHide = autohide;
