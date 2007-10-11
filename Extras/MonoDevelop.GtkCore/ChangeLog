@@ -1,3 +1,8 @@
+2007-10-11  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs: Changed calls for
+	  the new StringParser.
+
 2007-10-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore/GtkDesignInfo.cs: In Bind(), don't subscribe the

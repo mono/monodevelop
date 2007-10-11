@@ -84,8 +84,6 @@ namespace MonoDevelop.GtkCore
 
 			IdeApp.ProjectOperations.ParserDatabase.UpdateFile (project, fileName, null);
 			
-			StringParserService sps = (StringParserService) ServiceManager.GetService (typeof (StringParserService));
-			
 			DotNetProject netProject = project as DotNetProject;
 			string ns = netProject != null ? netProject.GetDefaultNamespace (fileName) : "";
 			string cname = Path.GetFileNameWithoutExtension (fileName);
@@ -99,7 +97,7 @@ namespace MonoDevelop.GtkCore
 			XmlElement widgetElem = steticTemplate ["widget"];
 			if (widgetElem != null) {
 				string content = widgetElem.OuterXml;
-				content = sps.Parse (content, tags);
+				content = StringParserService.Parse (content, tags);
 				
 				XmlDocument doc = new XmlDocument ();
 				doc.LoadXml (content);
@@ -115,7 +113,7 @@ namespace MonoDevelop.GtkCore
 			widgetElem = steticTemplate ["action-group"];
 			if (widgetElem != null) {
 				string content = widgetElem.OuterXml;
-				content = sps.Parse (content, tags);
+				content = StringParserService.Parse (content, tags);
 				
 				XmlDocument doc = new XmlDocument ();
 				doc.LoadXml (content);
