@@ -1,3 +1,9 @@
+2007-10-12  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
+	* Navigation/ProjectNodeBuilderExtension.cs: If exuberant-ctags is not
+	  installed, instead of showing an error message dialog, put an error
+	  message in the class pad in the project node.
+
 2007-10-05  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* Gui/CodeGenerationPanel.cs, Project/CCompilationParameters.cs,

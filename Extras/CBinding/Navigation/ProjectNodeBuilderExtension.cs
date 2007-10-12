@@ -38,7 +38,9 @@ using Mono.Addins;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
 
 using CBinding;
@@ -93,11 +95,46 @@ namespace CBinding.Navigation
 					if (f.BuildAction == BuildAction.Compile)
 						TagDatabaseManager.Instance.UpdateFileTags (p, f.Name);
 				}
-			} catch (IOException ex) {
-				IdeApp.Services.MessageService.ShowError (ex);
+			} catch (IOException) {
 				return;
 			}
 		}
+		
+		private bool check_ctags = false;
+		private bool have_ctags = false;
+		
+		private void CheckForCtags ()
+		{
+			check_ctags = true;
+			
+			try {
+				ProcessWrapper p = Runtime.ProcessService.StartProcess ("ctags", "--version", null, null);
+				p.WaitForOutput ();
+				have_ctags = true;
+			} catch {
+				have_ctags = false;
+			}
+		}
+		
+		public override void BuildNode (ITreeBuilder treeBuilder,
+		                                object dataObject,
+		                                ref string label,
+		                                ref Gdk.Pixbuf icon,
+		                                ref Gdk.Pixbuf closedIcon)
+		{
+			if (!check_ctags)
+				CheckForCtags ();
+			
+			CProject p = dataObject as CProject;
+			
+			if (p == null)
+				return;
+			
+			if (!have_ctags) {
+				label = string.Format ("{0} <span foreground='red' size='small'>(CTags not installed)</span>", p.Name);
+			}
+		}
+
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{			
