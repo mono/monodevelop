@@ -164,12 +164,12 @@ namespace MonoDevelop.Prj2Make
 			Utils.EnsureChildValue (configElement, "OptionStrict", vbparams.OptionStrict ? "On" : "Off");
 			if (vbparams.Win32Icon != null && vbparams.Win32Icon.Length > 0)
 				Utils.EnsureChildValue (configElement, "ApplicationIcon",
-					Utils.CanonicalizePath (Runtime.FileService.AbsoluteToRelativePath (
+					Utils.CanonicalizePath (FileService.AbsoluteToRelativePath (
 						project.BaseDirectory, vbparams.Win32Icon)));
 
 			if (vbparams.Win32Resource != null && vbparams.Win32Resource.Length > 0)
 				Utils.EnsureChildValue (configElement, "Win32Resource",
-					Utils.CanonicalizePath (Runtime.FileService.AbsoluteToRelativePath (
+					Utils.CanonicalizePath (FileService.AbsoluteToRelativePath (
 						project.BaseDirectory, vbparams.Win32Resource)));
 
 			//FIXME: VB.net Imports

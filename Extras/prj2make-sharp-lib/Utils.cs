@@ -245,7 +245,7 @@ namespace MonoDevelop.Prj2Make
 			if (String.IsNullOrEmpty (path))
 				return path;
 
-			string ret = Runtime.FileService.NormalizeRelativePath (path);
+			string ret = FileService.NormalizeRelativePath (path);
 			if (ret.Length == 0)
 				return ".";
 

@@ -583,7 +583,7 @@ namespace MonoDevelop.Prj2Make
 			string dir = Path.GetDirectoryName (oldfname);
 			string newfname = Path.Combine (dir, e.NewName + extn);
 
-			Runtime.FileService.MoveFile (oldfname, newfname);
+			FileService.MoveFile (oldfname, newfname);
 			e.CombineEntry.FileName = newfname;
 		}
 
@@ -709,7 +709,7 @@ namespace MonoDevelop.Prj2Make
 			//DependentUpon is relative to the basedir of the 'pf' (resource file)
 			if (!String.IsNullOrEmpty (e.ProjectFile.DependsOn))
 				Utils.EnsureChildValue (d.ProjectFileElements [e.ProjectFile], "DependentUpon",
-					Utils.CanonicalizePath (Runtime.FileService.AbsoluteToRelativePath (
+					Utils.CanonicalizePath (FileService.AbsoluteToRelativePath (
 						Path.GetDirectoryName (e.ProjectFile.Name), e.ProjectFile.DependsOn)));
 			//FIXME: Subtype, Data
 		}

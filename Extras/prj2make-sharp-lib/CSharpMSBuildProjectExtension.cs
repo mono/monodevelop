@@ -128,12 +128,12 @@ namespace MonoDevelop.Prj2Make
 			Utils.EnsureChildValue (configElement, "WarningLevel", csparams.WarningLevel);
 			if (csparams.Win32Icon != null && csparams.Win32Icon.Length > 0)
 				Utils.EnsureChildValue (configElement, "ApplicationIcon",
-					Utils.CanonicalizePath (Runtime.FileService.AbsoluteToRelativePath (
+					Utils.CanonicalizePath (FileService.AbsoluteToRelativePath (
 						project.BaseDirectory, csparams.Win32Icon)));
 
 			if (csparams.Win32Resource != null && csparams.Win32Resource.Length > 0)
 				Utils.EnsureChildValue (configElement, "Win32Resource",
-					Utils.CanonicalizePath (Runtime.FileService.AbsoluteToRelativePath (
+					Utils.CanonicalizePath (FileService.AbsoluteToRelativePath (
 						project.BaseDirectory, csparams.Win32Resource)));
 		}
 

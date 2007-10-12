@@ -1,3 +1,10 @@
+2007-10-12  Mike Krüger <mkrueger@novell.com> 
+
+	* CSharpResourceIdBuilder.cs, VBNetMSBuildProjectExtension.cs,
+	  CSharpMSBuildProjectExtension.cs, DefaultMSBuildProjectExtension.cs,
+	  Utils.cs, SlnFileFormat.cs, MSBuildFileFormat.cs: Applied changes that
+	  were neccassary for to the new FileService.
+
 2007-10-09  Ankit Jain  <jankit@novell.com>
 
 	* CSharpResourceIdBuilder.cs: Handle localized resources.

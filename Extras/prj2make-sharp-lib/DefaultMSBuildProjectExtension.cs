@@ -282,7 +282,7 @@ namespace MonoDevelop.Prj2Make
 			Utils.EnsureChildValue (configElement, "AssemblyName", Utils.CanonicalizePath (config.OutputAssembly));
 			// VS2005 emits trailing \\ for folders
 			Utils.EnsureChildValue (configElement, "OutputPath", 
-				Utils.CanonicalizePath (Runtime.FileService.AbsoluteToRelativePath (
+				Utils.CanonicalizePath (FileService.AbsoluteToRelativePath (
 					project.BaseDirectory, config.OutputDirectory)) + "\\");
 			Utils.EnsureChildValue (configElement, "DebugSymbols", config.DebugMode);
 		}
@@ -359,7 +359,7 @@ namespace MonoDevelop.Prj2Make
 						Utils.RemoveChild (elem, "DependentUpon");
 				} else {
 					Utils.EnsureChildValue (elem, "DependentUpon",
-						Utils.CanonicalizePath (Runtime.FileService.AbsoluteToRelativePath (
+						Utils.CanonicalizePath (FileService.AbsoluteToRelativePath (
 							Path.GetDirectoryName (projectFile.Name), projectFile.DependsOn)));
 				}
 			}
@@ -423,7 +423,7 @@ namespace MonoDevelop.Prj2Make
 				}
 
 				Utils.EnsureChildValue (elem, "HintPath",
-					Utils.CanonicalizePath (Runtime.FileService.AbsoluteToRelativePath (project.BaseDirectory, projectRef.Reference)));
+					Utils.CanonicalizePath (FileService.AbsoluteToRelativePath (project.BaseDirectory, projectRef.Reference)));
 				Utils.EnsureChildValue (elem, "SpecificVersion", "False");
 				break;
 			case ReferenceType.Project:
@@ -442,7 +442,7 @@ namespace MonoDevelop.Prj2Make
 						return elem;
 					}
 
-					reference = Utils.CanonicalizePath (Runtime.FileService.AbsoluteToRelativePath (
+					reference = Utils.CanonicalizePath (FileService.AbsoluteToRelativePath (
 						project.BaseDirectory, p.FileName));
 
 					if (p.ExtendedProperties.Contains (typeof (MSBuildFileFormat))) {

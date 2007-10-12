@@ -45,7 +45,7 @@ namespace MonoDevelop.Prj2Make
 				if (pf.IsExternalToProject)
 					fname = Path.GetFileName (fname);
 				else
-					fname = Runtime.FileService.NormalizeRelativePath (fname);
+					fname = FileService.NormalizeRelativePath (fname);
 
 				if (String.Compare (Path.GetExtension (fname), ".resx", true) == 0) {
 					fname = Path.ChangeExtension (fname, ".resources");
