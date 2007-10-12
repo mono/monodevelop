@@ -31,6 +31,9 @@
 //
 
 using System;
+
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Serialization;
 
@@ -40,6 +43,9 @@ namespace AspNetAddIn
 	{
 		[ItemProperty ("AspNet/GenerateNonPartialCodeBehindMembers")]
 		bool generateNonPartialCodeBehindMembers = false;
+		
+		[ItemProperty ("AspNet/nonStandardOutputDirectory", DefaultValue = false)]
+		bool nonStandardOutputDirectory = false;
 		
 		public bool GenerateNonPartialCodeBehindMembers {
 			get { return generateNonPartialCodeBehindMembers; }
@@ -56,14 +62,31 @@ namespace AspNetAddIn
 			}
 		}
 		
+		string GetStandardOutputDirectory ()
+		{
+			if (SourceDirectory != null) {
+				return System.IO.Path.Combine (SourceDirectory, "bin");
+			} else {
+				return "bin";
+			}
+		}
+		
 		public override string OutputDirectory {
 			get {
-				if (SourceDirectory != null)
-					return System.IO.Path.Combine (SourceDirectory, "bin");
+				if (nonStandardOutputDirectory)
+					return base.OutputDirectory;
 				else
-					return "bin";
+					return GetStandardOutputDirectory ();
 			}
-			set { }
+			set {
+				if (value != OutputDirectory
+				    && !nonStandardOutputDirectory 
+				    && MonoDevelop.Core.Gui.Services.MessageService.AskQuestion (GettextCatalog.GetString ("Using an output directory other than the default 'bin' directory can prevent your ASP.NET project from running and deploying correctly. Would you still like to make this change?"))
+				    )
+					nonStandardOutputDirectory = true;
+				if (nonStandardOutputDirectory)
+					base.OutputDirectory = value;
+			}
 		}
 		
 		#endregion
