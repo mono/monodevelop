@@ -1,3 +1,8 @@
+2007-10-12  Mike Krüger <mkrueger@novell.com> 
+
+	* ChangeLogService.cs, CommitDialogExtensionWidget.cs: Applied changes that
+	  were neccassary for to the new FileService.
+
 2007-09-26  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ChangeLogAddIn.addin.xml: Add missing identifier for the add-in

@@ -61,14 +61,14 @@ namespace MonoDevelop.ChangeLogAddIn
 			// find a combine entry at the file location
 			CombineEntry entry = null;
 			string bestPath = null;
-			file = Runtime.FileService.GetFullPath (file);
+			file = FileService.GetFullPath (file);
 			
 			foreach (CombineEntry e in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllEntries ()) {
 				if (e is Project && ((Project)e).ProjectFiles.GetFile (file) != null) {
 					entry = e;
 					break;
 				}
-				string epath = Runtime.FileService.GetFullPath (e.BaseDirectory) + Path.DirectorySeparatorChar;
+				string epath = FileService.GetFullPath (e.BaseDirectory) + Path.DirectorySeparatorChar;
 				if (file.StartsWith (epath) && (bestPath == null || bestPath.Length < epath.Length)) {
 					bestPath = epath;
 					entry = e;
@@ -81,7 +81,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			if (baseCommitPath == null)
 				baseCommitPath = entry.RootCombine.BaseDirectory;
 			
-			baseCommitPath = Runtime.FileService.GetFullPath (baseCommitPath);
+			baseCommitPath = FileService.GetFullPath (baseCommitPath);
 			
 			ChangeLogData changeLogData = GetChangeLogData (entry);
 			
@@ -96,7 +96,7 @@ namespace MonoDevelop.ChangeLogAddIn
 					return string.Empty;
 					
 				case ChangeLogPolicy.UpdateNearestChangeLog: {
-					string dir = Runtime.FileService.GetFullPath (Path.GetDirectoryName (file));
+					string dir = FileService.GetFullPath (Path.GetDirectoryName (file));
 					
 					do {
 						string cf = Path.Combine (dir, "ChangeLog");

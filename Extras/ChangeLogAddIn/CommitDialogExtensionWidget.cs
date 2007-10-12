@@ -140,7 +140,7 @@ namespace MonoDevelop.ChangeLogAddIn
 					// Make a backup copy of the log file
 					if (!ce.IsNew) {
 						ce.BackupFile = System.IO.Path.GetTempFileName ();
-						Runtime.FileService.CopyFile (ce.File, ce.BackupFile);
+						FileService.CopyFile (ce.File, ce.BackupFile);
 						
 						// Read the log file and add the new entry
 						TextFile tf = TextFile.ReadFile (ce.File);
@@ -170,8 +170,8 @@ namespace MonoDevelop.ChangeLogAddIn
 			foreach (ChangeLogEntry ce in entries.Values) {
 				if (ce.BackupFile != null && File.Exists (ce.BackupFile)) {
 					try {
-						Runtime.FileService.CopyFile (ce.BackupFile, ce.File);
-						Runtime.FileService.DeleteFile (ce.BackupFile);
+						FileService.CopyFile (ce.BackupFile, ce.File);
+						FileService.DeleteFile (ce.BackupFile);
 						ce.BackupFile = null;
 					} catch (Exception ex) {
 						Runtime.LoggingService.Error (ex);
@@ -180,7 +180,7 @@ namespace MonoDevelop.ChangeLogAddIn
 				else if (ce.IsNew && File.Exists (ce.File)) {
 					// Remove generated files
 					try {
-						Runtime.FileService.DeleteFile (ce.File);
+						FileService.DeleteFile (ce.File);
 					} catch (Exception ex) {
 						Runtime.LoggingService.Error (ex);
 					}
@@ -193,7 +193,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			foreach (ChangeLogEntry ce in entries.Values) {
 				if (ce.BackupFile != null && File.Exists (ce.BackupFile)) {
 					try {
-						Runtime.FileService.DeleteFile (ce.BackupFile);
+						FileService.DeleteFile (ce.BackupFile);
 						ce.BackupFile = null;
 					} catch (Exception ex) {
 						Runtime.LoggingService.Error (ex);
