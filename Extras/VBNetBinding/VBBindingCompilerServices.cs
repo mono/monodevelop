@@ -181,9 +181,9 @@ namespace VBBinding {
 			ICompilerResult result = ParseOutput(tf, output);
 			ParseOutput(tf,error);
 			
-			Runtime.FileService.DeleteFile (responseFileName);
-			Runtime.FileService.DeleteFile (output);
-			Runtime.FileService.DeleteFile (error);
+			FileService.DeleteFile (responseFileName);
+			FileService.DeleteFile (output);
+			FileService.DeleteFile (error);
 			if (configuration.CompileTarget != CompileTarget.Library) {
 				WriteManifestFile(exe);
 			}
