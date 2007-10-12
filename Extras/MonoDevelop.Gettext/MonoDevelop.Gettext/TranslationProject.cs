@@ -164,7 +164,7 @@ namespace MonoDevelop.Gettext
 		}
 		public void AddTranslationStrings (Translation translation, string fileName, List<TranslationProject.MatchLocation> matches)
 		{
-			string relativeFileName = MonoDevelop.Core.Runtime.FileService.AbsoluteToRelativePath (this.BaseDirectory, fileName);
+			string relativeFileName = MonoDevelop.Core.FileService.AbsoluteToRelativePath (this.BaseDirectory, fileName);
 			string poFileName = GetFileName (translation);
 			if (!catalogs.ContainsKey (poFileName))
 				catalogs[poFileName] = new Catalog (poFileName);

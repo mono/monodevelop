@@ -1,3 +1,9 @@
+2007-10-12  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Gettext.NodeBuilders/TranslationNodeBuilder.cs,
+	  MonoDevelop.Gettext/TranslationProject.cs: Applied changes that were
+	  neccassary for to the new FileService.
+
 2007-09-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Gettext.addin.xml: Bump MD version.

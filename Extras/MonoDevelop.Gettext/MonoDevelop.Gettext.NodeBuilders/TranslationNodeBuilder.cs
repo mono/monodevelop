@@ -117,7 +117,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 				if (yes) {
 					string fileName = Path.Combine (project.BaseDirectory, translation.FileName);
 					if (File.Exists (fileName)) {
-						Runtime.FileService.DeleteFile (fileName);
+						FileService.DeleteFile (fileName);
 					}
 					
 					project.RemoveTranslation (translation.IsoCode);
