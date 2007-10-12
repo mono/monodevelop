@@ -98,8 +98,8 @@ namespace MonoDevelop.Ide.Gui
 			entryAddedToCombineHandler = (CombineEntryChangeEventHandler) DispatchService.GuiDispatch (new CombineEntryChangeEventHandler (NotifyEntryAddedToCombine));
 			entryRemovedFromCombineHandler = (CombineEntryChangeEventHandler) DispatchService.GuiDispatch (new CombineEntryChangeEventHandler (NotifyEntryRemovedFromCombine));
 			
-			Runtime.FileService.FileRemoved += (FileEventHandler) DispatchService.GuiDispatch (new FileEventHandler (CheckFileRemove));
-			Runtime.FileService.FileRenamed += (FileEventHandler) DispatchService.GuiDispatch (new FileEventHandler (CheckFileRename));
+			FileService.FileRemoved += (EventHandler<FileEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileEventArgs> (CheckFileRemove));
+			FileService.FileRenamed += (EventHandler<FileCopyEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileCopyEventArgs> (CheckFileRename));
 			
 			parserDatabase = Services.ParserService.CreateParserDatabase ();
 			parserDatabase.TrackFileChanges = true;
@@ -492,7 +492,7 @@ namespace MonoDevelop.Ide.Gui
 		void SearchNewFiles (Project project)
 		{
 			StringCollection newFiles   = new StringCollection();
-			StringCollection collection = Runtime.FileService.SearchDirectory (project.BaseDirectory, "*");
+			string[] collection = Directory.GetFiles (project.BaseDirectory, "*", SearchOption.AllDirectories);
 
 			foreach (string sfile in collection) {
 				string extension = Path.GetExtension(sfile).ToUpper();
@@ -612,7 +612,7 @@ namespace MonoDevelop.Ide.Gui
 				openCombine.RemoveFileFromProjects (e.FileName);
 		}
 		
-		void CheckFileRename(object sender, FileEventArgs e)
+		void CheckFileRename(object sender, FileCopyEventArgs e)
 		{
 			if (openCombine != null)
 				openCombine.RenameFileInProjects (e.SourceFile, e.TargetFile);
@@ -822,7 +822,7 @@ namespace MonoDevelop.Ide.Gui
 							XmlReadHelper.ReadList (reader, FilesNode, delegate() {
 								switch (reader.LocalName) {
 								case FileNode:
-									string fileName = Runtime.FileService.RelativeToAbsolutePath (Path.GetDirectoryName (combine.FileName), reader.GetAttribute (FileNameAttribute));
+									string fileName = FileService.RelativeToAbsolutePath (Path.GetDirectoryName (combine.FileName), reader.GetAttribute (FileNameAttribute));
 									int lin=0, col=0;
 									int.TryParse (reader.GetAttribute (FileLineAttribute), out lin);
 									int.TryParse (reader.GetAttribute (FileColumnAttribute), out col);
@@ -902,7 +902,7 @@ namespace MonoDevelop.Ide.Gui
 				foreach (Document document in IdeApp.Workbench.Documents) {
 					if (!String.IsNullOrEmpty (document.FileName)) {
 						writer.WriteStartElement (FileNode);
-						writer.WriteAttributeString (FileNameAttribute, Runtime.FileService.AbsoluteToRelativePath (Path.GetDirectoryName (combine.FileName), document.FileName)); 
+						writer.WriteAttributeString (FileNameAttribute, FileService.AbsoluteToRelativePath (Path.GetDirectoryName (combine.FileName), document.FileName)); 
 						if (document.TextEditor != null) {
 							writer.WriteAttributeString (FileLineAttribute, document.TextEditor.CursorLine.ToString ());
 							writer.WriteAttributeString (FileColumnAttribute, document.TextEditor.CursorColumn.ToString ());
@@ -1298,7 +1298,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		string MoveCopyFile (Project project, string baseDirectory, string filename, bool move, bool alreadyInPlace)
 		{
-			if (Runtime.FileService.IsDirectory (filename))
+			if (FileService.IsDirectory (filename))
 			    return null;
 
 			string name = System.IO.Path.GetFileName (filename);
@@ -1309,9 +1309,9 @@ namespace MonoDevelop.Ide.Gui
 					if (!Services.MessageService.AskQuestion (GettextCatalog.GetString ("The file '{0}' already exists. Do you want to replace it?", newfilename), "MonoDevelop"))
 						return null;
 				}
-				Runtime.FileService.CopyFile (filename, newfilename);
+				FileService.CopyFile (filename, newfilename);
 				if (move)
-					Runtime.FileService.DeleteFile (filename);
+					FileService.DeleteFile (filename);
 			}
 			
 			if (project.IsCompileable (newfilename)) {
@@ -1367,7 +1367,7 @@ namespace MonoDevelop.Ide.Gui
 			string newFolder = Path.Combine (targetPath, Path.GetFileName (sourcePath));
 			try {
 				if (Directory.Exists (sourcePath) && !Directory.Exists (newFolder) && !movingFolder)
-					Runtime.FileService.CreateDirectory (newFolder);
+					FileService.CreateDirectory (newFolder);
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Could not create directory '{0}'.", targetPath), ex);
 				return;
@@ -1378,7 +1378,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			if (movingFolder) {
 				try {
-					Runtime.FileService.MoveDirectory (sourcePath, newFolder);
+					FileService.MoveDirectory (sourcePath, newFolder);
 				} catch (Exception ex) {
 					monitor.ReportError (GettextCatalog.GetString ("Directory '{0}' could not be deleted.", sourcePath), ex);
 				}
@@ -1397,11 +1397,11 @@ namespace MonoDevelop.Ide.Gui
 					try {
 						string fileDir = Path.GetDirectoryName (newFile);
 						if (!Directory.Exists (fileDir))
-							Runtime.FileService.CreateDirectory (fileDir);
+							FileService.CreateDirectory (fileDir);
 						if (removeFromSource)
-							Runtime.FileService.MoveFile (sourceFile, newFile);
+							FileService.MoveFile (sourceFile, newFile);
 						else
-							Runtime.FileService.CopyFile (sourceFile, newFile);
+							FileService.CopyFile (sourceFile, newFile);
 					} catch (Exception ex) {
 						monitor.ReportError (GettextCatalog.GetString ("File '{0}' could not be created.", newFile), ex);
 						monitor.Step (1);

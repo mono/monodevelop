@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.Templates
 				{"ProjectName", projectCreateInformation.ProjectName}
 			});
 			
-			project.FileName = Runtime.FileService.GetDirectoryNameWithSeparator(projectCreateInformation.ProjectBasePath) + newProjectName + ".mdp";
+			project.FileName = Path.Combine (projectCreateInformation.ProjectBasePath, newProjectName + ".mdp");
 			project.Name = newProjectName;
 			
 			// Add References

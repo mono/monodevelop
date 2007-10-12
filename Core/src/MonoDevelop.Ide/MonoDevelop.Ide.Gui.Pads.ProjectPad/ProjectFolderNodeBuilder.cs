@@ -45,8 +45,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		Gdk.Pixbuf folderOpenIcon;
 		Gdk.Pixbuf folderClosedIcon;
 		
-		FileEventHandler fileRenamedHandler;
-		FileEventHandler fileRemovedHandler;
+		EventHandler<FileCopyEventArgs> fileRenamedHandler;
+		EventHandler<FileEventArgs> fileRemovedHandler;
 		
 		public override Type NodeDataType {
 			get { return typeof(ProjectFolder); }
@@ -77,8 +77,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			folderOpenIcon = Context.GetIcon (Stock.OpenFolder);
 			folderClosedIcon = Context.GetIcon (Stock.ClosedFolder);
 			
-			fileRenamedHandler = (FileEventHandler) DispatchService.GuiDispatch (new FileEventHandler (OnFolderRenamed));
-			fileRemovedHandler = (FileEventHandler) DispatchService.GuiDispatch (new FileEventHandler (OnFolderRemoved));
+			fileRenamedHandler = (EventHandler<FileCopyEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileCopyEventArgs> (OnFolderRenamed));
+			fileRemovedHandler = (EventHandler<FileEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileEventArgs> (OnFolderRemoved));
 		}
 		
 		public override void OnNodeAdded (object dataObject)
@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			folder.Dispose ();
 		}
 		
-		void OnFolderRenamed (object sender, FileEventArgs e)
+		void OnFolderRenamed (object sender, FileCopyEventArgs e)
 		{
 			ProjectFolder f = (ProjectFolder) sender;
 			ITreeBuilder tb = Context.GetTreeBuilder (f.Parent);
@@ -155,8 +155,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (oldFoldername != newFoldername) {
 				try {
 					
-					if (Runtime.FileService.IsValidFileName (newFoldername)) {
-						Runtime.FileService.RenameDirectory (oldFoldername, newName);
+					if (FileService.IsValidFileName (newFoldername)) {
+						FileService.RenameDirectory (oldFoldername, newName);
 						IdeApp.ProjectOperations.SaveCombine();
 					}
 				} catch (System.IO.IOException) {   // assume duplicate file
@@ -179,7 +179,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				if (!yes) return;
 
 				try {
-					Runtime.FileService.DeleteDirectory (folder.Path);
+					FileService.DeleteDirectory (folder.Path);
 				} catch {
 					Services.MessageService.ShowError (GettextCatalog.GetString ("The folder {0} could not be deleted", folder.Path));
 				}

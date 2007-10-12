@@ -258,7 +258,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			sr.Close();
 			
 			if (showFile) {
-				string longfilename = Runtime.FileService.GetDirectoryNameWithSeparator (ProjectLocation) + StringParserService.Parse(filename, new string[,] { {"PROJECT", txt_name.Text}});
+				string longfilename = System.IO.Path.Combine (ProjectLocation, StringParserService.Parse (filename, new string[,] { {"PROJECT", txt_name.Text}}));
 				IdeApp.Workbench.OpenDocument (longfilename);
 			}
 		}
@@ -340,9 +340,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			}
 
 			if ((solution != null && solution.Trim () != "" 
-				&& (!Runtime.FileService.IsValidFileName (solution) || solution.IndexOf(System.IO.Path.DirectorySeparatorChar) >= 0)) ||
-			    !Runtime.FileService.IsValidFileName(name)     || name.IndexOf(System.IO.Path.DirectorySeparatorChar) >= 0 ||
-			    !Runtime.FileService.IsValidFileName(location)) {
+				&& (!FileService.IsValidFileName (solution) || solution.IndexOf(System.IO.Path.DirectorySeparatorChar) >= 0)) ||
+			    !FileService.IsValidFileName(name)     || name.IndexOf(System.IO.Path.DirectorySeparatorChar) >= 0 ||
+			    !FileService.IsValidFileName(location)) {
 				Services.MessageService.ShowError (this, GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, space, '.' or '_'."));
 				return false;
 			}
@@ -459,7 +459,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			hbox_template.PackStart (TemplateView, true, true, 0);
 
 			if (basePath == null)
-				basePath = PropertyService.Get ("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", Runtime.FileService.GetDirectoryNameWithSeparator (Environment.GetEnvironmentVariable ("HOME")) + "Projects").ToString ();
+				basePath = PropertyService.Get ("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", System.IO.Path.Combine (Environment.GetEnvironmentVariable ("HOME"), "Projects"));
 				
 			entry_location.Path = basePath;
 			

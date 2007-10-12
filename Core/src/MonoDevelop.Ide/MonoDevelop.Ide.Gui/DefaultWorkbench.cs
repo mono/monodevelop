@@ -186,8 +186,8 @@ namespace MonoDevelop.Ide.Gui
 			// FIXME: GTKize
 			IdeApp.ProjectOperations.CurrentProjectChanged += (ProjectEventHandler) DispatchService.GuiDispatch (new ProjectEventHandler(SetProjectTitle));
 
-			Runtime.FileService.FileRemoved += (FileEventHandler) DispatchService.GuiDispatch (new FileEventHandler(CheckRemovedFile));
-			Runtime.FileService.FileRenamed += (FileEventHandler) DispatchService.GuiDispatch (new FileEventHandler(CheckRenamedFile));
+			FileService.FileRemoved += (EventHandler<FileEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileEventArgs>(CheckRemovedFile));
+			FileService.FileRenamed += (EventHandler<FileCopyEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileCopyEventArgs>(CheckRenamedFile));
 			
 //			TopMenu.Selected   += new CommandHandler(OnTopMenuSelected);
 //			TopMenu.Deselected += new CommandHandler(OnTopMenuDeselected);
@@ -329,7 +329,7 @@ namespace MonoDevelop.Ide.Gui
 				string fileName = content.ContentName.Substring(3).Replace('/', '.').Replace('\\', '.').Replace(System.IO.Path.DirectorySeparatorChar, '.');
 				string fullFileName = directory + System.IO.Path.DirectorySeparatorChar + fileName;
 				// check the file name length because it could be more than the maximum length of a file name
-				if (Runtime.FileService.IsValidFileName(fullFileName) && File.Exists(fullFileName)) {
+				if (FileService.IsValidFileName(fullFileName) && File.Exists(fullFileName)) {
 					return Properties.Load (fullFileName);
 				}
 			}
@@ -360,7 +360,7 @@ namespace MonoDevelop.Ide.Gui
 			string fileName = content.ContentName.Substring(3).Replace('/', '.').Replace('\\', '.').Replace(System.IO.Path.DirectorySeparatorChar, '.');
 			// check the file name length because it could be more than the maximum length of a file name
 			string fullFileName = System.IO.Path.Combine (directory, fileName);
-			if (Runtime.FileService.IsValidFileName(fullFileName)) {
+			if (FileService.IsValidFileName(fullFileName)) {
 				((Properties)memento).Save (fullFileName);
 //				doc.Save (fullFileName);
 			}
@@ -441,7 +441,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		void CheckRenamedFile(object sender, FileEventArgs e)
+		void CheckRenamedFile(object sender, FileCopyEventArgs e)
 		{
 			if (e.IsDirectory) {
 				foreach (IViewContent content in ViewContentCollection) {

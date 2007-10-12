@@ -308,7 +308,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					return false;
 				}
 
-				if (!Runtime.FileService.IsValidFileName(directoryName)) {
+				if (!FileService.IsValidFileName(directoryName)) {
 					Services.MessageService.ShowErrorFormatted(GettextCatalog.GetString ("Invalid directory name: {0}"), directoryName);
 					return false;
 				}
@@ -318,7 +318,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					return false;
 				}
 				
-				if (!Runtime.FileService.IsValidFileName(fileMask) || fileMask.IndexOf('\\') >= 0) {
+				if (!FileService.IsValidFileName(fileMask) || fileMask.IndexOf('\\') >= 0) {
 					Services.MessageService.ShowErrorFormatted(GettextCatalog.GetString ("Invalid file mask: {0}"), fileMask);
 					return false;
 				}

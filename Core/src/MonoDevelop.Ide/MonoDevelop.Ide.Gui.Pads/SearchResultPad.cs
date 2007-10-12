@@ -384,7 +384,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 	
 				string tmpPath = file;
 				if (basePath != null)
-					tmpPath = Runtime.FileService.AbsoluteToRelativePath (basePath, file);
+					tmpPath = FileService.AbsoluteToRelativePath (basePath, file);
 				
 				string fileName = tmpPath;
 				string path = tmpPath;

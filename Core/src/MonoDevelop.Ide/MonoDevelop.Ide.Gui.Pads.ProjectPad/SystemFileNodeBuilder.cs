@@ -105,8 +105,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			string newname = Path.Combine (Path.GetDirectoryName (oldname), newName);
 			if (oldname != newname) {
 				try {
-					if (Runtime.FileService.IsValidFileName (newname)) {
-						Runtime.FileService.RenameFile (oldname, newName);
+					if (FileService.IsValidFileName (newname)) {
+						FileService.RenameFile (oldname, newName);
 					}
 				} catch (System.IO.IOException) {   // assume duplicate file
 					Services.MessageService.ShowError (GettextCatalog.GetString ("File or directory name is already in use, choose a different one."));
@@ -131,7 +131,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (!yes) return;
 
 			try {
-				Runtime.FileService.DeleteFile (file.Path);
+				FileService.DeleteFile (file.Path);
 			} catch {
 				Services.MessageService.ShowError (GettextCatalog.GetString ("The file {0} could not be deleted", file.Path));
 			}

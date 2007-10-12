@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 							if (System.IO.Path.GetFileNameWithoutExtension(part.Region.FileName) == cls.Name) {
 								string newFileName = System.IO.Path.HasExtension(part.Region.FileName) ? name + System.IO.Path.GetExtension(part.Region.FileName) : name;
 								newFileName = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(part.Region.FileName), newFileName);
-								Runtime.FileService.RenameFile(part.Region.FileName, newFileName);
+								FileService.RenameFile(part.Region.FileName, newFileName);
 							}
 						}
 						IdeApp.ProjectOperations.SaveProject(IdeApp.ProjectOperations.CurrentSelectedProject);

@@ -115,8 +115,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			if (oldPath != newPath) {
 				try {
-					if (Runtime.FileService.IsValidFileName (newPath)) {
-						Runtime.FileService.RenameFile (oldPath, newName);
+					if (FileService.IsValidFileName (newPath)) {
+						FileService.RenameFile (oldPath, newName);
 						IdeApp.ProjectOperations.SaveCombine();
 					}
 				} catch (System.IO.IOException) {   // assume duplicate file
@@ -180,7 +180,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				
 				project.ProjectFiles.Remove (file);
 				if (deleteDialog.DeleteFromDisk)
-					Runtime.FileService.DeleteFile (file.Name);
+					FileService.DeleteFile (file.Name);
 			
 				IdeApp.ProjectOperations.SaveProject (project);				
 			} finally {

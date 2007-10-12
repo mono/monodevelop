@@ -69,7 +69,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			// add the found files to the check list box						
 			foreach (string file in newFiles) {
-				string name = Runtime.FileService.AbsoluteToRelativePath(project.BaseDirectory, file);
+				string name = FileService.AbsoluteToRelativePath(project.BaseDirectory, file);
 				store.AppendValues (false, name);
 			}
 		}
@@ -98,7 +98,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				string fileName = (string) store.GetValue(current, 1);
 			
 				// process raw values into actual project details
-				string file = Runtime.FileService.RelativeToAbsolutePath(project.BaseDirectory,fileName);
+				string file = FileService.RelativeToAbsolutePath(project.BaseDirectory,fileName);
 				ProjectFile finfo = new ProjectFile(file);
 				if (isSelected) {
 					finfo.BuildAction = project.IsCompileable(file) ? BuildAction.Compile : BuildAction.Nothing;

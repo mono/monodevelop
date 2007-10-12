@@ -1,3 +1,32 @@
+2007-10-12  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs,
+	  MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs,
+	  MonoDevelop.Ide.Templates/FileTemplate.cs,
+	  MonoDevelop.Ide.Templates/CombineDescriptor.cs,
+	  MonoDevelop.Ide.Templates/TextTemplate.cs,
+	  MonoDevelop.Ide.Templates/ProjectDescriptor.cs,
+	  MonoDevelop.Ide.Commands/ProjectCommands.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolder.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/IncludeFilesDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/RenameItemDialog.cs,
+	  MonoDevelop.Ide.Gui.Pads/FileList.cs,
+	  MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs,
+	  MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs,
+	  MonoDevelop.Ide.Gui/Document.cs,
+	  MonoDevelop.Ide.Gui/AbstractViewContent.cs,
+	  MonoDevelop.Ide.Gui/ProjectOperations.cs,
+	  MonoDevelop.Ide.Gui/Workbench.cs,
+	  MonoDevelop.Ide.Gui/DefaultWorkbench.cs, MonoDevelop.Ide.Gui/Ide.cs,
+	  MonoDevelop.Ide.Tasks/CommentTasksView.cs: Applied changes that were
+	  neccassary for to the new FileService.
+
 2007-10-11  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Templates/CombineDescriptor.cs,

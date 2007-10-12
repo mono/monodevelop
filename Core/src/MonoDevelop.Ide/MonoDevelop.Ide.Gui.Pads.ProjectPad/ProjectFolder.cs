@@ -60,9 +60,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				if (trackChanges != value) {
 					trackChanges = value;
 					if (trackChanges)
-						Runtime.FileService.FileRenamed += new FileEventHandler (OnFileRenamed);
+						FileService.FileRenamed += new EventHandler<FileCopyEventArgs> (OnFileRenamed);
 					else
-						Runtime.FileService.FileRenamed -= new FileEventHandler (OnFileRenamed);
+						FileService.FileRenamed -= new EventHandler<FileCopyEventArgs> (OnFileRenamed);
 				}
 			}
 		}
@@ -110,7 +110,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public void Dispose ()
 		{
-			Runtime.FileService.FileRenamed -= new FileEventHandler (OnFileRenamed);
+			FileService.FileRenamed -= new EventHandler<FileCopyEventArgs> (OnFileRenamed);
 		}
 		
 		public void Remove ()
@@ -120,7 +120,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 		}
 
-		void OnFileRenamed (object sender, FileEventArgs e)
+		void OnFileRenamed (object sender, FileCopyEventArgs e)
 		{
 			if (!e.IsDirectory || e.SourceFile != absolutePath) return;
 
@@ -128,12 +128,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			// the identity of the object. Another folder object will need
 			// to be created by updating the tree.
 			
-			if (FolderRenamed != null) {
-				FolderRenamed(this, e);
-			}
+			if (FolderRenamed != null) 
+				FolderRenamed (this, e);
 		}
 
-		public event FileEventHandler FolderRenamed;
-		public event FileEventHandler FolderRemoved;
+		public event EventHandler<FileCopyEventArgs> FolderRenamed;
+		public event EventHandler<FileEventArgs> FolderRemoved;
 	}
 }

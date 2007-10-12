@@ -332,9 +332,9 @@ namespace MonoDevelop.Ide.Templates
 					int n=0;
 					while (File.Exists (fn + n + ext))
 						n++;
-					Runtime.FileService.MoveFile (fn, fn + n + ext);
+					FileService.MoveFile (fn, fn + n + ext);
 					string mimeType = Gnome.Vfs.MimeType.GetMimeTypeForUri (fn + n + ext);
-					Runtime.FileService.DeleteFile (fn + n + ext);
+					FileService.DeleteFile (fn + n + ext);
 					if (mimeType == null || mimeType == "")
 						mimeType = "text";
 					

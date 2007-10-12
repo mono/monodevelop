@@ -122,7 +122,7 @@ namespace MonoDevelop.Ide.Gui
 			get
 			{
 				if (project != null) {
-					return Runtime.FileService.AbsoluteToRelativePath (project.BaseDirectory, ContentName).Substring (2);
+					return FileService.AbsoluteToRelativePath (project.BaseDirectory, ContentName).Substring (2);
 				}
 				return null;
 			}

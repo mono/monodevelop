@@ -107,7 +107,7 @@ namespace MonoDevelop.Ide.Gui
 				Services.MessageService.ShowError (args.Exception, args.ErrorMessage);
 			};
 			
-			Runtime.FileService.ErrorHandler = FileServiceErrorHandler;
+			FileService.ErrorHandler = FileServiceErrorHandler;
 		
 			monitor.BeginTask (GettextCatalog.GetString("Loading Workbench"), 6);
 			

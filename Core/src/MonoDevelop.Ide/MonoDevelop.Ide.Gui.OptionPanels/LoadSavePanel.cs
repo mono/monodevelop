@@ -75,7 +75,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			// check for correct settings
 			string projectPath = folderEntry.Path;
 			if (projectPath.Length > 0) {
-				if (!Runtime.FileService.IsValidFileName(projectPath)) {
+				if (!FileService.IsValidFileName(projectPath)) {
 					Services.MessageService.ShowError("Invalid project path specified");
 					return false;
 				}
