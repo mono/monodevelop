@@ -52,8 +52,13 @@ namespace MonoDevelop.DesignerSupport
 		{
 		}
 		
-		
 		public static IMember GetCompatibleMemberInClass (IClass cls, CodeTypeMember member)
+		{
+			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext ((MonoDevelop.Projects.Project) cls.SourceProject);
+			return GetCompatibleMemberInClass (ctx, cls, member);
+		}
+		
+		public static IMember GetCompatibleMemberInClass (IParserContext ctx, IClass cls, CodeTypeMember member)
 		{
 			//check for identical property names
 			foreach (IProperty prop in cls.Properties) {
@@ -63,8 +68,8 @@ namespace MonoDevelop.DesignerSupport
 					if (memProp == null)
 						throw new MemberExistsException (cls.Name, member, MemberType.Property);
 					
-					if (memProp.Type.BaseType != prop.ReturnType.FullyQualifiedName)
-						throw new InvalidOperationException ("Return type does not match");
+					if (!IsTypeCompatible (ctx, prop.ReturnType.FullyQualifiedName, memProp.Type.BaseType))
+						throw new InvalidOperationException ("Member with same name exists but has incompatible return type");
 					
 					return prop;
 				}
@@ -78,8 +83,8 @@ namespace MonoDevelop.DesignerSupport
 					if (memMeth == null)
 						throw new MemberExistsException (cls.Name, member, MemberType.Method);
 					
-					if (memMeth.ReturnType.BaseType != meth.ReturnType.FullyQualifiedName)
-						throw new InvalidOperationException ("Return type does not match");
+					if (!IsTypeCompatible (ctx, meth.ReturnType.FullyQualifiedName, memMeth.ReturnType.BaseType))
+						throw new InvalidOperationException ("Member with same name exists but has incompatible return type");
 					
 					return meth;
 				}
@@ -93,8 +98,8 @@ namespace MonoDevelop.DesignerSupport
 					if (memEv == null)
 						throw new MemberExistsException (cls.Name, member, MemberType.Event);
 					
-					if (memEv.Type.BaseType != ev.ReturnType.FullyQualifiedName)
-						throw new InvalidOperationException ("Return type does not match");
+					if (!IsTypeCompatible (ctx, ev.ReturnType.FullyQualifiedName, memEv.Type.BaseType))
+						throw new InvalidOperationException ("Member with same name exists but has incompatible return type");
 
 					return ev;
 				}
@@ -108,23 +113,59 @@ namespace MonoDevelop.DesignerSupport
 					if (memField == null)
 						throw new MemberExistsException (cls.Name, member, MemberType.Method);
 					
-					if (memField.Type.BaseType != field.ReturnType.FullyQualifiedName)
-						throw new InvalidOperationException ("Return type does not match");
+					if (!IsTypeCompatible (ctx, field.ReturnType.FullyQualifiedName, memField.Type.BaseType))
+						throw new InvalidOperationException ("Member with same name exists but has incompatible return type");
 					
 					return field;
 				}
+			}
+			
+			//walk down into base classes, if any
+			foreach (IReturnType baseType in cls.BaseTypes) {
+				IClass c = ctx.GetClass (baseType.FullyQualifiedName);
+				if (c == null)
+					throw new Exception ("Could not find class " + baseType.FullyQualifiedName);
+				IMember mem = GetCompatibleMemberInClass (ctx, c, member);
+				if (mem != null)
+					return mem;
 			}
 			
 			//return null if no match
 			return null;
 		}
 		
+		static bool IsTypeCompatible (IParserContext ctx, string existingType, string checkType)
+		{
+			if (existingType == checkType)
+				return true;
+			IClass cls = ctx.GetClass (checkType);
+			if (cls == null)
+				throw new Exception ("Could not find class " + checkType);
+			foreach (IReturnType baseType in cls.BaseTypes) {
+				if (IsTypeCompatible (ctx, existingType, baseType.FullyQualifiedName))
+				    return true;
+			}
+			return false;
+		}
+		
 		public static IMember AddMemberToClass (IClass cls, CodeTypeMember member, bool throwIfExists)
 		{
+			return AddMemberToClass (cls, null, member, throwIfExists);
+		}
+		
+		public static IMember AddMemberToClass (IClass cls, IClass specificPartToAffect, CodeTypeMember member, bool throwIfExists)
+		{
+			bool isChildClass = false;
+			foreach (IClass c in cls.Parts)
+				if (c == specificPartToAffect)
+					isChildClass = true;
+			if (!isChildClass)
+				throw new ArgumentException ("Class specificPartToAffect is not a part of class cls");
+			
 			IMember existingMember = GetCompatibleMemberInClass (cls, member);
 			
 			if (existingMember == null)
-				return GetCodeGenerator ().AddMember (cls, member);
+				return GetCodeGenerator ().AddMember (specificPartToAffect, member);
 			
 			if (throwIfExists)
 				throw new MemberExistsException (cls.Name, member, MemberType.Method);

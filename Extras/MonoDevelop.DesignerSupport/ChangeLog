@@ -1,3 +1,10 @@
+2007-10-12  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.DesignerSupport/BindingService.cs: Walk down into base classes
+	  when checking if compatible members are present in a class. If members
+	  with same name exist, check type compatibility down through the class
+	  hierarchy.
+
 2007-10-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxLoader.cs:
