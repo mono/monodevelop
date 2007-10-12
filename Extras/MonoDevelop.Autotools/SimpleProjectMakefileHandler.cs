@@ -137,7 +137,7 @@ namespace MonoDevelop.Autotools
 				foreach (ProjectFile projectFile in project.ProjectFiles) 
 				{
 					pfpath = (PlatformID.Unix == Environment.OSVersion.Platform) ? projectFile.RelativePath : projectFile.RelativePath.Replace("\\","/");
-					pfpath = Runtime.FileService.NormalizeRelativePath (pfpath);
+					pfpath = FileService.NormalizeRelativePath (pfpath);
 					switch ( projectFile.BuildAction )
 					{
 						case BuildAction.Compile:
@@ -159,9 +159,9 @@ namespace MonoDevelop.Autotools
 								string rdir = Path.Combine (Path.GetDirectoryName (project.FileName), resourcedir);
 								if ( !Directory.Exists ( rdir ) ) Directory.CreateDirectory ( rdir );
 								string newPath = Path.Combine (rdir, Path.GetFileName ( projectFile.FilePath ));
-								Runtime.FileService.CopyFile ( projectFile.FilePath, newPath ) ;
+								FileService.CopyFile ( projectFile.FilePath, newPath ) ;
 								pfpath = (PlatformID.Unix == Environment.OSVersion.Platform) ? project.GetRelativeChildPath (newPath) : project.GetRelativeChildPath (newPath).Replace("\\","/");
-								pfpath = Runtime.FileService.NormalizeRelativePath (pfpath);
+								pfpath = FileService.NormalizeRelativePath (pfpath);
 							}
 							if (!String.IsNullOrEmpty (projectFile.ResourceId) && projectFile.ResourceId != Path.GetFileName (pfpath))
 								res_files.AppendFormat ( "\\\n\t{0},{1} ", pfpath, projectFile.ResourceId);
@@ -202,7 +202,7 @@ namespace MonoDevelop.Autotools
 
 					conf_vars.AppendFormat ("srcdir=.\n");
 					conf_vars.AppendFormat ("top_srcdir={0}\n\n",
-						Runtime.FileService.AbsoluteToRelativePath (project.BaseDirectory, ctx.TargetCombine.BaseDirectory));
+						FileService.AbsoluteToRelativePath (project.BaseDirectory, ctx.TargetCombine.BaseDirectory));
 
 					conf_vars.AppendFormat ("include $(top_srcdir)/Makefile.include\n");
 					conf_vars.AppendFormat ("include $(top_srcdir)/config.make\n\n");
@@ -334,7 +334,7 @@ namespace MonoDevelop.Autotools
 							DeployFile dfile = configSection.DeployFileVars [targetDeployVar];
 							string targetDeployFile = String.Format ("$(BUILD_DIR){0}{1}",
 									Path.DirectorySeparatorChar, Path.GetFileName (dfile.RelativeTargetPath));
-							string fname = Runtime.FileService.AbsoluteToRelativePath (
+							string fname = FileService.AbsoluteToRelativePath (
 									Path.GetFullPath (project.BaseDirectory),
 									Path.GetFullPath (dfile.SourcePath));
 
@@ -464,9 +464,9 @@ namespace MonoDevelop.Autotools
 					dllRefWriter.WriteLine (" \\");
 					dllRefWriter.Write ("\t");
 
-					ctx.AddGlobalReferencedFile (Runtime.FileService.AbsoluteToRelativePath (
+					ctx.AddGlobalReferencedFile (FileService.AbsoluteToRelativePath (
 						Path.GetFullPath (ctx.BaseDirectory), assemblyPath));
-					dllRefWriter.Write (Runtime.FileService.AbsoluteToRelativePath (
+					dllRefWriter.Write (FileService.AbsoluteToRelativePath (
 						project.BaseDirectory, assemblyPath));
 
 				} 
@@ -525,15 +525,15 @@ namespace MonoDevelop.Autotools
 				File.Copy (dfile.SourcePath, infname, true);
 
 				//Path relative to TargetCombine
-				fname = Runtime.FileService.NormalizeRelativePath (
-						Runtime.FileService.AbsoluteToRelativePath (ctx.TargetCombine.BaseDirectory, full_fname));
+				fname = FileService.NormalizeRelativePath (
+						FileService.AbsoluteToRelativePath (ctx.TargetCombine.BaseDirectory, full_fname));
 				infname = fname + ".in";
 				ctx.AddAutoconfFile (fname);
 				ctx.AddGeneratedFile (full_fname + ".in");
 
 				//Path relative to project
-				fname = Runtime.FileService.NormalizeRelativePath (
-						Runtime.FileService.AbsoluteToRelativePath (project.BaseDirectory, full_fname));
+				fname = FileService.NormalizeRelativePath (
+						FileService.AbsoluteToRelativePath (project.BaseDirectory, full_fname));
 				infname = fname + ".in";
 				if (!generateAutotools) {
 					templateFilesTargets.AppendFormat ("{0}: {1} $(top_srcdir)/config.make\n", fname, infname);
@@ -565,7 +565,7 @@ namespace MonoDevelop.Autotools
 				default:
 					string var;
 					if (dfile.TargetDirectoryID != TargetDirectory.Binaries) {
-						string ddir = Runtime.FileService.NormalizeRelativePath (Path.GetDirectoryName (dfile.RelativeTargetPath).Trim ('/',' '));
+						string ddir = FileService.NormalizeRelativePath (Path.GetDirectoryName (dfile.RelativeTargetPath).Trim ('/',' '));
 						if (ddir.Length > 0)
 							ddir = "/" + ddir;
 						var = ctx.GetDeployDirectoryVar (dfile.TargetDirectoryID + ddir);

@@ -158,11 +158,11 @@ namespace MonoDevelop.Autotools
 		
 		public void AddBuiltFile (string filePath)
 		{
-			string fpath = Runtime.FileService.GetFullPath (filePath);
-			string bd = Runtime.FileService.GetFullPath (BaseDirectory);
+			string fpath = FileService.GetFullPath (filePath);
+			string bd = FileService.GetFullPath (BaseDirectory);
 			if (fpath.StartsWith (bd + Path.DirectorySeparatorChar) || fpath == bd) {
-				string rel = Runtime.FileService.AbsoluteToRelativePath (bd, fpath);
-				rel = Runtime.FileService.NormalizeRelativePath (rel);
+				string rel = FileService.AbsoluteToRelativePath (bd, fpath);
+				rel = FileService.NormalizeRelativePath (rel);
 				rel = "$(top_builddir)" + Path.DirectorySeparatorChar + rel;
 				builtFiles.Add (rel);
 			}
@@ -222,8 +222,8 @@ namespace MonoDevelop.Autotools
 			string fpath = Path.GetFullPath (path);
 			string bd = Path.GetFullPath (project.BaseDirectory);
 			if (fpath.StartsWith (bd + Path.DirectorySeparatorChar) || fpath == bd) {
-				string rel = Runtime.FileService.AbsoluteToRelativePath (bd, fpath);
-				rel = Runtime.FileService.NormalizeRelativePath (rel);
+				string rel = FileService.AbsoluteToRelativePath (bd, fpath);
+				rel = FileService.NormalizeRelativePath (rel);
 				if (isGenerated)
 					return rel;
 				else
@@ -231,8 +231,8 @@ namespace MonoDevelop.Autotools
 			}
 			bd = Path.GetFullPath (BaseDirectory);
 			if (fpath.StartsWith (bd + Path.DirectorySeparatorChar) || fpath == bd) {
-				string rel = Runtime.FileService.AbsoluteToRelativePath (bd, fpath);
-				rel = Runtime.FileService.NormalizeRelativePath (rel);
+				string rel = FileService.AbsoluteToRelativePath (bd, fpath);
+				rel = FileService.NormalizeRelativePath (rel);
 				string file = "$(top_builddir)" + Path.DirectorySeparatorChar + rel;
 				if (builtFiles.Contains (file))
 					return file;

@@ -95,7 +95,7 @@ namespace MonoDevelop.Autotools
 		
 		protected override void OnBuild (IProgressMonitor monitor, DeployContext ctx)
 		{
-			string tmpFolder = Runtime.FileService.CreateTempDirectory ();
+			string tmpFolder = FileService.CreateTempDirectory ();
 			Combine combine = null;
 			CombineEntry entry = RootCombineEntry;
 			

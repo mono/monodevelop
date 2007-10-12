@@ -508,7 +508,7 @@ namespace MonoDevelop.Autotools
 		public string GetRelativePath (string path)
 		{
 			if (Path.IsPathRooted (path))
-				return Runtime.FileService.AbsoluteToRelativePath (BaseDirectory, path);
+				return FileService.AbsoluteToRelativePath (BaseDirectory, path);
 			else
 				return path;
 		}
@@ -518,7 +518,7 @@ namespace MonoDevelop.Autotools
 			if (Path.IsPathRooted (path))
 				return path;
 			else
-				return Runtime.FileService.RelativeToAbsolutePath (BaseDirectory, path);
+				return FileService.RelativeToAbsolutePath (BaseDirectory, path);
 		}
 
 		public void Save ()

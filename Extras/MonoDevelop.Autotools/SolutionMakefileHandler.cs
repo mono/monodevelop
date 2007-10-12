@@ -57,7 +57,7 @@ namespace MonoDevelop.Autotools
 				subdirs.Append ("#Warning: This is an automatically generated file, do not edit!\n");
 
 				if (!generateAutotools) {
-					solutionTop.AppendFormat ("top_srcdir={0}\n", Runtime.FileService.AbsoluteToRelativePath (
+					solutionTop.AppendFormat ("top_srcdir={0}\n", FileService.AbsoluteToRelativePath (
 							entry.BaseDirectory, ctx.TargetCombine.BaseDirectory));
 					solutionTop.Append ("include $(top_srcdir)/config.make\n");
 					solutionTop.Append ("include $(top_srcdir)/rules.make\n\n");

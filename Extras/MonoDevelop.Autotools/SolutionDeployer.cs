@@ -191,7 +191,7 @@ namespace MonoDevelop.Autotools
 
 				string filename = output.Substring ( begin + 1, (targz - begin) + 5 ).Trim ();
 				
-				Runtime.FileService.CopyFile (Path.Combine (baseDir, filename), Path.Combine (targetDir, filename));
+				FileService.CopyFile (Path.Combine (baseDir, filename), Path.Combine (targetDir, filename));
 				monitor.Step ( 1 );
 			}
 			catch ( Exception e )
@@ -209,7 +209,7 @@ namespace MonoDevelop.Autotools
 		void DeleteGeneratedFiles ( AutotoolsContext context )
 		{
 			foreach (string file in context.GetGeneratedFiles ())
-				if ( File.Exists ( file ) ) Runtime.FileService.DeleteFile ( file );
+				if ( File.Exists ( file ) ) FileService.DeleteFile ( file );
 		}
 
 		void AddTopLevelMakefileVars ( Makefile makefile, IProgressMonitor monitor)
@@ -311,11 +311,11 @@ namespace MonoDevelop.Autotools
 			string tmpmf = null;
 			foreach (string makefile in context.GetAutoConfFiles () ) 
 			{
-				tmpmf = Runtime.FileService.AbsoluteToRelativePath ( solution_dir, makefile );
+				tmpmf = FileService.AbsoluteToRelativePath ( solution_dir, makefile );
 				if (PlatformID.Unix != Environment.OSVersion.Platform)
 					tmpmf = tmpmf.Replace("\\","/");
 
-				configFiles.Append(Runtime.FileService.NormalizeRelativePath (tmpmf));
+				configFiles.Append(FileService.NormalizeRelativePath (tmpmf));
 				configFiles.Append("\n");
 			}
 			templateEngine.Variables["CONFIG_FILES"] = configFiles.ToString();
