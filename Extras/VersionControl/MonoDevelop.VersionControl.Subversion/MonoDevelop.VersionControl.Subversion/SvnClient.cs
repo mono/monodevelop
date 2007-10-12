@@ -611,7 +611,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 					if (outfile != IntPtr.Zero)
 						apr.file_close (outfile);
 					if (fout != null)
-						Runtime.FileService.DeleteFile (fout);
+						FileService.DeleteFile (fout);
 					outfile = IntPtr.Zero;
 					fout = null;
 				} catch {}
@@ -625,7 +625,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 					if (errfile != IntPtr.Zero)
 						apr.file_close (errfile);
 					if (ferr != null)
-						Runtime.FileService.DeleteFile (ferr);
+						FileService.DeleteFile (ferr);
 				} catch {}
 			}
 		}

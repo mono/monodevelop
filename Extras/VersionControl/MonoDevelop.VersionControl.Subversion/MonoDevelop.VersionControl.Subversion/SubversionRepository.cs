@@ -369,7 +369,7 @@ namespace MonoDevelop.VersionControl.Subversion
 					try {
 						list.AddRange (GenerateUnifiedDiffInfo (diff, path, new string [] { path }));
 					} finally {
-						Runtime.FileService.DeleteFile (diff);
+						FileService.DeleteFile (diff);
 					}
 				}
 				return (DiffInfo[]) list.ToArray (typeof(DiffInfo));
@@ -378,7 +378,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				try {
 					return GenerateUnifiedDiffInfo (diff, baseLocalPath, null);
 				} finally {
-					Runtime.FileService.DeleteFile (diff);
+					FileService.DeleteFile (diff);
 				}
 			}
 		}
