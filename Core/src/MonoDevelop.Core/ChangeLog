@@ -1,3 +1,10 @@
+2007-10-12  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Core.FileSystem/DefaultFileSystemExtension.cs,
+	  MonoDevelop.Core/Runtime.cs, MonoDevelop.Core/FileEventArgs.cs,
+	  MonoDevelop.Core/FileService.cs: Rewrote/Refactored FileService (it's
+	  now under MIT), removed some unneccessary/unused methods.
+
 2007-10-11  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Core/StringParserService.cs: Renamed some variables in the

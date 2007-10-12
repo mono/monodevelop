@@ -47,10 +47,10 @@ namespace MonoDevelop.Core.FileSystem
 			string destDir = Path.Combine (dest, subdir);
 	
 			if (!Directory.Exists (destDir))
-				Runtime.FileService.CreateDirectory (destDir);
+				FileService.CreateDirectory (destDir);
 	
 			foreach (string file in Directory.GetFiles (src))
-				Runtime.FileService.CopyFile (file, Path.Combine (destDir, Path.GetFileName (file)));
+				FileService.CopyFile (file, Path.Combine (destDir, Path.GetFileName (file)));
 	
 			foreach (string dir in Directory.GetDirectories (src))
 				CopyDirectory (dir, dest, Path.Combine (subdir, Path.GetFileName (dir)));

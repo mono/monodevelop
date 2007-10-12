@@ -41,7 +41,6 @@ namespace MonoDevelop.Core
 	{
 		static ProcessService processService;
 		static SystemAssemblyService systemAssemblyService;
-		static FileService fileService;
 		static ILoggingService loggingService;
 		static SetupService setupService;
 		static ApplicationService applicationService;
@@ -104,14 +103,6 @@ namespace MonoDevelop.Core
 				if (processService == null)
 					processService = (ProcessService) ServiceManager.GetService (typeof(ProcessService));
 				return processService;
-			}
-		}
-	
-		public static FileService FileService {
-			get {
-				if (fileService == null)
-					fileService = new FileService ();
-				return fileService; 
 			}
 		}
 		

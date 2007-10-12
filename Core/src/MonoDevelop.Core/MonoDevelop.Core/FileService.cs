@@ -1,68 +1,89 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version value="$version"/>
-// </file>
+//
+// FileService.cs
+//
+// Author:
+//   Mike Krüger <mkrueger@novell.com>
+//
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
 
 using System;
-using System.Collections;
-using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
-using System.Xml;
+using System.Text;
 
 using Mono.Addins;
 using MonoDevelop.Core.FileSystem;
 
 namespace MonoDevelop.Core
 {
-	public class FileService
+	public static class FileService
 	{
-		FileServiceErrorHandler errorHandler;
-		const string FileSystemExtensionPath = "/MonoDevelop/Core/FileSystemExtensions";
-		
-		FileSystemExtension fileSystemChain;
-		FileSystemExtension defaultExtension = new DefaultFileSystemExtension ();
-		
+		const string addinFileSystemExtensionPath = "/MonoDevelop/Core/FileSystemExtensions";
 		readonly static char[] separators = { Path.DirectorySeparatorChar, Path.VolumeSeparatorChar, Path.AltDirectorySeparatorChar };
-		string sharpDevelopRootPath;
 		
-		public FileService()
+		static FileServiceErrorHandler errorHandler;
+		
+		static FileSystemExtension fileSystemChain;
+		static FileSystemExtension defaultExtension = new DefaultFileSystemExtension ();
+		
+		static string applicationRootPath = Path.Combine (PropertyService.EntryAssemblyPath, "..");
+		public static string ApplicationRootPath {
+			get {
+				return applicationRootPath;
+			}
+		}
+		
+		static FileService()
 		{
-			sharpDevelopRootPath = Path.Combine (PropertyService.EntryAssemblyPath, "..");
-			AddinManager.ExtensionChanged += delegate (object s, ExtensionEventArgs args) {
-				if (args.PathChanged (FileSystemExtensionPath))
+			AddinManager.ExtensionChanged += delegate (object sender, ExtensionEventArgs args) {
+				if (args.PathChanged (addinFileSystemExtensionPath))
 					UpdateExtensions ();
 			};
 		}
 		
-		void UpdateExtensions ()
+		static void UpdateExtensions ()
 		{
 			if (!Runtime.Initialized) {
 				fileSystemChain = defaultExtension;
 				return;
 			}
 			
-			FileSystemExtension[] extensions = (FileSystemExtension[]) AddinManager.GetExtensionObjects (FileSystemExtensionPath, typeof(FileSystemExtension));
-			for (int n=0; n<extensions.Length - 1; n++)
+			FileSystemExtension[] extensions = (FileSystemExtension[]) AddinManager.GetExtensionObjects (addinFileSystemExtensionPath, typeof(FileSystemExtension));
+			for (int n=0; n<extensions.Length - 1; n++) {
 				extensions [n].Next = extensions [n + 1];
+			}
 
 			if (extensions.Length > 0) {
 				extensions [extensions.Length - 1].Next = defaultExtension;
 				fileSystemChain = extensions [0];
-			} else
+			} else {
 				fileSystemChain = defaultExtension;
-		}
-		
-		public string SharpDevelopRootPath {
-			get {
-				return sharpDevelopRootPath;
 			}
 		}
 		
-		public void DeleteFile (string fileName)
+		public static void DeleteFile (string fileName)
 		{
+			Debug.Assert (!String.IsNullOrEmpty (fileName));
 			try {
 				GetFileSystemForPath (fileName, false).DeleteFile (fileName);
 			} catch (Exception e) {
@@ -73,8 +94,9 @@ namespace MonoDevelop.Core
 			OnFileRemoved (new FileEventArgs (fileName, false));
 		}
 		
-		public void DeleteDirectory (string path)
+		public static void DeleteDirectory (string path)
 		{
+			Debug.Assert (!String.IsNullOrEmpty (path));
 			try {
 				GetFileSystemForPath (path, true).DeleteDirectory (path);
 			} catch (Exception e) {
@@ -85,106 +107,126 @@ namespace MonoDevelop.Core
 			OnFileRemoved (new FileEventArgs (path, true));
 		}
 		
-		public void RenameFile (string filePath, string newName)
+		public static void RenameFile (string oldName, string newName)
 		{
-			if (Path.GetFileName (filePath) != newName) {
-				string newPath = Path.Combine (Path.GetDirectoryName (filePath), newName);
-				InternalMoveFile (filePath, newPath);
-				OnFileRenamed (new FileEventArgs (filePath, newPath, false));
+			Debug.Assert (!String.IsNullOrEmpty (oldName));
+			Debug.Assert (!String.IsNullOrEmpty (newName));
+			if (Path.GetFileName (oldName) != newName) {
+				string newPath = Path.Combine (Path.GetDirectoryName (oldName), newName);
+				InternalMoveFile (oldName, newPath);
+				OnFileRenamed (new FileCopyEventArgs (oldName, newPath, false));
 				OnFileCreated (new FileEventArgs (newPath, false));
-				OnFileRemoved (new FileEventArgs (filePath, false));
+				OnFileRemoved (new FileEventArgs (oldName, false));
 			}
 		}
 		
-		public void RenameDirectory (string path, string newName)
+		public static void RenameDirectory (string oldName, string newName)
 		{
-			if (Path.GetFileName (path) != newName) {
-				string newPath = Path.Combine (Path.GetDirectoryName (path), newName);
-				InternalMoveDirectory (path, newPath);
-				OnFileRenamed (new FileEventArgs (path, newPath, true));
+			Debug.Assert (!String.IsNullOrEmpty (oldName));
+			Debug.Assert (!String.IsNullOrEmpty (newName));
+			if (Path.GetFileName (oldName) != newName) {
+				string newPath = Path.Combine (Path.GetDirectoryName (oldName), newName);
+				InternalMoveDirectory (oldName, newPath);
+				OnFileRenamed (new FileCopyEventArgs (oldName, newPath, true));
 				OnFileCreated (new FileEventArgs (newPath, false));
-				OnFileRemoved (new FileEventArgs (path, false));
+				OnFileRemoved (new FileEventArgs (oldName, false));
 			}
 		}
 		
-		public void CopyFile (string sourcePath, string destPath)
+		public static void CopyFile (string srcFile, string dstFile)
 		{
-			GetFileSystemForPath (destPath, false).CopyFile (sourcePath, destPath, true);
-			OnFileCreated (new FileEventArgs (destPath, false));
+			Debug.Assert (!String.IsNullOrEmpty (srcFile));
+			Debug.Assert (!String.IsNullOrEmpty (dstFile));
+			GetFileSystemForPath (dstFile, false).CopyFile (srcFile, dstFile, true);
+			OnFileCreated (new FileEventArgs (dstFile, false));
 		}
 
-		public void MoveFile (string sourcePath, string destPath)
+		public static void MoveFile (string srcFile, string dstFile)
 		{
-			InternalMoveFile (sourcePath, destPath);
-			OnFileCreated (new FileEventArgs (destPath, false));
-			OnFileRemoved (new FileEventArgs (sourcePath, false));
+			Debug.Assert (!String.IsNullOrEmpty (srcFile));
+			Debug.Assert (!String.IsNullOrEmpty (dstFile));
+			InternalMoveFile (srcFile, dstFile);
+			OnFileCreated (new FileEventArgs (dstFile, false));
+			OnFileRemoved (new FileEventArgs (srcFile, false));
 		}
 		
-		void InternalMoveFile (string sourcePath, string destPath)
+		static void InternalMoveFile (string srcFile, string dstFile)
 		{
-			FileSystemExtension srcExt = GetFileSystemForPath (sourcePath, false);
-			FileSystemExtension dstExt = GetFileSystemForPath (destPath, false);
+			Debug.Assert (!String.IsNullOrEmpty (srcFile));
+			Debug.Assert (!String.IsNullOrEmpty (dstFile));
+			FileSystemExtension srcExt = GetFileSystemForPath (srcFile, false);
+			FileSystemExtension dstExt = GetFileSystemForPath (dstFile, false);
 			
 			if (srcExt == dstExt) {
 				// Everything can be handled by the same file system
-				srcExt.MoveFile (sourcePath, destPath);
+				srcExt.MoveFile (srcFile, dstFile);
 			} else {
 				// If the file system of the source and dest files are
 				// different, decompose the Move operation into a Copy
 				// and Delete, so every file system can handle its part
-				dstExt.CopyFile (sourcePath, destPath, true);
-				srcExt.DeleteFile (sourcePath);
+				dstExt.CopyFile (srcFile, dstFile, true);
+				srcExt.DeleteFile (srcFile);
 			}
 		}
 		
-		public void CreateDirectory (string path)
+		public static void CreateDirectory (string path)
 		{
+			Debug.Assert (!String.IsNullOrEmpty (path));
 			GetFileSystemForPath (path, true).CreateDirectory (path);
 			OnFileCreated (new FileEventArgs (path, true));
 		}
 		
-		public void CopyDirectory (string sourcePath, string destPath)
+		public static void CopyDirectory (string srcPath, string dstPath)
 		{
-			GetFileSystemForPath (destPath, true).CopyDirectory (sourcePath, destPath);
+			Debug.Assert (!String.IsNullOrEmpty (srcPath));
+			Debug.Assert (!String.IsNullOrEmpty (dstPath));
+			GetFileSystemForPath (dstPath, true).CopyDirectory (srcPath, dstPath);
 		}
 		
-		public void MoveDirectory (string sourcePath, string destPath)
+		public static void MoveDirectory (string srcPath, string dstPath)
 		{
-			InternalMoveDirectory (sourcePath, destPath);
-			OnFileCreated (new FileEventArgs (destPath, true));
-			OnFileRemoved (new FileEventArgs (sourcePath, true));
+			Debug.Assert (!String.IsNullOrEmpty (srcPath));
+			Debug.Assert (!String.IsNullOrEmpty (dstPath));
+			InternalMoveDirectory (srcPath, dstPath);
+			OnFileCreated (new FileEventArgs (dstPath, true));
+			OnFileRemoved (new FileEventArgs (srcPath, true));
 		}
 		
-		void InternalMoveDirectory (string sourcePath, string destPath)
+		static void InternalMoveDirectory (string srcPath, string dstPath)
 		{
-			FileSystemExtension srcExt = GetFileSystemForPath (sourcePath, true);
-			FileSystemExtension dstExt = GetFileSystemForPath (destPath, true);
+			Debug.Assert (!String.IsNullOrEmpty (srcPath));
+			Debug.Assert (!String.IsNullOrEmpty (dstPath));
+			FileSystemExtension srcExt = GetFileSystemForPath (srcPath, true);
+			FileSystemExtension dstExt = GetFileSystemForPath (dstPath, true);
 			
 			if (srcExt == dstExt) {
 				// Everything can be handled by the same file system
-				srcExt.MoveDirectory (sourcePath, destPath);
+				srcExt.MoveDirectory (srcPath, dstPath);
 			} else {
 				// If the file system of the source and dest files are
 				// different, decompose the Move operation into a Copy
 				// and Delete, so every file system can handle its part
-				dstExt.CopyDirectory (sourcePath, destPath);
-				srcExt.DeleteDirectory (sourcePath);
+				dstExt.CopyDirectory (srcPath, dstPath);
+				srcExt.DeleteDirectory (srcPath);
 			}
 		}
 		
-		public bool RequestFileEdit (string file)
+		public static bool RequestFileEdit (string fileName)
 		{
-			return GetFileSystemForPath (file, false).RequestFileEdit (file);
+			Debug.Assert (!String.IsNullOrEmpty (fileName));
+			return GetFileSystemForPath (fileName, false).RequestFileEdit (fileName);
 		}
 		
-		public void NotifyFileChanged (string path)
+		public static void NotifyFileChanged (string fileName)
 		{
-			GetFileSystemForPath (path, false).NotifyFileChanged (path);
-			OnFileChanged (new FileEventArgs (path, false));
+			Debug.Assert (!String.IsNullOrEmpty (fileName));
+			GetFileSystemForPath (fileName, false).NotifyFileChanged (fileName);
+			OnFileChanged (new FileEventArgs (fileName, false));
 		}
 		
-		internal FileSystemExtension GetFileSystemForPath (string path, bool isDirectory)
+		internal static FileSystemExtension GetFileSystemForPath (string path, bool isDirectory)
 		{
+			Debug.Assert (!String.IsNullOrEmpty (path));
 			if (fileSystemChain == null)
 				UpdateExtensions ();
 			FileSystemExtension nx = fileSystemChain;
@@ -193,261 +235,122 @@ namespace MonoDevelop.Core
 			return nx;
 		}
 		
-		
-		public StringCollection SearchDirectory(string directory, string filemask, bool searchSubdirectories)
+		public static string AbsoluteToRelativePath (string baseDirectoryPath, string absPath)
 		{
-			StringCollection collection = new StringCollection();
-			SearchDirectory(directory, filemask, collection, searchSubdirectories);
-			return collection;
-		}
-		
-		public StringCollection SearchDirectory(string directory, string filemask)
-		{
-			return SearchDirectory (directory, filemask, true);
-		}
-		
-		/// <summary>
-		/// Finds all files which are valid to the mask <code>filemask</code> in the path
-		/// <code>directory</code> and all subdirectories (if searchSubdirectories
-		/// is true. The found files are added to the StringCollection 
-		/// <code>collection</code>.
-		/// </summary>
-		void SearchDirectory (string directory, string filemask, StringCollection collection, bool searchSubdirectories)
-		{
-			string[] file = Directory.GetFiles(directory, filemask);
-			foreach (string f in file) {
-				collection.Add(f);
-			}
-			
-			if (searchSubdirectories) {
-				string[] dir = Directory.GetDirectories(directory);
-				foreach (string d in dir) {
-					SearchDirectory(d, filemask, collection, searchSubdirectories);
-				}
-			}
-		}
-		
-		/// <summary>
-		/// Converts a given absolute path and a given base path to a path that leads
-		/// from the base path to the absoulte path. (as a relative path)
-		/// </summary>
-		public string AbsoluteToRelativePath (string baseDirectoryPath, string absPath)
-		{
-			if (! Path.IsPathRooted (absPath))
+			if (!Path.IsPathRooted (absPath))
 				return absPath;
 			
-			absPath = Path.GetFullPath (absPath);
+			absPath           = Path.GetFullPath (absPath);
 			baseDirectoryPath = Path.GetFullPath (baseDirectoryPath);
 			
 			string[] bPath = baseDirectoryPath.Split (separators);
 			string[] aPath = absPath.Split (separators);
 			int indx = 0;
-			for(; indx < Math.Min(bPath.Length, aPath.Length); ++indx){
-				if(!bPath[indx].Equals(aPath[indx]))
+			
+			for (; indx < Math.Min (bPath.Length, aPath.Length); indx++) {
+				if (!bPath[indx].Equals(aPath[indx]))
 					break;
 			}
 			
-			if (indx == 0) {
+			if (indx == 0) 
 				return absPath;
+			
+			StringBuilder result = new StringBuilder ();
+			
+			for (int i = indx; i < bPath.Length; i++) {
+				result.Append ("..");
+				result.Append (Path.DirectorySeparatorChar);
 			}
 			
-			string erg = "";
-			
-			if(indx == bPath.Length) {
-				erg += "." + Path.DirectorySeparatorChar;
-			} else {
-				for (int i = indx; i < bPath.Length; ++i) {
-					erg += ".." + Path.DirectorySeparatorChar;
-				}
-			}
-			erg += String.Join(Path.DirectorySeparatorChar.ToString(), aPath, indx, aPath.Length-indx);
-			
-			return erg;
+			result.Append (String.Join(Path.DirectorySeparatorChar.ToString(), aPath, indx, aPath.Length - indx));
+			return result.ToString ();
 		}
 		
-		/// <summary>
-		/// Converts a given relative path and a given base path to a path that leads
-		/// to the relative path absoulte.
-		/// </summary>
-		public string RelativeToAbsolutePath (string baseDirectoryPath, string relPath)
-		{			
-			return Path.GetFullPath (baseDirectoryPath + Path.DirectorySeparatorChar + relPath);
-		}
-		
-		/// <summary>
-		/// This method checks the file fileName if it is valid.
-		/// </summary>
-		public bool IsValidFileName (string fileName)
+		public static string RelativeToAbsolutePath (string baseDirectoryPath, string relPath)
 		{
-			// Fixme: 260 is the hardcoded maximal length for a path on my Windows XP system
-			//        I can't find a .NET property or method for determining this variable.
-			if (String.IsNullOrEmpty (fileName) || fileName.Length >= 260) {
+			return Path.GetFullPath (Path.Combine (baseDirectoryPath, relPath));
+		}
+		
+		public static bool IsValidFileName (string fileName)
+		{
+			if (String.IsNullOrEmpty (fileName) || fileName.IndexOfAny (Path.GetInvalidPathChars ()) >= 0)
 				return false;
-			}
-			
-			// platform independent : check for invalid path chars
-			foreach (char invalidChar in Path.GetInvalidPathChars()) {
-				if (fileName.IndexOf(invalidChar) >= 0) {
-					return false;
-				}
-			}
-			
-			// platform dependend : Check for invalid file names (DOS)
-			// this routine checks for follwing bad file names :
-			// CON, PRN, AUX, NUL, COM1-9 and LPT1-9
-			
-			string nameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
-			if (nameWithoutExtension != null) {
-				nameWithoutExtension = nameWithoutExtension.ToUpper();
-			}
-			
-			if (nameWithoutExtension == "CON" ||
-			    nameWithoutExtension == "PRN" ||
-			    nameWithoutExtension == "AUX" ||
-			    nameWithoutExtension == "NUL") {
-		    	
-		    	return false;
-		    }
-			    
-		    char ch = nameWithoutExtension.Length == 4 ? nameWithoutExtension[3] : '\0';
-			
-			return !((nameWithoutExtension.StartsWith("COM") ||
-			          nameWithoutExtension.StartsWith("LPT")) &&
-			          Char.IsDigit(ch));
+			return true;
 		}
 		
-		public bool IsDirectory (string filename)
+		public static bool IsDirectory (string filename)
 		{
-			if (!Directory.Exists(filename)) {
-				return false;
-			}
-			FileAttributes attr = File.GetAttributes(filename);
-			return (attr & FileAttributes.Directory) != 0;
+			return Directory.Exists (filename) && (File.GetAttributes (filename) & FileAttributes.Directory) != 0;
 		}
 		
-		/// <summary>
-		/// Returns directoryName + "\\" (Win32) when directoryname doesn't end with
-		/// "\\"
-		/// </summary>
-		public string GetDirectoryNameWithSeparator (string directoryName)
-		{
-			if (directoryName == null) return "";
-			
-			if (directoryName.EndsWith(Path.DirectorySeparatorChar.ToString())) {
-				return directoryName;
-			}
-			return directoryName + Path.DirectorySeparatorChar;
-		}
-		
-		// Works like Path.GetFullPath, but it does not require the path to exist
-		public string GetFullPath (string path)
+		public static string GetFullPath (string path)
 		{
 			if (path == null)
 				throw new ArgumentNullException ("path");
-				
-			if (!Path.IsPathRooted (path))
-				path = Path.Combine (Environment.CurrentDirectory, path);
-			
-			string root = Path.GetPathRoot (path);
-			path = path.Substring (root.Length);
-			
-			string[] parts = path.Split (Path.DirectorySeparatorChar);
-			string[] newParts = new string [parts.Length];
-			int i = 0;
-			for (int n=0; n<parts.Length; n++) {
-				string p = parts [n];
-				if (p == null || p.Length == 0 || p == ".")
-					continue;
-				if (p == "..") {
-					if (i > 0)
-						i--;
-				} else {
-					newParts [i++] = p;
-				}
-			}
-			return root + string.Join (new string (Path.DirectorySeparatorChar, 1), newParts, 0, i);
+			// Note: It's not required for Path.GetFullPath (path) that path exists.
+			return Path.GetFullPath (path); 
 		}
 		
-		public string CreateTempDirectory ()
+		public static string CreateTempDirectory ()
 		{
-			string tmpFolder;
-			
-			Random rand = new Random ();
-			do {
-				tmpFolder = Path.Combine (Path.GetTempPath (), "d" + rand.Next (0, int.MaxValue));
-				try {
-					if (Directory.Exists (tmpFolder))
-						tmpFolder = null;
-					else
-						Directory.CreateDirectory (tmpFolder);
-				}
-				catch {
-					tmpFolder = null;
-				}
-			}
-			while (tmpFolder == null);
-			
-			return tmpFolder;
+			Random rnd = new Random ();
+			string result;
+			while (true) {
+				result = Path.Combine (Path.GetTempPath (), "mdTmpDir" + rnd.Next ());
+				if (!Directory.Exists (result))
+					break;
+			} 
+			Directory.CreateDirectory (result);
+			return result;
 		}
 
-		public string NormalizeRelativePath (string path)
+		public static string NormalizeRelativePath (string path)
 		{
-			path = path.Trim (Path.DirectorySeparatorChar,' ');
-			while (path.StartsWith ("." + Path.DirectorySeparatorChar)) {
-				path = path.Substring (2);
-				path = path.Trim (Path.DirectorySeparatorChar,' ');
+			string result = path.Trim (Path.DirectorySeparatorChar, ' ');
+			while (result.StartsWith ("." + Path.DirectorySeparatorChar)) {
+				result = result.Substring (2);
+				result = result.Trim (Path.DirectorySeparatorChar);
 			}
-			if (path == ".")
-				return string.Empty;
-			else
-				return path;
+			return result == "." ? "" : result;
 		}
 		
-		bool HandleError (string message, Exception ex)
+		static bool HandleError (string message, Exception ex)
 		{
-			if (errorHandler != null)
-				return errorHandler (message, ex);
-			else
-				return false;
+			return errorHandler != null ? errorHandler (message, ex) : false;
 		}
 		
-		protected virtual void OnFileCreated (FileEventArgs e)
-		{
-			if (FileCreated != null) {
-				FileCreated (this, e);
-			}
-		}
-		
-		protected virtual void OnFileRemoved (FileEventArgs e)
-		{
-			if (FileRemoved != null) {
-				FileRemoved(this, e);
-			}
-		}
-
-		protected virtual void OnFileRenamed (FileEventArgs e)
-		{
-			if (FileRenamed != null) {
-				FileRenamed(this, e);
-			}
-		}
-
-		protected virtual void OnFileChanged (FileEventArgs e)
-		{
-			if (FileChanged != null) {
-				FileChanged(this, e);
-			}
-		}
-		
-		public FileServiceErrorHandler ErrorHandler {
+		public static FileServiceErrorHandler ErrorHandler {
 			get { return errorHandler; }
 			set { errorHandler = value; }
 		}
 
-		public event FileEventHandler FileCreated;
-		public event FileEventHandler FileRenamed;
-		public event FileEventHandler FileRemoved;
-		public event FileEventHandler FileChanged;
+		public static event EventHandler<FileEventArgs> FileCreated;
+		static void OnFileCreated (FileEventArgs args)
+		{
+			if (FileCreated != null) 
+				FileCreated (null, args);
+		}
+		
+		public static event EventHandler<FileCopyEventArgs> FileRenamed;
+		static void OnFileRenamed (FileCopyEventArgs args)
+		{
+			if (FileRenamed != null) 
+				FileRenamed (null, args);
+		}
+		
+		public static event EventHandler<FileEventArgs> FileRemoved;
+		static void OnFileRemoved (FileEventArgs args)
+		{
+			if (FileRemoved != null) 
+				FileRemoved (null, args);
+		}
+		
+		public static event EventHandler<FileEventArgs> FileChanged;
+		static void OnFileChanged (FileEventArgs args)
+		{
+			if (FileChanged != null) 
+				FileChanged (null, args);
+		}
 	}
 	
 	public delegate bool FileServiceErrorHandler (string message, Exception ex);
