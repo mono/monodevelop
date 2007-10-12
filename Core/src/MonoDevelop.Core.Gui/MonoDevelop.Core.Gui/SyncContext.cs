@@ -7,6 +7,7 @@
 
 
 using System;
+using System.Text;
 using System.Collections;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -60,15 +61,24 @@ namespace MonoDevelop.Core.Gui
 				return factory.Create (del, this);
 			}
 		}
-			
+		
 		Type GetDelegateFactoryType (Type delegateType)
 		{
 			MethodInfo invoke = delegateType.GetMethod ("Invoke");
 			ModuleBuilder module = GetModuleBuilder ();
 			
 			// *** Data class
-			
-			TypeBuilder dataTypeBuilder = module.DefineType ("__" + delegateType.Name + "_DelegateData", TypeAttributes.Public, typeof(object), Type.EmptyTypes);
+			StringBuilder typeNameBuilder = new StringBuilder ();
+			typeNameBuilder.Append ("__");
+			typeNameBuilder.Append (delegateType.Name);
+			Type[] generics = delegateType.GetGenericArguments ();
+			if (generics != null) {
+				foreach (Type t in generics) {
+					typeNameBuilder.Append ("_");
+					typeNameBuilder.Append (t.Name);
+				}
+			}
+			TypeBuilder dataTypeBuilder = module.DefineType (typeNameBuilder + "_DelegateData", TypeAttributes.Public, typeof(object), Type.EmptyTypes);
 			
 			// Parameters
 			ParameterInfo[] pars = invoke.GetParameters ();
@@ -97,7 +107,7 @@ namespace MonoDevelop.Core.Gui
 			
 			// *** Factory class
 			
-			TypeBuilder typeBuilder = module.DefineType ("__" + delegateType.Name + "_DelegateFactory", TypeAttributes.Public, typeof(object), new Type[] {typeof(IDelegateFactory)});
+			TypeBuilder typeBuilder = module.DefineType (typeNameBuilder + "_DelegateFactory", TypeAttributes.Public, typeof(object), new Type[] {typeof(IDelegateFactory)});
 			
 			// Context and target delegate field
 			

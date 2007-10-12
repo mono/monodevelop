@@ -115,15 +115,11 @@ namespace MonoDevelop.Core.Gui
 			OnRecentFileChange();
 		}
 		
-		public void FileRenamed(object sender, FileEventArgs e)
+		public void FileRenamed (object sender, FileCopyEventArgs e)
 		{
 			if (e.IsDirectory)
 				return;
-			
-			if (e.FileName == null)
-				recentFiles.RenameItem (ToUri (e.SourceFile), ToUri (e.TargetFile));
-			else
-				recentFiles.RenameItem (ToUri (e.FileName), ToUri (e.TargetFile));
+			recentFiles.RenameItem (ToUri (e.SourceFile), ToUri (e.TargetFile));
 			OnRecentFileChange();
 		}
 
