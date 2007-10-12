@@ -195,15 +195,15 @@ namespace CSharpBinding
 			if (result.CompilerOutput.Trim () != "")
 				monitor.Log.WriteLine (result.CompilerOutput);
 
-			Runtime.FileService.DeleteFile (responseFileName);
-			Runtime.FileService.DeleteFile (output);
-			Runtime.FileService.DeleteFile (error);
+			FileService.DeleteFile (responseFileName);
+			FileService.DeleteFile (output);
+			FileService.DeleteFile (error);
 			return result;
 		}
 
 		string GetCompilerName (ClrVersion version)
 		{
-			string runtimeDir = Runtime.FileService.GetDirectoryNameWithSeparator(System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory());
+			string runtimeDir = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory();
 			// The following regex foo gets the index of the
 			// last match of lib/lib32/lib64 and uses
 			// the text before that as the 'prefix' in order
@@ -212,7 +212,7 @@ namespace CSharpBinding
 			MatchCollection matches = regex.Matches(runtimeDir);
 			Match match = matches[matches.Count - 1];
 			string mcs = version == ClrVersion.Net_1_1 ? "mcs" : "gmcs";
-			string compilerName = runtimeDir.Substring(0, match.Index) + Path.Combine("bin", mcs);
+			string compilerName = Path.Combine (runtimeDir.Substring(0, match.Index), Path.Combine("bin", mcs));
 			return compilerName;
 		}
 		

@@ -1,3 +1,8 @@
+2007-10-12  Mike Krüger <mkrueger@novell.com> 
+
+	* CSharpBindingCompilerManager.cs: Applied changes that were neccassary for
+	  to the new FileService.
+
 2007-10-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CSharpAmbience.cs: Always show parameter types.
