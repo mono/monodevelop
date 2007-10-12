@@ -135,7 +135,7 @@ namespace MonoDevelop.Projects.Parser
 				CloseReader ();
 				
 				if (File.Exists (oldDataFile))
-					Runtime.FileService.MoveFile (oldDataFile, dataFile);
+					FileService.MoveFile (oldDataFile, dataFile);
 			}
 		}
 		
@@ -305,15 +305,15 @@ namespace MonoDevelop.Projects.Parser
 					CloseReader ();
 					
 					if (File.Exists (dataFile))
-						Runtime.FileService.DeleteFile (dataFile);
+						FileService.DeleteFile (dataFile);
 						
-					Runtime.FileService.MoveFile (tmpDataFile, dataFile);
+					FileService.MoveFile (tmpDataFile, dataFile);
 				} catch (Exception ex) {
 					Runtime.LoggingService.Error (ex);
 					if (dfile != null)
 						dfile.Close ();
 					if (File.Exists (tmpDataFile))
-						Runtime.FileService.DeleteFile (tmpDataFile);
+						FileService.DeleteFile (tmpDataFile);
 				}
 			}
 			

@@ -619,7 +619,7 @@ namespace MonoDevelop.Projects.Parser
 			if (!Directory.Exists (path))
 				Directory.CreateDirectory (path);
 
-			codeCompletionPath = Runtime.FileService.GetDirectoryNameWithSeparator(path);
+			codeCompletionPath = path;
 		}
 
 		public void Initialize ()

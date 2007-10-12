@@ -223,7 +223,7 @@ namespace MonoDevelop.Projects.Parser
 			int version = (int) headers ["Version"];
 			if (!File.Exists (checkFile) || version != FORMAT_VERSION) {
 				string dataFile = Path.Combine (baseDir, name + ".pidb");
-				Runtime.FileService.DeleteFile (dataFile);
+				FileService.DeleteFile (dataFile);
 				Runtime.LoggingService.Info ("Deleted " + dataFile);
 			}
 		}

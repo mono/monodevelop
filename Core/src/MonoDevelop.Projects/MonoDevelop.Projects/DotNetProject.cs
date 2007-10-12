@@ -581,7 +581,7 @@ namespace MonoDevelop.Projects
 			string file = GetOutputFileName ();
 			if (file != null) {
 				if (File.Exists (file + ".mdb"))
-					Runtime.FileService.DeleteFile (file + ".mdb");
+					FileService.DeleteFile (file + ".mdb");
 			}
 
 			List<string> cultures = new List<string> ();

@@ -56,7 +56,7 @@ namespace MonoDevelop.Projects
 		{
 			if (value == null || ((string)value).Length == 0) return null;
 			string basePath = Path.GetDirectoryName (serCtx.BaseFile);
-			string file = Runtime.FileService.AbsoluteToRelativePath (basePath, value.ToString ());
+			string file = FileService.AbsoluteToRelativePath (basePath, value.ToString ());
 			return new DataValue (Name, file);
 		}
 		
@@ -65,7 +65,7 @@ namespace MonoDevelop.Projects
 			string file = ((DataValue)data).Value;
 			if (file == "") return "";
 			string basePath = Path.GetDirectoryName (serCtx.BaseFile);
-			return Runtime.FileService.RelativeToAbsolutePath (basePath, file);
+			return FileService.RelativeToAbsolutePath (basePath, file);
 		}
 	}
 }

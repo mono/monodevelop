@@ -120,7 +120,7 @@ namespace MonoDevelop.Projects
 				doc.Load (mdCombineAddition);
 				string rop = doc.DocumentElement["RelativeOutputPath"].InnerText;
 				if (rop != "")
-					combine.OutputDirectory = Runtime.FileService.RelativeToAbsolutePath (combine.BaseDirectory, rop);
+					combine.OutputDirectory = FileService.RelativeToAbsolutePath (combine.BaseDirectory, rop);
 			}
 			
 			return combine;
@@ -135,7 +135,7 @@ namespace MonoDevelop.Projects
 				monitor.BeginTask (GettextCatalog.GetString ("Loading solution: {0}", combine.FileName), 1);
 				while (MoveToNextElement (reader)) {
 					string nodefile = reader.GetAttribute ("filename");
-					nodefile = Runtime.FileService.RelativeToAbsolutePath (basePath, nodefile);
+					nodefile = FileService.RelativeToAbsolutePath (basePath, nodefile);
 					combine.Entries.Add ((CombineEntry) Services.ProjectService.ReadFile (nodefile, monitor));
 					reader.Skip ();
 				}
@@ -197,7 +197,7 @@ namespace MonoDevelop.Projects
 				ArrayList files = new ArrayList ();
 				while (MoveToNextElement (reader)) {
 					string nodefile = reader.GetAttribute ("filename");
-					nodefile = Runtime.FileService.RelativeToAbsolutePath (basePath, nodefile);
+					nodefile = FileService.RelativeToAbsolutePath (basePath, nodefile);
 					files.Add (nodefile);
 					reader.Skip ();
 				}

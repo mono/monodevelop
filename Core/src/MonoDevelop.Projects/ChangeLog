@@ -1,3 +1,19 @@
+2007-10-12  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects/ProjectReference.cs,
+	  MonoDevelop.Projects/ProjectService.cs,
+	  MonoDevelop.Projects/ProjectPathItemPropertyAttribute.cs,
+	  MonoDevelop.Projects/CombineEntry.cs,
+	  MonoDevelop.Projects/ProjectFileCollection.cs,
+	  MonoDevelop.Projects/DotNetProject.cs,
+	  MonoDevelop.Projects/CmbxFileFormat.cs,
+	  MonoDevelop.Projects/ProjectConvertTool.cs,
+	  MonoDevelop.Projects/Project.cs,
+	  MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Parser/DefaultParserService.cs,
+	  MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Applied changes
+	  that were neccassary for to the new FileService.
+
 2007-10-11  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects/CustomCommand.cs, MonoDevelop.Projects/Project.cs:

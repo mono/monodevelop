@@ -148,8 +148,8 @@ namespace MonoDevelop.Projects
 						// The file location has changed, the entry paths have to be relocated
 						for (int n=0; n<entriesToExport.Count; n++) {
 							string file = (string) entriesToExport [n];
-							file = Runtime.FileService.AbsoluteToRelativePath (sourcePath, file);
-							file = Runtime.FileService.RelativeToAbsolutePath (targetPath, file);
+							file = FileService.AbsoluteToRelativePath (sourcePath, file);
+							file = FileService.RelativeToAbsolutePath (targetPath, file);
 							file = Path.GetFullPath (file);
 							entriesToExport [n] = file;
 						}
@@ -189,7 +189,7 @@ namespace MonoDevelop.Projects
 			StringCollection files = entry.GetExportFiles ();
 			
 			foreach (string file in files) {
-				string fname = Runtime.FileService.GetFullPath (file);
+				string fname = FileService.GetFullPath (file);
 				
 				// Can't export files from outside the root solution directory
 				if (!fname.StartsWith (baseCombinePath + Path.DirectorySeparatorChar)) {
@@ -197,11 +197,11 @@ namespace MonoDevelop.Projects
 					return false;
 				}
 				
-				string rpath = Runtime.FileService.AbsoluteToRelativePath (baseCombinePath, fname);
+				string rpath = FileService.AbsoluteToRelativePath (baseCombinePath, fname);
 				rpath = Path.Combine (targetBasePath, rpath);
 				
 				if (!Directory.Exists (Path.GetDirectoryName (rpath)))
-					Directory.CreateDirectory (Runtime.FileService.GetFullPath (Path.GetDirectoryName (rpath)));
+					Directory.CreateDirectory (FileService.GetFullPath (Path.GetDirectoryName (rpath)));
 				
 				File.Copy (file, rpath, true);
 			}
@@ -227,13 +227,13 @@ namespace MonoDevelop.Projects
 					else
 						comb.Entries.Remove (e);
 				}
-				if (!needsConversion && !entriesToExport.Contains (Runtime.FileService.GetFullPath (entry.FileName))) {
+				if (!needsConversion && !entriesToExport.Contains (FileService.GetFullPath (entry.FileName))) {
 					oldFiles.AddRange (entry.GetExportFiles ());
 					return false;
 				}
 			}
 			else {
-				if (!entriesToExport.Contains (Runtime.FileService.GetFullPath (entry.FileName))) {
+				if (!entriesToExport.Contains (FileService.GetFullPath (entry.FileName))) {
 					oldFiles.AddRange (entry.GetExportFiles ());
 					return false;
 				}

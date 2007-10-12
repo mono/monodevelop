@@ -256,13 +256,12 @@ namespace MonoDevelop.Projects
 		{
 			if (Path.IsPathRooted (relPath))
 				return relPath;
-			else
-				return Runtime.FileService.RelativeToAbsolutePath (BaseDirectory, relPath);
+			return FileService.RelativeToAbsolutePath (BaseDirectory, relPath);
 		}
 		
 		public string GetRelativeChildPath (string absPath)
 		{
-			return Runtime.FileService.AbsoluteToRelativePath (BaseDirectory, absPath);
+			return FileService.AbsoluteToRelativePath (BaseDirectory, absPath);
 		}
 		
 		public StringCollection GetExportFiles ()

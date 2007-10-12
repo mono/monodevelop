@@ -45,7 +45,7 @@ namespace MonoDevelop.Projects
 				return 1;
 			}
 			
-			projectFile = Runtime.FileService.GetFullPath (projectFile);
+			projectFile = FileService.GetFullPath (projectFile);
 			if (!File.Exists (projectFile)) {
 				Console.WriteLine ("File {0} not found.", projectFile);
 				return 1;
@@ -96,7 +96,7 @@ namespace MonoDevelop.Projects
 			
 			if (destPath == null)
 				destPath = Path.GetDirectoryName (projectFile);
-			destPath = Runtime.FileService.GetFullPath (destPath);
+			destPath = FileService.GetFullPath (destPath);
 			
 			string ofile = Services.ProjectService.Export (monitor, projectFile, destPath, format);
 			if (ofile != null) {

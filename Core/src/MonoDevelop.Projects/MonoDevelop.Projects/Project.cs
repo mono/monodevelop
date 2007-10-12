@@ -222,7 +222,7 @@ namespace MonoDevelop.Projects
 						if (!Directory.Exists (Path.GetDirectoryName (destinationFileName)))
 							Directory.CreateDirectory (Path.GetDirectoryName (destinationFileName));
 						// Copy the file
-						Runtime.FileService.CopyFile (sourcePath, destinationFileName);
+						FileService.CopyFile (sourcePath, destinationFileName);
 					}
 				} catch (Exception e) {
 					Runtime.LoggingService.ErrorFormat ("Can't copy reference file from {0} to {1}: {2}", (object)sourcePath, (object)destinationFileName, (object)e);
@@ -265,7 +265,7 @@ namespace MonoDevelop.Projects
 				try {
 					if (destinationFileName != sourcePath) {
 						if (File.Exists (destinationFileName))
-							Runtime.FileService.DeleteFile (destinationFileName);
+							FileService.DeleteFile (destinationFileName);
 					}
 				} catch (Exception e) {
 					Runtime.LoggingService.ErrorFormat ("Can't delete reference file {0}: {2}", destinationFileName, e);
@@ -324,7 +324,7 @@ namespace MonoDevelop.Projects
 					string message = GettextCatalog.GetString ("Cannot create directory {0}, as a file with that name exists.", newPath);
 					throw new InvalidOperationException (message);
 				}
-				Runtime.FileService.CreateDirectory (newPath);
+				FileService.CreateDirectory (newPath);
 			}
 			
 			ProjectFile newDir = new ProjectFile (newPath);
@@ -433,7 +433,7 @@ namespace MonoDevelop.Projects
 			string file = GetOutputFileName ();
 			if (file != null) {
 				if (File.Exists (file))
-					Runtime.FileService.DeleteFile (file);
+					FileService.DeleteFile (file);
 			}
 
 			// Delete referenced assemblies
