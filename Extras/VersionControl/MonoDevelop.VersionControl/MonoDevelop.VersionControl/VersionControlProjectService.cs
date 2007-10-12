@@ -213,7 +213,7 @@ namespace MonoDevelop.VersionControl
 				string file = Path.Combine (PropertyService.ConfigPath, "version-control-commit-msg");
 				if (comments.Count == 0) {
 					if (File.Exists (file))
-						Runtime.FileService.DeleteFile (file);
+						FileService.DeleteFile (file);
 					return;
 				}
 			
