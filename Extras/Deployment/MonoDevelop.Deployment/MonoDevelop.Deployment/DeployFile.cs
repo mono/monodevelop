@@ -87,7 +87,7 @@ namespace MonoDevelop.Deployment
 				if (displayName != null)
 					return displayName;
 				else {
-					return Runtime.FileService.AbsoluteToRelativePath (sourceCombineEntry.BaseDirectory, SourcePath);
+					return FileService.AbsoluteToRelativePath (sourceCombineEntry.BaseDirectory, SourcePath);
 				}
 			}
 			set { displayName = value; }

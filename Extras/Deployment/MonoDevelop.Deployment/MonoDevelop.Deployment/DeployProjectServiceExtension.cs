@@ -19,7 +19,7 @@ namespace MonoDevelop.Deployment
 			if (string.IsNullOrEmpty (outfile))
 				return res;
 			
-			outfile = Runtime.FileService.GetFullPath (outfile);
+			outfile = FileService.GetFullPath (outfile);
 			
 			// Copy deploy files with ProgramFiles as target directory
 			
@@ -27,7 +27,7 @@ namespace MonoDevelop.Deployment
 				DeployFileCollection files = DeployService.GetDeployFiles (ctx, entry);
 				
 				foreach (DeployFile file in files) {
-					if (Runtime.FileService.GetFullPath (file.SourcePath) == outfile)
+					if (FileService.GetFullPath (file.SourcePath) == outfile)
 						continue;
 					
 					if (file.TargetDirectoryID == TargetDirectory.ProgramFiles) {
@@ -36,7 +36,7 @@ namespace MonoDevelop.Deployment
 							continue;
 						}
 						string tfile = file.ResolvedTargetFile;
-						if (Runtime.FileService.GetFullPath (tfile) != Runtime.FileService.GetFullPath (file.SourcePath)) {
+						if (FileService.GetFullPath (tfile) != FileService.GetFullPath (file.SourcePath)) {
 							string tpath = Path.GetDirectoryName (tfile);
 							if (!Directory.Exists (tpath))
 								Directory.CreateDirectory (tpath);

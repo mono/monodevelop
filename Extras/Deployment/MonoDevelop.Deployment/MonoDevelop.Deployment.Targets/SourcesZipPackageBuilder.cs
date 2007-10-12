@@ -60,13 +60,13 @@ namespace MonoDevelop.Deployment
 			AggregatedProgressMonitor mon = new AggregatedProgressMonitor ();
 			mon.AddSlaveMonitor (monitor, MonitorAction.WriteLog|MonitorAction.ReportError|MonitorAction.ReportWarning|MonitorAction.ReportSuccess);
 			
-			string tmpFolder = Runtime.FileService.CreateTempDirectory ();
+			string tmpFolder = FileService.CreateTempDirectory ();
 			
 			try {
 				string tf = Path.GetFileNameWithoutExtension (targetFile);
 				if (tf.EndsWith (".tar")) tf = Path.GetFileNameWithoutExtension (tf);
 				
-				string folder = Runtime.FileService.GetFullPath (Path.Combine (tmpFolder, tf));
+				string folder = FileService.GetFullPath (Path.Combine (tmpFolder, tf));
 				Directory.CreateDirectory (folder);
 				
 				// Export the project

@@ -58,17 +58,17 @@ namespace MonoDevelop.Deployment
 						return;
 				}
 				
-				tmpFolder = Runtime.FileService.CreateTempDirectory ();
+				tmpFolder = FileService.CreateTempDirectory ();
 				
 				string tf = Path.GetFileNameWithoutExtension (targetFile);
 				if (tf.EndsWith (".tar")) tf = Path.GetFileNameWithoutExtension (tf);
-				string folder = Runtime.FileService.GetFullPath (Path.Combine (tmpFolder, tf));
+				string folder = FileService.GetFullPath (Path.Combine (tmpFolder, tf));
 				
 				// Export the binary files
 				DeployFileCollection deployFiles = GetDeployFiles (ctx);
 				foreach (DeployFile file in deployFiles) {
 					string tfile = Path.Combine (folder, file.ResolvedTargetFile);
-					string tdir = Runtime.FileService.GetFullPath (Path.GetDirectoryName (tfile));
+					string tdir = FileService.GetFullPath (Path.GetDirectoryName (tfile));
 					if (!Directory.Exists (tdir))
 						Directory.CreateDirectory (tdir);
 					File.Copy (file.SourcePath, tfile, true);

@@ -1,3 +1,13 @@
+2007-10-12  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Deployment/InstallResolver.cs,
+	  MonoDevelop.Deployment/DeployFile.cs,
+	  MonoDevelop.Deployment/DeployProjectServiceExtension.cs,
+	  MonoDevelop.Deployment/PackageBuilder.cs,
+	  MonoDevelop.Deployment.Targets/BinariesZipPackageBuilder.cs,
+	  MonoDevelop.Deployment.Targets/SourcesZipPackageBuilder.cs: Applied
+	  changes that were neccassary for to the new FileService.
+
 2007-10-02  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Deployment.addin.xml, MonoDevelop.Deployment.mdp,

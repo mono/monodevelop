@@ -74,13 +74,13 @@ namespace MonoDevelop.Deployment
 		
 		void CopyFile (IProgressMonitor monitor, string src, string dest, DeployFileAttributes atts)
 		{
-			dest = Runtime.FileService.GetFullPath (dest);
+			dest = FileService.GetFullPath (dest);
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Deploying file {0}.", dest));
 			
 			string targetDir = Path.GetDirectoryName (dest);
 			if (!Directory.Exists (targetDir))
 				Directory.CreateDirectory (targetDir);
-			Runtime.FileService.CopyFile (src, dest);
+			FileService.CopyFile (src, dest);
 			
 			Mono.Unix.Native.FilePermissions perms = Mono.Unix.Native.FilePermissions.DEFFILEMODE;
 			if ((atts & DeployFileAttributes.Executable) != 0)

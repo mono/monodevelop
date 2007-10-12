@@ -188,12 +188,12 @@ namespace MonoDevelop.Deployment
 		
 		public void AddEntry (CombineEntry entry)
 		{
-			string fp = Runtime.FileService.GetFullPath (entry.FileName);
+			string fp = FileService.GetFullPath (entry.FileName);
 			foreach (string s in childEntries)
-				if (Runtime.FileService.GetFullPath (s) == fp)
+				if (FileService.GetFullPath (s) == fp)
 					return;
 			
-			if (Runtime.FileService.GetFullPath (rootEntry) == fp)
+			if (FileService.GetFullPath (rootEntry) == fp)
 				return;
 			
 			List<CombineEntry> list = new List<CombineEntry> ();
@@ -242,7 +242,7 @@ namespace MonoDevelop.Deployment
 		CombineEntry GetEntry (string fileName)
 		{
 			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				CombineEntry fe = FindEntry (IdeApp.ProjectOperations.CurrentOpenCombine, Runtime.FileService.GetFullPath (fileName));
+				CombineEntry fe = FindEntry (IdeApp.ProjectOperations.CurrentOpenCombine, FileService.GetFullPath (fileName));
 				return fe;
 			}
 			return Services.ProjectService.ReadCombineEntry (fileName, new NullProgressMonitor ());
@@ -250,7 +250,7 @@ namespace MonoDevelop.Deployment
 		
 		CombineEntry FindEntry (CombineEntry e, string fileName)
 		{
-			if (Runtime.FileService.GetFullPath (e.FileName) == fileName)
+			if (FileService.GetFullPath (e.FileName) == fileName)
 				return e;
 			if (e is Combine) {
 				foreach (CombineEntry ce in ((Combine)e).Entries) {
