@@ -64,13 +64,8 @@ namespace MonoDevelop.DesignerSupport
 			foreach (IProperty prop in cls.Properties) {
 				if (string.Compare (prop.Name, member.Name, ignoreCase) == 0) {
 					CodeMemberProperty memProp = member as CodeMemberProperty;
-					
-					if (memProp == null)
-						throw new MemberExistsException (cls.Name, member, MemberType.Property);
-					
-					if (!IsTypeCompatible (ctx, prop.ReturnType.FullyQualifiedName, memProp.Type.BaseType))
-						throw new InvalidOperationException ("Member with same name exists but has incompatible return type");
-					
+					if (memProp == null || !IsTypeCompatible (ctx, prop.ReturnType.FullyQualifiedName, memProp.Type.BaseType))
+						throw new MemberExistsException (cls.FullyQualifiedName, MemberType.Property, member);
 					return prop;
 				}
 			}
@@ -79,13 +74,8 @@ namespace MonoDevelop.DesignerSupport
 			foreach (IMethod meth in cls.Methods) {
 				if (string.Compare (meth.Name, member.Name, ignoreCase) == 0) {
 					CodeMemberMethod memMeth = member as CodeMemberMethod;
-					
-					if (memMeth == null)
-						throw new MemberExistsException (cls.Name, member, MemberType.Method);
-					
-					if (!IsTypeCompatible (ctx, meth.ReturnType.FullyQualifiedName, memMeth.ReturnType.BaseType))
-						throw new InvalidOperationException ("Member with same name exists but has incompatible return type");
-					
+					if (memMeth == null || !IsTypeCompatible (ctx, meth.ReturnType.FullyQualifiedName, memMeth.ReturnType.BaseType))
+						throw new MemberExistsException (cls.FullyQualifiedName, MemberType.Method, member);
 					return meth;
 				}
 			}
@@ -94,13 +84,8 @@ namespace MonoDevelop.DesignerSupport
 			foreach (IEvent ev in cls.Events) {
 				if (string.Compare (ev.Name, member.Name, ignoreCase) == 0) {
 					CodeMemberEvent memEv = member as CodeMemberEvent;
-					
-					if (memEv == null)
-						throw new MemberExistsException (cls.Name, member, MemberType.Event);
-					
-					if (!IsTypeCompatible (ctx, ev.ReturnType.FullyQualifiedName, memEv.Type.BaseType))
-						throw new InvalidOperationException ("Member with same name exists but has incompatible return type");
-
+					if (memEv == null || !IsTypeCompatible (ctx, ev.ReturnType.FullyQualifiedName, memEv.Type.BaseType))
+						throw new MemberExistsException (cls.FullyQualifiedName, MemberType.Event, member);
 					return ev;
 				}
 			}
@@ -109,13 +94,8 @@ namespace MonoDevelop.DesignerSupport
 			foreach (IField field in cls.Fields) {
 				if (string.Compare (field.Name, member.Name, ignoreCase) == 0) {
 					CodeMemberField memField = member as CodeMemberField;
-					
-					if (memField == null)
-						throw new MemberExistsException (cls.Name, member, MemberType.Method);
-					
-					if (!IsTypeCompatible (ctx, field.ReturnType.FullyQualifiedName, memField.Type.BaseType))
-						throw new InvalidOperationException ("Member with same name exists but has incompatible return type");
-					
+					if (memField == null || !IsTypeCompatible (ctx, field.ReturnType.FullyQualifiedName, memField.Type.BaseType))
+						throw new MemberExistsException (cls.FullyQualifiedName, MemberType.Field, member);
 					return field;
 				}
 			}

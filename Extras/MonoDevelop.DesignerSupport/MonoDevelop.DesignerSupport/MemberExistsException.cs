@@ -33,16 +33,14 @@
 using System;
 
 namespace MonoDevelop.DesignerSupport
-{
-	
-	
+{	
 	public class MemberExistsException : Exception
 	{
 		string className;
 		string memberName;
+		
 		MemberType existingMemberType = MemberType.Member;
 		MemberType newMemberType = MemberType.Member;
-		
 		
 		public MemberExistsException (string className, string memberName)
 		{
@@ -57,19 +55,27 @@ namespace MonoDevelop.DesignerSupport
 			this.newMemberType = newMemberType;
 		}
 		
-		public MemberExistsException (string className, System.CodeDom.CodeTypeMember newMember, MemberType existingMemberType)
-			: this (className, newMember.Name)
+		public MemberExistsException (string className, MemberType newMemberType, System.CodeDom.CodeTypeMember existingMember)
+			: this (className, existingMember.Name, newMemberType, GetMemberTypeFromCodeTypeMember (existingMember))
 		{
-			this.existingMemberType = existingMemberType;
-			
-			if (newMember is System.CodeDom.CodeMemberEvent)
-				this.newMemberType = MemberType.Event;
-			else if (newMember is System.CodeDom.CodeMemberProperty)
-				this.newMemberType = MemberType.Property;
-			else if (newMember is System.CodeDom.CodeMemberField)
-				this.newMemberType = MemberType.Field;
-			else if (newMember is System.CodeDom.CodeMemberMethod)
-				this.newMemberType = MemberType.Method;
+		}
+		
+		public MemberExistsException (string className, System.CodeDom.CodeTypeMember newMember, MemberType existingMemberType)
+			: this (className, newMember.Name, GetMemberTypeFromCodeTypeMember (newMember), existingMemberType)
+		{
+		}
+		
+		protected static MemberType GetMemberTypeFromCodeTypeMember (System.CodeDom.CodeTypeMember mem)
+		{
+			if (mem is System.CodeDom.CodeMemberEvent)
+				return MemberType.Event;
+			else if (mem is System.CodeDom.CodeMemberProperty)
+				return MemberType.Property;
+			else if (mem is System.CodeDom.CodeMemberField)
+				return MemberType.Field;
+			else if (mem is System.CodeDom.CodeMemberMethod)
+				return MemberType.Method;
+			return MemberType.Member;
 		}
 		
 		public string ClassName {
@@ -94,9 +100,13 @@ namespace MonoDevelop.DesignerSupport
 		
 		public override string ToString ()
 		{
-			return "Cannot add new " + Enum.GetName (typeof (MemberType), newMemberType).ToLower () +
-				" named \"" + memberName + "\"to class \"" + className + "\", " + "because there is already a \""
-				+ Enum.GetName (typeof (MemberType), existingMemberType).ToLower () + "\" with that name.";
+			return string.Format ("Cannot add {0} '{1}' to class '{2}', because there is already a {3} with that name{4}.",
+			                      newMemberType.ToString ().ToLower (),
+			                      memberName,
+			                      className,
+			                      existingMemberType.ToString ().ToLower (),
+			                      (NewMemberType == ExistingMemberType)? " with an incompatible return type" : ""
+			                      );
 		}
 	}
 	
