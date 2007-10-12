@@ -49,9 +49,9 @@ namespace MonoDevelop.Components
 				this.SetCurrentFolder (Environment.GetFolderPath (Environment.SpecialFolder.Personal));
 
 			// add default project path as a MD bookmark
-			string pathName = PropertyService.Get ("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", Runtime.FileService.GetDirectoryNameWithSeparator (Environment.GetFolderPath (Environment.SpecialFolder.Personal))).ToString ();
+			string pathName = PropertyService.Get ("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", Environment.GetFolderPath (Environment.SpecialFolder.Personal));
 
-			if (Runtime.FileService.IsDirectory (pathName)) {
+			if (FileService.IsDirectory (pathName)) {
 				try {
 					this.AddShortcutFolder (pathName);
 				} catch {
