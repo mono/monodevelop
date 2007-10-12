@@ -50,7 +50,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
         private Gtk.CheckButton checkPauseCons;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget
             Stetic.BinContainer.Attach(this);
             this.CanFocus = true;

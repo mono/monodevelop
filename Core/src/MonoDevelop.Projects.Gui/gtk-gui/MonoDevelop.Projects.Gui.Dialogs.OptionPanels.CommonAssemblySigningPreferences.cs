@@ -24,7 +24,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
         private MonoDevelop.Components.FileEntry strongNameFileEntry;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences
             Stetic.BinContainer.Attach(this);
             this.Name = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences";

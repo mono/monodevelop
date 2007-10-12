@@ -22,7 +22,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
         private Gtk.VBox vboxCommands;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget
             Stetic.BinContainer.Attach(this);
             this.Events = ((Gdk.EventMask)(256));

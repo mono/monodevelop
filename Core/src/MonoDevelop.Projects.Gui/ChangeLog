@@ -1,3 +1,13 @@
+2007-10-12  Mike Krüger <mkrueger@novell.com> 
+
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs:
+	  Applied changes that were neccassary for to the new FileService.
+
 2007-10-11  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:
@@ -215,7 +225,7 @@
 
 	Fixes bug#81820.
 	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs
-	(.ctor): Use Runtime.FileService.NormalizeRelativePath for project files.
+	(.ctor): Use FileService.NormalizeRelativePath for project files.
 
 2007-06-06  Lluis Sanchez Gual <lluis@novell.com> 
 

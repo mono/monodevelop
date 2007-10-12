@@ -107,7 +107,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				fdiag.SelectMultiple = false;
 				if (fdiag.Run () == (int) Gtk.ResponseType.Ok) {
 					if (System.IO.Path.IsPathRooted (fdiag.Filename))
-						entryCommand.Text = Runtime.FileService.AbsoluteToRelativePath (entry.BaseDirectory, fdiag.Filename);
+						entryCommand.Text = FileService.AbsoluteToRelativePath (entry.BaseDirectory, fdiag.Filename);
 					else
 						entryCommand.Text = fdiag.Filename;
 				}
