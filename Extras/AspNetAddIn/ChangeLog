@@ -1,3 +1,9 @@
+2007-10-12  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Project/VerifyCodeBehindBuildStep.cs: Change how partial classes are
+	  handled during code generation to work around the fact that they don't
+	  have all of the information that the 'full' class does.
+
 2007-10-08  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Project/AspNetAppProject.cs: Use xsp2 if using 2.0 runtime (regression 

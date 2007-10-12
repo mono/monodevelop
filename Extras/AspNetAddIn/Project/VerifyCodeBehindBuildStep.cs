@@ -55,14 +55,13 @@ namespace AspNetAddIn
 				}
 				
 				//handle partial designer classes; skip if non-partial and this is disabled
-				IClass designerClass = CodeBehind.GetDesignerClass (cls);
-				if (designerClass != null) {
-					cls = designerClass;
-				} else if (!config.GenerateNonPartialCodeBehindMembers) {
-					continue;
+				IClass partToAddTo = CodeBehind.GetDesignerClass (cls);
+				if (partToAddTo == null) {
+					if (!config.GenerateNonPartialCodeBehindMembers)
+						continue;
+					else
+						partToAddTo = cls;
 				}
-
-				//if (File.GetLastWriteTime (cls.Region.FileName) >= File.GetLastWriteTime (file.FilePath)) {
 				
 				Document doc = null; 
 				try {
@@ -76,7 +75,7 @@ namespace AspNetAddIn
 						foreach (System.CodeDom.CodeMemberField member in doc.MemberList.List.Values) {
 							MonoDevelop.Projects.Parser.IMember existingMember = BindingService.GetCompatibleMemberInClass (cls, member);
 							if (existingMember == null) {
-								classesForMembers.Add (cls);
+								classesForMembers.Add (partToAddTo);
 								membersToAdd.Add (member);
 							}
 						}
