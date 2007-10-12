@@ -52,7 +52,7 @@ namespace MonoDevelop.GtkCore
 		
 		internal static void Initialize ()
 		{
-			Runtime.FileService.FileChanged += new FileEventHandler (OnFileChanged);
+			FileService.FileChanged += new EventHandler<FileEventArgs> (OnFileChanged);
 			Runtime.SystemAssemblyService.PackagesChanged += delegate {
 				supportedGtkVersions = null;
 			};

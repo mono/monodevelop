@@ -155,7 +155,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			string newBuildFile = GuiBuilderService.GetBuildCodeFileName (project.Project, groupInfo.Name);
 			if (oldBuildFile != newBuildFile)
-				Runtime.FileService.MoveFile (oldBuildFile, newBuildFile);
+				FileService.MoveFile (oldBuildFile, newBuildFile);
 
 			project.Save (true);
 		}

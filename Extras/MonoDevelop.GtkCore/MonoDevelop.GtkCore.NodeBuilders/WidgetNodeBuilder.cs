@@ -136,7 +136,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		public void OnDelete ()
 		{
 			GuiBuilderWindow w = (GuiBuilderWindow) CurrentNode.DataItem;
-			string fn = Runtime.FileService.AbsoluteToRelativePath (w.Project.Project.BaseDirectory, w.SourceCodeFile);
+			string fn = FileService.AbsoluteToRelativePath (w.Project.Project.BaseDirectory, w.SourceCodeFile);
 			using (ConfirmWindowDeleteDialog dialog = new ConfirmWindowDeleteDialog (w.Name, fn, w.RootWidget)) {
 				if (dialog.Run () == (int) Gtk.ResponseType.Yes) {
 					if (dialog.DeleteFile) {

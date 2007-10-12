@@ -69,7 +69,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			rootName = window.Name;
 			gproject = window.Project;
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (gproject.Project);
-			gproject.SteticProject.ImagesRootPath = Runtime.FileService.AbsoluteToRelativePath (info.GtkGuiFolder, gproject.Project.BaseDirectory);
+			gproject.SteticProject.ImagesRootPath = FileService.AbsoluteToRelativePath (info.GtkGuiFolder, gproject.Project.BaseDirectory);
 			gproject.UpdateLibraries ();
 			LoadDesigner ();
 		}
@@ -304,8 +304,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			if (oldBuildFile != newBuildFile) {
 				if (System.IO.File.Exists (newBuildFile))
-					Runtime.FileService.DeleteFile (newBuildFile);
-				Runtime.FileService.MoveFile (oldBuildFile, newBuildFile);
+					FileService.DeleteFile (newBuildFile);
+				FileService.MoveFile (oldBuildFile, newBuildFile);
 			}
 			
 			gproject.Save (true);

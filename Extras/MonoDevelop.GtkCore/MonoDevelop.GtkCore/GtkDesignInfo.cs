@@ -244,7 +244,7 @@ namespace MonoDevelop.GtkCore
 			// This method synchronizes the current gtk project configuration info
 			// with the needed support files in the gtk-gui folder.
 
-			Runtime.FileService.CreateDirectory (GtkGuiFolder);
+			FileService.CreateDirectory (GtkGuiFolder);
 			bool projectModified = false;
 				
 			// Create the stetic file if not found
@@ -300,7 +300,7 @@ namespace MonoDevelop.GtkCore
 				foreach (ProjectFile pf in project.ProjectFiles.GetFilesInPath (GtkGuiFolder)) {
 					if (pf.FilePath != SteticGeneratedFile && pf.FilePath != ObjectsFile && pf.FilePath != SteticFile && !partialFiles.Contains (pf.FilePath)) {
 						project.ProjectFiles.Remove (pf);
-						Runtime.FileService.DeleteFile (pf.FilePath);
+						FileService.DeleteFile (pf.FilePath);
 						projectModified = true;
 					}
 				}

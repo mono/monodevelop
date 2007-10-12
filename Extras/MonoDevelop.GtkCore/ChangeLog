@@ -1,3 +1,14 @@
+2007-10-12  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.GtkCore.NodeBuilders/StockIconsNodeBuilder.cs,
+	  MonoDevelop.GtkCore.NodeBuilders/WidgetNodeBuilder.cs,
+	  MonoDevelop.GtkCore/GtkDesignInfo.cs,
+	  MonoDevelop.GtkCore/GtkCoreService.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs: Applied changes that
+	  were neccassary for to the new FileService.
+
 2007-10-11  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs: Changed calls for

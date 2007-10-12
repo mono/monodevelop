@@ -31,18 +31,18 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return null;
 				
 			Hashtable refs = new Hashtable ();
-			string of = Runtime.FileService.GetFullPath (view.Project.GetOutputFileName ());
+			string of = FileService.GetFullPath (view.Project.GetOutputFileName ());
 			refs [of] = of;
 			foreach (ProjectReference pr in view.Project.ProjectReferences)
 				foreach (string f in pr.GetReferencedFileNames ()) {
-					refs[Runtime.FileService.GetFullPath (f)] = f;
+					refs[FileService.GetFullPath (f)] = f;
 				}
 			
 			List<ItemToolboxNode> list = new List<ItemToolboxNode> ();
 			foreach (ComponentType type in types) {
 				if (type.Category == "window")
 					continue;
-				if (type.ClassName == "Gtk.Action" || refs.Contains (Runtime.FileService.GetFullPath (type.Library))) {
+				if (type.ClassName == "Gtk.Action" || refs.Contains (FileService.GetFullPath (type.Library))) {
 					ComponentToolboxNode node = new ComponentToolboxNode (type);
 					list.Add (node);
 				}

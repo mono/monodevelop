@@ -62,7 +62,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			GuiBuilderProject gp = GtkCoreService.GetGtkInfo (node.Project).GuiBuilderProject;
 			Stetic.Project sp = gp.SteticProject;
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (gp.Project);
-			sp.ImagesRootPath = Runtime.FileService.AbsoluteToRelativePath (info.GtkGuiFolder, gp.Project.BaseDirectory);
+			sp.ImagesRootPath = FileService.AbsoluteToRelativePath (info.GtkGuiFolder, gp.Project.BaseDirectory);
 			sp.ImportFileCallback = delegate (string file) {
 				return GuiBuilderService.ImportFile (gp.Project, file);
 			};
