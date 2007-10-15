@@ -1295,7 +1295,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		public override bool SupportsSearch (SearchOptions options, bool reverse)
 		{
-			return !options.SearchWholeWordOnly;
+			return true;
 		}
 		
 		public override void MoveToEnd ()
@@ -1321,7 +1321,6 @@ namespace MonoDevelop.SourceEditor.Gui
 			SourceSearchFlags flags = options.IgnoreCase ? (SourceSearchFlags)7 : (SourceSearchFlags)1;
 			
 			Gtk.TextIter matchStart, matchEnd, limit;
-								
 			
 			if (reverse) {
 				if (!hasWrapped)
@@ -1340,24 +1339,29 @@ namespace MonoDevelop.SourceEditor.Gui
 			// When searching backwards, the limit check is: matchEnd > limit
 			
 			TextIter iterator = Buffer.GetIterAtOffset (DocumentOffset);
-			bool res = Find (reverse, iterator, text, flags, out matchStart, out matchEnd, limit);
-			
-			if (!res && !hasWrapped) {
+			bool res;
+			do {
+				res = Find (reverse, iterator, text, flags, out matchStart, out matchEnd, limit);
 				
-				hasWrapped = true;																
-								
-				// Not found in the first half of the document, try the other half
-				if (reverse && DocumentOffset <= EndOffset) {					
-					limit = Buffer.GetIterAtOffset (EndOffset);
-					res = Find (true, Buffer.EndIter, text, flags, out matchStart, out matchEnd, limit);
-				// Not found in the second half of the document, try the other half
-				} else if (!reverse && DocumentOffset >= EndOffset) {										
-					limit = Buffer.GetIterAtOffset (EndOffset + text.Length);									
-					res = Find (false, Buffer.StartIter, text, flags, out matchStart, out matchEnd, limit);
+				if (!res && !hasWrapped) {
+					
+					hasWrapped = true;																
+									
+					// Not found in the first half of the document, try the other half
+					if (reverse && DocumentOffset <= EndOffset) {					
+						limit = Buffer.GetIterAtOffset (EndOffset);
+						res = Find (true, Buffer.EndIter, text, flags, out matchStart, out matchEnd, limit);
+					// Not found in the second half of the document, try the other half
+					} else if (!reverse && DocumentOffset >= EndOffset) {										
+						limit = Buffer.GetIterAtOffset (EndOffset + text.Length);									
+						res = Find (false, Buffer.StartIter, text, flags, out matchStart, out matchEnd, limit);
+					}
 				}
-			}
+				iterator = matchEnd;
+			} while (res && options.SearchWholeWordOnly && (!matchStart.StartsWord () || !matchEnd.EndsWord ()));
 			
-			if (!res) return false;
+			if (!res) 
+				return false;
 			
 			DocumentOffset = matchStart.Offset;
 			return true;

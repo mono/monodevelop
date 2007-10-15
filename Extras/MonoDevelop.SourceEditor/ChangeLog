@@ -1,5 +1,10 @@
 2007-10-15  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Fixed "Bug
+	  327062 - MD Search (Whole Words Only) is very slow".
+
+2007-10-15  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs: Fixed "Bug 330113 -
 	  Clicking a line bookmark crashes md".
 
