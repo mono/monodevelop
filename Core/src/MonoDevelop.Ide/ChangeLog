@@ -1,3 +1,13 @@
+2007-10-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.addin.xml: The HIG states that for dialogs that don't need
+	  user interaction for the action to complete (Preferences, About, Plugin
+	  managers etc), we don't need ellipses in the menu name. Also, removed
+	  the "MonoDevelop" from "MonoDevelop Preferences" in the preferences tree
+	  (not the title). The application name has no use there and leads to the
+	  treeview needing a horizontal scrollbar, which looks bad. Patch by
+	  Michael Monreal.
+
 2007-10-12  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs,

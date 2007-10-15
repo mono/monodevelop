@@ -311,7 +311,7 @@
 				description = "Count words in a text file"/>
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences"
 				defaultHandler = "MonoDevelop.Ide.Commands.MonodevelopPreferencesHandler"
-				_label = "Pre_ferences..."
+				_label = "Pre_ferences"
 				icon = "gtk-preferences"
 				description = "Show MonoDevelop preferences window" />
 				
@@ -355,7 +355,7 @@
 				icon  = "gtk-delete" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Options"
 				defaultHandler = "MonoDevelop.Ide.Commands.CombineEntryOptionsHandler"
-				_label = "Options..." 
+				_label = "Options" 
 				description = "Show options window"
 				icon  = "md-properties-icon" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddResource"
@@ -617,7 +617,7 @@
 		<Command id = "MonoDevelop.Ide.Commands.ToolCommands.AddinManager"
 				defaultHandler = "MonoDevelop.Ide.Commands.AddinManagerHandler"
 				icon = "md-software-update"
-				_label = "_Add-in Manager..." />
+				_label = "_Add-in Manager" />
 		<Command id = "MonoDevelop.Ide.Commands.ToolCommands.ToolList"
 				defaultHandler = "MonoDevelop.Ide.Commands.ToolListHandler"
 				type="array"
@@ -656,12 +656,12 @@
 				shortcut = "F1" />
 		<Command id = "MonoDevelop.Ide.Commands.HelpCommands.TipOfTheDay"
 				defaultHandler = "MonoDevelop.Ide.Commands.TipOfTheDayHandler"
-				_label = "_Tip of the Day..." 
+				_label = "_Tip of the Day" 
 				icon = "md-tip-of-the-day" 
 				description = "Show tip of the day" />
 		<Command id = "MonoDevelop.Ide.Commands.HelpCommands.About"
 				defaultHandler = "MonoDevelop.Ide.Commands.AboutHandler"
-				_label = "_About..." 
+				_label = "_About" 
 				icon = "gnome-stock-about" 
 				description = "Show about dialog" />
 		</Category>
@@ -1052,7 +1052,7 @@
 	
 	<Extension path = "/MonoDevelop/Ide/OptionsDialogPanels">
 		<DialogPanel id    = "UIOptions"
-		             _label = "MonoDevelop Preferences">
+		             _label = "Preferences">
 <!--			<DialogPanel id = "SelectCulture"
 			             _label = "${res:Dialog.Options.IDEOptions.SelectCulture.PanelName}"
 			             class = "MonoDevelop.Gui.Dialogs.OptionPanels.IDEOptionPanel"/>-->
