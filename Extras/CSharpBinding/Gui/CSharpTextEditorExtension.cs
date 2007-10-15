@@ -200,7 +200,7 @@ namespace CSharpBinding
 			}
 			
 			// This code is for Smart Indent, no-op for any other indent style
-			if (TextEditorProperties.IndentStyle != IndentStyle.Smart)
+			if (TextEditorProperties.IndentStyle != IndentStyle.Smart && key != Gdk.Key.greater && key != Gdk.Key.KP_Divide && key != Gdk.Key.slash)
 				return base.KeyPress (key, modifier);
 			
 			switch (key) {

@@ -1,3 +1,8 @@
+2007-10-15  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CSharpTextEditorExtension.cs: Fixed "Bug 333140 - Xml comment
+	  generation only works when using "Smart" indentation".
+
 2007-10-12  Mike Krüger <mkrueger@novell.com> 
 
 	* CSharpBindingCompilerManager.cs: Applied changes that were neccassary for
