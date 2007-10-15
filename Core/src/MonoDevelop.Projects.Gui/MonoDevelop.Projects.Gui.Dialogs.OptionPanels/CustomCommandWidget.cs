@@ -146,6 +146,10 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				} else
 					cmd.Type = (CustomCommandType) (comboType.Active);
 				UpdateControls ();
+				if (cmd.Type == CustomCommandType.Custom)
+					entryName.GrabFocus ();
+				else
+					entryCommand.GrabFocus ();
 			}
 		}
 
@@ -174,6 +178,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			if (!updating) {
 				cmd.WorkingDir = workingdirEntry.Text;
 				UpdateControls ();
+				workingdirEntry.GrabFocus ();
 			}
 		}
 

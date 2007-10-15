@@ -1,3 +1,9 @@
+2007-10-15  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs
+	(OnComboTypeChanged):
+	(OnWorkingdirEntryChanged): Set focus on the correct widget.
+
 2007-10-12  Mike Krüger <mkrueger@novell.com> 
 
 	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences.cs,
