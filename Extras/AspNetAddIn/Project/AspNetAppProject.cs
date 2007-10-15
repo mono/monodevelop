@@ -183,6 +183,17 @@ namespace AspNetAddIn
 		
 		#region build/prebuild/execute
 		
+		// all this does is makes sure that references are copied after building
+		// it's not strictly necessary, as the Run/Deploy commands do it too..
+		// but some users expect it to happen during a compile, so it's easier all round this way
+		protected override ICompilerResult DoBuild (IProgressMonitor monitor)
+		{
+			ICompilerResult ret = base.DoBuild (monitor);
+			//need to do this after the compile, as the compile phase removes copied references
+			CopyReferencesToOutputPath (false);
+			return ret;
+		}
+		
 		static bool CheckXsp (string command)
 		{
 			try {

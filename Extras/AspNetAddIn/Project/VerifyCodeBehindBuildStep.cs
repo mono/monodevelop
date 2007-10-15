@@ -19,6 +19,7 @@ namespace AspNetAddIn
 		public override ICompilerResult Build (IProgressMonitor monitor, CombineEntry project)
 		{
 			AspNetAppProject aspProject = project as AspNetAppProject;
+			List<CodeBehindWarning> errors = new List<CodeBehindWarning> ();
 			
 			if (aspProject == null)
 				return base.Build (monitor, project);
@@ -33,9 +34,9 @@ namespace AspNetAddIn
 			IParserContext ctx = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (aspProject);
 			ctx.UpdateDatabase ();
 			
-			monitor.Log.WriteLine ("Generating CodeBehind members...");
+			monitor.Log.WriteLine (GettextCatalog.GetString ("Generating CodeBehind members..."));
 			if (!config.GenerateNonPartialCodeBehindMembers)
-				monitor.Log.WriteLine ("Auto-generation of CodeBehind members is disabled for non-partial classes.");
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Auto-generation of CodeBehind members is disabled for non-partial classes."));
 			
 			//find the members that need to be added to CodeBehind classes
 			foreach (ProjectFile file in aspProject.ProjectFiles) {
@@ -50,7 +51,12 @@ namespace AspNetAddIn
 				
 				IClass cls = ctx.GetClass (className);
 				if (cls == null) {
-					monitor.ReportWarning ("Cannot find CodeBehind class \"" + className  + "\" for  file \"" + file.Name + "\".");
+					CodeBehindWarning cbw = new CodeBehindWarning (
+						GettextCatalog.GetString ("Cannot find CodeBehind class '{0}'.", className),
+					    file.FilePath
+					);
+					monitor.Log.WriteLine (cbw.ToString ());
+					errors.Add (cbw);
 					continue;
 				}
 				
@@ -67,49 +73,144 @@ namespace AspNetAddIn
 				try {
 					doc = aspProject.GetDocument (file);
 				} catch (Exception e) {
-					monitor.ReportWarning (string.Format ("Parser failed on {0} with error {1}. CodeBehind members for this file will not be added.", file, e.ToString ()));
+					CodeBehindWarning cbw = new CodeBehindWarning (
+						GettextCatalog.GetString ("Parser failed with error {1}. CodeBehind members for this file will not be added.", e.ToString ()),
+					    file.FilePath
+					);
+					monitor.Log.WriteLine (cbw.ToString ());
+					errors.Add (cbw);
 				}
 				
 				try {
 					if (doc != null) {
 						foreach (System.CodeDom.CodeMemberField member in doc.MemberList.List.Values) {
-							MonoDevelop.Projects.Parser.IMember existingMember = BindingService.GetCompatibleMemberInClass (cls, member);
-							if (existingMember == null) {
-								classesForMembers.Add (partToAddTo);
-								membersToAdd.Add (member);
+							try {
+								MonoDevelop.Projects.Parser.IMember existingMember = BindingService.GetCompatibleMemberInClass (cls, member);
+								if (existingMember == null) {
+									classesForMembers.Add (partToAddTo);
+									membersToAdd.Add (member);
+								}
+							} catch (MemberExistsException ex) {
+								CodeBehindWarning cbw = new CodeBehindWarning (
+									ex.ToString (),
+									ex.FileName,
+									ex.Line,
+									ex.Column
+								);
+								monitor.Log.WriteLine (cbw.ToString ());
+								errors.Add (cbw);
 							}
 						}
 					}
+				} catch (ErrorInFileException e) {
+					CodeBehindWarning cbw = null;
+					if (e.FileName == null)
+						cbw = new CodeBehindWarning (e.ToString (), file.FilePath);
+					else
+						cbw = new CodeBehindWarning (e.ToString (), e.FileName, e.Line, e.Column);
+					monitor.Log.WriteLine (cbw.ToString ());
+					errors.Add (cbw);
 				} catch (Exception e) {
-					monitor.ReportWarning (string.Format ("CodeBehind member generation failed on {0} with error {1}. Further CodeBehind members for this file will not be added.", file, e.ToString ()));
+					CodeBehindWarning cbw = new CodeBehindWarning (
+						GettextCatalog.GetString ("CodeBehind member generation failed with error {0}. Further CodeBehind members for this file will not be added.", e.ToString ()),
+					    file.FilePath
+					);
+					monitor.Log.WriteLine (cbw.ToString ());
+					errors.Add (cbw);
 				}
 			}
 			
 			//add all the members
 			//documents may be open, so needs to run in GUI thread
-			Gtk.Application.Invoke ( delegate {
+			MonoDevelop.Core.Gui.DispatchService.GuiSyncDispatch (delegate {
 				for (int i = 0; i < membersToAdd.Count; i++)
 					try {
 						BindingService.GetCodeGenerator ().AddMember (classesForMembers[i], membersToAdd[i]);
 					} catch (MemberExistsException m) {
-						monitor.ReportWarning (m.ToString ());
-					}			
+						CodeBehindWarning cbw = new CodeBehindWarning (
+							m.ToString (),
+						    m.FileName,
+							m.Line,
+							m.Column
+						);
+						monitor.Log.WriteLine (cbw.ToString ());
+						errors.Add (cbw);
+					}
 			});
-
+			
 			if (membersToAdd.Count > 0) {
-				monitor.Log.WriteLine (string.Format ("Added {0} member{1} to CodeBehind classes. Saving updated source files.", membersToAdd.Count, (membersToAdd.Count>1)?"s":""));
+				monitor.Log.WriteLine (GettextCatalog.GetPluralString (
+					"Added {0} member to CodeBehind classes. Saving updated source files.",
+					"Added {0} members to CodeBehind classes. Saving updated source files.",
+					membersToAdd.Count, membersToAdd.Count
+				));
 				
 				//make sure updated files are saved before compilation
-				Gtk.Application.Invoke ( delegate {
+				MonoDevelop.Core.Gui.DispatchService.GuiSyncDispatch (delegate {
 					foreach (MonoDevelop.Ide.Gui.Document guiDoc in MonoDevelop.Ide.Gui.IdeApp.Workbench.Documents)
 						if (guiDoc.IsDirty)
 							guiDoc.Save ();
 				});
 			} else {
-				monitor.Log.WriteLine ("No changes made to CodeBehind classes.");
+				monitor.Log.WriteLine (GettextCatalog.GetString ("No changes made to CodeBehind classes."));
 			}
 			
-			return base.Build (monitor, project);
+			ICompilerResult baseResult = base.Build (monitor, project);
+			foreach (CodeBehindWarning cbw in errors) {
+				if (cbw.FileName != null)
+					baseResult.AddWarning (cbw.FileName, cbw.Line, cbw.Column, null, cbw.WarningText);
+				else
+					baseResult.AddWarning (cbw.WarningText);
+					
+			}
+			return baseResult;
+		}
+		
+		class CodeBehindWarning
+		{
+			string fileName = null;
+			int line = 0;
+			int col = 0;
+			string warningText;
+			
+			public CodeBehindWarning (string warningText)
+				: this (warningText, null)
+			{
+			}
+			
+			public CodeBehindWarning (string warningText, string fileName)
+				: this (warningText, fileName, 0, 0)
+			{
+			}
+			
+			public CodeBehindWarning (string warningText, string fileName, int line, int col)
+			{
+				this.warningText = warningText;
+				this.fileName = fileName;
+				this.line = line;
+				this.col = col;
+			}
+			
+			public string FileName {
+				get { return fileName; }
+			}
+			
+			public string WarningText {
+				get { return warningText; }
+			}
+			
+			public int Line {
+				get { return line; }
+			}
+			
+			public int Column {
+				get { return col; }
+			}
+			
+			public override string ToString ()
+			{
+				return string.Format ("{0}({1},{2}): {3}", FileName, Line, Column, WarningText);
+			}
 		}
 	}
 }

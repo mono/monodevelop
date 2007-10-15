@@ -1,3 +1,15 @@
+2007-10-15  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Project/AspNetAppProject.cs: Copy refs to output path during compile. Not
+	  sure it's necessary, as the Run/Deploy commands do the copy too, and
+	  people shouldn't be running their site without executing one of these
+	  commands first. However, we have had a few bug reports about this
+	  behaviour, so it's better to do what people expect.
+	* Project/VerifyCodeBehindBuildStep.cs: Report ASP.NET parser and Codebehind
+	  member generation errors as compile warnings, with file/line number
+	  info. Use Gettext for i18n of warnings. 
+	* AspNetAddIn.mdp: Updated.
+
 2007-10-12  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Project/AspNetAppProjectConfiguration.cs: Allowing changing the output
