@@ -1,3 +1,7 @@
+2007-10-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* lib/libstetic.mdp: Fix required gtk# version.
+
 2007-10-12  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.GtkCore.NodeBuilders/StockIconsNodeBuilder.cs,
