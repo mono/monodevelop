@@ -1,3 +1,8 @@
+2007-10-15  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs: Fixed "Bug 326313 -
+	  MD does not remember my Find in Files settings".
+
 2007-10-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.addin.xml: The HIG states that for dialogs that don't need

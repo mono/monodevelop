@@ -200,6 +200,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			fileMaskTextBox.Text = SearchReplaceInFilesManager.SearchOptions.FileMask;
 			includeSubdirectoriesCheckBox.Active = SearchReplaceInFilesManager.SearchOptions.SearchSubdirectories;
 			
+			searchLocationComboBox.Active = PropertyService.Get ("MonoDevelop.FindReplaceDialogs.DocumentIterator", 0);
+			
 			searchPatternEntry.Entry.Text = SearchReplaceInFilesManager.SearchOptions.SearchPattern;
 			
 			if (replacePatternEntry != null)
@@ -348,6 +350,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				SearchReplaceInFilesManager.SearchOptions.SearchStrategyType = SearchStrategyType.Normal;
 			}
 			
+			PropertyService.Set ("MonoDevelop.FindReplaceDialogs.DocumentIterator", searchLocationComboBox.Active);
 			switch (searchLocationComboBox.Active) {
 				case 0:
 					SearchReplaceInFilesManager.SearchOptions.DocumentIteratorType = DocumentIteratorType.Directory;
@@ -445,6 +448,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			// set the history in properties
 			stringArray = new string[findHistory.Count];
 			findHistory.CopyTo (stringArray, 0);			
+			PropertyService.Set ("MonoDevelop.FindReplaceDialogs.FindHistory", string.Join(historySeparator.ToString(), stringArray));
+			
 			PropertyService.Set ("MonoDevelop.FindReplaceDialogs.FindHistory", string.Join(historySeparator.ToString(), stringArray));
 			
 			// now do the replace history
