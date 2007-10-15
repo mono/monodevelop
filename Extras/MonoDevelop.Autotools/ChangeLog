@@ -1,3 +1,12 @@
+2007-10-16  Ankit Jain  <jankit@novell.com>
+
+	* SimpleProjectMakefileHandler.cs (Deploy): Add support for emitting
+	custom commands for simple makefiles.
+	(EmitCustomCommandTargets): New.
+	* templates/Makefile.noauto.project.template: Insert calls to *Build targets.
+	* templates/rules.make: Insert calls to *Clean targets and add empty default
+	targets for the custom commands.
+
 2007-10-12  Mike Krüger <mkrueger@novell.com> 
 
 	* SolutionMakefileHandler.cs, SimpleProjectMakefileHandler.cs, Handler.cs,

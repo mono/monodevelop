@@ -1,6 +1,8 @@
 clean-local:
 	make pre-clean-local-hook
+	make $(CONFIG)_BeforeClean
 	-rm -f $(CLEANFILES)
+	make $(CONFIG)_AfterClean
 	make post-clean-local-hook
 
 install-local:
@@ -30,3 +32,9 @@ dist-local-recursive:
 #	and their *-local variants
 pre-%-hook: ; @:
 post-%-hook: ; @:
+
+#targets for custom commands
+%_BeforeBuild: ; @:
+%_AfterBuild: ; @:
+%_BeforeClean: ; @:
+%_AfterClean: ; @:
