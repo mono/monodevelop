@@ -54,7 +54,6 @@ FILES =  \
 	Parser/SharpDevelopTree/GenericParameter.cs \
 	Parser/SharpDevelopTree/Method.cs \
 	Parser/SharpDevelopTree/ReturnType.cs \
-	Parser/TypeNameResolver.cs \
 	Parser/TypeVisitor.cs \
 	Project/CSharpCompilerParameters.cs
 

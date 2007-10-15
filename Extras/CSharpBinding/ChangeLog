@@ -1,3 +1,8 @@
+2007-10-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* CSharpBinding.mdp, Parser/TypeNameResolver.cs, Makefile.am: Moved
+	  TypeNameResolver to MD.Projects.
+
 2007-10-15  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/CSharpTextEditorExtension.cs: Fixed "Bug 333140 - Xml comment
