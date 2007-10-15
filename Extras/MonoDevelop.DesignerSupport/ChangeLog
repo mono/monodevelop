@@ -1,3 +1,12 @@
+2007-10-15  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.DesignerSupport.mdp, Makefile.am: Updated.
+	* MonoDevelop.DesignerSupport/TypeNotFoundException.cs,
+	  MonoDevelop.DesignerSupport/MemberExistsException.cs,
+	  MonoDevelop.DesignerSupport/BindingService.cs,
+	  MonoDevelop.DesignerSupport/ErrorInFileException.cs: Better error
+	  reporting, including filename/line number.
+
 2007-10-12  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.DesignerSupport/BindingService.cs,

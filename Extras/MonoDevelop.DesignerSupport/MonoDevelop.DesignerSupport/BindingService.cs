@@ -63,9 +63,10 @@ namespace MonoDevelop.DesignerSupport
 			//check for identical property names
 			foreach (IProperty prop in cls.Properties) {
 				if (string.Compare (prop.Name, member.Name, ignoreCase) == 0) {
+					EnsureClassExists (ctx, prop.ReturnType.FullyQualifiedName, GetValidRegion (prop));
 					CodeMemberProperty memProp = member as CodeMemberProperty;
 					if (memProp == null || !IsTypeCompatible (ctx, prop.ReturnType.FullyQualifiedName, memProp.Type.BaseType))
-						throw new MemberExistsException (cls.FullyQualifiedName, MemberType.Property, member);
+						throw new MemberExistsException (cls.FullyQualifiedName, MemberType.Property, member, GetValidRegion (prop));
 					return prop;
 				}
 			}
@@ -73,9 +74,10 @@ namespace MonoDevelop.DesignerSupport
 			//check for identical method names
 			foreach (IMethod meth in cls.Methods) {
 				if (string.Compare (meth.Name, member.Name, ignoreCase) == 0) {
+					EnsureClassExists (ctx, meth.ReturnType.FullyQualifiedName, GetValidRegion (meth));
 					CodeMemberMethod memMeth = member as CodeMemberMethod;
 					if (memMeth == null || !IsTypeCompatible (ctx, meth.ReturnType.FullyQualifiedName, memMeth.ReturnType.BaseType))
-						throw new MemberExistsException (cls.FullyQualifiedName, MemberType.Method, member);
+						throw new MemberExistsException (cls.FullyQualifiedName, MemberType.Method, member, GetValidRegion (meth));
 					return meth;
 				}
 			}
@@ -83,9 +85,10 @@ namespace MonoDevelop.DesignerSupport
 			//check for identical event names
 			foreach (IEvent ev in cls.Events) {
 				if (string.Compare (ev.Name, member.Name, ignoreCase) == 0) {
+					EnsureClassExists (ctx, ev.ReturnType.FullyQualifiedName, GetValidRegion (ev));
 					CodeMemberEvent memEv = member as CodeMemberEvent;
 					if (memEv == null || !IsTypeCompatible (ctx, ev.ReturnType.FullyQualifiedName, memEv.Type.BaseType))
-						throw new MemberExistsException (cls.FullyQualifiedName, MemberType.Event, member);
+						throw new MemberExistsException (cls.FullyQualifiedName, MemberType.Event, member, GetValidRegion (ev));
 					return ev;
 				}
 			}
@@ -93,9 +96,10 @@ namespace MonoDevelop.DesignerSupport
 			//check for identical field names
 			foreach (IField field in cls.Fields) {
 				if (string.Compare (field.Name, member.Name, ignoreCase) == 0) {
+					EnsureClassExists (ctx, field.ReturnType.FullyQualifiedName, GetValidRegion (field));
 					CodeMemberField memField = member as CodeMemberField;
 					if (memField == null || !IsTypeCompatible (ctx, field.ReturnType.FullyQualifiedName, memField.Type.BaseType))
-						throw new MemberExistsException (cls.FullyQualifiedName, MemberType.Field, member);
+						throw new MemberExistsException (cls.FullyQualifiedName, MemberType.Field, member, GetValidRegion (field));
 					return field;
 				}
 			}
@@ -104,7 +108,7 @@ namespace MonoDevelop.DesignerSupport
 			foreach (IReturnType baseType in cls.BaseTypes) {
 				IClass c = ctx.GetClass (baseType.FullyQualifiedName);
 				if (c == null)
-					throw new Exception ("Could not find class " + baseType.FullyQualifiedName);
+					throw new TypeNotFoundException (baseType.FullyQualifiedName, cls.Region);
 				IMember mem = GetCompatibleMemberInClass (ctx, c, member);
 				if (mem != null)
 					return mem;
@@ -114,13 +118,26 @@ namespace MonoDevelop.DesignerSupport
 			return null;
 		}
 		
+		static IRegion GetValidRegion (IMember member)
+		{
+			if (member.Region.FileName == null)
+				member.Region.FileName = member.DeclaringType.Region.FileName;
+			return member.Region;
+		}
+		
+		static IClass EnsureClassExists (IParserContext ctx, string className, IRegion location)
+		{
+			IClass cls = ctx.GetClass (className);
+			if (cls == null)
+				throw new TypeNotFoundException (className, location);
+			return cls;
+		}
+		
 		static bool IsTypeCompatible (IParserContext ctx, string existingType, string checkType)
 		{
 			if (existingType == checkType)
 				return true;
-			IClass cls = ctx.GetClass (checkType);
-			if (cls == null)
-				throw new Exception ("Could not find class " + checkType);
+			IClass cls = EnsureClassExists (ctx, checkType, null);
 			foreach (IReturnType baseType in cls.BaseTypes) {
 				if (IsTypeCompatible (ctx, existingType, baseType.FullyQualifiedName))
 				    return true;
@@ -148,7 +165,7 @@ namespace MonoDevelop.DesignerSupport
 				return GetCodeGenerator ().AddMember (specificPartToAffect, member);
 			
 			if (throwIfExists)
-				throw new MemberExistsException (cls.Name, member, MemberType.Method);
+				throw new MemberExistsException (cls.Name, member, MemberType.Method, existingMember.Region);
 			
 			return existingMember;
 		}

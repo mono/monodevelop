@@ -84,6 +84,7 @@ FILES =  \
 	MonoDevelop.DesignerSupport/Commands.cs \
 	MonoDevelop.DesignerSupport/CustomDescriptor.cs \
 	MonoDevelop.DesignerSupport/DesignerSupportService.cs \
+	MonoDevelop.DesignerSupport/ErrorInFileException.cs \
 	MonoDevelop.DesignerSupport/IPropertyProvider.cs \
 	MonoDevelop.DesignerSupport/MemberExistsException.cs \
 	MonoDevelop.DesignerSupport/OpenDocumentFileProvider.cs \
@@ -91,6 +92,7 @@ FILES =  \
 	MonoDevelop.DesignerSupport/RemoteDesignerProcess.cs \
 	MonoDevelop.DesignerSupport/ToolboxPad.cs \
 	MonoDevelop.DesignerSupport/ToolboxService.cs \
+	MonoDevelop.DesignerSupport/TypeNotFoundException.cs \
 	MonoDevelop.DesignerSupport/WrapperDesignView.cs
 
 RES =  \

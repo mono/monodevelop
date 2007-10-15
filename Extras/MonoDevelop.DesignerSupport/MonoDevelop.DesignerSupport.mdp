@@ -4,96 +4,98 @@
       <Output directory="../../build/AddIns/MonoDevelop.DesignerSupport" assembly="MonoDevelop.DesignerSupport" />
       <Build debugmode="True" target="Library" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
-      <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" win32Icon="./" ctype="CSharpCompilerParameters" />
+      <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" win32Icon="" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
-      <Output directory="./bin/Release" assembly="MonoDevelop.DesignerSupport" />
+      <Output directory="bin/Release" assembly="MonoDevelop.DesignerSupport" />
       <Build debugmode="False" target="Exe" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
   <Contents>
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid/DefaultPropertyTab.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid/EditorManager.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid/EventPropertyTab.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid/PropertyEditorTypeAttribute.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid/PropertyValueChangedEventHandler.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid/SurrogateUITypeEditorAttribute.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/CollectionEditor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/DefaultEditor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/EventEditor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/ExpandableObjectEditor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.Toolbox/BaseToolboxNode.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.Toolbox/CategoryToolboxNode.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.Toolbox/ItemToolboxNode.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.Toolbox/TextToolboxNode.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxNode.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.Toolbox/ToolboxStore.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/MonoDevelop.DesignerSupport.PropertyGrid.DefaultPropertyTab.bmp" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/MonoDevelop.DesignerSupport.PropertyGrid.EventPropertyTab.bmp" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/MonoDevelop.DesignerSupport.PropertyGrid.SortByCat.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
-    <File name="./MonoDevelop.DesignerSupport/PropertyPad.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport/DesignerSupportService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport/ToolboxPad.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.Toolbox/IToolboxConsumer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.Toolbox/IToolboxLoader.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxLoader.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.Toolbox/UnknownToolboxNode.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.Toolbox/TypeToolboxNode.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport/WrapperDesignView.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.CodeBehind/CodeBehindViewContent.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.CodeBehind/CodeBehindProjectFileExtension.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.CodeBehind/ICodeBehindProvider.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.CodeBehind/CodeBehindDisplayBinding.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.CodeBehind/CodeBehindMissingClassBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport/ToolboxService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport/CodeBehindService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport/BindingService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport/MemberExistsException.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport/RemoteDesignerProcess.cs" subtype="Code" buildaction="Compile" />
-    <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
-    <File name="./MonoDevelop.DesignerSupport.Toolbox/IToolboxProvider.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.Toolbox/ToolboxList.cs" subtype="Code" buildaction="Compile" />
-    <File name="./icons/group-by-category.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./MonoDevelop.DesignerSupport.Toolbox/TypeReference.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid/IPropertyPadProvider.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid/PropertyPadVisitor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid/PropertyGrid.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid/PropertyEditorCell.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/EnumerationEditorCell.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/FlagsEditorCell.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/FlagsSelectorDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/BooleanEditorCell.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/ColorEditorCell.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/TextEditor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/TextEditorDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/IntRange.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/FloatRange.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid/PropertyGridTree.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid/PropertyValueChangedEventArgs.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/DateTimeEditor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/TimeSpanEditor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/CharPropertyEditor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport/IPropertyProvider.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.Projects/ComponentNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.Projects/ProjectsPropertyProvider.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport/CustomDescriptor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/gui.stetic" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./gtk-gui/generated.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.Toolbox/CompactToolboxView.cs" subtype="Code" buildaction="Compile" />
-    <File name="./icons/md-design-listboxtoggle.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./MonoDevelop.DesignerSupport.Toolbox/ToolboxConfiguration.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport/Commands.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.Projects/PropertyPadTextEditorExtension.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.CodeBehind/CodeBehindClassEventArgs.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.CodeBehind/CodeBehindClass.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport/OpenDocumentFileProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.PropertyGrid/DefaultPropertyTab.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.PropertyGrid/EditorManager.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.PropertyGrid/EventPropertyTab.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.PropertyGrid/PropertyEditorTypeAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.PropertyGrid/PropertyValueChangedEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.PropertyGrid/SurrogateUITypeEditorAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.PropertyGrid.Editors/CollectionEditor.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.PropertyGrid.Editors/DefaultEditor.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.PropertyGrid.Editors/EventEditor.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.PropertyGrid.Editors/ExpandableObjectEditor.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.Toolbox/BaseToolboxNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.Toolbox/CategoryToolboxNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.Toolbox/ItemToolboxNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.Toolbox/TextToolboxNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.Toolbox/ToolboxStore.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/MonoDevelop.DesignerSupport.PropertyGrid.DefaultPropertyTab.bmp" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/MonoDevelop.DesignerSupport.PropertyGrid.EventPropertyTab.bmp" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/MonoDevelop.DesignerSupport.PropertyGrid.SortByCat.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="MonoDevelop.DesignerSupport/PropertyPad.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport/DesignerSupportService.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport/ToolboxPad.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.Toolbox/IToolboxConsumer.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.Toolbox/IToolboxLoader.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxLoader.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.Toolbox/UnknownToolboxNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.Toolbox/TypeToolboxNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport/WrapperDesignView.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.CodeBehind/CodeBehindViewContent.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.CodeBehind/CodeBehindProjectFileExtension.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.CodeBehind/ICodeBehindProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.CodeBehind/CodeBehindDisplayBinding.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.CodeBehind/CodeBehindMissingClassBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport/ToolboxService.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport/CodeBehindService.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport/BindingService.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport/MemberExistsException.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport/RemoteDesignerProcess.cs" subtype="Code" buildaction="Compile" />
+    <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="MonoDevelop.DesignerSupport.Toolbox/IToolboxProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.Toolbox/ToolboxList.cs" subtype="Code" buildaction="Compile" />
+    <File name="icons/group-by-category.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="MonoDevelop.DesignerSupport.Toolbox/TypeReference.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.PropertyGrid/IPropertyPadProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.PropertyGrid/PropertyPadVisitor.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.PropertyGrid/PropertyGrid.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.PropertyGrid/PropertyEditorCell.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.PropertyGrid.Editors/EnumerationEditorCell.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.PropertyGrid.Editors/FlagsEditorCell.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.PropertyGrid.Editors/FlagsSelectorDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.PropertyGrid.Editors/BooleanEditorCell.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.PropertyGrid.Editors/ColorEditorCell.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.PropertyGrid.Editors/TextEditor.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.PropertyGrid.Editors/TextEditorDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.PropertyGrid.Editors/IntRange.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.PropertyGrid.Editors/FloatRange.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.PropertyGrid/PropertyGridTree.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.PropertyGrid/PropertyValueChangedEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.PropertyGrid.Editors/DateTimeEditor.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.PropertyGrid.Editors/TimeSpanEditor.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.PropertyGrid.Editors/CharPropertyEditor.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport/IPropertyProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.Projects/ComponentNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.Projects/ProjectsPropertyProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport/CustomDescriptor.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/gui.stetic" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="gtk-gui/generated.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.Toolbox/CompactToolboxView.cs" subtype="Code" buildaction="Compile" />
+    <File name="icons/md-design-listboxtoggle.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="MonoDevelop.DesignerSupport.Toolbox/ToolboxConfiguration.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport/Commands.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.Projects/PropertyPadTextEditorExtension.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.CodeBehind/CodeBehindClassEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.CodeBehind/CodeBehindClass.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport/OpenDocumentFileProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport/ErrorInFileException.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport/TypeNotFoundException.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -117,7 +119,6 @@
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
-  <GtkDesignInfo gtkVersion="2.8.3" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />
@@ -127,6 +128,7 @@
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
+  <GtkDesignInfo gtkVersion="2.8.3" />
   <MonoDevelop.Gettext.TranslationInfo />
   <DeploymentInformation strategy="File">
     <excludeFiles />

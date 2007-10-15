@@ -32,9 +32,11 @@
 
 using System;
 
+using MonoDevelop.Projects.Parser;
+
 namespace MonoDevelop.DesignerSupport
 {	
-	public class MemberExistsException : Exception
+	public class MemberExistsException : ErrorInFileException
 	{
 		string className;
 		string memberName;
@@ -43,25 +45,28 @@ namespace MonoDevelop.DesignerSupport
 		MemberType newMemberType = MemberType.Member;
 		
 		public MemberExistsException (string className, string memberName)
+			: base (null)
 		{
 			this.className = className;
 			this.memberName = memberName;
 		}
 		
-		public MemberExistsException (string className, string memberName, MemberType existingMemberType, MemberType newMemberType)
-			: this (className, memberName)
+		public MemberExistsException (string className, string memberName, MemberType existingMemberType, MemberType newMemberType, IRegion errorLocation)
+			: base (errorLocation)
 		{
+			this.className = className;
+			this.memberName = memberName;
 			this.existingMemberType = existingMemberType;
 			this.newMemberType = newMemberType;
 		}
 		
-		public MemberExistsException (string className, MemberType newMemberType, System.CodeDom.CodeTypeMember existingMember)
-			: this (className, existingMember.Name, newMemberType, GetMemberTypeFromCodeTypeMember (existingMember))
+		public MemberExistsException (string className, MemberType newMemberType, System.CodeDom.CodeTypeMember existingMember, IRegion errorLocation)
+			: this (className, existingMember.Name, newMemberType, GetMemberTypeFromCodeTypeMember (existingMember), errorLocation)
 		{
 		}
 		
-		public MemberExistsException (string className, System.CodeDom.CodeTypeMember newMember, MemberType existingMemberType)
-			: this (className, newMember.Name, GetMemberTypeFromCodeTypeMember (newMember), existingMemberType)
+		public MemberExistsException (string className, System.CodeDom.CodeTypeMember newMember, MemberType existingMemberType, IRegion errorLocation)
+			: this (className, newMember.Name, GetMemberTypeFromCodeTypeMember (newMember), existingMemberType, errorLocation)
 		{
 		}
 		
@@ -100,13 +105,14 @@ namespace MonoDevelop.DesignerSupport
 		
 		public override string ToString ()
 		{
-			return string.Format ("Cannot add {0} '{1}' to class '{2}', because there is already a {3} with that name{4}.",
-			                      newMemberType.ToString ().ToLower (),
-			                      memberName,
-			                      className,
-			                      existingMemberType.ToString ().ToLower (),
-			                      (NewMemberType == ExistingMemberType)? " with an incompatible return type" : ""
-			                      );
+			return MonoDevelop.Core.GettextCatalog.GetString (
+				"Cannot add {0} '{1}' to class '{2}', because there is already a {3} with that name{4}.",
+				newMemberType.ToString ().ToLower (),
+				memberName,
+				className,
+				existingMemberType.ToString ().ToLower (),
+				(NewMemberType == ExistingMemberType)? " with an incompatible return type" : ""
+		   );
 		}
 	}
 	
