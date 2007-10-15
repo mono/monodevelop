@@ -1,3 +1,8 @@
+2007-10-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Parser/ClassWrapper.cs: Make sure the wrapped class
+	  is lazily loaded.
+
 2007-10-12  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects/ProjectReference.cs,

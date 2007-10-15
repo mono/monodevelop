@@ -73,7 +73,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public ICompilationUnit CompilationUnit {
 			get {
-				if (Wrapped != null && (entry.ContentFlags & ContentFlags.HasCompilationUnit) != 0)
+				if (HasContent (ContentFlags.HasCompilationUnit))
 					return Wrapped.CompilationUnit;
 				else
 					return null;
@@ -91,7 +91,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public IRegion Region {
 			get {
-				if (Wrapped != null && (entry.ContentFlags & ContentFlags.HasRegion) != 0)
+				if (HasContent (ContentFlags.HasRegion))
 					return Wrapped.Region;
 				else
 					return null;
@@ -100,7 +100,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public IRegion BodyRegion {
 			get {
-				if (Wrapped != null && (entry.ContentFlags & ContentFlags.HasBodyRegion) != 0)
+				if (HasContent (ContentFlags.HasBodyRegion))
 					return Wrapped.BodyRegion;
 				else
 					return null;
@@ -110,7 +110,7 @@ namespace MonoDevelop.Projects.Parser
 		// For classes composed by several files, returns all parts of the class
 		public IClass[] Parts {
 			get {
-				if (Wrapped != null && (entry.ContentFlags & ContentFlags.HasParts) != 0)
+				if (HasContent (ContentFlags.HasParts))
 					return Wrapped.Parts;
 				else
 					return new IClass [0];
@@ -119,7 +119,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public GenericParameterList GenericParameters {
 			get {
-				if (Wrapped != null && (entry.ContentFlags & ContentFlags.HasGenericParams) != 0)
+				if (HasContent (ContentFlags.HasGenericParams))
 					return Wrapped.GenericParameters;
 				else
 					return null;
@@ -128,7 +128,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public ReturnTypeList BaseTypes {
 			get {
-				if (Wrapped != null && (entry.ContentFlags & ContentFlags.HasBaseTypes) != 0)
+				if (HasContent (ContentFlags.HasBaseTypes))
 					return Wrapped.BaseTypes;
 				else
 					return new ReturnTypeList ();
@@ -137,7 +137,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public ClassCollection InnerClasses {
 			get {
-				if (Wrapped != null && (entry.ContentFlags & ContentFlags.HasInnerClasses) != 0)
+				if (HasContent (ContentFlags.HasInnerClasses))
 					return Wrapped.InnerClasses;
 				else
 					return new ClassCollection ();
@@ -146,7 +146,7 @@ namespace MonoDevelop.Projects.Parser
 
 		public FieldCollection Fields {
 			get {
-				if (Wrapped != null && (entry.ContentFlags & ContentFlags.HasFields) != 0)
+				if (HasContent (ContentFlags.HasFields))
 					return Wrapped.Fields;
 				else
 					return new FieldCollection (this);
@@ -155,7 +155,7 @@ namespace MonoDevelop.Projects.Parser
 
 		public PropertyCollection Properties {
 			get {
-				if (Wrapped != null && (entry.ContentFlags & ContentFlags.HasProperties) != 0)
+				if (HasContent (ContentFlags.HasProperties))
 					return Wrapped.Properties;
 				else
 					return new PropertyCollection (this);
@@ -164,7 +164,7 @@ namespace MonoDevelop.Projects.Parser
 
 		public IndexerCollection Indexer {
 			get {
-				if (Wrapped != null && (entry.ContentFlags & ContentFlags.HasIndexers) != 0)
+				if (HasContent (ContentFlags.HasIndexers))
 					return Wrapped.Indexer;
 				else
 					return new IndexerCollection (this);
@@ -173,7 +173,7 @@ namespace MonoDevelop.Projects.Parser
 
 		public MethodCollection Methods {
 			get {
-				if (Wrapped != null && (entry.ContentFlags & ContentFlags.HasMethods) != 0)
+				if (HasContent (ContentFlags.HasMethods))
 					return Wrapped.Methods;
 				else
 					return new MethodCollection (this);
@@ -182,7 +182,7 @@ namespace MonoDevelop.Projects.Parser
 
 		public EventCollection Events {
 			get {
-				if (Wrapped != null && (entry.ContentFlags & ContentFlags.HasEvents) != 0)
+				if (HasContent (ContentFlags.HasEvents))
 					return Wrapped.Events;
 				else
 					return new EventCollection (this);
@@ -195,7 +195,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public AttributeSectionCollection Attributes {
 			get {
-				if (Wrapped != null && (entry.ContentFlags & ContentFlags.HasAttributes) != 0)
+				if (HasContent (ContentFlags.HasAttributes))
 					return Wrapped.Attributes;
 				else
 					return new AttributeSectionCollection ();
@@ -204,11 +204,16 @@ namespace MonoDevelop.Projects.Parser
 
 		public string Documentation {
 			get {
-				if (Wrapped != null && (entry.ContentFlags & ContentFlags.HasDocumentation) != 0)
+				if (HasContent (ContentFlags.HasDocumentation))
 					return Wrapped.Documentation;
 				else
 					return string.Empty;
 			}
+		}
+		
+		bool HasContent (ContentFlags cf)
+		{
+			return (entry.ContentFlags & cf) != 0 && Wrapped != null;
 		}
 		
 		public ModifierEnum Modifiers {
