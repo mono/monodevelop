@@ -1,3 +1,8 @@
+2007-10-15  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Core/FileService.cs: AbsoluteToRelativePath gives back . if
+	  the paths are the same.
+
 2007-10-12  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Core.FileSystem/DefaultFileSystemExtension.cs,

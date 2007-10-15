@@ -262,6 +262,9 @@ namespace MonoDevelop.Core
 				result.Append (Path.DirectorySeparatorChar);
 			}
 			
+			if (aPath.Length - indx <= 0)
+				return ".";
+			
 			result.Append (String.Join(Path.DirectorySeparatorChar.ToString(), aPath, indx, aPath.Length - indx));
 			return result.ToString ();
 		}
