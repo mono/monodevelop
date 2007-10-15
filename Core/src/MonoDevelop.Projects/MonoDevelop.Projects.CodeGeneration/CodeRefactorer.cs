@@ -63,7 +63,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		public IClass CreateClass (Project project, string language, string directory, string namspace, CodeTypeDeclaration type)
 		{
 			IParserContext ctx = pdb.GetProjectParserContext (project);
-			RefactorerContext gctx = new RefactorerContext (ctx, fileProvider);
+			RefactorerContext gctx = new RefactorerContext (ctx, fileProvider, null);
 			IRefactorer gen = Services.Languages.GetRefactorerForLanguage (language);
 			IClass c = gen.CreateClass (gctx, directory, namspace, type);
 			gctx.Save ();
@@ -535,17 +535,17 @@ namespace MonoDevelop.Projects.CodeGeneration
 		RefactorerContext GetGeneratorContext (Project p)
 		{
 			IParserContext ctx = pdb.GetProjectParserContext (p);
-			return new RefactorerContext (ctx, fileProvider);
+			return new RefactorerContext (ctx, fileProvider, null);
 		}
 		
 		RefactorerContext GetGeneratorContext (IClass cls)
 		{
-			return new RefactorerContext (GetParserContext (cls), fileProvider);
+			return new RefactorerContext (GetParserContext (cls), fileProvider, cls);
 		}
 		
 		RefactorerContext GetGeneratorContext (LocalVariable var)
 		{
-			return new RefactorerContext (GetParserContext (var), fileProvider);
+			return new RefactorerContext (GetParserContext (var), fileProvider, null);
 		}
 		
 		IParserContext GetParserContext (IClass cls)

@@ -29,6 +29,7 @@
 using System.Collections;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Text;
+using MonoDevelop.Projects.Ambience;
 
 namespace MonoDevelop.Projects.CodeGeneration
 {
@@ -37,11 +38,15 @@ namespace MonoDevelop.Projects.CodeGeneration
 		ITextFileProvider files;
 		ArrayList textFiles = new ArrayList ();
 		IParserContext ctx;
+		static TypeNameResolver defaultResolver = new TypeNameResolver ();
+		ITypeNameResolver typeResolver;
 		
-		internal RefactorerContext (IParserContext ctx, ITextFileProvider files)
+		internal RefactorerContext (IParserContext ctx, ITextFileProvider files, IClass cls)
 		{
 			this.files = files;
 			this.ctx = ctx;
+			if (cls != null)
+				typeResolver = GetTypeNameResolver (cls);
 		}
 		
 		public IParserContext ParserContext {
@@ -61,6 +66,27 @@ namespace MonoDevelop.Projects.CodeGeneration
 			TextFile file = new TextFile (name);
 			textFiles.Add (file);
 			return file;
+		}
+		
+		public ITypeNameResolver TypeNameResolver {
+			get {
+				return typeResolver ?? defaultResolver;
+			}
+		}
+		
+		ITypeNameResolver GetTypeNameResolver (IClass cls)
+		{
+			if (cls.Region == null || cls.Region.FileName == null)
+				return null;
+			string file = cls.Region.FileName;
+			IParseInformation pi = ctx.GetParseInformation (file);
+			if (pi == null)
+				return null;
+			ICompilationUnit unit = pi.MostRecentCompilationUnit as ICompilationUnit;
+			if (unit != null)
+				return new TypeNameResolver (unit, cls);
+			else
+				return null;
 		}
 		
 		internal void Save ()

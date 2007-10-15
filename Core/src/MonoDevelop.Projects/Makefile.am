@@ -18,7 +18,6 @@ FILES =  \
 	MonoDevelop.Projects.Ambience/AmbienceService.cs \
 	MonoDevelop.Projects.Ambience/CodeDOMGeneratorUtility.cs \
 	MonoDevelop.Projects.Ambience/ConversionFlags.cs \
-	MonoDevelop.Projects.Ambience/ITypeNameResolver.cs \
 	MonoDevelop.Projects.Ambience/NetAmbience.cs \
 	MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs \
 	MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs \
@@ -97,6 +96,7 @@ FILES =  \
 	MonoDevelop.Projects.Parser/IProperty.cs \
 	MonoDevelop.Projects.Parser/IRegion.cs \
 	MonoDevelop.Projects.Parser/IReturnType.cs \
+	MonoDevelop.Projects.Parser/ITypeNameResolver.cs \
 	MonoDevelop.Projects.Parser/IUsing.cs \
 	MonoDevelop.Projects.Parser/IUsingCollection.cs \
 	MonoDevelop.Projects.Parser/LanguageItemCollection.cs \
@@ -137,6 +137,7 @@ FILES =  \
 	MonoDevelop.Projects.Parser/Tag.cs \
 	MonoDevelop.Projects.Parser/TagCollection.cs \
 	MonoDevelop.Projects.Parser/TypedCSharpCollection.cs \
+	MonoDevelop.Projects.Parser/TypeNameResolver.cs \
 	MonoDevelop.Projects.Serialization/ArrayHandler.cs \
 	MonoDevelop.Projects.Serialization/ArrayListHandler.cs \
 	MonoDevelop.Projects.Serialization/ClassDataType.cs \

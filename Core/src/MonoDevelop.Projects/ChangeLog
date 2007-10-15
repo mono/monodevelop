@@ -1,3 +1,18 @@
+2007-10-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Ambience/ITypeNameResolver.cs,
+	  MonoDevelop.Projects.mdp, Makefile.am,
+	  MonoDevelop.Projects.Parser/ITypeNameResolver.cs: Moved
+	  ITypeNameResolver class and interface to .Parser namespace.
+	* MonoDevelop.Projects.CodeGeneration/RefactorerContext.cs: Added property
+	  for getting a type resolver for the context.
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs,
+	  MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: In generated
+	  code, don't use full names when not necessary. Use the type name
+	  resolver provided by the RefactorerContext for this.
+	* MonoDevelop.Projects.Parser/TypeNameResolver.cs: New class. An
+	  implementation of ITypeNameResolver.
+
 2007-10-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Parser/ClassWrapper.cs: Make sure the wrapped class

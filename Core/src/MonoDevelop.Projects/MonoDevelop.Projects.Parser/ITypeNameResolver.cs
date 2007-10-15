@@ -27,7 +27,7 @@
 
 using System;
 
-namespace MonoDevelop.Projects.Ambience
+namespace MonoDevelop.Projects.Parser
 {
 	public interface ITypeNameResolver
 	{
