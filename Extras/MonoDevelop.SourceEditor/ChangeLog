@@ -1,3 +1,8 @@
+2007-10-15  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs: Fixed "Bug 330113 -
+	  Clicking a line bookmark crashes md".
+
 2007-10-11  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Changed calls
