@@ -1,3 +1,10 @@
+2007-10-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.mdp: Fix warning level.
+	* Base.glade: Made the preferences dialog slightly larger, to make the
+	  highlight style page fit with common themes like Clearlooks. Patch by
+	  Michael Monreal.
+
 2007-10-12  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Core.Gui/SyncContext.cs, MonoDevelop.Core.Gui/RecentOpen.cs:
