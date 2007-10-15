@@ -1,3 +1,8 @@
+2007-10-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs: Track
+	  api changes.
+
 2007-10-15  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs

@@ -102,7 +102,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			AddResolveResults (list, allowInstrinsicNames, null);
 		}
 		
-		public void AddResolveResults (LanguageItemCollection list, bool allowInstrinsicNames, MonoDevelop.Projects.Ambience.ITypeNameResolver typeNameResolver) 
+		public void AddResolveResults (LanguageItemCollection list, bool allowInstrinsicNames, ITypeNameResolver typeNameResolver) 
 		{
 			if (list == null) {
 				return;
@@ -112,7 +112,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				AddResolveResult (o, allowInstrinsicNames, typeNameResolver);
 		}
 		
-		public void AddResolveResult (ILanguageItem o, bool allowInstrinsicNames, MonoDevelop.Projects.Ambience.ITypeNameResolver typeNameResolver) 
+		public void AddResolveResult (ILanguageItem o, bool allowInstrinsicNames, ITypeNameResolver typeNameResolver) 
 		{
 			if (o is Namespace) {
 				Namespace ns = (Namespace) o;
@@ -166,7 +166,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			AddResolveResults (results, allowInstrinsicNames, null);
 		}
 		
-		public void AddResolveResults (ResolveResult results, bool allowInstrinsicNames, MonoDevelop.Projects.Ambience.ITypeNameResolver typeNameResolver)
+		public void AddResolveResults (ResolveResult results, bool allowInstrinsicNames, ITypeNameResolver typeNameResolver)
 		{
 			if (results != null) {
 				AddResolveResults (results.Namespaces, allowInstrinsicNames, typeNameResolver);
