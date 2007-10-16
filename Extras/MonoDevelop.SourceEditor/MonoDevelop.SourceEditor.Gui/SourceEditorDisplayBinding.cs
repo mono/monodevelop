@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Runtime.InteropServices;
 
@@ -462,6 +463,25 @@ namespace MonoDevelop.SourceEditor.Gui
 				GLib.Timeout.Add (1000, new GLib.TimeoutHandler (BindClassCombo));
 			}
 		}
+		KeyValuePair<IClass, int> SearchClass (int line)
+		{
+			TreeIter iter;
+			int i = 0, foundIndex = 0;
+			IClass result = null;
+			if (classStore.GetIterFirst (out iter)) {
+				do {
+					IClass c = (IClass)classStore.GetValue (iter, 2);
+					if (c.BodyRegion != null && c.BodyRegion.BeginLine <= line && line <= c.BodyRegion.EndLine)	{
+						if (result == null || result.BodyRegion.BeginLine <= c.BodyRegion.BeginLine) {
+							result = c;
+							foundIndex = i;
+						}
+					}
+					i++;
+				} while (classStore.IterNext (ref iter));
+			}
+			return new KeyValuePair<IClass, int> (result, foundIndex);
+		}
 		
 		void UpdateMethodBrowser ()
 		{
@@ -479,16 +499,8 @@ namespace MonoDevelop.SourceEditor.Gui
 
 			// Find the selected class
 			
-			TreeIter iter;
-			if (!classStore.GetIterFirst (out iter))
-				return;
-			
-			IClass classFound = null;
-			do {
-				IClass c = (IClass) classStore.GetValue (iter, 2);
-				if (c.BodyRegion != null && c.BodyRegion.BeginLine <= line && line <= c.BodyRegion.EndLine)
-					classFound = c;
-			} while (classFound == null && classStore.IterNext (ref iter));
+			KeyValuePair<IClass, int> c = SearchClass (line);
+			IClass classFound = c.Key;
 
 			loadingMembers = true;
 			
@@ -502,9 +514,9 @@ namespace MonoDevelop.SourceEditor.Gui
 					return;
 				}
 				
-				TreeIter citer;
-				if (!classCombo.GetActiveIter (out citer) || !citer.Equals (iter)) {
-					classCombo.SetActiveIter (iter);
+				TreeIter iter;
+				if (c.Value != classCombo.Active) {
+					classCombo.Active = c.Value; 
 					BindMemberCombo (classFound);
 					return;
 				}
@@ -530,6 +542,17 @@ namespace MonoDevelop.SourceEditor.Gui
 			finally {
 				loadingMembers = false;
 			}
+		}
+		
+		void Add (IClass c, ArrayList classes, string prefix)
+		{
+			MonoDevelop.Projects.Ambience.Ambience am = se.View.GetAmbience ();
+			Gdk.Pixbuf pix = IdeApp.Services.Resources.GetIcon (IdeApp.Services.Icons.GetIcon (c), IconSize.Menu);
+			string name = prefix + am.Convert (c, MonoDevelop.Projects.Ambience.ConversionFlags.ShowGenericParameters);
+			classStore.AppendValues (pix, name, c);
+
+			foreach (IClass inner in c.InnerClasses)
+				Add (inner, classes, name + ".");
 		}
 		
 		private bool BindClassCombo ()
@@ -563,35 +586,25 @@ namespace MonoDevelop.SourceEditor.Gui
 				
 				classBrowser.Visible = true;
 				ArrayList classes = new ArrayList ();
-				classes.AddRange (cls);
-				classes.Sort (new LanguageItemComparer ());
-
-				MonoDevelop.Projects.Ambience.Ambience am = se.View.GetAmbience ();
-				foreach (IClass c in classes) {
-					// Get the appropriate icon from the Icon service for the current IClass.
-					Gdk.Pixbuf pix = IdeApp.Services.Resources.GetIcon (IdeApp.Services.Icons.GetIcon (c), IconSize.Menu);
-					classStore.AppendValues (pix, am.Convert (c, MonoDevelop.Projects.Ambience.ConversionFlags.ShowGenericParameters), c);
-				}
+				foreach (IClass c in cls)
+					Add (c, classes, "");
 				
 				// find out where the current cursor position is and set the combos.
 				int line;
 				int column;
 				this.GetLineColumnFromPosition(this.CursorPosition, out line, out column);
-				for(int i = 0; i < cls.Count; i++) {
-					IClass c = cls[i];
-					if (c.BodyRegion != null && c.BodyRegion.BeginLine <= line && line <= c.BodyRegion.EndLine)	{
-						// found the right class. Now need right method
-						classCombo.Active = i;
-						BindMemberCombo(c);
-						handlingParseEvent = false;
-						
-						// return false to stop the GLib.Timeout
-						return false;
-					}
+				KeyValuePair<IClass, int> ckvp = SearchClass (line);
+				
+				IClass foundClass = ckvp.Key;
+				if (foundClass != null) {
+					// found the right class. Now need right method
+					classCombo.Active = ckvp.Value;
+					BindMemberCombo (foundClass);
+				} else {
+					// Sometimes there might be no classes e.g. AssemblyInfo.cs
+					classCombo.Active = -1;
+					UpdateComboTip (classCombo, null);
 				}
-				// Sometimes there might be no classes e.g. AssemblyInfo.cs
-				classCombo.Active = -1;
-				UpdateComboTip (classCombo, null);
 				handlingParseEvent = false;
 			}
 			finally {
