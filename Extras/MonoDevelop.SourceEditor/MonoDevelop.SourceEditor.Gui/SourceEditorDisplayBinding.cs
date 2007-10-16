@@ -811,8 +811,10 @@ namespace MonoDevelop.SourceEditor.Gui
 		void ClickedReload (object sender, EventArgs args)
 		{
 			try {
+				double vscroll = se.View.VScroll;
 				Load (ContentName);
 				editorBar.Remove (reloadBar);
+				se.View.VScroll = vscroll;
 				WorkbenchWindow.ShowNotification = false;
 			} catch (Exception ex) {
 				Services.MessageService.ShowError (ex, "Could not reload the file.");

@@ -584,6 +584,17 @@ namespace MonoDevelop.SourceEditor.Gui
 
 			return ctx.ResolveIdentifier (expression, ti.Line + 1, ti.LineOffset + 1, fileName, txt);
 		}
+		
+		public double VScroll {
+			get {
+				return ParentEditor.Vadjustment.Value;
+			}
+			set {
+				ParentEditor.Vadjustment.Value = value; 
+				ParentEditor.Vadjustment.ChangeValue();
+			}
+			
+		}
 
 		[CommandHandler (TextEditorCommands.ScrollLineUp)]
 		internal void ScrollUp ()

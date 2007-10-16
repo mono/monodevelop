@@ -1,3 +1,9 @@
+2007-10-16  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs,
+	  MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Fixed "Bug
+	  331944 - MD does not keep selected line when file is re-loaded".
+
 2007-10-15  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Fixed "Bug
