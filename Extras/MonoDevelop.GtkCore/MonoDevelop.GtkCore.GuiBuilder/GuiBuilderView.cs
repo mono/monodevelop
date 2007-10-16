@@ -489,7 +489,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		[CommandUpdateHandler (EditCommands.Delete)]
 		protected void OnUpdateDelete (CommandInfo cinfo)
 		{
-			cinfo.Enabled = designer.CanDeleteSelection;
+			cinfo.Bypass = !designer.CanDeleteSelection;
 		}
 		
 		[CommandHandler (EditCommands.Copy)]

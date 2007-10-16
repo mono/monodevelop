@@ -1,5 +1,11 @@
 2007-10-16  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: If the current selection
+	  can't be deleted, just ignore the delete command, so the default handler
+	  will be executed. Fixes bug #325440.
+
+2007-10-16  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* lib/libstetic.mdp: Fix required gtk# version.
 
 2007-10-12  Mike Krüger <mkrueger@novell.com> 
