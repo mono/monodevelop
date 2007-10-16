@@ -1,3 +1,8 @@
+2007-10-16  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Core/FileService.cs: Found a better solution for the "." case
+	  in abs2rel path.
+
 2007-10-15  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Core/FileService.cs: AbsoluteToRelativePath gives back . if
