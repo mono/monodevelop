@@ -1336,8 +1336,9 @@ namespace CSharpBinding.Parser
 		public LanguageItemCollection CtrlSpace (int caretLine, int caretColumn, string fileName)
 		{
 			LanguageItemCollection result = new LanguageItemCollection ();
-			foreach (System.Collections.Generic.KeyValuePair<string, string> pt in TypeReference.PrimitiveTypesCSharp)
-				result.Add (new Namespace (pt.Key));
+// Why whas it here ? (I've removed it to remove dupes int/int for example) Mike			
+//			foreach (System.Collections.Generic.KeyValuePair<string, string> pt in TypeReference.PrimitiveTypesCSharp) 
+//				result.Add (new Namespace (pt.Key));
 
 			SetCursorPosition (caretLine, caretColumn);
 			IParseInformation parseInfo = parserContext.GetParseInformation (fileName);
@@ -1354,7 +1355,7 @@ namespace CSharpBinding.Parser
 			if (currentUnit != null) {
 				SetCursorPosition (caretLine, caretColumn);
 				callingClass = GetInnermostClass();
-				Console.WriteLine("CallingClass is " + (callingClass == null ? "null" : callingClass.Name));
+//				Console.WriteLine("CallingClass is " + (callingClass == null ? "null" : callingClass.Name));
 			}
 
 			IMethod met = GetMethod ();

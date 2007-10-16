@@ -1,3 +1,8 @@
+2007-10-16  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/Resolver.cs: fixed "Bug 325528 - Intellisense contains multiple
+	  entries of same namespace".
+
 2007-10-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CSharpBinding.mdp, Parser/TypeNameResolver.cs, Makefile.am: Moved

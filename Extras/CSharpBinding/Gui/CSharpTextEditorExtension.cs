@@ -677,7 +677,7 @@ namespace CSharpBinding
 				
 				IParserContext pctx = GetParserContext ();
 				Resolver res = new Resolver (pctx);
-							
+				
 				IClass cls = res.GetCallingClass (line, column, FileName, true);
 				if (cls != null && (cls.ClassType == ClassType.Class || cls.ClassType == ClassType.Struct)) {
 					string typedModifiers = Editor.GetText (firstMod, ctx.TriggerOffset);
