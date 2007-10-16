@@ -142,54 +142,6 @@ namespace MonoDevelop.Projects.CodeGeneration
 				return name.Substring (0, idx);
 			return name;
 		}
-
-		string ExplicitNamePrefix (IParseInformation pinfo, IClass klass, IClass iface, IReturnType hintReturnType)
-		{
-//			RefactorerContext gctx = GetGeneratorContext (klass);
-			IRefactorer gen = GetGeneratorForClass (klass);
-			if (iface.Namespace == klass.Namespace)
-				return RemoveGenericParamSuffix (iface.Name) + GenerateGenerics (gen, iface, hintReturnType) + ".";
-			
-			string name = iface.FullyQualifiedName;
-			int maxLen = name.LastIndexOf ('.') - 1;
-			
-			if (maxLen < 0)
-				return RemoveGenericParamSuffix (iface.Name) + GenerateGenerics (gen, iface, hintReturnType) + ".";
-			
-			string longestMatch = null;
-			
-			if (name.StartsWith (klass.Namespace + "."))
-				longestMatch = klass.Namespace;
-			
-			if (pinfo != null && pinfo.BestCompilationUnit != null) {
-				ICompilationUnit compilationUnit = (ICompilationUnit) pinfo.BestCompilationUnit;
-				bool found = false;
-				IUsing use;
-				int i;
-				
-				for (i = 0; i < compilationUnit.Usings.Count && !found; i++) {
-					if ((use = compilationUnit.Usings[i]) == null)
-						continue;
-					
-					foreach (string prefix in use.Usings) {
-						if (name.StartsWith (prefix + ".")) {
-							if (longestMatch == null || prefix.Length > longestMatch.Length) {
-								longestMatch = prefix;
-								if (longestMatch.Length == maxLen) {
-									found = true;
-									break;
-								}
-							}
-						}
-					}
-				}
-			}
-			
-			if (longestMatch != null)
-				return RemoveGenericParamSuffix (name.Substring (longestMatch.Length + 1)) + GenerateGenerics (gen, iface, hintReturnType) + ".";
-			
-			return RemoveGenericParamSuffix (name) + GenerateGenerics (gen, iface, hintReturnType) + ".";
-		}
 		
 		public void ImplementInterface (IParseInformation pinfo, IClass klass, IClass iface, bool explicitly, IClass declaringClass, IReturnType hintReturnType)
 		{
@@ -214,7 +166,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			}
 			
 			if (explicitly)
-				prefix = ExplicitNamePrefix (pinfo, klass, iface, hintReturnType);
+				prefix = gctx.TypeNameResolver.ResolveName (iface.FullyQualifiedName ) + ".";
 			
 			// Stub out non-implemented events defined by @iface
 			for (i = 0; i < iface.Events.Count; i++) {

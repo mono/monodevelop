@@ -168,8 +168,14 @@ namespace MonoDevelop.Projects.CodeGeneration
 				IProperty property = (IProperty) member;
 				m = (CodeMemberProperty) mProperty;
 				
+				CodeExpression nieReference = new CodeObjectCreateExpression (TypeToDom (ctx, typeof (NotImplementedException)));
+				CodeStatement throwExpression = new CodeThrowExceptionStatement (nieReference);
 				mProperty.HasGet = property.CanGet;
 				mProperty.HasSet = property.CanSet;
+				if (property.CanGet)
+					mProperty.GetStatements.Add (throwExpression);
+				if (property.CanSet)
+					mProperty.SetStatements.Add (throwExpression);
 				
 				mProperty.Type = ReturnTypeToDom (ctx, member.ReturnType);
 			} else {

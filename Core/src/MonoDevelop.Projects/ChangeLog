@@ -1,3 +1,11 @@
+2007-10-15  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Use new
+	  ITypeNameResolver instead of custom code to generate type names for
+	  explicit inteface implementations.
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: Stub out
+	  implemented properties with NotImplementedExceptions.
+
 2007-10-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Ambience/ITypeNameResolver.cs,
