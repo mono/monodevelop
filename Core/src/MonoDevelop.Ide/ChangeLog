@@ -1,3 +1,8 @@
+2007-10-16  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs: Fixed "Bug 325492 -
+	  application output buggy".
+
 2007-10-15  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs: Fixed "Bug 326313 -

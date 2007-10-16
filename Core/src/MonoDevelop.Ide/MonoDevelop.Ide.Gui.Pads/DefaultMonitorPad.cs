@@ -172,9 +172,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				indents.Push (null);
 
 			if (name != null) {
-				TextIter it = buffer.EndIter;
-				string txt = "\n" + name + "\n";
-				buffer.InsertWithTags (ref it, txt, tag, bold);
+				AddText (Environment.NewLine + name + Environment.NewLine, bold);
 			}
 		}
 		
@@ -197,9 +195,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void WriteText (string text, TextTag extraTag)
 		{
 			AddText (text, extraTag);
-//			buffer.MoveMark (buffer.InsertMark, buffer.EndIter);
-			if (text.EndsWith ("\n"))
-				textEditorControl.ScrollMarkOnscreen (buffer.InsertMark);
 		}
 		
 		public virtual Gtk.Widget Control {
@@ -233,13 +228,16 @@ namespace MonoDevelop.Ide.Gui.Pads
 			buttonStop.Sensitive = false;
 		}
 		
-		void AddText (string s, TextTag extraTag)
+		void AddText (string text, TextTag extraTag)
 		{
 			TextIter it = buffer.EndIter;
 			if (extraTag != null)
-				buffer.InsertWithTags (ref it, s, tag, extraTag);
+				buffer.InsertWithTags (ref it, text, tag, extraTag);
 			else
-				buffer.InsertWithTags (ref it, s, tag);
+				buffer.InsertWithTags (ref it, text, tag);
+			
+			if (buffer.EndIter.StartsLine ())
+				textEditorControl.ScrollToIter (buffer.EndIter, 0, false, 0, 0);
 		}
 		
 		void Indent ()
