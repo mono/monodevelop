@@ -70,6 +70,8 @@ namespace AspNetAddIn
 		//used true while the project is being loaded
 		bool loading = false;
 		
+		AspNetAddIn.WebTypeManager webTypeManager;
+		
 		#region properties
 		
 		public override string ProjectType {
@@ -93,6 +95,10 @@ namespace AspNetAddIn
 		
 		public WebDeployTargetCollection WebDeployTargets {
 			get { return webDeployTargets; }
+		}
+		
+		public AspNetAddIn.WebTypeManager WebTypeManager {
+			get { return webTypeManager; }
 		}
 		
 		#endregion
@@ -124,6 +130,8 @@ namespace AspNetAddIn
 				AspNetAppProjectConfiguration conf = (AspNetAppProjectConfiguration) args.Configuration;
 				conf.SourceDirectory = BaseDirectory;
 			};
+			
+			webTypeManager = new WebTypeManager (this);
 		}
 		
 		public override void Deserialize (ITypeSerializer handler, DataCollection data)

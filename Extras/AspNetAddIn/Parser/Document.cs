@@ -32,6 +32,8 @@
 
 using System;
 using System.IO;
+using System.Collections.Generic;
+
 using AspNetAddIn.Parser.Tree;
 using MonoDevelop.Projects;
 
@@ -39,11 +41,12 @@ namespace AspNetAddIn.Parser
 {
 	public class Document
 	{
-		private RootNode rootNode;
-		private ProjectFile projectFile;
-		private WebFormReferenceManager refMan;
-		private PageInfoVisitor info;
-		private MemberListVisitor memberList;
+		RootNode rootNode;
+		ProjectFile projectFile;
+		DocumentReferenceManager refMan;
+		PageInfoVisitor info;
+		MemberListVisitor memberList;
+		List<Exception> errors = new List<Exception> ();
 		
 		public Document (ProjectFile file)
 		{
@@ -54,22 +57,33 @@ namespace AspNetAddIn.Parser
 			try {
 				sr = new StreamReader (file.FilePath);
 				rootNode.Parse (file.FilePath, sr);
+			} catch (AspNetAddIn.Parser.Internal.ParseException e) {
+				errors.Add (new ParserException (e.Location, e.Message));
 			} catch (Exception e) {
-				System.Console.WriteLine ("The ASP.NET file parser failed to parse " + file.FilePath + " because: "+e.Message);
+				MonoDevelop.Core.Runtime.LoggingService.Error ((object) "Unhandled error parsing ASP.NET document", e);
+				errors.Add (e);
 			} finally {
 				if (sr != null)
 					sr.Close ();
 			}
 		}
 		
+		public bool IsValid {
+			get { return errors.Count == 0; }
+		}
+		
+		public IList<Exception> ParseErrors {
+			get { return errors; }
+		}
+		
 		public RootNode RootNode {
 			get { return rootNode; }
 		}
 		
-		public WebFormReferenceManager WebFormReferenceManager {
+		public DocumentReferenceManager ReferenceManager {
 			get {
 				if (refMan == null)
-					refMan = new WebFormReferenceManager (this);
+					refMan = new DocumentReferenceManager (this);
 				return refMan;
 			}
 		}
@@ -82,6 +96,10 @@ namespace AspNetAddIn.Parser
 				}
 				return info;
 			}
+		}
+		
+		public AspNetAppProject Project {
+			get { return (AspNetAppProject) projectFile.Project; }
 		}
 		
 		public ProjectFile ProjectFile {

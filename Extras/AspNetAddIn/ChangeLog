@@ -1,3 +1,16 @@
+2007-10-16  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Project/AspNetAppProject.cs, Project/VerifyCodeBehindBuildStep.cs,
+	  Parser/MemberListVisitor.cs, Parser/LocatedParserException.cs,
+	  Parser/Internal/ParseException.cs: Rework error handling to include
+	  location info for document parse errors.
+	* Project/WebTypeManager.cs, Parser/WebFormReferenceManager.cs,
+	  Parser/DocumentReferenceManager.cs: Rework type lookups for registered
+	  controls. Now handles custom controls and user controls, whether
+	  registered in aspx file or web.config.
+	* AspNetAddIn.mdp, Makefile.am: Updated.
+	* Parser/Document.cs: Collect parse errors instead of dying in constructor.
+
 2007-10-15  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Project/AspNetAppProject.cs: Copy refs to output path during compile. Not

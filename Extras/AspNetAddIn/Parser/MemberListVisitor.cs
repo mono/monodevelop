@@ -31,7 +31,11 @@
 //
 
 using System;
-using System.Collections;
+using System.CodeDom;
+using System.Collections.Generic;
+
+using MonoDevelop.Core;
+
 using AspNetAddIn.Parser.Tree;
 
 namespace AspNetAddIn.Parser
@@ -39,7 +43,7 @@ namespace AspNetAddIn.Parser
 	//purpose is to find all named tags for code completion and compilation of base class
 	public class MemberListVisitor : Visitor
 	{
-		private Hashtable list = new Hashtable ();
+		private Dictionary<string,CodeMemberField> members = new Dictionary<string,CodeMemberField> ();
 		Document doc;
 		
 		public MemberListVisitor (Document parent)
@@ -57,25 +61,34 @@ namespace AspNetAddIn.Parser
 			if (id == null)
 				return;
 			
-			if (list.ContainsKey (id))
-				throw new Exception ("Tag id must be unique within the document");
+			if (members.ContainsKey (id))
+				throw new ParserException (node.Location, GettextCatalog.GetString ("Tag ID must be unique within the document: '{0}'.", id));
 			
 			string [] s = node.TagName.Split (':');
 			string prefix = (s.Length == 1)? "" : s[0];
 			string name = (s.Length == 1)? s[0] : s[1];
 			if (s.Length > 2)
-				throw new Exception ("Malformed tag name");
-				
-			Type type = doc.WebFormReferenceManager.GetType (prefix, name);
-			System.CodeDom.CodeTypeReference ctRef = new System.CodeDom.CodeTypeReference (type.ToString ());
-			System.CodeDom.CodeMemberField member = new System.CodeDom.CodeMemberField (ctRef, id);
+				throw new ParserException (node.Location, GettextCatalog.GetString ("Malformed tag name: '{0}'.", node.TagName));
+			
+			string typeName = null;
+			try {
+				typeName = doc.ReferenceManager.GetTypeName (prefix, name);}
+			catch (Exception e) {
+				throw new ParserException (node.Location, e.ToString ());
+			}
+			
+			if (typeName == null)
+				throw new ParserException (node.Location, GettextCatalog.GetString ("Could not find tag type: '{0}{1}{2}'.", prefix, string.IsNullOrEmpty(prefix)? string.Empty:":", name));
+			
+			CodeTypeReference ctRef = new CodeTypeReference (typeName);
+			CodeMemberField member = new CodeMemberField (ctRef, id);
 			member.Attributes = System.CodeDom.MemberAttributes.Family;
 			
-			list [id] = member;
+			members [id] = member;
 		}
 		
-		public IDictionary List {
-			get { return list; }
+		public IDictionary<string,CodeMemberField> Members {
+			get { return members; }
 		}
 	}
 }

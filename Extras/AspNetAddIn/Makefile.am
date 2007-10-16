@@ -16,6 +16,7 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:System \
+	-r:System.Configuration \
 	-r:System.Design \
 	-r:System.Drawing \
 	-r:System.Drawing.Design \
@@ -45,6 +46,7 @@ FILES =  \
 	Gui/XspOptionsPanel.cs \
 	Gui/XspOptionsPanelWidget.cs \
 	Parser/Document.cs \
+	Parser/DocumentReferenceManager.cs \
 	Parser/Internal/AspParser.cs \
 	Parser/Internal/AspTokenizer.cs \
 	Parser/Internal/Directive.cs \
@@ -53,6 +55,7 @@ FILES =  \
 	Parser/Internal/StrUtils.cs \
 	Parser/Internal/TagAttributes.cs \
 	Parser/Internal/TagType.cs \
+	Parser/LocatedParserException.cs \
 	Parser/MemberListVisitor.cs \
 	Parser/PageInfoVisitor.cs \
 	Parser/Tree/CodeRenderNode.cs \
@@ -78,6 +81,7 @@ FILES =  \
 	Project/CodeBehind.cs \
 	Project/ProjectFolderNodeBuilderExtension.cs \
 	Project/VerifyCodeBehindBuildStep.cs \
+	Project/WebTypeManager.cs \
 	Project/XspParameters.cs
 
 RES =  \

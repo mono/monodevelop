@@ -32,100 +32,42 @@
 
 using System;
 using System.Globalization;
-using System.Collections;
+using System.Collections.Generic;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.Design;
 
 using AspNetAddIn.Parser.Tree;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui;
 
 namespace AspNetAddIn.Parser
 {
-	public class WebFormReferenceManager : IWebFormReferenceManager
+	public class WebFormReferenceManager : DocumentReferenceManager, IWebFormReferenceManager
 	{
 		int prefixIndex = 0;
-		ArrayList list = new ArrayList ();
-		Document doc;
 		
 		public WebFormReferenceManager (Document parent)
+			: base (parent)
 		{
-			this.doc = parent;	
 		}
 		
 		#region IWebFormReferenceManager Members
 
 		public Type GetObjectType (string tagPrefix, string typeName)
 		{
-			if (tagPrefix == null || tagPrefix.Length < 1)
-				return typeof (System.Web.UI.HtmlControls.HtmlControl).Assembly.GetType ("System.Web.UI.HtmlControls.Html"+typeName, true, true);
-			
-			if (0 == string.Compare (tagPrefix, "asp", true, CultureInfo.InvariantCulture))
-				return typeof (System.Web.UI.WebControls.WebControl).Assembly.GetType ("System.Web.UI.WebControls."+typeName, true, true);
-			
-			foreach (RegisterDirective directive in list) {
-				AssemblyRegisterDirective ard = directive as AssemblyRegisterDirective;
-				if (ard != null) {
-					//TODO: look up from parent project's type resolution
-					string fullName = ard.Namespace + "." + typeName;
-					/* MonoDevelop.Projects.Parser.IProjectParserContext cxt =
-					MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (pf.Project);
-					MonoDevelop.Projects.Parser.IClass cls = cxt.GetClass (fullName); */
-					
-					//TODO: should load referenced assemblies out-of process, or in another appdomain
-					
-					System.Reflection.Assembly assem = System.Reflection.Assembly.Load (ard.Assembly);
-					return assem.GetType (fullName, true, true);
-				}
-				
-				ControlRegisterDirective crd = directive as ControlRegisterDirective;
-				if (crd != null) {
-					//TODO: UserControls - is this correct behaviour?
-					ProjectFile pf = doc.ProjectFile.Project.GetProjectFile (crd.Src);
-					if (pf != null) {
-						string inheritsName = ((AspNetAppProject) pf.Project).GetDocument (pf).Info.InheritedClass;
-						//TODO: look up from parent project's type resolution
-						return Type.GetType (inheritsName, true, true);
-					}
-					return typeof (System.Web.UI.UserControl);
-				}
-			}
-			
-			throw new Exception ("The tag prefix \"" + tagPrefix + "\" has not been registered");
-		}
-		
-		public string GetTypeName (string tagPrefix, string typeName)
-		{
-			if (tagPrefix == null || tagPrefix.Length < 1)
-				return "System.Web.UI.HtmlControls."+typeName;
-			
-			if (0 == string.Compare (tagPrefix, "asp", true, CultureInfo.InvariantCulture))
-				return "System.Web.UI.WebControls."+typeName;
-			
-			foreach (RegisterDirective directive in list) {
-				AssemblyRegisterDirective ard = directive as AssemblyRegisterDirective;
-				if (ard != null)
-					return ard.Namespace + "." + typeName;
-				
-				ControlRegisterDirective crd = directive as ControlRegisterDirective;
-				if (crd != null) {
-					//TODO: UserControls - is this correct behaviour?
-					ProjectFile pf = doc.ProjectFile.Project.GetProjectFile (crd.Src);
-					if (pf != null)
-						return crd.Src.Replace ('.', '_');
-					else
-						return "System.Web.UI.UserControl";
-				}
-			}
-			
-			throw new Exception ("The tag prefix \"" + tagPrefix + "\" has not been registered");
+			string fullName = GetTypeName (tagPrefix, typeName);
+			Type type = System.Type.GetType (fullName, false);
+			if (type != null)
+				return type;
+			throw new NotImplementedException ("Cannot yet load custom types out-of-process.");
 		}
 
 		public string GetRegisterDirectives ()
 		{
 			System.Text.StringBuilder sb = new System.Text.StringBuilder ();
 			
-			foreach (RegisterDirective directive in list) {
+			foreach (RegisterDirective directive in pageRefsList) {
 				AssemblyRegisterDirective ard = directive as AssemblyRegisterDirective;
 				
 				if (ard != null)
@@ -144,7 +86,7 @@ namespace AspNetAddIn.Parser
 			if (objectType.Namespace.StartsWith ("System.Web.UI"))
 				return "asp";
 			
-			foreach (RegisterDirective directive in list) {
+			foreach (RegisterDirective directive in pageRefsList) {
 				AssemblyRegisterDirective ard = directive as AssemblyRegisterDirective;
 				
 				if (ard != null)
@@ -169,7 +111,7 @@ namespace AspNetAddIn.Parser
 			if (type.Assembly == typeof(System.Web.UI.WebControls.WebControl).Assembly)
 				return;
 
-			//check namespace is not already registered			foreach (RegisterDirective directive in list) {
+			//check namespace is not already registered			foreach (RegisterDirective directive in pageRefsList) {
 				AssemblyRegisterDirective ard = directive as AssemblyRegisterDirective;
 				if (0 == string.Compare (ard.Namespace, type.Namespace, false, CultureInfo.InvariantCulture))
 					throw new Exception ("That namespace is already registered with another prefix");
@@ -182,7 +124,7 @@ namespace AspNetAddIn.Parser
 				}
 			}
 			
-			doc.ProjectFile.Project.ProjectReferences.Add (
+			doc.Project.ProjectReferences.Add (
 			    new ProjectReference (ReferenceType.Assembly, type.Assembly.ToString ()));
 		/*
 		TODO: insert the reference into the document tree 
@@ -219,7 +161,7 @@ namespace AspNetAddIn.Parser
 		
 		public string GetUserControlPath (string tagPrefix, string tagName)
 		{
-			foreach (RegisterDirective directive in list) {
+			foreach (RegisterDirective directive in pageRefsList) {
 				ControlRegisterDirective crd = directive as ControlRegisterDirective;
 				
 				if (crd != null)
@@ -237,101 +179,5 @@ namespace AspNetAddIn.Parser
 		}
 		
 		#endregion 2.0 WebFormsReferenceManager members
-		
-		#region extra utility members
-		
-		
-		#endregion
-		
-		#region directive classes
-		
-		private abstract class RegisterDirective
-		{
-			private DirectiveNode node;
-			
-			public RegisterDirective (DirectiveNode node)
-			{
-				this.node = node;
-			}
-			
-			public DirectiveNode Node {
-				get { return node; }
-			}
-			
-			public string TagPrefix {
-				get { return (string) node.Attributes ["TagPrefix"]; }
-				set { node.Attributes ["TagPrefix"] = value; }
-			}
-		}
-		
-		private class AssemblyRegisterDirective : RegisterDirective
-		{
-			public AssemblyRegisterDirective (DirectiveNode node)
-				: base (node)
-			{
-			}
-			
-			public string Namespace {
-				get { return (string) Node.Attributes ["Namespace"]; }
-				set { Node.Attributes ["Namespace"] = value; }
-			}
-			
-			public string Assembly {
-				get { return (string) Node.Attributes ["Assembly"]; }
-				set { Node.Attributes ["Assembly"] = value; }
-			}
-			
-			public override string ToString ()
-			{	
-				return String.Format ("<%@ Register {0}=\"{1}\" {2}=\"{3}\" {4}=\"{5}\" %>", "TagPrefix", TagPrefix, "Namespace", Namespace, "Assembly", Assembly);
-			}
-		}
-		
-		private class ControlRegisterDirective : RegisterDirective
-		{			
-			public ControlRegisterDirective (DirectiveNode node)
-				: base (node)
-			{
-			}
-			
-			public string TagName {
-				get { return (string) Node.Attributes ["TagName"]; }
-				set { Node.Attributes ["TagName"] = value; }
-			}
-			
-			public string Src {
-				get { return (string) Node.Attributes ["Src"]; }
-				set { Node.Attributes ["Src"] = value; }
-			}
-			
-			public override string ToString ()
-			{	
-				return String.Format ("<%@ Register {0}=\"{1}\" {2}=\"{3}\" {4}=\"{5}\" %>", "TagPrefix", TagPrefix, "TagName", TagName, "Src", Src);
-			}
-		}
-		
-		private class ReferenceVisitor : Visitor
-		{
-			WebFormReferenceManager parent;
-			
-			public ReferenceVisitor (WebFormReferenceManager parent)
-			{
-				this.parent = parent;
-			}
-			
-			public override void Visit (DirectiveNode node)
-			{
-				if ((String.Compare (node.Name, "register", true) != 0) || (node.Attributes ["TagPrefix"] == null))
-					return;
-				
-				if ((node.Attributes ["TagName"] != null) && (node.Attributes ["Src"] != null))
-					parent.list.Add (new ControlRegisterDirective (node));
-				else if ((node.Attributes ["Namespace"] != null) && (node.Attributes ["Assembly"] != null))
-					parent.list.Add (new AssemblyRegisterDirective (node));
-			}	
-		}
-		
-		
-		#endregion classes
 	}
 }

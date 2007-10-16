@@ -62,6 +62,10 @@ namespace AspNetAddIn.Parser.Internal
 				       "Review your source file and modify it to fix this error.";
 			}
 		}
+		
+		public ILocation Location {
+			get { return location; }
+		}
 
 		public override string ErrorMessage {
 			get { return Message; }
