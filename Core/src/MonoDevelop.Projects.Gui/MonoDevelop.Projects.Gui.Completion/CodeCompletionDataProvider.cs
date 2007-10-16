@@ -112,11 +112,21 @@ namespace MonoDevelop.Projects.Gui.Completion
 				AddResolveResult (o, allowInstrinsicNames, typeNameResolver);
 		}
 		
+		CodeCompletionData SearchData (string text)
+		{
+			foreach (CodeCompletionData ccd in completionData) {
+				if (ccd.Text != null && ccd.Text.Length == 1 && ccd.Text[0] == text) 
+					return ccd;
+			}
+			return null;
+		}
+		
 		public void AddResolveResult (ILanguageItem o, bool allowInstrinsicNames, ITypeNameResolver typeNameResolver) 
 		{
 			if (o is Namespace) {
 				Namespace ns = (Namespace) o;
-				completionData.Add(new CodeCompletionData(ns.Name, Stock.NameSpace));
+				if (SearchData (ns.Name) == null)
+					completionData.Add(new CodeCompletionData(ns.Name, Stock.NameSpace));
 			} else if (o is IClass) {
 				IClass iclass = (IClass) o;
 				if (iclass.Name != null && insertedClasses[iclass.Name] == null) {
