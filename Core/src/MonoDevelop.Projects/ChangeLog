@@ -1,3 +1,8 @@
+2007-10-17  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: Fixed bug in member
+	  generation.
+
 2007-10-15  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Use new

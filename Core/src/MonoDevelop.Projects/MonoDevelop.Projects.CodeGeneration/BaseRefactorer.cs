@@ -109,6 +109,23 @@ namespace MonoDevelop.Projects.CodeGeneration
 			}
 			return null;
 		}*/
+		
+		static string[] baseTypes = new string[] {"System.Void", "System.Object", "System.Boolean", 
+			                         "System.Byte", "System.SByte", "System.Char", 
+			                         "System.Enum", "System.Int16", "System.Int32", 
+			                         "System.Int64", "System.UInt16", "System.UInt32",
+			                         "System.UInt64", "System.Single", "System.Double",
+			                         "System.Decimal", "System.String"};
+
+		bool IsBaseType (string name)
+		{
+			foreach (string baseType in baseTypes) {
+				if (name == baseType)
+					return true;
+			}
+			return false;
+		}
+		
 		protected CodeTypeReference ReturnTypeToDom (RefactorerContext ctx, IReturnType declaredType)
 		{
 			CodeTypeReference [] argTypes = null;
@@ -122,7 +139,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 					argTypes[i] = ReturnTypeToDom (ctx, genericArgs[i]);
 				}
 			}
-			string name = ctx.TypeNameResolver.ResolveName (rtype.FullyQualifiedName);
+			string name = IsBaseType (rtype.FullyQualifiedName) ? rtype.FullyQualifiedName : ctx.TypeNameResolver.ResolveName (rtype.FullyQualifiedName);
 			CodeTypeReference typeRef = argTypes != null ? new CodeTypeReference (name, argTypes) : new CodeTypeReference (name);
 			
 			if (rtype.ArrayCount == 0)
@@ -135,8 +152,9 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		protected CodeTypeReference TypeToDom (RefactorerContext ctx, Type type)
 		{
-			string name = ctx.TypeNameResolver.ResolveName (type.FullName);
-			return new CodeTypeReference (name);
+			if (IsBaseType (type.FullName))
+				return new CodeTypeReference (type);
+			return new CodeTypeReference (ctx.TypeNameResolver.ResolveName (type.FullName));
 		}
 		
 		public virtual IMember ImplementMember (RefactorerContext ctx, IClass cls, string prefix, bool explicitly, IMember member)
