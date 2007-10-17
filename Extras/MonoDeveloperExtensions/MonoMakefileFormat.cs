@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Specialized;
 using System.IO;
 using System.Text;
 using MonoDevelop.Core;
@@ -71,8 +72,17 @@ namespace MonoDeveloper
 		{
 		}
 		
-		public System.Collections.Specialized.StringCollection GetExportFiles (object obj)
+		public StringCollection GetExportFiles (object obj)
 		{
+			MonoProject mp = obj as MonoProject;
+			if (mp != null) {
+				if (File.Exists (mp.SourcesFile)) {
+					StringCollection col = new StringCollection ();
+					col.Add (mp.FileName);
+					col.Add (mp.SourcesFile);
+					return col;
+				}
+			}
 			return null;
 		}
 		

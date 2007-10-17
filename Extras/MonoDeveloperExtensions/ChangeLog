@@ -1,3 +1,8 @@
+2007-10-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoMakefileFormat.cs, MonoProject.cs: Make sure the .sources file is
+	  included when exporting the project.
+
 2007-09-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDeveloperExtensions.addin.xml: Bump MD version.

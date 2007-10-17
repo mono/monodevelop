@@ -62,6 +62,10 @@ namespace MonoDeveloper
 			}
 		}
 		
+		public string SourcesFile {
+			get { return outFile + ".sources"; }
+		}
+		
 		void Read (MonoMakefile mkfile)
 		{
 			loading = true;
