@@ -14,7 +14,24 @@ namespace MonoDevelop.Projects.Parser
 	{
 		protected IClass declaringType;
 		protected IReturnType returnType;
+		protected IReturnType explicitDeclaration = null;
 		protected IRegion          region;
+		
+		
+		public bool IsExplicitDeclaration {
+			get {
+				return explicitDeclaration != null;
+			}
+		}
+		
+		public IReturnType ExplicitDeclaration {
+			get {
+				return explicitDeclaration;
+			}
+			set {
+				explicitDeclaration = value;
+			}
+		}
 		
 		public virtual IRegion Region {
 			get { return region; }
@@ -78,6 +95,16 @@ namespace MonoDevelop.Projects.Parser
 			} else if (member.ReturnType != null)
 				return 1;
 			
+			if (ExplicitDeclaration != null) {
+				if (member.ExplicitDeclaration == null)
+					return -1;
+				cmp = ExplicitDeclaration.CompareTo(member.ExplicitDeclaration);
+				if (cmp != 0) {
+					return cmp;
+				}
+			} else if (member.ExplicitDeclaration != null)
+				return 1;
+			
 			if (Region != null) {
 				if (member.Region == null)
 					return -1;
@@ -101,6 +128,7 @@ namespace MonoDevelop.Projects.Parser
 			c += (FullyQualifiedName != null) ? FullyQualifiedName.GetHashCode () : 1;
 			c += (ReturnType != null) ? ReturnType.GetHashCode () : 2;
 			c += (Region != null) ? Region.GetHashCode () : 4;
+			c += (ExplicitDeclaration != null) ? ExplicitDeclaration.GetHashCode () : 8;
 			return c;
 		}
 	}

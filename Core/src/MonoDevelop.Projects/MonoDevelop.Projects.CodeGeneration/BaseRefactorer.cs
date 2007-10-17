@@ -95,7 +95,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			
 			buffer.InsertText (pos, code);
 			
-			return FindGeneratedMember (ctx, buffer, cls, member);
+			return FindGeneratedMember (ctx, buffer, cls, member, line);
 		}
 		/*
 		IReturnType GetGenericArgument (IClass type, IReturnType rtype, IReturnType hintType)
@@ -262,7 +262,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			
 			buffer.InsertText (sp, code);
 			
-			return FindGeneratedMember (ctx, buffer, cls, memberInfo);
+			return FindGeneratedMember (ctx, buffer, cls, memberInfo, reg.BeginLine);
 		}
 
 		public virtual string ConvertToLanguageTypeName (string netTypeName)
@@ -312,7 +312,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				return null;
 			
 			memberInfo.Name = newName;
-			return FindGeneratedMember (ctx, file, cls, memberInfo);
+			return FindGeneratedMember (ctx, file, cls, memberInfo, member.Region.BeginLine);
 		}
 		
 		public virtual MemberReferenceCollection FindMemberReferences (RefactorerContext ctx, string fileName, IClass cls, IMember member)
@@ -608,25 +608,25 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return null;
 		}
 		
-		protected IMember FindGeneratedMember (RefactorerContext ctx, IEditableTextFile buffer, IClass cls, CodeTypeMember member)
+		protected IMember FindGeneratedMember (RefactorerContext ctx, IEditableTextFile buffer, IClass cls, CodeTypeMember member, int line)
 		{
 			IClass rclass = GetGeneratedClass (ctx, buffer, cls);
 			if (rclass != null) {
 				if (member is CodeMemberField) {
 					foreach (IField m in rclass.Fields)
-						if (m.Name == member.Name)
+						if (m.Name == member.Name && line == m.Region.BeginLine)
 							return m;
 				} else if (member is CodeMemberProperty) {
 					foreach (IProperty m in rclass.Properties)
-						if (m.Name == member.Name)
+						if (m.Name == member.Name && line == m.Region.BeginLine)
 							return m;
 				} else if (member is CodeMemberEvent) {
 					foreach (IEvent m in rclass.Events)
-						if (m.Name == member.Name)
+						if (m.Name == member.Name && line == m.Region.BeginLine)
 							return m;
 				} else if (member is CodeMemberMethod) {
 					foreach (IMethod m in rclass.Methods)
-						if (m.Name == member.Name)
+						if (m.Name == member.Name && line == m.Region.BeginLine)
 							return m;
 				}
 			}

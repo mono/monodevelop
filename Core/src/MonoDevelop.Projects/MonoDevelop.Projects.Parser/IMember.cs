@@ -5,6 +5,7 @@
 //     <version value="$version"/>
 // </file>
 using System;
+using System.Collections;
 using System.Reflection;
 
 namespace MonoDevelop.Projects.Parser
@@ -24,6 +25,14 @@ namespace MonoDevelop.Projects.Parser
 
 		IClass DeclaringType {
 			get;
+		}
+		
+		bool IsExplicitDeclaration {
+			get;
+		}
+		IReturnType ExplicitDeclaration {
+			get;
+			set;
 		}
 	}
 }

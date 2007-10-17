@@ -35,6 +35,7 @@ namespace MonoDevelop.Projects.Parser
 					met.GenericParameters.Add(PersistentGenericParamater.Resolve(gp, typeResolver));
 				}
 			}
+			met.ExplicitDeclaration = PersistentReturnType.Resolve (source.ExplicitDeclaration, typeResolver);
 			
 			return met;
 		}
@@ -47,6 +48,7 @@ namespace MonoDevelop.Projects.Parser
 			
 			met.Modifiers = (ModifierEnum)reader.ReadUInt32();
 			met.ReturnType = PersistentReturnType.Read (reader, nameTable);
+			met.ExplicitDeclaration = PersistentReturnType.Read (reader, nameTable);
 			
 			uint count = reader.ReadUInt32();
 			for (uint i = 0; i < count; ++i) {
@@ -66,7 +68,6 @@ namespace MonoDevelop.Projects.Parser
 				}
 				// All the generic parameters have been added...
 			}
-			
 			return met;
 		}
 		
@@ -77,6 +78,7 @@ namespace MonoDevelop.Projects.Parser
 			
 			writer.Write ((uint)met.Modifiers);
 			PersistentReturnType.WriteTo (met.ReturnType, writer, nameTable);
+			PersistentReturnType.WriteTo (met.ExplicitDeclaration, writer, nameTable);
 			
 			writer.Write (met.Parameters != null ? (uint)met.Parameters.Count : (uint)0);
 			foreach (IParameter p in met.Parameters) {

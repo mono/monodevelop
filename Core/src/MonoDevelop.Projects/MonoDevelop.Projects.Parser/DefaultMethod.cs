@@ -67,11 +67,12 @@ namespace MonoDevelop.Projects.Parser
 
 		public override string ToString()
 		{
-			return String.Format("[DefaultMethod: FullyQualifiedName={0}, ReturnType = {1}, IsConstructor={2}, Modifier={3}]",
+			return String.Format("[DefaultMethod: FullyQualifiedName={0}, ReturnType = {1}, IsConstructor={2}, Modifier={3}, ExplicitDeclaration={4}]",
 			                     FullyQualifiedName,
 			                     ReturnType,
 			                     IsConstructor,
-			                     base.Modifiers);
+			                     base.Modifiers,
+			                     base.ExplicitDeclaration == null ? "null" : base.ExplicitDeclaration.ToString ());
 		}
 		
 		public override int CompareTo (object value)

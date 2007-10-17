@@ -172,54 +172,50 @@ namespace MonoDevelop.Projects.CodeGeneration
 			for (i = 0; i < iface.Events.Count; i++) {
 				IEvent ev = iface.Events[i];
 				
-				for (j = 0, alreadyImplemented = false; j < klass.Events.Count; j++) {
-					if (klass.Events[j].Name == ev.Name) {
-						alreadyImplemented = true;
-						break;
-					}
+				for (j = 0, alreadyImplemented = false; j < klass.Events.Count && !alreadyImplemented; j++) {
+					if (klass.Events[j].Name == ev.Name && klass.Events[j].IsExplicitDeclaration == explicitly) 
+						alreadyImplemented = !explicitly || iface.FullyQualifiedName == klass.Events[j].ExplicitDeclaration.FullyQualifiedName;
 				}
 				
 				if (alreadyImplemented)
 					continue;
 				
-				if ((newMember = gen.ImplementMember (gctx, klass, prefix, explicitly, ev)) != null)
-					klass = newMember.DeclaringType;
+				if ((newMember = gen.ImplementMember (gctx, klass, prefix, explicitly, ev)) != null) {
+					klass.Events.Add ((IEvent)newMember);
+				}
 			}
 			
 			// Stub out non-implemented methods defined by @iface
 			for (i = 0; i < iface.Methods.Count; i++) {
 				IMethod method = iface.Methods[i];
 				
-				for (j = 0, alreadyImplemented = false; j < klass.Methods.Count; j++) {
-					if (klass.Methods[j].Name == method.Name) {
-						alreadyImplemented = true;
-						break;
-					}
+				for (j = 0, alreadyImplemented = false; j < klass.Methods.Count&& !alreadyImplemented; j++) {
+					if (klass.Methods[j].Name == method.Name && klass.Methods[j].IsExplicitDeclaration == explicitly) 
+						alreadyImplemented = !explicitly || iface.FullyQualifiedName == klass.Methods[j].ExplicitDeclaration.FullyQualifiedName;
 				}
 				
 				if (alreadyImplemented)
 					continue;
-				
-				if ((newMember = gen.ImplementMember (gctx, klass, prefix, explicitly, method)) != null)
-					klass = newMember.DeclaringType;
+				if ((newMember = gen.ImplementMember (gctx, klass, prefix, explicitly, method)) != null) {
+					klass.Methods.Add ((IMethod)newMember);
+				}
 			}
 			
 			// Stub out non-implemented properties defined by @iface
 			for (i = 0; i < iface.Properties.Count; i++) {
 				IProperty prop = iface.Properties[i];
 				
-				for (j = 0, alreadyImplemented = false; j < klass.Properties.Count; j++) {
-					if (klass.Properties[j].Name == prop.Name) {
-						alreadyImplemented = true;
-						break;
-					}
+				for (j = 0, alreadyImplemented = false; j < klass.Properties.Count&& !alreadyImplemented; j++) {
+					if (klass.Properties[j].Name == prop.Name && klass.Properties[j].IsExplicitDeclaration == explicitly) 
+						alreadyImplemented = !explicitly || iface.FullyQualifiedName == klass.Properties[j].ExplicitDeclaration.FullyQualifiedName;
 				}
 				
 				if (alreadyImplemented)
 					continue;
 				
-				if ((newMember = gen.ImplementMember (gctx, klass, prefix, explicitly, prop)) != null)
-					klass = newMember.DeclaringType;
+				if ((newMember = gen.ImplementMember (gctx, klass, prefix, explicitly, prop)) != null) {
+					klass.Properties.Add ((IProperty)newMember);
+				}
 			}
 			
 			gctx.Save ();

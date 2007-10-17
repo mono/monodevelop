@@ -1,5 +1,20 @@
 2007-10-17  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs,
+	  MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs,
+	  MonoDevelop.Projects.Parser/PersistentMethod.cs,
+	  MonoDevelop.Projects.Parser/PersistentProperty.cs,
+	  MonoDevelop.Projects.Parser/DefaultParserService.cs,
+	  MonoDevelop.Projects.Parser/AbstractMember.cs,
+	  MonoDevelop.Projects.Parser/PersistentEvent.cs,
+	  MonoDevelop.Projects.Parser/IMember.cs,
+	  MonoDevelop.Projects.Parser/DefaultMethod.cs,
+	  MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Fixed "Bug 325457
+	  - Implementing Interface doesn't allow explicit + implicit" and "Bug
+	  325459 - Cant implement two interfaces explicitly".
+
+2007-10-17  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: Fixed bug in member
 	  generation.
 

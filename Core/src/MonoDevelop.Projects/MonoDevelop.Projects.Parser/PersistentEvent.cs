@@ -23,6 +23,7 @@ namespace MonoDevelop.Projects.Parser
 			ev.ReturnType = PersistentReturnType.Resolve (source.ReturnType, typeResolver);
 			ev.Region = source.Region;
 			ev.Attributes = PersistentAttributeSectionCollection.Resolve (source.Attributes, typeResolver);
+			ev.ExplicitDeclaration = PersistentReturnType.Resolve (source.ExplicitDeclaration, typeResolver);
 			return ev;
 		}
 		
@@ -33,6 +34,7 @@ namespace MonoDevelop.Projects.Parser
 			ev.Documentation = PersistentHelper.ReadString (reader, nameTable);
 			ev.Modifiers = (ModifierEnum)reader.ReadUInt32();
 			ev.ReturnType = PersistentReturnType.Read (reader, nameTable);
+			ev.ExplicitDeclaration = PersistentReturnType.Read (reader, nameTable);
 			ev.Region = PersistentRegion.Read (reader, nameTable);
 			ev.Attributes = PersistentAttributeSectionCollection.Read (reader, nameTable);
 			return ev;
@@ -44,6 +46,7 @@ namespace MonoDevelop.Projects.Parser
 			PersistentHelper.WriteString (ev.Documentation, writer, nameTable);
 			writer.Write ((uint)ev.Modifiers);
 			PersistentReturnType.WriteTo (ev.ReturnType, writer, nameTable);
+			PersistentReturnType.WriteTo (ev.ExplicitDeclaration, writer, nameTable);
 			PersistentRegion.WriteTo (ev.Region, writer, nameTable);
 			PersistentAttributeSectionCollection.WriteTo (ev.Attributes, writer, nameTable);
 		}

@@ -44,6 +44,7 @@ namespace MonoDevelop.Projects.Parser
 			pro.region = source.Region;
 			pro.bodyRegion = source.BodyRegion;
 			pro.attributes = PersistentAttributeSectionCollection.Resolve (source.Attributes, typeResolver);
+			pro.ExplicitDeclaration = PersistentReturnType.Resolve (source.ExplicitDeclaration, typeResolver);
 			return pro;
 		}
 		
@@ -57,6 +58,7 @@ namespace MonoDevelop.Projects.Parser
 			pro.canGet = (m & canGetFlag) == canGetFlag;
 			pro.canSet = (m & canSetFlag) == canSetFlag;
 			pro.returnType = PersistentReturnType.Read (reader, nameTable);
+			pro.ExplicitDeclaration = PersistentReturnType.Read (reader, nameTable);
 			pro.region = PersistentRegion.Read (reader, nameTable);
 			pro.bodyRegion = PersistentRegion.Read (reader, nameTable);
 			pro.attributes = PersistentAttributeSectionCollection.Read (reader, nameTable);
@@ -69,6 +71,7 @@ namespace MonoDevelop.Projects.Parser
 			PersistentHelper.WriteString (p.Documentation, writer, nameTable);
 			writer.Write((uint)p.Modifiers + (p.CanGet ? canGetFlag : 0) + (p.CanSet ? canSetFlag : 0));
 			PersistentReturnType.WriteTo (p.ReturnType, writer, nameTable);
+			PersistentReturnType.WriteTo (p.ExplicitDeclaration, writer, nameTable);
 			PersistentRegion.WriteTo (p.Region, writer, nameTable);
 			PersistentRegion.WriteTo (p.BodyRegion, writer, nameTable);
 			PersistentAttributeSectionCollection.WriteTo (p.Attributes, writer, nameTable);
