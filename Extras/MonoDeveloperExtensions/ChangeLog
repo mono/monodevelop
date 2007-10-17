@@ -1,5 +1,10 @@
 2007-10-17  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoProject.cs, MonoProjectConfiguration.cs: MonoProject now is a subclass
+	  of DotNetProject. Project export to VS format now works.
+
+2007-10-17  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoMakefileFormat.cs, MonoProject.cs: Make sure the .sources file is
 	  included when exporting the project.
 

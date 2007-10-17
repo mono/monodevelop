@@ -39,7 +39,7 @@ using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDeveloper
 {
-	public class MonoProject: Project
+	public class MonoProject: DotNetProject
 	{
 		string outFile;
 		ArrayList refNames = new ArrayList ();
@@ -51,7 +51,7 @@ namespace MonoDeveloper
 			get { return "MonoMakefile"; }
 		}
 		
-		internal MonoProject (MonoMakefile mkfile)
+		internal MonoProject (MonoMakefile mkfile): base ("C#")
 		{
 			Read (mkfile);
 		}
@@ -137,11 +137,13 @@ namespace MonoDeveloper
 			}
 			
 			MonoProjectConfiguration conf = new MonoProjectConfiguration ("default", "default");
+			conf.CompilationParameters = LanguageBinding.CreateCompilationParameters (null);
 			conf.OutputDirectory = basePath;
 			conf.AssemblyPathTemplate = targetAssembly;
 			Configurations.Add (conf);
 			
 			conf = new MonoProjectConfiguration ("net_2_0", "net_2_0");
+			conf.CompilationParameters = LanguageBinding.CreateCompilationParameters (null);
 			conf.OutputDirectory = basePath;
 			conf.AssemblyPathTemplate = targetAssembly;
 			Configurations.Add (conf);
@@ -227,7 +229,9 @@ namespace MonoDeveloper
 		
 		public override IConfiguration CreateConfiguration (string name)
 		{
-			return new MonoProjectConfiguration (name, name);
+			MonoProjectConfiguration conf = new MonoProjectConfiguration (name, name);
+			conf.CompilationParameters = LanguageBinding.CreateCompilationParameters (null);
+			return conf;
 		}
 		
 		public void CombineOpened (object sender, CombineEventArgs args)

@@ -35,7 +35,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDeveloper
 {
-	class MonoProjectConfiguration: AbstractProjectConfiguration
+	class MonoProjectConfiguration: DotNetProjectConfiguration
 	{
 		string profile;
 		string assemblyPath;
