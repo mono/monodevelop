@@ -1,3 +1,8 @@
+2007-10-17  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/Resolver.cs: Fixed "Bug 334236 - Intellisense does not work for
+	  `is' keyword".
+
 2007-10-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Parser/Resolver.cs: Let TypeNameResolver fill the names using the compiled

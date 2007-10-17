@@ -1260,7 +1260,19 @@ namespace CSharpBinding.Parser
 					ns.Add (cns);
 				}
 			}
-
+			Stack<IReturnType> baseTypes = new Stack<IReturnType> ();
+			baseTypes.Push (type);
+			do {
+				IClass c = SearchType (baseTypes.Pop (), currentUnit);
+				if (c != null) {
+					if (!result.Contains (c) && !(excludeInterfaces && (c.ClassType == ClassType.Interface || c.IsAbstract)))
+						result.Add (c);
+					foreach (IReturnType retType in c.BaseTypes) {
+						baseTypes.Push (retType);
+					}
+				}
+			} while (baseTypes.Count > 0);
+			
 			foreach (IClass iclass in parserContext.GetSubclassesTree (returnClass, ns.ToArray ())) {
 				if (!result.Contains (iclass) && !(excludeInterfaces && (iclass.ClassType == ClassType.Interface || iclass.IsAbstract)))
 					result.Add (iclass);
