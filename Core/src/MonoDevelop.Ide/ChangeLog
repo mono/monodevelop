@@ -1,5 +1,9 @@
 2007-10-17  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.addin.xml: Some command category fixes.
+
+2007-10-17  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.addin.xml: Added shortcuts for navigate back/forward.
 
 2007-10-17  Lluis Sanchez Gual <lluis@novell.com> 

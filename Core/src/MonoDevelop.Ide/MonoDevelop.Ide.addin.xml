@@ -536,6 +536,16 @@
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder"
 				_label = "_Open Containing Folder" 
 				description = "Opens the folder that contains this file."/>
+		<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAllButThis"
+		         defaultHandler = "MonoDevelop.Ide.Commands.CloseAllButThisHandler"
+				_label = "Close all but this"/>
+				_description = "Closes all opened files except for the active file"/>
+		<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.CopyPathName"
+		         defaultHandler = "MonoDevelop.Ide.Commands.CopyPathNameHandler"
+				_label = "Copy file path/name"/>
+		<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.ToggleMaximize"
+		         defaultHandler = "MonoDevelop.Ide.Commands.ToggleMaximizeHandler"
+				_label = "Switch maximize/normal view"/>
 		</Category>
 				
 		<!-- ViewCommands -->
@@ -810,19 +820,6 @@
 				_label = "Show Parameter List"
 				shortcut = "Control|Shift|space" />
 				
-		</Category>
-		
-		<!-- FileTabCommands -->
-		<Category _name = "File Tab" id="FileTab">
-			<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAllButThis"
-			         defaultHandler = "MonoDevelop.Ide.Commands.CloseAllButThisHandler"
-					_label = "Close all but this"/>
-			<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.CopyPathName"
-			         defaultHandler = "MonoDevelop.Ide.Commands.CopyPathNameHandler"
-					_label = "Copy file path/name"/>
-			<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.ToggleMaximize"
-			         defaultHandler = "MonoDevelop.Ide.Commands.ToggleMaximizeHandler"
-					_label = "Switch maximize/normal view"/>
 		</Category>
 		
 	</Extension>
