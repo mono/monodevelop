@@ -61,9 +61,13 @@ namespace AspNetAddIn.Parser
 		
 		public string GetTypeName (string tagPrefix, string tagName)
 		{
+			return GetTypeName (tagPrefix, tagName, null);
+		}
+		
+		public string GetTypeName (string tagPrefix, string tagName, string htmlTypeAttribute)
+		{
 			if (tagPrefix == null || tagPrefix.Length < 1)
-				//FIXME: need to pass 'type' attributes to look up input types correctly
-				return doc.Project.WebTypeManager.HtmlControlLookup (tagName);
+				return doc.Project.WebTypeManager.HtmlControlLookup (tagName, htmlTypeAttribute);
 			
 			if (0 == string.Compare (tagPrefix, "asp", true, CultureInfo.InvariantCulture))
 				return doc.Project.WebTypeManager.SystemWebControlLookup (tagName);
@@ -86,11 +90,9 @@ namespace AspNetAddIn.Parser
 			
 			string globalLookup = doc.Project.WebTypeManager.GetGloballyRegisteredTypeName 
 					(System.IO.Path.GetDirectoryName (doc.ProjectFile.FilePath), tagPrefix, tagName);
-			if (globalLookup != null)
-				return globalLookup;
 			
-			//FIXME: use nicer error
-			throw new Exception ("The tag prefix \"" + tagPrefix + "\" has not been registered");
+			//returns null if type not found
+			return globalLookup;
 		}
 		
 		#region directive classes

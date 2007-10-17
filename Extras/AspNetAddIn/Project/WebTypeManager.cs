@@ -55,6 +55,10 @@ namespace AspNetAddIn
 		
 		public string GetGloballyRegisteredTypeName (string webDirectory, string tagPrefix, string tagName)
 		{
+			//global control registration not possible in ASP.NET 1.1
+			if (project.ClrVersion == MonoDevelop.Core.ClrVersion.Net_1_1)
+				return null;
+			
 			//read the web.config files at each level
 			//look up a level if a result not found until we hit the project root
 			DirectoryInfo dir = new DirectoryInfo (webDirectory);

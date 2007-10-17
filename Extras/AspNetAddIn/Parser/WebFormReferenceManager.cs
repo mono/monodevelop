@@ -57,6 +57,8 @@ namespace AspNetAddIn.Parser
 		public Type GetObjectType (string tagPrefix, string typeName)
 		{
 			string fullName = GetTypeName (tagPrefix, typeName);
+			if (fullName == null)
+				throw new Exception (string.Format ("The tag type '{0}{1}{2}' has not been registered.", tagPrefix, string.IsNullOrEmpty(tagPrefix)? string.Empty:":", typeName));
 			Type type = System.Type.GetType (fullName, false);
 			if (type != null)
 				return type;

@@ -72,13 +72,13 @@ namespace AspNetAddIn.Parser
 			
 			string typeName = null;
 			try {
-				typeName = doc.ReferenceManager.GetTypeName (prefix, name);}
-			catch (Exception e) {
+				typeName = doc.ReferenceManager.GetTypeName (prefix, name, node.Attributes ["type"] as string);
+			} catch (Exception e) {
 				throw new ParserException (node.Location, e.ToString ());
 			}
 			
 			if (typeName == null)
-				throw new ParserException (node.Location, GettextCatalog.GetString ("Could not find tag type: '{0}{1}{2}'.", prefix, string.IsNullOrEmpty(prefix)? string.Empty:":", name));
+				throw new ParserException (node.Location, GettextCatalog.GetString ("The tag type '{0}{1}{2}' has not been registered.", prefix, string.IsNullOrEmpty(prefix)? string.Empty:":", name));
 			
 			CodeTypeReference ctRef = new CodeTypeReference (typeName);
 			CodeMemberField member = new CodeMemberField (ctRef, id);

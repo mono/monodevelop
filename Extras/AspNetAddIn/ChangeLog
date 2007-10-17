@@ -1,3 +1,11 @@
+2007-10-17  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Project/WebTypeManager.cs: Don't do web.config control lookups for 1.1
+	  projects.
+	* Parser/WebFormReferenceManager.cs: Track API change.
+	* Parser/MemberListVisitor.cs, Parser/DocumentReferenceManager.cs: Handle
+	  the "type" property of "input" HTML controls.
+
 2007-10-16  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Project/AspNetAppProject.cs, Project/VerifyCodeBehindBuildStep.cs,
