@@ -1,5 +1,9 @@
 2007-10-17  Mike Krüger <mkrueger@novell.com> 
 
+	* Parser/Resolver.cs: changed is/as resolve.
+
+2007-10-17  Mike Krüger <mkrueger@novell.com> 
+
 	* Parser/Resolver.cs: Fixed "Bug 334236 - Intellisense does not work for
 	  `is' keyword".
 

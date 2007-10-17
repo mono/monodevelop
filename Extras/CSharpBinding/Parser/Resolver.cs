@@ -1220,22 +1220,22 @@ namespace CSharpBinding.Parser
 			if (currentUnit != null) {
 				callingClass = GetInnermostClass ();
 			}
-
-			IReturnType type = expr.AcceptVisitor (typeVisitor, null) as IReturnType;
-			if (type == null || type.PointerNestingLevel != 0) {
-				fcu = parserContext.ParseFile (fileName, fileContent).MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Ast.CompilationUnit;
-				lookupTableVisitor.VisitCompilationUnit (fcu, null);
-				currentUnit = (ICompilationUnit)csharpVisitor.VisitCompilationUnit (fcu, null);
-
-				if (currentUnit != null) {
-					callingClass = GetInnermostClass ();
-				}
-				type = expr.AcceptVisitor (typeVisitor, null) as IReturnType;
-				if (type == null)
-					return null;
-			}
-			if (type.ArrayDimensions != null && type.ArrayDimensions.Length > 0)
-				type = new ReturnType ("System.Array");
+			IReturnType type = new ReturnType ("System.Object");
+//			IReturnType type = expr.AcceptVisitor (typeVisitor, null) as IReturnType;
+//			if (type == null || type.PointerNestingLevel != 0) {
+//				fcu = parserContext.ParseFile (fileName, fileContent).MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Ast.CompilationUnit;
+//				lookupTableVisitor.VisitCompilationUnit (fcu, null);
+//				currentUnit = (ICompilationUnit)csharpVisitor.VisitCompilationUnit (fcu, null);
+//
+//				if (currentUnit != null) {
+//					callingClass = GetInnermostClass ();
+//				}
+//				type = expr.AcceptVisitor (typeVisitor, null) as IReturnType;
+//				if (type == null)
+//					return null;
+//			}
+//			if (type.ArrayDimensions != null && type.ArrayDimensions.Length > 0)
+//				type = new ReturnType ("System.Array");
 
 			IClass returnClass = SearchType (type, currentUnit);
 //			IClass returnClass = parserContext.SearchType (type.FullyQualifiedName, null, currentUnit);
@@ -1260,18 +1260,18 @@ namespace CSharpBinding.Parser
 					ns.Add (cns);
 				}
 			}
-			Stack<IReturnType> baseTypes = new Stack<IReturnType> ();
-			baseTypes.Push (type);
-			do {
-				IClass c = SearchType (baseTypes.Pop (), currentUnit);
-				if (c != null) {
-					if (!result.Contains (c) && !(excludeInterfaces && (c.ClassType == ClassType.Interface || c.IsAbstract)))
-						result.Add (c);
-					foreach (IReturnType retType in c.BaseTypes) {
-						baseTypes.Push (retType);
-					}
-				}
-			} while (baseTypes.Count > 0);
+//			Stack<IReturnType> baseTypes = new Stack<IReturnType> ();
+//			baseTypes.Push (type);
+//			do {
+//				IClass c = SearchType (baseTypes.Pop (), currentUnit);
+//				if (c != null) {
+//					if (!result.Contains (c) && !(excludeInterfaces && (c.ClassType == ClassType.Interface || c.IsAbstract)))
+//						result.Add (c);
+//					foreach (IReturnType retType in c.BaseTypes) {
+//						baseTypes.Push (retType);
+//					}
+//				}
+//			} while (baseTypes.Count > 0);
 			
 			foreach (IClass iclass in parserContext.GetSubclassesTree (returnClass, ns.ToArray ())) {
 				if (!result.Contains (iclass) && !(excludeInterfaces && (iclass.ClassType == ClassType.Interface || iclass.IsAbstract)))
