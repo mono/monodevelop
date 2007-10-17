@@ -1,5 +1,9 @@
 2007-10-17  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.addin.xml: Added shortcuts for navigate back/forward.
+
+2007-10-17  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads/FileList.cs: File list should not be reorderable.
 	  Fixes bug #323471.
 	* gtk-gui/gui.stetic,

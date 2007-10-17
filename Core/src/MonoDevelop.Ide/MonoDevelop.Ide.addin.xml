@@ -317,21 +317,6 @@
 				
 		</Category>
 
-		<!-- NavigationCommands -->
-		<Category _name = "Navigation" id = "Navigation">
-
-		<Command id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack"
-				type = "custom"
-				widget = "MonoDevelop.Ide.Gui.NavigationHistoryBack"
-				_label = "_Back"
-				_description = "Navigate Back"/>
-		<Command id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateForward"
-				type = "custom"
-				widget = "MonoDevelop.Ide.Gui.NavigationHistoryForward"
-				_label = "_Forward"
-				_description = "Navigate Forward"/>
-		</Category>
-
 		<!-- ProjectCommands -->
 		<Category _name = "Project" id = "Project">
 				
@@ -608,6 +593,28 @@
 				_label = "Browse Previous" 
 				description = "Browse Previous"
 				shortcut = "Shift|F4" />
+		<Command id = "@MonoDevelop.Ide.Commands.NavigationCommands.NavigateBackWidget"
+				type = "custom"
+				widget = "MonoDevelop.Ide.Gui.NavigationHistoryBack"
+				_label = "Navigate _Back"
+				_description = "Navigate Back"/>
+		<Command id = "@MonoDevelop.Ide.Commands.NavigationCommands.NavigateForwardWidget"
+				type = "custom"
+				widget = "MonoDevelop.Ide.Gui.NavigationHistoryForward"
+				_label = "Navigate _Forward"
+				_description = "Navigate Forward"/>
+		<Command id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack"
+				_label = "Navigate _Back"
+				icon = "md-navigate-back"
+				defaultHandler = "MonoDevelop.Ide.Commands.NavigateBack"
+				shortcut = "Alt|Left"
+				_description = "Navigate Back"/>
+		<Command id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateForward"
+				_label = "Navigate _Forward"
+				icon = "md-navigate-forward"
+				defaultHandler = "MonoDevelop.Ide.Commands.NavigateForward"
+				shortcut = "Alt|Right"
+				_description = "Navigate Forward"/>
 
 		</Category>
 		
@@ -1140,8 +1147,8 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FullScreen" />
 		</ItemSet>
 		<ItemSet id = "Navigation" _label = "Navigation">
-			<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateForward" />
+			<CommandItem id = "@MonoDevelop.Ide.Commands.NavigationCommands.NavigateBackWidget" />
+			<CommandItem id = "@MonoDevelop.Ide.Commands.NavigationCommands.NavigateForwardWidget" />
 		</ItemSet>
 	</Extension>
 
@@ -1230,6 +1237,9 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ShowPrevious" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ShowNext" />
 			<SeparatorItem id = "ViewItemsSeparator3" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateForward" />
+			<SeparatorItem id = "ViewItemsSeparator4" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FullScreen" />
 		</ItemSet>
 		
@@ -1343,6 +1353,8 @@
 		<StockIcon stockid = "md-pin-up" resource = "pinup.png" />
 		<StockIcon stockid = "md-pin-down" resource = "pindown.png" />
 		<StockIcon stockid = "system-file-manager" resource = "system-file-manager.png" />
+		<StockIcon stockid = "md-navigate-back" resource = "navigate-previous.png" />
+		<StockIcon stockid = "md-navigate-forward" resource = "navigate-next.png" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/OptionsDialogPanels/CodingOptions">
