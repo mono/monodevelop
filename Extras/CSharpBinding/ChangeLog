@@ -1,3 +1,8 @@
+2007-10-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Parser/Resolver.cs: Let TypeNameResolver fill the names using the compiled
+	  unit. Helps fixing bug #325081.
+
 2007-10-17  Mike Krüger <mkrueger@novell.com> 
 
 	* Parser/CSharpVisitor.cs: Modified visitor to handle explicit declarations.

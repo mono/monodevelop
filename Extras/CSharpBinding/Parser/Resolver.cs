@@ -1090,32 +1090,10 @@ namespace CSharpBinding.Parser
 		
 		public TypeNameResolver CreateTypeNameResolver ()
 		{
-			TypeNameResolver res = new TypeNameResolver ();
-
-			if (callingClass != null) {
-				res.AddName (callingClass.Namespace, "");
-				// For inner classes:
-				res.AddName (callingClass.FullyQualifiedName, "");
-			}
-			
-			if (currentUnit != null) {
-				foreach (IUsing u in currentUnit.Usings) {
-					if (u != null && (u.Region == null || u.Region.IsInside(caretLine, caretColumn))) {
-						foreach (string us in u.Usings)
-							res.AddName (us, "");
-					}
-				}
-				
-				// Namespace aliases
-				foreach (IUsing u in currentUnit.Usings) {
-					if (u != null && (u.Region == null || u.Region.IsInside(caretLine, caretColumn))) {
-						foreach (string e in u.Aliases) {
-							res.AddName (u.GetAlias (e).FullyQualifiedName, e);
-						}
-					}
-				}
-			}
-			return res;
+			if (currentUnit == null)
+				return new TypeNameResolver ();
+			else
+				return new TypeNameResolver (currentUnit, caretLine, caretColumn);
 		}
 		
 		/// <remarks>
