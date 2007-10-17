@@ -1,3 +1,7 @@
+2007-10-17  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/CSharpVisitor.cs: Modified visitor to handle explicit declarations.
+
 2007-10-16  Mike Krüger <mkrueger@novell.com> 
 
 	* Parser/Resolver.cs: fixed "Bug 325528 - Intellisense contains multiple

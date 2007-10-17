@@ -245,6 +245,10 @@ namespace CSharpBinding.Parser
 			
 			Modifiers mf = methodDeclaration.Modifier;
 			Method method = new Method (String.Concat(methodDeclaration.Name), type, mf, region, bodyRegion);
+			if (methodDeclaration.InterfaceImplementations != null && methodDeclaration.InterfaceImplementations.Count > 0) {
+				method.ExplicitDeclaration = new ReturnType(methodDeclaration.InterfaceImplementations[0].InterfaceType);
+			}
+			
 			ParameterCollection parameters = method.Parameters;
 			if (methodDeclaration.Parameters != null) {
 				foreach (ParameterDeclarationExpression par in methodDeclaration.Parameters) {
@@ -474,6 +478,10 @@ namespace CSharpBinding.Parser
 			Modifiers mf = propertyDeclaration.Modifier;
 			DefaultProperty property = new DefaultProperty (propertyDeclaration.Name, type, (ModifierEnum)mf, region, bodyRegion);
 			
+			if (propertyDeclaration.InterfaceImplementations != null && propertyDeclaration.InterfaceImplementations.Count > 0) {
+				property.ExplicitDeclaration = new ReturnType (propertyDeclaration.InterfaceImplementations[0].InterfaceType);
+			}
+			
 			FillAttributes (property, propertyDeclaration.Attributes);
 			
 			if (propertyDeclaration.HasGetRegion)
@@ -506,6 +514,9 @@ namespace CSharpBinding.Parser
 				FillAttributes (e, eventDeclaration.Attributes);
 				c.Events.Add(e);
 //			}
+			if (eventDeclaration.InterfaceImplementations != null && eventDeclaration.InterfaceImplementations.Count > 0) {
+				e.ExplicitDeclaration = new ReturnType(eventDeclaration.InterfaceImplementations[0].InterfaceType);
+			}
 			return null;
 		}
 		
