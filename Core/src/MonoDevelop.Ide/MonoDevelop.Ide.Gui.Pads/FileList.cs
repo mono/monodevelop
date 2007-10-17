@@ -32,7 +32,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			HeadersVisible = true;
 			HeadersClickable = true;
-			Reorderable = true;
 			RulesHint = true;
 
 			Gtk.TreeViewColumn name_column = new Gtk.TreeViewColumn ();
