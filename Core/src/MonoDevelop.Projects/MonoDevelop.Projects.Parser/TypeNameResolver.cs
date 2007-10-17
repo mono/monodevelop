@@ -33,6 +33,7 @@ namespace MonoDevelop.Projects.Parser
 	public class TypeNameResolver: ITypeNameResolver
 	{
 		protected Dictionary<string,string> names = new Dictionary<string,string> ();
+		string enclosingNamespace;
 		
 		public TypeNameResolver ()
 		{
@@ -54,6 +55,7 @@ namespace MonoDevelop.Projects.Parser
 				if ((cls.Region != null && cls.Region.IsInside (caretLine, caretColumn)) || (cls.BodyRegion != null && cls.BodyRegion.IsInside (caretLine, caretColumn))) {
 					// Enclosing namespace:
 					AddName (cls.Namespace, "");
+					enclosingNamespace = cls.Namespace;
 					// For inner classes:
 					AddName (cls.FullyQualifiedName, "");
 				}
@@ -101,8 +103,13 @@ namespace MonoDevelop.Projects.Parser
 				else
 					return typeName.Substring (i+1);
 			}
-			else
+			else {
+				// We don't resolve partial namespaces, but the enclosing namespace is an exception.
+				if (enclosingNamespace != null && typeName.StartsWith (enclosingNamespace + "."))
+					return typeName.Substring (enclosingNamespace.Length + 1);
+				
 				return typeName;
+			}
 		}
 	}
 }
