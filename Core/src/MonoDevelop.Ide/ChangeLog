@@ -1,3 +1,10 @@
+2007-10-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceNodeBuilder.cs: Some tree
+	  update fixes. If a new class is added, don't show it if the namespace
+	  branch is not expanded.
+	* MonoDevelop.Ide.mdp: Updated.
+
 2007-10-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.addin.xml: Some command category fixes.

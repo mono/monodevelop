@@ -178,8 +178,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		{
 			ITreeBuilder builder = Context.GetTreeBuilder ();
 			if (!builder.MoveToObject (project)) {
-				if (!builder.MoveToRoot ())
-					return;	// The tree may have been cleaned
+				return;	// The project is not there or may not yet be expanded
 			}
 			
 			if (cls.Namespace == "") {
@@ -189,10 +188,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 					string[] nsparts = cls.Namespace.Split ('.');
 					string ns = "";
 					foreach (string nsp in nsparts) {
-						if (ns.Length > 0) ns += ".";
-						ns += nsp;
-						if (!builder.MoveToChild (nsp, typeof(NamespaceData)))
-							builder.AddChild (new NamespaceData (project, ns), true);
+						if (builder.Filled) {
+							if (ns.Length > 0) ns += ".";
+							ns += nsp;
+							if (!builder.MoveToChild (nsp, typeof(NamespaceData))) {
+								builder.AddChild (new NamespaceData (project, ns), true);
+								break;
+							}
+						} else
+							break;
 					}
 					builder.AddChild (new ClassData (project, cls));
 				} else {
