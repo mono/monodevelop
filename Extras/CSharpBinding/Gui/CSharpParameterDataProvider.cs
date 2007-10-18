@@ -16,12 +16,12 @@ namespace CSharpBinding
 		TextEditor editor;
 		CSharpAmbience ambience = new CSharpAmbience ();
 		
-		public CSharpParameterDataProvider (TextEditor editor, IClass cls, string methodName): base (cls, methodName)
+		public CSharpParameterDataProvider (TextEditor editor, MethodParameterDataProvider.Scope scope, IClass cls, string methodName): base (cls, methodName, scope)
 		{
 			this.editor = editor;
 		}
 		
-		public CSharpParameterDataProvider (TextEditor editor, IClass cls): base (cls)
+		public CSharpParameterDataProvider (TextEditor editor, MethodParameterDataProvider.Scope scope, IClass cls): base (cls, scope)
 		{
 			this.editor = editor;
 		}

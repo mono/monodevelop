@@ -537,13 +537,31 @@ namespace CSharpBinding
 				Resolver res = new Resolver (pctx);
 				ILanguageItem it = res.ResolveIdentifier (pctx, ex, lin, col - 1, FileName, Editor.Text);
 				
-				// Create the parameter data provider if a method is found.
+				MethodParameterDataProvider.Scope scope = MethodParameterDataProvider.Scope.All;
+				if (it is IMember) {
+					IMember member = it as IMember;
+					IClass insideClass = LookupClass (res.CompilationUnit, lin, col);
+					if (insideClass != null) {
+						if (insideClass.FullyQualifiedName == member.DeclaringType.FullyQualifiedName) {
+							scope = MethodParameterDataProvider.Scope.All;
+						} else {
+							scope = MethodParameterDataProvider.Scope.Public;
+							foreach (IClass c in pctx.GetClassInheritanceTree (insideClass)) {
+								if (c.FullyQualifiedName == member.DeclaringType.FullyQualifiedName) {
+									scope |= MethodParameterDataProvider.Scope.Protected;
+									break;
+								}
+							}
+						}
+						scope |= MethodParameterDataProvider.Scope.Internal;
+					}
+				}
 				if (it is IMethod) {
 					IMethod met = (IMethod) it;
 					if (met.IsConstructor)
-						return new CSharpParameterDataProvider (Editor, met.DeclaringType);
+						return new CSharpParameterDataProvider (Editor, scope, met.DeclaringType);
 					else
-						return new CSharpParameterDataProvider (Editor, met.DeclaringType, met.Name);
+						return new CSharpParameterDataProvider (Editor, scope, met.DeclaringType, met.Name);
 				}
 				else if (it is IEvent) {
 					IEvent ev = (IEvent) it;
@@ -551,12 +569,12 @@ namespace CSharpBinding
 					if (cls != null) {
 						foreach(IMethod m in cls.Methods) {
 							if (m.Name == "Invoke")
-								return new CSharpParameterDataProvider (Editor, cls, "Invoke");
+								return new CSharpParameterDataProvider (Editor, scope, cls, "Invoke");
 						}
 					}
 				}
 				else if (it is IClass) {
-					return new CSharpParameterDataProvider (Editor, (IClass)it);
+					return new CSharpParameterDataProvider (Editor, scope, (IClass)it);
 				}
 			}
 			return null;
