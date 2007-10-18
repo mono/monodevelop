@@ -1,3 +1,11 @@
+2007-10-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Diff/Diff.mdp, DiffWidget/DiffWidget.mdp,
+	  MonoDevelop.VersionControl.Subversion/gtk-gui/gui.stetic,
+	  MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.SslServerTrustDialog.cs,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl.mdp,
+	  VersionControl.mds: Flush
+
 2007-10-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/LibSvnClient.cs:

@@ -20,9 +20,9 @@
     <Execute type="None" entry="MonoDevelop.VersionControl.Subversion" />
   </StartMode>
   <Entries>
-    <Entry filename="./Diff/Diff.mdp" />
-    <Entry filename="./DiffWidget/DiffWidget.mdp" />
-    <Entry filename="./MonoDevelop.VersionControl/MonoDevelop.VersionControl.mdp" />
-    <Entry filename="./MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.mdp" />
+    <Entry filename="Diff/Diff.mdp" />
+    <Entry filename="DiffWidget/DiffWidget.mdp" />
+    <Entry filename="MonoDevelop.VersionControl/MonoDevelop.VersionControl.mdp" />
+    <Entry filename="MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.mdp" />
   </Entries>
 </Combine>
