@@ -12,6 +12,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Xml;
 using System.Collections;
+using MonoDevelop.Core;
 using MonoDevelop.Projects.Serialization;
 
 namespace MonoDevelop.Projects
@@ -62,14 +63,14 @@ namespace MonoDevelop.Projects
 		
 		public ProjectFile(string filename)
 		{
-			this.filename = filename;
+			this.filename = FileService.GetFullPath (filename);
 			subtype       = Subtype.Code;
 			buildaction   = BuildAction.Compile;
 		}
 		
 		public ProjectFile(string filename, BuildAction buildAction)
 		{
-			this.filename = filename;
+			this.filename = FileService.GetFullPath (filename);
 			subtype       = Subtype.Code;
 			buildaction   = buildAction;
 		}
@@ -95,7 +96,7 @@ namespace MonoDevelop.Projects
 			set {
 				Debug.Assert (value != null && value.Length > 0, "name == null || name.Length == 0");
 				string oldName = filename;
-				filename = value;
+				filename = FileService.GetFullPath (value);
 				if (project != null)
 					project.NotifyFileRenamedInProject (new ProjectFileRenamedEventArgs (project, this, oldName));
 			}

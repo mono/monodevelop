@@ -42,7 +42,7 @@ namespace MonoDevelop.Projects
 			fileName = FileService.GetFullPath (fileName);
 			
 			foreach (ProjectFile file in this) {
-				if (FileService.GetFullPath (file.Name) == fileName)
+				if (file.Name == fileName)
 					return file;
 			}
 			return null;

@@ -5,6 +5,7 @@
 //     <version value="$version"/>
 // </file>
 using System;
+using System.Collections.Generic;
 using System.Text;
 using MonoDevelop.Projects.Utility;
 
@@ -20,6 +21,9 @@ namespace MonoDevelop.Projects.Parser
 		protected bool   byRef;
 		string fname;
 		
+		static readonly int[] zeroDimensions = new int[0];
+		static readonly int[] oneDimensions = new int[] { 1 };
+		
 		public DefaultReturnType ()
 		{
 		}
@@ -32,9 +36,9 @@ namespace MonoDevelop.Projects.Parser
 		public DefaultReturnType (string fullyQualifiedName, int[] arrayDimensions, int pointerNestingLevel, ReturnTypeList genericArguments)
 		{
 			this.FullyQualifiedName  = fullyQualifiedName;
-			this.arrayDimensions     = arrayDimensions;
 			this.pointerNestingLevel = pointerNestingLevel;
 			this.genericArguments    = genericArguments;
+			ArrayDimensions = arrayDimensions;
 		}
 		
 		public virtual string FullyQualifiedName {
@@ -127,11 +131,17 @@ namespace MonoDevelop.Projects.Parser
 
 		public virtual int[] ArrayDimensions {
 			get {
-				if (arrayDimensions == null) return new int[0];
+				if (arrayDimensions == null)
+					return zeroDimensions;
 				return arrayDimensions;
 			}
 			set {
-				arrayDimensions = value;
+				if (value == null || value.Length == 0)
+					arrayDimensions = zeroDimensions;
+				else if (value != null && value.Length == 1 && value[0] == 1)
+					arrayDimensions = oneDimensions;
+				else
+					arrayDimensions = value;
 			}
 		}
 		 		
@@ -176,9 +186,11 @@ namespace MonoDevelop.Projects.Parser
 				return cmp;
 			}
 			
-			cmp = DiffUtility.Compare(ArrayDimensions, value.ArrayDimensions);
-			if (cmp != 0)
-				return cmp;
+			if (ArrayDimensions != value.ArrayDimensions) {
+				cmp = DiffUtility.Compare(ArrayDimensions, value.ArrayDimensions);
+				if (cmp != 0)
+					return cmp;
+			}
 			
 			if (GenericArguments == value.GenericArguments)
 				return 0;
@@ -281,6 +293,58 @@ namespace MonoDevelop.Projects.Parser
 					bestLevel = lev;
 			}
 			return bestLevel;
+		}
+		
+		
+		static Dictionary<string, IReturnType> commonTypes;
+		
+		internal static IReturnType GetSharedType (IReturnType type)
+		{
+			if (type.ArrayCount > 0 || type.ByRef || (type.GenericArguments != null && type.GenericArguments.Count > 0) || type.PointerNestingLevel > 0)
+				return type;
+
+			if (commonTypes == null)
+				InitializeCommonTypes ();
+			
+			IReturnType res;
+			if (commonTypes.TryGetValue (type.FullyQualifiedName, out res))
+				return res;
+			else
+				return type;
+		}
+		
+		static void InitializeCommonTypes ()
+		{
+			commonTypes = new Dictionary <string,IReturnType> ();
+			
+			AddCommonType ("System.Void");
+			AddCommonType ("System.Object");
+			AddCommonType ("System.Boolean");
+			AddCommonType ("System.Byte");
+			AddCommonType ("System.SByte");
+			AddCommonType ("System.Char");
+			AddCommonType ("System.Enum");
+			AddCommonType ("System.Int16");
+			AddCommonType ("System.Int32");
+			AddCommonType ("System.Int64");
+			AddCommonType ("System.UInt16");
+			AddCommonType ("System.UInt32");
+			AddCommonType ("System.UInt64");
+			AddCommonType ("System.Single");
+			AddCommonType ("System.Double");
+			AddCommonType ("System.Decimal");
+			AddCommonType ("System.String");
+			AddCommonType ("System.DateTime");
+			AddCommonType ("System.IntPtr");
+			AddCommonType ("System.Enum");
+			AddCommonType ("System.Type");
+			AddCommonType ("System.IO.Stream");
+			AddCommonType ("System.EventArgs");
+		}
+		
+		static void AddCommonType (string type)
+		{
+			commonTypes [type] = new DefaultReturnType (type);
 		}
 	}
 	

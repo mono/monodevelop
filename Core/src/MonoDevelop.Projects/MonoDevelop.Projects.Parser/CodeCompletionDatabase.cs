@@ -48,8 +48,8 @@ namespace MonoDevelop.Projects.Parser
 {
 	internal class CodeCompletionDatabase: IDisposable
 	{
-		static readonly int MAX_ACTIVE_COUNT = 100;
-		static readonly int MIN_ACTIVE_COUNT = 50;
+		static protected readonly int MAX_ACTIVE_COUNT = 100;
+		static protected readonly int MIN_ACTIVE_COUNT = 10;
 		static protected readonly int FORMAT_VERSION = 24;
 		
 		NamespaceEntry rootNamespace;
@@ -265,9 +265,11 @@ namespace MonoDevelop.Projects.Parser
 							// goes wrong when reading the file contents
 							if (len > 1024*1024*10 || len < 0)
 								throw new InvalidOperationException ("pidb file corrupted: " + dataFile);
-								
+
 							data = new byte[len];
-							datafile.Read (data, 0, len);
+							int nr = 0;
+							while (nr < len)
+								nr += datafile.Read (data, nr, len - nr);
 						}
 						else {
 							buffer.Position = 0;
@@ -366,15 +368,19 @@ namespace MonoDevelop.Projects.Parser
 		
 		internal IClass ReadClass (ClassEntry ce)
 		{
-			if (datareader == null) {
-				datafile = new FileStream (dataFile, FileMode.Open, FileAccess.Read, FileShare.Read);
-				datareader = new BinaryReader (datafile);
+			lock (rwlock)
+			{
+				if (datareader == null) {
+					datafile = new FileStream (dataFile, FileMode.Open, FileAccess.Read, FileShare.Read);
+					datareader = new BinaryReader (datafile);
+				}
+				datafile.Position = ce.Position;
+				datareader.ReadInt32 ();	// Length of data
+
+				DefaultClass cls = PersistentClass.Read (datareader, parserDatabase.DefaultNameDecoder);
+				cls.SourceProject = SourceEntry;
+				return cls;
 			}
-			datafile.Position = ce.Position;
-			datareader.ReadInt32 ();	// Length of data
-			DefaultClass cls = PersistentClass.Read (datareader, parserDatabase.DefaultNameDecoder);
-			cls.SourceProject = SourceEntry;
-			return cls;
 		}
 		
 		void CloseReader ()

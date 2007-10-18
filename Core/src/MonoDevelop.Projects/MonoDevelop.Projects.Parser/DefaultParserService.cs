@@ -418,7 +418,7 @@ namespace MonoDevelop.Projects.Parser
 						rt.GenericArguments.Add (PersistentReturnType.Resolve (ga, this));
 					}
 				}
-				return rt;
+				return DefaultReturnType.GetSharedType (rt);
 			}
 			
 			public bool AllResolved
@@ -1077,6 +1077,7 @@ namespace MonoDevelop.Projects.Parser
 			IProgressMonitor monitor = null;
 			
 			try {
+				Dictionary<CodeCompletionDatabase,CodeCompletionDatabase> dbsToFlush = new Dictionary<CodeCompletionDatabase,CodeCompletionDatabase> ();
 				do {
 					if (pending > 5 && monitor == null) {
 						monitor = GetParseProgressMonitor ();
@@ -1093,6 +1094,7 @@ namespace MonoDevelop.Projects.Parser
 					if (job != null) {
 						try {
 							job.ParseCallback (job.Data, monitor);
+							dbsToFlush [job.Database] = job.Database;
 						} catch (Exception ex) {
 							if (monitor == null)
 								monitor = GetParseProgressMonitor ();
@@ -1105,6 +1107,11 @@ namespace MonoDevelop.Projects.Parser
 					
 				}
 				while (pending > 0);
+				
+				// Flush the parsed databases
+				foreach (CodeCompletionDatabase db in dbsToFlush.Keys)
+					db.Flush ();
+				
 			} finally {
 				if (monitor != null) monitor.Dispose ();
 			}
@@ -1521,7 +1528,7 @@ namespace MonoDevelop.Projects.Parser
 				tr.AllResolved = true;
 				DefaultClass rc = PersistentClass.Resolve (c, tr);
 				
-				if (tr.AllResolved) {
+				if (tr.AllResolved && c.FullyQualifiedName != "System.Object") {
 					// If the class has no base classes, make sure it subclasses System.Object
 					bool foundBase = false;
 					foreach (IReturnType bt in rc.BaseTypes) {
@@ -1635,14 +1642,8 @@ namespace MonoDevelop.Projects.Parser
 			ICompilationUnitBase parserOutput = null;
 			
 			if (fileContent == null) {
-				lock (databases) {
-					foreach (object ob in databases.Values) {
-						ProjectCodeCompletionDatabase db = ob as ProjectCodeCompletionDatabase;
-						if (db != null) {
-							if (db.Project.IsFileInProject (fileName))
-								fileContent = db.Project.GetParseableFileContent(fileName);
-						}
-					}
+				using (StreamReader sr = File.OpenText(fileName)) {
+					fileContent = sr.ReadToEnd();
 				}
 			}
 			

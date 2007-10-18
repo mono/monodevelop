@@ -42,6 +42,7 @@ namespace MonoDevelop.Projects.Parser
 		Project project;
 		bool initialFileCheck;
 		ClrVersion lastVersion = ClrVersion.Default;
+		int parseCount;
 		
 		public ProjectCodeCompletionDatabase (Project project, ParserDatabase parserDatabase)
 		: base (parserDatabase)
@@ -280,7 +281,8 @@ namespace MonoDevelop.Projects.Parser
 					file.ParseErrorRetries = 0;
 			}
 			
-			Flush ();
+			if ((++parseCount % MAX_ACTIVE_COUNT) == 0)
+				Flush ();
 			return res;
 		}
 		

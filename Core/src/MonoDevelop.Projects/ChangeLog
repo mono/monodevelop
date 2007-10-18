@@ -1,3 +1,25 @@
+2007-10-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/ProjectFileCollection.cs: ProjectFile.Name is now a
+	  normalized path, so there is no need to call GetFullPath. Fixes a
+	  performance problem when looking for files.
+	* MonoDevelop.Projects/ProjectFile.cs: Always work with normalized paths.
+	* MonoDevelop.Projects.mdp: Updated.
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs: Flush the modified
+	  databases after parsing files. Avoid adding System.Object as a base
+	  class of System.Object (it happens when parsing mcs). Removed call to
+	  GetParseableFileContent. We don't use that at all.
+	* MonoDevelop.Projects.Parser/PersistentReturnType.cs,
+	  MonoDevelop.Projects.Parser/DefaultReturnType.cs: Some memory
+	  optimizations. Reuse common array dimension arrays and IReturnType
+	  objects.
+	* MonoDevelop.Projects.Parser/ProjectCodeCompletionDatabase.cs: Don't flush
+	  the db at every file parsed. Doing it at every MAX_ACTIVE_COUNT span is
+	  enough.
+	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Added missing rw
+	  lock. Fixed potential issue when reading data from the file. Stream.Read
+	  may return less bytes than requested. 
+
 2007-10-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Parser/TypeNameResolver.cs: TypeNameResolver don't

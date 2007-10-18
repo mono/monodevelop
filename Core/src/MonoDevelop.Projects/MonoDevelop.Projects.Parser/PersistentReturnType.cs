@@ -19,7 +19,7 @@ namespace MonoDevelop.Projects.Parser
 			return typeResolver.Resolve (source);
 		}
 
-		public static DefaultReturnType Read (BinaryReader reader, INameDecoder nameTable)
+		public static IReturnType Read (BinaryReader reader, INameDecoder nameTable)
 		{
 			if (PersistentHelper.ReadNull (reader)) return null;
 			
@@ -31,10 +31,11 @@ namespace MonoDevelop.Projects.Parser
 			rt.PointerNestingLevel = reader.ReadInt32();
 
 			uint count = reader.ReadUInt32();
-			rt.ArrayDimensions = new int[count];
-			for (uint i = 0; i < rt.ArrayDimensions.Length; ++i) {
-				rt.ArrayDimensions[i] = reader.ReadInt32();
+			int[] dims = new int[count];
+			for (uint i = 0; i < count; ++i) {
+				dims[i] = reader.ReadInt32();
 			}
+			rt.ArrayDimensions = dims;
 			
 			// Read the generic arguments
 			count = reader.ReadUInt32();
@@ -47,7 +48,7 @@ namespace MonoDevelop.Projects.Parser
 				// All the generic arguments have been added...
 			}
 			
-			return rt;
+			return DefaultReturnType.GetSharedType (rt);
 		}
 
 		public static void WriteTo (IReturnType rt, BinaryWriter writer, INameEncoder nameTable)
