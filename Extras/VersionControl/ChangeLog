@@ -1,5 +1,16 @@
 2007-10-18  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.VersionControl.Subversion/Makefile.am,
+	  MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.mdp:
+	  Added reference to System.
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/LibApr.cs,
+	  MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:
+	  libsvn_client may be linked to libapr-0 or libapr-1, and we need to bind
+	  the LibApr class the the same library. Added code that detects the
+	  required libapr version and loads it. Fixes bug #325391.
+
+2007-10-18  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Diff/Diff.mdp, DiffWidget/DiffWidget.mdp,
 	  MonoDevelop.VersionControl.Subversion/gtk-gui/gui.stetic,
 	  MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.SslServerTrustDialog.cs,

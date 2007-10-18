@@ -26,8 +26,33 @@ namespace MonoDevelop.VersionControl.Subversion {
 		
 		static SvnClient()
 		{
-			apr = LibApr.GetLib ();
+			// Detect the libapr version required by libsvn_client. We need to bind to the same library.
+			int aprver = GetLoadAprLib (-1);
 			svn = LibSvnClient.GetLib ();
+			aprver = GetLoadAprLib (aprver);
+			if (aprver != -1)
+				Runtime.LoggingService.Info ("Subversion add-in: detected libapr-" + aprver);
+			apr = LibApr.GetLib (aprver);
+		}
+		
+		static int GetLoadAprLib (int oldVersion)
+		{
+			// Get the version of the loaded libapr
+			string file = "/proc/" + System.Diagnostics.Process.GetCurrentProcess ().Id + "/maps";
+			try {
+				int newv = oldVersion;
+				if (File.Exists (file)) {
+					string txt = File.ReadAllText (file);
+					if (txt.IndexOf ("libapr-0") != -1 && oldVersion != 0)
+						newv = 0;
+					if (txt.IndexOf ("libapr-1") != -1 && oldVersion != 1)
+						newv = 1;
+				}
+				return newv;
+			} catch {
+				// Ignore
+				return oldVersion;
+			}
 		}
 		
 		private static IntPtr newpool (IntPtr parent)

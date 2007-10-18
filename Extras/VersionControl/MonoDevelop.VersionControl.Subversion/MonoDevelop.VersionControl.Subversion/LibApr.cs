@@ -11,8 +11,13 @@ namespace MonoDevelop.VersionControl.Subversion
 		public static readonly int APR_CREATE = 4;
 		public static readonly int APR_TRUNCATE = 16;
 		
-		public static LibApr GetLib ()
+		public static LibApr GetLib (int ver)
 		{
+			if (ver == 0)
+				return new LibApr0 ();
+			else if (ver == 1)
+				return new LibApr1 ();
+			
 			try {
 				return new LibApr0 ();
 			} catch {}
