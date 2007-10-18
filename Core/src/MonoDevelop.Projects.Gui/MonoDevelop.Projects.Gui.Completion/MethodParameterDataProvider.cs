@@ -9,31 +9,53 @@ namespace MonoDevelop.Projects.Gui.Completion
 	
 	public abstract class MethodParameterDataProvider: IParameterDataProvider
 	{
+		[Flags]
+		public enum Scope 
+		{
+			Public,
+			Private,
+			Internal,
+			Protected,
+			All = Public | Private | Internal | Protected
+		}
 		IMethod[] listMethods;
 		string methodName;
 		
-		public MethodParameterDataProvider (IClass cls, string methodName)
+		public MethodParameterDataProvider (IClass cls, string methodName, Scope scope)
 		{
 			this.methodName = methodName;
 			
 			ArrayList methods = new ArrayList ();
 			foreach (IMethod met in cls.Methods) {
-				if (met.Name == methodName)
+				if (met.Name == methodName && ShouldAdd (met, scope)) 
 					methods.Add (met);
 			}
 			Init (methods);
 		}
+		public MethodParameterDataProvider (IClass cls, string methodName) : this (cls, methodName, Scope.All)
+		{
+		}
 		
-		public MethodParameterDataProvider (IClass cls)
+		public MethodParameterDataProvider (IClass cls, Scope scope)
 		{
 			// Look for constructors
 			
 			ArrayList methods = new ArrayList ();
 			foreach (IMethod met in cls.Methods) {
-				if (met.IsConstructor)
+				if (met.IsConstructor && ShouldAdd (met, scope))
 					methods.Add (met);
 			}
 			Init (methods);
+		}
+		public MethodParameterDataProvider (IClass cls) : this (cls, Scope.All)
+		{
+		}
+		
+		bool ShouldAdd (IMethod met, Scope scope)
+		{
+			return !((scope & Scope.Internal) != Scope.Internal && met.IsInternal ||
+			         (scope & Scope.Private) != Scope.Private && met.IsPrivate ||
+				     (scope & Scope.Protected) != Scope.Protected && met.IsProtected);
 		}
 		
 		void Init (ArrayList methods)

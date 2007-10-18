@@ -1,3 +1,8 @@
+2007-10-18  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/MethodParameterDataProvider.cs: fixed
+	  "Bug 325509 - Inaccessible methods displayed in autocomplete".
+
 2007-10-16  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs: Fixed
