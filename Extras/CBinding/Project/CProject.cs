@@ -235,7 +235,9 @@ namespace CBinding
 			string literal = "LD_LIBRARY_PATH";
 			string ld_library_path = Environment.GetEnvironmentVariable (literal);
 			
-			if (!ld_library_path.Contains (config.OutputDirectory)) {
+			if (string.IsNullOrEmpty (ld_library_path)) {
+				Environment.SetEnvironmentVariable (literal, config.OutputDirectory);
+			} else if (!ld_library_path.Contains (config.OutputDirectory)) {
 				ld_library_path = string.Format ("{0}:{1}", config.OutputDirectory, ld_library_path);
 				Environment.SetEnvironmentVariable (literal, ld_library_path);
 			}

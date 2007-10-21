@@ -1,3 +1,7 @@
+2007-10-20  Chris Howie <bzximian.3.crazycomputers@neverbox.com> 
+
+	* Project/CProject.cs: Don't assume LD_LIBRARY_PATH is set.
+
 2007-10-12  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* Navigation/ProjectNodeBuilderExtension.cs: If exuberant-ctags is not
