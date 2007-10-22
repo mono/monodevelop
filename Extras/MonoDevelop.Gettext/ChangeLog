@@ -1,5 +1,10 @@
 2007-10-22  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs:
+	  Updating translations is now done async.
+
+2007-10-22  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Gettext/CatalogParser.cs, MonoDevelop.Gettext/Catalog.cs:
 	  Fixed "Bug 335326 - Gettext addin breaks zh_CN.po".
 

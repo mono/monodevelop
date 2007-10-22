@@ -174,34 +174,48 @@ namespace MonoDevelop.Gettext.NodeBuilders
 					chooser.Destroy ();
 				}
 			}
+			IAsyncOperation currentTranslation;
 			
+			void UpdateTranslationsAsync (object ob)
+			{
+				object[] data = (object[]) ob;
+				IProgressMonitor monitor = (IProgressMonitor) data [0];
+				TranslationProject project = (TranslationProject) data [1];
+				
+				int count = 0;
+				foreach (Project p in project.ParentCombine.GetAllProjects ()) {
+					if (!project.IsIncluded (p))
+						continue;
+					count++;
+				}
+				monitor.BeginTask (GettextCatalog.GetString ("Updating Translations "), count);
+				
+				foreach (Project p in project.ParentCombine.GetAllProjects ()) {
+					if (!project.IsIncluded (p))
+						continue;
+					monitor.Log.WriteLine (String.Format (GettextCatalog.GetString ("Scanning project {0}..."),  p.Name));
+					monitor.Step (1);
+					foreach (ProjectFile file in p.ProjectFiles) {
+						PropertyProvider.ProjectFileWrapper wrapper = new PropertyProvider.ProjectFileWrapper (file);
+						if (wrapper.ScanForTranslations)
+							TranslationService.UpdateTranslation (project, file.FilePath, monitor);
+					}
+				}
+				
+				monitor.EndTask ();
+				monitor.Log.WriteLine ();
+				monitor.Log.WriteLine (GettextCatalog.GetString ("---------------------- Done ----------------------"));
+				monitor.Dispose ();
+			}
+
 			void UpdateTranslations (TranslationProject project)
 			{
-				using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ()) {
-					int count = 0;
-					foreach (Project p in project.ParentCombine.GetAllProjects ()) {
-						if (!project.IsIncluded (p))
-							continue;
-						count++;
-					}
-					monitor.BeginTask (GettextCatalog.GetString ("Updating Translations "), count);
-					
-					foreach (Project p in project.ParentCombine.GetAllProjects ()) {
-						if (!project.IsIncluded (p))
-							continue;
-						monitor.Log.WriteLine (String.Format (GettextCatalog.GetString ("Scanning project {0}..."),  p.Name));
-						monitor.Step (1);
-						foreach (ProjectFile file in p.ProjectFiles) {
-							PropertyProvider.ProjectFileWrapper wrapper = new PropertyProvider.ProjectFileWrapper (file);
-							if (wrapper.ScanForTranslations)
-								TranslationService.UpdateTranslation (project, file.FilePath, monitor);
-						}
-					}
-					
-					monitor.EndTask ();
-					monitor.Log.WriteLine ();
-					monitor.Log.WriteLine (GettextCatalog.GetString ("---------------------- Done ----------------------"));
-				}
+				if (currentTranslation != null && !currentTranslation.IsCompleted) 
+					return;
+				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
+				DispatchService.ThreadDispatch (new StatefulMessageHandler (UpdateTranslationsAsync), new object[] {monitor, project});
+				currentTranslation = monitor.AsyncOperation;
+				
 			}
 			
 			[CommandHandler (Commands.UpdateTranslations)]
