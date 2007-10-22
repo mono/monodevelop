@@ -91,6 +91,9 @@ $(MONO_ADDINS_GUI_DATA_FILES_BUILD): $(BUILD_DIR)/% : $(addprefix $(MONO_ADDINS_
 	mkdir -p $(dir $@)		
 	cp $< $@
 
+update-source:
+	svn rm svn+ssh://mono-cvs.ximian.com/source/trunk/monodevelop/contrib/Mono.Addins/src && \
+	svn cp svn+ssh://mono-cvs.ximian.com/source/trunk/mono-addins svn+ssh://mono-cvs.ximian.com/source/trunk/monodevelop/contrib/Mono.Addins/src
 
 assemblydir = $(MD_ASSEMBLY_DIR)
 assembly_DATA = $(MONO_ADDINS) $(MONO_ADDINS_SETUP) $(MONO_ADDINS_GUI) $(MONO_ADDINS_DATA_FILES_BUILD)  $(MONO_ADDINS_SETUP_DATA_FILES_BUILD) $(MONO_ADDINS_GUI_DATA_FILES_BUILD) 

@@ -1,6 +1,9 @@
 <Combine name="contrib" fileversion="2.0">
-  <Configurations>
+  <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
+      <CustomCommands>
+        <Command type="Custom" name="Update mono-addins" command="make update-source" workingdir="${ProjectDir}/Mono.Addins" externalConsole="True" pauseExternalConsole="True" />
+      </CustomCommands>
       <Entry build="True" name="Firebird" configuration="Default" />
       <Entry build="True" name="Mono.Addins" configuration="Debug" />
       <Entry build="True" name="Mono.Cecil" configuration="Debug" />
@@ -28,11 +31,11 @@
     <Execute type="None" entry="Mono.Addins.Setup" />
   </StartMode>
   <Entries>
-    <Entry filename="./Firebird/Firebird.mdp" />
-    <Entry filename="./Mono.Addins/Mono.Addins.mdp" />
-    <Entry filename="./Mono.Cecil/Mono.Cecil.mdp" />
-    <Entry filename="./log4net/log4net.mdp" />
-    <Entry filename="./Mono.Addins/Mono.Addins.Gui.mdp" />
-    <Entry filename="./Mono.Addins/Mono.Addins.Setup.mdp" />
+    <Entry filename="Firebird/Firebird.mdp" />
+    <Entry filename="Mono.Addins/Mono.Addins.mdp" />
+    <Entry filename="Mono.Cecil/Mono.Cecil.mdp" />
+    <Entry filename="log4net/log4net.mdp" />
+    <Entry filename="Mono.Addins/Mono.Addins.Gui.mdp" />
+    <Entry filename="Mono.Addins/Mono.Addins.Setup.mdp" />
   </Entries>
 </Combine>
