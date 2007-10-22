@@ -1,0 +1,468 @@
+<Type Name="ExtensionContext" FullName="Mono.Addins.ExtensionContext">
+  <TypeSignature Language="C#" Value="public class ExtensionContext" />
+  <AssemblyInfo>
+    <AssemblyName>Mono.Addins</AssemblyName>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Members>
+    <Member MemberName="ExtensionChanged">
+      <MemberSignature Language="C#" Value="public event Mono.Addins.ExtensionEventHandler ExtensionChanged;" />
+      <MemberType>Event</MemberType>
+      <ReturnValue>
+        <ReturnType>Mono.Addins.ExtensionEventHandler</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetExtensionNode">
+      <MemberSignature Language="C#" Value="public Mono.Addins.ExtensionNode GetExtensionNode (string path);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>Mono.Addins.ExtensionNode</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="path" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="path">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetExtensionObjects">
+      <MemberSignature Language="C#" Value="public object[] GetExtensionObjects (string path);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Object[]</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="path" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="path">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetExtensionObjects">
+      <MemberSignature Language="C#" Value="public object[] GetExtensionObjects (string path, bool reuseCachedInstance);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Object[]</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="path" Type="System.String" />
+        <Parameter Name="reuseCachedInstance" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="path">To be added.</param>
+        <param name="reuseCachedInstance">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetExtensionObjects">
+      <MemberSignature Language="C#" Value="public object[] GetExtensionObjects (string path, Type arrayElementType);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Object[]</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="path" Type="System.String" />
+        <Parameter Name="arrayElementType" Type="System.Type" />
+      </Parameters>
+      <Docs>
+        <param name="path">To be added.</param>
+        <param name="arrayElementType">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetExtensionObjects">
+      <MemberSignature Language="C#" Value="public object[] GetExtensionObjects (string path, Type arrayElementType, bool reuseCachedInstance);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Object[]</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="path" Type="System.String" />
+        <Parameter Name="arrayElementType" Type="System.Type" />
+        <Parameter Name="reuseCachedInstance" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="path">To be added.</param>
+        <param name="arrayElementType">To be added.</param>
+        <param name="reuseCachedInstance">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetExtensionObjects">
+      <MemberSignature Language="C#" Value="public object[] GetExtensionObjects (Type instanceType);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Object[]</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="instanceType" Type="System.Type" />
+      </Parameters>
+      <Docs>
+        <param name="instanceType">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetExtensionObjects">
+      <MemberSignature Language="C#" Value="public object[] GetExtensionObjects (Type instanceType, bool reuseCachedInstance);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Object[]</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="instanceType" Type="System.Type" />
+        <Parameter Name="reuseCachedInstance" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="instanceType">To be added.</param>
+        <param name="reuseCachedInstance">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetExtensionNodes">
+      <MemberSignature Language="C#" Value="public Mono.Addins.ExtensionNodeList GetExtensionNodes (string path);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>Mono.Addins.ExtensionNodeList</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="path" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="path">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetExtensionNodes">
+      <MemberSignature Language="C#" Value="public Mono.Addins.ExtensionNodeList GetExtensionNodes (string path, Type expectedNodeType);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>Mono.Addins.ExtensionNodeList</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="path" Type="System.String" />
+        <Parameter Name="expectedNodeType" Type="System.Type" />
+      </Parameters>
+      <Docs>
+        <param name="path">To be added.</param>
+        <param name="expectedNodeType">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="RegisterCondition">
+      <MemberSignature Language="C#" Value="public void RegisterCondition (string id, Mono.Addins.ConditionType type);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="id" Type="System.String" />
+        <Parameter Name="type" Type="Mono.Addins.ConditionType" />
+      </Parameters>
+      <Docs>
+        <param name="id">To be added.</param>
+        <param name="type">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="RegisterCondition">
+      <MemberSignature Language="C#" Value="public void RegisterCondition (string id, Type type);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="id" Type="System.String" />
+        <Parameter Name="type" Type="System.Type" />
+      </Parameters>
+      <Docs>
+        <param name="id">To be added.</param>
+        <param name="type">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="AddExtensionNodeHandler">
+      <MemberSignature Language="C#" Value="public void AddExtensionNodeHandler (string path, Mono.Addins.ExtensionNodeEventHandler handler);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="path" Type="System.String" />
+        <Parameter Name="handler" Type="Mono.Addins.ExtensionNodeEventHandler" />
+      </Parameters>
+      <Docs>
+        <param name="path">To be added.</param>
+        <param name="handler">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="RemoveExtensionNodeHandler">
+      <MemberSignature Language="C#" Value="public void RemoveExtensionNodeHandler (string path, Mono.Addins.ExtensionNodeEventHandler handler);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="path" Type="System.String" />
+        <Parameter Name="handler" Type="Mono.Addins.ExtensionNodeEventHandler" />
+      </Parameters>
+      <Docs>
+        <param name="path">To be added.</param>
+        <param name="handler">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+  <Docs>
+    <summary>An extension context.</summary>
+    <remarks>
+      <para>Extension contexts can be used to query the extension tree using particular condition values.
+
+Extension points which declare the availability of a condition type can only be queryed using an extension context which provides an evaluator for that condition.
+</para>
+      <para>
+This is a complete example of using ExtensionContext together with conditions. In this example, we want to implement an extensible library called "WriterService" which offers the following class:
+</para>
+      <example>
+        <code lang="C#">
+namespace WriterService
+{
+	public class WriterManager
+	{
+		public WriterManager (string[] flags) { ... }
+		public IWriter[] GetWriters () { ... }
+	}
+}
+  </code>
+      </example>
+      <para>
+The IWriter interface is defined like this:
+</para>
+      <example>
+        <code lang="C#">
+namespace WriterService
+{
+	public interface IWriter
+	{
+		string Write ();
+	}
+}
+  </code>
+      </example>
+      <para>
+An application can use this library to get a set of writers, which will be implemented in add-ins extending WriterService.
+We also want add-ins to be able to decide which writers should be returned, depending on some flags defined provided by the user.
+Notice that different WriterManager instances can have different flags.
+</para>
+      <para>
+This is an example of consumer application:
+</para>
+      <example>
+        <code lang="C#">
+	Console.WriteLine ("Normal writers:");
+
+	// Creates a WriterManager which will return all writers
+	WriterManager manager = new WriterManager (new string[0]);
+
+	// Get the writers and print them
+	foreach (IWriter w in manager.GetWriters ())
+		Console.WriteLine (w.Write ());
+	
+	Console.WriteLine ("Including debug writers:");
+
+	// Now this creates a new WriterManager, and providers a debug flag
+	WriterManager debugManager = new WriterManager (new string[] { "debug" });
+
+	foreach (IWriter w in debugManager.GetWriters ())
+		Console.WriteLine (w.Write ());
+  </code>
+      </example>
+      <para>
+THE WRITER-SERVICE LIBRARY
+</para>
+      <para>
+The WriterService library needs to define an extension point where add-ins can register new writer types. 
+The add-in description file could be the following:
+</para>
+      <example>
+        <code lang="XML">
+&lt;Addin id = "WriterService" version = "0.1.0" isroot="true"&gt;
+
+	&lt;Runtime&gt;
+		&lt;Import assembly="WriterService.dll"/&gt;
+	&lt;/Runtime&gt;
+	
+	&lt;ExtensionPoint path = "/WriterService/Writers"&gt;
+		&lt;ExtensionNode id="Writer" objectType="WriterService.IWriter"/&gt;
+		&lt;Condition id="HasFlag"/&gt;
+	&lt;/ExtensionPoint&gt;
+	
+&lt;/Addin&gt;
+  </code>
+      </example>
+      <para>
+Notice that the Writers extension point specifies that a "HasFlag" condition type which can be used by extenders when defining extension nodes. This condition will be implemented by the WriterService in
+the FlagsCondition class:
+</para>
+      <example>
+        <code lang="C#">
+namespace WriterService
+{
+	public class FlagsCondition: ConditionType
+	{
+		string[] flags;
+		
+		public FlagsCondition (string[] flags)
+		{
+			this.flags = flags;
+		}
+		
+		public override bool Evaluate (INodeInfo attributes)
+		{
+			// Return true if the provided flag can be found in the condition's flag list
+			string flag = attributes.GetAttribute ("value");
+			return Array.IndexOf (flags, flag) != -1;
+		}
+	}
+}
+  </code>
+      </example>
+      <para>
+Now let's see the complete implementation of the WriterManager class:
+</para>
+      <example>
+        <code lang="C#">
+namespace WriterService
+{
+	public class WriterManager
+	{
+		ExtensionContext ctx;
+		
+		public WriterManager (string[] flags)
+		{
+			// Create a new extension context
+			ctx = AddinManager.CreateExtensionContext ();
+			
+			// Register the flags condition in the new context
+			FlagsCondition condition = new FlagsCondition (flags);
+			ctx.RegisterCondition ("HasFlag", condition);
+		}
+		
+		public IWriter[] GetWriters ()
+		{
+			// Returns the IWriter objects registered in the Writers path
+			return (IWriter[]) ctx.GetExtensionObjects ("/WriterService/Writers", typeof(IWriter));
+		}
+	}
+}
+  </code>
+      </example>
+      <para>
+The WriterManager class creates a new ExtensionContext instance and registers a properly initialized FlagsCondition object on it. 
+The ExtensionContext instance is needed because every WriterManager needs to have it's particular FlagsCondition object. 
+The GetWriters method calls <see cref="M:Mono.Addins.ExtensionContext.GetExtensionObjects(System.String)" /> on the created extension
+context to get the extension nodes, so it will only return those matching the registered condition.
+</para>
+      <para>In this case it would not be possible to use the global <see cref="M:Mono.Addins.AddinManager.GetExtensionObjects(System.String)" /> method to get the writers because
+the HasFlag condition is not registered at global level, only for a particular context. 
+</para>
+      <para>
+SAMPLE ADD-IN
+</para>
+      <para>
+This is a sample add-in which extends the WriterService by adding two writer types. One of them is under a condition, so it will only be visible if the debug flag is defined:
+</para>
+      <example>
+        <code lang="XML">
+&lt;Addin&gt;
+
+	&lt;Runtime&gt;
+		&lt;Import assembly="SampleExtender.dll"/&gt;
+	&lt;/Runtime&gt;
+	
+	&lt;Dependencies&gt;
+		&lt;Addin id="WriterService" version="0.1.0" /&gt;
+	&lt;/Dependencies&gt;
+	
+	&lt;Extension path = "/WriterService/Writers"&gt;
+		&lt;Writer type="SampleExtender.MyWriter" /&gt;
+		&lt;Condition id="HasFlag" value="debug"&gt;
+			&lt;Writer type="SampleExtender.DebugWriter" /&gt;
+		&lt;/Condition&gt;
+	&lt;/Extension&gt;
+	
+&lt;/Addin&gt;
+  </code>
+      </example>
+      <para>
+The new writers are implemented like this:
+</para>
+      <example>
+        <code lang="C#">
+namespace SampleExtender
+{
+	public class MyWriter: IWriter
+	{
+		public string Write ()
+		{
+			return "Some writer";
+		}
+	}
+	
+	public class DebugWriter: IWriter
+	{
+		public string Write ()
+		{
+			return "Some debug output";
+		}
+	}
+}
+  </code>
+      </example>
+      <para>
+The sample application shown earlier would give the following output after installing the previous add-in:
+</para>
+      <example>
+        <code>
+Normal writers:
+Some writer
+Including debug writers:
+Some writer
+Some debug output
+  </code>
+      </example>
+    </remarks>
+  </Docs>
+</Type>

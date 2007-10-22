@@ -1,0 +1,18 @@
+<Addin>
+
+	<Runtime>
+		<Import assembly="SampleExtender.dll"/>
+	</Runtime>
+	
+	<Dependencies>
+		<Addin id="WriterService" version="0.1.0" />
+	</Dependencies>
+	
+	<Extension path = "/WriterService/Writers">
+		<Writer type="SampleExtender.MyWriter" />
+		<Condition id="HasFlag" value="debug">
+			<Writer type="SampleExtender.DebugWriter" />
+		</Condition>
+	</Extension>
+	
+</Addin>

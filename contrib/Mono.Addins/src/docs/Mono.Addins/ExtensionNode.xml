@@ -1,0 +1,341 @@
+<Type Name="ExtensionNode" FullName="Mono.Addins.ExtensionNode">
+  <TypeSignature Language="C#" Value="public class ExtensionNode" />
+  <AssemblyInfo>
+    <AssemblyName>Mono.Addins</AssemblyName>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public ExtensionNode ();" />
+      <MemberType>Constructor</MemberType>
+      <Parameters />
+      <Docs>
+        <summary>Creates an extension node.</summary>
+        <remarks />
+      </Docs>
+    </Member>
+    <Member MemberName="Addin">
+      <MemberSignature Language="C#" Value="public Mono.Addins.RuntimeAddin Addin { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>Mono.Addins.RuntimeAddin</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>The add-in that registered this extension node.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ChildNodes">
+      <MemberSignature Language="C#" Value="public Mono.Addins.ExtensionNodeList ChildNodes { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>Mono.Addins.ExtensionNodeList</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Child nodes of this extension node.</summary>
+        <value>A list of child nodes.</value>
+        <remarks />
+      </Docs>
+    </Member>
+    <Member MemberName="GetChildObjects">
+      <MemberSignature Language="C#" Value="public object[] GetChildObjects ();" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Object[]</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Returns the child objects of a node.</summary>
+        <returns>An array of child objects.</returns>
+        <remarks>This method only works if all children of this node are of type <see cref="T:Mono.Addins.TypeExtensionNode" />. The returned array is composed by all objects created by calling the <see cref="M:Mono.Addins.TypeExtensionNode.GetInstance()" /> method for each node.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetChildObjects">
+      <MemberSignature Language="C#" Value="public object[] GetChildObjects (bool reuseCachedInstance);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Object[]</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="reuseCachedInstance" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="reuseCachedInstance">True if the method can reuse instances created in previous calls.</param>
+        <summary>Returns the child objects of a node.</summary>
+        <returns>An array of child objects.</returns>
+        <remarks>This method only works if all children of this node are of type <see cref="T:Mono.Addins.TypeExtensionNode" />. The returned array is composed by all objects created by calling the <see cref="M:Mono.Addins.TypeExtensionNode.CreateInstance()" /> method for each node (or <see cref="M:Mono.Addins.TypeExtensionNode.GetInstance()" /> if reuseCachedInstance is set to true).</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetChildObjects">
+      <MemberSignature Language="C#" Value="public object[] GetChildObjects (Type arrayElementType);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Object[]</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="arrayElementType" Type="System.Type" />
+      </Parameters>
+      <Docs>
+        <param name="arrayElementType">Type of the return array elements.</param>
+        <summary>Returns the child objects of a node (with type check).</summary>
+        <returns>An array of child objects.</returns>
+        <remarks>This method only works if all children of this node are of type <see cref="T:Mono.Addins.TypeExtensionNode" />. The returned array is composed by all objects created by calling the <see cref="M:Mono.Addins.TypeExtensionNode.GetInstance(System.Type)" /> method for each node.
+
+<para>
+A <see cref="T:System.InvalidOperationException" /> exception is thrown if one of the found child objects is not a subclass of the provided type.
+</para></remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetChildObjects">
+      <MemberSignature Language="C#" Value="public object[] GetChildObjects (Type arrayElementType, bool reuseCachedInstance);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Object[]</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="arrayElementType" Type="System.Type" />
+        <Parameter Name="reuseCachedInstance" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="arrayElementType">Type of the return array elements.</param>
+        <param name="reuseCachedInstance">True if the method can reuse instances created in previous calls.</param>
+        <summary>Returns the child objects of a node (with type check).</summary>
+        <returns>An array of child objects.</returns>
+        <remarks>
+          <para>This method only works if all children of this node are of type <see cref="T:Mono.Addins.TypeExtensionNode" />. The returned array is composed by all objects created by calling the <see cref="M:Mono.Addins.TypeExtensionNode.CreateInstance(System.Type)" /> method for each node (or <see cref="M:Mono.Addins.TypeExtensionNode.GetInstance(System.Type)" /> if reuseCachedInstance is set to true).</para>
+          <para>
+A <see cref="T:System.InvalidOperationException" /> exception will be thrown if one of the found child objects is not a subclass of the provided type.
+</para>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="HasId">
+      <MemberSignature Language="C#" Value="public bool HasId { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Specifies whether the extension node has as an Id or not.</summary>
+        <value>True if this node has an user-specified id.</value>
+        <remarks>It is not mandatory to specify an 'id' for a node. When none is provided, the add-in manager will automatically generate an unique id for the node. This property will return true if an 'id' was provided for the node, and false if the id was assigned by the add-in manager.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Id">
+      <MemberSignature Language="C#" Value="public string Id { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Identifier of the node.</summary>
+        <value>Identifier of the node.</value>
+        <remarks>It is not mandatory to specify an 'id' for a node. When none is provided, the add-in manager will automatically generate an unique id for the node. The <see cref="P:Mono.Addins.ExtensionNode.HasId" /> property can be used to know if the 'id' has been specified by the developer or not.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OnChildNodeAdded">
+      <MemberSignature Language="C#" Value="protected virtual void OnChildNodeAdded (Mono.Addins.ExtensionNode node);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="node" Type="Mono.Addins.ExtensionNode" />
+      </Parameters>
+      <Docs>
+        <param name="node">The new child node.</param>
+        <summary>Notifies the addition of a child node.</summary>
+        <remarks>This method is called when a new child is added to this node. It may be due to changes in conditions or for an add-in being enabled. </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OnChildNodeRemoved">
+      <MemberSignature Language="C#" Value="protected virtual void OnChildNodeRemoved (Mono.Addins.ExtensionNode node);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="node" Type="Mono.Addins.ExtensionNode" />
+      </Parameters>
+      <Docs>
+        <param name="node">The removed node.</param>
+        <summary>Notifies the removal of a child node.</summary>
+        <remarks>This method is called when a child of this node is removed. It may be due to changes in conditions or for an add-in being disabled. </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OnChildrenChanged">
+      <MemberSignature Language="C#" Value="protected virtual void OnChildrenChanged ();" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Notifies changes in child nodes.</summary>
+        <remarks>This method is called when child nodes are added or removed. It may be due to changes in conditions, or to add-ins being enabled or disabled.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Path">
+      <MemberSignature Language="C#" Value="public string Path { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Location of this node in the extension tree.</summary>
+        <value>Path of the node.</value>
+        <remarks>
+          <para>
+The node path is composed by the path of the extension point where it is defined, the identifiers of its parent nodes, and its own identifier. For example:
+</para>
+          <example>
+            <code lang="XML">
+	&lt;Extension path="/MonoDevelop/Workbench/MainMenu"&gt;
+		&lt;ItemSet id="File" _label="_File"&gt;
+			&lt;CommandItem id="NewFile" /&gt;
+			&lt;CommandItem id="NewProject" /&gt;
+		&lt;/ItemSet&gt;
+	&lt;/Extension&gt;
+	</code>
+          </example>
+          <para>
+The path of the node "NewProject" would be "/MonoDevelop/Workbench/MainMenu/File/NewProject".
+</para>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ExtensionNodeChanged">
+      <MemberSignature Language="C#" Value="public event Mono.Addins.ExtensionNodeEventHandler ExtensionNodeChanged;" />
+      <MemberType>Event</MemberType>
+      <ReturnValue>
+        <ReturnType>Mono.Addins.ExtensionNodeEventHandler</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OnAddinLoaded">
+      <MemberSignature Language="C#" Value="protected virtual void OnAddinLoaded ();" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OnAddinUnloaded">
+      <MemberSignature Language="C#" Value="protected virtual void OnAddinUnloaded ();" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Read">
+      <MemberSignature Language="C#" Value="protected virtual void Read (Mono.Addins.NodeElement elem);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="elem" Type="Mono.Addins.NodeElement" />
+      </Parameters>
+      <Docs>
+        <param name="elem">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+  <Docs>
+    <summary>A node of the extension tree.</summary>
+    <remarks>
+      <para>
+An extension node is an element registered by an add-in in an extension point. A host can get nodes registered in an extension point using methods such as <see cref="M:Mono.Addins.AddinManager.GetExtensionNodes(System.String)" />, which returns a collection of ExtensionNode objects.
+</para>
+      <para>
+ExtensionNode will normally be used as a base class of more complex extension point types. The most common subclass is <see cref="T:Mono.Addins.TypeExtensionNode" />, which allows registering a class implemented in an add-in.
+</para>
+      <para>
+EXAMPLE: An application has a toolbar that must be extensible by add-ins. The application could define the following extension node type:
+</para>
+      <example>
+        <code lang="C#">
+	public class ToolbarItemNode: ExtensionNode
+	{
+		[NodeAttribute]
+		string icon;
+		
+		[NodeAttribute]
+		string label;
+		
+		public string Icon {
+			get { return icon; }
+		}
+		
+		public string Label {
+			get { return label; }
+		}
+	}
+  </code>
+      </example>
+      <para>
+In the implementation of an ExtensionNode, the <see cref="T:Mono.Addins.NodeAttributeAttribute" /> attribute can be applied to fields to specify which attributes must be loaded from the node.
+</para>
+      <para>
+The extension point could be defined like this:
+</para>
+      <example>
+        <code lang="XML">
+&lt;Addin id = "SomeApplication" version = "0.1.0" isroot="true"&gt;
+	...
+	&lt;ExtensionPoint path = "/MainWindow/Toolbar"&gt;
+		&lt;ExtensionNode id="ToolbarItem" type="ToolbarItemNode"/&gt;
+	&lt;/ExtensionPoint&gt;
+	...
+&lt;/Addin&gt;
+  </code>
+      </example>
+      <para>
+An add-in could extend the toolbar by registering new nodes in the extension point like this:
+</para>
+      <example>
+        <code lang="XML">
+&lt;Addin id = "SomeAddin" version = "0.1.0"&gt;
+	...
+	&lt;Extension path = "/MainWindow/Toolbar"&gt;
+		&lt;ToolbarItem label="Open" icon="gtk-open"/&gt;
+		&lt;ToolbarItem label="New" icon="gtk-new"/&gt;
+	&lt;/Extension&gt;
+	...
+&lt;/Addin&gt;
+  </code>
+      </example>
+      <para>
+To create the toolbar, the host application would get the nodes registered in the extension point:
+</para>
+      <example>
+        <code lang="C#">
+	foreach (ToolbarItemNode node in AddinManager.GetExtensionNodes ("/MainWindow/Toolbar")) {
+		Gtk.ToolButton it = new Gtk.ToolButton (new Gtk.Image (node.Icon, IconSize.SmallToolbar), node.Label);
+		// Add the button to the toolbar
+	}
+
+  </code>
+      </example>
+    </remarks>
+  </Docs>
+</Type>

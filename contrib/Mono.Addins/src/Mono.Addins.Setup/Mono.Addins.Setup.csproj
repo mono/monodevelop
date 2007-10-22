@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0AF6E8A8-3D48-46FD-955D-DEC206E83217}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NApf.UI</RootNamespace>
+    <AssemblyName>NApf.UI</AssemblyName>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DocumentationFile>
+    </DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!--<Import Project="$(MSBuildExtensionsPath)\MSBee\MSBuildExtras.FX1_1.CSharp.targets" />-->
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.5.0.0, Culture=neutral, PublicKeyToken=1b03e6acf1164f73">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Mono.Addins.Setup.ProgressMonitoring\ConsoleProgressMonitor.cs" />
+    <Compile Include="Mono.Addins.Setup.ProgressMonitoring\LogTextWriter.cs" />
+    <Compile Include="Mono.Addins.Setup.ProgressMonitoring\NullProgressMonitor.cs" />
+    <Compile Include="Mono.Addins.Setup.ProgressMonitoring\ProgressStatusMonitor.cs" />
+    <Compile Include="Mono.Addins.Setup.ProgressMonitoring\ProgressTracker.cs" />
+    <Compile Include="Mono.Addins.Setup\AddinInfo.cs" />
+    <Compile Include="Mono.Addins.Setup\AddinInfoCollection.cs" />
+    <Compile Include="Mono.Addins.Setup\AddinPackage.cs" />
+    <Compile Include="Mono.Addins.Setup\AddinRepositoryEntry.cs" />
+    <Compile Include="Mono.Addins.Setup\AddinStore.cs" />
+    <Compile Include="Mono.Addins.Setup\AddinSystemConfiguration.cs" />
+    <Compile Include="Mono.Addins.Setup\AddinSystemConfigurationReaderWriter.cs" />
+    <Compile Include="Mono.Addins.Setup\AddinSystemConfigurationSerializer.cs" />
+    <Compile Include="Mono.Addins.Setup\InstallException.cs" />
+    <Compile Include="Mono.Addins.Setup\IProgressMonitor.cs" />
+    <Compile Include="Mono.Addins.Setup\NativePackage.cs" />
+    <Compile Include="Mono.Addins.Setup\Package.cs" />
+    <Compile Include="Mono.Addins.Setup\PackageCollection.cs" />
+    <Compile Include="Mono.Addins.Setup\ReferenceRepositoryEntry.cs" />
+    <Compile Include="Mono.Addins.Setup\Repository.cs" />
+    <Compile Include="Mono.Addins.Setup\RepositoryEntry.cs" />
+    <Compile Include="Mono.Addins.Setup\RepositoryEntryCollection.cs" />
+    <Compile Include="Mono.Addins.Setup\RepositoryReaderWriter.cs" />
+    <Compile Include="Mono.Addins.Setup\RepositoryRecord.cs" />
+    <Compile Include="Mono.Addins.Setup\RepositoryRegistry.cs" />
+    <Compile Include="Mono.Addins.Setup\RepositorySerializer.cs" />
+    <Compile Include="Mono.Addins.Setup\SetupService.cs" />
+    <Compile Include="Mono.Addins.Setup\SetupTool.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Mono.Addins\Mono.Addins.csproj">
+      <Project>{76B2FF16-0094-4003-A1BD-C9F6F37D0186}</Project>
+      <Name>Mono.Addins</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

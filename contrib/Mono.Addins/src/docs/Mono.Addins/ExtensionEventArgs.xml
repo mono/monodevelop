@@ -1,0 +1,57 @@
+<Type Name="ExtensionEventArgs" FullName="Mono.Addins.ExtensionEventArgs">
+  <TypeSignature Language="C#" Value="public class ExtensionEventArgs : EventArgs" />
+  <AssemblyInfo>
+    <AssemblyName>Mono.Addins</AssemblyName>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.EventArgs</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public ExtensionEventArgs (string path);" />
+      <MemberType>Constructor</MemberType>
+      <Parameters>
+        <Parameter Name="path" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="path">Path of the extension node that has changed.</param>
+        <summary>Creates a new instance.</summary>
+        <remarks />
+      </Docs>
+    </Member>
+    <Member MemberName="Path">
+      <MemberSignature Language="C#" Value="public virtual string Path { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Path of the extension node that has changed.</summary>
+        <value>An extension path.</value>
+        <remarks>Path of the extension node that has changed.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="PathChanged">
+      <MemberSignature Language="C#" Value="public bool PathChanged (string pathToCheck);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="pathToCheck" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="pathToCheck">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+  <Docs>
+    <summary>Arguments for extension events.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+</Type>

@@ -1,0 +1,24 @@
+build_sources = $(addprefix $(srcdir)/, $(FILES) $(GENERATED_FILES))
+build_resources = $(addprefix $(srcdir)/, $(RESOURCES))
+build_resources_embed = $(foreach res,$(build_resources), $(addprefix -resource:,$(res)),$(RESOURCES_PREFIX)$(notdir $(res)))
+
+build_references_ref = $(REFERENCES)
+build_references_ref += $(foreach ref, $(DLL_REFERENCES), -r:$(ref))
+build_references_ref += $(foreach ref, $(PROJECT_REFERENCES), -r:$(ref))
+
+pc_files = $(PC_FILES_IN:.pc.in=.pc)
+
+build_datafiles = $(addprefix $(BUILD_DIR)/, $(DATA_FILES))
+  
+$(build_datafiles): $(BUILD_DIR)/% : $(addprefix $(srcdir)/, %)
+	mkdir -p $(dir $@)		
+	cp $< $@
+
+EXTRA_DIST = $(FILES) $(GENERATED_FILES) $(RESOURCES) $(ASSEMBLY_WRAPPER_IN) $(EXTRAS) $(DATA_FILES) $(PC_FILES_IN)
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(DLL_REFERENCES)
+DISTCLEANFILES = $(GENERATED_FILES) $(build_datafiles) $(pc_files)
+
+pkglib_SCRIPTS = $(ASSEMBLY) $(build_datafiles)
+bin_SCRIPTS = $(ASSEMBLY_WRAPPER)
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = $(pc_files)

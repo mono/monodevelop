@@ -1,0 +1,121 @@
+2007-10-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AssemblyInfo.cs: Get ready for 0.3 release.
+
+2007-10-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Gui/AddinTreeWidget.cs: Make this class public.
+
+2007-09-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/Mono.Addins.Gui.ManageSitesDialog.cs, gtk-gui/generated.cs,
+	  gtk-gui/Mono.Addins.Gui.AddinInstallDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.ErrorDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.AddinInfoDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.AddinInstallerDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.NewSiteDialog.cs, gtk-gui/gui.stetic,
+	  Mono.Addins.Gui/NewSiteDialog.cs: Fix some GUI issues in the manage
+	  sites dialog.
+
+2007-08-07  Chris Howie <cdhowie@nerdshack.com>
+
+	* gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.AddinInfoDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.ErrorDialog.cs, gtk-gui/gui.stetic: Removed
+	  MonoDevelop-specific strings.
+	* gtk-gui/Mono.Addins.Gui.ManageSitesDialog.cs, gtk-gui/generated.cs,
+	  gtk-gui/Mono.Addins.Gui.AddinInstallDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.ManageSitesDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.AddinInstallerDialog.cs: Regenerated.
+	* Mono.Addins.Gui/AddinManagerWindow.cs: Added static property for
+	  the flag that hides install buttons.
+	* Mono.Addins.Gui/AddinManagerDialog.cs: Implementation of the above
+	  property.
+	* icons/system-software-update.png: Added missing icon.
+
+2007-07-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.am: Don't try to install the assembly if gui is disabled.
+
+2007-07-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/Mono.Addins.Gui.AddinInstallDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs, gtk-gui/gui.stetic:
+	  The OK button must be hidden by default.
+
+2007-07-03  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AssemblyInfo.cs, Makefile.am, Mono.Addins.Gui.mdp: Sign the assembly.
+	* Mono.Addins.Gui/AddinInstallerDialog.cs: Added missing (C) header.
+
+2007-07-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/generated.cs, gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs:
+	  Updated.
+	* gtk-gui/Mono.Addins.Gui.AddinInstallerDialog.cs, gtk-gui/gui.stetic,
+	  Mono.Addins.Gui/AddinInstaller.cs,
+	  Mono.Addins.Gui/AddinInstallerDialog.cs: Added an implementation of
+	  IAddinInstaller.
+	* Makefile.am, Mono.Addins.Gui.mdp: Added new files.
+	* Mono.Addins.Gui/AddinInstallDialog.cs: Don't include markup in
+	  translatable strings.
+
+2007-05-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/generated.cs, gtk-gui/Mono.Addins.Gui.AddinInstallDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.ErrorDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs, gtk-gui/gui.stetic:
+	  Updated.
+	* Mono.Addins.Gui/AddinManagerDialog.cs: Handle exceptions thrown when
+	  enabling/disabling add-ins.
+
+2007-05-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs, gtk-gui/gui.stetic:
+	  Updated.
+	* Mono.Addins.Gui/NewSiteDialog.cs,
+	  Mono.Addins.Gui/ManageSitesDialog.cs,
+	  Mono.Addins.Gui/AddinManagerWindow.cs, Mono.Addins.Gui/Services.cs,
+	  Mono.Addins.Gui/AddinInstallDialog.cs,
+	  Mono.Addins.Gui/ErrorDialog.cs,
+	  Mono.Addins.Gui/AddinManagerDialog.cs: Properly destroy all
+	  dialogs.
+
+2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.mdp: Updated.
+	* Mono.Addins/ExtensionContext.cs: Fixed GetExtensionObjects overload
+	  which was not using the correct reuseCachedInstance value.
+	* Mono.Addins/ExtensionTree.cs: Improved error message. When looking
+	  for a type in an assembly, avoid throwing an exception too early,
+	  since it may be found in other assemblies.
+	* Mono.Addins.Database/AddinDatabase.cs: In the addin info cache, also
+	  store information about unsuccessful lookups, to avoid looking for
+	  an add-in again if we found that it doesn't exist. In Update(),
+	  don't use verbose output by default.
+
+2007-04-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Gui.csproj: Added msbuild project files. Patch by
+	  Matthijs ter Woord.
+
+2007-03-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/Mono.Addins.Gui.ManageSitesDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.AddinInstallDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.ErrorDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.AddinInfoDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.NewSiteDialog.cs, gtk-gui/gui.stetic:
+	  Updated.
+	* Mono.Addins.Gui/NewSiteDialog.cs: Implement missing bits in the
+	  dialog.
+	* Mono.Addins.Gui/AddinInstallDialog.cs: Fixed nullref. Removed
+	  "restart" message.
+
+2007-03-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.am, Mono.Addins.Gui.mdp: Enabled conditional compilation of
+	  the gui lib.
+

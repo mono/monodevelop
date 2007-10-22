@@ -1,0 +1,14 @@
+<Addin>
+
+	<Extension path = "/TextEditor/MainMenu/Edit">
+		<Condition id="OpenFile" extension="xml,config">
+			<MenuSeparator insertafter="Paste" />
+			<MenuItem label="Format XML" commandType="TextEditor.Xml.FormatXmlCommand" />
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/TextEditor/Templates">
+		<FileTemplate name="Xml File" resource="EmptyFile.xml" />
+	</Extension>
+	
+</Addin>

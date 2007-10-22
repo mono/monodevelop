@@ -1,0 +1,139 @@
+<Type Name="ExtensionAttribute" FullName="Mono.Addins.ExtensionAttribute">
+  <TypeSignature Language="C#" Value="public class ExtensionAttribute : Attribute" />
+  <AssemblyInfo>
+    <AssemblyName>Mono.Addins</AssemblyName>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Attribute</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Attributes>
+    <Attribute>
+      <AttributeName>System.AttributeUsage(System.AttributeTargets.Class, AllowMultiple=true)</AttributeName>
+    </Attribute>
+  </Attributes>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public ExtensionAttribute ();" />
+      <MemberType>Constructor</MemberType>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public ExtensionAttribute (string path);" />
+      <MemberType>Constructor</MemberType>
+      <Parameters>
+        <Parameter Name="path" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="path">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Id">
+      <MemberSignature Language="C#" Value="public string Id { set; get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Identifier of the extension node.</summary>
+        <value>Identifier of the extension node.</value>
+        <remarks />
+      </Docs>
+    </Member>
+    <Member MemberName="InsertAfter">
+      <MemberSignature Language="C#" Value="public string InsertAfter { set; get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Identifier of the extension node after which this node has to be added in the extension point.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="InsertBefore">
+      <MemberSignature Language="C#" Value="public string InsertBefore { set; get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Identifier of the extension node before which this node has to be added in the extension point.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="NodeName">
+      <MemberSignature Language="C#" Value="public string NodeName { set; get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Name of the node.</summary>
+        <value>Name of the node.</value>
+        <remarks>Extension points may require extensions to use a specific node name. This is needed when an extension point may contain several different types nodes.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Path">
+      <MemberSignature Language="C#" Value="public string Path { set; get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Path to which the extension type should be registered.</summary>
+        <value>The path.</value>
+        <remarks>When provided, the add-in manager will register this type in the specified extension path. If not provided, the extension will be registered in any available extension point which accepts this type.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+  <Docs>
+    <summary>Declares an extension.</summary>
+    <remarks>
+      <para>When applied to a class, specifies that the class is an extension class to be registered in a matching extension point. For example:</para>
+      <example>
+        <code lang="C#">
+[Extension]
+class MyWritter: IWritter
+{
+	public string Write ()
+	{
+		return "hello";
+	}
+}
+</code>
+      </example>
+      <para>
+The previous example class would be registered as an extension of the following extension point defined in a host:
+</para>
+      <example>
+        <code lang="C#">
+[TypeExtensionPoint]
+public interface IWritter
+{
+	string Write ();
+}
+</code>
+      </example>
+      <para>
+It would also be registered in an extension point declared in an .addin file with the following declaration:
+</para>
+      <example>
+        <code lang="XML">
+	&lt;ExtensionPoint path = "/Writers"&gt;
+		&lt;ExtensionNode objectType="IWriter" /&gt;
+	&lt;/ExtensionPoint&gt;
+</code>
+      </example>
+    </remarks>
+  </Docs>
+</Type>
