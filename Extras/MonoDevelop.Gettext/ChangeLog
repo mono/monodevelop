@@ -1,3 +1,8 @@
+2007-10-22  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Gettext/CatalogParser.cs, MonoDevelop.Gettext/Catalog.cs:
+	  Fixed "Bug 335326 - Gettext addin breaks zh_CN.po".
+
 2007-10-12  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Gettext.NodeBuilders/TranslationNodeBuilder.cs,

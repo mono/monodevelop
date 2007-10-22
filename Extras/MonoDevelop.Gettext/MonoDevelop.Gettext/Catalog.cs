@@ -96,45 +96,54 @@ namespace MonoDevelop.Gettext
 		static string FormatStringForFile (string text)
 		{
 			StringBuilder sb = new StringBuilder ();
-			uint n_cnt = 0;
-			int len = text.Length;
-
-			//s = new char[len + 16];
-			// Scan the string up to len-2 because we don't want to account for the
-			// very last \n on the line:
-			//       "some\n string \n"
-			//                      ^
-			//                      |
-			//                      \--- = len-2
-			int i;
-			if (text.Length > 0 && text[0] != '\n')
-				sb.Append (text[0]);
-			else
-				n_cnt++;
-			for (i = 1; i < len - 2; i++)
-			{
-				if (text[i] == '\\' && text[i + 1] == 'n')
-				{
-					n_cnt++;
-					sb.Append ("\\n\"\n\"");
-					i++;
-				} else if (text[i] == '\n')
-				{
-					sb.Append ("\"\n\"");
-					n_cnt++;
-				} else
-					sb.Append (text[i]);
+			string[] textArr = text.Split ('\n');
+			for (int i = 0; i < textArr.Length; i++) {
+				sb.Append ('"');
+				sb.Append (textArr[i]);
+				sb.Append ('"');
+				if (i + 1 < textArr.Length)
+					sb.Append ('\n');
 			}
-			// ...and add not yet processed characters to the string...
-			for (; i < len; i++)
-				sb.Append (text[i]);
-
-			// normalize, remove "\n\"\"" lines
-			sb.Replace ("\n\"\"", String.Empty);
-
-			if (n_cnt >= 1 && sb.Length > 0)
-				return "\"\n\"" + sb.ToString ();
-			else
+			
+//			uint n_cnt = 0;
+//			int len = text.Length;
+//
+//			//s = new char[len + 16];
+//			// Scan the string up to len-2 because we don't want to account for the
+//			// very last \n on the line:
+//			//       "some\n string \n"
+//			//                      ^
+//			//                      |
+//			//                      \--- = len-2
+//			int i;
+//			if (text.Length > 0 && text[0] != '\n')
+//				sb.Append (text[0]);
+//			else
+//				n_cnt++;
+//			for (i = 1; i < len - 2; i++)
+//			{
+//				if (text[i] == '\\' && text[i + 1] == 'n')
+//				{
+//					n_cnt++;
+//					sb.Append ("\\n\"\n\"");
+//					i++;
+//				} else if (text[i] == '\n')
+//				{
+//					sb.Append ("\"\n\"");
+//					n_cnt++;
+//				} else
+//					sb.Append (text[i]);
+//			}
+//			// ...and add not yet processed characters to the string...
+//			for (; i < len; i++)
+//				sb.Append (text[i]);
+//
+//			// normalize, remove "\n\"\"" lines
+//			sb.Replace ("\n\"\"", String.Empty);
+//
+//			if (n_cnt >= 1 && sb.Length > 0)
+//				return "\"\n\"" + sb.ToString ();
+//			else
 				return sb.ToString ();
 		}
 
@@ -248,22 +257,22 @@ namespace MonoDevelop.Gettext
 					sb.Append (dummy);
 				}
 				dummy = Catalog.FormatStringForFile (data.String);
-				Catalog.SaveMultiLines (sb, "msgid \"" + dummy + "\"", originalNewLine);
+				Catalog.SaveMultiLines (sb, "msgid " + dummy + "", originalNewLine);
 				if (data.HasPlural)
 				{
 					dummy = Catalog.FormatStringForFile (data.PluralString);
-					Catalog.SaveMultiLines (sb, "msgid_plural \"" + dummy + "\"", originalNewLine);
+					Catalog.SaveMultiLines (sb, "msgid_plural " + dummy, originalNewLine);
 
 					for (int n = 0; n < data.NumberOfTranslations; n++)
 					{
 						dummy = Catalog.FormatStringForFile (data.GetTranslation (n));
-						string hdr = String.Format ("msgstr[{0}] \"", n);
-						SaveMultiLines (sb, hdr + dummy + "\"", originalNewLine);
+						string hdr = String.Format ("msgstr[{0}] ", n);
+						SaveMultiLines (sb, hdr + dummy, originalNewLine);
 					}
 				} else
 				{
 					dummy = Catalog.FormatStringForFile (data.GetTranslation (0));
-					SaveMultiLines (sb, "msgstr \"" + dummy + "\"", originalNewLine);
+					SaveMultiLines (sb, "msgstr " + dummy, originalNewLine);
 				}
 				sb.Append (originalNewLine);
 			}
@@ -319,8 +328,9 @@ namespace MonoDevelop.Gettext
 		{
 			if (text != null)
 			{
-				foreach (string line in text.Split (new char[] { '\n', '\r'}, StringSplitOptions.None))
+				foreach (string line in text.Split (new string[] { "\n\r", "\r\n", "\r", "\n", "\r"}, StringSplitOptions.None)) {
 					sb.AppendFormat ("{0}{1}", line, newLine);
+				}
 			}
 		}
 

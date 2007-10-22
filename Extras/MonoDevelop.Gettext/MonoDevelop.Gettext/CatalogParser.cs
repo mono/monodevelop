@@ -199,10 +199,12 @@ namespace MonoDevelop.Gettext
 					mstr = dummy.Substring (0, dummy.Length - 1);
 		            while ((line = fileLines[lineNumber++]) != String.Empty)
 		            {
-		                if (line[0] == '\t')
+		                if (line[0] == '\t') 
 		                    line = line.Substring (1);
-		                if (line[0] == '"' && line[line.Length - 1] == '"')
+						
+		                if (line[0] == '"' && line[line.Length - 1] == '"') {
 							mstr += "\n" + line.Substring (1, line.Length - 2);
+						}
 		                else
 		                    break;
 		            }
@@ -243,9 +245,9 @@ namespace MonoDevelop.Gettext
 		            {
 		                if (line[0] == '\t')
 							line = line.Substring (1);
-		                if (line[0] == '"' && line[line.Length - 1] == '"')
+		                if (line[0] == '"' && line[line.Length - 1] == '"') {
 		                    str += "\n" + line.Substring (1, line.Length - 2);
-		                else
+						} else
 		                    break;
 		            }
 		            mtranslations.Add (str);
