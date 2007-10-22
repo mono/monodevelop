@@ -95,19 +95,6 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
-		static Regex steticTranslationPattern = new Regex(@"translatable=""yes""\s*>(.*)</property>", RegexOptions.Compiled);
-		static void UpdateSteticTranslations (TranslationProject translationProject, string fileName)
-		{
-			string text = File.ReadAllText (fileName);
-			if (!String.IsNullOrEmpty (text)) {
-				List<TranslationProject.MatchLocation> matches = new List<TranslationProject.MatchLocation> ();
-				foreach (Match match in steticTranslationPattern.Matches (text)) {
-					matches.Add (new TranslationProject.MatchLocation (match.Groups[1].Value, GetLineNumber (text, match.Index)));
-				}
-				translationProject.AddTranslationStrings (fileName, matches);
-			}
-		}
-		
 		static Regex translationPattern = new Regex(@"GetString\s*\(\s*""([^""]*)""\s*\)", RegexOptions.Compiled);
 		static Regex pluralTranslationPattern = new Regex(@"GetPluralString\s*\(\s*""([^""]*)""\s*,\s*""([^""]*)""\s*,.*\)", RegexOptions.Compiled);
 		
@@ -115,6 +102,21 @@ namespace MonoDevelop.Gettext
 		{
 			string text = File.ReadAllText (fileName);
 			if (!String.IsNullOrEmpty (text)) {
+//				List<TranslationProject.MatchLocation> matches = new List<TranslationProject.MatchLocation> ();
+//				for (int i = 0; i + 9 < text.Length; i++) {
+//					if (text.Substring (i, 3) == "Get") {
+//						if (text.Substring (i + 3, 6) == "String") {
+//							Match m = translationPattern.Match (text, i);
+//							if (m.Success) 
+//								matches.Add (new TranslationProject.MatchLocation (m.Groups[1].Value, GetLineNumber (text, m.Index)));
+//						} else if (i + 15 < text.Length && text.Substring (i + 3, 12) == "PluralString") {
+//							Match m = pluralTranslationPattern.Match (text, i);
+//							if (m.Success) 
+//								matches.Add (new TranslationProject.MatchLocation (m.Groups[1].Value, m.Groups[2].Value, GetLineNumber (text, m.Index)));
+//						}
+//					}
+//				}
+				
 				List<TranslationProject.MatchLocation> matches = new List<TranslationProject.MatchLocation> ();
 				foreach (Match match in translationPattern.Matches (text)) {
 					matches.Add (new TranslationProject.MatchLocation (match.Groups[1].Value, GetLineNumber (text, match.Index)));
@@ -128,6 +130,10 @@ namespace MonoDevelop.Gettext
 		
 		public static void UpdateTranslation (TranslationProject translationProject, string fileName, IProgressMonitor monitor)
 		{
+			if (!File.Exists (fileName)) {
+				Runtime.LoggingService.Warn ((object)String.Format (GettextCatalog.GetString ("UpdateTranslation: File {0} not found."), fileName));
+				return;
+			}
 			translationProject.BeginUpdate ();
 			try {
 				switch (Path.GetExtension (fileName)) {

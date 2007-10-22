@@ -144,6 +144,12 @@ namespace MonoDevelop.Gettext.NodeBuilders
 				IdeApp.ProjectOperations.SaveCombine ();
 			}
 			
+			[CommandUpdateHandler (Commands.AddTranslation)]
+			public void OnUpdateAddTranslation (CommandInfo info)
+			{
+				info.Enabled = currentUpdateTranslationOperation == null  ||  currentUpdateTranslationOperation.IsCompleted;
+			}
+			
 			[CommandHandler (Commands.AddTranslation)]
 			public void OnAddTranslation ()
 			{
@@ -152,7 +158,6 @@ namespace MonoDevelop.Gettext.NodeBuilders
 					return;
 				
 				string monitorTitle = GettextCatalog.GetString ("Translator Output");
-				
 				Translator.LanguageChooserDialog chooser = new Translator.LanguageChooserDialog ();
 				try {
 					int response = 0;
@@ -174,7 +179,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 					chooser.Destroy ();
 				}
 			}
-			IAsyncOperation currentTranslation;
+			static IAsyncOperation currentUpdateTranslationOperation = MonoDevelop.Core.ProgressMonitoring.NullAsyncOperation.Success;
 			
 			void UpdateTranslationsAsync (object ob)
 			{
@@ -189,19 +194,21 @@ namespace MonoDevelop.Gettext.NodeBuilders
 					count++;
 				}
 				monitor.BeginTask (GettextCatalog.GetString ("Updating Translations "), count);
-				
+				project.BeginUpdate ();
 				foreach (Project p in project.ParentCombine.GetAllProjects ()) {
 					if (!project.IsIncluded (p))
 						continue;
 					monitor.Log.WriteLine (String.Format (GettextCatalog.GetString ("Scanning project {0}..."),  p.Name));
 					monitor.Step (1);
 					foreach (ProjectFile file in p.ProjectFiles) {
+						if (file.Subtype == Subtype.Directory)
+							continue;
 						PropertyProvider.ProjectFileWrapper wrapper = new PropertyProvider.ProjectFileWrapper (file);
 						if (wrapper.ScanForTranslations)
 							TranslationService.UpdateTranslation (project, file.FilePath, monitor);
 					}
 				}
-				
+				project.EndUpdate ();
 				monitor.EndTask ();
 				monitor.Log.WriteLine ();
 				monitor.Log.WriteLine (GettextCatalog.GetString ("---------------------- Done ----------------------"));
@@ -210,12 +217,11 @@ namespace MonoDevelop.Gettext.NodeBuilders
 
 			void UpdateTranslations (TranslationProject project)
 			{
-				if (currentTranslation != null && !currentTranslation.IsCompleted) 
+				if (currentUpdateTranslationOperation != null && !currentUpdateTranslationOperation.IsCompleted) 
 					return;
 				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
+				currentUpdateTranslationOperation = monitor.AsyncOperation;
 				DispatchService.ThreadDispatch (new StatefulMessageHandler (UpdateTranslationsAsync), new object[] {monitor, project});
-				currentTranslation = monitor.AsyncOperation;
-				
 			}
 			
 			[CommandHandler (Commands.UpdateTranslations)]
