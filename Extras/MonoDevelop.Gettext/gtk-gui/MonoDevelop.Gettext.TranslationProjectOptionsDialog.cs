@@ -240,7 +240,7 @@ namespace MonoDevelop.Gettext {
             this.frame2.Add(this.GtkAlignment3);
             this.GtkLabel6 = new Gtk.Label();
             this.GtkLabel6.Name = "GtkLabel6";
-            this.GtkLabel6.LabelProp = Mono.Unix.Catalog.GetString("<b>Init String</b>");
+            this.GtkLabel6.LabelProp = Mono.Unix.Catalog.GetString("<b>Initialization String</b>");
             this.GtkLabel6.UseMarkup = true;
             this.frame2.LabelWidget = this.GtkLabel6;
             this.vbox2.Add(this.frame2);
@@ -296,7 +296,7 @@ namespace MonoDevelop.Gettext {
             // Internal child MonoDevelop.Gettext.TranslationProjectOptionsDialog.ActionArea
             Gtk.HButtonBox w24 = this.ActionArea;
             w24.Name = "dialog1_ActionArea";
-            w24.Spacing = 6;
+            w24.Spacing = 10;
             w24.BorderWidth = ((uint)(5));
             w24.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -328,7 +328,7 @@ namespace MonoDevelop.Gettext {
                 this.Child.ShowAll();
             }
             this.DefaultWidth = 519;
-            this.DefaultHeight = 346;
+            this.DefaultHeight = 433;
             this.Show();
         }
     }

@@ -70,21 +70,30 @@ namespace MonoDevelop.Gettext
 				this.Destroy ();
 			};
 			
-			store = new TreeStore (typeof(string), typeof(bool), typeof(string), typeof(CombineEntry));
+			store = new TreeStore (typeof(string), typeof(bool), typeof(string), typeof(CombineEntry), typeof(bool));
 			treeviewProjectList.Model = store;
 			treeviewProjectList.HeadersVisible = false;
 			
-			this.treeviewProjectList.AppendColumn ("", new CellRendererPixbuf (), "stock_id", 0);
+			TreeViewColumn col = new TreeViewColumn ();
 			
 			CellRendererToggle cellRendererToggle = new CellRendererToggle ();
 			cellRendererToggle.Toggled += new ToggledHandler (ActiveToggled);
 			cellRendererToggle.Activatable = true;
-			this.treeviewProjectList.AppendColumn ("", cellRendererToggle, "active", 1);
+			col.PackStart (cellRendererToggle, false);
+			col.AddAttribute (cellRendererToggle, "active", 1);
+			col.AddAttribute (cellRendererToggle, "visible", 4);
 			
-			this.treeviewProjectList.AppendColumn ("", new CellRendererText (), "text", 2);
+			CellRendererPixbuf crp = new CellRendererPixbuf ();
+			col.PackStart (crp, false);
+			col.AddAttribute (crp, "stock_id", 0);
+			
+			CellRendererText crt = new CellRendererText ();
+			col.PackStart (crt, true);
+			col.AddAttribute (crt, "text", 2);
+			
+			treeviewProjectList.AppendColumn (col);
 			
 			FillTree (TreeIter.Zero, project.ParentCombine);
-			
 		}
 		
 		void ActiveToggled (object sender, ToggledArgs e)
@@ -132,13 +141,17 @@ namespace MonoDevelop.Gettext
 		{
 			TreeIter curIter;
 			if (!iter.Equals (TreeIter.Zero)) {
-				curIter = store.AppendValues (iter, GetIcon (entry), entry is Combine ? false : IsIncluded (entry), entry.Name, entry);
+				curIter = store.AppendValues (iter, GetIcon (entry), entry is Combine ? false : IsIncluded (entry), entry.Name, entry, !(entry is Combine));
 			} else {
-				curIter = store.AppendValues (GetIcon (entry), entry is Combine ? false : IsIncluded (entry), entry.Name, entry);
+				curIter = store.AppendValues (GetIcon (entry), entry is Combine ? false : IsIncluded (entry), entry.Name, entry, !(entry is Combine));
 			}
 			if (entry is Combine) {
+				// Add solutions first, then projects
 				foreach (CombineEntry childEntry in ((Combine)entry).Entries)
-					if (!(childEntry is TranslationProject) && (childEntry is Project || childEntry is Combine))
+					if (childEntry is Combine)
+						FillTree (curIter, childEntry);
+				foreach (CombineEntry childEntry in ((Combine)entry).Entries)
+					if (!(childEntry is TranslationProject) && (childEntry is Project))
 						FillTree (curIter, childEntry);
 			}
 		}

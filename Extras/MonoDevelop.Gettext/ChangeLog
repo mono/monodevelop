@@ -1,3 +1,11 @@
+2007-10-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/gui.stetic, MonoDevelop.Gettext.mdp: Updated.
+	* gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs: Some
+	  cosmetic fixes.
+	* MonoDevelop.Gettext/TranslationProjectOptionsDialog.cs: Show all cell
+	  renderers in a single column. Fixes some alignment issues in the tree.
+
 2007-10-22  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs,

@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
-    <images-root-path>../</images-root-path>
+    <images-root-path>..</images-root-path>
     <target-gtk-version>2.8.3</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../../../build/AddIns/MonoDevelop.Projects.Gui.dll" />
-    <widget-library name="../../../build/AddIns/MonoDevelop.Components.dll" />
-    <widget-library name="../../../build/AddIns/MonoDevelop.Ide.dll" />
+    <widget-library name="../../../build/bin/MonoDevelop.Projects.Gui.dll" />
+    <widget-library name="../../../build/bin/MonoDevelop.Components.dll" />
+    <widget-library name="../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../build/AddIns/MonoDevelop.Deployment.dll" />
-    <widget-library name="../../../build/AddIns/MonoDevelop.Gettext/MonoDevelop.Gettext.dll" internal="true" />
     <widget-library name="../../../build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll" />
+    <widget-library name="../../../build/AddIns/MonoDevelop.Gettext/MonoDevelop.Gettext.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.Gettext.Editor.CatalogHeadersWidget" design-size="672 613">
     <property name="MemberName" />
@@ -909,7 +909,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Gettext.TranslationProjectOptionsDialog" design-size="519 346">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Gettext.TranslationProjectOptionsDialog" design-size="519 426">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Translation Options</property>
     <property name="WindowPosition">CenterOnParent</property>
@@ -1032,6 +1032,7 @@
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
                                 <property name="Label" translatable="yes">_Relative to output path:</property>
+                                <property name="Active">True</property>
                                 <property name="DrawIndicator">True</property>
                                 <property name="HasLabel">True</property>
                                 <property name="UseUnderline">True</property>
@@ -1240,7 +1241,7 @@
     <child internal-child="ActionArea">
       <widget class="Gtk.HButtonBox" id="dialog1_ActionArea">
         <property name="MemberName" />
-        <property name="Spacing">6</property>
+        <property name="Spacing">10</property>
         <property name="BorderWidth">5</property>
         <property name="Size">2</property>
         <property name="LayoutStyle">End</property>
@@ -1252,7 +1253,7 @@
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-cancel</property>
-            <property name="IsDialogButton">False</property>
+            <property name="ResponseId">-6</property>
             <property name="label">gtk-cancel</property>
           </widget>
           <packing>
@@ -1268,7 +1269,7 @@
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-ok</property>
-            <property name="IsDialogButton">False</property>
+            <property name="ResponseId">-5</property>
             <property name="label">gtk-ok</property>
           </widget>
           <packing>
