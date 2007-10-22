@@ -99,7 +99,7 @@ namespace MonoDevelop.Core.Gui.Components
 
 			tv.RowActivated += new RowActivatedHandler (OnRowActivated);
 			tv.ButtonReleaseEvent += new ButtonReleaseEventHandler (OnButtonRelease);			
-			tv.PopupMenu += new PopupMenuHandler (OnPopupMenu);			
+			tv.PopupMenu += new PopupMenuHandler (OnPopupMenu);
 
 			scrolledwindow.Add (tv);
 			this.Homogeneous = false;
@@ -420,7 +420,6 @@ namespace MonoDevelop.Core.Gui.Components
 			performingtask = PerformingTask.CreatingNew;
 			text_render.Editable = true;
 
-			tv.Reorderable = false;
 			iter = store.AppendValues (FileIconLoader.GetPixbufForFile (CurrentDir, 24), "folder name");
 			treepath = tv.Model.GetPath(iter);
 

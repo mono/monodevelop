@@ -1,3 +1,11 @@
+2007-10-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.mdp: Updated.
+	* MonoDevelop.Core.Gui.Components/FileBrowser.cs: Don't allow reordering of
+	  rows.
+	* MonoDevelop.Core.Gui/DispatchService.cs: Thread.ManagedThreadId is broken
+	  (see bug #335579). Don't use it to check for the gui thread.
+
 2007-10-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.mdp: Fix warning level.

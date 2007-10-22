@@ -13,7 +13,7 @@ namespace MonoDevelop.Core.Gui
 		static Thread thrBackground;
 		static uint iIdle = 0;
 		static GLib.IdleHandler handler;
-		static int guiThreadId;
+		static Thread guiThread;
 		static GuiSyncContext guiContext;
 		static internal bool DispatchDebug;
 		const string errormsg = "An exception was thrown while dispatching a method call in the UI thread.";
@@ -21,8 +21,8 @@ namespace MonoDevelop.Core.Gui
 		static DispatchService ()
 		{
 			guiContext = new GuiSyncContext ();
-			
-			guiThreadId = Thread.CurrentThread.ManagedThreadId;
+
+			guiThread = Thread.CurrentThread;
 			
 			handler = new GLib.IdleHandler (guiDispatcher);
 			arrBackgroundQueue = new ArrayList ();
@@ -94,12 +94,12 @@ namespace MonoDevelop.Core.Gui
 		
 		public static bool IsGuiThread
 		{
-			get { return guiThreadId == Thread.CurrentThread.ManagedThreadId; }
+			get { return guiThread == Thread.CurrentThread; }
 		}
 		
 		public static void AssertGuiThread ()
 		{
-			if (guiThreadId != Thread.CurrentThread.ManagedThreadId)
+			if (guiThread != Thread.CurrentThread)
 				throw new InvalidOperationException ("This method can only be called in the GUI thread");
 		}
 		
