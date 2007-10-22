@@ -84,7 +84,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands">
-		<Category _name = "Gtk Core" id = "GtkCore">
+		<Category _name = "Gtk# Designer" id = "GtkCore">
 		<Command id = "MonoDevelop.GtkCore.GtkCommands.AddNewDialog"
 				icon = "md-gtkcore-dialog"
 				_label = "New Dialog..." />
