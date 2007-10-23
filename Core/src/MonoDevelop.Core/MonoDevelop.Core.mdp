@@ -14,74 +14,74 @@
     </Configuration>
   </Configurations>
   <Contents>
-    <File name="./MonoDevelop.Core/AbstractService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core/IService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core/ServiceManager.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core/StringParserService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core/UserException.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Utils.ReportingStream/ReportingStream.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Utils.DirectoryArchive/Bz2Support.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Utils.DirectoryArchive/Decompressor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Utils.DirectoryArchive/GzSupport.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Utils.DirectoryArchive/TarDecompressor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Utils.DirectoryArchive/ZipDecompressor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core/DefaultLoggingService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core/ILoggingService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core/Runtime.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core/SystemAssemblyService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Execution/AddinDependencyAttribute.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Execution/BreakpointEventHandler.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Execution/IBreakpoint.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Execution/IDebuggerService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Execution/IProcessHost.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Execution/IProcessHostController.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Execution/ProcessHostController.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Execution/ProcessService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Execution/ProcessWrapper.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Execution/RemoteProcessObject.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.ProgressMonitoring/AggregatedProgressMonitor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.ProgressMonitoring/ConsoleProgressMonitor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core/IAsyncOperation.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core/IProgressMonitor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.ProgressMonitoring/LogTextWriter.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.ProgressMonitoring/NullAsyncOperation.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.ProgressMonitoring/NullProgressMonitor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.ProgressMonitoring/ProgressTracker.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Execution/DefaultExecutionHandlerFactory.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Execution/ExternalConsoleFactory.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Execution/IConsole.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Execution/IConsoleFactory.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Execution/IExecutionHandler.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Execution/IExecutionHandlerFactory.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Execution/IProcessAsyncOperation.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Execution/MintPlatformExecutionHandler.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Execution/MonoPlatformExecutionHandler.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Execution/NativePlatformExecutionHandler.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.ProgressMonitoring/AggregatedOperationMonitor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.ProgressMonitoring/SynchronizedProgressMonitor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core/ClrVersion.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core/SystemPackage.cs" subtype="Code" buildaction="Compile" />
-    <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
-    <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
-    <File name="./MonoDevelop.Core.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./MonoDevelop.Core/FileService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core/FileEventArgs.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.FileSystem/FileSystemExtension.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.FileSystem/DefaultFileSystemExtension.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core/GettextCatalog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.AddIns/ExecutionHandlerCodon.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.ProgressMonitoring/ConsoleProgressStatus.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.AddIns/ServiceExtensionNode.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.AddIns/AssemblyExtensionNode.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.AddIns/PackageExtensionNode.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.AddIns/ApplicationExtensionNode.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.ProgressMonitoring/FilteredProgressMonitor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core/Properties.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core/PropertyChangedEventArgs.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core/PropertyService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core/XmlReadHelper.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core/ICustomXmlSerializer.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core/AbstractService.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core/IService.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core/ServiceManager.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core/StringParserService.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core/UserException.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Utils.ReportingStream/ReportingStream.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Utils.DirectoryArchive/Bz2Support.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Utils.DirectoryArchive/Decompressor.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Utils.DirectoryArchive/GzSupport.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Utils.DirectoryArchive/TarDecompressor.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Utils.DirectoryArchive/ZipDecompressor.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core/DefaultLoggingService.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core/ILoggingService.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core/Runtime.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core/SystemAssemblyService.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Execution/AddinDependencyAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Execution/BreakpointEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Execution/IBreakpoint.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Execution/IDebuggerService.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Execution/IProcessHost.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Execution/IProcessHostController.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Execution/ProcessHostController.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Execution/ProcessService.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Execution/ProcessWrapper.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Execution/RemoteProcessObject.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.ProgressMonitoring/AggregatedProgressMonitor.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.ProgressMonitoring/ConsoleProgressMonitor.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core/IAsyncOperation.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core/IProgressMonitor.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.ProgressMonitoring/LogTextWriter.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.ProgressMonitoring/NullAsyncOperation.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.ProgressMonitoring/NullProgressMonitor.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.ProgressMonitoring/ProgressTracker.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Execution/DefaultExecutionHandlerFactory.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Execution/ExternalConsoleFactory.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Execution/IConsole.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Execution/IConsoleFactory.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Execution/IExecutionHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Execution/IExecutionHandlerFactory.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Execution/IProcessAsyncOperation.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Execution/MintPlatformExecutionHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Execution/MonoPlatformExecutionHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Execution/NativePlatformExecutionHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.ProgressMonitoring/AggregatedOperationMonitor.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.ProgressMonitoring/SynchronizedProgressMonitor.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core/ClrVersion.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core/SystemPackage.cs" subtype="Code" buildaction="Compile" />
+    <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="MonoDevelop.Core.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="MonoDevelop.Core/FileService.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core/FileEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.FileSystem/FileSystemExtension.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.FileSystem/DefaultFileSystemExtension.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core/GettextCatalog.cs" subtype="Code" buildaction="Compile" />
+    <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.AddIns/ExecutionHandlerCodon.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.ProgressMonitoring/ConsoleProgressStatus.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.AddIns/ServiceExtensionNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.AddIns/AssemblyExtensionNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.AddIns/PackageExtensionNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.AddIns/ApplicationExtensionNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.ProgressMonitoring/FilteredProgressMonitor.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core/Properties.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core/PropertyChangedEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core/PropertyService.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core/XmlReadHelper.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core/ICustomXmlSerializer.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -95,8 +95,8 @@
   </References>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <ExcludedFiles>
-      <File>./MonoDevelop.Core/GettextCatalog.cs</File>
-      <File>./AssemblyInfo.cs</File>
+      <File>MonoDevelop.Core/GettextCatalog.cs</File>
+      <File>AssemblyInfo.cs</File>
     </ExcludedFiles>
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />

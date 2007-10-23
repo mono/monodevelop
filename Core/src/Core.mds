@@ -41,16 +41,16 @@
     <Execute type="None" entry="NRefactory" />
   </StartMode>
   <Entries>
-    <Entry filename="./MonoDevelop.Core/MonoDevelop.Core.mdp" />
-    <Entry filename="./MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.mdp" />
-    <Entry filename="./MonoDevelop.Components/MonoDevelop.Components.mdp" />
-    <Entry filename="./MonoDevelop.Dock/MonoDevelop.Dock.mdp" />
-    <Entry filename="./MonoDevelop.Documentation/MonoDevelop.Documentation.mdp" />
-    <Entry filename="./MonoDevelop.Ide/MonoDevelop.Ide.mdp" />
-    <Entry filename="./MonoDevelop.Projects/MonoDevelop.Projects.mdp" />
-    <Entry filename="./MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.mdp" />
-    <Entry filename="./Tools/Tools.mds" />
-    <Entry filename="./MonoDevelop.Startup/MonoDevelop.Startup.mdp" />
-    <Entry filename="./NRefactory/NRefactory.mdp" />
+    <Entry filename="MonoDevelop.Core/MonoDevelop.Core.mdp" />
+    <Entry filename="MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.mdp" />
+    <Entry filename="MonoDevelop.Components/MonoDevelop.Components.mdp" />
+    <Entry filename="MonoDevelop.Dock/MonoDevelop.Dock.mdp" />
+    <Entry filename="MonoDevelop.Documentation/MonoDevelop.Documentation.mdp" />
+    <Entry filename="MonoDevelop.Ide/MonoDevelop.Ide.mdp" />
+    <Entry filename="MonoDevelop.Projects/MonoDevelop.Projects.mdp" />
+    <Entry filename="MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.mdp" />
+    <Entry filename="Tools/Tools.mds" />
+    <Entry filename="MonoDevelop.Startup/MonoDevelop.Startup.mdp" />
+    <Entry filename="NRefactory/NRefactory.mdp" />
   </Entries>
 </Combine>

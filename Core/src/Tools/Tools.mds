@@ -14,7 +14,7 @@
     <Execute type="None" entry="mdrun" />
   </StartMode>
   <Entries>
-    <Entry filename="./mdhost/mdhost.mdp" />
-    <Entry filename="./mdrun/mdrun.mdp" />
+    <Entry filename="mdhost/mdhost.mdp" />
+    <Entry filename="mdrun/mdrun.mdp" />
   </Entries>
 </Combine>
