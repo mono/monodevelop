@@ -15,12 +15,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		CombineEntry entry;
 		Combine parentCombine;
 		VBox box = new VBox ();
+		Gdk.Cursor handCursor;
 		
 		public CombineEntryFeatureSelector ()
 		{
 			this.Build();
+			handCursor = new Gdk.Cursor (Gdk.CursorType.Hand1);
 			box.Spacing = 6;
-			box.BorderWidth = 6;
+			box.BorderWidth = 3;
 			box.Show ();
 		}
 		
@@ -64,18 +66,34 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			CheckButton check = null;
 			
 			Label fl = new Label ();
-			fl.Markup = "<b>" + feature.Title + "</b>";
-			
-			if (feature.IsEnabled (parentCombine, entry)) {
-				cbox.PackStart (fl, false, false, 0);
+			fl.Wrap = true;
+			fl.WidthRequest = 630;
+			fl.Markup = "<b>" + feature.Title + "</b>\n<small>" + feature.Description + "</small>";
+			bool enabledByDefault = feature.IsEnabled (parentCombine, entry);
+
+			if (enabledByDefault) {
+				Alignment al = new Alignment (0,0,0,0);
+				al.SetPadding (6,6,6,6);
+				al.Add (fl);
+				cbox.PackStart (al, false, false, 0);
 			}
 			else {
 				check = new CheckButton ();
 				check.Image = fl;
 				cbox.PackStart (check, false, false, 0);
+				check.ModifyBg (StateType.Prelight, Style.MidColors [(int)StateType.Normal]);
+				check.BorderWidth = 3;
 			}
-			box.PackStart (cbox, false, false, 0);
-			cbox.ShowAll ();
+			EventBox eb = new EventBox ();
+			if (!enabledByDefault) {
+				eb.Realized += delegate {
+					eb.GdkWindow.Cursor = handCursor;
+				};
+			}
+			eb.ModifyBg (StateType.Normal, Style.MidColors[(int)StateType.Normal]);
+			eb.Add (cbox);
+			eb.ShowAll ();
+			box.PackStart (eb, false, false, 0);
 			
 			HBox fbox = new HBox ();
 			Gtk.Widget editor = feature.CreateFeatureEditor (parentCombine, entry);
@@ -87,9 +105,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				editor.Show ();
 				fbox.PackStart (editor, false, false, 0);
 				box.PackStart (fbox, false, false, 0);
-				HSeparator sep = new HSeparator ();
-				sep.Show ();
-				box.PackStart (sep, false, false, 0);
 			}
 			
 			if (check != null) {

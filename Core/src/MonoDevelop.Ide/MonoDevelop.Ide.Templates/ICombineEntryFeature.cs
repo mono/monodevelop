@@ -11,6 +11,7 @@ namespace MonoDevelop.Ide.Templates
 	{
 		bool SupportsCombineEntry (Combine parentCombine, CombineEntry entry);
 		string Title { get; }
+		string Description { get; }
 		Gtk.Widget CreateFeatureEditor (Combine parentCombine, CombineEntry entry);
 		bool IsEnabled (Combine parentCombine, CombineEntry entry);
 		string Validate (Combine parentCombine, CombineEntry entry, Gtk.Widget editor);

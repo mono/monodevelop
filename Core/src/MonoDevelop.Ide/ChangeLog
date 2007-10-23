@@ -1,3 +1,13 @@
+2007-10-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Templates/ICombineEntryFeature.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/CombineEntryFeatureSelector.cs: Show a
+	  description of each feature to make it more clear what can it be used
+	  for.
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs,
+	  gtk-gui/gui.stetic,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs: Updated.
+
 2007-10-23  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Dialogs/OpenFileInSolutionDialog.cs: Fixed "Bug 324943

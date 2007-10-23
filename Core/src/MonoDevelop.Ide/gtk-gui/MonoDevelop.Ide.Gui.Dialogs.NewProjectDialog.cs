@@ -71,6 +71,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
         
         private Gtk.Label label3;
         
+        private Gtk.Label label4;
+        
         private MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector featureList;
         
         private Gtk.Label label2;
@@ -99,14 +101,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.notebook = new Gtk.Notebook();
             this.notebook.CanFocus = true;
             this.notebook.Name = "notebook";
-            this.notebook.CurrentPage = 0;
+            this.notebook.CurrentPage = 1;
             this.notebook.ShowBorder = false;
             this.notebook.BorderWidth = ((uint)(6));
             // Container child notebook.Gtk.Notebook+NotebookChild
             this.vbox1 = new Gtk.VBox();
             this.vbox1.Name = "vbox1";
             this.vbox1.Spacing = 7;
-            this.vbox1.BorderWidth = ((uint)(6));
             // Container child vbox1.Gtk.Box+BoxChild
             this.vbox2 = new Gtk.VBox();
             this.vbox2.Name = "vbox2";
@@ -352,12 +353,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.vbox5 = new Gtk.VBox();
             this.vbox5.Name = "vbox5";
             this.vbox5.Spacing = 6;
-            this.vbox5.BorderWidth = ((uint)(12));
             // Container child vbox5.Gtk.Box+BoxChild
             this.label3 = new Gtk.Label();
             this.label3.Name = "label3";
             this.label3.Xalign = 0F;
-            this.label3.LabelProp = Mono.Unix.Catalog.GetString("<b>Project features</b>");
+            this.label3.LabelProp = Mono.Unix.Catalog.GetString("<b>Project Features</b>");
             this.label3.UseMarkup = true;
             this.vbox5.Add(this.label3);
             Gtk.Box.BoxChild w27 = ((Gtk.Box.BoxChild)(this.vbox5[this.label3]));
@@ -365,16 +365,29 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             w27.Expand = false;
             w27.Fill = false;
             // Container child vbox5.Gtk.Box+BoxChild
+            this.label4 = new Gtk.Label();
+            this.label4.WidthRequest = 632;
+            this.label4.Name = "label4";
+            this.label4.Xalign = 0F;
+            this.label4.LabelProp = Mono.Unix.Catalog.GetString("<small>This list shows a set of features you can enable in the new project. After creating the project those features can be enabled or disabled in the Project Options dialog, or by adding new projects to the solution.</small>");
+            this.label4.UseMarkup = true;
+            this.label4.Wrap = true;
+            this.vbox5.Add(this.label4);
+            Gtk.Box.BoxChild w28 = ((Gtk.Box.BoxChild)(this.vbox5[this.label4]));
+            w28.Position = 1;
+            w28.Expand = false;
+            w28.Fill = false;
+            // Container child vbox5.Gtk.Box+BoxChild
             this.featureList = new MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector();
             this.featureList.Events = ((Gdk.EventMask)(256));
             this.featureList.Name = "featureList";
             this.vbox5.Add(this.featureList);
-            Gtk.Box.BoxChild w28 = ((Gtk.Box.BoxChild)(this.vbox5[this.featureList]));
-            w28.Position = 1;
+            Gtk.Box.BoxChild w29 = ((Gtk.Box.BoxChild)(this.vbox5[this.featureList]));
+            w29.Position = 2;
             this.notebook.Add(this.vbox5);
-            Gtk.Notebook.NotebookChild w29 = ((Gtk.Notebook.NotebookChild)(this.notebook[this.vbox5]));
-            w29.Position = 1;
-            w29.TabExpand = false;
+            Gtk.Notebook.NotebookChild w30 = ((Gtk.Notebook.NotebookChild)(this.notebook[this.vbox5]));
+            w30.Position = 1;
+            w30.TabExpand = false;
             // Notebook tab
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
@@ -382,14 +395,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.notebook.SetTabLabel(this.vbox5, this.label2);
             this.label2.ShowAll();
             w1.Add(this.notebook);
-            Gtk.Box.BoxChild w30 = ((Gtk.Box.BoxChild)(w1[this.notebook]));
-            w30.Position = 0;
+            Gtk.Box.BoxChild w31 = ((Gtk.Box.BoxChild)(w1[this.notebook]));
+            w31.Position = 0;
             // Internal child MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.ActionArea
-            Gtk.HButtonBox w31 = this.ActionArea;
-            w31.Name = "dialog-action_area1";
-            w31.Spacing = 6;
-            w31.BorderWidth = ((uint)(5));
-            w31.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
+            Gtk.HButtonBox w32 = this.ActionArea;
+            w32.Name = "dialog-action_area1";
+            w32.Spacing = 10;
+            w32.BorderWidth = ((uint)(5));
+            w32.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog-action_area1.Gtk.ButtonBox+ButtonBoxChild
             this.btn_close = new Gtk.Button();
             this.btn_close.CanDefault = true;
@@ -405,9 +418,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.btn_new.UseStock = true;
             this.btn_new.UseUnderline = true;
             this.btn_new.Label = "gtk-go-forward";
-            w31.Add(this.btn_new);
-            Gtk.ButtonBox.ButtonBoxChild w33 = ((Gtk.ButtonBox.ButtonBoxChild)(w31[this.btn_new]));
-            w33.Position = 1;
+            w32.Add(this.btn_new);
+            Gtk.ButtonBox.ButtonBoxChild w34 = ((Gtk.ButtonBox.ButtonBoxChild)(w32[this.btn_new]));
+            w34.Position = 1;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
