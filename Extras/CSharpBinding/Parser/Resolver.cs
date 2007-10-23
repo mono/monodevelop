@@ -338,7 +338,14 @@ namespace CSharpBinding.Parser
 			//Console.WriteLine("Returning Result!");
 			if (returnClass.FullyQualifiedName == "System.Void")
 				return null;
-			return new ResolveResult(returnClass, ListMembers(new LanguageItemCollection(), returnClass, returnClass));
+			LanguageItemCollection members = new LanguageItemCollection();
+			ListMembers(members, returnClass, returnClass);
+			if (returnClass.ClassType == ClassType.Interface) {
+				IClass objType = SearchType ("System.Object", null, null);
+				ListMembers (members, objType, objType);
+			}
+			
+			return new ResolveResult(returnClass, members);
 		}
 		
 		LanguageItemCollection ListMembers (LanguageItemCollection members, IClass qualifierClass, IClass curType)
