@@ -26,7 +26,8 @@ namespace MonoDevelop.VersionControl.Subversion {
 		
 		static SvnClient()
 		{
-			// Detect the libapr version required by libsvn_client. We need to bind to the same library.
+			// libsvn_client may be linked to libapr-0 or libapr-1, and we need to bind the LibApr class
+			// the the same library. The following code detects the required libapr version and loads it. 
 			int aprver = GetLoadAprLib (-1);
 			svn = LibSvnClient.GetLib ();
 			aprver = GetLoadAprLib (aprver);

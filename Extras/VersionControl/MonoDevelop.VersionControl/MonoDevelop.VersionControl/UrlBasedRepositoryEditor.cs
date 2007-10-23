@@ -27,6 +27,8 @@ namespace MonoDevelop.VersionControl
 		
 		void Fill ()
 		{
+			if (repo.Name == repositoryServerEntry.Text)
+				repo.Name = repo.Server;
 			repositoryServerEntry.Text = repo.Server;
 			repositoryPortSpin.Value = repo.Port;
 			repositoryPathEntry.Text = repo.Dir;
@@ -49,6 +51,8 @@ namespace MonoDevelop.VersionControl
 		{
 			updating = true;
 			repositoryUrlEntry.Text = repo.Url;
+			if (repo.Name == repositoryServerEntry.Text)
+				repo.Name = repo.Server;
 			updating = false;
 		}
 		
@@ -76,6 +80,8 @@ namespace MonoDevelop.VersionControl
 		protected virtual void OnRepositoryServerEntryChanged(object sender, System.EventArgs e)
 		{
 			if (updating) return;
+			if (repo.Name == repo.Server)
+				repo.Name = repositoryServerEntry.Text;
 			repo.Server = repositoryServerEntry.Text;
 			UpdateUrl ();
 		}

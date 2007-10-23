@@ -1,3 +1,12 @@
+2007-10-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:
+	  Updated comment.
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/EditRepositoryDialog.cs,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl/Repository.cs,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl/UrlBasedRepositoryEditor.cs:
+	  Set a default repo name if none is specified. Fixes bug #335114.
+
 2007-10-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.Subversion/Makefile.am,

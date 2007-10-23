@@ -32,8 +32,15 @@ namespace MonoDevelop.VersionControl.Dialogs
 				versionControlType.Active = -1;
 				entryName.Sensitive = false;
 			}
-			if (repo != null)
+			if (repo != null) {
 				entryName.Text = repo.Name;
+				repo.NameChanged += OnNameChanged;
+			}
+		}
+		
+		void OnNameChanged (object s, EventArgs a)
+		{
+			entryName.Text = repo.Name;
 		}
 		
 		void UpdateEditor ()
@@ -54,6 +61,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			VersionControlSystem vcs = (VersionControlSystem) systems [versionControlType.Active];
 			repo = vcs.CreateRepositoryInstance ();
 			repo.Name = oldname;
+			repo.NameChanged += OnNameChanged;
 			Gtk.Widget editor = vcs.CreateRepositoryEditor (repo);
 			repoEditorContainer.Add (editor);
 			editor.Show ();
@@ -67,7 +75,9 @@ namespace MonoDevelop.VersionControl.Dialogs
 
 		protected virtual void OnEntryNameChanged(object sender, System.EventArgs e)
 		{
+			repo.NameChanged -= OnNameChanged;
 			repo.Name = entryName.Text;
+			repo.NameChanged += OnNameChanged;
 		}
 		
 		public Repository Repository {

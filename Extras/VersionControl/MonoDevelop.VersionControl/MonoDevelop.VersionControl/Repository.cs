@@ -18,6 +18,8 @@ namespace MonoDevelop.VersionControl
 		[ItemProperty ("VcsType")] 
 		string vcsName;
 		
+		public event EventHandler NameChanged;
+		
 		public Repository ()
 		{
 		}
@@ -30,8 +32,12 @@ namespace MonoDevelop.VersionControl
 		// Display name of the repository
 		[ItemProperty]
 		public string Name	{
-			get { return name; }
-			set { name = value; }		
+			get { return name ?? string.Empty; }
+			set {
+				name = value;
+				if (NameChanged != null)
+					NameChanged (this, EventArgs.Empty);
+			}		
 		}
 		
 		// Description of the repository location (for example, the url)
