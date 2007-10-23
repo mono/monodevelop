@@ -1,0 +1,9 @@
+prefix=@prefix@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+
+Name: Stetic
+Description: Stetic - A Gtk# GUI builder
+Version: @VERSION@
+Requires: gtk-sharp-2.0
+Libs: -r:${prefix}/lib/stetic/libstetic.dll -r:${prefix}/lib/stetic/libsteticui.dll
