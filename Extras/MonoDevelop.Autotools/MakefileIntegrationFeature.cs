@@ -12,6 +12,10 @@ namespace MonoDevelop.Autotools
 		public string Title {
 			get { return GettextCatalog.GetString ("Makefile Integration"); }
 		}
+		
+		public string Description {
+			get { return string.Empty; }
+		}
 
 		public bool SupportsCombineEntry (Combine parentCombine, CombineEntry entry)
 		{
