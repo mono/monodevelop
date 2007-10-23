@@ -231,12 +231,17 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void AddText (string text, TextTag extraTag)
 		{
 			TextIter it = buffer.EndIter;
+			ScrolledWindow window = textEditorControl.Parent as ScrolledWindow;
+			bool scrollToEnd = true;
+			if (window != null) {
+				scrollToEnd = window.Vadjustment.Value >= window.Vadjustment.Upper - 2 * window.Vadjustment.PageSize;
+			}
 			if (extraTag != null)
 				buffer.InsertWithTags (ref it, text, tag, extraTag);
 			else
 				buffer.InsertWithTags (ref it, text, tag);
 			
-			if (buffer.EndIter.StartsLine ())
+			if (scrollToEnd && buffer.EndIter.StartsLine ())
 				textEditorControl.ScrollToIter (buffer.EndIter, 0, false, 0, 0);
 		}
 		
