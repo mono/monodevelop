@@ -160,21 +160,20 @@ namespace MonoDevelop.Gettext
 				foreach (KeyValuePair<string, Catalog> catalog in catalogs) {
 					catalog.Value.Save (catalog.Key);
 				}
+				catalogs.Clear ();
 			}
 		}
 		public void AddTranslationStrings (Translation translation, string fileName, List<TranslationProject.MatchLocation> matches)
 		{
 			string relativeFileName = MonoDevelop.Core.FileService.AbsoluteToRelativePath (this.BaseDirectory, fileName);
+			string fileNamePrefix   = relativeFileName + ":";
 			string poFileName = GetFileName (translation);
 			if (!catalogs.ContainsKey (poFileName))
 				catalogs[poFileName] = new Catalog (poFileName);
 			Catalog catalog = catalogs[poFileName];
 			
 			foreach (CatalogEntry entry in catalog) {
-				foreach (string reference in entry.References) {
-					if (reference.StartsWith (relativeFileName + ":"))
-						entry.RemoveReference (reference);
-				}
+				entry.RemoveReferenceTo (fileNamePrefix);
 			}
 			
 			foreach (MatchLocation match in matches) {
@@ -185,7 +184,7 @@ namespace MonoDevelop.Gettext
 						entry.SetTranslations (new string[] {"", ""});
 					catalog.AddItem (entry);
 				}
-				entry.AddReference (relativeFileName + ":" + match.Line);
+				entry.AddReference (fileNamePrefix + match.Line);
 			}
 		}
 		

@@ -104,16 +104,17 @@ namespace MonoDevelop.Gettext
 			if (!String.IsNullOrEmpty (text)) {
 //				List<TranslationProject.MatchLocation> matches = new List<TranslationProject.MatchLocation> ();
 //				for (int i = 0; i + 9 < text.Length; i++) {
-//					if (text.Substring (i, 3) == "Get") {
-//						if (text.Substring (i + 3, 6) == "String") {
-//							Match m = translationPattern.Match (text, i);
-//							if (m.Success) 
-//								matches.Add (new TranslationProject.MatchLocation (m.Groups[1].Value, GetLineNumber (text, m.Index)));
-//						} else if (i + 15 < text.Length && text.Substring (i + 3, 12) == "PluralString") {
-//							Match m = pluralTranslationPattern.Match (text, i);
-//							if (m.Success) 
-//								matches.Add (new TranslationProject.MatchLocation (m.Groups[1].Value, m.Groups[2].Value, GetLineNumber (text, m.Index)));
-//						}
+//					i = text.IndexOf ("Get", i);
+//					if (i < 0)
+//						break;
+//					if (text.Substring (i + 3, 6) == "String") {
+//						Match m = translationPattern.Match (text, i);
+//						if (m.Success) 
+//							matches.Add (new TranslationProject.MatchLocation (m.Groups[1].Value, GetLineNumber (text, m.Index)));
+//					} else if (i + 15 < text.Length && text.Substring (i + 3, 12) == "PluralString") {
+//						Match m = pluralTranslationPattern.Match (text, i);
+//						if (m.Success) 
+//							matches.Add (new TranslationProject.MatchLocation (m.Groups[1].Value, m.Groups[2].Value, GetLineNumber (text, m.Index)));
 //					}
 //				}
 				

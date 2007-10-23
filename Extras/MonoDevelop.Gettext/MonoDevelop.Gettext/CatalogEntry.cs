@@ -161,7 +161,7 @@ namespace MonoDevelop.Gettext
         // Adds new reference to the entry (used by SourceDigger).
         public void AddReference (string reference)
         {
-            if (! references.Contains (reference))
+            if (!references.Contains (reference))
                 references.Add (reference);
         }
 
@@ -170,6 +170,16 @@ namespace MonoDevelop.Gettext
         {
             references.Clear ();
         }
+		
+		public void RemoveReferenceTo (string fileNamePrefix)
+		{
+			for (int i = 0; i < this.references.Count; i++) {
+				if (references[i].StartsWith (fileNamePrefix)) {
+					references.RemoveAt (i);
+					i--;
+				}
+			}
+		}
 		
 		public void RemoveReference (string reference)
 		{
