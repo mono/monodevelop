@@ -85,7 +85,6 @@ RES =  \
 	templates/GnomeSharpProject.xpt.xml \
 	templates/GtkSharp2Project.xpt.xml \
 	templates/GtkSharpProject.xpt.xml \
-	templates/GtkSharpWindow.xft.xml \
 	templates/Library.xpt.xml
 
 TESTFILES =  \

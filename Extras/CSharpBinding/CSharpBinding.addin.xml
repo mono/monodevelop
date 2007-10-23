@@ -29,7 +29,6 @@
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
 		<FileTemplate id = "Empty" resource = "EmptyCSharpFile.xft.xml"/>
 		<FileTemplate id = "GnomeSharpProgram" resource = "GnomeSharpProgram.xft.xml"/>
-		<FileTemplate id = "GtkSharpWindow" resource = "GtkSharpWindow.xft.xml"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">

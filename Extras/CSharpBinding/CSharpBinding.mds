@@ -14,7 +14,7 @@
     <Execute type="None" entry="CSharpBinding.Autotools" />
   </StartMode>
   <Entries>
-    <Entry filename="./CSharpBinding.mdp" />
-    <Entry filename="./Autotools/Autotools.mdp" />
+    <Entry filename="CSharpBinding.mdp" />
+    <Entry filename="Autotools/Autotools.mdp" />
   </Entries>
 </Combine>

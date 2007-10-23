@@ -1,5 +1,12 @@
 2007-10-23  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* CSharpBinding.addin.xml, Makefile.am, templates/GtkSharpWindow.xft.xml:
+	  Removed the Gtk.Window template, because the Stetic addin already
+	  provides a template for creating windows.
+	* Autotools/Autotools.mdp, CSharpBinding.mdp, CSharpBinding.mds: Updated.
+
+2007-10-23  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Gui/OverrideCompletionData.cs: Flags for showing return types and
 	  parameters must be explicitely specified now.
 
