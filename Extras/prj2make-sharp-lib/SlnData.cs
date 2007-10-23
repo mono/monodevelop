@@ -28,6 +28,7 @@
 
 using MonoDevelop.Projects;
 
+using System;
 using System.Collections.Generic;
 
 namespace MonoDevelop.Prj2Make
@@ -44,7 +45,7 @@ namespace MonoDevelop.Prj2Make
 
 		public SlnData ()
 		{ 
-			this.guid = System.Guid.NewGuid ().ToString ().ToUpper ();
+			this.guid = String.Format ("{{{0}}}", System.Guid.NewGuid ().ToString ().ToUpper ());
 		}
 
 		public SlnData (string guid)
@@ -52,6 +53,7 @@ namespace MonoDevelop.Prj2Make
 			this.guid = guid;
 		}
 
+		/* Guid with enclosing {} */
 		public string Guid {
 			get { return guid; }
 			set { guid = value; }
