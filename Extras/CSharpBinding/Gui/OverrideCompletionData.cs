@@ -90,7 +90,12 @@ namespace CSharpBinding
 		
 		void InsertMethod (IMethod method, string modifiers)
 		{
-			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters | ConversionFlags.UseFullyQualifiedNames | ConversionFlags.UseIntrinsicTypeNames | ConversionFlags.QualifiedNamesOnlyForReturnTypes;
+			ConversionFlags flags = 
+				ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters | 
+				ConversionFlags.UseFullyQualifiedNames | ConversionFlags.UseIntrinsicTypeNames | 
+				ConversionFlags.QualifiedNamesOnlyForReturnTypes | ConversionFlags.ShowReturnType | 
+				ConversionFlags.ShowParameters;
+			
 			StringBuilder textBuilder = new StringBuilder ();
 			Console.WriteLine ("ppres: " + resolver);
 			
@@ -138,7 +143,12 @@ namespace CSharpBinding
 		
 		void InsertProperty (IProperty prop, string modifiers)
 		{
-			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters | ConversionFlags.UseFullyQualifiedNames | ConversionFlags.UseIntrinsicTypeNames | ConversionFlags.QualifiedNamesOnlyForReturnTypes;
+			ConversionFlags flags = 
+				ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters | 
+				ConversionFlags.UseFullyQualifiedNames | ConversionFlags.UseIntrinsicTypeNames | 
+				ConversionFlags.QualifiedNamesOnlyForReturnTypes | ConversionFlags.ShowReturnType | 
+				ConversionFlags.ShowParameters;
+			
 			StringBuilder textBuilder = new StringBuilder ();
 			int cpos = -1;
 			
@@ -189,7 +199,12 @@ namespace CSharpBinding
 		
 		void InsertEvent (IEvent ev, string modifiers)
 		{
-			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters | ConversionFlags.UseFullyQualifiedNames | ConversionFlags.UseIntrinsicTypeNames | ConversionFlags.QualifiedNamesOnlyForReturnTypes;
+			ConversionFlags flags = 
+				ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters | 
+				ConversionFlags.UseFullyQualifiedNames | ConversionFlags.UseIntrinsicTypeNames | 
+				ConversionFlags.QualifiedNamesOnlyForReturnTypes | ConversionFlags.ShowReturnType | 
+				ConversionFlags.ShowParameters;
+			
 			StringBuilder textBuilder = new StringBuilder ();
 			
 			textBuilder.Append (modifiers);
@@ -229,7 +244,12 @@ namespace CSharpBinding
 		
 		void InsertIndexer (IIndexer indexer, string modifiers)
 		{
-			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters | ConversionFlags.UseFullyQualifiedNames | ConversionFlags.UseIntrinsicTypeNames | ConversionFlags.QualifiedNamesOnlyForReturnTypes;
+			ConversionFlags flags = 
+				ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters | 
+				ConversionFlags.UseFullyQualifiedNames | ConversionFlags.UseIntrinsicTypeNames | 
+				ConversionFlags.QualifiedNamesOnlyForReturnTypes | ConversionFlags.ShowReturnType | 
+				ConversionFlags.ShowParameters;
+			
 			StringBuilder textBuilder = new StringBuilder ();
 			
 			textBuilder.Append (modifiers);

@@ -1,3 +1,8 @@
+2007-10-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/OverrideCompletionData.cs: Flags for showing return types and
+	  parameters must be explicitely specified now.
+
 2007-10-18  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/CSharpParameterDataProvider.cs, Gui/CSharpTextEditorExtension.cs:
