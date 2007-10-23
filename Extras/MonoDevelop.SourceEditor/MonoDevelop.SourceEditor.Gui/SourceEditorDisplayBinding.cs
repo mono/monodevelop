@@ -559,7 +559,6 @@ namespace MonoDevelop.SourceEditor.Gui
 		{
 			if (disposed)
 				return false;
-			
 			if (!ClassBrowserVisible)
 				return false;
 			
@@ -576,7 +575,7 @@ namespace MonoDevelop.SourceEditor.Gui
 					return false;
 				}
 				
-				ClassCollection cls = ((ICompilationUnit)memberParseInfo.BestCompilationUnit).Classes;
+				ClassCollection cls = ((ICompilationUnit)memberParseInfo.MostRecentCompilationUnit).Classes;
 				// if we've got this far then we have valid parse info - but if we have not classes the not much point
 				// in displaying the browser bar
 				if (cls.Count == 0) {
@@ -605,16 +604,14 @@ namespace MonoDevelop.SourceEditor.Gui
 					classCombo.Active = -1;
 					UpdateComboTip (classCombo, null);
 				}
+			} finally {
 				handlingParseEvent = false;
-			}
-			finally {
 				loadingMembers = false;
 			}
 			
 			// return false to stop the GLib.Timeout
 			return false;
 		}
-		
 		
 		private void BindMemberCombo (IClass c)
 		{
