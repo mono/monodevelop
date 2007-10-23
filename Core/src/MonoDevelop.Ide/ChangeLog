@@ -1,5 +1,10 @@
 2007-10-23  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Dialogs/OpenFileInSolutionDialog.cs: Fixed "Bug 324943
+	  - PageUp/PageDown not working in Open File in Project dialog".
+
+2007-10-23  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs: Changed the behaviour of
 	  the output pads (Bug 325492 - application output buggy). Autoscrolling
 	  is now enabled when scrolling to the bottom of the output.

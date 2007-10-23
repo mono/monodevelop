@@ -127,7 +127,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (response == (int)Gtk.ResponseType.Ok)
 				IdeApp.Workbench.OpenDocument (od.Filename, od.FileLine, od.FileColumn, true);	
 	    }
-		
+		int cellHeight;
 		private void SetupTreeView ()
 		{
 			Type[] types = new Type[] {
@@ -159,12 +159,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			pathColumn.Resizable = true;
 			pathColumn.Title = GettextCatalog.GetString ("Full name");
 			crText = new CellRendererText ();
+			
 			pathColumn.PackStart (crText, true);
 			pathColumn.AddAttribute (crText, "text", COL_PATH);			
 			tree.AppendColumn (pathColumn);
-			
 			model.SetSortColumnId (COL_FILE, SortType.Ascending);
 			model.ChangeSortColumn ();
+			this.cellHeight = 29;
 		}
 		
 		protected void HandleShown (object sender, System.EventArgs e)
@@ -390,19 +391,28 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			// Up and down move the tree selection up and down
 			// for rapid selection changes.
 			Gdk.EventKey key = args.Event;
+			int page = (int)(tree.VisibleRect.Height / cellHeight);
 			switch (key.Key) {
+			case Gdk.Key.Page_Down:
+				MoveSelectionDown (page);
+				args.RetVal = true;
+				break;
+			case Gdk.Key.Page_Up:
+				MoveSelectionUp (page);
+				args.RetVal = true;
+				break;
 			case Gdk.Key.Up:
-				MoveSelectionUp ();
+				MoveSelectionUp (1);
 				args.RetVal = true;
 				break;
 			case Gdk.Key.Down:
-				MoveSelectionDown ();
+				MoveSelectionDown (1);
 				args.RetVal = true;
 				break;
 			}
 		}
 		
-		void MoveSelectionUp ()
+		void MoveSelectionUp (int n)
 		{
 			TreeSelection sel = tree.Selection;
 			TreeIter iter;
@@ -410,32 +420,60 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (!sel.GetSelected (out iter))
 				return;
 			
-			// Bah, no IterPrev.
 			TreePath path = model.GetPath (iter);
+			while (--n > 0 && path.Prev ()) 
+				;
+			
 			if (path.Prev ()) {
 				// Go to the previous node.
 				if (model.GetIter (out iter, path))
 					Select (iter);
+				userSelecting = true;
 			} else {
-				// Go to the last node.
-				int num = model.IterNChildren();
-				if (model.IterNthChild (out iter, num - 1))
-					Select (iter);
+				SelectFirstNode();
+			}
+		}
+		
+		void SelectLastNode ()
+		{
+			TreeSelection sel = tree.Selection;
+			TreeIter iter;
+			
+			if (!sel.GetSelected (out iter))
+				return;
+			while (model.IterNext (ref iter)) {
+				Select (iter);
 			}
 			userSelecting = true;
 		}
 
-		void MoveSelectionDown ()
+		void SelectFirstNode()
 		{
 			TreeSelection sel = tree.Selection;
 			TreeIter iter;
-
-			if (sel.GetSelected (out iter)) {
-				if (model.IterNext (ref iter))
-					Select (iter);
-				else if (model.GetIterFirst (out iter))
-					Select (iter);
-			}
+			
+			if (!sel.GetSelected (out iter))
+				return;
+			if (model.GetIterFirst (out iter))
+				Select (iter);
+			userSelecting = true;
+		}
+		
+		void MoveSelectionDown (int n)
+		{
+			TreeSelection sel = tree.Selection;
+			TreeIter iter;
+			
+			if (!sel.GetSelected (out iter))
+				return;
+			
+			TreePath path = model.GetPath (iter);
+			while (n-- > 0)
+				path.Next ();
+			if (model.GetIter (out iter, path))
+				Select (iter);
+			else 
+				SelectLastNode ();
 			userSelecting = true;
 		}
 		
