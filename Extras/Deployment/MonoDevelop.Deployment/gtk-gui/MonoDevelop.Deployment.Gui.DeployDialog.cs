@@ -211,6 +211,8 @@ namespace MonoDevelop.Deployment.Gui {
             Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox3[this.scrolledwindow2]));
             w8.Position = 3;
             this.notebook.Add(this.vbox3);
+            Gtk.Notebook.NotebookChild w9 = ((Gtk.Notebook.NotebookChild)(this.notebook[this.vbox3]));
+            w9.TabExpand = false;
             // Notebook tab
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
@@ -260,6 +262,7 @@ namespace MonoDevelop.Deployment.Gui {
             this.notebook.Add(this.pageSelectProject);
             Gtk.Notebook.NotebookChild w14 = ((Gtk.Notebook.NotebookChild)(this.notebook[this.pageSelectProject]));
             w14.Position = 1;
+            w14.TabExpand = false;
             // Notebook tab
             this.label3 = new Gtk.Label();
             this.label3.Name = "label3";
@@ -327,6 +330,7 @@ namespace MonoDevelop.Deployment.Gui {
             this.notebook.Add(this.vbox4);
             Gtk.Notebook.NotebookChild w21 = ((Gtk.Notebook.NotebookChild)(this.notebook[this.vbox4]));
             w21.Position = 2;
+            w21.TabExpand = false;
             // Notebook tab
             this.label6 = new Gtk.Label();
             this.label6.Name = "label6";
@@ -565,6 +569,7 @@ namespace MonoDevelop.Deployment.Gui {
             this.notebook.Add(this.pageSave);
             Gtk.Notebook.NotebookChild w45 = ((Gtk.Notebook.NotebookChild)(this.notebook[this.pageSave]));
             w45.Position = 3;
+            w45.TabExpand = false;
             // Notebook tab
             this.label8 = new Gtk.Label();
             this.label8.Name = "label8";

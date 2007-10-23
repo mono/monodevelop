@@ -12,6 +12,10 @@ namespace MonoDevelop.Deployment.Gui
 		public string Title {
 			get { return GettextCatalog.GetString ("Packaging"); }
 		}
+		
+		public string Description {
+			get { return GettextCatalog.GetString ("Add a Packaging Project to the solution for generating different kinds of packages for the new project."); }
+		}
 
 		public bool SupportsCombineEntry (Combine parentCombine, CombineEntry entry)
 		{

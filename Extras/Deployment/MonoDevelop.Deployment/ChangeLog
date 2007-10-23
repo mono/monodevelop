@@ -1,5 +1,16 @@
 2007-10-23  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* gtk-gui/objects.xml, gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs,
+	  gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs,
+	  gtk-gui/gui.stetic: Updated.
+	* MonoDevelop.Deployment.Gui/PackagingFeature.cs: Track api changes. Add
+	  description property.
+	* MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs: If the only option
+	  is to create a new packaging project, don't show a checkbox, a label is
+	  enough.
+
+2007-10-23  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Deployment.mdp: Project file names updated by change in MD
 	  path functions.
 

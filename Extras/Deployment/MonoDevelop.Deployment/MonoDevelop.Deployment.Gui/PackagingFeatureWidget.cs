@@ -19,12 +19,13 @@ namespace MonoDevelop.Deployment.Gui
 			this.entry = entry;
 			this.parentCombine = parentCombine;
 			
+			CombineEntryCollection packProjects = parentCombine.RootCombine.GetAllEntries (typeof(PackagingProject));
 			newPackProject = new PackagingProject ();
 			
-			string label = GettextCatalog.GetString ("Create packages for this project in a new packaging project");
-			AddCreatePackageSection (box, label, newPackProject);
+			string label = GettextCatalog.GetString ("Create packages for this project in a new Packaging Project");
+			AddCreatePackageSection (box, label, newPackProject, packProjects.Count > 0);
 			
-			foreach (PackagingProject project in parentCombine.RootCombine.GetAllEntries (typeof(PackagingProject)))
+			foreach (PackagingProject project in packProjects)
 				AddProject (project);
 		}
 		
@@ -49,7 +50,7 @@ namespace MonoDevelop.Deployment.Gui
 			
 			if (list.Count > 0)
 			{
-				label = GettextCatalog.GetString ("Add the new project to the packaging project '{0}'", pname);
+				label = GettextCatalog.GetString ("Add the new project to the Packaging Project '{0}'", pname);
 				Gtk.CheckButton checkAddNew = new Gtk.CheckButton (label);
 				checkAddNew.Show ();
 				box.PackStart (checkAddNew, false, false, 0);
@@ -91,28 +92,36 @@ namespace MonoDevelop.Deployment.Gui
 				// Options for creating new packages
 				
 				label = GettextCatalog.GetString ("Create new packages for the project");
-				AddCreatePackageSection (vbox, label, project);
+				AddCreatePackageSection (vbox, label, project, true);
 			}
 			else {
 				label = GettextCatalog.GetString ("Add new packages for this project in the packaging project '{0}'", pname);
-				AddCreatePackageSection (box, label, project);
+				AddCreatePackageSection (box, label, project, true);
 			}
 		}
 		
-		void AddCreatePackageSection (Gtk.VBox vbox, string label, PackagingProject parentProject)
+		void AddCreatePackageSection (Gtk.VBox vbox, string label, PackagingProject parentProject, bool showCheck)
 		{
-			Gtk.CheckButton check = new Gtk.CheckButton (label);
-			check.Show ();
-			vbox.PackStart (check, false, false, 0);
-			
 			Gtk.VBox vboxNewPacks;
 			Gtk.Widget hbox;
-			AddBox (vbox, out hbox, out vboxNewPacks);
-			check.Toggled += delegate {
-				hbox.Visible = check.Active;
-				if (!check.Active)
-					DisableChecks (hbox);
-			};
+			if (showCheck) {
+				Gtk.CheckButton check = new Gtk.CheckButton (label);
+				check.Show ();
+				vbox.PackStart (check, false, false, 0);
+				
+				AddBox (vbox, out hbox, out vboxNewPacks);
+				check.Toggled += delegate {
+					hbox.Visible = check.Active;
+					if (!check.Active)
+						DisableChecks (hbox);
+				};
+			} else {
+				Gtk.Label lab = new Gtk.Label (label);
+				lab.Show ();
+				vbox.PackStart (lab, false, false, 0);
+				AddBox (vbox, out hbox, out vboxNewPacks);
+				hbox.Show ();
+			}
 			
 			foreach (PackageBuilder pb in DeployService.GetSupportedPackageBuilders (entry)) {
 				pb.SetCombineEntry (parentCombine, new CombineEntry [] { entry });

@@ -12,6 +12,10 @@ namespace MonoDevelop.Deployment.Linux
 		public string Title {
 			get { return GettextCatalog.GetString ("Unix Integration"); }
 		}
+		
+		public string Description {
+			get { return GettextCatalog.GetString ("Set options for generating files to better integrate the application or library in a Unix system."); }
+		}
 
 		public bool SupportsCombineEntry (Combine parentCombine, CombineEntry entry)
 		{
