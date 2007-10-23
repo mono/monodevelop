@@ -526,7 +526,7 @@ namespace CSharpBinding
 				string ex = expressionFinder.FindExpression (textToCursor, textToCursor.Length - 1).Expression;
 				if (ex == null)
 					return null;
-
+				
 				// This is a bit of a hack, but for the resolver to properly resolve a constructor
 				// call needs the new keyword and the brackets, so let's provide them
 				int i = curPos - 2 - ex.Length;
@@ -618,9 +618,6 @@ namespace CSharpBinding
 			if (charTyped == '<' && IsInsideDocumentationComment (Editor.CursorPosition)) 
 				return GetXmlDocumentationCompletionData ();
 
-			if (charTyped != '.' && charTyped != ' ')
-				return null;
-			
 			int caretLineNumber = ctx.TriggerLine + 1;
 			int caretColumn = ctx.TriggerLineOffset + 1;
 
@@ -671,7 +668,9 @@ namespace CSharpBinding
 					return cp;
 				}
 			}
-
+			//if (charTyped != '.' && charTyped != ' ')
+			//	return null;
+			
 			// Check for 'overridable' completion
 			
 			i = ctx.TriggerOffset;
@@ -708,9 +707,20 @@ namespace CSharpBinding
 			string expression = expressionFinder.FindExpression (Editor.GetText (0, ctx.TriggerOffset), ctx.TriggerOffset - 2).Expression;
 			if (expression == null)
 				return null;
-
 			IParserContext parserContext = GetParserContext ();
 			CodeCompletionDataProvider completionProvider = new CodeCompletionDataProvider (parserContext, GetAmbience ());
+			
+			if (charTyped == '(' && expression.Trim () == "typeof") {
+				string[] namespaces = parserContext.GetNamespaceList ("", true, true);
+				Resolver res = new Resolver (parserContext);				
+				LanguageItemCollection items = res.IsAsResolve ("System.Object", caretLineNumber, caretColumn, FileName, Editor.Text, false);
+				TypeNameResolver resolver = res.CreateTypeNameResolver ();
+				completionProvider.AddResolveResults (items, true, resolver);
+				return completionProvider;
+			}
+			
+			if (charTyped != '.' && charTyped != ' ')
+				return null;
 
 			string ns;
 			if (IsInUsing (expression, ctx.TriggerOffset, out ns)) {
