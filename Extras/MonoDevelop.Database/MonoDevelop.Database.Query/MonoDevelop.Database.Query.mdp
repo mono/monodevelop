@@ -14,35 +14,35 @@
     </Configuration>
   </Configurations>
   <Contents>
-    <File name="./MonoDevelop.Database.Query.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./QueryResultView.cs" subtype="Code" buildaction="Compile" />
-    <File name="./SqlQueryView.cs" subtype="Code" buildaction="Compile" />
-    <File name="./icons/Icons.16x16.Database.Column.Key.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.Database.Column.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.Database.Connection.Error.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.Database.Connection.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.Database.Connection.Remove.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.Database.Constraints.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.Database.Database.Error.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.Database.Database.Ok.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.Database.Database.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.Database.Execute.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.Database.Parameter.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.Database.Procedure.Error.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.Database.Procedure.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.Database.Procedure.Source.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.Database.Relations.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.Database.Table.Error.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.Database.Table.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.Database.Tables.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.Database.User.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.Database.Users.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.Database.View.Error.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.Database.View.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.Database.View.Source.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.Database.Views.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./Commands/ToolCommands.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="MonoDevelop.Database.Query.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="QueryResultView.cs" subtype="Code" buildaction="Compile" />
+    <File name="SqlQueryView.cs" subtype="Code" buildaction="Compile" />
+    <File name="icons/Icons.16x16.Database.Column.Key.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Icons.16x16.Database.Column.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Icons.16x16.Database.Connection.Error.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Icons.16x16.Database.Connection.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Icons.16x16.Database.Connection.Remove.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Icons.16x16.Database.Constraints.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Icons.16x16.Database.Database.Error.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Icons.16x16.Database.Database.Ok.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Icons.16x16.Database.Database.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Icons.16x16.Database.Execute.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Icons.16x16.Database.Parameter.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Icons.16x16.Database.Procedure.Error.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Icons.16x16.Database.Procedure.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Icons.16x16.Database.Procedure.Source.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Icons.16x16.Database.Relations.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Icons.16x16.Database.Table.Error.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Icons.16x16.Database.Table.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Icons.16x16.Database.Tables.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Icons.16x16.Database.User.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Icons.16x16.Database.Users.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Icons.16x16.Database.View.Error.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Icons.16x16.Database.View.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Icons.16x16.Database.View.Source.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Icons.16x16.Database.Views.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="Commands/ToolCommands.cs" subtype="Code" buildaction="Compile" />
+    <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

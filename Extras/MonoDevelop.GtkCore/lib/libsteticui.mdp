@@ -20,9 +20,9 @@
     </Configuration>
   </Configurations>
   <Contents>
-    <File name="./stetic/libsteticui/action.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./stetic/libsteticui/missing.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./stetic/libsteticui/libsteticui.dll.config" subtype="Code" buildaction="FileCopy" />
+    <File name="stetic/libsteticui/action.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="stetic/libsteticui/missing.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="stetic/libsteticui/libsteticui.dll.config" subtype="Code" buildaction="FileCopy" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="gconf-sharp, Version=2.16.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />

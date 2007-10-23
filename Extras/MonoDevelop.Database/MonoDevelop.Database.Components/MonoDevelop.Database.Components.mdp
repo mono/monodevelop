@@ -1,7 +1,7 @@
 <Project name="MonoDevelop.Database.Components" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
-      <Output directory="../../../build/AddIns/MonoDevelop.Database" assemblyKeyFile="./" assembly="MonoDevelop.Database.Components" />
+      <Output directory="../../../build/AddIns/MonoDevelop.Database" assemblyKeyFile="." assembly="MonoDevelop.Database.Components" />
       <Build debugmode="True" target="Library" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
       <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
@@ -14,60 +14,60 @@
     </Configuration>
   </Configurations>
   <Contents>
-    <File name="./gtk-gui/gui.stetic" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./gtk-gui/generated.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Dialogs/SelectColumnDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Database.Components.SelectColumnDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/ProjectDirectoryComboBox.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/SelectColumnWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/SelectSchemaWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Containers/SchemaContainers.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Containers/ColumnContainer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Containers/ParameterContainer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Containers/ConditionContainer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/ColumnMappingWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/SchemaMappingWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/CellRendererTypeCombo.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/DataGrid/DataGridColumn.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/DataGrid/Visualizers/IDataGridVisualizer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/DataGrid/DataGrid.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Database.Components.DataGrid.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/DataGrid/Renderers/IDataGridContentRenderer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/DataGrid/Renderers/StringContentRenderer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/DataGrid/Renderers/ObjectContentRenderer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/DataGrid/Renderers/NullContentRenderer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/DataGrid/Renderers/BooleanContentRenderer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/DataGrid/Renderers/IntegerContentRenderer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/DataGrid/Renderers/LongContentRenderer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/DataGrid/Renderers/DecimalContentRenderer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/DataGrid/Renderers/FloatContentRenderer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/DataGrid/Renderers/DoubleContentRenderer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/DataGrid/Renderers/ByteContentRenderer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/DataGrid/Renderers/BlobContentRenderer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Codons/DataGridContentRendererCodon.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Dialogs/ShowImageDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Database.Components.ShowImageDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Dialogs/ShowTextDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Database.Components.ShowTextDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/DataGrid/Visualizers/TextVisualizer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/DataGrid/Visualizers/ImageVisualizer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/DataGrid/Visualizers/XmlTextVisualizer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/DataGrid/Visualizers/XmlTreeVisualizer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Dialogs/DatabaseConnectionSettingsDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Dialogs/WaitDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Database.Components.WaitDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/DatabaseConnectionContextComboBox.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/SqlEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Database.Components.SqlEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Commands/SqlEditorCommands.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Commands/DataGridCommands.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/DataGrid/Visualizers/AbstractDataGridVisualizer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/DataGrid/Visualizers/DataGridItemCommandHandler.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Database.Components.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./gtk-gui/objects.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./Widgets/SortedColumnListStore.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="gtk-gui/gui.stetic" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="gtk-gui/generated.cs" subtype="Code" buildaction="Compile" />
+    <File name="Dialogs/SelectColumnDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Database.Components.SelectColumnDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/ProjectDirectoryComboBox.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/SelectColumnWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/SelectSchemaWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="Containers/SchemaContainers.cs" subtype="Code" buildaction="Compile" />
+    <File name="Containers/ColumnContainer.cs" subtype="Code" buildaction="Compile" />
+    <File name="Containers/ParameterContainer.cs" subtype="Code" buildaction="Compile" />
+    <File name="Containers/ConditionContainer.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/ColumnMappingWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/SchemaMappingWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/CellRendererTypeCombo.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/DataGrid/DataGridColumn.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/DataGrid/Visualizers/IDataGridVisualizer.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/DataGrid/DataGrid.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Database.Components.DataGrid.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/DataGrid/Renderers/IDataGridContentRenderer.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/DataGrid/Renderers/StringContentRenderer.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/DataGrid/Renderers/ObjectContentRenderer.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/DataGrid/Renderers/NullContentRenderer.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/DataGrid/Renderers/BooleanContentRenderer.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/DataGrid/Renderers/IntegerContentRenderer.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/DataGrid/Renderers/LongContentRenderer.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/DataGrid/Renderers/DecimalContentRenderer.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/DataGrid/Renderers/FloatContentRenderer.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/DataGrid/Renderers/DoubleContentRenderer.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/DataGrid/Renderers/ByteContentRenderer.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/DataGrid/Renderers/BlobContentRenderer.cs" subtype="Code" buildaction="Compile" />
+    <File name="Codons/DataGridContentRendererCodon.cs" subtype="Code" buildaction="Compile" />
+    <File name="Dialogs/ShowImageDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Database.Components.ShowImageDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="Dialogs/ShowTextDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Database.Components.ShowTextDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/DataGrid/Visualizers/TextVisualizer.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/DataGrid/Visualizers/ImageVisualizer.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/DataGrid/Visualizers/XmlTextVisualizer.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/DataGrid/Visualizers/XmlTreeVisualizer.cs" subtype="Code" buildaction="Compile" />
+    <File name="Dialogs/DatabaseConnectionSettingsDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="Dialogs/WaitDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Database.Components.WaitDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/DatabaseConnectionContextComboBox.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/SqlEditorWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Database.Components.SqlEditorWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="Commands/SqlEditorCommands.cs" subtype="Code" buildaction="Compile" />
+    <File name="Commands/DataGridCommands.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/DataGrid/Visualizers/AbstractDataGridVisualizer.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/DataGrid/Visualizers/DataGridItemCommandHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Database.Components.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="gtk-gui/objects.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="Widgets/SortedColumnListStore.cs" subtype="Code" buildaction="Compile" />
+    <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

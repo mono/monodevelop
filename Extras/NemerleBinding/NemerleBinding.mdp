@@ -14,39 +14,39 @@
     </Configuration>
   </Configurations>
   <Contents>
-    <File name="./Nemerle.glade" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./NemerleEmptyProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./NemerleGnomeSharpProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./NemerleGtkSharpProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./NemerleGtkSharpWindow.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./EmptyNemerleFile.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Nemerle.File.EmptyFile" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Nemerle.File.Form" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Nemerle.FileIcon" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Nemerle.Project.EmptyProject" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Nemerle.Project.Form" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Nemerle.ProjectIcon" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./Gui/CodeGenerationPanel.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Project/NemerleParameters.cs" subtype="Code" buildaction="Compile" />
-    <File name="./NemerleBindingCompilerServices.cs" subtype="Code" buildaction="Compile" />
-    <File name="./NemerleLanguageBinding.cs" subtype="Code" buildaction="Compile" />
-    <File name="./NemerleAmbience.cs" subtype="Code" buildaction="Compile" />
-    <File name="./NemerleBinding.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./Parser/CodeGeneration.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Parser/ExpressionFinder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Parser/Parser.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Parser/SharpDevelopTree/Class.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Parser/SharpDevelopTree/Constructor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Parser/SharpDevelopTree/Event.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Parser/SharpDevelopTree/Field.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Parser/SharpDevelopTree/Indexer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Parser/SharpDevelopTree/Method.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Parser/SharpDevelopTree/Modifier.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Parser/SharpDevelopTree/Parameter.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Parser/SharpDevelopTree/Property.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Parser/SharpDevelopTree/ReturnType.cs" subtype="Code" buildaction="Compile" />
-    <File name="./FormattingStrategy/NemerleFormattingStrategy.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="Nemerle.glade" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="NemerleEmptyProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="NemerleGnomeSharpProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="NemerleGtkSharpProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="NemerleGtkSharpWindow.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="EmptyNemerleFile.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Nemerle.File.EmptyFile" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Nemerle.File.Form" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Nemerle.FileIcon" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Nemerle.Project.EmptyProject" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Nemerle.Project.Form" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Nemerle.ProjectIcon" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="Gui/CodeGenerationPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="Project/NemerleParameters.cs" subtype="Code" buildaction="Compile" />
+    <File name="NemerleBindingCompilerServices.cs" subtype="Code" buildaction="Compile" />
+    <File name="NemerleLanguageBinding.cs" subtype="Code" buildaction="Compile" />
+    <File name="NemerleAmbience.cs" subtype="Code" buildaction="Compile" />
+    <File name="NemerleBinding.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="Parser/CodeGeneration.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/ExpressionFinder.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/Parser.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/SharpDevelopTree/Class.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/SharpDevelopTree/Constructor.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/SharpDevelopTree/Event.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/SharpDevelopTree/Field.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/SharpDevelopTree/Indexer.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/SharpDevelopTree/Method.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/SharpDevelopTree/Modifier.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/SharpDevelopTree/Parameter.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/SharpDevelopTree/Property.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/SharpDevelopTree/ReturnType.cs" subtype="Code" buildaction="Compile" />
+    <File name="FormattingStrategy/NemerleFormattingStrategy.cs" subtype="Code" buildaction="Compile" />
+    <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />
@@ -63,5 +63,6 @@
     <ProjectReference type="Gac" localcopy="False" refto="Nemerle.Macros, Version=0.9.3.34404, Culture=neutral, PublicKeyToken=5291d186334f6101" />
     <ProjectReference type="Gac" localcopy="False" refto="gtk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="False" refto="glade-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Project" localcopy="True" refto="Mono.Addins" />
   </References>
 </Project>

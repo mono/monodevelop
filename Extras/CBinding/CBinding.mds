@@ -14,7 +14,7 @@
     <Execute type="None" entry="CBinding.Autotools" />
   </StartMode>
   <Entries>
-    <Entry filename="./CBinding.mdp" />
-    <Entry filename="./CBinding.Autotools/CBinding.Autotools.mdp" />
+    <Entry filename="CBinding.mdp" />
+    <Entry filename="CBinding.Autotools/CBinding.Autotools.mdp" />
   </Entries>
 </Combine>

@@ -14,7 +14,7 @@
     <Execute type="None" entry="MonoDevelop.Deployment.Linux" />
   </StartMode>
   <Entries>
-    <Entry filename="./MonoDevelop.Deployment/MonoDevelop.Deployment.mdp" />
-    <Entry filename="./MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux.mdp" />
+    <Entry filename="MonoDevelop.Deployment/MonoDevelop.Deployment.mdp" />
+    <Entry filename="MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux.mdp" />
   </Entries>
 </Combine>

@@ -1,3 +1,8 @@
+2007-10-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Gettext.mdp: Project file names updated by change in MD path
+	  functions.
+
 2007-10-23  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Gettext/TranslationService.cs,

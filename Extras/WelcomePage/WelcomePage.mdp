@@ -14,16 +14,16 @@
     </Configuration>
   </Configurations>
   <Contents>
-    <File name="./WelcomePageCommands.cs" subtype="Code" buildaction="Compile" />
-    <File name="./WelcomePageOptionPanel.cs" subtype="Code" buildaction="Compile" />
-    <File name="./WelcomePageView.cs" subtype="Code" buildaction="Compile" />
-    <File name="./WelcomePage.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./WelcomePage.xsl" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./WelcomePageContent.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./mono-bg.png" subtype="Code" buildaction="FileCopy" />
-    <File name="./mono-logo.png" subtype="Code" buildaction="FileCopy" />
-    <File name="./WelcomePage.css" subtype="Code" buildaction="FileCopy" />
-    <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="WelcomePageCommands.cs" subtype="Code" buildaction="Compile" />
+    <File name="WelcomePageOptionPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="WelcomePageView.cs" subtype="Code" buildaction="Compile" />
+    <File name="WelcomePage.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="WelcomePage.xsl" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="WelcomePageContent.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="mono-bg.png" subtype="Code" buildaction="FileCopy" />
+    <File name="mono-logo.png" subtype="Code" buildaction="FileCopy" />
+    <File name="WelcomePage.css" subtype="Code" buildaction="FileCopy" />
+    <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="gecko-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=ccf7d78a55e9f021" />

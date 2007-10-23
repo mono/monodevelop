@@ -1,3 +1,8 @@
+2007-10-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* WelcomePage.mdp: Project file names updated by change in MD path
+	  functions.
+
 2007-09-26  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* mono-bg.png, mono-logo.png, WelcomePage.xsl: Updated logo.

@@ -1,7 +1,7 @@
 <Project name="MonoDevelop.Database.Designer" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
-      <Output directory="../../../build/AddIns/MonoDevelop.Database" assemblyKeyFile="./" assembly="MonoDevelop.Database.Designer" />
+      <Output directory="../../../build/AddIns/MonoDevelop.Database" assemblyKeyFile="." assembly="MonoDevelop.Database.Designer" />
       <Build debugmode="True" target="Library" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
       <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
@@ -14,41 +14,41 @@
     </Configuration>
   </Configurations>
   <Contents>
-    <File name="./gtk-gui/gui.stetic" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./gtk-gui/generated.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/TriggersEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Database.Designer.TriggersEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/ColumnsEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Database.Designer.ColumnsEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/ConstraintsEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Database.Designer.ConstraintsEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/IndicesEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Database.Designer.IndicesEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Dialogs/TableEditorDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Database.Designer.TableEditorDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Dialogs/CreateDatabaseDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Database.Designer.CreateDatabaseDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Dialogs/ViewEditorDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Database.Designer.ViewEditorDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Dialogs/ProcedureEditorDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Database.Designer.ProcedureEditorDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/CommentEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Database.Designer.CommentEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Dialogs/PreviewDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Database.Designer.PreviewDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Dialogs/UserEditorDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Database.Designer.UserEditorDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/ForeignKeyConstraintEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Database.Designer.ForeignKeyConstraintEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/CheckConstraintEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Database.Designer.CheckConstraintEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/PrimaryKeyConstraintEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Database.Designer.PrimaryKeyConstraintEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Widgets/UniqueConstraintEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Database.Designer.UniqueConstraintEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Database.Designer.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./gtk-gui/objects.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="gtk-gui/gui.stetic" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="gtk-gui/generated.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/TriggersEditorWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Database.Designer.TriggersEditorWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/ColumnsEditorWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Database.Designer.ColumnsEditorWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/ConstraintsEditorWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Database.Designer.ConstraintsEditorWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/IndicesEditorWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Database.Designer.IndicesEditorWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="Dialogs/TableEditorDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Database.Designer.TableEditorDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="Dialogs/CreateDatabaseDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Database.Designer.CreateDatabaseDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="Dialogs/ViewEditorDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Database.Designer.ViewEditorDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="Dialogs/ProcedureEditorDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Database.Designer.ProcedureEditorDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/CommentEditorWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Database.Designer.CommentEditorWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="Dialogs/PreviewDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Database.Designer.PreviewDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="Dialogs/UserEditorDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Database.Designer.UserEditorDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/ForeignKeyConstraintEditorWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Database.Designer.ForeignKeyConstraintEditorWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/CheckConstraintEditorWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Database.Designer.CheckConstraintEditorWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/PrimaryKeyConstraintEditorWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Database.Designer.PrimaryKeyConstraintEditorWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/UniqueConstraintEditorWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Database.Designer.UniqueConstraintEditorWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Database.Designer.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="gtk-gui/objects.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />

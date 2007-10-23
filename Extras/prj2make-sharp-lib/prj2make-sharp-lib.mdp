@@ -14,34 +14,34 @@
     </Configuration>
   </Configurations>
   <Contents>
-    <File name="./MsPrjHelper.cs" subtype="Code" buildaction="Compile" />
-    <File name="./PrjHelper.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MdPrjHelper.cs" subtype="Code" buildaction="Compile" />
-    <File name="./CsprojInfo.cs" subtype="Code" buildaction="Compile" />
-    <File name="./PrjxInfo.cs" subtype="Code" buildaction="Compile" />
-    <File name="./pkgconfiginvoker.cs" subtype="Code" buildaction="Compile" />
-    <File name="./sharp_d_cmbx.cs" subtype="Code" buildaction="Compile" />
-    <File name="./sharp_d_prjx.cs" subtype="Code" buildaction="Compile" />
-    <File name="./csproj_ver2003.cs" subtype="Code" buildaction="Compile" />
-    <File name="./prj2make-sharp-lib.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./MSBuildFileFormat.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MSBuildProjectServiceExtension.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MSBuildData.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
-    <File name="./SlnData.cs" subtype="Code" buildaction="Compile" />
-    <File name="./SlnFileFormat.cs" subtype="Code" buildaction="Compile" />
-    <File name="./VBNetResourceIdBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./CSharpResourceIdBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./IResourceIdBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
-    <File name="./VS2003SlnFileFormat.cs" subtype="Code" buildaction="Compile" />
-    <File name="./VS2003ProjectFileFormat.cs" subtype="Code" buildaction="Compile" />
-    <File name="./SilverlightMSBuildProjectExtension.cs" subtype="Code" buildaction="Compile" />
-    <File name="./VBNetMSBuildProjectExtension.cs" subtype="Code" buildaction="Compile" />
-    <File name="./CSharpMSBuildProjectExtension.cs" subtype="Code" buildaction="Compile" />
-    <File name="./DefaultMSBuildProjectExtension.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MSBuildProjectExtension.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Utils.cs" subtype="Code" buildaction="Compile" />
+    <File name="MsPrjHelper.cs" subtype="Code" buildaction="Compile" />
+    <File name="PrjHelper.cs" subtype="Code" buildaction="Compile" />
+    <File name="MdPrjHelper.cs" subtype="Code" buildaction="Compile" />
+    <File name="CsprojInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="PrjxInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="pkgconfiginvoker.cs" subtype="Code" buildaction="Compile" />
+    <File name="sharp_d_cmbx.cs" subtype="Code" buildaction="Compile" />
+    <File name="sharp_d_prjx.cs" subtype="Code" buildaction="Compile" />
+    <File name="csproj_ver2003.cs" subtype="Code" buildaction="Compile" />
+    <File name="prj2make-sharp-lib.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="MSBuildFileFormat.cs" subtype="Code" buildaction="Compile" />
+    <File name="MSBuildProjectServiceExtension.cs" subtype="Code" buildaction="Compile" />
+    <File name="MSBuildData.cs" subtype="Code" buildaction="Compile" />
+    <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="SlnData.cs" subtype="Code" buildaction="Compile" />
+    <File name="SlnFileFormat.cs" subtype="Code" buildaction="Compile" />
+    <File name="VBNetResourceIdBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="CSharpResourceIdBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="IResourceIdBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="VS2003SlnFileFormat.cs" subtype="Code" buildaction="Compile" />
+    <File name="VS2003ProjectFileFormat.cs" subtype="Code" buildaction="Compile" />
+    <File name="SilverlightMSBuildProjectExtension.cs" subtype="Code" buildaction="Compile" />
+    <File name="VBNetMSBuildProjectExtension.cs" subtype="Code" buildaction="Compile" />
+    <File name="CSharpMSBuildProjectExtension.cs" subtype="Code" buildaction="Compile" />
+    <File name="DefaultMSBuildProjectExtension.cs" subtype="Code" buildaction="Compile" />
+    <File name="MSBuildProjectExtension.cs" subtype="Code" buildaction="Compile" />
+    <File name="Utils.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

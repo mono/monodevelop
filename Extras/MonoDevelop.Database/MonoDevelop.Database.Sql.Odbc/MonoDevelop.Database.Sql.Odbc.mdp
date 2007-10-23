@@ -14,11 +14,11 @@
     </Configuration>
   </Configurations>
   <Contents>
-    <File name="./OdbcConnectionProvider.cs" subtype="Code" buildaction="Compile" />
-    <File name="./OdbcSchemaProvider.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Database.Sql.Odbc.addin.xml" subtype="Code" buildaction="FileCopy" />
-    <File name="./OdbcDbFactory.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Schema" subtype="Directory" buildaction="Compile" />
+    <File name="OdbcConnectionProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="OdbcSchemaProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Database.Sql.Odbc.addin.xml" subtype="Code" buildaction="FileCopy" />
+    <File name="OdbcDbFactory.cs" subtype="Code" buildaction="Compile" />
+    <File name="Schema" subtype="Directory" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

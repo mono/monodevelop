@@ -14,36 +14,36 @@
     </Configuration>
   </Configurations>
   <Contents>
-    <File name="./ConnectionManagerPad.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Database.ConnectionManager.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./NodeBuilders/ConnectionContextCollectionNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./NodeBuilders/ConnectionContextNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./NodeBuilders/TablesNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./NodeBuilders/ViewsNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./NodeBuilders/ProceduresNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./NodeBuilders/UsersNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./NodeBuilders/ConstraintsNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./FakeNodes.cs" subtype="Code" buildaction="Compile" />
-    <File name="./ConnectionManagerCommands.cs" subtype="Code" buildaction="Compile" />
-    <File name="./NodeBuilders/TableNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./NodeBuilders/UserNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./NodeBuilders/ProcedureNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./NodeBuilders/ViewNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./NodeBuilders/ColumnNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./NodeBuilders/ColumnsNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./NodeBuilders/ConstraintNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./NodeBuilders/AggregatesNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./NodeBuilders/GroupsNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./NodeBuilders/LanguagesNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./NodeBuilders/OperatorsNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./NodeBuilders/RolesNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./NodeBuilders/RulesNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./NodeBuilders/SequencesNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./NodeBuilders/TriggersNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./NodeBuilders/TypesNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./NodeBuilders/ParametersNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./NodeBuilders/ParameterNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="ConnectionManagerPad.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Database.ConnectionManager.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="NodeBuilders/ConnectionContextCollectionNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="NodeBuilders/ConnectionContextNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="NodeBuilders/TablesNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="NodeBuilders/ViewsNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="NodeBuilders/ProceduresNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="NodeBuilders/UsersNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="NodeBuilders/ConstraintsNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="FakeNodes.cs" subtype="Code" buildaction="Compile" />
+    <File name="ConnectionManagerCommands.cs" subtype="Code" buildaction="Compile" />
+    <File name="NodeBuilders/TableNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="NodeBuilders/UserNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="NodeBuilders/ProcedureNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="NodeBuilders/ViewNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="NodeBuilders/ColumnNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="NodeBuilders/ColumnsNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="NodeBuilders/ConstraintNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="NodeBuilders/AggregatesNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="NodeBuilders/GroupsNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="NodeBuilders/LanguagesNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="NodeBuilders/OperatorsNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="NodeBuilders/RolesNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="NodeBuilders/RulesNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="NodeBuilders/SequencesNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="NodeBuilders/TriggersNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="NodeBuilders/TypesNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="NodeBuilders/ParametersNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="NodeBuilders/ParameterNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

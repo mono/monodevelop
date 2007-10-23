@@ -14,7 +14,7 @@
     <Execute type="None" entry="MonoDeveloperExtensions_nunit" />
   </StartMode>
   <Entries>
-    <Entry filename="./MonoDeveloperExtensions.mdp" />
-    <Entry filename="./NUnit/NUnit.mdp" />
+    <Entry filename="MonoDeveloperExtensions.mdp" />
+    <Entry filename="NUnit/NUnit.mdp" />
   </Entries>
 </Combine>

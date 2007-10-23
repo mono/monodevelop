@@ -1,70 +1,70 @@
 <Project name="AspNetEdit" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
-      <Output directory="./bin/Debug" assembly="AspNetEdit" />
+      <Output directory="bin/Debug" assembly="AspNetEdit" />
       <Build debugmode="True" target="Exe" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
-      <Output directory="./bin/Release" assembly="AspNetEdit" />
+      <Output directory="bin/Release" assembly="AspNetEdit" />
       <Build debugmode="False" target="Exe" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
   <Contents>
-    <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
-    <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Integration" subtype="Directory" buildaction="Compile" />
-    <File name="./AspNetEdit.Integration/AspNetEditDisplayBinding.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./AspNetEdit.Editor.Persistence/ControlPersister.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.Persistence/DesignTimeParser.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.Persistence/HtmlParsingObject.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.Persistence/ParsingObject.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.Persistence/RootParsingObject.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.Persistence/ServerControlParsingObject.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.ComponentModel/DesignContainer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.ComponentModel/DesignerHost.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.ComponentModel/Document.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.ComponentModel/DocumentDirective.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.ComponentModel/ExtenderListService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.ComponentModel/MenuCommandService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.ComponentModel/NameCreationService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.ComponentModel/RootDesigner.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.ComponentModel/SelectionService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.ComponentModel/TextToolboxItem.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.ComponentModel/ToolboxService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.ComponentModel/Transaction.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.ComponentModel/TypeDescriptorFilterService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.ComponentModel/TypeResolutionService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.ComponentModel/WebFormPage.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.ComponentModel/WebFormReferenceManager.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.UI/PropertyGrid.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.UI/RootDesignerView.cs" subtype="Code" buildaction="Compile" />
-    <File name="./chrome/install.rdf" subtype="Code" buildaction="Nothing" />
-    <File name="./chrome/Makefile.am" subtype="Code" buildaction="Nothing" />
-    <File name="./chrome/README" subtype="Code" buildaction="Nothing" />
-    <File name="./chrome/content/aspdesigner/aspdesigner.xul" subtype="Code" buildaction="Nothing" />
-    <File name="./chrome/content/aspdesigner/clipboard.js" subtype="Code" buildaction="Nothing" />
-    <File name="./chrome/content/aspdesigner/constants.js" subtype="Code" buildaction="Nothing" />
-    <File name="./chrome/content/aspdesigner/contents.rdf" subtype="Code" buildaction="Nothing" />
-    <File name="./chrome/content/aspdesigner/editor.js" subtype="Code" buildaction="Nothing" />
-    <File name="./chrome/content/aspdesigner/editorContent.css" subtype="Code" buildaction="Nothing" />
-    <File name="./chrome/content/aspdesigner/JSCall.js" subtype="Code" buildaction="Nothing" />
-    <File name="./chrome/content/aspdesigner/xpcom.js" subtype="Code" buildaction="Nothing" />
-    <File name="./chrome/locale/en-US/aspdesigner/contents.rdf" subtype="Code" buildaction="Nothing" />
-    <File name="./AspNetEdit.Integration/AspNetEditViewContent.cs" subtype="Code" buildaction="Compile" />
-    <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
-    <File name="./AspNetEdit.Editor/EditorHost.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Integration/EditorProcess.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Integration/MonoDevelopProxy.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.ComponentModel/EventBindingService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Integration/ToolboxProvider.cs" subtype="Code" buildaction="Compile" />
-    <File name="./chrome/aspdesigner.manifest.in" subtype="Code" buildaction="Nothing" />
-    <File name="./AspNetEdit.JSCall/CommandManager.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.JSCall/InvalidJSArgumentException.cs" subtype="Code" buildaction="Compile" />
+    <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.Integration" subtype="Directory" buildaction="Compile" />
+    <File name="AspNetEdit.Integration/AspNetEditDisplayBinding.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="AspNetEdit.Editor.Persistence/ControlPersister.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.Editor.Persistence/DesignTimeParser.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.Editor.Persistence/HtmlParsingObject.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.Editor.Persistence/ParsingObject.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.Editor.Persistence/RootParsingObject.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.Editor.Persistence/ServerControlParsingObject.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.Editor.ComponentModel/DesignContainer.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.Editor.ComponentModel/DesignerHost.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.Editor.ComponentModel/Document.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.Editor.ComponentModel/DocumentDirective.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.Editor.ComponentModel/ExtenderListService.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.Editor.ComponentModel/MenuCommandService.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.Editor.ComponentModel/NameCreationService.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.Editor.ComponentModel/RootDesigner.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.Editor.ComponentModel/SelectionService.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.Editor.ComponentModel/TextToolboxItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.Editor.ComponentModel/ToolboxService.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.Editor.ComponentModel/Transaction.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.Editor.ComponentModel/TypeDescriptorFilterService.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.Editor.ComponentModel/TypeResolutionService.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.Editor.ComponentModel/WebFormPage.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.Editor.ComponentModel/WebFormReferenceManager.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.Editor.UI/PropertyGrid.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.Editor.UI/RootDesignerView.cs" subtype="Code" buildaction="Compile" />
+    <File name="chrome/install.rdf" subtype="Code" buildaction="Nothing" />
+    <File name="chrome/Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="chrome/README" subtype="Code" buildaction="Nothing" />
+    <File name="chrome/content/aspdesigner/aspdesigner.xul" subtype="Code" buildaction="Nothing" />
+    <File name="chrome/content/aspdesigner/clipboard.js" subtype="Code" buildaction="Nothing" />
+    <File name="chrome/content/aspdesigner/constants.js" subtype="Code" buildaction="Nothing" />
+    <File name="chrome/content/aspdesigner/contents.rdf" subtype="Code" buildaction="Nothing" />
+    <File name="chrome/content/aspdesigner/editor.js" subtype="Code" buildaction="Nothing" />
+    <File name="chrome/content/aspdesigner/editorContent.css" subtype="Code" buildaction="Nothing" />
+    <File name="chrome/content/aspdesigner/JSCall.js" subtype="Code" buildaction="Nothing" />
+    <File name="chrome/content/aspdesigner/xpcom.js" subtype="Code" buildaction="Nothing" />
+    <File name="chrome/locale/en-US/aspdesigner/contents.rdf" subtype="Code" buildaction="Nothing" />
+    <File name="AspNetEdit.Integration/AspNetEditViewContent.cs" subtype="Code" buildaction="Compile" />
+    <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="AspNetEdit.Editor/EditorHost.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.Integration/EditorProcess.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.Integration/MonoDevelopProxy.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.Editor.ComponentModel/EventBindingService.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.Integration/ToolboxProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="chrome/aspdesigner.manifest.in" subtype="Code" buildaction="Nothing" />
+    <File name="AspNetEdit.JSCall/CommandManager.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.JSCall/InvalidJSArgumentException.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="gecko-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=ccf7d78a55e9f021" />

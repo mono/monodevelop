@@ -20,7 +20,6 @@
       <Entry build="True" name="MonoDevelop.Autotools" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.WebReferences" configuration="Debug" />
       <Entry build="True" name="Deployment" configuration="" />
-      <Entry build="True" name="BooBinding" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Database" configuration="Debug" />
       <Entry build="True" name="CSharpBinding" configuration="" />
       <Entry build="True" name="MonoDevelop.Gettext" configuration="Debug" />
@@ -47,7 +46,6 @@
       <Entry build="True" name="MonoDevelop.Autotools" configuration="Release" />
       <Entry build="True" name="MonoDevelop.WebReferences" configuration="Release" />
       <Entry build="True" name="Deployment" configuration="" />
-      <Entry build="True" name="BooBinding" configuration="Release" />
       <Entry build="True" name="MonoDevelop.Database" configuration="Release" />
       <Entry build="True" name="CSharpBinding" configuration="" />
       <Entry build="True" name="MonoDevelop.Gettext" configuration="Release" />
@@ -85,30 +83,29 @@
     <Execute type="None" entry="CBinding" />
   </StartMode>
   <Entries>
-    <Entry filename="./NUnit/MonoDevelop.NUnit.mdp" />
-    <Entry filename="./ILAsmBinding/ILAsmBinding.mdp" />
-    <Entry filename="./VersionControl/VersionControl.mds" />
-    <Entry filename="./JavaBinding/JavaBinding.mdp" />
-    <Entry filename="./MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.mdp" />
-    <Entry filename="./NemerleBinding/NemerleBinding.mdp" />
-    <Entry filename="./MonoDevelop.GtkCore/MonoDevelop.GtkCore.mds" />
-    <Entry filename="./WelcomePage/WelcomePage.mdp" />
-    <Entry filename="./prj2make-sharp-lib/prj2make-sharp-lib.mdp" />
-    <Entry filename="./VBNetBinding/VBNetBinding.mds" />
-    <Entry filename="./DebuggerAddIn/MonoDevelop.Debugger.mdp" />
-    <Entry filename="./ChangeLogAddIn/ChangeLogAddIn.mdp" />
-    <Entry filename="./MonoDeveloperExtensions/MonoDeveloperExtensions.mds" />
-    <Entry filename="./AspNetAddIn/AspNetAddIn.mdp" />
-    <Entry filename="./AspNetEdit/AspNetEdit.mdp" />
-    <Entry filename="./MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.mdp" />
-    <Entry filename="./MonoDevelop.Autotools/MonoDevelop.Autotools.mdp" />
-    <Entry filename="./MonoDevelop.WebReferences/MonoDevelop.WebReferences.mdp" />
-    <Entry filename="./Deployment/Deployment.mds" />
-    <Entry filename="./BooBinding/BooBinding.mds" />
-    <Entry filename="./MonoDevelop.Database/MonoDevelop.Database.mds" />
-    <Entry filename="./CSharpBinding/CSharpBinding.mds" />
-    <Entry filename="./MonoDevelop.Gettext/MonoDevelop.Gettext.mdp" />
-    <Entry filename="./MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit.mdp" />
-    <Entry filename="./CBinding/CBinding.mds" />
+    <Entry filename="NUnit/MonoDevelop.NUnit.mdp" />
+    <Entry filename="ILAsmBinding/ILAsmBinding.mdp" />
+    <Entry filename="VersionControl/VersionControl.mds" />
+    <Entry filename="JavaBinding/JavaBinding.mdp" />
+    <Entry filename="MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.mdp" />
+    <Entry filename="NemerleBinding/NemerleBinding.mdp" />
+    <Entry filename="MonoDevelop.GtkCore/MonoDevelop.GtkCore.mds" />
+    <Entry filename="WelcomePage/WelcomePage.mdp" />
+    <Entry filename="prj2make-sharp-lib/prj2make-sharp-lib.mdp" />
+    <Entry filename="VBNetBinding/VBNetBinding.mds" />
+    <Entry filename="DebuggerAddIn/MonoDevelop.Debugger.mdp" />
+    <Entry filename="ChangeLogAddIn/ChangeLogAddIn.mdp" />
+    <Entry filename="MonoDeveloperExtensions/MonoDeveloperExtensions.mds" />
+    <Entry filename="AspNetAddIn/AspNetAddIn.mdp" />
+    <Entry filename="AspNetEdit/AspNetEdit.mdp" />
+    <Entry filename="MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.mdp" />
+    <Entry filename="MonoDevelop.Autotools/MonoDevelop.Autotools.mdp" />
+    <Entry filename="MonoDevelop.WebReferences/MonoDevelop.WebReferences.mdp" />
+    <Entry filename="Deployment/Deployment.mds" />
+    <Entry filename="MonoDevelop.Database/MonoDevelop.Database.mds" />
+    <Entry filename="CSharpBinding/CSharpBinding.mds" />
+    <Entry filename="MonoDevelop.Gettext/MonoDevelop.Gettext.mdp" />
+    <Entry filename="MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit.mdp" />
+    <Entry filename="CBinding/CBinding.mds" />
   </Entries>
 </Combine>

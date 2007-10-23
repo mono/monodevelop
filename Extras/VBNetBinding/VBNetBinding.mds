@@ -11,6 +11,6 @@
     <Execute type="None" entry="VBNetBinding" />
   </StartMode>
   <Entries>
-    <Entry filename="./VBNetBinding.mdp" />
+    <Entry filename="VBNetBinding.mdp" />
   </Entries>
 </Combine>

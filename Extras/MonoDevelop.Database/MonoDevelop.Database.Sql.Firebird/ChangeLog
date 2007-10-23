@@ -1,3 +1,8 @@
+2007-10-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Database.Sql.Firebird.mdp: Project file names updated by
+	  change in MD path functions.
+
 2007-09-26  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Database.Sql.Firebird.mdp: Don't unnecessarily local-copy

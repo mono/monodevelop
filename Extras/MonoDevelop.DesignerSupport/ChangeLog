@@ -1,3 +1,8 @@
+2007-10-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.DesignerSupport.mdp: Project file names updated by change in
+	  MD path functions.
+
 2007-10-15  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.DesignerSupport.mdp, Makefile.am: Updated.
