@@ -1,5 +1,15 @@
 2007-10-23  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* gtk-gui/MonoDevelop.Gettext.GettextFeatureWidget.cs, gtk-gui/gui.stetic,
+	  MonoDevelop.Gettext/GettextFeature.cs: Cosmetic changes in the feature
+	  widget. Don't show scrollbars, just grow the list as new items are
+	  added.
+	* gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs: Cosmetic
+	  fix.
+	* MonoDevelop.Gettext.mdp: Updated.
+
+2007-10-23  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Gettext.mdp: Project file names updated by change in MD path
 	  functions.
 

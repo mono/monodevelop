@@ -15,8 +15,6 @@ namespace MonoDevelop.GtkCore.Dialogs
 		public GtkFeatureWidget (DotNetProject project)
 		{
 			Spacing = 6;
-			Label lab = new Label (GettextCatalog.GetString ("Gtk# designer support is enabled."));
-			PackStart (lab, false, false, 0);
 			
 			versionCombo = Gtk.ComboBox.NewText ();
 			foreach (string v in GtkCoreService.SupportedGtkVersions)
@@ -55,6 +53,10 @@ namespace MonoDevelop.GtkCore.Dialogs
 	{
 		public string Title {
 			get { return GettextCatalog.GetString ("Gtk# Support"); }
+		}
+		
+		public string Description {
+			get { return GettextCatalog.GetString ("Enables support for GTK# in the project. Allows the visual design of GTK# windows, and the creation of a GTK# widget library."); }
 		}
 
 		public bool SupportsCombineEntry (Combine parentCombine, CombineEntry entry)

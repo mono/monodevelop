@@ -77,8 +77,8 @@ RES =  \
 EXTRA_DIST = $(FILES) $(RES)
 
 update-stetic:
-	svn rm svn+ssh://mono-cvs.ximian.com/source/trunk/monodevelop/Extras/MonoDevelop.GtkCore/lib/stetic && \
-	svn cp svn+ssh://mono-cvs.ximian.com/source/trunk/stetic svn+ssh://mono-cvs.ximian.com/source/trunk/monodevelop/Extras/MonoDevelop.GtkCore/lib/stetic
+	svn rm -m "Update Stetic sources" svn+ssh://mono-cvs.ximian.com/source/trunk/monodevelop/Extras/MonoDevelop.GtkCore/lib/stetic && \
+	svn cp -m "Update Stetic sources" svn+ssh://mono-cvs.ximian.com/source/trunk/stetic svn+ssh://mono-cvs.ximian.com/source/trunk/monodevelop/Extras/MonoDevelop.GtkCore/lib/stetic
 
 all: $(ASSEMBLY)
 

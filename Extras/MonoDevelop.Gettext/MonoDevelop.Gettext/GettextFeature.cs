@@ -42,6 +42,10 @@ namespace MonoDevelop.Gettext
 			get { return GettextCatalog.GetString ("Translation"); }
 		}
 		
+		public string Description {
+			get { return GettextCatalog.GetString ("Add a Translation Project to the solution that will use gettext to generate a set of PO files for the new project."); }
+		}
+		
 		public bool SupportsCombineEntry (Combine parentCombine, CombineEntry entry)
 		{
 			return (entry is Project) && parentCombine != null;

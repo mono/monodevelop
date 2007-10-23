@@ -240,7 +240,7 @@ namespace MonoDevelop.Gettext {
             this.frame2.Add(this.GtkAlignment3);
             this.GtkLabel6 = new Gtk.Label();
             this.GtkLabel6.Name = "GtkLabel6";
-            this.GtkLabel6.LabelProp = Mono.Unix.Catalog.GetString("<b>Initialization String</b>");
+            this.GtkLabel6.LabelProp = Mono.Unix.Catalog.GetString("<b>Init String</b>");
             this.GtkLabel6.UseMarkup = true;
             this.frame2.LabelWidget = this.GtkLabel6;
             this.vbox2.Add(this.frame2);
@@ -328,7 +328,7 @@ namespace MonoDevelop.Gettext {
                 this.Child.ShowAll();
             }
             this.DefaultWidth = 519;
-            this.DefaultHeight = 433;
+            this.DefaultHeight = 426;
             this.Show();
         }
     }

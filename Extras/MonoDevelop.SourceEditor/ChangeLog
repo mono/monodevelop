@@ -1,5 +1,9 @@
 2007-10-23  Lluis Sanchez Gual <lluis@novell.com> 
 
+	
+
+2007-10-23  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.SourceEditor.mdp: Project file names updated by change in MD
 	  path functions.
 

@@ -177,7 +177,8 @@ namespace MonoDevelop.SourceEditor.Gui
 		bool AutocorrResetMeth ()
 		{
 			ResetUnderlineChangement ();
-			ParseCompilationUnit (lastCu);
+			if (lastCu != null)
+				ParseCompilationUnit (lastCu);
 			resetTimerStarted = false;
 			return false;
 		}

@@ -881,7 +881,7 @@
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-cancel</property>
-            <property name="IsDialogButton">False</property>
+            <property name="ResponseId">-6</property>
             <property name="label">gtk-cancel</property>
           </widget>
           <packing>
@@ -897,7 +897,7 @@
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-ok</property>
-            <property name="IsDialogButton">False</property>
+            <property name="ResponseId">-5</property>
             <property name="label">gtk-ok</property>
           </widget>
           <packing>
@@ -1032,7 +1032,6 @@
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
                                 <property name="Label" translatable="yes">_Relative to output path:</property>
-                                <property name="Active">True</property>
                                 <property name="DrawIndicator">True</property>
                                 <property name="HasLabel">True</property>
                                 <property name="UseUnderline">True</property>
@@ -1626,6 +1625,7 @@
                 <property name="MemberName" />
                 <property name="ShowArrow">False</property>
                 <property name="ButtonStyle">Icons</property>
+                <property name="IconSize">LargeToolbar</property>
                 <node name="toolbarPages" type="Toolbar" />
               </widget>
               <packing>
@@ -1653,13 +1653,26 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Gettext.GettextFeatureWidget" design-size="330 239">
+  <widget class="Gtk.Bin" id="MonoDevelop.Gettext.GettextFeatureWidget" design-size="500 239">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.VBox" id="vbox2">
         <property name="MemberName" />
-        <property name="Spacing">16</property>
+        <property name="Spacing">6</property>
         <property name="BorderWidth">8</property>
+        <child>
+          <widget class="Gtk.Label" id="label4">
+            <property name="MemberName" />
+            <property name="Xalign">0</property>
+            <property name="LabelProp" translatable="yes">Select the languages you want to support (more languages can be added later):</property>
+          </widget>
+          <packing>
+            <property name="Position">0</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
         <child>
           <widget class="Gtk.HBox" id="hbox1">
             <property name="MemberName" />
@@ -1669,37 +1682,21 @@
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
                 <child>
-                  <widget class="Gtk.Label" id="label4">
+                  <widget class="Gtk.Frame" id="frame1">
                     <property name="MemberName" />
-                    <property name="Xalign">0</property>
-                    <property name="LabelProp" translatable="yes">Translations:</property>
-                  </widget>
-                  <packing>
-                    <property name="Position">0</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
-                    <property name="MemberName" />
-                    <property name="WidthRequest">200</property>
-                    <property name="HeightRequest">200</property>
-                    <property name="CanFocus">True</property>
-                    <property name="VscrollbarPolicy">Automatic</property>
-                    <property name="HscrollbarPolicy">Automatic</property>
                     <property name="ShadowType">In</property>
+                    <property name="LabelXalign">0</property>
                     <child>
                       <widget class="Gtk.TreeView" id="treeviewTranslations">
                         <property name="MemberName" />
+                        <property name="WidthRequest">200</property>
                         <property name="CanFocus">True</property>
                         <property name="HeadersClickable">True</property>
                       </widget>
                     </child>
                   </widget>
                   <packing>
-                    <property name="Position">1</property>
+                    <property name="Position">0</property>
                     <property name="AutoSize">True</property>
                   </packing>
                 </child>
@@ -1707,8 +1704,6 @@
               <packing>
                 <property name="Position">0</property>
                 <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
               </packing>
             </child>
             <child>
@@ -1757,7 +1752,7 @@
             </child>
           </widget>
           <packing>
-            <property name="Position">0</property>
+            <property name="Position">1</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
