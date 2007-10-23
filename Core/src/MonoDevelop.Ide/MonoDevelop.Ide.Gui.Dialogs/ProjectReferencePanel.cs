@@ -27,7 +27,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			this.selectDialog = selectDialog;
 			
 			store = new ListStore (typeof (string), typeof (string), typeof(Project), typeof(bool), typeof(Gdk.Pixbuf), typeof(bool));
-			store.DefaultSortFunc = new Gtk.TreeIterCompareFunc (CompareNodes);
+			store.SetSortFunc (0, CompareNodes);
 			treeView = new TreeView (store);
 			
 			TreeViewColumn firstColumn = new TreeViewColumn ();
@@ -59,6 +59,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			sc.Add (treeView);
 			PackStart (sc, true, true, 0);
 			
+			store.SetSortColumnId (0, SortType.Ascending);
 			ShowAll ();
 			
 			BorderWidth = 6;
