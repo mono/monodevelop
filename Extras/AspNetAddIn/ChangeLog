@@ -1,3 +1,8 @@
+2007-10-24  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Templates/WebApplication-Empty.xpt.xml, Templates/WebApplication.xpt.xml:
+	  Updated project icons.
+
 2007-10-17  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Project/WebTypeManager.cs: Don't do web.config control lookups for 1.1
