@@ -53,10 +53,10 @@ namespace MonoDevelop.Projects.Gui
 
 		void InitializeIcons (string path)
 		{			
-			extensionHashtable[".PRJX"] = Stock.SolutionIcon;
-			extensionHashtable[".CMBX"] = Stock.CombineIcon;
-			extensionHashtable[".MDS"] = Stock.CombineIcon;
-			extensionHashtable[".MDP"] = Stock.SolutionIcon;
+			extensionHashtable[".PRJX"] = Stock.Project;
+			extensionHashtable[".CMBX"] = Stock.Solution;
+			extensionHashtable[".MDS"] = Stock.Solution;
+			extensionHashtable[".MDP"] = Stock.Project;
 		
 			foreach (IconCodon iconCodon in AddinManager.GetExtensionNodes (path, typeof(IconCodon))) {
 				string image;
