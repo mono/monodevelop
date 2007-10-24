@@ -40,15 +40,10 @@ RES =  \
 	icons/VB.File.NewClass \
 	icons/VB.File.WebFile \
 	icons/VB.FileIcon \
-	icons/VB.Project.DOSProject \
-	icons/VB.Project.EmptyProject \
-	icons/VB.Project.Form \
-	icons/VB.Project.FullProject \
-	icons/VB.Project.Library \
 	icons/VB.Project.ServiceProject \
 	icons/VB.Project.UserControl \
 	icons/VB.Project.WebProject \
-	icons/VB.ProjectIcon \
+	icons/vb-icon-32.png \
 	templates/EmptyVBFile.xft.xml \
 	templates/EmptyVBProject.xpt.xml \
 	templates/VBConsoleApplicationProject.xpt.xml \

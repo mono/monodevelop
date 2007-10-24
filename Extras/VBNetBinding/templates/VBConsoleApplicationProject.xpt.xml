@@ -7,7 +7,7 @@
 	<TemplateConfiguration>
 		<_Name>Console Project</_Name>
 		<Category>VBNet</Category>
-		<Icon>res:VB.Project.DOSProject</Icon>
+		<Icon>md-project-console|res:vb-icon-32.png</Icon>
 		<LanguageName>VBNet</LanguageName>
 		<_Description>Create a console VB.Net project</_Description>
 	</TemplateConfiguration>

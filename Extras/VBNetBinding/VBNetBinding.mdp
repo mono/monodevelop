@@ -42,16 +42,11 @@
     <File name="icons/VB.FileIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/VB.File.NewClass" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/VB.File.WebFile" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/VB.Project.DOSProject" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/VB.Project.EmptyProject" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/VB.Project.Form" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/VB.Project.FullProject" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/VB.ProjectIcon" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/VB.Project.Library" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/VB.Project.ServiceProject" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/VB.Project.UserControl" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/VB.Project.WebProject" subtype="Code" buildaction="EmbedAsResource" />
     <File name="VBNetBinding.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/vb-icon-32.png" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />
