@@ -67,6 +67,7 @@ namespace MonoDevelop.Gettext
 			this.owner = owner;
 			this.str = str;
 			this.plural = plural;
+
 			hasPlural = ! String.IsNullOrEmpty (plural);
 			references = new List<string> ();
 			autocomments = new List<string> ();

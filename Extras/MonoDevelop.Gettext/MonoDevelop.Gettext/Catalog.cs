@@ -99,7 +99,15 @@ namespace MonoDevelop.Gettext
 			string[] textArr = text.Split ('\n');
 			for (int i = 0; i < textArr.Length; i++) {
 				sb.Append ('"');
-				sb.Append (textArr[i]);
+				for (int j = 0; j < textArr[i].Length; j++) {
+					if (textArr[i][j] == '\\') {
+						if (j + 1 < textArr[i].Length && textArr[i][j + 1] != 'n') {
+							sb.Append ("\\\\");
+							continue;
+						}
+					}
+					sb.Append (textArr[i][j]);
+				}
 				sb.Append ('"');
 				if (i + 1 < textArr.Length)
 					sb.Append ('\n');
@@ -107,7 +115,7 @@ namespace MonoDevelop.Gettext
 			
 //			uint n_cnt = 0;
 //			int len = text.Length;
-//
+//			sb.Append ('"');
 //			//s = new char[len + 16];
 //			// Scan the string up to len-2 because we don't want to account for the
 //			// very last \n on the line:
@@ -140,10 +148,9 @@ namespace MonoDevelop.Gettext
 //
 //			// normalize, remove "\n\"\"" lines
 //			sb.Replace ("\n\"\"", String.Empty);
-//
 //			if (n_cnt >= 1 && sb.Length > 0)
 //				return "\"\n\"" + sb.ToString ();
-//			else
+//			else 
 				return sb.ToString ();
 		}
 
@@ -253,8 +260,8 @@ namespace MonoDevelop.Gettext
 				dummy = data.Flags;
 				if (! String.IsNullOrEmpty (dummy))
 				{
-					dummy += originalNewLine;
 					sb.Append (dummy);
+					sb.Append (originalNewLine);
 				}
 				dummy = Catalog.FormatStringForFile (data.String);
 				Catalog.SaveMultiLines (sb, "msgid " + dummy + "", originalNewLine);

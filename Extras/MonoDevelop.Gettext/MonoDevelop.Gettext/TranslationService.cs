@@ -82,7 +82,7 @@ namespace MonoDevelop.Gettext
 			return result;
 		}
 		
-		static Regex xmlTranslationPattern = new Regex(@"_.*=""(.*)""", RegexOptions.Compiled);
+		static Regex xmlTranslationPattern = new Regex(@"_[^""]*=\s*""([^""]*)""", RegexOptions.Compiled);
 		static void UpdateXmlTranslations (TranslationProject translationProject, string fileName)
 		{
 			string text = File.ReadAllText (fileName);

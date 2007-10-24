@@ -1,3 +1,10 @@
+2007-10-24  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Gettext/TranslationService.cs,
+	  MonoDevelop.Gettext/TranslationProject.cs,
+	  MonoDevelop.Gettext/CatalogEntry.cs, MonoDevelop.Gettext/Catalog.cs:
+	  Fixed re opened "Bug 335326 - Gettext addin breaks zh_CN.po".
+
 2007-10-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/MonoDevelop.Gettext.GettextFeatureWidget.cs, gtk-gui/gui.stetic,

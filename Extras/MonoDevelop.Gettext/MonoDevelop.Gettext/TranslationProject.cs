@@ -177,6 +177,8 @@ namespace MonoDevelop.Gettext
 			}
 			
 			foreach (MatchLocation match in matches) {
+				if (String.IsNullOrEmpty (match.OriginalString))
+					continue;
 				CatalogEntry entry = catalog.FindItem (match.OriginalString);
 				if (entry == null) {
 					entry = new CatalogEntry (catalog, match.OriginalString, match.OriginalPluralString);
