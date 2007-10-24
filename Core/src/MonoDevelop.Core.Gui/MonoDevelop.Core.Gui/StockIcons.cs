@@ -17,7 +17,7 @@ namespace MonoDevelop.Core.Gui
 		public static readonly string ClosedFolder = "md-closed-folder";
 		public static readonly string ClosedReferenceFolder = "md-closed-reference-folder";
 		public static readonly string ClosedResourceFolder = "md-closed-resource-folder";
-		public static readonly string CombineIcon = "md-combine-icon";
+		public static readonly string Solution = "md-solution";
 		public static readonly string CopyIcon = Gtk.Stock.Copy;
 		public static readonly string CutIcon = Gtk.Stock.Cut;
 		public static readonly string Delegate = "md-delegate";
@@ -99,7 +99,7 @@ namespace MonoDevelop.Core.Gui
 		public static readonly string SaveAsIcon = Gtk.Stock.SaveAs;
 		public static readonly string SaveIcon = Gtk.Stock.Save;
 		public static readonly string SharpDevelopIcon = "md-sharp-develop-icon";
-		public static readonly string SolutionIcon = "md-solution-icon";
+		public static readonly string Project = "md-project";
 		public static readonly string SplitWindow = "md-split-window";
 		public static readonly string Struct = "md-struct";
 		public static readonly string TaskListIcon = "md-task-list-icon";

@@ -48,6 +48,9 @@ namespace MonoDevelop.Core.Gui.Codons
 		[NodeAttribute ("resource", "Name of the resource where the icon is stored.")]
 		string resource;
 		
+		[NodeAttribute ("icon", "Id of another icon or combination of icons to assign to this stock id.")]
+		string iconid;
+		
 		public string StockId {
 			get { return stockid; }
 		}
@@ -58,6 +61,10 @@ namespace MonoDevelop.Core.Gui.Codons
 		
 		public string Resource {
 			get { return resource; }
+		}
+		
+		public string IconId {
+			get { return iconid; }
 		}
 	}
 }

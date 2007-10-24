@@ -175,6 +175,14 @@
     <File name="gtk-gui/generated.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Gui.Dialogs/MultiTaskProgressDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/MonoDevelop.Core.Gui.Dialogs.MultiTaskProgressDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="icons/project-16.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/project-32.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/solution-16.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/solution-32.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/project-console-32.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/project-gui-32.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/project-library-32.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/web-overlay-32.png" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="gecko-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=ccf7d78a55e9f021" />

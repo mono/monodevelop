@@ -1,3 +1,17 @@
+2007-10-24  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.mdp, Makefile.am, icons/solution-32.png,
+	  icons/web-overlay-32.png, icons/project-16.png, icons/solution-16.png,
+	  icons/project-gui-32.png, icons/project-32.png,
+	  icons/project-console-32.png, icons/project-library-32.png,
+	  MonoDevelop.Core.Gui.addin.xml: Added new tangoified icons for project
+	  and solution.
+	* MonoDevelop.Core.Gui.Codons/StockIconCodon.cs,
+	  MonoDevelop.Core.Gui/ResourceService.cs: Allow defining a stock icon as
+	  a combination of a set of icons (e.g. a base icon and an overlay icon).
+	* MonoDevelop.Core.Gui/StockIcons.cs: Set the correct names for solution and
+	  project icons.
+
 2007-10-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.mdp: Updated.

@@ -8,6 +8,7 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using System.Resources;
 using System.Drawing;
@@ -15,6 +16,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Xml;
 using System.Runtime.InteropServices;
+using System.Text;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Codons;
@@ -48,6 +50,7 @@ namespace MonoDevelop.Core.Gui
 		
 		ArrayList addinIcons = new ArrayList ();
 		ArrayList addins = new ArrayList ();
+		Dictionary<string,string> composedIcons = new Dictionary<string,string> ();
 		
 		public ResourceService ()
 		{
@@ -65,12 +68,17 @@ namespace MonoDevelop.Core.Gui
 		{
 			if (args.Change == ExtensionChange.Add) {
 				StockIconCodon icon = (StockIconCodon) args.ExtensionNode;
-				System.IO.Stream s = icon.Addin.GetResource (icon.Resource);
-				if (s != null) {
-					using (s) {
-						Gdk.Pixbuf px = new Gdk.Pixbuf (s);
-						AddToIconFactory (icon.StockId, px, icon.IconSize);
+				if (!string.IsNullOrEmpty (icon.Resource)) {
+					System.IO.Stream s = icon.Addin.GetResource (icon.Resource);
+					if (s != null) {
+						using (s) {
+							Gdk.Pixbuf px = new Gdk.Pixbuf (s);
+							AddToIconFactory (icon.StockId, px, icon.IconSize);
+						}
 					}
+				} else if (!string.IsNullOrEmpty (icon.IconId)) {
+					string iid = InternalGetStockId (args.ExtensionNode.Addin, icon.IconId);
+					AddToIconFactory (icon.StockId, GetIcon (iid, icon.IconSize), icon.IconSize);
 				}
 			}
 		}
@@ -168,7 +176,7 @@ namespace MonoDevelop.Core.Gui
 		
 		public Gdk.Pixbuf GetIcon (string name, Gtk.IconSize size)
 		{
-			string stockid = GetStockId (name);
+			string stockid = InternalGetStockId (name);
 			if (stockid != null) {
 				Gtk.IconSet iconset = Gtk.IconFactory.LookupDefault (stockid);
 				if (iconset != null) {
@@ -200,13 +208,7 @@ namespace MonoDevelop.Core.Gui
 
 		public Gdk.Pixbuf GetBitmap(string name, Gtk.IconSize size)
 		{
-			// Try stock icons first
-			Gdk.Pixbuf pix = GetIcon (name, size);
-			if (pix == null) {
-				// Try loading directly from disk then
-				pix = new Gdk.Pixbuf("../data/resources/icons/" + name);
-			}
-			return pix;
+			return GetIcon (name, size);
 		}
 
 		public Gtk.Image GetImage (string name, Gtk.IconSize size)
@@ -305,6 +307,47 @@ namespace MonoDevelop.Core.Gui
 			}
 			return sid;
 		}
+		
+		string GetComposedIcon (string[] ids)
+		{
+			string id = string.Join ("_", ids);
+			string cid;
+			if (composedIcons.TryGetValue (id, out cid))
+				return cid;
+			
+			foreach (object o in Enum.GetValues (typeof(Gtk.IconSize))) {
+				Gtk.IconSize sz = (Gtk.IconSize) o;
+				if (sz == Gtk.IconSize.Invalid)
+					continue;
+				Gdk.Pixbuf icon = null;
+				for (int n=0; n<ids.Length; n++) {
+					Gdk.Pixbuf px = GetBitmap (ids[n], sz);
+					if (px != null)
+						icon = MergeIcons (icon, px);
+					else {
+						icon = null;
+						break;
+					}
+				}
+				if (icon != null)
+					AddToIconFactory (id, icon, sz);
+			}
+			composedIcons [id] = id;
+			return id;
+		}
+		
+		Gdk.Pixbuf MergeIcons (Gdk.Pixbuf icon1, Gdk.Pixbuf icon2)
+		{
+			if (icon1 == null)
+				return icon2;
+			if (icon2 == null)
+				return icon1;
+			Gdk.Pixbuf res = new Gdk.Pixbuf (icon1.Colorspace, icon1.HasAlpha, icon1.BitsPerSample, icon1.Width, icon1.Height);
+			res.Fill (0);
+			icon1.CopyArea (0, 0, icon1.Width, icon1.Height, res, 0, 0);
+			icon2.Composite (res, 0,  0, icon2.Width, icon2.Height, 0,  0, 1, 1, Gdk.InterpType.Bilinear, 255);
+			return res;
+		}
 
 		internal void AddToIconFactory (string stockId, string filename)
 		{
@@ -322,6 +365,18 @@ namespace MonoDevelop.Core.Gui
 		}
 		
 		internal string InternalGetStockId (RuntimeAddin addin, string filename)
+		{
+			if (filename.IndexOf ('|') == -1)
+				return PrivGetStockId (addin, filename);
+			
+			string[] parts = filename.Split ('|');
+			for (int n=0; n<parts.Length; n++) {
+				parts [n] = PrivGetStockId (addin, parts[n]);
+			}
+			return GetComposedIcon (parts);
+		}
+		
+		string PrivGetStockId (RuntimeAddin addin, string filename)
 		{
 			if (addin != null && filename.StartsWith ("res:"))
 				return InternalGetStockIdFromResource (addin, filename);

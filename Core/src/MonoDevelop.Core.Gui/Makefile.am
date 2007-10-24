@@ -171,6 +171,13 @@ RES =  \
 	icons/plugin-16.png \
 	icons/plugin-22.png \
 	icons/plugin-32.png \
+	icons/project-16.png \
+	icons/project-32.png \
+	icons/project-console-32.png \
+	icons/project-gui-32.png \
+	icons/project-library-32.png \
+	icons/solution-16.png \
+	icons/solution-32.png \
 	icons/system-software-update.png \
 	icons/system-software-update_22.png \
 	icons/uncomment.png \
@@ -178,6 +185,7 @@ RES =  \
 	icons/view-fullscreen.png \
 	icons/view-fullscreen_22.png \
 	icons/visual-studio.png \
+	icons/web-overlay-32.png \
 	MonoDevelop.Core.Gui.addin.xml
 
 GENERATED_FILES = \
