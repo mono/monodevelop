@@ -114,12 +114,12 @@ namespace MonoDevelop.Gettext
 		string GetIcon (CombineEntry entry)
 		{
 			if (entry is Combine)
-				return MonoDevelop.Core.Gui.Stock.CombineIcon;
+				return MonoDevelop.Core.Gui.Stock.Solution;
 			
 			if (entry is Project)
 				return IdeApp.Services.Icons.GetImageForProjectType (((Project)entry).ProjectType);
 			
-			return MonoDevelop.Core.Gui.Stock.SolutionIcon;
+			return MonoDevelop.Core.Gui.Stock.Project;
 		}
 		
 		bool IsIncluded (CombineEntry entry)

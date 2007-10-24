@@ -36,9 +36,6 @@
     <File name="MonoDevelop.Gettext/Translation.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Gettext.NodeBuilders/TranslationNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="icons/md-gettext-project_16.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/md-gettext-project_32.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/md-gettext-project_22.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="MonoDevelop.Gettext/TranslationService.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Gettext/TranslationProjectOptionsDialog.cs" subtype="Code" buildaction="Compile" />
@@ -60,6 +57,8 @@
     <File name="MonoDevelop.Gettext/MakefileHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="templates/Makefile.template" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/Makefile.am.template" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/gettext-overlay-16.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/gettext-overlay-32.png" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -81,6 +80,7 @@
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Autotools" />
     <ProjectReference type="Project" localcopy="False" refto="Mono.Addins" />
   </References>
+  <Deployment.LinuxDeployData scriptName="monodevelop.gettext" generatePcFile="False" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />
@@ -97,6 +97,5 @@
       <Widget>MonoDevelop.Gettext.GettextFeatureWidget</Widget>
     </ExportedWidgets>
   </GtkDesignInfo>
-  <Deployment.LinuxDeployData scriptName="monodevelop.gettext" generatePcFile="False" />
   <MonoDevelop.Gettext.TranslationInfo />
 </Project>

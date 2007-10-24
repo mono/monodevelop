@@ -55,13 +55,12 @@ FILES =  \
 RES =  \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
+	icons/gettext-overlay-16.png \
+	icons/gettext-overlay-32.png \
 	icons/locale.svg \
 	icons/locale_16x16.png \
 	icons/locale_22x22.png \
 	icons/locale_32x32.png \
-	icons/md-gettext-project_16.png \
-	icons/md-gettext-project_22.png \
-	icons/md-gettext-project_32.png \
 	MonoDevelop.Gettext.addin.xml \
 	templates/Makefile.am.template \
 	templates/Makefile.template \

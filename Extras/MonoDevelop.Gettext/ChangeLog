@@ -1,3 +1,13 @@
+2007-10-24  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Gettext.addin.xml, MonoDevelop.Gettext.mdp, Makefile.am,
+	  MonoDevelop.Gettext/TranslationProjectOptionsDialog.cs,
+	  icons/md-gettext-project_16.png, icons/gettext-overlay-32.png,
+	  icons/gettext-overlay-16.png, icons/md-gettext-project_22.png,
+	  icons/md-gettext-project_32.png, templates/TranslationProject.xpt.xml:
+	  Updated project icons. Use the base project icon with an overlay to show
+	  the type.
+
 2007-10-24  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Gettext/TranslationService.cs,
