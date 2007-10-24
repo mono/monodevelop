@@ -24,11 +24,11 @@ namespace CSharpBinding
 {
 	public class CSharpTextEditorExtension: CompletionTextEditorExtension
 	{
-		CSharpIndentEngine engine;
+		CSharpIndentEngine indentEngine = new CSharpIndentEngine ();
+		Stack< CSharpIndentEngine> oldEngines = new Stack<CSharpIndentEngine> ();
 		
 		public CSharpTextEditorExtension () : base ()
 		{
-			engine = new CSharpIndentEngine ();
 		}
 		
 		public override bool ExtendsEditor (Document doc, IEditableTextBuffer editor)
@@ -54,15 +54,15 @@ namespace CSharpBinding
 			return null;
 		}
 		
-		void AppendSummary (StringBuilder sb)
+		void AppendSummary (StringBuilder sb, out int newCursorOffset)
 		{
 			Debug.Assert (sb != null);
 			sb.Append ("/ <summary>\n");
-			sb.Append (engine.ThisLineIndent);
+			sb.Append (indentEngine.ThisLineIndent);
 			sb.Append ("/// \n");
-			sb.Append (engine.ThisLineIndent);
+			sb.Append (indentEngine.ThisLineIndent);
 			sb.Append ("/// </summary>");
-			newCursorOffset = ("/ <summary>\n/// " + engine.ThisLineIndent).Length;
+			newCursorOffset = ("/ <summary>\n/// " + indentEngine.ThisLineIndent).Length;
 		}
 		
 		void AppendMethodComment (StringBuilder builder, IMethod method)
@@ -70,64 +70,62 @@ namespace CSharpBinding
 			if (method.Parameters != null) {
 				foreach (IParameter para in method.Parameters) {
 					builder.Append (Environment.NewLine);
-					builder.Append (engine.ThisLineIndent);
+					builder.Append (indentEngine.ThisLineIndent);
 					builder.Append ("/// <param name=\"");
 					builder.Append (para.Name);
 					builder.Append ("\">\n");
-					builder.Append (engine.ThisLineIndent);
+					builder.Append (indentEngine.ThisLineIndent);
 					builder.Append ("/// A <see cref=\"");
 					builder.Append (para.ReturnType.FullyQualifiedName);
 					builder.Append ("\"/>\n");
-					builder.Append (engine.ThisLineIndent);
+					builder.Append (indentEngine.ThisLineIndent);
 					builder.Append ("/// </param>");
 				}
 			}
 			if (method.ReturnType != null && method.ReturnType.FullyQualifiedName != "System.Void") {
 				builder.Append (Environment.NewLine);
-				builder.Append (engine.ThisLineIndent);
+				builder.Append (indentEngine.ThisLineIndent);
 				builder.Append("/// <returns>\n");
-				builder.Append (engine.ThisLineIndent);
+				builder.Append (indentEngine.ThisLineIndent);
 				builder.Append ("/// A <see cref=\"");
 				builder.Append (method.ReturnType.FullyQualifiedName);
 				builder.Append ("\"/>\n");
-				builder.Append (engine.ThisLineIndent);
+				builder.Append (indentEngine.ThisLineIndent);
 				builder.Append ("/// </returns>");
 			}
 		}
-		string GenerateBody (IClass c, int line)
+		
+		string GenerateBody (IClass c, int line, out int newCursorOffset)
 		{
 			int startLine = int.MaxValue;
-			object result = null;
+			newCursorOffset = 0;
+			StringBuilder builder = new StringBuilder ();
 			
+			IMethod method = null;
+			IProperty property = null;
 			foreach (IMethod m in c.Methods) {
 				if (m.Region.BeginLine < startLine && m.Region.BeginLine > line) {
 					startLine = m.Region.BeginLine;
-					result = m;
+					method = m;
 				}
 			}
 			foreach (IProperty p in c.Properties) {
 				if (p.Region.BeginLine < startLine && p.Region.BeginLine > line) {
 					startLine = p.Region.BeginLine;
-					result = p;
+					property = p;
 				}
 			}
 			
-			StringBuilder builder = new StringBuilder ();
-			
-			IMethod method = result as IMethod;
 			if (method != null) {
-				AppendSummary (builder);
+				AppendSummary (builder, out newCursorOffset);
 				AppendMethodComment (builder, method);
-
-			}
-			IProperty property = result as IProperty;
-			if (property != null) {
+			} else if (property != null) {
 				builder.Append ("/ <value>\n");
-				builder.Append (engine.ThisLineIndent);
+				builder.Append (indentEngine.ThisLineIndent);
 				builder.Append ("/// \n");
-				builder.Append (engine.ThisLineIndent);
+				builder.Append (indentEngine.ThisLineIndent);
 				builder.Append ("/// </value>");
-				newCursorOffset = ("/ <value>\n/// " + engine.ThisLineIndent).Length;
+				newCursorOffset = ("/ <value>\n/// " + indentEngine.ThisLineIndent).Length;
 			}
 			
 			return builder.ToString ();
@@ -185,30 +183,140 @@ namespace CSharpBinding
 			return false;
 		}
 		
-		int newCursorOffset;
 		public override bool KeyPress (Gdk.Key key, Gdk.ModifierType modifier)
-		{
-			bool reindent = false, insert = true;
-			bool setCursor = true;
-			int nInserted, bufLen, cursor;
-			string newIndent;
-			char ch, c;
-			
+		{			
 			if ((char)(uint)key == ',') {
 				// Parameter completion
 				RunParameterCompletionCommand ();
 			}
 			
-			// This code is for Smart Indent, no-op for any other indent style
-			if (TextEditorProperties.IndentStyle != IndentStyle.Smart && key != Gdk.Key.greater && key != Gdk.Key.KP_Divide && key != Gdk.Key.slash)
-				return base.KeyPress (key, modifier);
+			if (GenerateDocComments (key))
+				//if doc comments were inserted, further handling not necessary
+				return false;
+			
+			//do the smart indent
+			if (TextEditorProperties.IndentStyle == IndentStyle.Smart) {
+				//pre text-insertion indent handling
+				if (!DoPreKeySmartIndent (key))
+					return false;
+				
+				//pass through to the base class, which actually inserts the character
+				int oldBufLen = Editor.TextLength;
+				bool retval = base.KeyPress (key, modifier);
+				UpdateSmartIndentEngine ();
+				
+				//handle inserted characters
+				bool reIndent = false;
+				char lastCharInserted = KeyToChar (key);
+				//System.Console.WriteLine (lastCharInserted);
+				if (oldBufLen != Editor.TextLength || lastCharInserted != '\0')
+					DoPostInsertionSmartIndent (lastCharInserted, out reIndent);
+				
+				//reindent the line after the insertion, if needed
+				UpdateSmartIndentEngine ();
+				if (indentEngine.NeedsReindent || reIndent)
+					DoReSmartIndent ();
+				return retval;
+			}
+			
+			return base.KeyPress (key, modifier);
+		}
+		
+		char KeyToChar (Gdk.Key key)
+		{
+			switch (key) {
+			case Gdk.Key.Tab:
+				return '\t';
+			case Gdk.Key.KP_Enter:
+			case Gdk.Key.Return:
+				return '\n';
+			default:
+				return (char) Gdk.Keyval.ToUnicode ((uint)key);
+			}
+		}
+		
+		void ResetSmartIndentEngine ()
+		{
+			oldEngines.Clear ();
+			indentEngine.Reset ();
+		}
+		
+		void ResetSmartIndentEngineToCursor (int cursor)
+		{
+			bool gotOldEngine = false;
+			while (oldEngines.Count > 0) {
+				CSharpIndentEngine csie = oldEngines.Peek ();
+				if (csie.Cursor <= cursor) {
+					indentEngine = (CSharpIndentEngine) csie.Clone ();
+					gotOldEngine = true;
+					//System.Console.WriteLine("Recovered stack engine #{0}", oldEngines.Count);
+					break;
+				} else {
+					oldEngines.Pop ();
+				}
+			}
+			if (!gotOldEngine)
+				indentEngine.Reset ();
+		}
+		
+		//Makes sure that the smart indent engine's cursor has caught up with the 
+		//text editor's cursor.
+		//The engine can take some time to parse the file, and we need it to be snappy
+		//so we keep a stack of old engines (they're fairly lightweight) that we can clone
+		//in order to quickly catch up.
+		void UpdateSmartIndentEngine ()
+		{
+			//bigger buffer means fewer saved stacks needed
+			const int BUFFER_SIZE = 2000;
+			
+			//moving backwards, so reset from previous saved location
+			int cursor = Editor.CursorPosition;
+			//System.Console.WriteLine("moving backwards if indentEngine.Cursor {0} > cursor {1}", indentEngine.Cursor, cursor);
+			if (indentEngine.Cursor > cursor)
+				ResetSmartIndentEngineToCursor (cursor);
+			
+			// get the engine caught up
+			int nextSave = (oldEngines.Count == 0)? BUFFER_SIZE : oldEngines.Peek ().Cursor + BUFFER_SIZE;
+			if (indentEngine.Cursor + 1 == cursor) {
+				char ch = Editor.GetCharAt (indentEngine.Cursor);
+				indentEngine.Push (ch);
+				//System.Console.WriteLine("pushing character '{0}'", ch);
+				if (indentEngine.Cursor == nextSave)
+					oldEngines.Push ((CSharpIndentEngine) indentEngine.Clone ());
+			} else {
+				//bulk copy characters in case buffer is unmanaged 
+				//(faster if we reduce managed/unmanaged transitions)
+				while (indentEngine.Cursor < cursor) {
+					int endCut = indentEngine.Cursor + BUFFER_SIZE;
+					if (endCut > cursor)
+						endCut = cursor;
+					string buffer = Editor.GetText (indentEngine.Cursor, endCut);
+					//System.Console.WriteLine("getting buffer between {0} and {1} : '{2}'", indentEngine.Cursor, endCut - 1, buffer);
+					foreach (char ch in buffer) {
+						indentEngine.Push (ch);
+						//System.Console.WriteLine("pushing character '{0}'", ch);
+						if (indentEngine.Cursor == nextSave) {
+							oldEngines.Push ((CSharpIndentEngine) indentEngine.Clone ());
+							nextSave += BUFFER_SIZE;
+						}
+					}
+				}
+			}
+			//System.Console.WriteLine("***now indentengine is at {0}, doc is at {1}", indentEngine.Cursor, cursor);
+		}
+		
+		bool GenerateDocComments (Gdk.Key key)
+		{
+			//whether user is using smart indent engine or not, doc comments
+			//use it to indent the inserted docs
+			UpdateSmartIndentEngine ();
+			
+			int cursor;
+			int newCursorOffset = 0;
 			
 			switch (key) {
-			
-			case Gdk.Key.greater:
-				
+			case Gdk.Key.greater:	
 				cursor = Editor.SelectionStartPosition;
-				c = '>';
 				if (IsInsideDocumentationComment (Editor.SelectionStartPosition)) {
 					int lin, col;
 					Editor.GetLineColumnFromPosition (Editor.CursorPosition, out lin, out col);
@@ -231,7 +339,7 @@ namespace CSharpBinding
 						if (!String.IsNullOrEmpty (tag) && commentTags.IndexOf (tag) >= 0) {
 							Editor.InsertText (cursor, "></" + tag + ">");
 							Editor.CursorPosition = cursor + 1; 
-							insert = false;
+							return true;
 						}
 					}
 				}
@@ -240,7 +348,6 @@ namespace CSharpBinding
 			case Gdk.Key.KP_Divide:
 			case Gdk.Key.slash:
 				cursor = Editor.SelectionStartPosition;
-				c = '/';
 				if (cursor < 2)
 					break;
 				int lin, col;
@@ -256,13 +363,13 @@ namespace CSharpBinding
 						IClass insideClass = LookupClass (unit, lin, col);
 						if (insideClass != null) {
 							if (insideClass.ClassType == ClassType.Delegate) {
-								AppendSummary (generatedComment);
+								AppendSummary (generatedComment, out newCursorOffset);
 								AppendMethodComment (generatedComment, insideClass.Methods[0]);
 								generateStandardComment = false;
 							} else {
 								if (!IsInsideClassBody (insideClass, lin, col))
 									break;
-								string body = GenerateBody (insideClass, lin);
+								string body = GenerateBody (insideClass, lin, out newCursorOffset);
 								if (!String.IsNullOrEmpty (body)) {
 									generatedComment.Append (body);
 									generateStandardComment = false;
@@ -271,203 +378,136 @@ namespace CSharpBinding
 						}
 					}
 					if (generateStandardComment) {
-						AppendSummary (generatedComment);
+						AppendSummary (generatedComment, out newCursorOffset);
 					}
 					
 					Editor.InsertText (cursor, generatedComment.ToString ());
-					Editor.CursorPosition = cursor + newCursorOffset; 
-					setCursor = false;
-					reindent = true; 
-					insert = false;
+					Editor.CursorPosition = cursor + newCursorOffset;
+					return true;
 				}
 				break;
+			}
+			return false;
+		}
+		
+		//if this returns false, further handling of the key will not take place (including insertion into the editor)
+		bool DoPreKeySmartIndent (Gdk.Key key)
+		{			
+			//handle some special cases
+			switch (key) {
 			case Gdk.Key.KP_Enter:
 			case Gdk.Key.Return:
-				if (Editor.SelectionEndPosition > Editor.SelectionStartPosition)
-					return base.KeyPress (key, modifier);
-				
-				reindent = true;
-				insert = false;
-				c = '\n';
+				if (Editor.SelectionEndPosition > Editor.SelectionStartPosition) {
+					return true;
+				}
 				break;
 			case Gdk.Key.Tab:
 				if (Editor.SelectionEndPosition > Editor.SelectionStartPosition) {
 					// user is conducting an "indent region"
-					engine.Reset ();
-					return base.KeyPress (key, modifier);
-				}
-				
-				c = '\t';
-				break;
-			case Gdk.Key.BackSpace:
-				c = '\0';
-				break;
-			default:
-				if ((c = (char) Gdk.Keyval.ToUnicode ((uint) key)) == 0) {
-					cursor = Editor.SelectionStartPosition;
-					bufLen = Editor.TextLength;
-					
-					if (base.KeyPress (key, modifier)) {
-						if (bufLen != Editor.TextLength && cursor < engine.Cursor) {
-							// text buffer changed somewhere before our cursor
-							engine.Reset ();
-						}
-						
-						return true;
-					}
-					
-					return false;
+					ResetSmartIndentEngineToCursor (Editor.SelectionStartPosition);
+					return true;
 				}
 				break;
 			}
 			
-			cursor = Editor.CursorPosition;
+			UpdateSmartIndentEngine ();
 			
-			if (cursor < engine.Cursor)
-				engine.Reset ();
-			
-			// get the engine caught up
-			for (int i = engine.Cursor; i < cursor; i++) {
-				if ((ch = Editor.GetCharAt (i)) == 0)
-					break;
-				
-				engine.Push (ch);
-			}
+			//special handling to delete empty comment
+			//DISABLED, makes it hard to escape from comments
+			/*
+			int cursor = Editor.CursorPosition;
 			if (key == Gdk.Key.BackSpace) {
-				bool emptyDocComment = engine.IsInsideDocLineComment && Editor.GetLineText (engine.LineNumber).Trim ().Length == 3;
-				bool emptyMutlilineComment = engine.IsInsideMultiLineComment && (Editor.GetLineText (engine.LineNumber).Trim ().Length <= 1 ||Editor.GetLineText (engine.LineNumber).Trim () == "/*"||Editor.GetLineText (engine.LineNumber).Trim () == "/**");
-				if (emptyDocComment || emptyMutlilineComment) {
+				bool emptyDocComment = indentEngine.IsInsideDocLineComment && Editor.GetLineText (indentEngine.LineNumber).Trim ().Length == 3;
+				bool emptyMultilineComment = indentEngine.IsInsideMultiLineComment;
+				if (emptyMultilineComment) {
+					string line = Editor.GetLineText (indentEngine.LineNumber).Trim ();
+					emptyMultilineComment = line.Length  <= 1 || line == "/*" || line == "/**";
+				}
+				if (emptyDocComment || emptyMultilineComment) {
+					Editor.DeleteLine (indentEngine.LineNumber);
 					Editor.InsertText (cursor, "\n");
-					Editor.DeleteLine (engine.LineNumber);
 				}
-				return base.KeyPress (key, modifier);
-			}
-			if (c == '\n') {
-				// Pass off to base.KeyPress() so the '\n' gets added to the Undo stack, etc
-				nInserted = 0;
-				if (base.KeyPress (key, modifier)) {
-					// if the char inserted is not '\n', then it means the user used
-					// <Enter> to accept an auto-completion choice.
-					nInserted = Editor.CursorPosition - cursor;
-					if (nInserted <= 0 || Editor.GetCharAt (cursor) != '\n')
-						return true;
-				}
-				
-				bool inDoc = engine.IsInsideDocLineComment;
-				//bool emptyDocComment = inDoc && Editor.GetLineText (engine.LineNumber).Trim ().Length == 3;
-				engine.Push ('\n');
-				nInserted--;
-				cursor++;
-				
-				if (nInserted > 0) {
-					// TODO: prevent our base class from auto-indenting(?) for us
-					Editor.DeleteText (cursor, nInserted);
-				}
-				
-				if (inDoc) {
-					Editor.InsertText (cursor, engine.ThisLineIndent + "/// ");
-					return true;
-				}
-				
-				if (engine.IsInsideMultiLineComment) {
-					string indent = engine.ThisLineIndent;
-					if (engine.LineNumber > 0) {
-						string text = Editor.GetLineText (engine.LineNumber - 1);
-						if (text.Trim ().StartsWith ("*")) {
-							indent = text.Substring (0, text.IndexOf ('*'));
-						} else if (text.Trim ().StartsWith ("/**")) {
-							indent = text.Substring (0, text.IndexOf ("/**")) + "  ";
-						}
-					}
-					Editor.InsertText (cursor, indent + "* ");
-					engine.Push ('*');
-					engine.Push (' ');
-					return true;
-				}
-			
-				ch = Editor.GetCharAt (cursor);
-				if (ch == 0 || ch == '\n') {
-					// the simple case
-					newIndent = engine.NewLineIndent;
-					Editor.InsertText (cursor, newIndent);
-					for (int i = 0; i < newIndent.Length; i++)
-						engine.Push (newIndent[i]);
-					cursor += newIndent.Length;
-					
-					// we handled the <Return>
-					return true;
-				}
-					
-				
-				// need more context... fall thru
-			} else {
-				if (c == '\t') {
-					// Tab is a special case... depending on the context, the user may be
-					// requesting a re-indent, tab-completing, or may just be wanting to
-					// insert a literal tab.
-					if (!engine.IsInsideVerbatimString) {
-						bufLen = Editor.TextLength;
-						
-						if (base.KeyPress (key, modifier)) {
-							nInserted = Editor.TextLength - bufLen;
-							
-							if (nInserted >= 1)
-								ch = Editor.GetCharAt (cursor);
-							else
-								ch = '\0';
-							
-							if (nInserted > 1 || (ch != '\0' && ch != '\t')) {
-								// tab-completion
-								return true;
-							}
-							
-							if (nInserted == 1 && ch == '\t') {
-								// base class inserted a tab, delete it
-								Editor.DeleteText (cursor, nInserted);
-							}
-						}
-						
-						reindent = true;
-						insert = false;
-					}
-				}
-				
-				if (insert) {
-					bool recalibrate = cursor > Editor.SelectionStartPosition;
-					
-					if (!base.KeyPress (key, modifier))
-						return false;
-					
-					if (recalibrate || cursor >= Editor.CursorPosition)
-						engine.Reset ();
-					
-					cursor = Editor.CursorPosition;
-					
-					for (int i = engine.Cursor; i < cursor; i++) {
-						if ((ch = Editor.GetCharAt (i)) == 0)
-							break;
-						
-						engine.Push (ch);
-					}
-				}
-				
-				//engine.Debug ();
-				
-				if (!(reindent || engine.NeedsReindent))
-					return true;
-			}
-			if (!setCursor) {
 				return true;
 			}
+			*/
+			return true;
+		}
+		
+		//special handling for certain characters just inserted , for comments etc
+		void DoPostInsertionSmartIndent (char charInserted, out bool reIndent)
+		{
+			UpdateSmartIndentEngine ();
+			reIndent = false;
+			int cursor = Editor.CursorPosition;
+			char nextChar = Editor.GetCharAt (cursor);
+			
+			//System.Console.WriteLine ("char inserted: '{0}'", charInserted);
+			//indentEngine.Debug ();
+			
+			switch (charInserted) {
+			case '\n':
+				if (indentEngine.LineNumber > 0) {
+					string previousLine = Editor.GetLineText (indentEngine.LineNumber - 1);
+					string trimmedPreviousLine = previousLine.TrimStart ();
+					
+					//xml doc comments
+					if (trimmedPreviousLine.StartsWith ("/// ") && Editor.GetPositionFromLineColumn (indentEngine.LineNumber + 1, 1) > -1) {
+						string nextLine = Editor.GetLineText (indentEngine.LineNumber + 1);
+						if (nextLine.TrimStart ().StartsWith ("/// ")) {
+						    Editor.InsertText (cursor, GetLineWhiteSpace (previousLine) + "/// ");
+							return;
+						}
+					//multi-line comments
+					} else if (indentEngine.IsInsideMultiLineComment) {
+					    string commentPrefix = string.Empty;
+						if (trimmedPreviousLine.StartsWith ("* ")) {
+							commentPrefix = "* ";
+						} else if (trimmedPreviousLine.StartsWith ("/**") || trimmedPreviousLine.StartsWith ("/*")) {
+							commentPrefix = " * ";
+						} else if (trimmedPreviousLine.StartsWith ("*")) {
+							commentPrefix = "*";
+						}
+						Editor.InsertText (cursor, GetLineWhiteSpace (previousLine) + commentPrefix);
+						return;
+					}
+				}
+				//newline always reindents unless it's had special handling
+				reIndent = true;
+				break;
+			case '\t':
+				// Tab is a special case... depending on the context, the user may be
+				// requesting a re-indent, tab-completing, or may just be wanting to
+				// insert a literal tab.
+				// Tab is interpreted as a reindent command when it's neither at the end of a line nor in a verbatim string
+				if (!indentEngine.IsInsideVerbatimString && (nextChar != '\n' || Editor.GetCharAt (cursor - 2) == '\n')) {
+					reIndent = true;
+				}
+				break;
+			}
+		}
+		
+		string GetLineWhiteSpace (string line)
+		{
+			int trimmedLength = line.TrimStart ().Length;
+			return line.Substring (0, line.Length - trimmedLength);
+		}
+		
+		//does re-indenting and cursor positioning
+		void DoReSmartIndent ()
+		{
+			string newIndent = string.Empty;
+			int cursor = Editor.CursorPosition;
+			
 			// Get more context but w/o changing our IndentEngine state
-			CSharpIndentEngine ctx = (CSharpIndentEngine) engine.Clone ();
+			CSharpIndentEngine ctx = (CSharpIndentEngine) indentEngine.Clone ();
 			string line = Editor.GetLineText (ctx.LineNumber);
 			for (int i = ctx.LineOffset; i < line.Length; i++) {
 				ctx.Push (line[i]);
 				if (ctx.NeedsReindent)
 					break;
 			}
-			
+			//System.Console.WriteLine("Re-indenting line '{0}'", line);
+
 			// Okay, we should have enough context now
 			
 			// Measure the current indent
@@ -484,7 +524,7 @@ namespace CSharpBinding
 			else
 				offset = 0;
 			
-			if (!engine.LineBeganInsideMultiLineComment ||
+			if (!indentEngine.LineBeganInsideMultiLineComment ||
 			    (nlwsp < line.Length && line[nlwsp] == '*')) {
 				// Possibly replace the indent
 				newIndent = ctx.ThisLineIndent;
@@ -494,7 +534,7 @@ namespace CSharpBinding
 					Editor.InsertText (pos, newIndent);
 					
 					// Engine state is now invalid
-					engine.Reset ();
+					ResetSmartIndentEngineToCursor (pos);
 				}
 				
 				pos += newIndent.Length;
@@ -507,7 +547,6 @@ namespace CSharpBinding
 				Editor.CursorPosition = pos;
 				Editor.Select (pos, pos);
 			}
-			return true;
 		}
 		
 		public override IParameterDataProvider HandleParameterCompletion (ICodeCompletionContext completionContext, char completionChar)
