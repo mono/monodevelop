@@ -15,7 +15,6 @@
   </Configurations>
   <Contents>
     <File name="ILAsmConsoleProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/ILAsm.Project.DOSProject" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Gui/CompilerParametersPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/ILAsmCompilerParameters.cs" subtype="Code" buildaction="Compile" />
     <File name="ILAsmCompilerManager.cs" subtype="Code" buildaction="Compile" />

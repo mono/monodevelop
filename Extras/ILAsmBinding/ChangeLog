@@ -1,3 +1,9 @@
+2007-10-24  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* ILAsmBinding.mdp, ILAsmConsoleProject.xpt.xml, Makefile.am,
+	  icons/ILAsm.Project.DOSProject: Updated project icons. Use the base
+	  project icon with an overlay to show the type.
+
 2007-10-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ILAsmBinding.mdp: Project file names updated by change in MD path

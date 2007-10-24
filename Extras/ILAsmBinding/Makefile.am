@@ -20,7 +20,6 @@ FILES =  \
 	Project/ILAsmCompilerParameters.cs
 
 RES =  \
-	icons/ILAsm.Project.DOSProject \
 	ILAsmBinding.addin.xml \
 	ILAsmConsoleProject.xpt.xml
 

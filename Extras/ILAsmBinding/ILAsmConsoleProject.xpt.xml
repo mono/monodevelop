@@ -7,7 +7,7 @@
 	<TemplateConfiguration>
 		<_Name>Console Project</_Name>
 		<Category>ILAsm</Category>
-		<Icon>res:ILAsm.Project.DOSProject</Icon>
+		<Icon>md-project</Icon>
 		<LanguageName>ILAsm</LanguageName>
 		<_Description>ILAsm Console Project</_Description>
 	</TemplateConfiguration>
