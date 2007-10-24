@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
-    <images-root-path>../</images-root-path>
-    <target-gtk-version>2.10.0</target-gtk-version>
+    <images-root-path>..</images-root-path>
+    <target-gtk-version>2.10.2</target-gtk-version>
   </configuration>
   <import>
     <widget-library name="../../../build/bin/MonoDevelop.Ide.dll" />
@@ -92,26 +92,31 @@
     <child>
       <widget class="Gtk.VBox" id="vbox2">
         <property name="MemberName" />
+        <property name="ShowScrollbars">False</property>
         <property name="Spacing">6</property>
         <child>
           <widget class="Gtk.VPaned" id="vpaned1">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
+            <property name="ShowScrollbars">False</property>
             <property name="Position">371</property>
             <property name="BorderWidth">6</property>
             <child>
               <widget class="Gtk.HPaned" id="hpaned1">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
+                <property name="ShowScrollbars">False</property>
                 <property name="Position">356</property>
                 <child>
                   <widget class="Gtk.VBox" id="vbox6">
                     <property name="MemberName" />
+                    <property name="ShowScrollbars">False</property>
                     <property name="Spacing">6</property>
                     <child>
                       <widget class="Gtk.Notebook" id="notebook1">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
+                        <property name="ShowScrollbars">False</property>
                         <property name="CurrentPage">0</property>
                         <child>
                           <widget class="Gtk.ScrolledWindow" id="scrolledwindow7">
@@ -124,17 +129,16 @@
                               <widget class="Gtk.TextView" id="regExTextview">
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
+                                <property name="ShowScrollbars">False</property>
                                 <property name="Text" translatable="yes" />
                               </widget>
                             </child>
                           </widget>
-                          <packing>
-                            <property name="TabExpand">False</property>
-                          </packing>
                         </child>
                         <child>
                           <widget class="Gtk.Label" id="label1">
                             <property name="MemberName" />
+                            <property name="ShowScrollbars">False</property>
                             <property name="LabelProp" translatable="yes">Regular Expression</property>
                           </widget>
                           <packing>
@@ -151,11 +155,13 @@
                             <child>
                               <widget class="Gtk.Viewport" id="GtkViewport">
                                 <property name="MemberName" />
+                                <property name="ShowScrollbars">False</property>
                                 <property name="ShadowType">None</property>
                                 <child>
                                   <widget class="Gtk.TreeView" id="optionsTreeview">
                                     <property name="MemberName" />
                                     <property name="CanFocus">True</property>
+                                    <property name="ShowScrollbars">False</property>
                                     <property name="HeadersClickable">True</property>
                                   </widget>
                                 </child>
@@ -164,12 +170,12 @@
                           </widget>
                           <packing>
                             <property name="Position">1</property>
-                            <property name="TabExpand">False</property>
                           </packing>
                         </child>
                         <child>
                           <widget class="Gtk.Label" id="label2">
                             <property name="MemberName" />
+                            <property name="ShowScrollbars">False</property>
                             <property name="LabelProp" translatable="yes">Options</property>
                           </widget>
                           <packing>
@@ -185,12 +191,14 @@
                     <child>
                       <widget class="Gtk.VBox" id="vbox3">
                         <property name="MemberName" />
+                        <property name="ShowScrollbars">False</property>
                         <property name="Spacing">6</property>
                         <child>
                           <widget class="Gtk.Label" id="label5">
                             <property name="MemberName" />
+                            <property name="ShowScrollbars">False</property>
                             <property name="Xalign">0</property>
-                            <property name="LabelProp" translatable="yes">Regex</property>
+                            <property name="LabelProp" translatable="yes">Replace Regex</property>
                           </widget>
                           <packing>
                             <property name="Position">0</property>
@@ -210,6 +218,7 @@
                               <widget class="Gtk.TextView" id="replaceTextview">
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
+                                <property name="ShowScrollbars">False</property>
                                 <property name="Text" translatable="yes" />
                               </widget>
                             </child>
@@ -228,10 +237,12 @@
                     <child>
                       <widget class="Gtk.VBox" id="vbox4">
                         <property name="MemberName" />
+                        <property name="ShowScrollbars">False</property>
                         <property name="Spacing">6</property>
                         <child>
                           <widget class="Gtk.Label" id="label6">
                             <property name="MemberName" />
+                            <property name="ShowScrollbars">False</property>
                             <property name="Xalign">0</property>
                             <property name="LabelProp" translatable="yes">Input</property>
                           </widget>
@@ -253,6 +264,7 @@
                               <widget class="Gtk.TextView" id="inputTextview">
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
+                                <property name="ShowScrollbars">False</property>
                                 <property name="Text" translatable="yes" />
                               </widget>
                             </child>
@@ -276,10 +288,12 @@
                 <child>
                   <widget class="Gtk.VBox" id="vbox5">
                     <property name="MemberName" />
+                    <property name="ShowScrollbars">False</property>
                     <property name="Spacing">6</property>
                     <child>
                       <widget class="Gtk.Label" id="label7">
                         <property name="MemberName" />
+                        <property name="ShowScrollbars">False</property>
                         <property name="Xalign">0</property>
                         <property name="LabelProp" translatable="yes">Regex Elements</property>
                       </widget>
@@ -301,6 +315,7 @@
                           <widget class="Gtk.TreeView" id="elementsTreeview">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
+                            <property name="ShowScrollbars">False</property>
                             <property name="HeadersClickable">True</property>
                           </widget>
                         </child>
@@ -321,6 +336,7 @@
               <widget class="Gtk.Notebook" id="notebook2">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
+                <property name="ShowScrollbars">False</property>
                 <property name="CurrentPage">0</property>
                 <child>
                   <widget class="Gtk.ScrolledWindow" id="scrolledwindow2">
@@ -333,17 +349,16 @@
                       <widget class="Gtk.TreeView" id="resultsTreeview">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
+                        <property name="ShowScrollbars">False</property>
                         <property name="HeadersClickable">True</property>
                       </widget>
                     </child>
                   </widget>
-                  <packing>
-                    <property name="TabExpand">False</property>
-                  </packing>
                 </child>
                 <child>
                   <widget class="Gtk.Label" id="label3">
                     <property name="MemberName" />
+                    <property name="ShowScrollbars">False</property>
                     <property name="LabelProp" translatable="yes">Matches</property>
                   </widget>
                   <packing>
@@ -361,6 +376,7 @@
                       <widget class="Gtk.TextView" id="replaceResultTextview">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
+                        <property name="ShowScrollbars">False</property>
                         <property name="Editable">False</property>
                         <property name="CursorVisible">False</property>
                         <property name="Text" translatable="yes" />
@@ -369,12 +385,12 @@
                   </widget>
                   <packing>
                     <property name="Position">1</property>
-                    <property name="TabExpand">False</property>
                   </packing>
                 </child>
                 <child>
                   <widget class="Gtk.Label" id="label4">
                     <property name="MemberName" />
+                    <property name="ShowScrollbars">False</property>
                     <property name="LabelProp" translatable="yes">Replace</property>
                   </widget>
                   <packing>
@@ -392,12 +408,14 @@
         <child>
           <widget class="Gtk.HBox" id="hbox1">
             <property name="MemberName" />
+            <property name="ShowScrollbars">False</property>
             <property name="Spacing">6</property>
             <child>
               <widget class="Gtk.Button" id="buttonCancel">
                 <property name="MemberName" />
                 <property name="CanDefault">True</property>
                 <property name="CanFocus">True</property>
+                <property name="ShowScrollbars">False</property>
                 <property name="UseStock">True</property>
                 <property name="Type">StockItem</property>
                 <property name="StockId">gtk-close</property>
@@ -415,6 +433,7 @@
                 <property name="MemberName" />
                 <property name="CanDefault">True</property>
                 <property name="CanFocus">True</property>
+                <property name="ShowScrollbars">False</property>
                 <property name="Type">TextOnly</property>
                 <property name="Label" translatable="yes">Regex Library</property>
                 <property name="UseUnderline">True</property>
@@ -431,6 +450,7 @@
                 <property name="MemberName" />
                 <property name="CanDefault">True</property>
                 <property name="CanFocus">True</property>
+                <property name="ShowScrollbars">False</property>
                 <property name="UseStock">True</property>
                 <property name="Type">StockItem</property>
                 <property name="StockId">gtk-find</property>
@@ -448,6 +468,7 @@
                 <property name="MemberName" />
                 <property name="CanDefault">True</property>
                 <property name="CanFocus">True</property>
+                <property name="ShowScrollbars">False</property>
                 <property name="UseStock">True</property>
                 <property name="Type">StockItem</property>
                 <property name="StockId">gtk-find-and-replace</property>

@@ -126,8 +126,6 @@ namespace MonoDevelop.RegexToolkit {
             this.regExTextview.Name = "regExTextview";
             this.scrolledwindow7.Add(this.regExTextview);
             this.notebook1.Add(this.scrolledwindow7);
-            Gtk.Notebook.NotebookChild w2 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.scrolledwindow7]));
-            w2.TabExpand = false;
             // Notebook tab
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
@@ -154,7 +152,6 @@ namespace MonoDevelop.RegexToolkit {
             this.notebook1.Add(this.scrolledwindow5);
             Gtk.Notebook.NotebookChild w6 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.scrolledwindow5]));
             w6.Position = 1;
-            w6.TabExpand = false;
             // Notebook tab
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
@@ -172,7 +169,7 @@ namespace MonoDevelop.RegexToolkit {
             this.label5 = new Gtk.Label();
             this.label5.Name = "label5";
             this.label5.Xalign = 0F;
-            this.label5.LabelProp = Mono.Unix.Catalog.GetString("Regex");
+            this.label5.LabelProp = Mono.Unix.Catalog.GetString("Replace Regex");
             this.vbox3.Add(this.label5);
             Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox3[this.label5]));
             w8.Position = 0;
@@ -284,8 +281,6 @@ namespace MonoDevelop.RegexToolkit {
             this.resultsTreeview.HeadersClickable = true;
             this.scrolledwindow2.Add(this.resultsTreeview);
             this.notebook2.Add(this.scrolledwindow2);
-            Gtk.Notebook.NotebookChild w23 = ((Gtk.Notebook.NotebookChild)(this.notebook2[this.scrolledwindow2]));
-            w23.TabExpand = false;
             // Notebook tab
             this.label3 = new Gtk.Label();
             this.label3.Name = "label3";
@@ -309,7 +304,6 @@ namespace MonoDevelop.RegexToolkit {
             this.notebook2.Add(this.scrolledwindow4);
             Gtk.Notebook.NotebookChild w25 = ((Gtk.Notebook.NotebookChild)(this.notebook2[this.scrolledwindow4]));
             w25.Position = 1;
-            w25.TabExpand = false;
             // Notebook tab
             this.label4 = new Gtk.Label();
             this.label4.Name = "label4";

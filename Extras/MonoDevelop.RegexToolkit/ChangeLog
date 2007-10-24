@@ -1,3 +1,8 @@
+2007-10-24  Mike Krüger <mkrueger@novell.com> 
+
+	* gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs,
+	  gtk-gui/gui.stetic: Made the replacement regex label clearer.
+
 2007-10-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.RegexToolkit.mdp: Project file names updated by change in MD
