@@ -1,3 +1,11 @@
+2007-10-24  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.NUnit.mdp, Services/NUnitService.cs, Gui/nunit-overlay-32.png,
+	  Gui/TestResultsPad.cs, Makefile.am,
+	  templates/NUnitAssemblyGroup.xpt.xml, templates/NUnitProject.xpt.xml:
+	  Updated project icons. Use the base project icon with an overlay to show
+	  the type.
+
 2007-10-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.NUnit.mdp: Project file names updated by change in MD path

@@ -226,7 +226,7 @@ namespace MonoDevelop.NUnit
 		{
 			this.window = window;
 			window.Title = GettextCatalog.GetString ("Test results");
-			window.Icon = "md-combine-icon";
+			window.Icon = "md-solution";
 		}
 		
 		public void Dispose ()

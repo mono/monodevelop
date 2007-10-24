@@ -7,7 +7,7 @@
 	<TemplateConfiguration>
 		<_Name>NUnit assembly test collection</_Name>
 		<Category>NUnit</Category>
-<!--		<Icon>Java.Project.DOSProject</Icon> -->
+		<Icon>md-project|res:nunit-overlay-32.png</Icon>
 		<_Description>Create an NUnit assembly test collection</_Description>
 	</TemplateConfiguration>
 	

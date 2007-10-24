@@ -5,6 +5,7 @@
 	<TemplateConfiguration>
 		<_Name>NUnit Library Project</_Name>
 		<Category>NUnit</Category>
+		<Icon>md-project|res:nunit-overlay-32.png</Icon>
 		<_Description>Creates an NUnit library</_Description>
 		<LanguageName>*</LanguageName>
 	</TemplateConfiguration>

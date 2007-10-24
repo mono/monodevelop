@@ -64,6 +64,7 @@ RES =  \
 	Gui/NUnit.Running.png \
 	Gui/NUnit.Success.png \
 	Gui/NUnit.SuccessAndFailed.png \
+	Gui/nunit-overlay-32.png \
 	MonoDevelopNUnit.addin.xml \
 	nunit.glade \
 	templates/NUnitAssemblyGroup.xpt.xml \
