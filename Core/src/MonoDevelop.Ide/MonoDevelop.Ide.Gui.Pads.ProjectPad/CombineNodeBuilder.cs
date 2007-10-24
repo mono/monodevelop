@@ -92,7 +92,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					break;
 			}
 
-			icon = Context.GetIcon (Stock.CombineIcon);
+			icon = Context.GetIcon (Stock.Solution);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)

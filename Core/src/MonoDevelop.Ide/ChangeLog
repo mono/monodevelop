@@ -1,3 +1,12 @@
+2007-10-24  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/CombineNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs,
+	  MonoDevelop.Ide.addin.xml: Track api changes.
+	* templates/GenericProject.xpt.xml, templates/BlankCombine.xpt.xml: Use new
+	  icon names.
+
 2007-10-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Templates/ICombineEntryFeature.cs,

@@ -7,7 +7,7 @@
 	<TemplateConfiguration>
 		<_Name>Blank Solution</_Name>
 		<Category>MonoDevelop</Category>
-		<Icon>md-combine-icon</Icon>
+		<Icon>md-solution</Icon>
 		<LanguageName/>
 		<_Description>A blank solution</_Description>
 	</TemplateConfiguration>

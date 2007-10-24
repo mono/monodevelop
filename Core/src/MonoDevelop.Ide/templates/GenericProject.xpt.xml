@@ -7,6 +7,7 @@
 	<TemplateConfiguration>
 		<_Name>Generic Project</_Name>
 		<Category>MonoDevelop</Category>
+		<Icon>md-project</Icon>
 		<_Description>Creates a project which can contain any kind of file.</_Description>
 	</TemplateConfiguration>
 	

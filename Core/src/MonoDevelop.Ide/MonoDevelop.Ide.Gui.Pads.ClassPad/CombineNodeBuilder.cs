@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		{
 			Combine combine = dataObject as Combine;
 			label = GettextCatalog.GetString ("Solution {0}", combine.Name);
-			icon = Context.GetIcon (Stock.CombineIcon);
+			icon = Context.GetIcon (Stock.Solution);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)

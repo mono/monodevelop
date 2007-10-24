@@ -31,7 +31,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				icon = Context.GetIcon (Gtk.Stock.DialogError);
 				label = GettextCatalog.GetString ("{0} <span foreground='red' size='small'>(Load failed)</span>", entry.Name);
 			} else {
-				icon = Context.GetIcon (MonoDevelop.Core.Gui.Stock.SolutionIcon);
+				icon = Context.GetIcon (MonoDevelop.Core.Gui.Stock.Project);
 				Gdk.Pixbuf gicon = Context.GetComposedIcon (icon, "fade");
 				if (gicon == null) {
 					gicon = Services.Icons.MakeTransparent (icon, 0.5);
