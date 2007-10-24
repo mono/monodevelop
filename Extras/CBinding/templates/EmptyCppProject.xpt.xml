@@ -8,7 +8,7 @@
 	<TemplateConfiguration>
 		<_Name>Empty C++ Project</_Name>
 		<Category>C/C++</Category>
-		<Icon>res:Cpp.Project.Empty</Icon>
+		<Icon>md-project|res:cpp-icon-32.png</Icon>
 		<LanguageName>CPP</LanguageName>
 		<_Description>Creates an empty C++ solution.</_Description>
 	</TemplateConfiguration>

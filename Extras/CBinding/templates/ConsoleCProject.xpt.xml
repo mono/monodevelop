@@ -8,7 +8,7 @@
 	<TemplateConfiguration>
 		<_Name>Console Project</_Name>
 		<Category>C</Category>
-		<Icon>res:C.Project.ConsoleProject</Icon>
+		<Icon>md-project-console|res:c-icon-32.png</Icon>
 		<LanguageName>C</LanguageName>
 		<_Description>Creates simple hello world C project.</_Description>
 	</TemplateConfiguration>

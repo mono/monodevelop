@@ -8,7 +8,7 @@
 	<TemplateConfiguration>
 		<_Name>Shared Library</_Name>
 		<Category>C/C++</Category>
-		<Icon>res:C.Project.SharedLibrary</Icon>
+		<Icon>md-project-library|res:cpp-icon-32.png</Icon>
 		<LanguageName>CPP</LanguageName>
 		<_Description>Creates simple shared library C++ project.</_Description>
 	</TemplateConfiguration>

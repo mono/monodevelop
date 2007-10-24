@@ -16,7 +16,6 @@
   <Contents>
     <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="CBinding.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/C.Project.Empty" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/EmptyCProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/EmptyCSourceFile.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Project/CCompilationParameters.cs" subtype="Code" buildaction="Compile" />
@@ -24,7 +23,6 @@
     <File name="Project/CProjectBinding.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/CProjectConfiguration.cs" subtype="Code" buildaction="Compile" />
     <File name="templates/EmptyCppProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Cpp.Project.Empty" subtype="Code" buildaction="EmbedAsResource" />
     <File name="gtk-gui/generated.cs" subtype="Code" buildaction="Compile" />
     <File name="Gui/CodeGenerationPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="Compiler/CCompiler.cs" subtype="Code" buildaction="Compile" />
@@ -114,9 +112,6 @@
     <File name="templates/EmptyCppHeaderFile.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/EmptyCppSourceFile.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="ProjectPad/ProjectResourcesExtension.cs" subtype="Code" buildaction="Compile" />
-    <File name="icons/C.Project.ConsoleProject" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/C.Project.SharedLibrary" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/C.Project.StaticLibrary" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/SharedLibraryCProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/SharedLibraryCppProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="CppLanguageBinding.cs" subtype="Code" buildaction="Compile" />
@@ -125,6 +120,8 @@
     <File name="templates/ConsoleCProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/ConsoleCppProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="README" subtype="Code" buildaction="Nothing" />
+    <File name="icons/c-icon-32.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/cpp-icon-32.png" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

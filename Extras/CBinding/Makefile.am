@@ -93,11 +93,8 @@ FILES =  \
 RES =  \
 	CBinding.addin.xml \
 	gtk-gui/gui.stetic \
-	icons/C.Project.ConsoleProject \
-	icons/C.Project.Empty \
-	icons/C.Project.SharedLibrary \
-	icons/C.Project.StaticLibrary \
-	icons/Cpp.Project.Empty \
+	icons/c-icon-32.png \
+	icons/cpp-icon-32.png \
 	icons/Icons.16x16.PrivateUnion \
 	icons/Icons.16x16.ProjectReference \
 	icons/Icons.16x16.ProtectedUnion \
