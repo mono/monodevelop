@@ -50,7 +50,9 @@ namespace MonoDevelop.RegexToolkit
 			resultStore = new Gtk.TreeStore (typeof (string), typeof (string), typeof (int), typeof (int));
 			
 			FillOptionsBox ();
-			
+			this.Destroyed += delegate {
+				HideTooltipWindow ();
+			};
 			this.buttonCancel.Clicked += delegate {
 				this.Destroy ();
 			};
@@ -179,6 +181,7 @@ namespace MonoDevelop.RegexToolkit
 				HideTooltipWindow ();
 			}
 		}
+		
 		
 		public override void Dispose ()
 		{

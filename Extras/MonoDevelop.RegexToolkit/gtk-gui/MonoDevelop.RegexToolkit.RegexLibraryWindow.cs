@@ -139,21 +139,17 @@ namespace MonoDevelop.RegexToolkit {
             this.scrolledwindow2.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow2.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow2.Gtk.Container+ContainerChild
-            Gtk.Viewport w5 = new Gtk.Viewport();
-            w5.ShadowType = ((Gtk.ShadowType)(0));
-            // Container child GtkViewport.Gtk.Container+ContainerChild
             this.expressionsTreeview = new Gtk.TreeView();
             this.expressionsTreeview.CanFocus = true;
             this.expressionsTreeview.Name = "expressionsTreeview";
             this.expressionsTreeview.HeadersClickable = true;
-            w5.Add(this.expressionsTreeview);
-            this.scrolledwindow2.Add(w5);
+            this.scrolledwindow2.Add(this.expressionsTreeview);
             this.vbox6.Add(this.scrolledwindow2);
-            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox6[this.scrolledwindow2]));
-            w8.Position = 1;
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox6[this.scrolledwindow2]));
+            w6.Position = 1;
             this.vpaned1.Add(this.vbox6);
-            Gtk.Paned.PanedChild w9 = ((Gtk.Paned.PanedChild)(this.vpaned1[this.vbox6]));
-            w9.Resize = false;
+            Gtk.Paned.PanedChild w7 = ((Gtk.Paned.PanedChild)(this.vpaned1[this.vbox6]));
+            w7.Resize = false;
             // Container child vpaned1.Gtk.Paned+PanedChild
             this.vbox3 = new Gtk.VBox();
             this.vbox3.Name = "vbox3";
@@ -174,17 +170,17 @@ namespace MonoDevelop.RegexToolkit {
             this.authorEntry.IsEditable = false;
             this.authorEntry.InvisibleChar = '●';
             this.hbox3.Add(this.authorEntry);
-            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.hbox3[this.authorEntry]));
-            w10.Position = 0;
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.hbox3[this.authorEntry]));
+            w8.Position = 0;
             // Container child hbox3.Gtk.Box+BoxChild
             this.label6 = new Gtk.Label();
             this.label6.Name = "label6";
             this.label6.LabelProp = Mono.Unix.Catalog.GetString("Source:");
             this.hbox3.Add(this.label6);
-            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.hbox3[this.label6]));
-            w11.Position = 1;
-            w11.Expand = false;
-            w11.Fill = false;
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.hbox3[this.label6]));
+            w9.Position = 1;
+            w9.Expand = false;
+            w9.Fill = false;
             // Container child hbox3.Gtk.Box+BoxChild
             this.sourceEntry = new Gtk.Entry();
             this.sourceEntry.CanFocus = true;
@@ -192,31 +188,31 @@ namespace MonoDevelop.RegexToolkit {
             this.sourceEntry.IsEditable = false;
             this.sourceEntry.InvisibleChar = '●';
             this.hbox3.Add(this.sourceEntry);
-            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.hbox3[this.sourceEntry]));
-            w12.Position = 2;
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.hbox3[this.sourceEntry]));
+            w10.Position = 2;
             this.table2.Add(this.hbox3);
-            Gtk.Table.TableChild w13 = ((Gtk.Table.TableChild)(this.table2[this.hbox3]));
-            w13.LeftAttach = ((uint)(1));
-            w13.RightAttach = ((uint)(2));
-            w13.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w11 = ((Gtk.Table.TableChild)(this.table2[this.hbox3]));
+            w11.LeftAttach = ((uint)(1));
+            w11.RightAttach = ((uint)(2));
+            w11.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table2.Gtk.Table+TableChild
             this.label3 = new Gtk.Label();
             this.label3.Name = "label3";
             this.label3.LabelProp = Mono.Unix.Catalog.GetString("Pattern:");
             this.table2.Add(this.label3);
-            Gtk.Table.TableChild w14 = ((Gtk.Table.TableChild)(this.table2[this.label3]));
-            w14.TopAttach = ((uint)(1));
-            w14.BottomAttach = ((uint)(2));
-            w14.XOptions = ((Gtk.AttachOptions)(4));
-            w14.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w12 = ((Gtk.Table.TableChild)(this.table2[this.label3]));
+            w12.TopAttach = ((uint)(1));
+            w12.BottomAttach = ((uint)(2));
+            w12.XOptions = ((Gtk.AttachOptions)(4));
+            w12.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table2.Gtk.Table+TableChild
             this.label5 = new Gtk.Label();
             this.label5.Name = "label5";
             this.label5.LabelProp = Mono.Unix.Catalog.GetString("Author:");
             this.table2.Add(this.label5);
-            Gtk.Table.TableChild w15 = ((Gtk.Table.TableChild)(this.table2[this.label5]));
-            w15.XOptions = ((Gtk.AttachOptions)(4));
-            w15.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w13 = ((Gtk.Table.TableChild)(this.table2[this.label5]));
+            w13.XOptions = ((Gtk.AttachOptions)(4));
+            w13.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table2.Gtk.Table+TableChild
             this.patternEntry = new Gtk.Entry();
             this.patternEntry.CanFocus = true;
@@ -224,17 +220,17 @@ namespace MonoDevelop.RegexToolkit {
             this.patternEntry.IsEditable = false;
             this.patternEntry.InvisibleChar = '●';
             this.table2.Add(this.patternEntry);
-            Gtk.Table.TableChild w16 = ((Gtk.Table.TableChild)(this.table2[this.patternEntry]));
-            w16.TopAttach = ((uint)(1));
-            w16.BottomAttach = ((uint)(2));
-            w16.LeftAttach = ((uint)(1));
-            w16.RightAttach = ((uint)(2));
-            w16.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w14 = ((Gtk.Table.TableChild)(this.table2[this.patternEntry]));
+            w14.TopAttach = ((uint)(1));
+            w14.BottomAttach = ((uint)(2));
+            w14.LeftAttach = ((uint)(1));
+            w14.RightAttach = ((uint)(2));
+            w14.YOptions = ((Gtk.AttachOptions)(4));
             this.vbox3.Add(this.table2);
-            Gtk.Box.BoxChild w17 = ((Gtk.Box.BoxChild)(this.vbox3[this.table2]));
-            w17.Position = 0;
-            w17.Expand = false;
-            w17.Fill = false;
+            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.vbox3[this.table2]));
+            w15.Position = 0;
+            w15.Expand = false;
+            w15.Fill = false;
             // Container child vbox3.Gtk.Box+BoxChild
             this.vbox7 = new Gtk.VBox();
             this.vbox7.Name = "vbox7";
@@ -245,10 +241,10 @@ namespace MonoDevelop.RegexToolkit {
             this.label9.Xalign = 0F;
             this.label9.LabelProp = Mono.Unix.Catalog.GetString("Description");
             this.vbox7.Add(this.label9);
-            Gtk.Box.BoxChild w18 = ((Gtk.Box.BoxChild)(this.vbox7[this.label9]));
-            w18.Position = 0;
-            w18.Expand = false;
-            w18.Fill = false;
+            Gtk.Box.BoxChild w16 = ((Gtk.Box.BoxChild)(this.vbox7[this.label9]));
+            w16.Position = 0;
+            w16.Expand = false;
+            w16.Fill = false;
             // Container child vbox7.Gtk.Box+BoxChild
             this.scrolledwindow1 = new Gtk.ScrolledWindow();
             this.scrolledwindow1.CanFocus = true;
@@ -264,11 +260,11 @@ namespace MonoDevelop.RegexToolkit {
             this.descriptionTextview.CursorVisible = false;
             this.scrolledwindow1.Add(this.descriptionTextview);
             this.vbox7.Add(this.scrolledwindow1);
-            Gtk.Box.BoxChild w20 = ((Gtk.Box.BoxChild)(this.vbox7[this.scrolledwindow1]));
-            w20.Position = 1;
+            Gtk.Box.BoxChild w18 = ((Gtk.Box.BoxChild)(this.vbox7[this.scrolledwindow1]));
+            w18.Position = 1;
             this.vbox3.Add(this.vbox7);
-            Gtk.Box.BoxChild w21 = ((Gtk.Box.BoxChild)(this.vbox3[this.vbox7]));
-            w21.Position = 1;
+            Gtk.Box.BoxChild w19 = ((Gtk.Box.BoxChild)(this.vbox3[this.vbox7]));
+            w19.Position = 1;
             // Container child vbox3.Gtk.Box+BoxChild
             this.hbox1 = new Gtk.HBox();
             this.hbox1.Name = "hbox1";
@@ -278,10 +274,10 @@ namespace MonoDevelop.RegexToolkit {
             this.label1.Name = "label1";
             this.label1.LabelProp = Mono.Unix.Catalog.GetString("Matching:");
             this.hbox1.Add(this.label1);
-            Gtk.Box.BoxChild w22 = ((Gtk.Box.BoxChild)(this.hbox1[this.label1]));
-            w22.Position = 0;
-            w22.Expand = false;
-            w22.Fill = false;
+            Gtk.Box.BoxChild w20 = ((Gtk.Box.BoxChild)(this.hbox1[this.label1]));
+            w20.Position = 0;
+            w20.Expand = false;
+            w20.Fill = false;
             // Container child hbox1.Gtk.Box+BoxChild
             this.matchingEntry = new Gtk.Entry();
             this.matchingEntry.CanFocus = true;
@@ -289,17 +285,17 @@ namespace MonoDevelop.RegexToolkit {
             this.matchingEntry.IsEditable = false;
             this.matchingEntry.InvisibleChar = '●';
             this.hbox1.Add(this.matchingEntry);
-            Gtk.Box.BoxChild w23 = ((Gtk.Box.BoxChild)(this.hbox1[this.matchingEntry]));
-            w23.Position = 1;
+            Gtk.Box.BoxChild w21 = ((Gtk.Box.BoxChild)(this.hbox1[this.matchingEntry]));
+            w21.Position = 1;
             // Container child hbox1.Gtk.Box+BoxChild
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
             this.label2.LabelProp = Mono.Unix.Catalog.GetString("Non Matching:");
             this.hbox1.Add(this.label2);
-            Gtk.Box.BoxChild w24 = ((Gtk.Box.BoxChild)(this.hbox1[this.label2]));
-            w24.Position = 2;
-            w24.Expand = false;
-            w24.Fill = false;
+            Gtk.Box.BoxChild w22 = ((Gtk.Box.BoxChild)(this.hbox1[this.label2]));
+            w22.Position = 2;
+            w22.Expand = false;
+            w22.Fill = false;
             // Container child hbox1.Gtk.Box+BoxChild
             this.nonMatchingEntry = new Gtk.Entry();
             this.nonMatchingEntry.CanFocus = true;
@@ -307,17 +303,17 @@ namespace MonoDevelop.RegexToolkit {
             this.nonMatchingEntry.IsEditable = false;
             this.nonMatchingEntry.InvisibleChar = '●';
             this.hbox1.Add(this.nonMatchingEntry);
-            Gtk.Box.BoxChild w25 = ((Gtk.Box.BoxChild)(this.hbox1[this.nonMatchingEntry]));
-            w25.Position = 3;
+            Gtk.Box.BoxChild w23 = ((Gtk.Box.BoxChild)(this.hbox1[this.nonMatchingEntry]));
+            w23.Position = 3;
             this.vbox3.Add(this.hbox1);
-            Gtk.Box.BoxChild w26 = ((Gtk.Box.BoxChild)(this.vbox3[this.hbox1]));
-            w26.Position = 2;
-            w26.Expand = false;
-            w26.Fill = false;
+            Gtk.Box.BoxChild w24 = ((Gtk.Box.BoxChild)(this.vbox3[this.hbox1]));
+            w24.Position = 2;
+            w24.Expand = false;
+            w24.Fill = false;
             this.vpaned1.Add(this.vbox3);
             this.vbox2.Add(this.vpaned1);
-            Gtk.Box.BoxChild w28 = ((Gtk.Box.BoxChild)(this.vbox2[this.vpaned1]));
-            w28.Position = 1;
+            Gtk.Box.BoxChild w26 = ((Gtk.Box.BoxChild)(this.vbox2[this.vpaned1]));
+            w26.Position = 1;
             // Container child vbox2.Gtk.Box+BoxChild
             this.hbuttonbox2 = new Gtk.HButtonBox();
             this.hbuttonbox2.Name = "hbuttonbox2";
@@ -331,9 +327,9 @@ namespace MonoDevelop.RegexToolkit {
             this.buttonCancel.UseUnderline = true;
             this.buttonCancel.Label = "gtk-close";
             this.hbuttonbox2.Add(this.buttonCancel);
-            Gtk.ButtonBox.ButtonBoxChild w29 = ((Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox2[this.buttonCancel]));
-            w29.Expand = false;
-            w29.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w27 = ((Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox2[this.buttonCancel]));
+            w27.Expand = false;
+            w27.Fill = false;
             // Container child hbuttonbox2.Gtk.ButtonBox+ButtonBoxChild
             this.buttonOk = new Gtk.Button();
             this.buttonOk.CanFocus = true;
@@ -342,15 +338,15 @@ namespace MonoDevelop.RegexToolkit {
             this.buttonOk.UseUnderline = true;
             this.buttonOk.Label = "gtk-refresh";
             this.hbuttonbox2.Add(this.buttonOk);
-            Gtk.ButtonBox.ButtonBoxChild w30 = ((Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox2[this.buttonOk]));
-            w30.Position = 1;
-            w30.Expand = false;
-            w30.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w28 = ((Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox2[this.buttonOk]));
+            w28.Position = 1;
+            w28.Expand = false;
+            w28.Fill = false;
             this.vbox2.Add(this.hbuttonbox2);
-            Gtk.Box.BoxChild w31 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbuttonbox2]));
-            w31.Position = 2;
-            w31.Expand = false;
-            w31.Fill = false;
+            Gtk.Box.BoxChild w29 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbuttonbox2]));
+            w29.Position = 2;
+            w29.Expand = false;
+            w29.Fill = false;
             this.Add(this.vbox2);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

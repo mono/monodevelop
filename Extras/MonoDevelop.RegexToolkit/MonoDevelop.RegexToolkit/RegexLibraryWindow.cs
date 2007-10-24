@@ -63,7 +63,7 @@ namespace MonoDevelop.RegexToolkit
 			
 			this.expressionsTreeview.AppendColumn (GettextCatalog.GetString ("Title"), new CellRendererText (), "text", 0);
 			this.expressionsTreeview.AppendColumn (GettextCatalog.GetString ("Rating"), new CellRendererText (), "text", 1);
-
+			
 			this.expressionsTreeview.Selection.Changed += delegate {
 				ShowSelectedEntry ();			
 			};

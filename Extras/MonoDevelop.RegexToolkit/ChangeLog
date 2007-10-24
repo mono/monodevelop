@@ -1,5 +1,11 @@
 2007-10-24  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.RegexToolkit/RegexLibraryWindow.cs,
+	  MonoDevelop.RegexToolkit/RegexToolkitWindow.cs: Regex library behaves
+	  more nicely when scrolling.
+
+2007-10-24  Mike Krüger <mkrueger@novell.com> 
+
 	* gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs,
 	  gtk-gui/gui.stetic: Made the replacement regex label clearer.
 
