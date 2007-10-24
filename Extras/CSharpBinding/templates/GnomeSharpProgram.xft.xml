@@ -4,7 +4,7 @@
 	
 	<TemplateConfiguration>
 		<_Name>Gnome# Program</_Name>
-		<Icon>res:C#.File.Form</Icon>
+		<Icon>md-project-gui|res:csharp-icon-32.png</Icon>
 		<Category>Gnome</Category>
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates a Gnome# program.</_Description>

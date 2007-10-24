@@ -7,7 +7,7 @@
 	<TemplateConfiguration>
 		<_Name>Glade# 1.0 Project</_Name>
 		<Category>C#/Samples</Category>
-		<Icon>res:C#.Project.Form</Icon>
+		<Icon>md-project-gui|res:csharp-icon-32.png</Icon>
 		<LanguageName>C#</LanguageName>
 		<_Description>a Glade# project with one window and button</_Description>
 	</TemplateConfiguration>

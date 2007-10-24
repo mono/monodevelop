@@ -1,3 +1,16 @@
+2007-10-24  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* CSharpBinding.mdp, templates/ConsoleProject.xpt.xml,
+	  templates/GtkSharpProject.xpt.xml, templates/GnomeSharpProject.xpt.xml,
+	  templates/GnomeSharp2Project.xpt.xml,
+	  templates/GtkSharp2Project.xpt.xml, templates/GnomeSharpProgram.xft.xml,
+	  templates/GladeSharpProject.xpt.xml,
+	  templates/GladeSharp2Project.xpt.xml, templates/Library.xpt.xml,
+	  templates/EmptyProject.xpt.xml, Makefile.am, icons/C#.Project.Form,
+	  icons/C#.Project.Library, icons/C#.Project.DOSProject,
+	  icons/csharp-icon-32.png, icons/C#.Project.EmptyProject: Updated project
+	  icons. Use the base project icon with an overlay to show the type.
+
 2007-10-24  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Gui/CSharpTextEditorExtension.cs: Refactored the keypress code to separate
