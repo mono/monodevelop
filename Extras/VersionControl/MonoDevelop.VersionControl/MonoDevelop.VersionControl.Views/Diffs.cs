@@ -80,6 +80,7 @@ namespace MonoDevelop.VersionControl.Views
 				leftwatcher.Dispose ();
 			if(rightwatcher != null)
 				rightwatcher.Dispose ();
+			box.Destroy ();
 			base.Dispose ();
 		}
 

@@ -1,3 +1,10 @@
+2007-10-24  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Diffs.cs,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:
+	  Destroy the view when disposing.
+
 2007-10-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:

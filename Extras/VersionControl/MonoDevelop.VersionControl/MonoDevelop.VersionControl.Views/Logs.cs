@@ -247,6 +247,13 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
+		public override void Dispose ()
+		{
+			widget.Destroy ();
+			base.Dispose ();
+		}
+
+		
 		internal class DiffWorker : Task {
 			Repository vc;
 			string name;
