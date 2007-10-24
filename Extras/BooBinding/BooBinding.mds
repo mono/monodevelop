@@ -14,7 +14,7 @@
     <Execute type="None" entry="BooShell" />
   </StartMode>
   <Entries>
-    <Entry filename="./BooBinding.mdp" />
-    <Entry filename="./BooShell/BooShell.mdp" />
+    <Entry filename="BooBinding.mdp" />
+    <Entry filename="BooShell/BooShell.mdp" />
   </Entries>
 </Combine>

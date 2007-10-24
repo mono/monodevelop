@@ -1,3 +1,11 @@
+2007-10-24  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* BooBinding.mdp, BooBinding.mds, templates/BooGtkSharpProject.xpt.xml,
+	  templates/BooLibraryProject.xpt.xml, templates/EmptyBooProject.xpt.xml,
+	  Makefile.am, icons/Boo.Project.Form, icons/Boo.Project.EmptyProject,
+	  icons/boo-icon-32.png, icons/Boo.ProjectIcon: Updated project icons. Use
+	  the base project icon with an overlay to show the type.
+
 2007-10-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Gui/BooTextEditorExtension.boo: When completing 'as', don't try to resolve

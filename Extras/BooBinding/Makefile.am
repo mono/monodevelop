@@ -56,10 +56,8 @@ RES =  \
 	icons/Boo.File.EmptyFile \
 	icons/Boo.File.Form \
 	icons/Boo.FileIcon \
-	icons/Boo.Project.EmptyProject \
-	icons/Boo.Project.Form \
-	icons/Boo.ProjectIcon \
 	icons/BooBinding.Base \
+	icons/boo-icon-32.png \
 	templates/BooGtkSharpProject.xpt.xml \
 	templates/BooGtkSharpWindow.xft.xml \
 	templates/BooLibraryProject.xpt.xml \
