@@ -25,6 +25,7 @@
       <Entry build="True" name="MonoDevelop.Gettext" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.RegexToolkit" configuration="Debug" />
       <Entry build="True" name="CBinding" configuration="Debug" />
+      <Entry build="True" name="BooBinding" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
@@ -51,6 +52,7 @@
       <Entry build="True" name="MonoDevelop.Gettext" configuration="Release" />
       <Entry build="True" name="MonoDevelop.RegexToolkit" configuration="Release" />
       <Entry build="True" name="CBinding" configuration="Release" />
+      <Entry build="True" name="BooBinding" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="MonoDevelop.NUnit" single="True">
@@ -81,6 +83,7 @@
     <Execute type="None" entry="MonoDevelop.Gettext" />
     <Execute type="None" entry="MonoDevelop.RegexToolkit" />
     <Execute type="None" entry="CBinding" />
+    <Execute type="None" entry="BooBinding" />
   </StartMode>
   <Entries>
     <Entry filename="NUnit/MonoDevelop.NUnit.mdp" />
@@ -107,5 +110,6 @@
     <Entry filename="MonoDevelop.Gettext/MonoDevelop.Gettext.mdp" />
     <Entry filename="MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit.mdp" />
     <Entry filename="CBinding/CBinding.mds" />
+    <Entry filename="BooBinding/BooBinding.mds" />
   </Entries>
 </Combine>
