@@ -172,8 +172,8 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid = "md-packaging-project" resource = "packaging-project-32.png" />
-		<StockIcon stockid = "md-packaging-project" resource = "packaging-project-16.png" size = "Menu" />
+		<StockIcon stockid = "md-packaging-project" icon = "md-project|res:packaging-32.png" size = "Dnd" />
+		<StockIcon stockid = "md-packaging-project" icon = "md-project|res:packaging-16.png" size = "Menu" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/CombineOptions/GeneralOptions">

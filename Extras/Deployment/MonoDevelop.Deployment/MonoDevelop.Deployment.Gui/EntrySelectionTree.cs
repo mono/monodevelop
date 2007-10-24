@@ -60,11 +60,11 @@ namespace MonoDevelop.Deployment.Gui
 		{
 			string icon;
 			if (entry is Combine)
-				icon = MonoDevelop.Core.Gui.Stock.CombineIcon;
+				icon = MonoDevelop.Core.Gui.Stock.Solution;
 			else if (entry is Project)
 				icon = IdeApp.Services.Icons.GetImageForProjectType (((Project)entry).ProjectType);
 			else
-				icon = MonoDevelop.Core.Gui.Stock.SolutionIcon;
+				icon = MonoDevelop.Core.Gui.Stock.Project;
 			
 			bool visible = builder.CanBuild (entry);
 			bool selected = selectedEntries.Contains (entry);
