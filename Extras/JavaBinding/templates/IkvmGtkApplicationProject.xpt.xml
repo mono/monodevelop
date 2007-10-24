@@ -7,7 +7,7 @@
 	<TemplateConfiguration>
 		<_Name>IKVM Gtk# Project</_Name>
 		<Category>Java</Category>
-		<Icon>res:Java.Project.DOSProject</Icon>
+		<Icon>md-project-gui|res:java-icon-32.png</Icon>
 		<LanguageName>Java</LanguageName>
 		<_Description>Create a Gtk# Java project with IKVM</_Description>
 	</TemplateConfiguration>

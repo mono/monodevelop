@@ -7,7 +7,7 @@
 	<TemplateConfiguration>
 		<_Name>Console Project</_Name>
 		<Category>Java</Category>
-		<Icon>res:Java.Project.DOSProject</Icon>
+		<Icon>md-project-console|res:java-icon-32.png</Icon>
 		<LanguageName>Java</LanguageName>
 		<_Description>Create a console Java project</_Description>
 	</TemplateConfiguration>

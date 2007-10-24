@@ -29,15 +29,7 @@ RES =  \
 	icons/Java.File.NewClass \
 	icons/Java.File.WebFile \
 	icons/Java.FileIcon \
-	icons/Java.Project.DOSProject \
-	icons/Java.Project.EmptyProject \
-	icons/Java.Project.Form \
-	icons/Java.Project.FullProject \
-	icons/Java.Project.Library \
-	icons/Java.Project.ServiceProject \
-	icons/Java.Project.UserControl \
-	icons/Java.Project.WebProject \
-	icons/Java.ProjectIcon \
+	icons/java-icon-32.png \
 	Java.glade \
 	JavaBinding.addin.xml \
 	templates/EmptyJavaFile.xft.xml \

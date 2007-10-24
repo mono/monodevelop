@@ -7,7 +7,7 @@
 	<TemplateConfiguration>
                 <_Name>Empty Project</_Name>
                 <Category>Java</Category>
-                <Icon>res:Java.Project.EmptyProject</Icon>
+                <Icon>md-project|res:java-icon-32.png</Icon>
                 <LanguageName>Java</LanguageName>
                 <_Description>Creates an empty Java solution.</_Description>
 	</TemplateConfiguration>
