@@ -64,6 +64,10 @@ namespace CBinding
 			get;
 		}
 		
+		public abstract bool SupportsPrecompiledHeaders {
+			get;
+		}
+		
 		public abstract string GetCompilerFlags (CProjectConfiguration configuration);
 		
 		public abstract string GetDefineFlags (CProjectConfiguration configuration);
@@ -73,6 +77,8 @@ namespace CBinding
 		    ProjectPackageCollection packages,
 		    CProjectConfiguration configuration,
 		    IProgressMonitor monitor);
+		
+		public abstract void Clean (ProjectFileCollection projectFiles, CProjectConfiguration configuration, IProgressMonitor monitor);
 		    
 		protected abstract void ParseCompilerOutput (string errorString, CompilerResults cr);
 		

@@ -79,36 +79,43 @@ namespace CBinding
 			}
 			
 			CompilerResults cr = new CompilerResults (new TempFileCollection ());
-			bool res = true;
-			string args = GetCompilerFlags (configuration);
+			bool success = true;
+			string compilerArgs = GetCompilerFlags (configuration) + " " + GeneratePkgCompilerArgs (packages);;
 			
 			string outputName = Path.Combine (configuration.OutputDirectory,
 			                                  configuration.CompiledOutputName);
 			
 			// Precompile header files and place them in .prec/<config_name>/
-			string precdir = Path.Combine (configuration.SourceDirectory, ".prec");
-			if (!Directory.Exists (precdir))
-				Directory.CreateDirectory (precdir);
-			precdir = Path.Combine (precdir, configuration.Name);
-			if (!Directory.Exists (precdir))
-				Directory.CreateDirectory (precdir);
-			
-			PrecompileHeaders (projectFiles, configuration, args);
-			
-			foreach (ProjectFile f in projectFiles) {
-				if (f.Subtype == Subtype.Directory) continue;
+			if (configuration.PrecompileHeaders) {
+				string precDir = Path.Combine (configuration.SourceDirectory, ".prec");
+				string precConfigDir = Path.Combine (precDir, configuration.Name);
+				if (!Directory.Exists (precDir))
+					Directory.CreateDirectory (precDir);
+				if (!Directory.Exists (precConfigDir))
+					Directory.CreateDirectory (precConfigDir);
 				
-				if (f.BuildAction == BuildAction.Compile) {
-					if (configuration.UseCcache || NeedsCompiling (f))
-						res = DoCompilation (f, args, packages, monitor, cr, configuration.UseCcache);
-				}
-				else
-					res = true;
-				
-				if (!res) break;
+				if (!PrecompileHeaders (projectFiles, configuration, compilerArgs, monitor, cr))
+					success = false;
+			} else {
+				//old headers could interfere with the build
+				CleanPrecompiledHeaders (configuration);
 			}
+			
+			//compile source to object files
+			monitor.BeginTask (GettextCatalog.GetString ("Compiling source to object files"), 1);
+			foreach (ProjectFile f in projectFiles) {
+				if (!success) break;
+				if (f.Subtype == Subtype.Directory || f.BuildAction != BuildAction.Compile || CProject.IsHeaderFile (f.FilePath))
+					continue;
+				
+				if (configuration.UseCcache || NeedsCompiling (f))
+					success = DoCompilation (f, compilerArgs, monitor, cr, configuration.UseCcache);
+			}
+			if (success)
+				monitor.Step (1);
+			monitor.EndTask ();
 
-			if (res) {
+			if (success) {
 				switch (configuration.CompileTarget)
 				{
 				case CBinding.CompileTarget.Bin:
@@ -133,10 +140,13 @@ namespace CBinding
 			get { return true; }
 		}
 		
+		public override bool SupportsPrecompiledHeaders {
+			get { return true; }
+		}
+		
 		public override string GetCompilerFlags (CProjectConfiguration configuration)
 		{
 			StringBuilder args = new StringBuilder ();
-			string precdir = Path.Combine (configuration.SourceDirectory, ".prec");
 			
 			CCompilationParameters cp =
 				(CCompilationParameters)configuration.CompilationParameters;
@@ -177,7 +187,11 @@ namespace CBinding
 				foreach (string inc in configuration.Includes)
 					args.Append ("-I" + inc + " ");
 			
-			args.Append ("-I" + precdir);
+			if (configuration.PrecompileHeaders) {
+				string precdir = Path.Combine (configuration.SourceDirectory, ".prec");
+				precdir = Path.Combine (precdir, configuration.Name);
+				args.Append ("-I" + precdir);
+			}
 			
 			return args.ToString ();
 		}
@@ -264,41 +278,51 @@ namespace CBinding
 			return dependencies.ToArray ();
 		}
 		
-		private void PrecompileHeaders (ProjectFileCollection projectFiles,
+		private bool PrecompileHeaders (ProjectFileCollection projectFiles,
 		                                CProjectConfiguration configuration,
-		                                string args)
+		                                string args,
+		                                IProgressMonitor monitor,
+		                                CompilerResults cr)
 		{
+			monitor.BeginTask (GettextCatalog.GetString ("Precompiling headers"), 1);
+			bool success = true;
+			
 			foreach (ProjectFile file in projectFiles) {
 				if (file.Subtype == Subtype.Code && CProject.IsHeaderFile (file.Name)) {
 					string precomp = Path.Combine (configuration.SourceDirectory, ".prec");
 					precomp = Path.Combine (precomp, configuration.Name);
 					precomp = Path.Combine (precomp, Path.GetFileName (file.Name) + ".ghc");
-					
-					if (!File.Exists (precomp)) {
-						DoPrecompileHeader (file, precomp, args);
-						continue;
-					}
-					
-					if (configuration.UseCcache || File.GetLastWriteTime (file.Name) > File.GetLastWriteTime (precomp)) {
-						DoPrecompileHeader (file, precomp, args);
+					if (file.BuildAction == BuildAction.Compile) {
+						if (!File.Exists (precomp) || configuration.UseCcache || File.GetLastWriteTime (file.Name) > File.GetLastWriteTime (precomp)) {
+							if (DoPrecompileHeader (file, precomp, args, monitor, cr) == false) {
+								success = false;
+								break;
+							}
+						}
+					} else {
+						//remove old files or they'll interfere with the build
+						if (File.Exists (precomp))
+							File.Delete (precomp);
 					}
 				}
+				
 			}
+			if (success)
+				monitor.Step (1);
+			monitor.EndTask ();
+			return success;
 		}
 		
-		private void DoPrecompileHeader (ProjectFile file, string output, string args)
+		private bool DoPrecompileHeader (ProjectFile file, string output, string args, IProgressMonitor monitor, CompilerResults cr)
 		{
-			string completeArgs = String.Format("{0} {1} -o {2}",
-						                        file.Name,
-						                        args,
-						                        output);
-			
-			ProcessWrapper p = Runtime.ProcessService.StartProcess (compilerCommand, completeArgs, null, null);
-			p.WaitForExit ();
-			p.Close ();
+			string completeArgs = String.Format ("{0} {1} -o {2}", file.Name, args, output);
+			string errorOutput;
+			int exitCode = ExecuteCommand (compilerCommand, completeArgs, Path.GetDirectoryName (output), monitor.Log, out errorOutput);
+			ParseCompilerOutput (errorOutput, cr);
+			return (exitCode == 0);
 		}
 		
-		private void MakeBin(ProjectFileCollection projectFiles,
+		private void MakeBin (ProjectFileCollection projectFiles,
 		                     ProjectPackageCollection packages,
 		                     CProjectConfiguration configuration,
 		                     CompilerResults cr,
@@ -325,31 +349,19 @@ namespace CBinding
 				foreach (string lib in configuration.Libs)
 					args.Append ("-l" + lib + " ");
 			
-			monitor.Log.WriteLine ("Generating binary...");
-			
 			string linker_args = string.Format ("-o {0} {1} {2} {3}",
 			    outputName, objectFiles, args.ToString (), pkgargs);
 			
-			monitor.Log.WriteLine ("using: " + linkerCommand + " " + linker_args);
+			monitor.BeginTask (GettextCatalog.GetString ("Generating binary \"{0}\" from object files", Path.GetFileName (outputName)), 1);
 			
-			ProcessWrapper p = Runtime.ProcessService.StartProcess (linkerCommand, linker_args, null, null);
+			string errorOutput;
+			int exitCode = ExecuteCommand (linkerCommand, linker_args, Path.GetDirectoryName (outputName), monitor.Log, out errorOutput);
+			if (exitCode == 0)
+				monitor.Step (1);
+			monitor.EndTask ();
 			
-			p.WaitForExit ();
-			
-			string line;
-			StringWriter error = new StringWriter ();
-			
-			while ((line = p.StandardError.ReadLine ()) != null)
-				error.WriteLine (line);
-			
-			monitor.Log.WriteLine (error.ToString ());
-			
-			ParseCompilerOutput (error.ToString (), cr);
-			
-			error.Close ();
-			p.Close ();
-			
-			ParseLinkerOutput (error.ToString (), cr);
+			ParseCompilerOutput (errorOutput, cr);
+			ParseLinkerOutput (errorOutput, cr);
 		}
 		
 		private void MakeStaticLibrary (ProjectFileCollection projectFiles,
@@ -358,15 +370,15 @@ namespace CBinding
 			if (!NeedsUpdate (projectFiles, outputName)) return;
 			
 			string objectFiles = StringArrayToSingleString (ObjectFiles (projectFiles));
+			string args = string.Format ("rcs {0} {1}", outputName, objectFiles);
 			
-			monitor.Log.WriteLine ("Generating static library...");
-			monitor.Log.WriteLine ("using: ar rcs " + outputName + " " + objectFiles);
+			monitor.BeginTask (GettextCatalog.GetString ("Generating static library {0} from object files", Path.GetFileName (outputName)), 1);
 			
-			Process p = Runtime.ProcessService.StartProcess (
-				"ar", "rcs " + outputName + " " + objectFiles,
-				null, null);
-			p.WaitForExit ();
-			p.Close ();
+			string errorOutput;
+			int exitCode = ExecuteCommand ("ar", args, Path.GetDirectoryName (outputName), monitor.Log, out errorOutput);
+			if (exitCode == 0)
+				monitor.Step (1);
+			monitor.EndTask ();
 		}
 		
 		private void MakeSharedLibrary(ProjectFileCollection projectFiles,
@@ -396,31 +408,45 @@ namespace CBinding
 				foreach (string lib in configuration.Libs)
 					args.Append ("-l" + lib + " ");
 			
-			monitor.Log.WriteLine ("Generating shared object...");
-			
 			string linker_args = string.Format ("-shared -o {0} {1} {2} {3}",
 			    outputName, objectFiles, args.ToString (), pkgargs);
 			
-			monitor.Log.WriteLine ("using: " + linkerCommand + " " + linker_args);
+			monitor.BeginTask (GettextCatalog.GetString ("Generating shared object \"{0}\" from object files", Path.GetFileName (outputName)), 1);
 			
-			ProcessWrapper p = Runtime.ProcessService.StartProcess (linkerCommand, linker_args, null, null);
-
-			p.WaitForExit ();
+			string errorOutput;
+			int exitCode = ExecuteCommand (linkerCommand , linker_args, Path.GetDirectoryName (outputName), monitor.Log, out errorOutput);
+			if (exitCode == 0)
+				monitor.Step (1);
+			monitor.EndTask ();
 			
-			string line;
-			StringWriter error = new StringWriter ();
+			ParseCompilerOutput (errorOutput, cr);
+			ParseLinkerOutput (errorOutput, cr);
+		}
+		
+		int ExecuteCommand (string command, string args, string baseDirectory, TextWriter outputLog, out string errorOutput)
+		{
+			errorOutput = string.Empty;
+			int exitCode = -1;
 			
-			while ((line = p.StandardError.ReadLine ()) != null)
-				error.WriteLine (line);
+			StringWriter swError = new StringWriter ();
+			LogTextWriter chainedError = new LogTextWriter ();
+			chainedError.ChainWriter (outputLog);
+			chainedError.ChainWriter (swError);
 			
-			monitor.Log.WriteLine (error.ToString ());
+			outputLog.WriteLine ("{0} {1}", command, args);
+				
+			try {
+				ProcessWrapper p = Runtime.ProcessService.StartProcess (command, args, baseDirectory, outputLog, chainedError, null);
+				p.WaitForOutput ();
+				errorOutput = swError.ToString ();
+				exitCode = p.ExitCode;
+				p.Dispose ();
+			} finally {
+				chainedError.Close ();
+				swError.Close ();
+			}
 			
-			ParseCompilerOutput (error.ToString (), cr);
-			
-			error.Close ();
-			p.Close ();
-			
-			ParseLinkerOutput (error.ToString (), cr);
+			return exitCode;
 		}
 		
 		private string ProcessDefineSymbols (string symbols)
@@ -447,41 +473,20 @@ namespace CBinding
 		/// and creates a file with it's dependencies.
 		/// </summary>
 		private bool DoCompilation (ProjectFile file, string args,
-		                            ProjectPackageCollection packages,
 		                            IProgressMonitor monitor,
 		                            CompilerResults cr,
 		                            bool use_ccache)
 		{			
 			string outputName = Path.ChangeExtension (file.Name, ".o");
-			string pkgargs = GeneratePkgCompilerArgs (packages);
 			
-			string compiler_args = string.Format ("{0} -MMD {1} {2} -c -o {3} {4}",
-			    (use_ccache ? compilerCommand : string.Empty), file.Name, args, outputName, pkgargs);
+			string compiler_args = string.Format ("{0} -MMD {1} {2} -c -o {3}",
+			    (use_ccache ? compilerCommand : string.Empty), file.Name, args, outputName);
 			
-			monitor.Log.WriteLine ("using: " + compilerCommand + " " + compiler_args);
+			string errorOutput;
+			int exitCode = ExecuteCommand ((use_ccache ? "ccache" : compilerCommand), compiler_args, Path.GetDirectoryName (outputName), monitor.Log, out errorOutput);
 			
-			ProcessWrapper p = Runtime.ProcessService.StartProcess (
-			    (use_ccache ? "ccache" : compilerCommand), compiler_args, null, null);
-
-			p.WaitForExit ();
-			
-			string line;
-			
-			StringWriter error = new StringWriter ();
-			
-			while ((line = p.StandardError.ReadLine ()) != null)
-				error.WriteLine (line);
-			
-			monitor.Log.WriteLine (error.ToString ());
-			
-			ParseCompilerOutput (error.ToString (), cr);
-			
-			error.Close ();
-			
-			bool result = p.ExitCode == 0;
-			p.Close ();
-			
-			return result;
+			ParseCompilerOutput (errorOutput, cr);
+			return exitCode == 0;
 		}
 		
 		private string[] ObjectFiles (ProjectFileCollection projectFiles)
@@ -496,6 +501,35 @@ namespace CBinding
 			
 			return objectFiles.ToArray ();
 		}
+		
+		public override void Clean (ProjectFileCollection projectFiles, CProjectConfiguration configuration, IProgressMonitor monitor)
+		{
+			//clean up object files
+			foreach (ProjectFile file in projectFiles) {
+				if (file.BuildAction == BuildAction.Compile) {
+					string oFile = Path.ChangeExtension (file.Name, ".o");
+					if (File.Exists (oFile))
+						File.Delete (oFile);
+					string dFile = Path.ChangeExtension (file.Name, ".d");
+					if (File.Exists (dFile))
+						File.Delete (dFile);
+				}
+			}
+			
+			CleanPrecompiledHeaders (configuration);
+			
+		}
+		
+		void CleanPrecompiledHeaders (CProjectConfiguration configuration)
+		{
+			string precDir = Path.Combine (configuration.SourceDirectory, ".prec");
+			string precConfigDir = Path.Combine (precDir, configuration.Name);
+			if (Directory.Exists (precConfigDir))
+				   Directory.Delete (precConfigDir, true);
+			if (Directory.GetFiles (precDir).Length == 0 && Directory.GetDirectories (precDir).Length == 0)
+				Directory.Delete (precDir);
+		}
+
 		
 		private string StringArrayToSingleString (string[] array)
 		{

@@ -53,7 +53,11 @@ namespace CBinding
 		}
 		
 		bool SupportsCcache {
-		 get;
+			get;
+		}
+		
+		bool SupportsPrecompiledHeaders {
+			get;
 		}
 		
 		string GetCompilerFlags (CProjectConfiguration configuration);
@@ -65,5 +69,7 @@ namespace CBinding
 		    ProjectPackageCollection packages,
 		    CProjectConfiguration configuration,
 		    IProgressMonitor monitor);
+		
+		void Clean (ProjectFileCollection projectFiles, CProjectConfiguration configuration, IProgressMonitor monitor);
 	}
 }

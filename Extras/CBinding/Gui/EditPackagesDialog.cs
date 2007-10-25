@@ -173,6 +173,7 @@ namespace CBinding
 			string[] pkg_paths;
 			
 			dirs.Add ("/usr/lib/pkgconfig");
+			dirs.Add ("/usr/lib64/pkgconfig");
 			dirs.Add ("/usr/share/pkgconfig");
 			dirs.Add ("/usr/local/lib/pkgconfig");
 			dirs.Add ("/usr/local/share/pkgconfig");
@@ -182,7 +183,8 @@ namespace CBinding
 			pkg_paths = pkg_var.Split (':');
 			
 			foreach (string dir in pkg_paths) {
-				if (!dirs.Contains (dir) && !string.IsNullOrEmpty (dir)) {
+				string dirPath = System.IO.Path.GetFullPath (dir);
+				if (!dirs.Contains (dirPath) && !string.IsNullOrEmpty (dir)) {
 					dirs.Add (dir);
 				}
 			}

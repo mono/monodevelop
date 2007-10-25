@@ -65,20 +65,10 @@ namespace CBinding
 			base.Clean (monitor, entry);
 			
 			CProject project = entry as CProject;
+			if (project == null)
+				return;
 			
-			if (project == null) return;
-			
-			StringBuilder cleanFiles = new StringBuilder ();
-			foreach (ProjectFile file in project.ProjectFiles) {
-				if (file.BuildAction == BuildAction.Compile) {
-					cleanFiles.Append (Path.ChangeExtension (file.Name, ".o") + " ");
-					cleanFiles.Append (Path.ChangeExtension (file.Name, ".d") + " ");
-				}
-			}
-			
-			ProcessWrapper p = Runtime.ProcessService.StartProcess ("rm", cleanFiles.ToString (), null, null);
-			p.WaitForExit ();
-			p.Close ();
+			project.Compiler.Clean (project.ProjectFiles, (CProjectConfiguration) project.ActiveConfiguration, monitor);
 		}
 	}
 }

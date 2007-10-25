@@ -75,6 +75,9 @@ namespace CBinding
 		[ItemProperty ("UseCcache", DefaultValue=false)]
 		private bool use_ccache = false;
 		
+		[ItemProperty ("PrecompileHeaders", DefaultValue=true)]
+		private bool precompileHeaders = true;
+		
 		public string Output {
 			get { return output; }
 			set { output = value; }
@@ -141,6 +144,11 @@ namespace CBinding
 		public bool UseCcache {
 			get { return use_ccache; }
 			set { use_ccache = value; }
+		}
+		
+		public bool PrecompileHeaders {
+			get { return precompileHeaders; }
+			set { precompileHeaders = value; }
 		}
 		
 		public override void CopyFrom (IConfiguration configuration)

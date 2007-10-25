@@ -1,3 +1,20 @@
+2007-10-25  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Gui/EditPackagesDialog.cs: Normalise pkg-config paths so that comparison
+	  to avoid duplication works correctly. Add lib64 to default paths.
+	* Project/CProjectConfiguration.cs: Add configuration option to disable
+	  precompilation of headers.
+	* Project/CProjectServiceExtension.cs: Pass cleanup to ICompiler.Clean.
+	* Compiler/CCompiler.cs, Compiler/ICompiler.cs: Add Clean method and
+	  SupportsPrecompiledHeaders property.
+	* Compiler/GNUCompiler.cs: Reworked process launching so that it handles
+	  output as it's generated. (fixes "Bug 336363 - [CBinding, possibly all
+	  MD] MD hangs when a compile output is long"). Headers are now
+	  precompiled if they're set to "compile", and precompilation errors are
+	  reported. Clean precompiled headers when appropriate. Pass package flags
+	  to header precompilation. Report build phases to monitor, also using
+	  gettext.
+
 2007-10-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* icons/text-x-c++src.32x32.png, templates/EmptyCHeaderFile.xft.xml,
