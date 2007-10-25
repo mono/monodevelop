@@ -1,5 +1,11 @@
 2007-10-25  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Deployment.Linux/LinuxDeployExtension.cs: Use the project
+	  description when generating .pc files, if available. Patch by Federico
+	  Di Gregorio.
+
+2007-10-25  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Deployment.Linux/DotDesktopView.cs: Destroy the view widget
 	  when the view is disposed.
 

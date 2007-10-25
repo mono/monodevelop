@@ -73,7 +73,7 @@ namespace MonoDevelop.Deployment.Linux
 			string file = ctx.CreateTempFile ();
 			using (StreamWriter sw = new StreamWriter (file)) {
 				sw.WriteLine ("Name: " + netProject.Name);
-				sw.WriteLine ("Description: " + netProject.Name);
+				sw.WriteLine ("Description: " + (String.IsNullOrEmpty(netProject.Description) ? netProject.Name : netProject.Description));
 				sw.WriteLine ("Version: " + netProject.Version);
 				sw.WriteLine ();
 				sw.WriteLine ("Requires: " + requires);
