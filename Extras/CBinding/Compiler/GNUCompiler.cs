@@ -317,7 +317,7 @@ namespace CBinding
 		{
 			string completeArgs = String.Format ("{0} {1} -o {2}", file.Name, args, output);
 			string errorOutput;
-			int exitCode = ExecuteCommand (compilerCommand, completeArgs, Path.GetDirectoryName (output), monitor.Log, out errorOutput);
+			int exitCode = ExecuteCommand (compilerCommand, completeArgs, Path.GetDirectoryName (output), monitor, out errorOutput);
 			ParseCompilerOutput (errorOutput, cr);
 			return (exitCode == 0);
 		}
@@ -355,7 +355,7 @@ namespace CBinding
 			monitor.BeginTask (GettextCatalog.GetString ("Generating binary \"{0}\" from object files", Path.GetFileName (outputName)), 1);
 			
 			string errorOutput;
-			int exitCode = ExecuteCommand (linkerCommand, linker_args, Path.GetDirectoryName (outputName), monitor.Log, out errorOutput);
+			int exitCode = ExecuteCommand (linkerCommand, linker_args, Path.GetDirectoryName (outputName), monitor, out errorOutput);
 			if (exitCode == 0)
 				monitor.Step (1);
 			monitor.EndTask ();
@@ -375,7 +375,7 @@ namespace CBinding
 			monitor.BeginTask (GettextCatalog.GetString ("Generating static library {0} from object files", Path.GetFileName (outputName)), 1);
 			
 			string errorOutput;
-			int exitCode = ExecuteCommand ("ar", args, Path.GetDirectoryName (outputName), monitor.Log, out errorOutput);
+			int exitCode = ExecuteCommand ("ar", args, Path.GetDirectoryName (outputName), monitor, out errorOutput);
 			if (exitCode == 0)
 				monitor.Step (1);
 			monitor.EndTask ();
@@ -414,7 +414,7 @@ namespace CBinding
 			monitor.BeginTask (GettextCatalog.GetString ("Generating shared object \"{0}\" from object files", Path.GetFileName (outputName)), 1);
 			
 			string errorOutput;
-			int exitCode = ExecuteCommand (linkerCommand , linker_args, Path.GetDirectoryName (outputName), monitor.Log, out errorOutput);
+			int exitCode = ExecuteCommand (linkerCommand , linker_args, Path.GetDirectoryName (outputName), monitor, out errorOutput);
 			if (exitCode == 0)
 				monitor.Step (1);
 			monitor.EndTask ();
@@ -423,27 +423,39 @@ namespace CBinding
 			ParseLinkerOutput (errorOutput, cr);
 		}
 		
-		int ExecuteCommand (string command, string args, string baseDirectory, TextWriter outputLog, out string errorOutput)
+		int ExecuteCommand (string command, string args, string baseDirectory, IProgressMonitor monitor, out string errorOutput)
 		{
 			errorOutput = string.Empty;
 			int exitCode = -1;
 			
 			StringWriter swError = new StringWriter ();
 			LogTextWriter chainedError = new LogTextWriter ();
-			chainedError.ChainWriter (outputLog);
+			chainedError.ChainWriter (monitor.Log);
 			chainedError.ChainWriter (swError);
 			
-			outputLog.WriteLine ("{0} {1}", command, args);
-				
+			monitor.Log.WriteLine ("{0} {1}", command, args);
+			
+			AggregatedOperationMonitor operationMonitor = new AggregatedOperationMonitor (monitor);
+			
 			try {
-				ProcessWrapper p = Runtime.ProcessService.StartProcess (command, args, baseDirectory, outputLog, chainedError, null);
+				ProcessWrapper p = Runtime.ProcessService.StartProcess (command, args, baseDirectory, monitor.Log, chainedError, null);
+				operationMonitor.AddOperation (p); //handles cancellation
+				
 				p.WaitForOutput ();
 				errorOutput = swError.ToString ();
 				exitCode = p.ExitCode;
 				p.Dispose ();
+				
+				if (monitor.IsCancelRequested) {
+					monitor.Log.WriteLine (GettextCatalog.GetString ("Build cancelled"));
+					monitor.ReportError (GettextCatalog.GetString ("Build cancelled"), null);
+					if (exitCode == 0)
+						exitCode = -1;
+				}
 			} finally {
 				chainedError.Close ();
 				swError.Close ();
+				operationMonitor.Dispose ();
 			}
 			
 			return exitCode;
@@ -483,7 +495,7 @@ namespace CBinding
 			    (use_ccache ? compilerCommand : string.Empty), file.Name, args, outputName);
 			
 			string errorOutput;
-			int exitCode = ExecuteCommand ((use_ccache ? "ccache" : compilerCommand), compiler_args, Path.GetDirectoryName (outputName), monitor.Log, out errorOutput);
+			int exitCode = ExecuteCommand ((use_ccache ? "ccache" : compilerCommand), compiler_args, Path.GetDirectoryName (outputName), monitor, out errorOutput);
 			
 			ParseCompilerOutput (errorOutput, cr);
 			return exitCode == 0;

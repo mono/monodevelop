@@ -1,5 +1,9 @@
 2007-10-25  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* Compiler/GNUCompiler.cs: Handle cancellation of build.
+
+2007-10-25  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* Gui/EditPackagesDialog.cs: Normalise pkg-config paths so that comparison
 	  to avoid duplication works correctly. Add lib64 to default paths.
 	* Project/CProjectConfiguration.cs: Add configuration option to disable
