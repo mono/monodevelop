@@ -239,6 +239,7 @@ namespace MonoDevelop.WelcomePage
 		public override void Dispose ()
 		{
 			IdeApp.Workbench.RecentOpen.RecentProjectChanged -= RecentChangesHandler;
+			htmlControl.Destroy ();
 		}
 		
 		public static string TimeSinceEdited (DateTime prjtime)

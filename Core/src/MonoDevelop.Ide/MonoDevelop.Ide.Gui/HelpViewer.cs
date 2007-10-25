@@ -27,6 +27,13 @@ namespace MonoDevelop.Ide.Gui
 		public override string ContentName {
 			get { return GettextCatalog.GetString ("Documentation"); }
 		}
+		
+		public override void Dispose ()
+		{
+			scroller.Destroy ();
+			base.Dispose ();
+		}
+
 
 		public HelpViewer ()
 		{

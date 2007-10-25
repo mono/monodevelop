@@ -60,7 +60,7 @@ namespace MonoDevelop.Database.Query
 		
 		public override void Dispose ()
 		{
-			Control.Dispose ();
+			Control.Destroy ();
 		}
 		
 		public override void Load (string filename)

@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 		
 		public override void Dispose()
 		{
-			htmlViewPane.Dispose();
+			htmlViewPane.Destroy();
 		}
 		
 		public override void Load(string url)

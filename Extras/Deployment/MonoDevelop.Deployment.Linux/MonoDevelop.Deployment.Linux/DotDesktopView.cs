@@ -35,5 +35,11 @@ namespace MonoDevelop.Deployment.Linux
 			get { return widget; }
 		}
 
+		public override void Dispose ()
+		{
+			widget.Destroy ();
+			base.Dispose ();
+		}
+
 	}
 }
