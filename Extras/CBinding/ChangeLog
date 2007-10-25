@@ -1,3 +1,11 @@
+2007-10-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* icons/text-x-c++src.32x32.png, templates/EmptyCHeaderFile.xft.xml,
+	  templates/EmptyCppHeaderFile.xft.xml,
+	  templates/EmptyCppSourceFile.xft.xml,
+	  templates/EmptyCSourceFile.xft.xml: Use tango file icons. Removed
+	  obsolete icons.
+
 2007-10-24  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CBinding.mdp, templates/StaticLibraryCProject.xpt.xml,

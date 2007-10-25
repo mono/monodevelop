@@ -7,7 +7,7 @@
 	
 	<TemplateConfiguration>
 		<_Name>Empty C Source File</_Name>
-		<Icon>res:text-x-csrc.48x48.png</Icon>
+		<Icon>res:text-x-csrc.32x32.png</Icon>
 		<Category>General</Category>
 		<LanguageName>C</LanguageName>
 		<_Description>Creates an empty C source file.</_Description>

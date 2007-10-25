@@ -71,7 +71,7 @@ namespace MonoDevelop.NUnit
 		{
 			NUnitAssemblyGroupProject project = dataObject as NUnitAssemblyGroupProject;
 			label = project.Name;
-			icon = Context.GetIcon (Stock.EmptyProjectIcon);
+			icon = Context.GetIcon (Stock.Project);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)

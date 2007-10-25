@@ -1,3 +1,11 @@
+2007-10-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* icons/VB.File.EmptyFile, icons/VB.File.Form, icons/VB.File.FullFile,
+	  icons/VB.File.NewClass, icons/VB.File.WebFile,
+	  icons/VB.Project.ServiceProject, icons/VB.Project.UserControl,
+	  icons/VB.Project.WebProject, Makefile.am, templates/EmptyVBFile.xft.xml,
+	  VBNetBinding.mdp: Use tango file icons. Removed obsolete icons.
+
 2007-10-24  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* VBNetBinding.mdp, templates/EmptyVBProject.xpt.xml,

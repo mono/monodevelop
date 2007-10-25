@@ -3,7 +3,7 @@
 	
 	<TemplateConfiguration>
            <_Name>Java AWT Dialog</_Name>
-           <Icon>res:Java.File.Form</Icon>
+           <Icon>md-gui-file</Icon>
            <Category>AWT</Category>
            <LanguageName>Java</LanguageName>
            <_Description>Creates an AWT dialog.</_Description>

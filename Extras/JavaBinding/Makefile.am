@@ -23,11 +23,6 @@ FILES =  \
 	Project/JavaCompilerParameters.cs
 
 RES =  \
-	icons/Java.File.EmptyFile \
-	icons/Java.File.Form \
-	icons/Java.File.FullFile \
-	icons/Java.File.NewClass \
-	icons/Java.File.WebFile \
 	icons/Java.FileIcon \
 	icons/java-icon-32.png \
 	Java.glade \

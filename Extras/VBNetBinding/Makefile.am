@@ -34,15 +34,7 @@ FILES =  \
 	VBLanguageBinding.cs
 
 RES =  \
-	icons/VB.File.EmptyFile \
-	icons/VB.File.Form \
-	icons/VB.File.FullFile \
-	icons/VB.File.NewClass \
-	icons/VB.File.WebFile \
 	icons/VB.FileIcon \
-	icons/VB.Project.ServiceProject \
-	icons/VB.Project.UserControl \
-	icons/VB.Project.WebProject \
 	icons/vb-icon-32.png \
 	templates/EmptyVBFile.xft.xml \
 	templates/EmptyVBProject.xpt.xml \

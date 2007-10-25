@@ -3,7 +3,7 @@
 	
 	<TemplateConfiguration>
            <_Name>AWT Applet</_Name>
-           <Icon>res:Java.File.FullFile</Icon>
+           <Icon>md-html-file-icon</Icon>
            <Category>AWT</Category>
            <LanguageName>Java</LanguageName>
            <_Description>Creates a Java AWT Applet</_Description>

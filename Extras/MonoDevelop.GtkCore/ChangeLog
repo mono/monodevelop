@@ -1,3 +1,11 @@
+2007-10-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* templates/ActionGroup.xft.xml, templates/ActionGroupPartial.xft.xml,
+	  templates/Dialog.xft.xml, templates/DialogPartial.xft.xml,
+	  templates/Widget.xft.xml, templates/WidgetPartial.xft.xml,
+	  templates/Window.xft.xml, templates/WindowPartial.xft.xml: Use tango
+	  file icons. Removed obsolete icons.
+
 2007-10-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.Dialogs/GtkFeatureWidget.cs: Track api changes. Added

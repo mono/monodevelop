@@ -6,7 +6,7 @@
 	  
 	<TemplateConfiguration>
 		<_Name>Gtk# Window</_Name>
-		<Icon>res:Boo.File.Form</Icon>
+		<Icon>md-gui-file</Icon>
 		<Category>General</Category>
 		<LanguageName>Boo</LanguageName>
 		<_Description>Creates a top-level Gtk# window</_Description>

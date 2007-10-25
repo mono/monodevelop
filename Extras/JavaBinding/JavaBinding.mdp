@@ -30,12 +30,7 @@
     <File name="templates/JavaFrame.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/JavaOKDialog.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/JavaPanel.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Java.File.EmptyFile" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Java.File.Form" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Java.File.FullFile" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Java.FileIcon" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Java.File.NewClass" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Java.File.WebFile" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Gui/ProjectConfigurationPropertyPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="Gui/GlobalOptionsPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/JavaCompilerParameters.cs" subtype="Code" buildaction="Compile" />

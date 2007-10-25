@@ -1,3 +1,8 @@
+2007-10-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* templates/BooGtkSharpWindow.xft.xml, templates/EmptyBooFile.xft.xml: Use
+	  tango file icons. Removed obsolete icons.
+
 2007-10-24  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* BooBinding.mdp, BooBinding.mds, templates/BooGtkSharpProject.xpt.xml,

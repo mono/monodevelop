@@ -36,15 +36,7 @@
     <File name="templates/VBConsoleApplicationProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/VBGtkSharpProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/VBGtkSharp2Project.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/VB.File.EmptyFile" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/VB.File.Form" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/VB.File.FullFile" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/VB.FileIcon" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/VB.File.NewClass" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/VB.File.WebFile" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/VB.Project.ServiceProject" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/VB.Project.UserControl" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/VB.Project.WebProject" subtype="Code" buildaction="EmbedAsResource" />
     <File name="VBNetBinding.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/vb-icon-32.png" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>

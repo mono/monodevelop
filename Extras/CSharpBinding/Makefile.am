@@ -60,17 +60,7 @@ FILES =  \
 RES =  \
 	CSharpBinding.addin.xml \
 	gtk-gui/gui.stetic \
-	icons/C\#.File.EmptyFile \
-	icons/C\#.File.Form \
-	icons/C\#.File.FullFile \
-	icons/C\#.File.NewClass \
-	icons/C\#.File.WebFile \
 	icons/C\#.FileIcon \
-	icons/C\#.Project.FullProject \
-	icons/C\#.Project.ServiceProject \
-	icons/C\#.Project.UserControl \
-	icons/C\#.Project.WebProject \
-	icons/C\#.ProjectIcon \
 	icons/csharp-icon-32.png \
 	templates/ConsoleProject.xpt.xml \
 	templates/EmptyCSharpFile.xft.xml \

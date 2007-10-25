@@ -1,3 +1,13 @@
+2007-10-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* icons/Java.File.EmptyFile, icons/Java.File.Form, icons/Java.File.FullFile,
+	  icons/Java.File.NewClass, icons/Java.File.WebFile, JavaBinding.mdp,
+	  Makefile.am, templates/EmptyJavaFile.xft.xml,
+	  templates/JavaApplet.xft.xml, templates/JavaApplication.xft.xml,
+	  templates/JavaDialog.xft.xml, templates/JavaFrame.xft.xml,
+	  templates/JavaOKDialog.xft.xml, templates/JavaPanel.xft.xml: Use tango
+	  file icons. Removed obsolete icons.
+
 2007-10-24  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* JavaBinding.mdp, templates/IkvmGnomeApplicationProject.xpt.xml,

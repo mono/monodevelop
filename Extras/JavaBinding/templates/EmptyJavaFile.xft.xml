@@ -3,7 +3,7 @@
 	
 	<TemplateConfiguration>
                 <_Name>Empty File</_Name>
-                <Icon>res:Java.File.EmptyFile</Icon>
+                <Icon>md-text-file-icon</Icon>
                 <Category>General</Category>
                 <LanguageName>Java</LanguageName>
                 <_Description>Creates an empty Java file.</_Description>

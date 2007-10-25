@@ -25,17 +25,7 @@
     <File name="templates/GtkSharpProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/GtkSharp2Project.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/Library.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/C#.File.EmptyFile" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/C#.File.Form" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/C#.File.FullFile" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/C#.FileIcon" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/C#.File.NewClass" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/C#.File.WebFile" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/C#.Project.FullProject" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/C#.ProjectIcon" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/C#.Project.ServiceProject" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/C#.Project.UserControl" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/C#.Project.WebProject" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Gui/FormattingPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="Gui/ChooseRuntimePanel.cs" subtype="Code" buildaction="Compile" />
     <File name="Gui/CodeGenerationPanel.cs" subtype="Code" buildaction="Compile" />

@@ -3,7 +3,7 @@
 	
 	<TemplateConfiguration>
 		<_Name>ActionGroup</_Name>
-		<Icon>md-empty-file-icon</Icon>
+		<Icon>md-gui-file</Icon>
 		<Category>Gtk</Category>
 		<LanguageName>*</LanguageName>
 		<_Description>Creates a global Action Group.</_Description>

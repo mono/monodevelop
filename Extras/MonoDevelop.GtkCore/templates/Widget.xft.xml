@@ -3,7 +3,7 @@
 	
 	<TemplateConfiguration>
 		<_Name>Widget</_Name>
-		<Icon>md-empty-file-icon</Icon>
+		<Icon>md-gui-file</Icon>
 		<Category>Gtk</Category>
 		<LanguageName>*</LanguageName>
 		<_Description>Creates a custom Gtk Widget.</_Description>
