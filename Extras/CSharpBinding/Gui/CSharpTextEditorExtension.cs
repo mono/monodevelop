@@ -54,48 +54,48 @@ namespace CSharpBinding
 			return null;
 		}
 		
-		void AppendSummary (StringBuilder sb, out int newCursorOffset)
+		void AppendSummary (StringBuilder sb, string indent, out int newCursorOffset)
 		{
 			Debug.Assert (sb != null);
 			sb.Append ("/ <summary>\n");
-			sb.Append (indentEngine.ThisLineIndent);
+			sb.Append (indent);
 			sb.Append ("/// \n");
-			sb.Append (indentEngine.ThisLineIndent);
+			sb.Append (indent);
 			sb.Append ("/// </summary>");
-			newCursorOffset = ("/ <summary>\n/// " + indentEngine.ThisLineIndent).Length;
+			newCursorOffset = ("/ <summary>\n/// " + indent).Length;
 		}
 		
-		void AppendMethodComment (StringBuilder builder, IMethod method)
+		void AppendMethodComment (StringBuilder builder, string indent, IMethod method)
 		{
 			if (method.Parameters != null) {
 				foreach (IParameter para in method.Parameters) {
 					builder.Append (Environment.NewLine);
-					builder.Append (indentEngine.ThisLineIndent);
+					builder.Append (indent);
 					builder.Append ("/// <param name=\"");
 					builder.Append (para.Name);
 					builder.Append ("\">\n");
-					builder.Append (indentEngine.ThisLineIndent);
+					builder.Append (indent);
 					builder.Append ("/// A <see cref=\"");
 					builder.Append (para.ReturnType.FullyQualifiedName);
 					builder.Append ("\"/>\n");
-					builder.Append (indentEngine.ThisLineIndent);
+					builder.Append (indent);
 					builder.Append ("/// </param>");
 				}
 			}
 			if (method.ReturnType != null && method.ReturnType.FullyQualifiedName != "System.Void") {
 				builder.Append (Environment.NewLine);
-				builder.Append (indentEngine.ThisLineIndent);
+				builder.Append (indent);
 				builder.Append("/// <returns>\n");
-				builder.Append (indentEngine.ThisLineIndent);
+				builder.Append (indent);
 				builder.Append ("/// A <see cref=\"");
 				builder.Append (method.ReturnType.FullyQualifiedName);
 				builder.Append ("\"/>\n");
-				builder.Append (indentEngine.ThisLineIndent);
+				builder.Append (indent);
 				builder.Append ("/// </returns>");
 			}
 		}
 		
-		string GenerateBody (IClass c, int line, out int newCursorOffset)
+		string GenerateBody (IClass c, int line, string indent, out int newCursorOffset)
 		{
 			int startLine = int.MaxValue;
 			newCursorOffset = 0;
@@ -117,15 +117,15 @@ namespace CSharpBinding
 			}
 			
 			if (method != null) {
-				AppendSummary (builder, out newCursorOffset);
-				AppendMethodComment (builder, method);
+				AppendSummary (builder, indent, out newCursorOffset);
+				AppendMethodComment (builder, indent, method);
 			} else if (property != null) {
 				builder.Append ("/ <value>\n");
-				builder.Append (indentEngine.ThisLineIndent);
+				builder.Append (indent);
 				builder.Append ("/// \n");
-				builder.Append (indentEngine.ThisLineIndent);
+				builder.Append (indent);
 				builder.Append ("/// </value>");
-				newCursorOffset = ("/ <value>\n/// " + indentEngine.ThisLineIndent).Length;
+				newCursorOffset = ("/ <value>\n/// " + indent).Length;
 			}
 			
 			return builder.ToString ();
@@ -316,10 +316,6 @@ namespace CSharpBinding
 		
 		bool GenerateDocComments (Gdk.Key key)
 		{
-			//whether user is using smart indent engine or not, doc comments
-			//use it to indent the inserted docs
-			UpdateSmartIndentEngine ();
-			
 			int cursor;
 			int newCursorOffset = 0;
 			
@@ -371,14 +367,15 @@ namespace CSharpBinding
 						
 						IClass insideClass = LookupClass (unit, lin, col);
 						if (insideClass != null) {
+							string indent = GetLineWhiteSpace (Editor.GetLineText (lin));
 							if (insideClass.ClassType == ClassType.Delegate) {
-								AppendSummary (generatedComment, out newCursorOffset);
-								AppendMethodComment (generatedComment, insideClass.Methods[0]);
+								AppendSummary (generatedComment, indent, out newCursorOffset);
+								AppendMethodComment (generatedComment, indent, insideClass.Methods[0]);
 								generateStandardComment = false;
 							} else {
 								if (!IsInsideClassBody (insideClass, lin, col))
 									break;
-								string body = GenerateBody (insideClass, lin, out newCursorOffset);
+								string body = GenerateBody (insideClass, lin, indent, out newCursorOffset);
 								if (!String.IsNullOrEmpty (body)) {
 									generatedComment.Append (body);
 									generateStandardComment = false;
@@ -387,7 +384,8 @@ namespace CSharpBinding
 						}
 					}
 					if (generateStandardComment) {
-						AppendSummary (generatedComment, out newCursorOffset);
+						string indent = GetLineWhiteSpace (Editor.GetLineText (lin));;
+						AppendSummary (generatedComment, indent, out newCursorOffset);
 					}
 					
 					Editor.InsertText (cursor, generatedComment.ToString ());
