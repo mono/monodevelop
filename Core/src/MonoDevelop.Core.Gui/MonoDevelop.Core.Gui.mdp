@@ -17,7 +17,6 @@
     <File name="Base.glade" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/BreakPoint.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/ExecutionMarker.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/FileIcons.XmlIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/GeneralWizardBackground" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.BuildCombine" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.BuildCurrentSelectedProject" subtype="Code" buildaction="EmbedAsResource" />
@@ -84,7 +83,6 @@
     <File name="icons/Icons.16x16.ReplaceInFiles" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.ResourceFileIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.SaveAllIcon" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.SolutionIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.SplitWindow" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.Struct" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.TaskListIcon" subtype="Code" buildaction="EmbedAsResource" />
@@ -92,9 +90,7 @@
     <File name="icons/Icons.16x16.ToggleBookmark" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.WebSearchIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.XMLFileIcon" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.32x32.CombineIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.32x32.EmptyFileIcon" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.32x32.EmptyProjectIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.32x32.HTMLFileIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.32x32.ResourceFileIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.32x32.TextFileIcon" subtype="Code" buildaction="EmbedAsResource" />
@@ -183,6 +179,11 @@
     <File name="icons/project-gui-32.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/project-library-32.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/web-overlay-32.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/file-class-32.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/file-enum-32.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/file-interface-32.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/file-struct-32.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/file-xml-32.png" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="gecko-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=ccf7d78a55e9f021" />

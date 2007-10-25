@@ -1,3 +1,17 @@
+2007-10-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.mdp, MonoDevelop.Core.Gui/StockIcons.cs, Makefile.am,
+	  icons/Icons.32x32.CombineIcon, icons/Icons.16x16.NewCombineIcon.png,
+	  icons/file-xml-32.png, icons/Icons.32x32.TextFileIcon,
+	  icons/web-overlay-32.png, icons/Icons.32x32.EmptyProjectIcon,
+	  icons/Icons.16x16.NewSolutionIcon.png, icons/file-interface-32.png,
+	  icons/Icons.16x16.SolutionIcon, icons/Icons.32x32.EmptyFileIcon,
+	  icons/file-struct-32.png, icons/Icons.16x16.CloseCombineIcon,
+	  icons/FileIcons.XmlIcon, icons/file-enum-32.png,
+	  icons/file-class-32.png, MonoDevelop.Core.Gui.addin.xml: Added
+	  class/interface/enum/struct file icons. Tangoified other file icons.
+	  Removed obsolete icons.
+
 2007-10-24  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.mdp, Makefile.am, icons/solution-32.png,

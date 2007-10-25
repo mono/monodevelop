@@ -79,7 +79,11 @@ RES =  \
 	icons/edit-select-all.png \
 	icons/edit-select-all_22.png \
 	icons/ExecutionMarker.png \
-	icons/FileIcons.XmlIcon \
+	icons/file-class-32.png \
+	icons/file-enum-32.png \
+	icons/file-interface-32.png \
+	icons/file-struct-32.png \
+	icons/file-xml-32.png \
 	icons/GeneralWizardBackground \
 	icons/gnome-fs-regular.png \
 	icons/Icons.16x16.BuildCombine \
@@ -147,7 +151,6 @@ RES =  \
 	icons/Icons.16x16.ReplaceInFiles \
 	icons/Icons.16x16.ResourceFileIcon \
 	icons/Icons.16x16.SaveAllIcon \
-	icons/Icons.16x16.SolutionIcon \
 	icons/Icons.16x16.SplitWindow \
 	icons/Icons.16x16.Struct \
 	icons/Icons.16x16.TaskListIcon \
@@ -157,9 +160,7 @@ RES =  \
 	icons/Icons.16x16.WebSearchIcon \
 	icons/Icons.16x16.XMLFileIcon \
 	icons/Icons.24x24.SaveAllIcon \
-	icons/Icons.32x32.CombineIcon \
 	icons/Icons.32x32.EmptyFileIcon \
-	icons/Icons.32x32.EmptyProjectIcon \
 	icons/Icons.32x32.HTMLFileIcon \
 	icons/Icons.32x32.ResourceFileIcon \
 	icons/Icons.32x32.TextFileIcon \

@@ -24,7 +24,6 @@ namespace MonoDevelop.Core.Gui
 		public static readonly string DeleteIcon = Gtk.Stock.Delete;
 		public static readonly string Empty = "md-empty";
 		public static readonly string EmptyFileIcon = "md-empty-file-icon";
-		public static readonly string EmptyProjectIcon = "md-empty-project-icon";
 		public static readonly string Enum = "md-enum";
 		public static readonly string Error = Gtk.Stock.DialogError;
 		public static readonly string Event = "md-event";
