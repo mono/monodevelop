@@ -1,3 +1,7 @@
+2007-10-25  Jordi Mas <jmas@softcatala.org>
+
+	* POTFILES.in: Update MonoQuery files
+
 2007-10-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* sv.po: Updated swedish translation by Daniel Nylander.
