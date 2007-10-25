@@ -1,3 +1,8 @@
+2007-10-25  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Project/AspNetAppProject.cs: No need to handle monitor's cancel request,
+	  as AggregatedOperationMonitor does this for us.
+
 2007-10-24  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Templates/WebApplication-Empty.xpt.xml, Templates/WebApplication.xpt.xml:

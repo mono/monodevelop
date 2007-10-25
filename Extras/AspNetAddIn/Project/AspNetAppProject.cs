@@ -247,8 +247,7 @@ namespace AspNetAddIn
 					envVars ["MONO_OPTIONS"] = "--debug";
 				
 				IProcessAsyncOperation op = handler.Execute (xspVersion, XspParameters.GetXspParameters (), configuration.SourceDirectory, envVars, console);
-				monitor.CancelRequested += delegate {  op.Cancel (); };
-				operationMonitor.AddOperation (op);
+				operationMonitor.AddOperation (op); //handles cancellation
 				
 				//launch a separate thread to detect the running server and launch a web browser
 				System.Threading.Thread t = new System.Threading.Thread (new System.Threading.ParameterizedThreadStart (LaunchWebBrowser));
