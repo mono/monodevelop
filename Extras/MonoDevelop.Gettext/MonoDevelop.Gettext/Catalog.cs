@@ -720,6 +720,12 @@ namespace MonoDevelop.Gettext
 		{
 			get { return isDirty; }
 		}
+
+		public string FileName {
+			get {
+				return fileName;
+			}
+		}
 		
 		public void MarkDirty (object sender)
 		{

@@ -144,7 +144,7 @@ namespace MonoDevelop.Gettext
 		}
 		
 		int updateLevel = 0;
-		Dictionary<string, Catalog> catalogs = new Dictionary<string, Catalog> (); 
+		Dictionary<Translation, Catalog> catalogs = new Dictionary<Translation, Catalog> (); 
 		public void BeginUpdate ()
 		{
 			updateLevel++;
@@ -157,43 +157,51 @@ namespace MonoDevelop.Gettext
 		{
 			updateLevel--;
 			if (updateLevel == 0) {
-				foreach (KeyValuePair<string, Catalog> catalog in catalogs) {
-					catalog.Value.Save (catalog.Key);
+				foreach (Catalog catalog in catalogs.Values) {
+					catalog.Save (catalog.FileName);
 				}
 				catalogs.Clear ();
-			}
-		}
-		public void AddTranslationStrings (Translation translation, string fileName, List<TranslationProject.MatchLocation> matches)
-		{
-			string relativeFileName = MonoDevelop.Core.FileService.AbsoluteToRelativePath (this.BaseDirectory, fileName);
-			string fileNamePrefix   = relativeFileName + ":";
-			string poFileName = GetFileName (translation);
-			if (!catalogs.ContainsKey (poFileName))
-				catalogs[poFileName] = new Catalog (poFileName);
-			Catalog catalog = catalogs[poFileName];
-			
-			foreach (CatalogEntry entry in catalog) {
-				entry.RemoveReferenceTo (fileNamePrefix);
-			}
-			
-			foreach (MatchLocation match in matches) {
-				if (String.IsNullOrEmpty (match.OriginalString))
-					continue;
-				CatalogEntry entry = catalog.FindItem (match.OriginalString);
-				if (entry == null) {
-					entry = new CatalogEntry (catalog, match.OriginalString, match.OriginalPluralString);
-					if (!String.IsNullOrEmpty (match.OriginalPluralString))
-						entry.SetTranslations (new string[] {"", ""});
-					catalog.AddItem (entry);
-				}
-				entry.AddReference (fileNamePrefix + match.Line);
 			}
 		}
 		
 		public void AddTranslationStrings (string fileName, List<TranslationProject.MatchLocation> matches)
 		{
+			if (Translations.Count == 0)
+				return;
+			
 			foreach (Translation translation in this.Translations) {
-				AddTranslationStrings (translation, fileName, matches);
+				if (!catalogs.ContainsKey(translation))
+					catalogs[translation] = new Catalog (GetFileName (translation));
+			}
+			
+			string relativeFileName = MonoDevelop.Core.FileService.AbsoluteToRelativePath (this.BaseDirectory, fileName);
+			string fileNamePrefix   = relativeFileName + ":";
+			Catalog catalog = catalogs[Translations[0]];
+			
+			foreach (CatalogEntry entry in catalog) {
+				if (entry.RemoveReferenceTo (fileNamePrefix)) {
+					foreach (Translation t in this.Translations) {
+						CatalogEntry findEntry = catalogs[t].FindItem (entry.String);
+						if (findEntry != null)
+							findEntry.RemoveReferenceTo (fileNamePrefix);
+					}
+				}
+			}
+			
+			foreach (MatchLocation match in matches) {
+				if (String.IsNullOrEmpty (match.OriginalString))
+					continue;
+				foreach (Translation translation in this.Translations) {
+					catalog = catalogs[translation];
+					CatalogEntry entry = catalog.FindItem (match.OriginalString);
+					if (entry == null) {
+						entry = new CatalogEntry (catalog, match.OriginalString, match.OriginalPluralString);
+						if (!String.IsNullOrEmpty (match.OriginalPluralString))
+							entry.SetTranslations (new string[] {"", ""});
+						catalog.AddItem (entry);
+					}
+					entry.AddReference (fileNamePrefix + match.Line);
+				}
 			}
 		}
 		

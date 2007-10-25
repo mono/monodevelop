@@ -51,8 +51,8 @@ namespace MonoDevelop.Gettext.Editor
 		[DllImport ("libgtkspell")]
 		static extern IntPtr gtkspell_get_from_text_view (IntPtr textView);
 		
-		[DllImport ("libgtkspell")]
-		static extern bool gtkspell_set_language (IntPtr spell, string lang, IntPtr error);
+//		[DllImport ("libgtkspell")]
+//		static extern bool gtkspell_set_language (IntPtr spell, string lang, IntPtr error);
 #endregion
 		
 		public static bool IsSupported {

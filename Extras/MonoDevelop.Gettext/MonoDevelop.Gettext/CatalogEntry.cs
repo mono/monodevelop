@@ -172,14 +172,17 @@ namespace MonoDevelop.Gettext
             references.Clear ();
         }
 		
-		public void RemoveReferenceTo (string fileNamePrefix)
+		public bool RemoveReferenceTo (string fileNamePrefix)
 		{
+			bool result = false;
 			for (int i = 0; i < this.references.Count; i++) {
 				if (references[i].StartsWith (fileNamePrefix)) {
 					references.RemoveAt (i);
 					i--;
+					result = true;
 				}
 			}
+			return result;
 		}
 		
 		public void RemoveReference (string reference)

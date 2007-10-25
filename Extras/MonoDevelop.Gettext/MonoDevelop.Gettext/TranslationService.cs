@@ -63,15 +63,15 @@ namespace MonoDevelop.Gettext
 			};
 		}
 		
-		static TranslationProject GetTranslationProject (Project p)
-		{
-			foreach (CombineEntry entry in p.ParentCombine.Entries) {
-				if (entry is TranslationProject) {
-					return (TranslationProject)entry;
-				}
-			}
-			return null;
-		}
+//		static TranslationProject GetTranslationProject (Project p)
+//		{
+//			foreach (CombineEntry entry in p.ParentCombine.Entries) {
+//				if (entry is TranslationProject) {
+//					return (TranslationProject)entry;
+//				}
+//			}
+//			return null;
+//		}
 		
 		static int GetLineNumber (string text, int index)
 		{
