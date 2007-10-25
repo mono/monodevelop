@@ -1,5 +1,11 @@
 2007-10-25  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* Gui/CSharpTextEditorExtension.cs: If indent engine says line needs to be
+	  reindented, check it's as a result of an inserted character rather than
+	  just navigating around the code.
+
+2007-10-25  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* Gui/CSharpTextEditorExtension.cs: Don't insert a tab if it's interpreted
 	  as a reindent command.
 

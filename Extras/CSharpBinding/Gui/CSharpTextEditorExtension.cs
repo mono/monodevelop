@@ -213,8 +213,10 @@ namespace CSharpBinding
 					DoPostInsertionSmartIndent (lastCharInserted, out reIndent);
 				
 				//reindent the line after the insertion, if needed
+				//N.B. if the engine says we need to reindent, make sure that it's because a char was 
+				//inserted rather than just updating the stack due to moving around
 				UpdateSmartIndentEngine ();
-				if (indentEngine.NeedsReindent || reIndent)
+				if (reIndent || (indentEngine.NeedsReindent && lastCharInserted != '\0'))
 					DoReSmartIndent ();
 				return retval;
 			}
