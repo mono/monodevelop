@@ -257,8 +257,10 @@ namespace CSharpBinding
 					oldEngines.Pop ();
 				}
 			}
-			if (!gotOldEngine)
+			if (!gotOldEngine) {
+				//System.Console.WriteLine("Did not recover a stack engine", oldEngines.Count);
 				indentEngine.Reset ();
+			}
 		}
 		
 		//Makes sure that the smart indent engine's cursor has caught up with the 
@@ -271,11 +273,16 @@ namespace CSharpBinding
 			//bigger buffer means fewer saved stacks needed
 			const int BUFFER_SIZE = 2000;
 			
-			//moving backwards, so reset from previous saved location
 			int cursor = Editor.CursorPosition;
 			//System.Console.WriteLine("moving backwards if indentEngine.Cursor {0} > cursor {1}", indentEngine.Cursor, cursor);
-			if (indentEngine.Cursor > cursor)
+			
+			if (indentEngine.Cursor == cursor) {
+				//cursors match, nothing to be done
+				return;
+			} else if (indentEngine.Cursor > cursor) {
+				//moving backwards, so reset from previous saved location
 				ResetSmartIndentEngineToCursor (cursor);
+			}
 			
 			// get the engine caught up
 			int nextSave = (oldEngines.Count == 0)? BUFFER_SIZE : oldEngines.Peek ().Cursor + BUFFER_SIZE;

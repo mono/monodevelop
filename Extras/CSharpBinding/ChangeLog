@@ -1,5 +1,9 @@
 2007-10-25  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* Gui/CSharpTextEditorExtension.cs: Minor optimisation.
+
+2007-10-25  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* Gui/CSharpTextEditorExtension.cs: Read context to end of line when
 	  reindenting. Fixes "Bug 324985 - operator '::' behaves like goto label
 	  in smart indentation".
