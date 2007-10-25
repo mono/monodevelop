@@ -122,7 +122,28 @@ namespace MonoDevelop.Gettext
 		    output = input.Substring (pattern.Length).TrimEnd (' ', '\t');
 		    return true;
 		}
-        
+        string ParseMessage (ref string dummy, ref int lineNumber)
+		{
+			StringBuilder result = new StringBuilder (dummy.Substring (0, dummy.Length - 1));
+			
+			bool firstLine = true;
+			string line;
+            while ((line = fileLines[lineNumber++]) != String.Empty) {
+                if (line[0] == '\t') 
+                    line = line.Substring (1);
+				
+                if (line[0] == '"' && line[line.Length - 1] == '"') { 
+					if (!firstLine && !result.ToString ().EndsWith ("\\n")) {
+						result.Append ("\n");
+					}
+					result.Append (line.Substring (1, line.Length - 2));
+				} else
+                    break;
+				firstLine = false;
+            }
+			return result.ToString ();
+		}
+		
         // Parses the entire file, calls OnEntry each time msgid/msgstr pair is found.
         // return false if parsing failed, true otherwise
         public bool Parse ()
@@ -196,35 +217,15 @@ namespace MonoDevelop.Gettext
 		        else if (CatalogParser.ReadParam (line, "msgid \"", out dummy) ||
 		                 CatalogParser.ReadParam (line, "msgid\t\"", out dummy))
 		        {
-					mstr = dummy.Substring (0, dummy.Length - 1);
-		            while ((line = fileLines[lineNumber++]) != String.Empty)
-		            {
-		                if (line[0] == '\t') 
-		                    line = line.Substring (1);
-						
-		                if (line[0] == '"' && line[line.Length - 1] == '"') {
-							mstr += "\n" + line.Substring (1, line.Length - 2);
-						}
-		                else
-		                    break;
-		            }
+					mstr = ParseMessage (ref dummy, ref lineNumber);
 		        }
 
 		        // msgid_plural:
 		        else if (CatalogParser.ReadParam (line, "msgid_plural \"", out dummy) ||
 		                 CatalogParser.ReadParam (line, "msgid_plural\t\"", out dummy))
 		        {
-		            msgidPlural = dummy.Substring (0, dummy.Length -1);
+		            msgidPlural = ParseMessage (ref dummy, ref lineNumber);
 		            hasPlural = true;
-		            while ((line = fileLines[lineNumber++]) != String.Empty)
-		            {
-		                if (line[0] == '\t')
-							line = line.Substring (1);
-		                if (line[0] == '"' && line[line.Length -1] == '"')
-		                    msgidPlural += "\n" + line.Substring (1, line.Length - 2);
-		                else
-		                    break;
-		            }
 		        }
 
 		        // msgstr:
@@ -239,17 +240,7 @@ namespace MonoDevelop.Gettext
 		            }
 
 		            
-		            string str = String.Empty;
-					str = dummy.Substring (0, dummy.Length - 1);
-		            while ((line = fileLines[lineNumber++]) != String.Empty)
-		            {
-		                if (line[0] == '\t')
-							line = line.Substring (1);
-		                if (line[0] == '"' && line[line.Length - 1] == '"') {
-		                    str += "\n" + line.Substring (1, line.Length - 2);
-						} else
-		                    break;
-		            }
+		            string str = ParseMessage (ref dummy, ref lineNumber);
 		            mtranslations.Add (str);
 
 		            if (! OnEntry (mstr, String.Empty, false, mtranslations.ToArray (),
@@ -285,12 +276,17 @@ namespace MonoDevelop.Gettext
 		            {
 		                string str = dummy.Substring (0, dummy.Length - 1);
 
+						bool firstLine = true;
 		                while ((line = fileLines[lineNumber++]) != String.Empty)
 		                {
 		                    if (line[0] == '\t')
 		                        line = line.Substring (1);
-		                    if (line[0] == '"' && line[line.Length - 1] == '"')
-		                        str += "\n" + line.Substring (1, line.Length - 2);
+		                    if (line[0] == '"' && line[line.Length - 1] == '"') {
+								if (!firstLine && !str.EndsWith ("\\n")) {
+									str += "\n";
+								}
+		                        str += line.Substring (1, line.Length - 2);
+							}
 		                    else
 		                    {
 		                        if (ReadParam (line, "msgstr[", out dummy))
@@ -301,6 +297,7 @@ namespace MonoDevelop.Gettext
 		                        }
 		                        break;
 		                    }
+							firstLine = false;
 		                }
 		                mtranslations.Add (str);
 		            }

@@ -96,61 +96,48 @@ namespace MonoDevelop.Gettext
 		static string FormatStringForFile (string text)
 		{
 			StringBuilder sb = new StringBuilder ();
-			string[] textArr = text.Split ('\n');
-			for (int i = 0; i < textArr.Length; i++) {
-				sb.Append ('"');
-				for (int j = 0; j < textArr[i].Length; j++) {
-					if (textArr[i][j] == '\\') {
-						if (j + 1 < textArr[i].Length && textArr[i][j + 1] != 'n') {
-							sb.Append ("\\\\");
-							continue;
+			uint n_cnt = 0;
+			int len = text.Length;
+			sb.Append ('"');
+			int i = 1;
+			if (text.Length > 0 && text[0] != '\n') {
+				i = 0;
+			} else
+				n_cnt++;
+			for (; i < len; i++)
+			{
+				if (text[i] == '"') {
+					sb.Append ("\\\"");
+				} else if (text[i] == '\\') {
+					if (text[i + 1] == 'n') {
+						if (i < len - 2) {
+							n_cnt++;
+							sb.Append ("\\n\"\n\"");
+							i++;
+						} else {
+							sb.Append ("\\n");
+							break;
 						}
+					} else if (text[i + 1] == '"') {
+						sb.Append ("\\\"");
+						i++;
+					} else {
+						sb.Append ("\\\\");
 					}
-					sb.Append (textArr[i][j]);
+				} else if (text[i] == '\n') {
+					sb.Append ("\"\n\"");
+					n_cnt++;
+				} else {
+					sb.Append (text[i]);
 				}
-				sb.Append ('"');
-				if (i + 1 < textArr.Length)
-					sb.Append ('\n');
 			}
-			
-//			uint n_cnt = 0;
-//			int len = text.Length;
-//			sb.Append ('"');
-//			//s = new char[len + 16];
-//			// Scan the string up to len-2 because we don't want to account for the
-//			// very last \n on the line:
-//			//       "some\n string \n"
-//			//                      ^
-//			//                      |
-//			//                      \--- = len-2
-//			int i;
-//			if (text.Length > 0 && text[0] != '\n')
-//				sb.Append (text[0]);
-//			else
-//				n_cnt++;
-//			for (i = 1; i < len - 2; i++)
-//			{
-//				if (text[i] == '\\' && text[i + 1] == 'n')
-//				{
-//					n_cnt++;
-//					sb.Append ("\\n\"\n\"");
-//					i++;
-//				} else if (text[i] == '\n')
-//				{
-//					sb.Append ("\"\n\"");
-//					n_cnt++;
-//				} else
-//					sb.Append (text[i]);
-//			}
-//			// ...and add not yet processed characters to the string...
-//			for (; i < len; i++)
-//				sb.Append (text[i]);
-//
-//			// normalize, remove "\n\"\"" lines
-//			sb.Replace ("\n\"\"", String.Empty);
-//			if (n_cnt >= 1 && sb.Length > 0)
-//				return "\"\n\"" + sb.ToString ();
-//			else 
+			sb.Append ('"');
+
+			// normalize, remove "\n\"\"" lines
+			sb.Replace ("\n\"\"", String.Empty);
+			if (n_cnt >= 1 && sb.Length > 0)
+				return "\"\"\n" + sb.ToString ();
+			else 
 				return sb.ToString ();
 		}
 
