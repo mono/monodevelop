@@ -503,17 +503,13 @@ namespace CSharpBinding
 			string newIndent = string.Empty;
 			int cursor = Editor.CursorPosition;
 			
-			// Get more context but w/o changing our IndentEngine state
+			// Get context to the end of the line w/o changing the main engine's state
 			CSharpIndentEngine ctx = (CSharpIndentEngine) indentEngine.Clone ();
 			string line = Editor.GetLineText (ctx.LineNumber);
 			for (int i = ctx.LineOffset; i < line.Length; i++) {
 				ctx.Push (line[i]);
-				if (ctx.NeedsReindent)
-					break;
 			}
 			//System.Console.WriteLine("Re-indenting line '{0}'", line);
-
-			// Okay, we should have enough context now
 			
 			// Measure the current indent
 			int nlwsp = 0;

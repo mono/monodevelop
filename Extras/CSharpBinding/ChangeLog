@@ -1,5 +1,11 @@
 2007-10-25  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* Gui/CSharpTextEditorExtension.cs: Read context to end of line when
+	  reindenting. Fixes "Bug 324985 - operator '::' behaves like goto label
+	  in smart indentation".
+
+2007-10-25  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* Gui/CSharpTextEditorExtension.cs: If indent engine says line needs to be
 	  reindented, check it's as a result of an inserted character rather than
 	  just navigating around the code.
