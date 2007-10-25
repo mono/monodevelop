@@ -1,3 +1,8 @@
+2007-10-25  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Gui/CSharpTextEditorExtension.cs: Don't insert a tab if it's interpreted
+	  as a reindent command.
+
 2007-10-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CSharpBindingCompilerManager.cs: Make compilation work when the key file
