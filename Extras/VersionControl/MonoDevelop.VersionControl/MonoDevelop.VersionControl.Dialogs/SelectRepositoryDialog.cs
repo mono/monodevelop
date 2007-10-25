@@ -172,16 +172,17 @@ namespace MonoDevelop.VersionControl.Dialogs
 
 		protected virtual void OnButtonEditClicked(object sender, System.EventArgs e)
 		{
-			try {
 			Repository rep = GetSelectedRepository ();
 			if (rep != null) {
-				EditRepositoryDialog dlg = new EditRepositoryDialog (rep);
+				Repository repCopy = rep.Clone ();
+				EditRepositoryDialog dlg = new EditRepositoryDialog (repCopy);
 				try {
 					if (dlg.Run () != (int) Gtk.ResponseType.Ok) {
 						VersionControlService.ResetConfiguration ();
 						return;
 					}
-
+					
+					rep.CopyConfigurationFrom (repCopy);
 					VersionControlService.SaveConfiguration ();
 
 					TreeIter iter;
@@ -190,15 +191,19 @@ namespace MonoDevelop.VersionControl.Dialogs
 						// Update values
 						store.SetValue (iter, RepoNameCol, rep.Name);
 						store.SetValue (iter, VcsName, rep.VersionControlSystem.Name);
-						store.SetValue (iter, FilledCol, false);
+						bool filled = (bool) store.GetValue (iter, FilledCol);
+						if (filled && repoTree.GetRowExpanded (store.GetPath (iter))) {
+							FullRepoNode (rep, iter);
+							repoTree.ExpandRow (store.GetPath (iter), false);
+						} else if (filled) {
+							store.SetValue (iter, FilledCol, false);
+							store.AppendValues (iter, null, "", "", true, "vcs-repository");
+						}
 					}
 					UpdateRepoDescription ();
 				} finally {
 					dlg.Destroy ();
 				}
-			}
-			} catch (Exception ex) {
-				Runtime.LoggingService.Error (ex);
 			}
 		}
 
@@ -219,20 +224,26 @@ namespace MonoDevelop.VersionControl.Dialogs
 			if (!filled) {
 				store.SetValue (args.Iter, FilledCol, true);
 				
-				// Remove the dummy child
-				TreeIter iter, citer;
-				store.IterChildren (out iter, args.Iter);
-				store.Remove (ref iter);
-				citer = store.AppendValues (args.Iter, null, GettextCatalog.GetString ("Loading..."), "", true);
-
-				loadingRepos.Add (FindRootRepo (args.Iter));
-				UpdateControls ();
-
-				Thread t = new Thread (delegate () { LoadRepoInfo (parent, args.Iter, citer); });
-				t.IsBackground = true;
-				t.Start ();
+				FullRepoNode (parent, args.Iter);
 			} else
 				args.RetVal = false;
+		}
+		
+		void FullRepoNode (Repository parent, TreeIter repoIter)
+		{
+			// Remove the dummy child
+			TreeIter iter, citer;
+			while (store.IterChildren (out iter, repoIter))
+				store.Remove (ref iter);
+			
+			citer = store.AppendValues (repoIter, null, GettextCatalog.GetString ("Loading..."), "", true);
+
+			loadingRepos.Add (FindRootRepo (repoIter));
+			UpdateControls ();
+
+			Thread t = new Thread (delegate () { LoadRepoInfo (parent, repoIter, citer); });
+			t.IsBackground = true;
+			t.Start ();
 		}
 			
 		Repository FindRootRepo (TreeIter iter)

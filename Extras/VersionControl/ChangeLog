@@ -1,5 +1,14 @@
 2007-10-25  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl/Repository.cs,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl/UrlBasedRepository.cs:
+	  Make a copy of the repository before editing, and only update the
+	  original copy if the user clicks on OK. Fixes bug #336155.
+	* MonoDevelop.VersionControl/gtk-gui/gui.stetic: Flush
+
+2007-10-25  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.VersionControl/overlay_added.png,
 	  MonoDevelop.VersionControl/overlay_conflicted.png,
 	  MonoDevelop.VersionControl/overlay_controled.png,

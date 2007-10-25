@@ -21,6 +21,19 @@ namespace MonoDevelop.VersionControl
 		{
 		}
 		
+		public override void CopyConfigurationFrom (Repository other)
+		{
+			base.CopyConfigurationFrom (other);
+			
+			UrlBasedRepository ot = (UrlBasedRepository) other;
+			dir = ot.dir;
+			user = ot.user;
+			pass = ot.pass;
+			port = ot.port;
+			server = ot.server;
+			method = ot.method;
+		}
+
 		public override string LocationDescription {
 			get { return Url; }
 		}

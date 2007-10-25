@@ -29,6 +29,20 @@ namespace MonoDevelop.VersionControl
 			VersionControlSystem = vcs;
 		}
 		
+		public virtual void CopyConfigurationFrom (Repository other)
+		{
+			name = other.name;
+			vcsName = other.vcsName;
+			vcs = other.vcs;
+		}
+		
+		public Repository Clone ()
+		{
+			Repository res = VersionControlSystem.CreateRepositoryInstance ();
+			res.CopyConfigurationFrom (this);
+			return res;
+		}
+		
 		// Display name of the repository
 		[ItemProperty]
 		public string Name	{
