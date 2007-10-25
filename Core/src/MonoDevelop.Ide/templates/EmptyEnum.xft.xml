@@ -3,7 +3,7 @@
 	
 	<TemplateConfiguration>
 		<_Name>Empty Enumeration</_Name>
-		<Icon>md-empty-file-icon</Icon>
+		<Icon>md-enum-file</Icon>
 		<Category>General</Category>
 		<LanguageName>*</LanguageName>
 		<_Description>Creates an empty enum.</_Description>

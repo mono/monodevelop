@@ -3,7 +3,7 @@
 	
 	<TemplateConfiguration>
 		<_Name>Empty Interface</_Name>
-		<Icon>md-empty-file-icon</Icon>
+		<Icon>md-interface-file</Icon>
 		<Category>General</Category>
 		<LanguageName>*</LanguageName>
 		<_Description>Creates an empty interface.</_Description>

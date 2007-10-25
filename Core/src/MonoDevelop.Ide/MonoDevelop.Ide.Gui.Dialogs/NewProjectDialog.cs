@@ -174,7 +174,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				TemplateView.Clear ();
 				foreach (TemplateItem item in ((Category)catStore.GetValue (iter, 1)).Templates) {
 					string icon = item.Template.Icon;
-					if (icon == null) icon = "md-empty-project-icon";
+					if (icon == null) icon = "md-project";
 					icon = ResourceService.GetStockId (icon);
 					TemplateView.AddIcon (icon, Gtk.IconSize.Dnd, item.Name, item.Template);
 				}

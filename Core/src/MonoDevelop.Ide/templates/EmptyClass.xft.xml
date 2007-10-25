@@ -3,7 +3,7 @@
 	
 	<TemplateConfiguration>
 		<_Name>Empty Class</_Name>
-		<Icon>md-empty-file-icon</Icon>
+		<Icon>md-class-file</Icon>
 		<Category>General</Category>
 		<LanguageName>*</LanguageName>
 		<_Description>Creates an empty class.</_Description>
