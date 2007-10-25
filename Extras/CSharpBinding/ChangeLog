@@ -1,5 +1,10 @@
 2007-10-25  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* CSharpBindingCompilerManager.cs: Make compilation work when the key file
+	  contains white spaces. Fixes bug #336107.
+
+2007-10-25  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* CSharpBinding.mdp, icons/C#.File.EmptyFile, icons/C#.File.Form,
 	  icons/C#.File.FullFile, icons/C#.File.NewClass, icons/C#.File.WebFile,
 	  icons/C#.Project.FullProject, icons/C#.Project.ServiceProject,

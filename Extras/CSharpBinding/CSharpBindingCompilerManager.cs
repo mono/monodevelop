@@ -85,7 +85,7 @@ namespace CSharpBinding
 				
 			if (configuration.SignAssembly) {
 				if (File.Exists (configuration.AssemblyKeyFile))
-					writer.WriteLine("/keyfile:" + configuration.AssemblyKeyFile);
+					writer.WriteLine("\"/keyfile:" + configuration.AssemblyKeyFile + '"');
 			}
 			
 			if (configuration.DebugMode) {
