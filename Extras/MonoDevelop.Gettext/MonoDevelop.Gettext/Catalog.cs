@@ -108,13 +108,13 @@ namespace MonoDevelop.Gettext
 			{
 				if (text[i] == '"') {
 					sb.Append ("\\\"");
-				} else if (text[i] == '\\') {
+				} else if (text[i] == '\\') {
 					if (text[i + 1] == 'n') {
 						if (i < len - 2) {
 							n_cnt++;
 							sb.Append ("\\n\"\n\"");
 							i++;
-						} else {
+						} else {
 							sb.Append ("\\n");
 							break;
 						}

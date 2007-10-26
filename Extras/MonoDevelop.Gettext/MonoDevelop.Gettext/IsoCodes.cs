@@ -44,7 +44,7 @@ namespace MonoDevelop.Gettext
 			}
 			
 			public string Name {
-				get { return name; }
+				get { return name; }
 			}
 			
 			public IsoCode (string iso, string name)
