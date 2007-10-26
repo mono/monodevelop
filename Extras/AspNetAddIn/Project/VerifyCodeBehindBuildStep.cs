@@ -81,8 +81,8 @@ namespace AspNetAddIn
 							cbw = new CodeBehindWarning (eife);
 						else
 							cbw = new CodeBehindWarning (
-								GettextCatalog.GetString ("Parser failed with error {1}. CodeBehind members for this file will not be added.", e.ToString ()),
-					  		  file.FilePath
+								GettextCatalog.GetString ("Parser failed with error {0}. CodeBehind members for this file will not be added.", e.ToString ()),
+					  			file.FilePath
 							);
 						monitor.Log.WriteLine (cbw.ToString ());
 						errors.Add (cbw);
@@ -106,7 +106,7 @@ namespace AspNetAddIn
 					} catch (Exception e) {
 						CodeBehindWarning cbw = new CodeBehindWarning (
 							GettextCatalog.GetString ("CodeBehind member generation failed with error {0}. Further CodeBehind members for this file will not be added.", e.ToString ()),
-						    file.FilePath
+							file.FilePath
 						);
 						monitor.Log.WriteLine (cbw.ToString ());
 						errors.Add (cbw);
