@@ -170,7 +170,7 @@ namespace MonoDevelop.Autotools {
         private Gtk.Label label4;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Autotools.MakefileOptionPanelWidget
             Stetic.BinContainer.Attach(this);
             this.Events = ((Gdk.EventMask)(256));
@@ -435,6 +435,7 @@ namespace MonoDevelop.Autotools {
             this.label1.Name = "label1";
             this.label1.LabelProp = Mono.Unix.Catalog.GetString("Makefile");
             this.notebook1.SetTabLabel(this.vbox1, this.label1);
+            this.label1.ShowAll();
             // Container child notebook1.Gtk.Notebook+NotebookChild
             this.vbox2 = new Gtk.VBox();
             this.vbox2.Name = "vbox2";
@@ -671,6 +672,7 @@ namespace MonoDevelop.Autotools {
             this.label2.Name = "label2";
             this.label2.LabelProp = Mono.Unix.Catalog.GetString("Files");
             this.notebook1.SetTabLabel(this.vbox2, this.label2);
+            this.label2.ShowAll();
             // Container child notebook1.Gtk.Notebook+NotebookChild
             this.vbox4 = new Gtk.VBox();
             this.vbox4.Name = "vbox4";
@@ -905,6 +907,7 @@ namespace MonoDevelop.Autotools {
             this.label3.Name = "label3";
             this.label3.LabelProp = Mono.Unix.Catalog.GetString("References");
             this.notebook1.SetTabLabel(this.vbox4, this.label3);
+            this.label3.ShowAll();
             // Container child notebook1.Gtk.Notebook+NotebookChild
             this.vbox3 = new Gtk.VBox();
             this.vbox3.Name = "vbox3";
@@ -1019,6 +1022,7 @@ namespace MonoDevelop.Autotools {
             this.label4.Name = "label4";
             this.label4.LabelProp = Mono.Unix.Catalog.GetString("Messages Regex");
             this.notebook1.SetTabLabel(this.vbox3, this.label4);
+            this.label4.ShowAll();
             this.Add(this.notebook1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

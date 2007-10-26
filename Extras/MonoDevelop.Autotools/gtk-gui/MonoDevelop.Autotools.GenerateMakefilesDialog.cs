@@ -42,7 +42,7 @@ namespace MonoDevelop.Autotools {
         private Gtk.Button buttonOk;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Autotools.GenerateMakefilesDialog
             this.Name = "MonoDevelop.Autotools.GenerateMakefilesDialog";
             this.Title = Mono.Unix.Catalog.GetString("Generate Makefiles");
@@ -76,7 +76,6 @@ namespace MonoDevelop.Autotools {
             this.rbSimple = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("Simple"));
             this.rbSimple.CanFocus = true;
             this.rbSimple.Name = "rbSimple";
-            this.rbSimple.Active = true;
             this.rbSimple.DrawIndicator = true;
             this.rbSimple.UseUnderline = true;
             this.rbSimple.Group = new GLib.SList(System.IntPtr.Zero);
@@ -85,8 +84,6 @@ namespace MonoDevelop.Autotools {
             this.label4 = new Gtk.Label();
             this.label4.WidthRequest = 550;
             this.label4.Name = "label4";
-            this.label4.Xalign = 0.25F;
-            this.label4.Yalign = 0.67F;
             this.label4.LabelProp = Mono.Unix.Catalog.GetString("<b>Simple Makefile</b>\nGenerates set of Makefiles with the most common targets, and a configuration script that does a basic check of package dependencies.");
             this.label4.UseMarkup = true;
             this.label4.Wrap = true;

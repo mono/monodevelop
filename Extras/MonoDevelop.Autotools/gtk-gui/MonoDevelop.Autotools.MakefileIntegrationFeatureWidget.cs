@@ -14,7 +14,7 @@ namespace MonoDevelop.Autotools {
     public partial class MakefileIntegrationFeatureWidget {
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Autotools.MakefileIntegrationFeatureWidget
             Stetic.BinContainer.Attach(this);
             this.Name = "MonoDevelop.Autotools.MakefileIntegrationFeatureWidget";

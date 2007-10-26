@@ -1,3 +1,14 @@
+2007-10-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.Autotools.MakefileIntegrationFeatureWidget.cs,
+	  gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs,
+	  gtk-gui/gui.stetic, TarballBuilderEditorWidget.cs: Cosmetic fixes in the
+	  tarball options dialog. Use a radio button instead of a checkbox to
+	  choose between simple and autotools based makefile.
+
 2007-10-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MakefileIntegrationFeature.cs: Track api changes. Add description
