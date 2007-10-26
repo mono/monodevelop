@@ -1,3 +1,12 @@
+2007-10-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment.Linux.addin.xml, MonoDevelop.Deployment.Linux.mdp,
+	  MonoDevelop.Deployment.Linux/LinuxDeploymentSetup.cs,
+	  MonoDevelop.Deployment.Linux/LinuxDeployData.cs, app.desktop.xft.xml,
+	  Makefile.am: Added new file template for creating .desktop files. When a
+	  .desktop file is added to a project, set the deploy options so it is
+	  deployed to the .desktop app folder.
+
 2007-10-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment.Linux/LinuxDeployExtension.cs: Use the project

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<Template Originator="Lluis Sanchez" Created="3/09/2001" LastModified="3/09/2001">
+	
+	<TemplateConfiguration>
+		<_Name>Desktop Application Launcher</_Name>
+		<Icon>md-gui-file</Icon>
+		<Category>Deployment</Category>
+		<_Description>Creates a Desktop Entry file.</_Description>
+	</TemplateConfiguration>
+	
+	<TemplateFiles>
+<File DefaultExtension=".desktop" DefaultName="app">
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+Name=${Name}
+Exec=
+Terminal=false
+</File>
+	</TemplateFiles>
+</Template>

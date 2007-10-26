@@ -82,6 +82,12 @@ namespace MonoDevelop.Deployment.Linux
 					return scriptName;
 				return entry.Name.ToLower ();
 			}
+			set {
+				if (packageName != value) {
+					packageName = value;
+					UpdateEntry ();
+				}
+			}
 		}
 		
 		public bool GenerateScript {

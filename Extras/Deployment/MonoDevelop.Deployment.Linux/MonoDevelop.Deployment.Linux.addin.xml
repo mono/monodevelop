@@ -78,4 +78,12 @@
 	<Extension path = "/MonoDevelop/Ide/ProjectFeatures">
 		<Class class = "MonoDevelop.Deployment.Linux.LinuxIntegrationProjectFeature" />
 	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/FileTemplates">
+		<FileTemplate resource = "app.desktop.xft.xml"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
+		<Class class="MonoDevelop.Deployment.Linux.LinuxDeploymentSetup" />
+	</Extension>
 </Addin>
