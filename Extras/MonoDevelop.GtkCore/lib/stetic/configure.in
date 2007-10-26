@@ -1,0 +1,39 @@
+AC_PREREQ(2.53)
+AC_INIT(stetic, 0.1.0)
+AC_CONFIG_SRCDIR(stetic/Stetic.cs)
+AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
+
+AM_MAINTAINER_MODE
+AC_PROG_MAKE_SET
+
+AC_DISABLE_STATIC
+
+MONO_REQUIRED_VERSION=1.1.2
+PKG_CHECK_MODULES(MONO, mono >= $MONO_REQUIRED_VERSION)
+
+AC_PATH_PROG(MONO, mono, no)
+AC_PATH_PROG(GMCS, gmcs, no)
+AC_PATH_PROG(MCS, mcs, no)
+
+CS="C#"
+if test "$MCS" = "no" ; then
+	AC_MSG_ERROR([No $CS compiler found])
+fi
+
+AC_SUBST(MONO)
+AC_SUBST(MCS)
+
+PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.4.0)
+AC_SUBST(GTK_CFLAGS)
+AC_SUBST(GTK_LIBS)
+
+PKG_CHECK_MODULES(STETIC, gtk-sharp-2.0 >= 2.3.91 glade-sharp-2.0 >= 2.4.0 gconf-sharp-2.0 >= 2.4.0 gnome-sharp-2.0 >= 2.4.0)
+AC_SUBST(STETIC_LIBS)
+
+AC_OUTPUT([
+Makefile
+libstetic/Makefile
+libsteticui/Makefile
+stetic/Makefile
+stetic.pc
+])
