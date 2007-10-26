@@ -1,3 +1,10 @@
+2007-09-22  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* monodevelop.in: Add PKG_CONFIG_PATH values for lib64 if it exists, 
+	  so that packages will be found on openSUSE 10.3 x86_64.
+	* Makefile.am: Likewise. Also modify all of the run targets to set 
+	  PKG_CONFIG_PATH and other variables as required.
+
 2007-10-09  Ankit Jain  <jankit@novell.com>
 
 	* monodevelop.in: Discard wrapper script args before invoking

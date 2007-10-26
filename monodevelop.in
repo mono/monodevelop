@@ -60,7 +60,10 @@ else
 	export LD_LIBRARY_PATH=$MOZILLA_HOME
 fi
 
+### SYNCH BLOCK: any changes to this block should be kept in sync with the one in Makefile.am
 MD_PKG_CONFIG_PATH=@gtksharp_prefix@/lib/pkgconfig/:/usr/lib/pkgconfig/:/usr/local/lib/pkgconfig/:/usr/share/pkgconfig/:/usr/local/share/pkgconfig/
+if test -d /usr/lib64; then MD_PKG_CONFIG_PATH=$MD_PKG_CONFIG_PATH:/usr/lib64/pkgconfig/:/usr/local/lib64/pkgconfig/; fi
+### END BLOCK
 
 if [ -n $PKG_CONFIG_PATH ]; then
 	export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$MD_PKG_CONFIG_PATH

@@ -71,10 +71,20 @@ apidocs:
 	cd docs/web/sources && mdassembler --out monodevelop-reference --ecma ../../api
 #	cd docs/apiguide && mdassembler --out monodevelop-api-guide --xhtml toc.xhtml && mv monodevelop-api-guide.zip ../web/sources
 
+### SYNCH BLOCK: any changes to this line should be kept in sync with the corresponding block in Makefile.am
+MD_PKG_CONFIG_PATH=$(gtksharp_prefix)/lib/pkgconfig/:/usr/lib/pkgconfig/:/usr/local/lib/pkgconfig/:/usr/share/pkgconfig/:/usr/local/share/pkgconfig/$(shell if test -d /usr/lib64; then echo ":/usr/lib64/pkgconfig/:/usr/local/lib64/pkgconfig/"; fi)
+### END BLOCK
+
+MD_LAUNCH_SETUP= \
+	cd build/bin && \
+	MONO_ADDINS_REGISTRY=. MOZILLA_FIVE_HOME=$(MOZILLA_HOME) \
+	LD_LIBRARY_PATH=`echo "$(LD_LIBRARY_PATH):$(MOZILLA_HOME)" | sed 's/^://g'` \
+	PKG_CONFIG_PATH=`echo "$(PKG_CONFIG_PATH):$(MD_PKG_CONFIG_PATH)" | sed 's/^://g'`
+
 run: runmd
 
 runmd: $(PROGRAM)
-	cd build/bin && MONO_ADDINS_REGISTRY=. MOZILLA_FIVE_HOME=$(MOZILLA_HOME) LD_LIBRARY_PATH=`echo "$(LD_LIBRARY_PATH):$(MOZILLA_HOME)" | sed 's/^://g'` $(RUNTIME) --debug MonoDevelop.exe
+	$(MD_LAUNCH_SETUP) $(RUNTIME) --debug MonoDevelop.exe
 
 pad: $(MONOPAD)
 
@@ -82,10 +92,13 @@ runpad: $(MONOPAD)
 	cd build/bin && mono MonoPad.exe
 
 run-profile: $(PROGRAM)
-	cd build/bin && mono -O=inline --profile MonoDevelop.exe
+	$(MD_LAUNCH_SETUP) $(RUNTIME) -O=inline --profile MonoDevelop.exe
+
+run-profile-stat: $(PROGRAM)
+	$(MD_LAUNCH_SETUP) $(RUNTIME) --profile=default:stat MonoDevelop.exe
 
 run-profile-heap: $(PROGRAM)
-	cd build/bin && mono -O=inline --profile=heap:heaplog MonoDevelop.exe
+	$(MD_LAUNCH_SETUP) $(RUNTIME) -O=inline --profile=heap:heaplog MonoDevelop.exe
 
 profile-pad: $(MONOPAD)
 	cd build/bin && mono -O=inline --profile MonoPad.exe
