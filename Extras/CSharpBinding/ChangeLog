@@ -1,3 +1,12 @@
+2007-10-26  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Gui/CSharpTextEditorExtension.cs: Avoid calling
+	  expressionFinder.FindExpression on every keystroke, as it calls
+	  FilterComments, which is very expensive (recorded 6% in statistical
+	  profiling, the most time spent in any managed non-runtime method). It's
+	  only called when the keystroke is completable -- not ideal, but an
+	  improvement.
+
 2007-10-25  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Gui/CSharpTextEditorExtension.cs: Removed GenerateDocComments' dependency

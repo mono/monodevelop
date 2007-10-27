@@ -184,7 +184,7 @@ namespace CSharpBinding
 		}
 		
 		public override bool KeyPress (Gdk.Key key, Gdk.ModifierType modifier)
-		{			
+		{
 			if ((char)(uint)key == ',') {
 				// Parameter completion
 				RunParameterCompletionCommand ();
@@ -220,7 +220,6 @@ namespace CSharpBinding
 					DoReSmartIndent ();
 				return retval;
 			}
-			
 			return base.KeyPress (key, modifier);
 		}
 		
@@ -749,13 +748,24 @@ namespace CSharpBinding
 			
 			// Code completion of classes, members and namespaces
 			
+			//FindExpression call is *very* expensive, so try to avoid reaching it unless we have a handleable character
+			if (charTyped == ' ') {
+				char previousChar = Editor.GetCharAt (ctx.TriggerOffset - 2);
+				if (char.IsWhiteSpace (previousChar))
+					return null;
+			} else if (charTyped != '(' && charTyped != '.') {
+				return null;
+			}
+			
 			string expression = expressionFinder.FindExpression (Editor.GetText (0, ctx.TriggerOffset), ctx.TriggerOffset - 2).Expression;
 			if (expression == null)
 				return null;
 			IParserContext parserContext = GetParserContext ();
 			CodeCompletionDataProvider completionProvider = new CodeCompletionDataProvider (parserContext, GetAmbience ());
 			
-			if (charTyped == '(' && expression.Trim () == "typeof") {
+			if (charTyped == '(') {
+				if (expression.Trim () != "typeof")
+					return null;
 				string[] namespaces = parserContext.GetNamespaceList ("", true, true);
 				Resolver res = new Resolver (parserContext);				
 				LanguageItemCollection items = res.IsAsResolve ("System.Object", caretLineNumber, caretColumn, FileName, Editor.Text, false);
@@ -763,9 +773,6 @@ namespace CSharpBinding
 				completionProvider.AddResolveResults (items, true, resolver);
 				return completionProvider;
 			}
-			
-			if (charTyped != '.' && charTyped != ' ')
-				return null;
 
 			string ns;
 			if (IsInUsing (expression, ctx.TriggerOffset, out ns)) {
