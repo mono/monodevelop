@@ -124,6 +124,7 @@ namespace MonoDevelop.Gettext {
             this.frame1 = new Gtk.Frame();
             this.frame1.Name = "frame1";
             this.frame1.ShadowType = ((Gtk.ShadowType)(0));
+            this.frame1.LabelXalign = 0F;
             // Container child frame1.Gtk.Container+ContainerChild
             this.GtkAlignment2 = new Gtk.Alignment(0F, 0F, 1F, 1F);
             this.GtkAlignment2.Name = "GtkAlignment2";
@@ -195,6 +196,7 @@ namespace MonoDevelop.Gettext {
             this.frame2 = new Gtk.Frame();
             this.frame2.Name = "frame2";
             this.frame2.ShadowType = ((Gtk.ShadowType)(0));
+            this.frame2.LabelXalign = 0F;
             // Container child frame2.Gtk.Container+ContainerChild
             this.GtkAlignment3 = new Gtk.Alignment(0F, 0F, 1F, 1F);
             this.GtkAlignment3.Name = "GtkAlignment3";
@@ -217,6 +219,7 @@ namespace MonoDevelop.Gettext {
             this.frame3 = new Gtk.Frame();
             this.frame3.Name = "frame3";
             this.frame3.ShadowType = ((Gtk.ShadowType)(1));
+            this.frame3.LabelXalign = 0F;
             // Container child frame3.Gtk.Container+ContainerChild
             this.GtkAlignment4 = new Gtk.Alignment(0F, 0F, 1F, 1F);
             this.GtkAlignment4.Name = "GtkAlignment4";
@@ -246,6 +249,8 @@ namespace MonoDevelop.Gettext {
             w18.Expand = false;
             w18.Fill = false;
             this.notebook1.Add(this.vbox2);
+            Gtk.Notebook.NotebookChild w19 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.vbox2]));
+            w19.TabExpand = false;
             // Notebook tab
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
@@ -269,6 +274,7 @@ namespace MonoDevelop.Gettext {
             this.notebook1.Add(this.scrolledwindow1);
             Gtk.Notebook.NotebookChild w21 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.scrolledwindow1]));
             w21.Position = 1;
+            w21.TabExpand = false;
             // Notebook tab
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";

@@ -1,5 +1,15 @@
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* gtk-gui/MonoDevelop.Gettext.GettextFeatureWidget.cs,
+	  gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs,
+	  gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs,
+	  gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs: Updated
+	  project icons. Use the base project icon with an overlay to show the
+	  type.
+
+2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Gettext.addin.xml: Track changes in the Icon extension node.
 
 2007-10-25  Mike Krüger <mkrueger@novell.com> 
