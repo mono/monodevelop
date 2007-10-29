@@ -31,6 +31,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		Gtk.HBox hbox;
 		ToolButton buttonStop;
 		ToggleToolButton buttonPin;
+		TextMark endMark;
 
 		private static Gtk.Tooltips tips = new Gtk.Tooltips ();
 		
@@ -101,6 +102,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 			tag.LeftMargin = 10;
 			buffer.TagTable.Add (tag);
 			tags.Add (tag);
+			
+			endMark = buffer.CreateMark ("end-mark", buffer.EndIter, false);
 
 			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (OnCombineOpen));
 			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (OnCombineClosed));
@@ -241,8 +244,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 			else
 				buffer.InsertWithTags (ref it, text, tag);
 			
-			if (scrollToEnd && buffer.EndIter.StartsLine ())
-				textEditorControl.ScrollToIter (buffer.EndIter, 0, false, 0, 0);
+			if (scrollToEnd) {
+				it.LineOffset = 0;
+				buffer.MoveMark (endMark, it);
+				textEditorControl.ScrollToMark (endMark, 0, false, 0, 0);
+			}
 		}
 		
 		void Indent ()
