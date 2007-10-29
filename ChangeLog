@@ -1,3 +1,7 @@
+2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* configure.in: Bump MD version.
+
 2007-09-22  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* monodevelop.in: Add PKG_CONFIG_PATH values for lib64 if it exists, 

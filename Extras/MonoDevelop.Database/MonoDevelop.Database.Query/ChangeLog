@@ -1,3 +1,7 @@
+2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Database.Query.addin.xml: Bump MD version.
+
 2007-10-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* QueryResultView.cs, SqlQueryView.cs: Destroy the view widget when the view

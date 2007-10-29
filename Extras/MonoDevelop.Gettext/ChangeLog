@@ -1,5 +1,9 @@
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Gettext.addin.xml: Bump MD version.
+
+2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Gettext/TranslationProject.cs: Set correct target directory
 	  path.
 

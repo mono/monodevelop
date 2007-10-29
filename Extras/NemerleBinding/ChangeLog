@@ -1,5 +1,9 @@
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* NemerleBinding.addin.xml: Bump MD version.
+
+2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* NemerleBinding.addin.xml: Track changes in the Icon extension node.
 
 2007-10-23  Lluis Sanchez Gual <lluis@novell.com> 

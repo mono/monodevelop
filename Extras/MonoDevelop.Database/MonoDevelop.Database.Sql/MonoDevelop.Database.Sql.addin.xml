@@ -5,7 +5,7 @@
 	copyright	= "MIT X11"
 	url		= "http://www.monodevelop.com"
 	description	= "Database Module"
-	version		= "0.16.0">
+	version		= "0.17.0">
     
 	<Runtime>
 		<Import assembly="MonoDevelop.Database.Sql.dll"/>

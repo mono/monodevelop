@@ -1,3 +1,7 @@
+2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AspNetAddIn.addin.xml: Bump MD version.
+
 2007-10-26  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Project/VerifyCodeBehindBuildStep.cs: Fix string formatting index in a

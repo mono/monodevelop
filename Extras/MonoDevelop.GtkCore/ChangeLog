@@ -1,5 +1,9 @@
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.GtkCore.addin.xml: Bump MD version.
+
+2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: Fix nullref. Happens
 	  when removing a project from a solution while one of the windows of that
 	  project is open.

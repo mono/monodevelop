@@ -1,5 +1,9 @@
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* BooBinding.addin.xml: Bump MD version.
+
+2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* BooShell/BooShell.boo: Don't try to abort the shell thread if it is
 	  already stopped.
 	* BooShell/BooShell.mdp: Update.

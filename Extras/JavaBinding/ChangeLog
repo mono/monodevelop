@@ -1,5 +1,9 @@
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* JavaBinding.addin.xml: Bump MD version.
+
+2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* JavaBinding.addin.xml: Track changes in the Icon extension node.
 
 2007-10-25  Lluis Sanchez Gual <lluis@novell.com> 

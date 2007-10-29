@@ -1,3 +1,7 @@
+2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.addin.xml: Bump MD version.
+
 2007-10-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/ProjectFileCollection.cs: ProjectFile.Name is now a

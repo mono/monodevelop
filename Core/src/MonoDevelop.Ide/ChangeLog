@@ -1,5 +1,9 @@
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.addin.xml: Bump MD version.
+
+2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs: ScrollToIter is based on
 	  heights computed in an idle handler, so it doesn't work here because it
 	  is called before the height computations. Use ScrollToMark instead,
