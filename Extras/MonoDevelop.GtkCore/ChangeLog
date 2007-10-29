@@ -1,3 +1,9 @@
+2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: Fix nullref. Happens
+	  when removing a project from a solution while one of the windows of that
+	  project is open.
+
 2007-10-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* templates/ActionGroup.xft.xml, templates/ActionGroupPartial.xft.xml,

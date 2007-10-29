@@ -396,7 +396,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		bool IToolboxConsumer.CustomFilterSupports (ItemToolboxNode item)
 		{
 			ComponentToolboxNode cnode = item as ComponentToolboxNode;
-			if (cnode != null) {
+			if (cnode != null && gproject.SteticProject != null) {
 				if (cnode.GtkVersion == null || Mono.Addins.Addin.CompareVersions (gproject.SteticProject.TargetGtkVersion, cnode.GtkVersion) <= 0)
 					return true;
 			}
