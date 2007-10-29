@@ -182,7 +182,8 @@ class BooShell (RemoteProcessObject):
 			Monitor.Exit (_commandQueue)
 	
 	def Dispose ():
-		_thread.Abort ()
+		if _thread.IsAlive:
+			_thread.Abort ()
 		super ()
 
 public enum ShellCommandType:

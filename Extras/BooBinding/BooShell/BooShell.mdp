@@ -14,7 +14,7 @@
     </Configuration>
   </Configurations>
   <Contents>
-    <File name="./BooShell.boo" subtype="Code" buildaction="Compile" />
+    <File name="BooShell.boo" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />
