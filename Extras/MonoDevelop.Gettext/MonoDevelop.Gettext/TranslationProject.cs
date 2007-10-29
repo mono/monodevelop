@@ -340,9 +340,10 @@ namespace MonoDevelop.Gettext
 			TranslationProjectConfiguration config = (TranslationProjectConfiguration)this.ActiveConfiguration;
 			foreach (Translation translation in this.Translations) {
 				string poFileName  = GetFileName (translation);
-				string moDirectory = Path.Combine (translation.IsoCode, "LC_MESSAGES");
+				string moDirectory = Path.Combine ("locale", translation.IsoCode);
+				moDirectory = Path.Combine (moDirectory, "LC_MESSAGES");
 				string moFileName  = Path.Combine (moDirectory, config.PackageName + ".mo");
-				result.Add (new DeployFile (this, poFileName, moFileName)); 
+				result.Add (new DeployFile (this, poFileName, moFileName, TargetDirectory.CommonApplicationDataRoot)); 
 			}
 			return result;
 		}
