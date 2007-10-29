@@ -58,12 +58,8 @@
   </Extension>
 
   <Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
-    <Icon id = "NemerlePrj"
-          language = "Nemerle"
-          resource = "res:Nemerle.ProjectIcon"/>
-    <Icon id = "NemerleFile"
-          extensions = ".n"
-          resource = "res:Nemerle.FileIcon"/>
+    <Icon language = "Nemerle" icon = "res:Nemerle.ProjectIcon"/>
+    <Icon extensions = ".n" icon = "res:Nemerle.FileIcon"/>
   </Extension>
 
   <Extension path = "/MonoDevelop/ProjectModel/LanguageBindings">

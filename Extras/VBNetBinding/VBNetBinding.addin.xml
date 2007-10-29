@@ -64,12 +64,8 @@
 
 
   <Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
-    <Icon id = "VBPrj"
-          language = "VBNet"
-          resource = "res:VB.ProjectIcon"/>
-    <Icon id = "VBFile"
-          extensions = ".vb"
-          resource = "res:VB.FileIcon"/>
+    <Icon language = "VBNet" icon = "res:VB.ProjectIcon"/>
+    <Icon extensions = ".vb" icon = "res:VB.FileIcon"/>
   </Extension>
 	
 	<!-- <Extension path = "/AddIns/DefaultTextEditor/Formatter">  

@@ -103,28 +103,9 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
-		<!-- C# -->
-		<Icon id         = "C#Prj"
-		      language   = "C#"
-		      resource   = "res:C#.ProjectIcon"/>
-
-		<Icon id         = "C#File"
-		      extensions = ".cs"
-		      resource   = "res:C#.FileIcon"/>
-		
-		<!-- Resources -->
-		<Icon id         = "ResourceFileIcon"
-		      extensions = ".resources,.resx"
-		      resource   = "md-resource-file-icon" />
-		<!-- XML -->
-		<Icon id         = "XmlFileIcon"
-		      extensions = ".xml"
-		      resource   = "md-file-xml-icon" />
-		<!-- TextFiles -->
-		<Icon id         = "TextFileIcon"
-		      extensions = ".txt,.doc"
-		      resource   = "md-text-file-icon"/>
-
+		<Icon language = "C#" icon = "res:C#.ProjectIcon"/>
+		<Icon extensions = ".cs" icon = "res:C#.FileIcon"/>
+		<Icon extensions = ".resources,.resx" icon = "md-resource-file-icon" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/LanguageBindings">

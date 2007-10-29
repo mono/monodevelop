@@ -21,7 +21,7 @@ namespace MonoDevelop.Projects.Gui
 		[NodeAttribute("language", "Name of the language represented by this icon. Optional.")]
 		string language  = null;
 		
-		[NodeAttribute("resource", "Resource name.")]
+		[NodeAttribute("icon", "Icon or resource name.")]
 		string resource  = null;
 		
 		[NodeAttribute("extensions", "File extensions represented by this icon. Optional.")]

@@ -65,18 +65,9 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
-    	<Icon
-    		id = "CHeaderFile"
-			extensions = ".h"
-			resource = "res:text-x-chdr.16x16.png"/>
-		<Icon
-    		id = "CSourceFile"
-			extensions = ".c"
-			resource = "res:text-x-csrc.16x16.png"/>
-		<Icon
-    		id = "CppSourceFile"
-			extensions = ".cpp,.cxx,.c++"
-			resource = "res:text-x-c++src.16x16.png"/>
+    	<Icon extensions = ".h" icon = "res:text-x-chdr.16x16.png"/>
+		<Icon extensions = ".c" icon = "res:text-x-csrc.16x16.png"/>
+		<Icon extensions = ".cpp,.cxx,.c++" icon = "res:text-x-c++src.16x16.png"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">

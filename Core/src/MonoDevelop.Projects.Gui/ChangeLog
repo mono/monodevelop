@@ -1,3 +1,9 @@
+2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml: Register some basic file type icons.
+	* MonoDevelop.Projects.Gui/IconCodon.cs: Renamed resource attribute to icon,
+	  since that's how the icon service handles it.
+
 2007-10-24  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui/IconService.cs: Use new icon names.

@@ -57,7 +57,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
-		<Icon id = "C#File" extensions = ".po" resource = "res:locale.svg"/>
+		<Icon extensions = ".po" icon = "res:locale.svg"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/FileFilters">
