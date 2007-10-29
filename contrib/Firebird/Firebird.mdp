@@ -4,14 +4,14 @@
       <CustomCommands>
         <Command type="Build" command="make all" workingdir="${ProjectDir}" />
       </CustomCommands>
-      <Output directory="./" />
+      <Output directory="." />
       <Build debugmode="True" />
       <Execution runwithwarnings="True" consolepause="True" />
     </Configuration>
   </Configurations>
   <Contents>
-    <File name="./FirebirdSql.Data.Firebird.dll" subtype="Code" buildaction="Nothing" />
-    <File name="./FirebirdSql.Data.Firebird.license.txt" subtype="Code" buildaction="Nothing" />
-    <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="FirebirdSql.Data.Firebird.dll" subtype="Code" buildaction="Nothing" />
+    <File name="FirebirdSql.Data.Firebird.license.txt" subtype="Code" buildaction="Nothing" />
+    <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
   </Contents>
 </Project>

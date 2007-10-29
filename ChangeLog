@@ -1,5 +1,13 @@
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* contrib/Mono.Cecil/Mono.Cecil.mdp, contrib/Firebird/Firebird.mdp,
+	  contrib/Mono.Addins/Mono.Addins.Setup.mdp,
+	  contrib/Mono.Addins/Mono.Addins.mdp,
+	  contrib/Mono.Addins/Mono.Addins.Gui.mdp, contrib/log4net/log4net.mdp:
+	  Updated paths.
+
+2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* configure.in: Bump MD version.
 
 2007-09-22  Michael Hutchinson  <mhutchinson@novell.com>

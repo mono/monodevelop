@@ -5,7 +5,7 @@
         <Command type="Build" command="make Mono.Addins.Gui" workingdir="${ProjectDir}" />
         <Command type="Clean" command="rm Mono.Addins.Gui.dll*" workingdir="${TargetDir}" />
       </CustomCommands>
-      <Output directory="../../build/bin" signAssembly="True" assemblyKeyFile="./src/mono-addins.snk" assembly="Mono.Addins.Gui" />
+      <Output directory="../../build/bin" signAssembly="True" assemblyKeyFile="src/mono-addins.snk" assembly="Mono.Addins.Gui" />
       <Build debugmode="True" target="Library" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
       <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
@@ -15,39 +15,39 @@
         <Command type="Build" command="make Mono.Addins.Gui" workingdir="${ProjectDir}" />
         <Command type="Clean" command="rm Mono.Addins.Gui.dll*" workingdir="${TargetDir}" />
       </CustomCommands>
-      <Output directory="../../build/bin" signAssembly="True" assemblyKeyFile="./src/mono-addins.snk" assembly="Mono.Addins.Gui" />
+      <Output directory="../../build/bin" signAssembly="True" assemblyKeyFile="src/mono-addins.snk" assembly="Mono.Addins.Gui" />
       <Build debugmode="False" target="Library" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
       <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
   <Contents>
-    <File name="./src/Mono.Addins.Gui/AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Mono.Addins.Gui/gtk-gui/generated.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.AddinInfoDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.AddinInstallDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.AddinInstallerDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.ErrorDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.ManageSitesDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.NewSiteDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Mono.Addins.Gui/Mono.Addins.Gui/AddinInfoDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Mono.Addins.Gui/Mono.Addins.Gui/AddinInstallDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Mono.Addins.Gui/Mono.Addins.Gui/AddinInstaller.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Mono.Addins.Gui/Mono.Addins.Gui/AddinInstallerDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerWindow.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Mono.Addins.Gui/Mono.Addins.Gui/AddinTreeWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Mono.Addins.Gui/Mono.Addins.Gui/ErrorDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Mono.Addins.Gui/Mono.Addins.Gui/ManageSitesDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Mono.Addins.Gui/Mono.Addins.Gui/NewSiteDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Mono.Addins.Gui/Mono.Addins.Gui/Services.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Mono.Addins.Gui/gtk-gui/gui.stetic" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./src/Mono.Addins.Gui/icons/package-x-generic.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./src/Mono.Addins.Gui/icons/package-x-generic_16.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./src/Mono.Addins.Gui/icons/package-x-generic_22.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./src/Mono.Addins.Gui/icons/system-software-update.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./src/Mono.Addins.Gui/icons/user-package.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="src/Mono.Addins.Gui/AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="src/Mono.Addins.Gui/gtk-gui/generated.cs" subtype="Code" buildaction="Compile" />
+    <File name="src/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.AddinInfoDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="src/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.AddinInstallDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="src/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.AddinInstallerDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="src/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="src/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.ErrorDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="src/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.ManageSitesDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="src/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.NewSiteDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="src/Mono.Addins.Gui/Mono.Addins.Gui/AddinInfoDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="src/Mono.Addins.Gui/Mono.Addins.Gui/AddinInstallDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="src/Mono.Addins.Gui/Mono.Addins.Gui/AddinInstaller.cs" subtype="Code" buildaction="Compile" />
+    <File name="src/Mono.Addins.Gui/Mono.Addins.Gui/AddinInstallerDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="src/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="src/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerWindow.cs" subtype="Code" buildaction="Compile" />
+    <File name="src/Mono.Addins.Gui/Mono.Addins.Gui/AddinTreeWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="src/Mono.Addins.Gui/Mono.Addins.Gui/ErrorDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="src/Mono.Addins.Gui/Mono.Addins.Gui/ManageSitesDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="src/Mono.Addins.Gui/Mono.Addins.Gui/NewSiteDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="src/Mono.Addins.Gui/Mono.Addins.Gui/Services.cs" subtype="Code" buildaction="Compile" />
+    <File name="src/Mono.Addins.Gui/gtk-gui/gui.stetic" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="src/Mono.Addins.Gui/icons/package-x-generic.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="src/Mono.Addins.Gui/icons/package-x-generic_16.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="src/Mono.Addins.Gui/icons/package-x-generic_22.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="src/Mono.Addins.Gui/icons/system-software-update.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="src/Mono.Addins.Gui/icons/user-package.png" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
