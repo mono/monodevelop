@@ -1,3 +1,14 @@
+2007-10-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* VBBindingCompilerServices.cs: A few changes to cope with vbnc''s issues:
+	  Use the compiler's exit code to determine whether the compile failed,
+	  and not the presence or not of errors parsed from the compiler output.
+	  If the compile failed (exit code != 0) and no errors were correctly
+	  parsed, show the entire output, since it's probable that the compiler
+	  crashed somehow. Also show the commandline used to compile in MD's
+	  output window, as well as any compiler output. Use in-memory storage
+	  instead of temporary files for compiler output.
+
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* VBNetBinding.addin.xml: Bump MD version.

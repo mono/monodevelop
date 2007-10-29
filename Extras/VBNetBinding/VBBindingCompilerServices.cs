@@ -167,7 +167,6 @@ namespace VBBinding {
 			writer.Close();
 			
 			string output = "";
-			string error  = "";
 			string compilerName = GetCompilerName(compilerparameters.VBCompilerVersion);
 			string outstr = String.Concat(compilerName, " @", responseFileName);
 			
@@ -175,15 +174,25 @@ namespace VBBinding {
 			string workingDir = ".";
 			if (projectFiles != null && projectFiles.Count > 0)
 				workingDir = projectFiles [0].Project.BaseDirectory;
-
-			DoCompilation (outstr, tf, workingDir, ref output, ref error);
+			int exitCode;
 			
-			ICompilerResult result = ParseOutput(tf, output);
-			ParseOutput(tf,error);
+			monitor.Log.WriteLine (compilerName + " " + string.Join (" ", File.ReadAllLines (responseFileName)));
+			exitCode = DoCompilation (outstr, tf, workingDir, ref output);
+			
+			CompilerResults results = new CompilerResults (tf);
+			DefaultCompilerResult result = new DefaultCompilerResult (results, output);
+				
+			monitor.Log.WriteLine (output);			                                                          
+			                                                          
+			ParseOutput(tf, output, results);
+
+			if (results.Errors.Count == 0 && exitCode != 0) {
+				// Compilation failed, but no errors?
+				// Show everything the compiler said.
+				result.AddError (output);
+			}
 			
 			FileService.DeleteFile (responseFileName);
-			FileService.DeleteFile (output);
-			FileService.DeleteFile (error);
 			if (configuration.CompileTarget != CompileTarget.Library) {
 				WriteManifestFile(exe);
 			}
@@ -217,33 +226,27 @@ namespace VBBinding {
 			sw.Close();
 		}
 		
-		ICompilerResult ParseOutput(TempFileCollection tf, string file)
+		void ParseOutput(TempFileCollection tf, string output, CompilerResults cr)
 		{
-			StringBuilder compilerOutput = new StringBuilder();
-			
-			StreamReader sr = File.OpenText(file);
-			
-			CompilerResults cr = new CompilerResults(tf);
-			
-			while (true) {
-				string curLine = sr.ReadLine();
-				compilerOutput.Append(curLine);
-				compilerOutput.Append('\n');
-				if (curLine == null) {
-					break;
+			using (StringReader sr = new StringReader (output)) {			
+				while (true) {
+					string curLine = sr.ReadLine();
+
+					if (curLine == null) {
+						break;
+					}
+					
+					curLine = curLine.Trim();
+					if (curLine.Length == 0) {
+						continue;
+					}
+					
+					CompilerError error = CreateErrorFromString (curLine);
+					
+					if (error != null)
+						cr.Errors.Add (error);
 				}
-				curLine = curLine.Trim();
-				if (curLine.Length == 0) {
-					continue;
-				}
-				
-				CompilerError error = CreateErrorFromString (curLine);
-				
-				if (error != null)
-					cr.Errors.Add (error);
 			}
-			sr.Close();
-			return new DefaultCompilerResult(cr, compilerOutput.ToString());
 		}
 		
 		
@@ -261,7 +264,9 @@ namespace VBBinding {
 			CompilerError error = new CompilerError();
 
 			Match match=regexError.Match(error_string);
-			if (!match.Success) return null;
+			if (!match.Success) {
+				return null;
+			}
 			if (String.Empty != match.Result("${file}"))
 				error.FileName=match.Result("${file}");
 			if (String.Empty != match.Result("${line}"))
@@ -275,21 +280,29 @@ namespace VBBinding {
 			return error;
 		}
 		
-		private void DoCompilation(string outstr, TempFileCollection tf, string working_dir, ref string output, ref string error) {
-			output = Path.GetTempFileName();
-			error = Path.GetTempFileName();
+		private int DoCompilation(string outstr, TempFileCollection tf, string working_dir, ref string output) {
+			StringWriter outwr = null, errwr = null;
 			
-			StreamWriter outwr = new StreamWriter(output);
-			StreamWriter errwr = new StreamWriter(error);
-			string[] tokens = outstr.Split(' ');
+			try {
+				outwr = new StringWriter ();
+								
+				string[] tokens = outstr.Split(' ');
 
-			outstr = outstr.Substring(tokens[0].Length+1);
+				outstr = outstr.Substring(tokens[0].Length+1);
 
-			ProcessService ps = (ProcessService) ServiceManager.GetService (typeof(ProcessService));
-			ProcessWrapper pw = ps.StartProcess(tokens[0], "\"" + outstr + "\"", working_dir, outwr, errwr, delegate{});
-			pw.WaitForOutput();
-			outwr.Close();
-			errwr.Close();
+				ProcessService ps = (ProcessService) ServiceManager.GetService (typeof(ProcessService));
+				ProcessWrapper pw = ps.StartProcess(tokens[0], "\"" + outstr + "\"", working_dir, outwr, outwr, delegate{});
+				pw.WaitForExit ();
+				
+				output = outwr.ToString ();
+				
+				return pw.ExitCode;
+			} finally {
+				if (errwr != null)
+					errwr.Dispose ();
+				if (outwr != null)
+					outwr.Dispose ();
+			}
 		}
 	}
 }
