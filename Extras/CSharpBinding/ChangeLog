@@ -1,3 +1,8 @@
+2007-10-29  Michael Hutchinson  <mhutchinson@novell.com> 
+
+	* Gui/CSharpTextEditorExtension.cs: Don't try to look back past first 
+	  char in buffer when checking whether to run completion code.
+
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CSharpBinding.addin.xml: Bump MD version.

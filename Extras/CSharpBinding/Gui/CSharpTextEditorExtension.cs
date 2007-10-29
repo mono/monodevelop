@@ -749,7 +749,7 @@ namespace CSharpBinding
 			// Code completion of classes, members and namespaces
 			
 			//FindExpression call is *very* expensive, so try to avoid reaching it unless we have a handleable character
-			if (charTyped == ' ') {
+			if (charTyped == ' ' && ctx.TriggerOffset > 1) {
 				char previousChar = Editor.GetCharAt (ctx.TriggerOffset - 2);
 				if (char.IsWhiteSpace (previousChar))
 					return null;
