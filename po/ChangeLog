@@ -1,3 +1,7 @@
+2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* ru.po: Russian translation by Daniel Abramov.
+
 2007-10-25  Jordi Mas <jmas@softcatala.org>
 
 	* POTFILES.in: Update MonoQuery files
