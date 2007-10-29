@@ -35,7 +35,7 @@
 		<FileTemplate id       = "WebHandler-Empty"
 		              resource = "WebHandler-Empty.xft.xml"/>
 		<FileTemplate id       = "WebHandler-CodeBehind"
-		              resource = "WebHandler-Empty.xft.xml"/>
+		              resource = "WebHandler-CodeBehind.xft.xml"/>
 		
 		<FileTemplate id       = "WebControl-Empty"
 		              resource = "WebControl-Empty.xft.xml"/>
