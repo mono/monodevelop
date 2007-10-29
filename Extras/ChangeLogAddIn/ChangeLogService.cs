@@ -85,9 +85,10 @@ namespace MonoDevelop.ChangeLogAddIn
 			
 			ChangeLogData changeLogData = GetChangeLogData (entry);
 			
+			CombineEntry parent = entry;
 			while (changeLogData.Policy == ChangeLogPolicy.UseParentPolicy) {
-				entry = entry.ParentCombine;
-				changeLogData = GetChangeLogData (entry);
+				parent = parent.ParentCombine;
+				changeLogData = GetChangeLogData (parent);
 			}
 			
 			switch (changeLogData.Policy)
