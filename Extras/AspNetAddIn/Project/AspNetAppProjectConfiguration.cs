@@ -79,13 +79,7 @@ namespace AspNetAddIn
 					return GetStandardOutputDirectory ();
 			}
 			set {
-				if (value != OutputDirectory
-				    && !nonStandardOutputDirectory 
-				    && MonoDevelop.Core.Gui.Services.MessageService.AskQuestion (GettextCatalog.GetString ("Using an output directory other than the default 'bin' directory can prevent your ASP.NET project from running and deploying correctly. Would you still like to make this change?"))
-				    )
-					nonStandardOutputDirectory = true;
-				if (nonStandardOutputDirectory)
-					base.OutputDirectory = value;
+				base.OutputDirectory = value;
 			}
 		}
 		
