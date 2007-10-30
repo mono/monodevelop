@@ -166,5 +166,9 @@
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Run">
 		<CommandItem id = "MonoDevelop.AspNet.Deployment.WebDeployCommands.DeployProject" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"/>
 	</Extension>
-	
+
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
+		<Icon extensions = ".aspx,.asax,.ascx,.ashx,.asmx" icon = "md-html-file-icon"/>
+	</Extension>
+
 </Addin>
