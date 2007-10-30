@@ -46,10 +46,9 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 			[Glade.Widget] VBox childrenVBox;
 			[Glade.Widget] CheckButton checkColor;
 			[Glade.Widget] CheckButton checkBackground;
-
-			SourceViewService svs = (SourceViewService) ServiceManager.GetService (typeof (SourceViewService));
+			
 			SourceLanguage currentLanguage;
-			SourceTagStyle currentStyle;
+			SourceStyleScheme currentStyle;
 			string styleid;
 			
 			public SyntaxHighlightingPanelWidget () :  base ("EditorBindings.glade", "SyntaxHighlightingPanel")
@@ -58,7 +57,7 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 				
 				// add available sourceLanguages
 				ListStore store = new ListStore (typeof (string));
-				foreach (SourceLanguage sl in svs.AvailableLanguages)
+				foreach (SourceLanguage sl in SourceViewService.AvailableLanguages)
 					store.AppendValues (sl.Name);
 				store.SetSortColumnId (0, SortType.Ascending);
 				sourceLanguages.Model = store;
@@ -79,12 +78,14 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 
 			void SetCurrentLanguage (string name)
 			{
-				currentLanguage = svs.FindLanguage (name);
+				currentLanguage = SourceViewService.FindLanguage (name);
 				SetTreeValues ();
 			}
 
 			void SetSourceTagStyle ()
 			{
+				//FIXME GTKSV2
+				/*
 				SourceTagStyle sts = currentStyle;
 				boldToggle.Active = sts.Bold;
 				italicToggle.Active = sts.Italic;
@@ -96,11 +97,13 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 				checkBackground.Active = (sts.Mask & 1) != 0;
 				fgColorButton.Sensitive = checkColor.Active;
 				bgColorButton.Sensitive = checkBackground.Active;
-				restoreDefaultButton.Sensitive = !sts.IsDefault;
+				restoreDefaultButton.Sensitive = !sts.IsDefault;*/
 			}
 
 			void SetTreeValues ()
 			{
+				//FIXME GTKSV2
+				/*
 				// name, id
 				ListStore store = new ListStore (typeof (string), typeof (string));
 				foreach (SourceTag t in currentLanguage.Tags)
@@ -109,11 +112,13 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 
 				TreeIter first;
 				store.GetIterFirst (out first);
-				stylesTreeView.Selection.SelectIter (first);
+				stylesTreeView.Selection.SelectIter (first);*/
 			}
 
 			protected void OnButtonToggled (object sender, EventArgs a)
 			{
+				//FIXME GTKSV2
+				/*
 				SourceTagStyle sts = currentStyle;
 				sts.Bold = boldToggle.Active;
 				sts.Italic = italicToggle.Active;
@@ -121,11 +126,13 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 				sts.Strikethrough = strikeToggle.Active;
 				sts.IsDefault = false;
 				currentLanguage.SetTagStyle (styleid, sts);
-				restoreDefaultButton.Sensitive = true;
+				restoreDefaultButton.Sensitive = true;*/
 			}
 
 			protected void OnColorSet (object sender, EventArgs a)
 			{
+				//FIXME GTKSV2
+				/*
 				SourceTagStyle sts = currentStyle;
 				sts.Foreground = fgColorButton.Color;
 				sts.Background = bgColorButton.Color;
@@ -135,7 +142,7 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 				bgColorButton.Sensitive = checkBackground.Active;
 				sts.IsDefault = false;
 				currentLanguage.SetTagStyle (styleid, sts);
-				restoreDefaultButton.Sensitive = true;
+				restoreDefaultButton.Sensitive = true;*/
 			}
 
 			protected void OnHighlightingToggled (object sender, EventArgs a)
@@ -154,12 +161,17 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 
 			protected void OnRestoreClicked (object sender, EventArgs a)
 			{
+				//FIXME GTKSV2
+				/*
 				currentLanguage = svs.RestoreDefaults (currentLanguage);
 				OnStyleChanged (stylesTreeView.Selection, EventArgs.Empty);
+				*/
 			}
 
 			private void OnStyleChanged (object sender, EventArgs a)
 			{
+				//FIXME GTKSV2
+				/*
 				TreeIter iter;
 				TreeModel model;
 				TreeSelection selection = sender as TreeSelection;
@@ -168,7 +180,7 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 					styleid = (string) model.GetValue (iter, 1);
 					currentStyle = currentLanguage.GetTagStyle (styleid);
 					SetSourceTagStyle ();
-				}
+				}*/
 			}
 		}
 	}

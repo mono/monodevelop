@@ -64,8 +64,7 @@ namespace MonoDevelop.SourceEditor.Gui
 	}
 	
 	public class SourceEditorBuffer : SourceBuffer, IClipboardHandler
-	{	
-		SourceViewService svs = ServiceManager.GetService (typeof (SourceViewService)) as SourceViewService;
+	{
 		TextTag markup;
 		TextTag complete_ahead;
 		TextTag compilation_error;
@@ -97,7 +96,7 @@ namespace MonoDevelop.SourceEditor.Gui
 
 		}
 		
-		public SourceEditorBuffer () : base (new SourceTagTable ())
+		public SourceEditorBuffer () : base (new TextTagTable ())
 		{
 			markup = new TextTag ("breakpoint");
 			markup.Background = "yellow";
@@ -241,7 +240,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		public void LoadText (string text, string mime)
 		{
 			if (mime != null) {
-				SourceLanguage lang = svs.GetLanguageFromMimeType (mime);
+				SourceLanguage lang = SourceViewService.GetLanguageFromMimeType (mime);
 				if (lang != null) 
 					Language = lang;
 			}

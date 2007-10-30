@@ -912,7 +912,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		public void Undo ()
 		{
-			if (((SourceBuffer)se.Buffer).CanUndo ()) {
+			if (((SourceBuffer)se.Buffer).CanUndo) {
 				se.Buffer.Undo ();
 				TextIter iter = se.Buffer.GetIterAtMark (se.Buffer.InsertMark);
 				if (!se.View.VisibleRect.Contains (se.View.GetIterLocation (iter)))
@@ -922,7 +922,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		public void Redo ()
 		{
-			if (((SourceBuffer)se.Buffer).CanRedo ()) {
+			if (((SourceBuffer)se.Buffer).CanRedo) {
 				se.Buffer.Redo ();
 				TextIter iter = se.Buffer.GetIterAtMark (se.Buffer.InsertMark);
 				if (!se.View.VisibleRect.Contains (se.View.GetIterLocation (iter)))
@@ -1015,7 +1015,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			int col = 1; // first char == 1
 			int chr = 1;
 			bool found_non_ws = false;
-			int tab_size = (int) se.View.TabsWidth;
+			int tab_size = (int) se.View.TabWidth;
 			
 			TextIter iter = se.Buffer.GetIterAtMark (se.Buffer.InsertMark);
 			TextIter start = iter;
@@ -1188,30 +1188,43 @@ namespace MonoDevelop.SourceEditor.Gui
 			return se.Buffer.GetText (start_line.Offset, end_line.Offset - start_line.Offset);
 		}		
 #endregion
+		
+		void UpdateStyleScheme ()
+		{
+			string id = properties.Get<string> ("GtkSourceViewStyleScheme", "classic");
+			SourceStyleScheme scheme = GtkSourceView.SourceStyleSchemeManager.Default.GetScheme (id);
+			if (scheme == null)
+				MonoDevelop.Core.Runtime.LoggingService.Warn ("GTKSourceView style scheme '" + id + "' is missing.");
+			else
+				se.Buffer.StyleScheme = scheme;
+		}
 
 		void SetInitialValues ()
 		{
 			se.View.ModifyFont (TextEditorProperties.Font);
 			se.View.ShowLineNumbers = TextEditorProperties.ShowLineNumbers;
-			se.Buffer.CheckBrackets = TextEditorProperties.ShowMatchingBracket;
-			se.View.ShowMargin = TextEditorProperties.ShowVerticalRuler;
+			se.Buffer.HighlightMatchingBrackets = TextEditorProperties.ShowMatchingBracket;
+			//FIXME gtksv2
+			se.View.ShowRightMargin = TextEditorProperties.ShowVerticalRuler;
 			se.View.EnableCodeCompletion = TextEditorProperties.EnableCodeCompletion;
 			se.View.InsertSpacesInsteadOfTabs = TextEditorProperties.ConvertTabsToSpaces;
 			se.View.AutoIndent = (TextEditorProperties.IndentStyle == IndentStyle.Auto);
 			se.View.AutoInsertTemplates = TextEditorProperties.AutoInsertTemplates;
 			se.View.HighlightCurrentLine = TextEditorProperties.HighlightCurrentLine;
-			se.Buffer.Highlight = TextEditorProperties.SyntaxHighlight;
+			se.Buffer.HighlightSyntax = TextEditorProperties.SyntaxHighlight;
 			se.DisplayBinding.ClassBrowserVisible = TextEditorProperties.ShowClassBrowser;
+			UpdateStyleScheme ();
 
 			if (TextEditorProperties.VerticalRulerRow > -1)
-				se.View.Margin = (uint) TextEditorProperties.VerticalRulerRow;
+				//fixme gtksv2 left or right?
+				se.View.RightMarginPosition = (uint) TextEditorProperties.VerticalRulerRow;
 			else
-				se.View.Margin = (uint) 80;
+				se.View.RightMarginPosition = 80;
 
 			if (TextEditorProperties.TabIndent > -1)
-				se.View.TabsWidth = (uint) TextEditorProperties.TabIndent;
+				se.View.TabWidth = (uint) TextEditorProperties.TabIndent;
 			else
-				se.View.TabsWidth = (uint) 4;
+				se.View.TabWidth = (uint) 4;
 
 			se.View.WrapMode = TextEditorProperties.WrapMode;
 		}
@@ -1227,10 +1240,10 @@ namespace MonoDevelop.SourceEditor.Gui
 					se.View.ShowLineNumbers = TextEditorProperties.ShowLineNumbers;
 					break;
 				case "ShowBracketHighlight":
-					se.Buffer.CheckBrackets = TextEditorProperties.ShowMatchingBracket;
+					se.Buffer.HighlightMatchingBrackets = TextEditorProperties.ShowMatchingBracket;
 					break;
 				case "ShowVRuler":
-					se.View.ShowMargin = TextEditorProperties.ShowVerticalRuler;
+					se.View.ShowRightMargin = TextEditorProperties.ShowVerticalRuler;
 					break;
 				case "EnableCodeCompletion":
 					se.View.EnableCodeCompletion = TextEditorProperties.EnableCodeCompletion;
@@ -1245,19 +1258,19 @@ namespace MonoDevelop.SourceEditor.Gui
 					se.View.AutoInsertTemplates = TextEditorProperties.AutoInsertTemplates;
 					break;
 				case "SyntaxHighlight":
-					se.Buffer.Highlight = TextEditorProperties.SyntaxHighlight;
+					se.Buffer.HighlightSyntax = TextEditorProperties.SyntaxHighlight;
 					break;
 				case "VRulerRow":
 					if (TextEditorProperties.VerticalRulerRow > -1)
-						se.View.Margin = (uint) TextEditorProperties.VerticalRulerRow;
+						se.View.RightMarginPosition = (uint) TextEditorProperties.VerticalRulerRow;
 					else
-						se.View.Margin = (uint) 80;
+						se.View.RightMarginPosition = 80;
 					break;
 				case "TabIndent":
 					if (TextEditorProperties.TabIndent > -1)
-						se.View.TabsWidth = (uint) TextEditorProperties.TabIndent;
+						se.View.TabWidth = (uint) TextEditorProperties.TabIndent;
 					else
-						se.View.TabsWidth = (uint) 4;
+						se.View.TabWidth = (uint) 4;
 					break;
 				case "TabsToSpaces":
 					se.View.InsertSpacesInsteadOfTabs = TextEditorProperties.ConvertTabsToSpaces;
@@ -1285,6 +1298,9 @@ namespace MonoDevelop.SourceEditor.Gui
 				case "HighlightNewlines":
 					SourceEditorView.HighlightNewlinesEnabled = TextEditorProperties.HighlightNewlines;
 					se.View.QueueDraw ();
+					break;
+				case "GtkSourceViewStyleScheme":
+					UpdateStyleScheme ();
 					break;
 				default:
 					break;

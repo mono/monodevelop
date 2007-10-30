@@ -2,6 +2,7 @@ DLLNAME = MonoDevelop.SourceEditor.dll
 ASSEMBLY = $(top_builddir)/build/AddIns/$(DLLNAME)
 
 FILES =  \
+	gtk-gui/generated.cs \
 	MonoDevelop.SourceEditor.Actions/DefaultEditActions.cs \
 	MonoDevelop.SourceEditor.Actions/EditActionCollection.cs \
 	MonoDevelop.SourceEditor.Actions/IEditAction.cs \
@@ -27,6 +28,8 @@ FILES =  \
 RES =  \
 	bookmark.png \
 	EditorBindings.glade \
+	gtk-gui/gui.stetic \
+	gtk-gui/objects.xml \
 	MonoDevelop.SourceEditor.addin.xml \
 	texteditoraddin.glade
 
@@ -39,7 +42,7 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GNOME_VFS_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	$(GTKSOURCEVIEW_SHARP_LIBS) \
+	$(GTKSOURCEVIEW2_SHARP_LIBS) \
 	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
@@ -48,20 +51,30 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:Mono.Cairo \
+	-r:Mono.Posix \
 	-r:System \
 	-r:System.Drawing \
 	-r:System.Xml
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns
 
-all : $(ASSEMBLY)
+if ENABLE_GTKSOURCEVIEW2
+  all: $(ASSEMBLY)
+else
+  all:
+endif
+
+all: $(ASSEMBLY)
 
 $(ASSEMBLY) : $(build_sources) $(build_resources)
 	mkdir -p $(top_builddir)/build/bin
 	$(CSC) $(CSC_FLAGS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -t:library $(REFS)
 
-assemblydir = $(MD_ADDIN_DIR)
-assembly_DATA = $(ASSEMBLY)
+if ENABLE_GTKSOURCEVIEW2
+  assemblydir = $(MD_ADDIN_DIR)
+  assembly_DATA = $(ASSEMBLY)
+else
+endif
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 

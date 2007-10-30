@@ -100,15 +100,17 @@ namespace MonoDevelop.SourceEditor.Gui
 			// Keep track of markers in a dictionary. It is used in case the
 			// line height of the editor changes.
 			markers.Add (name, image);
-			View.SetMarkerPixbuf (name, FixMarkerSize (image));
+			//FIXME GTKSV2
+			//View.SetMarkerPixbuf (name, FixMarkerSize (image));
 		}
 		
 		internal void UpdateMarkerSize ()
 		{
 			// Makes sure markers are not bigger than the line height
-			foreach (KeyValuePair<string, Gdk.Pixbuf> entry in markers) {
-				View.SetMarkerPixbuf (entry.Key, FixMarkerSize (entry.Value));
-			}
+			//foreach (KeyValuePair<string, Gdk.Pixbuf> entry in markers) {
+				//FIXME GTKSV2
+				//View.SetMarkerPixbuf (entry.Key, FixMarkerSize (entry.Value));
+			//}
 		}
 		
 		Gdk.Pixbuf FixMarkerSize (Gdk.Pixbuf pix)
@@ -201,6 +203,8 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		protected void CreatePrintJob ()
 		{
+			//FIXME GTKSV2
+			/*
 			if (printDialog == null  || printJob == null)
 			{
 				PrintConfig config = PrintConfig.Default ();
@@ -213,7 +217,7 @@ namespace MonoDevelop.SourceEditor.Gui
 				sourcePrintJob.SetFooterFormat (GettextCatalog.GetString ("MonoDevelop"), null, GettextCatalog.GetString ("Page") + " %N/%Q", true);
 				sourcePrintJob.WrapMode = WrapMode.Word;
 				printJob = sourcePrintJob.Print ();
-			}
+			}*/
 		}
 		
 		[CommandHandler (EditorCommands.PrintDocument)]
@@ -280,12 +284,14 @@ namespace MonoDevelop.SourceEditor.Gui
 		[CommandHandler (EditorCommands.GotoMatchingBrace)]
 		public void GotoMatchingBrace ()
 		{
+			//FIXME GTKSV2
+			/*
 			TextIter iter = Buffer.GetIterAtMark (Buffer.InsertMark);
 			if (Source.IterFindMatchingBracket (ref iter)) {
 				iter.ForwardChar ();
 				Buffer.PlaceCursor (iter);
 				View.ScrollMarkOnscreen (Buffer.InsertMark);
-			}
+			}*/
 		}
 
 		[CommandHandler (EditorCommands.ToggleBookmark)]

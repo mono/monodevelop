@@ -1,17 +1,15 @@
 <Addin id          = "SourceEditor"
        namespace   = "MonoDevelop"
        name        = "MonoDevelop Text Editor"
-       author      = "Ben Maurer, Lluis Sanchez, Todd Berman"
+       author      = "Ben Maurer, Lluis Sanchez, Todd Berman, Michael Hutchinson"
        copyright   = ""
        url         = ""
-       description = "Provides a text editor for the MonoDevelop IDE based on GtkSourceView"
+       description = "Provides a text editor for the MonoDevelop IDE based on GtkSourceView 2"
        category    = "MonoDevelop Core"
-       version     = "0.17.0">
+       version     = "0.17.2">
 	
 	<Runtime>
 		<Import assembly="MonoDevelop.SourceEditor.dll"/>
-		<!-- <Import assembly="../bin/MonoDevelop.SourceEditor.dll"/> -->
-		<!-- <Import assembly="../bin/MonoDevelop.DefaultTexteditor.dll"/> -->
 	</Runtime>
 
 	<Dependencies>

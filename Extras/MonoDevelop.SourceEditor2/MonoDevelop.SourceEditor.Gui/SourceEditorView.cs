@@ -209,25 +209,6 @@ namespace MonoDevelop.SourceEditor.Gui
 			set { autoInsertTemplates = value; }
 		}
 		
-		static SourceEditorView ()
-		{
-			SourceView view = new SourceView ();
-			try
-			{
-				GetHighlightCurrentLine (view.Handle);
-				HighlightCurrentLineSupported = true;
-			}
-			catch
-			{
-				HighlightCurrentLineSupported = false;
-			}
-			finally
-			{
-				view.Destroy ();
-				view = null;
-			}
-		}
-		
 		protected SourceEditorView (IntPtr p): base (p)
 		{
 		}
@@ -235,12 +216,13 @@ namespace MonoDevelop.SourceEditor.Gui
 		public SourceEditorView (SourceEditorBuffer buf, SourceEditor parent)
 		{
 			this.ParentEditor = parent;
-			this.TabsWidth = 4;
+			this.TabWidth = 4;
 			Buffer = this.buf = buf;
 			AutoIndent = false;
-			SmartHomeEnd = true;
+			SmartHomeEnd = SourceSmartHomeEndType.Always;
 			ShowLineNumbers = true;
-			ShowLineMarkers = true;
+			//FIXME GTKSV2
+			//ShowLineMarkers = true;
 			controlsDrawer = new DrawControlCharacterImp (this);
 			HighlightCurrentLine = true;
 			buf.PlaceCursor (buf.StartIter);
@@ -431,8 +413,9 @@ namespace MonoDevelop.SourceEditor.Gui
 			NotifyCompletionContextChanged ();
 			HideLanguageItemWindow ();
 			
-			if (!ShowLineMarkers)
-				goto done;
+			//FIXME GTKSV2
+			//if (!ShowLineMarkers)
+			//	goto done;
 			
 			if (e.Window == GetWindow (Gtk.TextWindowType.Left)) {
 				int x, y;
@@ -462,7 +445,7 @@ namespace MonoDevelop.SourceEditor.Gui
 				buf.PlaceCursor (GetIterAtLocation (x, y));		
 			}
 			
-		 done:
+		 //done:
 			
 			result = base.OnButtonPressEvent (e);
 			
@@ -854,7 +837,7 @@ namespace MonoDevelop.SourceEditor.Gui
 
 		void IndentLines (int y0, int y1)
 		{
-			IndentLines (y0, y1, InsertSpacesInsteadOfTabs ? new string (' ', (int) TabsWidth) : "\t");
+			IndentLines (y0, y1, InsertSpacesInsteadOfTabs ? new string (' ', (int) TabWidth) : "\t");
 		}
 
 		void IndentLines (int y0, int y1, string indent)
@@ -880,7 +863,7 @@ namespace MonoDevelop.SourceEditor.Gui
 					
 				} else if (c == ' ') {
 					int cnt = 0;
-					int max = (int) TabsWidth;
+					int max = (int) TabWidth;
 					
 					while (cnt < max && end.Char[0] == ' ' && ! end.EndsLine ()) {
 						cnt ++;
@@ -991,29 +974,6 @@ namespace MonoDevelop.SourceEditor.Gui
 			get
 			{
 				return Style.Copy();
-			}
-		}
-#endregion
-		
-#region HighlightCurrentLine functionality
-		//gboolean gtk_source_view_get_highlight_current_line (GtkSourceView *view);
-		[DllImport ("gtksourceview-1.0", EntryPoint="gtk_source_view_get_highlight_current_line")]
-		static extern bool GetHighlightCurrentLine (IntPtr raw);
-
-		//void gtk_source_view_set_highlight_current_line (GtkSourceView *view, gboolean show);
-		[DllImport("gtksourceview-1.0", EntryPoint="gtk_source_view_set_highlight_current_line")]
-		static extern void SetHighlightCurrentLine (IntPtr raw, bool show);
-
-		[GLib.Property ("highlight-current-line")]
-		public bool HighlightCurrentLine {
-			get  {
-				if (HighlightCurrentLineSupported)
-					return GetHighlightCurrentLine (Handle);
-				return false;
-			}
-			set  {
-				if (HighlightCurrentLineSupported)
-					SetHighlightCurrentLine (Handle, value);
 			}
 		}
 #endregion

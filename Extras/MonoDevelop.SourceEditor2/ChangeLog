@@ -1,3 +1,14 @@
+2007-10-29  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs,
+	  MonoDevelop.SourceEditor.Gui/SourceEditorView.cs,
+	  MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs,
+	  MonoDevelop.SourceEditor.Gui.OptionPanels/SyntaxHighlightingPanel.cs,
+	  MonoDevelop.SourceEditor/SourceViewService.cs, Makefile.am,
+	  MonoDevelop.SourceEditor.addin.xml, MonoDevelop.SourceEditor.mdp: Get
+	  the SourceEditor working with GtkSourceView 2.
+
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.addin.xml: Bump MD version.
