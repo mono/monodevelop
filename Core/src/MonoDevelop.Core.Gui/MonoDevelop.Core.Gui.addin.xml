@@ -1,0 +1,159 @@
+<Addin id          = "Core.Gui"
+       namespace   = "MonoDevelop"
+       name        = "MonoDevelop Gui Services"
+       author      = "Lluis Sanchez, Todd Berman, John Luke, Mike Krueger"
+       copyright   = "GPL"
+       url         = "http://www.monodevelop.com"
+       description = "Provides basic GUI services"
+	   category    = "MonoDevelop Core"
+       version     = "0.17.0"
+	   isroot      = "true"
+       compatVersion = "0.17.0">
+
+	<Dependencies>
+		<Addin id="Core" version="0.17.0"/>
+		<Addin id="Components" version="0.17.0"/>
+	</Dependencies>
+
+	<!-- Extension points -->
+
+	<ExtensionNodeSet id="MonoDevelop.Core.Gui.DialogPanel">
+		<ExtensionNode name="DialogPanel" type="MonoDevelop.Core.Gui.Codons.DialogPanelCodon">
+			<ExtensionNodeSet id="MonoDevelop.Core.Gui.DialogPanel" />
+		</ExtensionNode>
+	</ExtensionNodeSet>
+	
+	<ExtensionPoint path = "/MonoDevelop/Core/StockIcons" name = "Stock icons">
+		<Description>Available from MonoDevelop.Core.Gui.Services.Resources.</Description>
+		<ExtensionNode name="StockIcon" type="MonoDevelop.Core.Gui.Codons.StockIconCodon" />
+	</ExtensionPoint>
+
+	<!-- Extensions -->
+	
+	<Extension path = "/MonoDevelop/Core/Applications">
+		<Application id = "gsetup"
+		       description = "Graphical add-in setup utility"
+		       class = "MonoDevelop.Core.Gui.Dialogs.SetupApp"/>
+	</Extension>
+
+
+	<Extension path = "/MonoDevelop/Core/StockIcons">
+		<StockIcon stockid = "md-break-point" resource = "BreakPoint.png" />
+		<StockIcon stockid = "md-build-combine" resource = "Icons.16x16.BuildCombine" />
+		<StockIcon stockid = "md-build-current-selected-project" resource = "Icons.16x16.BuildCurrentSelectedProject" />
+		<StockIcon stockid = "md-class" resource = "Icons.16x16.Class" />
+		<StockIcon stockid = "md-clear-all-bookmarks" resource = "Icons.16x16.ClearAllBookmarks" />
+		<StockIcon stockid = "md-close-all-documents" resource = "Icons.16x16.CloseAllDocuments" />
+		<StockIcon stockid = "md-close-combine-icon" resource = "Icons.16x16.CloseCombineIcon" />
+		<StockIcon stockid = "md-closed-folder" resource = "Icons.16x16.ClosedFolderBitmap" />
+		<StockIcon stockid = "md-closed-reference-folder" resource = "Icons.16x16.ClosedReferenceFolder" />
+		<StockIcon stockid = "md-closed-resource-folder" resource = "Icons.16x16.ClosedResourceFolder" />
+		<StockIcon stockid = "md-solution" resource = "solution-16.png" size = "Menu" />
+		<StockIcon stockid = "md-solution" resource = "solution-32.png" size = "Dnd" />
+		<StockIcon stockid = "md-delegate" resource = "Icons.16x16.Delegate" />
+		<StockIcon stockid = "md-empty" resource = "Icons.16x16.Empty" />
+		<StockIcon stockid = "md-empty-file-icon" resource = "Icons.32x32.EmptyFileIcon" />
+		<StockIcon stockid = "md-enum" resource = "Icons.16x16.Enum" />
+		<StockIcon stockid = "md-event" resource = "Icons.16x16.Event" />
+		<StockIcon stockid = "md-execution-marker" resource = "ExecutionMarker.png" />
+		<StockIcon stockid = "md-field" resource = "Icons.16x16.Field" />
+		<StockIcon stockid = "md-find-in-files" resource = "Icons.16x16.FindInFiles" />
+		<StockIcon stockid = "md-find-next-icon" resource = "Icons.16x16.FindNextIcon" />
+		<StockIcon stockid = "md-fullscreen" resource = "view-fullscreen.png"  size = "Menu" />
+		<StockIcon stockid = "md-fullscreen" resource = "view-fullscreen_22.png" />
+		<StockIcon stockid = "md-goto-nextbookmark" resource = "Icons.16x16.GotoNextbookmark" />
+		<StockIcon stockid = "md-goto-prevbookmark" resource = "Icons.16x16.GotoPrevbookmark" />
+		<StockIcon stockid = "md-interface" resource = "Icons.16x16.Interface" />
+		<StockIcon stockid = "md-internal-class" resource = "Icons.16x16.InternalClass" />
+		<StockIcon stockid = "md-internal-delegate" resource = "Icons.16x16.InternalDelegate" />
+		<StockIcon stockid = "md-internal-enum" resource = "Icons.16x16.InternalEnum" />
+		<StockIcon stockid = "md-internal-event" resource = "Icons.16x16.InternalEvent" />
+		<StockIcon stockid = "md-internal-field" resource = "Icons.16x16.InternalField" />
+		<StockIcon stockid = "md-internal-interface" resource = "Icons.16x16.InternalInterface" />
+		<StockIcon stockid = "md-internal-method" resource = "Icons.16x16.InternalMethod" />
+		<StockIcon stockid = "md-internal-property" resource = "Icons.16x16.InternalProperty" />
+		<StockIcon stockid = "md-internal-struct" resource = "Icons.16x16.InternalStruct" />
+		<StockIcon stockid = "md-literal" resource = "Icons.16x16.Literal" />
+		<StockIcon stockid = "md-method" resource = "Icons.16x16.Method" />
+		<StockIcon stockid = "md-misc-files" resource = "Icons.16x16.MiscFiles" />
+		<StockIcon stockid = "md-name-space" resource = "Icons.16x16.NameSpace" />
+		<StockIcon stockid = "md-new-folder-icon" resource = "Icons.16x16.NewFolderIcon" />
+		<StockIcon stockid = "md-new-project-icon" resource = "Icons.16x16.NewSolutionIcon.png" />
+		<StockIcon stockid = "md-new-solution-icon" resource = "Icons.16x16.NewCombineIcon.png" />
+		<StockIcon stockid = "md-open-folder" resource = "Icons.16x16.OpenFolderBitmap" />
+		<StockIcon stockid = "md-open-project-icon" resource = "Icons.16x16.OpenProjectIcon" />
+		<StockIcon stockid = "md-open-reference-folder" resource = "Icons.16x16.OpenReferenceFolder" />
+		<StockIcon stockid = "md-open-resource-folder" resource = "Icons.16x16.OpenResourceFolder" />
+		<StockIcon stockid = "md-output-icon" resource = "Icons.16x16.OutputIcon" />
+		<StockIcon stockid = "md-private-class" resource = "Icons.16x16.PrivateClass" />
+		<StockIcon stockid = "md-private-delegate" resource = "Icons.16x16.PrivateDelegate" />
+		<StockIcon stockid = "md-private-enum" resource = "Icons.16x16.PrivateEnum" />
+		<StockIcon stockid = "md-private-event" resource = "Icons.16x16.PrivateEvent" />
+		<StockIcon stockid = "md-private-field" resource = "Icons.16x16.PrivateField" />
+		<StockIcon stockid = "md-private-interface" resource = "Icons.16x16.PrivateInterface" />
+		<StockIcon stockid = "md-private-method" resource = "Icons.16x16.PrivateMethod" />
+		<StockIcon stockid = "md-private-property" resource = "Icons.16x16.PrivateProperty" />
+		<StockIcon stockid = "md-private-struct" resource = "Icons.16x16.PrivateStruct" />
+		<StockIcon stockid = "md-properties-icon" resource = "Icons.16x16.PropertiesIcon" />
+		<StockIcon stockid = "md-property" resource = "Icons.16x16.Property" />
+		<StockIcon stockid = "md-protected-class" resource = "Icons.16x16.ProtectedClass" />
+		<StockIcon stockid = "md-protected-delegate" resource = "Icons.16x16.ProtectedDelegate" />
+		<StockIcon stockid = "md-protected-enum" resource = "Icons.16x16.ProtectedEnum" />
+		<StockIcon stockid = "md-protected-event" resource = "Icons.16x16.ProtectedEvent" />
+		<StockIcon stockid = "md-protected-field" resource = "Icons.16x16.ProtectedField" />
+		<StockIcon stockid = "md-protected-interface" resource = "Icons.16x16.ProtectedInterface" />
+		<StockIcon stockid = "md-protected-method" resource = "Icons.16x16.ProtectedMethod" />
+		<StockIcon stockid = "md-protected-property" resource = "Icons.16x16.ProtectedProperty" />
+		<StockIcon stockid = "md-protected-struct" resource = "Icons.16x16.ProtectedStruct" />
+		<StockIcon stockid = "md-reference" resource = "Icons.16x16.Reference" />
+		<StockIcon stockid = "md-replace-in-files" resource = "Icons.16x16.ReplaceInFiles" />
+		<StockIcon stockid = "md-resource-file-icon" resource = "Icons.16x16.ResourceFileIcon" size = "Menu" />
+		<StockIcon stockid = "md-resource-file-icon" resource = "Icons.32x32.ResourceFileIcon" size = "Dnd" />
+		<StockIcon stockid = "md-save-all-icon" resource = "Icons.16x16.SaveAllIcon" size = "Menu"/>
+		<StockIcon stockid = "md-save-all-icon" resource = "Icons.24x24.SaveAllIcon" />
+		<StockIcon stockid = "md-sharp-develop-icon" resource = "Icons.SharpDevelopIcon-22.png" />
+		<StockIcon stockid = "md-sharp-develop-icon" resource = "Icons.SharpDevelopIcon" size="Button"/>
+		<StockIcon stockid = "md-sharp-develop-icon" resource = "Icons.SharpDevelopIcon" size="Dialog"/>
+		<StockIcon stockid = "md-project" resource = "project-16.png" size="Menu"/>
+		<StockIcon stockid = "md-project" resource = "project-32.png" size="Dnd" />
+		<StockIcon stockid = "md-project-gui" icon = "md-project|res:project-gui-32.png" size="Dnd" />
+		<StockIcon stockid = "md-project-console" icon = "md-project|res:project-console-32.png" size="Dnd" />
+		<StockIcon stockid = "md-project-library" icon = "md-project|res:project-library-32.png" size="Dnd" />
+		<StockIcon stockid = "md-project-web" icon = "md-project|res:web-overlay-32.png" size="Dnd" />
+		<StockIcon stockid = "md-split-window" resource = "Icons.16x16.SplitWindow" />
+		<StockIcon stockid = "md-struct" resource = "Icons.16x16.Struct" />
+		<StockIcon stockid = "md-task-list-icon" resource = "Icons.16x16.TaskListIcon" />
+		<StockIcon stockid = "md-text-file-icon" resource = "Icons.16x16.TextFileIcon" size = "Menu" />
+		<StockIcon stockid = "md-text-file-icon" resource = "Icons.32x32.TextFileIcon" size = "Dnd" />
+		<StockIcon stockid = "md-html-file-icon" icon = "md-text-file-icon|res:web-overlay-32.png" size = "Dnd" />
+		<StockIcon stockid = "md-html-file-icon" icon = "md-text-file-icon|res:web-overlay-16.png" size = "Menu" />
+		<StockIcon stockid = "md-class-file" resource = "file-class-32.png" size = "Dnd" />
+		<StockIcon stockid = "md-interface-file" resource = "file-interface-32.png" size = "Dnd" />
+		<StockIcon stockid = "md-enum-file" resource = "file-enum-32.png" size = "Dnd" />
+		<StockIcon stockid = "md-struct-file" resource = "file-struct-32.png" size = "Dnd" />
+		<StockIcon stockid = "md-gui-file" icon = "md-text-file-icon|res:project-gui-32.png" size = "Dnd" />
+		<StockIcon stockid = "md-tip-of-the-day" resource = "Icons.16x16.TipOfTheDay" />
+		<StockIcon stockid = "md-toggle-bookmark" resource = "Icons.16x16.ToggleBookmark" />
+		<StockIcon stockid = "md-web-search-icon" resource = "Icons.16x16.WebSearchIcon" />
+		<StockIcon stockid = "md-xml-file-icon" resource = "Icons.16x16.XMLFileIcon" size = "Menu" />
+		<StockIcon stockid = "md-xml-file-icon" resource = "file-xml-32.png" size = "Dnd" />
+		<StockIcon stockid = "md-package" resource = "package-x-generic_22.png" />
+		<StockIcon stockid = "md-package" resource = "package-x-generic.png" size = "Dialog" />
+		<StockIcon stockid = "md-select-all" resource = "edit-select-all_22.png" />
+		<StockIcon stockid = "md-select-all" resource = "edit-select-all.png" size = "Menu" />
+		<StockIcon stockid = "md-software-update" resource = "system-software-update_22.png" />
+		<StockIcon stockid = "md-software-update" resource = "system-software-update_22.png" size = "Button" />
+		<StockIcon stockid = "md-software-update" resource = "system-software-update.png" size = "Dialog" />
+		<StockIcon stockid = "md-user-package" resource = "user-package.png" />
+		<StockIcon stockid = "md-visual-studio" resource = "visual-studio.png" />
+		<StockIcon stockid = "md-comment" resource = "comment.png" />
+		<StockIcon stockid = "md-uncomment" resource = "uncomment.png" />
+		<StockIcon stockid = "md-addin" resource = "plugin-16.png" />
+		<StockIcon stockid = "md-addin" resource = "plugin-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-addin" resource = "plugin-22.png" size = "Button"/>
+		<StockIcon stockid = "md-addin" resource = "plugin-32.png" size = "LargeToolbar"/>
+	</Extension>
+	
+
+
+</Addin>
