@@ -1,3 +1,11 @@
+2007-10-30  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Project/AspNetAppProjectConfiguration.cs: Fix "Bug 337819 - Directory
+	  change warning shown when creating a new Web Project.". Re-opens "Bug
+	  333419 - Output dir in ASP.NET project don't work", though it's now
+	  possible to work around the latter by setting an XML attribute in the
+	  project file.
+
 2007-10-30  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AspNetAddIn.addin.xml: Use the html file icon for some known asp.net
