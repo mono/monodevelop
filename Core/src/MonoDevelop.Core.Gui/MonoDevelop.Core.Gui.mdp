@@ -184,6 +184,7 @@
     <File name="icons/file-interface-32.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/file-struct-32.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/file-xml-32.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/web-overlay-16.png" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="gecko-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=ccf7d78a55e9f021" />

@@ -186,6 +186,7 @@ RES =  \
 	icons/view-fullscreen.png \
 	icons/view-fullscreen_22.png \
 	icons/visual-studio.png \
+	icons/web-overlay-16.png \
 	icons/web-overlay-32.png \
 	MonoDevelop.Core.Gui.addin.xml
 

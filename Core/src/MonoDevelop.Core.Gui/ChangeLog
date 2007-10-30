@@ -1,3 +1,10 @@
+2007-10-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.mdp, Makefile.am, icons/Icons.16x16.MiscFiles,
+	  icons/Icons.16x16.TextFileIcon, icons/web-overlay-16.png,
+	  MonoDevelop.Core.Gui.addin.xml: Registered menu size html file icon.
+	  Updated text file icon.
+
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.addin.xml: Bump MD version.
