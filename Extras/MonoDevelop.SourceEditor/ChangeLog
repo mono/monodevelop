@@ -1,3 +1,9 @@
+2007-10-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs: Fix "Bug 338018 - 
+	  LineCountChanged events fired even when count is 0". Based on patch 
+	  by Zach Lute.
+
 2007-10-29  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am: Make the changes needed to build SourceEditor(1|2)
