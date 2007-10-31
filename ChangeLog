@@ -1,3 +1,18 @@
+2007-10-31  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* contrib/contrib.mds:
+	* contrib/Mono.Cecil:
+	* contrib/Mono.Cecil/Mono.Cecil.mdp:
+	* contrib/Mono.Cecil/Mono.Cecil.Mdb.mdp:
+	* contrib/Mono.Cecil/Mono.Cecil:
+	* contrib/Mono.Cecil/Mono.CompilerServices.SymbolWriter:
+	* contrib/Mono.Cecil/Mono.Cecil.Mdb:
+	* contrib/Mono.Cecil/Makefile.am:
+	  Start building Mono.Cecil.Mdb.dll rather than including its code in 
+	  MonoDevelop.Projects. Remove svn:externals; started using "svn copy" 
+	  instead, and added some make targets to facilitate updating the
+	  source.
+
 2007-10-29  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* configure.in:
