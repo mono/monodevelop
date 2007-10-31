@@ -39,12 +39,41 @@ namespace MonoDevelop.AspNet.Deployment
 		const int LISTCOL_Text = 0;
 		const int LISTCOL_Target = 1;
 		const int LISTCOL_Checked = 2;
+		AspNetAppProject project;
 		
 		public WebDeployLaunchDialog (AspNetAppProject project)
 		{
 			this.Build();
 			
-			//fill the list
+			this.project = project;
+			
+			//set up the sort order 
+			targetStore.SetSortFunc (LISTCOL_Text, delegate (TreeModel m, TreeIter a, TreeIter b) {
+				return string.Compare ((string) m.GetValue (a, LISTCOL_Text), (string) m.GetValue (b, LISTCOL_Text));
+			});
+			targetStore.SetSortColumnId (LISTCOL_Text, SortType.Ascending);
+			
+			//set up the view
+			targetView.Model = targetStore;
+			targetView.HeadersVisible = false;
+			
+			CellRendererToggle toggleRenderer = new CellRendererToggle ();
+			toggleRenderer.Activatable = true;
+			toggleRenderer.Xpad = 6;
+			TreeViewColumn checkCol = new TreeViewColumn ("", toggleRenderer, "active", LISTCOL_Checked);
+			checkCol.Expand = false;
+			targetView.AppendColumn (checkCol);
+			toggleRenderer.Toggled += HandleToggle;
+			
+			CellRendererText textRenderer = new CellRendererText ();
+			textRenderer.WrapMode = Pango.WrapMode.WordChar;
+			targetView.AppendColumn ("", textRenderer, "markup", LISTCOL_Text);
+			
+			fillStore ();
+		}
+		
+		void fillStore ()
+		{
 			int count = 0;
 			TreeIter lastIter = TreeIter.Zero;
 			foreach (WebDeployTarget target in project.WebDeployTargets) {
@@ -59,24 +88,6 @@ namespace MonoDevelop.AspNet.Deployment
 				targetStore.SetValue (lastIter, LISTCOL_Checked, true);
 			}
 			//FIXME: store/load other selections in .userprefs file
-			
-			//set up the sort order 
-			targetStore.SetSortFunc (LISTCOL_Text, delegate (TreeModel m, TreeIter a, TreeIter b) {
-				return string.Compare ((string) m.GetValue (a, LISTCOL_Text), (string) m.GetValue (b, LISTCOL_Text));
-			});
-			targetStore.SetSortColumnId (LISTCOL_Text, SortType.Ascending);
-			
-			//set up the view
-			targetView.Model = targetStore;
-			targetView.HeadersVisible = false;
-			CellRendererText textRenderer = new CellRendererText ();
-			textRenderer.WrapMode = Pango.WrapMode.WordChar;
-			targetView.AppendColumn ("", textRenderer, "markup", LISTCOL_Text);
-			CellRendererToggle toggleRenderer = new CellRendererToggle ();
-			toggleRenderer.Activatable = true;
-			targetView.AppendColumn ("", toggleRenderer, "active", LISTCOL_Checked);
-			toggleRenderer.Toggled += HandleToggle;
-			
 			UpdateButtonState ();
 		}
 		
@@ -106,6 +117,13 @@ namespace MonoDevelop.AspNet.Deployment
 				if (((bool)row [LISTCOL_Checked]) == true)
 					targetSelected = true;
 			buttonDeploy.Sensitive = targetSelected;
+		}
+		
+		protected virtual void editTargetsClicked (object sender, System.EventArgs e)
+		{
+			MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ShowOptions (project, "AspNetAddin.Deployment");
+			targetStore.Clear ();
+			fillStore ();
 		}
 	}
 }

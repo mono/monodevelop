@@ -1,5 +1,14 @@
 2007-10-30  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* Deployment/WebDeployService.cs, Deployment/WebDeployCommands.cs,
+	  Deployment/WebDeployLaunchDialog.cs,
+	  gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployLaunchDialog.cs,
+	  gtk-gui/gui.stetic: Enable web deploy dialog even if no targets exist,
+	  but add a button for editng/adding targets. Fixes "Bug 337804 - Web
+	  Deployment should be easier to configure".
+
+2007-10-30  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* Project/AspNetAppProjectConfiguration.cs: Fix "Bug 337819 - Directory
 	  change warning shown when creating a new Web Project.". Re-opens "Bug
 	  333419 - Output dir in ASP.NET project don't work", though it's now

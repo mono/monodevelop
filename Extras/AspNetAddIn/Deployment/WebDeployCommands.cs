@@ -51,7 +51,7 @@ namespace MonoDevelop.AspNet.Deployment
 		{
 			AspNetAppProject project = IdeApp.ProjectOperations.CurrentSelectedProject as AspNetAppProject;
 			info.Visible = (project != null);
-			info.Enabled = (project != null && project.WebDeployTargets.ContainsTargetValidForDeployment ());
+			info.Enabled = (project != null);
 		}
 	}
 }

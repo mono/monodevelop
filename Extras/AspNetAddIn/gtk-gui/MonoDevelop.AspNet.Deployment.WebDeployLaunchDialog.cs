@@ -21,6 +21,8 @@ namespace MonoDevelop.AspNet.Deployment {
         
         private Gtk.TreeView targetView;
         
+        private Gtk.Button button6;
+        
         private Gtk.Button buttonCancel;
         
         private Gtk.Button buttonDeploy;
@@ -84,6 +86,28 @@ namespace MonoDevelop.AspNet.Deployment {
             w6.BorderWidth = ((uint)(5));
             w6.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
+            this.button6 = new Gtk.Button();
+            this.button6.CanFocus = true;
+            this.button6.Name = "button6";
+            this.button6.UseUnderline = true;
+            // Container child button6.Gtk.Container+ContainerChild
+            Gtk.Alignment w7 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            // Container child GtkAlignment.Gtk.Container+ContainerChild
+            Gtk.HBox w8 = new Gtk.HBox();
+            w8.Spacing = 2;
+            // Container child GtkHBox.Gtk.Container+ContainerChild
+            Gtk.Image w9 = new Gtk.Image();
+            w9.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-edit", Gtk.IconSize.Menu, 16);
+            w8.Add(w9);
+            // Container child GtkHBox.Gtk.Container+ContainerChild
+            Gtk.Label w11 = new Gtk.Label();
+            w11.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("_Edit targets");
+            w11.UseUnderline = true;
+            w8.Add(w11);
+            w7.Add(w8);
+            this.button6.Add(w7);
+            this.AddActionWidget(this.button6, -11);
+            // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonCancel = new Gtk.Button();
             this.buttonCancel.CanDefault = true;
             this.buttonCancel.CanFocus = true;
@@ -92,9 +116,10 @@ namespace MonoDevelop.AspNet.Deployment {
             this.buttonCancel.UseUnderline = true;
             this.buttonCancel.Label = "gtk-cancel";
             this.AddActionWidget(this.buttonCancel, -6);
-            Gtk.ButtonBox.ButtonBoxChild w7 = ((Gtk.ButtonBox.ButtonBoxChild)(w6[this.buttonCancel]));
-            w7.Expand = false;
-            w7.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w16 = ((Gtk.ButtonBox.ButtonBoxChild)(w6[this.buttonCancel]));
+            w16.Position = 1;
+            w16.Expand = false;
+            w16.Fill = false;
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonDeploy = new Gtk.Button();
             this.buttonDeploy.CanDefault = true;
@@ -102,32 +127,33 @@ namespace MonoDevelop.AspNet.Deployment {
             this.buttonDeploy.Name = "buttonDeploy";
             this.buttonDeploy.UseUnderline = true;
             // Container child buttonDeploy.Gtk.Container+ContainerChild
-            Gtk.Alignment w8 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            // Container child GtkAlignment1.Gtk.Container+ContainerChild
-            Gtk.HBox w9 = new Gtk.HBox();
-            w9.Spacing = 2;
-            // Container child GtkHBox1.Gtk.Container+ContainerChild
-            Gtk.Image w10 = new Gtk.Image();
-            w10.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-ok", Gtk.IconSize.Menu, 16);
-            w9.Add(w10);
-            // Container child GtkHBox1.Gtk.Container+ContainerChild
-            Gtk.Label w12 = new Gtk.Label();
-            w12.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("_Deploy");
-            w12.UseUnderline = true;
-            w9.Add(w12);
-            w8.Add(w9);
-            this.buttonDeploy.Add(w8);
+            Gtk.Alignment w17 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            // Container child GtkAlignment2.Gtk.Container+ContainerChild
+            Gtk.HBox w18 = new Gtk.HBox();
+            w18.Spacing = 2;
+            // Container child GtkHBox2.Gtk.Container+ContainerChild
+            Gtk.Image w19 = new Gtk.Image();
+            w19.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-ok", Gtk.IconSize.Menu, 16);
+            w18.Add(w19);
+            // Container child GtkHBox2.Gtk.Container+ContainerChild
+            Gtk.Label w21 = new Gtk.Label();
+            w21.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("_Deploy");
+            w21.UseUnderline = true;
+            w18.Add(w21);
+            w17.Add(w18);
+            this.buttonDeploy.Add(w17);
             this.AddActionWidget(this.buttonDeploy, -5);
-            Gtk.ButtonBox.ButtonBoxChild w16 = ((Gtk.ButtonBox.ButtonBoxChild)(w6[this.buttonDeploy]));
-            w16.Position = 1;
-            w16.Expand = false;
-            w16.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w25 = ((Gtk.ButtonBox.ButtonBoxChild)(w6[this.buttonDeploy]));
+            w25.Position = 2;
+            w25.Expand = false;
+            w25.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 437;
-            this.DefaultHeight = 344;
+            this.DefaultWidth = 511;
+            this.DefaultHeight = 353;
             this.Show();
+            this.button6.Clicked += new System.EventHandler(this.editTargetsClicked);
         }
     }
 }

@@ -111,9 +111,14 @@ namespace MonoDevelop.AspNet.Deployment
 			
 			ICollection<WebDeployTarget> targets = null;
 			
-			ResponseType response = (ResponseType) dialog.Run ();
+			ResponseType response = Gtk.ResponseType.None;
+			do {
+				response = (ResponseType) dialog.Run ();
+			} while (response != Gtk.ResponseType.Ok && response != Gtk.ResponseType.Cancel && response != Gtk.ResponseType.DeleteEvent);
+			
 			if (response == Gtk.ResponseType.Ok)
 				targets = dialog.GetSelectedTargets ();
+			
 			dialog.Destroy ();
 			
 			if (targets != null && targets.Count > 0)
