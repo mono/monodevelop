@@ -19,7 +19,7 @@
       <Entry build="True" name="log4net" configuration="Release" />
       <Entry build="True" name="Mono.Addins.Gui" configuration="Release" />
       <Entry build="True" name="Mono.Addins.Setup" configuration="Release" />
-      <Entry build="True" name="Mono.Cecil.Mdp" configuration="Release" />
+      <Entry build="True" name="Mono.Cecil.Mdb" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="Firebird" single="True">
@@ -31,7 +31,7 @@
     <Execute type="None" entry="log4net" />
     <Execute type="None" entry="Mono.Addins.Gui" />
     <Execute type="None" entry="Mono.Addins.Setup" />
-    <Execute type="None" entry="Mono.Cecil.Mdp" />
+    <Execute type="None" entry="Mono.Cecil.Mdb" />
   </StartMode>
   <Entries>
     <Entry filename="Firebird/Firebird.mdp" />
