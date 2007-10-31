@@ -7,6 +7,7 @@ REFS =  \
 	$(MONODOC_LIBS) \
 	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
 	-r:$(top_builddir)/build/bin/Mono.Cecil.dll \
+	-r:$(top_builddir)/build/bin/Mono.Cecil.Mdb.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:Mono.Posix \
 	-r:System \
@@ -30,13 +31,6 @@ FILES =  \
 	MonoDevelop.Projects.Extensions/ItemPropertyCodon.cs \
 	MonoDevelop.Projects.Extensions/LanguageBindingCodon.cs \
 	MonoDevelop.Projects.Extensions/ProjectBindingCodon.cs \
-	MonoDevelop.Projects.Parser.Cecil/MdbFactory.cs \
-	MonoDevelop.Projects.Parser.Cecil/MdbReader.cs \
-	MonoDevelop.Projects.Parser.Cecil/MdbWriter.cs \
-	MonoDevelop.Projects.Parser.Cecil/MonoSymbolFile.cs \
-	MonoDevelop.Projects.Parser.Cecil/MonoSymbolTable.cs \
-	MonoDevelop.Projects.Parser.Cecil/MonoSymbolWriter.cs \
-	MonoDevelop.Projects.Parser.Cecil/SymbolWriterImpl.cs \
 	MonoDevelop.Projects.Parser/AbstractDecoration.cs \
 	MonoDevelop.Projects.Parser/AbstractMember.cs \
 	MonoDevelop.Projects.Parser/AbstractNamedEntity.cs \

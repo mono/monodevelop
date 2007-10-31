@@ -1,3 +1,10 @@
+2007-10-31  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Parser.Cecil/*:
+	* MonoDevelop.Projects.mdp:
+	* Makefile.am: Don't build Mono.Cecil.Mdb into the MonoDevelop.Projects 
+	  dll, as we're now building it independently.
+
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.addin.xml: Bump MD version.
