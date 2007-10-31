@@ -129,7 +129,7 @@ namespace MonoDevelop.SourceEditor.Gui
 					lines++;
 			}
 			TextIter iter = this.GetIterAtOffset (args.Pos.Offset - args.Length);
-			if (lines > 0)
+			if (lines != 0)
 				OnLineCountChanged (iter.Line, lines, iter.LineOffset);
 		}
 		
@@ -145,7 +145,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		protected override void OnDeleteRange (TextIter start, TextIter end)
 		{
 			int count = start.Line - end.Line;
-			if (count > 0)
+			if (count != 0)
 				OnLineCountChanged (start.Line, count, start.LineOffset);
 			base.OnDeleteRange (start, end);
 		}
