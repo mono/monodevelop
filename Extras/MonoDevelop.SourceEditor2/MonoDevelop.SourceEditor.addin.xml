@@ -40,10 +40,6 @@
 	
 	
 	<!-- Extensions -->
-	
-	<Extension path = "/MonoDevelop/Core/Services">
-		<Class id = "SourceViewService" class="MonoDevelop.SourceEditor.SourceViewService" />
-	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Commands/TextEditor">
 		<Command id = "MonoDevelop.SourceEditor.EditorCommands.HighlightingTypeList"
