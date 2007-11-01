@@ -1227,22 +1227,21 @@ namespace CSharpBinding.Parser
 			if (currentUnit != null) {
 				callingClass = GetInnermostClass ();
 			}
-			IReturnType type = new ReturnType ("System.Object");
-//			IReturnType type = expr.AcceptVisitor (typeVisitor, null) as IReturnType;
-//			if (type == null || type.PointerNestingLevel != 0) {
-//				fcu = parserContext.ParseFile (fileName, fileContent).MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Ast.CompilationUnit;
-//				lookupTableVisitor.VisitCompilationUnit (fcu, null);
-//				currentUnit = (ICompilationUnit)csharpVisitor.VisitCompilationUnit (fcu, null);
-//
-//				if (currentUnit != null) {
-//					callingClass = GetInnermostClass ();
-//				}
-//				type = expr.AcceptVisitor (typeVisitor, null) as IReturnType;
-//				if (type == null)
-//					return null;
-//			}
-//			if (type.ArrayDimensions != null && type.ArrayDimensions.Length > 0)
-//				type = new ReturnType ("System.Array");
+			IReturnType type = expr.AcceptVisitor (typeVisitor, null) as IReturnType;
+			if (type == null || type.PointerNestingLevel != 0) {
+				fcu = parserContext.ParseFile (fileName, fileContent).MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Ast.CompilationUnit;
+				lookupTableVisitor.VisitCompilationUnit (fcu, null);
+				currentUnit = (ICompilationUnit)csharpVisitor.VisitCompilationUnit (fcu, null);
+
+				if (currentUnit != null) {
+					callingClass = GetInnermostClass ();
+				}
+				type = expr.AcceptVisitor (typeVisitor, null) as IReturnType;
+				if (type == null)
+					return null;
+			}
+			if (type.ArrayDimensions != null && type.ArrayDimensions.Length > 0)
+				type = new ReturnType ("System.Array");
 
 			IClass returnClass = SearchType (type, currentUnit);
 //			IClass returnClass = parserContext.SearchType (type.FullyQualifiedName, null, currentUnit);
