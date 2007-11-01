@@ -86,7 +86,7 @@ namespace MonoDevelop.Projects.Parser
 		{
 			// Resolve complete class names (aliases replace complete class names)
 			string res;
-			if (names.TryGetValue (typeName, out res))
+			if (names.TryGetValue (typeName, out res) && !string.IsNullOrEmpty (res))
 				return res;
 			
 			// Try replacing the namespace
