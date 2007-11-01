@@ -1,3 +1,9 @@
+2007-11-01  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Parser/Resolver.cs: Restore IsAsResolve logic. Is/as are used for
+	  downcasting, so it only makes sense to return subclasses of the provided
+	  type.
+
 2007-10-29  Michael Hutchinson  <mhutchinson@novell.com> 
 
 	* Gui/CSharpTextEditorExtension.cs: Don't try to look back past first 
