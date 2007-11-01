@@ -427,7 +427,8 @@ namespace MonoDevelop.SourceEditor.Gui
 				buf.PlaceCursor (line);		
 				
 				if (e.Button == 1) {
-					buf.ToggleBookmark (line.Line);
+					//FIXME GTKSV2
+					//buf.ToggleBookmark (line.Line);
 				} else if (e.Button == 3) {
 					CommandEntrySet cset = new CommandEntrySet ();
 					cset.AddItem (EditorCommands.ToggleBookmark);
@@ -466,7 +467,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			}
 			base.OnPopulatePopup (menu);
 		}
-		
+		/* FIXME GTKSV2
 		public void ShowBreakpointAt (int linenumber)
 		{
 			if (!buf.IsMarked (linenumber, SourceMarkerType.BreakpointMark))
@@ -490,7 +491,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			buf.ToggleMark (linenumber, SourceMarkerType.ExecutionMark);
 			buf.UnMarkupLine (linenumber);
 		}
-
+*/
 		public void SimulateKeyPress (ref Gdk.EventKey evnt)
 		{
 			Global.PropagateEvent (this, evnt);

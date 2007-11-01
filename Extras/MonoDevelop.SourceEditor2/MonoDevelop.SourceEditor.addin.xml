@@ -48,6 +48,7 @@
 		<Command id = "MonoDevelop.SourceEditor.EditorCommands.ShowBufferOptions"
 				_label = "Buffer Options"
 				icon = "md-properties-icon" />
+		<!-- FIXME GTKSV2
 		<Command id = "MonoDevelop.SourceEditor.EditorCommands.ToggleBookmark"
 				icon = "md-toggle-bookmark"
 				shortcut = "Control|F2"
@@ -66,12 +67,13 @@
 		<Command id = "MonoDevelop.SourceEditor.EditorCommands.ClearBookmarks"
 				icon = "md-clear-all-bookmarks"
 				_description = "Clear bookmarks"
-				_label = "Clear Bookmarks" />
+				_label = "Clear Bookmarks" />-->
 		<Command id = "MonoDevelop.SourceEditor.EditorCommands.GotoLineNumber"
 				_label = "_Go to Line..." 
 				description = "Go to line"
 				shortcut = "Control|G"
 				icon = "gtk-jump-to" />
+		<!--FIXME GTKSV2
 		<Command id = "MonoDevelop.SourceEditor.EditorCommands.GotoMatchingBrace"
 				_label = "Go to Matching _Brace" 
 				description = "Go to Matching Brace" 
@@ -85,7 +87,7 @@
 				_label = "Print Previe_w" 
 				description = "Show print preview" 
 				icon  = "gtk-print-preview"
-				shortcut = "Shift|Control|P" />
+				shortcut = "Shift|Control|P" />-->
 	</Extension>
 
 	<Extension path = "/MonoDevelop/SourceEditor/ContextMenu/Editor">
@@ -109,11 +111,13 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.Find" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindNext" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.Replace" />
+			<!--FIXME GTKSV2
 			<SeparatorItem id = "SearchSeparator" />
 			<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.ToggleBookmark" />
 			<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.PrevBookmark" />
 			<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.NextBookmark" />
 			<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.ClearBookmarks" />
+			-->
 		</ItemSet>
 	</Extension>
 	
@@ -128,31 +132,37 @@
 		<SeparatorItem id = "SearchSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ReplaceInFiles" />
-			
+		<!--FIXME GTKSV2
 		<SeparatorItem id = "SearchInFilesSeparator" />
 		<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.ToggleBookmark" />
 		<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.PrevBookmark" />
 		<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.NextBookmark" />
 		<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.ClearBookmarks" />
-
+		-->
 		<SeparatorItem id = "Separator2" />
 		<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.GotoLineNumber" />
+		<!--FIXME GTKSV2
 		<SeparatorItem id = "Separator3" />
 		<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.GotoMatchingBrace" />
+		-->
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/File">
+			<!--FIXME GTKSV2
 			<SeparatorItem id = "PrintSeparator"  insertafter = "SaveSeparator" />
 			<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.PrintPreviewDocument"
 						 insertafter = "SaveSeparator"
 						 insertbefore = "PrintSeparator" />
 			<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.PrintDocument"
 						 insertafter = "MonoDevelop.SourceEditor.EditorCommands.PrintPreviewDocument" />
+			-->
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Toolbar/Standard">
+		<!--FIXME GTKSV2
 		<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.PrintDocument"
 					 insertafter = "MonoDevelop.Ide.Commands.FileCommands.SaveAll" />
+					 -->
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/OptionsDialogPanels">
@@ -169,9 +179,11 @@
 			<DialogPanel id = "Behavior"
 			             _label = "Behavior"
 			             class = "MonoDevelop.SourceEditor.Gui.OptionPanels.BehaviorTextEditorPanel"/>
+			<!--FIXME GTKSV2
 			<DialogPanel id = "SyntaxHighlighting"
 		             _label = "Syntax Highlighting"
 		             class = "MonoDevelop.SourceEditor.Gui.OptionPanels.SyntaxHighlightingPanel"/>
+		    -->
 		</DialogPanel>
 	</Extension>
 

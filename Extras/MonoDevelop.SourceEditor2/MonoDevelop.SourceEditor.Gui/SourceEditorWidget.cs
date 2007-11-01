@@ -64,7 +64,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			Buffer.Dispose ();
 			base.Dispose ();
 		}
-
+/* FIXME GTKSV2
 		public void ExecutingAt (int linenumber)
 		{
 			View.ExecutingAt (linenumber);
@@ -74,7 +74,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		{
 			View.ClearExecutingAt (linenumber);
 		}
-
+*/
 		public string Text
 		{
 			get { return Buffer.Text; }
@@ -200,11 +200,9 @@ namespace MonoDevelop.SourceEditor.Gui
 			
 			return str.Substring (0, leftOffset) + delimiter + str.Substring (rightOffset);
 		}
-		
+		/*FIXME GTKSV2
 		protected void CreatePrintJob ()
 		{
-			//FIXME GTKSV2
-			/*
 			if (printDialog == null  || printJob == null)
 			{
 				PrintConfig config = PrintConfig.Default ();
@@ -217,7 +215,7 @@ namespace MonoDevelop.SourceEditor.Gui
 				sourcePrintJob.SetFooterFormat (GettextCatalog.GetString ("MonoDevelop"), null, GettextCatalog.GetString ("Page") + " %N/%Q", true);
 				sourcePrintJob.WrapMode = WrapMode.Word;
 				printJob = sourcePrintJob.Print ();
-			}*/
+			}
 		}
 		
 		[CommandHandler (EditorCommands.PrintDocument)]
@@ -279,19 +277,17 @@ namespace MonoDevelop.SourceEditor.Gui
 				preview.TransientFor = IdeApp.Workbench.RootWindow;
 //			preview.IconName = "gtk-print-preview";
 			preview.ShowAll ();
-		}
-		
+		}*/
+/* FIXME GTKSV2	
 		[CommandHandler (EditorCommands.GotoMatchingBrace)]
 		public void GotoMatchingBrace ()
 		{
-			//FIXME GTKSV2
-			/*
 			TextIter iter = Buffer.GetIterAtMark (Buffer.InsertMark);
 			if (Source.IterFindMatchingBracket (ref iter)) {
 				iter.ForwardChar ();
 				Buffer.PlaceCursor (iter);
 				View.ScrollMarkOnscreen (Buffer.InsertMark);
-			}*/
+			}
 		}
 
 		[CommandHandler (EditorCommands.ToggleBookmark)]
@@ -336,6 +332,6 @@ namespace MonoDevelop.SourceEditor.Gui
 				info.Visible = false;
 			else
 				info.Enabled = DisplayBinding.ContentName != null;
-		}
+		}*/
 	}
 }

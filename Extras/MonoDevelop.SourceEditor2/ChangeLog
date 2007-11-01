@@ -1,5 +1,14 @@
 2007-11-01  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs,
+	  MonoDevelop.SourceEditor.Gui/SourceEditorView.cs,
+	  MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs,
+	  MonoDevelop.SourceEditor.addin.xml: Disable all the bookmarks and
+	  printing related code as GTKSV2 can't handle this stuff.
+
+2007-11-01  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs: Don't fire
 	  LineCountChanged when count hasn't changed.
 	* MonoDevelop.SourceEditor.addin.xml: SourceViewService is now static, so

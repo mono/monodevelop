@@ -19,14 +19,14 @@ using System.Runtime.InteropServices;
 using GtkSourceView;
 	
 namespace MonoDevelop.SourceEditor.Gui
-{
+{/* FIXME GTKSV 2
 	public enum SourceMarkerType
 	{
 		SourceEditorBookmark,
 		BreakpointMark,
 		ExecutionMark
 	}
-
+*/
 	// This gives us a nice way to avoid the try/finally
 	// which is really long.
 	struct NoUndo : IDisposable
@@ -168,7 +168,8 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		public void UnMarkupLine (int line)
 		{
-			ClearMarks (SourceMarkerType.ExecutionMark);
+			//FIXME GTKSV2
+			//ClearMarks (SourceMarkerType.ExecutionMark);
 			RemoveTag (markup, StartIter, EndIter);
 		}
 		
@@ -382,6 +383,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		//
 		// http://bugzilla.gnome.org/show_bug.cgi?id=132525
 		//
+		/* fixme gtksv 2.0
 		[DllImport("libgtksourceview-1.0.so.0")]
 		static extern IntPtr gtk_source_buffer_get_markers_in_region (IntPtr raw, ref Gtk.TextIter begin, ref Gtk.TextIter end);
 		
@@ -510,8 +512,8 @@ namespace MonoDevelop.SourceEditor.Gui
 			}
 
 			gtk_source_buffer_create_marker (Handle, null, type.ToString (), ref begin_line);
-		}
-		
+		}*/
+		/* FIXME GTKSV 2.0
 		[DllImport("libgtksourceview-1.0.so.0")]
 		static extern IntPtr gtk_source_buffer_get_prev_marker(IntPtr raw, ref Gtk.TextIter iter);
 		
@@ -553,8 +555,8 @@ namespace MonoDevelop.SourceEditor.Gui
 			}
 			
 			PlaceCursor (loc);
-		}
-		
+		}*/
+		/* FIXME GTKSV 2.0
 		[DllImport("libgtksourceview-1.0.so.0")]
 		static extern IntPtr gtk_source_buffer_get_first_marker (IntPtr raw);
 		
@@ -597,7 +599,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			
 			PlaceCursor (loc);
 		}
-
+		 
 		public void ClearBookmarks ()
 		{
 			ClearMarks (SourceMarkerType.SourceEditorBookmark);
@@ -623,7 +625,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			
 			if (lst != IntPtr.Zero)
 				g_slist_free (lst);
-		}
+		}*/
 #endregion
 
 #region ITextBufferStrategy compat interface, this should be removed ASAP

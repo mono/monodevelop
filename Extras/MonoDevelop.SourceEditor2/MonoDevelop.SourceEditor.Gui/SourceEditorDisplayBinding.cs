@@ -90,8 +90,8 @@ namespace MonoDevelop.SourceEditor.Gui
 	}
 	
 	public class SourceEditorDisplayBindingWrapper : AbstractViewContent,
-		IExtensibleTextEditor, IPositionable, IBookmarkBuffer, IDebuggableEditor, ICodeStyleOperations,
-		IDocumentInformation, IEncodedTextContent, IViewHistory
+		IExtensibleTextEditor, IPositionable, ICodeStyleOperations,
+		IDocumentInformation, IEncodedTextContent, IViewHistory //FIXME GTKSV2 IDebuggableEditor, IBookmarkBuffer
 	{
 		VBox mainBox;
 		VBox editorBar;
@@ -146,7 +146,7 @@ namespace MonoDevelop.SourceEditor.Gui
 				ShowFileChangedWarning ();
 			}
 		}
-
+/* FIXME GTKSV2
 		public void ExecutingAt (int line)
 		{
 			se.ExecutingAt (line);
@@ -156,7 +156,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		{
 			se.ClearExecutingAt (line);
 		}
-		
+		*/
 		public override Gtk.Widget Control {
 			get {
 				return mainBox;
@@ -266,7 +266,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			fsw.Changed += (FileSystemEventHandler) DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));
 			UpdateFSW (null, null);
 			mainBox.PackStart (se, true, true, 0);
-			
+			/* FIXME GTKSV 2
 			if (Services.DebuggingService != null) {
 				breakpointAddedHandler = (BreakpointEventHandler) DispatchService.GuiDispatch (new BreakpointEventHandler (OnBreakpointAdded));
 				breakpointRemovedHandler = (BreakpointEventHandler) DispatchService.GuiDispatch (new BreakpointEventHandler (OnBreakpointRemoved));
@@ -276,7 +276,7 @@ namespace MonoDevelop.SourceEditor.Gui
 				Services.DebuggingService.BreakpointRemoved += breakpointRemovedHandler;
 				Services.DebuggingService.ExecutionLocationChanged += executionChangedHandler;
 			}
-			
+			*/
 			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += new ParseInformationEventHandler(UpdateClassBrowser);
 			
 			mainBox.ShowAll ();
@@ -427,14 +427,14 @@ namespace MonoDevelop.SourceEditor.Gui
 			ContentName = fileName;
 			lastSaveTime = File.GetLastWriteTime (ContentName);
 			InitializeFormatter ();
-			
+			/* FIXME GTKSV2
 			if (Services.DebuggingService != null) {
 				foreach (IBreakpoint b in Services.DebuggingService.GetBreakpointsAtFile (fileName))
 					se.View.ShowBreakpointAt (b.Line - 1);
 					
 				UpdateExecutionLocation ();
 			}
-			
+			*/
 			IFileParserContext context = IdeApp.ProjectOperations.ParserDatabase.GetFileParserContext(fileName);
 			memberParseInfo = context.ParseFile(fileName);
 			BindClassCombo();
@@ -754,7 +754,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			else
 				return (mem.Region != null && mem.Region.BeginLine <= line && line <= mem.Region.EndLine);
 		}
-		
+		/* FIXME GTKSV2
 		void OnBreakpointAdded (object sender, BreakpointEventArgs args)
 		{
 			if (args.Breakpoint.FileName == ContentName)
@@ -790,7 +790,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			else
 				currentExecutionLine = -1;
 		}
-		
+		*/
 		void ShowFileChangedWarning ()
 		{
 			if (reloadBar == null) {
@@ -1136,7 +1136,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			else
 				return (char) 0;
 		}
-
+/* FIXME GTKSV2
 		public void SetBookmarked (int position, bool mark)
 		{
 			int line = se.Buffer.GetIterAtOffset (position).Line;
@@ -1164,7 +1164,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		{
 			se.ClearBookmarks ();
 		}
-		
+		*/
 #region IDocumentInformation
 		string IDocumentInformation.FileName {
 			get { return ContentName != null ? ContentName : UntitledName; }
@@ -1204,7 +1204,6 @@ namespace MonoDevelop.SourceEditor.Gui
 			se.View.ModifyFont (TextEditorProperties.Font);
 			se.View.ShowLineNumbers = TextEditorProperties.ShowLineNumbers;
 			se.Buffer.HighlightMatchingBrackets = TextEditorProperties.ShowMatchingBracket;
-			//FIXME gtksv2
 			se.View.ShowRightMargin = TextEditorProperties.ShowVerticalRuler;
 			se.View.EnableCodeCompletion = TextEditorProperties.EnableCodeCompletion;
 			se.View.InsertSpacesInsteadOfTabs = TextEditorProperties.ConvertTabsToSpaces;
@@ -1216,7 +1215,6 @@ namespace MonoDevelop.SourceEditor.Gui
 			UpdateStyleScheme ();
 
 			if (TextEditorProperties.VerticalRulerRow > -1)
-				//fixme gtksv2 left or right?
 				se.View.RightMarginPosition = (uint) TextEditorProperties.VerticalRulerRow;
 			else
 				se.View.RightMarginPosition = 80;
