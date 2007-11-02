@@ -134,8 +134,13 @@ namespace MonoDevelop.Projects
 			get { return parentCombine; }
 		}
 		
-		public Combine RootCombine {
-			get { return parentCombine != null ? parentCombine.RootCombine : this as Combine; }
+		public virtual Combine RootCombine {
+			get {
+				if (parentCombine != null)
+					return parentCombine.RootCombine;
+				else
+					return this as Combine; 
+			}
 		}
 		
 		// Returns a path which can be used to store local data related to the combine entry
@@ -294,13 +299,9 @@ namespace MonoDevelop.Projects
 		
 		protected virtual void OnNameChanged (CombineEntryRenamedEventArgs e)
 		{
-			Combine topMostParentCombine = this.parentCombine;
+			Combine topMostParentCombine = this.RootCombine;
 
 			if (topMostParentCombine != null) {
-				while (topMostParentCombine.ParentCombine != null) {
-					topMostParentCombine = topMostParentCombine.ParentCombine;
-				}
-				
 				foreach (Project project in topMostParentCombine.GetAllProjects()) {
 					if (project == this) {
 						continue;

@@ -1,3 +1,10 @@
+2007-11-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/Combine.cs, MonoDevelop.Projects/CombineEntry.cs:
+	  Made RootCombine overridable, which means that the root combine doesn't
+	  need to be the root in the hierarchy. There could be for example several
+	  branches with a root in each one.
+
 2007-11-01  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Parser/TypeNameResolver.cs: Don't return empty type

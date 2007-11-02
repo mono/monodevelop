@@ -132,6 +132,10 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		public virtual bool IsRoot {
+			get { return RootCombine == this; }
+		}
+		
 		protected internal override bool OnGetNeedsBuilding ()
 		{
 			foreach (CombineEntry entry in Entries)
@@ -677,11 +681,13 @@ namespace MonoDevelop.Projects
 				throw new CyclicBuildOrderException();
 			}
 			triedToInsert[index] = true;
-			foreach (ProjectReference reference in ((Project)allProjects[index]).ProjectReferences) {
+			Project insertProject = (Project) allProjects[index];
+			foreach (ProjectReference reference in insertProject.ProjectReferences) {
 				if (reference.ReferenceType == ReferenceType.Project) {
 					int j = 0;
 					for (; j < allProjects.Count; ++j) {
-						if (reference.Reference == ((Project)allProjects[j]).Name) {
+						Project checkProject = (Project)allProjects[j];
+						if (reference.Reference == checkProject.Name && (insertProject.RootCombine == checkProject.RootCombine)) {
 							if (!inserted[j]) {
 								Insert(j, allProjects, sortedEntries, inserted, triedToInsert);
 							}
