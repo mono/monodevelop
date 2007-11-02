@@ -1,3 +1,11 @@
+2007-11-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Commands/CustomStringTagProvider.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs: Use RootCombine
+	  instead of CurrentOpenCombine when possible.
+	* MonoDevelop.Ide.Gui/Workbench.cs: Factorized some code.
+
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.addin.xml: Bump MD version.

@@ -347,7 +347,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				return false;
 			}
 
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null && IdeApp.ProjectOperations.CurrentOpenCombine.FindProject (name) != null) {
+			if (parentCombine != null && parentCombine.RootCombine.FindProject (name) != null) {
 				Services.MessageService.ShowError (this, GettextCatalog.GetString ("A Project with that name is already in your Project Space"));
 				return false;
 			}

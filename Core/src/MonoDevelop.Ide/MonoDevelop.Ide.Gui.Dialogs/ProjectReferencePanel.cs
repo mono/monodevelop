@@ -116,7 +116,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		
 		void PopulateListView (Project configureProject)
 		{
-			Combine openCombine = IdeApp.ProjectOperations.CurrentOpenCombine;
+			Combine openCombine = configureProject.RootCombine;
 			
 			if (openCombine == null) {
 				return;

@@ -124,11 +124,14 @@ namespace MonoDevelop.Ide.Commands
 					break;
 				
 				case "COMBINEDIR":
-					return Path.GetDirectoryName (IdeApp.ProjectOperations.CurrentOpenCombine.FileName);
+					if (IdeApp.ProjectOperations.CurrentSelectedCombineEntry != null)
+						return Path.GetDirectoryName (IdeApp.ProjectOperations.CurrentSelectedCombineEntry.RootCombine.FileName);
+					break;
 
 				case "COMBINEFILENAME":
 					try {
-						return Path.GetFileName (IdeApp.ProjectOperations.CurrentOpenCombine.FileName);
+					if (IdeApp.ProjectOperations.CurrentSelectedCombineEntry != null)
+						return Path.GetFileName (IdeApp.ProjectOperations.CurrentSelectedCombineEntry.RootCombine.FileName);
 					} catch (Exception) {}
 					break;
 				case "STARTUPPATH":

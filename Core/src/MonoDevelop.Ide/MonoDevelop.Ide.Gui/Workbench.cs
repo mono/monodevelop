@@ -651,22 +651,10 @@ namespace MonoDevelop.Ide.Gui
 					binding = DisplayBindings.GetBindingPerFileName(fileName);
 				
 				if (binding != null) {
-					Project project = null;
-					Combine combine = null;
-					GetProjectAndCombineFromFile (fileName, out project, out combine);
-					
-					if (combine != null && project != null)
-					{
-						LoadFileWrapper fw = new LoadFileWrapper (workbench, binding, project, oFileInfo);
-						fw.Invoke (fileName);
-						RecentOpen.AddLastFile (fileName, project.Name);
-					}
-					else
-					{
-						LoadFileWrapper fw = new LoadFileWrapper (workbench, binding, null, oFileInfo);
-						fw.Invoke (fileName);
-						RecentOpen.AddLastFile (fileName, null);
-					}
+					Project project = IdeApp.ProjectOperations.CurrentOpenCombine.GetProjectContainingFile (fileName);
+					LoadFileWrapper fw = new LoadFileWrapper (workbench, binding, project, oFileInfo);
+					fw.Invoke (fileName);
+					RecentOpen.AddLastFile (fileName, project != null ? project.Name : null);
 				} else {
 					try {
 						// FIXME: this doesn't seem finished yet in Gtk#
@@ -681,21 +669,6 @@ namespace MonoDevelop.Ide.Gui
 						fw.Invoke (fileName);
 						RecentOpen.AddLastFile (fileName, null);
 					}
-				}
-			}
-		}
-		
-		void GetProjectAndCombineFromFile (string fileName, out Project project, out Combine combine)
-		{
-			combine = IdeApp.ProjectOperations.CurrentOpenCombine;
-			project = null;
-			
-			if (combine != null)
-			{
-				foreach (Project projectaux in combine.GetAllProjects())
-				{
-					if (projectaux.IsFileInProject (fileName))
-						project = projectaux;
 				}
 			}
 		}
