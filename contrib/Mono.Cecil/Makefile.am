@@ -54,4 +54,4 @@ assemblydir = $(MD_ASSEMBLY_DIR)
 assembly_DATA = $(CECIL) $(CECIL_MDB) $(CECIL_DEBUG) $(CECIL_MDB_DEBUG)
 
 CLEANFILES =  $(CECIL) $(CECIL_MDB) $(CECIL_DEBUG) $(CECIL_MDB_DEBUG)
-EXTRA_DIST = $(CECIL_DIST) $(CECIL_DIR)/Mono.Cecil.dll.sources $(CECIL_MDB_DIR)/Mono.Cecil.Mdb.dll.sources stripnewline.sed
+EXTRA_DIST = $(CECIL_DIST) $(CECIL_DIR)/Mono.Cecil.dll.sources $(CECIL_MDB_DIST) $(CECIL_MDB_DIR)/Mono.Cecil.Mdb.dll.sources stripnewline.sed
