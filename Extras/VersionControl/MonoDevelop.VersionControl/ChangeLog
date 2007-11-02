@@ -1,0 +1,5 @@
+2007-11-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl/Publish.cs: Use RootCombine instead of
+	  CurrentOpenCombine when possible.
+

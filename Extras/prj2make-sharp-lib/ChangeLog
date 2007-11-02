@@ -1,3 +1,8 @@
+2007-11-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* SlnFileFormat.cs: Use RootCombine instead of CurrentOpenCombine when
+	  possible.
+
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* prj2make-sharp-lib.addin.xml: Bump MD version.

@@ -35,6 +35,8 @@ namespace MonoDevelop.Deployment.Gui
 			Combine c = project.ParentCombine;
 			while (c != null) {
 				pname = c.Name + " / " + pname;
+				if (c.IsRoot)
+					break;
 				c = c.ParentCombine;
 			}
 			

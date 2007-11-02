@@ -105,10 +105,10 @@ namespace MonoDevelop.Deployment.Gui
 			combineList = IdeApp.ProjectOperations.CurrentOpenCombine.GetAllEntries (typeof(Combine));
 			foreach (Combine c in combineList) {
 				string name = c.Name;
-				Combine co = c.ParentCombine;
-				while (co != null) {
-					name = co.Name + " / " + name;
+				Combine co = c;
+				while (!co.IsRoot) {
 					co = co.ParentCombine;
+					name = co.Name + " / " + name;
 				}
 				comboCreateProject.AppendText (name);
 				n++;

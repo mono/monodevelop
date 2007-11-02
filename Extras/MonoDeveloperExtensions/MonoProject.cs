@@ -237,7 +237,7 @@ namespace MonoDeveloper
 		public void CombineOpened (object sender, CombineEventArgs args)
 		{
 			foreach (string pref in refNames) {
-				Project p = IdeApp.ProjectOperations.CurrentOpenCombine.FindProject (pref);
+				Project p = RootCombine.FindProject (pref);
 				if (p != null) ProjectReferences.Add (new ProjectReference (p));
 			}
 		}

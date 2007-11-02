@@ -1,3 +1,11 @@
+2007-11-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment.Gui/DeployDialog.cs,
+	  MonoDevelop.Deployment.Gui/EntrySelectionTree.cs,
+	  MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs,
+	  MonoDevelop.Deployment/PackageBuilder.cs: Use RootCombine instead of
+	  CurrentOpenCombine when possible.
+
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment.addin.xml: Bump MD version.

@@ -136,7 +136,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			string fullName = namspace.Length > 0 ? namspace + "." + name : name;
 			
-			CodeRefactorer gen = new CodeRefactorer (IdeApp.ProjectOperations.CurrentOpenCombine, IdeApp.ProjectOperations.ParserDatabase);
+			CodeRefactorer gen = new CodeRefactorer (project.RootCombine, IdeApp.ProjectOperations.ParserDatabase);
 			
 			CodeTypeDeclaration type = new CodeTypeDeclaration ();
 			type.Name = name;

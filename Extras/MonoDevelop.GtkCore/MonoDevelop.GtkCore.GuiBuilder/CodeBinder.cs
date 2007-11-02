@@ -243,7 +243,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		CodeRefactorer GetCodeGenerator ()
 		{
-			CodeRefactorer cr = new CodeRefactorer (IdeApp.ProjectOperations.CurrentOpenCombine, IdeApp.ProjectOperations.ParserDatabase);
+			CodeRefactorer cr = new CodeRefactorer (project.RootCombine, IdeApp.ProjectOperations.ParserDatabase);
 			cr.TextFileProvider = textFileProvider;
 			return cr;
 		}

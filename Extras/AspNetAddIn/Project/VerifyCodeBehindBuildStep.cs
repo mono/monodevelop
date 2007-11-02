@@ -119,7 +119,7 @@ namespace AspNetAddIn
 			MonoDevelop.Core.Gui.DispatchService.GuiSyncDispatch (delegate {
 				for (int i = 0; i < membersToAdd.Count; i++)
 					try {
-						BindingService.GetCodeGenerator ().AddMember (classesForMembers[i], membersToAdd[i]);
+						BindingService.GetCodeGenerator (project).AddMember (classesForMembers[i], membersToAdd[i]);
 					} catch (MemberExistsException m) {
 						CodeBehindWarning cbw = new CodeBehindWarning (m);
 						monitor.Log.WriteLine (cbw.ToString ());

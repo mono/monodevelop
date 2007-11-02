@@ -76,7 +76,7 @@ namespace MonoDevelop.Prj2Make
 		public System.Collections.Specialized.StringCollection GetExportFiles (object obj)
 		{
 			Combine c = obj as Combine;
-			if (c != null && c.ParentCombine != null && c.ParentCombine.FileFormat is MSBuildFileFormat)
+			if (c != null && !c.IsRoot && c.ParentCombine.FileFormat is MSBuildFileFormat)
 				// Solution folder
 				return new System.Collections.Specialized.StringCollection ();
 
@@ -89,7 +89,7 @@ namespace MonoDevelop.Prj2Make
 			if (c == null)
 				return;
 
-			if (c.ParentCombine != null && c.ParentCombine.FileFormat is MSBuildFileFormat)
+			if (!c.IsRoot && c.ParentCombine.FileFormat is MSBuildFileFormat)
 				// Ignore a non-root combine if its parent is a msbuild solution
 				// Eg. if parent is a mds, then this should get emitted as the
 				// top level solution
@@ -760,7 +760,7 @@ namespace MonoDevelop.Prj2Make
 			//Ensure the corresponding entries exist all the way
 			//upto the RootCombine
 			Combine parent = project.ParentCombine;
-			while (parent.ParentCombine != null) {
+			while (!parent.IsRoot && parent.ParentCombine != null) {
 				CombineConfigurationEntry p = GetConfigEntry (parent, configName);
 				if (p.ConfigurationName != configName)
 					p.ConfigurationName = configName;

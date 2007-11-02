@@ -305,7 +305,10 @@ namespace MonoDevelop.Deployment
 					} else if (firstEntry) {
 						combineList.Add (c);
 					}
-					c = c.ParentCombine;
+					if ((c is Combine) && ((Combine)c).IsRoot)
+						c = null;
+					else
+						c = c.ParentCombine;
 				}
 				while (c != null);
 				

@@ -75,11 +75,9 @@ namespace MonoDevelop.VersionControl
 		string moduleName;
 		string[] files;
 		string message;
-		Combine co;
 					
 		public PublishWorker (Repository vc, string moduleName, string localPath, string[] files, string message) 
 		{
-			this.co = IdeApp.ProjectOperations.CurrentOpenCombine;
 			this.vc = vc;
 			this.path = localPath;
 			this.moduleName = moduleName;
@@ -89,7 +87,7 @@ namespace MonoDevelop.VersionControl
 
 		protected override string GetDescription ()
 		{
-			return "Publishing \"" + co.Name + "\" Project...";
+			return "Publishing \"" + moduleName + "\" Project...";
 		}
 		
 		protected override void Run ()

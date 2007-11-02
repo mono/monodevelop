@@ -44,10 +44,12 @@ namespace AspNetEdit.Integration
 	public class MonoDevelopProxy : MarshalByRefObject, IDisposable
 	{
 		IClass codeBehindClass;
+		CombineEntry project;
 		
-		public MonoDevelopProxy (IClass codeBehindClass)
+		public MonoDevelopProxy (CombineEntry project, IClass codeBehindClass)
 		{
 			this.codeBehindClass = codeBehindClass;
+			this.project = project;
 		}
 		
 		#region services (must all be GuiSyncObjects, i.e. MarshalByRef)
@@ -107,7 +109,7 @@ namespace AspNetEdit.Integration
 				return false;
 			
 			Gtk.Application.Invoke ( delegate {
-				BindingService.CreateAndShowMember (codeBehindClass, method);
+				BindingService.CreateAndShowMember (project, codeBehindClass, method);
 			});
 			
 			return true;

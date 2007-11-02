@@ -34,6 +34,7 @@ using System.CodeDom;
 using System.Reflection;
 using System.Collections.Generic;
 
+using MonoDevelop.Projects;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.CodeGeneration;
@@ -145,12 +146,12 @@ namespace MonoDevelop.DesignerSupport
 			return false;
 		}
 		
-		public static IMember AddMemberToClass (IClass cls, CodeTypeMember member, bool throwIfExists)
+		public static IMember AddMemberToClass (CombineEntry entry, IClass cls, CodeTypeMember member, bool throwIfExists)
 		{
-			return AddMemberToClass (cls, null, member, throwIfExists);
+			return AddMemberToClass (entry, cls, null, member, throwIfExists);
 		}
 		
-		public static IMember AddMemberToClass (IClass cls, IClass specificPartToAffect, CodeTypeMember member, bool throwIfExists)
+		public static IMember AddMemberToClass (CombineEntry entry, IClass cls, IClass specificPartToAffect, CodeTypeMember member, bool throwIfExists)
 		{
 			bool isChildClass = false;
 			foreach (IClass c in cls.Parts)
@@ -162,7 +163,7 @@ namespace MonoDevelop.DesignerSupport
 			IMember existingMember = GetCompatibleMemberInClass (cls, member);
 			
 			if (existingMember == null)
-				return GetCodeGenerator ().AddMember (specificPartToAffect, member);
+				return GetCodeGenerator (entry).AddMember (specificPartToAffect, member);
 			
 			if (throwIfExists)
 				throw new MemberExistsException (cls.Name, member, MemberType.Method, existingMember.Region);
@@ -170,9 +171,9 @@ namespace MonoDevelop.DesignerSupport
 			return existingMember;
 		}
 		
-		public static CodeRefactorer GetCodeGenerator ()
+		public static CodeRefactorer GetCodeGenerator (CombineEntry entry)
 		{			
-			CodeRefactorer cr = new CodeRefactorer (IdeApp.ProjectOperations.CurrentOpenCombine, IdeApp.ProjectOperations.ParserDatabase);
+			CodeRefactorer cr = new CodeRefactorer (entry.RootCombine, IdeApp.ProjectOperations.ParserDatabase);
 			cr.TextFileProvider = OpenDocumentFileProvider.Instance;
 			return cr;
 		}
@@ -253,10 +254,10 @@ namespace MonoDevelop.DesignerSupport
 		
 		
 		//opens the code view with the desired method, creating it if it doesn't already exist
-		public static void CreateAndShowMember (IClass cls, CodeTypeMember member)
+		public static void CreateAndShowMember (CombineEntry project, IClass cls, CodeTypeMember member)
 		{
 			//only adds the method if it doesn't already exist
-			IMember mem = AddMemberToClass (cls, member, false);
+			IMember mem = AddMemberToClass (project, cls, member, false);
 			
 			//some tests in case code refactorer returns bad values
 			int beginline = cls.Region.BeginLine;			
