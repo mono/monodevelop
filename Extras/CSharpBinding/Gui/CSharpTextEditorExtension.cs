@@ -821,11 +821,14 @@ namespace CSharpBinding
 			ns = String.Empty;
 			if (expr == "using" || (expr.EndsWith ("using") && char.IsWhiteSpace (expr[len - 5])))
 				return true;
+			if (expr == "namespace" || (expr.EndsWith ("namespace") && char.IsWhiteSpace (expr[len - 9])))
+				return true;
 			
 			ns = expr;
 			int i = triggerOffset - expr.Length - 1;
-			
-			return (GetPreviousToken (ref i, true) == "using");
+
+			string token = GetPreviousToken (ref i, true);
+			return (token == "using" || token == "namespace");
 		}
 		
 		bool GetPreviousToken (string token, ref int i, bool allowLineChange)
