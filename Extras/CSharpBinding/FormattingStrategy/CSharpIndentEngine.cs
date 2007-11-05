@@ -607,11 +607,15 @@ namespace CSharpBinding.FormattingStrategy {
 					pKeyword = keyword;
 				}
 				
-				if (pKeyword == "base" || pKeyword == "this" || pKeyword == "class" || pKeyword == "interface") {
-					// folded ctor or class
-					while (stack.PeekInside (0) == Inside.FoldedStatement) {
-						TrimIndent ();
-						stack.Pop ();
+				while (true) {
+					if (stack.PeekInside (0) != Inside.FoldedStatement)
+						break;
+					string kw = stack.PeekKeyword (0);
+					stack.Pop ();
+					TrimIndent ();
+					if (!string.IsNullOrEmpty (kw)) {
+						pKeyword = kw;
+						break;
 					}
 				}
 				
