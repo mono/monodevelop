@@ -226,9 +226,15 @@ namespace CSharpBinding
 			//Regex normalError  = new Regex(@"(?<file>.*)\((?<line>\d+),(?<column>\d+)\):\s+(?<error>\w+)\s+(?<number>[\d\w]+):\s+(?<message>.*)", RegexOptions.Compiled);
 			//Regex generalError = new Regex(@"(?<error>.+)\s+(?<number>[\d\w]+):\s+(?<message>.*)", RegexOptions.Compiled);
 			
+			bool typeLoadException = false;
+			
 			foreach (string s in new string[] { stdout, stderr }) {
 				StreamReader sr = File.OpenText (s);
 				while (true) {
+					if (typeLoadException) {
+						compilerOutput.Append (sr.ReadToEnd ());
+						break;
+					}
 					string curLine = sr.ReadLine();
 					compilerOutput.Append(curLine);
 					compilerOutput.Append('\n');
@@ -239,7 +245,12 @@ namespace CSharpBinding
 					if (curLine.Length == 0) {
 						continue;
 					}
-				
+
+					if (curLine.StartsWith ("Unhandled Exception: System.TypeLoadException")) {
+						cr.Errors.Clear ();
+						typeLoadException = true;
+					}
+					
 					CompilerError error = CreateErrorFromString (curLine);
 					
 					if (error != null)
@@ -247,6 +258,14 @@ namespace CSharpBinding
 				}
 				sr.Close();
 			}
+			if (typeLoadException) {
+				Regex reg  = new Regex(@".*WARNING.*used in (mscorlib|System),.*", RegexOptions.Multiline);
+				if (reg.Match (compilerOutput.ToString ()).Success)
+					cr.Errors.Add (CreateErrorFromString ("Error: A referenced assembly may be built with an incompatible CLR version. See the compilation output for more details."));
+				else
+					cr.Errors.Add (CreateErrorFromString ("Error: A dependency of a referenced assembly may be missing, or you may be referencing an assembly created with a newer CLR version. See the compilation output for more details."));
+			}
+			
 			return new DefaultCompilerResult(cr, compilerOutput.ToString());
 		}
 		
