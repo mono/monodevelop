@@ -1,3 +1,9 @@
+2007-11-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Don't display the "Find
+	  References" command for sealed classes, enums, structs and delegates.
+	  Fixes bug #338385.
+
 2007-11-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Commands/CustomStringTagProvider.cs,
