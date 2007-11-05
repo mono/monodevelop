@@ -1393,8 +1393,15 @@ namespace CSharpBinding.Parser
 				}
 				
 				// Add classes from calling namespace
-				if (callingClass.Namespace.Length > 0)
-					result.AddRange (parserContext.GetNamespaceContents (callingClass.Namespace, true));
+				string cn = callingClass.Namespace;
+				while (cn.Length > 0) {
+					result.AddRange (parserContext.GetNamespaceContents (cn, true));
+					int i = cn.LastIndexOf ('.');
+					if (i != -1)
+						cn = cn.Substring (0, i);
+					else
+						cn = string.Empty;
+				}
 			}
 			string n = "";
 			
