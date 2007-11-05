@@ -715,6 +715,28 @@ namespace CSharpBinding
 			//if (charTyped != '.' && charTyped != ' ')
 			//	return null;
 			
+			// Completion of enum assignment
+			i = ctx.TriggerOffset;
+			if (charTyped == ' ' && GetPreviousToken ("=", ref i, true)) {
+				IParserContext pctx = GetParserContext ();
+				Resolver res = new Resolver (pctx);
+
+				string ex = expressionFinder.FindExpression (Editor.GetText (0, i), i - 2).Expression;
+				
+				// Find the type of the variable that will hold the object
+				IReturnType rt = res.internalResolve (ex, caretLineNumber, caretColumn, FileName, Editor.Text);
+				if (rt != null) {
+					IClass cls = res.SearchType (rt, res.CompilationUnit);
+					if (cls.ClassType == ClassType.Enum) {
+						CodeCompletionDataProvider cp = new CodeCompletionDataProvider (pctx, GetAmbience ());
+						TypeNameResolver resolver = res.CreateTypeNameResolver ();
+						cp.AddResolveResult (cls, false, resolver);
+						return cp;
+					}
+				}
+				return null;
+			}
+			
 			// Check for 'overridable' completion
 			
 			i = ctx.TriggerOffset;

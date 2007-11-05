@@ -1,5 +1,11 @@
 2007-11-05  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Gui/CSharpTextEditorExtension.cs: Implemented completion context for
+	  "SomeEnum e =". In this case the completion list will show the enum
+	  name. Fixes bug #335142.
+
+2007-11-05  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Parser/Resolver.cs: Include in the completion list the classes from parent
 	  namespaces. Fixes bug #338394.
 
