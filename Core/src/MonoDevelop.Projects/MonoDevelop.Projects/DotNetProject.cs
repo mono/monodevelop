@@ -176,15 +176,16 @@ namespace MonoDevelop.Projects
 		protected override ICompilerResult DoBuild (IProgressMonitor monitor)
 		{
 			if (languageBinding == null) {
-				DefaultCompilerResult refres = new DefaultCompilerResult ();
+				DefaultCompilerResult langres = new DefaultCompilerResult ();
 				string msg = GettextCatalog.GetString ("Unknown language '{0}'. You may need to install an additional add-in to support this language.", language);
-				refres.AddError (msg);
+				langres.AddError (msg);
 				monitor.ReportError (msg, null);
-				return refres;
+				return langres;
 			}
 
+			DefaultCompilerResult refres = null;
+			
 			foreach (ProjectReference pr in ProjectReferences) {
-				DefaultCompilerResult refres = null;
 				if (pr.ReferenceType == ReferenceType.Project) {
 					// Ignore non-dotnet projects
 					Project p = RootCombine != null ? RootCombine.FindProject (pr.Reference) : null;
@@ -195,12 +196,10 @@ namespace MonoDevelop.Projects
 						if (refres == null)
 							refres = new DefaultCompilerResult ();
 						string msg = GettextCatalog.GetString ("Referenced project '{0}' not found in the solution.", pr.Reference);
-						monitor.ReportError (msg, null);
-						refres.AddError (msg);
+						monitor.ReportWarning (msg);
+						refres.AddWarning (msg);
 					}
 				}
-				if (refres != null)
-					return refres;
 			}
 			
 			DotNetProjectConfiguration conf = (DotNetProjectConfiguration) ActiveConfiguration;
@@ -215,7 +214,13 @@ namespace MonoDevelop.Projects
 			CopySupportAssemblies (supportAssemblies);
 
 			try {
-				return languageBinding.Compile (files, ProjectReferences, conf, monitor);
+				res = languageBinding.Compile (files, ProjectReferences, conf, monitor);
+				if (refres != null) {
+					refres.Append (res);
+					return refres;
+				}
+				else
+					return res;
 			}
 			finally {
 				// Delete support assemblies

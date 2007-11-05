@@ -1,3 +1,10 @@
+2007-11-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/DefaultCompilerResult.cs: New Append method allows
+	  merging two ICompilerResult objects.
+	* MonoDevelop.Projects/DotNetProject.cs: A missing project reference is now
+	  a warning, not an error. Fixes bug #337503.
+
 2007-11-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/Combine.cs, MonoDevelop.Projects/CombineEntry.cs:
