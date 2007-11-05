@@ -21,6 +21,7 @@ using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory;
 using ClassType = MonoDevelop.Projects.Parser.ClassType;
+using MPP = MonoDevelop.Projects.Parser;
 
 namespace CSharpBinding.Parser
 {
@@ -1361,6 +1362,11 @@ namespace CSharpBinding.Parser
 					result.Add(par);
 					vars [par.Name] = par;
 				}
+				// Add generic method type parameters
+				if (met.GenericParameters != null) {
+					foreach (MPP.GenericParameter gp in met.GenericParameters)
+						result.Add (CreateParameterTypeClass (gp.Name, gp.BaseTypes, currentUnit));
+				}
 			}
 			
 			foreach (string name in lookupTableVisitor.Variables.Keys) {
@@ -1390,6 +1396,12 @@ namespace CSharpBinding.Parser
 					result.Add (new DefaultParameter (null, "base", new ReturnType(callingClass.BaseTypes.Count > 0 ? callingClass.BaseTypes[0].FullyQualifiedName : "object")));					            
 					showStatic = false;
 					ListMembers (result, callingClass, callingClass);
+				}
+				
+				// Add generic type parameters
+				if (callingClass.GenericParameters != null) {
+					foreach (MPP.GenericParameter gp in callingClass.GenericParameters)
+						result.Add (CreateParameterTypeClass (gp.Name, gp.BaseTypes, currentUnit));
 				}
 				
 				// Add classes from calling namespace

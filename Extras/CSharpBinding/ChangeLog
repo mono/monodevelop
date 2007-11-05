@@ -1,5 +1,10 @@
 2007-11-05  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Parser/Resolver.cs: Include generic type parameters in completion list.
+	  Fixes bug #334620.
+
+2007-11-05  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Gui/CSharpTextEditorExtension.cs: Implemented completion context for
 	  "SomeEnum e =". In this case the completion list will show the enum
 	  name. Fixes bug #335142.
