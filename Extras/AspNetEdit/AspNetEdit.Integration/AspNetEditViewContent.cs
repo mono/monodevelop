@@ -157,7 +157,7 @@ namespace AspNetEdit.Integration
 						codeBehind = cc.IClass;
 				}
 			}
-			proxy = new MonoDevelopProxy (codeBehind);
+			proxy = new MonoDevelopProxy (viewContent.Project, codeBehind);
 			
 			ITextBuffer textBuf = (ITextBuffer) viewContent.GetContent (typeof(ITextBuffer));			
 			editorProcess.Initialise (proxy, textBuf.Text, viewContent.ContentName);

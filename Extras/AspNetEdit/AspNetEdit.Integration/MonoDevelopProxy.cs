@@ -35,6 +35,7 @@ using System.CodeDom;
 using System.Collections.Generic;
 
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Projects;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.DesignerSupport;
 
@@ -91,6 +92,9 @@ namespace AspNetEdit.Integration
 		
 		public string GenerateIdentifierUniqueInCodeBehind (string trialIdentifier)
 		{
+			if (codeBehindClass == null)
+				return trialIdentifier;
+			
 			return BindingService.GenerateIdentifierUniqueInClass (codeBehindClass, trialIdentifier);
 		}
 		
