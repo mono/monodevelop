@@ -35,6 +35,7 @@ namespace MonoDevelop.Components
 				default:
 					break;
 			}
+			DefaultResponse = ResponseType.Ok;
 
 			CommonSetup ();
 		}
