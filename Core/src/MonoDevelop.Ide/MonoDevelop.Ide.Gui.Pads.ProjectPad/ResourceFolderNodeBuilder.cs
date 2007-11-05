@@ -122,7 +122,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		string[] AskFiles (Project project)
 		{
-			FileSelector fs = new FileSelector (GettextCatalog.GetString ("File to Open"));
+			FileSelector fs = new FileSelector (GettextCatalog.GetString ("Add Resource"));
 			try {
 				fs.SelectMultiple = true;
 				fs.SetCurrentFolder (project.BaseDirectory);
