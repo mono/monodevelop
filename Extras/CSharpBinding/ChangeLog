@@ -1,3 +1,8 @@
+2007-11-06  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/Resolver.cs: Fixed "Bug 337658 - MD intellisense does not work for
+	  `value'".
+
 2007-11-05  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* FormattingStrategy/CSharpIndentEngine.cs: Properly collapse folded

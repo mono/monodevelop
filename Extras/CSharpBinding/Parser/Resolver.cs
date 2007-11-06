@@ -289,9 +289,22 @@ namespace CSharpBinding.Parser
 			if (expression == null) {
 				return null;
 			}
-			expression = expression.TrimStart(null);
+			expression = expression.TrimStart (null);
 			if (expression.Length == 0)
 				return null;
+			if (expression == "value") {
+				IClass callingClass = this.GetCallingClass (caretLineNumber, caretColumn, fileName, true);
+				if (callingClass != null) {
+					foreach (IProperty p in callingClass.Properties) {
+						if (p.CanSet && p.SetterRegion != null && p.SetterRegion.IsInside (caretLineNumber, caretColumn)) {
+							LanguageItemCollection membersResult = new LanguageItemCollection ();
+							IClass propertyType = SearchType (p.ReturnType, currentUnit);
+							ListMembers (membersResult, propertyType, propertyType);
+							return new ResolveResult (propertyType, membersResult);
+						}
+					}
+				}
+			}
 
 			// disable the code completion for numbers like 3.47
 			int nn;
@@ -333,6 +346,7 @@ namespace CSharpBinding.Parser
 				type = new ReturnType("System.Array");
 			
 			IClass returnClass = SearchType (type, currentUnit);
+			
 			if (returnClass == null) {
 				// Try if type is Namespace:
 				string n = SearchNamespace(type.FullyQualifiedName, currentUnit);
@@ -349,9 +363,11 @@ namespace CSharpBinding.Parser
 				string[] namespaces = parserContext.GetNamespaceList (n, true, true);
 				return new ResolveResult(namespaces, classes);
 			}
+			
 			//Console.WriteLine("Returning Result!");
 			if (returnClass.FullyQualifiedName == "System.Void")
 				return null;
+			
 			LanguageItemCollection members = new LanguageItemCollection();
 			ListMembers(members, returnClass, returnClass);
 			if (returnClass.ClassType == ClassType.Interface) {
