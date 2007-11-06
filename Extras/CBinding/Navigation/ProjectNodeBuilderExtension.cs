@@ -68,18 +68,6 @@ namespace CBinding.Navigation
 			TagDatabaseManager.Instance.FileUpdated += finishedBuildingTreeHandler;
 		}
 		
-		public override void OnNodeAdded (object dataObject)
-		{
-			CProject p = dataObject as CProject;
-			
-			if (p == null) return;
-			
-			Thread builderThread = new Thread (new ParameterizedThreadStart (CreatePadTree));
-			builderThread.Name = "PadBuilder";
-			builderThread.IsBackground = true;
-			builderThread.Start (p);
-		}
-		
 		public override void Dispose ()
 		{
 			TagDatabaseManager.Instance.FileUpdated -= finishedBuildingTreeHandler;
@@ -198,10 +186,10 @@ namespace CBinding.Navigation
 			
 			if (p == null) return;
 			
-			Thread builderThread = new Thread (new ParameterizedThreadStart (ProjectNodeBuilderExtension.CreatePadTree));
-			builderThread.Name = "PadBuilder";
-			builderThread.IsBackground = true;
-			builderThread.Start (p);
+			foreach (ProjectFile f in p.ProjectFiles) {
+				if (f.BuildAction == BuildAction.Compile)
+					TagDatabaseManager.Instance.UpdateFileTags (p, f.Name);
+			}
 		}
 	}
 }

@@ -33,6 +33,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
+using System.Threading;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
@@ -49,6 +50,9 @@ namespace CBinding.Parser
 	public class TagDatabaseManager
 	{
 		private static TagDatabaseManager instance;
+		private Queue<ProjectFilePair> parsingJobs = new Queue<ProjectFilePair> ();
+		private Thread parsingThread;
+		
 		public event ClassPadEventHandler FileUpdated;
 		
 		private TagDatabaseManager()
@@ -203,13 +207,42 @@ namespace CBinding.Parser
 			fileInfo.IsFilled = true;
 		}
 		
+		private void ParsingThread ()
+		{
+			while (parsingJobs.Count > 0)
+			{
+				ProjectFilePair p;
+					
+				lock (this) {
+					p = parsingJobs.Dequeue ();
+				}
+
+				DoUpdateFileTags (p.Project, p.File);
+			}
+		}
+		
 		public void UpdateFileTags (Project project, string filename)
+		{
+			ProjectFilePair p = new ProjectFilePair (project, filename);
+			
+			lock (this) {
+				if (!parsingJobs.Contains (p))
+					parsingJobs.Enqueue (p);
+			}
+			
+			if (parsingThread == null || !parsingThread.IsAlive) {
+				parsingThread = new Thread (ParsingThread);
+				parsingThread.IsBackground = true;
+				parsingThread.Start();
+			}
+		}
+		
+		private void DoUpdateFileTags (Project project, string filename)
 		{
 			string[] headers = Headers (filename, false);
 			string ctags_options = "--C++-kinds=+p+u --fields=+a-f+S --language-force=C++ --excmd=pattern -f - " + filename + " " + string.Join (" ", headers);
 			
 			string[] system_headers = diff (Headers (filename, true), headers);
-			
 			
 			ProcessWrapper p;
 			
@@ -225,9 +258,7 @@ namespace CBinding.Parser
 			
 			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
 			string tagEntry;
-			
 
-			
 			using (StringReader reader = new StringReader (ctags_output)) {
 				while ((tagEntry = reader.ReadLine ()) != null) {
 					if (tagEntry.StartsWith ("!_")) continue;
@@ -567,6 +598,44 @@ namespace CBinding.Parser
 			}
 			
 			return res.ToArray ();
+		}
+		
+		private class ProjectFilePair
+		{
+			string file;
+			Project project;
+			
+			public ProjectFilePair (Project project, string file)
+			{
+				this.project = project;
+				this.file = file;
+			}
+			
+			public string File {
+				get { return file; }
+			}
+			
+			public Project Project {
+				get { return project; }
+			}
+			
+			public override bool Equals (object other)
+			{
+				ProjectFilePair o = other as ProjectFilePair;
+				
+				if (o == null)
+					return false;
+				
+				if (file == o.File && project == o.Project)
+					return true;
+				else
+					return false;
+			}
+			
+			public override int GetHashCode ()
+			{
+				return (project.ToString() + file).GetHashCode ();
+			}
 		}
 	}
 }

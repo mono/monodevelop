@@ -79,6 +79,8 @@ namespace CBinding
 		private void Init ()
 		{
 			packages.Project = this;
+			
+			IdeApp.ProjectOperations.EntryAddedToCombine += OnEntryAddedToCombine;
 		}
 		
 		public CProject ()
@@ -386,6 +388,9 @@ namespace CBinding
 			    e.ProjectFile.BuildAction == BuildAction.Compile) {
 				e.ProjectFile.BuildAction = BuildAction.Nothing;
 			}
+			
+			if (e.ProjectFile.BuildAction == BuildAction.Compile)
+				TagDatabaseManager.Instance.UpdateFileTags (this, e.ProjectFile.Name);
 		}
 		
 		protected override void OnFileChangedInProject (ProjectFileEventArgs e)
@@ -393,6 +398,17 @@ namespace CBinding
 			base.OnFileChangedInProject (e);
 			
 			TagDatabaseManager.Instance.UpdateFileTags (this, e.ProjectFile.Name);
+		}
+		
+		private static void OnEntryAddedToCombine (object sender, CombineEntryEventArgs e)
+		{
+			CProject p = e.CombineEntry as CProject;
+			
+			if (p == null)
+				return;
+			
+			foreach (ProjectFile f in p.ProjectFiles)
+				TagDatabaseManager.Instance.UpdateFileTags (p, f.Name);
 		}
 		
 		internal void NotifyPackageRemovedFromProject (ProjectPackage package)
