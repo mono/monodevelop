@@ -183,11 +183,16 @@ namespace CSharpBinding.Parser
 			
 			string txt = file.GetText (begin, end);
 			
-			int i = txt.IndexOf ('=');
+			int i = 0; /* = txt.IndexOf ('=');
 			if (i == -1)
-				i = txt.Length;
+				i = txt.Length;*/
 			
-			int pos = txt.LastIndexOf (var.Name, i);
+			int pos = -1;
+			do {
+				i = pos = txt.IndexOf (var.Name, i);
+			} while ( (pos > 0 && !Char.IsLetter (file.GetCharAt (pos - 1))) &&
+			          (pos + txt.Length + 1 < file.Length )&& !Char.IsLetterOrDigit (file.GetCharAt (pos + txt.Length + 1))
+			         );
 			if (pos == -1)
 				return -1;
 			
@@ -649,7 +654,7 @@ namespace CSharpBinding.Parser
 			
 			return false;
 		}
-		
+				
 		public override object VisitCastExpression (CastExpression castExpression, object data)
 		{
 			//Debug ("CastExpression", castExpression.ToString (), castExpression);

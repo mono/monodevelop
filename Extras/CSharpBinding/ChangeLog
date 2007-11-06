@@ -1,5 +1,11 @@
 2007-11-06  Mike Krüger <mkrueger@novell.com> 
 
+	* Parser/CodeGenerator.cs: Fixed "Bug 336598 - Renaming variables by
+	  refactoring replaces matches in the replace string" and "Bug 335977 -
+	  Rename refactoring does not rename instance in foreach".
+
+2007-11-06  Mike Krüger <mkrueger@novell.com> 
+
 	* Parser/Resolver.cs: Fixed "Bug 337658 - MD intellisense does not work for
 	  `value'".
 
