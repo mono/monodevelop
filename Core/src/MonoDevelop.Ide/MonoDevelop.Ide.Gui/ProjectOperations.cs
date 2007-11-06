@@ -528,10 +528,27 @@ namespace MonoDevelop.Ide.Gui
 						ProjectFile newFile = new ProjectFile(file);
 						newFile.BuildAction = project.IsCompileable(file) ? BuildAction.Compile : BuildAction.Nothing;
 						project.ProjectFiles.Add(newFile);
-					}
+					}		
 				} else {
-					DispatchService.GuiDispatch (new MessageHandler (new IncludeFilesDialog (project, newFiles).ShowDialog));
+					DispatchService.GuiDispatch (
+						delegate (object state) {
+							NewFilesMessage message = (NewFilesMessage) state;
+							new IncludeFilesDialog (message.Project, message.NewFiles).ShowDialog ();
+						},
+						new NewFilesMessage (project, newFiles)
+					);
 				}
+			}
+		}
+		
+		private class NewFilesMessage
+		{
+			public Project Project;
+			public StringCollection NewFiles;
+			public NewFilesMessage (Project p, StringCollection newFiles)
+			{
+				this.Project = p;
+				this.NewFiles = newFiles;
 			}
 		}
 		

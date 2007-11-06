@@ -1,3 +1,9 @@
+2007-11-06  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Make sure that
+	  IncludeFilesDialog is constructed in the GUI thread. Fixes "Bug 338268 -
+	  Automatic search for new files dialog segfaults MD".
+
 2007-11-06  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.StandardHeader/StandardHeaderTemplates.xml: Added GPLv3 to
