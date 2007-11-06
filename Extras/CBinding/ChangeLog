@@ -2,7 +2,7 @@
 
 	* Navigation/ProjectNodeBuilderExtension.cs: Moved all the threading for the
 	  parsing of source files to the TagDatabaseManager, parsing jobs are
-	  placed on a queue and dispatched by a single thread. Fixes bug 339590.
+	  placed on a queue and dispatched by a single thread. Fixes bug 336368.
 
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
