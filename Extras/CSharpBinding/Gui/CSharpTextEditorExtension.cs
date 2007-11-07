@@ -734,7 +734,7 @@ namespace CSharpBinding
 				IReturnType rt = res.internalResolve (ex, caretLineNumber, caretColumn, FileName, Editor.Text);
 				if (rt != null) {
 					IClass cls = res.SearchType (rt, res.CompilationUnit);
-					if (cls.ClassType == ClassType.Enum) {
+					if (cls != null && cls.ClassType == ClassType.Enum) {
 						CodeCompletionDataProvider cp = new CodeCompletionDataProvider (pctx, GetAmbience ());
 						TypeNameResolver resolver = res.CreateTypeNameResolver ();
 						cp.AddResolveResult (cls, false, resolver);

@@ -1,3 +1,8 @@
+2007-11-06  Zach Lute  <zach.lute@gmail.com>
+
+	* Gui/CSharpTextEditorExtension.cs: Added missing null check to fix 
+	  Bug #339445.
+
 2007-11-06  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Gui/CSharpTextEditorExtension.cs: Override TextChanged in order to update
