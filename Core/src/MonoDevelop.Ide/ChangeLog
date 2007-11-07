@@ -1,3 +1,8 @@
+2007-11-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui/Workbench.cs: Fix crash opening a file when there is
+	  no solution open.
+
 2007-11-06  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Content/IEditable.cs: TextChanged event now reports

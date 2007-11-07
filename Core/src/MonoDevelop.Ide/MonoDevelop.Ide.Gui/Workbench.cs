@@ -651,7 +651,7 @@ namespace MonoDevelop.Ide.Gui
 					binding = DisplayBindings.GetBindingPerFileName(fileName);
 				
 				if (binding != null) {
-					Project project = IdeApp.ProjectOperations.CurrentOpenCombine.GetProjectContainingFile (fileName);
+					Project project = IdeApp.ProjectOperations.CurrentOpenCombine != null ? IdeApp.ProjectOperations.CurrentOpenCombine.GetProjectContainingFile (fileName) : null;
 					LoadFileWrapper fw = new LoadFileWrapper (workbench, binding, project, oFileInfo);
 					fw.Invoke (fileName);
 					RecentOpen.AddLastFile (fileName, project != null ? project.Name : null);
