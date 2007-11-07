@@ -1,3 +1,8 @@
+2007-11-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.DesignerSupport.PropertyGrid/PropertyGridTree.cs: Use a more
+	  convenient color for grup headers.
+
 2007-11-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.DesignerSupport/BindingService.cs: Use RootCombine instead of
