@@ -1,3 +1,8 @@
+2007-11-07  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CSharpTextEditorExtension.cs: Fixed "Bug 339480 - Crash in XML comment
+	  autocompletion".
+
 2007-11-06  Zach Lute  <zach.lute@gmail.com>
 
 	* Gui/CSharpTextEditorExtension.cs: Added missing null check to fix 

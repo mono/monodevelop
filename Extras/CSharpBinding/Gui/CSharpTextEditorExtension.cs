@@ -42,7 +42,7 @@ namespace CSharpBinding
 				int startLine = int.MaxValue;
 				IClass result = null;
 				foreach (IClass c in unit.Classes) {
-					if (c.Region.BeginLine < startLine && c.Region.BeginLine > line) { 
+					if (c.Region != null && c.Region.BeginLine < startLine && c.Region.BeginLine > line) { 
 						startLine = c.Region.BeginLine;						
 						result = c.ClassType == ClassType.Delegate ? c : null;
 					}
