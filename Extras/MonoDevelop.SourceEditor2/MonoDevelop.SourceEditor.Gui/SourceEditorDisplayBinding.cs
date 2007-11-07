@@ -982,9 +982,9 @@ namespace MonoDevelop.SourceEditor.Gui
 			se.Buffer.Delete (pos, length);
 		}
 		
-		public event EventHandler TextChanged {
-			add { se.Buffer.Changed += value; }
-			remove { se.Buffer.Changed -= value; }
+		public event TextChangedEventHandler TextChanged {
+			add { se.Buffer.TextChanged += value; }
+			remove { se.Buffer.TextChanged -= value; }
 		}
 		
 		public string SourceEncoding {

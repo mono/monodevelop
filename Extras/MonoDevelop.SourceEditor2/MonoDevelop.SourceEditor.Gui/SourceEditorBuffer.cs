@@ -130,7 +130,17 @@ namespace MonoDevelop.SourceEditor.Gui
 			TextIter iter = this.GetIterAtOffset (args.Pos.Offset - args.Length);
 			if (lines != 0)
 				OnLineCountChanged (iter.Line, lines, iter.LineOffset);
+			
+			OnTextChanged (args.Pos.Offset, args.Pos.Offset + args.Length);
 		}
+		
+		protected void OnTextChanged (int startOffset, int endOffset)
+		{
+			if (TextChanged != null)
+				TextChanged (this, new TextChangedEventArgs (startOffset, endOffset));
+		}
+		
+		public event TextChangedEventHandler TextChanged;
 		
 		public delegate void LineCountChange (int line, int count, int column);
 		public event LineCountChange LineCountChanged;
@@ -146,7 +156,11 @@ namespace MonoDevelop.SourceEditor.Gui
 			int count = start.Line - end.Line;
 			if (count != 0)
 				OnLineCountChanged (start.Line, count, start.LineOffset);
+			
+			int startIndex = start.Offset, endIndex = end.Offset;
+			
 			base.OnDeleteRange (start, end);
+			OnTextChanged (startIndex, endIndex);
 		}
 		
 		public override void Dispose ()
