@@ -183,6 +183,13 @@ namespace CSharpBinding
 			return false;
 		}
 		
+		public override void TextChanged (int startIndex, int endIndex)
+		{
+			if (startIndex < indentEngine.Cursor)
+				ResetSmartIndentEngineToCursor (startIndex);
+			base.TextChanged (startIndex, endIndex);
+		}
+		
 		public override bool KeyPress (Gdk.Key key, Gdk.ModifierType modifier)
 		{
 			if ((char)(uint)key == ',') {
