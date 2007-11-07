@@ -101,7 +101,7 @@ namespace MonoDevelop.Ide.Gui
 			set { textBuffer.SelectedText = value; }
 		}
 		
-		public event EventHandler TextChanged {
+		public event TextChangedEventHandler TextChanged {
 			add { textBuffer.TextChanged += value; }
 			remove { textBuffer.TextChanged -= value; }
 		}

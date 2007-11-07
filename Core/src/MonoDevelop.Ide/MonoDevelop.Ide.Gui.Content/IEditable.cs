@@ -37,6 +37,27 @@ namespace MonoDevelop.Ide.Gui.Content
 			
 		new string SelectedText { get; set; }
 		
-		event EventHandler TextChanged;
+		event TextChangedEventHandler TextChanged;
+	}
+	
+	public delegate void TextChangedEventHandler (object sender, TextChangedEventArgs args);
+	
+	public class TextChangedEventArgs : EventArgs
+	{
+		int startIndex = -1, endIndex = -1;
+		
+		public TextChangedEventArgs (int startIndex, int endIndex)
+		{
+			this.startIndex = startIndex;
+			this.endIndex = endIndex;
+		}
+		
+		public int StartIndex {
+			get { return startIndex; }
+		}
+		
+		public int EndIndex {
+			get { return endIndex; }
+		}
 	}
 }

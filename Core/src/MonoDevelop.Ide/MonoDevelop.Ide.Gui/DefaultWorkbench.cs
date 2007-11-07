@@ -291,7 +291,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			IEditableTextBuffer editor = (IEditableTextBuffer) content.GetContent (typeof(IEditableTextBuffer));
 			if (editor != null)
-				editor.TextChanged += new EventHandler (OnViewTextChanged);
+				editor.TextChanged += new TextChangedEventHandler (OnViewTextChanged);
 		}
 		
 		public virtual void ShowPad (PadCodon content)
@@ -543,7 +543,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		bool parsingFile;
 		
-		void OnViewTextChanged (object sender, EventArgs e)
+		void OnViewTextChanged (object sender, TextChangedEventArgs e)
 		{
 			if (!parsingFile) {
 				parsingFile = true;

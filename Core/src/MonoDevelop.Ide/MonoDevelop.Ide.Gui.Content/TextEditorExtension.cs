@@ -117,6 +117,12 @@ namespace MonoDevelop.Ide.Gui.Content
 				Next.CursorPositionChanged ();
 		}
 		
+		public virtual void TextChanged (int startIndex, int endIndex)
+		{
+			if (Next != null)
+				Next.TextChanged (startIndex, endIndex);
+		}
+		
 		public virtual void Initialize ()
 		{
 			CheckInitialized ();
@@ -155,6 +161,7 @@ namespace MonoDevelop.Ide.Gui.Content
 	{
 		bool KeyPress (Gdk.Key key, Gdk.ModifierType modifier);
 		void CursorPositionChanged ();
+		void TextChanged (int startIndex, int endIndex);
 		
 		// Return the object that is going to process commands, or null
 		// if commands don't need custom processing

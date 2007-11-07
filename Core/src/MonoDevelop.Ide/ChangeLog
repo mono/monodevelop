@@ -1,5 +1,14 @@
 2007-11-06  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Content/IEditable.cs: TextChanged event now reports
+	  character offsets.
+	* MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs: Add TextChanged
+	  handler.
+	* MonoDevelop.Ide.Gui/TextEditor.cs,
+	  MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Track API change.
+
+2007-11-06  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Make sure that
 	  IncludeFilesDialog is constructed in the GUI thread. Fixes "Bug 338268 -
 	  Automatic search for new files dialog segfaults MD".
