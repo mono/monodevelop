@@ -72,6 +72,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			synErrorTag.Priority = buf.TagTable.Size - 1;
 			
 			buf.Changed += OnBufferChanged;
+			buf.TextChanged += OnBufferTextChanged;
 			TextEditorProperties.Properties.PropertyChanged += OnPropertyChanged;
 			if (TextEditorProperties.EnableAutoCorrection)
 				db.ParseInformationChanged += OnParseInformationChanged;
@@ -81,6 +82,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		{
 			db.ParseInformationChanged -= OnParseInformationChanged;
 			buf.Changed -= OnBufferChanged;
+			buf.TextChanged -= OnBufferTextChanged;
 			TextEditorProperties.Properties.PropertyChanged -= OnPropertyChanged;
 		}
 		
@@ -99,6 +101,14 @@ namespace MonoDevelop.SourceEditor.Gui
 		void OnBufferChanged (object sender, EventArgs e)
 		{
 			ResetUnderlineChangement ();
+		}
+		
+		void OnBufferTextChanged (object sender, TextChangedEventArgs e)
+		{
+			if (extension == null)
+				((ITextEditorExtension)this).TextChanged (e.StartIndex, e.EndIndex);
+			else
+				extension.TextChanged (e.StartIndex, e.EndIndex);
 		}
 		
 		void OnPropertyChanged (object sender, PropertyChangedEventArgs e) {
@@ -655,6 +665,10 @@ namespace MonoDevelop.SourceEditor.Gui
 				res = base.OnKeyPressEvent (evnt);
 			}
 			return res;
+		}
+		
+		void ITextEditorExtension.TextChanged (int startIndex, int endIndex)
+		{
 		}
 		
 		protected override void OnMoveCursor (MovementStep step, int count, bool extend_selection)
