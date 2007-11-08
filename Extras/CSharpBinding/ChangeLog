@@ -1,3 +1,10 @@
+2007-11-08  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Gui/CSharpTextEditorExtension.cs: Don't try to look back at chars before
+	  the beginning of the buffer when deciding how to handle tabs.
+	  Restructure/comment the affected code so it's easier to understand.
+	  Fixes "Bug 340270 - Ctrl+Tab caused exception".
+
 2007-11-08  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/CSharpTextEditorExtension.cs, Parser/Resolver.cs: Fixed "Bug 335140 -

@@ -494,7 +494,14 @@ namespace CSharpBinding
 				//
 				// Tab is interpreted as a reindent command when it's neither at the end of a line nor in a verbatim string
 				// and when a tab has just been inserted (i.e. not a template or an autocomplete command)
-				if ((!indentEngine.IsInsideVerbatimString && (nextChar != '\n' || Editor.GetCharAt (cursor - 2) == '\n')) && Editor.GetCharAt (cursor -1) == '\t') {
+				if (!indentEngine.IsInsideVerbatimString
+				    && cursor >= 1 && Editor.GetCharAt (cursor - 1) == '\t' //tab was actually inserted, or in a region of tabs
+				    && (
+				        nextChar != '\n' // not at the end of a line
+				        || (cursor >= 2 && Editor.GetCharAt (cursor - 2) == '\n') //unless also at the beginning of a line
+				        )
+				    )
+				{
 					Editor.DeleteText (cursor - 1, 1);
 					reIndent = true;
 				}
