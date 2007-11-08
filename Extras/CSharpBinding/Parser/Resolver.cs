@@ -292,6 +292,20 @@ namespace CSharpBinding.Parser
 			expression = expression.TrimStart (null);
 			if (expression.Length == 0)
 				return null;
+			if (expression == ":") {
+				IClass callingClass = this.GetCallingClass (caretLineNumber, caretColumn, fileName, true);
+				if (callingClass != null && callingClass.Region.BeginLine == caretLineNumber) {
+					LanguageItemCollection items = new LanguageItemCollection();
+					LanguageItemCollection content = parserContext.CtrlSpace (caretLineNumber, caretColumn, fileName);
+					for (int i = 0; i < content.Count; ++i) {
+						IClass c = content[i] as IClass;
+						if (c != null && IsClassInInheritanceTree (callingClass, c)) 
+							continue;
+						items.Add (content[i]);
+					}
+					return new ResolveResult (items);
+				}
+			}
 			if (expression == "value") {
 				IClass callingClass = this.GetCallingClass (caretLineNumber, caretColumn, fileName, true);
 				if (callingClass != null) {

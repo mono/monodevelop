@@ -674,9 +674,20 @@ namespace CSharpBinding
 
 			ExpressionFinder expressionFinder = new ExpressionFinder (null);
 			
-			// Code completion of "new"
-			
 			int i = ctx.TriggerOffset;
+			// Base class completion
+			if (charTyped == ' ' && GetPreviousToken (":", ref i, false)) {
+//				if (i + 2 != ctx.TriggerOffset)
+//					return null;
+				IParserContext pctx = GetParserContext ();
+				CodeCompletionDataProvider cp = new CodeCompletionDataProvider (pctx, GetAmbience ());
+				Resolver res = new Resolver (pctx);
+				ResolveResult results = res.Resolve (":", caretLineNumber, caretColumn, FileName, Editor.Text);
+				cp.AddResolveResults (results, false, res.CreateTypeNameResolver ());
+				return cp;
+			}
+			
+			// Code completion of "new"
 			if (charTyped == ' ' && GetPreviousToken ("new", ref i, false)) {
 				string token = GetPreviousToken (ref i, true);
 				if (token == "=" || token == "throw") {
