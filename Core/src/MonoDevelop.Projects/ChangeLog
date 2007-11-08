@@ -1,3 +1,8 @@
+2007-11-08  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Fixed "Bug 340006 -
+	  "Implement Interface" does not work correctly".
+
 2007-11-06  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Parser/PersistentProperty.cs,

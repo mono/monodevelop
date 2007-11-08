@@ -143,6 +143,21 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return name;
 		}
 		
+		static bool Equals (ParameterCollection col1, ParameterCollection col2)
+		{
+			if (col1 == null && col2 == null)
+				return true;
+			if (col1 == null  || col2 == null)
+				return false;
+			if (col1.Count != col2.Count)
+				return false;
+			for (int i = 0; i < col1.Count; i++) {
+				if (col1[i].ReturnType.FullyQualifiedName != col2[i].ReturnType.FullyQualifiedName)
+					return false;
+			}
+			return true;
+		}
+		
 		public void ImplementInterface (IParseInformation pinfo, IClass klass, IClass iface, bool explicitly, IClass declaringClass, IReturnType hintReturnType)
 		{
 			RefactorerContext gctx = GetGeneratorContext (klass);
@@ -190,7 +205,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				IMethod method = iface.Methods[i];
 				
 				for (j = 0, alreadyImplemented = false; j < klass.Methods.Count&& !alreadyImplemented; j++) {
-					if (klass.Methods[j].Name == method.Name && klass.Methods[j].IsExplicitDeclaration == explicitly) 
+					if (klass.Methods[j].Name == method.Name && Equals (klass.Methods[j].Parameters, method.Parameters) && klass.Methods[j].IsExplicitDeclaration == explicitly) 
 						alreadyImplemented = !explicitly || iface.FullyQualifiedName == klass.Methods[j].ExplicitDeclaration.FullyQualifiedName;
 				}
 				
