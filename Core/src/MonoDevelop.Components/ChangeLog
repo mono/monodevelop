@@ -1,3 +1,8 @@
+2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Components.Commands/KeyBindingService.cs: Track LoggingService
+	  API changes.
+
 2007-11-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Components/BaseFileEntry.cs,

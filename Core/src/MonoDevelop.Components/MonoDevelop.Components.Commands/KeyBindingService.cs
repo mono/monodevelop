@@ -233,7 +233,7 @@ namespace MonoDevelop.Components.Commands {
 					schemeName = name;
 				}
 			} catch (Exception e) {
-				Runtime.LoggingService.Error (e);
+				LoggingService.LogError (e.ToString ());
 			} finally {
 				if (reader != null)
 					reader.Close ();
@@ -281,7 +281,7 @@ namespace MonoDevelop.Components.Commands {
 				
 				success = true;
 			} catch (Exception e) {
-				Runtime.LoggingService.Error (e);
+				LoggingService.LogError (e.ToString ());
 			} finally {
 				if (writer != null)
 					writer.Close ();
