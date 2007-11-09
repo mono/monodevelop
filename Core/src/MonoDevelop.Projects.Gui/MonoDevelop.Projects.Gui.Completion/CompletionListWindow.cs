@@ -77,7 +77,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				}
 				
 			} catch (Exception ex) {
-				Runtime.LoggingService.Error (ex);
+				LoggingService.LogError (ex.ToString ());
 			}
 		}
 		

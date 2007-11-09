@@ -116,7 +116,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				try {
 					documentation = GetDocumentation (documentation);
 				} catch (Exception e) {
-					Runtime.LoggingService.Error (e);
+					LoggingService.LogError (e.ToString ());
 				}
 			}
 		
@@ -348,7 +348,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 					}
 				} while (xml.Read ());
 			} catch (Exception ex) {
-				Runtime.LoggingService.Error (ex);
+				LoggingService.LogError (ex.ToString ());
 				return doc;
 			}
 			return ret.ToString ();
