@@ -37,7 +37,7 @@ namespace MonoDevelop.Documentation
 			}
 			catch (Exception ex) {
 				// If something goes wrong, just report the error
-				Runtime.LoggingService.Error (ex);
+				LoggingService.LogError (ex.ToString ());
 				return null;
 			}
 		}
