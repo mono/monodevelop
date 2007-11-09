@@ -246,7 +246,7 @@ namespace Freedesktop.RecentFiles
 						result.Add (RecentItem.Read (reader));
 				}
 			} catch (Exception e) {
-				MonoDevelop.Core.Runtime.LoggingService.Error ((object)"Exception while reading the store", e);
+				MonoDevelop.Core.LoggingService.LogError ("Exception while reading the store", e);
 				if (numberOfTry < MAX_TRIES) {
 					Thread.Sleep (200);
 					return ReadStore (numberOfTry + 1);

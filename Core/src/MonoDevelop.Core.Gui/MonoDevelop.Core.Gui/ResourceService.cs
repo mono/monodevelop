@@ -255,8 +255,7 @@ namespace MonoDevelop.Core.Gui
 			catch (GLib.GException) {
 				// just discard the exception, the icon simply can't be
 				// loaded
-				Runtime.LoggingService.Info(typeof(ResourceService).ToString(), "Warning: can't load " + filename +
-				                   " icon file");
+				LoggingService.LogWarning (typeof(ResourceService).ToString() + " can't load " + filename + " icon file");
 			}
 		}
 		

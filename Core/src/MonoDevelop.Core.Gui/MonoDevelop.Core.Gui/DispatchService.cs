@@ -191,14 +191,11 @@ namespace MonoDevelop.Core.Gui
 		
 		static void HandlerError (GenericMessageContainer msg)
 		{
-			Runtime.LoggingService.Error (errormsg);
-			Runtime.LoggingService.Error (msg.Exception);
 			if (msg.CallerStack != null) {
-				Runtime.LoggingService.Error ("\nCaller stack:");
-				Runtime.LoggingService.Error (msg.CallerStack);
+				LoggingService.LogError ("{0} {1}\nCaller stack:{2}", errormsg, msg.Exception.ToString (), msg.CallerStack);
 			}
 			else
-				Runtime.LoggingService.Error ("\n\nCaller stack not available. Define the environment variable MONODEVELOP_DISPATCH_DEBUG to enable caller stack capture.");
+				LoggingService.LogError ("{0} {1}\nCaller stack not available. Define the environment variable MONODEVELOP_DISPATCH_DEBUG to enable caller stack capture.", errormsg, msg.Exception.ToString ());
 		}
 	}
 

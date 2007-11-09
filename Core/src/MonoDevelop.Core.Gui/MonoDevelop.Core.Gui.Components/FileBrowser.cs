@@ -446,7 +446,7 @@ namespace MonoDevelop.Core.Gui.Components
 			} catch (UnauthorizedAccessException){
 				// Ignore
 			} catch (Exception ex) {
-				Runtime.LoggingService.Error (ex);
+				LoggingService.LogError (ex.ToString ());
 			}
 		}
 

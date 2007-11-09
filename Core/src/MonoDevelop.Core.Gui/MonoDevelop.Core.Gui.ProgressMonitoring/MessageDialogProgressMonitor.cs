@@ -139,7 +139,7 @@ namespace MonoDevelop.Core.Gui.ProgressMonitoring
 			
 			errorsMessages.Add (message);
 			if (ex != null) {
-				Runtime.LoggingService.Error (ex);
+				LoggingService.LogError (ex.ToString ());
 				errorException = ex;
 			}
 			

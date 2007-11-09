@@ -1,3 +1,16 @@
+2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Core.Gui.Dialogs/WizardDialog.cs,
+	  MonoDevelop.Core.Gui.Dialogs/AbstractWizardPanel.cs,
+	  MonoDevelop.Core.Gui.Components/FileBrowser.cs,
+	  MonoDevelop.Core.Gui/DispatchService.cs,
+	  MonoDevelop.Core.Gui/ResourceService.cs,
+	  MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs,
+	  MonoDevelop.Core.Gui.ProgressMonitoring/BaseProgressMonitor.cs,
+	  MonoDevelop.Core.Gui.ProgressMonitoring/MultiTaskDialogProgressMonitor.cs,
+	  Freedesktop.RecentFiles/RecentFileStorage.cs: Track LoggingService API
+	  changes.
+
 2007-11-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.Components/FileBrowser.cs: Remove some frames.
