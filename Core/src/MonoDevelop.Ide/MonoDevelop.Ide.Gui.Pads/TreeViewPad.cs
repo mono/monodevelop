@@ -375,7 +375,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 							handler.OnNodeDrop (obj, oper);
 					}
 				} catch (Exception ex) {
-					Runtime.LoggingService.Error (ex);
+					LoggingService.LogError (ex.ToString ());
 				}
 			}
 			return foundHandler;
@@ -389,7 +389,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				try {
 					nb.Dispose ();
 				} catch (Exception ex) {
-					Runtime.LoggingService.Error (ex);
+					LoggingService.LogError (ex.ToString ());
 				}
 			}
 		}
@@ -604,7 +604,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 							break;
 						}
 					} catch (Exception ex) {
-						Runtime.LoggingService.Error (ex);
+						LoggingService.LogError (ex.ToString ());
 					}
 					node.MoveToPosition (pos);
 				}
@@ -624,7 +624,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 						if ((handler.CanDragNode () & oper) != 0)
 							return true;
 					} catch (Exception ex) {
-						Runtime.LoggingService.Error (ex);
+						LoggingService.LogError (ex.ToString ());
 					}
 					node.MoveToPosition (pos);
 				}
@@ -715,7 +715,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				try {
 					b.GetNodeAttributes (parentNode, dataObject, ref attributes);
 				} catch (Exception ex) {
-					Runtime.LoggingService.Error (ex);
+					LoggingService.LogError (ex.ToString ());
 				}
 				parentNode.MoveToPosition (pos);
 			}
@@ -754,7 +754,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 							handler.SetCurrentNode (nav);
 							handler.RenameItem (e.NewText);
 						} catch (Exception ex) {
-							Runtime.LoggingService.Error (ex);
+							LoggingService.LogError (ex.ToString ());
 						}
 						nav.MoveToPosition (pos);
 					}
@@ -829,7 +829,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 							if (((NodeBuilderExtension)nb).CanBuildNode (type))
 								list.Add (nb);
 						} catch (Exception ex) {
-							Runtime.LoggingService.Error (ex);
+							LoggingService.LogError (ex.ToString ());
 						}
 					}
 				}
@@ -903,7 +903,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 					try {
 						nb.OnNodeAdded (dataObject);
 					} catch (Exception ex) {
-						Runtime.LoggingService.Error (ex);
+						LoggingService.LogError (ex.ToString ());
 					}
 				}
 			} else {
@@ -953,7 +953,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				try {
 					nb.OnNodeRemoved (dataObject);
 				} catch (Exception ex) {
-					Runtime.LoggingService.Error (ex);
+					LoggingService.LogError (ex.ToString ());
 				}
 			}
 		}
@@ -1227,7 +1227,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 						handler.SetCurrentNode (node);
 						handler.OnItemSelected ();
 					} catch (Exception ex) {
-						Runtime.LoggingService.Error (ex);
+						LoggingService.LogError (ex.ToString ());
 					}
 					node.MoveToPosition (pos);
 				}
@@ -1747,7 +1747,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 					try {
 						nb.GetNodeAttributes (this, dataObject, ref ats);
 					} catch (Exception ex) {
-						Runtime.LoggingService.Error (ex);
+						LoggingService.LogError (ex.ToString ());
 					}
 					currentIter = oldIter;
 				}
@@ -1815,7 +1815,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 						bool res = nb.HasChildNodes (this, dataObject);
 						if (res) return true;
 					} catch (Exception ex) {
-						Runtime.LoggingService.Error (ex);
+						LoggingService.LogError (ex.ToString ());
 					}
 					currentIter = citer;
 				}
@@ -1833,7 +1833,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 					try {
 						builder.BuildNode (this, dataObject, ref text, ref icon, ref closedIcon);
 					} catch (Exception ex) {
-						Runtime.LoggingService.Error (ex);
+						LoggingService.LogError (ex.ToString ());
 					}
 					currentIter = citer;
 				}
@@ -1873,7 +1873,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 					try {
 						builder.BuildChildNodes (this, dataObject);
 					} catch (Exception ex) {
-						Runtime.LoggingService.Error (ex);
+						LoggingService.LogError (ex.ToString ());
 					}
 					currentIter = it;
 				}

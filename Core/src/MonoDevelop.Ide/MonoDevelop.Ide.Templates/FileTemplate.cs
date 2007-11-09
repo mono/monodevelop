@@ -258,7 +258,7 @@ namespace MonoDevelop.Ide.Templates
 					t.id = codon.Id;
 					fileTemplates.Add (t);
 				} catch (Exception e) {
-					Runtime.LoggingService.Fatal ((object)GettextCatalog.GetString ("Error loading template: {0}", codon.Id), e);
+					LoggingService.LogFatalError (GettextCatalog.GetString ("Error loading template: {0}", codon.Id), e);
 				}
 			}
 			else {

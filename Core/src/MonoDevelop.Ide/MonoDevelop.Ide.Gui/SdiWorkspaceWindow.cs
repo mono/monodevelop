@@ -409,7 +409,7 @@ namespace MonoDevelop.Ide.Gui
 					tabLabel.Icon.Pixbuf = FileIconLoader.GetPixbufForFile (content.ContentName, 16);
 				}
 			} catch (Exception ex) {
-				Runtime.LoggingService.Error (ex);
+				LoggingService.LogError (ex.ToString ());
 				tabLabel.Icon.Pixbuf = FileIconLoader.GetPixbufForType ("gnome-fs-regular", 16);
 			}
 

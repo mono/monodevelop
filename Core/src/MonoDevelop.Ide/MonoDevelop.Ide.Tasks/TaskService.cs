@@ -131,7 +131,7 @@ namespace MonoDevelop.Ide.Tasks
 				}
 				catch (Exception ex)
 				{
-					Runtime.LoggingService.Warn ("Could not load user tasks: " + fileToLoad as object, ex);
+					LoggingService.LogWarning ("Could not load user tasks: " + fileToLoad, ex);
 				}
         	}
 		}
@@ -152,7 +152,7 @@ namespace MonoDevelop.Ide.Tasks
 			}
 			catch (Exception ex)
 			{
-				Runtime.LoggingService.Warn ("Could not save user tasks: " + fileToSave as object, ex);
+				LoggingService.LogWarning ("Could not save user tasks: " + fileToSave, ex);
 			}
 
 			//Cleanup

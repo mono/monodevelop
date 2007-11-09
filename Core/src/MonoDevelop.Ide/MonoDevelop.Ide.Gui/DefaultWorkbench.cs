@@ -154,7 +154,7 @@ namespace MonoDevelop.Ide.Gui
 		public DefaultWorkbench() : base (Gtk.WindowType.Toplevel)
 		{
 			Title = "MonoDevelop";
-			Runtime.LoggingService.Info ("Creating DefaultWorkbench");
+			LoggingService.LogInfo ("Creating DefaultWorkbench");
 		
 			windowChangeEventHandler = new EventHandler(OnActiveWindowChanged);
 
@@ -188,7 +188,7 @@ namespace MonoDevelop.Ide.Gui
 						else
 							IdeApp.Workbench.OpenDocument (file);
 					} catch (Exception e) {
-						Runtime.LoggingService.ErrorFormat ("unable to open file {0} exception was :\n{1}", file, e.ToString());
+						LoggingService.LogError ("unable to open file {0} exception was :\n{1}", file, e.ToString());
 					}
 				}
 			}
@@ -278,7 +278,7 @@ namespace MonoDevelop.Ide.Gui
 						((IMementoCapable)content).SetMemento(memento);
 					}
 				} catch (Exception e) {
-					Runtime.LoggingService.Error ("Can't get/set memento : " + e.ToString());
+					LoggingService.LogError ("Can't get/set memento : " + e.ToString());
 				}
 			}
 			

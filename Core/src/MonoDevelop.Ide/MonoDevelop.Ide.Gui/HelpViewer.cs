@@ -60,7 +60,7 @@ namespace MonoDevelop.Ide.Gui
 
 		void UrlRequested (object sender, UrlRequestedArgs args)
 		{
-			Runtime.LoggingService.DebugFormat ("Image requested: {0}", args.Url);
+			LoggingService.LogDebug ("Image requested: {0}", args.Url);
 			Stream s = Services.DocumentationService.HelpTree.GetImage (args.Url);
 			
 			if (s != null) {

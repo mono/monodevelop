@@ -200,7 +200,7 @@ namespace MonoDevelop.Ide.Gui {
 			if (targetNode != null) {
 				currentNode = targetNode;
 			} else {
-				Runtime.LoggingService.ErrorFormat ("Logging additional point: {0}", target);
+				LoggingService.LogError ("Logging additional point: {0}", target);
 				LogInternal (target);
 				//currentNode = history.AddAfter(currentNode, target);
 			}

@@ -166,7 +166,7 @@ namespace MonoDevelop.Ide.StandardHeaders
 				if (File.Exists (file))
 					Load (file);
 			} catch (Exception ex) {
-				Runtime.LoggingService.Error (ex);
+				LoggingService.LogError (ex.ToString ());
 			}
 		}
 		
@@ -236,7 +236,7 @@ namespace MonoDevelop.Ide.StandardHeaders
 					}
 				}
 			} catch (Exception e) {
-				Runtime.LoggingService.Error (e);
+				LoggingService.LogError (e.ToString ());
 			} finally {
 				if (reader != null)
 					reader.Close ();

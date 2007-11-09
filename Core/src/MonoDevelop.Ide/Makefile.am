@@ -11,7 +11,6 @@ REFS =  \
 	$(GTKHTML_SHARP_LIBS) \
 	$(MONODOC_LIBS) \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Documentation.dll \
-	-r:$(top_builddir)/build/bin/log4net.dll \
 	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
 	-r:$(top_builddir)/build/bin/Mono.Addins.Gui.dll \
 	-r:$(top_builddir)/build/bin/Mono.Addins.Setup.dll \

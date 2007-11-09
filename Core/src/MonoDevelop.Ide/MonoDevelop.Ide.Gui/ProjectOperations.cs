@@ -895,7 +895,7 @@ namespace MonoDevelop.Ide.Gui
 						return true;
 				});
 			} catch (Exception e) {
-				Runtime.LoggingService.Error ((object)"Exception while loading user combine preferences.", e);
+				LoggingService.LogError ("Exception while loading user combine preferences.", e);
 			} finally {
 				reader.Close ();
 			}
@@ -950,7 +950,7 @@ namespace MonoDevelop.Ide.Gui
 				
 				writer.WriteEndElement (); // UserCombinePreferencesNode
 			} catch (Exception e) {
-				Runtime.LoggingService.Warn("Could not save solution preferences: " + GetPreferencesFileName (combine) as object, e);
+				LoggingService.LogWarning ("Could not save solution preferences: " + GetPreferencesFileName (combine), e);
 			} finally {
 				writer.Close ();
 			}

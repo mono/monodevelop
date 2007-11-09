@@ -1,3 +1,32 @@
+2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Templates/FileTemplate.cs,
+	  MonoDevelop.Ide.Templates/ProjectTemplate.cs,
+	  MonoDevelop.Ide.ExternalTools/ExternalToolService.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/SelectEncodingsDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs,
+	  MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs,
+	  MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs,
+	  MonoDevelop.Ide.Gui.Pads/TaskListPad.cs,
+	  MonoDevelop.Ide.Gui.Pads/NodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs,
+	  MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs,
+	  MonoDevelop.Ide.Gui/ProjectOperations.cs,
+	  MonoDevelop.Ide.Gui/BackgroundProgressMonitor.cs,
+	  MonoDevelop.Ide.Gui/InternalLog.cs,
+	  MonoDevelop.Ide.Gui/NavigationService.cs,
+	  MonoDevelop.Ide.Gui/IdeStartup.cs,
+	  MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs,
+	  MonoDevelop.Ide.Gui/DefaultWorkbench.cs,
+	  MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs, MonoDevelop.Ide.Gui/Ide.cs,
+	  MonoDevelop.Ide.Gui/HelpViewer.cs, MonoDevelop.Ide.Tasks/TaskService.cs,
+	  MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs,
+	  MonoDevelop.Ide.CodeTemplates/CodeTemplateService.cs: Track
+	  LoggingService API changes.
+	* MonoDevelop.Ide.mdp, Makefile.am: Remove log4net dependency.
+
 2007-11-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs,

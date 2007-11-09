@@ -392,7 +392,7 @@ namespace MonoDevelop.Ide.Gui
 					it.Present ();
 				}
 			} catch (Exception ex) {
-				Runtime.LoggingService.Error (ex);
+				LoggingService.LogError (ex.ToString ());
 			}
 		}
 

@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			try {
 				groups = LoadTemplates ();			
 			} catch (Exception e) {
-				Runtime.LoggingService.Error ("CodeTemplateService: Exception while loading templates.\n" + e);
+				LoggingService.LogError ("CodeTemplateService: Exception while loading templates.", e);
 			}
 			if (groups == null)
 				groups = new List<CodeTemplateGroup> ();
@@ -136,7 +136,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			List<CodeTemplateGroup> result = LoadTemplates (Path.Combine (PropertyService.ConfigPath, FileName));
 			if (result == null) {
-				Runtime.LoggingService.Info ("CodeTemplateService: No user templates, reading default templates.");
+				LoggingService.LogInfo ("CodeTemplateService: No user templates, reading default templates.");
 				result = LoadTemplates (Path.Combine (Path.Combine (PropertyService.DataPath, "options"), FileName));
 			}
 			return result;

@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			try {
 				Initialize ();
 			} catch (Exception ex) {
-				Runtime.LoggingService.Error (ex);
+				LoggingService.LogError (ex.ToString ());
 			}
 		}
 		

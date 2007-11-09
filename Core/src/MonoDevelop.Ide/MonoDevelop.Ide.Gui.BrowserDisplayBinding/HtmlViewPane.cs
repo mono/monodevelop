@@ -65,8 +65,8 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 				htmlViewPane.MozillaControl.AppendData (buffer.Text);
 				htmlViewPane.MozillaControl.CloseStream ();
 				GLib.Timeout.Add (50, new GLib.TimeoutHandler (checkFocus));
-			} catch {
-				Runtime.LoggingService.Error ("Gecko# tossed an exception");
+			} catch (Exception e) {
+				LoggingService.LogError ("Swallowed Gecko# exception", e);
 			}
 		}
 

@@ -308,7 +308,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 					featureList.Fill (parentCombine, currentEntry, CombineEntryFeatures.GetFeatures (parentCombine, currentEntry));
 				}
 				catch (Exception ex) {
-					Runtime.LoggingService.Error (ex);
+					LoggingService.LogError (ex.ToString ());
 				}
 				notebook.Page++;
 				btn_new.Label = Gtk.Stock.Ok;

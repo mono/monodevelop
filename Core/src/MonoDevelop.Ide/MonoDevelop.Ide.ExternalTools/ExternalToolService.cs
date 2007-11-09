@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.ExternalTools
 			try {
 				tools = LoadTools ();
 			} catch (Exception e) {
-				Runtime.LoggingService.Error ("ExternalToolService: Exception while loading tools.\n" + e);
+				LoggingService.LogError ("ExternalToolService: Exception while loading tools.", e);
 				tools = new List<ExternalTool> ();
 			}
 		}
@@ -120,7 +120,7 @@ namespace MonoDevelop.Ide.ExternalTools
 		{
 			List<ExternalTool> result = LoadTools (Path.Combine (PropertyService.ConfigPath, FileName));
 			if (result == null) {
-				Runtime.LoggingService.Info ("ExternalToolService: No user templates, reading default templates.");
+				LoggingService.LogInfo ("ExternalToolService: No user templates, reading default templates.");
 				result = LoadTools (Path.Combine (Path.Combine (PropertyService.DataPath, "options"), FileName));
 			}
 			

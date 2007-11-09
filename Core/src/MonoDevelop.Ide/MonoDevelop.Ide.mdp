@@ -367,7 +367,6 @@
     <ProjectReference type="Gac" localcopy="True" refto="gnome-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gnome-vfs-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gtkhtml-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Project" localcopy="False" refto="log4net" />
     <ProjectReference type="Project" localcopy="False" refto="Mono.Addins.Gui" />
     <ProjectReference type="Project" localcopy="False" refto="Mono.Addins.Setup" />
     <ProjectReference type="Project" localcopy="False" refto="Mono.Addins" />

@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide
 				foreach (TextEncoding e in TextEncoding.ConversionEncodings)
 					storeSelected.AppendValues (e.Name, e.Id);
 			} catch (Exception  ex) {
-				Runtime.LoggingService.Error (ex);
+				LoggingService.LogError (ex.ToString ());
 			}
 		}
 		

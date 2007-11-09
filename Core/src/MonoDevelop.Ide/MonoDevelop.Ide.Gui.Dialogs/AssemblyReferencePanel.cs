@@ -94,7 +94,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		public void AddReference(object sender, EventArgs e)
 		{
-			//System.Runtime.LoggingService.Info("This panel will contain a file browser, but so long use the browse button :)");
+			//LoggingService.LogInfo("This panel will contain a file browser, but so long use the browse button :)");
 		}
 	}
 }

@@ -146,7 +146,7 @@ namespace MonoDevelop.Ide.Gui
 						IdeApp.Workbench.OpenDocument (file);
 					
 					} catch (Exception e) {
-						Runtime.LoggingService.InfoFormat("unable to open file {0} exception was :\n{1}", file, e.ToString());
+						LoggingService.LogInfo ("unable to open file {0} exception was :\n{1}", file, e.ToString());
 					}
 				}
 			}
@@ -180,7 +180,7 @@ namespace MonoDevelop.Ide.Gui
 				try {
 					typeof(CommandHandler).GetMethod ("Run", System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance, null, Type.EmptyTypes, null).Invoke (args.ExtensionObject, null);
 				} catch (Exception ex) {
-					Runtime.LoggingService.Error (ex);
+					LoggingService.LogError (ex.ToString ());
 				}
 			}
 		}

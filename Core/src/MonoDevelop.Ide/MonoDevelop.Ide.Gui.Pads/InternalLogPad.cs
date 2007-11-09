@@ -36,6 +36,7 @@ using System.IO;
 using System.Diagnostics;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Logging;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Tasks;
@@ -47,7 +48,7 @@ using Gtk;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
-	internal class InternalLogPad : IPadContent
+	internal class InternalLogPad : IPadContent, ILogger
 	{
 		VBox control;
 		ScrolledWindow sw;
@@ -161,7 +162,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			                           typeof (string),          // desc
 			                           typeof (string),          // time
 			                           typeof (string),          // type string
-			                           typeof(LogAppendedArgs)); // message
+			                           typeof (LogMessage));     // message
 
 			TreeModelFilterVisibleFunc filterFunct = new TreeModelFilterVisibleFunc (FilterTaskTypes);
 			filter = new TreeModelFilter (store, null);
@@ -180,7 +181,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			sw.ShadowType = ShadowType.In;
 			sw.Add (view);
 			
-			Runtime.LoggingService.LogAppended += (LogAppendedHandler) DispatchService.GuiDispatch (new LogAppendedHandler (MessageAdded));
+			LoggingService.AddLogger (this);
 						
 			iconWarning = sw.RenderIcon (Gtk.Stock.DialogWarning, Gtk.IconSize.Menu, "");
 			iconError = sw.RenderIcon (Gtk.Stock.DialogError, Gtk.IconSize.Menu, "");
@@ -203,7 +204,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			store.Clear ();
 			lock (InternalLog.Messages) {
 				// Load existing messages
-				foreach (LogAppendedArgs msg in InternalLog.Messages) {
+				foreach (LogMessage msg in InternalLog.Messages) {
 					AddMessage (msg);
 				}
 			}
@@ -261,10 +262,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 				TreeIter it;
 				if (!model.GetIter (out it, p))
 					continue;
-				LogAppendedArgs msg = (LogAppendedArgs) model.GetValue (it, (int) Columns.Message);
+				LogMessage msg = (LogMessage) model.GetValue (it, (int) Columns.Message);
 				if (txt.Length > 0)
 					txt.Append ('\n');
-				txt.AppendFormat ("{0} - {1} - {2}", msg.Level, msg.Timestamp.ToLongTimeString (), msg.Message);
+				txt.AppendFormat ("{0} - {1} - {2}", msg.Level, msg.TimeStamp.ToLongTimeString (), msg.Message);
 			}
 			clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
 			clipboard.Text = txt.ToString ();
@@ -289,16 +290,16 @@ namespace MonoDevelop.Ide.Gui.Pads
 		bool FilterTaskTypes (TreeModel model, TreeIter iter)
 		{
 			try {
-				LogAppendedArgs msg = (LogAppendedArgs) store.GetValue (iter, (int)Columns.Message);
+				LogMessage msg = (LogMessage) store.GetValue (iter, (int)Columns.Message);
 				if (msg == null)
 					return true;
-				if ((msg.Level == InternalLog.Error || msg.Level == InternalLog.Fatal) && errorBtn.Active)
+				if (((msg.Level & LogLevel.Error) == LogLevel.Error || (msg.Level & LogLevel.Fatal) == LogLevel.Fatal) && errorBtn.Active)
 					return true;
-				else if (msg.Level == InternalLog.Warning && warnBtn.Active)
+				else if ((msg.Level & LogLevel.Warn) == LogLevel.Warn && warnBtn.Active)
 					return true;
-				else if (msg.Level == InternalLog.Info && msgBtn.Active)
+				else if ((msg.Level & LogLevel.Info) == LogLevel.Info && msgBtn.Active)
 					return true;
-				else if (msg.Level == InternalLog.Debug && debugBtn.Active)
+				else if ((msg.Level & LogLevel.Debug) == LogLevel.Debug && debugBtn.Active)
 					return true;
 			} catch {
 				//Not yet fully added
@@ -315,36 +316,26 @@ namespace MonoDevelop.Ide.Gui.Pads
 			UpdateMessagesNum ();
 			UpdateDebugNum ();
 		}
-
-		void MessageAdded (object sender, LogAppendedArgs args)
-		{
-			if (args.Level == InternalLog.Debug)
-				return;
-			if (window != null && window.Visible)
-				AddMessage (args);
-			else
-				needsReload = true;
-		}
 		
-		public void AddMessage (LogAppendedArgs args)
+		public void AddMessage (LogMessage message)
 		{
 			Gdk.Pixbuf stock;
 			
-			switch (args.Level) {
-				case InternalLog.Fatal:
-				case InternalLog.Error:
+			switch (message.Level) {
+				case LogLevel.Fatal:
+				case LogLevel.Error:
 					stock = iconError;
 					UpdateErrorsNum ();
 					break; 
-				case InternalLog.Warning:
+				case LogLevel.Warn:
 					stock = iconWarning;
 					UpdateWarningsNum ();	
 					break;
-				case InternalLog.Info:
+				case LogLevel.Info:
 					stock = iconInfo;
 					UpdateWarningsNum ();	
 					break;
-				case InternalLog.Debug:
+				case LogLevel.Debug:
 					stock = iconDebug;
 					UpdateDebugNum ();
 					break;
@@ -354,10 +345,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 
 			store.AppendValues (stock,
-			                    args.Message,
-			                    args.Timestamp.ToLongTimeString (),
-			                    args.Level,
-			                    args);
+			                    message.Message,
+			                    message.TimeStamp.ToLongTimeString (),
+			                    message.Level.ToString (),
+			                    message);
 			filter.Refilter ();
 		}
 
@@ -383,8 +374,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		private int TimeSortFunc (TreeModel model, TreeIter iter1, TreeIter iter2)
 		{
-			LogAppendedArgs m1 = (LogAppendedArgs) model.GetValue (iter1, (int)Columns.Message);
-			LogAppendedArgs m2 = (LogAppendedArgs) model.GetValue (iter2, (int)Columns.Message);
+			LogMessage m1 = (LogMessage) model.GetValue (iter1, (int)Columns.Message);
+			LogMessage m2 = (LogMessage) model.GetValue (iter2, (int)Columns.Message);
 
 			if (m1 == null || m2 == null)
 				return 0;
@@ -394,9 +385,33 @@ namespace MonoDevelop.Ide.Gui.Pads
 			store.GetSortColumnId (out sid, out order);
 			
 			if (order == SortType.Ascending)
-				return DateTime.Compare (m1.Timestamp, m2.Timestamp);
+				return DateTime.Compare (m1.TimeStamp, m2.TimeStamp);
 			else
-				return DateTime.Compare (m2.Timestamp, m1.Timestamp);
+				return DateTime.Compare (m2.TimeStamp, m1.TimeStamp);
 		}
+		
+#region ILogger	implementation
+		
+		LogLevel enabledLevel = LogLevel.UpToInfo;
+
+		void ILogger.Log (LogLevel level, string message)
+		{
+			if ((enabledLevel & level) != level)
+				return;
+			if (window != null && window.Visible)
+				AddMessage (new LogMessage (level, message));
+			else
+				needsReload = true;
+		}
+		
+		string ILogger.Name {
+			get { return Id; }
+		}
+
+		LogLevel ILogger.EnabledLevel {
+			get { return enabledLevel; }
+		}
+		
+#endregion
 	}
 }

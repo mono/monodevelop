@@ -120,7 +120,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					imglist.Add(bitmap);
 					tmp[entry.Key] = ++i;
 				} else {
-					Runtime.LoggingService.ErrorFormat(GettextCatalog.GetString ("Can't load bitmap {0} using default"), entry.Key.ToString ());
+					LoggingService.LogError (GettextCatalog.GetString ("Can't load bitmap {0} using default", entry.Key.ToString ()));
 				}
 			}
 			
@@ -364,7 +364,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					okButton.Sensitive = false;
 				}
 			} catch (Exception ex) {
-				Runtime.LoggingService.Error (ex);
+				LoggingService.LogError (ex.ToString ());
 			}
 		}
 		

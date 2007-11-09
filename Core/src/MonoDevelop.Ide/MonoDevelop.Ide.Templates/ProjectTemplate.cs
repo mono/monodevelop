@@ -176,7 +176,7 @@ namespace MonoDevelop.Ide.Templates
 						// per-language template instances should not share the XmlDocument
 						ProjectTemplates.Add (new ProjectTemplate (addin, id, (XmlDocument) doc.Clone (), language, language+"/"+category));
 					} catch (Exception e) {
-						Runtime.LoggingService.Fatal ((object)GettextCatalog.GetString ("Error loading template {0}", codon.Id), e);
+						LoggingService.LogFatalError (GettextCatalog.GetString ("Error loading template {0}", codon.Id), e);
 					}
 				}
 			} else {
@@ -290,7 +290,7 @@ namespace MonoDevelop.Ide.Templates
 				try {
 					ProjectTemplates.Add (new ProjectTemplate (codon.Addin, codon.Id, codon));
 				} catch (Exception e) {
-					Runtime.LoggingService.Fatal (e);
+					LoggingService.LogFatalError (e.ToString ());
 				}
 			}
 			else {

@@ -106,7 +106,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 					IdeApp.HelpOperations.ShowDocs (s, match, url);
 					return;
 				}
-				Runtime.LoggingService.Error ("Couldnt find match");
+				LoggingService.LogError ("Couldnt find match");
 			}
 		}
 
