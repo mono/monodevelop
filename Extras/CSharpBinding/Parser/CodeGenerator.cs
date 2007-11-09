@@ -809,7 +809,7 @@ namespace CSharpBinding.Parser
 		void AddUniqueReference (int line, int col, string name)
 		{
 			if (line < 0 || col < 0) {
-				MonoDevelop.Core.Runtime.LoggingService.Warn ("AddUniqueReference called with invalid position line:" + line + " col: " + col + " name:" + name + ".");
+				MonoDevelop.Core.LoggingService.LogWarning ("AddUniqueReference called with invalid position line: {0} col: {1} name: {2}.", line, col, name);
 				return;
 			}
 			

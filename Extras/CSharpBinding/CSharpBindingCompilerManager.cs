@@ -200,7 +200,7 @@ namespace CSharpBinding
 					workingDir = ".";
 			}
 
-			Runtime.LoggingService.Info (compilerName + " " + writer.ToString ());
+			LoggingService.LogInfo (compilerName + " " + writer.ToString ());
 			
 			DoCompilation(outstr, tf, workingDir, gacRoots, ref output, ref error);
 
