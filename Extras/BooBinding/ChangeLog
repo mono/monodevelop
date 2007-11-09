@@ -1,3 +1,7 @@
+2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Parser/BooParser.boo: Track LoggingService API changes.
+
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* BooBinding.addin.xml: Bump MD version.

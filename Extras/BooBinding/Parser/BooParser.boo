@@ -178,7 +178,7 @@ class BooParser(IParser):
 		Error (self.GetType(), message)
 
 	static def Log (type, message):
-		MonoDevelop.Core.Runtime.LoggingService.Debug (type.ToString (), message)
+		MonoDevelop.Core.LoggingService.LogDebug (type.ToString () + message)
 	
 	static def Error (type, message):
-		MonoDevelop.Core.Runtime.LoggingService.Error (type.ToString (), message)
+		MonoDevelop.Core.LoggingService.LogError (type.ToString () + message)
