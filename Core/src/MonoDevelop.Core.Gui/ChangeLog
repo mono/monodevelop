@@ -1,3 +1,7 @@
+2007-11-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.Components/FileBrowser.cs: Remove some frames.
+
 2007-10-30  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.mdp, Makefile.am, icons/Icons.16x16.MiscFiles,

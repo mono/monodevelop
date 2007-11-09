@@ -48,13 +48,13 @@ namespace MonoDevelop.Core.Gui.Components
 
 		public FileBrowser ()
 		{
+			Spacing = 2;
 			scrolledwindow = new ScrolledWindow ();
 			scrolledwindow.VscrollbarPolicy = PolicyType.Automatic;
 			scrolledwindow.HscrollbarPolicy = PolicyType.Automatic;
-			scrolledwindow.ShadowType = ShadowType.In;
 
 			Toolbar toolbar = new Toolbar ();
-			toolbar.IconSize = IconSize.SmallToolbar;
+			toolbar.IconSize = IconSize.Menu;
 
 			goUp = new ToolButton (Gtk.Stock.GoUp);
 			goUp.Clicked += new EventHandler (OnGoUpClicked);
@@ -103,6 +103,7 @@ namespace MonoDevelop.Core.Gui.Components
 
 			scrolledwindow.Add (tv);
 			this.Homogeneous = false;
+			this.PackEnd (new HSeparator (), false, false, 0);
 			this.PackEnd (scrolledwindow);
 			this.ShowAll ();
 			init = true;
