@@ -19,6 +19,7 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  
 using System;
+using System.Collections;
 using System.IO;
 using System.Collections.Generic;
 using System.Drawing;
@@ -28,7 +29,6 @@ using System.Xml.Serialization;
 using MonoDevelop.Core;
 
 using Gtk;
-using Gdl;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Components;
 using MonoDevelop.Core.Gui.Utils;
@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Components.DockToolbars;
+using MonoDevelop.Components.Docking;
 
 namespace MonoDevelop.Ide.Gui
 {	
@@ -45,10 +46,15 @@ namespace MonoDevelop.Ide.Gui
 	/// </summary>
 	internal class SdiWorkbenchLayout : IWorkbenchLayout
 	{
-		static string configFile = Path.Combine (PropertyService.ConfigPath, "DefaultEditingLayout.xml");
+		static string configFile = Path.Combine (PropertyService.ConfigPath, "EditingLayout.xml");
+		const string fullViewModeTag = "[FullViewMode]";
+		
+		readonly string[] defaultVisiblePads = new string [] {
+			"MonoDevelop.Ide.Gui.Pads.FileScout",
+			"ClassPad",
+			"ProjectPad"
+		};
 
-		// contains the fully qualified name of the current layout (ie. Edit.Default)
-		string currentLayout = "";
 		// list of layout names for the current context, without the context prefix
 		List<string> layouts = new List<string> ();
 
@@ -60,8 +66,7 @@ namespace MonoDevelop.Ide.Gui
 		Window wbWindow;
 		Container rootWidget;
 		DockToolbarFrame toolbarFrame;
-		Dock dock;
-		DockLayout dockLayout;
+		DockFrame dock;
 		SdiDragNotebook tabControl;
 		EventHandler contextChangedHandler;
 		Dictionary<PadCodon, IPadWindow> padWindows = new Dictionary<PadCodon, IPadWindow> ();
@@ -70,7 +75,8 @@ namespace MonoDevelop.Ide.Gui
 		bool initialized;
 		IWorkbenchWindow lastActive;
 		bool ignorePageSwitch;
-		
+		bool isInFullViewMode = false;
+
 		Gtk.Toolbar[] toolBars;
 		Gtk.MenuBar menubar;
 
@@ -115,12 +121,8 @@ namespace MonoDevelop.Ide.Gui
 			menubar = workbench.TopMenu;
 			
 			// Create the docking widget and add it to the window.
-			dock = new Dock ();
-			DockBar dockBar = new DockBar (dock);
-			dockBox = new HBox (false, 5);
-			dockBox.PackStart (dockBar, false, true, 0);
-			dockBox.PackStart (dock, true, true, 0);
-			toolbarFrame.AddContent (dockBox);
+			dock = new DockFrame ();
+			toolbarFrame.AddContent (dock);
 
 			// Create the notebook for the various documents.
 			tabControl = new SdiDragNotebook ();
@@ -148,13 +150,35 @@ namespace MonoDevelop.Ide.Gui
 			};
 			
 			tabControl.TabsReordered += new TabsReorderedHandler (OnTabsReordered);
+
+			// The main document area
+			documentDockItem = dock.AddItem ("Documents");
+			documentDockItem.Behavior = DockItemBehavior.Locked;
+			documentDockItem.Expand = true;
+			documentDockItem.DrawFrame = false;
+			documentDockItem.Label = GettextCatalog.GetString ("Documents");
+			documentDockItem.Content = tabControl;
 			
-			documentDockItem = new DockItem ("Documents", "Documents", DockItemBehavior.Locked | DockItemBehavior.NoGrip);
-			documentDockItem.PreferredWidth = -2;
-			documentDockItem.PreferredHeight = -2;
-			documentDockItem.Add (tabControl);
-			documentDockItem.Show ();
-			dock.AddItem (documentDockItem, DockPlacement.Center);
+			// Add some hiden items to be used as position reference
+			DockItem dit = dock.AddItem ("__left");
+			dit.DefaultLocation = "Documents/Left";
+			dit.Behavior = DockItemBehavior.Locked;
+			dit.DefaultVisible = false;
+			
+			dit = dock.AddItem ("__right");
+			dit.DefaultLocation = "Documents/Right";
+			dit.Behavior = DockItemBehavior.Locked;
+			dit.DefaultVisible = false;
+			
+			dit = dock.AddItem ("__top");
+			dit.DefaultLocation = "Documents/Top";
+			dit.Behavior = DockItemBehavior.Locked;
+			dit.DefaultVisible = false;
+			
+			dit = dock.AddItem ("__bottom");
+			dit.DefaultLocation = "Documents/Bottom";
+			dit.Behavior = DockItemBehavior.Locked;
+			dit.DefaultVisible = false;
 
 			workbench.Add (fullViewVBox);
 			
@@ -188,21 +212,22 @@ namespace MonoDevelop.Ide.Gui
 				contextMenu.Popup ();
 		}
 		
-		bool isInFullViewMode = true;
-
 		public void ToggleFullViewMode ()
 		{
 			isInFullViewMode = !isInFullViewMode;
 			this.tabControl.LeaveDragMode (0);
 			
 			if (isInFullViewMode) {
-				toolbarFrame.RemoveContent (this.tabControl);
-				documentDockItem.Add (this.tabControl);
-				toolbarFrame.AddContent (dockBox);
+				string fullViewLayout = workbench.Context.Id + "." + CurrentLayout + fullViewModeTag;
+				if (!dock.HasLayout (fullViewLayout))
+					dock.CreateLayout (fullViewLayout, true);
+				dock.CurrentLayout = fullViewLayout;
+				foreach (DockItem it in dock.GetItems ()) {
+					if (it.Behavior != DockItemBehavior.Locked && it.Visible)
+						it.Status = DockItemStatus.AutoHide;
+				}
 			} else {
-				toolbarFrame.RemoveContent (dockBox);
-				documentDockItem.Remove (this.tabControl);
-				toolbarFrame.AddContent (this.tabControl);
+				dock.CurrentLayout = workbench.Context.Id + "." + CurrentLayout;
 			}
 		}
 		
@@ -248,11 +273,10 @@ namespace MonoDevelop.Ide.Gui
 			
 			// get the list of layouts
 			string ctxtPrefix = ctxt.Id + ".";
-			string[] list = dockLayout.GetLayouts (false);
 
 			layouts.Clear ();
-			foreach (string name in list) {
-				if (name.StartsWith (ctxtPrefix)) {
+			foreach (string name in dock.Layouts) {
+				if (name.StartsWith (ctxtPrefix) && !name.EndsWith (fullViewModeTag)) {
 					layouts.Add (name.Substring (ctxtPrefix.Length));
 				}
 			}
@@ -266,9 +290,9 @@ namespace MonoDevelop.Ide.Gui
 			{
 				if (!activePadCollection.Contains (content))
 				{
-					DockItem item = dock.GetItemByName (content.PadId);
+					DockItem item = dock.GetItem (content.PadId);
 					if (item != null)
-						item.HideItem ();
+						item.Visible = false;
 				}
 			}
 		}
@@ -279,73 +303,33 @@ namespace MonoDevelop.Ide.Gui
 		
 		public string CurrentLayout {
 			get {
-				return currentLayout.Substring (currentLayout.IndexOf (".") + 1);
+				if (dock != null && dock.CurrentLayout != null) {
+					string s = dock.CurrentLayout;
+					s = s.Substring (s.IndexOf (".") + 1);
+					if (s.EndsWith (fullViewModeTag))
+						return s.Substring (0, s.Length - fullViewModeTag.Length);
+					return s;
+				}
+				else
+					return "";
 			}
 			set {
 				// Leave dragging mode, to avoid problems due to widget relocating
 				tabControl.LeaveDragMode (0);
-				
-				// Store a list of pads being shown
-				List<PadCodon> visible = new List<PadCodon> ();
-				foreach (PadCodon content in activePadCollection) {
-					if (IsVisible (content))
-						visible.Add (content);
-				}
-				
-				// save previous layout first
-				if (!String.IsNullOrEmpty (currentLayout))
-					dockLayout.SaveLayout (currentLayout);
+				isInFullViewMode = false;
 				
 				string newLayout = workbench.Context.Id + "." + value;
-
-				if (layouts.Contains (value))
-				{
-					dockLayout.LoadLayout (newLayout);
-					
-					DockItem ot = dock.GetItemByName ("Documents");
-					if (!ot.IsAttached) {
-						// Something went wrong. The documents item should always be visible.
-						// The cause may be a corrupt configuration file.
-						// This will reset this layout:
-						dockLayout.LoadLayout (null);
-						dockLayout.SaveLayout (newLayout);
-					}
-				}
-				else
-				{
-					if (String.IsNullOrEmpty (currentLayout)) {
-						// if the layout doesn't exist and we need to
-						// load a layout (ie.  we've just been
-						// created), load the default so old layout
-						// xml files work smoothly
-						dockLayout.LoadLayout (null);
-					}
-					
-					// the layout didn't exist, so save it and add it to our list
-					dockLayout.SaveLayout (newLayout);
+				if (!((IList)dock.Layouts).Contains (newLayout)) {
+					dock.CreateLayout (newLayout, true);
 					layouts.Add (value);
 				}
-				currentLayout = newLayout;
+				dock.CurrentLayout = newLayout;
 				toolbarFrame.CurrentLayout = newLayout;
 
 				// persist the selected layout for the current context
 				PropertyService.Set ("MonoDevelop.Core.Gui.SdiWorkbenchLayout." +
 				                                workbenchContext.Id, 
 				                                value);
-				// Notify hide/show events
-				foreach (PadCodon content in activePadCollection) {
-					if (IsVisible (content)) {
-						if (!visible.Contains (content)) {
-							PadWindow win = (PadWindow) padWindows [content];
-							win.NotifyShown ();
-						}
-					} else {
-						if (visible.Contains (content)) {
-							PadWindow win = (PadWindow) padWindows [content];
-							win.NotifyHidden ();
-						}
-					}
-				}
 			}
 		}
 
@@ -361,7 +345,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			string layout = workbench.Context.Id + "." + name;
 			layouts.Remove (name);
-			dockLayout.DeleteLayout (layout);
+			dock.DeleteLayout (layout);
 		}
 
 
@@ -381,7 +365,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (activePadCollection.Contains (content))
 			{
-				DockItem item = dock.GetItemByName (content.PadId);
+				DockItem item = dock.GetItem (content.PadId);
 				return item;
 			}
 			return null;
@@ -391,11 +375,24 @@ namespace MonoDevelop.Ide.Gui
 		{
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/WorkbenchContexts", OnExtensionChanged);
 			
-			dockLayout = new DockLayout (dock);
-			if (System.IO.File.Exists (configFile)) {
-				dockLayout.LoadFromFile (configFile);
-			} else {
-				dockLayout.LoadFromFile ("../data/options/DefaultEditingLayout.xml");
+			try {
+				if (System.IO.File.Exists (configFile)) {
+					dock.LoadLayouts (configFile);
+				} else if (System.IO.File.Exists ("../data/options/DefaultEditingLayout2.xml")) {
+					dock.LoadLayouts ("../data/options/DefaultEditingLayout2.xml");
+				} else {
+					dock.CreateLayout ("Edit.Default", true);
+					dock.CurrentLayout = "Edit.Default";
+					DockItem it = null;
+					foreach (string s in defaultVisiblePads) {
+						it = dock.GetItem (s);
+						if (it != null)
+							it.Visible = true;
+					}
+					it.Present ();
+				}
+			} catch (Exception ex) {
+				Runtime.LoggingService.Error (ex);
 			}
 		}
 
@@ -424,61 +421,15 @@ namespace MonoDevelop.Ide.Gui
 		{
 			workbench.ContextChanged -= contextChangedHandler;
 
-			dockLayout.SaveLayout (currentLayout);
-			dockLayout.SaveToFile (configFile);
+			dock.SaveLayouts (configFile);
 			rootWidget.Remove(((DefaultWorkbench)workbench).TopMenu);
 			wbWindow.Remove(rootWidget);
 			activePadCollection = null;
 		}
 		
-		void GetPlacement (string placementString, out DockPlacement dockPlacement, out DockItem originItem)
-		{
-			// placementString can be: left, right, top, bottom, or a relative
-			// position, for example: "ProjectPad/left" would show the pad at
-			// the left of the project pad. When using
-			// relative placements several positions can be provided. If the
-			// pad can be placed in the first position, the next one will be
-			// tried. For example "ProjectPad/left; bottom".
-			
-			dockPlacement = DockPlacement.None;
-			string[] placementOptions = placementString.Split (';');
-			foreach (string placementOption in placementOptions) {
-				int i = placementOption.IndexOf ('/');
-				if (i == -1) {
-					dockPlacement = (DockPlacement) Enum.Parse (typeof(DockPlacement), placementOption, true);
-					break;
-				} else {
-					string id = placementOption.Substring (0, i);
-					originItem = dock.GetItemByName (id); 
-					if (originItem != null && originItem.IsAttached) {
-						dockPlacement = (DockPlacement) Enum.Parse (typeof(DockPlacement), placementOption.Substring (i+1), true);
-						return;
-					}
-				}
-			}
-
-			if (dockPlacement != DockPlacement.None) {
-				// If there is a pad in the same position, place the new one
-				// over the existing one with a new tab.
-				foreach (PadCodon pad in activePadCollection) {
-					string[] places = pad.DefaultPlacement.Split (';');
-					foreach (string p in places)
-						if (string.Compare (p.Trim(), dockPlacement.ToString(), true) == 0) {
-							originItem = GetDockItem (pad);
-							if (originItem != null && originItem.IsAttached) {
-								dockPlacement = DockPlacement.Center;
-								return;
-							}
-						}
-				}
-			}
-			
-			originItem = null;
-		}
-		
 		void CreatePadContent (bool force, PadCodon padCodon, PadWindow window, DockItem item)
 		{
-			if (force || item.Child == null) {
+			if (force || item.Content == null) {
 				IPadContent newContent = padCodon.PadContent;
 				newContent.Initialize (window);
 			
@@ -493,7 +444,7 @@ namespace MonoDevelop.Ide.Gui
 				
 				PadCommandRouterContainer router = new PadCommandRouterContainer (window, pcontent, toolbarFrame, false);
 				router.Show ();
-				item.Add (router);
+				item.Content = router;
 			}
 		}
 		void AddPad (PadCodon padCodon, string placement)
@@ -506,62 +457,43 @@ namespace MonoDevelop.Ide.Gui
 			window.TitleChanged += new EventHandler (UpdatePad);
 			window.IconChanged += new EventHandler (UpdatePad);
 			
+			string location = "";
+			foreach (string s in placement.Split (' ')) {
+				if (string.IsNullOrEmpty (s))
+					continue;
+				if (location.Length > 0)
+					location += ";";
+				if (s.IndexOf ('/') == -1)
+					location += "__" + s.ToLower () + "/Center";
+				else
+					location += s;
+			}
+			
 			string windowTitle = GettextCatalog.GetString (padCodon.Label);
-			DockItem item = new DockItem (padCodon.PadId,
-								 windowTitle,
-								 window.Icon,
-								 DockItemBehavior.Normal);
+			DockItem item = dock.AddItem (padCodon.PadId);
+			item.Label = windowTitle;
+			item.Icon = window.Icon;
+			item.DefaultLocation = location;
+			item.DefaultVisible = false;
+			
 			if (padCodon.Initialized) {
 				CreatePadContent (true, padCodon, window, item);
 			} else {
-				item.Realized += delegate {
-					CreatePadContent (false, padCodon, window, item);
+				item.VisibleChanged += delegate {
+					if (item.Visible)
+						CreatePadContent (false, padCodon, window, item);
 				};
 			}
 			
-			item.DockItemShown += delegate (object s, EventArgs a) {
-				window.NotifyShown ();
+			item.VisibleChanged += delegate {
+				if (item.Visible)
+					window.NotifyShown ();
+				else
+					window.NotifyHidden ();
 			};
-
-			item.DockItemHidden += delegate (object s, EventArgs a) {
-				window.NotifyHidden ();
-			};
-
-			Gtk.Label label = item.TabLabel as Gtk.Label;
-			label.UseMarkup = true;			
 			
-			item.Show ();
-			item.HideItem ();
-			
-			DockPad (item, placement);
-
 			if (!activePadCollection.Contains (padCodon))
 				activePadCollection.Add (padCodon);
-		}
-		
-		void DockPad (DockItem item, string placement)
-		{
-			DockPlacement dockPlacement = DockPlacement.None;
-			DockItem ot = null;
-			
-			if (placement != null)
-				GetPlacement (placement, out dockPlacement, out ot);
-				
-			if (item.Iconified)
-				item.Iconified = false;
-			
-			if (dockPlacement != DockPlacement.None && dockPlacement != DockPlacement.Floating) {
-				if (ot != null) {
-					item.DockTo (ot, dockPlacement);
-				}
-				else {
-					ot = dock.GetItemByName ("Documents"); 
-					item.DockTo (ot, dockPlacement);
-				}
-			}
-			else
-				dock.AddItem (item, dockPlacement);
-			item.Show ();
 		}
 		
 		void UpdatePad (object source, EventArgs args)
@@ -572,13 +504,11 @@ namespace MonoDevelop.Ide.Gui
 			PadCodon codon = padCodons [window];
 			DockItem item = GetDockItem (codon);
 			if (item != null) {
-				Gtk.Label label = item.TabLabel as Gtk.Label;
 				string windowTitle = GettextCatalog.GetString (window.Title); 
 				if (String.IsNullOrEmpty (windowTitle)) 
 					windowTitle = GettextCatalog.GetString (codon.Label);
-				label.Markup  = windowTitle;
-				item.LongName = windowTitle;
-				item.StockId  = window.Icon;
+				item.Label = windowTitle;
+				item.Icon  = window.Icon;
 			}
 		}
 
@@ -586,13 +516,8 @@ namespace MonoDevelop.Ide.Gui
 		{
 			DockItem item = GetDockItem (content);
 			if (item != null) {
-				if (item.IsAttached)
-					return;
-
-				if (item.DefaultPosition != null)
-					item.ShowItem();
-				else
-					DockPad (item, content.DefaultPlacement);
+				Console.WriteLine ("pp sp: ");
+				item.Visible = true;
 			}
 			else
 				AddPad (content, content.DefaultPlacement);
@@ -604,13 +529,8 @@ namespace MonoDevelop.Ide.Gui
 			win.NotifyDestroyed ();
 			
 			DockItem item = GetDockItem (content);
-			if (item != null) {
-				if (item.IsAttached) {
-					Gtk.Container c = (Gtk.Container) item.Parent;
-					c.Remove (item);
-				}
-				item.Destroy ();
-			}
+			if (item != null)
+				dock.RemoveItem (item.Id);
 			padWindows.Remove (content);
 			padCodons.Remove (win);
 			
@@ -622,7 +542,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			DockItem item = GetDockItem (padContent);
 			if (item != null)
-				return item.IsAttached;
+				return item.Visible;
 			return false;
 		}
 		
@@ -630,24 +550,18 @@ namespace MonoDevelop.Ide.Gui
 		{
 			DockItem item = GetDockItem (padContent);
 			if (item != null) 
-				item.HideItem();
+				item.Visible = false;
 		}
 		
 		public void ActivatePad (PadCodon padContent)
 		{
 			DockItem item = GetDockItem (padContent);
 			if (item != null)
-				item.Present (null);
+				item.Present ();
 		}
 		
 		public void RedrawAllComponents()
 		{
-			foreach (PadCodon content in ((IWorkbench)workbench).PadContentCollection) {
-				DockItem item = dock.GetItemByName (content.PadId);
-				if (item != null)
-					item.LongName = GetPadWindow (content).Title;
-			}
-			
 			// If the toolbar or menubar has changed, replace it in the layout
 			
 			DefaultWorkbench wb = (DefaultWorkbench) workbench;
@@ -794,7 +708,7 @@ namespace MonoDevelop.Ide.Gui
 					}
 				} else {
 					((Gtk.Window)workbench).Title = "MonoDevelop";
-					if (!isInFullViewMode) 
+					if (isInFullViewMode) 
 						this.ToggleFullViewMode ();
 				}
 			} catch {

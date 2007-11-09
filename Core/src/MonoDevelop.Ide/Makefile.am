@@ -255,6 +255,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/DefaultWorkbench.cs \
 	MonoDevelop.Ide.Gui/DisplayBindingService.cs \
 	MonoDevelop.Ide.Gui/Document.cs \
+	MonoDevelop.Ide.Gui/DragNotebook.cs \
 	MonoDevelop.Ide.Gui/ExitEventHandler.cs \
 	MonoDevelop.Ide.Gui/FileViewer.cs \
 	MonoDevelop.Ide.Gui/HelpOperations.cs \

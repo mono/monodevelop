@@ -209,6 +209,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal static void OnExited ()
 		{
+			PropertyService.SaveProperties ();
 			if (Exited != null)
 				Exited (null, EventArgs.Empty);
 		}

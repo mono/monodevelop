@@ -51,14 +51,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler(OnCombineOpened));
 			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler(OnCombineClosed));
 
-			Gtk.Frame treef  = new Gtk.Frame ();
-			treef.Add (fb);
-
 			Gtk.ScrolledWindow listsw = new Gtk.ScrolledWindow ();
-			listsw.ShadowType = Gtk.ShadowType.In;
 			listsw.Add (filelister);
 			
-			this.Pack1 (treef, true, true);
+			this.Pack1 (fb, true, true);
 			this.Pack2 (listsw, true, true);
 
 			fb.SelectFirst ();

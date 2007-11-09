@@ -32,8 +32,6 @@ using System.Collections;
 using System.IO;
 using Gtk;
 
-using Gdl;
-
 using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Core.Gui;

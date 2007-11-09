@@ -23,8 +23,6 @@ using System.Collections;
 using System.IO;
 using Gtk;
 
-using Gdl;
-
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Utils;

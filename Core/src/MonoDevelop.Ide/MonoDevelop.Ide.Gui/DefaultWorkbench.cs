@@ -422,17 +422,6 @@ namespace MonoDevelop.Ide.Gui
 			Decorated = true;
 		}
 		
-		protected /*override*/ void OnResize(EventArgs e)
-		{
-			// FIXME: GTKize
-			
-		}
-		
-		protected /*override*/ void OnLocationChanged(EventArgs e)
-		{
-			// FIXME: GTKize
-		}
-		
 		void CheckRemovedFile(object sender, FileEventArgs e)
 		{
 			if (e.IsDirectory) {

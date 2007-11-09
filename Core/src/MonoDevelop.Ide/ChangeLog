@@ -1,3 +1,19 @@
+2007-11-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs,
+	  MonoDevelop.Ide.Gui.Pads/FileScout.cs,
+	  MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs: Remove some shadows and
+	  frames.
+	* MonoDevelop.Ide.mdp, Makefile.am: Updated.
+	* MonoDevelop.Ide.Gui/DragNotebook.cs: Moved from old docking lib.
+	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs,
+	  MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Removed old namespace
+	  references.
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Removed unused code.
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Use the new docking library.
+	* MonoDevelop.Ide.Gui/Ide.cs: Make sure all properties are saved when
+	  exiting MD.
+
 2007-11-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui/Workbench.cs: Fix crash opening a file when there is

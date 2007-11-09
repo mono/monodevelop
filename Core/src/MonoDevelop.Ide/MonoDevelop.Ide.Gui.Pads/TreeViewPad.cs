@@ -88,7 +88,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		object copyObject;
 		DragOperation currentTransferOperation;
 
-		Gtk.Frame contentPanel;
+		Gtk.Widget contentPanel;
 
 		private static Gtk.TargetEntry [] target_table = new Gtk.TargetEntry [] {
 			new Gtk.TargetEntry ("text/uri-list", 0, 11 ),
@@ -219,14 +219,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			Gtk.ScrolledWindow sw = new Gtk.ScrolledWindow ();
 			sw.Add(tree);
-			contentPanel = new Gtk.Frame ();
-			contentPanel.Add(sw);
+			contentPanel = sw;
 			
 			tree.TestExpandRow += new Gtk.TestExpandRowHandler (OnTestExpandRow);
 			tree.RowActivated += new Gtk.RowActivatedHandler(OnNodeActivated);
 			
-			contentPanel.ButtonReleaseEvent += new Gtk.ButtonReleaseEventHandler(OnButtonRelease);
-			contentPanel.PopupMenu += new Gtk.PopupMenuHandler (OnPopupMenu);
+			tree.ButtonReleaseEvent += new Gtk.ButtonReleaseEventHandler(OnButtonRelease);
+			tree.PopupMenu += new Gtk.PopupMenuHandler (OnPopupMenu);
 			
 			workNode = new TreeNodeNavigator (this);
 			compareNode1 = new TreeNodeNavigator (this);

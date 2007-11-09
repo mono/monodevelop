@@ -165,7 +165,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			LoadColumnsVisibility ();
 			
 			sw = new Gtk.ScrolledWindow ();
-			sw.ShadowType = ShadowType.In;
+			sw.ShadowType = ShadowType.None;
 			sw.Add (view);
 			
 			Services.TaskService.TasksCleared     += (EventHandler) DispatchService.GuiDispatch (new EventHandler (ShowResults));
