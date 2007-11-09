@@ -127,6 +127,8 @@ namespace MonoDevelop.Components.Docking
 				if (hiddenFrame != null)
 					bar.Frame.AutoHide (it, hiddenFrame, false);
 				autoShowFrame = bar.Frame.AutoShow (it, bar, size);
+				autoShowFrame.EnterNotifyEvent += OnFrameEnter;
+				autoShowFrame.LeaveNotifyEvent += OnFrameLeave;
 			}
 		}
 		
@@ -140,6 +142,8 @@ namespace MonoDevelop.Components.Docking
 					hiddenFrame = null;
 				};
 				bar.Frame.AutoHide (it, autoShowFrame, animate);
+				autoShowFrame.EnterNotifyEvent -= OnFrameEnter;
+				autoShowFrame.LeaveNotifyEvent += OnFrameLeave;
 				autoShowFrame = null;
 			}
 		}
@@ -196,6 +200,17 @@ namespace MonoDevelop.Components.Docking
 			ScheduleAutoHide ();
 			ModifyBg (StateType.Normal, bar.Style.Background (Gtk.StateType.Normal));
 			return base.OnLeaveNotifyEvent (evnt);
+		}
+		
+		void OnFrameEnter (object s, Gtk.EnterNotifyEventArgs args)
+		{
+			AutoShow ();
+		}
+		
+		void OnFrameLeave (object s, Gtk.LeaveNotifyEventArgs args)
+		{
+			if (args.Event.Detail != Gdk.NotifyType.Inferior)
+				ScheduleAutoHide ();
 		}
 		
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)

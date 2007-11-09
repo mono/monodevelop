@@ -1,5 +1,10 @@
 2007-11-10  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* DockBarItem.cs: Don't hide the item if the mouse cursor is over the
+	  autohide box.
+
+2007-11-10  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* AutoHideBox.cs, DockGroupItem.cs, stock-auto-hide.png,
 	  MonoDevelop.Dock.mdp, DockBarItem.cs, stock-close-12.png, TabStrip.cs,
 	  DockGroup.cs, DockItem.cs, DockPosition.cs, DockBar.cs, DockObject.cs,
