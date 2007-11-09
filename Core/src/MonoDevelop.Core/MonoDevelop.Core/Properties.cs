@@ -235,7 +235,7 @@ namespace MonoDevelop.Core
 					XmlSerializer serializer = new XmlSerializer (typeof(T));
 					return (T)serializer.Deserialize (new StreamReader(new MemoryStream(System.Text.Encoding.UTF8.GetBytes (xml))));
 				} catch (Exception e) {
-					Runtime.LoggingService.Warn ((object)("Caught exception while deserializing:" + typeof(T)), e);
+					LoggingService.LogWarning ("Caught exception while deserializing:" + typeof(T), e);
 					return default(T);
 				}
 			}

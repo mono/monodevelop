@@ -92,7 +92,7 @@ namespace MonoDevelop.Core.Execution
 					process.StandardInput.WriteLine (sref);
 					process.StandardInput.Flush ();
 				} catch (Exception ex) {
-					Runtime.LoggingService.Error (ex);
+					LoggingService.LogError (ex.ToString ());
 					throw;
 				}
 			}
@@ -219,7 +219,7 @@ namespace MonoDevelop.Core.Execution
 					}
 				}
 			} catch (Exception ex) {
-				Runtime.LoggingService.Error (ex);
+				LoggingService.LogError (ex.ToString ());
 			}
 		}
 		

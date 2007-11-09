@@ -29,6 +29,10 @@ FILES =  \
 	MonoDevelop.Core.Execution/RemoteProcessObject.cs \
 	MonoDevelop.Core.FileSystem/DefaultFileSystemExtension.cs \
 	MonoDevelop.Core.FileSystem/FileSystemExtension.cs \
+	MonoDevelop.Core.Logging/ConsoleLogger.cs \
+	MonoDevelop.Core.Logging/FileLogger.cs \
+	MonoDevelop.Core.Logging/ILogger.cs \
+	MonoDevelop.Core.Logging/LogLevel.cs \
 	MonoDevelop.Core.ProgressMonitoring/AggregatedOperationMonitor.cs \
 	MonoDevelop.Core.ProgressMonitoring/AggregatedProgressMonitor.cs \
 	MonoDevelop.Core.ProgressMonitoring/ConsoleProgressMonitor.cs \
@@ -47,14 +51,13 @@ FILES =  \
 	MonoDevelop.Core.Utils.ReportingStream/ReportingStream.cs \
 	MonoDevelop.Core/AbstractService.cs \
 	MonoDevelop.Core/ClrVersion.cs \
-	MonoDevelop.Core/DefaultLoggingService.cs \
 	MonoDevelop.Core/FileEventArgs.cs \
 	MonoDevelop.Core/FileService.cs \
 	MonoDevelop.Core/IAsyncOperation.cs \
 	MonoDevelop.Core/ICustomXmlSerializer.cs \
-	MonoDevelop.Core/ILoggingService.cs \
 	MonoDevelop.Core/IProgressMonitor.cs \
 	MonoDevelop.Core/IService.cs \
+	MonoDevelop.Core/LoggingService.cs \
 	MonoDevelop.Core/Properties.cs \
 	MonoDevelop.Core/PropertyChangedEventArgs.cs \
 	MonoDevelop.Core/PropertyService.cs \
@@ -72,7 +75,6 @@ GENERATED_FILES = MonoDevelop.Core/GettextCatalog.cs \
 RES = MonoDevelop.Core.addin.xml                                                          
 
 REFS =  \
-	-r:$(top_builddir)/build/bin/log4net.dll \
 	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
 	-r:$(top_builddir)/build/bin/Mono.Addins.Setup.dll \
 	-r:ICSharpCode.SharpZipLib \

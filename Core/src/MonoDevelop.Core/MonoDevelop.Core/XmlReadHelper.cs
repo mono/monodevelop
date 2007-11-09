@@ -81,7 +81,7 @@ namespace MonoDevelop.Core
 				case XmlNodeType.EndElement:
 					if (endNodes.Contains (reader.LocalName)) 
 						return;
-					Runtime.LoggingService.Warn ("Unknown end node: " + reader.LocalName + " valid end nodes are: " + ConcatString (endNodes));
+					LoggingService.LogWarning ("Unknown end node: " + reader.LocalName + " valid end nodes are: " + ConcatString (endNodes));
 					break;
 				case XmlNodeType.Element:
 					if (!didReadStartNode && endNodes.Contains (reader.LocalName)) {
@@ -90,7 +90,7 @@ namespace MonoDevelop.Core
 					}
 					bool validNode = callback (data);
 					if (!validNode) 
-						Runtime.LoggingService.Warn ("Unknown node: " + reader.LocalName);
+						LoggingService.LogWarning ("Unknown node: " + reader.LocalName);
 					if (data.SkipNextRead) 
 						goto skip;
 					break;

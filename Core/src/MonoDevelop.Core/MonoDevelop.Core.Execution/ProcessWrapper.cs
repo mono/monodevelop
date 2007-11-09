@@ -93,7 +93,7 @@ namespace MonoDevelop.Core.Execution
 					captureErrorThread.Abort ();
 				}
 			} catch (Exception ex) {
-				Runtime.LoggingService.Error (ex);
+				LoggingService.LogError (ex.ToString ());
 			}
 		}
 

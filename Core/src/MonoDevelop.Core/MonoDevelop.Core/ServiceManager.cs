@@ -118,7 +118,7 @@ namespace MonoDevelop.Core
 				if (IsInstanceOfType(serviceType, service)) {
 					servicesHashtable[serviceType] = service;
 					if (!initializedServices.Contains (service)) {
-						Runtime.LoggingService.Info (GettextCatalog.GetString ("Initializing service: ") + serviceType);
+						LoggingService.LogInfo (GettextCatalog.GetString ("Initializing service: ") + serviceType);
 						service.InitializeService();
 						initializedServices.Add (service);
 					}

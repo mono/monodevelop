@@ -1,3 +1,20 @@
+2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Core.Execution/ProcessWrapper.cs,
+	  MonoDevelop.Core.Execution/ProcessHostController.cs,
+	  MonoDevelop.Core/ServiceManager.cs, MonoDevelop.Core/XmlReadHelper.cs,
+	  MonoDevelop.Core/Properties.cs: Track LoggingService API changes.
+	* MonoDevelop.Core.mdp, Makefile.am: Updated..
+	* MonoDevelop.Core.Logging/FileLogger.cs,
+	  MonoDevelop.Core.Logging/ConsoleLogger.cs,
+	  MonoDevelop.Core.Logging/ILogger.cs,
+	  MonoDevelop.Core.Logging/LogLevel.cs,
+	  MonoDevelop.Core/LoggingService.cs: Rewrite logging service as a MIT/X11
+	  static class.
+	* MonoDevelop.Core/DefaultLoggingService.cs,
+	  MonoDevelop.Core/ILoggingService.cs, MonoDevelop.Core/Runtime.cs: Remove
+	  old logging service.
+
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.addin.xml: Bump MD version.

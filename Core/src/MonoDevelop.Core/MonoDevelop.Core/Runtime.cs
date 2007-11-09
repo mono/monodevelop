@@ -41,7 +41,6 @@ namespace MonoDevelop.Core
 	{
 		static ProcessService processService;
 		static SystemAssemblyService systemAssemblyService;
-		static ILoggingService loggingService;
 		static SetupService setupService;
 		static ApplicationService applicationService;
 		static bool initialized;
@@ -74,18 +73,18 @@ namespace MonoDevelop.Core
 		
 		static void OnLoadError (object s, AddinErrorEventArgs args)
 		{
-			object msg = "Add-in error (" + args.AddinId + "): " + args.Message;
-			Runtime.LoggingService.Error (msg, args.Exception);
+			string msg = "Add-in error (" + args.AddinId + "): " + args.Message;
+			LoggingService.LogError (msg, args.Exception);
 		}
 		
 		static void OnLoad (object s, AddinEventArgs args)
 		{
-			Runtime.LoggingService.Info ("Add-in loaded: " + args.AddinId);
+			LoggingService.LogInfo ("Add-in loaded: " + args.AddinId);
 		}
 		
 		static void OnUnload (object s, AddinEventArgs args)
 		{
-			Runtime.LoggingService.Info ("Add-in unloaded: " + args.AddinId);
+			LoggingService.LogInfo ("Add-in unloaded: " + args.AddinId);
 		}
 		
 		internal static bool Initialized {
@@ -111,15 +110,6 @@ namespace MonoDevelop.Core
 				if (systemAssemblyService == null)
 					systemAssemblyService = (SystemAssemblyService) ServiceManager.GetService (typeof(SystemAssemblyService));
 				return systemAssemblyService;
-			}
-		}
-	
-		public static ILoggingService LoggingService {
-			get {
-				if (loggingService == null)
-					loggingService = new DefaultLoggingService();
-				
-				return loggingService;
 			}
 		}
 	
