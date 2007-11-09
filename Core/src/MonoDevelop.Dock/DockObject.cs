@@ -1,614 +1,274 @@
-/*
- * Copyright (C) 2004 Todd Berman <tberman@off.net>
- * Copyright (C) 2004 Jeroen Zwartepoorte <jeroen@xs4all.nl>
- * Copyright (C) 2005 John Luke <john.luke@gmail.com>
- *
- * based on work by:
- * Copyright (C) 2002 Gustavo Giráldez <gustavo.giraldez@gmx.net>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- */
+//
+// DockObject.cs
+//
+// Author:
+//   Lluis Sanchez Gual
+//
+
+//
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
 using System.Xml;
 using Gtk;
 
-namespace Gdl
+namespace MonoDevelop.Components.Docking
 {
-	public delegate void PropertyChangedHandler (object o, string name);
-
-	public class DockObject : Container
-	{	
-		private DockObjectFlags flags = DockObjectFlags.Automatic;
-		private int freezeCount = 0;
-		private DockMaster master;
-		private string name;
-		private string longName;
-		private string stockid;
-		private bool reducePending;
-
-		static Dictionary<Type, TypeProps> props = new Dictionary<Type, TypeProps> ();
+	internal abstract class DockObject
+	{
+		DockGroup parentGroup;
+		DockFrame frame;
+		Gdk.Rectangle rect;
 		
-		class TypeProps { 
-			public Dictionary<string, PropertyInfo> AfterProps;
-			public Dictionary<string, PropertyInfo> BeforeProps;
+		// The current size in pixels of this item
+		double size = -1;
+
+		// The current size in pixels of this item, but as an integer.
+		// In general it is the same value as size, but it may change a bit due to rounding.
+		int allocSize = -1;
+		
+		double defaultHorSize = -1;
+		double defaultVerSize = -1;
+		double prefSize = 0;
+		
+		// Those are the last known coordinates of the item. They are stored in StoreAllocation
+		// and restored to rect in RestoreAllocation. This is needed for example when a layout
+		// is cloned. It is convenient to have allocation information in the cloned layout, even
+		// if the layout has never been displayed (e.g., to decide the autohide dock location)
+		int ax=-1, ay=-1;
+		
+		public DockObject (DockFrame frame)
+		{
+			this.frame = frame;
 		}
 		
-		public event DetachedHandler Detached;
-		public event DockedHandler Docked;
-		public event PropertyChangedHandler PropertyChanged;
-
-		protected DockObject (IntPtr raw) : base (raw) { }
-		protected DockObject () : base () { }
-		
-		public DockObjectFlags DockObjectFlags {
+		internal DockGroup ParentGroup {
 			get {
-				return flags;
+				return parentGroup;
 			}
 			set {
-				flags = value;
-				EmitPropertyEvent ("DockObjectFlags");
+				parentGroup = value;
+				if (size < 0)
+					size = prefSize = DefaultSize;
 			}
 		}
-		
-		public bool InDetach {
+
+		public double Size {
 			get {
-				return ((flags & DockObjectFlags.InDetach) != 0);
-			}
-		}
-		
-		public bool InReflow {
-			get {
-				return ((flags & DockObjectFlags.InReflow) != 0);
-			}
-		}
-		
-		public bool IsAttached {
-			get {
-				return ((flags & DockObjectFlags.Attached) != 0);
-			}
-		}
-		
-		public bool IsAutomatic {
-			get {
-				return ((flags & DockObjectFlags.Automatic) != 0);
-			}
-		}
-		
-		public bool IsBound {
-			get {
-				return master != null;
-			}
-		}
-		
-		public virtual bool IsCompound {
-			get {
-				return true;
-			}
-		}
-		
-		public bool IsFrozen {
-			get {
-				return freezeCount > 0;
-			}
-		}
-		
-		public string LongName {
-			get {
-				return longName;
+				return size;
 			}
 			set {
-				longName = value;
-				EmitPropertyEvent ("LongName");
+				size = value;
 			}
 		}
 		
-		public DockMaster Master {
+		public bool HasAllocatedSize {
+			get { return allocSize != -1; }
+		}
+		
+		public double DefaultSize {
 			get {
-				return master;
+				if (defaultHorSize < 0)
+					InitDefaultSizes ();
+				if (parentGroup != null) {
+					if (parentGroup.Type == DockGroupType.Horizontal)
+						return defaultHorSize;
+					else if (parentGroup.Type == DockGroupType.Vertical)
+						return defaultVerSize;
+				}
+				return 0;
 			}
 			set {
-				if (value != null)
-					Bind (master);
-				else
-					Unbind ();
-				EmitPropertyEvent ("Master");
+				if (parentGroup != null) {
+					if (parentGroup.Type == DockGroupType.Horizontal)
+						defaultHorSize = value;
+					else if (parentGroup.Type == DockGroupType.Vertical)
+						defaultVerSize = value;
+				}
 			}
 		}
 		
-		[Export]
-		public new string Name {
+		internal void ResetDefaultSize ()
+		{
+			defaultHorSize = -1;
+			defaultVerSize = -1;
+		}
+
+		public int MinSize {
 			get {
-				return name;
+				int w,h;
+				GetMinSize (out w, out h);
+				if (parentGroup != null) {
+					if (parentGroup.Type == DockGroupType.Horizontal)
+						return w;
+					else if (parentGroup.Type == DockGroupType.Vertical)
+						return h;
+				}
+				return w;
+			}
+		}
+		
+		public abstract bool Expand { get; }
+		
+		public virtual void SizeAllocate (Gdk.Rectangle rect)
+		{
+			this.rect = rect;
+		}
+
+		internal Gdk.Rectangle Allocation {
+			get {
+				return rect;
 			}
 			set {
-				name = value;
-				EmitPropertyEvent ("Name");
-			}
-		}
-		
-		public DockObject ParentObject {
-			get {
-				Widget parent = Parent;
-				while (parent != null && !(parent is DockObject)) {
-					parent = parent.Parent;
-				}
-				return parent != null ? (DockObject)parent : null;
+				rect = value; 
 			}
 		}
 
-		public string StockId {
+		public int AllocSize {
 			get {
-				return stockid;
+				return allocSize;
 			}
 			set {
-				stockid = value;
-				EmitPropertyEvent ("StockId");
+				allocSize = value;
 			}
 		}
-
-		private PropertyInfo[] PublicProps {
+		
+		public MonoDevelop.Components.Docking.DockFrame Frame {
 			get {
-				return this.GetType ().GetProperties (BindingFlags.Public | BindingFlags.Instance);
+				return frame;
 			}
 		}
 
-		void SetPropertyValue (string property, string val, bool after)
-		{
-			TypeProps tprops;
-			if (!props.TryGetValue (GetType (), out tprops)) {
-				tprops = new TypeProps ();
-				tprops.AfterProps = new Dictionary<string, PropertyInfo> ();
-				tprops.BeforeProps = new Dictionary<string, PropertyInfo> ();
-				foreach (PropertyInfo pp in PublicProps) {
-					if (pp.IsDefined (typeof (AfterAttribute), true))
-						tprops.AfterProps [pp.Name.ToLower ()] = pp;
-					else
-						tprops.BeforeProps [pp.Name.ToLower ()] = pp;
-				}
-				props [GetType ()] = tprops;
-			}
-			
-			property = property.ToLower ();
-			PropertyInfo p = null;
-			if (after && tprops.AfterProps.ContainsKey (property)) {
-				p = tprops.AfterProps [property];
-			} else if (tprops.BeforeProps.ContainsKey (property)) {
-				p = tprops.BeforeProps [property];
-			}
-			if (p != null)
-				SetPropertyValue (p, property, val);
-		}
-
-		void SetPropertyValue (PropertyInfo pi, string property, string val)
-		{
-			if (pi.PropertyType.IsEnum)
-				pi.SetValue (this, Enum.Parse (pi.PropertyType, val, true), null);
-			else if (pi.PropertyType == typeof (bool))
-				pi.SetValue (this, val == "no" ? false : true, null);
-			else if (pi.PropertyType == typeof (int))
-				pi.SetValue (this, int.Parse (val), null);
-			else
-				pi.SetValue (this, val, null);
-		}
-
-		public void FromXml (XmlNode node)
-		{
-			foreach (XmlAttribute att in node.Attributes)
-				SetPropertyValue (att.Name, att.Value, false);
-		}
-
-		public void FromXmlAfter (XmlNode node)
-		{
-			foreach (XmlAttribute att in node.Attributes)
-				SetPropertyValue (att.Name, att.Value, true);
-		}
-
-		string GetXmlName (Type t)
-		{
-			switch (t.ToString ()) {
-				case "Gdl.Dock":
-					return "dock";
-				case "Gdl.DockItem":
-					return "item";
-				case "Gdl.DockNotebook":
-					return "notebook";
-				case "Gdl.DockPaned":
-					return "paned";
-				default:
-					return "object";
-			}
-		}
-
-		public XmlElement ToXml (XmlDocument doc)
-		{
-			Type t = this.GetType ();
-			XmlElement element = doc.CreateElement (GetXmlName (t));
-
-			// get object exported attributes
-			List<PropertyInfo> exported = new List<PropertyInfo> ();
-			foreach (PropertyInfo p in PublicProps) {
-				if (p.IsDefined (typeof (ExportAttribute), true))
-					exported.Add (p);
-			}
-
-			foreach (PropertyInfo p in exported) {
-				if (p.PropertyType.IsSubclassOf (typeof (System.Enum)))
-					element.SetAttribute (p.Name.ToLower (), p.GetValue (this, null).ToString ().ToLower ());
-				else if (p.PropertyType == typeof (bool))
-					element.SetAttribute (p.Name.ToLower (), ((bool) p.GetValue (this, null)) ? "yes" : "no");
-				else if (p.GetValue (this, null) != null)
-					element.SetAttribute (p.Name.ToLower (), p.GetValue (this, null).ToString ());
-			}
-			return element;
-		}
-
-		protected override void OnDestroyed ()
-		{
-			if (IsCompound) {
-				/* detach our dock object children if we have some, and even
-				   if we are not attached, so they can get notification */
-				Freeze ();
-				foreach (DockObject child in DockChildren)
-					child.Detach (true);
-				reducePending = false;
-				Thaw ();
-			}
-
-			if (IsAttached)
-				/* detach ourselves */
-				Detach (false);
-
-			if (Master != null)
-				/* finally unbind us */
-				Unbind ();
-
-			base.OnDestroyed ();
-		}
-		
-		protected override void OnShown ()
-		{
-			if (IsCompound)
-				foreach (Widget child in DockChildren)
-					child.Show ();
-
-			base.OnShown ();
-		}
-		
-		protected override void OnHidden ()
-		{
-			if (IsCompound)
-				foreach (Widget child in DockChildren)
-					child.Hide ();
-
-			base.OnHidden ();
-		}
-		
-		public virtual void OnDetached (bool recursive)
-		{
-			/* detach children */
-			if (recursive && IsCompound) {
-				foreach (Widget c in DockChildren) {
-					DockObject child = c as DockObject;
-					if (child != null)
-						child.Detach (recursive);
-				}
-			}
-			
-			/* detach the object itself */
-			flags &= ~(DockObjectFlags.Attached);
-			DockObject parent = ParentObject;
-			if (Parent != null && Parent is Container)
-				((Container)Parent).Remove (this);
-
-			if (parent != null)
-				parent.Reduce ();
-		}
-		
-		public virtual void OnReduce ()
-		{
-			if (!IsCompound)
-				return;
-				
-			DockPlaceholder.DumpTree (this);
-			
-			DockObject parent = ParentObject;
-			List<Widget> children = new List<Widget> ();
-			foreach (Widget w in DockChildren)
-				if (w is DockObject)
-					children.Add (w);
-			
-			if (children.Count <= 1) {
-				if (parent != null)
-					parent.Freeze ();
-
-				Freeze ();
-				
-				// Detach the children before detaching this object, since in this
-				// way the children can have access to the whole object hierarchy.
-				
-				// Set the InDetach flag now, so the children know that this object
-				// is going to be detached.
-				
-				flags |= DockObjectFlags.InDetach;
-				
-				ArrayList dchildren = new ArrayList ();
-
-				foreach (Widget widget in children) {
-					DockObject child = widget as DockObject;
-					child.flags |= DockObjectFlags.InReflow;
-					child.Detach (false);
-					if (parent != null) {
-						// Don't add the child to the new parent yet, 
-						// since we need first to removed the old child.
-						dchildren.Add (child);
-					}
-					child.flags &= ~(DockObjectFlags.InReflow);
-				}
-				
-				// Now it can be detached
-				Detach (false);
-				
-				// After detaching the reduced object, we can add the
-				// children (the only child in fact) to the new parent
-				foreach (DockObject c in dchildren)
-					parent.Add (c);
-				
-				reducePending = false;
-
-				Thaw ();
-				if (parent != null)
-					parent.Thaw ();
-			}
-			DockPlaceholder.DumpTree (parent);
-		}
-		
-		public virtual bool OnDockRequest (int x, int y, ref DockRequest request)
-		{
-			return false;
-		}
-		
-		public virtual void OnDocked (DockObject requestor, DockPlacement position, object data)
-		{
-		}
-		
-		public virtual bool OnReorder (DockObject child, DockPlacement new_position, object data)
-		{
-			return false;
-		}
-		
-		public virtual void OnPresent (DockObject child)
-		{
-			Show ();			
-		}
-		
-		public virtual bool OnChildPlacement (DockObject child, ref DockPlacement placement)
-		{
-			return false;
-		}
-		
-		public bool ChildPlacement (DockObject child, ref DockPlacement placement)
-		{
-			if (!IsCompound)
-				return false;
-			
-			return OnChildPlacement (child, ref placement);
-		}
-		
-		public virtual void GetRelativePlacement (out DockObject relativeObject, out DockPlacement relativePlacement)
-		{
-			// Returns a reference object and a reference placement from which this object
-			// can be located
-			
-			if (ParentObject != null)
-				ParentObject.GetRelativeChildPlacement (this, out relativeObject, out relativePlacement);
-			else {
-				relativeObject = this;
-				relativePlacement = DockPlacement.Floating;
-			}
-		}
-		
-		public virtual DockObject GetObjectFromRelativePlacement (DockPlacement relativePlacement)
-		{
-			// Returns the object at the specified relative position
-			if (ParentObject != null)
-				return ParentObject.GetChildFromRelative (this, relativePlacement);
-			else
-				return this;
-		}
-		
-		public virtual void GetRelativeChildPlacement (DockObject child, out DockObject relativeObject, out DockPlacement relativePlacement)
-		{
-			// Returns a reference child and a reference placement from which this object
-			// can be located
-			
-			relativeObject = this;
-			relativePlacement = DockPlacement.None;
-		}
-		
-		public virtual DockObject GetChildFromRelative (DockObject relativeObject, DockPlacement relativePlacement)
-		{
-			// Returns the child at the specified relative child position
-			
-			DockObject child;
-			DockPlacement pos;
-			GetRelativeChildPlacement (relativeObject, out child, out pos);
-			return child;
-		}
-		
-		public void Detach (bool recursive)
-		{
-			if (!IsAttached)
-				return;
-				
-			/* freeze the object to avoid reducing while detaching children */
-			Freeze ();
-			
-			// Call the OnDetached mehtod after firing the event, so everything
-			// is processed in the correct order
-			
-			DockObjectFlags |= DockObjectFlags.InDetach;
-			DetachedHandler handler = Detached;
-			if (handler != null)
-				handler (this, new DetachedArgs (recursive));
-			OnDetached (recursive);
-			DockObjectFlags &= ~(DockObjectFlags.InDetach);
-
-			Thaw ();		
-		}
-		
-		public void Dock (DockObject requestor, DockPlacement position, object data)
-		{
-			if (requestor == null || requestor == this)
-				return;
-				
-			if (master == null) {
-				Console.WriteLine ("Dock operation requested in a non-bound object {0}.", this);
-				Console.WriteLine ("This might break.");
-			}
-
-			if (!requestor.IsBound)
-				requestor.Bind (Master);
-
-			if (requestor.Master != Master) {
-				Console.WriteLine ("Cannot dock {0} to {1} as they belong to different masters.",
-						   requestor, this);
-				return;
-			}
-
-			/* first, see if we can optimize things by reordering */
-			if (position != DockPlacement.None) {
-				DockObject parent = ParentObject;
-				if (OnReorder (requestor, position, data) ||
-				    (parent != null && parent.OnReorder (requestor, position, data)))
-					return;
-			}
-
-			/* freeze the object, since under some conditions it might
-			   be destroyed when detaching the requestor */
-			Freeze ();
-
-			/* detach the requestor before docking */
-			if (requestor.IsAttached)
-				requestor.Detach (false);
-
-			/* notify interested parties that an object has been docked. */
-			if (position != DockPlacement.None) {
-				OnDocked (requestor, position, data);
-				DockedHandler handler = Docked;
-				if (handler != null) {
-					DockedArgs args = new DockedArgs (requestor, position);
-					handler (this, args);
-				}
-			}
-			
-			Thaw ();
-		}
-		
-		public void Present (DockObject child)
-		{
-			if (ParentObject != null)
-				/* chain the call to our parent */
-				ParentObject.Present (this);
-			
-			OnPresent (child);
-		}
-
-		public void Reduce ()
-		{
-			if (IsFrozen) {
-				reducePending = true;
-				return;
-			}
-
-			OnReduce ();		
-		}
-
-		public void Freeze ()
-		{
-			freezeCount++;
-		}
-		
-		public void Thaw ()
-		{
-			if (freezeCount < 0) {
-				Console.WriteLine ("DockObject.Thaw: freezeCount < 0");
-				return;
-			}
-
-			freezeCount--;
-
-			if (freezeCount == 0 && reducePending) {
-				reducePending = false;
-				Reduce ();
-			}
-		}
-		
-		public void Bind (DockMaster master)
-		{
-			if (master == null) {
-				Console.WriteLine ("Passed master is null");
-				return;
-			}
-			if (this.master == master) {
-				Console.WriteLine ("Passed master is this master");
-				return;
-			}
-			if (this.master != null) {
-				Console.WriteLine ("Attempt to bind an already bound object");
-				return;
-			}
-			
-			master.Add (this);
-			this.master = master;
-			EmitPropertyEvent ("Master");
-		}
-		
-		public void Unbind ()
-		{
-			if (IsAttached)
-				Detach (true);
-
-			if (master != null) {
-				DockMaster _master = master;
-				master = null;
-				_master.Remove (this);
-				EmitPropertyEvent ("Master");
-			}
-		}
-		
-		protected void EmitPropertyEvent (string name)
-		{
-			// Make a local assignment of the handler here to prevent
-			// any race conditions if the PropertyChanged value changes
-			// to null after the != null check.
-			PropertyChangedHandler handler = PropertyChanged;
-			if (handler != null)
-				handler (this, name);
-		}
-		
-		public virtual IEnumerable<Widget> DockChildren {
+		public double PrefSize {
 			get {
-				foreach (Widget w in Children)
-					if (w is DockObject)
-						yield return w;
+				return prefSize;
 			}
+			set {
+				prefSize = value;
+			}
+		}
+
+		void InitDefaultSizes ()
+		{
+			int width, height;
+			GetDefaultSize (out width, out height);
+			if (width == -1)
+				width = frame.DefaultItemWidth;
+			if (height == -1)
+				height = frame.DefaultItemHeight;
+			defaultHorSize = (double) width;
+			defaultVerSize = (double) height;
+		}
+		
+		internal virtual void GetDefaultSize (out int width, out int height)
+		{
+			width = -1;
+			height = -1;
+		}
+
+		internal virtual void GetMinSize (out int width, out int height)
+		{
+			width = 0;
+			height = 0;
+		}
+			
+		internal abstract void QueueResize ();
+		
+		internal abstract bool GetDockTarget (DockItem item, int px, int py, out DockDelegate dockDelegate, out Gdk.Rectangle rect);
+		
+		internal abstract Gtk.Requisition SizeRequest ();
+		
+		internal abstract bool Visible { get; }
+
+		internal abstract void Dump (int ind);
+		
+		internal virtual void RestoreAllocation ()
+		{
+			if (parentGroup != null) {
+				int x = ax != -1 ? ax : 0;
+				int y = ay != -1 ? ay : 0;
+				if (parentGroup.Type == DockGroupType.Horizontal)
+					rect = new Gdk.Rectangle (x, y, (int)size, parentGroup.Allocation.Height);
+				else if (parentGroup.Type == DockGroupType.Vertical)
+					rect = new Gdk.Rectangle (x, y, parentGroup.Allocation.Width, (int)size);
+			}
+		}
+		
+		internal virtual void StoreAllocation ()
+		{
+			if (Visible) {
+				if (parentGroup == null || parentGroup.Type == DockGroupType.Horizontal)
+					size = prefSize = (int) rect.Width;
+				else if (parentGroup.Type == DockGroupType.Vertical)
+					size = prefSize = (int) rect.Height;
+				ax = Allocation.X;
+				ay = Allocation.Y;
+			}
+		}
+		
+		internal virtual void Write (XmlWriter writer)
+		{
+			writer.WriteAttributeString ("size", size.ToString ());
+			writer.WriteAttributeString ("prefSize", prefSize.ToString ());
+			writer.WriteAttributeString ("defaultHorSize", defaultHorSize.ToString ());
+			writer.WriteAttributeString ("defaultVerSize", defaultVerSize.ToString ());
+		}
+		
+		internal virtual void Read (XmlReader reader)
+		{
+			size = double.Parse (reader.GetAttribute ("size"));
+			prefSize = double.Parse (reader.GetAttribute ("prefSize"));
+			defaultHorSize = double.Parse (reader.GetAttribute ("defaultHorSize"));
+			defaultVerSize = double.Parse (reader.GetAttribute ("defaultVerSize"));
+		}
+		
+		public virtual void CopyFrom (DockObject ob)
+		{
+			parentGroup = null;
+			frame = ob.frame;
+			rect = ob.rect;
+			size = ob.size;
+			allocSize = ob.allocSize;
+			defaultHorSize = ob.defaultHorSize;
+			defaultVerSize = ob.defaultVerSize;
+			prefSize = ob.prefSize;
+		}
+		
+		public DockObject Clone ()
+		{
+			DockObject ob = (DockObject) this.MemberwiseClone ();
+			ob.CopyFrom (this);
+			return ob;
+		}
+		
+		public virtual void CopySizeFrom (DockObject obj)
+		{
+			size = obj.size;
+			allocSize = obj.allocSize;
+			defaultHorSize = obj.defaultHorSize;
+			defaultVerSize = obj.defaultVerSize;
+			prefSize = obj.prefSize;
 		}
 	}
 }

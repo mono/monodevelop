@@ -4,7 +4,9 @@ TEST = $(top_builddir)/build/AddIns/dock-test.exe
 
 RES =  \
 	layout.glade \
+	stock-auto-hide.png \
 	stock-close-12.png \
+	stock-dock.png \
 	stock-menu-left-12.png \
 	stock-menu-right-12.png
 
@@ -21,28 +23,25 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
-	AfterAttribute.cs \
 	AssemblyInfo.cs \
-	DetachedHandler.cs \
-	Dock.cs \
+	AutoHideBox.cs \
 	DockBar.cs \
-	DockBarButton.cs \
-	DockedHandler.cs \
+	DockBarItem.cs \
+	DockContainer.cs \
+	DockFrame.cs \
+	DockFrameTopLevel.cs \
+	DockGroup.cs \
+	DockGroupItem.cs \
+	DockGroupType.cs \
 	DockItem.cs \
 	DockItemBehavior.cs \
-	DockItemGrip.cs \
+	DockItemContainer.cs \
+	DockItemStatus.cs \
 	DockLayout.cs \
-	DockMaster.cs \
-	DockNotebook.cs \
 	DockObject.cs \
-	DockObjectFlags.cs \
-	DockPaned.cs \
-	DockPlaceholder.cs \
-	DockPlacement.cs \
-	DockRequest.cs \
-	DragNotebook.cs \
-	ExportAttribute.cs \
-	Stock.cs
+	DockPosition.cs \
+	PlaceholderWindow.cs \
+	TabStrip.cs
 
 TEST_FILES = $(srcdir)/GdlDockTest.cs
 

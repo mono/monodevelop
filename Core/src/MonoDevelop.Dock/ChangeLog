@@ -1,3 +1,13 @@
+2007-11-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AutoHideBox.cs, DockGroupItem.cs, stock-auto-hide.png,
+	  MonoDevelop.Dock.mdp, DockBarItem.cs, stock-close-12.png, TabStrip.cs,
+	  DockGroup.cs, DockItem.cs, DockPosition.cs, DockBar.cs, DockObject.cs,
+	  PlaceholderWindow.cs, DockLayout.cs, DockItemBehavior.cs,
+	  stock-dock.png, DockContainer.cs, DockFrame.cs, DockGroupType.cs,
+	  DockItemContainer.cs, DockItemStatus.cs, Makefile.am,
+	  DockFrameTopLevel.cs: New docking manager implementation.
+
 2007-10-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Dock.mdp: Project file names updated by change in MD path

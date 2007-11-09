@@ -1,5 +1,5 @@
 //
-// DockItemBehavior.cs
+// DockGroupType.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -32,16 +32,10 @@ using System;
 
 namespace MonoDevelop.Components.Docking
 {
-	[Flags]
-	public enum DockItemBehavior
+	enum DockGroupType
 	{
-		Normal,
-		NeverFloating = 1 << 0,
-		NeverVertical = 1 << 1,
-		NeverHorizontal = 1 << 2,
-		CantClose = 1 << 3,
-		CantAutoHide = 1 << 4,
-		NoGrip = 1 << 5,
-		Locked = NoGrip,
+		Horizontal,
+		Vertical,
+		Tabbed
 	}
 }

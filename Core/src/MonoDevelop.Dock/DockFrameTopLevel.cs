@@ -1,5 +1,5 @@
 //
-// DockItemBehavior.cs
+// DockFrameTopLevel.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -28,20 +28,34 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+
+
 using System;
+using Gtk;
 
 namespace MonoDevelop.Components.Docking
 {
-	[Flags]
-	public enum DockItemBehavior
+	class DockFrameTopLevel: EventBox
 	{
-		Normal,
-		NeverFloating = 1 << 0,
-		NeverVertical = 1 << 1,
-		NeverHorizontal = 1 << 2,
-		CantClose = 1 << 3,
-		CantAutoHide = 1 << 4,
-		NoGrip = 1 << 5,
-		Locked = NoGrip,
+		int x, y;
+		
+		public int X {
+			get { return x; }
+			set {
+				x = value;
+				if (Parent != null)
+					Parent.QueueResize ();
+			}
+		}
+		
+		public int Y {
+			get { return y; }
+			set {
+				y = value;
+				if (Parent != null)
+					Parent.QueueResize ();
+			}
+		}
 	}
+
 }

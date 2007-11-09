@@ -1,5 +1,5 @@
 //
-// DockItemBehavior.cs
+// DockPosition.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -28,20 +28,18 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+
 using System;
 
 namespace MonoDevelop.Components.Docking
 {
-	[Flags]
-	public enum DockItemBehavior
+	enum DockPosition
 	{
-		Normal,
-		NeverFloating = 1 << 0,
-		NeverVertical = 1 << 1,
-		NeverHorizontal = 1 << 2,
-		CantClose = 1 << 3,
-		CantAutoHide = 1 << 4,
-		NoGrip = 1 << 5,
-		Locked = NoGrip,
+		Left,
+		Right,
+		Top,
+		Bottom,
+		Center,
+		CenterBefore
 	}
 }
