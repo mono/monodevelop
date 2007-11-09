@@ -155,7 +155,7 @@ namespace MonoDevelop.Projects.Parser
 					currentGetTime = 0;
 					CloseReader ();
 					
-					Runtime.LoggingService.Debug ("Reading " + dataFile);
+					LoggingService.LogDebug ("Reading " + dataFile);
 					
 					ifile = new FileStream (dataFile, FileMode.Open, FileAccess.Read, FileShare.Read);
 					BinaryFormatter bf = new BinaryFormatter ();
@@ -184,7 +184,7 @@ namespace MonoDevelop.Projects.Parser
 				catch (Exception ex)
 				{
 					if (ifile != null) ifile.Close ();
-					Runtime.LoggingService.Error ("PIDB file '" + dataFile + "' couldn not be loaded: '" + ex.Message + "'. The file will be recreated");
+					LoggingService.LogError ("PIDB file '" + dataFile + "' couldn not be loaded: '" + ex.Message + "'. The file will be recreated");
 					rootNamespace = new NamespaceEntry (null, null);
 					files = new Hashtable ();
 					references = new ArrayList ();
@@ -225,7 +225,7 @@ namespace MonoDevelop.Projects.Parser
 				headers["Version"] = FORMAT_VERSION;
 				headers["LastValidTaskListTokens"] = (string)PropertyService.Get ("Monodevelop.TaskListTokens", "");
 
-				Runtime.LoggingService.Debug ("Writing " + dataFile);
+				LoggingService.LogDebug ("Writing " + dataFile);
 				
 				string tmpDataFile = dataFile + ".tmp";
 				FileStream dfile = new FileStream (tmpDataFile, FileMode.Create, FileAccess.Write, FileShare.Write);
@@ -311,7 +311,7 @@ namespace MonoDevelop.Projects.Parser
 						
 					FileService.MoveFile (tmpDataFile, dataFile);
 				} catch (Exception ex) {
-					Runtime.LoggingService.Error (ex);
+					LoggingService.LogError (ex.ToString ());
 					if (dfile != null)
 						dfile.Close ();
 					if (File.Exists (tmpDataFile))

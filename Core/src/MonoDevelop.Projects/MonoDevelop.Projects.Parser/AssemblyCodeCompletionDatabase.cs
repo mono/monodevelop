@@ -224,7 +224,7 @@ namespace MonoDevelop.Projects.Parser
 			if (!File.Exists (checkFile) || version != FORMAT_VERSION) {
 				string dataFile = Path.Combine (baseDir, name + ".pidb");
 				FileService.DeleteFile (dataFile);
-				Runtime.LoggingService.Info ("Deleted " + dataFile);
+				LoggingService.LogInfo ("Deleted " + dataFile);
 			}
 		}
 		
@@ -260,11 +260,11 @@ namespace MonoDevelop.Projects.Parser
 						assemblyName = AssemblyName.GetAssemblyName (assemblyFile).FullName;
 						gotname = true;
 					} catch (Exception ex) {
-						Runtime.LoggingService.Error (ex);
+						LoggingService.LogError (ex.ToString ());
 					}
 				}
 				if (!gotname) {
-					Runtime.LoggingService.Error ("Could not load assembly: " + assemblyName);
+					LoggingService.LogError ("Could not load assembly: " + assemblyName);
 					return false;
 				}
 				name = EncodeGacAssemblyName (assemblyName);
@@ -287,7 +287,7 @@ namespace MonoDevelop.Projects.Parser
 				return references;
 				
 			} catch (Exception ex) {
-				Runtime.LoggingService.Error (ex);
+				LoggingService.LogError (ex.ToString ());
 				return null;
 			}
 		}

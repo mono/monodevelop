@@ -238,7 +238,7 @@ namespace MonoDevelop.Projects
 						FileService.CopyFile (sourcePath, destinationFileName);
 					}
 				} catch (Exception e) {
-					Runtime.LoggingService.ErrorFormat ("Can't copy reference file from {0} to {1}: {2}", (object)sourcePath, (object)destinationFileName, (object)e);
+					LoggingService.LogError ("Can't copy reference file from {0} to {1}: {2}", sourcePath, destinationFileName, e);
 				}
 			}
 		}
@@ -281,7 +281,7 @@ namespace MonoDevelop.Projects
 							FileService.DeleteFile (destinationFileName);
 					}
 				} catch (Exception e) {
-					Runtime.LoggingService.ErrorFormat ("Can't delete reference file {0}: {2}", destinationFileName, e);
+					LoggingService.LogError ("Can't delete reference file {0}: {2}", destinationFileName, e);
 				}
 			}
 		}

@@ -43,7 +43,7 @@ namespace MonoDevelop.Projects.Parser
 						wrapped = db.ReadClass (entry);
 						entry.AttachClass (wrapped);
 					} catch (Exception ex) {
-						Runtime.LoggingService.Error (ex);
+						LoggingService.LogError (ex.ToString ());
 					}
 				}
 				return wrapped;

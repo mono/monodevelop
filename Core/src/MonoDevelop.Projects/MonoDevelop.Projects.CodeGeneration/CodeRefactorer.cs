@@ -89,7 +89,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				
 				gctx.Save ();
 			} catch (Exception e) {
-				Runtime.LoggingService.Error (GettextCatalog.GetString ("Error while renaming {0} to {1}: {2}",  cls, newName, e.ToString ()));
+				LoggingService.LogError (GettextCatalog.GetString ("Error while renaming {0} to {1}: {2}",  cls, newName, e.ToString ()));
 			}
 		}
 		
@@ -173,7 +173,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 					continue;
 				IClass baseClass = ctx.GetClass (rType.FullyQualifiedName);
 				if (baseClass == null)
-					Runtime.LoggingService.Error (GettextCatalog.GetString
+					LoggingService.LogError (GettextCatalog.GetString
 						("Error while implementing interface '{0}' in '{1}': base type '{2}' was not found.", klass, iface, baseClass)
 					);
 				else
@@ -244,7 +244,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				gen.RemoveMember (gctx, cls, member);
 				gctx.Save ();
 			} catch (Exception e) {
-				Runtime.LoggingService.Error (GettextCatalog.GetString ("Error while removing {0}:{1}", member, e.ToString ()));
+				LoggingService.LogError (GettextCatalog.GetString ("Error while removing {0}:{1}", member, e.ToString ()));
 			}
 		}
 		
@@ -261,7 +261,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				gctx.Save ();
 				return m;
 			} catch (Exception e) {
-				Runtime.LoggingService.Error (GettextCatalog.GetString ("Error while renaming {0} to {1}: {2}",  member, newName, e.ToString ()));
+				LoggingService.LogError (GettextCatalog.GetString ("Error while renaming {0} to {1}: {2}",  member, newName, e.ToString ()));
 				return null;
 			}
 		}
@@ -282,7 +282,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				gctx.Save ();
 				return m;
 			} catch (Exception e) {
-				Runtime.LoggingService.Error (GettextCatalog.GetString ("Error while replacing {0}: {1}",  member, e.ToString ()));
+				LoggingService.LogError (GettextCatalog.GetString ("Error while replacing {0}: {1}",  member, e.ToString ()));
 				return null;
 			}
 		}
@@ -301,7 +301,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				
 				return rv;
 			} catch (Exception e) {
-				Runtime.LoggingService.Error (GettextCatalog.GetString ("Error while renaming {0} to {1}: {2}",  var, newName, e.ToString ()));
+				LoggingService.LogError (GettextCatalog.GetString ("Error while renaming {0} to {1}: {2}",  var, newName, e.ToString ()));
 				return false;
 			}
 		}
@@ -321,7 +321,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				
 				return rv;
 			} catch (Exception e) {
-				Runtime.LoggingService.Error (GettextCatalog.GetString ("Error while renaming {0} to {1}: {2}",  param, newName, e.ToString ()));
+				LoggingService.LogError (GettextCatalog.GetString ("Error while renaming {0} to {1}: {2}",  param, newName, e.ToString ()));
 				return false;
 			}
 		}

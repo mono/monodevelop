@@ -281,13 +281,13 @@ namespace MonoDevelop.Projects.Parser
 			// being thrown and corrupting the textarea control
 			try {
 				IParser parser = parserService.GetParser (fileName);
-				//Runtime.LoggingService.DebugFormat ("Parse info : {0}", GetParseInformation(fileName).MostRecentCompilationUnit.Tag);
+				//LoggingService.LogDebug ("Parse info : {0}", GetParseInformation(fileName).MostRecentCompilationUnit.Tag);
 				if (parser != null) {
 					return parser.Resolve (this, expression, caretLineNumber, caretColumn, fileName, fileContent);
 				}
 				return null;
 			} catch (Exception ex) {
-				Runtime.LoggingService.Error (ex);
+				LoggingService.LogError (ex.ToString ());
 				return null;
 			}
 		}
@@ -315,7 +315,7 @@ namespace MonoDevelop.Projects.Parser
 				}
 				return null;
 			} catch (Exception ex) {
-				Runtime.LoggingService.Error (ex);
+				LoggingService.LogError (ex.ToString ());
 				return null;
 			}
 		}
@@ -573,7 +573,7 @@ namespace MonoDevelop.Projects.Parser
 		{
 			CodeCompletionDatabase pdb = GetProjectDatabase (project);
 			if (pdb == null) {
-				Runtime.LoggingService.Error ("Project '" + project.Name + "' not found in parser database");
+				LoggingService.LogError ("Project '" + project.Name + "' not found in parser database");
 				return null;
 			}
 			return new ProjectParserContext (parserService, this, pdb);
@@ -1203,7 +1203,7 @@ namespace MonoDevelop.Projects.Parser
 					return this.GetCachedParseInformation (fileName);
 				}
 			} catch (Exception e) {
-				Runtime.LoggingService.Error (e.ToString ());
+				LoggingService.LogError (e.ToString ());
 				return null;
 			}
 		}
@@ -1366,7 +1366,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public string SearchNamespace (CodeCompletionDatabase db, IUsing usin, string partitialNamespaceName, bool caseSensitive)
 		{
-//			Runtime.LoggingService.DebugFormat ("SearchNamespace : >{0}<", partitialNamespaceName);
+//			LoggingService.LogDebug ("SearchNamespace : >{0}<", partitialNamespaceName);
 			if (NamespaceExists (db, partitialNamespaceName, caseSensitive)) {
 				return partitialNamespaceName;
 			}
