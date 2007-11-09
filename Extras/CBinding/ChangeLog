@@ -1,3 +1,7 @@
+2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Parser/TagDatabaseManager.cs: Track LoggingService API changes.
+
 2007-11-06  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* Navigation/ProjectNodeBuilderExtension.cs: Moved all the threading for the

@@ -99,7 +99,7 @@ namespace CBinding.Parser
 				p = Runtime.ProcessService.StartProcess ("gcc", option + " -MG " + filename, null, null);
 				p.WaitForExit ();
 			} catch (Exception ex) {
-				Runtime.LoggingService.Error (ex);
+				LoggingService.LogError (ex.ToString ());
 				return new string [0];
 			}
 			
