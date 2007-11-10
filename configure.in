@@ -385,7 +385,6 @@ build/Makefile
 contrib/Makefile
 contrib/Firebird/Makefile
 contrib/Mono.Addins/Makefile
-contrib/log4net/Makefile
 contrib/Mono.Cecil/Makefile
 Core/Makefile
 Core/src/NRefactory/Makefile
