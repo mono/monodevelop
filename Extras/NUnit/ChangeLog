@@ -1,3 +1,8 @@
+2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Services/NUnitService.cs, Services/XmlResultsStore.cs,
+	  Services/NUnitAssemblyTestSuite.cs: Track LoggingService API changes.
+
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelopNUnit.addin.xml: Bump MD version.

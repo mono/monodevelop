@@ -238,7 +238,7 @@ namespace MonoDevelop.NUnit
 			try {
 				res = (TestRecord) serializer.Deserialize (s);
 			} catch (Exception ex) {
-				Runtime.LoggingService.Error (ex);
+				LoggingService.LogError (ex.ToString ());
 				return null;
 			} finally {
 				s.Close ();
