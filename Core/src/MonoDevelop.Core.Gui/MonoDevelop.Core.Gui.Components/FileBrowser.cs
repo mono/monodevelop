@@ -168,11 +168,11 @@ namespace MonoDevelop.Core.Gui.Components
 					if (ignoreHidden)
 					{
 						if (!d.Name.StartsWith (".") && NotHidden (d.Name))
-							store.AppendValues (FileIconLoader.GetPixbufForFile (System.IO.Path.Combine (CurrentDir, d.Name), 24), d.Name);
+							store.AppendValues (FileIconLoader.GetPixbufForFile (System.IO.Path.Combine (CurrentDir, d.Name), 16), d.Name);
 					}
 					else
 					{
-						store.AppendValues (FileIconLoader.GetPixbufForFile (System.IO.Path.Combine (CurrentDir, d.Name), 24), d.Name);
+						store.AppendValues (FileIconLoader.GetPixbufForFile (System.IO.Path.Combine (CurrentDir, d.Name), 16), d.Name);
 					}
 				}
 
