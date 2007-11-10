@@ -133,7 +133,7 @@ namespace MonoDevelop.SourceEditor
 					}
 				} while (xml.Read ());
 			} catch (Exception ex) {
-				Runtime.LoggingService.Error (ex);
+				LoggingService.LogError (ex.ToString ());
 				return doc;
 			}
 			return ret.ToString ();

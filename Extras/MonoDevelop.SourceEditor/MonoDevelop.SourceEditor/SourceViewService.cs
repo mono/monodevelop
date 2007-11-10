@@ -81,7 +81,7 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 			catch (XmlException e) {
-				Runtime.LoggingService.Error (e.ToString ());
+				LoggingService.LogError (e.ToString ());
 			}
 			reader.Close ();
 		}

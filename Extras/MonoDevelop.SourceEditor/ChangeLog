@@ -1,3 +1,9 @@
+2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/LanguageItemWindow.cs,
+	  MonoDevelop.SourceEditor/SourceViewService.cs: Track LoggingService API
+	  changes.
+
 2007-11-06  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs:
