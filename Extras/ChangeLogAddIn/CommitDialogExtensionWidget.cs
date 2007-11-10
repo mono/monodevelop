@@ -159,7 +159,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			}
 			catch (Exception e) {
 				// Restore the makefiles
-				Runtime.LoggingService.Error (e);
+				LoggingService.LogError (e.ToString ());
 				RollbackMakefiles ();
 				throw;
 			}
@@ -174,7 +174,7 @@ namespace MonoDevelop.ChangeLogAddIn
 						FileService.DeleteFile (ce.BackupFile);
 						ce.BackupFile = null;
 					} catch (Exception ex) {
-						Runtime.LoggingService.Error (ex);
+						LoggingService.LogError (ex.ToString ());
 					}
 				}
 				else if (ce.IsNew && File.Exists (ce.File)) {
@@ -182,7 +182,7 @@ namespace MonoDevelop.ChangeLogAddIn
 					try {
 						FileService.DeleteFile (ce.File);
 					} catch (Exception ex) {
-						Runtime.LoggingService.Error (ex);
+						LoggingService.LogError (ex.ToString ());
 					}
 				}
 			}
@@ -196,7 +196,7 @@ namespace MonoDevelop.ChangeLogAddIn
 						FileService.DeleteFile (ce.BackupFile);
 						ce.BackupFile = null;
 					} catch (Exception ex) {
-						Runtime.LoggingService.Error (ex);
+						LoggingService.LogError (ex.ToString ());
 					}
 				}
 			}

@@ -117,7 +117,7 @@ namespace MonoDevelop.ChangeLogAddIn
 					return Path.Combine (dir, "ChangeLog");
 
 				default:
-					Runtime.LoggingService.Error ("Could not handle ChangeLogPolicy: " + changeLogData.Policy);
+					LoggingService.LogError ("Could not handle ChangeLogPolicy: " + changeLogData.Policy);
 					return null;
 			}                                                     	
 		}	
