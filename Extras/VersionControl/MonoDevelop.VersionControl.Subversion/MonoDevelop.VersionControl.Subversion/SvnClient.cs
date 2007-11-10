@@ -32,7 +32,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 			svn = LibSvnClient.GetLib ();
 			aprver = GetLoadAprLib (aprver);
 			if (aprver != -1)
-				Runtime.LoggingService.Info ("Subversion add-in: detected libapr-" + aprver);
+				LoggingService.LogInfo ("Subversion add-in: detected libapr-" + aprver);
 			apr = LibApr.GetLib (aprver);
 		}
 		

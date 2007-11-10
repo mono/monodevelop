@@ -191,7 +191,7 @@ namespace MonoDevelop.VersionControl
 						
 				} catch (Exception ex) {
 					// If there is an error, just discard the file
-					Runtime.LoggingService.Error (ex);
+					LoggingService.LogError (ex.ToString ());
 					comments = new Hashtable ();
 				} finally {
 					if (stream != null)
@@ -224,7 +224,7 @@ namespace MonoDevelop.VersionControl
 				formatter.Serialize (stream, comments);
 			} catch (Exception ex) {
 				// If there is an error, just discard the file
-				Runtime.LoggingService.Error (ex);
+				LoggingService.LogError (ex.ToString ());
 			} finally {
 				if (stream != null)
 					stream.Close ();

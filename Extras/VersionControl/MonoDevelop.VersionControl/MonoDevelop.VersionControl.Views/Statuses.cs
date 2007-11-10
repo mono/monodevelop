@@ -321,7 +321,7 @@ namespace MonoDevelop.VersionControl.Views
 					if (vc.CanCommit(filepath))
 						buttonCommit.Sensitive = true;
 				} catch (Exception ex) {
-					Runtime.LoggingService.Error (ex);
+					LoggingService.LogError (ex.ToString ());
 					buttonCommit.Sensitive = true;
 				}
 			}
@@ -635,7 +635,7 @@ namespace MonoDevelop.VersionControl.Views
 				newInfo = vc.GetVersionInfo (args.FilePath, remoteStatus);
 			}
 			catch (Exception ex) {
-				Runtime.LoggingService.Error (ex);
+				LoggingService.LogError (ex.ToString ());
 				return;
 			}
 			

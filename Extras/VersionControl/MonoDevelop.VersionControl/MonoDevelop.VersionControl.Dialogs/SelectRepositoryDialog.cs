@@ -140,7 +140,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 					store.AppendValues (it, null, "", "", true, "vcs-repository");
 			}
 			catch (Exception ex) {
-				Runtime.LoggingService.Error (ex);
+				LoggingService.LogError (ex.ToString ());
 			}
 		}
 
@@ -268,7 +268,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			Gtk.Application.Invoke (delegate {
 				if (ex != null) {
 					store.AppendValues (piter, null, "ERROR: " + ex.Message, "", true);
-					MonoDevelop.Core.Runtime.LoggingService.Error (ex);
+					MonoDevelop.Core.LoggingService.LogError (ex.ToString ());
 				}
 				else {
 					foreach (Repository rep in repos)

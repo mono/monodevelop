@@ -40,7 +40,7 @@ namespace MonoDevelop.VersionControl
 			}
 			catch (Exception ex) {
 				if (test)
-					Runtime.LoggingService.Error (ex);
+					LoggingService.LogError (ex.ToString ());
 				else
 					IdeApp.Services.MessageService.ShowError (ex, GettextCatalog.GetString ("Version control command failed."));
 				return false;

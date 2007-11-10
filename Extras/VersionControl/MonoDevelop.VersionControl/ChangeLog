@@ -1,3 +1,13 @@
+2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs,
+	  MonoDevelop.VersionControl.Views/Statuses.cs,
+	  MonoDevelop.VersionControl/CommitCommand.cs,
+	  MonoDevelop.VersionControl/VersionControlNodeExtension.cs,
+	  MonoDevelop.VersionControl/VersionControlProjectService.cs,
+	  MonoDevelop.VersionControl/RevertCommand.cs: Track LoggingService API
+	  changes.
+
 2007-11-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl/Publish.cs: Use RootCombine instead of

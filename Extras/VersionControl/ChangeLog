@@ -1,3 +1,9 @@
+2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs,
+	  MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs:
+	  Track LoggingService API changes.
+
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.addin.xml,
