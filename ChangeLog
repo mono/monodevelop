@@ -1,3 +1,13 @@
+2007-11-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* contrib/contrib.mds:
+	* contrib/Makefile.am:
+	* contrib/log4net/*: Removed log4net from build.
+	
+	* MonoDevelop.mds:
+	* po/po.mdp:
+	* contrib/Mono.Cecil/Mono.Cecil.Mdb.mdp: Updated.
+
 2007-11-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* configure.in: Correct the GtkSourceView2# version requirement.

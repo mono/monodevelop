@@ -1,3 +1,3 @@
-SUBDIRS = Mono.Addins Mono.Cecil log4net Firebird
+SUBDIRS = Mono.Addins Mono.Cecil Firebird
 
 EXTRA_DIST =  $(srcdir)/extract_makefile_variable.sh

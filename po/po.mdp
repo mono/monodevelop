@@ -1,34 +1,34 @@
 <Project name="po" fileversion="2.0" ctype="GenericProject">
   <Configurations>
     <Configuration name="Default" ctype="GenericProjectConfiguration">
-      <Output directory="./" />
+      <Output directory="." />
       <Build debugmode="True" />
       <Execution runwithwarnings="True" consolepause="True" />
     </Configuration>
   </Configurations>
   <Contents>
-    <File name="./ca.po" subtype="Code" buildaction="Nothing" />
-    <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
-    <File name="./cs.po" subtype="Code" buildaction="Nothing" />
-    <File name="./da.po" subtype="Code" buildaction="Nothing" />
-    <File name="./de.po" subtype="Code" buildaction="Nothing" />
-    <File name="./es.po" subtype="Code" buildaction="Nothing" />
-    <File name="./fr.po" subtype="Code" buildaction="Nothing" />
-    <File name="./it.po" subtype="Code" buildaction="Nothing" />
-    <File name="./pl.po" subtype="Code" buildaction="Nothing" />
-    <File name="./POTFILES.in" subtype="Code" buildaction="Nothing" />
-    <File name="./POTFILES.skip" subtype="Code" buildaction="Nothing" />
-    <File name="./pt_BR.po" subtype="Code" buildaction="Nothing" />
-    <File name="./README" subtype="Code" buildaction="Nothing" />
-    <File name="./ru.po" subtype="Code" buildaction="Nothing" />
-    <File name="./sl_SI.po" subtype="Code" buildaction="Nothing" />
-    <File name="./tr.po" subtype="Code" buildaction="Nothing" />
-    <File name="./zh_CN.po" subtype="Code" buildaction="Nothing" />
-    <File name="./zh_TW.po" subtype="Code" buildaction="Nothing" />
-    <File name="./gl.po" subtype="Code" buildaction="Nothing" />
-    <File name="./ja.po" subtype="Code" buildaction="Nothing" />
-    <File name="./pt.po" subtype="Code" buildaction="Nothing" />
-    <File name="./sv.po" subtype="Code" buildaction="Nothing" />
+    <File name="ca.po" subtype="Code" buildaction="Nothing" />
+    <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="cs.po" subtype="Code" buildaction="Nothing" />
+    <File name="da.po" subtype="Code" buildaction="Nothing" />
+    <File name="de.po" subtype="Code" buildaction="Nothing" />
+    <File name="es.po" subtype="Code" buildaction="Nothing" />
+    <File name="fr.po" subtype="Code" buildaction="Nothing" />
+    <File name="it.po" subtype="Code" buildaction="Nothing" />
+    <File name="pl.po" subtype="Code" buildaction="Nothing" />
+    <File name="POTFILES.in" subtype="Code" buildaction="Nothing" />
+    <File name="POTFILES.skip" subtype="Code" buildaction="Nothing" />
+    <File name="pt_BR.po" subtype="Code" buildaction="Nothing" />
+    <File name="README" subtype="Code" buildaction="Nothing" />
+    <File name="ru.po" subtype="Code" buildaction="Nothing" />
+    <File name="sl_SI.po" subtype="Code" buildaction="Nothing" />
+    <File name="tr.po" subtype="Code" buildaction="Nothing" />
+    <File name="zh_CN.po" subtype="Code" buildaction="Nothing" />
+    <File name="zh_TW.po" subtype="Code" buildaction="Nothing" />
+    <File name="gl.po" subtype="Code" buildaction="Nothing" />
+    <File name="ja.po" subtype="Code" buildaction="Nothing" />
+    <File name="pt.po" subtype="Code" buildaction="Nothing" />
+    <File name="sv.po" subtype="Code" buildaction="Nothing" />
   </Contents>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile">
     <BuildFilesVar />

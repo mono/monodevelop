@@ -7,7 +7,6 @@
       <Entry build="True" name="Firebird" configuration="Default" />
       <Entry build="True" name="Mono.Addins" configuration="Debug" />
       <Entry build="True" name="Mono.Cecil" configuration="Debug" />
-      <Entry build="True" name="log4net" configuration="Debug" />
       <Entry build="True" name="Mono.Addins.Gui" configuration="Debug" />
       <Entry build="True" name="Mono.Addins.Setup" configuration="Debug" />
       <Entry build="True" name="Mono.Cecil.Mdp" configuration="Debug" />
@@ -16,7 +15,6 @@
       <Entry build="True" name="Firebird" configuration="Default" />
       <Entry build="True" name="Mono.Addins" configuration="Release" />
       <Entry build="True" name="Mono.Cecil" configuration="Release" />
-      <Entry build="True" name="log4net" configuration="Release" />
       <Entry build="True" name="Mono.Addins.Gui" configuration="Release" />
       <Entry build="True" name="Mono.Addins.Setup" configuration="Release" />
       <Entry build="True" name="Mono.Cecil.Mdb" configuration="Release" />
@@ -37,7 +35,6 @@
     <Entry filename="Firebird/Firebird.mdp" />
     <Entry filename="Mono.Addins/Mono.Addins.mdp" />
     <Entry filename="Mono.Cecil/Mono.Cecil.mdp" />
-    <Entry filename="log4net/log4net.mdp" />
     <Entry filename="Mono.Addins/Mono.Addins.Gui.mdp" />
     <Entry filename="Mono.Addins/Mono.Addins.Setup.mdp" />
     <Entry filename="Mono.Cecil/Mono.Cecil.Mdb.mdp" />
