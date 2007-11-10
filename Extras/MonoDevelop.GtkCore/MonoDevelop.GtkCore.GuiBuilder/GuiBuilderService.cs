@@ -436,7 +436,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 			
 			if (generatedException != null) {
-				Runtime.LoggingService.Error ((object)"GUI code generation failed", generatedException);
+				LoggingService.LogError ("GUI code generation failed", generatedException);
 				throw new UserException ("GUI code generation failed: " + generatedException.Message);
 			}
 			
