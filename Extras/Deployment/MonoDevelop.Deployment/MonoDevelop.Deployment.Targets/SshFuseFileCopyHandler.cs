@@ -91,7 +91,7 @@ namespace MonoDevelop.Deployment
 			int indexOfAt = TargetDirectory.IndexOf ('@');
 			int indexOfColon = TargetDirectory.IndexOf (':');
 			if (indexOfColon < 1) {
-				Runtime.LoggingService.WarnFormat ("Ignoring invalid SSHFS host path \"{0}\" in configuration.", (object)TargetDirectory);
+				LoggingService.LogWarning ("Ignoring invalid SSHFS host path \"{0}\" in configuration.", TargetDirectory);
 				return;
 			}
 			if (indexOfAt > 0 && indexOfColon > indexOfAt) {

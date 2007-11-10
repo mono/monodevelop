@@ -90,7 +90,7 @@ namespace MonoDevelop.Deployment
 					File.Delete (file);
 				} catch (Exception ex) {
 					// Ignore exception
-					Runtime.LoggingService.Warn (ex);
+					LoggingService.LogWarning (ex.ToString ());
 				}
 			}
 		}

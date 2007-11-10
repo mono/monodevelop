@@ -30,7 +30,7 @@ namespace MonoDevelop.Deployment.Linux
 						}
 					}
 				} catch (Exception ex) {
-					Runtime.LoggingService.Error ((object)"Could not read .desktop file", ex);
+					LoggingService.LogError ("Could not read .desktop file", ex);
 				}
 			}
 		}
