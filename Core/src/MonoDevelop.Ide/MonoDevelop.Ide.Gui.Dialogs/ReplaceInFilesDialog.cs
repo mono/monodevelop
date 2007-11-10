@@ -179,6 +179,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			closeButton.Clicked += new EventHandler (CloseDialogEvent);
 			DeleteEvent += new DeleteEventHandler (OnDeleted);
 			
+			searchPatternEntry.Entry.SelectRegion (0, searchPatternEntry.ActiveText.Length);
+			
 			SearchLocationCheckBoxChangedEvent (null, null);
 			SpecialSearchStrategyCheckBoxChangedEvent (null, null);
 		}

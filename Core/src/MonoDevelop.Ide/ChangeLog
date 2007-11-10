@@ -1,3 +1,8 @@
+2007-11-09  Zach Lute  <zach.lute@gmail.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs: Select the search
+	  pattern in the ReplaceInFilesDialog on open for quick replacement.
+
 2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Templates/FileTemplate.cs,
