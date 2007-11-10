@@ -332,7 +332,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			try {
 				toolboxService.DragSelectedItem (nodeView, arg.Context);
 			} catch (Exception ex) {
-				MonoDevelop.Core.Runtime.LoggingService.Error (ex);
+				MonoDevelop.Core.LoggingService.LogError (ex.ToString ());
 			}
 		}
 		#endregion	

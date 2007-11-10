@@ -297,7 +297,7 @@ namespace MonoDevelop.DesignerSupport
 			if (proj == null)
 				proj = parent.Project;
 			if (proj == null) {
-				Runtime.LoggingService.WarnFormat ("CodeBehind grouping: Could not find project for class {0}", child.FullyQualifiedName);
+				LoggingService.LogWarning ("CodeBehind grouping: Could not find project for class {0}", child.FullyQualifiedName);
 				return files;
 			}
 			
@@ -306,7 +306,7 @@ namespace MonoDevelop.DesignerSupport
 				if (partFile == parent)
 					continue;
 				if (partFile == null)
-					Runtime.LoggingService.WarnFormat ("CodeBehind grouping: The file {0} for IClass {1} was not found in the project.",  part.Region.FileName, part.FullyQualifiedName);
+					LoggingService.LogWarning ("CodeBehind grouping: The file {0} for IClass {1} was not found in the project.",  part.Region.FileName, part.FullyQualifiedName);
 				files.Add (partFile);
 			}
 			return files;

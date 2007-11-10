@@ -1,3 +1,10 @@
+2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.DesignerSupport/CodeBehindService.cs,
+	  MonoDevelop.DesignerSupport/ToolboxService.cs,
+	  MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs: Track LoggingService API
+	  changes.
+
 2007-11-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.DesignerSupport.PropertyGrid/PropertyGridTree.cs: Use a more

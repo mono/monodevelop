@@ -219,7 +219,7 @@ namespace MonoDevelop.DesignerSupport
 				}
 				catch (Exception ex) {
 					// Ignore
-					Runtime.LoggingService.Error (ex);
+					LoggingService.LogError (ex.ToString ());
 				}
 			}
 			return items;
@@ -269,7 +269,7 @@ namespace MonoDevelop.DesignerSupport
 							config = new ToolboxConfiguration ();
 					} catch (Exception ex) {
 						// Ignore, just provide a default configuration
-						Runtime.LoggingService.Error (ex);
+						LoggingService.LogError (ex.ToString ());
 						config = new ToolboxConfiguration ();
 					}
 				}
@@ -283,7 +283,7 @@ namespace MonoDevelop.DesignerSupport
 				try {
 					config.SaveContents (ToolboxConfigFile);
 				} catch (Exception ex) {
-					Runtime.LoggingService.Error (ex);
+					LoggingService.LogError (ex.ToString ());
 				}
 			}
 		}
@@ -571,7 +571,7 @@ namespace MonoDevelop.DesignerSupport
 			}
 			catch (Exception ex) {
 				// Ignore exceptions
-				Runtime.LoggingService.Error (ex);
+				LoggingService.LogError (ex.ToString ());
 				return new ComponentIndex ();
 			}
 		}
@@ -586,7 +586,7 @@ namespace MonoDevelop.DesignerSupport
 			}
 			catch (Exception ex) {
 				// Ignore exceptions
-				Runtime.LoggingService.Error (ex);
+				LoggingService.LogError (ex.ToString ());
 			}
 		}
 		
