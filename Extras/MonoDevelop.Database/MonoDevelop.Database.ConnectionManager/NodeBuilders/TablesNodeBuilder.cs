@@ -147,7 +147,7 @@ namespace MonoDevelop.Database.ConnectionManager
 			TableSchema table = objs[1] as TableSchema;
 			BaseNode node = objs[2] as BaseNode;
 
-			Runtime.LoggingService.Debug ("ADD TABLE: ", table.Definition);
+			LoggingService.LogDebug ("ADD TABLE: {0}", table.Definition);
 			
 			IPooledDbConnection conn = provider.ConnectionPool.Request ();
 			conn.ExecuteNonQuery (table.Definition);

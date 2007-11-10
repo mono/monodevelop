@@ -54,7 +54,7 @@ namespace MonoDevelop.Database.Sql
 					BuildChildren (fac);
 					return fac;
 				} catch (Exception e) {
-					Runtime.LoggingService.Error (e);
+					LoggingService.LogError (e.ToString ());
 					return null;
 				}
 			}

@@ -819,7 +819,7 @@ using MonoDevelop.Core;
 
 		private string GetSource (string objectName) 
 		{
-			Runtime.LoggingService.Debug ("GetSource: " + objectName);
+			LoggingService.LogDebug ("GetSource: " + objectName);
 			IPooledDbConnection conn = connectionPool.Request ();
 			IDbCommand command = conn.CreateCommand (
 				String.Format ("EXEC sp_helptext '{0}', null", objectName)

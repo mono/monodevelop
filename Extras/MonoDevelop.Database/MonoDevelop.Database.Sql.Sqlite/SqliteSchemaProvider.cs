@@ -222,13 +222,13 @@ namespace MonoDevelop.Database.Sql
 		public override void CreateDatabase (DatabaseSchema database)
 		{
 			//TODO: error if db exists
-			Runtime.LoggingService.Error ("CREATE START");
+			LoggingService.LogDebug ("CREATE START");
 			
 			SqliteConnection conn = new SqliteConnection ("URI=file:" + database.Name + ";Version=3;");
 			conn.Open ();
 			conn.Close ();
 			
-			Runtime.LoggingService.Error ("CREATE STOP");
+			LoggingService.LogDebug ("CREATE STOP");
 		}
 
 		//http://www.sqlite.org/lang_createtable.html

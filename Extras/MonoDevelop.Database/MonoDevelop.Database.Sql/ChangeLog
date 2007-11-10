@@ -1,3 +1,11 @@
+2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Codons/DbFactoryCodon.cs, ConnectionContextService.cs,
+	  Capabilities/CapabilitiesUtility.cs,
+	  ConnectionPool/AbstractPooledDbConnection.cs, QueryService.cs,
+	  DbFactoryService.cs: Track LoggingService API. Replace some "LogError"
+	  calls with "LogDebug" calls.
+
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Database.Sql.addin.xml: Bump MD version.

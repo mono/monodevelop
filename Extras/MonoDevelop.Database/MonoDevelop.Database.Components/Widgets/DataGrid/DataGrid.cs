@@ -395,7 +395,7 @@ namespace MonoDevelop.Database.Components
 		{
 			foreach (Type type in renderer.DataTypes) {
 				if (contentRenderers.ContainsKey (type))
-					Runtime.LoggingService.ErrorFormat ("Duplicate IDataGridContentRenderer for type '{0}'", type.FullName);
+					LoggingService.LogError ("Duplicate IDataGridContentRenderer for type '{0}'", type.FullName);
 				else
 					contentRenderers.Add (type, renderer);
 			}

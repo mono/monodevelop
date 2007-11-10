@@ -1,3 +1,9 @@
+2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* NodeBuilders/TablesNodeBuilder.cs,
+	  NodeBuilders/ConnectionContextCollectionNodeBuilder.cs: Track
+	  LoggingService API. Replace some "LogError" calls with "LogDebug" calls.
+
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Database.ConnectionManager.addin.xml: Bump MD version.

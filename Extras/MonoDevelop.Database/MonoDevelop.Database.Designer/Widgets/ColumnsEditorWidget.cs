@@ -160,7 +160,7 @@ namespace MonoDevelop.Database.Designer
 		
 		public void Initialize (TableSchema table, ColumnSchemaCollection columns, ConstraintSchemaCollection constraints, DataTypeSchemaCollection dataTypes)
 		{
-			Runtime.LoggingService.Error ("CEW: Initialize");
+			LoggingService.LogDebug ("ColumnsEditorWidget: entering Initialize");
 			if (columns == null)
 				throw new ArgumentNullException ("columns");
 			if (constraints == null)
@@ -180,7 +180,7 @@ namespace MonoDevelop.Database.Designer
 			
 			foreach (DataTypeSchema dataType in dataTypes)
 				storeTypes.AppendValues (dataType.Name, storeTypes);
-			Runtime.LoggingService.Error ("CEW: Initialize 2");
+			LoggingService.LogDebug ("ColumnsEditorWidget: exiting Initialize");
 		}
 		
 		private void AppendColumnSchema (ColumnSchema column)

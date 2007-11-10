@@ -42,7 +42,7 @@ namespace MonoDevelop.Database.Sql
 				IDbFactory fac = codon.DbFactory;
 				if (fac != null) {
 					factories.Add (fac.Identifier, fac);
-					Runtime.LoggingService.Debug ("DB FACTORY: " + fac.Identifier);
+					LoggingService.LogDebug ("DB FACTORY: " + fac.Identifier);
 				}
 			}
 		}

@@ -77,7 +77,7 @@ namespace MonoDevelop.Database.ConnectionManager
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			DatabaseConnectionContextCollection collection = (DatabaseConnectionContextCollection) dataObject;
-			Runtime.LoggingService.Debug ("BuildChildNodes CONTEXT  " + collection.Count);
+			LoggingService.LogDebug ("BuildChildNodes CONTEXT  " + collection.Count);
 				
 			foreach (DatabaseConnectionContext context in collection)
 				builder.AddChild (context);
@@ -86,7 +86,7 @@ namespace MonoDevelop.Database.ConnectionManager
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			Runtime.LoggingService.Debug ("HasChildNodes CONTEXT");
+			LoggingService.LogDebug ("HasChildNodes CONTEXT");
 			DatabaseConnectionContextCollection collection = (DatabaseConnectionContextCollection) dataObject;
 			return collection.Count > 0;
 		}

@@ -52,7 +52,7 @@ namespace MonoDevelop.Database.Sql
 
 			if (types.ContainsKey (category)) {
 				types[category] = type;
-				Runtime.LoggingService.WarnFormat ("Duplicate CapabilityFlags for category {0}.", category);
+				LoggingService.LogWarning ("Duplicate CapabilityFlags for category {0}.", category);
 			} else {
 				types.Add (category, type);
 			}

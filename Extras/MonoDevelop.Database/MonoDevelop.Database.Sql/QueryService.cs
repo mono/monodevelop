@@ -43,13 +43,13 @@ namespace MonoDevelop.Database.Sql
 		public static void RaiseException (Exception exception)
 		{
 			Services.MessageService.ShowError (exception);
-			Runtime.LoggingService.Error ((object)"Database Exception", exception);
+			LoggingService.LogError ("Database Exception", exception);
 		}
 		
 		public static void RaiseException (string message, Exception exception)
 		{
 			Services.MessageService.ShowError (exception, message);
-			Runtime.LoggingService.Error ((object)"Database Exception", exception);
+			LoggingService.LogError ("Database Exception", exception);
 		}
 		
 		//TODO: show errors
@@ -99,7 +99,7 @@ namespace MonoDevelop.Database.Sql
 					internalState.Callback (internalState.ConnectionContext, connected, internalState.State);
 				});
 			} catch (Exception e) {
-				Runtime.LoggingService.Debug (e);
+				LoggingService.LogDebug (e.ToString ());
 				
 				DispatchService.GuiDispatch (delegate () {
 					internalState.Callback (internalState.ConnectionContext, false, internalState.State);

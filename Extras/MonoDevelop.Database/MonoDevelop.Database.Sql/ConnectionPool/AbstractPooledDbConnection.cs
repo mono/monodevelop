@@ -89,7 +89,7 @@ namespace MonoDevelop.Database.Sql
 				throw new ArgumentNullException ("statement");
 			
 			string sql = connectionPool.DbFactory.Dialect.GetSql (statement);
-			Runtime.LoggingService.DebugFormat ("Statement = {0}", sql);
+			LoggingService.LogDebug ("Statement = {0}", sql);
 			
 			IDbCommand command = connection.CreateCommand ();
 			command.CommandType = CommandType.Text;

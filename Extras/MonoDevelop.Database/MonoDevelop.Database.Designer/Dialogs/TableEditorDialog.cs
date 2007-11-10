@@ -129,18 +129,30 @@ namespace MonoDevelop.Database.Designer
 			//TODO: indices
 			indexes = new IndexSchemaCollection ();
 			
-			Runtime.LoggingService.Error ("TABLE " + originalTable.Name);
-			Runtime.LoggingService.Error ("   columns = " + columns.Count);
-			Runtime.LoggingService.Error ("   constraints = " + constraints.Count);
+			System.Text.StringBuilder builder = new System.Text.StringBuilder ();
+			builder.Append ("Loading editor for TABLE ");
+			builder.Append (originalTable.Name);
+			builder.AppendLine ();
+			builder.Append ("    columns = ");
+			builder.Append (columns.Count);
+			builder.AppendLine ();
+		    builder.Append ("constraints = ");
+			builder.Append (constraints.Count);
+			builder.AppendLine ();
 
 			try {
-			foreach (ColumnSchema col in columns) {				
-				int dummy = col.Constraints.Count; //get column constraints
-				Runtime.LoggingService.Error ("CONSTRAINTS " + col.Name + " " + dummy);
-			}
+				foreach (ColumnSchema col in columns) {				
+					int dummy = col.Constraints.Count; //get column constraints
+					builder.Append ("CONSTRAINTS ");
+					builder.Append (col.Name);
+					builder.Append (" ");
+					builder.Append (dummy);
+					builder.AppendLine ();
+				}
+				LoggingService.LogDebug (builder.ToString ());
 			} catch (Exception ee) {
-				Runtime.LoggingService.Error (ee);
-				Runtime.LoggingService.Error (ee.StackTrace);
+				LoggingService.LogDebug (builder.ToString ());
+				LoggingService.LogError (ee.ToString ());
 			}
 
 			if (action == SchemaActions.Alter) //make a duplicate if we are going to alter the table
@@ -156,14 +168,14 @@ namespace MonoDevelop.Database.Designer
 			notebook.Sensitive = true;
 			WaitDialog.HideDialog ();
 			
-			Runtime.LoggingService.Error ("TED: InitializeGui");
+			LoggingService.LogDebug ("TableEditorDialog: entering InitializeGui");
 			
 			columnEditor.Initialize (table, columns, constraints, dataTypes);
 			if (constraintEditor != null)
 				constraintEditor.Initialize (tables, table, columns, constraints, dataTypes);
 			if (triggerEditor != null)
 				triggerEditor.Initialize (table, triggers);
-			Runtime.LoggingService.Error ("TED: InitializeGui 2");
+			LoggingService.LogDebug ("TableEditorDialog: leaving InitializeGui");
 		}
 
 		protected virtual void CancelClicked (object sender, System.EventArgs e)
