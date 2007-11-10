@@ -1,3 +1,13 @@
+2007-11-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: When implementing
+	  an interface, make sure the class is updated after adding each member.
+	  Also added support for implementing indexers. Fixes bug #340865.
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: Use
+	  member.PrivateImplementationType to specify the interface name of an
+	  explicit implementation. Add support for generating indexers. Fix
+	  problem when locating explicit member implementations.
+
 2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Projects/DotNetProject.cs, MonoDevelop.Projects/Project.cs,

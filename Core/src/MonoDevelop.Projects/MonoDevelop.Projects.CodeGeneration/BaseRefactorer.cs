@@ -164,8 +164,9 @@ namespace MonoDevelop.Projects.CodeGeneration
 			if (member is IEvent) {
 				CodeMemberEvent mEvent = new CodeMemberEvent ();
 				m = (CodeTypeMember) mEvent;
-				
 				mEvent.Type = ReturnTypeToDom (ctx, member.ReturnType);
+				if (prefix != null)
+					mEvent.PrivateImplementationType = new CodeTypeReference (prefix);
 			} else if (member is IMethod) {
 				CodeMemberMethod mMethod = new CodeMemberMethod ();
 				IMethod method = (IMethod) member;
@@ -181,6 +182,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 					par = new CodeParameterDeclarationExpression (ReturnTypeToDom (ctx, param.ReturnType), param.Name);
 					mMethod.Parameters.Add (par);
 				}
+				if (prefix != null)
+					mMethod.PrivateImplementationType = new CodeTypeReference (prefix);
 			} else if (member is IProperty) {
 				CodeMemberProperty mProperty = new CodeMemberProperty ();
 				IProperty property = (IProperty) member;
@@ -196,12 +199,37 @@ namespace MonoDevelop.Projects.CodeGeneration
 					mProperty.SetStatements.Add (throwExpression);
 				
 				mProperty.Type = ReturnTypeToDom (ctx, member.ReturnType);
+				if (prefix != null)
+					mProperty.PrivateImplementationType = new CodeTypeReference (prefix);
+			} else if (member is IIndexer) {
+				CodeMemberProperty mProperty = new CodeMemberProperty ();
+				IIndexer property = (IIndexer) member;
+				m = (CodeMemberProperty) mProperty;
+				
+				CodeExpression nieReference = new CodeObjectCreateExpression (TypeToDom (ctx, typeof (NotImplementedException)));
+				CodeStatement throwExpression = new CodeThrowExceptionStatement (nieReference);
+				mProperty.HasGet = true;
+				mProperty.HasSet = true;
+				if (mProperty.HasGet)
+					mProperty.GetStatements.Add (throwExpression);
+				if (mProperty.HasSet)
+					mProperty.SetStatements.Add (throwExpression);
+				
+				foreach (IParameter param in property.Parameters) {
+					CodeParameterDeclarationExpression par;
+					par = new CodeParameterDeclarationExpression (ReturnTypeToDom (ctx, param.ReturnType), param.Name);
+					mProperty.Parameters.Add (par);
+				}
+				
+				mProperty.Type = ReturnTypeToDom (ctx, member.ReturnType);
+				if (prefix != null)
+					mProperty.PrivateImplementationType = new CodeTypeReference (prefix);
 			} else {
 				return null;
 			}
 			
-			if (prefix != null)
-				m.Name = prefix + member.Name;
+			if (member is IIndexer)
+				m.Name = "Item";
 			else
 				m.Name = member.Name;
 			
@@ -611,23 +639,31 @@ namespace MonoDevelop.Projects.CodeGeneration
 		protected IMember FindGeneratedMember (RefactorerContext ctx, IEditableTextFile buffer, IClass cls, CodeTypeMember member, int line)
 		{
 			IClass rclass = GetGeneratedClass (ctx, buffer, cls);
+			string name = member.Name;
+			
+			// Remove the prefix in explicit interface implementations. Not needed to locate the member.
+			int i = name.IndexOf ('.');
+			if (i != -1)
+				name = name.Substring (i+1);
+				
 			if (rclass != null) {
 				if (member is CodeMemberField) {
 					foreach (IField m in rclass.Fields)
-						if (m.Name == member.Name && line == m.Region.BeginLine)
+						if (m.Name == name && line == m.Region.BeginLine)
 							return m;
 				} else if (member is CodeMemberProperty) {
 					foreach (IProperty m in rclass.Properties)
-						if (m.Name == member.Name && line == m.Region.BeginLine)
+						if (m.Name == name && line == m.Region.BeginLine)
 							return m;
 				} else if (member is CodeMemberEvent) {
 					foreach (IEvent m in rclass.Events)
-						if (m.Name == member.Name && line == m.Region.BeginLine)
+						if (m.Name == name && line == m.Region.BeginLine)
 							return m;
 				} else if (member is CodeMemberMethod) {
-					foreach (IMethod m in rclass.Methods)
-						if (m.Name == member.Name && line == m.Region.BeginLine)
+					foreach (IMethod m in rclass.Methods) {
+						if (m.Name == name && line == m.Region.BeginLine)
 							return m;
+					}
 				}
 			}
 			return null;
