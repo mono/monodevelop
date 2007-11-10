@@ -74,7 +74,7 @@ namespace MonoDevelop.Autotools
 					if (Variables.TryGetValue (varname.ToString (), out val))
 						result.Append (val);
 					else
-						Runtime.LoggingService.Warn("No replacement for variable %%" +
+						LoggingService.LogWarning ("No replacement for variable %%" +
 						                  varname + "%% defined");
 					continue;
 				}

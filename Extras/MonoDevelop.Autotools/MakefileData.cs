@@ -759,7 +759,7 @@ namespace MonoDevelop.Autotools
 				fileVar.SaveEnabled = true;
 				ReadFilesActual (fileVar, buildAction, id, promptForRemoval);
 			} catch (Exception e) {
-				Runtime.LoggingService.Error (e);
+				LoggingService.LogError (e.ToString ());
 				Console.WriteLine ("Error in loading files for {0}. Skipping.", id);
 				monitor.ReportWarning (GettextCatalog.GetString ("Error in loading files for {0}. Skipping.", id));
 				fileVar.SaveEnabled = false;
@@ -862,7 +862,7 @@ namespace MonoDevelop.Autotools
 					if (buildAction == BuildAction.EmbedAsResource && resourceId != null)
 						pf.ResourceId = resourceId;
 				} catch (Exception e) {
-					Runtime.LoggingService.Error (e);
+					LoggingService.LogError (e.ToString ());
 					fileVar.Extra.Add (f);
 				}
 			}
