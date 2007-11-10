@@ -1194,7 +1194,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			string id = properties.Get<string> ("GtkSourceViewStyleScheme", "classic");
 			SourceStyleScheme scheme = GtkSourceView.SourceStyleSchemeManager.Default.GetScheme (id);
 			if (scheme == null)
-				MonoDevelop.Core.Runtime.LoggingService.Warn ("GTKSourceView style scheme '" + id + "' is missing.");
+				MonoDevelop.Core.LoggingService.LogWarning ("GTKSourceView style scheme '" + id + "' is missing.");
 			else
 				se.Buffer.StyleScheme = scheme;
 		}
