@@ -178,7 +178,7 @@ namespace MonoDevelop.RegexToolkit
 					}
 				}
 			} catch (Exception e) {
-				Runtime.LoggingService.Error (e);
+				LoggingService.LogError (e.ToString ());
 			} finally {
 				if (reader != null)
 					reader.Close ();
