@@ -506,7 +506,7 @@ namespace AspNetAddIn
 				if (tf != null)
 					tf.Save ();
 			} catch (Exception e) {
-				Runtime.LoggingService.Warn ((object) ("Could not modify application web.config in project " + this.Name), e); 
+				LoggingService.LogWarning ("Could not modify application web.config in project " + this.Name, e); 
 			}
 		}
 		

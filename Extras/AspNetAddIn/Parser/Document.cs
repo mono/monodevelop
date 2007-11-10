@@ -60,7 +60,7 @@ namespace AspNetAddIn.Parser
 			} catch (AspNetAddIn.Parser.Internal.ParseException e) {
 				errors.Add (new ParserException (e.Location, e.Message));
 			} catch (Exception e) {
-				MonoDevelop.Core.Runtime.LoggingService.Error ((object) "Unhandled error parsing ASP.NET document", e);
+				MonoDevelop.Core.LoggingService.LogError ("Unhandled error parsing ASP.NET document", e);
 				errors.Add (e);
 			} finally {
 				if (sr != null)

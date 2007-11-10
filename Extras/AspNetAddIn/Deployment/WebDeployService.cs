@@ -94,8 +94,8 @@ namespace MonoDevelop.AspNet.Deployment
 					}
 				}
 			} catch (Exception e) {
-				MonoDevelop.Core.Runtime.LoggingService.Error ((object)"Unhandled exception in the web deploy thread", e);
-				MonoDevelop.Core.Gui.Services.MessageService.ShowError (e, "Unhandled exception in the web deploy thread");
+				MonoDevelop.Core.LoggingService.LogError ("Unhandled exception in the web deploy thread", e);
+				MonoDevelop.Core.Gui.Services.MessageService.ShowError (e, "Web deploy failed due to unhandled exception");
 			} finally {
 				threadParams.Monitor.Dispose ();
 			}
