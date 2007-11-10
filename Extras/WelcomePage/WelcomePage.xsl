@@ -38,20 +38,15 @@
 				</style>
 			</head>
 			<body         class="ns-0"         id="page-MainPage">
-				<div id="globalWrapper">
 					<div id="bigWrapper">
 						<div class="portlet" id="p-logo">
 							<a href="http://monodevelop.com/Main_Page"
 								title="{gtc:GetString(@_title)}"></a>
 						</div>
-						<div id="caption">
-							
-						</div>
 						<div id="column-content">
 							<div>
 								<div id="bodyContent">
 									<h3 id="siteSub"><xsl:value-of select="gtc:GetString(Projects/_siteSub)"/></h3>
-									<div id="contentSub"></div>
 									<!-- start content -->
 									<table id="welcome_content" >
 										<tr>
@@ -108,7 +103,6 @@
 						<div id="footer">
 						</div>
 					</div>
-				</div>
 			</body>
 		</html>
 
