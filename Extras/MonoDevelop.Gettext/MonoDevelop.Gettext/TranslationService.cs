@@ -132,7 +132,7 @@ namespace MonoDevelop.Gettext
 		public static void UpdateTranslation (TranslationProject translationProject, string fileName, IProgressMonitor monitor)
 		{
 			if (!File.Exists (fileName)) {
-				Runtime.LoggingService.Warn ((object)String.Format (GettextCatalog.GetString ("UpdateTranslation: File {0} not found."), fileName));
+				LoggingService.LogWarning (GettextCatalog.GetString ("UpdateTranslation: File {0} not found.", fileName));
 				return;
 			}
 			translationProject.BeginUpdate ();

@@ -602,7 +602,7 @@ namespace MonoDevelop.Gettext
 		{
 			if (this.entriesDict.ContainsKey (data.String))
 			{
-				Runtime.LoggingService.WarnFormat ("Duplicate message id '{0}' in po file, ignoring it to achieve validity", data.String);
+				LoggingService.LogWarning ("Duplicate message id '{0}' in po file, ignoring it to achieve validity", data.String);
 			} else
 			{
 				this.entriesDict.Add (data.String, data);

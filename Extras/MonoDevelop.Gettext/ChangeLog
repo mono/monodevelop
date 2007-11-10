@@ -1,3 +1,8 @@
+2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Gettext/TranslationService.cs, MonoDevelop.Gettext/Catalog.cs:
+	  Track LoggingService API changes.
+
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Gettext.addin.xml: Bump MD version.
