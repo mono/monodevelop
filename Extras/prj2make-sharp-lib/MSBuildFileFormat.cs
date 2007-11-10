@@ -623,8 +623,7 @@ namespace MonoDevelop.Prj2Make
 				d.ProjectReferenceElements [e.ProjectReference] = 
 					d.ExtensionChain.ReferenceToXmlElement (d, e.Project, e.ProjectReference);
 			} catch (Exception ex) {
-				Runtime.LoggingService.ErrorFormat ("{0}", ex.Message);
-				Console.WriteLine ("{0}", ex.ToString ());
+				LoggingService.LogError (ex.ToString ());
 				throw;
 			}
 		}
@@ -678,8 +677,7 @@ namespace MonoDevelop.Prj2Make
 			//BuildAction
 			string buildAction = BuildActionToString (e.ProjectFile.BuildAction);
 			if (buildAction == null) {
-				Runtime.LoggingService.WarnFormat ("BuildAction.{0} not supported!", e.ProjectFile.BuildAction);
-				Console.WriteLine ("BuildAction.{0} not supported!", e.ProjectFile.BuildAction);
+				LoggingService.LogWarning ("BuildAction.{0} not supported!", e.ProjectFile.BuildAction);
 				return;
 			}
 

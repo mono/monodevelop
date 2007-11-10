@@ -434,7 +434,7 @@ namespace MonoDevelop.Prj2Make
 			foreach (Section sec in projectSections) {
 				Match match = ProjectRegex.Match (lines [sec.Start]);
 				if (!match.Success) {
-					Runtime.LoggingService.DebugFormat (GettextCatalog.GetString (
+					LoggingService.LogDebug (GettextCatalog.GetString (
 						"Invalid Project definition on line number #{0} in file '{1}'. Ignoring.",
 						sec.Start + 1,
 						fileName));
@@ -447,7 +447,7 @@ namespace MonoDevelop.Prj2Make
 					new Guid (match.Groups [1].Value);
 				} catch (FormatException) {
 					//Use default guid as projectGuid
-					Runtime.LoggingService.Debug (GettextCatalog.GetString (
+					LoggingService.LogDebug (GettextCatalog.GetString (
 						"Invalid Project type guid '{0}' on line #{1}. Ignoring.",
 						match.Groups [1].Value,
 						sec.Start + 1));
@@ -478,7 +478,7 @@ namespace MonoDevelop.Prj2Make
 				}
 
 				if (!MSBuildFileFormat.ProjectTypeGuids.ContainsValue (projTypeGuid)) {
-					Runtime.LoggingService.Debug (GettextCatalog.GetString (
+					LoggingService.LogDebug (GettextCatalog.GetString (
 						"Unknown project type guid '{0}' on line #{1}. Ignoring.",
 						projTypeGuid,
 						sec.Start + 1));
@@ -832,13 +832,13 @@ namespace MonoDevelop.Prj2Make
 
 				if (!entries.ContainsKey (pair.Value)) {
 					//Container not found
-					Runtime.LoggingService.Debug ("Project with guid '{0}' not found.", pair.Value);
+					LoggingService.LogDebug ("Project with guid '{0}' not found.", pair.Value);
 					continue;
 				}
 
 				if (!entries.ContainsKey (pair.Key)) {
 					//Containee not found
-					Runtime.LoggingService.Debug ("Project with guid '{0}' not found.", pair.Key);
+					LoggingService.LogDebug ("Project with guid '{0}' not found.", pair.Key);
 					continue;
 				}
 
@@ -1007,8 +1007,7 @@ namespace MonoDevelop.Prj2Make
 				//Need some other solution, for now, hack -
 				rootSln.FileName = rootSln.FileName;
 			} catch (Exception ex) {
-				Runtime.LoggingService.DebugFormat ("{0}", ex.Message);
-				Console.WriteLine ("HandleCombineEntryAdded : {0}", ex.ToString ());
+				LoggingService.LogDebug ("HandleCombineEntryAdded : {0}", ex);
 			}
 		}
 

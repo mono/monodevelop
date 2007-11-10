@@ -247,7 +247,7 @@ namespace MonoDevelop.Prj2Make
 				data.ProjectFileElements [pf] = (XmlElement) node;
 				break;
 			default:
-				Console.WriteLine ("Unrecognised ItemGroup element '{0}', Include = '{1}'. Ignoring.", node.LocalName, include);
+				LoggingService.LogWarning  ("Unrecognised ItemGroup element '{0}', Include = '{1}'. Ignoring.", node.LocalName, include);
 				break;
 			}
 
@@ -294,8 +294,7 @@ namespace MonoDevelop.Prj2Make
 
 			string name = MSBuildFileFormat.BuildActionToString (projectFile.BuildAction);
 			if (name == null) {
-				Runtime.LoggingService.WarnFormat ("BuildAction.{0} not supported!", projectFile.BuildAction);
-				Console.WriteLine ("BuildAction.{0} not supported!", projectFile.BuildAction);
+				LoggingService.LogWarning ("BuildAction.{0} not supported!", projectFile.BuildAction);
 				return null;
 			}
 
@@ -431,11 +430,7 @@ namespace MonoDevelop.Prj2Make
 				if (c != null) {
 					Project p = c.FindProject (projectRef.Reference);
 					if (p == null) {
-						Runtime.LoggingService.WarnFormat (GettextCatalog.GetString (
-							"The project '{0}' referenced from '{1}' could not be found.",
-							projectRef.Reference, project.Name));
-
-						Console.WriteLine (GettextCatalog.GetString (
+						LoggingService.LogWarning (GettextCatalog.GetString (
 							"The project '{0}' referenced from '{1}' could not be found.",
 							projectRef.Reference, project.Name));
 

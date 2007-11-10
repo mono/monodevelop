@@ -1,3 +1,9 @@
+2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* DefaultMSBuildProjectExtension.cs, SlnFileFormat.cs, pkgconfiginvoker.cs,
+	  MSBuildFileFormat.cs: Track LoggingService API changes. Remove some
+	  Console.WriteLines that were duplicating the logging.
+
 2007-11-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* SlnFileFormat.cs: Use RootCombine instead of CurrentOpenCombine when

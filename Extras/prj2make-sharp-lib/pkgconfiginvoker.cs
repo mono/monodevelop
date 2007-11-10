@@ -73,14 +73,14 @@ namespace MonoDevelop.Prj2Make
 
 			if (p.StandardOutput == null)
 			{
-				Runtime.LoggingService.Debug ("Specified package did not return any information");
+				LoggingService.LogDebug ("Specified package did not return any information");
 			}
 			
 			pkgout = p.StandardOutput.ReadToEnd ();		
 			p.WaitForExit ();
 			if (p.ExitCode != 0) 
 			{
-				Runtime.LoggingService.Debug ("pkg-config command failed: pkg-config " + strArgLine);
+				LoggingService.LogDebug ("pkg-config command failed: pkg-config " + strArgLine);
 				return null;
 			}
 
