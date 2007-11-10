@@ -244,7 +244,8 @@ namespace MonoDevelop.Components.Docking
 			if (VisibleObjects.Count > 0) {
 				CalcNewSizes ();
 				MarkForRelayout ();
-			}
+			} else
+				ParentGroup.UpdateVisible (this);
 		}
 		
 		public void Reduce ()
@@ -886,12 +887,13 @@ namespace MonoDevelop.Components.Docking
 				// Dock in a separator
 				for (int n=0; n<VisibleObjects.Count; n++) {
 					DockObject ob = VisibleObjects [n];
-					if (n < dockObjects.Count - 1 &&
+					if (n < VisibleObjects.Count - 1 &&
 					    px >= ob.Allocation.Right - DockFrame.GroupDockSeparatorSize/2 &&
 					    px <= ob.Allocation.Right + DockFrame.GroupDockSeparatorSize/2)
 					{
+						int dn = dockObjects.IndexOf (ob);
 						dockDelegate = delegate (DockItem it) {
-							DockTarget (it, n+1);
+							DockTarget (it, dn+1);
 						};
 						rect = new Gdk.Rectangle (ob.Allocation.Right - DockFrame.GroupDockSeparatorSize/2, Allocation.Y, DockFrame.GroupDockSeparatorSize, Allocation.Height);
 						return true;
@@ -918,14 +920,15 @@ namespace MonoDevelop.Components.Docking
 					return true;
 				}
 				// Dock in a separator
-				for (int n=0; n<dockObjects.Count; n++) {
-					DockObject ob = dockObjects [n];
-					if (n < dockObjects.Count - 1 &&
+				for (int n=0; n<VisibleObjects.Count; n++) {
+					DockObject ob = VisibleObjects [n];
+					if (n < VisibleObjects.Count - 1 &&
 					    py >= ob.Allocation.Bottom - DockFrame.GroupDockSeparatorSize/2 &&
 					    py <= ob.Allocation.Bottom + DockFrame.GroupDockSeparatorSize/2)
 					{
+						int dn = dockObjects.IndexOf (ob);
 						dockDelegate = delegate (DockItem it) {
-							DockTarget (it, n+1);
+							DockTarget (it, dn+1);
 						};
 						rect = new Gdk.Rectangle (Allocation.X, ob.Allocation.Bottom - DockFrame.GroupDockSeparatorSize/2, Allocation.Width, DockFrame.GroupDockSeparatorSize);
 						return true;

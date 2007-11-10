@@ -114,7 +114,7 @@ namespace MonoDevelop.Components.Docking
 					GLib.Source.Remove (anim);
 					anim = 0;
 				}
-				if (animate) {
+				if (animate && w < 150 && h < 150) {
 					int sa = 7;
 					Move (rx-sa, ry-sa);
 					Resize (rw+sa*2, rh+sa*2);

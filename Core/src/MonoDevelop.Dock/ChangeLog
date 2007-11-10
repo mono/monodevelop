@@ -1,5 +1,13 @@
 2007-11-10  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* DockGroupItem.cs: Don't allow docking on a hidden item.
+	* DockGroup.cs: Update group visibility when removing the last tab of a
+	  tabbed group. Fix issues when locking for dock target in a vgroup.
+	* PlaceholderWindow.cs: Don't animate big rectangles, since it generates
+	  flickering.
+
+2007-11-10  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* DockGroup.cs: Fix crash when moving the last visible item of a tabbed
 	  group. Fix grip orientation.
 

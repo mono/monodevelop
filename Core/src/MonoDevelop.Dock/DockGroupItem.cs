@@ -104,7 +104,7 @@ namespace MonoDevelop.Components.Docking
 		{
 			dockDelegate = null;
 			
-			if (item != this.item && rect.Contains (px, py)) {
+			if (item != this.item && this.item.Visible && rect.Contains (px, py)) {
 				int xdockMargin = (int) ((double)rect.Width * (1.0 - DockFrame.ItemDockCenterArea)) / 2;
 				int ydockMargin = (int) ((double)rect.Height * (1.0 - DockFrame.ItemDockCenterArea)) / 2;
 				DockPosition pos;
