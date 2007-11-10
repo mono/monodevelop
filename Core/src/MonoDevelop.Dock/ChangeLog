@@ -1,5 +1,10 @@
 2007-11-10  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* DockGroup.cs: Fix crash when moving the last visible item of a tabbed
+	  group. Fix grip orientation.
+
+2007-11-10  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* DockBarItem.cs: Don't hide the item if the mouse cursor is over the
 	  autohide box.
 

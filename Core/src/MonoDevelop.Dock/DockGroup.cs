@@ -336,7 +336,7 @@ namespace MonoDevelop.Components.Docking
 					int tabsHeight = boundTabStrip.SizeRequest ().Height;
 					newAlloc.Height -= tabsHeight;
 					boundTabStrip.QueueDraw ();
-				} else {
+				} else if (VisibleObjects.Count != 0) {
 					((DockGroupItem)VisibleObjects [0]).Item.Widget.Show ();
 				}
 				allocStatus = AllocStatus.Valid;
@@ -770,7 +770,7 @@ namespace MonoDevelop.Components.Docking
 			int y = Allocation.Y;
 			int hw = horiz ? Frame.HandleSize : Allocation.Width;
 			int hh = horiz ? Allocation.Height : Frame.HandleSize;
-			Gtk.Orientation or = horiz ? Gtk.Orientation.Horizontal : Gtk.Orientation.Vertical;
+			Gtk.Orientation or = horiz ? Gtk.Orientation.Vertical : Gtk.Orientation.Horizontal;
 
 			for (int n=0; n<VisibleObjects.Count; n++) {
 				DockObject ob = VisibleObjects [n];
