@@ -464,7 +464,9 @@ namespace CSharpBinding
 					string trimmedPreviousLine = previousLine.TrimStart ();
 					
 					//xml doc comments
-					if (trimmedPreviousLine.StartsWith ("/// ") && Editor.GetPositionFromLineColumn (indentEngine.LineNumber + 1, 1) > -1) {
+					if (trimmedPreviousLine.StartsWith ("/// ") //check previous line was a doc comment
+					    && Editor.GetPositionFromLineColumn (indentEngine.LineNumber + 1, 1) > -1 //check there's a following line?
+					    && cursor > 0 && Editor.GetCharAt (cursor - 1) == '\n') { //check that the newline command actually inserted a newline
 						string nextLine = Editor.GetLineText (indentEngine.LineNumber + 1);
 						if (nextLine.TrimStart ().StartsWith ("/// ")) {
 						    Editor.InsertText (cursor, GetLineWhiteSpace (previousLine) + "/// ");
