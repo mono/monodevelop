@@ -464,8 +464,17 @@ namespace MonoDevelop.Ide.Commands
 			
 			if (iface == null)
 				return;
-			
-			refactorer.ImplementInterface (pinfo, klass, iface, explicitly, iface, this.hintReturnType);
+				
+			IEditableTextBuffer editor = IdeApp.Workbench.ActiveDocument.GetContent <IEditableTextBuffer>();
+			if (editor != null)
+				editor.BeginAtomicUndo ();
+				
+			try {
+				refactorer.ImplementInterface (pinfo, klass, iface, explicitly, iface, this.hintReturnType);
+			} finally {
+				if (editor != null)
+					editor.EndAtomicUndo ();
+			}
 		}
 		
 		public void ImplementImplicitInterface ()
@@ -480,8 +489,18 @@ namespace MonoDevelop.Ide.Commands
 		
 		public void EncapsulateField ()
 		{
-			EncapsulateFieldDialog dialog = new EncapsulateFieldDialog (ctx, (IField) item);
-			dialog.Show ();
+			IEditableTextBuffer editor = IdeApp.Workbench.ActiveDocument.GetContent <IEditableTextBuffer>();
+			if (editor != null)
+				editor.BeginAtomicUndo ();
+				
+			try {
+				EncapsulateFieldDialog dialog = new EncapsulateFieldDialog (ctx, (IField) item);
+				dialog.Show ();
+			} finally {
+				if (editor != null)
+					editor.EndAtomicUndo ();
+			}
+			
 		}
 		
 		public void Rename ()

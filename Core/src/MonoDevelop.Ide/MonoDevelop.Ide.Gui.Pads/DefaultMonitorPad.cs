@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			textEditorControl = new Gtk.TextView (buffer);
 			textEditorControl.Editable = false;
 			scroller = new Gtk.ScrolledWindow ();
-			scroller.ShadowType = ShadowType.In;
+			scroller.ShadowType = ShadowType.None;
 			scroller.Add (textEditorControl);
 
 			Toolbar toolbar = new Toolbar ();

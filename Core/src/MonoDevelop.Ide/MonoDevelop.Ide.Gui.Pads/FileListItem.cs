@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			this.lastModified = lastModified;
 			//FIXME: This is because //home/blah is not the same as /home/blah according to Icon.LookupSync, if we get weird behaviours, lets look at this again, see if we still need it.
 			FullName = fullname.Substring (1);
-			icon = FileIconLoader.GetPixbufForFile (FullName, 24);
+			icon = FileIconLoader.GetPixbufForFile (FullName, 16);
 		}
 
 		public FileListItem (string name)
@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			this.size = Math.Round ((double) fi.Length / 1024).ToString () + " KB";
 			this.lastModified = fi.LastWriteTime.ToString ();
 			FullName = System.IO.Path.GetFullPath (name); 
-			icon = FileIconLoader.GetPixbufForFile (FullName, 24);
+			icon = FileIconLoader.GetPixbufForFile (FullName, 16);
 		}
 	}
 }

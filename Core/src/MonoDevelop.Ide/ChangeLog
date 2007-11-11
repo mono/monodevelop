@@ -1,3 +1,14 @@
+2007-11-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs: Removed some unneeded
+	  shadows.
+	* MonoDevelop.Ide.Gui.Pads/FileListItem.cs: Make file and folder icons
+	  smaller.
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Use new ContentRequired event
+	  to lazily create the pads. Track api changes.
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Run refactoring operations
+	  in an atomic undo change.
+
 2007-11-09  Zach Lute  <zach.lute@gmail.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs: Select the search

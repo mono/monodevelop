@@ -447,6 +447,7 @@ namespace MonoDevelop.Ide.Gui
 				item.Content = router;
 			}
 		}
+		
 		void AddPad (PadCodon padCodon, string placement)
 		{
 			PadWindow window = new PadWindow (this, padCodon);
@@ -479,9 +480,8 @@ namespace MonoDevelop.Ide.Gui
 			if (padCodon.Initialized) {
 				CreatePadContent (true, padCodon, window, item);
 			} else {
-				item.VisibleChanged += delegate {
-					if (item.Visible)
-						CreatePadContent (false, padCodon, window, item);
+				item.ContentRequired += delegate {
+					CreatePadContent (false, padCodon, window, item);
 				};
 			}
 			
@@ -515,10 +515,8 @@ namespace MonoDevelop.Ide.Gui
 		public void ShowPad (PadCodon content)
 		{
 			DockItem item = GetDockItem (content);
-			if (item != null) {
-				Console.WriteLine ("pp sp: ");
+			if (item != null)
 				item.Visible = true;
-			}
 			else
 				AddPad (content, content.DefaultPlacement);
 		}
@@ -530,7 +528,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			DockItem item = GetDockItem (content);
 			if (item != null)
-				dock.RemoveItem (item.Id);
+				dock.RemoveItem (item);
 			padWindows.Remove (content);
 			padCodons.Remove (win);
 			
