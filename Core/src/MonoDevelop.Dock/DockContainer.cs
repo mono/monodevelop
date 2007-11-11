@@ -92,6 +92,13 @@ namespace MonoDevelop.Components.Docking
 				layout.StoreAllocation ();
 			layout = dl;
 			layout.RestoreAllocation ();
+			
+			// Make sure items not present in this layout are hidden
+			foreach (DockItem it in items) {
+				if (layout.FindDockGroupItem (it.Id) == null)
+					it.HideWidget ();
+			}
+			
 			RelayoutWidgets ();
 		}
 		

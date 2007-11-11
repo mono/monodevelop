@@ -297,7 +297,7 @@ namespace MonoDevelop.Components.Docking
 		internal override void RestoreAllocation ()
 		{
 			base.RestoreAllocation ();
-			item.Visible = visibleFlag;
+			item.UpdateVisibleStatus ();
 			
 			if (Status == DockItemStatus.Floating)
 				item.SetFloatMode (floatRect);

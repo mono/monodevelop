@@ -1,3 +1,11 @@
+2007-11-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DockGroupItem.cs, DockItem.cs: The VisibleChanged event is now fired by a
+	  UpdateVisibleStatus method, which keeps track of old visibility status.
+	* DockGroup.cs, DockFrame.cs: Implemented RemoveItem.
+	* DockContainer.cs: Some dynamically added items may not be present in a
+	  layout. Make sure they are explicitely hidden in this case.
+
 2007-11-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am: Fix dist.

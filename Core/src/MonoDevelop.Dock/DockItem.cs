@@ -52,8 +52,11 @@ namespace MonoDevelop.Components.Docking
 		DockItemBehavior behavior;
 		Gtk.Window floatingWindow;
 		DockBarItem dockBarItem;
+		bool lastVisibleStatus;
+		bool gettingContent;
 		
 		public event EventHandler VisibleChanged;
+		public event EventHandler ContentRequired;
 		
 		public DockItem (DockFrame frame, string id)
 		{
@@ -90,8 +93,7 @@ namespace MonoDevelop.Components.Docking
 			}
 			set {
 				frame.SetVisible (this, value);
-				if (VisibleChanged != null)
-					VisibleChanged (this, EventArgs.Empty);
+				UpdateVisibleStatus ();
 			}
 		}
 		
@@ -109,6 +111,14 @@ namespace MonoDevelop.Components.Docking
 				if (widget == null) {
 					widget = new DockItemContainer (frame, this);
 					widget.Label = label;
+					if (ContentRequired != null) {
+						gettingContent = true;
+						try {
+							ContentRequired (this, EventArgs.Empty);
+						} finally {
+							gettingContent = false;
+						}
+					}
 					widget.UpdateContent ();
 				}
 				return widget;
@@ -121,7 +131,7 @@ namespace MonoDevelop.Components.Docking
 			}
 			set {
 				content = value;
-				if (widget != null)
+				if (!gettingContent && widget != null)
 					widget.UpdateContent ();
 			}
 		}
@@ -199,6 +209,16 @@ namespace MonoDevelop.Components.Docking
 		public void Present ()
 		{
 			frame.Present (this);
+		}
+		
+		internal void UpdateVisibleStatus ()
+		{
+			bool vis = frame.GetVisible (this);
+			if (vis != lastVisibleStatus) {
+				lastVisibleStatus = vis;
+				if (VisibleChanged != null)
+					VisibleChanged (this, EventArgs.Empty);
+			}
 		}
 		
 		internal void ShowWidget ()
