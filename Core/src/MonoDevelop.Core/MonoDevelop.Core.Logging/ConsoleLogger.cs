@@ -86,9 +86,9 @@ namespace MonoDevelop.Core.Logging
 				break;
 			}
 			
-			Console.Write ("{0} [{1}]: ", header, DateTime.Now);
-			if (useColour) Console.ResetColor (); 
-			Console.WriteLine (message);
+			Console.Write ("{0} [{1}]:", header, DateTime.Now);
+			if (useColour) Console.ResetColor ();
+			Console.WriteLine (" " + message);
 		}
 		
 		public LogLevel EnabledLevel {
@@ -103,15 +103,13 @@ namespace MonoDevelop.Core.Logging
 		public bool UseColour {
 			get { return useColour; }
 			set {
-				if (value) {
-					try {
-						Console.ForegroundColor = ConsoleColor.Red;
-						Console.ResetColor ();
-						useColour = true;
-						return;
-					} catch {}
-				}
-				useColour = value; }
+				useColour = false;
+				if (value) try {
+					Console.ForegroundColor = ConsoleColor.Red;
+					Console.ResetColor ();
+					useColour = true;
+				} catch {}
+			}
 		}
 		
 		~ConsoleLogger ()
