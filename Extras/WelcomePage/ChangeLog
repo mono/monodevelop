@@ -1,3 +1,8 @@
+2007-11-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* WelcomePageView.cs: Don't destroy the html control when disposing the
+	  welcome page. Fixes bug #339590.
+
 2007-11-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* WelcomePage.css, WelcomePage.xsl: Cleanup. Removed many unused styles.

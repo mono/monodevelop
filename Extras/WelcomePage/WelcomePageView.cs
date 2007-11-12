@@ -60,7 +60,7 @@ namespace MonoDevelop.WelcomePage
 {	
 	public class WelcomePageView : AbstractViewContent
 	{
-		MozillaControl htmlControl;
+		static MozillaControl htmlControl;
 		bool loadingProject;
 		
 		string datadir;
@@ -86,10 +86,12 @@ namespace MonoDevelop.WelcomePage
 			this.ContentName = GettextCatalog.GetString ("Welcome");
 			this.IsViewOnly = true;
 
-			htmlControl = new MozillaControl ();
-			htmlControl.Show ();
-			htmlControl.OpenUri += CatchUri;
-			htmlControl.LinkMsg += LinkMessage;
+			if (htmlControl == null) {
+				htmlControl = new MozillaControl ();
+				htmlControl.Show ();
+				htmlControl.OpenUri += CatchUri;
+				htmlControl.LinkMsg += LinkMessage;
+			}
 			
 			datadir = "file://" + Path.GetDirectoryName (typeof(ShowWelcomePageHandler).Assembly.Location) + "/";
 
@@ -239,7 +241,6 @@ namespace MonoDevelop.WelcomePage
 		public override void Dispose ()
 		{
 			IdeApp.Workbench.RecentOpen.RecentProjectChanged -= RecentChangesHandler;
-			htmlControl.Destroy ();
 		}
 		
 		public static string TimeSinceEdited (DateTime prjtime)
