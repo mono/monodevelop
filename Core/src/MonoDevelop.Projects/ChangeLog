@@ -1,5 +1,11 @@
 2007-11-12  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: In
+	  FindGenerateMember, the interface prefix is not added to the name
+	  anymore, so there is no need to remove it.
+
+2007-11-12  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs,
 	  MonoDevelop.Projects.CodeGeneration/IRefactorer.cs: The explicit
 	  implementation prefix is now an IReturnType. Needed because types in the

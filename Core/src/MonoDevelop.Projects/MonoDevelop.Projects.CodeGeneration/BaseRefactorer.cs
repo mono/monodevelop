@@ -637,29 +637,23 @@ namespace MonoDevelop.Projects.CodeGeneration
 		protected IMember FindGeneratedMember (RefactorerContext ctx, IEditableTextFile buffer, IClass cls, CodeTypeMember member, int line)
 		{
 			IClass rclass = GetGeneratedClass (ctx, buffer, cls);
-			string name = member.Name;
 			
-			// Remove the prefix in explicit interface implementations. Not needed to locate the member.
-			int i = name.IndexOf ('.');
-			if (i != -1)
-				name = name.Substring (i+1);
-				
 			if (rclass != null) {
 				if (member is CodeMemberField) {
 					foreach (IField m in rclass.Fields)
-						if (m.Name == name && line == m.Region.BeginLine)
+						if (m.Name == member.Name && line == m.Region.BeginLine)
 							return m;
 				} else if (member is CodeMemberProperty) {
 					foreach (IProperty m in rclass.Properties)
-						if (m.Name == name && line == m.Region.BeginLine)
+						if (m.Name == member.Name && line == m.Region.BeginLine)
 							return m;
 				} else if (member is CodeMemberEvent) {
 					foreach (IEvent m in rclass.Events)
-						if (m.Name == name && line == m.Region.BeginLine)
+						if (m.Name == member.Name && line == m.Region.BeginLine)
 							return m;
 				} else if (member is CodeMemberMethod) {
 					foreach (IMethod m in rclass.Methods) {
-						if (m.Name == name && line == m.Region.BeginLine)
+						if (m.Name == member.Name && line == m.Region.BeginLine)
 							return m;
 					}
 				}
