@@ -1,3 +1,9 @@
+2007-11-12  Aaron Bockover  <abockover@novell.com>
+
+	* autogen.sh: Added -Wno-portability -Wno-syntax to make automake be
+	quiet about some things; typical Makefile.am files in Mono projects 
+	can never conform to the perfect standards of automake
+
 2007-11-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* contrib/contrib.mds:

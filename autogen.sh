@@ -75,7 +75,7 @@ aclocal $ACLOCAL_FLAGS || {
 }
 
 echo "Running automake --gnu $am_opt ..."
-automake --add-missing --gnu $am_opt ||
+automake --add-missing --gnu -Wno-portability -Wno-syntax $am_opt ||
   { echo "**Error**: automake failed."; exit 1; }
 
 echo "Running autoconf ..."
