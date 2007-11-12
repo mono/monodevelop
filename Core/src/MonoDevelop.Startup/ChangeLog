@@ -1,3 +1,8 @@
+2007-11-12  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Startup/MonoDevelopMain.cs: Use SetProcessName; "killall
+	  monodevelop" will work now. Convert some WriteLines to logging calls.
+
 2007-10-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Startup.mdp: Project file names updated by change in MD path
