@@ -1,3 +1,8 @@
+2007-11-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* TabStrip.cs: Use Notebook as a base class. Fixes rendering issues in gtk
+	  themes which check the type of the widget when drawing the tabs.
+
 2007-11-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* DockGroupItem.cs, DockItem.cs: The VisibleChanged event is now fired by a

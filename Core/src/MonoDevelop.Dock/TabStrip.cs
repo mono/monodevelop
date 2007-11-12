@@ -34,13 +34,19 @@ using System;
 
 namespace MonoDevelop.Components.Docking
 {
-	class TabStrip: Gtk.HBox
+	class TabStrip: Notebook
 	{
 		int currentTab = -1;
 		bool ellipsized = true;
+		HBox box = new HBox ();
 		
 		public TabStrip()
 		{
+			box = new HBox ();
+			AppendPage (box, null);
+			ShowBorder = false;
+			ShowTabs = false;
+			ShowAll ();
 		}
 		
 		public void AddTab (Gtk.Widget page, string icon, string label)
@@ -48,9 +54,9 @@ namespace MonoDevelop.Components.Docking
 			Tab tab = new Tab ();
 			tab.SetLabel (page, icon, label);
 			tab.ShowAll ();
-			PackStart (tab, true, true, 0);
+			box.PackStart (tab, true, true, 0);
 			if (currentTab == -1)
-				CurrentTab = Children.Length - 1;
+				CurrentTab = box.Children.Length - 1;
 			else {
 				tab.Active = false;
 				page.Hide ();
@@ -61,7 +67,7 @@ namespace MonoDevelop.Components.Docking
 		
 		public void SetTabLabel (Gtk.Widget page, string icon, string label)
 		{
-			foreach (Tab tab in Children) {
+			foreach (Tab tab in box.Children) {
 				if (tab.Page == page) {
 					tab.SetLabel (page, icon, label);
 					UpdateEllipsize (Allocation);
@@ -71,7 +77,7 @@ namespace MonoDevelop.Components.Docking
 		}
 		
 		public int TabCount {
-			get { return this.Children.Length; }
+			get { return box.Children.Length; }
 		}
 		
 		public int CurrentTab {
@@ -80,30 +86,30 @@ namespace MonoDevelop.Components.Docking
 				if (currentTab == value)
 					return;
 				if (currentTab != -1) {
-					Tab t = (Tab) Children [currentTab];
+					Tab t = (Tab) box.Children [currentTab];
 					t.Page.Hide ();
 					t.Active = false;
 				}
 				currentTab = value;
 				if (currentTab != -1) {
-					Tab t = (Tab) Children [currentTab];
+					Tab t = (Tab) box.Children [currentTab];
 					t.Active = true;
 					t.Page.Show ();
 				}
 			}
 		}
 		
-		public Gtk.Widget CurrentPage {
+		new public Gtk.Widget CurrentPage {
 			get {
 				if (currentTab != -1) {
-					Tab t = (Tab) Children [currentTab];
+					Tab t = (Tab) box.Children [currentTab];
 					return t.Page;
 				} else
 					return null;
 			}
 			set {
 				if (value != null) {
-					Gtk.Widget[] tabs = Children;
+					Gtk.Widget[] tabs = box.Children;
 					for (int n = 0; n < tabs.Length; n++) {
 						Tab tab = (Tab) tabs [n];
 						if (tab.Page == value) {
@@ -120,15 +126,15 @@ namespace MonoDevelop.Components.Docking
 		{
 			ellipsized = true;
 			currentTab = -1;
-			foreach (Widget w in Children) {
-				Remove (w);
+			foreach (Widget w in box.Children) {
+				box.Remove (w);
 				w.Destroy ();
 			}
 		}
 		
 		void OnTabPress (object s, Gtk.ButtonPressEventArgs args)
 		{
-			CurrentTab = Array.IndexOf (Children, s);
+			CurrentTab = Array.IndexOf (box.Children, s);
 			QueueDraw ();
 		}
 
@@ -141,14 +147,14 @@ namespace MonoDevelop.Components.Docking
 		void UpdateEllipsize (Gdk.Rectangle allocation)
 		{
 			int tsize = 0;
-			foreach (Tab tab in Children)
+			foreach (Tab tab in box.Children)
 				tsize += tab.LabelWidth;
 
 			bool ellipsize = tsize > allocation.Width;
 			if (ellipsize != ellipsized) {
-				foreach (Tab tab in Children) {
+				foreach (Tab tab in box.Children) {
 					tab.SetEllipsize (ellipsize);
-					Gtk.Box.BoxChild bc = (Gtk.Box.BoxChild) this [tab];
+					Gtk.Box.BoxChild bc = (Gtk.Box.BoxChild) box [tab];
 					bc.Expand = bc.Fill = ellipsize;
 				}
 				ellipsized = ellipsize;
@@ -157,7 +163,7 @@ namespace MonoDevelop.Components.Docking
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
-			Gtk.Widget[] tabs = Children;
+			Gtk.Widget[] tabs = box.Children;
 			for (int n=tabs.Length - 1; n>=0; n--) {
 				Tab tab = (Tab) tabs [n];
 				if (n != currentTab)
