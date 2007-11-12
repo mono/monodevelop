@@ -1,5 +1,10 @@
 2007-11-12  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Gui/CSharpTextEditorExtension.cs: Completion check for '#' must be done
+	  relative to trigger offset. Fixes bug #338382.
+
+2007-11-12  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Parser/CSharpVisitor.cs: Set the explicit declaration type for indexers.
 	* Parser/CodeGenerator.cs: Workaround for bug in the code generator. Generic
 	  private implementation types are not generated correctly when they are
