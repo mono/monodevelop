@@ -253,8 +253,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			nav.MoveToFirstChild ();
 			do {
 				if (nav.HasChildren ()) {
-					ITreeNavigator newNav = nav.Clone ();
-					GetFiles (newNav, filesToAdd);
+					ProjectFolder pf = nav.DataItem as ProjectFolder;
+					if (pf != null && (File.GetAttributes (pf.Path) & FileAttributes.Hidden) == 0) {
+						ITreeNavigator newNav = nav.Clone ();
+						GetFiles (newNav, filesToAdd);
+					}
 				} else if (nav.DataItem is SystemFile) {
 					filesToAdd.Add ((SystemFile) nav.DataItem);
 				}

@@ -1,3 +1,9 @@
+2007-11-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs: In the
+	  Include Folder to Project command, don't include hidden subfolders.
+	  Fixes bug #339444.
+
 2007-11-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs: Removed some unneeded
