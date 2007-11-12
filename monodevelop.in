@@ -81,21 +81,21 @@ cd $MD_BIN_PATH
 case x$1 in
 	x--profile)
 		shift
-		exec @RUNTIME@ --profile ./MonoDevelop.exe $@
+		exec -a "monodevelop" @RUNTIME@ --profile ./MonoDevelop.exe $@
 		exit 0
 		;;
 	x--debug)
 		shift
 		export MONODEVELOP_DISPATCH_DEBUG=yes
-		exec @RUNTIME@ --debug ./MonoDevelop.exe $@
+		exec -a "monodevelop"  @RUNTIME@ --debug ./MonoDevelop.exe $@
 		exit 0
 		;;
 	x--trace)
 		shift
-		exec @RUNTIME@ --trace ./MonoDevelop.exe $@
+		exec -a "monodevelop"  @RUNTIME@ --trace ./MonoDevelop.exe $@
 		exit 0;
 		;;
 esac
 
-exec @RUNTIME@ ./MonoDevelop.exe $@
+exec -a "monodevelop"  @RUNTIME@ ./MonoDevelop.exe $@
 

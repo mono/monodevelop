@@ -1,3 +1,9 @@
+2007-11-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* monodevelop.in: Pass '-a "monodevelop"' to exec in order to set 
+	  monodevelop process name, so it shows up nicely in process lists.
+
 2007-11-12  Aaron Bockover  <abockover@novell.com>
 
 	* autogen.sh: Added -Wno-portability -Wno-syntax to make automake be

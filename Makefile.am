@@ -81,10 +81,12 @@ MD_LAUNCH_SETUP= \
 	LD_LIBRARY_PATH=`echo "$(LD_LIBRARY_PATH):$(MOZILLA_HOME)" | sed 's/^://g'` \
 	PKG_CONFIG_PATH=`echo "$(PKG_CONFIG_PATH):$(MD_PKG_CONFIG_PATH)" | sed 's/^://g'`
 
+MD_LAUNCH=$(MD_LAUNCH_SETUP) exec -a "monodevelop" $(RUNTIME)
+
 run: runmd
 
 runmd: $(PROGRAM)
-	$(MD_LAUNCH_SETUP) $(RUNTIME) --debug MonoDevelop.exe
+	$(MD_LAUNCH) --debug MonoDevelop.exe
 
 pad: $(MONOPAD)
 
@@ -92,13 +94,13 @@ runpad: $(MONOPAD)
 	cd build/bin && mono MonoPad.exe
 
 run-profile: $(PROGRAM)
-	$(MD_LAUNCH_SETUP) $(RUNTIME) -O=inline --profile MonoDevelop.exe
+	$(MD_LAUNCH) -O=inline --profile MonoDevelop.exe
 
 run-profile-stat: $(PROGRAM)
-	$(MD_LAUNCH_SETUP) $(RUNTIME) --profile=default:stat MonoDevelop.exe
+	$(MD_LAUNCH) --profile=default:stat MonoDevelop.exe
 
 run-profile-heap: $(PROGRAM)
-	$(MD_LAUNCH_SETUP) $(RUNTIME) -O=inline --profile=heap:heaplog MonoDevelop.exe
+	$(MD_LAUNCH) -O=inline --profile=heap:heaplog MonoDevelop.exe
 
 profile-pad: $(MONOPAD)
 	cd build/bin && mono -O=inline --profile MonoPad.exe
