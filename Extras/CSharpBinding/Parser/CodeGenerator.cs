@@ -40,6 +40,7 @@ using Microsoft.CSharp;
 using MonoDevelop.Ide.Gui.Content;
 
 using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Ambience;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.CodeGeneration;
 
@@ -160,6 +161,17 @@ namespace CSharpBinding.Parser
 			
 			if (prop.HasSet && prop.SetStatements.Count == 0)
 				prop.SetStatements.Add (new CodeAssignStatement (new CodeVariableReferenceExpression (field.Name), new CodeVariableReferenceExpression ("value")));
+		}
+		
+		public override IMember ImplementMember (RefactorerContext ctx, IClass cls, IMember member, IReturnType privateImplementationType)
+		{
+			if (privateImplementationType != null) {
+				// Workaround for bug in the code generator. Generic private implementation types are not generated correctly when they are generic.
+				CSharpAmbience amb = new CSharpAmbience();
+				string tn = amb.Convert (privateImplementationType, ConversionFlags.ShowGenericParameters | ConversionFlags.UseFullyQualifiedNames | ConversionFlags.UseIntrinsicTypeNames, ctx.TypeNameResolver);
+				privateImplementationType = new DefaultReturnType (tn);
+			}
+			return base.ImplementMember (ctx, cls, member, privateImplementationType);
 		}
 		
 		public override MemberReferenceCollection FindClassReferences (RefactorerContext ctx, string fileName, IClass cls)

@@ -535,6 +535,9 @@ namespace CSharpBinding.Parser
 			}
 			FillAttributes (i, indexerDeclaration.Attributes);
 			c.Indexer.Add(i);
+			if (indexerDeclaration.InterfaceImplementations != null && indexerDeclaration.InterfaceImplementations.Count > 0) {
+				i.ExplicitDeclaration = new ReturnType (indexerDeclaration.InterfaceImplementations[0].InterfaceType);
+			}
 			return null;
 		}
 	}

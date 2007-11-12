@@ -1,3 +1,10 @@
+2007-11-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Parser/CSharpVisitor.cs: Set the explicit declaration type for indexers.
+	* Parser/CodeGenerator.cs: Workaround for bug in the code generator. Generic
+	  private implementation types are not generated correctly when they are
+	  generic.
+
 2007-11-12  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/CSharpTextEditorExtension.cs: see/seealso tags are now generated with
