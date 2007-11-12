@@ -69,6 +69,7 @@ namespace MonoDevelop.Ide.Gui
 		Project currentProject = null;
 		Combine currentCombine = null;
 		Combine openCombine = null;
+		object currentItem;
 		
 		IParserDatabase parserDatabase;
 		CodeRefactorer refactorer;
@@ -185,6 +186,15 @@ namespace MonoDevelop.Ide.Gui
 			}
 			internal set {
 				currentEntry = value;
+			}
+		}
+		
+		public object CurrentSelectedItem {
+			get {
+				return currentItem;
+			}
+			internal set {
+				currentItem = value;
 			}
 		}
 		

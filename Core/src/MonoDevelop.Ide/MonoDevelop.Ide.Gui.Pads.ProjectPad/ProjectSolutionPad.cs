@@ -54,6 +54,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				IdeApp.ProjectOperations.CurrentSelectedCombine = c;
 				CombineEntry ce = (CombineEntry) nav.GetParentDataItem (typeof(CombineEntry), true);
 				IdeApp.ProjectOperations.CurrentSelectedCombineEntry = ce;
+				IdeApp.ProjectOperations.CurrentSelectedItem = nav.DataItem;
 			}
 		}
 		

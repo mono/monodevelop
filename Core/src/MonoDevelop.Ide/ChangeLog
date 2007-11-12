@@ -1,5 +1,11 @@
 2007-11-12  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectSolutionPad.cs,
+	  MonoDevelop.Ide.Gui/ProjectOperations.cs: Added property for getting the
+	  current selected item in the project solution.
+
+2007-11-12  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs: In the
 	  Include Folder to Project command, don't include hidden subfolders.
 	  Fixes bug #339444.
