@@ -1,3 +1,8 @@
+2007-11-12  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CSharpTextEditorExtension.cs: Fixed "Bug 340875 - Bugs while using XML
+	  comments".
+
 2007-11-11  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Gui/CSharpTextEditorExtension.cs: Fix part 1 of "Bug 340875 - Bugs 

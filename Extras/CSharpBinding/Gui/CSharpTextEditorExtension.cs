@@ -113,6 +113,7 @@ namespace CSharpBinding
 				if (p.Region.BeginLine < startLine && p.Region.BeginLine > line) {
 					startLine = p.Region.BeginLine;
 					property = p;
+					method = null;
 				}
 			}
 			
@@ -209,14 +210,16 @@ namespace CSharpBinding
 				
 				//pass through to the base class, which actually inserts the character
 				int oldBufLen = Editor.TextLength;
+				int oldLine = Editor.CursorLine; 
 				bool retval = base.KeyPress (key, modifier);
+				
 				UpdateSmartIndentEngine ();
 				
 				//handle inserted characters
 				bool reIndent = false;
 				char lastCharInserted = KeyToChar (key);
 				//System.Console.WriteLine (lastCharInserted);
-				if (oldBufLen != Editor.TextLength || lastCharInserted != '\0')
+				if (!(oldLine == Editor.CursorLine && lastCharInserted == '\n') && (oldBufLen != Editor.TextLength || lastCharInserted != '\0'))
 					DoPostInsertionSmartIndent (lastCharInserted, out reIndent);
 				
 				//reindent the line after the insertion, if needed
