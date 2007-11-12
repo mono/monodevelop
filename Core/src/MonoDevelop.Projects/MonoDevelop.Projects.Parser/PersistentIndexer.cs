@@ -40,6 +40,7 @@ namespace MonoDevelop.Projects.Parser
 
 			ind.Region = source.Region;
 			ind.Attributes = PersistentAttributeSectionCollection.Resolve (source.Attributes, typeResolver);
+			ind.ExplicitDeclaration = PersistentReturnType.Resolve (source.ExplicitDeclaration, typeResolver);
 			return ind;
 		}
 		
@@ -50,6 +51,7 @@ namespace MonoDevelop.Projects.Parser
 			ind.Documentation = PersistentHelper.ReadString (reader, nameTable);
 			ind.Modifiers = (ModifierEnum)reader.ReadUInt32();
 			ind.ReturnType = PersistentReturnType.Read (reader, nameTable);
+			ind.ExplicitDeclaration = PersistentReturnType.Read (reader, nameTable);
 			
 			uint count = reader.ReadUInt32();
 			for (uint i = 0; i < count; ++i) {
@@ -67,6 +69,7 @@ namespace MonoDevelop.Projects.Parser
 			
 			writer.Write((uint)ind.Modifiers);
 			PersistentReturnType.WriteTo (ind.ReturnType, writer, nameTable);
+			PersistentReturnType.WriteTo (ind.ExplicitDeclaration, writer, nameTable);
 			
 			writer.Write ((uint)ind.Parameters.Count);
 			foreach (IParameter p in ind.Parameters) {

@@ -1,3 +1,20 @@
+2007-11-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs,
+	  MonoDevelop.Projects.CodeGeneration/IRefactorer.cs: The explicit
+	  implementation prefix is now an IReturnType. Needed because types in the
+	  parsed results are not fully resolved.
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: The explicit
+	  implementation prefix is now an IReturnType, in this way generic types
+	  can be properly used. Fixed some issues when looking for existing
+	  members.
+	* MonoDevelop.Projects.Parser/PersistentIndexer.cs,
+	  MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Read/write the
+	  explicit declaration type for indexers. Requires a database version
+	  bump.
+	* MonoDevelop.Projects.Parser/DefaultReturnType.cs: Added method for parsing
+	  IReturnType objects from strings.
+
 2007-11-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: When implementing

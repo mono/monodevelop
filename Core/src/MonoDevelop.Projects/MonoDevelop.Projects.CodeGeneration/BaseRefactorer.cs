@@ -157,7 +157,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return new CodeTypeReference (ctx.TypeNameResolver.ResolveName (type.FullName));
 		}
 		
-		public virtual IMember ImplementMember (RefactorerContext ctx, IClass cls, string prefix, bool explicitly, IMember member)
+		public virtual IMember ImplementMember (RefactorerContext ctx, IClass cls, IMember member, IReturnType privateImplementationType)
 		{
 			CodeTypeMember m;
 			
@@ -165,8 +165,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 				CodeMemberEvent mEvent = new CodeMemberEvent ();
 				m = (CodeTypeMember) mEvent;
 				mEvent.Type = ReturnTypeToDom (ctx, member.ReturnType);
-				if (prefix != null)
-					mEvent.PrivateImplementationType = new CodeTypeReference (prefix);
+				if (privateImplementationType != null)
+					mEvent.PrivateImplementationType = ReturnTypeToDom (ctx, privateImplementationType);
 			} else if (member is IMethod) {
 				CodeMemberMethod mMethod = new CodeMemberMethod ();
 				IMethod method = (IMethod) member;
@@ -182,8 +182,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 					par = new CodeParameterDeclarationExpression (ReturnTypeToDom (ctx, param.ReturnType), param.Name);
 					mMethod.Parameters.Add (par);
 				}
-				if (prefix != null)
-					mMethod.PrivateImplementationType = new CodeTypeReference (prefix);
+				if (privateImplementationType != null)
+					mMethod.PrivateImplementationType = ReturnTypeToDom (ctx, privateImplementationType);
 			} else if (member is IProperty) {
 				CodeMemberProperty mProperty = new CodeMemberProperty ();
 				IProperty property = (IProperty) member;
@@ -199,8 +199,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 					mProperty.SetStatements.Add (throwExpression);
 				
 				mProperty.Type = ReturnTypeToDom (ctx, member.ReturnType);
-				if (prefix != null)
-					mProperty.PrivateImplementationType = new CodeTypeReference (prefix);
+				if (privateImplementationType != null)
+					mProperty.PrivateImplementationType = ReturnTypeToDom (ctx, privateImplementationType);
 			} else if (member is IIndexer) {
 				CodeMemberProperty mProperty = new CodeMemberProperty ();
 				IIndexer property = (IIndexer) member;
@@ -222,8 +222,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 				}
 				
 				mProperty.Type = ReturnTypeToDom (ctx, member.ReturnType);
-				if (prefix != null)
-					mProperty.PrivateImplementationType = new CodeTypeReference (prefix);
+				if (privateImplementationType != null)
+					mProperty.PrivateImplementationType = ReturnTypeToDom (ctx, privateImplementationType);
 			} else {
 				return null;
 			}
@@ -235,7 +235,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			
 			m.Attributes = MemberAttributes.Final;
 			
-			if (!explicitly)
+			if (privateImplementationType == null)
 				m.Attributes |= MemberAttributes.Public;
 			
 			return AddMember (ctx, cls, m);
@@ -628,12 +628,10 @@ namespace MonoDevelop.Projects.CodeGeneration
 		// Returns a reparsed IClass instance that contains the generated code.
 		protected IClass GetGeneratedClass (RefactorerContext ctx, IEditableTextFile buffer, IClass cls)
 		{
-			IParseInformation pi = ctx.ParserContext.ParserDatabase.UpdateFile (buffer.Name, buffer.Text);
-			foreach (IClass rclass in ((ICompilationUnit) pi.MostRecentCompilationUnit).Classes) {
-				if (cls.Name == rclass.Name)
-					return rclass;
-			}
-			return null;
+			// Don't get the class from the parse results because in that class the types are not resolved.
+			// Get the class from the database instead.
+			ctx.ParserContext.ParserDatabase.UpdateFile (buffer.Name, buffer.Text);
+			return ctx.ParserContext.GetClass (cls.FullyQualifiedName);
 		}
 		
 		protected IMember FindGeneratedMember (RefactorerContext ctx, IEditableTextFile buffer, IClass cls, CodeTypeMember member, int line)
@@ -818,7 +816,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				return pos + ind.Length;
 			} else {
 				IEvent m = cls.Events [cls.Events.Count - 1];
-				int pos = buffer.GetPositionFromLineColumn (m.BodyRegion.EndLine, m.BodyRegion.EndColumn);
+				int pos = buffer.GetPositionFromLineColumn (m.Region.EndLine, m.Region.EndColumn);
 				pos = GetNextLine (buffer, pos);
 				pos = GetNextLine (buffer, pos);
 				string ind = GetLineIndent (buffer, m.Region.EndLine);

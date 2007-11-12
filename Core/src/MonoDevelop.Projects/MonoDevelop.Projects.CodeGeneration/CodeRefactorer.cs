@@ -112,11 +112,11 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return m;
 		}
 		
-		public IMember ImplementMember (IClass cls, string prefix, bool explicitly, IMember member)
+		public IMember ImplementMember (IClass cls, IMember member, IReturnType privateReturnType)
 		{
 			RefactorerContext gctx = GetGeneratorContext (cls);
 			IRefactorer gen = GetGeneratorForClass (cls);
-			IMember m = gen.ImplementMember (gctx, cls, prefix, explicitly, member);
+			IMember m = gen.ImplementMember (gctx, cls, member, privateReturnType);
 			gctx.Save ();
 			return m;
 		}
@@ -155,7 +155,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			if (col1.Count != col2.Count)
 				return false;
 			for (int i = 0; i < col1.Count; i++) {
-				if (col1[i].ReturnType.FullyQualifiedName != col2[i].ReturnType.FullyQualifiedName)
+				if (!col1[i].ReturnType.Equals (col2[i].ReturnType))
 					return false;
 			}
 			return true;
@@ -166,7 +166,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			RefactorerContext gctx = GetGeneratorContext (klass);
 			IRefactorer gen = GetGeneratorForClass (klass);
 			bool alreadyImplemented;
-			string prefix = null;
+			IReturnType prefix = null;
 			IMember newMember;
 			int i, j;
 			
@@ -174,7 +174,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			foreach (IReturnType rType in iface.BaseTypes) {
 				if (rType.FullyQualifiedName == "System.Object")
 					continue;
-				IClass baseClass = ctx.GetClass (rType.FullyQualifiedName);
+				IClass baseClass = ctx.GetClass (rType.FullyQualifiedName, rType.GenericArguments, true, true);
 				if (baseClass == null)
 					LoggingService.LogError (GettextCatalog.GetString
 						("Error while implementing interface '{0}' in '{1}': base type '{2}' was not found.", klass, iface, baseClass)
@@ -183,23 +183,27 @@ namespace MonoDevelop.Projects.CodeGeneration
 					klass = ImplementInterface (pinfo, klass, baseClass, explicitly, declaringClass, hintReturnType);
 			}
 			
-			if (explicitly)
-				prefix = gctx.TypeNameResolver.ResolveName (iface.FullyQualifiedName);
+			prefix = DefaultReturnType.FromString (iface.FullyQualifiedName);
 			
 			// Stub out non-implemented events defined by @iface
 			for (i = 0; i < iface.Events.Count; i++) {
 				IEvent ev = iface.Events[i];
+				bool needsExplicitly = explicitly;
 				
 				for (j = 0, alreadyImplemented = false; j < klass.Events.Count && !alreadyImplemented; j++) {
 					IEvent cev = klass.Events[j];
-					if (cev.Name == ev.Name && cev.IsExplicitDeclaration == explicitly) 
-						alreadyImplemented = !explicitly || (iface.FullyQualifiedName == cev.ExplicitDeclaration.FullyQualifiedName) || (iface.Name == cev.ExplicitDeclaration.Name);
+					if (cev.Name == ev.Name && cev.IsExplicitDeclaration == needsExplicitly) {
+						if (!needsExplicitly && !cev.ReturnType.Equals (ev.ReturnType))
+							needsExplicitly = true;
+						else
+							alreadyImplemented = !needsExplicitly || (iface.FullyQualifiedName == cev.ExplicitDeclaration.ToString ());
+					}
 				}
 				
 				if (alreadyImplemented)
 					continue;
 				
-				if ((newMember = gen.ImplementMember (gctx, klass, prefix, explicitly, ev)) != null) {
+				if ((newMember = gen.ImplementMember (gctx, klass, ev, needsExplicitly ? prefix : null)) != null) {
 					klass = newMember.DeclaringType;
 				}
 			}
@@ -207,16 +211,21 @@ namespace MonoDevelop.Projects.CodeGeneration
 			// Stub out non-implemented methods defined by @iface
 			for (i = 0; i < iface.Methods.Count; i++) {
 				IMethod method = iface.Methods[i];
+				bool needsExplicitly = explicitly;
 				
 				for (j = 0, alreadyImplemented = false; j < klass.Methods.Count&& !alreadyImplemented; j++) {
 					IMethod cmet = klass.Methods[j];
-					if (cmet.Name == method.Name && Equals (cmet.Parameters, method.Parameters) && cmet.IsExplicitDeclaration == explicitly)
-						alreadyImplemented = !explicitly || (iface.FullyQualifiedName == cmet.ExplicitDeclaration.FullyQualifiedName) || (iface.Name == cmet.ExplicitDeclaration.Name);
+					if (cmet.Name == method.Name && Equals (cmet.Parameters, method.Parameters) && cmet.IsExplicitDeclaration == needsExplicitly) {
+						if (!needsExplicitly && !cmet.ReturnType.Equals (method.ReturnType))
+							needsExplicitly = true;
+						else
+							alreadyImplemented = !needsExplicitly || (iface.FullyQualifiedName == cmet.ExplicitDeclaration.ToString ());
+					}
 				}
 				
 				if (alreadyImplemented)
 					continue;
-				if ((newMember = gen.ImplementMember (gctx, klass, prefix, explicitly, method)) != null) {
+				if ((newMember = gen.ImplementMember (gctx, klass, method, needsExplicitly ? prefix : null)) != null) {
 					klass = newMember.DeclaringType;
 				}
 			}
@@ -224,17 +233,22 @@ namespace MonoDevelop.Projects.CodeGeneration
 			// Stub out non-implemented properties defined by @iface
 			for (i = 0; i < iface.Properties.Count; i++) {
 				IProperty prop = iface.Properties[i];
+				bool needsExplicitly = explicitly;
 				
 				for (j = 0, alreadyImplemented = false; j < klass.Properties.Count&& !alreadyImplemented; j++) {
 					IProperty cprop = klass.Properties[j];
-					if (cprop.Name == prop.Name && cprop.IsExplicitDeclaration == explicitly) 
-						alreadyImplemented = !explicitly || (iface.FullyQualifiedName == cprop.ExplicitDeclaration.FullyQualifiedName) || (iface.Name == cprop.ExplicitDeclaration.Name);
+					if (cprop.Name == prop.Name && cprop.IsExplicitDeclaration == needsExplicitly) {
+						if (!needsExplicitly && !cprop.ReturnType.Equals (prop.ReturnType))
+							needsExplicitly = true;
+						else
+							alreadyImplemented = !needsExplicitly || (iface.FullyQualifiedName == cprop.ExplicitDeclaration.ToString ());
+					}
 				}
 				
 				if (alreadyImplemented)
 					continue;
 				
-				if ((newMember = gen.ImplementMember (gctx, klass, prefix, explicitly, prop)) != null) {
+				if ((newMember = gen.ImplementMember (gctx, klass, prop, needsExplicitly ? prefix : null)) != null) {
 					klass = newMember.DeclaringType;
 				}
 			}
@@ -242,16 +256,22 @@ namespace MonoDevelop.Projects.CodeGeneration
 			// Stub out non-implemented indexers defined by @iface
 			for (i = 0; i < iface.Indexer.Count; i++) {
 				IIndexer indexer = iface.Indexer[i];
+				bool needsExplicitly = explicitly;
 				
-				for (j = 0, alreadyImplemented = false; j < klass.Indexer.Count&& !alreadyImplemented; j++) {
+				for (j = 0, alreadyImplemented = false; j < klass.Indexer.Count && !alreadyImplemented; j++) {
 					IIndexer cmet = klass.Indexer[j];
-					if (cmet.Name == indexer.Name && Equals (cmet.Parameters, indexer.Parameters) && cmet.IsExplicitDeclaration == explicitly)
-						alreadyImplemented = !explicitly || (iface.FullyQualifiedName == cmet.ExplicitDeclaration.FullyQualifiedName) || (iface.Name == cmet.ExplicitDeclaration.Name);
+					// Ignore the name in indexers, it has no use
+					if (Equals (cmet.Parameters, indexer.Parameters) && cmet.IsExplicitDeclaration == needsExplicitly) {
+						if (!needsExplicitly && !cmet.ReturnType.Equals (indexer.ReturnType))
+							needsExplicitly = true;
+						else
+							alreadyImplemented = !needsExplicitly || (iface.FullyQualifiedName == cmet.ExplicitDeclaration.ToString ());
+					}
 				}
 				
 				if (alreadyImplemented)
 					continue;
-				if ((newMember = gen.ImplementMember (gctx, klass, prefix, explicitly, indexer)) != null) {
+				if ((newMember = gen.ImplementMember (gctx, klass, indexer, needsExplicitly ? prefix : null)) != null) {
 					klass = newMember.DeclaringType;
 				}
 			}

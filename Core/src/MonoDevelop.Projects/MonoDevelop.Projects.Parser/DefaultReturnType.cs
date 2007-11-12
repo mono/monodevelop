@@ -261,6 +261,83 @@ namespace MonoDevelop.Projects.Parser
 			return sb.ToString ();
 		}
 		
+		public static IReturnType FromString (string typeName)
+		{
+			int i = 0;
+			return ParseType (typeName, ref i);
+		}
+		
+		static DefaultReturnType ParseType (string str, ref int i)
+		{
+			int p = str.IndexOfAny (new char [] { '`', ',', '*', '[', ']'}, i);
+			if (p == -1) {
+				if (i == 0)
+					return new DefaultReturnType (str);
+				else
+					return null;
+			}
+			
+			DefaultReturnType rt = new DefaultReturnType (str.Substring (i, p - i));
+			List<int> arrayDims = new List<int> ();
+			bool allowGenericDef = true;
+			
+			while (p < str.Length) {
+				char c = str [p];
+				if (c == '`') {
+					// It's a generic type
+					if (!allowGenericDef)
+						return null;
+					i = str.IndexOf ('[', p);
+					if (i == -1) return null;
+					if (!ParseGenericParamList (rt, str, ref i))
+						return null;
+					p = i;
+				}
+				else if (c == ',' || c == ']') {
+					// end of name
+					i = p;
+					return rt;
+				}
+				else if (c == '[') {
+					// It's an array, skip it and continue searching
+					i = str.IndexOf (']', p + 1);
+					if (i == -1) return null;
+					arrayDims.Add (i - p);
+					p = i + 1;
+					allowGenericDef = false;
+				}
+				else if (c == '*') {
+					// It's an array, skip it and continue searching
+					rt.PointerNestingLevel++;
+					p++;
+					allowGenericDef = false;
+				}
+				else
+					return null;
+			}
+			i = p;
+			rt.ArrayDimensions = arrayDims.ToArray ();
+			return rt;
+		}
+		
+		static bool ParseGenericParamList (DefaultReturnType rt, string str, ref int i)
+		{
+			// Parses a list of generic parameters (including the brackets)
+			
+			int p = i + 1;
+			rt.GenericArguments = new ReturnTypeList();
+			while (p < str.Length && str [p] != ']') {
+				DefaultReturnType pt = ParseType (str, ref p);
+				if (pt == null)
+					return false;
+				rt.GenericArguments.Add (pt);
+				if (str [p] == ',')
+					p++;
+			}
+			i = p + 1;
+			return true;
+		}
+		
 		// Checks if subType is assignable to baseType. Returns -1 if it is not, 0 for an exact match,
 		// or a number > 0 which is the distance in the inheritance hierarchy between both types.
 		public static int IsTypeAssignable (IParserContext ctx, IReturnType baseType, IReturnType subType)
