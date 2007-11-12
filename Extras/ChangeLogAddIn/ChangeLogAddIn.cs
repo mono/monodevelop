@@ -34,6 +34,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 
 namespace MonoDevelop.ChangeLogAddIn
 {
@@ -65,10 +66,18 @@ namespace MonoDevelop.ChangeLogAddIn
 
         private string GetSelectedFile()
 		{
-			if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.FileName != null)
-				return IdeApp.Workbench.ActiveDocument.FileName;
-			else
-				return null;
+			if (IdeApp.Workbench.ActiveDocument != null) {
+				string fn = IdeApp.Workbench.ActiveDocument.FileName;
+				if (fn != null && Path.GetFileName (fn) != "ChangeLog")
+					return fn;
+			}
+			ProjectFile file = IdeApp.ProjectOperations.CurrentSelectedItem as ProjectFile;
+			if (file != null)
+				return file.FilePath;
+			SystemFile sf = IdeApp.ProjectOperations.CurrentSelectedItem as SystemFile;
+			if (sf != null)
+				return sf.Path;
+			return null;
 		}
 		
 		private void InsertEntry(Document document)
