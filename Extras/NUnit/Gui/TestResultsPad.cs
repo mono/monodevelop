@@ -225,8 +225,6 @@ namespace MonoDevelop.NUnit
 		void IPadContent.Initialize (IPadWindow window)
 		{
 			this.window = window;
-			window.Title = GettextCatalog.GetString ("Test results");
-			window.Icon = "md-solution";
 		}
 		
 		public void Dispose ()

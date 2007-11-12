@@ -46,7 +46,6 @@ namespace MonoDevelop.NUnit
 	{
 		ArrayList providers = new ArrayList ();
 		UnitTest rootTest;
-		Pad resultsPad;
 		
 		public NUnitService ()
 		{
@@ -108,6 +107,7 @@ namespace MonoDevelop.NUnit
 		
 		public IAsyncOperation RunTest (UnitTest test)
 		{
+			Pad resultsPad = IdeApp.Workbench.GetPad <TestResultsPad>();
 			if (resultsPad == null) {
 				resultsPad = IdeApp.Workbench.ShowPad (new TestResultsPad (), "MonoDevelop.NUnit.TestResultsPad", GettextCatalog.GetString ("Test results"), "Bottom", "md-solution");
 			}

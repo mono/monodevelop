@@ -1,3 +1,9 @@
+2007-11-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelopNUnit.addin.xml, Services/NUnitService.cs: Reuse the results
+	  pad. Don't create it at every session. Fixes bug #338960.
+	* Gui/TestResultsPad.cs: Icon and title is now set in the manifest.
+
 2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Services/NUnitService.cs, Services/XmlResultsStore.cs,
