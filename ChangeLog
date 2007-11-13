@@ -1,3 +1,8 @@
+2007-11-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* monodevelop.in: Explicitly use /bin/bash rather than /bin/sh, as 
+	  "exec -a" isn't compatible with POSIX sh.
+
 2007-11-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Makefile.am: Added target for rebuilding the add-in database.
