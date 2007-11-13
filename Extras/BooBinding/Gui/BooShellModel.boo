@@ -140,6 +140,8 @@ class BooShellModel(IShellModel):
 						if _outputHandler is not null:
 							_outputHandler ()
 
+			except:
+				return
 			ensure:
 				Monitor.Exit (_commandQueue)
 

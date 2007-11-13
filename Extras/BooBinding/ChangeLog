@@ -1,3 +1,8 @@
+2007-11-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/BooShellModel.boo: Cleanly return from the main thread if an exception
+	  is thrown.
+
 2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Parser/BooParser.boo: Track LoggingService API changes.

@@ -1,0 +1,4 @@
+2007-11-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* BooShell.boo: The main thread must be a background thread.
+

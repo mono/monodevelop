@@ -157,6 +157,7 @@ class BooShell (RemoteProcessObject):
 	private def kickOffGuiThread():
 		_start as ThreadStart = ThreadRun
 		_thread = System.Threading.Thread (_start)
+		_thread.IsBackground = true
 		_thread.Start ()
 	
 	private def print(obj):
