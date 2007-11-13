@@ -34,17 +34,32 @@ using MonoDevelop.Core.Logging;
 
 namespace MonoDevelop.Ide.Gui
 {
-	class InternalLog
+	static class InternalLog
 	{
 		static IStatusIcon errorIcon;
 		static bool errorNotificationEnabled;
 		
 		static InternalLogger logger;
+		static EnabledLoggingLevel enabledLevel = EnabledLoggingLevel.UpToInfo;
+		
+		static InternalLog ()
+		{
+			string logLevelEnv = System.Environment.GetEnvironmentVariable ("MONODEVELOP_LOGGING_PAD_LEVEL");
+			if (!string.IsNullOrEmpty (logLevelEnv)) {
+				try {
+					enabledLevel = (EnabledLoggingLevel) Enum.Parse (typeof (EnabledLoggingLevel), logLevelEnv, true);
+				} catch {}
+			}
+		}
 		
 		public static void Initialize ()
 		{
 			logger = new InternalLogger ();
 			LoggingService.AddLogger (logger);
+		}
+		
+		public static EnabledLoggingLevel EnabledLoggingLevel {
+			get { return enabledLevel; }
 		}
 		
 		public static List<LogMessage> Messages {
@@ -118,9 +133,6 @@ namespace MonoDevelop.Ide.Gui
 			
 			public void Log (LogLevel level, string message)
 			{
-				if ((EnabledLevel & level) != level)
-					return;
-				
 				LogMessage logMessage = new LogMessage (level, message);
 				lock (Messages) {
 					Messages.Add (logMessage);
@@ -133,7 +145,7 @@ namespace MonoDevelop.Ide.Gui
 					}
 				}
 				
-				if ((level & LogLevel.Fatal ) == LogLevel.Fatal) {
+				if (level  == LogLevel.Fatal) {
 					if (errorNotificationEnabled) {
 						Gtk.Application.Invoke (delegate {
 							InternalLog.NotifyError (logMessage);
@@ -152,8 +164,8 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 			
-			public LogLevel EnabledLevel {
-				get { return LogLevel.UpToDebug; }
+			public EnabledLoggingLevel EnabledLevel {
+				get { return InternalLog.EnabledLoggingLevel; }
 			}
 
 			public string Name {
@@ -194,6 +206,12 @@ namespace MonoDevelop.Ide.Gui
 				return (m.level == this.level) && (m.timestamp == this.timestamp) && (m.message == this.message); 
 			return false;
 		}
+		
+		public override int GetHashCode ()
+		{
+			return (((int)level).ToString () + message + timestamp.Ticks.ToString ()).GetHashCode ();
+		}
+
 
 	}
 }

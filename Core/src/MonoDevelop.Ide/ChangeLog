@@ -1,3 +1,10 @@
+2007-11-13  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs: Track LogLevel enum split.
+	* MonoDevelop.Ide.Gui/InternalLog.cs: Track LogLevel enum split. Override
+	  GetHashcode to suppress warning. Use environment variable to set logging
+	  level.
+
 2007-11-13  Zach Lute <zach.lute@gmail.com>
 
 	* MonoDevelop.Ide.Gui/AbstractViewContent.cs: Fix for Bug #338594 - MD title

@@ -293,13 +293,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 				LogMessage msg = (LogMessage) store.GetValue (iter, (int)Columns.Message);
 				if (msg == null)
 					return true;
-				if (((msg.Level & LogLevel.Error) == LogLevel.Error || (msg.Level & LogLevel.Fatal) == LogLevel.Fatal) && errorBtn.Active)
+				if ((msg.Level == LogLevel.Error || msg.Level == LogLevel.Fatal) && errorBtn.Active)
 					return true;
-				else if ((msg.Level & LogLevel.Warn) == LogLevel.Warn && warnBtn.Active)
+				else if (msg.Level == LogLevel.Warn && warnBtn.Active)
 					return true;
-				else if ((msg.Level & LogLevel.Info) == LogLevel.Info && msgBtn.Active)
+				else if (msg.Level == LogLevel.Info && msgBtn.Active)
 					return true;
-				else if ((msg.Level & LogLevel.Debug) == LogLevel.Debug && debugBtn.Active)
+				else if (msg.Level == LogLevel.Debug && debugBtn.Active)
 					return true;
 			} catch {
 				//Not yet fully added
@@ -392,12 +392,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 #region ILogger	implementation
 		
-		LogLevel enabledLevel = LogLevel.UpToInfo;
-
 		void ILogger.Log (LogLevel level, string message)
 		{
-			if ((enabledLevel & level) != level)
-				return;
 			if (window != null && window.Visible)
 				AddMessage (new LogMessage (level, message));
 			else
@@ -408,8 +404,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 			get { return Id; }
 		}
 
-		LogLevel ILogger.EnabledLevel {
-			get { return enabledLevel; }
+		EnabledLoggingLevel ILogger.EnabledLevel {
+			get { return InternalLog.EnabledLoggingLevel; }
 		}
 		
 #endregion
