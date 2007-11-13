@@ -1,3 +1,8 @@
+2007-11-13  Zach Lute <zach.lute@gmail.com>
+
+	* MonoDevelop.Ide.Gui/AbstractViewContent.cs: Fix for Bug #338594 - MD title
+	  does not display first 2 characters of any source file.
+
 2007-11-13  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs,
