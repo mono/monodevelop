@@ -1,3 +1,7 @@
+2007-11-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/CSharpTextEditorExtension.cs: Fix completion of 'new'.
+
 2007-11-13  Mike Krüger <mkrueger@novell.com> 
 
 	* Parser/Resolver.cs: Fixed "Bug 339209 - App crashes when trying to list

@@ -689,8 +689,6 @@ namespace CSharpBinding
 			int i = ctx.TriggerOffset;
 			// Base class completion
 			if (charTyped == ' ' && GetPreviousToken (":", ref i, false)) {
-//				if (i + 2 != ctx.TriggerOffset)
-//					return null;
 				IParserContext pctx = GetParserContext ();
 				CodeCompletionDataProvider cp = new CodeCompletionDataProvider (pctx, GetAmbience ());
 				Resolver res = new Resolver (pctx);
@@ -698,6 +696,8 @@ namespace CSharpBinding
 				cp.AddResolveResults (results, false, res.CreateTypeNameResolver ());
 				return cp;
 			}
+			
+			i = ctx.TriggerOffset;
 			
 			// Code completion of "new"
 			if (charTyped == ' ' && GetPreviousToken ("new", ref i, false)) {
