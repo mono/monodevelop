@@ -118,37 +118,66 @@ namespace MonoDevelop.Ide.Gui.Pads
 			errorBtn = new ToggleToolButton ();
 			UpdateErrorsNum();
 			errorBtn.Active = (bool)PropertyService.Get (showErrorsPropertyName, true);
+			string errorTipText;
+			if ((InternalLog.EnabledLoggingLevel & EnabledLoggingLevel.Error) != EnabledLoggingLevel.Error
+				&& (InternalLog.EnabledLoggingLevel & EnabledLoggingLevel.Fatal) != EnabledLoggingLevel.Fatal) {
+				errorBtn.Sensitive = false;
+				errorTipText = GettextCatalog.GetString ("Logging of errors is not enabled");
+			} else {
+				errorTipText = GettextCatalog.GetString ("Show errors");
+			}
 			errorBtn.IconWidget = new Gtk.Image (Gtk.Stock.DialogError, Gtk.IconSize.Button);
 			errorBtn.IsImportant = true;
 			errorBtn.Toggled += new EventHandler (FilterChanged);
-			errorBtn.SetTooltip (tips, GettextCatalog.GetString ("Show Errors"), GettextCatalog.GetString ("Show Errors"));
+			errorBtn.SetTooltip (tips, errorTipText, errorTipText);
 			toolbar.Insert (errorBtn, -1);
 			
 			warnBtn = new ToggleToolButton ();
 			UpdateWarningsNum();
 			warnBtn.Active = (bool)PropertyService.Get (showWarningsPropertyName, true);
+			string warnTipText;
+			if ((InternalLog.EnabledLoggingLevel & EnabledLoggingLevel.Warn) != EnabledLoggingLevel.Warn) {
+				warnBtn.Sensitive = false;
+				warnTipText = GettextCatalog.GetString ("Logging of warnings is not enabled");
+			} else {
+				warnTipText = GettextCatalog.GetString ("Show warnings");
+			}
 			warnBtn.IconWidget = new Gtk.Image (Gtk.Stock.DialogWarning, Gtk.IconSize.Button);
 			warnBtn.IsImportant = true;
 			warnBtn.Toggled += new EventHandler (FilterChanged);
-			warnBtn.SetTooltip (tips, GettextCatalog.GetString ("Show Warnings"), GettextCatalog.GetString ("Show Warnings"));
+			warnBtn.SetTooltip (tips, warnTipText, warnTipText);
 			toolbar.Insert (warnBtn, -1);
 			
 			msgBtn = new ToggleToolButton ();
 			UpdateMessagesNum();
 			msgBtn.Active = (bool)PropertyService.Get (showMessagesPropertyName, true);
+			string msgTipText;
+			if ((InternalLog.EnabledLoggingLevel & EnabledLoggingLevel.Info) != EnabledLoggingLevel.Info) {
+				msgBtn.Sensitive = false;
+				msgTipText = GettextCatalog.GetString ("Logging of informational messages is not enabled");
+			} else {
+				msgTipText = GettextCatalog.GetString ("Show messages");
+			}
 			msgBtn.IconWidget = new Gtk.Image (Gtk.Stock.DialogInfo, Gtk.IconSize.Button);
 			msgBtn.IsImportant = true;
 			msgBtn.Toggled += new EventHandler (FilterChanged);
-			msgBtn.SetTooltip (tips, GettextCatalog.GetString ("Show Messages"), GettextCatalog.GetString ("Show Messages"));
+			msgBtn.SetTooltip (tips, msgTipText, msgTipText);
 			toolbar.Insert (msgBtn, -1);
 			
 			debugBtn = new ToggleToolButton ();
 			UpdateDebugNum();
 			debugBtn.Active = (bool)PropertyService.Get (showDebugPropertyName, true);
+			string debugTipText;
+			if ((InternalLog.EnabledLoggingLevel & EnabledLoggingLevel.Debug) != EnabledLoggingLevel.Debug) {
+				debugBtn.Sensitive = false;
+				debugTipText = GettextCatalog.GetString ("Logging of debug messages is not enabled");
+			} else {
+				debugTipText = GettextCatalog.GetString ("Show debug");
+			}
 			debugBtn.IconWidget = new Gtk.Image (Gtk.Stock.DialogQuestion, Gtk.IconSize.Button);
 			debugBtn.IsImportant = true;
 			debugBtn.Toggled += new EventHandler (FilterChanged);
-			debugBtn.SetTooltip (tips, GettextCatalog.GetString ("Show Debug"), GettextCatalog.GetString ("Show Debug"));
+			debugBtn.SetTooltip (tips, debugTipText, debugTipText);
 			toolbar.Insert (debugBtn, -1);
 			
 			toolbar.Insert (new SeparatorToolItem (), -1);

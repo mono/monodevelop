@@ -1,5 +1,11 @@
 2007-11-13  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs: Log pad buttons' sensitive
+	  status and tooltips now reflect whether the relevant logging levels are
+	  enabled.
+
+2007-11-13  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs: Track LogLevel enum split.
 	* MonoDevelop.Ide.Gui/InternalLog.cs: Track LogLevel enum split. Override
 	  GetHashcode to suppress warning. Use environment variable to set logging
