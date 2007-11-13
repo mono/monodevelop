@@ -170,6 +170,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			findButton.Clicked += new EventHandler(FindEvent);
 
 			stopButton.Clicked += new EventHandler(StopEvent);
+			stopButton.Sensitive = false;
 			
 			if (replaceMode) {
 				replaceAllButton.Clicked += new EventHandler(ReplaceEvent);
@@ -178,7 +179,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			Close += new EventHandler (CloseDialogEvent);
 			closeButton.Clicked += new EventHandler (CloseDialogEvent);
 			DeleteEvent += new DeleteEventHandler (OnDeleted);
-			
 			searchPatternEntry.Entry.SelectRegion (0, searchPatternEntry.ActiveText.Length);
 			
 			SearchLocationCheckBoxChangedEvent (null, null);
@@ -225,8 +225,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		void FindEvent (object sender, EventArgs e)
 		{
-			if (SetupSearchReplaceInFilesManager ())
+			if (SetupSearchReplaceInFilesManager ()) {
+				stopButton.Sensitive = true;
+				SearchReplaceInFilesManager.NextSearchFinished += delegate {
+					stopButton.Sensitive = false;
+				};
+
 				SearchReplaceInFilesManager.FindAll ();
+			}
 			AddSearchHistoryItem(findHistory, searchPatternEntry.ActiveText);
 		}
 
@@ -247,8 +253,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 						
 		void ReplaceEvent(object sender, EventArgs e)
 		{
-			if (SetupSearchReplaceInFilesManager ())
+			if (SetupSearchReplaceInFilesManager ()) {
+				stopButton.Sensitive = true;
+				SearchReplaceInFilesManager.NextSearchFinished += delegate {
+					stopButton.Sensitive = false;
+				};
 				SearchReplaceInFilesManager.ReplaceAll ();
+			}
 		}
 		
 		void BrowseDirectoryEvent (object sender, EventArgs e)

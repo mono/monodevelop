@@ -135,7 +135,11 @@ namespace MonoDevelop.Ide.Gui.Search
 
 			searchMonitor.Dispose ();
 			searching = false;
+			if (NextSearchFinished != null)
+				NextSearchFinished (null, EventArgs.Empty);
+			NextSearchFinished = null;
 		}
+		public static event EventHandler NextSearchFinished;
 		
 		public static void ReplaceAll()
 		{
