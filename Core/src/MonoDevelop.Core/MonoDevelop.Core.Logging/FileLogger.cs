@@ -36,7 +36,7 @@ namespace MonoDevelop.Core.Logging
 	{
 		TextWriter writer;
 		string name;
-		LogLevel enabledLevel = LogLevel.UpToInfo;
+		EnabledLoggingLevel enabledLevel = EnabledLoggingLevel.UpToInfo;
 		
 		public FileLogger (string filename)
 			: this (filename, false)
@@ -51,9 +51,6 @@ namespace MonoDevelop.Core.Logging
 
 		public void Log (LogLevel level, string message)
 		{
-			if ((EnabledLevel & level) != level)
-				return;
-			
 			string header;
 			
 			switch (level) {
@@ -77,10 +74,10 @@ namespace MonoDevelop.Core.Logging
 				break;
 			}
 			
-			writer.WriteLine ("{0}[{1}]: {2}", header, DateTime.Now, message);
+			writer.WriteLine ("{0}[{1}]: {2}", header, DateTime.Now.ToString ("u"), message);
 		}
 		
-		public LogLevel EnabledLevel {
+		public EnabledLoggingLevel EnabledLevel {
 			get { return enabledLevel; }
 			set { enabledLevel = value; }
 		}

@@ -33,7 +33,7 @@ namespace MonoDevelop.Core.Logging
 	
 	public interface ILogger
 	{
-		LogLevel EnabledLevel { get; }
+		EnabledLoggingLevel EnabledLevel { get; }
 		
 		string Name { get; }
 		

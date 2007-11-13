@@ -33,20 +33,15 @@ namespace MonoDevelop.Core.Logging
 	
 	public class ConsoleLogger : ILogger
 	{
-		ConsoleColor defaultColour;
-		LogLevel enabledLevel = LogLevel.UpToWarn;
+		EnabledLoggingLevel enabledLevel = EnabledLoggingLevel.UpToWarn;
 		bool useColour = false;
 		
 		public ConsoleLogger ()
 		{
-			UseColour = true;
 		}
 
 		public void Log (LogLevel level, string message)
 		{
-			if ((EnabledLevel & level) != level)
-				return;
-			
 			string header;
 			
 			switch (level) {
@@ -86,12 +81,12 @@ namespace MonoDevelop.Core.Logging
 				break;
 			}
 			
-			Console.Write ("{0} [{1}]:", header, DateTime.Now);
+			Console.Write ("{0} [{1}]:", header, DateTime.Now.ToString ("u"));
 			if (useColour) Console.ResetColor ();
 			Console.WriteLine (" " + message);
 		}
 		
-		public LogLevel EnabledLevel {
+		public EnabledLoggingLevel EnabledLevel {
 			get { return enabledLevel; }
 			set { enabledLevel = value; }
 		}
@@ -110,13 +105,6 @@ namespace MonoDevelop.Core.Logging
 					useColour = true;
 				} catch {}
 			}
-		}
-		
-		~ConsoleLogger ()
-		{
-			try {
-				Console.ResetColor ();
-			} catch {}
 		}
 	}
 }

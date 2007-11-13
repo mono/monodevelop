@@ -30,8 +30,18 @@ using System;
 
 namespace MonoDevelop.Core.Logging
 {
-	[Flags]
+	
 	public enum LogLevel
+	{
+		Fatal = 1,
+		Error = 2,
+		Warn  = 4,
+		Info  = 8,
+		Debug = 16,
+	}
+	
+	[Flags]
+	public enum EnabledLoggingLevel
 	{
 		Fatal = 1,
 		Error = 2,

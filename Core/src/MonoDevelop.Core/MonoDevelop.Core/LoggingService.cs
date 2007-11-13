@@ -46,8 +46,15 @@ namespace MonoDevelop.Core
 			string consoleLogLevelEnv = System.Environment.GetEnvironmentVariable ("MONODEVELOP_CONSOLE_LOG_LEVEL");
 			if (!string.IsNullOrEmpty (consoleLogLevelEnv)) {
 				try {
-					consoleLogger.EnabledLevel = (LogLevel) Enum.Parse (typeof (LogLevel), consoleLogLevelEnv, true);
+					consoleLogger.EnabledLevel = (EnabledLoggingLevel) Enum.Parse (typeof (EnabledLoggingLevel), consoleLogLevelEnv, true);
 				} catch {}
+			}
+			
+			string consoleLogUseColourEnv = System.Environment.GetEnvironmentVariable ("MONODEVELOP_CONSOLE_LOG_USE_COLOUR");
+			if (!string.IsNullOrEmpty (consoleLogUseColourEnv) && consoleLogUseColourEnv.ToLower () == "true") {
+				consoleLogger.UseColour = true;
+			} else {
+				consoleLogger.UseColour = false;
 			}
 			
 			string logFileEnv = System.Environment.GetEnvironmentVariable ("MONODEVELOP_LOG_FILE");
@@ -56,7 +63,7 @@ namespace MonoDevelop.Core
 					FileLogger fileLogger = new FileLogger (logFileEnv);
 					loggers.Add (fileLogger);
 					string logFileLevelEnv = System.Environment.GetEnvironmentVariable ("MONODEVELOP_FILE_LOG_LEVEL");
-					fileLogger.EnabledLevel = (LogLevel) Enum.Parse (typeof (LogLevel), logFileLevelEnv, true);
+					fileLogger.EnabledLevel = (EnabledLoggingLevel) Enum.Parse (typeof (EnabledLoggingLevel), logFileLevelEnv, true);
 				} catch (Exception e) {
 					LogError (e.ToString ());
 				}
@@ -67,16 +74,19 @@ namespace MonoDevelop.Core
 		
 		public static bool IsLevelEnabled (LogLevel level)
 		{
+			EnabledLoggingLevel l = (EnabledLoggingLevel) level;
 			foreach (ILogger logger in loggers)
-				if ((logger.EnabledLevel & level) == level)
+				if ((logger.EnabledLevel & l) == l)
 					return true;
 			return false;
 		}
 		
 		public static void Log (LogLevel level, string message)
 		{
+			EnabledLoggingLevel l = (EnabledLoggingLevel) level;
 			foreach (ILogger logger in loggers)
-				logger.Log (level, message);
+				if ((logger.EnabledLevel & l) == l)
+					logger.Log (level, message);
 		}
 		
 #endregion
@@ -98,7 +108,7 @@ namespace MonoDevelop.Core
 			loggers.Add (logger);
 		}
 		
-		public static void RemoveLoggger (string name)
+		public static void RemoveLogger (string name)
 		{
 			ILogger logger = GetLogger (name);
 			if (logger == null)

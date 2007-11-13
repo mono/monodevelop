@@ -1,3 +1,15 @@
+2007-11-13  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Core.Logging/FileLogger.cs,
+	  MonoDevelop.Core.Logging/ConsoleLogger.cs,
+	  MonoDevelop.Core.Logging/ILogger.cs: Track LogLevel changes.
+	* MonoDevelop.Core.Logging/LogLevel.cs: Split LogLevel enum's two uses --
+	  flags for enabled logging levels, and mutually exclusive values for
+	  message severity -- into two compatible enums.
+	* MonoDevelop.Core/LoggingService.cs: Disable coloured console output by
+	  default due to weird issues when Mono doesn't shut down cleanly.
+	  Spelling correction for RemoveLogger. Track LogLevel changes.
+
 2007-11-12  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Core/Runtime.cs: Add new SetProcessName method.
