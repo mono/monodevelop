@@ -343,11 +343,13 @@ namespace MonoDevelop.Components.Docking
 				if (boundTabStrip != null) {
 					int tabsHeight = boundTabStrip.SizeRequest ().Height;
 					boundTabStrip.SizeAllocate (new Gdk.Rectangle (newAlloc.X, newAlloc.Bottom - tabsHeight, newAlloc.Width, tabsHeight));
-					if (currentTabPage != boundTabStrip.CurrentTab && currentTabPage < boundTabStrip.TabCount && currentTabPage != -1)
-						boundTabStrip.CurrentTab = currentTabPage;
 				}
-				if (allocStatus == AllocStatus.Valid && newAlloc == oldAlloc)
+				if (allocStatus == AllocStatus.Valid && newAlloc == oldAlloc) {
+					// Even if allocation has not changed, SizeAllocation has to be called on all items to avoid redrawing issues.
+					foreach (DockObject ob in VisibleObjects)
+						ob.SizeAllocate (ob.Allocation);
 					return;
+				}
 				if (VisibleObjects.Count > 1 && boundTabStrip != null) {
 					int tabsHeight = boundTabStrip.SizeRequest ().Height;
 					newAlloc.Height -= tabsHeight;

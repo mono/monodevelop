@@ -1,3 +1,8 @@
+2007-11-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DockGroup.cs: Call SizeAllocate on all children even when children
+	  position has not changed. Fixes some drawing issues.
+
 2007-11-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* TabStrip.cs: Use Notebook as a base class. Fixes rendering issues in gtk
