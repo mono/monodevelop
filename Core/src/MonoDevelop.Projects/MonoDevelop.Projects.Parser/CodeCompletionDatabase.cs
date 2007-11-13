@@ -164,7 +164,7 @@ namespace MonoDevelop.Projects.Parser
 					headers = (Hashtable) bf.Deserialize (ifile);
 					int ver = (int) headers["Version"];
 					if (ver != FORMAT_VERSION)
-						throw new Exception ("Expected version " + FORMAT_VERSION + ", found version " + ver);
+						throw new OldPidbVersionException (ver, FORMAT_VERSION);
 					
 					// Move to the index offset and read the index
 					BinaryReader br = new BinaryReader (ifile);
@@ -184,7 +184,11 @@ namespace MonoDevelop.Projects.Parser
 				catch (Exception ex)
 				{
 					if (ifile != null) ifile.Close ();
-					LoggingService.LogError ("PIDB file '" + dataFile + "' couldn not be loaded: '" + ex.Message + "'. The file will be recreated");
+					OldPidbVersionException opvEx = ex as OldPidbVersionException;
+					if (opvEx != null)
+						LoggingService.LogWarning ("PIDB file '{0}' could not be loaded. Expected version {1}, found version {2}'. The file will be recreated.", dataFile, opvEx.ExpectedVersion, opvEx.FoundVersion);
+					else
+						LoggingService.LogError ("PIDB file '{0}' could not be loaded: '{1}'. The file will be recreated.", dataFile, ex.Message);
 					rootNamespace = new NamespaceEntry (null, null);
 					files = new Hashtable ();
 					references = new ArrayList ();
@@ -203,6 +207,18 @@ namespace MonoDevelop.Projects.Parser
 			// Update comments if needed...
 			PropertyChangedEventArgs args = new PropertyChangedEventArgs ("Monodevelop.TaskListTokens", LastValidTaskListTokens, PropertyService.Get ("Monodevelop.TaskListTokens", ""));
 			this.OnPropertyUpdated (null, args);
+		}
+		
+		private class OldPidbVersionException : Exception
+		{
+			public int FoundVersion;
+			public int ExpectedVersion;
+			
+			public OldPidbVersionException (int foundVersion, int expectedVersion)
+			{
+				FoundVersion = foundVersion;
+				ExpectedVersion = expectedVersion;
+			}
 		}
 		
 		public static Hashtable ReadHeaders (string baseDir, string name)
