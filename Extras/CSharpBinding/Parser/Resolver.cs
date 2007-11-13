@@ -392,8 +392,20 @@ namespace CSharpBinding.Parser
 			return new ResolveResult(returnClass, members);
 		}
 		
+		// We need to check, if a class is already listed to prevent a endless loop caused by an inheritance cycle mistake
+		Dictionary<IClass, bool> alreadyListed = new Dictionary<IClass, bool> ();  
 		LanguageItemCollection ListMembers (LanguageItemCollection members, IClass qualifierClass, IClass curType)
 		{
+			alreadyListed.Clear ();
+			return _ListMembers (members, qualifierClass, curType);
+		}
+		
+		LanguageItemCollection _ListMembers (LanguageItemCollection members, IClass qualifierClass, IClass curType)
+		{
+			if (alreadyListed.ContainsKey (curType))
+				return members;
+			alreadyListed [curType] = true;
+			
 //			Console.WriteLine("LIST MEMBERS!!!");
 //			Console.WriteLine("showStatic = " + showStatic);
 //			Console.WriteLine(curType.InnerClasses.Count + " classes");
@@ -447,14 +459,14 @@ namespace CSharpBinding.Parser
 				foreach (IReturnType s in curType.BaseTypes) {
 					IClass baseClass = parserContext.GetClass (s.FullyQualifiedName, s.GenericArguments, true, true);
 					if (baseClass != null && baseClass.ClassType == ClassType.Interface) {
-						ListMembers (members, qualifierClass, baseClass);
+						_ListMembers (members, qualifierClass, baseClass);
 					}
 				}
 			} else {
 				IClass baseClass = BaseClass(curType);
 				if (baseClass != null) {
 //					Console.WriteLine("Base Class = " + baseClass.FullyQualifiedName);
-					ListMembers (members, qualifierClass, baseClass);
+					_ListMembers (members, qualifierClass, baseClass);
 				}
 			}
 //			Console.WriteLine("listing finished");
