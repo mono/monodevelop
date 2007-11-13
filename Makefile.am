@@ -88,11 +88,6 @@ run: runmd
 runmd: $(PROGRAM)
 	$(MD_LAUNCH) --debug MonoDevelop.exe
 
-pad: $(MONOPAD)
-
-runpad: $(MONOPAD)
-	cd build/bin && mono MonoPad.exe
-
 run-profile: $(PROGRAM)
 	$(MD_LAUNCH) -O=inline --profile MonoDevelop.exe
 
@@ -101,9 +96,9 @@ run-profile-stat: $(PROGRAM)
 
 run-profile-heap: $(PROGRAM)
 	$(MD_LAUNCH) -O=inline --profile=heap:heaplog MonoDevelop.exe
-
-profile-pad: $(MONOPAD)
-	cd build/bin && mono -O=inline --profile MonoPad.exe
+	
+check-addins:
+	$(MD_LAUNCH_SETUP) $(RUNTIME) --debug mdrun.exe setup reg-build -v
 
 # we can't use the variables that are conditionally defined
 EXTRA_DIST = $(bin_SCRIPTS) $(desktop_DATA) $(pixmap_DATA) \
