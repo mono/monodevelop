@@ -1,3 +1,9 @@
+2007-11-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.Views/Logs.cs: Don't disable the view if
+	  version info is not found for the file/folder. Just hide the buttons.
+	  Fixes bug #324953.
+
 2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs,

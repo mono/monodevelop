@@ -80,12 +80,10 @@ namespace MonoDevelop.VersionControl.Views
 			VBox box = new VBox(false, 6);
 			
 			widget = box;
-			if (vinfo == null)
-				widget.Sensitive = false;
 
 			// Create the toolbar
 			
-			if (!isDirectory) {
+			if (!isDirectory && vinfo != null) {
 				commandbar = new Toolbar ();
 				commandbar.ToolbarStyle = Gtk.ToolbarStyle.BothHoriz;
 				commandbar.IconSize = Gtk.IconSize.Menu;
