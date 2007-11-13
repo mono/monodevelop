@@ -50,6 +50,7 @@ namespace MonoDevelop.Components.Commands
 		ArrayList globalHandlers = new ArrayList ();
 		ArrayList commandUpdateErrors = new ArrayList ();
 		ArrayList visitors = new ArrayList ();
+		Dictionary<Gtk.Window,Gtk.Window> topLevelWindows = new Dictionary<Gtk.Window,Gtk.Window> ();
 		Stack delegatorStack = new Stack ();
 		bool disposed;
 		bool toolbarUpdaterRunning;
@@ -200,7 +201,24 @@ namespace MonoDevelop.Components.Commands
 			
 			rootWidget = root;
 			rootWidget.AddAccelGroup (AccelGroup);
-			rootWidget.KeyPressEvent += new Gtk.KeyPressEventHandler (OnKeyPressed);
+			RegisterTopWindow (rootWidget);
+		}
+		
+		void RegisterTopWindow (Gtk.Window win)
+		{
+			if (!topLevelWindows.ContainsKey (win)) {
+				topLevelWindows.Add (win, win);
+				win.KeyPressEvent += OnKeyPressed;
+				win.Destroyed += TopLevelDestroyed;
+			}
+		}
+		
+		void TopLevelDestroyed (object o, EventArgs args)
+		{
+			Gtk.Window w = (Gtk.Window) o;
+			w.Destroyed -= TopLevelDestroyed;
+			w.KeyPressEvent -= OnKeyPressed;
+			topLevelWindows.Remove (w);
 		}
 		
 		public void Dispose ()
@@ -699,6 +717,7 @@ namespace MonoDevelop.Components.Commands
 			}
 			
 			if (win != null) {
+				RegisterTopWindow (win);
 				Gtk.Widget widget = win;
 				while (widget is Gtk.Container) {
 					Gtk.Widget child = ((Gtk.Container)widget).FocusChild;
