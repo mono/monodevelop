@@ -31,9 +31,10 @@ namespace MonoDevelop.SourceEditor.Actions
 	{
 		public override void Execute (SourceEditorView sourceView)
 		{
+			//FIXME: GtkSourceView 1.8+ can do this already, but the accessors to enable it are not wrapped
 			if (!sourceView.IndentSelection (false, true) && !sourceView.InsertTemplate ())
 				PassToBase = true;
 		}
-	}		
+	}
 }
 

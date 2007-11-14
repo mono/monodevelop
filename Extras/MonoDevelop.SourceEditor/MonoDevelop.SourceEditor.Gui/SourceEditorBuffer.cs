@@ -94,7 +94,6 @@ namespace MonoDevelop.SourceEditor.Gui
 		public SourceEditorBuffer (SourceEditorView view) : this ()
 		{
 			this.view = view;
-
 		}
 		
 		public SourceEditorBuffer () : base (new SourceTagTable ())
@@ -119,6 +118,8 @@ namespace MonoDevelop.SourceEditor.Gui
 			MaxUndoLevels = 1000;
 			
 			base.InsertText += OnInsertText;
+			base.DeleteRange += onDeleteRangeAfter;
+			base.DeleteRange += onDeleteRangeBefore;
 		}
 		
 		void OnInsertText (object sender, InsertTextArgs args)
@@ -135,10 +136,17 @@ namespace MonoDevelop.SourceEditor.Gui
 			OnTextChanged (args.Pos.Offset, args.Pos.Offset + args.Length);
 		}
 		
+		bool onTextChangedFiring = false;
 		protected void OnTextChanged (int startOffset, int endOffset)
 		{
-			if (TextChanged != null)
+			if (onTextChangedFiring)
+				throw new InvalidOperationException ("Cannot modify the text buffer within a TextChanged event handler");
+			
+			if (TextChanged != null) {
+				onTextChangedFiring = true;
 				TextChanged (this, new TextChangedEventArgs (startOffset, endOffset));
+				onTextChangedFiring = false;
+			}
 		}
 		
 		public event TextChangedEventHandler TextChanged;
@@ -150,23 +158,38 @@ namespace MonoDevelop.SourceEditor.Gui
 			if (LineCountChanged != null)
 				LineCountChanged (line, count, column);
 		}
-
 		
-		protected override void OnDeleteRange (TextIter start, TextIter end)
+		//HACK: Can't use an override, as it should use ref TextIter parameters, but GTK# doesn't.
+		//bug https://bugzilla.novell.com/show_bug.cgi?id=341762
+		//protected override void OnDeleteRange (TextIter start, TextIter end)
+		//Hence we have to have two event handlers; one to get state before the delete, 
+		//and the other to fire the OnTextChanged event afterwards
+		[GLib.ConnectBefore]
+		void onDeleteRangeBefore (object sender, DeleteRangeArgs args)
 		{
-			int count = start.Line - end.Line;
+			onDeleteRangeStartLine = args.Start.Line;
+			onDeleteRangeEndLine = args.End.Line;
+			onDeleteRangeStartCol = args.Start.LineOffset;
+			onDeleteRangeStartIndex = args.Start.Offset;
+			onDeleteRangeEndIndex = args.End.Offset;
+		}
+		
+		int onDeleteRangeStartLine = -1, onDeleteRangeEndLine = -1, onDeleteRangeStartCol = -1;
+		int onDeleteRangeStartIndex = -1, onDeleteRangeEndIndex = -1;
+		
+		void onDeleteRangeAfter (object sender, DeleteRangeArgs args)
+		{
+			int count = onDeleteRangeEndLine - onDeleteRangeStartLine;
 			if (count != 0)
-				OnLineCountChanged (start.Line, count, start.LineOffset);
-			
-			int startIndex = start.Offset, endIndex = end.Offset;
-			
-			base.OnDeleteRange (start, end);
-			OnTextChanged (startIndex, endIndex);
+				OnLineCountChanged (onDeleteRangeStartLine, count, onDeleteRangeStartCol);
+			OnTextChanged (onDeleteRangeStartIndex, onDeleteRangeEndIndex);
 		}
 		
 		public override void Dispose ()
 		{
 			base.InsertText -= OnInsertText;
+			base.DeleteRange -= onDeleteRangeAfter;
+			base.DeleteRange -= onDeleteRangeBefore;
 			
 			Language = null;
 			base.Dispose ();
