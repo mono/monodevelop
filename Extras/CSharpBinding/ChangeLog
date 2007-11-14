@@ -1,3 +1,9 @@
+2007-11-14  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Gui/CSharpTextEditorExtension.cs: Don't interpret tab as a reindent
+	  command when there's a selection. Fixes "Bug 341319 - Tab not working
+	  correctly". Also, remove a load of dead code.
+
 2007-11-13  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Gui/OverrideCompletionData.cs: When generating overrides, only call the

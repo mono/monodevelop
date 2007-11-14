@@ -204,15 +204,13 @@ namespace CSharpBinding
 			
 			//do the smart indent
 			if (TextEditorProperties.IndentStyle == IndentStyle.Smart) {
-				//pre text-insertion indent handling
-				if (!DoPreKeySmartIndent (key))
-					return false;
+				//capture some of the current state
+				int oldBufLen = Editor.TextLength;
+				int oldLine = Editor.CursorLine;
+				bool hadSelection = Editor.SelectionEndPosition != Editor.SelectionStartPosition;
 				
 				//pass through to the base class, which actually inserts the character
-				int oldBufLen = Editor.TextLength;
-				int oldLine = Editor.CursorLine; 
 				bool retval = base.KeyPress (key, modifier);
-				
 				UpdateSmartIndentEngine ();
 				
 				//handle inserted characters
@@ -220,7 +218,7 @@ namespace CSharpBinding
 				char lastCharInserted = KeyToChar (key);
 				//System.Console.WriteLine (lastCharInserted);
 				if (!(oldLine == Editor.CursorLine && lastCharInserted == '\n') && (oldBufLen != Editor.TextLength || lastCharInserted != '\0'))
-					DoPostInsertionSmartIndent (lastCharInserted, out reIndent);
+					DoPostInsertionSmartIndent (lastCharInserted, hadSelection, out reIndent);
 				
 				//reindent the line after the insertion, if needed
 				//N.B. if the engine says we need to reindent, make sure that it's because a char was 
@@ -406,51 +404,8 @@ namespace CSharpBinding
 			return false;
 		}
 		
-		//if this returns false, further handling of the key will not take place (including insertion into the editor)
-		bool DoPreKeySmartIndent (Gdk.Key key)
-		{			
-			//handle some special cases
-			switch (key) {
-			case Gdk.Key.KP_Enter:
-			case Gdk.Key.Return:
-				if (Editor.SelectionEndPosition > Editor.SelectionStartPosition) {
-					return true;
-				}
-				break;
-			case Gdk.Key.Tab:
-				if (Editor.SelectionEndPosition > Editor.SelectionStartPosition) {
-					// user is conducting an "indent region"
-					ResetSmartIndentEngineToCursor (Editor.SelectionStartPosition);
-					return true;
-				}
-				break;
-			}
-			
-			UpdateSmartIndentEngine ();
-			
-			//special handling to delete empty comment
-			//DISABLED, makes it hard to escape from comments
-			/*
-			int cursor = Editor.CursorPosition;
-			if (key == Gdk.Key.BackSpace) {
-				bool emptyDocComment = indentEngine.IsInsideDocLineComment && Editor.GetLineText (indentEngine.LineNumber).Trim ().Length == 3;
-				bool emptyMultilineComment = indentEngine.IsInsideMultiLineComment;
-				if (emptyMultilineComment) {
-					string line = Editor.GetLineText (indentEngine.LineNumber).Trim ();
-					emptyMultilineComment = line.Length  <= 1 || line == "/*" || line == "/**";
-				}
-				if (emptyDocComment || emptyMultilineComment) {
-					Editor.DeleteLine (indentEngine.LineNumber);
-					Editor.InsertText (cursor, "\n");
-				}
-				return true;
-			}
-			*/
-			return true;
-		}
-		
 		//special handling for certain characters just inserted , for comments etc
-		void DoPostInsertionSmartIndent (char charInserted, out bool reIndent)
+		void DoPostInsertionSmartIndent (char charInserted, bool hadSelection, out bool reIndent)
 		{
 			UpdateSmartIndentEngine ();
 			reIndent = false;
@@ -501,6 +456,7 @@ namespace CSharpBinding
 				// and when a tab has just been inserted (i.e. not a template or an autocomplete command)
 				if (!indentEngine.IsInsideVerbatimString
 				    && cursor >= 1 && Editor.GetCharAt (cursor - 1) == '\t' //tab was actually inserted, or in a region of tabs
+				    && !hadSelection //was just a cursor, not a block of selected text -- the text editor handles that specially 
 				    && (
 				        nextChar != '\n' // not at the end of a line
 				        || (cursor >= 2 && Editor.GetCharAt (cursor - 2) == '\n') //unless also at the beginning of a line
