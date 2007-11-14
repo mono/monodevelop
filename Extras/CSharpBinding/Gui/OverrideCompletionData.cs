@@ -110,23 +110,28 @@ namespace CSharpBinding
 			else
 				textBuilder.Append ('\t');
 			
-			// Include call to base
-
-			if (method.ReturnType != null && method.ReturnType.FullyQualifiedName != "System.Void")
-				textBuilder.Append ("return ");
-			
-			textBuilder.Append ("base.").Append (method.Name).Append (" (");
-			for (int n=0; n<method.Parameters.Count; n++) {
-				IParameter par = method.Parameters [n];
-				if (n > 0)
-					textBuilder.Append (", ");
-				if (par.IsOut)
-					textBuilder.Append ("out ");
-				else if (par.IsRef)
-					textBuilder.Append ("ref ");
-				textBuilder.Append (method.Parameters [n].Name);
+			// Include call to base when possible
+			if (!method.IsAbstract && method.DeclaringType.ClassType != ClassType.Interface) {
+				if (method.ReturnType != null && method.ReturnType.FullyQualifiedName != "System.Void")
+					textBuilder.Append ("return ");
+				
+				textBuilder.Append ("base.").Append (method.Name).Append (" (");
+				for (int n=0; n<method.Parameters.Count; n++) {
+					IParameter par = method.Parameters [n];
+					if (n > 0)
+						textBuilder.Append (", ");
+					if (par.IsOut)
+						textBuilder.Append ("out ");
+					else if (par.IsRef)
+						textBuilder.Append ("ref ");
+					textBuilder.Append (method.Parameters [n].Name);
+				}
+				textBuilder.Append (");");
+			} else {
+				textBuilder.Append ("throw new ");
+				textBuilder.Append (resolver.ResolveName ("System.NotImplementedException"));
+				textBuilder.Append (" ();");
 			}
-			textBuilder.Append (");");
 			
 			int cpos = insertOffset + textBuilder.Length;
 			

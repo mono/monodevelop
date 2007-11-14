@@ -1,3 +1,10 @@
+2007-11-13  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Gui/OverrideCompletionData.cs: When generating overrides, only call the
+	  base if it's non-abstract and not an interface, else generate a
+	  NotImplementedException. Fixes "Bug 341495 - Problem with auto-generated
+	  code for overriden methods".
+
 2007-11-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Gui/CSharpTextEditorExtension.cs: Fix completion of 'new'.
