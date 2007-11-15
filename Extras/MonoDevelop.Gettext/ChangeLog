@@ -1,3 +1,17 @@
+2007-11-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs,
+	  gtk-gui/gui.stetic: Updated.
+	* MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs: Moved
+	  code for updating translation to TranslationProject.
+	* MonoDevelop.Gettext/TranslationService.cs,
+	  MonoDevelop.Gettext/TranslationProject.cs,
+	  MonoDevelop.Gettext/Catalog.cs,
+	  MonoDevelop.Gettext.Editor/CatalogEditor.cs: Use progress monitors to
+	  report errors.
+	* MonoDevelop.Gettext/TranslationProjectOptionsDialog.cs: Create a new
+	  configuration if none exist.
+
 2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Gettext/TranslationService.cs, MonoDevelop.Gettext/Catalog.cs:

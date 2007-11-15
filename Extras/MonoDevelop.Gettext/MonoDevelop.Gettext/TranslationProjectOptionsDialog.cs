@@ -42,6 +42,10 @@ namespace MonoDevelop.Gettext
 			this.Build();
 			
 			TranslationProjectConfiguration config = this.project.ActiveConfiguration as TranslationProjectConfiguration;
+			if (config == null) {
+				config = new TranslationProjectConfiguration ();
+				project.Configurations.Add (config);
+			}
 			entryPackageName.Text        = config.PackageName;
 			entryRelPath.Text            = config.RelPath;
 			folderentrySystemPath.Path   = config.AbsPath;

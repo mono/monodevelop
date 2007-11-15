@@ -63,10 +63,8 @@ namespace MonoDevelop.Gettext.Editor
 		
 		public override void Load (string fileName)
 		{
-			catalog.Load (fileName);
-			if (!catalog.IsOk)
-			{
-				// TODO: GUI Feedback
+			using (IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
+				catalog.Load (mon, fileName);
 			}
 			poEditorWidget.Catalog = catalog;
 			poEditorWidget.POFileName = fileName;

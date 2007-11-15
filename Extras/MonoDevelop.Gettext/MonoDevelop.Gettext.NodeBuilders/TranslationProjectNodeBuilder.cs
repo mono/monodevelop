@@ -186,33 +186,18 @@ namespace MonoDevelop.Gettext.NodeBuilders
 				object[] data = (object[]) ob;
 				IProgressMonitor monitor = (IProgressMonitor) data [0];
 				TranslationProject project = (TranslationProject) data [1];
-				
-				int count = 0;
-				foreach (Project p in project.ParentCombine.GetAllProjects ()) {
-					if (!project.IsIncluded (p))
-						continue;
-					count++;
+
+				try {
+					project.UpdateTranslations (monitor);
 				}
-				monitor.BeginTask (GettextCatalog.GetString ("Updating Translations "), count);
-				project.BeginUpdate ();
-				foreach (Project p in project.ParentCombine.GetAllProjects ()) {
-					if (!project.IsIncluded (p))
-						continue;
-					monitor.Log.WriteLine (String.Format (GettextCatalog.GetString ("Scanning project {0}..."),  p.Name));
-					monitor.Step (1);
-					foreach (ProjectFile file in p.ProjectFiles) {
-						if (file.Subtype == Subtype.Directory)
-							continue;
-						PropertyProvider.ProjectFileWrapper wrapper = new PropertyProvider.ProjectFileWrapper (file);
-						if (wrapper.ScanForTranslations)
-							TranslationService.UpdateTranslation (project, file.FilePath, monitor);
-					}
+				catch (Exception ex) {
+					monitor.ReportError ("Translation update failed.", ex);
 				}
-				project.EndUpdate ();
-				monitor.EndTask ();
-				monitor.Log.WriteLine ();
-				monitor.Log.WriteLine (GettextCatalog.GetString ("---------------------- Done ----------------------"));
-				monitor.Dispose ();
+				finally {
+					monitor.Log.WriteLine ();
+					monitor.Log.WriteLine (GettextCatalog.GetString ("---------------------- Done ----------------------"));
+					monitor.Dispose ();
+				}
 			}
 
 			void UpdateTranslations (TranslationProject project)

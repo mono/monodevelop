@@ -60,13 +60,6 @@ namespace MonoDevelop.Gettext
 			headers = new CatalogHeaders (this);
 		}
 
-		// Loads the catalog from po file.
-		public Catalog (string poFile)
-			: this ()
-		{
-			isOk = Load (poFile);
-		}
-		
 		// Creates new, empty header. Sets Charset to something meaningful ("UTF-8", currently).
 		public void CreateNewHeaders ()
 		{
@@ -151,7 +144,7 @@ namespace MonoDevelop.Gettext
 		}
 
 		// Loads catalog from .po file.
-		public bool Load (string poFile)
+		public bool Load (IProgressMonitor monitor, string poFile)
 		{
 			Clear ();
 			isOk = false;
@@ -169,8 +162,7 @@ namespace MonoDevelop.Gettext
 			}
 			catch (Exception e)
 			{
-				// TODO: use loging - GUI!
-				Console.WriteLine ("Error during getting charset of '{0}' file, exception: {1}", poFile, e.ToString ());
+				monitor.ReportError ("Error during getting charset of file '" + poFile + "'.", e);
 			}
 			if (! finished)
 				return false;
@@ -349,23 +341,20 @@ namespace MonoDevelop.Gettext
 		}
 
 		// Updates the catalog from POT file.
-		public bool UpdateFromPOT (string potFile, bool summary)
+		public bool UpdateFromPOT (IProgressMonitor mon, string potFile, bool summary)
 		{
 			if (! isOk)
 				return false;
 
-			Catalog newCat = new Catalog (potFile);
+			Catalog newCat = new Catalog ();
+			newCat.Load (mon, potFile);
 
-			if (! newCat.IsOk)
-			{
-				// TODO: log - GUI!
-				Console.WriteLine ("'{0}' is not a valid POT file.", potFile);
+			if (!newCat.IsOk)
 				return false;
-			}
 
 			// TODO: add some interactivity
 			//if (! summary) //|| ShowMergeSummary (newcat)
-				return Merge (newCat);
+				return Merge (mon, newCat);
 			//else
 			//	return false;
 		}
@@ -640,7 +629,7 @@ namespace MonoDevelop.Gettext
 		// (in the sense of msgmerge -- this catalog is old one with
 		// translations, \a refcat is reference catalog created by Update().)
 		// return true if the merge was successfull, false otherwise.
-		public bool Merge (Catalog refCat)
+		public bool Merge (IProgressMonitor mon, Catalog refCat)
 		{
 			// TODO: implement via monitor, not in a GUI thread...
 			// But mind about it as it would be used during build.
@@ -668,7 +657,8 @@ namespace MonoDevelop.Gettext
 			bool succ = process.ExitCode == 0;
 			if (succ)
 			{
-				Catalog c = new Catalog (tmp3);
+				Catalog c = new Catalog ();
+				c.Load (mon, tmp3);
 				Clear ();
 				Append (c);
 			}

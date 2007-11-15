@@ -164,14 +164,17 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
-		public void AddTranslationStrings (string fileName, List<TranslationProject.MatchLocation> matches)
+		public void AddTranslationStrings (IProgressMonitor monitor, string fileName, List<TranslationProject.MatchLocation> matches)
 		{
 			if (Translations.Count == 0)
 				return;
 			
 			foreach (Translation translation in this.Translations) {
-				if (!catalogs.ContainsKey(translation))
-					catalogs[translation] = new Catalog (GetFileName (translation));
+				if (!catalogs.ContainsKey(translation)) {
+					Catalog c = new Catalog ();
+					c.Load (monitor, GetFileName (translation));
+					catalogs[translation] = c;
+				}
 			}
 			
 			string relativeFileName = MonoDevelop.Core.FileService.AbsoluteToRelativePath (this.BaseDirectory, fileName);
@@ -264,12 +267,37 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
+		public void UpdateTranslations (IProgressMonitor monitor)
+		{
+			List<Project> projects = new List<Project> ();
+			foreach (Project p in RootCombine.GetAllProjects ()) {
+				if (IsIncluded (p))
+					projects.Add (p);
+			}
+			monitor.BeginTask (GettextCatalog.GetString ("Updating Translations "), projects.Count);
+			BeginUpdate ();
+			foreach (Project p in projects) {
+				monitor.Log.WriteLine (String.Format (GettextCatalog.GetString ("Scanning project {0}..."),  p.Name));
+				monitor.Step (1);
+				foreach (ProjectFile file in p.ProjectFiles) {
+					if (file.Subtype == Subtype.Directory)
+						continue;
+					PropertyProvider.ProjectFileWrapper wrapper = new PropertyProvider.ProjectFileWrapper (file);
+					if (wrapper.ScanForTranslations)
+						TranslationService.UpdateTranslation (this, file.FilePath, monitor);
+				}
+			}
+			EndUpdate ();
+			monitor.EndTask ();
+		}
+		
 		public void RemoveEntry (string msgstr)
 		{
 			foreach (Translation translation in this.Translations) {
 				string poFileName  = GetFileName (translation);
-				Catalog catalog = new Catalog (poFileName);
-				CatalogEntry entry   = catalog.FindItem (msgstr);
+				Catalog catalog = new Catalog ();
+				catalog.Load (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), poFileName);
+				CatalogEntry entry = catalog.FindItem (msgstr);
 				if (entry != null) {
 					catalog.RemoveItem (entry);
 					catalog.Save (poFileName);

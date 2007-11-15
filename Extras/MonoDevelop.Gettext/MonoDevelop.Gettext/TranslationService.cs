@@ -83,7 +83,7 @@ namespace MonoDevelop.Gettext
 		}
 		
 		static Regex xmlTranslationPattern = new Regex(@"_[^""]*=\s*""([^""]*)""", RegexOptions.Compiled);
-		static void UpdateXmlTranslations (TranslationProject translationProject, string fileName)
+		static void UpdateXmlTranslations (IProgressMonitor monitor, TranslationProject translationProject, string fileName)
 		{
 			string text = File.ReadAllText (fileName);
 			if (!String.IsNullOrEmpty (text)) {
@@ -91,14 +91,14 @@ namespace MonoDevelop.Gettext
 				foreach (Match match in xmlTranslationPattern.Matches (text)) {
 					matches.Add (new TranslationProject.MatchLocation (match.Groups[1].Value, GetLineNumber (text, match.Index)));
 				}
-				translationProject.AddTranslationStrings (fileName, matches);
+				translationProject.AddTranslationStrings (monitor, fileName, matches);
 			}
 		}
 		
 		static Regex translationPattern = new Regex(@"GetString\s*\(\s*""([^""]*)""\s*\)", RegexOptions.Compiled);
 		static Regex pluralTranslationPattern = new Regex(@"GetPluralString\s*\(\s*""([^""]*)""\s*,\s*""([^""]*)""\s*,.*\)", RegexOptions.Compiled);
 		
-		static void UpdateTranslations (TranslationProject translationProject, string fileName)
+		static void UpdateTranslations (IProgressMonitor monitor, TranslationProject translationProject, string fileName)
 		{
 			string text = File.ReadAllText (fileName);
 			if (!String.IsNullOrEmpty (text)) {
@@ -125,24 +125,24 @@ namespace MonoDevelop.Gettext
 				foreach (Match match in pluralTranslationPattern.Matches (text)) {
 					matches.Add (new TranslationProject.MatchLocation (match.Groups[1].Value, match.Groups[2].Value, GetLineNumber (text, match.Index)));
 				}
-				translationProject.AddTranslationStrings (fileName, matches);
+				translationProject.AddTranslationStrings (monitor, fileName, matches);
 			}
 		}
 		
 		public static void UpdateTranslation (TranslationProject translationProject, string fileName, IProgressMonitor monitor)
 		{
 			if (!File.Exists (fileName)) {
-				LoggingService.LogWarning (GettextCatalog.GetString ("UpdateTranslation: File {0} not found.", fileName));
+				monitor.ReportWarning (GettextCatalog.GetString ("UpdateTranslation: File {0} not found.", fileName));
 				return;
 			}
 			translationProject.BeginUpdate ();
 			try {
 				switch (Path.GetExtension (fileName)) {
 				case ".xml":
-					UpdateXmlTranslations (translationProject, fileName);
+					UpdateXmlTranslations (monitor, translationProject, fileName);
 					break;
 				default:
-					UpdateTranslations (translationProject, fileName);
+					UpdateTranslations (monitor, translationProject, fileName);
 					break;
 				}
 			} finally {
