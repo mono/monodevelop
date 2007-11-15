@@ -17,7 +17,7 @@ REFS =  \
 FILES =  \
 	Gui/GlobalOptionsPanel.cs \
 	Gui/ProjectConfigurationPropertyPanel.cs \
-	JavaBindingCompilerServices.cs \
+	IKVMCompilerManager.cs \
 	JavaCompiler.cs \
 	JavaLanguageBinding.cs \
 	Project/JavaCompilerParameters.cs

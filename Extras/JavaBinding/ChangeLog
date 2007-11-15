@@ -1,3 +1,13 @@
+2007-11-15  Mike Krüger <mkrueger@novell.com> 
+
+	* JavaBindingCompilerServices.cs, JavaLanguageBinding.cs,
+	  JavaBinding.addin.xml, JavaBinding.mdp, IKVMCompilerManager.cs,
+	  Makefile.am: Worked on the java binding (compile & run of all sample
+	  projects work). 
+	
+	  Removed the gnome sample project, because there seems to be something
+	  wrong with the generated *.jar (no symbol for Modules.UI).
+
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* JavaBinding.addin.xml: Bump MD version.

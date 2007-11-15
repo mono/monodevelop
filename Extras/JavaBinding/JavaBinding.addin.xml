@@ -41,7 +41,7 @@
     <ProjectTemplate id = "EmptyJavaProject" resource = "EmptyJavaProject.xpt.xml"/>
     <ProjectTemplate id = "IkvmConsoleApplicationProject" resource = "IkvmConsoleApplicationProject.xpt.xml"/>
     <ProjectTemplate id = "IkvmGladeApplicationProject" resource = "IkvmGladeApplicationProject.xpt.xml"/>
-    <ProjectTemplate id = "IkvmGnomeApplicationProject" resource = "IkvmGnomeApplicationProject.xpt.xml"/>
+<!--    <ProjectTemplate id = "IkvmGnomeApplicationProject" resource = "IkvmGnomeApplicationProject.xpt.xml"/> -->
     <ProjectTemplate id = "IkvmGtkApplicationProject" resource = "IkvmGtkApplicationProject.xpt.xml"/>
     <ProjectTemplate id = "JavaApplicationProject" resource = "JavaApplicationProject.xpt.xml"/>
     <ProjectTemplate id = "JavaConsoleApplicationProject" resource = "JavaConsoleApplicationProject.xpt.xml"/>

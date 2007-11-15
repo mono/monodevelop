@@ -41,8 +41,6 @@ namespace JavaBinding
 	public class JavaLanguageBinding : IDotNetLanguageBinding
 	{
 		internal const string LanguageName = "Java";
-		JavaBindingCompilerServices compilerServices = new JavaBindingCompilerServices ();
-		
 		static GlobalProperties props = new GlobalProperties ();
 		
 		public static GlobalProperties Properties {
@@ -57,14 +55,12 @@ namespace JavaBinding
 		
 		public bool IsSourceCodeFile (string fileName)
 		{
-			Debug.Assert(compilerServices != null);
-			return compilerServices.CanCompile(fileName);
+			return Path.GetExtension (fileName) == ".java";
 		}
 		
 		public ICompilerResult Compile (ProjectFileCollection projectFiles, ProjectReferenceCollection references, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
 		{
-			Debug.Assert(compilerServices != null);
-			return compilerServices.Compile (projectFiles, references, configuration, monitor);
+			return IKVMCompilerManager.Compile (projectFiles, references, configuration, monitor);
 		}
 		
 		public void GenerateMakefile (Project project, Combine parentCombine)
@@ -76,9 +72,8 @@ namespace JavaBinding
 		public ICloneable CreateCompilationParameters (XmlElement projectOptions)
 		{
 			JavaCompilerParameters parameters = new JavaCompilerParameters ();
-			parameters.ClassPath = Path.Combine (Path.Combine (Properties.IkvmPath, "classpath"), "mscorlib.jar");
 			if (Properties.Classpath.Length > 0)
-				parameters.ClassPath += ": " + Properties.Classpath;
+				parameters.ClassPath = Properties.Classpath;
 				
 			parameters.Compiler = Properties.CompilerType;
 			parameters.CompilerPath = Properties.CompilerCommand;
