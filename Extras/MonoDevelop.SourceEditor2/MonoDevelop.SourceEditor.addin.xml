@@ -190,7 +190,6 @@
 	
 	<Extension path = "/MonoDevelop/SourceEditor/EditActions" extension-nodes="EditAction" description="Custom edit actions.">
 		<!-- these are the default editor actions -->
-		<EditAction id = "ShiftTab" class = "MonoDevelop.SourceEditor.Actions.ShiftTab" keys = "Shift|ISO_Left_Tab"/>
 		<EditAction id = "Tab" class = "MonoDevelop.SourceEditor.Actions.Tab" keys = "Tab"/>
 		<EditAction id = "Return" class = "MonoDevelop.SourceEditor.Actions.Return" keys = "Return"/>
 	</Extension>

@@ -74,7 +74,6 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 				showErrorsCheckBox.Active = TextEditorProperties.UnderlineErrors;
 				
 				highlightCurrentLineCheckBox.Active = TextEditorProperties.HighlightCurrentLine;
-				highlightCurrentLineCheckBox.Sensitive = MonoDevelop.SourceEditor.Gui.SourceEditorView.HighlightCurrentLineSupported;
 
 				highlightSpacesCheckBox.Active = TextEditorProperties.HighlightSpaces;
 				highlightTabsCheckBox.Active = TextEditorProperties.HighlightTabs;
@@ -84,9 +83,6 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 				vRulerRowTextBox.Value = TextEditorProperties.VerticalRulerRow;
 				
 				wrapModeComboBox.Active = (int) TextEditorProperties.WrapMode;
-				
-				// FIXME: re-enable when implemented
-				showErrorsCheckBox.Sensitive = false;
 			}
 
 			public void Store ()

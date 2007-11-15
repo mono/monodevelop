@@ -16,24 +16,15 @@ namespace MonoDevelop.SourceEditor.Actions
 			sourceView.FormatLine ();
 			PassToBase = false;
 		}
-	}		
-
-	public class ShiftTab : AbstractEditAction
-	{
-		public override void Execute (SourceEditorView sourceView)
-		{
-			if (!sourceView.IndentSelection (true, true))
-				PassToBase = true;
-		}
 	}
 
 	public class Tab : AbstractEditAction
 	{
 		public override void Execute (SourceEditorView sourceView)
 		{
-			if (!sourceView.IndentSelection (false, true) && !sourceView.InsertTemplate ())
+			if (!sourceView.InsertTemplate ())
 				PassToBase = true;
 		}
-	}		
+	}
 }
 

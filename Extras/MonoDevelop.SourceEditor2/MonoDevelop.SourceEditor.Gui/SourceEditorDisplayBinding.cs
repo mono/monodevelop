@@ -301,8 +301,9 @@ namespace MonoDevelop.SourceEditor.Gui
 			TextIter itr = se.Buffer.GetIterAtLine (line - 1);
 			itr.LineOffset = column - 1;
 
-			se.Buffer.PlaceCursor (itr);		
-			se.Buffer.HighlightLine (line - 1);	
+			se.Buffer.PlaceCursor (itr);
+			if (!se.View.HighlightCurrentLine)
+				se.Buffer.HighlightLine (line - 1);	
 			se.View.ScrollToMark (se.Buffer.InsertMark, 0.3, false, 0, 0);
 			GLib.Timeout.Add (20, new GLib.TimeoutHandler (changeFocus));
 		}
@@ -1213,6 +1214,9 @@ namespace MonoDevelop.SourceEditor.Gui
 			se.Buffer.HighlightSyntax = TextEditorProperties.SyntaxHighlight;
 			se.DisplayBinding.ClassBrowserVisible = TextEditorProperties.ShowClassBrowser;
 			UpdateStyleScheme ();
+			
+			//tab and shift-tab respectively indent and unindent the selected code block
+			se.View.IndentOnTab = true;
 
 			if (TextEditorProperties.VerticalRulerRow > -1)
 				se.View.RightMarginPosition = (uint) TextEditorProperties.VerticalRulerRow;

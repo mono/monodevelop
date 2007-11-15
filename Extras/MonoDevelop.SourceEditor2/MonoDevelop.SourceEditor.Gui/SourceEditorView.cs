@@ -33,7 +33,6 @@ namespace MonoDevelop.SourceEditor.Gui
 {
 	public class SourceEditorView : SourceView, ICompletionWidget, ITextEditorExtension
 	{
-		public static readonly bool HighlightCurrentLineSupported;
 		public static bool HighlightSpacesEnabled = TextEditorProperties.HighlightSpaces;
 		public static bool HighlightTabsEnabled = TextEditorProperties.HighlightTabs;
 		public static bool HighlightNewlinesEnabled = TextEditorProperties.HighlightNewlines;
@@ -234,7 +233,6 @@ namespace MonoDevelop.SourceEditor.Gui
 			//FIXME GTKSV2
 			//ShowLineMarkers = true;
 			controlsDrawer = new DrawControlCharacterImp (this);
-			HighlightCurrentLine = true;
 			buf.PlaceCursor (buf.StartIter);
 			GrabFocus ();
 			buf.MarkSet += new MarkSetHandler (BufferMarkSet);
