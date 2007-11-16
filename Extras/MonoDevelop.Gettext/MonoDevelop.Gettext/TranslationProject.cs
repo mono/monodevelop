@@ -260,12 +260,9 @@ namespace MonoDevelop.Gettext
 			args.Append ("--from-code=UTF-8");
 			args.Append (" -p ");args.Append ('"');args.Append (this.BaseDirectory);args.Append ('"');
 			args.Append (" -f ");args.Append ('"');args.Append (tempFile);args.Append ('"');
-			
-			Runtime.ProcessService.StartProcess ("xgettext",
-			                                     args.ToString (),
-			                                     this.BaseDirectory,
-			                                     MergeTranslations);
-			
+			System.Diagnostics.Process process = System.Diagnostics.Process.Start ("xgettext", args.ToString ());
+			process.WaitForExit();
+			MergeTranslations (this, null);
 			monitor.EndTask ();
 		}
 		void MergeTranslations (object sender, EventArgs args)
@@ -274,11 +271,8 @@ namespace MonoDevelop.Gettext
 				File.Delete (tempFile);
 			foreach (Translation translation in this.Translations) {
 				string poFileName  = GetFileName (translation);
-				Console.WriteLine (poFileName + "  " + this.BaseDirectory + "/messages.po");
-				Runtime.ProcessService.StartProcess ("msgmerge",
-				                                     " -U " + poFileName + "  " + this.BaseDirectory + "/messages.po",
-				                                     this.BaseDirectory,
-				                                     null);
+				System.Diagnostics.Process process = System.Diagnostics.Process.Start ("msgmerge", " -U " + poFileName + "  " + this.BaseDirectory + "/messages.po");
+				process.WaitForExit();
 			}
 		}
 		public void RemoveEntry (string msgstr)

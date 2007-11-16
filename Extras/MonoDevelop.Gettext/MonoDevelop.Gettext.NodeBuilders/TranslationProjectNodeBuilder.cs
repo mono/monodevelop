@@ -189,11 +189,10 @@ namespace MonoDevelop.Gettext.NodeBuilders
 				
 				try {
 					project.UpdateTranslations (monitor);
-				}
-				catch (Exception ex) {
+					POEditorWidget.ReloadWidgets ();
+				} catch (Exception ex) {
 					monitor.ReportError ("Translation update failed.", ex);
-				}
-				finally {
+				} finally {
 					monitor.Log.WriteLine ();
 					monitor.Log.WriteLine (GettextCatalog.GetString ("---------------------- Done ----------------------"));
 					monitor.Dispose ();
@@ -206,7 +205,8 @@ namespace MonoDevelop.Gettext.NodeBuilders
 					return;
 				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
 				currentUpdateTranslationOperation = monitor.AsyncOperation;
-				DispatchService.ThreadDispatch (new StatefulMessageHandler (UpdateTranslationsAsync), new object[] {monitor, project});
+				DispatchService.GuiDispatch (new StatefulMessageHandler (UpdateTranslationsAsync), new object[] {monitor, project});
+				
 			}
 			
 			[CommandHandler (Commands.UpdateTranslations)]

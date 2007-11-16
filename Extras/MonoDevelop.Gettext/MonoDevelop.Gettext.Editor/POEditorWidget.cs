@@ -48,7 +48,7 @@ namespace MonoDevelop.Gettext
 		string  poFileName;
 		
 		static List<POEditorWidget> widgets = new List<POEditorWidget> (); 
-		
+				
 		public Catalog Catalog {
 			get {
 				return catalog;
@@ -58,7 +58,6 @@ namespace MonoDevelop.Gettext
 				headersEditor.CatalogHeaders = catalog.Headers;
 				ClearTextview ();
 				AddTextview (0);
-
 				UpdateFromCatalog ();
 				UpdateProgressBar ();
 			}
@@ -155,6 +154,20 @@ namespace MonoDevelop.Gettext
 			widgets.Add (this);
 		}
 		
+		public static void ReloadWidgets ()
+		{
+			foreach (POEditorWidget widget in widgets) {
+				widget.Reload ();
+			}
+		}
+		
+		void Reload ()
+		{
+			Catalog newCatalog = new Catalog();
+			newCatalog.Load (null, catalog.FileName);
+			this.Catalog = newCatalog;
+		}
+		
 		TextView GetTextView (int index)
 		{
 			ScrolledWindow window = this.notebookTranslated.GetNthPage (index) as ScrolledWindow;
@@ -243,11 +256,12 @@ namespace MonoDevelop.Gettext
 		
 		void UpdateProgressBar ()
 		{
+			Console.WriteLine("a");
 			int all, untrans, fuzzy, missing, bad;
 			catalog.GetStatistics (out all, out fuzzy, out missing, out bad, out untrans);
 			double percentage = all > 0 ? ((double)(all - untrans) / all) * 100 : 0.0;
 			string barText = String.Format (GettextCatalog.GetString ("{0:#00.00}% Translated"), percentage);
-			
+			Console.WriteLine("b");
 			if (missing > 0 || fuzzy > 0)
 				barText += " (";
 			
@@ -264,8 +278,10 @@ namespace MonoDevelop.Gettext
 			if (missing > 0 || fuzzy > 0)
 				barText += ")";
 			
+			Console.WriteLine("c");
 			this.progressbar1.Text = barText;
 			percentage = percentage / 100;
+			Console.WriteLine("d");
 			this.progressbar1.Fraction = percentage;
 		}		
 		

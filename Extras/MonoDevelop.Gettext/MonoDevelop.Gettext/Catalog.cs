@@ -162,7 +162,8 @@ namespace MonoDevelop.Gettext
 			}
 			catch (Exception e)
 			{
-				monitor.ReportError ("Error during getting charset of file '" + poFile + "'.", e);
+				if (monitor != null)
+					monitor.ReportError ("Error during getting charset of file '" + poFile + "'.", e);
 			}
 			if (! finished)
 				return false;
