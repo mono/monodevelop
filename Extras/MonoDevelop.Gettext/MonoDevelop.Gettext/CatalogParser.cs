@@ -122,12 +122,11 @@ namespace MonoDevelop.Gettext
 		    output = input.Substring (pattern.Length).TrimEnd (' ', '\t');
 		    return true;
 		}
-        string ParseMessage (ref string dummy, ref int lineNumber)
+        string ParseMessage (ref string line, ref string dummy, ref int lineNumber)
 		{
 			StringBuilder result = new StringBuilder (dummy.Substring (0, dummy.Length - 1));
 			
 			bool firstLine = true;
-			string line;
             while ((line = fileLines[lineNumber++]) != String.Empty) {
                 if (line[0] == '\t') 
                     line = line.Substring (1);
@@ -217,14 +216,14 @@ namespace MonoDevelop.Gettext
 		        else if (CatalogParser.ReadParam (line, "msgid \"", out dummy) ||
 		                 CatalogParser.ReadParam (line, "msgid\t\"", out dummy))
 		        {
-					mstr = ParseMessage (ref dummy, ref lineNumber);
+					mstr = ParseMessage (ref line, ref dummy, ref lineNumber);
 		        }
 
 		        // msgid_plural:
 		        else if (CatalogParser.ReadParam (line, "msgid_plural \"", out dummy) ||
 		                 CatalogParser.ReadParam (line, "msgid_plural\t\"", out dummy))
 		        {
-		            msgidPlural = ParseMessage (ref dummy, ref lineNumber);
+		            msgidPlural = ParseMessage (ref line, ref dummy, ref lineNumber);
 		            hasPlural = true;
 		        }
 
@@ -240,7 +239,7 @@ namespace MonoDevelop.Gettext
 		            }
 
 		            
-		            string str = ParseMessage (ref dummy, ref lineNumber);
+		            string str = ParseMessage (ref line, ref dummy, ref lineNumber);
 		            mtranslations.Add (str);
 
 		            if (! OnEntry (mstr, String.Empty, false, mtranslations.ToArray (),

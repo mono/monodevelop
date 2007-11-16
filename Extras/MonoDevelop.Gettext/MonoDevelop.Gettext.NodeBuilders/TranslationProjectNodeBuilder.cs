@@ -186,7 +186,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 				object[] data = (object[]) ob;
 				IProgressMonitor monitor = (IProgressMonitor) data [0];
 				TranslationProject project = (TranslationProject) data [1];
-
+				
 				try {
 					project.UpdateTranslations (monitor);
 				}

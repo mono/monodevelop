@@ -1,3 +1,17 @@
+2007-11-16  Mike Krüger <mkrueger@novell.com> 
+
+	* gtk-gui/MonoDevelop.Gettext.GettextFeatureWidget.cs,
+	  gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs,
+	  gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs,
+	  gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs,
+	  MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs,
+	  MonoDevelop.Gettext/TranslationService.cs,
+	  MonoDevelop.Gettext/TranslationProject.cs,
+	  MonoDevelop.Gettext/CatalogParser.cs: The gettext addin now uses
+	  xgettext and msgmerge command line tools instead of custom routines.
+	  Fixed some bugs in the po editor and catalog parser.
+
 2007-11-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs,

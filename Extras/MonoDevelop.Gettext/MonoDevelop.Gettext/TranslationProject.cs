@@ -32,6 +32,7 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Text;
 using System.Xml;
 
 using MonoDevelop.Core;
@@ -143,76 +144,33 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
-		int updateLevel = 0;
-		Dictionary<Translation, Catalog> catalogs = new Dictionary<Translation, Catalog> (); 
-		public void BeginUpdate ()
-		{
-			updateLevel++;
-			if (updateLevel == 1) {
-				catalogs.Clear ();
-			}
-		}
-		
-		public void EndUpdate ()
-		{
-			updateLevel--;
-			if (updateLevel == 0) {
-				foreach (Catalog catalog in catalogs.Values) {
-					catalog.Save (catalog.FileName);
-				}
-				catalogs.Clear ();
-			}
-		}
-		
-		public void AddTranslationStrings (IProgressMonitor monitor, string fileName, List<TranslationProject.MatchLocation> matches)
-		{
-			if (Translations.Count == 0)
-				return;
-			
-			foreach (Translation translation in this.Translations) {
-				if (!catalogs.ContainsKey(translation)) {
-					Catalog c = new Catalog ();
-					c.Load (monitor, GetFileName (translation));
-					catalogs[translation] = c;
-				}
-			}
-			
-			string relativeFileName = MonoDevelop.Core.FileService.AbsoluteToRelativePath (this.BaseDirectory, fileName);
-			string fileNamePrefix   = relativeFileName + ":";
-			Catalog catalog = catalogs[Translations[0]];
-			
-			foreach (CatalogEntry entry in catalog) {
-				if (entry.RemoveReferenceTo (fileNamePrefix)) {
-					foreach (Translation t in this.Translations) {
-						CatalogEntry findEntry = catalogs[t].FindItem (entry.String);
-						if (findEntry != null)
-							findEntry.RemoveReferenceTo (fileNamePrefix);
-					}
-				}
-			}
-			
-			foreach (MatchLocation match in matches) {
-				if (String.IsNullOrEmpty (match.OriginalString))
-					continue;
-				foreach (Translation translation in this.Translations) {
-					catalog = catalogs[translation];
-					CatalogEntry entry = catalog.FindItem (match.OriginalString);
-					if (entry == null) {
-						entry = new CatalogEntry (catalog, match.OriginalString, match.OriginalPluralString);
-						if (!String.IsNullOrEmpty (match.OriginalPluralString))
-							entry.SetTranslations (new string[] {"", ""});
-						catalog.AddItem (entry);
-					}
-					entry.AddReference (fileNamePrefix + match.Line);
-				}
-			}
-		}
-		
 		public void AddNewTranslation (string isoCode, IProgressMonitor monitor)
 		{
 			try {
 				translations.Add (new Translation (isoCode));
-				File.WriteAllText (GetFileName (isoCode), "");
+				string templateFile    = Path.Combine (this.BaseDirectory, "messages.po");
+				string translationFile = GetFileName (isoCode);
+				if (!File.Exists (templateFile)) {
+	 				CreateTempProjectFileList (monitor);
+					
+					
+					StringBuilder args = new StringBuilder ();
+					args.Append ("--from-code=UTF-8");
+					args.Append (" -p ");args.Append ('"');args.Append (this.BaseDirectory);args.Append ('"');
+					args.Append (" -f ");args.Append ('"');args.Append (tempFile);args.Append ('"');
+					
+					Runtime.ProcessService.StartProcess ("xgettext",
+					                                     args.ToString (),
+					                                     this.BaseDirectory,
+					                                     delegate {
+						if (File.Exists (this.tempFile))
+							File.Delete (this.tempFile);
+						File.Copy (templateFile, translationFile);
+					});
+				} else {
+					File.Copy (templateFile, translationFile);
+				}
+				
 				monitor.ReportSuccess (String.Format (GettextCatalog.GetString ("Language '{0}' successfully added."), isoCode));
 				monitor.Step (1);
 				isDirty = true; 
@@ -266,6 +224,28 @@ namespace MonoDevelop.Gettext
 				}
 			}
 		}
+		string tempFile;
+		
+		void CreateTempProjectFileList (IProgressMonitor monitor)
+		{
+ 			tempFile = Path.GetTempFileName ();
+			StreamWriter writer = new StreamWriter(tempFile);
+			List<Project> projects = new List<Project> ();
+			foreach (Project p in RootCombine.GetAllProjects ()) {
+				if (IsIncluded (p))
+					projects.Add (p);
+			}
+			foreach (Project p in projects) {
+				monitor.Log.WriteLine (String.Format (GettextCatalog.GetString ("Scanning project {0}..."),  p.Name));
+				monitor.Step (1);
+				foreach (ProjectFile file in p.ProjectFiles) {
+					if (file.Subtype == Subtype.Directory)
+						continue;
+					writer.WriteLine (file.FilePath);
+				}
+			}
+			writer.Close ();
+		}
 		
 		public void UpdateTranslations (IProgressMonitor monitor)
 		{
@@ -275,22 +255,32 @@ namespace MonoDevelop.Gettext
 					projects.Add (p);
 			}
 			monitor.BeginTask (GettextCatalog.GetString ("Updating Translations "), projects.Count);
-			BeginUpdate ();
-			foreach (Project p in projects) {
-				monitor.Log.WriteLine (String.Format (GettextCatalog.GetString ("Scanning project {0}..."),  p.Name));
-				monitor.Step (1);
-				foreach (ProjectFile file in p.ProjectFiles) {
-					if (file.Subtype == Subtype.Directory)
-						continue;
-					PropertyProvider.ProjectFileWrapper wrapper = new PropertyProvider.ProjectFileWrapper (file);
-					if (wrapper.ScanForTranslations)
-						TranslationService.UpdateTranslation (this, file.FilePath, monitor);
-				}
-			}
-			EndUpdate ();
+			CreateTempProjectFileList (monitor);
+			StringBuilder args = new StringBuilder ();
+			args.Append ("--from-code=UTF-8");
+			args.Append (" -p ");args.Append ('"');args.Append (this.BaseDirectory);args.Append ('"');
+			args.Append (" -f ");args.Append ('"');args.Append (tempFile);args.Append ('"');
+			
+			Runtime.ProcessService.StartProcess ("xgettext",
+			                                     args.ToString (),
+			                                     this.BaseDirectory,
+			                                     MergeTranslations);
+			
 			monitor.EndTask ();
 		}
-		
+		void MergeTranslations (object sender, EventArgs args)
+		{
+			if (File.Exists (tempFile))
+				File.Delete (tempFile);
+			foreach (Translation translation in this.Translations) {
+				string poFileName  = GetFileName (translation);
+				Console.WriteLine (poFileName + "  " + this.BaseDirectory + "/messages.po");
+				Runtime.ProcessService.StartProcess ("msgmerge",
+				                                     " -U " + poFileName + "  " + this.BaseDirectory + "/messages.po",
+				                                     this.BaseDirectory,
+				                                     null);
+			}
+		}
 		public void RemoveEntry (string msgstr)
 		{
 			foreach (Translation translation in this.Translations) {
