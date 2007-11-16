@@ -1,3 +1,8 @@
+2007-11-16  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Fixed "Bug
+	  341886 - Quick Class navigator does not sort file types".
+
 2007-11-14  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs: Implemented a

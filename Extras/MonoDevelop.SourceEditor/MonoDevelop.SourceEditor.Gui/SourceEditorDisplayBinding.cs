@@ -197,6 +197,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			classBrowser = new HBox(true, 2);
 			classCombo = new Gtk.ComboBox();
 			classCombo.WidthRequest = 1;
+			
 			membersCombo = new Gtk.ComboBox();
 			membersCombo.WidthRequest = 1;
 			
@@ -232,8 +233,10 @@ namespace MonoDevelop.SourceEditor.Gui
 			
 			// Set up the data stores for the comboboxes
 			classStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(IClass));
+			classStore.SetSortColumnId (1, Gtk.SortType.Ascending);
 			classCombo.Model = classStore;	
 			memberStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(IMember));
+			memberStore.SetSortColumnId (1, Gtk.SortType.Ascending);
 			membersCombo.Model = memberStore;
    			membersCombo.Changed += new EventHandler (MemberChanged);
 			classCombo.Changed += new EventHandler (ClassChanged);
