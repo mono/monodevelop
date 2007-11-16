@@ -1,3 +1,9 @@
+2007-11-16  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/TypeVisitor.cs, CSharpBindingCompilerManager.cs: Fixed "Bug 341901
+	  - MD and CS0618 warning results". And a possible nullreference exception
+	  in TypeVisitor.
+
 2007-11-14  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Gui/CSharpTextEditorExtension.cs: Don't interpret tab as a reindent

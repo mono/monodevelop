@@ -131,36 +131,41 @@ namespace CSharpBinding.Parser
 		// of superclasses that had to be searched.
 		void FindOperator (string name, IClass c1, IReturnType c2, int ownerParamPos, int otherParamPos, out IMethod met, out int sublevel)
 		{
+			
 			sublevel = 0;
 			do {
-				foreach (IMethod m in c1.Methods) {
-					if (m.IsSpecialName && m.Name == name) {
-						// Check parameter types
-						IParameter par1 = m.Parameters [ownerParamPos];
-						if (par1.ReturnType.ArrayCount != 0 || par1.ReturnType.PointerNestingLevel != 0 || par1.ReturnType.ByRef)
-							continue;
-						IClass pc = resolver.ParserContext.GetClass (par1.ReturnType.FullyQualifiedName, par1.ReturnType.GenericArguments, true, true);
-						if (pc == null || (pc.FullyQualifiedName != c1.FullyQualifiedName))
-							continue;
+				if (c1.Methods != null) {
+					foreach (IMethod m in c1.Methods) {
+						if (m.IsSpecialName && m.Name == name) {
+							// Check parameter types
+							IParameter par1 = m.Parameters [ownerParamPos];
+							if (par1.ReturnType.ArrayCount != 0 || par1.ReturnType.PointerNestingLevel != 0 || par1.ReturnType.ByRef)
+								continue;
+							IClass pc = resolver.ParserContext.GetClass (par1.ReturnType.FullyQualifiedName, par1.ReturnType.GenericArguments, true, true);
+							if (pc == null || (pc.FullyQualifiedName != c1.FullyQualifiedName))
+								continue;
 
-						// Ok, the class that implements the operator is in the right parameter position
-						// Now let's check if the other parameter is compatible with the other operand
-						
-						IParameter par2 = m.Parameters [otherParamPos];
-						if (DefaultReturnType.IsTypeAssignable (resolver.ParserContext, par2.ReturnType, c2) == -1)
-							continue;
-						met = m;
-						return;
+							// Ok, the class that implements the operator is in the right parameter position
+							// Now let's check if the other parameter is compatible with the other operand
+							
+							IParameter par2 = m.Parameters [otherParamPos];
+							if (DefaultReturnType.IsTypeAssignable (resolver.ParserContext, par2.ReturnType, c2) == -1)
+								continue;
+							met = m;
+							return;
+						}
 					}
 				}
 				// Operator not found in this class, look in the base class
 				// Avoid implemented interfaces
 				IClass baseClass = null;
-				foreach (IReturnType bt in c1.BaseTypes) {
-					IClass bc = resolver.ParserContext.GetClass (bt.FullyQualifiedName, bt.GenericArguments, true, true);
-					if (bc.ClassType != MonoDevelop.Projects.Parser.ClassType.Interface) {
-						baseClass = bc;
-						break;
+				if (c1.BaseTypes != null) {
+					foreach (IReturnType bt in c1.BaseTypes) {
+						IClass bc = resolver.ParserContext.GetClass (bt.FullyQualifiedName, bt.GenericArguments, true, true);
+						if (bc.ClassType != MonoDevelop.Projects.Parser.ClassType.Interface) {
+							baseClass = bc;
+							break;
+						}
 					}
 				}
 				c1 = baseClass;
