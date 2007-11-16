@@ -1,3 +1,8 @@
+2007-11-15  Aaron Bockover  <abockover@novell.com>
+
+	* DockContainer.cs: Draw a border on the header, change the background 
+	fill to active on hover; just some visual touch-up
+
 2007-11-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* DockGroup.cs: Call SizeAllocate on all children even when children

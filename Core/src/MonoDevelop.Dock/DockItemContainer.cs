@@ -45,11 +45,13 @@ namespace MonoDevelop.Components.Docking
 		Gtk.Button btnDock;
 		string txt;
 		Gtk.EventBox header;
+		Gtk.Alignment headerAlign;
 		DockFrame frame;
 		DockItem item;
 		Widget widget;
 		Frame borderFrame;
 		bool allowPlaceholderDocking;
+		bool pointerHover;
 		Gtk.Tooltips tips = new Tooltips ();
 		
 		static Gdk.Cursor fleurCursor = new Gdk.Cursor (Gdk.CursorType.Fleur);
@@ -95,6 +97,10 @@ namespace MonoDevelop.Components.Docking
 			box.PackEnd (btnClose, false, false, 0);
 			box.PackEnd (btnDock, false, false, 0);
 			
+			headerAlign = new Alignment (0.0f, 0.0f, 1.0f, 1.0f);
+			headerAlign.TopPadding = headerAlign.BottomPadding = headerAlign.RightPadding = headerAlign.LeftPadding = 1;
+			headerAlign.Add (box);
+			
 			header = new EventBox ();
 			header.Events |= Gdk.EventMask.KeyPressMask | Gdk.EventMask.KeyReleaseMask;
 			header.ButtonPressEvent += HeaderButtonPress;
@@ -102,11 +108,16 @@ namespace MonoDevelop.Components.Docking
 			header.MotionNotifyEvent += HeaderMotion;
 			header.KeyPressEvent += HeaderKeyPress;
 			header.KeyReleaseEvent += HeaderKeyRelease;
-			header.Add (box);
+			header.Add (headerAlign);
+			header.ExposeEvent += HeaderExpose;
 			header.Realized += delegate {
 				header.GdkWindow.Cursor = handCursor;
-				header.ModifyBg (StateType.Normal, frame.Style.Mid (Gtk.StateType.Normal));
 			};
+			
+			foreach (Widget w in new Widget [] { header, btnDock, btnClose }) {
+				w.EnterNotifyEvent += HeaderEnterNotify;
+				w.LeaveNotifyEvent += HeaderLeaveNotify;
+			}
 			
 			PackStart (header, false, false, 0);
 			ShowAll ();
@@ -218,6 +229,32 @@ namespace MonoDevelop.Components.Docking
 				allowPlaceholderDocking = true;
 				frame.UpdatePlaceholder (item, Allocation.Size, true);
 			}
+		}
+		
+		private void HeaderExpose (object ob, Gtk.ExposeEventArgs a)
+		{
+			Gdk.Rectangle rect = new Gdk.Rectangle (0, 0, header.Allocation.Width - 1, header.Allocation.Height);
+			Gdk.GC gc = pointerHover
+				? frame.Style.MidGC (Gtk.StateType.Active)
+				: frame.Style.MidGC (Gtk.StateType.Normal);
+			
+			header.GdkWindow.DrawRectangle (gc, true, rect);
+			header.GdkWindow.DrawRectangle (frame.Style.DarkGC (Gtk.StateType.Normal), false, rect);
+			
+			foreach (Widget child in header.Children)
+				header.PropagateExpose (child, a.Event);
+		}
+		
+		private void HeaderLeaveNotify (object ob, EventArgs a)
+		{
+			pointerHover = false;
+			header.QueueDraw ();
+		}
+		
+		private void HeaderEnterNotify (object ob, EventArgs a)
+		{
+			pointerHover = true;
+			header.QueueDraw ();
 		}
 				
 		public string Label {
