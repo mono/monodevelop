@@ -1,3 +1,9 @@
+2007-11-16  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Gui/CSharpTextEditorExtension.cs: Fix "Bug 342124 - Tab should indent,
+	  regardless of the position of the cursor", as its behaviour was
+	  confusingly inconsistent. Remove some unused code.
+
 2007-11-16  Mike Krüger <mkrueger@novell.com> 
 
 	* Parser/TypeVisitor.cs, CSharpBindingCompilerManager.cs: Fixed "Bug 341901

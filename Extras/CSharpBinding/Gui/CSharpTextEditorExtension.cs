@@ -244,12 +244,6 @@ namespace CSharpBinding
 			}
 		}
 		
-		void ResetSmartIndentEngine ()
-		{
-			oldEngines.Clear ();
-			indentEngine.Reset ();
-		}
-		
 		void ResetSmartIndentEngineToCursor (int cursor)
 		{
 			bool gotOldEngine = false;
@@ -456,11 +450,7 @@ namespace CSharpBinding
 				// and when a tab has just been inserted (i.e. not a template or an autocomplete command)
 				if (!indentEngine.IsInsideVerbatimString
 				    && cursor >= 1 && Editor.GetCharAt (cursor - 1) == '\t' //tab was actually inserted, or in a region of tabs
-				    && !hadSelection //was just a cursor, not a block of selected text -- the text editor handles that specially 
-				    && (
-				        nextChar != '\n' // not at the end of a line
-				        || (cursor >= 2 && Editor.GetCharAt (cursor - 2) == '\n') //unless also at the beginning of a line
-				        )
+				    && !hadSelection //was just a cursor, not a block of selected text -- the text editor handles that specially
 				    )
 				{
 					Editor.DeleteText (cursor - 1, 1);
@@ -774,7 +764,6 @@ namespace CSharpBinding
 			if (charTyped == '(') {
 				if (expression.Trim () != "typeof")
 					return null;
-				string[] namespaces = parserContext.GetNamespaceList ("", true, true);
 				Resolver res = new Resolver (parserContext);				
 				LanguageItemCollection items = res.IsAsResolve ("System.Object", caretLineNumber, caretColumn, FileName, Editor.Text, false);
 				TypeNameResolver resolver = res.CreateTypeNameResolver ();
