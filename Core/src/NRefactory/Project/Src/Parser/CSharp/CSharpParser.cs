@@ -400,6 +400,15 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			return IsTypeNameOrKWForTypeCast(ref pt) && pt.kind == Tokens.Identifier;
 		}
 
+		bool IsTokenWithGenericParameters ()
+		{
+			StartPeek();
+			Token t = Peek (1);
+			if (t.kind != Tokens.LessThan) 
+				return false;
+			return SkipGeneric(ref t);
+		}
+		
 		/* True if lookahead is type parameters (<...>) followed by the specified token */
 		bool IsGenericFollowedBy(int token)
 		{

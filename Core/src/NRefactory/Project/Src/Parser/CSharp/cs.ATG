@@ -1734,6 +1734,8 @@ PrimaryExpr<out Expression pexpr>
 		"true"                              (.pexpr = new PrimitiveExpression(true, "true");  .)
 		| "false"                           (.pexpr = new PrimitiveExpression(false, "false"); .)
 		| "null"                            (.pexpr = new PrimitiveExpression(null, "null");  .)          /* from literal token */
+		| IF (IsTokenWithGenericParameters()) 
+		  TypeName<out type, true>          (.pexpr = new FieldReferenceExpression(new TypeReferenceExpression (type), ""); .)
 		| Literal                           (.pexpr = new PrimitiveExpression(t.literalValue, t.val);  .)
 		| IF (la.kind == Tokens.Identifier && Peek(1).kind == Tokens.DoubleColon)
 			ident (. type = new TypeReference(t.val); .)
