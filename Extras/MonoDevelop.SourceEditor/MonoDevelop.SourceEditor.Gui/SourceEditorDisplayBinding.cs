@@ -1373,7 +1373,8 @@ namespace MonoDevelop.SourceEditor.Gui
 					}
 				}
 				iterator = matchEnd;
-			} while (res && options.SearchWholeWordOnly && (!matchStart.StartsWord () || !matchEnd.EndsWord ()));
+			} while (res && options.SearchWholeWordOnly && (!IsWordSeparator (matchStart.Offset > 0 ? Buffer.Text [matchStart.Offset - 1] : ' ') || 
+			                                                !IsWordSeparator (matchEnd.Offset < Buffer.CharCount ? Buffer.Text [matchEnd.Offset] : ' ')));
 			
 			if (!res) 
 				return false;
@@ -1382,6 +1383,10 @@ namespace MonoDevelop.SourceEditor.Gui
 			return true;
 		}
 		
+		static bool IsWordSeparator (char c)
+		{
+			return Char.IsWhiteSpace (c) || (Char.IsPunctuation (c) && c != '_');
+		}
 		
 		bool Find (bool reverse, Gtk.TextIter iter, string str, GtkSourceView.SourceSearchFlags flags, out Gtk.TextIter match_start, out Gtk.TextIter match_end, Gtk.TextIter limit)
 		{
