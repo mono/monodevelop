@@ -51,6 +51,7 @@ FILES =  \
 	MonoDevelop.Core.Utils.ReportingStream/ReportingStream.cs \
 	MonoDevelop.Core/AbstractService.cs \
 	MonoDevelop.Core/ClrVersion.cs \
+	MonoDevelop.Core/DefaultAddinLocalizer.cs \
 	MonoDevelop.Core/FileEventArgs.cs \
 	MonoDevelop.Core/FileService.cs \
 	MonoDevelop.Core/IAsyncOperation.cs \

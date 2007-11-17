@@ -65,6 +65,8 @@ namespace MonoDevelop.Core
 			configDir = System.IO.Path.Combine (configDir, "MonoDevelop");
 			
 			AddinManager.Initialize (configDir);
+			AddinManager.InitializeDefaultLocalizer (new DefaultAddinLocalizer ());
+			
 			if (updateAddinRegistry)
 				AddinManager.Registry.Update (null);
 			setupService = new SetupService (AddinManager.Registry);
