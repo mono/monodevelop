@@ -204,12 +204,12 @@ namespace MonoDevelop.Ide.Templates
 				wizardpath = config["Wizard"].InnerText;
 			}
 			
-			name         = GettextCatalog.GetString (config["_Name"].InnerText);
+			name         = addin.Localizer.GetString (config["_Name"].InnerText);
 			this.category     = category;
 			this.languagename = languagename;
 			
 			if (config["_Description"] != null) {
-				description  = GettextCatalog.GetString (config["_Description"].InnerText);
+				description  = addin.Localizer.GetString (config["_Description"].InnerText);
 			}
 			
 			if (config["Icon"] != null) {

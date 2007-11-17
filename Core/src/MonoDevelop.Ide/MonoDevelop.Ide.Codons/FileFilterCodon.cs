@@ -30,7 +30,7 @@ namespace MonoDevelop.Ide.Codons
 	[ExtensionNode (Description="A file filter to be used in the Open File dialog.")]
 	internal class FileFilterCodon : TypeExtensionNode
 	{
-		[NodeAttribute ("_label", true, "Display name of the filter.")]
+		[NodeAttribute ("_label", true, "Display name of the filter.", Localizable=true)]
 		string filtername = null;
 		
 		[NodeAttribute("extensions", true, "Extensions to use as filter.")]

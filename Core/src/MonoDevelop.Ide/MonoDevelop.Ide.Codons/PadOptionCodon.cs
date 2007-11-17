@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.Codons
 	[ExtensionNode (Description="A display option of a solution pad.")]
 	internal class PadOptionCodon : ExtensionNode
 	{
-		[NodeAttribute("_label", true, "Display name of the option")]
+		[NodeAttribute("_label", true, "Display name of the option", Localizable=true)]
 		string label = null;
 		
 		[NodeAttribute("defaultValue", "Default value of the option")]
@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.Codons
 		protected override void Read (NodeElement elem)
 		{
 			base.Read (elem);
-			option = new TreePadOption (Id, GettextCatalog.GetString (label), defaultValue);
+			option = new TreePadOption (Id, label, defaultValue);
 		}
 	}
 }

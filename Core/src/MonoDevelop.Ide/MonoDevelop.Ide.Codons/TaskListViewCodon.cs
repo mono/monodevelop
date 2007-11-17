@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.Codons
 	{
 		ITaskListView view;
 		
-		[NodeAttribute("_label", "Display name of the view.")]
+		[NodeAttribute("_label", "Display name of the view.", Localizable=true)]
 		string label = null;
 		
 		[NodeAttribute("class", "Class of the view.")]
@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide.Codons
 		}
 		
 		public string Label {
-			get { return GettextCatalog.GetString (label); }
+			get { return label; }
 		}		
 
 		protected virtual ITaskListView CreateView ()

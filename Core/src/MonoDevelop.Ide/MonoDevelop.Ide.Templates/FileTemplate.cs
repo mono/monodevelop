@@ -178,7 +178,7 @@ namespace MonoDevelop.Ide.Templates
 			fileTemplate.lastmodified = doc.DocumentElement.GetAttribute ("LastModified");
 			
 			if (config["_Name"] != null)
-				fileTemplate.name = GettextCatalog.GetString (config["_Name"].InnerText);
+				fileTemplate.name = addin.Localizer.GetString (config["_Name"].InnerText);
 			else
 				throw new InvalidOperationException ("Missing element '_Name' in file template: " + codon.Id);
 			
@@ -194,7 +194,7 @@ namespace MonoDevelop.Ide.Templates
 				fileTemplate.projecttype  = config["ProjectType"].InnerText;
 			
 			if (config["_Description"] != null) {
-				fileTemplate.description  = GettextCatalog.GetString (config["_Description"].InnerText);
+				fileTemplate.description  = addin.Localizer.GetString (config["_Description"].InnerText);
 			}
 			
 			if (config["Icon"] != null) {

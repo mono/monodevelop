@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.Codons
 		IPadContent content;
 		string id;
 		
-		[NodeAttribute("_label", "Display name of the pad.")]
+		[NodeAttribute("_label", "Display name of the pad.", Localizable=true)]
 		string label = null;
 		
 		[NodeAttribute("class", "Class name.")]
@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.Codons
 		}
 		
 		public string Label {
-			get { return GettextCatalog.GetString(label); }
+			get { return label; }
 		}
 		
 		public string Icon {

@@ -1,3 +1,14 @@
+2007-11-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Codons/FileFilterCodon.cs,
+	  MonoDevelop.Ide.Codons/PadOptionCodon.cs,
+	  MonoDevelop.Ide.Codons/PadCodon.cs,
+	  MonoDevelop.Ide.Codons/TaskListViewCodon.cs: Made some extension node
+	  attributes serializable.
+	* MonoDevelop.Ide.Templates/FileTemplate.cs,
+	  MonoDevelop.Ide.Templates/ProjectTemplate.cs: Use the add-in localizer
+	  to localize template names and descriptions.
+
 2007-11-13  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs: Log pad buttons' sensitive
