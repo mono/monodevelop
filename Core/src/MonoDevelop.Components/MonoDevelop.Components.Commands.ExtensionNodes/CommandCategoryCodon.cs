@@ -37,12 +37,12 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 	[ExtensionNode (Description="A command category")]
 	public class CommandCategoryCodon : ExtensionNode
 	{
-		[NodeAttribute ("_name", true, "Name")]
+		[NodeAttribute ("_name", true, "Name", Localizable=true)]
 		string name;
 		
 		public string Name {
 			get {
-				return Mono.Unix.Catalog.GetString (name);
+				return name;
 			}
 		}
 	}

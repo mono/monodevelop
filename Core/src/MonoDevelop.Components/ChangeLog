@@ -1,3 +1,12 @@
+2007-11-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Components.Commands.ExtensionNodes/ItemSetCodon.cs,
+	  MonoDevelop.Components.Commands.ExtensionNodes/CommandCategoryCodon.cs,
+	  MonoDevelop.Components.Commands.ExtensionNodes/LinkItemCodon.cs,
+	  MonoDevelop.Components.Commands.ExtensionNodes/CommandCodon.cs,
+	  MonoDevelop.Components.Commands.ExtensionNodes/SchemeExtensionNode.cs:
+	  Made some extension node attributes serializable.
+
 2007-11-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Components.Commands/CommandManager.cs: Make shortcuts work in

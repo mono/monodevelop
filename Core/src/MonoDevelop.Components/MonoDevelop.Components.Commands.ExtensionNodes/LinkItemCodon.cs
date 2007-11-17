@@ -41,7 +41,7 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 	[ExtensionNode (Description="A menu or toolbar item that opens an URL when activated")]
 	internal class LinkItemCodon : InstanceExtensionNode
 	{
-		[NodeAttribute ("_label", "Label of the item.")]
+		[NodeAttribute ("_label", "Label of the item.", Localizable=true)]
 		string label;
 		
 		[NodeAttribute ("link", "URL to open.")]

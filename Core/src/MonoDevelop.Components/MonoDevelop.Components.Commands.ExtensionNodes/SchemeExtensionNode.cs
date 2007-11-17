@@ -33,7 +33,7 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 {
 	internal class SchemeExtensionNode: ExtensionNode
 	{
-		[NodeAttribute ("_name", "Name of the key bindings scheme")]
+		[NodeAttribute ("_name", "Name of the key bindings scheme", Localizable=true)]
 		string name;
 
 		[NodeAttribute ("file", "Name of the key bindings file")]

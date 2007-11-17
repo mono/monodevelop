@@ -41,7 +41,7 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 	[ExtensionNode (Description="A submenu")]
 	internal class ItemSetCodon : InstanceExtensionNode
 	{
-		[NodeAttribute ("_label", "Label of the submenu")]
+		[NodeAttribute ("_label", "Label of the submenu", Localizable=true)]
 		string label;
 		
 		[NodeAttribute("icon", "Icon of the submenu. The provided value must be a registered stock icon. A resource icon can also be specified using 'res:' as prefix for the name, for example: 'res:customIcon.png'")]
@@ -54,7 +54,7 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 		{
 			if (label == null) label = Id;
 
-			label = StringParserService.Parse (GettextCatalog.GetString (label));
+			label = StringParserService.Parse (label);
 			if (icon != null) icon = CommandCodon.GetStockId (Addin, icon);
 			CommandEntrySet cset = new CommandEntrySet (label, icon);
 			cset.AutoHide = autohide;

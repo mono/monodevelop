@@ -41,10 +41,10 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 	[ExtensionNode (Description="A user interface command. The 'id' of the command must match the full name of an existing enumeration. An arbitrary string can also be used as an id for the command by just using '@' as prefix for the string.")]
 	public class CommandCodon : TypeExtensionNode
 	{
-		[NodeAttribute ("_label", true, "Label")]
+		[NodeAttribute ("_label", true, "Label", Localizable=true)]
 		string label;
 		
-		[NodeAttribute ("_description", "Description of the command")]
+		[NodeAttribute ("_description", "Description of the command", Localizable=true)]
 		string _description;
 		
 		[NodeAttribute ("shortcut", "Key combination that triggers the command. Control, Alt and Shift modifiers can be specified using '+' as a separator. Multi-state key bindings can be specified using a '|' between the mode and accel. For example 'Control+D' or 'Control+X|Control+S'")]
@@ -143,11 +143,11 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 			}
 			
 			cmd.Id = ParseCommandId (this);
-			cmd.Text = StringParserService.Parse (GettextCatalog.GetString (label));
+			cmd.Text = StringParserService.Parse (label);
 			if ((_description != null) && (_description.Length > 0)){
 				cmd.Description = _description;				
 			}
-			cmd.Description = GettextCatalog.GetString(cmd.Description);
+			cmd.Description = cmd.Description;
 			
 			if (icon != null)
 				cmd.Icon = GetStockId (Addin, icon);
