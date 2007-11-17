@@ -183,6 +183,8 @@ namespace CBinding
 			pkg_paths = pkg_var.Split (':');
 			
 			foreach (string dir in pkg_paths) {
+				if (string.IsNullOrEmpty (dir))
+					continue;
 				string dirPath = System.IO.Path.GetFullPath (dir);
 				if (!dirs.Contains (dirPath) && !string.IsNullOrEmpty (dir)) {
 					dirs.Add (dir);

@@ -1,3 +1,8 @@
+2007-11-17  Christian Hergert <christian.hergert@gmail.com> 
+
+	* Gui/EditPackagesDialog.cs: Check if string is null or empty before using
+	  it to prevent crash.
+
 2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Parser/TagDatabaseManager.cs: Track LoggingService API changes.
