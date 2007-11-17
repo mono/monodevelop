@@ -1,0 +1,54 @@
+2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* CommandExtension/CommandExtension.mdp,
+	  FileContentExtension/FileContentExtension.mdp,
+	  FileExtender/FileExtender.mdp,
+	  HelloWorldExtension/HelloWorldExtension.mdp,
+	  SystemInfoExtension/SystemInfoExtension.mdp, Test.mds,
+	  UnitTests/UnitTests.mdp: Update paths.
+
+2007-07-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* UnitTests/TestEvents.cs,
+	  SystemInfoExtension/SystemInfoExtension.addin.xml: Minor fixes.
+	* Makefile.am: Added new test target.
+
+2007-07-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* UnitTests/UnitTests.mdp, UnitTests/Makefile.am,
+	  FileContentExtension/FileContentExtension.mdp,
+	  HelloWorldExtension/HelloWorldExtension.mdp,
+	  CommandExtension/CommandExtension.mdp,
+	  SystemInfoExtension/SystemInfoExtension.mdp,
+	  FileExtender/FileExtender.mdp: More project file fixes.
+
+2007-04-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* UnitTests/UnitTests.mdp, UnitTests/Makefile.am,
+	  FileContentExtension/FileContentExtension.mdp,
+	  FileContentExtension/Makefile.am,
+	  HelloWorldExtension/HelloWorldExtension.mdp,
+	  HelloWorldExtension/Makefile.am, CommandExtension/Makefile.am,
+	  CommandExtension/CommandExtension.mdp,
+	  SystemInfoExtension/Makefile.am,
+	  SystemInfoExtension/SystemInfoExtension.mdp,
+	  FileExtender/Makefile.am, FileExtender/FileExtender.mdp: Enabled
+	  makefile synchronization.
+
+2007-03-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* UnitTests/TestExtensions.cs, UnitTests/SimpleApp.addin.xml,
+	  FileContentExtension/FileContentExtension.addin.xml,
+	  SystemInfoExtension/SystemInfoExtension.addin.xml: Test extension
+	  of child nodes.
+
+2007-03-28  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* UnitTests/TestSetup.cs, UnitTests/TestBase.cs: Use Assembly.CodeBase,
+	  since Assembly.Location will return the wrong value when the
+	  assembly is loaded using shadow copy.
+
+2007-03-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	Added build files.
+

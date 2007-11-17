@@ -1,0 +1,134 @@
+<Overview>
+  <Assemblies>
+    <Assembly Name="Mono.Addins" Version="1.0.0.0">
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.Reflection.AssemblyTrademark("")</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Reflection.AssemblyCopyright("")</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Reflection.AssemblyProduct("")</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Reflection.AssemblyCompany("")</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Reflection.AssemblyConfiguration("")</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Reflection.AssemblyDescription("")</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Reflection.AssemblyTitle("")</AttributeName>
+        </Attribute>
+      </Attributes>
+    </Assembly>
+    <Assembly Name="Mono.Addins.Setup" Version="0.0.0.0" />
+    <Assembly Name="Mono.Addins.Gui" Version="1.0.2645.32627">
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.Reflection.AssemblyTrademark("")</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Reflection.AssemblyCopyright("")</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Reflection.AssemblyProduct("")</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Reflection.AssemblyCompany("")</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Reflection.AssemblyConfiguration("")</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Reflection.AssemblyDescription("")</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Reflection.AssemblyTitle("")</AttributeName>
+        </Attribute>
+      </Attributes>
+    </Assembly>
+  </Assemblies>
+  <Remarks>To be added.</Remarks>
+  <Copyright>To be added.</Copyright>
+  <Types>
+    <Namespace Name="Mono.Addins">
+      <Type Name="IProgressStatus" />
+      <Type Name="ExtensionNode" />
+      <Type Name="NodeAttribute" />
+      <Type Name="Addin" />
+      <Type Name="TypeExtensionNode" />
+      <Type Name="ExtensionNodeList" />
+      <Type Name="NodeAttributeAttribute" />
+      <Type Name="ExtensionContext" />
+      <Type Name="ConditionType" />
+      <Type Name="AddinAttribute" />
+      <Type Name="ExtensionAttribute" />
+      <Type Name="AddinDependencyAttribute" />
+      <Type Name="ExtensionPointAttribute" />
+      <Type Name="AddinManager" />
+      <Type Name="ExtensionEventHandler" />
+      <Type Name="TypeExtensionPointAttribute" />
+      <Type Name="ExtensionEventArgs" />
+      <Type Name="ExtensionNodeEventArgs" />
+      <Type Name="ExtensionNodeEventHandler" />
+      <Type Name="ExtensionChange" />
+      <Type Name="NodeElement" />
+      <Type Name="RuntimeAddin" />
+      <Type Name="ConsoleProgressStatus" />
+      <Type Name="AddinErrorEventArgs" />
+      <Type Name="AddinEventArgs" />
+      <Type Name="AddinErrorEventHandler" />
+      <Type Name="AddinEventHandler" />
+      <Type Name="AddinRegistry" />
+      <Type Name="ExtensionNodeChildAttribute" />
+      <Type Name="ExtensionNodeAttribute" />
+      <Type Name="AddinRootAttribute" />
+    </Namespace>
+    <Namespace Name="Mono.Addins.Setup">
+      <Type Name="InstallException" />
+      <Type Name="Package" />
+      <Type Name="PackageCollection" />
+      <Type Name="AddinRepositoryEntry" />
+      <Type Name="AddinRepository" />
+      <Type Name="AddinHeader" />
+      <Type Name="RepositoryRegistry" />
+      <Type Name="SetupService" />
+      <Type Name="SetupTool" />
+      <Type Name="SetupCommandHandler" />
+    </Namespace>
+    <Namespace Name="Mono.Addins.Description">
+      <Type Name="AddinDescription" />
+      <Type Name="ExtensionPoint" />
+      <Type Name="ObjectDescription" />
+      <Type Name="ModuleDescription" />
+      <Type Name="ObjectDescriptionCollection" />
+      <Type Name="ExtensionPointCollection" />
+      <Type Name="ExtensionNodeType" />
+      <Type Name="ExtensionNodeSet" />
+      <Type Name="NodeSetIdCollection" />
+      <Type Name="ExtensionNodeSetCollection" />
+      <Type Name="Extension" />
+      <Type Name="ExtensionNodeDescription" />
+      <Type Name="ExtensionNodeDescriptionCollection" />
+      <Type Name="ExtensionCollection" />
+      <Type Name="ConditionTypeDescription" />
+      <Type Name="ConditionTypeDescriptionCollection" />
+      <Type Name="AddinDependency" />
+      <Type Name="Dependency" />
+      <Type Name="AssemblyDependency" />
+      <Type Name="DependencyCollection" />
+      <Type Name="ModuleCollection" />
+      <Type Name="NativeDependency" />
+      <Type Name="NodeTypeAttribute" />
+      <Type Name="NodeTypeAttributeCollection" />
+    </Namespace>
+    <Namespace Name="Mono.Addins.Gui">
+      <Type Name="AddinManagerWindow" />
+    </Namespace>
+  </Types>
+  <Title>Untitled</Title>
+</Overview>

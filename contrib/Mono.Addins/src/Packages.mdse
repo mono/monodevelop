@@ -1,0 +1,48 @@
+<CombineEntry name="Packages" fileversion="2.0" ctype="PackagingProject">
+  <Packages>
+    <Package name="MSBuild Sources">
+      <Builder rootEntry="Mono.Addins.mds" targetFile="packages/mono-addins-msbuild.zip" format="MonoDevelop.Projects.MonoDevelopFileFormat" ctype="SourcesZipPackageBuilder">
+        <ChildEntries>
+          <Entry>Mono.Addins.Setup/Mono.Addins.Setup.mdp</Entry>
+          <Entry>Mono.Addins/Mono.Addins.mdp</Entry>
+        </ChildEntries>
+      </Builder>
+    </Package>
+    <Package name="Windows Binaries">
+      <Builder rootEntry="Mono.Addins.mds" targetFile="packages/mono-addins-win.zip" platform="Windows" ctype="BinariesZipPackageBuilder">
+        <ChildEntries>
+          <Entry>Mono.Addins.Setup/Mono.Addins.Setup.mdp</Entry>
+          <Entry>Mono.Addins/Mono.Addins.mdp</Entry>
+        </ChildEntries>
+      </Builder>
+    </Package>
+    <Package name="Tarball">
+      <Builder rootEntry="Mono.Addins.mds" TargetDirectory="/home/lluis/work/mono-addins/packages" DefaultConfiguration="Default" GenerateFiles="False" ctype="TarballDeployTarget">
+        <ChildEntries>
+          <Entry>Test/CommandExtension/CommandExtension.mdp</Entry>
+          <Entry>Test/UnitTests/UnitTests.mdp</Entry>
+          <Entry>Samples/WriterServiceHost/WriterServiceHost.mdp</Entry>
+          <Entry>Samples/TextEditorLib/TextEditorLib.mdp</Entry>
+          <Entry>Samples/TextEditor.Xml/TextEditor.Xml.mdp</Entry>
+          <Entry>Test/FileExtender/FileExtender.mdp</Entry>
+          <Entry>Test/SystemInfoExtension/SystemInfoExtension.mdp</Entry>
+          <Entry>Samples/WriterService/WriterService.mdp</Entry>
+          <Entry>Samples/TextEditor/TextEditor.mdp</Entry>
+          <Entry>Mono.Addins.Setup/Mono.Addins.Setup.mdp</Entry>
+          <Entry>Samples/Samples.mds</Entry>
+          <Entry>Test/HelloWorldExtension/HelloWorldExtension.mdp</Entry>
+          <Entry>Samples/WriterService.SampleExtender/WriterService.SampleExtender.mdp</Entry>
+          <Entry>docs/docs.mdp</Entry>
+          <Entry>Mono.Addins/Mono.Addins.mdp</Entry>
+          <Entry>Samples/TextEditor.CompilerService.CSharp/TextEditor.CompilerService.CSharp.mdp</Entry>
+          <Entry>Mono.Addins.Gui/Mono.Addins.Gui.mdp</Entry>
+          <Entry>Packages.mdse</Entry>
+          <Entry>Test/Test.mds</Entry>
+          <Entry>mautil/mautil.mdp</Entry>
+          <Entry>Test/FileContentExtension/FileContentExtension.mdp</Entry>
+          <Entry>Samples/TextEditor.CompilerService/TextEditor.CompilerService.mdp</Entry>
+        </ChildEntries>
+      </Builder>
+    </Package>
+  </Packages>
+</CombineEntry>

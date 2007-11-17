@@ -1,0 +1,114 @@
+<Type Name="SetupTool" FullName="Mono.Addins.Setup.SetupTool">
+  <TypeSignature Language="C#" Value="public class SetupTool" />
+  <AssemblyInfo>
+    <AssemblyName>Mono.Addins.Setup</AssemblyName>
+    <AssemblyVersion>0.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public SetupTool (Mono.Addins.AddinRegistry registry);" />
+      <MemberType>Constructor</MemberType>
+      <Parameters>
+        <Parameter Name="registry" Type="Mono.Addins.AddinRegistry" />
+      </Parameters>
+      <Docs>
+        <param name="registry">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="AddCommand">
+      <MemberSignature Language="C#" Value="public void AddCommand (string category, string command, string shortName, string arguments, string description, string longDescription, Mono.Addins.Setup.SetupCommandHandler handler);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="category" Type="System.String" />
+        <Parameter Name="command" Type="System.String" />
+        <Parameter Name="shortName" Type="System.String" />
+        <Parameter Name="arguments" Type="System.String" />
+        <Parameter Name="description" Type="System.String" />
+        <Parameter Name="longDescription" Type="System.String" />
+        <Parameter Name="handler" Type="Mono.Addins.Setup.SetupCommandHandler" />
+      </Parameters>
+      <Docs>
+        <param name="category">To be added.</param>
+        <param name="command">To be added.</param>
+        <param name="shortName">To be added.</param>
+        <param name="arguments">To be added.</param>
+        <param name="description">To be added.</param>
+        <param name="longDescription">To be added.</param>
+        <param name="handler">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ApplicationName">
+      <MemberSignature Language="C#" Value="public string ApplicationName { set; get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Run">
+      <MemberSignature Language="C#" Value="public int Run (string[] args);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="args" Type="System.String[]" />
+      </Parameters>
+      <Docs>
+        <param name="args">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Run">
+      <MemberSignature Language="C#" Value="public int Run (string[] args, int firstArgumentIndex);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="args" Type="System.String[]" />
+        <Parameter Name="firstArgumentIndex" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="args">To be added.</param>
+        <param name="firstArgumentIndex">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="VerboseOutput">
+      <MemberSignature Language="C#" Value="public bool VerboseOutput { set; get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+</Type>

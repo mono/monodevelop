@@ -1,0 +1,37 @@
+<Project name="FileExtender" fileversion="2.0" language="C#" clr-version="Net_1_1" ctype="DotNetProject">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="DotNetProjectConfiguration">
+      <Output directory="../lib/extras" assembly="FileExtender" />
+      <Build debugmode="True" target="Library" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_1_1" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" win32Icon="." ctype="CSharpCompilerParameters" />
+    </Configuration>
+    <Configuration name="Release" ctype="DotNetProjectConfiguration">
+      <Output directory="bin/Release" assembly="FileExtender" />
+      <Build debugmode="False" target="Library" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_1_1" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+  </Configurations>
+  <Contents>
+    <File name="FileExtender.cs" subtype="Code" buildaction="Compile" />
+    <File name="FileExtender.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="ExtraExtender.addin.xml" subtype="Code" buildaction="FileCopy" />
+    <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
+  </Contents>
+  <References>
+    <ProjectReference type="Gac" localcopy="True" refto="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Project" localcopy="True" refto="FileContentExtension" />
+    <ProjectReference type="Project" localcopy="True" refto="Mono.Addins" />
+  </References>
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True">
+    <BuildFilesVar Sync="True" Name="FILES" />
+    <DeployFilesVar Sync="True" Name="DATA_FILES" />
+    <ResourcesVar Sync="True" Name="RESOURCES" />
+    <OthersVar Name="EXTRAS" />
+    <GacRefVar Sync="True" Name="REFERENCES" Prefix="-r:" />
+    <AsmRefVar Sync="True" Name="DLL_REFERENCES" />
+    <ProjectRefVar Sync="True" Name="PROJECT_REFERENCES" />
+  </MonoDevelop.Autotools.MakefileInfo>
+  <Deployment.LinuxDeployData scriptName="fileextender" generatePcFile="False" />
+</Project>

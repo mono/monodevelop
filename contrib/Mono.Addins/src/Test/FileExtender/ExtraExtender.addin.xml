@@ -1,0 +1,25 @@
+<Addin 
+		id="ExtraExtender"
+		version="0.1.0"
+       namespace   = "SimpleApp">
+
+	<Dependencies>
+		<Addin id="Core" version="0.1.0" />
+		<Addin id="FileContentExtension" version="0.1.0" />
+		<Addin id="SystemInfoExtension" version="0.1.0" />
+	</Dependencies>
+
+	<!-- Extensions -->
+	
+	<Extension path = "/SimpleApp/ExtraWriters">
+		<Condition id="GlobalInfo" value="testChildren">
+			<FileContent id="SomeParentFile" fileName="someFile1" insertafter="first">
+				<Content xpath="child1" />
+				<Condition id="InputParameter" value="tc1">
+					<Content xpath="child2" />
+				</Condition>
+			</FileContent>
+		</Condition>
+	</Extension>
+	
+</Addin>
