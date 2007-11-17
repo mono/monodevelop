@@ -57,6 +57,6 @@ namespace MonoDevelop.Core.Logging
 		UpToInfo  = Info  | UpToWarn,
 		UpToDebug = Debug | UpToInfo,
 		
-		All = UpToInfo
+		All = UpToDebug
 	}
 }

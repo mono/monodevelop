@@ -1,3 +1,8 @@
+2007-11-16  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Core.Logging/LogLevel.cs: EnabledLoggingLevel.All should be
+	  equivalent to UpToDebug, not UpToInfo.
+
 2007-11-13  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Core.Logging/FileLogger.cs,
