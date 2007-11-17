@@ -32,7 +32,7 @@ namespace MonoDevelop.Core.Gui.Codons
 	[ExtensionNode (Description="A dialog panel to be shown in an options dialog. The specified class must implement MonoDevelop.Core.Gui.Dialogs.IDialogPanel.")]
 	public class DialogPanelCodon : TypeExtensionNode
 	{
-		[NodeAttribute("_label", true, "Name of the panel")]
+		[NodeAttribute("_label", true, "Name of the panel", Localizable=true)]
 		string label = null;
 		
 		string clsName;
@@ -56,15 +56,15 @@ namespace MonoDevelop.Core.Gui.Codons
 			
 			if (ChildNodes.Count == 0) {
 				if (clsName.Length > 0) {
-					newItem = new DefaultDialogPanelDescriptor (Id, GettextCatalog.GetString (Label), (IDialogPanel)base.CreateInstance ());
+					newItem = new DefaultDialogPanelDescriptor (Id, Label, (IDialogPanel)base.CreateInstance ());
 				} else {
-					newItem = new DefaultDialogPanelDescriptor (Id, GettextCatalog.GetString (Label));
+					newItem = new DefaultDialogPanelDescriptor (Id, Label);
 				}
 			} else {
 				ArrayList subItems = new ArrayList ();
 				foreach (TypeExtensionNode node in ChildNodes)
 					subItems.Add (node.CreateInstance ());
-				newItem = new DefaultDialogPanelDescriptor (Id, GettextCatalog.GetString (Label), subItems);
+				newItem = new DefaultDialogPanelDescriptor (Id, Label, subItems);
 			}
 			return newItem;
 		}

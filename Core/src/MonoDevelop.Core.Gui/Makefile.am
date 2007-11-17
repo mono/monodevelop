@@ -188,6 +188,8 @@ RES =  \
 	icons/visual-studio.png \
 	icons/web-overlay-16.png \
 	icons/web-overlay-32.png \
+	icons/workspace-16.png \
+	icons/workspace-32.png \
 	MonoDevelop.Core.Gui.addin.xml
 
 GENERATED_FILES = \

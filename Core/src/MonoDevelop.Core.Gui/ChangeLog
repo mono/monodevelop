@@ -1,3 +1,11 @@
+2007-11-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.mdp, MonoDevelop.Core.Gui/StockIcons.cs, Makefile.am,
+	  icons/workspace-32.png, icons/workspace-16.png,
+	  MonoDevelop.Core.Gui.addin.xml: Added workspace icons.
+	* MonoDevelop.Core.Gui.Codons/DialogPanelCodon.cs: Made some extension node
+	  attributes serializable.
+
 2007-11-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.Components/FileBrowser.cs: Make file scout icons

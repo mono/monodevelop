@@ -18,6 +18,7 @@ namespace MonoDevelop.Core.Gui
 		public static readonly string ClosedReferenceFolder = "md-closed-reference-folder";
 		public static readonly string ClosedResourceFolder = "md-closed-resource-folder";
 		public static readonly string Solution = "md-solution";
+		public static readonly string Workspace = "md-workspace";
 		public static readonly string CopyIcon = Gtk.Stock.Copy;
 		public static readonly string CutIcon = Gtk.Stock.Cut;
 		public static readonly string Delegate = "md-delegate";
