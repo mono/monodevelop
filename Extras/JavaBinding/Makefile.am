@@ -10,11 +10,15 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	-r:Mono.Posix \
 	-r:System \
 	-r:System.Drawing \
 	-r:System.Xml
 
 FILES =  \
+	gtk-gui/generated.cs \
+	gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs \
+	gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs \
 	Gui/GlobalOptionsPanel.cs \
 	Gui/ProjectConfigurationPropertyPanel.cs \
 	IKVMCompilerManager.cs \
@@ -23,6 +27,7 @@ FILES =  \
 	Project/JavaCompilerParameters.cs
 
 RES =  \
+	gtk-gui/gui.stetic \
 	icons/Java.FileIcon \
 	icons/java-icon-32.png \
 	Java.glade \

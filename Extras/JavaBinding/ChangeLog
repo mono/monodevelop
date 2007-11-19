@@ -1,3 +1,8 @@
+2007-11-20  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/GlobalOptionsPanel.cs, Gui/ProjectConfigurationPropertyPanel.cs,
+	  JavaBinding.mdp, Makefile.am: Migrated to Stetic.
+
 2007-11-15  Mike Krüger <mkrueger@novell.com> 
 
 	* JavaBindingCompilerServices.cs, JavaLanguageBinding.cs,
