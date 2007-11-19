@@ -57,16 +57,17 @@ namespace CSharpBinding.Parser
 {
 	class CSharpRefactorer: BaseRefactorer
 	{
-		CSharpCodeProvider csharpProvider = new CSharpCodeProvider ();
+		CSharpEnhancedCodeProvider csharpProvider = new CSharpEnhancedCodeProvider ();
 		
 		public override RefactorOperations SupportedOperations {
 			get { return RefactorOperations.All; }
 		}
 		
-		protected override ICodeGenerator GetGenerator ()
+		protected override CodeDomProvider GetCodeDomProvider ()
 		{
-			return csharpProvider.CreateGenerator ();
+			return csharpProvider;
 		}
+		
 		public override string ConvertToLanguageTypeName (string netTypeName)
 		{
 			Console.WriteLine ("Convert : '{0}'", netTypeName);

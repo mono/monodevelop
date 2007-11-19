@@ -44,6 +44,7 @@ namespace CSharpBinding
 	{
 		private ICodeParser codeParser;
 		
+		[Obsolete]
 		public override ICodeParser CreateParser ()
 		{
 			if (codeParser == null)
@@ -53,67 +54,71 @@ namespace CSharpBinding
 		
 		public override CodeCompileUnit Parse (TextReader codeStream)
 		{
-			return CreateParser ().Parse (codeStream);
+			return ParseInternal (codeStream);
+		}
+		
+		static CodeCompileUnit ParseInternal (TextReader codeStream)
+		{
+			CodeDomVisitor cdv = new CodeDomVisitor ();
+			IParser parser = ParserFactory.CreateParser (
+				SupportedLanguage.CSharp,
+				codeStream);
+			parser.ParseMethodBodies = true;
+			parser.Parse ();
+			
+			if (parser.Errors.Count > 0)
+				throw new ArgumentException (parser.Errors.ErrorOutput);
+			
+			parser.CompilationUnit.AcceptVisitor (cdv, null);
+			
+			parser.Dispose ();
+			
+			CodeCompileUnit ccu = cdv.codeCompileUnit;
+			
+			//C# parser seems to insist on putting imports in the "Global" namespace; fix it up
+			for (int i = 0; i < ccu.Namespaces.Count; i++) {
+				CodeNamespace global = ccu.Namespaces [i];
+				if ((global.Name == "Global") && (global.Types.Count == 0)) {
+					global.Name = "";
+					ccu.Namespaces.RemoveAt (i);
+					ccu.Namespaces.Insert (0, global);
+					
+					//clear out repeat imports...
+					for (int j = 1; j < ccu.Namespaces.Count; j++) {
+						CodeNamespace cn = ccu.Namespaces [j];
+						
+						//why can't we remove imports? will have to collect ones to keep
+						//then clear and refill
+						CodeNamespaceImportCollection imps = new CodeNamespaceImportCollection ();
+						
+						for (int m = 0; m < cn.Imports.Count; m++) {
+							bool found = false;
+							
+							for (int n = 0; n < global.Imports.Count; n++)
+								if (global.Imports [n] == cn.Imports [m])
+									found = true;
+						
+							if (!found)
+								imps.Add (cn.Imports [m]);
+						}
+						
+						cn.Imports.Clear ();
+						
+						foreach (CodeNamespaceImport imp in imps)
+							cn.Imports.Add (imp);
+					}
+					
+					break;
+				}
+			}
+			return ccu;
 		}
 		
 		private class CodeParser : ICodeParser
 		{
 			public CodeCompileUnit Parse (TextReader codeStream)
 			{
-				CodeDomVisitor cdv = new CodeDomVisitor ();
-				IParser parser = ParserFactory.CreateParser (
-					SupportedLanguage.CSharp,
-					codeStream);
-				parser.ParseMethodBodies = true;
-				parser.Parse ();
-				
-				if (parser.Errors.Count > 0)
-					throw new ArgumentException (parser.Errors.ErrorOutput);
-				
-				parser.CompilationUnit.AcceptVisitor (cdv, null);
-				
-				parser.Dispose ();
-				
-				CodeCompileUnit ccu = cdv.codeCompileUnit;
-				
-				//C# parser seems to insist on putting imports in the "Global" namespace; fix it up
-				for (int i = 0; i < ccu.Namespaces.Count; i++) {
-					CodeNamespace global = ccu.Namespaces [i];
-					if ((global.Name == "Global") && (global.Types.Count == 0)) {
-						global.Name = "";
-						ccu.Namespaces.RemoveAt (i);
-						ccu.Namespaces.Insert (0, global);
-						
-						//clear out repeat imports...
-						for (int j = 1; j < ccu.Namespaces.Count; j++) {
-							CodeNamespace cn = ccu.Namespaces [j];
-							
-							//why can't we remove imports? will have to collect ones to keep
-							//then clear and refill
-							CodeNamespaceImportCollection imps = new CodeNamespaceImportCollection ();
-							
-							for (int m = 0; m < cn.Imports.Count; m++) {
-								bool found = false;
-								
-								for (int n = 0; n < global.Imports.Count; n++)
-									if (global.Imports [n] == cn.Imports [m])
-										found = true;
-							
-								if (!found)
-									imps.Add (cn.Imports [m]);
-							}
-							
-							cn.Imports.Clear ();
-							
-							foreach (CodeNamespaceImport imp in imps)
-								cn.Imports.Add (imp);
-						}
-						
-						break;
-					}
-				}
-				
-				return ccu;
+				return ParseInternal (codeStream);
 			}
 		}
 	}
