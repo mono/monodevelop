@@ -1,8 +1,0 @@
-<Addin namespace="TextEditor" id="CompilerService" version="1.0">
-	<Dependencies>
-		<Addin id="Core" version="1.0" />
-	</Dependencies>
-	<Extension path = "/TextEditor/ToolbarButtons">
-		<ToolButton icon="gtk-execute" commandType="TextEditor.CompilerService.RunCommand" />
-	</Extension>
-</Addin>
