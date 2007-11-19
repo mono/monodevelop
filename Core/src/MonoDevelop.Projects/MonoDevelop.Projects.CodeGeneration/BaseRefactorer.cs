@@ -44,8 +44,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 			get { return RefactorOperations.All; }
 		}
 		
-		protected abstract ICodeGenerator GetGenerator ();
-	
+		protected abstract CodeDomProvider GetCodeDomProvider ();
+		
 		public IClass CreateClass (RefactorerContext ctx, string directory, string namspace, CodeTypeDeclaration type)
 		{
 			CodeCompileUnit unit = new CodeCompileUnit ();
@@ -56,8 +56,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 			string file = Path.Combine (directory, type.Name + ".cs");
 			StreamWriter sw = new StreamWriter (file);
 			
-			ICodeGenerator gen = GetGenerator ();
-			gen.GenerateCodeFromCompileUnit (unit, sw, GetOptions (false));
+			CodeDomProvider provider = GetCodeDomProvider ();
+			provider.GenerateCodeFromCompileUnit (unit, sw, GetOptions (false));
 			
 			sw.Close ();
 			
@@ -609,9 +609,9 @@ namespace MonoDevelop.Projects.CodeGeneration
 		{
 			CodeTypeDeclaration type = new CodeTypeDeclaration ("temp");
 			type.Members.Add (member);
-			ICodeGenerator gen = GetGenerator ();
+			CodeDomProvider provider = GetCodeDomProvider ();
 			StringWriter sw = new StringWriter ();
-			gen.GenerateCodeFromType (type, sw, GetOptions (member is CodeMemberMethod));
+			provider.GenerateCodeFromType (type, sw, GetOptions (member is CodeMemberMethod));
 			string code = sw.ToString ();
 			int i = code.IndexOf ('{');
 			int j = code.LastIndexOf ('}');

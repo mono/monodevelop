@@ -718,9 +718,18 @@ namespace MonoDevelop.Projects
 			CombineConfiguration config = ActiveConfiguration as CombineConfiguration;
 			if (config == null)
 				return;
+			
+			if (config.Entries == null) {
+				LoggingService.LogWarning ("Combine.OnClean '{0}', configuration '{1}': Entries is null", Name, config.Name);
+				return;
+			}
 
-			foreach (CombineConfigurationEntry cce in config.Entries)
-				cce.Entry.Clean (monitor);
+			foreach (CombineConfigurationEntry cce in config.Entries) {
+				if (cce.Entry == null)
+					LoggingService.LogWarning ("Combine.OnClean '{0}', configuration '{1}', entry '{2}': Entry is null", Name, config.Name, cce.EntryName);
+				else
+					cce.Entry.Clean (monitor);
+			}
 		}
 		
 		protected internal override ICompilerResult OnBuild (IProgressMonitor monitor)
