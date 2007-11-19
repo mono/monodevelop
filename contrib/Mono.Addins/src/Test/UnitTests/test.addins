@@ -1,0 +1,4 @@
+<Addins>
+	<Directory>../../../lib</Directory>
+	<Directory>../../../lib/extras</Directory>
+</Addins>

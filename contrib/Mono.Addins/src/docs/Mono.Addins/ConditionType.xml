@@ -1,0 +1,55 @@
+<Type Name="ConditionType" FullName="Mono.Addins.ConditionType">
+  <TypeSignature Language="C#" Value="public abstract class ConditionType" />
+  <AssemblyInfo>
+    <AssemblyName>Mono.Addins</AssemblyName>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="protected ConditionType ();" />
+      <MemberType>Constructor</MemberType>
+      <Parameters />
+      <Docs>
+        <summary>Creates a new instance.</summary>
+        <remarks />
+      </Docs>
+    </Member>
+    <Member MemberName="NotifyChanged">
+      <MemberSignature Language="C#" Value="public void NotifyChanged ();" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Notifies that the condition has changed, and that it has to be re-evaluated.</summary>
+        <remarks>This method must be called when there is a change in the state that determines the result of the evaluation. When this method is called, all node conditions depending on it are reevaluated and the corresponding events for adding or removing extension nodes are fired.
+</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Evaluate">
+      <MemberSignature Language="C#" Value="public abstract bool Evaluate (Mono.Addins.NodeElement conditionNode);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="conditionNode" Type="Mono.Addins.NodeElement" />
+      </Parameters>
+      <Docs>
+        <param name="conditionNode">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+  <Docs>
+    <summary>A condition evaluator.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+</Type>

@@ -1,0 +1,13 @@
+<Project name="docs" fileversion="2.0" ctype="GenericProject">
+  <Configurations active="Default">
+    <Configuration name="Default" ctype="GenericProjectConfiguration">
+      <Output directory="." />
+      <Build debugmode="True" />
+      <Execution runwithwarnings="True" consolepause="True" />
+    </Configuration>
+  </Configurations>
+  <Contents>
+    <File name="Mono.Addins" subtype="Directory" buildaction="Compile" />
+    <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
+  </Contents>
+</Project>

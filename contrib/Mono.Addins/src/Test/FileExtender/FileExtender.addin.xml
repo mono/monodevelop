@@ -1,0 +1,28 @@
+<Addin 
+       namespace   = "SimpleApp"
+       >
+
+	<Runtime>
+		<Import assembly="FileExtender.dll"/>
+	</Runtime>
+	
+	<Dependencies>
+		<Addin id="Core" version="0.1.0" />
+		<Addin id="FileContentExtension" version="0.1.0" />
+		<Addin id="ExtraExtender" version="0.1.0" />
+	</Dependencies>
+
+	<!-- Extensions -->
+	
+	<Extension path = "/SimpleApp/Writers/SomeFile">
+		<Content xpath="some/path1" />
+		<Content xpath="some/path2" />
+	</Extension>
+	
+	<Extension path = "/SimpleApp/ExtraWriters/SomeParentFile">
+		<Condition id="InputParameter" value="tc2">
+			<Content xpath="child3" />
+		</Condition>
+	</Extension>
+	
+</Addin>
