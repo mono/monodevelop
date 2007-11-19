@@ -1,5 +1,5 @@
 <objects>
-  <object type="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin" internal="true">
+  <object type="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
     <itemgroups>
     </itemgroups>
     <signals>

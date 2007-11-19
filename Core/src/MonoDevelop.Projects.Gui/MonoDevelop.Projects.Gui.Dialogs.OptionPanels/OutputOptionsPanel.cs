@@ -32,72 +32,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
 	public class OutputOptionsPanel : AbstractOptionPanel
 	{
-		class OutputOptionsPanelWidget : GladeWidgetExtract 
-		{
-			//
-			// Gtk Controls	
-			//
-			[Glade.Widget] Entry assemblyNameEntry;
-			[Glade.Widget] Gnome.FileEntry outputPathButton;
-			[Glade.Widget] Entry parametersEntry;
-			[Glade.Widget] CheckButton pauseConsoleOutputCheckButton;			
-			[Glade.Widget] CheckButton externalConsoleCheckButton;			
-			
-			DotNetProjectConfiguration configuration;
-			Project project;
-
-			public  OutputOptionsPanelWidget(Properties CustomizationObject) : base ("Base.glade", "OutputOptionsPanel")
- 			{			
-				configuration = ((Properties)CustomizationObject).Get<DotNetProjectConfiguration>("Config");
-				project = ((Properties)CustomizationObject).Get<Project>("Project");
-				externalConsoleCheckButton.Toggled += new EventHandler (ExternalConsoleToggle);
-				
-				assemblyNameEntry.Text = configuration.OutputAssembly;
-				parametersEntry.Text = configuration.CommandLineParameters;
-				
-				outputPathButton.DefaultPath = project.BaseDirectory;
-				outputPathButton.Filename = configuration.OutputDirectory;
-				
- 				externalConsoleCheckButton.Active = configuration.ExternalConsole;
- 				pauseConsoleOutputCheckButton.Active = configuration.PauseConsoleOutput;
-			}
-
-			public bool Store ()
-			{	
-				if (configuration == null) {
-					return true;
-				}
-				
-				if (!FileService.IsValidFileName (assemblyNameEntry.Text)) {
-					Services.MessageService.ShowError (null, GettextCatalog.GetString ("Invalid assembly name specified"), (Gtk.Window) Toplevel, true);
-					return false;
-				}
-
-				if (!FileService.IsValidFileName (outputPathButton.Filename)) {
-					Services.MessageService.ShowError (null, GettextCatalog.GetString ("Invalid output directory specified"), (Gtk.Window) Toplevel, true);
-					return false;
-				}
-				
-				configuration.OutputAssembly = assemblyNameEntry.Text;
-				configuration.OutputDirectory = outputPathButton.Filename;
-				configuration.CommandLineParameters = parametersEntry.Text;
- 				configuration.ExternalConsole = externalConsoleCheckButton.Active;
-				configuration.PauseConsoleOutput = pauseConsoleOutputCheckButton.Active;
-				return true;
-			}
-			
-			void ExternalConsoleToggle (object sender, EventArgs e)
-			{
-				if (externalConsoleCheckButton.Active) {
-	 				pauseConsoleOutputCheckButton.Sensitive = true;
-					pauseConsoleOutputCheckButton.Active = true;
-				} else {
-	 				pauseConsoleOutputCheckButton.Sensitive = false;
-					pauseConsoleOutputCheckButton.Active = false;
-				}
-			}
-		}
-
 		OutputOptionsPanelWidget  widget;
 		public override void LoadPanelContents()
 		{
@@ -111,4 +45,67 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
  			return result;
 		}
 	}
+
+
+	partial class OutputOptionsPanelWidget : Gtk.Bin 
+	{
+		DotNetProjectConfiguration configuration;
+		Project project;
+
+		public  OutputOptionsPanelWidget(Properties CustomizationObject)
+		{	
+			Build ();
+			configuration = ((Properties)CustomizationObject).Get<DotNetProjectConfiguration>("Config");
+			project = ((Properties)CustomizationObject).Get<Project>("Project");
+			externalConsoleCheckButton.Toggled += new EventHandler (ExternalConsoleToggle);
+			
+			assemblyNameEntry.Text = configuration.OutputAssembly;
+			parametersEntry.Text = configuration.CommandLineParameters;
+			
+			outputPathEntry.DefaultPath = project.BaseDirectory;
+			outputPathEntry.Path = configuration.OutputDirectory;
+			
+			externalConsoleCheckButton.Active = configuration.ExternalConsole;
+			pauseConsoleOutputCheckButton.Active = configuration.PauseConsoleOutput;
+			
+			if (!externalConsoleCheckButton.Active)
+				pauseConsoleOutputCheckButton.Sensitive = false;
+		}
+
+		public bool Store ()
+		{	
+			if (configuration == null) {
+				return true;
+			}
+			
+			if (!FileService.IsValidFileName (assemblyNameEntry.Text)) {
+				Services.MessageService.ShowError (null, GettextCatalog.GetString ("Invalid assembly name specified"), (Gtk.Window) Toplevel, true);
+				return false;
+			}
+
+			if (!FileService.IsValidFileName (outputPathEntry.Path)) {
+				Services.MessageService.ShowError (null, GettextCatalog.GetString ("Invalid output directory specified"), (Gtk.Window) Toplevel, true);
+				return false;
+			}
+			
+			configuration.OutputAssembly = assemblyNameEntry.Text;
+			configuration.OutputDirectory = outputPathEntry.Path;
+			configuration.CommandLineParameters = parametersEntry.Text;
+				configuration.ExternalConsole = externalConsoleCheckButton.Active;
+			configuration.PauseConsoleOutput = pauseConsoleOutputCheckButton.Active;
+			return true;
+		}
+		
+		void ExternalConsoleToggle (object sender, EventArgs e)
+		{
+			if (externalConsoleCheckButton.Active) {
+ 				pauseConsoleOutputCheckButton.Sensitive = true;
+				pauseConsoleOutputCheckButton.Active = true;
+			} else {
+ 				pauseConsoleOutputCheckButton.Sensitive = false;
+				pauseConsoleOutputCheckButton.Active = false;
+			}
+		}
+	}
 }
+

@@ -35,7 +35,6 @@
     <File name="MonoDevelop.Projects.Gui.Completion/ListWindow.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Completion/TextUtilities.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Gui.Dialogs/ConfigurationManager.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui/ProjectsGuiServices.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
@@ -57,6 +56,20 @@
     <File name="MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CommonAssemblySigningPreferences.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui/IconCodon.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanelWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Gui.Dialogs/DeleteConfigDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Gui.Dialogs/NewConfigurationDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Projects.Gui.Dialogs.NewConfigurationDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Projects.Gui.Dialogs.DeleteConfigDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Gui.Dialogs/RenameConfigDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Projects.Gui.Dialogs.RenameConfigDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineBuildOptionsWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineEntryConfigurationsPanelWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineInformationWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineStartupPanelWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CompileFileOptionsWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RuntimeOptionsPanelWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineConfigurationPanelWidget.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -74,15 +87,6 @@
     <ProjectReference type="Gac" localcopy="True" refto="gnome-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Project" localcopy="False" refto="Mono.Addins" />
   </References>
-  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
-    <BuildFilesVar Sync="True" Name="FILES" />
-    <DeployFilesVar />
-    <ResourcesVar Sync="True" Name="RES" />
-    <OthersVar />
-    <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />
-    <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
-    <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
-  </MonoDevelop.Autotools.MakefileInfo>
   <GtkDesignInfo isWidgetLibrary="True" gettextClass="MonoDevelop.Core.GettextCatalog">
     <ExportedWidgets>
       <Widget>MonoDevelop.Projects.Gui.Deployment.DirectoryDeployEditorWidget</Widget>
@@ -95,6 +99,15 @@
       <Widget>MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget</Widget>
     </ExportedWidgets>
   </GtkDesignInfo>
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
+    <BuildFilesVar Sync="True" Name="FILES" />
+    <DeployFilesVar />
+    <ResourcesVar Sync="True" Name="RES" />
+    <OthersVar />
+    <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
+  </MonoDevelop.Autotools.MakefileInfo>
   <DeploymentInformation strategy="File">
     <excludeFiles />
   </DeploymentInformation>

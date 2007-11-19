@@ -44,146 +44,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 	{
 		CombineEntryConfigurationsPanelWidget widget;
 		
-		class CombineEntryConfigurationsPanelWidget : GladeWidgetExtract 
-		{
-   			[Glade.Widget] Button addButton;
- 			[Glade.Widget] Button removeButton;
- 			[Glade.Widget] Button renameButton;
- 			[Glade.Widget] Button copyButton;
- 			[Glade.Widget] Gtk.TreeView configsList;
-			
-			TreeStore store;
-			ConfigurationData configData;
-			
-			public CombineEntryConfigurationsPanelWidget (Properties CustomizationObject): base ("Base.glade", "CombineEntryConfigurationsPanel")
-			{
-//				combine = (Combine)((Properties)CustomizationObject).Get("Combine");
-				configData = ((Properties)CustomizationObject).Get<ConfigurationData>("CombineConfigData");
-				
-				store = new TreeStore (typeof(object), typeof(string));
-				configsList.Model = store;
-				configsList.HeadersVisible = true;
-				
-				TreeViewColumn col = new TreeViewColumn ();
-				CellRendererText sr = new CellRendererText ();
-				col.PackStart (sr, true);
-				col.AddAttribute (sr, "text", 1);
-				col.Title = GettextCatalog.GetString ("Configuration");
-				configsList.AppendColumn (col);
-				
-				foreach (CombineConfiguration cc in configData.Configurations)
-					store.AppendValues (cc, cc.Name);
-
-				addButton.Clicked += new EventHandler (OnAddConfiguration);
-				removeButton.Clicked += new EventHandler (OnRemoveConfiguration);
-				renameButton.Clicked += new EventHandler (OnRenameConfiguration);
-				copyButton.Clicked += new EventHandler (OnCopyConfiguration);
-			}
-			
-			void OnAddConfiguration (object sender, EventArgs args)
-			{
-				AddConfiguration (null);
-			}
-
-			void OnCopyConfiguration (object sender, EventArgs args)
-			{
-				Gtk.TreeModel foo;
-				Gtk.TreeIter iter;
-				if (!configsList.Selection.GetSelected (out foo, out iter))
-					return;
-					
-				CombineConfiguration cc = (CombineConfiguration) store.GetValue (iter, 0);
-				AddConfiguration (cc.Name);
-			}
-
-			void AddConfiguration (string copyFrom)
-			{
-				AddConfigurationDialog dlg = new AddConfigurationDialog ();
-				try {
-					bool done = false;
-					do {
-						if (dlg.Run () == Gtk.ResponseType.Ok) {
-							if (dlg.Name.Length == 0) {
-								Services.MessageService.ShowWarning (GettextCatalog.GetString ("Please enter a valid configuration name."));
-							} else if (configData.Configurations [dlg.Name] != null) {
-								Services.MessageService.ShowWarning (GettextCatalog.GetString ("A configuration with the name '{0}' already exists.", dlg.Name));
-							} else {
-								CombineConfiguration cc = (CombineConfiguration) configData.AddConfiguration (dlg.Name, copyFrom, dlg.CreateChildren);
-								store.AppendValues (cc, cc.Name);
-								done = true;
-							}
-						} else
-							done = true;
-					} while (!done);
-				} finally {
-					dlg.Destroy ();
-				}
-			}
-
-			void OnRemoveConfiguration (object sender, EventArgs args)
-			{
-				Gtk.TreeModel foo;
-				Gtk.TreeIter iter;
-				if (!configsList.Selection.GetSelected (out foo, out iter))
-					return;
-				
-				if (configData.Configurations.Count == 1) {
-					Services.MessageService.ShowWarning (GettextCatalog.GetString ("There must be at least one configuration."));
-					return;
-				}
-				
-				CombineConfiguration cc = (CombineConfiguration) store.GetValue (iter, 0);
-				DeleteConfigDialog dlg = new DeleteConfigDialog ();
-				
-				try {
-					if (dlg.Run () == Gtk.ResponseType.Yes) {
-						configData.RemoveConfiguration (cc.Name, dlg.DeleteChildren);
-						store.Remove (ref iter);
-					}
-				} finally {
-					dlg.Destroy ();
-				}
-			}
-			
-			void OnRenameConfiguration (object sender, EventArgs args)
-			{
-				Gtk.TreeModel foo;
-				Gtk.TreeIter iter;
-				if (!configsList.Selection.GetSelected (out foo, out iter))
-					return;
-					
-				CombineConfiguration cc = (CombineConfiguration) store.GetValue (iter, 0);
-				RenameConfigDialog dlg = new RenameConfigDialog ();
-				dlg.Name = cc.Name;
-				
-				try {
-					bool done = false;
-					do {
-						if (dlg.Run () == Gtk.ResponseType.Ok) {
-							if (dlg.Name.Length == 0) {
-								Services.MessageService.ShowWarning (GettextCatalog.GetString ("Please enter a valid configuration name."));
-							} else if (configData.Configurations [dlg.Name] != null) {
-								Services.MessageService.ShowWarning (GettextCatalog.GetString ("A configuration with the name '{0}' already exists.", dlg.Name));
-							} else {
-								configData.RenameConfiguration (cc.Name, dlg.Name, dlg.RenameChildren);
-								store.SetValue (iter, 1, cc.Name);
-								done = true;
-							}
-						} else
-							done = true;
-					} while (!done);
-				} finally {
-					dlg.Destroy ();
-				}
-			}
-
-			public bool Store()
-			{
-				// Data stored at dialog level
-				return true;
-			}
-		}
-
 		public override void LoadPanelContents()
 		{
 			Add (widget = new CombineEntryConfigurationsPanelWidget ((Properties) CustomizationObject));
@@ -195,100 +55,140 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			return success;			
        	}
 	}
-	
-	class AddConfigurationDialog
+
+	partial class CombineEntryConfigurationsPanelWidget : Gtk.Bin 
 	{
-		Glade.XML glade;
-		[Glade.Widget] Dialog NewConfigurationDialog;
-		[Glade.Widget] CheckButton createChildrenCheck;
-		[Glade.Widget] Entry nameEntry;
+		TreeStore store;
+		ConfigurationData configData;
 		
-		public AddConfigurationDialog ()
+		public CombineEntryConfigurationsPanelWidget (Properties CustomizationObject)
 		{
-			// we must do it from *here* otherwise, we get this assembly, not the caller
-			glade = new XML (Assembly.GetCallingAssembly (), "Base.glade", "NewConfigurationDialog", null);
-			glade.Autoconnect (this);
+			Build ();
+			
+//			combine = (Combine)((Properties)CustomizationObject).Get("Combine");
+			configData = ((Properties)CustomizationObject).Get<ConfigurationData>("CombineConfigData");
+			
+			store = new TreeStore (typeof(object), typeof(string));
+			configsList.Model = store;
+			configsList.HeadersVisible = true;
+			
+			TreeViewColumn col = new TreeViewColumn ();
+			CellRendererText sr = new CellRendererText ();
+			col.PackStart (sr, true);
+			col.AddAttribute (sr, "text", 1);
+			col.Title = GettextCatalog.GetString ("Configuration");
+			configsList.AppendColumn (col);
+			
+			foreach (CombineConfiguration cc in configData.Configurations)
+				store.AppendValues (cc, cc.Name);
+
+			addButton.Clicked += new EventHandler (OnAddConfiguration);
+			removeButton.Clicked += new EventHandler (OnRemoveConfiguration);
+			renameButton.Clicked += new EventHandler (OnRenameConfiguration);
+			copyButton.Clicked += new EventHandler (OnCopyConfiguration);
 		}
 		
-		public string Name {
-			get { return nameEntry.Text; }
-			set { nameEntry.Text = value; }
-		}
-		
-		public bool CreateChildren {
-			get { return createChildrenCheck.Active; }
-		}
-		
-		public Gtk.ResponseType Run ()
+		void OnAddConfiguration (object sender, EventArgs args)
 		{
-			return (Gtk.ResponseType) NewConfigurationDialog.Run ();
+			AddConfiguration (null);
 		}
-		
-		public void Destroy ()
+
+		void OnCopyConfiguration (object sender, EventArgs args)
 		{
-			NewConfigurationDialog.Destroy ();
+			Gtk.TreeModel foo;
+			Gtk.TreeIter iter;
+			if (!configsList.Selection.GetSelected (out foo, out iter))
+				return;
+				
+			CombineConfiguration cc = (CombineConfiguration) store.GetValue (iter, 0);
+			AddConfiguration (cc.Name);
 		}
-	}
-	
-	class RenameConfigDialog
-	{
-		Glade.XML glade;
-		[Glade.Widget] Dialog RenameConfigurationDialog;
-		[Glade.Widget] CheckButton renameChildrenCheck;
-		[Glade.Widget] Entry nameEntry;
-		
-		public RenameConfigDialog ()
+
+		void AddConfiguration (string copyFrom)
 		{
-			// we must do it from *here* otherwise, we get this assembly, not the caller
-			glade = new XML (Assembly.GetCallingAssembly (), "Base.glade", "RenameConfigurationDialog", null);
-			glade.Autoconnect (this);
+			NewConfigurationDialog dlg = new NewConfigurationDialog ();
+			try {
+				bool done = false;
+				do {
+					if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
+						if (dlg.ConfigName.Length == 0) {
+							Services.MessageService.ShowWarning (GettextCatalog.GetString ("Please enter a valid configuration name."));
+						} else if (configData.Configurations [dlg.ConfigName] != null) {
+							Services.MessageService.ShowWarning (GettextCatalog.GetString ("A configuration with the name '{0}' already exists.", dlg.ConfigName));
+						} else {
+							CombineConfiguration cc = (CombineConfiguration) configData.AddConfiguration (dlg.ConfigName, copyFrom, dlg.CreateChildren);
+							store.AppendValues (cc, cc.Name);
+							done = true;
+						}
+					} else
+						done = true;
+				} while (!done);
+			} finally {
+				dlg.Destroy ();
+			}
 		}
-		
-		public string Name {
-			get { return nameEntry.Text; }
-			set { nameEntry.Text = value; }
-		}
-		
-		public bool RenameChildren {
-			get { return renameChildrenCheck.Active; }
-		}
-		
-		public Gtk.ResponseType Run ()
+
+		void OnRemoveConfiguration (object sender, EventArgs args)
 		{
-			return (Gtk.ResponseType) RenameConfigurationDialog.Run ();
+			Gtk.TreeModel foo;
+			Gtk.TreeIter iter;
+			if (!configsList.Selection.GetSelected (out foo, out iter))
+				return;
+			
+			if (configData.Configurations.Count == 1) {
+				Services.MessageService.ShowWarning (GettextCatalog.GetString ("There must be at least one configuration."));
+				return;
+			}
+			
+			CombineConfiguration cc = (CombineConfiguration) store.GetValue (iter, 0);
+			DeleteConfigDialog dlg = new DeleteConfigDialog ();
+			
+			try {
+				if (dlg.Run () == (int) Gtk.ResponseType.Yes) {
+					configData.RemoveConfiguration (cc.Name, dlg.DeleteChildren);
+					store.Remove (ref iter);
+				}
+			} finally {
+				dlg.Destroy ();
+			}
 		}
 		
-		public void Destroy ()
+		void OnRenameConfiguration (object sender, EventArgs args)
 		{
-			RenameConfigurationDialog.Destroy ();
+			Gtk.TreeModel foo;
+			Gtk.TreeIter iter;
+			if (!configsList.Selection.GetSelected (out foo, out iter))
+				return;
+				
+			CombineConfiguration cc = (CombineConfiguration) store.GetValue (iter, 0);
+			RenameConfigDialog dlg = new RenameConfigDialog ();
+			dlg.ConfigName = cc.Name;
+			
+			try {
+				bool done = false;
+				do {
+					if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
+						if (dlg.ConfigName.Length == 0) {
+							Services.MessageService.ShowWarning (GettextCatalog.GetString ("Please enter a valid configuration name."));
+						} else if (configData.Configurations [dlg.ConfigName] != null) {
+							Services.MessageService.ShowWarning (GettextCatalog.GetString ("A configuration with the name '{0}' already exists.", dlg.ConfigName));
+						} else {
+							configData.RenameConfiguration (cc.Name, dlg.ConfigName, dlg.RenameChildren);
+							store.SetValue (iter, 1, cc.Name);
+							done = true;
+						}
+					} else
+						done = true;
+				} while (!done);
+			} finally {
+				dlg.Destroy ();
+			}
 		}
-	}
-	
-	class DeleteConfigDialog
-	{
-		Glade.XML glade;
-		[Glade.Widget] Dialog DeleteConfigurationDialog;
-		[Glade.Widget] CheckButton deleteChildrenCheck;
-		
-		public DeleteConfigDialog ()
+
+		public bool Store()
 		{
-			// we must do it from *here* otherwise, we get this assembly, not the caller
-			glade = new XML (Assembly.GetCallingAssembly (), "Base.glade", "DeleteConfigurationDialog", null);
-			glade.Autoconnect (this);
-		}
-		
-		public bool DeleteChildren {
-			get { return deleteChildrenCheck.Active; }
-		}
-		
-		public Gtk.ResponseType Run ()
-		{
-			return (Gtk.ResponseType) DeleteConfigurationDialog.Run ();
-		}
-		
-		public void Destroy ()
-		{
-			DeleteConfigurationDialog.Destroy ();
+			// Data stored at dialog level
+			return true;
 		}
 	}
 }

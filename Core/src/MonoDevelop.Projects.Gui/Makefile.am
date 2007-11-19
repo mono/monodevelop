@@ -16,9 +16,20 @@ REFS =  \
 
 FILES =  \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.DeleteConfigDialog.cs \
+	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.NewConfigurationDialog.cs \
+	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineBuildOptionsWidget.cs \
+	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineConfigurationPanelWidget.cs \
+	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineEntryConfigurationsPanelWidget.cs \
+	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineInformationWidget.cs \
+	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineStartupPanelWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences.cs \
+	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CompileFileOptionsWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs \
+	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanelWidget.cs \
+	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RuntimeOptionsPanelWidget.cs \
+	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.RenameConfigDialog.cs \
 	MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs \
 	MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs \
 	MonoDevelop.Projects.Gui.Completion/CommentCompletionDataProvider.cs \
@@ -47,8 +58,10 @@ FILES =  \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs \
-	MonoDevelop.Projects.Gui.Dialogs/ConfigurationManager.cs \
+	MonoDevelop.Projects.Gui.Dialogs/DeleteConfigDialog.cs \
+	MonoDevelop.Projects.Gui.Dialogs/NewConfigurationDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs \
+	MonoDevelop.Projects.Gui.Dialogs/RenameConfigDialog.cs \
 	MonoDevelop.Projects.Gui/IconCodon.cs \
 	MonoDevelop.Projects.Gui/IconService.cs \
 	MonoDevelop.Projects.Gui/ProjectsGuiServices.cs

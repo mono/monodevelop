@@ -41,34 +41,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 	public class CombineInformationPanel : AbstractOptionPanel 
 	{
 		CombineInformationWidget widget;
-		
-		class CombineInformationWidget : GladeWidgetExtract 
-		{
-			[Glade.Widget] Label versLabel;
-			[Glade.Widget] Label descLabel;
-			[Glade.Widget] Entry versEntry;
-			[Glade.Widget] TextView descView;
-
-			Combine combine;
-
-			public CombineInformationWidget (Properties CustomizationObject) : 
-				base ("Base.glade", "CombineInformationPanel")
-			{
-				this.combine =  ((Properties)CustomizationObject).Get<Combine> ("Combine");
-
-				versLabel.UseUnderline = true;
-				descLabel.UseUnderline = true;
-
-				versEntry.Text = combine.Version;
-				descView.Buffer.Text = combine.Description;
-			}			
-			
-			public void Store (Properties CustomizationObject)
-			{
-				combine.Version = versEntry.Text;
-				combine.Description = descView.Buffer.Text;
-			}
-		}
 
 		public override void LoadPanelContents()
 		{
@@ -79,6 +51,29 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		{
 			widget.Store ((Properties) CustomizationObject);
  			return true;
+		}
+	}
+		
+	partial class CombineInformationWidget : Gtk.Bin 
+	{
+		Combine combine;
+
+		public CombineInformationWidget (Properties CustomizationObject) 
+		{
+			Build ();
+			this.combine =  ((Properties)CustomizationObject).Get<Combine> ("Combine");
+
+			versLabel.UseUnderline = true;
+			descLabel.UseUnderline = true;
+
+			versEntry.Text = combine.Version;
+			descView.Buffer.Text = combine.Description;
+		}			
+		
+		public void Store (Properties CustomizationObject)
+		{
+			combine.Version = versEntry.Text;
+			combine.Description = descView.Buffer.Text;
 		}
 	}
 }

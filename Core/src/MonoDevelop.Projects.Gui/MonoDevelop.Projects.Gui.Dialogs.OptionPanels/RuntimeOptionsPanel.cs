@@ -41,48 +41,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
 	public class RuntimeOptionsPanel : AbstractOptionPanel
 	{
-		class RuntimeOptionsPanelWidget : GladeWidgetExtract 
-		{
-			//
-			// Gtk Controls	
-			//
-			[Glade.Widget] ComboBox runtimeVersionCombo;
-			
-			DotNetProject project;
-			ArrayList supportedVersions = new ArrayList (); 
-
-			public RuntimeOptionsPanelWidget (Properties CustomizationObject) : base ("Base.glade", "RuntimeOptionsPanel")
- 			{
-				project = ((Properties)CustomizationObject).Get<DotNetProject>("Project") ;
-				if (project != null) {
-					// Get the list of available versions, and add only those supported by the target language.
-					ClrVersion[] langSupported = project.LanguageBinding.GetSupportedClrVersions ();
-					foreach (ClrVersion ver in Runtime.SystemAssemblyService.GetSupportedClrVersions ()) {
-						if (Array.IndexOf (langSupported, ver) == -1)
-							continue;
-						string desc = ver.ToString().Substring (4).Replace ('_','.');
-						runtimeVersionCombo.AppendText (desc);
-						if (project.ClrVersion == ver)
-			 				runtimeVersionCombo.Active = supportedVersions.Count;
-						supportedVersions.Add (ver);
-					}
-					if (supportedVersions.Count <= 1)
-						Sensitive = false;
-	 			}
-	 			else
-	 				Sensitive = false;
-			}
-
-			public bool Store ()
-			{	
-				if (project == null || runtimeVersionCombo.Active == -1)
-					return true;
-				
-				project.ClrVersion = (ClrVersion) supportedVersions [runtimeVersionCombo.Active];
-				return true;
-			}
-		}
-
 		RuntimeOptionsPanelWidget widget;
 		
 		public override void LoadPanelContents()
@@ -95,6 +53,45 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			bool result = true;
 			result = widget.Store ();
  			return result;
+		}
+	}
+
+	partial class RuntimeOptionsPanelWidget : Gtk.Bin 
+	{
+		DotNetProject project;
+		ArrayList supportedVersions = new ArrayList (); 
+
+		public RuntimeOptionsPanelWidget (Properties CustomizationObject)
+		{
+			Build ();
+			
+			project = ((Properties)CustomizationObject).Get<DotNetProject>("Project") ;
+			if (project != null) {
+				// Get the list of available versions, and add only those supported by the target language.
+				ClrVersion[] langSupported = project.LanguageBinding.GetSupportedClrVersions ();
+				foreach (ClrVersion ver in Runtime.SystemAssemblyService.GetSupportedClrVersions ()) {
+					if (Array.IndexOf (langSupported, ver) == -1)
+						continue;
+					string desc = ver.ToString().Substring (4).Replace ('_','.');
+					runtimeVersionCombo.AppendText (desc);
+					if (project.ClrVersion == ver)
+		 				runtimeVersionCombo.Active = supportedVersions.Count;
+					supportedVersions.Add (ver);
+				}
+				if (supportedVersions.Count <= 1)
+					Sensitive = false;
+ 			}
+ 			else
+ 				Sensitive = false;
+		}
+
+		public bool Store ()
+		{	
+			if (project == null || runtimeVersionCombo.Active == -1)
+				return true;
+			
+			project.ClrVersion = (ClrVersion) supportedVersions [runtimeVersionCombo.Active];
+			return true;
 		}
 	}
 }
