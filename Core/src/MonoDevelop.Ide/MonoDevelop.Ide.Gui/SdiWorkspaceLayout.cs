@@ -94,7 +94,6 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		Gtk.VBox fullViewVBox = new VBox (false, 0);
-		Gtk.HBox dockBox;
 		DockItem documentDockItem;
 		
 		public void Attach (IWorkbench wb)

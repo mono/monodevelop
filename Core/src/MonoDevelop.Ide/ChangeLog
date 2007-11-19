@@ -1,3 +1,9 @@
+2007-11-19  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui/InternalLog.cs: Fix error notification
+	  configurability.
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Remove unused field.
+
 2007-11-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Codons/FileFilterCodon.cs,

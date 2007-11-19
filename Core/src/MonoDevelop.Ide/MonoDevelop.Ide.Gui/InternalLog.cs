@@ -73,6 +73,8 @@ namespace MonoDevelop.Ide.Gui
 
 		static void NotifyError (LogMessage message)
 		{
+			if (!errorNotificationEnabled)
+				return;
 			ClearErrorIcon ();
 			Gdk.Pixbuf pix = IdeApp.Services.Resources.GetIcon (Gtk.Stock.DialogError, Gtk.IconSize.Menu);
 			errorIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (pix);
