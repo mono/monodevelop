@@ -912,7 +912,7 @@ namespace CSharpBinding
 		
 		bool CanOverrideIndexer (IClass cls, IIndexer idx)
 		{
-			foreach (IProperty i in cls.Indexer) {
+			foreach (IIndexer i in cls.Indexer) {
 				if (idx.Name == i.Name && IsEqual (idx.Parameters, i.Parameters))
 					return false;
 			}

@@ -1,3 +1,7 @@
+2007-11-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/CSharpTextEditorExtension.cs: Fix invalid cast. Fixes bug #342607.
+
 2007-11-16  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Gui/CSharpTextEditorExtension.cs: Fix "Bug 342124 - Tab should indent,
