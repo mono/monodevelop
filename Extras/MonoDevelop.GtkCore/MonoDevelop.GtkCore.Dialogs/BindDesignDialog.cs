@@ -32,6 +32,7 @@ using System.Collections;
 using Glade;
 using Gtk;
 using MonoDevelop.Core;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.GtkCore.Dialogs
 {
@@ -45,8 +46,10 @@ namespace MonoDevelop.GtkCore.Dialogs
 		[Glade.Widget] protected Gtk.RadioButton radioSelect;
 		[Glade.Widget] protected Gtk.RadioButton radioCreate;
 		[Glade.Widget] protected Gtk.Table tableNewClass;
-		[Glade.Widget] protected Gnome.FileEntry fileEntry;
 		[Glade.Widget] protected Gtk.Button okButton;
+		[Glade.Widget] protected Gtk.EventBox fileEntryBox;
+		
+		FolderEntry fileEntry;
 		
 		ListStore store;
 		static string lastNamespace = "";
@@ -56,6 +59,10 @@ namespace MonoDevelop.GtkCore.Dialogs
 			XML glade = new XML (null, "gui.glade", "BindDesignDialog", null);
 			glade.Autoconnect (this);
 			labelMessage.Text = GettextCatalog.GetString ("The widget design {0} is not currently bound to a class.", id);
+			
+			fileEntry = new FolderEntry ();
+			fileEntryBox.Add (fileEntry);
+			fileEntry.ShowAll ();
 			
 			if (validClasses.Count > 0) {
 			
@@ -73,7 +80,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 				radioCreate.Active = true;
 			}
 			
-			fileEntry.Filename = baseFolder;
+			fileEntry.Path = baseFolder;
 			
 			// Initialize the class name using the widget name
 			int i = id.IndexOf ('.');
@@ -142,7 +149,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 		}
 		
 		public string Folder {
-			get { return fileEntry.Filename; }
+			get { return fileEntry.Path; }
 		}
 		
 		protected void OnSelectToggled (object ob, EventArgs args)

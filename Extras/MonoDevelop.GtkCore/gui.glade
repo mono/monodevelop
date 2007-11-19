@@ -1008,39 +1008,6 @@
 	      </child>
 
 	      <child>
-		<widget class="GnomeFileEntry" id="fileEntry">
-		  <property name="visible">True</property>
-		  <property name="max_saved">10</property>
-		  <property name="directory_entry">True</property>
-		  <property name="modal">False</property>
-		  <property name="use_filechooser">True</property>
-		  <property name="filechooser_action">GTK_FILE_CHOOSER_ACTION_OPEN</property>
-
-		  <child internal-child="entry">
-		    <widget class="GtkEntry" id="combo-entry1">
-		      <property name="visible">True</property>
-		      <property name="can_focus">True</property>
-		      <property name="editable">True</property>
-		      <property name="visibility">True</property>
-		      <property name="max_length">0</property>
-		      <property name="text" translatable="yes"></property>
-		      <property name="has_frame">True</property>
-		      <property name="invisible_char">*</property>
-		      <property name="activates_default">False</property>
-		      <signal name="changed" handler="OnEntryChanged" last_modification_time="Mon, 27 Feb 2006 18:53:39 GMT"/>
-		    </widget>
-		  </child>
-		</widget>
-		<packing>
-		  <property name="left_attach">2</property>
-		  <property name="right_attach">3</property>
-		  <property name="top_attach">2</property>
-		  <property name="bottom_attach">3</property>
-		  <property name="y_options"></property>
-		</packing>
-	      </child>
-
-	      <child>
 		<widget class="GtkEntry" id="entryNamespace">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
@@ -1059,6 +1026,26 @@
 		  <property name="top_attach">1</property>
 		  <property name="bottom_attach">2</property>
 		  <property name="y_options"></property>
+		</packing>
+	      </child>
+
+	      <child>
+		<widget class="GtkEventBox" id="fileEntryBox">
+		  <property name="visible">True</property>
+		  <property name="visible_window">True</property>
+		  <property name="above_child">False</property>
+
+		  <child>
+		    <placeholder/>
+		  </child>
+		</widget>
+		<packing>
+		  <property name="left_attach">2</property>
+		  <property name="right_attach">3</property>
+		  <property name="top_attach">2</property>
+		  <property name="bottom_attach">3</property>
+		  <property name="x_options">fill</property>
+		  <property name="y_options">fill</property>
 		</packing>
 	      </child>
 	    </widget>
