@@ -1,3 +1,15 @@
+2007-11-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.DesignerSupport.addin.xml, MonoDevelop.DesignerSupport.mdp,
+	  Makefile.am,
+	  MonoDevelop.DesignerSupport.Projects/CombineEntryDescriptor.cs,
+	  MonoDevelop.DesignerSupport.Projects/CombineEntryPropertyProvider.cs,
+	  MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs,
+	  MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs,
+	  MonoDevelop.DesignerSupport.Projects/ProjectItemPropertyProvider.cs,
+	  MonoDevelop.DesignerSupport.Projects/ProjectsPropertyProvider.cs: Added
+	  some property descriptors for references and CombineEntry.
+
 2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.DesignerSupport/CodeBehindService.cs,
