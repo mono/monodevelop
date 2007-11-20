@@ -22,6 +22,28 @@ namespace MonoDevelop.Core.Execution
 		string remotingChannel = "unix";
 		string unixRemotingFile;
 		
+		Dictionary<string, string> environmentVariableOverrides = null;
+		
+		public IDictionary<string, string> EnvironmentVariableOverrides {
+			get {
+				if (environmentVariableOverrides == null)
+					environmentVariableOverrides = new Dictionary<string,string> ();
+				return environmentVariableOverrides;
+			}
+		}
+		
+		void ProcessEnvironmentVariableOverrides (ProcessStartInfo info)
+		{
+			if (environmentVariableOverrides == null)
+				return;
+			foreach (KeyValuePair<string, string> kvp in environmentVariableOverrides) {
+				if (kvp.Value == null && info.EnvironmentVariables.ContainsKey (kvp.Key))
+					info.EnvironmentVariables.Remove (kvp.Key);
+				else
+					info.EnvironmentVariables[kvp.Key] = kvp.Value;
+			}
+		}
+		
 		public override void InitializeService ()
 		{
 			if (PlatformID.Unix != Environment.OSVersion.Platform) {
@@ -87,6 +109,7 @@ namespace MonoDevelop.Core.Execution
 				p.Exited += exited;
 				
 			p.StartInfo = startInfo;
+			ProcessEnvironmentVariableOverrides (p.StartInfo);
 			p.EnableRaisingEvents = true;
 			
 			p.Start ();
@@ -155,6 +178,7 @@ namespace MonoDevelop.Core.Execution
 					p.Exited += exited;
 				
 				p.StartInfo = psi;
+				ProcessEnvironmentVariableOverrides (p.StartInfo);
 				p.Start();
 				return p;
 			} else {

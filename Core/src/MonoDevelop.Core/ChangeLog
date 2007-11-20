@@ -1,3 +1,11 @@
+2007-11-20  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Core.Execution/ProcessService.cs: Add API to allow global
+	  override of environment variables on processes launched from
+	  MonoDevelop. Part of fix for "Bug 342965 - When running my program from
+	  monodevelop (F5) MONO_MANAGED_WATCHER is enabled".
+	* MonoDevelop.Core/Runtime.cs: Convert a writeline to a log message.
+
 2007-11-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.mdp, Makefile.am, MonoDevelop.Core/Runtime.cs,
