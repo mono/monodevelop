@@ -1,5 +1,10 @@
 2007-11-20  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs: Fix
+	  build.
+
+2007-11-20  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects.Gui.mdp,
 	  MonoDevelop.Projects.Gui.Dialogs/RenameConfigDialog.cs,
 	  MonoDevelop.Projects.Gui.Dialogs/NewConfigurationDialog.cs,
