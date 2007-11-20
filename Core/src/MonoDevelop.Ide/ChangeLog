@@ -1,3 +1,11 @@
+2007-11-20  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: Capture previous value of
+	  MONO_MANAGED_WATCHER in the case where MD overrides it, and assign the
+	  old value to processes launched from MD. Fixes "Bug 342965 - When
+	  running my program from monodevelop (F5) MONO_MANAGED_WATCHER is
+	  enabled".
+
 2007-11-19  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Gui/InternalLog.cs: Fix error notification

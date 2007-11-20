@@ -264,11 +264,13 @@ namespace MonoDevelop.Ide.Gui
 						msg += "MonoDevelop will switch to managed file watching.\n";
 						msg += "See http://www.monodevelop.com/Inotify_Watches_Limit for more info.";
 						LoggingService.LogWarning (msg);
+						Runtime.ProcessService.EnvironmentVariableOverrides["MONO_MANAGED_WATCHER"] = 
+							Environment.GetEnvironmentVariable ("MONO_MANAGED_WATCHER");
 						Environment.SetEnvironmentVariable ("MONO_MANAGED_WATCHER", "1");
 					}
 				}
-			} catch {
-				// Ignore
+			} catch (Exception e) {
+				LoggingService.LogWarning ("There was a problem checking whether to use managed file watching", e);
 			}
 		}
 		
