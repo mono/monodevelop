@@ -36,6 +36,7 @@ using System.Text;
 using System.Xml;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Serialization;
 using MonoDevelop.Gettext.Editor;
@@ -162,6 +163,8 @@ namespace MonoDevelop.Gettext
 					Runtime.ProcessService.StartProcess ("xgettext",
 					                                     args.ToString (),
 					                                     this.BaseDirectory,
+					                                     monitor.Log,
+					                                     monitor.Log,
 					                                     delegate {
 						if (File.Exists (this.tempFile))
 							File.Delete (this.tempFile);
@@ -260,20 +263,25 @@ namespace MonoDevelop.Gettext
 			args.Append ("--from-code=UTF-8");
 			args.Append (" -p ");args.Append ('"');args.Append (this.BaseDirectory);args.Append ('"');
 			args.Append (" -f ");args.Append ('"');args.Append (tempFile);args.Append ('"');
-			System.Diagnostics.Process process = System.Diagnostics.Process.Start ("xgettext", args.ToString ());
-			process.WaitForExit();
-			MergeTranslations (this, null);
-			monitor.EndTask ();
-		}
-		void MergeTranslations (object sender, EventArgs args)
-		{
+			Runtime.ProcessService.StartProcess ("xgettext",
+			                                     args.ToString (),
+			                                     this.BaseDirectory,
+			                                     monitor.Log,
+			                                     monitor.Log,
+			                                     null).WaitForExit ();
+			
 			if (File.Exists (tempFile))
 				File.Delete (tempFile);
 			foreach (Translation translation in this.Translations) {
 				string poFileName  = GetFileName (translation);
-				System.Diagnostics.Process process = System.Diagnostics.Process.Start ("msgmerge", " -U " + poFileName + "  " + this.BaseDirectory + "/messages.po");
-				process.WaitForExit();
+				Runtime.ProcessService.StartProcess ("msgmerge",
+				                                     " -U " + poFileName + "  " + this.BaseDirectory + "/messages.po",
+				                                     this.BaseDirectory,
+				                                     monitor.Log,
+				                                     monitor.Log,
+				                                     null).WaitForExit ();
 			}
+			monitor.EndTask ();
 		}
 		public void RemoveEntry (string msgstr)
 		{
@@ -302,13 +310,14 @@ namespace MonoDevelop.Gettext
 						Directory.CreateDirectory (moDirectory);
 					string moFileName  = Path.Combine (moDirectory, config.PackageName + ".mo");
 					
-					System.Diagnostics.Process process = new System.Diagnostics.Process ();
-					process.StartInfo.FileName = "msgfmt";
-					process.StartInfo.Arguments = poFileName + " -o " + moFileName;
-					process.StartInfo.UseShellExecute = false;
-					process.StartInfo.RedirectStandardError = true;
-					process.Start ();
+					ProcessWrapper process = Runtime.ProcessService.StartProcess ("msgfmt",
+				                                     poFileName + " -o " + moFileName,
+				                                     this.BaseDirectory,
+				                                     monitor.Log,
+				                                     monitor.Log,
+				                                     null);
 					process.WaitForExit ();
+
 					if (process.ExitCode == 0) {
 						monitor.Log.WriteLine (GettextCatalog.GetString ("Translation {0}: Compilation succeeded.", translation.IsoCode));
 					} else {
@@ -445,7 +454,7 @@ namespace MonoDevelop.Gettext
 			this.name = name;
 		}
 
-		public object Clone ()
+		public object Clone ()		
 		{
 			IConfiguration conf = (IConfiguration) MemberwiseClone ();
 			conf.CopyFrom (this);

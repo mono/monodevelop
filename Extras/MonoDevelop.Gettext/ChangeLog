@@ -1,5 +1,10 @@
 2007-11-20  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Gettext/TranslationProject.cs: Process output is now written
+	  to the monitor.Log.
+
+2007-11-20  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Gettext/TranslationProject.cs: gettext addin now only scans
 	  code files for translations.
 

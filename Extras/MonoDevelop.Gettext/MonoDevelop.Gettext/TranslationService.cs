@@ -73,14 +73,14 @@ namespace MonoDevelop.Gettext
 //			return null;
 //		}
 		
-		static int GetLineNumber (string text, int index)
-		{
-			int result = 0;
-			for (int i = 0; i < index; i++)
-				if (text[i] == '\n')
-					result++;
-			return result;
-		}
+//		static int GetLineNumber (string text, int index)
+//		{
+//			int result = 0;
+//			for (int i = 0; i < index; i++)
+//				if (text[i] == '\n')
+//					result++;
+//			return result;
+//		}
 		
 		static void CombineOpened (object sender, CombineEventArgs e)
 		{
