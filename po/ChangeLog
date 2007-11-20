@@ -1,3 +1,9 @@
+2007-11-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* POTFILES.in, POTFILES.skip: Updated, mostly automatically with the 
+	  help of intltool-update -m. Lots of new and moved files; some might 
+	  re-use existing strings.
+
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ru.po: Russian translation by Daniel Abramov.
