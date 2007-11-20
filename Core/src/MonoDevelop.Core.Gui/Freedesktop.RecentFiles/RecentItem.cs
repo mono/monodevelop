@@ -147,7 +147,7 @@ namespace Freedesktop.RecentFiles
 		
 		public void NewTimeStamp ()
 		{
-			this.timestamp = DateTime.Now;
+			this.timestamp = DateTime.UtcNow;
 		}
 		
 		public bool IsInGroup (string group)
@@ -169,7 +169,7 @@ namespace Freedesktop.RecentFiles
 		}
 
 #region Unix Time functions
-		static readonly DateTime UnixStartTime = new DateTime (1970, 1, 1, 0, 0, 0, 0);
+		static readonly DateTime UnixStartTime = new DateTime (1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
 		static int ToUnixTime (DateTime time)
 		{
 			return (int)(time - UnixStartTime).TotalSeconds;

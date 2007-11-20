@@ -202,7 +202,9 @@ namespace MonoDevelop.Core.Gui.Components
 				store.Clear ();
 				store.AppendValues (null, GettextCatalog.GetString ("Access denied"));
 			} catch (Exception ex) {
-				Services.MessageService.ShowError (ex, GettextCatalog.GetString ("Could not access to directory: ") + CurrentDir); 
+				string message = GettextCatalog.GetString ("Could not access to directory: ") + CurrentDir;
+				LoggingService.LogError (message, ex);
+				Services.MessageService.ShowError (ex, message);
 			}
 		}
 
@@ -305,16 +307,16 @@ namespace MonoDevelop.Core.Gui.Components
 
 		private void OnEntryActivated (object sender, EventArgs args)
 		{
-			Exception error = null;
 			try {
 				if (Directory.Exists (entry.Text.Trim ())) {
 					CurrentDir = entry.Text.Trim ();
 					return;
 				}
 			} catch (Exception ex) {
-				error = ex;
+				string message = GettextCatalog.GetString ("Cannot enter '{0}' folder", entry.Text);
+				LoggingService.LogError (message, ex);
+				Services.MessageService.ShowError (message);
 			}
-   			Services.MessageService.ShowError (error, GettextCatalog.GetString ("Cannot enter '{0}' folder", entry.Text));
 		}
 
 		private void OnDirRename (object o, EventArgs args)
@@ -349,7 +351,9 @@ namespace MonoDevelop.Core.Gui.Components
     					}
     					catch (Exception ex)
     					{
-    						Services.MessageService.ShowError (ex, GettextCatalog.GetString ("Could not rename folder '{0}' to '{1}'", oldpath, args.NewText));
+						string message = GettextCatalog.GetString ("Could not rename folder '{0}' to '{1}'", oldpath, args.NewText);
+						LoggingService.LogError (message, ex);
+						Services.MessageService.ShowError (ex, message);
     					}
     					finally
     					{
@@ -367,7 +371,9 @@ namespace MonoDevelop.Core.Gui.Components
 					}
 					catch (Exception ex)
 					{
-    					Services.MessageService.ShowError (ex, GettextCatalog.GetString ("Could not create new folder '{0}'", args.NewText));
+					string message = GettextCatalog.GetString ("Could not create new folder '{0}'", args.NewText);
+					LoggingService.LogError (message, ex);
+					Services.MessageService.ShowError (ex, message);
 					}
 					finally
 					{
@@ -377,7 +383,7 @@ namespace MonoDevelop.Core.Gui.Components
 					break;
 											
 				default:
-					Console.WriteLine ("This should not be happening");
+					LoggingService.LogError ("FileBrowser: Reached unknown case in OnDirEdited");
 					break;
 			}
 
@@ -399,7 +405,9 @@ namespace MonoDevelop.Core.Gui.Components
 					}
 					catch (Exception ex)
 					{
-						Services.MessageService.ShowError (ex, GettextCatalog.GetString ("Could not delete folder '{0}'", System.IO.Path.Combine (CurrentDir, (string) store.GetValue (iter, 1))));
+						string message = GettextCatalog.GetString ("Could not delete folder '{0}'", System.IO.Path.Combine (CurrentDir, (string) store.GetValue (iter, 1)));
+						LoggingService.LogError (message, ex);
+						Services.MessageService.ShowError (ex, message);
 					}
 					finally
 					{
