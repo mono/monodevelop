@@ -1,3 +1,9 @@
+2007-11-20  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Project/AspNetAppProject.cs: Don't try to compile if no files are set to
+	  compile, as compilers/bindings (e.g. CSharpBinding) will error out if no
+	  files are set to compile. 
+
 2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Deployment/WebDeployService.cs, Project/AspNetAppProject.cs,

@@ -191,12 +191,28 @@ namespace AspNetAddIn
 		
 		#region build/prebuild/execute
 		
-		// all this does is makes sure that references are copied after building
-		// it's not strictly necessary, as the Run/Deploy commands do it too..
-		// but some users expect it to happen during a compile, so it's easier all round this way
+		
 		protected override ICompilerResult DoBuild (IProgressMonitor monitor)
 		{
-			ICompilerResult ret = base.DoBuild (monitor);
+			//if no files are set to compile, then some compilers will error out
+			//though this is valid with ASP.NET apps, so we just avoid calling the compiler in this case
+			bool needsCompile = false;
+			foreach (ProjectFile pf in ProjectFiles) {
+				if (pf.BuildAction == BuildAction.Compile) {
+					needsCompile = true;
+					break;
+				}
+			}
+			
+			ICompilerResult ret;
+			if (needsCompile)
+				ret = base.DoBuild (monitor);
+			else
+				ret = new DefaultCompilerResult ();
+			
+			// all this does is makes sure that references are copied after building
+			// it's not strictly necessary, as the Run/Deploy commands do it too..
+			// but some users expect it to happen during a compile, so it's easier all round this way
 			//need to do this after the compile, as the compile phase removes copied references
 			CopyReferencesToOutputPath (false);
 			return ret;
