@@ -1,3 +1,8 @@
+2007-11-20  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Gettext/TranslationProject.cs: gettext addin now only scans
+	  code files for translations.
+
 2007-11-16  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Gettext.Editor/POEditorWidget.cs,

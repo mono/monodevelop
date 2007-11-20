@@ -239,7 +239,7 @@ namespace MonoDevelop.Gettext
 				monitor.Log.WriteLine (String.Format (GettextCatalog.GetString ("Scanning project {0}..."),  p.Name));
 				monitor.Step (1);
 				foreach (ProjectFile file in p.ProjectFiles) {
-					if (file.Subtype == Subtype.Directory)
+					if (file.Subtype != Subtype.Code  || file.BuildAction != BuildAction.Compile)
 						continue;
 					writer.WriteLine (file.FilePath);
 				}
