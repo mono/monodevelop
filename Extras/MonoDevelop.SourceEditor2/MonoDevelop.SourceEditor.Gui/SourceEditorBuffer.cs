@@ -178,8 +178,9 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		void onDeleteRangeAfter (object sender, DeleteRangeArgs args)
 		{
-			int count = onDeleteRangeEndLine - onDeleteRangeStartLine;
-			if (count != 0)
+			// We want the count to be negative here if lines were removed.
+			int count = onDeleteRangeStartLine - onDeleteRangeEndLine;
+			if (count != 0) 
 				OnLineCountChanged (onDeleteRangeStartLine, count, onDeleteRangeStartCol);
 			OnTextChanged (onDeleteRangeStartIndex, onDeleteRangeEndIndex);
 		}

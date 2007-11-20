@@ -1,3 +1,18 @@
+2007-11-19  Zach Lute <zach.lute@gmail.com>
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs: LineCountChanged now
+	  sends a negative count if lines were removed again.
+
+2007-11-16  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: fixed "Bug
+	  341880 - Find and Whole words only".
+
+2007-11-16  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Fixed "Bug
+	  341886 - Quick Class navigator does not sort file types".
+
 2007-11-14  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs: Implemented a

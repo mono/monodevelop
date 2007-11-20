@@ -197,6 +197,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			classBrowser = new HBox(true, 2);
 			classCombo = new Gtk.ComboBox();
 			classCombo.WidthRequest = 1;
+			
 			membersCombo = new Gtk.ComboBox();
 			membersCombo.WidthRequest = 1;
 			
@@ -232,8 +233,10 @@ namespace MonoDevelop.SourceEditor.Gui
 			
 			// Set up the data stores for the comboboxes
 			classStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(IClass));
+			classStore.SetSortColumnId (1, Gtk.SortType.Ascending);
 			classCombo.Model = classStore;	
 			memberStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(IMember));
+			memberStore.SetSortColumnId (1, Gtk.SortType.Ascending);
 			membersCombo.Model = memberStore;
    			membersCombo.Changed += new EventHandler (MemberChanged);
 			classCombo.Changed += new EventHandler (ClassChanged);
@@ -1388,7 +1391,8 @@ namespace MonoDevelop.SourceEditor.Gui
 					}
 				}
 				iterator = matchEnd;
-			} while (res && options.SearchWholeWordOnly && (!matchStart.StartsWord () || !matchEnd.EndsWord ()));
+			} while (res && options.SearchWholeWordOnly && (!IsWordSeparator (matchStart.Offset > 0 ? Buffer.Text [matchStart.Offset - 1] : ' ') || 
+			                                                !IsWordSeparator (matchEnd.Offset < Buffer.CharCount ? Buffer.Text [matchEnd.Offset] : ' ')));
 			
 			if (!res) 
 				return false;
@@ -1397,6 +1401,10 @@ namespace MonoDevelop.SourceEditor.Gui
 			return true;
 		}
 		
+		static bool IsWordSeparator (char c)
+		{
+			return Char.IsWhiteSpace (c) || (Char.IsPunctuation (c) && c != '_');
+		}
 		
 		bool Find (bool reverse, Gtk.TextIter iter, string str, GtkSourceView.SourceSearchFlags flags, out Gtk.TextIter match_start, out Gtk.TextIter match_end, Gtk.TextIter limit)
 		{
