@@ -1,5 +1,11 @@
 2007-11-20  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* gtk-gui, gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs,
+	  gtk-gui/generated.cs, gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs,
+	  gtk-gui/gui.stetic: Added missing files.
+
+2007-11-20  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Gui/GlobalOptionsPanel.cs, Gui/ProjectConfigurationPropertyPanel.cs,
 	  JavaBinding.mdp, Makefile.am: Migrated to Stetic.
 
