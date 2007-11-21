@@ -1,3 +1,31 @@
+2007-11-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.mdp, MonoDevelop.Core.Gui.Dialogs/WizardDialog.cs,
+	  MonoDevelop.Core.Gui.Dialogs/CurrentPanelPanel.cs,
+	  MonoDevelop.Core.Gui.Dialogs/StatusPanel.cs,
+	  MonoDevelop.Core.Gui.Dialogs/AbstractWizardPanel.cs,
+	  MonoDevelop.Core.Gui.Dialogs/IWizardPanel.cs,
+	  MonoDevelop.Core.Gui.Components/LocalizedObject.cs,
+	  MonoDevelop.Core.Gui.Components/LocalizedPropertyAttribute.cs,
+	  MonoDevelop.Core.Gui.Components/LocalizedPropertyDescriptor.cs,
+	  MonoDevelop.Core.Gui/ResourceNotFoundException.cs, Makefile.am,
+	  MonoDevelop.Core.Gui.ErrorHandlers,
+	  MonoDevelop.Core.Gui.ErrorHandlers/CombineLoadError.cs,
+	  MonoDevelop.Core.Gui.ErrorHandlers/GenericError.cs: Removed unused
+	  files.
+	* MonoDevelop.Core.Gui.Utils/FileIconLoader.cs,
+	  MonoDevelop.Core.Gui/StockIcons.cs,
+	  MonoDevelop.Core.Gui/DispatchService.cs,
+	  MonoDevelop.Core.Gui/AsyncDispatchAttribute.cs,
+	  MonoDevelop.Core.Gui/SyncContext.cs,
+	  MonoDevelop.Core.Gui/FreeDispatchAttribute.cs,
+	  MonoDevelop.Core.Gui/GuiSyncAbstractService.cs,
+	  MonoDevelop.Core.Gui/GuiSyncContext.cs,
+	  MonoDevelop.Core.Gui/SyncObject.cs,
+	  MonoDevelop.Core.Gui/SyncContextAttribute.cs,
+	  MonoDevelop.Core.Gui/GuiService.cs,
+	  MonoDevelop.Core.Gui/GuiSyncObject.cs: Added missing license headers.
+
 2007-11-20  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Core.Gui.Components/FileBrowser.cs: Log errors as well as

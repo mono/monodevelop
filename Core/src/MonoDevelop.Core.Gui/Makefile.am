@@ -26,26 +26,16 @@ FILES =  \
 	MonoDevelop.Core.Gui.Codons/DialogPanelCodon.cs \
 	MonoDevelop.Core.Gui.Codons/StockIconCodon.cs \
 	MonoDevelop.Core.Gui.Components/FileBrowser.cs \
-	MonoDevelop.Core.Gui.Components/LocalizedObject.cs \
-	MonoDevelop.Core.Gui.Components/LocalizedPropertyAttribute.cs \
-	MonoDevelop.Core.Gui.Components/LocalizedPropertyDescriptor.cs \
 	MonoDevelop.Core.Gui.Components/MenuButtonEntry.cs \
 	MonoDevelop.Core.Gui.Dialogs/AbstractOptionPanel.cs \
-	MonoDevelop.Core.Gui.Dialogs/AbstractWizardPanel.cs \
-	MonoDevelop.Core.Gui.Dialogs/CurrentPanelPanel.cs \
 	MonoDevelop.Core.Gui.Dialogs/DefaultDialogPanelDescriptor.cs \
 	MonoDevelop.Core.Gui.Dialogs/ErrorDialog.cs \
 	MonoDevelop.Core.Gui.Dialogs/IDialogPanel.cs \
 	MonoDevelop.Core.Gui.Dialogs/IDialogPanelDescriptor.cs \
-	MonoDevelop.Core.Gui.Dialogs/IWizardPanel.cs \
 	MonoDevelop.Core.Gui.Dialogs/MultiTaskProgressDialog.cs \
 	MonoDevelop.Core.Gui.Dialogs/ProgressDialog.cs \
 	MonoDevelop.Core.Gui.Dialogs/SetupApp.cs \
-	MonoDevelop.Core.Gui.Dialogs/StatusPanel.cs \
 	MonoDevelop.Core.Gui.Dialogs/TreeViewOptions.cs \
-	MonoDevelop.Core.Gui.Dialogs/WizardDialog.cs \
-	MonoDevelop.Core.Gui.ErrorHandlers/CombineLoadError.cs \
-	MonoDevelop.Core.Gui.ErrorHandlers/GenericError.cs \
 	MonoDevelop.Core.Gui.ProgressMonitoring/BaseProgressMonitor.cs \
 	MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs \
 	MonoDevelop.Core.Gui.ProgressMonitoring/MultiTaskDialogProgressMonitor.cs \
@@ -64,7 +54,6 @@ FILES =  \
 	MonoDevelop.Core.Gui/MessageService.cs \
 	MonoDevelop.Core.Gui/PixbufList.cs \
 	MonoDevelop.Core.Gui/RecentOpen.cs \
-	MonoDevelop.Core.Gui/ResourceNotFoundException.cs \
 	MonoDevelop.Core.Gui/ResourceService.cs \
 	MonoDevelop.Core.Gui/StockIcons.cs \
 	MonoDevelop.Core.Gui/SyncContext.cs \
