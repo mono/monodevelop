@@ -482,7 +482,6 @@ namespace MonoDevelop.Prj2Make
 				prjxObj.Name = Path.GetFileNameWithoutExtension(csprojFileName);
 				prjxObj.Description = "";
 				prjxObj.NewFileSearch = NewFileSearch.None;
-				prjxObj.EnableViewState = true;
 				prjxObj.DefaultNamespace = csprojObj.CSHARP.Build.Settings.RootNamespace;
 
 				GetContents (prjxObj, csprojObj.CSHARP.Files.Include, prjxObj.ProjectFiles, monitor);
