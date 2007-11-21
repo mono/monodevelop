@@ -122,9 +122,6 @@ namespace CSharpBinding
 
 #region Code Generation
 		[DefaultValue("")]
-		[LocalizedProperty("${res:BackendBindings.CompilerOptions.CodeGeneration.MainClass}",
-		                   Category    = "${res:BackendBindings.CompilerOptions.CodeGeneration}",
-		                   Description = "${res:BackendBindings.CompilerOptions.CodeGeneration.MainClass.Description}")]
 		public string MainClass {
 			get {
 				return mainclass;
@@ -135,9 +132,6 @@ namespace CSharpBinding
 		}
 		
 		[DefaultValue("")]
-		[LocalizedProperty("${res:BackendBindings.CompilerOptions.CodeGeneration.DefineSymbols}",
-		                   Category    = "${res:BackendBindings.CompilerOptions.CodeGeneration}",
-		                   Description = "${res:BackendBindings.CompilerOptions.CodeGeneration.DefineSymbols.Description}")]
 		public string DefineSymbols {
 			get {
 				return definesymbols;
@@ -148,9 +142,6 @@ namespace CSharpBinding
 		}
 		
 		[DefaultValue(true)]
-		[LocalizedProperty("${res:BackendBindings.CompilerOptions.CodeGeneration.Optimize}",
-		                   Category    = "${res:BackendBindings.CompilerOptions.CodeGeneration}",
-		                   Description = "${res:BackendBindings.CompilerOptions.CodeGeneration.Optimize.Description}")]
 		public bool Optimize {
 			get {
 				return optimize;
@@ -161,9 +152,6 @@ namespace CSharpBinding
 		}
 		
 		[DefaultValue(false)]
-		[LocalizedProperty("${res:BackendBindings.CompilerOptions.CodeGeneration.UnsafeCode}",
-		                   Category    = "${res:BackendBindings.CompilerOptions.CodeGeneration}",
-		                   Description = "${res:BackendBindings.CompilerOptions.CodeGeneration.UnsafeCode.Description}")]
 		public bool UnsafeCode {
 			get {
 				return unsafecode;
@@ -174,9 +162,6 @@ namespace CSharpBinding
 		}
 		
 		[DefaultValue(true)]
-		[LocalizedProperty("${res:BackendBindings.CompilerOptions.CodeGeneration.GenerateOverflowChecks}",
-		                   Category    = "${res:BackendBindings.CompilerOptions.CodeGeneration}",
-		                   Description = "${res:BackendBindings.CompilerOptions.CodeGeneration.GenerateOverflowChecks.Description}")]
 		public bool GenerateOverflowChecks {
 			get {
 				return generateOverflowChecks;
@@ -187,9 +172,6 @@ namespace CSharpBinding
 		}
 		
 		[DefaultValue(false)]
-		[LocalizedProperty("${res:BackendBindings.CompilerOptions.CodeGeneration.GenerateXmlDocumentation}",
-		                   Category    = "${res:BackendBindings.CompilerOptions.CodeGeneration}",
-		                   Description = "${res:BackendBindings.CompilerOptions.CodeGeneration.GenerateXmlDocumentation.Description}")]
 		public bool GenerateXmlDocumentation {
 			get {
 				return generateXmlDocumentation;
@@ -203,9 +185,6 @@ namespace CSharpBinding
 
 #region Errors and Warnings 
 		[DefaultValue(4)]
-		[LocalizedProperty("${res:BackendBindings.CompilerOptions.WarningAndErrorCategory.WarningLevel}",
-		                   Category    = "${res:BackendBindings.CompilerOptions.WarningAndErrorCategory}",
-		                   Description = "${res:BackendBindings.CompilerOptions.WarningAndErrorCategory.WarningLevel.Description}")]
 		public int WarningLevel {
 			get {
 				return warninglevel;
@@ -216,9 +195,6 @@ namespace CSharpBinding
 		}
 		
 		[DefaultValue("")]
-		[LocalizedProperty("${res:BackendBindings.CompilerOptions.WarningAndErrorCategory.NoWarnings}",
-		                   Category    = "${res:BackendBindings.CompilerOptions.WarningAndErrorCategory}",
-		                   Description = "${res:BackendBindings.CompilerOptions.WarningAndErrorCategory.NoWarnings.Description}")]
 		public string NoWarnings {
 			get {
 				return noWarnings;
