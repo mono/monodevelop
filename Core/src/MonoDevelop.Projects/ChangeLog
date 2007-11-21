@@ -1,5 +1,45 @@
 2007-11-21  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects/CustomCommandType.cs,
+	  MonoDevelop.Projects/ProjectServiceExtension.cs,
+	  MonoDevelop.Projects/CustomCommandCollection.cs,
+	  MonoDevelop.Projects/ProjectsServices.cs,
+	  MonoDevelop.Projects/CustomCommandExtension.cs,
+	  MonoDevelop.Projects/UnknownConfiguration.cs,
+	  MonoDevelop.Projects/ProjectReferenceEventArgs.cs,
+	  MonoDevelop.Projects/ProjectConvertTool.cs,
+	  MonoDevelop.Projects/GenericProject.cs,
+	  MonoDevelop.Projects/CustomCommand.cs,
+	  MonoDevelop.Projects/CombineEntryEventArgs.cs,
+	  MonoDevelop.Projects.Ambience/Ambience.cs,
+	  MonoDevelop.Projects.Text/TextFileReader.cs,
+	  MonoDevelop.Projects.Parser/MemberCollectionBase.cs,
+	  MonoDevelop.Projects.Parser/ClassInformationEventHandler.cs,
+	  MonoDevelop.Projects.Parser/CommentTasksChangedEventHandler.cs,
+	  MonoDevelop.Projects.Parser/AssemblyInformationEventHandler.cs,
+	  MonoDevelop.Projects.Parser/ClassWrapper.cs: Added missing license
+	  headers.
+	* MonoDevelop.Projects/IConfiguration.cs: Moved UknownConfiguration to its
+	  own file.
+	* MonoDevelop.Projects/CombineEntryCollection.cs: This file is not from SD.
+	* MonoDevelop.Projects/TypelibImporter.cs,
+	  MonoDevelop.Projects/NoStartupCombineDefinedException.cs,
+	  MonoDevelop.Projects.Ambience/CodeDOMGeneratorUtility.cs,
+	  MonoDevelop.Projects.Utility/Comparers.cs,
+	  MonoDevelop.Projects.Utility/SortUtility.cs,
+	  MonoDevelop.Projects.Utility/SortUtilityBase.cs,
+	  MonoDevelop.Projects.Utility/PriorityQueue.cs, MonoDevelop.Projects.mdp,
+	  Makefile.am, MonoDevelop.Projects.Parser/IParseInformationListener.cs,
+	  MonoDevelop.Projects/Language.cs: Removed unused files.
+	* MonoDevelop.Projects.Parser/CompoundClass.cs,
+	  MonoDevelop.Projects.Parser/IExpressionFinder.cs,
+	  MonoDevelop.Projects.Parser/ExpressionContext.cs: This class was taken
+	  from SD2, so it is LGPL.
+	* MonoDevelop.Projects.Extensions/LanguageBindingCodon.cs: This class was
+	  refactored when migrated to Mono.Addins.
+
+2007-11-21  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects/Project.cs, MonoDevelop.Projects/IBuildStep.cs:
 	  Removed unused stuff.
 	* Makefile.am, MonoDevelop.Projects.addin.xml, MonoDevelop.Projects.mdp,

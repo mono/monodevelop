@@ -17,7 +17,6 @@ REFS =  \
 FILES =  \
 	MonoDevelop.Projects.Ambience/Ambience.cs \
 	MonoDevelop.Projects.Ambience/AmbienceService.cs \
-	MonoDevelop.Projects.Ambience/CodeDOMGeneratorUtility.cs \
 	MonoDevelop.Projects.Ambience/ConversionFlags.cs \
 	MonoDevelop.Projects.Ambience/NetAmbience.cs \
 	MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs \
@@ -84,7 +83,6 @@ FILES =  \
 	MonoDevelop.Projects.Parser/IMember.cs \
 	MonoDevelop.Projects.Parser/IMethod.cs \
 	MonoDevelop.Projects.Parser/IParameter.cs \
-	MonoDevelop.Projects.Parser/IParseInformationListener.cs \
 	MonoDevelop.Projects.Parser/IParser.cs \
 	MonoDevelop.Projects.Parser/IParserService.cs \
 	MonoDevelop.Projects.Parser/IProperty.cs \
@@ -162,11 +160,7 @@ FILES =  \
 	MonoDevelop.Projects.Text/TextFile.cs \
 	MonoDevelop.Projects.Text/TextFileReader.cs \
 	MonoDevelop.Projects.Text/TextFileService.cs \
-	MonoDevelop.Projects.Utility/Comparers.cs \
 	MonoDevelop.Projects.Utility/DiffUtility.cs \
-	MonoDevelop.Projects.Utility/PriorityQueue.cs \
-	MonoDevelop.Projects.Utility/SortUtility.cs \
-	MonoDevelop.Projects.Utility/SortUtilityBase.cs \
 	MonoDevelop.Projects/AbstractConfiguration.cs \
 	MonoDevelop.Projects/AbstractProjectConfiguration.cs \
 	MonoDevelop.Projects/BuildEventHandler.cs \
@@ -204,10 +198,8 @@ FILES =  \
 	MonoDevelop.Projects/ILanguageBinding.cs \
 	MonoDevelop.Projects/IProjectBinding.cs \
 	MonoDevelop.Projects/IProjectService.cs \
-	MonoDevelop.Projects/Language.cs \
 	MonoDevelop.Projects/LanguageBindingService.cs \
 	MonoDevelop.Projects/MonoDevelopFileFormat.cs \
-	MonoDevelop.Projects/NoStartupCombineDefinedException.cs \
 	MonoDevelop.Projects/PrjxFileFormat.cs \
 	MonoDevelop.Projects/Project.cs \
 	MonoDevelop.Projects/ProjectConvertTool.cs \
@@ -225,8 +217,8 @@ FILES =  \
 	MonoDevelop.Projects/ProjectServiceExtension.cs \
 	MonoDevelop.Projects/ProjectsServices.cs \
 	MonoDevelop.Projects/SharpDevelopFileFormat.cs \
-	MonoDevelop.Projects/TypelibImporter.cs \
 	MonoDevelop.Projects/UnknownCombineEntry.cs \
+	MonoDevelop.Projects/UnknownConfiguration.cs \
 	MonoDevelop.Projects/UnknownProjectVersionException.cs \
 	MonoDevelop.Projects/Workspace.cs
 

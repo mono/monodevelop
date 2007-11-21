@@ -1,4 +1,4 @@
-// AssemblyInformationEventHandler.cs
+// UnknownConfiguration.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -25,30 +25,42 @@
 //
 //
 
+using System.Collections;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Serialization;
 
-using System;
-
-namespace MonoDevelop.Projects.Parser
+namespace MonoDevelop.Projects
 {
-	public delegate void AssemblyInformationEventHandler (object sender, AssemblyInformationEventArgs args);
-	
-	public class AssemblyInformationEventArgs
+	public class UnknownConfiguration: IConfiguration, IExtendedDataItem
 	{
-		readonly string assemblyFile;
-		readonly string assemblyName;
+		Hashtable properties;
 		
-		public AssemblyInformationEventArgs (string assemblyFile, string assemblyName)
+		public object Clone()
 		{
-			this.assemblyFile = assemblyFile;
+			return (IConfiguration) MemberwiseClone ();
 		}
 		
-		public string AssemblyFile {
-			get { return assemblyFile; }
+		public void CopyFrom (IConfiguration configuration)
+		{
+			UnknownConfiguration other = (UnknownConfiguration) configuration;
+			if (other.properties != null)
+				properties = other.properties;
 		}
 		
-		public string AssemblyName {
-			get { return assemblyName; }
+		public string Name {
+			get { return "Unknown Configuration"; }
+		}
+		
+		public override string ToString()
+		{
+			return "Unknown Configuration";
+		}
+		
+		public IDictionary ExtendedProperties {
+			get {
+				if (properties == null) properties = new Hashtable ();
+				return properties;
+			}
 		}
 	}
-	
 }
