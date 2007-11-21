@@ -1,3 +1,8 @@
+2007-11-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Documentation/DocumentationService.cs: Added missing license
+	  header.
+
 2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Documentation/DocumentationService.cs: Track LoggingService
