@@ -105,7 +105,6 @@ TESTFILES =  \
 	Parser/SharpDevelopTree/GenericParameter.cs \
 	Parser/SharpDevelopTree/Method.cs \
 	Parser/SharpDevelopTree/ReturnType.cs \
-	Parser/TypeNameResolver.cs \
 	Parser/TypeVisitor.cs \
 	Project/CSharpCompilerParameters.cs
 
@@ -121,8 +120,8 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) \
 		$(build_resources:%=/resource:%) $(build_sources)
 
-check: all $(TESTASSEMBLY)
-	MONO_PATH=$(top_builddir)/build/AddIns nunit-console $(TESTASSEMBLY)
+#check: all $(TESTASSEMBLY)
+#	MONO_PATH=$(top_builddir)/build/AddIns nunit-console $(TESTASSEMBLY)
 
 
 $(TESTASSEMBLY) : $(build_test_sources) $(build_resources)

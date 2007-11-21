@@ -1,3 +1,8 @@
+2007-11-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am: Fix distcheck; update-mime-database leaves "empty" 
+	  files behind after an uninstall, and we should ignore these.
+
 2007-11-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* monodevelop.in: Explicitly use /bin/bash rather than /bin/sh, as 
