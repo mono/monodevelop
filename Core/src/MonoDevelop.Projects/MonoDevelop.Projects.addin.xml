@@ -89,6 +89,7 @@
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "MonoDevelop.Projects.Combine" />
 		<DataType class = "MonoDevelop.Projects.Project" />
+		<DataType class = "MonoDevelop.Projects.Workspace" />
 		<DataType class = "MonoDevelop.Projects.DotNetProject" />
 		<DataType class = "MonoDevelop.Projects.GenericProject" />
 		<DataType class = "MonoDevelop.Projects.GenericProjectConfiguration" />

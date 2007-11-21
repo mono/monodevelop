@@ -149,7 +149,7 @@ namespace MonoDevelop.Projects
 		
 		public virtual Combine RootCombine {
 			get {
-				if (parentCombine != null)
+				if (parentCombine != null && !(parentCombine is Workspace))
 					return parentCombine.RootCombine;
 				else
 					return this as Combine; 

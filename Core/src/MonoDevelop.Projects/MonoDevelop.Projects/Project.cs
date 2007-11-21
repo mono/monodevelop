@@ -59,9 +59,6 @@ namespace MonoDevelop.Projects
 		[ItemProperty ("newfilesearch", DefaultValue = NewFileSearch.None)]
 		protected NewFileSearch newFileSearch  = NewFileSearch.None;
 
-		[ItemProperty ("enableviewstate", DefaultValue = true)]
-		protected bool enableViewState = true;
-		
 		ProjectFileCollection projectFiles;
 
 		protected ProjectReferenceCollection projectReferences;
@@ -129,17 +126,6 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		[Browsable(false)]
-		public bool EnableViewState {
-			get {
-				return enableViewState;
-			}
-			set {
-				enableViewState = value;
-				NotifyModified ();
-			}
-		}
-		
 		public abstract string ProjectType {
 			get;
 		}
@@ -186,15 +172,6 @@ namespace MonoDevelop.Projects
 			isDirty = false;
 		}
 
-		public virtual string GetParseableFileContent(string fileName)
-		{
-			fileName = fileName.Replace('\\', '/'); // FIXME PEDRO
-			StreamReader sr = File.OpenText(fileName);
-			string content = sr.ReadToEnd();
-			sr.Close();
-			return content;
-		}
-		
 		internal void RenameReferences(string oldName, string newName)
 		{
 			ArrayList toBeRemoved = new ArrayList();
@@ -703,21 +680,6 @@ namespace MonoDevelop.Projects
 		public event ProjectFileRenamedEventHandler FileRenamedInProject;
 		public event ProjectReferenceEventHandler ReferenceRemovedFromProject;
 		public event ProjectReferenceEventHandler ReferenceAddedToProject;
-		
-		class MainBuildStep: IBuildStep
-		{
-			public ICompilerResult Build (IProgressMonitor monitor, Project project)
-			{
-				monitor.Log.WriteLine (GettextCatalog.GetString ("Performing main compilation..."));
-				return project.DoBuild (monitor);
-			}
-			
-			public bool NeedsBuilding (Project project)
-			{
-				if (!project.isDirty) project.CheckNeedsBuild ();
-				return project.isDirty;
-			}
-		}
 	}
 	
 	public class UnknownProject: Project

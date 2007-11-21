@@ -197,7 +197,6 @@ FILES =  \
 	MonoDevelop.Projects/FileFormatManager.cs \
 	MonoDevelop.Projects/GenericProject.cs \
 	MonoDevelop.Projects/GenericProjectBinding.cs \
-	MonoDevelop.Projects/IBuildStep.cs \
 	MonoDevelop.Projects/ICompilerResult.cs \
 	MonoDevelop.Projects/IConfiguration.cs \
 	MonoDevelop.Projects/IDotNetLanguageBinding.cs \
@@ -228,7 +227,8 @@ FILES =  \
 	MonoDevelop.Projects/SharpDevelopFileFormat.cs \
 	MonoDevelop.Projects/TypelibImporter.cs \
 	MonoDevelop.Projects/UnknownCombineEntry.cs \
-	MonoDevelop.Projects/UnknownProjectVersionException.cs
+	MonoDevelop.Projects/UnknownProjectVersionException.cs \
+	MonoDevelop.Projects/Workspace.cs
 
 RES = MonoDevelop.Projects.addin.xml 
 

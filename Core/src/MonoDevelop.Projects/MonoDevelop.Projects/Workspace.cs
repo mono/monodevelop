@@ -1,5 +1,5 @@
 //
-// IBuildStep.cs
+// Workspace.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -26,15 +26,12 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+
 using System;
-using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {
-	public interface IBuildStep
+	public class Workspace: Combine
 	{
-		ICompilerResult Build (IProgressMonitor monitor, Project project);
-		bool NeedsBuilding (Project project);
 	}
-	
 }

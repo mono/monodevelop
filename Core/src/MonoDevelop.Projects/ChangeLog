@@ -1,3 +1,11 @@
+2007-11-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/Project.cs, MonoDevelop.Projects/IBuildStep.cs:
+	  Removed unused stuff.
+	* Makefile.am, MonoDevelop.Projects.addin.xml, MonoDevelop.Projects.mdp,
+	  MonoDevelop.Projects/CombineEntry.cs, MonoDevelop.Projects/Workspace.cs:
+	  Added Workspace class. Used to group independent solutions.
+
 2007-11-19  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Projects/Combine.cs: Catch some potential nulls and replace
