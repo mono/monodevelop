@@ -1,5 +1,25 @@
 2007-11-21  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects.Gui.mdp, Makefile.am,
+	  MonoDevelop.Projects.Gui.Completion/CommentCompletionDataProvider.cs:
+	  Removed unused file.
+	* MonoDevelop.Projects.Gui/ProjectsGuiServices.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/NewConfigurationDialog.cs,
+	  MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs,
+	  MonoDevelop.Projects.Gui.Completion/IParameterDataProvider.cs,
+	  MonoDevelop.Projects.Gui.Completion/ParameterInformationWindow.cs,
+	  MonoDevelop.Projects.Gui.Completion/ListWindow.cs,
+	  MonoDevelop.Projects.Gui.Completion/ICompletionWidget.cs,
+	  MonoDevelop.Projects.Gui.Completion/MethodParameterDataProvider.cs,
+	  MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanelWidget.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanel.cs:
+	  Added missing license headers.
+
+2007-11-21  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects.Gui.mdp, Base.glade,
 	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs,
 	  gtk-gui/objects.xml, gtk-gui/gui.stetic, Makefile.am,

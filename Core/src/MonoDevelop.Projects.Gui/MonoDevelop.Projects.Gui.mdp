@@ -25,7 +25,6 @@
     <File name="MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Gui.Completion/CommentCompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Completion/ICompletionData.cs" subtype="Code" buildaction="Compile" />
