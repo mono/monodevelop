@@ -22,7 +22,6 @@ namespace PythonBinding
 			}
 		}
 		
-		[LocalizedProperty("Output path", Description = "The path where the assembly is created.")]
 		public string OutputPath {
 			get {
 				return OutputDirectory;
@@ -32,7 +31,6 @@ namespace PythonBinding
 			}
 		}
 		
-		[LocalizedProperty("Output assembly", Description = "The assembly name.")]
 		public string AssemblyName {
 			get {
 				return OutputAssembly;
@@ -43,7 +41,6 @@ namespace PythonBinding
 		}
 		
 		[DefaultValue(CompilationTarget.Exe)]
-		[LocalizedProperty("Compilation Target", Description = "The compilation target of the source code. (/dll, /exe)")]
 		public CompilationTarget CompilationTarget {
 			get {
 				return compilerOptions.compilationTarget;
@@ -54,7 +51,6 @@ namespace PythonBinding
 		}
 		
 		[DefaultValue(false)]
-		[LocalizedProperty("Include debug information", Description = "Specifies if debug information should be omited. (/DEBUG)")]
 		public bool IncludeDebugInformation {
 			get {
 				return compilerOptions.includeDebugInformation;

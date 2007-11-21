@@ -1,3 +1,7 @@
+2007-11-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Project/VBCompilerParameters.cs: Removed some obsolete attributes.
+
 2007-10-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* VBBindingCompilerServices.cs: A few changes to cope with vbnc''s issues:

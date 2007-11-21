@@ -132,9 +132,6 @@ namespace VBBinding {
 		}
 		
 		[DefaultValue(false)]
-//		[LocalizedProperty("${res:BackendBindings.CompilerOptions.CodeGeneration.UnsafeCode}",
-//		                   Category    = "${res:BackendBindings.CompilerOptions.CodeGeneration}",
-//		                   Description = "${res:BackendBindings.CompilerOptions.CodeGeneration.UnsafeCode.Description}")]
 		public bool UnsafeCode {
 			get {
 				return unsafecode;
@@ -145,9 +142,6 @@ namespace VBBinding {
 		}
 		
 		[DefaultValue(false)]
-//		[LocalizedProperty("${res:BackendBindings.CompilerOptions.CodeGeneration.GenerateXmlDocumentation}",
-//		                   Category    = "${res:BackendBindings.CompilerOptions.CodeGeneration}",
-//		                   Description = "${res:BackendBindings.CompilerOptions.CodeGeneration.GenerateXmlDocumentation.Description}")]
 		public bool GenerateXmlDocumentation {
 			get {
 				return generateXmlDocumentation;
@@ -159,9 +153,6 @@ namespace VBBinding {
 		
 		
 		[DefaultValue(4)]
-//		[LocalizedProperty("${res:BackendBindings.CompilerOptions.WarningAndErrorCategory.WarningLevel}",
-//		                   Category    = "${res:BackendBindings.CompilerOptions.WarningAndErrorCategory}",
-//		                   Description = "${res:BackendBindings.CompilerOptions.WarningAndErrorCategory.WarningLevel.Description}")]
 		public int WarningLevel {
 			get {
 				return warninglevel;
