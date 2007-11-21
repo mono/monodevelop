@@ -1,3 +1,27 @@
+2007-11-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.AddIns/PackageExtensionNode.cs,
+	  MonoDevelop.Core.AddIns/AssemblyExtensionNode.cs,
+	  MonoDevelop.Core.AddIns/ServiceExtensionNode.cs,
+	  MonoDevelop.Core.AddIns/ApplicationExtensionNode.cs,
+	  MonoDevelop.Core.Execution/ProcessService.cs,
+	  MonoDevelop.Core.ProgressMonitoring/ConsoleProgressStatus.cs,
+	  MonoDevelop.Core.FileSystem/FileSystemExtension.cs,
+	  MonoDevelop.Core.FileSystem/DefaultFileSystemExtension.cs,
+	  MonoDevelop.Core/DefaultAddinLocalizer.cs,
+	  MonoDevelop.Core/FileService.cs,
+	  MonoDevelop.Core/SystemAssemblyService.cs,
+	  MonoDevelop.Core/IAsyncOperation.cs: Added missing license headers.
+	* MonoDevelop.Core.Utils.DirectoryArchive,
+	  MonoDevelop.Core.Utils.DirectoryArchive/TarDecompressor.cs,
+	  MonoDevelop.Core.Utils.DirectoryArchive/GzSupport.cs,
+	  MonoDevelop.Core.Utils.DirectoryArchive/Decompressor.cs,
+	  MonoDevelop.Core.Utils.DirectoryArchive/ZipDecompressor.cs,
+	  MonoDevelop.Core.Utils.DirectoryArchive/Bz2Support.cs,
+	  MonoDevelop.Core.mdp, MonoDevelop.Core.Utils.ReportingStream,
+	  MonoDevelop.Core.Utils.ReportingStream/ReportingStream.cs, Makefile.am:
+	  Removed unused classes.
+
 2007-11-20  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Core.Execution/ProcessService.cs: Add API to allow global

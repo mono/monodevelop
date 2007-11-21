@@ -43,12 +43,6 @@ FILES =  \
 	MonoDevelop.Core.ProgressMonitoring/NullProgressMonitor.cs \
 	MonoDevelop.Core.ProgressMonitoring/ProgressTracker.cs \
 	MonoDevelop.Core.ProgressMonitoring/SynchronizedProgressMonitor.cs \
-	MonoDevelop.Core.Utils.DirectoryArchive/Bz2Support.cs \
-	MonoDevelop.Core.Utils.DirectoryArchive/Decompressor.cs \
-	MonoDevelop.Core.Utils.DirectoryArchive/GzSupport.cs \
-	MonoDevelop.Core.Utils.DirectoryArchive/TarDecompressor.cs \
-	MonoDevelop.Core.Utils.DirectoryArchive/ZipDecompressor.cs \
-	MonoDevelop.Core.Utils.ReportingStream/ReportingStream.cs \
 	MonoDevelop.Core/AbstractService.cs \
 	MonoDevelop.Core/ClrVersion.cs \
 	MonoDevelop.Core/DefaultAddinLocalizer.cs \
