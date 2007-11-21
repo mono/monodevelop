@@ -1,5 +1,5 @@
 //
-// Document.cs
+// FileViewer.cs
 //
 // Author:
 //   Lluis Sanchez Gual

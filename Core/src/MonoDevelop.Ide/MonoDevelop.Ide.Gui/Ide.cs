@@ -36,7 +36,6 @@ using System.Net.Sockets;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.Core.Gui.ErrorHandlers;
 using Mono.Addins;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Dialogs;

@@ -1,3 +1,33 @@
+2007-11-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Codons/CombineOpenCondition.cs,
+	  MonoDevelop.Ide.Codons/ProjectActiveCondition.cs: Changed license
+	  header. This class was reimplemented after migration to Mono.Addins.
+	* MonoDevelop.Ide.Codons/LanguageActiveCondition.cs,
+	  MonoDevelop.Ide.Codons/WorkbenchContextCondition.cs,
+	  MonoDevelop.Ide.Commands/DebugCommands.cs,
+	  MonoDevelop.Ide.Commands/NavigationCommands.cs,
+	  MonoDevelop.Ide.Commands/TextEditorCommands.cs,
+	  MonoDevelop.Ide.Gui.Content/ICodeStyleOperations.cs,
+	  MonoDevelop.Ide.Gui.Content/IExtensibleTextEditor.cs,
+	  MonoDevelop.Ide.Gui.Content/IndentStyle.cs,
+	  MonoDevelop.Ide.Gui.Content/IViewHistory.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/CombineEntryFeatureSelector.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/DeleteFileDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/ExportProjectDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/FeatureSelectorDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/RenameItemDialog.cs,
+	  MonoDevelop.Ide.Gui/AddEntryEventHandler.cs,
+	  MonoDevelop.Ide.Gui/DefaultDisplayBinding.cs,
+	  MonoDevelop.Ide.Gui/DragNotebook.cs, MonoDevelop.Ide.Gui/FileViewer.cs,
+	  MonoDevelop.Ide.Gui/HelpViewer.cs,
+	  MonoDevelop.Ide.Gui/OutputProgressMonitor.cs,
+	  MonoDevelop.Ide.Gui/TextEditor.cs, MonoDevelop.Ide/Services.cs: Added
+	  missing header.
+	* MonoDevelop.Ide.Commands/FileCommands.cs: Remove old namespace.
+	* MonoDevelop.Ide.Gui/Ide.cs: Removed old namespace.
+
 2007-11-20  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Gui/IdeStartup.cs: Capture previous value of

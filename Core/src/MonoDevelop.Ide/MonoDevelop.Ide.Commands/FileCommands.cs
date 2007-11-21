@@ -28,7 +28,6 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Components;
 using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.Core.Gui.ErrorHandlers;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Dialogs;
 using Freedesktop.RecentFiles;
