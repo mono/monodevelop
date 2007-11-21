@@ -1,3 +1,13 @@
+2007-11-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp, Base.glade,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs,
+	  gtk-gui/objects.xml, gtk-gui/gui.stetic, Makefile.am,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:
+	  Ported the last dialog to Stetic. Removed all remaining glade
+	  references.
+
 2007-11-20  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs: Fix

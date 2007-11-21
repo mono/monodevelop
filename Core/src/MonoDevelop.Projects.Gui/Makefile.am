@@ -2,7 +2,6 @@
 ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll
 
 REFS =  \
-	$(GLADE_SHARP_LIBS) \
 	$(GNOME_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
@@ -27,6 +26,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CompileFileOptionsWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs \
+	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RuntimeOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.RenameConfigDialog.cs \
@@ -67,7 +67,6 @@ FILES =  \
 	MonoDevelop.Projects.Gui/ProjectsGuiServices.cs
 
 RES =  \
-	Base.glade \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
 	MonoDevelop.Projects.Gui.addin.xml

@@ -36,7 +36,6 @@ using MonoDevelop.Components;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 using Gtk;
-using Glade;
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
