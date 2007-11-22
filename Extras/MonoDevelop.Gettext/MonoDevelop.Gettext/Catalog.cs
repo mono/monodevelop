@@ -652,7 +652,7 @@ namespace MonoDevelop.Gettext
 			System.Diagnostics.Process process = new System.Diagnostics.Process ();
 			process.StartInfo.FileName = "msgmerge";
 			process.StartInfo.Arguments = "--force-po -o \"" + tmp3 + "\" \"" + tmp2 + "\" \"" + tmp1 + "\"";
-			Console.WriteLine ("--force-po -o \"" + tmp3 + "\" \"" + tmp2 + "\" \"" + tmp1 + "\"");
+			//Console.WriteLine ("--force-po -o \"" + tmp3 + "\" \"" + tmp2 + "\" \"" + tmp1 + "\"");
 			process.Start ();
 			process.WaitForExit ();
 			bool succ = process.ExitCode == 0;

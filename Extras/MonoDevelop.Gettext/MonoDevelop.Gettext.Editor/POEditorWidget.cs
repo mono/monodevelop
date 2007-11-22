@@ -256,12 +256,10 @@ namespace MonoDevelop.Gettext
 		
 		void UpdateProgressBar ()
 		{
-			Console.WriteLine("a");
 			int all, untrans, fuzzy, missing, bad;
 			catalog.GetStatistics (out all, out fuzzy, out missing, out bad, out untrans);
 			double percentage = all > 0 ? ((double)(all - untrans) / all) * 100 : 0.0;
 			string barText = String.Format (GettextCatalog.GetString ("{0:#00.00}% Translated"), percentage);
-			Console.WriteLine("b");
 			if (missing > 0 || fuzzy > 0)
 				barText += " (";
 			
@@ -278,10 +276,8 @@ namespace MonoDevelop.Gettext
 			if (missing > 0 || fuzzy > 0)
 				barText += ")";
 			
-			Console.WriteLine("c");
 			this.progressbar1.Text = barText;
 			percentage = percentage / 100;
-			Console.WriteLine("d");
 			this.progressbar1.Fraction = percentage;
 		}		
 		

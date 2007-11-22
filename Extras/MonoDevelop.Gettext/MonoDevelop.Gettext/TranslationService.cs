@@ -56,31 +56,11 @@ namespace MonoDevelop.Gettext
 		{
 			Debug.Assert (!isInitialized);
 			isInitialized = true;
-//			IdeApp.ProjectOperations.FileChangedInProject += new ProjectFileEventHandler (FileChangedInProject);
 			IdeApp.ProjectOperations.CombineOpened += new CombineEventHandler (CombineOpened);
 			IdeApp.ProjectOperations.CombineClosed += delegate {
 				isTranslationEnabled = false;
 			};
 		}
-		
-//		static TranslationProject GetTranslationProject (Project p)
-//		{
-//			foreach (CombineEntry entry in p.ParentCombine.Entries) {
-//				if (entry is TranslationProject) {
-//					return (TranslationProject)entry;
-//				}
-//			}
-//			return null;
-//		}
-		
-//		static int GetLineNumber (string text, int index)
-//		{
-//			int result = 0;
-//			for (int i = 0; i < index; i++)
-//				if (text[i] == '\n')
-//					result++;
-//			return result;
-//		}
 		
 		static void CombineOpened (object sender, CombineEventArgs e)
 		{
@@ -92,6 +72,8 @@ namespace MonoDevelop.Gettext
 			}
 			isTranslationEnabled = false;
 		}
+		
+
 	}
 	
 	public class TranslationServiceStartupCommand : CommandHandler

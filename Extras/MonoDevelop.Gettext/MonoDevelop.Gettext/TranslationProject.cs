@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
 
 using MonoDevelop.Core;
@@ -151,28 +152,9 @@ namespace MonoDevelop.Gettext
 				translations.Add (new Translation (isoCode));
 				string templateFile    = Path.Combine (this.BaseDirectory, "messages.po");
 				string translationFile = GetFileName (isoCode);
-				if (!File.Exists (templateFile)) {
-	 				CreateTempProjectFileList (monitor);
-					
-					
-					StringBuilder args = new StringBuilder ();
-					args.Append ("--from-code=UTF-8");
-					args.Append (" -p ");args.Append ('"');args.Append (this.BaseDirectory);args.Append ('"');
-					args.Append (" -f ");args.Append ('"');args.Append (tempFile);args.Append ('"');
-					
-					Runtime.ProcessService.StartProcess ("xgettext",
-					                                     args.ToString (),
-					                                     this.BaseDirectory,
-					                                     monitor.Log,
-					                                     monitor.Log,
-					                                     delegate {
-						if (File.Exists (this.tempFile))
-							File.Delete (this.tempFile);
-						File.Copy (templateFile, translationFile);
-					});
-				} else {
-					File.Copy (templateFile, translationFile);
-				}
+				if (!File.Exists (templateFile)) 
+					CreateDefaultCatalog (monitor);
+				File.Copy (templateFile, translationFile);
 				
 				monitor.ReportSuccess (String.Format (GettextCatalog.GetString ("Language '{0}' successfully added."), isoCode));
 				monitor.Step (1);
@@ -227,12 +209,87 @@ namespace MonoDevelop.Gettext
 				}
 			}
 		}
-		string tempFile;
-		
-		void CreateTempProjectFileList (IProgressMonitor monitor)
+		static CatalogEntry GetItem (Catalog catalog, string original, string plural)
 		{
- 			tempFile = Path.GetTempFileName ();
-			StreamWriter writer = new StreamWriter(tempFile);
+			CatalogEntry result = catalog.FindItem (original);
+			if (result == null) {
+				result = new CatalogEntry (catalog, original, plural);
+				if (!String.IsNullOrEmpty (plural))
+					result.SetTranslations (new string[] {"", ""});
+				catalog.AddItem (result);
+			}
+			return result;
+		}
+		
+		int GetLineCount (string text, int startIndex, int endIndex)
+		{
+			int result = 0;
+			for (int i = startIndex; i < endIndex; i++) {
+				if (text[i] == '\n')
+					result++;
+			}
+			return result;
+		}
+		
+		static Regex xmlTranslationPattern = new Regex(@"_[^""]*=\s*""([^""]*)""", RegexOptions.Compiled);
+		void UpdateXmlTranslations (Catalog catalog, IProgressMonitor monitor, string fileName)
+		{
+			string text = File.ReadAllText (fileName);
+			string relativeFileName = MonoDevelop.Core.FileService.AbsoluteToRelativePath (this.BaseDirectory, fileName);
+			string fileNamePrefix   = relativeFileName + ":";
+			if (!String.IsNullOrEmpty (text)) {
+				int lineNumber = 0;
+				int oldIndex  = 0;
+				foreach (Match match in xmlTranslationPattern.Matches (text)) {
+					CatalogEntry entry = GetItem (catalog, match.Groups[1].Value, null);
+					lineNumber += GetLineCount (text, oldIndex, match.Index);
+					oldIndex = match.Index;
+					entry.AddReference (fileNamePrefix + lineNumber);
+				}
+			}
+		}
+
+		static Regex translationPattern = new Regex(@"GetString\s*\(\s*""([^""]*)""\s*\)", RegexOptions.Compiled);
+		static Regex pluralTranslationPattern = new Regex(@"GetPluralString\s*\(\s*""([^""]*)""\s*,\s*""([^""]*)""\s*,.*\)", RegexOptions.Compiled);
+		void UpdateTranslations (Catalog catalog, IProgressMonitor monitor, string fileName)
+		{
+			string text = File.ReadAllText (fileName);
+			string relativeFileName = MonoDevelop.Core.FileService.AbsoluteToRelativePath (this.BaseDirectory, fileName);
+			string fileNamePrefix   = relativeFileName + ":";
+			if (!String.IsNullOrEmpty (text)) {
+				int lineNumber = 0;
+				int oldIndex  = 0;
+				foreach (Match match in translationPattern.Matches (text)) {
+					CatalogEntry entry = GetItem (catalog, match.Groups[1].Value, null);
+					lineNumber += GetLineCount (text, oldIndex, match.Index);
+					oldIndex = match.Index;
+					entry.AddReference (fileNamePrefix + lineNumber);
+				}
+				lineNumber = oldIndex  = 0;
+				foreach (Match match in pluralTranslationPattern.Matches (text)) {
+					CatalogEntry entry = GetItem (catalog, match.Groups[1].Value, match.Groups[2].Value);
+					lineNumber += GetLineCount (text, oldIndex, match.Index);
+					oldIndex = match.Index;
+					entry.AddReference (fileNamePrefix + lineNumber);
+				}
+			}
+		}
+
+		void UpdateTranslation (Catalog catalog, string fileName, IProgressMonitor monitor)
+		{
+	       switch (Path.GetExtension (fileName)) {
+	       case ".xml":
+	               UpdateXmlTranslations (catalog, monitor, fileName);
+	               break;
+	       default:
+	               UpdateTranslations (catalog, monitor, fileName);
+	               break;
+	       }
+		}
+		
+		void CreateDefaultCatalog (IProgressMonitor monitor)
+		{
+			Catalog catalog = new Catalog ();
 			List<Project> projects = new List<Project> ();
 			foreach (Project p in RootCombine.GetAllProjects ()) {
 				if (IsIncluded (p))
@@ -242,12 +299,14 @@ namespace MonoDevelop.Gettext
 				monitor.Log.WriteLine (String.Format (GettextCatalog.GetString ("Scanning project {0}..."),  p.Name));
 				monitor.Step (1);
 				foreach (ProjectFile file in p.ProjectFiles) {
-					if (file.Subtype != Subtype.Code  || file.BuildAction != BuildAction.Compile)
+					if (!File.Exists (file.FilePath))
 						continue;
-					writer.WriteLine (file.FilePath);
+					string mimeType = Gnome.Vfs.MimeType.GetMimeTypeForUri (file.FilePath);
+					if (file.Subtype == Subtype.Code  || file.BuildAction == BuildAction.Compile || mimeType == "application/xml" || mimeType.StartsWith ("text"))
+						UpdateTranslation (catalog, file.FilePath, monitor);
 				}
 			}
-			writer.Close ();
+			catalog.Save (Path.Combine (this.BaseDirectory, "messages.po"));
 		}
 		
 		public void UpdateTranslations (IProgressMonitor monitor)
@@ -258,20 +317,7 @@ namespace MonoDevelop.Gettext
 					projects.Add (p);
 			}
 			monitor.BeginTask (GettextCatalog.GetString ("Updating Translations "), projects.Count);
-			CreateTempProjectFileList (monitor);
-			StringBuilder args = new StringBuilder ();
-			args.Append ("--from-code=UTF-8");
-			args.Append (" -p ");args.Append ('"');args.Append (this.BaseDirectory);args.Append ('"');
-			args.Append (" -f ");args.Append ('"');args.Append (tempFile);args.Append ('"');
-			Runtime.ProcessService.StartProcess ("xgettext",
-			                                     args.ToString (),
-			                                     this.BaseDirectory,
-			                                     monitor.Log,
-			                                     monitor.Log,
-			                                     null).WaitForExit ();
-			
-			if (File.Exists (tempFile))
-				File.Delete (tempFile);
+			CreateDefaultCatalog (monitor);
 			foreach (Translation translation in this.Translations) {
 				string poFileName  = GetFileName (translation);
 				Runtime.ProcessService.StartProcess ("msgmerge",

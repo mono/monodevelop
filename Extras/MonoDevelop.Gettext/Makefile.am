@@ -4,6 +4,7 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Gettext.dll
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
+	$(GNOME_VFS_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment.dll \

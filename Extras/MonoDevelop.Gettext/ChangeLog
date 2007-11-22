@@ -1,3 +1,13 @@
+2007-11-22  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs,
+	  Makefile.am, MonoDevelop.Gettext.mdp,
+	  MonoDevelop.Gettext/TranslationService.cs,
+	  MonoDevelop.Gettext/TranslationProject.cs,
+	  MonoDevelop.Gettext/Catalog.cs: Now message strings are extracted using
+	  regexes instead of xgettext.
+
 2007-11-20  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Gettext/TranslationProject.cs: Process output is now written
