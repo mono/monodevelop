@@ -112,7 +112,7 @@ namespace MonoDevelop.Ide.StandardHeaders
 			return null;
 		}
 		
-		public static string GetHeader (string language)
+		public static string GetHeader (string language, string fileName)
 		{
 			if (String.IsNullOrEmpty (Header) || GetComment (language) == null) {
 				return "";
@@ -127,7 +127,14 @@ namespace MonoDevelop.Ide.StandardHeaders
 				result.Append (line);
 				result.Append (Environment.NewLine);
 			}
-			return result.ToString();
+			
+			return StringParserService.Parse (result.ToString(), new string[,] { 
+				{ "FileName", Path.GetFileName (fileName) }, 
+				{ "FileNameWithoutExtension", Path.GetFileNameWithoutExtension (fileName) }, 
+				{ "Directory", Path.GetDirectoryName (fileName) }, 
+				{ "FullFileName", fileName },
+			
+			});
 		}
 		
 		static void LoadHeaderTemplates ()

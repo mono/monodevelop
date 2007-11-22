@@ -1,5 +1,12 @@
 2007-11-22  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs,
+	  MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	  StandardHeaderService now takes care of replacing variables used in the
+	  header.
+
+2007-11-22  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Makefile.am, MonoDevelop.Ide.Gui.BrowserDisplayBinding/HTMLInterfaces.cs,
 	  MonoDevelop.Ide.Gui.Dialogs/AddWebReferenceDialog.cs,
 	  MonoDevelop.Ide.Gui.Undo,

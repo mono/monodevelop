@@ -199,13 +199,7 @@ namespace MonoDevelop.Ide.Templates
 			MemoryStream ms = new MemoryStream ();
 			byte[] data;
 			if (StandardHeaderService.EmitStandardHeader && AddStandardHeader) { 
-				string header = StringParserService.Parse (StandardHeaderService.GetHeader(language), new string[,] { 
-					{ "FileName", Path.GetFileName (fileName) }, 
-					{ "FileNameWithoutExtension", Path.GetFileNameWithoutExtension (fileName) }, 
-					{ "Directory", Path.GetDirectoryName (fileName) }, 
-					{ "FullFileName", fileName },
-				
-				});
+				string header = StandardHeaderService.GetHeader (language, fileName); 
 				data = System.Text.Encoding.UTF8.GetBytes (header);
 				ms.Write (data, 0, data.Length);
 			}
