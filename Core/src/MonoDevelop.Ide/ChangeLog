@@ -1,3 +1,20 @@
+2007-11-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs,
+	  MonoDevelop.Ide.Gui.Pads/FileListItem.cs,
+	  MonoDevelop.Ide.Gui.Pads/FileScout.cs,
+	  MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs,
+	  MonoDevelop.Ide.Gui.Pads/TreeViewItem.cs,
+	  MonoDevelop.Ide.Gui.Search/ExtendedStreamReader.cs,
+	  MonoDevelop.Ide.Gui.Search/ForwardTextFileIterator.cs,
+	  MonoDevelop.Ide.Gui.Search/IDocumentInformation.cs,
+	  MonoDevelop.Ide.Templates/FileDescriptionTemplate.cs,
+	  MonoDevelop.Ide.Templates/ICombineEntryFeature.cs,
+	  MonoDevelop.Ide.Templates/INewFileCreator.cs: Added missing license
+	  headers.
+
 2007-11-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Codons/CombineOpenCondition.cs,
