@@ -72,7 +72,20 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				foreach (ClrVersion ver in Runtime.SystemAssemblyService.GetSupportedClrVersions ()) {
 					if (Array.IndexOf (langSupported, ver) == -1)
 						continue;
-					string desc = ver.ToString().Substring (4).Replace ('_','.');
+					string desc;
+					switch (ver) {
+					case ClrVersion.Net_1_1:
+						desc = "Mono/.NET 1.1 Profile";
+						break;
+					case ClrVersion.Net_2_0:
+						desc = "Mono/.NET 2.0 Profile";
+						break;
+					case ClrVersion.Clr_2_1:
+						desc = "Moonlight/Silverlight 1.1";
+						break;
+					default:
+						throw new Exception ("Unknown ClrVersion '" + ver.ToString () + "'");
+					}
 					runtimeVersionCombo.AppendText (desc);
 					if (project.ClrVersion == ver)
 		 				runtimeVersionCombo.Active = supportedVersions.Count;

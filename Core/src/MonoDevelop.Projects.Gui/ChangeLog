@@ -1,3 +1,8 @@
+2007-11-22  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs: Add
+	  support for 2.1 runtime, and explicitly name the runtime versions.
+
 2007-11-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.mdp, Makefile.am,
