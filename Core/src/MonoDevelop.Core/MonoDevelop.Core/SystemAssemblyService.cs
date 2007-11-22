@@ -52,6 +52,7 @@ namespace MonoDevelop.Core
 		bool initialized;
 		
 		ClrVersion currentVersion;
+		ClrVersion[] supportedVersions = new ClrVersion [] {};
 		
 		public event EventHandler PackagesChanged;
 
@@ -65,7 +66,7 @@ namespace MonoDevelop.Core
 		
 		public ClrVersion[] GetSupportedClrVersions ()
 		{
-			return new ClrVersion [] { ClrVersion.Net_1_1, ClrVersion.Net_2_0 };
+			return supportedVersions;
 		}
 
 		public ICollection<string> GetAssemblyFullNames ()
@@ -394,6 +395,10 @@ namespace MonoDevelop.Core
 
 		void RegisterSystemAssemblies (string prefix, string version, ClrVersion ver)
 		{
+			foreach (ClrVersion v in supportedVersions)
+				if (v == ver)
+					return;
+			
 			SystemPackage package = new SystemPackage ();
 			List<string> list = new List<string> ();
 			
@@ -409,6 +414,11 @@ namespace MonoDevelop.Core
 
 			package.Initialize ("mono", version, "The Mono runtime", list.ToArray (), ver, null, false);
 			packages.Add (package);
+			
+			ClrVersion[] newArr = new ClrVersion[supportedVersions.Length + 1];
+			supportedVersions.CopyTo (newArr, 0);
+			newArr [newArr.Length - 1] = ver;
+			supportedVersions = newArr;
 		}
 		
 		private void ParsePCFile (string pcfile)

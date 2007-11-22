@@ -1,3 +1,8 @@
+2007-11-22  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Core/SystemAssemblyService.cs: Update SupportedVersions
+	  depending on which ClrVersions were registered successfully.
+
 2007-11-21  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Core/ClrVersion.cs, MonoDevelop.Core/SystemAssemblyService.cs:
