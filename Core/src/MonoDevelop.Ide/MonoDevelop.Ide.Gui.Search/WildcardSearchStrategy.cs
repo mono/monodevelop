@@ -22,7 +22,6 @@ using System;
 using System.Collections;
 
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui.Undo;
 
 namespace MonoDevelop.Ide.Gui.Search
 {

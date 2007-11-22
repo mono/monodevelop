@@ -22,7 +22,6 @@ using System;
 using System.Drawing;
 using Gtk;
 
-using MonoDevelop.Ide.Gui.Undo;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Codons;

@@ -1,5 +1,15 @@
 2007-11-22  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs,
+	  MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs,
+	  MonoDevelop.Ide.Gui.Content/IClipboardHandler.cs,
+	  MonoDevelop.Ide.Gui.Search/BruteForceSearchStrategy.cs,
+	  MonoDevelop.Ide.Gui.Search/SearchOptions.cs,
+	  MonoDevelop.Ide.Gui.Search/WildcardSearchStrategy.cs: Remove reference
+	  to old namespace.
+
+2007-11-22  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs,
 	  MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
 	  StandardHeaderService now takes care of replacing variables used in the

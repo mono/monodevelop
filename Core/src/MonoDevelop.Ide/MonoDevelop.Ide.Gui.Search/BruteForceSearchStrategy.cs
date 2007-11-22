@@ -21,7 +21,6 @@
 using System;
 using System.Globalization;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui.Undo;
 
 namespace MonoDevelop.Ide.Gui.Search
 {
