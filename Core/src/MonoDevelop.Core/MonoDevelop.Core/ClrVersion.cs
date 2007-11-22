@@ -34,6 +34,7 @@ namespace MonoDevelop.Core
 	{
 		Default,
 		Net_1_1,
-		Net_2_0
+		Net_2_0,
+		Clr_2_1 //Moonlight/Silverlight 1.1
 	}
 }

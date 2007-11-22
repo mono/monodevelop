@@ -339,7 +339,8 @@ namespace MonoDevelop.Core
 			
 			RegisterSystemAssemblies (prefix, "1.0", ClrVersion.Net_1_1);
 			RegisterSystemAssemblies (prefix, "2.0", ClrVersion.Net_2_0);
-
+			RegisterSystemAssemblies (prefix, "2.1", ClrVersion.Clr_2_1);
+			
 			string search_dirs = Environment.GetEnvironmentVariable ("PKG_CONFIG_PATH");
 			string libpath = Environment.GetEnvironmentVariable ("PKG_CONFIG_LIBPATH");
 
