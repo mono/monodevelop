@@ -68,9 +68,6 @@
     <File name="MonoDevelop.Ide.Templates/CodeDomFileDescriptionTemplate.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Templates/ResourceFileDescriptionTemplate.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Undo/IUndoableOperation.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Undo/UndoQueue.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Undo/UndoStack.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/AbstractBaseViewContent.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/AbstractPadContent.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/AbstractSecondaryViewContent.cs" subtype="Code" buildaction="Compile" />
@@ -113,7 +110,6 @@
     <File name="MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.OptionPanels/SelectStylePanel.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.OptionPanels/AddInsOptionsPanel.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Dialogs/AddWebReferenceDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs" subtype="Code" buildaction="Compile" />
@@ -206,7 +202,6 @@
     <File name="MonoDevelop.Ide.Templates/CombineEntryDescriptor.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/ConfigurationComboBox.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/IPadContainer.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.BrowserDisplayBinding/HTMLInterfaces.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.CodeTemplates/TemplateCompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/Document.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/HelpOperations.cs" subtype="Code" buildaction="Compile" />
@@ -336,6 +331,7 @@
     <File name="MonoDevelop.Ide.Templates/ParentProjectFileTemplateCondition.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/DragNotebook.cs" subtype="Code" buildaction="Compile" />
+    <File name="templates/Workspace.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="gecko-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=ccf7d78a55e9f021" />

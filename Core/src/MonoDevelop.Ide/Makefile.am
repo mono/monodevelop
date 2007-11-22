@@ -103,7 +103,6 @@ FILES =  \
 	MonoDevelop.Ide.ExternalTools/ExternalTool.cs \
 	MonoDevelop.Ide.ExternalTools/ExternalToolService.cs \
 	MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs \
-	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HTMLInterfaces.cs \
 	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs \
 	MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs \
 	MonoDevelop.Ide.Gui.Content/IBookmarkBuffer.cs \
@@ -122,7 +121,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs \
 	MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs \
 	MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs \
-	MonoDevelop.Ide.Gui.Dialogs/AddWebReferenceDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs \
 	MonoDevelop.Ide.Gui.Dialogs/CombineEntryFeatureSelector.cs \
 	MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs \
@@ -237,9 +235,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Search/SearchReplaceUtilities.cs \
 	MonoDevelop.Ide.Gui.Search/WholeProjectDocumentIterator.cs \
 	MonoDevelop.Ide.Gui.Search/WildcardSearchStrategy.cs \
-	MonoDevelop.Ide.Gui.Undo/IUndoableOperation.cs \
-	MonoDevelop.Ide.Gui.Undo/UndoQueue.cs \
-	MonoDevelop.Ide.Gui.Undo/UndoStack.cs \
 	MonoDevelop.Ide.Gui/AbstractBaseViewContent.cs \
 	MonoDevelop.Ide.Gui/AbstractPadContent.cs \
 	MonoDevelop.Ide.Gui/AbstractSecondaryViewContent.cs \
@@ -351,7 +346,8 @@ RES =  \
 	templates/EmptyStruct.xft.xml \
 	templates/EmptyTextFile.xft.xml \
 	templates/EmptyXMLFile.xft.xml \
-	templates/GenericProject.xpt.xml
+	templates/GenericProject.xpt.xml \
+	templates/Workspace.xpt.xml
 
 
 GENERATED_FILES = \

@@ -1,5 +1,15 @@
 2007-11-22  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Makefile.am, MonoDevelop.Ide.Gui.BrowserDisplayBinding/HTMLInterfaces.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/AddWebReferenceDialog.cs,
+	  MonoDevelop.Ide.Gui.Undo,
+	  MonoDevelop.Ide.Gui.Undo/IUndoableOperation.cs,
+	  MonoDevelop.Ide.Gui.Undo/UndoQueue.cs,
+	  MonoDevelop.Ide.Gui.Undo/UndoStack.cs, templates/Workspace.xpt.xml,
+	  MonoDevelop.Ide.mdp: Removed unused files. Added Workspace template.
+
+2007-11-22  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs,
 	  MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs,
 	  MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs,
