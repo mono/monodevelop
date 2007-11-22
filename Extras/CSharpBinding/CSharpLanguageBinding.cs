@@ -98,7 +98,7 @@ namespace CSharpBinding
 		
 		public ClrVersion[] GetSupportedClrVersions ()
 		{
-			return new ClrVersion[] { ClrVersion.Net_1_1, ClrVersion.Net_2_0 };
+			return new ClrVersion[] { ClrVersion.Net_1_1, ClrVersion.Net_2_0, ClrVersion.Clr_2_1 };
 		}
 	}
 }

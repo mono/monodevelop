@@ -12,14 +12,20 @@ namespace CSharpBinding.Autotools
 	{
 		public string GetCompilerCommand ( Project project, string configuration )
 		{
-			if ( !this.CanDeploy ( project ) )
-				throw new Exception ( "Not a deployable project." );
-
 			DotNetProject dp = project as DotNetProject;
-			if (dp != null && dp.ClrVersion == ClrVersion.Net_2_0)
-				return "gmcs";
-			else
+			if ( !this.CanDeploy ( project ) || dp == null)
+				throw new Exception ( "Not a deployable project." );
+			
+			switch (dp.ClrVersion) {
+			case ClrVersion.Net_1_1:
 				return "mcs";
+			case ClrVersion.Net_2_0:
+				return "gmcs";
+			case ClrVersion.Clr_2_1:
+				return "smcs";
+			default:
+				throw new Exception ("Cannot handle unknown runtime version ClrVersion.'" + dp.ClrVersion.ToString () + "'.");
+			}
 		}
 
 		public string GetCompilerFlags ( Project project, string configuration )
@@ -64,6 +70,24 @@ namespace CSharpBinding.Autotools
 				if (!hasDebugDefine)
 					writer.Write (" -define:DEBUG");
 			}
+			
+			if (!string.IsNullOrEmpty (parameters.AdditionalArguments)) {
+				writer.Write (" " + parameters.AdditionalArguments + " ");
+			}
+			
+			switch (parameters.LangVersion) {
+			case LangVersion.Default:
+				break;
+			case LangVersion.ISO_1:
+				writer.Write (" -langversion:ISO-1 ");
+				break;
+			case LangVersion.ISO_2:
+				writer.Write (" -langversion:ISO-2 ");
+				break;
+			default:
+				throw new Exception ("Invalid LangVersion enum value '" + parameters.LangVersion.ToString () + "'");
+			}
+			
 			
 			// TODO check path and add to extradist...
 			//if (parameters.Win32Icon != null && parameters.Win32Icon.Length > 0) {

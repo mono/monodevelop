@@ -107,6 +107,22 @@ namespace CSharpBinding
 				writer.WriteLine("/d:DEBUG");
 			}
 			
+			switch (compilerparameters.LangVersion) {
+			case LangVersion.Default:
+				break;
+			case LangVersion.ISO_1:
+				writer.WriteLine ("/langversion:ISO-1");
+				break;
+			case LangVersion.ISO_2:
+				writer.WriteLine ("/langversion:ISO-2");
+				break;
+			default:
+				string message = "Invalid LangVersion enum value '" + compilerparameters.LangVersion.ToString () + "'";
+				monitor.ReportError (message, null);
+				LoggingService.LogError (message);
+				return null;
+			}
+			
 			// mcs default is + but others might not be
 			if (compilerparameters.Optimize)
 				writer.WriteLine("/optimize+");
@@ -175,17 +191,31 @@ namespace CSharpBinding
 			if (compilerparameters.GenerateXmlDocumentation) {
 				writer.WriteLine("\"/doc:" + Path.ChangeExtension(exe, ".xml") + '"');
 			}
+			
+			if (!string.IsNullOrEmpty (compilerparameters.AdditionalArguments)) {
+				writer.WriteLine (compilerparameters.AdditionalArguments);
+			}
+			
+			if (!string.IsNullOrEmpty (compilerparameters.NoWarnings)) {
+				writer.WriteLine ("/nowarn:\"{0}\"", compilerparameters.NoWarnings);
+			}
 
 			writer.Close();
 
 			string output = String.Empty;
 			string error  = String.Empty;
 			
-			string mcs = configuration.ClrVersion == ClrVersion.Net_1_1 ? "mcs" : "gmcs";
-			
 			File.WriteAllText (responseFileName, writer.ToString ());
 			
-			string compilerName = compilerparameters.CsharpCompiler == CsharpCompiler.Csc ? GetCompilerName (configuration.ClrVersion) : mcs;
+			string compilerName;
+			try {
+				compilerName = GetCompilerName (configuration.ClrVersion);
+			} catch (Exception e) {
+				string message = "Could not obtain a C# compiler";
+				monitor.ReportError (message, e);
+				return null;
+			}
+			
 			string outstr = compilerName + " @" + responseFileName;
 			TempFileCollection tf = new TempFileCollection();
 
@@ -224,7 +254,24 @@ namespace CSharpBinding
 			Regex regex = new Regex ("lib[32 64]?");
 			MatchCollection matches = regex.Matches(runtimeDir);
 			Match match = matches[matches.Count - 1];
-			string mcs = version == ClrVersion.Net_1_1 ? "mcs" : "gmcs";
+			string mcs;
+			switch (version) {
+			case ClrVersion.Net_1_1:
+				mcs = "mcs";
+				break;
+			case ClrVersion.Net_2_0:
+				mcs = "gmcs";
+				break;
+			case ClrVersion.Clr_2_1:
+				mcs = "smcs";
+				break;
+			default:
+				string message = "Cannot handle unknown runtime version ClrVersion.'" + version.ToString () + "'.";
+				LoggingService.LogError (message);
+				throw new Exception (message);
+				
+			}
+			
 			string compilerName = Path.Combine (runtimeDir.Substring(0, match.Index), Path.Combine("bin", mcs));
 			return compilerName;
 		}

@@ -33,10 +33,11 @@ FILES =  \
 	FormattingStrategy/CSharpIndentEngine.cs \
 	FormattingStrategy/CSharpIndentEngineStack.cs \
 	gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs \
+	gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs \
 	gtk-gui/CSharpBinding.FormattingPanelWidget.cs \
 	gtk-gui/generated.cs \
-	Gui/ChooseRuntimePanel.cs \
 	Gui/CodeGenerationPanel.cs \
+	Gui/CompilerOptionsPanelWidget.cs \
 	Gui/CSharpParameterDataProvider.cs \
 	Gui/CSharpTextEditorExtension.cs \
 	Gui/FormattingPanel.cs \
@@ -60,6 +61,7 @@ FILES =  \
 RES =  \
 	CSharpBinding.addin.xml \
 	gtk-gui/gui.stetic \
+	gtk-gui/objects.xml \
 	icons/C\#.FileIcon \
 	icons/csharp-icon-32.png \
 	templates/ConsoleProject.xpt.xml \

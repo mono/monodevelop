@@ -33,6 +33,12 @@ namespace CSharpBinding
 		Mcs
 	};
 	
+	public enum LangVersion {
+		Default = 0,
+		ISO_1   = 1,
+		ISO_2   = 2
+	}
+	
 	/// <summary>
 	/// This class handles project specific compiler parameters
 	/// </summary>
@@ -75,6 +81,13 @@ namespace CSharpBinding
 	
 		[ItemProperty ("codepage", DefaultValue = 0)]
 		int codePage;
+		
+		[ItemProperty ("additionalargs", DefaultValue = "")]
+		string additionalArgs = string.Empty;
+		
+		[ItemProperty ("langversion", DefaultValue = LangVersion.Default)]
+		LangVersion langVersion = LangVersion.Default;
+		
 	
 		public object Clone ()
 		{
@@ -118,6 +131,16 @@ namespace CSharpBinding
 			set {
 				win32Resource = value;
 			}
+		}
+		
+		public string AdditionalArguments {
+			get { return additionalArgs; }
+			set { additionalArgs = value; }
+		}
+		
+		public LangVersion LangVersion {
+			get { return langVersion; }
+			set { langVersion = value; }
 		}
 
 #region Code Generation

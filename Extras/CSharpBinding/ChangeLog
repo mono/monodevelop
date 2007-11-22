@@ -1,3 +1,21 @@
+2007-11-22  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* CSharpLanguageBinding.cs: Add support for 2.1 profile.
+	* Gui/ChooseRuntimePanel.cs: Unused; delete.
+	* Gui/CodeGenerationPanel.cs, Gui/CompilerOptionsPanelWidget.cs,
+	  gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs,
+	  gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs: Add support for
+	  LangVersion and AdditionalArgs. Move options from per-config to
+	  per-project.
+	* CSharpBinding.addin.xml, CSharpBinding.mdp, gtk-gui/objects.xml,
+	  gtk-gui/gui.stetic, Makefile.am: Updated.
+	* Autotools/CSharpAutotoolsSetup.cs: Add support for 2.1 profile, additional
+	  args and langversion.
+	* CSharpBindingCompilerManager.cs: Add support for 2.1 profile, additional
+	  args, nowarn and langversion.
+	* Project/CSharpCompilerParameters.cs: Add support for LangVersion and
+	  AdditionalArgs.
+
 2007-11-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Project/CSharpCompilerParameters.cs: Removed some obsolete attributes.

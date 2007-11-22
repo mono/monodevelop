@@ -71,7 +71,7 @@
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions">
 		<Condition id="activelanguage" value="C#">
 			<DialogPanel id = "CSharpCodeGenerationPanel"
-			             _label = "Code Generation"
+			             _label = "Compiler Options"
 			             class = "CSharpBinding.CodeGenerationPanel"/>
 			<DialogPanel id = "CSharpOutputOptionsPanel"
 			             _label = "Output"
@@ -85,6 +85,9 @@
 				<DialogPanel id = "RuntimeOptionsPanel"
 				             _label = "Runtime Options"
 				             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RuntimeOptionsPanel"/>
+				<DialogPanel id = "CSharpCompilerOptionsPanel"
+				             _label = "Compiler Options"
+				             class = "CSharpBinding.CompilerOptionsPanel"/>
 		</Condition>
 	</Extension>
 		
