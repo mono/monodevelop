@@ -195,7 +195,8 @@ namespace CSharpBinding
 		{
 			if ((char)(uint)key == ',') {
 				// Parameter completion
-				RunParameterCompletionCommand ();
+				if (CanRunParameterCompletionCommand ())
+					RunParameterCompletionCommand ();
 			}
 			
 			if (GenerateDocComments (key))
