@@ -6,13 +6,10 @@ Core/src/MonoDevelop.Components/MonoDevelop.Components/Navbar.cs
 Core/src/MonoDevelop.Core.Gui/Base.glade
 Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs
 Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/ProgressDialog.cs
-Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/StatusPanel.cs
 Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/TreeViewOptions.cs
-Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/WizardDialog.cs
 Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs
 Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.ProgressMonitoring/MultiTaskDialogProgressMonitor.cs
 Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs
-Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/ResourceNotFoundException.cs
 Core/src/MonoDevelop.Core.Gui/gtk-gui/MonoDevelop.Core.Gui.Dialogs.MultiTaskProgressDialog.cs
 Core/src/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs
 Core/src/MonoDevelop.Core/MonoDevelop.Core.Logging/ConsoleLogger.cs
@@ -139,7 +136,6 @@ Core/src/MonoDevelop.Ide/templates/EmptyStruct.xft.xml
 Core/src/MonoDevelop.Ide/templates/EmptyTextFile.xft.xml
 Core/src/MonoDevelop.Ide/templates/EmptyXMLFile.xft.xml
 Core/src/MonoDevelop.Ide/templates/GenericProject.xpt.xml
-Core/src/MonoDevelop.Projects.Gui/Base.glade
 Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs
 Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Completion/ParameterInformationWindow.cs
 Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs
