@@ -185,12 +185,12 @@ namespace CBinding
 			
 			if (configuration.Includes != null)
 				foreach (string inc in configuration.Includes)
-					args.Append ("-I" + inc + " ");
+					args.Append ("-I\"" + inc + "\" ");
 			
 			if (configuration.PrecompileHeaders) {
 				string precdir = Path.Combine (configuration.SourceDirectory, ".prec");
 				precdir = Path.Combine (precdir, configuration.Name);
-				args.Append ("-I" + precdir);
+				args.Append ("-I\"" + precdir + "\"");
 			}
 			
 			return args.ToString ();
@@ -315,7 +315,7 @@ namespace CBinding
 		
 		private bool DoPrecompileHeader (ProjectFile file, string output, string args, IProgressMonitor monitor, CompilerResults cr)
 		{
-			string completeArgs = String.Format ("{0} {1} -o {2}", file.Name, args, output);
+			string completeArgs = String.Format ("\"{0}\" {1} -o {2}", file.Name, args, output);
 			string errorOutput;
 			int exitCode = ExecuteCommand (compilerCommand, completeArgs, Path.GetDirectoryName (output), monitor, out errorOutput);
 			ParseCompilerOutput (errorOutput, cr);
@@ -330,7 +330,7 @@ namespace CBinding
 		{			
 			if (!NeedsUpdate (projectFiles, outputName)) return;
 			
-			string objectFiles = StringArrayToSingleString (ObjectFiles (projectFiles));
+			string objectFiles = StringArrayToSingleString (ObjectFiles (projectFiles, true));
 			string pkgargs = GeneratePkgLinkerArgs (packages);
 			StringBuilder args = new StringBuilder ();
 			CCompilationParameters cp =
@@ -343,13 +343,13 @@ namespace CBinding
 			
 			if (configuration.LibPaths != null)
 				foreach (string libpath in configuration.LibPaths)
-					args.Append ("-L" + libpath + " ");
+					args.Append ("-L\"" + libpath + "\" ");
 			
 			if (configuration.Libs != null)
 				foreach (string lib in configuration.Libs)
-					args.Append ("-l" + lib + " ");
+					args.Append ("-l\"" + lib + "\" ");
 			
-			string linker_args = string.Format ("-o {0} {1} {2} {3}",
+			string linker_args = string.Format ("-o \"{0}\" {1} {2} {3}",
 			    outputName, objectFiles, args.ToString (), pkgargs);
 			
 			monitor.BeginTask (GettextCatalog.GetString ("Generating binary \"{0}\" from object files", Path.GetFileName (outputName)), 1);
@@ -369,8 +369,8 @@ namespace CBinding
 		{
 			if (!NeedsUpdate (projectFiles, outputName)) return;
 			
-			string objectFiles = StringArrayToSingleString (ObjectFiles (projectFiles));
-			string args = string.Format ("rcs {0} {1}", outputName, objectFiles);
+			string objectFiles = StringArrayToSingleString (ObjectFiles (projectFiles, true));
+			string args = string.Format ("rcs \"{0}\" {1}", outputName, objectFiles);
 			
 			monitor.BeginTask (GettextCatalog.GetString ("Generating static library {0} from object files", Path.GetFileName (outputName)), 1);
 			
@@ -389,7 +389,7 @@ namespace CBinding
 		{
 			if (!NeedsUpdate (projectFiles, outputName)) return;
 			
-			string objectFiles = StringArrayToSingleString (ObjectFiles (projectFiles));
+			string objectFiles = StringArrayToSingleString (ObjectFiles (projectFiles, true));
 			string pkgargs = GeneratePkgLinkerArgs (packages);
 			StringBuilder args = new StringBuilder ();
 			CCompilationParameters cp =
@@ -402,13 +402,13 @@ namespace CBinding
 			
 			if (configuration.LibPaths != null)
 				foreach (string libpath in configuration.LibPaths)
-					args.Append ("-L" + libpath + " ");
+					args.Append ("-L\"" + libpath + "\" ");
 			
 			if (configuration.Libs != null)
 				foreach (string lib in configuration.Libs)
-					args.Append ("-l" + lib + " ");
+					args.Append ("-l\"" + lib + "\" ");
 			
-			string linker_args = string.Format ("-shared -o {0} {1} {2} {3}",
+			string linker_args = string.Format ("-shared -o \"{0}\" {1} {2} {3}",
 			    outputName, objectFiles, args.ToString (), pkgargs);
 			
 			monitor.BeginTask (GettextCatalog.GetString ("Generating shared object \"{0}\" from object files", Path.GetFileName (outputName)), 1);
@@ -491,7 +491,7 @@ namespace CBinding
 		{			
 			string outputName = Path.ChangeExtension (file.Name, ".o");
 			
-			string compiler_args = string.Format ("{0} -MMD {1} {2} -c -o {3}",
+			string compiler_args = string.Format ("{0} -MMD \"{1}\" {2} -c -o \"{3}\"",
 			    (use_ccache ? compilerCommand : string.Empty), file.Name, args, outputName);
 			
 			string errorOutput;
@@ -501,13 +501,33 @@ namespace CBinding
 			return exitCode == 0;
 		}
 		
-		private string[] ObjectFiles (ProjectFileCollection projectFiles)
+		/// <summary>
+		/// Gets the files that get compiled into object code.
+		/// </summary>
+		/// <param name="projectFiles">
+		/// A <see cref="ProjectFileCollection"/>
+		/// The project's files, extracts from here the files that get compiled into object code.
+		/// </param>
+		/// <param name="withQuotes">
+		/// A <see cref="System.Boolean"/>
+		/// If true, it will surround each object file with quotes 
+		/// so that gcc has no problem with paths that contain spaces.
+		/// </param>
+		/// <returns>
+		/// An array of strings, each string is the name of a file
+		/// that will get compiled into object code. The file name
+		/// will already have the .o extension.
+		/// </returns>
+		private string[] ObjectFiles (ProjectFileCollection projectFiles, bool withQuotes)
 		{
 			List<string> objectFiles = new List<string> ();
 			
 			foreach (ProjectFile f in projectFiles) {
 				if (f.BuildAction == BuildAction.Compile) {
-					objectFiles.Add (Path.ChangeExtension (f.Name, ".o"));
+					if (!withQuotes)
+						objectFiles.Add (Path.ChangeExtension (f.Name, ".o"));
+					else
+						objectFiles.Add ("\"" + Path.ChangeExtension (f.Name, ".o") + "\"");
 				}
 			}
 			
@@ -560,7 +580,7 @@ namespace CBinding
 			if (!File.Exists (target))
 				return true;
 			
-			foreach (string obj in ObjectFiles (projectFiles))
+			foreach (string obj in ObjectFiles (projectFiles, false))
 				if (File.GetLastWriteTime (obj) > File.GetLastWriteTime (target))
 					return true;
 			

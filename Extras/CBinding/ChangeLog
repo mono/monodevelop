@@ -1,3 +1,9 @@
+2007-11-23  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
+	* Compiler/GNUCompiler.cs: Should fix bug #343098
+	
+	  gcc/g++ failed if path had white spaces.
+
 2007-11-17  Christian Hergert <christian.hergert@gmail.com> 
 
 	* Gui/EditPackagesDialog.cs: Check if string is null or empty before using
