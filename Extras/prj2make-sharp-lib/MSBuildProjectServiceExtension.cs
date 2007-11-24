@@ -63,7 +63,10 @@ namespace MonoDevelop.Prj2Make
 					CompilerResults cr = new CompilerResults (new TempFileCollection ());
 					cr.Errors.Add (error);
 
-					monitor.Log.WriteLine (GettextCatalog.GetString("Build complete -- {0} errors, {1} warnings", cr.Errors.Count, 0));
+					monitor.Log.WriteLine (GettextCatalog.GetString("Build complete -- ") +
+					                       GettextCatalog.GetPluralString("{0} error", "{0} errors", cr.Errors.Count) +
+					                       GettextCatalog.GetPluralString("{0} warning", "{0} warnings", 0),
+					                       cr.Errors.Count, 0);
 					return new DefaultCompilerResult (cr, String.Empty);
 				}
 			}

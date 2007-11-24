@@ -1,3 +1,7 @@
+2007-11-24  David Makovský (Yakeen) <yakeen@sanyas-on.net> 
+
+	
+
 2007-11-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MsPrjHelper.cs: Fix build. EnableViewState is not used anymore.
