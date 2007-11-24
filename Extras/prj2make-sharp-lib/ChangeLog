@@ -1,6 +1,7 @@
 2007-11-24  David Makovský (Yakeen) <yakeen@sanyas-on.net> 
 
-	
+	* MSBuildProjectServiceExtension.cs: corected translatable string to
+	  support plural forms.	
 
 2007-11-21  Lluis Sanchez Gual <lluis@novell.com> 
 
