@@ -1,3 +1,8 @@
+2007-11-27  Aaron Bockover <abockover@novell.com>
+
+	* MonoDevelop.Components.DockToolbars/DockToolbar.cs: Override the 
+	drawing of the background on toolbars to cover up the ugly border lines
+
 2007-11-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Components.Commands.ExtensionNodes/ItemSetCodon.cs,

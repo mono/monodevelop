@@ -237,6 +237,17 @@ namespace MonoDevelop.Components.DockToolbars
 			return base.OnButtonReleaseEvent (e);
 		}
 		
+		protected override bool OnExposeEvent (EventExpose evnt)
+		{
+		    GdkWindow.DrawRectangle (Style.BackgroundGC (State), true, Allocation);
+            
+            foreach (Widget child in Children) {
+                PropagateExpose (child, evnt);
+            }
+		
+		    return true;
+		}
+
 		internal void ResetSize ()
 		{
 			WidthRequest = -1;
