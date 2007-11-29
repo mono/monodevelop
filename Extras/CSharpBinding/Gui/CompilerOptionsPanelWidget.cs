@@ -92,6 +92,7 @@ namespace CSharpBinding
 			langVerStore.AppendValues ("ISO-1");
 			langVerStore.AppendValues ("ISO-2");
 			langVerCombo.Model = langVerStore;
+			langVerCombo.Active = (int) compilerParameters.LangVersion;
 		}
 		
 		public bool Store ()

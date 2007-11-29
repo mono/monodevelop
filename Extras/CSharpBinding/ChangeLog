@@ -1,3 +1,7 @@
+2007-11-29  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Gui/CompilerOptionsPanelWidget.cs: Load existing LangVersion value.
+
 2007-11-23  Andreia Gaita <avidigal@novell.com> 
 
 	* Gui/CSharpTextEditorExtension.cs: When a comma is typed in a method call,
