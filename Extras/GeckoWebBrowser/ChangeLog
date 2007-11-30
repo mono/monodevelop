@@ -1,0 +1,6 @@
+2007-11-30  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.WebBrowsers.GeckoWebBrowser.addin.xml,
+	  GeckoWebBrowserLoader.cs, GeckoWebBrowser.mdp, Makefile.am,
+	  GeckoWebBrowser.cs: Add an IWebBrowserLoader using GeckoSharp/Mozilla.
+
