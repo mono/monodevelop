@@ -1,3 +1,9 @@
+2007-11-30  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs,
+	  MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs: Use
+	  abstracted BrowserService instead of Mozilla/GeckoSharp.
+
 2007-11-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs,

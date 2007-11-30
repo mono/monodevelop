@@ -24,6 +24,7 @@ using Gtk;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.WebBrowser;
 using MonoDevelop.Ide.Codons;
 
 namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
@@ -31,23 +32,18 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 	public class BrowserDisplayBinding : IDisplayBinding, ISecondaryDisplayBinding
 	{
 		public string DisplayName {
-			get { return "Web Browser"; }
+			get { return GettextCatalog.GetString ("Web Browser"); }
 		}
 		
 
 		public bool CanCreateContentForFile(string fileName)
 		{
-			return fileName.StartsWith("http") || fileName.StartsWith("ftp");
+			return WebBrowserService.CanGetWebBrowser
+				&& (fileName.StartsWith("http") || fileName.StartsWith("ftp"));
 		}
 
 		public bool CanCreateContentForMimeType (string mimetype)
 		{
-			/*switch (mimetype) {
-				case "text/html":
-					return true;
-				default:
-					return false;
-			}*/
 			return false;
 		}
 		
@@ -64,11 +60,15 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 		
 		public bool CanAttachTo (IViewContent parent)
 		{
+			if (!WebBrowserService.CanGetWebBrowser)
+				return false;
+			
 			string filename = parent.ContentName;
 			if (filename == null)
 				return false;
+			
 			string mimetype = Gnome.Vfs.MimeType.GetMimeTypeForUri (filename);
-			if (mimetype == "text/html")
+			if (mimetype == "text/html" || mimetype == "application/x-mozilla-bookmarks")
 				return parent.GetContent (typeof(MonoDevelop.Ide.Gui.Content.ITextBuffer)) != null;
 			return false;
 		}

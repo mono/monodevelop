@@ -20,14 +20,13 @@
 
 using System;
 using Gtk;
-using Gecko;
 
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.WebBrowser;
 using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Components;
-using MonoDevelop.Components.HtmlControl;
 
 namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 {
@@ -57,15 +56,12 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 		
 		public void BaseContentChanged ()
 		{
-			ITextBuffer buffer = (ITextBuffer) parent.GetContent (typeof(ITextBuffer));
-			
 			try {
-				htmlViewPane.MozillaControl.OpenStream ("file://", "text/html");
-				htmlViewPane.MozillaControl.AppendData (buffer.Text);
-				htmlViewPane.MozillaControl.CloseStream ();
+				ITextBuffer buffer = (ITextBuffer) parent.GetContent (typeof(ITextBuffer));
+				htmlViewPane.IWebBrowser.LoadHtml (buffer.Text);
 				GLib.Timeout.Add (50, new GLib.TimeoutHandler (checkFocus));
 			} catch (Exception e) {
-				LoggingService.LogError ("Swallowed Gecko# exception", e);
+				LoggingService.LogError ("Exception in BrowserPane.BaseContentChanged", e);
 			}
 		}
 
@@ -106,19 +102,19 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 			
 			//suppress in-window hyperlinking, but only when this used as is an 
 			//ISecondaryViewContent, i.e, it has a parent
-			htmlViewPane.MozillaControl.OpenUri += CatchUri;
+			htmlViewPane.IWebBrowser.LocationChanging += CatchUri;
 		}
 
 		public BrowserPane (bool showNavigation)
 		{
 			htmlViewPane = new HtmlViewPane(showNavigation);
-			htmlViewPane.MozillaControl.TitleChange += new EventHandler (OnTitleChanged);
+			htmlViewPane.IWebBrowser.TitleChanged += OnTitleChanged;
 		}
 		
-		void CatchUri (object sender, OpenUriArgs e)
+		void CatchUri (object sender, LocationChangingEventArgs e)
 		{
-			e.RetVal = true;
-			Gnome.Url.Show (e.AURI);
+			e.SuppressChange = true;
+			Gnome.Url.Show (e.NextLocation);
 		}
 		
 		public BrowserPane () : this (true)
@@ -140,15 +136,15 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 			Load(url);
 		}
 		
-		private void OnTitleChanged (object o, EventArgs args)
+		private void OnTitleChanged (object o, TitleChangedEventArgs args)
 		{
-			ContentName = htmlViewPane.MozillaControl.Title; 
+			ContentName = args.Title;; 
 		}
 	}
 	
 	public class HtmlViewPane : Gtk.Frame
 	{
-		MozillaControl htmlControl = null;
+		IWebBrowser htmlControl = null;
 		SdStatusBar status;
 		
 		VBox topPanel = new VBox (false, 2);
@@ -156,7 +152,7 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 		
 		bool loading = false;
 		
-		public MozillaControl MozillaControl {
+		public IWebBrowser IWebBrowser {
 			get {
 				return htmlControl;
 			}
@@ -180,13 +176,14 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 				mainbox.PackStart (topPanel, false, false, 2);
 			} 
 			
-			htmlControl = new MozillaControl ();
+			htmlControl = WebBrowserService.GetWebBrowser ();
+			Widget htmlControlWidget = (Widget) htmlControl;
 			htmlControl.NetStart += new EventHandler (OnNetStart);
 			htmlControl.NetStop += new EventHandler (OnNetStop);
-			htmlControl.LocChange += new EventHandler (OnLocationChanged);
-			htmlControl.ShowAll ();
+			htmlControl.LocationChanged += new LocationChangedHandler (OnLocationChanged);
+			htmlControlWidget.ShowAll ();
 			
-			mainbox.PackStart (htmlControl);
+			mainbox.PackStart (htmlControlWidget);
 			this.Add (mainbox);
 			this.ShowAll ();
 		}
@@ -247,12 +244,12 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 		
 		private void OnStopClicked (object o, EventArgs args)
 		{
-			htmlControl.Stop ();
+			htmlControl.StopLoad ();
 		}
 		
 		private void OnRefreshClicked (object o, EventArgs args)
 		{
-			htmlControl.Refresh ();
+			htmlControl.Reload ();
 		}
 	}
 }
