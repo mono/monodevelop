@@ -2,7 +2,6 @@
 ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.Components.dll
 
 REFS =  \
-	$(GECKO_SHARP_LIBS) \
 	$(GLADE_SHARP_LIBS) \
 	$(GNOME_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
@@ -82,13 +81,6 @@ FILES =  \
 	MonoDevelop.Components.DockToolbars/FloatingPosition.cs \
 	MonoDevelop.Components.DockToolbars/IDockBar.cs \
 	MonoDevelop.Components.DockToolbars/PlaceholderWindow.cs \
-	MonoDevelop.Components.HtmlControl/BrowserNavigateEventArgs.cs \
-	MonoDevelop.Components.HtmlControl/ControlType.cs \
-	MonoDevelop.Components.HtmlControl/IHTMLDocument2.cs \
-	MonoDevelop.Components.HtmlControl/IHTMLElement.cs \
-	MonoDevelop.Components.HtmlControl/IWebBrowser.cs \
-	MonoDevelop.Components.HtmlControl/IWebBrowserEvents.cs \
-	MonoDevelop.Components.HtmlControl/MozillaControl.cs \
 	MonoDevelop.Components/BaseFileEntry.cs \
 	MonoDevelop.Components/CellRendererComboBox.cs \
 	MonoDevelop.Components/DataGrid.cs \

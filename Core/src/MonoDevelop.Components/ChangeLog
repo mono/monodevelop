@@ -1,3 +1,9 @@
+2007-11-30  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Components.HtmlControl/MozillaControl.cs, Makefile.am,
+	  MonoDevelop.Components.mdp: Remove GeckoSharp/Mozilla wrapper and unused
+	  IE-ish web browser APIs.
+
 2007-11-27  Aaron Bockover <abockover@novell.com>
 
 	* MonoDevelop.Components.DockToolbars/DockToolbar.cs: Override the 

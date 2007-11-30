@@ -5,7 +5,7 @@
 //
 // Copyright 2003 John Luke
 //
-
+/*
 using System;
 using Gecko;
 using GLib;
@@ -22,7 +22,7 @@ namespace MonoDevelop.Components.HtmlControl
 		
 		static MozillaControl ()
 		{
-			WebControl.SetProfilePath ("/tmp", "MonoDevelop");
+			
 		}
 		
 		public MozillaControl ()
@@ -103,3 +103,4 @@ namespace MonoDevelop.Components.HtmlControl
 		}
 	}
 }
+*/
