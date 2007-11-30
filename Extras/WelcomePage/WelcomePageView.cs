@@ -31,13 +31,12 @@ using Gtk;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.WebBrowser;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Components.HtmlControl;
 
 using Freedesktop.RecentFiles;
-using Gecko;
 
 using System.Xml;
 using System.Xml.Xsl;
@@ -60,14 +59,15 @@ namespace MonoDevelop.WelcomePage
 {	
 	public class WelcomePageView : AbstractViewContent
 	{
-		static MozillaControl htmlControl;
+		static IWebBrowser browser;
+		
 		bool loadingProject;
 		
 		string datadir;
 		
 		public override Gtk.Widget Control {
 			get {
-				return htmlControl;
+				return (Widget) browser;
 			}
 		}
 		
@@ -86,11 +86,12 @@ namespace MonoDevelop.WelcomePage
 			this.ContentName = GettextCatalog.GetString ("Welcome");
 			this.IsViewOnly = true;
 
-			if (htmlControl == null) {
-				htmlControl = new MozillaControl ();
-				htmlControl.Show ();
-				htmlControl.OpenUri += CatchUri;
-				htmlControl.LinkMsg += LinkMessage;
+			if (browser == null) {
+				browser = WebBrowserService.GetWebBrowser ();
+				Control.Show ();
+				Control.Show ();
+				browser.LocationChanging += CatchUri;
+				browser.LinkStatusChanged += LinkMessage;
 			}
 			
 			datadir = "file://" + Path.GetDirectoryName (typeof(ShowWelcomePageHandler).Assembly.Location) + "/";
@@ -118,7 +119,7 @@ namespace MonoDevelop.WelcomePage
 			StringWriter fs = new StringWriter ();
 			xslt.Transform (inxml, arg, fs, null);
 			
-			htmlControl.Html = fs.ToString ();
+			browser.LoadHtml (fs.ToString ());
 		}
 
 		void RecentChangesHandler (object sender, EventArgs e)
@@ -127,23 +128,23 @@ namespace MonoDevelop.WelcomePage
 			Initialize ();
 		}
 		
-		void LinkMessage (object sender, EventArgs e)
+		void LinkMessage (object sender, StatusMessageChangedEventArgs e)
 		{
-			if (String.IsNullOrEmpty (htmlControl.LinkMessage) || htmlControl.LinkMessage.IndexOf ("monodevelop://") != -1) {
+			if (String.IsNullOrEmpty (e.Message) || e.Message.IndexOf ("monodevelop://") != -1) {
 				IdeApp.Workbench.StatusBar.SetMessage (null);
 			} else {
-				string message = htmlControl.LinkMessage;
+				string message = e.Message;
 				if (message.IndexOf ("project://") != -1) 
 					message = message.Substring (10);
 				IdeApp.Workbench.StatusBar.SetMessage (message);
 			}
 		}
 		
-		void CatchUri (object sender, OpenUriArgs e)
+		void CatchUri (object sender, LocationChangingEventArgs e)
 		{
-			e.RetVal = true;
+			e.SuppressChange = true;
 	
-			string URI = e.AURI;
+			string URI = e.NextLocation;
 
 			// HACK: Necessary for win32; I have no idea why
 			if (PlatformID.Unix != Environment.OSVersion.Platform)
@@ -235,7 +236,6 @@ namespace MonoDevelop.WelcomePage
 
 		public void Initialize()
 		{
-			htmlControl.DelayedInitialize ();
 		}
 
 		public override void Dispose ()

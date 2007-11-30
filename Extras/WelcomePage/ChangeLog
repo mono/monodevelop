@@ -1,3 +1,9 @@
+2007-11-30  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* WelcomePageOptionPanel.cs, WelcomePageView.cs, WelcomePageCommands.cs: Use
+	  abstracted BrowserService instead of GeckoSharp, so there's no longer a
+	  hard dependency on a browser.
+
 2007-11-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* WelcomePageView.cs: Don't destroy the html control when disposing the

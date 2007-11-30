@@ -16,6 +16,7 @@ namespace MonoDevelop.WelcomePage
 			
 			showOnStartCheckButton.Label = GettextCatalog.GetString ("Show welcome page on startup");
 			showOnStartCheckButton.Active = PropertyService.Get("WelcomePage.ShowOnStartup", true);
+			showOnStartCheckButton.Sensitive = MonoDevelop.Core.Gui.WebBrowserService.CanGetWebBrowser;
 			vbox.PackStart(showOnStartCheckButton, false, false, 0);
 		}
 		

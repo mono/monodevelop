@@ -25,6 +25,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Commands;
 
 using MonoDevelop.Ide.Gui;
@@ -40,7 +41,7 @@ namespace MonoDevelop.WelcomePage
 	{
 		protected override void Run()
 		{
-			if (!PropertyService.Get("WelcomePage.ShowOnStartup", true))
+			if (!PropertyService.Get("WelcomePage.ShowOnStartup", true) || !WebBrowserService.CanGetWebBrowser)
 				return;
 			
 			WelcomePageView wpv = new WelcomePageView();
@@ -66,6 +67,13 @@ namespace MonoDevelop.WelcomePage
 			
 			// Html must be rendered after the widget has been drawn
 			wpv.Initialize ();
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			base.Update (info);
+			info.Visible = WebBrowserService.CanGetWebBrowser;
+			info.Enabled = WebBrowserService.CanGetWebBrowser;
 		}
 	}
 }
