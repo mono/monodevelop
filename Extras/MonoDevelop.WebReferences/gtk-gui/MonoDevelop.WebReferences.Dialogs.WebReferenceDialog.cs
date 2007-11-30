@@ -119,7 +119,6 @@ namespace Stetic.SteticGenerated {
             bindings["frmBrowser"] = w20;
             w20.Name = "frmBrowser";
             w20.ShadowType = ((Gtk.ShadowType)(0));
-            w20.LabelXalign = 0F;
             w20.LabelYalign = 0F;
             w9.Add(w20);
             Gtk.Box.BoxChild w21 = ((Gtk.Box.BoxChild)(w9[w20]));

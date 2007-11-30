@@ -9,7 +9,8 @@ using System.Xml;
 using System.Xml.Xsl;
 using System.Xml.XPath;
 using MonoDevelop.Core;
-using MonoDevelop.Components.HtmlControl;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.WebBrowser;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.WebReferences;
 using Gtk;
@@ -32,7 +33,8 @@ namespace MonoDevelop.WebReferences.Dialogs
 		protected Gtk.Entry tbxReferenceName;
 		protected Gtk.Entry tbxReferenceURL;
 		protected Gtk.Frame frmBrowser;
-		protected MozillaControl cstBrowser = new MozillaControl();
+		protected Widget browserWidget = null;
+		protected IWebBrowser browser = null;
 		#endregion
 		
 		#region Properties
@@ -144,12 +146,27 @@ namespace MonoDevelop.WebReferences.Dialogs
 			this.IsWebService = false;
 			
 			// Add the mozilla control to the frame
-			cstBrowser.LocChange += new EventHandler(Browser_LocationChanged);
-			cstBrowser.NetStart += new EventHandler(Browser_StartLoading);
-			cstBrowser.NetStop += new EventHandler(Browser_StopLoading);
-			frmBrowser.Add(cstBrowser);
-			cstBrowser.LoadUrl(this.homeUrl);
-			cstBrowser.Show();
+			if (WebBrowserService.CanGetWebBrowser) {
+				browser = WebBrowserService.GetWebBrowser ();
+				browserWidget = (Widget) browser;
+				browser.LocationChanged += Browser_LocationChanged;
+				browser.NetStart += Browser_StartLoading;
+				browser.NetStop += Browser_StopLoading;
+				frmBrowser.Add(browserWidget);
+				browser.LoadUrl(this.homeUrl);
+				browserWidget.Show();
+			} else {
+				btnNext.Sensitive = false;
+				btnBack.Sensitive = false;
+				btnRefresh.Sensitive = false;
+				btnStop.Sensitive = false;
+				btnHome.Sensitive = false;
+				
+				Label l = new Label (GettextCatalog.GetString ("Cannot display Web Browser, because no Browser Addin is available."));
+				frmBrowser.Add (l);
+				l.Show ();
+			}
+
 			frmBrowser.Show();
 			this.ShowAll();
 		}
@@ -161,7 +178,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 		{
 			if (sender.Equals(btnOK) && Directory.Exists(this.ReferencePath))
 			{
-				string message = String.Format("The referene name '{0}' already exists.", this.ReferenceName);
+				string message = GettextCatalog.GetString ("The reference name '{0}' already exists.", this.ReferenceName);
 				IdeApp.Services.MessageService.ShowWarning(message);
 				return;	
 			}
@@ -177,7 +194,8 @@ namespace MonoDevelop.WebReferences.Dialogs
 		/// <param name="e">An EventArgs object that contains the event data.</param>
 		private void Browser_GoButtonClicked (object sender, EventArgs e)
 		{
-			cstBrowser.LoadUrl(tbxReferenceURL.Text);
+			if (browser != null)
+				browser.LoadUrl(tbxReferenceURL.Text);
 		}
 		
 		/// <summary>Execute the event when the Enter key has been pressed on the Url Entry</summary>
@@ -187,7 +205,8 @@ namespace MonoDevelop.WebReferences.Dialogs
 		{
 			if (e.Event.Key == Gdk.Key.Return)
 			{
-				cstBrowser.LoadUrl(tbxReferenceURL.Text);
+				if (browser != null)
+					browser.LoadUrl(tbxReferenceURL.Text);
 			}
 		}
 		
@@ -196,11 +215,13 @@ namespace MonoDevelop.WebReferences.Dialogs
 		/// <param name="e">An EventArgs object that contains the event data.</param>
 		private void Browser_LocationChanged (object sender, EventArgs e)
 		{
-			this.tbxReferenceURL.Text = this.cstBrowser.Location;
-			this.btnBack.Sensitive = cstBrowser.CanGoBack();
-			this.btnNext.Sensitive = cstBrowser.CanGoForward();
-			// Query the current url for services
-			ThreadPool.QueueUserWorkItem(new WaitCallback(QueryService), this.tbxReferenceURL.Text);
+			if (browser != null) {
+				this.tbxReferenceURL.Text = this.browser.Location;
+				this.btnBack.Sensitive = browser.CanGoBack;
+				this.btnNext.Sensitive = browser.CanGoForward;
+				// Query the current url for services
+				ThreadPool.QueueUserWorkItem(new WaitCallback(QueryService), this.tbxReferenceURL.Text);
+			}
 		}
 		
 		/// <summary>Execute when the browser starts loading a document</summary>
@@ -224,7 +245,8 @@ namespace MonoDevelop.WebReferences.Dialogs
 		/// <param name="e">An EventArgs object that contains the event data.</param>
 		private void Browser_BackButtonClicked (object sender, EventArgs e)
 		{
-			this.cstBrowser.GoBack();
+			if (browser != null)
+				this.browser.GoBack();
 		}
 		
 		/// <summary>Execute when the Next button has been clicked</summary>
@@ -232,7 +254,8 @@ namespace MonoDevelop.WebReferences.Dialogs
 		/// <param name="e">An EventArgs object that contains the event data.</param>
 		private void Browser_NextButtonClicked (object sender, EventArgs e)
 		{
-			this.cstBrowser.GoForward();
+			if (browser != null)
+				this.browser.GoForward();
 		}
 		
 		/// <summary>Execute when the Refresh button has been clicked</summary>
@@ -240,7 +263,8 @@ namespace MonoDevelop.WebReferences.Dialogs
 		/// <param name="e">An EventArgs object that contains the event data.</param>
 		private void Browser_RefreshButtonClicked (object sender, EventArgs e)
 		{
-			this.cstBrowser.Reload(0);
+			if (browser != null)
+				this.browser.Reload();
 		}
 		
 		/// <summary>Execute when the Stop button has been clicked</summary>
@@ -248,7 +272,8 @@ namespace MonoDevelop.WebReferences.Dialogs
 		/// <param name="e">An EventArgs object that contains the event data.</param>
 		private void Browser_StopButtonClicked (object sender, EventArgs e)
 		{
-			this.cstBrowser.StopLoad();
+			if (browser != null)
+				this.browser.StopLoad();
 		}
 		
 		/// <summary>Execute when the Home button has been clicked</summary>
@@ -256,7 +281,8 @@ namespace MonoDevelop.WebReferences.Dialogs
 		/// <param name="e">An EventArgs object that contains the event data.</param>
 		private void Browser_HomeButtonClicked (object sender, EventArgs e)
 		{
-			this.cstBrowser.LoadUrl(this.homeUrl);
+			if (browser != null)
+				this.browser.LoadUrl(this.homeUrl);
 		}
 		
 		/// <summary>Queries the web service to validate that the current url contains services</summary>

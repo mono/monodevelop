@@ -20,13 +20,12 @@ namespace Stetic {
         }
         
         public static void Build(object cobj, string id) {
-            Stetic.Gui.Initialize();
             if ((id == "MonoDevelop.WebReferences.Dialogs.WebReferenceDialog")) {
                 Stetic.SteticGenerated.MonoDevelopWebReferencesDialogsWebReferenceDialog.Build(((Gtk.Dialog)(cobj)));
             }
         }
         
-        internal static void Initialize() {
+        internal static void Initialize(Gtk.Widget iconRenderer) {
             if ((Stetic.Gui.initialized == false)) {
                 Stetic.Gui.initialized = true;
             }

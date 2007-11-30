@@ -1,3 +1,11 @@
+2007-11-30  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.WebReferences.mdp,
+	  MonoDevelop.WebReferences.Dialogs/WebReferenceDialog.cs,
+	  gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs,
+	  gtk-gui/gui.stetic: Use WebBrowserService instead of MozillaControl.
+
 2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.WebReferences.mdp: Don't try to use partial types in stetic
