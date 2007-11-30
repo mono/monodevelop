@@ -11,6 +11,7 @@ REFS =  \
 	$(GNOME_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	-r:$(top_builddir)/build/AddIns/AspNetAddIn/AspNetAddIn.dll \
+	-r:$(top_builddir)/build/AddIns/GeckoWebBrowser/GeckoWebBrowser.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor.dll \

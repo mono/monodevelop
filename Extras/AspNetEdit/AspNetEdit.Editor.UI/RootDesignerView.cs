@@ -40,7 +40,7 @@ using Gtk;
 
 namespace AspNetEdit.Editor.UI
 {
-	public class RootDesignerView : MonoDevelop.Components.HtmlControl.MozillaControl
+	public class RootDesignerView : MonoDevelop.WebBrowsers.GeckoWebBrowser
 	{
 		private const string geckoChrome = "chrome://aspdesigner/content/"; 
 		private CommandManager comm;

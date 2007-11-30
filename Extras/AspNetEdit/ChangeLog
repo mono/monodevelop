@@ -1,3 +1,9 @@
+2007-11-30  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* AspNetEdit.mdp, AspNetEdit.Editor.UI/RootDesignerView.cs, Makefile.am:
+	  Depend on GeckoWebBrowser now that the MozillaControl has beeen removed
+	  from core.
+
 2007-11-05  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* AspNetEdit.Integration/AspNetEditViewContent.cs,
