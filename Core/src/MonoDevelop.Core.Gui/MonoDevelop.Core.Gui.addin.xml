@@ -27,6 +27,11 @@
 		<Description>Available from MonoDevelop.Core.Gui.Services.Resources.</Description>
 		<ExtensionNode name="StockIcon" type="MonoDevelop.Core.Gui.Codons.StockIconCodon" />
 	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Core/WebBrowsers" name = "Web Browsers">
+		<Description>Used optionally to provides a web browser widget. Must implement MonoDevelop.Core.Gui.WebBrowser.IWebBrowserLoader</Description>
+		<ExtensionNode name="Class" />
+	</ExtensionPoint>
 
 	<!-- Extensions -->
 	

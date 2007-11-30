@@ -1,3 +1,18 @@
+2007-11-30  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Core.Gui.mdp, MonoDevelop.Core.Gui.WebBrowser,
+	  MonoDevelop.Core.Gui.WebBrowser/LoadingProgressChangedEventArgs.cs,
+	  MonoDevelop.Core.Gui.WebBrowser/LocationChangedEventArgs.cs,
+	  MonoDevelop.Core.Gui.WebBrowser/StatusMessageChangedEventArgs.cs,
+	  MonoDevelop.Core.Gui.WebBrowser/IWebBrowserLoader.cs,
+	  MonoDevelop.Core.Gui.WebBrowser/PageLoadedHandler.cs,
+	  MonoDevelop.Core.Gui.WebBrowser/LocationChangingEventArgs.cs,
+	  MonoDevelop.Core.Gui.WebBrowser/IWebBrowser.cs,
+	  MonoDevelop.Core.Gui.WebBrowser/TitleChangedEventArgs.cs,
+	  MonoDevelop.Core.Gui/WebBrowserService.cs, Makefile.am,
+	  MonoDevelop.Core.Gui.addin.xml: Add new Web Browser extension point and
+	  service.
+
 2007-11-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.mdp, MonoDevelop.Core.Gui.Dialogs/WizardDialog.cs,

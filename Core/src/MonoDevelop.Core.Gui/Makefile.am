@@ -2,7 +2,6 @@
 ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll
 
 REFS =  \
-	$(GECKO_SHARP_LIBS) \
 	$(GLADE_SHARP_LIBS) \
 	$(GNOME_SHARP_LIBS) \
 	$(GNOME_VFS_SHARP_LIBS) \
@@ -41,6 +40,13 @@ FILES =  \
 	MonoDevelop.Core.Gui.ProgressMonitoring/MultiTaskDialogProgressMonitor.cs \
 	MonoDevelop.Core.Gui.Utils/DesktopApplication.cs \
 	MonoDevelop.Core.Gui.Utils/FileIconLoader.cs \
+	MonoDevelop.Core.Gui.WebBrowser/IWebBrowser.cs \
+	MonoDevelop.Core.Gui.WebBrowser/IWebBrowserLoader.cs \
+	MonoDevelop.Core.Gui.WebBrowser/LoadingProgressChangedEventArgs.cs \
+	MonoDevelop.Core.Gui.WebBrowser/LocationChangedEventArgs.cs \
+	MonoDevelop.Core.Gui.WebBrowser/LocationChangingEventArgs.cs \
+	MonoDevelop.Core.Gui.WebBrowser/StatusMessageChangedEventArgs.cs \
+	MonoDevelop.Core.Gui.WebBrowser/TitleChangedEventArgs.cs \
 	MonoDevelop.Core.Gui/AsyncDispatchAttribute.cs \
 	MonoDevelop.Core.Gui/DispatchService.cs \
 	MonoDevelop.Core.Gui/FreeDispatchAttribute.cs \
@@ -58,7 +64,8 @@ FILES =  \
 	MonoDevelop.Core.Gui/StockIcons.cs \
 	MonoDevelop.Core.Gui/SyncContext.cs \
 	MonoDevelop.Core.Gui/SyncContextAttribute.cs \
-	MonoDevelop.Core.Gui/SyncObject.cs
+	MonoDevelop.Core.Gui/SyncObject.cs \
+	MonoDevelop.Core.Gui/WebBrowserService.cs
 
 RES =  \
 	Base.glade \
