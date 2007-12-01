@@ -624,7 +624,6 @@ namespace MonoDevelop.Autotools
 			configName = configName.ToUpper ();
 			foreach (CustomCommandType type in types) {
 				bool targetEmitted = false;
-				string lastdir = project.BaseDirectory;
 				for (int i = 0; i < commands.Count; i ++) {
 					CustomCommand cmd = commands [i];
 					if (cmd.Type != type) {
@@ -657,7 +656,6 @@ namespace MonoDevelop.Autotools
 		void ResolveCustomCommand (Project project, CustomCommand cmd, out string dir, out string exe, out string args)
 		{
 			dir = exe = args = null;
-			string outputname = project.GetOutputFileName();
 			string [,] customtags = new string [,] {
 				{"ProjectDir", "$(srcdir)"},
 				{"TargetName", "$(notdir $(ASSEMBLY))"},

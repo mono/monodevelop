@@ -1,3 +1,7 @@
+2007-12-01  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* SimpleProjectMakefileHandler.cs: Fix warnings.
+
 2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* TemplateEngine.cs, MakefileData.cs: Track LoggingService API changes.
