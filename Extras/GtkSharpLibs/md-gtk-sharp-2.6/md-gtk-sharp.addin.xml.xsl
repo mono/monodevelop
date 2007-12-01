@@ -20,8 +20,8 @@
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core" version="0.16.0"/>
-		<Addin id="GtkCore" version="0.16.0"/>
+		<Addin id="Core" version="0.17.0"/>
+		<Addin id="GtkCore" version="0.17.0"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Core/SupportPackages">
