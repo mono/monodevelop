@@ -34,6 +34,11 @@ FILES =  \
 	MonoDevelop.Gettext.Editor/GettextEditorDisplayBinding.cs \
 	MonoDevelop.Gettext.Editor/GtkSpell.cs \
 	MonoDevelop.Gettext.Editor/POEditorWidget.cs \
+	MonoDevelop.Gettext.ExtensionNodes/ExcludeRegex.cs \
+	MonoDevelop.Gettext.ExtensionNodes/IncludeExtensionNode.cs \
+	MonoDevelop.Gettext.ExtensionNodes/RegexScannerExtensionNode.cs \
+	MonoDevelop.Gettext.ExtensionNodes/TransformExtensionNode.cs \
+	MonoDevelop.Gettext.ExtensionNodes/XmlRegexScannerExtensionNode.cs \
 	MonoDevelop.Gettext.NodeBuilders/TranslationNodeBuilder.cs \
 	MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs \
 	MonoDevelop.Gettext.Translator/LanguageChooserDialog.cs \
@@ -44,10 +49,13 @@ FILES =  \
 	MonoDevelop.Gettext/CatalogParser.cs \
 	MonoDevelop.Gettext/GettextFeature.cs \
 	MonoDevelop.Gettext/GettextFeatureWidget.cs \
+	MonoDevelop.Gettext/GettextTool.cs \
+	MonoDevelop.Gettext/IFileScanner.cs \
 	MonoDevelop.Gettext/IsoCodes.cs \
 	MonoDevelop.Gettext/MakefileHandler.cs \
 	MonoDevelop.Gettext/PluralForms.cs \
 	MonoDevelop.Gettext/PropertyProvider.cs \
+	MonoDevelop.Gettext/RegexFileScanner.cs \
 	MonoDevelop.Gettext/Translation.cs \
 	MonoDevelop.Gettext/TranslationProject.cs \
 	MonoDevelop.Gettext/TranslationProjectOptionsDialog.cs \

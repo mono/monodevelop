@@ -41,16 +41,11 @@ namespace MonoDevelop.Gettext
 			this.project = project;
 			this.Build();
 			
-			TranslationProjectConfiguration config = this.project.ActiveConfiguration as TranslationProjectConfiguration;
-			if (config == null) {
-				config = new TranslationProjectConfiguration ();
-				project.Configurations.Add (config);
-			}
-			entryPackageName.Text        = config.PackageName;
-			entryRelPath.Text            = config.RelPath;
-			folderentrySystemPath.Path   = config.AbsPath;
-			radiobuttonRelPath.Active    = config.OutputType == TranslationOutputType.RelativeToOutput;
-			radiobuttonSystemPath.Active = config.OutputType == TranslationOutputType.SystemPath;
+			entryPackageName.Text        = project.PackageName;
+			entryRelPath.Text            = project.RelPath;
+			folderentrySystemPath.Path   = project.AbsPath;
+			radiobuttonRelPath.Active    = project.OutputType == TranslationOutputType.RelativeToOutput;
+			radiobuttonSystemPath.Active = project.OutputType == TranslationOutputType.SystemPath;
 			
 			entryPackageName.Changed += new EventHandler (UpdateInitString);
 			entryRelPath.Changed += new EventHandler (UpdateInitString);
@@ -60,13 +55,13 @@ namespace MonoDevelop.Gettext
 			
 			UpdateInitString (this, EventArgs.Empty);
 			this.buttonOk.Clicked += delegate {
-				config.PackageName = entryPackageName.Text;
-				config.RelPath = entryRelPath.Text;
-				config.AbsPath = folderentrySystemPath.Path;
+				project.PackageName = entryPackageName.Text;
+				project.RelPath = entryRelPath.Text;
+				project.AbsPath = folderentrySystemPath.Path;
 				if (radiobuttonRelPath.Active) {
-					config.OutputType = TranslationOutputType.RelativeToOutput;
+					project.OutputType = TranslationOutputType.RelativeToOutput;
 				} else {
-					config.OutputType = TranslationOutputType.SystemPath;
+					project.OutputType = TranslationOutputType.SystemPath;
 				}
 				this.Destroy ();
 			};

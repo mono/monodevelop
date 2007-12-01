@@ -1,5 +1,29 @@
 2007-12-01  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Gettext/Translation.cs: Added properties for getting the Po
+	  and Out files.
+	* Makefile.am, MonoDevelop.Gettext.addin.xml,
+	  MonoDevelop.Gettext.ExtensionNodes/ExcludeRegex.cs,
+	  MonoDevelop.Gettext.ExtensionNodes/IncludeExtensionNode.cs,
+	  MonoDevelop.Gettext.ExtensionNodes/RegexScannerExtensionNode.cs,
+	  MonoDevelop.Gettext.ExtensionNodes/TransformExtensionNode.cs,
+	  MonoDevelop.Gettext.ExtensionNodes/XmlRegexScannerExtensionNode.cs,
+	  MonoDevelop.Gettext.mdp, MonoDevelop.Gettext/Catalog.cs,
+	  MonoDevelop.Gettext/IFileScanner.cs,
+	  MonoDevelop.Gettext/RegexFileScanner.cs,
+	  MonoDevelop.Gettext/TranslationProject.cs,
+	  MonoDevelop.Gettext/TranslationProjectOptionsDialog.cs,
+	  MonoDevelop.Gettext/TranslationService.cs,
+	  templates/TranslationProject.xpt.xml: Added an extension point for
+	  specifying regular expressions to use for scanning files. Fixed some old
+	  regexes. Moved some properties from TranslationProjectConfiguration to
+	  TranslationProject, since it is not really useful to handle that info
+	  per-config.
+	* MonoDevelop.Gettext/MakefileHandler.cs, templates/Makefile.template: Set
+	  the correct install dir depending on the project output type.
+
+2007-12-01  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Gettext/GettextFeature.cs,
 	  MonoDevelop.Gettext/GettextFeatureWidget.cs: Show the gettext feature
 	  when creating new Packaging projects.

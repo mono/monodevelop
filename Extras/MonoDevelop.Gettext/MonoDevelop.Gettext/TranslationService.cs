@@ -32,6 +32,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 
+using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
@@ -60,6 +61,11 @@ namespace MonoDevelop.Gettext
 			IdeApp.ProjectOperations.CombineClosed += delegate {
 				isTranslationEnabled = false;
 			};
+		}
+		
+		public static IFileScanner[] GetFileScanners ()
+		{
+			return (IFileScanner[]) AddinManager.GetExtensionObjects ("/MonoDevelop/Gettext/FileScanners", typeof(IFileScanner), true);
 		}
 		
 		static void CombineOpened (object sender, CombineEventArgs e)

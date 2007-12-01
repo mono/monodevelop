@@ -47,6 +47,38 @@ namespace MonoDevelop.Gettext
 {	
 	public class TranslationProject : CombineEntry, IDeployable
 	{
+		[ItemProperty("packageName")]
+		string packageName = null;
+		
+		[ItemProperty("outputType")]
+		TranslationOutputType outputType;
+			
+		[ItemProperty("relPath")]
+		string relPath = null;
+		
+		[ItemProperty("absPath")]
+		string absPath = null;
+		
+		public string PackageName {
+			get { return packageName; }
+			set { packageName = value; }
+		}
+		
+		public string RelPath {
+			get { return relPath; }
+			set { relPath = value; }
+		}
+		
+		public string AbsPath {
+			get { return absPath; }
+			set { absPath = value; }
+		}
+		
+		public TranslationOutputType OutputType {
+			get { return outputType; }
+			set { outputType = value; }
+		}
+		
 		[ItemProperty]
 		List<Translation> translations = new List<Translation> ();
 		
@@ -91,24 +123,10 @@ namespace MonoDevelop.Gettext
 		
 		public override void InitializeFromTemplate (XmlElement template)
 		{
-			foreach (XmlNode node in template.ChildNodes) {
-				XmlElement el = node as XmlElement;
-				if (el == null) 
-					continue;
-				if (node.Name == "Configuration") {
-					TranslationProjectConfiguration config = (TranslationProjectConfiguration)this.CreateConfiguration (el.GetAttribute ("name"));
-					config.OutputType  = (TranslationOutputType)Enum.Parse (typeof(TranslationOutputType), el.GetAttribute ("outputType"));
-					config.PackageName = el.GetAttribute ("packageName");
-					config.RelPath     = el.GetAttribute ("relPath");
-					config.AbsPath     = el.GetAttribute ("absPath");
-					this.Configurations.Add (config);
-				}
-			}
-		}
-		
-		string GetFileName (Translation translation)
-		{
-			return GetFileName (translation.IsoCode);
+			OutputType  = (TranslationOutputType)Enum.Parse (typeof(TranslationOutputType), template.GetAttribute ("outputType"));
+			PackageName = template.GetAttribute ("packageName");
+			RelPath     = template.GetAttribute ("relPath");
+			AbsPath     = template.GetAttribute ("absPath");
 		}
 		
 		string GetFileName (string isoCode)
@@ -146,10 +164,12 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
-		public void AddNewTranslation (string isoCode, IProgressMonitor monitor)
+
+		public Translation AddNewTranslation (string isoCode, IProgressMonitor monitor)
 		{
 			try {
-				translations.Add (new Translation (isoCode));
+				Translation tr = new Translation (this, isoCode);
+				translations.Add (tr);
 				string templateFile    = Path.Combine (this.BaseDirectory, "messages.po");
 				string translationFile = GetFileName (isoCode);
 				if (!File.Exists (templateFile)) 
@@ -161,8 +181,10 @@ namespace MonoDevelop.Gettext
 				isDirty = true; 
 				this.Save (monitor);
 				OnTranslationAdded (EventArgs.Empty);
+				return tr;
 			} catch (Exception e) {
 				monitor.ReportError (String.Format ( GettextCatalog.GetString ("Language '{0}' could not be added: "), isoCode), e);
+				return null;
 			} finally {
 				monitor.EndTask ();
 			}
@@ -192,103 +214,21 @@ namespace MonoDevelop.Gettext
 			return new TranslationProjectConfiguration (name);
 		}
 		
-		string OutputDirectory {
+		internal string OutputDirectory {
 			get {
-				TranslationProjectConfiguration config = this.ActiveConfiguration as TranslationProjectConfiguration;
-				if (config == null) 
-					return null;
-				if (config.OutputType == TranslationOutputType.SystemPath) {
-					return config.AbsPath;
-				} else {
-					if (this.ParentCombine.StartupEntry == null) 
-						return null;
-					if (this.ParentCombine.StartupEntry is DotNetProject) {
-						return Path.Combine (Path.GetDirectoryName (((DotNetProject)ParentCombine.StartupEntry).GetOutputFileName ()), config.RelPath);
-					}
-					return Path.Combine (this.ParentCombine.StartupEntry.BaseDirectory, config.RelPath);
+				if (this.ParentCombine.StartupEntry == null) 
+					return BaseDirectory;
+				if (this.ParentCombine.StartupEntry is DotNetProject) {
+					return Path.Combine (Path.GetDirectoryName (((DotNetProject)RootCombine.StartupEntry).GetOutputFileName ()), RelPath);
 				}
+				return Path.Combine (this.RootCombine.StartupEntry.BaseDirectory, RelPath);
 			}
-		}
-		static CatalogEntry GetItem (Catalog catalog, string original, string plural)
-		{
-			CatalogEntry result = catalog.FindItem (original);
-			if (result == null) {
-				result = new CatalogEntry (catalog, original, plural);
-				if (!String.IsNullOrEmpty (plural))
-					result.SetTranslations (new string[] {"", ""});
-				catalog.AddItem (result);
-			}
-			return result;
-		}
-		
-		int GetLineCount (string text, int startIndex, int endIndex)
-		{
-			int result = 0;
-			for (int i = startIndex; i < endIndex; i++) {
-				if (text[i] == '\n')
-					result++;
-			}
-			return result;
-		}
-		
-		static Regex xmlTranslationPattern = new Regex(@"_[^""]*=\s*""([^""]*)""", RegexOptions.Compiled);
-		void UpdateXmlTranslations (Catalog catalog, IProgressMonitor monitor, string fileName)
-		{
-			string text = File.ReadAllText (fileName);
-			string relativeFileName = MonoDevelop.Core.FileService.AbsoluteToRelativePath (this.BaseDirectory, fileName);
-			string fileNamePrefix   = relativeFileName + ":";
-			if (!String.IsNullOrEmpty (text)) {
-				int lineNumber = 0;
-				int oldIndex  = 0;
-				foreach (Match match in xmlTranslationPattern.Matches (text)) {
-					CatalogEntry entry = GetItem (catalog, match.Groups[1].Value, null);
-					lineNumber += GetLineCount (text, oldIndex, match.Index);
-					oldIndex = match.Index;
-					entry.AddReference (fileNamePrefix + lineNumber);
-				}
-			}
-		}
-
-		static Regex translationPattern = new Regex(@"GetString\s*\(\s*""([^""]*)""\s*\)", RegexOptions.Compiled);
-		static Regex pluralTranslationPattern = new Regex(@"GetPluralString\s*\(\s*""([^""]*)""\s*,\s*""([^""]*)""\s*,.*\)", RegexOptions.Compiled);
-		void UpdateTranslations (Catalog catalog, IProgressMonitor monitor, string fileName)
-		{
-			string text = File.ReadAllText (fileName);
-			string relativeFileName = MonoDevelop.Core.FileService.AbsoluteToRelativePath (this.BaseDirectory, fileName);
-			string fileNamePrefix   = relativeFileName + ":";
-			if (!String.IsNullOrEmpty (text)) {
-				int lineNumber = 0;
-				int oldIndex  = 0;
-				foreach (Match match in translationPattern.Matches (text)) {
-					CatalogEntry entry = GetItem (catalog, match.Groups[1].Value, null);
-					lineNumber += GetLineCount (text, oldIndex, match.Index);
-					oldIndex = match.Index;
-					entry.AddReference (fileNamePrefix + lineNumber);
-				}
-				lineNumber = oldIndex  = 0;
-				foreach (Match match in pluralTranslationPattern.Matches (text)) {
-					CatalogEntry entry = GetItem (catalog, match.Groups[1].Value, match.Groups[2].Value);
-					lineNumber += GetLineCount (text, oldIndex, match.Index);
-					oldIndex = match.Index;
-					entry.AddReference (fileNamePrefix + lineNumber);
-				}
-			}
-		}
-
-		void UpdateTranslation (Catalog catalog, string fileName, IProgressMonitor monitor)
-		{
-	       switch (Path.GetExtension (fileName)) {
-	       case ".xml":
-	               UpdateXmlTranslations (catalog, monitor, fileName);
-	               break;
-	       default:
-	               UpdateTranslations (catalog, monitor, fileName);
-	               break;
-	       }
 		}
 		
 		void CreateDefaultCatalog (IProgressMonitor monitor)
 		{
+			IFileScanner[] scanners = TranslationService.GetFileScanners ();
+			
 			Catalog catalog = new Catalog ();
 			List<Project> projects = new List<Project> ();
 			foreach (Project p in RootCombine.GetAllProjects ()) {
@@ -296,43 +236,73 @@ namespace MonoDevelop.Gettext
 					projects.Add (p);
 			}
 			foreach (Project p in projects) {
-				monitor.Log.WriteLine (String.Format (GettextCatalog.GetString ("Scanning project {0}..."),  p.Name));
-				monitor.Step (1);
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Scanning project {0}...", p.Name));
 				foreach (ProjectFile file in p.ProjectFiles) {
+					if (monitor.IsCancelRequested)
+						return;
 					if (!File.Exists (file.FilePath))
 						continue;
-					string mimeType = Gnome.Vfs.MimeType.GetMimeTypeForUri (file.FilePath);
-					if (file.Subtype == Subtype.Code  || file.BuildAction == BuildAction.Compile || mimeType == "application/xml" || mimeType.StartsWith ("text"))
-						UpdateTranslation (catalog, file.FilePath, monitor);
+					if (file.Subtype == Subtype.Code) {
+						string mimeType = Gnome.Vfs.MimeType.GetMimeTypeForUri (file.FilePath);
+						foreach (IFileScanner fs in scanners) {
+							if (fs.CanScan (this, catalog, file.FilePath, mimeType))
+								fs.UpdateCatalog (this, catalog, monitor, file.FilePath);
+						}
+					}
 				}
+				monitor.Step (1);
 			}
 			catalog.Save (Path.Combine (this.BaseDirectory, "messages.po"));
 		}
 		
 		public void UpdateTranslations (IProgressMonitor monitor)
 		{
-			List<Project> projects = new List<Project> ();
-			foreach (Project p in RootCombine.GetAllProjects ()) {
-				if (IsIncluded (p))
-					projects.Add (p);
+			monitor.BeginTask (null, Translations.Count + 1);
+			
+			try {
+				List<Project> projects = new List<Project> ();
+				foreach (Project p in RootCombine.GetAllProjects ()) {
+					if (IsIncluded (p))
+						projects.Add (p);
+				}
+				monitor.BeginTask (GettextCatalog.GetString ("Updating message catalog"), projects.Count);
+				CreateDefaultCatalog (monitor);
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Done"));
+			} finally { 
+				monitor.EndTask ();
+				monitor.Step (1);
 			}
-			monitor.BeginTask (GettextCatalog.GetString ("Updating Translations "), projects.Count);
-			CreateDefaultCatalog (monitor);
+			if (monitor.IsCancelRequested) {
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Operation cancelled."));
+				return;
+			}
+			
 			foreach (Translation translation in this.Translations) {
-				string poFileName  = GetFileName (translation);
-				Runtime.ProcessService.StartProcess ("msgmerge",
-				                                     " -U " + poFileName + "  " + this.BaseDirectory + "/messages.po",
-				                                     this.BaseDirectory,
-				                                     monitor.Log,
-				                                     monitor.Log,
-				                                     null).WaitForExit ();
+				string poFileName  = translation.PoFile;
+				monitor.BeginTask (GettextCatalog.GetString ("Updating {0}", translation.PoFile), 1);
+				try {
+					Runtime.ProcessService.StartProcess ("msgmerge",
+					                                     " -U " + poFileName + " -v " + Path.Combine (this.BaseDirectory, "messages.po"),
+					                                     this.BaseDirectory,
+					                                     monitor.Log,
+					                                     monitor.Log,
+					                                     null).WaitForOutput ();
+				} catch (Exception ex) {
+					monitor.ReportError (GettextCatalog.GetString ("Could not update file {0}", translation.PoFile), ex);
+				} finally {
+					monitor.EndTask ();
+					monitor.Step (1);
+				}
+				if (monitor.IsCancelRequested) {
+					monitor.Log.WriteLine (GettextCatalog.GetString ("Operation cancelled."));
+					return;
+				}
 			}
-			monitor.EndTask ();
 		}
 		public void RemoveEntry (string msgstr)
 		{
 			foreach (Translation translation in this.Translations) {
-				string poFileName  = GetFileName (translation);
+				string poFileName  = translation.PoFile;
 				Catalog catalog = new Catalog ();
 				catalog.Load (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), poFileName);
 				CatalogEntry entry = catalog.FindItem (msgstr);
@@ -342,19 +312,26 @@ namespace MonoDevelop.Gettext
 				}
 			}
 		}
+		
+		public override void Deserialize (ITypeSerializer handler, DataCollection data)
+		{
+			base.Deserialize (handler, data);
+			foreach (Translation translation in this.Translations)
+				translation.ParentProject = this;
+		}
+
 				
 		protected override ICompilerResult OnBuild (IProgressMonitor monitor)
 		{
 			CompilerResults results = new CompilerResults (null);
-			TranslationProjectConfiguration config = (TranslationProjectConfiguration)this.ActiveConfiguration;
 			string outputDirectory = OutputDirectory;
 			if (!string.IsNullOrEmpty (outputDirectory)) {
 				foreach (Translation translation in this.Translations) {
-					string poFileName  = GetFileName (translation);
+					string poFileName  = translation.PoFile;
 					string moDirectory = Path.Combine (Path.Combine (outputDirectory, translation.IsoCode), "LC_MESSAGES");
 					if (!Directory.Exists (moDirectory))
 						Directory.CreateDirectory (moDirectory);
-					string moFileName  = Path.Combine (moDirectory, config.PackageName + ".mo");
+					string moFileName  = Path.Combine (moDirectory, PackageName + ".mo");
 					
 					ProcessWrapper process = Runtime.ProcessService.StartProcess ("msgfmt",
 				                                     poFileName + " -o " + moFileName,
@@ -384,19 +361,18 @@ namespace MonoDevelop.Gettext
 			isDirty = true;
 			this.NeedsBuilding = true;
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Removing all .mo files."));
-			TranslationProjectConfiguration config = (TranslationProjectConfiguration)this.ActiveConfiguration;
 			string outputDirectory = OutputDirectory;
 			if (string.IsNullOrEmpty (outputDirectory))
 				return;
 			foreach (Translation translation in this.Translations) {
 				string moDirectory = Path.Combine (Path.Combine (outputDirectory, translation.IsoCode), "LC_MESSAGES");
-				string moFileName  = Path.Combine (moDirectory, config.PackageName + ".mo");
+				string moFileName  = Path.Combine (moDirectory, PackageName + ".mo");
 				if (File.Exists (moFileName)) 
 					File.Delete (moFileName);
 			}
 		}
 		
-		protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context)
+		protected override void OnExecute (IProgressMonitor monitor, MonoDevelop.Projects.ExecutionContext context)
 		{
 		}
 		
@@ -404,13 +380,18 @@ namespace MonoDevelop.Gettext
 		public DeployFileCollection GetDeployFiles ()
 		{
 			DeployFileCollection result = new DeployFileCollection ();
-			TranslationProjectConfiguration config = (TranslationProjectConfiguration)this.ActiveConfiguration;
 			foreach (Translation translation in this.Translations) {
-				string poFileName  = GetFileName (translation);
-				string moDirectory = Path.Combine ("locale", translation.IsoCode);
-				moDirectory = Path.Combine (moDirectory, "LC_MESSAGES");
-				string moFileName  = Path.Combine (moDirectory, config.PackageName + ".mo");
-				result.Add (new DeployFile (this, poFileName, moFileName, TargetDirectory.CommonApplicationDataRoot)); 
+				if (OutputType == TranslationOutputType.SystemPath) {
+					string moDirectory = Path.Combine ("locale", translation.IsoCode);
+					moDirectory = Path.Combine (moDirectory, "LC_MESSAGES");
+					string moFileName  = Path.Combine (moDirectory, PackageName + ".mo");
+					result.Add (new DeployFile (this, translation.OutFile, moFileName, TargetDirectory.CommonApplicationDataRoot));
+				} else {
+					string moDirectory = Path.Combine (RelPath, translation.IsoCode);
+					moDirectory = Path.Combine (moDirectory, "LC_MESSAGES");
+					string moFileName  = Path.Combine (moDirectory, PackageName + ".mo");
+					result.Add (new DeployFile (this, translation.OutFile, moFileName, TargetDirectory.ProgramFiles));
+				}
 			}
 			return result;
 		}
@@ -451,44 +432,13 @@ namespace MonoDevelop.Gettext
 	
 	public class TranslationProjectConfiguration : IConfiguration
 	{
-		[ItemProperty("name")]
-		string name = null;
-		
-		[ItemProperty("packageName")]
-		string packageName = null;
-		
-		[ItemProperty("outputType")]
-		TranslationOutputType outputType;
-			
-		[ItemProperty("relPath")]
-		string relPath = null;
-		
-		[ItemProperty("absPath")]
-		string absPath = null;
+		[ItemProperty]
+		string name;
 		
 		public string Name {
-			get { return name; }
-			set { name = value; }
-		}
-		
-		public string PackageName {
-			get { return packageName; }
-			set { packageName = value; }
-		}
-		
-		public string RelPath {
-			get { return relPath; }
-			set { relPath = value; }
-		}
-		
-		public string AbsPath {
-			get { return absPath; }
-			set { absPath = value; }
-		}
-		
-		public TranslationOutputType OutputType {
-			get { return outputType; }
-			set { outputType = value; }
+			get {
+				return name;
+			}
 		}
 		
 		public TranslationProjectConfiguration ()
@@ -538,5 +488,5 @@ namespace MonoDevelop.Gettext
 		{
 			this.projectName = projectName;
 		}
-	}	
+	}
 }

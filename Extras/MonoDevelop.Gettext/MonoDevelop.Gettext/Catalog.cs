@@ -384,6 +384,19 @@ namespace MonoDevelop.Gettext
 				return null;
 		}
 
+		// Adds an item to the catalog if it isn't already there
+		public CatalogEntry AddItem (string original, string plural)
+		{
+			CatalogEntry result;
+			if (!entriesDict.TryGetValue (original, out result)) {
+				result = new CatalogEntry (this, original, plural);
+				if (!String.IsNullOrEmpty (plural))
+					result.SetTranslations (new string[] {"", ""});
+				AddItem (result);
+			}
+			return result;
+		}
+
 		// Returns the number of strings/translations in the catalog.
 		public int Count
 		{

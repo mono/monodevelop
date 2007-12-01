@@ -13,10 +13,10 @@
 	<Combine name = "${ProjectName}" directory = ".">
 		<CombineEntry name = "${ProjectName}" 
 		              directory = "." 
-		              type = "MonoDevelop.Gettext.TranslationProject, MonoDevelop.Gettext">
-			<Configuration name="Debug" packageName="i8n1" outputType="RelativeToOutput" relPath="locale" absPath="/usr/share/locale"/>
-			<Configuration name="Release" packageName="i8n1" outputType="RelativeToOutput" relPath="locale" absPath="/usr/share/locale"/>
-		</CombineEntry>
+		              type = "MonoDevelop.Gettext.TranslationProject, MonoDevelop.Gettext"
+		              packageName="i8n1" 
+		              outputType="RelativeToOutput" 
+		              relPath="locale" />
 	</Combine>
 	
 </Template>

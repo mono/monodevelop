@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.IO;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Serialization;
 
@@ -34,8 +35,20 @@ namespace MonoDevelop.Gettext
 {
 	public class Translation
 	{
+		TranslationProject parentProject;
+		
 		[ItemProperty]
 		string isoCode;
+		
+		internal Translation ()
+		{
+		}
+			
+		internal Translation (TranslationProject prj, string isoCode)
+		{
+			this.parentProject = prj;
+			this.isoCode = isoCode;
+		}
 		
 		public string IsoCode {
 			get { return isoCode; }
@@ -47,14 +60,27 @@ namespace MonoDevelop.Gettext
 				return isoCode + ".po";
 			}
 		}
-			
-		public Translation ()
-		{
+
+		public TranslationProject ParentProject {
+			get {
+				return parentProject;
+			}
+			internal set {
+				parentProject = value;
+			}
 		}
 		
-		public Translation (string isoCode)
-		{
-			this.isoCode = isoCode;
+		public string PoFile {
+			get {
+				return Path.Combine (parentProject.BaseDirectory, isoCode + ".po");
+			}
+		}
+		
+		public string OutFile {
+			get {
+				string moDirectory = Path.Combine (Path.Combine (parentProject.OutputDirectory, isoCode), "LC_MESSAGES");
+				return Path.Combine (moDirectory, parentProject.PackageName + ".mo");
+			}
 		}
 	}
 	

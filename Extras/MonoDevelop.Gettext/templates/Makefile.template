@@ -8,6 +8,7 @@ include $(top_srcdir)/Makefile.include
 include $(top_srcdir)/config.make
 
 BUILD_DIR = %%BUILD_DIR%%
+INSTALL_DIR = %%INSTALL_DIR%%
 
 FILES = %%FILES%%
 

@@ -28,14 +28,16 @@
 using System;
 using System.Text;
 using System.IO;
+using System.Collections.Generic;
 
 using MonoDevelop.Core;
 using MonoDevelop.Autotools;
 using MonoDevelop.Projects;
+using MonoDevelop.Deployment;
 
 namespace MonoDevelop.Gettext
 {
-	class MakefileHandler: IMakefileHandler
+	public class MakefileHandler: IMakefileHandler
 	{
 		public bool CanDeploy (CombineEntry entry, MakefileType type)
 		{
@@ -52,10 +54,19 @@ namespace MonoDevelop.Gettext
 				files.Append ("\\\n\t" + t.FileName);
 			}
 			
+			string dir;
+			if (project.OutputType == TranslationOutputType.SystemPath) {
+				dir = ctx.DeployContext.GetResolvedPath (TargetDirectory.CommonApplicationDataRoot, "locale");
+			} else {
+				dir = ctx.DeployContext.GetResolvedPath (TargetDirectory.ProgramFiles, project.RelPath);
+			}
+			dir = dir.Replace ("@prefix@", "$(prefix)");
+			dir = dir.Replace ("@PACKAGE@", "$(PACKAGE)");
+			
 			TemplateEngine templateEngine = new TemplateEngine ();
 			templateEngine.Variables ["FILES"] = files.ToString ();
 			templateEngine.Variables ["BUILD_DIR"] = ".";
-			templateEngine.Variables ["INSTALL_DIR"] = "$(prefix)/share/locale";
+			templateEngine.Variables ["INSTALL_DIR"] = dir;
 			
 			StringWriter sw = new StringWriter ();
 			

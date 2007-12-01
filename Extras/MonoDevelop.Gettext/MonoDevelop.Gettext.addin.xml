@@ -22,6 +22,7 @@
 		<Addin id="Components" version="0.17.0"/>
 		<Addin id="DesignerSupport" version="0.17.0"/>
 		<Addin id="Autotools" version="0.17.0"/>
+		<Addin id="Deployment" version="0.17.0"/>
 	</Dependencies>
 	
 	<!-- Extension Points -->
@@ -34,8 +35,18 @@
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 
+	<ExtensionPoint path = "/MonoDevelop/Gettext/FileScanners" name="File scanners">
+		<ExtensionNode name="Scanner" />
+		<ExtensionNode name="RegexScanner" type="MonoDevelop.Gettext.ExtensionNodes.RegexScannerExtensionNode" />
+		<ExtensionNode name="XmlRegexScanner" type="MonoDevelop.Gettext.ExtensionNodes.XmlRegexScannerExtensionNode" />
+	</ExtensionPoint>
+	
 	<!-- Extensions -->
 
+	<Extension path = "/MonoDevelop/Core/Applications">
+		<Application id = "gettext-update" class = "MonoDevelop.Gettext.GettextTool" description = "Gettext update tool"/>
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Command id   = "MonoDevelop.Gettext.Commands.AddTranslation"
 		         icon = "md-gettext-locale"
@@ -122,4 +133,37 @@
 		<Class class = "MonoDevelop.Gettext.MakefileHandler"/>
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/Gettext/FileScanners">
+		<XmlRegexScanner extension="glade">
+			<Include regex='translatable\s*=\s*"yes"\s*&gt;([^&lt;]*)&lt;'/>
+		</XmlRegexScanner>
+		<XmlRegexScanner extension="xml" mimeType="application/xml">
+			<Include regex='\s_[-A-Za-z0-9._:]+\s*=\s*"([^"]+)"'/>
+			<Include regex="&lt;_[^&gt;]+&gt;((?:.|\n)*?)&lt;/_[^&gt;]+&gt;" />
+		</XmlRegexScanner>
+		<RegexScanner extension="vb">
+			<Exclude regex='".*?[^"]"(?!")' />   <!-- Strings-->
+			<Exclude regex="'(?:(?!').)*" />     <!-- Line comments -->
+			<Include regex='GetString\s*\(\s*"(.*?[^\\])"' />
+			<Include regex='GetPluralString\s*\(\s*".*?[^\\]"\s*,\s*"(.*?[^\\])"' plural="true"/>
+			<Transform regex='""' value='"' />
+		</RegexScanner>
+		<RegexScanner extension="boo">
+			<Exclude regex='".*?"' />               <!-- Strings -->
+			<Exclude regex="'.*?'" />               <!-- Strings -->
+			<Exclude regex='"""(?:.|\n)*?"""' />    <!-- Strings -->
+			<Exclude regex='//(?:(?!//).)*' />      <!-- Line comments -->
+			<Exclude regex='/\*(?:.|\n)*?\*/' />    <!-- Block comments -->
+			<Include regex='GetString\s*\(\s*"(.*?[^\\])"' />
+			<Include regex='GetPluralString\s*\(\s*".*?[^\\]"\s*,\s*"(.*?[^\\])"' plural="true"/>
+		</RegexScanner>
+		<RegexScanner extension="cs">
+			<Exclude regex='@".*?"' />	                  <!-- Strings starting with @ -->
+			<Exclude regex='(?&lt;!@)".*?(?&lt;!\\)"' />  <!-- Strings-->
+			<Exclude regex='//(?:(?!//).)*' />            <!-- Line comments -->
+			<Exclude regex='/\*(?:.|\n)*?\*/' />          <!-- Block comments -->
+			<Include regex='GetString\s*\(\s*"(.*?[^\\])"' />
+			<Include regex='GetPluralString\s*\(\s*".*?[^\\]"\s*,\s*"(.*?[^\\])"' plural="true"/>
+		</RegexScanner>
+	</Extension>
 </Addin>
