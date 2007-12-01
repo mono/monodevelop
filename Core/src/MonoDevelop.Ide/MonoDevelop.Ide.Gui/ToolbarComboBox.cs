@@ -1,10 +1,10 @@
 //
-// LayoutComboBox.cs
+// ConfigurationComboBox.cs
 //
 // Author:
-//   David Makovský <yakeen@sannyas-on.net>
+//   Lluis Sanchez Gual
 //
-// Copyright (C) 2006 David Makovský
+// Copyright (C) 2005 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,48 +27,52 @@
 //
 
 using System;
-using MonoDevelop.Ide;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
 using MonoDevelop.Core.Gui;
-using Gtk;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Ide.Gui
 {
-	internal class LayoutComboBox : ToolbarComboBox
+	internal class ToolbarComboBox: CustomItem
 	{
-		bool changingHere = false;
-	
-		public LayoutComboBox ()
+		Gtk.Alignment align;
+		Gtk.ComboBox combo;
+		Gtk.CellRendererText ctx;
+		
+		public ToolbarComboBox () 
 		{
-			Combo.Changed += new EventHandler (OnComboChanged);
-			ShowAll ();
+			align = new Gtk.Alignment (0.5f, 0.5f, 1.0f, 0f);
+			Add (align);
 			
-			IdeApp.Workbench.LayoutChanged += (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnConfigurationsChanged));
+			align.LeftPadding = 3;
+			align.RightPadding = 3;
+			
+			combo = new Gtk.ComboBox ();
+			combo.Model = new Gtk.ListStore (typeof(string));
+			ctx = new Gtk.CellRendererText ();
+			combo.PackStart (ctx, true);
+			combo.AddAttribute (ctx, "text", 0);
+			
+			align.Add (combo);
+			ShowAll ();
 		}
 		
-		void OnConfigurationsChanged (object sender, EventArgs e)
-		{
-			((ListStore)Combo.Model).Clear ();
-			int active = 0;
-			for (int i = 0; i < IdeApp.Workbench.Layouts.Length; i++)
-			{
-				Combo.AppendText (IdeApp.Workbench.Layouts[i]);
-				if (IdeApp.Workbench.Layouts[i] == IdeApp.Workbench.CurrentLayout)
-					active = i;
-			}
-			changingHere = true;
-			Combo.Active = active;
-			Combo.ShowAll ();
+		protected Gtk.ComboBox Combo {
+			get { return combo; }
 		}
 		
-		void OnComboChanged (object sender, EventArgs e)
+		public override void SetToolbarStyle (Gtk.Toolbar toolbar)
 		{
-			if (! changingHere)
-			{
-				TreeIter iter;
-				if (Combo.GetActiveIter (out iter))
-					IdeApp.Workbench.CurrentLayout = (string)Combo.Model.GetValue (iter, 0);
+			if (Style != null) {
+				if (toolbar.IconSize == Gtk.IconSize.Menu || toolbar.IconSize == Gtk.IconSize.SmallToolbar) {
+					Pango.FontDescription fd = Style.FontDescription.Copy ();
+					fd.Size = (int) (fd.Size * Pango.Scale.Small);
+					ctx.FontDesc = fd;
+				} else {
+					ctx.FontDesc = Style.FontDescription;
+				}
 			}
-			changingHere = false;
 		}
 	}
 }

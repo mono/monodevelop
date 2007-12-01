@@ -140,7 +140,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					OnClickFeature (f, check, fbox, editor);
 				};
 			} else {
-				fbox.ShowAll ();
+				fbox.Show ();
 			}
 			return editor;
 		}

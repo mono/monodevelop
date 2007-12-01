@@ -30,23 +30,18 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Ide.Gui
 {
-	internal class ConfigurationComboBox: Gtk.Alignment
+	internal class ConfigurationComboBox: ToolbarComboBox
 	{
-		Gtk.ComboBox combo;
 		ConfigurationEventHandler onActiveConfigurationChanged;
 		ConfigurationEventHandler onConfigurationsChanged;
 		
-		public ConfigurationComboBox (): base (0.5f, 0.5f, 1.0f, 0f)
+		public ConfigurationComboBox () 
 		{
-			LeftPadding = 3;
-			RightPadding = 3;
-			combo = Gtk.ComboBox.NewText ();
-			combo.Changed += new EventHandler (OnChanged);
-			Add (combo);
-			ShowAll ();
+			Combo.Changed += new EventHandler (OnChanged);
 			
 			onActiveConfigurationChanged = (ConfigurationEventHandler) DispatchService.GuiDispatch (new ConfigurationEventHandler (OnActiveConfigurationChanged));
 			onConfigurationsChanged = (ConfigurationEventHandler) DispatchService.GuiDispatch (new ConfigurationEventHandler (OnConfigurationsChanged));
@@ -58,25 +53,25 @@ namespace MonoDevelop.Ide.Gui
 		
 		void Reset ()
 		{
-			((Gtk.ListStore)combo.Model).Clear ();
-			combo.AppendText ("dummy");
-			combo.Active = -1;
-			combo.Sensitive = false;
+			((Gtk.ListStore)Combo.Model).Clear ();
+			Combo.AppendText ("dummy");
+			Combo.Active = -1;
+			Combo.Sensitive = false;
 		}
 		
 		void RefreshCombo (Combine combine)
 		{
-			((Gtk.ListStore)combo.Model).Clear ();
-			combo.Sensitive = true;
+			((Gtk.ListStore)Combo.Model).Clear ();
+			Combo.Sensitive = true;
 			int active = 0;
 			for (int n=0; n < combine.Configurations.Count; n++) {
 				IConfiguration c = combine.Configurations [n];
-				combo.AppendText (c.Name);
+				Combo.AppendText (c.Name);
 				if (combine.ActiveConfiguration == c)
 					active = n;
 			}
-			combo.Active = active;
-			combo.ShowAll ();
+			Combo.Active = active;
+			Combo.ShowAll ();
 		}
 
 		void OpenCombine (object sender, CombineEventArgs e)
@@ -106,7 +101,7 @@ namespace MonoDevelop.Ide.Gui
 			for (int n=0; n < combine.Configurations.Count; n++) {
 				IConfiguration c = combine.Configurations [n];
 				if (combine.ActiveConfiguration == c) {
-					combo.Active = n;
+					Combo.Active = n;
 					break;
 				}
 			}
@@ -116,8 +111,8 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
 				Gtk.TreeIter iter;
-				if (combo.GetActiveIter (out iter)) {
-					string cs = (string) combo.Model.GetValue (iter, 0);
+				if (Combo.GetActiveIter (out iter)) {
+					string cs = (string) Combo.Model.GetValue (iter, 0);
 					IConfiguration conf = IdeApp.ProjectOperations.CurrentOpenCombine.GetConfiguration (cs);
 					IdeApp.ProjectOperations.CurrentOpenCombine.ActiveConfiguration = conf;
 				}

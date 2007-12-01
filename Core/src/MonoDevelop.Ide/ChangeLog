@@ -1,3 +1,27 @@
+2007-12-01  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Commands/EditCommands.cs: Implemented new Insert Header
+	  command.
+	* MonoDevelop.Ide.Gui.Dialogs/CombineEntryFeatureSelector.cs: Avoid showing
+	  hidden checkboxes.
+	* MonoDevelop.Ide.addin.xml: Registered new help and insert header commands.
+	* MonoDevelop.Ide.mdp, Makefile.am: Added new files.
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog.cs,
+	  gtk-gui/gui.stetic,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.SelectStylePanelWidget.cs:
+	  Updated.
+	* MonoDevelop.Ide.Gui/NavigationHistory.cs: The navigation widget is now a
+	  MenuToolButton, in this way the command handler can directly add it to
+	  the toolbar and will be aware of toolbar style changes.
+	* MonoDevelop.Ide.Gui/ToolbarComboBox.cs,
+	  MonoDevelop.Ide.Gui/ConfigurationComboBox.cs,
+	  MonoDevelop.Ide.Gui/LayoutComboBox.cs: Update the configuration and
+	  layout combos when the the size of the toolbar changes.
+
 2007-11-30  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs,

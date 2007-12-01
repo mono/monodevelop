@@ -314,6 +314,10 @@
 				_label = "Pre_ferences"
 				icon = "gtk-preferences"
 				description = "Show MonoDevelop preferences window" />
+		<Command id = "MonoDevelop.Ide.Commands.EditCommands.InsertStandardHeader"
+				_label = "Insert Standard Header" 
+				defaultHandler = "MonoDevelop.Ide.Commands.InsertStandardHeaderHandler"
+				description = "Add the user defined header to the top of the file"/>
 				
 		</Category>
 
@@ -1212,6 +1216,7 @@
 			
 			<SeparatorItem id = "Separator5" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.WordCount" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.InsertStandardHeader" />
 			
 			<SeparatorItem id = "optionssep5" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences" />
@@ -1290,6 +1295,7 @@
 		</ItemSet> 
 
 		<ItemSet id = "Help" _label = "_Help">
+			<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.Help" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.TipOfTheDay" />
 			<SeparatorItem id = "Separator2" />
 			<ItemSet id = "Web" _label = "_Web">
@@ -1334,6 +1340,7 @@
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
 		<ProjectTemplate id = "MonoDevelop.BlankSolution" resource = "BlankCombine.xpt.xml"/>
+<!--		<ProjectTemplate id = "MonoDevelop.Workspace" resource = "Workspace.xpt.xml"/>-->
 		<ProjectTemplate id = "MonoDevelop.GenericProject" resource = "GenericProject.xpt.xml"/>
 	</Extension>
 	

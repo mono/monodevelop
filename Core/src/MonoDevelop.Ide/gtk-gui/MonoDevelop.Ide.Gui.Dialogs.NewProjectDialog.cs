@@ -155,6 +155,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Container child vbox4.Gtk.Box+BoxChild
             this.frame2 = new Gtk.Frame();
             this.frame2.Name = "frame2";
+            this.frame2.LabelXalign = 0F;
             this.frame2.LabelYalign = 0F;
             // Container child frame2.Gtk.Container+ContainerChild
             this.lbl_template_descr = new Gtk.Label();
@@ -340,6 +341,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             w25.Position = 1;
             w25.Expand = false;
             this.notebook.Add(this.vbox1);
+            Gtk.Notebook.NotebookChild w26 = ((Gtk.Notebook.NotebookChild)(this.notebook[this.vbox1]));
+            w26.TabExpand = false;
             // Notebook tab
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
@@ -384,6 +387,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.notebook.Add(this.vbox5);
             Gtk.Notebook.NotebookChild w30 = ((Gtk.Notebook.NotebookChild)(this.notebook[this.vbox5]));
             w30.Position = 1;
+            w30.TabExpand = false;
             // Notebook tab
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";

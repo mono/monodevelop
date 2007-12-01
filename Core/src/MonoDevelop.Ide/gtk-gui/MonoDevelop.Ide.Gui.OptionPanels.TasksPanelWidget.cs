@@ -222,6 +222,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.frame1 = new Gtk.Frame();
             this.frame1.Name = "frame1";
             this.frame1.ShadowType = ((Gtk.ShadowType)(0));
+            this.frame1.LabelXalign = 0F;
             // Container child frame1.Gtk.Container+ContainerChild
             this.alignment1 = new Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
             this.alignment1.Name = "alignment1";

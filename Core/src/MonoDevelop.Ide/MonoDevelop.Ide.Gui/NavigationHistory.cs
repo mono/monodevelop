@@ -29,23 +29,16 @@ using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Ide.Gui {
-	public abstract class NavigationHistory : Alignment {
-		protected MenuToolButton button;
+namespace MonoDevelop.Ide.Gui
+{
+	public abstract class NavigationHistory : MenuToolButton
+	{
 		protected Hashtable navpoints;
 		
-		public NavigationHistory (string stock_id) : base (0.5f, 0.5f, 1.0f, 0.0f)
+		public NavigationHistory (string stock_id): base (stock_id)
 		{
-			LeftPadding = 3;
-			RightPadding = 3;
-			
 			navpoints = new Hashtable ();
-			
-			button = new MenuToolButton (stock_id);
-			button.Clicked += new EventHandler (ButtonClicked);
-			button.Show ();
-			Add (button);
-			
+			Show ();
 			NavigationService.HistoryChanged += new EventHandler (HistoryChanged);
 		}
 		
@@ -54,7 +47,7 @@ namespace MonoDevelop.Ide.Gui {
 			throw new NotImplementedException ();
 		}
 		
-		void ButtonClicked (object sender, EventArgs e)
+		protected override void OnClicked ()
 		{
 			Go ();
 		}
@@ -80,13 +73,13 @@ namespace MonoDevelop.Ide.Gui {
 			item = new SeparatorMenuItem ();
 			item.Show ();
 			
-			((MenuShell) button.Menu).Append (item);
+			((MenuShell) Menu).Append (item);
 			
 			item = new MenuItem ("Clear History");
 			item.Activated += new EventHandler (ClearHistory);
 			item.Show ();
 			
-			((MenuShell) button.Menu).Append (item);
+			((MenuShell) Menu).Append (item);
 		}
 		
 		void HistoryChanged (object sender, EventArgs e)
@@ -161,7 +154,7 @@ namespace MonoDevelop.Ide.Gui {
 			}
 			
 			menu.Show ();
-			button.Menu = menu;
+			Menu = menu;
 			base.UpdateHistory ();
 		}
 	}
@@ -232,7 +225,7 @@ namespace MonoDevelop.Ide.Gui {
 			}
 			
 			menu.Show ();
-			button.Menu = menu;
+			Menu = menu;
 			base.UpdateHistory ();
 		}
 	}
