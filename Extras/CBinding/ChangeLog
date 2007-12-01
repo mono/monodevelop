@@ -1,3 +1,7 @@
+2007-12-01  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* CBinding.mdp, gtk-gui/gui.stetic: Updated paths.
+
 2007-11-23  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* Compiler/GNUCompiler.cs: Should fix bug #343098
