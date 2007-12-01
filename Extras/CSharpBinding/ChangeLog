@@ -1,3 +1,8 @@
+2007-12-01  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/CSharpTextEditorExtension.cs: Implement completion of symbols when
+	  typing #if or #elif.
+
 2007-11-29  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Gui/CompilerOptionsPanelWidget.cs: Load existing LangVersion value.

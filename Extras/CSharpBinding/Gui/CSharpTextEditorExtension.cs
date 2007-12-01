@@ -17,6 +17,7 @@ using MonoDevelop.SourceEditor.FormattingStrategy;
 using CSharpBinding.Parser;
 using CSharpBinding.FormattingStrategy;
 
+using MonoDevelop.Projects;
 using MonoDevelop.Projects.Ambience;
 using Ambience_ = MonoDevelop.Projects.Ambience.Ambience;
 
@@ -634,6 +635,7 @@ namespace CSharpBinding
 			ExpressionFinder expressionFinder = new ExpressionFinder (null);
 			
 			int i = ctx.TriggerOffset;
+			
 			// Base class completion
 			if (charTyped == ' ' && GetPreviousToken (":", ref i, false)) {
 				IParserContext pctx = GetParserContext ();
@@ -645,7 +647,15 @@ namespace CSharpBinding
 			}
 			
 			i = ctx.TriggerOffset;
+			string prevTokenInLine = GetPreviousToken (ref i, false);
+
+			if (charTyped == ' ' && (prevTokenInLine == "if" || prevTokenInLine == "elif") && GetPreviousToken ("#", ref i, false)) {
+				ICompletionDataProvider cp = GetDefineCompletionData ();
+				if (cp != null)
+					return cp;
+			}
 			
+			i = ctx.TriggerOffset;
 			// Code completion of "new"
 			if (charTyped == ' ' && GetPreviousToken ("new", ref i, false)) {
 				string token = GetPreviousToken (ref i, true);
@@ -955,6 +965,30 @@ namespace CSharpBinding
 				
 				FindOverridables (pctx, motherClass, baseCls, classMembers, isInterface ? interfaceMembers : null);
 			}
+		}
+		
+		CodeCompletionDataProvider GetDefineCompletionData ()
+		{
+			if (Document.Project == null)
+				return null;
+
+			Hashtable symbols = new Hashtable ();
+			CodeCompletionDataProvider cp = new CodeCompletionDataProvider (null, GetAmbience ());
+			foreach (DotNetProjectConfiguration conf in Document.Project.Configurations) {
+				CSharpCompilerParameters cparams = conf.CompilationParameters as CSharpCompilerParameters;
+				if (cparams != null) {
+					string[] syms = cparams.DefineSymbols.Split (';');
+					foreach (string s in syms) {
+						string ss = s.Trim ();
+						if (!symbols.Contains (ss)) {
+							symbols [ss] = ss;
+							cp.AddCompletionData (new CodeCompletionData (ss, "md-literal"));
+						}
+					}
+				}
+			}
+
+			return cp;
 		}
 		
 		CodeCompletionDataProvider GetDirectiveCompletionData ()
