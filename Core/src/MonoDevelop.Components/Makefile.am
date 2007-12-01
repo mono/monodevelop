@@ -3,6 +3,7 @@ ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.Components.dll
 
 REFS =  \
 	$(GLADE_SHARP_LIBS) \
+	$(GLIB_SHARP_LIBS) \
 	$(GNOME_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
@@ -55,6 +56,7 @@ FILES =  \
 	MonoDevelop.Components.Commands/CommandToolbar.cs \
 	MonoDevelop.Components.Commands/CommandToolButton.cs \
 	MonoDevelop.Components.Commands/CustomCommand.cs \
+	MonoDevelop.Components.Commands/CustomItem.cs \
 	MonoDevelop.Components.Commands/CustomMenuItem.cs \
 	MonoDevelop.Components.Commands/ICommandDelegatorRouter.cs \
 	MonoDevelop.Components.Commands/ICommandMenuItem.cs \

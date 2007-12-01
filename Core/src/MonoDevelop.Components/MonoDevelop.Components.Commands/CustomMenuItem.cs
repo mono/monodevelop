@@ -31,7 +31,7 @@ using System.Collections;
 
 namespace MonoDevelop.Components.Commands
 {
-	public class CustomMenuItem: Gtk.MenuItem
+	class CustomMenuItem: Gtk.MenuItem
 	{
 		protected override bool OnButtonPressEvent (Gdk.EventButton e)
 		{

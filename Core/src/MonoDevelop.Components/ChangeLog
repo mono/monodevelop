@@ -1,3 +1,20 @@
+2007-12-01  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.am, MonoDevelop.Components.mdp,
+	  MonoDevelop.Components.Commands/CustomItem.cs,
+	  MonoDevelop.Components.Commands/CommandManager.cs: Added new CustomItem
+	  base class to be used by custom toolbar/menu items which need to be
+	  aware of toolbar style changes.
+	* MonoDevelop.Components.Commands/CustomMenuItem.cs: This class is internal.
+	* MonoDevelop.Components.Commands/ICommandTargetVisitor.cs,
+	  MonoDevelop.Components/GladeWidgetExtract.cs,
+	  MonoDevelop.Components/FolderEntry.cs,
+	  MonoDevelop.Components/FileSelector.cs,
+	  MonoDevelop.Components/IconView.cs, MonoDevelop.Components/Navbar.cs:
+	  Added missing header.
+	* MonoDevelop.Components.Commands/CommandEntry.cs: If a custom item is a
+	  Gtk.ToolItem, there is no need to create a wrapper tool item.
+
 2007-11-30  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Components.HtmlControl/MozillaControl.cs, Makefile.am,

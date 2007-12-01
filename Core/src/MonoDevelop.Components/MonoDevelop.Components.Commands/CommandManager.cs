@@ -330,8 +330,13 @@ namespace MonoDevelop.Components.Commands
 		public Gtk.MenuBar CreateMenuBar (string name, CommandEntrySet entrySet)
 		{
 			Gtk.MenuBar topMenu = new CommandMenuBar (this);
-			foreach (CommandEntry entry in entrySet)
-				topMenu.Append (entry.CreateMenuItem (this));
+			foreach (CommandEntry entry in entrySet) {
+				Gtk.MenuItem mi = entry.CreateMenuItem (this);
+				CustomItem ci = mi.Child as CustomItem;
+				if (ci != null)
+					ci.SetMenuStyle (topMenu);
+				topMenu.Append (mi);
+			}
 			return topMenu;
 		}
 		
@@ -343,8 +348,13 @@ namespace MonoDevelop.Components.Commands
 */		public Gtk.Menu CreateMenu (CommandEntrySet entrySet)
 		{
 			CommandMenu menu = new CommandMenu (this);
-			foreach (CommandEntry entry in entrySet)
-				menu.Append (entry.CreateMenuItem (this));
+			foreach (CommandEntry entry in entrySet) {
+				Gtk.MenuItem mi = entry.CreateMenuItem (this);
+				CustomItem ci = mi.Child as CustomItem;
+				if (ci != null)
+					ci.SetMenuStyle (menu);
+				menu.Append (mi);
+			}
 			return menu;
 		}
 		
@@ -352,6 +362,9 @@ namespace MonoDevelop.Components.Commands
 		{
 			foreach (CommandEntry entry in entrySet) {
 				Gtk.MenuItem item = entry.CreateMenuItem (this);
+				CustomItem ci = item.Child as CustomItem;
+				if (ci != null)
+					ci.SetMenuStyle (menu);
 				int n = menu.Children.Length;
 				menu.Insert (item, index);
 				if (item is ICommandUserItem)
@@ -394,11 +407,18 @@ namespace MonoDevelop.Components.Commands
 		public Gtk.Toolbar CreateToolbar (string id, CommandEntrySet entrySet)
 		{
 			CommandToolbar toolbar = new CommandToolbar (this, id, entrySet.Name);
-			foreach (CommandEntry entry in entrySet)
-				toolbar.Add (entry.CreateToolItem (this));
+			foreach (CommandEntry entry in entrySet) {
+				Gtk.ToolItem ti = entry.CreateToolItem (this);
+				CustomItem ci = ti.Child as CustomItem;
+				if (ci != null)
+					ci.SetToolbarStyle (toolbar);
+				toolbar.Add (ti);
+			}
+			ToolbarTracker tt = new ToolbarTracker ();
+			tt.Track (toolbar);
 			return toolbar;
 		}
-
+		
 		public bool DispatchCommand (object commandId)
 		{
 			return DispatchCommand (commandId, null, null);
@@ -863,6 +883,34 @@ namespace MonoDevelop.Components.Commands
 		public void Run (object cmdTarget, object dataItem)
 		{
 			Method.Invoke (cmdTarget, new object[] {dataItem});
+		}
+	}
+	
+	internal class ToolbarTracker
+	{
+		Gtk.IconSize lastSize;
+		
+		public void Track (Gtk.Toolbar toolbar)
+		{
+			lastSize = toolbar.IconSize;
+			toolbar.AddNotification (OnToolbarPropChanged);
+		}
+		
+		void OnToolbarPropChanged (object ob, GLib.NotifyArgs args)
+		{
+			Gtk.Toolbar t = (Gtk.Toolbar) ob;
+			if (lastSize != t.IconSize || args.Property == "orientation" || args.Property == "toolbar-style")
+				UpdateCustomItems (t);
+			lastSize = t.IconSize;
+		}
+		
+		void UpdateCustomItems (Gtk.Toolbar t)
+		{
+			foreach (Gtk.ToolItem ti in t.Children) {
+				CustomItem ci = ti.Child as CustomItem;
+				if (ci != null)
+					ci.SetToolbarStyle (t);
+			}
 		}
 	}
 }

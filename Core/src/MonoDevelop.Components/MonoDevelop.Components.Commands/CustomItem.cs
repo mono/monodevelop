@@ -1,11 +1,9 @@
-// FolderEntry.cs
+// CustomItem.cs
 //
 // Author:
-//   Ben Maurer  <bmaurer@users.sourceforge.net>
-//   Todd Berman  <tberman@off.net>
+//   Lluis Sanchez Gual <lluis@novell.com>
 //
-// Copyright (c) 2004 Ben Maurer
-// Copyright (c) 2004 Todd Berman
+// Copyright (c) 2007 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,36 +26,18 @@
 //
 
 using System;
-using System.IO;
 using Gtk;
-using Gdk;
 
-namespace MonoDevelop.Components {
-	public class FolderEntry : BaseFileEntry
+namespace MonoDevelop.Components.Commands
+{
+	public class CustomItem: HBox
 	{
-		public FolderEntry () : base ("")
+		public virtual void SetToolbarStyle (Gtk.Toolbar toolbar)
 		{
 		}
 		
-		public FolderEntry (string name) : base (name)
+		public virtual void SetMenuStyle (Gtk.MenuShell menu)
 		{
-		}
-		
-		protected override string ShowBrowseDialog (string name, string start_in)
-		{
-			FolderDialog fd = new FolderDialog (name);
-			if (start_in != null)
-				fd.SetFilename (start_in);
-			
-			int response = fd.Run ();
-			
-			if (response == (int) ResponseType.Ok) {
-				fd.Hide ();
-				return fd.Filename;
-			}
-			fd.Hide ();
-			
-			return null;
 		}
 	}
 }

@@ -60,8 +60,13 @@ namespace MonoDevelop.Components.Commands
 			
 			if (cmd is CustomCommand) {
 				Gtk.Widget child = (Gtk.Widget) Activator.CreateInstance (((CustomCommand)cmd).WidgetType);
-				Gtk.ToolItem ti = new Gtk.ToolItem ();
-				ti.Child = child;
+				Gtk.ToolItem ti;
+				if (child is Gtk.ToolItem)
+					ti = (Gtk.ToolItem) child;
+				else {
+					ti = new Gtk.ToolItem ();
+					ti.Child = child;
+				}
 				if (cmd.Text != null && cmd.Text.Length > 0) {
 					Gtk.Tooltips tips = new Gtk.Tooltips ();
 					ti.SetTooltip (tips, cmd.Text, cmd.Text);
