@@ -40,6 +40,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		int isize = 3;
 		int col = -1;
 		LogTextWriter logger;
+		bool ignoreLogMessages;
 		
 		public ConsoleProgressMonitor ()
 		{
@@ -50,6 +51,11 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		public bool WrapText {
 			get { return wrap; }
 			set { wrap = value; }
+		}
+		
+		public bool IgnoreLogMessages {
+			get { return ignoreLogMessages; }
+			set { ignoreLogMessages = value; }
 		}
 		
 		public int WrapColumns {
@@ -64,8 +70,10 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		
 		public override void BeginTask (string name, int totalWork)
 		{
-			WriteText (name);
-			Indent ();
+			if (!ignoreLogMessages) {
+				WriteText (name);
+				Indent ();
+			}
 		}
 		
 		public override void BeginStepTask (string name, int totalWork, int stepSize)
@@ -75,12 +83,14 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		
 		public override void EndTask ()
 		{
-			Unindent ();
+			if (!ignoreLogMessages)
+				Unindent ();
 		}
 		
 		void WriteLog (string text)
 		{
-			WriteText (text);
+			if (!ignoreLogMessages)
+				WriteText (text);
 		}
 		
 		public override TextWriter Log {
