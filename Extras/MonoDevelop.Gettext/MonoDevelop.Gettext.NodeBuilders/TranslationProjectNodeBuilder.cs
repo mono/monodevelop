@@ -189,7 +189,9 @@ namespace MonoDevelop.Gettext.NodeBuilders
 				
 				try {
 					project.UpdateTranslations (monitor);
-					POEditorWidget.ReloadWidgets ();
+					Gtk.Application.Invoke (delegate {
+						POEditorWidget.ReloadWidgets ();
+					});
 				} catch (Exception ex) {
 					monitor.ReportError ("Translation update failed.", ex);
 				} finally {
@@ -205,7 +207,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 					return;
 				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
 				currentUpdateTranslationOperation = monitor.AsyncOperation;
-				DispatchService.GuiDispatch (new StatefulMessageHandler (UpdateTranslationsAsync), new object[] {monitor, project});
+				DispatchService.BackgroundDispatch (new StatefulMessageHandler (UpdateTranslationsAsync), new object[] {monitor, project});
 				
 			}
 			

@@ -299,6 +299,8 @@ namespace MonoDevelop.Gettext {
             Gtk.Box.BoxChild w25 = ((Gtk.Box.BoxChild)(this.vbox7[this.vpaned2]));
             w25.Position = 0;
             this.notebookPages.Add(this.vbox7);
+            Gtk.Notebook.NotebookChild w26 = ((Gtk.Notebook.NotebookChild)(this.notebookPages[this.vbox7]));
+            w26.TabExpand = false;
             // Notebook tab
             this.label5 = new Gtk.Label();
             this.label5.Name = "label5";
@@ -318,6 +320,7 @@ namespace MonoDevelop.Gettext {
             this.toolbarPages.Name = "toolbarPages";
             this.toolbarPages.ShowArrow = false;
             this.toolbarPages.ToolbarStyle = ((Gtk.ToolbarStyle)(0));
+            this.toolbarPages.IconSize = ((Gtk.IconSize)(3));
             this.hbox1.Add(this.toolbarPages);
             Gtk.Box.BoxChild w28 = ((Gtk.Box.BoxChild)(this.hbox1[this.toolbarPages]));
             w28.Position = 0;

@@ -63,6 +63,7 @@ namespace MonoDevelop.Gettext {
             this.frame1 = new Gtk.Frame();
             this.frame1.Name = "frame1";
             this.frame1.ShadowType = ((Gtk.ShadowType)(1));
+            this.frame1.LabelXalign = 0F;
             // Container child frame1.Gtk.Container+ContainerChild
             this.treeviewTranslations = new Gtk.TreeView();
             this.treeviewTranslations.WidthRequest = 200;

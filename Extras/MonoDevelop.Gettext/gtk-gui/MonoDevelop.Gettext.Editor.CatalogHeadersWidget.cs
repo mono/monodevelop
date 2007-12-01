@@ -246,6 +246,8 @@ namespace MonoDevelop.Gettext.Editor {
             w13.RightAttach = ((uint)(2));
             w13.YOptions = ((Gtk.AttachOptions)(4));
             this.notebook1.Add(this.table1);
+            Gtk.Notebook.NotebookChild w14 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.table1]));
+            w14.TabExpand = false;
             // Notebook tab
             this.label3 = new Gtk.Label();
             this.label3.Name = "label3";
@@ -410,6 +412,7 @@ namespace MonoDevelop.Gettext.Editor {
             this.notebook1.Add(this.table2);
             Gtk.Notebook.NotebookChild w28 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.table2]));
             w28.Position = 1;
+            w28.TabExpand = false;
             // Notebook tab
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
