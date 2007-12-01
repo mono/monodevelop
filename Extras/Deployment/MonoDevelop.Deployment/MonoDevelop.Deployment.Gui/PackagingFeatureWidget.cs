@@ -12,6 +12,7 @@ namespace MonoDevelop.Deployment.Gui
 		Combine parentCombine;
 		ArrayList packages = new ArrayList ();
 		PackagingProject newPackProject;
+		bool creatingPackProject;
 		
 		public PackagingFeatureWidget (Combine parentCombine, CombineEntry entry)
 		{
@@ -19,14 +20,21 @@ namespace MonoDevelop.Deployment.Gui
 			this.entry = entry;
 			this.parentCombine = parentCombine;
 			
-			CombineEntryCollection packProjects = parentCombine.RootCombine.GetAllEntries (typeof(PackagingProject));
-			newPackProject = new PackagingProject ();
+			creatingPackProject = entry is PackagingProject;
 			
-			string label = GettextCatalog.GetString ("Create packages for this project in a new Packaging Project");
-			AddCreatePackageSection (box, label, newPackProject, packProjects.Count > 0);
+			if (!creatingPackProject) {
+				CombineEntryCollection packProjects = parentCombine.RootCombine.GetAllEntries (typeof(PackagingProject));
+				newPackProject = new PackagingProject ();
 			
-			foreach (PackagingProject project in packProjects)
-				AddProject (project);
+				string label = GettextCatalog.GetString ("Create packages for this project in a new Packaging Project");
+				AddCreatePackageSection (box, label, newPackProject, packProjects.Count > 0);
+			
+				foreach (PackagingProject project in packProjects)
+					AddProject (project);
+			} else {
+				string label = GettextCatalog.GetString ("Select packages to add to the new Packaging Project");
+				AddCreatePackageSection (box, label, (PackagingProject) entry, false);
+			}
 		}
 		
 		void AddProject (PackagingProject project)
@@ -125,8 +133,24 @@ namespace MonoDevelop.Deployment.Gui
 				hbox.Show ();
 			}
 			
-			foreach (PackageBuilder pb in DeployService.GetSupportedPackageBuilders (entry)) {
-				pb.SetCombineEntry (parentCombine, new CombineEntry [] { entry });
+			ICollection builders;
+			if (creatingPackProject)
+				builders = DeployService.GetPackageBuilders ();
+			else
+				builders = DeployService.GetSupportedPackageBuilders (entry);
+			
+			foreach (PackageBuilder pb in builders) {
+				if (creatingPackProject) {
+					pb.SetCombineEntry (parentCombine.RootCombine);
+					// Add all compatible projects
+					foreach (CombineEntry e in parentCombine.RootCombine.GetAllEntries ()) {
+						if (pb.CanBuild (e))
+							pb.AddEntry (e);
+					}
+				} else {
+					pb.SetCombineEntry (parentCombine, new CombineEntry [] { entry });
+				}
+				
 				PackageBuilder[] defp = pb.CreateDefaultBuilders ();
 				if (defp.Length == 0)
 					continue;
@@ -214,7 +238,7 @@ namespace MonoDevelop.Deployment.Gui
 					pi.Package.PackageBuilder.AddEntry (entry);
 				}
 			}
-			if (newPackProject.Packages.Count > 0) {
+			if (newPackProject != null && newPackProject.Packages.Count > 0) {
 				newPackProject.Name = "Packages";
 				newPackProject.FileName = System.IO.Path.Combine (parentCombine.BaseDirectory, "Packages.mdse");
 				parentCombine.Entries.Add (newPackProject);

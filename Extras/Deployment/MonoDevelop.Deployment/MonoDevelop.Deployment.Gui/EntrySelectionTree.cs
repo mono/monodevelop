@@ -53,7 +53,7 @@ namespace MonoDevelop.Deployment.Gui
 				selectedEntries [selection] = selection;
 			}
 			
-			AddEntry (TreeIter.Zero, builder.RootCombineEntry.RootCombine);
+			AddEntry (TreeIter.Zero, IdeApp.ProjectOperations.CurrentOpenCombine);
 		}
 		
 		void AddEntry (TreeIter iter, CombineEntry entry)

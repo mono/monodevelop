@@ -8,7 +8,7 @@ namespace MonoDevelop.Deployment
 	[ExtensionNode("DeployPlatform")]
 	internal class DeployPlatformNodeType: ExtensionNode
 	{
-		[NodeAttribute ("_label")]
+		[NodeAttribute ("_label", Localizable=true)]
 		string description;
 		
 		public DeployPlatformInfo GetDeployPlatformInfo ()

@@ -1,3 +1,16 @@
+2007-12-01  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment/DeployDirectoryNodeType.cs,
+	  MonoDevelop.Deployment/DeployPlatformNodeType.cs: Make some attributes
+	  localizable.
+	* MonoDevelop.Deployment/PackageBuilder.cs: Added some null checks.
+	* gtk-gui/objects.xml: Updated.
+	* MonoDevelop.Deployment.Gui/EntrySelectionTree.cs: Avoid nullref when
+	  creating the project.
+	* MonoDevelop.Deployment.Gui/PackagingFeature.cs,
+	  MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs: Show the packaging
+	  feature widget when creating a new packaging project.
+
 2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Deployment/DeployContext.cs,

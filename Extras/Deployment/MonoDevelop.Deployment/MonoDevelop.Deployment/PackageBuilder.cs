@@ -193,11 +193,12 @@ namespace MonoDevelop.Deployment
 				if (FileService.GetFullPath (s) == fp)
 					return;
 			
-			if (FileService.GetFullPath (rootEntry) == fp)
+			if (rootEntry != null && FileService.GetFullPath (rootEntry) == fp)
 				return;
 			
 			List<CombineEntry> list = new List<CombineEntry> ();
-			list.Add (RootCombineEntry);
+			if (RootCombineEntry != null)
+				list.Add (RootCombineEntry);
 			list.AddRange (GetChildEntries());
 			list.Add (entry);
 			
