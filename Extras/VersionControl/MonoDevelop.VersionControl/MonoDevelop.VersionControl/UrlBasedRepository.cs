@@ -43,15 +43,8 @@ namespace MonoDevelop.VersionControl
 			get {
 				if (method.Length == 0)
 					return "";
-				string login = "";
-				if (this.User != "") {
-					login += this.User;
-					if (this.Pass != "")
-						login += ":" + this.Pass;
-					login += "@";
-				}
 				string sdir = dir.StartsWith ("/") ? dir.Substring (1) : dir;
-				return method + "://" + login + this.Server + (port > 0 ? ":"+port.ToString() : "") + "/" + sdir;
+				return Root + "/" + sdir;
 			}
 			set {
 				try {
@@ -110,6 +103,21 @@ namespace MonoDevelop.VersionControl
 		{
 			get { return method; }
 			set { method = value; }
-		}	
+		}
+		
+		public string Root {
+			get {
+				if (method.Length == 0)
+					return "";
+				string login = "";
+				if (this.User != "") {
+					login += this.User;
+					if (this.Pass != "")
+						login += ":" + this.Pass;
+					login += "@";
+				}
+				return method + "://" + login + this.Server + (port > 0 ? ":"+port.ToString() : "");
+			}
+		}
 	}
 }

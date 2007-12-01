@@ -1,3 +1,10 @@
+2007-12-01  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:
+	  In some cases it may be possible to natively move files between two
+	  repositories (e.g. if they are in the same server). Added a virtual
+	  method to check that and implemented it for SVN.
+
 2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs,

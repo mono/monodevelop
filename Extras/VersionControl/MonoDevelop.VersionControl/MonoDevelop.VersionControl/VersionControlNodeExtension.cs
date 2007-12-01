@@ -26,9 +26,8 @@ namespace MonoDevelop.VersionControl
 			//Console.Error.WriteLine(dataType);
 			return typeof(ProjectFile).IsAssignableFrom (dataType)
 				|| typeof(SystemFile).IsAssignableFrom (dataType)
-				|| typeof(Project).IsAssignableFrom (dataType)
 				|| typeof(ProjectFolder).IsAssignableFrom (dataType)
-				|| typeof(Combine).IsAssignableFrom (dataType);
+				|| typeof(CombineEntry).IsAssignableFrom (dataType);
 		}
 		
 		public VersionControlNodeExtension ()
@@ -297,21 +296,15 @@ namespace MonoDevelop.VersionControl
 				path = file.Path;
 				isDir = false;
 				pentry = file.Project;
-			} else if (CurrentNode.DataItem is Project) {
-				Project project = (Project)CurrentNode.DataItem;
-				path = project.BaseDirectory;
-				isDir = true;
-				pentry = project;
 			} else if (CurrentNode.DataItem is ProjectFolder) {
 				ProjectFolder f = ((ProjectFolder)CurrentNode.DataItem);
 				path = f.Path;
 				isDir = true;
 				pentry = f.Project;
-			} else if (CurrentNode.DataItem is Combine) {
-				Combine c = ((Combine)CurrentNode.DataItem);
-				path = c.BaseDirectory;
-				isDir = true;				
-				pentry = c;
+			} else if (CurrentNode.DataItem is CombineEntry) {
+				pentry = ((CombineEntry)CurrentNode.DataItem);
+				path = pentry.BaseDirectory;
+				isDir = true;
 			} else {
 				Console.Error.WriteLine(CurrentNode.DataItem);
 				return TestResult.NoVersionControl;

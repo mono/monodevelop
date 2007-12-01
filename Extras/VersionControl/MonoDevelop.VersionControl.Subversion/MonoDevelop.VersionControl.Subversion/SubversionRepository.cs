@@ -184,6 +184,11 @@ namespace MonoDevelop.VersionControl.Subversion
 				Svn.Add (path, recurse, monitor);
 		}
 		
+		public override bool CanMoveFileFrom (Repository srcRepository, string localSrcPath, string localDestPath)
+		{
+			return (srcRepository is SubversionRepository) && ((SubversionRepository)srcRepository).Root == Root;
+		}
+		
 		public override void MoveFile (string srcPath, string destPath, bool force, IProgressMonitor monitor)
 		{
 			bool destIsVersioned = false;

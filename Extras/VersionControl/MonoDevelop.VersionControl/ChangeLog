@@ -1,3 +1,15 @@
+2007-12-01  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl/Repository.cs,
+	  MonoDevelop.VersionControl/VersionControlFileSystemExtension.cs,
+	  MonoDevelop.VersionControl/UrlBasedRepository.cs: In some cases it may
+	  be possible to natively move files between two repositories (e.g. if
+	  they are in the same server). Added a virtual method to check that and
+	  implemented it for SVN.
+	* MonoDevelop.VersionControl/VersionControlNodeExtension.cs: Add support for
+	  version control commands for all kinds of combine entries, not only
+	  Project and Combine.
+
 2007-11-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.Views/Logs.cs: Don't disable the view if

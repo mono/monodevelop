@@ -220,7 +220,12 @@ namespace MonoDevelop.VersionControl
 		
 		// Adds a file or directory to the repository
 		public abstract void Add (string localPath, bool recurse, IProgressMonitor monitor);
-		
+
+		// Returns true if the file can be moved from source location (and repository) to this repository
+		public virtual bool CanMoveFileFrom (Repository srcRepository, string localSrcPath, string localDestPath)
+		{
+			return srcRepository == this;
+		}
 
 		// Moves a file. This method may be called for versioned and unversioned
 		// files. The default implementetions performs a system file move.
