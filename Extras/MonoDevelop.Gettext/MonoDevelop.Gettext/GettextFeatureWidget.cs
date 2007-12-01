@@ -81,15 +81,20 @@ namespace MonoDevelop.Gettext
 			};
 		}
 		
-		public void ApplyFeature (Combine parentCombine, Project project)
+		public void ApplyFeature (Combine parentCombine, CombineEntry entry)
 		{
-			TranslationProject newProject = new TranslationProject ();
-			newProject.Name = project.Name + "Translation";
-			string path = System.IO.Path.Combine (parentCombine.BaseDirectory, newProject.Name);
-			if (!System.IO.Directory.Exists (path))
-				System.IO.Directory.CreateDirectory (path);
-			newProject.FileName = System.IO.Path.Combine (path, newProject.Name + ".mdse");
-			parentCombine.Entries.Add (newProject);
+			TranslationProject newProject;
+			if (entry is TranslationProject)
+				newProject = (TranslationProject) entry;
+			else {
+				newProject = new TranslationProject ();
+				newProject.Name = entry.Name + "Translation";
+				string path = System.IO.Path.Combine (parentCombine.BaseDirectory, newProject.Name);
+				if (!System.IO.Directory.Exists (path))
+					System.IO.Directory.CreateDirectory (path);
+				newProject.FileName = System.IO.Path.Combine (path, newProject.Name + ".mdse");
+				parentCombine.Entries.Add (newProject);
+			}
 			
 			TreeIter iter;
 			if (store.GetIterFirst (out iter)) {

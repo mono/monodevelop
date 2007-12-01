@@ -1,5 +1,11 @@
 2007-12-01  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Gettext/GettextFeature.cs,
+	  MonoDevelop.Gettext/GettextFeatureWidget.cs: Show the gettext feature
+	  when creating new Packaging projects.
+
+2007-12-01  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs: Run the
 	  translation update in a background thread.
 	* MonoDevelop.Gettext/GettextTool.cs: New command line tool for updating

@@ -48,7 +48,7 @@ namespace MonoDevelop.Gettext
 		
 		public bool SupportsCombineEntry (Combine parentCombine, CombineEntry entry)
 		{
-			return (entry is Project) && parentCombine != null;
+			return ((entry is Project) || (entry is TranslationProject)) && parentCombine != null;
 		}
 		
 		public Widget CreateFeatureEditor (Combine parentCombine, CombineEntry entry)
@@ -58,7 +58,7 @@ namespace MonoDevelop.Gettext
 
 		public void ApplyFeature (Combine parentCombine, CombineEntry entry, Widget editor)
 		{
-			((GettextFeatureWidget)editor).ApplyFeature (parentCombine, (Project)entry);
+			((GettextFeatureWidget)editor).ApplyFeature (parentCombine, entry);
 		}
 		
 		public string Validate (Combine parentCombine, CombineEntry entry, Gtk.Widget editor)
@@ -68,7 +68,7 @@ namespace MonoDevelop.Gettext
 		
 		public bool IsEnabled (Combine parentCombine, CombineEntry entry) 
 		{
-			return false;
+			return entry is TranslationProject;
 		}
 	}
 }
