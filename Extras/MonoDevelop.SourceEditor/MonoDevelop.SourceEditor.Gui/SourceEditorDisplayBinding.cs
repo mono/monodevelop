@@ -84,7 +84,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			sr.Close ();
 			
 			SourceEditorDisplayBindingWrapper w = new SourceEditorDisplayBindingWrapper ();
-			w.LoadString (mimeType, StringParserService.Parse (text));
+			w.LoadString (mimeType, text);
 			return w;
 		}	
 	}

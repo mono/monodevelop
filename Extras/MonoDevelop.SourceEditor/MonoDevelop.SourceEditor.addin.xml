@@ -96,6 +96,7 @@
 
 	<Extension path = "/MonoDevelop/SourceEditor/ContextMenu/Editor">
 		<CommandItem id = "MonoDevelop.Ide.Commands.RefactoryCommands.CurrentRefactoryOperations" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.Help" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Save" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAs" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile" />
