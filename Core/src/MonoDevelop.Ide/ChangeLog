@@ -1,3 +1,8 @@
+2007-12-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui/HelpViewer.cs: Fixed bug #319086: Can't copy text from
+	  help view
+
 2007-12-01  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Commands/EditCommands.cs: Implemented new Insert Header

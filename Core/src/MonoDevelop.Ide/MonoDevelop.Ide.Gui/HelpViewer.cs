@@ -33,6 +33,8 @@ using Monodoc;
 
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -141,6 +143,11 @@ namespace MonoDevelop.Ide.Gui
 		{
 		}
 
+		[CommandHandler (EditCommands.Copy)]
+		protected void OnCopy ()
+		{
+			html_viewer.Copy ();
+		}
 	}
 
 }
