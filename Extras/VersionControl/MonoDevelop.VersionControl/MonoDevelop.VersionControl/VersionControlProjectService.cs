@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Xml;
+using System.Threading;
 using System.Runtime.Serialization.Formatters.Binary;
 
 using Gtk;
@@ -32,6 +33,8 @@ namespace MonoDevelop.VersionControl
 		internal static Gdk.Pixbuf icon_controled;
 		
 		static Hashtable comments;
+		static object commentsLock = new object ();
+		static DateTime nextSave = DateTime.MinValue;
 		
 		static VersionControlProjectService ()
 		{
@@ -56,6 +59,9 @@ namespace MonoDevelop.VersionControl
 			//IdeApp.ProjectOperations.FileRenamedInProject += OnFileRenamed;
 			
 			IdeApp.ProjectOperations.EntryAddedToCombine += OnEntryAdded;
+			IdeApp.Exiting += delegate {
+				DelayedSaveComments (null);
+			};
 		}
 		
 		public static Gdk.Pixbuf LoadOverlayIconForStatus(VersionStatus status)
@@ -136,31 +142,35 @@ namespace MonoDevelop.VersionControl
 		
 		internal static void SetCommitComment (string file, string comment, bool save)
 		{
-			Hashtable doc = GetCommitComments ();
-			if (comment == null || comment.Length == 0) {
-				if (doc.ContainsKey (file)) {
-					doc.Remove (file);
+			lock (commentsLock) {
+				Hashtable doc = GetCommitComments ();
+				if (comment == null || comment.Length == 0) {
+					if (doc.ContainsKey (file)) {
+						doc.Remove (file);
+						if (save) SaveComments ();
+					}
+				} else {
+					CommitComment cm = new CommitComment ();
+					cm.Comment = comment;
+					cm.Date = DateTime.Now;
+					doc [file] = cm;
 					if (save) SaveComments ();
 				}
-			} else {
-				CommitComment cm = new CommitComment ();
-				cm.Comment = comment;
-				cm.Date = DateTime.Now;
-				doc [file] = cm;
-				if (save) SaveComments ();
 			}
 		}
 		
 		internal static string GetCommitComment (string file)
 		{
-			Hashtable doc = GetCommitComments ();
-			CommitComment cm = doc [file] as CommitComment;
-			if (cm != null) {
-				cm.Date = DateTime.Now;
-				return cm.Comment;
+			lock (commentsLock) {
+				Hashtable doc = GetCommitComments ();
+				CommitComment cm = doc [file] as CommitComment;
+				if (cm != null) {
+					cm.Date = DateTime.Now;
+					return cm.Comment;
+				}
+				else
+					return null;
 			}
-			else
-				return null;
 		}
 		
 		static Hashtable GetCommitComments ()
@@ -205,29 +215,50 @@ namespace MonoDevelop.VersionControl
 		
 		static void SaveComments ()
 		{
-			if (comments == null)
-				return;
-				
-			FileStream stream = null;
-			try {
-				string file = Path.Combine (PropertyService.ConfigPath, "version-control-commit-msg");
-				if (comments.Count == 0) {
-					if (File.Exists (file))
-						FileService.DeleteFile (file);
+			lock (commentsLock) {
+				if (comments == null)
 					return;
+				if (nextSave == DateTime.MinValue)
+					ThreadPool.QueueUserWorkItem (DelayedSaveComments);
+				nextSave = DateTime.Now.AddSeconds (3);
+			}
+		}
+		
+		static void DelayedSaveComments (object ob)
+		{
+			lock (commentsLock)
+			{
+				if (comments == null || nextSave == DateTime.MinValue)
+					return;
+				
+				DateTime tim = DateTime.Now;
+				while (tim < nextSave) {
+					Monitor.Wait (commentsLock, nextSave - tim);
+					tim = DateTime.Now;
 				}
-			
-				if (!Directory.Exists (PropertyService.ConfigPath))
-					Directory.CreateDirectory (PropertyService.ConfigPath);
-				stream = new FileStream (file, FileMode.Create, FileAccess.Write);
-				BinaryFormatter formatter = new BinaryFormatter ();
-				formatter.Serialize (stream, comments);
-			} catch (Exception ex) {
-				// If there is an error, just discard the file
-				LoggingService.LogError (ex.ToString ());
-			} finally {
-				if (stream != null)
-					stream.Close ();
+				nextSave = DateTime.MinValue;
+				
+				FileStream stream = null;
+				try {
+					string file = Path.Combine (PropertyService.ConfigPath, "version-control-commit-msg");
+					if (comments.Count == 0) {
+						if (File.Exists (file))
+							FileService.DeleteFile (file);
+						return;
+					}
+				
+					if (!Directory.Exists (PropertyService.ConfigPath))
+						Directory.CreateDirectory (PropertyService.ConfigPath);
+					stream = new FileStream (file, FileMode.Create, FileAccess.Write);
+					BinaryFormatter formatter = new BinaryFormatter ();
+					formatter.Serialize (stream, comments);
+				} catch (Exception ex) {
+					// If there is an error, just discard the file
+					LoggingService.LogError (ex.ToString ());
+				} finally {
+					if (stream != null)
+						stream.Close ();
+				}
 			}
 		}
 		

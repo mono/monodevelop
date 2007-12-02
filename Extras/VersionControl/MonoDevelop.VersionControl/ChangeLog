@@ -1,3 +1,9 @@
+2007-12-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl/VersionControlProjectService.cs: Save comments
+	  in a background thread and only after a small delay (avoids saving too
+	  often). Should fix bug #324986.
+
 2007-12-01  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl/Repository.cs,
