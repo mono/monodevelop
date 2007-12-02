@@ -391,7 +391,7 @@ namespace MonoDevelop.Gettext
 			if (!entriesDict.TryGetValue (original, out result)) {
 				result = new CatalogEntry (this, original, plural);
 				if (!String.IsNullOrEmpty (plural))
-					result.SetTranslations (new string[] {"", ""});
+					result.SetTranslations (new string[]{"", ""});
 				AddItem (result);
 			}
 			return result;
