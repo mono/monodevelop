@@ -44,7 +44,27 @@ namespace MonoDevelop.WebBrowsers
 		public GeckoWebBrowser ()
 		{
 			WebControl.SetProfilePath ("/tmp", "MonoDevelop");
+			
+			//FIXME: On{Event} doesn't fire
 			this.ExposeEvent += exposeHandler;
+			this.OpenUri += delegate (object o, OpenUriArgs args) {
+				args.RetVal = OnLocationChanging (args.AURI);
+			};
+			this.LocChange += delegate (object sender, EventArgs e) {
+				OnLocationChanged ();
+			};
+			this.Progress += delegate (object sender, ProgressArgs e) {
+				OnLoadingProgressChanged (e.Curprogress / e.Maxprogress);
+			};
+			this.ECMAStatus += delegate {
+				OnJSStatusChanged ();
+			};
+			this.LinkStatusChanged += delegate {
+				OnLinkStatusChanged ();
+			};
+			this.TitleChange += delegate {
+				OnTitleChanged ();
+			};
 		}
 		
 		//FIXME: OnExposeEvent doesn't fire, but ExposeEvent does
@@ -173,48 +193,43 @@ namespace MonoDevelop.WebBrowsers
 		public event StatusMessageChangedHandler LinkStatusChanged;
 		public event LoadingProgressChangedHandler LoadingProgressChanged;
 		
-		protected override bool OnOpenUri (string aURI)
+		protected virtual bool OnLocationChanging (string aURI)
 		{
 			LocationChangingEventArgs args = new LocationChangingEventArgs (aURI, false);
 			args.SuppressChange = false;
 			if (LocationChanging != null)
 				LocationChanging (this, args);
-			return base.OnOpenUri (aURI) || args.SuppressChange;
+			return args.SuppressChange;
 		}
 		
-		protected override void OnLocChange ()
+		protected virtual void OnLocationChanged ()
 		{
 			if (LocationChanged != null)
 				LocationChanged (this, new LocationChangedEventArgs (null));
-			base.OnLocChange ();
 		}
 		
-		protected override void OnProgress (int curprogress, int maxprogress)
+		protected virtual void OnLoadingProgressChanged (float progress)
 		{
 			if (LoadingProgressChanged != null)
-				LoadingProgressChanged (this, new LoadingProgressChangedEventArgs (curprogress / maxprogress));
-			base.OnProgress (curprogress, maxprogress);
+				LoadingProgressChanged (this, new LoadingProgressChangedEventArgs (progress));
 		}
 		
-		protected override void OnECMAStatus ()
+		protected virtual void OnJSStatusChanged ()
 		{
 			if (JSStatusChanged != null)
 				JSStatusChanged (this, new StatusMessageChangedEventArgs (base.JsStatus));
-			base.OnECMAStatus ();
 		}
 		
-		protected override void OnLinkMsg ()
+		protected virtual void OnLinkStatusChanged ()
 		{
 			if (LinkStatusChanged != null)
 				LinkStatusChanged (this, new StatusMessageChangedEventArgs (base.LinkMessage));
-			base.OnLinkMsg ();
 		}
 		
-		protected override void OnTitleChange ()
+		protected virtual void OnTitleChanged ()
 		{
 			if (TitleChanged != null)
 				TitleChanged (this, new TitleChangedEventArgs (base.Title));
-			base.OnTitleChange ();
 		}
 	}
 }
