@@ -678,12 +678,12 @@
 		<Command id = "MonoDevelop.Ide.Commands.HelpCommands.TipOfTheDay"
 				defaultHandler = "MonoDevelop.Ide.Commands.TipOfTheDayHandler"
 				_label = "_Tip of the Day" 
-				icon = "md-tip-of-the-day" 
+				icon = "gtk-dialog-info" 
 				description = "Show tip of the day" />
 		<Command id = "MonoDevelop.Ide.Commands.HelpCommands.About"
 				defaultHandler = "MonoDevelop.Ide.Commands.AboutHandler"
 				_label = "_About" 
-				icon = "gnome-stock-about" 
+				icon = "gtk-about" 
 				description = "Show about dialog" />
 		</Category>
 				

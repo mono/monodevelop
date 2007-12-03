@@ -1,3 +1,8 @@
+2007-12-03  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.addin.xml: Use gtk icons instead of old gnomeui icons.
+	  Patch by Michael Monreal.
+
 2007-12-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui/HelpViewer.cs: Fixed bug #319086: Can't copy text from
