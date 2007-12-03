@@ -30,7 +30,6 @@ RES =  \
 	gtk-gui/gui.stetic \
 	icons/Java.FileIcon \
 	icons/java-icon-32.png \
-	Java.glade \
 	JavaBinding.addin.xml \
 	templates/EmptyJavaFile.xft.xml \
 	templates/EmptyJavaProject.xpt.xml \
