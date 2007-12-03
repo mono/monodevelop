@@ -1,9 +1,0 @@
-2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
-
-	* mautil.mdp: Update paths.
-
-2007-07-24  Lluis Sanchez Gual <lluis@novell.com> 
-
-	* Main.cs: Fixed endless loop when the -v arg is specified before other
-	  arguments.
-
