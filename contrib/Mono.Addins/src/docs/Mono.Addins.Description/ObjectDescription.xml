@@ -1,0 +1,21 @@
+<Type Name="ObjectDescription" FullName="Mono.Addins.Description.ObjectDescription">
+  <TypeSignature Language="C#" Value="public class ObjectDescription : Mono.Addins.Serialization.IBinaryXmlElement" />
+  <AssemblyInfo>
+    <AssemblyName>Mono.Addins</AssemblyName>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces>
+    <Interface>
+      <InterfaceName>Mono.Addins.Serialization.IBinaryXmlElement</InterfaceName>
+    </Interface>
+  </Interfaces>
+  <Members>
+  </Members>
+  <Docs>
+    <summary>Base class for add-in description definitions.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+</Type>

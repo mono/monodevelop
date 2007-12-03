@@ -1,0 +1,127 @@
+<Type Name="TypeExtensionPointAttribute" FullName="Mono.Addins.TypeExtensionPointAttribute">
+  <TypeSignature Language="C#" Value="public class TypeExtensionPointAttribute : Attribute" />
+  <AssemblyInfo>
+    <AssemblyName>Mono.Addins</AssemblyName>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Attribute</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Attributes>
+    <Attribute>
+      <AttributeName>System.AttributeUsage(System.AttributeTargets.Class | System.AttributeTargets.Interface, AllowMultiple=true)</AttributeName>
+    </Attribute>
+  </Attributes>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public TypeExtensionPointAttribute ();" />
+      <MemberType>Constructor</MemberType>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public TypeExtensionPointAttribute (string path);" />
+      <MemberType>Constructor</MemberType>
+      <Parameters>
+        <Parameter Name="path" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="path">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Description">
+      <MemberSignature Language="C#" Value="public string Description { set; get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Description of the extension point.</summary>
+        <value>Description of the extension point.</value>
+        <remarks />
+      </Docs>
+    </Member>
+    <Member MemberName="Name">
+      <MemberSignature Language="C#" Value="public string Name { set; get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Display name of the extension point.</summary>
+        <value>Display name of the extension point.</value>
+        <remarks>This name is for documentation pourposes only.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="NodeName">
+      <MemberSignature Language="C#" Value="public string NodeName { set; get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Node name to be used when registering extensions in this extension point.</summary>
+        <value>Name of the node.</value>
+        <remarks>Node name to be used when registering extensions in this extension point.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Path">
+      <MemberSignature Language="C#" Value="public string Path { set; get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Path of the extension point.</summary>
+        <value>Path of the extension point.</value>
+        <remarks>If not provided, the add-in manager will assign a default extension path.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="NodeType">
+      <MemberSignature Language="C#" Value="public Type NodeType { set; get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Type</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+  <Docs>
+    <summary>Indicates that a type is the source of an extension point.</summary>
+    <remarks>
+      <para>
+When applied to a class or interface, defines a new extension point that will accept object extensions of the specified type. For example, the following declaration:
+</para>
+      <example>
+        <code lang="C#">
+[TypeExtensionPoint ("/SimpleApp/Writers", Description="Writer classes")]
+public interface IWriter
+{
+	string Write ();
+}
+  </code>
+      </example>
+      <para>
+would be equivalent to the following manifest declaration:
+</para>
+      <example>
+        <code lang="XML">
+	&lt;ExtensionPoint path = "/SimpleApp/Writers"&gt;
+		&lt;Description&gt;Writer classes&lt;/Description&gt;
+		&lt;ExtensionNode objectType="IWriter" /&gt;
+	&lt;/ExtensionPoint&gt;
+  </code>
+      </example>
+    </remarks>
+  </Docs>
+</Type>

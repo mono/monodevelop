@@ -1,0 +1,105 @@
+<Type Name="AddinAttribute" FullName="Mono.Addins.AddinAttribute">
+  <TypeSignature Language="C#" Value="public class AddinAttribute : Attribute" />
+  <AssemblyInfo>
+    <AssemblyName>Mono.Addins</AssemblyName>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Attribute</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Attributes>
+    <Attribute>
+      <AttributeName>System.AttributeUsage(System.AttributeTargets.Assembly)</AttributeName>
+    </Attribute>
+  </Attributes>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public AddinAttribute ();" />
+      <MemberType>Constructor</MemberType>
+      <Parameters />
+      <Docs>
+        <summary>Creates an AddinAttribute instance.</summary>
+        <remarks />
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public AddinAttribute (string id);" />
+      <MemberType>Constructor</MemberType>
+      <Parameters>
+        <Parameter Name="id" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="id">Identifier of the add-in.</param>
+        <summary>Creates an AddinAttribute instance.</summary>
+        <remarks />
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public AddinAttribute (string id, string version);" />
+      <MemberType>Constructor</MemberType>
+      <Parameters>
+        <Parameter Name="id" Type="System.String" />
+        <Parameter Name="version" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="id">Identifier of the add-in.</param>
+        <param name="version">Version of the add-in.</param>
+        <summary>Creates an AddinAttribute instance.</summary>
+        <remarks />
+      </Docs>
+    </Member>
+    <Member MemberName="Category">
+      <MemberSignature Language="C#" Value="public string Category { set; get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Id">
+      <MemberSignature Language="C#" Value="public string Id { set; get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Identifier of the add-in.</summary>
+        <value>Identifier of the add-in.</value>
+        <remarks>The full identifier of an add-in is composed by its Id and Namespace properties.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Namespace">
+      <MemberSignature Language="C#" Value="public string Namespace { set; get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Namespace of the add-in.</summary>
+        <value>Namespace of the add-in.</value>
+        <remarks>The full identifier of an add-in is composed by its Id and Namespace properties.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Version">
+      <MemberSignature Language="C#" Value="public string Version { set; get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Version of the add-in.</summary>
+        <value>Version of the add-in.</value>
+        <remarks />
+      </Docs>
+    </Member>
+  </Members>
+  <Docs>
+    <summary>Marks an assembly as being an add-in.</summary>
+    <remarks>This attribute can be used to indicate that an assembly is an add-in, and allows specifying the identifier, namespace and version of the add-in.</remarks>
+  </Docs>
+</Type>

@@ -1,0 +1,23 @@
+<Type Name="ExtensionNodeEventHandler" FullName="Mono.Addins.ExtensionNodeEventHandler">
+  <TypeSignature Language="C#" Value="public delegate void ExtensionNodeEventHandler(object sender, ExtensionNodeEventArgs args);" />
+  <AssemblyInfo>
+    <AssemblyName>Mono.Addins</AssemblyName>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Delegate</BaseTypeName>
+  </Base>
+  <Parameters>
+    <Parameter Name="sender" Type="System.Object" />
+    <Parameter Name="args" Type="Mono.Addins.ExtensionNodeEventArgs" />
+  </Parameters>
+  <ReturnValue>
+    <ReturnType>System.Void</ReturnType>
+  </ReturnValue>
+  <Docs>
+    <param name="sender">The node that fires the event.</param>
+    <param name="args">Event arguments.</param>
+    <summary>Handler for extension node events.</summary>
+    <remarks />
+  </Docs>
+</Type>

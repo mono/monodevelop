@@ -1,0 +1,58 @@
+2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Samples.mds,
+	  TextEditor.CompilerService.CSharp/TextEditor.CompilerService.CSharp.mdp,
+	  TextEditor.CompilerService/TextEditor.CompilerService.mdp,
+	  TextEditor.Xml/TextEditor.Xml.mdp, TextEditor/TextEditor.mdp,
+	  TextEditorLib/TextEditorLib.mdp,
+	  WriterService.SampleExtender/WriterService.SampleExtender.mdp,
+	  WriterService/WriterService.mdp,
+	  WriterServiceHost/WriterServiceHost.mdp: Update paths.
+
+2007-10-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* TextEditor/Main.cs: Get ready for 0.3 release.
+
+2007-07-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* TextEditorLib/TextEditorLib.mdp,
+	  TextEditor.CompilerService/TextEditor.CompilerService.mdp,
+	  TextEditor.CompilerService/Makefile.am,
+	  TextEditor.Xml/TextEditor.Xml.mdp, TextEditor.Xml/Makefile.am,
+	  TextEditor/Makefile.am, TextEditor/TextEditor.mdp,
+	  WriterServiceHost/Makefile.am,
+	  WriterServiceHost/WriterServiceHost.mdp,
+	  WriterService.SampleExtender/WriterService.SampleExtender.mdp,
+	  WriterService/WriterService.mdp: Makefile and project file fixes.
+	* TextEditorLib/gtk-gui/MainWindow.cs: Updated.
+
+2007-04-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* TextEditorLib/MainWindow.cs, TextEditorLib/gtk-gui/MainWindow.cs,
+	  TextEditorLib/gtk-gui/gui.stetic: Updated.
+	* TextEditorLib/TextEditorLib.mdp, TextEditorLib/Makefile.am,
+	  TextEditor.CompilerService.CSharp/TextEditor.CompilerService.CSharp.mdp,
+	  TextEditor.CompilerService.CSharp/Makefile.am,
+	  TextEditor.CompilerService/TextEditor.CompilerService.mdp,
+	  TextEditor.CompilerService/Makefile.am,
+	  TextEditor.Xml/TextEditor.Xml.mdp, TextEditor.Xml/Makefile.am,
+	  TextEditor/Makefile.am, TextEditor/TextEditor.mdp,
+	  WriterServiceHost/WriterServiceHost.mdp,
+	  WriterService.SampleExtender/Makefile.am,
+	  WriterService.SampleExtender/WriterService.SampleExtender.mdp,
+	  WriterService/Makefile.am, WriterService/WriterService.mdp: Enabled
+	  makefile synchronization.
+
+2007-03-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* TextEditorLib/MainWindow.cs: Track changes in the templates extension
+	  point.
+
+2007-03-28  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* TextEditor/Main.cs: Improved error reporting.
+
+2007-03-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	Added build files.
+

@@ -1,0 +1,32 @@
+<Addin id          = "CommandExtension"
+       namespace   = "SimpleApp"
+       name        = "CommandExtension"
+       author      = "Lluis Sanchez"
+       copyright   = "GPL"
+       description = "CommandExtension"
+	   category    = "SimpleApp/Extensions"
+       version     = "0.1.0">
+
+	<Runtime>
+		<Import assembly="CommandExtension.dll"/>
+	</Runtime>
+	
+	<Dependencies>
+		<Addin id="Core" version="0.1.0" />
+	</Dependencies>
+
+	<!-- Adds a new extension node type to the SimpleApp/Writers extension point,
+	     to be used by other add-ins -->
+	<ExtensionPoint path = "/SimpleApp/Writers">
+		<ExtensionNode name="Command" type="CommandExtension.CommandExtensionNode"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/SimpleApp/Writers2">
+		<ExtensionNode name="Command" type="CommandExtension.CommandExtensionNode"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/SimpleApp/ExtraWriters">
+		<ExtensionNode name="Command" type="CommandExtension.CommandExtensionNode"/>
+	</ExtensionPoint>
+
+</Addin>

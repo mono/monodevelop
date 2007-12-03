@@ -1,0 +1,4 @@
+yyyy-mm-dd  Developer name  <some@email.com>
+
+	* File name: change done
+

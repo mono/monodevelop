@@ -1,0 +1,60 @@
+<Addin id          = "FileContentExtension"
+       namespace   = "SimpleApp"
+       name        = "FileContentExtension"
+       author      = "Lluis Sanchez"
+       copyright   = "GPL"
+       description = "FileContentExtension"
+	   category    = "SimpleApp/Extensions"
+       version     = "0.1.0">
+
+	<Runtime>
+		<Import assembly="FileContentExtension.dll"/>
+	</Runtime>
+	
+	<Dependencies>
+		<Addin id="Core" version="0.1.0" />
+	</Dependencies>
+	
+	<Localizer type="Gettext" />
+	
+	<!-- Adds a new extension node type to the SimpleApp/Writers extension point,
+	     to be used by other add-ins. This node type can have children nodes -->
+	<ExtensionPoint path = "/SimpleApp/Writers">
+		<ExtensionNode name="FileContent" type="FileContentExtension.FileContentExtensionNode">
+			<Description>Shows the contents of a file</Description>
+			<ExtensionNode name="Content" type="FileContentExtension.ContentExtensionNode">
+				<Description>Content of the file to be shown</Description>
+			</ExtensionNode>
+		</ExtensionNode>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/SimpleApp/ExtraWriters">
+		<ExtensionNode name="FileContent" type="FileContentExtension.FileContentExtensionNode">
+			<ExtensionNode name="Content" type="FileContentExtension.ContentExtensionNode" />
+		</ExtensionNode>
+	</ExtensionPoint>
+
+	<!-- Extensions -->
+	
+	<Extension path = "/SimpleApp/Writers">
+		<FileContent id="SomeFile" fileName="someFile" title="Sample file">
+			<Content xpath="root" />
+		</FileContent>
+	</Extension>
+	
+	<Extension path="/SimpleApp/NodeWithChildren">
+		<Node id="node2" type="test" insertafter="node1">
+			<Child id="child2.1" type="test" />
+			<Child id="child2.2" type="test" />
+		</Node>
+	</Extension>
+	
+	<Module>
+		<Dependencies>
+			<Addin id="SystemInfoExtension" version="0.1.0" />
+		</Dependencies>
+		<Extension path = "/SystemInformation/Modules">
+			<Module name="File system information" insertbefore="System"/>
+		</Extension>
+	</Module>
+</Addin>
