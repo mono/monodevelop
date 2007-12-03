@@ -11,15 +11,18 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml
 
 FILES =  \
+	gtk-gui/generated.cs \
 	WelcomePageCommands.cs \
 	WelcomePageOptionPanel.cs \
 	WelcomePageView.cs
 
 RES =  \
+	gtk-gui/gui.stetic \
 	WelcomePage.addin.xml \
 	WelcomePage.xsl \
 	WelcomePageContent.xml

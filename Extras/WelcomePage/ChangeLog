@@ -1,3 +1,8 @@
+2007-12-03  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* WelcomePageView.cs: Second part of the fix for "Bug 345423 - project is
+	  not a registered protocol".
+
 2007-11-30  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* WelcomePageOptionPanel.cs, WelcomePageView.cs, WelcomePageCommands.cs: Use
