@@ -1,2 +1,4 @@
 main
 extras/JavaBinding
+extras/BooBinding
+extras/MonoDevelop.Database

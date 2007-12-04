@@ -1,4 +1,8 @@
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* stable: Add boo and db to stable profile.
+
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* all, core, stable: Directory reorganization.
 
