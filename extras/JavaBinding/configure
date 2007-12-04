@@ -55,10 +55,10 @@ while test x$1 != x; do
                 --prefix=*)
                         prefix=`echo $1 | sed 's/--prefix=//'`
                         ;;
-                --prefix)
-                        echo --prefix needs an argument: --prefix=directory >&2
-
-                        ;;
+		--prefix)
+			shift
+			prefix=$1
+			;;
 		--config=*)
                         conf=`echo $1 | sed 's/--config=//'`
 			validate_config "$conf"
