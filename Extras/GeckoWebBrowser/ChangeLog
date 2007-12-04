@@ -1,5 +1,9 @@
 2007-12-03  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* GeckoWebBrowser.cs: Implement LinkClicked event.
+
+2007-12-03  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* GeckoWebBrowser.cs: Workaround for On{Event} overridable methods not
 	  executing even though events are fired. Partial fix for "Bug 345423 -
 	  project is not a registered protocol".

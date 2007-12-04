@@ -41,6 +41,8 @@ namespace MonoDevelop.WebBrowsers
 		string oldTempFile;
 		bool reShown = false;
 		
+		bool suppressLinkClickedBecauseCausedByLoadUrlCall = false;
+		
 		public GeckoWebBrowser ()
 		{
 			WebControl.SetProfilePath ("/tmp", "MonoDevelop");
@@ -167,6 +169,8 @@ namespace MonoDevelop.WebBrowsers
 				oldTempFile = null;
 			}
 			
+			suppressLinkClickedBecauseCausedByLoadUrlCall = true;
+			
 			if (url.StartsWith ("tempfile://")) {
 				oldTempFile = url.Substring (11);
 				base.LoadUrl (oldTempFile);
@@ -187,19 +191,31 @@ namespace MonoDevelop.WebBrowsers
 		
 		public event PageLoadedHandler PageLoaded;
 		public event LocationChangingHandler LocationChanging;
+		public event LocationChangingHandler LinkClicked;
 		public event LocationChangedHandler LocationChanged;
 		public event TitleChangedHandler TitleChanged;
 		public event StatusMessageChangedHandler JSStatusChanged;
 		public event StatusMessageChangedHandler LinkStatusChanged;
 		public event LoadingProgressChangedHandler LoadingProgressChanged;
 		
-		protected virtual bool OnLocationChanging (string aURI)
+		protected bool OnLocationChanging (string aURI)
 		{
 			LocationChangingEventArgs args = new LocationChangingEventArgs (aURI, false);
 			args.SuppressChange = false;
 			if (LocationChanging != null)
 				LocationChanging (this, args);
+			OnLinkClicked (args);
 			return args.SuppressChange;
+		}
+		
+		protected virtual void OnLinkClicked (LocationChangingEventArgs args)
+		{
+			if (suppressLinkClickedBecauseCausedByLoadUrlCall) {
+				suppressLinkClickedBecauseCausedByLoadUrlCall = false;
+				return;
+			}
+			if (LinkClicked != null)
+				LinkClicked (this, args);
 		}
 		
 		protected virtual void OnLocationChanged ()
