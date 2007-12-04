@@ -1,5 +1,9 @@
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* AddinCatalog.cs: Add missing file.
+
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* ConnectionContextService.cs, QueryService.cs,
 	  MonoDevelop.Database.Sql.addin.xml, MonoDevelop.Database.Sql.mdp,
 	  Makefile.am: Directory reorganization.
