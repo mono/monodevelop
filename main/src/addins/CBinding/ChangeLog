@@ -1,5 +1,9 @@
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* CBinding.mdp, Makefile.am: Add missing reference.
+
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* CBinding.addin.xml, CBinding.mdp, CBinding.mds,
 	  CBinding.Autotools/CBinding.Autotools.mdp, Makefile.am: Directory
 	  reorganization.
