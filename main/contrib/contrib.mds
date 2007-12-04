@@ -4,39 +4,24 @@
       <CustomCommands>
         <Command type="Custom" name="Update mono-addins" command="make update-source" workingdir="${ProjectDir}/Mono.Addins" externalConsole="True" pauseExternalConsole="True" />
       </CustomCommands>
-      <Entry build="True" name="Firebird" configuration="Default" />
-      <Entry build="True" name="Mono.Addins" configuration="Debug" />
       <Entry build="True" name="Mono.Cecil" configuration="Debug" />
-      <Entry build="True" name="Mono.Addins.Gui" configuration="Debug" />
-      <Entry build="True" name="Mono.Addins.Setup" configuration="Debug" />
       <Entry build="True" name="Mono.Cecil.Mdp" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
-      <Entry build="True" name="Firebird" configuration="Default" />
-      <Entry build="True" name="Mono.Addins" configuration="Release" />
       <Entry build="True" name="Mono.Cecil" configuration="Release" />
-      <Entry build="True" name="Mono.Addins.Gui" configuration="Release" />
-      <Entry build="True" name="Mono.Addins.Setup" configuration="Release" />
       <Entry build="True" name="Mono.Cecil.Mdb" configuration="Release" />
     </Configuration>
   </Configurations>
-  <StartMode startupentry="Firebird" single="True">
+  <StartMode startupentry="Mono.Cecil" single="True">
     <Execute type="None" entry="Firebird" />
     <Execute type="None" entry="Firebird" />
-    <Execute type="None" entry="Mono.Addins" />
-    <Execute type="None" entry="Mono.Addins.Gui" />
     <Execute type="None" entry="Mono.Cecil" />
     <Execute type="None" entry="log4net" />
     <Execute type="None" entry="Mono.Addins.Gui" />
-    <Execute type="None" entry="Mono.Addins.Setup" />
     <Execute type="None" entry="Mono.Cecil.Mdb" />
   </StartMode>
   <Entries>
-    <Entry filename="Firebird/Firebird.mdp" />
-    <Entry filename="Mono.Addins/Mono.Addins.mdp" />
     <Entry filename="Mono.Cecil/Mono.Cecil.mdp" />
-    <Entry filename="Mono.Addins/Mono.Addins.Gui.mdp" />
-    <Entry filename="Mono.Addins/Mono.Addins.Setup.mdp" />
     <Entry filename="Mono.Cecil/Mono.Cecil.Mdb.mdp" />
   </Entries>
 </Combine>
