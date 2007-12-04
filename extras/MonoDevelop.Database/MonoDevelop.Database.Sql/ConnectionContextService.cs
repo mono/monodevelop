@@ -110,7 +110,7 @@ namespace MonoDevelop.Database.Sql
 						connections = (DatabaseConnectionSettingsCollection) serializer.Deserialize (fs);
 					}
 				} catch {
-					LoggingService.LogError (GettextCatalog.GetString ("Unable to load stored SQL connection information."));
+					LoggingService.LogError (AddinCatalog.GetString ("Unable to load stored SQL connection information."));
 					File.Delete (configFile);
 				}
 			}

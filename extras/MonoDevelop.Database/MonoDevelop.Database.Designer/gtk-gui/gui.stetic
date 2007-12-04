@@ -1,14 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
-    <images-root-path>../</images-root-path>
-    <target-gtk-version>2.10.0</target-gtk-version>
+    <images-root-path>..</images-root-path>
+    <target-gtk-version>2.8.3</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../../../../build/AddIns/MonoDevelop.Database/MonoDevelop.Database.Components.dll" />
-    <widget-library name="../../../../build/bin/MonoDevelop.Components.dll" />
-    <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.Database/MonoDevelop.Database.Designer.dll" internal="true" />
+    <widget-library name="../../build/MonoDevelop.Database.Components.dll" />
+    <widget-library name="MonoDevelop.Components, Version=0.17.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Ide, Version=0.17.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Projects.Gui, Version=0.17.0.0, Culture=neutral" />
+    <widget-library name="../../build/MonoDevelop.Database.Designer.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.Database.Designer.TriggersEditorWidget" design-size="422 300">
     <property name="MemberName" />

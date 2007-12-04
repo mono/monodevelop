@@ -67,7 +67,7 @@ namespace MonoDevelop.Database.Components
 		protected virtual void InitializeColumns (bool showCheckBoxes)
 		{
 			TreeViewColumn col = new TreeViewColumn ();
-			col.Title = GettextCatalog.GetString ("Column");
+			col.Title = AddinCatalog.GetString ("Column");
 
 			if (showCheckBoxes) {
 				CellRendererToggle toggleRenderer = new CellRendererToggle ();

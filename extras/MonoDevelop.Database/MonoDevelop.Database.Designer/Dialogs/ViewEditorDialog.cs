@@ -62,20 +62,20 @@ namespace MonoDevelop.Database.Designer
 			this.Build();
 			
 			if (create)
-				Title = GettextCatalog.GetString ("Create View");
+				Title = AddinCatalog.GetString ("Create View");
 			else
-				Title = GettextCatalog.GetString ("Alter View");
+				Title = AddinCatalog.GetString ("Alter View");
 			
 			notebook = new Notebook ();
 
 			sqlEditor = new SqlEditorWidget ();
 			sqlEditor.TextChanged += new EventHandler (SqlChanged);
-			notebook.AppendPage (sqlEditor, new Label (GettextCatalog.GetString ("Definition")));
+			notebook.AppendPage (sqlEditor, new Label (AddinCatalog.GetString ("Definition")));
 			
 			IDbFactory fac = schemaProvider.ConnectionPool.DbFactory;
 			if (fac.IsCapabilitySupported ("View", action, ViewCapabilities.Comment)) {
 				commentEditor = new CommentEditorWidget ();
-				notebook.AppendPage (commentEditor, new Label (GettextCatalog.GetString ("Comment")));
+				notebook.AppendPage (commentEditor, new Label (AddinCatalog.GetString ("Comment")));
 			}
 
 			notebook.Page = 0;

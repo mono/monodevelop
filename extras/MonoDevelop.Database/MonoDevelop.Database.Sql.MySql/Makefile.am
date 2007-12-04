@@ -1,16 +1,11 @@
-ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.Database
+ADDIN_BUILD = $(top_builddir)/build
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Database.Sql.MySql.dll
 REFS =  \
 	$(GTK_SHARP_LIBS) \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Database/MonoDevelop.Database.Components.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Database/MonoDevelop.Database.Designer.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Database/MonoDevelop.Database.Sql.dll \
-	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	$(MONODEVELOP_LIBS) \
+	-r:$(top_builddir)/build/MonoDevelop.Database.Components.dll \
+	-r:$(top_builddir)/build/MonoDevelop.Database.Designer.dll \
+	-r:$(top_builddir)/build/MonoDevelop.Database.Sql.dll \
 	-r:$(top_srcdir)/contrib/MySql/MySql.Data.dll \
 	-r:System \
 	-r:System.Data

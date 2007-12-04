@@ -85,7 +85,7 @@ namespace MonoDevelop.Database.ConnectionManager
 					icon = Context.GetIcon ("md-db-database-ok");
 				} else if (pool.HasErrors) {
 					icon = Context.GetIcon ("md-db-database-error");
-					Services.MessageService.ShowError (GettextCatalog.GetString ("Unable to connect:") + Environment.NewLine + pool.Error);
+					Services.MessageService.ShowError (AddinCatalog.GetString ("Unable to connect:") + Environment.NewLine + pool.Error);
 				} else {
 					icon = Context.GetIcon ("md-db-database");
 				}
@@ -165,8 +165,8 @@ namespace MonoDevelop.Database.ConnectionManager
 		{
 			DatabaseConnectionContext context = (DatabaseConnectionContext) CurrentNode.DataItem;
 			if (Services.MessageService.AskQuestion (
-				GettextCatalog.GetString ("Are you sure you want to remove connection '{0}'?", context.ConnectionSettings.Name),
-				GettextCatalog.GetString ("Remove Connection"))) {
+				AddinCatalog.GetString ("Are you sure you want to remove connection '{0}'?", context.ConnectionSettings.Name),
+				AddinCatalog.GetString ("Remove Connection"))) {
 				ConnectionContextService.RemoveDatabaseConnectionContext (context);
 			}
 		}
@@ -244,8 +244,8 @@ namespace MonoDevelop.Database.ConnectionManager
 		{
 			DatabaseConnectionContext context = (DatabaseConnectionContext) CurrentNode.DataItem;
 			if (Services.MessageService.AskQuestion (
-				GettextCatalog.GetString ("Are you sure you want to drop database '{0}'", context.ConnectionSettings.Database),
-				GettextCatalog.GetString ("Drop Database")
+				AddinCatalog.GetString ("Are you sure you want to drop database '{0}'", context.ConnectionSettings.Database),
+				AddinCatalog.GetString ("Drop Database")
 			)) {
 				ThreadPool.QueueUserWorkItem (new WaitCallback (OnDropDatabaseThreaded), CurrentNode.DataItem);
 			}

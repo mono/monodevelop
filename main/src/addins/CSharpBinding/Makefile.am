@@ -1,7 +1,7 @@
 SUBDIRS = . Autotools
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/BackendBindings
-ASSEMBLY = $(ADDIN_BUILD)/CSharpBinding.dll
+ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.CSharpBinding.dll
 
 PARSE = parse.exe
 
@@ -9,8 +9,8 @@ REFS =  \
 	$(GLADE_SHARP_LIBS) \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
+	$(MONO_ADDINS_LIBS) \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor.dll \
-	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \

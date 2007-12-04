@@ -64,12 +64,12 @@ namespace MonoDevelop.Database.ConnectionManager
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return GettextCatalog.GetString ("Tables");
+			return AddinCatalog.GetString ("Tables");
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			label = GettextCatalog.GetString ("Tables");
+			label = AddinCatalog.GetString ("Tables");
 			icon = Context.GetIcon ("md-db-tables");
 			
 			BaseNode node = (BaseNode) dataObject;

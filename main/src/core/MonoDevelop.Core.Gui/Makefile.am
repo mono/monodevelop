@@ -6,9 +6,9 @@ REFS =  \
 	$(GNOME_SHARP_LIBS) \
 	$(GNOME_VFS_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
-	-r:$(top_builddir)/build/bin/Mono.Addins.Gui.dll \
-	-r:$(top_builddir)/build/bin/Mono.Addins.Setup.dll \
+	$(MONO_ADDINS_GUI_LIBS) \
+	$(MONO_ADDINS_LIBS) \
+	$(MONO_ADDINS_SETUP_LIBS) \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:ICSharpCode.SharpZipLib \

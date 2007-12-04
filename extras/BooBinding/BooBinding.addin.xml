@@ -13,6 +13,8 @@
     <Import assembly = "BooShell.dll"/>
   </Runtime>
 
+  <Localizer type="Gettext" catalog="monodevelop-boo"/>
+  
   <Dependencies>
     <Addin id="Core" version="0.17.0"/>
     <Addin id="Core.Gui" version="0.17.0"/>

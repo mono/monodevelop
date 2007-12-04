@@ -8,10 +8,6 @@
 	   category    = "Language bindings"
        version     = "0.17.0">
 	
-	<Runtime>
-		<Import assembly = "CSharpBinding.dll"/>
-	</Runtime>
-
 	<Dependencies>
 	    <Addin id="Core" version="0.17.0"/>
 	    <Addin id="Core.Gui" version="0.17.0"/>
@@ -127,7 +123,7 @@
 	
 	<Module>
 	    <Runtime>
-	        <Import assembly="CSharpBinding.Autotools.dll"/>
+	        <Import assembly="MonoDevelop.CSharpBinding.Autotools.dll"/>
 	    </Runtime>
 		<Dependencies>
 			<Addin id="Autotools" version="0.17.0"/>

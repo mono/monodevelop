@@ -104,7 +104,7 @@ namespace JavaBinding {
             this.label82 = new Gtk.Label();
             this.label82.Name = "label82";
             this.label82.Xalign = 0F;
-            this.label82.LabelProp = Mono.Unix.Catalog.GetString("<b>Code Generation</b>");
+            this.label82.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("<b>Code Generation</b>");
             this.label82.UseMarkup = true;
             this.vbox62.Add(this.label82);
             Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.vbox62[this.label82]));
@@ -166,7 +166,7 @@ namespace JavaBinding {
             this.label86 = new Gtk.Label();
             this.label86.Name = "label86";
             this.label86.Xalign = 0F;
-            this.label86.LabelProp = Mono.Unix.Catalog.GetString("Compile _Target:");
+            this.label86.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Compile _Target:");
             this.label86.UseUnderline = true;
             this.table7.Add(this.label86);
             Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.table7[this.label86]));
@@ -176,7 +176,7 @@ namespace JavaBinding {
             this.label87 = new Gtk.Label();
             this.label87.Name = "label87";
             this.label87.Xalign = 0F;
-            this.label87.LabelProp = Mono.Unix.Catalog.GetString("Define S_ymbols:");
+            this.label87.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Define S_ymbols:");
             this.label87.UseUnderline = true;
             this.table7.Add(this.label87);
             Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.table7[this.label87]));
@@ -188,7 +188,7 @@ namespace JavaBinding {
             this.label88 = new Gtk.Label();
             this.label88.Name = "label88";
             this.label88.Xalign = 0F;
-            this.label88.LabelProp = Mono.Unix.Catalog.GetString("_Main Class:");
+            this.label88.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("_Main Class:");
             this.label88.UseUnderline = true;
             this.table7.Add(this.label88);
             Gtk.Table.TableChild w8 = ((Gtk.Table.TableChild)(this.table7[this.label88]));
@@ -200,7 +200,7 @@ namespace JavaBinding {
             this.label91 = new Gtk.Label();
             this.label91.Name = "label91";
             this.label91.Xalign = 0F;
-            this.label91.LabelProp = Mono.Unix.Catalog.GetString("Classpath:");
+            this.label91.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Classpath:");
             this.label91.UseUnderline = true;
             this.table7.Add(this.label91);
             Gtk.Table.TableChild w9 = ((Gtk.Table.TableChild)(this.table7[this.label91]));
@@ -247,7 +247,7 @@ namespace JavaBinding {
             this.label92 = new Gtk.Label();
             this.label92.Name = "label92";
             this.label92.Xalign = 0F;
-            this.label92.LabelProp = Mono.Unix.Catalog.GetString("<b>Compiler</b>");
+            this.label92.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("<b>Compiler</b>");
             this.label92.UseMarkup = true;
             this.vbox62.Add(this.label92);
             Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.vbox62[this.label92]));
@@ -275,7 +275,7 @@ namespace JavaBinding {
             this.hbox58.Name = "hbox58";
             this.hbox58.Spacing = 18;
             // Container child hbox58.Gtk.Box+BoxChild
-            this.compilerGcjButton = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("gcj"));
+            this.compilerGcjButton = new Gtk.RadioButton(Mono.Addins.AddinManager.CurrentLocalizer.GetString("gcj"));
             this.compilerGcjButton.Name = "compilerGcjButton";
             this.compilerGcjButton.Active = true;
             this.compilerGcjButton.DrawIndicator = true;
@@ -287,7 +287,7 @@ namespace JavaBinding {
             w17.Expand = false;
             w17.Fill = false;
             // Container child hbox58.Gtk.Box+BoxChild
-            this.compilerJavacButton = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("javac"));
+            this.compilerJavacButton = new Gtk.RadioButton(Mono.Addins.AddinManager.CurrentLocalizer.GetString("javac"));
             this.compilerJavacButton.Name = "compilerJavacButton";
             this.compilerJavacButton.DrawIndicator = true;
             this.compilerJavacButton.UseUnderline = true;
@@ -329,7 +329,7 @@ namespace JavaBinding {
             this.label90 = new Gtk.Label();
             this.label90.Name = "label90";
             this.label90.Xalign = 0F;
-            this.label90.LabelProp = Mono.Unix.Catalog.GetString("<b>Options</b>");
+            this.label90.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("<b>Options</b>");
             this.label90.UseMarkup = true;
             this.label90.UseUnderline = true;
             this.vbox68.Add(this.label90);
@@ -357,7 +357,7 @@ namespace JavaBinding {
             // Container child vbox64.Gtk.Box+BoxChild
             this.enableOptimizationCheckButton = new Gtk.CheckButton();
             this.enableOptimizationCheckButton.Name = "enableOptimizationCheckButton";
-            this.enableOptimizationCheckButton.Label = Mono.Unix.Catalog.GetString("Enable _optimizations");
+            this.enableOptimizationCheckButton.Label = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Enable _optimizations");
             this.enableOptimizationCheckButton.DrawIndicator = true;
             this.enableOptimizationCheckButton.UseUnderline = true;
             this.vbox64.Add(this.enableOptimizationCheckButton);
@@ -368,7 +368,7 @@ namespace JavaBinding {
             // Container child vbox64.Gtk.Box+BoxChild
             this.generateDebugInformationCheckButton = new Gtk.CheckButton();
             this.generateDebugInformationCheckButton.Name = "generateDebugInformationCheckButton";
-            this.generateDebugInformationCheckButton.Label = Mono.Unix.Catalog.GetString("Emit _debugging information");
+            this.generateDebugInformationCheckButton.Label = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Emit _debugging information");
             this.generateDebugInformationCheckButton.DrawIndicator = true;
             this.generateDebugInformationCheckButton.UseUnderline = true;
             this.vbox64.Add(this.generateDebugInformationCheckButton);
@@ -393,7 +393,7 @@ namespace JavaBinding {
             this.label94 = new Gtk.Label();
             this.label94.Name = "label94";
             this.label94.Xalign = 0F;
-            this.label94.LabelProp = Mono.Unix.Catalog.GetString("<b>Warnings</b>");
+            this.label94.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("<b>Warnings</b>");
             this.label94.UseMarkup = true;
             this.label94.UseUnderline = true;
             this.vbox69.Add(this.label94);
@@ -421,7 +421,7 @@ namespace JavaBinding {
             // Container child vbox67.Gtk.Box+BoxChild
             this.generateWarningsCheckButton = new Gtk.CheckButton();
             this.generateWarningsCheckButton.Name = "generateWarningsCheckButton";
-            this.generateWarningsCheckButton.Label = Mono.Unix.Catalog.GetString("Generate warnings");
+            this.generateWarningsCheckButton.Label = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Generate warnings");
             this.generateWarningsCheckButton.DrawIndicator = true;
             this.generateWarningsCheckButton.UseUnderline = true;
             this.vbox67.Add(this.generateWarningsCheckButton);
@@ -432,7 +432,7 @@ namespace JavaBinding {
             // Container child vbox67.Gtk.Box+BoxChild
             this.deprecationCheckButton = new Gtk.CheckButton();
             this.deprecationCheckButton.Name = "deprecationCheckButton";
-            this.deprecationCheckButton.Label = Mono.Unix.Catalog.GetString("Enable deprecation warnings");
+            this.deprecationCheckButton.Label = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Enable deprecation warnings");
             this.deprecationCheckButton.DrawIndicator = true;
             this.deprecationCheckButton.UseUnderline = true;
             this.vbox67.Add(this.deprecationCheckButton);
@@ -443,7 +443,7 @@ namespace JavaBinding {
             // Container child vbox67.Gtk.Box+BoxChild
             this.warningsAsErrorsCheckButton = new Gtk.CheckButton();
             this.warningsAsErrorsCheckButton.Name = "warningsAsErrorsCheckButton";
-            this.warningsAsErrorsCheckButton.Label = Mono.Unix.Catalog.GetString("Treat warnings as _errors");
+            this.warningsAsErrorsCheckButton.Label = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Treat warnings as _errors");
             this.warningsAsErrorsCheckButton.DrawIndicator = true;
             this.warningsAsErrorsCheckButton.UseUnderline = true;
             this.vbox67.Add(this.warningsAsErrorsCheckButton);

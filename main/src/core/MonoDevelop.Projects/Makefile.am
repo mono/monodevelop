@@ -4,8 +4,8 @@ CONFIG = MonoDevelop.Projects.dll.config
   
 
 REFS =  \
+	$(MONO_ADDINS_LIBS) \
 	$(MONODOC_LIBS) \
-	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
 	-r:$(top_builddir)/build/bin/Mono.Cecil.dll \
 	-r:$(top_builddir)/build/bin/Mono.Cecil.Mdb.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \

@@ -1,16 +1,11 @@
-ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.Database
+ADDIN_BUILD = $(top_builddir)/build
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Database.Sql.SqlServer.dll
 REFS =  \
 	$(GTK_SHARP_LIBS) \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Database/MonoDevelop.Database.Components.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Database/MonoDevelop.Database.Designer.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Database/MonoDevelop.Database.Sql.dll \
-	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	$(MONODEVELOP_LIBS) \
+	-r:../build/MonoDevelop.Database.Components.dll \
+	-r:../build/MonoDevelop.Database.Designer.dll \
+	-r:../build/MonoDevelop.Database.Sql.dll \
 	-r:System \
 	-r:System.Data
 
@@ -35,10 +30,8 @@ $(ASSEMBLY): $(FILES) $(build_resources)
 	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
 
 
-if ENABLE_DATABASE
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.Database
 assembly_DATA = $(ASSEMBLY)
-endif
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 EXTRA_DIST = $(FILES) $(RES)

@@ -1,3 +1,8 @@
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Database.Sql.Oracle.addin.xml,
+	  MonoDevelop.Database.Sql.Oracle.mdp: Directory reorganization.
+
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Database.Sql.Oracle.addin.xml: Bump MD version.

@@ -11,6 +11,8 @@
 		<Import assembly="MonoDevelop.Database.Sql.dll"/>
 	</Runtime>
 	
+  	<Localizer type="Gettext" catalog="monodevelop-database"/>
+	
 	<ExtensionPoint path = "/MonoDevelop/Database/Sql" name = "MonoDevelop database providers">
 		<Description>MonoDevelop database factory addins.</Description>
 		<ExtensionNode name="DatabaseFactory" type="MonoDevelop.Database.Sql.DbFactoryCodon">

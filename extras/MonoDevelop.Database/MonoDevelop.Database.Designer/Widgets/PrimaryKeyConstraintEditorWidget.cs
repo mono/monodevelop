@@ -75,7 +75,7 @@ namespace MonoDevelop.Database.Designer
 			
 			TreeViewColumn colName = new TreeViewColumn ();
 			
-			colName.Title = GettextCatalog.GetString ("Name");
+			colName.Title = AddinCatalog.GetString ("Name");
 			CellRendererText nameRenderer = new CellRendererText ();
 			
 			nameRenderer.Editable = true;
@@ -167,8 +167,8 @@ namespace MonoDevelop.Database.Designer
 				PrimaryKeyConstraintSchema pk = store.GetValue (iter, colObjIndex) as PrimaryKeyConstraintSchema;
 				
 				if (Services.MessageService.AskQuestion (
-					GettextCatalog.GetString ("Are you sure you want to remove constraint '{0}'?", pk.Name),
-					GettextCatalog.GetString ("Remove Constraint")
+					AddinCatalog.GetString ("Are you sure you want to remove constraint '{0}'?", pk.Name),
+					AddinCatalog.GetString ("Remove Constraint")
 				)) {
 					store.Remove (ref iter);
 					constraints.Remove (pk);
@@ -191,7 +191,7 @@ namespace MonoDevelop.Database.Designer
 					string columns = store.GetValue (iter, colColumnsIndex) as string;
 					
 					if (String.IsNullOrEmpty (columns)) {
-						msg = GettextCatalog.GetString ("Primary Key constraint '{0}' must be applied to one or more columns.", name);
+						msg = AddinCatalog.GetString ("Primary Key constraint '{0}' must be applied to one or more columns.", name);
 						return false;
 					}
 				} while (store.IterNext (ref iter));

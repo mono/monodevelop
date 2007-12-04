@@ -1,7 +1,7 @@
 FILES = CSharpAutotoolsSetup.cs
 
 REFS =  \
-	-r:$(top_builddir)/build/AddIns/BackendBindings/CSharpBinding.dll \
+	-r:$(top_builddir)/build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
@@ -9,7 +9,7 @@ REFS =  \
 	-r:System
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/BackendBindings
-ASSEMBLY = $(ADDIN_BUILD)/CSharpBinding.Autotools.dll
+ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.CSharpBinding.Autotools.dll
 
 all: $(ASSEMBLY)
 

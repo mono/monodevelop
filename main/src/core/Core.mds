@@ -9,7 +9,6 @@
       <Entry build="True" name="MonoDevelop.Ide" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Projects" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Projects.Gui" configuration="Debug" />
-      <Entry build="True" name="Tools" configuration="" />
       <Entry build="True" name="MonoDevelop.Startup" configuration="Debug" />
       <Entry build="True" name="NRefactory" configuration="Debug" />
     </Configuration>
@@ -22,7 +21,6 @@
       <Entry build="True" name="MonoDevelop.Ide" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Projects" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Projects.Gui" configuration="Debug" />
-      <Entry build="True" name="Tools" configuration="" />
       <Entry build="True" name="MonoDevelop.Startup" configuration="Debug" />
       <Entry build="True" name="NRefactory" configuration="Release" />
     </Configuration>
@@ -49,7 +47,6 @@
     <Entry filename="MonoDevelop.Ide/MonoDevelop.Ide.mdp" />
     <Entry filename="MonoDevelop.Projects/MonoDevelop.Projects.mdp" />
     <Entry filename="MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.mdp" />
-    <Entry filename="Tools/Tools.mds" />
     <Entry filename="MonoDevelop.Startup/MonoDevelop.Startup.mdp" />
     <Entry filename="NRefactory/NRefactory.mdp" />
   </Entries>

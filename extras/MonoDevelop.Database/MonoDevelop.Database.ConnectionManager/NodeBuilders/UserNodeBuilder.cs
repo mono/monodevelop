@@ -167,8 +167,8 @@ namespace MonoDevelop.Database.ConnectionManager
 		{
 			UserNode node = (UserNode)CurrentNode.DataItem;
 			if (Services.MessageService.AskQuestion (
-				GettextCatalog.GetString ("Are you sure you want to drop user '{0}'", node.User.Name),
-				GettextCatalog.GetString ("Drop User")
+				AddinCatalog.GetString ("Are you sure you want to drop user '{0}'", node.User.Name),
+				AddinCatalog.GetString ("Drop User")
 			)) {
 				ThreadPool.QueueUserWorkItem (new WaitCallback (OnDropUserThreaded), CurrentNode.DataItem);
 			}

@@ -1,3 +1,26 @@
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Dialogs/TableEditorDialog.cs, Dialogs/ProcedureEditorDialog.cs,
+	  Dialogs/ViewEditorDialog.cs, Dialogs/UserEditorDialog.cs,
+	  Widgets/ColumnsEditorWidget.cs,
+	  Widgets/PrimaryKeyConstraintEditorWidget.cs,
+	  Widgets/CheckConstraintEditorWidget.cs, Widgets/TriggersEditorWidget.cs,
+	  Widgets/ConstraintsEditorWidget.cs,
+	  Widgets/ForeignKeyConstraintEditorWidget.cs,
+	  Widgets/UniqueConstraintEditorWidget.cs,
+	  MonoDevelop.Database.Designer.addin.xml,
+	  gtk-gui/MonoDevelop.Database.Designer.CheckConstraintEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Database.Designer.ViewEditorDialog.cs,
+	  gtk-gui/MonoDevelop.Database.Designer.TriggersEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Database.Designer.PreviewDialog.cs,
+	  gtk-gui/MonoDevelop.Database.Designer.UserEditorDialog.cs,
+	  gtk-gui/MonoDevelop.Database.Designer.CreateDatabaseDialog.cs,
+	  gtk-gui/MonoDevelop.Database.Designer.TableEditorDialog.cs,
+	  gtk-gui/MonoDevelop.Database.Designer.ProcedureEditorDialog.cs,
+	  gtk-gui/MonoDevelop.Database.Designer.ForeignKeyConstraintEditorWidget.cs,
+	  gtk-gui/gui.stetic, MonoDevelop.Database.Designer.mdp, Makefile.am:
+	  Directory reorganization.
+
 2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Dialogs/TableEditorDialog.cs, Widgets/ColumnsEditorWidget.cs: Track

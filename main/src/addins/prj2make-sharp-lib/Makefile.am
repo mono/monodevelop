@@ -1,13 +1,12 @@
 
-ADDIN_BUILD = $(top_builddir)/build/AddIns/prj2makesharp
-ASSEMBLY = $(ADDIN_BUILD)/prj2make-sharp-lib.dll
+ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.MsVisualStudio
+ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.MsVisualStudio.dll
 
 REFS =  \
 	$(GTK_SHARP_LIBS) \
-	-r:$(top_builddir)/build/AddIns/BackendBindings/CSharpBinding.dll \
-	-r:$(top_builddir)/build/AddIns/BackendBindings/VBNetBinding.dll \
-	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
+	$(MONO_ADDINS_LIBS) \
+	-r:$(top_builddir)/build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll \
+	-r:$(top_builddir)/build/AddIns/BackendBindings/MonoDevelop.VBNetBinding.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
@@ -55,7 +54,7 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -out:$@ -target:library $(build_resources:%=/resource:%) $(build_sources) $(REFS)
 
-assemblydir = $(MD_ADDIN_DIR)
+assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.MsVisualStudio
 assembly_DATA = $(ASSEMBLY)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb

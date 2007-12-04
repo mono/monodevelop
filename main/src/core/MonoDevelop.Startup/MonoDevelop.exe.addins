@@ -1,3 +1,4 @@
 <Addins>
 	<Directory include-subdirs="true">../AddIns</Directory>
+	<Directory include-subdirs="true">../../../local-config</Directory>
 </Addins>

@@ -1,3 +1,7 @@
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.am, MonoDevelop.Core.mdp: Directory reorganization.
+
 2007-12-01  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.ProgressMonitoring/ConsoleProgressMonitor.cs: Added

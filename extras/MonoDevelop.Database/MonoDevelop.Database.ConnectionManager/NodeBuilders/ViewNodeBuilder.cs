@@ -188,8 +188,8 @@ namespace MonoDevelop.Database.ConnectionManager
 		{
 			ViewNode node = (ViewNode)CurrentNode.DataItem;
 			if (Services.MessageService.AskQuestion (
-				GettextCatalog.GetString ("Are you sure you want to drop view '{0}'", node.View.Name),
-				GettextCatalog.GetString ("Drop View")
+				AddinCatalog.GetString ("Are you sure you want to drop view '{0}'", node.View.Name),
+				AddinCatalog.GetString ("Drop View")
 			)) {
 				ThreadPool.QueueUserWorkItem (new WaitCallback (OnDropViewThreaded), CurrentNode.DataItem);
 			}

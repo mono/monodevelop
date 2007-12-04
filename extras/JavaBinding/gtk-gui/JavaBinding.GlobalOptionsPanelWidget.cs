@@ -62,7 +62,7 @@ namespace JavaBinding {
             this.label96 = new Gtk.Label();
             this.label96.Name = "label96";
             this.label96.Xalign = 0F;
-            this.label96.LabelProp = Mono.Unix.Catalog.GetString("<b>Compiler</b>");
+            this.label96.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("<b>Compiler</b>");
             this.label96.UseMarkup = true;
             this.vbox70.Add(this.label96);
             Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.vbox70[this.label96]));
@@ -130,7 +130,7 @@ namespace JavaBinding {
             this.label101 = new Gtk.Label();
             this.label101.Name = "label101";
             this.label101.Xalign = 0F;
-            this.label101.LabelProp = Mono.Unix.Catalog.GetString("Compiler command:");
+            this.label101.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Compiler command:");
             this.table9.Add(this.label101);
             Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.table9[this.label101]));
             w7.TopAttach = ((uint)(2));
@@ -141,7 +141,7 @@ namespace JavaBinding {
             this.label98 = new Gtk.Label();
             this.label98.Name = "label98";
             this.label98.Xalign = 0F;
-            this.label98.LabelProp = Mono.Unix.Catalog.GetString("IKVM path:");
+            this.label98.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("IKVM path:");
             this.table9.Add(this.label98);
             Gtk.Table.TableChild w8 = ((Gtk.Table.TableChild)(this.table9[this.label98]));
             w8.XOptions = ((Gtk.AttachOptions)(4));
@@ -150,7 +150,7 @@ namespace JavaBinding {
             this.label99 = new Gtk.Label();
             this.label99.Name = "label99";
             this.label99.Xalign = 0F;
-            this.label99.LabelProp = Mono.Unix.Catalog.GetString("Java compiler:");
+            this.label99.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Java compiler:");
             this.table9.Add(this.label99);
             Gtk.Table.TableChild w9 = ((Gtk.Table.TableChild)(this.table9[this.label99]));
             w9.TopAttach = ((uint)(1));
@@ -169,7 +169,7 @@ namespace JavaBinding {
             this.label97 = new Gtk.Label();
             this.label97.Name = "label97";
             this.label97.Xalign = 0F;
-            this.label97.LabelProp = Mono.Unix.Catalog.GetString("<b>Code Generation</b>");
+            this.label97.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("<b>Code Generation</b>");
             this.label97.UseMarkup = true;
             this.vbox70.Add(this.label97);
             Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.vbox70[this.label97]));
@@ -208,7 +208,7 @@ namespace JavaBinding {
             this.label103 = new Gtk.Label();
             this.label103.Name = "label103";
             this.label103.Xalign = 0F;
-            this.label103.LabelProp = Mono.Unix.Catalog.GetString("Classpath:");
+            this.label103.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Classpath:");
             this.table10.Add(this.label103);
             Gtk.Table.TableChild w15 = ((Gtk.Table.TableChild)(this.table10[this.label103]));
             w15.XOptions = ((Gtk.AttachOptions)(4));

@@ -1,14 +1,13 @@
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/BackendBindings
-ASSEMBLY = $(ADDIN_BUILD)/CBinding.dll
+ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.CBinding.dll
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment.Linux.dll \
+	$(MONO_ADDINS_LIBS) \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor.dll \
-	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \

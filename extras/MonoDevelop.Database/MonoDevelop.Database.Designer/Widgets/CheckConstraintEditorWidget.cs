@@ -84,9 +84,9 @@ namespace MonoDevelop.Database.Designer
 			TreeViewColumn colColumn = new TreeViewColumn ();
 			TreeViewColumn colIsColumnConstraint = new TreeViewColumn ();
 			
-			colName.Title = GettextCatalog.GetString ("Name");
-			colColumn.Title = GettextCatalog.GetString ("Column");
-			colIsColumnConstraint.Title = GettextCatalog.GetString ("Column Constraint");
+			colName.Title = AddinCatalog.GetString ("Name");
+			colColumn.Title = AddinCatalog.GetString ("Column");
+			colIsColumnConstraint.Title = AddinCatalog.GetString ("Column Constraint");
 			
 			colColumn.MinWidth = 120; //request a bigger width
 			
@@ -151,8 +151,8 @@ namespace MonoDevelop.Database.Designer
 				CheckConstraintSchema check = store.GetValue (iter, colObjIndex) as CheckConstraintSchema;
 				
 				if (Services.MessageService.AskQuestion (
-					GettextCatalog.GetString ("Are you sure you want to remove constraint '{0}'?", check.Name),
-					GettextCatalog.GetString ("Remove Constraint")
+					AddinCatalog.GetString ("Are you sure you want to remove constraint '{0}'?", check.Name),
+					AddinCatalog.GetString ("Remove Constraint")
 				)) {
 					store.Remove (ref iter);
 					constraints.Remove (check);
@@ -248,12 +248,12 @@ namespace MonoDevelop.Database.Designer
 					bool iscolc = (bool)store.GetValue (iter, colIsColumnConstraintIndex);
 					
 					if (String.IsNullOrEmpty (source)) {
-						msg = GettextCatalog.GetString ("Checked constraint '{0}' does not contain a check statement.", name);
+						msg = AddinCatalog.GetString ("Checked constraint '{0}' does not contain a check statement.", name);
 						return false;
 					}
 					
 					if (iscolc && String.IsNullOrEmpty (column)) {
-						msg = GettextCatalog.GetString ("Checked constraint '{0}' is marked as a column constraint but is not applied to a column.", name);
+						msg = AddinCatalog.GetString ("Checked constraint '{0}' is marked as a column constraint but is not applied to a column.", name);
 						return false;
 					}
 				} while (store.IterNext (ref iter));

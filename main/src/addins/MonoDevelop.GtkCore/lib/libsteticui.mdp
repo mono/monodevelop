@@ -4,7 +4,7 @@
       <CustomCommands>
         <Command type="Build" command="make libsteticui" workingdir="${ProjectDir}" />
       </CustomCommands>
-      <Output directory="../../../build/AddIns/MonoDevelop.GtkCore" assembly="libsteticui" />
+      <Output directory="../../../../build/AddIns/MonoDevelop.GtkCore" assembly="libsteticui" />
       <Build debugmode="True" target="Library" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_1_1" />
       <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
@@ -13,7 +13,7 @@
       <CustomCommands>
         <Command type="Build" command="make libsteticui" workingdir="${ProjectDir}" />
       </CustomCommands>
-      <Output directory="../../../build/AddIns/MonoDevelop.GtkCore" assembly="libsteticui" />
+      <Output directory="../../../../build/AddIns/MonoDevelop.GtkCore" assembly="libsteticui" />
       <Build debugmode="False" target="Library" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_1_1" />
       <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />

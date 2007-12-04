@@ -187,8 +187,8 @@ namespace MonoDevelop.Database.ConnectionManager
 		{
 			ProcedureNode node = (ProcedureNode)CurrentNode.DataItem;
 			if (Services.MessageService.AskQuestion (
-				GettextCatalog.GetString ("Are you sure you want to drop procedure '{0}'", node.Procedure.Name),
-				GettextCatalog.GetString ("Drop Procedure")
+				AddinCatalog.GetString ("Are you sure you want to drop procedure '{0}'", node.Procedure.Name),
+				AddinCatalog.GetString ("Drop Procedure")
 			)) {
 				ThreadPool.QueueUserWorkItem (new WaitCallback (OnDropProcedureThreaded), CurrentNode.DataItem);
 			}

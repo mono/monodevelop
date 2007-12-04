@@ -11,7 +11,6 @@
 	<Runtime>
 		<Import assembly="Diff.dll"/>
 		<Import assembly="DiffWidget.dll"/>
-		<Import assembly="VersionControlAddIn.dll"/>
 	</Runtime>
 
 	<Dependencies>

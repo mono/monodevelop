@@ -138,7 +138,7 @@ namespace MonoDevelop.Database.Designer {
             this.frame1.Add(this.GtkAlignment2);
             this.GtkLabel2 = new Gtk.Label();
             this.GtkLabel2.Name = "GtkLabel2";
-            this.GtkLabel2.LabelProp = Mono.Unix.Catalog.GetString("Columns");
+            this.GtkLabel2.LabelProp = AddinCatalog.GetString("Columns");
             this.GtkLabel2.UseMarkup = true;
             this.frame1.LabelWidget = this.GtkLabel2;
             this.vboxColumns.Add(this.frame1);
@@ -166,7 +166,7 @@ namespace MonoDevelop.Database.Designer {
             this.frame2.Add(this.GtkAlignment3);
             this.GtkLabel3 = new Gtk.Label();
             this.GtkLabel3.Name = "GtkLabel3";
-            this.GtkLabel3.LabelProp = Mono.Unix.Catalog.GetString("Reference Columns");
+            this.GtkLabel3.LabelProp = AddinCatalog.GetString("Reference Columns");
             this.GtkLabel3.UseMarkup = true;
             this.frame2.LabelWidget = this.GtkLabel3;
             this.vboxColumns.Add(this.frame2);

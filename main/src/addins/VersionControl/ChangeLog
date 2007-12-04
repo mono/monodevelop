@@ -1,3 +1,9 @@
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Diff/Diff.mdp, MonoDevelop.VersionControl.Subversion/Makefile.am,
+	  MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.mdp,
+	  DiffWidget/DiffWidget.mdp: Directory reorganization.
+
 2007-12-01  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:

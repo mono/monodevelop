@@ -8,10 +8,6 @@
        category    = "Language bindings"
        version     = "0.17.0">
 
-	<Runtime>
-		<Import assembly = "CBinding.dll"/>
-	</Runtime>
-	
 	<Dependencies>
 		<Addin id = "Core" version = "0.17.0"/>
 		<Addin id = "Core.Gui" version = "0.17.0"/>

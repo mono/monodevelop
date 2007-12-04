@@ -62,20 +62,20 @@ namespace MonoDevelop.Database.Designer
 			this.Build();
 			
 			if (create)
-				Title = GettextCatalog.GetString ("Create Procedure");
+				Title = AddinCatalog.GetString ("Create Procedure");
 			else
-				Title = GettextCatalog.GetString ("Alter Procedure");
+				Title = AddinCatalog.GetString ("Alter Procedure");
 			
 			notebook = new Notebook ();
 
 			sqlEditor = new SqlEditorWidget ();
 			sqlEditor.TextChanged += new EventHandler (SqlChanged);
-			notebook.AppendPage (sqlEditor, new Label (GettextCatalog.GetString ("Definition")));
+			notebook.AppendPage (sqlEditor, new Label (AddinCatalog.GetString ("Definition")));
 			
 			IDbFactory fac = schemaProvider.ConnectionPool.DbFactory;
 			if (fac.IsCapabilitySupported ("Procedure", action, ProcedureCapabilities.Comment)) {
 				commentEditor = new CommentEditorWidget ();
-				notebook.AppendPage (commentEditor, new Label (GettextCatalog.GetString ("Comment")));
+				notebook.AppendPage (commentEditor, new Label (AddinCatalog.GetString ("Comment")));
 			}
 
 			entryName.Text = procedure.Name;

@@ -1,3 +1,8 @@
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* SqlQueryView.cs, Makefile.am, MonoDevelop.Database.Query.addin.xml,
+	  MonoDevelop.Database.Query.mdp: Directory reorganization.
+
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Database.Query.addin.xml: Bump MD version.

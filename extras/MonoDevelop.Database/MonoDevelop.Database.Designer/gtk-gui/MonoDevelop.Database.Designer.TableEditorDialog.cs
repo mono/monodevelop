@@ -37,7 +37,7 @@ namespace MonoDevelop.Database.Designer {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Database.Designer.TableEditorDialog
             this.Name = "MonoDevelop.Database.Designer.TableEditorDialog";
-            this.Title = Mono.Unix.Catalog.GetString("Edit Table");
+            this.Title = AddinCatalog.GetString("Edit Table");
             this.TypeHint = ((Gdk.WindowTypeHint)(1));
             this.WindowPosition = ((Gtk.WindowPosition)(1));
             this.SkipTaskbarHint = true;
@@ -59,7 +59,7 @@ namespace MonoDevelop.Database.Designer {
             this.label7 = new Gtk.Label();
             this.label7.Name = "label7";
             this.label7.Xalign = 0F;
-            this.label7.LabelProp = Mono.Unix.Catalog.GetString("Name");
+            this.label7.LabelProp = AddinCatalog.GetString("Name");
             this.hboxName.Add(this.label7);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hboxName[this.label7]));
             w2.Position = 0;
@@ -110,7 +110,7 @@ namespace MonoDevelop.Database.Designer {
             this.checkPreview = new Gtk.CheckButton();
             this.checkPreview.CanFocus = true;
             this.checkPreview.Name = "checkPreview";
-            this.checkPreview.Label = Mono.Unix.Catalog.GetString("Preview SQL");
+            this.checkPreview.Label = AddinCatalog.GetString("Preview SQL");
             this.checkPreview.Active = true;
             this.checkPreview.DrawIndicator = true;
             this.checkPreview.UseUnderline = true;

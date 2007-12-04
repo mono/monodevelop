@@ -97,7 +97,6 @@ namespace MonoDevelop.Database.Components {
             this.entryCurrent.Name = "entryCurrent";
             this.entryCurrent.IsEditable = true;
             this.entryCurrent.InvisibleChar = '●';
-            this.entryCurrent.Xalign = 0.5F;
             this.hbox.Add(this.entryCurrent);
             Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.hbox[this.entryCurrent]));
             w5.Position = 2;
@@ -105,7 +104,7 @@ namespace MonoDevelop.Database.Components {
             // Container child hbox.Gtk.Box+BoxChild
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
-            this.label1.LabelProp = Mono.Unix.Catalog.GetString("of");
+            this.label1.LabelProp = AddinCatalog.GetString("of");
             this.hbox.Add(this.label1);
             Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.hbox[this.label1]));
             w6.Position = 3;
@@ -117,7 +116,6 @@ namespace MonoDevelop.Database.Components {
             this.entryTotal.Name = "entryTotal";
             this.entryTotal.IsEditable = false;
             this.entryTotal.InvisibleChar = '●';
-            this.entryTotal.Xalign = 0.5F;
             this.hbox.Add(this.entryTotal);
             Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.hbox[this.entryTotal]));
             w7.Position = 4;

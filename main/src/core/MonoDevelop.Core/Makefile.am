@@ -70,8 +70,8 @@ GENERATED_FILES = MonoDevelop.Core/GettextCatalog.cs \
 RES = MonoDevelop.Core.addin.xml                                                          
 
 REFS =  \
-	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
-	-r:$(top_builddir)/build/bin/Mono.Addins.Setup.dll \
+	$(MONO_ADDINS_LIBS) \
+	$(MONO_ADDINS_SETUP_LIBS) \
 	-r:ICSharpCode.SharpZipLib \
 	-r:Mono.Posix \
 	-r:System \

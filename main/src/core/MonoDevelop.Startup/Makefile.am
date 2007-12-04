@@ -11,7 +11,7 @@ AssemblyInfo.cs
 all: $(ASSEMBLY) $(ASSEMBLY).config
 
 REFS =  \
-	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
+	$(MONO_ADDINS_LIBS) \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll
 

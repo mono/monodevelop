@@ -346,17 +346,8 @@
     <ProjectReference type="Gac" localcopy="False" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Gac" localcopy="False" refto="Mono.GetOptions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Gac" localcopy="False" refto="System.Runtime.Remoting, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />
-    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects.Gui" />
-    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Documentation" />
-    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Dock" />
-    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core.Gui" />
-    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects" />
     <ProjectReference type="Gac" localcopy="True" refto="gconf-sharp-peditors, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Project" localcopy="False" refto="Mono.Addins.Gui" />
-    <ProjectReference type="Project" localcopy="False" refto="Mono.Addins.Setup" />
-    <ProjectReference type="Project" localcopy="False" refto="Mono.Addins" />
     <ProjectReference type="Gac" localcopy="True" refto="gconf-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="glade-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
@@ -366,14 +357,17 @@
     <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core.Gui" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects.Gui" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Documentation" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins.Setup, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins.Gui, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <ProjectReference type="Gac" localcopy="True" refto="gtkhtml-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
-  <GtkDesignInfo isWidgetLibrary="True" gtkVersion="2.8.3">
-    <ExportedWidgets>
-      <Widget>MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector</Widget>
-      <Widget>MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel</Widget>
-      <Widget>MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel</Widget>
-    </ExportedWidgets>
-  </GtkDesignInfo>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <ExcludedFiles>
       <File>AssemblyInfo.cs</File>
@@ -386,6 +380,13 @@
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
+  <GtkDesignInfo isWidgetLibrary="True" gtkVersion="2.8.3">
+    <ExportedWidgets>
+      <Widget>MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector</Widget>
+      <Widget>MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel</Widget>
+      <Widget>MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel</Widget>
+    </ExportedWidgets>
+  </GtkDesignInfo>
   <MonoDevelop.Gettext.TranslationInfo />
   <DeploymentInformation strategy="File">
     <excludeFiles />

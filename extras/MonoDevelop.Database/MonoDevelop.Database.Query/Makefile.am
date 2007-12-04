@@ -1,18 +1,12 @@
-ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.Database
+ADDIN_BUILD = $(top_builddir)/build
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Database.Query.dll
 REFS =  \
-	$(GLADE_SHARP_LIBS) \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	$(GTKSOURCEVIEW_SHARP_LIBS) \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Database/MonoDevelop.Database.Components.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Database/MonoDevelop.Database.Sql.dll \
-	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	$(MONO_ADDINS_LIBS) \
+	$(MONODEVELOP_LIBS) \
+	-r:../build/MonoDevelop.Database.Components.dll \
+	-r:../build/MonoDevelop.Database.Sql.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Data
@@ -49,21 +43,15 @@ FILES =  \
 	QueryResultView.cs \
 	SqlQueryView.cs
 
-if ENABLE_DATABASE
 all: $(ASSEMBLY)
-else
-all:
-endif
 
 $(ASSEMBLY): $(FILES) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
 
 
-if ENABLE_DATABASE
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.Database
 assembly_DATA = $(ASSEMBLY)
-endif
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 EXTRA_DIST = $(FILES) $(RES)

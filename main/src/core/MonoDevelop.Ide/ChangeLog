@@ -1,3 +1,7 @@
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.mdp, Makefile.am: Directory reorganization.
+
 2007-12-03  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs: Make logging call more

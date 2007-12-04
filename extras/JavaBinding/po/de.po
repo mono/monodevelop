@@ -1,0 +1,258 @@
+# German MonoDevelop translation.
+# Copyright (C) 2004 Gustav Schauwecker
+# This file is distributed under the same license as the MonoDevelop package.
+# Gustav Schauwecker <gustl@cashmoral.com>, 2005.
+#
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: MonoDevelop\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2005-04-07 07:24+0200\n"
+"Last-Translator: Gustav Schauwecker <gustl@cashmoral.com>\n"
+"Language-Team: German <de@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../Java.glade:30 ../Java.glade:1035
+#, fuzzy
+msgid "<b>Code Generation</b>"
+msgstr "Quelltext-Erzeugung"
+
+#: ../Java.glade:102
+#, fuzzy
+msgid "Compile _Target:"
+msgstr "Kompilierungsziel"
+
+#: ../Java.glade:130
+#, fuzzy
+msgid "Define S_ymbols:"
+msgstr "Definiere S_ymbole"
+
+#: ../Java.glade:159
+#, fuzzy
+msgid "_Main Class:"
+msgstr "Hauptklasse"
+
+#: ../Java.glade:230 ../Java.glade:1101
+msgid "Classpath:"
+msgstr ""
+
+#: ../Java.glade:330 ../Java.glade:790
+#, fuzzy
+msgid "<b>Compiler</b>"
+msgstr "<b>Vorlage</b>"
+
+#: ../Java.glade:400
+msgid "gcj"
+msgstr ""
+
+#: ../Java.glade:419
+msgid "javac"
+msgstr ""
+
+#: ../Java.glade:490
+#, fuzzy
+msgid "<b>Options</b>"
+msgstr "<b>Optimierungen</b>"
+
+#: ../Java.glade:554
+msgid "Enable _optimizations"
+msgstr "Optimierungen aktivieren"
+
+#: ../Java.glade:573
+msgid "Emit _debugging information"
+msgstr "Debug-Informationen ausgeben"
+
+#: ../Java.glade:618
+msgid "<b>Warnings</b>"
+msgstr "<b>Warnungen</b>"
+
+#: ../Java.glade:682
+#, fuzzy
+msgid "Generate warnings"
+msgstr "Ignoriere Warnungen"
+
+#: ../Java.glade:701
+#, fuzzy
+msgid "Enable deprecation warnings"
+msgstr "Code-Vervollständigung aktivieren"
+
+#: ../Java.glade:720
+msgid "Treat warnings as _errors"
+msgstr "Behandle Warnungen als Fehler"
+
+#: ../Java.glade:856
+msgid "IKVM path:"
+msgstr ""
+
+#: ../Java.glade:884
+#, fuzzy
+msgid "Java compiler:"
+msgstr "Neue Dateien"
+
+#: ../Java.glade:912
+#, fuzzy
+msgid "Compiler command:"
+msgstr "Befehl auswählen"
+
+#: ../templates/EmptyJavaFile.xft.xml:4
+msgid "Empty File"
+msgstr "Leere Datei"
+
+#: ../templates/EmptyJavaFile.xft.xml:8
+msgid "Creates an empty Java file."
+msgstr "Erzeugt eine leere Java-Datei"
+
+#: ../templates/EmptyJavaProject.xpt.xml:7
+msgid "Empty Project"
+msgstr "Leeres Projekt"
+
+#: ../templates/EmptyJavaProject.xpt.xml:11
+msgid "Creates an empty Java solution."
+msgstr "Erzeugt eine leere Java-Solution"
+
+#: ../templates/IkvmConsoleApplicationProject.xpt.xml:7
+msgid "IKVM Console Project"
+msgstr "IKVM Konsole-Projekt"
+
+#: ../templates/IkvmConsoleApplicationProject.xpt.xml:11
+msgid "Create a console Java project with IKVM"
+msgstr "Erzeugt ein Konsole-Java-Projekt mit IKVM"
+
+#: ../templates/IkvmGladeApplicationProject.xpt.xml:7
+msgid "IKVM Glade# Project"
+msgstr "IKVM Glade# Projekt"
+
+#: ../templates/IkvmGladeApplicationProject.xpt.xml:11
+msgid "Create a Glade# Java project with IKVM"
+msgstr "Erzeugt ein Glade# Java-Projekt mit IKVM"
+
+#: ../templates/IkvmGnomeApplicationProject.xpt.xml:7
+msgid "IKVM Gnome# Project"
+msgstr "IKVM Gnome# Projekt"
+
+#: ../templates/IkvmGnomeApplicationProject.xpt.xml:11
+msgid "Create a Gnome# Java project with IKVM"
+msgstr "Erzeugt ein Gnome# Java Projekt mit IKVM"
+
+#: ../templates/IkvmGtkApplicationProject.xpt.xml:7
+msgid "IKVM Gtk# Project"
+msgstr "IKVM Gtk#-Projekt"
+
+#: ../templates/IkvmGtkApplicationProject.xpt.xml:11
+msgid "Create a Gtk# Java project with IKVM"
+msgstr "Erzeugt ein Gtk# Java-Projekt mit IKVM"
+
+#: ../templates/IkvmLibraryProject.xpt.xml:7
+#, fuzzy
+msgid "IKVM Library"
+msgstr "Bibliothek"
+
+#: ../templates/IkvmLibraryProject.xpt.xml:11
+#, fuzzy
+msgid "Create a Java library with IKVM"
+msgstr "Erzeugt ein Gtk# Java-Projekt mit IKVM"
+
+#: ../templates/JavaApplet.xft.xml:4
+msgid "AWT Applet"
+msgstr "AWT Applet"
+
+#: ../templates/JavaApplet.xft.xml:8
+msgid "Creates a Java AWT Applet"
+msgstr "Erzeugt ein Java AWT Applet"
+
+#: ../templates/JavaApplicationProject.xpt.xml:7
+msgid "AWT Project"
+msgstr "AWT Projekt"
+
+#: ../templates/JavaApplicationProject.xpt.xml:11
+msgid "Creates a Java AWT project."
+msgstr "Erzeugt ein Java AWT Projekt"
+
+#: ../templates/JavaApplication.xft.xml:4
+#, fuzzy
+msgid "AWT Application"
+msgstr "AWT Applet"
+
+#: ../templates/JavaApplication.xft.xml:8
+msgid "Creates a Java AWT application."
+msgstr "Erzeugt eine Java AWT Anwendung"
+
+#: ../templates/JavaConsoleApplicationProject.xpt.xml:7
+msgid "Console Project"
+msgstr "Konsole-Projekt"
+
+#: ../templates/JavaConsoleApplicationProject.xpt.xml:11
+msgid "Create a console Java project"
+msgstr "Erzeugt ein Konsole Java Projekt"
+
+#: ../templates/JavaDialog.xft.xml:4
+msgid "Java AWT Dialog"
+msgstr "Java AWT Dialog"
+
+#: ../templates/JavaDialog.xft.xml:8
+msgid "Creates an AWT dialog."
+msgstr "Erzeugt einen AWT Dialog"
+
+#: ../templates/JavaFrame.xft.xml:4
+msgid "AWT Frame"
+msgstr "AWT Frame"
+
+#: ../templates/JavaFrame.xft.xml:8
+msgid "Creates a Java AWT Frame"
+msgstr "Erzeugt einen Java AWT Frame"
+
+#: ../templates/JavaOKDialog.xft.xml:4
+msgid "AWT OK Dialog"
+msgstr "AWT OK Dialog"
+
+#: ../templates/JavaOKDialog.xft.xml:8
+msgid "Creates a Java AWT OK Dialog."
+msgstr "Erzeugt einen Java AWT OK Dialog"
+
+#: ../templates/JavaPanel.xft.xml:4
+msgid "AWT Panel"
+msgstr "AWT Panel"
+
+#: ../templates/JavaPanel.xft.xml:8
+msgid "Creates a Java AWT panel."
+msgstr "Erzeugt ein Java AWT panel"
+
+#: ../Gui/ProjectConfigurationPropertyPanel.cs:48
+#, fuzzy
+msgid "Executable"
+msgstr ""
+"Programm\n"
+"Bibliothek"
+
+#: ../Gui/ProjectConfigurationPropertyPanel.cs:49
+msgid "Library"
+msgstr "Bibliothek"
+
+#: ../Gui/GlobalOptionsPanel.cs:28
+msgid "Javac"
+msgstr ""
+
+#: ../Gui/GlobalOptionsPanel.cs:29
+msgid "Gcj"
+msgstr ""
+
+#: ../JavaBinding.addin.xml:27
+#, fuzzy
+msgid "Java Files"
+msgstr "Neue Dateien"
+
+#: ../JavaBinding.addin.xml:55
+msgid "Code Generation"
+msgstr "Quelltext-Erzeugung"
+
+#: ../JavaBinding.addin.xml:58
+msgid "Output"
+msgstr "Ausgabe"
+
+#: ../JavaBinding.addin.xml:64
+msgid "Java"
+msgstr ""

@@ -1,3 +1,12 @@
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* monodevelop-core-addins.pc.in, configure.in, src/tools/Tools.mds,
+	  src/addins/Addins.mds, src/addins/Extras.mds, src/addins/Makefile.am,
+	  src/core/Makefile.am, src/core/Core.mds, src/Makefile.am,
+	  monodevelop.pc.in, contrib/Mono.Addins/Mono.Addins.mdp,
+	  contrib/Makefile.am, MonoDevelop.mds, Makefile.am: Directory
+	  reorganization.
+
 2007-12-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* configure.in: Remove GtkHtml dependency.

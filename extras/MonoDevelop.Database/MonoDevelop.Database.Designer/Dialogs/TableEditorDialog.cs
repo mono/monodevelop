@@ -72,38 +72,38 @@ namespace MonoDevelop.Database.Designer
 			this.Build();
 			
 			if (create)
-				Title = GettextCatalog.GetString ("Create Table");
+				Title = AddinCatalog.GetString ("Create Table");
 			else
-				Title = GettextCatalog.GetString ("Alter Table");
+				Title = AddinCatalog.GetString ("Alter Table");
 			
 			notebook = new Notebook ();
 			vboxContent.PackStart (notebook, true, true, 0);
 			
 			columnEditor = new ColumnsEditorWidget (schemaProvider, action);
 			columnEditor.ContentChanged += new EventHandler (OnContentChanged);
-			notebook.AppendPage (columnEditor, new Label (GettextCatalog.GetString ("Columns")));
+			notebook.AppendPage (columnEditor, new Label (AddinCatalog.GetString ("Columns")));
 			
 			//TODO: there is a diff between col and table constraints
 			IDbFactory fac = schemaProvider.ConnectionPool.DbFactory;
 			if (fac.IsCapabilitySupported ("Table", action, TableCapabilities.Constraints)) {
 				constraintEditor = new ConstraintsEditorWidget (schemaProvider, action);
 				constraintEditor.ContentChanged += new EventHandler (OnContentChanged);
-				notebook.AppendPage (constraintEditor, new Label (GettextCatalog.GetString ("Constraints")));
+				notebook.AppendPage (constraintEditor, new Label (AddinCatalog.GetString ("Constraints")));
 			}
 
 			//TODO:
 			//indexEditor = new IndicesEditorWidget (schemaProvider);
-			//notebook.AppendPage (indexEditor, new Label (GettextCatalog.GetString ("Indexes")));
+			//notebook.AppendPage (indexEditor, new Label (AddinCatalog.GetString ("Indexes")));
 			
 			if (fac.IsCapabilitySupported ("Table", action, TableCapabilities.Trigger)) {
 				triggerEditor = new TriggersEditorWidget (schemaProvider, action);
 				triggerEditor.ContentChanged += new EventHandler (OnContentChanged);
-				notebook.AppendPage (triggerEditor, new Label (GettextCatalog.GetString ("Triggers")));
+				notebook.AppendPage (triggerEditor, new Label (AddinCatalog.GetString ("Triggers")));
 			}
 			
 			if (fac.IsCapabilitySupported ("Table", action, TableCapabilities.Comment)) {
 				commentEditor = new CommentEditorWidget ();
-				notebook.AppendPage (commentEditor, new Label (GettextCatalog.GetString ("Comment")));
+				notebook.AppendPage (commentEditor, new Label (AddinCatalog.GetString ("Comment")));
 			}
 
 			notebook.Page = 0;
@@ -225,7 +225,7 @@ namespace MonoDevelop.Database.Designer
 			
 			bool val = entryName.Text.Length > 0;
 			if (!val) {
-				msg = GettextCatalog.GetString ("No name specified.");
+				msg = AddinCatalog.GetString ("No name specified.");
 				goto sens;
 			}
 			

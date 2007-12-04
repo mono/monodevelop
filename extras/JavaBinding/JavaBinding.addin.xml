@@ -11,6 +11,8 @@
   <Runtime>
     <Import assembly = "JavaBinding.dll"/>
   </Runtime>
+  
+  <Localizer type="Gettext" catalog="monodevelop-java"/>
 
 	<Dependencies>
 	    <Addin id="Core" version="0.17.0"/>

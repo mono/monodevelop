@@ -1,3 +1,7 @@
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* ChangeLogAddIn.mdp, Makefile.am: Directory reorganization.
+
 2007-11-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ChangeLogAddIn.cs: If no file is open but one is selected in the tree, use

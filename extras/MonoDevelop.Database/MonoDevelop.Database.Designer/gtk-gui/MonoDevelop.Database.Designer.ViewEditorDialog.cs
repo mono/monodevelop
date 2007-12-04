@@ -54,7 +54,7 @@ namespace MonoDevelop.Database.Designer {
             this.label7 = new Gtk.Label();
             this.label7.Name = "label7";
             this.label7.Xalign = 0F;
-            this.label7.LabelProp = Mono.Unix.Catalog.GetString("Name");
+            this.label7.LabelProp = AddinCatalog.GetString("Name");
             this.hboxName.Add(this.label7);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hboxName[this.label7]));
             w2.Position = 0;

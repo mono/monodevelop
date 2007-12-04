@@ -95,7 +95,7 @@ namespace MonoDevelop.Database.Components
 		protected void OnImportFromFile ()
 		{
 			FileChooserDialog dlg = new FileChooserDialog (
-				GettextCatalog.GetString ("Import From File"), null, FileChooserAction.Open,
+				AddinCatalog.GetString ("Import From File"), null, FileChooserAction.Open,
 				"gtk-cancel", ResponseType.Cancel,
 				"gtk-open", ResponseType.Accept
 			);
@@ -105,10 +105,10 @@ namespace MonoDevelop.Database.Components
 			
 			FileFilter filter = new FileFilter ();
 			filter.AddPattern ("*.[sS][qQ][lL]");
-			filter.Name = GettextCatalog.GetString ("SQL files");
+			filter.Name = AddinCatalog.GetString ("SQL files");
 			FileFilter filterAll = new FileFilter ();
 			filterAll.AddPattern ("*");
-			filterAll.Name = GettextCatalog.GetString ("All files");
+			filterAll.Name = AddinCatalog.GetString ("All files");
 			dlg.AddFilter (filter);
 			dlg.AddFilter (filterAll);
 
@@ -126,7 +126,7 @@ namespace MonoDevelop.Database.Components
 		protected void OnExportToFile ()
 		{
 			FileChooserDialog dlg = new FileChooserDialog (
-				GettextCatalog.GetString ("Export To File"), null, FileChooserAction.Save,
+				AddinCatalog.GetString ("Export To File"), null, FileChooserAction.Save,
 				"gtk-cancel", ResponseType.Cancel,
 				"gtk-save", ResponseType.Accept
 			);
@@ -137,14 +137,14 @@ namespace MonoDevelop.Database.Components
 			
 			FileFilter filter = new FileFilter ();
 			filter.AddPattern ("*.[sS][qQ][lL]");
-			filter.Name = GettextCatalog.GetString ("SQL files");
+			filter.Name = AddinCatalog.GetString ("SQL files");
 			dlg.AddFilter (filter);
 
 			if (dlg.Run () == (int)ResponseType.Accept) {
 				if (File.Exists (dlg.Filename)) {
 					bool overwrite = Services.MessageService.AskQuestion (
-						GettextCatalog.GetString ("Are you sure you want to overwrite the file '{0}'?", dlg.Filename), 
-						GettextCatalog.GetString ("Overwrite?"));
+						AddinCatalog.GetString ("Are you sure you want to overwrite the file '{0}'?", dlg.Filename), 
+						AddinCatalog.GetString ("Overwrite?"));
 					if (overwrite) {
 						using (FileStream stream = File.Open (dlg.Filename, FileMode.Create)) {
 							using (StreamWriter writer = new StreamWriter (stream)) {

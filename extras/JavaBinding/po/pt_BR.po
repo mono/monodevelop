@@ -1,0 +1,251 @@
+# MonoDevelop Portuguese (Brazilian) translation
+# Copyright (C) 2004, Andre Filipe de Assuncao e Brito <decko@noisemakers.org>
+# Copyright (C) 2004, Maurício de Lemos Rodrigues Collares Neto <mauricioc@gmail.com>
+# Copyright (C) 2006, Rafael "Monoman" Teixeira <rafaelteixeirabr@hotmail.com>
+# 
+# This file is distributed under the same license as the MonoDevelop package.
+# 
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: MonoDevelop 0.10\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2006-04-06 16:24-0300\n"
+"Last-Translator: Rafael \"Monoman\" Teixeira <rafaelteixeirabr@hotmail.com>\n"
+"Language-Team: pt_BR <gnome-l10n-br@listas.cipsga.org.br>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#: ../Java.glade:30 ../Java.glade:1035
+#, fuzzy
+msgid "<b>Code Generation</b>"
+msgstr "Geração de Código"
+
+#: ../Java.glade:102
+msgid "Compile _Target:"
+msgstr "Compilar a_lvo:"
+
+#: ../Java.glade:130
+msgid "Define S_ymbols:"
+msgstr "Definir _Símbolos:"
+
+#: ../Java.glade:159
+msgid "_Main Class:"
+msgstr "Classe Pri_ncipal:"
+
+#: ../Java.glade:230 ../Java.glade:1101
+msgid "Classpath:"
+msgstr "Caminho para as classes:"
+
+#: ../Java.glade:330 ../Java.glade:790
+msgid "<b>Compiler</b>"
+msgstr "<b>Compilador</b>"
+
+#: ../Java.glade:400
+msgid "gcj"
+msgstr "gcj"
+
+#: ../Java.glade:419
+#, fuzzy
+msgid "javac"
+msgstr "javac"
+
+#: ../Java.glade:490
+msgid "<b>Options</b>"
+msgstr "<b>Opções</b>"
+
+#: ../Java.glade:554
+msgid "Enable _optimizations"
+msgstr "Habilitar _optimizações"
+
+#: ../Java.glade:573
+msgid "Emit _debugging information"
+msgstr "Emitir informações de _depuração"
+
+#: ../Java.glade:618
+msgid "<b>Warnings</b>"
+msgstr "<b>Avisos</b>"
+
+#: ../Java.glade:682
+msgid "Generate warnings"
+msgstr "Gerar avisos"
+
+#: ../Java.glade:701
+msgid "Enable deprecation warnings"
+msgstr "Habilitar avisos de obsolescência"
+
+#: ../Java.glade:720
+msgid "Treat warnings as _errors"
+msgstr "Tratar avisos como _erros"
+
+#: ../Java.glade:856
+msgid "IKVM path:"
+msgstr "Caminho para o IKVM:"
+
+#: ../Java.glade:884
+msgid "Java compiler:"
+msgstr "Compilador Java:"
+
+#: ../Java.glade:912
+msgid "Compiler command:"
+msgstr "Comando do compilador:"
+
+#: ../templates/EmptyJavaFile.xft.xml:4
+msgid "Empty File"
+msgstr "Arquivo Vazio"
+
+#: ../templates/EmptyJavaFile.xft.xml:8
+msgid "Creates an empty Java file."
+msgstr "Cria um fonte Java vazio."
+
+#: ../templates/EmptyJavaProject.xpt.xml:7
+msgid "Empty Project"
+msgstr "Projeto Vazio"
+
+#: ../templates/EmptyJavaProject.xpt.xml:11
+msgid "Creates an empty Java solution."
+msgstr "Cria uma solução Java vazia."
+
+#: ../templates/IkvmConsoleApplicationProject.xpt.xml:7
+msgid "IKVM Console Project"
+msgstr "Projeto em Modo Texto com IKVM"
+
+#: ../templates/IkvmConsoleApplicationProject.xpt.xml:11
+msgid "Create a console Java project with IKVM"
+msgstr "Criar um novo projeto modo texto em Java com IKVM"
+
+#: ../templates/IkvmGladeApplicationProject.xpt.xml:7
+msgid "IKVM Glade# Project"
+msgstr "Projeto Glade# com IKVM"
+
+#: ../templates/IkvmGladeApplicationProject.xpt.xml:11
+msgid "Create a Glade# Java project with IKVM"
+msgstr "Criar um projeto Glade# em Java com IKVM"
+
+#: ../templates/IkvmGnomeApplicationProject.xpt.xml:7
+msgid "IKVM Gnome# Project"
+msgstr "Projeto Gnome# com IKVM"
+
+#: ../templates/IkvmGnomeApplicationProject.xpt.xml:11
+msgid "Create a Gnome# Java project with IKVM"
+msgstr "Cria um projeto Gnome# em Java com IKVM "
+
+#: ../templates/IkvmGtkApplicationProject.xpt.xml:7
+msgid "IKVM Gtk# Project"
+msgstr "Projeto Gtk# com IKVM"
+
+#: ../templates/IkvmGtkApplicationProject.xpt.xml:11
+msgid "Create a Gtk# Java project with IKVM"
+msgstr "Criar um projeto GTK# em Java com IKVM"
+
+#: ../templates/IkvmLibraryProject.xpt.xml:7
+#, fuzzy
+msgid "IKVM Library"
+msgstr "Biblioteca"
+
+#: ../templates/IkvmLibraryProject.xpt.xml:11
+#, fuzzy
+msgid "Create a Java library with IKVM"
+msgstr "Criar um projeto GTK# em Java com IKVM"
+
+#: ../templates/JavaApplet.xft.xml:4
+msgid "AWT Applet"
+msgstr "Applet AWT"
+
+#: ../templates/JavaApplet.xft.xml:8
+msgid "Creates a Java AWT Applet"
+msgstr "Cria um Applet AWT em Java"
+
+#: ../templates/JavaApplicationProject.xpt.xml:7
+msgid "AWT Project"
+msgstr "Projeto AWT"
+
+#: ../templates/JavaApplicationProject.xpt.xml:11
+msgid "Creates a Java AWT project."
+msgstr "Cria um projeto AWT em Java."
+
+#: ../templates/JavaApplication.xft.xml:4
+#, fuzzy
+msgid "AWT Application"
+msgstr "Applet AWT"
+
+#: ../templates/JavaApplication.xft.xml:8
+msgid "Creates a Java AWT application."
+msgstr "Cria uma aplicação AWT em Java."
+
+#: ../templates/JavaConsoleApplicationProject.xpt.xml:7
+msgid "Console Project"
+msgstr "Projeto Modo Texto"
+
+#: ../templates/JavaConsoleApplicationProject.xpt.xml:11
+msgid "Create a console Java project"
+msgstr "Criar um novo projeto modo texto em Java"
+
+#: ../templates/JavaDialog.xft.xml:4
+msgid "Java AWT Dialog"
+msgstr "Caixa de Diálogo.AWT em Java"
+
+#: ../templates/JavaDialog.xft.xml:8
+msgid "Creates an AWT dialog."
+msgstr "Cria uma caixa de diálogo AWT."
+
+#: ../templates/JavaFrame.xft.xml:4
+msgid "AWT Frame"
+msgstr "Quadro AWT"
+
+#: ../templates/JavaFrame.xft.xml:8
+msgid "Creates a Java AWT Frame"
+msgstr "Criar um novo quadro AWT em Java"
+
+#: ../templates/JavaOKDialog.xft.xml:4
+msgid "AWT OK Dialog"
+msgstr "Caixa de Diálogo.AWT com Botão OK"
+
+#: ../templates/JavaOKDialog.xft.xml:8
+msgid "Creates a Java AWT OK Dialog."
+msgstr "Cria uma caixa de diálogo AWT, com um botão de OK em Java."
+
+#: ../templates/JavaPanel.xft.xml:4
+msgid "AWT Panel"
+msgstr "Painel AWT"
+
+#: ../templates/JavaPanel.xft.xml:8
+msgid "Creates a Java AWT panel."
+msgstr "Cria um painel AWT em Java."
+
+#: ../Gui/ProjectConfigurationPropertyPanel.cs:48
+msgid "Executable"
+msgstr "Executável"
+
+#: ../Gui/ProjectConfigurationPropertyPanel.cs:49
+msgid "Library"
+msgstr "Biblioteca"
+
+#: ../Gui/GlobalOptionsPanel.cs:28
+msgid "Javac"
+msgstr "Javac"
+
+#: ../Gui/GlobalOptionsPanel.cs:29
+msgid "Gcj"
+msgstr "Gcj"
+
+#: ../JavaBinding.addin.xml:27
+#, fuzzy
+msgid "Java Files"
+msgstr "Salvar Arquivos"
+
+#: ../JavaBinding.addin.xml:55
+msgid "Code Generation"
+msgstr "Geração de Código"
+
+#: ../JavaBinding.addin.xml:58
+msgid "Output"
+msgstr "Saida"
+
+#: ../JavaBinding.addin.xml:64
+#, fuzzy
+msgid "Java"
+msgstr "Javac"

@@ -1,3 +1,8 @@
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Startup.mdp, MonoDevelop.exe.addins, Makefile.am: Directory
+	  reorganization.
+
 2007-11-12  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Startup/MonoDevelopMain.cs: Use SetProcessName; "killall

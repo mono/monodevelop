@@ -11,6 +11,8 @@
 		<Import assembly="MonoDevelop.Database.Sql.Odbc.dll"/>
 	</Runtime>
 	
+  	<Localizer type="Gettext" catalog="monodevelop-database"/>
+	
 	<Dependencies>
 		<Addin id="MonoDevelop.Database.Sql" version="0.17.0"/>
 	</Dependencies>

@@ -1,5 +1,5 @@
 <Combine name="Tools" fileversion="2.0">
-  <Configurations>
+  <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="True" name="mdhost" configuration="Debug" />
       <Entry build="True" name="mdrun" configuration="Debug" />

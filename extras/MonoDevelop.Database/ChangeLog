@@ -1,0 +1,11 @@
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AUTHORS, configure.in, ChangeLog,
+	  MonoDevelop.Database.Sql.Tests/MonoDevelop.Database.Sql.Tests.mdp,
+	  README, Makefile.include, monodevelop-database.pc.in, Makefile.am,
+	  autogen.sh, MonoDevelop.Database.mds, NEWS, po, po/gl.po, po/cs.po,
+	  po/pt_BR.po, po/es.po, po/fr.po, po/sl_SI.po, po/pl.po, po/it.po,
+	  po/ca.po, po/pt.po, po/da.po, po/tr.po, po/ru.po, po/de.po, po/sv.po,
+	  po/po.mdse, po/ja.po, po/zh_TW.po, po/Makefile.am, po/zh_CN.po:
+	  Directory reorganization.
+

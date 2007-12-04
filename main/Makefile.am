@@ -1,4 +1,4 @@
-SUBDIRS = contrib Core build po Extras man
+SUBDIRS = contrib src build po man
 
 bin_SCRIPTS = monodevelop mdtool
 
@@ -13,7 +13,7 @@ pixmap_DATA = monodevelop.png
 xdgmimedir = $(datadir)/mime/packages
 xdgmime_DATA = monodevelop.xml
 
-pkgconfig_in_files = monodevelop.pc.in
+pkgconfig_in_files = monodevelop.pc.in monodevelop-core-addins.pc.in
 
 pkgconfigdir= $(prefix)/lib/pkgconfig
 pkgconfig_DATA = $(pkgconfig_in_files:.pc.in=.pc)
@@ -103,16 +103,7 @@ check-addins:
 # we can't use the variables that are conditionally defined
 EXTRA_DIST = $(bin_SCRIPTS) $(desktop_DATA) $(pixmap_DATA) \
 	monodevelop.xml mkinstalldirs intltool-extract.in \
-	intltool-merge.in intltool-update.in monodevelop.pc.in
+	intltool-merge.in intltool-update.in $(pkgconfig_in_files)
 
 DISTCLEANFILES = monodevelop intltool-extract intltool-merge intltool-update \
-	monodevelop.pc
-
-# fixup automake-1.9.6 distuninstallcheck:-rule reporting files created by update-mime-database
-# From BEAST (LGPL license): http://svn.gnome.org/viewvc/beast/trunk/Makefile.am
-filter_stale_uninstalled      = | egrep -v '^.*/share/mime/(subclasses|globs|magic|XMLnamespaces|aliases)$$'
-filter_stale_buildfiles       = | egrep -v '^./report.out$$'
-distuninstallcheck_listfiles  = find . -type f -print 		# automake-1.9 setting
-distuninstallcheck_listfiles += $(filter_stale_uninstalled)	# amend by required filtering
-distcleancheck_listfiles      = find . -type f -print		# automake-1.9 setting
-distcleancheck_listfiles     += $(filter_stale_buildfiles)	# amend by required filtering
+	$(pkgconfig_DATA) 

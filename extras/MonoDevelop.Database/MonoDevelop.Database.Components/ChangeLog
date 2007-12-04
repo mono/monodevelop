@@ -1,3 +1,19 @@
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Dialogs/WaitDialog.cs, Dialogs/DatabaseConnectionSettingsDialog.cs,
+	  Widgets/DataGrid/Renderers/BooleanContentRenderer.cs,
+	  Widgets/ColumnMappingWidget.cs, Widgets/SelectColumnWidget.cs,
+	  Widgets/SqlEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Database.Components.DataGrid.cs,
+	  gtk-gui/MonoDevelop.Database.Components.ShowImageDialog.cs,
+	  gtk-gui/MonoDevelop.Database.Components.WaitDialog.cs,
+	  gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs,
+	  gtk-gui/MonoDevelop.Database.Components.ShowTextDialog.cs,
+	  gtk-gui/MonoDevelop.Database.Components.SelectColumnDialog.cs,
+	  gtk-gui/gui.stetic, Makefile.am,
+	  MonoDevelop.Database.Components.addin.xml,
+	  MonoDevelop.Database.Components.mdp: Directory reorganization.
+
 2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Widgets/DataGrid/DataGrid.cs: Track LoggingService API. Replace some

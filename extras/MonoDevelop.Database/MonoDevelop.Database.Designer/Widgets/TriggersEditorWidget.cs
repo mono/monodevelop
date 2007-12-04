@@ -91,13 +91,13 @@ namespace MonoDevelop.Database.Designer
 			TreeViewColumn colActive = new TreeViewColumn ();
 			TreeViewColumn colComment = new TreeViewColumn ();
 			
-			colName.Title = GettextCatalog.GetString ("Name");
-			colType.Title = GettextCatalog.GetString ("Type");
-			colEvent.Title = GettextCatalog.GetString ("Event");
-			colFireType.Title = GettextCatalog.GetString ("Each Row");
-			colPosition.Title = GettextCatalog.GetString ("Position");
-			colActive.Title = GettextCatalog.GetString ("Active");
-			colComment.Title = GettextCatalog.GetString ("Comment");
+			colName.Title = AddinCatalog.GetString ("Name");
+			colType.Title = AddinCatalog.GetString ("Type");
+			colEvent.Title = AddinCatalog.GetString ("Event");
+			colFireType.Title = AddinCatalog.GetString ("Each Row");
+			colPosition.Title = AddinCatalog.GetString ("Position");
+			colActive.Title = AddinCatalog.GetString ("Active");
+			colComment.Title = AddinCatalog.GetString ("Comment");
 			
 			colType.MinWidth = 120;
 			colEvent.MinWidth = 120;
@@ -183,8 +183,8 @@ namespace MonoDevelop.Database.Designer
 				TriggerSchema trigger = store.GetValue (iter, colObjIndex) as TriggerSchema;
 				
 				if (Services.MessageService.AskQuestion (
-					GettextCatalog.GetString ("Are you sure you want to remove trigger '{0}'?", trigger.Name),
-					GettextCatalog.GetString ("Remove Trigger")
+					AddinCatalog.GetString ("Are you sure you want to remove trigger '{0}'?", trigger.Name),
+					AddinCatalog.GetString ("Remove Trigger")
 				)) {
 					store.Remove (ref iter);
 					triggers.Remove (trigger);
@@ -339,7 +339,7 @@ namespace MonoDevelop.Database.Designer
 					//type, event, firetype, position and fireType are always valid
 					
 					if (String.IsNullOrEmpty (source)) {
-						msg = GettextCatalog.GetString ("Trigger '{0}' does not contain a trigger statement.", name);
+						msg = AddinCatalog.GetString ("Trigger '{0}' does not contain a trigger statement.", name);
 						return false;
 					}
 				} while (store.IterNext (ref iter));

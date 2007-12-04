@@ -3,18 +3,22 @@
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="True" name="BooBinding" configuration="Debug" />
       <Entry build="True" name="BooShell" configuration="Debug" />
+      <Entry build="True" name="po" configuration="" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="BooBinding" configuration="Release" />
       <Entry build="True" name="BooShell" configuration="Debug" />
+      <Entry build="True" name="po" configuration="" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="BooBinding" single="True">
     <Execute type="None" entry="BooBinding" />
     <Execute type="None" entry="BooShell" />
+    <Execute type="None" entry="po" />
   </StartMode>
   <Entries>
     <Entry filename="BooBinding.mdp" />
     <Entry filename="BooShell/BooShell.mdp" />
+    <Entry filename="po/po.mdse" />
   </Entries>
 </Combine>

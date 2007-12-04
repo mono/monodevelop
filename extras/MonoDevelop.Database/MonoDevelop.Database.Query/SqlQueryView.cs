@@ -74,10 +74,10 @@ namespace MonoDevelop.Database.Query
 			
 			buttonExecute = new ToolButton (
 				Services.Resources.GetImage ("md-db-execute", IconSize.SmallToolbar),
-				GettextCatalog.GetString ("Execute")
+		AddinCatalog.GetString ("Execute")
 			);
 			buttonStop = new ToolButton ("gtk-stop");
-			buttonClear = new ToolButton (Services.Resources.GetImage ("gtk-clear", IconSize.Button), GettextCatalog.GetString ("Clear Results"));
+			buttonClear = new ToolButton (Services.Resources.GetImage ("gtk-clear", IconSize.Button), AddinCatalog.GetString ("Clear Results"));
 			buttonStop.Sensitive = false;
 			buttonExecute.Sensitive = false;
 			
@@ -107,7 +107,7 @@ namespace MonoDevelop.Database.Query
 			windowStatus.Add (status);
 			
 			notebook = new Notebook ();
-			notebook.AppendPage (windowStatus, new Label (GettextCatalog.GetString ("Status")));
+			notebook.AppendPage (windowStatus, new Label (AddinCatalog.GetString ("Status")));
 			
 			pane.Pack1 (sqlEditor, true, true);
 			pane.Pack2 (notebook, true, true);
@@ -167,7 +167,7 @@ namespace MonoDevelop.Database.Query
 		{
 			if (!connected) {
 				Services.MessageService.ShowErrorFormatted (
-					GettextCatalog.GetString ("Unable to connect to database '{0}'"), context.ConnectionSettings.Name);
+					AddinCatalog.GetString ("Unable to connect to database '{0}'"), context.ConnectionSettings.Name);
 				return;
 			}
 			
@@ -200,8 +200,8 @@ namespace MonoDevelop.Database.Query
 						grid.DataSource = table;
 						grid.DataBind ();
 	
-						string msg = String.Concat (Environment.NewLine, GettextCatalog.GetString ("Table"), ": ",table.TableName,
-							Environment.NewLine, "\t", GettextCatalog.GetString ("Affected Rows"), ": ", table.Rows.Count);
+						string msg = String.Concat (Environment.NewLine, AddinCatalog.GetString ("Table"), ": ",table.TableName,
+							Environment.NewLine, "\t", AddinCatalog.GetString ("Affected Rows"), ": ", table.Rows.Count);
 						status.Buffer.Text += msg;
 							
 						TabLabel label = new TabLabel (new Label (table.TableName), Services.Resources.GetImage ("md-db-table", IconSize.Menu));
@@ -214,7 +214,7 @@ namespace MonoDevelop.Database.Query
 			
 			if (result == null || result.Tables.Count == 0) {
 				DispatchService.GuiDispatch (delegate () {
-					status.Buffer.Text += GettextCatalog.GetString ("No Results");
+					status.Buffer.Text += AddinCatalog.GetString ("No Results");
 				});
 			}
 		}
@@ -232,7 +232,7 @@ namespace MonoDevelop.Database.Query
 		
 		private void ExecuteClicked (object sender, EventArgs e)
 		{
-			SetQueryState (true, GettextCatalog.GetString ("Executing query"));
+			SetQueryState (true, AddinCatalog.GetString ("Executing query"));
 			ExecuteQuery ();
 		}
 		
@@ -246,7 +246,7 @@ namespace MonoDevelop.Database.Query
 		
 		private void StopClicked (object sender, EventArgs e)
 		{
-			SetQueryState (false, GettextCatalog.GetString ("Query execute cancelled"));
+			SetQueryState (false, AddinCatalog.GetString ("Query execute cancelled"));
 			
 			//since we can't abort a threadpool task, each task is assigned a unique state
 			//when stop is pressed, the state is added to the list of results that need

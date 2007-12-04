@@ -63,12 +63,12 @@ namespace MonoDevelop.Database.ConnectionManager
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return GettextCatalog.GetString ("Procedures");
+			return AddinCatalog.GetString ("Procedures");
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			label = GettextCatalog.GetString ("Procedures");
+			label = AddinCatalog.GetString ("Procedures");
 			icon = Context.GetIcon ("md-db-procedure");
 			
 			BaseNode node = (BaseNode) dataObject;

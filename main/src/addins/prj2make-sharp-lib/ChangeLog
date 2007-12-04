@@ -1,3 +1,8 @@
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* prj2make-sharp-lib.addin.xml, Makefile.am, prj2make-sharp-lib.mdp:
+	  Directory reorganization.
+
 2007-11-24  David Makovský (Yakeen) <yakeen@sanyas-on.net> 
 
 	* MSBuildProjectServiceExtension.cs: corected translatable string to

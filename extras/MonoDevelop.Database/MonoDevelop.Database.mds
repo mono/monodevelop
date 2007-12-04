@@ -15,6 +15,7 @@
       <Entry build="True" name="MonoDevelop.Database.ConnectionManager" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Database.Components" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Database.Designer" configuration="Debug" />
+      <Entry build="True" name="po" configuration="" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.Database.Sql" configuration="Release" />
@@ -31,6 +32,7 @@
       <Entry build="True" name="MonoDevelop.Database.ConnectionManager" configuration="Release" />
       <Entry build="True" name="MonoDevelop.Database.Components" configuration="Release" />
       <Entry build="True" name="MonoDevelop.Database.Designer" configuration="Release" />
+      <Entry build="True" name="po" configuration="" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="MonoDevelop.Database.Sql.Tests" single="False">
@@ -48,6 +50,7 @@
     <Execute type="None" entry="MonoDevelop.Database.Sql.Oracle" />
     <Execute type="None" entry="MonoDevelop.Database.Sql.Npgsql" />
     <Execute type="None" entry="MonoDevelop.Database.Sql.Odbc" />
+    <Execute type="None" entry="po" />
   </StartMode>
   <Entries>
     <Entry filename="MonoDevelop.Database.Sql/MonoDevelop.Database.Sql.mdp" />
@@ -64,5 +67,6 @@
     <Entry filename="MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.mdp" />
     <Entry filename="MonoDevelop.Database.Components/MonoDevelop.Database.Components.mdp" />
     <Entry filename="MonoDevelop.Database.Designer/MonoDevelop.Database.Designer.mdp" />
+    <Entry filename="po/po.mdse" />
   </Entries>
 </Combine>

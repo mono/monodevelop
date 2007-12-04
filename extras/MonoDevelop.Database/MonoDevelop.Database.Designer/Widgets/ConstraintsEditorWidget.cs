@@ -82,28 +82,28 @@ namespace MonoDevelop.Database.Designer
 				//not for column constraints, since they are already editable in the column editor
 				pkEditor = new PrimaryKeyConstraintEditorWidget (schemaProvider, action, table, columns, constraints);
 				pkEditor.ContentChanged += new EventHandler (OnContentChanged);
-				notebook.AppendPage (pkEditor, new Label (GettextCatalog.GetString ("Primary Key")));
+				notebook.AppendPage (pkEditor, new Label (AddinCatalog.GetString ("Primary Key")));
 			}
 			
 			if (fac.IsCapabilitySupported ("Table", action, TableCapabilities.ForeignKeyConstraint)
 				|| fac.IsCapabilitySupported ("TableColumn", action, TableCapabilities.ForeignKeyConstraint)) {
 				fkEditor = new ForeignKeyConstraintEditorWidget (schemaProvider, action, tables, table, columns, constraints);
 				fkEditor.ContentChanged += new EventHandler (OnContentChanged);
-				notebook.AppendPage (fkEditor, new Label (GettextCatalog.GetString ("Foreign Key")));
+				notebook.AppendPage (fkEditor, new Label (AddinCatalog.GetString ("Foreign Key")));
 			}
 			
 			if (fac.IsCapabilitySupported ("Table", action, TableCapabilities.CheckConstraint)
 				|| fac.IsCapabilitySupported ("TableColumn", action, TableCapabilities.CheckConstraint)) {
 				checkEditor = new CheckConstraintEditorWidget (schemaProvider, action, table, columns, constraints);
 				checkEditor.ContentChanged += new EventHandler (OnContentChanged);
-				notebook.AppendPage (checkEditor, new Label (GettextCatalog.GetString ("Check")));
+				notebook.AppendPage (checkEditor, new Label (AddinCatalog.GetString ("Check")));
 			}
 			
 			if (fac.IsCapabilitySupported ("Table", action, TableCapabilities.UniqueConstraint)
 				|| fac.IsCapabilitySupported ("TableColumn", action, TableCapabilities.CheckConstraint)) {
 				uniqueEditor = new UniqueConstraintEditorWidget (schemaProvider, action, table, columns, constraints);
 				uniqueEditor.ContentChanged += new EventHandler (OnContentChanged);
-				notebook.AppendPage (uniqueEditor, new Label (GettextCatalog.GetString ("Unique")));
+				notebook.AppendPage (uniqueEditor, new Label (AddinCatalog.GetString ("Unique")));
 			}
 
 			ShowAll ();

@@ -11,6 +11,8 @@
 		<Import assembly="MonoDevelop.Database.ConnectionManager.dll"/>
 	</Runtime>
 	
+  	<Localizer type="Gettext" catalog="monodevelop-database"/>
+	
 	<Dependencies>
 		<Addin id="Core" version="0.17.0"/>
 		<Addin id="Core.Gui" version="0.17.0"/>

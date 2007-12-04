@@ -7,8 +7,8 @@ src/mdrun.cs
 all: $(ASSEMBLY) $(ASSEMBLY).config
 
 REFS = -r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
-	-r:$(top_builddir)/build/bin/Mono.Addins.Setup.dll
+	$(MONO_ADDINS_LIBS) \
+	$(MONO_ADDINS_SETUP_LIBS)
 	
 $(ASSEMBLY): $(build_sources)
 	$(CSC) $(CSC_FLAGS) $(build_sources) $(REFS) /out:$(ASSEMBLY)

@@ -80,8 +80,8 @@ namespace MonoDevelop.Database.Designer
 			TreeViewColumn colName = new TreeViewColumn ();
 			TreeViewColumn colIsColConstraint = new TreeViewColumn ();
 
-			colName.Title = GettextCatalog.GetString ("Name");
-			colIsColConstraint.Title = GettextCatalog.GetString ("Column Constraint");
+			colName.Title = AddinCatalog.GetString ("Name");
+			colIsColConstraint.Title = AddinCatalog.GetString ("Column Constraint");
 			
 			CellRendererText nameRenderer = new CellRendererText ();
 			CellRendererToggle toggleRenderer = new CellRendererToggle ();
@@ -186,8 +186,8 @@ namespace MonoDevelop.Database.Designer
 				UniqueConstraintSchema uni = store.GetValue (iter, colObjIndex) as UniqueConstraintSchema;
 				
 				if (Services.MessageService.AskQuestion (
-					GettextCatalog.GetString ("Are you sure you want to remove constraint '{0}'?", uni.Name),
-					GettextCatalog.GetString ("Remove Constraint")
+					AddinCatalog.GetString ("Are you sure you want to remove constraint '{0}'?", uni.Name),
+					AddinCatalog.GetString ("Remove Constraint")
 				)) {
 					store.Remove (ref iter);
 					constraints.Remove (uni);
@@ -226,7 +226,7 @@ namespace MonoDevelop.Database.Designer
 					string columns = store.GetValue (iter, colColumnsIndex) as string;
 					
 					if (String.IsNullOrEmpty (columns)) {
-						msg = GettextCatalog.GetString ("Unique Key constraint '{0}' must be applied to one or more columns.", name);
+						msg = AddinCatalog.GetString ("Unique Key constraint '{0}' must be applied to one or more columns.", name);
 						return false;
 					}
 				} while (store.IterNext (ref iter));

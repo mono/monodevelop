@@ -1,11 +1,11 @@
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/BackendBindings
-ASSEMBLY = $(ADDIN_BUILD)/VBNetBinding.dll
+ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.VBNetBinding.dll
 
 REFS =  \
 	$(GLADE_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
+	$(MONO_ADDINS_LIBS) \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \

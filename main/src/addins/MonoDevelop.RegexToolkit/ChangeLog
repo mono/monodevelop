@@ -1,3 +1,7 @@
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.RegexToolkit.mdp, Makefile.am: Directory reorganization.
+
 2007-12-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AssemblyInfo.cs: Sync assembly and add-in versions.

@@ -1,13 +1,13 @@
 
-ADDIN_BUILD = $(top_builddir)/build/AddIns
+ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.Deployment
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Deployment.dll
 
 REFS =  \
 	$(GLADE_SHARP_LIBS) \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
+	$(MONO_ADDINS_LIBS) \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
-	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \

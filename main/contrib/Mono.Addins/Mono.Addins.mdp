@@ -95,6 +95,14 @@
     <File name="src/Mono.Addins/Mono.Addins/TypeExtensionNode.cs" subtype="Code" buildaction="Compile" />
     <File name="src/Mono.Addins/Mono.Addins/TypeExtensionPointAttribute.cs" subtype="Code" buildaction="Compile" />
     <File name="src/Mono.Addins/Mono.Addins.dll.config" subtype="Code" buildaction="FileCopy" />
+    <File name="src/Mono.Addins/Mono.Addins.Localization/GettextDomain.cs" subtype="Code" buildaction="Compile" />
+    <File name="src/Mono.Addins/Mono.Addins.Localization/GettextLocalizer.cs" subtype="Code" buildaction="Compile" />
+    <File name="src/Mono.Addins/Mono.Addins.Localization/IAddinLocalizer.cs" subtype="Code" buildaction="Compile" />
+    <File name="src/Mono.Addins/Mono.Addins.Localization/IAddinLocalizerFactory.cs" subtype="Code" buildaction="Compile" />
+    <File name="src/Mono.Addins/Mono.Addins.Localization/NullLocalizer.cs" subtype="Code" buildaction="Compile" />
+    <File name="src/Mono.Addins/Mono.Addins.Localization/StringResourceLocalizer.cs" subtype="Code" buildaction="Compile" />
+    <File name="src/Mono.Addins/Mono.Addins.Localization/StringTableLocalizer.cs" subtype="Code" buildaction="Compile" />
+    <File name="src/Mono.Addins/Mono.Addins/AddinLocalizer.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

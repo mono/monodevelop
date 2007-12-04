@@ -1,3 +1,8 @@
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.am, MonoDevelop.Database.Sql.MySql.addin.xml,
+	  MonoDevelop.Database.Sql.MySql.mdp: Directory reorganization.
+
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Database.Sql.MySql.addin.xml: Bump MD version.

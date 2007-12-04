@@ -3,8 +3,8 @@ ASSEMBLY = $(ADDIN_BUILD)/ChangeLogAddIn.dll
 
 REFS =  \
 	$(GTK_SHARP_LIBS) \
-	-r:$(top_builddir)/build/AddIns/VersionControl/VersionControlAddIn.dll \
-	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
+	$(MONO_ADDINS_LIBS) \
+	-r:$(top_builddir)/build/AddIns/VersionControl/MonoDevelop.VersionControl.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \

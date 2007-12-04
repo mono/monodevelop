@@ -41,7 +41,7 @@ namespace MonoDevelop.Database.Components
 		public void SetContent (CellRendererText cell, object dataObject)
 		{
 			bool b = (bool)dataObject;
-			cell.Text = b ? GettextCatalog.GetString ("Y") : GettextCatalog.GetString ("N");
+			cell.Text = b ? AddinCatalog.GetString ("Y") : AddinCatalog.GetString ("N");
 		}
 
 		public int Compare (object x, object y)

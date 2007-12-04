@@ -120,7 +120,7 @@ namespace MonoDevelop.Database.Designer {
             this.frame.Add(this.alignment);
             this.GtkLabel2 = new Gtk.Label();
             this.GtkLabel2.Name = "GtkLabel2";
-            this.GtkLabel2.LabelProp = Mono.Unix.Catalog.GetString("Check Condition");
+            this.GtkLabel2.LabelProp = AddinCatalog.GetString("Check Condition");
             this.GtkLabel2.UseMarkup = true;
             this.frame.LabelWidget = this.GtkLabel2;
             this.vpaned.Add(this.frame);

@@ -39,7 +39,7 @@ namespace MonoDevelop.Database.Designer {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Database.Designer.CreateDatabaseDialog
             this.Name = "MonoDevelop.Database.Designer.CreateDatabaseDialog";
-            this.Title = Mono.Unix.Catalog.GetString("Create Database");
+            this.Title = AddinCatalog.GetString("Create Database");
             this.TypeHint = ((Gdk.WindowTypeHint)(1));
             this.WindowPosition = ((Gtk.WindowPosition)(1));
             this.SkipTaskbarHint = true;
@@ -122,7 +122,7 @@ namespace MonoDevelop.Database.Designer {
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
             this.label1.Xalign = 0F;
-            this.label1.LabelProp = Mono.Unix.Catalog.GetString("Name");
+            this.label1.LabelProp = AddinCatalog.GetString("Name");
             this.table.Add(this.label1);
             Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.table[this.label1]));
             w7.TopAttach = ((uint)(1));
@@ -133,7 +133,7 @@ namespace MonoDevelop.Database.Designer {
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
             this.label2.Xalign = 0F;
-            this.label2.LabelProp = Mono.Unix.Catalog.GetString("Database");
+            this.label2.LabelProp = AddinCatalog.GetString("Database");
             this.table.Add(this.label2);
             Gtk.Table.TableChild w8 = ((Gtk.Table.TableChild)(this.table[this.label2]));
             w8.TopAttach = ((uint)(2));
@@ -144,7 +144,7 @@ namespace MonoDevelop.Database.Designer {
             this.label3 = new Gtk.Label();
             this.label3.Name = "label3";
             this.label3.Xalign = 0F;
-            this.label3.LabelProp = Mono.Unix.Catalog.GetString("Base Settings");
+            this.label3.LabelProp = AddinCatalog.GetString("Base Settings");
             this.table.Add(this.label3);
             Gtk.Table.TableChild w9 = ((Gtk.Table.TableChild)(this.table[this.label3]));
             w9.XOptions = ((Gtk.AttachOptions)(4));

@@ -62,9 +62,9 @@ namespace MonoDevelop.Database.Components
 			this.isCreateDbMode = isCreateDbMode;
 			
 			if (isEditMode)
-				Title = GettextCatalog.GetString ("Edit Database Connection");
+				Title = AddinCatalog.GetString ("Edit Database Connection");
 			else
-				Title = GettextCatalog.GetString ("Add Database Connection");
+				Title = AddinCatalog.GetString ("Add Database Connection");
 			
 			textConnectionString.Buffer.Changed += new EventHandler (ConnectionStringChanged);
 			checkCustom.Toggled += new EventHandler (CustomConnectionStringActivated);
@@ -119,7 +119,7 @@ namespace MonoDevelop.Database.Components
 			isDefaultSettings = true;
 				
 			if (!isCreateDbMode) {
-				storeDatabases.AppendValues (GettextCatalog.GetString ("No databases found!"));
+				storeDatabases.AppendValues (AddinCatalog.GetString ("No databases found!"));
 				isDatabaseListEmpty = true;
 			}
 		}
@@ -227,7 +227,7 @@ namespace MonoDevelop.Database.Components
 
 			if (isDatabaseListEmpty) {
 				DispatchService.GuiDispatch (delegate () {
-					storeDatabases.AppendValues (GettextCatalog.GetString ("No databases found!"));
+					storeDatabases.AppendValues (AddinCatalog.GetString ("No databases found!"));
 				});
 			} else {
 				DispatchService.GuiDispatch (delegate () {
@@ -287,7 +287,7 @@ namespace MonoDevelop.Database.Components
 		
 		protected virtual void DatabaseChanged (object sender, EventArgs e)
 		{
-			if (isDatabaseListEmpty && comboDatabase.Entry.Text == GettextCatalog.GetString ("No databases found!")) {
+			if (isDatabaseListEmpty && comboDatabase.Entry.Text == AddinCatalog.GetString ("No databases found!")) {
 				comboDatabase.Entry.Text = String.Empty;
 			}
 			

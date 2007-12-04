@@ -213,7 +213,7 @@ namespace MonoDevelop.Database.Components {
             this.checkSavePassword = new Gtk.CheckButton();
             this.checkSavePassword.CanFocus = true;
             this.checkSavePassword.Name = "checkSavePassword";
-            this.checkSavePassword.Label = Mono.Unix.Catalog.GetString("Save Password");
+            this.checkSavePassword.Label = AddinCatalog.GetString("Save Password");
             this.checkSavePassword.Active = true;
             this.checkSavePassword.DrawIndicator = true;
             this.checkSavePassword.UseUnderline = true;
@@ -233,7 +233,7 @@ namespace MonoDevelop.Database.Components {
             this.label3 = new Gtk.Label();
             this.label3.Name = "label3";
             this.label3.Xalign = 0F;
-            this.label3.LabelProp = Mono.Unix.Catalog.GetString("Type");
+            this.label3.LabelProp = AddinCatalog.GetString("Type");
             this.tableGeneral.Add(this.label3);
             Gtk.Table.TableChild w13 = ((Gtk.Table.TableChild)(this.tableGeneral[this.label3]));
             w13.XOptions = ((Gtk.AttachOptions)(4));
@@ -242,7 +242,7 @@ namespace MonoDevelop.Database.Components {
             this.label4 = new Gtk.Label();
             this.label4.Name = "label4";
             this.label4.Xalign = 0F;
-            this.label4.LabelProp = Mono.Unix.Catalog.GetString("Name");
+            this.label4.LabelProp = AddinCatalog.GetString("Name");
             this.tableGeneral.Add(this.label4);
             Gtk.Table.TableChild w14 = ((Gtk.Table.TableChild)(this.tableGeneral[this.label4]));
             w14.TopAttach = ((uint)(1));
@@ -253,7 +253,7 @@ namespace MonoDevelop.Database.Components {
             this.label5 = new Gtk.Label();
             this.label5.Name = "label5";
             this.label5.Xalign = 0F;
-            this.label5.LabelProp = Mono.Unix.Catalog.GetString("Server");
+            this.label5.LabelProp = AddinCatalog.GetString("Server");
             this.tableGeneral.Add(this.label5);
             Gtk.Table.TableChild w15 = ((Gtk.Table.TableChild)(this.tableGeneral[this.label5]));
             w15.TopAttach = ((uint)(2));
@@ -264,7 +264,7 @@ namespace MonoDevelop.Database.Components {
             this.label6 = new Gtk.Label();
             this.label6.Name = "label6";
             this.label6.Xalign = 0F;
-            this.label6.LabelProp = Mono.Unix.Catalog.GetString("Port");
+            this.label6.LabelProp = AddinCatalog.GetString("Port");
             this.tableGeneral.Add(this.label6);
             Gtk.Table.TableChild w16 = ((Gtk.Table.TableChild)(this.tableGeneral[this.label6]));
             w16.TopAttach = ((uint)(3));
@@ -275,7 +275,7 @@ namespace MonoDevelop.Database.Components {
             this.label7 = new Gtk.Label();
             this.label7.Name = "label7";
             this.label7.Xalign = 0F;
-            this.label7.LabelProp = Mono.Unix.Catalog.GetString("Username");
+            this.label7.LabelProp = AddinCatalog.GetString("Username");
             this.tableGeneral.Add(this.label7);
             Gtk.Table.TableChild w17 = ((Gtk.Table.TableChild)(this.tableGeneral[this.label7]));
             w17.TopAttach = ((uint)(4));
@@ -286,7 +286,7 @@ namespace MonoDevelop.Database.Components {
             this.label8 = new Gtk.Label();
             this.label8.Name = "label8";
             this.label8.Xalign = 0F;
-            this.label8.LabelProp = Mono.Unix.Catalog.GetString("Password");
+            this.label8.LabelProp = AddinCatalog.GetString("Password");
             this.tableGeneral.Add(this.label8);
             Gtk.Table.TableChild w18 = ((Gtk.Table.TableChild)(this.tableGeneral[this.label8]));
             w18.TopAttach = ((uint)(5));
@@ -297,7 +297,7 @@ namespace MonoDevelop.Database.Components {
             this.label9 = new Gtk.Label();
             this.label9.Name = "label9";
             this.label9.Xalign = 0F;
-            this.label9.LabelProp = Mono.Unix.Catalog.GetString("Database");
+            this.label9.LabelProp = AddinCatalog.GetString("Database");
             this.tableGeneral.Add(this.label9);
             Gtk.Table.TableChild w19 = ((Gtk.Table.TableChild)(this.tableGeneral[this.label9]));
             w19.TopAttach = ((uint)(6));
@@ -326,7 +326,7 @@ namespace MonoDevelop.Database.Components {
             // Notebook tab
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
-            this.label1.LabelProp = Mono.Unix.Catalog.GetString("General");
+            this.label1.LabelProp = AddinCatalog.GetString("General");
             this.notebook.SetTabLabel(this.tableGeneral, this.label1);
             this.label1.ShowAll();
             // Container child notebook.Gtk.Notebook+NotebookChild
@@ -339,7 +339,7 @@ namespace MonoDevelop.Database.Components {
             this.checkCustom = new Gtk.CheckButton();
             this.checkCustom.CanFocus = true;
             this.checkCustom.Name = "checkCustom";
-            this.checkCustom.Label = Mono.Unix.Catalog.GetString("Use custom connection string");
+            this.checkCustom.Label = AddinCatalog.GetString("Use custom connection string");
             this.checkCustom.DrawIndicator = true;
             this.checkCustom.UseUnderline = true;
             this.tableAdvanced.Add(this.checkCustom);
@@ -352,7 +352,7 @@ namespace MonoDevelop.Database.Components {
             this.label10 = new Gtk.Label();
             this.label10.Name = "label10";
             this.label10.Xalign = 0F;
-            this.label10.LabelProp = Mono.Unix.Catalog.GetString("Min Pool Size");
+            this.label10.LabelProp = AddinCatalog.GetString("Min Pool Size");
             this.tableAdvanced.Add(this.label10);
             Gtk.Table.TableChild w23 = ((Gtk.Table.TableChild)(this.tableAdvanced[this.label10]));
             w23.XOptions = ((Gtk.AttachOptions)(4));
@@ -361,7 +361,7 @@ namespace MonoDevelop.Database.Components {
             this.label11 = new Gtk.Label();
             this.label11.Name = "label11";
             this.label11.Xalign = 0F;
-            this.label11.LabelProp = Mono.Unix.Catalog.GetString("Max Pool Size");
+            this.label11.LabelProp = AddinCatalog.GetString("Max Pool Size");
             this.tableAdvanced.Add(this.label11);
             Gtk.Table.TableChild w24 = ((Gtk.Table.TableChild)(this.tableAdvanced[this.label11]));
             w24.TopAttach = ((uint)(1));
@@ -424,7 +424,7 @@ namespace MonoDevelop.Database.Components {
             // Notebook tab
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
-            this.label2.LabelProp = Mono.Unix.Catalog.GetString("Advanced");
+            this.label2.LabelProp = AddinCatalog.GetString("Advanced");
             this.notebook.SetTabLabel(this.tableAdvanced, this.label2);
             this.label2.ShowAll();
             w1.Add(this.notebook);
@@ -435,7 +435,7 @@ namespace MonoDevelop.Database.Components {
             // Internal child MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.ActionArea
             Gtk.HButtonBox w31 = this.ActionArea;
             w31.Name = "dialog1_ActionArea";
-            w31.Spacing = 6;
+            w31.Spacing = 10;
             w31.BorderWidth = ((uint)(5));
             w31.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild

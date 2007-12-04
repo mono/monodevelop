@@ -81,12 +81,12 @@ namespace MonoDevelop.Database.Designer
 			TreeViewColumn colNullable = new TreeViewColumn ();
 			TreeViewColumn colComment = new TreeViewColumn ();
 			
-			colPK.Title = GettextCatalog.GetString ("PK");
-			colName.Title = GettextCatalog.GetString ("Name");
-			colType.Title = GettextCatalog.GetString ("Type");
-			colLength.Title = GettextCatalog.GetString ("Length");
-			colNullable.Title = GettextCatalog.GetString ("Nullable");
-			colComment.Title = GettextCatalog.GetString ("Comment");
+			colPK.Title = AddinCatalog.GetString ("PK");
+			colName.Title = AddinCatalog.GetString ("Name");
+			colType.Title = AddinCatalog.GetString ("Type");
+			colLength.Title = AddinCatalog.GetString ("Length");
+			colNullable.Title = AddinCatalog.GetString ("Nullable");
+			colComment.Title = AddinCatalog.GetString ("Comment");
 			
 			colType.MinWidth = 120; //request a bigger width
 
@@ -218,8 +218,8 @@ namespace MonoDevelop.Database.Designer
 				//TODO: also check for attached constraints
 				
 				bool result = Services.MessageService.AskQuestion (
-					GettextCatalog.GetString ("Are you sure you want to remove column '{0}'", column.Name),
-					GettextCatalog.GetString ("Remove Column")
+					AddinCatalog.GetString ("Are you sure you want to remove column '{0}'", column.Name),
+					AddinCatalog.GetString ("Remove Column")
 				);
 				
 				if (result) {
@@ -382,26 +382,26 @@ namespace MonoDevelop.Database.Designer
 		
 					DataTypeSchema dt = schemaProvider.GetDataType (type);
 					if (dt == null) {
-						msg = GettextCatalog.GetString ("Unknown data type '{0}' applied to column '{1}'.", type, name);
+						msg = AddinCatalog.GetString ("Unknown data type '{0}' applied to column '{1}'.", type, name);
 						return false;
 					}
 					
 					//TODO: enable when all providers have good datatype info
 //					if (!dt.LengthRange.IsInRange (len)) {
-//						msg = GettextCatalog.GetString ("Invalid length for '{0}'.", name);
+//						msg = AddinCatalog.GetString ("Invalid length for '{0}'.", name);
 //						return false;
 //					}
 				} while (storeColumns.IterNext (ref iter));
 				
 				if (!isPk) {
-					msg = GettextCatalog.GetString ("Table '{0}' must contain at least one primary key.", table.Name);
+					msg = AddinCatalog.GetString ("Table '{0}' must contain at least one primary key.", table.Name);
 					return false;
 				} else {
 					msg = null;
 					return true;
 				}
 			}
-			msg = GettextCatalog.GetString ("Table '{0}' must contain at least 1 column.", table.Name);
+			msg = AddinCatalog.GetString ("Table '{0}' must contain at least 1 column.", table.Name);
 			return false;
 		}
 		

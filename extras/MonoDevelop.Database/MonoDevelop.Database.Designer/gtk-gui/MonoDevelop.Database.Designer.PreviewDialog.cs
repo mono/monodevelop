@@ -25,7 +25,7 @@ namespace MonoDevelop.Database.Designer {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Database.Designer.PreviewDialog
             this.Name = "MonoDevelop.Database.Designer.PreviewDialog";
-            this.Title = Mono.Unix.Catalog.GetString("Preview");
+            this.Title = AddinCatalog.GetString("Preview");
             this.TypeHint = ((Gdk.WindowTypeHint)(1));
             this.WindowPosition = ((Gtk.WindowPosition)(1));
             this.SkipTaskbarHint = true;

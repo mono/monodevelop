@@ -9,10 +9,6 @@
        version     = "0.17.0"
        compatVersion = "0.17.0">
 
-	<Runtime>
-		<Import assembly="MonoDevelop.Deployment.dll"/>
-	</Runtime>
-
 	<Dependencies>
 		<Addin id="Core" version="0.17.0"/>
 		<Addin id="Core.Gui" version="0.17.0"/>

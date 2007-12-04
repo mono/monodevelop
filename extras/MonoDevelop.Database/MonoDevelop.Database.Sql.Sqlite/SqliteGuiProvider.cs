@@ -39,13 +39,13 @@ using MonoDevelop.Database.Components;
 			FileChooserDialog dlg = null;
 			if (create) {
 				dlg = new FileChooserDialog (
-					GettextCatalog.GetString ("Save Database"), null, FileChooserAction.Save,
+					AddinCatalog.GetString ("Save Database"), null, FileChooserAction.Save,
 					"gtk-cancel", ResponseType.Cancel,
 					"gtk-save", ResponseType.Accept
 				);
 			} else {
 				dlg = new FileChooserDialog (
-					GettextCatalog.GetString ("Open Database"), null, FileChooserAction.Open,
+					AddinCatalog.GetString ("Open Database"), null, FileChooserAction.Open,
 					"gtk-cancel", ResponseType.Cancel,
 					"gtk-open", ResponseType.Accept
 				);
@@ -58,10 +58,10 @@ using MonoDevelop.Database.Components;
 			filter.AddMimeType ("application/x-sqlite2");
 			filter.AddMimeType ("application/x-sqlite3");
 			filter.AddPattern ("*.db");
-			filter.Name = GettextCatalog.GetString ("SQLite databases");
+			filter.Name = AddinCatalog.GetString ("SQLite databases");
 			FileFilter filterAll = new FileFilter ();
 			filterAll.AddPattern ("*");
-			filterAll.Name = GettextCatalog.GetString ("All files");
+			filterAll.Name = AddinCatalog.GetString ("All files");
 			dlg.AddFilter (filter);
 			dlg.AddFilter (filterAll);
 

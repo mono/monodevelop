@@ -1,3 +1,25 @@
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* NodeBuilders/UsersNodeBuilder.cs, NodeBuilders/ParametersNodeBuilder.cs,
+	  NodeBuilders/ConnectionContextNodeBuilder.cs,
+	  NodeBuilders/TypesNodeBuilder.cs, NodeBuilders/LanguagesNodeBuilder.cs,
+	  NodeBuilders/ConstraintsNodeBuilder.cs,
+	  NodeBuilders/AggregatesNodeBuilder.cs,
+	  NodeBuilders/TablesNodeBuilder.cs, NodeBuilders/ViewNodeBuilder.cs,
+	  NodeBuilders/ProceduresNodeBuilder.cs,
+	  NodeBuilders/OperatorsNodeBuilder.cs, NodeBuilders/UserNodeBuilder.cs,
+	  NodeBuilders/GroupsNodeBuilder.cs, NodeBuilders/ParameterNodeBuilder.cs,
+	  NodeBuilders/ConnectionContextCollectionNodeBuilder.cs,
+	  NodeBuilders/ColumnsNodeBuilder.cs, NodeBuilders/RolesNodeBuilder.cs,
+	  NodeBuilders/ConstraintNodeBuilder.cs,
+	  NodeBuilders/TriggersNodeBuilder.cs, NodeBuilders/TableNodeBuilder.cs,
+	  NodeBuilders/ProcedureNodeBuilder.cs, NodeBuilders/RulesNodeBuilder.cs,
+	  NodeBuilders/SequencesNodeBuilder.cs, NodeBuilders/ColumnNodeBuilder.cs,
+	  NodeBuilders/ViewsNodeBuilder.cs,
+	  MonoDevelop.Database.ConnectionManager.addin.xml,
+	  MonoDevelop.Database.ConnectionManager.mdp, Makefile.am: Directory
+	  reorganization.
+
 2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* NodeBuilders/TablesNodeBuilder.cs,

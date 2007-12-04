@@ -1,5 +1,5 @@
-ADDIN_BUILD = $(top_builddir)/build/AddIns/GeckoWebBrowser
-ASSEMBLY = $(ADDIN_BUILD)/GeckoWebBrowser.dll
+ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.GeckoWebBrowser/GeckoWebBrowser
+ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.GeckoWebBrowser.dll
 
 REFS =  \
 	$(GECKO_SHARP_LIBS) \

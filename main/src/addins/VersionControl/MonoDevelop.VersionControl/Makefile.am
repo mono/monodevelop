@@ -42,9 +42,9 @@ FILES =  \
 REFS =  \
 	$(GCONF_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
+	$(MONO_ADDINS_LIBS) \
 	-r:$(top_builddir)/build/AddIns/VersionControl/Diff.dll \
 	-r:$(top_builddir)/build/AddIns/VersionControl/DiffWidget.dll \
-	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
@@ -80,7 +80,7 @@ RES =  \
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/VersionControl
 
-DLL = $(ADDIN_BUILD)/VersionControlAddIn.dll
+DLL = $(ADDIN_BUILD)/MonoDevelop.VersionControl.dll
 
 if ENABLE_VERSIONCONTROL
 all: $(DLL)

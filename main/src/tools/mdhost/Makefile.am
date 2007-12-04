@@ -8,7 +8,7 @@ all: $(ASSEMBLY)
 
 REFS = -r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:System.Runtime.Remoting \
-	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
+	$(MONO_ADDINS_LIBS) \
 	-r:Mono.Posix
 	
 $(ASSEMBLY): $(build_sources)

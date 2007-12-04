@@ -252,8 +252,8 @@ namespace MonoDevelop.Database.ConnectionManager
 			TableNode node = (TableNode)CurrentNode.DataItem;
 
 			if (Services.MessageService.AskQuestion (
-				GettextCatalog.GetString ("Are you sure you want to empty table '{0}'", node.Table.Name),
-				GettextCatalog.GetString ("Empty Table")
+				AddinCatalog.GetString ("Are you sure you want to empty table '{0}'", node.Table.Name),
+				AddinCatalog.GetString ("Empty Table")
 			)) {
 				IdentifierExpression tableId = new IdentifierExpression (node.Table.Name);
 				DeleteStatement del = new DeleteStatement (new FromTableClause (tableId));
@@ -269,7 +269,7 @@ namespace MonoDevelop.Database.ConnectionManager
 			connection.Release ();
 
 			DispatchService.GuiDispatch (delegate () {
-				IdeApp.Workbench.StatusBar.SetMessage (GettextCatalog.GetString ("Table emptied"));
+				IdeApp.Workbench.StatusBar.SetMessage (AddinCatalog.GetString ("Table emptied"));
 			});
 		}
 		
@@ -278,8 +278,8 @@ namespace MonoDevelop.Database.ConnectionManager
 		{
 			TableNode node = (TableNode)CurrentNode.DataItem;
 			if (Services.MessageService.AskQuestion (
-				GettextCatalog.GetString ("Are you sure you want to drop table '{0}'", node.Table.Name),
-				GettextCatalog.GetString ("Drop Table")
+				AddinCatalog.GetString ("Are you sure you want to drop table '{0}'", node.Table.Name),
+				AddinCatalog.GetString ("Drop Table")
 			)) {
 				ThreadPool.QueueUserWorkItem (new WaitCallback (OnDropTableThreaded), CurrentNode.DataItem);
 			}

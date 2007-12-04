@@ -27,7 +27,7 @@ namespace MonoDevelop.Database.Components {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Database.Components.WaitDialog
             this.Name = "MonoDevelop.Database.Components.WaitDialog";
-            this.Title = Mono.Unix.Catalog.GetString("WaitDialog");
+            this.Title = AddinCatalog.GetString("WaitDialog");
             this.TypeHint = ((Gdk.WindowTypeHint)(6));
             this.WindowPosition = ((Gtk.WindowPosition)(1));
             this.Modal = true;
@@ -61,7 +61,7 @@ namespace MonoDevelop.Database.Components {
             this.label.Name = "label";
             this.label.Xalign = 0F;
             this.label.Yalign = 0F;
-            this.label.LabelProp = Mono.Unix.Catalog.GetString("Please wait");
+            this.label.LabelProp = AddinCatalog.GetString("Please wait");
             this.hbox2.Add(this.label);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox2[this.label]));
             w2.Position = 1;

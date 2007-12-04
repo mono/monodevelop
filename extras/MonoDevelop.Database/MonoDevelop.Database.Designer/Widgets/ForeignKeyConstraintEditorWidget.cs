@@ -111,11 +111,11 @@ namespace MonoDevelop.Database.Designer
 			TreeViewColumn colDeleteAction = new TreeViewColumn ();
 			TreeViewColumn colUpdateAction = new TreeViewColumn ();
 			
-			colName.Title = GettextCatalog.GetString ("Name");
-			colRefTable.Title = GettextCatalog.GetString ("Reference Table");
-			colIsColumnConstraint.Title = GettextCatalog.GetString ("Column Constraint");
-			colDeleteAction.Title = GettextCatalog.GetString ("Delete Action");
-			colUpdateAction.Title = GettextCatalog.GetString ("Update Action");
+			colName.Title = AddinCatalog.GetString ("Name");
+			colRefTable.Title = AddinCatalog.GetString ("Reference Table");
+			colIsColumnConstraint.Title = AddinCatalog.GetString ("Column Constraint");
+			colDeleteAction.Title = AddinCatalog.GetString ("Delete Action");
+			colUpdateAction.Title = AddinCatalog.GetString ("Update Action");
 			
 			colRefTable.MinWidth = 120;
 			
@@ -189,8 +189,8 @@ namespace MonoDevelop.Database.Designer
 				ForeignKeyConstraintSchema fk = store.GetValue (iter, colObjIndex) as ForeignKeyConstraintSchema;
 				
 				if (Services.MessageService.AskQuestion (
-					GettextCatalog.GetString ("Are you sure you want to remove constraint '{0}'?", fk.Name),
-					GettextCatalog.GetString ("Remove Constraint")
+					AddinCatalog.GetString ("Are you sure you want to remove constraint '{0}'?", fk.Name),
+					AddinCatalog.GetString ("Remove Constraint")
 				)) {
 					store.Remove (ref iter);
 					constraints.Remove (fk);
@@ -344,7 +344,7 @@ namespace MonoDevelop.Database.Designer
 					string columns = store.GetValue (iter, colColumnsIndex) as string;
 					
 					if (String.IsNullOrEmpty (columns)) {
-						msg = GettextCatalog.GetString ("Unique Key constraint '{0}' must be applied to one or more columns.", name);
+						msg = AddinCatalog.GetString ("Unique Key constraint '{0}' must be applied to one or more columns.", name);
 						return false;
 					}
 				} while (store.IterNext (ref iter));

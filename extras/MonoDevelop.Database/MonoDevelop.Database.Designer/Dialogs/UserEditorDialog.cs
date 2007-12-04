@@ -60,9 +60,9 @@ namespace MonoDevelop.Database.Designer
 			this.Build();
 			
 			if (create)
-				Title = GettextCatalog.GetString ("Create User");
+				Title = AddinCatalog.GetString ("Create User");
 			else
-				Title = GettextCatalog.GetString ("Alter User");
+				Title = AddinCatalog.GetString ("Alter User");
 			
 			notebook = new Notebook ();
 			vboxContent.PackStart (notebook, true, true, 0);

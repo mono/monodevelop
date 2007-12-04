@@ -1,3 +1,9 @@
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* CSharpBinding.addin.xml, Autotools/Autotools.mdp, Autotools/Makefile.am,
+	  CSharpBinding.mdp, CSharpBinding.mds, gtk-gui/gui.stetic, Makefile.am:
+	  Directory reorganization.
+
 2007-12-03  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Gui/CSharpTextEditorExtension.cs: Fix for "Bug 345774 - "override"

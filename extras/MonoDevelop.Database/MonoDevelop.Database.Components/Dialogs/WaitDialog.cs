@@ -55,7 +55,7 @@ namespace MonoDevelop.Database.Components
 				dlg = new WaitDialog ();
 			
 			if (text == null)
-				dlg.label.Markup = GettextCatalog.GetString ("Please Wait");
+				dlg.label.Markup = AddinCatalog.GetString ("Please Wait");
 			else
 				dlg.label.Markup = text;
 

@@ -1,16 +1,18 @@
-<Combine name="MonoDevelop" fileversion="2.0" outputpath="build/bin/" MakePkgConfig="False" MakeLibPC="True">
+<Combine name="Main" fileversion="2.0" outputpath="build/bin/" MakePkgConfig="False" MakeLibPC="True">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="True" name="Core" configuration="Debug" />
-      <Entry build="True" name="Extras" configuration="Debug" />
-      <Entry build="True" name="po" configuration="Debug" />
+      <Entry build="True" name="Addins" configuration="Debug" />
       <Entry build="True" name="contrib" configuration="Debug" />
+      <Entry build="True" name="po" configuration="Debug" />
+      <Entry build="True" name="Tools" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="Core" configuration="Release" />
-      <Entry build="True" name="Extras" configuration="Release" />
-      <Entry build="True" name="po" configuration="Release" />
+      <Entry build="True" name="Addins" configuration="Release" />
       <Entry build="True" name="contrib" configuration="Release" />
+      <Entry build="True" name="po" configuration="Release" />
+      <Entry build="True" name="Tools" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="Core" single="True">
@@ -19,12 +21,15 @@
     <Execute type="None" entry="contrib" />
     <Execute type="None" entry="po" />
     <Execute type="None" entry="contrib" />
+    <Execute type="None" entry="po" />
+    <Execute type="None" entry="Tools" />
   </StartMode>
   <DeployTargets />
   <Entries>
-    <Entry filename="Core/src/Core.mds" />
-    <Entry filename="Extras/Extras.mds" />
-    <Entry filename="po/po.mdp" />
+    <Entry filename="src/core/Core.mds" />
+    <Entry filename="src/addins/Addins.mds" />
     <Entry filename="contrib/contrib.mds" />
+    <Entry filename="po/po.mdse" />
+    <Entry filename="src/tools/Tools.mds" />
   </Entries>
 </Combine>

@@ -1,0 +1,4 @@
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* configure, profiles, MonoDevelop.mds, Makefile: Directory reorganization.
+

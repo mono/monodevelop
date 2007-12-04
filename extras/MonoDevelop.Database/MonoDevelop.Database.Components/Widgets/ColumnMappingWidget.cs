@@ -44,7 +44,7 @@ namespace MonoDevelop.Database.Components
 			list = new TreeView (store);
 			
 			TreeViewColumn colName = new TreeViewColumn ();
-			colName.Title = GettextCatalog.GetString ("Name");
+			colName.Title = AddinCatalog.GetString ("Name");
 
 			CellRendererToggle toggleRenderer = new CellRendererToggle ();
 			toggleRenderer.Activatable = true;
@@ -54,36 +54,36 @@ namespace MonoDevelop.Database.Components
 			colName.PackStart (nameRenderer, true);
 
 			TreeViewColumn colType = new TreeViewColumn ();
-			colType.Title = GettextCatalog.GetString ("Type");
+			colType.Title = AddinCatalog.GetString ("Type");
 			CellRendererText typeRenderer = new CellRendererText ();
 			colType.PackStart (typeRenderer, true);
 			
 			TreeViewColumn colPropName = new TreeViewColumn ();
-			colPropName.Title = GettextCatalog.GetString ("Property Name");
+			colPropName.Title = AddinCatalog.GetString ("Property Name");
 			CellRendererText propNameRenderer = new CellRendererText ();
 			propNameRenderer.Editable = true;
 			propNameRenderer.Edited += new EditedHandler (PropNameEdited);
 			colPropName.PackStart (propNameRenderer, true);
 			
 			TreeViewColumn colPropType = new TreeViewColumn ();
-			colPropType.Title = GettextCatalog.GetString ("Property Type");
+			colPropType.Title = AddinCatalog.GetString ("Property Type");
 			CellRendererTypeCombo propTypeRenderer = new CellRendererTypeCombo ();
 			colPropType.PackStart (propTypeRenderer, true);
 			
 			TreeViewColumn colNullable = new TreeViewColumn ();
-			colNullable.Title = GettextCatalog.GetString ("Nullable");
+			colNullable.Title = AddinCatalog.GetString ("Nullable");
 			CellRendererToggle nullableRenderer = new CellRendererToggle ();
 			colNullable.PackStart (nullableRenderer, false);
 			
 			TreeViewColumn colSetter = new TreeViewColumn ();
-			colSetter.Title = GettextCatalog.GetString ("Create Setter");
+			colSetter.Title = AddinCatalog.GetString ("Create Setter");
 			CellRendererToggle setterRenderer = new CellRendererToggle ();
 			setterRenderer.Activatable = true;
 			setterRenderer.Toggled += new ToggledHandler (SetterToggled);
 			colSetter.PackStart (setterRenderer, false);
 			
 			TreeViewColumn colCtor = new TreeViewColumn ();
-			colCtor.Title = GettextCatalog.GetString ("Ctor Parameter");
+			colCtor.Title = AddinCatalog.GetString ("Ctor Parameter");
 			CellRendererToggle ctorParamRenderer = new CellRendererToggle ();
 			ctorParamRenderer.Activatable = true;
 			ctorParamRenderer.Toggled += new ToggledHandler (CtorParamToggled);

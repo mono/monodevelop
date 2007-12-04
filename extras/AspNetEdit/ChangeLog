@@ -1,3 +1,8 @@
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AspNetEdit.mdp, configure, AspNetEdit.mds, Makefile.include, rules.make,
+	  Makefile.am, AspNetEdit.make, Makefile: Directory reorganization.
+
 2007-11-30  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* AspNetEdit.mdp, AspNetEdit.Editor.UI/RootDesignerView.cs, Makefile.am:
