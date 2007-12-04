@@ -1,5 +1,9 @@
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Makefile: Added missing file.
+
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* BooShell.mdp, Makefile.am: Directory reorganization.
 
 2007-11-13  Lluis Sanchez Gual <lluis@novell.com> 
