@@ -1,3 +1,7 @@
+2007-12-03  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* configure.in: Remove GtkHtml dependency.
+
 2007-11-30  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* configure.in:
