@@ -62,7 +62,6 @@ namespace MonoDevelop.WelcomePage
 		static IWebBrowser browser;
 		
 		bool loadingProject;
-		bool loadingContent = false;
 		
 		string datadir;
 		
@@ -91,7 +90,7 @@ namespace MonoDevelop.WelcomePage
 				browser = WebBrowserService.GetWebBrowser ();
 				Control.Show ();
 				Control.Show ();
-				browser.LocationChanging += CatchUri;
+				browser.LinkClicked += CatchUri;
 				browser.LinkStatusChanged += LinkMessage;
 			}
 			
@@ -120,7 +119,6 @@ namespace MonoDevelop.WelcomePage
 			StringWriter fs = new StringWriter ();
 			xslt.Transform (inxml, arg, fs, null);
 			
-			loadingContent = true;
 			browser.LoadHtml (fs.ToString ());
 		}
 
@@ -144,12 +142,6 @@ namespace MonoDevelop.WelcomePage
 		
 		void CatchUri (object sender, LocationChangingEventArgs e)
 		{
-			//don't intercept the URI when we actually want to load a page
-			if (loadingContent) {
-				loadingContent = false;
-				return;
-			}
-			
 			e.SuppressChange = true;
 	
 			string URI = e.NextLocation;

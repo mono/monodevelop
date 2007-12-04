@@ -1,5 +1,9 @@
 2007-12-03  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* WelcomePageView.cs: Use new LinkClicked event.
+
+2007-12-03  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* WelcomePageView.cs: Second part of the fix for "Bug 345423 - project is
 	  not a registered protocol".
 
