@@ -142,11 +142,11 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (helpViewer == null) {
 				helpViewer = new HelpViewer ();
-				helpViewer.Render (text, matched_node, url);
+				helpViewer.LoadNode (text, matched_node, url);
 				IdeApp.Workbench.OpenDocument (helpViewer, true);
 				helpViewer.WorkbenchWindow.Closed += new EventHandler (CloseWindowEvent);
 			} else {
-				helpViewer.Render (text, matched_node, url);
+				helpViewer.LoadNode (text, matched_node, url);
 				helpViewer.WorkbenchWindow.SelectWindow ();
 			}
 		}

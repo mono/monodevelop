@@ -1,3 +1,11 @@
+2007-12-03  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs: Make logging call more
+	  verbose.
+	* MonoDevelop.Ide.mdp, MonoDevelop.Ide.Gui/HelpOperations.cs,
+	  MonoDevelop.Ide.Gui/HelpViewer.cs: Port to IWebBrowser to remove GtkHtml
+	  dependency. Doesn't yet handle images.
+
 2007-12-03  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.addin.xml: Use gtk icons instead of old gnomeui icons.

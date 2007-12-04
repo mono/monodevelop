@@ -127,7 +127,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 					IdeApp.HelpOperations.ShowDocs (s, match, url);
 					return;
 				}
-				LoggingService.LogError ("Couldnt find match");
+				LoggingService.LogError ("MonoDocTreePad RowActivated couldn't find match");
 			}
 		}
 
