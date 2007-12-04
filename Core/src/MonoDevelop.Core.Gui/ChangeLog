@@ -1,3 +1,9 @@
+2007-12-03  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Core.Gui.WebBrowser/IWebBrowser.cs: Add LinkClicked event,
+	  identical to LocationChanging except that it's not triggered by calls to
+	  Load(Url|Html).
+
 2007-11-30  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Core.Gui.mdp, MonoDevelop.Core.Gui.WebBrowser,

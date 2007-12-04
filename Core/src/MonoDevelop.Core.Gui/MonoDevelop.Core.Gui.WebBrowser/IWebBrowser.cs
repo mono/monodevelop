@@ -50,7 +50,12 @@ namespace MonoDevelop.Core.Gui.WebBrowser
 		void StopLoad ();
 		
 		event PageLoadedHandler PageLoaded;
+		
+		//the differnce between these two is that LocationChanging will be fired by all nav changes including calls to 
+		//LoadUrl or LoadHtml, whereas LocationChanging is only fired by changes initiated from within the browser
+		event LocationChangingHandler LinkClicked;
 		event LocationChangingHandler LocationChanging;
+		
 		event LocationChangedHandler LocationChanged;
 		event TitleChangedHandler TitleChanged;
 		event StatusMessageChangedHandler JSStatusChanged;
