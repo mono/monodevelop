@@ -5,7 +5,7 @@ profile=stable
 
 usage ()
 {
-	echo "Usage : configure [--prefix=PREFIX] [--prfile=PROFILE]"
+	echo "Usage : configure [--prefix=PREFIX] [--profile=PROFILE]"
 	echo
 	echo "Profiles available :"
 	ls -1 profiles
@@ -79,16 +79,16 @@ create_local_config ()
 }
 
 while test x$1 != x; do
-        case $1 in
-                --prefix=*)
-                        prefix=`echo $1 | sed 's/--prefix=//'`
-                        ;;
-                --prefix)
-                        echo --prefix needs an argument: --prefix=directory >&2
-
-                        ;;
+	case $1 in
+		--prefix=*)
+			prefix=`echo $1 | sed 's/--prefix=//'`
+			;;
+		--prefix)
+			shift
+			prefix=$1
+			;;
 		--profile=*)
-                        prof=`echo $1 | sed 's/--profile=//'`
+			prof=`echo $1 | sed 's/--profile=//'`
 			validate_profile "$prof"
 			if [ $? -eq 1 ]; then
 				profile=$prof
@@ -97,18 +97,30 @@ while test x$1 != x; do
 				usage
 				exit 1
 			fi
-                        ;;
+			;;
+		--profile)
+			shift
+			prof=$1
+			validate_profile "$prof"
+			if [ $? -eq 1 ]; then
+				profile=$prof
+			else
+				echo "Invalid profile name - $conf"
+				usage
+				exit 1
+			fi
+			;;
 		--help)
 			usage
 			exit
 			;;
-                *)
-                        echo Unknown argument $1 >&2
+		*)
+			echo Unknown argument $1 >&2
 			usage
 			exit 1
 			;;
-        esac
-        shift
+	esac
+	shift
 done
 
 configure_packages
