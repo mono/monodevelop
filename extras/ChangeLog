@@ -1,4 +1,8 @@
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* extras.mds: Moved SourceEditor2 to main.
+
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* extras.mds: Directory reorganization.
 
