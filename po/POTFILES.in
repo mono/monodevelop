@@ -302,7 +302,6 @@ Extras/ILAsmBinding/ILAsmConsoleProject.xpt.xml
 Extras/JavaBinding/Gui/GlobalOptionsPanel.cs
 Extras/JavaBinding/Gui/ProjectConfigurationPropertyPanel.cs
 Extras/JavaBinding/IKVMCompilerManager.cs
-Extras/JavaBinding/Java.glade
 Extras/JavaBinding/JavaBinding.addin.xml
 Extras/JavaBinding/gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs
 Extras/JavaBinding/gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs
