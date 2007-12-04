@@ -947,18 +947,26 @@ namespace CSharpBinding
 				ArrayList list = isInterface ? interfaceMembers : classMembers;
 				
 				foreach (IMethod m in baseCls.Methods) {
+					if (m.IsInternal && motherClass.SourceProject != null && motherClass.SourceProject != m.DeclaringType.SourceProject)
+						continue;
 					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && CanOverrideMethod (motherClass, m))
 						list.Add (m);
 				}
 				foreach (IProperty m in baseCls.Properties) {
+					if (m.IsInternal && motherClass.SourceProject != null && motherClass.SourceProject != m.DeclaringType.SourceProject)
+						continue;
 					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && CanOverrideProperty (motherClass, m))
 						list.Add (m);
 				}
 				foreach (IIndexer m in baseCls.Indexer) {
+					if (m.IsInternal && motherClass.SourceProject != null && motherClass.SourceProject != m.DeclaringType.SourceProject)
+						continue;
 					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && CanOverrideIndexer (motherClass, m))
 						list.Add (m);
 				}
 				foreach (IEvent m in baseCls.Events) {
+					if (m.IsInternal && motherClass.SourceProject != null && motherClass.SourceProject != m.DeclaringType.SourceProject)
+						continue;
 					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed)
 						list.Add (m);
 				}
