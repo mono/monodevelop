@@ -76,6 +76,7 @@ dnl hard dependencies
 MONOADDINS_REQUIRED_VERSION=0.3
 GTKSHARP_REQUIRED_VERSION=2.8.0
 GTKSOURCEVIEWSHARP_REQUIRED_VERSION=0.10
+GTKSOURCEVIEW2SHARP_REQUIRED_VERSION=1.9.1
 GECKOSHARP_REQUIRED_VERSION=0.10
 MONODOC_REQUIRED_VERSION=1.0
 
@@ -320,6 +321,8 @@ src/addins/MonoDevelop.Gettext/Makefile
 src/addins/MonoDevelop.RegexToolkit/Makefile
 src/addins/CBinding/Makefile
 src/addins/GeckoWebBrowser/Makefile
+src/addins/SourceEditor2/AssemblyInfo.cs
+src/addins/SourceEditor2/Makefile
 Makefile
 monodevelop
 mdtool
@@ -342,4 +345,5 @@ echo "   *     Subversion: $enable_subversion"
 echo "   * ASP.NET project support: $enable_aspnet"
 echo "   * Web References: yes"
 echo "   * C/C++ project support: $enable_c"
+echo "   * GtkSourceView2: $enable_gtksourceview2"
 echo ""

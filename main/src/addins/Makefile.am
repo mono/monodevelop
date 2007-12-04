@@ -1,2 +1,2 @@
 
-SUBDIRS = MonoDevelop.DesignerSupport Deployment MonoDevelop.SourceEditor MonoDevelop.Autotools MonoDevelop.Gettext CSharpBinding ILAsmBinding NUnit MonoDeveloperExtensions VersionControl VBNetBinding prj2make-sharp-lib WelcomePage ChangeLogAddIn MonoDevelop.GtkCore AspNetAddIn MonoDevelop.WebReferences MonoDevelop.RegexToolkit CBinding GeckoWebBrowser
+SUBDIRS = MonoDevelop.DesignerSupport Deployment MonoDevelop.SourceEditor SourceEditor2 MonoDevelop.Autotools MonoDevelop.Gettext CSharpBinding ILAsmBinding NUnit MonoDeveloperExtensions VersionControl VBNetBinding prj2make-sharp-lib WelcomePage ChangeLogAddIn MonoDevelop.GtkCore AspNetAddIn MonoDevelop.WebReferences MonoDevelop.RegexToolkit CBinding GeckoWebBrowser

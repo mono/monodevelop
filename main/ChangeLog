@@ -1,5 +1,9 @@
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* configure.in, src/addins/Makefile.am: Moved SourceEditor2 back to main.
+
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* monodevelop-core-addins.pc.in, configure.in, src/tools/Tools.mds,
 	  src/addins/Addins.mds, src/addins/Extras.mds, src/addins/Makefile.am,
 	  src/core/Makefile.am, src/core/Core.mds, src/Makefile.am,

@@ -1,5 +1,10 @@
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Makefile.am, MonoDevelop.SourceEditor.mdp: Moved SourceEditor2 back to
+	  main.
+
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.SourceEditor.mdp: Directory reorganization.
 
 2007-11-19  Zach Lute <zach.lute@gmail.com>
