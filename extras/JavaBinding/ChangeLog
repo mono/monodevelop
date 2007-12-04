@@ -1,5 +1,9 @@
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* po/Makefile: Properly install .mo files.
+
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* configure, JavaBinding.make, JavaBinding.addin.xml, JavaBinding.mdp,
 	  JavaBinding.mds, Makefile.include, rules.make,
 	  gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs,

@@ -46,7 +46,7 @@ $(GMO_FILES): $(BUILD_DIR)/%/LC_MESSAGES/$(PACKAGE).mo: %.po
 	mkdir -p $(dir $@)
 	msgfmt '$<' -o '$@'
 	
-$(MO_FILES): $(INSTALL_DIR)/%/LC_MESSAGES/$(PACKAGE).mo : $(BUILD_DIR)/%.gmo
+$(MO_FILES): $(INSTALL_DIR)/%/LC_MESSAGES/$(PACKAGE).mo : $(BUILD_DIR)/%/LC_MESSAGES/$(PACKAGE).mo
 	mkdir -p $(dir $@)
 	cp '$<' '$@'
 
