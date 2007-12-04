@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 VERSION=0.1
 PACKAGE=monodevelop-boo
 prefix=/usr/local

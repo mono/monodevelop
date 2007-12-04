@@ -17,7 +17,7 @@ Compiling
 
 	To compile execute:
 
-	./configure --prefix=`pkg-config --variable=prefix mono`
+	./configure
 	make
 
 	There are two variables you can set when running 'configure':
