@@ -93,6 +93,13 @@
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.SourceEditor, Version=0.0.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Project" localcopy="False" refto="GeckoWebBrowser" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Cecil, Version=0.6.8.8607, Culture=neutral" />
+    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.VersionControl, Version=0.0.0.0, Culture=neutral" />
+    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.AspNet, Version=0.0.0.0, Culture=neutral" />
+    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.VBNetBinding, Version=1.0.1.1649, Culture=neutral" />
+    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.CBinding, Version=0.0.0.0, Culture=neutral" />
+    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.CSharpBinding, Version=0.0.0.0, Culture=neutral" />
+    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.MsVisualStudio, Version=0.17.0.0, Culture=neutral" />
   </References>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="AspNetEdit.make" SyncReferences="True" RelativeConfigureInPath="../../">
     <BuildFilesVar Sync="True" Name="FILES" />

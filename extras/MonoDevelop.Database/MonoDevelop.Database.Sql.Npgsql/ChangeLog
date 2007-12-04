@@ -1,5 +1,9 @@
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Database.Sql.Npgsql.mdp: Updated project files.
+
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Database.Sql.Npgsql.addin.xml, Makefile.am,
 	  MonoDevelop.Database.Sql.Npgsql.mdp: Directory reorganization.
 

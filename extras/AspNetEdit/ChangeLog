@@ -1,5 +1,9 @@
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* AspNetEdit.mdp, AspNetEdit.make: Updated project files.
+
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* AspNetEdit.mdp, configure, AspNetEdit.mds, Makefile.include, rules.make,
 	  Makefile.am, AspNetEdit.make, Makefile: Directory reorganization.
 

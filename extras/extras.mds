@@ -5,14 +5,12 @@
       <Entry build="True" name="BooBinding" configuration="Debug" />
       <Entry build="True" name="JavaBinding" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Database" configuration="Debug" />
-      <Entry build="True" name="NemerleBinding" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="AspNetEdit" configuration="Release" />
       <Entry build="True" name="BooBinding" configuration="Release" />
       <Entry build="True" name="JavaBinding" configuration="Release" />
       <Entry build="True" name="MonoDevelop.Database" configuration="Release" />
-      <Entry build="True" name="NemerleBinding" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="AspNetEdit" single="True">
@@ -27,6 +25,5 @@
     <Entry filename="BooBinding/BooBinding.mds" />
     <Entry filename="JavaBinding/JavaBinding.mds" />
     <Entry filename="MonoDevelop.Database/MonoDevelop.Database.mds" />
-    <Entry filename="NemerleBinding/NemerleBinding.mds" />
   </Entries>
 </Combine>

@@ -1,5 +1,9 @@
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Database.Sql.Sqlite.mdp: Updated project files.
+
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Database.Sql.Sqlite.addin.xml, SqliteGuiProvider.cs,
 	  MonoDevelop.Database.Sql.Sqlite.mdp, Makefile.am: Directory
 	  reorganization.

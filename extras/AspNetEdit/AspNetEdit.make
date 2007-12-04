@@ -122,12 +122,13 @@ $(build_resx_resources) : %.resources: %.resx
 	resgen2 '$<' '$@'
 
 
+LOCAL_PKGCONFIG=PKG_CONFIG_PATH=../../local-config:$$PKG_CONFIG_PATH
 
 $(ASSEMBLY) $(ASSEMBLY_MDB): $(build_sources) $(build_resources) $(build_datafiles) $(DLL_REFERENCES) $(PROJECT_REFERENCES) $(build_xamlg_list)
 	make pre-all-local-hook prefix=$(prefix)
 	mkdir -p $(dir $(ASSEMBLY))
 	make $(CONFIG)_BeforeBuild
-	$(ASSEMBLY_COMPILER_COMMAND) $(ASSEMBLY_COMPILER_FLAGS) -out:$(ASSEMBLY) -target:$(COMPILE_TARGET) $(build_sources_embed) $(build_resources_embed) $(build_references_ref)
+	$(LOCAL_PKGCONFIG) $(ASSEMBLY_COMPILER_COMMAND) $(ASSEMBLY_COMPILER_FLAGS) -out:$(ASSEMBLY) -target:$(COMPILE_TARGET) $(build_sources_embed) $(build_resources_embed) $(build_references_ref)
 	make $(CONFIG)_AfterBuild
 	make post-all-local-hook prefix=$(prefix)
 

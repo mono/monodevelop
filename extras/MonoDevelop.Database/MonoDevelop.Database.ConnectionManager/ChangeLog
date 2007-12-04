@@ -1,5 +1,9 @@
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Database.ConnectionManager.mdp: Updated project files.
+
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* NodeBuilders/UsersNodeBuilder.cs, NodeBuilders/ParametersNodeBuilder.cs,
 	  NodeBuilders/ConnectionContextNodeBuilder.cs,
 	  NodeBuilders/TypesNodeBuilder.cs, NodeBuilders/LanguagesNodeBuilder.cs,

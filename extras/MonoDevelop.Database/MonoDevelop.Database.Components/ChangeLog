@@ -1,5 +1,9 @@
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Database.Components.mdp: Updated project files.
+
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Dialogs/WaitDialog.cs, Dialogs/DatabaseConnectionSettingsDialog.cs,
 	  Widgets/DataGrid/Renderers/BooleanContentRenderer.cs,
 	  Widgets/ColumnMappingWidget.cs, Widgets/SelectColumnWidget.cs,

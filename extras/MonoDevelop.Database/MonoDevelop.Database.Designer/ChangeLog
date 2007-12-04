@@ -1,5 +1,9 @@
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Database.Designer.mdp: Updated project files.
+
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Dialogs/TableEditorDialog.cs, Dialogs/ProcedureEditorDialog.cs,
 	  Dialogs/ViewEditorDialog.cs, Dialogs/UserEditorDialog.cs,
 	  Widgets/ColumnsEditorWidget.cs,

@@ -1,5 +1,9 @@
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Database.Query.mdp: Updated project files.
+
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* SqlQueryView.cs, Makefile.am, MonoDevelop.Database.Query.addin.xml,
 	  MonoDevelop.Database.Query.mdp: Directory reorganization.
 
