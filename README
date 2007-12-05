@@ -62,6 +62,7 @@ Dependencies
 	Gtk# >= 2.8.0
 	monodoc >= 1.0
 	gtksourceview-sharp >= 0.10
+	mono-addins >= 0.3
 	
 References
 ----------
