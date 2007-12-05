@@ -1,3 +1,7 @@
+2007-12-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* configure: Stop if one of the configuration scripts fails.
+
 2007-12-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* configure (profile): Fixed a typo (s/--prfile/--profile/) and
