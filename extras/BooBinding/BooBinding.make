@@ -95,7 +95,6 @@ REFERENCES =  \
 	System.Drawing \
 	-pkg:boo \
 	-pkg:mono-addins \
-	-pkg:cecil \
 	-pkg:monodevelop \
 	-pkg:monodevelop-core-addins \
 	-pkg:gconf-sharp-2.0 \

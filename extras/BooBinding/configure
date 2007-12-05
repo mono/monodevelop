@@ -4,7 +4,7 @@ PACKAGE=monodevelop-boo
 prefix=/usr/local
 config=DEBUG
 configurations=" RELEASE DEBUG"
-required_packages=" gtk-sharp-2.0;2.8.3 monodevelop;0.17 cecil;1.2.5 mono-addins;0.3 glib-sharp-2.0;2.8.3"
+required_packages=" gtk-sharp-2.0;2.8.3 monodevelop;0.17 mono-addins;0.3 glib-sharp-2.0;2.8.3"
 
 usage ()
 {

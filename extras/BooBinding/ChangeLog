@@ -1,5 +1,10 @@
 2007-12-05  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* configure, BooBinding.make, BooBinding.mdp: Remove cecil dependency. Not
+	  needed.
+
+2007-12-05  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* configure: Use bash to run the config scripts.
 
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
