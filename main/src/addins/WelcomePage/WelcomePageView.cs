@@ -119,9 +119,10 @@ namespace MonoDevelop.WelcomePage
 		
 		public static WelcomePageView GetWelcomePage ()
 		{
-			if (WebBrowserService.CanGetWebBrowser)
-				return new WelcomePageBrowser ();
-			else
+			//FIXME: make the HTML version worth using
+			//if (WebBrowserService.CanGetWebBrowser)
+			//	return new WelcomePageBrowser ();
+			//else
 				return new WelcomePageFallbackView ();
 		}
 

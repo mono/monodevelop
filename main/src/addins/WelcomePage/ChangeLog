@@ -1,5 +1,14 @@
 2007-12-05  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* WelcomePageFallbackWidget.cs: Correct background rendering order.
+	* WelcomePageView.cs: Disable the HTML welcome page code path; the GTK#
+	  version currently does everything and uses fewer resources. We can
+	  re-enable it when the HTML version is worth using.
+	* WelcomePageOptionPanel.cs: Enable option panel even when there is no
+	  browser.
+
+2007-12-05  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* mono-decoration.png, WelcomePageFallbackWidget.cs, mono-bg.png,
 	  WelcomePageView.cs, WelcomePage.xsl, WelcomePageBrowser.cs,
 	  WelcomePage.mdp, gtk-gui/generated.cs, gtk-gui/objects.xml,

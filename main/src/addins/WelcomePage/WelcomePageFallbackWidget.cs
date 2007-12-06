@@ -178,7 +178,12 @@ namespace MonoDevelop.WelcomePage
 			Pixbuf stretched = bgPixbuf.ScaleSimple (Allocation.Width,
 			                                  bgPixbuf.Height,
 			                                  InterpType.Nearest);
-				
+			
+			GdkWindow.DrawPixbuf (Style.BackgroundGC (StateType.Normal), 
+			                      stretched, 0, 0, 0, 0, 
+			                      stretched.Width, stretched.Height, 
+			                      RgbDither.Normal, 0, 0);
+			
 			GdkWindow.DrawPixbuf (Style.BackgroundGC (StateType.Normal), 
 			                      decorationPixbuf, 0, 0, 0, 0, 
 			                      decorationPixbuf.Width, decorationPixbuf.Height, 
@@ -187,11 +192,6 @@ namespace MonoDevelop.WelcomePage
 			GdkWindow.DrawPixbuf (Style.BackgroundGC (StateType.Normal), 
 			                      logoPixbuf, 0, 0, logoOffset, logoOffset, 
 			                      logoPixbuf.Width, logoPixbuf.Height, 
-			                      RgbDither.Normal, 0, 0);
-			
-			GdkWindow.DrawPixbuf (Style.BackgroundGC (StateType.Normal), 
-			                      stretched, 0, 0, 0, 0, 
-			                      stretched.Width, stretched.Height, 
 			                      RgbDither.Normal, 0, 0);
 			
 			foreach (Widget widget in Children)
