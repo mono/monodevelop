@@ -41,14 +41,11 @@ namespace MonoDevelop.WelcomePage
 	{
 		protected override void Run()
 		{
-			if (!PropertyService.Get("WelcomePage.ShowOnStartup", true) || !WebBrowserService.CanGetWebBrowser)
+			if (!PropertyService.Get("WelcomePage.ShowOnStartup", true))
 				return;
 			
-			WelcomePageView wpv = new WelcomePageView();
+			WelcomePageView wpv = WelcomePageView.GetWelcomePage ();
 			IdeApp.Workbench.OpenDocument (wpv, true);
-
-			// Html must be rendered after the widget has been drawn
-			wpv.Initialize ();
 		}
 	}
 
@@ -62,18 +59,13 @@ namespace MonoDevelop.WelcomePage
 					return;
 				}
 			}
-			WelcomePageView wpv = new WelcomePageView();
+			WelcomePageView wpv = WelcomePageView.GetWelcomePage ();
 			IdeApp.Workbench.OpenDocument(wpv, true);
-			
-			// Html must be rendered after the widget has been drawn
-			wpv.Initialize ();
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
 			base.Update (info);
-			info.Visible = WebBrowserService.CanGetWebBrowser;
-			info.Enabled = WebBrowserService.CanGetWebBrowser;
 		}
 	}
 }

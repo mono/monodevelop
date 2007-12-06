@@ -1,0 +1,16 @@
+<objects>
+  <object type="MonoDevelop.WelcomePage.WelcomePageFallbackWidget" palette-category="WelcomePage" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.WelcomePage.LinkButton" palette-category="WelcomePage" allow-children="false" base-type="Gtk.Button">
+    <itemgroups>
+      <itemgroup label="LinkButton Properties">
+        <property name="HoverMessage" />
+        <property name="Label" />
+        <property name="LinkUrl" />
+      </itemgroup>
+    </itemgroups>
+    <signals />
+  </object>
+</objects>

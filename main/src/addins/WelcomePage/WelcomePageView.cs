@@ -38,43 +38,17 @@ using MonoDevelop.Components.Commands;
 
 using Freedesktop.RecentFiles;
 
-using System.Xml;
-using System.Xml.Xsl;
 using System.IO;
-
-namespace MonoDevelop.Core
-{
-	public class XslGettextCatalog
-	{
-		public XslGettextCatalog() {}
-		
-		public static string GetString (string str)
-		{
-			return GettextCatalog.GetString(str);
-		}
-	}
-}
 
 namespace MonoDevelop.WelcomePage
 {	
-	public class WelcomePageView : AbstractViewContent
+	public abstract class WelcomePageView : AbstractViewContent
 	{
-		static IWebBrowser browser;
-		
+		string datadir;
 		bool loadingProject;
 		
-		string datadir;
-		
-		public override Gtk.Widget Control {
-			get {
-				return (Widget) browser;
-			}
-		}
-		
 		public override string StockIconId {
-			get {
-				return Gtk.Stock.Home;
-			}
+			get { return Gtk.Stock.Home; }
 		}
 		
 		public override void Load (string fileName) 
@@ -85,76 +59,26 @@ namespace MonoDevelop.WelcomePage
 		{
 			this.ContentName = GettextCatalog.GetString ("Welcome");
 			this.IsViewOnly = true;
-
-			if (browser == null) {
-				browser = WebBrowserService.GetWebBrowser ();
-				Control.Show ();
-				Control.Show ();
-				browser.LinkClicked += CatchUri;
-				browser.LinkStatusChanged += LinkMessage;
-			}
 			
-			datadir = "file://" + Path.GetDirectoryName (typeof(ShowWelcomePageHandler).Assembly.Location) + "/";
+			datadir = Path.GetDirectoryName (typeof(ShowWelcomePageHandler).Assembly.Location) + "/";
 
 			if (PlatformID.Unix != Environment.OSVersion.Platform)
 				datadir = datadir.Replace("\\","/");
 
-			LoadContent ();
-
 			IdeApp.Workbench.RecentOpen.RecentProjectChanged += RecentChangesHandler;
 		}
 		
-		void LoadContent ()
+		public void HandleLinkAction (string uri)
 		{
-			// Get the Xml
-			XmlDocument inxml = BuildXmlDocument ();
-			
-			XsltArgumentList arg = new XsltArgumentList ();
-			arg.AddExtensionObject ("urn:MonoDevelop.Core.XslGettextCatalog", new MonoDevelop.Core.XslGettextCatalog ());
-			
-			XslTransform xslt = new XslTransform();
-			using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream ("WelcomePage.xsl")) {
-				xslt.Load (new XmlTextReader (stream));
-			}		
-			StringWriter fs = new StringWriter ();
-			xslt.Transform (inxml, arg, fs, null);
-			
-			browser.LoadHtml (fs.ToString ());
-		}
-
-		void RecentChangesHandler (object sender, EventArgs e)
-		{
-			LoadContent ();
-			Initialize ();
-		}
-		
-		void LinkMessage (object sender, StatusMessageChangedEventArgs e)
-		{
-			if (String.IsNullOrEmpty (e.Message) || e.Message.IndexOf ("monodevelop://") != -1) {
-				IdeApp.Workbench.StatusBar.SetMessage (null);
-			} else {
-				string message = e.Message;
-				if (message.IndexOf ("project://") != -1) 
-					message = message.Substring (10);
-				IdeApp.Workbench.StatusBar.SetMessage (message);
-			}
-		}
-		
-		void CatchUri (object sender, LocationChangingEventArgs e)
-		{
-			e.SuppressChange = true;
-	
-			string URI = e.NextLocation;
-
 			// HACK: Necessary for win32; I have no idea why
 			if (PlatformID.Unix != Environment.OSVersion.Platform)
-				Console.WriteLine ("WelcomePage: Handling URI: " + URI);
+				Console.WriteLine ("WelcomePage: Handling URI: " + uri);
 
-			if (URI.StartsWith ("project://")) {
+			if (uri.StartsWith ("project://")) {
 				if (loadingProject)
 					return;
 					
-				string projectUri = URI.Substring (10);			
+				string projectUri = uri.Substring (10);			
 				Uri fileuri = new Uri (projectUri);
 				try {
 					loadingProject = true;
@@ -163,9 +87,9 @@ namespace MonoDevelop.WelcomePage
 				} finally {
 					loadingProject = false;
 				}
-			} else if (URI.StartsWith ("monodevelop://")) {
+			} else if (uri.StartsWith ("monodevelop://")) {
 				// Launch MonoDevelop Gui Commands
-				switch (URI.Substring (14))
+				switch (uri.Substring (14))
 				{
 					case "NewProject":
 						IdeApp.CommandService.DispatchCommand (FileCommands.NewProject);
@@ -179,9 +103,9 @@ namespace MonoDevelop.WelcomePage
 			{
 				//Launch the Uri externally
 				try {
-					Gnome.Url.Show (URI);
+					Gnome.Url.Show (uri);
 				} catch (Exception) {
-					string msg = String.Format (GettextCatalog.GetString ("Could not open the url {0}"), URI);
+					string msg = String.Format (GettextCatalog.GetString ("Could not open the url {0}"), uri);
 					Gtk.MessageDialog md = new Gtk.MessageDialog (null, Gtk.DialogFlags.Modal | Gtk.DialogFlags.DestroyWithParent, Gtk.MessageType.Error, Gtk.ButtonsType.Ok, msg);
 					try {
 						md.Run ();
@@ -193,48 +117,15 @@ namespace MonoDevelop.WelcomePage
 			}
 		}
 		
-		private XmlDocument BuildXmlDocument()
+		public static WelcomePageView GetWelcomePage ()
 		{
-			XmlDocument xml = new XmlDocument();
-			using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream ("WelcomePageContent.xml")) {
-				xml.Load (new XmlTextReader (stream));
-			}
-			
-			// Get the Parent node
-			XmlNode parent = xml.SelectSingleNode ("/WelcomePage");
-			
-			// Resource Path
-			XmlElement element = xml.CreateElement ("ResourcePath");
-			element.InnerText = datadir;
-			parent.AppendChild(element);
-			
-			RecentOpen recentOpen = IdeApp.Workbench.RecentOpen;
-			if (recentOpen.RecentProject != null && recentOpen.RecentProject.Length > 0)
-			{
-				XmlElement projectList  = xml.CreateElement ("RecentProjects");
-				parent.AppendChild(projectList);
-				foreach (RecentItem ri in recentOpen.RecentProject)
-				{
-					XmlElement project = xml.CreateElement ("Project");
-					projectList.AppendChild(project);
-					// Uri
-					element = xml.CreateElement ("Uri");
-					element.InnerText = ri.LocalPath;
-					project.AppendChild (element);
-					// Name
-					element = xml.CreateElement ("Name");
-					element.InnerText = (ri.Private != null && ri.Private.Length > 0) ? ri.Private : Path.GetFileNameWithoutExtension(ri.LocalPath);
-					project.AppendChild (element);
-					// Date Modified
-					element = xml.CreateElement ("DateModified");
-					element.InnerText = TimeSinceEdited (ri.Timestamp);
-					project.AppendChild (element);
-				}
-			} 
-			return xml;
+			if (WebBrowserService.CanGetWebBrowser)
+				return new WelcomePageBrowser ();
+			else
+				return new WelcomePageFallbackView ();
 		}
 
-		public void Initialize()
+		protected virtual void RecentChangesHandler (object sender, EventArgs e)
 		{
 		}
 
@@ -255,6 +146,16 @@ namespace MonoDevelop.WelcomePage
 				return GettextCatalog.GetPluralString ("{0} minute", "{0} minutes", sincelast.Minutes, sincelast.Minutes);
 			
 			return GettextCatalog.GetString ("Less than a minute");
+		}
+		
+		public virtual string DataDirectory {
+			get { return datadir; }
+		}
+		
+		public RecentItem[] RecentProjects {
+			get {
+				return IdeApp.Workbench.RecentOpen.RecentProject;
+			}
 		}
 	}
 }

@@ -18,7 +18,7 @@
 					@import "<xsl:value-of select="ResourcePath" />WelcomePage.css"; 
 
 					body {
-					background: #fff url('<xsl:value-of select="ResourcePath" />mono-bg.png') no-repeat top left;
+					background: #fff url('<xsl:value-of select="ResourcePath" />mono-bg.png') repeat-x top left;
 					}
 					
 					#p-logo {
@@ -35,6 +35,10 @@
 					width: 266px;
 					height: 53px;
 					}
+					
+					#bigWrapper {
+					background: transparent url('<xsl:value-of select="ResourcePath" />mono-decoration.png') no-repeat top left;
+					}
 				</style>
 			</head>
 			<body         class="ns-0"         id="page-MainPage">
@@ -43,6 +47,7 @@
 							<a href="http://monodevelop.com/Main_Page"
 								title="{gtc:GetString(@_title)}"></a>
 						</div>
+						<div id="decoration"> </div>
 						<div id="column-content">
 							<div>
 								<div id="bodyContent">

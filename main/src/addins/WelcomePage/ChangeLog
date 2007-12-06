@@ -1,3 +1,16 @@
+2007-12-05  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* mono-decoration.png, WelcomePageFallbackWidget.cs, mono-bg.png,
+	  WelcomePageView.cs, WelcomePage.xsl, WelcomePageBrowser.cs,
+	  WelcomePage.mdp, gtk-gui/generated.cs, gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.WelcomePage.WelcomePageFallbackWidget.cs,
+	  gtk-gui/gui.stetic, Makefile.am, WelcomePageCommands.cs: New browserless
+	  Welcome Page that activates when no IWebBrowser addin is available.
+	  Changed theming mechanism slightly so browser and GTK# welcome pages
+	  share as much as possible, including XML link definition file. Saves
+	  almost 10MB of memory (though a lot of that was shared with Firefox
+	  open).
+
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* WelcomePage.mdp: Directory reorganization.

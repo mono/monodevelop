@@ -2,8 +2,6 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/WelcomePage
 ASSEMBLY = $(ADDIN_BUILD)/WelcomePage.dll
 REFS =  \
-	$(GECKO_SHARP_LIBS) \
-	$(GLADE_SHARP_LIBS) \
 	$(GNOME_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
@@ -17,18 +15,23 @@ REFS =  \
 
 FILES =  \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.WelcomePage.WelcomePageFallbackWidget.cs \
+	WelcomePageBrowser.cs \
 	WelcomePageCommands.cs \
+	WelcomePageFallbackWidget.cs \
 	WelcomePageOptionPanel.cs \
 	WelcomePageView.cs
 
 RES =  \
 	gtk-gui/gui.stetic \
+	gtk-gui/objects.xml \
 	WelcomePage.addin.xml \
 	WelcomePage.xsl \
 	WelcomePageContent.xml
  
 DATA_FILES =  \
 	mono-bg.png \
+	mono-decoration.png \
 	mono-logo.png \
 	WelcomePage.css
 
