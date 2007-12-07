@@ -199,7 +199,10 @@ namespace MonoDevelop.Autotools
 			if (tmpData.IntegrationEnabled) {
 				//Validate
 				try {
-					tmpData.Makefile.GetVariables ();	
+					tmpData.Makefile.GetVariables ();
+				} catch (FileNotFoundException e) {
+					ShowMakefileNotFoundError (e);
+					return false;
 				} catch (Exception e) {
 					IdeApp.Services.MessageService.ShowError (e, GettextCatalog.GetString (
 						"Specified makefile is invalid: {0}", tmpData.AbsoluteMakefileName),
@@ -712,6 +715,9 @@ namespace MonoDevelop.Autotools
 			ICollection<string> vars = null;
 			try {
 				vars = data.Makefile.GetVariables ();
+			} catch (FileNotFoundException e) {
+				if (showError)
+					ShowMakefileNotFoundError (e);
 			} catch (Exception e) {
 				if (showError)
 					IdeApp.Services.MessageService.ShowError (e,
@@ -906,6 +912,13 @@ namespace MonoDevelop.Autotools
 		{
 			string active = GetActiveVar (cb);
 			entryResourcesPattern.Text = GuessResPrefix (data.Makefile.GetListVariable (active));
+		}
+
+		void ShowMakefileNotFoundError (Exception e)
+		{
+				IdeApp.Services.MessageService.ShowError (e,
+                    GettextCatalog.GetString ("Unable to find the specified Makefile. You need to specify the path to an existing Makefile for use with the 'Makefile Integration' feature."),
+                    (Window) this.Toplevel, true);
 		}
 
 		// Returns true if either

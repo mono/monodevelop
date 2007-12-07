@@ -1,3 +1,8 @@
+2007-12-07  Ankit Jain  <jankit@novell.com>
+
+	Fix bug #344837.
+	* MakefileOptionPanelWidget.cs: Improve error message.
+
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Autotools.mdp, gtk-gui/gui.stetic, Makefile.am: Directory
