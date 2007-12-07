@@ -21,8 +21,8 @@ CONFIG_MAKE=$(top_srcdir)/config.make
 	$$final_exit
 
 $(CONFIG_MAKE):
-	echo "You must run configure first"
-	exit 1
+	@echo "You must run configure first"
+	@exit 1
 
 clean: clean-recursive
 install: install-recursive
