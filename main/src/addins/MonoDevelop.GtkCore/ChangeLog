@@ -1,3 +1,8 @@
+2007-12-06  Geoff Norton  <gnorton@novell.com>
+
+	* Makefile.am: Only build the GtkCore addin if we have gnome-sharp 
+	  available.
+
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.mdp, lib/libsteticui.mdp, lib/libstetic.mdp,

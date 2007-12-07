@@ -1,4 +1,4 @@
-ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.GeckoWebBrowser/GeckoWebBrowser
+ADDIN_BUILD = $(top_builddir)/build/AddIns/GeckoWebBrowser
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.GeckoWebBrowser.dll
 
 REFS =  \
@@ -18,7 +18,7 @@ RES =  \
 	gtk-gui/gui.stetic \
 	MonoDevelop.WebBrowsers.GeckoWebBrowser.addin.xml  
 
-if ENABLE_GECKOSHARP
+if ENABLE_GECKOBROWSER
 all: $(ASSEMBLY)
 else
 all:
@@ -28,7 +28,7 @@ $(ASSEMBLY): $(FILES) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
 
-if ENABLE_GECKOSHARP
+if ENABLE_GECKOBROWSER
 assemblydir = $(MD_ADDIN_DIR)/GeckoWebBrowser
 assembly_DATA = $(ASSEMBLY)
 endif

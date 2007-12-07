@@ -294,7 +294,7 @@ namespace MonoDevelop.VersionControl.Views
 	public class HistoricalFileView
 	{
 		public static void Show(string name, string file, string text) {
-			string mimeType = Gnome.Vfs.MimeType.GetMimeTypeForUri (file);
+			string mimeType = Runtime.PlatformService.GetMimeTypeForUri (file);
 			if (mimeType == null || mimeType.Length == 0)
 				mimeType = "text/plain";
 			Document doc = MonoDevelop.Ide.Gui.IdeApp.Workbench.NewDocument (name, mimeType, text);

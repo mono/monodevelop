@@ -1,3 +1,10 @@
+2007-12-06  Geoff Norton  <gnorton@novell.com>
+
+	* MonoDevelop.VersionControl.Views/CellRendererDiff.cs:
+	* MonoDevelop.VersionControl.Views/Diffs.cs:
+	* MonoDevelop.VersionControl.Views/Logs.cs: Use the PlatformService to get
+	  font and mime information instead of GConf / Gnome.Vfs directly
+
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.mdp, VersionControl.addin.xml, Makefile.am:

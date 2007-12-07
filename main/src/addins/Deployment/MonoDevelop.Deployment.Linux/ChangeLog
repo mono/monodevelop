@@ -1,3 +1,8 @@
+2007-12-06  Geoff Norton  <gnorton@novell.com>
+
+	* MonoDevelop.Deployment.Linux/DotDesktopViewWidget.cs: Use 
+	  PlatformService to get mime information instead of Gnome.Vfs directly
+
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment.Linux.mdp, Makefile.am: Directory reorganization.

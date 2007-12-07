@@ -4,6 +4,7 @@ using System.IO;
 
 using Gtk;
 
+using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 
@@ -109,7 +110,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 						
 			DiffWidget.Options opts = new DiffWidget.Options();
-			opts.Font = (string) new GConf.Client ().Get ("/desktop/gnome/interface/monospace_font_name");
+			opts.Font = Runtime.PlatformService.DefaultMonospaceFont;
 			opts.LeftName = "Repository";
 			opts.RightName = "Working Copy";
 			widget = new DiffWidget(diff, opts);

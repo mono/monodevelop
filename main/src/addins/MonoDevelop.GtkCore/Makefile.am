@@ -1,5 +1,8 @@
 
+if HAVE_GNOME_SHARP
 SUBDIRS = lib
+endif
+
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.GtkCore
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.GtkCore.dll
 
@@ -79,7 +82,11 @@ update-stetic:
 	svn rm -m "Update Stetic sources" svn+ssh://mono-cvs.ximian.com/source/trunk/monodevelop/Extras/MonoDevelop.GtkCore/lib/stetic && \
 	svn cp -m "Update Stetic sources" svn+ssh://mono-cvs.ximian.com/source/trunk/stetic svn+ssh://mono-cvs.ximian.com/source/trunk/monodevelop/Extras/MonoDevelop.GtkCore/lib/stetic
 
+if HAVE_GNOME_SHARP
 all: $(ASSEMBLY)
+else
+all:
+endif
 
 $(ADDIN_BUILD)/%: $(srcdir)/lib/%
 	mkdir -p $(ADDIN_BUILD)
@@ -90,8 +97,10 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library \
 	$(build_resources:%=/resource:%) $(build_sources) $(REFS)
 
+if HAVE_GNOME_SHARP
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.GtkCore
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
+endif
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 

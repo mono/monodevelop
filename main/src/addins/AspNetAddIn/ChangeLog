@@ -1,3 +1,8 @@
+2007-12-06  Geoff Norton  <gnorton@novell.com>
+
+	* Project/AspNetAppProject.cs: Use PlatformService to launch a browser 
+	  instead of Gnome.Url.Show.
+
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/objects.xml, AspNetAddIn.addin.xml, AspNetAddIn.mdp, Makefile.am:

@@ -1,3 +1,10 @@
+2007-12-06  Geoff Norton  <gnorton@novell.com>
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:
+	  Use the PlatformService to get mime information instead of Gnome.Vfs
+	* MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs: Remove unused
+	  Gnome widgets.
+
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Makefile.am, MonoDevelop.SourceEditor.mdp: Moved SourceEditor2 back to

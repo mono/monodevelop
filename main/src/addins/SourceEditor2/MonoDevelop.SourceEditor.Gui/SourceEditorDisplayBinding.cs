@@ -427,7 +427,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			vfsname = vfsname.Replace ("%", "%25");
 			vfsname = vfsname.Replace ("#", "%23");
 			vfsname = vfsname.Replace ("?", "%3F");
-			se.Buffer.LoadFile (fileName, Gnome.Vfs.MimeType.GetMimeTypeForUri (vfsname), encoding);
+			se.Buffer.LoadFile (fileName, Runtime.PlatformService.GetMimeTypeForUri (vfsname), encoding);
 			ContentName = fileName;
 			lastSaveTime = File.GetLastWriteTime (ContentName);
 			InitializeFormatter ();

@@ -54,8 +54,6 @@ namespace MonoDevelop.Gettext
 				return 0;
 			}
 			
-			Gnome.Vfs.Vfs.Initialize ();
-			
 			if (file == null) {
 				string[] files = Directory.GetFiles (".", "*.mds");
 				if (files.Length == 0) {

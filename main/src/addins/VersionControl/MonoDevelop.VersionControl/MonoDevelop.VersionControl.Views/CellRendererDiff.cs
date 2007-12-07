@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using Gtk;
 using Gdk;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -15,7 +16,7 @@ namespace MonoDevelop.VersionControl.Views
 
 		public CellRendererDiff()
 		{
-			font = Pango.FontDescription.FromString ((string) new GConf.Client ().Get ("/desktop/gnome/interface/monospace_font_name"));
+			font = Pango.FontDescription.FromString (Runtime.PlatformService.DefaultMonospaceFont);
 		}
 		
 		public void Reset ()

@@ -405,7 +405,7 @@ namespace AspNetAddIn
 				
 					if (resp != null) {
 						//TODO: a choice of browsers
-						Gnome.Url.Show (url);
+						Runtime.PlatformService.ShowUrl (url);
 						break;
 					}
 				}

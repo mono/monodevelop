@@ -1,3 +1,8 @@
+2007-12-06  Geoff Norton  <gnorton@novell.com>
+
+	* WelcomePageView.cs: Use the PlatformService to get Mime information instead
+	  of Gnome.Vfs directly
+
 2007-12-05  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* WelcomePageFallbackWidget.cs: Correct background rendering order.
