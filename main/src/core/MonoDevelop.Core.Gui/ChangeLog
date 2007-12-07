@@ -1,3 +1,15 @@
+2007-12-06  Geoff Norton  <gnorton@novell.com>
+
+	* Base.glade: We no longer require libgnome, remove it.
+	* MonoDevelop.Core.Gui/StockIcons.cs: Gnome.Stock.About isn't needed
+	  anymore and removing it no longer hard-requires Gnome.
+	* MonoDevelop.Core.Gui/DesktopApplication.cs: Move to MonoDevelop.Core
+	  and refactor it to utilize the new PlatformService.
+	* MonoDevelop.Core.Gui/RecentOpen.cs: 
+	* MonoDevelop.Core.Gui/FileIconLoader.cs: Get Icon/Vfs information from
+	  the PlatformService
+	* Makefile.am: Remove DesktopApplication.cs from the build.
+
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.mdp, Makefile.am: Directory reorganization.

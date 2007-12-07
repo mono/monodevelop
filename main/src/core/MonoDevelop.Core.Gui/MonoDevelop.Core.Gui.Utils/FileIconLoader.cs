@@ -36,12 +36,10 @@ namespace MonoDevelop.Core.Gui.Utils
 	public sealed class FileIconLoader
 	{
 		static Gdk.Pixbuf defaultIcon;
-		static Gnome.ThumbnailFactory thumbnailFactory;
 		static Hashtable iconHash;
 
 		static FileIconLoader ()
 		{
-			thumbnailFactory = new Gnome.ThumbnailFactory (Gnome.ThumbnailSize.Normal);
 			iconHash = new Hashtable ();
 		}
 
@@ -76,8 +74,7 @@ namespace MonoDevelop.Core.Gui.Utils
 				filename = filename.Replace ("?", "%3F");
 				string icon = null;
 				try {
-					Gnome.IconLookupResultFlags result;
-					icon = Gnome.Icon.LookupSync (IconTheme.Default, thumbnailFactory, filename, null, Gnome.IconLookupFlags.None, out result);
+					icon = Runtime.PlatformService.IconForFile (filename);
 				} catch {}
 				if (icon == null || icon.Length == 0)
 					return GetPixbufForType ("gnome-fs-regular", size);

@@ -23,8 +23,6 @@ using System.Xml;
 using System.Diagnostics;
 using System.Collections;
 using System.IO;
-using Vfs = Gnome.Vfs.Vfs;
-using MimeType = Gnome.Vfs.MimeType;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Utils;
@@ -89,7 +87,7 @@ namespace MonoDevelop.Core.Gui
 		
 		public void AddLastFile (string name, string project)
 		{
-			RecentItem ri = new RecentItem (ToUri (name), MimeType.GetMimeTypeForUri (name), "MonoDevelop Files");
+			RecentItem ri = new RecentItem (ToUri (name), Runtime.PlatformService.GetMimeTypeForUri (name), "MonoDevelop Files");
 			if (project == null)
 				ri.Private = Path.GetFileName (name);
 			else
@@ -113,7 +111,7 @@ namespace MonoDevelop.Core.Gui
 		
 		public void AddLastProject (string name, string projectName)
 		{
-			RecentItem ri = new RecentItem (ToUri (name), MimeType.GetMimeTypeForUri (name), "MonoDevelop Projects");
+			RecentItem ri = new RecentItem (ToUri (name), Runtime.PlatformService.GetMimeTypeForUri (name), "MonoDevelop Projects");
 			ri.Private = projectName;
 			recentFiles.AddWithLimit (ri, "MonoDevelop Projects", MAX_LENGTH);
 			OnRecentProjectChange();

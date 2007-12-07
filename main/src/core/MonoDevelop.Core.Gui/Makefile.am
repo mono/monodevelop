@@ -38,7 +38,6 @@ FILES =  \
 	MonoDevelop.Core.Gui.ProgressMonitoring/BaseProgressMonitor.cs \
 	MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs \
 	MonoDevelop.Core.Gui.ProgressMonitoring/MultiTaskDialogProgressMonitor.cs \
-	MonoDevelop.Core.Gui.Utils/DesktopApplication.cs \
 	MonoDevelop.Core.Gui.Utils/FileIconLoader.cs \
 	MonoDevelop.Core.Gui.WebBrowser/IWebBrowser.cs \
 	MonoDevelop.Core.Gui.WebBrowser/IWebBrowserLoader.cs \
