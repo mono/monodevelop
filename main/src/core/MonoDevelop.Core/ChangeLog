@@ -1,3 +1,20 @@
+2007-12-06  Geoff Norton  <gnorton@novell.com>
+
+	* MonoDevelop.Core/PlatformService.cs: New service to hand off the
+	  platform specific operations to platform-specific addins.  Operations
+	  such as Mime, Font, DefaultApplication and Icons (anything that
+	  touches Gnome) is abstracted for now.
+	* MonoDevelop.Core/Runtime.cs: Expose a static PlatformService to the
+	  system.
+	* MonoDevelop.Core/DesktopApplication.cs: Move this from
+	  MonoDevelop.Core.Gui as it needs to be available from
+	  PlatformService.cs.  Refactor the actual commands that get the
+	  applications into the PlatformService
+	* Makefile.am: Add PlatformService.cs and DesktopApplication.cs to 
+	  the build.
+	* MonoDevelop.Core.addin.xml: Register a new ExtensoinPoint for the
+	  PlatformService
+
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Makefile.am, MonoDevelop.Core.mdp: Directory reorganization.

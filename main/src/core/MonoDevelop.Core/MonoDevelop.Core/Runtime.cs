@@ -41,6 +41,7 @@ namespace MonoDevelop.Core
 {
 	public class Runtime
 	{
+		static PlatformService platformService;
 		static ProcessService processService;
 		static SystemAssemblyService systemAssemblyService;
 		static SetupService setupService;
@@ -100,6 +101,14 @@ namespace MonoDevelop.Core
 			ServiceManager.UnloadAllServices ();
 			PropertyService.SaveProperties ();
 		}
+		
+		public static PlatformService PlatformService {
+			get {
+				if (platformService == null)
+					platformService = (PlatformService) AddinManager.GetExtensionObjects ("/MonoDevelop/Core/PlatformService") [0];
+				return platformService;
+			}
+		}
 	
 		public static ProcessService ProcessService {
 			get {
@@ -154,7 +163,10 @@ namespace MonoDevelop.Core
 					throw new ApplicationException ("Error setting process name: " + Mono.Unix.Native.Stdlib.GetLastError ());
 				}
 			} catch (EntryPointNotFoundException) {
-				setproctitle (Encoding.ASCII.GetBytes ("%s\0"), Encoding.ASCII.GetBytes (name + "\0"));
+				// Not every BSD has setproctitle
+				try {
+					setproctitle (Encoding.ASCII.GetBytes ("%s\0"), Encoding.ASCII.GetBytes (name + "\0"));
+				} catch (EntryPointNotFoundException) {}
 			}
 		}
 	}

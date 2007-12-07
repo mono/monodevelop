@@ -46,6 +46,7 @@ FILES =  \
 	MonoDevelop.Core/AbstractService.cs \
 	MonoDevelop.Core/ClrVersion.cs \
 	MonoDevelop.Core/DefaultAddinLocalizer.cs \
+	MonoDevelop.Core/DesktopApplication.cs \
 	MonoDevelop.Core/FileEventArgs.cs \
 	MonoDevelop.Core/FileService.cs \
 	MonoDevelop.Core/IAsyncOperation.cs \
@@ -53,6 +54,7 @@ FILES =  \
 	MonoDevelop.Core/IProgressMonitor.cs \
 	MonoDevelop.Core/IService.cs \
 	MonoDevelop.Core/LoggingService.cs \
+	MonoDevelop.Core/PlatformService.cs \
 	MonoDevelop.Core/Properties.cs \
 	MonoDevelop.Core/PropertyChangedEventArgs.cs \
 	MonoDevelop.Core/PropertyService.cs \
