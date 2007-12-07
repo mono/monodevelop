@@ -1,3 +1,18 @@
+2007-12-03  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* configure.in: Fix a couple of requirement checks. Add some more 
+	  output about which options are enabled.
+
+2007-12-06  Geoff Norton  <gnorton@novell.com>
+
+	* src/addins/Makefile.am: Add the GnomePlatform and MacPlatform
+	  AddIns.
+	* configure.in: Only hard depend on update-*-database if their
+	  usage is enabled.  Change the hard dependency on gnome-sharp, 
+	  gnome-vfs-sharp, gconf-sharp, to a soft dependency.  Add flags
+	  to buld the gnomeplatform and macplatform support.  Default the
+	  gnomeplatform to yes and macplatform to no.
+
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* configure.in, src/addins/Makefile.am: Moved SourceEditor2 back to main.

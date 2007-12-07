@@ -1,0 +1,4 @@
+2007-12-06  Geoff Norton  <gnorton@novell.com>
+	
+	* Initial check in of the Mac PlatformService that provides
+	Mac equivalents to the Gnome calls in Gnome.Vfs
