@@ -27,6 +27,7 @@
 //
 
 using MonoDevelop.Core;
+using MonoDevelop.Deployment;
 using MonoDevelop.Projects;
 
 using System;
@@ -220,10 +221,13 @@ namespace MonoDevelop.Prj2Make
 				path = Utils.GetValidPath (monitor, basePath, include);
 				if (path == null)
 					return;
-				if (Utils.ReadAsString (node, "CopyToOutputDirectory", ref str_tmp, false))
+				if (Utils.ReadAsString (node, "CopyToOutputDirectory", ref str_tmp, false)) {
 					pf = project.AddFile (path, BuildAction.FileCopy);
-				else
+					DeployProperties dp = DeployService.GetDeployProperties (pf);
+					dp.UseProjectRelativePath = true;
+				} else {
 					pf = project.AddFile (path, BuildAction.Nothing);
+				}
 				data.ProjectFileElements [pf] = (XmlElement) node;
 				break;
 			case "EmbeddedResource":
@@ -361,6 +365,11 @@ namespace MonoDevelop.Prj2Make
 						Utils.CanonicalizePath (FileService.AbsoluteToRelativePath (
 							Path.GetDirectoryName (projectFile.Name), projectFile.DependsOn)));
 				}
+			}
+
+			if (projectFile.BuildAction == BuildAction.FileCopy) {
+				DeployProperties dp = DeployService.GetDeployProperties (projectFile);
+				dp.UseProjectRelativePath = true;
 			}
 
 			return elem;

@@ -702,6 +702,9 @@ namespace MonoDevelop.Prj2Make
 				parent.AppendChild (newElem);
 
 				d.ProjectFileElements [e.ProjectFile] = newElem;
+
+				if (e.ProjectFile.BuildAction == BuildAction.FileCopy)
+					Utils.EnsureChildValue (newElem, "CopyToOutputDirectory", "Always");
 			}
 
 			//DependentUpon is relative to the basedir of the 'pf' (resource file)

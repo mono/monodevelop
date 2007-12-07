@@ -1,3 +1,13 @@
+2007-12-07  Ankit Jain  <jankit@novell.com>
+
+	Fix bug #341643.
+	* DefaultMSBuildProjectExtension.cs: Set DeployProperties.UseProjectRelativePath
+	for all deploy files.
+	* MSBuildFileFormat.cs (HandleFilePropertyChanged): Set "CopyToOutputDirectory"
+	if build action changed to FileCopy.
+	* Makefile.am:
+	* prj2make-sharp-lib.mdp: Add reference to MonoDevelop.Deployment project.
+
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* prj2make-sharp-lib.addin.xml, Makefile.am, prj2make-sharp-lib.mdp:
