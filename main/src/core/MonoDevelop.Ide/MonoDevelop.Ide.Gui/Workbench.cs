@@ -286,7 +286,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			List<FileViewer> list = new List<FileViewer> ();
 			
-			string mimeType = Gnome.Vfs.MimeType.GetMimeTypeForUri (fileName);
+			string mimeType = Runtime.PlatformService.GetMimeTypeForUri (fileName);
 
 			IDisplayBinding[] bindings = DisplayBindings.GetBindingsForMimeType (mimeType);
 			foreach (IDisplayBinding bin in bindings)
@@ -662,7 +662,7 @@ namespace MonoDevelop.Ide.Gui
 						//if (mimetype != null) {
 						//	mimetype.DefaultAction.Launch ();
 						//} else {
-							Gnome.Url.Show ("file://" + fileName);
+							Runtime.PlatformService.ShowUrl ("file://" + fileName);
 						//}
 					} catch {
 						LoadFileWrapper fw = new LoadFileWrapper (workbench, DisplayBindings.LastBinding, null, oFileInfo);

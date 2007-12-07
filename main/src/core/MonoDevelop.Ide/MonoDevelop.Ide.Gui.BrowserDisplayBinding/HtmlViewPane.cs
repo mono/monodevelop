@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 		void CatchUri (object sender, LocationChangingEventArgs e)
 		{
 			e.SuppressChange = true;
-			Gnome.Url.Show (e.NextLocation);
+			Runtime.PlatformService.ShowUrl (e.NextLocation);
 		}
 		
 		public BrowserPane () : this (true)

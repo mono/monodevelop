@@ -370,8 +370,11 @@ namespace MonoDevelop.Ide.Gui.Content {
 				switch (s) {
 				case "__default_monospace":
 					try {
-						return FontDescription.FromString ((string) new GConf.Client ().Get ("/desktop/gnome/interface/monospace_font_name"));
-					} catch {
+						string fontName = Runtime.PlatformService.DefaultMonospaceFont;
+						System.Console.WriteLine (fontName);
+						return FontDescription.FromString (fontName);
+					} catch (Exception ex) {
+						LoggingService.LogWarning ("Could not load platform's default monospace font.", ex);
 						goto case "__default_sans";
 					}
 				case "__default_sans":

@@ -1,3 +1,15 @@
+2007-12-06  Geoff Norton  <gnorton@novell.com>
+
+	* MonoDevelop.Ide.Gui/DisplayBindingService.cs: 
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: 
+	* MonoDevelop.Ide.Gui/Workbench.cs: 
+	* MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs:
+	* MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs:
+	* MonoDevelop.Ide.Templates/FileTemplate.cs: Access Font/Vfs/Mime information
+	  from the PlatformService instead of Gnome directly.
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: Call Gtk.Application.Init so we can
+	  remove the dependency on Gnome.Program. 
+
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.mdp, Makefile.am: Directory reorganization.

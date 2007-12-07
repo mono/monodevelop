@@ -63,7 +63,8 @@ namespace MonoDevelop.Ide.Gui
 		{
 			SetupExceptionManager ();
 			
-			Gnome.Vfs.Vfs.Initialize ();
+			//OSXFIXME
+			Gtk.Application.Init ();
 			InternalLog.Initialize ();
 			MonoDevelopOptions options = new MonoDevelopOptions ();
 			options.ProcessArgs (args);
@@ -100,7 +101,7 @@ namespace MonoDevelop.Ide.Gui
 				version += "." + Assembly.GetEntryAssembly ().GetName ().Version.Revision;
 
 			try {
-				new Gnome.Program (name, version, Gnome.Modules.UI, remainingArgs);
+				// When we loose Gnome.Program what should we do here?
 			} catch (Exception ex) {
 				string msg = GettextCatalog.GetString ("MonoDevelop failed to start.\nIf you installed MonoDevelop using a binary installer, take a look at \nhttp://www.mono-project.com/InstallerInstructions for more info about possible\ncauses of this error.");
 				Console.WriteLine (new string ('#',70));
