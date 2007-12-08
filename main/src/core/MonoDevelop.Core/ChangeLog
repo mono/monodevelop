@@ -1,3 +1,8 @@
+2007-12-07  Geoff Norton  <gnorton@novell.com>
+
+	* MonoDevelop.Core/PlatformService.cs: Add fallback mime-type support
+	for ChangeLogs.
+
 2007-12-06  Geoff Norton  <gnorton@novell.com>
 
 	* MonoDevelop.Core/PlatformService.cs: New service to hand off the

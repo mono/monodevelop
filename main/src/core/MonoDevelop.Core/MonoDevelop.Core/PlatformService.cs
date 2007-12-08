@@ -52,6 +52,10 @@ namespace MonoDevelop.Core
 				case ".cs":
 					return "text/x-csharp";
 			}
+			switch (file.Name.ToLower ()) {
+				case "changelog":
+					return "text/x-changelog";
+			}
 			return "text/plain";
 		}
 
