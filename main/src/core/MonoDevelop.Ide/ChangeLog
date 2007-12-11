@@ -1,3 +1,19 @@
+2007-12-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* ChangeLog, MonoDevelop.Ide.Gui.Dialogs/OpenFileInSolutionDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.cs,
+	  gtk-gui/gui.stetic: Minor improvements to OpenFileInSolutionDialog.
+	  Makes the OpenFileInSolutionDialog taller by default to show more rows.
+	  Matches types against FullyQualifiedName instead of simply Name. Patch
+	  by Zach Lute.
+
+2007-12-08  Zach Lute <zach.lute@gmail.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/OpenFileInSolutionDialog.cs: Type searches now
+	  match against FullyQualifiedName.
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.cs,
+	  gtk-gui/gui.stetic: Made window slightly larger by default.
+
 2007-12-06  Geoff Norton  <gnorton@novell.com>
 
 	* MonoDevelop.Ide.Gui/DisplayBindingService.cs: 

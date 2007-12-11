@@ -168,8 +168,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 690;
-            this.DefaultHeight = 356;
+            this.DefaultWidth = 750;
+            this.DefaultHeight = 579;
             this.Show();
             this.Shown += new System.EventHandler(this.HandleShown);
             this.toggleFiles.Clicked += new System.EventHandler(this.OnToggleFilesClicked);

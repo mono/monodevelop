@@ -310,7 +310,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		void CheckType (IClass c, string toMatch)
 		{
-			if (toMatch.Length > 0 && !c.Name.ToLower ().Contains (toMatch))
+			if (toMatch.Length > 0 && !c.FullyQualifiedName.ToLower ().Contains (toMatch))
 				return;
 			
 			if (c.Region == null)
