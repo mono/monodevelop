@@ -461,7 +461,7 @@ namespace MonoDevelop.Prj2Make
 
 				if (projTypeGuid == folderTypeGuid) {
 					//Solution folder
-					Combine folder = new Combine ();
+					SolutionFolder folder = new SolutionFolder ();
 					folder.Name = projectName;
 					folder.FileName = projectPath;
 					folder.Version = "0.1"; //FIXME:
@@ -1076,6 +1076,12 @@ namespace MonoDevelop.Prj2Make
 			this.Val = Val;
 			this.Start = Start;
 			this.Count = Count;
+		}
+	}
+
+	class SolutionFolder : Combine {
+		public override bool NeedsReload {
+			get { return false; }
 		}
 	}
 

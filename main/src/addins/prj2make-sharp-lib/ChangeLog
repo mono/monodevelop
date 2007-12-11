@@ -1,3 +1,9 @@
+2007-12-11  Ankit Jain  <jankit@novell.com>
+
+	Fix bug #324333.
+	* SlnFileFormat.cs (SolutionFolder): New.
+	(LoadSolution): Use the new SolutionFolder class for solution folders.
+
 2007-12-07  Ankit Jain  <jankit@novell.com>
 
 	Fix bug #341643.
