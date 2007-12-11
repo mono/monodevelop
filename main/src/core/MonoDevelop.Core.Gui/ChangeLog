@@ -1,3 +1,8 @@
+2007-12-08  Zach Lute <zach.lute@gmail.com>
+
+	* MonoDevelop.Core.Gui.Components/FileBrowser.cs: Location bar will now
+	  expand to fill the rest of the toolbar.
+
 2007-12-06  Geoff Norton  <gnorton@novell.com>
 
 	* Base.glade: We no longer require libgnome, remove it.

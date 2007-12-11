@@ -67,6 +67,7 @@ namespace MonoDevelop.Core.Gui.Components
 			toolbar.Insert (goHome, -1);
 
 			entry = new ToolbarEntry ();
+			entry.Expand = true;
 			entry.Activated += new EventHandler (OnEntryActivated);
 			entry.SetTooltip (tips, GettextCatalog.GetString ("Location"), "");
 			toolbar.Insert (entry, -1);
