@@ -25,7 +25,11 @@ namespace MonoDevelop.VersionControl.Subversion {
 				return new LibSvnClient0 ();
 			} catch {}
 			
-			return new LibSvnClient1 ();
+			try {
+				return new LibSvnClient1 ();
+			} catch {}
+			
+			return null;
 		}
 		
 		public abstract void config_ensure (string config_dir, IntPtr pool);

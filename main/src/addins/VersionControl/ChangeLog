@@ -1,3 +1,12 @@
+2007-12-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.Subversion/gtk-gui/gui.stetic: Updated.
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/LibSvnClient.cs,
+	  MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs,
+	  MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs,
+	  MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/LibApr.cs:
+	  Check if Subversion is installed in a nicer way. Fixes bug #342507.
+
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Diff/Diff.mdp, MonoDevelop.VersionControl.Subversion/Makefile.am,

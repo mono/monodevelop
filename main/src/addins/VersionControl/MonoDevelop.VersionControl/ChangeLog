@@ -1,3 +1,8 @@
+2007-12-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl/VersionControlService.cs: Check if Subversion
+	  is installed in a nicer way. Fixes bug #342507.
+
 2007-12-06  Geoff Norton  <gnorton@novell.com>
 
 	* MonoDevelop.VersionControl.Views/CellRendererDiff.cs:

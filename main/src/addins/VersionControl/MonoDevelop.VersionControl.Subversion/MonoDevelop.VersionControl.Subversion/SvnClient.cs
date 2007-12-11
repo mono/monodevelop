@@ -30,10 +30,16 @@ namespace MonoDevelop.VersionControl.Subversion {
 			// the the same library. The following code detects the required libapr version and loads it. 
 			int aprver = GetLoadAprLib (-1);
 			svn = LibSvnClient.GetLib ();
+			if (svn == null)
+				return;
 			aprver = GetLoadAprLib (aprver);
 			if (aprver != -1)
 				LoggingService.LogInfo ("Subversion add-in: detected libapr-" + aprver);
 			apr = LibApr.GetLib (aprver);
+		}
+		
+		internal static bool IsInstalled {
+			get { return svn != null && apr != null; }
 		}
 		
 		static int GetLoadAprLib (int oldVersion)

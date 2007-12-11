@@ -13,16 +13,22 @@ namespace MonoDevelop.VersionControl.Subversion
 		
 		public static LibApr GetLib (int ver)
 		{
-			if (ver == 0)
-				return new LibApr0 ();
-			else if (ver == 1)
-				return new LibApr1 ();
-			
 			try {
-				return new LibApr0 ();
-			} catch {}
-			
-			return new LibApr1 ();
+				if (ver == 0)
+					return new LibApr0 ();
+				else if (ver == 1)
+					return new LibApr1 ();
+				
+				try {
+					return new LibApr0 ();
+				} catch {}
+				
+				return new LibApr1 ();
+			}
+			catch {
+				// Not installed
+				return null;
+			}
 		}
 		
 		public LibApr ()

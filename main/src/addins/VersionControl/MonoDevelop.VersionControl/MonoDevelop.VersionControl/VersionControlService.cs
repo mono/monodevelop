@@ -44,7 +44,9 @@ namespace MonoDevelop.VersionControl
 		
 		static public IEnumerable<VersionControlSystem> GetVersionControlSystems ()
 		{
-			return handlers;
+			foreach (VersionControlSystem vs in handlers)
+				if (vs.IsInstalled)
+					yield return vs;
 		}
 		
 		public static void AddRepository (Repository repo)
@@ -100,7 +102,7 @@ namespace MonoDevelop.VersionControl
 		
 		public static Repository GetRepositoryReference (string path, string id)
 		{
-			foreach (VersionControlSystem vcs in handlers) {
+			foreach (VersionControlSystem vcs in GetVersionControlSystems ()) {
 				Repository repo = vcs.GetRepositoryReference (path, id);
 				if (repo != null)
 					return repo;
