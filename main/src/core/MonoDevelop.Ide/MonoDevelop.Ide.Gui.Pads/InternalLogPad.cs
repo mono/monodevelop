@@ -423,10 +423,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		void ILogger.Log (LogLevel level, string message)
 		{
-			if (window != null && window.Visible)
-				AddMessage (new LogMessage (level, message));
-			else
+			if (window != null && window.Visible) {
+				LogMessage msg = new LogMessage (level, message);
+				Gtk.Application.Invoke (delegate {
+					AddMessage (msg);
+				});
+			} else {
 				needsReload = true;
+			}
 		}
 		
 		string ILogger.Name {

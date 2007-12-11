@@ -371,7 +371,6 @@ namespace MonoDevelop.Ide.Gui.Content {
 				case "__default_monospace":
 					try {
 						string fontName = Runtime.PlatformService.DefaultMonospaceFont;
-						System.Console.WriteLine (fontName);
 						return FontDescription.FromString (fontName);
 					} catch (Exception ex) {
 						LoggingService.LogWarning ("Could not load platform's default monospace font.", ex);
