@@ -1634,7 +1634,7 @@ namespace MonoDevelop.Autotools
 		public List<string> GetNamesFromVarName (string varname)
 		{
 			if (!pkgVarNameToPkgName.ContainsKey (varname)) {
-				Console.WriteLine ("pkg-config variable {0} not found in pkgVarNameToPkgName.", varname);
+				LoggingService.LogDebug (GettextCatalog.GetString ("pkg-config variable {0} not found in pkgVarNameToPkgName.", varname));
 				return null;
 			}
 
@@ -1645,7 +1645,7 @@ namespace MonoDevelop.Autotools
 		public string GetVarNameFromName (string name)
 		{
 			if (!pkgNameToPkgVarName.ContainsKey (name)) {
-				Console.WriteLine ("Package named '{0}' not specified in configure.in", name);
+				LoggingService.LogDebug (GettextCatalog.GetString ("Package named '{0}' not specified in configure.in", name));
 				return null;
 			}
 
