@@ -1,3 +1,8 @@
+2007-12-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Components.DockToolbars/DockGrip.cs: Fix orientation of
+	  toolbar grip. Fixes bug #346764.
+
 2007-12-06  Geoff Norton  <gnorton@novell.com>
 
 	* MonoDevelop.Components.Commands/LinkCommandEntry.cs: Use the new RuntimeService

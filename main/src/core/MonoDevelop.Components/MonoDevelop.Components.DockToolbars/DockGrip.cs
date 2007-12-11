@@ -64,7 +64,8 @@ namespace MonoDevelop.Components.DockToolbars
 				rect.Y += MarginLeft;
 			}
 			
-			Gtk.Style.PaintHandle (this.Style, this.ParentWindow, this.State, Gtk.ShadowType.None, args.Area, this, "grip", rect.X, rect.Y, rect.Width, rect.Height, Orientation);
+			Gtk.Orientation or = Orientation == Gtk.Orientation.Horizontal ? Gtk.Orientation.Vertical : Gtk.Orientation.Horizontal;
+			Gtk.Style.PaintHandle (this.Style, this.ParentWindow, this.State, Gtk.ShadowType.None, args.Area, this, "grip", rect.X, rect.Y, rect.Width, rect.Height, or);
 			return true;
 		}
 	}
