@@ -251,7 +251,7 @@ namespace MonoDevelop.Prj2Make
 				data.ProjectFileElements [pf] = (XmlElement) node;
 				break;
 			default:
-				LoggingService.LogWarning  ("Unrecognised ItemGroup element '{0}', Include = '{1}'. Ignoring.", node.LocalName, include);
+				LoggingService.LogWarning  ("Unrecognised ItemGroup element '{0}', Include = '{1}' in project '{2}'. Ignoring.", node.LocalName, include, project.Name);
 				break;
 			}
 
