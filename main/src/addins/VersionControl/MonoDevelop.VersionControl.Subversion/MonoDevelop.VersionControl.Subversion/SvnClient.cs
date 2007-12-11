@@ -8,9 +8,12 @@ using MonoDevelop.Core;
 using MonoDevelop.VersionControl.Subversion.Gui;
 
 namespace MonoDevelop.VersionControl.Subversion {
-	public class SvnClient {
+	public class SvnClient : IDisposable {
 		static LibSvnClient svn;
 		static LibApr apr;
+		static bool isInstallChecked;
+		
+		bool disposed  = false;
 		IntPtr auth_baton;
 		IntPtr pool;
 		IntPtr ctx;
@@ -24,22 +27,34 @@ namespace MonoDevelop.VersionControl.Subversion {
 		// retain this so the delegates aren't GC'ed
 		LibSvnClient.svn_client_ctx_t ctxstruct;
 		
-		static SvnClient()
+		static void CheckInstalled ()
 		{
+			isInstallChecked = true;
+			
 			// libsvn_client may be linked to libapr-0 or libapr-1, and we need to bind the LibApr class
 			// the the same library. The following code detects the required libapr version and loads it. 
 			int aprver = GetLoadAprLib (-1);
 			svn = LibSvnClient.GetLib ();
-			if (svn == null)
+			if (svn == null) {
+				LoggingService.LogWarning ("Subversion addin could not load libsvn_client, so it will be disabled.");
 				return;
+			}
 			aprver = GetLoadAprLib (aprver);
 			if (aprver != -1)
-				LoggingService.LogInfo ("Subversion add-in: detected libapr-" + aprver);
+				LoggingService.LogDebug ("Subversion addin detected libapr-" + aprver);
 			apr = LibApr.GetLib (aprver);
+			if (apr == null) {
+				svn = null;
+				LoggingService.LogInfo ("Subversion addin could not load libapr, so it will be disabled.");
+			}
 		}
 		
 		internal static bool IsInstalled {
-			get { return svn != null && apr != null; }
+			get {
+				if (!isInstallChecked)
+					CheckInstalled ();
+				return svn != null;
+			}
 		}
 		
 		static int GetLoadAprLib (int oldVersion)
@@ -105,8 +120,8 @@ namespace MonoDevelop.VersionControl.Subversion {
 			IntPtr providers = apr.array_make (pool, 1, IntPtr.Size);
 			IntPtr item;
 			
-		    // The main disk-caching auth providers, for both
-		    // 'username/password' creds and 'username' creds.
+			// The main disk-caching auth providers, for both
+			// 'username/password' creds and 'username' creds.
 			
 			item = apr.array_push (providers);
 			svn.client_get_simple_provider (item, pool);
@@ -153,9 +168,17 @@ namespace MonoDevelop.VersionControl.Subversion {
 			Marshal.StructureToPtr (ctxstruct, ctx, false);
 		}
 		
+		public void Dispose ()
+		{
+			if (!disposed) {
+				apr.pool_destroy(pool);
+				disposed = true;
+			}
+		}
+		
 		~SvnClient ()
 		{
-			apr.pool_destroy(pool);
+			Dispose ();
 		}
 		
 		static IntPtr GetCancelError ()

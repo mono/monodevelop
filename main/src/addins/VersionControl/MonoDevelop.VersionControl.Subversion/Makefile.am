@@ -35,7 +35,7 @@ RES =  \
 
 $(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) --unsafe $(build_sources) $(REFS) $(build_resources:%=/resource:%) -out:$@ -target:library
+	$(CSC) $(CSC_FLAGS) -unsafe $(build_sources) $(REFS) $(build_resources:%=/resource:%) -out:$@ -target:library
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 EXTRA_DIST = $(FILES) $(RES)

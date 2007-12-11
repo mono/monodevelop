@@ -1,3 +1,12 @@
+2007-12-11  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.VersionControl.Subversion/Makefile.am: Fix trivial warning.
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:
+	  Use lazy initialisation rather than a static constructor. Log a message
+	  to tell the user if the SVN add is disabled. Implement IDisposable in
+	  addition to finaliser. Minor optimisation to release the LibSvnClient if
+	  LibApr can't be loaded.
+
 2007-12-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.Subversion/gtk-gui/gui.stetic: Updated.
