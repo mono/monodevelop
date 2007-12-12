@@ -110,7 +110,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			switcherCombo.PackStart (cr, true);
 			switcherCombo.AddAttribute (cr, "text", 0);
 			
-          	switcherCombo.Changed += new EventHandler (OnContentSwitched);
+			switcherCombo.Changed += new EventHandler (OnContentSwitched);
 
 			ToolItem comboswitcherCombo = new ToolItem ();
 			comboswitcherCombo.Add (switcherCombo);
@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			separator = new SeparatorToolItem ();
 			
 			sw = new Gtk.ScrolledWindow ();
-			sw.ShadowType = ShadowType.In;
+			sw.ShadowType = ShadowType.None;
 			
 			toolbar.ToolbarStyle = ToolbarStyle.BothHoriz;
 			vbox.PackStart (toolbar, false, false, 0);

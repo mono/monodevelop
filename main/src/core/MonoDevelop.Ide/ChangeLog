@@ -1,3 +1,10 @@
+2007-12-12  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/TaskListPad.cs,
+	  MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs,
+	  MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs: Don't draw shadows in pads
+	  (the new docking library does that already).
+
 2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.addin.xml: Bump add-in versions.

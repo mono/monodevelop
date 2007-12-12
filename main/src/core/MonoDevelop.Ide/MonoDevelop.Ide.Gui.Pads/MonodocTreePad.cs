@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			tree_view.HeadersVisible = false;
 			
 			scroller = new ScrolledWindow ();
-			scroller.ShadowType = Gtk.ShadowType.In;
+			scroller.ShadowType = Gtk.ShadowType.None;
 			scroller.Add (tree_view);
 
 			tree_view.ExpandRow (new TreePath ("0"), false);

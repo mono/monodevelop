@@ -207,7 +207,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			AddColumns ();
 			
 			sw = new Gtk.ScrolledWindow ();
-			sw.ShadowType = ShadowType.In;
+			sw.ShadowType = ShadowType.None;
 			sw.Add (view);
 			
 			LoggingService.AddLogger (this);
