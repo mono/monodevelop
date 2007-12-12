@@ -1,3 +1,11 @@
+2007-12-12  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Core/SystemAssemblyService.cs: Catch exception when pkg-config
+	  can't be executed. Catch top-level unhandled exceptions in background
+	  initialisation thread to stop MD dying on Mono 1.2.6.
+	* MonoDevelop.Core/LoggingService.cs: Add some newlines to the log messages
+	  when an exception is being logged, to improve readability.
+
 2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.AddIns/PackageExtensionNode.cs,

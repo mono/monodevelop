@@ -50,6 +50,7 @@ namespace MonoDevelop.Core
 		
 		object initLock = new object ();
 		bool initialized;
+		bool reportedPkgConfigNotFound = false;
 		
 		ClrVersion currentVersion;
 		ClrVersion[] supportedVersions = new ClrVersion [] {};
@@ -311,6 +312,8 @@ namespace MonoDevelop.Core
 			lock (initLock) {
 				try {
 					RunInitialization ();
+				} catch (Exception ex) {
+					LoggingService.LogFatalError ("Unhandled exception in SystemAssemblyService background initialisation thread.", ex);
 				} finally {
 					Monitor.PulseAll (initLock);
 					initialized = true;
@@ -533,18 +536,28 @@ namespace MonoDevelop.Core
 	
 		private string GetVariableFromPkgConfig (string var, string pcfile)
 		{
+			if (reportedPkgConfigNotFound)
+				return string.Empty;
 			ProcessStartInfo psi = new ProcessStartInfo ("pkg-config");
 			psi.RedirectStandardOutput = true;
 			psi.UseShellExecute = false;
 			psi.Arguments = String.Format ("--variable={0} {1}", var, pcfile);
 			Process p = new Process ();
 			p.StartInfo = psi;
-			p.Start ();
-			string ret = p.StandardOutput.ReadToEnd ().Trim ();
-			p.WaitForExit ();
-			if (String.IsNullOrEmpty (ret))
-				return String.Empty;
-			return ret;
+			string ret = string.Empty;
+			try {
+				p.Start ();
+				ret = p.StandardOutput.ReadToEnd ().Trim ();
+				p.WaitForExit ();
+			} catch (System.ComponentModel.Win32Exception) {
+				LoggingService.LogError ("Could not run pkg-config to locate system assemblies.");
+				reportedPkgConfigNotFound = true;
+			} catch (Exception ex) {
+				LoggingService.LogError ("Could not run pkg-config to locate system assemblies.", ex);
+				reportedPkgConfigNotFound = true;
+			}
+			
+			return ret ?? string.Empty;
 		}
 		
 		public AssemblyName ParseAssemblyName (string fullname)

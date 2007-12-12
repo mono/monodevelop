@@ -180,27 +180,27 @@ namespace MonoDevelop.Core
 		
 		public static void LogDebug (string message, Exception ex)
 		{
-			Log (LogLevel.Debug, message + (ex != null? ex.ToString () : string.Empty));
+			Log (LogLevel.Debug, message + System.Environment.NewLine + (ex != null? ex.ToString () : string.Empty));
 		}
 		
 		public static void LogInfo (string message, Exception ex)
 		{
-			Log (LogLevel.Info, message + (ex != null? ex.ToString () : string.Empty));
+			Log (LogLevel.Info, message + System.Environment.NewLine + (ex != null? ex.ToString () : string.Empty));
 		}
 		
 		public static void LogWarning (string message, Exception ex)
 		{
-			Log (LogLevel.Warn, message + (ex != null? ex.ToString () : string.Empty));
+			Log (LogLevel.Warn, message + System.Environment.NewLine + (ex != null? ex.ToString () : string.Empty));
 		}
 		
 		public static void LogError (string message, Exception ex)
 		{
-			Log (LogLevel.Error, message + (ex != null? ex.ToString () : string.Empty));
+			Log (LogLevel.Error, message + System.Environment.NewLine + (ex != null? ex.ToString () : string.Empty));
 		}
 		
 		public static void LogFatalError (string message, Exception ex)
 		{
-			Log (LogLevel.Fatal, message + (ex != null? ex.ToString () : string.Empty));
+			Log (LogLevel.Fatal, message + System.Environment.NewLine + (ex != null? ex.ToString () : string.Empty));
 		}
 		
 #endregion		
