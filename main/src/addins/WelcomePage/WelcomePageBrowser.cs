@@ -150,14 +150,7 @@ namespace MonoDevelop.WelcomePage
 		
 		void LinkMessage (object sender, StatusMessageChangedEventArgs e)
 		{
-			if (String.IsNullOrEmpty (e.Message) || e.Message.IndexOf ("monodevelop://") != -1) {
-				IdeApp.Workbench.StatusBar.SetMessage (null);
-			} else {
-				string message = e.Message;
-				if (message.IndexOf ("project://") != -1) 
-					message = message.Substring (10);
-				IdeApp.Workbench.StatusBar.SetMessage (message);
-			}
+			base.SetLinkStatus (e.Message);
 		}
 		
 		public override string DataDirectory {

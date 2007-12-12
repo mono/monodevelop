@@ -117,6 +117,18 @@ namespace MonoDevelop.WelcomePage
 			}
 		}
 		
+		public void SetLinkStatus (string link)
+		{
+			if (String.IsNullOrEmpty (link) || link.IndexOf ("monodevelop://") != -1) {
+				IdeApp.Workbench.StatusBar.SetMessage (null);
+			} else {
+				string message = link;
+				if (link.IndexOf ("project://") != -1) 
+					message = message.Substring (10);
+				IdeApp.Workbench.StatusBar.SetMessage (message);
+			}
+		}
+		
 		public static WelcomePageView GetWelcomePage ()
 		{
 			//FIXME: make the HTML version worth using

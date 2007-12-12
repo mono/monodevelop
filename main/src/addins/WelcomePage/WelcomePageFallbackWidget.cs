@@ -79,10 +79,19 @@ namespace MonoDevelop.WelcomePage
 		
 		readonly int logoOffset = 20;
 		
+		//keep ref to delegates, as we're going to use them a lot
+		Gtk.LeaveNotifyEventHandler linkHoverLeaveEventHandler;
+		Gtk.EnterNotifyEventHandler linkHoverEnterEventHandler;
+		EventHandler linkClickedEventHandler;
+		
 		public WelcomePageFallbackWidget (WelcomePageView parentView) : base ()
 		{
 			this.Build ();
 			this.parentView = parentView;
+			
+			linkHoverLeaveEventHandler = new Gtk.LeaveNotifyEventHandler (handleHoverLeave);
+			linkHoverEnterEventHandler = new Gtk.EnterNotifyEventHandler (handleHoverEnter);
+			linkClickedEventHandler = new EventHandler (HandleLink);
 			
 			string logoPath = System.IO.Path.Combine (parentView.DataDirectory, "mono-logo.png");
 			logoPixbuf = new Gdk.Pixbuf (logoPath);
@@ -113,7 +122,9 @@ namespace MonoDevelop.WelcomePage
 			foreach (XmlNode link in actions.ChildNodes) {
 				XmlAttribute a; 
 				LinkButton button = new LinkButton ();
-				button.Clicked += HandleLink;
+				button.Clicked += linkClickedEventHandler;
+				button.EnterNotifyEvent += linkHoverEnterEventHandler;
+				button.LeaveNotifyEvent += linkHoverLeaveEventHandler;
 				a = link.Attributes ["_title"];
 				if (a != null) button.Label = string.Format (textFormat, a.Value);
 				a = link.Attributes ["href"];
@@ -130,7 +141,9 @@ namespace MonoDevelop.WelcomePage
 			foreach (XmlNode link in supportLinks.ChildNodes) {
 				XmlAttribute a; 
 				LinkButton button = new LinkButton ();
-				button.Clicked += HandleLink;
+				button.Clicked += linkClickedEventHandler;
+				button.EnterNotifyEvent += linkHoverEnterEventHandler;
+				button.LeaveNotifyEvent += linkHoverLeaveEventHandler;
 				a = link.Attributes ["_title"];
 				if (a != null) button.Label = string.Format (textFormat, a.Value);
 				a = link.Attributes ["href"];
@@ -147,7 +160,9 @@ namespace MonoDevelop.WelcomePage
 			foreach (XmlNode link in devLinks.ChildNodes) {
 				XmlAttribute a; 
 				LinkButton button = new LinkButton ();
-				button.Clicked += HandleLink;
+				button.Clicked += linkClickedEventHandler;
+				button.EnterNotifyEvent += linkHoverEnterEventHandler;
+				button.LeaveNotifyEvent += linkHoverLeaveEventHandler;
 				a = link.Attributes ["_title"];
 				if (a != null) button.Label = string.Format (textFormat, a.Value);
 				a = link.Attributes ["href"];
@@ -171,6 +186,16 @@ namespace MonoDevelop.WelcomePage
 			LinkButton button = (LinkButton) sender;
 			if (parentView != null)
 				parentView.HandleLinkAction (button.LinkUrl); 
+		}
+		
+		void handleHoverEnter (object sender, EventArgs e)
+		{
+			parentView.SetLinkStatus (((LinkButton) sender).LinkUrl);
+		}
+		
+		void handleHoverLeave (object sender, EventArgs e)
+		{
+			parentView.SetLinkStatus (null);
 		}
 		
 		//draw the background
@@ -226,7 +251,9 @@ namespace MonoDevelop.WelcomePage
 				Label label = new Label ();
 				recentFilesTable.Attach (button, 0, 1, i, i+1);
 				recentFilesTable.Attach (label, 1, 2, i, i+1);
-				button.Clicked += HandleLink;
+				button.Clicked += linkClickedEventHandler;
+				button.EnterNotifyEvent += linkHoverEnterEventHandler;
+				button.LeaveNotifyEvent += linkHoverLeaveEventHandler;
 				label.Justify = Justification.Right;
 				label.Xalign = 1;
 				button.Xalign = 0;
@@ -302,13 +329,6 @@ namespace MonoDevelop.WelcomePage
 			if (!string.IsNullOrEmpty (desc))
 				markup += "\n<span size=\"small\">" + desc + "</span>";
 			label.Markup = markup;
-		}
-		
-		protected override void OnClicked ()
-		{
-			base.OnClicked ();
-			//FIXME
-			//Gnome.Url.Show (linkUrl);
 		}
 		
 		protected override bool OnDestroyEvent (Event evnt)

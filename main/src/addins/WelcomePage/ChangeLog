@@ -1,3 +1,10 @@
+2007-12-12  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* WelcomePageFallbackWidget.cs: Set hover status message for links. Re-use
+	  delegates where possible.
+	* WelcomePageView.cs, WelcomePageBrowser.cs: Move link status code into
+	  common class for the two welcome implementations.
+
 2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/MonoDevelop.WelcomePage.WelcomePageFallbackWidget.cs,
