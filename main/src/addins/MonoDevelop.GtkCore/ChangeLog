@@ -1,3 +1,7 @@
+2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.am: Update after build reorg.
+
 2007-12-06  Geoff Norton  <gnorton@novell.com>
 
 	* Makefile.am: Only build the GtkCore addin if we have gnome-sharp 
