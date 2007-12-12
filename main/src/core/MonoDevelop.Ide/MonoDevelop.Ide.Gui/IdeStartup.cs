@@ -58,6 +58,7 @@ namespace MonoDevelop.Ide.Gui
 		Socket listen_socket   = null;
 		static string fileToOpen = String.Empty;
 		ArrayList errorsList = new ArrayList ();
+		bool initialized;
 		
 		public int Run (string[] args)
 		{
@@ -193,6 +194,8 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 
+			initialized = true;
+			
 			IdeApp.Run ();
 
 			// unloading services
@@ -202,6 +205,10 @@ namespace MonoDevelop.Ide.Gui
 			ServiceManager.UnloadAllServices ();
 			System.Environment.Exit (0);
 			return 0;
+		}
+		
+		public bool Initialized {
+			get { return initialized; }
 		}
 		
 		void OnAddinError (object s, AddinErrorEventArgs args)

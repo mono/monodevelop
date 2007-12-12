@@ -1,3 +1,9 @@
+2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs: Updated.
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: Add property to know when the IDE has
+	  been initialized.
+
 2007-12-11  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs: Remove a debug
