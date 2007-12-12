@@ -1,3 +1,9 @@
+2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui/IconService.cs: API cleanup.
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Remove unused
+	  event.
+
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.mdp, Makefile.am: Directory reorganization.

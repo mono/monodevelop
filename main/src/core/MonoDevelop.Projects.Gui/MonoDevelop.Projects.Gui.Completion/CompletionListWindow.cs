@@ -52,8 +52,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 		const int declarationWindowMargin = 3;
 		static DataComparer dataComparer = new DataComparer ();
 		
-		public static event EventHandler WindowClosed;
-		
 		class DataComparer: IComparer
 		{
 			public int Compare (object x, object y)

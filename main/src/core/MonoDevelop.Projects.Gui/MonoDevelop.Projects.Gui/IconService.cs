@@ -30,7 +30,6 @@ using MonoDevelop.Projects.Parser;
 using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Addins;
 using Stock = MonoDevelop.Core.Gui.Stock;
 
 namespace MonoDevelop.Projects.Gui
