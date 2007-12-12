@@ -7,8 +7,8 @@
        description = "The MonoDevelop IDE application."
 	   category    = "MonoDevelop Core"
 	   isroot      = "true"
-       version     = "0.17.0"
-       compatVersion = "0.17.0">
+       version     = "0.18.0"
+       compatVersion = "0.18.0">
 
 
 	<Runtime>
@@ -16,9 +16,9 @@
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core.Gui" version="0.17.0"/>
-		<Addin id="Documentation" version="0.17.0"/>
-		<Addin id="Components" version="0.17.0"/>
+		<Addin id="Core.Gui" version="0.18.0"/>
+		<Addin id="Documentation" version="0.18.0"/>
+		<Addin id="Components" version="0.18.0"/>
 	</Dependencies>
 
 	<!-- Extension points -->

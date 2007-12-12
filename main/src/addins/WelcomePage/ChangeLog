@@ -1,5 +1,9 @@
 2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* WelcomePage.addin.xml: Bump add-in versions.
+
+2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* WelcomePageFallbackWidget.cs, WelcomePage.mdp, gtk-gui/objects.xml,
 	  gtk-gui/MonoDevelop.WelcomePage.WelcomePageFallbackWidget.cs,
 	  gtk-gui/gui.stetic: Make fonts bigger. Show url descriptions in the

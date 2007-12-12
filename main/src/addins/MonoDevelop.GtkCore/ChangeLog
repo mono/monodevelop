@@ -1,5 +1,9 @@
 2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.GtkCore.addin.xml: Bump add-in versions.
+
+2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Makefile.am: Update after build reorg.
 
 2007-12-06  Geoff Norton  <gnorton@novell.com>

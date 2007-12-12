@@ -6,14 +6,14 @@
        url         = "http://blog.sublimeintervention.com/"
        description = "Mac Platform Support for MonoDevelop"
        category    = "IDE extensions"
-       version     = "0.17.0">
+       version     = "0.18.0">
 	
 	<Runtime>
 		<Import assembly="MacPlatform.dll"/>
 	</Runtime>
 
 	<Dependencies>
-	    <Addin id="Core" version="0.17.0"/>
+	    <Addin id="Core" version="0.18.0"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Core/PlatformService">

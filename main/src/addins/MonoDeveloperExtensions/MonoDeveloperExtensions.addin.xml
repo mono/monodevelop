@@ -5,18 +5,18 @@
        copyright   = "(c) 2005 Novell, Inc."
        url         = "http://www.monodevelop.com"
        description = "Provides some IDE extensions useful for developing and building the Mono class libraries."
-       version     = "0.17.0">
+       version     = "0.18.0">
     
     <Runtime>
         <Import assembly="MonoDeveloperExtensions.dll"/>
     </Runtime>
 	
 	<Dependencies>
-	    <Addin id="Core" version="0.17.0"/>
-	    <Addin id="Core.Gui" version="0.17.0"/>
-	    <Addin id="Projects" version="0.17.0"/>
-	    <Addin id="Projects.Gui" version="0.17.0"/>
-		<Addin id="Ide" version="0.17.0"/>
+	    <Addin id="Core" version="0.18.0"/>
+	    <Addin id="Core.Gui" version="0.18.0"/>
+	    <Addin id="Projects" version="0.18.0"/>
+	    <Addin id="Projects.Gui" version="0.18.0"/>
+		<Addin id="Ide" version="0.18.0"/>
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectFileFormats">
@@ -57,7 +57,7 @@
 	        <Import assembly="MonoDeveloperExtensions_nunit.dll"/>
 	    </Runtime>
 		<Dependencies>
-			<Addin id="NUnit" version="0.17.0"/>
+			<Addin id="NUnit" version="0.18.0"/>
 		</Dependencies>
 		<Extension path = "/MonoDevelop/NUnit/TestProviders">
 			<Class id = "MonoTestProvider" class = "MonoDeveloper.MonoTestProvider"/>

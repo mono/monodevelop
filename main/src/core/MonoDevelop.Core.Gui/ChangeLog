@@ -1,3 +1,7 @@
+2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.addin.xml: Bump add-in versions.
+
 2007-12-08  Zach Lute <zach.lute@gmail.com>
 
 	* MonoDevelop.Core.Gui.Components/FileBrowser.cs: Location bar will now

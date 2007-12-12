@@ -6,18 +6,18 @@
        url         = "http://www.monodevelop.com/"
        description = "Support for ASP.NET projects, including editing, compiling, previewing and deploying to remote servers."
 	   category    = "IDE extensions"
-       version     = "0.17.0">
+       version     = "0.18.0">
 	
 	<Dependencies>
-	    <Addin id="Core" version="0.17.0"/>
-	    <Addin id="Core.Gui" version="0.17.0"/>
-    	<Addin id="Projects" version="0.17.0"/>
-		<Addin id="Projects.Gui" version="0.17.0"/>
-		<Addin id="Ide" version="0.17.0"/>
-		<Addin id="SourceEditor" version="0.17.0"/>
-		<Addin id="DesignerSupport" version="0.17.0"/>
-		<Addin id="Deployment" version="0.17.0"/>
-		<Addin id="Prj2Make" version="0.17.0" />
+	    <Addin id="Core" version="0.18.0"/>
+	    <Addin id="Core.Gui" version="0.18.0"/>
+    	<Addin id="Projects" version="0.18.0"/>
+		<Addin id="Projects.Gui" version="0.18.0"/>
+		<Addin id="Ide" version="0.18.0"/>
+		<Addin id="SourceEditor" version="0.18.0"/>
+		<Addin id="DesignerSupport" version="0.18.0"/>
+		<Addin id="Deployment" version="0.18.0"/>
+		<Addin id="Prj2Make" version="0.18.0" />
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">

@@ -7,19 +7,19 @@
 	url = "http://www.monodevelop.com"
 	description = "Provides support for adding and maintianing Web References for CSharp and VB projects."
 	category = "IDE extensions"
-	version = "0.17.0" >
+	version = "0.18.0" >
     
     <Runtime>
     	<Import assembly = "MonoDevelop.WebReferences.dll"/>
     </Runtime>
     
 	<Dependencies>
-		<Addin id="Core" version="0.17.0"/>
-		<Addin id="Core.Gui" version="0.17.0"/>
-		<Addin id="Ide" version="0.17.0"/>
-		<Addin id="Projects" version="0.17.0"/>
-		<Addin id="Projects.Gui" version="0.17.0"/>
-		<Addin id="Components" version="0.17.0"/>
+		<Addin id="Core" version="0.18.0"/>
+		<Addin id="Core.Gui" version="0.18.0"/>
+		<Addin id="Ide" version="0.18.0"/>
+		<Addin id="Projects" version="0.18.0"/>
+		<Addin id="Projects.Gui" version="0.18.0"/>
+		<Addin id="Components" version="0.18.0"/>
 	</Dependencies>
 	
 	<ExtensionPoint path = "/MonoDevelop/WebReferences/ContextMenu/ProjectPad/WebReferenceFolder">

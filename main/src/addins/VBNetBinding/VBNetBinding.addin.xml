@@ -6,14 +6,14 @@
        url         = "http://bard.sytes.net/vbnetbinding"
        description = "VB.NET Language Binding"
 	   category    = "Language bindings"
-       version     = "0.17.0">
+       version     = "0.18.0">
 
 	<Dependencies>
-	    <Addin id="Core" version="0.17.0"/>
-	    <Addin id="Core.Gui" version="0.17.0"/>
-	    <Addin id="Projects" version="0.17.0"/>
-		<Addin id="Projects.Gui" version="0.17.0"/>
-		<Addin id="Ide" version="0.17.0"/>
+	    <Addin id="Core" version="0.18.0"/>
+	    <Addin id="Core.Gui" version="0.18.0"/>
+	    <Addin id="Projects" version="0.18.0"/>
+		<Addin id="Projects.Gui" version="0.18.0"/>
+		<Addin id="Ide" version="0.18.0"/>
 	</Dependencies>
 	
   <Extension path = "/MonoDevelop/Ide/FileFilters">

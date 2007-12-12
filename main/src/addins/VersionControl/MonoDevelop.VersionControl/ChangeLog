@@ -1,3 +1,7 @@
+2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* VersionControl.addin.xml: Bump add-in versions.
+
 2007-12-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl/VersionControlService.cs: Check if Subversion

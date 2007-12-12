@@ -13,10 +13,10 @@
   </Runtime>
 
 	<Dependencies>
-	    <Addin id="Core" version="0.17.0"/>
-	    <Addin id="Core.Gui" version="0.17.0"/>
-	    <Addin id="Projects" version="0.17.0"/>
-		<Addin id="Ide" version="0.17.0"/>
+	    <Addin id="Core" version="0.18.0"/>
+	    <Addin id="Core.Gui" version="0.18.0"/>
+	    <Addin id="Projects" version="0.18.0"/>
+		<Addin id="Ide" version="0.18.0"/>
 	</Dependencies>
 	
   <Extension path = "/MonoDevelop/ProjectModel/Ambiences">

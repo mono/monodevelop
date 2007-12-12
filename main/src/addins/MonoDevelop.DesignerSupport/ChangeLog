@@ -1,5 +1,9 @@
 2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.DesignerSupport.addin.xml: Bump add-in versions.
+
+2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.DesignerSupport/ToolboxService.cs: Make sure the toolbox is
 	  filled the first time it is shown.
 	* gtk-gui/gui.stetic: Updated.

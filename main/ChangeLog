@@ -1,3 +1,7 @@
+2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* configure.in: Bump MD version.
+
 2007-12-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* configure.in: Fix a couple of requirement checks. Add some more 

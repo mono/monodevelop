@@ -5,7 +5,7 @@
         copyright   = "LGPL"
         url         = "http://monodevelop.com"
         description = "AddIn for deploying projects as autotool projects"
-        version     = "0.17.0">
+        version     = "0.18.0">
         
 	<Runtime>
 		<Import assembly="MonoDevelop.Autotools.dll" />
@@ -17,13 +17,13 @@
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="0.17.0"/>
-		<Addin id="Core.Gui" version="0.17.0"/>
-		<Addin id="Ide" version="0.17.0"/>
-		<Addin id="Projects" version="0.17.0"/>
-		<Addin id="Projects.Gui" version="0.17.0"/>
-		<Addin id="Deployment" version="0.17.0"/>
-		<Addin id="DesignerSupport" version="0.17.0"/>
+		<Addin id="Core" version="0.18.0"/>
+		<Addin id="Core.Gui" version="0.18.0"/>
+		<Addin id="Ide" version="0.18.0"/>
+		<Addin id="Projects" version="0.18.0"/>
+		<Addin id="Projects.Gui" version="0.18.0"/>
+		<Addin id="Deployment" version="0.18.0"/>
+		<Addin id="DesignerSupport" version="0.18.0"/>
 	</Dependencies>
 	
 	<ExtensionPoint path = "/MonoDevelop/Autotools/SimpleSetups">

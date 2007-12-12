@@ -1,5 +1,9 @@
 2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects.Gui.addin.xml: Bump add-in versions.
+
+2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects.Gui/IconService.cs: API cleanup.
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Remove unused
 	  event.
