@@ -29,9 +29,9 @@
 using System;
 using Mono.Addins;
 
-namespace MonoDevelop.Core.Addins
+namespace MonoDevelop.Core.AddIns
 {
-	public class ServiceExtensionNode: TypeExtensionNode
+	internal class ServiceExtensionNode: TypeExtensionNode
 	{
 		protected override void OnAddinLoaded ()
 		{

@@ -16,7 +16,7 @@
 	
 	<ExtensionPoint path = "/MonoDevelop/Core/Services" name = "Services">
 		<Description>Services to be initialized by the runtime. Specified classes must implement MonoDevelop.Core.IService</Description>
-		<ExtensionNode name="Class" type="MonoDevelop.Core.Addins.ServiceExtensionNode" />
+		<ExtensionNode name="Class" type="MonoDevelop.Core.AddIns.ServiceExtensionNode" />
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Core/PlatformService" name = "Platform Service">
@@ -26,7 +26,7 @@
 
 	<ExtensionPoint path = "/MonoDevelop/Core/ExecutionHandlers" name = "Execution handlers">
 		<Description>Default execution handlers.</Description>
-		<ExtensionNode name="ExecutionHandler" type="MonoDevelop.Core.Addins.ExecutionHandlerCodon" />
+		<ExtensionNode name="ExecutionHandler" type="MonoDevelop.Core.AddIns.ExecutionHandlerCodon" />
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/Core/FileSystemExtensions" name = "File system extensions">

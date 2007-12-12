@@ -32,7 +32,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Core.FileSystem
 {
-	public class DefaultFileSystemExtension: FileSystemExtension
+	internal class DefaultFileSystemExtension: FileSystemExtension
 	{
 		public override bool CanHandlePath (string path, bool isDirectory)
 		{

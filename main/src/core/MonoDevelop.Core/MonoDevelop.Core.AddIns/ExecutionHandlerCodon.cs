@@ -37,7 +37,7 @@ using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 
-namespace MonoDevelop.Core.Addins
+namespace MonoDevelop.Core.AddIns
 {
 	[ExtensionNode (Description="Registers an IExecutionHandler type.")]
 	class ExecutionHandlerCodon : TypeExtensionNode

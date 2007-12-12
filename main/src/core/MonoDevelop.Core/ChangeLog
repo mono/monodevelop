@@ -1,3 +1,12 @@
+2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.AddIns/PackageExtensionNode.cs,
+	  MonoDevelop.Core.AddIns/ServiceExtensionNode.cs,
+	  MonoDevelop.Core.AddIns/ExecutionHandlerCodon.cs,
+	  MonoDevelop.Core.Execution/ProcessService.cs,
+	  MonoDevelop.Core.FileSystem/DefaultFileSystemExtension.cs,
+	  MonoDevelop.Core.addin.xml: API cleanup.
+
 2007-12-07  Geoff Norton  <gnorton@novell.com>
 
 	* MonoDevelop.Core/PlatformService.cs: Add fallback mime-type support

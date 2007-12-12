@@ -35,7 +35,7 @@ namespace MonoDevelop.Core.AddIns
 {
 	[ExtensionNode ("Package")]
 	[ExtensionNodeChild (typeof(AssemblyExtensionNode))]
-	public class PackageExtensionNode: TypeExtensionNode
+	internal class PackageExtensionNode: TypeExtensionNode
 	{
 		[NodeAttribute ("name", Required=true)]
 		string name;

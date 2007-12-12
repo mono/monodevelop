@@ -37,7 +37,7 @@ using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Tcp;
 
-using MonoDevelop.Core.Addins;
+using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core;
 using Mono.Addins;
 
