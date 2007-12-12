@@ -70,6 +70,8 @@ namespace MonoDevelop.DesignerSupport
 			
 			AddinManager.AddExtensionNodeHandler (toolboxLoaderPath, OnLoaderExtensionChanged);
 			AddinManager.AddExtensionNodeHandler (toolboxProviderPath, OnProviderExtensionChanged);
+			
+			onActiveDocChanged (null, null);
 		}
 		
 		static string ToolboxConfigFile {
