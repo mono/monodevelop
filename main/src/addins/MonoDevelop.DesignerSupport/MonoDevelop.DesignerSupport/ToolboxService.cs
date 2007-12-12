@@ -65,13 +65,14 @@ namespace MonoDevelop.DesignerSupport
 		internal ToolboxService ()
 		{
 			// Null check here because the service may be loaded in an external process
-			if (IdeApp.Workbench != null)
+			if (IdeApp.IsInitialized)
 				IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (onActiveDocChanged);
 			
 			AddinManager.AddExtensionNodeHandler (toolboxLoaderPath, OnLoaderExtensionChanged);
 			AddinManager.AddExtensionNodeHandler (toolboxProviderPath, OnProviderExtensionChanged);
 			
-			onActiveDocChanged (null, null);
+			if (IdeApp.IsInitialized)
+				onActiveDocChanged (null, null);
 		}
 		
 		static string ToolboxConfigFile {
@@ -692,6 +693,7 @@ namespace MonoDevelop.DesignerSupport
 	{
 		public string LoadFile (string file)
 		{
+			Gtk.Application.Init ();
 			ToolboxService service = new ToolboxService ();
 			XmlDataSerializer ser = new XmlDataSerializer (Services.ProjectService.DataContext);
 			ToolboxList tl = new ToolboxList ();

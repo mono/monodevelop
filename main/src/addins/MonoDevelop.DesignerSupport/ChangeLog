@@ -1,5 +1,11 @@
 2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.DesignerSupport/ToolboxService.cs: Make sure Gtk is properly
+	  initialized in the process that looks for components. Added some missing
+	  check.
+
+2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.DesignerSupport.addin.xml: Bump add-in versions.
 
 2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
