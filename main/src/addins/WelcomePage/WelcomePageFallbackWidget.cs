@@ -32,6 +32,7 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Reflection;
+using MonoDevelop.Core;
 
 using Gtk;
 using Gdk;
@@ -70,8 +71,8 @@ namespace MonoDevelop.WelcomePage
 		
 		WelcomePageView parentView;
 		
-		const string headerSize = "medium";
-		const string textSize = "small";
+		const string headerSize = "large";
+		const string textSize = "medium";
 		static readonly string headerFormat = "<span size=\"" + headerSize + "\"  weight=\"bold\" foreground=\"#2525a6\">{0}</span>";
 		static readonly string tableHeaderFormat = "<span size=\"" + textSize + "\" weight=\"bold\">{0}</span>";
 		static readonly string textFormat = "<span size=\"" + textSize + "\">{0}</span>";
@@ -108,7 +109,7 @@ namespace MonoDevelop.WelcomePage
 			
 			//Actions
 			XmlNode actions = xml.SelectSingleNode ("/WelcomePage/Actions");
-			headerActions.Markup = string.Format (headerFormat, actions.Attributes ["_title"].Value);
+			headerActions.Markup = string.Format (headerFormat, GettextCatalog.GetString (actions.Attributes ["_title"].Value));
 			foreach (XmlNode link in actions.ChildNodes) {
 				XmlAttribute a; 
 				LinkButton button = new LinkButton ();
@@ -125,7 +126,7 @@ namespace MonoDevelop.WelcomePage
 			
 			//Support Links
 			XmlNode supportLinks = xml.SelectSingleNode ("/WelcomePage/Links[@_title=\"Support Links\"]");
-			headerSupportLinks.Markup = string.Format (headerFormat, supportLinks.Attributes ["_title"].Value);
+			headerSupportLinks.Markup = string.Format (headerFormat, GettextCatalog.GetString (supportLinks.Attributes ["_title"].Value));
 			foreach (XmlNode link in supportLinks.ChildNodes) {
 				XmlAttribute a; 
 				LinkButton button = new LinkButton ();
@@ -135,14 +136,14 @@ namespace MonoDevelop.WelcomePage
 				a = link.Attributes ["href"];
 				if (a != null) button.LinkUrl = a.Value;
 				a = link.Attributes ["_desc"];
-				if (a != null) button.HoverMessage = a.Value;
+				if (a != null) button.Description = a.Value;
 				supportLinkBox.PackEnd (button, true, false, 0);
 			}
 			supportLinkBox.ShowAll ();
 			
 			//Development Links
 			XmlNode devLinks = xml.SelectSingleNode ("/WelcomePage/Links[@_title=\"Development Links\"]");
-			headerDevLinks.Markup = string.Format (headerFormat, devLinks.Attributes ["_title"].Value);
+			headerDevLinks.Markup = string.Format (headerFormat, GettextCatalog.GetString (devLinks.Attributes ["_title"].Value));
 			foreach (XmlNode link in devLinks.ChildNodes) {
 				XmlAttribute a; 
 				LinkButton button = new LinkButton ();
@@ -152,16 +153,16 @@ namespace MonoDevelop.WelcomePage
 				a = link.Attributes ["href"];
 				if (a != null) button.LinkUrl = a.Value;
 				a = link.Attributes ["_desc"];
-				if (a != null) button.HoverMessage = a.Value;
+				if (a != null) button.Description = a.Value;
 				devLinkBox.PackEnd (button, true, false, 0);
 			}
 			devLinkBox.ShowAll ();
 			
 			//Recently Changed
 			XmlNode recChanged = xml.SelectSingleNode ("/WelcomePage/Projects");
-			headerRecentProj.Markup = string.Format (headerFormat, recChanged.Attributes ["_title"].Value);
-			this.projNameLabel.Markup = string.Format (tableHeaderFormat, recChanged.Attributes ["_col1"].Value);
-			projTimeLabel.Markup = string.Format (tableHeaderFormat, recChanged.Attributes ["_col2"].Value);
+			headerRecentProj.Markup = string.Format (headerFormat, GettextCatalog.GetString (recChanged.Attributes ["_title"].Value));
+			projNameLabel.Markup = string.Format (tableHeaderFormat, GettextCatalog.GetString (recChanged.Attributes ["_col1"].Value));
+			projTimeLabel.Markup = string.Format (tableHeaderFormat, GettextCatalog.GetString (recChanged.Attributes ["_col2"].Value));
 			//_linkTitle="Open Project"
 		}
 		
@@ -209,14 +210,17 @@ namespace MonoDevelop.WelcomePage
 		public void LoadRecent ()
 		{
 			Widget[] oldChildren = (Widget[]) recentFilesTable.Children.Clone ();
-			foreach (Widget w in oldChildren)
-				recentFilesTable.Remove (w);
+			foreach (Widget w in oldChildren) {
+				Gtk.Table.TableChild tc = (Gtk.Table.TableChild) recentFilesTable [w];
+				if (tc.TopAttach >= 2)
+					recentFilesTable.Remove (w);
+			}
 			
 			RecentItem[] items = parentView.RecentProjects;
 			if (items == null || items.Length < 1)
 				return;
 			
-			uint i = 0;
+			uint i = 2;
 			foreach (RecentItem ri in items) {
 				LinkButton button = new LinkButton ();
 				Label label = new Label ();
@@ -250,6 +254,8 @@ namespace MonoDevelop.WelcomePage
 	{
 		string hoverMessage = null;
 		Label label;
+		string text;
+		string desc;
 		static Tooltips tooltips;
 		static int tipcount;
 		
@@ -281,10 +287,21 @@ namespace MonoDevelop.WelcomePage
 		}
 		
 		public new string Label {
-			get { return label.Text; }
-			set {
-				label.Markup = string.Format ("<span underline=\"single\" foreground=\"#5a7ac7\">{0}</span>", value);
-			}
+			get { return text; }
+			set { text = value; UpdateLabel (); }
+		}
+		
+		public string Description {
+			get { return desc; }
+			set { desc = value; UpdateLabel (); }
+		}
+		
+		void UpdateLabel ()
+		{
+			string markup = string.Format ("<span underline=\"single\" foreground=\"#5a7ac7\">{0}</span>", text);
+			if (!string.IsNullOrEmpty (desc))
+				markup += "\n<span size=\"small\">" + desc + "</span>";
+			label.Markup = markup;
 		}
 		
 		protected override void OnClicked ()

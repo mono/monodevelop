@@ -1,3 +1,11 @@
+2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* WelcomePageFallbackWidget.cs, WelcomePage.mdp, gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.WelcomePage.WelcomePageFallbackWidget.cs,
+	  gtk-gui/gui.stetic: Make fonts bigger. Show url descriptions in the
+	  button instead of a tooltip. Moved project table headers into the table,
+	  to make sure they are properly aligned.
+
 2007-12-06  Geoff Norton  <gnorton@novell.com>
 
 	* WelcomePageView.cs: Use the PlatformService to get Mime information instead

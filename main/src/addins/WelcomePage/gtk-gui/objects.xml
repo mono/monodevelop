@@ -9,6 +9,7 @@
         <property name="HoverMessage" />
         <property name="Label" />
         <property name="LinkUrl" />
+        <property name="Description" />
       </itemgroup>
     </itemgroups>
     <signals />
