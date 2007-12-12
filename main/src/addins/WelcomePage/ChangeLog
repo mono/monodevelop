@@ -1,5 +1,10 @@
 2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* gtk-gui/MonoDevelop.WelcomePage.WelcomePageFallbackWidget.cs,
+	  gtk-gui/gui.stetic: Cosmetic fix.
+
+2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* WelcomePage.addin.xml: Bump add-in versions.
 
 2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 

@@ -109,6 +109,19 @@
                   </packing>
                 </child>
                 <child>
+                  <widget class="Gtk.Label" id="filler2">
+                    <property name="MemberName" />
+                    <property name="HeightRequest">3</property>
+                    <property name="LabelProp" translatable="yes" />
+                  </widget>
+                  <packing>
+                    <property name="Position">4</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+                <child>
                   <widget class="Gtk.HBox" id="hbox4">
                     <property name="MemberName" />
                     <property name="Spacing">6</property>
@@ -129,32 +142,6 @@
                       <widget class="Gtk.VBox" id="vbox3">
                         <property name="MemberName" />
                         <property name="Spacing">6</property>
-                        <child>
-                          <widget class="Gtk.HBox" id="hbox2">
-                            <property name="MemberName" />
-                            <property name="Spacing">6</property>
-                            <child>
-                              <placeholder />
-                            </child>
-                            <child>
-                              <widget class="Gtk.Label" id="filler2">
-                                <property name="MemberName" />
-                                <property name="LabelProp" translatable="yes" />
-                              </widget>
-                              <packing>
-                                <property name="Position">1</property>
-                                <property name="AutoSize">False</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <placeholder />
-                            </child>
-                          </widget>
-                          <packing>
-                            <property name="Position">0</property>
-                            <property name="AutoSize">False</property>
-                          </packing>
-                        </child>
                         <child>
                           <widget class="Gtk.Table" id="recentFilesTable">
                             <property name="MemberName" />
@@ -220,7 +207,7 @@
                             </child>
                           </widget>
                           <packing>
-                            <property name="Position">1</property>
+                            <property name="Position">0</property>
                             <property name="AutoSize">True</property>
                             <property name="Expand">False</property>
                             <property name="Fill">False</property>
@@ -234,7 +221,7 @@
                     </child>
                   </widget>
                   <packing>
-                    <property name="Position">4</property>
+                    <property name="Position">5</property>
                     <property name="AutoSize">True</property>
                     <property name="Expand">False</property>
                     <property name="Fill">False</property>
