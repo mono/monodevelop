@@ -1,5 +1,12 @@
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* gtk-gui/MonoDevelop.Deployment.Gui.FileCopyConfigurationSelector.cs,
+	  gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs, gtk-gui/gui.stetic,
+	  MonoDevelop.Deployment.Gui/FileCopyConfigurationSelector.cs: FileCopy*
+	  classes need to be public.
+
+2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Deployment.addin.xml,
 	  MonoDevelop.Deployment.NodeBuilders/PackageNodeBuilder.cs,
 	  MonoDevelop.Deployment.NodeBuilders/PackagingProjectNodeBuilder.cs,

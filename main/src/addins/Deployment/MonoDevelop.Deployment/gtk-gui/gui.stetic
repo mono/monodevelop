@@ -49,7 +49,6 @@
   <widget class="Gtk.Bin" id="MonoDevelop.Deployment.Gui.FileCopyConfigurationSelector" design-size="300 300">
     <property name="MemberName" />
     <property name="Events">ButtonPressMask</property>
-    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox1">
         <property name="MemberName" />
