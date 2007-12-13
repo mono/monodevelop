@@ -2041,8 +2041,6 @@
             <child>
               <widget class="Gtk.ScrolledWindow" id="scrolledwindow3">
                 <property name="MemberName" />
-                <property name="VscrollbarPolicy">Automatic</property>
-                <property name="HscrollbarPolicy">Automatic</property>
                 <property name="ShadowType">In</property>
                 <child>
                   <widget class="Gtk.TreeView" id="templateListView">
@@ -2121,8 +2119,6 @@
         <child>
           <widget class="Gtk.ScrolledWindow" id="scrolledwindow4">
             <property name="MemberName" />
-            <property name="VscrollbarPolicy">Automatic</property>
-            <property name="HscrollbarPolicy">Automatic</property>
             <property name="ShadowType">In</property>
             <child>
               <widget class="Gtk.TextView" id="templateTextView">

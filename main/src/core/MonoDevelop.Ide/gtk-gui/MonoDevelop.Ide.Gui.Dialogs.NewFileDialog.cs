@@ -79,8 +79,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.scrolledwindow1 = new Gtk.ScrolledWindow();
             this.scrolledwindow1.CanFocus = true;
             this.scrolledwindow1.Name = "scrolledwindow1";
-            this.scrolledwindow1.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow1.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow1.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow1.Gtk.Container+ContainerChild
             this.catView = new Gtk.TreeView();
@@ -99,8 +97,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.iconView = new MonoDevelop.Components.IconView();
             this.iconView.CanFocus = true;
             this.iconView.Name = "iconView";
-            this.iconView.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.iconView.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.iconView.ShadowType = ((Gtk.ShadowType)(1));
             this.hbox1.Add(this.iconView);
             Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.hbox1[this.iconView]));

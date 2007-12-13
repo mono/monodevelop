@@ -1,5 +1,18 @@
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* gtk-gui/gui.stetic,
+	  gtk-gui/MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.IncludeFilesDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.ExternalToolPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs,
+	  gtk-gui/MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel.cs: Updated.
+
+2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.mdp: Remove unneeded reference.
 	* MonoDevelop.Ide.Gui/Ide.cs: Load the previous combine at startup only
 	  after everything has been properly initialized. Also, don't continue

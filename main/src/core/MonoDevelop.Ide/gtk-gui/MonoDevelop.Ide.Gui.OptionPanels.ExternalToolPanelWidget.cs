@@ -83,8 +83,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             // Container child hbox21.Gtk.Box+BoxChild
             this.scrolledwindow4 = new Gtk.ScrolledWindow();
             this.scrolledwindow4.Name = "scrolledwindow4";
-            this.scrolledwindow4.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow4.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow4.ShadowType = ((Gtk.ShadowType)(4));
             // Container child scrolledwindow4.Gtk.Container+ContainerChild
             this.toolListBox = new Gtk.TreeView();

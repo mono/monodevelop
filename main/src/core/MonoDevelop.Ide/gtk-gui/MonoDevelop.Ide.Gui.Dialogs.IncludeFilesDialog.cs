@@ -82,8 +82,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.scrolledwindow9.WidthRequest = 100;
             this.scrolledwindow9.HeightRequest = 100;
             this.scrolledwindow9.Name = "scrolledwindow9";
-            this.scrolledwindow9.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow9.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow9.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow9.Gtk.Container+ContainerChild
             this.IncludeFileListView = new Gtk.TreeView();

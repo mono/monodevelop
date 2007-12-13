@@ -132,8 +132,6 @@ namespace MonoDevelop.Ide.CodeTemplates {
             // Container child hbox9.Gtk.Box+BoxChild
             this.scrolledwindow3 = new Gtk.ScrolledWindow();
             this.scrolledwindow3.Name = "scrolledwindow3";
-            this.scrolledwindow3.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow3.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow3.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow3.Gtk.Container+ContainerChild
             this.templateListView = new Gtk.TreeView();
@@ -190,8 +188,6 @@ namespace MonoDevelop.Ide.CodeTemplates {
             // Container child vbox13.Gtk.Box+BoxChild
             this.scrolledwindow4 = new Gtk.ScrolledWindow();
             this.scrolledwindow4.Name = "scrolledwindow4";
-            this.scrolledwindow4.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow4.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow4.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow4.Gtk.Container+ContainerChild
             this.templateTextView = new Gtk.TextView();

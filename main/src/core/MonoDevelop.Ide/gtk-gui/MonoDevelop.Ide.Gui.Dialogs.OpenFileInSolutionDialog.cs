@@ -90,8 +90,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.scrolledwindow2 = new Gtk.ScrolledWindow();
             this.scrolledwindow2.CanFocus = true;
             this.scrolledwindow2.Name = "scrolledwindow2";
-            this.scrolledwindow2.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow2.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow2.ShadowType = ((Gtk.ShadowType)(3));
             // Container child scrolledwindow2.Gtk.Container+ContainerChild
             this.tree = new Gtk.TreeView();

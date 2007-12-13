@@ -24,8 +24,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.scrolled = new Gtk.ScrolledWindow();
             this.scrolled.CanFocus = true;
             this.scrolled.Name = "scrolled";
-            this.scrolled.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolled.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.Add(this.scrolled);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
