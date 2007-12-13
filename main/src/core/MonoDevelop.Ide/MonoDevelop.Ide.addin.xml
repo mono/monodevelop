@@ -542,7 +542,7 @@
 				description = "Opens the folder that contains this file."/>
 		<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAllButThis"
 		         defaultHandler = "MonoDevelop.Ide.Commands.CloseAllButThisHandler"
-				_label = "Close all but this"/>
+				_label = "Close all but this"
 				_description = "Closes all opened files except for the active file"/>
 		<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.CopyPathName"
 		         defaultHandler = "MonoDevelop.Ide.Commands.CopyPathNameHandler"
@@ -1313,10 +1313,10 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
-		<FileTemplate resource = "EmptyClass.xft.xml"/>
-		<FileTemplate resource = "EmptyEnum.xft.xml"/>
-		<FileTemplate resource = "EmptyInterface.xft.xml"/>
-		<FileTemplate resource = "EmptyStruct.xft.xml"/>
+		<FileTemplate id = "EmptyClass" resource = "EmptyClass.xft.xml"/>
+		<FileTemplate id = "EmptyEnum" resource = "EmptyEnum.xft.xml"/>
+		<FileTemplate id = "EmptyInterface" resource = "EmptyInterface.xft.xml"/>
+		<FileTemplate id = "EmptyStruct" resource = "EmptyStruct.xft.xml"/>
 		<FileTemplate id = "EmptyHTMLFile" resource = "EmptyHTMLFile.xft.xml"/>
 		<FileTemplate id = "AppConfigFile" resource = "AppConfigFile.xft.xml"/>
 		<FileTemplate id = "EmptyResourceFile" resource = "EmptyResourceFile.xft.xml"/>
