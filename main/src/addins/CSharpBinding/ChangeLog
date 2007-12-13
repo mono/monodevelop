@@ -1,3 +1,17 @@
+2007-12-13  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* CSharpBinding.addin.xml: Updated. Prefix C# templates IDs with "CSharp" so
+	  that they're not invading the generic part of the unique ID landscape.
+	* CSharpBinding.mdp, Makefile.am: Updated.
+	* templates/ConsoleProject.xpt.xml, templates/GnomeSharp2Project.xpt.xml,
+	  templates/GtkSharp2Project.xpt.xml, templates/AssemblyInfo.xft.xml,
+	  templates/GladeSharp2Project.xpt.xml, templates/Library.xpt.xml: Move
+	  common files out of project templates to ease maintenance. Make
+	  AssemblyInfo more readable. Enable standard headers.
+	* templates/GnomeSharpProject.xpt.xml, templates/GtkSharpProject.xpt.xml,
+	  templates/GladeSharpProject.xpt.xml,
+	  templates/GnomeSharpProgram.xft.xml: Remove obsolete templates.
+
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Gui/CSharpTextEditorExtension.cs, Parser/CodeGenerator.cs,

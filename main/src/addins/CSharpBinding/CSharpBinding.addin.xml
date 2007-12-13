@@ -23,20 +23,17 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
-		<FileTemplate id = "Empty" resource = "EmptyCSharpFile.xft.xml"/>
-		<FileTemplate id = "GnomeSharpProgram" resource = "GnomeSharpProgram.xft.xml"/>
+		<FileTemplate id = "CSharpEmptyFile" resource = "EmptyCSharpFile.xft.xml"/>
+		<FileTemplate id = "CSharpAssemblyInfo" resource = "AssemblyInfo.xft.xml"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
-		<ProjectTemplate id = "ConsoleProject" resource = "ConsoleProject.xpt.xml"/>
-		<ProjectTemplate id = "EmptyProject" resource = "EmptyProject.xpt.xml"/>
-		<ProjectTemplate id = "GladeSharpProject" resource = "GladeSharpProject.xpt.xml"/>
-		<ProjectTemplate id = "GladeSharp2Project" resource = "GladeSharp2Project.xpt.xml"/>
-		<ProjectTemplate id = "GnomeSharpProject" resource = "GnomeSharpProject.xpt.xml"/>
-		<ProjectTemplate id = "GnomeSharp2Project" resource = "GnomeSharp2Project.xpt.xml"/>
-		<ProjectTemplate id = "GtkSharpProject" resource = "GtkSharpProject.xpt.xml"/>
-		<ProjectTemplate id = "GtkSharp2Project" resource = "GtkSharp2Project.xpt.xml"/>
-		<ProjectTemplate id = "Library" resource = "Library.xpt.xml"/>
+		<ProjectTemplate id = "CSharpConsoleProject" resource = "ConsoleProject.xpt.xml"/>
+		<ProjectTemplate id = "CSharpEmptyProject" resource = "EmptyProject.xpt.xml"/>
+		<ProjectTemplate id = "CSharpGladeSharp2Project" resource = "GladeSharp2Project.xpt.xml"/>
+		<ProjectTemplate id = "CSharpGnomeSharp2Project" resource = "GnomeSharp2Project.xpt.xml"/>
+		<ProjectTemplate id = "CSharpGtkSharp2Project" resource = "GtkSharp2Project.xpt.xml"/>
+		<ProjectTemplate id = "CSharpLibrary" resource = "Library.xpt.xml"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/FileFilters">

@@ -64,16 +64,13 @@ RES =  \
 	gtk-gui/objects.xml \
 	icons/C\#.FileIcon \
 	icons/csharp-icon-32.png \
+	templates/AssemblyInfo.xft.xml \
 	templates/ConsoleProject.xpt.xml \
 	templates/EmptyCSharpFile.xft.xml \
 	templates/EmptyProject.xpt.xml \
 	templates/GladeSharp2Project.xpt.xml \
-	templates/GladeSharpProject.xpt.xml \
 	templates/GnomeSharp2Project.xpt.xml \
-	templates/GnomeSharpProgram.xft.xml \
-	templates/GnomeSharpProject.xpt.xml \
 	templates/GtkSharp2Project.xpt.xml \
-	templates/GtkSharpProject.xpt.xml \
 	templates/Library.xpt.xml
 
 TESTFILES =  \

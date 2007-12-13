@@ -17,12 +17,8 @@
     <File name="templates/ConsoleProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/EmptyCSharpFile.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/EmptyProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="templates/GladeSharpProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/GladeSharp2Project.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="templates/GnomeSharpProgram.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="templates/GnomeSharpProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/GnomeSharp2Project.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="templates/GtkSharpProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/GtkSharp2Project.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/Library.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/C#.FileIcon" subtype="Code" buildaction="EmbedAsResource" />
@@ -65,6 +61,7 @@
     <File name="gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/objects.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Gui/CompilerOptionsPanelWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="templates/AssemblyInfo.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />
@@ -87,6 +84,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </References>
+  <GtkDesignInfo gtkVersion="2.8.3" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />
@@ -96,5 +94,4 @@
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
-  <GtkDesignInfo gtkVersion="2.8.3" />
 </Project>
