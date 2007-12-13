@@ -122,14 +122,6 @@ namespace MonoDevelop.Ide.Gui
 			
 			InternalLog.EnableErrorNotification ();
 			
-			// load previous combine
-			if ((bool)PropertyService.Get("SharpDevelop.LoadPrevProjectOnStartup", false)) {
-				RecentOpen recentOpen = Workbench.RecentOpen;
-
-				if (recentOpen.RecentProject != null && recentOpen.RecentProject.Length > 0) { 
-					IdeApp.ProjectOperations.OpenCombine(recentOpen.RecentProject[0].ToString());
-				}
-			}
 			monitor.Step (1);
 			
 			foreach (string file in StartupInfo.GetRequestedFileList()) {
@@ -165,6 +157,15 @@ namespace MonoDevelop.Ide.Gui
 			isInitialized = true;
 			if (Initialized != null)
 				Initialized (null, EventArgs.Empty);
+			
+			// load previous combine
+			if ((bool)PropertyService.Get("SharpDevelop.LoadPrevProjectOnStartup", false)) {
+				RecentOpen recentOpen = Workbench.RecentOpen;
+
+				if (recentOpen.RecentProject != null && recentOpen.RecentProject.Length > 0) { 
+					IdeApp.ProjectOperations.OpenCombine(recentOpen.RecentProject[0].ToString()).WaitForCompleted ();
+				}
+			}
 		}
 		
 		static bool FileServiceErrorHandler (string message, Exception ex)

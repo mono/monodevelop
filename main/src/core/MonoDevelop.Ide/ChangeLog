@@ -1,3 +1,10 @@
+2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.mdp: Remove unneeded reference.
+	* MonoDevelop.Ide.Gui/Ide.cs: Load the previous combine at startup only
+	  after everything has been properly initialized. Also, don't continue
+	  until the combine has been fully loaded. Fixes bug #347438.
+
 2007-12-12  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads/TaskListPad.cs,
