@@ -2,16 +2,14 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns
 ASSEMBLY = $(ADDIN_BUILD)/GnomePlatform.dll
 REFS =  \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-pkg:gnome-sharp-2.0 \
-	-pkg:gconf-sharp-2.0 \
+	$(GCONF_SHARP_LIBS) \
+	$(GNOME_SHARP_LIBS) \
+	-r:../../../build/bin/MonoDevelop.Core.dll \
 	-r:System
 
-FILES =  \
-	GnomePlatform.cs
+FILES = GnomePlatform.cs
 
-RES =  \
-	GnomePlatform.addin.xml
+RES = GnomePlatform.addin.xml
 
 if ENABLE_GNOMEPLATFORM
 all: $(ASSEMBLY)

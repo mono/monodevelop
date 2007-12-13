@@ -1,6 +1,6 @@
 <Addin id          = "GnomePlatform"
        namespace   = "MonoDevelop"
-       name        = "GGNOME Platform Support"
+       name        = "GNOME Platform Support"
        author      = "Geoff Norton"
        copyright   = "MIT X11"
        url         = "http://monodevelop.com/"
