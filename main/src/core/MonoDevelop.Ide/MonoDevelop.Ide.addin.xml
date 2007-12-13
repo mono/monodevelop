@@ -277,6 +277,7 @@
 				_label = "Select _All" 
 				description = "Select all text" 
 				shortcut = "Control|A"
+				defaultHandler = "MonoDevelop.Ide.Commands.DefaultSelectAllHandler"
 				icon = "md-select-all" />
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.CommentCode"
 				shortcut = "Control|Alt|C"

@@ -1,3 +1,10 @@
+2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Commands/EditCommands.cs, MonoDevelop.Ide.addin.xml,
+	  MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: Implemented default handler
+	  for SelectAll. Disable Edit commands if the selected control is not
+	  editable. Fixes bug #348599.
+
 2007-12-13  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.addin.xml: Use Home for unindent command and End for

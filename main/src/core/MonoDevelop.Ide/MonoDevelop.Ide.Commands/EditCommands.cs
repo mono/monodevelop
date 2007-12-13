@@ -101,7 +101,12 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			object focus = IdeApp.Workbench.RootWindow.Focus;
-			info.Enabled = (focus is Gtk.Editable || focus is Gtk.TextView); 
+			if (focus is Gtk.Editable)
+				info.Enabled = ((Gtk.Editable)focus).IsEditable;
+			else if (focus is Gtk.TextView)
+				info.Enabled =  ((Gtk.TextView)focus).Editable;
+			else
+				info.Enabled = false;
 		}
 	}
 	
@@ -153,7 +158,12 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			object focus = IdeApp.Workbench.RootWindow.HasToplevelFocus ? IdeApp.Workbench.RootWindow.Focus : null;
-			info.Enabled = (focus is Gtk.Editable || focus is Gtk.TextView); 
+			if (focus is Gtk.Editable)
+				info.Enabled = ((Gtk.Editable)focus).IsEditable;
+			else if (focus is Gtk.TextView)
+				info.Enabled =  ((Gtk.TextView)focus).Editable;
+			else
+				info.Enabled = false;
 		}
 	}
 	
@@ -179,7 +189,12 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			object focus = IdeApp.Workbench.RootWindow.HasToplevelFocus ? IdeApp.Workbench.RootWindow.Focus : null;
-			info.Enabled = (focus is Gtk.Editable || (focus is Gtk.TextView && ((Gtk.TextView)focus).Editable)); 
+			if (focus is Gtk.Editable)
+				info.Enabled = ((Gtk.Editable)focus).IsEditable;
+			else if (focus is Gtk.TextView)
+				info.Enabled =  ((Gtk.TextView)focus).Editable;
+			else
+				info.Enabled = false;
 		}
 	}
 	
@@ -201,6 +216,31 @@ namespace MonoDevelop.Ide.Commands
 				info.Enabled = lang != null;
 			} else
 				info.Enabled = false;
+		}
+	}	
+	
+	internal class DefaultSelectAllHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			if (IdeApp.Workbench.RootWindow.HasToplevelFocus) {
+				Gtk.Editable editable = IdeApp.Workbench.RootWindow.Focus as Gtk.Editable;
+				if (editable != null) {
+					editable.SelectRegion (0, -1);
+					return;
+				}
+				Gtk.TextView tv = IdeApp.Workbench.RootWindow.Focus as Gtk.TextView;
+				if (tv != null) {
+					tv.Buffer.SelectRange (tv.Buffer.StartIter, tv.Buffer.EndIter);
+					return;
+				}
+			}
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			object focus = IdeApp.Workbench.RootWindow.HasToplevelFocus ? IdeApp.Workbench.RootWindow.Focus : null;
+			info.Enabled = (focus is Gtk.Editable || focus is Gtk.TextView); 
 		}
 	}	
 }

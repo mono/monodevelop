@@ -234,7 +234,10 @@ namespace MonoDevelop.Ide.Gui
 		protected void OnUpdateSelectAll (CommandInfo info)
 		{
 			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
-			info.Enabled = editable != null && editable.ClipboardHandler.EnableSelectAll;
+			if (editable != null)
+				info.Enabled = editable.ClipboardHandler.EnableSelectAll;
+			else
+				info.Bypass = true;
 		}
 		
 		[CommandHandler (EditCommands.WordCount)]
