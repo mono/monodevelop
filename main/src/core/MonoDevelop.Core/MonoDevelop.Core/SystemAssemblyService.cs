@@ -376,9 +376,14 @@ namespace MonoDevelop.Core
 						continue;
 	
 					if (Directory.Exists (pcdir)) {
-							foreach (string pcfile in Directory.GetFiles (pcdir, "*.pc")) {
+						foreach (string pcfile in Directory.GetFiles (pcdir, "*.pc")) {
+							try {
 								ParsePCFile (pcfile);
 							}
+							catch (Exception ex) {
+								LoggingService.LogError ("Could not parse file '" + pcfile + "'", ex);
+							}
+						}
 					}
 				}
 			}

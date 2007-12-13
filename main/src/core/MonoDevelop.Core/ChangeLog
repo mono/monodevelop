@@ -1,3 +1,8 @@
+2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core/SystemAssemblyService.cs: Catch exceptions thrown by
+	  ParsePCFile. Fixes bug #346295.
+
 2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.addin.xml: Bump add-in versions.
