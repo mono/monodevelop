@@ -1,7 +1,7 @@
-<Combine name="extras" fileversion="2.0" ctype="Workspace">
+<Combine name="Extras" fileversion="2.0" ctype="Workspace">
   <Configurations>
     <Configuration name="Debug" ctype="CombineConfiguration">
-      <Entry build="True" name="AspNetEdit" configuration="Debug" />
+      <Entry build="False" name="AspNetEdit" configuration="Debug" />
       <Entry build="True" name="BooBinding" configuration="Debug" />
       <Entry build="True" name="JavaBinding" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Database" configuration="Debug" />
@@ -18,7 +18,6 @@
     <Execute type="None" entry="BooBinding" />
     <Execute type="None" entry="JavaBinding" />
     <Execute type="None" entry="MonoDevelop.Database" />
-    <Execute type="None" entry="NemerleBinding" />
   </StartMode>
   <Entries>
     <Entry filename="AspNetEdit/AspNetEdit.mds" />
