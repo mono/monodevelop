@@ -38,7 +38,7 @@ namespace MonoDevelop.ChangeLogAddIn {
         private Gtk.Label label7;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget
             Stetic.BinContainer.Attach(this);
             this.Name = "MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget";

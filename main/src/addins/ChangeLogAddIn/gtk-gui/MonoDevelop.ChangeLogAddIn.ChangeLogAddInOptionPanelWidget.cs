@@ -32,7 +32,7 @@ namespace MonoDevelop.ChangeLogAddIn {
         private Gtk.CheckButton integrationCheck;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.ChangeLogAddIn.ChangeLogAddInOptionPanelWidget
             Stetic.BinContainer.Attach(this);
             this.Events = ((Gdk.EventMask)(256));

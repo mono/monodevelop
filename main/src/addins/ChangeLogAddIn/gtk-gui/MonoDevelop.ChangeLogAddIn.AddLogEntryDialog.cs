@@ -58,7 +58,7 @@ namespace MonoDevelop.ChangeLogAddIn {
         private Gtk.Button button119;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.ChangeLogAddIn.AddLogEntryDialog
             this.Events = ((Gdk.EventMask)(256));
             this.Name = "MonoDevelop.ChangeLogAddIn.AddLogEntryDialog";
