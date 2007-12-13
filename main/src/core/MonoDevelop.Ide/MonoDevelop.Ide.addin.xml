@@ -289,12 +289,12 @@
 				_label = "_Uncomment Line(s)"
 				icon = "md-uncomment" />
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection"
-				shortcut = "Control|Alt|Home"
+				shortcut = "Control|Alt|End"
 				description = "Indent selected lines of code" 
 				_label = "_Indent Selection"
 				icon = "gtk-indent" />
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection"
-				shortcut = "Control|Alt|End"
+				shortcut = "Control|Alt|Home"
 				description = "Unindent selected lines of code" 
 				_label = "_Unindent Selection"
 				icon = "gtk-unindent" />

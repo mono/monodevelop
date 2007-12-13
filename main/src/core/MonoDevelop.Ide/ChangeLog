@@ -1,5 +1,11 @@
 2007-12-13  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.Ide.addin.xml: Use Home for unindent command and End for
+	  indent, as it's more intuitive this way. Fixes "Bug 325446 - Strange
+	  keybindings for indention".
+
+2007-12-13  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.Ide.addin.xml: Add unique ids for the CodeDom templates and
 	  fix an XML typo.
 
