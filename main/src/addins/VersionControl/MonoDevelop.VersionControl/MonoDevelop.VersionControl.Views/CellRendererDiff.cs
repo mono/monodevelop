@@ -4,6 +4,7 @@ using System.Collections;
 using Gtk;
 using Gdk;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -16,7 +17,7 @@ namespace MonoDevelop.VersionControl.Views
 
 		public CellRendererDiff()
 		{
-			font = Pango.FontDescription.FromString (Runtime.PlatformService.DefaultMonospaceFont);
+			font = Pango.FontDescription.FromString (IdeApp.Services.PlatformService.DefaultMonospaceFont);
 		}
 		
 		public void Reset ()

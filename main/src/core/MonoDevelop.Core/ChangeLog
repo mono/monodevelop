@@ -1,5 +1,13 @@
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Makefile.am, MonoDevelop.Core.addin.xml, MonoDevelop.Core.mdp,
+	  MonoDevelop.Core/Runtime.cs, MonoDevelop.Core/DesktopApplication.cs,
+	  MonoDevelop.Core/PlatformService.cs: Moved PlatformService to
+	  MD.Core.Gui. Removed old FileIconService class, which is now implemented
+	  in PlatformService.
+
+2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Core.Execution/ProcessService.cs: Fix warning.
 	* MonoDevelop.Core.mdp: Updated.
 

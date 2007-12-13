@@ -18,11 +18,6 @@
 		<Description>Services to be initialized by the runtime. Specified classes must implement MonoDevelop.Core.IService</Description>
 		<ExtensionNode name="Class" type="MonoDevelop.Core.AddIns.ServiceExtensionNode" />
 	</ExtensionPoint>
-	
-	<ExtensionPoint path = "/MonoDevelop/Core/PlatformService" name = "Platform Service">
-		<Description>Implementations of platform-dependent code wrapped in a platform-agnostic API. Specified classes must inherit from MonoDevelop.Core.PlatformService.</Description>
-		<ExtensionNode name="Class" />
-	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/Core/ExecutionHandlers" name = "Execution handlers">
 		<Description>Default execution handlers.</Description>

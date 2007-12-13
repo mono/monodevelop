@@ -36,7 +36,6 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.Utils;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -73,7 +72,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (ic != Stock.MiscFiles || !File.Exists (file.Path))
 				icon = Context.GetIcon (ic);
 			else
-				icon = FileIconLoader.GetPixbufForFile (file.Path, 16);
+				icon = IdeApp.Services.PlatformService.GetPixbufForFile (file.Path, 16);
 			
 			if (file.ShowTransparent) {
 				Gdk.Pixbuf gicon = Context.GetComposedIcon (icon, "fade");

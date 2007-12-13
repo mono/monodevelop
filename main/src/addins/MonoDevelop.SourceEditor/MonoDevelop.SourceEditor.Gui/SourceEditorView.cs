@@ -14,7 +14,6 @@ using MonoDevelop.Components.Commands;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.Utils;
 
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.CodeTemplates;

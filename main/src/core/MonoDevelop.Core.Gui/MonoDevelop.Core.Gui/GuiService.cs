@@ -29,6 +29,7 @@
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Dialogs;
 using System;
+using Mono.Addins;
 using Mono.Addins.Gui;
 
 namespace MonoDevelop.Core.Gui
@@ -37,6 +38,19 @@ namespace MonoDevelop.Core.Gui
 	{
 		static ResourceService resourceService;
 		static MessageService messageService;
+		static PlatformService platformService;
+		
+		static Services ()
+		{
+			object[] platforms = AddinManager.GetExtensionObjects ("/MonoDevelop/Core/PlatformService");
+			if (platforms.Length > 0)
+				platformService = (PlatformService) platforms [0];
+			else {
+				platformService = new DefaultPlatformService ();
+				LoggingService.LogFatalError ("A platform service implementation has not been found.");
+			}
+			platformService.InitializeService ();
+		}
 
 		public static ResourceService Resources {
 			get {
@@ -51,6 +65,12 @@ namespace MonoDevelop.Core.Gui
 				if (messageService == null)
 					messageService = new MessageService ();
 				return messageService;
+			}
+		}
+		
+		public static PlatformService PlatformService {
+			get {
+				return platformService;
 			}
 		}
 	

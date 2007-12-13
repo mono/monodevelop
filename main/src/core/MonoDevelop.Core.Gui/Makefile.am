@@ -38,7 +38,6 @@ FILES =  \
 	MonoDevelop.Core.Gui.ProgressMonitoring/BaseProgressMonitor.cs \
 	MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs \
 	MonoDevelop.Core.Gui.ProgressMonitoring/MultiTaskDialogProgressMonitor.cs \
-	MonoDevelop.Core.Gui.Utils/FileIconLoader.cs \
 	MonoDevelop.Core.Gui.WebBrowser/IWebBrowser.cs \
 	MonoDevelop.Core.Gui.WebBrowser/IWebBrowserLoader.cs \
 	MonoDevelop.Core.Gui.WebBrowser/LoadingProgressChangedEventArgs.cs \
@@ -47,6 +46,8 @@ FILES =  \
 	MonoDevelop.Core.Gui.WebBrowser/StatusMessageChangedEventArgs.cs \
 	MonoDevelop.Core.Gui.WebBrowser/TitleChangedEventArgs.cs \
 	MonoDevelop.Core.Gui/AsyncDispatchAttribute.cs \
+	MonoDevelop.Core.Gui/DefaultPlatformService.cs \
+	MonoDevelop.Core.Gui/DesktopApplication.cs \
 	MonoDevelop.Core.Gui/DispatchService.cs \
 	MonoDevelop.Core.Gui/FreeDispatchAttribute.cs \
 	MonoDevelop.Core.Gui/GuiService.cs \
@@ -58,6 +59,7 @@ FILES =  \
 	MonoDevelop.Core.Gui/ITextBufferStrategy.cs \
 	MonoDevelop.Core.Gui/MessageService.cs \
 	MonoDevelop.Core.Gui/PixbufList.cs \
+	MonoDevelop.Core.Gui/PlatformService.cs \
 	MonoDevelop.Core.Gui/RecentOpen.cs \
 	MonoDevelop.Core.Gui/ResourceService.cs \
 	MonoDevelop.Core.Gui/StockIcons.cs \

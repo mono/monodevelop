@@ -7,6 +7,7 @@ using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Ide.Gui;
 
 using Algorithm.Diff.Gtk;
 
@@ -110,7 +111,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 						
 			DiffWidget.Options opts = new DiffWidget.Options();
-			opts.Font = Runtime.PlatformService.DefaultMonospaceFont;
+			opts.Font = IdeApp.Services.PlatformService.DefaultMonospaceFont;
 			opts.LeftName = "Repository";
 			opts.RightName = "Working Copy";
 			widget = new DiffWidget(diff, opts);

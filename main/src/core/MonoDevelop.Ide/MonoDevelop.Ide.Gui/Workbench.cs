@@ -39,7 +39,6 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Core.Gui.Utils;
 using MonoDevelop.Core.Gui.Dialogs;
 using Mono.Addins;
 
@@ -286,13 +285,13 @@ namespace MonoDevelop.Ide.Gui
 		{
 			List<FileViewer> list = new List<FileViewer> ();
 			
-			string mimeType = Runtime.PlatformService.GetMimeTypeForUri (fileName);
+			string mimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
 
 			IDisplayBinding[] bindings = DisplayBindings.GetBindingsForMimeType (mimeType);
 			foreach (IDisplayBinding bin in bindings)
 				list.Add (new FileViewer (bin));
 
-			foreach (DesktopApplication app in DesktopApplication.GetApplications (mimeType))
+			foreach (DesktopApplication app in IdeApp.Services.PlatformService.GetAllApplications (mimeType))
 				if (app.Command != "monodevelop")
 					list.Add (new FileViewer (app));
 				
@@ -662,7 +661,7 @@ namespace MonoDevelop.Ide.Gui
 						//if (mimetype != null) {
 						//	mimetype.DefaultAction.Launch ();
 						//} else {
-							Runtime.PlatformService.ShowUrl ("file://" + fileName);
+							IdeApp.Services.PlatformService.ShowUrl ("file://" + fileName);
 						//}
 					} catch {
 						LoadFileWrapper fw = new LoadFileWrapper (workbench, DisplayBindings.LastBinding, null, oFileInfo);

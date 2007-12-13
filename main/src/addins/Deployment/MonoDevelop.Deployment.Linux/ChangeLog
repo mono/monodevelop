@@ -1,5 +1,11 @@
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Deployment.Linux/DotDesktopViewWidget.cs: Moved
+	  PlatformService to MD.Core.Gui. Removed old FileIconService class, which
+	  is now implemented in PlatformService.
+
+2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs,
 	  gtk-gui/MonoDevelop.Deployment.Linux.MenuCategorySelectorDialog.cs,
 	  gtk-gui/gui.stetic: Flush.

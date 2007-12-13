@@ -1,5 +1,13 @@
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.VersionControl.Views/Diffs.cs,
+	  MonoDevelop.VersionControl.Views/CellRendererDiff.cs,
+	  MonoDevelop.VersionControl.Views/Logs.cs: Moved PlatformService to
+	  MD.Core.Gui. Removed old FileIconService class, which is now implemented
+	  in PlatformService.
+
+2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.VersionControl.mdp,
 	  MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs,
 	  MonoDevelop.VersionControl.Dialogs/EditRepositoryDialog.cs,

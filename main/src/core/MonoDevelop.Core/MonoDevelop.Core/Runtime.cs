@@ -41,7 +41,6 @@ namespace MonoDevelop.Core
 {
 	public class Runtime
 	{
-		static PlatformService platformService;
 		static ProcessService processService;
 		static SystemAssemblyService systemAssemblyService;
 		static SetupService setupService;
@@ -102,14 +101,6 @@ namespace MonoDevelop.Core
 			PropertyService.SaveProperties ();
 		}
 		
-		public static PlatformService PlatformService {
-			get {
-				if (platformService == null)
-					platformService = (PlatformService) AddinManager.GetExtensionObjects ("/MonoDevelop/Core/PlatformService") [0];
-				return platformService;
-			}
-		}
-	
 		public static ProcessService ProcessService {
 			get {
 				if (processService == null)

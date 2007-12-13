@@ -67,7 +67,7 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 			if (filename == null)
 				return false;
 			
-			string mimetype = Runtime.PlatformService.GetMimeTypeForUri (filename);
+			string mimetype = IdeApp.Services.PlatformService.GetMimeTypeForUri (filename);
 			if (mimetype == "text/html" || mimetype == "application/x-mozilla-bookmarks")
 				return parent.GetContent (typeof(MonoDevelop.Ide.Gui.Content.ITextBuffer)) != null;
 			return false;

@@ -1,5 +1,11 @@
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Gettext/TranslationProject.cs: Moved PlatformService to
+	  MD.Core.Gui. Removed old FileIconService class, which is now implemented
+	  in PlatformService.
+
+2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Gettext/TranslationProject.cs: API cleanup.
 
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 

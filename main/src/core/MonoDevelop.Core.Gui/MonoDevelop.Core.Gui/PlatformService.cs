@@ -35,15 +35,18 @@ using System.Text.RegularExpressions;
 using Mono.Addins;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Core
+namespace MonoDevelop.Core.Gui
 {
 	public abstract class PlatformService : AbstractService
 	{
+		Gdk.Pixbuf defaultIcon;
+		Hashtable iconHash = new Hashtable ();
+		
 		public abstract DesktopApplication GetDefaultApplication (string mimetype);
 		public abstract DesktopApplication [] GetAllApplications (string mimetype);
-		public abstract string GetDescription (string mt);
+		public abstract string GetMimeTypeDescription (string mt);
 		public abstract string DefaultMonospaceFont { get; }
-		public abstract string IconForFile (string filename);
+		public abstract string GetIconForFile (string filename);
 		
 		public virtual string GetMimeTypeForUri (string uri) {
 			FileInfo file = new FileInfo (uri);
@@ -62,6 +65,60 @@ namespace MonoDevelop.Core
 		public virtual void ShowUrl (string url)
 		{
 			Process.Start (url);
+		}
+
+		public virtual Gdk.Pixbuf DefaultFileIcon {
+			get {
+				if (defaultIcon == null)
+					defaultIcon = new Gdk.Pixbuf (typeof(PlatformService).Assembly, "gnome-fs-regular.png");
+				return defaultIcon;
+			}
+		}
+		
+		public virtual Gdk.Pixbuf GetPixbufForFile (string filename, int size)
+		{
+			if (filename == "Documentation") {
+				return GetPixbufForType ("gnome-fs-regular", size);
+			} else if (Directory.Exists (filename)) {
+				return GetPixbufForType ("gnome-fs-directory", size);
+			} else if (File.Exists (filename)) {
+				foreach (char c in filename) {
+					// FIXME: This is a temporary workaround. In some systems, files with
+					// accented characters make LookupSync crash. Still trying to find out why.
+					if ((int)c < 32 || (int)c > 127)
+						return GetPixbufForType ("gnome-fs-regular", size);
+				}
+				filename = filename.Replace ("%", "%25");
+				filename = filename.Replace ("#", "%23");
+				filename = filename.Replace ("?", "%3F");
+				string icon = null;
+				try {
+					icon = GetIconForFile (filename);
+				} catch {}
+				if (icon == null || icon.Length == 0)
+					return GetPixbufForType ("gnome-fs-regular", size);
+				else
+					return GetPixbufForType (icon, size);
+			}
+
+			return GetPixbufForType ("gnome-fs-regular", size);
+		}
+		
+		public virtual Gdk.Pixbuf GetPixbufForType (string type, int size)
+		{
+			Gdk.Pixbuf bf = (Gdk.Pixbuf) iconHash [type+size];
+			if (bf == null) {
+				try {
+					bf = Gtk.IconTheme.Default.LoadIcon (type, size, (Gtk.IconLookupFlags) 0);
+				}
+				catch {
+					bf = DefaultFileIcon;
+					if (bf.Height > size)
+						bf = bf.ScaleSimple (size, size, Gdk.InterpType.Bilinear);
+				}
+				iconHash [type+size] = bf;
+			}
+			return bf;
 		}
 	}
 }

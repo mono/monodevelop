@@ -31,7 +31,6 @@ using MonoDevelop.Core;
 using Gtk;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Components;
-using MonoDevelop.Core.Gui.Utils;
 using Mono.Addins;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Codons;
@@ -616,9 +615,9 @@ namespace MonoDevelop.Ide.Gui
 				mimeimage = new Gtk.Image (content.StockIconId, IconSize.Menu );
 			}
 			else if (content.IsUntitled && content.UntitledName == null) {
-				mimeimage = new Gtk.Image (FileIconLoader.GetPixbufForType ("gnome-fs-regular", 16));
+				mimeimage = new Gtk.Image (IdeApp.Services.PlatformService.GetPixbufForType ("gnome-fs-regular", 16));
 			} else {
-				mimeimage = new Gtk.Image (FileIconLoader.GetPixbufForFile (content.ContentName, 16));
+				mimeimage = new Gtk.Image (IdeApp.Services.PlatformService.GetPixbufForFile (content.ContentName, 16));
 			}			
 
 			TabLabel tabLabel = new TabLabel (new Label (), mimeimage != null ? mimeimage : new Gtk.Image (""));

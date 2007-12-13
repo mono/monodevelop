@@ -1,5 +1,23 @@
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs,
+	  MonoDevelop.Ide.Templates/FileTemplate.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads/FileList.cs,
+	  MonoDevelop.Ide.Gui.Pads/FileListItem.cs,
+	  MonoDevelop.Ide.Gui/DisplayBindingService.cs,
+	  MonoDevelop.Ide.Gui/ViewCommandHandlers.cs,
+	  MonoDevelop.Ide.Gui/FileViewer.cs, MonoDevelop.Ide.Gui/Workbench.cs,
+	  MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs,
+	  MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs, MonoDevelop.Ide.Gui/Ide.cs,
+	  MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs,
+	  MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs:
+	  Moved PlatformService to MD.Core.Gui. Removed old FileIconService class,
+	  which is now implemented in PlatformService.
+
+2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.CodeTemplates/EditTemplateGroupDialog.cs,
 	  MonoDevelop.Ide.CodeTemplates/EditTemplateDialog.cs,
 	  MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs,

@@ -65,7 +65,7 @@ namespace MonoDevelop.Components.Commands
 		internal void HandleActivation (object sender, EventArgs e)
 		{
 			try {
-				Runtime.PlatformService.ShowUrl (url);
+				System.Diagnostics.Process.Start (url);
 			} catch (Exception) {
 				string msg = GettextCatalog.GetString ("Could not open the url {0}", url);
 				Gtk.MessageDialog md = new Gtk.MessageDialog (null, Gtk.DialogFlags.Modal | Gtk.DialogFlags.DestroyWithParent, Gtk.MessageType.Error, Gtk.ButtonsType.Ok, msg);

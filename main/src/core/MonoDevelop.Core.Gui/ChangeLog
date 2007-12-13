@@ -1,5 +1,17 @@
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Core.Gui.mdp, MonoDevelop.Core.Gui.Components/FileBrowser.cs,
+	  MonoDevelop.Core.Gui.Utils/FileIconLoader.cs,
+	  MonoDevelop.Core.Gui/DesktopApplication.cs,
+	  MonoDevelop.Core.Gui/RecentOpen.cs, MonoDevelop.Core.Gui/GuiService.cs,
+	  MonoDevelop.Core.Gui/PlatformService.cs,
+	  MonoDevelop.Core.Gui/DefaultPlatformService.cs, Makefile.am,
+	  MonoDevelop.Core.Gui.addin.xml: Moved PlatformService to MD.Core.Gui.
+	  Removed old FileIconService class, which is now implemented in
+	  PlatformService.
+
+2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Core.Gui.mdp,
 	  MonoDevelop.Core.Gui.Dialogs/MultiTaskProgressDialog.cs,
 	  MonoDevelop.Core.Gui.Dialogs/DefaultDialogPanelDescriptor.cs,

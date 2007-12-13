@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			FileService.ErrorHandler = FileServiceErrorHandler;
 		
-			monitor.BeginTask (GettextCatalog.GetString("Loading Workbench"), 6);
+			monitor.BeginTask (GettextCatalog.GetString("Loading Workbench"), 5);
 			
 			commandService.LoadCommands ("/MonoDevelop/Ide/Commands");
 			commandService.LoadKeyBindingSchemes ("/MonoDevelop/Ide/KeyBindingSchemes");
@@ -122,25 +122,6 @@ namespace MonoDevelop.Ide.Gui
 			
 			InternalLog.EnableErrorNotification ();
 			
-			monitor.Step (1);
-			
-			foreach (string file in StartupInfo.GetRequestedFileList()) {
-				//FIXME: use mimetypes
-				if (Services.ProjectService.IsCombineEntryFile (file)) {
-					try {
-						IdeApp.ProjectOperations.OpenCombine (file);
-					} catch (Exception e) {
-						Services.MessageService.ShowError (e, "Could not load solution: " + file);
-					}
-				} else {
-					try {
-						IdeApp.Workbench.OpenDocument (file);
-					
-					} catch (Exception e) {
-						LoggingService.LogInfo ("unable to open file {0} exception was :\n{1}", file, e.ToString());
-					}
-				}
-			}
 			monitor.Step (1);
 
 			workbench.Show ("SharpDevelop.Workbench.WorkbenchMemento");
@@ -157,6 +138,25 @@ namespace MonoDevelop.Ide.Gui
 			isInitialized = true;
 			if (Initialized != null)
 				Initialized (null, EventArgs.Empty);
+			
+			// Load requested files
+			foreach (string file in StartupInfo.GetRequestedFileList()) {
+				//FIXME: use mimetypes
+				if (Services.ProjectService.IsCombineEntryFile (file)) {
+					try {
+						IdeApp.ProjectOperations.OpenCombine (file).WaitForCompleted ();
+					} catch (Exception e) {
+						Services.MessageService.ShowError (e, "Could not load solution: " + file);
+					}
+				} else {
+					try {
+						IdeApp.Workbench.OpenDocument (file);
+					
+					} catch (Exception e) {
+						LoggingService.LogInfo ("unable to open file {0} exception was :\n{1}", file, e.ToString());
+					}
+				}
+			}
 			
 			// load previous combine
 			if ((bool)PropertyService.Get("SharpDevelop.LoadPrevProjectOnStartup", false)) {
@@ -264,6 +264,9 @@ namespace MonoDevelop.Ide.Gui
 		public IProjectService ProjectService {
 			get { return MonoDevelop.Projects.Services.ProjectService; }
 		}
+		
+		public PlatformService PlatformService {
+			get { return MonoDevelop.Core.Gui.Services.PlatformService; }
+		}
 	}
-	
 }

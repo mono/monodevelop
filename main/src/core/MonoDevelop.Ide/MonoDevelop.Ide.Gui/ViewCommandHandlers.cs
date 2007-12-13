@@ -35,7 +35,6 @@ using Gtk;
 using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.Utils;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Components;

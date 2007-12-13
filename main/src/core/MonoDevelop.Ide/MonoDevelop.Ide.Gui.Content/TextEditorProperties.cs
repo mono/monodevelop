@@ -370,7 +370,7 @@ namespace MonoDevelop.Ide.Gui.Content {
 				switch (s) {
 				case "__default_monospace":
 					try {
-						string fontName = Runtime.PlatformService.DefaultMonospaceFont;
+						string fontName = IdeApp.Services.PlatformService.DefaultMonospaceFont;
 						return FontDescription.FromString (fontName);
 					} catch (Exception ex) {
 						LoggingService.LogWarning ("Could not load platform's default monospace font.", ex);

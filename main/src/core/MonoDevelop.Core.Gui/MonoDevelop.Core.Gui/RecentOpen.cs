@@ -25,7 +25,6 @@ using System.Collections;
 using System.IO;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui.Utils;
 using Freedesktop.RecentFiles;
 
 namespace MonoDevelop.Core.Gui
@@ -87,7 +86,7 @@ namespace MonoDevelop.Core.Gui
 		
 		public void AddLastFile (string name, string project)
 		{
-			RecentItem ri = new RecentItem (ToUri (name), Runtime.PlatformService.GetMimeTypeForUri (name), "MonoDevelop Files");
+			RecentItem ri = new RecentItem (ToUri (name), Services.PlatformService.GetMimeTypeForUri (name), "MonoDevelop Files");
 			if (project == null)
 				ri.Private = Path.GetFileName (name);
 			else
@@ -111,7 +110,7 @@ namespace MonoDevelop.Core.Gui
 		
 		public void AddLastProject (string name, string projectName)
 		{
-			RecentItem ri = new RecentItem (ToUri (name), Runtime.PlatformService.GetMimeTypeForUri (name), "MonoDevelop Projects");
+			RecentItem ri = new RecentItem (ToUri (name), Services.PlatformService.GetMimeTypeForUri (name), "MonoDevelop Projects");
 			ri.Private = projectName;
 			recentFiles.AddWithLimit (ri, "MonoDevelop Projects", MAX_LENGTH);
 			OnRecentProjectChange();

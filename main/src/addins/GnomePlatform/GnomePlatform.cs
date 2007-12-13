@@ -33,7 +33,7 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
 
-using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using Gnome;
 using Gnome.Vfs;
 
@@ -42,7 +42,6 @@ namespace MonoDevelop.Platform
 	public class GnomePlatform : PlatformService
 	{
 		Gnome.ThumbnailFactory thumbnailFactory = new Gnome.ThumbnailFactory (Gnome.ThumbnailSize.Normal);
-		Gnome.IconLookupResultFlags result;
 
 		static GnomePlatform () {
 			Gnome.Vfs.Vfs.Initialize ();
@@ -66,7 +65,7 @@ namespace MonoDevelop.Platform
 			return (DesktopApplication[]) list.ToArray (typeof(DesktopApplication));
 		}
 
-		public override string GetDescription (string mt) {
+		public override string GetMimeTypeDescription (string mt) {
 			return Mime.GetDescription (mt);
 		}
 
@@ -84,8 +83,9 @@ namespace MonoDevelop.Platform
 			get { return (string) (new GConf.Client ().Get ("/desktop/gnome/interface/monospace_font_name")); }
 		}
 		
-		public override string IconForFile (string filename)
+		public override string GetIconForFile (string filename)
 		{
+			Gnome.IconLookupResultFlags result;
 			return Gnome.Icon.LookupSync (IconTheme.Default, thumbnailFactory, filename, null, Gnome.IconLookupFlags.None, out result);
 		}
 	}

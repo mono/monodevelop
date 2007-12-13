@@ -1,5 +1,10 @@
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Project/AspNetAppProject.cs: Moved PlatformService to MD.Core.Gui. Removed
+	  old FileIconService class, which is now implemented in PlatformService.
+
+2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Deployment/WebDeployTargetEditor.cs: Track api changes.
 	* gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployLaunchDialog.cs,
 	  gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployOptionsPanelWidget.cs,

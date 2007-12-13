@@ -24,7 +24,6 @@ using System.Collections;
 
 using MonoDevelop.Core;
 using MonoDevelop.Components;
-using MonoDevelop.Core.Gui.Utils;
 using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.Gui.Pads

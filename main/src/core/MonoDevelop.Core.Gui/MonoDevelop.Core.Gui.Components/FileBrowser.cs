@@ -13,7 +13,6 @@ using System.IO;
 using Gtk;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui.Utils;
 using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Core.Gui.Components
@@ -169,11 +168,11 @@ namespace MonoDevelop.Core.Gui.Components
 					if (ignoreHidden)
 					{
 						if (!d.Name.StartsWith (".") && NotHidden (d.Name))
-							store.AppendValues (FileIconLoader.GetPixbufForFile (System.IO.Path.Combine (CurrentDir, d.Name), 16), d.Name);
+							store.AppendValues (Services.PlatformService.GetPixbufForFile (System.IO.Path.Combine (CurrentDir, d.Name), 16), d.Name);
 					}
 					else
 					{
-						store.AppendValues (FileIconLoader.GetPixbufForFile (System.IO.Path.Combine (CurrentDir, d.Name), 16), d.Name);
+						store.AppendValues (Services.PlatformService.GetPixbufForFile (System.IO.Path.Combine (CurrentDir, d.Name), 16), d.Name);
 					}
 				}
 
@@ -430,7 +429,7 @@ namespace MonoDevelop.Core.Gui.Components
 			performingtask = PerformingTask.CreatingNew;
 			text_render.Editable = true;
 
-			iter = store.AppendValues (FileIconLoader.GetPixbufForFile (CurrentDir, 24), "folder name");
+			iter = store.AppendValues (Services.PlatformService.GetPixbufForFile (CurrentDir, 24), "folder name");
 			treepath = tv.Model.GetPath(iter);
 
 			column = tv.GetColumn (0);

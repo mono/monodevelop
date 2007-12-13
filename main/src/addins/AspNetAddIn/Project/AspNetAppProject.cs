@@ -405,7 +405,7 @@ namespace AspNetAddIn
 				
 					if (resp != null) {
 						//TODO: a choice of browsers
-						Runtime.PlatformService.ShowUrl (url);
+						MonoDevelop.Core.Gui.Services.PlatformService.ShowUrl (url);
 						break;
 					}
 				}

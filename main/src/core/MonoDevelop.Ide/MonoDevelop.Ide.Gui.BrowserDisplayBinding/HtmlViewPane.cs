@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 		void CatchUri (object sender, LocationChangingEventArgs e)
 		{
 			e.SuppressChange = true;
-			Runtime.PlatformService.ShowUrl (e.NextLocation);
+			IdeApp.Services.PlatformService.ShowUrl (e.NextLocation);
 		}
 		
 		public BrowserPane () : this (true)

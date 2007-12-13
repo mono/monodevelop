@@ -38,7 +38,6 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Codons;
-using MonoDevelop.Core.Gui.Utils;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -79,7 +78,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (ic != Stock.MiscFiles || !File.Exists (file.FilePath))
 				icon = Context.GetIcon (ic);
 			else
-				icon = FileIconLoader.GetPixbufForFile (file.FilePath, 16);
+				icon = IdeApp.Services.PlatformService.GetPixbufForFile (file.FilePath, 16);
 		}
 		
 		public override object GetParentObject (object dataObject)

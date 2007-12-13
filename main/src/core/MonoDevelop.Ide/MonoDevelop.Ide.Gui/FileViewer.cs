@@ -28,8 +28,7 @@
 
 using System;
 using MonoDevelop.Ide.Codons;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui.Utils;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.Gui
 {

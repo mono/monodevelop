@@ -32,7 +32,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 
-using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Platform
 {
@@ -53,8 +53,8 @@ namespace MonoDevelop.Platform
 			return new DesktopApplication [] {new DesktopApplication ()};
 		}
 
-		public override string GetDescription (string mt) {
-			return "";
+		public override string GetMimeTypeDescription (string mt) {
+			return string.Empty;
 		}
 
 		public override string GetMimeTypeForUri (string uri)
@@ -76,7 +76,7 @@ namespace MonoDevelop.Platform
 			get { return "Bitstream Vera Serif"; }
 		}
 		
-		public override string IconForFile (string filename)
+		public override string GetIconForFile (string filename)
 		{
 			return "gnome-fs-regular";
 		}

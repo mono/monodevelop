@@ -33,7 +33,7 @@ using System.Collections;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 
-namespace MonoDevelop.Core
+namespace MonoDevelop.Core.Gui
 {
 	public struct DesktopApplication
 	{
@@ -70,16 +70,6 @@ namespace MonoDevelop.Core
 					Process.Start (command + " " + s);
 				}
 			}
-		}
-		
-		public static DesktopApplication GetDefaultApplication (string mimeType)
-		{
-			return Runtime.PlatformService.GetDefaultApplication (mimeType);
-		}
-		
-		public static DesktopApplication[] GetApplications (string mimeType)
-		{
-			return Runtime.PlatformService.GetAllApplications (mimeType);
 		}
 	}
 }

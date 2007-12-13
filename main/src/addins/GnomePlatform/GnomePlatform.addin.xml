@@ -14,10 +14,10 @@
 
 	<Dependencies>
 		<Addin id="Core" version="0.18.0"/>
+		<Addin id="Core.Gui" version="0.18.0"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Core/PlatformService">
-		<Class id      = "PlatformService"
-		       class   = "MonoDevelop.Platform.GnomePlatform"/>
+		<Class class = "MonoDevelop.Platform.GnomePlatform"/>
 	</Extension>
 </Addin>
