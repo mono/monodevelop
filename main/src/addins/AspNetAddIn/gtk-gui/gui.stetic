@@ -665,8 +665,6 @@
           <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="VscrollbarPolicy">Automatic</property>
-            <property name="HscrollbarPolicy">Automatic</property>
             <property name="ShadowType">In</property>
             <child>
               <widget class="Gtk.TreeView" id="targetView">
@@ -1038,7 +1036,6 @@
           <widget class="Gtk.ScrolledWindow" id="scrolledwindow4">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="VscrollbarPolicy">Automatic</property>
             <property name="HscrollbarPolicy">Never</property>
             <property name="ShadowType">In</property>
             <child>

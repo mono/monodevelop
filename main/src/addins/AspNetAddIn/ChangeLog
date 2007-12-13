@@ -1,5 +1,12 @@
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Deployment/WebDeployTargetEditor.cs: Track api changes.
+	* gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployLaunchDialog.cs,
+	  gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployOptionsPanelWidget.cs,
+	  gtk-gui/gui.stetic: Updated.
+
+2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Project/AspNetAppProject.cs: API cleanup.
 
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 

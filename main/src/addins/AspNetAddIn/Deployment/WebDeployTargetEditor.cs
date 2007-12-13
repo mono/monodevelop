@@ -27,6 +27,7 @@
 using System;
 
 using MonoDevelop.Deployment;
+using MonoDevelop.Deployment.Targets;
 using MonoDevelop.Deployment.Gui;
 
 namespace MonoDevelop.AspNet.Deployment
