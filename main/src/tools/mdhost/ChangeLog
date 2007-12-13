@@ -1,5 +1,9 @@
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* src/mdhost.cs: Fix warnings.
+
+2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* mdhost.mdp: Add missing reference.
 
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 

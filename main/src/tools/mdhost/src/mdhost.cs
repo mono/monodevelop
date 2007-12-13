@@ -54,12 +54,12 @@ public class MonoDevelopProcessHost
 				Hashtable props = new Hashtable ();
 				props ["path"] = unixPath;
 				props ["name"] = "__internal_unix";
-				ChannelServices.RegisterChannel (new UnixChannel (props, null, null));
+				ChannelServices.RegisterChannel (new UnixChannel (props, null, null), false);
 			} else {
 				Hashtable props = new Hashtable ();
 				props ["port"] = 0;
 				props ["name"] = "__internal_tcp";
-				ChannelServices.RegisterChannel (new TcpChannel (props, null, null));
+				ChannelServices.RegisterChannel (new TcpChannel (props, null, null), false);
 			}
 			
 			string sref = Console.In.ReadLine ();
