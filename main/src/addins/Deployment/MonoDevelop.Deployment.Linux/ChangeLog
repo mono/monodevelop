@@ -1,6 +1,12 @@
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs,
+	  gtk-gui/MonoDevelop.Deployment.Linux.MenuCategorySelectorDialog.cs,
+	  gtk-gui/gui.stetic: Flush.
+
+2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs,
 	  gtk-gui/gui.stetic,
 	  gtk-gui/MonoDevelop.Deployment.Linux.MenuCategorySelectorDialog.cs:
 	  Updated.

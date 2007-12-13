@@ -181,8 +181,6 @@
           <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="VscrollbarPolicy">Automatic</property>
-            <property name="HscrollbarPolicy">Automatic</property>
             <child>
               <widget class="Gtk.Viewport" id="GtkViewport">
                 <property name="MemberName" />
@@ -773,8 +771,6 @@ Directory</property>
                         <property name="MemberName" />
                         <property name="HeightRequest">150</property>
                         <property name="CanFocus">True</property>
-                        <property name="VscrollbarPolicy">Automatic</property>
-                        <property name="HscrollbarPolicy">Automatic</property>
                         <property name="ShadowType">In</property>
                         <child>
                           <widget class="Gtk.TreeView" id="treeCategories">
@@ -1018,8 +1014,6 @@ Directory</property>
               <widget class="Gtk.ScrolledWindow" id="scrolledwindow3">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="VscrollbarPolicy">Automatic</property>
-                <property name="HscrollbarPolicy">Automatic</property>
                 <property name="ShadowType">In</property>
                 <child>
                   <widget class="Gtk.TreeView" id="treeMimeTypes">
@@ -1123,8 +1117,6 @@ Directory</property>
               <widget class="Gtk.ScrolledWindow" id="scrolledwindow4">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="VscrollbarPolicy">Automatic</property>
-                <property name="HscrollbarPolicy">Automatic</property>
                 <property name="ShadowType">In</property>
                 <child>
                   <widget class="Gtk.TreeView" id="treeEntries">
@@ -1240,8 +1232,6 @@ Directory</property>
               <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="VscrollbarPolicy">Automatic</property>
-                <property name="HscrollbarPolicy">Automatic</property>
                 <property name="ShadowType">In</property>
                 <child>
                   <widget class="Gtk.TreeView" id="tree">
@@ -1279,7 +1269,6 @@ Directory</property>
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-cancel</property>
-            <property name="IsDialogButton">True</property>
             <property name="ResponseId">-6</property>
             <property name="label">gtk-cancel</property>
           </widget>
@@ -1296,7 +1285,6 @@ Directory</property>
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-ok</property>
-            <property name="IsDialogButton">True</property>
             <property name="ResponseId">-5</property>
             <property name="label">gtk-ok</property>
           </widget>
