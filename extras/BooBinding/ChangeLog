@@ -1,3 +1,7 @@
+2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* BooBinding.make, BooBinding.mdp: Synch the makefile with the mdp.
+
 2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* BooBinding.addin.xml: Bump add-in versions.

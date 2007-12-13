@@ -44,62 +44,59 @@ LINUX_PKGCONFIG = \
 BOOBINDING_PC = $(BUILD_DIR)/monodevelop-boo.pc
 
 
-FILES = \
-	FormattingStrategy/BooFormattingStrategy.boo \
-	Gui/ShellTextView.boo \
-	Gui/IShellModel.boo \
-	Gui/BooShellModel.boo \
-	Gui/OptionPanels/CodeCompilationPanel.boo \
-	Gui/OptionPanels/GeneralShellPanel.boo \
-	Gui/OptionPanels/GeneralBooShellPanel.boo \
-	Project/BooCompilerParameters.boo \
-	Properties/ShellProperties.boo \
-	Properties/BooShellProperties.boo \
-	BooBindingCompilerServices.boo \
+FILES =  \
 	BooAmbience.boo \
-	BooShellPadContent.boo \
+	BooBindingCompilerServices.boo \
 	BooCompiler.boo \
 	BooLanguageBinding.boo \
+	BooShellPadContent.boo \
+	FormattingStrategy/BooFormattingStrategy.boo \
+	Gui/BooShellModel.boo \
+	Gui/BooTextEditorExtension.boo \
+	Gui/IShellModel.boo \
+	Gui/OptionPanels/CodeCompilationPanel.boo \
+	Gui/OptionPanels/GeneralBooShellPanel.boo \
+	Gui/OptionPanels/GeneralShellPanel.boo \
+	Gui/ShellTextView.boo \
 	Parser/BooParser.boo \
-	Parser/Resolver.boo \
-	Parser/TypeMembers.boo \
 	Parser/ExpressionFinder.boo \
-	Parser/ReturnType.boo \
-	Parser/VariableLookupVisitor.boo \
 	Parser/ExpressionTypeVisitor.boo \
+	Parser/Resolver.boo \
+	Parser/ReturnType.boo \
 	Parser/Tree.boo \
+	Parser/TypeMembers.boo \
+	Parser/VariableLookupVisitor.boo \
 	Parser/Visitor.boo \
-	Gui/BooTextEditorExtension.boo 
+	Project/BooCompilerParameters.boo \
+	Properties/BooShellProperties.boo \
+	Properties/ShellProperties.boo 
 
 DATA_FILES = 
 
-RESOURCES = \
-	templates/BooGtkSharpProject.xpt.xml \
-	templates/BooLibraryProject.xpt.xml \
-	templates/BooGtkSharpWindow.xft.xml \
-	templates/EmptyBooFile.xft.xml \
-	templates/EmptyBooProject.xpt.xml \
-	icons/BooBinding.Base \
+RESOURCES =  \
+	BooBinding.addin.xml \
 	icons/Boo.File.EmptyFile \
 	icons/Boo.File.Form \
 	icons/Boo.FileIcon \
-	BooBinding.addin.xml \
-	icons/boo-icon-32.png 
+	icons/BooBinding.Base \
+	icons/boo-icon-32.png \
+	templates/BooGtkSharpProject.xpt.xml \
+	templates/BooGtkSharpWindow.xft.xml \
+	templates/BooLibraryProject.xpt.xml \
+	templates/EmptyBooFile.xft.xml \
+	templates/EmptyBooProject.xpt.xml 
 
 EXTRAS = \
 	monodevelop-boo.pc.in 
 
 REFERENCES =  \
-	System.Xml \
-	System.Runtime.Remoting \
-	System.Drawing \
-	-pkg:boo \
+	build/BooShell.dll \
+	-pkg:gtk-sharp-2.0 \
 	-pkg:mono-addins \
 	-pkg:monodevelop \
-	-pkg:monodevelop-core-addins \
-	-pkg:gconf-sharp-2.0 \
-	-pkg:gtksourceview-sharp-2.0 \
-	-pkg:gtk-sharp-2.0
+	System.Drawing \
+	System.Runtime.Remoting \
+	System.Xml
 
 DLL_REFERENCES = 
 
