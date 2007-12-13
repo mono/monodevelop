@@ -199,6 +199,7 @@ namespace MonoDevelop.Autotools {
             this.rbAutotools = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("Autotools based"));
             this.rbAutotools.CanFocus = true;
             this.rbAutotools.Name = "rbAutotools";
+            this.rbAutotools.Active = true;
             this.rbAutotools.DrawIndicator = true;
             this.rbAutotools.UseUnderline = true;
             this.rbAutotools.Group = new GLib.SList(System.IntPtr.Zero);
