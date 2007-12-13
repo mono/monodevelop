@@ -145,10 +145,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			nodeView.AppendColumn (col);
 			
 			//Initialise self
+			scrolledWindow.ShadowType = ShadowType.None;
 			scrolledWindow.VscrollbarPolicy = PolicyType.Automatic;
 			scrolledWindow.HscrollbarPolicy = PolicyType.Never;
 			scrolledWindow.WidthRequest = 150;
-			scrolledWindow.AddWithViewport (nodeView);
+			scrolledWindow.Add (nodeView);
 			
 			//selection events
 			nodeView.NodeSelection.Changed += OnSelectionChanged;

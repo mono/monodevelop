@@ -436,7 +436,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				OnSelectionChanged (EventArgs.Empty);
 			};
 			
-			this.AddWithViewport (compactWidget);
+			this.ShadowType = ShadowType.None;
+			Viewport v = new Viewport ();
+			this.Add (v);
+			v.ShadowType = ShadowType.None;
+			v.Add (compactWidget);
 			this.HscrollbarPolicy = PolicyType.Never;
 			this.VscrollbarPolicy = PolicyType.Automatic;
 		}

@@ -1,3 +1,11 @@
+2007-12-12  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs,
+	  MonoDevelop.DesignerSupport.Toolbox/CompactToolboxView.cs: Don't draw
+	  shadows in pads (the new docking library does that already). Haven't
+	  fixed property pad as it doesn't seem to be possible to remove the
+	  borders from the Vpaned.
+
 2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.DesignerSupport/ToolboxService.cs: Make sure Gtk is properly
