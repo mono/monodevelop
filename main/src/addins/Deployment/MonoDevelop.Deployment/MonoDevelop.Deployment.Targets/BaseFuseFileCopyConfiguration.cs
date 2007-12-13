@@ -30,7 +30,7 @@ using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Serialization;
 
-namespace MonoDevelop.Deployment
+namespace MonoDevelop.Deployment.Targets
 {
 	
 	

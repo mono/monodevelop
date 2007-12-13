@@ -34,7 +34,7 @@ using MonoDevelop.Projects.Serialization;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 
-namespace MonoDevelop.Deployment
+namespace MonoDevelop.Deployment.Targets
 {
 	public class CommandPackageBuilder: PackageBuilder
 	{

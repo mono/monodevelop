@@ -41,7 +41,6 @@
     <File name="MonoDevelop.Deployment/IDeployDirectoryResolver.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Deployment/DeployServiceExtension.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Deployment.Gui/PropertyProvider.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Deployment/DeployData.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Deployment.Gui/DeployDirectoryInfoEditor.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Deployment/DefaultDeployServiceExtension.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Deployment/DeployFile.cs" subtype="Code" buildaction="Compile" />

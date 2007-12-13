@@ -30,7 +30,7 @@ using mun = Mono.Unix.Native;
 
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Deployment
+namespace MonoDevelop.Deployment.Targets
 {
 	
 	public abstract class BaseFuseFileCopyHandler : LocalFileCopyHandler

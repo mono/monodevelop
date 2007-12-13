@@ -8,7 +8,7 @@ namespace MonoDevelop.Deployment.Gui
 {
 	
 	
-	public partial class FileCopyConfigurationSelector : Gtk.Bin
+	internal partial class FileCopyConfigurationSelector : Gtk.Bin
 	{
 		FileCopyHandler[] handlers;
 		FileCopyConfiguration currentConfig;

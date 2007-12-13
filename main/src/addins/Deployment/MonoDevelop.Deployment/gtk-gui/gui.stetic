@@ -49,6 +49,7 @@
   <widget class="Gtk.Bin" id="MonoDevelop.Deployment.Gui.FileCopyConfigurationSelector" design-size="300 300">
     <property name="MemberName" />
     <property name="Events">ButtonPressMask</property>
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox1">
         <property name="MemberName" />
@@ -314,8 +315,6 @@
                       <widget class="Gtk.ScrolledWindow" id="scrolledwindow2">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="VscrollbarPolicy">Automatic</property>
-                        <property name="HscrollbarPolicy">Automatic</property>
                         <property name="ShadowType">In</property>
                         <child>
                           <widget class="Gtk.TreeView" id="targetsTree">
@@ -623,6 +622,7 @@
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
                                 <property name="Label" translatable="yes">Save in a new Packaging Project</property>
+                                <property name="Active">True</property>
                                 <property name="DrawIndicator">True</property>
                                 <property name="HasLabel">True</property>
                                 <property name="UseUnderline">True</property>
@@ -1263,8 +1263,6 @@
       <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
         <property name="MemberName" />
         <property name="CanFocus">True</property>
-        <property name="VscrollbarPolicy">Automatic</property>
-        <property name="HscrollbarPolicy">Automatic</property>
         <property name="ShadowType">In</property>
         <child>
           <widget class="Gtk.TreeView" id="tree">
@@ -1713,8 +1711,6 @@
           <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="VscrollbarPolicy">Automatic</property>
-            <property name="HscrollbarPolicy">Automatic</property>
             <property name="ShadowType">In</property>
             <child>
               <widget class="Gtk.TreeView" id="fileList">
@@ -2276,6 +2272,7 @@
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.Deployment.Gui.SshFuseFileCopyConfigurationEditorWidget" design-size="367 146">
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.Table" id="table1">
         <property name="MemberName" />

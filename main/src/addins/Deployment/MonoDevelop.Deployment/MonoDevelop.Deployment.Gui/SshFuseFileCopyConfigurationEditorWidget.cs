@@ -25,12 +25,13 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using MonoDevelop.Deployment.Targets;
 
 namespace MonoDevelop.Deployment.Gui
 {
 	
 	
-	public partial class SshFuseFileCopyConfigurationEditorWidget : Gtk.Bin
+	internal partial class SshFuseFileCopyConfigurationEditorWidget : Gtk.Bin
 	{
 		SshFuseFileCopyConfiguration config;
 		

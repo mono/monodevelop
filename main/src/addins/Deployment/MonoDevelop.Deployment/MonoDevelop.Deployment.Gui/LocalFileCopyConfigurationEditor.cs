@@ -1,10 +1,11 @@
 
 using System;
 using MonoDevelop.Deployment;
+using MonoDevelop.Deployment.Targets;
 
 namespace MonoDevelop.Deployment.Gui
 {
-	public class LocalFileCopyConfigurationEditor: IFileCopyConfigurationEditor
+	internal class LocalFileCopyConfigurationEditor: IFileCopyConfigurationEditor
 	{
 		public bool CanEdit (FileCopyConfiguration config)
 		{

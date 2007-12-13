@@ -41,7 +41,7 @@ using GuiServices = MonoDevelop.Core.Gui.Services;
 
 namespace MonoDevelop.Deployment.NodeBuilders
 {
-	public class PackagingProjectNodeBuilder: TypeNodeBuilder
+	internal class PackagingProjectNodeBuilder: TypeNodeBuilder
 	{
 		EventHandler configsChanged;
 		

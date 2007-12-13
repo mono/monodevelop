@@ -34,7 +34,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
-namespace MonoDevelop.Deployment
+namespace MonoDevelop.Deployment.Targets
 {
 	public class LocalFileCopyHandler : IFileCopyHandler
 	{

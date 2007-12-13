@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.IO;
 using MonoDevelop.Projects;
+using MonoDevelop.Deployment.Targets;
 
 namespace MonoDevelop.Deployment.Gui
 {

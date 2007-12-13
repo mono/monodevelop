@@ -1,6 +1,7 @@
 
 using System;
 using MonoDevelop.Projects;
+using MonoDevelop.Deployment.Targets;
 
 namespace MonoDevelop.Deployment.Gui
 {

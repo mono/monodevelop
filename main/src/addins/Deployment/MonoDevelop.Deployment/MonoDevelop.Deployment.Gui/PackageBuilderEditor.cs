@@ -36,7 +36,7 @@ using Mono.Addins;
 
 namespace MonoDevelop.Deployment.Gui
 {
-	public class PackageBuilderEditor: HBox
+	internal class PackageBuilderEditor: HBox
 	{
 		public PackageBuilderEditor (PackageBuilder target)
 		{

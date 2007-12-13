@@ -28,7 +28,7 @@ using System;
 
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Deployment
+namespace MonoDevelop.Deployment.Targets
 {
 	
 	

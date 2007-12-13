@@ -1,5 +1,39 @@
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Deployment.addin.xml,
+	  MonoDevelop.Deployment.NodeBuilders/PackageNodeBuilder.cs,
+	  MonoDevelop.Deployment.NodeBuilders/PackagingProjectNodeBuilder.cs,
+	  MonoDevelop.Deployment.mdp, MonoDevelop.Deployment/DeployData.cs,
+	  gtk-gui/MonoDevelop.Deployment.Gui.EntrySelectionTree.cs,
+	  gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.Deployment.Gui.FileCopyConfigurationSelector.cs,
+	  gtk-gui/MonoDevelop.Deployment.DeployFileListWidget.cs,
+	  gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs,
+	  gtk-gui/MonoDevelop.Deployment.Gui.SshFuseFileCopyConfigurationEditorWidget.cs,
+	  gtk-gui/gui.stetic,
+	  MonoDevelop.Deployment.Gui/SshFuseFileCopyConfigurationEditorWidget.cs,
+	  MonoDevelop.Deployment.Gui/SourcesZipEditorWidget.cs,
+	  MonoDevelop.Deployment.Gui/LocalFileCopyConfigurationEditor.cs,
+	  MonoDevelop.Deployment.Gui/LocalFileCopyConfigurationEditorWidget.cs,
+	  MonoDevelop.Deployment.Gui/BinariesZipEditorWidget.cs,
+	  MonoDevelop.Deployment.Gui/PackagingFeature.cs,
+	  MonoDevelop.Deployment.Gui/FileCopyConfigurationSelector.cs,
+	  MonoDevelop.Deployment.Gui/DeployDirectoryInfoEditor.cs,
+	  MonoDevelop.Deployment.Gui/CommandDeployEditorWidget.cs,
+	  MonoDevelop.Deployment.Gui/PackageBuilderEditor.cs,
+	  MonoDevelop.Deployment.Gui/SshFuseFileCopyConfigurationEditor.cs,
+	  Makefile.am,
+	  MonoDevelop.Deployment.Targets/LocalFileCopyConfiguration.cs,
+	  MonoDevelop.Deployment.Targets/BaseFuseFileCopyConfiguration.cs,
+	  MonoDevelop.Deployment.Targets/CommandPackageBuilder.cs,
+	  MonoDevelop.Deployment.Targets/BinariesZipPackageBuilder.cs,
+	  MonoDevelop.Deployment.Targets/LocalFileCopyHandler.cs,
+	  MonoDevelop.Deployment.Targets/BaseFuseFileCopyHandler.cs,
+	  MonoDevelop.Deployment.Targets/SourcesZipPackageBuilder.cs,
+	  MonoDevelop.Deployment.Targets/SshFuseFileCopyHandler.cs: API cleanup.
+
+2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Deployment/DeployDirectoryNodeType.cs,
 	  MonoDevelop.Deployment/DeployPlatformNodeType.cs: Fix warning.
 	* gtk-gui/objects.xml, gtk-gui/gui.stetic: Updated.

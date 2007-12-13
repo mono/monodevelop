@@ -7,7 +7,7 @@ using Gtk;
 
 namespace MonoDevelop.Deployment.Gui
 {
-	public class PackagingFeature: ICombineEntryFeature
+	internal class PackagingFeature: ICombineEntryFeature
 	{
 		public string Title {
 			get { return GettextCatalog.GetString ("Packaging"); }

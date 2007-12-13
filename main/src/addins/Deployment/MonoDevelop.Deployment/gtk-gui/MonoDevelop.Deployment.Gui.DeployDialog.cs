@@ -198,8 +198,6 @@ namespace MonoDevelop.Deployment.Gui {
             this.scrolledwindow2 = new Gtk.ScrolledWindow();
             this.scrolledwindow2.CanFocus = true;
             this.scrolledwindow2.Name = "scrolledwindow2";
-            this.scrolledwindow2.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow2.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow2.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow2.Gtk.Container+ContainerChild
             this.targetsTree = new Gtk.TreeView();
@@ -428,6 +426,7 @@ namespace MonoDevelop.Deployment.Gui {
             this.radioCreateProject = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("Save in a new Packaging Project"));
             this.radioCreateProject.CanFocus = true;
             this.radioCreateProject.Name = "radioCreateProject";
+            this.radioCreateProject.Active = true;
             this.radioCreateProject.DrawIndicator = true;
             this.radioCreateProject.UseUnderline = true;
             this.radioCreateProject.Group = new GLib.SList(System.IntPtr.Zero);

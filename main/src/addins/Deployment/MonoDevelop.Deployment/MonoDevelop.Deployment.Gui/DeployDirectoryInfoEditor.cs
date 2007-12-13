@@ -7,7 +7,7 @@ using Gdk;
 
 namespace MonoDevelop.Deployment
 {
-	public class DeployDirectoryInfoEditor: PropertyEditorCell
+	internal class DeployDirectoryInfoEditor: PropertyEditorCell
 	{
 		protected override string GetValueText ()
 		{

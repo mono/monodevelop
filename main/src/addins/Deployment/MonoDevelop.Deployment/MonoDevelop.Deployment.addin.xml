@@ -96,21 +96,21 @@
 	</Extension>	
 
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
-		<DataType class = "MonoDevelop.Deployment.LocalFileCopyConfiguration" />
-		<DataType class = "MonoDevelop.Deployment.SshFuseFileCopyConfiguration" />
+		<DataType class = "MonoDevelop.Deployment.Targets.LocalFileCopyConfiguration" />
+		<DataType class = "MonoDevelop.Deployment.Targets.SshFuseFileCopyConfiguration" />
 		<DataType class = "MonoDevelop.Deployment.PackagingProject" />
-		<DataType class = "MonoDevelop.Deployment.BinariesZipPackageBuilder" />
-		<DataType class = "MonoDevelop.Deployment.SourcesZipPackageBuilder" />
+		<DataType class = "MonoDevelop.Deployment.Targets.BinariesZipPackageBuilder" />
+		<DataType class = "MonoDevelop.Deployment.Targets.SourcesZipPackageBuilder" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/DeployService/PackageBuilders" extension-nodes="Class" description="Deployment handlers. Specified classes must implement IDeployHandler.">
-		<Class class = "MonoDevelop.Deployment.SourcesZipPackageBuilder" />
-		<Class class = "MonoDevelop.Deployment.BinariesZipPackageBuilder" />
+		<Class class = "MonoDevelop.Deployment.Targets.SourcesZipPackageBuilder" />
+		<Class class = "MonoDevelop.Deployment.Targets.BinariesZipPackageBuilder" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Deployment/DeployFileCopiers" extension-nodes="Class" description="File copiers for deployment handlers. Specified classes must implement IDeployFileCopier.">
-		<Class class = "MonoDevelop.Deployment.LocalFileCopyHandler" />
-		<Class class = "MonoDevelop.Deployment.SshFuseFileCopyHandler" />
+		<Class class = "MonoDevelop.Deployment.Targets.LocalFileCopyHandler" />
+		<Class class = "MonoDevelop.Deployment.Targets.SshFuseFileCopyHandler" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Deployment/DeployServiceExtensions" extension-nodes="Class">

@@ -71,7 +71,6 @@ FILES =  \
 	MonoDevelop.Deployment.Targets/SshFuseFileCopyHandler.cs \
 	MonoDevelop.Deployment/DefaultDeployServiceExtension.cs \
 	MonoDevelop.Deployment/DeployContext.cs \
-	MonoDevelop.Deployment/DeployData.cs \
 	MonoDevelop.Deployment/DeployDirectoryInfo.cs \
 	MonoDevelop.Deployment/DeployDirectoryNodeType.cs \
 	MonoDevelop.Deployment/DeployFile.cs \
