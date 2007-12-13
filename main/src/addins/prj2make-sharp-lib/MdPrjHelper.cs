@@ -13,7 +13,6 @@ namespace MonoDevelop.Prj2Make
     {
 		public static string slash;
 		static Hashtable projNameInfo = new Hashtable();
-		static Hashtable projGuidInfo = new Hashtable();
 		private MonoDevelop.Prj2Make.Schema.Cmbx.Combine m_cmbObject;
 		private bool m_bIsUnix;
 		private bool m_bIsMcs;

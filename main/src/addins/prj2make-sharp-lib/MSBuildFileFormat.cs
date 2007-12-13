@@ -93,7 +93,7 @@ namespace MonoDevelop.Prj2Make
 					String.Compare (xr.NamespaceURI, Utils.ns) == 0)
 					return true;
 
-			} catch (FileNotFoundException fex) {
+			} catch (FileNotFoundException) {
 				Console.WriteLine (GettextCatalog.GetString ("File not found {0} : ", file));
 				return false;
 			} catch (XmlException xe) {
@@ -174,7 +174,6 @@ namespace MonoDevelop.Prj2Make
 
 		void WriteFileInternal (string file, DotNetProject project, IProgressMonitor monitor)
 		{
-			string platform = "AnyCPU";
 			bool newdoc = false;
 			XmlDocument doc = null;
 

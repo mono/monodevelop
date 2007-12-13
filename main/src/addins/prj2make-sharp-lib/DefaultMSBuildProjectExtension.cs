@@ -86,7 +86,6 @@ namespace MonoDevelop.Prj2Make
 			}
 
 			string str_tmp = String.Empty;
-			int int_tmp = 0;
 			bool bool_tmp = false;
 
 			if (Utils.ReadAsString (nav, "AssemblyName", ref str_tmp, false))
@@ -105,8 +104,6 @@ namespace MonoDevelop.Prj2Make
 			//FIXME: This can also be Config/Platform specific
 			XmlNodeList itemList = data.Document.SelectNodes ("/tns:Project/tns:ItemGroup", MSBuildFileFormat.NamespaceManager);
 
-			ProjectFile pf;
-			ProjectReference pr;
 			foreach (XmlNode itemGroup in itemList) {
 				foreach (XmlNode node in itemGroup.ChildNodes) {
 					if (node.NodeType != XmlNodeType.Element)
