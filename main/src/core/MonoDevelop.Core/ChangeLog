@@ -1,5 +1,10 @@
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Core.Execution/ProcessService.cs: Fix warning.
+	* MonoDevelop.Core.mdp: Updated.
+
+2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Core/SystemAssemblyService.cs: Catch exceptions thrown by
 	  ParsePCFile. Fixes bug #346295.
 

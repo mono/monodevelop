@@ -294,12 +294,12 @@ namespace MonoDevelop.Core.Execution
 			if (remotingChannel == "tcp") {
 				IChannel ch = ChannelServices.GetChannel ("tcp");
 				if (ch == null)
-					ChannelServices.RegisterChannel (new TcpChannel (0));
+					ChannelServices.RegisterChannel (new TcpChannel (0), false);
 			} else {
 				IChannel ch = ChannelServices.GetChannel ("unix");
 				if (ch == null) {
 					unixRemotingFile = Path.GetTempFileName ();
-					ChannelServices.RegisterChannel (new UnixChannel (unixRemotingFile));
+					ChannelServices.RegisterChannel (new UnixChannel (unixRemotingFile), false);
 				}
 			}
 			return remotingChannel;
