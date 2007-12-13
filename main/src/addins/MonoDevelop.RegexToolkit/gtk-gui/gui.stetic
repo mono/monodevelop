@@ -2,13 +2,12 @@
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
-    <target-gtk-version>2.10.2</target-gtk-version>
+    <target-gtk-version>2.8.3</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../../../build/bin/MonoDevelop.Ide.dll" />
-    <widget-library name="../../../build/bin/MonoDevelop.Components.dll" />
-    <widget-library name="../../../build/bin/MonoDevelop.Projects.Gui.dll" />
-    <widget-library name="../../../build/AddIns/MonoDevelop.Deployment.dll" />
+    <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
+    <widget-library name="../../../../build/bin/MonoDevelop.Components.dll" />
+    <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.RegexToolkit.UpdateInProgressDialog" design-size="358 97">
     <property name="MemberName" />
@@ -505,18 +504,15 @@
     <child>
       <widget class="Gtk.VBox" id="vbox2">
         <property name="MemberName" />
-        <property name="ShowScrollbars">False</property>
         <property name="Spacing">6</property>
         <property name="BorderWidth">6</property>
         <child>
           <widget class="Gtk.HBox" id="hbox4">
             <property name="MemberName" />
-            <property name="ShowScrollbars">False</property>
             <property name="Spacing">6</property>
             <child>
               <widget class="Gtk.Label" id="label7">
                 <property name="MemberName" />
-                <property name="ShowScrollbars">False</property>
                 <property name="LabelProp" translatable="yes">Search:</property>
               </widget>
               <packing>
@@ -530,7 +526,6 @@
               <widget class="Gtk.Entry" id="searchEntry">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="ShowScrollbars">False</property>
                 <property name="IsEditable">True</property>
                 <property name="InvisibleChar">●</property>
               </widget>
@@ -551,17 +546,14 @@
           <widget class="Gtk.VPaned" id="vpaned1">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="ShowScrollbars">False</property>
             <property name="Position">170</property>
             <child>
               <widget class="Gtk.VBox" id="vbox6">
                 <property name="MemberName" />
-                <property name="ShowScrollbars">False</property>
                 <property name="Spacing">6</property>
                 <child>
                   <widget class="Gtk.Label" id="label8">
                     <property name="MemberName" />
-                    <property name="ShowScrollbars">False</property>
                     <property name="Xalign">0</property>
                     <property name="LabelProp" translatable="yes">Expressions</property>
                   </widget>
@@ -583,7 +575,6 @@
                       <widget class="Gtk.TreeView" id="expressionsTreeview">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="ShowScrollbars">False</property>
                         <property name="HeadersClickable">True</property>
                       </widget>
                     </child>
@@ -601,12 +592,10 @@
             <child>
               <widget class="Gtk.VBox" id="vbox3">
                 <property name="MemberName" />
-                <property name="ShowScrollbars">False</property>
                 <property name="Spacing">6</property>
                 <child>
                   <widget class="Gtk.Table" id="table2">
                     <property name="MemberName" />
-                    <property name="ShowScrollbars">False</property>
                     <property name="NRows">2</property>
                     <property name="NColumns">2</property>
                     <property name="RowSpacing">6</property>
@@ -614,13 +603,11 @@
                     <child>
                       <widget class="Gtk.HBox" id="hbox3">
                         <property name="MemberName" />
-                        <property name="ShowScrollbars">False</property>
                         <property name="Spacing">6</property>
                         <child>
                           <widget class="Gtk.Entry" id="authorEntry">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
-                            <property name="ShowScrollbars">False</property>
                             <property name="IsEditable">False</property>
                             <property name="InvisibleChar">●</property>
                           </widget>
@@ -632,7 +619,6 @@
                         <child>
                           <widget class="Gtk.Label" id="label6">
                             <property name="MemberName" />
-                            <property name="ShowScrollbars">False</property>
                             <property name="LabelProp" translatable="yes">Source:</property>
                           </widget>
                           <packing>
@@ -646,7 +632,6 @@
                           <widget class="Gtk.Entry" id="sourceEntry">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
-                            <property name="ShowScrollbars">False</property>
                             <property name="IsEditable">False</property>
                             <property name="InvisibleChar">●</property>
                           </widget>
@@ -672,7 +657,6 @@
                     <child>
                       <widget class="Gtk.Label" id="label3">
                         <property name="MemberName" />
-                        <property name="ShowScrollbars">False</property>
                         <property name="LabelProp" translatable="yes">Pattern:</property>
                       </widget>
                       <packing>
@@ -692,7 +676,6 @@
                     <child>
                       <widget class="Gtk.Label" id="label5">
                         <property name="MemberName" />
-                        <property name="ShowScrollbars">False</property>
                         <property name="LabelProp" translatable="yes">Author:</property>
                       </widget>
                       <packing>
@@ -711,7 +694,6 @@
                       <widget class="Gtk.Entry" id="patternEntry">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="ShowScrollbars">False</property>
                         <property name="IsEditable">False</property>
                         <property name="InvisibleChar">●</property>
                       </widget>
@@ -741,12 +723,10 @@
                 <child>
                   <widget class="Gtk.VBox" id="vbox7">
                     <property name="MemberName" />
-                    <property name="ShowScrollbars">False</property>
                     <property name="Spacing">6</property>
                     <child>
                       <widget class="Gtk.Label" id="label9">
                         <property name="MemberName" />
-                        <property name="ShowScrollbars">False</property>
                         <property name="Xalign">0</property>
                         <property name="LabelProp" translatable="yes">Description</property>
                       </widget>
@@ -768,7 +748,6 @@
                           <widget class="Gtk.TextView" id="descriptionTextview">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
-                            <property name="ShowScrollbars">False</property>
                             <property name="Editable">False</property>
                             <property name="CursorVisible">False</property>
                             <property name="Text" translatable="yes" />
@@ -789,12 +768,10 @@
                 <child>
                   <widget class="Gtk.HBox" id="hbox1">
                     <property name="MemberName" />
-                    <property name="ShowScrollbars">False</property>
                     <property name="Spacing">6</property>
                     <child>
                       <widget class="Gtk.Label" id="label1">
                         <property name="MemberName" />
-                        <property name="ShowScrollbars">False</property>
                         <property name="LabelProp" translatable="yes">Matching:</property>
                       </widget>
                       <packing>
@@ -808,7 +785,6 @@
                       <widget class="Gtk.Entry" id="matchingEntry">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="ShowScrollbars">False</property>
                         <property name="IsEditable">False</property>
                         <property name="InvisibleChar">●</property>
                       </widget>
@@ -820,7 +796,6 @@
                     <child>
                       <widget class="Gtk.Label" id="label2">
                         <property name="MemberName" />
-                        <property name="ShowScrollbars">False</property>
                         <property name="LabelProp" translatable="yes">Non Matching:</property>
                       </widget>
                       <packing>
@@ -834,7 +809,6 @@
                       <widget class="Gtk.Entry" id="nonMatchingEntry">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="ShowScrollbars">False</property>
                         <property name="IsEditable">False</property>
                         <property name="InvisibleChar">●</property>
                       </widget>
@@ -862,7 +836,6 @@
         <child>
           <widget class="Gtk.HButtonBox" id="hbuttonbox2">
             <property name="MemberName" />
-            <property name="ShowScrollbars">False</property>
             <property name="Spacing">6</property>
             <property name="Size">2</property>
             <property name="LayoutStyle">End</property>
@@ -870,7 +843,6 @@
               <widget class="Gtk.Button" id="buttonCancel">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="ShowScrollbars">False</property>
                 <property name="UseStock">True</property>
                 <property name="Type">StockItem</property>
                 <property name="StockId">gtk-close</property>
@@ -885,7 +857,6 @@
               <widget class="Gtk.Button" id="buttonOk">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="ShowScrollbars">False</property>
                 <property name="UseStock">True</property>
                 <property name="Type">StockItem</property>
                 <property name="StockId">gtk-refresh</property>
