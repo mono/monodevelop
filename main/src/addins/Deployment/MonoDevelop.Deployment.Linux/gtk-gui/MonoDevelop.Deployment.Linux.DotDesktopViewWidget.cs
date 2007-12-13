@@ -167,6 +167,8 @@ namespace MonoDevelop.Deployment.Linux {
             this.scrolledwindow1 = new Gtk.ScrolledWindow();
             this.scrolledwindow1.CanFocus = true;
             this.scrolledwindow1.Name = "scrolledwindow1";
+            this.scrolledwindow1.VscrollbarPolicy = ((Gtk.PolicyType)(1));
+            this.scrolledwindow1.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             // Container child scrolledwindow1.Gtk.Container+ContainerChild
             Gtk.Viewport w1 = new Gtk.Viewport();
             w1.CanFocus = true;
@@ -548,6 +550,7 @@ namespace MonoDevelop.Deployment.Linux {
             this.treeCategories = new Gtk.TreeView();
             this.treeCategories.CanFocus = true;
             this.treeCategories.Name = "treeCategories";
+            this.treeCategories.HeadersClickable = true;
             this.scrolledwindow2.Add(this.treeCategories);
             this.hbox6.Add(this.scrolledwindow2);
             Gtk.Box.BoxChild w38 = ((Gtk.Box.BoxChild)(this.hbox6[this.scrolledwindow2]));
@@ -657,6 +660,7 @@ namespace MonoDevelop.Deployment.Linux {
             this.treeEnvs = new Gtk.TreeView();
             this.treeEnvs.CanFocus = true;
             this.treeEnvs.Name = "treeEnvs";
+            this.treeEnvs.HeadersClickable = true;
             this.GtkAlignment4.Add(this.treeEnvs);
             this.frame1.Add(this.GtkAlignment4);
             this.boxMenu.Add(this.frame1);
@@ -709,6 +713,7 @@ namespace MonoDevelop.Deployment.Linux {
             this.treeMimeTypes = new Gtk.TreeView();
             this.treeMimeTypes.CanFocus = true;
             this.treeMimeTypes.Name = "treeMimeTypes";
+            this.treeMimeTypes.HeadersClickable = true;
             this.scrolledwindow3.Add(this.treeMimeTypes);
             this.tableMimeTypes.Add(this.scrolledwindow3);
             Gtk.Table.TableChild w56 = ((Gtk.Table.TableChild)(this.tableMimeTypes[this.scrolledwindow3]));
@@ -776,6 +781,7 @@ namespace MonoDevelop.Deployment.Linux {
             this.treeEntries = new Gtk.TreeView();
             this.treeEntries.CanFocus = true;
             this.treeEntries.Name = "treeEntries";
+            this.treeEntries.HeadersClickable = true;
             this.scrolledwindow4.Add(this.treeEntries);
             this.hbox4.Add(this.scrolledwindow4);
             Gtk.Box.BoxChild w62 = ((Gtk.Box.BoxChild)(this.hbox4[this.scrolledwindow4]));

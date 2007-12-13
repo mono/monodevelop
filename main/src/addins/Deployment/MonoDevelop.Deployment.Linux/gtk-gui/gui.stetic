@@ -1,14 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
-    <images-root-path>../</images-root-path>
+    <images-root-path>..</images-root-path>
+    <target-gtk-version>2.8.3</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../../../../build/AddIns/MonoDevelop.Projects.Gui.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.Ide.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.Components.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.Deployment.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.Deployment.Linux.dll" internal="true" />
+    <widget-library name="../../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
+    <widget-library name="../../../../../build/bin/MonoDevelop.Ide.dll" />
+    <widget-library name="../../../../../build/bin/MonoDevelop.Components.dll" />
+    <widget-library name="../../../../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll" />
+    <widget-library name="../../../../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.Linux.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.Deployment.Linux.BasicOptionPanelWidget" design-size="409 245">
     <property name="MemberName" />
@@ -180,6 +181,8 @@
           <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
+            <property name="VscrollbarPolicy">Automatic</property>
+            <property name="HscrollbarPolicy">Automatic</property>
             <child>
               <widget class="Gtk.Viewport" id="GtkViewport">
                 <property name="MemberName" />
@@ -280,7 +283,6 @@ Directory</property>
                             <property name="CanFocus">True</property>
                             <property name="Type">TextOnly</property>
                             <property name="Label" translatable="yes">New locale...</property>
-                            <property name="IsDialogButton">False</property>
                           </widget>
                           <packing>
                             <property name="Position">2</property>
@@ -799,7 +801,6 @@ Directory</property>
                             <property name="UseStock">True</property>
                             <property name="Type">StockItem</property>
                             <property name="StockId">gtk-add</property>
-                            <property name="IsDialogButton">False</property>
                             <signal name="Clicked" handler="OnButtonAddCategoriesClicked" />
                             <property name="label">gtk-add</property>
                           </widget>
@@ -817,7 +818,6 @@ Directory</property>
                             <property name="UseStock">True</property>
                             <property name="Type">StockItem</property>
                             <property name="StockId">gtk-remove</property>
-                            <property name="IsDialogButton">False</property>
                             <signal name="Clicked" handler="OnButtonRemoveCategoryClicked" />
                             <property name="label">gtk-remove</property>
                           </widget>
@@ -1052,7 +1052,6 @@ Directory</property>
                     <property name="UseStock">True</property>
                     <property name="Type">StockItem</property>
                     <property name="StockId">gtk-add</property>
-                    <property name="IsDialogButton">False</property>
                     <signal name="Clicked" handler="OnButtonAddMimeTypeClicked" />
                     <property name="label">gtk-add</property>
                   </widget>
@@ -1070,7 +1069,6 @@ Directory</property>
                     <property name="UseStock">True</property>
                     <property name="Type">StockItem</property>
                     <property name="StockId">gtk-remove</property>
-                    <property name="IsDialogButton">False</property>
                     <signal name="Clicked" handler="OnButtonRemoveMimeTypeClicked" />
                     <property name="label">gtk-remove</property>
                   </widget>
@@ -1152,7 +1150,6 @@ Directory</property>
                     <property name="UseStock">True</property>
                     <property name="Type">StockItem</property>
                     <property name="StockId">gtk-add</property>
-                    <property name="IsDialogButton">False</property>
                     <signal name="Clicked" handler="OnButtonAddEntryClicked" />
                     <property name="label">gtk-add</property>
                   </widget>
@@ -1170,7 +1167,6 @@ Directory</property>
                     <property name="UseStock">True</property>
                     <property name="Type">StockItem</property>
                     <property name="StockId">gtk-remove</property>
-                    <property name="IsDialogButton">False</property>
                     <signal name="Clicked" handler="OnButtonRemoveEntryClicked" />
                     <property name="label">gtk-remove</property>
                   </widget>

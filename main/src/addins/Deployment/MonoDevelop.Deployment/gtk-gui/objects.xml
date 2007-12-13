@@ -20,7 +20,7 @@
     <itemgroups />
     <signals />
   </object>
-  <object type="MonoDevelop.Deployment.Gui.PackagingFeatureWidget" palette-category="MonoDevelop.Deployment" allow-children="false" base-type="Gtk.Bin">
+  <object type="MonoDevelop.Deployment.Gui.PackagingFeatureWidget" palette-category="MonoDevelop.Deployment" allow-children="false" base-type="Gtk.Bin" internal="true">
     <itemgroups />
     <signals />
   </object>

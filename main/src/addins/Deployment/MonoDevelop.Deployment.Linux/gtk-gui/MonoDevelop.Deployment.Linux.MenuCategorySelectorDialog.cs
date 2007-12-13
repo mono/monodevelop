@@ -63,6 +63,7 @@ namespace MonoDevelop.Deployment.Linux {
             this.tree = new Gtk.TreeView();
             this.tree.CanFocus = true;
             this.tree.Name = "tree";
+            this.tree.HeadersClickable = true;
             this.scrolledwindow1.Add(this.tree);
             this.vbox5.Add(this.scrolledwindow1);
             Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.vbox5[this.scrolledwindow1]));

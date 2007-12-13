@@ -9,7 +9,7 @@ namespace MonoDevelop.Deployment
 	internal class DeployDirectoryNodeType: ExtensionNode
 	{
 		[NodeAttribute ("_label", Localizable=true)]
-		string description;
+		string description = null;
 		
 		public DeployDirectoryInfo GetDeployDirectoryInfo ()
 		{
