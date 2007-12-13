@@ -34,10 +34,9 @@ namespace VBBinding
 {
 	public class CodeGenerationPanel : AbstractOptionPanel
 	{
+		/*
 		VBCompilerParameters compilerParameters = null;
 		DotNetProjectConfiguration configuration;
-	
-		/*
 		
 		ResourceService resourceService = (ResourceService)ServiceManager.GetService(typeof(IResourceService));
 		
