@@ -65,13 +65,13 @@ namespace MonoDevelop.DesignerSupport
 		internal ToolboxService ()
 		{
 			// Null check here because the service may be loaded in an external process
-			if (IdeApp.IsInitialized)
+			if (IdeApp.Workbench != null)
 				IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (onActiveDocChanged);
 			
 			AddinManager.AddExtensionNodeHandler (toolboxLoaderPath, OnLoaderExtensionChanged);
 			AddinManager.AddExtensionNodeHandler (toolboxProviderPath, OnProviderExtensionChanged);
 			
-			if (IdeApp.IsInitialized)
+			if (IdeApp.Workbench != null)
 				onActiveDocChanged (null, null);
 		}
 		
