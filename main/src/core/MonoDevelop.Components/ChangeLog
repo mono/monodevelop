@@ -1,3 +1,8 @@
+2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Components.Commands/CommandManager.cs: Before executing the
+	  command bound to a shortcut, check if the command is enabled.
+
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Components.Commands/LinkCommandEntry.cs: Moved PlatformService

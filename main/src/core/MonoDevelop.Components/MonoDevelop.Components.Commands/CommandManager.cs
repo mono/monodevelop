@@ -189,7 +189,8 @@ namespace MonoDevelop.Components.Commands
 			}
 			
 			for (int i = 0; i < commands.Count; i++) {
-				if (DispatchCommand (commands[i].Id))
+				CommandInfo cinfo = GetCommandInfo (commands[i].Id, null);
+				if (cinfo.Enabled && cinfo.Visible && DispatchCommand (commands[i].Id))
 					break;
 			}
 		}
