@@ -1,5 +1,10 @@
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects/CombineConfiguration.cs: Change the order of the
+	  properties to match the old serialization order.
+
+2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects/ProjectService.cs,
 	  MonoDevelop.Projects/CombineEntry.cs,
 	  MonoDevelop.Projects/ConvertXml.cs,

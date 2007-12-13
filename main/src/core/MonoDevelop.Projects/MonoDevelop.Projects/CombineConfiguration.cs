@@ -128,6 +128,12 @@ namespace MonoDevelop.Projects
 		Combine combine;
 		bool build;
 		
+		[ItemProperty ("build")]
+		public bool Build {
+			get { return build; }
+			set { build = value; }
+		}
+		
 		[ItemProperty ("name")]
 		internal string EntryName {
 			get { return Entry != null ? Entry.Name : entryName; }
@@ -144,12 +150,6 @@ namespace MonoDevelop.Projects
 				if (Entry != null && combine != null)
 					combine.UpdateActiveConfigurationTree ();
 			}
-		}
-		
-		[ItemProperty ("build")]
-		public bool Build {
-			get { return build; }
-			set { build = value; }
 		}
 		
 		public CombineEntry Entry {
