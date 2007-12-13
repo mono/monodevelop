@@ -93,7 +93,7 @@ namespace AspNetAddIn {
             // Container child vbox1.Gtk.Box+BoxChild
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
-            this.label1.Xalign = 0.01F;
+            this.label1.Xalign = 0F;
             this.label1.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("<b>General Options</b>");
             this.label1.UseMarkup = true;
             this.vbox1.Add(this.label1);
@@ -200,7 +200,7 @@ namespace AspNetAddIn {
             // Container child vbox1.Gtk.Box+BoxChild
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
-            this.label2.Xalign = 0.01F;
+            this.label2.Xalign = 0F;
             this.label2.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("<b>Security</b>");
             this.label2.UseMarkup = true;
             this.vbox1.Add(this.label2);
@@ -279,7 +279,7 @@ namespace AspNetAddIn {
             // Container child vbox1.Gtk.Box+BoxChild
             this.label3 = new Gtk.Label();
             this.label3.Name = "label3";
-            this.label3.Xalign = 0.01F;
+            this.label3.Xalign = 0F;
             this.label3.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("<b>SSL Key</b>");
             this.label3.UseMarkup = true;
             this.vbox1.Add(this.label3);
@@ -376,7 +376,7 @@ namespace AspNetAddIn {
             // Container child table4.Gtk.Table+TableChild
             this.label11 = new Gtk.Label();
             this.label11.Name = "label11";
-            this.label11.Xalign = 0.01F;
+            this.label11.Xalign = 0F;
             this.label11.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("Key type:");
             this.table4.Add(this.label11);
             Gtk.Table.TableChild w28 = ((Gtk.Table.TableChild)(this.table4[this.label11]));

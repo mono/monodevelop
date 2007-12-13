@@ -1,3 +1,9 @@
+2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/AspNetAddIn.XspOptionsPanelWidget.cs,
+	  gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployTargetEditor.cs,
+	  gtk-gui/gui.stetic: Fix alignment of some labels.
+
 2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AspNetAddIn.addin.xml: Bump add-in versions.

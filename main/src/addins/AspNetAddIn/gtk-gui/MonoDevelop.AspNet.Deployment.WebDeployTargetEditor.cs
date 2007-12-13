@@ -59,7 +59,7 @@ namespace MonoDevelop.AspNet.Deployment {
             // Container child dialog1_VBox.Gtk.Box+BoxChild
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
-            this.label1.Xalign = 0.01F;
+            this.label1.Xalign = 0F;
             this.label1.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("<b>General Options</b>");
             this.label1.UseMarkup = true;
             w1.Add(this.label1);
@@ -123,7 +123,7 @@ namespace MonoDevelop.AspNet.Deployment {
             // Container child dialog1_VBox.Gtk.Box+BoxChild
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
-            this.label2.Xalign = 0.01F;
+            this.label2.Xalign = 0F;
             this.label2.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("<b>File Copying</b>");
             this.label2.UseMarkup = true;
             w1.Add(this.label2);
@@ -164,7 +164,8 @@ namespace MonoDevelop.AspNet.Deployment {
             // Internal child MonoDevelop.AspNet.Deployment.WebDeployTargetEditor.ActionArea
             Gtk.HButtonBox w14 = this.ActionArea;
             w14.Name = "dialog1_ActionArea";
-            w14.Spacing = 6;
+            w14.Spacing = 10;
+            w14.BorderWidth = ((uint)(5));
             w14.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonCancel = new Gtk.Button();
