@@ -7,13 +7,13 @@ using Gtk;
 
 namespace MonoDevelop.VersionControl.Dialogs
 {
-	public enum SelectRepositoryMode
+	internal enum SelectRepositoryMode
 	{
 		Checkout,
 		Publish
 	}
 	
-	public partial class SelectRepositoryDialog : Gtk.Dialog
+	internal partial class SelectRepositoryDialog : Gtk.Dialog
 	{
 		Repository repo;
 		ArrayList systems = new ArrayList ();

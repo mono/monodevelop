@@ -29,12 +29,12 @@ namespace MonoDevelop.VersionControl
 				if (vc.CanCommit (changeSet.BaseLocalPath)) {
 					if (test) return true;
 
-					if (!VersionControlProjectService.NotifyPrepareCommit (vc, changeSet))
+					if (!VersionControlService.NotifyPrepareCommit (vc, changeSet))
 						return false;
 					CommitDialog dlg = new CommitDialog (changeSet);
 					try {
 						if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
-							if (VersionControlProjectService.NotifyBeforeCommit (vc, changeSet)) {
+							if (VersionControlService.NotifyBeforeCommit (vc, changeSet)) {
 								new CommitWorker (vc, changeSet, dlg).Start();
 								return true;
 							}
@@ -43,7 +43,7 @@ namespace MonoDevelop.VersionControl
 					} finally {
 						dlg.Destroy ();
 					}
-					VersionControlProjectService.NotifyAfterCommit (vc, changeSet, false);
+					VersionControlService.NotifyAfterCommit (vc, changeSet, false);
 				}
 				return false;
 			}
@@ -86,16 +86,16 @@ namespace MonoDevelop.VersionControl
 					Gtk.Application.Invoke (delegate {
 						dlg.EndCommit (success);
 						dlg.Dispose ();
-						VersionControlProjectService.NotifyAfterCommit (vc, changeSet, success);
+						VersionControlService.NotifyAfterCommit (vc, changeSet, success);
 						ArrayList dirs = new ArrayList ();
 						ArrayList files = new ArrayList ();
 						foreach (ChangeSetItem it in changeSet.Items)
 							if (it.IsDirectory) dirs.Add (it.LocalPath);
 							else files.Add (it.LocalPath);
 						foreach (string path in dirs)
-							VersionControlProjectService.NotifyFileStatusChanged (vc, path, true);
+							VersionControlService.NotifyFileStatusChanged (vc, path, true);
 						foreach (string path in files)
-							VersionControlProjectService.NotifyFileStatusChanged (vc, path, false);
+							VersionControlService.NotifyFileStatusChanged (vc, path, false);
 					});
 				}
 			}

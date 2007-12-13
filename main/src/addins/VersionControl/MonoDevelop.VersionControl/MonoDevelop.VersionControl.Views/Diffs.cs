@@ -12,7 +12,7 @@ using Algorithm.Diff.Gtk;
 
 namespace MonoDevelop.VersionControl.Views
 {
-	public class DiffView : BaseView 
+	internal class DiffView : BaseView 
 	{
 		object left, right;
 		Algorithm.Diff.Diff diff;

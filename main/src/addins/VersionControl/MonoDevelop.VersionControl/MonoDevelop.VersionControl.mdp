@@ -64,7 +64,6 @@
     <File name="MonoDevelop.VersionControl/UrlBasedRepositoryEditor.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.VersionControl/VersionControlConfiguration.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.VersionControl/VersionControlNodeExtension.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.VersionControl/VersionControlProjectService.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.VersionControl/VersionControlService.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.VersionControl/VersionControlSystem.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.VersionControl/VersionInfo.cs" subtype="Code" buildaction="Compile" />

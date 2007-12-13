@@ -38,24 +38,4 @@ namespace MonoDevelop.VersionControl
 	}
 	
 	public delegate void UpdateCallback(string path, string action);
-	
-	public class VCdir
-	{
-		public string Name;
-		public string RealPath;
-		public bool Loaded;
-		public IList Nodes = new ArrayList();
-		public VCdir(string path) {
-			Loaded = false;
-			RealPath = path;
-			Name = DirList( path.Remove(0, path.LastIndexOf('/')) );
-		}
-		
-		string DirList(string bla) {
-			int c = bla.IndexOf('/');
-			if (c >= 0)
-				return bla.Remove(0,c+1);
-			else return "";
-		}
-	}
 }

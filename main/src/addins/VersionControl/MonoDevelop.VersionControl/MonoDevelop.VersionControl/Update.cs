@@ -14,7 +14,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl
 {
-	public class UpdateCommand
+	internal class UpdateCommand
 	{
 		public static bool Update (Repository vc, string path, bool test)
 		{
@@ -43,7 +43,7 @@ namespace MonoDevelop.VersionControl
 			{
 				vc.Update (path, true, GetProgressMonitor ());
 				Gtk.Application.Invoke (delegate {
-					VersionControlProjectService.NotifyFileStatusChanged (vc, path, Directory.Exists (path));
+					VersionControlService.NotifyFileStatusChanged (vc, path, Directory.Exists (path));
 				});
 			}
 		}

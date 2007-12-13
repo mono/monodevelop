@@ -8,7 +8,7 @@ using MonoDevelop.VersionControl.Dialogs;
 
 namespace MonoDevelop.VersionControl
 {
-	public class CheckoutCommand : CommandHandler
+	internal class CheckoutCommand : CommandHandler
 	{
 		protected override void Run()
 		{

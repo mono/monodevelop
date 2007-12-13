@@ -5,8 +5,8 @@
     <target-gtk-version>2.8.3</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../../../../build/bin/MonoDevelop.Components.dll" />
-    <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
+    <widget-library name="../../../../../build/bin/MonoDevelop.Ide.dll" />
+    <widget-library name="../../../../../build/bin/MonoDevelop.Components.dll" />
   </import>
   <icon-factory>
     <icon-set id="vcs-repository">
@@ -18,6 +18,7 @@
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog" design-size="617 438">
     <property name="MemberName" />
     <property name="Events">ButtonPressMask</property>
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Select Repository</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="BorderWidth">6</property>
@@ -127,8 +128,6 @@
                       <widget class="Gtk.ScrolledWindow" id="scrolledwindow2">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="VscrollbarPolicy">Automatic</property>
-                        <property name="HscrollbarPolicy">Automatic</property>
                         <property name="ShadowType">In</property>
                         <child>
                           <widget class="Gtk.TreeView" id="repoTree">
@@ -513,6 +512,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog" design-size="537 414">
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Repository Configuration</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="BorderWidth">6</property>
@@ -1119,8 +1119,6 @@
               <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="VscrollbarPolicy">Automatic</property>
-                <property name="HscrollbarPolicy">Automatic</property>
                 <property name="ShadowType">In</property>
                 <child>
                   <widget class="Gtk.TreeView" id="fileList">
@@ -1160,8 +1158,6 @@
               <widget class="Gtk.ScrolledWindow" id="scrolledwindow2">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="VscrollbarPolicy">Automatic</property>
-                <property name="HscrollbarPolicy">Automatic</property>
                 <property name="ShadowType">In</property>
                 <child>
                   <widget class="Gtk.TextView" id="textview">

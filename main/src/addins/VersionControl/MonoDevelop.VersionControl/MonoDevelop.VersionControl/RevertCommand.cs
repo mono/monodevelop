@@ -15,7 +15,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.VersionControl
 {
-	public class RevertCommand
+	internal class RevertCommand
 	{
 		public static bool Revert (Repository vc, string path, bool test)
 		{
@@ -82,10 +82,10 @@ namespace MonoDevelop.VersionControl
 						Document doc = IdeApp.Workbench.GetDocument (s);
 						if (doc != null)
 							doc.Reload ();
-						VersionControlProjectService.NotifyFileStatusChanged (vc, s, false);
+						VersionControlService.NotifyFileStatusChanged (vc, s, false);
 					}
 					foreach (string s in dirs)
-						VersionControlProjectService.NotifyFileStatusChanged (vc, s, true);
+						VersionControlService.NotifyFileStatusChanged (vc, s, true);
 				});
 			}
 		}

@@ -191,10 +191,10 @@ namespace MonoDevelop.VersionControl
 		
 		public string Comment {
 			get {
-				string txt = VersionControlProjectService.GetCommitComment (LocalPath);
+				string txt = VersionControlService.GetCommitComment (LocalPath);
 				return txt != null ? txt : "";
 			}
-			set { VersionControlProjectService.SetCommitComment (LocalPath, value, true); }
+			set { VersionControlService.SetCommitComment (LocalPath, value, true); }
 		}
 		
 		public string LocalPath {

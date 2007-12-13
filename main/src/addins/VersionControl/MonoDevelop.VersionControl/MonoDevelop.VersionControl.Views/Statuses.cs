@@ -15,7 +15,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.VersionControl.Views
 {
-	public class StatusView : BaseView 
+	internal class StatusView : BaseView 
 	{
 		string filepath;
 		Repository vc;
@@ -224,7 +224,7 @@ namespace MonoDevelop.VersionControl.Views
 			status.Visible = false;
 			
 			filelist.Selection.Changed += new EventHandler(OnCursorChanged);
-			VersionControlProjectService.FileStatusChanged += OnFileStatusChanged;
+			VersionControlService.FileStatusChanged += OnFileStatusChanged;
 			
 			filelist.HeadersClickable = true;
 			filestore.SetSortFunc (0, CompareNodes);
@@ -268,7 +268,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public override void Dispose ()
 		{
-			VersionControlProjectService.FileStatusChanged -= OnFileStatusChanged;
+			VersionControlService.FileStatusChanged -= OnFileStatusChanged;
 			widget.Destroy ();
 			base.Dispose ();
 		}
@@ -362,8 +362,8 @@ namespace MonoDevelop.VersionControl.Views
 		
 		TreeIter AppendFileInfo (VersionInfo n)
 		{
-			Gdk.Pixbuf statusicon = VersionControlProjectService.LoadIconForStatus(n.Status);
-			string lstatus = VersionControlProjectService.GetStatusLabel (n.Status);
+			Gdk.Pixbuf statusicon = VersionControlService.LoadIconForStatus(n.Status);
+			string lstatus = VersionControlService.GetStatusLabel (n.Status);
 			
 			string localpath = n.LocalPath.Substring(filepath.Length);
 			if (localpath.Length > 0 && localpath[0] == Path.DirectorySeparatorChar) localpath = localpath.Substring(1);
@@ -464,7 +464,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		string GetCommitMessage (string file)
 		{
-			string txt = VersionControlProjectService.GetCommitComment (file);
+			string txt = VersionControlService.GetCommitComment (file);
 			return txt != null ? txt : "";
 		}
 		
@@ -476,7 +476,7 @@ namespace MonoDevelop.VersionControl.Views
 					item = changeSet.AddFile (file);
 				item.Comment = text;
 			} else {
-				VersionControlProjectService.SetCommitComment (file, text, true);
+				VersionControlService.SetCommitComment (file, text, true);
 			}
 		}
 		

@@ -11,7 +11,7 @@
 namespace MonoDevelop.VersionControl.Dialogs {
     
     
-    public partial class SelectRepositoryDialog {
+    internal partial class SelectRepositoryDialog {
         
         private Gtk.VBox vbox1;
         
@@ -162,8 +162,6 @@ namespace MonoDevelop.VersionControl.Dialogs {
             this.scrolledwindow2 = new Gtk.ScrolledWindow();
             this.scrolledwindow2.CanFocus = true;
             this.scrolledwindow2.Name = "scrolledwindow2";
-            this.scrolledwindow2.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow2.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow2.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow2.Gtk.Container+ContainerChild
             this.repoTree = new Gtk.TreeView();

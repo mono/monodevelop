@@ -1,3 +1,30 @@
+2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.mdp,
+	  MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs,
+	  MonoDevelop.VersionControl.Dialogs/EditRepositoryDialog.cs,
+	  MonoDevelop.VersionControl.Dialogs/CommitDialog.cs,
+	  gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs,
+	  gtk-gui/MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog.cs,
+	  gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs,
+	  gtk-gui/gui.stetic, MonoDevelop.VersionControl.Views/Diffs.cs,
+	  MonoDevelop.VersionControl.Views/Statuses.cs,
+	  MonoDevelop.VersionControl.Views/Logs.cs, Makefile.am,
+	  MonoDevelop.VersionControl/Update.cs,
+	  MonoDevelop.VersionControl/CommitCommand.cs,
+	  MonoDevelop.VersionControl/VersionControlFileSystemExtension.cs,
+	  MonoDevelop.VersionControl/VersionControlNodeExtension.cs,
+	  MonoDevelop.VersionControl/VersionControlSystem.cs,
+	  MonoDevelop.VersionControl/AddRemoveMoveCommand.cs,
+	  MonoDevelop.VersionControl/VersionControlProjectService.cs,
+	  MonoDevelop.VersionControl/ChangeSet.cs,
+	  MonoDevelop.VersionControl/Task.cs,
+	  MonoDevelop.VersionControl/Checkout.cs,
+	  MonoDevelop.VersionControl/BaseView.cs,
+	  MonoDevelop.VersionControl/RevertCommand.cs,
+	  MonoDevelop.VersionControl/Publish.cs,
+	  MonoDevelop.VersionControl/VersionControlService.cs: API cleanup.
+
 2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* VersionControl.addin.xml: Bump add-in versions.

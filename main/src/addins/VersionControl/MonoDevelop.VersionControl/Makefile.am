@@ -33,7 +33,6 @@ FILES =  \
 	MonoDevelop.VersionControl/VersionControlConfiguration.cs \
 	MonoDevelop.VersionControl/VersionControlFileSystemExtension.cs \
 	MonoDevelop.VersionControl/VersionControlNodeExtension.cs \
-	MonoDevelop.VersionControl/VersionControlProjectService.cs \
 	MonoDevelop.VersionControl/VersionControlService.cs \
 	MonoDevelop.VersionControl/VersionControlSystem.cs \
 	MonoDevelop.VersionControl/VersionInfo.cs \

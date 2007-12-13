@@ -8,7 +8,7 @@ using MonoDevelop.Core.FileSystem;
 
 namespace MonoDevelop.VersionControl
 {
-	public class VersionControlFileSystemExtension: FileSystemExtension
+	internal class VersionControlFileSystemExtension: FileSystemExtension
 	{
 		public override bool CanHandlePath (string path, bool isDirectory)
 		{
@@ -24,7 +24,7 @@ namespace MonoDevelop.VersionControl
 			// FIXME: Optimize
 			foreach (Project prj in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects ()) {
 				if (path.StartsWith (prj.BaseDirectory)) {
-					return VersionControlProjectService.GetRepository (prj);
+					return VersionControlService.GetRepository (prj);
 				}
 			}
 			return null;
@@ -98,7 +98,7 @@ namespace MonoDevelop.VersionControl
 		public override void NotifyFileChanged (string file)
 		{
 			Repository repo = GetRepository (file);
-			VersionControlProjectService.NotifyFileStatusChanged (repo, file, false);
+			VersionControlService.NotifyFileStatusChanged (repo, file, false);
 		}
 	}
 }

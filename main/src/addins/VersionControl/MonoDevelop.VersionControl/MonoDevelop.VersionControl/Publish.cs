@@ -9,7 +9,7 @@ using MonoDevelop.VersionControl.Dialogs;
 
 namespace MonoDevelop.VersionControl 
 {
-	public class PublishCommand 
+	internal class PublishCommand 
 	{
 		public static bool Publish (CombineEntry entry, string localPath, bool test)
 		{
@@ -95,7 +95,7 @@ namespace MonoDevelop.VersionControl
 			vc.Publish (moduleName, path, files, message, GetProgressMonitor ());
 			
 			Gtk.Application.Invoke (delegate {
-				VersionControlProjectService.NotifyFileStatusChanged (vc, path, true);
+				VersionControlService.NotifyFileStatusChanged (vc, path, true);
 			});
 		}
 	}

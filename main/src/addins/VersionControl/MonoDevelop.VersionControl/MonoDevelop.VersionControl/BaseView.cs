@@ -13,7 +13,7 @@ using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.VersionControl
 {
-	public abstract class BaseView : AbstractBaseViewContent, IViewContent
+	internal abstract class BaseView : AbstractBaseViewContent, IViewContent
 	{
 		string name;
 		public BaseView(string name) { this.name = name; }

@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace MonoDevelop.VersionControl.Dialogs
 {
-	public partial class EditRepositoryDialog : Gtk.Dialog
+	internal partial class EditRepositoryDialog : Gtk.Dialog
 	{
 		Repository repo;
 		ArrayList systems = new ArrayList ();

@@ -9,7 +9,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.VersionControl
 {
-	public abstract class Task 
+	internal abstract class Task 
 	{
 		IProgressMonitor tracker;
 		ThreadNotify threadnotify;

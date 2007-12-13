@@ -14,7 +14,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl 
 {
-	public class AddCommand
+	internal class AddCommand
 	{
 		public static bool Add (Repository vc, string path, bool test) {
 			if (vc.CanAdd(path)) {
@@ -51,7 +51,7 @@ namespace MonoDevelop.VersionControl
 			{
 				vc.Add (path, true, GetProgressMonitor ());
 				Gtk.Application.Invoke (delegate {
-					VersionControlProjectService.NotifyFileStatusChanged (vc, path, Directory.Exists (path));
+					VersionControlService.NotifyFileStatusChanged (vc, path, Directory.Exists (path));
 				});
 			}
 		}
@@ -105,7 +105,7 @@ namespace MonoDevelop.VersionControl
 //		
 //	}
 	
-	public class RemoveCommand
+	internal class RemoveCommand
 	{
 		public static bool Remove (Repository vc, string path, bool isDir, bool test)
 		{
@@ -144,7 +144,7 @@ namespace MonoDevelop.VersionControl
 				else
 					vc.DeleteFile (path, true, GetProgressMonitor ());
 				Gtk.Application.Invoke (delegate {
-					VersionControlProjectService.NotifyFileStatusChanged (vc, path, isDir);
+					VersionControlService.NotifyFileStatusChanged (vc, path, isDir);
 				});
 			}
 		}

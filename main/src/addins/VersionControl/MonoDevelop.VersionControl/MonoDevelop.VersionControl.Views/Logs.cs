@@ -10,7 +10,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.VersionControl.Views
 {
-	public class LogView : BaseView
+	internal class LogView : BaseView
 	{
 		string filepath;
 		Widget widget;
@@ -291,7 +291,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 	}
 
-	public class HistoricalFileView
+	internal class HistoricalFileView
 	{
 		public static void Show(string name, string file, string text) {
 			string mimeType = Runtime.PlatformService.GetMimeTypeForUri (file);

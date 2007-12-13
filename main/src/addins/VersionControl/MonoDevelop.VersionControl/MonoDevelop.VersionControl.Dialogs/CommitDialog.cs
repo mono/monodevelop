@@ -59,8 +59,8 @@ namespace MonoDevelop.VersionControl.Dialogs
 			}
 
 			foreach (ChangeSetItem info in changeSet.Items) {
-				Gdk.Pixbuf statusicon = VersionControlProjectService.LoadIconForStatus (info.Status);
-				string lstatus = VersionControlProjectService.GetStatusLabel (info.Status);
+				Gdk.Pixbuf statusicon = VersionControlService.LoadIconForStatus (info.Status);
+				string lstatus = VersionControlService.GetStatusLabel (info.Status);
 				
 				string localpath = info.LocalPath.Substring (changeSet.BaseLocalPath.Length);
 				if (localpath.Length > 0 && localpath[0] == System.IO.Path.DirectorySeparatorChar) localpath = localpath.Substring(1);

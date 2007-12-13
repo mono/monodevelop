@@ -32,7 +32,7 @@ namespace MonoDevelop.VersionControl
 		
 		public VersionControlNodeExtension ()
 		{
-			VersionControlProjectService.FileStatusChanged += Monitor;
+			VersionControlService.FileStatusChanged += Monitor;
 		}
 		
 		public override void BuildNode (ITreeBuilder builder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
@@ -44,13 +44,13 @@ namespace MonoDevelop.VersionControl
 			
 			if (dataObject is CombineEntry) {
 				CombineEntry ce = (CombineEntry) dataObject;
-				Repository rep = VersionControlProjectService.GetRepository (ce);
+				Repository rep = VersionControlService.GetRepository (ce);
 				if (rep != null)
 					AddFolderOverlay (rep, ce.BaseDirectory, ref icon, ref closedIcon);
 				return;
 			} else if (dataObject is ProjectFolder) {
 				ProjectFolder ce = (ProjectFolder) dataObject;
-				Repository rep = VersionControlProjectService.GetRepository (ce.Project);
+				Repository rep = VersionControlService.GetRepository (ce.Project);
 				if (rep != null)
 					AddFolderOverlay (rep, ce.Path, ref icon, ref closedIcon);
 				return;
@@ -72,12 +72,12 @@ namespace MonoDevelop.VersionControl
 			if (prj == null)
 				return;
 			
-			Repository repo = VersionControlProjectService.GetRepository (prj);
+			Repository repo = VersionControlService.GetRepository (prj);
 			if (repo == null)
 				return;
 			
 			VersionStatus status = GetVersionInfo (repo, file);
-			Gdk.Pixbuf overlay = VersionControlProjectService.LoadOverlayIconForStatus (status);
+			Gdk.Pixbuf overlay = VersionControlService.LoadOverlayIconForStatus (status);
 			if (overlay != null)
 				AddOverlay (ref icon, overlay);
 		}
@@ -87,11 +87,11 @@ namespace MonoDevelop.VersionControl
 			Gdk.Pixbuf overlay = null;
 			VersionInfo vinfo = rep.GetVersionInfo (folder, false);
 			if (vinfo == null) {
-				overlay = VersionControlProjectService.LoadOverlayIconForStatus (VersionStatus.Unversioned);
+				overlay = VersionControlService.LoadOverlayIconForStatus (VersionStatus.Unversioned);
 			} else if (vinfo.Status == VersionStatus.Unchanged) {
-				overlay = VersionControlProjectService.overlay_controled;
+				overlay = VersionControlService.overlay_controled;
 			} else {
-				overlay = VersionControlProjectService.LoadOverlayIconForStatus (vinfo.Status);
+				overlay = VersionControlService.LoadOverlayIconForStatus (vinfo.Status);
 			}
 			if (overlay != null) {
 				AddOverlay (ref icon, overlay);
@@ -310,7 +310,7 @@ namespace MonoDevelop.VersionControl
 				return TestResult.NoVersionControl;
 			}
 			
-			Repository repo = VersionControlProjectService.GetRepository (pentry);
+			Repository repo = VersionControlService.GetRepository (pentry);
 			if (repo == null) {
 				if (cmd != Commands.Publish)
 					return TestResult.NoVersionControl;
