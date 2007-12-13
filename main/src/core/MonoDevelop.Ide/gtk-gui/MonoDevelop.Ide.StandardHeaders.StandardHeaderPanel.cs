@@ -11,7 +11,7 @@
 namespace MonoDevelop.Ide.StandardHeaders {
     
     
-    public partial class StandardHeaderPanel {
+    internal partial class StandardHeaderPanel {
         
         private Gtk.VBox vbox2;
         

@@ -33,7 +33,7 @@ using Mono.Addins;
 
 namespace MonoDevelop.Projects.Extensions
 {
-	public class ItemPropertyCodon: DataTypeCodon
+	internal class ItemPropertyCodon: DataTypeCodon
 	{
 		[NodeAttribute("name", true, Description="Name of the property")]
 		string propName;

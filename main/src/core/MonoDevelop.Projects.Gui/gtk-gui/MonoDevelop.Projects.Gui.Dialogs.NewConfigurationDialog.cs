@@ -96,8 +96,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs {
             this.cancelbutton1.UseUnderline = true;
             this.cancelbutton1.Label = "gtk-cancel";
             this.AddActionWidget(this.cancelbutton1, -6);
-            Gtk.ButtonBox.ButtonBoxChild w8 = ((Gtk.ButtonBox.ButtonBoxChild)(w7[this.cancelbutton1]));
-            w8.Position = 0;
             // Container child dialog-action_area6.Gtk.ButtonBox+ButtonBoxChild
             this.okbutton1 = new Gtk.Button();
             this.okbutton1.Name = "okbutton1";

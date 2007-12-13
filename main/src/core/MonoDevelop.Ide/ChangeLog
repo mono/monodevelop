@@ -1,5 +1,25 @@
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.CodeTemplates/EditTemplateGroupDialog.cs,
+	  MonoDevelop.Ide.CodeTemplates/EditTemplateDialog.cs,
+	  MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs,
+	  MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/LinkedFilesFolder.cs,
+	  MonoDevelop.Ide.StandardHeader/NewHeaderTemplateDialog.cs,
+	  MonoDevelop.Ide.StandardHeader/StandardHeaderPanel.cs,
+	  MonoDevelop.Ide.mdp,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs,
+	  gtk-gui/gui.stetic, gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.Ide.StandardHeaders.NewHeaderTemplateDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs,
+	  gtk-gui/MonoDevelop.Ide.NewHeaderTemplateDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel.cs,
+	  Makefile.am, MonoDevelop.Ide.Gui/IdeStartup.cs,
+	  MonoDevelop.Ide.Gui/ExitEventHandler.cs,
+	  MonoDevelop.Ide.Gui/HelpViewer.cs: API cleanup.
+
+2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* gtk-gui/gui.stetic,
 	  gtk-gui/MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs,
 	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector.cs,

@@ -33,7 +33,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
-	public class GeneralProjectOptions : AbstractOptionPanel
+	internal class GeneralProjectOptions : AbstractOptionPanel
 	{
 		GeneralProjectOptionsWidget widget;
 

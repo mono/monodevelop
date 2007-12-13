@@ -36,7 +36,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {
-	public class BuildTool : IApplication
+	internal class BuildTool : IApplication
 	{
 		bool help;
 		string file;

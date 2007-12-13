@@ -33,7 +33,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
-	public class CustomCommandPanel: AbstractOptionPanel
+	internal class CustomCommandPanel: AbstractOptionPanel
 	{
 		AbstractConfiguration configuration;
 		CustomCommandCollection commands;

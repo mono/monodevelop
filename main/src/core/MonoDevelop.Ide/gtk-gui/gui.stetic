@@ -1240,6 +1240,7 @@
       <widget class="Gtk.VBox" id="dialog1_VBox">
         <property name="MemberName" />
         <property name="Spacing">6</property>
+        <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.VBox" id="vbox">
             <property name="MemberName" />
@@ -1481,6 +1482,7 @@
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel" design-size="491 298">
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox2">
         <property name="MemberName" />
@@ -1489,8 +1491,6 @@
           <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="VscrollbarPolicy">Automatic</property>
-            <property name="HscrollbarPolicy">Automatic</property>
             <property name="ShadowType">In</property>
             <property name="BorderWidth">6</property>
             <child>
@@ -1690,9 +1690,10 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.NewHeaderTemplateDialog" design-size="400 127">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.StandardHeaders.NewHeaderTemplateDialog" design-size="400 127">
     <property name="MemberName" />
     <property name="WidthRequest">320</property>
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Add New Standard Header Template</property>
     <property name="TypeHint">Dialog</property>
     <property name="WindowPosition">CenterOnParent</property>

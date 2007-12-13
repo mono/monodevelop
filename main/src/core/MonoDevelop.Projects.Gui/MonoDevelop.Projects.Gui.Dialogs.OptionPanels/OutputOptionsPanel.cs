@@ -30,7 +30,7 @@ using Gtk;
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
-	public class OutputOptionsPanel : AbstractOptionPanel
+	internal class OutputOptionsPanel : AbstractOptionPanel
 	{
 		OutputOptionsPanelWidget  widget;
 		public override void LoadPanelContents()

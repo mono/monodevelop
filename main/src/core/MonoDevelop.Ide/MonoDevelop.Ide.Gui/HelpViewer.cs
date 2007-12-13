@@ -188,8 +188,8 @@ namespace MonoDevelop.Ide.Gui
 					//IMG tags; what we're looking for!
 					else if (input[pos+1] == 'i' && input [pos+2] == 'm' && input [pos+3] == 'm' ){
 						//WriteImage
-						string url = "";
-						string path = Path.Combine (tempDir, "image" + imageIndex);
+						//string url = "";
+						//string path = Path.Combine (tempDir, "image" + imageIndex);
 						//WriteImage (path, url);
 						imageIndex++;
 						System.Console.WriteLine(input.Substring (pos, 10));

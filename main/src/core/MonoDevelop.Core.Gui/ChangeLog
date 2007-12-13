@@ -1,3 +1,13 @@
+2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.mdp,
+	  MonoDevelop.Core.Gui.Dialogs/MultiTaskProgressDialog.cs,
+	  MonoDevelop.Core.Gui.Dialogs/DefaultDialogPanelDescriptor.cs,
+	  MonoDevelop.Core.Gui.Codons/DialogPanelCodon.cs,
+	  gtk-gui/MonoDevelop.Core.Gui.Dialogs.MultiTaskProgressDialog.cs,
+	  gtk-gui/gui.stetic, Freedesktop.RecentFiles/RecentFileStorage.cs: API
+	  cleanup.
+
 2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.addin.xml: Bump add-in versions.

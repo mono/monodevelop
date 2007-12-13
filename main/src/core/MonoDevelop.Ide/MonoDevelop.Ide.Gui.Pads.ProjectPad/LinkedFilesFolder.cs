@@ -29,7 +29,7 @@
 using System;
 using MonoDevelop.Projects;
 
-namespace MonoDevelop.Ide
+namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	public class LinkedFilesFolder
 	{

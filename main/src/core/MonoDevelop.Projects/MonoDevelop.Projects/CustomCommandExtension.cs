@@ -32,7 +32,7 @@ using System.CodeDom.Compiler;
 
 namespace MonoDevelop.Projects
 {
-	public class CustomCommandExtension: ProjectServiceExtension
+	internal class CustomCommandExtension: ProjectServiceExtension
 	{
 		public override ICompilerResult Build (IProgressMonitor monitor, CombineEntry entry)
 		{

@@ -38,7 +38,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.StandardHeaders
 {
-	public partial class StandardHeaderPanel : Gtk.Bin, IDialogPanel
+	internal partial class StandardHeaderPanel : Gtk.Bin, IDialogPanel
 	{
 		public StandardHeaderPanel()
 		{

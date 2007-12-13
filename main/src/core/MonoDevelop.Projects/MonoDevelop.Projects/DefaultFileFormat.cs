@@ -35,7 +35,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {
-	public class DefaultFileFormat: IFileFormat
+	internal class DefaultFileFormat: IFileFormat
 	{
 		public string Name {
 			get { return "MonoDevelop Solution Item"; }

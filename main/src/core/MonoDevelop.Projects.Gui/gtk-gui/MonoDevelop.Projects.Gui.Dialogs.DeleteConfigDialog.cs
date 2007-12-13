@@ -11,7 +11,7 @@
 namespace MonoDevelop.Projects.Gui.Dialogs {
     
     
-    public partial class DeleteConfigDialog {
+    internal partial class DeleteConfigDialog {
         
         private Gtk.HBox hbox64;
         
@@ -94,8 +94,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs {
             this.button11.UseUnderline = true;
             this.button11.Label = "gtk-no";
             this.AddActionWidget(this.button11, -9);
-            Gtk.ButtonBox.ButtonBoxChild w8 = ((Gtk.ButtonBox.ButtonBoxChild)(w7[this.button11]));
-            w8.Position = 0;
             // Container child dialog-action_area7.Gtk.ButtonBox+ButtonBoxChild
             this.button12 = new Gtk.Button();
             this.button12.CanDefault = true;

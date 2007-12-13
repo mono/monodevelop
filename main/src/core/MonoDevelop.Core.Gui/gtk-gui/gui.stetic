@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
-    <images-root-path>../</images-root-path>
+    <images-root-path>..</images-root-path>
     <target-gtk-version>2.8.3</target-gtk-version>
   </configuration>
   <import>
@@ -9,6 +9,7 @@
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.Core.Gui.Dialogs.MultiTaskProgressDialog" design-size="491 418">
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Progress</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Modal">True</property>

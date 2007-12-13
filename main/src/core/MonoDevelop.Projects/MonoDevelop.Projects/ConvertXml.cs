@@ -31,7 +31,7 @@ namespace MonoDevelop.Projects
 	/// <summary>
 	/// This class is used to convert xml files using xslt
 	/// </summary>
-	public class ConvertXml
+	internal class ConvertXml
 	{
 		/// <remarks>
 		/// The main module loads the three required input vars

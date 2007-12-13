@@ -1,3 +1,18 @@
+2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/ProjectService.cs,
+	  MonoDevelop.Projects/CombineEntry.cs,
+	  MonoDevelop.Projects/ConvertXml.cs,
+	  MonoDevelop.Projects/CustomCommandExtension.cs,
+	  MonoDevelop.Projects/Combine.cs, MonoDevelop.Projects/DotNetProject.cs,
+	  MonoDevelop.Projects/DefaultFileFormat.cs,
+	  MonoDevelop.Projects/BuildTool.cs,
+	  MonoDevelop.Projects/CombineConfiguration.cs,
+	  MonoDevelop.Projects/Project.cs,
+	  MonoDevelop.Projects.Utility/DiffUtility.cs,
+	  MonoDevelop.Projects.Extensions/DataTypeCodon.cs,
+	  MonoDevelop.Projects.Extensions/ItemPropertyCodon.cs: API cleanup.
+
 2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.addin.xml: Bump add-in versions.

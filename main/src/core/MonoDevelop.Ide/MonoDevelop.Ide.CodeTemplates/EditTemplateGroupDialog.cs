@@ -25,7 +25,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
-	public class EditTemplateGroupDialog : Gtk.Dialog 
+	internal class EditTemplateGroupDialog : Gtk.Dialog 
 	{
 		CodeTemplateGroup codeTemplateGroup;
 		string titlePrefix = string.Empty;

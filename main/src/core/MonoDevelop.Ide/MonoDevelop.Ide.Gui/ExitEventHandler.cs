@@ -28,7 +28,7 @@
 
 using System;
 
-namespace MonoDevelop.Ide
+namespace MonoDevelop.Ide.Gui
 {
 	public delegate void ExitEventHandler (object sender, ExitEventArgs args);
 	

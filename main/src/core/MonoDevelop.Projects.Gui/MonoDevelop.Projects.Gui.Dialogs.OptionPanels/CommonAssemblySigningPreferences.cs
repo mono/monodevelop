@@ -33,7 +33,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
-	public partial class CommonAssemblySigningPreferences : Gtk.Bin, IDialogPanel
+	internal partial class CommonAssemblySigningPreferences : Gtk.Bin, IDialogPanel
 	{
 		Project project;
 		AbstractProjectConfiguration configuration;

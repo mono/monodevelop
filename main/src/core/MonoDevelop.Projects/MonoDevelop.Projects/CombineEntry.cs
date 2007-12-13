@@ -237,7 +237,17 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public virtual DataCollection Serialize (ITypeSerializer handler)
+		DataCollection ICustomDataItem.Serialize (ITypeSerializer handler)
+		{
+			return Serialize (handler);
+		}
+		
+		void ICustomDataItem.Deserialize (ITypeSerializer handler, DataCollection data)
+		{
+			Deserialize (handler, data);
+		}
+		
+		protected virtual DataCollection Serialize (ITypeSerializer handler)
 		{
 			DataCollection data = handler.Serialize (this);
 			if (activeConfiguration != null) {
@@ -249,7 +259,7 @@ namespace MonoDevelop.Projects
 			return data;
 		}
 		
-		public virtual void Deserialize (ITypeSerializer handler, DataCollection data)
+		protected virtual void Deserialize (ITypeSerializer handler, DataCollection data)
 		{
 			DataValue ac = null;
 			DataItem confItem = data ["Configurations"] as DataItem;

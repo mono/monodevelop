@@ -11,7 +11,7 @@
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
     
     
-    public partial class CommonAssemblySigningPreferences {
+    internal partial class CommonAssemblySigningPreferences {
         
         private Gtk.VBox vbox1;
         

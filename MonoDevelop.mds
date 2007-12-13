@@ -2,11 +2,11 @@
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="True" name="Main" configuration="Debug" />
-      <Entry build="True" name="extras" configuration="" />
+      <Entry build="True" name="Extras" configuration="" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="Main" configuration="Release" />
-      <Entry build="True" name="extras" configuration="" />
+      <Entry build="True" name="Extras" configuration="" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="Main" single="True">

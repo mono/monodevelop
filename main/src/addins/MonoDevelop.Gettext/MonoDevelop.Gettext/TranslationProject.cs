@@ -313,7 +313,7 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
-		public override void Deserialize (ITypeSerializer handler, DataCollection data)
+		protected override void Deserialize (ITypeSerializer handler, DataCollection data)
 		{
 			base.Deserialize (handler, data);
 			foreach (Translation translation in this.Translations)

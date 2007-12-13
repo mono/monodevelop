@@ -136,7 +136,6 @@
     <File name="MonoDevelop.Core.Gui.Components/MenuButtonEntry.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Gui.Codons/StockIconCodon.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Core.Gui.Utils/DesktopApplication.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Gui.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="ChangeLog" subtype="Code" buildaction="Nothing" />

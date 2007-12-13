@@ -158,7 +158,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public override void Deserialize (ITypeSerializer handler, DataCollection data)
+		protected override void Deserialize (ITypeSerializer handler, DataCollection data)
 		{
 			base.Deserialize (handler, data);
 			languageBinding = FindLanguage (language);

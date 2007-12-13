@@ -33,7 +33,7 @@ using System.Text;
 
 namespace MonoDevelop.Projects.Gui.Completion
 {
-	public class ListWindow: Gtk.Window
+	internal class ListWindow: Gtk.Window
 	{
 		VScrollbar scrollbar;
 		ListWidget list;
@@ -301,7 +301,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		}		
 	}
 
-	public class ListWidget: Gtk.DrawingArea
+	internal class ListWidget: Gtk.DrawingArea
 	{
 		int margin = 0;
 		int padding = 4;

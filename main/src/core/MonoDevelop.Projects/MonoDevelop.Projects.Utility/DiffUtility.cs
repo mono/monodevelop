@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace MonoDevelop.Projects.Utility 
 {
-	public class DiffUtility
+	internal class DiffUtility
 	{
 		public static int GetAddedItems(IList original, IList changed, IList result)
 		{

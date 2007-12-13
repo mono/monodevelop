@@ -334,7 +334,7 @@ namespace MonoDevelop.Projects
 			entry.Saved += entrySavedHandler;
 		}
 		
-		public override DataCollection Serialize (ITypeSerializer handler)
+		protected override DataCollection Serialize (ITypeSerializer handler)
 		{
 			if (StartupEntry != null)
 				startEntryName = StartupEntry.Name;
@@ -342,7 +342,7 @@ namespace MonoDevelop.Projects
 			return base.Serialize (handler);
 		}
 		
-		public override void Deserialize (ITypeSerializer handler, DataCollection data)
+		protected override void Deserialize (ITypeSerializer handler, DataCollection data)
 		{
 			try {
 				deserializing = true;

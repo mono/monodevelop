@@ -30,7 +30,7 @@ using MonoDevelop.Core.Gui.Dialogs;
 namespace MonoDevelop.Core.Gui.Codons
 {
 	[ExtensionNode (Description="A dialog panel to be shown in an options dialog. The specified class must implement MonoDevelop.Core.Gui.Dialogs.IDialogPanel.")]
-	public class DialogPanelCodon : TypeExtensionNode
+	internal class DialogPanelCodon : TypeExtensionNode
 	{
 		[NodeAttribute("_label", true, "Name of the panel", Localizable=true)]
 		string label = null;

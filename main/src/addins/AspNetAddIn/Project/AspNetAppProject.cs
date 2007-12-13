@@ -134,7 +134,7 @@ namespace AspNetAddIn
 			webTypeManager = new WebTypeManager (this);
 		}
 		
-		public override void Deserialize (ITypeSerializer handler, DataCollection data)
+		protected override void Deserialize (ITypeSerializer handler, DataCollection data)
 		{
 			loading = true;
 			base.Deserialize (handler, data);

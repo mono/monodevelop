@@ -381,7 +381,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		}
 	}
 
-	public class CodeTemplatePane : AbstractOptionPanel
+	internal class CodeTemplatePane : AbstractOptionPanel
 	{
 		
 		CodeTemplatePanelWidget widget;

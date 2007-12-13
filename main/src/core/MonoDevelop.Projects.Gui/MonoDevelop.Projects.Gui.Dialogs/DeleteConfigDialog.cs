@@ -29,7 +29,7 @@ using System;
 
 namespace MonoDevelop.Projects.Gui.Dialogs
 {
-	partial class DeleteConfigDialog: Gtk.Dialog
+	internal partial class DeleteConfigDialog: Gtk.Dialog
 	{
 		public DeleteConfigDialog()
 		{

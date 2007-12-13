@@ -26,7 +26,7 @@ using Gtk;
 
 namespace MonoDevelop.Projects.Gui.Completion
 {
-	public class DeclarationViewWindow : Window
+	internal class DeclarationViewWindow : Window
 	{
 		static char[] newline = {'\n'};
 		static char[] whitespace = {' '};

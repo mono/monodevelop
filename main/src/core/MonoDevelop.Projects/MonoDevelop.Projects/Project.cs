@@ -165,7 +165,7 @@ namespace MonoDevelop.Projects
 			return prj;
 		}
 		
-		public override void Deserialize (ITypeSerializer handler, DataCollection data)
+		protected override void Deserialize (ITypeSerializer handler, DataCollection data)
 		{
 			base.Deserialize (handler, data);
 			projectReferences.SetProject (this);

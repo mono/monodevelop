@@ -1,5 +1,9 @@
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Gettext/TranslationProject.cs: API cleanup.
+
+2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* gtk-gui/gui.stetic: Updated.
 
 2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 

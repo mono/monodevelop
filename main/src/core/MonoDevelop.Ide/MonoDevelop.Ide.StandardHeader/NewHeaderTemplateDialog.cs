@@ -28,9 +28,9 @@
 
 using System;
 
-namespace MonoDevelop.Ide
+namespace MonoDevelop.Ide.StandardHeaders
 {
-	public partial class NewHeaderTemplateDialog : Gtk.Dialog
+	internal partial class NewHeaderTemplateDialog : Gtk.Dialog
 	{
 		public string HeaderName {
 			get {

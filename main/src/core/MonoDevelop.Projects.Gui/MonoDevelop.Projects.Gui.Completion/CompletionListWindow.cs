@@ -35,9 +35,41 @@ using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Projects.Gui.Completion
 {
-	public class CompletionListWindow : ListWindow, IListDataProvider
+	public class CompletionWindowManager
 	{
-		ICompletionWidget completionWidget;
+		static CompletionListWindow wnd;
+		
+		static CompletionWindowManager ()
+		{
+			wnd = new CompletionListWindow ();
+		}
+		
+		public static void ShowWindow (char firstChar, ICompletionDataProvider provider, ICompletionWidget completionWidget, ICodeCompletionContext completionContext, CompletionDelegate closedDelegate)
+		{
+			try {
+				if (!wnd.ShowListWindow (firstChar, provider,  completionWidget, completionContext, closedDelegate)) {
+					provider.Dispose ();
+					return;
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError (ex.ToString ());
+			}
+		}
+		
+		public static bool ProcessKeyEvent (Gdk.Key key, Gdk.ModifierType modifier)
+		{
+			return wnd.ProcessKeyEvent (key, modifier);
+		}
+		
+		public static void HideWindow ()
+		{
+			wnd.Hide ();
+		}
+	}
+	
+	internal class CompletionListWindow : ListWindow, IListDataProvider
+	{
+		internal ICompletionWidget completionWidget;
 		ICodeCompletionContext completionContext;
 		ICompletionData[] completionData;
 		DeclarationViewWindow declarationviewwindow = new DeclarationViewWindow ();
@@ -62,51 +94,46 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		
-		static CompletionListWindow wnd;
-		
-		static CompletionListWindow ()
-		{
-			wnd = new CompletionListWindow ();
-		}
-		
 		internal CompletionListWindow ()
 		{
 			SizeAllocated += new SizeAllocatedHandler (ListSizeChanged);
 		}
 		
-		public static void ShowWindow (char firstChar, ICompletionDataProvider provider, ICompletionWidget completionWidget, ICodeCompletionContext completionContext, CompletionDelegate closedDelegate)
+		public bool ProcessKeyEvent (Gdk.Key key, Gdk.ModifierType modifier)
 		{
-			try {
-				if (!wnd.ShowListWindow (firstChar, provider,  completionWidget, completionContext, closedDelegate)) {
-					provider.Dispose ();
-					return;
-				}
+			ListWindow.KeyAction ka = ProcessKey (key, modifier);
+			
+			if ((ka & ListWindow.KeyAction.CloseWindow) != 0)
+				Hide ();
 				
-				// makes control-space in midle of words to work
-				string text = wnd.completionWidget.GetCompletionText (completionContext);
-				if (text.Length == 0) {
-					text = provider.DefaultCompletionString;
-					if (text != null && text.Length > 0)
-						wnd.SelectEntry (text);
-					wnd.initialWordLength = wnd.completionWidget.SelectedLength;
-					return;
-				}
-				
-				wnd.initialWordLength = text.Length + wnd.completionWidget.SelectedLength;
-				wnd.PartialWord = text; 
-				//if there is only one matching result we take it by default
-				if (wnd.IsUniqueMatch && !wnd.IsChanging)
-				{	
-					wnd.UpdateWord ();
-					wnd.Hide ();
-				}
-				
-			} catch (Exception ex) {
-				LoggingService.LogError (ex.ToString ());
+			if ((ka & ListWindow.KeyAction.Complete) != 0) {
+				UpdateWord ();
 			}
+			
+			if ((ka & ListWindow.KeyAction.Ignore) != 0)
+				return true;
+
+			if ((ka & ListWindow.KeyAction.Process) != 0) {
+				if (key == Gdk.Key.Left || key == Gdk.Key.Right) {
+					if (modifier != 0) {
+						Hide ();
+						return false;
+					}
+					if (declarationviewwindow.Multiple) {
+						if (key == Gdk.Key.Left)
+							declarationviewwindow.OverloadLeft ();
+						else
+							declarationviewwindow.OverloadRight ();
+						UpdateDeclarationView ();
+					}
+					return true;
+				}
+			}
+
+			return false;
 		}
 		
-		bool ShowListWindow (char firstChar, ICompletionDataProvider provider, ICompletionWidget completionWidget, ICodeCompletionContext completionContext, CompletionDelegate closedDelegate)
+		internal bool ShowListWindow (char firstChar, ICompletionDataProvider provider, ICompletionWidget completionWidget, ICodeCompletionContext completionContext, CompletionDelegate closedDelegate)
 		{
 			if (mutableProvider != null) {
 				mutableProvider.CompletionDataChanging -= OnCompletionDataChanging;
@@ -130,7 +157,29 @@ namespace MonoDevelop.Projects.Gui.Completion
 			this.completionWidget = completionWidget;
 			this.firstChar = firstChar;
 
-			return FillList ();
+			if (FillList ()) {
+				// makes control-space in midle of words to work
+				string text = completionWidget.GetCompletionText (completionContext);
+				if (text.Length == 0) {
+					text = provider.DefaultCompletionString;
+					if (text != null && text.Length > 0)
+						SelectEntry (text);
+					initialWordLength = completionWidget.SelectedLength;
+					return true;
+				}
+				
+				initialWordLength = text.Length + completionWidget.SelectedLength;
+				PartialWord = text; 
+				//if there is only one matching result we take it by default
+				if (IsUniqueMatch && !IsChanging)
+				{	
+					UpdateWord ();
+					Hide ();
+				}
+				return true;
+			}
+			else
+				return false;
 		}
 		
 		bool FillList ()
@@ -168,60 +217,19 @@ namespace MonoDevelop.Projects.Gui.Completion
 			return true;
 		}
 		
-		public static void HideWindow ()
-		{
-			wnd.Hide ();
-		}
-		
-		public static bool ProcessKeyEvent (Gdk.Key key, Gdk.ModifierType modifier)
-		{
-			if (!wnd.Visible) return false;
-			
-			ListWindow.KeyAction ka = wnd.ProcessKey (key, modifier);
-			
-			if ((ka & ListWindow.KeyAction.CloseWindow) != 0)
-				wnd.Hide ();
-				
-			if ((ka & ListWindow.KeyAction.Complete) != 0) {
-				wnd.UpdateWord ();
-			}
-			
-			if ((ka & ListWindow.KeyAction.Ignore) != 0)
-				return true;
-
-			if ((ka & ListWindow.KeyAction.Process) != 0) {
-				if (key == Gdk.Key.Left || key == Gdk.Key.Right) {
-					if (modifier != 0) {
-						wnd.Hide ();
-						return false;
-					}
-					if (wnd.declarationviewwindow.Multiple) {
-						if (key == Gdk.Key.Left)
-							wnd.declarationviewwindow.OverloadLeft ();
-						else
-							wnd.declarationviewwindow.OverloadRight ();
-						wnd.UpdateDeclarationView ();
-					}
-					return true;
-				}
-			}
-
-			return false;
-		}
-		
 		void UpdateWord ()
 		{
-			string word = wnd.CompleteWord;
+			string word = CompleteWord;
 			
 			if (word != null) {
-				if (wnd.Selection != -1) {
-					IActionCompletionData ac = completionData [wnd.Selection] as IActionCompletionData;
+				if (Selection != -1) {
+					IActionCompletionData ac = completionData [Selection] as IActionCompletionData;
 					if (ac != null) {
 						ac.InsertAction (completionWidget, completionContext);
 						return;
 					}
 				}
-				int replaceLen = completionContext.TriggerWordLength + wnd.PartialWord.Length - initialWordLength;
+				int replaceLen = completionContext.TriggerWordLength + PartialWord.Length - initialWordLength;
 				string pword = completionWidget.GetText (completionContext.TriggerOffset, completionContext.TriggerOffset + replaceLen);
 				
 				completionWidget.SetCompletionText (completionContext, pword, word);
@@ -251,8 +259,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			bool ret = base.OnButtonPressEvent (evnt);
 			if (evnt.Button == 1 && evnt.Type == Gdk.EventType.TwoButtonPress) {
-				wnd.UpdateWord ();
-				wnd.Hide ();
+				UpdateWord ();
+				Hide ();
 			}
 			return ret;
 		}
@@ -375,12 +383,12 @@ namespace MonoDevelop.Projects.Gui.Completion
 				hbox.ShowAll ();
 				parsingMessage = hbox;
 			}
-			wnd.ShowFooter (parsingMessage);
+			ShowFooter (parsingMessage);
 		}
 		
 		void OnCompletionDataChanged (object s, EventArgs args)
 		{
-			wnd.HideFooter ();
+			HideFooter ();
 			if (Visible) {
 				Reset ();
 				FillList ();

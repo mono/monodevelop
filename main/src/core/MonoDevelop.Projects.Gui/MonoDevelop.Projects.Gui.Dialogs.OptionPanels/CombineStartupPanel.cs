@@ -31,7 +31,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
-	public class CombineStartupPanel : AbstractOptionPanel
+	internal class CombineStartupPanel : AbstractOptionPanel
 	{
 		CombineStartupPanelWidget widget;
 

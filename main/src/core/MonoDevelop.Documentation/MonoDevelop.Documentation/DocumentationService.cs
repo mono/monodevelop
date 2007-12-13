@@ -36,8 +36,7 @@ using MonoDevelop.Projects.Documentation;
 
 namespace MonoDevelop.Documentation
 {
-
-	public class DocumentationService : IDocumentationService
+	internal class DocumentationService : IDocumentationService
 	{
 
 		RootTree helpTree;

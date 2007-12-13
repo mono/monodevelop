@@ -47,7 +47,7 @@ namespace Freedesktop.RecentFiles
 	///
 	/// http://standards.freedesktop.org/recent-file-spec/recent-file-spec-0.2.html
 	/// </summary>
-	public sealed class RecentFileStorage
+	internal sealed class RecentFileStorage
 	{
 		const int MaxRecentItemsCount = 500; // max. items according to the spec.
 		const string FileName = ".recently-used";

@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			
 			if (currentCompletionContext != null) {
 				autoHideCompletionWindow = false;
-				if (CompletionListWindow.ProcessKeyEvent (key, modifier)) {
+				if (CompletionWindowManager.ProcessKeyEvent (key, modifier)) {
 					autoHideCompletionWindow = true;
 					return true;
 				}
@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.Gui.Content
 				ICompletionDataProvider cp = HandleCodeCompletion (currentCompletionContext, (char)(uint)key);
 					
 				if (cp != null)
-					CompletionListWindow.ShowWindow ((char)(uint)key, cp, completionWidget, currentCompletionContext, OnCompletionWindowClosed);
+					CompletionWindowManager.ShowWindow ((char)(uint)key, cp, completionWidget, currentCompletionContext, OnCompletionWindowClosed);
 				else
 					currentCompletionContext = null;
 			}
@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		{
 			if (autoHideCompletionWindow) {
 				if (currentCompletionContext != null)
-					CompletionListWindow.HideWindow ();
+					CompletionWindowManager.HideWindow ();
 				ParameterInformationWindowManager.HideWindow ();
 			}
 		}
@@ -134,7 +134,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			cp = CodeCompletionCommand (currentCompletionContext);
 				
 			if (cp != null)
-				CompletionListWindow.ShowWindow ((char)0, cp, completionWidget, currentCompletionContext, OnCompletionWindowClosed);
+				CompletionWindowManager.ShowWindow ((char)0, cp, completionWidget, currentCompletionContext, OnCompletionWindowClosed);
 			else
 				currentCompletionContext = null;
 		}

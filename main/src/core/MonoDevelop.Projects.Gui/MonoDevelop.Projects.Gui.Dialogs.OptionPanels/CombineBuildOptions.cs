@@ -30,7 +30,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
-	public class CombineBuildOptions : AbstractOptionPanel
+	internal class CombineBuildOptions : AbstractOptionPanel
 	{
 		CombineBuildOptionsWidget widget;
 		

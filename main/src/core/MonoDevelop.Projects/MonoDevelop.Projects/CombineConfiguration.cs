@@ -126,6 +126,7 @@ namespace MonoDevelop.Projects
 		string entryName;
 		string configName;
 		Combine combine;
+		bool build;
 		
 		[ItemProperty ("name")]
 		internal string EntryName {
@@ -133,7 +134,7 @@ namespace MonoDevelop.Projects
 			set { entryName = value; }
 		}
 		
-		public CombineEntry entry;
+		CombineEntry entry;
 		
 		[ItemProperty ("configuration")]
 		public string ConfigurationName {
@@ -146,7 +147,10 @@ namespace MonoDevelop.Projects
 		}
 		
 		[ItemProperty ("build")]
-		public bool Build;
+		public bool Build {
+			get { return build; }
+			set { build = value; }
+		}
 		
 		public CombineEntry Entry {
 			get { return entry; }

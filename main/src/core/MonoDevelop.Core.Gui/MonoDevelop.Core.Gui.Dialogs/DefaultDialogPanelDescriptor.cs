@@ -27,7 +27,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Core.Gui.Dialogs
 {
-	public class DefaultDialogPanelDescriptor : IDialogPanelDescriptor
+	internal class DefaultDialogPanelDescriptor : IDialogPanelDescriptor
 	{
 		string       id    = String.Empty;
 		string       label = String.Empty;

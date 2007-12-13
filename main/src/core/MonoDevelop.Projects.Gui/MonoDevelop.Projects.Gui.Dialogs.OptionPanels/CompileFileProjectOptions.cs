@@ -31,7 +31,7 @@ using Gtk;
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
-	public class CompileFileProjectOptions : AbstractOptionPanel
+	internal class CompileFileProjectOptions : AbstractOptionPanel
 	{
 		CompileFileOptionsWidget widget;
 		

@@ -93,7 +93,6 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 			
-			string name    = Assembly.GetEntryAssembly ().GetName ().Name;
 			string version = Assembly.GetEntryAssembly ().GetName ().Version.Major + "." + Assembly.GetEntryAssembly ().GetName ().Version.Minor;
 			
 			if (Assembly.GetEntryAssembly ().GetName ().Version.Build != 0)

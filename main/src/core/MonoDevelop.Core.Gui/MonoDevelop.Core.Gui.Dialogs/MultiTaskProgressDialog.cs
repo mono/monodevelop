@@ -31,9 +31,7 @@ using Gtk;
 
 namespace MonoDevelop.Core.Gui.Dialogs
 {
-	
-	
-	public partial class MultiTaskProgressDialog : Gtk.Dialog
+	internal partial class MultiTaskProgressDialog : Gtk.Dialog
 	{
 		ListStore statusStore = new ListStore (typeof(string), typeof(string), typeof (int));
 		const int STORE_TaskName = 0; 

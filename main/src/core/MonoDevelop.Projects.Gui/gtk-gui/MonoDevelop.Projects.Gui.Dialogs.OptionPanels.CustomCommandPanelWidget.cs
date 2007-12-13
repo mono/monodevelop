@@ -47,7 +47,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.scrolledwindow1 = new Gtk.ScrolledWindow();
             this.scrolledwindow1.CanFocus = true;
             this.scrolledwindow1.Name = "scrolledwindow1";
-            this.scrolledwindow1.VscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow1.HscrollbarPolicy = ((Gtk.PolicyType)(2));
             // Container child scrolledwindow1.Gtk.Container+ContainerChild
             Gtk.Viewport w2 = new Gtk.Viewport();

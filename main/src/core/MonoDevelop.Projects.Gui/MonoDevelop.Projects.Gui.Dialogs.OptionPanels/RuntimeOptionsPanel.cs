@@ -39,7 +39,7 @@ using Gtk;
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
-	public class RuntimeOptionsPanel : AbstractOptionPanel
+	internal class RuntimeOptionsPanel : AbstractOptionPanel
 	{
 		RuntimeOptionsPanelWidget widget;
 		

@@ -39,7 +39,7 @@ using Gtk;
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
-	public class CombineEntryConfigurationsPanel : AbstractOptionPanel
+	internal class CombineEntryConfigurationsPanel : AbstractOptionPanel
 	{
 		CombineEntryConfigurationsPanelWidget widget;
 		

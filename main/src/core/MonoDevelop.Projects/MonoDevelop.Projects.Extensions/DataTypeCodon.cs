@@ -36,7 +36,7 @@ using Mono.Addins;
 namespace MonoDevelop.Projects.Extensions
 {
 	[ExtensionNode (Description="A type name.")]
-	public class DataTypeCodon: ExtensionNode
+	internal class DataTypeCodon: ExtensionNode
 	{
 		[NodeAttribute ("class", true)]
 		string typeName;

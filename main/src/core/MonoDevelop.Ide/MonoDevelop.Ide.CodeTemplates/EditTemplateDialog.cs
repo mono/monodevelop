@@ -26,7 +26,7 @@ using MonoDevelop.Ide.CodeTemplates;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
-	public class EditTemplateDialog : Gtk.Dialog 
+	internal class EditTemplateDialog : Gtk.Dialog 
 	{
 		CodeTemplate codeTemplate;
 		

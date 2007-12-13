@@ -382,7 +382,7 @@ namespace MonoDevelop.Projects
 		}
 	}
 	
-	public class DefaultProjectServiceExtension: ProjectServiceExtension
+	internal class DefaultProjectServiceExtension: ProjectServiceExtension
 	{
 		Dictionary <CombineEntry,bool> needsBuildingCache;
 		
