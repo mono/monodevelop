@@ -508,14 +508,6 @@ namespace CSharpBinding.Parser
 			return false;
 		}
 		
-		void Debug (string what, string name, AbstractNode node)
-		{
-			Console.WriteLine ("{0}: {1} reference for {2} @ ({3}, {4})", file.Name, what, name,
-			                   node.StartLocation.Y, node.StartLocation.X);
-		}
-		
-		 
-		
 		public override object VisitFieldDeclaration (FieldDeclaration fieldDeclaration, object data)
 		{
 			//Debug ("FieldDeclaration", fieldDeclaration.ToString (), fieldDeclaration);

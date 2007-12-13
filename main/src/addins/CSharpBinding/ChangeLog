@@ -1,3 +1,8 @@
+2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/CSharpTextEditorExtension.cs, Parser/CodeGenerator.cs,
+	  Parser/ExpressionFinder.cs: Fix warnings.
+
 2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CSharpBinding.addin.xml: Bump add-in versions.

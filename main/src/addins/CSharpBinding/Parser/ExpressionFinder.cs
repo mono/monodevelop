@@ -598,12 +598,12 @@ namespace CSharpBinding.Parser
 			return '\0';
 		}
 		
-		void UnGet()
+/*		void UnGet()
 		{
 			++offset;
 		}
 		
-/*		void UnGetToken()
+		void UnGetToken()
 		{
 			do {
 				UnGet();

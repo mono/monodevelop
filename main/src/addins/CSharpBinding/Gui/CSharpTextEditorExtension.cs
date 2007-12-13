@@ -406,7 +406,6 @@ namespace CSharpBinding
 			UpdateSmartIndentEngine ();
 			reIndent = false;
 			int cursor = Editor.CursorPosition;
-			char nextChar = Editor.GetCharAt (cursor);
 			
 			//System.Console.WriteLine ("char inserted: '{0}'", charInserted);
 			//indentEngine.Debug ();
