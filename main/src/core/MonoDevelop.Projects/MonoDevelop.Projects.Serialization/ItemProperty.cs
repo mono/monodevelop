@@ -45,6 +45,7 @@ namespace MonoDevelop.Projects.Serialization
 		string[] nameList;
 		bool readOnly;
 		bool writeOnly;
+		bool unsorted;
 		
 		public ItemProperty ()
 		{
@@ -170,6 +171,15 @@ namespace MonoDevelop.Projects.Serialization
 		
 		internal bool HasSetter {
 			get { return member == null || (member is FieldInfo) || ((member is PropertyInfo) && ((PropertyInfo)member).CanWrite); }
+		}
+
+		internal bool Unsorted {
+			get {
+				return unsorted;
+			}
+			set {
+				unsorted = value;
+			}
 		}
 
 		internal DataNode Serialize (SerializationContext serCtx, object value)

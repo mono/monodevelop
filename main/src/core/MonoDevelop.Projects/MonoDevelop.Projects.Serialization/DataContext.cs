@@ -73,6 +73,7 @@ namespace MonoDevelop.Projects.Serialization
 				
 			ClassDataType ctype = (ClassDataType) GetConfigurationDataType (targetType);
 			ItemProperty prop = new ItemProperty (name, propertyType);
+			prop.Unsorted = true;
 			ctype.AddProperty (prop);
 		}
 		

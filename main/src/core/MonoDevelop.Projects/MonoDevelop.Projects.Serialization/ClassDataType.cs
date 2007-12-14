@@ -174,8 +174,20 @@ namespace MonoDevelop.Projects.Serialization
 			prop.SetContext (Context);
 			if (properties.ContainsKey (prop.Name))
 				throw new InvalidOperationException ("Duplicate property '" + prop.Name + "' in class '" + ValueType);
+			
 			properties.Add (prop.Name, prop);
-			sortedPoperties.Add (prop);
+			if (prop.Unsorted) {
+				int foundPos = sortedPoperties.Count;
+				for (int n=0; n < sortedPoperties.Count; n++) {
+					ItemProperty cp = (ItemProperty) sortedPoperties [n];
+					if (cp.Unsorted && prop.Name.CompareTo (cp.Name) < 0) {
+						foundPos = n;
+						break;
+					}
+				}
+				sortedPoperties.Insert (foundPos, prop);
+			} else
+				sortedPoperties.Add (prop);
 			
 			if (subtypes != null && subtypes.Count > 0) {
 				foreach (ClassDataType subtype in subtypes)

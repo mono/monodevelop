@@ -1,3 +1,11 @@
+2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Serialization/DataContext.cs,
+	  MonoDevelop.Projects.Serialization/ClassDataType.cs,
+	  MonoDevelop.Projects.Serialization/ItemProperty.cs: Use alphabetical
+	  order when adding properties registered through extensions. This avoids
+	  random property order changes when saving project files.
+
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/CombineConfiguration.cs: Change the order of the
