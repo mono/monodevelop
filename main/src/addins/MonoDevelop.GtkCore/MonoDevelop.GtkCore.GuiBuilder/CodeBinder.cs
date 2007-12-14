@@ -89,14 +89,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			if (targetObject == null)
 				return;
-			IdeApp.ProjectOperations.ParserDatabase.UpdateFile (project, fileName, null);
+			IParseInformation pi = IdeApp.ProjectOperations.ParserDatabase.UpdateFile (project, fileName, null);
 			classFile = fileName;
 			
-			IClass cls = GetClass ();
-			UpdateBindings (targetObject, cls);
+			if (!pi.MostRecentCompilationUnit.ErrorsDuringCompile) {
+				IClass cls = GetClass ();
+				UpdateBindings (targetObject, cls);
 			
-			if (cls != null)
-				targetObject.GeneratePublic = cls.IsPublic;
+				if (cls != null)
+					targetObject.GeneratePublic = cls.IsPublic;
+			}
 		}
 		
 		void UpdateBindings (Stetic.Component obj, IClass cls)

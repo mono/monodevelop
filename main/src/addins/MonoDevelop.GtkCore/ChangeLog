@@ -1,3 +1,8 @@
+2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs: Don't update bindings if the
+	  file has syntax errors. May fix bug #347590.
+
 2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.addin.xml: Bump add-in versions.
