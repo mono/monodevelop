@@ -135,7 +135,9 @@ namespace MonoDevelop.Prj2Make
 				sw.WriteLine ("# Visual Studio 2005");
 
 				//Write the projects
+				monitor.BeginTask (GettextCatalog.GetString ("Saving projects"), 1);
 				WriteProjects (c, c.BaseDirectory, sw, monitor);
+				monitor.EndTask ();
 
 				SlnData slnData = GetSlnData (c);
 				if (slnData == null) {
@@ -196,6 +198,7 @@ namespace MonoDevelop.Prj2Make
 
 		void WriteProjects (Combine combine, string baseDirectory, StreamWriter writer, IProgressMonitor monitor)
 		{
+			monitor.BeginStepTask (GettextCatalog.GetString ("Saving projects"), combine.Entries.Count, 1); 
 			foreach (CombineEntry ce in combine.Entries) {
 				Combine c = ce as Combine;
 
@@ -206,6 +209,7 @@ namespace MonoDevelop.Prj2Make
 					if (project == null) {
 						monitor.ReportWarning (GettextCatalog.GetString (
 							"Error saving project ({0}) : Only DotNetProjects can be part of a MSBuild solution. Ignoring.", ce.Name));
+						monitor.Step (1);
 						continue;
 					}
 
@@ -213,6 +217,7 @@ namespace MonoDevelop.Prj2Make
 						// FIXME: Should not happen, temp
 						monitor.ReportWarning (GettextCatalog.GetString ("Saving for project {0} not supported. Ignoring.",
 							ce.FileName));
+						monitor.Step (1);
 						continue;
 					}
 
@@ -266,7 +271,9 @@ namespace MonoDevelop.Prj2Make
 				writer.WriteLine ("EndProject");
 				if (c != null)
 					WriteProjects (c, baseDirectory, writer, monitor);
+				monitor.Step (1);
 			}
+			monitor.EndTask ();
 		}
 
 		void WriteProjectConfigurations (Combine c, List<string> list, int ind, string config)
@@ -393,6 +400,7 @@ namespace MonoDevelop.Prj2Make
 			List<Section> projectSections = null;
 			List<string> lines = null;
 
+			monitor.BeginTask (GettextCatalog.GetString ("Loading solution: {0}", fileName), 1);
 			//Parse the .sln file
 			using (StreamReader reader = new StreamReader(fileName)) {
 				combine = new Combine ();
@@ -430,8 +438,10 @@ namespace MonoDevelop.Prj2Make
 				}
 			}
 
+			monitor.BeginTask("Loading projects ..", projectSections.Count + 1);
 			Dictionary<string, CombineEntry> entries = new Dictionary<string, CombineEntry> ();
 			foreach (Section sec in projectSections) {
+				monitor.Step (1);
 				Match match = ProjectRegex.Match (lines [sec.Start]);
 				if (!match.Success) {
 					LoggingService.LogDebug (GettextCatalog.GetString (
@@ -533,6 +543,7 @@ namespace MonoDevelop.Prj2Make
 
 				data.UnknownProjects.AddRange (lines.GetRange (sec.Start, sec.Count));
 			}
+			monitor.EndTask ();
 
 			if (globals != null && globals.Contains ("NestedProjects")) {
 				LoadNestedProjects (globals ["NestedProjects"] as Section, lines, entries, monitor);
@@ -616,6 +627,7 @@ namespace MonoDevelop.Prj2Make
 				globalLines.InsertRange (globalLines.Count, lines.GetRange (sec.Start, sec.Count));
 
 			data.GlobalExtra = globalLines;
+			monitor.EndTask ();
 			return combine;
 		}
 

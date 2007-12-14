@@ -413,6 +413,8 @@ namespace MonoDevelop.Prj2Make
 			string lang = Utils.GetLanguage (fname);
 			string basePath = Path.GetDirectoryName (fname);
 
+			monitor.BeginTask (GettextCatalog.GetString ("Loading project: {0}", fname), 1);
+
 			//try to get type guid
 			string type_guid;
 			string type_guids = String.Empty;
@@ -518,6 +520,7 @@ namespace MonoDevelop.Prj2Make
 			extensionChain.OnFinishRead (data, project);
 			SetupHandlers (project);
 
+			monitor.EndTask ();
 			return project;
 		}
 

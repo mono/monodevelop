@@ -1,3 +1,8 @@
+2007-12-14  Ankit Jain  <jankit@novell.com>
+
+	* MSBuildFileFormat.cs: Use monitor's Begin/EndTask.
+	* SlnFileFormat.cs: Likewise.
+
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MdPrjHelper.cs, DefaultMSBuildProjectExtension.cs, MSBuildFileFormat.cs:
