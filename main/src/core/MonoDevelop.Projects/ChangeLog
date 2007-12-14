@@ -1,3 +1,8 @@
+2007-12-14  Ankit Jain  <jankit@novell.com>
+
+	Fix bug #348107
+	* DotNetProject.cs: Quote filenames when passing to al.
+
 2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Serialization/DataContext.cs,

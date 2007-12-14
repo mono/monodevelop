@@ -316,7 +316,7 @@ namespace MonoDevelop.Projects
 				if (resourcesByCulture.ContainsKey (culture))
 					cmd = resourcesByCulture [culture];
 
-				cmd = String.Format ("{0} /embed:{1},{2}", cmd, fname, resourceId);
+				cmd = String.Format ("{0} \"/embed:{1},{2}\"", cmd, fname, resourceId);
 				resourcesByCulture [culture] = cmd;
 				if (!cloned) {
 					// Clone only if required
@@ -437,7 +437,7 @@ namespace MonoDevelop.Projects
 
 				using (StringWriter sw = new StringWriter ()) {
 					//generate assembly
-					string args = String.Format ("/t:lib {0} /out:{1} /culture:{2}", pair.Value, outputFile, culture);
+					string args = String.Format ("/t:lib {0} \"/out:{1}\" /culture:{2}", pair.Value, outputFile, culture);
 
 					Console.WriteLine ("Generating satellite assembly for '{0}' culture.\n{1}$ {2} {3}", culture, satDir, al, args);
 					monitor.Log.WriteLine (GettextCatalog.GetString (
