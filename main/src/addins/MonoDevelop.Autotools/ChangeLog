@@ -1,5 +1,9 @@
 2007-12-14  Ankit Jain  <jankit@novell.com>
 
+	* MakefileData.cs: Re-init Build vars when the owner project gets set.
+
+2007-12-14  Ankit Jain  <jankit@novell.com>
+
 	* SolutionDeployer.cs: Remove dead code.
 
 2007-12-14  Ankit Jain  <jankit@novell.com>

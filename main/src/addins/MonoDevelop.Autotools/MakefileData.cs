@@ -112,6 +112,7 @@ namespace MonoDevelop.Autotools
 					};
 				}
 				ownerProject = value;
+				InitBuildVars ();
 			}
 		}
 
@@ -853,7 +854,7 @@ namespace MonoDevelop.Autotools
 
 					if (!File.Exists (absPath)) {
 						//Invalid file, maybe we couldn't parse it correctly!
-						Console.WriteLine ("Invalid file : '{0}'. Ignoring", fname);
+						LoggingService.LogWarning (GettextCatalog.GetString ("Invalid file : '{0}' found in '{1}' for project - '{2}'. Ignoring.", f, relativeMakefileName, OwnerProject.Name));
 						fileVar.Extra.Add (f);
 						continue;
 					}
