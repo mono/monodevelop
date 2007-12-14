@@ -119,6 +119,7 @@ namespace Stetic.SteticGenerated {
             bindings["frmBrowser"] = w20;
             w20.Name = "frmBrowser";
             w20.ShadowType = ((Gtk.ShadowType)(0));
+            w20.LabelXalign = 0F;
             w20.LabelYalign = 0F;
             w9.Add(w20);
             Gtk.Box.BoxChild w21 = ((Gtk.Box.BoxChild)(w9[w20]));
@@ -129,6 +130,7 @@ namespace Stetic.SteticGenerated {
             w22.Name = "tblReferenceName";
             w22.RowSpacing = ((uint)(4));
             w22.ColumnSpacing = ((uint)(4));
+            w22.BorderWidth = ((uint)(9));
             // Container child tblReferenceName.Gtk.Table+TableChild
             Gtk.Label w23 = new Gtk.Label();
             bindings["lblNamespace"] = w23;
@@ -232,6 +234,7 @@ namespace Stetic.SteticGenerated {
             w6.Activated += ((System.EventHandler)(System.Delegate.CreateDelegate(typeof(System.EventHandler), cobj, "Browser_StopButtonClicked")));
             w7.Activated += ((System.EventHandler)(System.Delegate.CreateDelegate(typeof(System.EventHandler), cobj, "Browser_HomeButtonClicked")));
             w17.KeyReleaseEvent += ((Gtk.KeyReleaseEventHandler)(System.Delegate.CreateDelegate(typeof(Gtk.KeyReleaseEventHandler), cobj, "Browser_URLKeyReleased")));
+            w13.Clicked += ((System.EventHandler)(System.Delegate.CreateDelegate(typeof(System.EventHandler), cobj, "Browser_GoButtonClicked")));
             System.Reflection.FieldInfo[] fields = cobj.GetType().GetFields(((System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic) | System.Reflection.BindingFlags.Instance));
             for (int n = 0; (n < fields.Length); n = (n + 1)) {
                 System.Reflection.FieldInfo field = fields[n];

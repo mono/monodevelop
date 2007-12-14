@@ -1,7 +1,8 @@
 using System;
 using System.Collections;
 using System.IO;
-using System.Net;using System.Runtime.Remoting.Messaging;
+using System.Net;using System.Text;
+using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using System.Web.Services.Description;
 using System.Web.Services.Discovery;
@@ -36,6 +37,8 @@ namespace MonoDevelop.WebReferences.Dialogs
 		protected Widget browserWidget = null;
 		protected IWebBrowser browser = null;
 		#endregion
+		
+		Label docLabel;
 		
 		#region Properties
 		/// <summary>Gets or Sets whether the current location of the browser is a valid web service or not.</summary>
@@ -162,9 +165,19 @@ namespace MonoDevelop.WebReferences.Dialogs
 				btnStop.Sensitive = false;
 				btnHome.Sensitive = false;
 				
-				Label l = new Label (GettextCatalog.GetString ("Cannot display Web Browser, because no Browser Addin is available."));
-				frmBrowser.Add (l);
-				l.Show ();
+				ScrolledWindow sw = new ScrolledWindow ();
+				sw.ShadowType = ShadowType.In;
+				docLabel = new Label ();
+				docLabel.Xpad = 6;
+				docLabel.Ypad = 6;
+				docLabel.Xalign = 0;
+				docLabel.Yalign = 0;
+				sw.AddWithViewport (docLabel);
+				sw.ShowAll ();
+				
+				frmBrowser.Add (sw);
+				tbxReferenceURL.Text = homeUrl;
+				UpdateLocation ();
 			}
 
 			frmBrowser.Show();
@@ -196,6 +209,8 @@ namespace MonoDevelop.WebReferences.Dialogs
 		{
 			if (browser != null)
 				browser.LoadUrl(tbxReferenceURL.Text);
+			else
+				UpdateLocation ();
 		}
 		
 		/// <summary>Execute the event when the Enter key has been pressed on the Url Entry</summary>
@@ -223,6 +238,12 @@ namespace MonoDevelop.WebReferences.Dialogs
 				ThreadPool.QueueUserWorkItem(new WaitCallback(QueryService), this.tbxReferenceURL.Text);
 			}
 		}
+		
+		void UpdateLocation ()
+		{
+			ThreadPool.QueueUserWorkItem(new WaitCallback(QueryService), this.tbxReferenceURL.Text);
+		}
+
 		
 		/// <summary>Execute when the browser starts loading a document</summary>
 		/// <param name="sender">An object that contains the sender data.</param>
@@ -303,50 +324,53 @@ namespace MonoDevelop.WebReferences.Dialogs
 			try
 			{
 				protocol.DiscoverAny (url);
+			}
+			catch (Exception)
+			{
+				protocol = null;
+			}
+			
+			Application.Invoke (delegate {
+				UpdateService (protocol, url);
+			});
+		}
+		
+		void UpdateService (DiscoveryClientProtocol protocol, string url)
+		{
+			StringBuilder text = new StringBuilder ();
+			
+			if (protocol == null) {
+				this.IsWebService = false;
+				this.selectedService = null;
+			}
+			else {
 				// Set the Default Namespace and Reference
 				this.tbxNamespace.Text = this.DefaultNamespace;
 				this.tbxReferenceName.Text = this.DefaultReferenceName;
 				this.IsWebService = true;
 				this.selectedService = protocol;
 				
-//				object doc = protocol.Documents [url];
-//				if (doc  is ServiceDescription)
-//					this.RenderBrowserData(new object[2] { Library.GenerateWsdlXml(protocol), "wsdl.html" });
-//				else if (doc is DiscoveryDocument)
-//					this.RenderBrowserData(new object[2] { Library.GenerateDiscoXml((DiscoveryDocument)doc), "disco.html" });
-				return;
+				if (docLabel != null) {
+					foreach (object dd in protocol.Documents.Values) {
+						if (dd is ServiceDescription) {
+							Library.GenerateWsdlXml (text, protocol);
+							break;
+						}
+						else if (dd is DiscoveryDocument) {
+							Library.GenerateDiscoXml(text, (DiscoveryDocument)dd);
+							break;
+						}
+					}
+				}
 			}
-			catch (Exception)
-			{
-				this.IsWebService = false;
-				this.selectedService = null;
-				return;
+			if (docLabel != null) {
+				if (text.Length >= 0)
+					docLabel.Markup = text.ToString ();
+				else
+					docLabel.Markup = GettextCatalog.GetString ("Web service not found.");
 			}
+			return;
 		}
-		
-//		private void RenderBrowserData (object param)
-//		{
-//			object[] parameters = param as object[];
-//			try
-//			{
-//				// Load the specified resource as an XslTransform class
-//				Stream stream = GetType().Assembly.GetManifestResourceStream ((string)parameters[1]);
-//				XmlTextReader reader = new XmlTextReader (stream);
-//				XslTransform xslt = new XslTransform ();
-//				xslt.Load (reader, null, null);
-//				
-//				// Transform Html
-//				StringWriter htmlWriter = new StringWriter ();
-//				xslt.Transform ((XmlDocument)parameters[0], null, htmlWriter, null);
-//				this.cstBrowser.RenderData(htmlWriter.ToString(), this.ServiceUrl, "text/html");
-//				htmlWriter.Close();
-//				htmlWriter.Dispose();
-//			}
-//			catch (Exception exception)
-//			{
-//				Console.WriteLine(exception.Message);
-//			}
-//		}
 	}
 	
 }

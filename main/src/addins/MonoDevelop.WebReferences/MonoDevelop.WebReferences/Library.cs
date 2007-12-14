@@ -1,5 +1,6 @@
 using System;
 using System.CodeDom;
+using System.Text;
 using System.IO;
 using System.Net;
 using System.Web.Services.Description;
@@ -7,6 +8,7 @@ using System.Web.Services.Discovery;
 using System.Xml;
 using System.Xml.Schema;
 using MonoDevelop.Projects;
+using MonoDevelop.Core;
 
 
 namespace MonoDevelop.WebReferences
@@ -54,37 +56,28 @@ namespace MonoDevelop.WebReferences
 			return importer;
 		}
 		
-		/// <summary>Generate a XmlDocument for the a DiscoverDocument.</summary>
+		/// <summary>Generate a text description for the a DiscoverDocument.</summary>
 		/// <param name="discovery">A DiscoveryDocument containing the details for the disco services.</param>
 		/// <returns>An XmlDocument containing the generated xml for the specified discovery document.</returns>
-		public static XmlDocument GenerateDiscoXml (DiscoveryDocument discovery)
+		public static void GenerateDiscoXml (StringBuilder text, DiscoveryDocument doc)
 		{
-			XmlDocument xdoc = new XmlDocument ();
-			XmlElement docelem = xdoc.CreateElement ("services");
-			xdoc.AppendChild (docelem);
-			foreach (DiscoveryReference dref in discovery.References)
+			text.Append ("<big><b>" + GettextCatalog.GetString ("Web Service References") + "</b></big>\n\n");
+			foreach (DiscoveryReference dref in doc.References)
 			{
-				if (dref is ContractReference)
-				{
-					XmlElement service = xdoc.CreateElement ("service");
-					docelem.AppendChild (service);
-					service.SetAttribute ("name", Path.GetFileNameWithoutExtension (dref.DefaultFilename));
-					service.SetAttribute ("url", dref.Url);
+				if (dref is ContractReference) {
+					text.AppendFormat ("<b>Service: {0}</b>\n<span size='small'>{1}</span>", System.IO.Path.GetFileNameWithoutExtension (dref.DefaultFilename), dref.Url);
 				}
-				if (dref is DiscoveryDocumentReference)
-				{
-					XmlElement service = xdoc.CreateElement ("disco");
-					docelem.AppendChild (service);
-					service.SetAttribute ("url", dref.Url);
+				else if (dref is DiscoveryDocumentReference) {
+					text.AppendFormat ("<b>Discovery document</b>\n<small>{0}</small>", dref.Url);
 				}
+				text.Append ("\n\n");
 			}
-			return xdoc;
 		}
 		
-		/// <summary>Generate an XmlDocument for the specified DiscoveryClientProtocol.</summary>
+		/// <summary>Generate a text description for the specified DiscoveryClientProtocol.</summary>
 		/// <param name="protocol">A DiscoveryClientProtocol containing the information for the service.</param>
 		/// <returns>An XmlDocument containing the generated xml for the specified discovery protocol.</returns>
-		public static XmlDocument GenerateWsdlXml (DiscoveryClientProtocol protocol)
+		public static void GenerateWsdlXml (StringBuilder text, DiscoveryClientProtocol protocol)
 		{
 			// Code Namespace & Compile Unit
 			CodeNamespace codeNamespace = new CodeNamespace();
@@ -95,72 +88,75 @@ namespace MonoDevelop.WebReferences
 			ServiceDescriptionImporter importer = ReadServiceDescriptionImporter(protocol);
 			importer.Import(codeNamespace, codeUnit);
 			
-			// Create Xml Document
-			XmlDocument xdoc = new XmlDocument ();
-			XmlElement docelem = xdoc.CreateElement ("services");
-			xdoc.AppendChild (docelem);
-			
 			foreach (CodeTypeDeclaration type in codeNamespace.Types)
 			{
-				XmlElement service = xdoc.CreateElement ("service");
-				service.SetAttribute ("name", type.Name);
+				if (type.BaseTypes.Count == 0 || type.BaseTypes[0].BaseType != "System.Web.Services.Protocols.SoapHttpClientProtocol")
+					continue;
+					
+				text.AppendFormat ("<big><b><u>{0}</u></b></big>\n\n", type.Name);
+				string coms = GetCommentElements (type);
+				if (coms != null)
+					text.Append (coms).Append ("\n\n");
+				
 				foreach (CodeTypeMember mem in type.Members)
 				{
 					CodeMemberMethod met = mem as CodeMemberMethod;
 					if (met != null && !(mem is CodeConstructor))
 					{
 						// Method
-						XmlElement xmet = xdoc.CreateElement ("method");
-						xmet.SetAttribute ("name", met.Name);
 						// Asynch Begin & End Results
 						string returnType = met.ReturnType.BaseType;
 						if (met.Name.StartsWith ("Begin") && returnType == "System.IAsyncResult") 
 							continue;	// BeginXXX method
+						if (met.Name.EndsWith ("Async"))
+							continue;
+						if (met.Name.StartsWith ("On") && met.Name.EndsWith ("Completed"))
+							continue;
 						if (met.Parameters.Count > 0)
 						{
 							CodeParameterDeclarationExpression par = met.Parameters [met.Parameters.Count-1];
 							if (met.Name.StartsWith ("End") && par.Type.BaseType == "System.IAsyncResult")
 								continue;	// EndXXX method
 						}
-						xmet.SetAttribute ("return", returnType);
+						text.AppendFormat ("<b>{0}</b> (", met.Name);
 						// Parameters
-						foreach (CodeParameterDeclarationExpression par in met.Parameters)
-						{
-							XmlElement xpar = xdoc.CreateElement ("parameter");
-							xmet.AppendChild (xpar);
-							xpar.SetAttribute ("name", par.Name);
-							xpar.SetAttribute ("type", par.Type.BaseType);
+						for (int n=0; n < met.Parameters.Count; n++) {
+							CodeParameterDeclarationExpression par = met.Parameters [n];
+							if (n > 0)
+								text.Append (", ");
+							text.AppendFormat ("{0}: <i>{1}</i>", par.Name, par.Type.BaseType);
 						}
+						text.Append (")");
+						if (returnType != "System.Void")
+							text.AppendFormat (": <i>{0}</i>", returnType);
+						
 						// Comments
-						AddCommentElements (xdoc, xmet, met);
-						service.AppendChild (xmet);
+						coms = GetCommentElements (met);
+						if (coms != null)
+							text.Append ("\n").Append (coms);
+						text.Append ("\n\n");
 					}
 				}
-				if (service.ChildNodes.Count > 0) 
-				{
-					AddCommentElements (xdoc, service, type);
-					docelem.AppendChild (service);
-				}
 			}
-			return xdoc;
 		}
 		
-		/// <summary>Add CodeTypeMember comment elements to the specified XmlDocument.</summary>
-		/// <param name="xdoc">An XmlDocument that will be used to add the comment to.</param>
-		/// <param name="xmet">An XmlElement that the comment elements will be appended to.</param>
-		/// <param name="member">A CodeTypeMember containg all the comments that will be added to the xmet element.</param>
-		public static void AddCommentElements (XmlDocument xdoc, XmlElement xmet, CodeTypeMember member)
+		public static string GetCommentElements (CodeTypeMember member)
 		{
+			StringBuilder coms = new StringBuilder ();
 			foreach (CodeCommentStatement comment in member.Comments)
 			{
-				XmlElement xcom = xdoc.CreateElement ("comment");
-				xmet.AppendChild (xcom);
 				string com = comment.Comment.Text;
 				com = com.Replace ("<remarks>","");
 				com = com.Replace ("</remarks>","");
 				com = com.Replace ("<remarks/>","");
-				xcom.SetAttribute ("text", com);
+				com = com.Trim (' ', '\n', '\t', '\r');
+				if (com.Length > 0)
+					coms.Append (com);
 			}
+			if (coms.Length > 0)
+				return coms.ToString ();
+			else
+				return null;
 		}
 		
 		/// <summary>Gets the path where all web references will be stored for the specified project.</summary>
