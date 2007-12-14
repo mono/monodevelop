@@ -24,6 +24,12 @@
 
 	* MonoDevelop.SourceEditor.mdp: Directory reorganization.
 
+2007-12-01  Lluis Sanchez Gual <lluis@novell.com> 
+ 
+ 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Removed
+ 	  unnecessary parse call.
+ 	* MonoDevelop.SourceEditor.addin.xml: Added help command to context menu. 
+
 2007-11-19  Zach Lute <zach.lute@gmail.com>
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs: LineCountChanged now

@@ -13,7 +13,6 @@ using Mono.Addins;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.Utils;
 using MonoDevelop.Core.Execution;
 
 using MonoDevelop.Ide.Gui;
@@ -64,7 +63,7 @@ namespace MonoDevelop.SourceEditor.Gui
 				return true;
 
 			// If gedit can open the file, this editor also can do it
-			foreach (DesktopApplication app in DesktopApplication.GetApplications (mimetype))
+			foreach (DesktopApplication app in IdeApp.Services.PlatformService.GetAllApplications (mimetype))
 				if (app.Command == "gedit")
 					return true;
 			
@@ -84,7 +83,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			sr.Close ();
 			
 			SourceEditorDisplayBindingWrapper w = new SourceEditorDisplayBindingWrapper ();
-			w.LoadString (mimeType, StringParserService.Parse (text));
+			w.LoadString (mimeType, text);
 			return w;
 		}	
 	}
