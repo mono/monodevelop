@@ -46,6 +46,7 @@ namespace MonoDevelop.WelcomePage
 	{
 		string datadir;
 		bool loadingProject;
+		EventHandler recentChangesHandler;
 		
 		public override string StockIconId {
 			get { return Gtk.Stock.Home; }
@@ -65,7 +66,8 @@ namespace MonoDevelop.WelcomePage
 			if (PlatformID.Unix != Environment.OSVersion.Platform)
 				datadir = datadir.Replace("\\","/");
 
-			IdeApp.Workbench.RecentOpen.RecentProjectChanged += RecentChangesHandler;
+			recentChangesHandler = (EventHandler) DispatchService.GuiDispatch (new EventHandler (RecentChangesHandler));
+			IdeApp.Workbench.RecentOpen.RecentProjectChanged += recentChangesHandler;
 		}
 		
 		public void HandleLinkAction (string uri)
@@ -144,7 +146,7 @@ namespace MonoDevelop.WelcomePage
 
 		public override void Dispose ()
 		{
-			IdeApp.Workbench.RecentOpen.RecentProjectChanged -= RecentChangesHandler;
+			IdeApp.Workbench.RecentOpen.RecentProjectChanged -= recentChangesHandler;
 		}
 		
 		public static string TimeSinceEdited (DateTime prjtime)
