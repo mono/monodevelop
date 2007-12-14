@@ -232,7 +232,6 @@ namespace MonoDevelop.SourceEditor.Gui
 			
 			// Set up the data stores for the comboboxes
 			classStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(IClass));
-			classStore.SetSortColumnId (1, Gtk.SortType.Ascending);
 			classCombo.Model = classStore;	
 			memberStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(IMember));
 			memberStore.SetSortColumnId (1, Gtk.SortType.Ascending);
@@ -547,7 +546,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			}
 		}
 		
-		void Add (IClass c, ArrayList classes, string prefix)
+		void Add (IClass c, string prefix)
 		{
 			MonoDevelop.Projects.Ambience.Ambience am = se.View.GetAmbience ();
 			Gdk.Pixbuf pix = IdeApp.Services.Resources.GetIcon (IdeApp.Services.Icons.GetIcon (c), IconSize.Menu);
@@ -555,7 +554,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			classStore.AppendValues (pix, name, c);
 
 			foreach (IClass inner in c.InnerClasses)
-				Add (inner, classes, name + ".");
+				Add (inner, name + ".");
 		}
 		
 		private bool BindClassCombo ()
@@ -588,8 +587,10 @@ namespace MonoDevelop.SourceEditor.Gui
 				
 				classBrowser.Visible = true;
 				ArrayList classes = new ArrayList ();
-				foreach (IClass c in cls)
-					Add (c, classes, "");
+				classes.AddRange (cls);
+				classes.Sort (new LanguageItemComparer ());
+				foreach (IClass c in classes)
+					Add (c, "");
 				
 				// find out where the current cursor position is and set the combos.
 				int line;

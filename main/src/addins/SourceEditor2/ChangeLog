@@ -1,3 +1,8 @@
+2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: TreeView
+	  sorting is too slow. Use Array.Sort instead. Fixes bug #344296.
+
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Moved
