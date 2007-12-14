@@ -1,5 +1,10 @@
 2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Don't process
+	  keys if the completion window is hidden. Fixes bug #348696.
+
+2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects.Gui.mdp: Updated project files. The order of extended
 	  properties won't change anymore.
 

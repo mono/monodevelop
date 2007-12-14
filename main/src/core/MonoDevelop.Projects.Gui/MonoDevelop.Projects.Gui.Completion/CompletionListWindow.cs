@@ -58,6 +58,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		public static bool ProcessKeyEvent (Gdk.Key key, Gdk.ModifierType modifier)
 		{
+			if (!wnd.Visible) return false;
 			return wnd.ProcessKeyEvent (key, modifier);
 		}
 		
