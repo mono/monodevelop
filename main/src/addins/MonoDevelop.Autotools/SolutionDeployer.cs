@@ -416,47 +416,6 @@ namespace MonoDevelop.Autotools
 				Syscall.chmod ( filename , FilePermissions.S_IXOTH | FilePermissions.S_IROTH | FilePermissions.S_IRWXU | FilePermissions.S_IRWXG );
 		}
 
-
-/*		void AppendConfigVariables ( Combine combine, string config, StringBuilder options )
-		{
-			string name = config.ToLower();
-
-			StringBuilder refb = new StringBuilder ();
-			StringBuilder libb = new StringBuilder ();
-			foreach ( CombineEntry ce in combine.GetAllBuildableEntries ( config ) )
-			{
-				Project p = ce as Project;
-				if ( p == null ) continue;
-
-				DotNetProjectConfiguration dnpc = p.Configurations [config] as DotNetProjectConfiguration;
-				if ( dnpc == null ) continue;
-
-				if ( dnpc.CompileTarget != CompileTarget.Library ) continue;
-				
-				string filename = Path.GetFileName ( dnpc.CompiledOutputName );
-				string projname = AutotoolsContext.EscapeStringForAutoconf (p.Name.ToUpper());
-				
-				// provide these for per-library pc files
-				options.AppendFormat ( "	{0}_{1}_LIB='{2}'\n", projname , config.ToUpper(), filename);
-				options.AppendFormat ( "	AC_SUBST({0}_{1}_LIB)\n", projname, config.ToUpper() );
-				
-				libb.Append ( " ${pkglibdir}/" + filename  );
-				refb.Append ( " -r:${pkglibdir}/" +  filename );
-			}
-
-			// must also add referenced dlls
-			foreach ( string dll in context.GetReferencedDlls () )
-			{
-				libb.Append ( " ${pkglibdir}/" + Path.GetFileName (dll) );
-				refb.Append ( " -r:${pkglibdir}/" + Path.GetFileName (dll) );
-			}
-			
-			options.AppendFormat ( "	{0}_CONFIG_LIBRARIES='{1}'\n", name.ToUpper(), libb.ToString ());
-			options.AppendFormat ( "	{0}_CONFIG_LIBS='{1}'\n", name.ToUpper(), refb.ToString ());
-			options.AppendFormat ( "	AC_SUBST({0}_CONFIG_LIBRARIES)\n", name.ToUpper() );
-			options.AppendFormat ( "	AC_SUBST({0}_CONFIG_LIBS)\n", name.ToUpper() );
-		}
-*/
 		void CreateMakefileInclude (AutotoolsContext context, IProgressMonitor monitor)
 		{
 			monitor.Log.WriteLine ( GettextCatalog.GetString ("Creating Makefile.include") );
@@ -504,56 +463,6 @@ namespace MonoDevelop.Autotools
 
 			context.AddGeneratedFile (fileName);
 		}
-
-/*
-		void CreatePkgConfigFile ( Combine combine, IProgressMonitor monitor, Makefile mfile, AutotoolsContext context )
-		{
-			if ( !pkgconfig ) return;
-
-			monitor.Log.WriteLine ( GettextCatalog.GetString ("Creating pkg-config file") );
-
-			TemplateEngine templateEngine = new TemplateEngine();			
-
-			templateEngine.Variables["NAME"] = solution_name;
-			templateEngine.Variables["DESCRIPTION"] = combine.Description;
-			templateEngine.Variables["VERSION"] = solution_version;
-			
-			StringBuilder pkgs = new StringBuilder ();
-			foreach ( string pkg in context.GetRequiredPackages () )
-				pkgs.AppendFormat ( "{0} ", pkg );
-			templateEngine.Variables ["REQUIRES_PKGS"] = pkgs.ToString ();
-
-			StringBuilder libs = new StringBuilder ();
-			StringBuilder libraries = new StringBuilder ();
-			foreach ( IConfiguration config in combine.Configurations )
-			{
-				string configName = context.EscapeAndUpperConfigName (config.Name);
-				libs.AppendFormat ( "@{0}_CONFIG_LIBS@ ", configName);
-				libraries.AppendFormat ( "@{0}_CONFIG_LIBRARIES@ ", configName);
-			}
-			templateEngine.Variables ["LIBS"] = libs.ToString ();
-			templateEngine.Variables ["LIBRARIES"] = libraries.ToString ();
-			
-			string fileName = solution_name.ToLower() + ".pc";
-			string path = String.Format ( "{0}/{1}.in", solution_dir, fileName );
-
-			StreamWriter writer = new StreamWriter( path );
-
-			Stream stream = context.GetTemplateStream ("package.pc.template");
-			StreamReader reader = new StreamReader(stream);
-
-			templateEngine.Process(reader, writer);
-
-			reader.Close();
-			writer.Close();
-			
-			context.AddAutoconfFile ( fileName );
-			mfile.AppendToVariable ( "EXTRA_DIST", fileName + ".in" );
-			mfile.SetVariable ( "pkgconfigdir", "$(libdir)/pkgconfig" );
-			mfile.AppendToVariable ( "pkgconfig_DATA", fileName );
-			mfile.AppendToVariable ( "DISTCLEANFILES", fileName );
-		}
-*/
 	}
 }
 

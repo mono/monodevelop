@@ -1,5 +1,9 @@
 2007-12-14  Ankit Jain  <jankit@novell.com>
 
+	* SolutionDeployer.cs: Remove dead code.
+
+2007-12-14  Ankit Jain  <jankit@novell.com>
+
 	Fix bug #347649
 	* AutotoolsContext.cs (AddRequiredPackages): Allow packages to be
 	specified per config.
