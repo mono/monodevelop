@@ -1,3 +1,19 @@
+2007-12-14  Ankit Jain  <jankit@novell.com>
+
+	Fix bug #347649
+	* AutotoolsContext.cs (AddRequiredPackages): Allow packages to be
+	specified per config.
+	(GetRequiredPackages): Per config.
+	(GetCommonRequiredPackages): Packages common to all configs.
+	* Set.cs (Intersect): New.
+	(Count): New.
+	(ToString): Override.
+	* SimpleProjectMakefileHandler.cs: Keep track of packages per config.
+	* SolutionDeployer.cs: Emit package requirements per config in
+	configure.ac and the configure script.
+	* templates/configure.ac.template: Update.
+	* templates/configure.template: Update to check per config packages.
+
 2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Autotools.mdp: Updated project files. The order of extended

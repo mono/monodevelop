@@ -289,8 +289,9 @@ namespace MonoDevelop.Autotools
 			{
 				config_options.Append ( "if test -z \"$CONFIG_REQUESTED\" ; then\n" );
 //				AppendConfigVariables ( combine, defaultConf, config_options );
-				config_options.AppendFormat ( "	AM_CONDITIONAL({0}, true)\nfi\n", "ENABLE_"
-						+ context.EscapeAndUpperConfigName (defaultConf));
+				config_options.AppendFormat ( "	AM_CONDITIONAL(ENABLE_{0}, true)\n", context.EscapeAndUpperConfigName (defaultConf));
+				config_options.AppendFormat ("\tenable_{0}=yes\n", context.EscapeAndUpperConfigName (defaultConf).ToLower ());
+				config_options.Append ("fi\n");
 			}
 
 			templateEngine.Variables ["CONFIG_OPTIONS"] = config_options.ToString();
@@ -322,14 +323,23 @@ namespace MonoDevelop.Autotools
 
 			// build list of pkgconfig checks we must make
 			StringWriter packageChecks = new StringWriter();
-			foreach (SystemPackage pkg in context.GetRequiredPackages ())
-			{
-				string pkgvar = AutotoolsContext.GetPkgConfigVariable (pkg.Name);
-				packageChecks.Write("PKG_CHECK_MODULES([");
-				packageChecks.Write(pkgvar);
-				packageChecks.Write("], [");
-				packageChecks.Write(pkg.Name);
-				packageChecks.WriteLine("])");
+			packageChecks.WriteLine ("dnl package checks, common for all configs");
+			Set<SystemPackage> commonPackages = context.GetCommonRequiredPackages ();
+			foreach (SystemPackage pkg in commonPackages)
+				packageChecks.WriteLine("PKG_CHECK_MODULES([{0}], [{1}])", AutotoolsContext.GetPkgConfigVariable (pkg.Name), pkg.Name);
+
+			packageChecks.WriteLine ("\ndnl package checks, per config");
+			foreach (IConfiguration config in combine.Configurations) {
+				Set<SystemPackage> pkgs = context.GetRequiredPackages (config.Name, true);
+				if (pkgs == null || pkgs.Count == 0)
+					continue;
+
+				packageChecks.WriteLine (@"if test ""x$enable_{0}"" = ""xyes""; then",
+				                         context.EscapeAndUpperConfigName (config.Name).ToLower());
+
+				foreach (SystemPackage pkg in pkgs)
+					packageChecks.WriteLine("\tPKG_CHECK_MODULES([{0}], [{1}])", AutotoolsContext.GetPkgConfigVariable (pkg.Name), pkg.Name);
+				packageChecks.WriteLine ("fi");
 			}
 			templateEngine.Variables["PACKAGE_CHECKS"] = packageChecks.ToString();
 			templateEngine.Variables["SOLUTION_NAME"] = solution_name;
@@ -361,18 +371,34 @@ namespace MonoDevelop.Autotools
 				sbConfig.AppendFormat (" {0}", config);
 			sbConfig.Append ("\"");
 
-			// Build list of required packages
-			StringBuilder sbPackages = new StringBuilder ();
-			sbPackages.Append ("\"");
-			foreach (SystemPackage pkg in ctx.GetRequiredPackages ())
-				sbPackages.AppendFormat (" {0};{1}", pkg.Name, pkg.Version);
-			sbPackages.Append ("\"");
+			// Build list of packages required by all configs
+			StringBuilder commonPackages = new StringBuilder ();
+			commonPackages.Append ("common_packages=\"");
+			foreach (SystemPackage pkg in context.GetCommonRequiredPackages ())
+				commonPackages.AppendFormat (" {0};{1}", pkg.Name, pkg.Version);
+			commonPackages.Append ("\"");
+
+			// Build list of packages required per config
+			StringBuilder requiredPackages = new StringBuilder ();
+			foreach (IConfiguration config in combine.Configurations) {
+				Set<SystemPackage> pkgs = context.GetRequiredPackages (config.Name, true);
+				if (pkgs == null || pkgs.Count == 0)
+					continue;
+
+				if (requiredPackages.Length > 0)
+					requiredPackages.Append ("\n");
+				requiredPackages.AppendFormat ("required_packages_{0}=\"", context.EscapeAndUpperConfigName (config.Name));
+				foreach (SystemPackage pkg in pkgs)
+					requiredPackages.AppendFormat (" {0};{1}", pkg.Name, pkg.Version);
+				requiredPackages.Append ("\"");
+			}
 
 			templateEngine.Variables ["VERSION"] = solution_version;
 			templateEngine.Variables ["PACKAGE"] = AutotoolsContext.EscapeStringForAutoconf (combine.Name).ToLower ();
 			templateEngine.Variables ["DEFAULT_CONFIG"] = ctx.EscapeAndUpperConfigName (defaultConf);
 			templateEngine.Variables ["CONFIGURATIONS"] = sbConfig.ToString ();
-			templateEngine.Variables ["REQUIRED_PACKAGES"] = sbPackages.ToString ();
+			templateEngine.Variables ["COMMON_PACKAGES"] = commonPackages.ToString ();
+			templateEngine.Variables ["REQUIRED_PACKAGES"] = requiredPackages.ToString ();
 
 
 			Stream stream = context.GetTemplateStream ("configure.template");

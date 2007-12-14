@@ -40,7 +40,8 @@ namespace MonoDevelop.Autotools
 		MakefileType makefileType;
 		
 		Set<string> autoconfConfigFiles = new Set<string> ();
-		Set<SystemPackage> referencedPackages = new Set<SystemPackage>();
+		Dictionary<string, Set<SystemPackage>> referencedPackagesByConfig = new Dictionary<string,Set<SystemPackage>> ();
+		Set<SystemPackage> commonPackages;
 		Set<string> globalFilesReferences = new Set<string>();
 		Set<string> compilers = new Set<string> ();
 		Set<string> builtProjects = new Set<string> ();
@@ -134,9 +135,12 @@ namespace MonoDevelop.Autotools
 			return dir;
 		}
 		
-		public void AddRequiredPackage (SystemPackage pkg)
+		public void AddRequiredPackages (string config, Set<SystemPackage> pkgs)
 		{
-			referencedPackages.Add (pkg);
+			if (!referencedPackagesByConfig.ContainsKey (config))
+				referencedPackagesByConfig [config] = new Set<SystemPackage> ();
+
+			referencedPackagesByConfig [config].Union (pkgs);
 		}
 
 		public void AddAutoconfFile ( string file_name )
@@ -193,9 +197,38 @@ namespace MonoDevelop.Autotools
 			return generatedFiles;
 		}
 
-		public IEnumerable<SystemPackage> GetRequiredPackages ()
+		public Set<SystemPackage> GetRequiredPackages (string config, bool removeCommonPackages)
 		{
-			return referencedPackages;
+			if (!referencedPackagesByConfig.ContainsKey (config))
+				return null;
+
+			if (removeCommonPackages)
+				referencedPackagesByConfig [config].Without (GetCommonRequiredPackages ());
+			return referencedPackagesByConfig [config];
+		}
+
+		// Returns set of packages required by all configs
+		public Set<SystemPackage> GetCommonRequiredPackages ()
+		{
+			if (commonPackages != null)
+				return commonPackages;
+
+			commonPackages = new Set<SystemPackage> ();
+			int i = 0;
+			foreach (Set<SystemPackage> pkgSet in referencedPackagesByConfig.Values) {
+				if (i == 0) {
+					// Use the first set as the starting one
+					foreach (SystemPackage p in pkgSet)
+						commonPackages.Add (p);
+					i ++;
+					continue;
+				}
+
+				commonPackages.Intersect (pkgSet);
+				if (commonPackages.Count == 0)
+					break;
+			}
+			return commonPackages;
 		}
 
 		public IEnumerable GetCommandChecks ()

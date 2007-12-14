@@ -4,7 +4,8 @@ PACKAGE=%%PACKAGE%%
 prefix=/usr/local
 config=%%DEFAULT_CONFIG%%
 configurations=%%CONFIGURATIONS%%
-required_packages=%%REQUIRED_PACKAGES%%
+%%COMMON_PACKAGES%%
+%%REQUIRED_PACKAGES%%
 
 usage ()
 {
@@ -31,21 +32,29 @@ validate_config ()
 	return 0
 }
 
+check_package ()
+{
+	name=`echo $1 | cut -d\; -f1`
+	version=`echo $1 | cut -d\; -f2`
+
+	echo -n "Checking for package '$name'.." | tee -a config.log
+	pkg-config --atleast-version=$version $name
+	if [ $? -ne 0 ]; then
+		echo " ERROR: Package named '$name' >= $version not found." | tee -a config.log
+		echo "Try adjusting your PKG_CONFIG_PATH environment variable." | tee -a config.log
+		return 1
+	fi
+	echo " found." | tee -a config.log
+}
+
 check_required_packages ()
 {
 	echo "Looking for required packages" | tee config.log
-	for pkg in $required_packages; do
-		name=`echo $pkg | cut -d\; -f1`
-		version=`echo $pkg | cut -d\; -f2`
-
-		echo -n "Checking for package '$name'.." | tee -a config.log
-		pkg-config --atleast-version=$version $name
-		if [ $? -ne 0 ]; then
-			echo " ERROR: Package named '$name' >= $version not found." | tee -a config.log
-			echo "Try adjusting your PKG_CONFIG_PATH environment variable." | tee -a config.log
-			return 1
-		fi
-		echo " found." | tee -a config.log
+	var=required_packages_$config
+	for pkg in $common_packages ${!var}; do
+		check_package $pkg
+		retval=$?
+		[ $retval -ne 0 ] && return $retval
 	done
 	return 0
 }

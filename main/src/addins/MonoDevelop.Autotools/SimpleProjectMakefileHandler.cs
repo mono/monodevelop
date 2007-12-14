@@ -1,7 +1,7 @@
 /*
 Copyright (C) 2006  Matthias Braun <matze@braunis.de>
 					Scott Ellington <scott.ellington@gmail.com>
- 
+
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
 License as published by the Free Software Foundation; either
@@ -65,6 +65,9 @@ namespace MonoDevelop.Autotools
 
 		// custom commands
 		StringBuilder customCommands;
+
+		// store all refs for easy access
+		Set<SystemPackage> pkgs;
 
 		public bool CanDeploy (CombineEntry entry, MakefileType type)
 		{
@@ -217,6 +220,7 @@ namespace MonoDevelop.Autotools
 						conf_vars.AppendFormat ("#include $(srcdir)/custom-hooks.make\n\n");
 				}
 
+				bool buildEnabled;
 				List<ConfigSection> configSections = new List<ConfigSection> ();
 				allDeployVars = new Dictionary<string, DeployFile> ();
 
@@ -224,7 +228,7 @@ namespace MonoDevelop.Autotools
 				foreach (CombineConfiguration combineConfig in ctx.TargetCombine.Configurations)
 				{
 					ctx.TargetCombine.ActiveConfiguration = combineConfig;
-					DotNetProjectConfiguration config = GetProjectConfig (combineConfig.Name, project) as DotNetProjectConfiguration;
+					DotNetProjectConfiguration config = GetProjectConfig (combineConfig.Name, project, out buildEnabled) as DotNetProjectConfiguration;
 					if (config == null)
 						continue;
 
@@ -276,7 +280,7 @@ namespace MonoDevelop.Autotools
 							continue;
 						Project refp = GetProjectFromName (reference.Reference, ctx.TargetCombine);
 
-						DotNetProjectConfiguration dnpc = GetProjectConfig (combineConfig.Name, refp) as DotNetProjectConfiguration;
+						DotNetProjectConfiguration dnpc = GetProjectConfig (combineConfig.Name, refp, out buildEnabled) as DotNetProjectConfiguration;
 						if ( dnpc == null )
 							throw new Exception ( GettextCatalog.GetString
 									("Could not add reference to project '{0}'", refp.Name) );
@@ -318,6 +322,9 @@ namespace MonoDevelop.Autotools
 						if (config.CustomCommands.Count > 0)
 							monitor.ReportWarning (GettextCatalog.GetString ("Custom commands are not supported for autotools based makefiles. Ignoring Ignoring.."));
 					}
+
+					if (buildEnabled && pkgs.Count > 0)
+						ctx.AddRequiredPackages (combineConfig.Name, pkgs);
 				}
 				ctx.TargetCombine.ActiveConfiguration = saveConfiguration;
 
@@ -443,9 +450,7 @@ namespace MonoDevelop.Autotools
 		{
 			StringWriter refWriter = new StringWriter();
 			StringWriter dllRefWriter = new StringWriter();
-
-			// store all refs for easy access
-			Set<SystemPackage> pkgs = new Set<SystemPackage>();
+			pkgs = new Set<SystemPackage> ();
 
 			// grab pkg-config references
 			foreach (ProjectReference reference in project.ProjectReferences) 
@@ -467,11 +472,11 @@ namespace MonoDevelop.Autotools
 						} else {
 							refWriter.Write ("\t-pkg:{0}", pkg.Name);
 						}
-						ctx.AddRequiredPackage (pkg);
+						pkgs.Add (pkg);
 					} 
 					else 
 					{
-						refWriter.WriteLine (" \\");
+						refWriter.WriteLine (" \\");			// store all refs for easy access
 						AssemblyName assembly = Runtime.SystemAssemblyService.ParseAssemblyName (reference.Reference);
 						refWriter.Write ("\t" + assembly.Name);
 						refWriter.Write ("");
@@ -676,15 +681,18 @@ namespace MonoDevelop.Autotools
 		}
 
 		// Get the Project config corresponding to its @parentConfig
-		IConfiguration GetProjectConfig (string parentConfig, CombineEntry entry)
+		internal static IConfiguration GetProjectConfig (string parentConfig, CombineEntry entry, out bool enabled)
 		{
+			enabled = false;
 			CombineConfiguration combineConfig = entry.ParentCombine.Configurations [parentConfig] as CombineConfiguration;
 			if (combineConfig == null)
 				return null;
 
 			foreach (CombineConfigurationEntry cce in combineConfig.Entries) {
-				if (cce.Entry == entry)
+				if (cce.Entry == entry) {
+					enabled = cce.Build;
 					return entry.Configurations [cce.ConfigurationName];
+				}
 			}
 
 			return null;

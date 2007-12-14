@@ -20,6 +20,7 @@ Boston, MA 02111-1307, USA.
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 
 namespace MonoDevelop.Autotools
 {
@@ -68,7 +69,18 @@ namespace MonoDevelop.Autotools
 				hashtable[o] = this;
 			}
 		}
-		
+
+		public void Intersect (Set<T> set)
+		{
+			List<T> toRemove = new List<T> ();
+			foreach (T o in hashtable.Keys)
+				if (!set.Contains (o))
+					toRemove.Add (o);
+
+			foreach (T o in toRemove)
+				hashtable.Remove (o);
+		}
+
 		public void Without(Set<T> set)
 		{
 			foreach(T o in set) {
@@ -80,6 +92,20 @@ namespace MonoDevelop.Autotools
 			get {
 				return hashtable.Count == 0;
 			}
+		}
+
+		public int Count {
+			get { return hashtable.Keys.Count; }
+		}
+
+		public override string ToString ()
+		{
+			StringBuilder sb = new StringBuilder ();
+			sb.Append ("[ ");
+			foreach (T o in hashtable.Keys)
+				sb.AppendFormat ("{0}, ", o.ToString ());
+			sb.Append (" ]");
+			return sb.ToString ();
 		}
 	}
 }
