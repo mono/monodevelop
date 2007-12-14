@@ -1,3 +1,8 @@
+2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Gettext.mdp: Updated project files. The order of extended
+	  properties won't change anymore.
+
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Gettext/TranslationProject.cs: Moved PlatformService to

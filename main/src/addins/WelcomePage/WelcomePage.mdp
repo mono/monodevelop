@@ -48,6 +48,13 @@
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gnome-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
+  <GtkDesignInfo isWidgetLibrary="True" gtkVersion="2.8.3">
+    <ExportedWidgets>
+      <Widget>MonoDevelop.WelcomePage.WelcomePageFallbackWidget</Widget>
+      <Widget>MonoDevelop.WelcomePage.LinkButton</Widget>
+      <Widget>MonoDevelop.WelcomePage.UrlButton</Widget>
+    </ExportedWidgets>
+  </GtkDesignInfo>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar Sync="True" Name="DATA_FILES" />
@@ -57,11 +64,4 @@
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
-  <GtkDesignInfo isWidgetLibrary="True" gtkVersion="2.8.3">
-    <ExportedWidgets>
-      <Widget>MonoDevelop.WelcomePage.WelcomePageFallbackWidget</Widget>
-      <Widget>MonoDevelop.WelcomePage.LinkButton</Widget>
-      <Widget>MonoDevelop.WelcomePage.UrlButton</Widget>
-    </ExportedWidgets>
-  </GtkDesignInfo>
 </Project>

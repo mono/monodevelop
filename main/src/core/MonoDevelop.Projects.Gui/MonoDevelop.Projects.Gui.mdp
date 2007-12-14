@@ -85,15 +85,6 @@
     <ProjectReference type="Gac" localcopy="True" refto="gnome-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </References>
-  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
-    <BuildFilesVar Sync="True" Name="FILES" />
-    <DeployFilesVar />
-    <ResourcesVar Sync="True" Name="RES" />
-    <OthersVar />
-    <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />
-    <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
-    <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
-  </MonoDevelop.Autotools.MakefileInfo>
   <GtkDesignInfo isWidgetLibrary="True" gettextClass="MonoDevelop.Core.GettextCatalog">
     <ExportedWidgets>
       <Widget>MonoDevelop.Projects.Gui.Deployment.DirectoryDeployEditorWidget</Widget>
@@ -106,6 +97,15 @@
       <Widget>MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget</Widget>
     </ExportedWidgets>
   </GtkDesignInfo>
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
+    <BuildFilesVar Sync="True" Name="FILES" />
+    <DeployFilesVar />
+    <ResourcesVar Sync="True" Name="RES" />
+    <OthersVar />
+    <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
+  </MonoDevelop.Autotools.MakefileInfo>
   <DeploymentInformation strategy="File">
     <excludeFiles />
   </DeploymentInformation>

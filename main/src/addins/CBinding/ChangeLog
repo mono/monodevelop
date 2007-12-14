@@ -1,3 +1,8 @@
+2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* CBinding.mdp: Updated project files. The order of extended properties
+	  won't change anymore.
+
 2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CBinding.addin.xml: Bump add-in versions.

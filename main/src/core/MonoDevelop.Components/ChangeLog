@@ -1,5 +1,10 @@
 2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Components.mdp: Updated project files. The order of extended
+	  properties won't change anymore.
+
+2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Components.Commands/CommandManager.cs: Before executing the
 	  command bound to a shortcut, check if the command is enabled.
 

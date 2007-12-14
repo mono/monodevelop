@@ -1,5 +1,10 @@
 2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.mdp: Updated project files. The order of extended
+	  properties won't change anymore.
+
+2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Commands/EditCommands.cs, MonoDevelop.Ide.addin.xml,
 	  MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: Implemented default handler
 	  for SelectAll. Disable Edit commands if the selected control is not
