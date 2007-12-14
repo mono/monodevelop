@@ -64,6 +64,8 @@
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Cecil, Version=0.6.8.8607, Culture=neutral" />
   </References>
+  <Deployment.LinuxDeployData generatePcFile="False" />
+  <GtkDesignInfo gettextClass="Mono.Addins.AddinManager.CurrentLocalizer" gtkVersion="2.8.3" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="JavaBinding.make" SyncReferences="True" RelativeConfigureInPath="../../">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />
@@ -73,6 +75,4 @@
     <AsmRefVar Sync="True" Name="REFERENCES" />
     <ProjectRefVar Sync="True" Name="REFERENCES" />
   </MonoDevelop.Autotools.MakefileInfo>
-  <Deployment.LinuxDeployData generatePcFile="False" />
-  <GtkDesignInfo gettextClass="Mono.Addins.AddinManager.CurrentLocalizer" gtkVersion="2.8.3" />
 </Project>

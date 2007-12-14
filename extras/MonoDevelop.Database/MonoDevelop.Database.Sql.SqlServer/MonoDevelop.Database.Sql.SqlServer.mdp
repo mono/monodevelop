@@ -42,7 +42,8 @@
     <ProjectReference type="Gac" localcopy="True" refto="NRefactory, Version=0.0.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Cecil, Version=0.6.8.8607, Culture=neutral" />
   </References>
-  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="..">
+  <Deployment.LinuxDeployData generatePcFile="False" />
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="..">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />
     <ResourcesVar Sync="True" Name="RES" />
@@ -51,5 +52,4 @@
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
-  <Deployment.LinuxDeployData generatePcFile="False" />
 </Project>
