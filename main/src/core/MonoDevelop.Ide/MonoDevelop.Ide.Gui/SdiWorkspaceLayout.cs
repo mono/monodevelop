@@ -463,7 +463,7 @@ namespace MonoDevelop.Ide.Gui
 				if (location.Length > 0)
 					location += ";";
 				if (s.IndexOf ('/') == -1)
-					location += "__" + s.ToLower () + "/Center";
+					location += "__" + s.ToLower () + "/CenterBefore";
 				else
 					location += s;
 			}
