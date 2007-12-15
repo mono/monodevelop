@@ -5,7 +5,7 @@
        copyright   = "MIT X11"
        url         = "http://blog.sublimeintervention.com/"
        description = "Mac Platform Support for MonoDevelop"
-       category    = "IDE extensions"
+       category    = "Platform Support"
        version     = "0.18.0">
 	
 	<Runtime>
