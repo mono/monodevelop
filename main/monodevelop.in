@@ -43,7 +43,7 @@ find_libgtkembedmoz ()
 }
 
 if test -e "@MOZILLA_HOME@/$MOZFILE"; then
-	MOZILLA_HOME=@MOZILLA_HOME@
+	MOZILLA_HOME="@MOZILLA_HOME@"
 else
 	MOZILLA_HOME=`find_libgtkembedmoz`
 	if test ! -e "$MOZILLA_HOME/$MOZFILE"; then

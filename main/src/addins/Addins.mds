@@ -20,7 +20,6 @@
       <Entry build="True" name="MonoDevelop.Gettext" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.RegexToolkit" configuration="Debug" />
       <Entry build="True" name="CBinding" configuration="Debug" />
-      <Entry build="True" name="GeckoWebBrowser" configuration="Debug" />
       <Entry build="True" name="GnomePlatform" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
@@ -43,7 +42,6 @@
       <Entry build="True" name="MonoDevelop.Gettext" configuration="Release" />
       <Entry build="True" name="MonoDevelop.RegexToolkit" configuration="Release" />
       <Entry build="True" name="CBinding" configuration="Release" />
-      <Entry build="True" name="GeckoWebBrowser" configuration="Release" />
       <Entry build="True" name="GnomePlatform" configuration="Release" />
     </Configuration>
   </Configurations>
@@ -71,7 +69,6 @@
     <Execute type="None" entry="MonoDevelop.RegexToolkit" />
     <Execute type="None" entry="CBinding" />
     <Execute type="None" entry="BooBinding" />
-    <Execute type="None" entry="GeckoWebBrowser" />
     <Execute type="None" entry="GnomePlatform" />
   </StartMode>
   <Entries>
@@ -94,7 +91,6 @@
     <Entry filename="MonoDevelop.Gettext/MonoDevelop.Gettext.mdp" />
     <Entry filename="MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit.mdp" />
     <Entry filename="CBinding/CBinding.mds" />
-    <Entry filename="GeckoWebBrowser/GeckoWebBrowser.mdp" />
     <Entry filename="GnomePlatform/GnomePlatform.mdp" />
   </Entries>
 </Combine>

@@ -1,3 +1,9 @@
+2007-12-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* configure.in:
+	* src/addins/Addins.mds:
+	* src/addins/Makefile.am: Move the GeckoBrowser addin to extras.
+
 2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* src/addins/Addins.mds: Added GnomePlatform to the build.
