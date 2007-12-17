@@ -94,14 +94,14 @@ namespace MonoDevelop.Prj2Make
 							ns = String.Empty;
 					}
 
-					if (String.Compare (tok, "class", false) == 0) {
+					if (tok == "class" || tok == "struct") {
 						classname = GetNextToken (rdr);
 						break;
 					}
 				}
 
 				if (classname == null) {
-					Console.WriteLine ("Warning: No class found in '{0}'.", pf.DependsOn);	
+					Console.WriteLine ("Warning: No class/struct found in '{0}'.", pf.DependsOn);	
 					return null;
 				}
 
