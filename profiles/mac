@@ -1,1 +1,0 @@
-main --enable-gtksourceview2 --disable-versioncontrol --disable-aspnetedit --disable-update-mimedb --disable-update-desktopdb --disable-geckobrowser --disable-gnomeplatform --enable-macplatform
