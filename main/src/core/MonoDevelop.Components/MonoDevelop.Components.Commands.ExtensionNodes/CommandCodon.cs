@@ -39,7 +39,7 @@ using System.ComponentModel;
 namespace MonoDevelop.Components.Commands.ExtensionNodes
 {
 	[ExtensionNode (Description="A user interface command. The 'id' of the command must match the full name of an existing enumeration. An arbitrary string can also be used as an id for the command by just using '@' as prefix for the string.")]
-	public class CommandCodon : TypeExtensionNode
+	internal class CommandCodon : TypeExtensionNode
 	{
 		[NodeAttribute ("_label", true, "Label", Localizable=true)]
 		string label;

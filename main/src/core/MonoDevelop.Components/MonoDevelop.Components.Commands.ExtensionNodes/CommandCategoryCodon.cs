@@ -35,7 +35,7 @@ using Mono.Addins;
 namespace MonoDevelop.Components.Commands.ExtensionNodes
 {
 	[ExtensionNode (Description="A command category")]
-	public class CommandCategoryCodon : ExtensionNode
+	internal class CommandCategoryCodon : ExtensionNode
 	{
 		[NodeAttribute ("_name", true, "Name", Localizable=true)]
 		string name;
