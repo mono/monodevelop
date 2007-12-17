@@ -1,3 +1,7 @@
+2007-12-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* configure: Updated versions to 0.18.
+
 2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AspNetEdit.addin.xml: Bump add-in versions.

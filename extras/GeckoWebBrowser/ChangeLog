@@ -1,3 +1,7 @@
+2007-12-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* configure: Updated versions to 0.18.
+
 2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* GeckoWebBrowser.mdp: Updated project files. The order of extended
