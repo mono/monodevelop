@@ -2,7 +2,7 @@
   <TypeSignature Language="C#" Value="public enum CommandSystemCommands" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Components</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Enum</BaseTypeName>
@@ -11,12 +11,8 @@
     <Member MemberName="ToolbarList">
       <MemberSignature Language="C#" Value="ToolbarList" />
       <MemberType>Field</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Components.Commands.CommandSystemCommands</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Components.Commands.CommandSystemCommands</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary></Docs>
     </Member>
   </Members>
   <Docs>

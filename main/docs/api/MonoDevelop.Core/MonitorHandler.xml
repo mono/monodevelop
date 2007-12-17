@@ -1,8 +1,8 @@
 <Type Name="MonitorHandler" FullName="MonoDevelop.Core.MonitorHandler">
-  <TypeSignature Language="C#" Value="public delegate void MonitorHandler(MonoDevelop.Core.IProgressMonitor monitor);" />
+  <TypeSignature Language="C#" Value="public delegate void MonitorHandler(IProgressMonitor monitor);" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Core</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Delegate</BaseTypeName>

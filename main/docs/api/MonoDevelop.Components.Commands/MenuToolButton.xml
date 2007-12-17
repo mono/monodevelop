@@ -2,7 +2,7 @@
   <TypeSignature Language="C#" Value="public class MenuToolButton : Gtk.ToolButton" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Components</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>Gtk.ToolButton</BaseTypeName>
@@ -12,16 +12,8 @@
     <Member MemberName=".ctor">
       <MemberSignature Language="C#" Value="public MenuToolButton (Gtk.Menu menu, string icon);" />
       <MemberType>Constructor</MemberType>
-      <Parameters>
-        <Parameter Name="menu" Type="Gtk.Menu" />
-        <Parameter Name="icon" Type="System.String" />
-      </Parameters>
-      <Docs>
-        <param name="menu">To be added.</param>
-        <param name="icon">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <Parameters><Parameter Name="menu" Type="Gtk.Menu" /><Parameter Name="icon" Type="System.String" /></Parameters>
+      <Docs><param name="menu">To be added.</param><param name="icon">To be added.</param><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
   </Members>
   <Docs>

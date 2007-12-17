@@ -2,7 +2,7 @@
   <TypeSignature Language="C#" Value="public class CustomCommand : MonoDevelop.Components.Commands.Command" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Components</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>MonoDevelop.Components.Commands.Command</BaseTypeName>
@@ -13,38 +13,19 @@
       <MemberSignature Language="C#" Value="public CustomCommand ();" />
       <MemberType>Constructor</MemberType>
       <Parameters />
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <Docs><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
     <Member MemberName=".ctor">
       <MemberSignature Language="C#" Value="public CustomCommand (object id, string text, Type widgetType);" />
       <MemberType>Constructor</MemberType>
-      <Parameters>
-        <Parameter Name="id" Type="System.Object" />
-        <Parameter Name="text" Type="System.String" />
-        <Parameter Name="widgetType" Type="System.Type" />
-      </Parameters>
-      <Docs>
-        <param name="id">To be added.</param>
-        <param name="text">To be added.</param>
-        <param name="widgetType">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <Parameters><Parameter Name="id" Type="System.Object" /><Parameter Name="text" Type="System.String" /><Parameter Name="widgetType" Type="System.Type" /></Parameters>
+      <Docs><param name="id">To be added.</param><param name="text">To be added.</param><param name="widgetType">To be added.</param><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
     <Member MemberName="WidgetType">
       <MemberSignature Language="C#" Value="public Type WidgetType { set; get; };" />
       <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>System.Type</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <ReturnValue><ReturnType>System.Type</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary><value>To be added.</value><remarks>To be added.</remarks></Docs>
     </Member>
   </Members>
   <Docs>

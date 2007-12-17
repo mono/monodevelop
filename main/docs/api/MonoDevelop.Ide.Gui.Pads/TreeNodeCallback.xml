@@ -1,8 +1,8 @@
 <Type Name="TreeNodeCallback" FullName="MonoDevelop.Ide.Gui.Pads.TreeNodeCallback">
-  <TypeSignature Language="C#" Value="public delegate void TreeNodeCallback(MonoDevelop.Ide.Gui.Pads.ITreeNavigator nav);" />
+  <TypeSignature Language="C#" Value="public delegate void TreeNodeCallback(ITreeNavigator nav);" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Ide</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Delegate</BaseTypeName>

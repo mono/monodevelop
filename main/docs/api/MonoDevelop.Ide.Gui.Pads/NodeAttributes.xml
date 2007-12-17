@@ -2,7 +2,7 @@
   <TypeSignature Language="C#" Value="public enum NodeAttributes" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Ide</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Enum</BaseTypeName>
@@ -16,32 +16,20 @@
     <Member MemberName="AllowRename">
       <MemberSignature Language="C#" Value="AllowRename" />
       <MemberType>Field</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Ide.Gui.Pads.NodeAttributes</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Ide.Gui.Pads.NodeAttributes</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary></Docs>
     </Member>
     <Member MemberName="Hidden">
       <MemberSignature Language="C#" Value="Hidden" />
       <MemberType>Field</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Ide.Gui.Pads.NodeAttributes</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Ide.Gui.Pads.NodeAttributes</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary></Docs>
     </Member>
     <Member MemberName="None">
       <MemberSignature Language="C#" Value="None" />
       <MemberType>Field</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Ide.Gui.Pads.NodeAttributes</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Ide.Gui.Pads.NodeAttributes</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary></Docs>
     </Member>
   </Members>
   <Docs>

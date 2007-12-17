@@ -1,8 +1,8 @@
 <Type Name="ExpandedCollectionAttribute" FullName="MonoDevelop.Projects.Serialization.ExpandedCollectionAttribute">
-  <TypeSignature Language="C#" Value="public class ExpandedCollectionAttribute : System.Attribute" />
+  <TypeSignature Language="C#" Value="public class ExpandedCollectionAttribute : Attribute" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Projects</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Attribute</BaseTypeName>
@@ -10,7 +10,7 @@
   <Interfaces />
   <Attributes>
     <Attribute>
-      <AttributeName>System.AttributeUsage(AllowMultiple=False, Inherited=True, ValidOn=System.AttributeTargets.Property|Field)</AttributeName>
+      <AttributeName>System.AttributeUsage(System.AttributeTargets.Property | System.AttributeTargets.Field)</AttributeName>
     </Attribute>
   </Attributes>
   <Members>
@@ -18,10 +18,7 @@
       <MemberSignature Language="C#" Value="public ExpandedCollectionAttribute ();" />
       <MemberType>Constructor</MemberType>
       <Parameters />
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <Docs><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
   </Members>
   <Docs>

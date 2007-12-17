@@ -2,7 +2,7 @@
   <TypeSignature Language="C#" Value="public class XmlCodeDomReader" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Projects</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Object</BaseTypeName>
@@ -13,42 +13,21 @@
       <MemberSignature Language="C#" Value="public XmlCodeDomReader ();" />
       <MemberType>Constructor</MemberType>
       <Parameters />
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <Docs><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
     <Member MemberName="ReadCompileUnit">
       <MemberSignature Language="C#" Value="public System.CodeDom.CodeCompileUnit ReadCompileUnit (System.Xml.XmlElement elem);" />
       <MemberType>Method</MemberType>
-      <ReturnValue>
-        <ReturnType>System.CodeDom.CodeCompileUnit</ReturnType>
-      </ReturnValue>
-      <Parameters>
-        <Parameter Name="elem" Type="System.Xml.XmlElement" />
-      </Parameters>
-      <Docs>
-        <param name="elem">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <ReturnValue><ReturnType>System.CodeDom.CodeCompileUnit</ReturnType></ReturnValue>
+      <Parameters><Parameter Name="elem" Type="System.Xml.XmlElement" /></Parameters>
+      <Docs><param name="elem">To be added.</param><summary>To be added.</summary><returns>To be added.</returns><remarks>To be added.</remarks></Docs>
     </Member>
     <Member MemberName="GetElementType">
       <MemberSignature Language="C#" Value="public Type GetElementType (string elemName);" />
       <MemberType>Method</MemberType>
-      <ReturnValue>
-        <ReturnType>System.Type</ReturnType>
-      </ReturnValue>
-      <Parameters>
-        <Parameter Name="elemName" Type="System.String" />
-      </Parameters>
-      <Docs>
-        <param name="elemName">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <ReturnValue><ReturnType>System.Type</ReturnType></ReturnValue>
+      <Parameters><Parameter Name="elemName" Type="System.String" /></Parameters>
+      <Docs><param name="elemName">To be added.</param><summary>To be added.</summary><returns>To be added.</returns><remarks>To be added.</remarks></Docs>
     </Member>
   </Members>
   <Docs>

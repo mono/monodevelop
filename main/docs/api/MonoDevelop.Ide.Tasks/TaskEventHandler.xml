@@ -1,8 +1,8 @@
 <Type Name="TaskEventHandler" FullName="MonoDevelop.Ide.Tasks.TaskEventHandler">
-  <TypeSignature Language="C#" Value="public delegate void TaskEventHandler(object sender, MonoDevelop.Ide.Tasks.TaskEventArgs e);" />
+  <TypeSignature Language="C#" Value="public delegate void TaskEventHandler(object sender, TaskEventArgs e);" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Ide</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Delegate</BaseTypeName>

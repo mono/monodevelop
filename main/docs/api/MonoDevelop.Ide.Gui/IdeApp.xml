@@ -2,7 +2,7 @@
   <TypeSignature Language="C#" Value="public abstract class IdeApp" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Ide</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Object</BaseTypeName>
@@ -12,91 +12,49 @@
     <Member MemberName="Initialize">
       <MemberSignature Language="C#" Value="public static void Initialize (MonoDevelop.Core.IProgressMonitor monitor);" />
       <MemberType>Method</MemberType>
-      <ReturnValue>
-        <ReturnType>System.Void</ReturnType>
-      </ReturnValue>
-      <Parameters>
-        <Parameter Name="monitor" Type="MonoDevelop.Core.IProgressMonitor" />
-      </Parameters>
-      <Docs>
-        <param name="monitor">Monitor where progress will be reported.</param>
-        <summary>Initializes the IDE.</summary>
-        <remarks>Initializes the IDE workbench and executes the startup commands. This method must be called only once.</remarks>
-      </Docs>
+      <ReturnValue><ReturnType>System.Void</ReturnType></ReturnValue>
+      <Parameters><Parameter Name="monitor" Type="MonoDevelop.Core.IProgressMonitor" /></Parameters>
+      <Docs><param name="monitor">Monitor where progress will be reported.</param><summary>Initializes the IDE.</summary><remarks>Initializes the IDE workbench and executes the startup commands. This method must be called only once.</remarks></Docs>
     </Member>
     <Member MemberName="Run">
       <MemberSignature Language="C#" Value="public static void Run ();" />
       <MemberType>Method</MemberType>
-      <ReturnValue>
-        <ReturnType>System.Void</ReturnType>
-      </ReturnValue>
+      <ReturnValue><ReturnType>System.Void</ReturnType></ReturnValue>
       <Parameters />
-      <Docs>
-        <summary>Executes the IDE.</summary>
-        <remarks />
-      </Docs>
+      <Docs><summary>Executes the IDE.</summary><remarks /></Docs>
     </Member>
     <Member MemberName="Exit">
       <MemberSignature Language="C#" Value="public static void Exit ();" />
       <MemberType>Method</MemberType>
-      <ReturnValue>
-        <ReturnType>System.Void</ReturnType>
-      </ReturnValue>
+      <ReturnValue><ReturnType>System.Void</ReturnType></ReturnValue>
       <Parameters />
-      <Docs>
-        <summary>Ends the exection of the IDE.</summary>
-        <remarks />
-      </Docs>
+      <Docs><summary>Ends the exection of the IDE.</summary><remarks /></Docs>
     </Member>
     <Member MemberName="Workbench">
       <MemberSignature Language="C#" Value="public static MonoDevelop.Ide.Gui.Workbench Workbench { get; };" />
       <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Ide.Gui.Workbench</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Ide.Gui.Workbench</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary><value>To be added.</value><remarks>To be added.</remarks></Docs>
     </Member>
     <Member MemberName="ProjectOperations">
       <MemberSignature Language="C#" Value="public static MonoDevelop.Ide.Gui.ProjectOperations ProjectOperations { get; };" />
       <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Ide.Gui.ProjectOperations</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Ide.Gui.ProjectOperations</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary><value>To be added.</value><remarks>To be added.</remarks></Docs>
     </Member>
     <Member MemberName="HelpOperations">
       <MemberSignature Language="C#" Value="public static MonoDevelop.Ide.Gui.HelpOperations HelpOperations { get; };" />
       <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Ide.Gui.HelpOperations</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Ide.Gui.HelpOperations</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary><value>To be added.</value><remarks>To be added.</remarks></Docs>
     </Member>
     <Member MemberName="CommandService">
-      <MemberSignature Language="C#" Value="public static MonoDevelop.Core.Gui.CommandService CommandService { get; };" />
+      <MemberSignature Language="C#" Value="public static MonoDevelop.Components.Commands.CommandManager CommandService { get; };" />
       <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Core.Gui.CommandService</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Components.Commands.CommandManager</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary><value>To be added.</value><remarks>To be added.</remarks></Docs>
     </Member>
-  </Members>
+  <Member MemberName="Exited"><MemberSignature Language="C#" Value="public static event EventHandler Exited;" /><MemberType>Event</MemberType><ReturnValue><ReturnType>System.EventHandler</ReturnType></ReturnValue><Docs><summary>To be added.</summary><remarks>To be added.</remarks></Docs></Member><Member MemberName="Exiting"><MemberSignature Language="C#" Value="public static event MonoDevelop.Ide.Gui.ExitEventHandler Exiting;" /><MemberType>Event</MemberType><ReturnValue><ReturnType>MonoDevelop.Ide.Gui.ExitEventHandler</ReturnType></ReturnValue><Docs><summary>To be added.</summary><remarks>To be added.</remarks></Docs></Member><Member MemberName="Initialized"><MemberSignature Language="C#" Value="public static event EventHandler Initialized;" /><MemberType>Event</MemberType><ReturnValue><ReturnType>System.EventHandler</ReturnType></ReturnValue><Docs><summary>To be added.</summary><remarks>To be added.</remarks></Docs></Member><Member MemberName="IsInitialized"><MemberSignature Language="C#" Value="public static bool IsInitialized { get; };" /><MemberType>Property</MemberType><ReturnValue><ReturnType>System.Boolean</ReturnType></ReturnValue><Docs><summary>To be added.</summary><value>To be added.</value><remarks>To be added.</remarks></Docs></Member><Member MemberName="Services"><MemberSignature Language="C#" Value="public static MonoDevelop.Ide.Gui.IdeServices Services { get; };" /><MemberType>Property</MemberType><ReturnValue><ReturnType>MonoDevelop.Ide.Gui.IdeServices</ReturnType></ReturnValue><Docs><summary>To be added.</summary><value>To be added.</value><remarks>To be added.</remarks></Docs></Member></Members>
   <Docs>
     <summary>The root IDE class.</summary>
     <remarks>

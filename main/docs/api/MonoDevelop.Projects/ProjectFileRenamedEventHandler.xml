@@ -1,8 +1,8 @@
 <Type Name="ProjectFileRenamedEventHandler" FullName="MonoDevelop.Projects.ProjectFileRenamedEventHandler">
-  <TypeSignature Language="C#" Value="public delegate void ProjectFileRenamedEventHandler(object sender, MonoDevelop.Projects.ProjectFileRenamedEventArgs e);" />
+  <TypeSignature Language="C#" Value="public delegate void ProjectFileRenamedEventHandler(object sender, ProjectFileRenamedEventArgs e);" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Projects</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Delegate</BaseTypeName>

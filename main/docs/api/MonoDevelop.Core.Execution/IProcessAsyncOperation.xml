@@ -2,7 +2,7 @@
   <TypeSignature Language="C#" Value="public interface IProcessAsyncOperation : MonoDevelop.Core.IAsyncOperation" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Core</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Interfaces>
     <Interface>
@@ -13,16 +13,10 @@
     <Member MemberName="ExitCode">
       <MemberSignature Language="C#" Value="public int ExitCode { get; };" />
       <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>System.Int32</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <ReturnValue><ReturnType>System.Int32</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary><value>To be added.</value><remarks>To be added.</remarks></Docs>
     </Member>
-  </Members>
+  <Member MemberName="ProcessId"><MemberSignature Language="C#" Value="public int ProcessId { get; };" /><MemberType>Property</MemberType><ReturnValue><ReturnType>System.Int32</ReturnType></ReturnValue><Docs><summary>To be added.</summary><value>To be added.</value><remarks>To be added.</remarks></Docs></Member></Members>
   <Docs>
     <summary>To be added.</summary>
     <remarks>To be added.</remarks>

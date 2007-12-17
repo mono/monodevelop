@@ -1,8 +1,8 @@
 <Type Name="CommandErrorHandler" FullName="MonoDevelop.Components.Commands.CommandErrorHandler">
-  <TypeSignature Language="C#" Value="public delegate void CommandErrorHandler(object sender, MonoDevelop.Components.Commands.CommandErrorArgs args);" />
+  <TypeSignature Language="C#" Value="public delegate void CommandErrorHandler(object sender, CommandErrorArgs args);" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Components</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Delegate</BaseTypeName>

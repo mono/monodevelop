@@ -2,7 +2,7 @@
   <TypeSignature Language="C#" Value="public class ProcessWrapper : System.Diagnostics.Process, MonoDevelop.Core.Execution.IProcessAsyncOperation" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Core</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Diagnostics.Process</BaseTypeName>
@@ -17,56 +17,33 @@
       <MemberSignature Language="C#" Value="public ProcessWrapper ();" />
       <MemberType>Constructor</MemberType>
       <Parameters />
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <Docs><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
     <Member MemberName="OutputStreamChanged">
       <MemberSignature Language="C#" Value="public event MonoDevelop.Core.Execution.ProcessEventHandler OutputStreamChanged;" />
       <MemberType>Event</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Core.Execution.ProcessEventHandler</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Core.Execution.ProcessEventHandler</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
     <Member MemberName="ErrorStreamChanged">
       <MemberSignature Language="C#" Value="public event MonoDevelop.Core.Execution.ProcessEventHandler ErrorStreamChanged;" />
       <MemberType>Event</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Core.Execution.ProcessEventHandler</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Core.Execution.ProcessEventHandler</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
     <Member MemberName="Start">
       <MemberSignature Language="C#" Value="public void Start ();" />
       <MemberType>Method</MemberType>
-      <ReturnValue>
-        <ReturnType>System.Void</ReturnType>
-      </ReturnValue>
+      <ReturnValue><ReturnType>System.Void</ReturnType></ReturnValue>
       <Parameters />
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <Docs><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
     <Member MemberName="WaitForOutput">
       <MemberSignature Language="C#" Value="public void WaitForOutput ();" />
       <MemberType>Method</MemberType>
-      <ReturnValue>
-        <ReturnType>System.Void</ReturnType>
-      </ReturnValue>
+      <ReturnValue><ReturnType>System.Void</ReturnType></ReturnValue>
       <Parameters />
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <Docs><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
   </Members>
   <Docs>

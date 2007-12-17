@@ -2,7 +2,7 @@
   <TypeSignature Language="C#" Value="public enum DragOperation" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Ide</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Enum</BaseTypeName>
@@ -11,32 +11,20 @@
     <Member MemberName="Move">
       <MemberSignature Language="C#" Value="Move" />
       <MemberType>Field</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Ide.Gui.Pads.DragOperation</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Ide.Gui.Pads.DragOperation</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary></Docs>
     </Member>
     <Member MemberName="Copy">
       <MemberSignature Language="C#" Value="Copy" />
       <MemberType>Field</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Ide.Gui.Pads.DragOperation</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Ide.Gui.Pads.DragOperation</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary></Docs>
     </Member>
     <Member MemberName="None">
       <MemberSignature Language="C#" Value="None" />
       <MemberType>Field</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Ide.Gui.Pads.DragOperation</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Ide.Gui.Pads.DragOperation</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary></Docs>
     </Member>
   </Members>
   <Docs>

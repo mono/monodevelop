@@ -1,8 +1,8 @@
 <Type Name="CombineEntryRenamedEventHandler" FullName="MonoDevelop.Projects.CombineEntryRenamedEventHandler">
-  <TypeSignature Language="C#" Value="public delegate void CombineEntryRenamedEventHandler(object sender, MonoDevelop.Projects.CombineEntryRenamedEventArgs e);" />
+  <TypeSignature Language="C#" Value="public delegate void CombineEntryRenamedEventHandler(object sender, CombineEntryRenamedEventArgs e);" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Projects</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Delegate</BaseTypeName>

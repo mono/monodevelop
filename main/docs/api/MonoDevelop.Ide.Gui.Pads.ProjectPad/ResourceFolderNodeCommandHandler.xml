@@ -2,7 +2,7 @@
   <TypeSignature Language="C#" Value="public class ResourceFolderNodeCommandHandler : MonoDevelop.Ide.Gui.Pads.NodeCommandHandler" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Ide</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>MonoDevelop.Ide.Gui.Pads.NodeCommandHandler</BaseTypeName>
@@ -13,22 +13,14 @@
       <MemberSignature Language="C#" Value="public ResourceFolderNodeCommandHandler ();" />
       <MemberType>Constructor</MemberType>
       <Parameters />
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <Docs><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
     <Member MemberName="AddResourceToProject">
       <MemberSignature Language="C#" Value="public void AddResourceToProject ();" />
       <MemberType>Method</MemberType>
-      <ReturnValue>
-        <ReturnType>System.Void</ReturnType>
-      </ReturnValue>
+      <ReturnValue><ReturnType>System.Void</ReturnType></ReturnValue>
       <Parameters />
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <Docs><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
   </Members>
   <Docs>

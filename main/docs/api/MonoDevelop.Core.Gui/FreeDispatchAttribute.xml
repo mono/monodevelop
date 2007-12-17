@@ -1,8 +1,8 @@
 <Type Name="FreeDispatchAttribute" FullName="MonoDevelop.Core.Gui.FreeDispatchAttribute">
-  <TypeSignature Language="C#" Value="public class FreeDispatchAttribute : System.Attribute" />
+  <TypeSignature Language="C#" Value="public class FreeDispatchAttribute : Attribute" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Core.Gui</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Attribute</BaseTypeName>
@@ -13,10 +13,7 @@
       <MemberSignature Language="C#" Value="public FreeDispatchAttribute ();" />
       <MemberType>Constructor</MemberType>
       <Parameters />
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <Docs><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
   </Members>
   <Docs>

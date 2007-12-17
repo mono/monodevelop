@@ -2,7 +2,7 @@
   <TypeSignature Language="C#" Value="public class ProjectPathItemProperty : MonoDevelop.Projects.Serialization.ItemPropertyAttribute" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Projects</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>MonoDevelop.Projects.Serialization.ItemPropertyAttribute</BaseTypeName>
@@ -13,22 +13,13 @@
       <MemberSignature Language="C#" Value="public ProjectPathItemProperty ();" />
       <MemberType>Constructor</MemberType>
       <Parameters />
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <Docs><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
     <Member MemberName=".ctor">
       <MemberSignature Language="C#" Value="public ProjectPathItemProperty (string name);" />
       <MemberType>Constructor</MemberType>
-      <Parameters>
-        <Parameter Name="name" Type="System.String" />
-      </Parameters>
-      <Docs>
-        <param name="name">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <Parameters><Parameter Name="name" Type="System.String" /></Parameters>
+      <Docs><param name="name">To be added.</param><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
   </Members>
   <Docs>

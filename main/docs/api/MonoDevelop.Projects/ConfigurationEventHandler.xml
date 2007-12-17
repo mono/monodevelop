@@ -1,8 +1,8 @@
 <Type Name="ConfigurationEventHandler" FullName="MonoDevelop.Projects.ConfigurationEventHandler">
-  <TypeSignature Language="C#" Value="public delegate void ConfigurationEventHandler(object sender, MonoDevelop.Projects.ConfigurationEventArgs e);" />
+  <TypeSignature Language="C#" Value="public delegate void ConfigurationEventHandler(object sender, ConfigurationEventArgs e);" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Projects</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Delegate</BaseTypeName>

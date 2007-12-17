@@ -1,8 +1,8 @@
 <Type Name="BreakpointEventHandler" FullName="MonoDevelop.Core.Execution.BreakpointEventHandler">
-  <TypeSignature Language="C#" Value="public delegate void BreakpointEventHandler(object sender, MonoDevelop.Core.Execution.BreakpointEventArgs args);" />
+  <TypeSignature Language="C#" Value="public delegate void BreakpointEventHandler(object sender, BreakpointEventArgs args);" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Core</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Delegate</BaseTypeName>

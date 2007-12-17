@@ -2,83 +2,29 @@
   <TypeSignature Language="C#" Value="public class CombineConfigurationEntry" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Projects</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Object</BaseTypeName>
   </Base>
   <Interfaces />
-  <Attributes>
-    <Attribute>
-      <AttributeName>MonoDevelop.Projects.Serialization.DataItem(Name="Entry")</AttributeName>
-    </Attribute>
-  </Attributes>
   <Members>
     <Member MemberName=".ctor">
       <MemberSignature Language="C#" Value="public CombineConfigurationEntry ();" />
       <MemberType>Constructor</MemberType>
       <Parameters />
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <Docs><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
-    <Member MemberName="entry">
-      <MemberSignature Language="C#" Value="public MonoDevelop.Projects.CombineEntry entry;" />
-      <MemberType>Field</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Projects.CombineEntry</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="ConfigurationName">
-      <MemberSignature Language="C#" Value="public string ConfigurationName;" />
-      <MemberType>Field</MemberType>
-      <Attributes>
-        <Attribute>
-          <AttributeName>MonoDevelop.Projects.Serialization.ItemProperty(DefaultValue=null, Name="configuration", Scope=0, SerializationDataType=null, ValueType=null, ReadOnly=False, WriteOnly=False)</AttributeName>
-        </Attribute>
-      </Attributes>
-      <ReturnValue>
-        <ReturnType>System.String</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="Build">
-      <MemberSignature Language="C#" Value="public bool Build;" />
-      <MemberType>Field</MemberType>
-      <Attributes>
-        <Attribute>
-          <AttributeName>MonoDevelop.Projects.Serialization.ItemProperty(DefaultValue=null, Name="build", Scope=0, SerializationDataType=null, ValueType=null, ReadOnly=False, WriteOnly=False)</AttributeName>
-        </Attribute>
-      </Attributes>
-      <ReturnValue>
-        <ReturnType>System.Boolean</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
+    
+    
+    
     <Member MemberName="Entry">
       <MemberSignature Language="C#" Value="public MonoDevelop.Projects.CombineEntry Entry { set; get; };" />
       <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Projects.CombineEntry</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Projects.CombineEntry</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary><value>To be added.</value><remarks>To be added.</remarks></Docs>
     </Member>
-  </Members>
+  <Member MemberName="Build"><MemberSignature Language="C#" Value="public bool Build { set; get; };" /><MemberType>Property</MemberType><Attributes><Attribute><AttributeName>MonoDevelop.Projects.Serialization.ItemProperty("build")</AttributeName></Attribute></Attributes><ReturnValue><ReturnType>System.Boolean</ReturnType></ReturnValue><Docs><summary>To be added.</summary><value>To be added.</value><remarks>To be added.</remarks></Docs></Member><Member MemberName="ConfigurationName"><MemberSignature Language="C#" Value="public string ConfigurationName { set; get; };" /><MemberType>Property</MemberType><Attributes><Attribute><AttributeName>MonoDevelop.Projects.Serialization.ItemProperty("configuration")</AttributeName></Attribute></Attributes><ReturnValue><ReturnType>System.String</ReturnType></ReturnValue><Docs><summary>To be added.</summary><value>To be added.</value><remarks>To be added.</remarks></Docs></Member></Members>
   <Docs>
     <summary>To be added.</summary>
     <remarks>To be added.</remarks>

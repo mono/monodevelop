@@ -2,7 +2,7 @@
   <TypeSignature Language="C#" Value="public class ParseInformation : MonoDevelop.Projects.Parser.IParseInformation" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Projects</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Object</BaseTypeName>
@@ -17,58 +17,31 @@
       <MemberSignature Language="C#" Value="public ParseInformation ();" />
       <MemberType>Constructor</MemberType>
       <Parameters />
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <Docs><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
     <Member MemberName="ValidCompilationUnit">
       <MemberSignature Language="C#" Value="public MonoDevelop.Projects.Parser.ICompilationUnitBase ValidCompilationUnit { set; get; };" />
       <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Projects.Parser.ICompilationUnitBase</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Projects.Parser.ICompilationUnitBase</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary><value>To be added.</value><remarks>To be added.</remarks></Docs>
     </Member>
     <Member MemberName="DirtyCompilationUnit">
       <MemberSignature Language="C#" Value="public MonoDevelop.Projects.Parser.ICompilationUnitBase DirtyCompilationUnit { set; get; };" />
       <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Projects.Parser.ICompilationUnitBase</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Projects.Parser.ICompilationUnitBase</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary><value>To be added.</value><remarks>To be added.</remarks></Docs>
     </Member>
     <Member MemberName="BestCompilationUnit">
       <MemberSignature Language="C#" Value="public MonoDevelop.Projects.Parser.ICompilationUnitBase BestCompilationUnit { get; };" />
       <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Projects.Parser.ICompilationUnitBase</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Projects.Parser.ICompilationUnitBase</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary><value>To be added.</value><remarks>To be added.</remarks></Docs>
     </Member>
     <Member MemberName="MostRecentCompilationUnit">
       <MemberSignature Language="C#" Value="public MonoDevelop.Projects.Parser.ICompilationUnitBase MostRecentCompilationUnit { get; };" />
       <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Projects.Parser.ICompilationUnitBase</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Projects.Parser.ICompilationUnitBase</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary><value>To be added.</value><remarks>To be added.</remarks></Docs>
     </Member>
   </Members>
   <Docs>

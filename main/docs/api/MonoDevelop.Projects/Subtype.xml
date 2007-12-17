@@ -2,92 +2,30 @@
   <TypeSignature Language="C#" Value="public enum Subtype" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Projects</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Enum</BaseTypeName>
   </Base>
   <Members>
-    <Member MemberName="WebForm">
-      <MemberSignature Language="C#" Value="WebForm" />
-      <MemberType>Field</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Projects.Subtype</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-      </Docs>
-    </Member>
-    <Member MemberName="WebService">
-      <MemberSignature Language="C#" Value="WebService" />
-      <MemberType>Field</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Projects.Subtype</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-      </Docs>
-    </Member>
-    <Member MemberName="WinForm">
-      <MemberSignature Language="C#" Value="WinForm" />
-      <MemberType>Field</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Projects.Subtype</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-      </Docs>
-    </Member>
-    <Member MemberName="WebReferences">
-      <MemberSignature Language="C#" Value="WebReferences" />
-      <MemberType>Field</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Projects.Subtype</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-      </Docs>
-    </Member>
+    
+    
+    
+    
     <Member MemberName="Code">
       <MemberSignature Language="C#" Value="Code" />
       <MemberType>Field</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Projects.Subtype</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Projects.Subtype</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary></Docs>
     </Member>
-    <Member MemberName="Dataset">
-      <MemberSignature Language="C#" Value="Dataset" />
-      <MemberType>Field</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Projects.Subtype</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-      </Docs>
-    </Member>
+    
     <Member MemberName="Directory">
       <MemberSignature Language="C#" Value="Directory" />
       <MemberType>Field</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Projects.Subtype</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Projects.Subtype</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary></Docs>
     </Member>
-    <Member MemberName="XmlForm">
-      <MemberSignature Language="C#" Value="XmlForm" />
-      <MemberType>Field</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Projects.Subtype</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-      </Docs>
-    </Member>
+    
   </Members>
   <Docs>
     <summary>To be added.</summary>

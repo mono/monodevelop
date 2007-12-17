@@ -2,7 +2,7 @@
   <TypeSignature Language="C#" Value="public delegate void StatefulMessageHandler(object state);" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Core.Gui</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Delegate</BaseTypeName>

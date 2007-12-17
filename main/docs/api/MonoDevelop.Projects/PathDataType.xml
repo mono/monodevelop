@@ -2,7 +2,7 @@
   <TypeSignature Language="C#" Value="public class PathDataType : MonoDevelop.Projects.Serialization.PrimitiveDataType" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Projects</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>MonoDevelop.Projects.Serialization.PrimitiveDataType</BaseTypeName>
@@ -12,14 +12,8 @@
     <Member MemberName=".ctor">
       <MemberSignature Language="C#" Value="public PathDataType (Type type);" />
       <MemberType>Constructor</MemberType>
-      <Parameters>
-        <Parameter Name="type" Type="System.Type" />
-      </Parameters>
-      <Docs>
-        <param name="type">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <Parameters><Parameter Name="type" Type="System.Type" /></Parameters>
+      <Docs><param name="type">To be added.</param><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
   </Members>
   <Docs>

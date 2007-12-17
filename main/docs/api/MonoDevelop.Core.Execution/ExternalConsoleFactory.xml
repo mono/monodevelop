@@ -2,7 +2,7 @@
   <TypeSignature Language="C#" Value="public sealed class ExternalConsoleFactory : MonoDevelop.Core.Execution.IConsoleFactory" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Core</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Object</BaseTypeName>
@@ -17,37 +17,20 @@
       <MemberSignature Language="C#" Value="public ExternalConsoleFactory ();" />
       <MemberType>Constructor</MemberType>
       <Parameters />
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <Docs><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
     <Member MemberName="Instance">
       <MemberSignature Language="C#" Value="public static MonoDevelop.Core.Execution.ExternalConsoleFactory Instance;" />
       <MemberType>Field</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Core.Execution.ExternalConsoleFactory</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Core.Execution.ExternalConsoleFactory</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
     <Member MemberName="CreateConsole">
       <MemberSignature Language="C#" Value="public MonoDevelop.Core.Execution.IConsole CreateConsole (bool closeOnDispose);" />
       <MemberType>Method</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Core.Execution.IConsole</ReturnType>
-      </ReturnValue>
-      <Parameters>
-        <Parameter Name="closeOnDispose" Type="System.Boolean" />
-      </Parameters>
-      <Docs>
-        <param name="closeOnDispose">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Core.Execution.IConsole</ReturnType></ReturnValue>
+      <Parameters><Parameter Name="closeOnDispose" Type="System.Boolean" /></Parameters>
+      <Docs><param name="closeOnDispose">To be added.</param><summary>To be added.</summary><returns>To be added.</returns><remarks>To be added.</remarks></Docs>
     </Member>
   </Members>
   <Docs>

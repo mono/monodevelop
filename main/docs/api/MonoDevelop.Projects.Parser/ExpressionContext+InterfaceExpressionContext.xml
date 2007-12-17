@@ -1,8 +1,8 @@
 <Type Name="ExpressionContext+InterfaceExpressionContext" FullName="MonoDevelop.Projects.Parser.ExpressionContext+InterfaceExpressionContext">
-  <TypeSignature Language="C#" Value="public class InterfaceExpressionContext : MonoDevelop.Projects.Parser.ExpressionContext" />
+  <TypeSignature Language="C#" Value="public class ExpressionContext.InterfaceExpressionContext : MonoDevelop.Projects.Parser.ExpressionContext" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Projects</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>MonoDevelop.Projects.Parser.ExpressionContext</BaseTypeName>
@@ -13,10 +13,7 @@
       <MemberSignature Language="C#" Value="public InterfaceExpressionContext ();" />
       <MemberType>Constructor</MemberType>
       <Parameters />
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <Docs><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
   </Members>
   <Docs>

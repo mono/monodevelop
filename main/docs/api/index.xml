@@ -1,183 +1,183 @@
 <Overview>
   <Assemblies>
-    <Assembly Name="MonoDevelop.Core" Version="0.9.0.0">
+    <Assembly Name="MonoDevelop.Core" Version="0.18.0.0">
       <Attributes>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyTrademark(Trademark="")</AttributeName>
+          <AttributeName>System.Runtime.CompilerServices.RuntimeCompatibility(WrapNonExceptionThrows=true)</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyCopyright(Copyright="Mike Krueger 2000-2003")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyTrademark("")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyProduct(Product="MonoDevelop.Core")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyCopyright("Mike Krueger 2000-2003")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyCompany(Company="")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyProduct("MonoDevelop.Core")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyConfiguration(Configuration="")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyCompany("")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyDescription(Description="The MonoDevelop Core containing the AddInTree and service Subsystem")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyConfiguration("")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyTitle(Title="MonoDevelop.Core")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyDescription("The MonoDevelop Core containing the AddInTree and service Subsystem")</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Reflection.AssemblyTitle("MonoDevelop.Core")</AttributeName>
         </Attribute>
       </Attributes>
     </Assembly>
-    <Assembly Name="MonoDevelop.Components" Version="0.9.0.0">
+    <Assembly Name="MonoDevelop.Components" Version="0.18.0.0">
       <Attributes>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyTrademark(Trademark="")</AttributeName>
+          <AttributeName>System.Runtime.CompilerServices.RuntimeCompatibility(WrapNonExceptionThrows=true)</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyCopyright(Copyright="Mike Krueger 2000-2003")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyTrademark("")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyProduct(Product="MonoDevelop.Components")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyCopyright("Mike Krueger 2000-2003")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyCompany(Company="")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyProduct("MonoDevelop.Components")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyConfiguration(Configuration="")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyCompany("")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyDescription(Description="")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyConfiguration("")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyTitle(Title="MonoDevelop.Components")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyDescription("")</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Reflection.AssemblyTitle("MonoDevelop.Components")</AttributeName>
         </Attribute>
       </Attributes>
     </Assembly>
-    <Assembly Name="MonoDevelop.Core.Gui" Version="0.9.0.0">
+    <Assembly Name="MonoDevelop.Core.Gui" Version="0.18.0.0">
       <Attributes>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyTrademark(Trademark="")</AttributeName>
+          <AttributeName>System.Runtime.CompilerServices.RuntimeCompatibility(WrapNonExceptionThrows=true)</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyCopyright(Copyright="Mike Krueger 2000-2003")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyTrademark("")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyProduct(Product="MonoDevelop.Core.Gui")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyCopyright("Mike Krueger 2000-2003")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyCompany(Company="")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyProduct("MonoDevelop.Core.Gui")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyConfiguration(Configuration="")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyCompany("")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyDescription(Description="")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyConfiguration("")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyTitle(Title="MonoDevelop.Core.Gui")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyDescription("")</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Reflection.AssemblyTitle("MonoDevelop.Core.Gui")</AttributeName>
         </Attribute>
       </Attributes>
     </Assembly>
-    <Assembly Name="MonoDevelop.Documentation" Version="0.9.0.0">
+    <Assembly Name="MonoDevelop.Documentation" Version="0.18.0.0">
       <Attributes>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyTrademark(Trademark="")</AttributeName>
+          <AttributeName>System.Runtime.CompilerServices.RuntimeCompatibility(WrapNonExceptionThrows=true)</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyProduct(Product="MonoDevelop.Documentation")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyTrademark("")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyCompany(Company="")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyProduct("MonoDevelop.Documentation")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyConfiguration(Configuration="")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyCompany("")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyDescription(Description="")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyConfiguration("")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyTitle(Title="MonoDevelop.Documentation")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyDescription("")</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Reflection.AssemblyTitle("MonoDevelop.Documentation")</AttributeName>
         </Attribute>
       </Attributes>
     </Assembly>
-    <Assembly Name="MonoDevelop.Ide" Version="0.9.0.0">
+    <Assembly Name="MonoDevelop.Ide" Version="0.18.0.0">
       <Attributes>
         <Attribute>
-          <AttributeName>Mono.Author</AttributeName>
+          <AttributeName>System.Runtime.CompilerServices.RuntimeCompatibility(WrapNonExceptionThrows=true)</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>Mono.UsageComplement</AttributeName>
+          <AttributeName>Mono.Author("MonoDevelop Team")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>Mono.About</AttributeName>
+          <AttributeName>Mono.UsageComplement("")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyTrademark(Trademark="")</AttributeName>
+          <AttributeName>Mono.About("http://monodevelop.com")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyCopyright(Copyright="MonoDevelop Team 2004-2005, Mike Krueger 2000-2003")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyTrademark("")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyProduct(Product="MonoDevelop.IdeApplication")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyCopyright("MonoDevelop Team 2004-2005, Mike Krueger 2000-2003")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyCompany(Company="")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyProduct("MonoDevelop.IdeApplication")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyConfiguration(Configuration="")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyCompany("")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyDescription(Description="The MonoDevelop IDE")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyConfiguration("")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyTitle(Title="MonoDevelop.IdeApplication")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyDescription("The MonoDevelop IDE")</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Reflection.AssemblyTitle("MonoDevelop.IdeApplication")</AttributeName>
         </Attribute>
       </Attributes>
     </Assembly>
-    <Assembly Name="MonoDevelop.Projects" Version="0.9.0.0">
+    <Assembly Name="MonoDevelop.Projects" Version="0.18.0.0">
       <Attributes>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyTrademark(Trademark="")</AttributeName>
+          <AttributeName>System.Runtime.CompilerServices.RuntimeCompatibility(WrapNonExceptionThrows=true)</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyCopyright(Copyright="Mike Krueger 2000-2003")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyTrademark("")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyProduct(Product="MonoDevelop.Projects")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyCopyright("Mike Krueger 2000-2003")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyCompany(Company="")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyProduct("MonoDevelop.Projects")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyConfiguration(Configuration="")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyCompany("")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyDescription(Description="")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyConfiguration("")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyTitle(Title="MonoDevelop.Projects")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyDescription("")</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Reflection.AssemblyTitle("MonoDevelop.Projects")</AttributeName>
         </Attribute>
       </Attributes>
     </Assembly>
-    <Assembly Name="MonoDevelop.Projects.Gui" Version="0.9.0.0">
+    <Assembly Name="MonoDevelop.Projects.Gui" Version="0.0.0.0">
       <Attributes>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyTrademark(Trademark="")</AttributeName>
-        </Attribute>
-        <Attribute>
-          <AttributeName>System.Reflection.AssemblyCopyright(Copyright="Mike Krueger 2000-2003")</AttributeName>
-        </Attribute>
-        <Attribute>
-          <AttributeName>System.Reflection.AssemblyProduct(Product="MonoDevelop.Projects.Gui")</AttributeName>
-        </Attribute>
-        <Attribute>
-          <AttributeName>System.Reflection.AssemblyCompany(Company="")</AttributeName>
-        </Attribute>
-        <Attribute>
-          <AttributeName>System.Reflection.AssemblyConfiguration(Configuration="")</AttributeName>
-        </Attribute>
-        <Attribute>
-          <AttributeName>System.Reflection.AssemblyDescription(Description="The MonoDevelop Core containing the AddInTree and service Subsystem")</AttributeName>
-        </Attribute>
-        <Attribute>
-          <AttributeName>System.Reflection.AssemblyTitle(Title="MonoDevelop.Projects.Gui")</AttributeName>
+          <AttributeName>System.Runtime.CompilerServices.RuntimeCompatibility(WrapNonExceptionThrows=true)</AttributeName>
         </Attribute>
       </Attributes>
     </Assembly>
@@ -187,17 +187,12 @@
   <Types>
     <Namespace Name="MonoDevelop.Core">
       <Type Name="IService" />
-      <Type Name="IStringTagProvider" />
-      <Type Name="ILoggingService" />
       <Type Name="IAsyncOperation" />
       <Type Name="IProgressMonitor" />
       <Type Name="AbstractService" />
-      <Type Name="FileUtilityService" />
       <Type Name="PropertyService" />
-      <Type Name="ServiceLoadArgs" />
       <Type Name="ServiceManager" />
       <Type Name="StringParserService" />
-      <Type Name="PropertyDictionary" />
       <Type Name="LogAppendedArgs" />
       <Type Name="Runtime" />
       <Type Name="SystemAssemblyService" />
@@ -208,23 +203,31 @@
       <Type Name="MonitorHandler" />
       <Type Name="ServiceLoadType" />
       <Type Name="UserException" />
+      <Type Name="ClrVersion" />
+      <Type Name="FileEventArgs" />
+      <Type Name="FileCopyEventArgs" />
+      <Type Name="FileService" />
+      <Type Name="ICustomXmlSerializer" />
+      <Type Name="LoggingService" />
+      <Type Name="Properties" />
+      <Type Name="PropertyChangedEventArgs" />
+      <Type Name="ApplicationService" />
+      <Type Name="IApplicationInfo" />
+      <Type Name="IApplication" />
+      <Type Name="StringParserService+IStringTagProvider" />
+      <Type Name="SystemPackage" />
+      <Type Name="XmlReadHelper" />
+      <Type Name="XmlReadHelper+ReadCallbackData" />
+      <Type Name="XmlReadHelper+ReaderCallback" />
+      <Type Name="XmlReadHelper+ReaderCallbackWithData" />
+      <Type Name="FileServiceErrorHandler" />
     </Namespace>
     <Namespace Name="MonoDevelop.Core.Properties">
-      <Type Name="IProperties" />
-      <Type Name="IXmlConvertable" />
-      <Type Name="DefaultProperties" />
-      <Type Name="CharacterEncodings" />
-      <Type Name="PropertyEventArgs" />
       <Type Name="PropertyFileLoadException" />
       <Type Name="UnknownPropertyNodeException" />
       <Type Name="PropertyEventHandler" />
     </Namespace>
     <Namespace Name="MonoDevelop.Core.AddIns">
-      <Type Name="IAddInTree" />
-      <Type Name="IAddInTreeNode" />
-      <Type Name="IApplication" />
-      <Type Name="ICodon" />
-      <Type Name="ICommand" />
       <Type Name="ICondition" />
       <Type Name="IOwnerState" />
       <Type Name="AddIn" />
@@ -273,11 +276,6 @@
       <Type Name="ConditionFailedAction" />
     </Namespace>
     <Namespace Name="MonoDevelop.Core.Utils.DirectoryArchive">
-      <Type Name="ISingleFileDecompressor" />
-      <Type Name="BZip2Decompressor" />
-      <Type Name="Decompressor" />
-      <Type Name="GZipDecompressor" />
-      <Type Name="TarDecompressor" />
       <Type Name="ZipDecompressor" />
       <Type Name="CompressionType" />
     </Namespace>
@@ -304,13 +302,9 @@
       <Type Name="MonoPlatformExecutionHandler" />
       <Type Name="BreakpointEventHandler" />
       <Type Name="ProcessEventHandler" />
+      <Type Name="AddinDependencyAttribute" />
     </Namespace>
     <Namespace Name="MonoDevelop.Core.AddIns.Setup">
-      <Type Name="AddinDependency" />
-      <Type Name="PackageDependency" />
-      <Type Name="AddinInfo" />
-      <Type Name="AddinInfoCollection" />
-      <Type Name="AddinPackage" />
       <Type Name="Package" />
       <Type Name="AddinRepositoryEntry" />
       <Type Name="RepositoryEntry" />
@@ -333,8 +327,6 @@
       <Type Name="AssemblyDependency" />
     </Namespace>
     <Namespace Name="MonoDevelop.Core.Utils.ReportingStream">
-      <Type Name="ReportingStream" />
-      <Type Name="ReadNotification" />
     </Namespace>
     <Namespace Name="MonoDevelop.Core.ProgressMonitoring">
       <Type Name="AggregatedProgressMonitor" />
@@ -348,6 +340,8 @@
       <Type Name="SynchronizedProgressMonitor" />
       <Type Name="LogTextEventHandler" />
       <Type Name="MonitorAction" />
+      <Type Name="ProgressStatusMonitor" />
+      <Type Name="FilteredProgressMonitor" />
     </Namespace>
     <Namespace Name="MonoDevelop.Components.Commands">
       <Type Name="ICommandRouter" />
@@ -373,7 +367,6 @@
       <Type Name="CommandToolbar" />
       <Type Name="CommandToolButton" />
       <Type Name="CustomCommand" />
-      <Type Name="CustomMenuItem" />
       <Type Name="LinkCommandEntry" />
       <Type Name="MenuToolButton" />
       <Type Name="CommandRouterContainer" />
@@ -382,12 +375,17 @@
       <Type Name="ActionType" />
       <Type Name="CommandSystemCommands" />
       <Type Name="CommandInfoSet" />
+      <Type Name="KeyBindingChangedEventArgs" />
+      <Type Name="CustomItem" />
+      <Type Name="ICommandTargetVisitor" />
+      <Type Name="KeyBindingManager" />
+      <Type Name="KeyBindingService" />
+      <Type Name="KeyBindingChangedEventHandler" />
     </Namespace>
     <Namespace Name="MonoDevelop.Components.DockToolbars">
       <Type Name="IDockToolbar" />
       <Type Name="DockToolbarFrame" />
       <Type Name="DockToolbar" />
-      <Type Name="ArrowWindow+Direction" />
       <Type Name="DockedPosition" />
       <Type Name="DockToolbarPosition" />
       <Type Name="DockToolbarFrameLayout" />
@@ -398,11 +396,6 @@
       <Type Name="Placement" />
     </Namespace>
     <Namespace Name="MonoDevelop.Components.HtmlControl">
-      <Type Name="IHTMLDocument2" />
-      <Type Name="IHTMLElement" />
-      <Type Name="IWebBrowser" />
-      <Type Name="IWebBrowserEvents" />
-      <Type Name="BrowserNavigateEventArgs" />
       <Type Name="MozillaControl" />
       <Type Name="BrowserNavigateEventHandler" />
       <Type Name="ControlType" />
@@ -410,7 +403,6 @@
     <Namespace Name="MonoDevelop.Components">
       <Type Name="DataGridColumn" />
       <Type Name="DataGrid" />
-      <Type Name="DragNotebook" />
       <Type Name="FileSelector" />
       <Type Name="BaseFileEntry" />
       <Type Name="FileEntry" />
@@ -420,7 +412,10 @@
       <Type Name="IconView" />
       <Type Name="Navbar" />
       <Type Name="TabLabel" />
-      <Type Name="TabsReorderedHandler" />
+      <Type Name="CellRendererComboBox" />
+      <Type Name="ComboSelectionChangedArgs" />
+      <Type Name="TreeViewCellContainer" />
+      <Type Name="ComboSelectionChangedHandler" />
     </Namespace>
     <Namespace Name="MonoDevelop.Components.Chart">
       <Type Name="Axis" />
@@ -436,14 +431,12 @@
     <Namespace Name="MonoDevelop.Core.Gui">
       <Type Name="IMessageService" />
       <Type Name="IDelegateFactory" />
-      <Type Name="IFileService" />
       <Type Name="IMementoCapable" />
       <Type Name="ITextBufferStrategy" />
       <Type Name="MessageService" />
       <Type Name="GuiSyncAbstractService" />
       <Type Name="GuiSyncObject" />
       <Type Name="SyncObject" />
-      <Type Name="ResourceNotFoundException" />
       <Type Name="ResourceService" />
       <Type Name="Stock" />
       <Type Name="AsyncDispatchAttribute" />
@@ -452,50 +445,41 @@
       <Type Name="GuiSyncContext" />
       <Type Name="SyncContext" />
       <Type Name="SyncContextAttribute" />
-      <Type Name="FileEventArgs" />
       <Type Name="RecentOpen" />
-      <Type Name="CommandService" />
       <Type Name="Services" />
       <Type Name="PixbufList" />
       <Type Name="MessageHandler" />
       <Type Name="StatefulMessageHandler" />
-      <Type Name="FileEventHandler" />
       <Type Name="QuestionResponse" />
+      <Type Name="DefaultPlatformService" />
+      <Type Name="DesktopApplication" />
+      <Type Name="PlatformService" />
+      <Type Name="WebBrowserService" />
+      <Type Name="RecentItem" />
     </Namespace>
     <Namespace Name="MonoDevelop.Core.Gui.Dialogs">
       <Type Name="IDialogPanel" />
       <Type Name="IDialogPanelDescriptor" />
-      <Type Name="IWizardPanel" />
-      <Type Name="DefaultDialogPanelDescriptor" />
       <Type Name="AbstractOptionPanel" />
       <Type Name="ErrorDialog" />
       <Type Name="TreeViewOptions" />
-      <Type Name="AbstractWizardPanel" />
-      <Type Name="CurrentPanelPanel" />
-      <Type Name="WizardDialog" />
       <Type Name="DialogMessage" />
     </Namespace>
     <Namespace Name="MonoDevelop.Core.Gui.Components">
       <Type Name="FileBrowser" />
-      <Type Name="LocalizedObject" />
-      <Type Name="LocalizedPropertyAttribute" />
-      <Type Name="LocalizedPropertyDescriptor" />
       <Type Name="MenuButtonEntry" />
       <Type Name="DirectoryChangedEventHandler" />
     </Namespace>
     <Namespace Name="MonoDevelop.Core.Gui.Utils">
-      <Type Name="FileIconLoader" />
     </Namespace>
     <Namespace Name="Freedesktop.RecentFiles">
-      <Type Name="RecentFiles" />
-      <Type Name="RecentItem" />
     </Namespace>
     <Namespace Name="MonoDevelop.Core.Gui.ProgressMonitoring">
       <Type Name="BaseProgressMonitor" />
       <Type Name="MessageDialogProgressMonitor" />
+      <Type Name="MultiTaskDialogProgressMonitor" />
     </Namespace>
     <Namespace Name="MonoDevelop.Documentation">
-      <Type Name="MonodocService" />
     </Namespace>
     <Namespace Name="MonoDevelop.Ide.Gui">
       <Type Name="IStatusBarService" />
@@ -512,15 +496,10 @@
       <Type Name="AbstractViewContent" />
       <Type Name="WorkbenchContext" />
       <Type Name="WorkbenchWindowEventArgs" />
-      <Type Name="PadContentCollection+IPadContentEnumerator" />
       <Type Name="ViewCommandHandlers" />
-      <Type Name="ViewContentCollection" />
-      <Type Name="ViewContentCollection+IViewContentEnumerator" />
-      <Type Name="WorkbenchWindowCollection+IWorkspaceWindowEnumerator" />
       <Type Name="HelpViewer" />
       <Type Name="WorkbenchMemento" />
       <Type Name="Document" />
-      <Type Name="DocumentCollection" />
       <Type Name="HelpOperations" />
       <Type Name="IdeApp" />
       <Type Name="Pad" />
@@ -534,11 +513,28 @@
       <Type Name="MonoDevelopOptions" />
       <Type Name="WorkbenchWindowEventHandler" />
       <Type Name="DisplayBindingService" />
+      <Type Name="AddEntryEventArgs" />
+      <Type Name="DefaultNavigationPoint" />
+      <Type Name="DragNotebook" />
+      <Type Name="ExitEventArgs" />
+      <Type Name="FileViewer" />
+      <Type Name="IdeServices" />
+      <Type Name="AddinError" />
+      <Type Name="INavigationPoint" />
+      <Type Name="ActiveViewContentEventArgs" />
+      <Type Name="NavigationHistory" />
+      <Type Name="NavigationHistoryBack" />
+      <Type Name="NavigationHistoryForward" />
+      <Type Name="NavigationService" />
+      <Type Name="TextEditor" />
+      <Type Name="ViewContentEventArgs" />
+      <Type Name="AddEntryEventHandler" />
+      <Type Name="TabsReorderedHandler" />
+      <Type Name="ExitEventHandler" />
+      <Type Name="ActiveViewContentEventHandler" />
+      <Type Name="ViewContentEventHandler" />
     </Namespace>
     <Namespace Name="MonoDevelop.Ide.Gui.Undo">
-      <Type Name="IUndoableOperation" />
-      <Type Name="UndoQueue" />
-      <Type Name="UndoStack" />
     </Namespace>
     <Namespace Name="MonoDevelop.Ide.Gui.Content">
       <Type Name="IBookmarkBuffer" />
@@ -550,6 +546,20 @@
       <Type Name="IPositionable" />
       <Type Name="IPrintable" />
       <Type Name="IEditableTextBuffer" />
+      <Type Name="CompletionTextEditorExtension" />
+      <Type Name="TextChangedEventArgs" />
+      <Type Name="IEncodedTextContent" />
+      <Type Name="IExtensibleTextEditor" />
+      <Type Name="IndentStyle" />
+      <Type Name="IViewHistory" />
+      <Type Name="TextEditorExtension" />
+      <Type Name="ITextEditorExtension" />
+      <Type Name="LineViewerStyle" />
+      <Type Name="BracketHighlightingStyle" />
+      <Type Name="DocumentSelectionMode" />
+      <Type Name="EditorFontType" />
+      <Type Name="TextEditorProperties" />
+      <Type Name="TextChangedEventHandler" />
     </Namespace>
     <Namespace Name="MonoDevelop.Ide.Gui.Pads">
       <Type Name="ITreeBuilder" />
@@ -569,6 +579,10 @@
       <Type Name="TreeNodeCallback" />
       <Type Name="DragOperation" />
       <Type Name="NodeAttributes" />
+      <Type Name="ILocationListPad" />
+      <Type Name="TaskListPad" />
+      <Type Name="TreeViewItem" />
+      <Type Name="TreeViewPad+TreeOptions" />
     </Namespace>
     <Namespace Name="MonoDevelop.Ide.Gui.Search">
       <Type Name="IDocumentInformation" />
@@ -587,13 +601,9 @@
     <Namespace Name="MonoDevelop.Ide.Codons">
       <Type Name="IDisplayBinding" />
       <Type Name="ISecondaryDisplayBinding" />
+      <Type Name="PadCodon" />
     </Namespace>
     <Namespace Name="MonoDevelop.Ide.Gui.BrowserDisplayBinding">
-      <Type Name="IHTMLDocument" />
-      <Type Name="IHTMLStyleSheet" />
-      <Type Name="IHTMLStyle" />
-      <Type Name="IHTMLDocument2" />
-      <Type Name="IHTMLElement" />
       <Type Name="IHTMLElementCollection" />
       <Type Name="BrowserDisplayBinding" />
       <Type Name="BrowserPane" />
@@ -605,28 +615,48 @@
       <Type Name="TaskEventArgs" />
       <Type Name="TaskEventHandler" />
       <Type Name="TaskType" />
+      <Type Name="ITaskListView" />
+      <Type Name="TaskPriority" />
+      <Type Name="UserTask" />
     </Namespace>
     <Namespace Name="MonoDevelop.Ide.Gui.Dialogs">
-      <Type Name="IncludeFilesDialog" />
       <Type Name="SplashScreenForm" />
-      <Type Name="EditTemplateDialog" />
+      <Type Name="CombineEntryFeatureSelector" />
+      <Type Name="DeleteFileDialog" />
+      <Type Name="EncapsulateFieldDialog" />
+      <Type Name="ExportProjectDialog" />
+      <Type Name="FeatureSelectorDialog" />
+      <Type Name="NewProjectDialog" />
+      <Type Name="OpenFileInSolutionDialog" />
+      <Type Name="RenameItemDialog" />
+      <Type Name="FileSelectorDialog" />
     </Namespace>
     <Namespace Name="MonoDevelop.Ide.CodeTemplates">
       <Type Name="CodeTemplate" />
       <Type Name="CodeTemplateGroup" />
-      <Type Name="CodeTemplateLoader" />
       <Type Name="TemplateCompletionDataProvider" />
+      <Type Name="CodeTemplateService" />
     </Namespace>
     <Namespace Name="MonoDevelop.Ide.Templates">
-      <Type Name="TextTemplate+Entry" />
       <Type Name="FileDescriptionTemplate" />
       <Type Name="FileTemplate" />
+      <Type Name="ClrVersionFileTemplateCondition" />
+      <Type Name="CodeDomFileDescriptionTemplate" />
+      <Type Name="CodeTranslationFileDescriptionTemplate" />
+      <Type Name="FileTemplateCondition" />
+      <Type Name="FileTemplateReference" />
+      <Type Name="ICombineEntryFeature" />
+      <Type Name="ParentProjectFileTemplateCondition" />
+      <Type Name="PartialTypeFileTemplateCondition" />
+      <Type Name="ResourceFileDescriptionTemplate" />
+      <Type Name="SingleFileDescriptionTemplate" />
+      <Type Name="TextFileDescriptionTemplate" />
     </Namespace>
     <Namespace Name="MonoDevelop.Ide.Gui.OptionPanels">
-      <Type Name="ExternalToolPane+ExternalToolPanelWidget" />
-      <Type Name="BuildPanel+BuildPanelWidget" />
       <Type Name="CodeGenerationPanel" />
-      <Type Name="AddInsOptionsPanel+AddInsPanelWidget" />
+      <Type Name="ExternalToolPanelWidget" />
+      <Type Name="KeyBindingsPanel" />
+      <Type Name="TasksPanelWidget" />
     </Namespace>
     <Namespace Name="MonoDevelop.Ide.Gui.Pads.ClassPad">
       <Type Name="ClassData" />
@@ -668,6 +698,10 @@
       <Type Name="SystemFile" />
       <Type Name="SystemFileNodeBuilder" />
       <Type Name="SystemFileNodeCommandHandler" />
+      <Type Name="LinkedFilesFolder" />
+      <Type Name="LinkedFilesFolderNodeBuilder" />
+      <Type Name="UnknownEntryNodeBuilder" />
+      <Type Name="UnknownEntryCommandHandler" />
     </Namespace>
     <Namespace Name="MonoDevelop.Ide.Commands">
       <Type Name="DebugCommands" />
@@ -679,15 +713,17 @@
       <Type Name="ToolCommands" />
       <Type Name="ViewCommands" />
       <Type Name="WindowCommands" />
+      <Type Name="FileTabCommands" />
+      <Type Name="NavigationCommands" />
+      <Type Name="RefactoryCommands" />
+      <Type Name="CurrentRefactoryOperationsHandler" />
+      <Type Name="TextEditorCommands" />
     </Namespace>
     <Namespace Name="MonoDevelop.Projects.Ambience">
-      <Type Name="IAmbience" />
-      <Type Name="AbstractAmbience" />
-      <Type Name="AmbienceReflectionDecorator" />
       <Type Name="AmbienceService" />
-      <Type Name="CodeDOMGeneratorUtility" />
       <Type Name="NetAmbience" />
       <Type Name="ConversionFlags" />
+      <Type Name="Ambience" />
     </Namespace>
     <Namespace Name="MonoDevelop.Projects.Parser">
       <Type Name="ITypeResolver" />
@@ -715,13 +751,10 @@
       <Type Name="IRegion" />
       <Type Name="IReturnType" />
       <Type Name="IUsing" />
-      <Type Name="IParseInformationListener" />
       <Type Name="ClassInformationEventArgs" />
       <Type Name="AbstractNamedEntity" />
       <Type Name="AbstractDecoration" />
-      <Type Name="ClassProxyCollection+ClassProxyEnumerator" />
       <Type Name="DefaultParserService" />
-      <Type Name="AbstractCompilationUnit" />
       <Type Name="ClassUpdateInformation" />
       <Type Name="ParseInformation" />
       <Type Name="ParseInformationEventArgs" />
@@ -752,8 +785,6 @@
       <Type Name="TagCollection+TagEnumerator" />
       <Type Name="IndexerCollection" />
       <Type Name="IndexerCollection+IIndexerEnumerator" />
-      <Type Name="AbstractAttributeSection" />
-      <Type Name="AbstractAttribute" />
       <Type Name="AbstractClass" />
       <Type Name="AbstractComment" />
       <Type Name="FoldingRegion" />
@@ -780,18 +811,43 @@
       <Type Name="ExpressionResult" />
       <Type Name="ExpressionContext" />
       <Type Name="ExpressionContext+InterfaceExpressionContext" />
+      <Type Name="DefaultUsing" />
+      <Type Name="AssemblyInformationEventArgs" />
+      <Type Name="CommentTasksChangedEventArgs" />
+      <Type Name="DefaultAttributeSection" />
+      <Type Name="DefaultAttribute" />
+      <Type Name="DefaultClass" />
+      <Type Name="DefaultComment" />
+      <Type Name="DefaultCompilationUnit" />
+      <Type Name="DefaultEvent" />
+      <Type Name="DefaultField" />
+      <Type Name="DefaultIndexer" />
+      <Type Name="DefaultMethod" />
+      <Type Name="DefaultParameter" />
+      <Type Name="DefaultProperty" />
+      <Type Name="DefaultReturnType" />
+      <Type Name="GenericParameter" />
+      <Type Name="GenericParameterList" />
+      <Type Name="ErrorInfo" />
+      <Type Name="IFileParserContext" />
+      <Type Name="IProjectParserContext" />
+      <Type Name="IAssemblyParserContext" />
+      <Type Name="ITypeNameResolver" />
+      <Type Name="LanguageItemCollection" />
+      <Type Name="MemberCollectionBase" />
+      <Type Name="Namespace" />
+      <Type Name="ReturnTypeList" />
+      <Type Name="TypeNameResolver" />
+      <Type Name="AssemblyInformationEventHandler" />
+      <Type Name="CommentTasksChangedEventHandler" />
     </Namespace>
     <Namespace Name="MonoDevelop.Projects">
       <Type Name="IProjectService" />
       <Type Name="IFileFormat" />
       <Type Name="IConfiguration" />
-      <Type Name="IDeploymentStrategy" />
       <Type Name="IProjectBinding" />
       <Type Name="ICompilerResult" />
       <Type Name="ILanguageBinding" />
-      <Type Name="ICombineEntryCollection" />
-      <Type Name="Language" />
-      <Type Name="LanguageService" />
       <Type Name="LanguageBindingService" />
       <Type Name="CombineEventArgs" />
       <Type Name="FileFormatManager" />
@@ -802,7 +858,6 @@
       <Type Name="PathDataType" />
       <Type Name="Combine" />
       <Type Name="CombineEntry" />
-      <Type Name="CombineActiveConfigurationTypeConverter" />
       <Type Name="CombineConfiguration" />
       <Type Name="AbstractConfiguration" />
       <Type Name="CombineConfigurationEntry" />
@@ -860,6 +915,23 @@
       <Type Name="ReferenceType" />
       <Type Name="DeploymentStrategy" />
       <Type Name="IDotNetLanguageBinding" />
+      <Type Name="BuildEventArgs" />
+      <Type Name="CombineEntryChangeEventArgs" />
+      <Type Name="CustomCommand" />
+      <Type Name="CustomCommandCollection" />
+      <Type Name="CustomCommandType" />
+      <Type Name="UnknownCompilationParameters" />
+      <Type Name="GenericProject" />
+      <Type Name="GenericProjectConfiguration" />
+      <Type Name="GenericProjectBinding" />
+      <Type Name="UnknownProject" />
+      <Type Name="UnknownProjectReference" />
+      <Type Name="ProjectServiceExtension" />
+      <Type Name="UnknownCombineEntry" />
+      <Type Name="UnknownConfiguration" />
+      <Type Name="Workspace" />
+      <Type Name="BuildEventHandler" />
+      <Type Name="CombineEntryChangeEventHandler" />
     </Namespace>
     <Namespace Name="MonoDevelop.Projects.Serialization">
       <Type Name="ICollectionHandler" />
@@ -877,7 +949,6 @@
       <Type Name="DataItemAttribute" />
       <Type Name="ClassDataType" />
       <Type Name="CollectionDataType" />
-      <Type Name="CollectionDataType+MapData" />
       <Type Name="DataCollection" />
       <Type Name="DataContext" />
       <Type Name="DataSerializer" />
@@ -889,11 +960,6 @@
       <Type Name="XmlDataSerializer" />
     </Namespace>
     <Namespace Name="MonoDevelop.Projects.Utility">
-      <Type Name="PropertyComparer" />
-      <Type Name="ReverseComparer" />
-      <Type Name="DiffUtility" />
-      <Type Name="SortUtility" />
-      <Type Name="SortUtilityBase" />
       <Type Name="PriorityQueue" />
       <Type Name="PriorityQueue+Pair" />
     </Namespace>
@@ -904,14 +970,20 @@
       <Type Name="ICompletionWidget" />
       <Type Name="IListDataProvider" />
       <Type Name="CodeCompletionDataProvider" />
-      <Type Name="CommentCompletionDataProvider" />
-      <Type Name="CompletionListWindow" />
-      <Type Name="ListWindow" />
-      <Type Name="ListWindow+KeyAction" />
-      <Type Name="DeclarationViewWindow" />
       <Type Name="ListWidget" />
       <Type Name="TextUtilities" />
       <Type Name="TextUtilities+CharacterType" />
+      <Type Name="CodeCompletionData" />
+      <Type Name="CompletionWindowManager" />
+      <Type Name="IActionCompletionData" />
+      <Type Name="IMutableCompletionDataProvider" />
+      <Type Name="ICodeCompletionContext" />
+      <Type Name="CodeCompletionContext" />
+      <Type Name="IParameterDataProvider" />
+      <Type Name="MethodParameterDataProvider" />
+      <Type Name="MethodParameterDataProvider+Scope" />
+      <Type Name="ParameterInformationWindowManager" />
+      <Type Name="CompletionDelegate" />
     </Namespace>
     <Namespace Name="MonoDevelop.Projects.Gui">
       <Type Name="IconService" />
@@ -921,13 +993,9 @@
       <Type Name="CombineOptionsDialog" />
     </Namespace>
     <Namespace Name="MonoDevelop.Projects.Gui.Dialogs.OptionPanels">
-      <Type Name="CombineBuildOptions" />
-      <Type Name="CombineConfigurationPanel" />
-      <Type Name="CombineStartupPanel" />
-      <Type Name="CompileFileProjectOptions" />
-      <Type Name="GeneralProjectOptions" />
       <Type Name="OutputOptionsPanel" />
       <Type Name="CombineEntryConfigurationsPanel" />
+      <Type Name="CombineInformationWidget" />
     </Namespace>
     <Namespace Name="MonoDevelop.Projects.CodeGeneration">
       <Type Name="IRefactorer" />
@@ -939,12 +1007,55 @@
       <Type Name="XmlCodeDomReader" />
       <Type Name="RefactoryScope" />
       <Type Name="RefactorOperations" />
+      <Type Name="MemberReferenceCollection+MemberComparer" />
     </Namespace>
     <Namespace Name="MonoDevelop.Projects.Text">
       <Type Name="IEditableTextFile" />
       <Type Name="ITextFile" />
       <Type Name="ITextFileProvider" />
       <Type Name="TextFile" />
+      <Type Name="TextEncoding" />
+      <Type Name="TextFileReader" />
+      <Type Name="TextFileService" />
+      <Type Name="TextFileEventArgs" />
+      <Type Name="LineCountEventArgs" />
+    </Namespace>
+    <Namespace Name="MonoDevelop.Core.FileSystem">
+      <Type Name="FileSystemExtension" />
+    </Namespace>
+    <Namespace Name="MonoDevelop.Core.Logging">
+      <Type Name="ConsoleLogger" />
+      <Type Name="FileLogger" />
+      <Type Name="ILogger" />
+      <Type Name="LogLevel" />
+      <Type Name="EnabledLoggingLevel" />
+    </Namespace>
+    <Namespace Name="MonoDevelop.Components.Commands.ExtensionNodes">
+    </Namespace>
+    <Namespace Name="MonoDevelop.Core.Gui.WebBrowser">
+      <Type Name="IWebBrowser" />
+      <Type Name="IWebBrowserLoader" />
+      <Type Name="LoadingProgressChangedEventArgs" />
+      <Type Name="LocationChangedEventArgs" />
+      <Type Name="LocationChangingEventArgs" />
+      <Type Name="StatusMessageChangedEventArgs" />
+      <Type Name="TitleChangedEventArgs" />
+      <Type Name="PageLoadedHandler" />
+      <Type Name="LocationChangedHandler" />
+      <Type Name="LocationChangingHandler" />
+      <Type Name="TitleChangedHandler" />
+      <Type Name="StatusMessageChangedHandler" />
+      <Type Name="LoadingProgressChangedHandler" />
+    </Namespace>
+    <Namespace Name="MonoDevelop.Ide.ExternalTools">
+      <Type Name="ExternalTool" />
+      <Type Name="ExternalToolService" />
+    </Namespace>
+    <Namespace Name="MonoDevelop.Ide.StandardHeaders">
+      <Type Name="StandardHeaderService" />
+    </Namespace>
+    <Namespace Name="MonoDevelop.Projects.Documentation">
+      <Type Name="IDocumentationService" />
     </Namespace>
   </Types>
   <Title>Untitled</Title>

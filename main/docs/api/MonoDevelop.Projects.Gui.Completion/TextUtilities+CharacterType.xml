@@ -1,8 +1,8 @@
 <Type Name="TextUtilities+CharacterType" FullName="MonoDevelop.Projects.Gui.Completion.TextUtilities+CharacterType">
-  <TypeSignature Language="C#" Value="public enum CharacterType" />
+  <TypeSignature Language="C#" Value="public enum TextUtilities.CharacterType" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Projects.Gui</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.0.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Enum</BaseTypeName>
@@ -11,32 +11,20 @@
     <Member MemberName="Other">
       <MemberSignature Language="C#" Value="Other" />
       <MemberType>Field</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Projects.Gui.Completion.TextUtilities+CharacterType</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Projects.Gui.Completion.TextUtilities+CharacterType</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary></Docs>
     </Member>
     <Member MemberName="WhiteSpace">
       <MemberSignature Language="C#" Value="WhiteSpace" />
       <MemberType>Field</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Projects.Gui.Completion.TextUtilities+CharacterType</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Projects.Gui.Completion.TextUtilities+CharacterType</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary></Docs>
     </Member>
     <Member MemberName="LetterDigitOrUnderscore">
       <MemberSignature Language="C#" Value="LetterDigitOrUnderscore" />
       <MemberType>Field</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Projects.Gui.Completion.TextUtilities+CharacterType</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Projects.Gui.Completion.TextUtilities+CharacterType</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary></Docs>
     </Member>
   </Members>
   <Docs>

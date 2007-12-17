@@ -2,7 +2,7 @@
   <TypeSignature Language="C#" Value="public class Services" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Core.Gui</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Object</BaseTypeName>
@@ -13,60 +13,23 @@
       <MemberSignature Language="C#" Value="public Services ();" />
       <MemberType>Constructor</MemberType>
       <Parameters />
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <Docs><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
-    <Member MemberName="RunAddinManager">
-      <MemberSignature Language="C#" Value="public static void RunAddinManager ();" />
-      <MemberType>Method</MemberType>
-      <ReturnValue>
-        <ReturnType>System.Void</ReturnType>
-      </ReturnValue>
-      <Parameters />
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
+    
     <Member MemberName="Resources">
       <MemberSignature Language="C#" Value="public static MonoDevelop.Core.Gui.ResourceService Resources { get; };" />
       <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Core.Gui.ResourceService</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Core.Gui.ResourceService</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary><value>To be added.</value><remarks>To be added.</remarks></Docs>
     </Member>
     <Member MemberName="MessageService">
       <MemberSignature Language="C#" Value="public static MonoDevelop.Core.Gui.MessageService MessageService { get; };" />
       <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Core.Gui.MessageService</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Core.Gui.MessageService</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary><value>To be added.</value><remarks>To be added.</remarks></Docs>
     </Member>
-    <Member MemberName="DispatchService">
-      <MemberSignature Language="C#" Value="public static MonoDevelop.Core.Gui.DispatchService DispatchService { get; };" />
-      <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Core.Gui.DispatchService</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-  </Members>
+    
+  <Member MemberName="PlatformService"><MemberSignature Language="C#" Value="public static MonoDevelop.Core.Gui.PlatformService PlatformService { get; };" /><MemberType>Property</MemberType><ReturnValue><ReturnType>MonoDevelop.Core.Gui.PlatformService</ReturnType></ReturnValue><Docs><summary>To be added.</summary><value>To be added.</value><remarks>To be added.</remarks></Docs></Member><Member MemberName="RunAddinManager"><MemberSignature Language="C#" Value="public static void RunAddinManager (Gtk.Window parent);" /><MemberType>Method</MemberType><ReturnValue><ReturnType>System.Void</ReturnType></ReturnValue><Parameters><Parameter Name="parent" Type="Gtk.Window" /></Parameters><Docs><param name="parent">To be added.</param><summary>To be added.</summary><remarks>To be added.</remarks></Docs></Member></Members>
   <Docs>
     <summary>To be added.</summary>
     <remarks>To be added.</remarks>

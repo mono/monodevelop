@@ -2,7 +2,7 @@
   <TypeSignature Language="C#" Value="public class DockToolbarFrameStatus" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Components</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Object</BaseTypeName>
@@ -13,26 +13,14 @@
       <MemberSignature Language="C#" Value="public DockToolbarFrameStatus ();" />
       <MemberType>Constructor</MemberType>
       <Parameters />
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <Docs><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
     <Member MemberName="Status">
       <MemberSignature Language="C#" Value="public System.Collections.ArrayList Status;" />
       <MemberType>Field</MemberType>
-      <Attributes>
-        <Attribute>
-          <AttributeName>System.Xml.Serialization.XmlElement(DataType="", ElementName="layout", Form=System.Xml.Schema.XmlSchemaForm.None, Namespace=null, IsNullable=False, Type=typeof(MonoDevelop.Components.DockToolbars.DockToolbarFrameLayout))</AttributeName>
-        </Attribute>
-      </Attributes>
-      <ReturnValue>
-        <ReturnType>System.Collections.ArrayList</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <Attributes><Attribute><AttributeName>System.Xml.Serialization.XmlElement("layout", typeof(MonoDevelop.Components.DockToolbars.DockToolbarFrameLayout))</AttributeName></Attribute></Attributes>
+      <ReturnValue><ReturnType>System.Collections.ArrayList</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
   </Members>
   <Docs>

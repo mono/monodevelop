@@ -2,7 +2,7 @@
   <TypeSignature Language="C#" Value="public class WorkbenchContext" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Ide</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Object</BaseTypeName>
@@ -12,54 +12,27 @@
     <Member MemberName="GetContext">
       <MemberSignature Language="C#" Value="public static MonoDevelop.Ide.Gui.WorkbenchContext GetContext (string id);" />
       <MemberType>Method</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Ide.Gui.WorkbenchContext</ReturnType>
-      </ReturnValue>
-      <Parameters>
-        <Parameter Name="id" Type="System.String" />
-      </Parameters>
-      <Docs>
-        <param name="id">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Ide.Gui.WorkbenchContext</ReturnType></ReturnValue>
+      <Parameters><Parameter Name="id" Type="System.String" /></Parameters>
+      <Docs><param name="id">To be added.</param><summary>To be added.</summary><returns>To be added.</returns><remarks>To be added.</remarks></Docs>
     </Member>
     <Member MemberName="Edit">
       <MemberSignature Language="C#" Value="public static MonoDevelop.Ide.Gui.WorkbenchContext Edit { get; };" />
       <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Ide.Gui.WorkbenchContext</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Ide.Gui.WorkbenchContext</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary><value>To be added.</value><remarks>To be added.</remarks></Docs>
     </Member>
     <Member MemberName="Debug">
       <MemberSignature Language="C#" Value="public static MonoDevelop.Ide.Gui.WorkbenchContext Debug { get; };" />
       <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Ide.Gui.WorkbenchContext</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Ide.Gui.WorkbenchContext</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary><value>To be added.</value><remarks>To be added.</remarks></Docs>
     </Member>
     <Member MemberName="Id">
       <MemberSignature Language="C#" Value="public string Id { get; };" />
       <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>System.String</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <ReturnValue><ReturnType>System.String</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary><value>To be added.</value><remarks>To be added.</remarks></Docs>
     </Member>
   </Members>
   <Docs>

@@ -2,7 +2,7 @@
   <TypeSignature Language="C#" Value="public enum NewFileSearch" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Projects</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Enum</BaseTypeName>
@@ -11,32 +11,20 @@
     <Member MemberName="OnLoad">
       <MemberSignature Language="C#" Value="OnLoad" />
       <MemberType>Field</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Projects.NewFileSearch</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Projects.NewFileSearch</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary></Docs>
     </Member>
     <Member MemberName="OnLoadAutoInsert">
       <MemberSignature Language="C#" Value="OnLoadAutoInsert" />
       <MemberType>Field</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Projects.NewFileSearch</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Projects.NewFileSearch</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary></Docs>
     </Member>
     <Member MemberName="None">
       <MemberSignature Language="C#" Value="None" />
       <MemberType>Field</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Projects.NewFileSearch</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Projects.NewFileSearch</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary></Docs>
     </Member>
   </Members>
   <Docs>

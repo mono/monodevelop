@@ -1,8 +1,8 @@
 <Type Name="ProjectReferenceEventHandler" FullName="MonoDevelop.Projects.ProjectReferenceEventHandler">
-  <TypeSignature Language="C#" Value="public delegate void ProjectReferenceEventHandler(object sender, MonoDevelop.Projects.ProjectReferenceEventArgs e);" />
+  <TypeSignature Language="C#" Value="public delegate void ProjectReferenceEventHandler(object sender, ProjectReferenceEventArgs e);" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Projects</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Delegate</BaseTypeName>

@@ -2,39 +2,13 @@
   <TypeSignature Language="C#" Value="public interface IMementoCapable" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Core.Gui</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Interfaces />
   <Members>
-    <Member MemberName="CreateMemento">
-      <MemberSignature Language="C#" Value="public MonoDevelop.Core.Properties.IXmlConvertable CreateMemento ();" />
-      <MemberType>Method</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Core.Properties.IXmlConvertable</ReturnType>
-      </ReturnValue>
-      <Parameters />
-      <Docs>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="SetMemento">
-      <MemberSignature Language="C#" Value="public void SetMemento (MonoDevelop.Core.Properties.IXmlConvertable memento);" />
-      <MemberType>Method</MemberType>
-      <ReturnValue>
-        <ReturnType>System.Void</ReturnType>
-      </ReturnValue>
-      <Parameters>
-        <Parameter Name="memento" Type="MonoDevelop.Core.Properties.IXmlConvertable" />
-      </Parameters>
-      <Docs>
-        <param name="memento">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-  </Members>
+    
+    
+  <Member MemberName="CreateMemento"><MemberSignature Language="C#" Value="public MonoDevelop.Core.ICustomXmlSerializer CreateMemento ();" /><MemberType>Method</MemberType><ReturnValue><ReturnType>MonoDevelop.Core.ICustomXmlSerializer</ReturnType></ReturnValue><Parameters /><Docs><summary>To be added.</summary><returns>To be added.</returns><remarks>To be added.</remarks></Docs></Member><Member MemberName="SetMemento"><MemberSignature Language="C#" Value="public void SetMemento (MonoDevelop.Core.ICustomXmlSerializer memento);" /><MemberType>Method</MemberType><ReturnValue><ReturnType>System.Void</ReturnType></ReturnValue><Parameters><Parameter Name="memento" Type="MonoDevelop.Core.ICustomXmlSerializer" /></Parameters><Docs><param name="memento">To be added.</param><summary>To be added.</summary><remarks>To be added.</remarks></Docs></Member></Members>
   <Docs>
     <summary>To be added.</summary>
     <remarks>To be added.</remarks>

@@ -1,140 +1,32 @@
 <Type Name="PropertyService" FullName="MonoDevelop.Core.PropertyService">
-  <TypeSignature Language="C#" Value="public class PropertyService : MonoDevelop.Core.Properties.DefaultProperties, MonoDevelop.Core.IService" />
+  <TypeSignature Language="C#" Value="public static class PropertyService" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Core</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
-    <BaseTypeName>MonoDevelop.Core.Properties.DefaultProperties</BaseTypeName>
+    <BaseTypeName>System.Object</BaseTypeName>
   </Base>
   <Interfaces>
-    <Interface>
-      <InterfaceName>MonoDevelop.Core.IService</InterfaceName>
-    </Interface>
   </Interfaces>
   <Members>
-    <Member MemberName=".ctor">
-      <MemberSignature Language="C#" Value="public PropertyService ();" />
-      <MemberType>Constructor</MemberType>
-      <Parameters />
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="Initialize">
-      <MemberSignature Language="C#" Value="public event EventHandler Initialize;" />
-      <MemberType>Event</MemberType>
-      <ReturnValue>
-        <ReturnType>System.EventHandler</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="Unload">
-      <MemberSignature Language="C#" Value="public event EventHandler Unload;" />
-      <MemberType>Event</MemberType>
-      <ReturnValue>
-        <ReturnType>System.EventHandler</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
+    
+    
+    
     <Member MemberName="SaveProperties">
-      <MemberSignature Language="C#" Value="public void SaveProperties ();" />
+      <MemberSignature Language="C#" Value="public static void SaveProperties ();" />
       <MemberType>Method</MemberType>
-      <ReturnValue>
-        <ReturnType>System.Void</ReturnType>
-      </ReturnValue>
+      <ReturnValue><ReturnType>System.Void</ReturnType></ReturnValue>
       <Parameters />
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <Docs><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
-    <Member MemberName="InitializeService">
-      <MemberSignature Language="C#" Value="public virtual void InitializeService ();" />
-      <MemberType>Method</MemberType>
-      <ReturnValue>
-        <ReturnType>System.Void</ReturnType>
-      </ReturnValue>
-      <Parameters />
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="UnloadService">
-      <MemberSignature Language="C#" Value="public virtual void UnloadService ();" />
-      <MemberType>Method</MemberType>
-      <ReturnValue>
-        <ReturnType>System.Void</ReturnType>
-      </ReturnValue>
-      <Parameters />
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="OnInitialize">
-      <MemberSignature Language="C#" Value="protected virtual void OnInitialize (EventArgs e);" />
-      <MemberType>Method</MemberType>
-      <ReturnValue>
-        <ReturnType>System.Void</ReturnType>
-      </ReturnValue>
-      <Parameters>
-        <Parameter Name="e" Type="System.EventArgs" />
-      </Parameters>
-      <Docs>
-        <param name="e">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="OnUnload">
-      <MemberSignature Language="C#" Value="protected virtual void OnUnload (EventArgs e);" />
-      <MemberType>Method</MemberType>
-      <ReturnValue>
-        <ReturnType>System.Void</ReturnType>
-      </ReturnValue>
-      <Parameters>
-        <Parameter Name="e" Type="System.EventArgs" />
-      </Parameters>
-      <Docs>
-        <param name="e">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="ConfigDirectory">
-      <MemberSignature Language="C#" Value="public string ConfigDirectory { get; };" />
-      <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>System.String</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="DataDirectory">
-      <MemberSignature Language="C#" Value="public string DataDirectory { get; };" />
-      <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>System.String</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-  </Members>
+    
+    
+    
+    
+    
+    
+  <Member MemberName="ConfigPath"><MemberSignature Language="C#" Value="public static string ConfigPath { get; };" /><MemberType>Property</MemberType><ReturnValue><ReturnType>System.String</ReturnType></ReturnValue><Docs><summary>To be added.</summary><value>To be added.</value><remarks>To be added.</remarks></Docs></Member><Member MemberName="DataPath"><MemberSignature Language="C#" Value="public static string DataPath { get; };" /><MemberType>Property</MemberType><ReturnValue><ReturnType>System.String</ReturnType></ReturnValue><Docs><summary>To be added.</summary><value>To be added.</value><remarks>To be added.</remarks></Docs></Member><Member MemberName="EntryAssemblyPath"><MemberSignature Language="C#" Value="public static string EntryAssemblyPath { get; };" /><MemberType>Property</MemberType><ReturnValue><ReturnType>System.String</ReturnType></ReturnValue><Docs><summary>To be added.</summary><value>To be added.</value><remarks>To be added.</remarks></Docs></Member><Member MemberName="Get&lt;T&gt;"><MemberSignature Language="C#" Value="public static T Get&lt;T&gt; (string property);" /><MemberType>Method</MemberType><ReturnValue><ReturnType>T</ReturnType></ReturnValue><Parameters><Parameter Name="property" Type="System.String" /></Parameters><Docs><typeparam name="T">To be added.</typeparam><param name="property">To be added.</param><summary>To be added.</summary><returns>To be added.</returns><remarks>To be added.</remarks></Docs></Member><Member MemberName="Get&lt;T&gt;"><MemberSignature Language="C#" Value="public static T Get&lt;T&gt; (string property, T defaultValue);" /><MemberType>Method</MemberType><ReturnValue><ReturnType>T</ReturnType></ReturnValue><Parameters><Parameter Name="property" Type="System.String" /><Parameter Name="defaultValue" Type="T" /></Parameters><Docs><typeparam name="T">To be added.</typeparam><param name="property">To be added.</param><param name="defaultValue">To be added.</param><summary>To be added.</summary><returns>To be added.</returns><remarks>To be added.</remarks></Docs></Member><Member MemberName="PropertyChanged"><MemberSignature Language="C#" Value="public static event EventHandler&lt;MonoDevelop.Core.PropertyChangedEventArgs&gt; PropertyChanged;" /><MemberType>Event</MemberType><ReturnValue><ReturnType>System.EventHandler&lt;MonoDevelop.Core.PropertyChangedEventArgs&gt;</ReturnType></ReturnValue><Docs><summary>To be added.</summary><remarks>To be added.</remarks></Docs></Member><Member MemberName="Set"><MemberSignature Language="C#" Value="public static void Set (string key, object val);" /><MemberType>Method</MemberType><ReturnValue><ReturnType>System.Void</ReturnType></ReturnValue><Parameters><Parameter Name="key" Type="System.String" /><Parameter Name="val" Type="System.Object" /></Parameters><Docs><param name="key">To be added.</param><param name="val">To be added.</param><summary>To be added.</summary><remarks>To be added.</remarks></Docs></Member></Members>
   <Docs>
     <summary>To be added.</summary>
     <remarks>To be added.</remarks>

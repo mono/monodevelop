@@ -2,7 +2,7 @@
   <TypeSignature Language="C#" Value="public class CommandMenuItem : Gtk.ImageMenuItem, MonoDevelop.Components.Commands.ICommandMenuItem" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Components</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>Gtk.ImageMenuItem</BaseTypeName>
@@ -16,16 +16,8 @@
     <Member MemberName=".ctor">
       <MemberSignature Language="C#" Value="public CommandMenuItem (object commandId, MonoDevelop.Components.Commands.CommandManager commandManager);" />
       <MemberType>Constructor</MemberType>
-      <Parameters>
-        <Parameter Name="commandId" Type="System.Object" />
-        <Parameter Name="commandManager" Type="MonoDevelop.Components.Commands.CommandManager" />
-      </Parameters>
-      <Docs>
-        <param name="commandId">To be added.</param>
-        <param name="commandManager">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <Parameters><Parameter Name="commandId" Type="System.Object" /><Parameter Name="commandManager" Type="MonoDevelop.Components.Commands.CommandManager" /></Parameters>
+      <Docs><param name="commandId">To be added.</param><param name="commandManager">To be added.</param><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
   </Members>
   <Docs>

@@ -2,7 +2,7 @@
   <TypeSignature Language="C#" Value="public class LocalCommandEntry : MonoDevelop.Components.Commands.CommandEntry" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Components</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>MonoDevelop.Components.Commands.CommandEntry</BaseTypeName>
@@ -12,28 +12,14 @@
     <Member MemberName=".ctor">
       <MemberSignature Language="C#" Value="public LocalCommandEntry (MonoDevelop.Components.Commands.Command cmd);" />
       <MemberType>Constructor</MemberType>
-      <Parameters>
-        <Parameter Name="cmd" Type="MonoDevelop.Components.Commands.Command" />
-      </Parameters>
-      <Docs>
-        <param name="cmd">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <Parameters><Parameter Name="cmd" Type="MonoDevelop.Components.Commands.Command" /></Parameters>
+      <Docs><param name="cmd">To be added.</param><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
     <Member MemberName=".ctor">
       <MemberSignature Language="C#" Value="public LocalCommandEntry (object id, string text);" />
       <MemberType>Constructor</MemberType>
-      <Parameters>
-        <Parameter Name="id" Type="System.Object" />
-        <Parameter Name="text" Type="System.String" />
-      </Parameters>
-      <Docs>
-        <param name="id">To be added.</param>
-        <param name="text">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <Parameters><Parameter Name="id" Type="System.Object" /><Parameter Name="text" Type="System.String" /></Parameters>
+      <Docs><param name="id">To be added.</param><param name="text">To be added.</param><summary>To be added.</summary><remarks>To be added.</remarks></Docs>
     </Member>
   </Members>
   <Docs>

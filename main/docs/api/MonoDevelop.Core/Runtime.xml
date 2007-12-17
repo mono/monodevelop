@@ -2,122 +2,33 @@
   <TypeSignature Language="C#" Value="public class Runtime" />
   <AssemblyInfo>
     <AssemblyName>MonoDevelop.Core</AssemblyName>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <AssemblyVersion>0.18.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Object</BaseTypeName>
   </Base>
   <Interfaces />
   <Members>
-    <Member MemberName="Initialize">
-      <MemberSignature Language="C#" Value="public static void Initialize ();" />
-      <MemberType>Method</MemberType>
-      <ReturnValue>
-        <ReturnType>System.Void</ReturnType>
-      </ReturnValue>
-      <Parameters />
-      <Docs>
-        <summary>Initializes the MonoDevelop runtime.</summary>
-        <remarks>This method must be called once in all aplications (and application domains) that want to use the MonoDevelop runtime and services.</remarks>
-      </Docs>
-    </Member>
+    
     <Member MemberName="ProcessService">
       <MemberSignature Language="C#" Value="public static MonoDevelop.Core.Execution.ProcessService ProcessService { get; };" />
       <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Core.Execution.ProcessService</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>Class that provides several utility methods related to process operations.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Core.Execution.ProcessService</ReturnType></ReturnValue>
+      <Docs><summary>Class that provides several utility methods related to process operations.</summary><value>To be added.</value><remarks>To be added.</remarks></Docs>
     </Member>
-    <Member MemberName="Properties">
-      <MemberSignature Language="C#" Value="public static MonoDevelop.Core.PropertyService Properties { get; };" />
-      <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Core.PropertyService</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="FileUtilityService">
-      <MemberSignature Language="C#" Value="public static MonoDevelop.Core.FileUtilityService FileUtilityService { get; };" />
-      <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Core.FileUtilityService</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>Service that provides several utility methods related to file operations.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="StringParserService">
-      <MemberSignature Language="C#" Value="public static MonoDevelop.Core.StringParserService StringParserService { get; };" />
-      <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Core.StringParserService</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
+    
+    
+    
     <Member MemberName="SystemAssemblyService">
       <MemberSignature Language="C#" Value="public static MonoDevelop.Core.SystemAssemblyService SystemAssemblyService { get; };" />
       <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Core.SystemAssemblyService</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <ReturnValue><ReturnType>MonoDevelop.Core.SystemAssemblyService</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary><value>To be added.</value><remarks>To be added.</remarks></Docs>
     </Member>
-    <Member MemberName="LoggingService">
-      <MemberSignature Language="C#" Value="public static MonoDevelop.Core.ILoggingService LoggingService { get; };" />
-      <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Core.ILoggingService</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="AddInService">
-      <MemberSignature Language="C#" Value="public static MonoDevelop.Core.AddIns.AddInService AddInService { get; };" />
-      <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Core.AddIns.AddInService</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>This service provides methods for loading add-ins and for getting information about currently loaded add-ins.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="SetupService">
-      <MemberSignature Language="C#" Value="public static MonoDevelop.Core.AddIns.Setup.SetupService SetupService { get; };" />
-      <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>MonoDevelop.Core.AddIns.Setup.SetupService</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-  </Members>
+    
+    
+    
+  <Member MemberName="AddinSetupService"><MemberSignature Language="C#" Value="public static Mono.Addins.Setup.SetupService AddinSetupService { get; };" /><MemberType>Property</MemberType><ReturnValue><ReturnType>Mono.Addins.Setup.SetupService</ReturnType></ReturnValue><Docs><summary>To be added.</summary><value>To be added.</value><remarks>To be added.</remarks></Docs></Member><Member MemberName="ApplicationService"><MemberSignature Language="C#" Value="public static MonoDevelop.Core.ApplicationService ApplicationService { get; };" /><MemberType>Property</MemberType><ReturnValue><ReturnType>MonoDevelop.Core.ApplicationService</ReturnType></ReturnValue><Docs><summary>To be added.</summary><value>To be added.</value><remarks>To be added.</remarks></Docs></Member><Member MemberName="Initialize"><MemberSignature Language="C#" Value="public static void Initialize (bool updateAddinRegistry);" /><MemberType>Method</MemberType><ReturnValue><ReturnType>System.Void</ReturnType></ReturnValue><Parameters><Parameter Name="updateAddinRegistry" Type="System.Boolean" /></Parameters><Docs><param name="updateAddinRegistry">To be added.</param><summary>To be added.</summary><remarks>To be added.</remarks></Docs></Member><Member MemberName="SetProcessName"><MemberSignature Language="C#" Value="public static void SetProcessName (string name);" /><MemberType>Method</MemberType><ReturnValue><ReturnType>System.Void</ReturnType></ReturnValue><Parameters><Parameter Name="name" Type="System.String" /></Parameters><Docs><param name="name">To be added.</param><summary>To be added.</summary><remarks>To be added.</remarks></Docs></Member><Member MemberName="Shutdown"><MemberSignature Language="C#" Value="public static void Shutdown ();" /><MemberType>Method</MemberType><ReturnValue><ReturnType>System.Void</ReturnType></ReturnValue><Parameters /><Docs><summary>To be added.</summary><remarks>To be added.</remarks></Docs></Member></Members>
   <Docs>
     <summary>The core runtime of MonoDevelop.</summary>
     <remarks>This class provides access to the core services of the MonoDevelop runtime.</remarks>
