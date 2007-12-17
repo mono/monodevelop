@@ -67,8 +67,12 @@ mpacks: $(PACKAGES)
 	mono build/bin/mdrun.exe setup rb packages
 
 apidocs:
-	monodocer $(DOCFILES:%=--assembly:%) --path docs/api
-	cd docs/web/sources && mdassembler --out monodevelop-reference --ecma ../../api
+	monodocer $(DOCFILES:%=--assembly:%) -delete --path docs/api
+	mkdir -p docs/sources
+	mdassembler --out docs/sources/monodevelop-reference --ecma docs/api
+	mautil -reg build/bin reg-build
+	mautil -reg build/bin -p build/bin info --all --xml > docs/extension-model.xml
+	mdassembler --out docs/sources/monodevelop-extension-guide --addins docs/extension-model.xml
 #	cd docs/apiguide && mdassembler --out monodevelop-api-guide --xhtml toc.xhtml && mv monodevelop-api-guide.zip ../web/sources
 
 ### SYNCH BLOCK: any changes to this line should be kept in sync with the corresponding block in Makefile.am

@@ -1,5 +1,11 @@
 2007-12-17  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* docs/sources, docs/sources/monodevelop-extension-guide.source,
+	  docs/sources/monodevelop-reference.source, Makefile.am: Add support for
+	  generating extension model documentation.
+
+2007-12-17  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* docs/api/*: Updated.
 
 2007-12-14  Michael Hutchinson  <mhutchinson@novell.com>
