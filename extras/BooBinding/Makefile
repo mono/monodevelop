@@ -67,7 +67,7 @@ dist: $(CONFIG_MAKE)
 
 distcheck: dist
 	(mkdir test; cd test;  \
-	 tar xzvf ../$(PACKAGE)-$(VERSION).tar.gz; cd $(PACKAGE)-$(VERSION); \
-	 ./configure --prefix=$$(cd `pwd`/..; pwd); \
-	 make && make install && make dist);
+	tar xzvf ../$(PACKAGE)-$(VERSION).tar.gz; cd $(PACKAGE)-$(VERSION); \
+	./configure --prefix=$$(cd `pwd`/..; pwd); \
+	make && make install && make dist);
 	rm -rf test
