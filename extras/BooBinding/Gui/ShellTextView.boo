@@ -239,7 +239,7 @@ class ShellTextView (SourceView, ICompletionWidget):
 		_reset.Show()
 	
 	override def OnKeyPressEvent (ev as Gdk.EventKey):
-		if CompletionListWindow.ProcessKeyEvent (ev.Key, ev.State):
+		if CompletionWindowManager.ProcessKeyEvent (ev.Key, ev.State):
 			return true
 		
 		// Short circuit to avoid getting moved back to the input line
@@ -348,7 +348,7 @@ class ShellTextView (SourceView, ICompletionWidget):
 		return super (ev)
 	
 	protected override def OnFocusOutEvent (e as EventFocus):
-		CompletionListWindow.HideWindow ()
+		CompletionWindowManager.HideWindow ()
 		return super.OnFocusOutEvent(e)
 	
 	#endregion

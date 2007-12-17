@@ -1,5 +1,10 @@
 2007-12-17  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Gui/ShellTextView.boo: Track api changes.
+	* BooBinding.make, BooBinding.mdp, configure: Add missing dependencies.
+
+2007-12-17  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* configure: Updated add-in versions.
 
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
