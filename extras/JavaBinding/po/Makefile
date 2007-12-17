@@ -1,7 +1,4 @@
 
-EXTRA_DIST = Makefile
-
-
 # Warning: This is an automatically generated file, do not edit!
 
 srcdir=.
@@ -12,7 +9,7 @@ include $(top_srcdir)/config.make
 
 MDTOOL = $(LOCAL_PKGCONFIG) mono `$(LOCAL_PKGCONFIG) pkg-config --variable=libdir monodevelop`/bin/mdrun.exe
 BUILD_DIR = ../build/locale
-INSTALL_DIR = $(prefix)/lib/monodevelop/AddIns/JavaBinding/locale
+INSTALL_DIR = $(DESTDIR)$(prefix)/lib/monodevelop/AddIns/JavaBinding/locale
 
 FILES = \
 	ca.po\
@@ -53,7 +50,7 @@ $(MO_FILES): $(INSTALL_DIR)/%/LC_MESSAGES/$(PACKAGE).mo : $(BUILD_DIR)/%/LC_MESS
 install-local: $(MO_FILES)
 
 CLEANFILES = $(GMO_FILES)
-EXTRA_DIST = Makefile
+EXTRA_DIST = Makefile $(FILES)
 install: install-local
 uninstall: uninstall-local
 clean: clean-local
