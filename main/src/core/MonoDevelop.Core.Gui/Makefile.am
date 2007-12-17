@@ -18,8 +18,6 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
-	Freedesktop.RecentFiles/RecentFileStorage.cs \
-	Freedesktop.RecentFiles/RecentItem.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Core.Gui.Dialogs.MultiTaskProgressDialog.cs \
 	MonoDevelop.Core.Gui.Codons/DialogPanelCodon.cs \
@@ -60,6 +58,8 @@ FILES =  \
 	MonoDevelop.Core.Gui/MessageService.cs \
 	MonoDevelop.Core.Gui/PixbufList.cs \
 	MonoDevelop.Core.Gui/PlatformService.cs \
+	MonoDevelop.Core.Gui/RecentFileStorage.cs \
+	MonoDevelop.Core.Gui/RecentItem.cs \
 	MonoDevelop.Core.Gui/RecentOpen.cs \
 	MonoDevelop.Core.Gui/ResourceService.cs \
 	MonoDevelop.Core.Gui/StockIcons.cs \

@@ -1,5 +1,9 @@
 2007-12-17  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Core.Gui.mdp, Makefile.am: RecentFiles location has changed.
+
+2007-12-17  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Freedesktop.RecentFiles/RecentFileStorage.cs,
 	  Freedesktop.RecentFiles/RecentItem.cs,
 	  MonoDevelop.Core.Gui/RecentFileStorage.cs,
