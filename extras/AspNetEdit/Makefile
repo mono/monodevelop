@@ -26,14 +26,14 @@ CONFIG_MAKE=$(top_srcdir)/config.make
 	@set . $$MAKEFLAGS; final_exit=:; \
 	case $$2 in --unix) shift ;; esac; \
 	case $$2 in *=*) dk="exit 1" ;; *k*) dk=: ;; *) dk="exit 1" ;; esac; \
-	make pre-$*-hook prefix=$(prefix)
+	make pre-$*-hook prefix=$(prefix) ; \
 	for dir in $(SUBDIRS); do \
 		case $$dir in \
 		.) make $*-local || { final_exit="exit 1"; $$dk; };;\
 		*) (cd $$dir && make $*) || { final_exit="exit 1"; $$dk; };;\
 		esac \
-	done
-	make post-$*-hook prefix=$(prefix)
+	done; \
+	make post-$*-hook prefix=$(prefix) ; \
 	$$final_exit
 
 $(CONFIG_MAKE):
