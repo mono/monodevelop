@@ -1,8 +1,0 @@
-
-namespace MonoDevelop.Debugger
-{
-	public class DebuggerPaths
-	{
-		public static readonly string VisualizerPath = "@pkglibdir@/Debugger";
-	}
-}

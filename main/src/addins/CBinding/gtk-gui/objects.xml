@@ -1,6 +1,0 @@
-<objects>
-  <object type="CBinding.OutputOptionsPanel" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals />
-  </object>
-</objects>
