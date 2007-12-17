@@ -32,7 +32,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Xml;
 
-namespace Freedesktop.RecentFiles
+namespace MonoDevelop.Core.Gui
 {
 	/// <summary>
 	/// Implementation of RecentItem according to "Recent File Storage Specification v0.2" from 

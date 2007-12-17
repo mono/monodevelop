@@ -39,7 +39,7 @@ using System.Text;
 using System.Threading;
 using System.Xml;
 
-namespace Freedesktop.RecentFiles
+namespace MonoDevelop.Core.Gui
 {
 	/// <summary>
 	/// Implementation of Recent File Storage according to 

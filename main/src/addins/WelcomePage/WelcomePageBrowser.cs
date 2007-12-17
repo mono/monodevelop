@@ -43,8 +43,6 @@ using MonoDevelop.Core.Gui.WebBrowser;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
 
-using Freedesktop.RecentFiles;
-
 namespace MonoDevelop.Core
 {
 	public class XslGettextCatalog

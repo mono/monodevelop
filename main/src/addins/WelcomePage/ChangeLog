@@ -1,3 +1,8 @@
+2007-12-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* WelcomePageBrowser.cs, WelcomePageFallbackWidget.cs, WelcomePageView.cs:
+	  Moved Freedesktop.RecentFiles classes to MonoDevelop.Core.Gui namespace.
+
 2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* WelcomePageView.cs: Make sure the RecentProjectChanged event is handled in

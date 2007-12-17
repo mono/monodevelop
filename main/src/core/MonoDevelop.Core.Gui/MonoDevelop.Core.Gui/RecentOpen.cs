@@ -25,7 +25,6 @@ using System.Collections;
 using System.IO;
 
 using MonoDevelop.Core;
-using Freedesktop.RecentFiles;
 
 namespace MonoDevelop.Core.Gui
 {

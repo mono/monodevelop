@@ -33,10 +33,10 @@ using System.IO;
 using System.Xml;
 using System.Reflection;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 
 using Gtk;
 using Gdk;
-using Freedesktop.RecentFiles;
 
 namespace MonoDevelop.WelcomePage
 {

@@ -30,7 +30,6 @@ using MonoDevelop.Components;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Dialogs;
-using Freedesktop.RecentFiles;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects.Gui.Dialogs;
 

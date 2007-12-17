@@ -36,8 +36,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 
-using Freedesktop.RecentFiles;
-
 using System.IO;
 
 namespace MonoDevelop.WelcomePage
