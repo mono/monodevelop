@@ -1,5 +1,11 @@
 2007-12-17  Ankit Jain  <jankit@novell.com>
 
+	Fix bug #349099.
+	* CSharpResourceIdBuilder.cs:
+	* VBNetResourceIdBuilder.cs: Allow both class and struct.
+
+2007-12-17  Ankit Jain  <jankit@novell.com>
+
 	* Minor fixes like use String.Empty instead of "" etc.
 
 2007-12-14  Ankit Jain  <jankit@novell.com>

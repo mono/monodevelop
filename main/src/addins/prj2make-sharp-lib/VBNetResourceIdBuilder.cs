@@ -76,7 +76,8 @@ namespace MonoDevelop.Prj2Make
 						ns = t;
 					}
 
-					if (String.Compare (tok, "class", true) == 0) {
+					if (String.Compare (tok, "class", true) == 0 ||
+						String.Compare (tok, "structure", true) == 0) {
 						string t = GetNextToken (rdr);
 						/* 'class' can be a attribute param also, */
 						if (t == ":" && GetNextToken (rdr) == "=")
@@ -87,7 +88,7 @@ namespace MonoDevelop.Prj2Make
 				}
 
 				if (classname == null) {
-					Console.WriteLine ("Warning: No class found in '{0}'.", pf.DependsOn);	
+					Console.WriteLine ("Warning: No class/structure found in '{0}'.", pf.DependsOn);
 					return null;
 				}
 
