@@ -80,13 +80,13 @@ namespace MonoDevelop.Prj2Make
 					return;
 
 				ProjectFile pf = project.AddFile (path, BuildAction.EmbedAsResource);
-				pf.ExtendedProperties ["MonoDevelop.MSBuildFileFormat.SilverlightPage"] = "";
+				pf.ExtendedProperties ["MonoDevelop.MSBuildFileFormat.SilverlightPage"] = String.Empty;
 				data.ProjectFileElements [pf] = (XmlElement) node;
 
 				// Add the corresponding %.g.cs to the project, we'll skip this
 				// when saving the project file
 				pf = project.AddFile (path + ".g.cs", BuildAction.Compile);
-				pf.ExtendedProperties ["MonoDevelop.MSBuildFileFormat.SilverlightGeneratedFile"] = "";
+				pf.ExtendedProperties ["MonoDevelop.MSBuildFileFormat.SilverlightGeneratedFile"] = String.Empty;
 				data.ProjectFileElements [pf] = (XmlElement) node;
 			} else {
 				base.ReadItemGroup (data, project, globalConfig, include, basePath, node, monitor);

@@ -104,7 +104,7 @@ namespace MonoDevelop.Prj2Make
 					monitor.Log.WriteLine (GettextCatalog.GetString (
 						"Error while trying to invoke '{0}' to generate partial classes for '{1}' :\n {2}", "xamlg", fname, ex.Message));
 
-					return new CompilerError (fname, 0, 0, "", ex.Message);
+					return new CompilerError (fname, 0, 0, String.Empty, ex.Message);
 				}
 
 				//FIXME: Handle exceptions

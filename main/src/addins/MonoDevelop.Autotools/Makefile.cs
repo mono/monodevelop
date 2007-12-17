@@ -38,7 +38,7 @@ namespace MonoDevelop.Autotools
 		public string GetVariable (string key)
 		{
 			if ( vars.ContainsKey (key) ) return vars [key] as string;
-			return "";
+			return String.Empty;
 		}
 			
 		public void SetVariable (string key, string val)

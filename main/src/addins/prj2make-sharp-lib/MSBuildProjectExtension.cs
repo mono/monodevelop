@@ -111,7 +111,7 @@ namespace MonoDevelop.Prj2Make
 
 		public override string ToString ()
 		{
-			return Name + (Next != null ? " -> " + Next.ToString () : "");
+			return Name + (Next != null ? " -> " + Next.ToString () : String.Empty);
 		}
 	}
 }
