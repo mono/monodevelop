@@ -1,3 +1,7 @@
+2007-12-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* extras.mds: Don't build GeckoBrowser by default.
+
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* extras.mds: Don't build AspNetEdit for now.

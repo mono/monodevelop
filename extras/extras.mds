@@ -5,7 +5,7 @@
       <Entry build="True" name="BooBinding" configuration="Debug" />
       <Entry build="True" name="JavaBinding" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Database" configuration="Debug" />
-      <Entry build="True" name="GeckoWebBrowser" configuration="Debug" />
+      <Entry build="False" name="GeckoWebBrowser" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="AspNetEdit" configuration="Release" />
