@@ -164,7 +164,7 @@ namespace MonoDevelop.Prj2Make
 				monitor.ReportError (GettextCatalog.GetString ("Could not save project: {0}", file), ex);
 				Console.WriteLine ("Could not save project: {0}, {1}", file, ex);
 
-				if (tmpfilename != String.Empty)
+				if (!String.IsNullOrEmpty (tmpfilename))
 					File.Delete (tmpfilename);
 				throw;
 			} finally {
@@ -462,7 +462,7 @@ namespace MonoDevelop.Prj2Make
 
 				//FIXME: RootNamespace can be specified per-config, but we are 
 				//taking the first occurrence
-				if (rootNamespace == String.Empty &&
+				if (String.IsNullOrEmpty (rootNamespace) &&
 					Utils.ReadAsString (iter.Current, "RootNamespace", ref str_tmp, false)) {
 					rootNamespace = str_tmp;
 				}

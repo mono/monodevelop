@@ -424,7 +424,7 @@ namespace MonoDevelop.Autotools
 			
 			StringBuilder deployDirs = new StringBuilder ();
 			IDictionary dirs = context.GetReferencedTargetDirectories ();
-			string deployDirVars = "";
+			string deployDirVars = String.Empty;
 			
 			foreach (DictionaryEntry e in dirs) {
 				// It may be a sub-path
@@ -440,7 +440,7 @@ namespace MonoDevelop.Autotools
 					resolved += ((string)e.Key).Substring (i);
 				
 				string var = (string) e.Value;
-				string dname = var.ToLower ().Replace ("_","");
+				string dname = var.ToLower ().Replace ("_", String.Empty);
 				deployDirs.AppendFormat ("{0}dir = {1}\n", dname, resolved);
 				deployDirs.AppendFormat ("{0}_DATA = $({1})\n", dname, var);
 				deployDirVars += "$(" + var + ") ";

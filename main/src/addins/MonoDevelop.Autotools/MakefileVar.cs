@@ -46,7 +46,7 @@ namespace MonoDevelop.Autotools
 		public string Name = String.Empty;
 
 		[ItemProperty (DefaultValue = "")]
-		public string Prefix = "";
+		public string Prefix = String.Empty;
 
 		public bool SaveEnabled = true;
 

@@ -115,7 +115,7 @@ namespace MonoDevelop.Prj2Make
 				monitor.ReportError (GettextCatalog.GetString ("Could not save solution: {0}", file), ex);
 				Console.WriteLine ("Could not save solution: {0}, {1}", file, ex);
 
-				if (tmpfilename != String.Empty)
+				if (!String.IsNullOrEmpty (tmpfilename))
 					File.Delete (tmpfilename);
 				throw;
 			} finally {
@@ -292,7 +292,7 @@ namespace MonoDevelop.Prj2Make
 
 						//FIXME: Bug in md :/ Workaround, setting the config name explicitly
 						//Solution folder's cce.ConfigurationName doesn't get set
-						if (cce.ConfigurationName == String.Empty) {
+						if (String.IsNullOrEmpty (cce.ConfigurationName)) {
 							if (combine.GetConfiguration (rootConfigName) != null)
 								cce.ConfigurationName = rootConfigName;
 						}

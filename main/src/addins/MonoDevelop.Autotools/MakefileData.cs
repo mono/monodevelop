@@ -60,11 +60,10 @@ namespace MonoDevelop.Autotools
 
 		public MakefileData ()
 		{
-			integrationEnabled = false;
 			relativeMakefileName = String.Empty;
 			buildTargetName = "all";
 			cleanTargetName = "clean";
-			executeTargetName = "";
+			executeTargetName = String.Empty;
 		}
 
 		public Project OwnerProject {
@@ -501,9 +500,8 @@ namespace MonoDevelop.Autotools
 				BuildVariables ["top_builddir"] = RelativeConfigureInPath;
 			}
 
-			if (AbsoluteMakefileName != String.Empty) {
+			if (!String.IsNullOrEmpty (AbsoluteMakefileName))
 				BuildVariables ["srcdir"] = BaseDirectory;
-			}
 		}
 
 		public string GetRelativePath (string path)
@@ -559,13 +557,13 @@ namespace MonoDevelop.Autotools
 			if (customRegex [index] == null || customRegex [index].ToString () != str) {
 				try {
 					customRegex [index] = new Regex (str, RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-				} catch (ArgumentException e) {
+				} catch (ArgumentException) {
 					// Invalid regex string
 					Console.WriteLine ("Invalid {0}Regex '{1}' specified for project {2}",
 						(index == 0 ? "Error" : "Warning"), str, OwnerProject.Name);
 					customRegex [index] = null;
 					if (throwOnError)
-						throw e;
+						throw;
 				}
 			}
 
@@ -770,7 +768,7 @@ namespace MonoDevelop.Autotools
 		void ReadFilesActual (MakefileVar fileVar, BuildAction buildAction, string id, bool promptForRemoval)
 		{
 			fileVar.Extra.Clear ();
-			if (!fileVar.Sync || fileVar.Name == String.Empty)
+			if (!fileVar.Sync || String.IsNullOrEmpty (fileVar.Name))
 				return;
 
 			//All filenames are treated as relative to the Makefile path
@@ -881,7 +879,7 @@ namespace MonoDevelop.Autotools
 
 		void ReadReferences (MakefileVar refVar, ReferenceType refType, string id, DotNetProject project)
 		{
-			if (refVar.Name == String.Empty || project == null)
+			if (String.IsNullOrEmpty (refVar.Name) || project == null)
 				return;
 
 			//All filenames are treated as relative to the Makefile path
@@ -949,7 +947,7 @@ namespace MonoDevelop.Autotools
 					return;
 				}
 
-				string pkgVarName = rname.Substring (2, rname.Length - 3).Replace ("_LIBS", "");
+				string pkgVarName = rname.Substring (2, rname.Length - 3).Replace ("_LIBS", String.Empty);
 				List<string> pkgNames = ConfiguredPackages.GetNamesFromVarName (pkgVarName);
 				if (pkgNames == null) {
 					Console.WriteLine ("Package named '{0}' not found in configure.in. Ignoring reference to {1}",
@@ -1701,7 +1699,7 @@ namespace MonoDevelop.Autotools
 				if (!s.EndsWith ("_LIBS"))
 					continue;
 
-				string pkgVarName = s.Replace ("_LIBS", "");
+				string pkgVarName = s.Replace ("_LIBS", String.Empty);
 				List<string> l = GetNamesFromVarName (pkgVarName);
 
 				if (l != null && l.Count == 1 &&
