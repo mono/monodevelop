@@ -1,3 +1,13 @@
+2007-12-17  Aaron Bockover <abockover@novell.com>
+
+	* configure.in, Makefile.am, theme-icons/: Added new Tango icons in all
+	proper theme sizes (16,22,24,32,48,scalable) for GNOME and install them
+	into the hicolor icon theme; Added the .icns file containing the Tango
+	icons of the appropriate sizes for the Mac
+
+	* Makefile.am, monodevelop.png: Do not install the legacy icon into the
+	deprecated pixbufs system data directory
+
 2007-12-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	
