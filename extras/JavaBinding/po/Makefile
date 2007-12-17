@@ -12,7 +12,7 @@ include $(top_srcdir)/config.make
 
 MDTOOL = $(LOCAL_PKGCONFIG) mono `$(LOCAL_PKGCONFIG) pkg-config --variable=libdir monodevelop`/bin/mdrun.exe
 BUILD_DIR = ../build/locale
-INSTALL_DIR = $(prefix)/lib/monodevelop/AddIns/JavaBinding/locale
+INSTALL_DIR = $(DESTDIR)$(prefix)/lib/monodevelop/AddIns/JavaBinding/locale
 
 FILES = \
 	ca.po\

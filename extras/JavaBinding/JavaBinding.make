@@ -32,7 +32,7 @@ BUILD_DIR = build
 
 endif
 
-INSTALL_DIR = $(prefix)/lib/monodevelop/AddIns/JavaBinding
+INSTALL_DIR = $(DESTDIR)$(prefix)/lib/monodevelop/AddIns/JavaBinding
 
 LINUX_PKGCONFIG = \
 	$(JAVABINDING_PC)  
@@ -129,8 +129,8 @@ install-local: $(ASSEMBLY) $(ASSEMBLY_MDB) $(JAVABINDING_PC)
 	make pre-install-local-hook prefix=$(prefix)
 	mkdir -p $(INSTALL_DIR)
 	cp $(ASSEMBLY) $(ASSEMBLY_MDB) $(INSTALL_DIR)
-	mkdir -p $(prefix)/lib/pkgconfig
-	test -z '$(JAVABINDING_PC)' || cp $(JAVABINDING_PC) $(prefix)/lib/pkgconfig
+	mkdir -p $(DESTDIR)$(prefix)/lib/pkgconfig
+	test -z '$(JAVABINDING_PC)' || cp $(JAVABINDING_PC) $(DESTDIR)$(prefix)/lib/pkgconfig
 	make post-install-local-hook prefix=$(prefix)
 
 uninstall-local: $(ASSEMBLY) $(ASSEMBLY_MDB) $(JAVABINDING_PC)
