@@ -1,3 +1,7 @@
+2007-12-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* configure: Updated add-in versions.
+
 2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* JavaBinding.mdp: Updated project file. The order of extended properties
