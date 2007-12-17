@@ -34,7 +34,7 @@ BUILD_DIR = build
 
 endif
 
-INSTALL_DIR = $(prefix)/lib/monodevelop/AddIns/BooBinding
+INSTALL_DIR = $(DESTDIR)$(prefix)/lib/monodevelop/AddIns/BooBinding
 
 LINUX_PKGCONFIG = \
 	$(BOOBINDING_PC)  
@@ -140,8 +140,8 @@ install-local: $(ASSEMBLY) $(ASSEMBLY_MDB) $(BOOBINDING_PC)
 	make pre-install-local-hook prefix=$(prefix)
 	mkdir -p $(INSTALL_DIR)
 	cp $(ASSEMBLY) $(ASSEMBLY_MDB) $(INSTALL_DIR)
-	mkdir -p $(prefix)/lib/pkgconfig
-	test -z '$(BOOBINDING_PC)' || cp $(BOOBINDING_PC) $(prefix)/lib/pkgconfig
+	mkdir -p $(DESTDIR)$(prefix)/lib/pkgconfig
+	test -z '$(BOOBINDING_PC)' || cp $(BOOBINDING_PC) $(DESTDIR)$(prefix)/lib/pkgconfig
 	make post-install-local-hook prefix=$(prefix)
 
 uninstall-local: $(ASSEMBLY) $(ASSEMBLY_MDB) $(BOOBINDING_PC)

@@ -35,7 +35,7 @@ BUILD_DIR = ../build
 
 endif
 
-INSTALL_DIR = $(prefix)/lib/monodevelop/AddIns/BooBinding
+INSTALL_DIR = $(DESTDIR)$(prefix)/lib/monodevelop/AddIns/BooBinding
 
 FILES = \
 	BooShell.boo 
