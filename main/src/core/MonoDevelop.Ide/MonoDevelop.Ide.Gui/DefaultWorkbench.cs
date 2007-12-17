@@ -162,7 +162,12 @@ namespace MonoDevelop.Ide.Gui
 			HeightRequest = normalBounds.Height;
 
 			DeleteEvent += new Gtk.DeleteEventHandler (OnClosing);
-			this.Icon = Services.Resources.GetBitmap ("md-sharp-develop-icon");
+			
+			if (Gtk.IconTheme.Default.HasIcon ("monodevelop")) 
+				Gtk.Window.DefaultIconName = "monodevelop";
+			else
+				this.Icon = Services.Resources.GetBitmap ("md-sharp-develop-icon");
+
 			//this.WindowPosition = Gtk.WindowPosition.None;
 
 			Gtk.Drag.DestSet (this, Gtk.DestDefaults.Motion | Gtk.DestDefaults.Highlight | Gtk.DestDefaults.Drop, targetEntryTypes, Gdk.DragAction.Copy);

@@ -1,3 +1,10 @@
+2007-12-17  Aaron Bockover <abockover@novell.com>
+
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: If the monodevelop icon is 
+	in the default icon theme, make it the default window icon for any of
+	the process' windows, otherwise just set the window icon to the old
+	resource
+
 2007-12-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Commands/FileCommands.cs: Moved Freedesktop.RecentFiles
