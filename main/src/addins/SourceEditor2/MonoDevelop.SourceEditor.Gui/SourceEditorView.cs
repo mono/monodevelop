@@ -555,6 +555,16 @@ namespace MonoDevelop.SourceEditor.Gui
 				IdeApp.HelpOperations.ShowHelp (MonoDevelop.Projects.Services.DocumentationService.GetHelpUrl(languageItem));
 		}
 		
+		[CommandUpdateHandler (HelpCommands.Help)]
+		internal void MonodocResolverUpdate (CommandInfo cinfo)
+		{
+			TextIter insertIter = buf.GetIterAtMark (buf.InsertMark);
+			ILanguageItem languageItem = GetLanguageItem (insertIter);
+			
+			if (languageItem == null)
+				cinfo.Bypass = true;
+		}
+		
 		ILanguageItem GetLanguageItem (TextIter ti)
 		{
 			string txt = buf.Text;
