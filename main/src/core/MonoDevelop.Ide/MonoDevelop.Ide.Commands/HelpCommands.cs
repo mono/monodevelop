@@ -40,6 +40,14 @@ namespace MonoDevelop.Ide.Commands
 		About
 	}
 	
+	internal class HelpHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			IdeApp.HelpOperations.ShowHelp ("root:");
+		}
+	}
+	
 	internal class TipOfTheDayHandler: CommandHandler
 	{
 		protected override void Run ()

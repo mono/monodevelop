@@ -1,3 +1,8 @@
+2007-12-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Added default handler
+	  for the help command that starts Monodoc.
+
 2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: TreeView
