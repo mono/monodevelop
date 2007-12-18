@@ -839,7 +839,7 @@ namespace MonoDevelop.Prj2Make
 			if (sec == null || String.Compare (sec.Val, "preSolution", true) != 0)
 				return;
 
-			for (int i = 0; i < sec.Count; i ++) {
+			for (int i = 0; i < sec.Count - 2; i ++) {
 				KeyValuePair<string, string> pair = SplitKeyValue (lines [i + sec.Start + 1].Trim ());
 
 				if (!entries.ContainsKey (pair.Value)) {
