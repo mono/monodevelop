@@ -66,7 +66,7 @@ namespace MonoDevelop.Gettext
 			TemplateEngine templateEngine = new TemplateEngine ();
 			templateEngine.Variables ["FILES"] = files.ToString ();
 			templateEngine.Variables ["BUILD_DIR"] = ".";
-			templateEngine.Variables ["INSTALL_DIR"] = dir;
+			templateEngine.Variables ["INSTALL_DIR"] = "$(DESTDIR)" + dir;
 			
 			StringWriter sw = new StringWriter ();
 			

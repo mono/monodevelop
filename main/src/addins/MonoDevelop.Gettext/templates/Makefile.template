@@ -28,4 +28,3 @@ $(MO_FILES): $(INSTALL_DIR)/%/LC_MESSAGES/$(PACKAGE).mo : $(BUILD_DIR)/%.gmo
 install-local: $(MO_FILES)
 
 CLEANFILES = $(GMO_FILES)
-EXTRA_DIST = Makefile

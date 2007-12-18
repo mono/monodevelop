@@ -1,3 +1,10 @@
+2007-12-18  Ankit Jain  <jankit@novell.com>
+
+	Fix bug #349419.
+	* templates/Makefile.template: Remove EXTRA_DIST, it gets generated.
+	* MakefileHandler.cs: Honor DESTDIR for INSTALL_DIR.
+	Based on patch by Wade Berrier.
+
 2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Gettext.mdp: Updated project files. The order of extended
