@@ -1,5 +1,13 @@
 2007-12-18  Ankit Jain  <jankit@novell.com>
 
+	Fix bug #349362
+	* CSharpResourceIdBuilder.cs:
+	* VBNetResourceIdBuilder.cs: If the source file has no class defined,
+	then treat it as if the resource had no dependent source file.
+	This also fixes my previous incorrect patch for bug #349099.
+
+2007-12-18  Ankit Jain  <jankit@novell.com>
+
 	* SlnFileFormat.cs (LoadNestedProjects): Handle empty section.
 
 2007-12-17  Ankit Jain  <jankit@novell.com>
