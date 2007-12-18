@@ -675,6 +675,7 @@
 				_label = "Help" 
 				icon = "gtk-help"
 				description = "Help"
+				defaultHandler = "MonoDevelop.Ide.Commands.HelpHandler"
 				shortcut = "F1" />
 		<Command id = "MonoDevelop.Ide.Commands.HelpCommands.TipOfTheDay"
 				defaultHandler = "MonoDevelop.Ide.Commands.TipOfTheDayHandler"
