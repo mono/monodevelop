@@ -1,3 +1,7 @@
+2007-12-18  Ankit Jain  <jankit@novell.com>
+
+	* SlnFileFormat.cs (LoadNestedProjects): Handle empty section.
+
 2007-12-17  Ankit Jain  <jankit@novell.com>
 
 	Fix bug #349099.
