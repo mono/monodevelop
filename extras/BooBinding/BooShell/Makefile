@@ -80,7 +80,7 @@ install-local: $(ASSEMBLY) $(ASSEMBLY_MDB)
 	make pre-install-local-hook prefix=$(prefix)
 	mkdir -p $(INSTALL_DIR)
 	cp $(ASSEMBLY) $(ASSEMBLY_MDB) $(INSTALL_DIR)
-	mkdir -p $(prefix)/lib/pkgconfig
+	mkdir -p $(DESTDIR)$(prefix)/lib/pkgconfig
 	make post-install-local-hook prefix=$(prefix)
 
 uninstall-local: $(ASSEMBLY) $(ASSEMBLY_MDB)

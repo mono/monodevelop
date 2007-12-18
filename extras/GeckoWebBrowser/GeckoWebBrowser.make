@@ -32,7 +32,7 @@ BUILD_DIR = build
 
 endif
 
-INSTALL_DIR = $(prefix)/lib/monodevelop/AddIns/GeckoWebBrowser
+INSTALL_DIR = $(DESTDIR)$(prefix)/lib/monodevelop/AddIns/GeckoWebBrowser
 
 LINUX_PKGCONFIG = \
 	$(GECKOWEBBROWSER_PC)  
@@ -102,13 +102,13 @@ install-local: $(ASSEMBLY) $(ASSEMBLY_MDB) $(GECKOWEBBROWSER_PC)
 	make pre-install-local-hook prefix=$(prefix)
 	mkdir -p $(INSTALL_DIR)
 	cp $(ASSEMBLY) $(ASSEMBLY_MDB) $(INSTALL_DIR)
-	mkdir -p $(prefix)/lib/pkgconfig
-	test -z '$(GECKOWEBBROWSER_PC)' || cp $(GECKOWEBBROWSER_PC) $(prefix)/lib/pkgconfig
+	mkdir -p $(DESTDIR)$(prefix)/lib/pkgconfig
+	test -z '$(GECKOWEBBROWSER_PC)' || cp $(GECKOWEBBROWSER_PC) $(DESTDIR)$(prefix)/lib/pkgconfig
 	make post-install-local-hook prefix=$(prefix)
 
 uninstall-local: $(ASSEMBLY) $(ASSEMBLY_MDB) $(GECKOWEBBROWSER_PC)
 	make pre-uninstall-local-hook prefix=$(prefix)
 	rm -f $(INSTALL_DIR)/$(notdir $(ASSEMBLY))
 	test -z '$(ASSEMBLY_MDB)' || rm -f $(INSTALL_DIR)/$(notdir $(ASSEMBLY_MDB))
-	test -z '$(GECKOWEBBROWSER_PC)' || rm -f $(prefix)/lib/pkgconfig/$(notdir $(GECKOWEBBROWSER_PC))
+	test -z '$(GECKOWEBBROWSER_PC)' || rm -f $(DESTDIR)$(prefix)/lib/pkgconfig/$(notdir $(GECKOWEBBROWSER_PC))
 	make post-uninstall-local-hook prefix=$(prefix)
