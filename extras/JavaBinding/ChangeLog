@@ -1,3 +1,7 @@
+2007-12-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* JavaBinding.make: Add missing pkg-config path update.
+
 2007-12-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* configure: Updated add-in versions.
