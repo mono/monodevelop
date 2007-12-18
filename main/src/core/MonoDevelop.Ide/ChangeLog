@@ -1,5 +1,10 @@
 2007-12-18  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Templates/FileTemplateReference.cs: Don't call Create in
+	  AddToProject because Create opens the files in the editor.
+
+2007-12-18  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Commands/HelpCommands.cs, MonoDevelop.Ide.addin.xml: Added
 	  default handler for the help command that starts Monodoc.
 
