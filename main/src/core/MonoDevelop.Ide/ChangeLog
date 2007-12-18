@@ -1,5 +1,9 @@
 2007-12-18  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* icons/SplashScreen.png: Updated to beta 3.
+
+2007-12-18  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui/HelpOperations.cs: Use gettext for the monodoc no
 	  found error dialog.
 
