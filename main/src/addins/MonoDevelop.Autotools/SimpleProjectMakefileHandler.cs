@@ -198,13 +198,13 @@ namespace MonoDevelop.Autotools
 					programFilesDir = programFilesDir.Replace ("@PACKAGE@", "$(PACKAGE)");
 					installDirs.Add (programFilesDir);
 					installTarget.Append ("\tmake pre-install-local-hook prefix=$(prefix)\n");
-					installTarget.AppendFormat ("\tmkdir -p {0}\n", programFilesDir);
-					installTarget.AppendFormat ("\tcp $(ASSEMBLY) $(ASSEMBLY_MDB) {0}\n", programFilesDir);
+					installTarget.AppendFormat ("\tmkdir -p $(DESTDIR){0}\n", programFilesDir);
+					installTarget.AppendFormat ("\tcp $(ASSEMBLY) $(ASSEMBLY_MDB) $(DESTDIR){0}\n", programFilesDir);
 
 					//remove dir?
 					uninstallTarget.Append ("\tmake pre-uninstall-local-hook prefix=$(prefix)\n");
-					uninstallTarget.AppendFormat ("\trm -f {0}/$(notdir $(ASSEMBLY))\n", programFilesDir);
-					uninstallTarget.AppendFormat ("\ttest -z '$(ASSEMBLY_MDB)' || rm -f {0}/$(notdir $(ASSEMBLY_MDB))\n", programFilesDir);
+					uninstallTarget.AppendFormat ("\trm -f $(DESTDIR){0}/$(notdir $(ASSEMBLY))\n", programFilesDir);
+					uninstallTarget.AppendFormat ("\ttest -z '$(ASSEMBLY_MDB)' || rm -f $(DESTDIR){0}/$(notdir $(ASSEMBLY_MDB))\n", programFilesDir);
 
 					installDeps.Append (" $(ASSEMBLY) $(ASSEMBLY_MDB)");
 
@@ -614,12 +614,12 @@ namespace MonoDevelop.Autotools
 				installDir = installDir.Replace ("@PACKAGE@", "$(PACKAGE)");
 
 				if (!installDirs.Contains (installDir))
-					installTarget.AppendFormat ("\tmkdir -p {0}\n", installDir);
+					installTarget.AppendFormat ("\tmkdir -p $(DESTDIR){0}\n", installDir);
 
-				installTarget.AppendFormat ("\ttest -z '$({0})' || cp $({0}) {1}\n", targetDeployVar, installDir);
+				installTarget.AppendFormat ("\ttest -z '$({0})' || cp $({0}) $(DESTDIR){1}\n", targetDeployVar, installDir);
 				installDeps.AppendFormat (" $({0})", targetDeployVar);
 
-				uninstallTarget.AppendFormat ("\ttest -z '$({1})' || rm -f {0}/$(notdir $({1}))\n", installDir, targetDeployVar);
+				uninstallTarget.AppendFormat ("\ttest -z '$({1})' || rm -f $(DESTDIR){0}/$(notdir $({1}))\n", installDir, targetDeployVar);
 			}
 		}
 
