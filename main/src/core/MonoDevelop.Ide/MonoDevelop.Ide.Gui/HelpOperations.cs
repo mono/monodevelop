@@ -82,13 +82,8 @@ namespace MonoDevelop.Ide.Gui
 					useExternalMonodoc = true;
 				pw = null;
 			} catch (Exception e) {
-				IdeApp.Services.MessageService.ShowError (String.Format (
-					"Could not start monodoc : {0}", e.ToString ()));
+				LoggingService.LogError ("Could not start monodoc : {0}", e);
 			}
-
-			if (!useExternalMonodoc)
-				IdeApp.Services.MessageService.ShowError (
-					"You need a newer monodoc to use it externally from monodevelop. Using the integrated help viewer now.");
 		}
 
 		void ShowHelpExternal (string topic)
@@ -127,7 +122,10 @@ namespace MonoDevelop.Ide.Gui
 
  		void ShowHelpIntegrated (string topic)
  		{
-			if (helpViewer == null) {
+			IdeApp.Services.MessageService.ShowError (
+				"The help window can't be shown. Monodoc v1.2.3 is not installed or could not be found.");
+			
+/*			if (helpViewer == null) {
 				helpViewer = new HelpViewer ();
 				helpViewer.LoadUrl (topic);
 				IdeApp.Workbench.OpenDocument (helpViewer, true);		
@@ -136,7 +134,7 @@ namespace MonoDevelop.Ide.Gui
 				helpViewer.LoadUrl (topic);
 				helpViewer.WorkbenchWindow.SelectWindow ();
 			}
-		}
+*/		}
 
 		public void ShowDocs (string text, Node matched_node, string url)
 		{
