@@ -1,3 +1,12 @@
+2007-12-18  Ankit Jain  <jankit@novell.com>
+
+	Fix bug #349419
+	* SimpleProjectMakefileHandler.cs: Honor DESTDIR.
+	* templates/Makefile.solution.template: Make sure exit_codes work
+	(escape shell so $$final_exit means something)
+	* templates/make-dist.targets: Remove spurious spaces.
+	Based on patches by Wade Berrier.
+
 2007-12-17  Ankit Jain  <jankit@novell.com>
 
 	* Minor fixes like use String.Empty instead of "" etc.
