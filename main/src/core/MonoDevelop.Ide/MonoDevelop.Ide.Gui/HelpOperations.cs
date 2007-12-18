@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.Gui
 					"monodoc", "--help", "", outWriter, errWriter, 
 					delegate { 
 						if (pw.ExitCode != 0) 
-							IdeApp.Services.MessageService.ShowError (
+							LoggingService.LogError (
 								String.Format (
 								"MonoDoc exited with a exit code = {0}. Error : {1}", 
 								pw.ExitCode, errWriter.ToString ()));
@@ -123,7 +123,7 @@ namespace MonoDevelop.Ide.Gui
  		void ShowHelpIntegrated (string topic)
  		{
 			IdeApp.Services.MessageService.ShowError (
-				"The help window can't be shown. Monodoc v1.2.3 is not installed or could not be found.");
+				GettextCatalog.GetString ("The help window can't be shown. Monodoc v1.2.3 is not installed or could not be found."));
 			
 /*			if (helpViewer == null) {
 				helpViewer = new HelpViewer ();

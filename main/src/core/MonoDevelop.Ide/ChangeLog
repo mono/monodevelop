@@ -1,5 +1,10 @@
 2007-12-18  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui/HelpOperations.cs: Use gettext for the monodoc no
+	  found error dialog.
+
+2007-12-18  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.addin.xml: Hide the help pad.
 	* MonoDevelop.Ide.Gui/HelpOperations.cs: Show an error if monodoc can't be
 	  found, or if it does not support remote control.
