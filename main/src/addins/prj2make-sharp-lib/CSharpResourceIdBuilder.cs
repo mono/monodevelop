@@ -40,31 +40,8 @@ namespace MonoDevelop.Prj2Make
 	{
 		public string GetResourceId (ProjectFile pf)
 		{
-			if (String.IsNullOrEmpty (pf.DependsOn)) {
-				string fname = pf.RelativePath;
-				if (pf.IsExternalToProject)
-					fname = Path.GetFileName (fname);
-				else
-					fname = FileService.NormalizeRelativePath (fname);
-
-				if (String.Compare (Path.GetExtension (fname), ".resx", true) == 0) {
-					fname = Path.ChangeExtension (fname, ".resources");
-				} else {
-					string only_filename, culture, extn;
-					if (Utils.TrySplitResourceName (fname, out only_filename, out culture, out extn)) {
-						//remove the culture from fname
-						//foo.it.bmp -> foo.bmp
-						fname = only_filename + "." + extn;
-					}
-				}
-
-				string rname = fname.Replace ('/', '.');
-
-				if (String.IsNullOrEmpty (pf.Project.DefaultNamespace))
-					return rname;
-				else
-					return pf.Project.DefaultNamespace + "." + rname;
-			}
+			if (String.IsNullOrEmpty (pf.DependsOn))
+				return GetResourceIdForNoClass (pf);
 
 			string ns = null;
 			string classname = null;
@@ -94,16 +71,14 @@ namespace MonoDevelop.Prj2Make
 							ns = String.Empty;
 					}
 
-					if (tok == "class" || tok == "struct") {
+					if (tok == "class") {
 						classname = GetNextToken (rdr);
 						break;
 					}
 				}
 
-				if (classname == null) {
-					Console.WriteLine ("Warning: No class/struct found in '{0}'.", pf.DependsOn);	
-					return null;
-				}
+				if (classname == null)
+					return GetResourceIdForNoClass (pf);
 
 				string culture, extn, only_filename;
 				if (Utils.TrySplitResourceName (pf.RelativePath, out only_filename, out culture, out extn))
@@ -116,6 +91,33 @@ namespace MonoDevelop.Prj2Make
 				else
 					return ns + '.' + classname + extn;
 			}
+		}
+
+		static string GetResourceIdForNoClass (ProjectFile pf)
+		{
+			string fname = pf.RelativePath;
+			if (pf.IsExternalToProject)
+				fname = Path.GetFileName (fname);
+			else
+				fname = FileService.NormalizeRelativePath (fname);
+
+			if (String.Compare (Path.GetExtension (fname), ".resx", true) == 0) {
+				fname = Path.ChangeExtension (fname, ".resources");
+			} else {
+				string only_filename, culture, extn;
+				if (Utils.TrySplitResourceName (fname, out only_filename, out culture, out extn)) {
+					//remove the culture from fname
+					//foo.it.bmp -> foo.bmp
+					fname = only_filename + "." + extn;
+				}
+			}
+
+			string rname = fname.Replace ('/', '.');
+
+			if (String.IsNullOrEmpty (pf.Project.DefaultNamespace))
+				return rname;
+			else
+				return pf.Project.DefaultNamespace + "." + rname;
 		}
 
 		/* Special parser for C# files
