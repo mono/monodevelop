@@ -1,3 +1,13 @@
+2007-12-19  Ankit Jain  <jankit@novell.com>
+
+	* MakefileHandler.cs: Set top_srcdir and all_target correctly.
+	* TranslationProject.cs: Set the default value for RelPath
+	to empty string instead of null.
+	Remove AbsPath.
+	* MonoDevelop.Gettext/TranslationProjectOptionsDialog: Update.
+	* templates/Makefile.template: Make top_srcdir and all_target template
+	variables to allow setting from MakefileHandler.
+
 2007-12-18  Ankit Jain  <jankit@novell.com>
 
 	Fix bug #349419.

@@ -2,7 +2,7 @@
 # Warning: This is an automatically generated file, do not edit!
 
 srcdir=.
-top_srcdir=../
+top_srcdir=%%TOP_SRCDIR%%
 
 include $(top_srcdir)/Makefile.include
 include $(top_srcdir)/config.make
@@ -15,7 +15,7 @@ FILES = %%FILES%%
 GMO_FILES = $(patsubst %.po,$(BUILD_DIR)/%.gmo,$(FILES))
 MO_FILES = $(foreach po,$(FILES), $(INSTALL_DIR)/$(basename $(po))/LC_MESSAGES/$(PACKAGE).mo)
 
-all-local: $(GMO_FILES)
+%%ALL_TARGET%%: $(GMO_FILES)
 
 $(GMO_FILES): $(BUILD_DIR)/%.gmo: %.po
 	mkdir -p $(BUILD_DIR)
