@@ -1,5 +1,9 @@
 2007-12-19  Ben Motmans <ben.motmans@gmail.com> 
 
+	* Makefile.am: added missing makefiles
+
+2007-12-19  Ben Motmans <ben.motmans@gmail.com> 
+
 	* Dialogs, Dialogs/SelectProcessDialog.cs,
 	  Dialogs/SelectExecutableDialog.cs, Codons, Codons/ProfilerCodon.cs,
 	  IProfilingSnapshot.cs, ProfilerState.cs, Pads, Pads/ProfilingPad.cs,

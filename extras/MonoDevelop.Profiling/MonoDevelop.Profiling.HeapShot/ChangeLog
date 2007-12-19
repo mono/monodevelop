@@ -1,5 +1,9 @@
 2007-12-19  Ben Motmans <ben.motmans@gmail.com> 
 
+	* Makefile.am: added missing makefiles
+
+2007-12-19  Ben Motmans <ben.motmans@gmail.com> 
+
 	* Snapshot, Snapshot/TypeInfo.cs, Snapshot/FieldInfo.cs,
 	  Snapshot/ObjectInfo.cs, Snapshot/ReferenceNode.cs,
 	  Snapshot/ObjectReference.cs, Snapshot/ObjectMapReader.cs,

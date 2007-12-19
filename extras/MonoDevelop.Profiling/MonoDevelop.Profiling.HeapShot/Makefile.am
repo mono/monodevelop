@@ -1,0 +1,44 @@
+ADDIN_BUILD = $(top_builddir)/build
+ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Profiling.HeapShot.dll
+REFS =  \
+	-pkg:glib-sharp-2.0 \
+	-pkg:gtk-sharp-2.0 \
+	-pkg:mono-addins \
+	-pkg:monodevelop \
+	-r:../build/MonoDevelop.Profiling.dll \
+	-r:Mono.Posix \
+	-r:System
+
+FILES =  \
+	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.Profiling.HeapShot.ReferenceTreeViewer.cs \
+	Gui/HeapShotProfilingSnapshotNodeBuilder.cs \
+	Gui/HeapShotProfilingSnapshotView.cs \
+	Gui/ReferenceTreeViewer.cs \
+	HeapShotProfiler.cs \
+	HeapShotProfilingSnapshot.cs \
+	Snapshot/FieldInfo.cs \
+	Snapshot/ObjectInfo.cs \
+	Snapshot/ObjectMapReader.cs \
+	Snapshot/ObjectReference.cs \
+	Snapshot/ReferenceNode.cs \
+	Snapshot/TypeInfo.cs
+
+RES =  \
+	gtk-gui/gui.stetic \
+	MonoDevelop.Profiling.HeapShot.addin.xml
+
+all: $(ASSEMBLY)
+
+$(ASSEMBLY): $(FILES) $(build_resources)
+	mkdir -p $(ADDIN_BUILD)
+	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
+
+
+assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.Profiling
+assembly_DATA = $(ASSEMBLY)
+
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
+EXTRA_DIST = $(FILES) $(RES)
+
+include $(top_srcdir)/Makefile.include
