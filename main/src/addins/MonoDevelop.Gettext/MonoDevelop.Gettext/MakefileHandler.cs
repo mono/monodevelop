@@ -64,9 +64,11 @@ namespace MonoDevelop.Gettext
 			dir = dir.Replace ("@PACKAGE@", "$(PACKAGE)");
 			
 			TemplateEngine templateEngine = new TemplateEngine ();
+			templateEngine.Variables ["TOP_SRCDIR"] = FileService.AbsoluteToRelativePath (project.BaseDirectory, ctx.TargetCombine.BaseDirectory);
 			templateEngine.Variables ["FILES"] = files.ToString ();
 			templateEngine.Variables ["BUILD_DIR"] = ".";
 			templateEngine.Variables ["INSTALL_DIR"] = "$(DESTDIR)" + dir;
+			templateEngine.Variables ["ALL_TARGET"] = (ctx.TargetCombine.BaseDirectory == project.BaseDirectory) ? "all-local" : "all";
 			
 			StringWriter sw = new StringWriter ();
 			

@@ -53,11 +53,8 @@ namespace MonoDevelop.Gettext
 		[ItemProperty("outputType")]
 		TranslationOutputType outputType;
 			
-		[ItemProperty("relPath")]
-		string relPath = null;
-		
-		[ItemProperty("absPath")]
-		string absPath = null;
+		[ItemProperty(Name = "relPath", DefaultValue = "")]
+		string relPath = String.Empty;
 		
 		public string PackageName {
 			get { return packageName; }
@@ -67,11 +64,6 @@ namespace MonoDevelop.Gettext
 		public string RelPath {
 			get { return relPath; }
 			set { relPath = value; }
-		}
-		
-		public string AbsPath {
-			get { return absPath; }
-			set { absPath = value; }
 		}
 		
 		public TranslationOutputType OutputType {
@@ -126,7 +118,6 @@ namespace MonoDevelop.Gettext
 			OutputType  = (TranslationOutputType)Enum.Parse (typeof(TranslationOutputType), template.GetAttribute ("outputType"));
 			PackageName = template.GetAttribute ("packageName");
 			RelPath     = template.GetAttribute ("relPath");
-			AbsPath     = template.GetAttribute ("absPath");
 		}
 		
 		string GetFileName (string isoCode)

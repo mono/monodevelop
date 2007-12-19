@@ -43,13 +43,11 @@ namespace MonoDevelop.Gettext
 			
 			entryPackageName.Text        = project.PackageName;
 			entryRelPath.Text            = project.RelPath;
-			folderentrySystemPath.Path   = project.AbsPath;
 			radiobuttonRelPath.Active    = project.OutputType == TranslationOutputType.RelativeToOutput;
 			radiobuttonSystemPath.Active = project.OutputType == TranslationOutputType.SystemPath;
 			
 			entryPackageName.Changed += new EventHandler (UpdateInitString);
 			entryRelPath.Changed += new EventHandler (UpdateInitString);
-			folderentrySystemPath.PathChanged  += new EventHandler (UpdateInitString);
 			radiobuttonRelPath.Activated += new EventHandler (UpdateInitString);
 			radiobuttonSystemPath.Activated += new EventHandler (UpdateInitString);
 			
@@ -57,7 +55,6 @@ namespace MonoDevelop.Gettext
 			this.buttonOk.Clicked += delegate {
 				project.PackageName = entryPackageName.Text;
 				project.RelPath = entryRelPath.Text;
-				project.AbsPath = folderentrySystemPath.Path;
 				if (radiobuttonRelPath.Active) {
 					project.OutputType = TranslationOutputType.RelativeToOutput;
 				} else {
@@ -157,12 +154,9 @@ namespace MonoDevelop.Gettext
 		
 		void UpdateInitString (object sender, EventArgs e)
 		{
-			string path;
-			if (radiobuttonRelPath.Active) {
+			string path = String.Empty;
+			if (radiobuttonRelPath.Active)
 				path = "./" + entryRelPath.Text;
-			} else {
-				path = folderentrySystemPath.Path;
-			}
 			labelInitString.Text = "Mono.Unix.Catalog.Init (\"" + entryPackageName.Text + "\", \"" + path + "\");";
 		}
 		
