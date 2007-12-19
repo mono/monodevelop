@@ -43,8 +43,12 @@ namespace MonoDevelop.Projects
 				Console.WriteLine ("Usage: mdtool project-export <source-project-file> [-d:dest-path] [-f:format-name]");
 				Console.WriteLine ("");
 				Console.WriteLine ("Options");
-				Console.WriteLine (" -d:<dest-path>    Directory where the project will be exported.");
-				Console.WriteLine (" -f:<format-name>  Format to which export the project or solution.");
+				Console.WriteLine ("  -d:<dest-path>      Directory where the project will be exported.");
+				Console.WriteLine ("  -f:\"<format-name>\"  Format to which export the project or solution.");
+				Console.WriteLine ("  -l                  Show a list of all allowed target formats.");
+				Console.WriteLine ("");
+				Console.WriteLine ("  The format name is optional. A list of allowed file formats will be");
+				Console.WriteLine ("  shown if none is provided.");
 				Console.WriteLine ("");
 				return 0;
 			}
@@ -52,6 +56,7 @@ namespace MonoDevelop.Projects
 			string projectFile = null;
 			string destPath = null;
 			string formatName = null;
+			bool formatList = false;
 			
 			foreach (string s in arguments)
 			{
@@ -59,8 +64,10 @@ namespace MonoDevelop.Projects
 					destPath = s.Substring (3);
 				else if (s.StartsWith ("-f:"))
 					formatName = s.Substring (3);
+				else if (s == "-l")
+					formatList = true;
 				else if (projectFile != null) {
-					Console.WriteLine ("Only one project can be converted at a time");
+					Console.WriteLine ("Only one project can be converted at a time.");
 					return 1;
 				}
 				else
@@ -68,7 +75,7 @@ namespace MonoDevelop.Projects
 			}
 			
 			if (projectFile == null) {
-				Console.WriteLine ("Project or solution file name not provided");
+				Console.WriteLine ("Project or solution file name not provided.");
 				return 1;
 			}
 			
@@ -78,7 +85,8 @@ namespace MonoDevelop.Projects
 				return 1;
 			}
 			
-			IProgressMonitor monitor = new ConsoleProgressMonitor ();
+			ConsoleProgressMonitor monitor = new ConsoleProgressMonitor ();
+			monitor.IgnoreLogMessages = true;
 			CombineEntry entry = Services.ProjectService.ReadCombineEntry (projectFile, monitor);
 			IFileFormat[] formats = Services.ProjectService.FileFormats.GetFileFormatsForObject (entry);
 			
@@ -89,12 +97,14 @@ namespace MonoDevelop.Projects
 			
 			IFileFormat format = null;
 			
-			if (formatName == null) {
+			if (formatName == null || formatList) {
 				Console.WriteLine ();
 				Console.WriteLine ("Target formats:");
 				for (int n=0; n<formats.Length; n++)
 					Console.WriteLine ("  {0}. {1}", n + 1, formats [n].Name);
 				Console.WriteLine ();
+				if (formatList)
+					return 0;
 				
 				int op = 0;
 				do {
