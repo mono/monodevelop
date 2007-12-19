@@ -6,6 +6,7 @@
       <Entry build="True" name="JavaBinding" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Database" configuration="Debug" />
       <Entry build="False" name="GeckoWebBrowser" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.Profiling" configuration="" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="AspNetEdit" configuration="Release" />
@@ -13,6 +14,7 @@
       <Entry build="True" name="JavaBinding" configuration="Release" />
       <Entry build="True" name="MonoDevelop.Database" configuration="Release" />
       <Entry build="True" name="GeckoWebBrowser" configuration="Release" />
+      <Entry build="True" name="MonoDevelop.Profiling" configuration="" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="AspNetEdit" single="True">
@@ -21,6 +23,7 @@
     <Execute type="None" entry="JavaBinding" />
     <Execute type="None" entry="MonoDevelop.Database" />
     <Execute type="None" entry="GeckoWebBrowser" />
+    <Execute type="None" entry="MonoDevelop.Profiling" />
   </StartMode>
   <Entries>
     <Entry filename="AspNetEdit/AspNetEdit.mds" />
@@ -28,5 +31,6 @@
     <Entry filename="JavaBinding/JavaBinding.mds" />
     <Entry filename="MonoDevelop.Database/MonoDevelop.Database.mds" />
     <Entry filename="GeckoWebBrowser/GeckoWebBrowser.mds" />
+    <Entry filename="MonoDevelop.Profiling/MonoDevelop.Profiling.mds" />
   </Entries>
 </Combine>

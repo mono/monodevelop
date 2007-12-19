@@ -1,0 +1,26 @@
+2007-12-19  Ben Motmans <ben.motmans@gmail.com> 
+
+	* Dialogs, Dialogs/SelectProcessDialog.cs,
+	  Dialogs/SelectExecutableDialog.cs, Codons, Codons/ProfilerCodon.cs,
+	  IProfilingSnapshot.cs, ProfilerState.cs, Pads, Pads/ProfilingPad.cs,
+	  Pads/ProfilingSnapshotCollectionNodeBuilder.cs, ChangeLog,
+	  ProfilingSnapshotCollection.cs, AbstractProfilerSnapshot.cs,
+	  ProfilingSnapshotEventArgs.cs, MonoDevelop.Profiling.addin.xml,
+	  MonoDevelop.Profiling.mdp, IProfiler.cs,
+	  MonoProfilerExecutionHandler.cs, ProfilingOperations.cs, Commands,
+	  Commands/ToolCommands.cs, Commands/AbstractProfilerList.cs,
+	  Commands/PadCommands.cs, Commands/ProjectCommands.cs,
+	  ProfilingContext.cs, ProfilerEventArgs.cs, ProfilerStateEventArgs.cs,
+	  gtk-gui, gtk-gui/MonoDevelop.Profiling.SelectProcessDialog.cs,
+	  gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.Profiling.SelectExecutableDialog.cs,
+	  gtk-gui/objects.xml, gtk-gui/gui.stetic,
+	  ProcessProfilerExecutionHandler.cs, AbstractProfiler.cs, icons,
+	  icons/Icons.16x16.Profiling.GC.png,
+	  icons/Icons.16x16.Profiling.Summary.png,
+	  icons/Icons.16x16.Profiling.Snapshot.png,
+	  icons/Icons.16x16.Profiling.History.png,
+	  icons/Icons.16x16.Profiling.Filter.png, DummyProcessAsyncOperation.cs,
+	  ProfilingService.cs: Initial code commit
+
+

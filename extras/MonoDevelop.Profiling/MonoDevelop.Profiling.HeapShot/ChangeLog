@@ -1,0 +1,15 @@
+2007-12-19  Ben Motmans <ben.motmans@gmail.com> 
+
+	* Snapshot, Snapshot/TypeInfo.cs, Snapshot/FieldInfo.cs,
+	  Snapshot/ObjectInfo.cs, Snapshot/ReferenceNode.cs,
+	  Snapshot/ObjectReference.cs, Snapshot/ObjectMapReader.cs,
+	  HeapShotProfiler.cs, Gui, Gui/ReferenceTreeViewer.cs,
+	  Gui/HeapShotProfilingSnapshotView.cs,
+	  Gui/HeapShotProfilingSnapshotNodeBuilder.cs,
+	  MonoDevelop.Profiling.HeapShot.addin.xml, ChangeLog, gtk-gui,
+	  gtk-gui/generated.cs, gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.Profiling.HeapShot.ReferenceTreeViewer.cs,
+	  gtk-gui/gui.stetic, MonoDevelop.Profiling.HeapShot.mdp,
+	  HeapShotProfilingSnapshot.cs: Initial code commit
+
+

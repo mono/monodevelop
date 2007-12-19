@@ -1,3 +1,8 @@
+2007-12-19  Ben Motmans <ben.motmans@gmail.com> 
+
+	* MonoDevelop.Profiling: Profiling addin
+	* extras.mds: added profiling addin
+
 2007-12-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* extras.mds: Don't build GeckoBrowser by default.

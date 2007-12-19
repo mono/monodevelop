@@ -1,0 +1,14 @@
+2007-12-19  Ben Motmans <ben.motmans@gmail.com> 
+
+	* Snapshot, Snapshot/Util.cs, Snapshot/Backtrace.cs, Snapshot/Type.cs,
+	  Snapshot/Resize.cs, Snapshot/ObjectStats.cs, Snapshot/Gc.cs,
+	  Snapshot/OutfileReader.cs, Snapshot/Frame.cs,
+	  MonoDevelop.Profiling.HeapBuddy.addin.xml,
+	  MonoDevelop.Profiling.HeapBuddy.mdp, HeapBuddyProfilingSnapshot.cs, Gui,
+	  Gui/HeapBuddyProfilingSnapshotNodeBuilder.cs, Gui/HistoryView.cs,
+	  Gui/BacktracesView.cs, Gui/HistoryNodeBuilder.cs, Gui/FakeNodes.cs,
+	  Gui/BacktracesNodeBuilder.cs, Gui/TypesView.cs, Gui/TypesNodeBuilder.cs,
+	  ChangeLog, gtk-gui, gtk-gui/generated.cs, gtk-gui/gui.stetic,
+	  HeapBuddyProfiler.cs: Initial code commit
+
+
