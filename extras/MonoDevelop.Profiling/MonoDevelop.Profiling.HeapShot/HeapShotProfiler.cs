@@ -68,9 +68,8 @@ namespace MonoDevelop.Profiling.HeapShot
 		{
 			lock (sync) {
 				State = ProfilerState.TakingSnapshot;
-				
-				//System.Diagnostics.Process.Start ("kill", "-PROF " + Context.AsyncOperation.ProcessId);
-				System.Diagnostics.Process.Start ("kill", "-9 " + Context.AsyncOperation.ProcessId);
+
+				System.Diagnostics.Process.Start ("kill", "-PROF " + Context.AsyncOperation.ProcessId);
 				ThreadPool.QueueUserWorkItem (new WaitCallback (AsyncTakeSnapshot));
 			}
 		}

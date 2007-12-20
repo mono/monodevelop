@@ -1,3 +1,8 @@
+2007-12-20  Ben Motmans <ben.motmans@gmail.com> 
+
+	* HeapShotProfiler.cs: send the -PROF signal instead of -9
+	* Makefile.am: automatic MD changes
+
 2007-12-19  Ben Motmans <ben.motmans@gmail.com> 
 
 	* Makefile.am: added missing makefiles

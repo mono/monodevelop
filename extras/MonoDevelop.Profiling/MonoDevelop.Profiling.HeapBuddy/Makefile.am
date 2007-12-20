@@ -1,10 +1,10 @@
 ADDIN_BUILD = $(top_builddir)/build
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Profiling.HeapBuddy.dll
 REFS =  \
-	-pkg:glib-sharp-2.0 \
-	-pkg:gtk-sharp-2.0 \
-	-pkg:mono-addins \
-	-pkg:monodevelop \
+	$(GLIB_SHARP_LIBS) \
+	$(GTK_SHARP_LIBS) \
+	$(MONO_ADDINS_LIBS) \
+	$(MONODEVELOP_LIBS) \
 	-r:../build/MonoDevelop.Profiling.dll \
 	-r:Mono.Posix \
 	-r:System

@@ -1,3 +1,7 @@
+2007-12-20  Ben Motmans <ben.motmans@gmail.com> 
+
+	* Makefile.am: automatic MD changes
+
 2007-12-19  Ben Motmans <ben.motmans@gmail.com> 
 
 	* Makefile.am: added missing makefiles
