@@ -316,16 +316,19 @@ namespace MonoDevelop.Components.Docking
 				return;
 			DockGroupItem gitem = container.FindDockGroupItem (item.Id);
 			
-			if (gitem == null && visible) {
-				// The item is not present in the layout. Add it now.
-				if (!string.IsNullOrEmpty (item.DefaultLocation))
-					gitem = AddDefaultItem (container.Layout, item);
-					
-				if (gitem == null) {
-					// No default position
-					gitem = new DockGroupItem (this, item);
-					container.Layout.AddObject (gitem);
-				}
+			if (gitem == null) {
+				if (visible) {
+					// The item is not present in the layout. Add it now.
+					if (!string.IsNullOrEmpty (item.DefaultLocation))
+						gitem = AddDefaultItem (container.Layout, item);
+						
+					if (gitem == null) {
+						// No default position
+						gitem = new DockGroupItem (this, item);
+						container.Layout.AddObject (gitem);
+					}
+				} else
+					return; // Already invisible
 			}
 			gitem.SetVisible (visible);
 			container.RelayoutWidgets ();
