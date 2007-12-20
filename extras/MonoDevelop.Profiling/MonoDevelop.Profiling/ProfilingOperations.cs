@@ -116,6 +116,9 @@ namespace MonoDevelop.Profiling
 			
 			DispatchService.GuiDispatch (delegate () {
 				IdeApp.Workbench.Context = context;
+
+				Pad pad = IdeApp.Workbench.GetPad<ProfilingPad> ();
+				pad.Visible = true;
 			});
 		}
 	}

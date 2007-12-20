@@ -49,17 +49,17 @@
 	<Extension path = "/MonoDevelop/Ide/WorkbenchContexts">
 		<WorkbenchContext id = "Profile">
 			<ContextPad id = "ProjectPad"/>
-			<ContextPad id = "ClassPad" defaultVisible = "False"/>
-			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.FileScout" defaultVisible = "False"/>
-			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.HelpTree" defaultVisible = "False"/>
+			<ContextPad id = "ClassPad"/>
+			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.FileScout"/>
+			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.HelpTree"/>
 			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.ErrorListPad"/>
-			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.TaskListPad" defaultVisible = "False"/>
+			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.TaskListPad"/>
 			<ContextPad id = "MonoDevelop.Profiling.ProfilingPad"/>
 		</WorkbenchContext>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/WorkbenchContexts/Edit">
-		<ContextPad id = "MonoDevelop.Profiling.ProfilingPad" defaultVisible = "False"/>
+		<ContextPad id = "MonoDevelop.Profiling.ProfilingPad"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands">

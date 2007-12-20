@@ -1,3 +1,11 @@
+2007-12-20  Ben Motmans <ben.motmans@gmail.com> 
+
+	* MonoDevelop.Profiling.addin.xml: removed the 'defaultVisible' attribute
+	  from all ContextPad nodes since it no longer exists
+	* ProfilingOperations.cs: show the profiling pad when switching to the
+	  'Profile' context
+	* Makefile.am: automatic changes by MD
+
 2007-12-19  Ben Motmans <ben.motmans@gmail.com> 
 
 	* Makefile.am: added missing makefiles
