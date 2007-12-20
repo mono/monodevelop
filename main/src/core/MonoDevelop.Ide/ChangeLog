@@ -1,3 +1,9 @@
+2007-12-20  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Ide.Templates/FileTemplateReference.cs (AddToProject): Use
+	'this.name' instead of 'nameNotUsed' as the filename. Fixes creation of
+	asp.net projects.
+
 2007-12-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* icons/SplashScreen.png: Updated to beta 3.
