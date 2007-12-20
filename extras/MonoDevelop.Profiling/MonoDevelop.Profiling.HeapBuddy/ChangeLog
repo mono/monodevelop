@@ -1,5 +1,10 @@
 2007-12-20  Ben Motmans <ben.motmans@gmail.com> 
 
+	* HeapBuddyProfiler.cs: show a warning message when trying to kill the
+	  profiler + handle snapshot failures
+
+2007-12-20  Ben Motmans <ben.motmans@gmail.com> 
+
 	* Makefile.am: automatic MD changes
 
 2007-12-19  Ben Motmans <ben.motmans@gmail.com> 

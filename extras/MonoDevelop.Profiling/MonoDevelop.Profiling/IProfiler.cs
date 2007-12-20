@@ -45,7 +45,8 @@ namespace MonoDevelop.Profiling
 		IExecutionHandlerFactory GetProcessExecutionHandlerFactory (Process process);
 		
 		event ProfilingSnapshotEventHandler SnapshotTaken;
-		event ProfilerStateEventHandler StateChanged;
+		event EventHandler SnapshotFailed;
+		event ProfilerStateEventHandler StateChanged;		
 		
 		event EventHandler Started;
 		event EventHandler Stopped;

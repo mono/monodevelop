@@ -84,8 +84,10 @@ namespace MonoDevelop.Profiling.HeapShot
 			bool success = false;
 			
 			while (!success) {
-				if (--attempts == 0)
-					return; //TODO: SnapshotError event?
+				if (--attempts == 0) {
+					OnSnapshotFailed (EventArgs.Empty);
+					return;
+				}
 				
 				Thread.Sleep (500);
 				if (!File.Exists (dumpFile))

@@ -43,12 +43,14 @@ namespace MonoDevelop.Profiling
 	{
 		public static event ProfilerEventHandler ActiveProfilerChanged;
 		public static event ProfilingSnapshotEventHandler SnapshotTaken;
+		public static event EventHandler SnapshotFailed;
 		
 		private static IProfiler activeProfiler;
 		private static Dictionary<string, IProfiler> profilers;
 		private static ProfilingSnapshotCollection profilingSnapshots;
 		
 		private static ProfilingSnapshotEventHandler snapshotHandler;
+		private static EventHandler snapshotFailedHandler;
 		private static ProfilerStateEventHandler stateHandler;
 		
 		static ProfilingService ()
@@ -60,8 +62,9 @@ namespace MonoDevelop.Profiling
 				profilers.Add (prof.Identifier, prof);
 			}
 			
-			snapshotHandler = new ProfilingSnapshotEventHandler (OnSnapshotTaken);
-			stateHandler = new ProfilerStateEventHandler (OnStateChanged);
+			snapshotHandler = new ProfilingSnapshotEventHandler (HandleSnapshotTaken);
+			stateHandler = new ProfilerStateEventHandler (HandleStateChanged);
+			snapshotFailedHandler = new EventHandler (HandleSnapshotFailed);
 			
 			string configFile = Path.Combine (PropertyService.ConfigPath, "MonoDevelop.Profiling.xml");
 			profilingSnapshots = new ProfilingSnapshotCollection (configFile);
@@ -80,12 +83,14 @@ namespace MonoDevelop.Profiling
 						if (activeProfiler.State != ProfilerState.Inactive)
 						          activeProfiler.Stop ();
 						activeProfiler.SnapshotTaken -= snapshotHandler;
-						activeProfiler.StateChanged -= stateHandler;
+						activeProfiler.SnapshotFailed -= snapshotFailedHandler;
+						activeProfiler.StateChanged -= stateHandler;						
 					}
 					
 					activeProfiler = value;
 					if (activeProfiler != null) {
 						activeProfiler.SnapshotTaken += snapshotHandler;
+						activeProfiler.SnapshotFailed += snapshotFailedHandler;
 						activeProfiler.StateChanged += stateHandler;
 					} else {
 						ProfilingOperations.RestoreWorkbenchContext ();
@@ -184,7 +189,7 @@ namespace MonoDevelop.Profiling
 			}
 		}
 		
-		private static void OnSnapshotTaken (object sender, ProfilingSnapshotEventArgs args)
+		private static void HandleSnapshotTaken (object sender, ProfilingSnapshotEventArgs args)
 		{
 			profilingSnapshots.Add (args.Snapshot);
 			
@@ -192,7 +197,15 @@ namespace MonoDevelop.Profiling
 				SnapshotTaken (sender, args);
 		}
 		
-		private static void OnStateChanged (object sender, ProfilerStateEventArgs args)
+		private static void HandleSnapshotFailed (object sender, EventArgs args)
+		{
+			Services.MessageService.ShowError (GettextCatalog.GetString ("Unable to take a profiling snapshot."));
+			
+			if (SnapshotFailed != null)
+				SnapshotFailed (sender, args);
+		}
+		
+		private static void HandleStateChanged (object sender, ProfilerStateEventArgs args)
 		{
 			if (args.State == ProfilerState.Inactive)
 				ActiveProfiler = null;

@@ -65,15 +65,18 @@ namespace MonoDevelop.Profiling.HeapBuddy
 		
 		public override void TakeSnapshot ()
 		{
-			//TODO: show a message dialog:
-			//"The process or application should exit cleanly"
-			// "cancel and close the application manually" - "i don't care, just kill it"
+			bool terminate = Services.MessageService.AskQuestion (
+				GettextCatalog.GetString ("Heap-Buddy requires the application to terminate cleanly.\nAre you sure you want to terminate the application (this might result in the loss of some profiling data)?")
+				, GettextCatalog.GetString ("Take snapshot")
+			);
 
-			lock (sync) {
-				State = ProfilerState.TakingSnapshot;
-				
-				System.Diagnostics.Process.Start ("kill", "-PROF " + Context.AsyncOperation.ProcessId);
-				ThreadPool.QueueUserWorkItem (new WaitCallback (AsyncTakeSnapshot));
+			if (terminate) {
+				lock (sync) {
+					State = ProfilerState.TakingSnapshot;
+					
+					System.Diagnostics.Process.Start ("kill", "-PROF " + Context.AsyncOperation.ProcessId);
+					ThreadPool.QueueUserWorkItem (new WaitCallback (AsyncTakeSnapshot));
+				}
 			}
 		}
 		
@@ -87,8 +90,10 @@ namespace MonoDevelop.Profiling.HeapBuddy
 			bool success = false;
 			
 			while (!success) {
-				if (--attempts == 0)
-					return; //TODO: SnapshotError event?
+				if (--attempts == 0) {
+					OnSnapshotFailed (EventArgs.Empty);
+					return;
+				}
 				
 				Thread.Sleep (500);
 				if (!File.Exists (dumpFile))
@@ -132,10 +137,10 @@ namespace MonoDevelop.Profiling.HeapBuddy
 		public override void Stop ()
 		{
 			lock (sync) {
-				if (State == ProfilerState.Profiling) {
+				if (State != ProfilerState.Inactive) {
 					Context.AsyncOperation.Cancel ();
-				}
-				State = ProfilerState.Inactive;
+					State = ProfilerState.Inactive;
+				}				
 			}
 		}
 		

@@ -1,5 +1,10 @@
 2007-12-20  Ben Motmans <ben.motmans@gmail.com> 
 
+	* IProfiler.cs, AbstractProfiler.cs, ProfilingService.cs: handle snapshot
+	  failures
+
+2007-12-20  Ben Motmans <ben.motmans@gmail.com> 
+
 	* MonoDevelop.Profiling.addin.xml: removed the 'defaultVisible' attribute
 	  from all ContextPad nodes since it no longer exists
 	* ProfilingOperations.cs: show the profiling pad when switching to the

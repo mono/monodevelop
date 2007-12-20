@@ -45,6 +45,7 @@ namespace MonoDevelop.Profiling
 		protected object sync = new object ();
 
 		public event ProfilingSnapshotEventHandler SnapshotTaken;
+		public event EventHandler SnapshotFailed;
 		public event ProfilerStateEventHandler StateChanged;
 		
 		public event EventHandler Started;
@@ -106,6 +107,12 @@ namespace MonoDevelop.Profiling
 		{
 			if (SnapshotTaken != null)
 				SnapshotTaken (this, args);
+		}
+		
+		protected virtual void OnSnapshotFailed (EventArgs args)
+		{
+			if (SnapshotFailed != null)
+				SnapshotFailed (this, args);
 		}
 		
 		protected virtual void OnStateChanged (ProfilerStateEventArgs args)
