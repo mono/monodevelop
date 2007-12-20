@@ -6,7 +6,20 @@ profile=stable
 usage ()
 {
 	echo "Usage : configure [--prefix=PREFIX] [--profile=PROFILE]"
-	echo
+	echo ""
+	echo "The MonoDevelop build system consists of 'main', which contains the "
+	echo "main distribution, and a number of additional addins in subdirectories "
+	echo "of 'extras'. The 'extras' addins are designed to be built and "
+	echo "distributed separately, and therefore build against your system- "
+	echo "installed MonoDevelop by default. However, this script sets them up to "
+	echo "build against the MonoDevelop in 'main', and ensures that they will be "
+	echo "loaded when MonoDevelop is launched with 'make run' in this top-level"
+	echo "directory. This is very useful for development and testing."
+	echo ""
+	echo "A 'profile' is a list of 'extras' directories and arguments for their "
+	echo "configure scripts, and arguments for the 'main' configure script. To "
+	echo "add a profile, simply create a file in the 'profiles' directory."
+	echo ""
 	echo "Profiles available :"
 	ls -1 profiles
 }
