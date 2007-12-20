@@ -29,11 +29,11 @@ namespace MonoDevelop.Autotools
 					if (s.Length > 3)
 						defaultConfig = s.Substring (3);
 				} else if (s [0] == '-') {
-					Console.WriteLine ("Error: Unknown option {0}", s);
+					Console.WriteLine (GettextCatalog.GetString ("Error: Unknown option {0}", s));
 					return 1;
 				} else {
 					if (filename != null) {
-						Console.WriteLine ("Error: Filename already specified - {0}, another filename '{1}' cannot be specified.", filename, s);
+						Console.WriteLine (GettextCatalog.GetString ("Error: Filename already specified - {0}, another filename '{1}' cannot be specified.", filename, s));
 						return 1;
 					}
 
@@ -42,22 +42,22 @@ namespace MonoDevelop.Autotools
 			}
 
 			if (filename == null) {
-				Console.WriteLine ("Error: Solution file not specified.");
+				Console.WriteLine (GettextCatalog.GetString ("Error: Solution file not specified."));
 				ShowUsage ();
 				return 1;
 			}
 
-			Console.WriteLine ("Loading solution file {0}", filename);
+			Console.WriteLine (GettextCatalog.GetString ("Loading solution file {0}", filename));
 			ConsoleProgressMonitor monitor = new ConsoleProgressMonitor ();
 			CombineEntry centry = Services.ProjectService.ReadCombineEntry (filename, monitor);
 			Combine combine = centry as Combine;
 			if (combine == null) {
-				Console.WriteLine ("Error: Makefile generation supported only for solutions.\n");
+				Console.WriteLine (GettextCatalog.GetString ("Error: Makefile generation supported only for solutions.\n"));
 				return 1;
 			}
 
 			if (defaultConfig == null || !CheckValidConfig (combine, defaultConfig)) {
-				Console.WriteLine ("\nInvalid configuration {0}. Valid configurations : ", defaultConfig);
+				Console.WriteLine (GettextCatalog.GetString ("\nInvalid configuration {0}. Valid configurations : ", defaultConfig));
 				for (int i = 0; i < combine.Configurations.Count; i ++) {
 					CombineConfiguration cc = (CombineConfiguration) combine.Configurations [i];
 					Console.WriteLine ("\t{0}. {1}", i + 1, cc.Name);
@@ -66,7 +66,7 @@ namespace MonoDevelop.Autotools
 				int configCount = combine.Configurations.Count;
 				int op = 0;
 				do {
-					Console.Write ("Select configuration : ");
+					Console.Write (GettextCatalog.GetString ("Select configuration : "));
 					string s = Console.ReadLine ();
 					if (s.Length == 0)
 						return 1;
@@ -128,10 +128,10 @@ namespace MonoDevelop.Autotools
 		{
 			Console.WriteLine ("generate-makefiles <solution-file> [--simple-makefiles] [-d:default-config]");
 			Console.WriteLine ();
-			Console.WriteLine ("Options");
-			Console.WriteLine (" --simple-makefiles -s\n\tGenerates set of Makefiles with the most common targets, and a configuration script that does a basic check of package dependencies. Default is to generate Makefile structure based on Autotools with the standard targets and configuration scripts.");
+			Console.WriteLine (GettextCatalog.GetString ("Options"));
+			Console.WriteLine (GettextCatalog.GetString (" --simple-makefiles -s\n\tGenerates set of Makefiles with the most common targets, and a configuration script that does a basic check of package dependencies. Default is to generate Makefile structure based on Autotools with the standard targets and configuration scripts."));
 			Console.WriteLine ();
-			Console.WriteLine (" -d:default-config\n\tConfiguration that the Makefile will build by default. Other configurations can be selected via the '--config' or '--enable-*' option of the generated configure script.");
+			Console.WriteLine (GettextCatalog.GetString (" -d:default-config\n\tConfiguration that the Makefile will build by default. Other configurations can be selected via the '--config' or '--enable-*' option of the generated configure script."));
 			Console.WriteLine ();
 		}
 
