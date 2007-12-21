@@ -1,3 +1,27 @@
+2007-12-21  Miguel de Icaza  <miguel@novell.com>
+
+	* Utils.cs (MapAndResolvePath): this routine only value add was to
+	call Path.GetFullPath, the problem is that the internals of
+	SlnMaker.MapPath could be internally broken if not fully formed
+	internally (in particular when coping with non-existing
+	directories and files). 
+
+	* MsPrjHelper.cs (SlnMaker.MapPath): a handful of changes to help
+	consumers of this class.   It now always returns paths that are
+	Path.GetFullPath processed first.   This just makes the code
+	homogenous.
+
+	Uses Directory.GetFileSystemEntries instead of trying to be smart
+	about Directories and Files and handling them separatedly, as in
+	Unix symlinks are not accounted for (which breaks if the full path
+	name contains symlinks).
+
+	It now also handles "..", which avoids the bug of OutputPath
+	entries ending up with "../DIR/../DIR/../DIR" as I reported
+	privately to Ankit a few days ago. 
+
+	This should fix the Paint.NET 3 problems.
+
 2007-12-18  Ankit Jain  <jankit@novell.com>
 
 	Fix bug #349362

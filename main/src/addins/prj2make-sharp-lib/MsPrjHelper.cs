@@ -802,8 +802,9 @@ namespace MonoDevelop.Prj2Make
 			if (basePath != null)
 				path = Path.Combine (basePath, path);
 
-			if (System.IO.File.Exists (path))
-				return path;
+			if (System.IO.File.Exists (path)){
+				return Path.GetFullPath (path);
+			}
 				
 			if (Path.IsPathRooted (path)) {
 					
@@ -815,10 +816,13 @@ namespace MonoDevelop.Prj2Make
 				
 				for (int n=0; n<names.Length; n++) {
 					string[] entries;
-					if (n < names.Length - 1)
-						entries = Directory.GetDirectories (part);
-					else
-						entries = Directory.GetFiles (part);
+
+					if (names [n] == ".."){
+						part = Path.GetFullPath (part + "/..");
+						continue;
+					}
+					
+					entries = Directory.GetFileSystemEntries (part);
 					
 					string fpath = null;
 					foreach (string e in entries) {
@@ -829,16 +833,18 @@ namespace MonoDevelop.Prj2Make
 					}
 					if (fpath == null) {
 						// Part of the path does not exist. Can't do any more checking.
+						part = Path.GetFullPath (part);
 						for (; n < names.Length; n++)
 							part += "/" + names[n];
 						return part;
 					}
-					
+
 					part = fpath;
 				}
-				return part;
-			} else
-				return path;
+				return Path.GetFullPath (part);
+			} else {
+				return Path.GetFullPath (path);
+			}
 		}
 	}   
 }

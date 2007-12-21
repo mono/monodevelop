@@ -234,10 +234,7 @@ namespace MonoDevelop.Prj2Make
 
 		public static string MapAndResolvePath (string basePath, string relPath)
 		{
-			string ret = SlnMaker.MapPath (basePath, relPath);
-			if (ret == null)
-				return ret;
-			return Path.GetFullPath (ret);
+			return SlnMaker.MapPath (basePath, relPath);
 		}
 
 		public static string CanonicalizePath (string path)
