@@ -214,10 +214,17 @@ namespace MonoDevelop.Autotools
 
 					conf_vars.AppendFormat ("include $(top_srcdir)/Makefile.include\n");
 					conf_vars.AppendFormat ("include $(top_srcdir)/config.make\n\n");
-					if (ctx.TargetCombine.BaseDirectory != project.BaseDirectory)
-						//Don't emit for top level project makefile(eg. pdn.make), as it would be
-						//included by top level solution makefile
-						conf_vars.AppendFormat ("#include $(srcdir)/custom-hooks.make\n\n");
+
+					
+					// Don't emit for top level project makefile(eg. pdn.make), as it would be
+					// included by top level solution makefile
+					if (ctx.TargetCombine.BaseDirectory != project.BaseDirectory){
+						string customhooks = Path.Combine (project.BaseDirectory, "custom-hooks.make");
+						bool include = File.Exists (customhooks);
+					
+						Console.WriteLine ("------ {0} for {1}", include, customhooks); 
+						conf_vars.AppendFormat ("{0}include $(srcdir)/custom-hooks.make\n\n", include ? "" : "#");
+					}
 				}
 
 				bool buildEnabled;
