@@ -1,3 +1,8 @@
+2007-12-22  Ben Motmans <ben.motmans@gmail.com> 
+
+	* NodeBuilders/ParametersNodeBuilder.cs, NodeBuilders/ColumnsNodeBuilder.cs:
+	  Add multiple children inside a single dispatch [fixes #339726]
+
 2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Database.ConnectionManager.mdp: Updated project file. The

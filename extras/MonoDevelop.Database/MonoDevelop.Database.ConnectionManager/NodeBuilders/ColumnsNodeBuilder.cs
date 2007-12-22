@@ -92,13 +92,12 @@ namespace MonoDevelop.Database.ConnectionManager
 			
 			if (columns == null)
 				return;
-			
-			foreach (ColumnSchema column in columns) {
-				DispatchService.GuiDispatch (delegate {
-					builder.AddChild (column);
-				});
-			}
+
 			DispatchService.GuiDispatch (delegate {
+				foreach (ColumnSchema column in columns) {
+					LoggingService.LogError (column.Name);
+					builder.AddChild (column);
+				}
 				builder.Expanded = true;
 			});
 		}

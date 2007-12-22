@@ -85,12 +85,12 @@ namespace MonoDevelop.Database.ConnectionManager
 
 			ParameterSchemaCollection parameters = node.ConnectionContext.SchemaProvider.GetProcedureParameters (node.Procedure);
 			
-			foreach (ParameterSchema parameter in parameters) {
-				DispatchService.GuiDispatch (delegate {
+			DispatchService.GuiDispatch (delegate {
+				foreach (ParameterSchema parameter in parameters) {
 					builder.AddChild (parameter);
-					builder.Expanded = true;
-				});
-			}
+				}
+				builder.Expanded = true;
+			});
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
