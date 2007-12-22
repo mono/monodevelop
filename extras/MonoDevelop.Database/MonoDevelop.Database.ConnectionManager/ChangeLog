@@ -1,5 +1,9 @@
 2007-12-22  Ben Motmans <ben.motmans@gmail.com> 
 
+	* NodeBuilders/ColumnsNodeBuilder.cs: removed temporary debug statement
+
+2007-12-22  Ben Motmans <ben.motmans@gmail.com> 
+
 	* NodeBuilders/ParametersNodeBuilder.cs, NodeBuilders/ColumnsNodeBuilder.cs:
 	  Add multiple children inside a single dispatch [fixes #339726]
 

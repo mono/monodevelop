@@ -95,7 +95,6 @@ namespace MonoDevelop.Database.ConnectionManager
 
 			DispatchService.GuiDispatch (delegate {
 				foreach (ColumnSchema column in columns) {
-					LoggingService.LogError (column.Name);
 					builder.AddChild (column);
 				}
 				builder.Expanded = true;
