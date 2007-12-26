@@ -1,3 +1,11 @@
+2007-12-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* VBNetBinding.addin.xml: Remove Gtk# 1.0 template. Add the
+	  RuntimeOptionsPanel so that projects can change their clr version.
+	* templates/VBGtkSharpProject.xpt.xml, Makefile.am: Remove Gtk# 1.0
+	  template.
+	* VBLanguageBinding.cs: Add support for 2.0 clr versions.
+
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Gui/CodeGenerationPanel.cs: Fix warning.

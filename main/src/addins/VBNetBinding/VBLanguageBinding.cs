@@ -92,7 +92,7 @@ namespace VBBinding
 		
 		public ClrVersion[] GetSupportedClrVersions ()
 		{
-			return new ClrVersion[] { ClrVersion.Net_1_1 };
+			return new ClrVersion[] { ClrVersion.Net_1_1, ClrVersion.Net_2_0 };
 		}
 	}
 }

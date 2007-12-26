@@ -6,12 +6,12 @@ REFS =  \
 	$(GLADE_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/bin/NRefactory.dll \
+	-r:$(top_srcdir)/build/bin/MonoDevelop.Components.dll \
+	-r:$(top_srcdir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_srcdir)/build/bin/MonoDevelop.Core.Gui.dll \
+	-r:$(top_srcdir)/build/bin/MonoDevelop.Ide.dll \
+	-r:$(top_srcdir)/build/bin/MonoDevelop.Projects.dll \
+	-r:$(top_srcdir)/build/bin/NRefactory.dll \
 	-r:System \
 	-r:System.Drawing \
 	-r:System.Xml
@@ -40,7 +40,6 @@ RES =  \
 	templates/EmptyVBProject.xpt.xml \
 	templates/VBConsoleApplicationProject.xpt.xml \
 	templates/VBGtkSharp2Project.xpt.xml \
-	templates/VBGtkSharpProject.xpt.xml \
 	VB.glade \
 	VBNetBinding.addin.xml
 
