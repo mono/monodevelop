@@ -31,8 +31,10 @@ using System.Collections;
 using System.CodeDom.Compiler;
 using System.IO;
 using System.Diagnostics;
+using System.Text;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Core.Execution;
@@ -48,14 +50,28 @@ namespace MonoDevelop.Ide.Gui
 		DefaultMonitorPad outputPad;
 		event EventHandler stopRequested;
 		
+		StringBuilder logOutputBuilder = new StringBuilder ();
+		bool outputDispatcherRunning = false;
+		GLib.TimeoutHandler outputDispatcher;
+		object dispatcherLock = new object (); 
+		
 		public OutputProgressMonitor (DefaultMonitorPad pad, string title, string icon)
 		{
 			pad.AsyncOperation = this.AsyncOperation;
 			outputPad = pad;
 			outputPad.BeginProgress (title);
+			
+			//using an anon method here to make sure we don't mess with the remoted dispatch mechanisms
+			//need to batch copy text on a timer to avoid cost of context switching
+			//also, hooking up our own handler to avoid remoting through the AsyncDispatch of base class's WriteLogInternal
+			LogTextWriter l = (LogTextWriter) Log;
+			l.TextWritten += delegate (string text) {
+				if (outputPad == null) throw GetDisposedException ();
+				outputPad.WriteText (text);
+			};
 		}
 		
-		[AsyncDispatch]
+		[FreeDispatch]
 		public override void BeginTask (string name, int totalWork)
 		{
 			if (outputPad == null) throw GetDisposedException ();
@@ -63,18 +79,12 @@ namespace MonoDevelop.Ide.Gui
 			base.BeginTask (name, totalWork);
 		}
 		
-		[AsyncDispatch]
+		[FreeDispatch]
 		public override void EndTask ()
 		{
 			if (outputPad == null) throw GetDisposedException ();
 			outputPad.EndTask ();
 			base.EndTask ();
-		}
-		
-		protected override void OnWriteLog (string text)
-		{
-			if (outputPad == null) throw GetDisposedException ();
-			outputPad.WriteText (text);
 		}
 		
 		protected override void OnCompleted ()

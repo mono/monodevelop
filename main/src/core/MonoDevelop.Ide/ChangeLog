@@ -1,3 +1,16 @@
+2007-12-27  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs,
+	  MonoDevelop.Ide.Gui/OutputProgressMonitor.cs: Make the GUI monitor pad
+	  thread safe for certain operations, with optimisations for large
+	  quantities raw text. The progress monitor can now avoid two remoting
+	  calls per line of output to context switch into the GUI thread. This
+	  also reduces pad updates on the GUI thread to maximum of one per 100ms.
+	  Fixes "Bug 350611 - MonoDevelop hangs when running program that dumps
+	  large amounts of output to console". This might be leaking memory, but
+	  I'm not certain, as it may be fragmentation instead. Either way it's
+	  better than a hang.
+
 2007-12-20  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Ide.Templates/FileTemplateReference.cs (AddToProject): Use

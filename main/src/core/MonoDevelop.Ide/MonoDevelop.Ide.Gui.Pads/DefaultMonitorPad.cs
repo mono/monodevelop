@@ -69,6 +69,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 		string typeTag;
 
 		private IAsyncOperation asyncOperation;
+		
+		Queue updates = new Queue ();
+		GLib.TimeoutHandler outputDispatcher;
+		bool outputDispatcherRunning = false;
+		
+		const int MAX_BUFFER_LENGTH = 100000; 
 
 		public DefaultMonitorPad (string typeTag, string icon, int instanceNum)
 		{
@@ -129,6 +135,24 @@ namespace MonoDevelop.Ide.Gui.Pads
 			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (OnCombineClosed));
 
 			Control.ShowAll ();
+			
+			outputDispatcher = new GLib.TimeoutHandler (outputDispatchHandler);
+		}
+		
+		bool outputDispatchHandler ()
+		{
+			lock (updates.SyncRoot) {
+				if (!outputDispatcherRunning) {
+					updates.Clear ();
+				} else {
+					while (updates.Count > 0) {
+						QueuedUpdate up = (QueuedUpdate) updates.Dequeue ();
+						up.Execute (this);
+					}
+					outputDispatcherRunning = false;
+				}
+			}
+			return false;
 		}
 
 		void IPadContent.Initialize (IPadWindow window)
@@ -148,6 +172,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		void OnButtonClearClick (object sender, EventArgs e)
 		{
+			lock (updates.SyncRoot) outputDispatcherRunning = false;
 			buffer.Clear();
 		}
 
@@ -158,11 +183,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		void OnCombineOpen (object sender, CombineEventArgs e)
 		{
+			lock (updates.SyncRoot) outputDispatcherRunning = false;
 			buffer.Clear ();
 		}
 
 		void OnCombineClosed (object sender, CombineEventArgs e)
 		{
+			lock (updates.SyncRoot) outputDispatcherRunning = false;
 			buffer.Clear ();
 		}
 		
@@ -177,6 +204,17 @@ namespace MonoDevelop.Ide.Gui.Pads
 		public bool AllowReuse {
 			get { return !buttonStop.Sensitive && !buttonPin.Active; }
 		}
+		
+		void addQueuedUpdate (QueuedUpdate update)
+		{
+			lock (updates.SyncRoot) {
+				updates.Enqueue (update);
+				if (!outputDispatcherRunning) {
+					GLib.Timeout.Add (200, outputDispatcher);
+					outputDispatcherRunning = true;
+				}
+			}
+		}
 
 		public void BeginProgress (string title)
 		{
@@ -186,7 +224,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			buttonStop.Sensitive = true;
 		}
 		
-		public void BeginTask (string name, int totalWork)
+		protected void UnsafeBeginTask (string name, int totalWork)
 		{
 			if (name != null && name.Length > 0) {
 				Indent ();
@@ -195,11 +233,23 @@ namespace MonoDevelop.Ide.Gui.Pads
 				indents.Push (null);
 
 			if (name != null) {
-				AddText (Environment.NewLine + name + Environment.NewLine, bold);
+				UnsafeAddText (Environment.NewLine + name + Environment.NewLine, bold);
 			}
 		}
 		
+		public void BeginTask (string name, int totalWork)
+		{
+			QueuedBeginTask bt = new QueuedBeginTask (name, totalWork);
+			addQueuedUpdate (bt);
+		}
+		
 		public void EndTask ()
+		{
+			QueuedEndTask et = new QueuedEndTask ();
+			addQueuedUpdate (et);
+		}
+		
+		protected void UnsafeEndTask ()
 		{
 			if (indents.Count > 0 && indents.Pop () != null)
 				Unindent ();
@@ -207,17 +257,29 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		public void WriteText (string text)
 		{
-			WriteText (text, null);
+			lock (updates.SyncRoot) {
+				if (updates.Count > 0) {
+					QueuedTextWrite w = updates.Peek () as QueuedTextWrite;
+					if (w != null && w.Tag == null) {
+						w.Text.Append (text);
+						return;
+					}
+				}
+			}
+			QueuedTextWrite qtw = new QueuedTextWrite (text, null);
+			addQueuedUpdate (qtw);
 		}
 		
 		public void WriteError (string text)
 		{
-			WriteText (text, errorTag);
+			QueuedTextWrite w = new QueuedTextWrite (text, errorTag);
+			addQueuedUpdate (w);
 		}
 		
 		void WriteText (string text, TextTag extraTag)
 		{
-			AddText (text, extraTag);
+			QueuedTextWrite w = new QueuedTextWrite (text, extraTag);
+			addQueuedUpdate (w);
 		}
 		
 		public virtual Gtk.Widget Control {
@@ -251,8 +313,16 @@ namespace MonoDevelop.Ide.Gui.Pads
 			buttonStop.Sensitive = false;
 		}
 		
-		void AddText (string text, TextTag extraTag)
+		protected void UnsafeAddText (string text, TextTag extraTag)
 		{
+			//don't allow the pad to hold more than MAX_BUFFER_LENGTH chars
+			int overrun = (buffer.CharCount + text.Length) - MAX_BUFFER_LENGTH;
+			if (overrun > 0) {
+				TextIter start = buffer.StartIter;
+				TextIter end = buffer.GetIterAtOffset (overrun);
+				buffer.Delete (ref start, ref end);
+			}
+			
 			TextIter it = buffer.EndIter;
 			ScrolledWindow window = textEditorControl.Parent as ScrolledWindow;
 			bool scrollToEnd = true;
@@ -298,6 +368,51 @@ namespace MonoDevelop.Ide.Gui.Pads
 	
 		public void RedrawContent()
 		{
+		}
+		
+		private abstract class QueuedUpdate
+		{
+			public abstract void Execute (DefaultMonitorPad pad);
+		}
+		
+		private class QueuedTextWrite : QueuedUpdate
+		{
+			public System.Text.StringBuilder Text;
+			public TextTag Tag;
+			public override void Execute (DefaultMonitorPad pad)
+			{
+				pad.UnsafeAddText (Text.ToString (), Tag);
+			}
+			
+			public QueuedTextWrite (string text, TextTag tag)
+			{
+				Text = new System.Text.StringBuilder (text);
+				Tag = tag;
+			}
+		}
+		
+		private class QueuedBeginTask : QueuedUpdate
+		{
+			public string Name;
+			public int TotalWork;
+			public override void Execute (DefaultMonitorPad pad)
+			{
+				pad.UnsafeBeginTask (Name, TotalWork);
+			}
+			
+			public QueuedBeginTask (string name, int totalWork)
+			{
+				TotalWork = totalWork;
+				Name = name;
+			}
+		}
+		
+		private class QueuedEndTask : QueuedUpdate
+		{
+			public override void Execute (DefaultMonitorPad pad)
+			{
+				pad.UnsafeEndTask ();
+			}
 		}
 	}
 }
