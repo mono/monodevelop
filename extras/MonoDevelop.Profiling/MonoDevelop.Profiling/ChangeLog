@@ -1,3 +1,8 @@
+2007-12-27  Ben Motmans <ben.motmans@gmail.com> 
+
+	* Makefile.am: patch from Zach Lute to fix a compilation problem when
+	  monodevelop isn't installed [fixes #350769]
+
 2007-12-20  Ben Motmans <ben.motmans@gmail.com> 
 
 	* IProfiler.cs, AbstractProfiler.cs, ProfilingService.cs: handle snapshot

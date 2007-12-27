@@ -4,8 +4,8 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
+	$(MONODEVELOP_CORE_ADDINS_LIBS) \
 	$(MONODEVELOP_LIBS) \
-	-pkg:monodevelop-core-addins \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml
