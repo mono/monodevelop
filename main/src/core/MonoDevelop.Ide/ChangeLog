@@ -1,6 +1,12 @@
 2007-12-27  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs,
+	  MonoDevelop.Ide.Gui/OutputProgressMonitor.cs: Avoid another remoted
+	  field. Improve comments. Avoid excessively re-launching output handler.
+
+2007-12-27  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs,
 	  MonoDevelop.Ide.Gui/OutputProgressMonitor.cs: Make the GUI monitor pad
 	  thread safe for certain operations, with optimisations for large
 	  quantities raw text. The progress monitor can now avoid two remoting

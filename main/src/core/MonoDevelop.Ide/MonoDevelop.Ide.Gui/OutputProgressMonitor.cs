@@ -61,14 +61,12 @@ namespace MonoDevelop.Ide.Gui
 			outputPad = pad;
 			outputPad.BeginProgress (title);
 			
-			//using an anon method here to make sure we don't mess with the remoted dispatch mechanisms
-			//need to batch copy text on a timer to avoid cost of context switching
-			//also, hooking up our own handler to avoid remoting through the AsyncDispatch of base class's WriteLogInternal
+			//using the DefaultMonitorPad's method here to make sure we don't mess with the remoted dispatch 
+			//mechanisms *at all* (even just accessing a field from an anon delegate invokes remoting) 
+			//We're hooking up our own handler to avoid cost of context switching via remoting through the 
+			//AsyncDispatch of base class's WriteLogInternal
 			LogTextWriter l = (LogTextWriter) Log;
-			l.TextWritten += delegate (string text) {
-				if (outputPad == null) throw GetDisposedException ();
-				outputPad.WriteText (text);
-			};
+			l.TextWritten += outputPad.WriteText;
 		}
 		
 		[FreeDispatch]

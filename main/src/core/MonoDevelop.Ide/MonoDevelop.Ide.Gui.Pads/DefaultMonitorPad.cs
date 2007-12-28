@@ -139,20 +139,24 @@ namespace MonoDevelop.Ide.Gui.Pads
 			outputDispatcher = new GLib.TimeoutHandler (outputDispatchHandler);
 		}
 		
+		//mechanism to to batch copy text when large amounts are being dumped
 		bool outputDispatchHandler ()
 		{
 			lock (updates.SyncRoot) {
-				if (!outputDispatcherRunning) {
+				if (updates.Count == 0) {
+					outputDispatcherRunning = false;
+					return false;
+				} else if (!outputDispatcherRunning) {
 					updates.Clear ();
+					return false;
 				} else {
 					while (updates.Count > 0) {
 						QueuedUpdate up = (QueuedUpdate) updates.Dequeue ();
 						up.Execute (this);
 					}
-					outputDispatcherRunning = false;
 				}
 			}
-			return false;
+			return true;
 		}
 
 		void IPadContent.Initialize (IPadWindow window)
@@ -257,6 +261,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		public void WriteText (string text)
 		{
+			//raw text has an extra optimisation here, as we can append it to existing updates
 			lock (updates.SyncRoot) {
 				if (updates.Count > 0) {
 					QueuedTextWrite w = updates.Peek () as QueuedTextWrite;
