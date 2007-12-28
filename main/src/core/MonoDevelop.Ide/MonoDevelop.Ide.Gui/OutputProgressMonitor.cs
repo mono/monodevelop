@@ -50,10 +50,7 @@ namespace MonoDevelop.Ide.Gui
 		DefaultMonitorPad outputPad;
 		event EventHandler stopRequested;
 		
-		StringBuilder logOutputBuilder = new StringBuilder ();
-		bool outputDispatcherRunning = false;
-		GLib.TimeoutHandler outputDispatcher;
-		object dispatcherLock = new object (); 
+		LogTextWriter logger = new LogTextWriter ();
 		
 		public OutputProgressMonitor (DefaultMonitorPad pad, string title, string icon)
 		{
@@ -63,10 +60,11 @@ namespace MonoDevelop.Ide.Gui
 			
 			//using the DefaultMonitorPad's method here to make sure we don't mess with the remoted dispatch 
 			//mechanisms *at all* (even just accessing a field from an anon delegate invokes remoting) 
-			//We're hooking up our own handler to avoid cost of context switching via remoting through the 
+			//We're hooking up our own logger to avoid cost of context switching via remoting through the 
 			//AsyncDispatch of base class's WriteLogInternal
-			LogTextWriter l = (LogTextWriter) Log;
-			l.TextWritten += outputPad.WriteText;
+			//HORRIBLE HACK:To get it properly deteched, we have to replace the actual logger.
+			logger.TextWritten += outputPad.WriteText;
+			((LogTextWriter) base.Log).TextWritten += outputPad.WriteText;
 		}
 		
 		[FreeDispatch]
@@ -122,12 +120,12 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		TextWriter IConsole.Out {
-			get { return Log; }
+			get { return logger; }
 		}
 		
 		TextWriter IConsole.Error {
-			get { return Log; }
-		}
+			get { return logger; }
+		} 
 		
 		bool IConsole.CloseOnDispose {
 			get { return false; }

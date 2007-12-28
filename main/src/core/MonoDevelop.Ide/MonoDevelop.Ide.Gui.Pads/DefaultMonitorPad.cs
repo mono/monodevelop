@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		GLib.TimeoutHandler outputDispatcher;
 		bool outputDispatcherRunning = false;
 		
-		const int MAX_BUFFER_LENGTH = 100000; 
+		const int MAX_BUFFER_LENGTH = 20 * 1024; 
 
 		public DefaultMonitorPad (string typeTag, string icon, int instanceNum)
 		{
@@ -214,7 +214,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			lock (updates.SyncRoot) {
 				updates.Enqueue (update);
 				if (!outputDispatcherRunning) {
-					GLib.Timeout.Add (200, outputDispatcher);
+					GLib.Timeout.Add (500, outputDispatcher);
 					outputDispatcherRunning = true;
 				}
 			}
@@ -266,7 +266,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				if (updates.Count > 0) {
 					QueuedTextWrite w = updates.Peek () as QueuedTextWrite;
 					if (w != null && w.Tag == null) {
-						w.Text.Append (text);
+						w.Write (text);
 						return;
 					}
 				}
@@ -382,7 +382,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		private class QueuedTextWrite : QueuedUpdate
 		{
-			public System.Text.StringBuilder Text;
+			private System.Text.StringBuilder Text;
 			public TextTag Tag;
 			public override void Execute (DefaultMonitorPad pad)
 			{
@@ -393,6 +393,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 			{
 				Text = new System.Text.StringBuilder (text);
 				Tag = tag;
+			}
+			
+			public void Write (string s)
+			{
+				Text.Append (s);
+				if (Text.Length > MAX_BUFFER_LENGTH)
+					Text.Remove (0, Text.Length - MAX_BUFFER_LENGTH);
 			}
 		}
 		

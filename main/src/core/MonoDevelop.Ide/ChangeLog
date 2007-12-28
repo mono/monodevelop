@@ -1,3 +1,15 @@
+2007-12-28  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs,
+	  MonoDevelop.Ide.Gui/OutputProgressMonitor.cs: More avoiding remoting
+	  calls, and also dropping excess text before it reaches the TextView.
+	  Reduce log to 20kb and increase update timeout to 500ms. Now memory use
+	  is pretty much constant, at least compared to the leak we had before,
+	  and the UI stays responsive enough to be able to end the child process.
+	  Statistical profiling indicates that MD is mainly Pango/Gtk/libc6-bound
+	  now, so we're unlikely to be able to make it much better without
+	  replacing the output rendering widget.
+
 2007-12-27  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs,
