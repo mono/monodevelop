@@ -1,3 +1,8 @@
+2007-12-28  Zach Lute <zach.lute@gmail.com>
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Methods will no longer show
+	  up twice in the menu if they are their own enclosing item. (Bug #350810)
+
 2007-12-28  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs,
