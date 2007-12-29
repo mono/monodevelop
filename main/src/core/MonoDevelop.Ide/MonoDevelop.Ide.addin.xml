@@ -480,9 +480,9 @@
 				_label = "Save All" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.NewProject" 
 				defaultHandler = "MonoDevelop.Ide.Commands.NewProjectHandler"
-				_label = "N_ew Project..." 
+				_label = "N_ew Solution..." 
 				icon = "md-new-project-icon" 
-				description = "Create a new project" 
+				description = "Create a new solution" 
 				shortcut = "Control|Shift|N"  />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile"
 				_label = "_Close File" 

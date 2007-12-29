@@ -2,16 +2,16 @@
 <WelcomePage _title="MonoDevelop Home Page" _desc="Free .Net Development Environment">
 	
 	<Actions _title="Common Actions">
-		<Action href="monodevelop://NewProject" _title="Start a New Project"/>
-		<Action href="monodevelop://OpenFile" _title="Open a Project / File"/>
+		<Action href="monodevelop://NewProject" _title="Start a New Solution"/>
+		<Action href="monodevelop://OpenFile" _title="Open a Solution / File"/>
 	</Actions>
 	
 	<Projects
-		_title="Recent Projects"
+		_title="Recent Solutions"
 		_siteSub="From MonoDevelop"
-		_col1="Project"
+		_col1="Solution"
 		_col2="Last Modified"
-		_linkTitle="Open Project"
+		_linkTitle="Open Solution"
 	/>
 	
 	<Links _title="Support Links">

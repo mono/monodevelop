@@ -1,3 +1,8 @@
+2007-12-28  Paul Lange  <palango@gmx.de>
+
+	* MonoDevelop.Ide.addin.xml: Fix 'Bug 350395 - Use of "New Project/
+	  Solution" terminology is inconsistent'.
+
 2007-12-28  Zach Lute <zach.lute@gmail.com>
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Methods will no longer show
