@@ -33,6 +33,7 @@ FILES =  \
 	gtk-gui/CBinding.CodeGenerationPanel.cs \
 	gtk-gui/CBinding.CompilerPanel.cs \
 	gtk-gui/CBinding.EditPackagesDialog.cs \
+	gtk-gui/CBinding.GeneralOptionsPanel.cs \
 	gtk-gui/CBinding.OutputOptionsPanel.cs \
 	gtk-gui/generated.cs \
 	Gui/AddLibraryDialog.cs \
@@ -42,6 +43,7 @@ FILES =  \
 	Gui/CTextEditorExtension.cs \
 	Gui/DataProvider.cs \
 	Gui/EditPackagesDialog.cs \
+	Gui/GeneralOptionsPanel.cs \
 	Gui/OutputOptionsPanel.cs \
 	Navigation/ClassNodeBuilder.cs \
 	Navigation/ClassPadEventArgs.cs \
@@ -93,6 +95,7 @@ FILES =  \
 RES =  \
 	CBinding.addin.xml \
 	gtk-gui/gui.stetic \
+	gtk-gui/objects.xml \
 	icons/c-icon-32.png \
 	icons/cpp-icon-32.png \
 	icons/Icons.16x16.PrivateUnion \

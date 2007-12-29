@@ -122,6 +122,9 @@
     <File name="README" subtype="Code" buildaction="Nothing" />
     <File name="icons/c-icon-32.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/cpp-icon-32.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="Gui/GeneralOptionsPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/objects.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="gtk-gui/CBinding.GeneralOptionsPanel.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -144,7 +147,11 @@
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Deployment.Linux" />
   </References>
   <Deployment.LinuxDeployData scriptName="cbinding" />
-  <GtkDesignInfo gtkVersion="2.8.3" />
+  <GtkDesignInfo gtkVersion="2.8.3">
+    <ExportedWidgets>
+      <Widget>CBinding.GeneralOptionsPanel</Widget>
+    </ExportedWidgets>
+  </GtkDesignInfo>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />

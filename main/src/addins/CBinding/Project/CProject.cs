@@ -362,10 +362,19 @@ namespace CBinding
 				if (value != null) {
 					compiler_manager = value;
 				} else {
+					object[] compilers = AddinManager.GetExtensionObjects ("/CBinding/Compilers");
+					string compiler;
+					
 					if (language == Language.C)
-						compiler_manager = new GccCompiler ();
+						compiler = PropertyService.Get ("CBinding.DefaultCCompiler", new GccCompiler ().Name);
 					else
-						compiler_manager = new GppCompiler ();
+						compiler = PropertyService.Get ("CBinding.DefaultCppCompiler", new GppCompiler ().Name);
+					
+					foreach (ICompiler c in compilers) {
+						if (compiler == c.Name) {
+							compiler_manager = c;
+						}
+					}
 				}
 			}
 		}

@@ -1,5 +1,5 @@
 <objects>
-  <object type="CBinding.OutputOptionsPanel" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
+  <object type="CBinding.GeneralOptionsPanel" palette-category="MonoDevelop.CBinding" allow-children="false" base-type="Gtk.Bin">
     <itemgroups />
     <signals />
   </object>

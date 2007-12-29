@@ -70,8 +70,6 @@ namespace CBinding {
             this.scrolledwindow1 = new Gtk.ScrolledWindow();
             this.scrolledwindow1.CanFocus = true;
             this.scrolledwindow1.Name = "scrolledwindow1";
-            this.scrolledwindow1.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow1.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow1.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow1.Gtk.Container+ContainerChild
             this.normalPackageTreeView = new Gtk.TreeView();
@@ -80,8 +78,6 @@ namespace CBinding {
             this.normalPackageTreeView.HeadersClickable = true;
             this.scrolledwindow1.Add(this.normalPackageTreeView);
             this.notebook1.Add(this.scrolledwindow1);
-            Gtk.Notebook.NotebookChild w3 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.scrolledwindow1]));
-            w3.TabExpand = false;
             // Notebook tab
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
@@ -92,8 +88,6 @@ namespace CBinding {
             this.scrolledwindow3 = new Gtk.ScrolledWindow();
             this.scrolledwindow3.CanFocus = true;
             this.scrolledwindow3.Name = "scrolledwindow3";
-            this.scrolledwindow3.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow3.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow3.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow3.Gtk.Container+ContainerChild
             this.projectPackageTreeView = new Gtk.TreeView();
@@ -104,7 +98,6 @@ namespace CBinding {
             this.notebook1.Add(this.scrolledwindow3);
             Gtk.Notebook.NotebookChild w5 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.scrolledwindow3]));
             w5.Position = 1;
-            w5.TabExpand = false;
             // Notebook tab
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
@@ -132,8 +125,6 @@ namespace CBinding {
             this.scrolledwindow2 = new Gtk.ScrolledWindow();
             this.scrolledwindow2.CanFocus = true;
             this.scrolledwindow2.Name = "scrolledwindow2";
-            this.scrolledwindow2.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow2.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow2.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow2.Gtk.Container+ContainerChild
             this.selectedPackagesTreeView = new Gtk.TreeView();

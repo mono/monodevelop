@@ -50,7 +50,7 @@ namespace CBinding
 	public class GppCompiler : GNUCompiler
 	{
 		public override string Name {
-			get { return "Default C++ Compiler"; }
+			get { return "g++"; }
 		}
 		
 		public override Language Language {
