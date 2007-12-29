@@ -1,3 +1,7 @@
+2007-12-29 David Makovský (Yakeen) <yakeen@sannyas-on.net>
+
+        * po/cs.po: updated translation
+
 2007-12-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* JavaBinding.make: Add missing pkg-config path update.

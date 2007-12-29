@@ -6,90 +6,18 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: monodevelop 0.9\n"
+"Project-Id-Version: MonoDevelop Java Addin\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2007-07-29 22:21+0100\n"
+"PO-Revision-Date: 2007-12-29 21:23+0100\n"
 "Last-Translator: David Makovský (Yakeen) <yakeen@sannyas-on.net>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-
-#: ../Java.glade:30 ../Java.glade:1035
-#, fuzzy
-msgid "<b>Code Generation</b>"
-msgstr "Vytváření kódu"
-
-#: ../Java.glade:102
-msgid "Compile _Target:"
-msgstr "Cíl kompilace:"
-
-#: ../Java.glade:130
-msgid "Define S_ymbols:"
-msgstr "Definovat _symboly:"
-
-#: ../Java.glade:159
-msgid "_Main Class:"
-msgstr "_Hlavní třída:"
-
-#: ../Java.glade:230 ../Java.glade:1101
-msgid "Classpath:"
-msgstr "Cesta ke knihovnám (-classpath):"
-
-#: ../Java.glade:330 ../Java.glade:790
-msgid "<b>Compiler</b>"
-msgstr "<b>Kompilátor</b>"
-
-#: ../Java.glade:400
-msgid "gcj"
-msgstr "Gcj (GNU)"
-
-#: ../Java.glade:419
-#, fuzzy
-msgid "javac"
-msgstr "Javac (SUN)"
-
-#: ../Java.glade:490
-msgid "<b>Options</b>"
-msgstr "<b>Volby</b>"
-
-#: ../Java.glade:554
-msgid "Enable _optimizations"
-msgstr "_Optimalizovat kód"
-
-#: ../Java.glade:573
-msgid "Emit _debugging information"
-msgstr "Generování informací la_dění"
-
-#: ../Java.glade:618
-msgid "<b>Warnings</b>"
-msgstr "<b>Varování</b>"
-
-#: ../Java.glade:682
-msgid "Generate warnings"
-msgstr "Generovat varování"
-
-#: ../Java.glade:701
-msgid "Enable deprecation warnings"
-msgstr "Zapnout varování při používání nedoporučených volání"
-
-#: ../Java.glade:720
-msgid "Treat warnings as _errors"
-msgstr "Považovat varování _za chyby"
-
-#: ../Java.glade:856
-msgid "IKVM path:"
-msgstr "Cesta k IKVM:"
-
-#: ../Java.glade:884
-msgid "Java compiler:"
-msgstr "Kompilátor Javy:"
-
-#: ../Java.glade:912
-msgid "Compiler command:"
-msgstr "Příkaz kompilátoru:"
+"X-Poedit-Language: Czech\n"
+"X-Poedit-Country: CZECH REPUBLIC\n"
 
 #: ../templates/EmptyJavaFile.xft.xml:4
 msgid "Empty File"
@@ -164,9 +92,8 @@ msgid "Creates a Java AWT project."
 msgstr "Vytvoří Java AWT projekt."
 
 #: ../templates/JavaApplication.xft.xml:4
-#, fuzzy
 msgid "AWT Application"
-msgstr "AWT aplet"
+msgstr "AWT Aplikace"
 
 #: ../templates/JavaApplication.xft.xml:8
 msgid "Creates a Java AWT application."
@@ -212,19 +139,19 @@ msgstr "AWT panel"
 msgid "Creates a Java AWT panel."
 msgstr "Vytvoří Java AWT panel."
 
-#: ../Gui/ProjectConfigurationPropertyPanel.cs:48
+#: ../Gui/ProjectConfigurationPropertyPanel.cs:60
 msgid "Executable"
 msgstr "Program"
 
-#: ../Gui/ProjectConfigurationPropertyPanel.cs:49
+#: ../Gui/ProjectConfigurationPropertyPanel.cs:61
 msgid "Library"
 msgstr "Knihovna"
 
-#: ../Gui/GlobalOptionsPanel.cs:28
+#: ../Gui/GlobalOptionsPanel.cs:35
 msgid "Javac"
 msgstr "Javac (SUN)"
 
-#: ../Gui/GlobalOptionsPanel.cs:29
+#: ../Gui/GlobalOptionsPanel.cs:36
 msgid "Gcj"
 msgstr "Gcj (GNU)"
 
@@ -243,3 +170,91 @@ msgstr "Výstup"
 #: ../JavaBinding.addin.xml:64
 msgid "Java"
 msgstr "Java"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:106
+#: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:171
+msgid "<b>Code Generation</b>"
+msgstr "<b>Vytváření kódu</b>"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:168
+msgid "Compile _Target:"
+msgstr "Cíl kompilace:"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:178
+msgid "Define S_ymbols:"
+msgstr "Definovat _symboly:"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:190
+msgid "_Main Class:"
+msgstr "_Hlavní třída:"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:202
+#: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:210
+msgid "Classpath:"
+msgstr "Cesta ke knihovnám (-classpath):"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:249
+#: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:64
+msgid "<b>Compiler</b>"
+msgstr "<b>Kompilátor</b>"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:277
+msgid "gcj"
+msgstr "Gcj (GNU)"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:289
+msgid "javac"
+msgstr "Javac (SUN)"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:331
+msgid "<b>Options</b>"
+msgstr "<b>Volby</b>"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:359
+msgid "Enable _optimizations"
+msgstr "_Optimalizovat kód"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:370
+msgid "Emit _debugging information"
+msgstr "Generování informací la_dění"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:395
+msgid "<b>Warnings</b>"
+msgstr "<b>Varování</b>"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:423
+msgid "Generate warnings"
+msgstr "Generovat varování"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:434
+msgid "Enable deprecation warnings"
+msgstr "Zapnout varování při používání nedoporučených volání"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:445
+msgid "Treat warnings as _errors"
+msgstr "Považovat varování _za chyby"
+
+#: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:132
+msgid "Compiler command:"
+msgstr "Příkaz kompilátoru:"
+
+#: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:143
+msgid "IKVM path:"
+msgstr "Cesta k IKVM:"
+
+#: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:152
+msgid "Java compiler:"
+msgstr "Kompilátor Javy:"
+
+#: ../IKVMCompilerManager.cs:134
+msgid "Generating {0} reference stub ..."
+msgstr "Generuji {0} referenční stub..."
+
+#: ../IKVMCompilerManager.cs:155
+msgid "Generating assembly ..."
+msgstr "Generuji assembly..."
+
+#: ../IKVMCompilerManager.cs:203
+msgid "Compiling Java source code ..."
+msgstr "Kompiluji Java zdrojový kód..."
+
