@@ -1139,7 +1139,7 @@
                                       <widget class="Gtk.Label" id="labelInitString">
                                         <property name="MemberName" />
                                         <property name="Xalign">0</property>
-                                        <property name="LabelProp" translatable="yes">Mono.Unix.Catalog.Init ("i8n1", "./locale");</property>
+                                        <property name="LabelProp" translatable="yes">Mono.Unix.Catalog.Init ("i18n", "./locale");</property>
                                       </widget>
                                     </child>
                                   </widget>

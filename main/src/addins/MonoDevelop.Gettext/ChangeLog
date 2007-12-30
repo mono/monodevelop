@@ -1,3 +1,8 @@
+2007-12-31  David Makovský (Yakeen) <yakeen@sannyas-on.net>
+
+	* gtk-gui/gui.stetic,
+	* gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs: Fixed typo in initialization string.
+
 2007-12-19  Ankit Jain  <jankit@novell.com>
 
 	* MakefileHandler.cs: Set top_srcdir and all_target correctly.
