@@ -363,15 +363,19 @@ namespace MonoDevelop.Autotools
 						if (configSection.DeployFileVars.ContainsKey (targetDeployVar)) {
 							//use the dfile from the config section
 							DeployFile dfile = configSection.DeployFileVars [targetDeployVar];
-							string targetDeployFile = String.Format ("$(BUILD_DIR){0}{1}",
-									Path.DirectorySeparatorChar, Path.GetFileName (dfile.RelativeTargetPath));
 							string fname = FileService.AbsoluteToRelativePath (
 									Path.GetFullPath (project.BaseDirectory),
 									Path.GetFullPath (dfile.SourcePath));
 
 							conf_vars.AppendFormat ("{0}_SOURCE={1}\n", targetDeployVar, fname);
-							if (!commonDeployVars.ContainsKey (targetDeployVar))
-								conf_vars.AppendFormat ("{0}={1}\n", targetDeployVar, targetDeployFile);
+
+							if (!commonDeployVars.ContainsKey (targetDeployVar)) {
+								//FOO_DLL=$(BUILD_DIR)/foo.dll
+								conf_vars.AppendFormat ("{0}=$(BUILD_DIR){1}{2}\n",
+										targetDeployVar,
+										Path.DirectorySeparatorChar,
+										dfile.RelativeTargetPath);
+							}
 						} else {
 							// not common and not part of @configSection
 							conf_vars.AppendFormat ("{0}=\n", pair.Key);
@@ -385,11 +389,11 @@ namespace MonoDevelop.Autotools
 					HandleDeployFile (pair.Value, pair.Key, project, ctx);
 
 					if (commonDeployVars.ContainsKey (pair.Key)) {
-						string targetDeployFile = String.Format ("$(BUILD_DIR){0}{1}",
-							Path.DirectorySeparatorChar, Path.GetFileName (pair.Value.RelativeTargetPath));
-
 						//FOO_DLL=$(BUILD_DIR)/foo.dll
-						deployFileCopyVars.AppendFormat ("{0} = {1}\n", pair.Key, targetDeployFile);
+						deployFileCopyVars.AppendFormat ("{0} = $(BUILD_DIR){1}{2}\n",
+									pair.Key,
+									Path.DirectorySeparatorChar,
+									pair.Value.RelativeTargetPath);
 					}
 				}
 
@@ -567,12 +571,6 @@ namespace MonoDevelop.Autotools
 				fname = FileService.NormalizeRelativePath (
 						FileService.AbsoluteToRelativePath (project.BaseDirectory, full_fname));
 				infname = fname + ".in";
-				if (!generateAutotools) {
-					templateFilesTargets.AppendFormat ("{0}: {1} $(top_srcdir)/config.make\n", fname, infname);
-					templateFilesTargets.AppendFormat (
-						"\tsed -e \"s,@prefix@,$(prefix),\" -e \"s,@PACKAGE@,$(PACKAGE),\" < {1} > {0}\n",
-						fname, infname);
-				}
 				extras.AppendFormat ( "\\\n\t{0} ", infname);
 
 				//dependencyDeployFile here should be filename relative to the project
@@ -583,12 +581,10 @@ namespace MonoDevelop.Autotools
 
 			builtFiles.Add (Path.GetFileName (dfile.RelativeTargetPath));
 
-			deployFileCopyTargets.AppendFormat ("$({0}): {1}\n", targetDeployVar, dependencyDeployFile);
-			deployFileCopyTargets.AppendFormat ("\tmkdir -p $(BUILD_DIR)\n");
-			deployFileCopyTargets.AppendFormat ("\tcp '$<' '$@'\n");
-			if (!generateAutotools && (dfile.FileAttributes & DeployFileAttributes.Executable) != 0)
-				deployFileCopyTargets.AppendFormat ("\tchmod u+x '$@'\n");
-			deployFileCopyTargets.Append ("\n");
+			if (dfile.ContainsPathReferences)
+				deployFileCopyTargets.AppendFormat ("$(eval $(call emit-deploy-wrapper,{0},{1}))\n", targetDeployVar, dependencyDeployFile);
+			else
+				deployFileCopyTargets.AppendFormat ("$(eval $(call emit-deploy-target,{0}))\n", targetDeployVar);
 
 			switch (dfile.TargetDirectoryID) {
 				case TargetDirectory.Gac:
@@ -615,13 +611,15 @@ namespace MonoDevelop.Autotools
 			}
 
 			if (!generateAutotools) {
-				string installDir = ctx.DeployContext.GetDirectory (dfile.TargetDirectoryID);
+				string installDir = Path.GetDirectoryName (ctx.DeployContext.GetResolvedPath (dfile.TargetDirectoryID, dfile.RelativeTargetPath));
 				//FIXME: temp
 				installDir = installDir.Replace ("@prefix@", "$(prefix)");
 				installDir = installDir.Replace ("@PACKAGE@", "$(PACKAGE)");
 
-				if (!installDirs.Contains (installDir))
+				if (!installDirs.Contains (installDir)) {
 					installTarget.AppendFormat ("\tmkdir -p $(DESTDIR){0}\n", installDir);
+					installDirs.Add (installDir);
+				}
 
 				installTarget.AppendFormat ("\ttest -z '$({0})' || cp $({0}) $(DESTDIR){1}\n", targetDeployVar, installDir);
 				installDeps.AppendFormat (" $({0})", targetDeployVar);

@@ -1,3 +1,14 @@
+2007-12-31  Ankit Jain  <jankit@novell.com>
+
+	* SimpleProjectMakefileHandler.cs: Use macros for emitting deploy
+	targets. Saves lot of redundant lines.
+	Honor dir structure of the source deploy file (eg. f1/f2/foo.txt should
+	be deployed to BUILD_DIR/f1/f2/foo.txt). Do this for install/uninstall
+	targets also.
+	* templates/Makefile.include: Add macros for emitting deploy targets.
+	* templates/Makefile.am.project.template: Fix positioning of include
+	Makefile.include to fix macros for autotools based makefiles.
+
 2007-12-21  Miguel de Icaza <miguel@novell.com> 
 
 	

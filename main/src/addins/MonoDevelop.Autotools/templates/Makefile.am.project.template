@@ -16,6 +16,8 @@ REFERENCES = %%REFERENCES%%
 
 DLL_REFERENCES = %%DLL_REFERENCES%%
 
+include $(top_srcdir)/Makefile.include
+
 %%COPY_DEPLOY_FILES_VARS%%
 %%COPY_DEPLOY_FILES_TARGETS%%
 
@@ -29,4 +31,3 @@ $(ASSEMBLY) $(ASSEMBLY_MDB): $(build_sources) $(build_resources) $(build_datafil
 	mkdir -p $(dir $(ASSEMBLY))
 	$(ASSEMBLY_COMPILER_COMMAND) $(ASSEMBLY_COMPILER_FLAGS) -out:$(ASSEMBLY) -target:$(COMPILE_TARGET) $(build_sources_embed) $(build_resources_embed) $(build_references_ref)
 
-include $(top_srcdir)/Makefile.include
