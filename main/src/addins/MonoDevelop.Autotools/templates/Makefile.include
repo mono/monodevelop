@@ -30,3 +30,26 @@ pkglib_SCRIPTS = $(ASSEMBLY)
 bin_SCRIPTS = $(BINARIES)
 
 %%DEPLOY_DIRS%%
+
+# macros
+
+# $(call emit-deploy-target,deploy-variable-name)
+define emit-deploy-target
+$($1): $($1_SOURCE)
+	mkdir -p $$(dir $($1))
+	cp '$$<' '$$@'
+endef
+
+# $(call emit-deploy-wrapper,wrapper-variable-name,wrapper-sourcefile)
+# assumes that for a wrapper foo.pc its source template is foo.pc.in
+define emit-deploy-wrapper
+$($1): $2 $(top_srcdir)/config.make
+	mkdir -p $$(BUILD_DIR)
+	cp '$$<' '$$@'
+	chmod +x '$$@'
+
+$2: $2.in $(top_srcdir)/config.make
+	sed -e "s,@prefix@,$(prefix)," -e "s,@PACKAGE@,$(PACKAGE)," < $2.in > $2
+
+endef
+
