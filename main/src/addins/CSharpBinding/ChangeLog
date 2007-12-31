@@ -1,3 +1,9 @@
+2007-12-31  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* templates/AssemblyInfo.xft.xml: Add revision to version number.
+	* templates/EmptyCSharpFile.xft.xml: Use standard header instead of
+	  hardcoded header.
+
 2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CSharpBinding.mdp: Updated project files. The order of extended properties
