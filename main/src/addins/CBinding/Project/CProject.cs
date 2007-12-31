@@ -282,6 +282,21 @@ namespace CBinding
 			CProjectConfiguration pc = (CProjectConfiguration)ActiveConfiguration;
 			pc.SourceDirectory = BaseDirectory;
 			
+			foreach (ProjectFile file in ProjectFiles) {
+				if (file.BuildAction == BuildAction.FileCopy) {
+					string source = file.Name;
+					string destination = Path.Combine (pc.OutputDirectory, Path.GetFileName (file.Name));
+					
+					DateTime source_last_write = File.GetLastWriteTime (source);
+					DateTime destination_last_write = File.GetLastWriteTime (destination);
+					
+					if (!File.Exists (destination) || source_last_write > destination_last_write) {
+						monitor.Log.WriteLine (GettextCatalog.GetString ("Copying {0} to {1}", source, destination));						
+						File.Copy (source, destination, true);
+					}
+				}
+			}
+			
 			return compiler_manager.Compile (
 				ProjectFiles, packages,
 				(CProjectConfiguration)ActiveConfiguration,
