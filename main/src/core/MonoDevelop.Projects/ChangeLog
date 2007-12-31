@@ -1,3 +1,9 @@
+2007-12-31  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects/DotNetProject.cs: Make sure that ClrVersion is
+	  something that the language binding can handle. Fixes some compilation
+	  problems with VB.NET.
+
 2007-12-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/ProjectConvertTool.cs: Improve documentation. Add
