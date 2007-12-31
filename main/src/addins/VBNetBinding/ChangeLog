@@ -1,3 +1,13 @@
+2007-12-31  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* VBBindingCompilerServices.cs: Use WaitForOutput instead of WaitForExit to
+	  make sure we get all of the output, or the output-collecting thread can
+	  sometimes try to write to the StringWriter after it's disposed, and
+	  crash the IDE.  Also tidy up code.
+	* Makefile.am: Updated.
+	* VBLanguageBinding.cs: We don't support the 1.1 profile for VB, so remove
+	  it.
+
 2007-12-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* VBNetBinding.addin.xml: Remove Gtk# 1.0 template. Add the

@@ -293,26 +293,18 @@ namespace VBBinding {
 			return error;
 		}
 		
-		private int DoCompilation(string outstr, TempFileCollection tf, string working_dir, ref string output) {
-			StringWriter outwr = null, errwr = null;
-			
+		private int DoCompilation (string outstr, TempFileCollection tf, string working_dir, ref string output)
+		{
+			StringWriter outwr = new StringWriter ();
+			string[] tokens = outstr.Split (' ');			
 			try {
-				outwr = new StringWriter ();
-								
-				string[] tokens = outstr.Split(' ');
-
-				outstr = outstr.Substring(tokens[0].Length+1);
-
-				ProcessService ps = (ProcessService) ServiceManager.GetService (typeof(ProcessService));
-				ProcessWrapper pw = ps.StartProcess(tokens[0], "\"" + outstr + "\"", working_dir, outwr, outwr, delegate{});
-				pw.WaitForExit ();
-				
+				outstr = outstr.Substring (tokens[0].Length+1);
+				ProcessWrapper pw = Runtime.ProcessService.StartProcess (tokens[0], "\"" + outstr + "\"", working_dir, outwr, outwr, null);
+				pw.WaitForOutput ();
 				output = outwr.ToString ();
 				
 				return pw.ExitCode;
 			} finally {
-				if (errwr != null)
-					errwr.Dispose ();
 				if (outwr != null)
 					outwr.Dispose ();
 			}
