@@ -1,5 +1,11 @@
 2007-12-31  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
+	* Compiler/GNUCompiler.cs: Report errors in the same order as they were
+	  outputted by the compiler and parse linker output to form better linker
+	  error reports.
+
+2007-12-31  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
 	* Project/CProject.cs: Copy deployment files to output directory when
 	  building the project.
 

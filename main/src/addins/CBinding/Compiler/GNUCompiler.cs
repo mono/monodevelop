@@ -591,12 +591,16 @@ namespace CBinding
 		{
 			TextReader reader = new StringReader (errorString);
 			string next;
-			
+			Queue<CompilerError> queue = new Queue<CompilerError> ();
+				
 			while ((next = reader.ReadLine ()) != null) {
 				CompilerError error = CreateErrorFromErrorString (next);
 				if (error != null)
-					cr.Errors.Add (error);
+					queue.Enqueue (error);
 			}
+			
+			while (queue.Count > 0)
+				cr.Errors.Add (queue.Dequeue ());
 			
 			reader.Close ();
 		}
@@ -606,6 +610,9 @@ namespace CBinding
 		    RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 		private static Regex noColRegex = new Regex (
 		    @"^\s*(?<file>.*):(?<line>\d*):\s*(?<level>.*)\s*:\s(?<message>.*)",
+		    RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+		private static Regex linkerRegex = new Regex (
+		    @"^\s*(?<file>[^:]*):(?<line>\d*):\s*(?<message>[^:]*)",
 		    RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 		
 		private CompilerError CreateErrorFromErrorString (string errorString)
@@ -644,24 +651,36 @@ namespace CBinding
 		{
 			TextReader reader = new StringReader (errorString);
 			string next;
+			Queue<CompilerError> queue = new Queue<CompilerError> ();
 			
 			while ((next = reader.ReadLine ()) != null) {
 				CompilerError error = CreateLinkerErrorFromErrorString (next);
 				if (error != null)
-					cr.Errors.Add (error);
+					queue.Enqueue (error);
 			}
+			
+			while (queue.Count > 0)
+				cr.Errors.Add (queue.Dequeue ());
 			
 			reader.Close ();
 		}
 		
-		// FIXME: needs to be improved UPDATE: or does it...?
 		private CompilerError CreateLinkerErrorFromErrorString (string errorString)
 		{
 			CompilerError error = new CompilerError ();
 			
-			error.ErrorText = errorString;
+			Match linkerMatch = linkerRegex.Match (errorString);
 			
-			return error;
+			if (linkerMatch.Success)
+			{
+				error.FileName = linkerMatch.Groups["file"].Value;
+				error.Line = int.Parse (linkerMatch.Groups["line"].Value);
+				error.ErrorText = linkerMatch.Groups["message"].Value;
+				
+				return error;
+			}
+			
+			return null;
 		}
 
 		// expands backticked portions of the parameter-list using "sh" and "echo"
