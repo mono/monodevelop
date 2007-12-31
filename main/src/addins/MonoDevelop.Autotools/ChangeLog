@@ -1,3 +1,7 @@
+2007-12-21  Miguel de Icaza <miguel@novell.com> 
+
+	
+
 2007-12-20  Ankit Jain  <jankit@novell.com>
 
 	* MakefileGeneratorTool.cs: Use GettextCatalog.GetString for
