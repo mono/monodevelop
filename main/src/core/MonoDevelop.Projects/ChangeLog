@@ -1,5 +1,10 @@
 2007-12-31  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.Projects/DotNetProject.cs: Fix logic error in last commit that
+	  downgraded 2.0 projects to 1.1 projects.
+
+2007-12-31  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.Projects/DotNetProject.cs: Make sure that ClrVersion is
 	  something that the language binding can handle. Fixes some compilation
 	  problems with VB.NET.

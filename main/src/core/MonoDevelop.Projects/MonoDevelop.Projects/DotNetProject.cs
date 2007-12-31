@@ -95,11 +95,12 @@ namespace MonoDevelop.Projects
 		//if possible, find a ClrVersion that the language binding can handle
 		ClrVersion GetValidClrVersion (ClrVersion suggestion)
 		{
-			if (languageBinding == null)
-				return ClrVersion.Default;
-			
-			if (suggestion == ClrVersion.Default)
-				suggestion = ClrVersion.Net_1_1;
+			if (suggestion == ClrVersion.Default) {
+				if (languageBinding == null)
+					return ClrVersion.Default;
+				else
+					suggestion = ClrVersion.Net_1_1;
+			}
 			
 			if (languageBinding != null) {
 				ClrVersion[] versions = languageBinding.GetSupportedClrVersions ();
