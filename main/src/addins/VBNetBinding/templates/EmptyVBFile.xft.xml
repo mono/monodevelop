@@ -10,9 +10,8 @@
 	</TemplateConfiguration>
 	
 	<TemplateFiles>
-        <File DefaultExtension=".vb" DefaultName="EmptyVBfile">
-			<![CDATA['created on ${Date} at ${Time}]]>
-		</File>
+        <File DefaultExtension=".vb" DefaultName="EmptyVBfile" AddStandardHeader="True">
+        </File>
 	</TemplateFiles>
 	
 	<FileOptions/>

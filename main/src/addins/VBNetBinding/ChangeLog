@@ -1,5 +1,14 @@
 2007-12-31  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* VBNetBinding.addin.xml, VBNetBinding.mdp, templates/AssemblyInfo.xft.xml,
+	  Makefile.am: Add AssemblyInfo template.
+	* templates/EmptyVBFile.xft.xml: Use standard header.
+	* templates/VBGtkSharp2Project.xpt.xml,
+	  templates/VBConsoleApplicationProject.xpt.xml: Use standard headers and
+	  AssemblyInfo template.
+
+2007-12-31  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* VBBindingCompilerServices.cs: Use WaitForOutput instead of WaitForExit to
 	  make sure we get all of the output, or the output-collecting thread can
 	  sometimes try to write to the StringWriter after it's disposed, and

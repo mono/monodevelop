@@ -25,6 +25,7 @@
 
   <Extension path = "/MonoDevelop/Ide/FileTemplates">
     <FileTemplate id = "EmptyVBFile" resource = "EmptyVBFile.xft.xml"/>
+    <FileTemplate id = "VBAssemblyInfo" resource = "AssemblyInfo.xft.xml"/>
   </Extension>
 
   <Extension path = "/MonoDevelop/Ide/ProjectTemplates">

@@ -36,6 +36,7 @@ FILES =  \
 RES =  \
 	icons/VB.FileIcon \
 	icons/vb-icon-32.png \
+	templates/AssemblyInfo.xft.xml \
 	templates/EmptyVBFile.xft.xml \
 	templates/EmptyVBProject.xpt.xml \
 	templates/VBConsoleApplicationProject.xpt.xml \

@@ -33,11 +33,11 @@
     <File name="templates/EmptyVBFile.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/EmptyVBProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/VBConsoleApplicationProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="templates/VBGtkSharpProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/VBGtkSharp2Project.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/VB.FileIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="VBNetBinding.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/vb-icon-32.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="templates/AssemblyInfo.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />
