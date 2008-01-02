@@ -227,8 +227,9 @@ namespace MonoDevelop.Ide.Templates
 		{
 			DotNetProject netProject = project as DotNetProject;
 			string languageExtension = "";
+			ILanguageBinding binding = null;
 			if (!string.IsNullOrEmpty (language)) {
-				ILanguageBinding binding = GetLanguageBinding (language);
+				binding = GetLanguageBinding (language);
 				if (binding != null)
 					languageExtension = Path.GetExtension (binding.GetFileName ("Default")).Remove (0, 1);
 			}
@@ -248,7 +249,17 @@ namespace MonoDevelop.Ide.Templates
 			 	
 				tags ["Name"] = identifier;
 				tags ["FullName"] = ns.Length > 0 ? ns + "." + identifier : identifier;
-			}			
+				
+				//some .NET languages may be able to use keywords as identifiers if they're escaped
+				//for simplicity, we escape the identifier in "Name" and provide "UnescapedName"
+				IDotNetLanguageBinding dnb = binding as IDotNetLanguageBinding;
+				if (dnb != null) {
+					System.CodeDom.Compiler.CodeDomProvider provider = dnb.GetCodeDomProvider ();
+					if (provider != null) {
+						tags ["EscapedIdentifier"] = provider.CreateEscapedIdentifier (identifier);
+					}
+				}
+			}
 			
 			if (ns.Length > 0)
 				tags ["Namespace"] = ns;
@@ -301,7 +312,7 @@ namespace MonoDevelop.Ide.Templates
 					if (binding != null) {
 						System.CodeDom.Compiler.CodeDomProvider provider = binding.GetCodeDomProvider ();
 						if (provider != null)
-							return provider.IsValidIdentifier (name);
+							return provider.IsValidIdentifier (provider.CreateEscapedIdentifier (name));
 					}
 				}
 				return name.IndexOfAny (Path.GetInvalidFileNameChars ()) == -1;
