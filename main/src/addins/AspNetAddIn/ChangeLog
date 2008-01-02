@@ -1,3 +1,18 @@
+2008-01-02  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Templates/WebService-CodeBehind.xft.xml,
+	  Templates/WebForm-CodeBehind.xft.xml,
+	  Templates/WebControl-CodeBehindNonPartial.xft.xml,
+	  Templates/WebService-Empty.xft.xml,
+	  Templates/WebHandler-CodeBehind.xft.xml,
+	  Templates/WebControl-CodeBehind.xft.xml,
+	  Templates/MasterPage-CodeBehindNonPartial.xft.xml,
+	  Templates/WebHandler-Empty.xft.xml,
+	  Templates/MasterPage-CodeBehind.xft.xml,
+	  Templates/WebForm-CodeBehindNonPartial.xft.xml: Use ${EscapedIdentifier}
+	  instead of ${Name} so that files can be created with names like
+	  "Default" and work correctly in VB.NET.
+
 2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AspNetAddIn.mdp: Updated project files. The order of extended properties

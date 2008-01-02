@@ -28,7 +28,7 @@ using System.Web.Services;
 
 namespace ${Namespace}
 {
-	public class ${Name} : System.Web.Services.WebService
+	public class ${EscapedIdentifier} : System.Web.Services.WebService
 	{
 		
 	}
