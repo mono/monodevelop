@@ -1,3 +1,8 @@
+2008-01-02  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* templates/BooGtkSharpWindow.xft.xml: Use ${EscapedIdentifier} instead of
+	  ${Name} so that classes/files can be named as language keywords.
+
 2007-12-29 David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
         * po/cs.po: updated translation

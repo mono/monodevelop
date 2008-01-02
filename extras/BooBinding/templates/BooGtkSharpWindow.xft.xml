@@ -18,9 +18,9 @@
 import System
 import Gtk
 
-class ${Name}(Window):
+class ${EscapedIdentifier}(Window):
 	def constructor():
-		super("${Name}")
+		super("${EscapedIdentifier}")
 ]]></File>
 	</TemplateFiles>
 	
