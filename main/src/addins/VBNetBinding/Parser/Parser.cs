@@ -95,32 +95,29 @@ namespace VBBinding.Parser
 		
 		public ICompilationUnitBase Parse(string fileName)
 		{
-			ICSharpCode.NRefactory.IParser p = ICSharpCode.NRefactory.ParserFactory.CreateParser (SupportedLanguage.VBNet, new StreamReader(fileName));
-			
-			p.Parse();
-			
-			VBNetVisitor visitor = new VBNetVisitor();
-			visitor.VisitCompilationUnit(p.CompilationUnit, null);
-			//visitor.Cu.FileName = fileName;
-			visitor.Cu.ErrorsDuringCompile = p.Errors.Count > 0;
-			RetrieveRegions(visitor.Cu, p.Lexer.SpecialTracker);
-			
-			AddCommentTags(visitor.Cu, p.Lexer.TagComments);
-			return visitor.Cu;
+			using (ICSharpCode.NRefactory.IParser p = ICSharpCode.NRefactory.ParserFactory.CreateParser (SupportedLanguage.VBNet, new StreamReader(fileName))) {
+				return Parse (p, fileName);
+			}
 		}
 		
 		public ICompilationUnitBase Parse(string fileName, string fileContent)
 		{
-			ICSharpCode.NRefactory.IParser p = ICSharpCode.NRefactory.ParserFactory.CreateParser (SupportedLanguage.VBNet, new StringReader(fileContent));
-			
+			using (ICSharpCode.NRefactory.IParser p = ICSharpCode.NRefactory.ParserFactory.CreateParser (SupportedLanguage.VBNet, new StringReader(fileContent))) {
+				return Parse (p, fileName);
+			}
+		}
+		
+		ICompilationUnit Parse (ICSharpCode.NRefactory.IParser p, string fileName)
+		{
 			p.Parse();
 			
 			VBNetVisitor visitor = new VBNetVisitor();
-			visitor.VisitCompilationUnit (p.CompilationUnit, null);
-			//visitor.Cu.FileName = fileName;
+			visitor.VisitCompilationUnit(p.CompilationUnit, null);
 			visitor.Cu.ErrorsDuringCompile = p.Errors.Count > 0;
 			visitor.Cu.Tag = p.CompilationUnit;
 			RetrieveRegions(visitor.Cu, p.Lexer.SpecialTracker);
+			foreach (IClass c in visitor.Cu.Classes)
+				c.Region.FileName = fileName;
 			AddCommentTags(visitor.Cu, p.Lexer.TagComments);
 			return visitor.Cu;
 		}

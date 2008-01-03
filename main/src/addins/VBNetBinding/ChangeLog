@@ -1,5 +1,11 @@
 2008-01-02  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* Parser/Parser.cs: Merge some code from C# binding so that VB parser
+	  actually tags classes with the filename in which they're defined. Fixes
+	  CodeBehind grouping and double-clicking on items in the class pad.
+
+2008-01-02  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* VBNetBinding.mdp, Makefile.am, VBLanguageBinding.cs, VBCodeGenerator.cs:
 	  Import VB.NET CodeDOM generator from Mono to get partial class support
 	  and keyword escaping support.
