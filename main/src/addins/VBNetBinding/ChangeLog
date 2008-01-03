@@ -1,3 +1,9 @@
+2008-01-02  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* VBNetBinding.mdp, Makefile.am, VBLanguageBinding.cs, VBCodeGenerator.cs:
+	  Import VB.NET CodeDOM generator from Mono to get partial class support
+	  and keyword escaping support.
+
 2007-12-31  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* VBNetBinding.addin.xml, VBNetBinding.mdp, templates/AssemblyInfo.xft.xml,

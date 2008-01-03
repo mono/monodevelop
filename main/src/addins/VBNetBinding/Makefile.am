@@ -31,6 +31,7 @@ FILES =  \
 	Project/VBCompilerParameters.cs \
 	VBAmbience.cs \
 	VBBindingCompilerServices.cs \
+	VBCodeGenerator.cs \
 	VBLanguageBinding.cs
 
 RES =  \

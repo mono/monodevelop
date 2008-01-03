@@ -38,6 +38,7 @@
     <File name="VBNetBinding.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/vb-icon-32.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/AssemblyInfo.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="VBCodeGenerator.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />
@@ -65,4 +66,5 @@
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
+  <MonoDevelop.MonodocerAddin.MonodocerData />
 </Project>

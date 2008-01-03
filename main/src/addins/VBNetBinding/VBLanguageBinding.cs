@@ -73,7 +73,7 @@ namespace VBBinding
 		public CodeDomProvider GetCodeDomProvider ()
 		{
 			if (provider == null)
-				provider = new VBCodeProvider ();
+				provider = new ImprovedCodeDomProvider ();
 			return provider;
 		}
 		
@@ -93,6 +93,15 @@ namespace VBBinding
 		public ClrVersion[] GetSupportedClrVersions ()
 		{
 			return new ClrVersion[] { ClrVersion.Net_2_0 };
+		}
+		
+		class ImprovedCodeDomProvider : Microsoft.VisualBasic.VBCodeProvider
+		{
+			[Obsolete ("Use CodeDomProvider class")]
+			public override ICodeGenerator CreateGenerator ()
+			{
+				return new VBBinding.VBCodeGenerator ();
+			}
 		}
 	}
 }
