@@ -145,7 +145,7 @@
 			<Exclude regex='".*?[^"]"(?!")' />   <!-- Strings-->
 			<Exclude regex="'(?:(?!').)*" />     <!-- Line comments -->
 			<Include regex='GetString\s*\(\s*"(.*?[^\\])"' />
-			<Include regex='GetPluralString\s*\(\s*".*?[^\\]"\s*,\s*"(.*?[^\\])"' plural="true"/>
+			<Include regex='GetPluralString\s*\(\s*"(.*?[^\\])"\s*,\s*"(.*?[^\\])"' plural="true"/>
 			<Transform regex='""' value='"' />
 		</RegexScanner>
 		<RegexScanner extension="boo">
@@ -155,7 +155,7 @@
 			<Exclude regex='//(?:(?!//).)*' />      <!-- Line comments -->
 			<Exclude regex='/\*(?:.|\n)*?\*/' />    <!-- Block comments -->
 			<Include regex='GetString\s*\(\s*"(.*?[^\\])"' />
-			<Include regex='GetPluralString\s*\(\s*".*?[^\\]"\s*,\s*"(.*?[^\\])"' plural="true"/>
+			<Include regex='GetPluralString\s*\(\s*"(.*?[^\\])"\s*,\s*"(.*?[^\\])"' plural="true"/>
 		</RegexScanner>
 		<RegexScanner extension="cs">
 			<Exclude regex='@".*?"' />	                  <!-- Strings starting with @ -->
@@ -163,7 +163,7 @@
 			<Exclude regex='//(?:(?!//).)*' />            <!-- Line comments -->
 			<Exclude regex='/\*(?:.|\n)*?\*/' />          <!-- Block comments -->
 			<Include regex='GetString\s*\(\s*"(.*?[^\\])"' />
-			<Include regex='GetPluralString\s*\(\s*".*?[^\\]"\s*,\s*"(.*?[^\\])"' plural="true"/>
+			<Include regex='GetPluralString\s*\(\s*"(.*?[^\\])"\s*,\s*"(.*?[^\\])"' plural="true"/>
 		</RegexScanner>
 	</Extension>
 </Addin>
