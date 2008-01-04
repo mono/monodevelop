@@ -49,15 +49,15 @@ namespace MonoDevelop.Gettext.ExtensionNodes
 			foreach (ExtensionNode node in ChildNodes) {
 				if (node is IncludeExtensionNode) {
 					IncludeExtensionNode rn = (IncludeExtensionNode) node;
-					rs.AddIncludeRegex (rn.RegexValue, rn.Group, rn.PluralGroup);
+					rs.AddIncludeRegex (rn.RegexValue, rn.Group, rn.PluralGroup, rn.RegexOptions);
 				}
 				else if (node is ExcludeExtensionNode) {
 					ExcludeExtensionNode rn = (ExcludeExtensionNode) node;
-					rs.AddExcludeRegex (rn.RegexValue);
+					rs.AddExcludeRegex (rn.RegexValue, rn.RegexOptions);
 				}
 				else if (node is TransformExtensionNode) {
 					TransformExtensionNode rn = (TransformExtensionNode) node;
-					rs.AddTransformRegex (rn.RegexValue, rn.ReplaceValue);
+					rs.AddTransformRegex (rn.RegexValue, rn.ReplaceValue, rn.RegexOptions);
 				}
 			}
 			return rs;

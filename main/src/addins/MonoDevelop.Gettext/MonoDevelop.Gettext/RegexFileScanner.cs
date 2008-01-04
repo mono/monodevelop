@@ -59,14 +59,14 @@ namespace MonoDevelop.Gettext
 			this.mimeTypes = mimeTypes != null ? mimeTypes : new string[0];
 		}
 		
-		public void AddIncludeRegex (string regex, int valueGroupIndex)
+		public void AddIncludeRegex (string regex, int valueGroupIndex, string regexOptions)
 		{
-			AddIncludeRegex (regex, valueGroupIndex, -1);
+			AddIncludeRegex (regex, valueGroupIndex, -1, regexOptions);
 		}
 		
-		public void AddIncludeRegex (string regex, int valueGroupIndex, int pluralGroupIndex)
+		public void AddIncludeRegex (string regex, int valueGroupIndex, int pluralGroupIndex, string regexOptions)
 		{
-			Regex rx = new Regex (regex, RegexOptions.Compiled);
+			Regex rx = new Regex (regex, ParseOptions (regexOptions));
 			RegexInfo ri = new RegexInfo ();
 			ri.Regex = rx;
 			ri.ValueGroupIndex = valueGroupIndex;
@@ -74,19 +74,39 @@ namespace MonoDevelop.Gettext
 			regexes.Add (ri);
 		}
 		
-		public void AddExcludeRegex (string regex)
+		public void AddExcludeRegex (string regex, string regexOptions)
 		{
-			Regex rx = new Regex (regex, RegexOptions.Compiled);
+			Regex rx = new Regex (regex, ParseOptions (regexOptions));
 			excluded.Add (rx);
 		}
 		
-		public void AddTransformRegex (string regex, string replaceText)
+		public void AddTransformRegex (string regex, string replaceText, string regexOptions)
 		{
-			Regex rx = new Regex (regex, RegexOptions.Compiled);
+			Regex rx = new Regex (regex, ParseOptions (regexOptions));
 			TransformInfo ri = new TransformInfo ();
 			ri.Regex = rx;
 			ri.ReplaceText = replaceText;
 			transforms.Add (ri);
+		}
+		
+		RegexOptions ParseOptions (string regexOptions)
+		{
+			RegexOptions retval = RegexOptions.Compiled;
+			System.Console.WriteLine("Parsing options {0}", regexOptions);
+			if (string.IsNullOrEmpty (regexOptions))
+				return retval;
+			
+			foreach (string s in regexOptions.Split('|')) {
+				try {
+					System.Console.WriteLine("Parsing option {0}", s);
+					RegexOptions option = (RegexOptions) System.Enum.Parse (typeof (RegexOptions), s);
+					System.Console.WriteLine("Found option {0}", option.ToString ());
+					retval |= option;
+				} catch (Exception ex) {
+					LoggingService.LogError ("Unknown RegexOptions value in Gettext scanner", ex);
+				}
+			}
+			return retval;
 		}
 		
 		public bool CanScan (TranslationProject project, Catalog catalog, string fileName, string mimeType)
@@ -135,13 +155,12 @@ namespace MonoDevelop.Gettext
 				int lineNumber = 0;
 				int oldIndex  = 0;
 				foreach (Match match in ri.Regex.Matches (text)) {
-					
 					// Ignore matches inside excluded regions
 					bool ignore = false;
 					foreach (Match em in excludeMatches) {
 						if (match.Index >= em.Index && match.Index < em.Index + em.Length) {
 							ignore = true;
-							Console.WriteLine ("pp ignored: " + fileName + " " + match.Groups[ri.ValueGroupIndex].Value);
+							LoggingService.LogDebug ("Excluded Gettext string '{0}' in file '{1}'", match.Groups[ri.ValueGroupIndex].Value, fileName);
 							break;
 						}
 					}
@@ -155,13 +174,20 @@ namespace MonoDevelop.Gettext
 					foreach (TransformInfo ti in transforms)
 						mt = ti.Regex.Replace (mt, ti.ReplaceText);
 					
-					if (mt.Trim().Length > 0) {
-						string pt = ri.PluralGroupIndex != -1 ? match.Groups[ri.PluralGroupIndex].Value : null;
-						CatalogEntry entry = catalog.AddItem (mt, pt);
-						lineNumber += GetLineCount (text, oldIndex, match.Index);
-						oldIndex = match.Index;
-						entry.AddReference (fileNamePrefix + lineNumber);
-					}
+					if (mt.Trim().Length == 0)
+						continue;
+					
+					//get the plural string if it's a plural form and apply transforms
+					string pt = ri.PluralGroupIndex != -1 ? match.Groups[ri.PluralGroupIndex].Value : null;
+					if (pt != null)
+						foreach (TransformInfo ti in transforms)
+							pt = ti.Regex.Replace (pt, ti.ReplaceText);
+					
+					//add to the catalog
+					CatalogEntry entry = catalog.AddItem (mt, pt);
+					lineNumber += GetLineCount (text, oldIndex, match.Index);
+					oldIndex = match.Index;
+					entry.AddReference (fileNamePrefix + lineNumber);
 				}
 			}
 		}

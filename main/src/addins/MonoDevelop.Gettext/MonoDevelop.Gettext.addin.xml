@@ -162,8 +162,9 @@
 			<Exclude regex='(?&lt;!@)".*?(?&lt;!\\)"' />  <!-- Strings-->
 			<Exclude regex='//(?:(?!//).)*' />            <!-- Line comments -->
 			<Exclude regex='/\*(?:.|\n)*?\*/' />          <!-- Block comments -->
-			<Include regex='GetString\s*\(\s*"(.*?[^\\])"' />
-			<Include regex='GetPluralString\s*\(\s*"(.*?[^\\])"\s*,\s*"(.*?[^\\])"' plural="true"/>
+			<Include regex='GetString\s*\(\s*"(.*?[^\\])"\s*[,\)]' regexOptions="Singleline"/>
+			<Include regex='GetPluralString\s*\(\s*"(.*?[^\\])"\s*,\s*"(.*?[^\\])"\s*[,\)]' plural="true" regexOptions="Singleline"/>
+			<Transform regex='([^\\])"\s*\+\s*"' value='$1' regexOptions="Singleline"/>
 		</RegexScanner>
 	</Extension>
 </Addin>

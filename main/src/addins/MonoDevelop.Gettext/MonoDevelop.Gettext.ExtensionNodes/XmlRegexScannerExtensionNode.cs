@@ -36,13 +36,13 @@ namespace MonoDevelop.Gettext.ExtensionNodes
 		public override object CreateInstance ()
 		{
 			RegexFileScanner rs = (RegexFileScanner) base.CreateInstance ();
-			rs.AddExcludeRegex ("<!--(?:.|\n)*?-->");
-			rs.AddTransformRegex (@"\\", @"\\\\");  // Escape all backslashes
-			rs.AddTransformRegex ("&lt;", "<");
-			rs.AddTransformRegex ("&gt;", ">");
-			rs.AddTransformRegex ("&amp;", "&");
-			rs.AddTransformRegex ("&quot;", "\"");
-			rs.AddTransformRegex ("&#xA;", "\n");
+			rs.AddExcludeRegex ("<!--(?:.|\n)*?-->", null);
+			rs.AddTransformRegex (@"\\", @"\\\\", null);  // Escape all backslashes
+			rs.AddTransformRegex ("&lt;", "<", null);
+			rs.AddTransformRegex ("&gt;", ">", null);
+			rs.AddTransformRegex ("&amp;", "&", null);
+			rs.AddTransformRegex ("&quot;", "\"", null);
+			rs.AddTransformRegex ("&#xA;", "\n", null);
 			return rs;
 		}
 	}

@@ -1,3 +1,16 @@
+2008-01-04  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Gettext.addin.xml: Handle simple concatenated strings in C#.
+	  Allows line breaks when specifying long strings.
+	* MonoDevelop.Gettext/RegexFileScanner.cs: Apply transforms to plural
+	  strings as well. Add the capability to specify regex options.
+	* MonoDevelop.Gettext.ExtensionNodes/TransformExtensionNode.cs,
+	  MonoDevelop.Gettext.ExtensionNodes/ExcludeRegex.cs,
+	  MonoDevelop.Gettext.ExtensionNodes/IncludeExtensionNode.cs,
+	  MonoDevelop.Gettext.ExtensionNodes/RegexScannerExtensionNode.cs,
+	  MonoDevelop.Gettext.ExtensionNodes/XmlRegexScannerExtensionNode.cs: Add
+	  the capability to specify regex options.
+
 2008-01-03  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Gettext.addin.xml: Plural string regexes needed to capture

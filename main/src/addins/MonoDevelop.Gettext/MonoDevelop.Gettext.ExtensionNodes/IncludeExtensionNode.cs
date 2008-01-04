@@ -45,6 +45,9 @@ namespace MonoDevelop.Gettext.ExtensionNodes
 		[NodeAttribute ("plural", Description="Set to 'true' if this regex includes a plural group.")]
 		bool plural = false;
 		
+		[NodeAttribute ("regexOptions", Description="RegexOptions flags separated by '|'")]
+		string regexOptions = null;
+		
 		public string RegexValue {
 			get {
 				return regexValue;
@@ -60,6 +63,12 @@ namespace MonoDevelop.Gettext.ExtensionNodes
 		public int PluralGroup {
 			get {
 				return plural ? pluralGroup : -1;
+			}
+		}
+		
+		public string RegexOptions {
+			get {
+				return regexOptions;
 			}
 		}
 	}
