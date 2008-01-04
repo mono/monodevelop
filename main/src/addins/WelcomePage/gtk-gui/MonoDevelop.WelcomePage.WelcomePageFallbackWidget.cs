@@ -67,6 +67,14 @@ namespace MonoDevelop.WelcomePage {
         
         private Gtk.VBox devLinkBox;
         
+        private Gtk.Label headerNewsLinks;
+        
+        private Gtk.HBox hbox7;
+        
+        private Gtk.Label label9;
+        
+        private Gtk.VBox newsLinkBox;
+        
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.WelcomePage.WelcomePageFallbackWidget
@@ -77,7 +85,6 @@ namespace MonoDevelop.WelcomePage {
             this.alignment1.Name = "alignment1";
             // Container child alignment1.Gtk.Container+ContainerChild
             this.hbox1 = new Gtk.HBox();
-            this.hbox1.Name = "hbox1";
             this.hbox1.Spacing = 35;
             // Container child hbox1.Gtk.Box+BoxChild
             this.vbox2 = new Gtk.VBox();
@@ -310,11 +317,48 @@ namespace MonoDevelop.WelcomePage {
             w24.Position = 4;
             w24.Expand = false;
             w24.Fill = false;
-            this.hbox1.Add(this.vbox1);
-            Gtk.Box.BoxChild w25 = ((Gtk.Box.BoxChild)(this.hbox1[this.vbox1]));
-            w25.Position = 1;
+            // Container child vbox1.Gtk.Box+BoxChild
+            this.headerNewsLinks = new Gtk.Label();
+            this.headerNewsLinks.WidthRequest = 200;
+            this.headerNewsLinks.Name = "headerNewsLinks";
+            this.headerNewsLinks.Xalign = 0F;
+            this.headerNewsLinks.LabelProp = "";
+            this.headerNewsLinks.UseMarkup = true;
+            this.vbox1.Add(this.headerNewsLinks);
+            Gtk.Box.BoxChild w25 = ((Gtk.Box.BoxChild)(this.vbox1[this.headerNewsLinks]));
+            w25.Position = 5;
             w25.Expand = false;
             w25.Fill = false;
+            // Container child vbox1.Gtk.Box+BoxChild
+            this.hbox7 = new Gtk.HBox();
+            this.hbox7.Name = "hbox7";
+            this.hbox7.Spacing = 6;
+            // Container child hbox7.Gtk.Box+BoxChild
+            this.label9 = new Gtk.Label();
+            this.label9.WidthRequest = 10;
+            this.label9.Name = "label9";
+            this.label9.LabelProp = "";
+            this.hbox7.Add(this.label9);
+            Gtk.Box.BoxChild w26 = ((Gtk.Box.BoxChild)(this.hbox7[this.label9]));
+            w26.Position = 0;
+            w26.Expand = false;
+            w26.Fill = false;
+            // Container child hbox7.Gtk.Box+BoxChild
+            this.newsLinkBox = new Gtk.VBox();
+            this.newsLinkBox.Name = "newsLinkBox";
+            this.hbox7.Add(this.newsLinkBox);
+            Gtk.Box.BoxChild w27 = ((Gtk.Box.BoxChild)(this.hbox7[this.newsLinkBox]));
+            w27.Position = 1;
+            this.vbox1.Add(this.hbox7);
+            Gtk.Box.BoxChild w28 = ((Gtk.Box.BoxChild)(this.vbox1[this.hbox7]));
+            w28.Position = 6;
+            w28.Expand = false;
+            w28.Fill = false;
+            this.hbox1.Add(this.vbox1);
+            Gtk.Box.BoxChild w29 = ((Gtk.Box.BoxChild)(this.hbox1[this.vbox1]));
+            w29.Position = 1;
+            w29.Expand = false;
+            w29.Fill = false;
             this.alignment1.Add(this.hbox1);
             this.Add(this.alignment1);
             if ((this.Child != null)) {

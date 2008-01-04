@@ -29,6 +29,7 @@
 //
 
 using System;
+using System.Net;
 using System.IO;
 using System.Xml;
 using System.Reflection;
@@ -61,6 +62,12 @@ namespace MonoDevelop.WelcomePage
 		{
 			widget.LoadRecent ();
 		}
+		
+		protected override void HandleNewsUpdate (object sender, EventArgs args)
+		{
+			widget.Rebuild ();
+		}
+
 	}
 	
 	public partial class WelcomePageFallbackWidget : Gtk.EventBox
@@ -109,12 +116,25 @@ namespace MonoDevelop.WelcomePage
 			LoadRecent ();
 		}
 		
-		void BuildFromXml ()
+		public void Rebuild ()
 		{
-			XmlDocument xml = new XmlDocument();
-			using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream ("WelcomePageContent.xml")) {
-				xml.Load (new XmlTextReader (stream));
-			}
+			clearContainer (actionBox);
+			clearContainer (newsLinkBox);
+			clearContainer (supportLinkBox);
+			clearContainer (devLinkBox);			
+			BuildFromXml ();
+			LoadRecent ();
+		}
+		
+		void clearContainer (Container c)
+		{
+			while (c.Children.Length > 0)
+				c.Remove (c.Children [0]);
+		}
+		
+		void BuildFromXml ()
+		{		
+			XmlDocument xml = parentView.GetUpdatedXmlDocument ();
 			
 			//Actions
 			XmlNode actions = xml.SelectSingleNode ("/WelcomePage/Actions");
@@ -153,6 +173,33 @@ namespace MonoDevelop.WelcomePage
 				supportLinkBox.PackEnd (button, true, false, 0);
 			}
 			supportLinkBox.ShowAll ();
+			
+			//News Links
+			XmlNode newsLinks = xml.SelectSingleNode ("/WelcomePage/Links[@_title=\"News Links\"]");
+			headerNewsLinks.Markup = string.Format (headerFormat, GettextCatalog.GetString (newsLinks.Attributes ["_title"].Value));
+			foreach (XmlNode link in newsLinks.ChildNodes) {
+				XmlAttribute a; 
+				LinkButton button = new LinkButton ();
+				button.Clicked += linkClickedEventHandler;
+				button.EnterNotifyEvent += linkHoverEnterEventHandler;
+				button.LeaveNotifyEvent += linkHoverLeaveEventHandler;
+				a = link.Attributes ["_title"];
+				if (a != null) button.Label = string.Format (textFormat, a.Value);
+				a = link.Attributes ["href"];
+				if (a != null) button.LinkUrl = a.Value;
+				a = link.Attributes ["_desc"];
+				if (a != null) button.Description = a.Value;
+				newsLinkBox.PackEnd (button, true, false, 0);
+			}
+			if (!newsLinks.HasChildNodes)
+			{
+				LinkButton button = new LinkButton ();
+				button.EnterNotifyEvent += linkHoverEnterEventHandler;
+				button.LeaveNotifyEvent += linkHoverLeaveEventHandler;
+				button.Label = "No news has been found";
+				newsLinkBox.PackEnd (button, true, false, 0);
+			}
+			newsLinkBox.ShowAll ();
 			
 			//Development Links
 			XmlNode devLinks = xml.SelectSingleNode ("/WelcomePage/Links[@_title=\"Development Links\"]");

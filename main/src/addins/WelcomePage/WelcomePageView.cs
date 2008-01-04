@@ -36,6 +36,8 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 
+using System.Net;
+using System.Xml;
 using System.IO;
 
 namespace MonoDevelop.WelcomePage
@@ -45,6 +47,9 @@ namespace MonoDevelop.WelcomePage
 		string datadir;
 		bool loadingProject;
 		EventHandler recentChangesHandler;
+		
+		// netNewsXml is where online the news.xml file can be found
+		const string netNewsXml = "http://mono.ximian.com/monodevelop-news/0.18.1/news.xml";
 		
 		public override string StockIconId {
 			get { return Gtk.Stock.Home; }
@@ -66,7 +71,89 @@ namespace MonoDevelop.WelcomePage
 
 			recentChangesHandler = (EventHandler) DispatchService.GuiDispatch (new EventHandler (RecentChangesHandler));
 			IdeApp.Workbench.RecentOpen.RecentProjectChanged += recentChangesHandler;
+			NewsUpdated += (EventHandler) DispatchService.GuiDispatch (new EventHandler (HandleNewsUpdate));
+			
+			UpdateNews ();
 		}
+		
+		public XmlDocument GetUpdatedXmlDocument ()
+		{
+			string localCachedNewsFile = System.IO.Path.Combine (PropertyService.ConfigPath, "news.xml");
+			
+			Stream stream = Assembly.GetExecutingAssembly ().GetManifestResourceStream ("WelcomePageContent.xml");
+			XmlDocument contentDoc = new XmlDocument ();
+			using (XmlTextReader reader = new XmlTextReader (stream))
+				contentDoc.Load (reader);
+			
+			try {
+				if (File.Exists (localCachedNewsFile)) {
+					XmlDocument updateDoc = new XmlDocument (); 
+					using (XmlTextReader reader = new XmlTextReader (localCachedNewsFile))
+						updateDoc.Load (reader);
+					
+					XmlNode oNodeWhereInsert = contentDoc.SelectSingleNode ("/WelcomePage/Links[@_title=\"News Links\"]"); 
+					foreach (XmlNode link in updateDoc.SelectSingleNode ("/links")) 
+						oNodeWhereInsert.AppendChild (contentDoc.ImportNode (link,true)); 
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error updating Welcome Page content.", ex);
+			}
+			
+			return contentDoc;
+		}
+		
+		static void updateNewsXmlThread ()
+		{
+			//check to see if the online news file has been modified since it was last downloaded
+			HttpWebRequest request = (HttpWebRequest) WebRequest.Create (netNewsXml);
+			string localCachedNewsFile = System.IO.Path.Combine (PropertyService.ConfigPath, "news.xml");
+			FileInfo localNewsXml = new FileInfo (localCachedNewsFile);
+			if (localNewsXml.Exists)
+				request.IfModifiedSince = localNewsXml.LastWriteTime;
+			
+			try {
+				HttpWebResponse response = (HttpWebResponse) request.GetResponse ();
+				if (response.StatusCode ==  HttpStatusCode.OK) {
+					Stream responseStream = response.GetResponseStream ();
+					using (FileStream fs = File.Create (localCachedNewsFile)) {
+						int position = 0;
+						int readBytes = -1;
+						byte[] buffer = new byte[2048];
+						while (readBytes != 0) {							
+							readBytes = responseStream.Read (buffer, position, 2048);
+							position += readBytes;
+							fs.Write (buffer, 0, readBytes);
+						}
+					}
+				}
+				NewsUpdated (null, EventArgs.Empty);
+			} catch (System.Net.WebException wex) {
+				if (((HttpWebResponse)wex.Response).StatusCode != HttpStatusCode.NotModified)
+					LoggingService.LogWarning ("Could not download news file for Welcome Page.", wex);
+			} catch (Exception ex) {
+				LoggingService.LogWarning ("Could not download news file for Welcome Page.", ex);
+			}
+			lock (updateLock)
+				isUpdating = false;
+		}
+		
+		public static void UpdateNews ()
+		{
+			lock (updateLock) {
+				if (isUpdating)
+					return;
+				else
+					isUpdating = true;
+			}
+			System.Threading.ThreadStart ts = new System.Threading.ThreadStart (updateNewsXmlThread);
+			System.Threading.Thread updateThread = new System.Threading.Thread (ts);
+			updateThread.Start ();
+		}
+		
+		static object updateLock = new object ();
+		static bool isUpdating;
+		static event EventHandler NewsUpdated;
+		protected abstract void HandleNewsUpdate (object sender, EventArgs args);
 		
 		public void HandleLinkAction (string uri)
 		{
@@ -128,7 +215,7 @@ namespace MonoDevelop.WelcomePage
 				IdeApp.Workbench.StatusBar.SetMessage (message);
 			}
 		}
-		
+
 		public static WelcomePageView GetWelcomePage ()
 		{
 			//FIXME: make the HTML version worth using

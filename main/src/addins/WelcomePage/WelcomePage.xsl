@@ -94,6 +94,12 @@
 																<xsl:if test="string-length(@_desc) != 0"> - <xsl:value-of select="gtc:GetString(@_desc)"/></xsl:if>
 															</li>
 														</xsl:for-each>
+													<xsl:if test="normalize-space(.)">
+														<xsl:if test="gtc:GetString(@_title)="News Links">
+															<li>No news can be found
+															</li>
+														</xsl:if>
+													</xsl:if>
 													</ul>
 													<p />
 												</xsl:for-each>

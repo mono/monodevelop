@@ -29,6 +29,7 @@
 //
 
 using System;
+using System.Net;
 using System.Xml;
 using System.Xml.Xsl;
 using System.IO;
@@ -79,7 +80,11 @@ namespace MonoDevelop.WelcomePage
 		public override Widget Control {
 			get { return (Widget) browser; }
 		}
-
+		
+		protected override void HandleNewsUpdate (object sender, EventArgs args)
+		{
+			LoadContent ();
+		}
 		
 		void LoadContent ()
 		{
@@ -104,14 +109,10 @@ namespace MonoDevelop.WelcomePage
 			e.SuppressChange = true;
 			base.HandleLinkAction (e.NextLocation);
 		}
-		
 		private XmlDocument BuildXmlDocument()
 		{
-			XmlDocument xml = new XmlDocument();
-			using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream ("WelcomePageContent.xml")) {
-				xml.Load (new XmlTextReader (stream));
-			}
-			
+			XmlDocument xml = GetUpdatedXmlDocument ();
+
 			// Get the Parent node
 			XmlNode parent = xml.SelectSingleNode ("/WelcomePage");
 			

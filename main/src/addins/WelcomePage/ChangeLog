@@ -1,3 +1,30 @@
+2008-01-04  Michael Hutchinson  <mhutchinson@novell.com> 
+
+	* WelcomePageView.cs:
+	* WelcomePageFallbackWidget.cs:
+	* WelcomePageBrowser.cs: Moved updating into another thread so we don't 
+	  block MD's startup. Fix request.IfModifiedSince logic -- the MSDN docs 
+	  sample seems to be wrong.
+
+2008-01-04  Steve Y.  <grizlo42@gmail.com>
+
+	* WelcomePageContent.xml: Added new set of links "News Links" for loading
+	  online links
+	* WelcomePageView.cs: Added function GetUpdatedXmlContent() to download
+	  news.xml off server, combine with WelcomePageContent.xml, and return
+	  and XmlDocument.
+	* WelcomePageFallbackWidget.cs: Added to BuildFromXml () so that the widget
+	  includes News links on the Welcome Page by loading them from the XML
+	  returned from GetUpdatedXmlContent () or adding "No news has been found"
+	  if the news.xml has no updates.
+	* WelcomePage.xsl: Added test if no news links are found, display
+	  "No news can be found"
+	* WelcomePageBrowser.cs: Loads XML from function GetUpdatedXmlContent ()
+	  instead of resource file.
+	* gtk-gui/MonoDevelop.WelcomePage.WelcomePageFallbackWidget.cs:
+	* gtk-gui/gui.stetic: Added GTK containers for displaying News Links section 
+	  after Development Links.
+
 2007-12-28  Paul Lange  <palango@gmx.de>
 
 	* WelcomePageContent.xml: Fix 'Bug 350395 - Use of "New Project/Solution" 
