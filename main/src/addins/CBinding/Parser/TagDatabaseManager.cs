@@ -55,6 +55,9 @@ namespace CBinding.Parser
 		
 		public event ClassPadEventHandler FileUpdated;
 		
+		bool ctagsInstalled = false;
+		bool checkedCtagsInstalled = false;
+		
 		private TagDatabaseManager()
 		{
 		}
@@ -69,8 +72,34 @@ namespace CBinding.Parser
 			}
 		}
 		
+		bool CheckInstalled
+		{
+			get {
+				if (!checkedCtagsInstalled) {
+					checkedCtagsInstalled = true;
+					try {
+						Runtime.ProcessService.StartProcess ("ctags", "--version", null, null).WaitForOutput ();
+					} catch {
+						LoggingService.LogWarning ("Cannot update C/C++ tags database because exuberant ctags is not installed.");
+						return false;
+					}
+					try {
+						Runtime.ProcessService.StartProcess ("gcc", "--version", null, null).WaitForOutput ();
+					} catch {
+						LoggingService.LogWarning ("Cannot update C/C++ tags database because gcc is not installed.");
+						return false;
+					}
+					ctagsInstalled = true;
+				}
+				return ctagsInstalled;
+			}
+		}
+		
 		public void WriteTags (Project project)
 		{
+			if (!CheckInstalled)
+				return;
+			
 			string tagsDir = Path.Combine (project.BaseDirectory, ".tags");
 			
 			if (!Directory.Exists (tagsDir))
@@ -164,6 +193,9 @@ namespace CBinding.Parser
 		
 		private void FillFileInformation (FileInformation fileInfo)
 		{
+			if (!CheckInstalled)
+				return;
+			
 			string confdir = PropertyService.ConfigPath;
 			string tagFileName = Path.GetFileName (fileInfo.FileName) + ".tag";
 			string tagdir = Path.Combine (confdir, "system-tags");
@@ -223,6 +255,9 @@ namespace CBinding.Parser
 		
 		public void UpdateFileTags (Project project, string filename)
 		{
+			if (!CheckInstalled)
+				return;
+			
 			ProjectFilePair p = new ProjectFilePair (project, filename);
 			
 			lock (this) {
@@ -239,6 +274,9 @@ namespace CBinding.Parser
 		
 		private void DoUpdateFileTags (Project project, string filename)
 		{
+			if (!CheckInstalled)
+				return;
+			
 			string[] headers = Headers (filename, false);
 			string ctags_options = "--C++-kinds=+p+u --fields=+a-f+S --language-force=C++ --excmd=pattern -f - " + filename + " " + string.Join (" ", headers);
 			

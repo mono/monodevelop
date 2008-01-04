@@ -1,3 +1,8 @@
+2008-01-04  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Parser/TagDatabaseManager.cs: Only try to parse tags if ctags and gcc are
+	  installed.
+
 2007-12-31  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* Compiler/GNUCompiler.cs: Report errors in the same order as they were
