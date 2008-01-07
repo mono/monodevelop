@@ -80,6 +80,13 @@
 		    supportedextensions = ".cpp,.cxx,.h,.hpp"
 		    class = "CBinding.CppLanguageBinding"/>
     </Extension>
+    
+	<Extension path = "/MonoDevelop/Ide/OptionsDialogPanels/Other">
+		<DialogPanel
+			id = "CBindingOptions"
+			_label = "C/C++"
+			class = "CBinding.GeneralOptionsPanelBinding"/>
+	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions">
 		<Condition id = "activelanguage" value = "C">

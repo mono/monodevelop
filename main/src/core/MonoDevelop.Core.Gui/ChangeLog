@@ -1,3 +1,8 @@
+2007-12-17  Aaron Bockover <abockover@novell.com>
+
+	* icons/Icons.SharpDevelopIcon, icons/Icons.SharpDevelopIcon-22.png:
+	Updated resources to the new tango icons
+
 2007-12-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.mdp, Makefile.am: RecentFiles location has changed.

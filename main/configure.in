@@ -367,6 +367,7 @@ monodevelop.pc
 monodevelop-core-addins.pc
 po/Makefile.in
 man/Makefile
+theme-icons/Makefile
 ])
 
 echo ""

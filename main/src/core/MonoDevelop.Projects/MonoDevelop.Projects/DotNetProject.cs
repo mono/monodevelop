@@ -42,7 +42,7 @@ namespace MonoDevelop.Projects
 	{
 		[ItemProperty]
 		string language;
-		ClrVersion clrVersion = ClrVersion.Net_1_1;
+		ClrVersion clrVersion = ClrVersion.Default;
 		bool usePartialTypes = true;
 		
 		IDotNetLanguageBinding languageBinding;
@@ -72,12 +72,15 @@ namespace MonoDevelop.Projects
 		[ItemProperty ("clr-version")]
 		public ClrVersion ClrVersion {
 			get {
-				return (clrVersion == ClrVersion.Default) ? ClrVersion.Net_1_1 : clrVersion;
+				if (clrVersion == ClrVersion.Default)
+					ClrVersion = ClrVersion.Default;
+				return clrVersion;
 			}
 			set {
-				if (clrVersion == value)
+				ClrVersion validValue = GetValidClrVersion (value);
+				if (clrVersion == validValue || validValue == ClrVersion.Default)
 					return;
-				clrVersion = value;
+				clrVersion = validValue;
 				
 				// Propagate the clr version to configurations. We don't support
 				// per-project clr versions right now, but we might support it
@@ -87,6 +90,30 @@ namespace MonoDevelop.Projects
 
 				UpdateSystemReferences ();
 			}
+		}
+		
+		//if possible, find a ClrVersion that the language binding can handle
+		ClrVersion GetValidClrVersion (ClrVersion suggestion)
+		{
+			if (suggestion == ClrVersion.Default) {
+				if (languageBinding == null)
+					return ClrVersion.Default;
+				else
+					suggestion = ClrVersion.Net_1_1;
+			}
+			
+			if (languageBinding != null) {
+				ClrVersion[] versions = languageBinding.GetSupportedClrVersions ();
+				if (versions != null && versions.Length > 0) {
+					foreach (ClrVersion v in versions) {
+						if (v == suggestion) {
+							return suggestion;
+						}
+					}
+					return versions[0];
+				}
+			}
+			return suggestion;
 		}
 		
 		[ItemProperty (DefaultValue=true)]

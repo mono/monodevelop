@@ -1,3 +1,19 @@
+2007-12-31  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects/DotNetProject.cs: Fix logic error in last commit that
+	  downgraded 2.0 projects to 1.1 projects.
+
+2007-12-31  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects/DotNetProject.cs: Make sure that ClrVersion is
+	  something that the language binding can handle. Fixes some compilation
+	  problems with VB.NET.
+
+2007-12-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/ProjectConvertTool.cs: Improve documentation. Add
+	  option for printing all available formats.
+
 2007-12-14  Ankit Jain  <jankit@novell.com>
 
 	Fix bug #348107

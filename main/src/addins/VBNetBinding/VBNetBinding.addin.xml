@@ -25,12 +25,12 @@
 
   <Extension path = "/MonoDevelop/Ide/FileTemplates">
     <FileTemplate id = "EmptyVBFile" resource = "EmptyVBFile.xft.xml"/>
+    <FileTemplate id = "VBAssemblyInfo" resource = "AssemblyInfo.xft.xml"/>
   </Extension>
 
   <Extension path = "/MonoDevelop/Ide/ProjectTemplates">
     <ProjectTemplate id = "EmptyVBProject" resource = "EmptyVBProject.xpt.xml"/>
     <ProjectTemplate id = "VBConsoleApplicationProject" resource = "VBConsoleApplicationProject.xpt.xml"/>
-    <ProjectTemplate id = "VBGtkSharpProject" resource = "VBGtkSharpProject.xpt.xml"/>
     <ProjectTemplate id = "VBGtkSharp2Project" resource = "VBGtkSharp2Project.xpt.xml"/>
   </Extension>
   
@@ -49,6 +49,13 @@
                    class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanel"/>
     </Condition>
   </Extension>
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/GeneralOptions/Common">
+		<Condition id="activelanguage" value="VBNet">
+				<DialogPanel id = "RuntimeOptionsPanel"
+				             _label = "Runtime Options"
+				             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RuntimeOptionsPanel"/>
+		</Condition>
+	</Extension>
 
   <!-- <Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions">
     <Condition id="activelanguage" value = "VBNet">

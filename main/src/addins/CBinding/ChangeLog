@@ -1,3 +1,31 @@
+2008-01-04  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Parser/TagDatabaseManager.cs: Only try to parse tags if ctags and gcc are
+	  installed.
+
+2007-12-31  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
+	* Compiler/GNUCompiler.cs: Report errors in the same order as they were
+	  outputted by the compiler and parse linker output to form better linker
+	  error reports.
+
+2007-12-31  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
+	* Project/CProject.cs: Copy deployment files to output directory when
+	  building the project.
+
+2007-12-28  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
+	* Gui/GeneralOptionsPanel.cs, CBinding.addin.xml,
+	  Parser/TagDatabaseManager.cs, CBinding.mdp, Project/CProject.cs,
+	  gtk-gui/CBinding.EditPackagesDialog.cs,
+	  gtk-gui/CBinding.CodeGenerationPanel.cs, gtk-gui/objects.xml,
+	  gtk-gui/CBinding.GeneralOptionsPanel.cs, gtk-gui/gui.stetic,
+	  Makefile.am: Added a general configuration panel for CBinding where you
+	  can choose the default compiler for new C and C++ projects as well as
+	  set if you want to parse system tags or not.
+	* Compiler/GppCompiler.cs, Compiler/GccCompiler.cs: Changed compiler names.
+
 2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CBinding.mdp: Updated project files. The order of extended properties

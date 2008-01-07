@@ -302,12 +302,19 @@ namespace MonoDevelop.DesignerSupport
 			}
 			
 			foreach (IClass part in child.Parts) {
+				if (part.Region == null || string.IsNullOrEmpty (part.Region.FileName)) {
+					LoggingService.LogError ("CodeBehind grouping: IClass {0} has not defined a valid region.",
+					                           part.FullyQualifiedName);
+					continue;
+				}
 				ProjectFile partFile = proj.ProjectFiles.GetFile (part.Region.FileName);
 				if (partFile == parent)
 					continue;
-				if (partFile == null)
-					LoggingService.LogWarning ("CodeBehind grouping: The file {0} for IClass {1} was not found in the project.",  part.Region.FileName, part.FullyQualifiedName);
-				files.Add (partFile);
+				if (partFile != null)
+					files.Add (partFile);
+				else
+					LoggingService.LogError ("CodeBehind grouping: The file {0} for IClass {1} was not found in the project.",
+					                           part.Region.FileName, part.FullyQualifiedName);
 			}
 			return files;
 		}

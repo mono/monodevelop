@@ -51,13 +51,14 @@ namespace MonoDevelop.Ide.Templates
 		CodeDomProvider parserProvider;
 		string tempSubstitutedContent;
 		bool showAutogenerationNotice = false;
+		string sourceLang;
 		
 		public override void Load (XmlElement filenode)
 		{
 			base.Load (filenode);
 			content = filenode.InnerText;
 			
-			string sourceLang = filenode.GetAttribute ("SourceLanguage");
+			sourceLang = filenode.GetAttribute ("SourceLanguage");
 			if ((sourceLang == null) || (sourceLang.Length == 0))
 				sourceLang = "C#";
 			
@@ -74,7 +75,7 @@ namespace MonoDevelop.Ide.Templates
 			if (string.IsNullOrEmpty (filenode.GetAttribute ("AddStandardHeader")))
 				AddStandardHeader = true;
 			
-			parserProvider = getProvider (sourceLang);
+			parserProvider = GetCodeDomProvider (sourceLang);
 		}
 		
 		//Adapted from CodeDomFileDescriptionTemplate.cs
@@ -85,7 +86,7 @@ namespace MonoDevelop.Ide.Templates
 			if (language == null || language == "")
 				throw new InvalidOperationException ("Language not defined in CodeDom based template.");
 			
-			CodeDomProvider provider = getProvider (language);
+			CodeDomProvider provider = GetCodeDomProvider (language);
 			
 			//parse the source code
 			if (tempSubstitutedContent == null)
@@ -127,9 +128,29 @@ namespace MonoDevelop.Ide.Templates
 			return txt.Substring (i+1);
 		}
 		
-		CodeDomProvider getProvider (string language)
+		public override void ModifyTags (Project project, string language, string identifier, string fileName, ref Hashtable tags)
 		{
-			CodeDomProvider provider = null;
+			//prevent parser breakage from missing tags, which SingleFile only provides for DotNetProject
+			//if ((project as DotNetProject) == null)
+			//	throw new InvalidOperationException ("CodeTranslationFileDescriptionTemplate can only be used with a DotNetProject");
+			
+			base.ModifyTags (project, language, identifier, fileName, ref tags);
+			
+			//swap out the escaped keyword identifiers for the target language with the source language
+			//CodeDOM should take care of handling it for the target language
+			System.CodeDom.Compiler.CodeDomProvider provider = GetCodeDomProvider (sourceLang);
+			tags ["EscapedIdentifier"] = provider.CreateEscapedIdentifier ((string) tags ["Name"]);
+			
+			//This is a bit hacky doing it here instead of in CreateContent, but need to
+			//substitute all tags in code before language is translated, because language
+			//translation gets confused by unsubstituted  substitution tokens.
+			string [,] tagsArr = HashtableToStringArray (tags);
+			tempSubstitutedContent = StringParserService.Parse (content, tagsArr);
+		}
+		
+		private System.CodeDom.Compiler.CodeDomProvider GetCodeDomProvider (string language)
+		{
+			System.CodeDom.Compiler.CodeDomProvider provider = null;
 			IDotNetLanguageBinding binding = GetLanguageBinding (language) as IDotNetLanguageBinding;
 			if (binding == null)
 				throw new InvalidOperationException ("No LanguageBinding was found for the language '" + language + "'.");
@@ -140,19 +161,11 @@ namespace MonoDevelop.Ide.Templates
 			return provider;
 		}
 		
-		public override void ModifyTags (Project project, string language, string identifier, string fileName, ref Hashtable tags)
+		//CodeDOM escapes keywords for us, so escaped keywords are valid too. Need to override to allow this,
+		//and also to check for validity in source language
+		public override bool IsValidName (string name, string language)
 		{
-			//prevent parser breakage from missing tags, which SingleFile only provides for DotNetProject
-			//if ((project as DotNetProject) == null)
-			//	throw new InvalidOperationException ("CodeTranslationFileDescriptionTemplate can only be used with a DotNetProject");
-			
-			base.ModifyTags (project, language, identifier, fileName, ref tags);
-			
-			//This is a bit hacky doing it here instead of in CreateContent, but need to
-			//substitute all tags in code before language is translated, because language
-			//translation gets confused by unsubstituted  substitution tokens.
-			string [,] tagsArr = HashtableToStringArray (tags);
-			tempSubstitutedContent = StringParserService.Parse (content, tagsArr);
+			return base.IsValidName (name, language) && base.IsValidName (name, sourceLang);
 		}
 	}
 }

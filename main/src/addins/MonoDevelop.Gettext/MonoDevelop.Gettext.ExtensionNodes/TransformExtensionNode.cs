@@ -39,6 +39,9 @@ namespace MonoDevelop.Gettext
 		[NodeAttribute ("value", Required=true, Description="Substitution text")]
 		string replaceValue = null;
 		
+		[NodeAttribute ("regexOptions", Description="RegexOptions flags separated by '|'")]
+		string regexOptions = null;
+		
 		public string RegexValue {
 			get {
 				return regexValue;
@@ -51,5 +54,10 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
+		public string RegexOptions {
+			get {
+				return regexOptions;
+			}
+		}
 	}
 }

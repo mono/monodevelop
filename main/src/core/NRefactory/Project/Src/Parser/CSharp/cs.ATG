@@ -1701,7 +1701,7 @@ UnaryExpr<out Expression uExpr>
 				throw new Exception("t.literalValue must be uint or ulong");
 			}
 		.)
-	|	PrimaryExpr<out expr> 
+	|	PrimaryExpr<out expr>
 	)
 	(.	for (int i = 0; i < expressions.Count; ++i) {
 			Expression nextExpression = i + 1 < expressions.Count ? (Expression)expressions[i + 1] : expr;
@@ -1734,9 +1734,9 @@ PrimaryExpr<out Expression pexpr>
 		"true"                              (.pexpr = new PrimitiveExpression(true, "true");  .)
 		| "false"                           (.pexpr = new PrimitiveExpression(false, "false"); .)
 		| "null"                            (.pexpr = new PrimitiveExpression(null, "null");  .)          /* from literal token */
+		| Literal                           (.pexpr = new PrimitiveExpression(t.literalValue, t.val); .)
 		| IF (IsTokenWithGenericParameters()) 
 		  TypeName<out type, true>          (.pexpr = new FieldReferenceExpression(new TypeReferenceExpression (type), ""); .)
-		| Literal                           (.pexpr = new PrimitiveExpression(t.literalValue, t.val);  .)
 		| IF (la.kind == Tokens.Identifier && Peek(1).kind == Tokens.DoubleColon)
 			ident (. type = new TypeReference(t.val); .)
 			"::"  (. pexpr = new TypeReferenceExpression(type); .)

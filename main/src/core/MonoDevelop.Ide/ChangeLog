@@ -1,3 +1,53 @@
+2008-01-02  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs,
+	  MonoDevelop.Ide.Templates/CodeTranslationFileDescriptionTemplate.cs:
+	  Allow creating files where the name is a language keyword, using keyword
+	  escaping. Fixes some VB.NET ASP.NET templates. Code in templates should
+	  use ${EscapedIdentifier} instead of ${Name}, or they may create invalid
+	  code.
+
+2007-12-28  Paul Lange  <palango@gmx.de>
+
+	* MonoDevelop.Ide.addin.xml: Fix 'Bug 350395 - Use of "New Project/
+	  Solution" terminology is inconsistent'.
+
+2007-12-28  Zach Lute <zach.lute@gmail.com>
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Methods will no longer show
+	  up twice in the menu if they are their own enclosing item. (Bug #350810)
+
+2007-12-28  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs,
+	  MonoDevelop.Ide.Gui/OutputProgressMonitor.cs: More avoiding remoting
+	  calls, and also dropping excess text before it reaches the TextView.
+	  Reduce log to 20kb and increase update timeout to 500ms. Now memory use
+	  is pretty much constant, at least compared to the leak we had before,
+	  and the UI stays responsive enough to be able to end the child process.
+	  Statistical profiling indicates that MD is mainly Pango/Gtk/libc6-bound
+	  now, so we're unlikely to be able to make it much better without
+	  replacing the output rendering widget.
+
+2007-12-27  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs,
+	  MonoDevelop.Ide.Gui/OutputProgressMonitor.cs: Avoid another remoted
+	  field. Improve comments. Avoid excessively re-launching output handler.
+
+2007-12-27  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs,
+	  MonoDevelop.Ide.Gui/OutputProgressMonitor.cs: Make the GUI monitor pad
+	  thread safe for certain operations, with optimisations for large
+	  quantities raw text. The progress monitor can now avoid two remoting
+	  calls per line of output to context switch into the GUI thread. This
+	  also reduces pad updates on the GUI thread to maximum of one per 100ms.
+	  Fixes "Bug 350611 - MonoDevelop hangs when running program that dumps
+	  large amounts of output to console". This might be leaking memory, but
+	  I'm not certain, as it may be fragmentation instead. Either way it's
+	  better than a hang.
+
 2007-12-20  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Ide.Templates/FileTemplateReference.cs (AddToProject): Use
@@ -29,6 +79,13 @@
  	* MonoDevelop.Ide.Commands/HelpCommands.cs, MonoDevelop.Ide.addin.xml: Added
  	  default handler for the help command that starts Monodoc.
  
+2007-12-17  Aaron Bockover <abockover@novell.com>
+
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: If the monodevelop icon is 
+	in the default icon theme, make it the default window icon for any of
+	the process' windows, otherwise just set the window icon to the old
+	resource
+
 2007-12-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Commands/FileCommands.cs: Moved Freedesktop.RecentFiles

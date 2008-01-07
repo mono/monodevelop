@@ -27,7 +27,7 @@ using System.Web;
 namespace ${Namespace}
 {
 
-	public class ${Name} : System.Web.IHttpHandler
+	public class ${EscapedIdentifier} : System.Web.IHttpHandler
 	{
 	
 		public void ProcessRequest (HttpContext context)

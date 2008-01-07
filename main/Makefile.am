@@ -1,4 +1,4 @@
-SUBDIRS = contrib src build po man
+SUBDIRS = contrib src build po man theme-icons
 
 bin_SCRIPTS = monodevelop mdtool
 
@@ -6,9 +6,6 @@ all:
 
 desktopdir = $(datadir)/applications
 desktop_DATA = monodevelop.desktop
-
-pixmapdir = $(datadir)/pixmaps
-pixmap_DATA = monodevelop.png
 
 xdgmimedir = $(datadir)/mime/packages
 xdgmime_DATA = monodevelop.xml

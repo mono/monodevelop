@@ -1,3 +1,9 @@
+2008-01-02  Geoff Norton  <gnorton@novell.com>
+
+	* MonoDevelop.WebReferences.Dialogs/WebReferenceDialog.cs:
+	The using System.Net;\rusing System.Text;\n pattern was causing a
+	CS8025 on SVN trunk.  Replace the \r with a \n.
+
 2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.WebReferences/Library.cs,

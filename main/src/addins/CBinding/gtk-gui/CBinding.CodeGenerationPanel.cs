@@ -310,7 +310,6 @@ namespace CBinding {
             this.frame2 = new Gtk.Frame();
             this.frame2.Name = "frame2";
             this.frame2.ShadowType = ((Gtk.ShadowType)(0));
-            this.frame2.LabelXalign = 0F;
             this.frame2.LabelYalign = 0F;
             // Container child frame2.Gtk.Container+ContainerChild
             this.GtkAlignment = new Gtk.Alignment(0F, 0F, 1F, 1F);
@@ -346,8 +345,6 @@ namespace CBinding {
             this.scrolledwindow4 = new Gtk.ScrolledWindow();
             this.scrolledwindow4.CanFocus = true;
             this.scrolledwindow4.Name = "scrolledwindow4";
-            this.scrolledwindow4.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow4.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow4.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow4.Gtk.Container+ContainerChild
             this.extraCompilerTextView = new Gtk.TextView();
@@ -363,8 +360,6 @@ namespace CBinding {
             this.scrolledwindow5 = new Gtk.ScrolledWindow();
             this.scrolledwindow5.CanFocus = true;
             this.scrolledwindow5.Name = "scrolledwindow5";
-            this.scrolledwindow5.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow5.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow5.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow5.Gtk.Container+ContainerChild
             this.extraLinkerTextView = new Gtk.TextView();
@@ -390,8 +385,6 @@ namespace CBinding {
             Gtk.Box.BoxChild w24 = ((Gtk.Box.BoxChild)(this.vbox6[this.frame2]));
             w24.Position = 2;
             this.notebook1.Add(this.vbox6);
-            Gtk.Notebook.NotebookChild w25 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.vbox6]));
-            w25.TabExpand = false;
             // Notebook tab
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
@@ -440,8 +433,6 @@ namespace CBinding {
             this.scrolledwindow1 = new Gtk.ScrolledWindow();
             this.scrolledwindow1.CanFocus = true;
             this.scrolledwindow1.Name = "scrolledwindow1";
-            this.scrolledwindow1.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow1.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow1.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow1.Gtk.Container+ContainerChild
             this.libTreeView = new Gtk.TreeView();
@@ -492,7 +483,6 @@ namespace CBinding {
             this.notebook1.Add(this.table2);
             Gtk.Notebook.NotebookChild w34 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.table2]));
             w34.Position = 1;
-            w34.TabExpand = false;
             // Notebook tab
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
@@ -545,8 +535,6 @@ namespace CBinding {
             this.scrolledwindow3 = new Gtk.ScrolledWindow();
             this.scrolledwindow3.CanFocus = true;
             this.scrolledwindow3.Name = "scrolledwindow3";
-            this.scrolledwindow3.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow3.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow3.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow3.Gtk.Container+ContainerChild
             this.libPathTreeView = new Gtk.TreeView();
@@ -638,8 +626,6 @@ namespace CBinding {
             this.scrolledwindow2 = new Gtk.ScrolledWindow();
             this.scrolledwindow2.CanFocus = true;
             this.scrolledwindow2.Name = "scrolledwindow2";
-            this.scrolledwindow2.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow2.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow2.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow2.Gtk.Container+ContainerChild
             this.includePathTreeView = new Gtk.TreeView();
@@ -693,7 +679,6 @@ namespace CBinding {
             this.notebook1.Add(this.vbox7);
             Gtk.Notebook.NotebookChild w53 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.vbox7]));
             w53.Position = 2;
-            w53.TabExpand = false;
             // Notebook tab
             this.label3 = new Gtk.Label();
             this.label3.Name = "label3";

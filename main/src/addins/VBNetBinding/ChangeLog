@@ -1,3 +1,48 @@
+2008-01-03  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* VBBindingCompilerServices.cs: Update the compiler output parsing regex to
+	  handle all vbnc errors and correctly extract file and position info when
+	  present.
+
+2008-01-02  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Parser/Parser.cs: Merge some code from C# binding so that VB parser
+	  actually tags classes with the filename in which they're defined. Fixes
+	  CodeBehind grouping and double-clicking on items in the class pad.
+
+2008-01-02  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* VBNetBinding.mdp, Makefile.am, VBLanguageBinding.cs, VBCodeGenerator.cs:
+	  Import VB.NET CodeDOM generator from Mono to get partial class support
+	  and keyword escaping support.
+
+2007-12-31  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* VBNetBinding.addin.xml, VBNetBinding.mdp, templates/AssemblyInfo.xft.xml,
+	  Makefile.am: Add AssemblyInfo template.
+	* templates/EmptyVBFile.xft.xml: Use standard header.
+	* templates/VBGtkSharp2Project.xpt.xml,
+	  templates/VBConsoleApplicationProject.xpt.xml: Use standard headers and
+	  AssemblyInfo template.
+
+2007-12-31  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* VBBindingCompilerServices.cs: Use WaitForOutput instead of WaitForExit to
+	  make sure we get all of the output, or the output-collecting thread can
+	  sometimes try to write to the StringWriter after it's disposed, and
+	  crash the IDE.  Also tidy up code.
+	* Makefile.am: Updated.
+	* VBLanguageBinding.cs: We don't support the 1.1 profile for VB, so remove
+	  it.
+
+2007-12-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* VBNetBinding.addin.xml: Remove Gtk# 1.0 template. Add the
+	  RuntimeOptionsPanel so that projects can change their clr version.
+	* templates/VBGtkSharpProject.xpt.xml, Makefile.am: Remove Gtk# 1.0
+	  template.
+	* VBLanguageBinding.cs: Add support for 2.0 clr versions.
+
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Gui/CodeGenerationPanel.cs: Fix warning.

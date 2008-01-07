@@ -10,8 +10,7 @@
 	</TemplateConfiguration>
 	
 	<TemplateFiles>
-		<File DefaultExtension=".cs" DefaultName="EmptyCSharpfile">
-			<![CDATA[// created on ${Date} at ${Time}]]>
+		<File DefaultExtension=".cs" DefaultName="EmptyCSharpfile" AddStandardHeader="True">
 		</File>
 	</TemplateFiles>
 	

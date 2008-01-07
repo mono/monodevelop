@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core;
 using MonoDevelop.DesignerSupport;
@@ -21,7 +22,11 @@ namespace AspNetAddIn
 			AspNetAppProject aspProject = project as AspNetAppProject;
 			List<CodeBehindWarning> errors = new List<CodeBehindWarning> ();
 			
-			if (aspProject == null)
+			if (aspProject == null || aspProject.LanguageBinding == null || aspProject.LanguageBinding.Refactorer == null)
+				return base.Build (monitor, project);
+			
+			RefactorOperations ops = aspProject.LanguageBinding.Refactorer.SupportedOperations;
+			if (ops & RefactorOperations.AddField != RefactorOperations.AddField)
 				return base.Build (monitor, project);
 			
 			//lists of members to be added 

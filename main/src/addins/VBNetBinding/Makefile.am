@@ -31,16 +31,17 @@ FILES =  \
 	Project/VBCompilerParameters.cs \
 	VBAmbience.cs \
 	VBBindingCompilerServices.cs \
+	VBCodeGenerator.cs \
 	VBLanguageBinding.cs
 
 RES =  \
 	icons/VB.FileIcon \
 	icons/vb-icon-32.png \
+	templates/AssemblyInfo.xft.xml \
 	templates/EmptyVBFile.xft.xml \
 	templates/EmptyVBProject.xpt.xml \
 	templates/VBConsoleApplicationProject.xpt.xml \
 	templates/VBGtkSharp2Project.xpt.xml \
-	templates/VBGtkSharpProject.xpt.xml \
 	VB.glade \
 	VBNetBinding.addin.xml
 

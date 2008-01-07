@@ -5,11 +5,12 @@
     <target-gtk-version>2.8.3</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../../../build/bin/MonoDevelop.Components.dll" />
-    <widget-library name="../../../build/bin/MonoDevelop.Ide.dll" />
-    <widget-library name="../../../build/bin/MonoDevelop.Projects.Gui.dll" />
-    <widget-library name="../../../build/AddIns/MonoDevelop.Deployment.dll" />
-    <widget-library name="../../../build/AddIns/MonoDevelop.Deployment.Linux.dll" />
+    <widget-library name="../../../../build/bin/MonoDevelop.Components.dll" />
+    <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
+    <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
+    <widget-library name="../../../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll" />
+    <widget-library name="../../../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.Linux.dll" />
+    <widget-library name="../../../../build/AddIns/BackendBindings/MonoDevelop.CBinding.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="CBinding.CodeGenerationPanel" design-size="611 396">
     <property name="MemberName" />
@@ -150,6 +151,7 @@ Shared Object</property>
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="Label" translatable="yes">no warnings</property>
+                        <property name="Active">True</property>
                         <property name="DrawIndicator">True</property>
                         <property name="HasLabel">True</property>
                         <property name="UseUnderline">True</property>
@@ -282,7 +284,6 @@ Shared Object</property>
               <widget class="Gtk.Frame" id="frame2">
                 <property name="MemberName" />
                 <property name="ShadowType">None</property>
-                <property name="LabelXalign">0</property>
                 <property name="LabelYalign">0</property>
                 <child>
                   <widget class="Gtk.Alignment" id="GtkAlignment">
@@ -340,8 +341,6 @@ Shared Object</property>
                           <widget class="Gtk.ScrolledWindow" id="scrolledwindow4">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
-                            <property name="VscrollbarPolicy">Automatic</property>
-                            <property name="HscrollbarPolicy">Automatic</property>
                             <property name="ShadowType">In</property>
                             <child>
                               <widget class="Gtk.TextView" id="extraCompilerTextView">
@@ -373,8 +372,6 @@ Example:
                           <widget class="Gtk.ScrolledWindow" id="scrolledwindow5">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
-                            <property name="VscrollbarPolicy">Automatic</property>
-                            <property name="HscrollbarPolicy">Automatic</property>
                             <property name="ShadowType">In</property>
                             <child>
                               <widget class="Gtk.TextView" id="extraLinkerTextView">
@@ -426,9 +423,6 @@ Example:
               </packing>
             </child>
           </widget>
-          <packing>
-            <property name="TabExpand">False</property>
-          </packing>
         </child>
         <child>
           <widget class="Gtk.Label" id="label1">
@@ -517,8 +511,6 @@ Example:
               <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="VscrollbarPolicy">Automatic</property>
-                <property name="HscrollbarPolicy">Automatic</property>
                 <property name="ShadowType">In</property>
                 <child>
                   <widget class="Gtk.TreeView" id="libTreeView">
@@ -603,7 +595,6 @@ Example:
           </widget>
           <packing>
             <property name="Position">1</property>
-            <property name="TabExpand">False</property>
           </packing>
         </child>
         <child>
@@ -697,8 +688,6 @@ Example:
                   <widget class="Gtk.ScrolledWindow" id="scrolledwindow3">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="VscrollbarPolicy">Automatic</property>
-                    <property name="HscrollbarPolicy">Automatic</property>
                     <property name="ShadowType">In</property>
                     <child>
                       <widget class="Gtk.TreeView" id="libPathTreeView">
@@ -863,8 +852,6 @@ Example:
                   <widget class="Gtk.ScrolledWindow" id="scrolledwindow2">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="VscrollbarPolicy">Automatic</property>
-                    <property name="HscrollbarPolicy">Automatic</property>
                     <property name="ShadowType">In</property>
                     <child>
                       <widget class="Gtk.TreeView" id="includePathTreeView">
@@ -958,7 +945,6 @@ Example:
           </widget>
           <packing>
             <property name="Position">2</property>
-            <property name="TabExpand">False</property>
           </packing>
         </child>
         <child>
@@ -1215,8 +1201,6 @@ Example:
                   <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="VscrollbarPolicy">Automatic</property>
-                    <property name="HscrollbarPolicy">Automatic</property>
                     <property name="ShadowType">In</property>
                     <child>
                       <widget class="Gtk.TreeView" id="normalPackageTreeView">
@@ -1226,9 +1210,6 @@ Example:
                       </widget>
                     </child>
                   </widget>
-                  <packing>
-                    <property name="TabExpand">False</property>
-                  </packing>
                 </child>
                 <child>
                   <widget class="Gtk.Label" id="label1">
@@ -1243,8 +1224,6 @@ Example:
                   <widget class="Gtk.ScrolledWindow" id="scrolledwindow3">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="VscrollbarPolicy">Automatic</property>
-                    <property name="HscrollbarPolicy">Automatic</property>
                     <property name="ShadowType">In</property>
                     <child>
                       <widget class="Gtk.TreeView" id="projectPackageTreeView">
@@ -1256,7 +1235,6 @@ Example:
                   </widget>
                   <packing>
                     <property name="Position">1</property>
-                    <property name="TabExpand">False</property>
                   </packing>
                 </child>
                 <child>
@@ -1305,8 +1283,6 @@ Example:
                   <widget class="Gtk.ScrolledWindow" id="scrolledwindow2">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="VscrollbarPolicy">Automatic</property>
-                    <property name="HscrollbarPolicy">Automatic</property>
                     <property name="ShadowType">In</property>
                     <child>
                       <widget class="Gtk.TreeView" id="selectedPackagesTreeView">
@@ -1667,6 +1643,141 @@ Example:
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
+          </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
+  <widget class="Gtk.Bin" id="CBinding.GeneralOptionsPanel" design-size="457 300">
+    <property name="MemberName" />
+    <child>
+      <widget class="Gtk.Table" id="table1">
+        <property name="MemberName" />
+        <property name="NRows">3</property>
+        <property name="NColumns">3</property>
+        <property name="RowSpacing">6</property>
+        <property name="ColumnSpacing">6</property>
+        <child>
+          <placeholder />
+        </child>
+        <child>
+          <placeholder />
+        </child>
+        <child>
+          <placeholder />
+        </child>
+        <child>
+          <placeholder />
+        </child>
+        <child>
+          <widget class="Gtk.ComboBox" id="cCombo">
+            <property name="MemberName" />
+            <property name="Tooltip" translatable="yes">Default compiler to use for new C projects.</property>
+            <property name="IsTextCombo">True</property>
+            <property name="Items" translatable="yes" />
+            <signal name="Changed" handler="OnCComboChanged" />
+          </widget>
+          <packing>
+            <property name="LeftAttach">1</property>
+            <property name="RightAttach">2</property>
+            <property name="AutoSize">True</property>
+            <property name="XOptions">Fill</property>
+            <property name="YOptions">Fill</property>
+            <property name="XExpand">False</property>
+            <property name="XFill">True</property>
+            <property name="XShrink">False</property>
+            <property name="YExpand">False</property>
+            <property name="YFill">True</property>
+            <property name="YShrink">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.ComboBox" id="cppCombo">
+            <property name="MemberName" />
+            <property name="Tooltip" translatable="yes">Default compiler to use for new C++ projects.</property>
+            <property name="IsTextCombo">True</property>
+            <property name="Items" translatable="yes" />
+            <signal name="Changed" handler="OnCppComboChanged" />
+          </widget>
+          <packing>
+            <property name="TopAttach">1</property>
+            <property name="BottomAttach">2</property>
+            <property name="LeftAttach">1</property>
+            <property name="RightAttach">2</property>
+            <property name="AutoSize">True</property>
+            <property name="XOptions">Fill</property>
+            <property name="YOptions">Fill</property>
+            <property name="XExpand">False</property>
+            <property name="XFill">True</property>
+            <property name="XShrink">False</property>
+            <property name="YExpand">False</property>
+            <property name="YFill">True</property>
+            <property name="YShrink">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.Label" id="label1">
+            <property name="MemberName" />
+            <property name="Xpad">10</property>
+            <property name="Xalign">0</property>
+            <property name="LabelProp" translatable="yes">Default C Compiler:</property>
+          </widget>
+          <packing>
+            <property name="AutoSize">True</property>
+            <property name="XOptions">Fill</property>
+            <property name="YOptions">Fill</property>
+            <property name="XExpand">False</property>
+            <property name="XFill">True</property>
+            <property name="XShrink">False</property>
+            <property name="YExpand">False</property>
+            <property name="YFill">True</property>
+            <property name="YShrink">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.Label" id="label2">
+            <property name="MemberName" />
+            <property name="Xpad">10</property>
+            <property name="Xalign">0</property>
+            <property name="LabelProp" translatable="yes">Default C++ Compiler:</property>
+          </widget>
+          <packing>
+            <property name="TopAttach">1</property>
+            <property name="BottomAttach">2</property>
+            <property name="AutoSize">True</property>
+            <property name="XOptions">Fill</property>
+            <property name="YOptions">Fill</property>
+            <property name="XExpand">False</property>
+            <property name="XFill">True</property>
+            <property name="XShrink">False</property>
+            <property name="YExpand">False</property>
+            <property name="YFill">True</property>
+            <property name="YShrink">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.CheckButton" id="parseSystemTagsCheck">
+            <property name="MemberName" />
+            <property name="Tooltip" translatable="yes">Choose whether you want to parse system tags or not, if you do you will get completion for things like printf, but the tag parsing process will take considerably longer.</property>
+            <property name="CanFocus">True</property>
+            <property name="Label" translatable="yes">Parse System Tags</property>
+            <property name="DrawIndicator">True</property>
+            <property name="HasLabel">True</property>
+            <property name="UseUnderline">True</property>
+          </widget>
+          <packing>
+            <property name="TopAttach">2</property>
+            <property name="BottomAttach">3</property>
+            <property name="XPadding">10</property>
+            <property name="AutoSize">True</property>
+            <property name="XOptions">Fill</property>
+            <property name="YOptions">Fill</property>
+            <property name="XExpand">False</property>
+            <property name="XFill">True</property>
+            <property name="XShrink">False</property>
+            <property name="YExpand">False</property>
+            <property name="YFill">True</property>
+            <property name="YShrink">False</property>
           </packing>
         </child>
       </widget>

@@ -94,10 +94,12 @@ namespace MonoDevelop.Ide.Commands
 					ILanguageItem item = ctx.ResolveIdentifier (id, line, column, editor.Name, null);
 					ILanguageItem eitem = ctx.GetEnclosingLanguageItem (line, column, editor);
 					
-					if (item != null && eitem != null && eitem.Name == item.Name && !(eitem is IProperty) && !(eitem is IMethod)) {
-						// If this occurs, then @item is the base-class version of @eitem
-						// in which case we don't want to show the base-class @item, we'd
-						// rather show the item the user /actually/ requested, @eitem.
+					if (item != null && eitem != null && 
+					    (eitem == item || (eitem.Name == item.Name && !(eitem is IProperty) && !(eitem is IMethod)))) {
+						// If this occurs, then @item is either its own enclosing item, in
+						// which case, we don't want to show it twice, or it is the base-class
+						// version of @eitem, in which case we don't want to show the base-class
+						// @item, we'd rather show the item the user /actually/ requested, @eitem.
 						item = eitem;
 						eitem = null;
 					}

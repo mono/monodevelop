@@ -36,9 +36,18 @@ namespace MonoDevelop.Gettext.ExtensionNodes
 		[NodeAttribute ("regex", Required=true, Description="Regular expression")]
 		string regexValue = null;
 		
+		[NodeAttribute ("regexOptions", Description="RegexOptions flags separated by '|'")]
+		string regexOptions = null;
+		
 		public string RegexValue {
 			get {
 				return regexValue;
+			}
+		}
+		
+		public string RegexOptions {
+			get {
+				return regexOptions;
 			}
 		}
 	}

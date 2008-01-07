@@ -4177,20 +4177,20 @@ out Expression pexpr) {
 
 #line  1736 "cs.ATG" 
 			pexpr = new PrimitiveExpression(null, "null");  
-		} else if (
-#line  1737 "cs.ATG" 
-IsTokenWithGenericParameters()) {
-			TypeName(
-#line  1738 "cs.ATG" 
-out type, true);
-
-#line  1738 "cs.ATG" 
-			pexpr = new FieldReferenceExpression(new TypeReferenceExpression (type), ""); 
 		} else if (la.kind == 2) {
 			lexer.NextToken();
 
+#line  1737 "cs.ATG" 
+			pexpr = new PrimitiveExpression(t.literalValue, t.val); 
+		} else if (
+#line  1738 "cs.ATG" 
+IsTokenWithGenericParameters()) {
+			TypeName(
 #line  1739 "cs.ATG" 
-			pexpr = new PrimitiveExpression(t.literalValue, t.val);  
+out type, true);
+
+#line  1739 "cs.ATG" 
+			pexpr = new FieldReferenceExpression(new TypeReferenceExpression (type), ""); 
 		} else if (
 #line  1740 "cs.ATG" 
 la.kind == Tokens.Identifier && Peek(1).kind == Tokens.DoubleColon) {

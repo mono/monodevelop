@@ -282,6 +282,21 @@ namespace CBinding
 			CProjectConfiguration pc = (CProjectConfiguration)ActiveConfiguration;
 			pc.SourceDirectory = BaseDirectory;
 			
+			foreach (ProjectFile file in ProjectFiles) {
+				if (file.BuildAction == BuildAction.FileCopy) {
+					string source = file.Name;
+					string destination = Path.Combine (pc.OutputDirectory, Path.GetFileName (file.Name));
+					
+					DateTime source_last_write = File.GetLastWriteTime (source);
+					DateTime destination_last_write = File.GetLastWriteTime (destination);
+					
+					if (!File.Exists (destination) || source_last_write > destination_last_write) {
+						monitor.Log.WriteLine (GettextCatalog.GetString ("Copying {0} to {1}", source, destination));						
+						File.Copy (source, destination, true);
+					}
+				}
+			}
+			
 			return compiler_manager.Compile (
 				ProjectFiles, packages,
 				(CProjectConfiguration)ActiveConfiguration,
@@ -362,10 +377,19 @@ namespace CBinding
 				if (value != null) {
 					compiler_manager = value;
 				} else {
+					object[] compilers = AddinManager.GetExtensionObjects ("/CBinding/Compilers");
+					string compiler;
+					
 					if (language == Language.C)
-						compiler_manager = new GccCompiler ();
+						compiler = PropertyService.Get ("CBinding.DefaultCCompiler", new GccCompiler ().Name);
 					else
-						compiler_manager = new GppCompiler ();
+						compiler = PropertyService.Get ("CBinding.DefaultCppCompiler", new GppCompiler ().Name);
+					
+					foreach (ICompiler c in compilers) {
+						if (compiler == c.Name) {
+							compiler_manager = c;
+						}
+					}
 				}
 			}
 		}

@@ -31,6 +31,12 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 		}
 		
+		public override string ToString ()
+		{
+			return String.Format ("[Token:kind={0}, col={1}, line={2}, val={3}]", kind, col, line, val);
+		}
+
+		
 		public Token(int kind) : this(kind, 0, 0)
 		{
 		}

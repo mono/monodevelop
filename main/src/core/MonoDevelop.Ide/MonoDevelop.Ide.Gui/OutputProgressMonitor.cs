@@ -31,8 +31,10 @@ using System.Collections;
 using System.CodeDom.Compiler;
 using System.IO;
 using System.Diagnostics;
+using System.Text;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Core.Execution;
@@ -48,14 +50,24 @@ namespace MonoDevelop.Ide.Gui
 		DefaultMonitorPad outputPad;
 		event EventHandler stopRequested;
 		
+		LogTextWriter logger = new LogTextWriter ();
+		
 		public OutputProgressMonitor (DefaultMonitorPad pad, string title, string icon)
 		{
 			pad.AsyncOperation = this.AsyncOperation;
 			outputPad = pad;
 			outputPad.BeginProgress (title);
+			
+			//using the DefaultMonitorPad's method here to make sure we don't mess with the remoted dispatch 
+			//mechanisms *at all* (even just accessing a field from an anon delegate invokes remoting) 
+			//We're hooking up our own logger to avoid cost of context switching via remoting through the 
+			//AsyncDispatch of base class's WriteLogInternal
+			//HORRIBLE HACK:To get it properly deteched, we have to replace the actual logger.
+			logger.TextWritten += outputPad.WriteText;
+			((LogTextWriter) base.Log).TextWritten += outputPad.WriteText;
 		}
 		
-		[AsyncDispatch]
+		[FreeDispatch]
 		public override void BeginTask (string name, int totalWork)
 		{
 			if (outputPad == null) throw GetDisposedException ();
@@ -63,18 +75,12 @@ namespace MonoDevelop.Ide.Gui
 			base.BeginTask (name, totalWork);
 		}
 		
-		[AsyncDispatch]
+		[FreeDispatch]
 		public override void EndTask ()
 		{
 			if (outputPad == null) throw GetDisposedException ();
 			outputPad.EndTask ();
 			base.EndTask ();
-		}
-		
-		protected override void OnWriteLog (string text)
-		{
-			if (outputPad == null) throw GetDisposedException ();
-			outputPad.WriteText (text);
 		}
 		
 		protected override void OnCompleted ()
@@ -114,12 +120,12 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		TextWriter IConsole.Out {
-			get { return Log; }
+			get { return logger; }
 		}
 		
 		TextWriter IConsole.Error {
-			get { return Log; }
-		}
+			get { return logger; }
+		} 
 		
 		bool IConsole.CloseOnDispose {
 			get { return false; }

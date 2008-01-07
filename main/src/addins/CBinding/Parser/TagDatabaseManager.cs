@@ -55,6 +55,9 @@ namespace CBinding.Parser
 		
 		public event ClassPadEventHandler FileUpdated;
 		
+		bool ctagsInstalled = false;
+		bool checkedCtagsInstalled = false;
+		
 		private TagDatabaseManager()
 		{
 		}
@@ -69,8 +72,34 @@ namespace CBinding.Parser
 			}
 		}
 		
+		bool CheckInstalled
+		{
+			get {
+				if (!checkedCtagsInstalled) {
+					checkedCtagsInstalled = true;
+					try {
+						Runtime.ProcessService.StartProcess ("ctags", "--version", null, null).WaitForOutput ();
+					} catch {
+						LoggingService.LogWarning ("Cannot update C/C++ tags database because exuberant ctags is not installed.");
+						return false;
+					}
+					try {
+						Runtime.ProcessService.StartProcess ("gcc", "--version", null, null).WaitForOutput ();
+					} catch {
+						LoggingService.LogWarning ("Cannot update C/C++ tags database because gcc is not installed.");
+						return false;
+					}
+					ctagsInstalled = true;
+				}
+				return ctagsInstalled;
+			}
+		}
+		
 		public void WriteTags (Project project)
 		{
+			if (!CheckInstalled)
+				return;
+			
 			string tagsDir = Path.Combine (project.BaseDirectory, ".tags");
 			
 			if (!Directory.Exists (tagsDir))
@@ -164,6 +193,9 @@ namespace CBinding.Parser
 		
 		private void FillFileInformation (FileInformation fileInfo)
 		{
+			if (!CheckInstalled)
+				return;
+			
 			string confdir = PropertyService.ConfigPath;
 			string tagFileName = Path.GetFileName (fileInfo.FileName) + ".tag";
 			string tagdir = Path.Combine (confdir, "system-tags");
@@ -223,6 +255,9 @@ namespace CBinding.Parser
 		
 		public void UpdateFileTags (Project project, string filename)
 		{
+			if (!CheckInstalled)
+				return;
+			
 			ProjectFilePair p = new ProjectFilePair (project, filename);
 			
 			lock (this) {
@@ -239,6 +274,9 @@ namespace CBinding.Parser
 		
 		private void DoUpdateFileTags (Project project, string filename)
 		{
+			if (!CheckInstalled)
+				return;
+			
 			string[] headers = Headers (filename, false);
 			string ctags_options = "--C++-kinds=+p+u --fields=+a-f+S --language-force=C++ --excmd=pattern -f - " + filename + " " + string.Join (" ", headers);
 			
@@ -270,9 +308,11 @@ namespace CBinding.Parser
 				}
 			}			
 			
-			FileUpdated (new ClassPadEventArgs (project));
+			if (FileUpdated != null)
+				FileUpdated (new ClassPadEventArgs (project));
 			
-			UpdateSystemTags (project, filename, system_headers);
+			if (PropertyService.Get<bool> ("CBinding.ParseSystemTags", true))
+				UpdateSystemTags (project, filename, system_headers);
 		}
 		
 		private void AddInfo (FileInformation info, Tag tag, string ctags_output)
@@ -430,96 +470,6 @@ namespace CBinding.Parser
 			
 			return new Tag (name, file, pattern, kind, access, _class, _namespace, _struct, _union, _enum, signature);
 		}
-		
-//		public void FillProjectInformation (Project project)
-//		{
-//			string tagsDir = Path.Combine (project.BaseDirectory, ".tags");
-//			string tagsFile = Path.Combine (tagsDir, "tags");
-//			
-//			if (!File.Exists (tagsFile))
-//				throw new IOException ("Tags file does not exist for project: " + project.Name);
-//			
-//			string tagEntry;
-//			
-//			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
-//			
-//			info.Clear ();
-//			
-//			using (StreamReader reader = new StreamReader (tagsFile)) {
-//				while ((tagEntry = reader.ReadLine ()) != null) {
-//					if (tagEntry.StartsWith ("!_")) continue;
-//					
-//					Tag tag = ParseTag (tagEntry);
-//					
-//					switch (tag.Kind)
-//					{
-//					case TagKind.Class:
-//						Class c = new Class (tag, project);
-//						if (!info.Classes.Contains (c))
-//							info.Classes.Add (c);
-//						break;
-//					case TagKind.Enumeration:
-//						Enumeration e = new Enumeration (tag, project);
-//						if (!info.Enumerations.Contains (e))
-//							info.Enumerations.Add (e);
-//						break;
-//					case TagKind.Enumerator:
-//						Enumerator en= new Enumerator (tag, project);
-//						if (!info.Enumerators.Contains (en))
-//							info.Enumerators.Add (en);
-//						break;
-//					case TagKind.ExternalVariable:
-//						break;
-//					case TagKind.Function:
-//						Function f = new Function (tag, project);
-//						if (!info.Functions.Contains (f))
-//							info.Functions.Add (f);
-//						break;
-//					case TagKind.Local:
-//						break;
-//					case TagKind.Macro:
-//						Macro m = new Macro (tag, project);
-//						if (!info.Macros.Contains (m))
-//							info.Macros.Add (m);
-//						break;
-//					case TagKind.Member:
-//						Member me = new Member (tag, project);
-//						if (!info.Members.Contains (me))
-//							info.Members.Add (me);
-//						break;
-//					case TagKind.Namespace:
-//						Namespace n = new Namespace (tag, project);
-//						if (!info.Namespaces.Contains (n))
-//							info.Namespaces.Add (n);
-//						break;
-//					case TagKind.Prototype:
-//						break;
-//					case TagKind.Structure:
-//						Structure s = new Structure (tag, project);
-//						if (!info.Structures.Contains (s))
-//							info.Structures.Add (s);
-//						break;
-//					case TagKind.Typedef:
-//						Typedef t = new Typedef (tag, project);
-//						if (!info.Typedefs.Contains (t))
-//							info.Typedefs.Add (t);
-//						break;
-//					case TagKind.Union:
-//						Union u = new Union (tag, project);
-//						if (!info.Unions.Contains (u))
-//							info.Unions.Add (u);
-//						break;
-//					case TagKind.Variable:
-//						Variable v = new Variable (tag, project);
-//						if (!info.Variables.Contains (v))
-//							info.Variables.Add (v);
-//						break;
-//					default:
-//						break;
-//					}
-//				}
-//			}
-//		}
 		
 		public LanguageItem GetParent (Tag tag, Project project, string ctags_output)
 		{

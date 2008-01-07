@@ -42,7 +42,7 @@ using System.Web.UI;
 
 namespace ${Namespace} {
 	
-	public partial class ${Name} : System.Web.UI.Page
+	public partial class ${EscapedIdentifier} : System.Web.UI.Page
 	{
 		
 	}
@@ -55,7 +55,7 @@ using System.Web.UI;
 
 namespace ${Namespace} {
 	
-	public partial class ${Name}
+	public partial class ${EscapedIdentifier}
 	{
 		
 	}

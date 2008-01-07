@@ -232,12 +232,16 @@ namespace CSharpBinding
 
 			LoggingService.LogInfo (compilerName + " " + writer.ToString ());
 			
-			DoCompilation(outstr, tf, workingDir, gacRoots, ref output, ref error);
-
+			int exitCode = DoCompilation (outstr, tf, workingDir, gacRoots, ref output, ref error);
+			
 			ICompilerResult result = ParseOutput(tf, output, error);
 			if (result.CompilerOutput.Trim () != "")
 				monitor.Log.WriteLine (result.CompilerOutput);
-
+			
+			//if compiler crashes, output entire error string
+			if (result.ErrorCount == 0 && exitCode != 0)
+				result.AddError (error);
+			
 			FileService.DeleteFile (responseFileName);
 			FileService.DeleteFile (output);
 			FileService.DeleteFile (error);
@@ -329,7 +333,7 @@ namespace CSharpBinding
 			return new DefaultCompilerResult(cr, compilerOutput.ToString());
 		}
 		
-		private void DoCompilation(string outstr, TempFileCollection tf, string working_dir, ArrayList gacRoots, ref string output, ref string error) {
+		private int DoCompilation (string outstr, TempFileCollection tf, string working_dir, ArrayList gacRoots, ref string output, ref string error) {
 			output = Path.GetTempFileName();
 			error = Path.GetTempFileName();
 			
@@ -356,8 +360,11 @@ namespace CSharpBinding
 			
 			ProcessWrapper pw = Runtime.ProcessService.StartProcess (pinfo, outwr, errwr, null);
 			pw.WaitForOutput();
+			int exitCode = pw.ExitCode;
 			outwr.Close();
 			errwr.Close();
+			pw.Dispose ();
+			return exitCode;
 		}
 
 

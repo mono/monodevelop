@@ -1,3 +1,8 @@
+2008-01-02  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.DesignerSupport/CodeBehindService.cs: Improve error reporting
+	  for invalid IClasses.
+
 2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.DesignerSupport.mdp: Updated project files. The order of

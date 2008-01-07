@@ -50,7 +50,7 @@ namespace CBinding
 	public class GccCompiler : GNUCompiler
 	{		
 		public override string Name {
-			get { return "Default C Compiler"; }
+			get { return "gcc"; }
 		}
 		
 		public override Language Language {

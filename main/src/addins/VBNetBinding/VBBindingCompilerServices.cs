@@ -39,10 +39,13 @@ namespace VBBinding {
 	/// This class controls the compilation of VB.net files and VB.net projects
 	/// </summary>
 	public class VBBindingCompilerServices
-	{	
-		static Regex regexError = new Regex (@"^(\s*(?<file>.*)\((?<line>\d*)(,(?<column>\d*))?\)\s+)*(?<level>\w+)\s*(?<number>.*):\s(?<message>.*)",
-		RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-
+	{
+		//matches "/home/path/Default.aspx.vb (40,31) : Error VBNC30205: Expected end of statement."
+		//and "Error : VBNC99999: vbnc crashed nearby this location in the source code."
+		//and "Error : VBNC99999: Unexpected error: Object reference not set to an instance of an object" 
+		static Regex regexError = new Regex (@"^\s*((?<file>.*)\((?<line>\d*),(?<column>\d*)\) : )?(?<level>\w+) :? ?(?<number>[^:]*): (?<message>.*)$",
+		                                     RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+		
 		public bool CanCompile(string fileName)
 		{
 			return Path.GetExtension(fileName) == ".vb";
@@ -293,26 +296,18 @@ namespace VBBinding {
 			return error;
 		}
 		
-		private int DoCompilation(string outstr, TempFileCollection tf, string working_dir, ref string output) {
-			StringWriter outwr = null, errwr = null;
-			
+		private int DoCompilation (string outstr, TempFileCollection tf, string working_dir, ref string output)
+		{
+			StringWriter outwr = new StringWriter ();
+			string[] tokens = outstr.Split (' ');			
 			try {
-				outwr = new StringWriter ();
-								
-				string[] tokens = outstr.Split(' ');
-
-				outstr = outstr.Substring(tokens[0].Length+1);
-
-				ProcessService ps = (ProcessService) ServiceManager.GetService (typeof(ProcessService));
-				ProcessWrapper pw = ps.StartProcess(tokens[0], "\"" + outstr + "\"", working_dir, outwr, outwr, delegate{});
-				pw.WaitForExit ();
-				
+				outstr = outstr.Substring (tokens[0].Length+1);
+				ProcessWrapper pw = Runtime.ProcessService.StartProcess (tokens[0], "\"" + outstr + "\"", working_dir, outwr, outwr, null);
+				pw.WaitForOutput ();
 				output = outwr.ToString ();
 				
 				return pw.ExitCode;
 			} finally {
-				if (errwr != null)
-					errwr.Dispose ();
 				if (outwr != null)
 					outwr.Dispose ();
 			}
