@@ -2,6 +2,10 @@
 
 	* Project/CProject.cs: Deploy resources in the correct way.
 
+2008-01-07  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
+	* Project/CProject.cs: Deploy resources in the correct way.
+
 2008-01-04  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Parser/TagDatabaseManager.cs: Only try to parse tags if ctags and gcc are
