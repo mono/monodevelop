@@ -1,3 +1,8 @@
+2008-01-07  Andreia Gaita <avidigal@novell.com>
+
+	* MonoDevelop.VersionControl.Views/Diffs.cs: Change the diff algorithm
+	call to have case-sensitive diffs.
+
 2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.mdp: Updated project files. The order of

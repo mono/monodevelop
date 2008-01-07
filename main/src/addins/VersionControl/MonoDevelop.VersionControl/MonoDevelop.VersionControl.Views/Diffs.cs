@@ -96,7 +96,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			try {
 				if (left is string)
-					diff = new Algorithm.Diff.Diff((string)left, (string)right, false, true);
+					diff = new Algorithm.Diff.Diff((string)left, (string)right, true, true);
 				else if (left is string[])
 					diff = new Algorithm.Diff.Diff((string[])left, (string[])right, null, null);
 			} catch (Exception e) {
