@@ -1,3 +1,7 @@
+2008-01-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* configure.in: Added Dutch translation. Patch by André Offringa.
+
 2007-12-17  Aaron Bockover <abockover@novell.com>
 
 	* monodevelop.desktop: Use the icon theme icon name instead of the actual

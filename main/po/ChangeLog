@@ -1,3 +1,7 @@
+2008-01-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* nl.po: Added Dutch translation. Patch by André Offringa.
+
 2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* po.mdse: Set the package name.
