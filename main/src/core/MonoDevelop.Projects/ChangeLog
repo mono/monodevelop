@@ -1,3 +1,8 @@
+2008-01-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Added methods for
+	  checking availability of refactory operations.
+
 2007-12-31  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Projects/DotNetProject.cs: Fix logic error in last commit that
