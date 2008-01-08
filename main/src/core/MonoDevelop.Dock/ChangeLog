@@ -1,3 +1,7 @@
+2008-01-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DockBarItem.cs: Don't auto-hide the item while it has the focus.
+
 2007-12-20  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* DockFrame.cs: Don't crash if trying to hide an item which is not yet

@@ -165,6 +165,9 @@ namespace MonoDevelop.Components.Docking
 			UnscheduleAutoShow ();
 			if (autoHideTimeout == uint.MaxValue) {
 				autoHideTimeout = GLib.Timeout.Add (bar.Frame.AutoHideDelay, delegate {
+					// Don't hide the item if it has the focus. Try again later.
+					if (it.Widget.FocusChild != null)
+						return true;
 					autoHideTimeout = uint.MaxValue;
 					AutoHide (true);
 					return false;
