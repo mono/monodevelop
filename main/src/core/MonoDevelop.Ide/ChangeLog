@@ -1,3 +1,9 @@
+2008-01-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Templates/FileTemplate.cs,
+	  MonoDevelop.Ide.Templates/FileDescriptionTemplate.cs: Added new method
+	  for checking if a file template supports a given project.
+
 2008-01-02  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs,

@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public Gdk.WindowState WindowState {
 			get {
-				return properties.Get ("windowState", (Gdk.WindowState)0);
+				return properties.Get ("windowState", Gdk.WindowState.Maximized);
 			}
 			set {
 				 properties.Set ("windowState", value);

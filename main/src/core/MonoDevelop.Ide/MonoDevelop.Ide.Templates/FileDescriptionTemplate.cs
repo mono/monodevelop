@@ -83,5 +83,10 @@ namespace MonoDevelop.Ide.Templates
 		{
 			return (name.Length > 0);
 		}
+		
+		public virtual bool SupportsProject (Project project, string projectPath)
+		{
+			return true;
+		}
 	}
 }
