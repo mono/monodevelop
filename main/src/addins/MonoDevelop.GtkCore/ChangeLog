@@ -1,5 +1,10 @@
 2008-01-08  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs: Added null check on the
+	  result of UpdateFile. Should fix bug #352194.
+
+2008-01-08  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs,
 	  MonoDevelop.GtkCore.NodeBuilders/ProjectNodeBuilder.cs,
 	  MonoDevelop.GtkCore/GtkDesignInfo.cs,
