@@ -1,3 +1,9 @@
+2008-01-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* EditorBindings.glade,
+	  MonoDevelop.SourceEditor.Gui.OptionPanels/MarkersTextEditorPanel.cs:
+	  Remove unused error underlining option. Fixes bug #351226.
+
 2007-12-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Added default handler
