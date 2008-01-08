@@ -365,6 +365,11 @@ namespace MonoDevelop.Ide.Templates
 						return false;
 			}
 			
+			// Filter on templates
+			foreach (FileDescriptionTemplate f in files)
+				if (!f.SupportsProject (project, projectPath))
+					return false;
+		
 			//filter on conditions
 			if (project != null) {
 				if (!string.IsNullOrEmpty(projecttype) && (projecttype != project.ProjectType))
