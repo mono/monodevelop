@@ -641,11 +641,18 @@ namespace CSharpBinding.Parser
 			if (type.ArrayDimensions != null && type.ArrayDimensions.Length > 0)
 				curType = SearchType ("System.Array", null, null);
 				
-			return SearchClassMember (curType, curType, memberName, includeMethods, out curType, out member);
+			return SearchClassMember (new List<IClass> (), curType, curType, memberName, includeMethods, out curType, out member);
 		}
 		
-		bool SearchClassMember (IClass qualifierClass, IClass curType, string memberName, bool includeMethods, out IClass resultType, out IDecoration member)
+		bool SearchClassMember (List<IClass> visited, IClass qualifierClass, IClass curType, string memberName, bool includeMethods, out IClass resultType, out IDecoration member)
 		{
+			if (visited.Contains (curType)) {
+				member = null;
+				resultType = null;
+				return false;
+			}
+			
+			visited.Add (curType);
 			resultType = curType;
 			
 			if (curType.ClassType == ClassType.Enum) {
@@ -701,7 +708,7 @@ namespace CSharpBinding.Parser
 			foreach (IReturnType baseType in curType.BaseTypes) {
 				IClass c = parserContext.GetClass (baseType.FullyQualifiedName, baseType.GenericArguments, true, true);
 				if (c != null && (c.ClassType != ClassType.Interface || curType.ClassType == ClassType.Interface)) {
-					if (SearchClassMember (qualifierClass, c, memberName, includeMethods, out resultType, out member))
+					if (SearchClassMember (visited, qualifierClass, c, memberName, includeMethods, out resultType, out member))
 						return true;
 				}
 			}
@@ -1098,13 +1105,15 @@ namespace CSharpBinding.Parser
 				// It may be an inner class
 				
 				IClass parentc = callingClass;
+				List<IClass> visited = new List<IClass> ();
 				do {
+					visited.Add (parentc);
 					c = parserContext.GetClass (parentc.FullyQualifiedName + "." + name, genericArguments);
 					if (c != null && (c.IsPublic || c.IsProtected || c.IsInternal))
 						return c;
 					parentc = BaseClass (parentc);
 				}
-				while (parentc != null);
+				while (parentc != null && !visited.Contains (parentc));
 			}
 			
 			// Now try to find the class using the included namespaces
@@ -1162,14 +1171,21 @@ namespace CSharpBinding.Parser
 		/// <remarks>
 		/// Returns true, if class possibleBaseClass is in the inheritance tree from c
 		/// </remarks>
-		bool IsClassInInheritanceTree(IClass possibleBaseClass, IClass c)
+		bool IsClassInInheritanceTree (IClass possibleBaseClass, IClass c)
 		{
-			if (possibleBaseClass == null || c == null) {
+			return IsClassInInheritanceTree (possibleBaseClass, c, new List<IClass> ());
+		}
+		
+		bool IsClassInInheritanceTree (IClass possibleBaseClass, IClass c, List<IClass> visited)
+		{
+			if (possibleBaseClass == null || c == null || visited.Contains (c)) {
 				return false;
 			}
 			if (possibleBaseClass.FullyQualifiedName == c.FullyQualifiedName) {
 				return true;
 			}
+			
+			visited.Add (c);
 			foreach (IReturnType baseClass in c.BaseTypes) {
 				IClass bc = parserContext.GetClass (baseClass.FullyQualifiedName, baseClass.GenericArguments, true, true);
 				if (IsClassInInheritanceTree(possibleBaseClass, bc)) {

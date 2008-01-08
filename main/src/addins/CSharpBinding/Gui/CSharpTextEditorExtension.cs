@@ -878,7 +878,7 @@ namespace CSharpBinding
 			ArrayList classMembers = new ArrayList ();
 			ArrayList interfaceMembers = new ArrayList ();
 			
-			FindOverridables (pctx, cls, cls, classMembers, interfaceMembers);
+			FindOverridables (pctx, cls, cls, classMembers, interfaceMembers, new List<IClass> ());
 			foreach (object mem in interfaceMembers)
 				if (!classMembers.Contains (mem))
 					classMembers.Add (mem);
@@ -929,8 +929,12 @@ namespace CSharpBinding
 			return true;
 		}
 		
-		void FindOverridables (IParserContext pctx, IClass motherClass, IClass cls, ArrayList classMembers, ArrayList interfaceMembers)
+		void FindOverridables (IParserContext pctx, IClass motherClass, IClass cls, ArrayList classMembers, ArrayList interfaceMembers, List<IClass> visited)
 		{
+			if (visited.Contains (cls))
+				return;
+			visited.Add (cls);
+			
 			foreach (IReturnType rt in cls.BaseTypes)
 			{
 				if (cls.ClassType == ClassType.Interface)
@@ -970,7 +974,7 @@ namespace CSharpBinding
 						list.Add (m);
 				}
 				
-				FindOverridables (pctx, motherClass, baseCls, classMembers, isInterface ? interfaceMembers : null);
+				FindOverridables (pctx, motherClass, baseCls, classMembers, isInterface ? interfaceMembers : null, visited);
 			}
 		}
 		

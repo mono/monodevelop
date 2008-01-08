@@ -1,3 +1,9 @@
+2008-01-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/CSharpTextEditorExtension.cs, Parser/Resolver.cs: Fixed some infinite
+	  loops when a class inherits from itself due to invalid code. Fixes bug
+	  #350855.
+
 2008-01-03  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* CSharpBindingCompilerManager.cs: Check C# compiler exit code to detect
