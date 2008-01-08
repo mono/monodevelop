@@ -90,6 +90,10 @@ namespace MonoDevelop.GtkCore.Dialogs
 				tree.AppendColumn (column);
 				
 				this.project = ((Properties)customizationObject).Get<Project> ("Project");
+				if (!GtkCoreService.SupportsGtkDesigner (project)) {
+					notebook.RemovePage (1);
+				}
+					
 				designInfo = GtkCoreService.GetGtkInfo (project);
 				
 				selection = new ArrayList ();

@@ -102,8 +102,12 @@ namespace MonoDevelop.GtkCore
 		
 		public GuiBuilderProject GuiBuilderProject {
 			get {
-				if (builderProject == null)
-					builderProject = new GuiBuilderProject (project, SteticFile);
+				if (builderProject == null) {
+					if (!SupportsDesigner)
+						builderProject = new GuiBuilderProject (project, null);
+					else
+						builderProject = new GuiBuilderProject (project, SteticFile);
+				}
 				return builderProject;
 			}
 		}
@@ -178,10 +182,16 @@ namespace MonoDevelop.GtkCore
 			set {
 				if (gtkVersion != value) {
 					gtkVersion = value;
-					GuiBuilderProject.SteticProject.TargetGtkVersion = TargetGtkVersion;
-					GuiBuilderProject.Save (false);
+					if (SupportsDesigner) {
+						GuiBuilderProject.SteticProject.TargetGtkVersion = TargetGtkVersion;
+						GuiBuilderProject.Save (false);
+					}
 				}
 			}
+		}
+		
+		public bool SupportsDesigner {
+			get { return GtkCoreService.SupportsGtkDesigner (project); }
 		}
 		
 		public bool IsExported (string name)
@@ -202,7 +212,12 @@ namespace MonoDevelop.GtkCore
 		
 		public IClass[] GetExportedClasses ()
 		{
-			IParserContext pctx = GuiBuilderProject.GetParserContext ();
+			IParserContext pctx;
+			if (builderProject != null)
+				pctx = builderProject.GetParserContext ();
+			else
+				pctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
+			
 			ArrayList list = new ArrayList ();
 			foreach (string cls in exportedWidgets) {
 				IClass c = pctx.GetClass (cls);
@@ -226,6 +241,8 @@ namespace MonoDevelop.GtkCore
 		
 		public void ForceCodeGenerationOnBuild ()
 		{
+			if (!SupportsDesigner)
+				return;
 			try {
 				FileInfo fi = new FileInfo (SteticFile);
 				fi.LastWriteTime = DateTime.Now;
@@ -246,62 +263,64 @@ namespace MonoDevelop.GtkCore
 
 			FileService.CreateDirectory (GtkGuiFolder);
 			bool projectModified = false;
-				
-			// Create the stetic file if not found
-			if (!File.Exists (SteticFile)) {
-				StreamWriter sw = new StreamWriter (SteticFile);
-				sw.WriteLine ("<stetic-interface>");
-				sw.WriteLine ("</stetic-interface>");
-				sw.Close ();
-			}
 			
-			// Add the stetic file to the project
-			if (!project.IsFileInProject (SteticFile)) {
-				project.AddFile (SteticFile, BuildAction.EmbedAsResource);
-				projectModified = true;
-			}
-		
-			if (!File.Exists (SteticGeneratedFile)) {
-				// Generate an empty build class
-				CodeDomProvider provider = GetCodeDomProvider ();
-				GuiBuilderService.SteticApp.GenerateProjectCode (SteticGeneratedFile, "Stetic", provider, null);
-			}
-
-			// Add the generated file to the project, if not already there
-			if (!project.IsFileInProject (SteticGeneratedFile)) {
-				project.AddFile (SteticGeneratedFile, BuildAction.Compile);
-				projectModified = true;
-			}
-
-			if (!GuiBuilderProject.HasError)
-			{
-				// Create files for all widgets
-				ArrayList partialFiles = new ArrayList ();
-				
-				foreach (GuiBuilderWindow win in GuiBuilderProject.Windows) {
-					string fn = GuiBuilderService.GenerateSteticCodeStructure (project, win.RootWidget, true, false);
-					partialFiles.Add (fn);
-					if (!project.IsFileInProject (fn)) {
-						project.AddFile (fn, BuildAction.Compile);
-						projectModified = true;
-					}
+			if (SupportsDesigner) {
+				// Create the stetic file if not found
+				if (!File.Exists (SteticFile)) {
+					StreamWriter sw = new StreamWriter (SteticFile);
+					sw.WriteLine ("<stetic-interface>");
+					sw.WriteLine ("</stetic-interface>");
+					sw.Close ();
 				}
 				
-				foreach (Stetic.ActionGroupInfo ag in GuiBuilderProject.SteticProject.ActionGroups) {
-					string fn = GuiBuilderService.GenerateSteticCodeStructure (project, ag, true, false);
-					partialFiles.Add (fn);
-					if (!project.IsFileInProject (fn)) {
-						project.AddFile (fn, BuildAction.Compile);
-						projectModified = true;
-					}
+				// Add the stetic file to the project
+				if (!project.IsFileInProject (SteticFile)) {
+					project.AddFile (SteticFile, BuildAction.EmbedAsResource);
+					projectModified = true;
 				}
-				
-				// Remove all project files which are not in the generated list
-				foreach (ProjectFile pf in project.ProjectFiles.GetFilesInPath (GtkGuiFolder)) {
-					if (pf.FilePath != SteticGeneratedFile && pf.FilePath != ObjectsFile && pf.FilePath != SteticFile && !partialFiles.Contains (pf.FilePath)) {
-						project.ProjectFiles.Remove (pf);
-						FileService.DeleteFile (pf.FilePath);
-						projectModified = true;
+			
+				if (!File.Exists (SteticGeneratedFile)) {
+					// Generate an empty build class
+					CodeDomProvider provider = GetCodeDomProvider ();
+					GuiBuilderService.SteticApp.GenerateProjectCode (SteticGeneratedFile, "Stetic", provider, null);
+				}
+
+				// Add the generated file to the project, if not already there
+				if (!project.IsFileInProject (SteticGeneratedFile)) {
+					project.AddFile (SteticGeneratedFile, BuildAction.Compile);
+					projectModified = true;
+				}
+
+				if (!GuiBuilderProject.HasError)
+				{
+					// Create files for all widgets
+					ArrayList partialFiles = new ArrayList ();
+					
+					foreach (GuiBuilderWindow win in GuiBuilderProject.Windows) {
+						string fn = GuiBuilderService.GenerateSteticCodeStructure (project, win.RootWidget, true, false);
+						partialFiles.Add (fn);
+						if (!project.IsFileInProject (fn)) {
+							project.AddFile (fn, BuildAction.Compile);
+							projectModified = true;
+						}
+					}
+					
+					foreach (Stetic.ActionGroupInfo ag in GuiBuilderProject.SteticProject.ActionGroups) {
+						string fn = GuiBuilderService.GenerateSteticCodeStructure (project, ag, true, false);
+						partialFiles.Add (fn);
+						if (!project.IsFileInProject (fn)) {
+							project.AddFile (fn, BuildAction.Compile);
+							projectModified = true;
+						}
+					}
+					
+					// Remove all project files which are not in the generated list
+					foreach (ProjectFile pf in project.ProjectFiles.GetFilesInPath (GtkGuiFolder)) {
+						if (pf.FilePath != SteticGeneratedFile && pf.FilePath != ObjectsFile && pf.FilePath != SteticFile && !partialFiles.Contains (pf.FilePath)) {
+							project.ProjectFiles.Remove (pf);
+							FileService.DeleteFile (pf.FilePath);
+							projectModified = true;
+						}
 					}
 				}
 			}
@@ -341,6 +360,10 @@ namespace MonoDevelop.GtkCore
 			}	
 			
 			bool gtk=false, gdk=false, posix=false;
+			
+			if (!SupportsDesigner) // No need to check posix in this case
+				posix = true;
+			
 			foreach (ProjectReference r in new ArrayList (project.ProjectReferences)) {
 				if (r.ReferenceType != ReferenceType.Gac)
 					continue;
@@ -378,7 +401,7 @@ namespace MonoDevelop.GtkCore
 				project.ProjectReferences.Add (new ProjectReference (ReferenceType.Gac, aname));
 			}
 			
-			return projectModified || gtk || gdk || posix;
+			return projectModified || !gtk || !gdk || !posix;
 		}
 		
 		CodeDomProvider GetCodeDomProvider ()
@@ -386,7 +409,7 @@ namespace MonoDevelop.GtkCore
 			IDotNetLanguageBinding binding = Services.Languages.GetBindingPerLanguageName (project.LanguageName) as IDotNetLanguageBinding;
 			CodeDomProvider provider = binding.GetCodeDomProvider ();
 			if (provider == null)
-				throw new UserException ("Code generation not supported in language: " + project.LanguageName);
+				throw new UserException ("Code generation not supported for language: " + project.LanguageName);
 			return provider;
 		}
 		

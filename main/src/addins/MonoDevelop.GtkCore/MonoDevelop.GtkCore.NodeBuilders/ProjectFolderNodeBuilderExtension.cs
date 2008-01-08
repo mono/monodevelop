@@ -161,7 +161,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			DotNetProject project = CurrentNode.GetParentDataItem (typeof(Project), true) as DotNetProject;
 			if (project != null) {
 				GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
-				return (info == null || !info.GuiBuilderProject.HasError);
+				return (info == null || info.SupportsDesigner);
 			}
 			return false;
 		}

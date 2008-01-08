@@ -73,7 +73,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void Load ()
 		{
-			if (gproject != null || disposed)
+			if (gproject != null || disposed || fileName == null)
 				return;
 			
 			gproject = GuiBuilderService.SteticApp.CreateProject ();

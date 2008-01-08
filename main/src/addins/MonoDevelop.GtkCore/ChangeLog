@@ -1,3 +1,20 @@
+2008-01-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs,
+	  MonoDevelop.GtkCore.NodeBuilders/ProjectNodeBuilder.cs,
+	  MonoDevelop.GtkCore/GtkDesignInfo.cs,
+	  MonoDevelop.GtkCore/GtkCoreService.cs,
+	  MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs,
+	  MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderDisplayBinding.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GtkProjectServiceExtension.cs: Handle
+	  projects which don't support the GTK# designer. Window and widget
+	  generation options are hidden, and code is never generated. Fixes bug
+	  #350632.
+
 2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs: Don't update bindings if the

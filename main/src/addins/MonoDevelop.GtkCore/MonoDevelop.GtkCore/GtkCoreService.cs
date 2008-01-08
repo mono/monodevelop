@@ -38,6 +38,7 @@ using System.CodeDom.Compiler;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Projects.Serialization;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Ide.Gui;
@@ -70,6 +71,16 @@ namespace MonoDevelop.GtkCore
 				FindSupportedGtkVersions ();
 				return defaultGtkVersion; 
 			}
+		}
+		
+		public static bool SupportsGtkDesigner (Project project)
+		{
+			DotNetProject dp = project as DotNetProject;
+			if (dp == null || dp.LanguageBinding == null || dp.LanguageBinding.GetCodeDomProvider () == null)
+				return false;
+			
+			RefactorOperations ops = RefactorOperations.AddField | RefactorOperations.AddMethod | RefactorOperations.RenameField;
+			return IdeApp.ProjectOperations.CodeRefactorer.LanguageSupportsOperation (dp.LanguageBinding.Language, ops); 
 		}
 		
 		static void FindSupportedGtkVersions ()
