@@ -112,6 +112,8 @@ namespace Stetic.Editor
 		
 		void ShowTip (int x, int y, string text)
 		{
+			if (GdkWindow == null)
+				return;
 			if (tipWindow == null) {
 				tipWindow = new TipWindow ();
 				Gtk.Label lab = new Gtk.Label (text);

@@ -384,9 +384,14 @@ namespace Stetic {
 		public Gtk.Widget GetWidget (WidgetData data)
 		{
 			if (data.Widget == null) {
-				ObjectReader reader = new ObjectReader (this, FileFormat.Native);
-				Wrapper.Container wrapper = Stetic.ObjectWrapper.ReadObject (reader, data.XmlData) as Wrapper.Container;
-				data.Widget = wrapper.Wrapped;
+				try {
+					loading = true;
+					ObjectReader reader = new ObjectReader (this, FileFormat.Native);
+					Wrapper.Container wrapper = Stetic.ObjectWrapper.ReadObject (reader, data.XmlData) as Wrapper.Container;
+					data.Widget = wrapper.Wrapped;
+				} finally {
+					loading = false;
+				}
 			}
 			
 			return data.Widget;

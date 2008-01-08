@@ -12,7 +12,7 @@ namespace Stetic.Wrapper {
 				paned.Pack1 (ph, true, false);
 				NotifyChildAdded (ph);
 				ph = CreatePlaceholder ();
-				paned.Pack2 (CreatePlaceholder (), true, false);
+				paned.Pack2 (ph, true, false);
 				NotifyChildAdded (ph);
 			}
 		}

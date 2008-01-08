@@ -1,3 +1,12 @@
+2008-01-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* libsteticui/ProjectBackend.cs: Don't fire load events when loading a
+	  widget. Fixes part of bug #352065.
+	* libstetic/wrapper/Paned.cs: Fix bug in paned initialization. Fixes part of
+	  bug #352065.
+	* libstetic/editor/IconSelectorItem.cs: Added null check. Fixes some
+	  crashes.
+
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* libstetic/wrapper/Container.cs: Call base method when attaching/detaching
