@@ -57,7 +57,6 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 			// Gtk Controls
 			[Glade.Widget] CheckButton showLineNumberCheckBox;
 			[Glade.Widget] CheckButton showBracketHighlighterCheckBox;
-			[Glade.Widget] CheckButton showErrorsCheckBox;
 			[Glade.Widget] CheckButton showVRulerCheckBox;
 			[Glade.Widget] CheckButton highlightCurrentLineCheckBox;
 			[Glade.Widget] CheckButton highlightSpacesCheckBox;
@@ -71,7 +70,6 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 			{
 				showLineNumberCheckBox.Active = TextEditorProperties.ShowLineNumbers;
 				showBracketHighlighterCheckBox.Active = TextEditorProperties.ShowMatchingBracket;
-				showErrorsCheckBox.Active = TextEditorProperties.UnderlineErrors;
 				
 				highlightCurrentLineCheckBox.Active = TextEditorProperties.HighlightCurrentLine;
 				highlightCurrentLineCheckBox.Sensitive = MonoDevelop.SourceEditor.Gui.SourceEditorView.HighlightCurrentLineSupported;
@@ -84,16 +82,12 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 				vRulerRowTextBox.Value = TextEditorProperties.VerticalRulerRow;
 				
 				wrapModeComboBox.Active = (int) TextEditorProperties.WrapMode;
-				
-				// FIXME: re-enable when implemented
-				showErrorsCheckBox.Sensitive = false;
 			}
 
 			public void Store ()
 			{
 				TextEditorProperties.ShowLineNumbers = showLineNumberCheckBox.Active;
 				TextEditorProperties.ShowMatchingBracket = showBracketHighlighterCheckBox.Active;
-				TextEditorProperties.UnderlineErrors = showErrorsCheckBox.Active;
 				TextEditorProperties.ShowVerticalRuler = showVRulerCheckBox.Active;
 				TextEditorProperties.HighlightCurrentLine = highlightCurrentLineCheckBox.Active;				
 				TextEditorProperties.HighlightSpaces = highlightSpacesCheckBox.Active;
