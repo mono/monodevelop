@@ -60,6 +60,30 @@ namespace MonoDevelop.Projects.CodeGeneration
 			set { fileProvider = value; } 
 		}
 		
+		public bool ClassSupportsOperation (IClass cls, RefactorOperations operation)
+		{
+			IRefactorer r = GetGeneratorForClass (cls);
+			if (r == null)
+				return false;
+			return (r.SupportedOperations & operation) == operation;
+		}
+		
+		public bool FileSupportsOperation (string file, RefactorOperations operation)
+		{
+			IRefactorer r = Services.Languages.GetRefactorerForFile (file);
+			if (r == null)
+				return false;
+			return (r.SupportedOperations & operation) == operation;
+		}
+		
+		public bool LanguageSupportsOperation (string langName, RefactorOperations operation)
+		{
+			IRefactorer r = Services.Languages.GetRefactorerForLanguage (langName);
+			if (r == null)
+				return false;
+			return (r.SupportedOperations & operation) == operation;
+		}
+		
 		public IClass CreateClass (Project project, string language, string directory, string namspace, CodeTypeDeclaration type)
 		{
 			IParserContext ctx = pdb.GetProjectParserContext (project);
