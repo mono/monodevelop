@@ -2,6 +2,11 @@
 
 	* DockBarItem.cs: Don't auto-hide the item while it has the focus.
 
+2007-12-20  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DockFrame.cs: Don't crash if trying to hide an item which is not yet
+	  included in the layout.
+
 2007-11-15  Aaron Bockover  <abockover@novell.com>
 
 	* DockContainer.cs: Draw a border on the header, change the background 
