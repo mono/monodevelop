@@ -92,7 +92,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			IParseInformation pi = IdeApp.ProjectOperations.ParserDatabase.UpdateFile (project, fileName, null);
 			classFile = fileName;
 			
-			if (!pi.MostRecentCompilationUnit.ErrorsDuringCompile) {
+			if (pi != null && !pi.MostRecentCompilationUnit.ErrorsDuringCompile) {
 				IClass cls = GetClass ();
 				UpdateBindings (targetObject, cls);
 			
