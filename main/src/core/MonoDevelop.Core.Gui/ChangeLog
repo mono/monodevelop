@@ -1,3 +1,9 @@
+2008-01-08  Michael Hutchinson  <mhutchinson@novell.com> 
+
+	* Base.glade: Make ErrorDialog modal, like all the other MessageService 
+	  dialogs, so that it doesn't come up behind modal dialogs. Fixes 
+	  "Bug 350627 - Error message dialogs come up behind modal dialogs".
+
 2007-12-17  Aaron Bockover <abockover@novell.com>
 
 	* icons/Icons.SharpDevelopIcon, icons/Icons.SharpDevelopIcon-22.png:
