@@ -57,7 +57,6 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 			// Gtk Controls
 			[Glade.Widget] CheckButton showLineNumberCheckBox;
 			[Glade.Widget] CheckButton showBracketHighlighterCheckBox;
-			[Glade.Widget] CheckButton showErrorsCheckBox;
 			[Glade.Widget] CheckButton showVRulerCheckBox;
 			[Glade.Widget] CheckButton highlightCurrentLineCheckBox;
 			[Glade.Widget] CheckButton highlightSpacesCheckBox;
@@ -71,7 +70,6 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 			{
 				showLineNumberCheckBox.Active = TextEditorProperties.ShowLineNumbers;
 				showBracketHighlighterCheckBox.Active = TextEditorProperties.ShowMatchingBracket;
-				showErrorsCheckBox.Active = TextEditorProperties.UnderlineErrors;
 				
 				highlightCurrentLineCheckBox.Active = TextEditorProperties.HighlightCurrentLine;
 
@@ -89,7 +87,6 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 			{
 				TextEditorProperties.ShowLineNumbers = showLineNumberCheckBox.Active;
 				TextEditorProperties.ShowMatchingBracket = showBracketHighlighterCheckBox.Active;
-				TextEditorProperties.UnderlineErrors = showErrorsCheckBox.Active;
 				TextEditorProperties.ShowVerticalRuler = showVRulerCheckBox.Active;
 				TextEditorProperties.HighlightCurrentLine = highlightCurrentLineCheckBox.Active;				
 				TextEditorProperties.HighlightSpaces = highlightSpacesCheckBox.Active;
