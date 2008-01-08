@@ -445,7 +445,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				
 			CodeDomProvider provider = project.LanguageBinding.GetCodeDomProvider ();
 			if (provider == null)
-				throw new UserException ("Code generation not supported in language: " + project.LanguageName);
+				throw new UserException ("Code generation not supported for language: " + project.LanguageName);
 			
 			string basePath = Path.GetDirectoryName (info.SteticGeneratedFile);
 			string ext = Path.GetExtension (info.SteticGeneratedFile);

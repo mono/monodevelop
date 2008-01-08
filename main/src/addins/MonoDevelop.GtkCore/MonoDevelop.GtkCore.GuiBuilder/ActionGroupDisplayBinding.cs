@@ -96,7 +96,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return null;
 				
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
-			if (info == null)
+			if (info == null || !info.SupportsDesigner)
 				return null;
 				
 			return info.GuiBuilderProject.GetActionGroupForFile (file);

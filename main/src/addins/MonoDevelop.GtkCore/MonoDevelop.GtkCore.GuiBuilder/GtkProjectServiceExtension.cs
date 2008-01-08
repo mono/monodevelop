@@ -17,7 +17,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				DotNetProject project = entry as DotNetProject;
 				if (project != null) {
 					GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
-					if (info != null) {
+					if (info != null && info.SupportsDesigner) {
 						// The code generator must run in the GUI thread since it needs to
 						// access to Gtk classes
 						Generator gen = new Generator ();
