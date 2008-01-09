@@ -390,8 +390,11 @@ namespace MonoDevelop.NUnit
 		{
 			base.OnSelectionChanged (sender, args);
 			ITreeNavigator nav = GetSelectedNode ();
-			UnitTest test = (UnitTest) nav.DataItem;
-			FillDetails (test, false);
+			if (nav != null) {
+				UnitTest test = (UnitTest) nav.DataItem;
+				if (test != null)
+					FillDetails (test, false);
+			}
 		}
 		
 		void OnGoBackTest (object sender, EventArgs args)
