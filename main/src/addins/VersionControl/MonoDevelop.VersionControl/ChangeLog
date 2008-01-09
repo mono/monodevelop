@@ -1,3 +1,14 @@
+2008-01-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl/Checkout.cs,
+	  MonoDevelop.VersionControl/Publish.cs,
+	  MonoDevelop.VersionControl/VersionControlService.cs: If there isn't any
+	  supported version control system installed, show a message saying that,
+	  instead of showing a Select Repository dialog with an empty combo. Fixes
+	  bug #344841.
+	* MonoDevelop.VersionControl.Dialogs/EditRepositoryDialog.cs: Select the
+	  first vcs type by default.
+
 2008-01-07  Andreia Gaita <avidigal@novell.com>
 
 	* MonoDevelop.VersionControl.Views/Diffs.cs: Change the diff algorithm

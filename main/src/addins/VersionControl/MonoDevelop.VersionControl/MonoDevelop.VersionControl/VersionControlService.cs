@@ -515,6 +515,17 @@ namespace MonoDevelop.VersionControl
 			repo.VersionControlSystem.StoreRepositoryReference (repo, path, id);
 		}
 		
+		public static bool CheckVersionControlInstalled ()
+		{
+			foreach (VersionControlSystem vcs in GetVersionControlSystems ()) {
+				if (vcs.IsInstalled)
+					return true;
+			}
+			
+			IdeApp.Services.MessageService.ShowError (GettextCatalog.GetString ("There isn't any supported version control system installed. You may need to install additional add-ins or packages."));
+			return false;
+		}
+		
 		internal static Repository InternalGetRepositoryReference (string path, string id)
 		{
 			string file = Path.Combine (path, id) + ".mdvcs";
