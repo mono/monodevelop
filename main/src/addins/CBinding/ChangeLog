@@ -1,3 +1,10 @@
+2008-01-08  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
+	* Gui/EditPackagesDialog.cs: Make sure packages are not repeated if the
+	  system has more than one copy of the same package in different
+	  directories.
+	* Parser/TagDatabaseManager.cs: Changed the name of a propery.
+
 2008-01-07  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* Project/CProject.cs: Deploy resources in the correct way.
