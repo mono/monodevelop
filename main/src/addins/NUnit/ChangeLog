@@ -1,3 +1,8 @@
+2008-01-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/TestPad.cs: Add null check when filling data for selected node. Should
+	  fix bug #350518.
+
 2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelopNUnit.addin.xml: Bump add-in versions.
