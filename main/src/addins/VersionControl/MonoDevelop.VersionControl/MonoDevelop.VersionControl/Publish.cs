@@ -16,6 +16,9 @@ namespace MonoDevelop.VersionControl
 			if (test)
 				return true;
 
+			if (!VersionControlService.CheckVersionControlInstalled ())
+				return false;
+			
 			ArrayList files = new ArrayList ();
 
 			// Build the list of files to be checked in			

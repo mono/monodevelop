@@ -12,6 +12,9 @@ namespace MonoDevelop.VersionControl
 	{
 		protected override void Run()
 		{
+			if (!VersionControlService.CheckVersionControlInstalled ())
+				return;
+			
 			SelectRepositoryDialog del = new SelectRepositoryDialog (SelectRepositoryMode.Checkout);
 			try {
 				if (del.Run () == (int) Gtk.ResponseType.Ok && del.Repository != null) {
@@ -21,21 +24,6 @@ namespace MonoDevelop.VersionControl
 			} finally {
 				del.Destroy ();
 			}
-		}
-		
-		protected override void Update (CommandInfo info)
-		{
-			bool enabled = false;
-			
-			foreach (VersionControlSystem vcs in VersionControlService.GetVersionControlSystems ()) {
-				if (vcs.IsInstalled) {
-					enabled = true;
-					break;
-				}
-			}
-			
-			info.Enabled = enabled;
-			info.Visible = enabled;
 		}
 	}
 	

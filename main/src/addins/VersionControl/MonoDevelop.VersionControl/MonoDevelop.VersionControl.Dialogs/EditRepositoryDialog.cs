@@ -29,7 +29,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 						systems.Add (vcs);
 					}
 				}
-				versionControlType.Active = -1;
+				versionControlType.Active = 0;
 				entryName.Sensitive = false;
 			}
 			if (repo != null) {
