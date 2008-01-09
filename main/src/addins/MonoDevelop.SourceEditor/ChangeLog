@@ -1,3 +1,8 @@
+2008-01-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui.OptionPanels/SyntaxHighlightingPanel.cs:
+	  Don't store changes until OK is clicked. Fixes bug #344269.
+
 2008-01-08  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* EditorBindings.glade,

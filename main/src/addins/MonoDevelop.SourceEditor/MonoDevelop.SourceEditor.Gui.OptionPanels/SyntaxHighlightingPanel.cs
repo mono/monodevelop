@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 
 using Gtk;
 using Pango;
@@ -52,6 +53,8 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 			SourceTagStyle currentStyle;
 			string styleid;
 			
+			Dictionary<SourceLanguage,Dictionary<string,SourceTagStyle>> changes = new Dictionary<SourceLanguage,Dictionary<string,SourceTagStyle>> ();
+			
 			public SyntaxHighlightingPanelWidget () :  base ("EditorBindings.glade", "SyntaxHighlightingPanel")
 			{
 				enableSyntaxHighlighting.Active = TextEditorProperties.SyntaxHighlight;
@@ -75,6 +78,11 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 			public void Store ()
 			{
 				TextEditorProperties.SyntaxHighlight = enableSyntaxHighlighting.Active;
+				foreach (KeyValuePair<SourceLanguage,Dictionary<string,SourceTagStyle>> lang in changes) {
+					foreach (KeyValuePair<string,SourceTagStyle> style in lang.Value) {
+						lang.Key.SetTagStyle (style.Key, style.Value);
+					}
+				}
 			}
 
 			void SetCurrentLanguage (string name)
@@ -120,7 +128,7 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 				sts.Underline = underlineToggle.Active;
 				sts.Strikethrough = strikeToggle.Active;
 				sts.IsDefault = false;
-				currentLanguage.SetTagStyle (styleid, sts);
+				SetTagStyle (currentLanguage, styleid, sts);
 				restoreDefaultButton.Sensitive = true;
 			}
 
@@ -134,7 +142,7 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 				fgColorButton.Sensitive = checkColor.Active;
 				bgColorButton.Sensitive = checkBackground.Active;
 				sts.IsDefault = false;
-				currentLanguage.SetTagStyle (styleid, sts);
+				SetTagStyle (currentLanguage, styleid, sts);
 				restoreDefaultButton.Sensitive = true;
 			}
 
@@ -166,9 +174,30 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 
 				if (selection.GetSelected (out model, out iter)) {
 					styleid = (string) model.GetValue (iter, 1);
-					currentStyle = currentLanguage.GetTagStyle (styleid);
+					currentStyle = GetTagStyle (currentLanguage, styleid);
 					SetSourceTagStyle ();
 				}
+			}
+			
+			SourceTagStyle GetTagStyle (SourceLanguage lang, string id)
+			{
+				Dictionary<string,SourceTagStyle> styles;
+				if (changes.TryGetValue (lang, out styles)) {
+					SourceTagStyle style;
+					if (styles.TryGetValue (id, out style))
+						return style;
+				}
+				return currentLanguage.GetTagStyle (styleid);
+			}
+			
+			void SetTagStyle (SourceLanguage lang, string id, SourceTagStyle style)
+			{
+				Dictionary<string,SourceTagStyle> styles;
+				if (!changes.TryGetValue (lang, out styles)) {
+					styles = new Dictionary<string,SourceTagStyle> ();
+					changes [lang] = styles;
+				}
+				styles [id] = style;
 			}
 		}
 	}
