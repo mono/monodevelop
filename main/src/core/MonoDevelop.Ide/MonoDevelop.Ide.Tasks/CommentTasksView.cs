@@ -228,22 +228,22 @@ namespace MonoDevelop.Ide.Tasks
 			{
 				ActionGroup group = new ActionGroup ("Popup");
 
-				Action copy = new Action ("copy", GettextCatalog.GetString ("_Copy"),
+				Gtk.Action copy = new Gtk.Action ("copy", GettextCatalog.GetString ("_Copy"),
 				                          GettextCatalog.GetString ("Copy comment task"), Gtk.Stock.Copy);
 				copy.Activated += new EventHandler (OnGenTaskCopied);
 				group.Add (copy, "<Control><Mod2>c");
 
-				Action jump = new Action ("jump", GettextCatalog.GetString ("_Go to"),
+				Gtk.Action jump = new Gtk.Action ("jump", GettextCatalog.GetString ("_Go to"),
 				                          GettextCatalog.GetString ("Go to comment task"), Gtk.Stock.JumpTo);
 				jump.Activated += new EventHandler (OnGenTaskJumpto);
 				group.Add (jump);
 
-				Action delete = new Action ("delete", GettextCatalog.GetString ("_Delete"),
+				Gtk.Action delete = new Gtk.Action ("delete", GettextCatalog.GetString ("_Delete"),
 				                          GettextCatalog.GetString ("Delete comment task"), Gtk.Stock.Delete);
 				delete.Activated += new EventHandler (OnGenTaskDelete);
 				group.Add (delete);
 
-				Action columns = new Action ("columns", GettextCatalog.GetString ("Columns"));
+				Gtk.Action columns = new Gtk.Action ("columns", GettextCatalog.GetString ("Columns"));
 				group.Add (columns, null);
 
 				ToggleAction columnLine = new ToggleAction ("columnLine", GettextCatalog.GetString ("Line"),
