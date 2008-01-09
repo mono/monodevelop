@@ -7284,7 +7284,8 @@ msgstr "<b>Пропущено</b>: {0}"
 
 #: ../Extras/NUnit/Gui/TestResultsPad.cs:107
 msgid "Successful Tests"
-msgstr "Успешно пройденные тесты"
+msgstr "Успешные"
+# "Успешно пройденные тесты" is way too long! unusable for button labels!
 
 #: ../Extras/NUnit/Gui/TestResultsPad.cs:112
 msgid "Show Successful Tests"
@@ -7292,7 +7293,8 @@ msgstr "Показать успешно пройденные тесты"
 
 #: ../Extras/NUnit/Gui/TestResultsPad.cs:116
 msgid "Failed Tests"
-msgstr "Проваленные тесты"
+msgstr "Проваленные"
+# "Проваленные тесты" is way too long! unusable for button labels!
 
 #: ../Extras/NUnit/Gui/TestResultsPad.cs:121
 msgid "Show Failed Tests"
@@ -7300,7 +7302,8 @@ msgstr "Показать проваленные тесты"
 
 #: ../Extras/NUnit/Gui/TestResultsPad.cs:125
 msgid "Ignored Tests"
-msgstr "Пропущенные тесты"
+msgstr "Пропущенные"
+# "Пропущенные тесты" is way too long! unusable for button labels!
 
 #: ../Extras/NUnit/Gui/TestResultsPad.cs:130
 msgid "Show Ignored Tests"

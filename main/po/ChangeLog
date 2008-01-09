@@ -1,3 +1,8 @@
+2008-01-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* ru.po: Fixes bug 338954 - too long button names make test results view
+	  unusable in russian translation. Patch by Ivan G Shevchenko.
+
 2008-01-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* nl.po: Added Dutch translation. Patch by André Offringa.
