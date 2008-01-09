@@ -133,18 +133,8 @@ namespace MonoDevelop.VersionControl.Subversion
 			LibSvnClient.Rev startrev;
 			string curPath;
 			
-			// We need to know the URL and last committed revision of
-			// sourcefile.  We can GetVersionInfo the sourcefile, unless
-			// this is the root directory of the repository, in which
-			// case GetVersionInfo will throw an exception
-			try {
-				VersionInfo node = GetVersionInfo (repo, sourcefile, false);
-				startrev = ((SvnRevision) node.Revision).ForApi ();
-				curPath = node.RepositoryPath;
-			} catch {
-				startrev = LibSvnClient.Rev.Head;
-				curPath = Client.GetPathUrl(sourcefile);
-			} 
+			startrev = LibSvnClient.Rev.Working;
+			curPath = Client.GetPathUrl(sourcefile);
 			
 			LibSvnClient.Rev sincerev = LibSvnClient.Rev.First;
 			if (since != null)

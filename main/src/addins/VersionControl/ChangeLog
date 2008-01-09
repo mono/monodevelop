@@ -1,3 +1,10 @@
+2008-01-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs:
+	  In GetHistory(), There is no need to query the working revision, since
+	  we can use the constant Rev.Working as start revision. It also fixes bug
+	  #324571.
+
 2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.mdp:
