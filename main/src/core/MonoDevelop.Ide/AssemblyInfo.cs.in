@@ -24,3 +24,11 @@ using System.Runtime.CompilerServices;
 [assembly: Mono.About ("http://monodevelop.com")]
 [assembly: Mono.UsageComplement ("")]
 [assembly: Mono.Author ("MonoDevelop Team")]
+
+namespace MonoDevelop.Ide
+{
+	internal class BuildVariables
+	{
+		public static string PackageVersion = "@PACKAGE_VERSION@";
+	}
+}

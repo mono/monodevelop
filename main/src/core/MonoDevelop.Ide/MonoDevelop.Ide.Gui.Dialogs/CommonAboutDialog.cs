@@ -47,31 +47,62 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		string[] authors = new string[]
 		{
-			"Todd Berman",
-			"Pedro Abelleira Seco",
-			"John Luke",
-			"Daniel Kornhauser",
+			"Aaron Bockover",
+			"Alberto Paro",
+			"Alejandro Serrano",
+			"Alexandre Gomes",
 			"Alex Graveley",
-			"nricciar",
-			"John Bou Antoun",
+			"Andrés G. Aragoneses",
+			"Andre Filipe de Assuncao e Brito",
+			"Antonio Ognio",
+			"Ankit Jain",
 			"Ben Maurer",
-			"Jeroen Zwartepoorte",
-			"Gustavo Giráldez",
-			"Miguel de Icaza",
-			"Inigo Illan",
-			"Iain McCoy",
-			"Nick Drochak",
-			"Paweł Różański",
-			"Richard Torkar",
-			"Erik Dasque",
-			"Paco Martinez",
-			"Lluis Sanchez Gual",
+			"Ben Motmans",
 			"Christian Hergert",
+			"Daniel Kornhauser",
+			"Daniel Morgan",
+			"David Makovský",
+			"Eric Butler",
+			"Erik Dasque",
+			"Franciso Martinez",
+			"Geoff Norton",
+			"Gustavo Giráldez",
+			"Iain McCoy",
+			"Inigo Illan",
 			"Jacob Ilsø Christensen",
-			"Scott Ellington",
+			"James Fitzsimons",
+			"Jeff Stedfast",
+			"Jérémie Laval",
+			"Jeroen Zwartepoorte",
+			"John BouAnton",
+			"John Luke",
+			"Joshua Tauberer",
+			"Jonathan Hernández Velasco",
+			"Levi Bard",
+			"Lluis Sanchez Gual",
+			"Marcos David Marín Amador",
+			"Martin Willemoes Hansen",
+			"Marek Sieradzki",
+			"Matej Urbas",
+			"Maurício de Lemos Rodrigues Collares Neto",
 			"Michael Hutchinson",
-			"Jeffrey Stedfast",
-			"Ankit Jain"
+			"Miguel de Icaza",
+			"Mike Krüger",
+			"Muthiah Annamalai",
+			"Nick Drochak",
+			"nricciar",
+			"Paco Martínez",
+			"Pawel Rozanski",
+			"Pedro Abelleira Seco",
+			"Peter Johanson",
+			"Philip Turnbull",
+			"Richard Torkar",
+			"Scott Ellington",
+			"Todd Berman",
+			"Vincent Daron",
+			"Wade Berrier",
+			"Yan-ren Tsai",
+			"Zach Lute"
 		};
 		
 		public ScrollBox ()
@@ -91,10 +122,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				StringBuilder sb = new StringBuilder ();
 				sb.Append (GettextCatalog.GetString ("<b>Ported and developed by:</b>\n"));
 
-				foreach (string s in authors)
-				{
-					sb.Append (s);
-					sb.Append ("\n");
+				for (int n=0; n<authors.Length; n++) {
+					sb.Append (authors [n]);
+					if (n % 2 == 1)
+						sb.Append ("\n");
+					else
+						sb.Append (",  ");
 				}
 
 				string trans = GettextCatalog.GetString ("translator-credits");

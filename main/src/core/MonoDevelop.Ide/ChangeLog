@@ -1,3 +1,10 @@
+2008-01-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs,
+	  AssemblyInfo.cs.in: Show the complete MD version number in the about
+	  box. Fixes bug #350625.
+	* MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs: Updated authors list.
+
 2008-01-09  Marek Safar <marek.safar@gmail.com> 
 
 	* MonoDevelop.Ide.Tasks/CommentTasksView.cs,
