@@ -145,6 +145,7 @@ namespace MonoDevelop.Components.Docking
 				container.Layout.RemoveItemRec (it);
 			foreach (DockGroup grp in layouts.Values)
 				grp.RemoveItemRec (it);
+			container.Items.Remove (it);
 		}
 		
 		public DockItem GetItem (string id)

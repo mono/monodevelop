@@ -1,3 +1,7 @@
+2008-01-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DockFrame.cs: Actually remove the item in RemoveItem.
+
 2008-01-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* DockGroupItem.cs, DockGroup.cs, DockItem.cs, DockFrame.cs: Load stored
