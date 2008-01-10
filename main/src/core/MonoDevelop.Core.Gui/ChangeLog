@@ -1,3 +1,8 @@
+2008-01-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui/DispatchService.cs: Fix bug #345477 - DispatchService
+	  locks up GUI (on Windows). Patch by Rolandas Rudomanskis.
+
 2008-01-08  Michael Hutchinson  <mhutchinson@novell.com> 
 
 	* Base.glade: Make ErrorDialog modal, like all the other MessageService 

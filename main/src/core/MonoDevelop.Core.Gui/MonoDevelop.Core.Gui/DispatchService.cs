@@ -107,8 +107,10 @@ namespace MonoDevelop.Core.Gui
 		
 		public static void RunPendingEvents ()
 		{
+			Gdk.Threads.Enter();
 			while (Gtk.Application.EventsPending ())
 				Gtk.Application.RunIteration ();
+			Gdk.Threads.Leave();
 			guiDispatcher ();
 		}
 		
