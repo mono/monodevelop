@@ -1,5 +1,9 @@
 2008-01-10  Mike Krüger <mkrueger@novell.com> 
 
+	* Parser/CodeGenerator.cs: Fixed Bug 350864 - Refactory tools - renaming.
+
+2008-01-10  Mike Krüger <mkrueger@novell.com> 
+
 	* Parser/Resolver.cs: Fixed 350861: Autocomplete displays hidden items
 
 2008-01-08  Lluis Sanchez Gual <lluis@novell.com> 
