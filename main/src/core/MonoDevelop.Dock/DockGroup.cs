@@ -1049,11 +1049,14 @@ namespace MonoDevelop.Components.Docking
 					if (reader.LocalName == "item") {
 						string id = reader.GetAttribute ("id");
 						DockItem it = Frame.GetItem (id);
-						if (it != null) {
-							DockGroupItem gitem = new DockGroupItem (Frame, it);
-							gitem.Read (reader);
-							AddObject (gitem);
+						if (it == null) {
+							it = Frame.AddItem (id);
+							it.IsPositionMarker = true;
 						}
+						DockGroupItem gitem = new DockGroupItem (Frame, it);
+						gitem.Read (reader);
+						AddObject (gitem);
+						
 						reader.MoveToElement ();
 						reader.Skip ();
 					}

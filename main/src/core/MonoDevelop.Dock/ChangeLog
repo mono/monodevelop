@@ -1,3 +1,14 @@
+2008-01-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DockFrame.cs: Actually remove the item in RemoveItem.
+
+2008-01-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DockGroupItem.cs, DockGroup.cs, DockItem.cs, DockFrame.cs: Load stored
+	  item position, even if the item has not been added to the frame. In this
+	  way it is possible to restore the position of items which are
+	  dynamically added.
+
 2008-01-08  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* DockBarItem.cs: Don't auto-hide the item while it has the focus.
