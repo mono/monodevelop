@@ -54,17 +54,18 @@ namespace MonoDevelop.Components.Docking
 		DockBarItem dockBarItem;
 		bool lastVisibleStatus;
 		bool gettingContent;
+		bool isPositionMarker;
 		
 		public event EventHandler VisibleChanged;
 		public event EventHandler ContentRequired;
 		
-		public DockItem (DockFrame frame, string id)
+		internal DockItem (DockFrame frame, string id)
 		{
 			this.frame = frame;
 			this.id = id;
 		}
 		
-		public DockItem (DockFrame frame, Widget w, string id)
+		internal DockItem (DockFrame frame, Widget w, string id)
 		{
 			this.frame = frame;
 			this.id = id;
@@ -320,6 +321,15 @@ namespace MonoDevelop.Components.Docking
 					return dockBarItem.Size;
 				else
 					return -1;
+			}
+		}
+
+		internal bool IsPositionMarker {
+			get {
+				return isPositionMarker;
+			}
+			set {
+				isPositionMarker = value;
 			}
 		}
 		

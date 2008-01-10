@@ -124,9 +124,15 @@ namespace MonoDevelop.Components.Docking
 		
 		public DockItem AddItem (string id)
 		{
-			foreach (DockItem dit in container.Items)
-				if (dit.Id == id)
+			foreach (DockItem dit in container.Items) {
+				if (dit.Id == id) {
+					if (dit.IsPositionMarker) {
+						dit.IsPositionMarker = false;
+						return dit;
+					}
 					throw new InvalidOperationException ("An item with id '" + id + "' already exists.");
+				}
+			}
 			
 			DockItem it = new DockItem (this, id);
 			container.Items.Add (it);
@@ -143,9 +149,14 @@ namespace MonoDevelop.Components.Docking
 		
 		public DockItem GetItem (string id)
 		{
-			foreach (DockItem it in container.Items)
-				if (it.Id == id)
-					return it;
+			foreach (DockItem it in container.Items) {
+				if (it.Id == id) {
+					if (!it.IsPositionMarker)
+					    return it;
+					else
+					    return null;
+				}
+			}
 			return null;
 		}
 		
