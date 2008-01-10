@@ -35,5 +35,6 @@ namespace MonoDevelop.Ide.Gui.Search
 	{
 		void SetBasePath (string path);
 		void ReportResult (string fileName, int line, int column, string text);
+		void ReportStatus (string resultMessage);
 	}
 }

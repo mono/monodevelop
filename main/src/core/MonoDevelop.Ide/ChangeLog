@@ -1,5 +1,13 @@
 2008-01-10  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs,
+	  MonoDevelop.Ide.Gui.Search/ISearchProgressMonitor.cs,
+	  MonoDevelop.Ide.Gui.Search/SearchProgressMonitor.cs,
+	  MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs: Improve
+	  handling of search status messages. Fixes bug #352531.
+
+2008-01-10  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs,
 	  AssemblyInfo.cs.in: Show the complete MD version number in the about
 	  box. Fixes bug #350625.

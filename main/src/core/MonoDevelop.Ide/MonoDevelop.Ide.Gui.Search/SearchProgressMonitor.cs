@@ -71,6 +71,12 @@ namespace MonoDevelop.Ide.Gui.Search
 			outputPad.AddResult (fileName, line, column, text);
 		}
 		
+		[AsyncDispatch]
+		public void ReportStatus (string resultMessage)
+		{
+			outputPad.ReportStatus (resultMessage);
+		}
+		
 		protected override void OnWriteLog (string text)
 		{
 			if (outputPad == null) throw GetDisposedException ();
