@@ -1,5 +1,10 @@
 2008-01-10  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui/ProgressMonitors.cs: When dynamically creating output
+	  or search pads, create them next to existing output/search pads.
+
+2008-01-10  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs,
 	  MonoDevelop.Ide.Gui.Search/ISearchProgressMonitor.cs,
 	  MonoDevelop.Ide.Gui.Search/SearchProgressMonitor.cs,

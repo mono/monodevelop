@@ -129,7 +129,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			if (instanceCount > 0)
 				title += " (" + (instanceCount+1) + ")";
-			pad = IdeApp.Workbench.ShowPad (monitorPad, "OutputPad" + monitorId, title, "Bottom", icon);
+			pad = IdeApp.Workbench.ShowPad (monitorPad, "OutputPad" + monitorId, title, "OutputPad1/Center Bottom", icon);
 			outputMonitors.Add (pad);
 			
 			if (instanceCount > 0) {
@@ -174,7 +174,7 @@ namespace MonoDevelop.Ide.Gui
 				title += " (" + (instanceNum+1) + ")";
 			
 			SearchResultPad monitorPad = new SearchResultPad (instanceNum);
-			pad = IdeApp.Workbench.ShowPad (monitorPad, "SearchPad" + (monitorId++), title, "Bottom", MonoDevelop.Core.Gui.Stock.FindIcon);
+			pad = IdeApp.Workbench.ShowPad (monitorPad, "SearchPad" + (monitorId++), title, "SearchPad0/Center Bottom", MonoDevelop.Core.Gui.Stock.FindIcon);
 		    searchMonitors.Add (pad);
 
 			if (searchMonitors.Count > 1) {
