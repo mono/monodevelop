@@ -97,14 +97,13 @@ namespace MonoDevelop.Projects.Gui.Completion
 			if (provider == null)
 				return;
 
+			scrollbar.Adjustment.Lower = 0;
+			scrollbar.Adjustment.Upper = Math.Max(0, provider.ItemCount - list.VisibleRows);
+			scrollbar.Adjustment.PageIncrement = list.VisibleRows - 1;
+			scrollbar.Adjustment.StepIncrement = 1;
+			
 			if (list.VisibleRows >= provider.ItemCount) {
 				this.scrollbar.Hide();
-			}
-			else {
-				scrollbar.Adjustment.Lower = 0;
-				scrollbar.Adjustment.Upper = provider.ItemCount - list.VisibleRows;
-				scrollbar.Adjustment.PageIncrement = list.VisibleRows - 1;
-				scrollbar.Adjustment.StepIncrement = 1;
 			}
 
 			this.Resize(this.list.WidthRequest, this.list.HeightRequest);
