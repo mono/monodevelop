@@ -120,10 +120,13 @@ namespace CBinding
 				if (p.Name == project.Name) continue;
 				string version = GetPackageVersion (p.File);
 				bool inProject = IsInProject (p.File);
-				projectPackageListStore.AppendValues (inProject, p.Name, version);
+
+				if (!IsPackageInStore (projectPackageListStore, p.Name, version, 1, 2)) {
+				    projectPackageListStore.AppendValues (inProject, p.Name, version);
 				
-				if (inProject)
-					selectedPackagesListStore.AppendValues (p.Name, version);
+					if (inProject)
+						selectedPackagesListStore.AppendValues (p.Name, version);
+				}
 			}
 			
 			// Fill up the normal tree view
@@ -139,10 +142,13 @@ namespace CBinding
 						string name = f.Name.Substring (0, f.Name.LastIndexOf ('.'));
 						string version = GetPackageVersion (f.FullName);
 						bool inProject = IsInProject (name);
-						normalPackageListStore.AppendValues (inProject, name, version);
 						
-						if (inProject)
-							selectedPackagesListStore.AppendValues (name, version);
+						if (!IsPackageInStore (normalPackageListStore, name, version, 1, 2)) {
+							normalPackageListStore.AppendValues (inProject, name, version);
+						
+							if (inProject)
+								selectedPackagesListStore.AppendValues (name, version);
+						}
 					}
 				}
 			}
@@ -164,6 +170,27 @@ namespace CBinding
 			}
 			
 			return packages;
+		}
+		
+		private bool IsPackageInStore (Gtk.ListStore store, string pname, string pversion, int pname_col, int pversion_col)
+		{
+			Gtk.TreeIter search_iter;
+			bool has_elem = store.GetIterFirst (out search_iter);
+				
+			if (has_elem) {
+				while (true) {
+					string name = (string)store.GetValue (search_iter, pname_col);
+					string version = (string)store.GetValue (search_iter, pversion_col);
+					
+					if (name == pname && version == pversion)
+						return true;
+						
+					if (!store.IterNext (ref search_iter))
+						break;
+				}
+			}
+			
+			return false;
 		}
 		
 		private string[] ScanDirs ()

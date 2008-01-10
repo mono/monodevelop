@@ -526,6 +526,23 @@ namespace CSharpBinding.Parser
 			return base.VisitFieldDeclaration (fieldDeclaration, data);
 		}
 		
+		public override object VisitTypeReference(TypeReference typeReference, object data)
+		{
+			string type = ReturnType.GetSystemType (typeReference.Type);
+			if (member is IClass && member.Name == GetNameWithoutPrefix (type)) {
+				int line = typeReference.StartLocation.Y;
+				int col = typeReference.StartLocation.X;
+				IClass cls = resolver.ResolveIdentifier (fileCompilationUnit, type, line, col) as IClass;
+				
+				if (cls != null && cls.FullyQualifiedName == declaringType.FullyQualifiedName) {
+					//Debug ("adding CastExpression", cls.FullyQualifiedName, castExpression);
+					AddUniqueReference (line, col, cls.FullyQualifiedName);
+				}
+			}
+			
+			return base.VisitTypeReference (typeReference, data);
+		}
+		
 		public override object VisitFieldReferenceExpression (FieldReferenceExpression fieldExp, object data)
 		{
 			//Debug ("FieldReferenceExpression", fieldExp.FieldName, fieldExp);

@@ -72,8 +72,7 @@ namespace CBinding.Parser
 			}
 		}
 		
-		bool CheckInstalled
-		{
+		bool AreDepsInstalled {
 			get {
 				if (!checkedCtagsInstalled) {
 					checkedCtagsInstalled = true;
@@ -97,7 +96,7 @@ namespace CBinding.Parser
 		
 		public void WriteTags (Project project)
 		{
-			if (!CheckInstalled)
+			if (!AreDepsInstalled)
 				return;
 			
 			string tagsDir = Path.Combine (project.BaseDirectory, ".tags");
@@ -193,7 +192,7 @@ namespace CBinding.Parser
 		
 		private void FillFileInformation (FileInformation fileInfo)
 		{
-			if (!CheckInstalled)
+			if (!AreDepsInstalled)
 				return;
 			
 			string confdir = PropertyService.ConfigPath;
@@ -255,7 +254,7 @@ namespace CBinding.Parser
 		
 		public void UpdateFileTags (Project project, string filename)
 		{
-			if (!CheckInstalled)
+			if (!AreDepsInstalled)
 				return;
 			
 			ProjectFilePair p = new ProjectFilePair (project, filename);
@@ -274,7 +273,7 @@ namespace CBinding.Parser
 		
 		private void DoUpdateFileTags (Project project, string filename)
 		{
-			if (!CheckInstalled)
+			if (!AreDepsInstalled)
 				return;
 			
 			string[] headers = Headers (filename, false);

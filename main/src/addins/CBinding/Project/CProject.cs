@@ -282,21 +282,6 @@ namespace CBinding
 			CProjectConfiguration pc = (CProjectConfiguration)ActiveConfiguration;
 			pc.SourceDirectory = BaseDirectory;
 			
-			foreach (ProjectFile file in ProjectFiles) {
-				if (file.BuildAction == BuildAction.FileCopy) {
-					string source = file.Name;
-					string destination = Path.Combine (pc.OutputDirectory, Path.GetFileName (file.Name));
-					
-					DateTime source_last_write = File.GetLastWriteTime (source);
-					DateTime destination_last_write = File.GetLastWriteTime (destination);
-					
-					if (!File.Exists (destination) || source_last_write > destination_last_write) {
-						monitor.Log.WriteLine (GettextCatalog.GetString ("Copying {0} to {1}", source, destination));						
-						File.Copy (source, destination, true);
-					}
-				}
-			}
-			
 			return compiler_manager.Compile (
 				ProjectFiles, packages,
 				(CProjectConfiguration)ActiveConfiguration,
@@ -455,7 +440,7 @@ namespace CBinding
 			foreach (ProjectFile f in ProjectFiles) {
 				if (f.BuildAction == BuildAction.FileCopy) {
 					string targetDirectory =
-						(IsHeaderFile (f.Name) ? TargetDirectory.Include : TargetDirectory.CommonApplicationData);
+						(IsHeaderFile (f.Name) ? TargetDirectory.Include : TargetDirectory.ProgramFiles);
 					
 					deployFiles.Add (new DeployFile (this, f.FilePath, f.RelativePath, targetDirectory));
 				}
@@ -468,13 +453,13 @@ namespace CBinding
 				
 				switch (target) {
 				case CompileTarget.Bin:
-					targetDirectory = TargetDirectory.Binaries;
+					targetDirectory = TargetDirectory.ProgramFiles;
 					break;
 				case CompileTarget.SharedLibrary:
-					targetDirectory = TargetDirectory.ProgramFilesRoot;
+					targetDirectory = TargetDirectory.ProgramFiles;
 					break;
 				case CompileTarget.StaticLibrary:
-					targetDirectory = TargetDirectory.ProgramFilesRoot;
+					targetDirectory = TargetDirectory.ProgramFiles;
 					break;
 				}					
 				
