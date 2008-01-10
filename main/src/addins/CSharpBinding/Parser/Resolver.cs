@@ -488,7 +488,7 @@ namespace CSharpBinding.Parser
 		{
 //			Console.WriteLine("member.Modifiers = " + member.Modifiers);
 			if ((member.Modifiers & ModifierEnum.Internal) == ModifierEnum.Internal) {
-				return true;
+				return callingClass.SourceProject == c.SourceProject;
 			}
 			if ((member.Modifiers & ModifierEnum.Public) == ModifierEnum.Public) {
 //				Console.WriteLine("IsAccessible");
