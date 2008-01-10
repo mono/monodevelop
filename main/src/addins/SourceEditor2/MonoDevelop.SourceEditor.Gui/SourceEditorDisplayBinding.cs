@@ -205,8 +205,9 @@ namespace MonoDevelop.SourceEditor.Gui
 			pixr.Ypad = 0;
 			classCombo.PackStart(pixr, false);
 			classCombo.AddAttribute(pixr, "pixbuf", 0);
-			CellRenderer colr = new CellRendererText();
+			CellRendererText colr = new CellRendererText();
 			colr.Ypad = 0;
+			colr.Ellipsize = Pango.EllipsizeMode.End;
 			classCombo.PackStart(colr, true);
 			classCombo.AddAttribute(colr, "text", 1);
 			
@@ -216,6 +217,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			membersCombo.AddAttribute(pixr, "pixbuf", 0);
 			colr = new CellRendererText();
 			colr.Ypad = 0;
+			colr.Ellipsize = Pango.EllipsizeMode.End;
 			membersCombo.PackStart(colr, true);
 			membersCombo.AddAttribute(colr, "text", 1);
 			
