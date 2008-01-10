@@ -46,6 +46,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		int matchCount;
 		string statusText;
 		int instanceNum;
+		bool customStatusSet;
 
 		Clipboard clipboard;
 		
@@ -177,13 +178,20 @@ namespace MonoDevelop.Ide.Gui.Pads
 				log = new StringBuilder ();
 				
 			buttonStop.Sensitive = true;
+			status.Text = string.Empty;
+			statusText = GettextCatalog.GetString ("Searching...");
 		}
 		
 		public void EndProgress ()
 		{
 			window.Title = originalTitle;
 			buttonStop.Sensitive = false;
-			status.Text = " " + statusText;
+			if (customStatusSet)
+				status.Text = " " + statusText;
+			else {
+				statusText = GettextCatalog.GetString("Search completed");
+				status.Text = " " + statusText + " - " + string.Format(GettextCatalog.GetPluralString("{0} match.", "{0} matches.", matchCount), matchCount);
+			}
 		}
 		
 		public bool AllowReuse {
@@ -384,34 +392,37 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			IdeApp.Workbench.OpenDocument (path, line, 1, true);
 		}
+		
+		public void ReportStatus (string resultMessage)
+		{
+			statusText = resultMessage;
+			customStatusSet = true;
+		}
 
 		public void AddResult (string file, int line, int column, string text)
 		{
-			if (file == null) {
-				statusText = text;
-			} else {
-				matchCount++;
-				
-				Gdk.Pixbuf stock;
-				stock = sw.RenderIcon (Services.Icons.GetImageForFile (file), Gtk.IconSize.Menu, "");
-	
-				string tmpPath = file;
-				if (basePath != null)
-					tmpPath = FileService.AbsoluteToRelativePath (basePath, file);
-				
-				string fileName = tmpPath;
-				string path = tmpPath;
-				
-				fileName = Path.GetFileName (file);
-				
-				try {
-					path = Path.GetDirectoryName (tmpPath);
-				} catch (Exception) {}
-				
-				store.AppendValues (stock, line, column, text, fileName, path, file, false, (int) Pango.Weight.Bold, file != null);
-			}
+			matchCount++;
 			
-			status.Text = " " + statusText + " - " + string.Format(GettextCatalog.GetPluralString("{0} match", "{0} matches", matchCount), matchCount);	
+			Gdk.Pixbuf stock;
+			stock = sw.RenderIcon (Services.Icons.GetImageForFile (file), Gtk.IconSize.Menu, "");
+
+			string tmpPath = file;
+			if (basePath != null)
+				tmpPath = FileService.AbsoluteToRelativePath (basePath, file);
+			
+			string fileName = tmpPath;
+			string path = tmpPath;
+			
+			fileName = Path.GetFileName (file);
+			
+			try {
+				path = Path.GetDirectoryName (tmpPath);
+			} catch (Exception) {}
+			
+			store.AppendValues (stock, line, column, text, fileName, path, file, false, (int) Pango.Weight.Bold, file != null);
+			
+			status.Text = " " + statusText + " - " + string.Format(GettextCatalog.GetPluralString("{0} match.", "{0} matches.", matchCount), matchCount);
+			customStatusSet = false;
 		}
 
 		public virtual bool GetNextLocation (out string file, out int line, out int column)

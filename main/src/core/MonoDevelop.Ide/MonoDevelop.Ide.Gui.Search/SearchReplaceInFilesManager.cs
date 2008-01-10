@@ -128,7 +128,7 @@ namespace MonoDevelop.Ide.Gui.Search
 				msg = GettextCatalog.GetString("Search completed. ") + matches + files;
 			}
 				
-			searchMonitor.ReportResult (null, 0, 0, msg);
+			searchMonitor.ReportStatus (msg);
 			
 			searchMonitor.Log.WriteLine (msg);
 			searchMonitor.Log.WriteLine (GettextCatalog.GetString ("Search time: {0} seconds."), (DateTime.Now - timer).TotalSeconds);
@@ -154,7 +154,7 @@ namespace MonoDevelop.Ide.Gui.Search
 			}
 			
 			string msg = GettextCatalog.GetString ("Replacing '{0}' in {1}.", searchOptions.SearchPattern, searchOptions.SearchDirectory);
-			searchMonitor.ReportResult (null, 0, 0, msg);
+			searchMonitor.ReportStatus (msg);
 			
 			timer = DateTime.Now;
 			DispatchService.BackgroundDispatch (new MessageHandler(ReplaceAllThread));
@@ -200,7 +200,7 @@ namespace MonoDevelop.Ide.Gui.Search
 			}
 			
 			string msg = GettextCatalog.GetString ("Looking for '{0}' in {1}.", searchOptions.SearchPattern, searchOptions.SearchDirectory);
-			searchMonitor.ReportResult (null, 0, 0, msg);
+			searchMonitor.ReportStatus (msg);
 			
 			timer = DateTime.Now;
 			DispatchService.BackgroundDispatch (new MessageHandler(FindAllThread));
