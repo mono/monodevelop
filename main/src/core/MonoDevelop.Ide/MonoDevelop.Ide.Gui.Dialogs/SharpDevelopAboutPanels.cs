@@ -37,8 +37,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			Label licenseLabel = new Label ();
 			Label copyrightLabel = new Label ();
 
-			Version v = Assembly.GetEntryAssembly ().GetName ().Version;
-			versionLabel.Markup = String.Format ("<b>{0}</b>\n    {1}", GettextCatalog.GetString ("Version"), v.Major + "." + v.Minor);
+			versionLabel.Markup = String.Format ("<b>{0}</b>\n    {1}", GettextCatalog.GetString ("Version"), BuildVariables.PackageVersion);
 			HBox hboxVersion = new HBox ();
 			hboxVersion.PackStart (versionLabel, false, false, 5);
 			
