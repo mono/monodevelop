@@ -1,3 +1,8 @@
+2008-01-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Ellipsize long
+	  class and member names in the combos. Fixes bug #350887.
+
 2008-01-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui.OptionPanels/SyntaxHighlightingPanel.cs:
