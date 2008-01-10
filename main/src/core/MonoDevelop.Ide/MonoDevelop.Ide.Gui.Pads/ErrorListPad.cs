@@ -227,22 +227,22 @@ namespace MonoDevelop.Ide.Gui.Pads
 			{
 				ActionGroup group = new ActionGroup ("Popup");
 
-				Action help = new Action ("help", GettextCatalog.GetString ("Show Error Reference"),
+				Gtk.Action help = new Gtk.Action ("help", GettextCatalog.GetString ("Show Error Reference"),
 				                          GettextCatalog.GetString ("Show Error Reference"), Gtk.Stock.Help);
 				help.Activated += new EventHandler (OnShowReference);
 				group.Add (help, "F1");
 
-				Action copy = new Action ("copy", GettextCatalog.GetString ("_Copy"),
+				Gtk.Action copy = new Gtk.Action ("copy", GettextCatalog.GetString ("_Copy"),
 				                          GettextCatalog.GetString ("Copy task"), Gtk.Stock.Copy);
 				copy.Activated += new EventHandler (OnTaskCopied);
 				group.Add (copy, "<Control><Mod2>c");
 
-				Action jump = new Action ("jump", GettextCatalog.GetString ("_Go to"),
+				Gtk.Action jump = new Gtk.Action ("jump", GettextCatalog.GetString ("_Go to"),
 				                          GettextCatalog.GetString ("Go to task"), Gtk.Stock.JumpTo);
 				jump.Activated += new EventHandler (OnTaskJumpto);
 				group.Add (jump);
 
-				Action columns = new Action ("columns", GettextCatalog.GetString ("Columns"));
+				Gtk.Action columns = new Gtk.Action ("columns", GettextCatalog.GetString ("Columns"));
 				group.Add (columns, null);
 
 				ToggleAction columnType = new ToggleAction ("columnType", GettextCatalog.GetString ("Type"),

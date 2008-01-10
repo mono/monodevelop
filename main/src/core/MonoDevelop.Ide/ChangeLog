@@ -1,3 +1,8 @@
+2008-01-09  Marek Safar <marek.safar@gmail.com> 
+
+	* MonoDevelop.Ide.Tasks/CommentTasksView.cs,
+	  MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs: Fixed System.Action ambiguity.
+	
 2008-01-08  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Templates/FileTemplate.cs,
