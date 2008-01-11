@@ -259,7 +259,7 @@ namespace Stetic.Editor
 		{
 			Widget wrapper = Widget.Lookup (this);
 			using (wrapper.UndoManager.AtomicChange) {
-				Action ac = (Action) ObjectWrapper.Create (wrapper.Project, new Gtk.Action ("", "", null, null));
+				Wrapper.Action ac = (Wrapper.Action) ObjectWrapper.Create (wrapper.Project, new Gtk.Action ("", "", null, null));
 				ActionTreeNode node = new ActionTreeNode (Gtk.UIManagerItemType.Menu, "", ac);
 				actionTree.Children.Insert (pos, node);
 

@@ -88,7 +88,7 @@ namespace Stetic.Editor
 					actionGroup.ObjectChanged -= OnGroupChanged;
 					actionGroup.ActionAdded -= OnActionAdded;
 					actionGroup.ActionRemoved -= OnActionRemoved;
-					foreach (Action a in actionGroup.Actions)
+					foreach (Wrapper.Action a in actionGroup.Actions)
 						a.ObjectChanged -= changedEvent;
 				}
 				actionGroup = value;
@@ -97,7 +97,7 @@ namespace Stetic.Editor
 					actionGroup.ObjectChanged += OnGroupChanged;
 					actionGroup.ActionAdded += OnActionAdded;
 					actionGroup.ActionRemoved += OnActionRemoved;
-					foreach (Action a in actionGroup.Actions)
+					foreach (Wrapper.Action a in actionGroup.Actions)
 						a.ObjectChanged += changedEvent;
 				}
 				Fill ();
@@ -114,12 +114,12 @@ namespace Stetic.Editor
 			set { modified = value; }
 		}
 		
-		public Action SelectedAction {
+		public Wrapper.Action SelectedAction {
 			get {
 				IDesignArea designArea = GetDesignArea ();
 				IObjectSelection sel = designArea.GetSelection ();
 				if (sel != null)
-					return ObjectWrapper.Lookup (sel.DataObject) as Action;
+					return ObjectWrapper.Lookup (sel.DataObject) as Wrapper.Action;
 				else
 					return null;
 			}
@@ -155,7 +155,7 @@ namespace Stetic.Editor
 			if (designArea == null)
 				return;
 
-			Action selAction = null;
+			Wrapper.Action selAction = null;
 			
 			foreach (ActionMenuItem item in items) {
 				if (designArea.IsSelected (item))
@@ -167,11 +167,11 @@ namespace Stetic.Editor
 			items.Clear ();
 			
 			if (actionGroup != null) {
-				Action[] sortedActions = new Action [actionGroup.Actions.Count];
+				Wrapper.Action[] sortedActions = new Wrapper.Action [actionGroup.Actions.Count];
 				actionGroup.Actions.CopyTo (sortedActions, 0);
 				Array.Sort (sortedActions, new ActionComparer ());
 				for (int n = 0; n < sortedActions.Length; n++) {
-					Action action = (Action) sortedActions [n];
+					Wrapper.Action action = (Wrapper.Action) sortedActions [n];
 					ActionMenuItem item = InsertAction (action, n);
 					if (selAction == action)
 						item.Select ();
@@ -190,7 +190,7 @@ namespace Stetic.Editor
 			ShowAll ();
 		}
 		
-		ActionMenuItem InsertAction (Action action, int n)
+		ActionMenuItem InsertAction (Wrapper.Action action, int n)
 		{
 			uint row = (uint) n / columns;
 			uint col = (uint) (n % columns) * 3;
@@ -270,7 +270,7 @@ namespace Stetic.Editor
 		
 		void OnAddClicked (object s, Gtk.ButtonPressEventArgs args)
 		{
-			Action ac = (Action) ObjectWrapper.Create (project, new Gtk.Action ("", "", null, null));
+			Wrapper.Action ac = (Wrapper.Action) ObjectWrapper.Create (project, new Gtk.Action ("", "", null, null));
 			ActionMenuItem item = InsertAction (ac, actionGroup.Actions.Count);
 			item.EditingDone += OnEditDone;
 			item.Select ();
@@ -451,7 +451,7 @@ namespace Stetic.Editor
 		{
 			public int Compare (object x, object y)
 			{
-				return string.Compare (((Action)x).GtkAction.Label, ((Action)y).GtkAction.Label);
+				return string.Compare (((Wrapper.Action)x).GtkAction.Label, ((Wrapper.Action)y).GtkAction.Label);
 			}
 		}
 	}

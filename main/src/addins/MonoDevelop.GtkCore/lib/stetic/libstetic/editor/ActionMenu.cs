@@ -200,7 +200,7 @@ namespace Stetic.Editor
 		ActionTreeNode InsertAction (int pos)
 		{
 			using (wrapper.UndoManager.AtomicChange) {
-				Action ac = (Action) ObjectWrapper.Create (wrapper.Project, new Gtk.Action ("", "", null, null));
+				Wrapper.Action ac = (Wrapper.Action) ObjectWrapper.Create (wrapper.Project, new Gtk.Action ("", "", null, null));
 				ActionTreeNode newNode = new ActionTreeNode (Gtk.UIManagerItemType.Menuitem, null, ac);
 				nodes.Insert (pos, newNode);
 				ActionMenuItem item = FindMenuItem (newNode);
