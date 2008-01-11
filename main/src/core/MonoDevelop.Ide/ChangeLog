@@ -1,3 +1,8 @@
+2008-01-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui/ProgressMonitors.cs: More fixes in transient pad
+	  management.
+
 2008-01-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui/ProgressMonitors.cs: Really fix placement of
