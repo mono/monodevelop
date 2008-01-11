@@ -65,7 +65,13 @@ namespace CSharpBinding
 		
 		public ICloneable CreateCompilationParameters (XmlElement projectOptions)
 		{
-			return new CSharpCompilerParameters();
+			CSharpCompilerParameters pars = new CSharpCompilerParameters ();
+			if (projectOptions != null) {
+				string debugAtt = projectOptions.GetAttribute ("DefineDebug");
+				if (string.Compare ("True", debugAtt, true) == 0)
+					pars.DefineSymbols = "DEBUG";
+			}
+			return pars;
 		}
 		
 		public string CommentTag
