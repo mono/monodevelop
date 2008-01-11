@@ -24,11 +24,7 @@
 		<Project name = "${ProjectName}" directory = ".">
 			<Options Target = "Library" />
 			<Files>
-				<File name="MyClass.boo"><![CDATA[import System
-class MyClass :
-	def constructor :
-		// Add code here
-		]]></File>
+				<FileTemplateReference TemplateID="EmptyClass" name="MyClass.boo" />
 			</Files>
 
 		</Project>

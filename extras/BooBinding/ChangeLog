@@ -1,3 +1,10 @@
+2008-01-11  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Gui/ShellTextView.boo: Use PropertyService.ConfigPath instead of
+	  hardcoding config location.
+	* templates/BooLibraryProject.xpt.xml: Use CodeDOM to generate class file.
+	  Fixes "Bug 350626 - Boo templates syntactically incorrect".
+
 2008-01-02  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* templates/BooGtkSharpWindow.xft.xml: Use ${EscapedIdentifier} instead of
