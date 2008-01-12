@@ -98,6 +98,21 @@
     <comment xml:lang="en">MonoDevelop solution</comment>
     <glob pattern="*.mds"/>
   </mime-type>
+  <mime-type type="application/x-csproj">
+  	<sub-class-of type="text/plain"/>
+    <comment xml:lang="en">Visual Studio .NET C# project</comment>
+    <glob pattern="*.csproj"/>
+  </mime-type>
+  <mime-type type="application/x-vbproj">
+  	<sub-class-of type="text/plain"/>
+    <comment xml:lang="en">Visual Studio .NET VB.NET project</comment>
+    <glob pattern="*.vbproj"/>
+  </mime-type>
+  <mime-type type="application/x-sln">
+  	<sub-class-of type="text/plain"/>
+    <comment xml:lang="en">Visual Studio .NET Solution</comment>
+    <glob pattern="*.sln"/>
+  </mime-type>
   <mime-type type="application/x-disco">
     <comment xml:lang="en">Static Discovery File</comment>
     <glob pattern="*.disco"/>

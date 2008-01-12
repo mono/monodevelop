@@ -1,3 +1,9 @@
+2008-01-12  Ankit Jain  <jankit@novell.com>
+
+	Fix bug #350786.
+	* monodevelop.xml: Add entries for csproj, vbproj and sln.
+	* monodevelop.desktop: Add mime types for vs projects.
+
 2008-01-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* configure.in: Added Dutch translation. Patch by André Offringa.
