@@ -47,7 +47,7 @@ namespace CBinding.Parser
 	/// <summary>
 	/// Singleton class to manage tag databases
 	/// </summary>
-	public class TagDatabaseManager
+	class TagDatabaseManager
 	{
 		private static TagDatabaseManager instance;
 		private Queue<ProjectFilePair> parsingJobs = new Queue<ProjectFilePair> ();
@@ -93,33 +93,8 @@ namespace CBinding.Parser
 				return ctagsInstalled;
 			}
 		}
-		
-		public void WriteTags (Project project)
-		{
-			if (!AreDepsInstalled)
-				return;
-			
-			string tagsDir = Path.Combine (project.BaseDirectory, ".tags");
-			
-			if (!Directory.Exists (tagsDir))
-				Directory.CreateDirectory (tagsDir);
-			
-			string ctags_options = "--C++-kinds=+p+u --fields=+a-f+S --language-force=C++ --excmd=pattern";
-			
-			StringBuilder args = new StringBuilder (ctags_options);
-			
-			foreach (ProjectFile file in project.ProjectFiles) 
-				args.AppendFormat (" {0}", file.Name);
-			
-			try {
-				ProcessWrapper p = Runtime.ProcessService.StartProcess ("ctags", args.ToString (), tagsDir, null);
-				p.WaitForExit ();
-			} catch (Exception ex) {
-				throw new IOException ("Could not create tags database (You must have exuberant ctags installed).", ex);
-			}
-		}
-		
-		internal string[] Headers (string filename, bool with_system)
+
+		private string[] Headers (string filename, bool with_system)
 		{
 			string option = (with_system ? "-M" : "-MM");
 			ProcessWrapper p;
@@ -470,75 +445,93 @@ namespace CBinding.Parser
 			return new Tag (name, file, pattern, kind, access, _class, _namespace, _struct, _union, _enum, signature);
 		}
 		
-		public LanguageItem GetParent (Tag tag, Project project, string ctags_output)
+		Tag BinarySearch (string[] ctags_lines, TagKind kind, string name)
 		{
-			if (!string.IsNullOrEmpty (tag.Namespace))
-				return new LanguageItem (FindTag (tag.Namespace, TagKind.Namespace, ctags_output), project);
-			else if (!string.IsNullOrEmpty (tag.Class))
-				return new LanguageItem (FindTag (tag.Class, TagKind.Class, ctags_output), project);
-			else if (!string.IsNullOrEmpty (tag.Enum))
-				return new LanguageItem (FindTag (tag.Enum, TagKind.Enumeration, ctags_output), project);
-			else if (!string.IsNullOrEmpty (tag.Structure))
-				return new LanguageItem (FindTag (tag.Structure, TagKind.Structure, ctags_output), project);
-			else if (!string.IsNullOrEmpty (tag.Union))
-				return new LanguageItem (FindTag (tag.Union, TagKind.Union, ctags_output), project);
+			int low;
+			int high = ctags_lines.Length - 2; // last element is an empty string (because of the Split)
+			int mid;
+			int start_index = 0;
+			
+			// Skip initial comment lines
+			while (ctags_lines[start_index].StartsWith ("!_"))
+				start_index++;
+
+			low = start_index;
+			
+			while (low <= high) {
+				mid = (low + high) / 2;
+				string entry = ctags_lines[mid];;
+				string tag_name = entry.Substring (0, entry.IndexOf ('\t'));
+				int res = string.CompareOrdinal (tag_name, name);
+				
+				if (res < 0) {
+					low = mid + 1;
+				} else if (res > 0) {
+					high = mid - 1;
+				} else {
+					// The tag we are at has the same name than the one we are looking for
+					// but not necessarily the same type, the actual tag we are looking
+					// for might be higher up or down, so we try both, starting with going down.
+					int save = mid;
+					bool going_down = true;
+					bool eof = false;
+					
+					while (true) {
+						Tag tag = ParseTag (entry);
+						
+						if (tag == null)
+							return null;
+						
+						if (tag.Kind == kind && tag_name == name)
+							return tag;
+						
+						if (going_down) {
+							mid++;
+							
+							if (mid >= ctags_lines.Length - 1)
+								eof = true;
+							
+							if (!eof) {
+								entry = ctags_lines[mid];
+								tag_name = entry.Substring (0, entry.IndexOf ('\t'));
+								
+								if (tag_name != name) {
+									going_down = false;
+									mid = save - 1;
+								}
+							} else {
+								going_down = false;
+								mid = save - 1;
+							}
+						} else { // going up
+							mid--;
+
+							if (mid < start_index)
+								return null;
+							
+							entry = ctags_lines[mid];
+							tag_name = entry.Substring (0, entry.IndexOf ('\t'));
+							
+							if (tag_name != name)
+								return null;
+						}
+					}
+				}
+			}
 			
 			return null;
 		}
 		
 		public Tag FindTag (string name, TagKind kind, string ctags_output)
-		{		
-			Tag tag;
-			string tagEntry;
-			
-			using (StringReader reader = new StringReader (ctags_output)) {
-				while ((tagEntry = reader.ReadLine ()) != null) {
-					if (tagEntry.StartsWith ("!_")) continue;
-					
-					if (tagEntry.Substring (0, tagEntry.IndexOf ('\t')).Equals (name)) {
-						tag = ParseTag (tagEntry);
-						
-						if (tag != null && tag.Kind == kind)
-							return tag;
-					}
-				}
-				
-				return null;
-			}
-		}
-		
-		public Tag FindTag (string name, TagKind kind, Project project)
 		{
-			string tagsDir = Path.Combine (project.BaseDirectory, ".tags");
-			string tagsFile = Path.Combine (tagsDir, "tags");
-			
-			if (!File.Exists (tagsFile))
-				throw new IOException ("Tags file does not exist for project: " + project.Name);
-			
-			Tag tag;
-			string tagEntry;
-			
-			using (StreamReader reader = new StreamReader (tagsFile)) {
-				while ((tagEntry = reader.ReadLine ()) != null) {
-					if (tagEntry.StartsWith ("!_")) continue;
-					
-					if (tagEntry.Substring (0, tagEntry.IndexOf ('\t')).Equals (name)) {
-						tag = ParseTag (tagEntry);
-						
-						if (tag != null && tag.Kind == kind)
-							return tag;
-					}
-				}
-				
-				return null;
-			}
+			string[] ctags_lines = ctags_output.Split ('\n');
+
+			return BinarySearch (ctags_lines, kind, name);			
 		}
 		
-		// TODO: This could probably be optimized...
 		private static string[] diff (string[] a1, string[] a2)
 		{
 			List<string> res = new List<string> ();
-			
 			List<string> right = new List<string> (a2);
 			
 			foreach (string s in a1) {
