@@ -219,7 +219,7 @@ namespace CBinding.Parser
 			{
 				ProjectFilePair p;
 					
-				lock (this) {
+				lock (parsingJobs) {
 					p = parsingJobs.Dequeue ();
 				}
 
@@ -234,7 +234,7 @@ namespace CBinding.Parser
 			
 			ProjectFilePair p = new ProjectFilePair (project, filename);
 			
-			lock (this) {
+			lock (parsingJobs) {
 				if (!parsingJobs.Contains (p))
 					parsingJobs.Enqueue (p);
 			}
@@ -460,7 +460,7 @@ namespace CBinding.Parser
 			
 			while (low <= high) {
 				mid = (low + high) / 2;
-				string entry = ctags_lines[mid];;
+				string entry = ctags_lines[mid];
 				string tag_name = entry.Substring (0, entry.IndexOf ('\t'));
 				int res = string.CompareOrdinal (tag_name, name);
 				
