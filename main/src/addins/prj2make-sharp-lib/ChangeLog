@@ -1,3 +1,7 @@
+2008-01-14  Ankit Jain  <jankit@novell.com>
+
+	* VS2003SlnFileFormat.cs: Handle being called in a non-gui mode.
+
 2007-12-21  Miguel de Icaza  <miguel@novell.com>
 
 	* Utils.cs (MapAndResolvePath): this routine only value add was to

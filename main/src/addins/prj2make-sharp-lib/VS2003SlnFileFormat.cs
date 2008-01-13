@@ -82,11 +82,17 @@ namespace MonoDevelop.Prj2Make
 		{
 			//if (!CanReadFile (fileName))
 
-			int choice = IdeApp.Services.MessageService.ShowCustomDialog (GettextCatalog.GetString ("Conversion required"),
-				GettextCatalog.GetString (
-					"The solution file {0} is a VS2003 solution. It must be converted to either a MonoDevelop " + 
-					"or a VS2005 solution. Converting to VS2005 format will overwrite existing files. Convert ?", fileName),
-					"MonoDevelop", "VS2005", "Cancel");
+			int choice;
+			if (IdeApp.Services == null) {
+				// HACK, for mdtool
+				choice = 0;
+			} else {
+				choice = IdeApp.Services.MessageService.ShowCustomDialog (GettextCatalog.GetString ("Conversion required"),
+					GettextCatalog.GetString (
+							"The solution file {0} is a VS2003 solution. It must be converted to either a MonoDevelop " + 
+							"or a VS2005 solution. Converting to VS2005 format will overwrite existing files. Convert ?", fileName),
+							"MonoDevelop", "VS2005", "Cancel");
+			}
 		                                                      	
 			if (choice == 2)
 				throw new InvalidOperationException ("VS2003 solutions are not supported natively.");
@@ -101,7 +107,7 @@ namespace MonoDevelop.Prj2Make
 				combine.Save (monitor);
 
 				// Re-read to get a MSBuildSolution object
-				combine = IdeApp.Services.ProjectService.ReadCombineEntry (combine.FileName, monitor) as Combine;
+				combine = Services.ProjectService.ReadCombineEntry (combine.FileName, monitor) as Combine;
 			}
 
 			return combine;
@@ -112,14 +118,21 @@ namespace MonoDevelop.Prj2Make
 		{
 			SlnMaker slnmaker = new SlnMaker ();
 			Combine combine = null;
+			IProgressMonitor m;
+			if (IdeApp.Services == null)
+				m = new ConsoleProgressMonitor ();
+			else
+				m = new MonoDevelop.Core.Gui.ProgressMonitoring.MessageDialogProgressMonitor (
+							true, false, true, false);
+
 			try { 
-				using (IProgressMonitor m = new MonoDevelop.Core.Gui.ProgressMonitoring.MessageDialogProgressMonitor (
-					true, false, true, false)) {
-					combine = slnmaker.MsSlnToCmbxHelper (fileName, m, save);
-				}
+				combine = slnmaker.MsSlnToCmbxHelper (fileName, m, save);
 			} catch (Exception e) {
-				Console.WriteLine ("exception while converting : " + e.ToString ());
+				LoggingService.LogError ("exception while converting : " + e.ToString ());
 				throw;
+			} finally {
+				if (m != null)
+					m.Dispose ();
 			}
 
 			return combine;
