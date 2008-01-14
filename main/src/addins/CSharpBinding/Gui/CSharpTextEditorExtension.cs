@@ -805,6 +805,7 @@ namespace CSharpBinding
 				}
 			} else {
 				/* '.' */
+				parserContext.ParseFile (this.FileName, this.Editor.Text);
 				Resolver res = new Resolver (parserContext);
 				ResolveResult results = res.Resolve (expression, caretLineNumber, caretColumn, FileName, Editor.Text);
 				completionProvider.AddResolveResults (results, false, res.CreateTypeNameResolver ());

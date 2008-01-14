@@ -104,7 +104,6 @@ namespace CSharpBinding
 			if (configuration.DebugMode) {
 				writer.WriteLine("/debug:+");
 				writer.WriteLine("/debug:full");
-				writer.WriteLine("/d:DEBUG");
 			}
 			
 			switch (compilerparameters.LangVersion) {

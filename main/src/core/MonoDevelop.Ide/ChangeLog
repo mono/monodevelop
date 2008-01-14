@@ -1,3 +1,8 @@
+2008-01-14  David Makovský (Yakeen) <yakeen@sannyas-on.net> 
+
+	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs: Make strings
+	  translatable
+
 2008-01-14  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui/Document.cs: Fixed 353008: Build command is available
