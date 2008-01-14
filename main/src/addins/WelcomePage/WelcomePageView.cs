@@ -128,7 +128,7 @@ namespace MonoDevelop.WelcomePage
 				}
 				NewsUpdated (null, EventArgs.Empty);
 			} catch (System.Net.WebException wex) {
-				if (((HttpWebResponse)wex.Response).StatusCode != HttpStatusCode.NotModified)
+				if (wex.Response == null || ((HttpWebResponse)wex.Response).StatusCode != HttpStatusCode.NotModified)
 					LoggingService.LogWarning ("Could not download news file for Welcome Page.", wex);
 			} catch (Exception ex) {
 				LoggingService.LogWarning ("Could not download news file for Welcome Page.", ex);
