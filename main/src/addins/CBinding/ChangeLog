@@ -1,3 +1,7 @@
+2008-01-12  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
+	* Parser/TagDatabaseManager.cs: Only lock the parsingJobs queue object.
+
 2008-01-11  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* Parser/TagDatabaseManager.cs: When searching for a tag instead of doing a
