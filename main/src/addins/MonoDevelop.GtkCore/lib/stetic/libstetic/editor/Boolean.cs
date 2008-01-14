@@ -4,6 +4,16 @@ namespace Stetic.Editor {
 
 	public class Boolean : PropertyEditorCell 
 	{
+		static int indicatorSize;
+		static int indicatorSpacing;
+		
+		static Boolean ()
+		{
+			Gtk.CheckButton cb = new Gtk.CheckButton ();
+			indicatorSize = (int) cb.StyleGetProperty ("indicator-size");
+			indicatorSpacing = (int) cb.StyleGetProperty ("indicator-spacing");
+		}
+		
 		public override void GetSize (int availableWidth, out int width, out int height)
 		{
 			width = 20;
@@ -13,7 +23,12 @@ namespace Stetic.Editor {
 		public override void Render (Gdk.Drawable window, Gdk.Rectangle bounds, Gtk.StateType state)
 		{
 			Gtk.ShadowType sh = (bool) Value ? Gtk.ShadowType.In : Gtk.ShadowType.Out;
-			Gtk.Style.PaintCheck (Container.Style, window, state, sh, bounds, Container, "", bounds.X, bounds.Y, bounds.Width, bounds.Height);
+			int s = indicatorSize - 1;
+			if (s > bounds.Height)
+				s = bounds.Height;
+			if (s > bounds.Width)
+				s = bounds.Width;
+			Gtk.Style.PaintCheck (Container.Style, window, state, sh, bounds, Container, "checkbutton", bounds.X + indicatorSpacing - 1, bounds.Y + (bounds.Height - s)/2, s, s);
 		}
 		
 		protected override IPropertyEditor CreateEditor (Gdk.Rectangle cell_area, Gtk.StateType state)

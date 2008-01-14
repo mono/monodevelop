@@ -238,7 +238,7 @@ namespace Stetic
 				ActiveGroupChanged (this, new ActionGroupEventArgs (ActiveGroup));
 		}
 		
-		void UpdateActionCommands (Action action)
+		void UpdateActionCommands (Wrapper.Action action)
 		{
 			foreach (Gtk.Widget w in Children) {
 				if (!internalButtons.Contains (w)) {
@@ -254,7 +254,7 @@ namespace Stetic
 			ShowAll ();
 		}
 		
-		protected virtual void AddActionCommands (Action action)
+		protected virtual void AddActionCommands (Wrapper.Action action)
 		{
 			if (allowBinding) {
 				Gtk.ToolButton bindButton = new Gtk.ToolButton (null, Catalog.GetString ("Bind to Field"));

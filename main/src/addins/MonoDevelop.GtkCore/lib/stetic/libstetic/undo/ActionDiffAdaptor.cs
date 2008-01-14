@@ -17,10 +17,10 @@ namespace Stetic.Undo
 		
 		public IEnumerable GetChildren (object parent)
 		{
-			if (parent is Action)
+			if (parent is Wrapper.Action)
 				yield break;
 			else if (parent is ActionGroup) {
-				foreach (Action ac in ((ActionGroup)parent).Actions)
+				foreach (Wrapper.Action ac in ((ActionGroup)parent).Actions)
 					if (ac.Name.Length > 0)
 						yield return ac;
 			}
@@ -36,8 +36,8 @@ namespace Stetic.Undo
 		{
 			if (childObject is ActionGroup)
 				return ((ActionGroup)childObject).UndoId;
-			if (childObject is Action)
-				return ((Action)childObject).UndoId;
+			if (childObject is Wrapper.Action)
+				return ((Wrapper.Action)childObject).UndoId;
 
 			throw new NotImplementedException ();
 		}
@@ -46,7 +46,7 @@ namespace Stetic.Undo
 		{
 			foreach (object ob in GetChildren (parent))
 				if (GetUndoId (ob) == undoId) {
-					if ((ob is Action) && ((Action)ob).Name.Length == 0)
+					if ((ob is Wrapper.Action) && ((Wrapper.Action)ob).Name.Length == 0)
 						continue;
 					return ob;
 				}
@@ -59,7 +59,7 @@ namespace Stetic.Undo
 			if (child == null)
 				return;
 			if (parent is ActionGroup) {
-				((ActionGroup)parent).Actions.Remove ((Action)child);
+				((ActionGroup)parent).Actions.Remove ((Wrapper.Action)child);
 			} else if (parent is ActionGroupCollection) {
 				((ActionGroupCollection)parent).Remove ((ActionGroup)child);
 			} else
@@ -72,15 +72,15 @@ namespace Stetic.Undo
 			if (parent is ActionGroup) {
 				ActionGroup group = (ActionGroup) parent;
 				if (insertAfter == null)
-					group.Actions.Insert (0, (Action) data);
+					group.Actions.Insert (0, (Wrapper.Action) data);
 				else {
 					for (int n=0; n<group.Actions.Count; n++) {
 						if (group.Actions [n].UndoId == insertAfter) {
-							group.Actions.Insert (n+1, (Action) data);
+							group.Actions.Insert (n+1, (Wrapper.Action) data);
 							return;
 						}
 					}
-					group.Actions.Add ((Action) data);
+					group.Actions.Add ((Wrapper.Action) data);
 				}
 			}
 			if (parent is ActionGroupCollection) {
@@ -101,7 +101,7 @@ namespace Stetic.Undo
 		
 		public IEnumerable GetProperties (object obj)
 		{
-			Action action = obj as Action;
+			Wrapper.Action action = obj as Wrapper.Action;
 			if (action != null) {
 				foreach (ItemGroup iset in action.ClassDescriptor.ItemGroups) {
 					foreach (ItemDescriptor it in iset) {
@@ -131,8 +131,8 @@ namespace Stetic.Undo
 			XmlDocument doc = new XmlDocument ();
 			ObjectWriter ow = new ObjectWriter (doc, FileFormat.Native);
 			
-			if (child is Action) {
-				return ((Action)child).Write (ow);
+			if (child is Wrapper.Action) {
+				return ((Wrapper.Action)child).Write (ow);
 			} else if (child is ActionGroup) {
 				return ((ActionGroup)child).Write (ow);
 			}
@@ -143,7 +143,7 @@ namespace Stetic.Undo
 		{
 			ObjectReader or = new ObjectReader (project, FileFormat.Native);
 			if (data.LocalName == "action") {
-				Action ac = new Action ();
+				Wrapper.Action ac = new Wrapper.Action ();
 				ac.Read (or, data);
 				return ac;
 			} else if (data.LocalName == "action-group") {
@@ -161,9 +161,9 @@ namespace Stetic.Undo
 		
 		public object GetPropertyByName (object obj, string name)
 		{
-			if (obj is Action) {
+			if (obj is Wrapper.Action) {
 				if (name == "id") name = "Name";
-				return ((Action)obj).ClassDescriptor [name];
+				return ((Wrapper.Action)obj).ClassDescriptor [name];
 			}
 			else if (obj is ActionGroup) {
 				if (name == "name") return name;
@@ -186,9 +186,9 @@ namespace Stetic.Undo
 		
 		public string GetPropertyValue (object obj, object property)
 		{
-			if (obj is Action) {
+			if (obj is Wrapper.Action) {
 				PropertyDescriptor prop = (PropertyDescriptor) property;
-				object val = prop.GetValue (((Action)obj).Wrapped);
+				object val = prop.GetValue (((Wrapper.Action)obj).Wrapped);
 				return prop.ValueToString (val);
 			}
 			else if (obj is ActionGroup) {
@@ -200,12 +200,12 @@ namespace Stetic.Undo
 		
 		public void SetPropertyValue (object obj, string name, string value)
 		{
-			if (obj is Action) {
+			if (obj is Wrapper.Action) {
 				if (name == "id") name = "Name";
 				PropertyDescriptor prop = (PropertyDescriptor) GetPropertyByName (obj, name);
 				if (prop == null)
 					throw new InvalidOperationException ("Property '" + name + "' not found in object of type: " + obj.GetType ());
-				prop.SetValue (((Action)obj).Wrapped, prop.StringToValue (value));
+				prop.SetValue (((Wrapper.Action)obj).Wrapped, prop.StringToValue (value));
 				return;
 			}
 			else if (obj is ActionGroup) {
@@ -219,17 +219,17 @@ namespace Stetic.Undo
 
 		public void ResetPropertyValue (object obj, string name)
 		{
-			if (obj is Action) {
+			if (obj is Wrapper.Action) {
 				if (name == "id") name = "Name";
 				PropertyDescriptor prop = (PropertyDescriptor) GetPropertyByName (obj, name);
-				prop.ResetValue (((Action)obj).Wrapped);
+				prop.ResetValue (((Wrapper.Action)obj).Wrapped);
 			}
 		}
 		
 		public IEnumerable GetSignals (object obj)
 		{
-			if (obj is Action) {
-				foreach (Signal s in ((Action)obj).Signals)
+			if (obj is Wrapper.Action) {
+				foreach (Signal s in ((Wrapper.Action)obj).Signals)
 					yield return s;
 			}
 			else
@@ -238,7 +238,7 @@ namespace Stetic.Undo
 		
 		public object GetSignal (object obj, string name, string handler)
 		{
-			foreach (Signal s in ((Action)obj).Signals) {
+			foreach (Signal s in ((Wrapper.Action)obj).Signals) {
 				if (s.SignalDescriptor.Name == name && s.Handler == handler)
 					return s;
 			}
@@ -254,17 +254,17 @@ namespace Stetic.Undo
 		
 		public void AddSignal (object obj, string name, string handler)
 		{
-			SignalDescriptor sd = (SignalDescriptor) ((Action)obj).ClassDescriptor.SignalGroups.GetItem (name);
+			SignalDescriptor sd = (SignalDescriptor) ((Wrapper.Action)obj).ClassDescriptor.SignalGroups.GetItem (name);
 			Signal sig = new Signal (sd);
 			sig.Handler = handler;
-			((Action)obj).Signals.Add (sig);
+			((Wrapper.Action)obj).Signals.Add (sig);
 		}
 		
 		public void RemoveSignal (object obj, string name, string handler)
 		{
-			foreach (Signal sig in ((Action)obj).Signals) {
+			foreach (Signal sig in ((Wrapper.Action)obj).Signals) {
 				if (sig.SignalDescriptor.Name == name && sig.Handler == handler) {
-					((Action)obj).Signals.Remove (sig);
+					((Wrapper.Action)obj).Signals.Remove (sig);
 					return;
 				}
 			}

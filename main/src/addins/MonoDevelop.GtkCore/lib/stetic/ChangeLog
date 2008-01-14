@@ -1,3 +1,17 @@
+2008-01-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* libstetic/editor/Boolean.cs: Improve rendering of checkbox.
+
+2008-01-11  Marek Safar <marek.safar@gmail.com> 
+
+	* libstetic/editor/ActionMenu.cs, libstetic/editor/ActionMenuBar.cs,
+	libstetic/editor/ActionToolbar.cs, libstetic/undo/ActionDiffAdaptor.cs
+	libstetic/editor/ActionGroupEditor.cs: Build with the latest gmcs.
+
+2008-01-11  Marek Safar <marek.safar@gmail.com> 
+
+	* libsteticui/ActionGroupToolbar.cs: Build with the latest gmcs.
+
 2008-01-08  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* libsteticui/ProjectBackend.cs: Don't fire load events when loading a
