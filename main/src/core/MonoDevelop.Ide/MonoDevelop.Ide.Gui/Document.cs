@@ -260,6 +260,8 @@ namespace MonoDevelop.Ide.Gui
 		{
 			get
 			{
+				if (this.IsViewOnly)
+					return false;
 				if (Window.ViewContent.ContentName != null)
 					return Services.ProjectService.CanCreateSingleFileProject(Window.ViewContent.ContentName);
 				
