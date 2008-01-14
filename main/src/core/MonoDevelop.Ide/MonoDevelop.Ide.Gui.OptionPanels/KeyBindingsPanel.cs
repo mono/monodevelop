@@ -71,8 +71,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
 			col.AddAttribute (crt, "weight", boldCol);
 			keyTreeView.AppendColumn (col);
 			
-			keyTreeView.AppendColumn ("Key Binding", new CellRendererText (), "text", bindingCol);
-			keyTreeView.AppendColumn ("Description", new CellRendererText (), "text", descCol);
+			keyTreeView.AppendColumn (GettextCatalog.GetString ("Key Binding"), new CellRendererText (), "text", bindingCol);
+			keyTreeView.AppendColumn (GettextCatalog.GetString ("Description"), new CellRendererText (), "text", descCol);
 			
 			keyTreeView.Selection.Changed += new EventHandler (OnKeysTreeViewSelectionChange);
 			
@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
 			accelEntry.KeyReleaseEvent += new KeyReleaseEventHandler (OnAccelEntryKeyRelease);
 			updateButton.Clicked += new EventHandler (OnUpdateButtonClick);
 			
-			schemeCombo.AppendText ("Current");
+			schemeCombo.AppendText (GettextCatalog.GetString ("Current"));
 			foreach (string s in KeyBindingService.SchemeNames)
 				schemeCombo.AppendText (s);
 			
