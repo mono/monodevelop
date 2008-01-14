@@ -1,3 +1,9 @@
+2008-01-11  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
+	* Parser/TagDatabaseManager.cs: When searching for a tag instead of doing a
+	  linear search do a binary search (ctags output sorted tag files).
+	  Greatly improves parsing speed. Also removed some unused methods.
+
 2008-01-08  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* Gui/EditPackagesDialog.cs: Make sure packages are not repeated if the
