@@ -234,12 +234,16 @@ namespace CSharpBinding
 			int exitCode = DoCompilation (outstr, tf, workingDir, gacRoots, ref output, ref error);
 			
 			ICompilerResult result = ParseOutput(tf, output, error);
-			if (result.CompilerOutput.Trim () != "")
+			if (result.CompilerOutput.Trim ().Length != 0)
 				monitor.Log.WriteLine (result.CompilerOutput);
 			
 			//if compiler crashes, output entire error string
-			if (result.ErrorCount == 0 && exitCode != 0)
-				result.AddError (error);
+			if (result.ErrorCount == 0 && exitCode != 0) {
+				if (!string.IsNullOrEmpty (error))
+					result.AddError (error);
+				else
+					result.AddError ("The compiler appears to have crashed without any error output.");
+			}
 			
 			FileService.DeleteFile (responseFileName);
 			FileService.DeleteFile (output);
@@ -324,9 +328,9 @@ namespace CSharpBinding
 			if (typeLoadException) {
 				Regex reg  = new Regex(@".*WARNING.*used in (mscorlib|System),.*", RegexOptions.Multiline);
 				if (reg.Match (compilerOutput.ToString ()).Success)
-					cr.Errors.Add (CreateErrorFromString ("Error: A referenced assembly may be built with an incompatible CLR version. See the compilation output for more details."));
+					cr.Errors.Add (new CompilerError (String.Empty, 0, 0, String.Empty, "Error: A referenced assembly may be built with an incompatible CLR version. See the compilation output for more details."));
 				else
-					cr.Errors.Add (CreateErrorFromString ("Error: A dependency of a referenced assembly may be missing, or you may be referencing an assembly created with a newer CLR version. See the compilation output for more details."));
+					cr.Errors.Add (new CompilerError (String.Empty, 0, 0, String.Empty, "Error: A dependency of a referenced assembly may be missing, or you may be referencing an assembly created with a newer CLR version. See the compilation output for more details."));
 			}
 			
 			return new DefaultCompilerResult(cr, compilerOutput.ToString());
