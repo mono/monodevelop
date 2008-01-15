@@ -1,3 +1,8 @@
+2008-01-15  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Components.Commands/CommandEntry.cs: Remove command
+	  accelerator underscores from tooltips.
+
 2007-12-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Components.Commands.ExtensionNodes/CommandCategoryCodon.cs,

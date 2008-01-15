@@ -68,8 +68,17 @@ namespace MonoDevelop.Components.Commands
 					ti.Child = child;
 				}
 				if (cmd.Text != null && cmd.Text.Length > 0) {
+					//strip "_" accelerators from tooltips
+					string text = cmd.Text;
+					while (true) {
+						int underscoreIndex = text.IndexOf ('_');
+						if (underscoreIndex > -1)
+							text = text.Remove (underscoreIndex, 1);
+						else
+							break;
+					}
 					Gtk.Tooltips tips = new Gtk.Tooltips ();
-					ti.SetTooltip (tips, cmd.Text, cmd.Text);
+					ti.SetTooltip (tips, text, text);
 					tips.Enable ();
 				}
 				return ti;
