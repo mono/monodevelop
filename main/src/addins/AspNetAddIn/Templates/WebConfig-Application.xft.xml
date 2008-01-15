@@ -7,7 +7,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Web Configuration</_Name>
-		<Category>ASP.NET</Category>
+		<_Category>ASP.NET</_Category>
 		<Icon>md-html-file-icon</Icon>
 		<LanguageName>*</LanguageName>
 		<ProjectType>AspNetApp</ProjectType>

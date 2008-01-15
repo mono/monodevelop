@@ -8,7 +8,7 @@
 	<TemplateConfiguration>
 		<_Name>Empty C Header File</_Name>
 		<Icon>res:text-x-chdr.32x32.png</Icon>
-		<Category>General</Category>
+		<_Category>General</_Category>
 		<LanguageName>C</LanguageName>
 		<_Description>Creates an empty C header file.</_Description>
 	</TemplateConfiguration>

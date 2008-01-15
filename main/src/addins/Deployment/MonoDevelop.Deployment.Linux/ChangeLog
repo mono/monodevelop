@@ -1,3 +1,7 @@
+2008-01-15  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* app.desktop.xft.xml: Make template categories translatable.
+
 2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment.Linux.mdp: Updated project files. The order of

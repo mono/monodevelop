@@ -4,7 +4,7 @@
 	<TemplateConfiguration>
 		<_Name>Test Fixture</_Name>
 		<Icon>md-text-file-icon|res:nunit-overlay-32.png</Icon>
-		<Category>NUnit</Category>
+		<_Category>NUnit</_Category>
 		<LanguageName>*</LanguageName>
 		<_Description>Creates a Test Fixture.</_Description>
 	</TemplateConfiguration>

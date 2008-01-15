@@ -1,3 +1,7 @@
+2008-01-15  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* templates/PackagingProject.xpt.xml: Make template categories translatable.
+
 2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment.mdp: Updated project files. The order of extended

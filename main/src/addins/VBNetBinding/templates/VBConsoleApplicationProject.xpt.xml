@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Console Project</_Name>
-		<Category>VBNet</Category>
+		<_Category>VBNet</_Category>
 		<Icon>md-project-console|res:vb-icon-32.png</Icon>
 		<LanguageName>VBNet</LanguageName>
 		<_Description>Create a console VB.Net project</_Description>

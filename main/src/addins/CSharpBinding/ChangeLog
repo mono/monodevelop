@@ -1,5 +1,13 @@
 2008-01-15  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* templates/ConsoleProject.xpt.xml, templates/GnomeSharp2Project.xpt.xml,
+	  templates/GtkSharp2Project.xpt.xml,
+	  templates/GladeSharp2Project.xpt.xml, templates/Library.xpt.xml,
+	  templates/EmptyCSharpFile.xft.xml, templates/EmptyProject.xpt.xml,
+	  templates/AssemblyInfo.xft.xml: Make template categories translatable.
+
+2008-01-15  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* CSharpBindingCompilerManager.cs: Manually create CompilerError for certain
 	  errors, as the CreateErrorFromString method returned null in that
 	  scenario. Fixes error caused by trying to use a null CompilerError.

@@ -1,3 +1,11 @@
+2008-01-15  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* templates/WidgetPartial.xft.xml, templates/Widget.xft.xml,
+	  templates/WindowPartial.xft.xml, templates/ActionGroupPartial.xft.xml,
+	  templates/Window.xft.xml, templates/ActionGroup.xft.xml,
+	  templates/DialogPartial.xft.xml, templates/Dialog.xft.xml: Make template
+	  categories translatable.
+
 2008-01-08  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs: Added null check on the

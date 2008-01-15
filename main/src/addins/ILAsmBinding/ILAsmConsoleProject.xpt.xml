@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Console Project</_Name>
-		<Category>ILAsm</Category>
+		<_Category>ILAsm</_Category>
 		<Icon>md-project</Icon>
 		<LanguageName>ILAsm</LanguageName>
 		<_Description>ILAsm Console Project</_Description>

@@ -1,3 +1,8 @@
+2008-01-15  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* templates/TranslationProject.xpt.xml: Make template categories
+	  translatable.
+
 2008-01-04  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Gettext.addin.xml: Handle simple concatenated strings in C#.

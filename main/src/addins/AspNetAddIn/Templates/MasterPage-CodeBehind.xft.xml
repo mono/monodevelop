@@ -7,7 +7,7 @@
 	<TemplateConfiguration>
 		<_Name>MasterPage with CodeBehind</_Name>
 		<Icon>md-html-file-icon</Icon>
-		<Category>ASP.NET</Category>
+		<_Category>ASP.NET</_Category>
 		<LanguageName>*</LanguageName>
 		<_Description>Creates an ASP.NET MasterPage with a CodeBehind class.</_Description>
 		<ProjectType>AspNetApp</ProjectType>

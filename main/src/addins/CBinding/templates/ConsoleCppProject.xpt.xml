@@ -7,7 +7,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Console Project</_Name>
-		<Category>C/C++</Category>
+		<_Category>C/C++</_Category>
 		<Icon>md-project-console|res:cpp-icon-32.png</Icon>
 		<LanguageName>CPP</LanguageName>
 		<_Description>Creates simple hello world C++ project.</_Description>

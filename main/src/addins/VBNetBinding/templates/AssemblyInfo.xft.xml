@@ -7,7 +7,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Assembly Information</_Name>
-		<Category>Misc</Category>
+		<_Category>Misc</_Category>
 		<Icon>md-text-file-icon</Icon>
 		<LanguageName>VBNet</LanguageName>
 		<DefaultFilename IsFixed="True">AssemblyInfo.vb</DefaultFilename>

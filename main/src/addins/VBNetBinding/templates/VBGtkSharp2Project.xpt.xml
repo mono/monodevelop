@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Gtk# 2.0 Project</_Name>
-		<Category>VBNet</Category>
+		<_Category>VBNet</_Category>
 		<Icon>md-project-gui|res:vb-icon-32.png</Icon>
 		<LanguageName>VBNet</LanguageName>
 		<_Description>Creates a VB.NET Gtk# 2.0 project.</_Description>

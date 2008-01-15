@@ -1,3 +1,16 @@
+2008-01-15  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* templates/StaticLibraryCProject.xpt.xml,
+	  templates/StaticLibraryCppProject.xpt.xml,
+	  templates/EmptyCProject.xpt.xml, templates/EmptyCSourceFile.xft.xml,
+	  templates/EmptyCppProject.xpt.xml, templates/EmptyCppSourceFile.xft.xml,
+	  templates/ConsoleCProject.xpt.xml, templates/ConsoleCppProject.xpt.xml,
+	  templates/EmptyCHeaderFile.xft.xml,
+	  templates/EmptyCppHeaderFile.xft.xml,
+	  templates/SharedLibraryCProject.xpt.xml,
+	  templates/SharedLibraryCppProject.xpt.xml: Make template categories
+	  translatable.
+
 2008-01-12  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* Parser/TagDatabaseManager.cs: Only lock the parsingJobs queue object.

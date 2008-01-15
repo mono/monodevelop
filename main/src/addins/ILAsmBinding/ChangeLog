@@ -1,3 +1,7 @@
+2008-01-15  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* ILAsmConsoleProject.xpt.xml: Make template categories translatable.
+
 2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ILAsmBinding.addin.xml: Bump add-in versions.

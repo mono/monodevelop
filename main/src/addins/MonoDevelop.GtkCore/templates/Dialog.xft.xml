@@ -4,7 +4,7 @@
 	<TemplateConfiguration>
 		<_Name>Dialog</_Name>
 		<Icon>md-gui-file</Icon>
-		<Category>Gtk</Category>
+		<_Category>Gtk</_Category>
 		<LanguageName>*</LanguageName>
 		<_Description>Creates a Gtk dialog.</_Description>
 	</TemplateConfiguration>

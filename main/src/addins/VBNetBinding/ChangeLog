@@ -1,3 +1,10 @@
+2008-01-15  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* templates/EmptyVBFile.xft.xml, templates/EmptyVBProject.xpt.xml,
+	  templates/AssemblyInfo.xft.xml, templates/VBGtkSharp2Project.xpt.xml,
+	  templates/VBConsoleApplicationProject.xpt.xml: Make template categories
+	  translatable.
+
 2008-01-03  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* VBBindingCompilerServices.cs: Update the compiler output parsing regex to
