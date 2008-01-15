@@ -85,7 +85,7 @@ namespace MonoDevelop.Ide.Templates
 			using (IProgressMonitor monitor = new NullProgressMonitor ()) {
 				if (File.Exists (fileName)) {
 					if (Services.MessageService.AskQuestion (GettextCatalog.GetString (
-						"Project file {0} already exists, do you want to overwrite\nthe existing file?", fileName),
+						"Project file {0} already exists. Do you want to overwrite\nthe existing file?", fileName),
 						GettextCatalog.GetString ("File already exists"))) {
 						entry.Save (fileName, monitor);
 					}

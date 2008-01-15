@@ -4,7 +4,7 @@
 	<TemplateConfiguration>
 		<_Name>Application Configuration File</_Name>
 		<Icon>md-text-file-icon</Icon>
-		<Category>Misc</Category>
+		<_Category>Misc</_Category>
 		<ProjectType>DotNet</ProjectType>
 		<_Description>Creates a .NET application configuration file.</_Description>
 	</TemplateConfiguration>

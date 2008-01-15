@@ -53,6 +53,14 @@ namespace MonoDevelop.Ide.Gui
 			"ClassPad",
 			"ProjectPad"
 		};
+		
+#if DUMMY_STRINGS_FOR_TRANSLATION_DO_NOT_COMPILE
+		private void DoNotCompile ()
+		{
+			//The default layout, translated indirectly because it's used as an ID
+			GettextCatalog.GetString ("Default");
+		}
+#endif
 
 		// list of layout names for the current context, without the context prefix
 		List<string> layouts = new List<string> ();

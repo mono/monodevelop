@@ -3464,7 +3464,7 @@ Large</property>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog" design-size="363 131">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
-    <property name="Title">New Layout</property>
+    <property name="Title" translatable="yes">New Layout</property>
     <property name="TypeHint">Dialog</property>
     <property name="BorderWidth">6</property>
     <property name="Resizable">False</property>
@@ -4653,7 +4653,7 @@ Months</property>
                     <property name="MemberName" />
                     <property name="Ypad">12</property>
                     <property name="Yalign">0</property>
-                    <property name="LabelProp" translatable="yes">&lt;i&gt;&lt;b&gt;Note:&lt;/b&gt; Only Letters, Digits and Underline are allowed.&lt;/i&gt;</property>
+                    <property name="LabelProp" translatable="yes">&lt;i&gt;&lt;b&gt;Note:&lt;/b&gt; Only Letters, Digits and Underscore are allowed.&lt;/i&gt;</property>
                     <property name="UseMarkup">True</property>
                     <property name="Wrap">True</property>
                     <property name="Justify">Center</property>

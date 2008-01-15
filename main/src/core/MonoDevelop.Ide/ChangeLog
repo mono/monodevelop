@@ -1,3 +1,29 @@
+2008-01-15  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Templates/FileTemplate.cs,
+	  MonoDevelop.Ide.Templates/ProjectTemplate.cs,
+	  templates/EmptyEnum.xft.xml, templates/EmptyHTMLFile.xft.xml,
+	  templates/EmptyStruct.xft.xml, templates/EmptyTextFile.xft.xml,
+	  templates/EmptyClass.xft.xml, templates/AppConfigFile.xft.xml,
+	  templates/EmptyResourceFile.xft.xml, templates/Workspace.xpt.xml,
+	  templates/GenericProject.xpt.xml, templates/BlankCombine.xpt.xml,
+	  templates/EmptyInterface.xft.xml, templates/EmptyXMLFile.xft.xml: Make
+	  template categories translatable.
+	* MonoDevelop.Ide.Templates/CombineEntryDescriptor.cs,
+	  MonoDevelop.Ide.Templates/ProjectDescriptor.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs: Correct
+	  grammar.
+	* MonoDevelop.Ide.Commands/ViewCommands.cs: Translate layout name, in case
+	  it's one of the built-in defaults.
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs,
+	  gtk-gui/gui.stetic: Make New Layout window title translatable, and
+	  correct "underline" to "underscore".
+	* MonoDevelop.Ide.Gui/HelpOperations.cs: Make string translatable.
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Make default layout name
+	  translatable.
+
 2008-01-14  David Makovský (Yakeen) <yakeen@sannyas-on.net> 
 
 	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs: Make strings

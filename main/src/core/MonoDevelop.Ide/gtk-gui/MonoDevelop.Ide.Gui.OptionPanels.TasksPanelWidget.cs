@@ -196,7 +196,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.label.Name = "label";
             this.label.Ypad = 12;
             this.label.Yalign = 0F;
-            this.label.LabelProp = Mono.Unix.Catalog.GetString("<i><b>Note:</b> Only Letters, Digits and Underline are allowed.</i>");
+            this.label.LabelProp = Mono.Unix.Catalog.GetString("<i><b>Note:</b> Only Letters, Digits and Underscore are allowed.</i>");
             this.label.UseMarkup = true;
             this.label.Wrap = true;
             this.label.Justify = ((Gtk.Justification)(2));

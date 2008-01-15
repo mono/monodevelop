@@ -4,7 +4,7 @@
 	<TemplateConfiguration>
 		<_Name>Empty Enumeration</_Name>
 		<Icon>md-enum-file</Icon>
-		<Category>General</Category>
+		<_Category>General</_Category>
 		<LanguageName>*</LanguageName>
 		<_Description>Creates an empty enum.</_Description>
 	</TemplateConfiguration>

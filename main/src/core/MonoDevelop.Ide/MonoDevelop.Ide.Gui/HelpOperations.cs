@@ -88,7 +88,7 @@ namespace MonoDevelop.Ide.Gui
 
 			if (!useExternalMonodoc)
 				IdeApp.Services.MessageService.ShowError (
-					"You need a newer monodoc to use it externally from monodevelop. Using the integrated help viewer now.");
+					GettextCatalog.GetString ("You need a newer monodoc to use it externally from monodevelop. Using the integrated help viewer now."));
 		}
 
 		void ShowHelpExternal (string topic)

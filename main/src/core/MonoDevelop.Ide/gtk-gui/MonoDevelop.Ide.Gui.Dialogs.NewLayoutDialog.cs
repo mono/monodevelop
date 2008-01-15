@@ -27,7 +27,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog
             this.Name = "MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog";
-            this.Title = "New Layout";
+            this.Title = Mono.Unix.Catalog.GetString("New Layout");
             this.TypeHint = ((Gdk.WindowTypeHint)(1));
             this.BorderWidth = ((uint)(6));
             this.Resizable = false;
