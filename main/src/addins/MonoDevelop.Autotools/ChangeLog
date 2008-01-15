@@ -1,3 +1,10 @@
+2008-01-15  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MakefileData.cs: Improve grammar/formatting for translatable strings.
+	  Replace console writes with logging.
+	* MakefileOptionPanelWidget.cs, SimpleProjectMakefileHandler.cs: Improve
+	  formatting of translatable strings.
+
 2007-12-31  Ankit Jain  <jankit@novell.com>
 
 	* SimpleProjectMakefileHandler.cs: Use macros for emitting deploy

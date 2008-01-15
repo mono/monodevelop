@@ -51,8 +51,17 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	{
 		static GuiBuilderProjectPad widgetTreePad;
 		static string GuiBuilderLayout = "GUI Builder";
+		
+#if DUMMY_STRINGS_FOR_TRANSLATION_DO_NOT_COMPILE
+		private void DoNotCompile ()
+		{
+			//The default GUI Builder layout, translated indirectly because it's used as an ID
+			GettextCatalog.GetString ("GUI Builder");
+		}
+#endif
+		
 		static string defaultLayout;
-	
+		
 		static Stetic.Application steticApp;
 		
 		static bool generating;

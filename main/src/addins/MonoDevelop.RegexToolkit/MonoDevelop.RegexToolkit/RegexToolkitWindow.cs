@@ -30,6 +30,7 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml;
+using MonoDevelop.Core;
 
 using Gtk;
 
@@ -360,13 +361,17 @@ namespace MonoDevelop.RegexToolkit
 					continue;
 				switch (reader.LocalName) {
 				case "Group":
-					TreeIter groupIter = this.elementsStore.AppendValues (Stock.Info, reader.GetAttribute ("_name"), null, null);
+					TreeIter groupIter = this.elementsStore.AppendValues (Stock.Info,
+						GettextCatalog.GetString (reader.GetAttribute ("_name")), null, null);
 					while (reader.Read ()) {
 						if (reader.NodeType == XmlNodeType.EndElement && reader.LocalName == "Group") 
 							break;
 						switch (reader.LocalName) {
 							case "Element":
-								this.elementsStore.AppendValues (groupIter, null, reader.GetAttribute ("_name"), reader.GetAttribute ("_description"), reader.ReadElementString ());
+								this.elementsStore.AppendValues (groupIter, null, 
+							        	GettextCatalog.GetString (reader.GetAttribute ("_name")),
+									GettextCatalog.GetString (reader.GetAttribute ("_description")),
+									reader.ReadElementString ());
 								break;
 						}
 					}

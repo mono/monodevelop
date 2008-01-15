@@ -1,3 +1,7 @@
+2008-01-15  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* libsteticui/WidgetDesigner.cs: Fix typo.
+
 2008-01-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* libstetic/editor/Boolean.cs: Improve rendering of checkbox.

@@ -1,5 +1,10 @@
 2008-01-15  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Feed default layout
+	  name to Gettext for translation.
+
+2008-01-15  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* templates/WidgetPartial.xft.xml, templates/Widget.xft.xml,
 	  templates/WindowPartial.xft.xml, templates/ActionGroupPartial.xft.xml,
 	  templates/Window.xft.xml, templates/ActionGroup.xft.xml,

@@ -327,7 +327,7 @@ namespace MonoDevelop.Autotools
 									CustomCommandType.AfterClean}, monitor);
 					} else {
 						if (config.CustomCommands.Count > 0)
-							monitor.ReportWarning (GettextCatalog.GetString ("Custom commands are not supported for autotools based makefiles. Ignoring Ignoring.."));
+							monitor.ReportWarning (GettextCatalog.GetString ("Custom commands are not supported for autotools based makefiles. Ignoring."));
 					}
 
 					if (buildEnabled && pkgs.Count > 0)
@@ -509,7 +509,7 @@ namespace MonoDevelop.Autotools
 				else if (reference.ReferenceType == ReferenceType.Project)
 					continue; // handled per-config
 				else
-					throw new Exception ( GettextCatalog.GetString  ("Project Reference Type {0} not supported yet", 
+					throw new Exception ( GettextCatalog.GetString  ("Project reference type '{0}' not supported yet", 
 							reference.ReferenceType.ToString() ) );
 			}
 
@@ -643,7 +643,7 @@ namespace MonoDevelop.Autotools
 							foreach (CustomCommandType t in types)
 								types_list.AppendFormat ("{0}, ", t);
 							monitor.ReportWarning (GettextCatalog.GetString (
-								"Custom commands of only - {0} - types are supported.", types_list.ToString ()));
+								"Custom commands of only the following types are supported: {0}.", types_list.ToString ()));
 							warned = true;
 						}
 						continue;
