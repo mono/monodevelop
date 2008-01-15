@@ -291,12 +291,12 @@ namespace MonoDevelop.VersionControl.Subversion {
   		}
 		
 		internal struct svn_dirent_t {
-			public int kind;
+			[MarshalAs (UnmanagedType.SysInt)] public int kind;
 			public long size;
-			public int has_props;
+			[MarshalAs (UnmanagedType.SysInt)] public int has_props;
 			public int created_rev;
 			public long time; // created
-			public string last_author;
+			[MarshalAs (UnmanagedType.LPStr)] public string last_author;
 		}
 		
 		public enum NodeSchedule {
