@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>IKVM Library</_Name>
-		<Category>Java</Category>
+		<_Category>Java</_Category>
 		<Icon>md-project-library|res:java-icon-32.png</Icon>
 		<LanguageName>Java</LanguageName>
 		<_Description>Create a Java library with IKVM</_Description>

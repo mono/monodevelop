@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Gtk# Project</_Name>
-		<Category>Nemerle</Category>
+		<_Category>Nemerle</_Category>
 		<Icon>res:Nemerle.Project.Form</Icon>
 		<LanguageName>Nemerle</LanguageName>
 		<_Description>Creates a Nemerle/Gtk# project</_Description>

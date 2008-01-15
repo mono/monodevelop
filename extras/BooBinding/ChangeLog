@@ -1,3 +1,10 @@
+2008-01-15  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* templates/BooGtkSharpProject.xpt.xml, templates/BooLibraryProject.xpt.xml,
+	  templates/BooGtkSharpWindow.xft.xml, templates/EmptyBooFile.xft.xml,
+	  templates/EmptyBooProject.xpt.xml: Make template categories
+	  translatable.
+
 2008-01-11  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Gui/ShellTextView.boo: Use PropertyService.ConfigPath instead of

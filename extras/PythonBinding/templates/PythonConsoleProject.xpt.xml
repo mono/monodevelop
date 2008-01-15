@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Python Console Project</_Name>
-		<Category>Python</Category>
+		<_Category>Python</_Category>
 		<Icon>C#.Project.DOSProject</Icon>
 		<LanguageName>Python</LanguageName>
 		<_Description>Python Console Project</_Description>

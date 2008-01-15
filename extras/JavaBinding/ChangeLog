@@ -1,3 +1,18 @@
+2008-01-15  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* templates/IkvmGnomeApplicationProject.xpt.xml,
+	  templates/JavaApplet.xft.xml,
+	  templates/IkvmGladeApplicationProject.xpt.xml,
+	  templates/JavaConsoleApplicationProject.xpt.xml,
+	  templates/JavaOKDialog.xft.xml, templates/JavaFrame.xft.xml,
+	  templates/IkvmLibraryProject.xpt.xml, templates/EmptyJavaFile.xft.xml,
+	  templates/JavaPanel.xft.xml, templates/JavaDialog.xft.xml,
+	  templates/IkvmGtkApplicationProject.xpt.xml,
+	  templates/EmptyJavaProject.xpt.xml, templates/JavaApplication.xft.xml,
+	  templates/JavaApplicationProject.xpt.xml,
+	  templates/IkvmConsoleApplicationProject.xpt.xml: Make template
+	  categories translatable.
+
 2007-12-29 David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
         * po/cs.po: updated translation

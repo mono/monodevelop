@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Python Gtk Project</_Name>
-		<Category>Python</Category>
+		<_Category>Python</_Category>
 		<Icon>C#.Project.DOSProject</Icon>
 		<LanguageName>Python</LanguageName>
 		<_Description>Python Gtk Project</_Description>

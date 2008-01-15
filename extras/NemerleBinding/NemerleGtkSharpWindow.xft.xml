@@ -7,7 +7,7 @@
 	<TemplateConfiguration>
 		<_Name>Gtk# Window</_Name>
 		<Icon>res:Nemerle.File.Form</Icon>
-		<Category>Nemerle</Category>
+		<_Category>Nemerle</_Category>
 		<LanguageName>Nemerle</LanguageName>
 		<_Description>Creates a top-level Gtk# window</_Description>
 	</TemplateConfiguration>
