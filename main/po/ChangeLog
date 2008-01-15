@@ -1,3 +1,7 @@
+2008-01-15  Wade Berrier  <wberrier@novell.com> 
+
+	* sl_SI.po: Rename to sl.po (caught by suse autobuild)
+
 2008-01-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ru.po: Fixes bug 338954 - too long button names make test results view

@@ -265,7 +265,7 @@ fi
 AC_SUBST(MOZILLA_HOME)
 
 dnl Intl
-ALL_LINGUAS="cs da de es fr ja pt_BR tr pl it zh_TW zh_CN ru sl_SI ca gl pt sv nl"
+ALL_LINGUAS="cs da de es fr ja pt_BR tr pl it zh_TW zh_CN ru sl ca gl pt sv nl"
 GETTEXT_PACKAGE=monodevelop
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [Gettext package])
