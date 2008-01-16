@@ -1,3 +1,8 @@
+2008-01-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Stetic code must be
+	  generated in the GUI thread. Should fix bug #349505.
+
 2008-01-15  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Feed default layout

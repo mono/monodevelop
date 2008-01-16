@@ -413,35 +413,40 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			bool canGenerateInProcess = IsolationMode != Stetic.IsolationMode.None || info.GuiBuilderProject.SteticProject.CanGenerateCode;
 			
-			// Run the generation in another thread to avoid freezing the GUI
-			System.Threading.ThreadPool.QueueUserWorkItem ( delegate {
-				try {
-					if (!canGenerateInProcess) {
+			if (!canGenerateInProcess) {
+				// Run the generation in another thread to avoid freezing the GUI
+				System.Threading.ThreadPool.QueueUserWorkItem ( delegate {
+					try {
 						// Generate the code in another process if stetic is not isolated
 						CodeGeneratorProcess cob = (CodeGeneratorProcess) Runtime.ProcessService.CreateExternalProcessObject (typeof (CodeGeneratorProcess), false);
 						using (cob) {
 							generationResult = cob.GenerateCode (projects, info.GenerateGettext, info.GettextClass, info.GeneratePartialClasses);
 						}
-					} else {
-						// No need to create another process, since stetic has its own backend process
-						// or the widget libraries have no custom wrappers
-						Stetic.GenerationOptions options = new Stetic.GenerationOptions ();
-						options.UseGettext = info.GenerateGettext;
-						options.GettextClass = info.GettextClass;
-						options.UsePartialClasses = info.GeneratePartialClasses;
-						options.GenerateSingleFile = false;
-						generationResult = SteticApp.GenerateProjectCode (options, info.GuiBuilderProject.SteticProject);
+					} catch (Exception ex) {
+						generatedException = ex;
+					} finally {
+						generating = false;
 					}
+				});
+			
+				while (generating) {
+					DispatchService.RunPendingEvents ();
+					System.Threading.Thread.Sleep (100);
+				}
+			} else {
+				// No need to create another process, since stetic has its own backend process
+				// or the widget libraries have no custom wrappers
+				try {
+					Stetic.GenerationOptions options = new Stetic.GenerationOptions ();
+					options.UseGettext = info.GenerateGettext;
+					options.GettextClass = info.GettextClass;
+					options.UsePartialClasses = info.GeneratePartialClasses;
+					options.GenerateSingleFile = false;
+					generationResult = SteticApp.GenerateProjectCode (options, info.GuiBuilderProject.SteticProject);
 				} catch (Exception ex) {
 					generatedException = ex;
-				} finally {
-					generating = false;
 				}
-			});
-			
-			while (generating) {
-				DispatchService.RunPendingEvents ();
-				System.Threading.Thread.Sleep (100);
+				generating = false;
 			}
 			
 			if (generatedException != null) {
