@@ -1,3 +1,8 @@
+2008-01-16  Ankit Jain  <jankit@novell.com>
+
+	* SolutionDeployer.cs: Sort the list of common and required packages
+	emitted in the configure script.
+
 2008-01-15  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MakefileData.cs: Improve grammar/formatting for translatable strings.
