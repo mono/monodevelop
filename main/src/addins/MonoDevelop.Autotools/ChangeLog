@@ -1,3 +1,8 @@
+2008-01-16  Ankit Jain  <jankit@novell.com>
+
+	* SolutionDeployer.cs: Sort the list of common and required packages
+	emitted in the configure script.
+
 2007-12-31  Ankit Jain  <jankit@novell.com>
 
 	* SimpleProjectMakefileHandler.cs: Use macros for emitting deploy

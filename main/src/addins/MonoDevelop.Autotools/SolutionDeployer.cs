@@ -20,6 +20,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -372,11 +373,7 @@ namespace MonoDevelop.Autotools
 			sbConfig.Append ("\"");
 
 			// Build list of packages required by all configs
-			StringBuilder commonPackages = new StringBuilder ();
-			commonPackages.Append ("common_packages=\"");
-			foreach (SystemPackage pkg in context.GetCommonRequiredPackages ())
-				commonPackages.AppendFormat (" {0};{1}", pkg.Name, pkg.Version);
-			commonPackages.Append ("\"");
+			string commonPackages = String.Format ("common_packages=\"{0}\"", GetPackageListFromSet (context.GetCommonRequiredPackages ()));
 
 			// Build list of packages required per config
 			StringBuilder requiredPackages = new StringBuilder ();
@@ -387,10 +384,9 @@ namespace MonoDevelop.Autotools
 
 				if (requiredPackages.Length > 0)
 					requiredPackages.Append ("\n");
-				requiredPackages.AppendFormat ("required_packages_{0}=\"", context.EscapeAndUpperConfigName (config.Name));
-				foreach (SystemPackage pkg in pkgs)
-					requiredPackages.AppendFormat (" {0};{1}", pkg.Name, pkg.Version);
-				requiredPackages.Append ("\"");
+				requiredPackages.AppendFormat ("required_packages_{0}=\"{1}\"",
+						context.EscapeAndUpperConfigName (config.Name),
+						GetPackageListFromSet (pkgs));
 			}
 
 			templateEngine.Variables ["VERSION"] = solution_version;
@@ -414,6 +410,20 @@ namespace MonoDevelop.Autotools
 
 			if (PlatformID.Unix == Environment.OSVersion.Platform)
 				Syscall.chmod ( filename , FilePermissions.S_IXOTH | FilePermissions.S_IROTH | FilePermissions.S_IRWXU | FilePermissions.S_IRWXG );
+		}
+
+		// Given a Set<SystemPackage> returns a string of the form
+		//   pkg1;pkg1-version pkg2;pkg2-version
+		static string GetPackageListFromSet (Set<SystemPackage> packages)
+		{
+			StringBuilder builder = new StringBuilder ();
+			List<string> pkgList = new List<string> ();
+			foreach (SystemPackage pkg in packages)
+				pkgList.Add (String.Format (" {0};{1}", pkg.Name, pkg.Version));
+			pkgList.Sort ();
+			foreach (string s in pkgList)
+				builder.Append (s);
+			return builder.ToString ();
 		}
 
 		void CreateMakefileInclude (AutotoolsContext context, IProgressMonitor monitor)
