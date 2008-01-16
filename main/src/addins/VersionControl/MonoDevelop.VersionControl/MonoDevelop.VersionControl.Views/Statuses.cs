@@ -720,31 +720,12 @@ namespace MonoDevelop.VersionControl.Views
 			if (difs != null) {
 				foreach (DiffInfo di in difs) {
 					if (di.FileName == file) {
-						filestore.SetValue (iter, ColPath, Colorize (di.Content));
+						filestore.SetValue (iter, ColPath, di.Content);
 						return;
 					}
 				}
 			}
 			filestore.SetValue (iter, ColPath, GLib.Markup.EscapeText (GettextCatalog.GetString ("No differences found")));
-		}
-		
-		string Colorize (string txt)
-		{
-			txt = GLib.Markup.EscapeText (txt);
-			StringReader sr = new StringReader (txt);
-			StringBuilder sb = new StringBuilder ();
-			string line;
-			while ((line = sr.ReadLine ()) != null) {
-				if (line.Length > 0) {
-					char c = line [0];
-					if (c == '-') {
-						line = "<span foreground='red'>" + line + "</span>";
-					} else if (c == '+')
-						line = "<span foreground='blue'>" + line + "</span>";
-				}
-				sb.Append (line).Append ('\n');
-			}
-			return sb.ToString ();
 		}
 		
 		void OnFillDifs (object s, EventArgs a)

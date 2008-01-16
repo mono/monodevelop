@@ -1,3 +1,13 @@
+2008-01-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.Views/Statuses.cs: Removed colorize method. Not
+	  needed anymore.
+	* MonoDevelop.VersionControl.Views/CellRendererDiff.cs: Changed the way
+	  diffs are rendered. Instead of having a big pango layout with all text,
+	  now we render text line by line, skipping lines which are not visible.
+	  Coloring is done changing the GC, instead of using markup. Fixes bug
+	  #353705 and improves performance.
+
 2008-01-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl/Checkout.cs,
