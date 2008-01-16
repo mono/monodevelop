@@ -21,7 +21,7 @@
     <File name="pt_BR.po" subtype="Code" buildaction="Nothing" />
     <File name="README" subtype="Code" buildaction="Nothing" />
     <File name="ru.po" subtype="Code" buildaction="Nothing" />
-    <File name="sl_SI.po" subtype="Code" buildaction="Nothing" />
+    <File name="sl.po" subtype="Code" buildaction="Nothing" />
     <File name="tr.po" subtype="Code" buildaction="Nothing" />
     <File name="zh_CN.po" subtype="Code" buildaction="Nothing" />
     <File name="zh_TW.po" subtype="Code" buildaction="Nothing" />
