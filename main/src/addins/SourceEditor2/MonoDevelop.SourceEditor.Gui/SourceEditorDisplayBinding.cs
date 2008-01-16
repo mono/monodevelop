@@ -406,8 +406,8 @@ namespace MonoDevelop.SourceEditor.Gui
 			}
 			if (encoding != null)
 				se.Buffer.SourceEncoding = encoding;
-			TextFileService.FireCommitCountChanges (this);
 			ContentName = fileName;
+			TextFileService.FireCommitCountChanges (this);
 			InitializeFormatter ();
 		}
 		

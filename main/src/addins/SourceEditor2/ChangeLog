@@ -1,3 +1,9 @@
+2008-01-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Set the file
+	  name before firing the CommitCountChange event, since the name may be
+	  needed by the handlers. Fixes bug #353649.
+
 2008-01-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Ellipsize long
