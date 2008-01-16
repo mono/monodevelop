@@ -128,7 +128,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 			internal DirEnt (string name, svn_dirent_t ent)
 			{
 				Name = name;
-				IsDirectory = (ent.kind == (int) NodeKind.Dir);
+				IsDirectory = (ent.kind.ToInt32 () == (int) NodeKind.Dir);
 				Size = ent.size;
 				HasProps = ent.has_props != 0;
 				CreatedRevision = ent.created_rev;
@@ -291,12 +291,12 @@ namespace MonoDevelop.VersionControl.Subversion {
   		}
 		
 		internal struct svn_dirent_t {
-			public int kind;
+			public IntPtr kind;
 			public long size;
-			public int has_props;
+			[MarshalAs (UnmanagedType.SysInt)] public int has_props;
 			public int created_rev;
 			public long time; // created
-			public string last_author;
+			[MarshalAs (UnmanagedType.LPStr)] public string last_author;
 		}
 		
 		public enum NodeSchedule {
