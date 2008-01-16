@@ -6,10 +6,10 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Glade# 2.0 Project</_Name>
-		<Category>C#/Samples</Category>
+		<_Category>C#/Samples</_Category>
 		<Icon>md-project-gui|res:csharp-icon-32.png</Icon>
 		<LanguageName>C#</LanguageName>
-		<_Description>a Glade# 2.0 project with one window and button</_Description>
+		<_Description>A Glade# 2.0 project with one window and button</_Description>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->

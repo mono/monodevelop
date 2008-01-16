@@ -248,7 +248,7 @@ namespace MonoDevelop.Autotools
 					tmpData.GetErrorRegex (true);
 				} catch (Exception e) {
 					IdeApp.Services.MessageService.ShowError (null, GettextCatalog.GetString (
-						"Invalid regex for Error messages. : {0}", e.Message),
+						"Invalid regex for Error messages: {0}", e.Message),
 						(Window) Toplevel, true);
 					return false;
 				}
@@ -257,7 +257,7 @@ namespace MonoDevelop.Autotools
 					tmpData.GetWarningRegex (true);
 				} catch (Exception e) {
 					IdeApp.Services.MessageService.ShowError (null, GettextCatalog.GetString (
-						"Invalid regex for Warning messages. : {0}", e.Message),
+						"Invalid regex for Warning messages: {0}", e.Message),
 						(Window) Toplevel, true);
 					return false;
 				}
@@ -281,7 +281,7 @@ namespace MonoDevelop.Autotools
 		{
 			if (var.Sync && String.IsNullOrEmpty (var.Name.Trim ())) {
 				IdeApp.Services.MessageService.ShowError (null, GettextCatalog.GetString (
-					"File variable ({0}) is set for sync'ing, but no valid variable is selected." + 
+					"File variable ({0}) is set for sync'ing, but no valid variable is selected. " + 
 					"Either disable the sync'ing or select a variable name.", id),
 					(Window) Toplevel, true);
 

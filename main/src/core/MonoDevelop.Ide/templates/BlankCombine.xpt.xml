@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Blank Solution</_Name>
-		<Category>MonoDevelop</Category>
+		<_Category>MonoDevelop</_Category>
 		<Icon>md-solution</Icon>
 		<LanguageName/>
 		<_Description>A blank solution</_Description>

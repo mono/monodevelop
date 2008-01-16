@@ -1,3 +1,8 @@
+2008-01-15  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* templates/NUnitTestClass.xft.xml, templates/NUnitAssemblyGroup.xpt.xml,
+	  templates/NUnitProject.xpt.xml: Make template categories translatable.
+
 2008-01-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Gui/TestPad.cs: Add null check when filling data for selected node. Should

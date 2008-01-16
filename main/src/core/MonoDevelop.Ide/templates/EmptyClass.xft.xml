@@ -4,7 +4,7 @@
 	<TemplateConfiguration>
 		<_Name>Empty Class</_Name>
 		<Icon>md-class-file</Icon>
-		<Category>General</Category>
+		<_Category>General</_Category>
 		<LanguageName>*</LanguageName>
 		<_Description>Creates an empty class.</_Description>
 	</TemplateConfiguration>

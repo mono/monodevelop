@@ -4,7 +4,7 @@
 	<TemplateConfiguration>
 		<_Name>Empty Text File</_Name>
 		<Icon>md-text-file-icon</Icon>
-		<Category>Misc</Category>
+		<_Category>Misc</_Category>
 		<_Description>Creates an empty text file.</_Description>
 	</TemplateConfiguration>
 	

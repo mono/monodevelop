@@ -7,7 +7,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Static Library</_Name>
-		<Category>C</Category>
+		<_Category>C</_Category>
 		<Icon>md-project-library|res:c-icon-32.png</Icon>
 		<LanguageName>C</LanguageName>
 		<_Description>Creates simple static library C project.</_Description>

@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Empty Web Application</_Name>
-		<Category>ASP.NET</Category>
+		<_Category>ASP.NET</_Category>
 		<Icon>md-project-web</Icon>
 		<LanguageName>*</LanguageName>
 		<_Description>Creates an empty ASP.NET Web Application project.</_Description>

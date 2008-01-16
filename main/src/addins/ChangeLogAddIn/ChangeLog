@@ -1,3 +1,7 @@
+2008-01-15  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* ChangeLogAddInOptionPanelWidget.cs: Make strings translatable.
+
 2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ChangeLogAddIn.mdp: Updated project files. The order of extended

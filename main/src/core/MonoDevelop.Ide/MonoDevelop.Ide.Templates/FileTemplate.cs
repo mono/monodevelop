@@ -182,10 +182,10 @@ namespace MonoDevelop.Ide.Templates
 			else
 				throw new InvalidOperationException ("Missing element '_Name' in file template: " + codon.Id);
 			
-			if (config["Category"] != null)
-				fileTemplate.category = config["Category"].InnerText;
+			if (config["_Category"] != null)
+				fileTemplate.category = addin.Localizer.GetString (config["_Category"].InnerText);
 			else
-				throw new InvalidOperationException ("Missing element 'Category' in file template: " + codon.Id);
+				throw new InvalidOperationException ("Missing element '_Category' in file template: " + codon.Id);
 			
 			if (config["LanguageName"] != null)
 				fileTemplate.languagename = config["LanguageName"].InnerText;

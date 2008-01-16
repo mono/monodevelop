@@ -138,7 +138,7 @@ namespace Stetic
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
 				Gtk.Label lab = new Gtk.Label ();
-				lab.Text = Mono.Unix.Catalog.GetString ("The desginer could not be loaded.") + "\n\n" + ex.Message;
+				lab.Text = Mono.Unix.Catalog.GetString ("The designer could not be loaded.") + "\n\n" + ex.Message;
 				lab.Wrap = true;
 				lab.WidthRequest = 400;
 				AddCustomWidget (lab);

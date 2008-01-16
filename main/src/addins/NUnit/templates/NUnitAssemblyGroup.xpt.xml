@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>NUnit assembly test collection</_Name>
-		<Category>NUnit</Category>
+		<_Category>NUnit</_Category>
 		<Icon>md-project|res:nunit-overlay-32.png</Icon>
 		<_Description>Create an NUnit assembly test collection</_Description>
 	</TemplateConfiguration>

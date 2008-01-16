@@ -7,7 +7,7 @@
 	<TemplateConfiguration>
 		<_Name>Web Form</_Name>
 		<Icon>md-html-file-icon</Icon>
-		<Category>ASP.NET</Category>
+		<_Category>ASP.NET</_Category>
 		<LanguageName>*</LanguageName>
 		<ProjectType>AspNetApp</ProjectType>
 		<_Description>Creates an ASP.NET Web Form.</_Description>

@@ -24,7 +24,7 @@ for example, \cC is control-C.">\cC</Element>
 	</Group>
 	
 	<Group _name="Substitutions">
-		<Element _name = "$number" _description="Substitutes the last substring matched by group number number (decimal).">$number</Element>
+		<Element _name = "$number" _description="Substitutes the last substring matched by group number 'number' (decimal).">$number</Element>
 		<Element _name = "${name}" _description="Substitutes the last substring matched by a (?&lt;name&gt;) group.">${name}</Element>
 		<Element _name = "$$" _description="Substitutes a single '$' literal.">$$</Element>
 		<Element _name = "$&amp;" _description="Substitutes a copy of the entire match itself.">$&amp;</Element>

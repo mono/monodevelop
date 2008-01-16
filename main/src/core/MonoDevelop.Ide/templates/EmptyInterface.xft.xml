@@ -4,7 +4,7 @@
 	<TemplateConfiguration>
 		<_Name>Empty Interface</_Name>
 		<Icon>md-interface-file</Icon>
-		<Category>General</Category>
+		<_Category>General</_Category>
 		<LanguageName>*</LanguageName>
 		<_Description>Creates an empty interface.</_Description>
 	</TemplateConfiguration>

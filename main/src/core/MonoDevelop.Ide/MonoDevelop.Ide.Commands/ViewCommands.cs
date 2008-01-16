@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.Commands
 			string[] layouts = IdeApp.Workbench.Layouts;
 			Array.Sort (layouts);
 			foreach (string layout in layouts) {
-				CommandInfo cmd = new CommandInfo (layout);
+				CommandInfo cmd = new CommandInfo (GettextCatalog.GetString (layout));
 				cmd.Checked = (layout == IdeApp.Workbench.CurrentLayout);
 				info.Add (cmd, layout);
 			}

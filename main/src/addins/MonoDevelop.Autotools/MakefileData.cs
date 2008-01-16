@@ -314,7 +314,7 @@ namespace MonoDevelop.Autotools
 						errorRegex = CompilerMessageRegex [value][0];
 						warningRegex = CompilerMessageRegex [value][1];
 					} else {
-						Console.WriteLine ("Error: Invalid value for MessageRegexName : {0}", value);
+						LoggingService.LogError ("Invalid value for MessageRegexName : {0}", value);
 						//FIXME: If !valid then throw
 					}
 				}
@@ -559,7 +559,7 @@ namespace MonoDevelop.Autotools
 					customRegex [index] = new Regex (str, RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 				} catch (ArgumentException) {
 					// Invalid regex string
-					Console.WriteLine ("Invalid {0}Regex '{1}' specified for project {2}",
+					LoggingService.LogError ("Invalid {0}Regex '{1}' specified for project '{2}'.",
 						(index == 0 ? "Error" : "Warning"), str, OwnerProject.Name);
 					customRegex [index] = null;
 					if (throwOnError)
@@ -614,7 +614,7 @@ namespace MonoDevelop.Autotools
 				return;
 
 			if (ownerProject == null)
-				throw new InvalidOperationException (GettextCatalog.GetString ("Internal Error: ownerProject not set"));
+				throw new InvalidOperationException ("Internal Error: ownerProject not set");
 
 			this.monitor = monitor;
 
@@ -622,7 +622,7 @@ namespace MonoDevelop.Autotools
 				Makefile.GetVariables ();
 			} catch (Exception e) {
 				monitor.ReportError (GettextCatalog.GetString (
-					"Invalid makefile : {0}. Disabling Makefile integration.", AbsoluteMakefileName), e);
+					"Invalid Makefile '{0}'. Disabling Makefile integration.", AbsoluteMakefileName), e);
 				IntegrationEnabled = false;
 
 				return;
@@ -671,12 +671,12 @@ namespace MonoDevelop.Autotools
 					}
 				}
 			} catch (Exception e) {
-				Console.WriteLine (String.Format (
-					"Error trying to read configure.in : {0} for project {1} : {2} ",
-					AbsoluteConfigureInPath, OwnerProject.Name, e.ToString ()));
+				LoggingService.LogWarning (
+					"Error trying to read configure.in ('{0}') for project '{1}':\n{2}",
+					AbsoluteConfigureInPath, OwnerProject.Name, e.ToString ());
 
 				monitor.ReportWarning (GettextCatalog.GetString (
-					"Error trying to read configure.in ({0}) for project {1} : {2} ",
+					"Error trying to read configure.in ('{0'}) for project '{1}':\n{2}",
 					AbsoluteConfigureInPath, OwnerProject.Name, e.Message));
 			}
 
@@ -742,9 +742,10 @@ namespace MonoDevelop.Autotools
 					newGacRefs.Clear ();
 				}
 			} catch (Exception e) {
-				Console.WriteLine ("Error in loading references : {0}. Skipping syncing of references", e.Message);
-				monitor.ReportWarning (GettextCatalog.GetString (
-					"Error in loading references : {0}. Skipping syncing of references", e.Message));
+				string msg = GettextCatalog.GetString (
+					"Error in loading references: {0}. Skipping syncing of references", e.Message);
+				LoggingService.LogWarning (msg);
+				monitor.ReportWarning (msg);
 
 				SaveReferences = false;
 			}
@@ -758,9 +759,9 @@ namespace MonoDevelop.Autotools
 				fileVar.SaveEnabled = true;
 				ReadFilesActual (fileVar, buildAction, id, promptForRemoval);
 			} catch (Exception e) {
-				LoggingService.LogError (e.ToString ());
-				Console.WriteLine ("Error in loading files for {0}. Skipping.", id);
-				monitor.ReportWarning (GettextCatalog.GetString ("Error in loading files for {0}. Skipping.", id));
+				string msg = GettextCatalog.GetString ("Error in loading files for '{0}'. Skipping.", id);
+				LoggingService.LogError (msg, e);
+				monitor.ReportWarning (msg);
 				fileVar.SaveEnabled = false;
 			}
 		}
@@ -775,13 +776,11 @@ namespace MonoDevelop.Autotools
 			List<string> files = Makefile.GetListVariable (fileVar.Name);
 			if (files == null) {
 				//FIXME: Move this to the caller, try-catch there
-				Console.WriteLine (GettextCatalog.GetString (
-					"Makefile variable '{0}' not found. Skipping syncing of {1} File list for project {2}.",
-					fileVar.Name, id, ownerProject.Name));
-
-				monitor.ReportWarning (GettextCatalog.GetString (
-					"Makefile variable '{0}' not found. Skipping syncing of {1} File list for project {2}.",
-					fileVar.Name, id, ownerProject.Name));
+				string msg = GettextCatalog.GetString (
+					"Makefile variable '{0}' not found. Skipping syncing of '{1}' file list for project '{2}'.",
+					fileVar.Name, id, ownerProject.Name);
+				LoggingService.LogWarning (msg);
+				monitor.ReportWarning (msg);
 
 				fileVar.SaveEnabled = false;
 				return;
@@ -825,13 +824,11 @@ namespace MonoDevelop.Autotools
 					if ((fname.Length > 2 && fname [0] == '$' && fname [1] == '(') && !UseAutotools) {
 						fileVar.Extra.Add (f);
 						if (!autotoolsWarned) {
-							Console.WriteLine (GettextCatalog.GetString (
-								"Files in variable '{0}' contain variables which cannot be parsed without path " +
-								"to the configure.in being set. Ignoring such files.", fileVar.Name));
-
-							monitor.ReportWarning (GettextCatalog.GetString (
-								"Files in variable '{0}' contain variables which cannot be parsed without path " +
-								"to the configure.in being set. Ignoring such files.", fileVar.Name));
+							string msg = GettextCatalog.GetString (
+								"Files in variable '{0}' contains variables which cannot be parsed without the path " +
+								"to configure.in being set. Ignoring such files.", fileVar.Name);
+							LoggingService.LogWarning (msg);
+							monitor.ReportWarning (msg);
 							autotoolsWarned = true;
 						}
 						continue;
@@ -852,7 +849,11 @@ namespace MonoDevelop.Autotools
 
 					if (!File.Exists (absPath)) {
 						//Invalid file, maybe we couldn't parse it correctly!
-						LoggingService.LogWarning (GettextCatalog.GetString ("Invalid file : '{0}' found in '{1}' for project - '{2}'. Ignoring.", f, relativeMakefileName, OwnerProject.Name));
+						string msg = GettextCatalog.GetString (
+							"Ignoring invalid file '{0}' found in '{1}' for project '{2}'.", f,
+							relativeMakefileName, OwnerProject.Name);
+						LoggingService.LogWarning (msg);
+						monitor.ReportWarning (msg);
 						fileVar.Extra.Add (f);
 						continue;
 					}
@@ -885,14 +886,11 @@ namespace MonoDevelop.Autotools
 			//All filenames are treated as relative to the Makefile path
 			List<string> references = Makefile.GetListVariable (refVar.Name);
 			if (references == null) {
-				
-				Console.WriteLine (GettextCatalog.GetString (
-					"Makefile variable '{0}' not found. Skipping syncing of {1} all references for project {2}.",
-					refVar.Name, id, project.Name));
-
-				monitor.ReportWarning (GettextCatalog.GetString (
-					"Makefile variable '{0}' not found. Skipping syncing of {1} all references for project {2}.",
-					refVar.Name, id, project.Name));
+				string msg = GettextCatalog.GetString (
+					"Makefile variable '{0}' not found. Skipping syncing of all '{1}' references for project {2}.",
+					refVar.Name, id, project.Name);
+				LoggingService.LogWarning (msg);
+				monitor.ReportWarning (msg);
 				SaveReferences = false;
 				return;
 			}
@@ -908,9 +906,9 @@ namespace MonoDevelop.Autotools
 				try { 
 					ParseReference (r, usePrefix, refVar, len, refType, project);
 				} catch (Exception e) {
-					Console.WriteLine ("For project {0} Unable to parse reference '{1}'. Ignoring. {2}", project.Name, r, e.ToString ());
-					monitor.ReportWarning (GettextCatalog.GetString (
-						"Unable to parse reference '{0}', reason : {1}. Ignoring.", r, e.Message));
+					string msg = GettextCatalog.GetString ("Unable to parse reference '{0}' for project '{1}'. Ignoring.", r, project.Name);
+					LoggingService.LogWarning (msg, e);
+					monitor.ReportWarning (msg);
 					refVar.Extra.Add (r);
 				}
 			}
@@ -950,7 +948,7 @@ namespace MonoDevelop.Autotools
 				string pkgVarName = rname.Substring (2, rname.Length - 3).Replace ("_LIBS", String.Empty);
 				List<string> pkgNames = ConfiguredPackages.GetNamesFromVarName (pkgVarName);
 				if (pkgNames == null) {
-					Console.WriteLine ("Package named '{0}' not found in configure.in. Ignoring reference to {1}",
+					 LoggingService.LogWarning  ("Package named '{0}' not found in configure.in. Ignoring reference to '{1}'.",
 						pkgVarName, rname);
 					refVar.Extra.Add (reference);
 					return;
@@ -1044,7 +1042,7 @@ namespace MonoDevelop.Autotools
 		{
 			SystemPackage pkg = Runtime.SystemAssemblyService.GetPackage (pkgName);
 			if (pkg == null) {
-				Console.WriteLine ("Error: No package named '{0}' found. Ignoring.", pkgName);
+				LoggingService.LogWarning ("No package named '{0}' found. Ignoring.", pkgName);
 				return false;
 			}
 
@@ -1059,7 +1057,7 @@ namespace MonoDevelop.Autotools
 					AddNewGacReference (project, fullname, fullpath);
 				} catch {
 					//Ignore
-					Console.WriteLine ("Error: Invalid assembly reference ({0}) found in package {1}. Ignoring.",
+					LoggingService.LogWarning ("Invalid assembly reference ({0}) found in package {1}. Ignoring.",
 						s, pkg.Name);
 				}
 			}
@@ -1351,10 +1349,10 @@ namespace MonoDevelop.Autotools
 
 			if (Makefile.GetListVariable (fileVar.Name) == null) {
 				//Var not found, skip
-                                Console.WriteLine (GettextCatalog.GetString (
-                                        "Makefile variable '{0}' not found. Skipping writing of {1} Files to the makefile.", fileVar.Name, id));
-                                monitor.ReportWarning (GettextCatalog.GetString (
-                                        "Makefile variable '{0}' not found. Skipping writing of {1} Files to the makefile.", fileVar.Name, id));
+				string msg = GettextCatalog.GetString (
+                                        "Makefile variable '{0}' not found. Skipping writing of '{1}' files to the Makefile.", fileVar.Name, id);
+                                LoggingService.LogWarning (msg);
+                                monitor.ReportWarning (msg);
 				return false;
 			}
 
@@ -1410,11 +1408,10 @@ namespace MonoDevelop.Autotools
 			List<string> references = Makefile.GetListVariable (refVar.Name);
 			if (references == null) {
 				//Var not found, skip
-                                Console.WriteLine (GettextCatalog.GetString (
-                                        "Makefile variable '{0}' not found. Skipping syncing of {1} references.", refVar.Name, id));
-
-                                monitor.ReportWarning (GettextCatalog.GetString (
-                                        "Makefile variable '{0}' not found. Skipping syncing of {1} references.", refVar.Name, id));
+				string msg = GettextCatalog.GetString (
+                                        "Makefile variable '{0}' not found. Skipping syncing of '{1}' references.", refVar.Name, id);
+				LoggingService.LogWarning (msg);
+				monitor.ReportWarning (msg);
 				return false;
 			}
 
@@ -1513,15 +1510,13 @@ namespace MonoDevelop.Autotools
 				if (!hasAcSubstPackages.ContainsKey (pkg.Name)) {
 					if (UseAutotools) {
 						//Warn only if UseAutotools
-						Console.WriteLine (GettextCatalog.GetString (
-							"A reference to package '{0}' is being emitted, as atleast one assembly from the package " +
-							"is used in the project. But it is not specified in the configure.in, you might need to " +
-							"add it for successfully building on other systems.", pkg.Name));
-
-						monitor.ReportWarning (GettextCatalog.GetString (
-							"A reference to package '{0}' is being emitted, as atleast one assembly from the package " +
-							"is used in the project. But it is not specified in the configure.in, you might need to " +
-							"add it for successfully building on other systems.", pkg.Name));
+						string msg = GettextCatalog.GetString (
+							"A reference to the pkg-config package '{0}' is being emitted to the Makefile, " +
+							"because at least one assembly from the package is used in the project. However, " +
+							"this dependency is not specified in the configure.in file, so you might need to " +
+							"add it to ensure that the project builds successfully on other systems.", pkg.Name);
+						LoggingService.LogWarning (msg);
+						monitor.ReportWarning (msg);
 					}
 
 					hasAcSubstPackages [pkg.Name] = false;
@@ -1622,7 +1617,7 @@ namespace MonoDevelop.Autotools
 			
 			if (!File.Exists (fullpath) || (Path.GetFileName (fullpath) != "configure.in" && Path.GetFileName (fullpath) != "configure.ac"))
 				//FIXME: Exception type?
-				throw new ArgumentException (GettextCatalog.GetString ("Unable to find configure.in at {0}", fullpath));
+				throw new ArgumentException (GettextCatalog.GetString ("Unable to find configure.in at '{0}'.", fullpath));
 
 			FileInfo finfo = new FileInfo (fullpath);
 			lastWriteTime = finfo.LastWriteTime;
@@ -1633,7 +1628,7 @@ namespace MonoDevelop.Autotools
 		public List<string> GetNamesFromVarName (string varname)
 		{
 			if (!pkgVarNameToPkgName.ContainsKey (varname)) {
-				LoggingService.LogDebug (GettextCatalog.GetString ("pkg-config variable {0} not found in pkgVarNameToPkgName.", varname));
+				LoggingService.LogDebug ("pkg-config variable {0} not found in pkgVarNameToPkgName.", varname);
 				return null;
 			}
 
@@ -1644,7 +1639,7 @@ namespace MonoDevelop.Autotools
 		public string GetVarNameFromName (string name)
 		{
 			if (!pkgNameToPkgVarName.ContainsKey (name)) {
-				LoggingService.LogDebug (GettextCatalog.GetString ("Package named '{0}' not specified in configure.in", name));
+				LoggingService.LogDebug ("Package named '{0}' not specified in configure.in", name);
 				return null;
 			}
 

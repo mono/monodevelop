@@ -4,7 +4,7 @@
 	<TemplateConfiguration>
 		<_Name>Empty Struct</_Name>
 		<Icon>md-struct-file</Icon>
-		<Category>General</Category>
+		<_Category>General</_Category>
 		<LanguageName>*</LanguageName>
 		<_Description>Creates an empty struct.</_Description>
 	</TemplateConfiguration>

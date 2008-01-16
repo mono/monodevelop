@@ -149,7 +149,13 @@ namespace MonoDevelop.Ide.Templates
 			XmlDocument doc = codon.GetTemplate ();
 						
 			XmlElement config = doc.DocumentElement["TemplateConfiguration"];
-			string category = config["Category"].InnerText;
+			
+			string category;
+			if (config["_Category"] != null)
+				category = addin.Localizer.GetString (config["_Category"].InnerText);
+			else
+				throw new InvalidOperationException ("Missing element '_Category' in file template: " + codon.Id);
+			
 			string languageElement  = (config["LanguageName"] == null)? null : config["LanguageName"].InnerText;
 			
 			//Find all of the languages that the template supports
@@ -204,7 +210,7 @@ namespace MonoDevelop.Ide.Templates
 				wizardpath = config["Wizard"].InnerText;
 			}
 			
-			name         = addin.Localizer.GetString (config["_Name"].InnerText);
+			this.name         = addin.Localizer.GetString (config["_Name"].InnerText);
 			this.category     = category;
 			this.languagename = languagename;
 			
