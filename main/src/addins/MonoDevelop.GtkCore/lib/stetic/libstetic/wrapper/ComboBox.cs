@@ -76,7 +76,7 @@ namespace Stetic.Wrapper {
 		
 		public bool IsTextCombo {
 			get { return textCombo; }
-			set { textCombo = value; }
+			set { textCombo = value; EmitNotify ("IsTextCombo"); }
 		}
 		
 		internal protected override CodeExpression GenerateObjectCreation (GeneratorContext ctx)
@@ -103,6 +103,13 @@ namespace Stetic.Wrapper {
 			}
 			
 			base.GenerateBuildCode (ctx, var);
+		}
+		
+		public override void Read (ObjectReader reader, XmlElement element)
+		{
+			base.Read (reader, element);
+			if (reader.Format == FileFormat.Glade && items.Length > 0)
+				IsTextCombo = true;
 		}
 	}
 }
