@@ -1,3 +1,9 @@
+2008-01-16  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* POTFILES.in, POTFILES.skip, po.mdp: No longer needed.
+	* po.mdse: Updated.
+	* Makefile.am: New build for i18n files.
+
 2008-01-15  Wade Berrier  <wberrier@novell.com> 
 
 	* sl_SI.po: Rename to sl.po (caught by suse autobuild)

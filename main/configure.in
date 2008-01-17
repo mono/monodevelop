@@ -3,8 +3,6 @@ AC_PREREQ(2.53)
 AM_INIT_AUTOMAKE([1.9 tar-ustar])
 AM_MAINTAINER_MODE
 
-AC_PROG_INTLTOOL([0.25])
-
 ASSEMBLY_VERSION=0.18.0.0
 
 AC_PATH_PROG(MONO, mono)
@@ -55,15 +53,18 @@ if test "x$PKG_CONFIG" = "xno"; then
         AC_MSG_ERROR([You need to install pkg-config])
 fi
 
+dnl Find msgfmt for translations
+AC_PATH_PROG(MSGFMT, msgfmt, no)
+if test "x$MSGFMT" = "xno"; then
+        AC_MSG_ERROR([You need to install msgfmt from intltool])
+fi
+
 MONO_REQUIRED_VERSION=1.1.10
 PKG_CHECK_MODULES(UNMANAGED_DEPENDENCIES_MONO,mono >= $MONO_REQUIRED_VERSION, has_mono=true, has_mono=false)
-PKG_CHECK_MODULES(UNMANAGED_DEPENDENCIES_MINT,mint >= $MONO_REQUIRED_VERSION, has_mint=true, has_mint=false)
 
 if test "x$has_mono" = "xfalse"; then
-  if test "x$has_mint" = "xfalse"; then
       AC_MSG_ERROR([Please install mono version $MONO_REQUIRED_VERSION or later to install MonoDevelop.
 Please see http://www.mono-project.org/ to download latest mono sources or packages])
-  fi
 fi
 
 if test "x$has_mono" = "xtrue"; then
@@ -74,13 +75,6 @@ if test "x$has_mono" = "xtrue"; then
 	LIB_SUFFIX=.dylib
     else
 	AC_PATH_PROG(RUNTIME, mono, no)
-	AC_PATH_PROG(CSC, gmcs, no)
-	LIB_PREFIX=.so
-	LIB_SUFFIX=
-    fi
-else
-    if test "x$has_mint" = "xtrue"; then
-	AC_PATH_PROG(RUNTIME, mint, no)
 	AC_PATH_PROG(CSC, gmcs, no)
 	LIB_PREFIX=.so
 	LIB_SUFFIX=
@@ -266,10 +260,10 @@ AC_SUBST(MOZILLA_HOME)
 
 dnl Intl
 ALL_LINGUAS="cs da de es fr ja pt_BR tr pl it zh_TW zh_CN ru sl ca gl pt sv nl"
+AC_SUBST(ALL_LINGUAS)
 GETTEXT_PACKAGE=monodevelop
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [Gettext package])
-AM_GLIB_GNU_GETTEXT
 
 CSC_FLAGS="-debug -codepage:utf8"
 
@@ -304,7 +298,6 @@ src/core/Makefile
 src/core/NRefactory/Makefile
 src/core/MonoDevelop.Core/AssemblyInfo.cs
 src/core/MonoDevelop.Core/Makefile
-src/core/MonoDevelop.Core/MonoDevelop.Core/GettextCatalog.cs
 src/core/MonoDevelop.Core.Gui/AssemblyInfo.cs
 src/core/MonoDevelop.Core.Gui/Makefile
 src/core/MonoDevelop.Projects/AssemblyInfo.cs
@@ -365,7 +358,7 @@ monodevelop
 mdtool
 monodevelop.pc
 monodevelop-core-addins.pc
-po/Makefile.in
+po/Makefile
 man/Makefile
 theme-icons/Makefile
 ])
