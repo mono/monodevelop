@@ -12,11 +12,11 @@ update-po:
 	pushd $(top_srcdir) && $(MDTOOL_RUN) gettext-update ; popd
 
 $(GMO_FILES): $(LC_BUILD)/%/LC_MESSAGES/$(PACKAGE).mo: %.po
-	$(MKDIR_P) $(dir $@)
+	$(mkdir_p) $(dir $@)
 	msgfmt '$<' -o '$@'
 	
 $(MO_FILES): $(INSTALL_DIR)/%/LC_MESSAGES/$(PACKAGE).mo : $(LC_BUILD)/%/LC_MESSAGES/$(PACKAGE).mo
-	$(MKDIR_P) $(dir $@)
+	$(mkdir_p) $(dir $@)
 	$(install_sh) '$<' '$@'
 
 install-data-local: $(MO_FILES)
