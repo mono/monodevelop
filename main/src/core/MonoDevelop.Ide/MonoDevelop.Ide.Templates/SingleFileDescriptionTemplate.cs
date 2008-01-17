@@ -272,7 +272,7 @@ namespace MonoDevelop.Ide.Templates
 			
 			if (fileName != null) {
 				string fileDirectory = Path.GetDirectoryName (fileName);
-				if (project != null && project.BaseDirectory != null && fileDirectory.Substring (0, project.BaseDirectory.Length) == fileDirectory )
+				if (project != null && project.BaseDirectory != null && fileDirectory.Length >= project.BaseDirectory.Length && fileDirectory.Substring (0, project.BaseDirectory.Length) == fileDirectory )
 					tags ["ProjectRelativeDirectory"] = fileDirectory.Substring (project.BaseDirectory.Length);
 				else
 					tags ["ProjectRelativeDirectory"] = fileDirectory;

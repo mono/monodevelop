@@ -116,23 +116,29 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		TextReader IConsole.In {
+			[FreeDispatch]
 			get { return new StringReader (""); }
 		}
 		
 		TextWriter IConsole.Out {
+			[FreeDispatch]
 			get { return logger; }
 		}
 		
 		TextWriter IConsole.Error {
+			[FreeDispatch]
 			get { return logger; }
 		} 
 		
 		bool IConsole.CloseOnDispose {
+			[FreeDispatch]
 			get { return false; }
 		}
 		
 		event EventHandler IConsole.CancelRequested {
+			[FreeDispatch]
 			add { stopRequested += value; }
+			[FreeDispatch]
 			remove { stopRequested -= value; }
 		}
 	}
