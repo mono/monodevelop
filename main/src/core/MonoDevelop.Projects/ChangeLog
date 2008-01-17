@@ -1,3 +1,9 @@
+2008-01-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: The assembly file
+	  location may change. Update it when loading the db.
+
 2008-01-14  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Projects/DotNetProject.cs: Add missing null-check.

@@ -80,6 +80,15 @@ namespace MonoDevelop.Projects.Parser
 
 			Read ();
 			
+			ArrayList oldFiles = new ArrayList ();
+			foreach (FileEntry e in GetAllFiles ()) {
+				if (e.FileName != assemblyFile)
+					oldFiles.Add (e);
+			}
+			
+			foreach (FileEntry e in oldFiles)
+				RemoveFile (e.FileName);
+			
 			if (files [assemblyFile] == null) {
 				AddFile (assemblyFile);
 				headers ["CheckFile"] = assemblyFile;
