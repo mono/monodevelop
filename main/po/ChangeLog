@@ -1,5 +1,12 @@
 2008-01-16  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* gl.po, cs.po, pt_BR.po, fr.po, es.po, messages.po, pl.po, it.po, sl.po,
+	  pt.po, ca.po, da.po, tr.po, ru.po, de.po, sv.po, ja.po, zh_TW.po,
+	  zh_CN.po: Updated po files using MD's translation system, so that
+	  translators don't have to build MD themselves.
+
+2008-01-16  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* POTFILES.in, POTFILES.skip, po.mdp: No longer needed.
 	* po.mdse: Updated.
 	* Makefile.am: New build for i18n files.
