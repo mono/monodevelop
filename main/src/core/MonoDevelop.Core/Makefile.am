@@ -48,6 +48,7 @@ FILES =  \
 	MonoDevelop.Core/DefaultAddinLocalizer.cs \
 	MonoDevelop.Core/FileEventArgs.cs \
 	MonoDevelop.Core/FileService.cs \
+	MonoDevelop.Core/GettextCatalog.cs \
 	MonoDevelop.Core/IAsyncOperation.cs \
 	MonoDevelop.Core/ICustomXmlSerializer.cs \
 	MonoDevelop.Core/IProgressMonitor.cs \
@@ -64,7 +65,7 @@ FILES =  \
 	MonoDevelop.Core/UserException.cs \
 	MonoDevelop.Core/XmlReadHelper.cs
 
-GENERATED_FILES = MonoDevelop.Core/GettextCatalog.cs \
+GENERATED_FILES =  \
 		  AssemblyInfo.cs
 
 RES = MonoDevelop.Core.addin.xml                                                          
@@ -80,11 +81,6 @@ REFS =  \
 
 all: $(ASSEMBLY)
 
-MonoDevelop.Core/GettextCatalog.cs: $(srcdir)/MonoDevelop.Core/GettextCatalog.cs.in
-	mkdir -p MonoDevelop.Core
-	sed -e 's,@''prefix@,$(prefix),g' $(srcdir)/$@.in > $@.tmp
-	mv $@.tmp $@
-
 $(ASSEMBLY): $(build_sources) $(build_resources)
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(build_resources:%=/resource:%) $(build_sources) 
 
@@ -92,8 +88,7 @@ assemblydir = $(MD_ASSEMBLY_DIR)
 assembly_DATA = $(ASSEMBLY)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
-DISTCLEANFILES = MonoDevelop.Core/GettextCatalog.cs
 
-EXTRA_DIST = $(FILES) MonoDevelop.Core/GettextCatalog.cs.in $(RES)
+EXTRA_DIST = $(FILES) $(RES)
 
 include $(top_srcdir)/Makefile.include
