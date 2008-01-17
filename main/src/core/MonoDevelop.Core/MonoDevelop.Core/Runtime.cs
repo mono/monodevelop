@@ -70,7 +70,15 @@ namespace MonoDevelop.Core
 			if (updateAddinRegistry)
 				AddinManager.Registry.Update (null);
 			setupService = new SetupService (AddinManager.Registry);
-			setupService.Repositories.RegisterRepository (null, "http://go-mono.com/md/main.mrep", false);
+			
+			string version = AddinManager.CurrentAddin.Version;
+			
+			AddinRepository[] repos = setupService.Repositories.GetRepositories ();
+			foreach (AddinRepository rep in repos) {
+				if (rep.Url.StartsWith ("http://go-mono.com/md/"))
+					setupService.Repositories.RemoveRepository (rep.Url);
+			}
+			setupService.Repositories.RegisterRepository (null, "http://go-mono.com/md/" + AddinManager.CurrentAddin.Version + "/main.mrep", false);
 
 			ServiceManager.Initialize ();
 		}
