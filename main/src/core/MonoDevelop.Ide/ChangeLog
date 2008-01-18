@@ -1,5 +1,10 @@
 2008-01-18  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Dispose the command manager when
+	  closing MD. Should fix bug #349484.
+
+2008-01-18  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.mdp, gtk-gui/gui.stetic,
 	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs,
 	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.cs,
