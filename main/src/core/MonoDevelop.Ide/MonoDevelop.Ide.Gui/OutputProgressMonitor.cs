@@ -45,7 +45,7 @@ using Pango;
 
 namespace MonoDevelop.Ide.Gui
 {	
-	internal class OutputProgressMonitor : BaseProgressMonitor, IConsole
+	internal class OutputProgressMonitor : NullProgressMonitor, IConsole
 	{
 		DefaultMonitorPad outputPad;
 		event EventHandler stopRequested;
@@ -57,17 +57,9 @@ namespace MonoDevelop.Ide.Gui
 			pad.AsyncOperation = this.AsyncOperation;
 			outputPad = pad;
 			outputPad.BeginProgress (title);
-			
-			//using the DefaultMonitorPad's method here to make sure we don't mess with the remoted dispatch 
-			//mechanisms *at all* (even just accessing a field from an anon delegate invokes remoting) 
-			//We're hooking up our own logger to avoid cost of context switching via remoting through the 
-			//AsyncDispatch of base class's WriteLogInternal
-			//HORRIBLE HACK:To get it properly deteched, we have to replace the actual logger.
 			logger.TextWritten += outputPad.WriteText;
-			((LogTextWriter) base.Log).TextWritten += outputPad.WriteText;
 		}
 		
-		[FreeDispatch]
 		public override void BeginTask (string name, int totalWork)
 		{
 			if (outputPad == null) throw GetDisposedException ();
@@ -75,7 +67,6 @@ namespace MonoDevelop.Ide.Gui
 			base.BeginTask (name, totalWork);
 		}
 		
-		[FreeDispatch]
 		public override void EndTask ()
 		{
 			if (outputPad == null) throw GetDisposedException ();
@@ -88,14 +79,14 @@ namespace MonoDevelop.Ide.Gui
 			if (outputPad == null) throw GetDisposedException ();
 			outputPad.WriteText ("\n");
 			
-			foreach (string msg in SuccessMessages)
+			foreach (string msg in Messages)
 				outputPad.WriteText (msg + "\n");
 			
 			foreach (string msg in Warnings)
 				outputPad.WriteText (msg + "\n");
 			
-			foreach (string msg in Errors)
-				outputPad.WriteError (msg + "\n");
+			foreach (ProgressError msg in Errors)
+				outputPad.WriteError (msg.Message + "\n");
 			
 			outputPad.EndProgress ();
 			base.OnCompleted ();
@@ -115,30 +106,28 @@ namespace MonoDevelop.Ide.Gui
 				stopRequested (this, null);
 		}
 		
+		public override TextWriter Log {
+			get { return logger; }
+		}
+		
 		TextReader IConsole.In {
-			[FreeDispatch]
 			get { return new StringReader (""); }
 		}
 		
 		TextWriter IConsole.Out {
-			[FreeDispatch]
 			get { return logger; }
 		}
 		
 		TextWriter IConsole.Error {
-			[FreeDispatch]
 			get { return logger; }
 		} 
 		
 		bool IConsole.CloseOnDispose {
-			[FreeDispatch]
 			get { return false; }
 		}
 		
 		event EventHandler IConsole.CancelRequested {
-			[FreeDispatch]
 			add { stopRequested += value; }
-			[FreeDispatch]
 			remove { stopRequested -= value; }
 		}
 	}

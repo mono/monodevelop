@@ -81,8 +81,6 @@
               <widget class="Gtk.ScrolledWindow" id="scrolledwindow2">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="VscrollbarPolicy">Automatic</property>
-                <property name="HscrollbarPolicy">Automatic</property>
                 <property name="ShadowType">EtchedIn</property>
                 <child>
                   <widget class="Gtk.TreeView" id="tree">
@@ -487,8 +485,6 @@
       <widget class="Gtk.ScrolledWindow" id="scrolled">
         <property name="MemberName" />
         <property name="CanFocus">True</property>
-        <property name="VscrollbarPolicy">Automatic</property>
-        <property name="HscrollbarPolicy">Automatic</property>
         <child>
           <widget class="Gtk.Viewport" id="GtkViewport">
             <property name="MemberName" />
@@ -588,7 +584,6 @@
                             <child>
                               <widget class="Gtk.Frame" id="frame2">
                                 <property name="MemberName" />
-                                <property name="LabelXalign">0</property>
                                 <property name="LabelYalign">0</property>
                                 <child>
                                   <widget class="Gtk.Label" id="lbl_template_descr">
@@ -900,9 +895,6 @@
                   </packing>
                 </child>
               </widget>
-              <packing>
-                <property name="TabExpand">False</property>
-              </packing>
             </child>
             <child>
               <widget class="Gtk.Label" id="label1">
@@ -960,7 +952,6 @@
               </widget>
               <packing>
                 <property name="Position">1</property>
-                <property name="TabExpand">False</property>
               </packing>
             </child>
             <child>
@@ -1839,8 +1830,6 @@
           <widget class="Gtk.ScrolledWindow" id="scrolledwindow">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="VscrollbarPolicy">Automatic</property>
-            <property name="HscrollbarPolicy">Automatic</property>
             <property name="ShadowType">In</property>
             <child>
               <widget class="Gtk.TreeView" id="keyTreeView">
@@ -2765,8 +2754,6 @@ Large</property>
             <child>
               <widget class="Gtk.ScrolledWindow" id="scrolledwindow2">
                 <property name="MemberName" />
-                <property name="VscrollbarPolicy">Automatic</property>
-                <property name="HscrollbarPolicy">Automatic</property>
                 <property name="ShadowType">In</property>
                 <child>
                   <widget class="Gtk.TextView" id="tipTextview">
@@ -3007,8 +2994,6 @@ Large</property>
             <child>
               <widget class="Gtk.ScrolledWindow" id="scrolledwindow4">
                 <property name="MemberName" />
-                <property name="VscrollbarPolicy">Automatic</property>
-                <property name="HscrollbarPolicy">Automatic</property>
                 <property name="ShadowType">EtchedOut</property>
                 <child>
                   <widget class="Gtk.TreeView" id="toolListBox">
@@ -3556,7 +3541,7 @@ Large</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.ReplaceDialog" design-size="642 309">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.ReplaceDialog" design-size="642 313">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <property name="Title">Replace</property>
@@ -4691,7 +4676,6 @@ Months</property>
           <widget class="Gtk.Frame" id="frame1">
             <property name="MemberName" />
             <property name="ShadowType">None</property>
-            <property name="LabelXalign">0</property>
             <child>
               <widget class="Gtk.Alignment" id="alignment1">
                 <property name="MemberName" />
@@ -5187,9 +5171,6 @@ Months</property>
                         <property name="Yalign">0</property>
                         <property name="LabelProp">label7</property>
                       </widget>
-                      <packing>
-                        <property name="TabExpand">False</property>
-                      </packing>
                     </child>
                     <child>
                       <widget class="Gtk.Label" id="label6">
@@ -5376,8 +5357,6 @@ Months</property>
                 <property name="MemberName" />
                 <property name="WidthRequest">100</property>
                 <property name="HeightRequest">100</property>
-                <property name="VscrollbarPolicy">Automatic</property>
-                <property name="HscrollbarPolicy">Automatic</property>
                 <property name="ShadowType">In</property>
                 <child>
                   <widget class="Gtk.TreeView" id="IncludeFileListView">
@@ -5774,8 +5753,6 @@ Months</property>
                   <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="VscrollbarPolicy">Automatic</property>
-                    <property name="HscrollbarPolicy">Automatic</property>
                     <property name="ShadowType">In</property>
                     <child>
                       <widget class="Gtk.TreeView" id="catView">
@@ -5798,8 +5775,6 @@ Months</property>
                   <widget class="MonoDevelop.Components.IconView" id="iconView">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="VscrollbarPolicy">Automatic</property>
-                    <property name="HscrollbarPolicy">Automatic</property>
                     <property name="ShadowType">In</property>
                   </widget>
                   <packing>
@@ -5817,7 +5792,6 @@ Months</property>
               <widget class="Gtk.Frame" id="frame1">
                 <property name="MemberName" />
                 <property name="ShadowType">In</property>
-                <property name="LabelXalign">0</property>
                 <child>
                   <widget class="Gtk.Alignment" id="GtkAlignment2">
                     <property name="MemberName" />

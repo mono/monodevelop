@@ -71,10 +71,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 		private IAsyncOperation asyncOperation;
 		
 		Queue updates = new Queue ();
+		QueuedTextWrite lastTextWrite;
 		GLib.TimeoutHandler outputDispatcher;
 		bool outputDispatcherRunning = false;
 		
-		const int MAX_BUFFER_LENGTH = 20 * 1024; 
+		const int MAX_BUFFER_LENGTH = 200 * 1024; 
 
 		public DefaultMonitorPad (string typeTag, string icon, int instanceNum)
 		{
@@ -143,6 +144,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		bool outputDispatchHandler ()
 		{
 			lock (updates.SyncRoot) {
+				lastTextWrite = null;
 				if (updates.Count == 0) {
 					outputDispatcherRunning = false;
 					return false;
@@ -214,18 +216,26 @@ namespace MonoDevelop.Ide.Gui.Pads
 			lock (updates.SyncRoot) {
 				updates.Enqueue (update);
 				if (!outputDispatcherRunning) {
-					GLib.Timeout.Add (500, outputDispatcher);
+					GLib.Timeout.Add (50, outputDispatcher);
 					outputDispatcherRunning = true;
 				}
+				lastTextWrite = update as QueuedTextWrite;
 			}
 		}
 
 		public void BeginProgress (string title)
 		{
-			originalTitle = window.Title;
-			buffer.Clear ();
-			window.Title = "<span foreground=\"blue\">" + originalTitle + "</span>";
-			buttonStop.Sensitive = true;
+			lock (updates.SyncRoot) {
+				updates.Clear ();
+				lastTextWrite = null;
+			}
+			
+			Gtk.Application.Invoke (delegate {
+				originalTitle = window.Title;
+				buffer.Clear ();
+				window.Title = "<span foreground=\"blue\">" + originalTitle + "</span>";
+				buttonStop.Sensitive = true;
+			});
 		}
 		
 		protected void UnsafeBeginTask (string name, int totalWork)
@@ -263,10 +273,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			//raw text has an extra optimisation here, as we can append it to existing updates
 			lock (updates.SyncRoot) {
-				if (updates.Count > 0) {
-					QueuedTextWrite w = updates.Peek () as QueuedTextWrite;
-					if (w != null && w.Tag == null) {
-						w.Write (text);
+				if (lastTextWrite != null) {
+					if (lastTextWrite.Tag == null) {
+						lastTextWrite.Write (text);
 						return;
 					}
 				}
@@ -314,8 +323,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		public void EndProgress ()
 		{
-			window.Title = originalTitle;
-			buttonStop.Sensitive = false;
+			Gtk.Application.Invoke (delegate {
+				window.Title = originalTitle;
+				buttonStop.Sensitive = false;
+			});
 		}
 		
 		protected void UnsafeAddText (string text, TextTag extraTag)
@@ -369,6 +380,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		public virtual void Dispose ()
 		{
+			lock (updates.SyncRoot) {
+				updates.Clear ();
+				lastTextWrite = null;
+			}
 		}
 	
 		public void RedrawContent()
