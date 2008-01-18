@@ -142,12 +142,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		
 		void IAsyncOperation.Cancel ()
 		{
-			lock (this) {
-				if (canceled) return;
-				canceled = true;
-			}
-			if (cancelRequestedEvent != null)
-				cancelRequestedEvent (this);
+			OnCancelRequested ();
 		}
 		
 		void IAsyncOperation.WaitForCompleted ()
@@ -200,6 +195,16 @@ namespace MonoDevelop.Core.ProgressMonitoring
 				}
 			}
 		}		
+		
+		protected virtual void OnCancelRequested ()
+		{
+			lock (this) {
+				if (canceled) return;
+				canceled = true;
+			}
+			if (cancelRequestedEvent != null)
+				cancelRequestedEvent (this);
+		}
 		
 		protected virtual void OnCompleted ()
 		{
