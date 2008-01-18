@@ -287,6 +287,9 @@ namespace CBinding.Parser
 			
 			if (PropertyService.Get<bool> ("CBinding.ParseSystemTags", true))
 				UpdateSystemTags (project, filename, system_headers);
+			
+			if (cache.Count > cache_size)
+				cache.Clear ();
 		}
 		
 		private void AddInfo (FileInformation info, Tag tag, string ctags_output)
@@ -522,11 +525,39 @@ namespace CBinding.Parser
 			return null;
 		}
 		
+		private struct SemiTag
+		{
+			readonly internal string name;
+			readonly internal TagKind kind;
+			
+			internal SemiTag (string name, TagKind kind)
+			{
+				this.name = name;
+				this.kind = kind;
+			}
+			
+			public override int GetHashCode ()
+			{
+				return (name + kind.ToString ()).GetHashCode ();
+			}
+		}
+		
+		private const int cache_size = 10000;
+		private Dictionary<SemiTag, Tag> cache = new Dictionary<SemiTag, Tag> ();
+		
 		public Tag FindTag (string name, TagKind kind, string ctags_output)
 		{
-			string[] ctags_lines = ctags_output.Split ('\n');
-
-			return BinarySearch (ctags_lines, kind, name);			
+			SemiTag semiTag = new SemiTag (name, kind);
+			
+			if (cache.ContainsKey (semiTag))
+				return cache[semiTag];
+			else {
+				string[] ctags_lines = ctags_output.Split ('\n');
+				Tag tag = BinarySearch (ctags_lines, kind, name);
+				cache.Add (semiTag, tag);
+				
+				return tag;
+			}
 		}
 		
 		private static string[] diff (string[] a1, string[] a2)
