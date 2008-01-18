@@ -492,6 +492,7 @@ namespace MonoDevelop.Ide.Gui
 				return false;
 
 			IdeApp.ProjectOperations.SaveCombinePreferences ();
+			IdeApp.CommandService.Dispose ();
 
 			bool showDirtyDialog = false;
 
