@@ -127,7 +127,7 @@ namespace MonoDevelop.Autotools
 							if (!generateAutotools)
 								solutionMakefile.SetVariable ("EXTRA_DIST", projectMakefileName);
 						} else {
-							makefile.SetVariable ("EXTRA_DIST", generateAutotools ? String.Empty : "Makefile");
+							makefile.AppendToVariable ("EXTRA_DIST", generateAutotools ? String.Empty : "Makefile");
 							outpath = Path.Combine (Path.GetDirectoryName(ce.FileName), "Makefile");
 							if (generateAutotools) {
 								ctx.AddAutoconfFile (outpath);

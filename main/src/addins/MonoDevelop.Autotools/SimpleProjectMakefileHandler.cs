@@ -128,6 +128,7 @@ namespace MonoDevelop.Autotools
 				extras = new StringBuilder ();
 				datafiles = new StringBuilder ();
 
+				string include_custom_hooks = String.Empty;
 				string references, dllReferences;
 				ProcessProjectReferences (project, out references, out dllReferences, ctx);
 
@@ -215,15 +216,15 @@ namespace MonoDevelop.Autotools
 					conf_vars.AppendFormat ("include $(top_srcdir)/Makefile.include\n");
 					conf_vars.AppendFormat ("include $(top_srcdir)/config.make\n\n");
 
-					
 					// Don't emit for top level project makefile(eg. pdn.make), as it would be
 					// included by top level solution makefile
 					if (ctx.TargetCombine.BaseDirectory != project.BaseDirectory){
 						string customhooks = Path.Combine (project.BaseDirectory, "custom-hooks.make");
 						bool include = File.Exists (customhooks);
 					
-						Console.WriteLine ("------ {0} for {1}", include, customhooks); 
-						conf_vars.AppendFormat ("{0}include $(srcdir)/custom-hooks.make\n\n", include ? "" : "#");
+						include_custom_hooks = String.Format ("{0}include $(srcdir)/custom-hooks.make\n\n", include ? "" : "#");
+						if (include)
+							makefile.SetVariable ("EXTRA_DIST", "$(srcdir)/custom-hooks.make");
 					}
 				}
 
@@ -428,6 +429,7 @@ namespace MonoDevelop.Autotools
 				templateEngine.Variables["COPY_DEPLOY_FILES_VARS"] = deployFileCopyVars.ToString();
 				templateEngine.Variables["COPY_DEPLOY_FILES_TARGETS"] = deployFileCopyTargets.ToString();
 				templateEngine.Variables["ALL_TARGET"] = (ctx.TargetCombine.BaseDirectory == project.BaseDirectory) ? "all-local" : "all";
+				templateEngine.Variables["INCLUDE_CUSTOM_HOOKS"] = include_custom_hooks;
 
 				templateEngine.Variables["FILES"] = files.ToString();
 				templateEngine.Variables["RESOURCES"] = res_files.ToString();
@@ -582,7 +584,10 @@ namespace MonoDevelop.Autotools
 			builtFiles.Add (Path.GetFileName (dfile.RelativeTargetPath));
 
 			if (dfile.ContainsPathReferences)
-				deployFileCopyTargets.AppendFormat ("$(eval $(call emit-deploy-wrapper,{0},{1}))\n", targetDeployVar, dependencyDeployFile);
+				deployFileCopyTargets.AppendFormat ("$(eval $(call emit-deploy-wrapper,{0},{1}{2}))\n",
+					targetDeployVar,
+					dependencyDeployFile,
+					(dfile.FileAttributes & DeployFileAttributes.Executable) != 0 ? ",x" : String.Empty);
 			else
 				deployFileCopyTargets.AppendFormat ("$(eval $(call emit-deploy-target,{0}))\n", targetDeployVar);
 

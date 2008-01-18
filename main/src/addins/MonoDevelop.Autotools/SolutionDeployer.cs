@@ -458,6 +458,13 @@ namespace MonoDevelop.Autotools
 			
 			templateEngine.Variables["DEPLOY_DIRS"] = deployDirs.ToString();
 			templateEngine.Variables["DEPLOY_FILES_CLEAN"] = deployDirVars;
+			templateEngine.Variables["CONFIG_MAKE_DEP"] = generateAutotools ? String.Empty : "$(top_srcdir)/config.make";
+			if (generateAutotools)
+				templateEngine.Variables["WRAPPER_SED"] = String.Empty;
+			else
+				templateEngine.Variables["WRAPPER_SED"] =
+					"\n$2: $2.in $(top_srcdir)/config.make\n" +
+					"\tsed -e \"s,@prefix@,$(prefix),\" -e \"s,@PACKAGE@,$(PACKAGE),\" < $2.in > $2";
 
 			string fileName = Path.Combine (solution_dir, "Makefile.include");
 

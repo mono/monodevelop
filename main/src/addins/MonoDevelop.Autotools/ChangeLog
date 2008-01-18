@@ -1,3 +1,18 @@
+2008-01-19  Ankit Jain  <jankit@novell.com>
+
+	* SimpleProjectMakefileHandler.cs: Ensure that custom-hooks.make is
+	included after the first target (all:). If the file exists then add it
+	to EXTRA_DIST.
+	Track change in emit-deploy-wrapper macro.
+	* SolutionDeployer.cs: Emit sed script to generate wrapper only for
+	simple makefiles.
+	* SolutionMakefileHandler.cs: Use AppendToVariable for EXTRA_DIST, to
+	allow a project to add to EXTRA_DIST.
+	* templates/Makefile.include: sed is not required for autotools based
+	makefiles.
+	* templates/Makefile.auto.project.template: Add INCLUDE_CUSTOM_HOOKS
+	after 'all:' target.
+
 2008-01-16  Ankit Jain  <jankit@novell.com>
 
 	* SolutionDeployer.cs: Sort the list of common and required packages
