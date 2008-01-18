@@ -1,5 +1,12 @@
 2008-01-18  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects.Parser/ClassEntry.cs: Removed unused property.
+	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Bump database
+	  format version, since existing pidb files may contain invalid data due
+	  to a recently fixed bug.
+
+2008-01-18  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs,
 	  MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: The assembly file
 	  location may change. Update it when loading the db.

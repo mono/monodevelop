@@ -50,7 +50,7 @@ namespace MonoDevelop.Projects.Parser
 	{
 		static protected readonly int MAX_ACTIVE_COUNT = 100;
 		static protected readonly int MIN_ACTIVE_COUNT = 10;
-		static protected readonly int FORMAT_VERSION = 26;
+		static protected readonly int FORMAT_VERSION = 27;
 		
 		NamespaceEntry rootNamespace;
 		protected ArrayList references;
@@ -889,7 +889,7 @@ namespace MonoDevelop.Projects.Parser
 							res.Modified.Add (ce.Class);
 						} else {
 							// It's a new class
-							ce = new ClassEntry (c, fe, newNss[n]);
+							ce = new ClassEntry (c, newNss[n]);
 							newNss[n].Add (c.Name, ce);
 							res.Added.Add (c);
 							ResolveSubclasses (ce);
