@@ -80,8 +80,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.label7.Yalign = 0F;
             this.label7.LabelProp = "label7";
             this.mainBook.Add(this.label7);
-            Gtk.Notebook.NotebookChild w2 = ((Gtk.Notebook.NotebookChild)(this.mainBook[this.label7]));
-            w2.TabExpand = false;
             // Notebook tab
             this.label6 = new Gtk.Label();
             this.label6.Name = "label6";

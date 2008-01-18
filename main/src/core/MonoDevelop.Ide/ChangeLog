@@ -1,5 +1,15 @@
 2008-01-18  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.mdp, gtk-gui/gui.stetic,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ReplaceDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs: Updated.
+
+2008-01-18  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs: Queue.Peek returns the head
 	  of the queue, not the tail. Use a field to store the last text write
 	  request. Made buffer bigger and reduced timeout for updating the

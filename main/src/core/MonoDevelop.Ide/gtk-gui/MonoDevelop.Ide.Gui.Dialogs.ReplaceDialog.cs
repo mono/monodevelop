@@ -302,7 +302,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
                 this.Child.ShowAll();
             }
             this.DefaultWidth = 642;
-            this.DefaultHeight = 309;
+            this.DefaultHeight = 313;
             this.findButton.HasDefault = true;
             this.Show();
         }
