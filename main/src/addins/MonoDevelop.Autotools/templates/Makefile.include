@@ -40,16 +40,13 @@ $($1): $($1_SOURCE)
 	cp '$$<' '$$@'
 endef
 
-# $(call emit-deploy-wrapper,wrapper-variable-name,wrapper-sourcefile)
+# $(call emit-deploy-wrapper,wrapper-variable-name,wrapper-sourcefile,x)
 # assumes that for a wrapper foo.pc its source template is foo.pc.in
+# if $3 is non-empty then wrapper is marked exec
 define emit-deploy-wrapper
-$($1): $2 $(top_srcdir)/config.make
-	mkdir -p $$(BUILD_DIR)
+$($1): $2 %%CONFIG_MAKE_DEP%%
+	mkdir -p $$(dir $($1))
 	cp '$$<' '$$@'
-	chmod +x '$$@'
-
-$2: $2.in $(top_srcdir)/config.make
-	sed -e "s,@prefix@,$(prefix)," -e "s,@PACKAGE@,$(PACKAGE)," < $2.in > $2
-
+	test -z '$3' || chmod +x '$$@'
+%%WRAPPER_SED%%
 endef
-
