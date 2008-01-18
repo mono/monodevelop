@@ -1,3 +1,12 @@
+2008-01-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs: Queue.Peek returns the head
+	  of the queue, not the tail. Use a field to store the last text write
+	  request. Made buffer bigger and reduced timeout for updating the
+	  textview.
+	* MonoDevelop.Ide.Gui/OutputProgressMonitor.cs: Make it subclass
+	  NullProgessMonitor since this class is now gui thread safe.
+
 2008-01-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui/OutputProgressMonitor.cs: Avoid going through the gui
