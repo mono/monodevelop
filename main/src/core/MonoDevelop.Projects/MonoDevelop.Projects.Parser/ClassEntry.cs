@@ -42,7 +42,6 @@ namespace MonoDevelop.Projects.Parser
 		
 		NamespaceEntry namespaceRef;
 		string name;
-		FileEntry fileEntry;
 		
 		[NonSerialized]
 		int lastGetTime;
@@ -55,10 +54,9 @@ namespace MonoDevelop.Projects.Parser
 		ClassType ctype;
 		ModifierEnum modifiers;
 		
-		public ClassEntry (IClass cls, FileEntry fileEntry, NamespaceEntry namespaceRef)
+		public ClassEntry (IClass cls, NamespaceEntry namespaceRef)
 		{
 			this.cls = cls;
-			this.fileEntry = fileEntry;
 			this.namespaceRef = namespaceRef;
 			position = -1;
 			UpdateContent (cls);
@@ -148,11 +146,6 @@ namespace MonoDevelop.Projects.Parser
 		public NamespaceEntry NamespaceRef
 		{
 			get { return namespaceRef; }
-		}
-		
-		public FileEntry FileEntry
-		{
-			get { return fileEntry; }
 		}
 		
 		public int LastGetTime
