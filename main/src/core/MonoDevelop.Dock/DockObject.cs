@@ -32,6 +32,7 @@
 using System;
 using System.Xml;
 using Gtk;
+using System.Globalization;
 
 namespace MonoDevelop.Components.Docking
 {
@@ -229,18 +230,18 @@ namespace MonoDevelop.Components.Docking
 		
 		internal virtual void Write (XmlWriter writer)
 		{
-			writer.WriteAttributeString ("size", size.ToString ());
-			writer.WriteAttributeString ("prefSize", prefSize.ToString ());
-			writer.WriteAttributeString ("defaultHorSize", defaultHorSize.ToString ());
-			writer.WriteAttributeString ("defaultVerSize", defaultVerSize.ToString ());
+			writer.WriteAttributeString ("size", size.ToString (CultureInfo.InvariantCulture));
+			writer.WriteAttributeString ("prefSize", prefSize.ToString (CultureInfo.InvariantCulture));
+			writer.WriteAttributeString ("defaultHorSize", defaultHorSize.ToString (CultureInfo.InvariantCulture));
+			writer.WriteAttributeString ("defaultVerSize", defaultVerSize.ToString (CultureInfo.InvariantCulture));
 		}
 		
 		internal virtual void Read (XmlReader reader)
 		{
-			size = double.Parse (reader.GetAttribute ("size"));
-			prefSize = double.Parse (reader.GetAttribute ("prefSize"));
-			defaultHorSize = double.Parse (reader.GetAttribute ("defaultHorSize"));
-			defaultVerSize = double.Parse (reader.GetAttribute ("defaultVerSize"));
+			size = double.Parse (reader.GetAttribute ("size"), CultureInfo.InvariantCulture);
+			prefSize = double.Parse (reader.GetAttribute ("prefSize"), CultureInfo.InvariantCulture);
+			defaultHorSize = double.Parse (reader.GetAttribute ("defaultHorSize"), CultureInfo.InvariantCulture);
+			defaultVerSize = double.Parse (reader.GetAttribute ("defaultVerSize"), CultureInfo.InvariantCulture);
 		}
 		
 		public virtual void CopyFrom (DockObject ob)
