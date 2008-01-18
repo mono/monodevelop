@@ -352,6 +352,12 @@ namespace MonoDevelop.Projects.Parser
 		{
 			return files [name] as FileEntry;
 		}
+		
+		protected IEnumerable<FileEntry> GetAllFiles ()
+		{
+			foreach (FileEntry fe in files.Values)
+				yield return fe;
+		}
 
 		internal IEnumerable<ClassEntry> GetAllClasses ()
 		{
