@@ -118,8 +118,8 @@ namespace MonoDevelop.Prj2Make
 						continue;
 
 					if (node.Attributes ["Include"] == null) {
-						Console.WriteLine ("Warning: Expected 'Include' attribute not found for ItemGroup '{0}'",
-							node.LocalName);
+						LoggingService.LogWarning (GettextCatalog.GetString ("Expected 'Include' attribute not found for ItemGroup '{0}'",
+							node.LocalName));
 						continue;
 					}
 
@@ -176,7 +176,7 @@ namespace MonoDevelop.Prj2Make
 					hintPath = Utils.Unescape (hintPath);
 					path = Utils.MapAndResolvePath (basePath, hintPath);
 					if (path == null) {
-						Console.WriteLine (GettextCatalog.GetString (
+						LoggingService.LogWarning (GettextCatalog.GetString (
 							"HintPath ({0}) for Reference '{1}' is invalid. Ignoring.",
 							hintPath, include));
 						monitor.ReportWarning (GettextCatalog.GetString (
@@ -203,7 +203,7 @@ namespace MonoDevelop.Prj2Make
 
 				if (String.IsNullOrEmpty (projName)) {
 					//FIXME: Add support to load the project file from here
-					Console.WriteLine ("Expected element <Name> for ProjectReference '{0}'", include);
+					LoggingService.LogError (GettextCatalog.GetString ("Expected element <Name> for ProjectReference '{0}'", include));
 					return;
 				}
 
@@ -256,7 +256,8 @@ namespace MonoDevelop.Prj2Make
 				data.ProjectFileElements [pf] = (XmlElement) node;
 				break;
 			default:
-				LoggingService.LogWarning  ("Unrecognised ItemGroup element '{0}', Include = '{1}' in project '{2}'. Ignoring.", node.LocalName, include, project.Name);
+				LoggingService.LogWarning (GettextCatalog.GetString (
+					"Unrecognised ItemGroup element '{0}', Include = '{1}' in project '{2}'. Ignoring.", node.LocalName, include, project.Name));
 				break;
 			}
 
@@ -271,7 +272,8 @@ namespace MonoDevelop.Prj2Make
 				if (String.Compare (node.LocalName, "Content", true) != 0 &&
 					String.Compare (node.LocalName, "None", true) != 0 &&
 					Utils.ReadAsString (node, "CopyToOutputDirectory", ref str_tmp, false))
-					Console.WriteLine ("Warning: CopyToOutputDirectory not supported for BuildAction '{0}', Include = '{1}'", node.LocalName, include);
+					LoggingService.LogDebug (GettextCatalog.GetString (
+							"CopyToOutputDirectory not supported for BuildAction '{0}', Include = '{1}'", node.LocalName, include));
 			}
 		}
 
@@ -303,7 +305,7 @@ namespace MonoDevelop.Prj2Make
 
 			string name = MSBuildFileFormat.BuildActionToString (projectFile.BuildAction);
 			if (name == null) {
-				LoggingService.LogWarning ("BuildAction.{0} not supported!", projectFile.BuildAction);
+				LoggingService.LogWarning (GettextCatalog.GetString ("BuildAction.{0} not supported!", projectFile.BuildAction));
 				return null;
 			}
 

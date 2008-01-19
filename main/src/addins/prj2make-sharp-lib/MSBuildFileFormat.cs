@@ -94,10 +94,10 @@ namespace MonoDevelop.Prj2Make
 					return true;
 
 			} catch (FileNotFoundException) {
-				Console.WriteLine (GettextCatalog.GetString ("File not found {0} : ", file));
+				LoggingService.LogError (GettextCatalog.GetString ("File not found {0} : ", file));
 				return false;
 			} catch (XmlException xe) {
-				Console.WriteLine (GettextCatalog.GetString ("Error reading file {0} : ", xe.ToString ()));
+				LoggingService.LogError (GettextCatalog.GetString ("Error reading file {0} : ", xe.ToString ()));
 				return false;
 			} finally {
 				if (xr != null)
@@ -162,7 +162,7 @@ namespace MonoDevelop.Prj2Make
 				}
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Could not save project: {0}", file), ex);
-				Console.WriteLine ("Could not save project: {0}, {1}", file, ex);
+				LoggingService.LogError (GettextCatalog.GetString ("Could not save project: {0}, {1}", file), ex);
 
 				if (!String.IsNullOrEmpty (tmpfilename))
 					File.Delete (tmpfilename);

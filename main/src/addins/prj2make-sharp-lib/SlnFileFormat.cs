@@ -113,7 +113,7 @@ namespace MonoDevelop.Prj2Make
 				}
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Could not save solution: {0}", file), ex);
-				Console.WriteLine ("Could not save solution: {0}, {1}", file, ex);
+				LoggingService.LogError (GettextCatalog.GetString ("Could not save solution: {0}", file), ex);
 
 				if (!String.IsNullOrEmpty (tmpfilename))
 					File.Delete (tmpfilename);
@@ -306,7 +306,7 @@ namespace MonoDevelop.Prj2Make
 							//	1. Invalid setting
 							//	2. New imported project, which doesn't yet have
 							//	   a config named rootConfigName
-							Console.WriteLine ("Known Problem: Invalid setting. Ignoring.");
+							LoggingService.LogDebug ("Known Problem: Invalid setting. Ignoring.");
 							continue;
 						}
 
@@ -678,7 +678,7 @@ namespace MonoDevelop.Prj2Make
 
 				string [] parts = s.Split (new char [] {'='}, 2);
 				if (parts.Length < 2) {
-					Console.WriteLine ("{0} ({1}) : Warning: Invalid format. Ignoring", sln.FileName, lineNum + 1);
+					LoggingService.LogDebug ("{0} ({1}) : Invalid format. Ignoring", sln.FileName, lineNum + 1);
 					continue;
 				}
 
@@ -693,14 +693,14 @@ namespace MonoDevelop.Prj2Make
 					action = "Build.0";
 					left = left.Substring (0, left.Length - 8);
 				} else { 
-					Console.WriteLine ("{0} ({1}) : Warning: Unknown action. Only ActiveCfg & Build.0 supported.",
-						sln.FileName, lineNum + 1);
+					LoggingService.LogWarning (GettextCatalog.GetString ("{0} ({1}) : Unknown action. Only ActiveCfg & Build.0 supported.",
+						sln.FileName, lineNum + 1));
 					continue;
 				}
 
 				string [] t = left.Split (new char [] {'.'}, 2);
 				if (t.Length < 2) {
-					Console.WriteLine ("{0} ({1}) : Warning: Invalid format of the left side. Ignoring",
+					LoggingService.LogDebug ("{0} ({1}) : Invalid format of the left side. Ignoring",
 						sln.FileName, lineNum + 1);
 					continue;
 				}
@@ -713,8 +713,8 @@ namespace MonoDevelop.Prj2Make
 						// already warned
 						continue;
 
-					Console.WriteLine ("{0} ({1}) : Warning: Project with guid = '{2}' not found or not loaded. Ignoring", 
-						sln.FileName, lineNum + 1, projGuid);
+					LoggingService.LogWarning (GettextCatalog.GetString ("{0} ({1}) : Project with guid = '{2}' not found or not loaded. Ignoring", 
+						sln.FileName, lineNum + 1, projGuid));
 					ignoredProjects [projGuid] = projGuid;
 					continue;
 				}
@@ -817,7 +817,7 @@ namespace MonoDevelop.Prj2Make
 
 				if (pair.Key.IndexOf ('|') < 0) {
 					//Config must of the form ConfigName|Platform
-					Console.WriteLine ("{0} ({1}) : Invalid config name '{2}'", combine.FileName, lineNum + 1, pair.Key);
+					LoggingService.LogError (GettextCatalog.GetString ("{0} ({1}) : Invalid config name '{2}'", combine.FileName, lineNum + 1, pair.Key));
 					continue;
 				}
 				
@@ -843,13 +843,13 @@ namespace MonoDevelop.Prj2Make
 
 				if (!entries.ContainsKey (pair.Value)) {
 					//Container not found
-					LoggingService.LogDebug ("Project with guid '{0}' not found.", pair.Value);
+					LoggingService.LogWarning (GettextCatalog.GetString ("Project with guid '{0}' not found.", pair.Value));
 					continue;
 				}
 
 				if (!entries.ContainsKey (pair.Key)) {
 					//Containee not found
-					LoggingService.LogDebug ("Project with guid '{0}' not found.", pair.Key);
+					LoggingService.LogWarning (GettextCatalog.GetString ("Project with guid '{0}' not found.", pair.Key));
 					continue;
 				}
 

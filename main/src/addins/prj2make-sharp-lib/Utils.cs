@@ -49,7 +49,7 @@ namespace MonoDevelop.Prj2Make
 			if (path != null)
 				return path;
 
-			Console.WriteLine (GettextCatalog.GetString ("File name '{0}' is invalid. Ignoring.", relPath));
+			LoggingService.LogWarning (GettextCatalog.GetString ("File name '{0}' is invalid. Ignoring.", relPath));
 			monitor.ReportWarning (GettextCatalog.GetString ("File name '{0}' is invalid. Ignoring.", relPath));
 			return null;
 		}
