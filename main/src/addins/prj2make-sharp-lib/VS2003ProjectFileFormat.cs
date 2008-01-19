@@ -124,7 +124,7 @@ namespace MonoDevelop.Prj2Make
 					project = slnmaker.CreatePrjxFromCsproj (fileName, m, save);
 				}
 			} catch (Exception e) {
-				Console.WriteLine ("exception while converting : " + e.ToString ());
+				LoggingService.LogError ("exception while converting : " + e.ToString ());
 				throw;
 			}
 

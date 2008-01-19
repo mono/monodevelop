@@ -85,7 +85,7 @@ namespace MonoDevelop.Prj2Make
 				return null;
 
 			using (StringWriter sw = new StringWriter ()) {
-				Console.WriteLine ("Generating partial classes for\n{0}$ {1} {2}", Path.GetDirectoryName (fname), "xamlg", fname);
+				LoggingService.LogDebug ("Generating partial classes for\n{0}$ {1} {2}", Path.GetDirectoryName (fname), "xamlg", fname);
 				monitor.Log.WriteLine (GettextCatalog.GetString (
 					"Generating partial classes for {0} with {1}", fname, "xamlg"));
 				ProcessWrapper pw = null;
@@ -99,7 +99,7 @@ namespace MonoDevelop.Prj2Make
 
 					pw = Runtime.ProcessService.StartProcess (info, sw, sw, null);
 				} catch (System.ComponentModel.Win32Exception ex) {
-					Console.WriteLine (GettextCatalog.GetString (
+					LoggingService.LogError (GettextCatalog.GetString (
 						"Error while trying to invoke '{0}' to generate partial classes for '{1}' :\n {2}", "xamlg", fname, ex.ToString ()));
 					monitor.Log.WriteLine (GettextCatalog.GetString (
 						"Error while trying to invoke '{0}' to generate partial classes for '{1}' :\n {2}", "xamlg", fname, ex.Message));
@@ -113,7 +113,7 @@ namespace MonoDevelop.Prj2Make
 				if (pw.ExitCode != 0) {
 					//FIXME: Stop build on error?
 					string output = sw.ToString ();
-					Console.WriteLine (GettextCatalog.GetString (
+					LoggingService.LogError (GettextCatalog.GetString (
 						"Unable to generate partial classes ({0}) for {1}. \nReason: \n{2}\n",
 						"xamlg", fname, output));
 					monitor.Log.WriteLine (GettextCatalog.GetString (
@@ -162,7 +162,7 @@ namespace MonoDevelop.Prj2Make
 			} else if (project.LanguageName == "VBNet") {
 				rb = new VBNetResourceIdBuilder ();
 			} else {
-				Console.WriteLine ("Language '{0}' not supported for building resource ids.", project.LanguageName);
+				LoggingService.LogError (GettextCatalog.GetString ("Language '{0}' not supported for building resource ids.", project.LanguageName));
 				return null;
 			}
 
