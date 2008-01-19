@@ -115,10 +115,10 @@ namespace AspNetAddIn
 			if (project.GetType () != typeof (AspNetAppProject))
 				return null;
 
-			if (!MSBuildFileFormat.ProjectTypeGuids.ContainsKey (project.LanguageName))
+			if (!MSBuildFileFormat.LanguageTypeGuids.ContainsKey (project.LanguageName))
 				return null;
 
-			return String.Format ("{0};{1}", myguid, MSBuildFileFormat.ProjectTypeGuids [project.LanguageName]);
+			return String.Format ("{0};{1}", myguid, MSBuildFileFormat.LanguageTypeGuids [project.LanguageName]);
 		}
 	}
 

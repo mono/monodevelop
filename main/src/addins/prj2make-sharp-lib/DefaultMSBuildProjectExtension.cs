@@ -48,6 +48,14 @@ namespace MonoDevelop.Prj2Make
 			get { return "DefaultMSBuildProjectExtension"; }
 		}
 
+		public override bool IsLanguage {
+			get { return false; }
+		}
+
+		public override string LanguageId {
+			get { return null; }
+		}
+
 		public override bool Supports (string type_guid, string filename, string type_guids)
 		{
 			//Should've been handled by now!

@@ -188,7 +188,7 @@ namespace MonoDevelop.Prj2Make
 				string type_guid;
 				string type_guids = String.Empty;
 				string longest_guid = String.Empty;
-				foreach (MSBuildProjectExtension extn in GuidToExtensions) {
+				foreach (MSBuildProjectExtension extn in Extensions) {
 					string g = extn.GetGuidChain (project);
 					if (g == null)
 						continue;
@@ -530,16 +530,16 @@ namespace MonoDevelop.Prj2Make
 		MSBuildProjectExtension GetExtensionChainFromTypeGuid (ref string type_guids, out string type_guid, string lang, string fname)
 		{
 			if (String.IsNullOrEmpty (type_guids)) {
-				if (!MSBuildFileFormat.ProjectTypeGuids.ContainsKey (lang))
+				if (!MSBuildFileFormat.LanguageTypeGuids.ContainsKey (lang))
 					throw new Exception (String.Format ("Unknown project type : {0}", fname));
-				type_guids = type_guid = MSBuildFileFormat.ProjectTypeGuids [lang];
+				type_guids = type_guid = MSBuildFileFormat.LanguageTypeGuids [lang];
 			}
 			type_guid = type_guids.Split (';') [0];
 
 			string [] type_guid_list = type_guids.Split (new char [] {';'}, StringSplitOptions.RemoveEmptyEntries);
 			MSBuildProjectExtension [] extensions = new MSBuildProjectExtension [type_guid_list.Length + 1];
 			for (int i = 0; i < type_guid_list.Length; i ++) {
-				foreach (MSBuildProjectExtension extn in GuidToExtensions) {
+				foreach (MSBuildProjectExtension extn in Extensions) {
 					if (extn.Supports (type_guid_list [i], fname, type_guids)) {
 						extensions [i] = extn;
 						break;
@@ -835,23 +835,37 @@ namespace MonoDevelop.Prj2Make
 			return flavor_properties_element;
 		}
 
-		static List<MSBuildProjectExtension> GuidToExtensions {
+		internal static List<MSBuildProjectExtension> Extensions {
 			get {
-				if (extensions == null) {
-					extensions = new List<MSBuildProjectExtension> ();
-					OnProjectExtensionsChanged (null, null);
-					AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Prj2Make/MSBuildProjectExtension", OnProjectExtensionsChanged);
-				}
+				if (extensions == null)
+					InitExtensions ();
 				return extensions;
 			}
+		}
+
+		static void InitExtensions ()
+		{
+			if (extensions != null)
+				return;
+
+			extensions = new List<MSBuildProjectExtension> ();
+			OnProjectExtensionsChanged (null, null);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Prj2Make/MSBuildProjectExtension", OnProjectExtensionsChanged);
 		}
 
 		static void OnProjectExtensionsChanged (object s, ExtensionNodeEventArgs args)
 		{
 			extensions.Clear ();
+			if (languageTypeGuids == null)
+				languageTypeGuids = new Dictionary<string,string> ();
+			else
+				LanguageTypeGuids.Clear ();
+
 			foreach (MSBuildProjectExtension extn in
 				AddinManager.GetExtensionObjects ("/MonoDevelop/Prj2Make/MSBuildProjectExtension", typeof (MSBuildProjectExtension))) {
 				extensions.Add (extn);
+				if (extn.IsLanguage)
+					LanguageTypeGuids [extn.LanguageId] = extn.TypeGuid;
 			}
 			extensions.Add (new DefaultMSBuildProjectExtension ());
 		}
@@ -883,21 +897,14 @@ namespace MonoDevelop.Prj2Make
 
 				return assemblyNamesTable;
 			}
-
 		}
 
-		static Dictionary<string, string> projectTypeGuids = null;
-		public static Dictionary<string, string> ProjectTypeGuids {
+		static Dictionary<string, string> languageTypeGuids = null;
+		public static Dictionary<string, string> LanguageTypeGuids {
 			get {
-				if (projectTypeGuids == null) {
-					projectTypeGuids = new Dictionary<string, string> ();
-					// values must be in UpperCase
-					projectTypeGuids ["C#"] = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}";
-					projectTypeGuids ["VBNet"] = "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}";
-				}
-				return projectTypeGuids;
+				InitExtensions ();
+				return languageTypeGuids;
 			}
 		}
-
 	}
 }
