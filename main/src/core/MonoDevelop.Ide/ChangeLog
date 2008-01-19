@@ -1,3 +1,8 @@
+2008-01-20  Ankit Jain  <jankit@novell.com>
+
+	* templates/EmptyXMLFile.xft.xml:
+	* templates/EmptyTextFile.xft.xml: Set BuildAction to Nothing.
+
 2008-01-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Dispose the command manager when
