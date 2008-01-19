@@ -1,3 +1,15 @@
+2008-01-19  Ankit Jain  <jankit@novell.com>
+
+	* MSBuildProjectExtension.cs (IsLanguage): New.
+	(LanguageId): New.
+	* DefaultMSBuildProjectExtension.cs: Override the language properties.
+	* CSharpMSBuildProjectExtension.cs: Likewise.
+	* VBNetMSBuildProjectExtension.cs: Likewise.
+	* MSBuildFileFormat.cs (ProjectTypeGuids): Rename to ..
+	(LanguageTypeGuids): .. this. Fill this from the extensions.
+	* SlnFileFormat.cs: Remove hardcoded .csproj/.vbproj.
+	* Utils.cs (GetLanguage): Use the extensions for this.
+
 2008-01-14  Ankit Jain  <jankit@novell.com>
 
 	* VS2003SlnFileFormat.cs: Handle being called in a non-gui mode.

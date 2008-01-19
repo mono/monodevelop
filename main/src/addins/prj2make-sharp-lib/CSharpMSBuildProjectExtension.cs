@@ -50,6 +50,14 @@ namespace MonoDevelop.Prj2Make
 			get { return "C#";}
 		}
 
+		public override bool IsLanguage {
+			get { return true; }
+		}
+
+		public override string LanguageId {
+			get { return "C#"; }
+		}
+
 		public override bool Supports (string type_guid, string filename, string type_guids)
 		{
 			if (String.IsNullOrEmpty (type_guid)) {

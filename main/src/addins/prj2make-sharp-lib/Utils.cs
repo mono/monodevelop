@@ -294,11 +294,10 @@ namespace MonoDevelop.Prj2Make
 
 		public static string GetLanguage (string fileName)
 		{
-			string extn = Path.GetExtension (fileName);
-			if (String.Compare (extn, ".csproj", true) == 0)
-				return "C#";
-			if (String.Compare (extn, ".vbproj", true) == 0)
-				return "VBNet";
+			foreach (MSBuildProjectExtension extn in MSBuildFileFormat.Extensions) {
+				if (extn.IsLanguage && extn.Supports (null, fileName, null))
+					return extn.LanguageId;
+			}
 
 			return null;
 		}

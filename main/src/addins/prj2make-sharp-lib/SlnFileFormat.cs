@@ -213,7 +213,7 @@ namespace MonoDevelop.Prj2Make
 						continue;
 					}
 
-					if (!MSBuildFileFormat.ProjectTypeGuids.ContainsKey (project.LanguageName)) {
+					if (!MSBuildFileFormat.LanguageTypeGuids.ContainsKey (project.LanguageName)) {
 						// FIXME: Should not happen, temp
 						monitor.ReportWarning (GettextCatalog.GetString ("Saving for project {0} not supported. Ignoring.",
 							ce.FileName));
@@ -240,7 +240,7 @@ namespace MonoDevelop.Prj2Make
 					l = msbData.Extra;
 
 					writer.WriteLine (@"Project(""{0}"") = ""{1}"", ""{2}"", ""{3}""",
-						MSBuildFileFormat.ProjectTypeGuids [project.LanguageName],
+						MSBuildFileFormat.LanguageTypeGuids [project.LanguageName],
 						project.Name, 
 						FileService.NormalizeRelativePath (FileService.AbsoluteToRelativePath (
 							baseDirectory, project.FileName)).Replace ('/', '\\'),
@@ -487,8 +487,8 @@ namespace MonoDevelop.Prj2Make
 					continue;
 				}
 
-				if (!MSBuildFileFormat.ProjectTypeGuids.ContainsValue (projTypeGuid)) {
-					LoggingService.LogDebug (GettextCatalog.GetString (
+				if (!MSBuildFileFormat.LanguageTypeGuids.ContainsValue (projTypeGuid)) {
+					LoggingService.LogWarning (GettextCatalog.GetString (
 						"Unknown project type guid '{0}' on line #{1}. Ignoring.",
 						projTypeGuid,
 						sec.Start + 1));
@@ -498,50 +498,49 @@ namespace MonoDevelop.Prj2Make
 					continue;
 				}
 
-				if (!projectPath.StartsWith("http://") &&
-					(projectPath.EndsWith (".csproj") || projectPath.EndsWith (".vbproj")))
-				{
-					DotNetProject project = null;
-					string path = SlnMaker.MapPath (Path.GetDirectoryName (fileName), projectPath);
-					if (String.IsNullOrEmpty (path)) {
-						monitor.ReportWarning (GettextCatalog.GetString (
-							"Invalid project path found in {0} : {1}", fileName, projectPath));
-						Console.WriteLine (GettextCatalog.GetString (
-							"Invalid project path found in {0} : {1}", fileName, projectPath));
+				if (projectPath.StartsWith("http://")) {
+					monitor.ReportWarning (GettextCatalog.GetString (
+						"{0}({1}): Projects with non-local source (http://...) not supported. '{2}'.",
+						fileName, sec.Start + 1, projectPath));
+					data.UnknownProjects.AddRange (lines.GetRange (sec.Start, sec.Count));
+					continue;
+				}
 
+				DotNetProject project = null;
+				string path = SlnMaker.MapPath (Path.GetDirectoryName (fileName), projectPath);
+				if (String.IsNullOrEmpty (path)) {
+					monitor.ReportWarning (GettextCatalog.GetString (
+						"Invalid project path found in {0} : {1}", fileName, projectPath));
+					LoggingService.LogWarning (GettextCatalog.GetString (
+						"Invalid project path found in {0} : {1}", fileName, projectPath));
+
+					continue;
+				}
+
+				projectPath = Path.GetFullPath (path);
+				try {
+					project = Services.ProjectService.ReadCombineEntry (projectPath, monitor) as DotNetProject;
+					if (project == null) {
+						LoggingService.LogError ("Internal Error: Didn't get the expected DotNetProject for {0} project.",
+							projectPath);
 						continue;
 					}
 
-					projectPath = Path.GetFullPath (path);
-					try {
-						project = Services.ProjectService.ReadCombineEntry (projectPath, monitor) as DotNetProject;
-						if (project == null) {
-							Console.WriteLine ("Internal Error: Didn't get the expected DotNetProject for {0} project.",
-								projectPath);
-							continue;
-						}
+					MSBuildData msdata = Utils.GetMSBuildData (project);
+					entries [projectGuid] = project;
+					data.ProjectsByGuid [msdata.Guid] = project;
 
-						MSBuildData msdata = Utils.GetMSBuildData (project);
-						entries [projectGuid] = project;
-						data.ProjectsByGuid [msdata.Guid] = project;
+					msdata.Extra = lines.GetRange (sec.Start + 1, sec.Count - 2);
+				} catch (Exception e) {
+					LoggingService.LogError (GettextCatalog.GetString (
+								"Error while trying to load the project {0}. Exception : {1}",
+								projectPath, e.ToString ()));
+					monitor.ReportWarning (GettextCatalog.GetString (
+						"Error while trying to load the project {0}. Exception : {1}", projectPath, e.Message));
 
-						msdata.Extra = lines.GetRange (sec.Start + 1, sec.Count - 2);
-					} catch (Exception e) {
-						Console.WriteLine ("Error while trying to load the project {0}", projectPath);
-						Console.WriteLine (e);
-						monitor.ReportWarning (GettextCatalog.GetString (
-							"Error while trying to load the project {0}. Exception : {1}", projectPath, e.Message));
-
-						if (project == null)
-							data.UnknownProjects.AddRange (lines.GetRange (sec.Start, sec.Count));
-					}
-					continue;
+					if (project == null)
+						data.UnknownProjects.AddRange (lines.GetRange (sec.Start, sec.Count));
 				}
-				//FIXME: Non .csproj/.vbproj projects not supported (yet)
-				monitor.ReportWarning (GettextCatalog.GetString (
-					"{0}({1}): Unsupported or unrecognized project : '{2}'. See logs.", fileName, sec.Start + 1, projectPath));
-
-				data.UnknownProjects.AddRange (lines.GetRange (sec.Start, sec.Count));
 			}
 			monitor.EndTask ();
 

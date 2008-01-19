@@ -47,6 +47,15 @@ namespace MonoDevelop.Prj2Make
 			get { return "MSBuildProjectExtension"; }
 		}
 
+		public virtual bool IsLanguage {
+			get { return false; }
+		}
+
+		// Must match the Id used by MonoDevelop for the language
+		public virtual string LanguageId {
+			get { return null; }
+		}
+
 		public virtual bool Supports (string guid, string filename, string type_guids)
 		{
 			return Next.Supports (guid, filename, type_guids);
