@@ -9,7 +9,7 @@
 	</TemplateConfiguration>
 	
 	<TemplateFiles>
-		<File DefaultExtension=".xml" DefaultName="EmptyXmlfile"/>
+		<File DefaultExtension=".xml" DefaultName="EmptyXmlfile" BuildAction="Nothing" />
 	</TemplateFiles>
 	
 	<FileOptions/>
