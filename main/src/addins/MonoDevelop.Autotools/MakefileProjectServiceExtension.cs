@@ -62,8 +62,8 @@ namespace MonoDevelop.Autotools
 				try {
 					MakefileData.ResolveProjectReferences (c, monitor);
 				} catch (Exception e) {
-					Console.WriteLine (GettextCatalog.GetString (
-						"Error resolving Makefile based project references for solution {0}", c.Name));
+					LoggingService.LogError (GettextCatalog.GetString (
+						"Error resolving Makefile based project references for solution {0}", c.Name), e);
 					monitor.ReportError (GettextCatalog.GetString (
 						"Error resolving Makefile based project references for solution {0}", c.Name), e);
 				}
@@ -112,8 +112,8 @@ namespace MonoDevelop.Autotools
 			try {
 				data.UpdateMakefile (monitor);
 			} catch (Exception e) {
-				Console.WriteLine ("Error saving to Makefile ({0}) for project {1} : {2}",
-					data.AbsoluteMakefileName, project.Name, e.ToString ());
+				LoggingService.LogError (GettextCatalog.GetString ("Error saving to Makefile ({0}) for project {1}",
+					data.AbsoluteMakefileName, project.Name, e));
 				monitor.ReportError (GettextCatalog.GetString (
 					"Error saving to Makefile ({0}) for project {1}", data.AbsoluteMakefileName, project.Name), e);
 			}

@@ -1,3 +1,7 @@
+2008-01-20  Ankit Jain  <jankit@novell.com>
+
+	* Change Console.WriteLines to LoggingService calls.
+
 2008-01-19  Ankit Jain  <jankit@novell.com>
 
 	* SimpleProjectMakefileHandler.cs: Ensure that custom-hooks.make is
