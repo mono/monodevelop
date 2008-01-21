@@ -41,4 +41,21 @@
 			supportedformats = "Text Files,Source Files"
 			class = "MonoDevelop.SourceEditor.SourceEditorDisplayBinding" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
+		<CommandItem id = "MonoDevelop.Ide.Commands.RefactoryCommands.CurrentRefactoryOperations" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.Help" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Save" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAs" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile" />
+		<SeparatorItem id = "Separator1" />
+<!--		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.CommentCode" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UncommentCode" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" />
+		<ItemSet id = "Advanced" _label = "_Advanced">
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UppercaseSelection" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection" />
+		</ItemSet> -->
+	</Extension>
 </Addin>

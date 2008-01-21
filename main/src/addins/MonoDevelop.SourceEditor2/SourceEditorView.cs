@@ -255,7 +255,7 @@ namespace MonoDevelop.SourceEditor
 			
 		public string SelectedText { 
 			get {
-				return this.widget.TextEditor.TextEditorData.IsSomethingSelected ? this.widget.TextEditor.Document.Buffer.GetTextAt (this.widget.TextEditor.TextEditorData.SelectionRange) : null;
+				return this.widget.TextEditor.TextEditorData.IsSomethingSelected ? this.widget.TextEditor.Document.Buffer.GetTextAt (this.widget.TextEditor.TextEditorData.SelectionRange) : "";
 			}
 			set {
 				this.widget.TextEditor.TextEditorData.DeleteSelectedText ();

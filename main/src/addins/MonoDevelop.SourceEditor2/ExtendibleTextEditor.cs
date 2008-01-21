@@ -28,14 +28,18 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
+using Gtk;
+
 using Mono.TextEditor;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class ExtendibleTextEditor : TextEditor
+	public class ExtendibleTextEditor : Mono.TextEditor.TextEditor
 	{
 		ITextEditorExtension extension = null;
 		LanguageItemWindow languageItemWindow;
@@ -69,6 +73,17 @@ namespace MonoDevelop.SourceEditor
 					extension.TextChanged (args.Offset, args.Offset + Math.Max (args.Count, args.Value != null ? args.Value.Length : 0));
 			};
 //			keyBindings.Remove (GetKeyCode (Gdk.Key.Tab));
+			this.PopupMenu += delegate {
+				this.ShowPopup ();
+			};
+			
+		}
+		protected override bool OnButtonPressEvent (Gdk.EventButton e)
+		{
+			if (e.Button == 3) {
+				this.ShowPopup ();
+			}
+			return base.OnButtonPressEvent (e);
 		}
 		
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
@@ -228,5 +243,25 @@ namespace MonoDevelop.SourceEditor
 				languageItemWindow = null;
 			}
 		}
+
+		void ShowPopup ()
+		{
+			HideLanguageItemWindow ();
+			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/SourceEditor2/ContextMenu/Editor");
+			IdeApp.CommandService.ShowContextMenu (cset);
+		}
+		
+		
+//		protected override void OnPopulatePopup (Menu menu)
+//		{
+//			
+//			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet ("");
+//			if (cset.Count > 0) {
+//				cset.AddItem (Command.Separator);
+//				IdeApp.CommandService.InsertOptions (menu, cset, 0);
+//			}
+//			base.OnPopulatePopup (menu);
+//		}
+//		
 	}
 }

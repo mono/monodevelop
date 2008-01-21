@@ -1,3 +1,9 @@
+2008-01-21  Mike Krüger <mkrueger@novell.com> 
+
+	* ExtendibleTextEditor.cs, SourceEditorView.cs,
+	  MonoDevelop.SourceEditor.addin.xml, MonoDevelop.SourceEditor.mdp: Worked
+	  on context menu.
+
 2008-01-21  Geoff Norton  <gnorton@novell.com>
 
 	* MonoDevelop.SourceEditor.mdp: Remove hard dependency on Gnome#

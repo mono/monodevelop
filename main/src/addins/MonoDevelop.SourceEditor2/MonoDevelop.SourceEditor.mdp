@@ -28,6 +28,7 @@
     <File name="gtk-gui/MonoDevelop.SourceEditor.SourceEditorWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="ExtendibleTextEditor.cs" subtype="Code" buildaction="Compile" />
     <File name="LanguageItemWindow.cs" subtype="Code" buildaction="Compile" />
+    <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="Mono.TextEditor" />
