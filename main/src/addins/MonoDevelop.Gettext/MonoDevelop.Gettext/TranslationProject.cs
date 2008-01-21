@@ -229,8 +229,6 @@ namespace MonoDevelop.Gettext
 			foreach (Project p in projects) {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Scanning project {0}...", p.Name));
 				foreach (ProjectFile file in p.ProjectFiles) {
-					if (monitor.IsCancelRequested)
-						return;
 					if (!File.Exists (file.FilePath))
 						continue;
 					if (file.Subtype == Subtype.Code) {
@@ -241,6 +239,8 @@ namespace MonoDevelop.Gettext
 						}
 					}
 				}
+				if (monitor.IsCancelRequested)
+					return;
 				monitor.Step (1);
 			}
 			catalog.Save (Path.Combine (this.BaseDirectory, "messages.po"));

@@ -1,3 +1,7 @@
+2008-01-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Gettext/TranslationProject.cs: Performance improvement.
+
 2008-01-16  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs: Make
