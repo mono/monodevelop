@@ -60,6 +60,7 @@
     <File name="Mono.TextEditor.Highlighting/DefaultStyle.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/TextMarker.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/DocumentUpdateRequest.cs" subtype="Code" buildaction="Compile" />
+    <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />

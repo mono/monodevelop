@@ -1,5 +1,10 @@
 2008-01-21  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor.mdp, Mono.TextEditor.mds: Added changelogs to the project
+	  files.
+
+2008-01-21  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditorData.cs, Mono.TextEditor/TextEditor.cs: Worked
 	  on selection logic.
 

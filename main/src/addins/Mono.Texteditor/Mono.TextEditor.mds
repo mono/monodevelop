@@ -18,6 +18,7 @@
     <Execute type="None" entry="StandAloneTextEditor" />
     <Execute type="None" entry="MonoDevelop.SourceEditor2" />
   </StartMode>
+  <MonoDevelop.ChangeLogAddIn.ChangeLogInfo policy="OneChangeLogInProjectRootDirectory" />
   <Entries>
     <Entry filename="Mono.TextEditor.mdp" />
     <Entry filename="../MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.mdp" />
