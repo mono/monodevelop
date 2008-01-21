@@ -153,19 +153,19 @@ namespace MonoDevelop.Autotools
 			string package_var = generateAutotools ? "@PACKAGE@" : "$(PACKAGE)";*/
 			//FIXME: Temp till we find a proper solution
 			string prefix_var = "@prefix@";
-			string package_var = "@PACKAGE@";
+	  		string package_var = "@PACKAGE@";
 
 			switch (folderId) {
 			case TargetDirectory.ProgramFilesRoot:
-				return prefix_var + "/lib";
+				return "@expanded_libdir@";
 			case TargetDirectory.ProgramFiles:
-				return prefix_var + "/lib/" + package_var;
+				return "@expanded_libdir@/" + package_var;
 			case TargetDirectory.Binaries:
-				return prefix_var + "/bin";
+				return "@expanded_bindir@";
 			case TargetDirectory.CommonApplicationDataRoot:
-				return prefix_var + "/share";
+				return "@expanded_datadir@";
 			case TargetDirectory.CommonApplicationData:
-				return prefix_var + "/share/" + package_var;
+				return "@expanded_datadir@/" + package_var;
 			case TargetDirectory.IncludeRoot:
 				return prefix_var + "/include";
 			case TargetDirectory.Include:

@@ -3,6 +3,7 @@ ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.Autotools
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Autotools.dll
 
 REFS =  \
+	$(GLIB_SHARP_LIBS) \
 	$(GNOME_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
@@ -63,6 +64,7 @@ DATA_FILES =  \
 	templates/configure.ac.template \
 	templates/configure.template \
 	templates/exe.wrapper.in.template \
+	templates/expansions.m4 \
 	templates/make-dist.targets \
 	templates/Makefile.am.project.template \
 	templates/Makefile.include \

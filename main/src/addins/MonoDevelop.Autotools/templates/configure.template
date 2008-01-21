@@ -9,7 +9,14 @@ configurations=%%CONFIGURATIONS%%
 
 usage ()
 {
-	echo "Usage : configure [--prefix=PREFIX] [--config=CONFIG]"
+	echo "Usage : configure [OPTION]... [--config=CONFIG]"
+	echo
+	echo "Options:"
+	echo "  --prefix=PREFIX         install architecture-independent files in PREFIX"
+	echo "                          [/usr/local]"
+	echo "  --bindir=DIR            user executables [PREFIX/bin]"
+	echo "  --datadir=DIR           read-only architecture-independent data [PREFIX/share]"
+	echo "  --libdir=DIR            object code libraries [PREFIX/lib]"
 	echo
 	echo "Configurations available :"
 	for c in $configurations; do
@@ -68,6 +75,27 @@ while test x$1 != x; do
 				shift
 				prefix=$1
 				;;
+		--libdir=*)
+				libdir=`echo $1 | sed 's/--libdir=//'`
+				;;
+		--libdir)
+				shift
+				libdir=$1
+				;;
+		--bindir=*)
+				bindir=`echo $1 | sed 's/--bindir=//'`
+				;;
+		--bindir)
+				shift
+				bindir=$1
+				;;
+		--datadir=*)
+				datadir=`echo $1 | sed 's/--datadir=//'`
+				;;
+		--datadir)
+				shift
+				datadir=$1
+				;;
 		--config=*)
 				conf=`echo $1 | sed 's/--config=//'`
 				validate_config "$conf"
@@ -95,7 +123,20 @@ done
 check_required_packages
 [ $? -eq 1 ] && exit 1
 
+if [ -z "$libdir" ]; then
+	libdir=$prefix/lib
+fi
+if [ -z "$bindir" ]; then
+	bindir=$prefix/bin
+fi
+if [ -z "$datadir" ]; then
+	datadir=$prefix/share
+fi
+
 echo "prefix=$prefix" > config.make
+echo "libdir=$libdir" >> config.make
+echo "bindir=$bindir" >> config.make
+echo "datadir=$datadir" >> config.make
 echo "RUNTIME=mono" >> config.make
 echo "ASSEMBLY_VERSION=$VERSION.0.0" >> config.make
 echo "VERSION=$VERSION" >> config.make
@@ -105,6 +146,15 @@ echo "CONFIG=$config" >> config.make
 echo
 echo "$PACKAGE has been configured with "
 echo "        prefix = $prefix"
+if [ "$libdir" != "$prefix/lib" ]; then
+	echo "        libdir = $libdir"
+fi
+if [ "$bindir" != "$prefix/bin" ]; then
+	echo "        bindir = $bindir"
+fi
+if [ "$datadir" != "$prefix/share" ]; then
+	echo "        datadir = $datadir"
+fi
 echo "        config = $config"
 echo
 
