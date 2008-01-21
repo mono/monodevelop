@@ -83,6 +83,7 @@ namespace MonoDevelop.VersionControl
 						if (doc != null)
 							doc.Reload ();
 						VersionControlService.NotifyFileStatusChanged (vc, s, false);
+						FileService.NotifyFileChanged (s);
 					}
 					foreach (string s in dirs)
 						VersionControlService.NotifyFileStatusChanged (vc, s, true);
