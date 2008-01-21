@@ -1,5 +1,10 @@
 2008-01-21  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs: Use the correct class to
+	  get the node_hash private field.
+
+2008-01-21  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.DesignerSupport.PropertyGrid/PropertyGrid.cs: Use a smaller
 	  toolbar.
 
