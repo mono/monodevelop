@@ -9,6 +9,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Serialization;
 using Mono.Addins;
@@ -333,8 +334,14 @@ namespace MonoDevelop.VersionControl
 		
 		internal static void NotifyFileStatusChanged (Repository repo, string localPath, bool isDirectory) 
 		{
-			if (FileStatusChanged != null)
-				FileStatusChanged (null, new FileUpdateEventArgs (repo, localPath, isDirectory));
+			if (!DispatchService.IsGuiThread)
+				Gtk.Application.Invoke (delegate {
+					NotifyFileStatusChanged (repo, localPath, isDirectory);
+				});
+			else {
+				if (FileStatusChanged != null)
+					FileStatusChanged (null, new FileUpdateEventArgs (repo, localPath, isDirectory));
+			}
 		}
 		
 		//static void OnFileChanged (object s, ProjectFileEventArgs args)

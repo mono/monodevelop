@@ -1,5 +1,10 @@
 2008-01-21  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.VersionControl/VersionControlService.cs: Make sure file status
+	  change events are always fired in the gui thread.
+
+2008-01-21  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.VersionControl/RevertCommand.cs: Notify file changes through
 	  the FileService.
 
