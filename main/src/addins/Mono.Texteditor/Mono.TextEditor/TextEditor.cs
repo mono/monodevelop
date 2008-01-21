@@ -43,7 +43,7 @@ namespace Mono.TextEditor
 	{
 		TextEditorData textEditorData = new TextEditorData ();
 		Mono.TextEditor.Highlighting.Style style = new Mono.TextEditor.Highlighting.Style ();
-		Dictionary <int, EditAction> keyBindings = new Dictionary<int,EditAction> ();
+		protected Dictionary <int, EditAction> keyBindings = new Dictionary<int,EditAction> ();
 		BookmarkMargin bookmarkMargin;
 		GutterMargin   gutterMargin;
 		FoldMarkerMargin foldMarkerMargin;
@@ -264,12 +264,12 @@ namespace Mono.TextEditor
 			foldMarkerMargin.IsVisible = TextEditorOptions.Options.ShowFoldMargin;
 		}
 		
-		static int GetKeyCode (Gdk.Key key)
+		protected static int GetKeyCode (Gdk.Key key)
 		{
 			return (int)key;
 		}
 		
-		static int GetKeyCode (Gdk.Key key, Gdk.ModifierType modifier)
+		protected static int GetKeyCode (Gdk.Key key, Gdk.ModifierType modifier)
 		{
 			int m = ((int)modifier) & ((int)Gdk.ModifierType.ControlMask | (int)Gdk.ModifierType.ShiftMask);
 			return (int)key | (int)m << 16;

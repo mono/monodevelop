@@ -1,0 +1,5 @@
+2008-01-21  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextEditorData.cs, Mono.TextEditor/TextEditor.cs: Worked
+	  on selection logic.
+

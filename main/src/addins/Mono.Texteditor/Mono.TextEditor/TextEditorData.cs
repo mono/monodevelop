@@ -88,10 +88,27 @@ namespace Mono.TextEditor
 				return new Segment (startOffset, endOffset - startOffset);
 			}
 			set {
-				LineSegment startLine = document.Splitter.GetByOffset (value.Offset);
-				LineSegment endLine   = document.Splitter.GetByOffset (value.EndOffset);
-				SelectionStart = new SelectionMarker (startLine, value.Offset - startLine.Offset);
-				SelectionEnd   = new SelectionMarker (endLine, value.EndOffset - endLine.Offset);
+				int start, end;
+				if (value.Offset < value.EndOffset) {
+					start = value.Offset;
+					end   = value.EndOffset;
+				} else {
+					start = value.EndOffset;
+					end   = value.Offset;
+				}
+				LineSegment startLine = document.Splitter.GetByOffset (start);
+				LineSegment endLine   = document.Splitter.GetByOffset (end);
+				this.Caret.Offset = end;
+				SelectionStart = new SelectionMarker (startLine, start - startLine.Offset);
+				SelectionEnd   = new SelectionMarker (endLine, end - endLine.Offset);
+			}
+		}
+		
+		public string SelectedText {
+			get {
+				if (!IsSomethingSelected)
+					return null;
+				return this.document.Buffer.GetTextAt (this.SelectionRange);
 			}
 		}
 
