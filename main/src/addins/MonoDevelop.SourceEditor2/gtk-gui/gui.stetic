@@ -4,10 +4,11 @@
     <images-root-path>..</images-root-path>
   </configuration>
   <import>
-    <widget-library name="../../Mono.TextEditor/bin/Debug/Mono.TextEditor.dll" />
-    <widget-library name="../../monodevelop/main/build/bin/MonoDevelop.Ide.dll" />
-    <widget-library name="../../monodevelop/main/build/bin/MonoDevelop.Projects.Gui.dll" />
-    <widget-library name="../bin/Debug/MonoDevelop.SourceEditor2.dll" internal="true" />
+    <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
+    <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
+    <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
+    <widget-library name="../../../../build/bin/MonoDevelop.Components.dll" />
+    <widget-library name="../../../../build/AddIns/MonoDevelop.SourceEditor2.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.SourceEditorWidget" design-size="300 300">
     <property name="MemberName" />

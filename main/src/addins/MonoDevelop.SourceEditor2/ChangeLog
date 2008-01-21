@@ -1,0 +1,5 @@
+2008-01-21  Mike Krüger <mkrueger@novell.com> 
+
+	* SourceEditorWidget.cs, ExtendibleTextEditor.cs, SourceEditorView.cs:
+	  Worked on search commands.
+

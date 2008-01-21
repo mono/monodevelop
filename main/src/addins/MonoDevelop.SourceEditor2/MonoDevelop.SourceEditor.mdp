@@ -44,6 +44,7 @@
     <ProjectReference type="Assembly" localcopy="True" refto="../../../build/bin/MonoDevelop.Ide.dll" />
     <ProjectReference type="Assembly" localcopy="True" refto="../../../build/bin/MonoDevelop.Projects.dll" />
     <ProjectReference type="Assembly" localcopy="True" refto="../../../build/bin/MonoDevelop.Projects.Gui.dll" />
+    <ProjectReference type="Assembly" localcopy="True" refto="../../../build/bin/MonoDevelop.Components.dll" />
   </References>
   <GtkDesignInfo isWidgetLibrary="True">
     <ExportedWidgets>

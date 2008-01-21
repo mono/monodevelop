@@ -33,10 +33,11 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui.Search;
 
 namespace MonoDevelop.SourceEditor
 {	
-	public class SourceEditorView : AbstractViewContent, ITextEditorExtension, IPositionable, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, ICompletionWidget
+	public class SourceEditorView : AbstractViewContent, ITextEditorExtension, IPositionable, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, ICompletionWidget, IDocumentInformation
 	{
 		SourceEditorWidget widget;
 		bool isDisposed = false;
@@ -46,6 +47,12 @@ namespace MonoDevelop.SourceEditor
 		public Mono.TextEditor.Document Document {
 			get {
 				return widget.TextEditor.Document;
+			}
+		}
+		
+		public Mono.TextEditor.TextEditorData TextEditorData {
+			get {
+				return widget.TextEditor.TextEditorData;
 			}
 		}
 		
@@ -290,6 +297,7 @@ namespace MonoDevelop.SourceEditor
 		public void Select (int startPosition, int endPosition)
 		{
 			this.widget.TextEditor.TextEditorData.SelectionRange = new Segment (startPosition, endPosition - startPosition);
+			this.widget.TextEditor.ScrollToCaret ();
 		}
 		
 		public void ShowPosition (int position)
@@ -517,7 +525,6 @@ namespace MonoDevelop.SourceEditor
 			widget.ParentWindow.GetOrigin (out tx, out ty);
 			tx += widget.TextEditor.Allocation.X;
 			ty += widget.TextEditor.Allocation.Y;
-			System.Console.WriteLine("tx:" + tx + " ty:" + ty + "p:" + p + " -- " + widget.Allocation.Top);
 			result.TriggerXCoord = tx + p.X + this.widget.TextEditor.XOffset - (int)this.widget.TextEditor.TextEditorData.HAdjustment.Value;
 			result.TriggerYCoord = ty + p.Y - (int)this.widget.TextEditor.TextEditorData.VAdjustment.Value + this.widget.TextEditor.LineHeight;
 			result.TriggerTextHeight = this.widget.TextEditor.LineHeight;
@@ -553,6 +560,116 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		public event EventHandler CompletionContextChanged;
-#endregion		
+#endregion
+		
+#region IDocumentInformation
+		string IDocumentInformation.FileName {
+			get { 
+				return this.IsUntitled ? UntitledName : ContentName; 
+			}
+		}
+		
+		public ITextIterator GetTextIterator ()
+		{
+			return new DocumentTextIterator (this, this.widget.TextEditor.TextEditorData.Caret.Offset);
+		}
+		
+		public string GetLineTextAtOffset (int offset)
+		{
+			LineSegment line = this.widget.TextEditor.Document.Splitter.GetByOffset (offset);
+			if (line == null)
+				return null;
+			return this.widget.TextEditor.Document.Buffer.GetTextAt (line);
+		}
+		
+		class DocumentTextIterator : ITextIterator
+		{
+			SourceEditorView view;
+			int initialOffset, offset;
+			
+			public DocumentTextIterator (SourceEditorView view, int offset)
+			{
+				this.view = view;
+				this.initialOffset = this.offset = offset;
+			}
+			
+			public char Current {
+				get {
+					return view.Document.Buffer.GetCharAt (offset);
+				}
+			}
+			public int Position {
+				get {
+					return offset;
+				}
+				set {
+					offset = value;
+				}
+			}
+			public int Line { 
+				get {
+					return view.Document.Splitter.GetLineNumberForOffset (offset);
+				}
+			}
+			public int Column {
+				get {
+					return offset - view.Document.Splitter.GetByOffset (offset).Offset;
+				}
+			}
+			public int DocumentOffset { 
+				get {
+					return offset;
+				}
+			}
+			
+			public char GetCharRelative (int offset)
+			{
+				return view.Document.Buffer.GetCharAt (this.offset + offset);
+			}
+			
+			public bool MoveAhead (int numChars)
+			{
+				bool result = offset + numChars < view.Document.Buffer.Length && offset + numChars >= 0;
+				offset = Math.Max (Math.Min (offset + numChars, view.Document.Buffer.Length - 1), 0);
+				return result;
+			}
+			public void MoveToEnd ()
+			{
+				offset = view.Document.Buffer.Length - 1;
+			}
+			public string ReadToEnd ()
+			{
+				return view.Document.Buffer.GetTextAt (offset, view.Document.Buffer.Length - offset);
+			}
+					
+			public void Reset()
+			{
+				offset = this.initialOffset;
+			}
+			public void Replace (int length, string pattern)
+			{
+				view.Document.Buffer.Replace (offset, length, new StringBuilder (pattern));
+			}
+			public void Close ()
+			{
+				// nothing
+			}
+		
+			public IDocumentInformation DocumentInformation { 
+				get {
+					return this.view;
+				}
+			}
+			
+			public bool SupportsSearch (SearchOptions options, bool reverse)
+			{
+				return false;
+			}
+			public bool SearchNext (string text, SearchOptions options, bool reverse)
+			{
+				return false;
+			}
+		}
+#endregion
 	}
 }

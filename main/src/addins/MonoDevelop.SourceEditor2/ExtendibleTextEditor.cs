@@ -68,6 +68,7 @@ namespace MonoDevelop.SourceEditor
 				if (extension != null)
 					extension.TextChanged (args.Offset, args.Offset + Math.Max (args.Count, args.Value != null ? args.Value.Length : 0));
 			};
+//			keyBindings.Remove (GetKeyCode (Gdk.Key.Tab));
 		}
 		
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)

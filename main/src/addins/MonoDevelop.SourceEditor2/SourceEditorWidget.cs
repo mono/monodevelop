@@ -32,6 +32,9 @@ using MonoDevelop.Projects.Parser;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Search;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -596,5 +599,62 @@ namespace MonoDevelop.SourceEditor
 			BindClassCombo();
 		}
 #endregion		
+		public void SetSearchPattern ()
+		{
+			string selectedText = this.TextEditor.TextEditorData.SelectedText;
+			
+			if (!String.IsNullOrEmpty (selectedText))
+				SearchReplaceManager.SearchOptions.SearchPattern = selectedText.Split ('\n')[0];
+		}
+		
+		[CommandHandler (SearchCommands.Find)]
+		public void Find()
+		{
+			SetSearchPattern();
+			SearchReplaceManager.ShowFindWindow ();
+		}
+		
+		[CommandHandler (SearchCommands.FindNext)]
+		public void FindNext ()
+		{
+			SearchReplaceManager.FindNext ();
+		}
+	
+		[CommandHandler (SearchCommands.FindPrevious)]
+		public void FindPrevious ()
+		{
+			SearchReplaceManager.FindPrevious ();
+		}
+	
+		[CommandHandler (SearchCommands.FindNextSelection)]
+		public void FindNextSelection ()
+		{
+			SetSearchPattern();
+			SearchReplaceManager.FindNext ();
+		}
+	
+		[CommandHandler (SearchCommands.FindPreviousSelection)]
+		public void FindPreviousSelection ()
+		{
+			SetSearchPattern();
+			SearchReplaceManager.FindPrevious ();
+		}
+	
+		[CommandHandler (SearchCommands.Replace)]
+		public void Replace ()
+		{ 
+			SetSearchPattern ();
+			SearchReplaceManager.ShowFindReplaceWindow ();
+			
+		}
+		
+//		[CommandHandler (EditorCommands.GotoLineNumber)]
+//		public void GotoLineNumber ()
+//		{
+//			if (!GotoLineNumberDialog.IsVisible)
+//				using (GotoLineNumberDialog gnd = new GotoLineNumberDialog ())
+//					gnd.Run ();
+//		}
+		
 	}
 }
