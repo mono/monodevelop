@@ -1,3 +1,12 @@
+2008-01-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Autotools.addin.xml, MonoDevelop.Autotools.mdp,
+	  SimpleProjectMakefileHandler.cs, Handler.cs, SolutionDeployer.cs,
+	  templates/expansions.m4, templates/configure.template,
+	  templates/configure.ac.template, Makefile.am: Properly implement support
+	  for libdir, bindir and datadir in both autotools and simple makefiles.
+	  Fixes bug #354128.
+
 2008-01-20  Ankit Jain  <jankit@novell.com>
 
 	* Change Console.WriteLines to LoggingService calls.

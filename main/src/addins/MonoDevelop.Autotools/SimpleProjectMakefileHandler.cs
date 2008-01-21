@@ -195,8 +195,7 @@ namespace MonoDevelop.Autotools
 
 					string programFilesDir = ctx.DeployContext.GetDirectory (TargetDirectory.ProgramFiles);
 					//FIXME:temp
-					programFilesDir = programFilesDir.Replace ("@prefix@", "$(prefix)");
-					programFilesDir = programFilesDir.Replace ("@PACKAGE@", "$(PACKAGE)");
+					programFilesDir = TranslateDir (programFilesDir);
 					installDirs.Add (programFilesDir);
 					installTarget.Append ("\tmake pre-install-local-hook prefix=$(prefix)\n");
 					installTarget.AppendFormat ("\tmkdir -p $(DESTDIR){0}\n", programFilesDir);
@@ -618,8 +617,7 @@ namespace MonoDevelop.Autotools
 			if (!generateAutotools) {
 				string installDir = Path.GetDirectoryName (ctx.DeployContext.GetResolvedPath (dfile.TargetDirectoryID, dfile.RelativeTargetPath));
 				//FIXME: temp
-				installDir = installDir.Replace ("@prefix@", "$(prefix)");
-				installDir = installDir.Replace ("@PACKAGE@", "$(PACKAGE)");
+				installDir = TranslateDir (installDir);
 
 				if (!installDirs.Contains (installDir)) {
 					installTarget.AppendFormat ("\tmkdir -p $(DESTDIR){0}\n", installDir);
@@ -631,6 +629,16 @@ namespace MonoDevelop.Autotools
 
 				uninstallTarget.AppendFormat ("\ttest -z '$({1})' || rm -f $(DESTDIR){0}/$(notdir $({1}))\n", installDir, targetDeployVar);
 			}
+		}
+		
+		string TranslateDir (string dir)
+		{
+			dir = dir.Replace ("@prefix@", "$(prefix)");
+			dir = dir.Replace ("@PACKAGE@", "$(PACKAGE)");
+			dir = dir.Replace ("@expanded_libdir@", "$(libdir)");
+			dir = dir.Replace ("@expanded_bindir@", "$(bindir)");
+			dir = dir.Replace ("@expanded_datadir@", "$(datadir)");
+			return dir;
 		}
 
 		void EmitCustomCommandTargets (CustomCommandCollection commands, Project project, StringBuilder builder, string configName, CustomCommandType[] types, IProgressMonitor monitor)

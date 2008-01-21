@@ -100,6 +100,7 @@ namespace MonoDevelop.Autotools
 					context.AddAutoconfFile (path);
 					CreateAutoGenDotSH (context, monitor);
 					CreateConfigureDotAC (combine, defaultConf, monitor, context);
+					CreateMacros ();
 				} else {
 					CreateConfigureScript (combine, defaultConf, context, monitor);
 
@@ -220,6 +221,8 @@ namespace MonoDevelop.Autotools
 			StringBuilder sb = new StringBuilder ();
 			if (!generateAutotools)
 				sb.Append ("rules.make configure Makefile.include");
+			else
+				sb.Append ("expansions.m4");
 
 			foreach ( string file in context.GetGlobalReferencedFiles() )
 				sb.Append (' ').Append (file);
@@ -411,6 +414,13 @@ namespace MonoDevelop.Autotools
 			if (PlatformID.Unix == Environment.OSVersion.Platform)
 				Syscall.chmod ( filename , FilePermissions.S_IXOTH | FilePermissions.S_IROTH | FilePermissions.S_IRWXU | FilePermissions.S_IRWXG );
 		}
+		
+		void CreateMacros ()
+		{
+			string file = Mono.Addins.AddinManager.CurrentAddin.GetFilePath ("expansions.m4");
+			string dest = Path.Combine (solution_dir, "expansions.m4");
+			File.Copy (file, dest, true);
+		}
 
 		// Given a Set<SystemPackage> returns a string of the form
 		//   pkg1;pkg1-version pkg2;pkg2-version
@@ -445,6 +455,9 @@ namespace MonoDevelop.Autotools
 				string resolved = context.DeployContext.GetDirectory (dir);
 				if (resolved == null)
 					throw new InvalidOperationException ("Unknown directory: " + e.Key);
+
+				// Don't use expanded dir vars in the makefile
+				resolved = resolved.Replace ("@expanded_", "@");
 				
 				if (i != -1)
 					resolved += ((string)e.Key).Substring (i);
@@ -464,7 +477,12 @@ namespace MonoDevelop.Autotools
 			else
 				templateEngine.Variables["WRAPPER_SED"] =
 					"\n$2: $2.in $(top_srcdir)/config.make\n" +
-					"\tsed -e \"s,@prefix@,$(prefix),\" -e \"s,@PACKAGE@,$(PACKAGE),\" < $2.in > $2";
+					"\tsed -e \"s,@prefix@,$(prefix),\"" +
+					" -e \"s,@PACKAGE@,$(PACKAGE),\"" +
+					" -e \"s,@expanded_libdir@,$(libdir),\"" +
+					" -e \"s,@expanded_bindir@,$(bindir),\"" +
+					" -e \"s,@expanded_datadir@,$(datadir),\"" +
+					" < $2.in > $2";
 
 			string fileName = Path.Combine (solution_dir, "Makefile.include");
 

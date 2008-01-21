@@ -9,11 +9,12 @@
         
 	<Runtime>
 		<Import assembly="MonoDevelop.Autotools.dll" />
-		<Import file="autogen.sh.template"/>		
-		<Import file="Makefile.am.project.template"/>		
-		<Import file="Makefile.include"/>		
-		<Import file="configure.ac.template"/>		
-		<Import file="exe.wrapper.in.template"/>		
+		<Import file="autogen.sh.template"/>
+		<Import file="Makefile.am.project.template"/>
+		<Import file="Makefile.include"/>
+		<Import file="configure.ac.template"/>
+		<Import file="exe.wrapper.in.template"/>
+		<Import file="expansions.m4"/>
 	</Runtime>
 
 	<Dependencies>
