@@ -1,3 +1,9 @@
+2008-01-21  Geoff Norton  <gnorton@novell.com>
+
+	* MonoDevelop.SourceEditor.mdp: Remove hard dependency on Gnome#
+	* SourceEditorView.cs: Get the MimeType from the PlatformService rather
+	than directly from Gnome.Vfs.
+
 2008-01-21  Mike Krüger <mkrueger@novell.com> 
 
 	* SourceEditorWidget.cs, ExtendibleTextEditor.cs, SourceEditorView.cs:

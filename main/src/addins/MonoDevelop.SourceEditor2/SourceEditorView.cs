@@ -122,7 +122,7 @@ namespace MonoDevelop.SourceEditor
 //				se.Buffer.SourceEncoding = encoding;
 //			TextFileService.FireCommitCountChanges (this);
 			ContentName = fileName;
-			Document.MimeType = Gnome.Vfs.MimeType.GetMimeTypeForUri (fileName);
+			Document.MimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
 //			InitializeFormatter ();
 			this.IsDirty = false;
 		}
@@ -152,7 +152,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			Document.Buffer.Text = File.ReadAllText (fileName);
-			Document.MimeType = Gnome.Vfs.MimeType.GetMimeTypeForUri (fileName);
+			Document.MimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
 			ContentName = fileName;
 			lastSaveTime = File.GetLastWriteTime (ContentName);
 //			InitializeFormatter ();
