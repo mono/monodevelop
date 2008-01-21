@@ -776,17 +776,17 @@ namespace MonoDevelop.SourceEditor.Gui
 			TextIter textStart;
 			TextIter textEnd;
 			GetSelectionBounds (out textStart, out textEnd);
-			if (textStart.Line == textEnd.Line)
-			{ // all the code is in one line, just uncomment is text starts with comment tag
-				textStart.LineOffset = 0;
-				textEnd = textStart;
-				textEnd.ForwardChars (commentTag.Length);
-				if (textStart.GetText (textEnd) == commentTag)
-					Delete (ref textStart, ref textEnd);
-			}
-			else
+//			if (textStart.Line == textEnd.Line)
+//			{ // all the code is in one line, just uncomment is text starts with comment tag
+//				textStart.LineOffset = 0;
+//				textEnd = textStart;
+//				textEnd.ForwardChars (commentTag.Length);
+//				if (textStart.GetText (textEnd) == commentTag)
+//					Delete (ref textStart, ref textEnd);
+//			}
+//			else
 			{ // uncomment the entire lines
-				int numberOfLines = textEnd.Line - textStart.Line + 1;
+				int numberOfLines = textStart.Line == textEnd.Line ? 1 : textEnd.Line - textStart.Line + 1;
 				TextMark mTextStart = CreateMark (null, textStart, true);
 				TextMark mTextTmp = mTextStart;
 				
