@@ -1,0 +1,10 @@
+<objects>
+  <object type="MonoDevelop.SourceEditor.SourceEditorWidget" allow-children="false" base-type="Gtk.Bin" palette-category="MonoDevelop.SourceEditor2">
+    <itemgroups>
+      <itemgroup label="SourceEditorWidget Properties">
+        <property name="IsClassBrowserVisible" />
+      </itemgroup>
+    </itemgroups>
+    <signals />
+  </object>
+</objects>

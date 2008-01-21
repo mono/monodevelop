@@ -1,0 +1,27 @@
+<Project name="Mono.TextEditor.Tests" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="DotNetProjectConfiguration">
+      <Output directory="bin/Debug" assembly="Mono.TextEditor.Tests" />
+      <Build debugmode="True" target="Library" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+    <Configuration name="Release" ctype="DotNetProjectConfiguration">
+      <Output directory="bin/Release" assembly="Mono.TextEditor.Tests" />
+      <Build debugmode="False" target="Library" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+  </Configurations>
+  <Contents>
+    <File name="Mono.TextEditor.Tests.DefaultEditActions" subtype="Directory" buildaction="Compile" />
+    <File name="Mono.TextEditor.Tests.DefaultEditActions/InsertNewLineTests.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.TextEditor.Tests.DefaultEditActions/CaretMoveTests.cs" subtype="Code" buildaction="Compile" />
+  </Contents>
+  <References>
+    <ProjectReference type="Project" localcopy="True" refto="Mono.TextEditor" />
+    <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Assembly" localcopy="False" refto="../../build/AddIns/NUnit/nunit.core.dll" />
+    <ProjectReference type="Assembly" localcopy="False" refto="../../build/AddIns/NUnit/nunit.framework.dll" />
+  </References>
+</Project>
