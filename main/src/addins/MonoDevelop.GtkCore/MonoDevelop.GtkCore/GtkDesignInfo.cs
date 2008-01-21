@@ -271,6 +271,7 @@ namespace MonoDevelop.GtkCore
 					sw.WriteLine ("<stetic-interface>");
 					sw.WriteLine ("</stetic-interface>");
 					sw.Close ();
+					FileService.NotifyFileChanged (SteticFile);
 				}
 				
 				// Add the stetic file to the project

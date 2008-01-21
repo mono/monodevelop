@@ -359,6 +359,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					IdeApp.ProjectOperations.ParserDatabase.UpdateFile (project, fileName, ((StringWriter)fileStream).ToString ());
 			}
 
+			FileService.NotifyFileChanged (fileName);
 			return fileName;
 		}
 		
@@ -475,6 +476,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					provider.GenerateCodeFromCompileUnit (unit, fileStream, new CodeGeneratorOptions ());
 				} finally {
 					fileStream.Close ();
+					FileService.NotifyFileChanged (fname);
 				}
 			}
 			
