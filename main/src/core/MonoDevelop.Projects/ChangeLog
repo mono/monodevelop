@@ -1,3 +1,9 @@
+2008-01-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/CombineEntry.cs: Notify changes in project files.
+	* MonoDevelop.Projects/Project.cs: Use the file service to track changes in
+	  files.
+
 2008-01-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Parser/ClassEntry.cs: Removed unused property.

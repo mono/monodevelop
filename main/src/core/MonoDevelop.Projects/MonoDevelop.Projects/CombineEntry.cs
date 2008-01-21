@@ -176,6 +176,7 @@ namespace MonoDevelop.Projects
 				Services.ProjectService.ExtensionChain.Save (monitor, this);
 				OnSaved (thisCombineArgs);
 				lastSaveTime = GetLastWriteTime ();
+				FileService.NotifyFileChanged (FileName);
 			} finally {
 				savingFlag = false;
 			}
