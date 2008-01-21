@@ -221,8 +221,12 @@ namespace MonoDevelop.Core
 		public static void NotifyFileChanged (string fileName)
 		{
 			Debug.Assert (!String.IsNullOrEmpty (fileName));
-			GetFileSystemForPath (fileName, false).NotifyFileChanged (fileName);
-			OnFileChanged (new FileEventArgs (fileName, false));
+			try {
+				GetFileSystemForPath (fileName, false).NotifyFileChanged (fileName);
+				OnFileChanged (new FileEventArgs (fileName, false));
+			} catch (Exception ex) {
+				LoggingService.LogError ("File change notification failed", ex);
+			}
 		}
 		
 		internal static FileSystemExtension GetFileSystemForPath (string path, bool isDirectory)

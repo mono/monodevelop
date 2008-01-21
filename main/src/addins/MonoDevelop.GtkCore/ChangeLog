@@ -1,3 +1,9 @@
+2008-01-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Notify file changes
+	  through the FileService.
+
 2008-01-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Stetic code must be

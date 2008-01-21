@@ -65,16 +65,13 @@ namespace MonoDevelop.Projects
 		
 		bool isDirty = false;
 		
-		private FileSystemWatcher projectFileWatcher;
-		
 		public Project ()
 		{
 			Name = "New Project";
 			projectReferences = new ProjectReferenceCollection ();
 			projectReferences.SetProject (this);
 			
-			projectFileWatcher = new FileSystemWatcher();
-			projectFileWatcher.Changed += new FileSystemEventHandler (OnFileChanged);
+			FileService.FileChanged += OnFileChanged;
 		}
 		
 		[DefaultValue("")]
@@ -265,12 +262,10 @@ namespace MonoDevelop.Projects
 		
 		public override void Dispose()
 		{
-			base.Dispose ();
-			projectFileWatcher.Changed -= new FileSystemEventHandler (OnFileChanged);
-			projectFileWatcher.Dispose ();
 			foreach (ProjectFile file in ProjectFiles) {
 				file.Dispose ();
 			}
+			base.Dispose ();
 		}
 		
 		public ProjectReference AddReference (string filename)
@@ -488,8 +483,6 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				base.FileName = value;
-				if (value != null)
-					UpdateFileWatch ();
 			}
 		}
 		
@@ -542,16 +535,9 @@ namespace MonoDevelop.Projects
 			else return finfo.LastWriteTime;
 		}
 
-		private void UpdateFileWatch()
+		void OnFileChanged (object source, FileEventArgs e)
 		{
-			projectFileWatcher.EnableRaisingEvents = false;
-			projectFileWatcher.Path = BaseDirectory;
-			projectFileWatcher.EnableRaisingEvents = true;
-		}
-		
-		void OnFileChanged (object source, FileSystemEventArgs e)
-		{
-			ProjectFile file = GetProjectFile (e.FullPath);
+			ProjectFile file = GetProjectFile (e.FileName);
 			if (file != null) {
 				isDirty = true;
 				try {

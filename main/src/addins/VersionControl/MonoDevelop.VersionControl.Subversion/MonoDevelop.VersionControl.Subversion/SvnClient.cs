@@ -22,6 +22,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 		bool inProgress = false;
 		
 		IProgressMonitor updatemonitor;
+		ArrayList updateFileList;
 		string commitmessage = null;
 		
 		// retain this so the delegates aren't GC'ed
@@ -425,12 +426,17 @@ namespace MonoDevelop.VersionControl.Subversion {
 			}
 			
 			updatemonitor = monitor;
+			updateFileList = new ArrayList ();
 			
 			LibSvnClient.Rev rev = LibSvnClient.Rev.Head;
 			IntPtr localpool = newpool (pool);
 			try {
 				CheckError (svn.client_update (IntPtr.Zero, path, ref rev, recurse ? 1 : 0, ctx, localpool));
 			} finally {
+				foreach (string file in updateFileList)
+					FileService.NotifyFileChanged (file);
+				updateFileList = null;
+				
 				apr.pool_destroy (localpool);
 				updatemonitor = null;
 				inProgress = false;
@@ -721,17 +727,20 @@ namespace MonoDevelop.VersionControl.Subversion {
 		                                long revision)
 		{
 			string actiondesc = action.ToString ();
+			string file = Marshal.PtrToStringAnsi (path);
+			bool notifyChange = false;
+			
 			switch (action) {
 			case LibSvnClient.NotifyAction.UpdateAdd: actiondesc = "Added"; break;
 			case LibSvnClient.NotifyAction.UpdateDelete: actiondesc = "Deleted"; break;
-			case LibSvnClient.NotifyAction.UpdateUpdate: actiondesc = "Updating"; break;
+			case LibSvnClient.NotifyAction.UpdateUpdate: actiondesc = "Updating"; notifyChange = true; break;
 			case LibSvnClient.NotifyAction.UpdateExternal: actiondesc = "External Updated"; break;
 			case LibSvnClient.NotifyAction.UpdateCompleted: actiondesc = "Finished"; break;
 				
 			case LibSvnClient.NotifyAction.CommitAdded: actiondesc = "Added"; break;
 			case LibSvnClient.NotifyAction.CommitDeleted: actiondesc = "Deleted"; break;
-			case LibSvnClient.NotifyAction.CommitModified: actiondesc = "Modified"; break;
-			case LibSvnClient.NotifyAction.CommitReplaced: actiondesc = "Replaced"; break;
+			case LibSvnClient.NotifyAction.CommitModified: actiondesc = "Modified"; notifyChange = true; break;
+			case LibSvnClient.NotifyAction.CommitReplaced: actiondesc = "Replaced"; notifyChange = true; break;
 			case LibSvnClient.NotifyAction.CommitPostfixTxDelta: actiondesc = "Sending Content"; break;
 				/*Add,
 				 Copy,
@@ -747,7 +756,9 @@ namespace MonoDevelop.VersionControl.Subversion {
 			}
 			
 			if (updatemonitor != null)
-				updatemonitor.Log.WriteLine (actiondesc + " " + Marshal.PtrToStringAnsi (path));
+				updatemonitor.Log.WriteLine (actiondesc + " " + file);
+			if (updateFileList != null && notifyChange && File.Exists (file))
+				updateFileList.Add (file);
 		}
 		
 		public class StatusCollector {

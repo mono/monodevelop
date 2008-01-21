@@ -1,3 +1,8 @@
+2008-01-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core/FileService.cs: Make NotifyFileChanged safer against
+	  exceptions.
+
 2008-01-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.ProgressMonitoring/NullProgressMonitor.cs: Added new
