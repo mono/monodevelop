@@ -1,3 +1,8 @@
+2008-01-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.DesignerSupport.PropertyGrid/PropertyGrid.cs: Use a smaller
+	  toolbar.
+
 2008-01-02  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.DesignerSupport/CodeBehindService.cs: Improve error reporting

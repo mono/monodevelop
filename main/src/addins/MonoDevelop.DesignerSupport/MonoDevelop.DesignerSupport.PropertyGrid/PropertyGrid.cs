@@ -85,7 +85,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 			#region Toolbar
 			toolbar = new Toolbar ();
 			toolbar.ToolbarStyle = ToolbarStyle.Icons;
-			toolbar.IconSize = IconSize.SmallToolbar;
+			toolbar.IconSize = IconSize.Menu;
 			base.PackStart (toolbar, false, false, 0);
 			
 			catButton = new RadioToolButton (new GLib.SList (IntPtr.Zero));
