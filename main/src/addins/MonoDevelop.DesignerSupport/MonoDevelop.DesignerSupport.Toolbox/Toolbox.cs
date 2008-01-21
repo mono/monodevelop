@@ -113,7 +113,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			store = new ToolboxStore ();
 			
 			//HACK: see #81942 (caused by #82087)
-			typeof (ToolboxStore).GetField ("node_hash", BindingFlags.Instance | BindingFlags.NonPublic).SetValue (store, new Hashtable ());
+			typeof (Gtk.NodeStore).GetField ("node_hash", BindingFlags.Instance | BindingFlags.NonPublic).SetValue (store, new Hashtable ());
 			
 			//initialise view
 			nodeView = new InternalNodeView (store);
