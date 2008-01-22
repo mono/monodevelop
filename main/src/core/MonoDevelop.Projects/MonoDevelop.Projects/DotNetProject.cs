@@ -607,6 +607,9 @@ namespace MonoDevelop.Projects
 		
 		public virtual string GetDefaultNamespace (string fileName)
 		{
+			if (!string.IsNullOrEmpty (DefaultNamespace))
+				return DefaultNamespace;
+			
 			StringBuilder sb = new StringBuilder ();
 			foreach (char c in Name) {
 				if (char.IsLetterOrDigit (c) || c == '_' || c == '.')
