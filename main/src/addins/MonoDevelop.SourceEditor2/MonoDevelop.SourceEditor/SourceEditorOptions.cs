@@ -284,6 +284,15 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
+		public string ColorSheme {
+			get {
+				return PropertyService.Get ("ColorSheme", "Default");
+			}
+			set {
+				PropertyService.Set ("ColorSheme", !String.IsNullOrEmpty (value) ? value : "Default");
+			}
+		}
+		
 		public override FontDescription Font {
 			get {
 				switch (EditorFontType) {

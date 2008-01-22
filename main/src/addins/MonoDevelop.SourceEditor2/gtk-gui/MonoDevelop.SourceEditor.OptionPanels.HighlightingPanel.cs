@@ -77,10 +77,11 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             Gtk.Viewport w1 = new Gtk.Viewport();
             w1.ShadowType = ((Gtk.ShadowType)(0));
             // Container child GtkViewport.Gtk.Container+ContainerChild
-            this.treeview1 = new Gtk.TreeView();
-            this.treeview1.CanFocus = true;
-            this.treeview1.Name = "treeview1";
-            w1.Add(this.treeview1);
+            this.styleTreeview = new Gtk.TreeView();
+            this.styleTreeview.CanFocus = true;
+            this.styleTreeview.Name = "styleTreeview";
+            this.styleTreeview.HeadersVisible = false;
+            w1.Add(this.styleTreeview);
             this.scrolledwindow1.Add(w1);
             this.vbox5.Add(this.scrolledwindow1);
             Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.vbox5[this.scrolledwindow1]));
@@ -141,14 +142,14 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             this.vbox6.Name = "vbox6";
             this.vbox6.Spacing = 6;
             // Container child vbox6.Gtk.Box+BoxChild
-            this.checkbutton3 = new Gtk.CheckButton();
-            this.checkbutton3.CanFocus = true;
-            this.checkbutton3.Name = "checkbutton3";
-            this.checkbutton3.Label = Mono.Unix.Catalog.GetString("_Enable highlighting");
-            this.checkbutton3.DrawIndicator = true;
-            this.checkbutton3.UseUnderline = true;
-            this.vbox6.Add(this.checkbutton3);
-            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.vbox6[this.checkbutton3]));
+            this.enableHighlightingCheckbutton = new Gtk.CheckButton();
+            this.enableHighlightingCheckbutton.CanFocus = true;
+            this.enableHighlightingCheckbutton.Name = "enableHighlightingCheckbutton";
+            this.enableHighlightingCheckbutton.Label = Mono.Unix.Catalog.GetString("_Enable highlighting");
+            this.enableHighlightingCheckbutton.DrawIndicator = true;
+            this.enableHighlightingCheckbutton.UseUnderline = true;
+            this.vbox6.Add(this.enableHighlightingCheckbutton);
+            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.vbox6[this.enableHighlightingCheckbutton]));
             w11.Position = 0;
             w11.Expand = false;
             w11.Fill = false;

@@ -26,6 +26,7 @@
 using System;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
@@ -34,9 +35,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		public BehaviorPanel ()
 		{
 			this.Build ();
-			indentationCombobox.InsertText (0, "None");
-			indentationCombobox.InsertText (1, "Automatic");
-			indentationCombobox.InsertText (2, "Smart");
+			indentationCombobox.InsertText (0, GettextCatalog.GetString ("None"));
+			indentationCombobox.InsertText (1, GettextCatalog.GetString ("Automatic"));
+			indentationCombobox.InsertText (2, GettextCatalog.GetString ("Smart"));
 		}
 		
 		bool   wasActivated = false;

@@ -1,23 +1,20 @@
 2008-01-22  Mike Krüger <mkrueger@novell.com> 
 
 	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs,
-	  gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs,
-	  gtk-gui/objects.xml,
-	  gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs,
-	  gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs,
-	  gtk-gui/gui.stetic,
+	  gtk-gui/gui.stetic, ChangeLog,
 	  MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs,
-	  MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs,
 	  MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs,
-	  MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs,
-	  MonoDevelop.SourceEditor.addin.xml, MonoDevelop.SourceEditor.mdp,
-	  MonoDevelop.SourceEditor/SourceEditorWidget.cs,
 	  MonoDevelop.SourceEditor/ExtendibleTextEditor.cs,
-	  MonoDevelop.SourceEditor/SourceEditorView.cs,
-	  MonoDevelop.SourceEditor/SourceEditorOptions.cs,
-	  MonoDevelop.SourceEditor/SourceEditorDisplayBinding.cs,
-	  MonoDevelop.SourceEditor/LanguageItemWindow.cs: Worked on text editor
-	  option panels.
+	  MonoDevelop.SourceEditor/SourceEditorOptions.cs: Worked on style panel.
+
+2008-01-22  Mike Krüger <mkrueger@novell.com> 
+
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs,
+	  gtk-gui/gui.stetic, ChangeLog,
+	  MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs,
+	  MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs,
+	  MonoDevelop.SourceEditor/ExtendibleTextEditor.cs,
+	  MonoDevelop.SourceEditor/SourceEditorOptions.cs: Worked on style panel.
 
 2008-01-22  Mike Krüger <mkrueger@novell.com> 
 

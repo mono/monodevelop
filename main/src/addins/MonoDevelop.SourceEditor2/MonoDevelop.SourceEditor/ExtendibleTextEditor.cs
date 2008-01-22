@@ -36,6 +36,7 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Components.Commands;
+using Mono.TextEditor.Highlighting;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -64,6 +65,7 @@ namespace MonoDevelop.SourceEditor
 		public ExtendibleTextEditor (SourceEditorView view)
 		{
 			this.view = view;
+			this.ColorStyle = SyntaxModeService.GetColorStyle (this, SourceEditorOptions.Options.ColorSheme);
 			base.TextEditorData.Caret.PositionChanged += delegate {
 				if (extension != null)
 					extension.CursorPositionChanged ();

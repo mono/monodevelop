@@ -24,17 +24,26 @@
 // THE SOFTWARE.
 
 using System;
+
+using Gtk;
+
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core.Gui;
+using Mono.TextEditor.Highlighting;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
 	public partial class HighlightingPanel : Gtk.Bin, IDialogPanel
 	{
+		ListStore styleStore = new ListStore (typeof (string), typeof (string));
+		
 		public HighlightingPanel()
 		{
 			this.Build();
+
 		}
+		
 		bool   wasActivated = false;
 		bool   isFinished   = true;
 		object customizationObject = null;
@@ -102,14 +111,36 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			return true;
 		}
 		
+		string GetMarkup (string name, string description)
+		{
+			return String.Format ("<b>{0}</b> - {1}", name, description);
+		}
+		
 		public virtual void LoadPanelContents()
 		{
 			this.enableHighlightingCheckbutton.Active = SourceEditorOptions.Options.EnableSyntaxHighlighting;
+			
+			
+			TreeIter selectedIter = styleStore.AppendValues (GetMarkup (GettextCatalog.GetString ("Default"), GettextCatalog.GetString ("The default color sheme.")),
+			                                                 "Default");
+			foreach (Mono.TextEditor.Highlighting.Style style in SyntaxModeService.Styles) {
+				TreeIter iter = styleStore.AppendValues (GetMarkup (GettextCatalog.GetString (style.Name), GettextCatalog.GetString (style.Description)), 
+				                                         style.Name);
+				if (style.Name == SourceEditorOptions.Options.ColorSheme)
+					selectedIter = iter;
+			}
+			styleTreeview.AppendColumn ("", new CellRendererText (), "markup", 0);
+			styleTreeview.Model = styleStore;
+			styleTreeview.Selection.SelectIter (selectedIter); 
 		}
 		
 		public virtual bool StorePanelContents()
 		{
 			SourceEditorOptions.Options.EnableSyntaxHighlighting = this.enableHighlightingCheckbutton.Active;
+			TreeIter selectedIter;
+			if (styleTreeview.Selection.GetSelected (out selectedIter)) {
+				SourceEditorOptions.Options.ColorSheme = (string)this.styleStore.GetValue (selectedIter, 1);
+			}
 			return true;
 		}
 		

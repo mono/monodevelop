@@ -635,6 +635,7 @@
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
                                 <property name="ShowScrollbars">True</property>
+                                <property name="HeadersVisible">False</property>
                                 <property name="HeadersClickable">True</property>
                               </widget>
                             </child>
