@@ -1,3 +1,10 @@
+2008-01-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* po/gl.po, po/cs.po, po/pt_BR.po, po/fr.po, po/es.po, po/sl_SI.po,
+	  po/nl.po, po/pl.po, po/it.po, po/pt.po, po/ca.po, po/da.po, po/tr.po,
+	  po/ru.po, po/po.mdse, po/de.po, po/sv.po, po/ja.po, po/zh_TW.po,
+	  po/id.po, po/zh_CN.po: Updated translations.
+
 2008-01-15  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* templates/BooGtkSharpProject.xpt.xml, templates/BooLibraryProject.xpt.xml,

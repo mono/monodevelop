@@ -20,6 +20,12 @@ msgstr ""
 msgid "Gtk# Project"
 msgstr "Projet Gtk#"
 
+#: ../templates/BooGtkSharpProject.xpt.xml:8
+#: ../templates/BooLibraryProject.xpt.xml:8
+#: ../templates/EmptyBooProject.xpt.xml:8
+msgid "Boo"
+msgstr ""
+
 #: ../templates/BooGtkSharpProject.xpt.xml:11
 msgid "Creates a Boo/Gtk# project"
 msgstr "Crée un projet Boo/Gtk#"
@@ -35,6 +41,12 @@ msgstr "Crée une blibliothèque Boo"
 #: ../templates/BooGtkSharpWindow.xft.xml:7
 msgid "Gtk# Window"
 msgstr "Fenêtre Gtk#"
+
+#: ../templates/BooGtkSharpWindow.xft.xml:9
+#: ../templates/EmptyBooFile.xft.xml:6
+#, fuzzy
+msgid "General"
+msgstr "Génération de code"
 
 #: ../templates/BooGtkSharpWindow.xft.xml:11
 msgid "Creates a top-level Gtk# window"
@@ -56,19 +68,19 @@ msgstr "Projet vide"
 msgid "Creates an empty Boo solution."
 msgstr "Crée une solution Boo vide."
 
-#: ../Gui/ShellTextView.boo:195
+#: ../Gui/ShellTextView.boo:194
 msgid "Copy Script"
 msgstr ""
 
-#: ../Gui/ShellTextView.boo:199
+#: ../Gui/ShellTextView.boo:198
 msgid "Save Script As ..."
 msgstr ""
 
-#: ../Gui/ShellTextView.boo:203
+#: ../Gui/ShellTextView.boo:202
 msgid "Load Project Assemblies (forces shell reset)"
 msgstr ""
 
-#: ../Gui/ShellTextView.boo:210
+#: ../Gui/ShellTextView.boo:209
 #, fuzzy
 msgid "Reset Shell"
 msgstr "Shell Boo"
@@ -81,7 +93,7 @@ msgstr ""
 msgid "Enable ducky mode"
 msgstr ""
 
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:88 ../BooBinding.addin.xml:50
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:88 ../BooBinding.addin.xml:52
 msgid "Code Generation"
 msgstr "Génération de code"
 
@@ -152,10 +164,10 @@ msgstr ""
 msgid "Use custom font:"
 msgstr ""
 
-#: ../BooBinding.addin.xml:28
+#: ../BooBinding.addin.xml:30
 msgid "Boo Files"
 msgstr "Fichiers Boo"
 
-#: ../BooBinding.addin.xml:80 ../BooBinding.addin.xml:88
+#: ../BooBinding.addin.xml:82 ../BooBinding.addin.xml:90
 msgid "Boo Shell"
 msgstr "Shell Boo"

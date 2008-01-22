@@ -23,6 +23,12 @@ msgstr ""
 msgid "Gtk# Project"
 msgstr "Gtk# projekt"
 
+#: ../templates/BooGtkSharpProject.xpt.xml:8
+#: ../templates/BooLibraryProject.xpt.xml:8
+#: ../templates/EmptyBooProject.xpt.xml:8
+msgid "Boo"
+msgstr ""
+
 #: ../templates/BooGtkSharpProject.xpt.xml:11
 msgid "Creates a Boo/Gtk# project"
 msgstr "Vytvoří Boo/Gtk# projekt."
@@ -38,6 +44,12 @@ msgstr "Vytvoří Boo knihovnu tříd"
 #: ../templates/BooGtkSharpWindow.xft.xml:7
 msgid "Gtk# Window"
 msgstr "Okno Gtk#"
+
+#: ../templates/BooGtkSharpWindow.xft.xml:9
+#: ../templates/EmptyBooFile.xft.xml:6
+#, fuzzy
+msgid "General"
+msgstr "Obecná nastavení"
 
 #: ../templates/BooGtkSharpWindow.xft.xml:11
 msgid "Creates a top-level Gtk# window"
@@ -59,19 +71,19 @@ msgstr "Prázdný projekt"
 msgid "Creates an empty Boo solution."
 msgstr "Vytvoří prázdnou Boo sestavu."
 
-#: ../Gui/ShellTextView.boo:195
+#: ../Gui/ShellTextView.boo:194
 msgid "Copy Script"
 msgstr "Kopírovat skript"
 
-#: ../Gui/ShellTextView.boo:199
+#: ../Gui/ShellTextView.boo:198
 msgid "Save Script As ..."
 msgstr "Uložit skript jako..."
 
-#: ../Gui/ShellTextView.boo:203
+#: ../Gui/ShellTextView.boo:202
 msgid "Load Project Assemblies (forces shell reset)"
 msgstr "Načíst assembly projektu (vynutí si reset konzole)"
 
-#: ../Gui/ShellTextView.boo:210
+#: ../Gui/ShellTextView.boo:209
 msgid "Reset Shell"
 msgstr "Reset konzole"
 

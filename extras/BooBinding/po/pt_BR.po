@@ -2,17 +2,18 @@
 # Copyright (C) 2004, Andre Filipe de Assuncao e Brito <decko@noisemakers.org>
 # Copyright (C) 2004, Maurício de Lemos Rodrigues Collares Neto <mauricioc@gmail.com>
 # Copyright (C) 2006, Rafael "Monoman" Teixeira <rafaelteixeirabr@hotmail.com>
-# 
+# Copyright (C) 2007, Renato Felipe Atilio <renatoat@gmail.com>
+#
 # This file is distributed under the same license as the MonoDevelop package.
-# 
-# 
+#
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 0.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2006-04-06 16:24-0300\n"
-"Last-Translator: Rafael \"Monoman\" Teixeira <rafaelteixeirabr@hotmail.com>\n"
+"PO-Revision-Date: 2007-12-14 21:15-0300\n"
+"Last-Translator: Renato Felipe Atilio <renatoat@gmail.com>\n"
 "Language-Team: pt_BR <gnome-l10n-br@listas.cipsga.org.br>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -23,92 +24,104 @@ msgstr ""
 msgid "Gtk# Project"
 msgstr "Projeto GTK#"
 
+#: ../templates/BooGtkSharpProject.xpt.xml:8
+#: ../templates/BooLibraryProject.xpt.xml:8
+#: ../templates/EmptyBooProject.xpt.xml:8
+msgid "Boo"
+msgstr ""
+
 #: ../templates/BooGtkSharpProject.xpt.xml:11
-#, fuzzy
 msgid "Creates a Boo/Gtk# project"
-msgstr "Criar um novo projeto GTK# em C#"
+msgstr "Cria um projeto Boo/Gtk#"
 
 #: ../templates/BooLibraryProject.xpt.xml:7
-#, fuzzy
 msgid "Boo Library"
-msgstr "Biblioteca"
+msgstr "Biblioteca Boo"
 
 #: ../templates/BooLibraryProject.xpt.xml:11
-#, fuzzy
 msgid "Creates a Boo library"
-msgstr "Cria um biblioteca C# vazia"
+msgstr "Cria uma biblioteca Boo"
 
 #: ../templates/BooGtkSharpWindow.xft.xml:7
 msgid "Gtk# Window"
 msgstr "Janela GTK#"
 
+#: ../templates/BooGtkSharpWindow.xft.xml:9
+#: ../templates/EmptyBooFile.xft.xml:6
+msgid "General"
+msgstr "Geral"
+
 #: ../templates/BooGtkSharpWindow.xft.xml:11
 msgid "Creates a top-level Gtk# window"
-msgstr "Cria uma janela raiz GTK#"
+msgstr "Cria uma janela principal GTK#"
 
 #: ../templates/EmptyBooFile.xft.xml:4
 msgid "Empty File"
 msgstr "Arquivo Vazio"
 
 #: ../templates/EmptyBooFile.xft.xml:8
-#, fuzzy
 msgid "Creates an empty Boo file."
-msgstr "Cria um novo fonte C# vazio."
+msgstr "Cria um arquivo Boo vazio."
 
 #: ../templates/EmptyBooProject.xpt.xml:7
 msgid "Empty Project"
 msgstr "Projeto Vazio"
 
 #: ../templates/EmptyBooProject.xpt.xml:11
-#, fuzzy
 msgid "Creates an empty Boo solution."
-msgstr "Cria uma solução VB.NET vazia."
+msgstr "Cria uma solução Boo vazia."
 
-#: ../Gui/ShellTextView.boo:195
+#: ../Gui/ShellTextView.boo:194
+#, fuzzy
 msgid "Copy Script"
-msgstr ""
+msgstr "Copyright:"
 
-#: ../Gui/ShellTextView.boo:199
+#: ../Gui/ShellTextView.boo:198
+#, fuzzy
 msgid "Save Script As ..."
-msgstr ""
+msgstr "Salv_ar Como..."
 
-#: ../Gui/ShellTextView.boo:203
+#: ../Gui/ShellTextView.boo:202
 msgid "Load Project Assemblies (forces shell reset)"
 msgstr ""
 
-#: ../Gui/ShellTextView.boo:210
+#: ../Gui/ShellTextView.boo:209
 #, fuzzy
 msgid "Reset Shell"
-msgstr "Console Boo"
+msgstr "Deselecionar tudo"
 
 #: ../Gui/OptionPanels/CodeCompilationPanel.boo:42
+#, fuzzy
 msgid "Enable debug"
-msgstr ""
+msgstr "Habilitado"
 
 #: ../Gui/OptionPanels/CodeCompilationPanel.boo:43
 msgid "Enable ducky mode"
 msgstr ""
 
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:88 ../BooBinding.addin.xml:50
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:88 ../BooBinding.addin.xml:52
 msgid "Code Generation"
 msgstr "Geração de Código"
 
 #: ../Gui/OptionPanels/CodeCompilationPanel.boo:89
+#, fuzzy
 msgid "Output Path"
-msgstr ""
+msgstr "Caminho da Saída:"
 
 #: ../Gui/OptionPanels/CodeCompilationPanel.boo:93
 #: ../Gui/OptionPanels/CodeCompilationPanel.boo:100
+#, fuzzy
 msgid "Output Assembly"
-msgstr ""
+msgstr "Montagem .Net"
 
 #: ../Gui/OptionPanels/CodeCompilationPanel.boo:95
+#, fuzzy
 msgid "Warnings and Compiler Options"
-msgstr ""
+msgstr "Opções Extras de Compilador"
 
 #: ../Gui/OptionPanels/CodeCompilationPanel.boo:97
 msgid "Compiler"
-msgstr ""
+msgstr "Compilador"
 
 #: ../Gui/OptionPanels/CodeCompilationPanel.boo:98
 msgid "Culture"
@@ -116,25 +129,25 @@ msgstr ""
 
 #: ../Gui/OptionPanels/CodeCompilationPanel.boo:106
 msgid "Executable"
-msgstr ""
+msgstr "Executável"
 
 #: ../Gui/OptionPanels/CodeCompilationPanel.boo:110
-#, fuzzy
 msgid "Library"
 msgstr "Biblioteca"
 
 #: ../Gui/OptionPanels/CodeCompilationPanel.boo:114
 msgid "Executable with GUI"
-msgstr ""
+msgstr "Executável com GUI"
 
 #: ../Gui/OptionPanels/GeneralShellPanel.boo:50
 #, fuzzy
 msgid "General Options"
-msgstr "Geração de Código"
+msgstr "<b>Opções gerais</b>"
 
 #: ../Gui/OptionPanels/GeneralShellPanel.boo:52
+#, fuzzy
 msgid "Automatically indent new lines in code blocks"
-msgstr ""
+msgstr "_Incluir arquivos encontrados automaticamente"
 
 #: ../Gui/OptionPanels/GeneralShellPanel.boo:53
 msgid "Shell reset clears scollback"
@@ -149,22 +162,25 @@ msgid "Load project assemblies after building them (Causes shell reset)"
 msgstr ""
 
 #: ../Gui/OptionPanels/GeneralShellPanel.boo:56
+#, fuzzy
 msgid "Font"
-msgstr ""
+msgstr "Meses"
 
 #: ../Gui/OptionPanels/GeneralShellPanel.boo:57
+#, fuzzy
 msgid "Use default monospace font"
-msgstr ""
+msgstr "Usar fonte _mono-espaçada padrão"
 
 #: ../Gui/OptionPanels/GeneralShellPanel.boo:58
-msgid "Use custom font:"
-msgstr ""
-
-#: ../BooBinding.addin.xml:28
 #, fuzzy
-msgid "Boo Files"
-msgstr "Arquivos"
+msgid "Use custom font:"
+msgstr "_Usar fonte customizada:"
 
-#: ../BooBinding.addin.xml:80 ../BooBinding.addin.xml:88
+#: ../BooBinding.addin.xml:30
+msgid "Boo Files"
+msgstr "Arquivos Boo"
+
+#: ../BooBinding.addin.xml:82 ../BooBinding.addin.xml:90
 msgid "Boo Shell"
 msgstr "Console Boo"
+

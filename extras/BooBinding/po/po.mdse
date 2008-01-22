@@ -18,5 +18,7 @@
     <Translation isoCode="tr" />
     <Translation isoCode="zh_CN" />
     <Translation isoCode="zh_TW" />
+    <Translation isoCode="id" />
+    <Translation isoCode="nl" />
   </translations>
 </CombineEntry>

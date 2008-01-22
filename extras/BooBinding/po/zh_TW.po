@@ -15,6 +15,12 @@ msgstr ""
 msgid "Gtk# Project"
 msgstr "Gtk#專案"
 
+#: ../templates/BooGtkSharpProject.xpt.xml:8
+#: ../templates/BooLibraryProject.xpt.xml:8
+#: ../templates/EmptyBooProject.xpt.xml:8
+msgid "Boo"
+msgstr ""
+
 #: ../templates/BooGtkSharpProject.xpt.xml:11
 #, fuzzy
 msgid "Creates a Boo/Gtk# project"
@@ -33,6 +39,12 @@ msgstr "建立空白 C# 類別函式庫"
 #: ../templates/BooGtkSharpWindow.xft.xml:7
 msgid "Gtk# Window"
 msgstr "Gtk#視窗"
+
+#: ../templates/BooGtkSharpWindow.xft.xml:9
+#: ../templates/EmptyBooFile.xft.xml:6
+#, fuzzy
+msgid "General"
+msgstr "代碼生成"
 
 #: ../templates/BooGtkSharpWindow.xft.xml:11
 msgid "Creates a top-level Gtk# window"
@@ -56,19 +68,19 @@ msgstr "空白專案"
 msgid "Creates an empty Boo solution."
 msgstr "建立空白 VB.Net 方案"
 
-#: ../Gui/ShellTextView.boo:195
+#: ../Gui/ShellTextView.boo:194
 msgid "Copy Script"
 msgstr ""
 
-#: ../Gui/ShellTextView.boo:199
+#: ../Gui/ShellTextView.boo:198
 msgid "Save Script As ..."
 msgstr ""
 
-#: ../Gui/ShellTextView.boo:203
+#: ../Gui/ShellTextView.boo:202
 msgid "Load Project Assemblies (forces shell reset)"
 msgstr ""
 
-#: ../Gui/ShellTextView.boo:210
+#: ../Gui/ShellTextView.boo:209
 #, fuzzy
 msgid "Reset Shell"
 msgstr "Boo Shell"
@@ -81,7 +93,7 @@ msgstr ""
 msgid "Enable ducky mode"
 msgstr ""
 
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:88 ../BooBinding.addin.xml:50
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:88 ../BooBinding.addin.xml:52
 msgid "Code Generation"
 msgstr "代碼生成"
 
@@ -152,11 +164,11 @@ msgstr ""
 msgid "Use custom font:"
 msgstr ""
 
-#: ../BooBinding.addin.xml:28
+#: ../BooBinding.addin.xml:30
 #, fuzzy
 msgid "Boo Files"
 msgstr "檔案"
 
-#: ../BooBinding.addin.xml:80 ../BooBinding.addin.xml:88
+#: ../BooBinding.addin.xml:82 ../BooBinding.addin.xml:90
 msgid "Boo Shell"
 msgstr "Boo Shell"
