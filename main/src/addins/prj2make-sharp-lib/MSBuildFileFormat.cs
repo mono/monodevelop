@@ -576,43 +576,58 @@ namespace MonoDevelop.Prj2Make
 
 		static void HandleRename (object sender, CombineEntryRenamedEventArgs e)
 		{
-			if (e.CombineEntry.ParentCombine == null)
-				//Ignore if the project is not yet a part of a Combine
-				return;
+			try {
+				if (e.CombineEntry.ParentCombine == null)
+					//Ignore if the project is not yet a part of a Combine
+					return;
 
-			string oldfname = e.CombineEntry.FileName;
-			string extn = Path.GetExtension (oldfname);
-			string dir = Path.GetDirectoryName (oldfname);
-			string newfname = Path.Combine (dir, e.NewName + extn);
+				string oldfname = e.CombineEntry.FileName;
+				string extn = Path.GetExtension (oldfname);
+				string dir = Path.GetDirectoryName (oldfname);
+				string newfname = Path.Combine (dir, e.NewName + extn);
 
-			FileService.MoveFile (oldfname, newfname);
-			e.CombineEntry.FileName = newfname;
+				FileService.MoveFile (oldfname, newfname);
+				e.CombineEntry.FileName = newfname;
+			} catch (Exception ex) {
+				LoggingService.LogError (ex.ToString ());
+				throw;
+			}
 		}
 
 		//Event handlers
 		static void HandleConfigurationRemoved (object sender, ConfigurationEventArgs e)
 		{
-			DotNetProject project = (DotNetProject) sender;
-			MSBuildData d = Utils.GetMSBuildData (project);
-			if (d == null || !d.ConfigElements.ContainsKey ((DotNetProjectConfiguration) e.Configuration))
-				return;
+			try {
+				DotNetProject project = (DotNetProject) sender;
+				MSBuildData d = Utils.GetMSBuildData (project);
+				if (d == null || !d.ConfigElements.ContainsKey ((DotNetProjectConfiguration) e.Configuration))
+					return;
 
-			XmlElement elem = d.ConfigElements [(DotNetProjectConfiguration)e.Configuration];
-			elem.ParentNode.RemoveChild (elem);
-			d.ConfigElements.Remove ((DotNetProjectConfiguration)e.Configuration);
+				XmlElement elem = d.ConfigElements [(DotNetProjectConfiguration)e.Configuration];
+				elem.ParentNode.RemoveChild (elem);
+				d.ConfigElements.Remove ((DotNetProjectConfiguration)e.Configuration);
+			} catch (Exception ex) {
+				LoggingService.LogError (ex.ToString ());
+				throw;
+			}
 		}
 
 		//References
 
 		static void HandleReferenceRemoved (object sender, ProjectReferenceEventArgs e)
 		{
-			MSBuildData d = Utils.GetMSBuildData (e.Project);
-			if (d == null || !d.ProjectReferenceElements.ContainsKey (e.ProjectReference))
-				return;
+			try {
+				MSBuildData d = Utils.GetMSBuildData (e.Project);
+				if (d == null || !d.ProjectReferenceElements.ContainsKey (e.ProjectReference))
+					return;
 
-			XmlElement elem = d.ProjectReferenceElements [e.ProjectReference];
-			elem.ParentNode.RemoveChild (elem);
-			d.ProjectReferenceElements.Remove (e.ProjectReference);
+				XmlElement elem = d.ProjectReferenceElements [e.ProjectReference];
+				elem.ParentNode.RemoveChild (elem);
+				d.ProjectReferenceElements.Remove (e.ProjectReference);
+			} catch (Exception ex) {
+				LoggingService.LogError (ex.ToString ());
+				throw;
+			}
 		}
 
 		static void HandleReferenceAdded (object sender, ProjectReferenceEventArgs e)
@@ -634,87 +649,107 @@ namespace MonoDevelop.Prj2Make
 
 		static void HandleFileRemoved (object sender, ProjectFileEventArgs e)
 		{
-			MSBuildData d = Utils.GetMSBuildData (e.Project);
-			if (d == null || !d.ProjectFileElements.ContainsKey (e.ProjectFile))
-				return;
+			try {
+				MSBuildData d = Utils.GetMSBuildData (e.Project);
+				if (d == null || !d.ProjectFileElements.ContainsKey (e.ProjectFile))
+					return;
 
-			XmlElement elem = d.ProjectFileElements [e.ProjectFile];
-			elem.ParentNode.RemoveChild (elem);
-			d.ProjectFileElements.Remove (e.ProjectFile);
+				XmlElement elem = d.ProjectFileElements [e.ProjectFile];
+				elem.ParentNode.RemoveChild (elem);
+				d.ProjectFileElements.Remove (e.ProjectFile);
+			} catch (Exception ex) {
+				LoggingService.LogError (ex.ToString ());
+				throw;
+			}
 		}
 
 		static void HandleFileAdded (object sender, ProjectFileEventArgs e)
 		{
-			MSBuildData d = Utils.GetMSBuildData (e.Project);
-			if (d == null)
-				return;
+			try {
+				MSBuildData d = Utils.GetMSBuildData (e.Project);
+				if (d == null)
+					return;
 
-			XmlElement xe = d.ExtensionChain.FileToXmlElement (d, e.Project, e.ProjectFile);
-			if (xe != null)
-				d.ProjectFileElements [e.ProjectFile] = xe;
+				XmlElement xe = d.ExtensionChain.FileToXmlElement (d, e.Project, e.ProjectFile);
+				if (xe != null)
+					d.ProjectFileElements [e.ProjectFile] = xe;
+			} catch (Exception ex) {
+				LoggingService.LogError (ex.ToString ());
+				throw;
+			}
 		}
 
 		static void HandleFileRenamed (object sender, ProjectFileRenamedEventArgs e)
 		{
-			MSBuildData d = Utils.GetMSBuildData (e.Project);
-			if (d == null || !d.ProjectFileElements.ContainsKey (e.ProjectFile))
-				return;
+			try {
+				MSBuildData d = Utils.GetMSBuildData (e.Project);
+				if (d == null || !d.ProjectFileElements.ContainsKey (e.ProjectFile))
+					return;
 
-			//FIXME: Check whether this file is a ApplicationIcon and accordingly update that?
-			XmlElement elem = d.ExtensionChain.FileToXmlElement (d, e.Project, e.ProjectFile);
-			if (elem != null)
-				d.ProjectFileElements [e.ProjectFile] = elem;
+				//FIXME: Check whether this file is a ApplicationIcon and accordingly update that?
+				XmlElement elem = d.ExtensionChain.FileToXmlElement (d, e.Project, e.ProjectFile);
+				if (elem != null)
+					d.ProjectFileElements [e.ProjectFile] = elem;
+			} catch (Exception ex) {
+				LoggingService.LogError (ex.ToString ());
+				throw;
+			}
 		}
 
 		static void HandleFilePropertyChanged (object sender, ProjectFileEventArgs e)
 		{
-			//Subtype, BuildAction, DependsOn, Data
+			try {
+				//Subtype, BuildAction, DependsOn, Data
 
-			MSBuildData d = Utils.GetMSBuildData (e.Project);
-			if (d == null || !d.ProjectFileElements.ContainsKey (e.ProjectFile))
-				return;
+				MSBuildData d = Utils.GetMSBuildData (e.Project);
+				if (d == null || !d.ProjectFileElements.ContainsKey (e.ProjectFile))
+					return;
 
-			XmlElement elem = d.ProjectFileElements [e.ProjectFile];
+				XmlElement elem = d.ProjectFileElements [e.ProjectFile];
 
-			//BuildAction
-			string buildAction = BuildActionToString (e.ProjectFile.BuildAction);
-			if (buildAction == null) {
-				LoggingService.LogWarning ("BuildAction.{0} not supported!", e.ProjectFile.BuildAction);
-				return;
+				//BuildAction
+				string buildAction = BuildActionToString (e.ProjectFile.BuildAction);
+				if (buildAction == null) {
+					LoggingService.LogWarning ("BuildAction.{0} not supported!", e.ProjectFile.BuildAction);
+					return;
+				}
+
+				if (elem.LocalName != buildAction) {
+					XmlElement newElem = d.Document.CreateElement (buildAction, Utils.ns);
+					XmlNode parent = elem.ParentNode;
+
+					List<XmlNode> list = new List<XmlNode> ();
+					foreach (XmlNode n in elem.ChildNodes)
+						list.Add (n);
+					foreach (XmlNode n in list)
+						newElem.AppendChild (elem.RemoveChild (n));
+
+					list.Clear ();
+					foreach (XmlAttribute a in elem.Attributes)
+						list.Add (a);
+
+					foreach (XmlAttribute a in list)
+						newElem.Attributes.Append (elem.Attributes.Remove (a));
+
+					parent.RemoveChild (elem);
+					parent.AppendChild (newElem);
+
+					d.ProjectFileElements [e.ProjectFile] = newElem;
+
+					if (e.ProjectFile.BuildAction == BuildAction.FileCopy)
+						Utils.EnsureChildValue (newElem, "CopyToOutputDirectory", "Always");
+				}
+
+				//DependentUpon is relative to the basedir of the 'pf' (resource file)
+				if (!String.IsNullOrEmpty (e.ProjectFile.DependsOn))
+					Utils.EnsureChildValue (d.ProjectFileElements [e.ProjectFile], "DependentUpon",
+						Utils.CanonicalizePath (FileService.AbsoluteToRelativePath (
+							Path.GetDirectoryName (e.ProjectFile.Name), e.ProjectFile.DependsOn)));
+				//FIXME: Subtype, Data
+			} catch (Exception ex) {
+				LoggingService.LogError (ex.ToString ());
+				throw;
 			}
-
-			if (elem.LocalName != buildAction) {
-				XmlElement newElem = d.Document.CreateElement (buildAction, Utils.ns);
-				XmlNode parent = elem.ParentNode;
-
-				List<XmlNode> list = new List<XmlNode> ();
-				foreach (XmlNode n in elem.ChildNodes)
-					list.Add (n);
-				foreach (XmlNode n in list)
-					newElem.AppendChild (elem.RemoveChild (n));
-
-				list.Clear ();
-				foreach (XmlAttribute a in elem.Attributes)
-					list.Add (a);
-
-				foreach (XmlAttribute a in list)
-					newElem.Attributes.Append (elem.Attributes.Remove (a));
-
-				parent.RemoveChild (elem);
-				parent.AppendChild (newElem);
-
-				d.ProjectFileElements [e.ProjectFile] = newElem;
-
-				if (e.ProjectFile.BuildAction == BuildAction.FileCopy)
-					Utils.EnsureChildValue (newElem, "CopyToOutputDirectory", "Always");
-			}
-
-			//DependentUpon is relative to the basedir of the 'pf' (resource file)
-			if (!String.IsNullOrEmpty (e.ProjectFile.DependsOn))
-				Utils.EnsureChildValue (d.ProjectFileElements [e.ProjectFile], "DependentUpon",
-					Utils.CanonicalizePath (FileService.AbsoluteToRelativePath (
-						Path.GetDirectoryName (e.ProjectFile.Name), e.ProjectFile.DependsOn)));
-			//FIXME: Subtype, Data
 		}
 
 		internal static string BuildActionToString (BuildAction ba)
