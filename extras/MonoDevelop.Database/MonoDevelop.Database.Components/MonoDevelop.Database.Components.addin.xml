@@ -5,6 +5,7 @@
 	copyright	= "MIT X11"
 	url		= "http://www.monodevelop.com"
 	description	= "Database Components Module"
+	category    = "Database"
 	version		= "0.18.0">
     
 	<Runtime>
