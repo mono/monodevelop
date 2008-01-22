@@ -1,3 +1,10 @@
+2008-01-22  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* po/messages.po: Add to svn so that translators don't have to build MD.
+	* po/hu.po: Added new translation.
+	* po/po.mdse:
+	* po/Makefile: Updated. Fix update-po target and add statistics target.
+
 2008-01-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* po/gl.po, po/cs.po, po/pt_BR.po, po/fr.po, po/es.po, po/sl_SI.po,

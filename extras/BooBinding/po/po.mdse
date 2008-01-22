@@ -7,8 +7,11 @@
     <Translation isoCode="es" />
     <Translation isoCode="fr" />
     <Translation isoCode="gl" />
+    <Translation isoCode="hu" />
+    <Translation isoCode="id" />
     <Translation isoCode="it" />
     <Translation isoCode="ja" />
+    <Translation isoCode="nl" />
     <Translation isoCode="pl" />
     <Translation isoCode="pt" />
     <Translation isoCode="pt_BR" />
@@ -18,7 +21,5 @@
     <Translation isoCode="tr" />
     <Translation isoCode="zh_CN" />
     <Translation isoCode="zh_TW" />
-    <Translation isoCode="id" />
-    <Translation isoCode="nl" />
   </translations>
 </CombineEntry>

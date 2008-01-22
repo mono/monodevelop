@@ -19,8 +19,11 @@ FILES = \
 	es.po\
 	fr.po\
 	gl.po\
+	hu.po\
+	id.po\
 	it.po\
 	ja.po\
+	nl.po\
 	pl.po\
 	pt.po\
 	pt_BR.po\
@@ -37,7 +40,13 @@ MO_FILES = $(foreach po,$(FILES), $(INSTALL_DIR)/$(basename $(po))/LC_MESSAGES/$
 all: $(GMO_FILES)
 
 update-po:
-	$(MDTOOL) gettext-update
+	pushd $(top_srcdir); $(MDTOOL) gettext-update; popd
+
+statistics:
+	@for LANGFILE in $(FILES); do \
+		echo "$$LANGFILE:"; \
+		msgfmt -o /dev/null --verbose "$$LANGFILE"; \
+	done
 
 $(GMO_FILES): $(BUILD_DIR)/%/LC_MESSAGES/$(PACKAGE).mo: %.po
 	mkdir -p $(dir $@)
