@@ -1,3 +1,7 @@
+2008-01-22  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs: Grammar fix.
+
 2008-01-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs: If a project is selected in
