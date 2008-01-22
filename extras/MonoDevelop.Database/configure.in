@@ -40,6 +40,16 @@ if test "x$has_mono" = "xtrue"; then
     fi
 fi
 
+# Find msgfmt and msgmerge for translations
+AC_PATH_PROG(MSGFMT, msgfmt, no)
+if test "x$MSGFMT" = "xno"; then
+        AC_MSG_ERROR([You need to install msgfmt from intltool])
+fi
+AC_PATH_PROG(MSGMERGE, msgmerge, no)
+if test "x$MSGMERGE" = "xno"; then
+        AC_MSG_ERROR([You need to install msgmerge from intltool])
+fi
+
 dnl hard dependencies
 MONOADDINS_REQUIRED_VERSION=0.3
 MONODEVELOP_REQUIRED_VERSION=0.18
