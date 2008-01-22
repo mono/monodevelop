@@ -18,86 +18,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
-#: ../Java.glade:30 ../Java.glade:1035
-#, fuzzy
-msgid "<b>Code Generation</b>"
-msgstr "Kodegenerering"
-
-#: ../Java.glade:102
-msgid "Compile _Target:"
-msgstr "Oversættelses_mål:"
-
-#: ../Java.glade:130
-msgid "Define S_ymbols:"
-msgstr "Definér s_ymboler:"
-
-#: ../Java.glade:159
-msgid "_Main Class:"
-msgstr "_Hovedklasse:"
-
-#: ../Java.glade:230 ../Java.glade:1101
-msgid "Classpath:"
-msgstr "Klassesti:"
-
-#: ../Java.glade:330 ../Java.glade:790
-#, fuzzy
-msgid "<b>Compiler</b>"
-msgstr "<b>Skabelon</b>"
-
-#: ../Java.glade:400
-msgid "gcj"
-msgstr "gcj"
-
-#: ../Java.glade:419
-#, fuzzy
-msgid "javac"
-msgstr "javac"
-
-#: ../Java.glade:490
-msgid "<b>Options</b>"
-msgstr "<b>Indstillinger</b>"
-
-#: ../Java.glade:554
-msgid "Enable _optimizations"
-msgstr "Aktivér _optimeringer"
-
-#: ../Java.glade:573
-msgid "Emit _debugging information"
-msgstr "Generer _aflusningsinformation"
-
-#: ../Java.glade:618
-msgid "<b>Warnings</b>"
-msgstr "<b>Advarsler</b>"
-
-#: ../Java.glade:682
-msgid "Generate warnings"
-msgstr "Generér advarsler"
-
-#: ../Java.glade:701
-#, fuzzy
-msgid "Enable deprecation warnings"
-msgstr "Aktivér _kodefuldførelse"
-
-#: ../Java.glade:720
-msgid "Treat warnings as _errors"
-msgstr "Håndter advarsler som f_ejl"
-
-#: ../Java.glade:856
-msgid "IKVM path:"
-msgstr "IKVM-sti:"
-
-#: ../Java.glade:884
-msgid "Java compiler:"
-msgstr "Java-oversætter:"
-
-#: ../Java.glade:912
-#, fuzzy
-msgid "Compiler command:"
-msgstr "Oversætter:"
-
 #: ../templates/EmptyJavaFile.xft.xml:4
 msgid "Empty File"
 msgstr "Tom fil"
+
+#: ../templates/EmptyJavaFile.xft.xml:6
+msgid "General"
+msgstr ""
 
 #: ../templates/EmptyJavaFile.xft.xml:8
 msgid "Creates an empty Java file."
@@ -106,6 +33,19 @@ msgstr "Opretter en tom Java-fil."
 #: ../templates/EmptyJavaProject.xpt.xml:7
 msgid "Empty Project"
 msgstr "Tomt projekt"
+
+#: ../templates/EmptyJavaProject.xpt.xml:8
+#: ../templates/IkvmConsoleApplicationProject.xpt.xml:8
+#: ../templates/IkvmGladeApplicationProject.xpt.xml:8
+#: ../templates/IkvmGnomeApplicationProject.xpt.xml:8
+#: ../templates/IkvmGtkApplicationProject.xpt.xml:8
+#: ../templates/IkvmLibraryProject.xpt.xml:8
+#: ../templates/JavaApplicationProject.xpt.xml:8
+#: ../templates/JavaConsoleApplicationProject.xpt.xml:8
+#: ../JavaBinding.addin.xml:64
+#, fuzzy
+msgid "Java"
+msgstr "Javac"
 
 #: ../templates/EmptyJavaProject.xpt.xml:11
 msgid "Creates an empty Java solution."
@@ -156,6 +96,12 @@ msgstr "Opret et Java/Gtk#-projekt med IKVM"
 #: ../templates/JavaApplet.xft.xml:4
 msgid "AWT Applet"
 msgstr "AWT-applet"
+
+#: ../templates/JavaApplet.xft.xml:6 ../templates/JavaApplication.xft.xml:6
+#: ../templates/JavaDialog.xft.xml:6 ../templates/JavaFrame.xft.xml:6
+#: ../templates/JavaOKDialog.xft.xml:6 ../templates/JavaPanel.xft.xml:6
+msgid "AWT"
+msgstr ""
 
 #: ../templates/JavaApplet.xft.xml:8
 msgid "Creates a Java AWT Applet"
@@ -218,19 +164,19 @@ msgstr "AWT-panel"
 msgid "Creates a Java AWT panel."
 msgstr "Opretter et Java/AWT-panel."
 
-#: ../Gui/ProjectConfigurationPropertyPanel.cs:48
+#: ../Gui/ProjectConfigurationPropertyPanel.cs:60
 msgid "Executable"
 msgstr "Kørbar"
 
-#: ../Gui/ProjectConfigurationPropertyPanel.cs:49
+#: ../Gui/ProjectConfigurationPropertyPanel.cs:61
 msgid "Library"
 msgstr "Bibliotek"
 
-#: ../Gui/GlobalOptionsPanel.cs:28
+#: ../Gui/GlobalOptionsPanel.cs:35
 msgid "Javac"
 msgstr "Javac"
 
-#: ../Gui/GlobalOptionsPanel.cs:29
+#: ../Gui/GlobalOptionsPanel.cs:36
 msgid "Gcj"
 msgstr "Gcj"
 
@@ -247,7 +193,94 @@ msgstr "Kodegenerering"
 msgid "Output"
 msgstr "Uddata"
 
-#: ../JavaBinding.addin.xml:64
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:106
+#: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:171
 #, fuzzy
-msgid "Java"
-msgstr "Javac"
+msgid "<b>Code Generation</b>"
+msgstr "Kodegenerering"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:168
+msgid "Compile _Target:"
+msgstr "Oversættelses_mål:"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:178
+msgid "Define S_ymbols:"
+msgstr "Definér s_ymboler:"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:190
+msgid "_Main Class:"
+msgstr "_Hovedklasse:"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:202
+#: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:210
+msgid "Classpath:"
+msgstr "Klassesti:"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:249
+#: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:64
+#, fuzzy
+msgid "<b>Compiler</b>"
+msgstr "<b>Skabelon</b>"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:277
+msgid "gcj"
+msgstr "gcj"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:289
+#, fuzzy
+msgid "javac"
+msgstr "javac"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:331
+msgid "<b>Options</b>"
+msgstr "<b>Indstillinger</b>"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:359
+msgid "Enable _optimizations"
+msgstr "Aktivér _optimeringer"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:370
+msgid "Emit _debugging information"
+msgstr "Generer _aflusningsinformation"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:395
+msgid "<b>Warnings</b>"
+msgstr "<b>Advarsler</b>"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:423
+msgid "Generate warnings"
+msgstr "Generér advarsler"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:434
+#, fuzzy
+msgid "Enable deprecation warnings"
+msgstr "Aktivér _kodefuldførelse"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:445
+msgid "Treat warnings as _errors"
+msgstr "Håndter advarsler som f_ejl"
+
+#: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:132
+#, fuzzy
+msgid "Compiler command:"
+msgstr "Oversætter:"
+
+#: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:143
+msgid "IKVM path:"
+msgstr "IKVM-sti:"
+
+#: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:152
+msgid "Java compiler:"
+msgstr "Java-oversætter:"
+
+#: ../IKVMCompilerManager.cs:134
+msgid "Generating {0} reference stub ..."
+msgstr ""
+
+#: ../IKVMCompilerManager.cs:165
+msgid "Generating assembly ..."
+msgstr ""
+
+#: ../IKVMCompilerManager.cs:213
+msgid "Compiling Java source code ..."
+msgstr ""

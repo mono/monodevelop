@@ -23,6 +23,10 @@ msgstr ""
 msgid "Empty File"
 msgstr "Prázdný soubor"
 
+#: ../templates/EmptyJavaFile.xft.xml:6
+msgid "General"
+msgstr ""
+
 #: ../templates/EmptyJavaFile.xft.xml:8
 msgid "Creates an empty Java file."
 msgstr "Vytvoří prázdný Java soubor."
@@ -30,6 +34,18 @@ msgstr "Vytvoří prázdný Java soubor."
 #: ../templates/EmptyJavaProject.xpt.xml:7
 msgid "Empty Project"
 msgstr "Prázdný projekt"
+
+#: ../templates/EmptyJavaProject.xpt.xml:8
+#: ../templates/IkvmConsoleApplicationProject.xpt.xml:8
+#: ../templates/IkvmGladeApplicationProject.xpt.xml:8
+#: ../templates/IkvmGnomeApplicationProject.xpt.xml:8
+#: ../templates/IkvmGtkApplicationProject.xpt.xml:8
+#: ../templates/IkvmLibraryProject.xpt.xml:8
+#: ../templates/JavaApplicationProject.xpt.xml:8
+#: ../templates/JavaConsoleApplicationProject.xpt.xml:8
+#: ../JavaBinding.addin.xml:64
+msgid "Java"
+msgstr "Java"
 
 #: ../templates/EmptyJavaProject.xpt.xml:11
 msgid "Creates an empty Java solution."
@@ -78,6 +94,12 @@ msgstr "Vytvoří Java knihovnu s IKVM"
 #: ../templates/JavaApplet.xft.xml:4
 msgid "AWT Applet"
 msgstr "AWT aplet"
+
+#: ../templates/JavaApplet.xft.xml:6 ../templates/JavaApplication.xft.xml:6
+#: ../templates/JavaDialog.xft.xml:6 ../templates/JavaFrame.xft.xml:6
+#: ../templates/JavaOKDialog.xft.xml:6 ../templates/JavaPanel.xft.xml:6
+msgid "AWT"
+msgstr ""
 
 #: ../templates/JavaApplet.xft.xml:8
 msgid "Creates a Java AWT Applet"
@@ -167,10 +189,6 @@ msgstr "Vytváření kódu"
 msgid "Output"
 msgstr "Výstup"
 
-#: ../JavaBinding.addin.xml:64
-msgid "Java"
-msgstr "Java"
-
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:106
 #: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:171
 msgid "<b>Code Generation</b>"
@@ -250,11 +268,10 @@ msgstr "Kompilátor Javy:"
 msgid "Generating {0} reference stub ..."
 msgstr "Generuji {0} referenční stub..."
 
-#: ../IKVMCompilerManager.cs:155
+#: ../IKVMCompilerManager.cs:165
 msgid "Generating assembly ..."
 msgstr "Generuji assembly..."
 
-#: ../IKVMCompilerManager.cs:203
+#: ../IKVMCompilerManager.cs:213
 msgid "Compiling Java source code ..."
 msgstr "Kompiluji Java zdrojový kód..."
-

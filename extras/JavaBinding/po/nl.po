@@ -1,24 +1,18 @@
-# Swedish translation for MonoDevelop.
-# Copyright (C) 2007 Free Software Foundation, Inc.
-# This file is distributed under the same license as the monodevelop package.
-# Daniel Nylander <po@danielnylander.se>, 2007.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version: monodevelop\n"
-"Report-Msgid-Bugs-To: \n"
+"Project-Id-Version: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2007-10-01 22:12+0100\n"
-"Last-Translator: Daniel Nylander <po@danielnylander.se>\n"
-"Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
+"PO-Revision-Date: 2008-01-22 18:54:28+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: MonoDevelop.Gettext \n"
 
 #: ../templates/EmptyJavaFile.xft.xml:4
 msgid "Empty File"
-msgstr "Tom fil"
+msgstr ""
 
 #: ../templates/EmptyJavaFile.xft.xml:6
 msgid "General"
@@ -26,11 +20,11 @@ msgstr ""
 
 #: ../templates/EmptyJavaFile.xft.xml:8
 msgid "Creates an empty Java file."
-msgstr "Skapar en tom Java-fil."
+msgstr ""
 
 #: ../templates/EmptyJavaProject.xpt.xml:7
 msgid "Empty Project"
-msgstr "Tomt projekt"
+msgstr ""
 
 #: ../templates/EmptyJavaProject.xpt.xml:8
 #: ../templates/IkvmConsoleApplicationProject.xpt.xml:8
@@ -42,16 +36,15 @@ msgstr "Tomt projekt"
 #: ../templates/JavaConsoleApplicationProject.xpt.xml:8
 #: ../JavaBinding.addin.xml:64
 msgid "Java"
-msgstr "Java"
+msgstr ""
 
 #: ../templates/EmptyJavaProject.xpt.xml:11
 msgid "Creates an empty Java solution."
-msgstr "Skapar en tom Java-lösning."
+msgstr ""
 
 #: ../templates/IkvmConsoleApplicationProject.xpt.xml:7
-#, fuzzy
 msgid "IKVM Console Project"
-msgstr "Konsollprojekt"
+msgstr ""
 
 #: ../templates/IkvmConsoleApplicationProject.xpt.xml:11
 msgid "Create a console Java project with IKVM"
@@ -66,27 +59,24 @@ msgid "Create a Glade# Java project with IKVM"
 msgstr ""
 
 #: ../templates/IkvmGnomeApplicationProject.xpt.xml:7
-#, fuzzy
 msgid "IKVM Gnome# Project"
-msgstr "Konsollprojekt"
+msgstr ""
 
 #: ../templates/IkvmGnomeApplicationProject.xpt.xml:11
 msgid "Create a Gnome# Java project with IKVM"
 msgstr ""
 
 #: ../templates/IkvmGtkApplicationProject.xpt.xml:7
-#, fuzzy
 msgid "IKVM Gtk# Project"
-msgstr "Tomt projekt"
+msgstr ""
 
 #: ../templates/IkvmGtkApplicationProject.xpt.xml:11
 msgid "Create a Gtk# Java project with IKVM"
 msgstr ""
 
 #: ../templates/IkvmLibraryProject.xpt.xml:7
-#, fuzzy
 msgid "IKVM Library"
-msgstr "Bibliotek"
+msgstr ""
 
 #: ../templates/IkvmLibraryProject.xpt.xml:11
 msgid "Create a Java library with IKVM"
@@ -103,114 +93,101 @@ msgid "AWT"
 msgstr ""
 
 #: ../templates/JavaApplet.xft.xml:8
-#, fuzzy
 msgid "Creates a Java AWT Applet"
-msgstr "Skapar en tom Java-fil."
+msgstr ""
 
 #: ../templates/JavaApplicationProject.xpt.xml:7
-#, fuzzy
 msgid "AWT Project"
-msgstr "Tomt projekt"
+msgstr ""
 
 #: ../templates/JavaApplicationProject.xpt.xml:11
-#, fuzzy
 msgid "Creates a Java AWT project."
-msgstr "Skapar en tom Java-fil."
+msgstr ""
 
 #: ../templates/JavaApplication.xft.xml:4
 msgid "AWT Application"
 msgstr ""
 
 #: ../templates/JavaApplication.xft.xml:8
-#, fuzzy
 msgid "Creates a Java AWT application."
-msgstr "Skapar en tom Java-lösning."
+msgstr ""
 
 #: ../templates/JavaConsoleApplicationProject.xpt.xml:7
 msgid "Console Project"
-msgstr "Konsollprojekt"
+msgstr ""
 
 #: ../templates/JavaConsoleApplicationProject.xpt.xml:11
-#, fuzzy
 msgid "Create a console Java project"
-msgstr "Konsollprojekt"
+msgstr ""
 
 #: ../templates/JavaDialog.xft.xml:4
 msgid "Java AWT Dialog"
 msgstr ""
 
 #: ../templates/JavaDialog.xft.xml:8
-#, fuzzy
 msgid "Creates an AWT dialog."
-msgstr "Skapar en tom Java-fil."
+msgstr ""
 
 #: ../templates/JavaFrame.xft.xml:4
 msgid "AWT Frame"
 msgstr ""
 
 #: ../templates/JavaFrame.xft.xml:8
-#, fuzzy
 msgid "Creates a Java AWT Frame"
-msgstr "Skapar en tom Java-fil."
+msgstr ""
 
 #: ../templates/JavaOKDialog.xft.xml:4
 msgid "AWT OK Dialog"
 msgstr ""
 
 #: ../templates/JavaOKDialog.xft.xml:8
-#, fuzzy
 msgid "Creates a Java AWT OK Dialog."
-msgstr "Skapar en tom Java-fil."
+msgstr ""
 
 #: ../templates/JavaPanel.xft.xml:4
 msgid "AWT Panel"
 msgstr ""
 
 #: ../templates/JavaPanel.xft.xml:8
-#, fuzzy
 msgid "Creates a Java AWT panel."
-msgstr "Skapar en tom Java-fil."
+msgstr ""
 
 #: ../Gui/ProjectConfigurationPropertyPanel.cs:60
 msgid "Executable"
-msgstr "Körbar fil"
+msgstr ""
 
 #: ../Gui/ProjectConfigurationPropertyPanel.cs:61
 msgid "Library"
-msgstr "Bibliotek"
+msgstr ""
 
 #: ../Gui/GlobalOptionsPanel.cs:35
 msgid "Javac"
-msgstr "Javac"
+msgstr ""
 
 #: ../Gui/GlobalOptionsPanel.cs:36
 msgid "Gcj"
-msgstr "Gcj"
+msgstr ""
 
 #: ../JavaBinding.addin.xml:27
-#, fuzzy
 msgid "Java Files"
-msgstr "Java-filer"
+msgstr ""
 
 #: ../JavaBinding.addin.xml:55
-#, fuzzy
 msgid "Code Generation"
-msgstr "Kodgenerering"
+msgstr ""
 
 #: ../JavaBinding.addin.xml:58
 msgid "Output"
-msgstr "Utdata"
+msgstr ""
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:106
 #: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:171
-#, fuzzy
 msgid "<b>Code Generation</b>"
-msgstr "Kodgenerering"
+msgstr ""
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:168
-#, fuzzy
 msgid "Compile _Target:"
-msgstr "Kommando för kompilator:"
+msgstr ""
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:178
 msgid "Define S_ymbols:"
@@ -223,29 +200,28 @@ msgstr ""
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:202
 #: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:210
 msgid "Classpath:"
-msgstr "Klassökväg:"
+msgstr ""
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:249
 #: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:64
 msgid "<b>Compiler</b>"
-msgstr "<b>Kompilator</b>"
+msgstr ""
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:277
 msgid "gcj"
-msgstr "gcj"
+msgstr ""
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:289
-#, fuzzy
 msgid "javac"
-msgstr "javac"
+msgstr ""
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:331
 msgid "<b>Options</b>"
-msgstr "<b>Alternativ</b>"
+msgstr ""
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:359
 msgid "Enable _optimizations"
-msgstr "Aktivera _optimeringar"
+msgstr ""
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:370
 msgid "Emit _debugging information"
@@ -253,33 +229,31 @@ msgstr ""
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:395
 msgid "<b>Warnings</b>"
-msgstr "<b>Varningar</b>"
+msgstr ""
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:423
 msgid "Generate warnings"
-msgstr "Generera varningar"
+msgstr ""
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:434
-#, fuzzy
 msgid "Enable deprecation warnings"
-msgstr "Generera varningar"
+msgstr ""
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:445
 msgid "Treat warnings as _errors"
-msgstr "Behandla varningar som _fel"
+msgstr ""
 
 #: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:132
 msgid "Compiler command:"
-msgstr "Kommando för kompilator:"
+msgstr ""
 
 #: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:143
 msgid "IKVM path:"
 msgstr ""
 
 #: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:152
-#, fuzzy
 msgid "Java compiler:"
-msgstr "Java-filer"
+msgstr ""
 
 #: ../IKVMCompilerManager.cs:134
 msgid "Generating {0} reference stub ..."
