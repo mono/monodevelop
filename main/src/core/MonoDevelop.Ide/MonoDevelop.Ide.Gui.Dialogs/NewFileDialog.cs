@@ -73,7 +73,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.BorderWidth = 6;
 			this.HasSeparator = false;
 			
-			InitializeDialog (false);
 			InitializeComponents ();
 			
 			nameEntry.GrabFocus ();
@@ -556,10 +555,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 			
 			if (projects != null) {
+				Project curProject = IdeApp.ProjectOperations.CurrentSelectedProject;
+				
 				boxProject.Visible = true;
+				projectAddCheckbox.Active = curProject != null;
 				projectAddCheckbox.Toggled += new EventHandler (AddToProjectToggled);
 				
-				Project curProject = IdeApp.ProjectOperations.CurrentSelectedProject;
 				projectNames = new string [projects.Count];
 				int i = 0;
 				
@@ -578,11 +579,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					projectAddCombo.AppendText (pn);
 				
 				projectAddCombo.Active = i;
-				projectAddCombo.Sensitive = false;
+				projectAddCombo.Sensitive = projectAddCheckbox.Active;
 				projectAddCombo.Changed += new EventHandler (AddToProjectComboChanged);
 				
-				projectPathLabel.Sensitive = false;
-				projectFolderEntry.Sensitive = false;
+				projectPathLabel.Sensitive = projectAddCheckbox.Active;
+				projectFolderEntry.Sensitive = projectAddCheckbox.Active;
 				if (curProject != null)
 					projectFolderEntry.Path = curProject.BaseDirectory;
 				projectFolderEntry.PathChanged += new EventHandler (AddToProjectPathChanged);
@@ -603,6 +604,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			catView.RowActivated += new RowActivatedHandler (CategoryActivated);
 			iconView.IconSelected += new EventHandler(SelectedIndexChange);
 			iconView.IconDoubleClicked += new EventHandler(OpenEvent);
+			InitializeDialog (false);
 			InitializeView ();
 			UpdateOkStatus ();
 		}

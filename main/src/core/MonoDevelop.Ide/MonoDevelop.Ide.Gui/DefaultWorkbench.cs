@@ -452,7 +452,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (e.IsDirectory) {
 				foreach (IViewContent content in ViewContentCollection) {
-					if (content.ContentName.StartsWith(e.SourceFile)) {
+					if (content.ContentName != null && content.ContentName.StartsWith(e.SourceFile)) {
 						content.ContentName = e.TargetFile + content.ContentName.Substring(e.SourceFile.Length);
 					}
 				}
