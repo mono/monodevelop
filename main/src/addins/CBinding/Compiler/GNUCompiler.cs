@@ -591,16 +591,12 @@ namespace CBinding
 		{
 			TextReader reader = new StringReader (errorString);
 			string next;
-			Queue<CompilerError> queue = new Queue<CompilerError> ();
 				
 			while ((next = reader.ReadLine ()) != null) {
 				CompilerError error = CreateErrorFromErrorString (next);
 				if (error != null)
-					queue.Enqueue (error);
+					cr.Errors.Add (error);
 			}
-			
-			while (queue.Count > 0)
-				cr.Errors.Add (queue.Dequeue ());
 			
 			reader.Close ();
 		}
@@ -651,16 +647,12 @@ namespace CBinding
 		{
 			TextReader reader = new StringReader (errorString);
 			string next;
-			Queue<CompilerError> queue = new Queue<CompilerError> ();
 			
 			while ((next = reader.ReadLine ()) != null) {
 				CompilerError error = CreateLinkerErrorFromErrorString (next);
 				if (error != null)
-					queue.Enqueue (error);
+					cr.Errors.Add (error);
 			}
-			
-			while (queue.Count > 0)
-				cr.Errors.Add (queue.Dequeue ());
 			
 			reader.Close ();
 		}

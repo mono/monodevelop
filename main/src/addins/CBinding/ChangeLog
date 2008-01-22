@@ -1,3 +1,7 @@
+2008-01-22  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
+	* Compiler/GNUCompiler.cs: Removed useless code.
+
 2008-01-18  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* Parser/TagDatabaseManager.cs: Cache tags into a hash table and see if they
