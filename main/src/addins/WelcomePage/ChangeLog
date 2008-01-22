@@ -1,3 +1,7 @@
+2008-01-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* WelcomePage.addin.xml: Updated add-in category and description.
+
 2008-01-11  Alexandre Miguel Pedro Gomes  <alexmipego@gmail.com>
 
 	* WelcomePageView.cs: Check if WebException.Response is null before

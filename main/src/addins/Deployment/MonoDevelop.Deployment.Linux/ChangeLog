@@ -1,3 +1,8 @@
+2008-01-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment.Linux.addin.xml: Updated add-in category and
+	  description.
+
 2008-01-15  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* app.desktop.xft.xml: Make template categories translatable.

@@ -1,3 +1,7 @@
+2008-01-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Autotools.addin.xml: Updated add-in category and description.
+
 2008-01-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Autotools.addin.xml, MonoDevelop.Autotools.mdp,

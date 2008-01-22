@@ -1,11 +1,11 @@
 <Addin id          = "WelcomePage"
        namespace   = "MonoDevelop"
-	   name        = "MonoDevelop Welcome Page"
+	   name        = "Welcome Page"
        author      = "Scott Ellington"
 	   copyright   = "MIT X11"
 	   url         = "http://salmonsalvo.net/"
 	   description = "Welcome Page for MonoDevelop"
-	   category    = "IDE extensions"	   
+	   category    = "MonoDevelop Core"	   
        version     = "0.18.0">
 	
 	<Runtime>

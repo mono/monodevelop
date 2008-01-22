@@ -1,6 +1,6 @@
 <Addin id          = "Deployment.Linux"
        namespace   = "MonoDevelop"
-       name        = "MonoDevelop Deployment Services for Linux"
+       name        = "Deployment Services for Linux"
        author      = "Lluis Sanchez, Michael Hutchinson"
        copyright   = "MIT X11"
        url         = "http://www.monodevelop.com"

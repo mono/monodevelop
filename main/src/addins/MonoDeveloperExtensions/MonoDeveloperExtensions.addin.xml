@@ -5,6 +5,7 @@
        copyright   = "(c) 2005 Novell, Inc."
        url         = "http://www.monodevelop.com"
        description = "Provides some IDE extensions useful for developing and building the Mono class libraries."
+       category    = "Project Import and Export"
        version     = "0.18.0">
     
     <Runtime>
