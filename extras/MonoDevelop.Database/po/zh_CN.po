@@ -3,15 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 # Yu Lindong <shinjidev@163.com>, 2006.
 # Funda Wang <fundawang@linux.net.cn>, 2006.
-# 
-# 
+#
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 0.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2006-08-15 18:26+0800\n"
-"Last-Translator: Funda Wang <fundawang@linux.net.cn>\n"
+"PO-Revision-Date: 2007-12-26 21:22+0800\n"
+"Last-Translator: Simon Keung <simon_keung@hotmail.com>\n"
 "Language-Team: Yu Lindong <shinjidev@163.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -27,36 +27,32 @@ msgid "Please enter the password for connection '{0}'"
 msgstr ""
 
 #: ../MonoDevelop.Database.Sql/QueryService.cs:75
-#, fuzzy
 msgid "Enter Password"
-msgstr "密码"
+msgstr "输入密码"
 
-#: ../MonoDevelop.Database.Query/MonoDevelop.Database.Query.addin.xml:30
-#, fuzzy
+#: ../MonoDevelop.Database.Query/MonoDevelop.Database.Query.addin.xml:31
 msgid "Query Database"
-msgstr "数据库"
+msgstr "查询数据库"
 
-#: ../MonoDevelop.Database.Query/MonoDevelop.Database.Query.addin.xml:36
-#, fuzzy
+#: ../MonoDevelop.Database.Query/MonoDevelop.Database.Query.addin.xml:37
 msgid "_Database"
-msgstr "数据库"
+msgstr "数据库(_D)"
 
 #: ../MonoDevelop.Database.Query/SqlQueryView.cs:76
 msgid "Execute"
 msgstr "执行"
 
 #: ../MonoDevelop.Database.Query/SqlQueryView.cs:79
-#, fuzzy
 msgid "Clear Results"
-msgstr "搜索结果"
+msgstr "清除结果"
 
 #: ../MonoDevelop.Database.Query/SqlQueryView.cs:109
 msgid "Status"
-msgstr ""
+msgstr "状态"
 
 #: ../MonoDevelop.Database.Query/SqlQueryView.cs:169
 msgid "Unable to connect to database '{0}'"
-msgstr ""
+msgstr "不能连接到数据库‘{0}’"
 
 #: ../MonoDevelop.Database.Query/SqlQueryView.cs:202
 msgid "Table"
@@ -67,33 +63,29 @@ msgid "Affected Rows"
 msgstr ""
 
 #: ../MonoDevelop.Database.Query/SqlQueryView.cs:216
-#, fuzzy
 msgid "No Results"
-msgstr "结果"
+msgstr "没有结果"
 
 #: ../MonoDevelop.Database.Query/SqlQueryView.cs:234
-#, fuzzy
 msgid "Executing query"
-msgstr "执行 SQL 查询于"
+msgstr "正在执行 SQL 查询"
 
 #: ../MonoDevelop.Database.Query/SqlQueryView.cs:248
-#, fuzzy
 msgid "Query execute cancelled"
-msgstr "测试执行被取消。"
+msgstr "执行 SQL 查询被取消"
 
 #: ../MonoDevelop.Database.Query/SqlQueryView.cs:185
-msgid "Query executed ({0} result tables)"
-msgstr ""
+msgid "Query executed ({0} result table)"
+msgid_plural "Query executed ({0} result tables)"
+msgstr[0] "查询执行完 （{0} 结果）"
 
 #: ../MonoDevelop.Database.Sql.Sqlite/SqliteGuiProvider.cs:41
-#, fuzzy
 msgid "Save Database"
-msgstr "数据库"
+msgstr "保存数据库"
 
 #: ../MonoDevelop.Database.Sql.Sqlite/SqliteGuiProvider.cs:47
-#, fuzzy
 msgid "Open Database"
-msgstr "数据库"
+msgstr "打开数据库"
 
 #: ../MonoDevelop.Database.Sql.Sqlite/SqliteGuiProvider.cs:60
 msgid "SQLite databases"
@@ -105,187 +97,172 @@ msgstr ""
 msgid "All files"
 msgstr "全部文件"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:26
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:27
 msgid "Database Browser"
 msgstr "数据库浏览器"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:27
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:28
 msgid "Show System Objects"
 msgstr "显示系统对象"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:165
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:166
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:299
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.CreateDatabaseDialog.cs:135
 msgid "Database"
 msgstr "数据库"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:168
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:169
 #, fuzzy
 msgid "Add Connection"
 msgstr "添加连接"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:171
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:172
 #, fuzzy
 msgid "Edit Connection"
 msgstr "添加连接"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:174
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:175
 msgid "Remove"
 msgstr "删除"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:177
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:178
 msgid "Refresh"
 msgstr "刷新"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:180
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:181
 #, fuzzy
 msgid "Connect"
 msgstr "断开连接"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:183
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:184
 msgid "Disconnect"
 msgstr "断开连接"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:186
-#, fuzzy
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:187
 msgid "Select *"
-msgstr "全选(_A)"
+msgstr "全选 *"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:189
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:190
 msgid "Select x,y,..."
 msgstr ""
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:192
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:193
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:255
-#, fuzzy
 msgid "Empty Table"
 msgstr "清空表"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:195
-#, fuzzy
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:196
 msgid "Query"
-msgstr "每"
+msgstr "查询"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:198
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:199
 msgid "Re_name"
 msgstr "重命名(_N)"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:206
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:207
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.CreateDatabaseDialog.cs:41
-#, fuzzy
 msgid "Create Database"
-msgstr "数据库"
+msgstr "创建新数据库"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:209
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:210
 #: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:74
-#, fuzzy
 msgid "Create Table"
-msgstr "创建新文件"
+msgstr "创建新表"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:212
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:213
 #: ../MonoDevelop.Database.Designer/Dialogs/ViewEditorDialog.cs:64
 #, fuzzy
 msgid "Create View"
 msgstr "创建新文件夹"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:215
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:216
 #: ../MonoDevelop.Database.Designer/Dialogs/ProcedureEditorDialog.cs:64
-#, fuzzy
 msgid "Create Procedure"
-msgstr "过程"
+msgstr "创建新工序"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:218
-#, fuzzy
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:219
 msgid "Create Constraint"
-msgstr "约束"
+msgstr "创建新约束"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:221
-#, fuzzy
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:222
 msgid "Create Trigger"
-msgstr "触发器"
+msgstr "创建新触发器"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:224
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:225
 #: ../MonoDevelop.Database.Designer/Dialogs/UserEditorDialog.cs:62
-#, fuzzy
 msgid "Create User"
-msgstr "创建新文件夹"
+msgstr "创建新用户"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:228
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:229
 #, fuzzy
 msgid "Alter Database"
 msgstr "数据库"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:231
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:232
 #: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:76
 #, fuzzy
 msgid "Alter Table"
 msgstr "表"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:234
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:235
 #: ../MonoDevelop.Database.Designer/Dialogs/ViewEditorDialog.cs:66
 msgid "Alter View"
 msgstr ""
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:237
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:238
 #: ../MonoDevelop.Database.Designer/Dialogs/ProcedureEditorDialog.cs:66
 #, fuzzy
 msgid "Alter Procedure"
 msgstr "过程"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:240
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:241
 #, fuzzy
 msgid "Alter Constraint"
 msgstr "约束"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:243
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:244
 #, fuzzy
 msgid "Alter Trigger"
 msgstr "触发器"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:246
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:247
 #: ../MonoDevelop.Database.Designer/Dialogs/UserEditorDialog.cs:64
 msgid "Alter User"
 msgstr ""
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:250
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:251
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:247
-#, fuzzy
 msgid "Drop Database"
-msgstr "删除表"
+msgstr "删除数据库"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:253
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:254
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:281
-#, fuzzy
 msgid "Drop Table"
 msgstr "删除表"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:256
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:257
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ViewNodeBuilder.cs:191
 #, fuzzy
 msgid "Drop View"
 msgstr "删除表"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:259
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:260
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ProcedureNodeBuilder.cs:190
-#, fuzzy
 msgid "Drop Procedure"
-msgstr "过程"
+msgstr "删除工序"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:262
-#, fuzzy
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:263
 msgid "Drop Trigger"
-msgstr "触发器"
+msgstr "删除触发器"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:265
-#, fuzzy
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:266
 msgid "Drop Constraint"
-msgstr "约束"
+msgstr "删除约束"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:268
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:269
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/UserNodeBuilder.cs:170
-#, fuzzy
 msgid "Drop User"
-msgstr "删除表"
+msgstr "删除用户"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextCollectionNodeBuilder.cs:66
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextCollectionNodeBuilder.cs:71
@@ -309,7 +286,7 @@ msgstr "重命名配置"
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:246
 #, fuzzy
 msgid "Are you sure you want to drop database '{0}'"
-msgstr "您确定想要删除窗口“{0}”吗？"
+msgstr "您确定想要删除部件“{0}”吗？"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TablesNodeBuilder.cs:66
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TablesNodeBuilder.cs:71
@@ -338,28 +315,24 @@ msgid "Constraints"
 msgstr "约束"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:254
-#, fuzzy
 msgid "Are you sure you want to empty table '{0}'"
-msgstr "您确定想要删除窗口“{0}”吗？"
+msgstr "您确定想要放空表“{0}”吗？"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:271
 msgid "Table emptied"
 msgstr "表已清空"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:280
-#, fuzzy
 msgid "Are you sure you want to drop table '{0}'"
-msgstr "您确定想要删除部件“{0}”吗？"
+msgstr "您确定想要删除表“{0}”吗？"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/UserNodeBuilder.cs:169
-#, fuzzy
 msgid "Are you sure you want to drop user '{0}'"
-msgstr "您确定想要删除窗口“{0}”吗？"
+msgstr "您确定想要删除用户“{0}”吗？"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ProcedureNodeBuilder.cs:189
-#, fuzzy
 msgid "Are you sure you want to drop procedure '{0}'"
-msgstr "您确定想要删除部件“{0}”吗？"
+msgstr "您确定想要删除过程“{0}”吗？"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ViewNodeBuilder.cs:190
 #, fuzzy
@@ -435,7 +408,6 @@ msgid "Parameters"
 msgstr "参数"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ParameterNodeBuilder.cs:56
-#, fuzzy
 msgid "Parameter"
 msgstr "参数"
 
@@ -445,14 +417,12 @@ msgid "Select Column"
 msgstr "选择命令"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.SelectColumnDialog.cs:55
-#, fuzzy
 msgid "Select All"
-msgstr "全选(_A)"
+msgstr "全选"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.SelectColumnDialog.cs:65
-#, fuzzy
 msgid "Deselect All"
-msgstr "全部不选(_U)"
+msgstr "全部不选"
 
 #: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:46
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:244
@@ -505,20 +475,19 @@ msgstr "参数"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DataGrid.cs:106
 msgid "of"
-msgstr ""
+msgstr "的"
 
 #: ../MonoDevelop.Database.Components/Widgets/DataGrid/Renderers/BooleanContentRenderer.cs:43
 msgid "Y"
-msgstr ""
+msgstr "是(Y)"
 
 #: ../MonoDevelop.Database.Components/Widgets/DataGrid/Renderers/BooleanContentRenderer.cs:43
 msgid "N"
-msgstr ""
+msgstr "否（N)"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ShowImageDialog.cs:31
-#, fuzzy
 msgid "Image"
-msgstr "页"
+msgstr "图像"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ShowImageDialog.cs:75
 msgid "Unable to load object as Image"
@@ -563,9 +532,8 @@ msgid "Port"
 msgstr ""
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:277
-#, fuzzy
 msgid "Username"
-msgstr "重命名"
+msgstr "用户名"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:288
 msgid "Password"
@@ -607,7 +575,7 @@ msgid "Please wait"
 msgstr ""
 
 #: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:97
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:45
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:46
 #, fuzzy
 msgid "Import From File"
 msgstr "空文件"
@@ -619,7 +587,7 @@ msgid "SQL files"
 msgstr "添加文件"
 
 #: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:128
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:48
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:49
 #, fuzzy
 msgid "Export To File"
 msgstr "空 HTML 文件"
@@ -631,22 +599,22 @@ msgstr "您确定想要删除部件“{0}”吗？"
 
 #: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:146
 msgid "Overwrite?"
-msgstr ""
+msgstr "覆盖？"
 
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:36
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:37
 #, fuzzy
 msgid "Display content as text"
 msgstr "显示选项列表"
 
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:38
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:39
 msgid "Display content as xml text"
 msgstr ""
 
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:40
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:41
 msgid "Display content as xml tree"
 msgstr ""
 
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:42
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:43
 msgid "Display content as image"
 msgstr ""
 
@@ -657,7 +625,7 @@ msgstr "事件 {0}"
 
 #: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:96
 msgid "Each Row"
-msgstr ""
+msgstr "每一行"
 
 #: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:97
 #, fuzzy
@@ -679,14 +647,12 @@ msgid "Comment"
 msgstr "公共"
 
 #: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:185
-#, fuzzy
 msgid "Are you sure you want to remove trigger '{0}'?"
-msgstr "您确定想要删除部件“{0}”吗？"
+msgstr "您确定想要删除触发器“{0}”吗？"
 
 #: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:186
-#, fuzzy
 msgid "Remove Trigger"
-msgstr "触发器"
+msgstr "删除触发器"
 
 #: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:341
 msgid "Trigger '{0}' does not contain a trigger statement."
@@ -748,9 +714,8 @@ msgid "No name specified."
 msgstr "指定了无效的程序集名称"
 
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.TableEditorDialog.cs:39
-#, fuzzy
 msgid "Edit Table"
-msgstr "清空表"
+msgstr "编辑表"
 
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.TableEditorDialog.cs:112
 msgid "Preview SQL"
@@ -767,9 +732,8 @@ msgid "Definition"
 msgstr "描述"
 
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.PreviewDialog.cs:27
-#, fuzzy
 msgid "Preview"
-msgstr "提供者"
+msgstr "预览"
 
 #: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:114
 #, fuzzy
@@ -799,7 +763,7 @@ msgstr "撤消最后的操作"
 #: ../MonoDevelop.Database.Designer/Widgets/UniqueConstraintEditorWidget.cs:188
 #, fuzzy
 msgid "Are you sure you want to remove constraint '{0}'?"
-msgstr "您确定想要删除窗口“{0}”吗？"
+msgstr "您确定想要删除部件“{0}”吗？"
 
 #: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:192
 #: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:154
@@ -837,3 +801,4 @@ msgstr "新建配置"
 #: ../MonoDevelop.Database.Designer/Widgets/PrimaryKeyConstraintEditorWidget.cs:193
 msgid "Primary Key constraint '{0}' must be applied to one or more columns."
 msgstr ""
+
