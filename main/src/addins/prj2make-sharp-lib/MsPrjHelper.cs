@@ -741,7 +741,7 @@ namespace MonoDevelop.Prj2Make
 						flOut.BuildAction = BuildAction.Compile;
 						break;
 					case MonoDevelop.Prj2Make.Schema.Csproj.FileBuildAction.Content:
-						flOut.BuildAction = BuildAction.Exclude;
+						flOut.BuildAction = BuildAction.Nothing;
 						break;
 					case MonoDevelop.Prj2Make.Schema.Csproj.FileBuildAction.EmbeddedResource:
 						flOut.BuildAction = BuildAction.EmbedAsResource;
