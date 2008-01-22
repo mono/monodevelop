@@ -33,6 +33,10 @@ namespace MonoDevelop.SourceEditor
 {
 	public class SourceEditorDisplayBinding : IDisplayBinding
 	{
+		static SourceEditorDisplayBinding ()
+		{
+			SourceEditorOptions.Init ();
+		}
 		
 		string IDisplayBinding.DisplayName {
 			get {

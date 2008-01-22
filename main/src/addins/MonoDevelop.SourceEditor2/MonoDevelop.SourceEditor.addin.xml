@@ -58,4 +58,14 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection" />
 		</ItemSet> -->
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/OptionsDialogPanels">
+		<DialogPanel id = "TextEditorOptions2" insertafter = "CodingOptions" insertbefore = "ToolsOptions" _label = "Text Editor">
+			<DialogPanel id = "General" _label = "General" class = "MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel"/>
+			<DialogPanel id = "Markers" _label = "Markers and Rulers" class = "MonoDevelop.SourceEditor.OptionPanels.MarkerPanel"/>
+			<DialogPanel id = "Behavior" _label = "Behavior" class = "MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel"/>
+			<DialogPanel id = "SyntaxHighlighting" _label = "Syntax Highlighting" class = "MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel"/>
+		</DialogPanel>
+	</Extension>
+	
 </Addin>
