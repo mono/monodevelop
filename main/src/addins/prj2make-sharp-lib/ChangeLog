@@ -1,3 +1,7 @@
+2008-01-22  Ankit Jain  <jankit@novell.com>
+
+	* MSBuildFileFormat.cs: Add try/catch for event handlers.
+
 2008-01-20  Ankit Jain  <jankit@novell.com>
 
 	* Change Console.WriteLines to LoggingService calls.
