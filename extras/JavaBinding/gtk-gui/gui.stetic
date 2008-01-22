@@ -5,9 +5,9 @@
     <target-gtk-version>2.8.3</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="MonoDevelop.Components, Version=0.17.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Ide, Version=0.17.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Projects.Gui, Version=0.17.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Components, Version=0.18.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Ide, Version=0.18.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Projects.Gui, Version=0.18.0.0, Culture=neutral" />
   </import>
   <widget class="Gtk.Bin" id="JavaBinding.CodeGenerationPanelWidget" design-size="600 410">
     <property name="MemberName" />

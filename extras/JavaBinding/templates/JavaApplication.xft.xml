@@ -4,7 +4,7 @@
 	<TemplateConfiguration>
            <_Name>AWT Application</_Name>
            <Icon>md-gui-file</Icon>
-           <Category>AWT</Category>
+           <_Category>AWT</_Category>
            <LanguageName>Java</LanguageName>
            <_Description>Creates a Java AWT application.</_Description>
 	</TemplateConfiguration>
