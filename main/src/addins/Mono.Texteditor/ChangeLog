@@ -1,3 +1,15 @@
+2008-01-22  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextEditor.cs, Mono.TextEditor/TextEditorOptions.cs,
+	  Mono.TextEditor/GutterMargin.cs: Added some text editor options -
+	  options are now virtual.
+
+2008-01-22  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextEditor.cs, Mono.TextEditor/TextEditorOptions.cs,
+	  Mono.TextEditor/GutterMargin.cs: Added some text editor options -
+	  options are now virtual.
+
 2008-01-21  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor.mdp, Mono.TextEditor.mds: Added changelogs to the project

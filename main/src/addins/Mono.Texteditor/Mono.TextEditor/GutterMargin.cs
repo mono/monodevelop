@@ -40,7 +40,7 @@ namespace Mono.TextEditor
 		{
 			this.editor = editor;
 			layout = new Pango.Layout (editor.PangoContext);
-			layout.FontDescription = Pango.FontDescription.FromString ("Monospace 10");
+			layout.FontDescription = TextEditorOptions.Options.Font;
 		}
 		
 		public override int Width {

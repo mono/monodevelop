@@ -31,7 +31,9 @@ namespace Mono.TextEditor
 {
 	public class TextEditorOptions
 	{
+		const string DEFAULT_FONT = "Mono 10";
 		static TextEditorOptions options = new TextEditorOptions ();
+		
 		public static TextEditorOptions Options {
 			get {
 				return options;
@@ -59,8 +61,9 @@ namespace Mono.TextEditor
 		bool showEolMarkers = false;
 		
 		bool highlightCaretLine = false;
+		string fontName = DEFAULT_FONT;
 		
-		public bool TabsToSpaces {
+		public virtual bool TabsToSpaces {
 			get {
 				return tabsToSpaces;
 			}
@@ -69,7 +72,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public int IndentationSize {
+		public virtual int IndentationSize {
 			get {
 				return indentationSize;
 			}
@@ -78,7 +81,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public int TabSize {
+		public virtual int TabSize {
 			get {
 				return tabSize;
 			}
@@ -87,7 +90,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public bool ShowIconMargin {
+		public virtual bool ShowIconMargin {
 			get {
 				return showIconMargin;
 			}
@@ -96,7 +99,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public bool ShowLineNumberMargin {
+		public virtual bool ShowLineNumberMargin {
 			get {
 				return showLineNumberMargin;
 			}
@@ -105,7 +108,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public bool ShowFoldMargin {
+		public virtual bool ShowFoldMargin {
 			get {
 				return showFoldMargin;
 			}
@@ -114,7 +117,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public bool ShowInvalidLines {
+		public virtual bool ShowInvalidLines {
 			get {
 				return showInvalidLines;
 			}
@@ -123,7 +126,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public bool ShowTabs {
+		public virtual bool ShowTabs {
 			get {
 				return showTabs;
 			}
@@ -132,7 +135,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public bool ShowEolMarkers {
+		public virtual bool ShowEolMarkers {
 			get {
 				return showEolMarkers;
 			}
@@ -141,7 +144,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public bool HighlightCaretLine {
+		public virtual bool HighlightCaretLine {
 			get {
 				return highlightCaretLine;
 			}
@@ -150,7 +153,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public bool ShowSpaces {
+		public virtual bool ShowSpaces {
 			get {
 				return showSpaces;
 			}
@@ -159,7 +162,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public int RulerColumn {
+		public virtual int RulerColumn {
 			get {
 				return rulerColumn;
 			}
@@ -168,7 +171,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public bool ShowRuler {
+		public virtual bool ShowRuler {
 			get {
 				return showRuler;
 			}
@@ -177,7 +180,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public bool AutoIndent {
+		public virtual bool AutoIndent {
 			get {
 				return autoIndent;
 			}
@@ -186,5 +189,19 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public virtual string FontName {
+			get {
+				return fontName;
+			}
+			set {
+				fontName = !String.IsNullOrEmpty (value) ? value : DEFAULT_FONT;
+			}
+		}
+		
+		public virtual Pango.FontDescription Font {
+			get {
+				return Pango.FontDescription.FromString (FontName);
+			}
+		}		
 	}
 }

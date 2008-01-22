@@ -146,7 +146,7 @@ namespace Mono.TextEditor
 			
 			layout = new Pango.Layout (this.PangoContext);
 			layout.Alignment = Pango.Alignment.Left;
-			layout.FontDescription = Pango.FontDescription.FromString ("Monospace 10");
+			layout.FontDescription = TextEditorOptions.Options.Font;
 			
 			keyBindings.Add (GetKeyCode (Gdk.Key.Left), new CaretMoveLeft ());
 			keyBindings.Add (GetKeyCode (Gdk.Key.Left, Gdk.ModifierType.ShiftMask), new SelectionMoveLeft ());
