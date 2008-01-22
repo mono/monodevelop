@@ -1,5 +1,15 @@
 2008-01-22  Mike Krüger <mkrueger@novell.com> 
 
+	* OblivionStyle.xml, Mono.TextEditor.Highlighting/Style.cs, C64Style.xml:
+	  Color styles now have descriptions. Name/Description is now localizable.
+
+2008-01-22  Mike Krüger <mkrueger@novell.com> 
+
+	* OblivionStyle.xml, Mono.TextEditor.Highlighting/Style.cs, C64Style.xml:
+	  Color styles now have descriptions. Name/Description is now localizable.
+
+2008-01-22  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditor.cs, Mono.TextEditor/TextEditorOptions.cs,
 	  Mono.TextEditor/GutterMargin.cs: Added some text editor options -
 	  options are now virtual.

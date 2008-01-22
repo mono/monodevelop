@@ -34,6 +34,7 @@ namespace Mono.TextEditor.Highlighting
 	public class Style
 	{
 		string name;
+		string description;
 		
 		Color def, background, selectedBg;
 		Color lineMarker, ruler, whitespaceMarker, invalidLineMarker;
@@ -142,11 +143,13 @@ namespace Mono.TextEditor.Highlighting
 			get {
 				return name;
 			}
-			set {
-				name = value;
+		}
+		
+		public string Description {
+			get {
+				return description;
 			}
 		}
-
 
 		public Style ()
 		{
@@ -292,7 +295,8 @@ namespace Mono.TextEditor.Highlighting
 			XmlReadHelper.ReadList (reader, "EditorStyle", delegate () {
 				switch (reader.LocalName) {
 				case "EditorStyle":
-					result.name = reader.GetAttribute ("name");
+					result.name        = reader.GetAttribute ("_name");
+					result.description = reader.GetAttribute ("_description");
 					return true;
 				case "Color":
 					result.SetColor (reader.GetAttribute ("name"),
