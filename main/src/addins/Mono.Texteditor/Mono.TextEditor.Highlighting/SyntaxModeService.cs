@@ -50,6 +50,15 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
+		public static Style GetColorStyle (Gtk.Widget widget, string name) 
+		{
+			foreach (Style style in styles) {
+				if (style.Name == name)
+					return style;
+			}
+			return new DefaultStyle (widget);
+		}
+		
 		public static SyntaxMode GetSyntaxMode (string mimeType)
 		{
 			foreach (SyntaxMode mode in syntaxModes) {
