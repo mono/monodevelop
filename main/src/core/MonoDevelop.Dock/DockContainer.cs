@@ -374,7 +374,7 @@ namespace MonoDevelop.Components.Docking
 		
 		internal void DockInPlaceholder (DockItem item)
 		{
-			if (!placeholderWindow.Visible)
+			if (placeholderWindow == null || !placeholderWindow.Visible)
 				return;
 			
 			item.Status = DockItemStatus.Dockable;
