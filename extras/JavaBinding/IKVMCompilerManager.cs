@@ -133,8 +133,18 @@ namespace JavaBinding
 				string outputName = Path.Combine (configuration.OutputDirectory, name + ".jar");
 				if (!System.IO.File.Exists (outputName)) {
 					monitor.Log.WriteLine (String.Format (GettextCatalog.GetString ("Generating {0} reference stub ..."), name));
-					ProcessWrapper p = Runtime.ProcessService.StartProcess ("ikvmstub", "\"" + fileName + "\"", configuration.OutputDirectory, null);
+					ProcessWrapper p = Runtime.ProcessService.StartProcess ("ikvmstub", "\"" + fileName + "\"", configuration.OutputDirectory, monitor.Log, monitor.Log, null);
 					p.WaitForExit ();
+					if (p.ExitCode != 0) {
+						monitor.ReportError ("Stub generation failed.", null);
+						if (File.Exists (outputName)) {
+							try {
+								File.Delete (outputName);
+							} catch {
+								// Ignore
+							}
+						}
+					}
 				}
 				AppendClasspath (result, outputName);
 			}
