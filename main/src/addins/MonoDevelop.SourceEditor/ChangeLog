@@ -1,3 +1,18 @@
+2008-01-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.addin.xml: Updated add-in category and
+	  description.
+
+2008-01-21  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs: Fixed Bug 354248 -
+	  Uncomment does not work when comment tag is not the first two signs.
+
+2008-01-21  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs: Fixed Bug 354248 -
+	  Uncomment does not work when comment tag is not the first two signs.
+
 2008-01-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Set the file

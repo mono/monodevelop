@@ -5,7 +5,7 @@
        copyright = "GPL"
        url       = ""
        description = "Support for VS2005 or MSBuild based projects and importer for VS2003 projects"
-	   category    = "IDE extensions"
+       category    = "Project Import and Export"
        version   = "0.18.0">
 
 	<Dependencies>

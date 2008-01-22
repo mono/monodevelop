@@ -5,7 +5,7 @@
        copyright   = "MIT X11"
        url         = "http://www.monodevelop.com/"
        description = "Support for ASP.NET projects, including editing, compiling, previewing and deploying to remote servers."
-	   category    = "IDE extensions"
+	   category    = "Web Development"
        version     = "0.18.0">
 	
 	<Dependencies>

@@ -1,11 +1,11 @@
 <Addin id        = "VersionControl"
        namespace   = "MonoDevelop"
-       name      = "MonoDevelop Version Control Addin"
+       name      = "Version Control Support"
        author    = "Joshua Tauberer"
        copyright = "GPL"
        url       = "http://taubz.for.net/code/diff"
        description = "A MonoDevelop addin for using version control systems like Subversion"
-       category    = "IDE extensions"
+       category    = "Version Control"
        version   = "0.18.0">
  
 	<Runtime>

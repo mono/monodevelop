@@ -1,6 +1,6 @@
 <Addin id          = "SourceEditor"
        namespace   = "MonoDevelop"
-       name        = "MonoDevelop Text Editor"
+       name        = "Text Editor"
        author      = "Ben Maurer, Lluis Sanchez, Todd Berman"
        copyright   = ""
        url         = ""

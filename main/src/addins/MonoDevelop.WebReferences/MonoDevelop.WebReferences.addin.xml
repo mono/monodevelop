@@ -6,7 +6,7 @@
 	copyright = "LGPL"
 	url = "http://www.monodevelop.com"
 	description = "Provides support for adding and maintianing Web References for CSharp and VB projects."
-	category = "IDE extensions"
+	category = "Web Development"
 	version = "0.18.0" >
     
     <Runtime>

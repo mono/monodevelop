@@ -1,3 +1,7 @@
+2008-01-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* WelcomePage.addin.xml: Updated add-in category and description.
+
 2007-12-28  Paul Lange  <palango@gmx.de>
 
 	* WelcomePageContent.xml: Fix 'Bug 350395 - Use of "New Project/Solution" 

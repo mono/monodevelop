@@ -1,10 +1,11 @@
 <Addin	id          = "Autotools"
         namespace   = "MonoDevelop"
-		name        = "MonoDevelop Autotools AddIn"
+		name        = "Makefile generation"
 		author      = "Matthias Braun, Scott Ellington"
         copyright   = "LGPL"
         url         = "http://monodevelop.com"
-        description = "AddIn for deploying projects as autotool projects"
+        description = "Allows generating simple makefiles and Autotools based makefiles for projects"
+        category    = "Project Import and Export"
         version     = "0.18.0">
         
 	<Runtime>
