@@ -14,6 +14,12 @@ update-po:
 $(GMO_FILES): $(LC_BUILD)/%/LC_MESSAGES/$(PACKAGE).mo: %.po
 	$(mkdir_p) $(dir $@)
 	msgfmt '$<' -o '$@'
+
+statistics:
+	@for LANGFILE in $(ALL_LINGUAS); do \
+		echo "$$LANGFILE.po:"; \
+		msgfmt -o /dev/null --verbose "$$LANGFILE.po"; \
+	done
 	
 $(MO_FILES): $(INSTALL_DIR)/%/LC_MESSAGES/$(PACKAGE).mo : $(LC_BUILD)/%/LC_MESSAGES/$(PACKAGE).mo
 	$(mkdir_p) $(dir $@)

@@ -225,79 +225,79 @@ msgstr "Pacote MonoDevelop"
 msgid "Loading..."
 msgstr "Carregando..."
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:60
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:59
 msgid "Go up one level"
 msgstr "Ir um nível acima"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:65
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:64
 msgid "Home"
 msgstr "Início"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:71
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:70
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:155
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:98
 msgid "Location"
 msgstr "Localização"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:83
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:82
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:156
 msgid "Directories"
 msgstr "Directórios"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:203
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:202
 msgid "Access denied"
 msgstr "Acesso negado"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:205
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:204
 msgid "Could not access to directory: "
 msgstr "Não foi possível aceder ao directório: "
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:239
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:238
 msgid "Open with file browser"
 msgstr "Abrir com o gestor de ficheiros"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:242
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:241
 msgid "Open with terminal"
 msgstr "Abrir com o terminal"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:245
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:244
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:305
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineEntryConfigurationsPanelWidget.cs:98
 msgid "Rename"
 msgstr "Renomear"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:248
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:247
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:204
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:147
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:146
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.addin.xml:54
 msgid "Delete"
 msgstr "Apagar"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:251
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:250
 msgid "Create new folder"
 msgstr "Criar um novo directório"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:316
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:315
 msgid "Cannot enter '{0}' folder"
 msgstr "Não é possível entrar no directório '{0}'"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:354
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:353
 msgid "Could not rename folder '{0}' to '{1}'"
 msgstr "Não foi possível renomear o directório '{0}' para '{1}'"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:374
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:373
 msgid "Could not create new folder '{0}'"
 msgstr "Não foi possível criar o novo directório '{0}'"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:398
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:397
 msgid "Are you sure you want to delete this folder?"
 msgstr "Tem a certeza que pretende apagar este directório?"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:398
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:397
 msgid "Delete folder"
 msgstr "Apagar directório"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:408
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:407
 msgid "Could not delete folder '{0}'"
 msgstr "Não é possível apagar o directório '{0}'"
 
@@ -809,8 +809,9 @@ msgid "The file '{0}' already exists in the project."
 msgstr "O ficheiro '{0}' já existe no projecto."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:121
+#, fuzzy
 msgid ""
-"File {0} already exists, do you want to overwrite\n"
+"File {0} already exists. Do you want to overwrite\n"
 "the existing file?"
 msgstr ""
 "O ficheiro {0} já existe, pretende reescrever o\n"
@@ -1289,7 +1290,7 @@ msgstr "Solução {0}"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:49
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:997
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libstetic/stetic.glade:470
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:669
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:672
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs:172
 msgid "Files"
 msgstr "Ficheiros"
@@ -1495,7 +1496,7 @@ msgid "Do you really want to remove project {0} from solution {1}?"
 msgstr "Tem a certeza que pretende eliminar o projecto {0} da solução {1}?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceFolderNodeBuilder.cs:79
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:903
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:907
 msgid "References"
 msgstr "Referências"
 
@@ -1505,7 +1506,7 @@ msgstr "Referências cíclicas de projectos não são permitidas"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolderNodeBuilder.cs:64
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libstetic/stetic.glade:432
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:506
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:508
 msgid "Resources"
 msgstr "Recursos"
 
@@ -1765,7 +1766,7 @@ msgid "File '{0}' could not be created."
 msgstr "Não foi possível criar o ficheiro '{0}'."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1220
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:403
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:408
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:66
 msgid "{0} error"
 msgid_plural "{0} errors"
@@ -1773,7 +1774,7 @@ msgstr[0] "{0} erro"
 msgstr[1] "{0} erros"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1221
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:404
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:409
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:67
 msgid "{0} warning"
 msgid_plural "{0} warnings"
@@ -2633,7 +2634,7 @@ msgstr "Projecto de Visual Studio"
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:300
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:63
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:200
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:145
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:144
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:405
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:515
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:598
@@ -3730,7 +3731,6 @@ msgstr "Guardando a solução: {0}"
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:55
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/MonoDevelopFileFormat.cs:119
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:114
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:115
 msgid "Could not save solution: {0}"
 msgstr "Não foi possível guardar a solução: {0}"
 
@@ -3874,29 +3874,29 @@ msgid ""
 "{2}\n"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:639
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:636
 #, fuzzy
 msgid "Removing all .resources files"
 msgstr "Ficheiros de recursos"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:653
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:650
 msgid "Removing all satellite assemblies"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:308
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:313
 #, fuzzy
 msgid "Cannot create directory {0}, as a file with that name exists."
 msgstr "Não foi possível criar o directório {0}. O ficheiro já existe."
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:337
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:342
 msgid "Building Project: {0} ({1})"
 msgstr "Compilando projecto: {0} ({1})"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:397
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:402
 msgid "Performing main compilation..."
 msgstr "Realizando a compilação principal..."
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:406
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:411
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:65
 msgid "Build complete -- "
 msgstr "Compilação completa -- "
@@ -4282,7 +4282,7 @@ msgid "Custom Command"
 msgstr "Comando personalizado"
 
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs:125
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:251
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:254
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:457
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:559
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:650
@@ -4332,7 +4332,7 @@ msgid "S_trong Name File:"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanelWidget.cs:62
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:185
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:186
 #: ../src/addins/CBinding/gtk-gui/CBinding.OutputOptionsPanel.cs:92
 msgid "<b>Output</b>"
 msgstr "<b>Saí­da</b>"
@@ -4499,7 +4499,7 @@ msgstr "Resultado"
 
 #: ../src/addins/NUnit/Gui/TestPad.cs:288
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:133
-#: ../src/addins/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml:30
+#: ../src/addins/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml:29
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:69
 #: ../src/addins/CBinding/CBinding.addin.xml:98
 msgid "Output"
@@ -4927,23 +4927,23 @@ msgstr ""
 msgid "This project or folder is not under version control"
 msgstr "Este projecto ou directório não está sob um controlo de versões"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:141
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:140
 msgid "Modified"
 msgstr "Modificado"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:143
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:142
 msgid "Conflict"
 msgstr "Conflito"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:153
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:152
 msgid "Unversioned"
 msgstr "Não versionado"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:442
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:435
 msgid "Updating version control repository"
 msgstr "Actualizando repositório de controlo de versões"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:531
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:524
 msgid ""
 "There isn't any supported version control system installed. You may need to "
 "install additional add-ins or packages."
@@ -4958,27 +4958,27 @@ msgstr "Seleccionar repositório"
 msgid "Type:"
 msgstr "Tipo:"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:150
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:152
 msgid "Connect to Repository"
 msgstr "Conectar ao repositório"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:223
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:226
 msgid "Registered Repositories"
 msgstr "Repositórios registados"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:316
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:319
 msgid "Repository:"
 msgstr "Repositório:"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:325
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:328
 msgid "Message:"
 msgstr "Mensagem:"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:336
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:339
 msgid "Module name:"
 msgstr "Nome do módulo:"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:357
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:360
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.LocalFileCopyConfigurationEditorWidget.cs:35
 msgid "Target directory:"
 msgstr "Directório destino:"
@@ -5528,7 +5528,7 @@ msgstr ""
 "esta razão, a compilação de projectos dependentes de bibliotecas Gtk# irá "
 "falhar. Deverá instalar os pacotes de desenvolvimento para gtk-sharp-2.0."
 
-#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:386
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:385
 msgid ""
 "GUI code generation failed for project '{0}'. The file '{1}' could not be "
 "loaded."
@@ -5536,11 +5536,11 @@ msgstr ""
 "A geração de código de interface falhou no projecto '{0}'. Não foi possível "
 "carregar o ficheiro '{1}'."
 
-#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:394
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:393
 msgid "Generating GUI code for project '{0}'..."
 msgstr "Gerando código de interface para o projecto '{0}'..."
 
-#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:504
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:502
 msgid ""
 "You are requesting the file '{0}' to be used as source for an image. "
 "However, this file is already added to the project as a resource. Are you "
@@ -6266,11 +6266,6 @@ msgstr "Não foi encontrado o ficheiro {0} : "
 msgid "Error reading file {0} : "
 msgstr "Erro ao ler o ficheiro {0} : "
 
-#: ../src/addins/prj2make-sharp-lib/MSBuildFileFormat.cs:164
-#, fuzzy
-msgid "Could not save project: {0}, {1}"
-msgstr "Não foi possível guardar o projecto: {0}"
-
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:88
 #, fuzzy
 msgid "Generating partial classes for {0} with {1}"
@@ -6297,10 +6292,6 @@ msgstr ""
 "Não foi possível compilar ({0}) {1} em .resources. Ignorando.\n"
 "Razão: \n"
 "{2}\n"
-
-#: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:164
-msgid "Language '{0}' not supported for building resource ids."
-msgstr ""
 
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:137
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:200
@@ -6335,45 +6326,22 @@ msgid "Unknown project type guid '{0}' on line #{1}. Ignoring."
 msgstr "Tipo do projecto guid '{0}' desconhecido na linha #{1}. Ignorando."
 
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:494
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:540
 msgid "{0}({1}): Unsupported or unrecognized project : '{2}'. See logs."
 msgstr ""
 "{0}({1}): Projecto não reconhecido ou não suportado: '{2}'. Verifique os "
 "logs."
 
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:501
-msgid ""
-"{0}({1}): Projects with non-local source (http://...) not supported. '{2}'."
-msgstr ""
-
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:511
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:513
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:506
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:508
 msgid "Invalid project path found in {0} : {1}"
 msgstr "Caminho do projecto inválido encontrado em {0} : {1}"
 
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:534
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:537
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:531
 msgid "Error while trying to load the project {0}. Exception : {1}"
 msgstr "Erro ao tentar carregar o projecto {0}. Excepção : {1}"
 
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:695
-msgid "{0} ({1}) : Unknown action. Only ActiveCfg & Build.0 supported."
-msgstr ""
-
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:715
-msgid "{0} ({1}) : Project with guid = '{2}' not found or not loaded. Ignoring"
-msgstr ""
-
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:819
-msgid "{0} ({1}) : Invalid config name '{2}'"
-msgstr ""
-
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:845
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:851
-#, fuzzy
-msgid "Project with guid '{0}' not found."
-msgstr "Não foi encontrado o ficheiro do projecto: "
-
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:945
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:946
 #, fuzzy
 msgid ""
 "The project file {0} must be converted to msbuild format to be added to a "
@@ -6407,36 +6375,12 @@ msgstr ""
 "um projecto MonoDevelop ou VS2005. A conversão para o VS2005 irá reescrever "
 "os ficheiros existentes. Converter?"
 
-#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:120
-msgid "Expected 'Include' attribute not found for ItemGroup '{0}'"
-msgstr ""
-
-#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:178
-#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:181
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:170
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:173
 msgid "HintPath ({0}) for Reference '{1}' is invalid. Ignoring."
 msgstr "O caminho ({0}) para a referência '{1}' não é válida. Ignorando."
 
-#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:205
-msgid "Expected element <Name> for ProjectReference '{0}'"
-msgstr ""
-
-#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:258
-#, fuzzy
-msgid ""
-"Unrecognised ItemGroup element '{0}', Include = '{1}' in project '{2}'. "
-"Ignoring."
-msgstr "Não foi possível analisar a referência '{0}', razão : {1}. Ignorando."
-
-#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:274
-msgid ""
-"CopyToOutputDirectory not supported for BuildAction '{0}', Include = '{1}'"
-msgstr ""
-
-#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:307
-msgid "BuildAction.{0} not supported!"
-msgstr ""
-
-#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:448
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:438
 msgid "The project '{0}' referenced from '{1}' could not be found."
 msgstr "Não foi possível encontrar o projecto '{0}' referenciado desde '{1}'."
 
@@ -6581,16 +6525,16 @@ msgstr "Nome do assembly"
 msgid "A file defining assembly information attributes."
 msgstr ""
 
-#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:30
+#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:29
 msgid "Insert ChangeLog Entry"
 msgstr "Inserir entrada de ChangeLog"
 
-#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:38
+#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:37
 msgid "ChangeLog Add-in"
 msgstr "Add-in ChangeLog"
 
-#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:47
-#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:51
+#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:46
+#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:50
 #, fuzzy
 msgid "ChangeLog Integration"
 msgstr "Entrada de ChangeLog:"
@@ -6757,7 +6701,7 @@ msgid ""
 "The ChangeLog file will be created if it doesn't exist."
 msgstr ""
 
-#: ../src/addins/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml:39
+#: ../src/addins/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml:38
 msgid "Install"
 msgstr "Instalar"
 
@@ -7256,7 +7200,7 @@ msgid ""
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Autotools/Commands.cs:69
-#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:51
+#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:49
 #, fuzzy
 msgid "Generate Makefiles..."
 msgstr "Gerar o ficheiro .desktop"
@@ -7289,29 +7233,29 @@ msgstr "Criando Makefile.am para o projecto {0}"
 msgid "Not a deployable project."
 msgstr "Não é um projecto distribuível."
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:276
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:277
 msgid "Unknown target {0}"
 msgstr "Destino desconhecido {0}"
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:291
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:292
 msgid "Could not add reference to project '{0}'"
 msgstr "Não foi possível adicionar a referência ao projecto '{0}'"
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:329
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:330
 msgid ""
 "Custom commands are not supported for autotools based makefiles. Ignoring."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:512
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:513
 #, fuzzy
 msgid "Project reference type '{0}' not supported yet"
 msgstr "A referência do projecto de tipo {0} ai­nda não é suportada"
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:657
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:649
 msgid "Custom commands of only the following types are supported: {0}."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:735
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:727
 msgid "Couldn't find referenced project '{0}'"
 msgstr "Não foi possível encontrar o projecto referenciado '{0}'"
 
@@ -7329,59 +7273,58 @@ msgstr ""
 "MonoDevelop ai­nda não é capaz de gerar ficheiros de autotools para um (ou "
 "mais) projectos filhos."
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:106
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:105
 #, fuzzy
 msgid "Creating rules.make"
 msgstr "Criando configure.ac"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:123
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:122
 #, fuzzy
 msgid "{0} were successfully generated."
 msgstr "Os ficheiros Autotools foram gerados com êxito."
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:128
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:129
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:127
 #, fuzzy
 msgid "{0} could not be generated: "
 msgstr "Não foi possível gerar os ficheiros Autotools: "
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:152
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:151
 msgid "Deploying Solution to Tarball"
 msgstr "Distribuido a solução para Tarball"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:166
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:184
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:165
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:183
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:353
 msgid "An unspecified error occurred while running '{0}'"
 msgstr "Ocorreu um erro não especificado aquando da execução '{0}'"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:200
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:199
 msgid "Solution could not be deployed: "
 msgstr "Não foi possível distribuir a solução:"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:207
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:206
 msgid "Solution was succesfully deployed"
 msgstr "A solução foi distribuída com sucesso"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:218
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:217
 #, fuzzy
 msgid "Adding variables to top-level Makefile"
 msgstr "Adicionando variáveis ao nível superior do Makefile.am"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:238
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:235
 msgid "Creating autogen.sh"
 msgstr "Criando autogen.sh"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:265
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:262
 msgid "Creating configure.ac"
 msgstr "Criando configure.ac"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:366
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:363
 #, fuzzy
 msgid "Creating configure script"
 msgstr "Criando configure.ac"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:440
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:430
 msgid "Creating Makefile.include"
 msgstr "Criando Makefile.include"
 
@@ -7475,7 +7418,7 @@ msgid ""
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:61
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:433
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:435
 msgid "Makefile"
 msgstr "Makefile"
 
@@ -7548,7 +7491,6 @@ msgstr "Actualizando projecto desde o Makefile"
 msgid "Error loading Makefile for project {0}"
 msgstr "Erro carregando o Makefile para o projecto {0}"
 
-#: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:114
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:116
 msgid "Error saving to Makefile ({0}) for project {1}"
 msgstr "Erro guardando o Makefile ({0}) para o projecto {1}"
@@ -7721,7 +7663,7 @@ msgid "Please enter a valid project name"
 msgstr "Introduza um nome do projecto válido"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileIntegrationFeature.cs:12
-#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:92
+#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:90
 msgid "Makefile Integration"
 msgstr "Integração com Makefile"
 
@@ -7761,23 +7703,23 @@ msgstr "Caminho do Makefile:"
 msgid "Output directory variable:"
 msgstr "Variável do directório output:"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:445
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:447
 msgid "Enable project file synchronization"
 msgstr "Activar sincronização do ficheiro do projecto"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:470
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:472
 msgid "Deployment files"
 msgstr "Ficheiros da distribuição"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:482
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:484
 msgid "Source code files"
 msgstr "Ficheiros de código fonte"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:494
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:496
 msgid "Other Files"
 msgstr "Outros ficheiros"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:624
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:626
 msgid ""
 "Select the kind of files you want to synchronize with the makefile. For each "
 "file kind please specify the makefile variable that holds the list and "
@@ -7787,25 +7729,25 @@ msgstr ""
 "cada tipo especifique a variável de makefile que contém a lista e "
 "opcionalmente um prefixo a inserir em cada nome do ficheiro."
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:636
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:837
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:638
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:840
 msgid "Makefile variable name:"
 msgstr "Nome da variável Makefile:"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:649
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:850
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:651
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:853
 msgid "Prefix:"
 msgstr "Prefixo:"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:681
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:684
 msgid "Enable references synchronization"
 msgstr "Activar sincronização de referências"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:705
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:708
 msgid "Look for packages in configure.in"
 msgstr "Procurar pacotes em configure.in"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:814
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:817
 msgid ""
 "Select the kind of references you want to synchronize with the makefile. For "
 "each reference type please specify the makefile variable that holds the "
@@ -7818,23 +7760,23 @@ msgstr ""
 "Pode especificar o mesmo nome de variável para diferentes tipos de "
 "referências."
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:826
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:829
 msgid "Assembly References"
 msgstr "Referências de assembly"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:863
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:866
 msgid "Path for configure.in"
 msgstr "Caminho para o configure.in"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:874
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:877
 msgid "Package References"
 msgstr "Referências a pacotes"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:885
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:888
 msgid "Project References"
 msgstr "Referências a projectos"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:915
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:919
 msgid ""
 "Select the Compiler message format for parsing the compiler errors and "
 "warnings. You can either select one of the built-in options, or specify "
@@ -7848,19 +7790,19 @@ msgstr ""
 "obedecer ao estilo .net. Os seguintes grupos são relevantes: ficheiro, "
 "linha, coluna, número (de erro) e mensagem."
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:981
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:985
 msgid "Error regex :"
 msgstr "Expr. regular para erro :"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:992
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:996
 msgid "Compiler :"
 msgstr "Compilador :"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:1001
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:1005
 msgid "Warnings regex :"
 msgstr "Expr. regular para avisos :"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:1017
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:1022
 msgid "Messages Regex"
 msgstr "Expr. regular para mensagens"
 
@@ -7873,28 +7815,28 @@ msgstr "Directório da distribuição:"
 msgid "Use existing Makefiles"
 msgstr "Usar os ficheiros Autotools existentes"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:107
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:106
 #, fuzzy
 msgid "Generate new Makefiles"
 msgstr "Gerar novos ficheiros Autotools"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:139
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:138
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:148
 msgid "Default configuration:"
 msgstr "Configuração padrão:"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:173
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:172
 #, fuzzy
 msgid "Select the kind of Makefile to generate:"
 msgstr "Seleccione o tipo de pacote a criar:"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:199
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:198
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:96
 #, fuzzy
 msgid "Autotools based"
 msgstr "Output de Autotools"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:211
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:210
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:107
 msgid ""
 "<b>Autotools based Makefile</b>\n"
@@ -7902,13 +7844,13 @@ msgid ""
 "and configuration scripts."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:238
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:237
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:75
 #, fuzzy
 msgid "Simple"
 msgstr "_Ignorar ficheiro"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:249
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:248
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:86
 msgid ""
 "<b>Simple Makefile</b>\n"
@@ -7916,12 +7858,12 @@ msgid ""
 "script that does a basic check of package dependencies."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:49
+#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:47
 #, fuzzy
 msgid "Autotools"
 msgstr "Output de Autotools"
 
-#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:55
+#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:53
 msgid "Include in Synchronized Makefile"
 msgstr "Inclui­r no Makefile sincronizado"
 
@@ -9489,26 +9431,26 @@ msgstr "Cria um projecto Gtk#"
 msgid "Create new localization"
 msgstr "Criar na solução:"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs:112
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs:113
 #, fuzzy
 msgid "_Language:"
 msgstr "Línguas"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs:150
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs:153
 #, fuzzy
 msgid "U_se Country Code"
 msgstr "Controlo de utilizador"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs:178
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs:183
 #, fuzzy
 msgid "_Known Language"
 msgstr "Línguas"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs:204
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs:209
 msgid "L_ocale:"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs:222
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs:227
 msgid "_User Defined Locale"
 msgstr ""
 
@@ -9536,39 +9478,39 @@ msgstr ""
 msgid "Creation date:"
 msgstr "Criando autogen.sh"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:249
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:253
 #, fuzzy
 msgid "Project settings"
 msgstr "Opções do projecto"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:347
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:351
 msgid "Translator name:"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:356
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:360
 #, fuzzy
 msgid "Translator e-mail:"
 msgstr "Vitor Hugo Barros <vitor.h.barros@gmail.com>"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:367
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:371
 #, fuzzy
 msgid "Language group:"
 msgstr "Línguas"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:378
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:382
 msgid "Language group e-mail:"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:389
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:393
 #, fuzzy
 msgid "Charset:"
 msgstr "Caracteres"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:400
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:404
 msgid "Plural forms:"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:413
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:418
 #, fuzzy
 msgid "Language settings"
 msgstr "Configuração do pacote"
@@ -9656,35 +9598,35 @@ msgstr "Opções da solução"
 msgid "_Package name:"
 msgstr "Pacote"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:158
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:159
 #, fuzzy
 msgid "_Relative to output path:"
 msgstr "Seleccionar o caminho de output"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:169
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:170
 #, fuzzy
 msgid "_System path:"
 msgstr "Caminho de elementos"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:209
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:211
 msgid "The catalog initialization string should look like:"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:227
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:230
 msgid "Mono.Unix.Catalog.Init (\"i18n\", \"./locale\");"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:239
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:242
 #, fuzzy
 msgid "<b>Init String</b>"
 msgstr "<b>Identação</b>"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:251
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:256
 #, fuzzy
 msgid "Settings"
 msgstr "Opções do GTK#"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:272
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:280
 #, fuzzy
 msgid "Include in Projects"
 msgstr "Inclui­r no projecto"
@@ -9741,29 +9683,29 @@ msgid_plural "{0} Missing Messages"
 msgstr[0] "{0} mensagem"
 msgstr[1] "{0} mensagens"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:141
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:143
 #, fuzzy
 msgid "_Comments:"
 msgstr "Comentários"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:177
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:181
 msgid "Translated (msgstr):"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:194
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:298
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:198
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:306
 msgid "page1"
 msgstr "página1"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:214
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:218
 msgid "Original (msgid):"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:236
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:240
 msgid "Original plural (msgid_plural):"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:262
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:266
 msgid "Found in:"
 msgstr ""
 
@@ -10897,6 +10839,21 @@ msgstr "Compilador:"
 #: ../src/addins/CBinding/gtk-gui/CBinding.GeneralOptionsPanel.cs:87
 msgid "Parse System Tags"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Could not save project: {0}, {1}"
+#~ msgstr "Não foi possível guardar o projecto: {0}"
+
+#, fuzzy
+#~ msgid "Project with guid '{0}' not found."
+#~ msgstr "Não foi encontrado o ficheiro do projecto: "
+
+#, fuzzy
+#~ msgid ""
+#~ "Unrecognised ItemGroup element '{0}', Include = '{1}' in project '{2}'. "
+#~ "Ignoring."
+#~ msgstr ""
+#~ "Não foi possível analisar a referência '{0}', razão : {1}. Ignorando."
 
 #~ msgid "Steps"
 #~ msgstr "Passos"

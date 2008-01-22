@@ -1,3 +1,10 @@
+2008-01-22  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* *.po: Final update for 1.0 string freeze.
+	* hu.po: Added.
+	* Makefile.am: Add statistics target.
+	* po.mdse: Add nl, id and hu so that they get updated.
+
 2008-01-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ca.po, cs.po, da.po, de.po, es.po, fr.po, gl.po, it.po, ja.po,
