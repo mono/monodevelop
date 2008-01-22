@@ -1,5 +1,10 @@
 2008-01-22  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* *.po: Oops, another "final" update for 1.0 string freeze. Adds some 
+	  fuzzy matches and updates line numbers.
+
+2008-01-22  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* *.po: Final update for 1.0 string freeze.
 	* hu.po: Added.
 	* Makefile.am: Add statistics target.

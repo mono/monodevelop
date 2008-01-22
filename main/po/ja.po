@@ -264,7 +264,7 @@ msgstr "名前の変更"
 
 #: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:247
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:204
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:146
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:147
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.addin.xml:54
 msgid "Delete"
 msgstr "削除"
@@ -1787,7 +1787,7 @@ msgstr "ファイル {0} が作成できませんでした"
 
 #  FIXME: make this a resource in the resource file
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1220
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:408
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:403
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:66
 msgid "{0} error"
 msgid_plural "{0} errors"
@@ -1795,7 +1795,7 @@ msgstr[0] "エラー {0}件"
 msgstr[1] "エラー {0}件"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1221
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:409
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:404
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:67
 msgid "{0} warning"
 msgid_plural "{0} warnings"
@@ -2630,7 +2630,7 @@ msgstr "Visual Studio"
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:300
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:63
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:200
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:144
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:145
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:405
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:515
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:598
@@ -3757,6 +3757,7 @@ msgstr "ソリューションを保存しています: {0}"
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:55
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/MonoDevelopFileFormat.cs:119
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:114
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:115
 msgid "Could not save solution: {0}"
 msgstr "ソリューションを保存できませんでした: {0}"
 
@@ -3898,28 +3899,28 @@ msgid ""
 "{2}\n"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:636
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:639
 msgid "Removing all .resources files"
 msgstr "全ての*.resourcesファイルを削除します"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:650
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:653
 #, fuzzy
 msgid "Removing all satellite assemblies"
 msgstr "全ての*.resourcesファイルを削除します"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:313
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:308
 msgid "Cannot create directory {0}, as a file with that name exists."
 msgstr "ディレクトリ {0} は作成できません。ファイルが既に存在します。"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:342
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:337
 msgid "Building Project: {0} ({1})"
 msgstr "プロジェクトをビルド中: {0} ({1})"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:402
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:397
 msgid "Performing main compilation..."
 msgstr "メインのコンパイルを実行中..."
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:411
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:406
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:65
 msgid "Build complete -- "
 msgstr "ビルド完了 -- "
@@ -4510,7 +4511,7 @@ msgstr "一時停止"
 
 #: ../src/addins/NUnit/Gui/TestPad.cs:288
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:133
-#: ../src/addins/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml:29
+#: ../src/addins/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml:30
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:69
 #: ../src/addins/CBinding/CBinding.addin.xml:98
 msgid "Output"
@@ -4942,23 +4943,23 @@ msgstr "本当に選択されたファイルの変更を破棄して元に戻し
 msgid "This project or folder is not under version control"
 msgstr "このプロジェクトあるいはフォルダはバージョン管理されていません"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:140
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:141
 msgid "Modified"
 msgstr "最終更新日"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:142
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:143
 msgid "Conflict"
 msgstr "衝突"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:152
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:153
 msgid "Unversioned"
 msgstr "バージョン指定なし"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:435
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:442
 msgid "Updating version control repository"
 msgstr "バージョン管理リポジトリの更新中"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:524
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:531
 msgid ""
 "There isn't any supported version control system installed. You may need to "
 "install additional add-ins or packages."
@@ -5529,7 +5530,7 @@ msgstr ""
 "GTK#ライブラリに依存するプロジェクトのコンパイルは失敗します。gtk-sharp-2.0の"
 "開発パッケージをインストールする必要があります。"
 
-#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:385
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:386
 msgid ""
 "GUI code generation failed for project '{0}'. The file '{1}' could not be "
 "loaded."
@@ -5537,11 +5538,11 @@ msgstr ""
 "プロジェクト '{0}' のGUIコード生成に失敗しました。ファイル'{1}'は読み込めませ"
 "んでした。"
 
-#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:393
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:394
 msgid "Generating GUI code for project '{0}'..."
 msgstr "プロジェクト '{0}' のGUIコードを生成中..."
 
-#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:502
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:504
 msgid ""
 "You are requesting the file '{0}' to be used as source for an image. "
 "However, this file is already added to the project as a resource. Are you "
@@ -6261,6 +6262,11 @@ msgstr "ファイル {0} が見つかりません "
 msgid "Error reading file {0} : "
 msgstr "ファイル {0} の読み込みでエラーです "
 
+#: ../src/addins/prj2make-sharp-lib/MSBuildFileFormat.cs:164
+#, fuzzy
+msgid "Could not save project: {0}, {1}"
+msgstr "プロジェクトを保存できませんでした: {0}"
+
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:88
 msgid "Generating partial classes for {0} with {1}"
 msgstr ""
@@ -6286,6 +6292,10 @@ msgstr ""
 "({0}) {1} を.resourcesにコンパイルできません。\n"
 "理由: \n"
 "{2}\n"
+
+#: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:164
+msgid "Language '{0}' not supported for building resource ids."
+msgstr ""
 
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:137
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:200
@@ -6319,22 +6329,46 @@ msgid "Unknown project type guid '{0}' on line #{1}. Ignoring."
 msgstr "{1}行目のGuid '{0}'のプロジェクト種別は未知です。無視します。"
 
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:494
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:540
 msgid "{0}({1}): Unsupported or unrecognized project : '{2}'. See logs."
 msgstr ""
 "{0}({1}): 未サポートあるいは認識できないプロジェクトです。ログを参照してくだ"
 "さい : '{2}'"
 
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:506
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:508
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:501
+msgid ""
+"{0}({1}): Projects with non-local source (http://...) not supported. '{2}'."
+msgstr ""
+
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:511
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:513
 msgid "Invalid project path found in {0} : {1}"
 msgstr "{0}中のプロジェクトパスが無効です : {1}"
 
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:531
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:534
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:537
 msgid "Error while trying to load the project {0}. Exception : {1}"
 msgstr "プロジェクト {0} のロード中にエラーが発生しました。例外の内容 : {1}"
 
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:946
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:695
+msgid "{0} ({1}) : Unknown action. Only ActiveCfg & Build.0 supported."
+msgstr ""
+
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:715
+#, fuzzy
+msgid "{0} ({1}) : Project with guid = '{2}' not found or not loaded. Ignoring"
+msgstr "プロジェクトファイルが見つかりません: "
+
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:819
+msgid "{0} ({1}) : Invalid config name '{2}'"
+msgstr ""
+
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:845
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:851
+#, fuzzy
+msgid "Project with guid '{0}' not found."
+msgstr "プロジェクトファイルが見つかりません: "
+
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:945
 msgid ""
 "The project file {0} must be converted to msbuild format to be added to a "
 "msbuild solution. Convert?"
@@ -6367,12 +6401,36 @@ msgstr ""
 "はVS2005のプロジェクトに、変換されなければなりません。VS2005への変換を行え"
 "ば、既存のファイルを上書きすることになります。変換しますか?"
 
-#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:170
-#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:173
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:120
+msgid "Expected 'Include' attribute not found for ItemGroup '{0}'"
+msgstr ""
+
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:178
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:181
 msgid "HintPath ({0}) for Reference '{1}' is invalid. Ignoring."
 msgstr "参照 '{1}' のヒントパス ({0}) が無効です。無視します。"
 
-#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:438
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:205
+msgid "Expected element <Name> for ProjectReference '{0}'"
+msgstr ""
+
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:258
+#, fuzzy
+msgid ""
+"Unrecognised ItemGroup element '{0}', Include = '{1}' in project '{2}'. "
+"Ignoring."
+msgstr "参照 '{0}' が解析できないため、無視します: {1}"
+
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:274
+msgid ""
+"CopyToOutputDirectory not supported for BuildAction '{0}', Include = '{1}'"
+msgstr ""
+
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:307
+msgid "BuildAction.{0} not supported!"
+msgstr ""
+
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:448
 msgid "The project '{0}' referenced from '{1}' could not be found."
 msgstr "'{1}'から参照されているプロジェクト '{0}' が見付かりません"
 
@@ -6517,16 +6575,16 @@ msgstr "アセンブリ署名"
 msgid "A file defining assembly information attributes."
 msgstr ""
 
-#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:29
+#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:30
 msgid "Insert ChangeLog Entry"
 msgstr "ChangeLogエントリの追加"
 
-#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:37
+#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:38
 msgid "ChangeLog Add-in"
 msgstr "ChangeLogアドイン"
 
-#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:46
-#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:50
+#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:47
+#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:51
 msgid "ChangeLog Integration"
 msgstr "ChangeLog統合"
 
@@ -6693,7 +6751,7 @@ msgid ""
 "The ChangeLog file will be created if it doesn't exist."
 msgstr ""
 
-#: ../src/addins/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml:38
+#: ../src/addins/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml:39
 msgid "Install"
 msgstr "インストール"
 
@@ -7190,7 +7248,7 @@ msgstr ""
 "'{0}' 全体用に作成しますか?"
 
 #: ../src/addins/MonoDevelop.Autotools/Commands.cs:69
-#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:49
+#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:51
 msgid "Generate Makefiles..."
 msgstr "Makefileを生成する"
 
@@ -7218,29 +7276,29 @@ msgstr "プロジェクト {1} の {0} を作成する"
 msgid "Not a deployable project."
 msgstr "配置できるプロジェクトではありません"
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:277
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:276
 msgid "Unknown target {0}"
 msgstr "未知のターゲット {0}"
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:292
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:291
 msgid "Could not add reference to project '{0}'"
 msgstr "プロジェクト '{0}' に参照を追加できませんでした"
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:330
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:329
 msgid ""
 "Custom commands are not supported for autotools based makefiles. Ignoring."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:513
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:512
 #, fuzzy
 msgid "Project reference type '{0}' not supported yet"
 msgstr "プロジェクト参照の種類 {0} はまだサポートされていません"
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:649
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:657
 msgid "Custom commands of only the following types are supported: {0}."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:727
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:735
 msgid "Couldn't find referenced project '{0}'"
 msgstr "参照しているプロジェクト '{0}' が見つかりませんでした"
 
@@ -7255,53 +7313,54 @@ msgid ""
 msgstr ""
 "現在のMonoDevelopは、子プロジェクト用の {0} の生成をサポートしていません。"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:105
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:106
 msgid "Creating rules.make"
 msgstr "rules.makeの作成中"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:122
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:123
 msgid "{0} were successfully generated."
 msgstr "{0} の生成に成功しました。"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:127
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:128
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:129
 msgid "{0} could not be generated: "
 msgstr "{0} を生成できませんでした"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:151
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:152
 msgid "Deploying Solution to Tarball"
 msgstr "ソリューションをTarballに配置中"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:165
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:183
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:166
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:184
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:353
 msgid "An unspecified error occurred while running '{0}'"
 msgstr "'{0}'の実行中に未定義のエラーが発生しました"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:199
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:200
 msgid "Solution could not be deployed: "
 msgstr "ソリューションを配置できませんでした: "
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:206
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:207
 msgid "Solution was succesfully deployed"
 msgstr "ソリューションは正常に配置されました"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:217
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:218
 msgid "Adding variables to top-level Makefile"
 msgstr "トップレベルのMakefileに変数を追加中"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:235
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:238
 msgid "Creating autogen.sh"
 msgstr "autogen.shを作成中"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:262
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:265
 msgid "Creating configure.ac"
 msgstr "configure.acの作成中"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:363
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:366
 msgid "Creating configure script"
 msgstr "configureスクリプトの作成中"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:430
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:440
 msgid "Creating Makefile.include"
 msgstr "Makefile.includeの作成中"
 
@@ -7466,6 +7525,7 @@ msgstr "Makefileに基づくプロジェクトをアップデートしていま�
 msgid "Error loading Makefile for project {0}"
 msgstr "プロジェクト {0} のMakefileの読み込みでエラーが発生しました"
 
+#: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:114
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:116
 msgid "Error saving to Makefile ({0}) for project {1}"
 msgstr "プロジェクト {1} のMakefile ({0}) の保存時にエラーが発生しました"
@@ -7632,7 +7692,7 @@ msgid "Please enter a valid project name"
 msgstr "有効なプロジェクト名を入力してください。"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileIntegrationFeature.cs:12
-#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:90
+#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:92
 msgid "Makefile Integration"
 msgstr "Makefile統合"
 
@@ -7823,11 +7883,11 @@ msgid ""
 "script that does a basic check of package dependencies."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:47
+#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:49
 msgid "Autotools"
 msgstr "Autotools"
 
-#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:53
+#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:55
 msgid "Include in Synchronized Makefile"
 msgstr "同期Makefileを含める"
 
@@ -10795,20 +10855,6 @@ msgstr "デフォルト ネームスペース:"
 #: ../src/addins/CBinding/gtk-gui/CBinding.GeneralOptionsPanel.cs:87
 msgid "Parse System Tags"
 msgstr ""
-
-#, fuzzy
-#~ msgid "Could not save project: {0}, {1}"
-#~ msgstr "プロジェクトを保存できませんでした: {0}"
-
-#, fuzzy
-#~ msgid "Project with guid '{0}' not found."
-#~ msgstr "プロジェクトファイルが見つかりません: "
-
-#, fuzzy
-#~ msgid ""
-#~ "Unrecognised ItemGroup element '{0}', Include = '{1}' in project '{2}'. "
-#~ "Ignoring."
-#~ msgstr "参照 '{0}' が解析できないため、無視します: {1}"
 
 #~ msgid "Steps"
 #~ msgstr "ステップ"

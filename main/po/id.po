@@ -263,7 +263,7 @@ msgstr "Ubah Nama"
 
 #: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:247
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:204
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:146
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:147
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.addin.xml:54
 msgid "Delete"
 msgstr "Hapus"
@@ -1739,7 +1739,7 @@ msgid "File '{0}' could not be created."
 msgstr "File '{0}' tidak dapat dibuat."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1220
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:408
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:403
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:66
 msgid "{0} error"
 msgid_plural "{0} errors"
@@ -1747,7 +1747,7 @@ msgstr[0] "{0} kesalahan"
 msgstr[1] "{0} kesalahan"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1221
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:409
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:404
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:67
 msgid "{0} warning"
 msgid_plural "{0} warnings"
@@ -2578,7 +2578,7 @@ msgstr "Visual Studio"
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:300
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:63
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:200
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:144
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:145
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:405
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:515
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:598
@@ -3645,6 +3645,7 @@ msgstr "Simpan solusi: {0}"
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:55
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/MonoDevelopFileFormat.cs:119
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:114
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:115
 msgid "Could not save solution: {0}"
 msgstr "Tidak dapat menyimpan solusi: {0}"
 
@@ -3789,28 +3790,28 @@ msgstr ""
 "Reason: \n"
 "{2}\n"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:636
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:639
 msgid "Removing all .resources files"
 msgstr "Pindahkan semua file .sumber"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:650
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:653
 msgid "Removing all satellite assemblies"
 msgstr "Removing all satellite assemblies"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:313
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:308
 msgid "Cannot create directory {0}, as a file with that name exists."
 msgstr ""
 "Tidak dapat membuat direktori {0}, karena ada file dengan nama yang sama"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:342
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:337
 msgid "Building Project: {0} ({1})"
 msgstr "Membangun Proyek: {0} ({1})"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:402
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:397
 msgid "Performing main compilation..."
 msgstr "Performing main compilation..."
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:411
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:406
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:65
 msgid "Build complete -- "
 msgstr "Pembangunan selesai -- "
@@ -4404,7 +4405,7 @@ msgstr "Hasil"
 
 #: ../src/addins/NUnit/Gui/TestPad.cs:288
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:133
-#: ../src/addins/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml:29
+#: ../src/addins/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml:30
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:69
 #: ../src/addins/CBinding/CBinding.addin.xml:98
 msgid "Output"
@@ -4825,23 +4826,23 @@ msgstr ""
 msgid "This project or folder is not under version control"
 msgstr "Proyek atau folder ini tidak berada di bawak kontrol versi"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:140
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:141
 msgid "Modified"
 msgstr "Diubah"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:142
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:143
 msgid "Conflict"
 msgstr "Konflik"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:152
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:153
 msgid "Unversioned"
 msgstr "Tidak ada versi"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:435
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:442
 msgid "Updating version control repository"
 msgstr "Meng-update repositori kontrol versi"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:524
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:531
 msgid ""
 "There isn't any supported version control system installed. You may need to "
 "install additional add-ins or packages."
@@ -5414,18 +5415,18 @@ msgstr ""
 "Kompilasi dari proyek yang bergantung pada Gtk# libraries akan gagal. Anda "
 "harus meng-install paket perkembangan untuk gtk-sharp-2.0."
 
-#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:385
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:386
 msgid ""
 "GUI code generation failed for project '{0}'. The file '{1}' could not be "
 "loaded."
 msgstr ""
 "Generasi kode GUI gagal pada proyek '{0}'. File '{1}' tidak dapat dimuat."
 
-#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:393
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:394
 msgid "Generating GUI code for project '{0}'..."
 msgstr "Hasilkan kode GUI untuk proyek '{0}'..."
 
-#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:502
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:504
 msgid ""
 "You are requesting the file '{0}' to be used as source for an image. "
 "However, this file is already added to the project as a resource. Are you "
@@ -6123,6 +6124,11 @@ msgstr "File tidak ditemukan {0}: "
 msgid "Error reading file {0} : "
 msgstr "Kesalahan membaca file {0} : "
 
+#: ../src/addins/prj2make-sharp-lib/MSBuildFileFormat.cs:164
+#, fuzzy
+msgid "Could not save project: {0}, {1}"
+msgstr "Tidak dapat menyimpan proyek: {0}"
+
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:88
 msgid "Generating partial classes for {0} with {1}"
 msgstr "Hasilkan class partial untuk {0} dengan {1}"
@@ -6147,6 +6153,10 @@ msgstr ""
 "Tidak dapat hasilkan partial classes ({0}) untuk {1}. \n"
 "Alasan: \n"
 "{2}\n"
+
+#: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:164
+msgid "Language '{0}' not supported for building resource ids."
+msgstr ""
 
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:137
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:200
@@ -6180,20 +6190,44 @@ msgid "Unknown project type guid '{0}' on line #{1}. Ignoring."
 msgstr "Tipe proyek invalid guid '{0}' pada baris #{1}. Abaikan."
 
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:494
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:540
 msgid "{0}({1}): Unsupported or unrecognized project : '{2}'. See logs."
 msgstr "{0}({1}): Proyek tidak didukung atau tidak dikenal : '{2}'. Lihat log."
 
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:506
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:508
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:501
+msgid ""
+"{0}({1}): Projects with non-local source (http://...) not supported. '{2}'."
+msgstr ""
+
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:511
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:513
 msgid "Invalid project path found in {0} : {1}"
 msgstr "Jalur proyek invalid ditemukan dalam {0} : {1}"
 
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:531
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:534
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:537
 msgid "Error while trying to load the project {0}. Exception : {1}"
 msgstr "Kesalahan ketika mencoba memuat proyek {0}. Pengecualian : {1}"
 
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:946
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:695
+msgid "{0} ({1}) : Unknown action. Only ActiveCfg & Build.0 supported."
+msgstr ""
+
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:715
+#, fuzzy
+msgid "{0} ({1}) : Project with guid = '{2}' not found or not loaded. Ignoring"
+msgstr "File proyek tidak ditemukan: "
+
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:819
+msgid "{0} ({1}) : Invalid config name '{2}'"
+msgstr ""
+
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:845
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:851
+#, fuzzy
+msgid "Project with guid '{0}' not found."
+msgstr "File proyek tidak ditemukan: "
+
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:945
 msgid ""
 "The project file {0} must be converted to msbuild format to be added to a "
 "msbuild solution. Convert?"
@@ -6226,13 +6260,37 @@ msgstr ""
 "MonoDevelop atau VS2005. Konversi menjadi format VS2005 akan mengganti file "
 "yang sudah ada. Konversi?"
 
-#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:170
-#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:173
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:120
+msgid "Expected 'Include' attribute not found for ItemGroup '{0}'"
+msgstr ""
+
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:178
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:181
 #, fuzzy
 msgid "HintPath ({0}) for Reference '{1}' is invalid. Ignoring."
 msgstr "Nama file '{0}' invalid. Abaikan."
 
-#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:438
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:205
+msgid "Expected element <Name> for ProjectReference '{0}'"
+msgstr ""
+
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:258
+#, fuzzy
+msgid ""
+"Unrecognised ItemGroup element '{0}', Include = '{1}' in project '{2}'. "
+"Ignoring."
+msgstr "Tidak dapat mengurai referensi '{0}', alasan : {1}. Abaikan."
+
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:274
+msgid ""
+"CopyToOutputDirectory not supported for BuildAction '{0}', Include = '{1}'"
+msgstr ""
+
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:307
+msgid "BuildAction.{0} not supported!"
+msgstr ""
+
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:448
 #, fuzzy
 msgid "The project '{0}' referenced from '{1}' could not be found."
 msgstr "File proyek designer GUI '{0}' tidak dapat dimuat."
@@ -6377,16 +6435,16 @@ msgstr "Assembly Signing"
 msgid "A file defining assembly information attributes."
 msgstr ""
 
-#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:29
+#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:30
 msgid "Insert ChangeLog Entry"
 msgstr "Tambah Entri ChangeLog"
 
-#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:37
+#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:38
 msgid "ChangeLog Add-in"
 msgstr "ChangeLog Add-in"
 
-#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:46
-#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:50
+#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:47
+#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:51
 msgid "ChangeLog Integration"
 msgstr "ChangeLog Integration"
 
@@ -6564,7 +6622,7 @@ msgstr ""
 "Perubahan file akan dimasukkan dalam ChangeLog yang berlokasi di direktori "
 "file tersebut. File ChangeLog akan dibuat jika file tersebut tidak ada."
 
-#: ../src/addins/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml:38
+#: ../src/addins/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml:39
 msgid "Install"
 msgstr "Install"
 
@@ -7027,7 +7085,7 @@ msgstr ""
 "untuk menghasilkannya untuk solusi penuh - '{0}' ?"
 
 #: ../src/addins/MonoDevelop.Autotools/Commands.cs:69
-#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:49
+#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:51
 msgid "Generate Makefiles..."
 msgstr "Hasilkan Makefiles..."
 
@@ -7055,29 +7113,29 @@ msgstr "Buat {0} untuk Proyek {1}"
 msgid "Not a deployable project."
 msgstr "Bukan proyek yang dapat di-deploy."
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:277
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:276
 msgid "Unknown target {0}"
 msgstr "Target tidk diketahui {0}"
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:292
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:291
 msgid "Could not add reference to project '{0}'"
 msgstr "Tidak dapat menambah referensi pada proyek '{0}'"
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:330
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:329
 msgid ""
 "Custom commands are not supported for autotools based makefiles. Ignoring."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:513
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:512
 #, fuzzy
 msgid "Project reference type '{0}' not supported yet"
 msgstr "Tipe Referensi Proyek {0} tidak terdukung"
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:649
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:657
 msgid "Custom commands of only the following types are supported: {0}."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:727
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:735
 msgid "Couldn't find referenced project '{0}'"
 msgstr "Tidak dapat menemukan proyek tereferensi '{0}'"
 
@@ -7093,53 +7151,54 @@ msgstr ""
 "MonoDevelop tidak mendukung pembuatan {0} untuk satu (atau lebih) proyek "
 "anakan."
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:105
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:106
 msgid "Creating rules.make"
 msgstr "Membuat rules.make"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:122
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:123
 msgid "{0} were successfully generated."
 msgstr "(0) sukses dihasilkan."
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:127
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:128
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:129
 msgid "{0} could not be generated: "
 msgstr "{0} tidak dapat dihasilkan: "
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:151
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:152
 msgid "Deploying Solution to Tarball"
 msgstr "Men-deploy Solusi ke Tarball"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:165
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:183
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:166
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:184
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:353
 msgid "An unspecified error occurred while running '{0}'"
 msgstr "Kesalahan yang tidak terspesifikasi ada ketika menjalankan '{0}'"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:199
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:200
 msgid "Solution could not be deployed: "
 msgstr "Solusi tidak dapat di-deploy"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:206
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:207
 msgid "Solution was succesfully deployed"
 msgstr "Solusi sukses di-deploy"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:217
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:218
 msgid "Adding variables to top-level Makefile"
 msgstr "Taruh variabel ke top-level Makefile"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:235
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:238
 msgid "Creating autogen.sh"
 msgstr "Membuat autogen.sh"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:262
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:265
 msgid "Creating configure.ac"
 msgstr "Membuat configure.ac"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:363
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:366
 msgid "Creating configure script"
 msgstr "Membuat script konfigurasi"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:430
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:440
 msgid "Creating Makefile.include"
 msgstr "Membuat Makefile.include"
 
@@ -7313,6 +7372,7 @@ msgstr "Meng-update proyek dari Makefile"
 msgid "Error loading Makefile for project {0}"
 msgstr "Kesalahan dalam memuat Makefile untuk proyek {0}"
 
+#: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:114
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:116
 msgid "Error saving to Makefile ({0}) for project {1}"
 msgstr "Kesalahan dalam menyimpan ke dalam Makefile ({0}) untuk proyek {1}"
@@ -7483,7 +7543,7 @@ msgid "Please enter a valid project name"
 msgstr "Harap masukkan nama proyek yang valid"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileIntegrationFeature.cs:12
-#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:90
+#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:92
 msgid "Makefile Integration"
 msgstr "Integrasi Makefile"
 
@@ -7675,11 +7735,11 @@ msgstr ""
 "hasilkan set dari Makefiles dengan target paling sederhana, dan script "
 "konfigurasi yang melakukan pengecekan dasar pada paket dependensi."
 
-#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:47
+#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:49
 msgid "Autotools"
 msgstr "Autotools"
 
-#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:53
+#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:55
 msgid "Include in Synchronized Makefile"
 msgstr "Masukkan dalam Makefile Tersinkronisasi"
 
@@ -10690,14 +10750,6 @@ msgstr "Compiler:"
 #, fuzzy
 msgid "Parse System Tags"
 msgstr "Paket Sistem"
-
-#, fuzzy
-#~ msgid "Could not save project: {0}, {1}"
-#~ msgstr "Tidak dapat menyimpan proyek: {0}"
-
-#, fuzzy
-#~ msgid "Project with guid '{0}' not found."
-#~ msgstr "File proyek tidak ditemukan: "
 
 #~ msgid ""
 #~ "MonoDevelop failed to start.\n"

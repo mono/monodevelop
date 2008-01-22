@@ -272,7 +272,7 @@ msgstr "Переименовать"
 
 #: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:247
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:204
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:146
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:147
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.addin.xml:54
 msgid "Delete"
 msgstr "Удалить"
@@ -1755,7 +1755,7 @@ msgid "File '{0}' could not be created."
 msgstr "Не удалось создать файл '{0}'."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1220
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:408
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:403
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:66
 msgid "{0} error"
 msgid_plural "{0} errors"
@@ -1764,7 +1764,7 @@ msgstr[1] "{0} ошибки"
 msgstr[2] "{0} ошибок"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1221
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:409
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:404
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:67
 msgid "{0} warning"
 msgid_plural "{0} warnings"
@@ -2594,7 +2594,7 @@ msgstr "Visual Studio"
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:300
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:63
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:200
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:144
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:145
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:405
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:515
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:598
@@ -3700,6 +3700,7 @@ msgstr "Сохраняется решение: {0}"
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:55
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/MonoDevelopFileFormat.cs:119
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:114
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:115
 msgid "Could not save solution: {0}"
 msgstr "Не удалось сохранить решение: {0}"
 
@@ -3844,29 +3845,29 @@ msgstr ""
 "Причина: \n"
 "{2}\n"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:636
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:639
 msgid "Removing all .resources files"
 msgstr "Удаляются все файлы .resource"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:650
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:653
 msgid "Removing all satellite assemblies"
 msgstr "Удаляются все сателлитные сборки"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:313
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:308
 msgid "Cannot create directory {0}, as a file with that name exists."
 msgstr ""
 "Не удалось создать каталог {0}, потому что уже существует файл с тем же "
 "именем."
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:342
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:337
 msgid "Building Project: {0} ({1})"
 msgstr "Построение проекта: {0} ({1})"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:402
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:397
 msgid "Performing main compilation..."
 msgstr "Выполняется основная компиляция..."
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:411
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:406
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:65
 msgid "Build complete -- "
 msgstr "Построение завершено -- "
@@ -4457,7 +4458,7 @@ msgstr "Результат"
 
 #: ../src/addins/NUnit/Gui/TestPad.cs:288
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:133
-#: ../src/addins/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml:29
+#: ../src/addins/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml:30
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:69
 #: ../src/addins/CBinding/CBinding.addin.xml:98
 msgid "Output"
@@ -4880,23 +4881,23 @@ msgstr "Отменить все сделанные изменения в выд�
 msgid "This project or folder is not under version control"
 msgstr "Этот проект или папка не используют контроль версий"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:140
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:141
 msgid "Modified"
 msgstr "Изменено"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:142
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:143
 msgid "Conflict"
 msgstr "Конфликт"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:152
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:153
 msgid "Unversioned"
 msgstr "Без версии"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:435
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:442
 msgid "Updating version control repository"
 msgstr "Репозиторий обновляется"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:524
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:531
 msgid ""
 "There isn't any supported version control system installed. You may need to "
 "install additional add-ins or packages."
@@ -5469,7 +5470,7 @@ msgstr ""
 "Компиляция проекта, требующего наличия библиотек Gtk#, невозможна. "
 "Установите пакеты разработчика gtk-sharp-2.0."
 
-#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:385
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:386
 msgid ""
 "GUI code generation failed for project '{0}'. The file '{1}' could not be "
 "loaded."
@@ -5477,11 +5478,11 @@ msgstr ""
 "Сгенерировать код графического интерфейса проекта '{0}' не получилось. Не "
 "удалось найти файл '{1}'."
 
-#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:393
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:394
 msgid "Generating GUI code for project '{0}'..."
 msgstr "Создаётся графический интерфейс проекта '{0}'..."
 
-#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:502
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:504
 msgid ""
 "You are requesting the file '{0}' to be used as source for an image. "
 "However, this file is already added to the project as a resource. Are you "
@@ -6209,6 +6210,11 @@ msgstr "Файл не найден {0} :"
 msgid "Error reading file {0} : "
 msgstr "Ошибка при чтении файла {0} :"
 
+#: ../src/addins/prj2make-sharp-lib/MSBuildFileFormat.cs:164
+#, fuzzy
+msgid "Could not save project: {0}, {1}"
+msgstr "Не удалось сохранить проект: {0}"
+
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:88
 #, fuzzy
 msgid "Generating partial classes for {0} with {1}"
@@ -6236,6 +6242,10 @@ msgstr ""
 "Не удалось создать сателлитные сборки для культуры '{0}' с {1}.\n"
 "Причина: \n"
 "{2}\n"
+
+#: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:164
+msgid "Language '{0}' not supported for building resource ids."
+msgstr ""
 
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:137
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:200
@@ -6269,22 +6279,46 @@ msgstr ""
 "Неизвестный идентификатор типа проекта '{0}' в строке #{1}. Пропускается."
 
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:494
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:540
 msgid "{0}({1}): Unsupported or unrecognized project : '{2}'. See logs."
 msgstr ""
 "{0}({1}): Неподдерживаемый или не распознанный проект: '{2}'. Смотрите "
 "журнал."
 
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:506
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:508
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:501
+msgid ""
+"{0}({1}): Projects with non-local source (http://...) not supported. '{2}'."
+msgstr ""
+
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:511
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:513
 msgid "Invalid project path found in {0} : {1}"
 msgstr "Неверный путь проекта найден в {0} : {1}"
 
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:531
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:534
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:537
 msgid "Error while trying to load the project {0}. Exception : {1}"
 msgstr "Произошла ошибка при попытке загрузки проекта {0}. Исключение : {1}"
 
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:946
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:695
+msgid "{0} ({1}) : Unknown action. Only ActiveCfg & Build.0 supported."
+msgstr ""
+
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:715
+#, fuzzy
+msgid "{0} ({1}) : Project with guid = '{2}' not found or not loaded. Ignoring"
+msgstr "Файл проекта не найден: "
+
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:819
+msgid "{0} ({1}) : Invalid config name '{2}'"
+msgstr ""
+
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:845
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:851
+#, fuzzy
+msgid "Project with guid '{0}' not found."
+msgstr "Файл проекта не найден: "
+
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:945
 msgid ""
 "The project file {0} must be converted to msbuild format to be added to a "
 "msbuild solution. Convert?"
@@ -6319,12 +6353,37 @@ msgstr ""
 "2005. Конвертация в формат Visual Studio 2005 перезапишет существующие "
 "файлы. Продолжить?"
 
-#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:170
-#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:173
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:120
+msgid "Expected 'Include' attribute not found for ItemGroup '{0}'"
+msgstr ""
+
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:178
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:181
 msgid "HintPath ({0}) for Reference '{1}' is invalid. Ignoring."
 msgstr "Неверный путь ({0}) для ссылки '{1}'. Пропускается."
 
-#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:438
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:205
+msgid "Expected element <Name> for ProjectReference '{0}'"
+msgstr ""
+
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:258
+#, fuzzy
+msgid ""
+"Unrecognised ItemGroup element '{0}', Include = '{1}' in project '{2}'. "
+"Ignoring."
+msgstr ""
+"Не удалось интерпретировать ссылку '{0}' по причине : {1}. Пропускается."
+
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:274
+msgid ""
+"CopyToOutputDirectory not supported for BuildAction '{0}', Include = '{1}'"
+msgstr ""
+
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:307
+msgid "BuildAction.{0} not supported!"
+msgstr ""
+
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:448
 #, fuzzy
 msgid "The project '{0}' referenced from '{1}' could not be found."
 msgstr "Не удалось загрузить файл проекта графического дизайнера {0}."
@@ -6470,16 +6529,16 @@ msgstr "Подписывание сборки"
 msgid "A file defining assembly information attributes."
 msgstr ""
 
-#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:29
+#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:30
 msgid "Insert ChangeLog Entry"
 msgstr "Добавить запись в журнал изменений"
 
-#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:37
+#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:38
 msgid "ChangeLog Add-in"
 msgstr "Журнал изменений"
 
-#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:46
-#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:50
+#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:47
+#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:51
 msgid "ChangeLog Integration"
 msgstr "Интеграция журнала изменений"
 
@@ -6647,7 +6706,7 @@ msgid ""
 "The ChangeLog file will be created if it doesn't exist."
 msgstr ""
 
-#: ../src/addins/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml:38
+#: ../src/addins/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml:39
 msgid "Install"
 msgstr "Установить"
 
@@ -7138,7 +7197,7 @@ msgstr ""
 "файлы Makefile для всего решения '{0}'?"
 
 #: ../src/addins/MonoDevelop.Autotools/Commands.cs:69
-#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:49
+#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:51
 msgid "Generate Makefiles..."
 msgstr "Создають файлы Makefile..."
 
@@ -7166,15 +7225,15 @@ msgstr "Создаётся {0} для проекта {1}"
 msgid "Not a deployable project."
 msgstr "Не развёртываемый проект."
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:277
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:276
 msgid "Unknown target {0}"
 msgstr "Неизвестная цель {0}"
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:292
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:291
 msgid "Could not add reference to project '{0}'"
 msgstr "Не удалось добавить ссылку в проект '{0}'"
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:330
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:329
 #, fuzzy
 msgid ""
 "Custom commands are not supported for autotools based makefiles. Ignoring."
@@ -7182,17 +7241,17 @@ msgstr ""
 "Пользовательские команды не поддерживаются файлами Makefile, основанными на "
 "autotools. Пропускается..."
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:513
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:512
 #, fuzzy
 msgid "Project reference type '{0}' not supported yet"
 msgstr "Тип ссылки проекта {0} пока что не поддерживается."
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:649
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:657
 #, fuzzy
 msgid "Custom commands of only the following types are supported: {0}."
 msgstr "Поддерживаются пользовательские команды только типов {0}"
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:727
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:735
 msgid "Couldn't find referenced project '{0}'"
 msgstr "Не удалось найти проект '{0}', на который имеется ссылка"
 
@@ -7208,53 +7267,54 @@ msgstr ""
 "MonoDevelop пока что не поддерживает создание {0} для одного (и более) "
 "дочерних проектов."
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:105
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:106
 msgid "Creating rules.make"
 msgstr "Создаётся rules.make"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:122
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:123
 msgid "{0} were successfully generated."
 msgstr "{0} были созданы успешно."
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:127
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:128
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:129
 msgid "{0} could not be generated: "
 msgstr "Не удалось создать {0}:"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:151
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:152
 msgid "Deploying Solution to Tarball"
 msgstr "Развёртывание решения в архив"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:165
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:183
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:166
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:184
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:353
 msgid "An unspecified error occurred while running '{0}'"
 msgstr "Во время запуска произошла нераспознанная ошибка '{0}'"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:199
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:200
 msgid "Solution could not be deployed: "
 msgstr "Не удалось развернуть решение: "
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:206
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:207
 msgid "Solution was succesfully deployed"
 msgstr "Решение было успешно развёрнуто."
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:217
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:218
 msgid "Adding variables to top-level Makefile"
 msgstr "Добавляются переменные в Makefile верхнего уровня"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:235
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:238
 msgid "Creating autogen.sh"
 msgstr "Создаётся autogen.sh"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:262
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:265
 msgid "Creating configure.ac"
 msgstr "Создаётся configure.ac"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:363
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:366
 msgid "Creating configure script"
 msgstr "Создаётся сценарий конфигурации"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:430
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:440
 msgid "Creating Makefile.include"
 msgstr "Создаётся Makefile.include"
 
@@ -7421,6 +7481,7 @@ msgstr "Проект обновляется из Makefile"
 msgid "Error loading Makefile for project {0}"
 msgstr "Не удалось загрузить Makefile для проекта {0}"
 
+#: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:114
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:116
 msgid "Error saving to Makefile ({0}) for project {1}"
 msgstr "Не удалось сохранить в Makefile ({0}) для проекта {1}"
@@ -7590,7 +7651,7 @@ msgid "Please enter a valid project name"
 msgstr "Пожалуйста, введите корректное имя проекта."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileIntegrationFeature.cs:12
-#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:90
+#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:92
 msgid "Makefile Integration"
 msgstr "Интеграция Makefile"
 
@@ -7786,11 +7847,11 @@ msgstr ""
 "Создаёт набор файлов Makefile с общими целями и конфигурационный сценарий, "
 "осуществляющий базовую проверку всех зависимостей пакета."
 
-#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:47
+#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:49
 msgid "Autotools"
 msgstr "Автосборка"
 
-#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:53
+#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:55
 msgid "Include in Synchronized Makefile"
 msgstr "Включить в синхронизацию Makefile"
 
@@ -10747,21 +10808,6 @@ msgstr "Пространство имён по умолчанию:"
 #: ../src/addins/CBinding/gtk-gui/CBinding.GeneralOptionsPanel.cs:87
 msgid "Parse System Tags"
 msgstr ""
-
-#, fuzzy
-#~ msgid "Could not save project: {0}, {1}"
-#~ msgstr "Не удалось сохранить проект: {0}"
-
-#, fuzzy
-#~ msgid "Project with guid '{0}' not found."
-#~ msgstr "Файл проекта не найден: "
-
-#, fuzzy
-#~ msgid ""
-#~ "Unrecognised ItemGroup element '{0}', Include = '{1}' in project '{2}'. "
-#~ "Ignoring."
-#~ msgstr ""
-#~ "Не удалось интерпретировать ссылку '{0}' по причине : {1}. Пропускается."
 
 #~ msgid "Steps"
 #~ msgstr "Шаги"
