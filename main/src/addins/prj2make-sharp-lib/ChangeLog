@@ -1,5 +1,10 @@
 2008-01-24  Ankit Jain  <jankit@novell.com>
 
+	* MSBuildFileFormat.cs: Simplification, AddExtensionNodeHandler calls
+	the handler for all existing extensions. Thanks to lluis.
+
+2008-01-24  Ankit Jain  <jankit@novell.com>
+
 	* MSBuildFileFormat.cs: Read the full list of extensions only at init
 	time and handle ExtensionChange.Add correctly.
 
