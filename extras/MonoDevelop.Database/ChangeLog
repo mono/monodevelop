@@ -1,3 +1,7 @@
+2008-01-23  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* po/ja.po : made it 100% up-to-date.
+
 2008-01-22  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* configure.in: Check for msgfmt and msgmerge.
