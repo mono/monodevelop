@@ -582,7 +582,7 @@
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.FullScreen"
 				defaultHandler = "MonoDevelop.Ide.Commands.FullScreenHandler"
 				_label = "_Full Screen" 
-				icon = "md-fullscreen" 
+				icon = "gtk-fullscreen" 
 				_description = "Full Screen" />
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.Open"
 				_label = "Open" />

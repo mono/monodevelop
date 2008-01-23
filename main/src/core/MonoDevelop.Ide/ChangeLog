@@ -1,3 +1,28 @@
+2008-01-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui/Ide.cs: Initialize the resource service before
+	  initializing the workbench.
+
+2008-01-22  Zach Lute <zach.lute@gmail.com> 
+
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: Added --newwindow option to force MD to
+	  open a new instance instead of passing to a running one.  This option is
+	  forced if opening a combine from the commandline. (Bug #350361)
+
+2008-01-22  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.addin.xml: Use GTK fullscreen icon (was added in 2.8).
+
+2008-01-22  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui/Ide.cs: Force resource service to load so that it
+	  registers GTK stock icons before the IDE loads. Fixes "Bug 353157 - Many
+	  toolbar icons aren't showing up".
+
+2008-01-22  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs: Grammar fix.
+
 2008-01-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs: If a project is selected in
