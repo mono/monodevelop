@@ -98,9 +98,7 @@ namespace MonoDevelop.Gettext
 			
 			foreach (string s in regexOptions.Split('|')) {
 				try {
-					System.Console.WriteLine("Parsing option {0}", s);
 					RegexOptions option = (RegexOptions) System.Enum.Parse (typeof (RegexOptions), s);
-					System.Console.WriteLine("Found option {0}", option.ToString ());
 					retval |= option;
 				} catch (Exception ex) {
 					LoggingService.LogError ("Unknown RegexOptions value in Gettext scanner", ex);
