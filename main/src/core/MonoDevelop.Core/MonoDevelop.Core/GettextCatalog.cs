@@ -24,6 +24,7 @@
  */
 
 using System;
+using System.IO;
 using System.Runtime.InteropServices;
 
 using MonoDevelop.Core;
@@ -37,7 +38,20 @@ namespace MonoDevelop.Core
 	{
 		static GettextCatalog ()
 		{
-			Catalog.Init ("monodevelop", "@prefix@/share/locale");
+			//variable can be used to override where Gettext looks for the catalogues
+			string catalog = System.Environment.GetEnvironmentVariable ("MONODEVELOP_LOCALE_PATH");
+			
+			if (string.IsNullOrEmpty (catalog)) {
+				string location = System.Reflection.Assembly.GetExecutingAssembly ().Location;
+				location = Path.GetDirectoryName (location);
+				//adding "../.." should give us $prefix
+				string prefix = Path.Combine (Path.Combine (location, ".."), "..");
+				//normalise it
+				prefix = Path.GetFullPath (prefix);
+				//catalogue is installed to "$prefix/share/locale" by default
+				catalog = Path.Combine (Path.Combine (prefix, "share"), "locale");
+			}
+			Catalog.Init ("monodevelop", catalog);
 		}
 	
 		private GettextCatalog ()

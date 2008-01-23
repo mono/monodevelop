@@ -330,7 +330,7 @@ namespace MonoDevelop.Gettext
 				                                     monitor.Log,
 				                                     monitor.Log,
 				                                     null);
-					process.WaitForExit ();
+					process.WaitForOutput ();
 
 					if (process.ExitCode == 0) {
 						monitor.Log.WriteLine (GettextCatalog.GetString ("Translation {0}: Compilation succeeded.", translation.IsoCode));

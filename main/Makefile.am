@@ -72,34 +72,24 @@ apidocs:
 	mdassembler --out docs/sources/monodevelop-extension-guide --addins docs/extension-model.xml
 #	cd docs/apiguide && mdassembler --out monodevelop-api-guide --xhtml toc.xhtml && mv monodevelop-api-guide.zip ../web/sources
 
-### SYNCH BLOCK: any changes to this line should be kept in sync with the corresponding block in Makefile.am
-MD_PKG_CONFIG_PATH=$(gtksharp_prefix)/lib/pkgconfig/:/usr/lib/pkgconfig/:/usr/local/lib/pkgconfig/:/usr/share/pkgconfig/:/usr/local/share/pkgconfig/$(shell if test -d /usr/lib64; then echo ":/usr/lib64/pkgconfig/:/usr/local/lib64/pkgconfig/"; fi)
-### END BLOCK
-
-MD_LAUNCH_SETUP= \
-	cd build/bin && \
-	MONO_ADDINS_REGISTRY=. MOZILLA_FIVE_HOME=$(MOZILLA_HOME) \
-	LD_LIBRARY_PATH=`echo "$(LD_LIBRARY_PATH):$(MOZILLA_HOME)" | sed 's/^://g'` \
-	PKG_CONFIG_PATH=`echo "$(PKG_CONFIG_PATH):$(MD_PKG_CONFIG_PATH)" | sed 's/^://g'`
-
 MD_LAUNCH=$(MD_LAUNCH_SETUP) exec -a "monodevelop" $(RUNTIME)
 
 run: runmd
 
 runmd: $(PROGRAM)
-	$(MD_LAUNCH) --debug MonoDevelop.exe
+	$(MD_LAUNCH) --debug $(MD_BIN_PATH)/MonoDevelop.exe
 
 run-profile: $(PROGRAM)
-	$(MD_LAUNCH) -O=inline --profile MonoDevelop.exe
+	$(MD_LAUNCH) -O=inline --profile $(MD_BIN_PATH)/MonoDevelop.exe
 
 run-profile-stat: $(PROGRAM)
-	$(MD_LAUNCH) --profile=default:stat MonoDevelop.exe
+	$(MD_LAUNCH) --profile=default:stat $(MD_BIN_PATH)/MonoDevelop.exe
 
 run-profile-heap: $(PROGRAM)
-	$(MD_LAUNCH) -O=inline --profile=heap:heaplog MonoDevelop.exe
+	$(MD_LAUNCH) -O=inline --profile=heap:heaplog $(MD_BIN_PATH)/MonoDevelop.exe
 	
 check-addins:
-	$(MD_LAUNCH_SETUP) $(RUNTIME) --debug mdrun.exe setup reg-build -v
+	$(MDTOOL_RUN) setup reg-build -v
 
 # we can't use the variables that are conditionally defined
 EXTRA_DIST = $(bin_SCRIPTS) $(desktop_DATA) $(pixmap_DATA) \
@@ -108,3 +98,5 @@ EXTRA_DIST = $(bin_SCRIPTS) $(desktop_DATA) $(pixmap_DATA) \
 
 DISTCLEANFILES = monodevelop intltool-extract intltool-merge intltool-update \
 	$(pkgconfig_DATA) 
+
+include $(top_srcdir)/Makefile.include

@@ -41,6 +41,7 @@ public class MonoDevelopProcessHost
 	{
 		try {
 			Runtime.Initialize (false);
+			Runtime.SetProcessName ("mdtool");
 			
 			if (args.Length == 0 || args [0] == "--help") {
 				Console.WriteLine ("MonoDevelop Application Runner");

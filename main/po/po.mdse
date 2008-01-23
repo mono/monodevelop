@@ -1,4 +1,4 @@
-<CombineEntry name="po" fileversion="2.0" packageName="monodevelop" outputType="SystemPath" relPath="" absPath="" ctype="TranslationProject">
+<CombineEntry name="po" fileversion="2.0" packageName="monodevelop" outputType="RelativeToOutput" relPath="../../build/po/" absPath="" ctype="TranslationProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="TranslationProjectConfiguration" />
     <Configuration name="Release" ctype="TranslationProjectConfiguration" />
@@ -17,7 +17,7 @@
     <Translation isoCode="pt" />
     <Translation isoCode="pt_BR" />
     <Translation isoCode="ru" />
-    <Translation isoCode="sl_SI" />
+    <Translation isoCode="sl" />
     <Translation isoCode="sv" />
     <Translation isoCode="tr" />
     <Translation isoCode="zh_CN" />

@@ -1,0 +1,30 @@
+
+LC_BUILD=$(top_builddir)/build/locale
+INSTALL_DIR=$(datarootdir)/locale
+
+FILES = $(addsuffix .po, $(ALL_LINGUAS))
+GMO_FILES = $(patsubst %.po,$(LC_BUILD)/%/LC_MESSAGES/$(PACKAGE).mo,$(FILES))
+MO_FILES = $(foreach po,$(FILES), $(INSTALL_DIR)/$(basename $(po))/LC_MESSAGES/$(PACKAGE).mo)
+
+all: $(GMO_FILES)
+
+update-po:
+	pushd $(top_srcdir) && $(MDTOOL_RUN) gettext-update ; popd
+
+$(GMO_FILES): $(LC_BUILD)/%/LC_MESSAGES/$(PACKAGE).mo: %.po
+	$(mkdir_p) $(dir $@)
+	msgfmt '$<' -o '$@'
+	
+$(MO_FILES): $(INSTALL_DIR)/%/LC_MESSAGES/$(PACKAGE).mo : $(LC_BUILD)/%/LC_MESSAGES/$(PACKAGE).mo
+	$(mkdir_p) $(dir $@)
+	$(install_sh) '$<' '$@'
+
+install-data-local: $(MO_FILES)
+
+uninstall-local:
+	for FILE in $(MO_FILES); do rm $$FILE; done
+
+CLEANFILES = $(GMO_FILES)
+EXTRA_DIST = Makefile $(FILES)
+
+include $(top_srcdir)/Makefile.include

@@ -193,7 +193,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 						POEditorWidget.ReloadWidgets ();
 					});
 				} catch (Exception ex) {
-					monitor.ReportError ("Translation update failed.", ex);
+					monitor.ReportError (GettextCatalog.GetString ("Translation update failed."), ex);
 				} finally {
 					monitor.Log.WriteLine ();
 					monitor.Log.WriteLine (GettextCatalog.GetString ("---------------------- Done ----------------------"));

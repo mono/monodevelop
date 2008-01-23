@@ -92,7 +92,6 @@
   </References>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <ExcludedFiles>
-      <File>MonoDevelop.Core/GettextCatalog.cs</File>
       <File>AssemblyInfo.cs</File>
     </ExcludedFiles>
     <BuildFilesVar Sync="True" Name="FILES" />

@@ -1,3 +1,25 @@
+2008-01-17  Geoff Norton  <gnorton@novell.com>
+
+	* Makefile.am:  It appears that not all versions of automake set MKDIR_P
+	but they do set mkdir_p.
+
+2008-01-16  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* gl.po, cs.po, pt_BR.po, fr.po, es.po, messages.po, pl.po, it.po, sl.po,
+	  pt.po, ca.po, da.po, tr.po, ru.po, de.po, sv.po, ja.po, zh_TW.po,
+	  zh_CN.po: Updated po files using MD's translation system, so that
+	  translators don't have to build MD themselves.
+
+2008-01-16  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* POTFILES.in, POTFILES.skip, po.mdp: No longer needed.
+	* po.mdse: Updated.
+	* Makefile.am: New build for i18n files.
+
+2008-01-15  Wade Berrier  <wberrier@novell.com> 
+
+	* sl_SI.po: Rename to sl.po (caught by suse autobuild)
+
 2008-01-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ru.po: Fixes bug 338954 - too long button names make test results view

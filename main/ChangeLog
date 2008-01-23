@@ -1,3 +1,18 @@
+2008-01-16  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* configure.in: Updated. Remove intltool calls, check for msgfmt.
+	* monodevelop.in: Tidied.
+	* Makefile.include: Refactor code that sets vars when lanching MD, and apply
+	  to mdtool too.
+	* mdtool.in: Set process name on mdtool.
+	* Makefile.am: Refactor code that sets vars when lanching MD.
+	* autogen.sh: Remove intltoolizing.
+
+2008-01-15  Wade Berrier  <wberrier@novell.com>
+
+	* configure.in: rename sl_SI to sl in LINGUAS
+	* monodevelop.desktop: removed "Application" category
+
 2008-01-12  Ankit Jain  <jankit@novell.com>
 
 	Fix bug #350786.

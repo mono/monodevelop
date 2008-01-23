@@ -15,6 +15,12 @@
 	* MonoDevelop.Core/Runtime.cs: Get add-ins from a version specific
 	  repository.
 
+2008-01-16  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Makefile.am, MonoDevelop.Core.mdp, MonoDevelop.Core/GettextCatalog.cs,
+	  MonoDevelop.Core/GettextCatalog.cs.in: Make Gettext catalogue path
+	  relative to MD rather than hardcoding the prefix set at build time.
+
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Makefile.am, MonoDevelop.Core.addin.xml, MonoDevelop.Core.mdp,
