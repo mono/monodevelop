@@ -886,12 +886,9 @@ namespace MonoDevelop.Prj2Make
 			extensions = new List<MSBuildProjectExtension> ();
 			languageTypeGuids = new Dictionary<string,string> ();
 
-			foreach (MSBuildProjectExtension extn in AddinManager.GetExtensionObjects (
-						"/MonoDevelop/Prj2Make/MSBuildProjectExtension", typeof (MSBuildProjectExtension)))
-				AddExtension (extn);
-
-			extensions.Add (new DefaultMSBuildProjectExtension ());
+			// AddinManager.AddExtensionNodeHandler calls the handler for all the existing extensions
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Prj2Make/MSBuildProjectExtension", OnProjectExtensionsChanged);
+			extensions.Add (new DefaultMSBuildProjectExtension ());
 		}
 
 		static void OnProjectExtensionsChanged (object s, ExtensionNodeEventArgs args)
