@@ -166,6 +166,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			model.SetSortColumnId (COL_FILE, SortType.Ascending);
 			model.ChangeSortColumn ();
 			this.cellHeight = 29;
+			tree.Selection.Changed += OnSelectionChanged;
+		}
+		
+		void OnSelectionChanged (object ob, EventArgs args)
+		{
+			openButton.Sensitive = (tree.Selection.GetSelectedRows ().Length != 0);
 		}
 		
 		protected void HandleShown (object sender, System.EventArgs e)

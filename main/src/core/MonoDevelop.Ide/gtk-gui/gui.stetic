@@ -24,6 +24,7 @@
         <property name="MemberName" />
         <property name="Events">ButtonPressMask</property>
         <property name="Spacing">6</property>
+        <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.VBox" id="vbox2">
             <property name="MemberName" />
@@ -148,8 +149,8 @@
       <widget class="Gtk.HButtonBox" id="MonoDevelop.Ide.OpenFileInSolutionDialog_ActionArea">
         <property name="MemberName" />
         <property name="Events">ButtonPressMask</property>
-        <property name="Spacing">10</property>
-        <property name="BorderWidth">6</property>
+        <property name="Spacing">6</property>
+        <property name="BorderWidth">5</property>
         <property name="Size">2</property>
         <property name="LayoutStyle">End</property>
         <child>

@@ -146,6 +146,11 @@ namespace MonoDevelop.Ide.Commands
 		{
 			OpenFileInSolutionDialog.Show (true);
 		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = IdeApp.ProjectOperations.CurrentOpenCombine != null;
+		}
 	}
 	
 	internal class CloseCombineHandler : CommandHandler
