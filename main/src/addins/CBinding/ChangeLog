@@ -1,3 +1,8 @@
+2008-01-18  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
+	* Parser/TagDatabaseManager.cs: Cache tags into a hash table and see if they
+	  had been previously cached before looking for them again.
+
 2008-01-15  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* templates/StaticLibraryCProject.xpt.xml,

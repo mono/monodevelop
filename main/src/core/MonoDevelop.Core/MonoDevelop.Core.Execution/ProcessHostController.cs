@@ -82,7 +82,11 @@ namespace MonoDevelop.Core.Execution
 				try {
 					process = new Process ();
 					process.Exited += new EventHandler (ProcessExited);
-					process.StartInfo = new ProcessStartInfo ("sh", "-c \"mono mdhost.exe " + id + "\"");
+					string location = Path.GetDirectoryName (System.Reflection.Assembly.GetExecutingAssembly ().Location);
+					string args = string.Empty;
+					if (isDebugMode) args += " --debug";
+					args += " '" + Path.Combine (location, "mdhost.exe") + "' " + id;
+					process.StartInfo = new ProcessStartInfo ("mono", args);
 					process.StartInfo.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
 					process.StartInfo.UseShellExecute = false;
 					process.StartInfo.RedirectStandardInput = true;
@@ -95,6 +99,13 @@ namespace MonoDevelop.Core.Execution
 					LoggingService.LogError (ex.ToString ());
 					throw;
 				}
+			}
+		}
+		
+		bool isDebugMode
+		{
+			get {
+				return System.Environment.StackTrace.IndexOf ("ProcessHostController.cs:") > -1;
 			}
 		}
 
