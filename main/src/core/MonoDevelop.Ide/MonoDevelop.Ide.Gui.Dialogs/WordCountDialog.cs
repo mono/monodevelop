@@ -159,7 +159,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 							items.Add(r);
 						}
 					}
-				} else
+				} else if (entry is Combine)
 					CountCombine ((Combine)entry, ref all);
 			}
 		}
@@ -203,11 +203,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.Title = GettextCatalog.GetString ("Word Count");
 			Button startButton = new Button (Gtk.Stock.Execute);
 			startButton.Clicked += new EventHandler (StartEvent);
+			
+			this.AddButton (Gtk.Stock.Cancel, (int) ResponseType.Cancel);
 
 			// dont emit response
 			this.ActionArea.PackStart (startButton);
-			
-			this.AddButton (Gtk.Stock.Cancel, (int) ResponseType.Cancel);
 			
 			scrolledwindow = new ScrolledWindow();
 			scrolledwindow.VscrollbarPolicy = PolicyType.Automatic;
