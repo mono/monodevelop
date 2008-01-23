@@ -1,3 +1,8 @@
+2008-01-24  Ankit Jain  <jankit@novell.com>
+
+	* MSBuildFileFormat.cs: Read the full list of extensions only at init
+	time and handle ExtensionChange.Add correctly.
+
 2008-01-23  Ankit Jain  <jankit@novell.com>
 
 	Fix bug#353042.
