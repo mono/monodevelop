@@ -82,7 +82,7 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.Caret.PositionChanged += delegate {
 				FireCompletionContextChanged ();
 			};
-//			
+			
 //			GLib.Timeout.Add (1000, delegate {
 //				if (!widget.IsSplitted)
 //					widget.Split (true);
@@ -518,7 +518,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			CodeCompletionContext result = new CodeCompletionContext ();
 			result.TriggerOffset = this.widget.TextEditor.Caret.Offset;
-			result.TriggerLine = this.widget.TextEditor.Caret.Line + 1;
+			result.TriggerLine   = this.widget.TextEditor.Caret.Line + 1;
 			result.TriggerLineOffset = this.widget.TextEditor.Document.Splitter.Get (this.widget.TextEditor.Caret.Line).Offset;
 			Gdk.Point p = this.widget.TextEditor.DocumentToVisualLocation (this.widget.TextEditor.Caret.Location);
 			int tx, ty;

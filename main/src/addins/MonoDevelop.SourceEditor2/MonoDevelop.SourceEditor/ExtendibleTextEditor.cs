@@ -37,6 +37,7 @@ using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Components.Commands;
 using Mono.TextEditor.Highlighting;
+using MonoDevelop.Ide.CodeTemplates;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -74,7 +75,7 @@ namespace MonoDevelop.SourceEditor
 				if (extension != null)
 					extension.TextChanged (args.Offset, args.Offset + Math.Max (args.Count, args.Value != null ? args.Value.Length : 0));
 			};
-//			keyBindings.Remove (GetKeyCode (Gdk.Key.Tab));
+			keyBindings [GetKeyCode (Gdk.Key.Tab)] = new TabAction (this);
 			this.PopupMenu += delegate {
 				this.ShowPopup ();
 			};
@@ -91,11 +92,11 @@ namespace MonoDevelop.SourceEditor
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
 			if (extension != null) {
-				if (extension.KeyPress (evnt.Key, evnt.State))
+				if (extension.KeyPress (evnt.Key, evnt.State)) {
 					return true;
+				}
 			}
-			bool result = base.OnKeyPressEvent (evnt);
-			return result;
+			return base.OnKeyPressEvent (evnt);
 		}
 		
 		double mx, my;
@@ -265,5 +266,84 @@ namespace MonoDevelop.SourceEditor
 //			base.OnPopulatePopup (menu);
 //		}
 //		
+		
+#region Templates
+		int FindPrevWordStart (int offset)
+		{
+			while (--offset >= 0 && !Char.IsWhiteSpace (Buffer.GetCharAt (offset))) 
+				;
+			return ++offset;
+		}
+
+		public string GetWordBeforeCaret ()
+		{
+			int offset = this.Caret.Offset;
+			int start  = FindPrevWordStart (offset);
+			return Buffer.GetTextAt (start, offset - start);
+		}
+		
+		public int DeleteWordBeforeCaret ()
+		{
+			int offset = this.Caret.Offset;
+			int start  = FindPrevWordStart (offset);
+			Buffer.Remove (start, offset - start);
+			return start;
+		}
+
+		public string GetLeadingWhiteSpace (int line)
+		{
+			string lineText = Buffer.GetTextAt (Document.GetLine (line));
+			int index = 0;
+			while (index < lineText.Length && Char.IsWhiteSpace (lineText[index]))
+				index++;
+ 	   		return index > 0 ? lineText.Substring (0, index) : "";
+		}
+
+		public bool DoInsertTemplate ()
+		{
+			string word = GetWordBeforeCaret ();
+			System.Console.WriteLine("word before:" + word);
+			CodeTemplateGroup templateGroup = CodeTemplateService.GetTemplateGroupPerFilename (this.view.ContentName);
+			if (String.IsNullOrEmpty (word) || templateGroup == null) 
+				return false;
+			
+			foreach (CodeTemplate template in templateGroup.Templates) {
+				if (template.Shortcut == word) {
+					InsertTemplate (template);
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		public void InsertTemplate (CodeTemplate template)
+		{
+			int offset = Caret.Offset;
+			string word = GetWordBeforeCaret ().Trim ();
+			if (word.Length > 0)
+				offset = DeleteWordBeforeCaret ();
+			
+			string leadingWhiteSpace = GetLeadingWhiteSpace (Caret.Line);
+
+			int finalCaretOffset = offset + template.Text.Length;
+			StringBuilder builder = new StringBuilder ();
+			for (int i = 0; i < template.Text.Length; ++i) {
+				switch (template.Text[i]) {
+				case '|':
+					finalCaretOffset = i + offset;
+					break;
+				default:
+					builder.Append (template.Text[i]);
+					break;
+				}
+			}
+			
+//			if (endLine > beginLine) {
+//				IndentLines (beginLine+1, endLine, leadingWhiteSpace);
+//			}
+			Buffer.Insert (offset, builder);
+			Caret.Offset = finalCaretOffset;
+		}		
+#endregion
 	}
 }
