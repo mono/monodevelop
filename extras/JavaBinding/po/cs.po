@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: MonoDevelop Java Addin\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2007-12-29 21:23+0100\n"
+"PO-Revision-Date: 2008-01-24 00:08+0100\n"
 "Last-Translator: David Makovský (Yakeen) <yakeen@sannyas-on.net>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -25,7 +25,7 @@ msgstr "Prázdný soubor"
 
 #: ../templates/EmptyJavaFile.xft.xml:6
 msgid "General"
-msgstr ""
+msgstr "Obecný"
 
 #: ../templates/EmptyJavaFile.xft.xml:8
 msgid "Creates an empty Java file."
@@ -95,11 +95,14 @@ msgstr "Vytvoří Java knihovnu s IKVM"
 msgid "AWT Applet"
 msgstr "AWT aplet"
 
-#: ../templates/JavaApplet.xft.xml:6 ../templates/JavaApplication.xft.xml:6
-#: ../templates/JavaDialog.xft.xml:6 ../templates/JavaFrame.xft.xml:6
-#: ../templates/JavaOKDialog.xft.xml:6 ../templates/JavaPanel.xft.xml:6
+#: ../templates/JavaApplet.xft.xml:6
+#: ../templates/JavaApplication.xft.xml:6
+#: ../templates/JavaDialog.xft.xml:6
+#: ../templates/JavaFrame.xft.xml:6
+#: ../templates/JavaOKDialog.xft.xml:6
+#: ../templates/JavaPanel.xft.xml:6
 msgid "AWT"
-msgstr ""
+msgstr "AWT"
 
 #: ../templates/JavaApplet.xft.xml:8
 msgid "Creates a Java AWT Applet"
@@ -275,3 +278,4 @@ msgstr "Generuji assembly..."
 #: ../IKVMCompilerManager.cs:213
 msgid "Compiling Java source code ..."
 msgstr "Kompiluji Java zdrojový kód..."
+
