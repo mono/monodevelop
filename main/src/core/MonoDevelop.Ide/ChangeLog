@@ -1,5 +1,11 @@
 2008-01-23  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs: Fix crash when counting
+	  words in a solution with a translation project. Changed the order of the
+	  buttons. Execute should be the rightmost.
+
+2008-01-23  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui/Ide.cs: Initialize the resource service before
 	  initializing the workbench.
 
