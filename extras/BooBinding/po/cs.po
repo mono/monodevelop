@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: MonoDevelop Boo Addin\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2007-12-23 22:59+0100\n"
+"PO-Revision-Date: 2008-01-24 00:09+0100\n"
 "Last-Translator: David Makovský (Yakeen) <yakeen@sannyas-on.net>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -27,7 +27,7 @@ msgstr "Gtk# projekt"
 #: ../templates/BooLibraryProject.xpt.xml:8
 #: ../templates/EmptyBooProject.xpt.xml:8
 msgid "Boo"
-msgstr ""
+msgstr "Boo"
 
 #: ../templates/BooGtkSharpProject.xpt.xml:11
 msgid "Creates a Boo/Gtk# project"
@@ -47,9 +47,8 @@ msgstr "Okno Gtk#"
 
 #: ../templates/BooGtkSharpWindow.xft.xml:9
 #: ../templates/EmptyBooFile.xft.xml:6
-#, fuzzy
 msgid "General"
-msgstr "Obecná nastavení"
+msgstr "Obecný"
 
 #: ../templates/BooGtkSharpWindow.xft.xml:11
 msgid "Creates a top-level Gtk# window"
@@ -95,7 +94,8 @@ msgstr "Zapnout ladění"
 msgid "Enable ducky mode"
 msgstr "Zapnout ducky mód"
 
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:88 ../BooBinding.addin.xml:52
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:88
+#: ../BooBinding.addin.xml:52
 msgid "Code Generation"
 msgstr "Vytváření kódu"
 
@@ -168,6 +168,8 @@ msgstr "Použít vlastní písmo:"
 msgid "Boo Files"
 msgstr "Soubory Boo (*.boo)"
 
-#: ../BooBinding.addin.xml:82 ../BooBinding.addin.xml:90
+#: ../BooBinding.addin.xml:82
+#: ../BooBinding.addin.xml:90
 msgid "Boo Shell"
 msgstr "Konzole Boo"
+
