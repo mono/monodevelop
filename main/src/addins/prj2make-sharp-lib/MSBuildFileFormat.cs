@@ -884,25 +884,31 @@ namespace MonoDevelop.Prj2Make
 				return;
 
 			extensions = new List<MSBuildProjectExtension> ();
-			OnProjectExtensionsChanged (null, null);
+			languageTypeGuids = new Dictionary<string,string> ();
+
+			foreach (MSBuildProjectExtension extn in AddinManager.GetExtensionObjects (
+						"/MonoDevelop/Prj2Make/MSBuildProjectExtension", typeof (MSBuildProjectExtension)))
+				AddExtension (extn);
+
+			extensions.Add (new DefaultMSBuildProjectExtension ());
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Prj2Make/MSBuildProjectExtension", OnProjectExtensionsChanged);
 		}
 
 		static void OnProjectExtensionsChanged (object s, ExtensionNodeEventArgs args)
 		{
-			extensions.Clear ();
-			if (languageTypeGuids == null)
-				languageTypeGuids = new Dictionary<string,string> ();
-			else
-				LanguageTypeGuids.Clear ();
-
-			foreach (MSBuildProjectExtension extn in
-				AddinManager.GetExtensionObjects ("/MonoDevelop/Prj2Make/MSBuildProjectExtension", typeof (MSBuildProjectExtension))) {
-				extensions.Add (extn);
-				if (extn.IsLanguage)
-					LanguageTypeGuids [extn.LanguageId] = extn.TypeGuid;
+			if (args.Change == ExtensionChange.Add) {
+				MSBuildProjectExtension extn = (MSBuildProjectExtension) args.ExtensionObject;
+				if (!extensions.Contains (extn))
+					AddExtension (extn);
 			}
-			extensions.Add (new DefaultMSBuildProjectExtension ());
+			//FIXME: ExtensionChange.Remove
+		}
+		
+		static void AddExtension (MSBuildProjectExtension extn)
+		{
+			extensions.Add (extn);
+			if (extn.IsLanguage)
+				LanguageTypeGuids [extn.LanguageId] = extn.TypeGuid;
 		}
 
 		static Regex conditionRegex = null;
