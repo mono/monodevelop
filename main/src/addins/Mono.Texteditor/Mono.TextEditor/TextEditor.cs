@@ -316,9 +316,9 @@ namespace Mono.TextEditor
 		}
 		bool caretBlink = true;
 		
-		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
+		public void SimulateKeyPress (Gdk.Key key, Gdk.ModifierType modifier)
 		{
-			int keyCode = GetKeyCode (evnt.Key, evnt.State);
+			int keyCode = GetKeyCode (key, modifier);
 			if (keyBindings.ContainsKey (keyCode)) {
 				try {
 					keyBindings[keyCode].Run (this.textEditorData);
@@ -326,17 +326,21 @@ namespace Mono.TextEditor
 					Console.WriteLine ("Error while executing " + keyBindings[keyCode] + " :" + e);
 				}
 				
-			} else if (evnt.KeyValue < 65000) {
+			} else if (((ulong)key) < 65000) {
 				this.textEditorData.DeleteSelectedText ();
-				char ch = (char)evnt.KeyValue;
+				char ch = (char)key;
 				if (!char.IsControl (ch)) {
 					Buffer.Insert (Caret.Offset, new StringBuilder (ch.ToString()));
 					Caret.Column++;
 				}
 			}
-			return true;
 		}
 		
+		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
+		{
+			SimulateKeyPress (evnt.Key, evnt.State);
+			return true;
+		}
 		
 		bool mousePressed = false;
 		uint lastTime;
