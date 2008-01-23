@@ -37,7 +37,7 @@ using MonoDevelop.Ide.Gui.Search;
 
 namespace MonoDevelop.SourceEditor
 {	
-	public class SourceEditorView : AbstractViewContent, ITextEditorExtension, IPositionable, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, ICompletionWidget, IDocumentInformation
+	public class SourceEditorView : AbstractViewContent, IPositionable, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, ICompletionWidget, IDocumentInformation
 	{
 		SourceEditorWidget widget;
 		bool isDisposed = false;
@@ -209,8 +209,9 @@ namespace MonoDevelop.SourceEditor
 #region IExtensibleTextEditor
 		ITextEditorExtension IExtensibleTextEditor.AttachExtension (ITextEditorExtension extension)
 		{
+			System.Console.WriteLine("Attach extension:" + extension);
 			this.widget.TextEditor.Extension = extension;
-			return this;
+			return this.widget;
 		}
 		
 //		protected override void OnMoveCursor (MovementStep step, int count, bool extend_selection)
@@ -370,26 +371,6 @@ namespace MonoDevelop.SourceEditor
 		}
 #endregion 
 		
-#region ITextEditorExtension
-		bool ITextEditorExtension.KeyPress (Gdk.Key key, Gdk.ModifierType modifier)
-		{
-			return false;
-		}
-				
-		void ITextEditorExtension.CursorPositionChanged ()
-		{
-		}
-		
-		void ITextEditorExtension.TextChanged (int startIndex, int endIndex)
-		{
-		}
-		
-		object ITextEditorExtension.GetExtensionCommandTarget ()
-		{
-			return null;
-		}
-#endregion
-
 #region IPositionable
 		public void JumpTo (int line, int column)
 		{
@@ -545,11 +526,13 @@ namespace MonoDevelop.SourceEditor
 			this.widget.TextEditor.TextEditorData.DeleteSelectedText ();
 			
 			int idx = complete_word.IndexOf ('|'); // | in the completion text now marks the caret position
-			if (idx >= 0) 
+			if (idx >= 0) {
 				complete_word = complete_word.Remove (idx, 1);
-			else 
+			} else {
 				idx = complete_word.Length;
-			this.widget.TextEditor.Buffer.Insert (ctx.TriggerOffset, new StringBuilder (complete_word));
+			}
+			
+			this.widget.TextEditor.Buffer.Replace (ctx.TriggerOffset, String.IsNullOrEmpty (partial_word) ? 0 : partial_word.Length, new StringBuilder (complete_word));
 			this.widget.TextEditor.Caret.Offset = ctx.TriggerOffset + idx;
 		}
 		

@@ -38,7 +38,7 @@ using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.SourceEditor
 {
-	public partial class SourceEditorWidget : Gtk.Bin
+	public partial class SourceEditorWidget : Gtk.Bin, ITextEditorExtension
 	{
 		SourceEditorView view;
 		bool isClassBrowserVisible = true;
@@ -68,6 +68,27 @@ namespace MonoDevelop.SourceEditor
 					BindClassCombo ();
 			}
 		}
+		
+#region ITextEditorExtension
+		object ITextEditorExtension.GetExtensionCommandTarget ()
+		{
+			return null;
+		}
+
+		void ITextEditorExtension.TextChanged (int startIndex, int endIndex)
+		{
+		}
+
+		void ITextEditorExtension.CursorPositionChanged ()
+		{
+		}
+
+		bool ITextEditorExtension.KeyPress (Gdk.Key key, Gdk.ModifierType modifier)
+		{
+			this.textEditor.SimulateKeyPress (key, modifier);
+			return true;
+		}
+#endregion
 		
 		void PrepareEvent (object sender, ButtonPressEventArgs args) 
 		{

@@ -66,6 +66,9 @@ namespace MonoDevelop.SourceEditor
 		public ExtendibleTextEditor (SourceEditorView view)
 		{
 			this.view = view;
+			this.Buffer.TextReplaced += delegate {
+				this.HideLanguageItemWindow ();
+			};
 			this.ColorStyle = SyntaxModeService.GetColorStyle (this, SourceEditorOptions.Options.ColorSheme);
 			base.TextEditorData.Caret.PositionChanged += delegate {
 				if (extension != null)
@@ -92,11 +95,11 @@ namespace MonoDevelop.SourceEditor
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
 			if (extension != null) {
-				if (extension.KeyPress (evnt.Key, evnt.State)) {
-					return true;
+				if (!extension.KeyPress (evnt.Key, evnt.State)) {
+					return base.OnKeyPressEvent (evnt);
 				}
 			}
-			return base.OnKeyPressEvent (evnt);
+			return true;
 		}
 		
 		double mx, my;

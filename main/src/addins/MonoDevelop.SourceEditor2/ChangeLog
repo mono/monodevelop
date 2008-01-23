@@ -1,10 +1,14 @@
 2008-01-23  Mike Krüger <mkrueger@novell.com> 
 
-	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs,
-	  gtk-gui/gui.stetic, MonoDevelop.SourceEditor.mdp,
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,
 	  MonoDevelop.SourceEditor/ExtendibleTextEditor.cs,
-	  MonoDevelop.SourceEditor/SourceEditorView.cs,
-	  MonoDevelop.SourceEditor/EditActions.cs: Worked on code templates.
+	  MonoDevelop.SourceEditor/SourceEditorView.cs: Worked on code completion.
+
+2008-01-23  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor/ExtendibleTextEditor.cs,
+	  MonoDevelop.SourceEditor/SourceEditorView.cs: Worked on code completion.
 
 2008-01-23  Mike Krüger <mkrueger@novell.com> 
 
@@ -13,15 +17,6 @@
 	  MonoDevelop.SourceEditor/ExtendibleTextEditor.cs,
 	  MonoDevelop.SourceEditor/SourceEditorView.cs,
 	  MonoDevelop.SourceEditor/EditActions.cs: Worked on code templates.
-
-2008-01-22  Mike Krüger <mkrueger@novell.com> 
-
-	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs,
-	  gtk-gui/gui.stetic, ChangeLog,
-	  MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs,
-	  MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs,
-	  MonoDevelop.SourceEditor/ExtendibleTextEditor.cs,
-	  MonoDevelop.SourceEditor/SourceEditorOptions.cs: Worked on style panel.
 
 2008-01-22  Mike Krüger <mkrueger@novell.com> 
 
