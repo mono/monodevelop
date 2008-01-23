@@ -75,16 +75,29 @@ namespace MonoDevelop.Ide.Gui
 			
 			AddinManager.AddinLoadError += OnAddinError;
 			
+			StartupInfo.SetCommandLineArgs (remainingArgs);
+			
+			// If a combine was specified, force --newwindow.
+			if(!options.newwindow) {
+				foreach (string file in StartupInfo.GetRequestedFileList ()) {
+					if (MonoDevelop.Projects.Services.ProjectService.IsCombineEntryFile (file))
+					{
+						options.newwindow = true;
+						break;
+					}
+				}
+			}
+			
 			if(!options.ipc_tcp){
 				socket_filename = "/tmp/md-" + Environment.GetEnvironmentVariable ("USER") + "-socket";
 				listen_socket = new Socket (AddressFamily.Unix, SocketType.Stream, ProtocolType.IP);
 				ep = new UnixEndPoint (socket_filename);
 				
-				// Connect to existing monodevelop and pass filename(s) and exit
-				if (remainingArgs.Length > 0 && File.Exists (socket_filename)) {
+				// If not opening a combine, connect to existing monodevelop and pass filename(s) and exit
+				if (!options.newwindow && StartupInfo.GetRequestedFileList ().Length > 0 && File.Exists (socket_filename)) {
 					try {
 						listen_socket.Connect (ep);
-						listen_socket.Send (Encoding.UTF8.GetBytes (String.Join ("\n", remainingArgs)));
+						listen_socket.Send (Encoding.UTF8.GetBytes (String.Join ("\n", StartupInfo.GetRequestedFileList ())));
 						return 0;
 					} catch {
 						// Reset the socket
@@ -120,9 +133,7 @@ namespace MonoDevelop.Ide.Gui
 					return 1;
 				}
 			}
-		
-			StartupInfo.SetCommandLineArgs (remainingArgs);
-			
+
 			IProgressMonitor monitor = SplashScreenForm.SplashScreen;
 			
 			if (!options.nologo) {
@@ -377,6 +388,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		[Option ("Use the Tcp channel for inter-process comunication.", "ipc-tcp")]
 		public bool ipc_tcp;
+		
+		[Option ("Do not open in an existing instance of MonoDevelop")]
+		public bool newwindow;
 	}	
 	
 	public class AddinError

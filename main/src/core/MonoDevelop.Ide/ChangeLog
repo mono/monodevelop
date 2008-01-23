@@ -1,3 +1,9 @@
+2008-01-22  Zach Lute <zach.lute@gmail.com> 
+
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: Added --newwindow option to force MD to
+	  open a new instance instead of passing to a running one.  This option is
+	  forced if opening a combine from the commandline. (Bug #350361)
+
 2008-01-22  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.addin.xml: Use GTK fullscreen icon (was added in 2.8).
