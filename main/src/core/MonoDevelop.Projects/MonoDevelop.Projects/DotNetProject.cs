@@ -147,14 +147,16 @@ namespace MonoDevelop.Projects
 			languageBinding = FindLanguage (language);
 			
 			if (languageBinding != null) {
-				projectOptions.SetAttribute ("DefineDebug", "True");
+				if (projectOptions != null)
+					projectOptions.SetAttribute ("DefineDebug", "True");
 				DotNetProjectConfiguration configuration = (DotNetProjectConfiguration) CreateConfiguration ("Debug");
 				configuration.CompilationParameters = languageBinding.CreateCompilationParameters (projectOptions);
 				Configurations.Add (configuration);
 				
 				configuration = (DotNetProjectConfiguration) CreateConfiguration ("Release");
 				configuration.DebugMode = false;
-				projectOptions.SetAttribute ("DefineDebug", "False");
+				if (projectOptions != null)
+					projectOptions.SetAttribute ("DefineDebug", "False");
 				configuration.CompilationParameters = languageBinding.CreateCompilationParameters (projectOptions);
 				Configurations.Add (configuration);
 			}
