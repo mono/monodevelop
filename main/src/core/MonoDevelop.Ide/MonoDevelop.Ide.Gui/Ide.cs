@@ -96,6 +96,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		public static void Initialize (IProgressMonitor monitor)
 		{
+			//force the ResourceService to load so that it registers stock icons
+			MonoDevelop.Core.Gui.Services.Resources.ToString ();
+			
 			workbench = new Workbench ();
 			projectOperations = new ProjectOperations ();
 			helpOperations = new HelpOperations ();
@@ -109,9 +112,6 @@ namespace MonoDevelop.Ide.Gui
 			FileService.ErrorHandler = FileServiceErrorHandler;
 		
 			monitor.BeginTask (GettextCatalog.GetString("Loading Workbench"), 5);
-			
-			//force the ResourceService to load so that it registers stock icons
-			MonoDevelop.Core.Gui.Services.Resources.ToString ();
 			
 			commandService.LoadCommands ("/MonoDevelop/Ide/Commands");
 			commandService.LoadKeyBindingSchemes ("/MonoDevelop/Ide/KeyBindingSchemes");

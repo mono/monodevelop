@@ -1,3 +1,8 @@
+2008-01-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui/Ide.cs: Initialize the resource service before
+	  initializing the workbench.
+
 2008-01-22  Zach Lute <zach.lute@gmail.com> 
 
 	* MonoDevelop.Ide.Gui/IdeStartup.cs: Added --newwindow option to force MD to
