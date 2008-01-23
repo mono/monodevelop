@@ -1,6 +1,6 @@
 
 LC_BUILD=$(top_builddir)/build/locale
-INSTALL_DIR=$(datarootdir)/locale
+INSTALL_DIR=$(DESTDIR)$(datarootdir)/locale
 
 FILES = $(addsuffix .po, $(ALL_LINGUAS))
 GMO_FILES = $(patsubst %.po,$(LC_BUILD)/%/LC_MESSAGES/$(PACKAGE).mo,$(FILES))
@@ -28,7 +28,12 @@ $(MO_FILES): $(INSTALL_DIR)/%/LC_MESSAGES/$(PACKAGE).mo : $(LC_BUILD)/%/LC_MESSA
 install-data-local: $(MO_FILES)
 
 uninstall-local:
-	for FILE in $(MO_FILES); do rm $$FILE; done
+	@for FILE in $(MO_FILES); do \
+		if test -e "$$FILE"; then \
+			echo "Removing $$FILE"; \
+			rm "$$FILE"; \
+		fi; \
+	done
 
 CLEANFILES = $(GMO_FILES)
 EXTRA_DIST = Makefile $(FILES)
