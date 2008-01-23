@@ -1,3 +1,9 @@
+2008-01-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/NUnitOptionsPanel.cs: Ensure we don't create subclasses of classes
+	  with private fields bound by glade#. It would not work due to bug
+	  355228.
+
 2008-01-15  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* templates/NUnitTestClass.xft.xml, templates/NUnitAssemblyGroup.xpt.xml,

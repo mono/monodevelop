@@ -1,3 +1,11 @@
+2008-01-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.Dialogs/ProgressDialog.cs: Ensure we don't create
+	  subclasses of classes with private fields bound by glade#. It would not
+	  work due to bug 355228.
+	* MonoDevelop.Core.Gui.Dialogs/TreeViewOptions.cs: Changed some fields to
+	  internal. Workaround to glade# bug 355228.
+
 2008-01-22  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Core.Gui.mdp, Makefile.am, icons/view-fullscreen_22.png,

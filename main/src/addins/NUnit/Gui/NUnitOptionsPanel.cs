@@ -41,7 +41,7 @@ namespace MonoDevelop.NUnit
 {
 	public class NUnitOptionsPanel : AbstractOptionPanel
 	{
-		class NUnitOptionsWidget : GladeWidgetExtract
+		sealed class NUnitOptionsWidget : GladeWidgetExtract
 		{
 			// Gtk Controls
 			[Glade.Widget] Gtk.TreeView categoryTree;

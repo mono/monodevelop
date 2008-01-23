@@ -17,7 +17,7 @@ using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 {
-	public class SyntaxHighlightingPanel : AbstractOptionPanel
+	class SyntaxHighlightingPanel : AbstractOptionPanel
 	{
 		SyntaxHighlightingPanelWidget widget;
 		

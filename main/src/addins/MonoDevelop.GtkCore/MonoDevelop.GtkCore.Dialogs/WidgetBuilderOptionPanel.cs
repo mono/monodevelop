@@ -46,7 +46,7 @@ using MonoDevelop.Core.Gui.Dialogs;
 
 namespace MonoDevelop.GtkCore.Dialogs
 {
-	public class WidgetBuilderOptionPanel: AbstractOptionPanel
+	class WidgetBuilderOptionPanel: AbstractOptionPanel
 	{
 		class WidgetBuilderOptionPanelWidget : GladeWidgetExtract
 		{

@@ -110,7 +110,7 @@ namespace VBBinding
 
 
 		
-		class CodeGenerationPanelWidget : GladeWidgetExtract 
+		sealed class CodeGenerationPanelWidget : GladeWidgetExtract 
 		{
 			//
 			// Gtk Controls	

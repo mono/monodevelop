@@ -45,10 +45,10 @@ namespace MonoDevelop.Core.Gui.Dialogs {
 		[Glade.Widget] protected Gtk.TreeView  TreeView;
 		[Glade.Widget] protected Gtk.ScrolledWindow TreeViewScrolledWindow;
 		[Glade.Widget] protected Gtk.VBox TreeViewContainer;
-		[Glade.Widget] Gtk.Label     optionTitle;
-		[Glade.Widget] Gtk.Notebook  mainBook;
-		[Glade.Widget] Gtk.Image     panelImage;
-		[Glade.Widget] Gtk.Dialog    TreeViewOptionDialog;
+		[Glade.Widget] internal Gtk.Label     optionTitle;
+		[Glade.Widget] internal Gtk.Notebook  mainBook;
+		[Glade.Widget] internal Gtk.Image     panelImage;
+		[Glade.Widget] internal Gtk.Dialog    TreeViewOptionDialog;
 		
 		public Properties Properties {
 			get {
