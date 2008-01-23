@@ -64,7 +64,8 @@ namespace MonoDevelop.Prj2Make
 		{
 			if (String.Compare (Path.GetExtension (file), ".sln", true) != 0)
 				return false;
-			string version = GetSlnFileVersion (file);
+			string tmp;
+			string version = GetSlnFileVersion (file, out tmp);
 			return version == "9.00" || version == "10.00";
 		}
 		
@@ -128,28 +129,27 @@ namespace MonoDevelop.Prj2Make
 			using (StreamWriter sw = new StreamWriter (file, false, Encoding.UTF8)) {
 				sw.NewLine = "\r\n";
 
-				sw.WriteLine ();
-				//Write Header
-				sw.WriteLine ("Microsoft Visual Studio Solution File, Format Version 9.00");
-
-				sw.WriteLine ("# Visual Studio 2005");
-
-				//Write the projects
-				monitor.BeginTask (GettextCatalog.GetString ("Saving projects"), 1);
-				WriteProjects (c, c.BaseDirectory, sw, monitor);
-				monitor.EndTask ();
-
 				SlnData slnData = GetSlnData (c);
 				if (slnData == null) {
 					// If a non-msbuild project is being converted by just
 					// changing the fileformat, then create the SlnData for it
 					slnData = new SlnData ();
 					c.ExtendedProperties [typeof (SlnFileFormat)] = slnData;
-				} else {
-					//Write the lines for unknownProjects
-					foreach (string l in slnData.UnknownProjects)
-						sw.WriteLine (l);
 				}
+
+				sw.WriteLine ();
+				//Write Header
+				sw.WriteLine ("Microsoft Visual Studio Solution File, Format Version " + slnData.VersionString);
+				sw.WriteLine (slnData.HeaderComment);
+
+				//Write the projects
+				monitor.BeginTask (GettextCatalog.GetString ("Saving projects"), 1);
+				WriteProjects (c, c.BaseDirectory, sw, monitor);
+				monitor.EndTask ();
+
+				//Write the lines for unknownProjects
+				foreach (string l in slnData.UnknownProjects)
+					sw.WriteLine (l);
 
 				//Write the Globals
 				sw.WriteLine ("Global");
@@ -252,6 +252,11 @@ namespace MonoDevelop.Prj2Make
 						// Solution folder
 						slnData = new SlnData ();
 						c.ExtendedProperties [typeof (SlnFileFormat)] = slnData;
+						SlnData data = GetSlnData (combine);
+						if (data != null) {
+							slnData.VersionString = data.VersionString;
+							slnData.HeaderComment = data.HeaderComment;
+						}
 					}
 
 					l = slnData.Extra;
@@ -390,7 +395,8 @@ namespace MonoDevelop.Prj2Make
 		//
 		Combine LoadSolution (string fileName, IProgressMonitor monitor)
 		{
-			string version = GetSlnFileVersion (fileName);
+			string headerComment;
+			string version = GetSlnFileVersion (fileName, out headerComment);
 			if (version != "9.00" && version != "10.00")
 				throw new UnknownProjectVersionException (fileName, version);
 
@@ -410,6 +416,8 @@ namespace MonoDevelop.Prj2Make
 				combine.FileFormat = new MSBuildFileFormat ();
 				data = new SlnData ();
 				combine.ExtendedProperties [typeof (SlnFileFormat)] = data;
+				data.VersionString = version;
+				data.HeaderComment = headerComment;
 
 				string s = null;
 				projectSections = new List<Section> ();
@@ -479,6 +487,8 @@ namespace MonoDevelop.Prj2Make
 
 					SlnData slnData = new SlnData (projectGuid);
 					folder.ExtendedProperties [typeof (SlnFileFormat)] = slnData;
+					slnData.VersionString = data.VersionString;
+					slnData.HeaderComment = data.HeaderComment;
 
 					slnData.Extra = lines.GetRange (sec.Start + 1, sec.Count - 2);
 
@@ -897,10 +907,11 @@ namespace MonoDevelop.Prj2Make
 		}
 
 		// Utility function to determine the sln file version
-		string GetSlnFileVersion(string strInSlnFile)
+		string GetSlnFileVersion(string strInSlnFile, out string headerComment)
 		{
 			string strVersion = null;
 			string strInput = null;
+			headerComment = null;
 			Match match;
 			StreamReader reader = new StreamReader(strInSlnFile);
 			
@@ -919,6 +930,7 @@ namespace MonoDevelop.Prj2Make
 			if (match.Success)
 			{
 				strVersion = match.Groups[1].Value;
+				headerComment = reader.ReadLine ();
 			}
 			
 			// Close the stream
