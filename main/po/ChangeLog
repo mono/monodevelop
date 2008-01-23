@@ -1,3 +1,7 @@
+2008-01-23  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* ja.po : made it mostly up-to-date (except for regex toolkit).
+
 2008-01-22  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* *.po: Oops, another "final" update for 1.0 string freeze. Adds some 
