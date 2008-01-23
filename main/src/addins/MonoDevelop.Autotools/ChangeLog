@@ -1,3 +1,14 @@
+2008-01-24  Ankit Jain  <jankit@novell.com>
+	Raja R Harinath  <harinath@gmail.com>
+
+	Fix bugs #333847.
+	* SimpleProjectMakefileHandler.cs:
+	* SolutionDeployer.cs:
+	* templates/Makefile.am.project.template:
+	* templates/Makefile.include:
+	* templates/Makefile.noauto.project.template:
+	Add support for generating satellite assemblies.
+
 2008-01-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Autotools.addin.xml: Updated add-in category and description.

@@ -21,6 +21,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -483,6 +484,7 @@ namespace MonoDevelop.Autotools
 					" -e \"s,@expanded_bindir@,$(bindir),\"" +
 					" -e \"s,@expanded_datadir@,$(datadir),\"" +
 					" < $2.in > $2";
+			templateEngine.Variables["VALID_CULTURES"] = CultureNames;
 
 			string fileName = Path.Combine (solution_dir, "Makefile.include");
 
@@ -497,6 +499,20 @@ namespace MonoDevelop.Autotools
 			writer.Close();
 
 			context.AddGeneratedFile (fileName);
+		}
+		
+		static string cultureNames;
+		static string CultureNames {
+			get {
+				if (cultureNames == null) {
+					StringBuilder sb = new StringBuilder ();
+					foreach (CultureInfo ci in CultureInfo.GetCultures (CultureTypes.AllCultures))
+						sb.AppendFormat (" {0}", ci.Name);
+					cultureNames = sb.ToString ();
+				}
+
+				return cultureNames;
+			}
 		}
 	}
 }
