@@ -1,5 +1,14 @@
 2008-01-23  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Commands/FileCommands.cs: Disable the OpenFileInSolution
+	  command if no solution is open.
+	* MonoDevelop.Ide.Gui.Dialogs/OpenFileInSolutionDialog.cs: Disable the open
+	  button if no row is selected.
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.cs,
+	  gtk-gui/gui.stetic: Updated.
+
+2008-01-23  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs: Fix crash when counting
 	  words in a solution with a translation project. Changed the order of the
 	  buttons. Execute should be the rightmost.
