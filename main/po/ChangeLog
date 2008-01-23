@@ -1,3 +1,7 @@
+2008-01-24  David Makovský (Yakeen) <yakeen@sannyas-on.net>
+
+        * cs.po: Updated translation.
+
 2008-01-22  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Makefile.am: Install to $DESTDIR.
