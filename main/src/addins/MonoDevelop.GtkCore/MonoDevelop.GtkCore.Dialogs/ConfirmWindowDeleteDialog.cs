@@ -33,7 +33,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.GtkCore.Dialogs
 {
-	public class ConfirmWindowDeleteDialog: IDisposable
+	class ConfirmWindowDeleteDialog: IDisposable
 	{
 		[Glade.Widget ("ConfirmWindowDeleteDialog")] protected Gtk.Dialog dialog;
 		[Glade.Widget] protected Gtk.Label label;

@@ -36,7 +36,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.GtkCore.Dialogs
 {
-	public class BindDesignDialog: IDisposable
+	class BindDesignDialog: IDisposable
 	{
 		[Glade.Widget ("BindDesignDialog")] protected Gtk.Dialog dialog;
 		[Glade.Widget] protected Gtk.Label labelMessage;

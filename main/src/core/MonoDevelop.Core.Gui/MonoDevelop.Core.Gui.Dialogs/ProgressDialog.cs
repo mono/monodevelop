@@ -33,7 +33,7 @@ using Glade;
 
 namespace MonoDevelop.Core.Gui.Dialogs
 {
-	class ProgressDialog : IDisposable
+	sealed class ProgressDialog : IDisposable
 	{
 		[Glade.Widget ("ProgressDialog")] Dialog dialog;
 		[Glade.Widget] Button btnCancel;

@@ -36,7 +36,7 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 	/// Summary description for Form9.
 	/// </summary>
 
-	public class MarkersTextEditorPanel : AbstractOptionPanel
+	class MarkersTextEditorPanel : AbstractOptionPanel
 	{
 		MarkersTextEditorPanelWidget widget;
 		
