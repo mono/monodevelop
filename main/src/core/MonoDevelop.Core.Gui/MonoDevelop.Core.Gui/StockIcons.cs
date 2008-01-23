@@ -60,7 +60,7 @@ namespace MonoDevelop.Core.Gui
 		public static readonly string FindIcon = Gtk.Stock.Find;
 		public static readonly string FindInFiles = "md-find-in-files";
 		public static readonly string FindNextIcon = "md-find-next-icon";
-		public static readonly string FullScreen = "md-fullscreen";
+		public static readonly string FullScreen = Gtk.Stock.Fullscreen;
 		public static readonly string GotoNextbookmark = "md-goto-nextbookmark";
 		public static readonly string GotoPrevbookmark = "md-goto-prevbookmark";
 		public static readonly string Information = Gtk.Stock.DialogInfo;

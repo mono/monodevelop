@@ -244,7 +244,8 @@ namespace MonoDevelop.Core.Gui
 				}
 
 				Gtk.IconSource source = new Gtk.IconSource ();
-				source.Filename = Path.GetFullPath (Path.Combine ("../data/resources/icons", filename));
+				source.Filename = Path.GetFullPath (Path.Combine (Path.Combine ( Path.Combine ( Path.Combine (
+				                                    "..", "data"), "resources"), "icons"), filename));
 				source.Size = iconSize;
 				iconSet.AddSource (source);
 

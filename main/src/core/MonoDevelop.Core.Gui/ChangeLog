@@ -1,3 +1,11 @@
+2008-01-22  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Core.Gui.mdp, Makefile.am, icons/view-fullscreen_22.png,
+	  icons/view-fullscreen.png: Remove unused icon.
+	* MonoDevelop.Core.Gui/StockIcons.cs: Use GTK fullscreen icon (was added in
+	  2.8)
+	* MonoDevelop.Core.Gui/ResourceService.cs: Fix Path.Combine call.
+
 2008-01-08  Michael Hutchinson  <mhutchinson@novell.com> 
 
 	* Base.glade: Make ErrorDialog modal, like all the other MessageService 

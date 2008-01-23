@@ -180,8 +180,6 @@ RES =  \
 	icons/system-software-update_22.png \
 	icons/uncomment.png \
 	icons/user-package.png \
-	icons/view-fullscreen.png \
-	icons/view-fullscreen_22.png \
 	icons/visual-studio.png \
 	icons/web-overlay-16.png \
 	icons/web-overlay-32.png \
