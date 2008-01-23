@@ -54,9 +54,14 @@ if test "x$PKG_CONFIG" = "xno"; then
 fi
 
 dnl Find msgfmt for translations
+# Find msgfmt and msgmerge for translations
 AC_PATH_PROG(MSGFMT, msgfmt, no)
 if test "x$MSGFMT" = "xno"; then
         AC_MSG_ERROR([You need to install msgfmt from intltool])
+fi
+AC_PATH_PROG(MSGMERGE, msgmerge, no)
+if test "x$MSGMERGE" = "xno"; then
+        AC_MSG_ERROR([You need to install msgmerge from intltool])
 fi
 
 MONO_REQUIRED_VERSION=1.1.10
@@ -259,7 +264,7 @@ fi
 AC_SUBST(MOZILLA_HOME)
 
 dnl Intl
-ALL_LINGUAS="cs da de es fr ja pt_BR tr pl it zh_TW zh_CN ru sl ca gl pt sv nl"
+ALL_LINGUAS="cs da de es fr ja pt_BR tr pl it zh_TW zh_CN ru sl ca gl pt sv nl id hu"
 AC_SUBST(ALL_LINGUAS)
 GETTEXT_PACKAGE=monodevelop
 AC_SUBST(GETTEXT_PACKAGE)

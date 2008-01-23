@@ -209,7 +209,7 @@ msgid "Register a local repository"
 msgstr "Registra un dipòsit local"
 
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:2389
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.cs:203
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.cs:202
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs:178
 msgid "Path:"
 msgstr "Camí"
@@ -268,7 +268,7 @@ msgstr "Reanomena"
 
 #: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:247
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:204
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:146
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:147
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.addin.xml:54
 msgid "Delete"
 msgstr "Suprimeix"
@@ -816,8 +816,9 @@ msgid "The file '{0}' already exists in the project."
 msgstr "El fitxer '{0}' ja existeix al projecte."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:121
+#, fuzzy
 msgid ""
-"File {0} already exists, do you want to overwrite\n"
+"File {0} already exists. Do you want to overwrite\n"
 "the existing file?"
 msgstr ""
 "El fitxer {0} ja existeix, voleu sobreescriure\n"
@@ -890,7 +891,7 @@ msgstr "Projecte: {0}"
 msgid "_Save and Quit"
 msgstr "_Desa i surt"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs:122
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs:121
 msgid "Can't load bitmap {0} using default"
 msgstr ""
 "No es pot carregar el mapa de bits {0}. Es farà servir el predeterminat"
@@ -1277,17 +1278,17 @@ msgstr "Projectes"
 msgid ".Net Assembly"
 msgstr "Assemblat .Net"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs:100
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs:101
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:81
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:431
 msgid "Stop"
 msgstr "Atura"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs:105
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs:106
 msgid "Clear console"
 msgstr "Neteja la consola"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs:110
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs:111
 #, fuzzy
 msgid "Pin output pad"
 msgstr "Camí de sortida"
@@ -1773,7 +1774,7 @@ msgid "File '{0}' could not be created."
 msgstr "No s'ha pogut crear el fitxer '{0}'."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1220
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:408
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:403
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:66
 msgid "{0} error"
 msgid_plural "{0} errors"
@@ -1781,7 +1782,7 @@ msgstr[0] "{0} error"
 msgstr[1] "{0} errors"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1221
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:409
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:404
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:67
 msgid "{0} warning"
 msgid_plural "{0} warnings"
@@ -2666,7 +2667,7 @@ msgstr "_Importar projecte del Visual Studio .NET 2003..."
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:300
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:63
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:200
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:144
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:145
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:405
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:515
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:598
@@ -3014,18 +3015,18 @@ msgid "Delete comment task"
 msgstr "Seleccioneu l'ordre"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/UserTasksView.cs:67
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs:270
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs:269
 msgid "High"
 msgstr "Alt"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/UserTasksView.cs:67
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs:279
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs:278
 msgid "Normal"
 msgstr "Normal"
 
 #
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/UserTasksView.cs:67
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs:290
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs:289
 msgid "Low"
 msgstr "Baix"
 
@@ -3189,37 +3190,37 @@ msgstr "_Suprimeix del disc"
 msgid "<b>Template</b>"
 msgstr "<b>Plantilla</b>"
 
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:164
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:163
 msgid "Creates a new C# Project"
 msgstr "Crea un nou projecte C#"
 
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:188
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:187
 msgid "<b>Location</b>"
 msgstr "<b>Ubicació</b>"
 
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:217
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:216
 msgid "_Create separate Solution subdirectory"
 msgstr "_Crea un subdirectori separat per a la solució"
 
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:262
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:261
 msgid "_Location:"
 msgstr "_Ubicació:"
 
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:275
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:274
 msgid "N_ame:"
 msgstr "N_om:"
 
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:286
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:285
 msgid "_Solution name:"
 msgstr "Nom de la _solució:"
 
 #
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:359
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:356
 #, fuzzy
 msgid "<b>Project Features</b>"
 msgstr "<b>Característiques del projecte</b>"
 
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:371
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:368
 msgid ""
 "<small>This list shows a set of features you can enable in the new project. "
 "After creating the project those features can be enabled or disabled in the "
@@ -3274,7 +3275,7 @@ msgid "_External"
 msgstr "_Extern"
 
 #
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs:158
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs:159
 msgid "_All"
 msgstr "_Tots"
 
@@ -3673,7 +3674,7 @@ msgstr "Prioritat:"
 msgid "<i><b>Note:</b> Only Letters, Digits and Underscore are allowed.</i>"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs:302
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs:301
 msgid "<b>Task Priorities Foreground Colors</b>"
 msgstr ""
 
@@ -3752,7 +3753,7 @@ msgstr ""
 "funcionalitat que proporcionen no estarà disponible."
 
 #
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog.cs:104
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog.cs:102
 msgid "Selected references:"
 msgstr "Referències seleccionades:"
 
@@ -3770,7 +3771,7 @@ msgstr "Visualitza"
 msgid "New Files Only"
 msgstr "Només els fitxers nous"
 
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.cs:145
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.cs:144
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.StandardHeaders.NewHeaderTemplateDialog.cs:51
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs:206
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.NewConfigurationDialog.cs:51
@@ -3785,7 +3786,7 @@ msgstr "Només els fitxers nous"
 msgid "Name:"
 msgstr "Nom:"
 
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.cs:177
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.cs:176
 #, fuzzy
 msgid "_Add to project:"
 msgstr "Afegeix un _projecte existent"
@@ -3817,6 +3818,7 @@ msgstr "S'està desant la solució: {0}"
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:55
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/MonoDevelopFileFormat.cs:119
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:114
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:115
 msgid "Could not save solution: {0}"
 msgstr "No s'ha pogut desar la solució: {0}"
 
@@ -3951,29 +3953,29 @@ msgid ""
 msgstr ""
 
 #
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:636
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:639
 msgid "Removing all .resources files"
 msgstr "S'estan suprimint tots els fitxers .resources"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:650
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:653
 msgid "Removing all satellite assemblies"
 msgstr "S'estan suprimint tots els assemblats satèl·lits"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:313
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:308
 msgid "Cannot create directory {0}, as a file with that name exists."
 msgstr ""
 "No s'ha pogut crear el directori {0} ja que existeix un fitxer amb el mateix "
 "nom."
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:342
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:337
 msgid "Building Project: {0} ({1})"
 msgstr "S'està muntant el projecte: {0} ({1})"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:402
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:397
 msgid "Performing main compilation..."
 msgstr "S'està realitzant la compilació principal..."
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:411
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:406
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:65
 msgid "Build complete -- "
 msgstr "Muntatge finalitzat -- "
@@ -4587,7 +4589,7 @@ msgstr "Resultat"
 
 #: ../src/addins/NUnit/Gui/TestPad.cs:288
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:133
-#: ../src/addins/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml:29
+#: ../src/addins/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml:30
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:69
 #: ../src/addins/CBinding/CBinding.addin.xml:98
 msgid "Output"
@@ -5040,25 +5042,25 @@ msgstr "Esteu segur de que voleu suprimir aquest fitxer?"
 msgid "This project or folder is not under version control"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:140
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:141
 #, fuzzy
 msgid "Modified"
 msgstr "Última modificació"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:142
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:143
 msgid "Conflict"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:152
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:153
 #, fuzzy
 msgid "Unversioned"
 msgstr "Versió"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:435
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:442
 msgid "Updating version control repository"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:524
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:531
 msgid ""
 "There isn't any supported version control system installed. You may need to "
 "install additional add-ins or packages."
@@ -5671,17 +5673,17 @@ msgid ""
 "to install development packages for gtk-sharp-2.0."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:385
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:386
 msgid ""
 "GUI code generation failed for project '{0}'. The file '{1}' could not be "
 "loaded."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:393
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:394
 msgid "Generating GUI code for project '{0}'..."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:502
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:504
 msgid ""
 "You are requesting the file '{0}' to be used as source for an image. "
 "However, this file is already added to the project as a resource. Are you "
@@ -6436,6 +6438,11 @@ msgstr "Fitxer no trobat: {0}"
 msgid "Error reading file {0} : "
 msgstr ""
 
+#: ../src/addins/prj2make-sharp-lib/MSBuildFileFormat.cs:164
+#, fuzzy
+msgid "Could not save project: {0}, {1}"
+msgstr "No s'ha pogut desar el projecte: {0}"
+
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:88
 msgid "Generating partial classes for {0} with {1}"
 msgstr ""
@@ -6453,6 +6460,10 @@ msgid ""
 "Unable to generate partial classes ({0}) for {1}. \n"
 "Reason: \n"
 "{2}\n"
+msgstr ""
+
+#: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:164
+msgid "Language '{0}' not supported for building resource ids."
 msgstr ""
 
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:137
@@ -6484,20 +6495,44 @@ msgid "Unknown project type guid '{0}' on line #{1}. Ignoring."
 msgstr ""
 
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:494
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:540
 msgid "{0}({1}): Unsupported or unrecognized project : '{2}'. See logs."
 msgstr ""
 
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:506
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:508
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:501
+msgid ""
+"{0}({1}): Projects with non-local source (http://...) not supported. '{2}'."
+msgstr ""
+
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:511
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:513
 msgid "Invalid project path found in {0} : {1}"
 msgstr ""
 
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:531
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:534
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:537
 msgid "Error while trying to load the project {0}. Exception : {1}"
 msgstr ""
 
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:946
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:695
+msgid "{0} ({1}) : Unknown action. Only ActiveCfg & Build.0 supported."
+msgstr ""
+
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:715
+#, fuzzy
+msgid "{0} ({1}) : Project with guid = '{2}' not found or not loaded. Ignoring"
+msgstr "No s'ha trobat el fitxer de projecte: "
+
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:819
+msgid "{0} ({1}) : Invalid config name '{2}'"
+msgstr ""
+
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:845
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:851
+#, fuzzy
+msgid "Project with guid '{0}' not found."
+msgstr "No s'ha trobat el fitxer de projecte: "
+
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:945
 msgid ""
 "The project file {0} must be converted to msbuild format to be added to a "
 "msbuild solution. Convert?"
@@ -6523,13 +6558,37 @@ msgid ""
 "existing files. Convert ?"
 msgstr ""
 
-#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:170
-#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:173
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:120
+msgid "Expected 'Include' attribute not found for ItemGroup '{0}'"
+msgstr ""
+
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:178
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:181
 #, fuzzy
 msgid "HintPath ({0}) for Reference '{1}' is invalid. Ignoring."
 msgstr "Nom de fitxer {0} no vàlid"
 
-#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:438
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:205
+msgid "Expected element <Name> for ProjectReference '{0}'"
+msgstr ""
+
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:258
+#, fuzzy
+msgid ""
+"Unrecognised ItemGroup element '{0}', Include = '{1}' in project '{2}'. "
+"Ignoring."
+msgstr "No s'ha pogut desar el projecte: {0}"
+
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:274
+msgid ""
+"CopyToOutputDirectory not supported for BuildAction '{0}', Include = '{1}'"
+msgstr ""
+
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:307
+msgid "BuildAction.{0} not supported!"
+msgstr ""
+
+#: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:448
 #, fuzzy
 msgid "The project '{0}' referenced from '{1}' could not be found."
 msgstr "El fitxer '{0}' no s'ha pogut carregar."
@@ -6681,18 +6740,18 @@ msgid "A file defining assembly information attributes."
 msgstr ""
 
 #
-#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:29
+#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:30
 msgid "Insert ChangeLog Entry"
 msgstr "Insereix entrada al ChangeLog"
 
-#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:37
+#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:38
 msgid "ChangeLog Add-in"
 msgstr "Complement ChangeLog"
 
 #
 #
-#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:46
-#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:50
+#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:47
+#: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:51
 msgid "ChangeLog Integration"
 msgstr "Integració ChangeLog"
 
@@ -6868,7 +6927,7 @@ msgid ""
 "The ChangeLog file will be created if it doesn't exist."
 msgstr ""
 
-#: ../src/addins/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml:38
+#: ../src/addins/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml:39
 #, fuzzy
 msgid "Install"
 msgstr "S'està instal·lant"
@@ -7383,7 +7442,7 @@ msgstr ""
 
 #
 #: ../src/addins/MonoDevelop.Autotools/Commands.cs:69
-#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:49
+#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:51
 msgid "Generate Makefiles..."
 msgstr "Genera fitxers Makefile..."
 
@@ -7433,15 +7492,15 @@ msgid ""
 "Custom commands are not supported for autotools based makefiles. Ignoring."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:511
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:512
 msgid "Project reference type '{0}' not supported yet"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:644
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:657
 msgid "Custom commands of only the following types are supported: {0}."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:722
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:735
 #, fuzzy
 msgid "Couldn't find referenced project '{0}'"
 msgstr "No s'ha pogut desar el projecte: {0}"
@@ -7457,59 +7516,60 @@ msgid ""
 "child projects."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:105
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:106
 msgid "Creating rules.make"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:122
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:123
 #, fuzzy
 msgid "{0} were successfully generated."
 msgstr "L'operació s'ha completat amb èxit."
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:127
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:128
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:129
 #, fuzzy
 msgid "{0} could not be generated: "
 msgstr "No s'ha pogut suprimir el fitxer {0}"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:151
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:152
 msgid "Deploying Solution to Tarball"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:165
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:183
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:166
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:184
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:353
 msgid "An unspecified error occurred while running '{0}'"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:199
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:200
 #, fuzzy
 msgid "Solution could not be deployed: "
 msgstr "No s'ha pogut importar la solució."
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:206
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:207
 #, fuzzy
 msgid "Solution was succesfully deployed"
 msgstr "L'operació s'ha completat amb èxit."
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:217
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:218
 msgid "Adding variables to top-level Makefile"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:235
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:238
 msgid "Creating autogen.sh"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:262
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:265
 msgid "Creating configure.ac"
 msgstr ""
 
 #
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:363
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:366
 #, fuzzy
 msgid "Creating configure script"
 msgstr "Crea fitxers pkg-config per les bibloteques"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:430
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:440
 msgid "Creating Makefile.include"
 msgstr ""
 
@@ -7668,6 +7728,7 @@ msgstr ""
 msgid "Error loading Makefile for project {0}"
 msgstr "Error al carregar el fitxer de plantilla des del recurs {0}"
 
+#: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:114
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:116
 #, fuzzy
 msgid "Error saving to Makefile ({0}) for project {1}"
@@ -7822,7 +7883,7 @@ msgstr "Si us plau, introduïu un nom de configuració vàlid."
 
 #
 #: ../src/addins/MonoDevelop.Autotools/MakefileIntegrationFeature.cs:12
-#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:90
+#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:92
 msgid "Makefile Integration"
 msgstr "Integració amb Makefile"
 
@@ -8020,12 +8081,12 @@ msgid ""
 msgstr ""
 
 #
-#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:47
+#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:49
 #, fuzzy
 msgid "Autotools"
 msgstr "Sortida del muntatge"
 
-#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:53
+#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:55
 msgid "Include in Synchronized Makefile"
 msgstr ""
 

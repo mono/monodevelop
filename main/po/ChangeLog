@@ -1,3 +1,30 @@
+2008-01-22  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Makefile.am: Install to $DESTDIR.
+
+2008-01-23  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* ja.po : made it mostly up-to-date (except for regex toolkit).
+
+2008-01-22  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* *.po: Oops, another "final" update for 1.0 string freeze. Adds some 
+	  fuzzy matches and updates line numbers.
+
+2008-01-22  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* *.po: Final update for 1.0 string freeze.
+	* hu.po: Added.
+	* Makefile.am: Add statistics target.
+	* po.mdse: Add nl, id and hu so that they get updated.
+
+2008-01-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* ca.po, cs.po, da.po, de.po, es.po, fr.po, gl.po, it.po, ja.po,
+	  messages.po, nl.po, pl.po, pt.po, pt_BR.po, ru.po, sl.po, sv.po, tr.po,
+	  zh_CN.po, zh_TW.po: Updated translations.
+	* id.po: Add indonesian language.
+
 2008-01-17  Geoff Norton  <gnorton@novell.com>
 
 	* Makefile.am:  It appears that not all versions of automake set MKDIR_P

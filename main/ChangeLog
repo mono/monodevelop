@@ -1,3 +1,11 @@
+2008-01-22  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* configure.in: Add a check for msgmerge. Add "hu" to ALL_LINGUAS.
+
+2008-01-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* configure.in: Add indonesian language.
+
 2008-01-16  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* configure.in: Updated. Remove intltool calls, check for msgfmt.
