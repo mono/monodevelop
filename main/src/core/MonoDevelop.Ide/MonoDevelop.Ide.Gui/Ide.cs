@@ -110,6 +110,9 @@ namespace MonoDevelop.Ide.Gui
 		
 			monitor.BeginTask (GettextCatalog.GetString("Loading Workbench"), 5);
 			
+			//force the ResourceService to load so that it registers stock icons
+			MonoDevelop.Core.Gui.Services.Resources.ToString ();
+			
 			commandService.LoadCommands ("/MonoDevelop/Ide/Commands");
 			commandService.LoadKeyBindingSchemes ("/MonoDevelop/Ide/KeyBindingSchemes");
 			monitor.Step (1);
