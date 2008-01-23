@@ -36,6 +36,8 @@ namespace MonoDevelop.Prj2Make
 	class SlnData
 	{
 		string guid;
+		string headerComment;
+		string versionString;
 		Dictionary<CombineConfiguration, string> configStrings;
 		List<string> globalExtra; // unused GlobalSections
 		Dictionary<string, List<string>> sectionExtras;
@@ -43,20 +45,35 @@ namespace MonoDevelop.Prj2Make
 		List<string> unknownProjects;
 		Dictionary<string, DotNetProject> projectsByGuidTable;
 
-		public SlnData ()
+		public SlnData () 
+			: this (String.Format ("{{{0}}}", System.Guid.NewGuid ().ToString ().ToUpper ()))
 		{ 
-			this.guid = String.Format ("{{{0}}}", System.Guid.NewGuid ().ToString ().ToUpper ());
 		}
 
 		public SlnData (string guid)
 		{
 			this.guid = guid;
+			// default, vs2005
+			versionString = "9.00";
+			headerComment = "# Visual Studio 2005";
 		}
 
 		/* Guid with enclosing {} */
 		public string Guid {
 			get { return guid; }
 			set { guid = value; }
+		}
+
+		// Eg. "# Visual C# Express 2008"
+		public string HeaderComment {
+			get { return headerComment; }
+			set { headerComment = value; }
+		}
+
+		// Eg. 9.00 or 10.00
+		public string VersionString {
+			get { return versionString; }
+			set { versionString = value; }
 		}
 
 		public Dictionary<CombineConfiguration, string> ConfigStrings {
