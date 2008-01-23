@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: MonoDevelop Database Addin\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2007-12-29 22:41+0100\n"
+"PO-Revision-Date: 2008-01-24 00:08+0100\n"
 "Last-Translator: David Makovský (Yakeen) <yakeen@sannyas-on.net>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -76,11 +76,10 @@ msgid "Query execute cancelled"
 msgstr "Provádění dotazu zrušeno"
 
 #: ../MonoDevelop.Database.Query/SqlQueryView.cs:185
-#, fuzzy
 msgid "Query executed ({0} result table)"
 msgid_plural "Query executed ({0} result tables)"
-msgstr[0] "Dotaz proveden ({0} výsledků tabulek)"
-msgstr[1] "Dotaz proveden ({0} výsledků tabulek)"
+msgstr[0] "Dotaz proveden ({0} výsledek tabulky)"
+msgstr[1] "Dotaz proveden ({0} výsledky tabulky)"
 msgstr[2] "Dotaz proveden ({0} výsledků tabulek)"
 
 #: ../MonoDevelop.Database.Sql.Sqlite/SqliteGuiProvider.cs:41
@@ -733,8 +732,7 @@ msgstr "Odebrat omezení"
 #: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:346
 #: ../MonoDevelop.Database.Designer/Widgets/UniqueConstraintEditorWidget.cs:228
 msgid "Unique Key constraint '{0}' must be applied to one or more columns."
-msgstr ""
-"Omezení unikátního klíče '{0}' musí být aplikováno na jeden či více sloupců. "
+msgstr "Omezení unikátního klíče '{0}' musí být aplikováno na jeden či více sloupců. "
 
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.ForeignKeyConstraintEditorWidget.cs:168
 msgid "Reference Columns"
@@ -745,12 +743,8 @@ msgid "Checked constraint '{0}' does not contain a check statement."
 msgstr "Omezení kontroly '{0}' neobsahuje výrok kontroly."
 
 #: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:255
-msgid ""
-"Checked constraint '{0}' is marked as a column constraint but is not applied "
-"to a column."
-msgstr ""
-"Omezení kontroly '{0}' je označeno jako omezení sloupce, ale není aplikováno "
-"na žádný sloupec."
+msgid "Checked constraint '{0}' is marked as a column constraint but is not applied to a column."
+msgstr "Omezení kontroly '{0}' je označeno jako omezení sloupce, ale není aplikováno na žádný sloupec."
 
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.CheckConstraintEditorWidget.cs:122
 msgid "Check Condition"
@@ -758,5 +752,5 @@ msgstr "Zkontrolovat stav"
 
 #: ../MonoDevelop.Database.Designer/Widgets/PrimaryKeyConstraintEditorWidget.cs:193
 msgid "Primary Key constraint '{0}' must be applied to one or more columns."
-msgstr ""
-"Omezení primárního klíče '{0}' musí být aplikováno na jeden či více sloupců. "
+msgstr "Omezení primárního klíče '{0}' musí být aplikováno na jeden či více sloupců. "
+
