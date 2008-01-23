@@ -38,7 +38,7 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 	/// <summary>
 	/// General texteditor options panelS.
 	/// </summary>
-	public class GeneralTextEditorPanel : AbstractOptionPanel
+	class GeneralTextEditorPanel : AbstractOptionPanel
 	{
 		GeneralTextEditorPanelWidget widget;
 		

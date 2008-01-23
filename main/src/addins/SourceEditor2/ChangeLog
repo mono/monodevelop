@@ -1,3 +1,23 @@
+2008-01-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui.OptionPanels/BehaviorTextEditorPanel.cs:
+	  Ensure we don't create subclasses of classes with private fields bound
+	  by glade#. It would not work due to bug 355228.
+	* MonoDevelop.SourceEditor.Gui.OptionPanels/GeneralTextEditorPanel.cs,
+	  MonoDevelop.SourceEditor.Gui.OptionPanels/MarkersTextEditorPanel.cs,
+	  MonoDevelop.SourceEditor.Gui.OptionPanels/SyntaxHighlightingPanel.cs:
+	  Made internal some classes that don't need to be public.
+
+2008-01-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.addin.xml: Updated add-in category and
+	  description.
+
+2008-01-21  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs: Fixed Bug 354248 -
+	  Uncomment does not work when comment tag is not the first two signs.
+
 2008-01-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Set the file

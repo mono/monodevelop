@@ -55,7 +55,7 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 			return true;
 		}
 		
-		class BehaviorTextEditorPanelWidget : GladeWidgetExtract 
+		sealed class BehaviorTextEditorPanelWidget : GladeWidgetExtract 
 		{
 			// GTK controls
 			[Glade.Widget] CheckButton autoinsertCurlyBraceCheckBox;
