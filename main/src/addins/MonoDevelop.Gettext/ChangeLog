@@ -1,3 +1,8 @@
+2008-01-24  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* templates/Makefile.am.template: CLEANFILES must be set before including
+	  Makefile.include.
+
 2008-01-23  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Gettext/RegexFileScanner.cs: Remove debug code.
