@@ -50,9 +50,7 @@ namespace MonoDevelop.VersionControl
 			protected override void Run ()
 			{
 				vc.Add (path, true, GetProgressMonitor ());
-				Gtk.Application.Invoke (delegate {
-					VersionControlService.NotifyFileStatusChanged (vc, path, Directory.Exists (path));
-				});
+				VersionControlService.NotifyFileStatusChanged (vc, path, Directory.Exists (path));
 			}
 		}
 		
@@ -143,9 +141,7 @@ namespace MonoDevelop.VersionControl
 					vc.DeleteDirectory (path, true, GetProgressMonitor ());
 				else
 					vc.DeleteFile (path, true, GetProgressMonitor ());
-				Gtk.Application.Invoke (delegate {
-					VersionControlService.NotifyFileStatusChanged (vc, path, isDir);
-				});
+				VersionControlService.NotifyFileStatusChanged (vc, path, isDir);
 			}
 		}
 		
