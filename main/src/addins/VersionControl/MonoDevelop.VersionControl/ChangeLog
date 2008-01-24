@@ -1,3 +1,9 @@
+2008-01-24  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl/AddRemoveMoveCommand.cs:
+	  NotifyFileStatusChanged is now gui thread safe, so no need to invoke it
+	  through Gtk.Application.Invoke.
+
 2008-01-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* VersionControl.addin.xml: Updated add-in category and description.

@@ -1,3 +1,9 @@
+2008-01-24  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs:
+	  In GetRepostoryReference, properly check if the provided directory is
+	  versioned. Fixes bug #355770.
+
 2008-01-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.addin.xml:

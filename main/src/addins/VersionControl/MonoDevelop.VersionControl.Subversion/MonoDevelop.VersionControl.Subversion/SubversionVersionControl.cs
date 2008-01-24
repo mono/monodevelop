@@ -35,13 +35,13 @@ namespace MonoDevelop.VersionControl.Subversion
 		public override Repository GetRepositoryReference (string path, string id)
 		{
 			try {
+				if (!IsVersioned (path))
+					return null;
 				string url = Client.GetPathUrl (path);
 				return new SubversionRepository (this, url);
 			} catch (Exception ex) {
 				// No SVN
-				// FIXME: hack to help diagnose a bug
-				if (!ex.Message.Contains ("is not a working copy"))
-					LoggingService.LogError (ex.ToString ());
+				LoggingService.LogError (ex.ToString ());
 				return null;
 			}
 		}
