@@ -389,10 +389,16 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		void OnCompletionDataChanged (object s, EventArgs args)
 		{
+			string last = null;
+			if (Visible)
+				last = CompleteWord;
+
 			HideFooter ();
 			if (Visible) {
 				Reset ();
 				FillList ();
+				if (last != null)
+					SelectEntry (last);
 			}
 		}
 	}
