@@ -154,7 +154,103 @@ namespace MonoDevelop.SourceEditor
 				UpdateLineCol ();
 				CaretModeChanged (this, EventArgs.Empty);
 			};
+			
+			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += OnParseInformationChanged;
 		}
+
+#region Error underlining
+		Dictionary<int, Error> errors = new Dictionary<int, Error> ();
+		uint resetTimerId;
+		ICompilationUnitBase lastCu = null;
+		bool resetTimerStarted = false;
+		
+		void OnParseInformationChanged (object sender, ParseInformationEventArgs args)
+		{
+			if (args == null || this.view.ContentName != args.FileName)
+				return;
+			
+			lastCu = args.ParseInformation.MostRecentCompilationUnit;
+			UpdateAutocorTimer ();
+		}
+		
+		void UpdateAutocorTimer ()
+		{
+			uint timeout = 900;
+			
+			if (resetTimerStarted) {
+				// Reset the timer
+				GLib.Source.Remove (resetTimerId);
+			} else {
+				// Start the timer for the first time
+				resetTimerStarted = true;
+			}
+			resetTimerId = GLib.Timeout.Add (timeout, AutocorrResetMeth);
+		}
+		
+		bool AutocorrResetMeth ()
+		{
+			ResetUnderlineChangement ();
+			if (lastCu != null)
+				ParseCompilationUnit (lastCu);
+			resetTimerStarted = false;
+			return false;
+		}
+		
+		void ResetUnderlineChangement ()
+		{
+			if (errors.Count > 0) {
+				foreach (Error error in this.errors.Values) {
+					error.RemoveFromLine ();
+				}
+				errors.Clear ();
+			}
+		}
+		void ParseCompilationUnit (ICompilationUnitBase cu)
+		{
+			// No new errors
+			if (!cu.ErrorsDuringCompile || cu.ErrorInformation == null)
+				return;
+			
+			// Else we underline the error
+			foreach (ErrorInfo info in cu.ErrorInformation)
+				UnderLineError (info);
+		}
+		class Error
+		{
+			public ErrorInfo info;
+			public LineSegment line;
+			TextMarker marker = new TextMarker ();
+			
+			public Error (ErrorInfo info, LineSegment line)
+			{
+				this.info = info;
+				this.line = line;
+			}
+			
+			public void AddToLine ()
+			{
+				line.AddMarker (marker);
+			}
+			public void RemoveFromLine ()
+			{
+				line.RemoveMarker (marker);
+			}
+		}
+		void UnderLineError (ErrorInfo info)
+		{
+			// Adjust the line to Gtk line representation
+			info.Line -= 1;
+			
+			// If the line is already underlined
+			if (errors.ContainsKey (info.Line))
+				return;
+			
+			LineSegment line = this.textEditor.Document.GetLine (info.Line);
+			Error error = new Error (info, line); 
+			errors [info.Line] = error;
+			error.AddToLine ();
+		}
+#endregion
 		
 		public override void Dispose ()
 		{

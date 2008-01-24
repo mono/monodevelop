@@ -1,8 +1,15 @@
-2008-01-23  Mike Krüger <mkrueger@novell.com> 
+2008-01-24  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,
-	  MonoDevelop.SourceEditor/ExtendibleTextEditor.cs,
-	  MonoDevelop.SourceEditor/SourceEditorView.cs: Worked on code completion.
+	  MonoDevelop.SourceEditor/ExtendibleTextEditor.cs: Worked on error
+	  underlining.
+
+2008-01-24  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor/ExtendibleTextEditor.cs: Worked on error
+	  underlining.
+
 
 2008-01-23  Mike Krüger <mkrueger@novell.com> 
 

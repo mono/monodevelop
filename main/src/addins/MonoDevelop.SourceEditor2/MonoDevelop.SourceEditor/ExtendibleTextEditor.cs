@@ -52,7 +52,6 @@ namespace MonoDevelop.SourceEditor
 		bool showTipScheduled;
 		int langTipX, langTipY;
 		uint tipTimeoutId;
-		Dictionary<int, ErrorInfo> errors = new Dictionary<int,ErrorInfo> ();
 		
 		public ITextEditorExtension Extension {
 			get {
@@ -82,8 +81,9 @@ namespace MonoDevelop.SourceEditor
 			this.PopupMenu += delegate {
 				this.ShowPopup ();
 			};
-			
 		}
+
+		
 		protected override bool OnButtonPressEvent (Gdk.EventButton e)
 		{
 			if (e.Button == 3) {
