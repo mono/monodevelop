@@ -475,7 +475,7 @@ namespace Stetic
 		
 		internal void NotifyWidgetAdded (object obj, string name, string typeName)
 		{
-			Gtk.Application.Invoke (
+			GuiDispatch.InvokeSync (
 				delegate {
 					Component c = App.GetComponent (obj, name, typeName);
 					if (c != null) {
@@ -493,7 +493,7 @@ namespace Stetic
 		
 		internal void NotifyWidgetRemoved (string name)
 		{
-			Gtk.Application.Invoke (
+			GuiDispatch.InvokeSync (
 				delegate {
 					WidgetInfo wi = GetWidget (name);
 					if (wi != null) {
@@ -507,7 +507,7 @@ namespace Stetic
 		
 		internal void NotifyModifiedChanged ()
 		{
-			Gtk.Application.Invoke (
+			GuiDispatch.InvokeSync (
 				delegate {
 					if (ModifiedChanged != null)
 						ModifiedChanged (this, EventArgs.Empty);
@@ -517,7 +517,7 @@ namespace Stetic
 		
 		internal void NotifyChanged ()
 		{
-			Gtk.Application.Invoke (
+			GuiDispatch.InvokeSync (
 				delegate {
 					if (Changed != null)
 						Changed (this, EventArgs.Empty);
@@ -543,7 +543,7 @@ namespace Stetic
 					wi.NotifyNameChanged (newName);
 			}
 			
-			Gtk.Application.Invoke (
+			GuiDispatch.InvokeSync (
 				delegate {
 					if (c != null) {
 						if (ComponentNameChanged != null)
@@ -555,7 +555,7 @@ namespace Stetic
 		
 		internal void NotifyActionGroupAdded (string group)
 		{
-			Gtk.Application.Invoke (delegate {
+			GuiDispatch.InvokeSync (delegate {
 				ActionGroupInfo gi = GetActionGroup (group);
 				if (gi == null) {
 					gi = new ActionGroupInfo (this, group);
@@ -568,7 +568,7 @@ namespace Stetic
 		
 		internal void NotifyActionGroupRemoved (string group)
 		{
-			Gtk.Application.Invoke (delegate {
+			GuiDispatch.InvokeSync (delegate {
 				ActionGroupInfo gi = GetActionGroup (group);
 				if (gi != null) {
 					groups.Remove (gi);
@@ -580,7 +580,7 @@ namespace Stetic
 		
 		internal void NotifySignalAdded (object obj, string name, Signal signal)
 		{
-			Gtk.Application.Invoke (delegate {
+			GuiDispatch.InvokeSync (delegate {
 				if (SignalAdded != null) {
 					Component c = App.GetComponent (obj, name, null);
 					if (c != null)
@@ -591,7 +591,7 @@ namespace Stetic
 		
 		internal void NotifySignalRemoved (object obj, string name, Signal signal)
 		{
-			Gtk.Application.Invoke (delegate {
+			GuiDispatch.InvokeSync (delegate {
 				if (SignalRemoved != null) {
 					Component c = App.GetComponent (obj, name, null);
 					if (c != null)
@@ -602,7 +602,7 @@ namespace Stetic
 		
 		internal void NotifySignalChanged (object obj, string name, Signal oldSignal, Signal signal)
 		{
-			Gtk.Application.Invoke (delegate {
+			GuiDispatch.InvokeSync (delegate {
 				if (SignalChanged != null) {
 					Component c = App.GetComponent (obj, name, null);
 					if (c != null)
@@ -613,7 +613,7 @@ namespace Stetic
 		
 		internal void NotifyProjectReloaded ()
 		{
-			Gtk.Application.Invoke (delegate {
+			GuiDispatch.InvokeSync (delegate {
 				if (ProjectReloaded != null)
 					ProjectReloaded (this, EventArgs.Empty);
 			});
@@ -621,7 +621,7 @@ namespace Stetic
 		
 		internal void NotifyProjectReloading ()
 		{
-			Gtk.Application.Invoke (delegate {
+			GuiDispatch.InvokeSync (delegate {
 				if (ProjectReloading != null)
 					ProjectReloading (this, EventArgs.Empty);
 			});
@@ -629,7 +629,7 @@ namespace Stetic
 		
 		internal void NotifyComponentTypesChanged ()
 		{
-			Gtk.Application.Invoke (delegate {
+			GuiDispatch.InvokeSync (delegate {
 				if (ComponentTypesChanged != null)
 					ComponentTypesChanged (this, EventArgs.Empty);
 			});
@@ -639,23 +639,9 @@ namespace Stetic
 		{
 			if (importFileDelegate != null) {
 				string res = null;
-				if (Gtk.Main.Level () > 0) {
-					return importFileDelegate (filePath);
-				}
-
-				object ob = new Object ();
-				lock (ob) {
-					Gtk.Application.Invoke (delegate {
-						lock (ob) {
-							try {
-								res = importFileDelegate (filePath);
-							} finally {
-								System.Threading.Monitor.PulseAll (ob);
-							}
-						}
-					});
-					System.Threading.Monitor.Wait (ob);
-				}
+				GuiDispatch.InvokeSync (delegate {
+					res = importFileDelegate (filePath);
+				});
 				return res;
 			}
 			else

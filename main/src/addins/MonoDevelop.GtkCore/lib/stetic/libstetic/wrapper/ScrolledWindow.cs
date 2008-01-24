@@ -102,5 +102,11 @@ namespace Stetic.Wrapper {
 				base.GenerateChildBuildCode (ctx, parentVar, wrapper);
 		}
 
+		public override void Delete (Stetic.Placeholder ph)
+		{
+			using (UndoManager.AtomicChange) {
+				Delete ();
+			}
+		}
 	}
 }

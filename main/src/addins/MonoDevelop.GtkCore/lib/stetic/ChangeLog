@@ -1,3 +1,12 @@
+2008-01-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* libsteticui/GuiDispatchServerSink.cs, libsteticui/WidgetDesigner.cs,
+	  libsteticui/Project.cs: Made events fired by the designer synchronous.
+	  Fixes some criticals caused by events being fired in the wrong order.
+	* libstetic/wrapper/Frame.cs, libstetic/wrapper/CheckButton.cs,
+	  libstetic/wrapper/Container.cs, libstetic/wrapper/ScrolledWindow.cs: Fix
+	  some gtk warnings and criticals.
+
 2008-01-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* libsteticui/WidgetDesigner.cs: Fix typo.

@@ -387,42 +387,42 @@ namespace Stetic
 		
 		public void NotifyBindField ()
 		{
-			Gtk.Application.Invoke (
+			GuiDispatch.InvokeSync (
 				delegate { if (!disposed) designer.NotifyBindField (); }
 			);
 		}
 		
 		public void NotifyModifiedChanged ()
 		{
-			Gtk.Application.Invoke (
+			GuiDispatch.InvokeSync (
 				delegate { if (!disposed) designer.NotifyModifiedChanged (); }
 			);
 		}
 		
 		public void NotifyChanged ()
 		{
-			Gtk.Application.Invoke (
+			GuiDispatch.InvokeSync (
 				delegate { if (!disposed) designer.NotifyChanged (); }
 			);
 		}
 		
 		internal void NotifySelectionChanged (object ob, bool canCut, bool canCopy, bool canPaste, bool canDelete)
 		{
-			Gtk.Application.Invoke (
+			GuiDispatch.InvokeSync (
 				delegate { if (!disposed) designer.NotifySelectionChanged (ob, canCut, canCopy, canPaste, canDelete); }
 			);
 		}
 
 		public void NotifyRootWidgetChanged ()
 		{
-			Gtk.Application.Invoke (
+			GuiDispatch.InvokeSync (
 				delegate { if (!disposed) designer.NotifyRootWidgetChanged (); }
 			);
 		}
 
 		public void NotifyRootWidgetChanging ()
 		{
-			Gtk.Application.Invoke (
+			GuiDispatch.InvokeSync (
 				delegate { if (!disposed) designer.NotifyRootWidgetChanging (); }
 			);
 		}

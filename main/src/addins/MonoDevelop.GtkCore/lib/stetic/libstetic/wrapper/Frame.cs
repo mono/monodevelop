@@ -28,7 +28,7 @@ namespace Stetic.Wrapper {
 
 		void LabelWidgetChanged (object obj, GLib.NotifyArgs args)
 		{
-			if (frame.LabelWidget != null && !(frame.LabelWidget is Stetic.Placeholder))
+			if (!IsDisposed && frame.LabelWidget != null && !(frame.LabelWidget is Stetic.Placeholder))
 				ObjectWrapper.Create (proj, frame.LabelWidget);
 		}
 
@@ -78,6 +78,13 @@ namespace Stetic.Wrapper {
 				frame.LabelWidget = newChild;
 			else
 				base.ReplaceChild (oldChild, newChild);
+		}
+
+		public override void Delete (Stetic.Placeholder ph)
+		{
+			using (UndoManager.AtomicChange) {
+				Delete ();
+			}
 		}
 	}
 }

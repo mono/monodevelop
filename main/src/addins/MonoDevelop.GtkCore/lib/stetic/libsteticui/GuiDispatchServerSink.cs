@@ -115,4 +115,28 @@ namespace Stetic
 		}
 	}
 	
+	class GuiDispatch
+	{
+		public static void InvokeSync (EventHandler h)
+		{
+			if (GLib.MainContext.Depth > 0)
+				h (null, null);
+			else {
+				object wo = new object ();
+				lock (wo) {
+					Gtk.Application.Invoke (delegate {
+						try {
+							h (null, null);
+						} finally {
+							lock (wo) {
+								System.Threading.Monitor.PulseAll (wo);
+							}
+						}
+					});
+					System.Threading.Monitor.Wait (wo);
+				}
+			}
+		}
+	}
+	
 }

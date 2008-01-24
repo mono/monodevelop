@@ -46,13 +46,17 @@ namespace Stetic.Wrapper {
 
 		internal void RemoveLabel ()
 		{
-			if (checkbutton.Child != null)
-				checkbutton.Remove (checkbutton.Child);
-
 			AddPlaceholder ();
 			HasLabel = false;
 		}
 
+		public override Placeholder AddPlaceholder ()
+		{
+			if (checkbutton.Child != null)
+				checkbutton.Remove (checkbutton.Child);
+			return base.AddPlaceholder ();
+		}
+		
 		internal void RestoreLabel ()
 		{
 			checkbutton.Label = checkbutton.Name;

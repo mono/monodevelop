@@ -1093,7 +1093,8 @@ namespace Stetic.Wrapper
 
 		void SelectionDestroyed (object obj, EventArgs args)
 		{
-			UnSelect (selection);
+			if (!IsDisposed)
+				UnSelect (selection);
 		}
 
 		Gtk.Widget dragSource;
