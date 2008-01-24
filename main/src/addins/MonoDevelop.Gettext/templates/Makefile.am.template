@@ -1,6 +1,8 @@
 
 # Warning: This is an automatically generated file, do not edit!
 
+CLEANFILES = $(GMO_FILES)
+
 include $(top_srcdir)/Makefile.include
 
 PACKAGE = @PACKAGE@
@@ -28,5 +30,3 @@ $(GMO_FILES): $(BUILD_DIR)/%.gmo: %.po
 $(MO_FILES): $(INSTALL_DIR)/%/LC_MESSAGES/$(PACKAGE).mo : $(BUILD_DIR)/%.gmo
 	mkdir -p $(dir $@)
 	@INSTALL_DATA@ '$<' '$@'
-
-CLEANFILES = $(GMO_FILES)
