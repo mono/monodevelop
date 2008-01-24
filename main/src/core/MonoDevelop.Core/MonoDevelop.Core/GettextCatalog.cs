@@ -44,8 +44,9 @@ namespace MonoDevelop.Core
 			if (string.IsNullOrEmpty (catalog)) {
 				string location = System.Reflection.Assembly.GetExecutingAssembly ().Location;
 				location = Path.GetDirectoryName (location);
-				//adding "../.." should give us $prefix
-				string prefix = Path.Combine (Path.Combine (location, ".."), "..");
+				// MD is located at $prefix/lib/monodevelop/bin
+				// adding "../../.." should give us $prefix
+				string prefix = Path.Combine (Path.Combine (Path.Combine (location, ".."), ".."), "..");
 				//normalise it
 				prefix = Path.GetFullPath (prefix);
 				//catalogue is installed to "$prefix/share/locale" by default

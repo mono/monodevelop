@@ -1,3 +1,8 @@
+2008-01-24  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core/GettextCatalog.cs: Fix logic that determines the location
+	  of locale directory.
+
 2008-01-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core/FileService.cs: Make NotifyFileChanged safer against
