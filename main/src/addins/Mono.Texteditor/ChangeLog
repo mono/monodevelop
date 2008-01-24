@@ -1,3 +1,10 @@
+2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.TextEditor/TextEditor.cs: Changes the mouse cursor to text when the
+	  mouse is inside the editor. Changes the way cursor blinking is handled,
+	  and make it work more like gtksourceview. Draws selected text using the
+	  system selection color (usually white).
+
 2008-01-23  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextEditor.cs: Worked on code completion.

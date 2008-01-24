@@ -47,6 +47,11 @@ namespace Mono.TextEditor
 		BookmarkMargin bookmarkMargin;
 		GutterMargin   gutterMargin;
 		FoldMarkerMargin foldMarkerMargin;
+		
+		Gdk.Cursor textCursor;
+		int caretBlinkStatus;
+		uint caretBlinkTimeoutId = 0;
+		const int CaretBlinkTime = 800;
 			
 		public Document Document {
 			get {
@@ -141,8 +146,8 @@ namespace Mono.TextEditor
 			this.SizeAllocated += delegate {
 				SetAdjustments ();
 			};
-			
-			GLib.Timeout.Add (500, new GLib.TimeoutHandler (CaretThread));
+
+			ResetCaretBlink ();
 			
 			layout = new Pango.Layout (this.PangoContext);
 			layout.Alignment = Pango.Alignment.Left;
@@ -262,7 +267,16 @@ namespace Mono.TextEditor
 			bookmarkMargin.IsVisible = TextEditorOptions.Options.ShowIconMargin;
 			gutterMargin.IsVisible = TextEditorOptions.Options.ShowLineNumberMargin;
 			foldMarkerMargin.IsVisible = TextEditorOptions.Options.ShowFoldMargin;
+			
+			textCursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
 		}
+		
+		protected override void OnRealized ()
+		{
+			base.OnRealized ();
+			this.GdkWindow.Cursor = textCursor;
+		}
+
 		
 		protected static int GetKeyCode (Gdk.Key key)
 		{
@@ -277,6 +291,8 @@ namespace Mono.TextEditor
 		
 		public override void Destroy ()
 		{
+			if (caretBlinkTimeoutId != 0)
+				GLib.Source.Remove (caretBlinkTimeoutId);
 			base.Destroy ();
 		}
 		
@@ -306,12 +322,28 @@ namespace Mono.TextEditor
 			this.QueueDrawArea (0, (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (logicalLine) * LineHeight, this.Allocation.Width, this.Allocation.Height);
 		}
 		
+		void ResetCaretBlink ()
+		{
+			if (caretBlinkTimeoutId != 0)
+				GLib.Source.Remove (caretBlinkTimeoutId);
+			caretBlinkStatus = 0;
+			caretBlinkTimeoutId = GLib.Timeout.Add (CaretBlinkTime / 2, new GLib.TimeoutHandler (CaretThread));
+		}
+		
 		bool CaretThread ()
 		{
-			caretBlink = !caretBlink;
-			if (layout != null) {
+			bool newCaretBlink = caretBlink;
+			if (caretBlinkStatus < 4)
+				newCaretBlink = true;
+			else
+				newCaretBlink = (caretBlinkStatus - 4) % 3 != 0;
+			
+			if (layout != null && newCaretBlink != caretBlink) {
+				caretBlink = newCaretBlink;
 				RedrawLine (Caret.Line);
 			}
+			
+			caretBlinkStatus++;
 			return true;
 		}
 		bool caretBlink = true;
@@ -334,6 +366,7 @@ namespace Mono.TextEditor
 					Caret.Column++;
 				}
 			}
+			ResetCaretBlink ();
 		}
 		
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
@@ -597,12 +630,33 @@ namespace Mono.TextEditor
 					int start  = offset;
 					int xStart = xPos;
 					offset = line.Offset + line.EditableLength - offset;
+					Gdk.Color selectedTextColor = this.Style.Foreground (Gtk.StateType.Selected);
+					int selectionStart = textEditorData.SelectionStart != null ? textEditorData.SelectionStart.Segment.Offset + textEditorData.SelectionStart.Column : -1;
+					int selectionEnd = textEditorData.SelectionEnd != null ? textEditorData.SelectionEnd.Segment.Offset + textEditorData.SelectionEnd.Column : -1;
+					if (selectionStart > selectionEnd) {
+						int tmp = selectionEnd;
+						selectionEnd = selectionStart;
+						selectionStart = tmp;
+					}
 //					Console.WriteLine ("#" + chunks.Length);
 					foreach (Chunk chunk in chunks) {
 //						Console.WriteLine (chunk + " style:" + chunk.Style);
 						layout.FontDescription.Weight = chunk.Style.Bold ? Pango.Weight.Bold : Pango.Weight.Normal;
 						layout.FontDescription.Style = chunk.Style.Italic ? Pango.Style.Italic : Pango.Style.Normal;
-						DrawTextWithHighlightedWs (win, gc, chunk.Style.Color, ref xPos, y, Document.Buffer.GetTextAt (chunk));
+						if (chunk.Offset >= selectionStart && chunk.EndOffset <= selectionEnd) {
+							DrawTextWithHighlightedWs (win, gc, selectedTextColor, ref xPos, y, Document.Buffer.GetTextAt (chunk));
+						} else if (chunk.Offset >= selectionStart && chunk.Offset < selectionEnd && chunk.EndOffset > selectionEnd) {
+							DrawTextWithHighlightedWs (win, gc, selectedTextColor, ref xPos, y, Document.Buffer.GetTextAt (chunk.Offset, selectionEnd - chunk.Offset));
+							DrawTextWithHighlightedWs (win, gc, chunk.Style.Color, ref xPos, y, Document.Buffer.GetTextAt (selectionEnd, chunk.EndOffset - selectionEnd));
+						} else if (chunk.Offset < selectionStart && chunk.EndOffset > selectionStart && chunk.EndOffset <= selectionEnd) {
+							DrawTextWithHighlightedWs (win, gc, chunk.Style.Color, ref xPos, y, Document.Buffer.GetTextAt (chunk.Offset, selectionStart - chunk.Offset));
+							DrawTextWithHighlightedWs (win, gc, selectedTextColor, ref xPos, y, Document.Buffer.GetTextAt (selectionStart, chunk.EndOffset - selectionStart));
+						} else if (chunk.Offset < selectionStart && chunk.EndOffset > selectionEnd) {
+							DrawTextWithHighlightedWs (win, gc, chunk.Style.Color, ref xPos, y, Document.Buffer.GetTextAt (chunk.Offset, selectionStart - chunk.Offset));
+							DrawTextWithHighlightedWs (win, gc, selectedTextColor, ref xPos, y, Document.Buffer.GetTextAt (selectionStart, selectionEnd - selectionStart));
+							DrawTextWithHighlightedWs (win, gc, chunk.Style.Color, ref xPos, y, Document.Buffer.GetTextAt (selectionEnd, chunk.EndOffset - selectionEnd));
+						} else 
+							DrawTextWithHighlightedWs (win, gc, chunk.Style.Color, ref xPos, y, Document.Buffer.GetTextAt (chunk));
 					}
 					if (line.Markers != null) {
 						foreach (TextMarker marker in line.Markers) {
@@ -611,7 +665,8 @@ namespace Mono.TextEditor
 					}
 				} else {
 					layout.FontDescription.Weight = Pango.Weight.Normal;
-					DrawTextWithHighlightedWs (win, gc, ColorStyle.Default, ref xPos, y, Document.Buffer.GetTextAt (offset, line.Offset + line.EditableLength - offset));
+					Gdk.Color textColor = isSelected ? this.Style.Foreground (Gtk.StateType.Selected) : ColorStyle.Default;
+					DrawTextWithHighlightedWs (win, gc, textColor, ref xPos, y, Document.Buffer.GetTextAt (offset, line.Offset + line.EditableLength - offset));
 				}
 				if (TextEditorOptions.Options.ShowEolMarkers) 
 					DrawEolMarker (win, gc, ref xPos, y);
