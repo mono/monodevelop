@@ -12,15 +12,17 @@ test -z "$srcdir" && srcdir=.
 (autoconf --version) < /dev/null > /dev/null 2>&1 || {
   echo
   echo "**Error**: You must have \`autoconf' installed to compile MonoDevelop."
-  echo "Download the appropriate package for your distribution,"
-  echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
+  echo "Download the appropriate package for your distribution, or get the "
+  echo "source at ftp://ftp.gnu.org/pub/gnu/autoconf/autoconf-2.61.tar.bz2 "
+  echo "(or a newer version if it is available)"
   DIE=1
 }
 
 (automake --version) < /dev/null > /dev/null 2>&1 || {
   echo
   echo "**Error**: You must have \`automake' installed to compile MonoDevelop."
-  echo "Get ftp://ftp.gnu.org/pub/gnu/automake-1.3.tar.gz"
+  echo "Download the appropriate package for your distribution, or get the "
+  echo "source at ftp://ftp.gnu.org/pub/gnu/automake/automake-1.10.1.tar.bz2 "
   echo "(or a newer version if it is available)"
   DIE=1
   NO_AUTOMAKE=yes
