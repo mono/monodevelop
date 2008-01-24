@@ -1,3 +1,9 @@
+2008-01-24  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Don't reset
+	  the code completion list to top when data gathering is completed. Fixes
+	  bug #350890.
+
 2008-01-10  Zach Lute <zach.lute@gmail.com>
 
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Scrollbar adjustment is
