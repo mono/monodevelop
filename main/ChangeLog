@@ -1,3 +1,7 @@
+2008-01-23  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* autogen.sh: Update ftp addresses for packages.
+
 2008-01-22  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* configure.in: Add a check for msgmerge. Add "hu" to ALL_LINGUAS.
