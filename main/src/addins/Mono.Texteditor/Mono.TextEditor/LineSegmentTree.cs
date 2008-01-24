@@ -98,8 +98,8 @@ namespace Mono.TextEditor
 		
 		public void Clear ()
 		{
-			tree.root = new RedBlackTree<TreeNode>.RedBlackTreeNode (new TreeNode (0, 0));
-			tree.root.value.TreeNode =  tree.root;
+			tree.Root = new RedBlackTree<TreeNode>.RedBlackTreeNode (new TreeNode (0, 0));
+			tree.Root.value.TreeNode =  tree.Root;
 			tree.Count = 1;
 		}
 		
@@ -110,8 +110,8 @@ namespace Mono.TextEditor
 			RedBlackTree<TreeNode>.RedBlackTreeNode newNode = new RedBlackTree<TreeNode>.RedBlackTreeNode (result);
 			RedBlackTree<TreeNode>.RedBlackTreeIterator iter = segment != null ? segment.Iter : null;
 			if (iter == null) {
-				tree.root = newNode;
-				result.TreeNode = tree.root;
+				tree.Root = newNode;
+				result.TreeNode = tree.Root;
 				tree.Count = 1;
 				return result;
 			}
@@ -162,10 +162,10 @@ namespace Mono.TextEditor
 		
 		public TreeNode GetNodeAtOffset (int offset)
 		{
-			Debug.Assert (0 <= offset && offset <= tree.root.value.totalLength);
-			if (offset == tree.root.value.totalLength) 
-				return tree.root.OuterRight.value;
-			RedBlackTree<TreeNode>.RedBlackTreeNode node = tree.root;
+			Debug.Assert (0 <= offset && offset <= tree.Root.value.totalLength);
+			if (offset == tree.Root.value.totalLength) 
+				return tree.Root.OuterRight.value;
+			RedBlackTree<TreeNode>.RedBlackTreeNode node = tree.Root;
 			int i = offset;
 			while (true) {
 				if (node == null)
@@ -193,7 +193,7 @@ namespace Mono.TextEditor
 		public TreeNode GetNode (int index)
 		{
 			Debug.Assert (0 <= index && index < tree.Count);
-			RedBlackTree<TreeNode>.RedBlackTreeNode node = tree.root;
+			RedBlackTree<TreeNode>.RedBlackTreeNode node = tree.Root;
 			int i = index;
 			while (true) {
 				if (node == null)

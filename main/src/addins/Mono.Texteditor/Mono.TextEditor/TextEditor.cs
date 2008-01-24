@@ -630,7 +630,7 @@ namespace Mono.TextEditor
 					int start  = offset;
 					int xStart = xPos;
 					offset = line.Offset + line.EditableLength - offset;
-					Gdk.Color selectedTextColor = this.Style.Foreground (Gtk.StateType.Selected);
+					Gdk.Color selectedTextColor = ColorStyle.SelectedFg;
 					int selectionStart = textEditorData.SelectionStart != null ? textEditorData.SelectionStart.Segment.Offset + textEditorData.SelectionStart.Column : -1;
 					int selectionEnd = textEditorData.SelectionEnd != null ? textEditorData.SelectionEnd.Segment.Offset + textEditorData.SelectionEnd.Column : -1;
 					if (selectionStart > selectionEnd) {
@@ -754,7 +754,6 @@ namespace Mono.TextEditor
 			DrawText (win, gc, ref x, y, "~");
 		}
 		
-		
 		public Gdk.Point DocumentToVisualLocation (DocumentLocation loc)
 		{
 			Gdk.Point result = new Point ();
@@ -845,7 +844,6 @@ namespace Mono.TextEditor
 		Pango.Layout layout;
 		int oldRequest = -1;
 		int charWidth;
-		
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{

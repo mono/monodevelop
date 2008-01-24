@@ -96,6 +96,11 @@ namespace Mono.TextEditor.Highlighting
 				return widget.Style.Background (StateType.Selected);
 			}
 		}
+		public override Color SelectedFg {
+			get {
+				return widget.Style.Foreground (StateType.Selected);
+			}
+		}
 
 		public override Color LineMarker {
 			get {

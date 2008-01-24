@@ -26,6 +26,7 @@
 	<Color name="Default">#97A0EF</Color>
 	<Color name="Background">#3F3FDF</Color>
 	<Color name="SelectedBackground">#000000</Color>
+	<Color name="SelectedForeground">#FFFFFF</Color>
 	
 	<Color name="LineMarker">#0088FF</Color>
 	<Color name="Ruler">#CC44CC</Color>

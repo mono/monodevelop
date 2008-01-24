@@ -36,7 +36,7 @@ namespace Mono.TextEditor.Highlighting
 		string name;
 		string description;
 		
-		Color def, background, selectedBg;
+		Color def, background, selectedBg, selectedFg;
 		Color lineMarker, ruler, whitespaceMarker, invalidLineMarker;
 		
 		Color lineNumberFg, lineNumberBg, lineNumberFgHighlighted;
@@ -109,6 +109,12 @@ namespace Mono.TextEditor.Highlighting
 				return selectedBg;
 			}
 		}
+		
+		public virtual Color SelectedFg {
+			get {
+				return selectedFg;
+			}
+		}
 
 		public virtual Color LineMarker {
 			get {
@@ -174,6 +180,7 @@ namespace Mono.TextEditor.Highlighting
 			
 			background = new Gdk.Color (255, 255, 255);
 			selectedBg   = new Gdk.Color (96, 87, 210);
+			selectedFg   = new Gdk.Color (255, 255, 255);
 			lineMarker  = new Gdk.Color (200, 255, 255);
 			ruler       = new Gdk.Color (187, 187, 187);
 			whitespaceMarker = new Gdk.Color (187, 187, 187);
@@ -219,6 +226,9 @@ namespace Mono.TextEditor.Highlighting
 				break;
 			case "SelectedBackground":
 				this.selectedBg = color;
+				break;
+			case "SelectedForeground":
+				this.selectedFg = color;
 				break;
 			case "LineMarker":
 				this.lineMarker = color;

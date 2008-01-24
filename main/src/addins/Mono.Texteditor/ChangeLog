@@ -1,13 +1,25 @@
+2008-01-25  Mike Krüger <mkrueger@novell.com> 
+
+	* OblivionStyle.xml, Mono.TextEditor/RedBlackTree.cs,
+	  Mono.TextEditor/LineSegmentTree.cs, Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor.Highlighting/Style.cs,
+	  Mono.TextEditor.Highlighting/DefaultStyle.cs, C64Style.xml: Selected
+	  foreground colors are now part of the highlighting style.
+
+2008-01-25  Mike Krüger <mkrueger@novell.com> 
+
+	* OblivionStyle.xml, Mono.TextEditor/RedBlackTree.cs,
+	  Mono.TextEditor/LineSegmentTree.cs, Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor.Highlighting/Style.cs,
+	  Mono.TextEditor.Highlighting/DefaultStyle.cs, C64Style.xml: Selected
+	  foreground colors are now part of the highlighting style.
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.TextEditor/TextEditor.cs: Changes the mouse cursor to text when the
 	  mouse is inside the editor. Changes the way cursor blinking is handled,
 	  and make it work more like gtksourceview. Draws selected text using the
 	  system selection color (usually white).
-
-2008-01-23  Mike Krüger <mkrueger@novell.com> 
-
-	* Mono.TextEditor/TextEditor.cs: Worked on code completion.
 
 2008-01-23  Mike Krüger <mkrueger@novell.com> 
 

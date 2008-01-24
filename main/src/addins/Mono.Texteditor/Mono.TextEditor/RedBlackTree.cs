@@ -35,7 +35,16 @@ namespace Mono.TextEditor
 	public class RedBlackTree<T> : ICollection<T>
 	{
 		int count;
-		public RedBlackTreeNode root;
+		RedBlackTreeNode root;
+		
+		public RedBlackTreeNode Root {
+			get {
+				return root;
+			}
+			set {
+				root = value;
+			}
+		}
 			
 		public void Add (RedBlackTreeNode node)
 		{
@@ -335,6 +344,7 @@ namespace Mono.TextEditor
 		public bool IsReadOnly {
 			get { return false; }
 		}
+
 		
 		public void CopyTo (T[] array, int arrayIndex)
 		{
