@@ -3,17 +3,17 @@
 reWrite() {
     ret=""
     WD=`pwd`
-    for arg in $*
+    for arg in "$@"
     do
-	if [ -f ./$arg ]
+	if [ -f "./$arg" ]
 	then
-	    ret="$ret $WD/$arg"
+	    ret="$ret '$WD/$arg'"
 	else
-	    ret="$ret $arg"
+	    ret="$ret '$arg'"
 	fi
    done
 
-    echo "$ret"
+   echo "$ret"
 }
 
 
@@ -73,29 +73,28 @@ fi
 
 export MOZILLA_FIVE_HOME=$MOZILLA_HOME
 
-ARGS=`reWrite "$@"`
-set -- $ARGS
+eval set -- `reWrite "$@"`
 
 cd $MD_BIN_PATH
 
 case x$1 in
 	x--profile)
 		shift
-		exec -a "monodevelop" @RUNTIME@ --profile ./MonoDevelop.exe $@
+		exec -a "monodevelop" @RUNTIME@ --profile ./MonoDevelop.exe "$@"
 		exit 0
 		;;
 	x--debug)
 		shift
 		export MONODEVELOP_DISPATCH_DEBUG=yes
-		exec -a "monodevelop"  @RUNTIME@ --debug ./MonoDevelop.exe $@
+		exec -a "monodevelop"  @RUNTIME@ --debug ./MonoDevelop.exe "$@"
 		exit 0
 		;;
 	x--trace)
 		shift
-		exec -a "monodevelop"  @RUNTIME@ --trace ./MonoDevelop.exe $@
+		exec -a "monodevelop"  @RUNTIME@ --trace ./MonoDevelop.exe "$@"
 		exit 0;
 		;;
 esac
 
-exec -a "monodevelop"  @RUNTIME@ ./MonoDevelop.exe $@
+exec -a "monodevelop"  @RUNTIME@ ./MonoDevelop.exe "$@"
 
