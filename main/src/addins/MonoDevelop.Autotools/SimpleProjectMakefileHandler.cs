@@ -128,7 +128,7 @@ namespace MonoDevelop.Autotools
 				extras = new StringBuilder ();
 				datafiles = new StringBuilder ();
 
-				string include_custom_hooks = String.Empty;
+				string includes = String.Empty;
 				string references, dllReferences;
 				ProcessProjectReferences (project, out references, out dllReferences, ctx);
 
@@ -212,7 +212,6 @@ namespace MonoDevelop.Autotools
 					conf_vars.AppendFormat ("top_srcdir={0}\n\n",
 						FileService.AbsoluteToRelativePath (project.BaseDirectory, ctx.TargetCombine.BaseDirectory));
 
-					conf_vars.AppendFormat ("include $(top_srcdir)/Makefile.include\n");
 					conf_vars.AppendFormat ("include $(top_srcdir)/config.make\n\n");
 
 					// Don't emit for top level project makefile(eg. pdn.make), as it would be
@@ -221,7 +220,8 @@ namespace MonoDevelop.Autotools
 						string customhooks = Path.Combine (project.BaseDirectory, "custom-hooks.make");
 						bool include = File.Exists (customhooks);
 					
-						include_custom_hooks = String.Format ("{0}include $(srcdir)/custom-hooks.make\n\n", include ? "" : "#");
+						includes = "include $(top_srcdir)/Makefile.include\n";
+						includes += String.Format ("{0}include $(srcdir)/custom-hooks.make\n\n", include ? "" : "#");
 						if (include)
 							makefile.SetVariable ("EXTRA_DIST", "$(srcdir)/custom-hooks.make");
 					}
@@ -385,6 +385,9 @@ namespace MonoDevelop.Autotools
 					conf_vars.Append ( "\nendif\n\n" );
 				}
 
+				conf_vars.AppendFormat ("AL={0}\n", (dotnetProject.ClrVersion == ClrVersion.Net_2_0) ? "al2" : "al");
+				conf_vars.AppendFormat ("SATELLITE_ASSEMBLY_NAME={0}.resources.dll\n", dotnetProject.DefaultNamespace);
+
 				foreach (KeyValuePair<string, DeployFile> pair in allDeployVars) {
 					HandleDeployFile (pair.Value, pair.Key, project, ctx);
 
@@ -428,15 +431,15 @@ namespace MonoDevelop.Autotools
 				templateEngine.Variables["COPY_DEPLOY_FILES_VARS"] = deployFileCopyVars.ToString();
 				templateEngine.Variables["COPY_DEPLOY_FILES_TARGETS"] = deployFileCopyTargets.ToString();
 				templateEngine.Variables["ALL_TARGET"] = (ctx.TargetCombine.BaseDirectory == project.BaseDirectory) ? "all-local" : "all";
-				templateEngine.Variables["INCLUDE_CUSTOM_HOOKS"] = include_custom_hooks;
+				templateEngine.Variables["INCLUDES"] = includes;
 
 				templateEngine.Variables["FILES"] = files.ToString();
 				templateEngine.Variables["RESOURCES"] = res_files.ToString();
 				templateEngine.Variables["EXTRAS"] = extras.ToString();
 				templateEngine.Variables["DATA_FILES"] = datafiles.ToString();
+				templateEngine.Variables["CLEANFILES"] = vars.ToString ();
 
 				if (!generateAutotools) {
-					templateEngine.Variables["CLEANFILES"] = vars.ToString ();
 					templateEngine.Variables["TEMPLATE_FILES_TARGETS"] = templateFilesTargets.ToString();
 					templateEngine.Variables["INSTALL_TARGET"] = installTarget.ToString();
 					templateEngine.Variables["UNINSTALL_TARGET"] = uninstallTarget.ToString();
@@ -738,6 +741,7 @@ namespace MonoDevelop.Autotools
 			
 			return refp;
 		}
+		
 	}
 }
 
