@@ -69,6 +69,7 @@ namespace Mono.TextEditor
 			}
 			set {
 				tabsToSpaces = value;
+				OnChanged (EventArgs.Empty);
 			}
 		}
 
@@ -78,6 +79,7 @@ namespace Mono.TextEditor
 			}
 			set {
 				indentationSize = value;
+				OnChanged (EventArgs.Empty);
 			}
 		}
 
@@ -87,6 +89,7 @@ namespace Mono.TextEditor
 			}
 			set {
 				tabSize = value;
+				OnChanged (EventArgs.Empty);
 			}
 		}
 
@@ -96,6 +99,7 @@ namespace Mono.TextEditor
 			}
 			set {
 				showIconMargin = value;
+				OnChanged (EventArgs.Empty);
 			}
 		}
 
@@ -105,6 +109,7 @@ namespace Mono.TextEditor
 			}
 			set {
 				showLineNumberMargin = value;
+				OnChanged (EventArgs.Empty);
 			}
 		}
 
@@ -114,6 +119,7 @@ namespace Mono.TextEditor
 			}
 			set {
 				showFoldMargin = value;
+				OnChanged (EventArgs.Empty);
 			}
 		}
 
@@ -123,6 +129,7 @@ namespace Mono.TextEditor
 			}
 			set {
 				showInvalidLines = value;
+				OnChanged (EventArgs.Empty);
 			}
 		}
 
@@ -132,6 +139,7 @@ namespace Mono.TextEditor
 			}
 			set {
 				showTabs = value;
+				OnChanged (EventArgs.Empty);
 			}
 		}
 
@@ -141,6 +149,7 @@ namespace Mono.TextEditor
 			}
 			set {
 				showEolMarkers = value;
+				OnChanged (EventArgs.Empty);
 			}
 		}
 
@@ -150,6 +159,7 @@ namespace Mono.TextEditor
 			}
 			set {
 				highlightCaretLine = value;
+				OnChanged (EventArgs.Empty);
 			}
 		}
 
@@ -159,6 +169,7 @@ namespace Mono.TextEditor
 			}
 			set {
 				showSpaces = value;
+				OnChanged (EventArgs.Empty);
 			}
 		}
 
@@ -168,6 +179,7 @@ namespace Mono.TextEditor
 			}
 			set {
 				rulerColumn = value;
+				OnChanged (EventArgs.Empty);
 			}
 		}
 
@@ -177,6 +189,7 @@ namespace Mono.TextEditor
 			}
 			set {
 				showRuler = value;
+				OnChanged (EventArgs.Empty);
 			}
 		}
 
@@ -186,6 +199,7 @@ namespace Mono.TextEditor
 			}
 			set {
 				autoIndent = value;
+				OnChanged (EventArgs.Empty);
 			}
 		}
 		
@@ -194,7 +208,10 @@ namespace Mono.TextEditor
 				return fontName;
 			}
 			set {
-				fontName = !String.IsNullOrEmpty (value) ? value : DEFAULT_FONT;
+				if (fontName != value) {
+					fontName = !String.IsNullOrEmpty (value) ? value : DEFAULT_FONT;
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 		
@@ -202,6 +219,13 @@ namespace Mono.TextEditor
 			get {
 				return Pango.FontDescription.FromString (FontName);
 			}
-		}		
+		}
+		
+		protected static void OnChanged (EventArgs args)
+		{
+			if (Changed != null)
+				Changed (null, args);
+		}
+		public static event EventHandler Changed;
 	}
 }

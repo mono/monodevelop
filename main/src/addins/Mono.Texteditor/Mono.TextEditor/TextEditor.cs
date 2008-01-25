@@ -42,7 +42,6 @@ namespace Mono.TextEditor
 	public class TextEditor : Gtk.DrawingArea, IMargin
 	{
 		TextEditorData textEditorData = new TextEditorData ();
-		Mono.TextEditor.Highlighting.Style style = new Mono.TextEditor.Highlighting.Style ();
 		protected Dictionary <int, EditAction> keyBindings = new Dictionary<int,EditAction> ();
 		BookmarkMargin bookmarkMargin;
 		GutterMargin   gutterMargin;
@@ -151,7 +150,6 @@ namespace Mono.TextEditor
 			
 			layout = new Pango.Layout (this.PangoContext);
 			layout.Alignment = Pango.Alignment.Left;
-			layout.FontDescription = TextEditorOptions.Options.Font;
 			
 			keyBindings.Add (GetKeyCode (Gdk.Key.Left), new CaretMoveLeft ());
 			keyBindings.Add (GetKeyCode (Gdk.Key.Left, Gdk.ModifierType.ShiftMask), new SelectionMoveLeft ());
@@ -264,11 +262,21 @@ namespace Mono.TextEditor
 			};
 			this.ColorStyle = new DefaultStyle (this);
 			
-			bookmarkMargin.IsVisible = TextEditorOptions.Options.ShowIconMargin;
-			gutterMargin.IsVisible = TextEditorOptions.Options.ShowLineNumberMargin;
-			foldMarkerMargin.IsVisible = TextEditorOptions.Options.ShowFoldMargin;
-			
 			textCursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
+			OptionsChanged (this, EventArgs.Empty);
+			TextEditorOptions.Changed += OptionsChanged;
+		}
+		
+		protected virtual void OptionsChanged (object sender, EventArgs args)
+		{
+			layout.FontDescription = TextEditorOptions.Options.Font;
+			layout.SetText ("H");
+			layout.GetPixelSize (out this.charWidth, out this.lineHeight);
+			
+			bookmarkMargin.IsVisible   = TextEditorOptions.Options.ShowIconMargin;
+			gutterMargin.IsVisible     = TextEditorOptions.Options.ShowLineNumberMargin;
+			foldMarkerMargin.IsVisible = TextEditorOptions.Options.ShowFoldMargin;
+			this.QueueDraw ();
 		}
 		
 		protected override void OnRealized ()
@@ -291,6 +299,7 @@ namespace Mono.TextEditor
 		
 		public override void Destroy ()
 		{
+			TextEditorOptions.Changed -= OptionsChanged;
 			if (caretBlinkTimeoutId != 0)
 				GLib.Source.Remove (caretBlinkTimeoutId);
 			base.Destroy ();
@@ -626,7 +635,7 @@ namespace Mono.TextEditor
 			}
 			if (line.EndOffset - offset > 0) {
 				if (Document.SyntaxMode != null) {
-					Chunk[] chunks = Document.SyntaxMode.GetChunks (Document, style, line, offset, line.Offset + line.EditableLength - offset);
+					Chunk[] chunks = Document.SyntaxMode.GetChunks (Document, TextEditorData.ColorStyle, line, offset, line.Offset + line.EditableLength - offset);
 					int start  = offset;
 					int xStart = xPos;
 					offset = line.Offset + line.EditableLength - offset;
@@ -849,8 +858,6 @@ namespace Mono.TextEditor
 		{
 			Gdk.Window    win = e.Window;
 			Gdk.Rectangle area = e.Area;
-			layout.SetText ("H");
-			layout.GetPixelSize (out this.charWidth, out this.lineHeight);
 			
 			int width;
 			if (TextEditorOptions.Options.ShowRuler) {

@@ -1,5 +1,15 @@
 2008-01-25  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextEditor.cs, Mono.TextEditor/TextEditorOptions.cs: Added
+	  property change event.
+
+2008-01-25  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextEditor.cs, Mono.TextEditor/TextEditorOptions.cs: Added
+	  property change event.
+
+2008-01-25  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextEditorData.cs,
 	  Mono.TextEditor/TextEditor.cs, Mono.TextEditor.Highlighting/Style.cs:
 	  Editor is now capable of outputting rtf to clipboard.
