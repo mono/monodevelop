@@ -315,7 +315,8 @@ namespace Mono.TextEditor
 		public void RedrawPosition (int logicalLine, int logicalColumn)
 		{
 //			Console.WriteLine ("redraw:" + logicalLine);
-			this.QueueDrawArea (0, (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (logicalLine) * LineHeight, this.Allocation.Width, LineHeight);
+			RedrawLine (logicalLine);
+//			this.QueueDrawArea (0, (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (logicalLine) * LineHeight, this.Allocation.Width, LineHeight);
 		}
 		
 		public void RedrawLines (int start, int end)
@@ -491,7 +492,7 @@ namespace Mono.TextEditor
 		{
 			return new Color ((byte)(((byte)color.Red * 19) / 20),
 			                  (byte)(((byte)color.Green * 19) / 20),
-			                  (byte)(((byte)color.Blue * 19) / 20));			
+			                  (byte)(((byte)color.Blue * 19) / 20));
 		}
 
 		void DrawRectangleWithRuler (Gdk.Window win, Gdk.GC gc, int x, Gdk.Rectangle area, Gdk.Color color)
@@ -634,7 +635,7 @@ namespace Mono.TextEditor
 				}
 			}
 			if (line.EndOffset - offset > 0) {
-				if (Document.SyntaxMode != null) {
+				if (Document.SyntaxMode != null && TextEditorOptions.Options.EnableSyntaxHighlighting) {
 					Chunk[] chunks = Document.SyntaxMode.GetChunks (Document, TextEditorData.ColorStyle, line, offset, line.Offset + line.EditableLength - offset);
 					int start  = offset;
 					int xStart = xPos;
@@ -858,7 +859,6 @@ namespace Mono.TextEditor
 		{
 			Gdk.Window    win = e.Window;
 			Gdk.Rectangle area = e.Area;
-			
 			int width;
 			if (TextEditorOptions.Options.ShowRuler) {
 				layout.SetText (new string (' ', TextEditorOptions.Options.RulerColumn));
@@ -871,8 +871,14 @@ namespace Mono.TextEditor
 			}
 			int reminder  = (int)this.textEditorData.VAdjustment.Value % LineHeight;
 			int firstLine = (int)(this.textEditorData.VAdjustment.Value / LineHeight);
-			
-			for (int visualLineNumber = area.Top / this.LineHeight; visualLineNumber <= area.Bottom / this.LineHeight; visualLineNumber++) {
+			int startLine = area.Top / this.LineHeight;
+			int endLine   = startLine + (area.Height / this.LineHeight);
+			if (area.Height % this.LineHeight == 0) {
+				startLine = (area.Top + reminder) / this.LineHeight;
+				endLine   = startLine + (area.Height / this.LineHeight) - 1;
+			}
+//			System.Console.WriteLine(startLine + " -- " + endLine);
+			for (int visualLineNumber = startLine; visualLineNumber <= endLine; visualLineNumber++) {
 				int curX = 0;
 				int logicalLineNumber = Document.VisualToLogicalLine (visualLineNumber + firstLine);
 				foreach (IMargin margin in this.margins) {

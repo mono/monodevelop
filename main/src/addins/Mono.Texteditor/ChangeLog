@@ -1,5 +1,17 @@
 2008-01-25  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor/TextEditorOptions.cs: Optimized drawing a bit, added
+	  syntax mode enabled option.
+
+2008-01-25  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor/TextEditorOptions.cs: Optimized drawing a bit, added
+	  syntax mode enabled option.
+
+2008-01-25  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditor.cs, Mono.TextEditor/TextEditorOptions.cs: Added
 	  property change event.
 

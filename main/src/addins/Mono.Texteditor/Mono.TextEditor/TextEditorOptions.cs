@@ -59,7 +59,7 @@ namespace Mono.TextEditor
 		bool showTabs   = false;
 		bool showSpaces = false;
 		bool showEolMarkers = false;
-		
+		bool enableSyntaxHighlighting = true;
 		bool highlightCaretLine = false;
 		string fontName = DEFAULT_FONT;
 		
@@ -214,6 +214,18 @@ namespace Mono.TextEditor
 				}
 			}
 		}
+		public virtual bool EnableSyntaxHighlighting {
+			get {
+				return enableSyntaxHighlighting;
+			}
+			set {
+				if (value != EnableSyntaxHighlighting) {
+					enableSyntaxHighlighting = value;
+					OnChanged (EventArgs.Empty);
+				}
+			}
+		}
+		
 		
 		public virtual Pango.FontDescription Font {
 			get {

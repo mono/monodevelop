@@ -793,7 +793,6 @@ namespace Mono.TextEditor
 				rtf.Append (@"\par");
 			} while (iter.MoveNext ());
 			rtf.Append("}");
-			System.Console.WriteLine(rtf);
 			this.rtf = rtf.ToString ();
 		}
 		
