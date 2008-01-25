@@ -34,11 +34,11 @@ namespace MonoDevelop.Core.Gui.Dialogs
 {
 	public class ErrorDialog : IDisposable
 	{
-		[Glade.Widget ("ErrorDialog")] Dialog dialog;
-		[Glade.Widget] Button okButton;
-		[Glade.Widget] Label descriptionLabel;
-		[Glade.Widget] Gtk.TextView detailsTextView;
-		[Glade.Widget] Gtk.Expander expander;
+		[Glade.Widget ("ErrorDialog")] protected Dialog dialog;
+		[Glade.Widget] protected Button okButton;
+		[Glade.Widget] protected Label descriptionLabel;
+		[Glade.Widget] protected Gtk.TextView detailsTextView;
+		[Glade.Widget] protected Gtk.Expander expander;
 		
 		TextTag tagNoWrap;
 		TextTag tagWrap;

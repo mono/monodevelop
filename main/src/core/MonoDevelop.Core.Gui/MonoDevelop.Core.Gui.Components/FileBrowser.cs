@@ -54,6 +54,7 @@ namespace MonoDevelop.Core.Gui.Components
 
 			Toolbar toolbar = new Toolbar ();
 			toolbar.IconSize = IconSize.Menu;
+			toolbar.ToolbarStyle = Gtk.ToolbarStyle.Icons;
 
 			goUp = new ToolButton (Gtk.Stock.GoUp);
 			goUp.Clicked += new EventHandler (OnGoUpClicked);
