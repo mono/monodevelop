@@ -1,6 +1,20 @@
 2008-01-25  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor/ExtendibleTextEditor.cs,
+	  MonoDevelop.SourceEditor/SourceEditorView.cs,
+	  MonoDevelop.SourceEditor/SourceEditorOptions.cs: Added auto insert
+	  bracket option.
+
+2008-01-25  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/ExtendibleTextEditor.cs,
+	  MonoDevelop.SourceEditor/SourceEditorView.cs,
+	  MonoDevelop.SourceEditor/SourceEditorOptions.cs: Added auto insert
+	  bracket option.
+
+2008-01-25  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/ExtendibleTextEditor.cs,
 	  MonoDevelop.SourceEditor/SourceEditorOptions.cs: Added property change
 	  event.
 

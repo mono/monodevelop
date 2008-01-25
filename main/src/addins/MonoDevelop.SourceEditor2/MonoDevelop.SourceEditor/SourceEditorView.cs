@@ -209,7 +209,6 @@ namespace MonoDevelop.SourceEditor
 #region IExtensibleTextEditor
 		ITextEditorExtension IExtensibleTextEditor.AttachExtension (ITextEditorExtension extension)
 		{
-			System.Console.WriteLine("Attach extension:" + extension);
 			this.widget.TextEditor.Extension = extension;
 			return this.widget;
 		}

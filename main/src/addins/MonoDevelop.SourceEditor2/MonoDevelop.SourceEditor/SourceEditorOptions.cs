@@ -194,7 +194,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public bool EnableSyntaxHighlighting {
+		public override bool EnableSyntaxHighlighting {
 			get {
 				return PropertyService.Get ("EnableSyntaxHighlighting", true);
 			}
@@ -220,7 +220,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public bool AutoInsertMatchingBracket {
 			get {
-				return PropertyService.Get ("AutoInsertMatchingBracket", true);
+				return PropertyService.Get ("AutoInsertMatchingBracket", false);
 			}
 			set {
 				if (value != AutoInsertMatchingBracket) {

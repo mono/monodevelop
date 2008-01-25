@@ -98,12 +98,38 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
+			bool result = true;
 			if (extension != null) {
 				if (!extension.KeyPress (evnt.Key, evnt.State)) {
-					return base.OnKeyPressEvent (evnt);
+					result = base.OnKeyPressEvent (evnt);
+				}
+			} else {
+				result = base.OnKeyPressEvent (evnt);				
+			}
+			char ch = (char)evnt.Key;
+			if (SourceEditorOptions.Options.AutoInsertMatchingBracket) {
+				switch (ch) {
+				case '{':
+					if (extension != null) {
+						int offset = Caret.Offset;
+						extension.KeyPress (Gdk.Key.Return, Gdk.ModifierType.None);
+						extension.KeyPress ((Gdk.Key)'}', Gdk.ModifierType.None);
+						Caret.Offset = offset;
+						extension.KeyPress (Gdk.Key.Return, Gdk.ModifierType.None);
+					} else {
+						base.SimulateKeyPress (Gdk.Key.Return, Gdk.ModifierType.None);
+						Buffer.Insert (Caret.Offset, new StringBuilder ("}"));
+					}
+					break;
+				case '[':
+					Buffer.Insert (Caret.Offset, new StringBuilder ("]"));
+					break;
+				case '(':
+					Buffer.Insert (Caret.Offset, new StringBuilder (")"));
+					break;
 				}
 			}
-			return true;
+			return result;
 		}
 		
 		double mx, my;
@@ -309,7 +335,6 @@ namespace MonoDevelop.SourceEditor
 		public bool DoInsertTemplate ()
 		{
 			string word = GetWordBeforeCaret ();
-			System.Console.WriteLine("word before:" + word);
 			CodeTemplateGroup templateGroup = CodeTemplateService.GetTemplateGroupPerFilename (this.view.ContentName);
 			if (String.IsNullOrEmpty (word) || templateGroup == null) 
 				return false;
