@@ -1,3 +1,10 @@
+2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/objects.xml, gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs,
+	  gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs,
+	  gtk-gui/gui.stetic,
+	  MonoDevelop.Deployment.Gui/EditDeployTargetDialog.cs: Code cleanup.
+
 2008-01-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment.addin.xml: Updated add-in category and description.
