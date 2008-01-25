@@ -7,7 +7,7 @@
 	<TemplateConfiguration>
 		<_Name>Gtk# Window</_Name>
 		<Icon>md-gui-file</Icon>
-		<Category>General</Category>
+		<_Category>General</_Category>
 		<LanguageName>Boo</LanguageName>
 		<_Description>Creates a top-level Gtk# window</_Description>
 	</TemplateConfiguration>

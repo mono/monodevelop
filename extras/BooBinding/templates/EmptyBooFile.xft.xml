@@ -4,7 +4,7 @@
 	<TemplateConfiguration>
                 <_Name>Empty File</_Name>
                 <Icon>md-text-file-icon</Icon>
-                <Category>General</Category>
+                <_Category>General</_Category>
                 <LanguageName>Boo</LanguageName>
                 <_Description>Creates an empty Boo file.</_Description>
 	</TemplateConfiguration>

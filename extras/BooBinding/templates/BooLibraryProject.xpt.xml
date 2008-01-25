@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Boo Library</_Name>
-		<Category>Boo</Category>
+		<_Category>Boo</_Category>
 		<Icon>md-project-library|res:boo-icon-32.png</Icon>
 		<LanguageName>Boo</LanguageName>
 		<_Description>Creates a Boo library</_Description>

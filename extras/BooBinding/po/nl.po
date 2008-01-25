@@ -1,25 +1,18 @@
-# Turkish translation of MonoDevelop
-# Copyright (C) 2004 Novell, Inc.
-# This file is distributed under the same license as the MonoDevelop package.
-# Enver ALTIN <skyblue@skyblue.gen.tr>, 2004.
-# , fuzzy
-# 
-# 
 msgid ""
 msgstr ""
-"Project-Id-Version: MonoDevelop 0.5\n"
-"Report-Msgid-Bugs-To: \n"
+"Project-Id-Version: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2004-09-19 05:44+0300\n"
-"Last-Translator: Enver ALTIN <skyblue@skyblue.gen.tr>\n"
-"Language-Team: Turkish <gnome-turk@gnome.org>\n"
+"PO-Revision-Date: 2008-01-22 18:51:37+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: MonoDevelop.Gettext \n"
 
 #: ../templates/BooGtkSharpProject.xpt.xml:7
 msgid "Gtk# Project"
-msgstr "Gtk# projesi"
+msgstr ""
 
 #: ../templates/BooGtkSharpProject.xpt.xml:8
 #: ../templates/BooLibraryProject.xpt.xml:8
@@ -28,52 +21,45 @@ msgid "Boo"
 msgstr ""
 
 #: ../templates/BooGtkSharpProject.xpt.xml:11
-#, fuzzy
 msgid "Creates a Boo/Gtk# project"
-msgstr "Bir Gtk# projesi oluşturur."
+msgstr ""
 
 #: ../templates/BooLibraryProject.xpt.xml:7
-#, fuzzy
 msgid "Boo Library"
-msgstr "Kütüphane"
+msgstr ""
 
 #: ../templates/BooLibraryProject.xpt.xml:11
-#, fuzzy
 msgid "Creates a Boo library"
-msgstr "Boş bir C# sınıf kütüphanesi oluşturur"
+msgstr ""
 
 #: ../templates/BooGtkSharpWindow.xft.xml:7
 msgid "Gtk# Window"
-msgstr "Gtk# penceresi"
+msgstr ""
 
 #: ../templates/BooGtkSharpWindow.xft.xml:9
 #: ../templates/EmptyBooFile.xft.xml:6
-#, fuzzy
 msgid "General"
-msgstr "Kod oluşturma"
+msgstr ""
 
 #: ../templates/BooGtkSharpWindow.xft.xml:11
-#, fuzzy
 msgid "Creates a top-level Gtk# window"
-msgstr "Üst-düzey bir Gtk# penceresi oluşturur."
+msgstr ""
 
 #: ../templates/EmptyBooFile.xft.xml:4
 msgid "Empty File"
-msgstr "Boş dosya"
+msgstr ""
 
 #: ../templates/EmptyBooFile.xft.xml:8
-#, fuzzy
 msgid "Creates an empty Boo file."
-msgstr "Boş bir C# dosyası oluşturur."
+msgstr ""
 
 #: ../templates/EmptyBooProject.xpt.xml:7
 msgid "Empty Project"
-msgstr "Boş Proje"
+msgstr ""
 
 #: ../templates/EmptyBooProject.xpt.xml:11
-#, fuzzy
 msgid "Creates an empty Boo solution."
-msgstr "Boş bir Java çözümü oluşturur"
+msgstr ""
 
 #: ../Gui/ShellTextView.boo:194
 msgid "Copy Script"
@@ -101,7 +87,7 @@ msgstr ""
 
 #: ../Gui/OptionPanels/CodeCompilationPanel.boo:88 ../BooBinding.addin.xml:52
 msgid "Code Generation"
-msgstr "Kod oluşturma"
+msgstr ""
 
 #: ../Gui/OptionPanels/CodeCompilationPanel.boo:89
 msgid "Output Path"
@@ -129,18 +115,16 @@ msgid "Executable"
 msgstr ""
 
 #: ../Gui/OptionPanels/CodeCompilationPanel.boo:110
-#, fuzzy
 msgid "Library"
-msgstr "Kütüphane"
+msgstr ""
 
 #: ../Gui/OptionPanels/CodeCompilationPanel.boo:114
 msgid "Executable with GUI"
 msgstr ""
 
 #: ../Gui/OptionPanels/GeneralShellPanel.boo:50
-#, fuzzy
 msgid "General Options"
-msgstr "Kod oluşturma"
+msgstr ""
 
 #: ../Gui/OptionPanels/GeneralShellPanel.boo:52
 msgid "Automatically indent new lines in code blocks"
@@ -171,9 +155,8 @@ msgid "Use custom font:"
 msgstr ""
 
 #: ../BooBinding.addin.xml:30
-#, fuzzy
 msgid "Boo Files"
-msgstr "Dosyalar"
+msgstr ""
 
 #: ../BooBinding.addin.xml:82 ../BooBinding.addin.xml:90
 msgid "Boo Shell"
