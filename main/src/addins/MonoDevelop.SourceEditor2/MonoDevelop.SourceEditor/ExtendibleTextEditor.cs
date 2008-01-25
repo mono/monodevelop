@@ -68,7 +68,6 @@ namespace MonoDevelop.SourceEditor
 			this.Buffer.TextReplaced += delegate {
 				this.HideLanguageItemWindow ();
 			};
-			this.ColorStyle = SyntaxModeService.GetColorStyle (this, SourceEditorOptions.Options.ColorSheme);
 			base.TextEditorData.Caret.PositionChanged += delegate {
 				if (extension != null)
 					extension.CursorPositionChanged ();
@@ -81,6 +80,11 @@ namespace MonoDevelop.SourceEditor
 			this.PopupMenu += delegate {
 				this.ShowPopup ();
 			};
+		}
+		protected override void OptionsChanged (object sender, EventArgs args)
+		{
+			this.ColorStyle = SyntaxModeService.GetColorStyle (this, SourceEditorOptions.Options.ColorSheme);
+			base.OptionsChanged (sender, args);
 		}
 
 		
@@ -326,7 +330,7 @@ namespace MonoDevelop.SourceEditor
 			if (word.Length > 0)
 				offset = DeleteWordBeforeCaret ();
 			
-			string leadingWhiteSpace = GetLeadingWhiteSpace (Caret.Line);
+//			string leadingWhiteSpace = GetLeadingWhiteSpace (Caret.Line);
 
 			int finalCaretOffset = offset + template.Text.Length;
 			StringBuilder builder = new StringBuilder ();

@@ -48,7 +48,7 @@ namespace MonoDevelop.SourceEditor
 	
 	public class SourceEditorOptions : TextEditorOptions
 	{
-		public static SourceEditorOptions Options {
+		public new static SourceEditorOptions Options {
 			get {
 				return (SourceEditorOptions)TextEditorOptions.Options;
 			}
@@ -73,7 +73,10 @@ namespace MonoDevelop.SourceEditor
 				return PropertyService.Get ("TabsToSpaces", base.TabsToSpaces);
 			}
 			set {
-				PropertyService.Set ("TabsToSpaces", value);
+				if (value != TabsToSpaces) {
+					PropertyService.Set ("TabsToSpaces", value);
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 
@@ -82,7 +85,10 @@ namespace MonoDevelop.SourceEditor
 				return PropertyService.Get ("TabIndent", base.IndentationSize);
 			}
 			set {
-				PropertyService.Set ("TabIndent", base.IndentationSize);
+				if (value != IndentationSize) {
+					PropertyService.Set ("TabIndent", value);
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 
@@ -109,7 +115,10 @@ namespace MonoDevelop.SourceEditor
 				return PropertyService.Get ("ShowLineNumberMargin", base.ShowLineNumberMargin);
 			}
 			set {
-				PropertyService.Set ("ShowLineNumberMargin", value);
+				if (value != ShowLineNumberMargin) {
+					PropertyService.Set ("ShowLineNumberMargin", value);
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 
@@ -118,7 +127,10 @@ namespace MonoDevelop.SourceEditor
 				return PropertyService.Get ("ShowFoldMargin", base.ShowFoldMargin);
 			}
 			set {
-				PropertyService.Set ("ShowFoldMargin", value);
+				if (value != ShowFoldMargin) {
+					PropertyService.Set ("ShowFoldMargin", value);
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 
@@ -127,7 +139,10 @@ namespace MonoDevelop.SourceEditor
 				return PropertyService.Get ("ShowInvalidLines", base.ShowInvalidLines);
 			}
 			set {
-				PropertyService.Set ("ShowInvalidLines", value);
+				if (value != ShowInvalidLines) {
+					PropertyService.Set ("ShowInvalidLines", value);
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 
@@ -136,7 +151,10 @@ namespace MonoDevelop.SourceEditor
 				return PropertyService.Get ("ShowTabs", base.ShowTabs);
 			}
 			set {
-				PropertyService.Set ("ShowTabs", value);
+				if (value != ShowTabs) {
+					PropertyService.Set ("ShowTabs", value);
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 
@@ -145,7 +163,10 @@ namespace MonoDevelop.SourceEditor
 				return PropertyService.Get ("ShowEolMarkers", base.ShowEolMarkers);
 			}
 			set {
-				PropertyService.Set ("ShowEolMarkers", value);
+				if (value != ShowEolMarkers) {
+					PropertyService.Set ("ShowEolMarkers", value);
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 
@@ -154,7 +175,10 @@ namespace MonoDevelop.SourceEditor
 				return PropertyService.Get ("HighlightCaretLine", base.HighlightCaretLine);
 			}
 			set {
-				PropertyService.Set ("HighlightCaretLine", value);
+				if (value != HighlightCaretLine) {
+					PropertyService.Set ("HighlightCaretLine", value);
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 
@@ -163,7 +187,10 @@ namespace MonoDevelop.SourceEditor
 				return PropertyService.Get ("ShowSpaces", base.ShowSpaces);
 			}
 			set {
-				PropertyService.Set ("ShowSpaces", value);
+				if (value != ShowSpaces) {
+					PropertyService.Set ("ShowSpaces", value);
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 		
@@ -172,7 +199,10 @@ namespace MonoDevelop.SourceEditor
 				return PropertyService.Get ("EnableSyntaxHighlighting", true);
 			}
 			set {
-				PropertyService.Set ("EnableSyntaxHighlighting", value);
+				if (value != EnableSyntaxHighlighting) {
+					PropertyService.Set ("EnableSyntaxHighlighting", value);
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 		
@@ -181,7 +211,10 @@ namespace MonoDevelop.SourceEditor
 				return PropertyService.Get ("AutoInsertTemplates", true);
 			}
 			set {
-				PropertyService.Set ("AutoInsertTemplates", value);
+				if (value != AutoInsertTemplates) {
+					PropertyService.Set ("AutoInsertTemplates", value);
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 		
@@ -190,7 +223,10 @@ namespace MonoDevelop.SourceEditor
 				return PropertyService.Get ("AutoInsertMatchingBracket", true);
 			}
 			set {
-				PropertyService.Set ("AutoInsertMatchingBracket", value);
+				if (value != AutoInsertMatchingBracket) {
+					PropertyService.Set ("AutoInsertMatchingBracket", value);
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 		
@@ -199,7 +235,10 @@ namespace MonoDevelop.SourceEditor
 				return PropertyService.Get ("EnableCodeCompletion", true);
 			}
 			set {
-				PropertyService.Set ("EnableCodeCompletion", value);
+				if (value != EnableCodeCompletion) {
+					PropertyService.Set ("EnableCodeCompletion", value);
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 		
@@ -208,7 +247,10 @@ namespace MonoDevelop.SourceEditor
 				return PropertyService.Get ("EnableQuickFinder", true);
 			}
 			set {
-				PropertyService.Set ("EnableQuickFinder", value);
+				if (value != EnableQuickFinder) {
+					PropertyService.Set ("EnableQuickFinder", value);
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 		
@@ -217,7 +259,10 @@ namespace MonoDevelop.SourceEditor
 				return PropertyService.Get ("UnderlineErrors", true);
 			}
 			set {
-				PropertyService.Set ("UnderlineErrors", value);
+				if (value != UnderlineErrors) {
+					PropertyService.Set ("UnderlineErrors", value);
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 		
@@ -226,7 +271,10 @@ namespace MonoDevelop.SourceEditor
 				return PropertyService.Get ("HighlightMatchingBracket", true);
 			}
 			set {
-				PropertyService.Set ("HighlightMatchingBracket", value);
+				if (value != HighlightMatchingBracket) {
+					PropertyService.Set ("HighlightMatchingBracket", value);
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 		
@@ -235,7 +283,10 @@ namespace MonoDevelop.SourceEditor
 				return PropertyService.Get ("RulerColumn", base.RulerColumn);
 			}
 			set {
-				PropertyService.Set ("RulerColumn", value);
+				if (value != RulerColumn) {
+					PropertyService.Set ("RulerColumn", value);
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 
@@ -244,7 +295,10 @@ namespace MonoDevelop.SourceEditor
 				return PropertyService.Get ("ShowRuler", base.ShowRuler);
 			}
 			set {
-				PropertyService.Set ("ShowRuler", value);
+				if (value != ShowRuler) {
+					PropertyService.Set ("ShowRuler", value);
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 
@@ -262,7 +316,10 @@ namespace MonoDevelop.SourceEditor
 				return PropertyService.Get ("IndentStyle", MonoDevelop.Ide.Gui.Content.IndentStyle.Smart);
 			}
 			set {
-				PropertyService.Set ("IndentStyle", value);
+				if (value != IndentStyle) {
+					PropertyService.Set ("IndentStyle", value);
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 		
@@ -271,7 +328,10 @@ namespace MonoDevelop.SourceEditor
 				return PropertyService.Get ("EditorFontType", MonoDevelop.SourceEditor.EditorFontType.DefaultMonospace);
 			}
 			set {
-				PropertyService.Set ("EditorFontType", value);
+				if (value != EditorFontType) {
+					PropertyService.Set ("EditorFontType", value);
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 		
@@ -280,7 +340,10 @@ namespace MonoDevelop.SourceEditor
 				return PropertyService.Get ("FontName", "Mono 10");
 			}
 			set {
-				PropertyService.Set ("FontName", !String.IsNullOrEmpty (value) ? value : "Mono 10");
+				if (value != FontName) {
+					PropertyService.Set ("FontName", !String.IsNullOrEmpty (value) ? value : "Mono 10");
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 		
@@ -289,7 +352,10 @@ namespace MonoDevelop.SourceEditor
 				return PropertyService.Get ("ColorSheme", "Default");
 			}
 			set {
-				PropertyService.Set ("ColorSheme", !String.IsNullOrEmpty (value) ? value : "Default");
+				if (value != ColorSheme) {
+					PropertyService.Set ("ColorSheme", !String.IsNullOrEmpty (value) ? value : "Default");
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 		
