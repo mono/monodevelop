@@ -451,10 +451,10 @@ namespace Mono.TextEditor
 
 		public Mono.TextEditor.Highlighting.Style ColorStyle {
 			get {
-				return style;
+				return this.textEditorData.ColorStyle;
 			}
 			set {
-				style = value;
+				this.textEditorData.ColorStyle = value;
 			}
 		}
 

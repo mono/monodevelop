@@ -62,6 +62,16 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		Mono.TextEditor.Highlighting.Style colorStyle;
+		public Mono.TextEditor.Highlighting.Style ColorStyle {
+			get {
+				return colorStyle;
+			}
+			set {
+				colorStyle = value;
+			}
+		}
+		
 		public bool IsSomethingSelected {
 			get {
 				return SelectionStart != null && SelectionEnd != null; 

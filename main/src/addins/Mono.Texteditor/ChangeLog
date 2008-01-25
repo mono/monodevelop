@@ -1,10 +1,14 @@
 2008-01-25  Mike Krüger <mkrueger@novell.com> 
 
-	* OblivionStyle.xml, Mono.TextEditor/RedBlackTree.cs,
-	  Mono.TextEditor/LineSegmentTree.cs, Mono.TextEditor/TextEditor.cs,
-	  Mono.TextEditor.Highlighting/Style.cs,
-	  Mono.TextEditor.Highlighting/DefaultStyle.cs, C64Style.xml: Selected
-	  foreground colors are now part of the highlighting style.
+	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextEditorData.cs,
+	  Mono.TextEditor/TextEditor.cs, Mono.TextEditor.Highlighting/Style.cs:
+	  Editor is now capable of outputting rtf to clipboard.
+
+2008-01-25  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextEditorData.cs,
+	  Mono.TextEditor/TextEditor.cs, Mono.TextEditor.Highlighting/Style.cs:
+	  Editor is now capable of outputting rtf to clipboard.
 
 2008-01-25  Mike Krüger <mkrueger@novell.com> 
 
@@ -31,23 +35,8 @@
 
 2008-01-22  Mike Krüger <mkrueger@novell.com> 
 
-	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: Worked on style panel.
-
-2008-01-22  Mike Krüger <mkrueger@novell.com> 
-
 	* OblivionStyle.xml, Mono.TextEditor.Highlighting/Style.cs, C64Style.xml:
 	  Color styles now have descriptions. Name/Description is now localizable.
-
-2008-01-22  Mike Krüger <mkrueger@novell.com> 
-
-	* OblivionStyle.xml, Mono.TextEditor.Highlighting/Style.cs, C64Style.xml:
-	  Color styles now have descriptions. Name/Description is now localizable.
-
-2008-01-22  Mike Krüger <mkrueger@novell.com> 
-
-	* Mono.TextEditor/TextEditor.cs, Mono.TextEditor/TextEditorOptions.cs,
-	  Mono.TextEditor/GutterMargin.cs: Added some text editor options -
-	  options are now virtual.
 
 2008-01-22  Mike Krüger <mkrueger@novell.com> 
 

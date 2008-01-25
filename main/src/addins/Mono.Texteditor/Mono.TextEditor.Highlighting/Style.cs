@@ -187,6 +187,34 @@ namespace Mono.TextEditor.Highlighting
 			invalidLineMarker = new Gdk.Color (210, 0, 0);
 			
 		}
+		static readonly string[] colorTable = new string[] { "Comment", 
+			                    "String",
+			                    "Punctuation",
+			                    "Keyword1",
+			                    "Keyword2",
+			                    "Keyword3",
+			                    "Keyword4",
+			                    "PreProcessorDirective" };
+		
+		public static int ColorTableCount {
+			get {
+				return colorTable.Length;
+			}
+		}
+		
+		public static string GetColorName (int number)
+		{
+			return colorTable[number];
+		}
+		
+		public static int GetColorNumber (string name)
+		{
+			for (int i = 0; i < colorTable.Length; i++) {
+				if (colorTable[i] == name)
+					return i;
+			}
+			return -1;
+		}
 		
 		public Gdk.Color GetColor (string name)
 		{

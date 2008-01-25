@@ -666,11 +666,149 @@ namespace Mono.TextEditor
 	
 	public class CopyAction : EditAction
 	{
+		const int TextType     = 1;		
+		const int RichTextType = 2;
+		
+		const int UTF8_FORMAT = 8;
+		
+		public static readonly Gdk.Atom CLIPBOARD_ATOM = Gdk.Atom.Intern ("CLIPBOARD", false);
+		static readonly Gdk.Atom RTF_ATOM = Gdk.Atom.Intern ("text/rtf", false);
+		
+		void ClipboardGetFunc (Clipboard clipboard, SelectionData selection_data, uint info)
+		{
+			switch (info) {
+			case TextType:
+				selection_data.Text = text;
+				break;
+			case RichTextType:
+				selection_data.Set (RTF_ATOM, UTF8_FORMAT, System.Text.Encoding.UTF8.GetBytes (rtf.ToString ()));
+				break;
+			}
+		}
+		void ClipboardClearFunc (Clipboard clipboard)
+		{
+			// NOTHING ?
+		}
+		
+		string text;
+		string rtf;
+		void GenerateRtf (TextEditorData data)
+		{
+			StringBuilder rtf = new StringBuilder();
+		
+			rtf.Append (@"{\rtf1\ansi\deff0\adeflang1025");
+			
+			// font table
+			rtf.Append(@"{\fonttbl");
+			rtf.Append(@"{\f0\fnil\fprq1\fcharset128 " + TextEditorOptions.Options.Font.Family + ";}");
+			rtf.Append("}");
+			
+			// color table
+			rtf.Append (@"{\colortbl ;");
+			Dictionary<Gdk.Color, int> colorTable = new Dictionary<Gdk.Color,int> ();
+			for (int i = 0; i < Mono.TextEditor.Highlighting.Style.ColorTableCount; i++) {
+				Gdk.Color color = data.ColorStyle.GetColor (Mono.TextEditor.Highlighting.Style.GetColorName (i));
+				rtf.Append (@"\red");
+				rtf.Append (color.Red);
+				rtf.Append (@"\green");
+				rtf.Append (color.Green); 
+				rtf.Append (@"\blue");
+				rtf.Append (color.Blue);
+				rtf.Append (";");
+				colorTable[color] = i;
+			}
+			rtf.Append ("}");
+			rtf.Append (@"\viewkind4\uc1\pard");
+			rtf.Append (@"\f0");
+			try {
+				string fontName = TextEditorOptions.Options.Font.ToString ();
+				double fontSize = Double.Parse (fontName.Substring (fontName.LastIndexOf (' ')  + 1)) * 2;
+				rtf.Append (@"\fs");
+				rtf.Append (fontSize);
+			} catch (Exception) {};
+			
+			rtf.Append (@"\cf1");
+
+			ISegment selection = data.SelectionRange;
+			LineSegment line    = data.Document.Splitter.GetByOffset (selection.Offset);
+			LineSegment endLine = data.Document.Splitter.GetByOffset (selection.EndOffset);
+			
+			RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = line.Iter;
+			bool isItalic = false;
+			bool isBold   = false;
+			int curColor  = 0;
+			do {
+				line = iter.Current;
+				Chunk[] chunks = data.Document.SyntaxMode.GetChunks (data.Document, 
+				                                                     data.ColorStyle, 
+				                                                     line, 
+				                                                     line.Offset, 
+				                                                     line.Offset + line.EditableLength);
+				foreach (Chunk chunk in chunks) {
+					int start = System.Math.Max (selection.Offset, chunk.Offset);
+					int end   = System.Math.Min (chunk.EndOffset, selection.EndOffset);
+					if (start < end) {
+						bool appendSpace = false;
+						if (isBold != chunk.Style.Bold) {
+							rtf.Append (chunk.Style.Bold ? @"\b" : @"\b0");
+							isBold = chunk.Style.Bold;
+							appendSpace = true;
+						}
+						if (isItalic != chunk.Style.Italic) {
+							rtf.Append (chunk.Style.Italic ? @"\b" : @"\b0");
+							isItalic = chunk.Style.Italic;
+							appendSpace = true;
+						}
+						if (curColor != colorTable[chunk.Style.Color]) {
+							curColor = colorTable[chunk.Style.Color];
+							rtf.Append (@"\cf" + (curColor + 1));					
+							appendSpace = true;
+						}
+						if (appendSpace)
+							rtf.Append (' ');
+						for (int i = start; i < end; i++) {
+							char ch = data.Document.Buffer.GetCharAt (i);
+							switch (ch) {
+							case '\\':
+								rtf.Append (@"\\");
+								break;
+							case '{':
+								rtf.Append (@"\{");
+								break;
+							case '}':
+								rtf.Append (@"\}");
+								break;
+							case '\t':
+								rtf.Append (@"\tab");
+								break;
+							default:
+								rtf.Append (ch);
+								break;
+							}
+						}
+					}
+				}
+				if (line == endLine)
+					break;
+				rtf.Append (@"\par");
+			} while (iter.MoveNext ());
+			rtf.Append("}");
+			System.Console.WriteLine(rtf);
+			this.rtf = rtf.ToString ();
+		}
+		
 		public override void Run (TextEditorData data)
 		{
 			if (data.IsSomethingSelected) {
-				Clipboard clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
-				clipboard.Text = data.Document.Buffer.GetTextAt (data.SelectionRange);
+				Clipboard clipboard = Clipboard.Get (CopyAction.CLIPBOARD_ATOM);
+				
+				text = data.Document.Buffer.GetTextAt (data.SelectionRange);
+				GenerateRtf (data);
+				
+				Gtk.TargetList list = new Gtk.TargetList ();
+				list.Add (RTF_ATOM, /* FLAGS */ 0, RichTextType);
+				list.AddTextTargets (TextType);
+				clipboard.SetWithData ((Gtk.TargetEntry[])list, ClipboardGetFunc, ClipboardClearFunc);
 			}
 		}
 	}
@@ -679,7 +817,7 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
-			Clipboard clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+			Clipboard clipboard = Clipboard.Get (CopyAction.CLIPBOARD_ATOM);
 			if (clipboard.WaitIsTextAvailable ()) {
 				if (data.IsSomethingSelected) {
 					DeleteAction.DeleteSelection (data);
