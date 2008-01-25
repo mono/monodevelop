@@ -1,11 +1,10 @@
 2008-01-25  Mike Krüger <mkrueger@novell.com> 
 
-	* OblivionStyle.xml, Mono.TextEditor/DefaultEditActions.cs,
-	  Mono.TextEditor/TextEditorOptions.cs, Mono.TextEditor/GutterMargin.cs,
-	  Mono.TextEditor.Highlighting/SyntaxMode.cs,
-	  Mono.TextEditor.Highlighting/Style.cs,
-	  Mono.TextEditor.Highlighting/ChunkStyle.cs, CSharpSyntaxMode.xml,
-	  C64Style.xml: Worked on Syntax highlighting
+	* Mono.TextEditor/DefaultEditActions.cs: Optimized rtf color table output.
+
+2008-01-25  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/DefaultEditActions.cs: Optimized rtf color table output.
 
 2008-01-25  Mike Krüger <mkrueger@novell.com> 
 
@@ -24,25 +23,8 @@
 
 2008-01-25  Mike Krüger <mkrueger@novell.com> 
 
-	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextEditor.cs,
-	  Mono.TextEditor/TextEditorOptions.cs: Optimized drawing a bit, added
-	  syntax mode enabled option.
-
-2008-01-25  Mike Krüger <mkrueger@novell.com> 
-
 	* Mono.TextEditor/TextEditor.cs, Mono.TextEditor/TextEditorOptions.cs: Added
 	  property change event.
-
-2008-01-25  Mike Krüger <mkrueger@novell.com> 
-
-	* Mono.TextEditor/TextEditor.cs, Mono.TextEditor/TextEditorOptions.cs: Added
-	  property change event.
-
-2008-01-25  Mike Krüger <mkrueger@novell.com> 
-
-	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextEditorData.cs,
-	  Mono.TextEditor/TextEditor.cs, Mono.TextEditor.Highlighting/Style.cs:
-	  Editor is now capable of outputting rtf to clipboard.
 
 2008-01-25  Mike Krüger <mkrueger@novell.com> 
 

@@ -694,40 +694,9 @@ namespace Mono.TextEditor
 		string rtf;
 		void GenerateRtf (TextEditorData data)
 		{
-			StringBuilder rtf = new StringBuilder();
-		
-			rtf.Append (@"{\rtf1\ansi\deff0\adeflang1025");
-			
-			// font table
-			rtf.Append(@"{\fonttbl");
-			rtf.Append(@"{\f0\fnil\fprq1\fcharset128 " + TextEditorOptions.Options.Font.Family + ";}");
-			rtf.Append("}");
-			
-			// color table
-			rtf.Append (@"{\colortbl ;");
-			Dictionary<Gdk.Color, int> colorTable = new Dictionary<Gdk.Color,int> ();
-			for (int i = 0; i < Mono.TextEditor.Highlighting.Style.ColorTableCount; i++) {
-				Gdk.Color color = data.ColorStyle.GetColor (Mono.TextEditor.Highlighting.Style.GetColorName (i)).Color;
-				rtf.Append (@"\red");
-				rtf.Append (color.Red);
-				rtf.Append (@"\green");
-				rtf.Append (color.Green); 
-				rtf.Append (@"\blue");
-				rtf.Append (color.Blue);
-				rtf.Append (";");
-				colorTable[color] = i;
-			}
-			rtf.Append ("}");
-			rtf.Append (@"\viewkind4\uc1\pard");
-			rtf.Append (@"\f0");
-			try {
-				string fontName = TextEditorOptions.Options.Font.ToString ();
-				double fontSize = Double.Parse (fontName.Substring (fontName.LastIndexOf (' ')  + 1)) * 2;
-				rtf.Append (@"\fs");
-				rtf.Append (fontSize);
-			} catch (Exception) {};
-			
-			rtf.Append (@"\cf1");
+			StringBuilder colorTable = new StringBuilder ();
+			StringBuilder rtfText = new StringBuilder ();
+			List<Gdk.Color> colorList = new List<Gdk.Color> ();
 
 			ISegment selection = data.SelectionRange;
 			LineSegment line    = data.Document.Splitter.GetByOffset (selection.Offset);
@@ -736,7 +705,7 @@ namespace Mono.TextEditor
 			RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = line.Iter;
 			bool isItalic = false;
 			bool isBold   = false;
-			int curColor  = 0;
+			int curColor  = -1;
 			do {
 				line = iter.Current;
 				Chunk[] chunks = data.Document.SyntaxMode.GetChunks (data.Document, 
@@ -750,39 +719,42 @@ namespace Mono.TextEditor
 					if (start < end) {
 						bool appendSpace = false;
 						if (isBold != chunk.Style.Bold) {
-							rtf.Append (chunk.Style.Bold ? @"\b" : @"\b0");
+							rtfText.Append (chunk.Style.Bold ? @"\b" : @"\b0");
 							isBold = chunk.Style.Bold;
 							appendSpace = true;
 						}
 						if (isItalic != chunk.Style.Italic) {
-							rtf.Append (chunk.Style.Italic ? @"\b" : @"\b0");
+							rtfText.Append (chunk.Style.Italic ? @"\b" : @"\b0");
 							isItalic = chunk.Style.Italic;
 							appendSpace = true;
 						}
-						if (curColor != colorTable[chunk.Style.Color]) {
-							curColor = colorTable[chunk.Style.Color];
-							rtf.Append (@"\cf" + (curColor + 1));					
+						if (!colorList.Contains (chunk.Style.Color)) 
+							colorList.Add (chunk.Style.Color);
+						int color = colorList.IndexOf (chunk.Style.Color);
+						if (curColor != color) {
+							curColor = color;
+							rtfText.Append (@"\cf" + (curColor + 1));					
 							appendSpace = true;
 						}
 						if (appendSpace)
-							rtf.Append (' ');
+							rtfText.Append (' ');
 						for (int i = start; i < end; i++) {
 							char ch = data.Document.Buffer.GetCharAt (i);
 							switch (ch) {
 							case '\\':
-								rtf.Append (@"\\");
+								rtfText.Append (@"\\");
 								break;
 							case '{':
-								rtf.Append (@"\{");
+								rtfText.Append (@"\{");
 								break;
 							case '}':
-								rtf.Append (@"\}");
+								rtfText.Append (@"\}");
 								break;
 							case '\t':
-								rtf.Append (@"\tab");
+								rtfText.Append (@"\tab");
 								break;
 							default:
-								rtf.Append (ch);
+								rtfText.Append (ch);
 								break;
 							}
 						}
@@ -790,9 +762,46 @@ namespace Mono.TextEditor
 				}
 				if (line == endLine)
 					break;
-				rtf.Append (@"\par");
+				rtfText.Append (@"\par");
 			} while (iter.MoveNext ());
+			
+			// color table
+			colorTable.Append (@"{\colortbl ;");
+			for (int i = 0; i < colorList.Count; i++) {
+				Gdk.Color color = colorList[i];
+				colorTable.Append (@"\red");
+				colorTable.Append (color.Red / 256);
+				colorTable.Append (@"\green");
+				colorTable.Append (color.Green / 256); 
+				colorTable.Append (@"\blue");
+				colorTable.Append (color.Blue / 256);
+				colorTable.Append (";");
+			}
+			colorTable.Append ("}");
+			
+			
+			StringBuilder rtf = new StringBuilder();
+			rtf.Append (@"{\rtf1\ansi\deff0\adeflang1025");
+			
+			// font table
+			rtf.Append (@"{\fonttbl");
+			rtf.Append (@"{\f0\fnil\fprq1\fcharset128 " + TextEditorOptions.Options.Font.Family + ";}");
+			rtf.Append ("}");
+			
+			rtf.Append (colorTable.ToString ());
+			
+			rtf.Append (@"\viewkind4\uc1\pard");
+			rtf.Append (@"\f0");
+			try {
+				string fontName = TextEditorOptions.Options.Font.ToString ();
+				double fontSize = Double.Parse (fontName.Substring (fontName.LastIndexOf (' ')  + 1)) * 2;
+				rtf.Append (@"\fs");
+				rtf.Append (fontSize);
+			} catch (Exception) {};
+			rtf.Append (@"\cf1");
+			rtf.Append (rtfText.ToString ());
 			rtf.Append("}");
+			System.Console.WriteLine(rtf);
 			this.rtf = rtf.ToString ();
 		}
 		
