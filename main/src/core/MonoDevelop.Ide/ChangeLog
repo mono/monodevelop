@@ -1,3 +1,7 @@
+2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.addin.xml: Update MD version.
+
 2008-01-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Commands/FileCommands.cs: Disable the OpenFileInSolution

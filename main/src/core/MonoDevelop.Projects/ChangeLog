@@ -1,3 +1,7 @@
+2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.addin.xml: Update MD version.
+
 2008-01-14  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Projects/DotNetProject.cs: Add missing null-check.

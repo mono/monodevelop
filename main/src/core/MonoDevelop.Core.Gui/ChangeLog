@@ -1,5 +1,9 @@
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Core.Gui.addin.xml: Update MD version.
+
+2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Core.Gui.Dialogs/ErrorDialog.cs: Workaround to GetFields mono
 	  bug fix.
 	* MonoDevelop.Core.Gui.Components/FileBrowser.cs: Don't show labels in the

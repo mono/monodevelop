@@ -1,3 +1,7 @@
+2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.addin.xml: Update MD version.
+
 2008-01-24  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core/GettextCatalog.cs: Fix logic that determines the location

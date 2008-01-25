@@ -1,3 +1,7 @@
+2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml: Update MD version.
+
 2008-01-24  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Don't reset

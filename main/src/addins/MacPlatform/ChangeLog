@@ -1,3 +1,7 @@
+2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MacPlatform.addin.xml: Update MD version.
+
 2007-12-17  Geoff Norton  <gnorton@novell.com>
 
 	* Makefile.am: Fix the build on the Mac profile.

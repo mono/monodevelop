@@ -1,3 +1,7 @@
+2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* CBinding.addin.xml: Update MD version.
+
 2008-01-22  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* Compiler/GNUCompiler.cs: Removed useless code.
