@@ -115,6 +115,7 @@ namespace Mono.TextEditor
 				           EventMask.ScrollMask | 
 					       EventMask.PointerMotionMask
 			;
+			
 			base.CanFocus =true;
 			this.ParentSet += delegate {
 //				if (Parent is Viewport) {

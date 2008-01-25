@@ -100,9 +100,9 @@ namespace Mono.TextEditor.Highlighting
 			{
 				ChunkStyle result ;
 				if (!String.IsNullOrEmpty (word.Color)) {
-					result = style.GetColor (word.Color);
+					result = style.GetChunkStyle (word.Color);
 				} else {
-					result = spanStack.Count > 0 ? style.GetColor (spanStack.Peek ().Color) : ChunkStyle.Default;
+					result = spanStack.Count > 0 ? style.GetChunkStyle (spanStack.Peek ().Color) : ChunkStyle.Default;
 				}
 				return result;
 			}
@@ -111,7 +111,7 @@ namespace Mono.TextEditor.Highlighting
 			{
 				if (spanStack.Count == 0)
 					return ChunkStyle.Default;
-				return style.GetColor (spanStack.Peek ().Color);
+				return style.GetChunkStyle (spanStack.Peek ().Color);
 			}
 			
 			void SetTree ()
