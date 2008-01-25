@@ -1,6 +1,24 @@
+2008-01-25  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/ExtendibleTextEditor.cs,
+	  MonoDevelop.SourceEditor/SourceEditorOptions.cs: AutoInsert template
+	  option now works.
+
+2008-01-25  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/ExtendibleTextEditor.cs,
+	  MonoDevelop.SourceEditor/SourceEditorOptions.cs: AutoInsert template
+	  option now works.
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.addin.xml: Update MD version.
+
+2008-01-25  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/ExtendibleTextEditor.cs,
+	  MonoDevelop.SourceEditor/SourceEditorOptions.cs: AutoInsert template
+	  option now works.
 
 2008-01-25  Mike Krüger <mkrueger@novell.com> 
 

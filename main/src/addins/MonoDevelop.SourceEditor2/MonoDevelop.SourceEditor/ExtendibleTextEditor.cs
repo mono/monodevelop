@@ -99,6 +99,7 @@ namespace MonoDevelop.SourceEditor
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
 			bool result = true;
+			char ch = (char)evnt.Key;
 			if (extension != null) {
 				if (!extension.KeyPress (evnt.Key, evnt.State)) {
 					result = base.OnKeyPressEvent (evnt);
@@ -106,7 +107,8 @@ namespace MonoDevelop.SourceEditor
 			} else {
 				result = base.OnKeyPressEvent (evnt);				
 			}
-			char ch = (char)evnt.Key;
+			if (SourceEditorOptions.Options.AutoInsertTemplates && IsTemplateKnown ())
+				DoInsertTemplate ();
 			if (SourceEditorOptions.Options.AutoInsertMatchingBracket) {
 				switch (ch) {
 				case '{':
@@ -323,15 +325,34 @@ namespace MonoDevelop.SourceEditor
 			return start;
 		}
 
-		public string GetLeadingWhiteSpace (int line)
+		public string GetLeadingWhiteSpace (int lineNr)
 		{
-			string lineText = Buffer.GetTextAt (Document.GetLine (line));
+			LineSegment line = Document.GetLine (lineNr);
 			int index = 0;
-			while (index < lineText.Length && Char.IsWhiteSpace (lineText[index]))
+			while (index < line.EditableLength && Char.IsWhiteSpace (Buffer.GetCharAt (line.Offset + index)))
 				index++;
- 	   		return index > 0 ? lineText.Substring (0, index) : "";
+ 	   		return index > 0 ? Buffer.GetTextAt (line.Offset, index) : "";
 		}
 
+		public bool IsTemplateKnown ()
+		{
+			string word = GetWordBeforeCaret ();
+			CodeTemplateGroup templateGroup = CodeTemplateService.GetTemplateGroupPerFilename (this.view.ContentName);
+			if (String.IsNullOrEmpty (word) || templateGroup == null) 
+				return false;
+			
+			bool result = false;
+			foreach (CodeTemplate template in templateGroup.Templates) {
+				if (template.Shortcut == word) {
+					result = true;
+				} else if (template.Shortcut.StartsWith (word)) {
+					result = false;
+					break;
+				}
+			}
+			return result;
+		}
+		
 		public bool DoInsertTemplate ()
 		{
 			string word = GetWordBeforeCaret ();
@@ -355,7 +376,7 @@ namespace MonoDevelop.SourceEditor
 			if (word.Length > 0)
 				offset = DeleteWordBeforeCaret ();
 			
-//			string leadingWhiteSpace = GetLeadingWhiteSpace (Caret.Line);
+			string leadingWhiteSpace = GetLeadingWhiteSpace (Caret.Line);
 
 			int finalCaretOffset = offset + template.Text.Length;
 			StringBuilder builder = new StringBuilder ();
@@ -363,6 +384,12 @@ namespace MonoDevelop.SourceEditor
 				switch (template.Text[i]) {
 				case '|':
 					finalCaretOffset = i + offset;
+					break;
+				case '\r':
+					break;
+				case '\n':
+					builder.Append (Environment.NewLine);
+					builder.Append (leadingWhiteSpace);
 					break;
 				default:
 					builder.Append (template.Text[i]);

@@ -208,7 +208,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public bool AutoInsertTemplates {
 			get {
-				return PropertyService.Get ("AutoInsertTemplates", true);
+				return PropertyService.Get ("AutoInsertTemplates", false);
 			}
 			set {
 				if (value != AutoInsertTemplates) {
