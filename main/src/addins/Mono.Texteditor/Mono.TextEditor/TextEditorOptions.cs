@@ -226,7 +226,6 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		
 		public virtual Pango.FontDescription Font {
 			get {
 				return Pango.FontDescription.FromString (FontName);

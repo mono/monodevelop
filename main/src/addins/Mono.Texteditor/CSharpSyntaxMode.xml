@@ -25,31 +25,31 @@
 <SyntaxMode name = "C#" mimeType="text/x-csharp">
 	<Delimiters>&amp;&lt;&gt;~!%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
 
-	<EolSpan color = "PreProcessorDirective" rule="PreProcessor">#</EolSpan>
-	<EolSpan color = "Comment" rule="XmlDocumentation">///</EolSpan>
-	<EolSpan color = "Comment" rule="Comment" constraint="!/">//</EolSpan>
+	<EolSpan color = "PreProcessorDirective1" rule="PreProcessor">#</EolSpan>
+	<EolSpan color = "Comment1" rule="XmlDocumentation">///</EolSpan>
+	<EolSpan color = "Comment1" rule="Comment" constraint="!/">//</EolSpan>
 	
-	<Span color = "Comment" rule="Comment">
+	<Span color = "Comment1" rule="Comment">
 		<Begin>/*</Begin>
 		<End>*/</End>
 	</Span>
 	
-	<Span color = "String" stopateol = "false" escape='"'>
+	<Span color = "Literal" stopateol = "false" escape='"'>
 		<Begin>@"</Begin>
 		<End>"</End>
 	</Span>
 
-	<Span color = "String" stopateol = "true" escape="\">
+	<Span color = "Literal" stopateol = "true" escape="\">
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 
-	<Span color = "String" stopateol = "true" escape="\">
+	<Span color = "Literal" stopateol = "true" escape="\">
 		<Begin>&apos;</Begin>
 		<End>&apos;</End>
 	</Span>
 	
-	<Keywords color = "Keyword1" weight="Bold">
+	<Keywords color = "Keyword1">
 		<Word>as</Word>
 		<Word>is</Word>
 		<Word>new</Word>
@@ -98,7 +98,7 @@
 		<Word>value</Word>
 	</Keywords>
 	
-	<Keywords color = "Keyword2" weight="Bold">
+	<Keywords color = "Keyword2">
 		<Word>bool</Word>
 		<Word>byte</Word>
 		<Word>char</Word>
@@ -118,7 +118,7 @@
 		<Word>string</Word>
 	</Keywords>
 	
-	<Keywords color = "Keyword3" weight="Bold">
+	<Keywords color = "Keyword3">
 		<Word>class</Word>
 		<Word>interface</Word>
 		<Word>delegate</Word>
@@ -150,7 +150,7 @@
 	</Keywords>
 
 	<Rule name = "PreProcessor" color = "PreProcessorDirective">
-		<Keywords weight="Bold">
+		<Keywords color="PreProcessorDirective2">
 			<Word>if</Word>
 			<Word>else</Word>
 			<Word>elif</Word>
@@ -167,7 +167,7 @@
 	</Rule>
 	
 	<Rule name = "Comment">
-		<Keywords weight="Italic" ignorecase="True">
+		<Keywords color="Comment4" ignorecase="True">
 			<Word>TODO</Word>
 			<Word>FIXME</Word>
 			<Word>HACK</Word>
@@ -176,7 +176,7 @@
 	</Rule>
 	
 	<Rule name = "XmlDocumentation">
-		<Keywords weight="Bold">
+		<Keywords color="Comment2">
 			<Word>c</Word>
 			<Word>code</Word>
 			<Word>example</Word>

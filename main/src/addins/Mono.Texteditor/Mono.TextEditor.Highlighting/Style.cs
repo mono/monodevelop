@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Xml;
 using Gdk;
 
@@ -42,7 +43,8 @@ namespace Mono.TextEditor.Highlighting
 		Color lineNumberFg, lineNumberBg, lineNumberFgHighlighted;
 		Color iconBarBg, iconBarSeperator;
 		Color foldLine, foldLineHighlighted, foldBg, foldToggleMarker;
-		Color comment, str, punctuation, keyword1, keyword2, keyword3, keyword4, preprocessor; 
+		
+		Dictionary<string, ChunkStyle> highlightingStyles = new Dictionary<string, ChunkStyle> (); 
 
 		public virtual Color Default {
 			get {
@@ -159,14 +161,6 @@ namespace Mono.TextEditor.Highlighting
 
 		public Style ()
 		{
-			comment      = new Gdk.Color (0, 0, 255);
-			str          = new Gdk.Color (255, 0, 255);
-			punctuation  = new Gdk.Color (0, 0, 0);
-			keyword1     = new Gdk.Color (165, 42, 42);
-			keyword2     = new Gdk.Color (46, 139, 87);
-			keyword3     = new Gdk.Color (165, 42, 42);
-			keyword4     = new Gdk.Color (0, 200, 0);
-			preprocessor = new Gdk.Color (0, 200, 0);
 			def          = new Gdk.Color (0, 0, 0); 
 			
 			lineNumberBg = new Gdk.Color (255, 255, 255);
@@ -179,22 +173,48 @@ namespace Mono.TextEditor.Highlighting
 			foldToggleMarker    = new Gdk.Color (0, 0, 0);
 			
 			background = new Gdk.Color (255, 255, 255);
-			selectedBg   = new Gdk.Color (96, 87, 210);
-			selectedFg   = new Gdk.Color (255, 255, 255);
-			lineMarker  = new Gdk.Color (200, 255, 255);
-			ruler       = new Gdk.Color (187, 187, 187);
-			whitespaceMarker = new Gdk.Color (187, 187, 187);
+			selectedBg = new Gdk.Color (96, 87, 210);
+			selectedFg = new Gdk.Color (255, 255, 255);
+			lineMarker = new Gdk.Color (200, 255, 255);
+			ruler      = new Gdk.Color (187, 187, 187);
+			whitespaceMarker  = new Gdk.Color (187, 187, 187);
 			invalidLineMarker = new Gdk.Color (210, 0, 0);
 			
+			foreach (string color in colorTable) {
+				highlightingStyles [color] = new Mono.TextEditor.ChunkStyle (def, false, false);
+			}
+			highlightingStyles ["Comment1"] = new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255), false, false);
+			highlightingStyles ["Comment2"] = new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255), true, false);
+			highlightingStyles ["Comment3"] = new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255), false, false);
+			highlightingStyles ["Comment4"] = new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255), false, true);
+			
+			highlightingStyles ["Keyword1"] = new Mono.TextEditor.ChunkStyle (new Gdk.Color (165, 42, 42), true, false);
+			highlightingStyles ["Keyword2"] = new Mono.TextEditor.ChunkStyle (new Gdk.Color (46, 139, 87), true, false);
+			highlightingStyles ["Keyword3"] = new Mono.TextEditor.ChunkStyle (new Gdk.Color (165, 42, 42), true, false);
+			highlightingStyles ["Keyword4"] = new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 200, 0), true, false);
+
+			highlightingStyles ["PreProcessorDirective1"] = new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 200, 0), false, false);
+			highlightingStyles ["PreProcessorDirective2"] = new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 200, 0), true, false);
 		}
-		static readonly string[] colorTable = new string[] { "Comment", 
-			                    "String",
-			                    "Punctuation",
-			                    "Keyword1",
-			                    "Keyword2",
-			                    "Keyword3",
-			                    "Keyword4",
-			                    "PreProcessorDirective" };
+		
+		static readonly string[] colorTable = new string[] { 
+			"Comment1", 
+			"Comment2",
+			"Comment3", 
+			"Comment4",
+			
+			"Digit",
+			"Literal",
+			"Punctuation",
+			
+            "Keyword1",
+            "Keyword2",
+            "Keyword3",
+            "Keyword4",
+			
+			"PreProcessorDirective1", 
+			"PreProcessorDirective2", 
+		};
 		
 		public static int ColorTableCount {
 			get {
@@ -207,6 +227,11 @@ namespace Mono.TextEditor.Highlighting
 			return colorTable[number];
 		}
 		
+		public static bool IsTableColor (string name)
+		{
+			return GetColorNumber (name) >= 0;
+		}
+		
 		public static int GetColorNumber (string name)
 		{
 			for (int i = 0; i < colorTable.Length; i++) {
@@ -216,29 +241,20 @@ namespace Mono.TextEditor.Highlighting
 			return -1;
 		}
 		
-		public Gdk.Color GetColor (string name)
+		public ChunkStyle GetColor (string name)
 		{
-			switch (name) {
-			case "Comment":
-				return comment;
-			case "String":
-				return str;
-			case "Punctuation":
-				return punctuation;
-			case "Keyword1":
-				return keyword1;
-			case "Keyword2":
-				return keyword2;
-			case "Keyword3":
-				return keyword3;
-			case "Keyword4":
-				return keyword4;
-			case "PreProcessorDirective":
-				return preprocessor;
-			}
-			return def;
+			return this.highlightingStyles [name];
 		}
-		
+		public void SetTableColor (string name, string weight, string value)
+		{
+			Gdk.Color color = new Color ();
+			if (!Gdk.Color.Parse (value, ref color)) {
+				throw new Exception ("Can't parse color: " + value);
+			}
+			highlightingStyles [name] = new Mono.TextEditor.ChunkStyle (color, 
+			                                                            weight == null ? false : weight.ToUpper ().IndexOf ("BOLD") > 0,
+			                                                            weight == null ? false : weight.ToUpper ().IndexOf ("ITALIC") > 0);
+		}
 		public void SetColor (string name, string value)
 		{
 			Gdk.Color color = new Color ();
@@ -297,31 +313,6 @@ namespace Mono.TextEditor.Highlighting
 			case "FoldToggleMarker":
 				this.foldToggleMarker = color;
 				break;
-				
-			case "Comment":
-				this.comment = color;
-				break;
-			case "String":
-				this.str = color;
-				break;
-			case "Punctuation":
-				this.punctuation = color;
-				break;
-			case "PreProcessor":
-				this.preprocessor = color;
-				break;
-			case "Keyword1":
-				this.keyword1 = color;
-				break;
-			case "Keyword2":
-				this.keyword2 = color;
-				break;
-			case "Keyword3":
-				this.keyword3 = color;
-				break;
-			case "Keyword4":
-				this.keyword4 = color;
-				break;
 			default:
 				throw new Exception ("color  " + name + " invalid.");
 			}
@@ -337,8 +328,15 @@ namespace Mono.TextEditor.Highlighting
 					result.description = reader.GetAttribute ("_description");
 					return true;
 				case "Color":
-					result.SetColor (reader.GetAttribute ("name"),
-					                 reader.ReadElementContentAsString ());
+					string name = reader.GetAttribute ("name"); 
+					if (IsTableColor (name)) {
+						result.SetTableColor (name,
+						                 reader.GetAttribute ("weight"),
+						                 reader.ReadElementContentAsString ());
+					} else {
+						result.SetColor (name,
+						                 reader.ReadElementContentAsString ());
+					}
 					return true;
 				}
 				return false;

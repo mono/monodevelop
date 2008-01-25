@@ -76,6 +76,13 @@ namespace Mono.TextEditor
 			this.color = color;
 			this.bold  = bold;
 		}
+		
+		public ChunkStyle (Gdk.Color color, bool bold, bool italic)
+		{
+			this.color = color;
+			this.bold  = bold;
+			this.italic  = italic;
+		}
 
 		public override string ToString ()
 		{

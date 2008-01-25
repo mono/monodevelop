@@ -45,10 +45,10 @@
 	<Color name="FoldLineHighlighted">#FFFFFF</Color>
 	<Color name="FoldToggleMarker">#97A0EF</Color>
 
-	<Color name="Comment">#BBBBBB</Color>
-	<Color name="String">#CC44CC</Color>
+	<Color name="Comment1">#BBBBBB</Color>
+	<Color name="Literal">#CC44CC</Color>
 	<Color name="Punctuation">#97A0EF</Color>
-	<Color name="PreProcessor">#00CC55</Color>
+	<Color name="PreProcessorDirective1">#00CC55</Color>
 	<Color name="Keyword1">#DD8855</Color>
 	<Color name="Keyword2">#664400</Color>
 	<Color name="Keyword3">#AAFF66</Color>

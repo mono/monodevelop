@@ -707,7 +707,7 @@ namespace Mono.TextEditor
 			rtf.Append (@"{\colortbl ;");
 			Dictionary<Gdk.Color, int> colorTable = new Dictionary<Gdk.Color,int> ();
 			for (int i = 0; i < Mono.TextEditor.Highlighting.Style.ColorTableCount; i++) {
-				Gdk.Color color = data.ColorStyle.GetColor (Mono.TextEditor.Highlighting.Style.GetColorName (i));
+				Gdk.Color color = data.ColorStyle.GetColor (Mono.TextEditor.Highlighting.Style.GetColorName (i)).Color;
 				rtf.Append (@"\red");
 				rtf.Append (color.Red);
 				rtf.Append (@"\green");

@@ -98,14 +98,12 @@ namespace Mono.TextEditor.Highlighting
 			
 			ChunkStyle GetChunkStyleColor (Stack<Span> spanStack, Keywords word)
 			{
-				ChunkStyle result = new ChunkStyle ();
+				ChunkStyle result ;
 				if (!String.IsNullOrEmpty (word.Color)) {
-					result.Color = style.GetColor (word.Color);
+					result = style.GetColor (word.Color);
 				} else {
-					result.Color = spanStack.Count > 0 ? style.GetColor (spanStack.Peek ().Color) : new Gdk.Color (0, 0, 0);
+					result = spanStack.Count > 0 ? style.GetColor (spanStack.Peek ().Color) : ChunkStyle.Default;
 				}
-				result.Bold   = (word.Weight & KeywordWeight.Bold)   == KeywordWeight.Bold; 
-				result.Italic = (word.Weight & KeywordWeight.Italic) == KeywordWeight.Italic; 
 				return result;
 			}
 			
@@ -113,7 +111,7 @@ namespace Mono.TextEditor.Highlighting
 			{
 				if (spanStack.Count == 0)
 					return ChunkStyle.Default;
-				return new ChunkStyle (style.GetColor (spanStack.Peek ().Color));
+				return style.GetColor (spanStack.Peek ().Color);
 			}
 			
 			void SetTree ()

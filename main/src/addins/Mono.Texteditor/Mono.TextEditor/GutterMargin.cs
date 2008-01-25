@@ -31,21 +31,30 @@ using Gdk;
 
 namespace Mono.TextEditor
 {
-	public class GutterMargin : AbstractMargin
+	public class GutterMargin : AbstractMargin, System.IDisposable
 	{
 		TextEditor editor;
 		Pango.Layout layout;
-		
+		int width;
 		public GutterMargin (TextEditor editor)
 		{
 			this.editor = editor;
 			layout = new Pango.Layout (editor.PangoContext);
+			TextEditorOptions.Changed += OptionsChanged;
+			OptionsChanged (this, EventArgs.Empty);
+		}
+		
+		protected virtual void OptionsChanged (object sender, EventArgs args)
+		{
 			layout.FontDescription = TextEditorOptions.Options.Font;
 		}
 		
 		public override int Width {
 			get {
-				return 5 + (int)(System.Math.Max (2, System.Math.Log10 (editor.Splitter.LineCount)) * 10);
+				layout.SetText (editor.Splitter.LineCount.ToString ());
+				int height;
+				layout.GetPixelSize (out width, out height);
+				return 5 + width;
 			}
 		}
 		
@@ -79,6 +88,11 @@ namespace Mono.TextEditor
 				gc.RgbFgColor = editor.Caret.Line == line ? editor.ColorStyle.LineNumberFgHighlighted : editor.ColorStyle.LineNumberFg;
 				win.DrawLayout (gc, x + 1, y, layout);
 			}
+		}
+
+		public void Dispose ()
+		{
+			TextEditorOptions.Changed -= OptionsChanged;
 		}
 	}
 }
