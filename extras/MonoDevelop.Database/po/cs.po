@@ -6,37 +6,36 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: monodevelop 0.9\n"
+"Project-Id-Version: MonoDevelop Database Addin\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2007-07-29 22:21+0100\n"
+"PO-Revision-Date: 2008-01-24 00:08+0100\n"
 "Last-Translator: David Makovský (Yakeen) <yakeen@sannyas-on.net>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Poedit-Language: Czech\n"
+"X-Poedit-Country: CZECH REPUBLIC\n"
 
 #: ../MonoDevelop.Database.Sql/ConnectionContextService.cs:112
 msgid "Unable to load stored SQL connection information."
-msgstr ""
+msgstr "Nepodařilo se načíst uložené informace o SQL spojení."
 
 #: ../MonoDevelop.Database.Sql/QueryService.cs:73
 msgid "Please enter the password for connection '{0}'"
-msgstr ""
+msgstr "Vložte heslo pro spojení '{0}'"
 
 #: ../MonoDevelop.Database.Sql/QueryService.cs:75
-#, fuzzy
 msgid "Enter Password"
-msgstr "Heslo"
+msgstr "Vložte heslo"
 
-#: ../MonoDevelop.Database.Query/MonoDevelop.Database.Query.addin.xml:30
-#, fuzzy
+#: ../MonoDevelop.Database.Query/MonoDevelop.Database.Query.addin.xml:31
 msgid "Query Database"
-msgstr "Databáze"
+msgstr "Dotázat databázi"
 
-#: ../MonoDevelop.Database.Query/MonoDevelop.Database.Query.addin.xml:36
-#, fuzzy
+#: ../MonoDevelop.Database.Query/MonoDevelop.Database.Query.addin.xml:37
 msgid "_Database"
 msgstr "Databáze"
 
@@ -45,7 +44,6 @@ msgid "Execute"
 msgstr "Spustit"
 
 #: ../MonoDevelop.Database.Query/SqlQueryView.cs:79
-#, fuzzy
 msgid "Clear Results"
 msgstr "Smazat výsledky"
 
@@ -54,9 +52,8 @@ msgid "Status"
 msgstr "Status"
 
 #: ../MonoDevelop.Database.Query/SqlQueryView.cs:169
-#, fuzzy
 msgid "Unable to connect to database '{0}'"
-msgstr "Nepodařilo se najít 'configure.in' v {0}"
+msgstr "Nepodařilo se spojit s databází '{0}'"
 
 #: ../MonoDevelop.Database.Query/SqlQueryView.cs:202
 msgid "Table"
@@ -64,228 +61,200 @@ msgstr "Tabulky"
 
 #: ../MonoDevelop.Database.Query/SqlQueryView.cs:203
 msgid "Affected Rows"
-msgstr ""
+msgstr "Ovlivněných řádků"
 
 #: ../MonoDevelop.Database.Query/SqlQueryView.cs:216
-#, fuzzy
 msgid "No Results"
-msgstr "Výsledek"
+msgstr "Žádné výsledky"
 
 #: ../MonoDevelop.Database.Query/SqlQueryView.cs:234
-#, fuzzy
 msgid "Executing query"
-msgstr "Spouštím SQL dotaz na"
+msgstr "Provádím dotaz"
 
 #: ../MonoDevelop.Database.Query/SqlQueryView.cs:248
-#, fuzzy
 msgid "Query execute cancelled"
-msgstr "Zrušeno spuštění testu."
+msgstr "Provádění dotazu zrušeno"
 
 #: ../MonoDevelop.Database.Query/SqlQueryView.cs:185
-msgid "Query executed ({0} result tables)"
-msgstr ""
+msgid "Query executed ({0} result table)"
+msgid_plural "Query executed ({0} result tables)"
+msgstr[0] "Dotaz proveden ({0} výsledek tabulky)"
+msgstr[1] "Dotaz proveden ({0} výsledky tabulky)"
+msgstr[2] "Dotaz proveden ({0} výsledků tabulek)"
 
 #: ../MonoDevelop.Database.Sql.Sqlite/SqliteGuiProvider.cs:41
-#, fuzzy
 msgid "Save Database"
-msgstr "Databáze"
+msgstr "Uložit databázi"
 
 #: ../MonoDevelop.Database.Sql.Sqlite/SqliteGuiProvider.cs:47
-#, fuzzy
 msgid "Open Database"
-msgstr "Databáze"
+msgstr "Otevřít databázi"
 
 #: ../MonoDevelop.Database.Sql.Sqlite/SqliteGuiProvider.cs:60
 msgid "SQLite databases"
-msgstr ""
+msgstr "SQLite databáze"
 
 #: ../MonoDevelop.Database.Sql.Sqlite/SqliteGuiProvider.cs:63
 #: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:110
-#, fuzzy
 msgid "All files"
 msgstr "Všechny soubory"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:26
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:27
 msgid "Database Browser"
 msgstr "Prohlížeč databáze"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:27
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:28
 msgid "Show System Objects"
 msgstr "Zobrazovat systémové objekty"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:165
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:166
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:299
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.CreateDatabaseDialog.cs:135
 msgid "Database"
 msgstr "Databáze"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:168
-#, fuzzy
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:169
 msgid "Add Connection"
 msgstr "Přidat spojení"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:171
-#, fuzzy
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:172
 msgid "Edit Connection"
-msgstr "Přidat spojení"
+msgstr "Upravit spojení"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:174
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:175
 msgid "Remove"
 msgstr "Odstranit"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:177
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:178
 msgid "Refresh"
 msgstr "Obnovit"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:180
-#, fuzzy
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:181
 msgid "Connect"
-msgstr "Odpojit"
+msgstr "Připojit"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:183
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:184
 msgid "Disconnect"
 msgstr "Odpojit"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:186
-#, fuzzy
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:187
 msgid "Select *"
-msgstr "Vybrat soubor"
+msgstr "Vybrat *"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:189
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:190
 msgid "Select x,y,..."
-msgstr ""
+msgstr "Vybrat x,y,..."
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:192
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:193
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:255
-#, fuzzy
 msgid "Empty Table"
 msgstr "Prázdná tabulka"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:195
-#, fuzzy
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:196
 msgid "Query"
-msgstr "Mono Query"
+msgstr "Dotaz"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:198
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:199
 msgid "Re_name"
 msgstr "Přejme_novat"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:206
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:207
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.CreateDatabaseDialog.cs:41
-#, fuzzy
 msgid "Create Database"
-msgstr "Databáze"
+msgstr "Vytvořit databázi"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:209
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:210
 #: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:74
-#, fuzzy
 msgid "Create Table"
-msgstr "Vytvořit balík"
+msgstr "Vytvořit tabulku"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:212
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:213
 #: ../MonoDevelop.Database.Designer/Dialogs/ViewEditorDialog.cs:64
-#, fuzzy
 msgid "Create View"
-msgstr "Vytvořit"
+msgstr "Vytvořit pohled"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:215
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:216
 #: ../MonoDevelop.Database.Designer/Dialogs/ProcedureEditorDialog.cs:64
-#, fuzzy
 msgid "Create Procedure"
-msgstr "Procedura"
+msgstr "Vytvořit proceduru"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:218
-#, fuzzy
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:219
 msgid "Create Constraint"
-msgstr "Omezení"
+msgstr "Vytvořit omezení"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:221
-#, fuzzy
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:222
 msgid "Create Trigger"
-msgstr "Vytvořit balík"
+msgstr "Vytvořit událost"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:224
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:225
 #: ../MonoDevelop.Database.Designer/Dialogs/UserEditorDialog.cs:62
-#, fuzzy
 msgid "Create User"
-msgstr "Vytvořit"
+msgstr "Vytvořit uživatele"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:228
-#, fuzzy
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:229
 msgid "Alter Database"
-msgstr "Databáze"
+msgstr "Modifikovat databázi"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:231
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:232
 #: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:76
-#, fuzzy
 msgid "Alter Table"
-msgstr "Po vyčištění"
+msgstr "Modifikovat tabulku"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:234
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:235
 #: ../MonoDevelop.Database.Designer/Dialogs/ViewEditorDialog.cs:66
 msgid "Alter View"
-msgstr ""
+msgstr "Modifikovat pohled"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:237
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:238
 #: ../MonoDevelop.Database.Designer/Dialogs/ProcedureEditorDialog.cs:66
-#, fuzzy
 msgid "Alter Procedure"
-msgstr "Procedura"
+msgstr "Modifikovat proceduru"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:240
-#, fuzzy
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:241
 msgid "Alter Constraint"
-msgstr "Omezení"
+msgstr "Modifikovat omezení"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:243
-#, fuzzy
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:244
 msgid "Alter Trigger"
-msgstr "Trigry"
+msgstr "Modifikovat událost"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:246
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:247
 #: ../MonoDevelop.Database.Designer/Dialogs/UserEditorDialog.cs:64
 msgid "Alter User"
-msgstr ""
+msgstr "Modifikovat uživatele"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:250
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:251
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:247
-#, fuzzy
 msgid "Drop Database"
-msgstr "Odstranit tabulku"
+msgstr "Smazat databázi"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:253
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:254
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:281
-#, fuzzy
 msgid "Drop Table"
-msgstr "Odstranit tabulku"
+msgstr "Smazat tabulku"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:256
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:257
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ViewNodeBuilder.cs:191
-#, fuzzy
 msgid "Drop View"
-msgstr "Odstranit tabulku"
+msgstr "Smazat pohled"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:259
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:260
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ProcedureNodeBuilder.cs:190
-#, fuzzy
 msgid "Drop Procedure"
-msgstr "Procedura"
+msgstr "Smazat proceduru"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:262
-#, fuzzy
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:263
 msgid "Drop Trigger"
-msgstr "Trigry"
+msgstr "Smazat událost"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:265
-#, fuzzy
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:266
 msgid "Drop Constraint"
-msgstr "Omezení"
+msgstr "Smazat omezení"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:268
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:269
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/UserNodeBuilder.cs:170
-#, fuzzy
 msgid "Drop User"
-msgstr "Odstranit tabulku"
+msgstr "Smazat uživatele"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextCollectionNodeBuilder.cs:66
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextCollectionNodeBuilder.cs:71
@@ -294,21 +263,19 @@ msgstr "Databázová spojení"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:87
 msgid "Unable to connect:"
-msgstr ""
+msgstr "Nepodařilo se připojit:"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:167
-#, fuzzy
 msgid "Are you sure you want to remove connection '{0}'?"
-msgstr "Opravdu chcete smazat '{0}'?"
+msgstr "Opravdu chcete smazat spojení '{0}'?"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:168
 msgid "Remove Connection"
 msgstr "Odebrat spojení"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:246
-#, fuzzy
 msgid "Are you sure you want to drop database '{0}'"
-msgstr "Opravdu chcete smazat '{0}'?"
+msgstr "Opravdu chcete smazat databázi '{0}'?"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TablesNodeBuilder.cs:66
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TablesNodeBuilder.cs:71
@@ -337,33 +304,28 @@ msgid "Constraints"
 msgstr "Omezení"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:254
-#, fuzzy
 msgid "Are you sure you want to empty table '{0}'"
-msgstr "Opravdu chcete smazat '{0}'?"
+msgstr "Opravdu chcete vyprázdnit tabulku '{0}'?"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:271
 msgid "Table emptied"
 msgstr "Tabulka byla vyprázdněna"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:280
-#, fuzzy
 msgid "Are you sure you want to drop table '{0}'"
-msgstr "Opravdu chcete smazat '{0}'?"
+msgstr "Opravdu chcete smazat tabulku '{0}'?"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/UserNodeBuilder.cs:169
-#, fuzzy
 msgid "Are you sure you want to drop user '{0}'"
-msgstr "Opravdu chcete smazat '{0}'?"
+msgstr "Opravdu chcete smazat uživatele '{0}'?"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ProcedureNodeBuilder.cs:189
-#, fuzzy
 msgid "Are you sure you want to drop procedure '{0}'"
-msgstr "Opravdu chcete smazat '{0}'?"
+msgstr "Opravdu chcete smazat proceduru '{0}'?"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ViewNodeBuilder.cs:190
-#, fuzzy
 msgid "Are you sure you want to drop view '{0}'"
-msgstr "Opravdu chcete smazat '{0}'?"
+msgstr "Opravdu chcete smazat pohled '{0}'?"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ColumnNodeBuilder.cs:56
 #: ../MonoDevelop.Database.Components/Widgets/SelectColumnWidget.cs:69
@@ -438,19 +400,16 @@ msgid "Parameter"
 msgstr "Parametr"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.SelectColumnDialog.cs:31
-#, fuzzy
 msgid "Select Column"
-msgstr "Vybrat složku"
+msgstr "Vybrat sloupec"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.SelectColumnDialog.cs:55
-#, fuzzy
 msgid "Select All"
-msgstr "Vybrat _vše"
+msgstr "Označit vše"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.SelectColumnDialog.cs:65
-#, fuzzy
 msgid "Deselect All"
-msgstr "Smazat vše"
+msgstr "Odznačit vše"
 
 #: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:46
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:244
@@ -476,51 +435,45 @@ msgid "Type"
 msgstr "Typ"
 
 #: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:61
-#, fuzzy
 msgid "Property Name"
-msgstr "Název vlastnosti:"
+msgstr "Název vlastnosti"
 
 #: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:68
-#, fuzzy
 msgid "Property Type"
-msgstr "Vlastnosti"
+msgstr "Typ vlastnosti"
 
 #: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:73
 #: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:87
-#, fuzzy
 msgid "Nullable"
-msgstr "Tabulky"
+msgstr "Nullable"
 
 #: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:78
-#, fuzzy
 msgid "Create Setter"
-msgstr "Vytvořit novou složku"
+msgstr "Vytvořit setter"
 
 #: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:85
-#, fuzzy
 msgid "Ctor Parameter"
-msgstr "Parametr"
+msgstr "Parametr konstruktoru"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DataGrid.cs:106
 msgid "of"
-msgstr ""
+msgstr "z"
 
 #: ../MonoDevelop.Database.Components/Widgets/DataGrid/Renderers/BooleanContentRenderer.cs:43
 msgid "Y"
-msgstr ""
+msgstr "A"
 
 #: ../MonoDevelop.Database.Components/Widgets/DataGrid/Renderers/BooleanContentRenderer.cs:43
 msgid "N"
-msgstr ""
+msgstr "N"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ShowImageDialog.cs:31
-#, fuzzy
 msgid "Image"
-msgstr "Strana"
+msgstr "Obrázek"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ShowImageDialog.cs:75
 msgid "Unable to load object as Image"
-msgstr ""
+msgstr "Nezdařilo se načíst objekt jako obrázek"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ShowTextDialog.cs:23
 msgid "Text"
@@ -531,40 +484,34 @@ msgid "button462"
 msgstr ""
 
 #: ../MonoDevelop.Database.Components/Dialogs/DatabaseConnectionSettingsDialog.cs:64
-#, fuzzy
 msgid "Edit Database Connection"
-msgstr "Databázová spojení"
+msgstr "Upravit databázové spojení"
 
 #: ../MonoDevelop.Database.Components/Dialogs/DatabaseConnectionSettingsDialog.cs:66
-#, fuzzy
 msgid "Add Database Connection"
-msgstr "Databázová spojení"
+msgstr "Přidat databázové spojení"
 
 #: ../MonoDevelop.Database.Components/Dialogs/DatabaseConnectionSettingsDialog.cs:121
 #: ../MonoDevelop.Database.Components/Dialogs/DatabaseConnectionSettingsDialog.cs:229
 #: ../MonoDevelop.Database.Components/Dialogs/DatabaseConnectionSettingsDialog.cs:289
-#, fuzzy
 msgid "No databases found!"
-msgstr "Neúspěšné testy nenalezeny."
+msgstr "Žádné databáze nebyly nenalezeny!"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:215
-#, fuzzy
 msgid "Save Password"
-msgstr "Heslo"
+msgstr "Uložit heslo"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:255
 msgid "Server"
 msgstr "Server"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:266
-#, fuzzy
 msgid "Port"
-msgstr "Port:"
+msgstr "Port"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:277
-#, fuzzy
 msgid "Username"
-msgstr "Přejmenovat"
+msgstr "Uživatel"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:288
 msgid "Password"
@@ -575,9 +522,8 @@ msgid "General"
 msgstr "Základní"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:341
-#, fuzzy
 msgid "Use custom connection string"
-msgstr "Řetězec spojení k databázi"
+msgstr "Použít vlastní řetězec spojení k databázi"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:354
 msgid "Min Pool Size"
@@ -588,255 +534,223 @@ msgid "Max Pool Size"
 msgstr ""
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:426
-#, fuzzy
 msgid "Advanced"
 msgstr "Pokročilé"
 
 #: ../MonoDevelop.Database.Components/Dialogs/WaitDialog.cs:57
 msgid "Please Wait"
-msgstr ""
+msgstr "Počkejte chvíli"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.WaitDialog.cs:29
-#, fuzzy
 msgid "WaitDialog"
-msgstr "Dialog"
+msgstr ""
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.WaitDialog.cs:63
 msgid "Please wait"
-msgstr ""
+msgstr "Počkejte chvíli"
 
 #: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:97
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:45
-#, fuzzy
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:46
 msgid "Import From File"
-msgstr "Prázdný soubor"
+msgstr "Importovat ze souboru"
 
 #: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:107
 #: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:139
-#, fuzzy
 msgid "SQL files"
-msgstr "Přidat soubory"
+msgstr "SQL soubory"
 
 #: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:128
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:48
-#, fuzzy
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:49
 msgid "Export To File"
-msgstr "Prázdný HTML soubor"
+msgstr "Exportovat do souboru"
 
 #: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:145
-#, fuzzy
 msgid "Are you sure you want to overwrite the file '{0}'?"
-msgstr "Opravdu chcete smazat widget '{0}'?"
+msgstr "Opravdu chcete přepsat soubor '{0}'?"
 
 #: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:146
 msgid "Overwrite?"
-msgstr ""
+msgstr "Přepsat?"
 
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:36
-#, fuzzy
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:37
 msgid "Display content as text"
-msgstr "Zobrazit seznam možností"
+msgstr "Zobrazit obsah jako text"
 
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:38
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:39
 msgid "Display content as xml text"
-msgstr ""
+msgstr "Zobrazit obsah jako xml text"
 
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:40
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:41
 msgid "Display content as xml tree"
-msgstr ""
+msgstr "Zobrazit obsah jako xml strom"
 
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:42
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:43
 msgid "Display content as image"
-msgstr ""
+msgstr "Zobrazit obsah jako obrázek "
 
 #: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:95
-#, fuzzy
 msgid "Event"
-msgstr "Události"
+msgstr "Událost"
 
 #: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:96
 msgid "Each Row"
-msgstr ""
+msgstr "Všechny řádky"
 
 #: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:97
-#, fuzzy
 msgid "Position"
-msgstr "Popis"
+msgstr "Pozice"
 
 #: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:98
-#, fuzzy
 msgid "Active"
-msgstr "(Aktivní)"
+msgstr "Aktivní"
 
 #: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:99
 #: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:88
 #: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:105
 #: ../MonoDevelop.Database.Designer/Dialogs/ViewEditorDialog.cs:77
 #: ../MonoDevelop.Database.Designer/Dialogs/ProcedureEditorDialog.cs:77
-#, fuzzy
 msgid "Comment"
-msgstr "Komentáře"
+msgstr "Komentář"
 
 #: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:185
-#, fuzzy
 msgid "Are you sure you want to remove trigger '{0}'?"
-msgstr "Opravdu chcete smazat '{0}'?"
+msgstr "Opravdu chcete odebrat událost '{0}'?"
 
 #: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:186
-#, fuzzy
 msgid "Remove Trigger"
-msgstr "Trigry"
+msgstr "Odebrat událost"
 
 #: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:341
 msgid "Trigger '{0}' does not contain a trigger statement."
-msgstr ""
+msgstr "Událost '{0}' neobsahuje výraz události."
 
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.TriggersEditorWidget.cs:123
 msgid "Statement"
-msgstr ""
+msgstr "Výrok"
 
 #: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:83
 msgid "PK"
-msgstr ""
+msgstr "PK"
 
 #: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:86
 msgid "Length"
-msgstr ""
+msgstr "Délka"
 
 #: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:220
-#, fuzzy
 msgid "Are you sure you want to remove column '{0}'"
-msgstr "Opravdu chcete smazat '{0}'?"
+msgstr "Opravdu chcete odebrat sloupec '{0}'?"
 
 #: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:221
-#, fuzzy
 msgid "Remove Column"
-msgstr "Smazat skupinu"
+msgstr "Odebrat sloupec"
 
 #: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:384
 msgid "Unknown data type '{0}' applied to column '{1}'."
-msgstr ""
+msgstr "Neznámý datový typ '{0}' aplikovaný na sloupec '{1}'."
 
 #: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:396
 msgid "Table '{0}' must contain at least one primary key."
-msgstr ""
+msgstr "Tabulka '{0}' musí obsahovat alespoň jeden primární klíč."
 
 #: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:403
 msgid "Table '{0}' must contain at least 1 column."
-msgstr ""
+msgstr "Tabulka '{0}' musí obsahovat alespoň jeden sloupec."
 
 #: ../MonoDevelop.Database.Designer/Widgets/ConstraintsEditorWidget.cs:84
 msgid "Primary Key"
-msgstr ""
+msgstr "Primární klíč"
 
 #: ../MonoDevelop.Database.Designer/Widgets/ConstraintsEditorWidget.cs:91
 msgid "Foreign Key"
-msgstr ""
+msgstr "Cizí klíč"
 
 #: ../MonoDevelop.Database.Designer/Widgets/ConstraintsEditorWidget.cs:98
-#, fuzzy
 msgid "Check"
-msgstr "Získat (Checkout)..."
+msgstr "Zkontrolovat"
 
 #: ../MonoDevelop.Database.Designer/Widgets/ConstraintsEditorWidget.cs:105
-#, fuzzy
 msgid "Unique"
-msgstr "Unicode"
+msgstr "Unikátní"
 
 #: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:227
-#, fuzzy
 msgid "No name specified."
-msgstr "Neplatný název assembly"
+msgstr "Jméno nespecifikováno."
 
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.TableEditorDialog.cs:39
-#, fuzzy
 msgid "Edit Table"
-msgstr "Prázdná tabulka"
+msgstr "Upravit tabulku"
 
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.TableEditorDialog.cs:112
 msgid "Preview SQL"
-msgstr ""
+msgstr "SQL náhled"
 
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.CreateDatabaseDialog.cs:146
-#, fuzzy
 msgid "Base Settings"
-msgstr "Nastavení balíku"
+msgstr "Základní nastavení"
 
 #: ../MonoDevelop.Database.Designer/Dialogs/ViewEditorDialog.cs:72
 #: ../MonoDevelop.Database.Designer/Dialogs/ProcedureEditorDialog.cs:72
-#, fuzzy
 msgid "Definition"
-msgstr "SQL definice"
+msgstr "Definice"
 
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.PreviewDialog.cs:27
-#, fuzzy
 msgid "Preview"
-msgstr "Poskytovatel"
+msgstr "Náhled"
 
 #: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:114
-#, fuzzy
 msgid "Reference Table"
-msgstr "Reference:"
+msgstr "Referenční tabulka"
 
 #: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:115
 #: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:88
 #: ../MonoDevelop.Database.Designer/Widgets/UniqueConstraintEditorWidget.cs:83
-#, fuzzy
 msgid "Column Constraint"
-msgstr "Omezení"
+msgstr "Sloupec omezení"
 
 #: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:116
-#, fuzzy
 msgid "Delete Action"
-msgstr "Smazat výběr"
+msgstr "Smazat akci"
 
 #: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:117
-#, fuzzy
 msgid "Update Action"
-msgstr "Vrátit poslední akci zpět"
+msgstr "Aktualizovat akci"
 
 #: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:191
 #: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:153
 #: ../MonoDevelop.Database.Designer/Widgets/PrimaryKeyConstraintEditorWidget.cs:169
 #: ../MonoDevelop.Database.Designer/Widgets/UniqueConstraintEditorWidget.cs:188
-#, fuzzy
 msgid "Are you sure you want to remove constraint '{0}'?"
-msgstr "Opravdu chcete smazat '{0}'?"
+msgstr "Opravdu chcete odebrat omezení '{0}'?"
 
 #: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:192
 #: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:154
 #: ../MonoDevelop.Database.Designer/Widgets/PrimaryKeyConstraintEditorWidget.cs:170
 #: ../MonoDevelop.Database.Designer/Widgets/UniqueConstraintEditorWidget.cs:189
-#, fuzzy
 msgid "Remove Constraint"
-msgstr "Odebrat spojení"
+msgstr "Odebrat omezení"
 
 #: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:346
 #: ../MonoDevelop.Database.Designer/Widgets/UniqueConstraintEditorWidget.cs:228
 msgid "Unique Key constraint '{0}' must be applied to one or more columns."
-msgstr ""
+msgstr "Omezení unikátního klíče '{0}' musí být aplikováno na jeden či více sloupců. "
 
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.ForeignKeyConstraintEditorWidget.cs:168
-#, fuzzy
 msgid "Reference Columns"
-msgstr "Reference"
+msgstr "Sloupce reference"
 
 #: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:250
 msgid "Checked constraint '{0}' does not contain a check statement."
-msgstr ""
+msgstr "Omezení kontroly '{0}' neobsahuje výrok kontroly."
 
 #: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:255
-msgid ""
-"Checked constraint '{0}' is marked as a column constraint but is not applied "
-"to a column."
-msgstr ""
+msgid "Checked constraint '{0}' is marked as a column constraint but is not applied to a column."
+msgstr "Omezení kontroly '{0}' je označeno jako omezení sloupce, ale není aplikováno na žádný sloupec."
 
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.CheckConstraintEditorWidget.cs:122
-#, fuzzy
 msgid "Check Condition"
-msgstr "Nová konfigurace"
+msgstr "Zkontrolovat stav"
 
 #: ../MonoDevelop.Database.Designer/Widgets/PrimaryKeyConstraintEditorWidget.cs:193
 msgid "Primary Key constraint '{0}' must be applied to one or more columns."
-msgstr ""
+msgstr "Omezení primárního klíče '{0}' musí být aplikováno na jeden či více sloupců. "
 

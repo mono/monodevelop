@@ -29,12 +29,12 @@ msgstr ""
 msgid "Enter Password"
 msgstr "Lösenord"
 
-#: ../MonoDevelop.Database.Query/MonoDevelop.Database.Query.addin.xml:30
+#: ../MonoDevelop.Database.Query/MonoDevelop.Database.Query.addin.xml:31
 #, fuzzy
 msgid "Query Database"
 msgstr "Databas"
 
-#: ../MonoDevelop.Database.Query/MonoDevelop.Database.Query.addin.xml:36
+#: ../MonoDevelop.Database.Query/MonoDevelop.Database.Query.addin.xml:37
 #, fuzzy
 msgid "_Database"
 msgstr "Databas"
@@ -82,8 +82,10 @@ msgstr "Sökning avbröts."
 
 #: ../MonoDevelop.Database.Query/SqlQueryView.cs:185
 #, fuzzy
-msgid "Query executed ({0} result tables)"
-msgstr "Sökning avbröts."
+msgid "Query executed ({0} result table)"
+msgid_plural "Query executed ({0} result tables)"
+msgstr[0] "Sökning avbröts."
+msgstr[1] "Sökning avbröts."
 
 #: ../MonoDevelop.Database.Sql.Sqlite/SqliteGuiProvider.cs:41
 #, fuzzy
@@ -106,185 +108,185 @@ msgstr "Databas"
 msgid "All files"
 msgstr "Alla filer"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:26
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:27
 msgid "Database Browser"
 msgstr "Databasbläddare"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:27
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:28
 msgid "Show System Objects"
 msgstr "Visa systemobjekt"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:165
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:166
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:299
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.CreateDatabaseDialog.cs:135
 msgid "Database"
 msgstr "Databas"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:168
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:169
 #, fuzzy
 msgid "Add Connection"
 msgstr "Lägg till anslutning"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:171
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:172
 #, fuzzy
 msgid "Edit Connection"
 msgstr "Lägg till anslutning"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:174
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:175
 msgid "Remove"
 msgstr "Ta bort"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:177
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:178
 msgid "Refresh"
 msgstr "Uppdatera"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:180
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:181
 #, fuzzy
 msgid "Connect"
 msgstr "Koppla från"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:183
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:184
 msgid "Disconnect"
 msgstr "Koppla från"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:186
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:187
 #, fuzzy
 msgid "Select *"
 msgstr "Markera _allt"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:189
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:190
 #, fuzzy
 msgid "Select x,y,..."
 msgstr "Välj mall:"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:192
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:193
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:255
 #, fuzzy
 msgid "Empty Table"
 msgstr "Töm tabell"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:195
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:196
 msgid "Query"
 msgstr ""
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:198
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:199
 msgid "Re_name"
 msgstr "By_t namn"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:206
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:207
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.CreateDatabaseDialog.cs:41
 #, fuzzy
 msgid "Create Database"
 msgstr "Databas"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:209
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:210
 #: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:74
 #, fuzzy
 msgid "Create Table"
 msgstr "Skapa paket"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:212
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:213
 #: ../MonoDevelop.Database.Designer/Dialogs/ViewEditorDialog.cs:64
 #, fuzzy
 msgid "Create View"
 msgstr "Skapa"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:215
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:216
 #: ../MonoDevelop.Database.Designer/Dialogs/ProcedureEditorDialog.cs:64
 #, fuzzy
 msgid "Create Procedure"
 msgstr "Skapa paket"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:218
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:219
 #, fuzzy
 msgid "Create Constraint"
 msgstr "Skapa i lösning:"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:221
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:222
 #, fuzzy
 msgid "Create Trigger"
 msgstr "Skapa paket"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:224
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:225
 #: ../MonoDevelop.Database.Designer/Dialogs/UserEditorDialog.cs:62
 #, fuzzy
 msgid "Create User"
 msgstr "Skapa"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:228
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:229
 #, fuzzy
 msgid "Alter Database"
 msgstr "Databas"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:231
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:232
 #: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:76
 #, fuzzy
 msgid "Alter Table"
 msgstr "Tabell"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:234
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:235
 #: ../MonoDevelop.Database.Designer/Dialogs/ViewEditorDialog.cs:66
 #, fuzzy
 msgid "Alter View"
 msgstr "Utlösare"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:237
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:238
 #: ../MonoDevelop.Database.Designer/Dialogs/ProcedureEditorDialog.cs:66
 #, fuzzy
 msgid "Alter Procedure"
 msgstr "Skapa paket"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:240
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:241
 #, fuzzy
 msgid "Alter Constraint"
 msgstr "Aktiv konfiguration"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:243
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:244
 #, fuzzy
 msgid "Alter Trigger"
 msgstr "Utlösare"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:246
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:247
 #: ../MonoDevelop.Database.Designer/Dialogs/UserEditorDialog.cs:64
 #, fuzzy
 msgid "Alter User"
 msgstr "Utlösare"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:250
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:251
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:247
 #, fuzzy
 msgid "Drop Database"
 msgstr "Ta bort tabell"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:253
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:254
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:281
 #, fuzzy
 msgid "Drop Table"
 msgstr "Ta bort tabell"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:256
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:257
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ViewNodeBuilder.cs:191
 #, fuzzy
 msgid "Drop View"
 msgstr "Ta bort tabell"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:259
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:260
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ProcedureNodeBuilder.cs:190
 #, fuzzy
 msgid "Drop Procedure"
 msgstr "Procedur"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:262
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:263
 #, fuzzy
 msgid "Drop Trigger"
 msgstr "Utlösare"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:265
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:266
 #, fuzzy
 msgid "Drop Constraint"
 msgstr "Aktiv konfiguration"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:268
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:269
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/UserNodeBuilder.cs:170
 #, fuzzy
 msgid "Drop User"
@@ -611,7 +613,7 @@ msgid "Please wait"
 msgstr "Var god vänta"
 
 #: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:97
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:45
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:46
 #, fuzzy
 msgid "Import From File"
 msgstr "Tom fil"
@@ -623,7 +625,7 @@ msgid "SQL files"
 msgstr "Lägg till filer"
 
 #: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:128
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:48
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:49
 #, fuzzy
 msgid "Export To File"
 msgstr "Tom HTML-fil"
@@ -637,19 +639,19 @@ msgstr "Är du säker på att du vill ta bort widgeten \"{0}\"?"
 msgid "Overwrite?"
 msgstr "Skriv över?"
 
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:36
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:37
 msgid "Display content as text"
 msgstr ""
 
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:38
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:39
 msgid "Display content as xml text"
 msgstr ""
 
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:40
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:41
 msgid "Display content as xml tree"
 msgstr ""
 
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:42
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:43
 msgid "Display content as image"
 msgstr ""
 

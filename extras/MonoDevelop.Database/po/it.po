@@ -43,11 +43,11 @@ msgstr "Inserire la password per la connessione «{0}»"
 msgid "Enter Password"
 msgstr "Inserire password"
 
-#: ../MonoDevelop.Database.Query/MonoDevelop.Database.Query.addin.xml:30
+#: ../MonoDevelop.Database.Query/MonoDevelop.Database.Query.addin.xml:31
 msgid "Query Database"
 msgstr "Query database"
 
-#: ../MonoDevelop.Database.Query/MonoDevelop.Database.Query.addin.xml:36
+#: ../MonoDevelop.Database.Query/MonoDevelop.Database.Query.addin.xml:37
 msgid "_Database"
 msgstr "_Database"
 
@@ -89,8 +89,10 @@ msgstr "Esecuzione query annullata."
 
 #: ../MonoDevelop.Database.Query/SqlQueryView.cs:185
 #, fuzzy
-msgid "Query executed ({0} result tables)"
-msgstr "Query eseguita ({0} tabella risultante)"
+msgid "Query executed ({0} result table)"
+msgid_plural "Query executed ({0} result tables)"
+msgstr[0] "Query eseguita ({0} tabella risultante)"
+msgstr[1] "Query eseguita ({0} tabella risultante)"
 
 #: ../MonoDevelop.Database.Sql.Sqlite/SqliteGuiProvider.cs:41
 msgid "Save Database"
@@ -111,159 +113,159 @@ msgstr "Tutti i file"
 
 # (NdT) questa scritta appare in due posti, assieme alle schede File, Classi...
 # e come titolo del riquadro. È lasciata corta per non occupare troppo spazio
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:26
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:27
 msgid "Database Browser"
 msgstr "Database"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:27
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:28
 msgid "Show System Objects"
 msgstr "Mostra oggetti di sistema"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:165
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:166
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:299
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.CreateDatabaseDialog.cs:135
 msgid "Database"
 msgstr "Database"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:168
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:169
 msgid "Add Connection"
 msgstr "Aggiungi connessione"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:171
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:172
 msgid "Edit Connection"
 msgstr "Modifica connessione"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:174
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:175
 msgid "Remove"
 msgstr "Rimuovi"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:177
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:178
 msgid "Refresh"
 msgstr "Aggiorna"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:180
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:181
 msgid "Connect"
 msgstr "Connetti"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:183
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:184
 msgid "Disconnect"
 msgstr "Disconnetti"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:186
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:187
 msgid "Select *"
 msgstr "Select *"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:189
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:190
 msgid "Select x,y,..."
 msgstr "Select x,y, ..."
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:192
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:193
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:255
 msgid "Empty Table"
 msgstr "Tabella vuota"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:195
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:196
 msgid "Query"
 msgstr "Query"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:198
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:199
 msgid "Re_name"
 msgstr "Ri_nomina"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:206
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:207
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.CreateDatabaseDialog.cs:41
 msgid "Create Database"
 msgstr "Crea database"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:209
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:210
 #: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:74
 msgid "Create Table"
 msgstr "Crea tabella"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:212
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:213
 #: ../MonoDevelop.Database.Designer/Dialogs/ViewEditorDialog.cs:64
 msgid "Create View"
 msgstr "Crea vista"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:215
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:216
 #: ../MonoDevelop.Database.Designer/Dialogs/ProcedureEditorDialog.cs:64
 msgid "Create Procedure"
 msgstr "Crea procedura"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:218
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:219
 msgid "Create Constraint"
 msgstr "Crea vincolo"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:221
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:222
 msgid "Create Trigger"
 msgstr "Crea trigger"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:224
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:225
 #: ../MonoDevelop.Database.Designer/Dialogs/UserEditorDialog.cs:62
 msgid "Create User"
 msgstr "Crea utente"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:228
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:229
 msgid "Alter Database"
 msgstr "Alter Database"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:231
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:232
 #: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:76
 msgid "Alter Table"
 msgstr "Alter Table"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:234
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:235
 #: ../MonoDevelop.Database.Designer/Dialogs/ViewEditorDialog.cs:66
 msgid "Alter View"
 msgstr "Alter View"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:237
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:238
 #: ../MonoDevelop.Database.Designer/Dialogs/ProcedureEditorDialog.cs:66
 msgid "Alter Procedure"
 msgstr "Alter Procedure"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:240
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:241
 msgid "Alter Constraint"
 msgstr "Alter Constraint"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:243
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:244
 msgid "Alter Trigger"
 msgstr "Alter Trigger"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:246
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:247
 #: ../MonoDevelop.Database.Designer/Dialogs/UserEditorDialog.cs:64
 msgid "Alter User"
 msgstr "Alter User"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:250
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:251
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:247
 msgid "Drop Database"
 msgstr "Drop Database"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:253
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:254
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:281
 msgid "Drop Table"
 msgstr "Drop Table"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:256
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:257
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ViewNodeBuilder.cs:191
 msgid "Drop View"
 msgstr "Drop View"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:259
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:260
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ProcedureNodeBuilder.cs:190
 msgid "Drop Procedure"
 msgstr "Drop Procedure"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:262
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:263
 msgid "Drop Trigger"
 msgstr "Drop Trigger"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:265
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:266
 msgid "Drop Constraint"
 msgstr "Drop Constraint"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:268
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:269
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/UserNodeBuilder.cs:170
 msgid "Drop User"
 msgstr "Drop User"
@@ -565,7 +567,7 @@ msgid "Please wait"
 msgstr "Attendere"
 
 #: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:97
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:45
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:46
 msgid "Import From File"
 msgstr "Importa da file"
 
@@ -575,7 +577,7 @@ msgid "SQL files"
 msgstr "File SQL"
 
 #: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:128
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:48
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:49
 msgid "Export To File"
 msgstr "Esporta su file"
 
@@ -587,19 +589,19 @@ msgstr "Sovrascrivere veramente il file «{0}»?"
 msgid "Overwrite?"
 msgstr "Sovrascrivere?"
 
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:36
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:37
 msgid "Display content as text"
 msgstr "Visualizzare il contenuto come testo"
 
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:38
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:39
 msgid "Display content as xml text"
 msgstr "Visualizzare il contenuto come testo xml"
 
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:40
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:41
 msgid "Display content as xml tree"
 msgstr "Visualizzare il contenuto come un albero xml"
 
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:42
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:43
 msgid "Display content as image"
 msgstr "Visualizzare il contenuto come immagine"
 

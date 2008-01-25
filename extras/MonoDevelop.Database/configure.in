@@ -1,9 +1,9 @@
-AC_INIT([monodevelop-database], 0.18, [monodevelop-list@lists.ximian.com])
+AC_INIT([monodevelop-database], 0.19, [monodevelop-list@lists.ximian.com])
 AC_PREREQ(2.53)
 AM_INIT_AUTOMAKE([1.9 tar-ustar])
 AM_MAINTAINER_MODE
 
-ASSEMBLY_VERSION=0.18.0.0
+ASSEMBLY_VERSION=0.19.0.0
 
 AC_PATH_PROG(MONO, mono)
 AC_PATH_PROG(MCS, gmcs)
@@ -40,9 +40,19 @@ if test "x$has_mono" = "xtrue"; then
     fi
 fi
 
+# Find msgfmt and msgmerge for translations
+AC_PATH_PROG(MSGFMT, msgfmt, no)
+if test "x$MSGFMT" = "xno"; then
+        AC_MSG_ERROR([You need to install msgfmt from intltool])
+fi
+AC_PATH_PROG(MSGMERGE, msgmerge, no)
+if test "x$MSGMERGE" = "xno"; then
+        AC_MSG_ERROR([You need to install msgmerge from intltool])
+fi
+
 dnl hard dependencies
 MONOADDINS_REQUIRED_VERSION=0.3
-MONODEVELOP_REQUIRED_VERSION=0.18
+MONODEVELOP_REQUIRED_VERSION=0.19
 GTKSHARP_REQUIRED_VERSION=2.8.0
 GTKSOURCEVIEWSHARP_REQUIRED_VERSION=0.10
 GTKSOURCEVIEW2SHARP_REQUIRED_VERSION=2.0

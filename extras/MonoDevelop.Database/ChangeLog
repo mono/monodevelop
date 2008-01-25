@@ -1,3 +1,39 @@
+2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* configure.in: Update MD version.
+
+2008-01-24  David Makovský (Yakeen) <yakeen@sannyas-on.net>
+
+        * cs.po: Updated translation.
+
+2008-01-23  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* po/ja.po : made it 100% up-to-date.
+
+2008-01-22  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* configure.in: Check for msgfmt and msgmerge.
+	* po/messages.po: Add to svn so that translators don't have to build MD.
+	* po/hu.po: Added new translation.
+	* po/po.mdse:
+	* po/Makefile.am: Updated. Fix update-po target and add statistics target.
+
+2008-01-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* po/gl.po, po/cs.po, po/pt_BR.po, po/fr.po, po/es.po, po/sl_SI.po,
+	  po/pl.po, po/it.po, po/pt.po, po/ca.po, po/da.po, po/tr.po, po/ru.po,
+	  po/de.po, po/sv.po, po/ja.po, po/zh_TW.po, po/zh_CN.po: Updated
+	  translations.
+	* po/nl.po, po/po.mdse, po/id.po: Added new translations.
+
+2007-12-29 David Makovský (Yakeen) <yakeen@sannyas-on.net>
+
+        * po/cs.po: updated translation
+
+2007-12-19  Ben Motmans <ben.motmans@gmail.com> 
+
+	* AUTHORS: added author info
+
 2007-12-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* configure.in: Updated add-in versions.
