@@ -1,3 +1,8 @@
+2008-01-25  Wade Berrier  <wberrier@novell.com> 
+
+	* Makefile.am: remove EXTRA_DIST files that were created
+	by intltool.
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* configure.in: Update MD version.
