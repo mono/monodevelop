@@ -1,3 +1,8 @@
+2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AspNetEdit.mdp: Updated.
+	* AspNetEdit.addin.xml: Changed add-in category.
+
 2007-12-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* configure: Updated versions to 0.18.

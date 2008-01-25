@@ -5,7 +5,7 @@
        copyright   = "MIT X11"
        url         = "http://www.monodevelop.com/"
        description = "Visual Designer for ASP.NET Web Forms."
-	   category    = "IDE extensions"
+	   category    = "Web Development"
        version     = "0.18.0">
 	
 	<Runtime>

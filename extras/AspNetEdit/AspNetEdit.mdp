@@ -101,6 +101,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.CSharpBinding, Version=0.0.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.MsVisualStudio, Version=0.17.0.0, Culture=neutral" />
   </References>
+  <Deployment.LinuxDeployData generatePcFile="False" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="AspNetEdit.make" SyncReferences="True" RelativeConfigureInPath="../../">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />
@@ -110,7 +111,6 @@
     <AsmRefVar Sync="True" Name="REFERENCES" />
     <ProjectRefVar Sync="True" Name="REFERENCES" />
   </MonoDevelop.Autotools.MakefileInfo>
-  <Deployment.LinuxDeployData generatePcFile="False" />
   <DeploymentInformation strategy="File">
     <excludeFiles />
   </DeploymentInformation>
