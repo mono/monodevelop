@@ -306,15 +306,14 @@ namespace Stetic
 		PropertyDescriptor property;
 		object instance;
 		int rowHeight;
-		Gdk.Color darkColor;
 		PropertyEditorCell editorCell;
 		bool sensitive;
 		bool visible;
+		TreeView tree;
 		
 		public CellRendererProperty (TreeView tree)
 		{
-			darkColor = tree.Style.Backgrounds [(int) Gtk.StateType.Normal];
-			
+			this.tree = tree;
 			Xalign = 0;
 			Xpad = 3;
 			
@@ -329,7 +328,7 @@ namespace Stetic
 			this.instance = instance;
 			this.property = property;
 			if (property == null)
-				this.CellBackgroundGdk = darkColor;
+				this.CellBackgroundGdk = tree.Style.MidColors [(int)Gtk.StateType.Normal];
 			else
 				this.CellBackground = null;
 			
@@ -407,9 +406,9 @@ namespace Stetic
 
 	class CellRendererPropertyGroup: CellRendererText
 	{
+		TreeView tree;
 		Pango.Layout layout;
 		bool isGroup;
-		Gdk.Color darkColor;
 		bool sensitive;
 		
 		public bool IsGroup {
@@ -417,7 +416,7 @@ namespace Stetic
 			set { 
 				isGroup = value;
 				if (value)
-					this.CellBackgroundGdk = darkColor;
+					this.CellBackgroundGdk = tree.Style.MidColors [(int)Gtk.StateType.Normal];
 				else
 					this.CellBackground = null;
 			}
@@ -430,9 +429,9 @@ namespace Stetic
 		
 		public CellRendererPropertyGroup (TreeView tree)
 		{
+			this.tree = tree;
 			layout = new Pango.Layout (tree.PangoContext);
 			layout.Wrap = Pango.WrapMode.Char;
-			darkColor = tree.Style.Backgrounds [(int) Gtk.StateType.Normal];
 			
 			Pango.FontDescription des = tree.Style.FontDescription.Copy();
 			layout.FontDescription = des;
@@ -485,7 +484,7 @@ namespace Stetic
 				window.DrawLayout (widget.Style.TextGC (state), x, y, layout);
 				int bx = background_area.X + background_area.Width - 1;
 				Gdk.GC gc = new Gdk.GC (window);
-		   		gc.RgbFgColor = darkColor;
+		   		gc.RgbFgColor = tree.Style.MidColors [(int)Gtk.StateType.Normal];
 				window.DrawLine (gc, bx, background_area.Y, bx, background_area.Y + background_area.Height);
 			}
 		}
