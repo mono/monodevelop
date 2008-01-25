@@ -116,7 +116,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Deployment.Gui.CommandDeployEditorWidget" design-size="300 158">
+  <widget class="Gtk.Bin" id="MonoDevelop.Deployment.Gui.CommandDeployEditorWidget" design-size="300 166">
     <property name="MemberName" />
     <property name="Events">ButtonPressMask</property>
     <property name="GeneratePublic">False</property>
