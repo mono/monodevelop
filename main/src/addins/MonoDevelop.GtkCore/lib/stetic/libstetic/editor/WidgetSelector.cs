@@ -16,6 +16,7 @@ namespace Stetic.Editor
 		{
 			store = new ListStore (typeof(Pixbuf), typeof(string));
 			Model = store;
+			store.SetSortColumnId (1, SortType.Ascending);
 			CellRendererPixbuf crp = new CellRendererPixbuf ();
 			CellRendererText crt = new CellRendererText ();
 			PackStart (crp, false);
@@ -48,10 +49,12 @@ namespace Stetic.Editor
 		
 		void FillWidgets (Stetic.Wrapper.Widget widget, int level)
 		{
-			TreeIter iter = store.AppendValues (widget.ClassDescriptor.Icon, widget.Wrapped.Name);
-			widgets [widget.Wrapped.Name] = iter;
+			if (!widget.Unselectable) {
+				TreeIter iter = store.AppendValues (widget.ClassDescriptor.Icon, widget.Wrapped.Name);
+				widgets [widget.Wrapped.Name] = iter;
+			}
 			Gtk.Container cont = widget.Wrapped as Gtk.Container;
-			if (cont != null) {
+			if (cont != null && widget.ClassDescriptor.AllowChildren) {
 				foreach (Gtk.Widget child in cont.AllChildren) {
 					Stetic.Wrapper.Widget cwidget = Stetic.Wrapper.Widget.Lookup (child);
 					if (cwidget != null)

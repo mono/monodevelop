@@ -27,17 +27,20 @@ namespace Stetic.Wrapper {
 		internal protected override void GeneratePostBuildCode (GeneratorContext ctx, CodeExpression var)
 		{
 			if (mnem != null) {
-				CodeExpression memVar = ctx.WidgetMap.GetWidgetExp (mnem);
-				if (memVar != null) {
-					ctx.Statements.Add (
-						new CodeAssignStatement (
-							new CodePropertyReferenceExpression (
-								var, 
-								"MnemonicWidget"
-							),
-							memVar
-						)
-					);
+				Widget targetWidget = GetTopLevel ().FindChild (mnem);
+				if (targetWidget != null) {
+					CodeExpression memVar = ctx.WidgetMap.GetWidgetExp (targetWidget);
+					if (memVar != null) {
+						ctx.Statements.Add (
+							new CodeAssignStatement (
+								new CodePropertyReferenceExpression (
+									var, 
+									"MnemonicWidget"
+								),
+								memVar
+							)
+						);
+					}
 				}
 			}
 			base.GeneratePostBuildCode (ctx, var);

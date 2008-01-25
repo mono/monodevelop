@@ -1,3 +1,11 @@
+2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* libstetic/wrapper/Label.cs: Fix generation of MnemonicWidget property
+	  assignment.
+	* libstetic/wrapper/objects.xml: The default way of 
+	* libstetic/editor/WidgetSelector.cs: Sort the list of widgets. Hide
+	  unselectable widgets.
+
 2008-01-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* libsteticui/GuiDispatchServerSink.cs, libsteticui/WidgetDesigner.cs,

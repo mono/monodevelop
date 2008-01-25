@@ -851,7 +851,7 @@
 		<property name="UseMarkup" />
 		<property name="UseUnderline" />
 		<property name="Wrap" />
-		<property name="MnemonicWidget" glade-override="true" editor="Stetic.Editor.WidgetSelector"/>
+		<property name="MnemonicWidget" glade-override="true" editor="Stetic.Editor.WidgetSelector" default=""/>
 		<property name="Justify" />
 		<property name="Selectable" />
 		<property name="Ellipsize" gtk-version="2.6"/>
