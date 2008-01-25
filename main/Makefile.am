@@ -93,8 +93,7 @@ check-addins:
 
 # we can't use the variables that are conditionally defined
 EXTRA_DIST = $(bin_SCRIPTS) $(desktop_DATA) $(pixmap_DATA) \
-	monodevelop.xml mkinstalldirs intltool-extract.in \
-	intltool-merge.in intltool-update.in $(pkgconfig_in_files)
+	monodevelop.xml $(pkgconfig_in_files)
 
 DISTCLEANFILES = monodevelop intltool-extract intltool-merge intltool-update \
 	$(pkgconfig_DATA) 
