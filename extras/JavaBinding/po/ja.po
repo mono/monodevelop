@@ -5,95 +5,25 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: MonoDevelop 0.3\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: \n"
-"PO-Revision-Date: 2007-09-21 11:06:04+0900\n"
-"Last-Translator: Atsushi Eno <atsushi@ximian.com>\n"
-"Language-Team: Atsushi Enomoto <atsushi@ximian.com>\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2008-01-24 01:55:44+0900\n"
+"Language-Team: Atsushi Enomoto <atsushi@ximian.com>\n"
+"Project-Id-Version: MonoDevelop 0.3\n"
+"MIME-Version: 1.0\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: MonoDevelop.Gettext \n"
-
-#: ../Java.glade:30 ../Java.glade:1035
-#, fuzzy
-msgid "<b>Code Generation</b>"
-msgstr "コード生成方法"
-
-#: ../Java.glade:102
-msgid "Compile _Target:"
-msgstr "コンパイルのターゲット: (_T)"
-
-#: ../Java.glade:130
-msgid "Define S_ymbols:"
-msgstr "シンボルを定義: (_y)"
-
-#: ../Java.glade:159
-msgid "_Main Class:"
-msgstr "_Main クラス:"
-
-#: ../Java.glade:230 ../Java.glade:1101
-msgid "Classpath:"
-msgstr "Classpath:"
-
-#: ../Java.glade:330 ../Java.glade:790
-msgid "<b>Compiler</b>"
-msgstr "<b>コンパイラ</b>"
-
-#: ../Java.glade:400
-msgid "gcj"
-msgstr "gcj"
-
-#: ../Java.glade:419
-#, fuzzy
-msgid "javac"
-msgstr "javac"
-
-#: ../Java.glade:490
-msgid "<b>Options</b>"
-msgstr "<b>オプション</b>"
-
-#: ../Java.glade:554
-msgid "Enable _optimizations"
-msgstr "最適化を有効にする (_O)"
-
-#: ../Java.glade:573
-msgid "Emit _debugging information"
-msgstr "デバッグ情報の出力 (_D)"
-
-#: ../Java.glade:618
-msgid "<b>Warnings</b>"
-msgstr "<b>警告</b>"
-
-#: ../Java.glade:682
-msgid "Generate warnings"
-msgstr "警告を生成"
-
-#: ../Java.glade:701
-msgid "Enable deprecation warnings"
-msgstr "廃止機能の警告を有効にする"
-
-#: ../Java.glade:720
-msgid "Treat warnings as _errors"
-msgstr "警告をエラーとして扱う (_E)"
-
-#: ../Java.glade:856
-msgid "IKVM path:"
-msgstr "IKVMのパス:"
-
-#: ../Java.glade:884
-msgid "Java compiler:"
-msgstr "Javaコンパイラ:"
-
-#: ../Java.glade:912
-msgid "Compiler command:"
-msgstr "コンパイラ コマンド:"
+"POT-Creation-Date: \n"
+"Last-Translator: Atsushi Eno <atsushi@ximian.com>\n"
 
 #: ../templates/EmptyJavaFile.xft.xml:4
 msgid "Empty File"
 msgstr "空のファイル"
+
+#: ../templates/EmptyJavaFile.xft.xml:6
+msgid "General"
+msgstr "全般"
 
 #: ../templates/EmptyJavaFile.xft.xml:8
 msgid "Creates an empty Java file."
@@ -102,6 +32,18 @@ msgstr "空のJavaファイルを作成します"
 #: ../templates/EmptyJavaProject.xpt.xml:7
 msgid "Empty Project"
 msgstr "空のプロジェクト"
+
+#: ../templates/EmptyJavaProject.xpt.xml:8
+#: ../templates/IkvmConsoleApplicationProject.xpt.xml:8
+#: ../templates/IkvmGladeApplicationProject.xpt.xml:8
+#: ../templates/IkvmGnomeApplicationProject.xpt.xml:8
+#: ../templates/IkvmGtkApplicationProject.xpt.xml:8
+#: ../templates/IkvmLibraryProject.xpt.xml:8
+#: ../templates/JavaApplicationProject.xpt.xml:8
+#: ../templates/JavaConsoleApplicationProject.xpt.xml:8
+#: ../JavaBinding.addin.xml:64
+msgid "Java"
+msgstr "Java"
 
 #: ../templates/EmptyJavaProject.xpt.xml:11
 msgid "Creates an empty Java solution."
@@ -151,6 +93,15 @@ msgstr "IKVMを使用するJavaライブラリを作成する"
 msgid "AWT Applet"
 msgstr "AWT アプレット"
 
+#: ../templates/JavaApplet.xft.xml:6
+#: ../templates/JavaApplication.xft.xml:6
+#: ../templates/JavaDialog.xft.xml:6
+#: ../templates/JavaFrame.xft.xml:6
+#: ../templates/JavaOKDialog.xft.xml:6
+#: ../templates/JavaPanel.xft.xml:6
+msgid "AWT"
+msgstr "AWT"
+
 #: ../templates/JavaApplet.xft.xml:8
 msgid "Creates a Java AWT Applet"
 msgstr "Java AWTアプレットを作成します"
@@ -164,9 +115,8 @@ msgid "Creates a Java AWT project."
 msgstr "Java AWTプロジェクトを作成します"
 
 #: ../templates/JavaApplication.xft.xml:4
-#, fuzzy
 msgid "AWT Application"
-msgstr "AWT アプレット"
+msgstr "AWT アプリケーション"
 
 #: ../templates/JavaApplication.xft.xml:8
 msgid "Creates a Java AWT application."
@@ -212,19 +162,19 @@ msgstr "AWT パネル"
 msgid "Creates a Java AWT panel."
 msgstr "Java AWTパネルを作成します"
 
-#: ../Gui/ProjectConfigurationPropertyPanel.cs:48
+#: ../Gui/ProjectConfigurationPropertyPanel.cs:60
 msgid "Executable"
 msgstr "実行可能ファイル"
 
-#: ../Gui/ProjectConfigurationPropertyPanel.cs:49
+#: ../Gui/ProjectConfigurationPropertyPanel.cs:61
 msgid "Library"
 msgstr "ライブラリ"
 
-#: ../Gui/GlobalOptionsPanel.cs:28
+#: ../Gui/GlobalOptionsPanel.cs:35
 msgid "Javac"
 msgstr "Javac"
 
-#: ../Gui/GlobalOptionsPanel.cs:29
+#: ../Gui/GlobalOptionsPanel.cs:36
 msgid "Gcj"
 msgstr "Gcj"
 
@@ -240,6 +190,90 @@ msgstr "コード生成方法"
 msgid "Output"
 msgstr "出力"
 
-#: ../JavaBinding.addin.xml:64
-msgid "Java"
-msgstr "Java"
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:106
+#: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:171
+msgid "<b>Code Generation</b>"
+msgstr "<b>コード生成方法</b>"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:168
+msgid "Compile _Target:"
+msgstr "コンパイルのターゲット: (_T)"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:178
+msgid "Define S_ymbols:"
+msgstr "シンボルを定義: (_y)"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:190
+msgid "_Main Class:"
+msgstr "_Main クラス:"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:202
+#: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:210
+msgid "Classpath:"
+msgstr "Classpath:"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:249
+#: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:64
+msgid "<b>Compiler</b>"
+msgstr "<b>コンパイラ</b>"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:277
+msgid "gcj"
+msgstr "gcj"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:289
+msgid "javac"
+msgstr "javac"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:331
+msgid "<b>Options</b>"
+msgstr "<b>オプション</b>"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:359
+msgid "Enable _optimizations"
+msgstr "最適化を有効にする (_O)"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:370
+msgid "Emit _debugging information"
+msgstr "デバッグ情報の出力 (_D)"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:395
+msgid "<b>Warnings</b>"
+msgstr "<b>警告</b>"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:423
+msgid "Generate warnings"
+msgstr "警告を生成"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:434
+msgid "Enable deprecation warnings"
+msgstr "廃止機能の警告を有効にする"
+
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:445
+msgid "Treat warnings as _errors"
+msgstr "警告をエラーとして扱う (_E)"
+
+#: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:132
+msgid "Compiler command:"
+msgstr "コンパイラ コマンド:"
+
+#: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:143
+msgid "IKVM path:"
+msgstr "IKVMのパス:"
+
+#: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:152
+msgid "Java compiler:"
+msgstr "Javaコンパイラ:"
+
+#: ../IKVMCompilerManager.cs:134
+msgid "Generating {0} reference stub ..."
+msgstr "{0} 参照スタブを生成しています..."
+
+#: ../IKVMCompilerManager.cs:165
+msgid "Generating assembly ..."
+msgstr "アセンブリを生成しています..."
+
+#: ../IKVMCompilerManager.cs:213
+msgid "Compiling Java source code ..."
+msgstr "javaソースコードをコンパイルしています..."
+
