@@ -1,3 +1,7 @@
+2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.WebBrowsers.GeckoWebBrowser.addin.xml: Update MD version.
+
 2007-12-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* configure: Updated versions to 0.18.

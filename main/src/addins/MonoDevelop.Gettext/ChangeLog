@@ -1,3 +1,7 @@
+2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Gettext.addin.xml: Update MD version.
+
 2008-01-24  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* templates/Makefile.am.template: CLEANFILES must be set before including

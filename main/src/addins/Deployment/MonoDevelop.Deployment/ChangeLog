@@ -1,5 +1,9 @@
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Deployment.addin.xml: Update MD version.
+
+2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* gtk-gui/objects.xml, gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs,
 	  gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs,
 	  gtk-gui/gui.stetic,

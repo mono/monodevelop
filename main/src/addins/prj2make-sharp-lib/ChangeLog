@@ -1,3 +1,7 @@
+2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* prj2make-sharp-lib.addin.xml: Update MD version.
+
 2008-01-24  Ankit Jain  <jankit@novell.com>
 
 	* MSBuildFileFormat.cs: Simplification, AddExtensionNodeHandler calls

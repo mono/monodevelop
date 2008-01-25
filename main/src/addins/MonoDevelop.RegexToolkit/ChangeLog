@@ -1,3 +1,7 @@
+2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.RegexToolkit.addin.xml: Update MD version.
+
 2008-01-15  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* RegexElements.xml: Improve formatting of translatable strings.

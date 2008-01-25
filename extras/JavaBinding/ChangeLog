@@ -1,3 +1,7 @@
+2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* configure, JavaBinding.addin.xml: Update MD version.
+
 2008-01-24  David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
         * cs.po: Updated translation.
