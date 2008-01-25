@@ -1,3 +1,8 @@
+2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:
+	  Flush.
+
 2008-01-24  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl/AddRemoveMoveCommand.cs:

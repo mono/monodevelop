@@ -145,8 +145,6 @@ namespace MonoDevelop.VersionControl.Dialogs {
             Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox2[this.repoContainer]));
             w6.Position = 2;
             this.notebook.Add(this.vbox2);
-            Gtk.Notebook.NotebookChild w7 = ((Gtk.Notebook.NotebookChild)(this.notebook[this.vbox2]));
-            w7.TabExpand = false;
             // Notebook tab
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
@@ -220,7 +218,6 @@ namespace MonoDevelop.VersionControl.Dialogs {
             this.notebook.Add(this.hbox2);
             Gtk.Notebook.NotebookChild w14 = ((Gtk.Notebook.NotebookChild)(this.notebook[this.hbox2]));
             w14.Position = 1;
-            w14.TabExpand = false;
             // Notebook tab
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
