@@ -694,7 +694,6 @@ namespace Mono.TextEditor
 		string rtf;
 		void GenerateRtf (TextEditorData data)
 		{
-			StringBuilder colorTable = new StringBuilder ();
 			StringBuilder rtfText = new StringBuilder ();
 			List<Gdk.Color> colorList = new List<Gdk.Color> ();
 
@@ -736,10 +735,12 @@ namespace Mono.TextEditor
 							rtfText.Append (@"\cf" + (curColor + 1));					
 							appendSpace = true;
 						}
-						if (appendSpace)
-							rtfText.Append (' ');
 						for (int i = start; i < end; i++) {
 							char ch = data.Document.Buffer.GetCharAt (i);
+							if (appendSpace && ch != '\t') {
+								rtfText.Append (' ');
+								appendSpace = false;
+							}							
 							switch (ch) {
 							case '\\':
 								rtfText.Append (@"\\");
@@ -752,6 +753,7 @@ namespace Mono.TextEditor
 								break;
 							case '\t':
 								rtfText.Append (@"\tab");
+								appendSpace = true;
 								break;
 							default:
 								rtfText.Append (ch);
@@ -766,6 +768,7 @@ namespace Mono.TextEditor
 			} while (iter.MoveNext ());
 			
 			// color table
+			StringBuilder colorTable = new StringBuilder ();
 			colorTable.Append (@"{\colortbl ;");
 			for (int i = 0; i < colorList.Count; i++) {
 				Gdk.Color color = colorList[i];

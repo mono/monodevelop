@@ -136,7 +136,7 @@ namespace Mono.TextEditor
 		
 		public override string ToString ()
 		{
-			return String.Format ("[Caret: Location={0}, IsInInsertMode={2}]", 
+			return String.Format ("[Caret: Location={0}, IsInInsertMode={1}]", 
 			                      this.Location,
 			                      this.isInInsertMode);
 		}
