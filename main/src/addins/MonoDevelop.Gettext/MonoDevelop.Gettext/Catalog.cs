@@ -85,53 +85,81 @@ namespace MonoDevelop.Gettext
 		{
 			return DateTime.Now.ToString ("yyyy-MM-dd HH':'mm':'sszz00"); //rfc822 format
 		}
+		
 
-		static string FormatStringForFile (string text)
+		//escapes string and lays it out to 80 cols
+		static void FormatMessageForFile (StringBuilder sb, string prefix, string message, string newlineChar)
 		{
-			StringBuilder sb = new StringBuilder ();
-			uint n_cnt = 0;
-			int len = text.Length;
-			sb.Append ('"');
-			int i = 1;
-			if (text.Length > 0 && text[0] != '\n') {
-				i = 0;
-			} else
-				n_cnt++;
-			for (; i < len; i++)
-			{
-				if (text[i] == '"') {
-					sb.Append ("\\\"");
-				} else if (text[i] == '\\') {
-					if (text[i + 1] == 'n') {
-						if (i < len - 2) {
-							n_cnt++;
-							sb.Append ("\\n\"\n\"");
-							i++;
-						} else {
-							sb.Append ("\\n");
-							break;
-						}
-					} else if (text[i + 1] == '"') {
-						sb.Append ("\\\"");
-						i++;
-					} else {
-						sb.Append ("\\\\");
-					}
-				} else if (text[i] == '\n') {
-					sb.Append ("\"\n\"");
-					n_cnt++;
-				} else {
-					sb.Append (text[i]);
-				}
+			string escaped = StringEscaping.ToGettextFormat (message);
+			
+			//format to 80 cols
+			//first the simple case: does it fit one one line, with the prefix, and contain no newlines?
+			if (prefix.Length + escaped.Length < 77  && !escaped.Contains ("\\n")) {
+				sb.Append (prefix);
+				sb.Append (" \"");
+				sb.Append (escaped);
+				sb.Append ("\"");
+				sb.Append (newlineChar);
+				return;
 			}
-			sb.Append ('"');
-
-			// normalize, remove "\n\"\"" lines
-			sb.Replace ("\n\"\"", String.Empty);
-			if (n_cnt >= 1 && sb.Length > 0)
-				return "\"\"\n" + sb.ToString ();
-			else 
-				return sb.ToString ();
+						
+			//not the simple case.
+			
+			// first line is typically: prefix ""
+			sb.Append (prefix);
+			sb.Append (" \"\"");
+			sb.Append (newlineChar);
+			
+			//followed by 80-col width break on spaces
+			int possibleBreak = -1;
+			int currLineLen = 0;
+			int lastBreakAt = 0;
+			bool forceBreak = false;
+			
+			int pos = 0;
+			while (pos < escaped.Length) {
+				char c = escaped[pos];
+				
+				//handle escapes			
+				if (c == '\\' && pos+1 < escaped.Length) {
+					pos++;
+					currLineLen++;
+					
+					char c2 = escaped[pos];
+					if (c2 == 'n') {
+						possibleBreak = pos+1;
+						forceBreak = true;
+					} else if (c2 == 't') {
+						possibleBreak = pos+1;
+					}
+				}
+							
+				if (c == ' ')
+					possibleBreak = pos + 1;
+				
+				if (forceBreak || (currLineLen >= 77 && possibleBreak != -1)) {
+					sb.Append ("\"");
+					sb.Append (escaped.Substring (lastBreakAt, possibleBreak - lastBreakAt));
+					sb.Append ("\"");
+					sb.Append (newlineChar);
+					
+					//reset state for new line
+					currLineLen = 0;
+					lastBreakAt = possibleBreak;
+					possibleBreak = -1;
+					forceBreak = false;
+				}
+				pos++;
+				currLineLen++;
+			}
+			string remainder = escaped.Substring (lastBreakAt);
+			if (remainder.Length > 0) {
+				sb.Append ("\"");
+				sb.Append (remainder);
+				sb.Append ("\"");
+				sb.Append (newlineChar);
+			}
+			return;
 		}
 
 		// Clears the catalog, removes all entries from it.
@@ -184,7 +212,6 @@ namespace MonoDevelop.Gettext
 		// Saves catalog to file.
 		public bool Save (string poFile)
 		{
-			string dummy;
 			StringBuilder sb = new StringBuilder ();
 
 			// TODO: check directory
@@ -233,33 +260,22 @@ namespace MonoDevelop.Gettext
 					else
 						sb.AppendFormat ("#. {0}{1}", autoComment, originalNewLine);
 				}
-				foreach (string reference in data.References)
-				{
+				foreach (string reference in data.References) {
 					sb.AppendFormat ("#: {0}{1}", reference, originalNewLine);
 				}
-				dummy = data.Flags;
-				if (! String.IsNullOrEmpty (dummy))
-				{
-					sb.Append (dummy);
+				if (! String.IsNullOrEmpty (data.Flags)) {
+					sb.Append (data.Flags);
 					sb.Append (originalNewLine);
 				}
-				dummy = Catalog.FormatStringForFile (data.String);
-				Catalog.SaveMultiLines (sb, "msgid " + dummy + "", originalNewLine);
-				if (data.HasPlural)
-				{
-					dummy = Catalog.FormatStringForFile (data.PluralString);
-					Catalog.SaveMultiLines (sb, "msgid_plural " + dummy, originalNewLine);
-
-					for (int n = 0; n < data.NumberOfTranslations; n++)
-					{
-						dummy = Catalog.FormatStringForFile (data.GetTranslation (n));
-						string hdr = String.Format ("msgstr[{0}] ", n);
-						SaveMultiLines (sb, hdr + dummy, originalNewLine);
+				FormatMessageForFile (sb, "msgid", data.String, originalNewLine);
+				if (data.HasPlural) {
+					FormatMessageForFile (sb, "msgid_plural", data.PluralString, originalNewLine);
+					for (int n = 0; n < data.NumberOfTranslations; n++) {
+						string hdr = String.Format ("msgstr[{0}]", n);
+						FormatMessageForFile (sb, hdr, data.GetTranslation (n), originalNewLine);
 					}
-				} else
-				{
-					dummy = Catalog.FormatStringForFile (data.GetTranslation (0));
-					SaveMultiLines (sb, "msgstr " + dummy, originalNewLine);
+				} else {
+					FormatMessageForFile (sb, "msgstr", data.GetTranslation (0), originalNewLine);
 				}
 				sb.Append (originalNewLine);
 			}
@@ -277,11 +293,10 @@ namespace MonoDevelop.Gettext
 				{
 					sb.AppendFormat ("#: {0}{1}", reference, originalNewLine);
 				}
-				dummy = deletedItem.Flags;
-				if (! String.IsNullOrEmpty (dummy))
-				{
-					dummy += originalNewLine;
-					sb.Append (dummy);
+				string flags = deletedItem.Flags;
+				if (! String.IsNullOrEmpty (flags)) {
+					sb.Append (flags);
+					sb.Append (originalNewLine);
 				}
 				foreach (string deletedLine in deletedItem.DeletedLines)
 				{
@@ -735,7 +750,7 @@ namespace MonoDevelop.Gettext
 		#region IEnumerable Members
 		IEnumerator IEnumerable.GetEnumerator ()
 		{
-			throw new Exception ("This method has not been implemented.");
+			return entriesList.GetEnumerator ();
 		}
 		#endregion
 	}

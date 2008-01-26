@@ -26,6 +26,7 @@
 //
 
 using System;
+using MonoDevelop.Gettext;
 using Mono.Addins;
 
 namespace MonoDevelop.Gettext.ExtensionNodes
@@ -48,6 +49,9 @@ namespace MonoDevelop.Gettext.ExtensionNodes
 		[NodeAttribute ("regexOptions", Description="RegexOptions flags separated by '|'")]
 		string regexOptions = null;
 		
+		[NodeAttribute ("escapeMode", Description="If the string is escaped, this can be used to unescape it using a mode defined in MonoDevelop.Gettext.StringEscaping.EscapeMode. If more flexibility is needed, define a Transform regex instead.")]
+		StringEscaping.EscapeMode escapeMode = StringEscaping.EscapeMode.None;
+		
 		public string RegexValue {
 			get {
 				return regexValue;
@@ -69,6 +73,12 @@ namespace MonoDevelop.Gettext.ExtensionNodes
 		public string RegexOptions {
 			get {
 				return regexOptions;
+			}
+		}
+		
+		public StringEscaping.EscapeMode EscapeMode {
+			get {
+				return escapeMode;
 			}
 		}
 	}

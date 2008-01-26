@@ -49,7 +49,7 @@ namespace MonoDevelop.Gettext.ExtensionNodes
 			foreach (ExtensionNode node in ChildNodes) {
 				if (node is IncludeExtensionNode) {
 					IncludeExtensionNode rn = (IncludeExtensionNode) node;
-					rs.AddIncludeRegex (rn.RegexValue, rn.Group, rn.PluralGroup, rn.RegexOptions);
+					rs.AddIncludeRegex (rn.RegexValue, rn.Group, rn.PluralGroup, rn.RegexOptions, rn.EscapeMode);
 				}
 				else if (node is ExcludeExtensionNode) {
 					ExcludeExtensionNode rn = (ExcludeExtensionNode) node;

@@ -37,12 +37,6 @@ namespace MonoDevelop.Gettext.ExtensionNodes
 		{
 			RegexFileScanner rs = (RegexFileScanner) base.CreateInstance ();
 			rs.AddExcludeRegex ("<!--(?:.|\n)*?-->", null);
-			rs.AddTransformRegex (@"\\", @"\\\\", null);  // Escape all backslashes
-			rs.AddTransformRegex ("&lt;", "<", null);
-			rs.AddTransformRegex ("&gt;", ">", null);
-			rs.AddTransformRegex ("&amp;", "&", null);
-			rs.AddTransformRegex ("&quot;", "\"", null);
-			rs.AddTransformRegex ("&#xA;", "\n", null);
 			return rs;
 		}
 	}
