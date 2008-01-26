@@ -105,18 +105,8 @@ namespace Mono.TextEditor
 		public TextEditor(Document doc)
 		{
 			this.textEditorData.Document = doc;
-			this.Events =  EventMask.ExposureMask | 
-				           EventMask.EnterNotifyMask |
-				           EventMask.LeaveNotifyMask |
-				           EventMask.ButtonPressMask | 
-				           EventMask.ButtonReleaseMask | 
-				           EventMask.KeyPressMask | 
-				           EventMask.KeyReleaseMask | 
-				           EventMask.ScrollMask | 
-					       EventMask.PointerMotionMask
-			;
-			
-			base.CanFocus =true;
+			this.Events = EventMask.AllEventsMask;
+			base.CanFocus = true;
 			this.ParentSet += delegate {
 //				if (Parent is Viewport) {
 //					Viewport vp = (Viewport)Parent;
@@ -266,6 +256,11 @@ namespace Mono.TextEditor
 			textCursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
 			OptionsChanged (this, EventArgs.Empty);
 			TextEditorOptions.Changed += OptionsChanged;
+			
+			Gtk.TargetList list = new Gtk.TargetList ();
+			list.AddTextTargets (CopyAction.TextType);
+			Gtk.Drag.DestSet (this, DestDefaults.All, (TargetEntry[])list, DragAction.Move | DragAction.Copy);
+//			Gtk.Drag.SourceSet (this, ModifierType.Button1Mask, (Gtk.TargetEntry[])list, DragAction.Copy | DragAction.Move);
 		}
 		
 		protected virtual void OptionsChanged (object sender, EventArgs args)
@@ -392,12 +387,17 @@ namespace Mono.TextEditor
 		{
 			base.IsFocus = true;
 			if (lastTime != e.Time) {// filter double clicks
-				lastTime = e.Time;
-				mousePressed = true;
+				if (e.Type == EventType.TwoButtonPress) {				
+				    lastTime = e.Time;
+					mousePressed = false;
+				} else {
+					lastTime = 0;
+					mousePressed = true;
+				}
 				int startPos;
 				IMargin margin = GetMarginAtX ((int)e.X, out startPos);
 				if (margin != null) {
-					margin.MousePressed ((int)e.Button, (int)(e.X - startPos), (int)e.Y);
+					margin.MousePressed ((int)e.Button, (int)(e.X - startPos), (int)e.Y, e.Type == EventType.TwoButtonPress);
 				}
 			}
 			return base.OnButtonPressEvent (e);
@@ -418,14 +418,87 @@ namespace Mono.TextEditor
 			startingPos = -1;
 			return null;
 		}
-				
-		
+
 		protected override bool OnButtonReleaseEvent (EventButton e)
 		{
 			mousePressed = false;
+			inDrag = false;
 			return base.OnButtonReleaseEvent (e);
 		}
 		
+		bool dragOver = false;
+		string text, rtf;
+		DocumentLocation defaultCaretPos, dragCaretPos;
+		ISegment selection = null;
+		
+		protected override void OnDragDataDelete (DragContext context)
+		{
+			if (Caret.Offset > selection.Offset)
+				Caret.Offset -= selection.Length;
+			Document.Buffer.Remove (selection.Offset, selection.Length);
+			base.OnDragDataDelete (context); 
+		}
+		
+		protected override void OnDragLeave (DragContext context, uint time_)
+		{
+			if (dragOver) {
+				Caret.PreserveSelection = true;
+				Caret.Location = defaultCaretPos;
+				Caret.PreserveSelection = false;
+				dragOver = false;
+			}
+			base.OnDragLeave (context, time_);
+		}
+		
+		protected override void OnDragDataGet (DragContext context, SelectionData selection_data, uint info, uint time_)
+		{
+			switch (info) {
+			case CopyAction.TextType:
+				selection_data.Text = text;
+				break;
+			case CopyAction.RichTextType:
+				selection_data.Set (CopyAction.RTF_ATOM, CopyAction.UTF8_FORMAT, System.Text.Encoding.UTF8.GetBytes (rtf.ToString ()));
+				break;
+			}
+			base.OnDragDataGet (context, selection_data, info, time_);
+		}
+				
+		protected override void OnDragDataReceived (DragContext context, int x, int y, SelectionData selection_data, uint info, uint time_)
+		{
+			if (selection_data.Length > 0 && selection_data.Format == 8) {
+				StringBuilder builder = new StringBuilder (selection_data.Text);
+				Caret.Location = dragCaretPos;
+				if (selection.Offset > Caret.Offset)
+					selection.Offset += builder.Length;
+				this.Buffer.Insert (Caret.Offset, builder);
+				Caret.Offset += builder.Length;
+				dragOver = false;
+				context = null;
+				Gtk.Drag.Finish (context, true, false, time_);
+			}
+			Gtk.Drag.Finish (context, false, false, time_);
+			base.OnDragDataReceived (context, x, y, selection_data, info, time_);
+		}
+
+		protected override bool OnDragMotion (DragContext context, int x, int y, uint time_)
+		{
+			if (!dragOver) {
+				defaultCaretPos = Caret.Location; 
+			}
+			dragOver = true;
+			Caret.PreserveSelection = true;
+			dragCaretPos = VisualToDocumentLocation (x - this.XOffset, y);
+			Caret.Location = dragCaretPos; 
+			Caret.PreserveSelection = false;
+			
+			if (selection != null && Caret.Offset >= this.selection.Offset && Caret.Offset < this.selection.EndOffset) {
+				Gdk.Drag.Status (context, DragAction.Default, time_);
+			} else {
+				Gdk.Drag.Status (context, context.SuggestedAction, time_);
+			}
+			return true;
+		}
+
 		IMargin oldMargin = null;
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
 		{
@@ -433,12 +506,20 @@ namespace Mono.TextEditor
 			IMargin margin = GetMarginAtX ((int)e.X, out startPos);
 			if (oldMargin != margin && oldMargin != null)
 				oldMargin.MouseLeft ();
-			if (margin != null) {
+			
+			if (inDrag && margin == this) {
+				selection = this.TextEditorData.SelectionRange;
+				text = Document.Buffer.GetTextAt (selection);
+				rtf  = CopyAction.GenerateRtf (TextEditorData);
+				Gtk.Drag.Begin (this, CopyAction.TargetList, DragAction.Move | DragAction.Copy, 1, e);
+				inDrag = false;
+			} else if (margin != null) {
 				margin.MouseDragged ((int)(e.X - startPos), (int)e.Y, mousePressed);
 			}
 			oldMargin = margin;
 			return base.OnMotionNotifyEvent (e);
 		}
+		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing e)
 		{ 
 			if (oldMargin != null)
@@ -742,6 +823,7 @@ namespace Mono.TextEditor
 			layout.FontDescription.Style = Pango.Style.Normal;
 			DrawText (win, gc, ref xPos, y, "\u00B6");
 		}
+		
 		void DrawSpaceMarker (Gdk.Window win, Gdk.GC gc, ref int xPos, int y)
 		{
 			gc.RgbFgColor = ColorStyle.WhitespaceMarker;
@@ -749,6 +831,7 @@ namespace Mono.TextEditor
 			layout.FontDescription.Style = Pango.Style.Normal;
 			DrawText (win, gc, ref xPos, y, "\u00B7");
 		}
+		
 		void DrawTabMarker (Gdk.Window win, Gdk.GC gc, ref int xPos, int y)
 		{
 			gc.RgbFgColor = ColorStyle.WhitespaceMarker;
@@ -791,27 +874,65 @@ namespace Mono.TextEditor
 			}
 			return new DocumentLocation (lineNumber, column);
 		}
-		
-		public void MousePressed (int button, int x, int y)
+		bool inSelectionDrag = false;
+		bool inDrag = false;
+		public void MousePressed (int button, int x, int y, bool doubleClick)
 		{
-			this.Caret.Location = VisualToDocumentLocation (x, y);
-			this.caretBlink = false;
-			this.QueueDraw ();
+			inSelectionDrag = false;
+			inDrag = false;
+			if (button == 1) {
+				DocumentLocation clickLocation = VisualToDocumentLocation (x, y);
+				int offset = Document.LocationToOffset (clickLocation);
+				if  (doubleClick) {
+					int start = ScanWord (offset, false);
+					int end   = ScanWord (offset, true);
+					if (TextEditorData.IsSomethingSelected) {
+						if (TextEditorData.SelectionRange.Offset == start && TextEditorData.SelectionRange.EndOffset == end) {
+							TextEditorData.SelectionRange = Document.Splitter.GetByOffset (offset);
+							return;
+						}
+					}
+					TextEditorData.SelectionRange = new Segment (start, end - start);
+					return;
+				}
+ 
+				if (TextEditorData.IsSomethingSelected && TextEditorData.SelectionRange.Offset <= offset && offset < TextEditorData.SelectionRange.EndOffset) {
+					inDrag = true;
+				} else {
+					inSelectionDrag = true;
+					Caret.Location = clickLocation; 
+					this.caretBlink = false;
+					this.QueueDraw ();
+				}
+			}
+		}
+		int ScanWord (int offset, bool forwardDirection)
+		{
+			LineSegment line = Document.Splitter.GetByOffset (offset);
+			while (offset >= line.Offset && offset < line.Offset + line.EditableLength && char.IsWhiteSpace (Buffer.GetCharAt (offset))) {
+				offset = forwardDirection ? offset + 1 : offset - 1; 
+			}
+			while (offset >= line.Offset && offset < line.Offset + line.EditableLength && (char.IsLetterOrDigit (Buffer.GetCharAt (offset)) || Buffer.GetCharAt (offset) == '_')) {
+				offset = forwardDirection ? offset + 1 : offset - 1; 
+			}
+			return offset + (forwardDirection ? 0 : 1);
 		}
 		
 		public void MouseDragged (int x, int y, bool buttonPressed)
 		{
 			if (!buttonPressed)
 				return;
-			if (!this.textEditorData.IsSomethingSelected) {
-				SelectionMoveLeft.StartSelection (this.textEditorData);
+			if (inSelectionDrag) {
+				if (!this.textEditorData.IsSomethingSelected) {
+					SelectionMoveLeft.StartSelection (this.textEditorData);
+				}
+				Caret.PreserveSelection = true;
+				Caret.Location = VisualToDocumentLocation (x, y);
+				Caret.PreserveSelection = false;
+				SelectionMoveLeft.EndSelection (this.textEditorData);
+				this.caretBlink = false;
+				this.QueueDraw ();
 			}
-			Caret.PreserveSelection = true;
-			Caret.Location = VisualToDocumentLocation (x, y);
-			Caret.PreserveSelection = false;
-			SelectionMoveLeft.EndSelection (this.textEditorData);
-			this.caretBlink = false;
-			this.QueueDraw ();
 		}
 		
 		public void MouseLeft ()

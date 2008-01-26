@@ -666,13 +666,13 @@ namespace Mono.TextEditor
 	
 	public class CopyAction : EditAction
 	{
-		const int TextType     = 1;		
-		const int RichTextType = 2;
+		public const int TextType     = 1;		
+		public const int RichTextType = 2;
 		
-		const int UTF8_FORMAT = 8;
+		public const int UTF8_FORMAT = 8;
 		
 		public static readonly Gdk.Atom CLIPBOARD_ATOM = Gdk.Atom.Intern ("CLIPBOARD", false);
-		static readonly Gdk.Atom RTF_ATOM = Gdk.Atom.Intern ("text/rtf", false);
+		public static readonly Gdk.Atom RTF_ATOM = Gdk.Atom.Intern ("text/rtf", false);
 		
 		void ClipboardGetFunc (Clipboard clipboard, SelectionData selection_data, uint info)
 		{
@@ -692,7 +692,7 @@ namespace Mono.TextEditor
 		
 		string text;
 		string rtf;
-		void GenerateRtf (TextEditorData data)
+		public static string GenerateRtf (TextEditorData data)
 		{
 			StringBuilder rtfText = new StringBuilder ();
 			List<Gdk.Color> colorList = new List<Gdk.Color> ();
@@ -805,21 +805,28 @@ namespace Mono.TextEditor
 			rtf.Append (rtfText.ToString ());
 			rtf.Append("}");
 			System.Console.WriteLine(rtf);
-			this.rtf = rtf.ToString ();
+			return rtf.ToString ();
 		}
 		
+		public static Gtk.TargetList TargetList {
+			get {
+				Gtk.TargetList list = new Gtk.TargetList ();
+				list.Add (RTF_ATOM, /* FLAGS */ 0, RichTextType);
+				list.AddTextTargets (TextType);
+				return list;
+			}
+		}
+			
+			
 		public override void Run (TextEditorData data)
 		{
 			if (data.IsSomethingSelected) {
 				Clipboard clipboard = Clipboard.Get (CopyAction.CLIPBOARD_ATOM);
 				
 				text = data.Document.Buffer.GetTextAt (data.SelectionRange);
-				GenerateRtf (data);
+				rtf  = GenerateRtf (data);
 				
-				Gtk.TargetList list = new Gtk.TargetList ();
-				list.Add (RTF_ATOM, /* FLAGS */ 0, RichTextType);
-				list.AddTextTargets (TextType);
-				clipboard.SetWithData ((Gtk.TargetEntry[])list, ClipboardGetFunc, ClipboardClearFunc);
+				clipboard.SetWithData ((Gtk.TargetEntry[])TargetList, ClipboardGetFunc, ClipboardClearFunc);
 			}
 		}
 	}

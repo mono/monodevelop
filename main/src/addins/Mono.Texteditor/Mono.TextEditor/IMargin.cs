@@ -45,7 +45,7 @@ namespace Mono.TextEditor
 		}
 		void Draw (Gdk.Window win, Gdk.Rectangle area, int line, int x, int y);
 		
-		void MousePressed (int button, int x, int y);
+		void MousePressed (int button, int x, int y, bool doubleClick);
 		void MouseDragged (int x, int y, bool buttonPressed);
 		void MouseLeft ();
 	}
@@ -77,7 +77,7 @@ namespace Mono.TextEditor
 		}
 		public abstract void Draw (Gdk.Window win, Gdk.Rectangle area, int line, int x, int y);
 		
-		public virtual void MousePressed (int button, int x, int y)
+		public virtual void MousePressed (int button, int x, int y, bool doubleClick)
 		{
 		}
 		

@@ -78,7 +78,7 @@ namespace Mono.TextEditor.Highlighting
 				char ch = doc.Buffer.GetCharAt (offset);
 				Span curSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
 				if (curSpan != null && !String.IsNullOrEmpty (curSpan.End)) {
-					if (curSpan.End[endOffset] == ch) {
+					if (endOffset < curSpan.End.Length && curSpan.End[endOffset] == ch) {
 						endOffset++;
 						if (endOffset >= curSpan.End.Length) {
 							spanStack.Pop ();
