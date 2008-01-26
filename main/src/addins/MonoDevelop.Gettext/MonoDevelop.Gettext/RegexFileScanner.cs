@@ -46,6 +46,7 @@ namespace MonoDevelop.Gettext
 			public Regex Regex;
 			public int ValueGroupIndex;
 			public int PluralGroupIndex;
+			public StringEscaping.EscapeMode EscapeMode;
 		}
 		
 		class TransformInfo {
@@ -59,18 +60,19 @@ namespace MonoDevelop.Gettext
 			this.mimeTypes = mimeTypes != null ? mimeTypes : new string[0];
 		}
 		
-		public void AddIncludeRegex (string regex, int valueGroupIndex, string regexOptions)
+		public void AddIncludeRegex (string regex, int valueGroupIndex, string regexOptions, StringEscaping.EscapeMode escapeMode)
 		{
-			AddIncludeRegex (regex, valueGroupIndex, -1, regexOptions);
+			AddIncludeRegex (regex, valueGroupIndex, -1, regexOptions, escapeMode);
 		}
 		
-		public void AddIncludeRegex (string regex, int valueGroupIndex, int pluralGroupIndex, string regexOptions)
+		public void AddIncludeRegex (string regex, int valueGroupIndex, int pluralGroupIndex, string regexOptions, StringEscaping.EscapeMode escapeMode)
 		{
 			Regex rx = new Regex (regex, ParseOptions (regexOptions));
 			RegexInfo ri = new RegexInfo ();
 			ri.Regex = rx;
 			ri.ValueGroupIndex = valueGroupIndex;
 			ri.PluralGroupIndex = pluralGroupIndex;
+			ri.EscapeMode = escapeMode;
 			regexes.Add (ri);
 		}
 		
@@ -92,7 +94,6 @@ namespace MonoDevelop.Gettext
 		RegexOptions ParseOptions (string regexOptions)
 		{
 			RegexOptions retval = RegexOptions.Compiled;
-			System.Console.WriteLine("Parsing options {0}", regexOptions);
 			if (string.IsNullOrEmpty (regexOptions))
 				return retval;
 			
@@ -171,6 +172,13 @@ namespace MonoDevelop.Gettext
 					
 					foreach (TransformInfo ti in transforms)
 						mt = ti.Regex.Replace (mt, ti.ReplaceText);
+					
+					try {
+						mt = StringEscaping.UnEscape (ri.EscapeMode, mt);
+					} catch (FormatException fex) {
+						monitor.ReportWarning ("Error unescaping string '" + mt + "': " + fex.Message);
+						continue;
+					}
 					
 					if (mt.Trim().Length == 0)
 						continue;

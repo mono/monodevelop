@@ -56,6 +56,7 @@ FILES =  \
 	MonoDevelop.Gettext/PluralForms.cs \
 	MonoDevelop.Gettext/PropertyProvider.cs \
 	MonoDevelop.Gettext/RegexFileScanner.cs \
+	MonoDevelop.Gettext/StringEscaping.cs \
 	MonoDevelop.Gettext/Translation.cs \
 	MonoDevelop.Gettext/TranslationProject.cs \
 	MonoDevelop.Gettext/TranslationProjectOptionsDialog.cs \

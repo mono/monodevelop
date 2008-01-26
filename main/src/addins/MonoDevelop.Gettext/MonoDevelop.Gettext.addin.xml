@@ -135,11 +135,11 @@
 	
 	<Extension path = "/MonoDevelop/Gettext/FileScanners">
 		<XmlRegexScanner extension="glade">
-			<Include regex='translatable\s*=\s*"yes"\s*&gt;([^&lt;]*)&lt;'/>
+			<Include regex='translatable\s*=\s*"yes"\s*&gt;([^&lt;]*)&lt;' escapeMode="Xml" />
 		</XmlRegexScanner>
 		<XmlRegexScanner extension="xml" mimeType="application/xml">
-			<Include regex='\s_[-A-Za-z0-9._:]+\s*=\s*"([^"]+)"'/>
-			<Include regex="&lt;_[^&gt;]+&gt;((?:.|\n)*?)&lt;/_[^&gt;]+&gt;" />
+			<Include regex='\s_[-A-Za-z0-9._:]+\s*=\s*"([^"]+)"' escapeMode="Xml" />
+			<Include regex="&lt;_[^&gt;]+&gt;((?:.|\n)*?)&lt;/_[^&gt;]+&gt;" escapeMode="Xml" />
 		</XmlRegexScanner>
 		<RegexScanner extension="vb">
 			<Exclude regex='".*?[^"]"(?!")' />   <!-- Strings-->
@@ -162,9 +162,9 @@
 			<Exclude regex='(?&lt;!@)".*?(?&lt;!\\)"' />  <!-- Strings-->
 			<Exclude regex='//(?:(?!//).)*' />            <!-- Line comments -->
 			<Exclude regex='/\*(?:.|\n)*?\*/' />          <!-- Block comments -->
-			<Include regex='GetString\s*\(\s*"(.*?[^\\])"\s*[,\)]' regexOptions="Singleline"/>
-			<Include regex='GetPluralString\s*\(\s*"(.*?[^\\])"\s*,\s*"(.*?[^\\])"\s*[,\)]' plural="true" regexOptions="Singleline"/>
-			<Transform regex='([^\\])"\s*\+\s*"' value='$1' regexOptions="Singleline"/>
+			<Include regex='GetString\s*\(\s*"(.*?[^\\])"\s*[,\)]' regexOptions="Singleline" escapeMode="CSharp"/>
+			<Include regex='GetPluralString\s*\(\s*"(.*?[^\\])"\s*,\s*"(.*?[^\\])"\s*[,\)]' plural="true" regexOptions="Singleline" escapeMode="CSharp"/>
+			<Transform regex='([^\\])"\s*\+\s*"' value='$1' regexOptions="Singleline"/><!-- strip out "+" concatenations -->
 		</RegexScanner>
 	</Extension>
 </Addin>

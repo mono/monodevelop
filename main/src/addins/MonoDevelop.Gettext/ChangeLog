@@ -1,3 +1,17 @@
+2008-01-25  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Gettext.addin.xml, MonoDevelop.Gettext/RegexFileScanner.cs,
+	  MonoDevelop.Gettext.ExtensionNodes/IncludeExtensionNode.cs,
+	  MonoDevelop.Gettext.ExtensionNodes/RegexScannerExtensionNode.cs,
+	  MonoDevelop.Gettext.ExtensionNodes/XmlRegexScannerExtensionNode.cs:
+	  Rework unescaping of C# and XML translatable strings.
+	* MonoDevelop.Gettext.mdp, Makefile.am: Updated.
+	* MonoDevelop.Gettext/StringEscaping.cs: Helper class for
+	  escaping/unescaping text.
+	* MonoDevelop.Gettext/Catalog.cs: Rework escaping of strings.
+	
+	Fixes "Bug 355967 - Translation issues with regex toolkit descriptions".
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Gettext.addin.xml: Update MD version.
