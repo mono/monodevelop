@@ -163,7 +163,10 @@ msgstr "Installare da:"
 
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:1424
 #, fuzzy
-msgid "Show all packagesShow new versions onlyShow updates only"
+msgid ""
+"Show all packages\n"
+"Show new versions only\n"
+"Show updates only"
 msgstr ""
 "Mostra tutti i pacchetti\n"
 "Mostra solo le nuove versioni\n"
@@ -234,79 +237,79 @@ msgstr "Pacchetto MonoDevelop"
 msgid "Loading..."
 msgstr "Caricamento..."
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:59
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:60
 msgid "Go up one level"
 msgstr "Sali di un livello"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:64
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:65
 msgid "Home"
 msgstr "Home"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:70
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:71
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:155
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:98
 msgid "Location"
 msgstr "Posizione"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:82
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:83
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:156
 msgid "Directories"
 msgstr "Directory"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:202
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:203
 msgid "Access denied"
 msgstr "Accesso negato"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:204
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:205
 msgid "Could not access to directory: "
 msgstr "Impossibile accedere alla directory:"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:238
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:239
 msgid "Open with file browser"
 msgstr "Apri con il file browser"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:241
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:242
 msgid "Open with terminal"
 msgstr "Apri con il terminale"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:244
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:245
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:305
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineEntryConfigurationsPanelWidget.cs:98
 msgid "Rename"
 msgstr "Rinomina"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:247
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:248
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:204
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:147
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.addin.xml:54
 msgid "Delete"
 msgstr "Cancella"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:250
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:251
 msgid "Create new folder"
 msgstr "Crea una nuova cartella"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:315
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:316
 msgid "Cannot enter '{0}' folder"
 msgstr "Impossibile accedere alla cartella «{0}»"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:353
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:354
 msgid "Could not rename folder '{0}' to '{1}'"
 msgstr "Impossibile rinominare la cartella «{0}» in «{1}»"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:373
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:374
 msgid "Could not create new folder '{0}'"
 msgstr "Impossibile creare la nuova cartella «{0}»"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:397
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:398
 msgid "Are you sure you want to delete this folder?"
 msgstr "Cancellare veramente questa cartella?"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:397
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:398
 msgid "Delete folder"
 msgstr "Cancella cartella"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:407
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:408
 msgid "Could not delete folder '{0}'"
 msgstr "Impossibile cancellare la cartella «{0}»"
 
@@ -565,23 +568,23 @@ msgstr "Possono essere aperti solo file locali."
 msgid "The provided file could not be loaded."
 msgstr "Impossibile caricare il file fornito."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:234
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:239
 msgid "Are you sure you want to clear recent files list?"
 msgstr "Pulire veramente l'elenco dei file recenti?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:234
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:239
 msgid "Clear recent files"
 msgstr "Pulisci file recenti"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:253
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:258
 msgid "Are you sure you want to clear recent projects list?"
 msgstr "Pulire veramente l'elenco dei progetti recenti?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:253
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:258
 msgid "Clear recent projects"
 msgstr "Pulisci progetti recenti"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:300
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:305
 msgid "load solution {0}"
 msgstr "carica soluzione {0}"
 
@@ -1254,7 +1257,7 @@ msgid "Type"
 msgstr "Tipo"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:162
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:468
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:465
 msgid "Packages"
 msgstr "Pacchetti"
 
@@ -1290,7 +1293,7 @@ msgstr "Soluzione: {0}"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:997
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libstetic/stetic.glade:470
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:672
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs:172
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs:168
 msgid "Files"
 msgstr "File"
 
@@ -1626,7 +1629,7 @@ msgid ""
 "integrated help viewer now."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Ide.cs:110
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Ide.cs:113
 msgid "Loading Workbench"
 msgstr "Caricamento ambiente di lavoro"
 
@@ -1840,12 +1843,12 @@ msgstr "Salvataggio..."
 msgid "Search Results"
 msgstr "Risultati della ricerca"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:115
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:128
 msgid "MonoDevelop failed to start. Local hostname cannot be resolved."
 msgstr ""
 "MonoDevelop non può essere avviato. Impossibile trovare il nome host locale."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:116
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:129
 msgid ""
 "Your network may be misconfigured. Make sure the hostname of your system is "
 "added to the /etc/hosts file."
@@ -1853,24 +1856,24 @@ msgstr ""
 "La rete potrebbe essere mal configurata. Assicurarsi che il nome host del "
 "proprio sistema sia presente nel file /etc/hosts."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:159
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:170
 msgid "MonoDevelop failed to start. The following error has been reported: "
 msgstr ""
 "MonoDevelop non può essere avviato. Si è verificato il seguente errore:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:310
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:321
 msgid ""
 "Some packages installed in your system are not compatible with MonoDevelop:\n"
 msgstr ""
 "Alcuni pacchetti installati nel sistema non sono compatibili con "
 "MonoDevelop:\n"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:312
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:314
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:323
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:325
 msgid "version required: {0}"
 msgstr "versione richiesta: {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:316
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:327
 msgid "You need to upgrade the previous packages to start using MonoDevelop."
 msgstr ""
 "È necessario aggiornare i pacchetti precedenti per poter usare MonoDevelop."
@@ -3031,15 +3034,15 @@ msgstr "Rinomina elemento"
 msgid "Open File in Solution"
 msgstr "Apri file nella soluzione"
 
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.cs:66
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.cs:67
 msgid "Search _Files"
 msgstr "Cerca _file"
 
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.cs:77
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.cs:78
 msgid "Search _Types"
 msgstr "Tipi di _ricerca"
 
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.cs:109
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.cs:110
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs:126
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs:130
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libstetic/editor/GroupPicker.cs:139
@@ -3637,7 +3640,7 @@ msgstr "Solo nuovi file"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog.cs:84
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:877
 #: ../src/addins/AspNetAddIn/gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployTargetEditor.cs:95
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:381
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:377
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs:81
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:213
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:307
@@ -3668,14 +3671,14 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:48
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/MonoDevelopFileFormat.cs:112
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:99
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:100
 msgid "Saving solution: {0}"
 msgstr "Salvataggio soluzione: {0}"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:55
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/MonoDevelopFileFormat.cs:119
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:114
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:115
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:116
 msgid "Could not save solution: {0}"
 msgstr "Impossibile salvare la soluzione: {0}"
 
@@ -3690,8 +3693,8 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:134
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:204
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:372
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:402
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:377
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:408
 msgid "Loading solution: {0}"
 msgstr "Caricamento soluzione: {0}"
 
@@ -4016,7 +4019,7 @@ msgid "Executing: {0} {1}"
 msgstr "Esecuzione: {0} {1}"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/MonoDevelopFileFormat.cs:160
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:376
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:381
 msgid "Could not load solution: {0}"
 msgstr "Impossibile caricare la soluzione: {0}"
 
@@ -4221,7 +4224,7 @@ msgid "Custom Command"
 msgstr "Comando personalizzato"
 
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs:125
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:254
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:251
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:457
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:559
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:650
@@ -4889,27 +4892,27 @@ msgstr "Selezionare repository"
 msgid "Type:"
 msgstr "Tipo:"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:152
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:150
 msgid "Connect to Repository"
 msgstr "Collegarsi al repository"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:226
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:223
 msgid "Registered Repositories"
 msgstr "Repository registrati"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:319
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:316
 msgid "Repository:"
 msgstr "Repository:"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:328
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:325
 msgid "Message:"
 msgstr "Messaggio:"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:339
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:336
 msgid "Module name:"
 msgstr "Nome modulo:"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:360
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:357
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.LocalFileCopyConfigurationEditorWidget.cs:35
 msgid "Target directory:"
 msgstr "Directory obiettivo:"
@@ -5180,7 +5183,11 @@ msgstr "Modalità a capo _automatico:"
 
 #: ../src/addins/MonoDevelop.SourceEditor/EditorBindings.glade:1024
 #, fuzzy
-msgid "NoneCharWordWordChar"
+msgid ""
+"None\n"
+"Char\n"
+"Word\n"
+"WordChar"
 msgstr ""
 "Nessuno\n"
 "Char\n"
@@ -6201,7 +6208,7 @@ msgstr ""
 msgid "Language '{0}' not supported for building resource ids."
 msgstr ""
 
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:137
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:145
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:200
 #, fuzzy
 msgid "Saving projects"
@@ -6219,60 +6226,60 @@ msgstr ""
 msgid "Saving for project {0} not supported. Ignoring."
 msgstr "Salvataggio non supportato per il progetto {0}. Ignorato."
 
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:446
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:454
 msgid "Invalid Project definition on line number #{0} in file '{1}'. Ignoring."
 msgstr ""
 "Definizione di progetto alla riga #{0} del file «{1}» non valida. Ignorata."
 
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:459
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:467
 msgid "Invalid Project type guid '{0}' on line #{1}. Ignoring."
 msgstr "GUID «{0}» del tipo di progetto sconosciuto sulla riga #{1}. Ignorato."
 
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:490
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:500
 msgid "Unknown project type guid '{0}' on line #{1}. Ignoring."
 msgstr "GUID «{0}» del tipo di progetto sconosciuto sulla riga #{1}. Ignorato."
 
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:494
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:504
 msgid "{0}({1}): Unsupported or unrecognized project : '{2}'. See logs."
 msgstr ""
 "{0}({1}): progetto non supportato o non riconosciuto: «{2}». Controllare i "
 "log."
 
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:501
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:511
 msgid ""
 "{0}({1}): Projects with non-local source (http://...) not supported. '{2}'."
 msgstr ""
 
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:511
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:513
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:521
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:523
 msgid "Invalid project path found in {0} : {1}"
 msgstr "Percorso del progetto in {0} non valido: {1}"
 
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:534
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:537
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:544
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:547
 msgid "Error while trying to load the project {0}. Exception : {1}"
 msgstr "Errore nel caricare il progetto {0}. Eccezione: {1}"
 
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:695
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:705
 msgid "{0} ({1}) : Unknown action. Only ActiveCfg & Build.0 supported."
 msgstr ""
 
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:715
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:725
 #, fuzzy
 msgid "{0} ({1}) : Project with guid = '{2}' not found or not loaded. Ignoring"
 msgstr "File progetto non trovato: "
 
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:819
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:829
 msgid "{0} ({1}) : Invalid config name '{2}'"
 msgstr ""
 
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:845
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:851
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:855
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:861
 #, fuzzy
 msgid "Project with guid '{0}' not found."
 msgstr "File progetto non trovato: "
 
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:945
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:957
 msgid ""
 "The project file {0} must be converted to msbuild format to be added to a "
 "msbuild solution. Convert?"
@@ -7185,25 +7192,25 @@ msgstr ""
 "I comandi personalizzati non sono supportati per i makefile basati su "
 "autotool. Ignorato."
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:512
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:515
 #, fuzzy
 msgid "Project reference type '{0}' not supported yet"
 msgstr "Tipo di riferimento {0} non ancora supportato"
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:657
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:660
 #, fuzzy
 msgid "Custom commands of only the following types are supported: {0}."
 msgstr "Sono supportati solo i comandi personalizzati del tipo {0}."
 
-#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:735
+#: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:738
 msgid "Couldn't find referenced project '{0}'"
 msgstr "Impossibile trovare il progetto «{0}» referenziato"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:74
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:75
 msgid "Generating {0} for Solution {1}"
 msgstr "Generazione di {0} per la soluzione {1}"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:91
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:92
 msgid ""
 "MonoDevelop does not currently support generating {0} for one (or more) "
 "child projects."
@@ -7211,54 +7218,54 @@ msgstr ""
 "MonoDevelop non supporta la generazione di {0} per uno (o più) progetti "
 "figli."
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:106
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:107
 msgid "Creating rules.make"
 msgstr "Creazione di rules.make"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:123
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:124
 msgid "{0} were successfully generated."
 msgstr "{0} è stato generato con successo."
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:128
 #: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:129
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:130
 msgid "{0} could not be generated: "
 msgstr "{0} non può essere generato: "
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:152
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:153
 msgid "Deploying Solution to Tarball"
 msgstr "Produzione soluzione in tarball"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:166
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:184
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:167
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:185
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:353
 msgid "An unspecified error occurred while running '{0}'"
 msgstr "Si è verificato un errore non specificato nell'eseguire «{0}»"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:200
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:201
 msgid "Solution could not be deployed: "
 msgstr "La soluzione non può essere prodotta: "
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:207
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:208
 msgid "Solution was succesfully deployed"
 msgstr "Soluzione prodotta con successo"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:218
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:219
 msgid "Adding variables to top-level Makefile"
 msgstr "Aggiunta variabili al makefile principale"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:238
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:239
 msgid "Creating autogen.sh"
 msgstr "Creazione di autogen.sh"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:265
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:266
 msgid "Creating configure.ac"
 msgstr "Creazione di configure.ac"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:366
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:367
 msgid "Creating configure script"
 msgstr "Creazione script di di configurazione"
 
-#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:440
+#: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:441
 msgid "Creating Makefile.include"
 msgstr "Creazione di Makefile.include"
 
@@ -7335,7 +7342,7 @@ msgstr "{0} esistono già per questa soluzione. Sovrascriverli?"
 #, fuzzy
 msgid ""
 " --simple-makefiles -s\n"
-"\\tGenerates set of Makefiles with the most common targets, and a "
+"\tGenerates set of Makefiles with the most common targets, and a "
 "configuration script that does a basic check of package dependencies. "
 "Default is to generate Makefile structure based on Autotools with the "
 "standard targets and configuration scripts."
@@ -7348,7 +7355,7 @@ msgstr ""
 #, fuzzy
 msgid ""
 " -d:default-config\n"
-"\\tConfiguration that the Makefile will build by default. Other "
+"\tConfiguration that the Makefile will build by default. Other "
 "configurations can be selected via the '--config' or '--enable-*' option of "
 "the generated configure script."
 msgstr ""
@@ -8099,53 +8106,53 @@ msgstr "<big><b>Tipo di pacchetto</b></big>"
 msgid "Select the type of package to create:"
 msgstr "Selezionare il tipo di pacchetto da creare:"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:227
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:225
 msgid "<big><b>Select Project</b></big>"
 msgstr "<big><b>Selezione progetto</b></big>"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:246
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:244
 msgid "Select the project or solution for which you want to create a package:"
 msgstr ""
 "Selezionare il progetto o la soluzione di cui si vuole creare un pacchetto:"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:277
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:274
 msgid "<big><b>Package Settings</b></big>"
 msgstr "<big><b>Impostazioni del pacchetto</b></big>"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:314
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:311
 msgid "Save this package configuration in the solution"
 msgstr "Salvare la configurazione del pacchetto nella soluzione"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:345
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:341
 msgid "<big><b>Save Package Configuration</b></big>"
 msgstr "<big><b>Salva configurazione del pacchetto</b></big>"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:368
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:364
 msgid "Enter the name you want to give to this package configuration:"
 msgstr "Inserire un nome per questa configurazione del pacchetto:"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:418
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:414
 msgid "Where do you want to save this configuration?"
 msgstr "Dove salvare questa configurazione?"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:425
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:421
 msgid "Save in a new Packaging Project"
 msgstr "Salvare in un nuovo progetto di pacchettizzazione"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:483
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:480
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:161
 msgid "Project name:"
 msgstr "Nome progetto:"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:493
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:490
 msgid "Create in solution:"
 msgstr "Creare nella soluzione:"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:509
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:506
 msgid "Add to existing Packaging Project"
 msgstr "Aggiungere a un progetto esistente"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:537
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:534
 msgid "Project:"
 msgstr "Progetto"
 
@@ -8168,15 +8175,15 @@ msgstr ""
 msgid "Select the archive file name and format:"
 msgstr "Selezionare il nome dell'archivio e il formato:"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs:118
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs:116
 msgid "Package Settings"
 msgstr "Impostazioni pacchetto"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs:130
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs:128
 msgid "Select the projects and solutions you want to include in the package:"
 msgstr "Selezionare i progetti e le soluzioni da includere nel pacchetto:"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs:150
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs:147
 msgid "Projects/Solutions"
 msgstr "Progetti/Soluzioni"
 
@@ -9611,19 +9618,19 @@ msgstr "Plurale originale (msgid_plural):"
 msgid "Found in:"
 msgstr "Trovata in:"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:494
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:509
 msgid "Singular"
 msgstr "Singolare"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:495
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:510
 msgid "Plural"
 msgstr "Plurale"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:521
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:536
 msgid "Form {0}"
 msgstr "Forma {0}"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:523
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:538
 msgid "Form {0} (e.g. \"{1}\")"
 msgstr "Forma {0} (es. «{1}»)"
 
@@ -9651,90 +9658,91 @@ msgid "Character Escapes"
 msgstr "Caratteri di escape"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:3
-msgid "\\\\\\\\a"
-msgstr ""
+msgid "\\a"
+msgstr "\\a"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:3
 #, fuzzy
-msgid "Matches a bell (alarm) \\\\\\\\u0007."
+msgid "Matches a bell (alarm) \\u0007."
 msgstr "Trova un campanello di sistema (allarme) \\u0007."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:4
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:82
-msgid "\\\\\\\\b"
-msgstr ""
+msgid "\\b"
+msgstr "\\b"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:4
 #, fuzzy
-msgid "Matches a backspace \\\\\\\\u0008 if in a [] character class."
+msgid "Matches a backspace \\u0008 if in a [] character class."
 msgstr "Corrisponde a un backspace \\u0008 se in una classe di caratteri []."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:5
-msgid "\\\\\\\\t"
-msgstr ""
+msgid "\\t"
+msgstr "\\t"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:5
 #, fuzzy
-msgid "Matches a tab \\\\\\\\u0009."
+msgid "Matches a tab \\u0009."
 msgstr "Trova una tabulazione \\u0009."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:6
-msgid "\\\\\\\\r"
-msgstr ""
+msgid "\\r"
+msgstr "\\r"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:6
 #, fuzzy
-msgid "Matches a carriage return \\\\\\\\u000D."
+msgid "Matches a carriage return \\u000D."
 msgstr "Trova un carriage return \\u000D"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:7
-msgid "\\\\\\\\v"
-msgstr ""
+msgid "\\v"
+msgstr "\\v"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:7
 #, fuzzy
-msgid "Matches a vertical tab \\\\\\\\u000B."
+msgid "Matches a vertical tab \\u000B."
 msgstr "Trova una tabulazione verticale \\u000B."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:8
-msgid "\\\\\\\\f"
-msgstr ""
+msgid "\\f"
+msgstr "\\f"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:8
 #, fuzzy
-msgid "Matches a form feed \\\\\\\\u000C."
+msgid "Matches a form feed \\u000C."
 msgstr "Trova un form feed \\u000C."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:9
-msgid "\\\\\\\n"
-msgstr ""
+msgid "\\n"
+msgstr "\\n"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:9
 #, fuzzy
-msgid "Matches a new line \\\\\\\\u000A."
+msgid "Matches a new line \\u000A."
 msgstr "Trova un new line \\u000A."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:10
-msgid "\\\\\\\\e"
-msgstr ""
+msgid "\\e"
+msgstr "\\e"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:10
 #, fuzzy
-msgid "Matches an escape \\\\\\\\u001B."
+msgid "Matches an escape \\u001B."
 msgstr "Trova un escape \\u001B."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:11
 #, fuzzy
-msgid "\\\\\\\\040"
+msgid "\\040"
 msgstr "\\040"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:11
 #, fuzzy
 msgid ""
-"Matches an ASCII character as octal (up to three digits);numbers with no "
-"leading zero are backreferences if they have only one digit or if they "
-"correspond to a capturing group number. (For more information, see "
-"Backreferences.) For example, the character \\\\\\\\040 represents a space."
+"Matches an ASCII character as octal (up to three digits);\n"
+"numbers with no leading zero are backreferences if they have \n"
+"only one digit or if they correspond to a capturing group number. \n"
+"(For more information, see Backreferences.) \n"
+"For example, the character \\040 represents a space."
 msgstr ""
 "Trova un carattere ASCII come ottale (fino a tre cifre);\n"
 "numeri senza uno zero iniziale vengono referenziati all'indietro se hanno\n"
@@ -9744,41 +9752,42 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:17
 #, fuzzy
-msgid "\\\\\\\\x20"
+msgid "\\x20"
 msgstr "\\x20"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:17
 #, fuzzy
 msgid ""
-"Matches an ASCII character using hexadecimal representation(exactly two "
-"digits)."
+"Matches an ASCII character using hexadecimal representation\n"
+"(exactly two digits)."
 msgstr ""
 "Trova un carattere ASCII utilizzando la rappresentazione esadecimale\n"
 "(esattamente due cifre)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:19
 #, fuzzy
-msgid "\\\\\\\\cC"
+msgid "\\cC"
 msgstr "\\cC"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:19
 #, fuzzy
 msgid ""
-"Matches an ASCII control character;for example, \\\\\\\\cC is control-C."
+"Matches an ASCII control character;\n"
+"for example, \\cC is control-C."
 msgstr ""
 "Trova un carattere di controllo ASCII;\n"
 "per esempio \\cC è Control-C."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:21
 #, fuzzy
-msgid "\\\\\\\\u0020"
+msgid "\\u0020"
 msgstr "\\u0020"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:21
 #, fuzzy
 msgid ""
-"Matches a Unicode character using hexadecimal representation(exactly four "
-"digits)."
+"Matches a Unicode character using hexadecimal representation\n"
+"(exactly four digits)."
 msgstr ""
 "Corrisponde a un carattere Unicode utilizzano la rappresentazione "
 "esadecimale\n"
@@ -9868,8 +9877,8 @@ msgstr "[gruppo_caratteri]"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:37
 #, fuzzy
 msgid ""
-"Positive character group.Matches any character in the specified character "
-"group."
+"Positive character group.\n"
+"Matches any character in the specified character group."
 msgstr ""
 "Gruppo caratteri positivi.\n"
 "Corrisponde a qualsiasi carattere specificato nel gruppo di caratteri."
@@ -9881,8 +9890,8 @@ msgstr "[^gruppo_caratteri]"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:39
 #, fuzzy
 msgid ""
-"Negative character group.Matches any character not in the specified "
-"character group."
+"Negative character group.\n"
+"Matches any character not in the specified character group."
 msgstr ""
 "Gruppo di caratteri negativo.\n"
 "Corrisponde a qualsiasi carattere non presente nel gruppo specificato."
@@ -9893,7 +9902,9 @@ msgstr "[primoCarattere-ultimoCarattere]"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:41
 #, fuzzy
-msgid "Character range.Matches any character in a range of characters."
+msgid ""
+"Character range.\n"
+"Matches any character in a range of characters."
 msgstr ""
 "Intervallo caratteri.\n"
 "Corrisponde a un qualsiasi carattere in un intervallo di caratteri."
@@ -9905,8 +9916,9 @@ msgstr "."
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:43
 #, fuzzy
 msgid ""
-"The period character.Matches any character except \\\\\\\n"
-". If modified by the Singleline option, a period character matches any "
+"The period character.\n"
+"Matches any character except \\n. \n"
+"If modified by the Singleline option, a period character matches any "
 "character."
 msgstr ""
 "Il carattere punto.\n"
@@ -9915,14 +9927,15 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:46
 #, fuzzy
-msgid "\\\\\\\\p{name}"
+msgid "\\p{name}"
 msgstr "\\p{nome}"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:46
 #, fuzzy
 msgid ""
-"Matches any character in the Unicode general categoryor named block "
-"specified by name (for example, Ll, Nd, Z, IsGreek, and IsBoxDrawing)."
+"Matches any character in the Unicode general category\n"
+"or named block specified by name (for example, Ll, Nd, Z, IsGreek, and "
+"IsBoxDrawing)."
 msgstr ""
 "Corrisponde a qualsiasi carattere nella categoria generale Unicode\n"
 "o un blocco denominato specificato da nome (per esempio L1, Nd, Z, IsGreek e "
@@ -9930,61 +9943,61 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:49
 #, fuzzy
-msgid "\\\\\\\\P{name}"
+msgid "\\P{name}"
 msgstr "\\P{nome}"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:49
 #, fuzzy
 msgid ""
-"Matches any character not in Unicode general category or named block "
-"specified in name."
+"Matches any character not in Unicode general category \n"
+"or named block specified in name."
 msgstr ""
 "Corrisponde a qualsiasi carattere non nella categoria generale Unicode \n"
 "o un blocco denominato specificato da nome."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:52
-msgid "\\\\\\\\w"
-msgstr ""
+msgid "\\w"
+msgstr "\\w"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:52
 msgid "Matches any word character."
 msgstr "Trova qualsiasi carattere non parola."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:53
-msgid "\\\\\\\\W"
-msgstr ""
+msgid "\\W"
+msgstr "\\W"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:53
 msgid "Matches any nonword character."
 msgstr "Corrisponde a qualsiasi carattere che non sia una parola."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:54
-msgid "\\\\\\\\s"
-msgstr ""
+msgid "\\s"
+msgstr "\\s"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:54
 msgid "Matches any white-space character."
 msgstr "Corrisponde a tutti i caratteri di spazio."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:55
-msgid "\\\\\\\\S"
-msgstr ""
+msgid "\\S"
+msgstr "\\S"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:55
 msgid "Matches any non-white-space character."
 msgstr "Corrisponde a qualsiasi carattere non spazio bianco."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:56
-msgid "\\\\\\\\d"
-msgstr ""
+msgid "\\d"
+msgstr "\\d"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:56
 msgid "Matches any digit character."
 msgstr "Corrisponde a qualsiasi carattere alfabetico."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:57
-msgid "\\\\\\\\D"
-msgstr ""
+msgid "\\D"
+msgstr "\\D"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:57
 msgid "Matches any nondigit character."
@@ -10001,8 +10014,8 @@ msgstr "^"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:61
 #, fuzzy
 msgid ""
-"Specifies that the match must occur at the beginning of the string or the "
-"beginning of the line."
+"Specifies that the match must occur at the beginning of \n"
+"the string or the beginning of the line."
 msgstr ""
 "Specifica che la corrispondenza debba avvenire all'inizio \n"
 "della stringa o della riga."
@@ -10014,64 +10027,65 @@ msgstr "$"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:64
 #, fuzzy
 msgid ""
-"Specifies that the match must occur at the end of the string, before \\\\\\\n"
-" at the end of the string, or at the end of the line."
+"Specifies that the match must occur at the end of the \n"
+"string, before \\n at the end of the string, or at the \n"
+"end of the line."
 msgstr ""
 "Specifica che la corrispondenza debba avvenire alla fine della\n"
 "stringa, prima di \\n alla fine della stringa o alla fine della\n"
 "riga."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:68
-msgid "\\\\\\\\A"
-msgstr ""
+msgid "\\A"
+msgstr "\\A"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:68
 #, fuzzy
 msgid ""
-"Specifies that the match must occur at the beginning of the string (ignores "
-"the Multiline option)."
+"Specifies that the match must occur at the beginning of \n"
+"the string (ignores the Multiline option)."
 msgstr ""
 "Specifica che la corrispondenza debba avvenire all'inizio della stringa \n"
 "(ignora l'opzione multi-riga)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:71
-msgid "\\\\\\\\Z"
-msgstr ""
+msgid "\\Z"
+msgstr "\\Z"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:71
 #, fuzzy
 msgid ""
-"Specifies that the match must occur at the end of the string or before \\\\"
-"\\\n"
-" at the end of the string (ignores the Multiline option)."
+"Specifies that the match must occur at the end of the \n"
+"string or before \\n at the end of the string (ignores \n"
+"the Multiline option)."
 msgstr ""
 "Specifica che la corrispondenza debba avvenire alla fine della \n"
 "stringa o prima di \\n alla fine della stringa (ignora l'opzione\n"
 "multiriga)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:75
-msgid "\\\\\\\\z"
-msgstr ""
+msgid "\\z"
+msgstr "\\z"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:75
 #, fuzzy
 msgid ""
-"Specifies that the match must occur at the end of the string (ignores the "
-"Multiline option)."
+"Specifies that the match must occur at the end of the \n"
+"string (ignores the Multiline option)."
 msgstr ""
 "Specifica che la corrispondenza debba avvenire alla fine \n"
 "della stringa (ignora l'opzione multiriga)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:78
-msgid "\\\\\\\\G"
-msgstr ""
+msgid "\\G"
+msgstr "\\G"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:78
 #, fuzzy
 msgid ""
-"Specifies that the match must occur at the point where the previous match "
-"ended. When used with Match.NextMatch(), this ensures that matches are all "
-"contiguous."
+"Specifies that the match must occur at the point where \n"
+"the previous match ended. When used with Match.NextMatch(), \n"
+"this ensures that matches are all contiguous."
 msgstr ""
 "Specifica che la corrispondenza debba avvenire nel punto in\n"
 "cui la corrispondeza precedente finiva. Quando usato con\n"
@@ -10080,11 +10094,12 @@ msgstr ""
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:82
 #, fuzzy
 msgid ""
-"Specifies that the match must occur on a boundary between \\\\\\\\w "
-"(alphanumeric) and \\\\\\\\W (nonalphanumeric) characters. The match must "
-"occur on word boundaries (that is, at the first or last characters in words "
-"separated by any nonalphanumeric characters). The match can also occur on a "
-"word boundary at the end of the string."
+"Specifies that the match must occur on a boundary \n"
+"between \\w (alphanumeric) and \\W (nonalphanumeric) characters. \n"
+"The match must occur on word boundaries (that is, at the first \n"
+"or last characters in words separated by any nonalphanumeric \n"
+"characters). The match can also occur on a word boundary at \n"
+"the end of the string."
 msgstr ""
 "Specifica che la corrispondenza debba avvenire su un limite\n"
 "tra i caratteri \\w (alfanumerico) e \\W (non alfanumerico).\n"
@@ -10094,12 +10109,12 @@ msgstr ""
 "stringa."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:89
-msgid "\\\\\\\\B"
-msgstr ""
+msgid "\\B"
+msgstr "\\B"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:89
 #, fuzzy
-msgid "Specifies that the match must not occur on a \\\\\\\\b boundary."
+msgid "Specifies that the match must not occur on a \\b boundary."
 msgstr "Specifica che la corrispondenza non debba occorrere su un limite \\b."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:92
@@ -10113,8 +10128,8 @@ msgstr "*"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:93
 #, fuzzy
 msgid ""
-"Specifies zero or more matches; for example, \\\\\\\\w* or (abc)*. "
-"Equivalent to {0,}."
+"Specifies zero or more matches; \n"
+"for example, \\w* or (abc)*. Equivalent to {0,}."
 msgstr ""
 "Specifica zero o più corrispondenze; \n"
 "per esempio, \\w* o (abc)*. Equivalente a {0,}."
@@ -10126,8 +10141,8 @@ msgstr "+"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:96
 #, fuzzy
 msgid ""
-"Specifies one or more matches; for example, \\\\\\\\w+ or (abc)+. Equivalent "
-"to {1,}."
+"Specifies one or more matches; \n"
+"for example, \\w+ or (abc)+. Equivalent to {1,}."
 msgstr ""
 "Specifica una o più corrispondenze; \n"
 "per esempio, \\w+ o (abc)+. Equivalente a {1,}."
@@ -10139,8 +10154,8 @@ msgstr "?"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:99
 #, fuzzy
 msgid ""
-"Specifies zero or one matches; for example, \\\\\\\\w? or (abc)?. Equivalent "
-"to {0,1}."
+"Specifies zero or one matches; \n"
+"for example, \\w? or (abc)?. Equivalent to {0,1}."
 msgstr ""
 "Specifica zero o più corrispondenze, \n"
 "per esempio \\w? o (abc)?. Equivalente a {0,1}."
@@ -10151,7 +10166,9 @@ msgstr "{n}"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:102
 #, fuzzy
-msgid "Specifies exactly n matches; for example, (pizza){2}."
+msgid ""
+"Specifies exactly n matches; \n"
+"for example, (pizza){2}."
 msgstr ""
 "Specifica esattamente n corrispondenze; \n"
 "per esempio (pizza){2}."
@@ -10162,7 +10179,9 @@ msgstr "{n,}"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:105
 #, fuzzy
-msgid "Specifies at least n matches;for example, (abc){2,}."
+msgid ""
+"Specifies at least n matches;\n"
+"for example, (abc){2,}."
 msgstr ""
 "Specifica almeno n corrispondenze;\n"
 "per esempio, (abc){2,}."
@@ -10182,8 +10201,8 @@ msgstr "*?"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:109
 #, fuzzy
 msgid ""
-"Specifies the first match that consumes as few repeats as possible "
-"(equivalent to lazy *)."
+"Specifies the first match that consumes as few repeats \n"
+"as possible (equivalent to lazy *)."
 msgstr ""
 "Specifica la prima corrispondenza che utilizza il minor numero \n"
 "di ripetizioni possibile (equivalente a *)."
@@ -10195,8 +10214,8 @@ msgstr "+?"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:112
 #, fuzzy
 msgid ""
-"Specifies as few repeats as possible, but at least one (equivalent to lazy "
-"+)."
+"Specifies as few repeats as possible, but at least one \n"
+"(equivalent to lazy +)."
 msgstr ""
 "Specifica meno ripetizioni possibili, ma almeno una \n"
 "(equivalente a +)."
@@ -10223,7 +10242,9 @@ msgstr "{n,}?"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:117
 #, fuzzy
-msgid "Specifies as few repeats as possible, but at least n (lazy {n,})."
+msgid ""
+"Specifies as few repeats as possible, \n"
+"but at least n (lazy {n,})."
 msgstr ""
 "Specifica meno ripetizioni possibili,\n"
 "ma almeno n (lazy {n,})."
@@ -10234,7 +10255,9 @@ msgstr "{n,m}?"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:120
 #, fuzzy
-msgid "Specifies as few repeats as possible between n and m (lazy {n,m})."
+msgid ""
+"Specifies as few repeats as possible \n"
+"between n and m (lazy {n,m})."
 msgstr ""
 "Specifica meno ripetizioni possibili\n"
 "tra n e m (lazy {n,m})."
@@ -10250,10 +10273,11 @@ msgstr "(sottoespressione)"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:126
 #, fuzzy
 msgid ""
-"Captures the matched subexpression (or noncapturing group; for more "
-"information, see the ExplicitCapture option in Regular Expression Options). "
-"Captures using () are numbered automatically based on the order of the "
-"opening parenthesis, starting from one. "
+"Captures the matched subexpression (or noncapturing group; \n"
+"for more information, see the ExplicitCapture option in \n"
+"Regular Expression Options). Captures using () are numbered \n"
+"automatically based on the order of the opening parenthesis, \n"
+"starting from one. "
 msgstr ""
 "Acquisisce la sottoespressione corrispondente (o il gruppo \n"
 "di non acquisizione; per maggiori informazioni consultare \n"
@@ -10268,9 +10292,9 @@ msgstr "(?<noem> sottoespressione)"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:132
 #, fuzzy
 msgid ""
-"Captures the matched subexpression into a group name or number name. The "
-"string used for name must not contain any punctuation and cannot begin with "
-"a number. "
+"Captures the matched subexpression into a group name or \n"
+"number name. The string used for name must not contain \n"
+"any punctuation and cannot begin with a number. "
 msgstr ""
 "Acquisisce la sottoespressione corrispondente in un gruppo denominato \n"
 "o numero. La stringa usata per la denominazione non deve contenere \n"
@@ -10283,9 +10307,9 @@ msgstr "(?<nome1-nome2> sottoespressione)"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:136
 #, fuzzy
 msgid ""
-"Deletes the definition of the previously defined group name2 and stores in "
-"group name1 the interval between the previously defined name2 group and the "
-"current group."
+"Deletes the definition of the previously defined group name2 \n"
+"and stores in group name1 the interval between the previously \n"
+"defined name2 group and the current group."
 msgstr ""
 "Cancella la definizione del gruppo nome2 precedentemente\n"
 "definito e salva in nome1 l'intervallo tra il gruppo nome2\n"
@@ -10298,8 +10322,8 @@ msgstr "(?: sottoespressione)"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:140
 #, fuzzy
 msgid ""
-"Noncapturing group. Does not capture the substring matched by the "
-"subexpression."
+"Noncapturing group. \n"
+"Does not capture the substring matched by the subexpression."
 msgstr ""
 "Gruppo non di acquisizione. \n"
 "Non acquisisce la sotto-stringa corrispondente alla sottoespressione."
@@ -10319,8 +10343,9 @@ msgstr "(?= sottoespressione)"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:145
 #, fuzzy
 msgid ""
-"Zero-width positive lookahead assertion.Continues match only if the "
-"subexpression matches at this position on the right."
+"Zero-width positive lookahead assertion.\n"
+"Continues match only if the subexpression matches at this \n"
+"position on the right."
 msgstr ""
 "Asserzione lookahead positiva zero-width.\n"
 "Continua solo se la sottoespressione corrisponde a questa\n"
@@ -10333,9 +10358,10 @@ msgstr "(?! sottoespressione)"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:149
 #, fuzzy
 msgid ""
-"Zero-width negative lookahead assertion.Continues match only if the "
-"subexpression does not matchat this position on the right. For example, \\\\"
-"\\\\b(?!un)\\\\\\\\w+\\\\\\\\b matches words that do not begin with un."
+"Zero-width negative lookahead assertion.\n"
+"Continues match only if the subexpression does not match\n"
+"at this position on the right. \n"
+"For example, \\b(?!un)\\w+\\b matches words that do not begin with un."
 msgstr ""
 "Asserzione negativa lookahead zero-width.\n"
 "Continua solo se la sottoespressione non corrisponde a questa\n"
@@ -10349,9 +10375,11 @@ msgstr "(?<= sottoespressione)"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:154
 #, fuzzy
 msgid ""
-"Zero-width positive lookbehind assertion.Continues match only if the "
-"subexpression matches at thisposition on the left. For example, (?<=19)99 "
-"matches instances of 99 that follow 19.This construct does not backtrack."
+"Zero-width positive lookbehind assertion.\n"
+"Continues match only if the subexpression matches at this\n"
+"position on the left. \n"
+"For example, (?<=19)99 matches instances of 99 that follow 19.\n"
+"This construct does not backtrack."
 msgstr ""
 "Asserzione lookbehind negativa zero-width.\n"
 "Continua solo se la sottoespressione corrisponde a questa\n"
@@ -10366,8 +10394,9 @@ msgstr "(?<! sottoespressione)"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:160
 #, fuzzy
 msgid ""
-"Zero-width negative lookbehind assertion.Continues match only if the "
-"subexpression does not match at the position on the left."
+"Zero-width negative lookbehind assertion.\n"
+"Continues match only if the subexpression does not \n"
+"match at the position on the left."
 msgstr ""
 "Asserzione lookbehind negativa zero-width.\n"
 "Continua solo se la sottoespressione non corrisponde alla \n"
@@ -10379,10 +10408,10 @@ msgstr "(?> sottoespressione)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:164
 msgid ""
-"Nonbacktracking subexpression (also known as a 'greedy' subexpression.)The "
-"subexpression is fully matched once, and then does not participate piecemeal "
-"in backtracking. (That is, the subexpression matches only stringsthat would "
-"be matched by the subexpression alone.)"
+"Nonbacktracking subexpression (also known as a 'greedy' subexpression.)\n"
+"The subexpression is fully matched once, and then does not participate \n"
+"piecemeal in backtracking. (That is, the subexpression matches only strings\n"
+"that would be matched by the subexpression alone.)"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:171
@@ -10391,32 +10420,30 @@ msgstr "Costrutti backreference"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:172
 #, fuzzy
-msgid ""
-"\\\\\\\n"
-"umber"
-msgstr "\\numero"
+msgid "\\number"
+msgstr "$numero"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:172
 #, fuzzy
 msgid ""
-"Backreference. For example, (\\\\\\\\w)\\\\\\\\1 finds doubled word "
-"characters."
+"Backreference. \n"
+"For example, (\\w)\\1 finds doubled word characters."
 msgstr ""
 "Backreference. \n"
 "Per esempio (\\w)\\1 trova i caratteri alfanumerici doppi."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:175
 #, fuzzy
-msgid "\\\\\\\\k<name>"
+msgid "\\k<name>"
 msgstr "\\k<nome>"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:175
 #, fuzzy
 msgid ""
-"Named backreference. For example, (?<char>\\\\\\\\w)\\\\\\\\k<char> finds "
-"doubled word characters. The expression (?<43>\\\\\\\\w)\\\\\\\\43 does the "
-"same. You can use single quotes instead of angle brackets; for example, \\\\"
-"\\\\k'char'."
+"Named backreference. \n"
+"For example, (?<char>\\w)\\k<char> finds doubled word characters. \n"
+"The expression (?<43>\\w)\\43 does the same. You can use single quotes\n"
+" instead of angle brackets; for example, \\k'char'."
 msgstr ""
 "Backreference denominato. \n"
 "Per esempio, (?<char>\\w)\\k<char> trova caratteri alfanumerici doppi.\n"
@@ -10434,7 +10461,7 @@ msgstr "|"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:183
 #, fuzzy
 msgid ""
-"Matches any one of the terms separated by the | (vertical bar) character; "
+"Matches any one of the terms separated by the | (vertical bar) character; \n"
 "for example, cat|dog|tiger. The leftmost successful match wins."
 msgstr ""
 "Corrisponde a qualsiasi termine separato dal carattere | (barra "
@@ -10460,10 +10487,11 @@ msgstr "(?(nome)yes|no)"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:187
 #, fuzzy
 msgid ""
-"Matches the 'yes' part if the named capture string has a match; otherwise, "
-"matches the 'no' part. The 'no' part can be omitted.If the given name does "
-"not correspond to the name or number of a capturing group used in this "
-"expression, the alternation construct is interpreted as an expression test."
+"Matches the 'yes' part if the named capture string has a match; \n"
+"otherwise, matches the 'no' part. The 'no' part can be omitted.\n"
+"If the given name does not correspond to the name or number of a \n"
+"capturing group used in this expression, the alternation construct \n"
+"is interpreted as an expression test."
 msgstr ""
 "Corrisponde alla parte \"yes\" se la stringa di acquisizione denominata \n"
 "ha una corrispondenza, altrimenti corrisponde alla parte \"no\". È "
@@ -10484,8 +10512,8 @@ msgstr "(?imnsx-imnsx)"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:196
 #, fuzzy
 msgid ""
-"Sets or disables options such as case insensitivity to beturned on or off in "
-"the middle of a pattern."
+"Sets or disables options such as case insensitivity to be\n"
+"turned on or off in the middle of a pattern."
 msgstr ""
 "Imposta o disabilita le opzione come la distinzione maiuscole minuscole\n"
 "affinché possano essere attivate a metà di un criterio."
@@ -10497,8 +10525,8 @@ msgstr "(?# )"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:199
 #, fuzzy
 msgid ""
-"Inline comment inserted within a regular expression. The comment terminates "
-"at the first closing parenthesis character."
+"Inline comment inserted within a regular expression. \n"
+"The comment terminates at the first closing parenthesis character."
 msgstr ""
 "Commenti in linea inseriti all'interno di un'espressione regolare. \n"
 "Il commento termina alla prima parentesi di chiusura."
@@ -10510,8 +10538,8 @@ msgstr "# [fino a fine riga]"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:202
 #, fuzzy
 msgid ""
-"X-mode comment. The comment begins at an unescaped # and continues to the "
-"end of the line."
+"X-mode comment. The comment begins at an unescaped # and \n"
+"continues to the end of the line."
 msgstr ""
 "Commento in modalità X. Il commento inizia con un carattere # senza \n"
 "codice di escape e continua fino alla fine della riga."
@@ -10855,6 +10883,12 @@ msgstr "Namespace predefinito:"
 #, fuzzy
 msgid "Parse System Tags"
 msgstr "Pacchetti di sistema"
+
+#, fuzzy
+#~ msgid ""
+#~ "\\\\\\\n"
+#~ "umber"
+#~ msgstr "\\numero"
 
 #~ msgid "The help viewer could not be loaded."
 #~ msgstr "Impossibile caricare il visualizzatore di documentazione."
@@ -11693,63 +11727,6 @@ msgstr "Pacchetti di sistema"
 
 #~ msgid "Widget Libraries"
 #~ msgstr "Librerie widget"
-
-#~ msgid "\\A"
-#~ msgstr "\\A"
-
-#~ msgid "\\B"
-#~ msgstr "\\B"
-
-#~ msgid "\\D"
-#~ msgstr "\\D"
-
-#~ msgid "\\G"
-#~ msgstr "\\G"
-
-#~ msgid "\\S"
-#~ msgstr "\\S"
-
-#~ msgid "\\W"
-#~ msgstr "\\W"
-
-#~ msgid "\\Z"
-#~ msgstr "\\Z"
-
-#~ msgid "\\a"
-#~ msgstr "\\a"
-
-#~ msgid "\\b"
-#~ msgstr "\\b"
-
-#~ msgid "\\d"
-#~ msgstr "\\d"
-
-#~ msgid "\\e"
-#~ msgstr "\\e"
-
-#~ msgid "\\f"
-#~ msgstr "\\f"
-
-#~ msgid "\\n"
-#~ msgstr "\\n"
-
-#~ msgid "\\r"
-#~ msgstr "\\r"
-
-#~ msgid "\\s"
-#~ msgstr "\\s"
-
-#~ msgid "\\t"
-#~ msgstr "\\t"
-
-#~ msgid "\\v"
-#~ msgstr "\\v"
-
-#~ msgid "\\w"
-#~ msgstr "\\w"
-
-#~ msgid "\\z"
-#~ msgstr "\\z"
 
 #~ msgid "\n"
 #~ msgstr "\n"
