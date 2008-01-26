@@ -1,3 +1,10 @@
+2008-01-25  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/LibSvnClient.cs:
+	  Add a workaround for [MarshalAs (UnmanagedType.SysInt)] not working.
+	  Fixes "Bug 325391 - Crash when attempting to browse registered repo" but
+	  related issues remain in the binding.
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.addin.xml:

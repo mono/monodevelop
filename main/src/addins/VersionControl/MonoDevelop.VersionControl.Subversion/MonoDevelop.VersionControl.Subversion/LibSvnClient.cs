@@ -293,7 +293,13 @@ namespace MonoDevelop.VersionControl.Subversion {
 		internal struct svn_dirent_t {
 			public IntPtr kind;
 			public long size;
-			[MarshalAs (UnmanagedType.SysInt)] public int has_props;
+			//HACK: [MarshalAs (UnmanagedType.SysInt)] doesn't work on mono, so hack around 32/64 issue
+			public IntPtr _has_props;
+			public int has_props {
+				get {
+					return _has_props.ToInt32 ();
+				}
+			}
 			public int created_rev;
 			public long time; // created
 			[MarshalAs (UnmanagedType.LPStr)] public string last_author;
