@@ -224,6 +224,41 @@ namespace Mono.TextEditor
 					RedrawLine (Caret.Line);
 				}
 			};
+			ISegment oldSelection = null;
+			this.TextEditorData.SelectionChanged += delegate {
+				ISegment selection = this.TextEditorData.SelectionRange;
+				int startLine    = selection != null ? Document.Splitter.GetLineNumberForOffset (selection.Offset) : -1;
+				int endLine      = selection != null ? Document.Splitter.GetLineNumberForOffset (selection.EndOffset) : -1;
+				int oldStartLine = oldSelection != null ? Document.Splitter.GetLineNumberForOffset (oldSelection.Offset) : -1;
+				int oldEndLine   = oldSelection != null ? Document.Splitter.GetLineNumberForOffset (oldSelection.EndOffset) : -1;
+				if (endLine < 0 && startLine >=0)
+					endLine = Splitter.LineCount;
+				if (oldEndLine < 0 && oldStartLine >=0)
+					oldEndLine = Splitter.LineCount;
+				int from = oldEndLine, to = endLine;
+				if (selection != null && oldSelection != null) {
+					if (startLine != oldStartLine && endLine != oldEndLine) {
+						from = System.Math.Min (startLine, oldStartLine);
+						to   = System.Math.Max (endLine, oldEndLine);
+					} else if (startLine != oldStartLine) {
+						from = startLine;
+						to   = oldStartLine;
+					} else if (endLine != oldEndLine) {
+						from = endLine;
+						to   = oldEndLine;
+					}
+			    } else {
+					if (selection == null) {
+						from = oldStartLine;
+						to = oldEndLine;
+					} else if (oldSelection == null) {
+						from = startLine;
+						to = endLine;
+					} 
+				}
+				oldSelection = selection;
+				this.RedrawLines (System.Math.Min (from, to), System.Math.Max (from, to));
+			};
 			Document.Splitter.LinesInserted  += delegate (object sender, LineEventArgs e) {
 				int lineNumber = Document.Splitter.GetLineNumberForOffset (e.Line.Offset);
 				RedrawFromLine (lineNumber);
@@ -244,12 +279,6 @@ namespace Mono.TextEditor
 				foreach (DocumentUpdateRequest request in Document.UpdateRequests) {
 					request.Update (this);
 				}
-			};
-			this.textEditorData.SelectionStartChanged += delegate {
-				this.QueueDraw ();
-			};
-			this.textEditorData.SelectionEndChanged += delegate {
-				this.QueueDraw ();
 			};
 			this.ColorStyle = new DefaultStyle (this);
 			
@@ -317,14 +346,13 @@ namespace Mono.TextEditor
 		
 		public void RedrawLines (int start, int end)
 		{
-//			Console.WriteLine ("redraw:" + logicalLine);
-			this.QueueDrawArea (0, (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (start) * LineHeight, 
-			                    this.Allocation.Width, 
-			                    (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (end) * LineHeight + LineHeight);
+			System.Console.WriteLine(start + " -- " + end);
+			int visualStart = (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (start) * LineHeight;
+			int visualEnd   = (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (end) * LineHeight + LineHeight;
+			this.QueueDrawArea (0, visualStart, this.Allocation.Width, visualEnd - visualStart );
 		}
 		public void RedrawFromLine (int logicalLine)
 		{
-//			Console.WriteLine ("redraw from :" + logicalLine);
 			this.QueueDrawArea (0, (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (logicalLine) * LineHeight, this.Allocation.Width, this.Allocation.Height);
 		}
 		
@@ -902,7 +930,6 @@ namespace Mono.TextEditor
 					inSelectionDrag = true;
 					Caret.Location = clickLocation; 
 					this.caretBlink = false;
-					this.QueueDraw ();
 				}
 			}
 		}
@@ -927,11 +954,12 @@ namespace Mono.TextEditor
 					SelectionMoveLeft.StartSelection (this.textEditorData);
 				}
 				Caret.PreserveSelection = true;
+				int oldLine = Caret.Line;
 				Caret.Location = VisualToDocumentLocation (x, y);
 				Caret.PreserveSelection = false;
 				SelectionMoveLeft.EndSelection (this.textEditorData);
 				this.caretBlink = false;
-				this.QueueDraw ();
+//				this.RedrawLines (System.Math.Min (oldLine, Caret.Line), System.Math.Max (oldLine, Caret.Line));
 			}
 		}
 		
@@ -999,7 +1027,7 @@ namespace Mono.TextEditor
 				startLine = (area.Top + reminder) / this.LineHeight;
 				endLine   = startLine + (area.Height / this.LineHeight) - 1;
 			}
-//			System.Console.WriteLine(startLine + " -- " + endLine);
+//			System.Console.WriteLine("draw" + startLine + " -- to: " + endLine);
 			for (int visualLineNumber = startLine; visualLineNumber <= endLine; visualLineNumber++) {
 				int curX = 0;
 				int logicalLineNumber = Document.VisualToLogicalLine (visualLineNumber + firstLine);

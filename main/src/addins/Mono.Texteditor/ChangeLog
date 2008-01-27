@@ -1,3 +1,13 @@
+2008-01-27  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextEditorData.cs, Mono.TextEditor/TextEditor.cs:
+	  Optimized re-draws a bit.
+
+2008-01-27  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextEditorData.cs, Mono.TextEditor/TextEditor.cs:
+	  Optimized re-draws a bit.
+
 2008-01-26  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/DefaultEditActions.cs,

@@ -109,8 +109,9 @@ namespace Mono.TextEditor
 				LineSegment startLine = document.Splitter.GetByOffset (start);
 				LineSegment endLine   = document.Splitter.GetByOffset (end);
 				this.Caret.Offset = end;
-				SelectionStart = new SelectionMarker (startLine, start - startLine.Offset);
-				SelectionEnd   = new SelectionMarker (endLine, end - endLine.Offset);
+				selectionStart = new SelectionMarker (startLine, start - startLine.Offset);
+				selectionEnd   = new SelectionMarker (endLine, end - endLine.Offset);
+				OnSelectionChanged (EventArgs.Empty);				
 			}
 		}
 		
@@ -146,8 +147,7 @@ namespace Mono.TextEditor
 			}
 			set {
 				selectionStart = value;
-				if (SelectionStartChanged != null) 
-					SelectionStartChanged (this, EventArgs.Empty);
+				OnSelectionChanged (EventArgs.Empty);
 			}
 		}
 
@@ -157,14 +157,14 @@ namespace Mono.TextEditor
 			}
 			set {
 				selectionEnd = value;
-				if (SelectionEndChanged != null) 
-					SelectionEndChanged (this, EventArgs.Empty);
+				OnSelectionChanged (EventArgs.Empty);
 			}
 		}
 		
 		public void ClearSelection ()
 		{
-			SelectionStart = SelectionEnd = null;
+			this.selectionStart = this.selectionEnd = null;
+			OnSelectionChanged (EventArgs.Empty);
 		}
 		
 		public void DeleteSelectedText ()
@@ -175,7 +175,11 @@ namespace Mono.TextEditor
 			ClearSelection();
 		}
 		
-		public event EventHandler SelectionEndChanged;
-		public event EventHandler SelectionStartChanged;
+		public event EventHandler SelectionChanged;
+		protected virtual void OnSelectionChanged (EventArgs args)
+		{
+			if (SelectionChanged != null) 
+				SelectionChanged (this, args);
+		}
 	}
 }
