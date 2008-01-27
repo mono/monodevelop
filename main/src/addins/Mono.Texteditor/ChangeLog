@@ -1,5 +1,10 @@
 2008-01-27  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextEditor.cs:
+	  Improved drag & drop support.
+
+2008-01-27  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditor.cs, Mono.TextEditor/DefaultEditActions.cs:
 	  Paste now requests a redraw.
 

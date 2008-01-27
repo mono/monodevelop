@@ -447,18 +447,23 @@ namespace Mono.TextEditor
 		}
 		
 		bool dragOver = false;
-		string text, rtf;
+		CopyAction dragContents = null;
 		DocumentLocation defaultCaretPos, dragCaretPos;
 		ISegment selection = null;
 		
 		protected override void OnDragDataDelete (DragContext context)
 		{
-			if (Caret.Offset > selection.Offset)
-				Caret.Offset -= selection.Length;
+			int offset = Caret.Offset;
 			Document.Buffer.Remove (selection.Offset, selection.Length);
+			if (offset >= selection.Offset) {
+				Caret.PreserveSelection = true;
+				Caret.Offset = offset - selection.Length;
+				Caret.PreserveSelection = false;
+			}
+			selection = null;
 			base.OnDragDataDelete (context); 
 		}
-		
+
 		protected override void OnDragLeave (DragContext context, uint time_)
 		{
 			if (dragOver) {
@@ -472,13 +477,9 @@ namespace Mono.TextEditor
 		
 		protected override void OnDragDataGet (DragContext context, SelectionData selection_data, uint info, uint time_)
 		{
-			switch (info) {
-			case CopyAction.TextType:
-				selection_data.Text = text;
-				break;
-			case CopyAction.RichTextType:
-				selection_data.Set (CopyAction.RTF_ATOM, CopyAction.UTF8_FORMAT, System.Text.Encoding.UTF8.GetBytes (rtf.ToString ()));
-				break;
+			if (this.dragContents != null) {
+				this.dragContents.SetData (selection_data, info);
+				this.dragContents = null;
 			}
 			base.OnDragDataGet (context, selection_data, info, time_);
 		}
@@ -488,34 +489,37 @@ namespace Mono.TextEditor
 			if (selection_data.Length > 0 && selection_data.Format == 8) {
 				StringBuilder builder = new StringBuilder (selection_data.Text);
 				Caret.Location = dragCaretPos;
-				if (selection.Offset > Caret.Offset)
+				int offset = Caret.Offset;
+				if (selection != null && selection.Offset >= offset)
 					selection.Offset += builder.Length;
-				this.Buffer.Insert (Caret.Offset, builder);
-				Caret.Offset += builder.Length;
-				dragOver = false;
-				context = null;
-				Gtk.Drag.Finish (context, true, false, time_);
+				this.Buffer.Insert (offset, builder);
+				Caret.Offset = offset + builder.Length;
+				this.TextEditorData.SelectionRange = new Segment (offset, builder.Length);
+				dragOver  = false;
+				context   = null;
 			}
-			Gtk.Drag.Finish (context, false, false, time_);
 			base.OnDragDataReceived (context, x, y, selection_data, info, time_);
 		}
 
 		protected override bool OnDragMotion (DragContext context, int x, int y, uint time_)
 		{
+			if (!this.HasFocus)
+				this.GrabFocus ();
 			if (!dragOver) {
 				defaultCaretPos = Caret.Location; 
 			}
 			dragOver = true;
 			Caret.PreserveSelection = true;
 			dragCaretPos = VisualToDocumentLocation (x - this.XOffset, y);
-			Caret.Location = dragCaretPos; 
-			Caret.PreserveSelection = false;
-			
-			if (selection != null && Caret.Offset >= this.selection.Offset && Caret.Offset < this.selection.EndOffset) {
+			int offset = Document.LocationToOffset (dragCaretPos);
+			if (selection != null && offset >= this.selection.Offset && offset < this.selection.EndOffset) {
 				Gdk.Drag.Status (context, DragAction.Default, time_);
+				Caret.Location = defaultCaretPos;
 			} else {
 				Gdk.Drag.Status (context, context.SuggestedAction, time_);
+				Caret.Location = dragCaretPos; 
 			}
+			Caret.PreserveSelection = false;
 			return true;
 		}
 
@@ -528,10 +532,10 @@ namespace Mono.TextEditor
 				oldMargin.MouseLeft ();
 			
 			if (inDrag && margin == this) {
-				selection = this.TextEditorData.SelectionRange;
-				text = Document.Buffer.GetTextAt (selection);
-				rtf  = CopyAction.GenerateRtf (TextEditorData);
+				dragContents = new CopyAction ();
+				dragContents.CopyData (this.TextEditorData);
 				Gtk.Drag.Begin (this, CopyAction.TargetList, DragAction.Move | DragAction.Copy, 1, e);
+				selection = this.TextEditorData.SelectionRange;
 				inDrag = false;
 			} else if (margin != null) {
 				margin.MouseDragged ((int)(e.X - startPos), (int)e.Y, mousePressed);
@@ -687,7 +691,7 @@ namespace Mono.TextEditor
 					                                            lineArea.Width - rulerX, lineArea.Height));
 				} else {
 					win.DrawRectangle (gc, true, lineArea);
-				}*/
+				} */
 			}
 			
 			
@@ -946,7 +950,7 @@ namespace Mono.TextEditor
 					SelectionMoveLeft.StartSelection (this.textEditorData);
 				}
 				Caret.PreserveSelection = true;
-				int oldLine = Caret.Line;
+//				int oldLine = Caret.Line;
 				Caret.Location = VisualToDocumentLocation (x, y);
 				Caret.PreserveSelection = false;
 				SelectionMoveLeft.EndSelection (this.textEditorData);

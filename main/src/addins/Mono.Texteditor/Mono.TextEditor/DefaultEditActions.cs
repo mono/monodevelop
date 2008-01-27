@@ -669,12 +669,12 @@ namespace Mono.TextEditor
 		public const int TextType     = 1;		
 		public const int RichTextType = 2;
 		
-		public const int UTF8_FORMAT = 8;
+		const int UTF8_FORMAT = 8;
 		
 		public static readonly Gdk.Atom CLIPBOARD_ATOM = Gdk.Atom.Intern ("CLIPBOARD", false);
-		public static readonly Gdk.Atom RTF_ATOM = Gdk.Atom.Intern ("text/rtf", false);
+		static readonly Gdk.Atom RTF_ATOM = Gdk.Atom.Intern ("text/rtf", false);
 		
-		void ClipboardGetFunc (Clipboard clipboard, SelectionData selection_data, uint info)
+		public void SetData (SelectionData selection_data, uint info)
 		{
 			switch (info) {
 			case TextType:
@@ -685,6 +685,11 @@ namespace Mono.TextEditor
 				break;
 			}
 		}
+		
+		void ClipboardGetFunc (Clipboard clipboard, SelectionData selection_data, uint info)
+		{
+			SetData (selection_data, info);
+		}
 		void ClipboardClearFunc (Clipboard clipboard)
 		{
 			// NOTHING ?
@@ -692,8 +697,11 @@ namespace Mono.TextEditor
 		
 		string text;
 		string rtf;
-		public static string GenerateRtf (TextEditorData data)
+		static string GenerateRtf (TextEditorData data)
 		{
+			if (!data.IsSomethingSelected) {
+				return "";
+			}
 			StringBuilder rtfText = new StringBuilder ();
 			List<Gdk.Color> colorList = new List<Gdk.Color> ();
 
@@ -804,7 +812,6 @@ namespace Mono.TextEditor
 			rtf.Append (@"\cf1");
 			rtf.Append (rtfText.ToString ());
 			rtf.Append("}");
-			System.Console.WriteLine(rtf);
 			return rtf.ToString ();
 		}
 		
@@ -816,15 +823,20 @@ namespace Mono.TextEditor
 				return list;
 			}
 		}
-			
-			
+		
+		public void CopyData (TextEditorData data)
+		{
+			if (data.IsSomethingSelected) {
+				text = data.Document.Buffer.GetTextAt (data.SelectionRange);
+				rtf  = GenerateRtf (data);
+			}
+		}
+		
 		public override void Run (TextEditorData data)
 		{
 			if (data.IsSomethingSelected) {
 				Clipboard clipboard = Clipboard.Get (CopyAction.CLIPBOARD_ATOM);
-				
-				text = data.Document.Buffer.GetTextAt (data.SelectionRange);
-				rtf  = GenerateRtf (data);
+				CopyData (data);
 				
 				clipboard.SetWithData ((Gtk.TargetEntry[])TargetList, ClipboardGetFunc, ClipboardClearFunc);
 			}
