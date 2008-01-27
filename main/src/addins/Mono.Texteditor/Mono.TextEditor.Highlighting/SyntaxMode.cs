@@ -34,6 +34,7 @@ namespace Mono.TextEditor.Highlighting
 {
 	public class SyntaxMode : Rule
 	{
+		public static readonly SyntaxMode Default = new SyntaxMode ();
 		string mimeType;
 		List<Rule> rules = new List<Rule> ();
 		

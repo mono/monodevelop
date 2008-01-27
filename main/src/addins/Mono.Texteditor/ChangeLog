@@ -1,5 +1,12 @@
 2008-01-27  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor/BookmarkMargin.cs,
+	  Mono.TextEditor.Highlighting/SyntaxMode.cs: No/missing syntax
+	  highlighting is now handled with a default syntax highlighting.
+
+2008-01-27  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/FoldMarkerMargin.cs, Mono.TextEditor/IMargin.cs,
 	  Mono.TextEditor/TextEditor.cs: Text cursor is now only for the text
 	  region.

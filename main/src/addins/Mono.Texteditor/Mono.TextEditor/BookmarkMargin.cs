@@ -58,7 +58,7 @@ namespace Mono.TextEditor
 			if (lineNumber < editor.Splitter.LineCount) {
 				LineSegment lineSegment = editor.Document.GetLine (lineNumber);
 				lineSegment.IsBookmarked = !lineSegment.IsBookmarked;
-				editor.QueueDraw ();
+				editor.RedrawLine (lineNumber);
 			}
 		}
 		

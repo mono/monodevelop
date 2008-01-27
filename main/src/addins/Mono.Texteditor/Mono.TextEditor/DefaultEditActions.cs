@@ -715,11 +715,8 @@ namespace Mono.TextEditor
 			int curColor  = -1;
 			do {
 				line = iter.Current;
-				Chunk[] chunks = data.Document.SyntaxMode.GetChunks (data.Document, 
-				                                                     data.ColorStyle, 
-				                                                     line, 
-				                                                     line.Offset, 
-				                                                     line.Offset + line.EditableLength);
+				Mono.TextEditor.Highlighting.SyntaxMode mode = data.Document.SyntaxMode != null && TextEditorOptions.Options.EnableSyntaxHighlighting ? data.Document.SyntaxMode : Mono.TextEditor.Highlighting.SyntaxMode.Default;
+				Chunk[] chunks = mode.GetChunks (data.Document, data.ColorStyle, line, line.Offset, line.Offset + line.EditableLength);
 				foreach (Chunk chunk in chunks) {
 					int start = System.Math.Max (selection.Offset, chunk.Offset);
 					int end   = System.Math.Min (chunk.EndOffset, selection.EndOffset);

@@ -441,6 +441,8 @@ namespace Mono.TextEditor
 
 		protected override bool OnButtonReleaseEvent (EventButton e)
 		{
+			if (inDrag) 
+				Caret.Location = this.clickLocation;
 			mousePressed = false;
 			inDrag = false;
 			return base.OnButtonReleaseEvent (e);
@@ -741,48 +743,43 @@ namespace Mono.TextEditor
 				}
 			}
 			if (line.EndOffset - offset > 0) {
-				if (Document.SyntaxMode != null && TextEditorOptions.Options.EnableSyntaxHighlighting) {
-					Chunk[] chunks = Document.SyntaxMode.GetChunks (Document, TextEditorData.ColorStyle, line, offset, line.Offset + line.EditableLength - offset);
-					int start  = offset;
-					int xStart = xPos;
-					offset = line.Offset + line.EditableLength - offset;
-					Gdk.Color selectedTextColor = ColorStyle.SelectedFg;
-					int selectionStart = textEditorData.SelectionStart != null ? textEditorData.SelectionStart.Segment.Offset + textEditorData.SelectionStart.Column : -1;
-					int selectionEnd = textEditorData.SelectionEnd != null ? textEditorData.SelectionEnd.Segment.Offset + textEditorData.SelectionEnd.Column : -1;
-					if (selectionStart > selectionEnd) {
-						int tmp = selectionEnd;
-						selectionEnd = selectionStart;
-						selectionStart = tmp;
-					}
+				SyntaxMode mode = Document.SyntaxMode != null && TextEditorOptions.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
+				Chunk[] chunks = mode.GetChunks (Document, TextEditorData.ColorStyle, line, offset, line.Offset + line.EditableLength - offset);
+				int start  = offset;
+				int xStart = xPos;
+				offset = line.Offset + line.EditableLength - offset;
+				Gdk.Color selectedTextColor = ColorStyle.SelectedFg;
+				int selectionStart = textEditorData.SelectionStart != null ? textEditorData.SelectionStart.Segment.Offset + textEditorData.SelectionStart.Column : -1;
+				int selectionEnd = textEditorData.SelectionEnd != null ? textEditorData.SelectionEnd.Segment.Offset + textEditorData.SelectionEnd.Column : -1;
+				if (selectionStart > selectionEnd) {
+					int tmp = selectionEnd;
+					selectionEnd = selectionStart;
+					selectionStart = tmp;
+				}
 //					Console.WriteLine ("#" + chunks.Length);
-					foreach (Chunk chunk in chunks) {
+				foreach (Chunk chunk in chunks) {
 //						Console.WriteLine (chunk + " style:" + chunk.Style);
-						layout.FontDescription.Weight = chunk.Style.Bold ? Pango.Weight.Bold : Pango.Weight.Normal;
-						layout.FontDescription.Style = chunk.Style.Italic ? Pango.Style.Italic : Pango.Style.Normal;
-						if (chunk.Offset >= selectionStart && chunk.EndOffset <= selectionEnd) {
-							DrawTextWithHighlightedWs (win, gc, selectedTextColor, ref xPos, y, Document.Buffer.GetTextAt (chunk));
-						} else if (chunk.Offset >= selectionStart && chunk.Offset < selectionEnd && chunk.EndOffset > selectionEnd) {
-							DrawTextWithHighlightedWs (win, gc, selectedTextColor, ref xPos, y, Document.Buffer.GetTextAt (chunk.Offset, selectionEnd - chunk.Offset));
-							DrawTextWithHighlightedWs (win, gc, chunk.Style.Color, ref xPos, y, Document.Buffer.GetTextAt (selectionEnd, chunk.EndOffset - selectionEnd));
-						} else if (chunk.Offset < selectionStart && chunk.EndOffset > selectionStart && chunk.EndOffset <= selectionEnd) {
-							DrawTextWithHighlightedWs (win, gc, chunk.Style.Color, ref xPos, y, Document.Buffer.GetTextAt (chunk.Offset, selectionStart - chunk.Offset));
-							DrawTextWithHighlightedWs (win, gc, selectedTextColor, ref xPos, y, Document.Buffer.GetTextAt (selectionStart, chunk.EndOffset - selectionStart));
-						} else if (chunk.Offset < selectionStart && chunk.EndOffset > selectionEnd) {
-							DrawTextWithHighlightedWs (win, gc, chunk.Style.Color, ref xPos, y, Document.Buffer.GetTextAt (chunk.Offset, selectionStart - chunk.Offset));
-							DrawTextWithHighlightedWs (win, gc, selectedTextColor, ref xPos, y, Document.Buffer.GetTextAt (selectionStart, selectionEnd - selectionStart));
-							DrawTextWithHighlightedWs (win, gc, chunk.Style.Color, ref xPos, y, Document.Buffer.GetTextAt (selectionEnd, chunk.EndOffset - selectionEnd));
-						} else 
-							DrawTextWithHighlightedWs (win, gc, chunk.Style.Color, ref xPos, y, Document.Buffer.GetTextAt (chunk));
+					layout.FontDescription.Weight = chunk.Style.Bold ? Pango.Weight.Bold : Pango.Weight.Normal;
+					layout.FontDescription.Style = chunk.Style.Italic ? Pango.Style.Italic : Pango.Style.Normal;
+					if (chunk.Offset >= selectionStart && chunk.EndOffset <= selectionEnd) {
+						DrawTextWithHighlightedWs (win, gc, selectedTextColor, ref xPos, y, Document.Buffer.GetTextAt (chunk));
+					} else if (chunk.Offset >= selectionStart && chunk.Offset < selectionEnd && chunk.EndOffset > selectionEnd) {
+						DrawTextWithHighlightedWs (win, gc, selectedTextColor, ref xPos, y, Document.Buffer.GetTextAt (chunk.Offset, selectionEnd - chunk.Offset));
+						DrawTextWithHighlightedWs (win, gc, chunk.Style.Color, ref xPos, y, Document.Buffer.GetTextAt (selectionEnd, chunk.EndOffset - selectionEnd));
+					} else if (chunk.Offset < selectionStart && chunk.EndOffset > selectionStart && chunk.EndOffset <= selectionEnd) {
+						DrawTextWithHighlightedWs (win, gc, chunk.Style.Color, ref xPos, y, Document.Buffer.GetTextAt (chunk.Offset, selectionStart - chunk.Offset));
+						DrawTextWithHighlightedWs (win, gc, selectedTextColor, ref xPos, y, Document.Buffer.GetTextAt (selectionStart, chunk.EndOffset - selectionStart));
+					} else if (chunk.Offset < selectionStart && chunk.EndOffset > selectionEnd) {
+						DrawTextWithHighlightedWs (win, gc, chunk.Style.Color, ref xPos, y, Document.Buffer.GetTextAt (chunk.Offset, selectionStart - chunk.Offset));
+						DrawTextWithHighlightedWs (win, gc, selectedTextColor, ref xPos, y, Document.Buffer.GetTextAt (selectionStart, selectionEnd - selectionStart));
+						DrawTextWithHighlightedWs (win, gc, chunk.Style.Color, ref xPos, y, Document.Buffer.GetTextAt (selectionEnd, chunk.EndOffset - selectionEnd));
+					} else 
+						DrawTextWithHighlightedWs (win, gc, chunk.Style.Color, ref xPos, y, Document.Buffer.GetTextAt (chunk));
+				}
+				if (line.Markers != null) {
+					foreach (TextMarker marker in line.Markers) {
+						marker.Draw (this, win, start, line.Offset + line.EditableLength, y, xStart, xPos);
 					}
-					if (line.Markers != null) {
-						foreach (TextMarker marker in line.Markers) {
-							marker.Draw (this, win, start, line.Offset + line.EditableLength, y, xStart, xPos);
-						}
-					}
-				} else {
-					layout.FontDescription.Weight = Pango.Weight.Normal;
-					Gdk.Color textColor = isSelected ? this.Style.Foreground (Gtk.StateType.Selected) : ColorStyle.Default;
-					DrawTextWithHighlightedWs (win, gc, textColor, ref xPos, y, Document.Buffer.GetTextAt (offset, line.Offset + line.EditableLength - offset));
 				}
 				if (TextEditorOptions.Options.ShowEolMarkers) 
 					DrawEolMarker (win, gc, ref xPos, y);
@@ -900,12 +897,13 @@ namespace Mono.TextEditor
 		}
 		bool inSelectionDrag = false;
 		bool inDrag = false;
+		DocumentLocation clickLocation;
 		public void MousePressed (int button, int x, int y, bool doubleClick)
 		{
 			inSelectionDrag = false;
 			inDrag = false;
 			if (button == 1) {
-				DocumentLocation clickLocation = VisualToDocumentLocation (x, y);
+				clickLocation = VisualToDocumentLocation (x, y);
 				int offset = Document.LocationToOffset (clickLocation);
 				if  (doubleClick) {
 					int start = ScanWord (offset, false);
