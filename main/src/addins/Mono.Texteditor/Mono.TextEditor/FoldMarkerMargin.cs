@@ -60,7 +60,7 @@ namespace Mono.TextEditor
 			editor.QueueDraw ();
 		}
 		
-		public override void MouseDragged (int x, int y, bool buttonPressed)
+		public override void MouseHover (int x, int y, bool buttonPressed)
 		{
 			int lineNumber = editor.Document.VisualToLogicalLine ((int)(y + editor.TextEditorData.VAdjustment.Value) / editor.LineHeight);
 			lineHover = null;

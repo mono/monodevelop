@@ -47,6 +47,7 @@ namespace Mono.TextEditor
 		GutterMargin   gutterMargin;
 		FoldMarkerMargin foldMarkerMargin;
 		
+		Gdk.Cursor defaultCursor;
 		Gdk.Cursor textCursor;
 		int caretBlinkStatus;
 		uint caretBlinkTimeoutId = 0;
@@ -281,7 +282,7 @@ namespace Mono.TextEditor
 				}
 			};
 			this.ColorStyle = new DefaultStyle (this);
-			
+			defaultCursor = null;
 			textCursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
 			OptionsChanged (this, EventArgs.Empty);
 			TextEditorOptions.Changed += OptionsChanged;
@@ -306,7 +307,6 @@ namespace Mono.TextEditor
 		protected override void OnRealized ()
 		{
 			base.OnRealized ();
-			this.GdkWindow.Cursor = textCursor;
 		}
 
 		
@@ -538,7 +538,7 @@ namespace Mono.TextEditor
 				selection = this.TextEditorData.SelectionRange;
 				inDrag = false;
 			} else if (margin != null) {
-				margin.MouseDragged ((int)(e.X - startPos), (int)e.Y, mousePressed);
+				margin.MouseHover ((int)(e.X - startPos), (int)e.Y, mousePressed);
 			}
 			oldMargin = margin;
 			return base.OnMotionNotifyEvent (e);
@@ -941,8 +941,9 @@ namespace Mono.TextEditor
 			return offset + (forwardDirection ? 0 : 1);
 		}
 		
-		public void MouseDragged (int x, int y, bool buttonPressed)
+		public void MouseHover (int x, int y, bool buttonPressed)
 		{
+			this.GdkWindow.Cursor = textCursor;
 			if (!buttonPressed)
 				return;
 			if (inSelectionDrag) {
@@ -961,6 +962,7 @@ namespace Mono.TextEditor
 		
 		public void MouseLeft ()
 		{
+			this.GdkWindow.Cursor = defaultCursor;
 		}
 		
 		public void ScrollToCaret ()
