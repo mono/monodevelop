@@ -13,7 +13,10 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
+	-r:gdk-sharp \
+	-r:gtk-sharp \
 	-r:Mono.Posix \
+	-r:pango-sharp \
 	-r:System \
 	-r:System.Data \
 	-r:System.Web \

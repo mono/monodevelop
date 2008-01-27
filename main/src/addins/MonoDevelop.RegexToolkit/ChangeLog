@@ -1,3 +1,13 @@
+2008-01-27  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.RegexToolkit/RegexToolkitWindow.cs: Fixed Bug 355842 - Tootips
+	  in regex toolkit are excessively persistent.
+
+2008-01-27  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.RegexToolkit/RegexToolkitWindow.cs: Fixed Bug 355842 - Tootips
+	  in regex toolkit are excessively persistent.
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.RegexToolkit.addin.xml: Update MD version.

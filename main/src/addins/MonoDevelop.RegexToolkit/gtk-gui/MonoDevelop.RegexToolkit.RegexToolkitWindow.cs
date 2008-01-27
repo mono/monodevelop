@@ -117,8 +117,6 @@ namespace MonoDevelop.RegexToolkit {
             this.scrolledwindow7 = new Gtk.ScrolledWindow();
             this.scrolledwindow7.CanFocus = true;
             this.scrolledwindow7.Name = "scrolledwindow7";
-            this.scrolledwindow7.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow7.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow7.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow7.Gtk.Container+ContainerChild
             this.regExTextview = new Gtk.TextView();
@@ -126,8 +124,6 @@ namespace MonoDevelop.RegexToolkit {
             this.regExTextview.Name = "regExTextview";
             this.scrolledwindow7.Add(this.regExTextview);
             this.notebook1.Add(this.scrolledwindow7);
-            Gtk.Notebook.NotebookChild w2 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.scrolledwindow7]));
-            w2.TabExpand = false;
             // Notebook tab
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
@@ -138,8 +134,6 @@ namespace MonoDevelop.RegexToolkit {
             this.scrolledwindow5 = new Gtk.ScrolledWindow();
             this.scrolledwindow5.CanFocus = true;
             this.scrolledwindow5.Name = "scrolledwindow5";
-            this.scrolledwindow5.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow5.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow5.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow5.Gtk.Container+ContainerChild
             Gtk.Viewport w3 = new Gtk.Viewport();
@@ -148,13 +142,11 @@ namespace MonoDevelop.RegexToolkit {
             this.optionsTreeview = new Gtk.TreeView();
             this.optionsTreeview.CanFocus = true;
             this.optionsTreeview.Name = "optionsTreeview";
-            this.optionsTreeview.HeadersClickable = true;
             w3.Add(this.optionsTreeview);
             this.scrolledwindow5.Add(w3);
             this.notebook1.Add(this.scrolledwindow5);
             Gtk.Notebook.NotebookChild w6 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.scrolledwindow5]));
             w6.Position = 1;
-            w6.TabExpand = false;
             // Notebook tab
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
@@ -182,8 +174,6 @@ namespace MonoDevelop.RegexToolkit {
             this.scrolledwindow3 = new Gtk.ScrolledWindow();
             this.scrolledwindow3.CanFocus = true;
             this.scrolledwindow3.Name = "scrolledwindow3";
-            this.scrolledwindow3.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow3.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow3.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow3.Gtk.Container+ContainerChild
             this.replaceTextview = new Gtk.TextView();
@@ -214,8 +204,6 @@ namespace MonoDevelop.RegexToolkit {
             this.scrolledwindow1 = new Gtk.ScrolledWindow();
             this.scrolledwindow1.CanFocus = true;
             this.scrolledwindow1.Name = "scrolledwindow1";
-            this.scrolledwindow1.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow1.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow1.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow1.Gtk.Container+ContainerChild
             this.inputTextview = new Gtk.TextView();
@@ -249,14 +237,11 @@ namespace MonoDevelop.RegexToolkit {
             this.elementsscrolledwindow = new Gtk.ScrolledWindow();
             this.elementsscrolledwindow.CanFocus = true;
             this.elementsscrolledwindow.Name = "elementsscrolledwindow";
-            this.elementsscrolledwindow.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.elementsscrolledwindow.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.elementsscrolledwindow.ShadowType = ((Gtk.ShadowType)(1));
             // Container child elementsscrolledwindow.Gtk.Container+ContainerChild
             this.elementsTreeview = new Gtk.TreeView();
             this.elementsTreeview.CanFocus = true;
             this.elementsTreeview.Name = "elementsTreeview";
-            this.elementsTreeview.HeadersClickable = true;
             this.elementsscrolledwindow.Add(this.elementsTreeview);
             this.vbox5.Add(this.elementsscrolledwindow);
             Gtk.Box.BoxChild w19 = ((Gtk.Box.BoxChild)(this.vbox5[this.elementsscrolledwindow]));
@@ -274,18 +259,13 @@ namespace MonoDevelop.RegexToolkit {
             this.scrolledwindow2 = new Gtk.ScrolledWindow();
             this.scrolledwindow2.CanFocus = true;
             this.scrolledwindow2.Name = "scrolledwindow2";
-            this.scrolledwindow2.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow2.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow2.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow2.Gtk.Container+ContainerChild
             this.resultsTreeview = new Gtk.TreeView();
             this.resultsTreeview.CanFocus = true;
             this.resultsTreeview.Name = "resultsTreeview";
-            this.resultsTreeview.HeadersClickable = true;
             this.scrolledwindow2.Add(this.resultsTreeview);
             this.notebook2.Add(this.scrolledwindow2);
-            Gtk.Notebook.NotebookChild w23 = ((Gtk.Notebook.NotebookChild)(this.notebook2[this.scrolledwindow2]));
-            w23.TabExpand = false;
             // Notebook tab
             this.label3 = new Gtk.Label();
             this.label3.Name = "label3";
@@ -296,8 +276,6 @@ namespace MonoDevelop.RegexToolkit {
             this.scrolledwindow4 = new Gtk.ScrolledWindow();
             this.scrolledwindow4.CanFocus = true;
             this.scrolledwindow4.Name = "scrolledwindow4";
-            this.scrolledwindow4.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow4.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow4.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow4.Gtk.Container+ContainerChild
             this.replaceResultTextview = new Gtk.TextView();
@@ -309,7 +287,6 @@ namespace MonoDevelop.RegexToolkit {
             this.notebook2.Add(this.scrolledwindow4);
             Gtk.Notebook.NotebookChild w25 = ((Gtk.Notebook.NotebookChild)(this.notebook2[this.scrolledwindow4]));
             w25.Position = 1;
-            w25.TabExpand = false;
             // Notebook tab
             this.label4 = new Gtk.Label();
             this.label4.Name = "label4";
