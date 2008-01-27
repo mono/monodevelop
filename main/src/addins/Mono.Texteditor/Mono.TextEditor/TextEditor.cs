@@ -215,15 +215,6 @@ namespace Mono.TextEditor
 			margins.Add (gutterMargin);
 			margins.Add (foldMarkerMargin);
 			margins.Add (this);
-			Caret.PositionChanged += delegate (object sender, DocumentLocationEventArgs args) {
-				if (Caret.AutoScrollToCaret) {
-					ScrollToCaret ();
-					caretBlink = true;
-					if (args.Location.Line != Caret.Line) 
-						RedrawLine (args.Location.Line);
-					RedrawLine (Caret.Line);
-				}
-			};
 			ISegment oldSelection = null;
 			this.TextEditorData.SelectionChanged += delegate {
 				ISegment selection = this.TextEditorData.SelectionRange;
@@ -280,6 +271,15 @@ namespace Mono.TextEditor
 					request.Update (this);
 				}
 			};
+			Caret.PositionChanged += delegate (object sender, DocumentLocationEventArgs args) {
+				if (Caret.AutoScrollToCaret) {
+					ScrollToCaret ();
+					caretBlink = true;
+					if (args.Location.Line != Caret.Line) 
+						RedrawLine (args.Location.Line);
+					RedrawLine (Caret.Line);
+				}
+			};
 			this.ColorStyle = new DefaultStyle (this);
 			
 			textCursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
@@ -289,7 +289,6 @@ namespace Mono.TextEditor
 			Gtk.TargetList list = new Gtk.TargetList ();
 			list.AddTextTargets (CopyAction.TextType);
 			Gtk.Drag.DestSet (this, DestDefaults.All, (TargetEntry[])list, DragAction.Move | DragAction.Copy);
-//			Gtk.Drag.SourceSet (this, ModifierType.Button1Mask, (Gtk.TargetEntry[])list, DragAction.Copy | DragAction.Move);
 		}
 		
 		protected virtual void OptionsChanged (object sender, EventArgs args)
@@ -346,7 +345,6 @@ namespace Mono.TextEditor
 		
 		public void RedrawLines (int start, int end)
 		{
-			System.Console.WriteLine(start + " -- " + end);
 			int visualStart = (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (start) * LineHeight;
 			int visualEnd   = (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (end) * LineHeight + LineHeight;
 			this.QueueDrawArea (0, visualStart, this.Allocation.Width, visualEnd - visualStart );
@@ -366,17 +364,11 @@ namespace Mono.TextEditor
 		
 		bool CaretThread ()
 		{
-			bool newCaretBlink = caretBlink;
-			if (caretBlinkStatus < 4)
-				newCaretBlink = true;
-			else
-				newCaretBlink = (caretBlinkStatus - 4) % 3 != 0;
-			
+			bool newCaretBlink = caretBlinkStatus < 4 || (caretBlinkStatus - 4) % 3 != 0;
 			if (layout != null && newCaretBlink != caretBlink) {
 				caretBlink = newCaretBlink;
 				RedrawLine (Caret.Line);
 			}
-			
 			caretBlinkStatus++;
 			return true;
 		}

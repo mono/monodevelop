@@ -1,7 +1,7 @@
 2008-01-27  Mike Krüger <mkrueger@novell.com> 
 
-	* Mono.TextEditor/TextEditorData.cs, Mono.TextEditor/TextEditor.cs:
-	  Optimized re-draws a bit.
+	* Mono.TextEditor/TextEditor.cs, Mono.TextEditor/DefaultEditActions.cs:
+	  Paste now requests a redraw.
 
 2008-01-27  Mike Krüger <mkrueger@novell.com> 
 
@@ -17,20 +17,6 @@
 	  Mono.TextEditor.Highlighting/SyntaxModeService.cs: Worked on text editor
 	  mouse handling.
 
-2008-01-26  Mike Krüger <mkrueger@novell.com> 
-
-	* Mono.TextEditor/DefaultEditActions.cs,
-	  Mono.TextEditor/FoldMarkerMargin.cs, Mono.TextEditor/IMargin.cs,
-	  Mono.TextEditor/TextEditor.cs, Mono.TextEditor/BookmarkMargin.cs,
-	  Mono.TextEditor/GutterMargin.cs,
-	  Mono.TextEditor.Highlighting/SyntaxModeService.cs: Worked on text editor
-	  mouse handling.
-
-2008-01-25  Mike Krüger <mkrueger@novell.com> 
-
-	* Mono.TextEditor/TextEditor.cs, Mono.TextEditor.Highlighting/SyntaxMode.cs,
-	  Mono.TextEditor.Highlighting/Style.cs: Worked on styles.
-
 2008-01-25  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextEditor.cs, Mono.TextEditor.Highlighting/SyntaxMode.cs,
@@ -39,14 +25,6 @@
 2008-01-25  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/DefaultEditActions.cs: Fixed little issue in rtf output.
-
-2008-01-25  Mike Krüger <mkrueger@novell.com> 
-
-	* Mono.TextEditor/DefaultEditActions.cs: Fixed little issue in rtf output.
-
-2008-01-25  Mike Krüger <mkrueger@novell.com> 
-
-	* Mono.TextEditor/DefaultEditActions.cs: Optimized rtf color table output.
 
 2008-01-25  Mike Krüger <mkrueger@novell.com> 
 

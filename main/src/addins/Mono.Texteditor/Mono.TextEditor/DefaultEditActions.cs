@@ -842,7 +842,9 @@ namespace Mono.TextEditor
 				}
 				StringBuilder sb = new StringBuilder (clipboard.WaitForText ());
 				data.Document.Buffer.Insert (data.Caret.Offset, sb);
+				int oldLine = data.Caret.Line;
 				data.Caret.Offset += sb.Length;
+				data.Document.RequestUpdate (oldLine != data.Caret.Line ? (DocumentUpdateRequest)new LineToEndUpdate (oldLine) : (DocumentUpdateRequest)new LineUpdate (oldLine));
 			}
 		}
 	}
