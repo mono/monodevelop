@@ -34,12 +34,6 @@ namespace MonoDevelop.SourceEditor
 	{
 		HighlightingTypeList,
 		ShowBufferOptions,
-		ToggleBookmark,
-		PrevBookmark,
-		NextBookmark,
-		ClearBookmarks,
-		GotoLineNumber,
-		GotoMatchingBrace,
 		PrintDocument,
 		PrintPreviewDocument
 	}

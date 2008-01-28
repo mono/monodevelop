@@ -1,3 +1,12 @@
+2008-01-28  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor.Gui/SourceEditorView.cs,
+	  MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs,
+	  MonoDevelop.SourceEditor/EditorCommands.cs: Moved some text editor
+	  commands to the ide: bookmarks, goto line number and goto matching
+	  brace.
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.addin.xml: Update MD version.

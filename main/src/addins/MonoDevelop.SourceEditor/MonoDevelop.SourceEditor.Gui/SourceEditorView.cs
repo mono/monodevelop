@@ -456,8 +456,8 @@ namespace MonoDevelop.SourceEditor.Gui
 					buf.ToggleBookmark (line.Line);
 				} else if (e.Button == 3) {
 					CommandEntrySet cset = new CommandEntrySet ();
-					cset.AddItem (EditorCommands.ToggleBookmark);
-					cset.AddItem (EditorCommands.ClearBookmarks);
+					cset.AddItem (SearchCommands.ToggleBookmark);
+					cset.AddItem (SearchCommands.ClearBookmarks);
 					cset.AddItem (Command.Separator);
 					cset.AddItem (DebugCommands.ToggleBreakpoint);
 					cset.AddItem (DebugCommands.ClearAllBreakpoints);
