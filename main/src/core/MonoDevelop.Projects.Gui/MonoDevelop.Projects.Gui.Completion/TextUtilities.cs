@@ -318,8 +318,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 			return - 1;
 		}
-/*
-		public static int SearchBracketForward(IDocument document, int offset, char openBracket, char closingBracket)
+		public static int SearchBracketForward (ICompletionWidget widget, int offset, char openBracket, char closingBracket)
 		{
 			int brackets = 1;
 			
@@ -329,60 +328,59 @@ namespace MonoDevelop.Projects.Gui.Completion
 			bool lineComment  = false;
 			bool blockComment = false;
 			
-			if (offset >= 0) {
-				while (offset < document.TextLength) {
-					char ch = document.GetCharAt(offset);
-					switch (ch) {
-						case '\r':
-						case '\n':
-							lineComment = false;
-							break;
-						case '/':
-							if (blockComment) {
-								Debug.Assert(offset > 0);
-								if (document.GetCharAt(offset - 1) == '*') {
-									blockComment = false;
+			while (offset >= 0 && offset < widget.TextLength) {
+				char ch = widget.GetChar (offset);
+				switch (ch) {
+					case '\r':
+					case '\n':
+						lineComment = false;
+						break;
+					case '/':
+						if (blockComment) {
+							Debug.Assert(offset > 0);
+							if (widget.GetChar (offset - 1) == '*') {
+								blockComment = false;
+							}
+						}
+						if (!inString && !inChar && offset + 1 < widget.TextLength) {
+							if (!blockComment && widget.GetChar (offset + 1) == '/') {
+								lineComment = true;
+							}
+							if (!lineComment && widget.GetChar (offset + 1) == '*') {
+								blockComment = true;
+							}
+						}
+						break;
+					case '"':
+						if (!(inChar || lineComment || blockComment)) {
+							inString = !inString;
+						}
+						break;
+					case '\'':
+						if (!(inString || lineComment || blockComment)) {
+							inChar = !inChar;
+						}
+						break;
+					default :
+						if (ch == openBracket) {
+							if (!(inString || inChar || lineComment || blockComment)) {
+								++brackets;
+							}
+						} else if (ch == closingBracket) {
+							if (!(inString || inChar || lineComment || blockComment)) {
+								--brackets;
+								if (brackets == 0) {
+									return offset;
 								}
 							}
-							if (!inString && !inChar && offset + 1 < document.TextLength) {
-								if (!blockComment && document.GetCharAt(offset + 1) == '/') {
-									lineComment = true;
-								}
-								if (!lineComment && document.GetCharAt(offset + 1) == '*') {
-									blockComment = true;
-								}
-							}
-							break;
-						case '"':
-							if (!(inChar || lineComment || blockComment)) {
-								inString = !inString;
-							}
-							break;
-						case '\'':
-							if (!(inString || lineComment || blockComment)) {
-								inChar = !inChar;
-							}
-							break;
-						default :
-							if (ch == openBracket) {
-								if (!(inString || inChar || lineComment || blockComment)) {
-									++brackets;
-								}
-							} else if (ch == closingBracket) {
-								if (!(inString || inChar || lineComment || blockComment)) {
-									--brackets;
-									if (brackets == 0) {
-										return offset;
-									}
-								}
-							}
-							break;
-					}
-					++offset;
+						}
+						break;
 				}
+				++offset;
 			}
 			return -1;
 		}
+/*
 		
 		/// <remarks>
 		/// Returns true, if the line lineNumber is empty or filled with whitespaces.

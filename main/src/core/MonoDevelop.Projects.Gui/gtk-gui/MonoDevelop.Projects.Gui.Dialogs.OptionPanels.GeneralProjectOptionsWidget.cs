@@ -272,6 +272,8 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
+            this.descriptionLabel.MnemonicWidget = this.scrolledwindow5;
+            this.nameLabel.MnemonicWidget = this.projectNameEntry;
             this.Show();
         }
     }

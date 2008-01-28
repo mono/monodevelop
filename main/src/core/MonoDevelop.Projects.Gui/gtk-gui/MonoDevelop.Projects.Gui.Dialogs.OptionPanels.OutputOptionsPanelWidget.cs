@@ -198,6 +198,8 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
+            this.label100.MnemonicWidget = this.parametersEntry;
+            this.label98.MnemonicWidget = this.assemblyNameEntry;
             this.Show();
         }
     }

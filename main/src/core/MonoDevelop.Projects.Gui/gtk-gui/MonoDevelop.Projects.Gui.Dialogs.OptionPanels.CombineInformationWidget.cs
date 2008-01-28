@@ -98,6 +98,8 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
+            this.descLabel.MnemonicWidget = this.scrolledwindow14;
+            this.versLabel.MnemonicWidget = this.versEntry;
             this.Show();
         }
     }
