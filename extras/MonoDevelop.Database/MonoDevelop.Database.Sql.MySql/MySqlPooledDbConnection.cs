@@ -28,13 +28,28 @@ using System.Data;
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 
-namespace MonoDevelop.Database.Sql
+namespace MonoDevelop.Database.Sql.MySql
 {
 	public class MySqlPooledDbConnection : AbstractPooledDbConnection
 	{
 		public MySqlPooledDbConnection (IConnectionPool connectionPool, IDbConnection connection)
 			: base (connectionPool, connection)
 		{
+		}
+		
+		public override Version DatabaseVersion {
+			get {
+				MySqlConnection connection = DbConnection as MySqlConnection;
+				try {
+					//the version string is in the form ##.##.##-xxx (major.minor.build-comment)
+					string version = connection.ServerVersion;
+					int index = version.IndexOf ("-");
+
+					return new Version (version.Substring (0, index));
+				} catch {
+					return new Version (4, 0); //assume a minimum of 4.0
+				}
+			}
 		}
 		
 		public override DataSet ExecuteSet (IDbCommand command)

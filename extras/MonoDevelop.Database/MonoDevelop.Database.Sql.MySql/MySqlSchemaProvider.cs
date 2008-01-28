@@ -6,7 +6,7 @@
 //	Ben Motmans  <ben.motmans@gmail.com>
 //
 // Copyright (C) 2005 Mosaix Communications, Inc.
-// Copyright (c) 2007 Ben Motmans
+// Copyright (c) 2007-2008 Ben Motmans
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -34,15 +34,28 @@ using System.Data;
 using MySql.Data.MySqlClient;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-namespace MonoDevelop.Database.Sql
+namespace MonoDevelop.Database.Sql.MySql
 {
-	public class MySqlSchemaProvider : AbstractSchemaProvider
+//TODO: retrieve a list of charsets and collations
+	public class MySqlSchemaProvider : AbstractEditSchemaProvider
 	{
 		public MySqlSchemaProvider (IConnectionPool connectionPool)
 			: base (connectionPool)
 		{
+			AddSupportedSchemaActions (SchemaType.Database, SchemaActions.All);
+			AddSupportedSchemaActions (SchemaType.Table, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.View, SchemaActions.All);
+			AddSupportedSchemaActions (SchemaType.TableColumn, SchemaActions.All);
+			AddSupportedSchemaActions (SchemaType.ProcedureParameter, SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.Trigger, SchemaActions.All);
+			AddSupportedSchemaActions (SchemaType.PrimaryKeyConstraint, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.ForeignKeyConstraint, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.CheckConstraint, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.UniqueConstraint, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.Constraint, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.User, SchemaActions.Schema);
 		}
-		
+
 		public override DatabaseSchemaCollection GetDatabases ()
 		{
 			DatabaseSchemaCollection databases = new DatabaseSchemaCollection ();
@@ -393,9 +406,9 @@ using MonoDevelop.Core;
 							
 							ConstraintSchema constraint = null;
 							if (key.Contains ("PRI")) {
-								constraint = GetNewPrimaryKeyConstraintSchema ("pk_" + column.Name);
+								constraint = CreatePrimaryKeyConstraintSchema ("pk_" + column.Name);
 							} else if (key.Contains ("UNI")) {
-								constraint = GetNewUniqueConstraintSchema ("uni_" + column.Name);
+								constraint = CreateUniqueConstraintSchema ("uni_" + column.Name);
 							} else {
 								continue;
 							}
@@ -739,27 +752,28 @@ using MonoDevelop.Core;
 		}
 		
 		//http://dev.mysql.com/doc/refman/5.1/en/alter-database.html
-		public override void AlterDatabase (DatabaseSchema database)
+		public override void AlterDatabase (DatabaseAlterSchema database)
 		{
 			throw new NotImplementedException ();
 		}
 
 		//http://dev.mysql.com/doc/refman/5.1/en/alter-table.html
-		public override void AlterTable (TableSchema table)
+		public override void AlterTable (TableAlterSchema table)
 		{
 			throw new NotImplementedException ();
 		}
 
 		//http://dev.mysql.com/doc/refman/5.1/en/alter-view.html
-		public override void AlterView (ViewSchema view)
+		public override void AlterView (ViewAlterSchema view)
 		{
-			ExecuteNonQuery (view.Definition);
+//TODO: fixme
+//			ExecuteNonQuery (view.Definition);
 		}
 
 		//http://dev.mysql.com/doc/refman/5.1/en/alter-procedure.html
-		public override void AlterProcedure (ProcedureSchema procedure)
+		public override void AlterProcedure (ProcedureAlterSchema procedure)
 		{
-			ExecuteNonQuery (procedure.Definition);
+			//ExecuteNonQuery (procedure.Definition); //TODO: fixme
 		}
 		
 		//http://dev.mysql.com/doc/refman/5.1/en/drop-database.html
@@ -838,16 +852,17 @@ using MonoDevelop.Core;
 			user.Name = name;
 		}
 		
-		public override string GetViewAlterStatement (ViewSchema view)
-		{
-			return String.Concat ("DROP VIEW IF EXISTS ", view.Name, "; ", Environment.NewLine, view.Definition); 
-		}
+//		public override string GetViewAlterStatement (ViewAlterSchema view)
+//		{
+//			return String.Concat ("DROP VIEW IF EXISTS ", view.Name, "; ", Environment.NewLine, view.Definition); 
+//		}
+//		
+//		public override string GetProcedureAlterStatement (ProcedureAlterSchema procedure)
+//		{
+//			return String.Concat ("DROP PROCEDURE IF EXISTS ", procedure.Name, "; ", Environment.NewLine, procedure.Definition);
+//		}
 		
-		public override string GetProcedureAlterStatement (ProcedureSchema procedure)
-		{
-			return String.Concat ("DROP PROCEDURE IF EXISTS ", procedure.Name, "; ", Environment.NewLine, procedure.Definition);
-		}
-		
+//TODO: remove this and use the Version provided by the connection pool
 		private int GetMainVersion (IDbCommand command)
 		{
 			string str = (command.Connection as MySqlConnection).ServerVersion;

@@ -1,5 +1,13 @@
 2008-01-28  Ben Motmans <ben.motmans@gmail.com> 
 
+	* MySqlDialect.cs, MySqlConnectionProvider.cs, MySqlSchemaProvider.cs,
+	  MySqlDbFactory.cs, MySqlGuiProvider.cs: small API related changes
+	* MySqlPooledDbConnection.cs: database version support
+	* Widgets/MySqlColumnEditorWidget.cs, Widgets/MySqlCreateDatabaseWidget.cs:
+	  placeholders for future implementations
+
+2008-01-28  Ben Motmans <ben.motmans@gmail.com> 
+
 	* MonoDevelop.Database.Sql.MySql.addin.xml: removed obsolete stuff from the
 	  old capabilities system
 

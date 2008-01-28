@@ -30,23 +30,23 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Database.Components;
 
-namespace MonoDevelop.Database.Sql
+namespace MonoDevelop.Database.Sql.MySql
 {
-	public class MySqlDbFactory : AbstractDbFactory
+	public class MySqlDbFactory : IDbFactory
 	{
 		private ISqlDialect dialect;
 		private IConnectionProvider connectionProvider;
 		private IGuiProvider guiProvider;
 		
-		public override string Identifier {
+		public string Identifier {
 			get { return "MySql.Data.MySqlClient"; }
 		}
 		
-		public override string Name {
-			get { return "MySql database"; }
+		public string Name {
+			get { return AddinCatalog.GetString ("MySql database"); }
 		}
 		
-		public override ISqlDialect Dialect {
+		public ISqlDialect Dialect {
 			get {
 				if (dialect == null)
 					dialect = new MySqlDialect ();
@@ -54,7 +54,7 @@ namespace MonoDevelop.Database.Sql
 			}
 		}
 		
-		public override IConnectionProvider ConnectionProvider {
+		public IConnectionProvider ConnectionProvider {
 			get {
 				if (connectionProvider == null)
 					connectionProvider = new MySqlConnectionProvider ();
@@ -62,7 +62,7 @@ namespace MonoDevelop.Database.Sql
 			}
 		}
 		
-		public override IGuiProvider GuiProvider {
+		public IGuiProvider GuiProvider {
 			get {
 				if (guiProvider == null)
 					guiProvider = new MySqlGuiProvider ();
@@ -70,17 +70,17 @@ namespace MonoDevelop.Database.Sql
 			}
 		}
 		
-		public override IConnectionPool CreateConnectionPool (DatabaseConnectionContext context)
+		public IConnectionPool CreateConnectionPool (DatabaseConnectionContext context)
 		{
 			return new DefaultConnectionPool (this, ConnectionProvider, context);
 		}
 		
-		public override ISchemaProvider CreateSchemaProvider (IConnectionPool connectionPool)
+		public ISchemaProvider CreateSchemaProvider (IConnectionPool connectionPool)
 		{
 			return new MySqlSchemaProvider (connectionPool);
 		}
 		
-		public override DatabaseConnectionSettings GetDefaultConnectionSettings ()
+		public DatabaseConnectionSettings GetDefaultConnectionSettings ()
 		{
 			DatabaseConnectionSettings settings = new DatabaseConnectionSettings ();
 			settings.ProviderIdentifier = Identifier;

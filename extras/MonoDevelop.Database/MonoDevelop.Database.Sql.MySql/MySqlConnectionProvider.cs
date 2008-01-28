@@ -31,7 +31,7 @@ using System;
 using System.Data;
 using MySql.Data.MySqlClient;
 using System.Collections.Generic;
-namespace MonoDevelop.Database.Sql
+namespace MonoDevelop.Database.Sql.MySql
 {
 	public class MySqlConnectionProvider : AbstractConnectionProvider
 	{

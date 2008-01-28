@@ -7,21 +7,32 @@ REFS =  \
 	-r:$(top_builddir)/build/MonoDevelop.Database.Designer.dll \
 	-r:$(top_builddir)/build/MonoDevelop.Database.Sql.dll \
 	-r:$(top_srcdir)/contrib/MySql/MySql.Data.dll \
+	-r:Mono.Posix \
 	-r:System \
 	-r:System.Data
 
 FILES =  \
+	Dialogs/MySqlTableEditorDialog.cs \
+	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.Database.Sql.MySql.MySqlColumnEditorWidget.cs \
+	gtk-gui/MonoDevelop.Database.Sql.MySql.MySqlCreateDatabaseWidget.cs \
 	MySqlConnectionProvider.cs \
 	MySqlDbFactory.cs \
 	MySqlDialect.cs \
 	MySqlGuiProvider.cs \
 	MySqlPooledDbConnection.cs \
-	MySqlSchemaProvider.cs
+	MySqlSchemaProvider.cs \
+	Schema/dummy.cs \
+	Widgets/MySqlColumnEditorWidget.cs \
+	Widgets/MySqlCreateDatabaseWidget.cs
 
 MYSQL_FILES = \
 	MySql.Data.dll
 
-RES = MonoDevelop.Database.Sql.MySql.addin.xml
+RES =  \
+	gtk-gui/gui.stetic \
+	gtk-gui/objects.xml \
+	MonoDevelop.Database.Sql.MySql.addin.xml
 
 SRC_MYSQL_FILES = $(addprefix $(top_srcdir)/contrib/MySql/, $(MYSQL_FILES))
 BUILD_MYSQL_FILES = $(addprefix $(ADDIN_BUILD)/, $(notdir $(MYSQL_FILES)))
