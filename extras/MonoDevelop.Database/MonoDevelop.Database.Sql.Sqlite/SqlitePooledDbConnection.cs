@@ -28,13 +28,26 @@ using System.Data;
 using System.Collections.Generic;
 using Mono.Data.Sqlite;
 
-namespace MonoDevelop.Database.Sql
+namespace MonoDevelop.Database.Sql.Sqlite
 {
 	public class SqlitePooledDbConnection : AbstractPooledDbConnection
 	{
 		public SqlitePooledDbConnection (IConnectionPool connectionPool, IDbConnection connection)
 			: base (connectionPool, connection)
 		{
+		}
+		
+		public override Version DatabaseVersion {
+			get {
+				SqliteConnection connection = DbConnection as SqliteConnection;
+				try {
+					//the same output as sqlite3_libversion
+					//eg: #define SQLITE_VERSION         "3.5.3"
+					return new Version (connection.ServerVersion);
+				} catch {
+					return new Version (3, 0);
+				}
+			}
 		}
 		
 		public override DataSet ExecuteSet (IDbCommand command)

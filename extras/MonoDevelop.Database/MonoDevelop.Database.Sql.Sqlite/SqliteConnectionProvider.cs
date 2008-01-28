@@ -31,7 +31,7 @@ using System.Data;
 using System.Collections.Generic;
 using Mono.Data.Sqlite;
 
-namespace MonoDevelop.Database.Sql
+namespace MonoDevelop.Database.Sql.Sqlite
 {
 	public class SqliteConnectionProvider : AbstractConnectionProvider
 	{

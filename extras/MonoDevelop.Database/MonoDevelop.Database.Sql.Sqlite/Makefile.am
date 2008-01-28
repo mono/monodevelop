@@ -8,18 +8,28 @@ REFS =  \
 	-r:$(top_builddir)/build/MonoDevelop.Database.Sql.dll \
 	-r:$(top_srcdir)/contrib/Sqlite/Mono.Data.Sqlite.dll \
 	-r:Mono.Data \
+	-r:Mono.Posix \
 	-r:System \
 	-r:System.Data
 
 FILES =  \
+	Dialogs/SqliteCreateDatabaseDialog.cs \
+	Dialogs/SqliteDatabaseConnectionSettingsDialog.cs \
+	Dialogs/SqliteTableEditorDialog.cs \
+	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.Database.Sql.Sqlite.SqliteCreateDatabaseDialog.cs \
+	Schema/dummy.cs \
 	SqliteConnectionProvider.cs \
 	SqliteDbFactory.cs \
 	SqliteDialect.cs \
 	SqliteGuiProvider.cs \
 	SqlitePooledDbConnection.cs \
-	SqliteSchemaProvider.cs
+	SqliteSchemaProvider.cs \
+	Widgets/dummy.cs
 
-RES = MonoDevelop.Database.Sql.Sqlite.addin.xml
+RES =  \
+	gtk-gui/gui.stetic \
+	MonoDevelop.Database.Sql.Sqlite.addin.xml
 
 SQLITE_FILES = \
 	Mono.Data.Sqlite.dll

@@ -30,70 +30,97 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Database.Designer;
 using MonoDevelop.Database.Components;
-namespace MonoDevelop.Database.Sql
+namespace MonoDevelop.Database.Sql.Sqlite
 {
 	public class SqliteGuiProvider : IGuiProvider
 	{
-		public bool ShowSelectDatabaseDialog (bool create, out string database)
+//		public bool ShowSelectDatabaseDialog (bool create, out string database)
+//		{
+//			FileChooserDialog dlg = null;
+//			if (create) {
+//				dlg = new FileChooserDialog (
+//					AddinCatalog.GetString ("Save Database"), null, FileChooserAction.Save,
+//					"gtk-cancel", ResponseType.Cancel,
+//					"gtk-save", ResponseType.Accept
+//				);
+//			} else {
+//				dlg = new FileChooserDialog (
+//					AddinCatalog.GetString ("Open Database"), null, FileChooserAction.Open,
+//					"gtk-cancel", ResponseType.Cancel,
+//					"gtk-open", ResponseType.Accept
+//				);
+//			}
+//			dlg.SelectMultiple = false;
+//			dlg.LocalOnly = true;
+//			dlg.Modal = true;
+//			
+//			FileFilter filter = new FileFilter ();
+//			filter.AddMimeType ("application/x-sqlite2");
+//			filter.AddMimeType ("application/x-sqlite3");
+//			filter.AddPattern ("*.db");
+//			filter.Name = AddinCatalog.GetString ("SQLite databases");
+//			FileFilter filterAll = new FileFilter ();
+//			filterAll.AddPattern ("*");
+//			filterAll.Name = AddinCatalog.GetString ("All files");
+//			dlg.AddFilter (filter);
+//			dlg.AddFilter (filterAll);
+//
+//			if (dlg.Run () == (int)ResponseType.Accept) {
+//				database = dlg.Filename;
+//				dlg.Destroy ();
+//				return true;
+//			} else {
+//				dlg.Destroy ();
+//				database = null;
+//				return false;
+//			}
+//		}
+		
+		public bool ShowCreateDatabaseDialog ()
 		{
-			FileChooserDialog dlg = null;
-			if (create) {
-				dlg = new FileChooserDialog (
-					AddinCatalog.GetString ("Save Database"), null, FileChooserAction.Save,
-					"gtk-cancel", ResponseType.Cancel,
-					"gtk-save", ResponseType.Accept
-				);
-			} else {
-				dlg = new FileChooserDialog (
-					AddinCatalog.GetString ("Open Database"), null, FileChooserAction.Open,
-					"gtk-cancel", ResponseType.Cancel,
-					"gtk-open", ResponseType.Accept
-				);
-			}
-			dlg.SelectMultiple = false;
-			dlg.LocalOnly = true;
-			dlg.Modal = true;
-			
-			FileFilter filter = new FileFilter ();
-			filter.AddMimeType ("application/x-sqlite2");
-			filter.AddMimeType ("application/x-sqlite3");
-			filter.AddPattern ("*.db");
-			filter.Name = AddinCatalog.GetString ("SQLite databases");
-			FileFilter filterAll = new FileFilter ();
-			filterAll.AddPattern ("*");
-			filterAll.Name = AddinCatalog.GetString ("All files");
-			dlg.AddFilter (filter);
-			dlg.AddFilter (filterAll);
-
-			if (dlg.Run () == (int)ResponseType.Accept) {
-				database = dlg.Filename;
-				dlg.Destroy ();
-				return true;
-			} else {
-				dlg.Destroy ();
-				database = null;
-				return false;
-			}
+			return false;
+		}
+		
+		public bool ShowAddConnectionDialog (IDbFactory factory)
+		{
+			return RunDialog (new SqliteDatabaseConnectionSettingsDialog (factory));
+		}
+		
+		public bool ShowEditConnectionDialog (IDbFactory factory, DatabaseConnectionSettings settings)
+		{
+			return RunDialog (new SqliteDatabaseConnectionSettingsDialog (factory, settings));
 		}
 
-		public bool ShowTableEditorDialog (ISchemaProvider schemaProvider, TableSchema table, bool create)
+		public bool ShowTableEditorDialog (IEditSchemaProvider schemaProvider, TableSchema table, bool create)
 		{
-			return RunDialog (new TableEditorDialog (schemaProvider, table, create));
+			TableEditorSettings settings = new TableEditorSettings ();
+			TableEditorDialog dlg = new TableEditorDialog (schemaProvider, create, settings);
+			dlg.Initialize (table);
+
+			return RunDialog (dlg);
 		}
 
-		public bool ShowViewEditorDialog (ISchemaProvider schemaProvider, ViewSchema view, bool create)
+		public bool ShowViewEditorDialog (IEditSchemaProvider schemaProvider, ViewSchema view, bool create)
 		{
-			return RunDialog (new ViewEditorDialog (schemaProvider, view, create));
+			ViewEditorSettings settings = new ViewEditorSettings ();
+			ViewEditorDialog dlg = new ViewEditorDialog (schemaProvider, create, settings);
+			dlg.Initialize (view);
+
+			return RunDialog (dlg);
 		}
 
-		public bool ShowProcedureEditorDialog (ISchemaProvider schemaProvider, ProcedureSchema procedure, bool create)
+		public bool ShowProcedureEditorDialog (IEditSchemaProvider schemaProvider, ProcedureSchema procedure, bool create)
 		{
-			return RunDialog (new ProcedureEditorDialog (schemaProvider, procedure, create));
+			ProcedureEditorSettings settings = new ProcedureEditorSettings ();
+			ProcedureEditorDialog dlg = new ProcedureEditorDialog (schemaProvider, create, settings);
+			dlg.Initialize (procedure);
+
+			return RunDialog (dlg);
 		}
 
-		public bool ShowUserEditorDialog (ISchemaProvider schemaProvider, UserSchema user, bool create)
+		public bool ShowUserEditorDialog (IEditSchemaProvider schemaProvider, UserSchema user, bool create)
 		{
-			return RunDialog (new UserEditorDialog (schemaProvider, user, create));
+			return false; //TODO: implement ShowUserEditorDialog
 		}
 
 		private bool RunDialog (Dialog dlg)

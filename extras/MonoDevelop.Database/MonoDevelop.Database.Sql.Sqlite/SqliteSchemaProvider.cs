@@ -33,15 +33,25 @@ using System.Collections.Generic;
 using Mono.Data.Sqlite;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Database.Sql
+namespace MonoDevelop.Database.Sql.Sqlite
 {
 	// see: http://www.sqlite.org/faq.html
 	// http://www.sqlite.org/google-talk-slides/page-021.html
-	public class SqliteSchemaProvider : AbstractSchemaProvider
+	public class SqliteSchemaProvider : AbstractEditSchemaProvider
 	{
 		public SqliteSchemaProvider (IConnectionPool connectionPool)
 			: base (connectionPool)
 		{
+			AddSupportedSchemaActions (SchemaType.Database, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.Table, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.View, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.TableColumn, SchemaActions.All);
+			AddSupportedSchemaActions (SchemaType.ProcedureParameter, SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.Trigger, SchemaActions.All);
+			AddSupportedSchemaActions (SchemaType.PrimaryKeyConstraint, SchemaActions.Create | SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.CheckConstraint, SchemaActions.Create | SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.UniqueConstraint, SchemaActions.Create | SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.Constraint, SchemaActions.Create | SchemaActions.Schema);
 		}
 
 		public override TableSchemaCollection GetTables ()
@@ -395,7 +405,7 @@ namespace MonoDevelop.Database.Sql
 
 		//http://www.sqlite.org/lang_altertable.html
 		//http://www.sqlite.org/lang_vacuum.html
-		public override void AlterTable (TableSchema table)
+		public override void AlterTable (TableAlterSchema table)
 		{
 			throw new NotImplementedException ();
 		}

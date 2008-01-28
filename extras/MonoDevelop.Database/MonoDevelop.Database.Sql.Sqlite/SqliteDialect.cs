@@ -26,7 +26,7 @@
 using System;
 using System.Data;
 using System.Collections.Generic;
-namespace MonoDevelop.Database.Sql
+namespace MonoDevelop.Database.Sql.Sqlite
 {
 	public class SqliteDialect : AbstractSqlDialect
 	{

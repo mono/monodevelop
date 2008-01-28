@@ -1,5 +1,11 @@
 2008-01-28  Ben Motmans <ben.motmans@gmail.com> 
 
+	* SqliteConnectionProvider.cs, SqliteSchemaProvider.cs, SqliteDbFactory.cs,
+	  SqliteGuiProvider.cs, SqliteDialect.cs: small API related changes
+	* SqlitePooledDbConnection.cs: database version support
+
+2008-01-28  Ben Motmans <ben.motmans@gmail.com> 
+
 	* MonoDevelop.Database.Sql.Sqlite.addin.xml: removed obsolete stuff from the
 	  old capabilities system
 
