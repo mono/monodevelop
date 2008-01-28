@@ -29,7 +29,7 @@ using System;
 using System.Data;
 using Npgsql;
 using System.Collections.Generic;
-namespace MonoDevelop.Database.Sql
+namespace MonoDevelop.Database.Sql.Npgsql
 {
 	public class NpgsqlConnectionProvider : AbstractConnectionProvider
 	{

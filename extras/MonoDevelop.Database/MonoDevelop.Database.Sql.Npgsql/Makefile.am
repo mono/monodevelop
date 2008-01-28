@@ -6,19 +6,30 @@ REFS =  \
 	-r:../build/MonoDevelop.Database.Components.dll \
 	-r:../build/MonoDevelop.Database.Designer.dll \
 	-r:../build/MonoDevelop.Database.Sql.dll \
+	-r:Mono.Posix \
 	-r:Npgsql \
 	-r:System \
 	-r:System.Data
 
 FILES =  \
+	Dialogs/NpgsqlTableEditorDialog.cs \
+	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.Database.Sql.Npgsql.NpgsqlColumnEditorWidget.cs \
+	gtk-gui/MonoDevelop.Database.Sql.Npgsql.NpgsqlCreateDatabaseWidget.cs \
 	NpgsqlConnectionProvider.cs \
 	NpgsqlDbFactory.cs \
 	NpgsqlDialect.cs \
 	NpgsqlGuiProvider.cs \
 	NpgsqlPooledDbConnection.cs \
-	NpgsqlSchemaProvider.cs
+	NpgsqlSchemaProvider.cs \
+	Schema/dummy.cs \
+	Widgets/NpgsqlColumnEditorWidget.cs \
+	Widgets/NpgsqlCreateDatabaseWidget.cs
 
-RES = MonoDevelop.Database.Sql.Npgsql.addin.xml
+RES =  \
+	gtk-gui/gui.stetic \
+	gtk-gui/objects.xml \
+	MonoDevelop.Database.Sql.Npgsql.addin.xml
 
 if ENABLE_POSTGRES
 all: $(ASSEMBLY)

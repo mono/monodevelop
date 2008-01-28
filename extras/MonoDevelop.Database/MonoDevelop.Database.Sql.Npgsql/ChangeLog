@@ -1,5 +1,14 @@
 2008-01-28  Ben Motmans <ben.motmans@gmail.com> 
 
+	* NpgsqlPooledDbConnection.cs: database version support
+	* NpgsqlConnectionProvider.cs, NpgsqlSchemaProvider.cs, NpgsqlDbFactory.cs,
+	  NpgsqlGuiProvider.cs, NpgsqlDialect.cs: small API related changes
+	* Widgets/NpgsqlColumnEditorWidget.cs,
+	  Widgets/NpgsqlCreateDatabaseWidget.cs: placeholders for future
+	  implementations
+
+2008-01-28  Ben Motmans <ben.motmans@gmail.com> 
+
 	* MonoDevelop.Database.Sql.Npgsql.addin.xml: removed obsolete stuff from the
 	  old capabilities system
 

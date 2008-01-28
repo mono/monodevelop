@@ -28,13 +28,21 @@ using System.Data;
 using System.Collections.Generic;
 using Npgsql;
 
-namespace MonoDevelop.Database.Sql
+namespace MonoDevelop.Database.Sql.Npgsql
 {
 	public class NpgsqlPooledDbConnection : AbstractPooledDbConnection
 	{
 		public NpgsqlPooledDbConnection (IConnectionPool connectionPool, IDbConnection connection)
 			: base (connectionPool, connection)
 		{
+		}
+		
+		public override Version DatabaseVersion {
+			get {
+				NpgsqlConnection connection = DbConnection as NpgsqlConnection;
+				ServerVersion version = connection.ServerVersion;
+				return new Version (version.Major, version.Minor, version.Patch);
+			}
 		}
 		
 		public override DataSet ExecuteSet (IDbCommand command)

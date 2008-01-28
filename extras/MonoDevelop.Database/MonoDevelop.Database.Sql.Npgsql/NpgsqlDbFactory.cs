@@ -29,23 +29,23 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Database.Components;
-namespace MonoDevelop.Database.Sql
+namespace MonoDevelop.Database.Sql.Npgsql
 {
-	public class NpgsqlDbFactory : AbstractDbFactory
+	public class NpgsqlDbFactory : IDbFactory
 	{
 		private ISqlDialect dialect;
 		private IConnectionProvider connectionProvider;
 		private IGuiProvider guiProvider;
 		
-		public override string Identifier {
+		public string Identifier {
 			get { return "Npgsql"; }
 		}
 		
-		public override string Name {
-			get { return "PostgreSQL database"; }
+		public string Name {
+			get { return AddinCatalog.GetString ("PostgreSQL database"); }
 		}
 		
-		public override ISqlDialect Dialect {
+		public ISqlDialect Dialect {
 			get {
 				if (dialect == null)
 					dialect = new NpgsqlDialect ();
@@ -53,7 +53,7 @@ using MonoDevelop.Database.Components;
 			}
 		}
 		
-		public override IConnectionProvider ConnectionProvider {
+		public IConnectionProvider ConnectionProvider {
 			get {
 				if (connectionProvider == null)
 					connectionProvider = new NpgsqlConnectionProvider ();
@@ -61,7 +61,7 @@ using MonoDevelop.Database.Components;
 			}
 		}
 		
-		public override IGuiProvider GuiProvider {
+		public IGuiProvider GuiProvider {
 			get {
 				if (guiProvider == null)
 					guiProvider = new NpgsqlGuiProvider ();
@@ -69,17 +69,17 @@ using MonoDevelop.Database.Components;
 			}
 		}
 		
-		public override IConnectionPool CreateConnectionPool (DatabaseConnectionContext context)
+		public IConnectionPool CreateConnectionPool (DatabaseConnectionContext context)
 		{
 			return new DefaultConnectionPool (this, ConnectionProvider, context);
 		}
 		
-		public override ISchemaProvider CreateSchemaProvider (IConnectionPool connectionPool)
+		public ISchemaProvider CreateSchemaProvider (IConnectionPool connectionPool)
 		{
 			return new NpgsqlSchemaProvider (connectionPool);
 		}
 		
-		public override DatabaseConnectionSettings GetDefaultConnectionSettings ()
+		public DatabaseConnectionSettings GetDefaultConnectionSettings ()
 		{
 			DatabaseConnectionSettings settings = new DatabaseConnectionSettings ();
 			settings.ProviderIdentifier = Identifier;

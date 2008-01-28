@@ -32,13 +32,25 @@ using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using Npgsql;
 using MonoDevelop.Core;
-namespace MonoDevelop.Database.Sql
+namespace MonoDevelop.Database.Sql.Npgsql
 {
-	public class NpgsqlSchemaProvider : AbstractSchemaProvider
+	public class NpgsqlSchemaProvider : AbstractEditSchemaProvider
 	{
 		public NpgsqlSchemaProvider (IConnectionPool connectionPool)
 			: base (connectionPool)
 		{
+			AddSupportedSchemaActions (SchemaType.Database, SchemaActions.All);
+			AddSupportedSchemaActions (SchemaType.Table, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.View, SchemaActions.All);
+			AddSupportedSchemaActions (SchemaType.TableColumn, SchemaActions.All);
+			AddSupportedSchemaActions (SchemaType.ProcedureParameter, SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.Trigger, SchemaActions.All);
+			AddSupportedSchemaActions (SchemaType.PrimaryKeyConstraint, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.ForeignKeyConstraint, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.CheckConstraint, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.UniqueConstraint, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.Constraint, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.User, SchemaActions.Schema);
 		}
 
 		public override TableSchemaCollection GetTables ()
@@ -682,31 +694,31 @@ using MonoDevelop.Core;
 		}
 		
 		//http://www.postgresql.org/docs/8.2/interactive/sql-alterdatabase.html
-		public override void AlterDatabase (DatabaseSchema database)
+		public override void AlterDatabase (DatabaseAlterSchema database)
 		{
 			throw new NotImplementedException ();
 		}
 
 		//http://www.postgresql.org/docs/8.2/interactive/sql-altertable.html
-		public override void AlterTable (TableSchema table)
+		public override void AlterTable (TableAlterSchema table)
 		{
 			throw new NotImplementedException ();
 		}
 
 		//http://www.postgresql.org/docs/8.2/interactive/sql-alterindex.html
-		public override void AlterIndex (IndexSchema index)
+		public override void AlterIndex (IndexAlterSchema index)
 		{
 			throw new NotImplementedException ();
 		}
 		
 		//http://www.postgresql.org/docs/8.2/interactive/sql-altertrigger.html
-		public override void AlterTrigger (TriggerSchema trigger)
+		public override void AlterTrigger (TriggerAlterSchema trigger)
 		{
 			throw new NotImplementedException ();
 		}
 
 		//http://www.postgresql.org/docs/8.2/interactive/sql-alteruser.html
-		public override void AlterUser (UserSchema user)
+		public override void AlterUser (UserAlterSchema user)
 		{
 			throw new NotImplementedException ();
 		}
