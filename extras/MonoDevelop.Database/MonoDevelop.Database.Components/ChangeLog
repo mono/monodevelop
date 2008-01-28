@@ -1,5 +1,9 @@
 2008-01-28  Ben Motmans <ben.motmans@gmail.com> 
 
+	* Widgets/ConnectionSettingsWidget.cs: implemented the test button
+
+2008-01-28  Ben Motmans <ben.motmans@gmail.com> 
+
 	* Commands/AbstractDatabaseProviderList.cs: command that lists all available
 	  db providers
 	* Dialogs/DatabaseConnectionSettingsDialog.cs: moved most of the

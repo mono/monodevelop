@@ -57,7 +57,10 @@ namespace MonoDevelop.Database.Sql.Sqlite
 			internal SqliteConnectionSettingsWidget (IDbFactory factory)
 				: base (factory)
 			{
-				HideWidgets (true, true, true, true);
+				EnableServerEntry = false;
+				EnablePortEntry = false;
+				EnableUsernameEntry = false;
+				EnablePasswordEntry = false;
 				EnableRefreshButton = false;
 				EnableOpenButton = true;
 			}

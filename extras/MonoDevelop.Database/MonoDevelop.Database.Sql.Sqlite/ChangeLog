@@ -1,5 +1,9 @@
 2008-01-28  Ben Motmans <ben.motmans@gmail.com> 
 
+	* Dialogs/SqliteDatabaseConnectionSettingsDialog.cs: disable some widgets
+
+2008-01-28  Ben Motmans <ben.motmans@gmail.com> 
+
 	* SqliteConnectionProvider.cs, SqliteSchemaProvider.cs, SqliteDbFactory.cs,
 	  SqliteGuiProvider.cs, SqliteDialect.cs: small API related changes
 	* SqlitePooledDbConnection.cs: database version support

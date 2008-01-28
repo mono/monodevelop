@@ -67,6 +67,11 @@ namespace MonoDevelop.Database.Components
 			comboDatabase.TextColumn = 0;
 			comboDatabase.Entry.Changed += new EventHandler (DatabaseChanged);
 			
+			EnableServerEntry = true;
+			EnablePortEntry = true;
+			EnableUsernameEntry = true;
+			EnablePasswordEntry = true;
+			EnableRefreshButton = true;
 			EnableOpenButton = false;
 		}
 		
@@ -166,27 +171,27 @@ namespace MonoDevelop.Database.Components
 
 		protected virtual void NameChanged (object sender, System.EventArgs e)
 		{
-			CheckSettings ();
+			CheckSettings (false);
 		}
 
 		protected virtual void ServerChanged (object sender, System.EventArgs e)
 		{
-			CheckSettings ();
+			CheckSettings (true);
 		}
 
 		protected virtual void PortChanged (object sender, System.EventArgs e)
 		{
-			CheckSettings ();
+			CheckSettings (true);
 		}
 
 		protected virtual void UsernameChanged (object sender, System.EventArgs e)
 		{
-			CheckSettings ();
+			CheckSettings (true);
 		}
 
 		protected virtual void PasswordChanged (object sender, System.EventArgs e)
 		{
-			CheckSettings ();
+			CheckSettings (true);
 		}
 
 		protected virtual void MinPoolSizeChanged (object sender, System.EventArgs e)
@@ -216,7 +221,7 @@ namespace MonoDevelop.Database.Components
 		
 		protected virtual void ConnectionStringChanged (object sender, EventArgs e)
 		{
-			CheckSettings ();
+			CheckSettings (true);
 		}
 		
 		protected virtual void DatabaseChanged (object sender, EventArgs e)
@@ -225,12 +230,14 @@ namespace MonoDevelop.Database.Components
 				comboDatabase.Entry.Text = String.Empty;
 			}
 			
-			CheckSettings ();
+			CheckSettings (true);
 		}
 
-		protected virtual void CheckSettings ()
+		protected virtual void CheckSettings (bool requiresTest)
 		{
 			isDefaultSettings = false;
+			if (requiresTest)
+				labelTest.Text = String.Empty;
 			
 			if (NeedsValidation != null)
 				NeedsValidation (this, EventArgs.Empty);
@@ -272,8 +279,9 @@ namespace MonoDevelop.Database.Components
 			DatabaseConnectionSettings settings = state as DatabaseConnectionSettings;
 			DatabaseConnectionContext context = new DatabaseConnectionContext (settings);
 			IDbFactory fac = DbFactoryService.GetDbFactory (settings.ProviderIdentifier);
+			FakeConnectionPool pool = null;
 			try {
-				FakeConnectionPool pool = new FakeConnectionPool (fac, fac.ConnectionProvider, context);
+				pool = new FakeConnectionPool (fac, fac.ConnectionProvider, context);
 				pool.Initialize ();
 				
 				ISchemaProvider prov = fac.CreateSchemaProvider (pool);
@@ -285,7 +293,11 @@ namespace MonoDevelop.Database.Components
 					});
 				}
 				isDatabaseListEmpty = databases.Count == 0;
-			} catch {}
+			} catch {
+			} finally {
+				if (pool != null)
+					pool.Close ();
+			}
 
 			if (isDatabaseListEmpty) {
 				DispatchService.GuiDispatch (delegate () {
@@ -299,29 +311,41 @@ namespace MonoDevelop.Database.Components
 				});
 			}
 		}
-		
-		protected internal void HideWidgets (bool hideServer, bool hidePort, bool hideUsername, bool hidePassword)
-		{
-			labelServer.Visible = !hideServer;
-			entryServer.Visible = !hideServer;
-
-			labelPort.Visible = !hidePort;
-			spinPort.Visible = !hidePort;
-	
-			labelUsername.Visible = !hideUsername;
-			entryUsername.Visible = !hideUsername;
-
-			labelPassword.Visible = !hidePassword;
-			hboxPassword.Visible = !hidePassword;
-		}
 
 		protected virtual void OpenClicked (object sender, System.EventArgs e)
 		{
 			//do nothing by default
+			//TODO: show a open file dialog with *.* as filter???
 		}
 
 		protected virtual void TestClicked (object sender, System.EventArgs e)
 		{
+			DatabaseConnectionSettings settingsCopy = CreateDatabaseConnectionSettings ();
+			ThreadPool.QueueUserWorkItem (new WaitCallback (TestClickedThreaded), settingsCopy);
+		}
+		
+		protected virtual void TestClickedThreaded (object state)
+		{
+			DatabaseConnectionSettings settings = state as DatabaseConnectionSettings;
+			DatabaseConnectionContext context = new DatabaseConnectionContext (settings);
+			IDbFactory fac = DbFactoryService.GetDbFactory (settings.ProviderIdentifier);
+
+			string message = null;
+			FakeConnectionPool pool = null;
+			try {
+				pool = new FakeConnectionPool (fac, fac.ConnectionProvider, context);
+				pool.Initialize ();
+				message = AddinCatalog.GetString ("Test succeeded");
+			} catch (System.Data.DataException ex) {
+				message = AddinCatalog.GetString ("Test failed: {0}", ex.Message);
+			} finally {
+				if (pool != null)
+					pool.Close ();
+			}
+			
+			DispatchService.GuiDispatch (delegate () {
+				labelTest.Text = message;
+			});
 		}
 	}
 }

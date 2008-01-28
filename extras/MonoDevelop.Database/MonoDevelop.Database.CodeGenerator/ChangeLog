@@ -1,5 +1,9 @@
 2008-01-28  Ben Motmans <ben.motmans@gmail.com> 
 
+	* MonoDevelop.Database.CodeGenerator.addin.xml: bumped the version number
+
+2008-01-28  Ben Motmans <ben.motmans@gmail.com> 
+
 	* Commands/ToolCommands.cs, Dialogs/GenerateDataClassesDialog.cs,
 	  MonoDevelop.Database.CodeGenerator.addin.xml,
 	  gtk-gui/MonoDevelop.Database.CodeGenerator.GenerateDataClassesDialog.cs,
