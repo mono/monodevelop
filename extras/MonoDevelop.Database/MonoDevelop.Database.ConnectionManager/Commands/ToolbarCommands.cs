@@ -1,10 +1,8 @@
 //
 // Authors:
-//   Christian Hergert	<chris@mosaix.net>
 //   Ben Motmans  <ben.motmans@gmail.com>
-//
-// Copyright (C) 2005 Mosaix Communications, Inc.
-// Copyright (c) 2007 Ben Motmans
+
+// Copyright (c) 2008 Ben Motmans
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -28,43 +26,19 @@
 
 using Gtk;
 using System;
-using System.IO;
+using MonoDevelop.Database.Sql;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Components.Commands;
-
-using MonoDevelop.Database.Sql;
+using MonoDevelop.Database.Components;
 
 namespace MonoDevelop.Database.ConnectionManager
 {
-	public class ConnectionManagerPad : TreeViewPad
+	public enum ToolbarCommands
 	{
-		private VBox vbox;
-
-		public ConnectionManagerPad ()
-		{
-			vbox = new VBox ();
-			
-			Toolbar toolbar = IdeApp.CommandService.CreateToolbar ("/MonoDevelop/Database/ToolBar/ConnectionManagerPad");
-			toolbar.ToolbarStyle = ToolbarStyle.Icons;
-			
-			vbox.PackStart (toolbar, false, true, 0);
-		}
-		
-		public override void Initialize (NodeBuilder[] builders, TreePadOption[] options)
-		{
-			base.Initialize (builders, options);
-			
-			vbox.PackStart (base.Control, true, true, 0);
-			vbox.ShowAll ();
-
-			Clear ();
-			LoadTree (ConnectionContextService.DatabaseConnections);
-		}
-		
-		public override Widget Control {
-			get { return vbox; }
-		}
+		ToggleSystemObjects
+		//TODO: add default handler
 	}
 }

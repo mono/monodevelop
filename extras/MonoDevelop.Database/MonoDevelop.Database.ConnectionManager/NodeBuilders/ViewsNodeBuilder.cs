@@ -131,8 +131,8 @@ namespace MonoDevelop.Database.ConnectionManager
 		{
 			BaseNode node = CurrentNode.DataItem as BaseNode;
 			IDbFactory fac = node.ConnectionContext.DbFactory;
-			ISchemaProvider schemaProvider = node.ConnectionContext.SchemaProvider;
-			ViewSchema view = schemaProvider.GetNewViewSchema ("NewView");
+			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
+			ViewSchema view = schemaProvider.CreateViewSchema ("NewView");
 
 			if (fac.GuiProvider.ShowViewEditorDialog (schemaProvider, view, true))
 				ThreadPool.QueueUserWorkItem (new WaitCallback (OnCreateViewThreaded), new object[] {schemaProvider, view, node} as object);
@@ -142,7 +142,7 @@ namespace MonoDevelop.Database.ConnectionManager
 		{
 			object[] objs = state as object[];
 			
-			ISchemaProvider provider = objs[0] as ISchemaProvider;
+			IEditSchemaProvider provider = objs[0] as IEditSchemaProvider;
 			ViewSchema view = objs[1] as ViewSchema;
 			BaseNode node = objs[2] as BaseNode;
 			
@@ -154,7 +154,7 @@ namespace MonoDevelop.Database.ConnectionManager
 		protected void OnUpdateCreateView (CommandInfo info)
 		{
 			BaseNode node = (BaseNode)CurrentNode.DataItem;
-			info.Enabled = node.ConnectionContext.DbFactory.IsActionSupported ("View", SchemaActions.Create);
+			info.Enabled = node.ConnectionContext.SchemaProvider.IsSchemaActionSupported (SchemaType.View, SchemaActions.Create);
 		}
 	}
 }

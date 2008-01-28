@@ -40,7 +40,9 @@ namespace MonoDevelop.Database.ConnectionManager
 {
 	public enum ConnectionManagerCommands
 	{
-		AddConnection,
+		AddConnectionByProvider,
+		CreateDatabaseByProvider,
+		
 		EditConnection,
 		RemoveConnection,
 		ConnectConnection,
@@ -53,8 +55,7 @@ namespace MonoDevelop.Database.ConnectionManager
 		EmptyTable,
 		Rename,
 		RenameDatabase,
-		
-		CreateDatabase,
+
 		CreateTable,
 		CreateView,
 		CreateProcedure,
@@ -77,5 +78,43 @@ namespace MonoDevelop.Database.ConnectionManager
 		DropConstraint,
 		DropUser,
 		DropTrigger
+	}
+	
+	internal class AddConnectionHandler : AbstractDatabaseProviderList
+	{
+		protected IDbFactory factory;
+		
+		protected override void Run (object ob)
+		{
+			factory = (IDbFactory)ob;
+			factory.GuiProvider.ShowAddConnectionDialog (factory);
+		}
+		
+//		protected override void Update (CommandInfo info)
+//		{
+//			if (IdeApp.ProjectOperations.CurrentOpenCombine != null)
+//				info.Enabled = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
+//			else
+//				info.Enabled = (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsBuildTarget);
+//		}
+	}
+	
+	internal class CreateDatabaseHandler : AbstractDatabaseProviderList
+	{
+		protected IDbFactory factory;
+		
+		protected override void Run (object ob)
+		{
+			factory = (IDbFactory)ob;
+			factory.GuiProvider.ShowCreateDatabaseDialog ();
+		}
+		
+//		protected override void Update (CommandInfo info)
+//		{
+//			if (IdeApp.ProjectOperations.CurrentOpenCombine != null)
+//				info.Enabled = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
+//			else
+//				info.Enabled = (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsBuildTarget);
+//		}
 	}
 }

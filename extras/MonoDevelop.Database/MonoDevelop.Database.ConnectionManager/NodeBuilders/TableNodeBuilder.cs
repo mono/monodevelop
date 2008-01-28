@@ -32,6 +32,7 @@ using System.Data;
 using System.Threading;
 using System.Collections.Generic;
 using MonoDevelop.Database.Sql;
+using SQL = MonoDevelop.Database.Sql;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
@@ -94,23 +95,19 @@ namespace MonoDevelop.Database.ConnectionManager
 		{
 			TableNode node = state as TableNode;
 			ITreeBuilder builder = Context.GetTreeBuilder (state);
-			IDbFactory fac = node.ConnectionContext.DbFactory;
+			ISchemaProvider provider = node.ConnectionContext.SchemaProvider;
 		
-			if (fac.IsCapabilitySupported ("Table", SchemaActions.Schema, TableCapabilities.Columns))
+			if (provider.IsSchemaActionSupported (SQL.SchemaType.TableColumn, SchemaActions.Schema))
 				DispatchService.GuiDispatch (delegate {
 					builder.AddChild (new ColumnsNode (node.ConnectionContext, node.Table));
 				});
 			
-			if (fac.IsCapabilitySupported ("Table", SchemaActions.Schema, TableCapabilities.PrimaryKeyConstraint)
-				|| fac.IsCapabilitySupported ("Table", SchemaActions.Schema, TableCapabilities.ForeignKeyConstraint)
-				|| fac.IsCapabilitySupported ("Table", SchemaActions.Schema, TableCapabilities.CheckConstraint)
-				|| fac.IsCapabilitySupported ("Table", SchemaActions.Schema, TableCapabilities.UniqueConstraint)
-			)
+			if (provider.IsSchemaActionSupported (SQL.SchemaType.Constraint, SchemaActions.Schema))
 				DispatchService.GuiDispatch (delegate {
 					builder.AddChild (new ConstraintsNode (node.ConnectionContext, node.Table));
 				});
 			
-			if (fac.IsCapabilitySupported ("Table", SchemaActions.Schema, TableCapabilities.Trigger))
+			if (provider.IsSchemaActionSupported (SQL.SchemaType.Trigger, SchemaActions.Schema))
 				DispatchService.GuiDispatch (delegate {
 					builder.AddChild (new TriggersNode (node.ConnectionContext));
 				});
@@ -159,7 +156,7 @@ namespace MonoDevelop.Database.ConnectionManager
 			
 			TableNode node = objs[0] as TableNode;
 			string newName = objs[1] as string;
-			ISchemaProvider provider = node.Table.SchemaProvider;
+			IEditSchemaProvider provider = (IEditSchemaProvider)node.Table.SchemaProvider;
 			
 			if (provider.IsValidName (newName)) {
 				provider.RenameTable (node.Table, newName);
@@ -288,7 +285,7 @@ namespace MonoDevelop.Database.ConnectionManager
 		private void OnDropTableThreaded (object state)
 		{
 			TableNode node = (TableNode)state;
-			ISchemaProvider provider = node.ConnectionContext.SchemaProvider;
+			IEditSchemaProvider provider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
 			
 			provider.DropTable (node.Table);
 			OnRefreshParent ();
@@ -314,7 +311,7 @@ namespace MonoDevelop.Database.ConnectionManager
 		{
 			TableNode node = CurrentNode.DataItem as TableNode;
 			IDbFactory fac = node.ConnectionContext.DbFactory;
-			ISchemaProvider schemaProvider = node.ConnectionContext.SchemaProvider;
+			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
 			
 			if (fac.GuiProvider.ShowTableEditorDialog (schemaProvider, node.Table, false))
 				ThreadPool.QueueUserWorkItem (new WaitCallback (OnAlterTableThreaded), CurrentNode.DataItem);
@@ -322,10 +319,10 @@ namespace MonoDevelop.Database.ConnectionManager
 		
 		private void OnAlterTableThreaded (object state)
 		{
-			TableNode node = (TableNode)state;
-			ISchemaProvider provider = node.ConnectionContext.SchemaProvider;
-			
-			provider.AlterTable (node.Table);
+//			TableNode node = (TableNode)state;
+//			IEditSchemaProvider provider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
+//			
+//			provider.AlterTable (node.Table);
 		}
 		
 		[CommandHandler (ConnectionManagerCommands.Rename)]
@@ -338,21 +335,21 @@ namespace MonoDevelop.Database.ConnectionManager
 		protected void OnUpdateDropTable (CommandInfo info)
 		{
 			BaseNode node = (BaseNode)CurrentNode.DataItem;
-			info.Enabled = node.ConnectionContext.DbFactory.IsActionSupported ("Table", SchemaActions.Drop);
+			info.Enabled = node.ConnectionContext.SchemaProvider.IsSchemaActionSupported (SQL.SchemaType.Table, SchemaActions.Drop);
 		}
 		
 		[CommandUpdateHandler (ConnectionManagerCommands.Rename)]
 		protected void OnUpdateRenameTable (CommandInfo info)
 		{
 			BaseNode node = (BaseNode)CurrentNode.DataItem;
-			info.Enabled = node.ConnectionContext.DbFactory.IsActionSupported ("Table", SchemaActions.Rename);
+			info.Enabled = node.ConnectionContext.SchemaProvider.IsSchemaActionSupported (SQL.SchemaType.Table, SchemaActions.Rename);
 		}
 		
 		[CommandUpdateHandler (ConnectionManagerCommands.AlterTable)]
 		protected void OnUpdateAlterTable (CommandInfo info)
 		{
 			BaseNode node = (BaseNode)CurrentNode.DataItem;
-			info.Enabled = node.ConnectionContext.DbFactory.IsActionSupported ("Table", SchemaActions.Alter);
+			info.Enabled = node.ConnectionContext.SchemaProvider.IsSchemaActionSupported (SQL.SchemaType.Table, SchemaActions.Alter);
 		}
 	}
 }

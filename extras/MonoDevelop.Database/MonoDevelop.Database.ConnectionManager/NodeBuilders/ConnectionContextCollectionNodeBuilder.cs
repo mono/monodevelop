@@ -112,53 +112,53 @@ namespace MonoDevelop.Database.ConnectionManager
 			return DragOperation.None;
 		}
 
-		[CommandHandler (ConnectionManagerCommands.CreateDatabase)]
-		protected void OnCreateDatabase ()
-		{
-			CreateDatabaseDialog dlg = new CreateDatabaseDialog ();
-			if (dlg.Run () == (int)ResponseType.Ok) {
-				DatabaseConnectionContext context = dlg.DatabaseConnection;
-				WaitDialog.ShowDialog ("Creating database ...");
-				ThreadPool.QueueUserWorkItem (new WaitCallback (OnCreateDatabaseThreaded), context);
-			}
-			dlg.Destroy ();
-		}
+//		[CommandHandler (ConnectionManagerCommands.CreateDatabase)]
+//		protected void OnCreateDatabase ()
+//		{
+//			CreateDatabaseDialog dlg = new CreateDatabaseDialog ();
+//			if (dlg.Run () == (int)ResponseType.Ok) {
+//				DatabaseConnectionContext context = dlg.DatabaseConnection;
+//				WaitDialog.ShowDialog ("Creating database ...");
+//				ThreadPool.QueueUserWorkItem (new WaitCallback (OnCreateDatabaseThreaded), context);
+//			}
+//			dlg.Destroy ();
+//		}
 		
-		[CommandUpdateHandler (ConnectionManagerCommands.CreateDatabase)]
-		protected void OnUpdateCreateDatabase (CommandInfo info)
-		{
-			info.Enabled = DbFactoryService.DbFactoryCount > 0;
-		}
+//		[CommandUpdateHandler (ConnectionManagerCommands.CreateDatabase)]
+//		protected void OnUpdateCreateDatabase (CommandInfo info)
+//		{
+//			info.Enabled = DbFactoryService.DbFactoryCount > 0;
+//		}
 		
-		[CommandHandler (ConnectionManagerCommands.AddConnection)]
-		protected void OnAddConnection ()
-		{
-			DatabaseConnectionSettingsDialog dlg = new DatabaseConnectionSettingsDialog ();
-			if (dlg.Run () == (int)ResponseType.Ok)
-				ConnectionContextService.AddDatabaseConnectionContext (dlg.ConnectionSettings);
-			dlg.Destroy ();
-		}
+//		[CommandHandler (ConnectionManagerCommands.AddConnection)]
+//		protected void OnAddConnection ()
+//		{
+//			DatabaseConnectionSettingsDialog dlg = new DatabaseConnectionSettingsDialog ();
+//			if (dlg.Run () == (int)ResponseType.Ok)
+//				ConnectionContextService.AddDatabaseConnectionContext (dlg.ConnectionSettings);
+//			dlg.Destroy ();
+//		}
 		
-		[CommandUpdateHandler (ConnectionManagerCommands.AddConnection)]
-		protected void OnUpdateAddConnection (CommandInfo info)
-		{
-			info.Enabled = DbFactoryService.DbFactoryCount > 0;
-		}
+//		[CommandUpdateHandler (ConnectionManagerCommands.AddConnection)]
+//		protected void OnUpdateAddConnection (CommandInfo info)
+//		{
+//			info.Enabled = DbFactoryService.DbFactoryCount > 0;
+//		}
 		
-		private void OnCreateDatabaseThreaded (object state)
-		{
-			DatabaseConnectionContext context = state as DatabaseConnectionContext;
-			
-			ISchemaProvider schemaProvider = context.SchemaProvider;
-			DatabaseSchema db = new DatabaseSchema (schemaProvider);
-			db.Name = context.ConnectionSettings.Database;
-			
-			schemaProvider.CreateDatabase (db);
-			
-			DispatchService.GuiDispatch (delegate () {
-				WaitDialog.HideDialog ();
-				ConnectionContextService.AddDatabaseConnectionContext (context);
-			});
-		}
+//		private void OnCreateDatabaseThreaded (object state)
+//		{
+//			DatabaseConnectionContext context = state as DatabaseConnectionContext;
+//			
+//			ISchemaProvider schemaProvider = context.SchemaProvider;
+//			DatabaseSchema db = new DatabaseSchema (schemaProvider);
+//			db.Name = context.ConnectionSettings.Database;
+//			
+//			schemaProvider.CreateDatabase (db);
+//			
+//			DispatchService.GuiDispatch (delegate () {
+//				WaitDialog.HideDialog ();
+//				ConnectionContextService.AddDatabaseConnectionContext (context);
+//			});
+//		}
 	}
 }

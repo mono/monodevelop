@@ -1,3 +1,20 @@
+2008-01-28  Ben Motmans <ben.motmans@gmail.com> 
+
+	* NodeBuilders/UsersNodeBuilder.cs,
+	  NodeBuilders/ConnectionContextNodeBuilder.cs,
+	  NodeBuilders/ViewNodeBuilder.cs, NodeBuilders/TablesNodeBuilder.cs,
+	  NodeBuilders/ProceduresNodeBuilder.cs, NodeBuilders/UserNodeBuilder.cs,
+	  NodeBuilders/ConnectionContextCollectionNodeBuilder.cs,
+	  NodeBuilders/TriggersNodeBuilder.cs, NodeBuilders/TableNodeBuilder.cs,
+	  NodeBuilders/ProcedureNodeBuilder.cs, NodeBuilders/ColumnNodeBuilder.cs,
+	  NodeBuilders/ViewsNodeBuilder.cs: migration to the improved capabilities
+	  system
+	* MonoDevelop.Database.ConnectionManager.addin.xml,
+	  Commands/ConnectionManagerCommands.cs: modified the behavior of the Add
+	  Connection and Create Database command
+	* Commands/ToolbarCommands.cs, ConnectionManagerPad.cs: the connection
+	  manager pad now supports a toolbar
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Database.ConnectionManager.addin.xml: Update MD version.

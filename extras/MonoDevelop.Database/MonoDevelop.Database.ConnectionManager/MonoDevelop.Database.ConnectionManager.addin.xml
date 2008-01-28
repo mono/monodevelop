@@ -26,7 +26,7 @@
 	
 	<Extension path = "/MonoDevelop/Ide/Pads">
 		<SolutionPad id = "ConnectionManagerPad" class = "MonoDevelop.Database.ConnectionManager.ConnectionManagerPad" defaultPlacement = "Left" _label = "Database Browser" icon = "md-db-database">
-			<PadOption id = "ShowSystemObjects" _label = "Show System Objects" defaultValue = "True"/>
+			<PadOption id = "ShowSystemObjects" _label = "Show System Objects" defaultValue = "False"/>
 			<NodeBuilder id = "AggregatesNodeBuilder" class = "MonoDevelop.Database.ConnectionManager.AggregatesNodeBuilder"/>
 			<NodeBuilder id = "ColumnNodeBuilder" class = "MonoDevelop.Database.ConnectionManager.ColumnNodeBuilder"/>
 			<NodeBuilder id = "ColumnsNodeBuilder" class = "MonoDevelop.Database.ConnectionManager.ColumnsNodeBuilder"/>
@@ -54,6 +54,11 @@
 			<NodeBuilder id = "UsersNodeBuilder" class = "MonoDevelop.Database.ConnectionManager.UsersNodeBuilder"/>
 		</SolutionPad>
 	</Extension>
+	
+	<ExtensionPoint path = "/MonoDevelop/Database/ToolBar/ConnectionManagerPad" name = "Connection Manager pad toolbar">
+		<Description>Connection manager pad toolbar items.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+	</ExtensionPoint>
 
 	<Extension path = "/MonoDevelop/Ide/WorkbenchContexts/Edit">
 		<ContextPad id = "ConnectionManagerPad"/>
@@ -166,9 +171,10 @@
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Category _name = "Database" id = "Database">
 		
-		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.AddConnection" 
-			_label = "Add Connection"
-			icon = "gtk-add"/>
+		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.AddConnectionByProvider"
+			defaultHandler = "MonoDevelop.Database.ConnectionManager.AddConnectionHandler"
+			type = "array"
+			_label = "Database Provider List" />
 		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.EditConnection"
 			_label = "Edit Connection"
 			icon = "gtk-edit"/>
@@ -204,9 +210,10 @@
 			_label = "Rename Database">
 		-->
 
-		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.CreateDatabase"
-			_label = "Create Database"
-			icon = "gtk-add"/>
+		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.CreateDatabaseByProvider"
+			defaultHandler = "MonoDevelop.Database.ConnectionManager.CreateDatabaseHandler"
+			type = "array"
+			_label = "Database Provider List" />
 		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.CreateTable"
 			_label = "Create Table"
 			icon = "gtk-add"/>
@@ -269,12 +276,21 @@
 		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.DropUser"
 			_label = "Drop User"
 			icon = "gtk-remove"/>
+			
+		<!--TODO: make this item a toggle button + other icon? -->
+		<Command id = "MonoDevelop.Database.ConnectionManager.ToolbarCommands.ToggleSystemObjects"
+			_label = "Toggle System Objects"
+			icon = "gtk-no"/>
 		</Category>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Database/ContextMenu/ConnectionManagerPad/ConnectionsNode">
-		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.AddConnection"/>
-		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.CreateDatabase"/>
+		<ItemSet id = "MonoDevelop.Database.ConnectionManager.AddConnection" _label = "Add Database Connection">
+			<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.AddConnectionByProvider" />
+		</ItemSet>
+		<ItemSet id = "MonoDevelop.Database.ConnectionManager.CreateDatabase" _label = "Create Database">
+			<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.CreateDatabaseByProvider" />
+		</ItemSet>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Database/ContextMenu/ConnectionManagerPad/ConnectionNode">
@@ -378,5 +394,15 @@
 		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.DropConstraint"/>
 		<SeparatorItem id = "RefreshSeparator" />
 		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.Refresh"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Tools/Database">
+		<ItemSet id = "MonoDevelop.Database.ConnectionManager.ToolsAddConnection" _label = "Add Database Connection" insertbefore="MonoDevelop.Database.Query.ToolCommands.Query">
+			<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.AddConnectionByProvider" />
+		</ItemSet>
+		<ItemSet id = "MonoDevelop.Database.ConnectionManager.ToolsCreateDatabase" _label = "Create Database">
+			<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.CreateDatabaseByProvider" />
+		</ItemSet>
+		<SeparatorItem id = "Separator" />
 	</Extension>
 </Addin>

@@ -110,18 +110,18 @@ namespace MonoDevelop.Database.ConnectionManager
 			
 			builder.Update ();
 			if (connected) {
-				IDbFactory fac = context.DbFactory;
+				ISchemaProvider provider = context.SchemaProvider;
 
-				if (fac.IsActionSupported ("Table", SchemaActions.Schema))
+				if (provider.IsSchemaActionSupported (SchemaType.Table, SchemaActions.Schema))
 					builder.AddChild (new TablesNode (context));
 
-				if (fac.IsActionSupported ("View", SchemaActions.Schema))
+				if (provider.IsSchemaActionSupported (SchemaType.View, SchemaActions.Schema))
 					builder.AddChild (new ViewsNode (context));
 				
-				if (fac.IsActionSupported ("Procedure", SchemaActions.Schema))
+				if (provider.IsSchemaActionSupported (SchemaType.Procedure, SchemaActions.Schema))
 					builder.AddChild (new ProceduresNode (context));
 
-				if (fac.IsActionSupported ("User", SchemaActions.Schema))
+				if (provider.IsSchemaActionSupported (SchemaType.User, SchemaActions.Schema))
 					builder.AddChild (new UsersNode (context));
 				
 				//TODO: custom datatypes, sequences, roles, operators, languages, groups and aggregates
@@ -175,7 +175,7 @@ namespace MonoDevelop.Database.ConnectionManager
 		protected void OnEditConnection ()
 		{
 			DatabaseConnectionContext context = (DatabaseConnectionContext) CurrentNode.DataItem;
-			DatabaseConnectionSettingsDialog dlg = new DatabaseConnectionSettingsDialog (context.ConnectionSettings);
+			DatabaseConnectionSettingsDialog dlg = new DatabaseConnectionSettingsDialog (context.DbFactory, context.ConnectionSettings);
 
 			if (dlg.Run () == (int)ResponseType.Ok) {
 				ConnectionContextService.EditDatabaseConnectionContext (context);
@@ -255,9 +255,10 @@ namespace MonoDevelop.Database.ConnectionManager
 		{
 			DatabaseConnectionContext context = (DatabaseConnectionContext) CurrentNode.DataItem;
 			ISchemaProvider provider = context.SchemaProvider;
-			DatabaseSchema db = provider.GetNewDatabaseSchema (context.ConnectionSettings.Name);
+			DatabaseSchema db = provider.CreateDatabaseSchema (context.ConnectionSettings.Name);
 			
-			context.SchemaProvider.DropDatabase (db);
+			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)context.SchemaProvider;
+			schemaProvider.DropDatabase (db);
 			DispatchService.GuiDispatch (delegate () { OnRefreshConnection (); });
 		}
 		
@@ -265,14 +266,14 @@ namespace MonoDevelop.Database.ConnectionManager
 		protected void OnUpdateDropDatabase (CommandInfo info)
 		{
 			DatabaseConnectionContext context = (DatabaseConnectionContext) CurrentNode.DataItem;
-			info.Enabled = context.DbFactory.IsActionSupported ("Database", SchemaActions.Drop);
+			//info.Enabled = context.DbFactory.IsActionSupported ("Database", SchemaActions.Drop);
 		}
 
 		[CommandUpdateHandler (ConnectionManagerCommands.AlterDatabase)]
 		protected void OnUpdateAlterDatabase (CommandInfo info)
 		{
 			DatabaseConnectionContext context = (DatabaseConnectionContext) CurrentNode.DataItem;
-			info.Enabled = context.DbFactory.IsActionSupported ("Database", SchemaActions.Alter);
+			//info.Enabled = context.DbFactory.IsActionSupported ("Database", SchemaActions.Alter);
 		}
 		
 		[CommandHandler (ConnectionManagerCommands.RenameDatabase)]
@@ -285,7 +286,7 @@ namespace MonoDevelop.Database.ConnectionManager
 		protected void OnUpdateRenameDatabase (CommandInfo info)
 		{
 			DatabaseConnectionContext context = (DatabaseConnectionContext) CurrentNode.DataItem;
-			info.Enabled = context.DbFactory.IsActionSupported ("Database", SchemaActions.Rename);
+			//info.Enabled = context.DbFactory.IsActionSupported ("Database", SchemaActions.Rename);
 		}
 	}
 }

@@ -89,21 +89,19 @@ namespace MonoDevelop.Database.ConnectionManager
 		{
 			ViewNode node = state as ViewNode;
 			ITreeBuilder builder = Context.GetTreeBuilder (state);
-			IDbFactory fac = node.ConnectionContext.DbFactory;
+			ISchemaProvider provider = node.ConnectionContext.SchemaProvider;
 
-			if (fac.IsActionSupported ("ViewColumn", SchemaActions.Schema)) {
+			if (provider.IsSchemaActionSupported (SchemaType.ViewColumn, SchemaActions.Schema))
 				DispatchService.GuiDispatch (delegate {
 					builder.AddChild (new ColumnsNode (node.ConnectionContext, node.View));
 					builder.Expanded = true;
 				});
-			}
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			ViewNode node = dataObject as ViewNode;
-			IDbFactory fac = node.ConnectionContext.DbFactory;
-			return fac.IsActionSupported ("ViewColumn", SchemaActions.Schema);
+			return node.ConnectionContext.SchemaProvider.IsSchemaActionSupported (SchemaType.ViewColumn, SchemaActions.Schema);
 		}
 		
 		private void OnRefreshEvent (object sender, EventArgs args)
@@ -133,7 +131,7 @@ namespace MonoDevelop.Database.ConnectionManager
 			
 			ViewNode node = objs[0] as ViewNode;
 			string newName = objs[1] as string;
-			ISchemaProvider provider = node.View.SchemaProvider;
+			IEditSchemaProvider provider = (IEditSchemaProvider)node.View.SchemaProvider;
 			
 			if (provider.IsValidName (newName)) {
 				provider.RenameView (node.View, newName);
@@ -169,7 +167,7 @@ namespace MonoDevelop.Database.ConnectionManager
 		{
 			ViewNode node = CurrentNode.DataItem as ViewNode;
 			IDbFactory fac = node.ConnectionContext.DbFactory;
-			ISchemaProvider schemaProvider = node.ConnectionContext.SchemaProvider;
+			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
 			
 			if (fac.GuiProvider.ShowViewEditorDialog (schemaProvider, node.View, false))
 				ThreadPool.QueueUserWorkItem (new WaitCallback (OnAlterViewThreaded), CurrentNode.DataItem);
@@ -177,10 +175,10 @@ namespace MonoDevelop.Database.ConnectionManager
 		
 		private void OnAlterViewThreaded (object state)
 		{
-			ViewNode node = (ViewNode)state;
-			ISchemaProvider provider = node.ConnectionContext.SchemaProvider;
-			
-			provider.AlterView (node.View);
+//			ViewNode node = (ViewNode)state;
+//			IEditSchemaProvider provider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
+//			
+//			provider.AlterView (node.View);
 		}
 		
 		[CommandHandler (ConnectionManagerCommands.DropView)]
@@ -198,8 +196,8 @@ namespace MonoDevelop.Database.ConnectionManager
 		private void OnDropViewThreaded (object state)
 		{
 			ViewNode node = (ViewNode)state;
-			ISchemaProvider provider = node.ConnectionContext.SchemaProvider;
-			
+			IEditSchemaProvider provider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
+	
 			provider.DropView (node.View);
 			OnRefreshParent ();
 		}
@@ -214,21 +212,21 @@ namespace MonoDevelop.Database.ConnectionManager
 		protected void OnUpdateDropView (CommandInfo info)
 		{
 			BaseNode node = (BaseNode)CurrentNode.DataItem;
-			info.Enabled = node.ConnectionContext.DbFactory.IsActionSupported ("View", SchemaActions.Drop);
+			info.Enabled = node.ConnectionContext.SchemaProvider.IsSchemaActionSupported (SchemaType.View, SchemaActions.Drop);
 		}
 		
 		[CommandUpdateHandler (ConnectionManagerCommands.Rename)]
 		protected void OnUpdateRenameView (CommandInfo info)
 		{
 			BaseNode node = (BaseNode)CurrentNode.DataItem;
-			info.Enabled = node.ConnectionContext.DbFactory.IsActionSupported ("View", SchemaActions.Rename);
+			info.Enabled = node.ConnectionContext.SchemaProvider.IsSchemaActionSupported (SchemaType.View, SchemaActions.Rename);
 		}
 		
 		[CommandUpdateHandler (ConnectionManagerCommands.AlterView)]
 		protected void OnUpdateAlterView (CommandInfo info)
 		{
 			BaseNode node = (BaseNode)CurrentNode.DataItem;
-			info.Enabled = node.ConnectionContext.DbFactory.IsActionSupported ("View", SchemaActions.Alter);
+			info.Enabled = node.ConnectionContext.SchemaProvider.IsSchemaActionSupported (SchemaType.View, SchemaActions.Alter);
 		}
 	}
 }

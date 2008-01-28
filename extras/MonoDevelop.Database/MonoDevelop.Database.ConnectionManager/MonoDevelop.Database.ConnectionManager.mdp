@@ -24,7 +24,6 @@
     <File name="NodeBuilders/UsersNodeBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="NodeBuilders/ConstraintsNodeBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="FakeNodes.cs" subtype="Code" buildaction="Compile" />
-    <File name="ConnectionManagerCommands.cs" subtype="Code" buildaction="Compile" />
     <File name="NodeBuilders/TableNodeBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="NodeBuilders/UserNodeBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="NodeBuilders/ProcedureNodeBuilder.cs" subtype="Code" buildaction="Compile" />
@@ -43,6 +42,8 @@
     <File name="NodeBuilders/TypesNodeBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="NodeBuilders/ParametersNodeBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="NodeBuilders/ParameterNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="Commands/ConnectionManagerCommands.cs" subtype="Code" buildaction="Compile" />
+    <File name="Commands/ToolbarCommands.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

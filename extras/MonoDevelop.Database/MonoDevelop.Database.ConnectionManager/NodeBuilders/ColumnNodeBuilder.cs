@@ -75,13 +75,9 @@ namespace MonoDevelop.Database.ConnectionManager
 		{
 			ColumnNode node = state as ColumnNode;
 			ITreeBuilder builder = Context.GetTreeBuilder (state);
-			IDbFactory fac = node.ConnectionContext.DbFactory;
+			ISchemaProvider provider = node.Column.SchemaProvider;
 
-			if (fac.IsCapabilitySupported ("TableColumn", SchemaActions.Schema, ColumnCapabilities.PrimaryKeyConstraint)
-				|| fac.IsCapabilitySupported ("TableColumn", SchemaActions.Schema, ColumnCapabilities.ForeignKeyConstraint)
-				|| fac.IsCapabilitySupported ("TableColumn", SchemaActions.Schema, ColumnCapabilities.CheckConstraint)
-				|| fac.IsCapabilitySupported ("TableColumn", SchemaActions.Schema, ColumnCapabilities.UniqueConstraint)
-			)
+			if (provider.IsSchemaActionSupported (SchemaType.Constraint, SchemaActions.Schema))
 				DispatchService.GuiDispatch (delegate {
 					builder.AddChild (new ConstraintsNode (node.ConnectionContext, node.Column));
 					builder.Expanded = true;

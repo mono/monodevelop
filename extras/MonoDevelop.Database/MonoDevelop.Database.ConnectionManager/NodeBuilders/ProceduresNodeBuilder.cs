@@ -131,8 +131,8 @@ namespace MonoDevelop.Database.ConnectionManager
 		{
 			BaseNode node = CurrentNode.DataItem as BaseNode;
 			IDbFactory fac = node.ConnectionContext.DbFactory;
-			ISchemaProvider schemaProvider = node.ConnectionContext.SchemaProvider;
-			ProcedureSchema proc = schemaProvider.GetNewProcedureSchema ("NewProcedure");
+			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
+			ProcedureSchema proc = schemaProvider.CreateProcedureSchema ("NewProcedure");
 
 			if (fac.GuiProvider.ShowProcedureEditorDialog (schemaProvider, proc, true))
 				ThreadPool.QueueUserWorkItem (new WaitCallback (OnCreateProcedureThreaded), new object[] {schemaProvider, proc, node} as object);
@@ -142,7 +142,7 @@ namespace MonoDevelop.Database.ConnectionManager
 		{
 			object[] objs = state as object[];
 			
-			ISchemaProvider provider = objs[0] as ISchemaProvider;
+			IEditSchemaProvider provider = objs[0] as IEditSchemaProvider;
 			ProcedureSchema proc = objs[1] as ProcedureSchema;
 			BaseNode node = objs[2] as BaseNode;
 			
@@ -154,7 +154,7 @@ namespace MonoDevelop.Database.ConnectionManager
 		protected void OnUpdateCreateProcedure (CommandInfo info)
 		{
 			BaseNode node = (BaseNode)CurrentNode.DataItem;
-			info.Enabled = node.ConnectionContext.DbFactory.IsActionSupported ("Procedure", SchemaActions.Create);
+			info.Enabled = node.ConnectionContext.SchemaProvider.IsSchemaActionSupported (SchemaType.Procedure, SchemaActions.Create);
 		}
 	}
 }

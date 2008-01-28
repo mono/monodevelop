@@ -88,21 +88,19 @@ namespace MonoDevelop.Database.ConnectionManager
 		{
 			ProcedureNode node = state as ProcedureNode;
 			ITreeBuilder builder = Context.GetTreeBuilder (state);
-			IDbFactory fac = node.ConnectionContext.DbFactory;
+			ISchemaProvider provider = node.ConnectionContext.SchemaProvider;
 
-			if (fac.IsCapabilitySupported ("Procedure", SchemaActions.Schema, ProcedureCapabilities.Parameters)) {
+			if (provider.IsSchemaActionSupported (SchemaType.Constraint, SchemaActions.Schema))
 				DispatchService.GuiDispatch (delegate {
 					builder.AddChild (new ParametersNode (node.ConnectionContext, node.Procedure));
 					builder.Expanded = true;
 				});
-			}
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			ProcedureNode node = dataObject as ProcedureNode;
-			IDbFactory fac = node.ConnectionContext.DbFactory;
-			return fac.IsCapabilitySupported ("Procedure", SchemaActions.Schema, ProcedureCapabilities.Parameters);
+			return node.ConnectionContext.SchemaProvider.IsSchemaActionSupported (SchemaType.ProcedureParameter, SchemaActions.Schema);
 		}
 		
 		private void OnRefreshEvent (object sender, EventArgs args)
@@ -132,7 +130,7 @@ namespace MonoDevelop.Database.ConnectionManager
 			
 			ProcedureNode node = objs[0] as ProcedureNode;
 			string newName = objs[1] as string;
-			ISchemaProvider provider = node.Procedure.SchemaProvider;
+			IEditSchemaProvider provider = (IEditSchemaProvider)node.Procedure.SchemaProvider;
 			
 			if (provider.IsValidName (newName)) {
 				provider.RenameProcedure (node.Procedure, newName);
@@ -168,7 +166,7 @@ namespace MonoDevelop.Database.ConnectionManager
 		{
 			ProcedureNode node = CurrentNode.DataItem as ProcedureNode;
 			IDbFactory fac = node.ConnectionContext.DbFactory;
-			ISchemaProvider schemaProvider = node.ConnectionContext.SchemaProvider;
+			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
 			
 			if (fac.GuiProvider.ShowProcedureEditorDialog (schemaProvider, node.Procedure, false))
 				ThreadPool.QueueUserWorkItem (new WaitCallback (OnAlterProcedureThreaded), CurrentNode.DataItem);
@@ -176,10 +174,10 @@ namespace MonoDevelop.Database.ConnectionManager
 		
 		private void OnAlterProcedureThreaded (object state)
 		{
-			ProcedureNode node = (ProcedureNode)state;
-			ISchemaProvider provider = node.ConnectionContext.SchemaProvider;
-			
-			provider.AlterProcedure (node.Procedure);
+//			ProcedureNode node = (ProcedureNode)state;
+//			IEditSchemaProvider provider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
+//			
+//			provider.AlterProcedure (node.Procedure);
 		}
 		
 		[CommandHandler (ConnectionManagerCommands.DropProcedure)]
@@ -197,7 +195,7 @@ namespace MonoDevelop.Database.ConnectionManager
 		private void OnDropProcedureThreaded (object state)
 		{
 			ProcedureNode node = (ProcedureNode)state;
-			ISchemaProvider provider = node.ConnectionContext.SchemaProvider;
+			IEditSchemaProvider provider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
 			
 			provider.DropProcedure (node.Procedure);
 			OnRefreshParent ();
@@ -213,21 +211,21 @@ namespace MonoDevelop.Database.ConnectionManager
 		protected void OnUpdateDropProcedure (CommandInfo info)
 		{
 			BaseNode node = (BaseNode)CurrentNode.DataItem;
-			info.Enabled = node.ConnectionContext.DbFactory.IsActionSupported ("Procedure", SchemaActions.Drop);
+			//info.Enabled = node.ConnectionContext.DbFactory.IsActionSupported ("Procedure", SchemaActions.Drop);
 		}
 		
 		[CommandUpdateHandler (ConnectionManagerCommands.Rename)]
 		protected void OnUpdateRenameProcedure (CommandInfo info)
 		{
 			BaseNode node = (BaseNode)CurrentNode.DataItem;
-			info.Enabled = node.ConnectionContext.DbFactory.IsActionSupported ("Procedure", SchemaActions.Rename);
+			//info.Enabled = node.ConnectionContext.DbFactory.IsActionSupported ("Procedure", SchemaActions.Rename);
 		}
 		
 		[CommandUpdateHandler (ConnectionManagerCommands.AlterProcedure)]
 		protected void OnUpdateAlterProcedure (CommandInfo info)
 		{
 			BaseNode node = (BaseNode)CurrentNode.DataItem;
-			info.Enabled = node.ConnectionContext.DbFactory.IsActionSupported ("Procedure", SchemaActions.Alter);
+			//info.Enabled = node.ConnectionContext.DbFactory.IsActionSupported ("Procedure", SchemaActions.Alter);
 		}
 	}
 }

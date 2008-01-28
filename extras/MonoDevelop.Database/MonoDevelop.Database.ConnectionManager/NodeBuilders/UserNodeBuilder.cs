@@ -53,7 +53,7 @@ namespace MonoDevelop.Database.ConnectionManager
 		}
 		
 		public override string ContextMenuAddinPath {
-			get { return "/SharpDevelop/Users/ConnectionManagerPad/ContextMenu/UserNode"; }
+			get { return "/MonoDevelop/Database/ContextMenu/ConnectionManagerPad/UserNode"; }
 		}
 		
 		public override Type CommandHandlerType {
@@ -112,7 +112,7 @@ namespace MonoDevelop.Database.ConnectionManager
 			
 			UserNode node = objs[0] as UserNode;
 			string newName = objs[1] as string;
-			ISchemaProvider provider = node.User.SchemaProvider;
+			IEditSchemaProvider provider = (IEditSchemaProvider)node.User.SchemaProvider;
 			
 			if (provider.IsValidName (newName)) {
 				provider.RenameUser (node.User, newName);
@@ -148,7 +148,7 @@ namespace MonoDevelop.Database.ConnectionManager
 		{
 			UserNode node = CurrentNode.DataItem as UserNode;
 			IDbFactory fac = node.ConnectionContext.DbFactory;
-			ISchemaProvider schemaProvider = node.ConnectionContext.SchemaProvider;
+			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
 			
 			if (fac.GuiProvider.ShowUserEditorDialog (schemaProvider, node.User, false))
 				ThreadPool.QueueUserWorkItem (new WaitCallback (OnAlterUserThreaded), CurrentNode.DataItem);
@@ -156,10 +156,10 @@ namespace MonoDevelop.Database.ConnectionManager
 		
 		private void OnAlterUserThreaded (object state)
 		{
-			UserNode node = (UserNode)state;
-			ISchemaProvider provider = node.ConnectionContext.SchemaProvider;
-			
-			provider.AlterUser (node.User);
+//			UserNode node = (UserNode)state;
+//			IEditSchemaProvider provider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
+//			
+//			provider.AlterUser (node.User);
 		}
 		
 		[CommandHandler (ConnectionManagerCommands.DropUser)]
@@ -177,7 +177,7 @@ namespace MonoDevelop.Database.ConnectionManager
 		private void OnDropUserThreaded (object state)
 		{
 			UserNode node = (UserNode)state;
-			ISchemaProvider provider = node.ConnectionContext.SchemaProvider;
+			IEditSchemaProvider provider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
 			
 			provider.DropUser (node.User);
 			OnRefreshParent ();
@@ -193,21 +193,21 @@ namespace MonoDevelop.Database.ConnectionManager
 		protected void OnUpdateDropUser (CommandInfo info)
 		{
 			BaseNode node = (BaseNode)CurrentNode.DataItem;
-			info.Enabled = node.ConnectionContext.DbFactory.IsActionSupported ("User", SchemaActions.Drop);
+			info.Enabled = node.ConnectionContext.SchemaProvider.IsSchemaActionSupported (SchemaType.User, SchemaActions.Drop);
 		}
 		
 		[CommandUpdateHandler (ConnectionManagerCommands.Rename)]
 		protected void OnUpdateRenameUser (CommandInfo info)
 		{
 			BaseNode node = (BaseNode)CurrentNode.DataItem;
-			info.Enabled = node.ConnectionContext.DbFactory.IsActionSupported ("User", SchemaActions.Rename);
+			info.Enabled = node.ConnectionContext.SchemaProvider.IsSchemaActionSupported (SchemaType.User, SchemaActions.Rename);
 		}
 		
 		[CommandUpdateHandler (ConnectionManagerCommands.AlterUser)]
 		protected void OnUpdateAlterUser (CommandInfo info)
 		{
 			BaseNode node = (BaseNode)CurrentNode.DataItem;
-			info.Enabled = node.ConnectionContext.DbFactory.IsActionSupported ("User", SchemaActions.Alter);
+			info.Enabled = node.ConnectionContext.SchemaProvider.IsSchemaActionSupported (SchemaType.User, SchemaActions.Alter);
 		}
 	}
 }

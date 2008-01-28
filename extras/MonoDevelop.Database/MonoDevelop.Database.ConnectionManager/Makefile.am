@@ -14,7 +14,8 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
-	ConnectionManagerCommands.cs \
+	Commands/ConnectionManagerCommands.cs \
+	Commands/ToolbarCommands.cs \
 	ConnectionManagerPad.cs \
 	FakeNodes.cs \
 	NodeBuilders/AggregatesNodeBuilder.cs \
