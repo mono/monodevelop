@@ -21,7 +21,7 @@ namespace MonoDevelop.Database.Components {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Database.Components.ShowTextDialog
             this.Name = "MonoDevelop.Database.Components.ShowTextDialog";
-            this.Title = AddinCatalog.GetString("Text");
+            this.Title = Mono.Unix.Catalog.GetString("Text");
             this.TypeHint = ((Gdk.WindowTypeHint)(1));
             this.WindowPosition = ((Gtk.WindowPosition)(1));
             this.SkipTaskbarHint = true;
@@ -47,7 +47,7 @@ namespace MonoDevelop.Database.Components {
             this.button462.CanFocus = true;
             this.button462.Name = "button462";
             this.button462.UseUnderline = true;
-            this.button462.Label = AddinCatalog.GetString("button462");
+            this.button462.Label = Mono.Unix.Catalog.GetString("button462");
             this.AddActionWidget(this.button462, 0);
             Gtk.ButtonBox.ButtonBoxChild w4 = ((Gtk.ButtonBox.ButtonBoxChild)(w3[this.button462]));
             w4.Expand = false;

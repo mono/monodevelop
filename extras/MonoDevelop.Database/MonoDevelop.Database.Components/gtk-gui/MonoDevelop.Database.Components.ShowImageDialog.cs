@@ -29,7 +29,7 @@ namespace MonoDevelop.Database.Components {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Database.Components.ShowImageDialog
             this.Name = "MonoDevelop.Database.Components.ShowImageDialog";
-            this.Title = AddinCatalog.GetString("Image");
+            this.Title = Mono.Unix.Catalog.GetString("Image");
             this.TypeHint = ((Gdk.WindowTypeHint)(1));
             this.WindowPosition = ((Gtk.WindowPosition)(1));
             this.SkipTaskbarHint = true;
@@ -42,8 +42,6 @@ namespace MonoDevelop.Database.Components {
             this.scrolledwindow = new Gtk.ScrolledWindow();
             this.scrolledwindow.CanFocus = true;
             this.scrolledwindow.Name = "scrolledwindow";
-            this.scrolledwindow.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow.Gtk.Container+ContainerChild
             Gtk.Viewport w2 = new Gtk.Viewport();
@@ -73,7 +71,7 @@ namespace MonoDevelop.Database.Components {
             this.label = new Gtk.Label();
             this.label.Name = "label";
             this.label.Xalign = 0F;
-            this.label.LabelProp = AddinCatalog.GetString("Unable to load object as Image");
+            this.label.LabelProp = Mono.Unix.Catalog.GetString("Unable to load object as Image");
             this.hboxError.Add(this.label);
             Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.hboxError[this.label]));
             w7.Position = 1;

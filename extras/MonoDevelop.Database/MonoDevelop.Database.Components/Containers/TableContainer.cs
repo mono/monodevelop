@@ -30,61 +30,29 @@ using MonoDevelop.Database.Sql;
 
 namespace MonoDevelop.Database.Components
 {
-	public class ColumnContainer
+	public class TableContainer
 	{
-		private ColumnSchema column;
-		private string fieldName;
-		private string propName;
-		private string propType;
-		private bool hasSetter;
-		private bool nullable;
+		private TableSchema table;
+		private string className;
 		
-		public ColumnContainer (ColumnSchema column)
+		public TableContainer (TableSchema table)
 		{
-			if (column == null)
-				throw new ArgumentNullException ("column");
-			this.column = column;
+			if (table == null)
+				throw new ArgumentNullException ("table");
+			this.table = table;
 		}
 		
-		public ColumnSchema ColumnSchema {
-			get { return column; }
+		public TableSchema TableSchema {
+			get { return table; }
 		}
 		
-		public string FieldName {
-			get { return fieldName; }
+		public string ClassName {
+			get { return className; }
 			set {
 				if (String.IsNullOrEmpty (value))
-					throw new ArgumentException ("FieldName");
-				fieldName = value;
+					throw new ArgumentException ("ClassName");
+				className = value;
 			}
-		}
-		
-		public string PropertyName {
-			get { return propName; }
-			set {
-				if (String.IsNullOrEmpty (value))
-					throw new ArgumentException ("PropertyName");
-				propName = value;
-			}
-		}
-		
-		public string PropertyType {
-			get { return propType; }
-			set {
-				if (String.IsNullOrEmpty (value))
-					throw new ArgumentException ("PropertyType");
-				propType = value;
-			}
-		}
-
-		public bool HasSetter {
-			get { return hasSetter; }
-			set { hasSetter = value; }
-		}
-		
-		public bool Nullable {
-			get { return nullable; }
-			set { nullable = value; }
 		}
 	}
 }

@@ -14,18 +14,22 @@ REFS =  \
 
 FILES =  \
 	Codons/DataGridContentRendererCodon.cs \
+	Commands/AbstractDatabaseProviderList.cs \
 	Commands/DataGridCommands.cs \
 	Commands/SqlEditorCommands.cs \
+	ComponentHelper.cs \
 	Containers/ColumnContainer.cs \
 	Containers/ConditionContainer.cs \
 	Containers/ParameterContainer.cs \
 	Containers/SchemaContainers.cs \
+	Containers/TableContainer.cs \
 	Dialogs/DatabaseConnectionSettingsDialog.cs \
 	Dialogs/SelectColumnDialog.cs \
 	Dialogs/ShowImageDialog.cs \
 	Dialogs/ShowTextDialog.cs \
 	Dialogs/WaitDialog.cs \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs \
 	gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs \
 	gtk-gui/MonoDevelop.Database.Components.DataGrid.cs \
 	gtk-gui/MonoDevelop.Database.Components.SelectColumnDialog.cs \
@@ -35,6 +39,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Database.Components.WaitDialog.cs \
 	Widgets/CellRendererTypeCombo.cs \
 	Widgets/ColumnMappingWidget.cs \
+	Widgets/ConnectionSettingsWidget.cs \
 	Widgets/DatabaseConnectionContextComboBox.cs \
 	Widgets/DataGrid/DataGrid.cs \
 	Widgets/DataGrid/DataGridColumn.cs \
@@ -58,11 +63,13 @@ FILES =  \
 	Widgets/DataGrid/Visualizers/XmlTextVisualizer.cs \
 	Widgets/DataGrid/Visualizers/XmlTreeVisualizer.cs \
 	Widgets/ProjectDirectoryComboBox.cs \
-	Widgets/SchemaMappingWidget.cs \
 	Widgets/SelectColumnWidget.cs \
 	Widgets/SelectSchemaWidget.cs \
+	Widgets/SelectTableWidget.cs \
 	Widgets/SortedColumnListStore.cs \
-	Widgets/SqlEditorWidget.cs
+	Widgets/SortedTableListStore.cs \
+	Widgets/SqlEditorWidget.cs \
+	Widgets/TableMappingWidget.cs
 
 RES =  \
 	gtk-gui/gui.stetic \

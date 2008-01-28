@@ -1,3 +1,31 @@
+2008-01-28  Ben Motmans <ben.motmans@gmail.com> 
+
+	* Commands/AbstractDatabaseProviderList.cs: command that lists all available
+	  db providers
+	* Dialogs/DatabaseConnectionSettingsDialog.cs: moved most of the
+	  functionality to a specific widget
+	* Widgets/SelectTableWidget.cs: widget to select a specific table
+	* Widgets/ColumnMappingWidget.cs: widget that allows a database object to be
+	  mapped to a .NET object
+	* Widgets/SortedTableListStore.cs: listview containing a list of sorted
+	  tables
+	* Widgets/ProjectDirectoryComboBox.cs: combobox that lists all
+	  projects/directories in the current open solution
+	* Widgets/ConnectionSettingsWidget.cs: improved widget to edit/create
+	  connection settings
+	* Widgets/TableMappingWidget.cs: table mapping widget for use in the
+	  codegeneration addin
+	* gtk-gui/MonoDevelop.Database.Components.DataGrid.cs,
+	  gtk-gui/MonoDevelop.Database.Components.ShowImageDialog.cs,
+	  gtk-gui/MonoDevelop.Database.Components.WaitDialog.cs,
+	  gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs,
+	  gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs,
+	  gtk-gui/MonoDevelop.Database.Components.ShowTextDialog.cs,
+	  gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.Database.Components.SqlEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Database.Components.SelectColumnDialog.cs,
+	  gtk-gui/gui.stetic, Makefile.am: auto generated changes
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Database.Components.addin.xml: Update MD version.

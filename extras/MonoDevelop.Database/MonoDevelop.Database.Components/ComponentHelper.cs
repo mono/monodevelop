@@ -25,66 +25,62 @@
 
 using Gtk;
 using System;
+using System.Text;
 using System.Collections.Generic;
 using MonoDevelop.Database.Sql;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Database.Components
 {
-	public class ColumnContainer
+	public static class ComponentHelper
 	{
-		private ColumnSchema column;
-		private string fieldName;
-		private string propName;
-		private string propType;
-		private bool hasSetter;
-		private bool nullable;
-		
-		public ColumnContainer (ColumnSchema column)
+		public static string GetClassName (string dbName)
 		{
-			if (column == null)
-				throw new ArgumentNullException ("column");
-			this.column = column;
+			return GetDotNetName (dbName, "Class", true);
 		}
 		
-		public ColumnSchema ColumnSchema {
-			get { return column; }
+		public static string GetFieldName (string dbName)
+		{
+			return GetDotNetName (dbName, "field", false);
 		}
 		
-		public string FieldName {
-			get { return fieldName; }
-			set {
-				if (String.IsNullOrEmpty (value))
-					throw new ArgumentException ("FieldName");
-				fieldName = value;
+		public static string GetPropertyName (string fieldName)
+		{
+			return GetDotNetName (fieldName, fieldName, true);
+		}
+		
+		internal static string GetDotNetName (string dbName, string alternative, bool startWithLetter)
+		{
+			StringBuilder sb = new StringBuilder ();
+			
+			bool validStart = false;
+			bool capitalizeNext = true;
+			foreach (char c in dbName) {
+				if (char.IsLetter (c)) {
+					validStart = true;
+					if (capitalizeNext)
+						sb.Append (char.ToUpper (c));
+					else
+						sb.Append (c);
+					capitalizeNext = false;
+				} else if (char.IsDigit (c)) {
+					if (validStart) {
+						sb.Append (c);
+						capitalizeNext = false;
+					}
+				} else if (c == '_') {
+					if (!validStart && !startWithLetter) {
+						sb.Append (c);
+						validStart = true;
+					}
+					capitalizeNext = true;
+				}
 			}
-		}
-		
-		public string PropertyName {
-			get { return propName; }
-			set {
-				if (String.IsNullOrEmpty (value))
-					throw new ArgumentException ("PropertyName");
-				propName = value;
-			}
-		}
-		
-		public string PropertyType {
-			get { return propType; }
-			set {
-				if (String.IsNullOrEmpty (value))
-					throw new ArgumentException ("PropertyType");
-				propType = value;
-			}
-		}
-
-		public bool HasSetter {
-			get { return hasSetter; }
-			set { hasSetter = value; }
-		}
-		
-		public bool Nullable {
-			get { return nullable; }
-			set { nullable = value; }
+			
+			if (sb.Length == 0)
+				return alternative;
+			
+			return sb.ToString ();
 		}
 	}
 }

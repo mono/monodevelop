@@ -49,8 +49,6 @@ namespace MonoDevelop.Database.Components {
             this.scrolledwindow = new Gtk.ScrolledWindow();
             this.scrolledwindow.CanFocus = true;
             this.scrolledwindow.Name = "scrolledwindow";
-            this.scrolledwindow.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow.Gtk.Container+ContainerChild
             this.grid = new Gtk.TreeView();
@@ -104,7 +102,7 @@ namespace MonoDevelop.Database.Components {
             // Container child hbox.Gtk.Box+BoxChild
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
-            this.label1.LabelProp = AddinCatalog.GetString("of");
+            this.label1.LabelProp = Mono.Unix.Catalog.GetString("of");
             this.hbox.Add(this.label1);
             Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.hbox[this.label1]));
             w6.Position = 3;

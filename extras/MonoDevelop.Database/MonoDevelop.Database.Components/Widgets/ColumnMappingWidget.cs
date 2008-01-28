@@ -25,7 +25,8 @@
 
 using Gtk;
 using System;
-using System.Collections.Generic;using MonoDevelop.Database.Sql;
+using System.Collections.Generic;
+using MonoDevelop.Database.Sql;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Database.Components
@@ -38,7 +39,13 @@ namespace MonoDevelop.Database.Components
 		private const int columnSelected = 0;
 		private const int columnObj = 1;
 		
+		public ColumnMappingWidget ()
+			: this (true)
+		{
+		}
+		
 		public ColumnMappingWidget (bool showCheckBoxes)
+			: base ()
 		{
 			store = new ListStore (typeof (bool), typeof (ColumnContainer));
 			list = new TreeView (store);
@@ -54,9 +61,21 @@ namespace MonoDevelop.Database.Components
 			colName.PackStart (nameRenderer, true);
 
 			TreeViewColumn colType = new TreeViewColumn ();
-			colType.Title = AddinCatalog.GetString ("Type");
+			colType.Title = AddinCatalog.GetString ("Db Type");
 			CellRendererText typeRenderer = new CellRendererText ();
 			colType.PackStart (typeRenderer, true);
+			
+			TreeViewColumn colPropType = new TreeViewColumn ();
+			colPropType.Title = AddinCatalog.GetString ("Type");
+			CellRendererText propTypeRenderer = new CellRendererText ();
+			colPropType.PackStart (propTypeRenderer, true);
+			
+			TreeViewColumn colFieldName = new TreeViewColumn ();
+			colFieldName.Title = AddinCatalog.GetString ("Field Name");
+			CellRendererText fieldNameRenderer = new CellRendererText ();
+			fieldNameRenderer.Editable = true;
+			fieldNameRenderer.Edited += new EditedHandler (FieldNameEdited);
+			colFieldName.PackStart (fieldNameRenderer, true);
 			
 			TreeViewColumn colPropName = new TreeViewColumn ();
 			colPropName.Title = AddinCatalog.GetString ("Property Name");
@@ -64,46 +83,27 @@ namespace MonoDevelop.Database.Components
 			propNameRenderer.Editable = true;
 			propNameRenderer.Edited += new EditedHandler (PropNameEdited);
 			colPropName.PackStart (propNameRenderer, true);
-			
-			TreeViewColumn colPropType = new TreeViewColumn ();
-			colPropType.Title = AddinCatalog.GetString ("Property Type");
-			CellRendererTypeCombo propTypeRenderer = new CellRendererTypeCombo ();
-			colPropType.PackStart (propTypeRenderer, true);
-			
-			TreeViewColumn colNullable = new TreeViewColumn ();
-			colNullable.Title = AddinCatalog.GetString ("Nullable");
-			CellRendererToggle nullableRenderer = new CellRendererToggle ();
-			colNullable.PackStart (nullableRenderer, false);
-			
+	
 			TreeViewColumn colSetter = new TreeViewColumn ();
-			colSetter.Title = AddinCatalog.GetString ("Create Setter");
+			colSetter.Title = AddinCatalog.GetString ("Setter");
 			CellRendererToggle setterRenderer = new CellRendererToggle ();
 			setterRenderer.Activatable = true;
 			setterRenderer.Toggled += new ToggledHandler (SetterToggled);
 			colSetter.PackStart (setterRenderer, false);
 			
-			TreeViewColumn colCtor = new TreeViewColumn ();
-			colCtor.Title = AddinCatalog.GetString ("Ctor Parameter");
-			CellRendererToggle ctorParamRenderer = new CellRendererToggle ();
-			ctorParamRenderer.Activatable = true;
-			ctorParamRenderer.Toggled += new ToggledHandler (CtorParamToggled);
-			colCtor.PackStart (ctorParamRenderer, false);
-			
 			colName.SetCellDataFunc (nameRenderer, new CellLayoutDataFunc (NameDataFunc));
 			colType.SetCellDataFunc (typeRenderer, new CellLayoutDataFunc (TypeDataFunc));
+			colPropName.SetCellDataFunc (fieldNameRenderer, new CellLayoutDataFunc (FieldNameDataFunc));
 			colPropName.SetCellDataFunc (propNameRenderer, new CellLayoutDataFunc (PropNameDataFunc));
 			colPropType.SetCellDataFunc (propTypeRenderer, new CellLayoutDataFunc (PropTypeDataFunc));
-			colNullable.SetCellDataFunc (nullableRenderer, new CellLayoutDataFunc (NullableDataFunc));
 			colSetter.SetCellDataFunc (setterRenderer, new CellLayoutDataFunc (SetterDataFunc));
-			colCtor.SetCellDataFunc (ctorParamRenderer, new CellLayoutDataFunc (CtorDataFunc));
 
 			list.AppendColumn (colName);
 			list.AppendColumn (colType);
+			list.AppendColumn (colFieldName);
 			list.AppendColumn (colPropName);
 			list.AppendColumn (colPropType);
-			list.AppendColumn (colNullable);
-			list.AppendColumn (colSetter);
-			list.AppendColumn (colCtor);
+			list.AppendColumn (colSetter);;
 			list.HeadersVisible = true;
 			
 			this.Add (list);
@@ -111,10 +111,8 @@ namespace MonoDevelop.Database.Components
 		
 		public void Append (IEnumerable<ColumnContainer> columns)
 		{
-			foreach (ColumnContainer column in columns) {
-				//TODO: make up a nice property name
+			foreach (ColumnContainer column in columns)
 				store.AppendValues (true, column);
-			}
 		}
 		
 		public IEnumerable<ColumnContainer> CheckedColumns {
@@ -164,6 +162,13 @@ namespace MonoDevelop.Database.Components
 			textRenderer.Text = container.ColumnSchema.DataTypeName;
 		}
 		
+		private void FieldNameDataFunc (CellLayout layout, CellRenderer cell, TreeModel model, TreeIter iter)
+		{
+			CellRendererText textRenderer = cell as CellRendererText;
+			ColumnContainer container = model.GetValue (iter, columnObj) as ColumnContainer;
+			textRenderer.Text = container.FieldName;
+		}
+		
 		private void PropNameDataFunc (CellLayout layout, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			CellRendererText textRenderer = cell as CellRendererText;
@@ -173,14 +178,13 @@ namespace MonoDevelop.Database.Components
 		
 		private void PropTypeDataFunc (CellLayout layout, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
-			//TODO: map the DB datatype to a .NET datatype
-		}
-		
-		private void NullableDataFunc (CellLayout layout, CellRenderer cell, TreeModel model, TreeIter iter)
-		{
-			CellRendererToggle toggleRenderer = cell as CellRendererToggle;
+			CellRendererText textRenderer = cell as CellRendererText;
 			ColumnContainer container = model.GetValue (iter, columnObj) as ColumnContainer;
-			toggleRenderer.Active = container.ColumnSchema.IsNullable;
+			DataTypeSchema dt = container.ColumnSchema.DataType;
+			
+			ISchemaProvider provider = dt.SchemaProvider;
+			Type type = dt.GetDotNetDataType ();
+			textRenderer.Text = type.Name;
 		}
 		
 		private void SetterDataFunc (CellLayout layout, CellRenderer cell, TreeModel model, TreeIter iter)
@@ -188,13 +192,6 @@ namespace MonoDevelop.Database.Components
 			CellRendererToggle toggleRenderer = cell as CellRendererToggle;
 			ColumnContainer container = model.GetValue (iter, columnObj) as ColumnContainer;
 			toggleRenderer.Active = container.HasSetter;
-		}
-		
-		private void CtorDataFunc (CellLayout layout, CellRenderer cell, TreeModel model, TreeIter iter)
-		{
-			CellRendererToggle toggleRenderer = cell as CellRendererToggle;
-			ColumnContainer container = model.GetValue (iter, columnObj) as ColumnContainer;
-			toggleRenderer.Active = container.IsCtorParameter;
 		}
 		
 		private void SelectToggled (object sender, ToggledArgs args)
@@ -215,15 +212,6 @@ namespace MonoDevelop.Database.Components
 	 		}
 		}
 		
-		private void CtorParamToggled (object sender, ToggledArgs args)
-		{
-	 		TreeIter iter;
-			if (store.GetIterFromString (out iter, args.Path)) {
-				ColumnContainer container = store.GetValue (iter, columnObj) as ColumnContainer;
-				container.IsCtorParameter = !container.IsCtorParameter;
-	 		}
-		}
-		
 		private void PropNameEdited (object sender, EditedArgs args)
 		{
 			Gtk.TreeIter iter;
@@ -235,6 +223,21 @@ namespace MonoDevelop.Database.Components
 				} else {
 					//restore old name if new one is empty
 					(sender as CellRendererText).Text = container.PropertyName;
+				}
+			}
+		}
+		
+		private void FieldNameEdited (object sender, EditedArgs args)
+		{
+			Gtk.TreeIter iter;
+			if (store.GetIterFromString (out iter, args.Path)) {
+				ColumnContainer container = store.GetValue (iter, columnObj) as ColumnContainer;
+				
+				if (args.NewText != null && args.NewText.Length > 0) {
+					container.FieldName = args.NewText;
+				} else {
+					//restore old name if new one is empty
+					(sender as CellRendererText).Text = container.FieldName;
 				}
 			}
 		}

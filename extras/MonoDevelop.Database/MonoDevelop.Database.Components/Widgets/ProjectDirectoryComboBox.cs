@@ -25,6 +25,7 @@
 
 using Gtk;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
@@ -39,7 +40,7 @@ namespace MonoDevelop.Database.Components
 		
 		public ProjectDirectoryComboBox ()
 		{
-			store = new TreeStore (typeof (Gdk.Pixbuf), typeof (string), typeof (Project), typeof (ProjectFile));
+			store = new TreeStore (typeof (Gdk.Pixbuf), typeof (string), typeof (Project), typeof (string));
 			
 			CellRendererPixbuf pixbuf = new CellRendererPixbuf ();
 			CellRendererText text = new CellRendererText ();
@@ -57,15 +58,8 @@ namespace MonoDevelop.Database.Components
 		public string SelectedDirectory {
 			get {
 				TreeIter iter;
-				if (this.GetActiveIter (out iter)) {
-					ProjectFile file = store.GetValue (iter, 3) as ProjectFile;
-					if (file != null)
-						return file.FilePath;
-					
-					Project proj = store.GetValue (iter, 2) as Project;
-					return proj.BaseDirectory;
-				}
-				
+				if (this.GetActiveIter (out iter))
+					return store.GetValue (iter, 3) as string;
 				return null;
 			}
 		}
@@ -80,8 +74,7 @@ namespace MonoDevelop.Database.Components
 		}
 		
 		private void PopulateCombo ()
-		{
-			IconService service = (IconService) ServiceManager.GetService (typeof(IconService));
+		{			
 			Combine cmb = IdeApp.ProjectOperations.CurrentOpenCombine;
 			if (cmb != null) {
 				CombineEntry selected = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
@@ -93,20 +86,15 @@ namespace MonoDevelop.Database.Components
 					if (proj is DotNetProject && (proj as DotNetProject).LanguageBinding == null) {
 						pixbuf = MonoDevelop.Core.Gui.Services.Resources.GetIcon (Stock.DialogError);
 					} else {
+						IconService service = (IconService) ServiceManager.GetService (typeof(IconService));
 						string icon = service.GetImageForProjectType (proj.ProjectType);
-						pixbuf = MonoDevelop.Core.Gui.Services.Resources.GetIcon (icon);
+
+						pixbuf = MonoDevelop.Core.Gui.Services.Resources.GetIcon (icon, IconSize.Menu);
 					}
 					
-					TreeIter iter = store.AppendValues (pixbuf, "<b>" + proj.Name + "</b>", proj, null);
-					
-					foreach (ProjectFile file in proj.ProjectFiles) {
-						if (file.Subtype != Subtype.Directory)
-							continue;
-						
-						pixbuf = MonoDevelop.Core.Gui.Services.Resources.GetIcon (Stock.Directory);
-						store.AppendValues (iter, pixbuf, file.Name, proj, file);
-					}
-					
+					TreeIter iter = store.AppendValues (pixbuf, "<b>" + proj.Name + "</b>", proj, proj.BaseDirectory);
+					PopulateCombo (iter, proj.BaseDirectory, proj);
+
 					if (proj == selected)
 						activeIter = iter;
 				}
@@ -117,6 +105,22 @@ namespace MonoDevelop.Database.Components
 				} else {
 					this.SetActiveIter (activeIter);
 				}
+			}
+		}
+		
+		private void PopulateCombo (TreeIter parent, string parentDir, Project project)
+		{
+			foreach (string dir in Directory.GetDirectories (parentDir)) {
+				string name = System.IO.Path.GetFileName (dir);
+				
+				//TODO: use the ProjectFile information
+				if (name == "gtk-gui" || name == "bin")
+					continue;
+				
+				Gdk.Pixbuf pixbuf = MonoDevelop.Core.Gui.Services.Resources.GetIcon (Stock.Directory);
+				TreeIter iter = store.AppendValues (parent, pixbuf, name, project, dir);
+						
+				PopulateCombo (iter, dir, project);
 			}
 		}
 	}
