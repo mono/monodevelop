@@ -42,13 +42,13 @@ namespace MonoDevelop.Database.Designer
 		
 		private Notebook notebook;
 		
-		private ISchemaProvider schemaProvider;
+		private IEditSchemaProvider schemaProvider;
 		private ProcedureSchema procedure;
 		
 		private CommentEditorWidget commentEditor;
 		private SqlEditorWidget sqlEditor;
 		
-		public ProcedureEditorDialog (ISchemaProvider schemaProvider, ProcedureSchema procedure, bool create)
+		public ProcedureEditorDialog (IEditSchemaProvider schemaProvider, bool create, ProcedureEditorSettings settings)
 		{
 			if (schemaProvider == null)
 				throw new ArgumentNullException ("schemaProvider");
@@ -72,21 +72,25 @@ namespace MonoDevelop.Database.Designer
 			sqlEditor.TextChanged += new EventHandler (SqlChanged);
 			notebook.AppendPage (sqlEditor, new Label (AddinCatalog.GetString ("Definition")));
 			
-			IDbFactory fac = schemaProvider.ConnectionPool.DbFactory;
-			if (fac.IsCapabilitySupported ("Procedure", action, ProcedureCapabilities.Comment)) {
+			if (settings.ShowComment) {
 				commentEditor = new CommentEditorWidget ();
 				notebook.AppendPage (commentEditor, new Label (AddinCatalog.GetString ("Comment")));
-			}
-
-			entryName.Text = procedure.Name;
-			if (!create) {
-				sqlEditor.Text = schemaProvider.GetProcedureAlterStatement (procedure);
-				commentEditor.Comment = procedure.Comment;
 			}
 
 			vboxContent.PackStart (notebook, true, true, 0);
 			vboxContent.ShowAll ();
 			SetWarning (null);
+		}
+		
+		public void Initialize (ProcedureSchema procedure)
+		{
+			entryName.Text = procedure.Name;
+
+			if (action == SchemaActions.Create) {
+				sqlEditor.Text = schemaProvider.GetProcedureAlterStatement (procedure);
+				if (commentEditor != null)
+					commentEditor.Comment = procedure.Comment;
+			}
 		}
 
 		protected virtual void OkClicked (object sender, EventArgs e)
@@ -130,6 +134,16 @@ namespace MonoDevelop.Database.Designer
 				hboxWarning.ShowAll ();
 				labelWarning.Text = msg;
 			}
+		}
+	}
+	
+	public class ProcedureEditorSettings
+	{
+		private bool showComment = false;
+
+		public bool ShowComment {
+			get { return showComment; }
+			set { showComment = value; }
 		}
 	}
 }

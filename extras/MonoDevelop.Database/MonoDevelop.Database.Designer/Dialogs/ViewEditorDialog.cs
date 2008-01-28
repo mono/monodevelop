@@ -48,15 +48,13 @@ namespace MonoDevelop.Database.Designer
 		private CommentEditorWidget commentEditor;
 		private SqlEditorWidget sqlEditor;
 		
-		public ViewEditorDialog (ISchemaProvider schemaProvider, ViewSchema view, bool create)
+		public ViewEditorDialog (ISchemaProvider schemaProvider, bool create, ViewEditorSettings settings)
 		{
 			if (schemaProvider == null)
 				throw new ArgumentNullException ("schemaProvider");
-			if (view == null)
-				throw new ArgumentNullException ("view");
+			
 			
 			this.schemaProvider = schemaProvider;
-			this.view = view;
 			this.action = create ? SchemaActions.Create : SchemaActions.Alter;
 			
 			this.Build();
@@ -72,8 +70,7 @@ namespace MonoDevelop.Database.Designer
 			sqlEditor.TextChanged += new EventHandler (SqlChanged);
 			notebook.AppendPage (sqlEditor, new Label (AddinCatalog.GetString ("Definition")));
 			
-			IDbFactory fac = schemaProvider.ConnectionPool.DbFactory;
-			if (fac.IsCapabilitySupported ("View", action, ViewCapabilities.Comment)) {
+			if (settings.ShowComment) {
 				commentEditor = new CommentEditorWidget ();
 				notebook.AppendPage (commentEditor, new Label (AddinCatalog.GetString ("Comment")));
 			}
@@ -81,14 +78,22 @@ namespace MonoDevelop.Database.Designer
 			notebook.Page = 0;
 
 			entryName.Text = view.Name;
-			if (!create) {
-				sqlEditor.Text = schemaProvider.GetViewAlterStatement (view);
-				commentEditor.Comment = view.Comment;
-			}
 
 			vboxContent.PackStart (notebook, true, true, 0);
 			vboxContent.ShowAll ();
 			SetWarning (null);
+		}
+		
+		public void Initialize (ViewSchema view)
+		{
+			if (view == null)
+				throw new ArgumentNullException ("view");
+			this.view = view;
+			
+			if (action == SchemaActions.Alter) {
+//				sqlEditor.Text = schemaProvider.GetViewAlterStatement (view);
+				commentEditor.Comment = view.Comment;
+			}
 		}
 
 		protected virtual void CancelClicked (object sender, System.EventArgs e)
@@ -132,6 +137,16 @@ namespace MonoDevelop.Database.Designer
 				hboxWarning.ShowAll ();
 				labelWarning.Text = msg;
 			}
+		}
+	}
+	
+	public class ViewEditorSettings
+	{
+		private bool showComment = false;
+
+		public bool ShowComment {
+			get { return showComment; }
+			set { showComment = value; }
 		}
 	}
 }

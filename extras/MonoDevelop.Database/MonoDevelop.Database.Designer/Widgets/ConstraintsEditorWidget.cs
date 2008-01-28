@@ -50,20 +50,45 @@ namespace MonoDevelop.Database.Designer
 		
 		private SchemaActions action;
 		
-		public ConstraintsEditorWidget (ISchemaProvider schemaProvider, SchemaActions action)
+		public ConstraintsEditorWidget (ISchemaProvider schemaProvider, SchemaActions action, ConstraintEditorSettings settings)
 		{
 			if (schemaProvider == null)
 				throw new ArgumentNullException ("schemaProvider");
 			
 			this.schemaProvider = schemaProvider;
 			this.action = action;
-			
-			//TODO: enable/disable features based on schema provider metadata
-			
+	
 			this.Build();
 			
 			notebook = new Notebook ();
 			Add (notebook);
+
+			if (settings.ShowPrimaryKeyConstraints) {
+				//not for column constraints, since they are already editable in the column editor
+				pkEditor = new PrimaryKeyConstraintEditorWidget (schemaProvider, action);
+				pkEditor.ContentChanged += new EventHandler (OnContentChanged);
+				notebook.AppendPage (pkEditor, new Label (AddinCatalog.GetString ("Primary Key")));
+			}
+			
+			if (settings.ShowForeignKeyConstraints) {
+				fkEditor = new ForeignKeyConstraintEditorWidget (schemaProvider, action, settings.ForeignKeySettings);
+				fkEditor.ContentChanged += new EventHandler (OnContentChanged);
+				notebook.AppendPage (fkEditor, new Label (AddinCatalog.GetString ("Foreign Key")));
+			}
+			
+			if (settings.ShowCheckConstraints) {
+				checkEditor = new CheckConstraintEditorWidget (schemaProvider, action, settings.CheckSettings);
+				checkEditor.ContentChanged += new EventHandler (OnContentChanged);
+				notebook.AppendPage (checkEditor, new Label (AddinCatalog.GetString ("Check")));
+			}
+			
+			if (settings.ShowUniqueConstraints) {
+				uniqueEditor = new UniqueConstraintEditorWidget (schemaProvider, action);
+				uniqueEditor.ContentChanged += new EventHandler (OnContentChanged);
+				notebook.AppendPage (uniqueEditor, new Label (AddinCatalog.GetString ("Unique")));
+			}
+
+			ShowAll ();
 		}
 		
 		public void Initialize (TableSchemaCollection tables, TableSchema table, ColumnSchemaCollection columns, ConstraintSchemaCollection constraints, DataTypeSchemaCollection dataTypes)
@@ -77,36 +102,14 @@ namespace MonoDevelop.Database.Designer
 			if (tables == null)
 				throw new ArgumentNullException ("tables");
 
-			IDbFactory fac = schemaProvider.ConnectionPool.DbFactory;
-			if (fac.IsCapabilitySupported ("Table", action, TableCapabilities.PrimaryKeyConstraint)) {
-				//not for column constraints, since they are already editable in the column editor
-				pkEditor = new PrimaryKeyConstraintEditorWidget (schemaProvider, action, table, columns, constraints);
-				pkEditor.ContentChanged += new EventHandler (OnContentChanged);
-				notebook.AppendPage (pkEditor, new Label (AddinCatalog.GetString ("Primary Key")));
-			}
-			
-			if (fac.IsCapabilitySupported ("Table", action, TableCapabilities.ForeignKeyConstraint)
-				|| fac.IsCapabilitySupported ("TableColumn", action, TableCapabilities.ForeignKeyConstraint)) {
-				fkEditor = new ForeignKeyConstraintEditorWidget (schemaProvider, action, tables, table, columns, constraints);
-				fkEditor.ContentChanged += new EventHandler (OnContentChanged);
-				notebook.AppendPage (fkEditor, new Label (AddinCatalog.GetString ("Foreign Key")));
-			}
-			
-			if (fac.IsCapabilitySupported ("Table", action, TableCapabilities.CheckConstraint)
-				|| fac.IsCapabilitySupported ("TableColumn", action, TableCapabilities.CheckConstraint)) {
-				checkEditor = new CheckConstraintEditorWidget (schemaProvider, action, table, columns, constraints);
-				checkEditor.ContentChanged += new EventHandler (OnContentChanged);
-				notebook.AppendPage (checkEditor, new Label (AddinCatalog.GetString ("Check")));
-			}
-			
-			if (fac.IsCapabilitySupported ("Table", action, TableCapabilities.UniqueConstraint)
-				|| fac.IsCapabilitySupported ("TableColumn", action, TableCapabilities.CheckConstraint)) {
-				uniqueEditor = new UniqueConstraintEditorWidget (schemaProvider, action, table, columns, constraints);
-				uniqueEditor.ContentChanged += new EventHandler (OnContentChanged);
-				notebook.AppendPage (uniqueEditor, new Label (AddinCatalog.GetString ("Unique")));
-			}
-
-			ShowAll ();
+			if (pkEditor != null)
+				pkEditor.Initialize (table, columns, constraints);
+			if (fkEditor != null)
+				fkEditor.Initialize (tables, table, columns, constraints);
+			if (checkEditor != null)
+				checkEditor.Initialize (table, columns, constraints);
+			if (uniqueEditor != null)
+				uniqueEditor.Initialize (table, columns, constraints);
 		}
 		
 		private void OnContentChanged (object sender, EventArgs args)
@@ -149,6 +152,51 @@ namespace MonoDevelop.Database.Designer
 				checkEditor.FillSchemaObjects ();
 			if (uniqueEditor != null)
 				uniqueEditor.FillSchemaObjects ();
+		}
+	}
+	
+	public class ConstraintEditorSettings
+	{
+		private bool showPrimaryKeyConstraints = true;
+		private bool showForeignKeyConstraints = true;
+		private bool showCheckConstraints = true;
+		private bool showUniqueConstraints = true;
+		
+		private ForeignKeyConstraintEditorSettings foreignKeySettings;
+		private CheckConstraintEditorSettings checkSettings;
+		
+		public ConstraintEditorSettings ()
+		{
+			foreignKeySettings = new ForeignKeyConstraintEditorSettings ();
+			checkSettings = new CheckConstraintEditorSettings ();
+		}
+		
+		public ForeignKeyConstraintEditorSettings ForeignKeySettings {
+			get { return foreignKeySettings; }
+		}
+		
+		public CheckConstraintEditorSettings CheckSettings {
+			get { return checkSettings; }
+		}
+
+		public bool ShowPrimaryKeyConstraints {
+			get { return showPrimaryKeyConstraints; }
+			set { showPrimaryKeyConstraints = value; }
+		}
+		
+		public bool ShowForeignKeyConstraints {
+			get { return showForeignKeyConstraints; }
+			set { showForeignKeyConstraints = value; }
+		}
+
+		public bool ShowCheckConstraints {
+			get { return showCheckConstraints; }
+			set { showCheckConstraints = value; }
+		}
+
+		public bool ShowUniqueConstraints {
+			get { return showUniqueConstraints; }
+			set { showUniqueConstraints = value; }
 		}
 	}
 }

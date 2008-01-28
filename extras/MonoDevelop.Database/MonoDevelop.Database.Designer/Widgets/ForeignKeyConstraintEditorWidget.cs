@@ -59,46 +59,37 @@ namespace MonoDevelop.Database.Designer
 		private ListStore storeTables;
 		
 		private SchemaActions action;
+		private ForeignKeyConstraintEditorSettings settings;
 
 		//TODO: difference between columns and reference columns + combo events
-		public ForeignKeyConstraintEditorWidget (ISchemaProvider schemaProvider, SchemaActions action, TableSchemaCollection tables, TableSchema table, ColumnSchemaCollection columns, ConstraintSchemaCollection constraints)
+		public ForeignKeyConstraintEditorWidget (ISchemaProvider schemaProvider, SchemaActions action, ForeignKeyConstraintEditorSettings settings)
 		{
-			if (columns == null)
-				throw new ArgumentNullException ("columns");
-			if (table == null)
-				throw new ArgumentNullException ("table");
-			if (constraints == null)
-				throw new ArgumentNullException ("constraints");
 			if (schemaProvider == null)
 				throw new ArgumentNullException ("schemaProvider");
-			if (tables == null)
-				throw new ArgumentNullException ("tables");
+			if (settings == null)
+				throw new ArgumentNullException ("settings");
 			
 			this.schemaProvider = schemaProvider;
-			this.table = table;
-			this.tables = tables;
-			this.columns = columns;
-			this.constraints = constraints;
 			this.action = action;
-			
+			this.settings = settings;
+
 			this.Build();
-			
+
 			store = new ListStore (typeof (string), typeof (string), typeof (bool), typeof (string), typeof (string), typeof (string), typeof (string), typeof (object));
 			listFK.Model = store;
 			
 			storeActions = new ListStore (typeof (string), typeof (int));
 			storeTables = new ListStore (typeof (string));
 			
-			IDbFactory fac = schemaProvider.ConnectionPool.DbFactory;
-			if (fac.IsCapabilitySupported ("ForeignKeyConstraint", action,  ForeignKeyConstraintCapabilities.Cascade))
+			if (settings.SupportsCascade)
 				storeActions.AppendValues ("Cascade", ForeignKeyAction.Cascade);
-			if (fac.IsCapabilitySupported ("ForeignKeyConstraint", action,  ForeignKeyConstraintCapabilities.Restrict))
+			if (settings.SupportsRestrict)
 				storeActions.AppendValues ("Restrict", ForeignKeyAction.Restrict);
-			if (fac.IsCapabilitySupported ("ForeignKeyConstraint", action,  ForeignKeyConstraintCapabilities.NoAction))
+			if (settings.SupportsNoAction)
 				storeActions.AppendValues ("No Action", ForeignKeyAction.NoAction);
-			if (fac.IsCapabilitySupported ("ForeignKeyConstraint", action,  ForeignKeyConstraintCapabilities.SetNull))
+			if (settings.SupportsSetNull)
 				storeActions.AppendValues ("Set Null", ForeignKeyAction.SetNull);
-			if (fac.IsCapabilitySupported ("ForeignKeyConstraint", action,  ForeignKeyConstraintCapabilities.SetDefault))
+			if (settings.SupportsSetDefault)
 				storeActions.AppendValues ("Set Default", ForeignKeyAction.SetDefault);
 
 			foreach (TableSchema tbl in tables)
@@ -171,9 +162,26 @@ namespace MonoDevelop.Database.Designer
 			ShowAll ();
 		}
 		
+		public void Initialize (TableSchemaCollection tables, TableSchema table, ColumnSchemaCollection columns, ConstraintSchemaCollection constraints)
+		{
+			if (columns == null)
+				throw new ArgumentNullException ("columns");
+			if (table == null)
+				throw new ArgumentNullException ("table");
+			if (constraints == null)
+				throw new ArgumentNullException ("constraints");
+			if (tables == null)
+				throw new ArgumentNullException ("tables");
+			
+			this.table = table;
+			this.tables = tables;
+			this.columns = columns;
+			this.constraints = constraints;
+		}
+		
 		protected virtual void AddClicked (object sender, EventArgs e)
 		{
-			ForeignKeyConstraintSchema fk = schemaProvider.GetNewForeignKeyConstraintSchema ("fk_new");
+			ForeignKeyConstraintSchema fk = schemaProvider.CreateForeignKeyConstraintSchema ("fk_new");
 			int index = 1;
 			while (constraints.Contains (fk.Name))
 				fk.Name = "fk_new" + (index++); 
@@ -414,6 +422,40 @@ namespace MonoDevelop.Database.Designer
 				} while (storeActions.IterNext (ref iter));
 			}
 			return ForeignKeyAction.None;
+		}
+	}
+	
+	public class ForeignKeyConstraintEditorSettings
+	{
+		private bool supportsCascade = true;
+		private bool supportsRestrict = true;
+		private bool supportsNoAction = true;
+		private bool supportsSetNull = true;
+		private bool supportsSetDefault = true;
+
+		public bool SupportsCascade {
+			get { return supportsCascade; }
+			set { supportsCascade = value; }
+		}
+		
+		public bool SupportsRestrict {
+			get { return supportsRestrict; }
+			set { supportsRestrict = value; }
+		}
+		
+		public bool SupportsNoAction {
+			get { return supportsNoAction; }
+			set { supportsNoAction = value; }
+		}
+		
+		public bool SupportsSetNull {
+			get { return supportsSetNull; }
+			set { supportsSetNull = value; }
+		}
+		
+		public bool SupportsSetDefault {
+			get { return supportsSetDefault; }
+			set { supportsSetDefault = value; }
 		}
 	}
 }

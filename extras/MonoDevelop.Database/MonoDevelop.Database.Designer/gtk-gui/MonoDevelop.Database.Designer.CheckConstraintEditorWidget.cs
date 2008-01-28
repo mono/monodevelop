@@ -53,8 +53,6 @@ namespace MonoDevelop.Database.Designer {
             this.windowCheck = new Gtk.ScrolledWindow();
             this.windowCheck.CanFocus = true;
             this.windowCheck.Name = "windowCheck";
-            this.windowCheck.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.windowCheck.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.windowCheck.ShadowType = ((Gtk.ShadowType)(1));
             // Container child windowCheck.Gtk.Container+ContainerChild
             this.listCheck = new Gtk.TreeView();
@@ -106,7 +104,6 @@ namespace MonoDevelop.Database.Designer {
             this.frame = new Gtk.Frame();
             this.frame.Name = "frame";
             this.frame.ShadowType = ((Gtk.ShadowType)(0));
-            this.frame.LabelXalign = 0F;
             // Container child frame.Gtk.Container+ContainerChild
             this.alignment = new Gtk.Alignment(0F, 0F, 1F, 1F);
             this.alignment.Name = "alignment";

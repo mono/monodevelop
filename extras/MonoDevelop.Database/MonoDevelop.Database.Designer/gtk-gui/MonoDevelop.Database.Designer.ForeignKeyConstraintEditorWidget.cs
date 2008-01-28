@@ -63,8 +63,6 @@ namespace MonoDevelop.Database.Designer {
             this.windowPK = new Gtk.ScrolledWindow();
             this.windowPK.CanFocus = true;
             this.windowPK.Name = "windowPK";
-            this.windowPK.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.windowPK.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.windowPK.ShadowType = ((Gtk.ShadowType)(1));
             // Container child windowPK.Gtk.Container+ContainerChild
             this.listFK = new Gtk.TreeView();
@@ -120,7 +118,6 @@ namespace MonoDevelop.Database.Designer {
             this.frame1 = new Gtk.Frame();
             this.frame1.Name = "frame1";
             this.frame1.ShadowType = ((Gtk.ShadowType)(0));
-            this.frame1.LabelXalign = 0F;
             // Container child frame1.Gtk.Container+ContainerChild
             this.GtkAlignment2 = new Gtk.Alignment(0F, 0F, 1F, 1F);
             this.GtkAlignment2.Name = "GtkAlignment2";
@@ -130,8 +127,6 @@ namespace MonoDevelop.Database.Designer {
             this.columnSelecter.Sensitive = false;
             this.columnSelecter.CanFocus = true;
             this.columnSelecter.Name = "columnSelecter";
-            this.columnSelecter.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.columnSelecter.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.columnSelecter.ShadowType = ((Gtk.ShadowType)(1));
             this.columnSelecter.SingleCheck = false;
             this.GtkAlignment2.Add(this.columnSelecter);
@@ -148,7 +143,6 @@ namespace MonoDevelop.Database.Designer {
             this.frame2 = new Gtk.Frame();
             this.frame2.Name = "frame2";
             this.frame2.ShadowType = ((Gtk.ShadowType)(0));
-            this.frame2.LabelXalign = 0F;
             // Container child frame2.Gtk.Container+ContainerChild
             this.GtkAlignment3 = new Gtk.Alignment(0F, 0F, 1F, 1F);
             this.GtkAlignment3.Name = "GtkAlignment3";
@@ -158,8 +152,6 @@ namespace MonoDevelop.Database.Designer {
             this.referenceColumnSelecter.Sensitive = false;
             this.referenceColumnSelecter.CanFocus = true;
             this.referenceColumnSelecter.Name = "referenceColumnSelecter";
-            this.referenceColumnSelecter.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.referenceColumnSelecter.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.referenceColumnSelecter.ShadowType = ((Gtk.ShadowType)(1));
             this.referenceColumnSelecter.SingleCheck = false;
             this.GtkAlignment3.Add(this.referenceColumnSelecter);

@@ -53,8 +53,6 @@ namespace MonoDevelop.Database.Designer {
             this.windowTriggers = new Gtk.ScrolledWindow();
             this.windowTriggers.CanFocus = true;
             this.windowTriggers.Name = "windowTriggers";
-            this.windowTriggers.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.windowTriggers.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.windowTriggers.ShadowType = ((Gtk.ShadowType)(1));
             // Container child windowTriggers.Gtk.Container+ContainerChild
             this.listTriggers = new Gtk.TreeView();
@@ -106,7 +104,6 @@ namespace MonoDevelop.Database.Designer {
             this.frame = new Gtk.Frame();
             this.frame.Name = "frame";
             this.frame.ShadowType = ((Gtk.ShadowType)(0));
-            this.frame.LabelXalign = 0F;
             // Container child frame.Gtk.Container+ContainerChild
             this.alignment = new Gtk.Alignment(0F, 0F, 1F, 1F);
             this.alignment.Name = "alignment";

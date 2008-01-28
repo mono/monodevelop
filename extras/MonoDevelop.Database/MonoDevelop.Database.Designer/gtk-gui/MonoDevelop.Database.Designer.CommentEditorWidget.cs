@@ -26,8 +26,6 @@ namespace MonoDevelop.Database.Designer {
             this.scrolledwindow = new Gtk.ScrolledWindow();
             this.scrolledwindow.CanFocus = true;
             this.scrolledwindow.Name = "scrolledwindow";
-            this.scrolledwindow.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow.Gtk.Container+ContainerChild
             this.textComment = new Gtk.TextView();

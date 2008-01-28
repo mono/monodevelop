@@ -39,7 +39,7 @@ namespace MonoDevelop.Database.Designer
 	{
 		private SchemaActions action;
 		
-		private ISchemaProvider schemaProvider;
+		private IEditSchemaProvider schemaProvider;
 		private TableSchemaCollection tables;
 		private TableSchema table;
 		private TableSchema originalTable;
@@ -57,16 +57,12 @@ namespace MonoDevelop.Database.Designer
 		private TriggersEditorWidget triggerEditor;
 		private CommentEditorWidget commentEditor;
 		
-		public TableEditorDialog (ISchemaProvider schemaProvider, TableSchema table, bool create)
+		public TableEditorDialog (IEditSchemaProvider schemaProvider, bool create, TableEditorSettings settings)
 		{
 			if (schemaProvider == null)
 				throw new ArgumentNullException ("schemaProvider");
-			if (table == null)
-				throw new ArgumentNullException ("table");
 			
 			this.schemaProvider = schemaProvider;
-			this.originalTable = table;
-			this.table = table;
 			this.action = create ? SchemaActions.Create : SchemaActions.Alter;
 			
 			this.Build();
@@ -79,14 +75,14 @@ namespace MonoDevelop.Database.Designer
 			notebook = new Notebook ();
 			vboxContent.PackStart (notebook, true, true, 0);
 			
-			columnEditor = new ColumnsEditorWidget (schemaProvider, action);
+			SetWarning (null);
+
+			columnEditor = new ColumnsEditorWidget (schemaProvider, action, settings.ColumnSettings);
 			columnEditor.ContentChanged += new EventHandler (OnContentChanged);
 			notebook.AppendPage (columnEditor, new Label (AddinCatalog.GetString ("Columns")));
 			
-			//TODO: there is a diff between col and table constraints
-			IDbFactory fac = schemaProvider.ConnectionPool.DbFactory;
-			if (fac.IsCapabilitySupported ("Table", action, TableCapabilities.Constraints)) {
-				constraintEditor = new ConstraintsEditorWidget (schemaProvider, action);
+			if (settings.ShowConstraints) {
+				constraintEditor = new ConstraintsEditorWidget (schemaProvider, action, settings.ConstraintSettings);
 				constraintEditor.ContentChanged += new EventHandler (OnContentChanged);
 				notebook.AppendPage (constraintEditor, new Label (AddinCatalog.GetString ("Constraints")));
 			}
@@ -95,13 +91,13 @@ namespace MonoDevelop.Database.Designer
 			//indexEditor = new IndicesEditorWidget (schemaProvider);
 			//notebook.AppendPage (indexEditor, new Label (AddinCatalog.GetString ("Indexes")));
 			
-			if (fac.IsCapabilitySupported ("Table", action, TableCapabilities.Trigger)) {
+			if (settings.ShowTriggers) {
 				triggerEditor = new TriggersEditorWidget (schemaProvider, action);
 				triggerEditor.ContentChanged += new EventHandler (OnContentChanged);
 				notebook.AppendPage (triggerEditor, new Label (AddinCatalog.GetString ("Triggers")));
 			}
 			
-			if (fac.IsCapabilitySupported ("Table", action, TableCapabilities.Comment)) {
+			if (settings.ShowComment) {
 				commentEditor = new CommentEditorWidget ();
 				notebook.AppendPage (commentEditor, new Label (AddinCatalog.GetString ("Comment")));
 			}
@@ -116,7 +112,15 @@ namespace MonoDevelop.Database.Designer
 			ThreadPool.QueueUserWorkItem (new WaitCallback (InitializeThreaded));
 			
 			vboxContent.ShowAll ();
-			SetWarning (null);
+		}
+		
+		public void Initialize (TableSchema table)
+		{
+			if (table == null)
+				throw new ArgumentNullException ("table");
+			
+			this.originalTable = table;
+			this.table = table;
 		}
 		
 		private void InitializeThreaded (object state)
@@ -136,7 +140,7 @@ namespace MonoDevelop.Database.Designer
 			builder.Append ("    columns = ");
 			builder.Append (columns.Count);
 			builder.AppendLine ();
-		    builder.Append ("constraints = ");
+			builder.Append ("constraints = ");
 			builder.Append (constraints.Count);
 			builder.AppendLine ();
 
@@ -196,8 +200,8 @@ namespace MonoDevelop.Database.Designer
 			
 			if (action == SchemaActions.Create)
 				table.Definition = schemaProvider.GetTableCreateStatement (table);
-			else
-				table.Definition = schemaProvider.GetTableAlterStatement (table);
+//			else
+//				table.Definition = schemaProvider.GetTableAlterStatement (table);
 
 			if (checkPreview.Active) {
 				PreviewDialog dlg = new PreviewDialog (table.Definition);
@@ -257,6 +261,55 @@ namespace MonoDevelop.Database.Designer
 				hboxWarning.ShowAll ();
 				labelWarning.Text = msg;
 			}
+		}
+	}
+	
+	public class TableEditorSettings
+	{
+		private bool showConstraints = true;
+		private bool showComment = false;
+		private bool showTriggers = true;
+		private bool showIndices = true;
+		
+		private ConstraintEditorSettings constraintSettings;
+		private ColumnEditorSettings columnSettings;
+		
+		public TableEditorSettings ()
+		{
+			constraintSettings = new ConstraintEditorSettings ();
+			columnSettings = new ColumnEditorSettings ();
+		}
+		
+		public ConstraintEditorSettings ConstraintSettings {
+			get { return constraintSettings; }
+		}
+		
+		public ColumnEditorSettings ColumnSettings {
+			get { return columnSettings; }
+		}
+		
+		public bool ShowConstraints {
+			get {
+				return constraintSettings.ShowPrimaryKeyConstraints |
+					constraintSettings.ShowForeignKeyConstraints |
+					constraintSettings.ShowCheckConstraints |
+					constraintSettings.ShowUniqueConstraints;
+			}
+		}
+
+		public bool ShowComment {
+			get { return showComment; }
+			set { showComment = value; }
+		}
+
+		public bool ShowTriggers {
+			get { return showTriggers; }
+			set { showTriggers = value; }
+		}
+
+		public bool ShowIndices {
+			get { return showIndices; }
+			set { showIndices = value; }
 		}
 	}
 }

@@ -195,7 +195,7 @@ namespace MonoDevelop.Database.Designer
 
 		protected virtual void AddClicked (object sender, EventArgs e)
 		{
-			TriggerSchema trigger = schemaProvider.GetNewTriggerSchema ("trigger_" + table.Name);
+			TriggerSchema trigger = schemaProvider.CreateTriggerSchema ("trigger_" + table.Name);
 			trigger.TableName = table.Name;
 			int index = 1;
 			while (triggers.Contains (trigger.Name))

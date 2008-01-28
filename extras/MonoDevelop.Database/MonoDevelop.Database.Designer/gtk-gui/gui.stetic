@@ -6,9 +6,9 @@
   </configuration>
   <import>
     <widget-library name="../../build/MonoDevelop.Database.Components.dll" />
-    <widget-library name="MonoDevelop.Components, Version=0.17.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Ide, Version=0.17.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Projects.Gui, Version=0.17.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Components, Version=0.19.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Ide, Version=0.19.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Projects.Gui, Version=0.19.0.0, Culture=neutral" />
     <widget-library name="../../build/MonoDevelop.Database.Designer.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.Database.Designer.TriggersEditorWidget" design-size="422 300">
@@ -26,8 +26,6 @@
               <widget class="Gtk.ScrolledWindow" id="windowTriggers">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="VscrollbarPolicy">Automatic</property>
-                <property name="HscrollbarPolicy">Automatic</property>
                 <property name="ShadowType">In</property>
                 <child>
                   <widget class="Gtk.TreeView" id="listTriggers">
@@ -97,7 +95,6 @@
           <widget class="Gtk.Frame" id="frame">
             <property name="MemberName" />
             <property name="ShadowType">None</property>
-            <property name="LabelXalign">0</property>
             <child>
               <widget class="Gtk.Alignment" id="alignment">
                 <property name="MemberName" />
@@ -144,8 +141,6 @@
               <widget class="Gtk.ScrolledWindow" id="scrolledwindowLeft">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="VscrollbarPolicy">Automatic</property>
-                <property name="HscrollbarPolicy">Automatic</property>
                 <property name="ShadowType">In</property>
                 <child>
                   <widget class="Gtk.TreeView" id="treeColumns">
@@ -249,8 +244,6 @@
           <widget class="Gtk.ScrolledWindow" id="scrolledwindowRight">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="VscrollbarPolicy">Automatic</property>
-            <property name="HscrollbarPolicy">Automatic</property>
             <property name="ShadowType">In</property>
             <child>
               <widget class="Gtk.Viewport" id="GtkViewport1">
@@ -994,8 +987,6 @@
       <widget class="Gtk.ScrolledWindow" id="scrolledwindow">
         <property name="MemberName" />
         <property name="CanFocus">True</property>
-        <property name="VscrollbarPolicy">Automatic</property>
-        <property name="HscrollbarPolicy">Automatic</property>
         <property name="ShadowType">In</property>
         <child>
           <widget class="Gtk.TextView" id="textComment">
@@ -1214,8 +1205,6 @@
               <widget class="Gtk.ScrolledWindow" id="windowPK">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="VscrollbarPolicy">Automatic</property>
-                <property name="HscrollbarPolicy">Automatic</property>
                 <property name="ShadowType">In</property>
                 <child>
                   <widget class="Gtk.TreeView" id="listFK">
@@ -1287,7 +1276,6 @@
               <widget class="Gtk.Frame" id="frame1">
                 <property name="MemberName" />
                 <property name="ShadowType">None</property>
-                <property name="LabelXalign">0</property>
                 <child>
                   <widget class="Gtk.Alignment" id="GtkAlignment2">
                     <property name="MemberName" />
@@ -1299,8 +1287,6 @@
                         <property name="MemberName" />
                         <property name="Sensitive">False</property>
                         <property name="CanFocus">True</property>
-                        <property name="VscrollbarPolicy">Automatic</property>
-                        <property name="HscrollbarPolicy">Automatic</property>
                         <property name="ShadowType">In</property>
                         <property name="SingleCheck">False</property>
                       </widget>
@@ -1327,7 +1313,6 @@
               <widget class="Gtk.Frame" id="frame2">
                 <property name="MemberName" />
                 <property name="ShadowType">None</property>
-                <property name="LabelXalign">0</property>
                 <child>
                   <widget class="Gtk.Alignment" id="GtkAlignment3">
                     <property name="MemberName" />
@@ -1339,8 +1324,6 @@
                         <property name="MemberName" />
                         <property name="Sensitive">False</property>
                         <property name="CanFocus">True</property>
-                        <property name="VscrollbarPolicy">Automatic</property>
-                        <property name="HscrollbarPolicy">Automatic</property>
                         <property name="ShadowType">In</property>
                         <property name="SingleCheck">False</property>
                       </widget>
@@ -1383,8 +1366,6 @@
               <widget class="Gtk.ScrolledWindow" id="windowCheck">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="VscrollbarPolicy">Automatic</property>
-                <property name="HscrollbarPolicy">Automatic</property>
                 <property name="ShadowType">In</property>
                 <child>
                   <widget class="Gtk.TreeView" id="listCheck">
@@ -1454,7 +1435,6 @@
           <widget class="Gtk.Frame" id="frame">
             <property name="MemberName" />
             <property name="ShadowType">None</property>
-            <property name="LabelXalign">0</property>
             <child>
               <widget class="Gtk.Alignment" id="alignment">
                 <property name="MemberName" />
@@ -1500,8 +1480,6 @@
               <widget class="Gtk.ScrolledWindow" id="windowPK">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="VscrollbarPolicy">Automatic</property>
-                <property name="HscrollbarPolicy">Automatic</property>
                 <property name="ShadowType">In</property>
                 <child>
                   <widget class="Gtk.TreeView" id="listPK">
@@ -1572,8 +1550,6 @@
             <property name="MemberName" />
             <property name="Sensitive">False</property>
             <property name="CanFocus">True</property>
-            <property name="VscrollbarPolicy">Automatic</property>
-            <property name="HscrollbarPolicy">Automatic</property>
             <property name="ShadowType">In</property>
             <property name="SingleCheck">False</property>
           </widget>
@@ -1596,8 +1572,6 @@
               <widget class="Gtk.ScrolledWindow" id="windowPK">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="VscrollbarPolicy">Automatic</property>
-                <property name="HscrollbarPolicy">Automatic</property>
                 <property name="ShadowType">In</property>
                 <child>
                   <widget class="Gtk.TreeView" id="listUnique">
@@ -1668,8 +1642,6 @@
             <property name="MemberName" />
             <property name="Sensitive">False</property>
             <property name="CanFocus">True</property>
-            <property name="VscrollbarPolicy">Automatic</property>
-            <property name="HscrollbarPolicy">Automatic</property>
             <property name="ShadowType">In</property>
             <property name="SingleCheck">False</property>
           </widget>

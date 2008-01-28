@@ -47,8 +47,6 @@ namespace MonoDevelop.Database.Designer {
             this.windowPK = new Gtk.ScrolledWindow();
             this.windowPK.CanFocus = true;
             this.windowPK.Name = "windowPK";
-            this.windowPK.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.windowPK.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.windowPK.ShadowType = ((Gtk.ShadowType)(1));
             // Container child windowPK.Gtk.Container+ContainerChild
             this.listUnique = new Gtk.TreeView();
@@ -101,8 +99,6 @@ namespace MonoDevelop.Database.Designer {
             this.columnSelecter.Sensitive = false;
             this.columnSelecter.CanFocus = true;
             this.columnSelecter.Name = "columnSelecter";
-            this.columnSelecter.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.columnSelecter.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.columnSelecter.ShadowType = ((Gtk.ShadowType)(1));
             this.columnSelecter.SingleCheck = false;
             this.hpaned.Add(this.columnSelecter);

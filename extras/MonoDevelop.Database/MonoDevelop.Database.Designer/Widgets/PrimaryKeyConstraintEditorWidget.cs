@@ -51,21 +51,12 @@ namespace MonoDevelop.Database.Designer
 		private const int colColumnsIndex = 1;
 		private const int colObjIndex = 2;
 		
-		public PrimaryKeyConstraintEditorWidget (ISchemaProvider schemaProvider, SchemaActions action, TableSchema table, ColumnSchemaCollection columns, ConstraintSchemaCollection constraints)
+		public PrimaryKeyConstraintEditorWidget (ISchemaProvider schemaProvider, SchemaActions action)
 		{
-			if (columns == null)
-				throw new ArgumentNullException ("columns");
-			if (table == null)
-				throw new ArgumentNullException ("table");
-			if (constraints == null)
-				throw new ArgumentNullException ("constraints");
 			if (schemaProvider == null)
 				throw new ArgumentNullException ("schemaProvider");
 			
 			this.schemaProvider = schemaProvider;
-			this.table = table;
-			this.columns = columns;
-			this.constraints = constraints;
 			this.action = action;
 			
 			this.Build();
@@ -94,6 +85,20 @@ namespace MonoDevelop.Database.Designer
 				AddConstraint (pk);
 			
 			ShowAll ();
+		}
+		
+		public void Initialize (TableSchema table, ColumnSchemaCollection columns, ConstraintSchemaCollection constraints)
+		{
+			if (columns == null)
+				throw new ArgumentNullException ("columns");
+			if (table == null)
+				throw new ArgumentNullException ("table");
+			if (constraints == null)
+				throw new ArgumentNullException ("constraints");
+			
+			this.table = table;
+			this.columns = columns;
+			this.constraints = constraints;
 		}
 		
 		private void NameEdited (object sender, EditedArgs args)
@@ -151,7 +156,7 @@ namespace MonoDevelop.Database.Designer
 
 		protected virtual void AddClicked (object sender, System.EventArgs e)
 		{
-			PrimaryKeyConstraintSchema pk = schemaProvider.GetNewPrimaryKeyConstraintSchema ("pk_new");
+			PrimaryKeyConstraintSchema pk = schemaProvider.CreatePrimaryKeyConstraintSchema ("pk_new");
 			int index = 1;
 			while (constraints.Contains (pk.Name))
 				pk.Name = "pk_new" + (index++); 

@@ -50,22 +50,22 @@ namespace MonoDevelop.Database.Designer
 
 		protected virtual void OkClicked (object sender, System.EventArgs e)
 		{
-			context = comboConnections.DatabaseConnection;
-			if (context.IsTemporary) {
-				//make it a real connection context and fill in the database
-				context.ConnectionSettings.Database = entryDatabase.Text;
-				context.ConnectionSettings.Name = entryName.Text;
-				context.IsTemporary = false;
-			} else {
-				//create a copy of the settings and create a new context
-				DatabaseConnectionSettings settings = new DatabaseConnectionSettings (context.ConnectionSettings);
-				settings.Database = entryDatabase.Text;
-				settings.Name = entryName.Text;
-				context = new DatabaseConnectionContext (settings);
-			}
-
-			Respond (ResponseType.Ok);
-			Destroy ();
+//			context = comboConnections.DatabaseConnection;
+//			if (context.IsTemporary) {
+//				//make it a real connection context and fill in the database
+//				context.ConnectionSettings.Database = entryDatabase.Text;
+//				context.ConnectionSettings.Name = entryName.Text;
+//				context.IsTemporary = false;
+//			} else {
+//				//create a copy of the settings and create a new context
+//				DatabaseConnectionSettings settings = new DatabaseConnectionSettings (context.ConnectionSettings);
+//				settings.Database = entryDatabase.Text;
+//				settings.Name = entryName.Text;
+//				context = new DatabaseConnectionContext (settings);
+//			}
+//
+//			Respond (ResponseType.Ok);
+//			Destroy ();
 		}
 
 		protected virtual void CancelClicked (object sender, System.EventArgs e)
@@ -76,26 +76,26 @@ namespace MonoDevelop.Database.Designer
 
 		protected virtual void SaveAsClicked (object sender, System.EventArgs e)
 		{
-			DatabaseConnectionContext context = comboConnections.DatabaseConnection;
-			if (context == null)
-				return;
-
-			IDbFactory fac = context.DbFactory;
-			
-			string database = null;
-			if (fac.GuiProvider.ShowSelectDatabaseDialog (true, out database))
-				entryDatabase.Text = database;
+//			DatabaseConnectionContext context = comboConnections.DatabaseConnection;
+//			if (context == null)
+//				return;
+//
+//			IDbFactory fac = context.DbFactory;
+//			
+//			string database = null;
+//			if (fac.GuiProvider.ShowSelectDatabaseDialog (true, out database))
+//				entryDatabase.Text = database;
 		}
 
 		protected virtual void NewClicked (object sender, System.EventArgs e)
 		{
-			DatabaseConnectionSettingsDialog dlg = new DatabaseConnectionSettingsDialog (true);
-			if (dlg.Run () == (int)ResponseType.Ok) {
-				DatabaseConnectionContext context = new DatabaseConnectionContext (dlg.ConnectionSettings, true);
-				context.IsTemporary = true;
-				comboConnections.AddDatabaseConnectionContext (context);
-				comboConnections.DatabaseConnection = context;
-			}
+//			DatabaseConnectionSettingsDialog dlg = new DatabaseConnectionSettingsDialog (true);
+//			if (dlg.Run () == (int)ResponseType.Ok) {
+//				DatabaseConnectionContext context = new DatabaseConnectionContext (dlg.ConnectionSettings, true);
+//				context.IsTemporary = true;
+//				comboConnections.AddDatabaseConnectionContext (context);
+//				comboConnections.DatabaseConnection = context;
+//			}
 		}
 
 		protected virtual void DatabaseNameChanged (object sender, EventArgs e)
@@ -115,11 +115,11 @@ namespace MonoDevelop.Database.Designer
 		
 		private void CheckOkState ()
 		{
-			DatabaseConnectionContext context = comboConnections.DatabaseConnection;
-			if (context != null)
-				buttonSelect.Sensitive = context.DbFactory.IsCapabilitySupported ("ConnectionSettings", SchemaActions.Schema, ConnectionSettingsCapabilities.SelectDatabase);
-			buttonOk.Sensitive = context != null &&
-				entryDatabase.Text.Length > 0 && entryName.Text.Length > 0;
+//			DatabaseConnectionContext context = comboConnections.DatabaseConnection;
+//			if (context != null)
+//				buttonSelect.Sensitive = context.DbFactory.IsCapabilitySupported ("ConnectionSettings", SchemaActions.Schema, ConnectionSettingsCapabilities.SelectDatabase);
+//			buttonOk.Sensitive = context != null &&
+//				entryDatabase.Text.Length > 0 && entryName.Text.Length > 0;
 		}
 
 		protected virtual void NameChanged (object sender, System.EventArgs e)

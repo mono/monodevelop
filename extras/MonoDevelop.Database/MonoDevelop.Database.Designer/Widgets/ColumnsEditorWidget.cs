@@ -57,17 +57,21 @@ namespace MonoDevelop.Database.Designer
 		private TableSchema table;
 		
 		private SchemaActions action;
+		private ColumnEditorSettings settings;
 		
-		public ColumnsEditorWidget (ISchemaProvider schemaProvider, SchemaActions action)
+		public ColumnsEditorWidget (ISchemaProvider schemaProvider, SchemaActions action, ColumnEditorSettings settings)
 		{
 			if (schemaProvider == null)
 				throw new ArgumentNullException ("schemaProvider");
+			if (settings == null)
+				throw new ArgumentNullException ("settings");
 			
 			this.schemaProvider = schemaProvider;
 			this.action = action;
+			this.settings = settings;
 
 			this.Build();
-			
+
 			storeTypes = new ListStore (typeof (string), typeof (object));
 			storeColumns = new ListStore (typeof (bool), typeof (string), typeof (string), typeof (string), typeof (bool), typeof (string), typeof (object));
 			treeColumns.Model = storeColumns;
@@ -131,16 +135,17 @@ namespace MonoDevelop.Database.Designer
 			colNullable.AddAttribute (nullableRenderer, "active", colNullableIndex);
 			colComment.AddAttribute (commentRenderer, "text", colCommentIndex);
 
-			IDbFactory fac = schemaProvider.ConnectionPool.DbFactory;
-			if (fac.IsCapabilitySupported ("TableColumn", action, ColumnCapabilities.PrimaryKeyConstraint))
+			if (settings.ShowPrimaryKeyColumn)
 				treeColumns.AppendColumn (colPK);
-			treeColumns.AppendColumn (colName);
-			treeColumns.AppendColumn (colType);
-			if (fac.IsCapabilitySupported ("TableColumn", action, ColumnCapabilities.Length))
+			if (settings.ShowNameColumn)
+				treeColumns.AppendColumn (colName);
+			if (settings.ShowTypeColumn)
+				treeColumns.AppendColumn (colType);
+			if (settings.ShowLengthColumn)
 				treeColumns.AppendColumn (colLength);
-			if (fac.IsCapabilitySupported ("TableColumn", action, ColumnCapabilities.Nullable))
+			if (settings.ShowNullableColumn)
 				treeColumns.AppendColumn (colNullable);
-			if (fac.IsCapabilitySupported ("TableColumn", action, ColumnCapabilities.Comment))
+			if (settings.ShowCommentColumn)
 				treeColumns.AppendColumn (colComment);
 
 			treeColumns.Reorderable = false;
@@ -150,9 +155,9 @@ namespace MonoDevelop.Database.Designer
 			treeColumns.EnableSearch = false;
 			
 			if (action == SchemaActions.Alter) {
-				buttonAdd.Sensitive = fac.IsCapabilitySupported ("Table", action, TableCapabilities.AppendColumn);
-				buttonRemove.Sensitive = fac.IsCapabilitySupported ("Table", action, TableCapabilities.RemoveColumn);
-				buttonUp.Sensitive = fac.IsCapabilitySupported ("Table", action, TableCapabilities.InsertColumn);
+				buttonAdd.Sensitive = settings.ShowAddButton;
+				buttonRemove.Sensitive = settings.ShowRemoveButton;
+				buttonUp.Sensitive = settings.AllowReorder;
 			}
 
 			ShowAll ();
@@ -160,7 +165,6 @@ namespace MonoDevelop.Database.Designer
 		
 		public void Initialize (TableSchema table, ColumnSchemaCollection columns, ConstraintSchemaCollection constraints, DataTypeSchemaCollection dataTypes)
 		{
-			LoggingService.LogDebug ("ColumnsEditorWidget: entering Initialize");
 			if (columns == null)
 				throw new ArgumentNullException ("columns");
 			if (constraints == null)
@@ -180,7 +184,6 @@ namespace MonoDevelop.Database.Designer
 			
 			foreach (DataTypeSchema dataType in dataTypes)
 				storeTypes.AppendValues (dataType.Name, storeTypes);
-			LoggingService.LogDebug ("ColumnsEditorWidget: exiting Initialize");
 		}
 		
 		private void AppendColumnSchema (ColumnSchema column)
@@ -198,15 +201,15 @@ namespace MonoDevelop.Database.Designer
 				index++;
 			} while (columns.Contains (name));
 			
-			ColumnSchema column = schemaProvider.GetNewColumnSchema (name, table);
-
-			TreeIter iter;
-			if (storeTypes.GetIterFirst (out iter))
-				column.DataTypeName = storeTypes.GetValue (iter, 0) as string;
-			
-			columns.Add (column);
-			AppendColumnSchema (column);
-			EmitContentChanged ();
+//			ColumnSchema column = schemaProvider.GetNewColumnSchema (name, table);
+//
+//			TreeIter iter;
+//			if (storeTypes.GetIterFirst (out iter))
+//				column.DataTypeName = storeTypes.GetValue (iter, 0) as string;
+//			
+//			columns.Add (column);
+//			AppendColumnSchema (column);
+//			EmitContentChanged ();
 		}
 
 		protected virtual void RemoveClicked (object sender, EventArgs e)
@@ -344,8 +347,8 @@ namespace MonoDevelop.Database.Designer
 			IDbFactory fac = schemaProvider.ConnectionPool.DbFactory;
 			//TODO: check Append if "next" is the last row
 			TreeIter iter;
-			bool sel = fac.IsCapabilitySupported ("Table", action, TableCapabilities.RemoveColumn);
-			bool next = fac.IsCapabilitySupported ("Table", action, TableCapabilities.InsertColumn);
+			bool sel = settings.ShowRemoveButton;
+			bool next = settings.AllowReorder;
 			bool prev = next;
 			
 			if (treeColumns.Selection.GetSelected (out iter)) {
@@ -419,11 +422,66 @@ namespace MonoDevelop.Database.Designer
 					column.Comment = storeColumns.GetValue (iter, colCommentIndex) as string;
 					
 					if ((bool)storeColumns.GetValue (iter, colPKIndex)) {
-						PrimaryKeyConstraintSchema pk = schemaProvider.GetNewPrimaryKeyConstraintSchema ("pk_" + column.Name);
+						PrimaryKeyConstraintSchema pk = schemaProvider.CreatePrimaryKeyConstraintSchema ("pk_" + column.Name);
 						column.Constraints.Add (pk);
 					}
 				} while (storeColumns.IterNext (ref iter));
 			}
+		}
+	}
+	
+	public class ColumnEditorSettings
+	{
+		private bool showAddButton = true;
+		private bool showRemoveButton = true;
+		private bool allowReorder = true;
+		
+		private bool showPrimaryKeyColumn = true;
+		private bool showNameColumn = true;
+		private bool showTypeColumn = true;
+		private bool showLengthColumn = true;
+		private bool showNullableColumn = true;
+		private bool showCommentColumn = true;
+		
+		public bool ShowAddButton {
+			get { return showAddButton; }
+			set { showAddButton = value; }
+		}
+		
+		public bool ShowRemoveButton {
+			get { return showRemoveButton; }
+			set { showRemoveButton = value; }
+		}
+		
+		public bool AllowReorder {
+			get { return allowReorder; }
+			set { allowReorder = value; }
+		}
+		
+		public bool ShowPrimaryKeyColumn {
+			get { return showPrimaryKeyColumn; }
+			set { showPrimaryKeyColumn = value; }
+		}
+		public bool ShowNameColumn {
+			get { return showNameColumn; }
+			set { showNameColumn = value; }
+		}
+		public bool ShowTypeColumn {
+			get { return showTypeColumn; }
+			set { showTypeColumn = value; }
+		}
+		public bool ShowLengthColumn {
+			get { return showLengthColumn; }
+			set { showLengthColumn = value; }
+		}
+		public bool ShowNullableColumn {
+			get { return showNullableColumn; }
+			set { showNullableColumn = value; }
+		}
+
+		public bool ShowCommentColumn {
+			get { return showCommentColumn; }
+			set { showCommentColumn = value; }
 		}
 	}
 }

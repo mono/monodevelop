@@ -51,8 +51,6 @@ namespace MonoDevelop.Database.Designer {
             this.scrolledwindowLeft = new Gtk.ScrolledWindow();
             this.scrolledwindowLeft.CanFocus = true;
             this.scrolledwindowLeft.Name = "scrolledwindowLeft";
-            this.scrolledwindowLeft.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindowLeft.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindowLeft.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindowLeft.Gtk.Container+ContainerChild
             this.treeColumns = new Gtk.TreeView();
@@ -130,8 +128,6 @@ namespace MonoDevelop.Database.Designer {
             this.scrolledwindowRight = new Gtk.ScrolledWindow();
             this.scrolledwindowRight.CanFocus = true;
             this.scrolledwindowRight.Name = "scrolledwindowRight";
-            this.scrolledwindowRight.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindowRight.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindowRight.ShadowType = ((Gtk.ShadowType)(1));
             this.hpaned.Add(this.scrolledwindowRight);
             this.Add(this.hpaned);

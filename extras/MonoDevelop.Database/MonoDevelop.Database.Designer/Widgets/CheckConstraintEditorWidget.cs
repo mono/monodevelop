@@ -51,26 +51,19 @@ namespace MonoDevelop.Database.Designer
 		private const int colSourceIndex = 3;
 		private const int colObjIndex = 4;
 		
-		private bool columnConstraintsSupported;
-		private bool tableConstraintsSupported;
+		private CheckConstraintEditorSettings settings;
 		
 		private SchemaActions action;
 		
-		public CheckConstraintEditorWidget (ISchemaProvider schemaProvider, SchemaActions action, TableSchema table, ColumnSchemaCollection columns, ConstraintSchemaCollection constraints)
+		public CheckConstraintEditorWidget (ISchemaProvider schemaProvider, SchemaActions action, CheckConstraintEditorSettings settings)
 		{
-			if (columns == null)
-				throw new ArgumentNullException ("columns");
-			if (table == null)
-				throw new ArgumentNullException ("table");
-			if (constraints == null)
-				throw new ArgumentNullException ("constraints");
+			if (settings == null)
+				throw new ArgumentNullException ("settings");
 			if (schemaProvider == null)
 				throw new ArgumentNullException ("schemaProvider");
 			
 			this.schemaProvider = schemaProvider;
-			this.table = table;
-			this.columns = columns;
-			this.constraints = constraints;
+			this.settings = settings;
 			this.action = action;
 			
 			this.Build();
@@ -113,29 +106,39 @@ namespace MonoDevelop.Database.Designer
 			colColumn.AddAttribute (columnRenderer, "text", colColumnNameIndex);
 			colIsColumnConstraint.AddAttribute (isColumnConstraintRenderer, "active", colIsColumnConstraintIndex);
 
-			IDbFactory fac = schemaProvider.ConnectionPool.DbFactory;
-			columnConstraintsSupported = fac.IsCapabilitySupported ("TableColumn", action, TableCapabilities.CheckConstraint);
-			tableConstraintsSupported = fac.IsCapabilitySupported ("Table", action, TableCapabilities.CheckConstraint);
-			
 			listCheck.AppendColumn (colName);
-			if (columnConstraintsSupported)
+			if (settings.SupportsColumnConstraints)
 				listCheck.AppendColumn (colColumn);
-			if (columnConstraintsSupported && tableConstraintsSupported)
+			if (settings.SupportsColumnConstraints && settings.SupportsTableConstraints)
 				listCheck.AppendColumn (colIsColumnConstraint);
 			
 			listCheck.Selection.Changed += new EventHandler (OnSelectionChanged);
 			sqlEditor.TextChanged += new EventHandler (SourceChanged);
+
+			ShowAll ();
+		}
+		
+		public void Initialize (TableSchema table, ColumnSchemaCollection columns, ConstraintSchemaCollection constraints)
+		{
+			if (columns == null)
+				throw new ArgumentNullException ("columns");
+			if (table == null)
+				throw new ArgumentNullException ("table");
+			if (constraints == null)
+				throw new ArgumentNullException ("constraints");
+
+			this.table = table;
+			this.columns = columns;
+			this.constraints = constraints;
 			
 			foreach (CheckConstraintSchema check in constraints.GetConstraints (ConstraintType.Check))
 				AddConstraint (check);
 			//TODO: also col constraints
-			
-			ShowAll ();
 		}
 
 		protected virtual void AddClicked (object sender, EventArgs e)
 		{
-			CheckConstraintSchema check = schemaProvider.GetNewCheckConstraintSchema ("check_new");
+			CheckConstraintSchema check = schemaProvider.CreateCheckConstraintSchema ("check_new");
 			int index = 1;
 			while (constraints.Contains (check.Name))
 				check.Name = "check_new" + (index++); 
@@ -281,6 +284,22 @@ namespace MonoDevelop.Database.Designer
 					table.Constraints.Add (check);
 				} while (store.IterNext (ref iter));
 			}
+		}
+	}
+	
+	public class CheckConstraintEditorSettings
+	{
+		private bool supportsColumnConstraints = true;
+		private bool supportsTableConstraints = true;
+
+		public bool SupportsColumnConstraints {
+			get { return supportsColumnConstraints; }
+			set { supportsColumnConstraints = value; }
+		}
+		
+		public bool SupportsTableConstraints {
+			get { return supportsTableConstraints; }
+			set { supportsTableConstraints = value; }
 		}
 	}
 }
