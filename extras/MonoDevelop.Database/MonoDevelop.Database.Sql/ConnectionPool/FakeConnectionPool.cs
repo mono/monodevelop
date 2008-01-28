@@ -38,6 +38,9 @@ namespace MonoDevelop.Database.Sql
 		protected IPooledDbConnection connection;
 		protected bool inUse = false;
 		
+		protected bool hasVersion;
+		protected Version databaseVersion;
+		
 		protected bool hasErrors;
 		protected string error;
 		
@@ -79,6 +82,14 @@ namespace MonoDevelop.Database.Sql
 		
 		public virtual string Error {
 			get { return error; }
+		}
+		
+		public virtual bool HasVersion {
+			get { return hasVersion; }
+		}
+		
+		public virtual Version DatabaseVersion {
+			get { return databaseVersion; }
 		}
 		
 		public virtual int MinSize {
@@ -141,6 +152,10 @@ namespace MonoDevelop.Database.Sql
 				hasErrors = true;
 				return false;
 			}
+			if (!hasVersion) {
+				databaseVersion = connection.DatabaseVersion;
+				hasVersion = true;
+			}
 			
 			hasErrors = false;
 			isInitialized = true;
@@ -151,7 +166,9 @@ namespace MonoDevelop.Database.Sql
 		{
 			if (connection != null)
 				connection.Dispose ();
-			
+			hasVersion = false;
+			hasErrors = false;
+			error = null;
 			isInitialized = false;
 		}
 	}

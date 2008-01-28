@@ -37,6 +37,8 @@ namespace MonoDevelop.Database.Sql
 	{
 		protected IConnectionPool connectionPool;
 		
+		protected Dictionary<SchemaType, SchemaActions> supportedActions;
+		
 		protected string databasesCollectionString = "Databases";
 		protected string tablesCollectionString = "Tables";
 		protected string viewsCollectionString = "Views";
@@ -71,9 +73,16 @@ namespace MonoDevelop.Database.Sql
 				throw new ArgumentNullException ("connectionPool");
 			
 			this.connectionPool = connectionPool;
+			this.supportedActions = new Dictionary<SchemaType, SchemaActions> ();
 		}
 		
-		public IConnectionPool ConnectionPool {
+		public virtual bool CanEdit
+		{
+			get { return true; }
+		}
+		
+		public IConnectionPool ConnectionPool
+		{
 			get { return connectionPool; }
 		}
 		
@@ -504,245 +513,7 @@ namespace MonoDevelop.Database.Sql
 			return schema;
 		}
 		
-		public virtual void CreateDatabase (DatabaseSchema database)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public virtual void CreateTable (TableSchema table)
-		{
-			string sql = GetTableCreateStatement (table);
-			ExecuteNonQuery (sql);
-		}
-
-		public virtual void CreateView (ViewSchema view)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public virtual void CreateProcedure (ProcedureSchema procedure)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public virtual void CreateIndex (IndexSchema index)
-		{
-			throw new NotImplementedException ();
-		}
-		
-		public virtual void CreateTrigger (TriggerSchema trigger)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public virtual void CreateUser (UserSchema user)
-		{
-			throw new NotImplementedException ();
-		}
-		
-		public virtual void AlterDatabase (DatabaseSchema database)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public virtual void AlterTable (TableSchema table)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public virtual void AlterView (ViewSchema view)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public virtual void AlterProcedure (ProcedureSchema procedure)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public virtual void AlterIndex (IndexSchema index)
-		{
-			throw new NotImplementedException ();
-		}
-		
-		public virtual void AlterTrigger (TriggerSchema trigger)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public virtual void AlterUser (UserSchema user)
-		{
-			throw new NotImplementedException ();
-		}
-		
-		public virtual void DropDatabase (DatabaseSchema database)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public virtual void DropTable (TableSchema table)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public virtual void DropView (ViewSchema view)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public virtual void DropProcedure (ProcedureSchema procedure)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public virtual void DropIndex (IndexSchema index)
-		{
-			throw new NotImplementedException ();
-		}
-		
-		public virtual void DropTrigger (TriggerSchema trigger)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public virtual void DropUser (UserSchema user)
-		{
-			throw new NotImplementedException ();
-		}
-		
-		public virtual void RenameDatabase (DatabaseSchema database, string name)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public virtual void RenameTable (TableSchema table, string name)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public virtual void RenameView (ViewSchema view, string name)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public virtual void RenameProcedure (ProcedureSchema procedure, string name)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public virtual void RenameIndex (IndexSchema index, string name)
-		{
-			throw new NotImplementedException ();
-		}
-		
-		public virtual void RenameTrigger (TriggerSchema trigger, string name)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public virtual void RenameUser (UserSchema user, string name)
-		{
-			throw new NotImplementedException ();
-		}
-		
-		public virtual DatabaseSchema GetNewDatabaseSchema (string name)
-		{
-			DatabaseSchema schema = new DatabaseSchema (this);
-			schema.Name = name;
-			return schema;
-		}
-
-		public virtual TableSchema GetNewTableSchema (string name)
-		{
-			TableSchema schema = new TableSchema (this, name);
-			return schema;
-		}
-
-		public virtual ViewSchema GetNewViewSchema (string name)
-		{
-			ViewSchema schema = new ViewSchema (this);
-			schema.Name = name;
-			return schema;
-		}
-
-		public virtual ProcedureSchema GetNewProcedureSchema (string name)
-		{
-			ProcedureSchema schema = new ProcedureSchema (this);
-			schema.Name = name;
-			return schema;
-		}
-
-		public virtual ColumnSchema GetNewColumnSchema (string name, ISchema parent)
-		{
-			ColumnSchema schema = new ColumnSchema (this, parent, name);
-			return schema;
-		}
-	
-		public virtual ParameterSchema GetNewParameterSchema (string name)
-		{
-			ParameterSchema schema = new ParameterSchema (this);
-			schema.Name = name;
-			return schema;
-		}
-
-		public virtual CheckConstraintSchema GetNewCheckConstraintSchema (string name)
-		{
-			CheckConstraintSchema schema = new CheckConstraintSchema (this);
-			schema.Name = name;
-			return schema;
-		}
-
-		public virtual UniqueConstraintSchema GetNewUniqueConstraintSchema (string name)
-		{
-			UniqueConstraintSchema schema = new UniqueConstraintSchema (this);
-			schema.Name = name;
-			return schema;
-		}
-
-		public virtual PrimaryKeyConstraintSchema GetNewPrimaryKeyConstraintSchema (string name)
-		{
-			PrimaryKeyConstraintSchema schema = new PrimaryKeyConstraintSchema (this);
-			schema.Name = name;
-			return schema;
-		}
-
-		public virtual ForeignKeyConstraintSchema GetNewForeignKeyConstraintSchema (string name)
-		{
-			ForeignKeyConstraintSchema schema = new ForeignKeyConstraintSchema (this);
-			schema.Name = name;
-			return schema;
-		}
-
-		public virtual UserSchema GetNewUserSchema (string name)
-		{
-			UserSchema schema = new UserSchema (this);
-			schema.Name = name;
-			return schema;
-		}
-		
-		public virtual TriggerSchema GetNewTriggerSchema (string name)
-		{
-			TriggerSchema schema = new TriggerSchema (this);
-			schema.Name = name;
-			return schema;
-		}
-		
 		public virtual string GetTableCreateStatement (TableSchema table)
-		{
-			throw new NotImplementedException ();
-		}
-		
-		public virtual string GetTableAlterStatement (TableSchema table)
-		{
-			throw new NotImplementedException ();
-		}
-		
-		public virtual string GetViewAlterStatement (ViewSchema view)
-		{
-			throw new NotImplementedException ();
-		}
-		
-		public virtual string GetProcedureAlterStatement (ProcedureSchema procedure)
 		{
 			throw new NotImplementedException ();
 		}
@@ -750,6 +521,176 @@ namespace MonoDevelop.Database.Sql
 		public virtual bool IsValidName (string name)
 		{
 			return true;
+		}
+		
+		public virtual AggregateSchema CreateAggregateSchema (string name)
+		{
+			AggregateSchema schema = new AggregateSchema (this);
+			schema.Name = name;
+			return schema;
+		}
+
+		public virtual CheckConstraintSchema CreateCheckConstraintSchema (string name)
+		{
+			CheckConstraintSchema schema = new CheckConstraintSchema (this);
+			schema.Name = name;
+			return schema;
+		}
+
+		public virtual ColumnSchema CreateColumnSchema (ISchema parent, string name)
+		{
+			ColumnSchema schema = new ColumnSchema (this, parent);
+			schema.Name = name;
+			return schema;
+		}
+
+		public virtual DatabaseSchema CreateDatabaseSchema (string name)
+		{
+			DatabaseSchema schema = new DatabaseSchema (this);
+			schema.Name = name;
+			return schema;
+		}
+
+		public virtual ForeignKeyConstraintSchema CreateForeignKeyConstraintSchema (string name)
+		{
+			ForeignKeyConstraintSchema schema = new ForeignKeyConstraintSchema (this);
+			schema.Name = name;
+			return schema;
+		}
+
+		public virtual GroupSchema CreateGroupSchema (string name)
+		{
+			GroupSchema schema = new GroupSchema (this);
+			schema.Name = name;
+			return schema;
+		}
+
+		public virtual IndexSchema CreateIndexSchema (string name)
+		{
+			IndexSchema schema = new IndexSchema (this);
+			schema.Name = name;
+			return schema;
+		}
+
+		public virtual LanguageSchema CreateLanguageSchema (string name)
+		{
+			LanguageSchema schema = new LanguageSchema (this);
+			schema.Name = name;
+			return schema;
+		}
+
+		public virtual OperatorSchema CreateOperatorSchema (string name)
+		{
+			OperatorSchema schema = new OperatorSchema (this);
+			schema.Name = name;
+			return schema;
+		}
+
+		public virtual ParameterSchema CreateParameterSchema (string name)
+		{
+			ParameterSchema schema = new ParameterSchema (this);
+			schema.Name = name;
+			return schema;
+		}
+
+		public virtual PrimaryKeyConstraintSchema CreatePrimaryKeyConstraintSchema (string name)
+		{
+			PrimaryKeyConstraintSchema schema = new PrimaryKeyConstraintSchema (this);
+			schema.Name = name;
+			return schema;
+		}
+
+		public virtual PrivilegeSchema CreatePrivilegeSchema (string name)
+		{
+			PrivilegeSchema schema = new PrivilegeSchema (this);
+			schema.Name = name;
+			return schema;
+		}
+
+		public virtual ProcedureSchema CreateProcedureSchema (string name)
+		{
+			ProcedureSchema schema = new ProcedureSchema (this);
+			schema.Name = name;
+			return schema;
+		}
+
+		public virtual RoleSchema CreateRoleSchema (string name)
+		{
+			RoleSchema schema = new RoleSchema (this);
+			schema.Name = name;
+			return schema;
+		}
+
+		public virtual RuleSchema CreateRuleSchema (string name)
+		{
+			RuleSchema schema = new RuleSchema (this);
+			schema.Name = name;
+			return schema;
+		}
+
+		public virtual SchemaSchema CreateSchemaSchema (string name)
+		{
+			SchemaSchema schema = new SchemaSchema (this);
+			schema.Name = name;
+			return schema;
+		}
+
+		public virtual SequenceSchema CreateSequenceSchema (string name)
+		{
+			SequenceSchema schema = new SequenceSchema (this);
+			schema.Name = name;
+			return schema;
+		}
+
+		public virtual TableSchema CreateTableSchema (string name)
+		{
+			TableSchema schema = new TableSchema (this);
+			schema.Name = name;
+			return schema;
+		}
+
+		public virtual TriggerSchema CreateTriggerSchema (string name)
+		{
+			TriggerSchema schema = new TriggerSchema (this);
+			schema.Name = name;
+			return schema;
+		}
+
+		public virtual UniqueConstraintSchema CreateUniqueConstraintSchema (string name)
+		{
+			UniqueConstraintSchema schema = new UniqueConstraintSchema (this);
+			schema.Name = name;
+			return schema;
+		}
+
+		public virtual UserSchema CreateUserSchema (string name)
+		{
+			UserSchema schema = new UserSchema (this);
+			schema.Name = name;
+			return schema;
+		}
+
+		public virtual ViewSchema CreateViewSchema (string name)
+		{
+			ViewSchema schema = new ViewSchema (this);
+			schema.Name = name;
+			return schema;
+		}
+		
+		public virtual bool IsSchemaActionSupported (SchemaType type, SchemaActions action)
+		{
+			SchemaActions supported;
+			if (supportedActions.TryGetValue (type, out supported))
+				return (supported & action) == action;
+			return false;
+		}
+		
+		protected virtual void AddSupportedSchemaActions (SchemaType type, SchemaActions actions)
+		{
+			if (supportedActions.ContainsKey (type))
+				supportedActions[type] = supportedActions[type] | actions;
+			else
+				supportedActions.Add (type, actions);
 		}
 		
 		protected int GetCheckedInt32 (IDataReader reader, int field)

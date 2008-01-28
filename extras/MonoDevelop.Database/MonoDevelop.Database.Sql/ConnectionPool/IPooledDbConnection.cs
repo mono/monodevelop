@@ -38,6 +38,8 @@ namespace MonoDevelop.Database.Sql
 		IDbConnection DbConnection { get; }
 		
 		bool IsOpen { get; }
+
+		Version DatabaseVersion { get; }
 		
 		void Release ();
 

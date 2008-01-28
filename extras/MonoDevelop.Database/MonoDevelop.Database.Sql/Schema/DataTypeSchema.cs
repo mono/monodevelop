@@ -233,6 +233,39 @@ namespace MonoDevelop.Database.Sql
 			}
 		}
 		
+		public virtual Type GetDotNetDataType ()
+		{
+			//TODO: improve detection based on the length/precision of the DateTypeSchema
+			switch (DataTypeCategory) {
+			case DataTypeCategory.AutoNumber:
+			case DataTypeCategory.Integer:
+				return isNullable ? typeof (int?) : typeof (int);
+			case DataTypeCategory.Binary:
+			case DataTypeCategory.VarBinary:
+				return typeof (byte[]);
+			case DataTypeCategory.Bit:
+			case DataTypeCategory.Boolean:
+				return isNullable ? typeof (bool?) : typeof (bool);
+			case DataTypeCategory.Char:
+			case DataTypeCategory.NChar:
+			case DataTypeCategory.VarChar:
+			case DataTypeCategory.NVarChar:
+			case DataTypeCategory.Xml:
+				return typeof (string);
+			case DataTypeCategory.Date:
+			case DataTypeCategory.DateTime:
+			case DataTypeCategory.Time:
+			case DataTypeCategory.TimeStamp:
+				return isNullable ? typeof (DateTime?) : typeof (DateTime);
+			case DataTypeCategory.Float:
+				return isNullable ? typeof (double?) : typeof (double);
+			case DataTypeCategory.Uid:
+			case DataTypeCategory.Other:
+			default:
+				return typeof (object);
+			}
+		}
+		
 		public override object Clone ()
 		{
 			return new DataTypeSchema (this);

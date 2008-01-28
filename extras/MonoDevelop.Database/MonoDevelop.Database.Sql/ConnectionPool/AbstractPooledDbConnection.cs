@@ -56,6 +56,8 @@ namespace MonoDevelop.Database.Sql
 			get { return connection.State == ConnectionState.Open; }
 		}
 		
+		public abstract Version DatabaseVersion { get; }
+		
 		public virtual void Release ()
 		{
 			connectionPool.Release (this);

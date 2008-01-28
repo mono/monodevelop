@@ -100,6 +100,10 @@ using System;
 		/// <summary>
 		/// Undefined data type
 		/// </summary>
-		Other
+		Other,
+		/// <summary>
+		/// A data type defined by the user
+		/// </summary>
+		UserDefined,
 	}
 }

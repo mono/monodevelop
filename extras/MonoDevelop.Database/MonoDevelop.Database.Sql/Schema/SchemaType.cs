@@ -27,22 +27,35 @@ using System;
 
 namespace MonoDevelop.Database.Sql
 {
-	[Flags]
-	public enum ProcedureCapabilities
+	//TODO: TableColumnConstraint value
+	//TODO: cannot use IsSchemaActionSupported on .Constraint --> need OR instead of AND
+	public enum SchemaType
 	{
-		None = 0x000,
+		Schema,
+		Table,
+		TableColumn,
+		View,
+		ViewColumn,
+		Procedure,
+		ProcedureParameter,
+		Trigger,
+		PrimaryKeyConstraint,
+		ForeignKeyConstraint,
+		CheckConstraint,
+		UniqueConstraint,
+		Constraint = PrimaryKeyConstraint | ForeignKeyConstraint | CheckConstraint | UniqueConstraint,
+		Aggregate,
+		Database,
+		Group,
+		Index,
+		Language,
+		Operator,
+		Privilege,
+		Role,
+		Rule,
+		Sequence,
+		User,
 		
-		Name = 0x001,
-		Owner = 0x002,
-		Comment = 0x004,
-		Definition = 0x008,
-		Schema = 0x010,
-		IsSystem = 0x020,
-		Language = 0x040,
-		Parameters = 0x080,
-
-		InsertParameter = 0x100,
-		AppendParameter = 0x200,
-		RemoveParameter = 0x400
+		Other
 	}
 }

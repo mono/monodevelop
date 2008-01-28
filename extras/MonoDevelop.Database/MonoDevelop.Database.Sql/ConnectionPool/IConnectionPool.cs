@@ -34,6 +34,9 @@ namespace MonoDevelop.Database.Sql
 		IDbFactory DbFactory { get; }
 		DatabaseConnectionContext ConnectionContext { get; }
 		
+		bool HasVersion { get; }
+		Version DatabaseVersion { get; }
+		
 		bool IsInitialized { get; }
 		bool HasErrors { get; }
 		

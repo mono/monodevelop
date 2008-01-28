@@ -1,3 +1,51 @@
+2008-01-28  Ben Motmans <ben.motmans@gmail.com> 
+
+	* Codons/CapabilitiesCodon.cs, Codons/ActionCodon.cs,
+	  Codons/CapabilityFlagsCodon.cs, Capabilities/UniqueConstraint.cs,
+	  Capabilities/CapabilitiesUtility.cs, Capabilities/User.cs,
+	  Capabilities/Parameter.cs, Capabilities/ConnectionSettings.cs,
+	  Capabilities/SchemaActions.cs, Capabilities/CheckConstraint.cs,
+	  Capabilities/Table.cs, Capabilities/Procedure.cs,
+	  Capabilities/Column.cs, Capabilities/PrimaryKeyConstraint.cs,
+	  Capabilities/Trigger.cs, Capabilities/Index.cs,
+	  Capabilities/ForeignKeyConstraint.cs, Capabilities/View.cs,
+	  MonoDevelop.Database.Sql.addin.xml: capabilities system is now obsolete
+	* Codons/DbFactoryCodon.cs: removed leftovers from the capabilities system
+	* AlterSchema, AlterSchema/TriggerAlterSchema.cs,
+	  AlterSchema/AbstractAlterSchema.cs, AlterSchema/DatabaseAlterSchema.cs,
+	  AlterSchema/IndexAlterSchema.cs,
+	  AlterSchema/ForeignKeyConstraintAlterSchema.cs, AlterSchema/Alterations,
+	  AlterSchema/Alterations/IAlteration.cs,
+	  AlterSchema/Alterations/DataTypeAlteration.cs,
+	  AlterSchema/Alterations/NameAlteration.cs,
+	  AlterSchema/Alterations/StatementAlteration.cs,
+	  AlterSchema/ViewAlterSchema.cs,
+	  AlterSchema/UniqueConstraintAlterSchema.cs,
+	  AlterSchema/UserAlterSchema.cs,
+	  AlterSchema/CheckConstraintAlterSchema.cs,
+	  AlterSchema/TableAlterSchema.cs, AlterSchema/IAlterSchema.cs,
+	  AlterSchema/ProcedureAlterSchema.cs, AlterSchema/ColumnAlterSchema.cs,
+	  AlterSchema/PrimaryKeyConstraintAlterSchema.cs: initial support for
+	  schema alterations (far from finished)
+	* ConnectionPool/AbstractPooledDbConnection.cs,
+	  ConnectionPool/DefaultConnectionPool.cs,
+	  ConnectionPool/FakeConnectionPool.cs,
+	  ConnectionPool/IPooledDbConnection.cs,
+	  ConnectionPool/IConnectionPool.cs: added support to retrieve the
+	  database version
+	* QueryService.cs: temporary changes
+	* IDbFactory.cs: removed the old capabilities system
+	* Schema/DataTypeSchema.cs: added GetDotNetDataType method
+	* Schema/SchemaType.cs: added a list of all Schema types
+	* Schema/DataTypeCategory.cs: added category 'UserDefined'
+	* AbstractDbFactory.cs: no longer needed
+	* Providers/AbstractSchemaProvider.cs, Providers/ISchemaProvider.cs,
+	  Providers/AbstractEditSchemaProvider.cs,
+	  Providers/IEditSchemaProvider.cs: splitted the schema provider in a
+	  query only and edit part
+	* Providers/IGuiProvider.cs: API changes
+	* AddinCatalog.cs: added support for plural strings
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Database.Sql.addin.xml: Update MD version.

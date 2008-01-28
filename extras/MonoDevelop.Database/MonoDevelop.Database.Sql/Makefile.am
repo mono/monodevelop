@@ -8,26 +8,25 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
-	AbstractDbFactory.cs \
 	AddinCatalog.cs \
-	Capabilities/CapabilitiesUtility.cs \
-	Capabilities/CheckConstraint.cs \
-	Capabilities/Column.cs \
-	Capabilities/ConnectionSettings.cs \
-	Capabilities/ForeignKeyConstraint.cs \
-	Capabilities/Index.cs \
-	Capabilities/Parameter.cs \
-	Capabilities/PrimaryKeyConstraint.cs \
-	Capabilities/Procedure.cs \
-	Capabilities/SchemaActions.cs \
-	Capabilities/Table.cs \
-	Capabilities/Trigger.cs \
-	Capabilities/UniqueConstraint.cs \
-	Capabilities/User.cs \
-	Capabilities/View.cs \
-	Codons/ActionCodon.cs \
-	Codons/CapabilitiesCodon.cs \
-	Codons/CapabilityFlagsCodon.cs \
+	AlterSchema/AbstractAlterSchema.cs \
+	AlterSchema/Alterations/DataTypeAlteration.cs \
+	AlterSchema/Alterations/IAlteration.cs \
+	AlterSchema/Alterations/NameAlteration.cs \
+	AlterSchema/Alterations/StatementAlteration.cs \
+	AlterSchema/CheckConstraintAlterSchema.cs \
+	AlterSchema/ColumnAlterSchema.cs \
+	AlterSchema/DatabaseAlterSchema.cs \
+	AlterSchema/ForeignKeyConstraintAlterSchema.cs \
+	AlterSchema/IAlterSchema.cs \
+	AlterSchema/IndexAlterSchema.cs \
+	AlterSchema/PrimaryKeyConstraintAlterSchema.cs \
+	AlterSchema/ProcedureAlterSchema.cs \
+	AlterSchema/TableAlterSchema.cs \
+	AlterSchema/TriggerAlterSchema.cs \
+	AlterSchema/UniqueConstraintAlterSchema.cs \
+	AlterSchema/UserAlterSchema.cs \
+	AlterSchema/ViewAlterSchema.cs \
 	Codons/DbFactoryCodon.cs \
 	Collections/ColumnSchemaCollection.cs \
 	Collections/ConstraintSchemaCollection.cs \
@@ -98,8 +97,10 @@ FILES =  \
 	Dialect/Statements/UpdateStatement.cs \
 	IDbFactory.cs \
 	Providers/AbstractConnectionProvider.cs \
+	Providers/AbstractEditSchemaProvider.cs \
 	Providers/AbstractSchemaProvider.cs \
 	Providers/IConnectionProvider.cs \
+	Providers/IEditSchemaProvider.cs \
 	Providers/IGuiProvider.cs \
 	Providers/ISchemaProvider.cs \
 	QueryService.cs \
@@ -129,7 +130,9 @@ FILES =  \
 	Schema/Range.cs \
 	Schema/RoleSchema.cs \
 	Schema/RuleSchema.cs \
+	Schema/SchemaActions.cs \
 	Schema/SchemaSchema.cs \
+	Schema/SchemaType.cs \
 	Schema/SequenceSchema.cs \
 	Schema/TableSchema.cs \
 	Schema/TriggerEvent.cs \

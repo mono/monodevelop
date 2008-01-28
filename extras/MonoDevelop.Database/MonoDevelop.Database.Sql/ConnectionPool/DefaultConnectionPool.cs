@@ -43,6 +43,9 @@ namespace MonoDevelop.Database.Sql
 		protected DatabaseConnectionContext context;
 		protected IConnectionProvider connectionProvider;
 		
+		protected bool hasVersion;
+		protected Version databaseVersion;
+		
 		protected bool isInitialized;
 		
 		protected List<IPooledDbConnection> connections;
@@ -89,6 +92,14 @@ namespace MonoDevelop.Database.Sql
 		
 		public virtual string Error {
 			get { return error; }
+		}
+		
+		public virtual bool HasVersion {
+			get { return hasVersion; }
+		}
+		
+		public virtual Version DatabaseVersion {
+			get { return databaseVersion; }
 		}
 		
 		public virtual int MinSize {
@@ -210,6 +221,11 @@ namespace MonoDevelop.Database.Sql
 				return false;
 			}
 			
+			if (!hasVersion) {
+				databaseVersion = conn.DatabaseVersion;
+				hasVersion = true;
+			}
+			
 			hasErrors = false;
 			lock (sync)
 				freeConnections.Enqueue (conn);
@@ -223,6 +239,7 @@ namespace MonoDevelop.Database.Sql
 			isInitialized = false;
 			hasErrors = false;
 			error = null;
+			hasVersion = false;
 		}
 		
 		protected virtual void Cleanup ()

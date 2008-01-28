@@ -126,27 +126,30 @@
     <File name="Schema/TriggerFireType.cs" subtype="Code" buildaction="Compile" />
     <File name="Schema/IndexType.cs" subtype="Code" buildaction="Compile" />
     <File name="Schema/ForeignKeyAction.cs" subtype="Code" buildaction="Compile" />
-    <File name="Capabilities/Table.cs" subtype="Code" buildaction="Compile" />
-    <File name="Capabilities/View.cs" subtype="Code" buildaction="Compile" />
-    <File name="Capabilities/Procedure.cs" subtype="Code" buildaction="Compile" />
-    <File name="Capabilities/PrimaryKeyConstraint.cs" subtype="Code" buildaction="Compile" />
-    <File name="Capabilities/ForeignKeyConstraint.cs" subtype="Code" buildaction="Compile" />
-    <File name="Capabilities/CheckConstraint.cs" subtype="Code" buildaction="Compile" />
-    <File name="Capabilities/UniqueConstraint.cs" subtype="Code" buildaction="Compile" />
-    <File name="Capabilities/Trigger.cs" subtype="Code" buildaction="Compile" />
-    <File name="Capabilities/Column.cs" subtype="Code" buildaction="Compile" />
-    <File name="Capabilities/Parameter.cs" subtype="Code" buildaction="Compile" />
-    <File name="Codons/ActionCodon.cs" subtype="Code" buildaction="Compile" />
-    <File name="Codons/CapabilityFlagsCodon.cs" subtype="Code" buildaction="Compile" />
-    <File name="Capabilities/CapabilitiesUtility.cs" subtype="Code" buildaction="Compile" />
-    <File name="Capabilities/ConnectionSettings.cs" subtype="Code" buildaction="Compile" />
-    <File name="Capabilities/Index.cs" subtype="Code" buildaction="Compile" />
-    <File name="Capabilities/SchemaActions.cs" subtype="Code" buildaction="Compile" />
-    <File name="Capabilities/User.cs" subtype="Code" buildaction="Compile" />
-    <File name="Codons/CapabilitiesCodon.cs" subtype="Code" buildaction="Compile" />
-    <File name="AbstractDbFactory.cs" subtype="Code" buildaction="Compile" />
     <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="AddinCatalog.cs" subtype="Code" buildaction="Compile" />
+    <File name="AlterSchema/ColumnAlterSchema.cs" subtype="Code" buildaction="Compile" />
+    <File name="AlterSchema/DatabaseAlterSchema.cs" subtype="Code" buildaction="Compile" />
+    <File name="AlterSchema/UserAlterSchema.cs" subtype="Code" buildaction="Compile" />
+    <File name="AlterSchema/IAlterSchema.cs" subtype="Code" buildaction="Compile" />
+    <File name="AlterSchema/AbstractAlterSchema.cs" subtype="Code" buildaction="Compile" />
+    <File name="AlterSchema/TableAlterSchema.cs" subtype="Code" buildaction="Compile" />
+    <File name="AlterSchema/TriggerAlterSchema.cs" subtype="Code" buildaction="Compile" />
+    <File name="AlterSchema/IndexAlterSchema.cs" subtype="Code" buildaction="Compile" />
+    <File name="AlterSchema/PrimaryKeyConstraintAlterSchema.cs" subtype="Code" buildaction="Compile" />
+    <File name="AlterSchema/ForeignKeyConstraintAlterSchema.cs" subtype="Code" buildaction="Compile" />
+    <File name="AlterSchema/CheckConstraintAlterSchema.cs" subtype="Code" buildaction="Compile" />
+    <File name="AlterSchema/UniqueConstraintAlterSchema.cs" subtype="Code" buildaction="Compile" />
+    <File name="Providers/IEditSchemaProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="AlterSchema/Alterations/NameAlteration.cs" subtype="Code" buildaction="Compile" />
+    <File name="AlterSchema/Alterations/IAlteration.cs" subtype="Code" buildaction="Compile" />
+    <File name="AlterSchema/Alterations/DataTypeAlteration.cs" subtype="Code" buildaction="Compile" />
+    <File name="AlterSchema/Alterations/StatementAlteration.cs" subtype="Code" buildaction="Compile" />
+    <File name="Providers/AbstractEditSchemaProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="Schema/SchemaType.cs" subtype="Code" buildaction="Compile" />
+    <File name="Schema/SchemaActions.cs" subtype="Code" buildaction="Compile" />
+    <File name="AlterSchema/ViewAlterSchema.cs" subtype="Code" buildaction="Compile" />
+    <File name="AlterSchema/ProcedureAlterSchema.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

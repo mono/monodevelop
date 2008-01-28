@@ -33,88 +33,59 @@ namespace MonoDevelop.Database.Sql
 {
 	public interface ISchemaProvider
 	{
+		bool CanEdit { get; }
+		
 		IConnectionPool ConnectionPool { get; }
-
+		
 		DatabaseSchemaCollection GetDatabases ();
 
-		TableSchemaCollection GetTables ();
-		
+		TableSchemaCollection GetTables ();	
 		ColumnSchemaCollection GetTableColumns (TableSchema table);
+		ConstraintSchemaCollection GetTableConstraints (TableSchema table);
+		IndexSchemaCollection GetTableIndexes (TableSchema table);
+		ColumnSchemaCollection GetTableIndexColumns (TableSchema table, IndexSchema index);
+		TriggerSchemaCollection GetTableTriggers (TableSchema table);
+		
+		ConstraintSchemaCollection GetColumnConstraints (TableSchema table, ColumnSchema column);
 
 		ViewSchemaCollection GetViews ();
-
 		ColumnSchemaCollection GetViewColumns (ViewSchema view);
 
 		ProcedureSchemaCollection GetProcedures ();
-		
 		ParameterSchemaCollection GetProcedureParameters (ProcedureSchema procedure);
-
-		ConstraintSchemaCollection GetTableConstraints (TableSchema table);
-		
-		ConstraintSchemaCollection GetColumnConstraints (TableSchema table, ColumnSchema column);
-		
-		IndexSchemaCollection GetTableIndexes (TableSchema table);
-		
-		ColumnSchemaCollection GetTableIndexColumns (TableSchema table, IndexSchema index);
-		
-		TriggerSchemaCollection GetTableTriggers (TableSchema table);
 
 		UserSchemaCollection GetUsers ();
 		
-		DataTypeSchemaCollection GetDataTypes ();
-		
+		DataTypeSchemaCollection GetDataTypes ();		
 		DataTypeSchema GetDataType (string name);
-		
-		void CreateDatabase (DatabaseSchema database);
-		void CreateTable (TableSchema table);
-		void CreateView (ViewSchema view);
-		void CreateProcedure (ProcedureSchema procedure);
-		void CreateIndex (IndexSchema index);
-		void CreateTrigger (TriggerSchema trigger);
-		void CreateUser (UserSchema user);
-		
-		void AlterDatabase (DatabaseSchema database);
-		void AlterTable (TableSchema table);
-		void AlterView (ViewSchema view);
-		void AlterProcedure (ProcedureSchema procedure);
-		void AlterIndex (IndexSchema index);
-		void AlterTrigger (TriggerSchema trigger);
-		void AlterUser (UserSchema user);
-		
-		void DropDatabase (DatabaseSchema database);
-		void DropTable (TableSchema table);
-		void DropView (ViewSchema view);
-		void DropProcedure (ProcedureSchema procedure);
-		void DropIndex (IndexSchema index);
-		void DropTrigger (TriggerSchema trigger);
-		void DropUser (UserSchema user);
 
-		void RenameDatabase (DatabaseSchema database, string name);
-		void RenameTable (TableSchema table, string name);
-		void RenameView (ViewSchema view, string name);
-		void RenameProcedure (ProcedureSchema procedure, string name);
-		void RenameIndex (IndexSchema index, string name);
-		void RenameTrigger (TriggerSchema trigger, string name);
-		void RenameUser (UserSchema user, string name);
-		
 		string GetTableCreateStatement (TableSchema table);
-		string GetTableAlterStatement (TableSchema table);
-		string GetViewAlterStatement (ViewSchema view);
-		string GetProcedureAlterStatement (ProcedureSchema procedure);
-		
-		DatabaseSchema GetNewDatabaseSchema (string name);
-		TableSchema GetNewTableSchema (string name);
-		ViewSchema GetNewViewSchema (string name);
-		ProcedureSchema GetNewProcedureSchema (string name);
-		ColumnSchema GetNewColumnSchema (string name, ISchema parent);
-		ParameterSchema GetNewParameterSchema (string name);
-		CheckConstraintSchema GetNewCheckConstraintSchema (string name);
-		UniqueConstraintSchema GetNewUniqueConstraintSchema (string name);
-		PrimaryKeyConstraintSchema GetNewPrimaryKeyConstraintSchema (string name);
-		ForeignKeyConstraintSchema GetNewForeignKeyConstraintSchema (string name);
-		UserSchema GetNewUserSchema (string name);
-		TriggerSchema GetNewTriggerSchema (string name);
-		
+
 		bool IsValidName (string name);
+		
+		bool IsSchemaActionSupported (SchemaType type, SchemaActions action);
+		
+		AggregateSchema CreateAggregateSchema (string name);
+		CheckConstraintSchema CreateCheckConstraintSchema (string name);
+		ColumnSchema CreateColumnSchema (ISchema parent, string name);
+		DatabaseSchema CreateDatabaseSchema (string name);
+		ForeignKeyConstraintSchema CreateForeignKeyConstraintSchema (string name);
+		GroupSchema CreateGroupSchema (string name);
+		IndexSchema CreateIndexSchema (string name);
+		LanguageSchema CreateLanguageSchema (string name);
+		OperatorSchema CreateOperatorSchema (string name);
+		ParameterSchema CreateParameterSchema (string name);
+		PrimaryKeyConstraintSchema CreatePrimaryKeyConstraintSchema (string name);
+		PrivilegeSchema CreatePrivilegeSchema (string name);
+		ProcedureSchema CreateProcedureSchema (string name);
+		RoleSchema CreateRoleSchema (string name);
+		RuleSchema CreateRuleSchema (string name);
+		SchemaSchema CreateSchemaSchema (string name);
+		SequenceSchema CreateSequenceSchema (string name);
+		TableSchema CreateTableSchema (string name);
+		TriggerSchema CreateTriggerSchema (string name);
+		UniqueConstraintSchema CreateUniqueConstraintSchema (string name);
+		UserSchema CreateUserSchema (string name);
+		ViewSchema CreateViewSchema (string name);
 	}
 }

@@ -46,13 +46,5 @@ namespace MonoDevelop.Database.Sql
 		IConnectionPool CreateConnectionPool (DatabaseConnectionContext context);
 		
 		ISchemaProvider CreateSchemaProvider (IConnectionPool connectionPool);
-		
-		SchemaActions GetSupportedActions (string category);
-		void SetSupportedActions (string category, SchemaActions actions);
-		bool IsActionSupported (string category, SchemaActions action);
-		
-		int GetCapabilities (string category, SchemaActions action);
-		void SetCapabilities (string category, SchemaActions action, int flags);
-		bool IsCapabilitySupported (string category, SchemaActions action, Enum capability);
 	}
 }

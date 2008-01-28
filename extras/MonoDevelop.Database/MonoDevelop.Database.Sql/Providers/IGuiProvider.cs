@@ -31,14 +31,17 @@ namespace MonoDevelop.Database.Sql
 {
 	public interface IGuiProvider
 	{
-		bool ShowSelectDatabaseDialog (bool create, out string database);
+		bool ShowCreateDatabaseDialog ();
+		
+		bool ShowAddConnectionDialog (IDbFactory factory);
+		bool ShowEditConnectionDialog (IDbFactory factory, DatabaseConnectionSettings settings);
 	
-		bool ShowTableEditorDialog (ISchemaProvider schemaProvider, TableSchema table, bool create);
+		bool ShowTableEditorDialog (IEditSchemaProvider schemaProvider, TableSchema table, bool create);
 		
-		bool ShowViewEditorDialog (ISchemaProvider schemaProvider, ViewSchema view, bool create);
+		bool ShowViewEditorDialog (IEditSchemaProvider schemaProvider, ViewSchema view, bool create);
 		
-		bool ShowProcedureEditorDialog (ISchemaProvider schemaProvider, ProcedureSchema procedure, bool create);
+		bool ShowProcedureEditorDialog (IEditSchemaProvider schemaProvider, ProcedureSchema procedure, bool create);
 		
-		bool ShowUserEditorDialog (ISchemaProvider schemaProvider, UserSchema user, bool create);
+		bool ShowUserEditorDialog (IEditSchemaProvider schemaProvider, UserSchema user, bool create);
 	}
 }

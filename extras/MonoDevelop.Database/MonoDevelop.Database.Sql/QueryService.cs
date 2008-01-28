@@ -67,7 +67,9 @@ namespace MonoDevelop.Database.Sql
 			}
 			
 			IDbFactory fac = DbFactoryService.GetDbFactory (context.ConnectionSettings);
-			bool requiresPassword = fac.GetCapabilities ("ConnectionSettings", SchemaActions.Schema) == (int)ConnectionSettingsCapabilities.Password;
+			//FIXME: connection settings dialog
+			//bool requiresPassword = fac.GetCapabilities ("ConnectionSettings", SchemaActions.Schema) == (int)ConnectionSettingsCapabilities.Password;
+			bool requiresPassword = true;
 			
 			if (!context.ConnectionSettings.SavePassword && String.IsNullOrEmpty (context.ConnectionSettings.Password) && requiresPassword) {
 				string password = Services.MessageService.GetPassword (

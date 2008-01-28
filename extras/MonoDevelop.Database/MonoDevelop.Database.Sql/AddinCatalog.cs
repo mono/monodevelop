@@ -2,8 +2,10 @@
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
+//	Ben Motmans  <ben.motmans@gmail.com>
 //
 // Copyright (c) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2007 Ben Motmans
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -44,6 +46,20 @@ namespace MonoDevelop.Database
 		public static string GetString (string str, params object[] pars)
 		{
 			return string.Format (GetString (str), pars);
+		}
+		
+		public static string GetPluralString (string msgid, string defaultPlural, int n)
+		{
+			if (localizer == null)
+				localizer = AddinManager.CurrentLocalizer;
+			return localizer.GetPluralString (msgid, defaultPlural, n);
+		}
+		
+		public static string GetPluralString (string msgid, string defaultPlural, int n, params string[] args)
+		{
+			if (localizer == null)
+				localizer = AddinManager.CurrentLocalizer;
+			return localizer.GetPluralString (msgid, defaultPlural, n, args);
 		}
 	}
 }
