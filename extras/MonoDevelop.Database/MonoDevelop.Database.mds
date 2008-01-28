@@ -16,6 +16,7 @@
       <Entry build="True" name="MonoDevelop.Database.Components" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Database.Designer" configuration="Debug" />
       <Entry build="True" name="po" configuration="" />
+      <Entry build="True" name="MonoDevelop.Database.CodeGenerator" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.Database.Sql" configuration="Release" />
@@ -33,6 +34,7 @@
       <Entry build="True" name="MonoDevelop.Database.Components" configuration="Release" />
       <Entry build="True" name="MonoDevelop.Database.Designer" configuration="Release" />
       <Entry build="True" name="po" configuration="" />
+      <Entry build="True" name="MonoDevelop.Database.CodeGenerator" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="MonoDevelop.Database.Sql.Tests" single="False">
@@ -51,6 +53,7 @@
     <Execute type="None" entry="MonoDevelop.Database.Sql.Npgsql" />
     <Execute type="None" entry="MonoDevelop.Database.Sql.Odbc" />
     <Execute type="None" entry="po" />
+    <Execute type="None" entry="MonoDevelop.Database.CodeGenerator" />
   </StartMode>
   <Entries>
     <Entry filename="MonoDevelop.Database.Sql/MonoDevelop.Database.Sql.mdp" />
@@ -68,5 +71,6 @@
     <Entry filename="MonoDevelop.Database.Components/MonoDevelop.Database.Components.mdp" />
     <Entry filename="MonoDevelop.Database.Designer/MonoDevelop.Database.Designer.mdp" />
     <Entry filename="po/po.mdse" />
+    <Entry filename="MonoDevelop.Database.CodeGenerator/MonoDevelop.Database.CodeGenerator.mdp" />
   </Entries>
 </Combine>

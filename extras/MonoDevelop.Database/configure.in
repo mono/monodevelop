@@ -156,6 +156,7 @@ MonoDevelop.Database.Sql.Sqlite/Makefile
 MonoDevelop.Database.Sql.SqlServer/Makefile
 MonoDevelop.Database.Components/Makefile
 MonoDevelop.Database.Query/Makefile
+MonoDevelop.Database.CodeGenerator/Makefile
 MonoDevelop.Database.Designer/Makefile
 MonoDevelop.Database.ConnectionManager/Makefile
 po/Makefile

@@ -7,6 +7,7 @@ SUBDIRS = \
 	MonoDevelop.Database.Sql.Sqlite \
 	MonoDevelop.Database.Sql.SqlServer \
 	MonoDevelop.Database.Query \
+	MonoDevelop.Database.CodeGenerator \
 	MonoDevelop.Database.ConnectionManager \
 	po
 

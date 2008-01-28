@@ -1,5 +1,10 @@
 2008-01-28  Ben Motmans <ben.motmans@gmail.com> 
 
+	* configure.in, monodevelop-database.pc.in, Makefile.am,
+	  MonoDevelop.Database.mds: added code generation addin
+
+2008-01-28  Ben Motmans <ben.motmans@gmail.com> 
+
 	* MonoDevelop.Database.CodeGenerator: added CodeGeneration addin to
 	  automatically generate data classes
 
