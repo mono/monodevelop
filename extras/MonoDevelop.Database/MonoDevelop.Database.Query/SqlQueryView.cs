@@ -74,7 +74,7 @@ namespace MonoDevelop.Database.Query
 			
 			buttonExecute = new ToolButton (
 				Services.Resources.GetImage ("md-db-execute", IconSize.SmallToolbar),
-		AddinCatalog.GetString ("Execute")
+					AddinCatalog.GetString ("Execute")
 			);
 			buttonStop = new ToolButton ("gtk-stop");
 			buttonClear = new ToolButton (Services.Resources.GetImage ("gtk-clear", IconSize.Button), AddinCatalog.GetString ("Clear Results"));
@@ -183,7 +183,7 @@ namespace MonoDevelop.Database.Query
 
 			DispatchService.GuiDispatch (delegate () {
 				notebook.ShowAll ();
-				string msg = GettextCatalog.GetPluralString ("Query executed ({0} result table)",
+				string msg = AddinCatalog.GetPluralString ("Query executed ({0} result table)",
 					"Query executed ({0} result tables)", result.Tables.Count);
 				SetQueryState (false, String.Format (msg, result.Tables.Count));
 			});

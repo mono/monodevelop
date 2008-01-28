@@ -12,6 +12,7 @@ REFS =  \
 	-r:System.Data
 
 RES =  \
+	gtk-gui/gui.stetic \
 	icons/Icons.16x16.Database.Column.Key.png \
 	icons/Icons.16x16.Database.Column.png \
 	icons/Icons.16x16.Database.Connection.Error.png \
@@ -40,6 +41,7 @@ RES =  \
 
 FILES =  \
 	Commands/ToolCommands.cs \
+	gtk-gui/generated.cs \
 	QueryResultView.cs \
 	SqlQueryView.cs
 
