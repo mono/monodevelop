@@ -1,3 +1,8 @@
+2008-01-28  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Makefile.include: Workaround so that "make run" and uses of mdtool 
+	  work with automake < 1.10.
+
 2008-01-25  Wade Berrier  <wberrier@novell.com> 
 
 	* Makefile.am: remove EXTRA_DIST files that were created

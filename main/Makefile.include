@@ -6,6 +6,10 @@ build_test_sources = $(addprefix $(srcdir)/, $(TESTFILES)) $(GENERATED_FILES)
 MD_PKG_CONFIG_PATH=$(gtksharp_prefix)/lib/pkgconfig/:/usr/lib/pkgconfig/:/usr/local/lib/pkgconfig/:/usr/share/pkgconfig/:/usr/local/share/pkgconfig/$(shell if test -d /usr/lib64; then echo ":/usr/lib64/pkgconfig/:/usr/local/lib64/pkgconfig/"; fi)
 ### END BLOCK
 
+# workaroundfor lack of abs_top_builddir variable in automake < 1.10. Will break if mdtool isn't 
+# launched from top_srcdir (i.e. where this script is located)
+abs_top_builddir ?= $(top_builddir)
+
 MD_BIN_PATH=$(abs_top_builddir)/build/bin
 
 MD_LAUNCH_SETUP= \
