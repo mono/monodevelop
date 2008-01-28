@@ -348,6 +348,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
+            this.titleLabel.MnemonicWidget = this.titleTextBox;
             this.Show();
         }
     }

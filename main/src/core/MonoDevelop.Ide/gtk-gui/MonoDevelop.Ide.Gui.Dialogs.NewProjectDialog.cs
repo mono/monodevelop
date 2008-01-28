@@ -422,6 +422,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             }
             this.DefaultWidth = 708;
             this.DefaultHeight = 501;
+            this.lbl_name.MnemonicWidget = this.txt_name;
+            this.lbl_subdirectory.MnemonicWidget = this.txt_subdirectory;
             this.btn_new.HasDefault = true;
             this.Show();
             this.txt_subdirectory.Changed += new System.EventHandler(this.PathChanged);

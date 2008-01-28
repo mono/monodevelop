@@ -66,6 +66,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";
             w1.Spacing = 6;
+            w1.BorderWidth = ((uint)(2));
             // Container child dialog1_VBox.Gtk.Box+BoxChild
             this.vbox2 = new Gtk.VBox();
             this.vbox2.Name = "vbox2";
@@ -228,7 +229,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Internal child MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.ActionArea
             Gtk.HButtonBox w21 = this.ActionArea;
             w21.Name = "dialog1_ActionArea";
-            w21.Spacing = 10;
+            w21.Spacing = 6;
             w21.BorderWidth = ((uint)(5));
             w21.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild

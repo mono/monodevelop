@@ -41,7 +41,14 @@ namespace MonoDevelop.Ide.Commands
 		FindPreviousSelection,
 		FindBox,
 		ReplaceInFiles,
-		GotoType
+		GotoType,
+		
+		GotoLineNumber,
+		
+		ToggleBookmark,
+		PrevBookmark,
+		NextBookmark,
+		ClearBookmarks,
 	}
 
 	internal class FindInFilesHandler : CommandHandler

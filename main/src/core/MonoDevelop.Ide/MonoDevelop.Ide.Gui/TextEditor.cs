@@ -314,5 +314,54 @@ namespace MonoDevelop.Ide.Gui
 			textBuffer.GetLineColumnFromPosition (offset, out openingLine, out col);
 			return offset;
 		}
+		
+		char GetMatchingBrace (char ch)
+		{
+			switch (ch) {
+			case '(':
+				return ')';
+			case ')':
+				return '(';
+			case '{':
+				return '}';
+			case '}':
+				return '{';
+			case '[':
+				return ']';
+			case ']':
+				return '[';
+			}
+			throw new System.ArgumentException (ch.ToString (), "ch");
+		}
+		bool IsBrace (char ch)
+		{
+			return ch == '(' || ch == ')' || ch == '{' || ch == '}' || ch == '[' || ch == ']';
+		}
+		bool IsOpenBrace (char ch)
+		{
+			return ch == '(' || ch == '{' || ch == '[';
+		}
+		
+		public void GotoMatchingBrace ()
+		{
+			int offset = textBuffer.CursorPosition;
+			if (!IsBrace (textBuffer.GetCharAt (offset)))
+				offset--;
+			
+			if (offset >= 0 && IsBrace (textBuffer.GetCharAt (offset))) {
+				char open = textBuffer.GetCharAt (offset);
+				char close = open;
+				bool searchForward = IsOpenBrace (open);
+				if (searchForward) {
+					close = GetMatchingBrace (open);
+					offset = MonoDevelop.Projects.Gui.Completion.TextUtilities.SearchBracketForward (completionWidget, offset + 1, open, close);
+				} else {
+					open  = GetMatchingBrace (open);
+					offset = MonoDevelop.Projects.Gui.Completion.TextUtilities.SearchBracketBackward (completionWidget, offset - 1, open, close);
+				}
+				if (offset >= 0)
+					textBuffer.CursorPosition = offset;
+			}
+		}
 	}
 }

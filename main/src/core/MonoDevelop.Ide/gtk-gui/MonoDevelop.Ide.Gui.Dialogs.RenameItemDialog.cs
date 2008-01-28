@@ -125,6 +125,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             }
             this.DefaultWidth = 375;
             this.DefaultHeight = 139;
+            this.labelNewName.MnemonicWidget = this.entry;
             this.renameFileFlag.Hide();
             this.Show();
         }

@@ -34,6 +34,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ExportProjectDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GotoLineDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.IncludeFilesDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs \
@@ -126,6 +127,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Dialogs/FeatureSelectorDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs \
+	MonoDevelop.Ide.Gui.Dialogs/GotoLineDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/IncludeFilesDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/NewLayoutDialog.cs \

@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections;
+using System.Diagnostics;
 using System.IO;
 using Gtk;
 
@@ -44,7 +45,7 @@ using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public class ViewCommandHandlers: ICommandRouter
+	public class ViewCommandHandlers : ICommandRouter
 	{
 		IWorkbenchWindow window;
 		Document doc;
@@ -207,7 +208,7 @@ namespace MonoDevelop.Ide.Gui
 				info.Bypass = true;
 		}
 		
-/*		[CommandHandler (EditCommands.Delete)]
+		[CommandHandler (EditCommands.Delete)]
 		protected void OnDelete ()
 		{
 			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
@@ -221,7 +222,7 @@ namespace MonoDevelop.Ide.Gui
 			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
 			info.Enabled = editable != null && editable.ClipboardHandler.EnableDelete;
 		}
-*/		
+		
 		[CommandHandler (EditCommands.SelectAll)]
 		protected void OnSelectAll ()
 		{
@@ -327,10 +328,16 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		[CommandUpdateHandler (EditCommands.UnIndentSelection)]
-		protected void OnUppercaseSelection (CommandInfo info)
+		[CommandUpdateHandler (SearchCommands.GotoLineNumber)]
+		void OnUpdateGotoLineNumber (CommandInfo info)
 		{
-			info.Enabled = GetContent <IEditableTextBuffer> () != null;
+			info.Enabled = GetContent <IPositionable> () != null && MonoDevelop.Ide.Gui.Dialogs.GotoLineDialog.CanShow;
+		}
+		
+		[CommandHandler (SearchCommands.GotoLineNumber)]
+		void OnGotoLineNumber ()
+		{
+			MonoDevelop.Ide.Gui.Dialogs.GotoLineDialog.ShowDialog (GetContent <IPositionable> ());
 		}
 		
 		[CommandHandler (EditCommands.LowercaseSelection)]
@@ -377,8 +384,9 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (TextEditorCommands.DocumentEnd)]
 		[CommandUpdateHandler (TextEditorCommands.DeleteLine)]
 		[CommandUpdateHandler (TextEditorCommands.DeleteToLineEnd)]
-		[CommandUpdateHandler (TextEditorCommands.MoveBlockUp)]		
+		[CommandUpdateHandler (TextEditorCommands.MoveBlockUp)]
 		[CommandUpdateHandler (TextEditorCommands.MoveBlockDown)]		
+		[CommandUpdateHandler (TextEditorCommands.GotoMatchingBrace)]		
 		protected void OnUpdateLineEnd (CommandInfo info)
 		{
 			// If the current document is not an editor, just ignore the text
@@ -459,6 +467,12 @@ namespace MonoDevelop.Ide.Gui
 		protected void OnDocumentEnd ()
 		{
 			doc.TextEditor.CursorPosition = doc.TextEditor.TextLength;
+		}
+		
+		[CommandHandler (TextEditorCommands.GotoMatchingBrace)]
+		protected void OnGotoMatchingBrace ()
+		{
+			doc.TextEditor.GotoMatchingBrace ();
 		}
 		
 		[CommandHandler (TextEditorCommands.DeleteLine)]
@@ -564,5 +578,49 @@ namespace MonoDevelop.Ide.Gui
 			doc.TextEditor.Select(selStart, selEnd);
 			doc.TextEditor.EndAtomicUndo ();
 		}
+#region Bookmarks
+		[CommandUpdateHandler (SearchCommands.ToggleBookmark)]
+		[CommandUpdateHandler (SearchCommands.PrevBookmark)]
+		[CommandUpdateHandler (SearchCommands.NextBookmark)]
+		[CommandUpdateHandler (SearchCommands.ClearBookmarks)]
+		protected void OnUpdateBookmarkCommands (CommandInfo info)
+		{
+			info.Enabled = GetContent <IBookmarkBuffer> () != null;
+		}
+		
+		[CommandHandler (SearchCommands.ToggleBookmark)]
+		public void ToggleBookmark ()
+		{
+			IBookmarkBuffer markBuffer = GetContent <IBookmarkBuffer> ();
+			Debug.Assert (markBuffer != null);
+			int position = markBuffer.CursorPosition;
+			markBuffer.SetBookmarked (position, !markBuffer.IsBookmarked (position));
+		}
+		
+		[CommandHandler (SearchCommands.PrevBookmark)]
+		public void PrevBookmark ()
+		{
+			IBookmarkBuffer markBuffer = GetContent <IBookmarkBuffer> ();
+			Debug.Assert (markBuffer != null);
+			markBuffer.PrevBookmark ();
+		}
+		
+		[CommandHandler (SearchCommands.NextBookmark)]
+		public void NextBookmark ()
+		{
+			IBookmarkBuffer markBuffer = GetContent <IBookmarkBuffer> ();
+			Debug.Assert (markBuffer != null);
+			markBuffer.NextBookmark ();
+		}
+		
+		[CommandHandler (SearchCommands.ClearBookmarks)]
+		public void ClearBookmarks ()
+		{
+			IBookmarkBuffer markBuffer = GetContent <IBookmarkBuffer> ();
+			Debug.Assert (markBuffer != null);
+			markBuffer.ClearBookmarks ();
+		}
+#endregion
+		
 	}
 }

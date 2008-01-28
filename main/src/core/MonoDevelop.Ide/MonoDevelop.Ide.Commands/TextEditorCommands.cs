@@ -25,8 +25,6 @@
 //
 //
 
-
-
 using System;
 
 namespace MonoDevelop.Ide.Commands
@@ -52,6 +50,7 @@ namespace MonoDevelop.Ide.Commands
 		DeleteToLineEnd,
 		MoveBlockUp,
 		MoveBlockDown,
-		ShowParameterCompletionWindow
+		ShowParameterCompletionWindow,
+		GotoMatchingBrace
 	}
 }

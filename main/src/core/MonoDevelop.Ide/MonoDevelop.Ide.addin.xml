@@ -764,6 +764,30 @@
 		        defaultHandler = "MonoDevelop.Ide.Commands.GotoTypeHandler"
 				_label = "Go to Type..." 
                 shortcut = "Control|Shift|T" />
+		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.ToggleBookmark"
+				icon = "md-toggle-bookmark"
+				shortcut = "Control|F2"
+				_description = "Toggle bookmark"
+				_label = "Toggle Bookmark" />
+		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.PrevBookmark"
+				icon = "md-goto-prevbookmark"
+				shortcut = "Shift|F2"
+				_description = "Previous bookmark"
+				_label = "Previous Bookmark" />
+		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.NextBookmark"
+				icon = "md-goto-nextbookmark"
+				shortcut = "F2"
+				_description = "Next bookmark"
+				_label = "Next Bookmark" />
+		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.ClearBookmarks"
+				icon = "md-clear-all-bookmarks"
+				_description = "Clear bookmarks"
+				_label = "Clear Bookmarks" />
+		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoLineNumber"
+				_label = "_Go to Line..." 
+				description = "Go to line"
+				shortcut = "Control|G"
+				icon = "gtk-jump-to" />
 		</Category>
 				
 		<!-- RefactoryCommands -->
@@ -825,7 +849,10 @@
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow"
 				_label = "Show Parameter List"
 				shortcut = "Control|Shift|space" />
-				
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace"
+				_label = "Go to Matching _Brace" 
+				description = "Go to Matching Brace" 
+				shortcut = "Control|B" />
 		</Category>
 		
 	</Extension>
@@ -1136,6 +1163,17 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Paste" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 		</ItemSet>
+		<ItemSet id = "Search" _label="Search">
+			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.Find" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindNext" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.Replace" />
+			<SeparatorItem id = "SearchSeparator" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ToggleBookmark" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.PrevBookmark" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.NextBookmark" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ClearBookmarks" />
+		</ItemSet>
+		
 		<ItemSet id = "Build" _label = "Build">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ConfigurationSelector" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
@@ -1143,6 +1181,7 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Run" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Stop" />
 		</ItemSet>
+		
 		<ItemSet id = "Layout" _label = "Layout">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.LayoutSelector" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.NewLayout" />
@@ -1248,8 +1287,27 @@
 		</ItemSet>
 		
 		<ItemSet id = "Search" _label = "_Search">
-            <CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType"
-                insertafter = "MonoDevelop.SourceEditor.EditorCommands.GotoLineNumber" />	        									
+		
+			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.Find" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindPrevious" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindNext" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindNextSelection" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.Replace" />
+		
+			<SeparatorItem id = "SearchSeparator" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ReplaceInFiles" />
+			
+			<SeparatorItem id = "SearchInFilesSeparator" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ToggleBookmark" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.PrevBookmark" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.NextBookmark" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ClearBookmarks" />
+			<SeparatorItem id = "Separator2" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoLineNumber" />
+            <CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType" />
+			<SeparatorItem id = "Separator3" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace" />
 		</ItemSet>
 
 		<ItemSet id = "Run" _label = "_Project">

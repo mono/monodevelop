@@ -312,6 +312,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
+            this.label112.MnemonicWidget = this.entryToken;
             this.Show();
         }
     }

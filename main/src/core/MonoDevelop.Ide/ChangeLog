@@ -1,3 +1,12 @@
+2008-01-28  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Commands/TextEditorCommands.cs,
+	  MonoDevelop.Ide.Commands/SearchCommands.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/GotoLineDialog.cs,
+	  MonoDevelop.Ide.addin.xml, MonoDevelop.Ide.Gui/ViewCommandHandlers.cs,
+	  MonoDevelop.Ide.Gui/TextEditor.cs: Moved some text editor commands to
+	  the ide: bookmarks, goto line number and goto matching brace.
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.addin.xml: Update MD version.
