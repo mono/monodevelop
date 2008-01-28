@@ -28,13 +28,26 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Collections.Generic;
 
-namespace MonoDevelop.Database.Sql
+namespace MonoDevelop.Database.Sql.SqlServer
 {
 	public class SqlServerPooledDbConnection : AbstractPooledDbConnection
 	{
 		public SqlServerPooledDbConnection (IConnectionPool connectionPool, IDbConnection connection)
 			: base (connectionPool, connection)
 		{
+		}
+		
+		public override Version DatabaseVersion {
+			get {
+				SqlConnection connection = DbConnection as SqlConnection;
+				try {
+					//http://msdn2.microsoft.com/en-us/library/system.data.sqlclient.sqlconnection.serverversion.aspx
+					//##.##.#### major.minor.build
+					return new Version (connection.ServerVersion);
+				} catch {
+					return new Version (7, 0);
+				}
+			}
 		}
 		
 		public override DataSet ExecuteSet (IDbCommand command)

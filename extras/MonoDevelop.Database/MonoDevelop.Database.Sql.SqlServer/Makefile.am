@@ -6,18 +6,29 @@ REFS =  \
 	-r:../build/MonoDevelop.Database.Components.dll \
 	-r:../build/MonoDevelop.Database.Designer.dll \
 	-r:../build/MonoDevelop.Database.Sql.dll \
+	-r:Mono.Posix \
 	-r:System \
 	-r:System.Data
 
 FILES =  \
+	Dialogs/SqlServerTableEditorDialog.cs \
+	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.Database.Sql.SqlServer.SqlServerColumnEditorWidget.cs \
+	gtk-gui/MonoDevelop.Database.Sql.SqlServer.SqlServerCreateDatabaseWidget.cs \
+	Schema/dummy.cs \
 	SqlServerConnectionProvider.cs \
 	SqlServerDbFactory.cs \
 	SqlServerDialect.cs \
 	SqlServerGuiProvider.cs \
 	SqlServerPooledDbConnection.cs \
-	SqlServerSchemaProvider.cs
+	SqlServerSchemaProvider.cs \
+	Widgets/SqlServerColumnEditorWidget.cs \
+	Widgets/SqlServerCreateDatabaseWidget.cs
 
-RES = MonoDevelop.Database.Sql.SqlServer.addin.xml
+RES =  \
+	gtk-gui/gui.stetic \
+	gtk-gui/objects.xml \
+	MonoDevelop.Database.Sql.SqlServer.addin.xml
 
 if ENABLE_SQLSERVER
 all: $(ASSEMBLY)

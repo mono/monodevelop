@@ -33,15 +33,28 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-namespace MonoDevelop.Database.Sql
+namespace MonoDevelop.Database.Sql.SqlServer
 {
+//TODO: retrieve a list of collations
 	// see:
 	// http://www.alberton.info/sql_server_meta_info.html + msdn
-	public class SqlServerSchemaProvider : AbstractSchemaProvider
+	public class SqlServerSchemaProvider : AbstractEditSchemaProvider
 	{
 		public SqlServerSchemaProvider (IConnectionPool connectionPool)
 			: base (connectionPool)
 		{
+			AddSupportedSchemaActions (SchemaType.Database, SchemaActions.All);
+			AddSupportedSchemaActions (SchemaType.Table, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.View, SchemaActions.All);
+			AddSupportedSchemaActions (SchemaType.TableColumn, SchemaActions.All);
+			AddSupportedSchemaActions (SchemaType.ProcedureParameter, SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.Trigger, SchemaActions.All);
+			AddSupportedSchemaActions (SchemaType.PrimaryKeyConstraint, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.ForeignKeyConstraint, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.CheckConstraint, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.UniqueConstraint, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.Constraint, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.User, SchemaActions.Schema);
 		}
 		
 		public override DatabaseSchemaCollection GetDatabases ()
@@ -660,41 +673,41 @@ using MonoDevelop.Core;
 		}
 		
 		//http://msdn2.microsoft.com/en-us/library/aa275464(SQL.80).aspx
-		public override void AlterDatabase (DatabaseSchema database)
+		public override void AlterDatabase (DatabaseAlterSchema database)
 		{
 			throw new NotImplementedException ();
 		}
 
 		//http://msdn2.microsoft.com/en-us/library/aa225939(SQL.80).aspx
-		public override void AlterTable (TableSchema table)
+		public override void AlterTable (TableAlterSchema table)
 		{
 			throw new NotImplementedException ();
 		}
 
 		//http://msdn2.microsoft.com/en-us/library/aa225939(SQL.80).aspx
-		public override void AlterView (ViewSchema view)
+		public override void AlterView (ViewAlterSchema view)
 		{
-			ExecuteNonQuery (view.Definition);
+			//ExecuteNonQuery (view.Definition);  //FIXME:
 		}
 
 		//http://msdn2.microsoft.com/en-us/library/aa225939(SQL.80).aspx
-		public override void AlterProcedure (ProcedureSchema procedure)
+		public override void AlterProcedure (ProcedureAlterSchema procedure)
 		{
-			ExecuteNonQuery (procedure.Definition);
+			//ExecuteNonQuery (procedure.Definition); //FIXME:
 		}
 
-		public override void AlterIndex (IndexSchema index)
+		public override void AlterIndex (IndexAlterSchema index)
 		{
 			throw new NotImplementedException ();
 		}
 		
 		//http://msdn2.microsoft.com/en-us/library/aa225939(SQL.80).aspx
-		public override void AlterTrigger (TriggerSchema trigger)
+		public override void AlterTrigger (TriggerAlterSchema trigger)
 		{
 			throw new NotImplementedException ();
 		}
 
-		public override void AlterUser (UserSchema user)
+		public override void AlterUser (UserAlterSchema user)
 		{
 			throw new NotImplementedException ();
 		}

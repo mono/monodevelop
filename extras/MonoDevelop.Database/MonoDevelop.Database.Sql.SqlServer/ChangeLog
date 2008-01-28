@@ -1,5 +1,15 @@
 2008-01-28  Ben Motmans <ben.motmans@gmail.com> 
 
+	* SqlServerDialect.cs, SqlServerConnectionProvider.cs,
+	  SqlServerSchemaProvider.cs, SqlServerDbFactory.cs,
+	  SqlServerGuiProvider.cs: small API related changes
+	* SqlServerPooledDbConnection.cs: database version support
+	* Widgets/SqlServerColumnEditorWidget.cs,
+	  Widgets/SqlServerCreateDatabaseWidget.cs: placeholders for future
+	  implementations
+
+2008-01-28  Ben Motmans <ben.motmans@gmail.com> 
+
 	* MonoDevelop.Database.Sql.SqlServer.addin.xml: removed obsolete stuff from
 	  the old capabilities system
 

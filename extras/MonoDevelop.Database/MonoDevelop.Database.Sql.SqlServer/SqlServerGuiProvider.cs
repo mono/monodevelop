@@ -29,34 +29,57 @@ using System.Data;
 using System.Collections.Generic;
 using MonoDevelop.Database.Designer;
 using MonoDevelop.Database.Components;
-namespace MonoDevelop.Database.Sql
+namespace MonoDevelop.Database.Sql.SqlServer
 {
 	public class SqlServerGuiProvider : IGuiProvider
 	{
-		public bool ShowSelectDatabaseDialog (bool create, out string database)
+		public bool ShowCreateDatabaseDialog ()
 		{
-			database = null;
 			return false;
 		}
 
-		public bool ShowTableEditorDialog (ISchemaProvider schemaProvider, TableSchema table, bool create)
+		public bool ShowAddConnectionDialog (IDbFactory factory)
 		{
-			return RunDialog (new TableEditorDialog (schemaProvider, table, create));
+			DatabaseConnectionSettingsDialog dlg = new DatabaseConnectionSettingsDialog (factory);
+			return RunDialog (dlg);
+		}
+		
+		public bool ShowEditConnectionDialog (IDbFactory factory, DatabaseConnectionSettings settings)
+		{
+			DatabaseConnectionSettingsDialog dlg = new DatabaseConnectionSettingsDialog (factory, settings);
+			return RunDialog (dlg);
 		}
 
-		public bool ShowViewEditorDialog (ISchemaProvider schemaProvider, ViewSchema view, bool create)
+		public bool ShowTableEditorDialog (IEditSchemaProvider schemaProvider, TableSchema table, bool create)
 		{
-			return RunDialog (new ViewEditorDialog (schemaProvider, view, create));
+			TableEditorSettings settings = new TableEditorSettings ();
+			TableEditorDialog dlg = new TableEditorDialog (schemaProvider, create, settings);
+			dlg.Initialize (table);
+
+			return RunDialog (dlg);
 		}
 
-		public bool ShowProcedureEditorDialog (ISchemaProvider schemaProvider, ProcedureSchema procedure, bool create)
+		public bool ShowViewEditorDialog (IEditSchemaProvider schemaProvider, ViewSchema view, bool create)
 		{
-			return RunDialog (new ProcedureEditorDialog (schemaProvider, procedure, create));
+			ViewEditorSettings settings = new ViewEditorSettings ();
+			ViewEditorDialog dlg = new ViewEditorDialog (schemaProvider, create, settings);
+			dlg.Initialize (view);
+
+			return RunDialog (dlg);
 		}
 
-		public bool ShowUserEditorDialog (ISchemaProvider schemaProvider, UserSchema user, bool create)
+		public bool ShowProcedureEditorDialog (IEditSchemaProvider schemaProvider, ProcedureSchema procedure, bool create)
 		{
-			return RunDialog (new UserEditorDialog (schemaProvider, user, create));
+			ProcedureEditorSettings settings = new ProcedureEditorSettings ();
+			ProcedureEditorDialog dlg = new ProcedureEditorDialog (schemaProvider, create, settings);
+			dlg.Initialize (procedure);
+
+			return RunDialog (dlg);
+		}
+
+		public bool ShowUserEditorDialog (IEditSchemaProvider schemaProvider, UserSchema user, bool create)
+		{
+			return false; //TODO: implement ShowUserEditorDialog
 		}
 
 		private bool RunDialog (Dialog dlg)
