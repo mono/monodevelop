@@ -126,8 +126,8 @@
 
 		<Word>explicit</Word>
 		<Word>implicit</Word>
+		
 		<Word>operator</Word>
-
 		<Word>params</Word>
 		<Word>ref</Word>
 		<Word>out</Word>

@@ -185,9 +185,9 @@ namespace Mono.TextEditor.Highlighting
 			SetStyle ("Comment3", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255), false, false));
 			SetStyle ("Comment4", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255), false, true));
 			
-			SetStyle ("Digit", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 0), true, false));
-			SetStyle ("Literal", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 0), true, false));
-			SetStyle ("Punctuation", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 0), true, false));
+			SetStyle ("Digit", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 0), false, false));
+			SetStyle ("Literal", new Mono.TextEditor.ChunkStyle (new Gdk.Color (255, 0, 255), false, false));
+			SetStyle ("Punctuation", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 0), false, false));
 			
 			SetStyle ("Keyword1", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165, 42, 42), true, false));
 			SetStyle ("Keyword2", new Mono.TextEditor.ChunkStyle (new Gdk.Color (46, 139, 87), true, false));

@@ -742,6 +742,10 @@ namespace Mono.TextEditor
 					xPos += width;
 				}
 			}
+			if (this.longestLine == null || line.EditableLength > this.longestLine.EditableLength) {
+				longestLine = line;
+				SetAdjustments ();
+			}
 			if (line.EndOffset - offset > 0) {
 				SyntaxMode mode = Document.SyntaxMode != null && TextEditorOptions.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
 				Chunk[] chunks = mode.GetChunks (Document, TextEditorData.ColorStyle, line, offset, line.Offset + line.EditableLength - offset);

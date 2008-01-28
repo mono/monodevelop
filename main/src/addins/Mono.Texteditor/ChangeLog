@@ -1,3 +1,10 @@
+2008-01-28  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextEditorData.cs, Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor.Highlighting/Style.cs: Fixed delete selection bug (caret
+	  offset didn't get updated), added primitive longest line management,
+	  changed syntax colors a bit.
+
 2008-01-27  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextEditor.cs,
