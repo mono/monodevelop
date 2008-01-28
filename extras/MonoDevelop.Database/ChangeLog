@@ -1,3 +1,8 @@
+2008-01-28  Ben Motmans <ben.motmans@gmail.com> 
+
+	* MonoDevelop.Database.CodeGenerator: added CodeGeneration addin to
+	  automatically generate data classes
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* configure.in: Update MD version.
