@@ -1,3 +1,7 @@
+2008-01-28  Ankit Jain  <jankit@novell.com>
+
+	* monodevelop.1: Add man page.
+
 2007-08-21  Ankit Jain  <jankit@novell.com>
 
 	* mdtool.1: "-s" added for --simple-makefiles.
