@@ -568,6 +568,69 @@ using MonoDevelop.Core;
 			return dts;
 		}
 		
+		//http://dev.mysql.com/doc/refman/5.0/en/charset-mysql.html
+		public MySqlCharacterSetSchemaCollection GetCharacterSets ()
+		{
+			MySqlCharacterSetSchemaCollection characterSets = new MySqlCharacterSetSchemaCollection ();
+
+			IPooledDbConnection conn = connectionPool.Request ();
+			IDbCommand command = conn.CreateCommand ("SHOW CHARACTER SET;");
+			try {
+				using (command) {
+					using (IDataReader r = command.ExecuteReader ()) {
+						while (r.Read ()) {
+							MySqlCharacterSetSchema charset = new MySqlCharacterSetSchema (this);
+							charset.Name = r.GetString (0);
+							charset.Comment = r.GetString (1);
+							charset.DefaultCollactionName = r.GetString (2);
+							charset.MaxLength = r.GetInt32 (3);
+		
+							characterSets.Add (charset);
+						}
+		
+						r.Close ();
+					}
+				}
+			} catch (Exception e) {
+				QueryService.RaiseException (e);
+			}
+			conn.Release ();
+
+			return characterSets;
+		}
+		
+		public MySqlCollationSchemaCollection GetCollations (MySqlCharacterSetSchema characterSet)
+		{
+			MySqlCollationSchemaCollection collations = new MySqlCollationSchemaCollection ();
+
+			IPooledDbConnection conn = connectionPool.Request ();
+			IDbCommand command = conn.CreateCommand (String.Format ("SHOW COLLATION LIKE '{0}%';", characterSet.Name));
+			try {
+				using (command) {
+					using (IDataReader r = command.ExecuteReader ()) {
+						while (r.Read ()) {
+							MySqlCollationSchema collation = new MySqlCollationSchema (this);
+							collation.Name = r.GetString (0);
+							collation.CharacterSetName = r.GetString (1);
+							collation.Id = r.GetInt32 (2);
+							collation.IsDefaultCollation = r.GetBoolean (3);
+							collation.IsCompiled = r.GetBoolean (4);
+							collation.SortLength = r.GetInt32 (5);
+		
+							collations.Add (collation);
+						}
+		
+						r.Close ();
+					}
+				}
+			} catch (Exception e) {
+				QueryService.RaiseException (e);
+			}
+			conn.Release ();
+
+			return collations;
+		}
+		
 		//http://dev.mysql.com/doc/refman/5.1/en/create-database.html
 		public override void CreateDatabase (DatabaseSchema database)
 		{
@@ -850,6 +913,13 @@ using MonoDevelop.Core;
 			ExecuteNonQuery ("RENAME USER " + user.Name + " TO " + name + ";");
 			
 			user.Name = name;
+		}
+		
+		public override DatabaseSchema CreateDatabaseSchema (string name)
+		{
+			MySqlDatabaseSchema schema = new MySqlDatabaseSchema (this);
+			schema.Name = name;
+			return schema;
 		}
 		
 //		public override string GetViewAlterStatement (ViewAlterSchema view)

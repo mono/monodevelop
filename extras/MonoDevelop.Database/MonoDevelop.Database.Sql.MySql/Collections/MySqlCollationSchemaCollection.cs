@@ -23,22 +23,22 @@
 // THE SOFTWARE.
 //
 
-using Gtk;
 using System;
-using MonoDevelop.Database.Sql;
-using MonoDevelop.Database.Designer;
-using MonoDevelop.Database.Components;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Database.Sql.MySql
 {
-	public partial class MySqlCreateDatabaseWidget : CreateDatabaseWidget
+	public sealed class MySqlCollationSchemaCollection : SortedCollectionBase<MySqlCollationSchema>
 	{
-		public MySqlCreateDatabaseWidget ()
+		public MySqlCollationSchemaCollection ()
+			: base (true)
 		{
-			this.Build();
-			
-			//TODO: add combo box entry for charset and collation
-			// 'utf8' / 'utf8_general_ci'
+		}
+		
+		public MySqlCollationSchemaCollection (MySqlCollationSchemaCollection collection)
+			: base (collection, true)
+		{
 		}
 	}
 }

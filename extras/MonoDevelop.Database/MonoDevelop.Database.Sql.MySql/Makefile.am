@@ -12,6 +12,8 @@ REFS =  \
 	-r:System.Data
 
 FILES =  \
+	Collections/MySqlCharacterSetSchemaCollection.cs \
+	Collections/MySqlCollationSchemaCollection.cs \
 	Dialogs/MySqlTableEditorDialog.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Database.Sql.MySql.MySqlColumnEditorWidget.cs \
@@ -22,7 +24,9 @@ FILES =  \
 	MySqlGuiProvider.cs \
 	MySqlPooledDbConnection.cs \
 	MySqlSchemaProvider.cs \
-	Schema/dummy.cs \
+	Schema/MySqlCharacterSetSchema.cs \
+	Schema/MySqlCollationSchema.cs \
+	Schema/MySqlDatabaseSchema.cs \
 	Widgets/MySqlColumnEditorWidget.cs \
 	Widgets/MySqlCreateDatabaseWidget.cs
 
