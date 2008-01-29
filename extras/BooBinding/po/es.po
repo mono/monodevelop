@@ -1,7 +1,7 @@
 # Translation of monodevelop.po into Spanish
 # Copyright (C) 2005 The Mono Project
 # This file is distributed under the same license as the MonoDevelop package.
-# Andrés G. Aragoneses <knocte@gmail.com>, 2005-2007
+# Andrés G. Aragoneses <knocte@gmail.com>, 2005-2008
 # Alejandro Serrano <trupill@yahoo.es>, 2006
 # Jonathan Hernández Velasco <jbilbo@ya.com>, 2004-2005
 # Antonio Ognio <gnrfan@gnrfan.org>, 2004
@@ -27,7 +27,7 @@ msgstr "Proyecto Gtk#"
 #: ../templates/BooLibraryProject.xpt.xml:8
 #: ../templates/EmptyBooProject.xpt.xml:8
 msgid "Boo"
-msgstr ""
+msgstr "Boo"
 
 #: ../templates/BooGtkSharpProject.xpt.xml:11
 msgid "Creates a Boo/Gtk# project"
@@ -47,9 +47,8 @@ msgstr "Ventana Gtk#"
 
 #: ../templates/BooGtkSharpWindow.xft.xml:9
 #: ../templates/EmptyBooFile.xft.xml:6
-#, fuzzy
 msgid "General"
-msgstr "Generación de código"
+msgstr "General"
 
 #: ../templates/BooGtkSharpWindow.xft.xml:11
 msgid "Creates a top-level Gtk# window"
@@ -73,28 +72,27 @@ msgstr "Crea una solución Boo vacía."
 
 #: ../Gui/ShellTextView.boo:194
 msgid "Copy Script"
-msgstr ""
+msgstr "Script de copiado"
 
 #: ../Gui/ShellTextView.boo:198
 msgid "Save Script As ..."
-msgstr ""
+msgstr "Guardar script como..."
 
 #: ../Gui/ShellTextView.boo:202
 msgid "Load Project Assemblies (forces shell reset)"
-msgstr ""
+msgstr "Cargar ensamblados de proyecto (provoca un reinicio de la línea de comandos)"
 
 #: ../Gui/ShellTextView.boo:209
-#, fuzzy
 msgid "Reset Shell"
-msgstr "Shell de Boo"
+msgstr "Reiniciar línea de comandos"
 
 #: ../Gui/OptionPanels/CodeCompilationPanel.boo:42
 msgid "Enable debug"
-msgstr ""
+msgstr "Activar depuración"
 
 #: ../Gui/OptionPanels/CodeCompilationPanel.boo:43
 msgid "Enable ducky mode"
-msgstr ""
+msgstr "Activar modo ducky"
 
 #: ../Gui/OptionPanels/CodeCompilationPanel.boo:88 ../BooBinding.addin.xml:52
 msgid "Code Generation"
@@ -102,70 +100,68 @@ msgstr "Generación de código"
 
 #: ../Gui/OptionPanels/CodeCompilationPanel.boo:89
 msgid "Output Path"
-msgstr ""
+msgstr "Ruta de salida"
 
 #: ../Gui/OptionPanels/CodeCompilationPanel.boo:93
 #: ../Gui/OptionPanels/CodeCompilationPanel.boo:100
 msgid "Output Assembly"
-msgstr ""
+msgstr "Ensamblado de salida"
 
 #: ../Gui/OptionPanels/CodeCompilationPanel.boo:95
 msgid "Warnings and Compiler Options"
-msgstr ""
+msgstr "Opciones de advertencia y compilación"
 
 #: ../Gui/OptionPanels/CodeCompilationPanel.boo:97
 msgid "Compiler"
-msgstr ""
+msgstr "Compilador"
 
 #: ../Gui/OptionPanels/CodeCompilationPanel.boo:98
 msgid "Culture"
-msgstr ""
+msgstr "Cultura"
 
 #: ../Gui/OptionPanels/CodeCompilationPanel.boo:106
 msgid "Executable"
-msgstr ""
+msgstr "Ejecutable"
 
 #: ../Gui/OptionPanels/CodeCompilationPanel.boo:110
-#, fuzzy
 msgid "Library"
-msgstr "Librería Boo"
+msgstr "Librería"
 
 #: ../Gui/OptionPanels/CodeCompilationPanel.boo:114
 msgid "Executable with GUI"
-msgstr ""
+msgstr "Ejecutable con GUI"
 
 #: ../Gui/OptionPanels/GeneralShellPanel.boo:50
-#, fuzzy
 msgid "General Options"
-msgstr "Generación de código"
+msgstr "Opciones generales"
 
 #: ../Gui/OptionPanels/GeneralShellPanel.boo:52
 msgid "Automatically indent new lines in code blocks"
-msgstr ""
+msgstr "Indentar automaticamente líneas nuevas en bloques de código"
 
 #: ../Gui/OptionPanels/GeneralShellPanel.boo:53
 msgid "Shell reset clears scollback"
-msgstr ""
+msgstr "Reinicio de la línea de comandos limpia el desplazamiento previo"
 
 #: ../Gui/OptionPanels/GeneralShellPanel.boo:54
 msgid "Shell reset clears command history"
-msgstr ""
+msgstr "Reinicio de la línea de comandos limpia el histórico de comandos"
 
 #: ../Gui/OptionPanels/GeneralShellPanel.boo:55
 msgid "Load project assemblies after building them (Causes shell reset)"
-msgstr ""
+msgstr "Cargar ensamblados de proyecto después de construirlos (provoca un reinicio de la línea de comandos) "
 
 #: ../Gui/OptionPanels/GeneralShellPanel.boo:56
 msgid "Font"
-msgstr ""
+msgstr "Tipografía"
 
 #: ../Gui/OptionPanels/GeneralShellPanel.boo:57
 msgid "Use default monospace font"
-msgstr ""
+msgstr "Usar tipografía monoespaciada predeterminada"
 
 #: ../Gui/OptionPanels/GeneralShellPanel.boo:58
 msgid "Use custom font:"
-msgstr ""
+msgstr "Usar tipografía personalizada:"
 
 #: ../BooBinding.addin.xml:30
 msgid "Boo Files"
