@@ -1,3 +1,11 @@
+2008-01-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.DesignerSupport.addin.xml, MonoDevelop.DesignerSupport.mdp,
+	  Makefile.am, icons/toolbox-pad-16.png, icons/properties-pad-16.png: New
+	  tango icons by Vinicius Depizzol.
+	* MonoDevelop.DesignerSupport.PropertyGrid.Editors/BooleanEditorCell.cs:
+	  Properly draw checkboxes.
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.DesignerSupport.addin.xml: Update MD version.

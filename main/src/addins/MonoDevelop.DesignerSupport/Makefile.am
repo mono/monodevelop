@@ -106,6 +106,8 @@ RES =  \
 	icons/MonoDevelop.DesignerSupport.PropertyGrid.DefaultPropertyTab.bmp \
 	icons/MonoDevelop.DesignerSupport.PropertyGrid.EventPropertyTab.bmp \
 	icons/MonoDevelop.DesignerSupport.PropertyGrid.SortByCat.png \
+	icons/properties-pad-16.png \
+	icons/toolbox-pad-16.png \
 	MonoDevelop.DesignerSupport.addin.xml
 
 all: $(ASSEMBLY)
