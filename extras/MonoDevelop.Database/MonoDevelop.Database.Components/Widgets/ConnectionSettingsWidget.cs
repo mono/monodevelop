@@ -57,6 +57,7 @@ namespace MonoDevelop.Database.Components
 		{
 			if (factory == null)
 				throw new ArgumentNullException ("factory");
+			this.factory = factory;
 			
 			this.Build();
 			
@@ -287,11 +288,11 @@ namespace MonoDevelop.Database.Components
 				ISchemaProvider prov = fac.CreateSchemaProvider (pool);
 				DatabaseSchemaCollection databases = prov.GetDatabases ();
 				
-				foreach (DatabaseSchema db in databases) {
-					DispatchService.GuiDispatch (delegate () {
+				DispatchService.GuiDispatch (delegate () {
+					foreach (DatabaseSchema db in databases) {
 						storeDatabases.AppendValues (db.Name);
-					});
-				}
+					}
+				});
 				isDatabaseListEmpty = databases.Count == 0;
 			} catch {
 			} finally {
@@ -320,7 +321,10 @@ namespace MonoDevelop.Database.Components
 
 		protected virtual void TestClicked (object sender, System.EventArgs e)
 		{
+			//TODO: use a Thread object, so the thread can be aborted when the entered values change
 			DatabaseConnectionSettings settingsCopy = CreateDatabaseConnectionSettings ();
+			labelTest.Text = AddinCatalog.GetString ("Trying to connect to database ...");
+			buttonTest.Sensitive = false;
 			ThreadPool.QueueUserWorkItem (new WaitCallback (TestClickedThreaded), settingsCopy);
 		}
 		
@@ -330,21 +334,33 @@ namespace MonoDevelop.Database.Components
 			DatabaseConnectionContext context = new DatabaseConnectionContext (settings);
 			IDbFactory fac = DbFactoryService.GetDbFactory (settings.ProviderIdentifier);
 
-			string message = null;
+			bool success = false;
+			string error = null;
+			
 			FakeConnectionPool pool = null;
+			IPooledDbConnection conn = null;
 			try {
 				pool = new FakeConnectionPool (fac, fac.ConnectionProvider, context);
-				pool.Initialize ();
-				message = AddinCatalog.GetString ("Test succeeded");
+				success = pool.Initialize ();
+				error = pool.Error;
 			} catch (System.Data.DataException ex) {
-				message = AddinCatalog.GetString ("Test failed: {0}", ex.Message);
+				error = ex.Message;
+				success = false;
 			} finally {
+				if (conn != null) {
+					conn.Release ();
+					conn.Dispose ();
+				}
 				if (pool != null)
 					pool.Close ();
 			}
 			
 			DispatchService.GuiDispatch (delegate () {
-				labelTest.Text = message;
+				buttonTest.Sensitive = true;
+				if (success)
+					labelTest.Text = AddinCatalog.GetString ("Test Succeeded.");
+				else
+					labelTest.Text = AddinCatalog.GetString ("Test Failed: {0}.", error);
 			});
 		}
 	}

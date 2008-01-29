@@ -390,6 +390,7 @@ namespace MonoDevelop.Database.Components {
             this.labelTest.Name = "labelTest";
             this.labelTest.Xalign = 0F;
             this.labelTest.LabelProp = "";
+            this.labelTest.Wrap = true;
             this.table.Add(this.labelTest);
             Gtk.Table.TableChild w34 = ((Gtk.Table.TableChild)(this.table[this.labelTest]));
             w34.TopAttach = ((uint)(7));

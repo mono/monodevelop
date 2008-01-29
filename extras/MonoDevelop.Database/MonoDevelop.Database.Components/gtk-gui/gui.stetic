@@ -1101,6 +1101,7 @@
             <property name="MemberName" />
             <property name="Xalign">0</property>
             <property name="LabelProp" translatable="yes" />
+            <property name="Wrap">True</property>
           </widget>
           <packing>
             <property name="TopAttach">7</property>
