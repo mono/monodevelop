@@ -1000,11 +1000,11 @@ msgstr "A program a GNU GPL feltételeinek megfelelően használható."
 msgid ""
 "<b>Copyright</b>\n"
 "    (c) 2000-2003 by icsharpcode.net\n"
-"    (c) 2004-2007 by MonoDevelop contributors"
+"    (c) 2004-{0} by MonoDevelop contributors"
 msgstr ""
 "<b>Copyright</b>\n"
 "    (c) 2000-2003 by icsharpcode.net\n"
-"    (c) 2004-2007 by MonoDevelop contributors"
+"    (c) 2004-{0} by MonoDevelop contributors"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:65
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/OpenFileInSolutionDialog.cs:148
