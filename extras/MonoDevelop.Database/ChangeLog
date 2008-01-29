@@ -1,3 +1,9 @@
+2008-01-28  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* po/nl.po: Updated translation by André Offringa.
+	* po/es.po: Updated translation by Andrés G. Aragoneses.
+	* po/de.po: Updated translation by anonymous GHOP student.
+
 2008-01-28  Ben Motmans <ben.motmans@gmail.com> 
 
 	* configure.in, monodevelop-database.pc.in, Makefile.am,
