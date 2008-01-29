@@ -1158,17 +1158,17 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		public void PrevBookmark ()
 		{
-			se.PrevBookmark ();
+			se.Buffer.PrevBookmark ();
 		}
 		
 		public void NextBookmark ()
 		{
-			se.NextBookmark ();
+			se.Buffer.NextBookmark ();
 		}
 		
 		public void ClearBookmarks ()
 		{
-			se.ClearBookmarks ();
+			se.Buffer.ClearBookmarks ();
 		}
 		*/
 #region IDocumentInformation

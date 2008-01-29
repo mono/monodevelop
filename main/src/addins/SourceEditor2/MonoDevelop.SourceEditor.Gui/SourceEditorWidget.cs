@@ -178,14 +178,6 @@ namespace MonoDevelop.SourceEditor.Gui
 			
 		}
 		
-		[CommandHandler (EditorCommands.GotoLineNumber)]
-		public void GotoLineNumber ()
-		{
-			if (!GotoLineNumberDialog.IsVisible)
-				using (GotoLineNumberDialog gnd = new GotoLineNumberDialog ())
-					gnd.Run ();
-		}
-		
 		protected static string StrMiddleTruncate (string str, int truncLen)
 		{
 			if (str == null) return String.Empty;
@@ -198,43 +190,6 @@ namespace MonoDevelop.SourceEditor.Gui
 			return str.Substring (0, leftOffset) + delimiter + str.Substring (rightOffset);
 		}
 /* FIXME GTKSV2	
-		[CommandHandler (EditorCommands.GotoMatchingBrace)]
-		public void GotoMatchingBrace ()
-		{
-			TextIter iter = Buffer.GetIterAtMark (Buffer.InsertMark);
-			if (Source.IterFindMatchingBracket (ref iter)) {
-				iter.ForwardChar ();
-				Buffer.PlaceCursor (iter);
-				View.ScrollMarkOnscreen (Buffer.InsertMark);
-			}
-		}
-
-		[CommandHandler (EditorCommands.ToggleBookmark)]
-		public void ToggleBookmark ()
-		{
-			Buffer.ToggleBookmark ();
-		}
-		
-		[CommandHandler (EditorCommands.PrevBookmark)]
-		public void PrevBookmark ()
-		{
-			Buffer.PrevBookmark ();
-			View.ScrollMarkOnscreen (Buffer.InsertMark);
-		}
-		
-		[CommandHandler (EditorCommands.NextBookmark)]
-		public void NextBookmark ()
-		{
-			Buffer.NextBookmark ();
-			View.ScrollMarkOnscreen (Buffer.InsertMark);
-		}
-		
-		[CommandHandler (EditorCommands.ClearBookmarks)]
-		public void ClearBookmarks ()
-		{
-			Buffer.ClearBookmarks ();
-		}
-		
 		[CommandHandler (DebugCommands.ToggleBreakpoint)]
 		public void ToggleBreakpoint ()
 		{

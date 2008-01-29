@@ -437,15 +437,17 @@ namespace MonoDevelop.SourceEditor.Gui
 					//FIXME GTKSV2
 					//buf.ToggleBookmark (line.Line);
 				} else if (e.Button == 3) {
+				/*FIXME GTKSV2
 					CommandEntrySet cset = new CommandEntrySet ();
-					cset.AddItem (EditorCommands.ToggleBookmark);
-					cset.AddItem (EditorCommands.ClearBookmarks);
+					
+					cset.AddItem (SearchCommands.ToggleBookmark);
+					cset.AddItem (SearchCommands.ClearBookmarks);
 					cset.AddItem (Command.Separator);
 					cset.AddItem (DebugCommands.ToggleBreakpoint);
 					cset.AddItem (DebugCommands.ClearAllBreakpoints);
 					Gtk.Menu menu = IdeApp.CommandService.CreateMenu (cset);
 					
-					menu.Popup (null, null, null, 3, e.Time);
+					menu.Popup (null, null, null, 3, e.Time);*/
 				}
 			} else if (e.Button == 3 && buf.GetSelectedText ().Length == 0) {
 				int x, y;
