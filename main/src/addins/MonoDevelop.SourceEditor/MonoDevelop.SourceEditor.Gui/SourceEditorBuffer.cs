@@ -393,6 +393,8 @@ namespace MonoDevelop.SourceEditor.Gui
 		{
 			if (_HasSelection)
 				DeleteSelection (true, true);
+			else 
+				this.Delete (GetIterAtMark (InsertMark).Offset, 1);
 		}
 		
 		void IClipboardHandler.SelectAll (object sender, EventArgs e)

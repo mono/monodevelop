@@ -1,3 +1,8 @@
+2008-01-29  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs: clipboard handler
+	  delete now works without a selection.
+
 2008-01-28  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs,
