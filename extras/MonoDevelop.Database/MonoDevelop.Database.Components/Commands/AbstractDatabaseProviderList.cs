@@ -46,7 +46,7 @@ namespace MonoDevelop.Database.Components
 					info.Add (cmd, fac);
 				}
 			} else {
-				CommandInfo cmd = new CommandInfo (GettextCatalog.GetString ("No database providers detected."));
+				CommandInfo cmd = new CommandInfo (AddinCatalog.GetString ("No database providers detected."));
 				cmd.Enabled = false;
 				info.Add (cmd, null);
 			}

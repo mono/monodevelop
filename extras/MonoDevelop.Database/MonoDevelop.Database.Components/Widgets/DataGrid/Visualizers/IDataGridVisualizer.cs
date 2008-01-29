@@ -33,9 +33,10 @@ namespace MonoDevelop.Database.Components
 {
 	public interface IDataGridVisualizer
 	{
-		bool CanVisualize (Type type);
+		string Name { get; }
 		
-		Type CommandHandlerType { get; }
-		DataGridItemCommandHandler CommandHandler { get; }
+		bool CanVisualize (object dataObject);
+		
+		void Visualize (object dataObject);
 	}
 }

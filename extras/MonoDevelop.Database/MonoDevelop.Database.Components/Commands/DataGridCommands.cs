@@ -37,9 +37,6 @@ namespace MonoDevelop.Database.Components
 {
 	public enum DataGridCommands
 	{
-		VisualizeAsText,
-		VisualizeAsXmlText,
-		VisualizeAsXmlTree,
-		VisualizeAsImage
+		VisualizeAsList
 	}
 }

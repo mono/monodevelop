@@ -231,14 +231,15 @@ namespace MonoDevelop.Database.Sql.Sqlite
 		
 		public override void CreateDatabase (DatabaseSchema database)
 		{
-			//TODO: error if db exists
-			LoggingService.LogDebug ("CREATE START");
-			
+			if (System.IO.File.Exists (database.Name)) {
+				MonoDevelop.Core.Gui.Services.MessageService.ShowError (
+					AddinCatalog.GetString ("Database '{0}' already exists.", database.Name)
+				);
+				return;
+			}
 			SqliteConnection conn = new SqliteConnection ("URI=file:" + database.Name + ";Version=3;");
 			conn.Open ();
 			conn.Close ();
-			
-			LoggingService.LogDebug ("CREATE STOP");
 		}
 
 		//http://www.sqlite.org/lang_createtable.html
@@ -361,7 +362,7 @@ namespace MonoDevelop.Database.Sql.Sqlite
 				sb.Append (" AFTER");
 				break;
 			default:
-				throw new NotImplementedException ();
+				throw new NotSupportedException ();
 			}
 			
 			switch (trigger.TriggerEvent) {
@@ -375,7 +376,7 @@ namespace MonoDevelop.Database.Sql.Sqlite
 				sb.Append (" DELETE ");
 				break;
 			default:
-				throw new NotImplementedException ();
+				throw new NotSupportedException ();
 			}
 			
 			sb.Append ("ON ");
@@ -389,7 +390,7 @@ namespace MonoDevelop.Database.Sql.Sqlite
 				sb.Append (" FOR EACH ROW ");
 				break;
 			default:
-				throw new NotImplementedException ();
+				throw new NotSupportedException ();
 			}
 			
 			sb.Append (Environment.NewLine);

@@ -14,6 +14,7 @@ REFS =  \
 
 FILES =  \
 	Codons/DataGridContentRendererCodon.cs \
+	Codons/DataGridVisualizerCodon.cs \
 	Commands/AbstractDatabaseProviderList.cs \
 	Commands/DataGridCommands.cs \
 	Commands/SqlEditorCommands.cs \
@@ -55,13 +56,9 @@ FILES =  \
 	Widgets/DataGrid/Renderers/NullContentRenderer.cs \
 	Widgets/DataGrid/Renderers/ObjectContentRenderer.cs \
 	Widgets/DataGrid/Renderers/StringContentRenderer.cs \
-	Widgets/DataGrid/Visualizers/AbstractDataGridVisualizer.cs \
-	Widgets/DataGrid/Visualizers/DataGridItemCommandHandler.cs \
+	Widgets/DataGrid/Views/ImageVisualizerView.cs \
+	Widgets/DataGrid/Views/TextVisualizerView.cs \
 	Widgets/DataGrid/Visualizers/IDataGridVisualizer.cs \
-	Widgets/DataGrid/Visualizers/ImageVisualizer.cs \
-	Widgets/DataGrid/Visualizers/TextVisualizer.cs \
-	Widgets/DataGrid/Visualizers/XmlTextVisualizer.cs \
-	Widgets/DataGrid/Visualizers/XmlTreeVisualizer.cs \
 	Widgets/ProjectDirectoryComboBox.cs \
 	Widgets/SelectColumnWidget.cs \
 	Widgets/SelectSchemaWidget.cs \

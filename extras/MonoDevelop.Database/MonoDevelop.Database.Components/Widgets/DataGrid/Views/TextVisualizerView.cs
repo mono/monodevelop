@@ -2,7 +2,7 @@
 // Authors:
 //   Ben Motmans  <ben.motmans@gmail.com>
 //
-// Copyright (c) 2007 Ben Motmans
+// Copyright (c) 2008 Ben Motmans
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,37 +25,64 @@
 
 using Gtk;
 using System;
-using System.Data;
+using System.Collections.Generic;
 using Mono.Addins;
+using MonoDevelop.Database.Sql;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Components;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Database.Components
 {
-	public class ImageVisualizer : AbstractDataGridVisualizer
+	public class TextVisualizerView : AbstractViewContent
 	{
-		public override bool CanVisualize (Type type)
+		private VBox vbox;
+		private ScrolledWindow scrolledWindow;
+		private TextView textView;
+		
+		public TextVisualizerView ()
 		{
-			return type == typeof (byte[]);
+			vbox = new VBox (false, 6);
+			vbox.BorderWidth = 6;
+			
+			TextTagTable tagTable = new TextTagTable ();
+			TextBuffer buffer = new TextBuffer (tagTable);
+			textView = new TextView (buffer);
+
+			scrolledWindow = new ScrolledWindow ();
+			scrolledWindow.AddWithViewport (textView);
+			
+			vbox.PackStart (scrolledWindow, true, true, 0);
+			
+			vbox.ShowAll ();
+		}
+
+		public override string UntitledName {
+			get { return AddinCatalog.GetString ("Image"); }
 		}
 		
-		public override Type CommandHandlerType {
-			get { return typeof (ImageVisualizerCommandHandler); }
-		}
-	}
-	
-	public class ImageVisualizerCommandHandler : DataGridItemCommandHandler
-	{
-		public override void ActivateItem ()
+		public override void Dispose ()
 		{
-			byte[] blob = DataObject as byte[];
-			
-			Gdk.Pixbuf pixbuf = null;
-			try {
-				pixbuf = new Gdk.Pixbuf (blob);
-			} catch {}
-			
-			using (ShowImageDialog dlg = new ShowImageDialog (pixbuf))
-				dlg.Run ();
+			Control.Destroy ();
+		}
+		
+		public override void Load (string filename)
+		{
+			throw new NotSupportedException ();
+		}
+		
+		public override Widget Control {
+			get { return vbox; }
+		}
+		
+		public void Load (object dataObject)
+		{
+			string text = dataObject as string;
+			if (text != null)
+				textView.Buffer.Text = text;
+			else
+				textView.Buffer.Text = String.Empty;
 		}
 	}
 }

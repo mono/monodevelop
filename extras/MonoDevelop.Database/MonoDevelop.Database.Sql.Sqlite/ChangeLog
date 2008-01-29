@@ -1,5 +1,9 @@
 2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
 
+	* SqliteSchemaProvider.cs: Removed temp log statements
+
+2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
+
 	* MonoDevelop.Database.Sql.Sqlite.mdp, Makefile.am: use a Gac reference for
 	  Mono.Data.Sqlite
 

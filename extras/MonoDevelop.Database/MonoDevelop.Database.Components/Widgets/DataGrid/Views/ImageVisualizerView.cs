@@ -2,7 +2,7 @@
 // Authors:
 //   Ben Motmans  <ben.motmans@gmail.com>
 //
-// Copyright (c) 2007 Ben Motmans
+// Copyright (c) 2008 Ben Motmans
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,20 +25,67 @@
 
 using Gtk;
 using System;
-using System.Data;
+using System.Collections.Generic;
 using Mono.Addins;
+using MonoDevelop.Database.Sql;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Components;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Database.Components
 {
-	public class XmlTextVisualizer : TextVisualizer
+	public class ImageVisualizerView : AbstractViewContent
 	{
-//		public void ShowContent (object dataObject)
-//		{
-//			string txt = GetContent (dataObject);
-//
-//			using (ShowTextDialog dlg = new ShowTextDialog (txt, "text/xml"))
-//				dlg.Run ();
-//		}
+		private VBox vbox;
+		private ScrolledWindow scrolledWindow;
+		private Gtk.Image image;
+		
+		public ImageVisualizerView ()
+		{
+			vbox = new VBox (false, 6);
+			vbox.BorderWidth = 6;
+			
+			image = new Gtk.Image ();
+
+			scrolledWindow = new ScrolledWindow ();
+			scrolledWindow.Add (image);
+			
+			vbox.PackStart (scrolledWindow, true, true, 0);
+			
+			vbox.ShowAll ();
+		}
+
+		public override string UntitledName {
+			get { return AddinCatalog.GetString ("Image"); }
+		}
+		
+		public override void Dispose ()
+		{
+			Control.Destroy ();
+		}
+		
+		public override void Load (string filename)
+		{
+			throw new NotSupportedException ();
+		}
+		
+		public override Widget Control {
+			get { return vbox; }
+		}
+		
+		public void Load (object dataObject)
+		{
+			byte[] blob = dataObject as byte[];
+			if (blob != null) {
+				try {
+					Gdk.Pixbuf pixbuf = new Gdk.Pixbuf (blob);
+					image.Pixbuf = pixbuf;
+					return;
+				} catch {}
+			}
+			
+			image.Pixbuf = Services.Resources.GetIcon ("gtk-missing-image", IconSize.Dialog);
+		}
 	}
 }

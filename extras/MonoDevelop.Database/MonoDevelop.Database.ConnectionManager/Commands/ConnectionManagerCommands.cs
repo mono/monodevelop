@@ -89,14 +89,6 @@ namespace MonoDevelop.Database.ConnectionManager
 			factory = (IDbFactory)ob;
 			factory.GuiProvider.ShowAddConnectionDialog (factory);
 		}
-		
-//		protected override void Update (CommandInfo info)
-//		{
-//			if (IdeApp.ProjectOperations.CurrentOpenCombine != null)
-//				info.Enabled = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
-//			else
-//				info.Enabled = (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsBuildTarget);
-//		}
 	}
 	
 	internal class CreateDatabaseHandler : AbstractDatabaseProviderList
@@ -108,13 +100,5 @@ namespace MonoDevelop.Database.ConnectionManager
 			factory = (IDbFactory)ob;
 			factory.GuiProvider.ShowCreateDatabaseDialog ();
 		}
-		
-//		protected override void Update (CommandInfo info)
-//		{
-//			if (IdeApp.ProjectOperations.CurrentOpenCombine != null)
-//				info.Enabled = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
-//			else
-//				info.Enabled = (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsBuildTarget);
-//		}
 	}
 }

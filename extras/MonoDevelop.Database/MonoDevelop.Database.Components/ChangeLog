@@ -1,5 +1,24 @@
 2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
 
+	* Commands/AbstractDatabaseProviderList.cs: use AddinCatalog to translate
+	  strings
+	* Commands/DataGridCommands.cs, Widgets/DataGrid/DataGrid.cs,
+	  MonoDevelop.Database.Components.addin.xml: use an Array CommandItem to
+	  show all datagrid visualizers
+	* Codons/DataGridVisualizerCodon.cs: Codon to add new DataGrid visualizers
+	* Widgets/DataGrid/Visualizers/DataGridItemCommandHandler.cs,
+	  Widgets/DataGrid/Visualizers/XmlTreeVisualizer.cs,
+	  Widgets/DataGrid/Visualizers/ImageVisualizer.cs,
+	  Widgets/DataGrid/Visualizers/AbstractDataGridVisualizer.cs,
+	  Widgets/DataGrid/Visualizers/TextVisualizer.cs,
+	  Widgets/DataGrid/Visualizers/XmlTextVisualizer.cs: obsolete
+	* Widgets/DataGrid/Visualizers/IDataGridVisualizer.cs: improved API
+	* Widgets/DataGrid/Views/ImageVisualizerView.cs: datagrid visualizer for
+	  images
+	* Widgets/DataGrid/Views/TextVisualizerView.cs: datagrid visualizer for text
+
+2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
+
 	* Widgets/ColumnMappingWidget.cs: use DotNetType property to get the .NET
 	  type
 

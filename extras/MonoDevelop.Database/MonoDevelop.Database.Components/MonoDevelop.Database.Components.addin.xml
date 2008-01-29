@@ -21,8 +21,14 @@
 		<Addin id="Database.Sql" version="0.19.0"/>
 	</Dependencies>
 	
-	<ExtensionPoint path = "/MonoDevelop/Database/DataGrid/Renderers">
-		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+	<ExtensionPoint path = "/MonoDevelop/Database/DataGrid/Renderers" name = "DataGrid renderers">
+		<Description>DataGrid renderers.</Description>
+		<ExtensionNode name="Renderer" type="MonoDevelop.Database.Components.DataGridContentRendererCodon" />
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Database/DataGrid/Visualizers" name = "DataGrid object visualizers">
+		<Description>DataGrid object visualizers.</Description>
+		<ExtensionNode name="Visualizer" type="MonoDevelop.Database.Components.DataGridVisualizerCodon" />
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Database/ContextMenu/DataGrid">
@@ -34,14 +40,11 @@
 	</ExtensionPoint>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands">
-		<Command id = "MonoDevelop.Database.Components.DataGridCommands.VisualizeAsText"
-			_label = "Display content as text"/>
-		<Command id = "MonoDevelop.Database.Components.DataGridCommands.VisualizeAsXmlText"
-			_label = "Display content as xml text"/>
-		<Command id = "MonoDevelop.Database.Components.DataGridCommands.VisualizeAsXmlTree"
-			_label = "Display content as xml tree"/>
-		<Command id = "MonoDevelop.Database.Components.DataGridCommands.VisualizeAsImage"
-			_label = "Display content as image"/>
+		<Category _name = "Database" id = "Database">
+		
+		<Command id = "MonoDevelop.Database.Components.DataGridCommands.VisualizeAsList"
+			type = "array"
+			_label = "Visualize Data"/>
 			
 		<Command id = "MonoDevelop.Database.Components.SqlEditorCommands.ImportFromFile"
 			_label = "Import From File"
@@ -49,13 +52,14 @@
 		<Command id = "MonoDevelop.Database.Components.SqlEditorCommands.ExportToFile"
 			_label = "Export To File"
 			icon = "gtk-save"/>
+			
+		</Category>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Database/ContextMenu/DataGrid">
-		<CommandItem id = "MonoDevelop.Database.Components.DataGridCommands.VisualizeAsText"/>
-		<CommandItem id = "MonoDevelop.Database.Components.DataGridCommands.VisualizeAsXmlText"/>
-		<CommandItem id = "MonoDevelop.Database.Components.DataGridCommands.VisualizeAsXmlTree"/>
-		<CommandItem id = "MonoDevelop.Database.Components.DataGridCommands.VisualizeAsImage"/>
+		<ItemSet id = "MonoDevelop.Database.Components.VisualizeAs" _label = "Visualize Data">
+			<CommandItem id = "MonoDevelop.Database.Components.DataGridCommands.VisualizeAsList" />
+		</ItemSet>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Database/ContextMenu/SqlEditor">

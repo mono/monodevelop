@@ -1,5 +1,9 @@
 2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
 
+	* Commands/ConnectionManagerCommands.cs: removed useless comments
+
+2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
+
 	* gtk-gui, gtk-gui/generated.cs, gtk-gui/gui.stetic: added missing
 	  auto-generated code
 

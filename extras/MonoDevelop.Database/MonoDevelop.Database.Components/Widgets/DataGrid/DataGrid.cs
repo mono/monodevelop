@@ -36,7 +36,7 @@ using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Database.Components
 {
-	public partial class DataGrid : Bin, ICommandDelegatorRouter
+	public partial class DataGrid : Bin
 	{
 		private bool limitPageSize = true;
 		private int pageSize = 50;
@@ -53,13 +53,14 @@ namespace MonoDevelop.Database.Components
 		
 		private ObjectContentRenderer defaultContentRenderer;
 		private Dictionary<Type, IDataGridContentRenderer> contentRenderers;
-		private List<IDataGridVisualizer> visualizers;
 		
 		private Dictionary<int, ConvertObjectFunc> conversionLookup = new Dictionary<int, ConvertObjectFunc> ();
 		private delegate string ConvertObjectFunc (object obj);
 		
 		private ConvertObjectFunc byteConvertFunc = new ConvertObjectFunc (ByteConvertFunc);
 		private ConvertObjectFunc sbyteConvertFunc = new ConvertObjectFunc (SByteConvertFunc);
+		
+		private object clickedCellObject;
 		
 		public DataGrid ()
 		{
@@ -69,7 +70,6 @@ namespace MonoDevelop.Database.Components
 			grid.ButtonPressEvent += new ButtonPressEventHandler (ButtonPressed);
 
 			contentRenderers = new Dictionary<Type, IDataGridContentRenderer> ();
-			visualizers = new List<IDataGridVisualizer> ();
 			
 			AddContentRenderer (new BlobContentRenderer ());
 			AddContentRenderer (new BooleanContentRenderer ());
@@ -80,11 +80,6 @@ namespace MonoDevelop.Database.Components
 			AddContentRenderer (new IntegerContentRenderer ());
 			AddContentRenderer (new LongContentRenderer ());
 			AddContentRenderer (new StringContentRenderer ());
-			
-			visualizers.Add (new ImageVisualizer ());
-			visualizers.Add (new TextVisualizer ());
-			visualizers.Add (new XmlTextVisualizer ());
-			visualizers.Add (new XmlTreeVisualizer ());
 
 			foreach (DataGridContentRendererCodon codon in AddinManager.GetExtensionNodes ("/MonoDevelop/Database/DataGrid/Renderers"))
 				AddContentRenderer (codon.ContentRenderer);
@@ -210,33 +205,6 @@ namespace MonoDevelop.Database.Components
 				FillGrid (record, count);
 			}
 			ShowNavigationState ();
-		}
-		
-		object ICommandDelegatorRouter.GetNextCommandTarget ()
-		{
-			return null;
-		}
-		
-		object ICommandDelegatorRouter.GetDelegatedCommandTarget ()
-		{
-//			if (dataObject != null) {
-//				IDataGridVisualizer[] visualizers = GetItemVisualizers (dataObject);
-//				if (visualizers.Length > 0) {
-//					DataGridItemCommandHandler[] handlers = new DataGridItemCommandHandler [visualizers.Length];
-//					for (int n=0; n<visualizers.Length; n++) {
-//						handlers [n] = chain [n].CommandHandler;
-//
-//					for (int n=0; n<handlers.Length; n++) {
-//						handlers [n].SetDataObject (dataObject);
-//						if (n < chain.Length - 1)
-//							handlers [n].SetNextTarget (handlers [n+1]);
-//						else
-//							handlers [n].SetNextTarget (null);
-//					}
-//					return handlers [0];
-//				}
-//			}
-			return null;
 		}
 		
 		private void ShowNavigationState ()
@@ -404,19 +372,21 @@ namespace MonoDevelop.Database.Components
 		[GLib.ConnectBefore]
 		private void ButtonPressed (object sender, ButtonPressEventArgs args)
 		{
-			if (args.Event.Button == 3) {
-				TreePath path = null;
-				TreeViewColumn col = null;
-				if (grid.GetPathAtPos ((int)args.Event.X, (int)args.Event.Y, out path, out col)) {
-					//DataGridColumn dgCol = col as DataGridColumn;
-					TreeIter iter;
-					if (store.GetIter (out iter, path)) {
-						//dataObject = store.GetValue (iter, dgCol.ColumnIndex);
-							
-						IdeApp.CommandService.ShowContextMenu ("/MonoDevelop/Database/ContextMenu/DataGrid");
-					}
-				}
+			TreePath path = null;
+			TreeViewColumn col = null;
+			if (grid.GetPathAtPos ((int)args.Event.X, (int)args.Event.Y, out path, out col)) {
+				DataGridColumn dgCol = col as DataGridColumn;
+				TreeIter iter;
+				if (store.GetIter (out iter, path))
+					clickedCellObject = store.GetValue (iter, dgCol.ColumnIndex);
+				else
+					return;
+			} else {
+				return;
 			}
+			
+			if (args.Event.Button == 3)
+				IdeApp.CommandService.ShowContextMenu ("/MonoDevelop/Database/ContextMenu/DataGrid");
 		}
 		
 		private static string ByteConvertFunc (object obj)
@@ -435,6 +405,23 @@ namespace MonoDevelop.Database.Components
 			
 			sbyte b = (sbyte)obj;
 			return b.ToString ("N");
+		}
+		
+		[CommandHandler (DataGridCommands.VisualizeAsList)]
+		protected void VisualizeAsListCommand (object obj)
+		{
+			IDataGridVisualizer visualizer = (IDataGridVisualizer)obj;
+			visualizer.Visualize (clickedCellObject);
+		}
+		
+		[CommandUpdateHandler (DataGridCommands.VisualizeAsList)]
+		protected void UpdateVisualizeAsListCommand (CommandArrayInfo info)
+		{
+			foreach (DataGridVisualizerCodon codon in AddinManager.GetExtensionNodes ("/MonoDevelop/Database/DataGrid/Visualizers")) {
+				IDataGridVisualizer visualizer = codon.Visualizer;
+				CommandInfo ci = info.Add (visualizer.Name, visualizer);
+				ci.Enabled = visualizer.CanVisualize (clickedCellObject);
+			}
 		}
 	}
 }
