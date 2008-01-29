@@ -32,6 +32,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using MonoDevelop.Core;
 
+using Gdk;
 using Gtk;
 
 namespace MonoDevelop.RegexToolkit
@@ -46,6 +47,7 @@ namespace MonoDevelop.RegexToolkit
 		public RegexToolkitWindow() : base (Gtk.WindowType.Toplevel)
 		{
 			this.Build();
+			this.Events = Gdk.EventMask.AllEventsMask;
 			this.TransientFor = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;
 			optionsStore = new ListStore (typeof (bool), typeof (string), typeof (Options));
 			resultStore = new Gtk.TreeStore (typeof (string), typeof (string), typeof (int), typeof (int));
@@ -123,16 +125,24 @@ namespace MonoDevelop.RegexToolkit
 			
 			elementsStore = new Gtk.TreeStore (typeof (string), typeof (string), typeof (string), typeof (string));
 			this.elementsTreeview.Model = this.elementsStore;
+			this.elementsTreeview.Events = Gdk.EventMask.AllEventsMask;
 			this.elementsTreeview.HeadersVisible = false;
 			this.elementsTreeview.AppendColumn (String.Empty, new CellRendererPixbuf (), "stock_id", 0);
 			cellRendText = new CellRendererText ();
 			cellRendText.Ellipsize = Pango.EllipsizeMode.End;
+			
 			this.elementsTreeview.AppendColumn ("", cellRendText, "text", 1);
 			this.elementsTreeview.Selection.Changed += delegate {
 				ShowTooltipForSelectedEntry ();			
 			};
+			this.elementsTreeview.Events = Gdk.EventMask.AllEventsMask;
+			this.LeaveNotifyEvent += delegate {
+				this.HideTooltipWindow ();
+			};
 			int ox = -1 , oy = -1;
-			this.elementsTreeview.WidgetEvent += delegate {
+			this.elementsTreeview.WidgetEvent += delegate(object sender, WidgetEventArgs args) {
+				if (args.Event.Type != EventType.MotionNotify)
+					return;
 				if (elementsTreeview.Selection.GetSelectedRows ().Length == 0)
 					return;
 				Gdk.Rectangle rect = elementsTreeview.GetCellArea (elementsTreeview.Selection.GetSelectedRows () [0], elementsTreeview.GetColumn (0));
@@ -140,7 +150,7 @@ namespace MonoDevelop.RegexToolkit
 				this.GdkWindow.GetOrigin (out x, out y);
 				x += rect.X;
 				y += rect.Y;
-				if (ox != x || oy != y) {
+				if (this.tooltipWindow == null || ox != x || oy != y) {
 					ShowTooltipForSelectedEntry ();
 					ox = x;
 					oy = y;
@@ -158,12 +168,14 @@ namespace MonoDevelop.RegexToolkit
 			
 			FillElementsBox ();
 		}
+		
 		void SetFindMode (bool findMode)
 		{
 			this.notebook2.ShowTabs = !findMode;
 			if (findMode)
 				this.notebook2.Page = 0;
 		}
+		
 		void ShowTooltipForSelectedEntry ()
 		{
 			TreeIter iter;
@@ -208,6 +220,8 @@ namespace MonoDevelop.RegexToolkit
 		{
 			HideTooltipWindow (); 
 			tooltipWindow = new CustomTooltipWindow ();
+			tooltipWindow.Parent = this;
+			tooltipWindow.DestroyWithParent = true;
 			tooltipWindow.Tooltip = text;
 			int ox, oy;
 			this.GdkWindow.GetOrigin (out ox, out oy);

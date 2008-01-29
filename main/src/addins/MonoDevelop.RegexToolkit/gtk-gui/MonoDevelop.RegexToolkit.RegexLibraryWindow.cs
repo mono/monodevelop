@@ -135,14 +135,11 @@ namespace MonoDevelop.RegexToolkit {
             this.scrolledwindow2 = new Gtk.ScrolledWindow();
             this.scrolledwindow2.CanFocus = true;
             this.scrolledwindow2.Name = "scrolledwindow2";
-            this.scrolledwindow2.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow2.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow2.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow2.Gtk.Container+ContainerChild
             this.expressionsTreeview = new Gtk.TreeView();
             this.expressionsTreeview.CanFocus = true;
             this.expressionsTreeview.Name = "expressionsTreeview";
-            this.expressionsTreeview.HeadersClickable = true;
             this.scrolledwindow2.Add(this.expressionsTreeview);
             this.vbox6.Add(this.scrolledwindow2);
             Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox6[this.scrolledwindow2]));
@@ -249,8 +246,6 @@ namespace MonoDevelop.RegexToolkit {
             this.scrolledwindow1 = new Gtk.ScrolledWindow();
             this.scrolledwindow1.CanFocus = true;
             this.scrolledwindow1.Name = "scrolledwindow1";
-            this.scrolledwindow1.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow1.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow1.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow1.Gtk.Container+ContainerChild
             this.descriptionTextview = new Gtk.TextView();
