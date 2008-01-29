@@ -1,3 +1,12 @@
+2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
+
+	* MonoDevelop.Database.Sql.SqlServer.mdp: depend on Gtk# 2.8 instead of 2.12
+	* gtk-gui,
+	  gtk-gui/MonoDevelop.Database.Sql.SqlServer.SqlServerColumnEditorWidget.cs,
+	  gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.Database.Sql.SqlServer.SqlServerCreateDatabaseWidget.cs,
+	  gtk-gui/objects.xml, gtk-gui/gui.stetic: auto generated code
+
 2008-01-28  Ben Motmans <ben.motmans@gmail.com> 
 
 	* SqlServerDialect.cs, SqlServerConnectionProvider.cs,

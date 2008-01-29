@@ -1,3 +1,7 @@
+2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
+
+	* MonoDevelop.Database.ConnectionManager.mdp: Gtk# 2.8 compatibility
+
 2008-01-28  Ben Motmans <ben.motmans@gmail.com> 
 
 	* NodeBuilders/UsersNodeBuilder.cs,

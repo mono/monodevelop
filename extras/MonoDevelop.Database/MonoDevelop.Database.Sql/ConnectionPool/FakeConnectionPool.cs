@@ -94,22 +94,22 @@ namespace MonoDevelop.Database.Sql
 		
 		public virtual int MinSize {
 			get { return 1; }
-			set { throw new NotImplementedException (); }
+			set { throw new NotSupportedException (); }
 		}
 		
 		public virtual int MaxSize {
 			get { return 1; }
-			set { throw new NotImplementedException (); }
+			set { throw new NotSupportedException (); }
 		}
 
 		public virtual int GrowSize {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
+			get { throw new NotSupportedException (); }
+			set { throw new NotSupportedException (); }
 		}
 
 		public virtual int ShrinkSize {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
+			get { throw new NotSupportedException (); }
+			set { throw new NotSupportedException (); }
 		}
 		
 		public virtual int ConnectionCount {

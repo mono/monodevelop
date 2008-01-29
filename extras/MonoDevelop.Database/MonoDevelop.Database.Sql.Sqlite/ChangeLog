@@ -1,3 +1,10 @@
+2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
+
+	* MonoDevelop.Database.Sql.Sqlite.mdp: depend on Gtk# 2.8 instead of 2.12
+	* gtk-gui, gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.Database.Sql.Sqlite.SqliteCreateDatabaseDialog.cs,
+	  gtk-gui/gui.stetic: auto generated code
+
 2008-01-28  Ben Motmans <ben.motmans@gmail.com> 
 
 	* Dialogs/SqliteDatabaseConnectionSettingsDialog.cs: disable some widgets

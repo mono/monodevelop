@@ -18,6 +18,7 @@ FILES =  \
 	Commands/ToolbarCommands.cs \
 	ConnectionManagerPad.cs \
 	FakeNodes.cs \
+	gtk-gui/generated.cs \
 	NodeBuilders/AggregatesNodeBuilder.cs \
 	NodeBuilders/ColumnNodeBuilder.cs \
 	NodeBuilders/ColumnsNodeBuilder.cs \
@@ -44,7 +45,9 @@ FILES =  \
 	NodeBuilders/ViewNodeBuilder.cs \
 	NodeBuilders/ViewsNodeBuilder.cs
 
-RES = MonoDevelop.Database.ConnectionManager.addin.xml
+RES =  \
+	gtk-gui/gui.stetic \
+	MonoDevelop.Database.ConnectionManager.addin.xml
 
 all: $(ASSEMBLY)
 

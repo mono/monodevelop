@@ -1,3 +1,9 @@
+2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
+
+	* ConnectionPool/FakeConnectionPool.cs: throw NotSupportedExceptions instead
+	  of NotImplementedExceptions
+	* MonoDevelop.Database.Sql.addin.xml: changed the name of the addin
+
 2008-01-28  Ben Motmans <ben.motmans@gmail.com> 
 
 	* Codons/CapabilitiesCodon.cs, Codons/ActionCodon.cs,

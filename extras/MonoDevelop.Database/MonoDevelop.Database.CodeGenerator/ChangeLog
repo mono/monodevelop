@@ -1,3 +1,9 @@
+2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
+
+	* MonoDevelop.Database.CodeGenerator.addin.xml: added a category attribute
+	* gtk-gui/gui.stetic: Gtk# 2.8 compatibility
+	* MonoDevelop.Database.CodeGenerator.mdp: depend on Gtk# 2.8 instead of 2.10
+
 2008-01-28  Ben Motmans <ben.motmans@gmail.com> 
 
 	* MonoDevelop.Database.CodeGenerator.addin.xml: bumped the version number
