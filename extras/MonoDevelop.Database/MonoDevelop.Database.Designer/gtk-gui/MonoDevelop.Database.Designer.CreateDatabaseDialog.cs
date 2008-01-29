@@ -13,23 +13,15 @@ namespace MonoDevelop.Database.Designer {
     
     public partial class CreateDatabaseDialog {
         
-        private Gtk.Table table;
+        private Gtk.Notebook notebook;
         
-        private Gtk.Button buttonNew;
-        
-        private Gtk.Button buttonSelect;
-        
-        private MonoDevelop.Database.Components.DatabaseConnectionContextComboBox comboConnections;
-        
-        private Gtk.Entry entryDatabase;
-        
-        private Gtk.Entry entryName;
+        private Gtk.VBox vboxConnection;
         
         private Gtk.Label label1;
         
-        private Gtk.Label label2;
+        private Gtk.VBox vboxDatabase;
         
-        private Gtk.Label label3;
+        private Gtk.Label label2;
         
         private Gtk.Button buttonCancel;
         
@@ -49,117 +41,45 @@ namespace MonoDevelop.Database.Designer {
             w1.Name = "dialog1_VBox";
             w1.BorderWidth = ((uint)(2));
             // Container child dialog1_VBox.Gtk.Box+BoxChild
-            this.table = new Gtk.Table(((uint)(3)), ((uint)(3)), false);
-            this.table.Name = "table";
-            this.table.RowSpacing = ((uint)(6));
-            this.table.ColumnSpacing = ((uint)(6));
-            this.table.BorderWidth = ((uint)(6));
-            // Container child table.Gtk.Table+TableChild
-            this.buttonNew = new Gtk.Button();
-            this.buttonNew.CanFocus = true;
-            this.buttonNew.Name = "buttonNew";
-            this.buttonNew.UseStock = true;
-            this.buttonNew.UseUnderline = true;
-            this.buttonNew.Label = "gtk-new";
-            this.table.Add(this.buttonNew);
-            Gtk.Table.TableChild w2 = ((Gtk.Table.TableChild)(this.table[this.buttonNew]));
-            w2.LeftAttach = ((uint)(2));
-            w2.RightAttach = ((uint)(3));
-            w2.XOptions = ((Gtk.AttachOptions)(4));
-            w2.YOptions = ((Gtk.AttachOptions)(4));
-            // Container child table.Gtk.Table+TableChild
-            this.buttonSelect = new Gtk.Button();
-            this.buttonSelect.Sensitive = false;
-            this.buttonSelect.CanFocus = true;
-            this.buttonSelect.Name = "buttonSelect";
-            this.buttonSelect.UseStock = true;
-            this.buttonSelect.UseUnderline = true;
-            this.buttonSelect.Label = "gtk-save-as";
-            this.table.Add(this.buttonSelect);
-            Gtk.Table.TableChild w3 = ((Gtk.Table.TableChild)(this.table[this.buttonSelect]));
-            w3.TopAttach = ((uint)(2));
-            w3.BottomAttach = ((uint)(3));
-            w3.LeftAttach = ((uint)(2));
-            w3.RightAttach = ((uint)(3));
-            w3.XOptions = ((Gtk.AttachOptions)(4));
-            w3.YOptions = ((Gtk.AttachOptions)(4));
-            // Container child table.Gtk.Table+TableChild
-            this.comboConnections = new MonoDevelop.Database.Components.DatabaseConnectionContextComboBox();
-            this.comboConnections.Name = "comboConnections";
-            this.table.Add(this.comboConnections);
-            Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.table[this.comboConnections]));
-            w4.LeftAttach = ((uint)(1));
-            w4.RightAttach = ((uint)(2));
-            w4.YOptions = ((Gtk.AttachOptions)(4));
-            // Container child table.Gtk.Table+TableChild
-            this.entryDatabase = new Gtk.Entry();
-            this.entryDatabase.CanFocus = true;
-            this.entryDatabase.Name = "entryDatabase";
-            this.entryDatabase.IsEditable = true;
-            this.entryDatabase.InvisibleChar = '●';
-            this.table.Add(this.entryDatabase);
-            Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.table[this.entryDatabase]));
-            w5.TopAttach = ((uint)(2));
-            w5.BottomAttach = ((uint)(3));
-            w5.LeftAttach = ((uint)(1));
-            w5.RightAttach = ((uint)(2));
-            w5.YOptions = ((Gtk.AttachOptions)(4));
-            // Container child table.Gtk.Table+TableChild
-            this.entryName = new Gtk.Entry();
-            this.entryName.CanFocus = true;
-            this.entryName.Name = "entryName";
-            this.entryName.IsEditable = true;
-            this.entryName.InvisibleChar = '●';
-            this.table.Add(this.entryName);
-            Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.table[this.entryName]));
-            w6.TopAttach = ((uint)(1));
-            w6.BottomAttach = ((uint)(2));
-            w6.LeftAttach = ((uint)(1));
-            w6.RightAttach = ((uint)(3));
-            w6.XOptions = ((Gtk.AttachOptions)(4));
-            w6.YOptions = ((Gtk.AttachOptions)(4));
-            // Container child table.Gtk.Table+TableChild
+            this.notebook = new Gtk.Notebook();
+            this.notebook.CanFocus = true;
+            this.notebook.Name = "notebook";
+            this.notebook.CurrentPage = 0;
+            // Container child notebook.Gtk.Notebook+NotebookChild
+            this.vboxConnection = new Gtk.VBox();
+            this.vboxConnection.Name = "vboxConnection";
+            this.vboxConnection.Spacing = 6;
+            this.vboxConnection.BorderWidth = ((uint)(6));
+            this.notebook.Add(this.vboxConnection);
+            // Notebook tab
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
-            this.label1.Xalign = 0F;
-            this.label1.LabelProp = AddinCatalog.GetString("Name");
-            this.table.Add(this.label1);
-            Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.table[this.label1]));
-            w7.TopAttach = ((uint)(1));
-            w7.BottomAttach = ((uint)(2));
-            w7.XOptions = ((Gtk.AttachOptions)(4));
-            w7.YOptions = ((Gtk.AttachOptions)(4));
-            // Container child table.Gtk.Table+TableChild
+            this.label1.LabelProp = AddinCatalog.GetString("Connection");
+            this.notebook.SetTabLabel(this.vboxConnection, this.label1);
+            this.label1.ShowAll();
+            // Container child notebook.Gtk.Notebook+NotebookChild
+            this.vboxDatabase = new Gtk.VBox();
+            this.vboxDatabase.Name = "vboxDatabase";
+            this.vboxDatabase.Spacing = 6;
+            this.vboxDatabase.BorderWidth = ((uint)(6));
+            this.notebook.Add(this.vboxDatabase);
+            Gtk.Notebook.NotebookChild w3 = ((Gtk.Notebook.NotebookChild)(this.notebook[this.vboxDatabase]));
+            w3.Position = 1;
+            // Notebook tab
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
-            this.label2.Xalign = 0F;
             this.label2.LabelProp = AddinCatalog.GetString("Database");
-            this.table.Add(this.label2);
-            Gtk.Table.TableChild w8 = ((Gtk.Table.TableChild)(this.table[this.label2]));
-            w8.TopAttach = ((uint)(2));
-            w8.BottomAttach = ((uint)(3));
-            w8.XOptions = ((Gtk.AttachOptions)(4));
-            w8.YOptions = ((Gtk.AttachOptions)(4));
-            // Container child table.Gtk.Table+TableChild
-            this.label3 = new Gtk.Label();
-            this.label3.Name = "label3";
-            this.label3.Xalign = 0F;
-            this.label3.LabelProp = AddinCatalog.GetString("Base Settings");
-            this.table.Add(this.label3);
-            Gtk.Table.TableChild w9 = ((Gtk.Table.TableChild)(this.table[this.label3]));
-            w9.XOptions = ((Gtk.AttachOptions)(4));
-            w9.YOptions = ((Gtk.AttachOptions)(4));
-            w1.Add(this.table);
-            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(w1[this.table]));
-            w10.Position = 0;
-            w10.Expand = false;
-            w10.Fill = false;
+            this.notebook.SetTabLabel(this.vboxDatabase, this.label2);
+            this.label2.ShowAll();
+            w1.Add(this.notebook);
+            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(w1[this.notebook]));
+            w4.Position = 0;
             // Internal child MonoDevelop.Database.Designer.CreateDatabaseDialog.ActionArea
-            Gtk.HButtonBox w11 = this.ActionArea;
-            w11.Name = "dialog1_ActionArea";
-            w11.Spacing = 6;
-            w11.BorderWidth = ((uint)(5));
-            w11.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
+            Gtk.HButtonBox w5 = this.ActionArea;
+            w5.Name = "dialog1_ActionArea";
+            w5.Spacing = 6;
+            w5.BorderWidth = ((uint)(5));
+            w5.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonCancel = new Gtk.Button();
             this.buttonCancel.CanDefault = true;
@@ -169,9 +89,9 @@ namespace MonoDevelop.Database.Designer {
             this.buttonCancel.UseUnderline = true;
             this.buttonCancel.Label = "gtk-cancel";
             this.AddActionWidget(this.buttonCancel, -6);
-            Gtk.ButtonBox.ButtonBoxChild w12 = ((Gtk.ButtonBox.ButtonBoxChild)(w11[this.buttonCancel]));
-            w12.Expand = false;
-            w12.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w6 = ((Gtk.ButtonBox.ButtonBoxChild)(w5[this.buttonCancel]));
+            w6.Expand = false;
+            w6.Fill = false;
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonOk = new Gtk.Button();
             this.buttonOk.Sensitive = false;
@@ -182,21 +102,16 @@ namespace MonoDevelop.Database.Designer {
             this.buttonOk.UseUnderline = true;
             this.buttonOk.Label = "gtk-ok";
             this.AddActionWidget(this.buttonOk, -5);
-            Gtk.ButtonBox.ButtonBoxChild w13 = ((Gtk.ButtonBox.ButtonBoxChild)(w11[this.buttonOk]));
-            w13.Position = 1;
-            w13.Expand = false;
-            w13.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w7 = ((Gtk.ButtonBox.ButtonBoxChild)(w5[this.buttonOk]));
+            w7.Position = 1;
+            w7.Expand = false;
+            w7.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 420;
-            this.DefaultHeight = 191;
+            this.DefaultWidth = 662;
+            this.DefaultHeight = 474;
             this.Show();
-            this.entryName.Changed += new System.EventHandler(this.NameChanged);
-            this.entryDatabase.Changed += new System.EventHandler(this.DatabaseNameChanged);
-            this.comboConnections.Changed += new System.EventHandler(this.ConnectionChanged);
-            this.buttonSelect.Clicked += new System.EventHandler(this.SaveAsClicked);
-            this.buttonNew.Clicked += new System.EventHandler(this.NewClicked);
             this.buttonCancel.Clicked += new System.EventHandler(this.CancelClicked);
             this.buttonOk.Clicked += new System.EventHandler(this.OkClicked);
         }

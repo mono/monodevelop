@@ -38,17 +38,44 @@ namespace MonoDevelop.Database.Designer
 	{
 		private DatabaseConnectionContext context;
 		
-		//TODO: validate db name + check for duplicates
-		public CreateDatabaseDialog()
+		private ConnectionSettingsWidget settingsWidget;
+		private CreateDatabaseWidget dbWidget;
+
+		//TODO: on page switch, create a temp connection setting context
+		public CreateDatabaseDialog (IDbFactory factory)
 		{
 			this.Build();
+			
+			settingsWidget = CreateConnectionSettingsWidget (factory);
+			dbWidget = CreateCreateDatabaseWidget (factory);
+			
+			vboxConnection.PackStart (settingsWidget, true, true, 0);
+			vboxDatabase.PackStart (dbWidget, true, true, 0);
+			
+			settingsWidget.NeedsValidation += Validate;
+			dbWidget.NeedsValidation += Validate;
+			
+			settingsWidget.EnableOpenButton = false;
+			settingsWidget.EnableRefreshButton = false;
+			
+			ShowAll ();
 		}
 		
 		public DatabaseConnectionContext DatabaseConnection {
 			get { return context; }
 		}
-
-		protected virtual void OkClicked (object sender, System.EventArgs e)
+		
+		protected virtual ConnectionSettingsWidget CreateConnectionSettingsWidget (IDbFactory factory)
+		{
+			return new ConnectionSettingsWidget (factory);
+		}
+		
+		protected virtual CreateDatabaseWidget CreateCreateDatabaseWidget (IDbFactory factory)
+		{
+			return new CreateDatabaseWidget ();
+		}
+		
+		protected virtual void OkClicked (object sender, EventArgs e)
 		{
 //			context = comboConnections.DatabaseConnection;
 //			if (context.IsTemporary) {
@@ -68,63 +95,15 @@ namespace MonoDevelop.Database.Designer
 //			Destroy ();
 		}
 
-		protected virtual void CancelClicked (object sender, System.EventArgs e)
+		protected virtual void CancelClicked (object sender, EventArgs e)
 		{
 			Respond (ResponseType.Cancel);
 			Destroy ();
 		}
-
-		protected virtual void SaveAsClicked (object sender, System.EventArgs e)
-		{
-//			DatabaseConnectionContext context = comboConnections.DatabaseConnection;
-//			if (context == null)
-//				return;
-//
-//			IDbFactory fac = context.DbFactory;
-//			
-//			string database = null;
-//			if (fac.GuiProvider.ShowSelectDatabaseDialog (true, out database))
-//				entryDatabase.Text = database;
-		}
-
-		protected virtual void NewClicked (object sender, System.EventArgs e)
-		{
-//			DatabaseConnectionSettingsDialog dlg = new DatabaseConnectionSettingsDialog (true);
-//			if (dlg.Run () == (int)ResponseType.Ok) {
-//				DatabaseConnectionContext context = new DatabaseConnectionContext (dlg.ConnectionSettings, true);
-//				context.IsTemporary = true;
-//				comboConnections.AddDatabaseConnectionContext (context);
-//				comboConnections.DatabaseConnection = context;
-//			}
-		}
-
-		protected virtual void DatabaseNameChanged (object sender, EventArgs e)
-		{
-			CheckOkState ();
-		}
-
-		protected virtual void ConnectionChanged (object sender, EventArgs e)
-		{
-			CheckOkState ();
-			
-			if (entryName.Text.Length == 0) {
-				DatabaseConnectionContext context = comboConnections.DatabaseConnection;
-				entryName.Text = context.ConnectionSettings.Name;
-			}
-		}
 		
-		private void CheckOkState ()
+		protected virtual void Validate (object sender, EventArgs e)
 		{
-//			DatabaseConnectionContext context = comboConnections.DatabaseConnection;
-//			if (context != null)
-//				buttonSelect.Sensitive = context.DbFactory.IsCapabilitySupported ("ConnectionSettings", SchemaActions.Schema, ConnectionSettingsCapabilities.SelectDatabase);
-//			buttonOk.Sensitive = context != null &&
-//				entryDatabase.Text.Length > 0 && entryName.Text.Length > 0;
-		}
-
-		protected virtual void NameChanged (object sender, System.EventArgs e)
-		{
-			CheckOkState ();
+			buttonOk.Sensitive = settingsWidget.ValidateFields () && dbWidget.ValidateFields ();
 		}
 	}
 }

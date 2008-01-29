@@ -22,6 +22,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Database.Designer.CommentEditorWidget.cs \
 	gtk-gui/MonoDevelop.Database.Designer.ConstraintsEditorWidget.cs \
 	gtk-gui/MonoDevelop.Database.Designer.CreateDatabaseDialog.cs \
+	gtk-gui/MonoDevelop.Database.Designer.CreateDatabaseWidget.cs \
 	gtk-gui/MonoDevelop.Database.Designer.ForeignKeyConstraintEditorWidget.cs \
 	gtk-gui/MonoDevelop.Database.Designer.IndicesEditorWidget.cs \
 	gtk-gui/MonoDevelop.Database.Designer.PreviewDialog.cs \
@@ -36,6 +37,7 @@ FILES =  \
 	Widgets/ColumnsEditorWidget.cs \
 	Widgets/CommentEditorWidget.cs \
 	Widgets/ConstraintsEditorWidget.cs \
+	Widgets/CreateDatabaseWidget.cs \
 	Widgets/ForeignKeyConstraintEditorWidget.cs \
 	Widgets/IndicesEditorWidget.cs \
 	Widgets/PrimaryKeyConstraintEditorWidget.cs \
