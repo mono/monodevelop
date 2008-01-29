@@ -26,38 +26,106 @@
 <SyntaxMode name = "C#" mimeType="text/x-csharp">
 	<Delimiters>&amp;&lt;&gt;~!%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
 
-	<EolSpan color = "PreProcessorDirective" rule="PreProcessor">#</EolSpan>
-	<EolSpan color = "Comment1" rule="XmlDocumentation" tagColor="CommentTag">///</EolSpan>
-	<EolSpan color = "Comment1" rule="Comment" constraint="!/" tagColor="CommentTag">//</EolSpan>
+	<EolSpan color = "preprocessor" rule="PreProcessor">#</EolSpan>
+	<EolSpan color = "comment" rule="XmlDocumentation" tagColor="commenttag">///</EolSpan>
+	<EolSpan color = "comment" rule="Comment" constraint="!/" tagColor="commenttag">//</EolSpan>
 	
-	<Span color = "Comment1" rule="Comment" tagColor="CommentTag">
+	<Span color = "comment" rule="Comment" tagColor="commenttag">
 		<Begin>/*</Begin>
 		<End>*/</End>
 	</Span>
 	
-	<Span color = "Literal" stopateol = "false" escape='"'>
+	<Span color = "literal" stopateol = "false" escape='"'>
 		<Begin>@"</Begin>
 		<End>"</End>
 	</Span>
 
-	<Span color = "Literal" stopateol = "true" escape="\">
+	<Span color = "literal" stopateol = "true" escape="\">
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 
-	<Span color = "Literal" stopateol = "true" escape="\">
+	<Span color = "literal" stopateol = "true" escape="\">
 		<Begin>&apos;</Begin>
 		<End>&apos;</End>
 	</Span>
 	
-	<Keywords color = "Keyword1">
+	<Keywords color = "kw:access">
+		<Word>this</Word>
+		<Word>base</Word>
+	</Keywords>
+	
+	<Keywords color = "kw:operator">
+		<Word>as</Word>
+		<Word>is</Word>
+		<Word>new</Word>
+		<Word>sizeof</Word>
+		<Word>typeof</Word>
+		<Word>stackalloc</Word>
+	</Keywords>
+	
+	<Keywords color = "kw:selection">
+		<Word>else</Word>
+		<Word>if</Word>
+		<Word>switch</Word>
+		<Word>case</Word>
+		<Word>default</Word>
+	</Keywords>
+	
+	<Keywords color = "kw:iteration">
+		<Word>do</Word>
+		<Word>for</Word>
+		<Word>foreach</Word>
+		<Word>in</Word>
+		<Word>while</Word>
+	</Keywords>
+	
+	<Keywords color = "kw:jump">
+		<Word>break</Word>
+		<Word>continue</Word>
+		<Word>goto</Word>
+		<Word>return</Word>
+	</Keywords>
+	
+	<Keywords color = "kw:context">
+		<Word>yield</Word>
+		<Word>partial</Word>
+		<Word>global</Word>
+		<Word>where</Word>
+	</Keywords>
+	
+	<Keywords color = "kw:exceptions">
+		<Word>try</Word>
+		<Word>throw</Word>
+		<Word>catch</Word>
+		<Word>finally</Word>
+	</Keywords>
+	
+	<Keywords color = "kw:literals">
+		<Word>true</Word>
+		<Word>false</Word>
+		<Word>null</Word>
+	</Keywords>
+	
+	<Keywords color = "kw:modifiers">
+		<Word>abstract</Word>
+		<Word>const</Word>
+		<Word>event</Word>
+		<Word>extern</Word>
+		<Word>override</Word>
+		<Word>readonly</Word>
+		<Word>sealed</Word>
+		<Word>static</Word>
+		<Word>virtual</Word>
+		<Word>volatile</Word>
+		
 		<Word>public</Word>
 		<Word>protected</Word>
 		<Word>private</Word>
 		<Word>internal</Word>
 	</Keywords>
 	
-	<Keywords color = "Keyword2">
+	<Keywords color = "kw:types">
 		<Word>bool</Word>
 		<Word>byte</Word>
 		<Word>char</Word>
@@ -77,96 +145,52 @@
 		<Word>string</Word>
 	</Keywords>
 	
-	<Keywords color = "Keyword3">
-		<Word>break</Word>
-		<Word>continue</Word>
-		<Word>goto</Word>
-		<Word>return</Word>
-		<Word>yield</Word>
-		<Word>partial</Word>
-		<Word>global</Word>
-		<Word>where</Word>
-		<Word>try</Word>
-		<Word>throw</Word>
-		<Word>catch</Word>
-		<Word>finally</Word>
+	<Keywords color = "kw:void">
+		<Word>void</Word>
+	</Keywords>
+	
+	<Keywords color = "kw:namespaces">
+		<Word>namespace</Word>
+		<Word>using</Word>
+	</Keywords>
+	
+	<Keywords color = "kw:properties">		<Word>get</Word>
+		<Word>set</Word>
+		<Word>add</Word>
+		<Word>remove</Word>
+		<Word>value</Word>
+	</Keywords>
+	
+	<Keywords color = "kw:declarations">
+		<Word>class</Word>
+		<Word>interface</Word>
+		<Word>delegate</Word>
+	</Keywords>
+	
+	<Keywords color = "kw:parameter">
+		<Word>params</Word>
+		<Word>ref</Word>
+		<Word>out</Word>
+	</Keywords>
+	
+	
+	<Keywords color = "kw:operatordecl">
+		<Word>explicit</Word>
+		<Word>implicit</Word>
+		
+		<Word>operator</Word>
+	</Keywords>
+	
+	<Keywords color = "kw:misc">
 		<Word>checked</Word>
 		<Word>unchecked</Word>
 		<Word>fixed</Word>
 		<Word>unsafe</Word>
 		<Word>lock</Word>
-		<Word>get</Word>
-		<Word>set</Word>
-		<Word>add</Word>
-		<Word>remove</Word>
-		
-		<Word>else</Word>
-		<Word>if</Word>
-		<Word>switch</Word>
-		<Word>case</Word>
-		<Word>default</Word>
-		
-		<Word>do</Word>
-		<Word>for</Word>
-		<Word>foreach</Word>
-		<Word>in</Word>
-		<Word>while</Word>
-		
-	</Keywords>
-	
-	<Keywords color = "Keyword5">
-		<Word>this</Word>
-		<Word>base</Word>
-		<Word>value</Word>
-	</Keywords>
-	<Keywords color = "Keyword7">
-		<Word>namespace</Word>
-		<Word>using</Word>
-	</Keywords>
-	
-	<Keywords color = "Keyword4">
-		<Word>class</Word>
-		<Word>interface</Word>
-		<Word>delegate</Word>
-		<Word>void</Word>
-
-		<Word>explicit</Word>
-		<Word>implicit</Word>
-		
-		<Word>operator</Word>
-		<Word>params</Word>
-		<Word>ref</Word>
-		<Word>out</Word>
-
-		<Word>abstract</Word>
-		<Word>const</Word>
-		<Word>event</Word>
-		<Word>extern</Word>
-		<Word>override</Word>
-		<Word>readonly</Word>
-		<Word>sealed</Word>
-		<Word>static</Word>
-		<Word>virtual</Word>
-		<Word>volatile</Word>
-	</Keywords>
-	
-	<Keywords color = "Literal">
-		<Word>true</Word>
-		<Word>false</Word>
-		<Word>null</Word>
-	</Keywords>
-	
-	<Keywords color = "Keyword6">
-		<Word>as</Word>
-		<Word>is</Word>
-		<Word>new</Word>
-		<Word>sizeof</Word>
-		<Word>typeof</Word>
-		<Word>stackalloc</Word>
 	</Keywords>
 
 	<Rule name = "PreProcessor">
-		<Keywords color="PreProcessorDirectiveKeyword">
+		<Keywords color="preprocessorkw">
 			<Word>if</Word>
 			<Word>else</Word>
 			<Word>elif</Word>
@@ -183,7 +207,7 @@
 	</Rule>
 	
 	<Rule name = "Comment">
-		<Keywords color="CommentKeyword" ignorecase="True">
+		<Keywords color="todocomment" ignorecase="True">
 			<Word>TODO</Word>
 			<Word>FIXME</Word>
 			<Word>HACK</Word>
@@ -192,11 +216,11 @@
 	</Rule>
 	
 	<Rule name = "XmlDocumentation">
-		<Span color = "Literal" stopateol = "true" escape="\">
+		<Span color = "literal" stopateol = "true" escape="\">
 			<Begin>"</Begin>
 			<End>"</End>
 		</Span>
-		<Keywords color="Comment3">
+		<Keywords color="commentkw">
 			<Word>c</Word>
 			<Word>code</Word>
 			<Word>example</Word>

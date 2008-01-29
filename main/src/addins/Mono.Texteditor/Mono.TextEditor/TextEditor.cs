@@ -791,10 +791,18 @@ namespace Mono.TextEditor
 			
 			if (lineNr == Caret.Line) {
 				int caretX = ColumnToVisualX (line, Caret.Column);
-				Gdk.Rectangle cursor = new Gdk.Rectangle ((int)(x + caretX - this.textEditorData.HAdjustment.Value), y, 0, LineHeight);
+				Gdk.Rectangle cursor = new Gdk.Rectangle ((int)(x + caretX - this.textEditorData.HAdjustment.Value), y, charWidth, LineHeight - 1);
 				
-				if (caretBlink && this.IsFocus && cursor.X >= x) 
-					Gtk.Draw.InsertionCursor (this, win, area, cursor, true, Gtk.TextDirection.Ltr, Caret.IsInInsertMode);
+				if (caretBlink && this.IsFocus && cursor.X >= x) {
+					gc.RgbFgColor = ColorStyle.Caret;
+					
+					if (Caret.IsInInsertMode) {
+						win.DrawRectangle (gc, false, cursor);
+					} else {
+						win.DrawLine (gc, cursor.X, cursor.Y, cursor.X, cursor.Y + LineHeight);
+					}
+				}
+					//Gtk.Draw.InsertionCursor (this, win, area, cursor, true, Gtk.TextDirection.Ltr, Caret.IsInInsertMode);
 			}
 		}
 		

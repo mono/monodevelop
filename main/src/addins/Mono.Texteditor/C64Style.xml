@@ -1,7 +1,7 @@
 <!-- C64Style.xml
 
  Author:
-   Mike Krüger <mkrueger@novell.com>
+   Mike Krüger <mkrueger@novell.com color="
 
  Copyright (c) 2007 Novell, Inc (http://www.novell.com)
 
@@ -22,35 +22,61 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE. -->
- <EditorStyle _name="C64" _description="A color style that uses the old Commodore 64 colors">
-	<Color name="Default">#97A0EF</Color>
-	<Color name="Background">#3F3FDF</Color>
-	<Color name="SelectedBackground">#000000</Color>
-	<Color name="SelectedForeground">#FFFFFF</Color>
+ <EditorStyle _name="C64" _description="A Style style that uses the old Commodore 64 Styles">
+
+	<Style name="default" color="#97A0EF"/>
+	<Style name="background" color="#3F3FDF"/>
+	<Style name="selectedBackground" color="#000000"/>
+	<Style name="selectedForeground" color="#FFFFFF"/>
 	
-	<Color name="LineMarker">#0088FF</Color>
-	<Color name="Ruler">#CC44CC</Color>
-	<Color name="Whitespaces">#AAFFEE</Color>
-	<Color name="InvalidLines">#880000</Color>
+	<Style name="lineMarker" color="#0088FF"/>
+	<Style name="ruler" color="#CC44CC"/>
+	<Style name="whitespaces" color="#AAFFEE"/>
+	<Style name="invalidLines" color="#880000"/>
 
-	<Color name="LineNumber">#97A0EF</Color>
-	<Color name="LineNumberHighlighted">#97A0EF</Color>
-	<Color name="LineNumberBg">#3F3FDF</Color>
+	<Style name="lineNumber" color="#97A0EF"/>
+	<Style name="lineNumberHighlighted" color="#97A0EF"/>
+	<Style name="lineNumberBg" color="#3F3FDF"/>
 	
-	<Color name="IconBar">#3F3FDF</Color>
-	<Color name="IconBarSeperator">#97A0EF</Color>
+	<Style name="iconBar" color="#3F3FDF"/>
+	<Style name="iconBarSeperator" color="#97A0EF"/>
 
-	<Color name="FoldLine">#97A0EF</Color>
-	<Color name="FoldBg">#3F3FDF</Color>
-	<Color name="FoldLineHighlighted">#FFFFFF</Color>
-	<Color name="FoldToggleMarker">#97A0EF</Color>
+	<Style name="foldLine" color="#97A0EF"/>
+	<Style name="foldBg" color="#3F3FDF"/>
+	<Style name="foldLineHighlighted" color="#FFFFFF"/>
+	<Style name="foldToggleMarker" color="#97A0EF"/>
 
-	<Color name="Comment1">#BBBBBB</Color>
-	<Color name="Literal">#CC44CC</Color>
-	<Color name="Punctuation">#97A0EF</Color>
-	<Color name="PreProcessorDirective1">#00CC55</Color>
-	<Color name="Keyword1">#DD8855</Color>
-	<Color name="Keyword2">#664400</Color>
-	<Color name="Keyword3">#AAFF66</Color>
-	<Color name="Keyword4">#777777</Color>
+	<!-- highlighting -->
+	<Style name="comment" color="white"/>
+	<Style name="altcomment" color="white"/>
+	<Style name="todocomment" weight="italic" color="white"/>
+	<Style name="commentkw" weight="bold" color="white"/>
+	<Style name="commenttag" color="white"/>
+	
+	<Style name="digit" color="white"/>
+	<Style name="literal" color="white"/>
+	<Style name="punctuation" color="white"/>
+	
+	<Style name="kw:access" weight="bold" color="white"/>
+	<Style name="kw:operator" weight="bold" color="white"/>
+	<Style name="kw:selection" weight="bold" color="white"/>
+	<Style name="kw:iteration" weight="bold" color="white"/>
+	<Style name="kw:jump" weight="bold" color="white"/>
+	<Style name="kw:context" weight="bold" color="white"/>
+	<Style name="kw:exceptions" weight="bold" color="white"/>
+	<Style name="kw:literals" weight="bold" color="white"/>
+	<Style name="kw:modifiers" weight="bold" color="white"/>
+	<Style name="kw:types" weight="bold" color="white"/>
+	<Style name="kw:namespaces" weight="bold" color="white"/>
+	<Style name="kw:properties" weight="bold" color="white"/>
+	<Style name="kw:declarations" weight="bold" color="white"/>
+	<Style name="kw:parameter" weight="bold" color="white"/>
+	<Style name="kw:operatordecl" weight="bold" color="white"/>
+	<Style name="kw:misc" weight="bold" color="white"/>
+	<Style name="kw:void" weight="bold" color="white"/>
+	
+	<Style name="preprocessor" color="white"/>
+	<Style name="preprocessorkw" weight="bold" color="white"/>
+	
+	<Style name="markup" color="white"/>
 </EditorStyle>

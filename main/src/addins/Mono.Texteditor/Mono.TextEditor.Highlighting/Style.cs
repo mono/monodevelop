@@ -38,6 +38,7 @@ namespace Mono.TextEditor.Highlighting
 		string description;
 		
 		Color def, background, selectedBg, selectedFg;
+		Color caret;
 		Color lineMarker, ruler, whitespaceMarker, invalidLineMarker;
 		
 		Color lineNumberFg, lineNumberBg, lineNumberFgHighlighted;
@@ -45,10 +46,17 @@ namespace Mono.TextEditor.Highlighting
 		Color foldLine, foldLineHighlighted, foldBg, foldToggleMarker;
 		List<ChunkStyle>        styles           = new List<Mono.TextEditor.ChunkStyle> ();
 		Dictionary<string, int> styleLookupTable = new Dictionary<string, int> (); 
+		Dictionary<string, string> customPalette = new Dictionary<string, string> (); 
 		
 		public virtual Color Default {
 			get {
 				return def;
+			}
+		}
+		
+		public virtual Color Caret {
+			get {
+				return caret;
 			}
 		}
 
@@ -161,7 +169,10 @@ namespace Mono.TextEditor.Highlighting
 
 		public Style ()
 		{
+			
 			def          = new Gdk.Color (0, 0, 0); 
+			
+			caret        = new Gdk.Color (0, 0, 0); 
 			
 			lineNumberBg = new Gdk.Color (255, 255, 255);
 			lineNumberFg = new Gdk.Color (172, 168, 153);
@@ -180,28 +191,38 @@ namespace Mono.TextEditor.Highlighting
 			whitespaceMarker  = new Gdk.Color (187, 187, 187);
 			invalidLineMarker = new Gdk.Color (210, 0, 0);
 			
-			SetStyle ("Comment1", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255), false, false));
-			SetStyle ("Comment2", new Mono.TextEditor.ChunkStyle (new Gdk.Color (128, 128, 128), true, false));
-			SetStyle ("Comment3", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255), true, false));
-			SetStyle ("CommentKeyword", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0,255), false, true));
-			SetStyle ("CommentTag", new Mono.TextEditor.ChunkStyle (new Gdk.Color (128, 128, 128), false, true));
+			SetStyle ("comment", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255), false, false));
+			SetStyle ("altcomment", new Mono.TextEditor.ChunkStyle (new Gdk.Color (128, 128, 128), true, false));
+			SetStyle ("todocomment", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255), true, false));
+			SetStyle ("commentkw", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0,255), false, true));
+			SetStyle ("commenttag", new Mono.TextEditor.ChunkStyle (new Gdk.Color (128, 128, 128), false, true));
 			
-			SetStyle ("Digit", new Mono.TextEditor.ChunkStyle (new Gdk.Color (255, 0, 255), false, false));
-			SetStyle ("Literal", new Mono.TextEditor.ChunkStyle (new Gdk.Color (255, 0, 255), false, false));
-			SetStyle ("Punctuation", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 0), false, false));
+			SetStyle ("digit", new Mono.TextEditor.ChunkStyle (new Gdk.Color (255, 0, 255), false, false));
+			SetStyle ("literal", new Mono.TextEditor.ChunkStyle (new Gdk.Color (255, 0, 255), false, false));
+			SetStyle ("punctuation", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 0), false, false));
 			
-			SetStyle ("Keyword1", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), true, false));
-			SetStyle ("Keyword2", new Mono.TextEditor.ChunkStyle (new Gdk.Color ( 46, 139,  87), true, false));
-			SetStyle ("Keyword3", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), true, false));
-			SetStyle ("Keyword4", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), true, false));
-			SetStyle ("Keyword5", new Mono.TextEditor.ChunkStyle (new Gdk.Color (  0,   0,   0), true, false));
-			SetStyle ("Keyword6", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), true, false));
-			SetStyle ("Keyword7", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), true, false));
+			SetStyle ("kw:access", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), true, false));
+			SetStyle ("kw:operator", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), true, false));
+			SetStyle ("kw:selection", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), true, false));
+			SetStyle ("kw:iteration", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), true, false));
+			SetStyle ("kw:jump", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), true, false));
+			SetStyle ("kw:context", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), true, false));
+			SetStyle ("kw:exceptions", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), true, false));
+			SetStyle ("kw:literals", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), true, false));
+			SetStyle ("kw:modifiers", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), true, false));
+			SetStyle ("kw:types", new Mono.TextEditor.ChunkStyle (new Gdk.Color ( 46, 139,  87), true, false));
+			SetStyle ("kw:namespaces", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), true, false));
+			SetStyle ("kw:properties", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), true, false));
+			SetStyle ("kw:declarations", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), true, false));
+			SetStyle ("kw:parameter", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), true, false));
+			SetStyle ("kw:operatordecl", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), true, false));
+			SetStyle ("kw:misc", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), true, false));
+			SetStyle ("kw:void", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), true, false));
 			
-			SetStyle ("PreProcessorDirective", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 128 , 0), false, false));
-			SetStyle ("PreProcessorDirectiveKeyword", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 128, 0), true, false));
+			SetStyle ("preprocessor", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 128 , 0), false, false));
+			SetStyle ("preprocessorkw", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 128, 0), true, false));
 			
-			SetStyle ("Markup", new Mono.TextEditor.ChunkStyle (new Gdk.Color (128, 0, 0), false, false));
+			SetStyle ("markup", new Mono.TextEditor.ChunkStyle (new Gdk.Color (128, 0, 0), false, false));
 		}
 		
 		void SetStyle (string name, ChunkStyle style)
@@ -214,7 +235,6 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-
 		public ChunkStyle GetChunkStyle (string name)
 		{
 			if (!styleLookupTable.ContainsKey (name)) 
@@ -224,96 +244,106 @@ namespace Mono.TextEditor.Highlighting
 		
 		public void SetChunkStyle (string name, string weight, string value)
 		{
-			Gdk.Color color = new Color ();
-			if (!Gdk.Color.Parse (value, ref color)) {
-				throw new Exception ("Can't parse color: " + value);
-			}
+			Gdk.Color color = GetColor (value);
 			SetStyle (name, new Mono.TextEditor.ChunkStyle (color, 
-			                                                weight == null ? false : weight.ToUpper ().IndexOf ("BOLD") > 0,
-			                                                weight == null ? false : weight.ToUpper ().IndexOf ("ITALIC") > 0));
+			                                                weight == null ? false : weight.ToUpper ().IndexOf ("BOLD") >= 0,
+			                                                weight == null ? false : weight.ToUpper ().IndexOf ("ITALIC") >= 0));
 		}
 		
 		public static bool IsChunkStyle (string name)
 		{
 			switch (name) {
-			case "Default":
-			case "Background":
-			case "SelectedBackground":
-			case "SelectedForeground":
-			case "LineMarker":
-			case "Ruler":
-			case "Whitespaces":
-			case "InvalidLines":
-			case "LineNumber":
-			case "LineNumberHighlighted":
-			case "LineNumberBg":
-			case "IconBar":
-			case "IconBarSeperator":
-			case "FoldLine":
-			case "FoldBg":
-			case "FoldLineHighlighted":
-			case "FoldToggleMarker":
+			case "default":
+			case "background":
+			case "caret":
+			case "selectedBackground":
+			case "selectedForeground":
+			case "lineMarker":
+			case "ruler":
+			case "whitespaces":
+			case "invalidLines":
+			case "lineNumber":
+			case "lineNumberHighlighted":
+			case "lineNumberBg":
+			case "iconBar":
+			case "iconBarSeperator":
+			case "foldLine":
+			case "foldBg":
+			case "foldLineHighlighted":
+			case "foldToggleMarker":
 				return false;
 			}
 			return true;
 		}
 		
+		Gdk.Color GetColor (string colorString)
+		{
+			if (customPalette.ContainsKey (colorString))
+				return GetColor (customPalette[colorString]);
+			
+			Gdk.Color result = new Color ();
+			if (!Gdk.Color.Parse (colorString, ref result)) {
+				throw new Exception ("Can't parse color: " + colorString);
+			}
+			return result;
+		}
+		
 		public void SetColor (string name, string value)
 		{
-			Gdk.Color color = new Color ();
-			if (!Gdk.Color.Parse (value, ref color)) {
-				throw new Exception ("Can't parse color: " + value);
-			}
+			Gdk.Color color = GetColor (value);
 			switch (name) {
-			case "Default":
+			case "default":
 				this.def = color;
 				break;
-			case "Background":
+			case "caret":
+				this.caret = color;
+				break;
+			case "background":
 				this.background = color;
 				break;
-			case "SelectedBackground":
+			case "selectedBackground":
 				this.selectedBg = color;
 				break;
-			case "SelectedForeground":
+			case "selectedForeground":
 				this.selectedFg = color;
 				break;
-			case "LineMarker":
+			case "lineMarker":
 				this.lineMarker = color;
 				break;
-			case "Ruler":
+			case "ruler":
 				this.ruler = color;
 				break;
-			case "Whitespaces":
+			case "whitespaces":
 				this.whitespaceMarker = color;
 				break;
-			case "InvalidLines":
+			case "invalidLines":
 				this.invalidLineMarker = color;
 				break;
-			case "LineNumber":
+			case "lineNumber":
 				this.lineNumberFg = color;
 				break;
-			case "LineNumberHighlighted":
+			case "lineNumberHighlighted":
 				this.lineNumberFgHighlighted = color;
 				break;
-			case "LineNumberBg":
+			case "lineNumberBg":
 				this.lineNumberBg = color;
 				break;
-			case "IconBar":
+			case "iconBar":
 				this.iconBarBg = color;
 				break;
-			case "IconBarSeperator":
+			case "iconBarSeperator":
 				this.iconBarSeperator = color;
 				break;
-			case "FoldLine":
+			case "foldLine":
 				this.foldLine = color;
 				break;
-			case "FoldBg":
+			case "foldBg":
 				this.foldBg = color;
 				break;
-			case "FoldLineHighlighted":
+			case "foldLineHighlighted":
 				this.foldLineHighlighted = color;
 				break;
-			case "FoldToggleMarker":
+			case "foldToggleMarker":
 				this.foldToggleMarker = color;
 				break;
 			default:
@@ -330,16 +360,17 @@ namespace Mono.TextEditor.Highlighting
 					result.name        = reader.GetAttribute ("_name");
 					result.description = reader.GetAttribute ("_description");
 					return true;
-					
 				case "Color":
+					result.customPalette[reader.GetAttribute ("name")] = reader.GetAttribute ("value");
+					return true;
+				case "Style":
 					string name = reader.GetAttribute ("name"); 
 					if (IsChunkStyle (name)) {
 						result.SetChunkStyle (name,
 						                 reader.GetAttribute ("weight"),
-						                 reader.ReadElementContentAsString ());
+						                 reader.GetAttribute ("color"));
 					} else {
-						result.SetColor (name,
-						                 reader.ReadElementContentAsString ());
+						result.SetColor (name, reader.GetAttribute ("color"));
 					}
 					return true;
 				}

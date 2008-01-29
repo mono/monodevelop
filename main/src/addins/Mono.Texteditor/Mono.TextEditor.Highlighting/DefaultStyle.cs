@@ -36,7 +36,13 @@ namespace Mono.TextEditor.Highlighting
 				return widget.Style.Text (StateType.Normal);
 			}
 		}
-
+		
+		public override Color Caret {
+			get {
+				return widget.Style.Text (StateType.Normal);
+			}
+		}
+		
 		public override Color LineNumberFg {
 			get {
 				return new Gdk.Color (172, 168, 153);

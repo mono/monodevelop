@@ -651,6 +651,8 @@ namespace Mono.TextEditor
 		public override void Run (TextEditorData data)
 		{
 			data.Caret.IsInInsertMode = !data.Caret.IsInInsertMode;
+			data.Document.RequestUpdate (new SinglePositionUpdate (data.Caret.Line, data.Caret.Column));
+			data.Document.CommitDocumentUpdate ();
 		}
 	}
 	

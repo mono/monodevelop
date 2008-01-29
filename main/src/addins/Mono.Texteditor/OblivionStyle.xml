@@ -23,34 +23,91 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE. -->
  <EditorStyle _name="Oblivion" _description="Dark color sheme using tango colors.">
-	<Color name="Default">#d3d7cf</Color>
-	<Color name="Background">#2e3436</Color>
-	<Color name="SelectedBackground">#888a85</Color>
-	<Color name="SelectedForeground">#000000</Color>
+ 
+	<!-- tango palette -->
+	<Color name="butter1" value="#fce94f"/>
+	<Color name="butter2" value="#edd400"/>
+	<Color name="butter3" value="#c4a000"/>
+	<Color name="orange1" value="#fcaf3e"/>
+	<Color name="orange2" value="#f57900"/>
+	<Color name="orange3" value="#ce5c00"/>
+	<Color name="chocolate1" value="#e9b96e"/>
+	<Color name="chocolate2" value="#c17d11"/>
+	<Color name="chocolate3" value="#8f5902"/>
+	<Color name="chameleon1" value="#8ae234"/>
+	<Color name="chameleon2" value="#73d216"/>
+	<Color name="chameleon3" value="#4e9a06"/>
+	<Color name="skyblue1" value="#729fcf"/>
+	<Color name="skyblue2" value="#3465a4"/>
+	<Color name="skyblue3" value="#204a87"/>
+	<Color name="plum1" value="#ad7fa8"/>
+	<Color name="plum2" value="#75507b"/>
+	<Color name="plum3" value="#5c3566"/>
+	<Color name="scarletred1" value="#ef2929"/>
+	<Color name="scarletred2" value="#cc0000"/>
+	<Color name="scarletred3" value="#a40000"/>
+	<Color name="aluminium1" value="#eeeeec"/>
+	<Color name="aluminium2" value="#d3d7cf"/>
+	<Color name="aluminium3" value="#babdb6"/>
+	<Color name="aluminium4" value="#888a85"/>
+	<Color name="aluminium5" value="#555753"/>
+	<Color name="aluminium6" value="#2e3436"/>
 	
-	<Color name="LineMarker">#555753</Color>
-	<Color name="Ruler">#CC44CC</Color>
-	<Color name="Whitespaces">#e9b96e</Color>
-	<Color name="InvalidLines">#8ae234</Color>
-
-	<Color name="LineNumber">#555753</Color>
-	<Color name="LineNumberHighlighted">#555753</Color>
-	<Color name="LineNumberBg">black</Color>
+	<!-- environment -->
+	<Style name="default" color="aluminium2"/>
+	<Style name="caret" color="aluminium2"/>
+	<Style name="background" color="aluminium6"/>
+	<Style name="selectedBackground" color="aluminium4"/>
+	<Style name="selectedForeground" color="aluminium1"/>
 	
-	<Color name="IconBar">black</Color>
-	<Color name="IconBarSeperator">#babdb6</Color>
+	<Style name="lineMarker" color="aluminium5"/>
+	<Style name="ruler" color="aluminium3"/>
+	<Style name="whitespaces" color="aluminium3"/>
+	<Style name="invalidLines" color="orange1"/>
 
-	<Color name="FoldLine">#babdb6</Color>
-	<Color name="FoldBg">black</Color>
-	<Color name="FoldLineHighlighted">#d3d7cf</Color>
-	<Color name="FoldToggleMarker">#eeeeec</Color>
+	<Style name="lineNumber" color="aluminium5"/>
+	<Style name="lineNumberHighlighted" color="aluminium3"/>
+	<Style name="lineNumberBg" color="black"/>
+	
+	<Style name="iconBar" color="black"/>
+	<Style name="iconBarSeperator" color="aluminium3"/>
 
-	<Color name="Comment1">#888a85</Color>
-	<Color name="Literal">#edd400</Color>
-	<Color name="Punctuation">#97A0EF</Color>
-	<Color name="PreProcessorDirective1">#ad7fa8</Color>
-	<Color name="Keyword1">white</Color>
-	<Color name="Keyword2">white</Color>
-	<Color name="Keyword3">white</Color>
-	<Color name="Keyword4">white</Color>
+	<Style name="foldLine" color="aluminium3"/>
+	<Style name="foldBg" color="black"/>
+	<Style name="foldLineHighlighted" color="aluminium2"/>
+	<Style name="foldToggleMarker" color="aluminium1"/>
+	
+	<!-- highlighting -->
+	<Style name="comment" color="aluminium4"/>
+	<Style name="altcomment" color="aluminium4"/>
+	<Style name="todocomment" color="aluminium4" weight="italic" />
+	<Style name="commentkw" color="aluminium4" weight="bold" />
+	<Style name="commenttag" color="aluminium4"/>
+	
+	<Style name="digit" color="butter2"/>
+	<Style name="literal" color="butter2"/>
+	<Style name="punctuation" color="butter2"/>
+	
+	<Style name="kw:access" color="white" weight="bold" />
+	<Style name="kw:operator" color="white" weight="bold"/>
+	<Style name="kw:selection" color="white" weight="bold"/>
+	<Style name="kw:iteration" color="white" weight="bold"/>
+	<Style name="kw:jump" color="white" weight="bold"/>
+	<Style name="kw:context" color="white" weight="bold"/>
+	<Style name="kw:exceptions" color="white" weight="bold"/>
+	<Style name="kw:literals" color="white" weight="bold"/>
+	<Style name="kw:modifiers" color="white" weight="bold"/>
+	<Style name="kw:types" color="white" weight="bold"/>
+	<Style name="kw:namespaces" color="white" weight="bold"/>
+	<Style name="kw:properties" color="white" weight="bold"/>
+	<Style name="kw:declarations" color="white" weight="bold"/>
+	<Style name="kw:parameter" color="white" weight="bold"/>
+	<Style name="kw:operatordecl" color="white" weight="bold"/>
+	<Style name="kw:misc" color="white" weight="bold"/>
+	<Style name="kw:void" color="white" weight="bold"/>
+	
+	<Style name="preprocessor" color="plum1"/>
+	<Style name="preprocessorkw" color="plum1" weight="bold"/>
+	
+	<Style name="markup" color="orange1"/>
 </EditorStyle>
