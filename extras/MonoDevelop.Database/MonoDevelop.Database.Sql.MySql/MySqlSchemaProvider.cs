@@ -36,7 +36,6 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 namespace MonoDevelop.Database.Sql.MySql
 {
-//TODO: retrieve a list of charsets and collations
 	public class MySqlSchemaProvider : AbstractEditSchemaProvider
 	{
 		public MySqlSchemaProvider (IConnectionPool connectionPool)
@@ -46,7 +45,6 @@ using MonoDevelop.Core;
 			AddSupportedSchemaActions (SchemaType.Table, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
 			AddSupportedSchemaActions (SchemaType.View, SchemaActions.All);
 			AddSupportedSchemaActions (SchemaType.TableColumn, SchemaActions.All);
-			AddSupportedSchemaActions (SchemaType.ProcedureParameter, SchemaActions.Schema);
 			AddSupportedSchemaActions (SchemaType.Trigger, SchemaActions.All);
 			AddSupportedSchemaActions (SchemaType.PrimaryKeyConstraint, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
 			AddSupportedSchemaActions (SchemaType.ForeignKeyConstraint, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
@@ -54,6 +52,11 @@ using MonoDevelop.Core;
 			AddSupportedSchemaActions (SchemaType.UniqueConstraint, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
 			AddSupportedSchemaActions (SchemaType.Constraint, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
 			AddSupportedSchemaActions (SchemaType.User, SchemaActions.Schema);
+			
+			if (connectionPool.DatabaseVersion.Major > 4) {
+				AddSupportedSchemaActions (SchemaType.Procedure, SchemaActions.All);
+				AddSupportedSchemaActions (SchemaType.ProcedureParameter, SchemaActions.Schema);
+			}
 		}
 
 		public override DatabaseSchemaCollection GetDatabases ()

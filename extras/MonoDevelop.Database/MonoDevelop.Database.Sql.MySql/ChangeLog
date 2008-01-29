@@ -1,5 +1,9 @@
 2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
 
+	* MySqlSchemaProvider.cs: only support procedures if the server version > 4
+
+2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
+
 	* Schema/MySqlDatabaseSchema.cs, Schema/MySqlCollationSchema.cs,
 	  Schema/MySqlCharacterSetSchema.cs, MySqlSchemaProvider.cs, Collections,
 	  Collections/MySqlCharacterSetSchemaCollection.cs,
