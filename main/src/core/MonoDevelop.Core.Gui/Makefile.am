@@ -73,7 +73,9 @@ RES =  \
 	gtk-gui/gui.stetic \
 	icons/BreakPoint.png \
 	icons/build-project-16.png \
+	icons/build-project-22.png \
 	icons/build-solution-16.png \
+	icons/build-solution-22.png \
 	icons/comment.png \
 	icons/edit-select-all.png \
 	icons/edit-select-all_22.png \

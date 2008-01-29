@@ -1,6 +1,13 @@
 2008-01-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.mdp, Makefile.am, icons/build-solution-16.png,
+	  icons/build-solution-22.png, icons/build-project-16.png,
+	  icons/build-project-22.png, icons/visibility-internal-16.png,
+	  MonoDevelop.Core.Gui.addin.xml: Updated icons.
+
+2008-01-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.mdp, Makefile.am, icons/build-solution-16.png,
 	  icons/Icons.16x16.GotoNextbookmark,
 	  icons/Icons.22x22.ClearAllBookmarks.png,
 	  icons/Icons.16x16.InternalDelegate, icons/visibility-private-16.png,

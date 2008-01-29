@@ -163,6 +163,8 @@
     <File name="icons/visibility-private-16.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/visibility-protected-16.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/pad-task-list-16.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/build-project-22.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/build-solution-22.png" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
