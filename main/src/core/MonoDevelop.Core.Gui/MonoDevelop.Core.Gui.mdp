@@ -18,9 +18,6 @@
     <File name="icons/BreakPoint.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/ExecutionMarker.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/GeneralWizardBackground" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.BuildCombine" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.BuildCurrentSelectedProject" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.Class" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.ClearAllBookmarks" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.CloseAllDocuments" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.CloseCombineIcon" subtype="Code" buildaction="EmbedAsResource" />
@@ -28,29 +25,13 @@
     <File name="icons/Icons.16x16.ClosedReferenceFolder" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.ClosedResourceFolder" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.CombineIcon" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.Delegate" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.Empty" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.Enum" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.Event" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.Field" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.FindInFiles" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.FindNextIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.GotoNextbookmark" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.GotoPrevbookmark" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.Interface" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.InternalClass" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.InternalDelegate" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.InternalEnum" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.InternalEvent" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.InternalField" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.InternalInterface" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.InternalMethod" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.InternalProperty" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.InternalStruct" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.Literal" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.Method" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.MiscFiles" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.NameSpace" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.NewFolderIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.NewSolutionIcon.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.NewCombineIcon.png" subtype="Code" buildaction="EmbedAsResource" />
@@ -59,33 +40,12 @@
     <File name="icons/Icons.16x16.OpenReferenceFolder" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.OpenResourceFolder" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.OutputIcon" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.PrivateClass" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.PrivateDelegate" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.PrivateEnum" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.PrivateEvent" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.PrivateField" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.PrivateInterface" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.PrivateMethod" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.PrivateProperty" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.PrivateStruct" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.PropertiesIcon" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.Property" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.ProtectedClass" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.ProtectedDelegate" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.ProtectedEnum" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.ProtectedEvent" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.ProtectedField" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.ProtectedInterface" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.ProtectedMethod" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.ProtectedProperty" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.ProtectedStruct" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.Reference" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.ReplaceInFiles" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.ResourceFileIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.SaveAllIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.SplitWindow" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.Struct" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.TaskListIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.TipOfTheDay" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.ToggleBookmark" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.WebSearchIcon" subtype="Code" buildaction="EmbedAsResource" />
@@ -183,6 +143,26 @@
     <File name="MonoDevelop.Core.Gui/DesktopApplication.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Gui/RecentItem.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Gui/RecentFileStorage.cs" subtype="Code" buildaction="Compile" />
+    <File name="icons/build-project-16.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/build-solution-16.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Icons.22x22.ClearAllBookmarks.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Icons.22x22.GotoNextbookmark.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Icons.22x22.GotoPrevbookmark.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/Icons.22x22.ToggleBookmark.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/element-class-16.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/element-delegate-16.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/element-enumeration-16.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/element-event-16.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/element-field-16.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/element-interface-16.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/element-method-16.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/element-namespace-16.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/element-property-16.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/element-structure-16.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/visibility-internal-16.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/visibility-private-16.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/visibility-protected-16.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/pad-task-list-16.png" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

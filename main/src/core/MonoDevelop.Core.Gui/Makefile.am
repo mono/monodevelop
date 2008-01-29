@@ -72,9 +72,21 @@ RES =  \
 	Base.glade \
 	gtk-gui/gui.stetic \
 	icons/BreakPoint.png \
+	icons/build-project-16.png \
+	icons/build-solution-16.png \
 	icons/comment.png \
 	icons/edit-select-all.png \
 	icons/edit-select-all_22.png \
+	icons/element-class-16.png \
+	icons/element-delegate-16.png \
+	icons/element-enumeration-16.png \
+	icons/element-event-16.png \
+	icons/element-field-16.png \
+	icons/element-interface-16.png \
+	icons/element-method-16.png \
+	icons/element-namespace-16.png \
+	icons/element-property-16.png \
+	icons/element-structure-16.png \
 	icons/ExecutionMarker.png \
 	icons/file-class-32.png \
 	icons/file-enum-32.png \
@@ -83,9 +95,6 @@ RES =  \
 	icons/file-xml-32.png \
 	icons/GeneralWizardBackground \
 	icons/gnome-fs-regular.png \
-	icons/Icons.16x16.BuildCombine \
-	icons/Icons.16x16.BuildCurrentSelectedProject \
-	icons/Icons.16x16.Class \
 	icons/Icons.16x16.ClearAllBookmarks \
 	icons/Icons.16x16.CloseAllDocuments \
 	icons/Icons.16x16.CloseCombineIcon \
@@ -93,29 +102,13 @@ RES =  \
 	icons/Icons.16x16.ClosedReferenceFolder \
 	icons/Icons.16x16.ClosedResourceFolder \
 	icons/Icons.16x16.CombineIcon \
-	icons/Icons.16x16.Delegate \
 	icons/Icons.16x16.Empty \
-	icons/Icons.16x16.Enum \
-	icons/Icons.16x16.Event \
-	icons/Icons.16x16.Field \
 	icons/Icons.16x16.FindInFiles \
 	icons/Icons.16x16.FindNextIcon \
 	icons/Icons.16x16.GotoNextbookmark \
 	icons/Icons.16x16.GotoPrevbookmark \
-	icons/Icons.16x16.Interface \
-	icons/Icons.16x16.InternalClass \
-	icons/Icons.16x16.InternalDelegate \
-	icons/Icons.16x16.InternalEnum \
-	icons/Icons.16x16.InternalEvent \
-	icons/Icons.16x16.InternalField \
-	icons/Icons.16x16.InternalInterface \
-	icons/Icons.16x16.InternalMethod \
-	icons/Icons.16x16.InternalProperty \
-	icons/Icons.16x16.InternalStruct \
 	icons/Icons.16x16.Literal \
-	icons/Icons.16x16.Method \
 	icons/Icons.16x16.MiscFiles \
-	icons/Icons.16x16.NameSpace \
 	icons/Icons.16x16.NewCombineIcon.png \
 	icons/Icons.16x16.NewFolderIcon \
 	icons/Icons.16x16.NewSolutionIcon.png \
@@ -124,38 +117,21 @@ RES =  \
 	icons/Icons.16x16.OpenReferenceFolder \
 	icons/Icons.16x16.OpenResourceFolder \
 	icons/Icons.16x16.OutputIcon \
-	icons/Icons.16x16.PrivateClass \
-	icons/Icons.16x16.PrivateDelegate \
-	icons/Icons.16x16.PrivateEnum \
-	icons/Icons.16x16.PrivateEvent \
-	icons/Icons.16x16.PrivateField \
-	icons/Icons.16x16.PrivateInterface \
-	icons/Icons.16x16.PrivateMethod \
-	icons/Icons.16x16.PrivateProperty \
-	icons/Icons.16x16.PrivateStruct \
-	icons/Icons.16x16.PropertiesIcon \
-	icons/Icons.16x16.Property \
-	icons/Icons.16x16.ProtectedClass \
-	icons/Icons.16x16.ProtectedDelegate \
-	icons/Icons.16x16.ProtectedEnum \
-	icons/Icons.16x16.ProtectedEvent \
-	icons/Icons.16x16.ProtectedField \
-	icons/Icons.16x16.ProtectedInterface \
-	icons/Icons.16x16.ProtectedMethod \
-	icons/Icons.16x16.ProtectedProperty \
-	icons/Icons.16x16.ProtectedStruct \
 	icons/Icons.16x16.Reference \
 	icons/Icons.16x16.ReplaceInFiles \
 	icons/Icons.16x16.ResourceFileIcon \
 	icons/Icons.16x16.SaveAllIcon \
 	icons/Icons.16x16.SplitWindow \
 	icons/Icons.16x16.Struct \
-	icons/Icons.16x16.TaskListIcon \
 	icons/Icons.16x16.TextFileIcon \
 	icons/Icons.16x16.TipOfTheDay \
 	icons/Icons.16x16.ToggleBookmark \
 	icons/Icons.16x16.WebSearchIcon \
 	icons/Icons.16x16.XMLFileIcon \
+	icons/Icons.22x22.ClearAllBookmarks.png \
+	icons/Icons.22x22.GotoNextbookmark.png \
+	icons/Icons.22x22.GotoPrevbookmark.png \
+	icons/Icons.22x22.ToggleBookmark.png \
 	icons/Icons.24x24.SaveAllIcon \
 	icons/Icons.32x32.EmptyFileIcon \
 	icons/Icons.32x32.HTMLFileIcon \
@@ -166,6 +142,7 @@ RES =  \
 	icons/Icons.SharpDevelopIcon-22.png \
 	icons/package-x-generic.png \
 	icons/package-x-generic_22.png \
+	icons/pad-task-list-16.png \
 	icons/plugin-16.png \
 	icons/plugin-22.png \
 	icons/plugin-32.png \
@@ -180,6 +157,9 @@ RES =  \
 	icons/system-software-update_22.png \
 	icons/uncomment.png \
 	icons/user-package.png \
+	icons/visibility-internal-16.png \
+	icons/visibility-private-16.png \
+	icons/visibility-protected-16.png \
 	icons/visual-studio.png \
 	icons/web-overlay-16.png \
 	icons/web-overlay-32.png \
