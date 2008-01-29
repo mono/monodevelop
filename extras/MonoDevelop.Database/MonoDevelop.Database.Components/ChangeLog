@@ -1,5 +1,10 @@
 2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
 
+	* Widgets/ColumnMappingWidget.cs: use DotNetType property to get the .NET
+	  type
+
+2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
+
 	* gtk-gui/MonoDevelop.Database.Components.DataGrid.cs,
 	  gtk-gui/MonoDevelop.Database.Components.ShowImageDialog.cs,
 	  gtk-gui/MonoDevelop.Database.Components.WaitDialog.cs,

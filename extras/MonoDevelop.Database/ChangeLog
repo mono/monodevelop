@@ -1,5 +1,9 @@
 2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
 
+	* configure.in: only compile the Sqlite addin if the mono version >= 1.2.5
+
+2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
+
 	* configure.in: test the correct Sqlite assembly
 	* contrib/Firebird, contrib/Firebird/Firebird.mdp,
 	  contrib/Firebird/FirebirdSql.Data.Firebird.dll,

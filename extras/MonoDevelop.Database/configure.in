@@ -101,7 +101,15 @@ test_postgres=$(gacutil -l | grep "Npgsql, Version=2")
 test_mysql=$(gacutil -l | grep "MySql.Data")
 
 if test "x$test_sqlite" != "x"; then
-	enable_sqlite="yes"
+	## mono 1.2.4 contains some bugs that prevents the sqlite addin from working properly
+	MONO_REQUIRED_VERSION=1.2.5
+	PKG_CHECK_MODULES(UNMANAGED_DEPENDENCIES_MONO,mono >= $MONO_REQUIRED_VERSION, has_correct_mono=true, has_correct_mono=false)
+
+	if test "x$has_correct_mono" = "xfalse"; then
+		enable_sqlite="no (requires mono >= 1.2.5)"
+	else
+		enable_sqlite="yes"
+	fi
 else
 	enable_sqlite="no (missing Mono.Data.Sqlite, Version 2)"
 fi

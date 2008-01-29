@@ -183,7 +183,7 @@ namespace MonoDevelop.Database.Components
 			DataTypeSchema dt = container.ColumnSchema.DataType;
 			
 			ISchemaProvider provider = dt.SchemaProvider;
-			Type type = dt.GetDotNetDataType ();
+			Type type = dt.DotNetType;
 			textRenderer.Text = type.Name;
 		}
 		
