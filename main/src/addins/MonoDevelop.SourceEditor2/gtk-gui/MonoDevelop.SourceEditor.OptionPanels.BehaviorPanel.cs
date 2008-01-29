@@ -54,7 +54,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             this.autoInsertTemplateCheckbutton = new Gtk.CheckButton();
             this.autoInsertTemplateCheckbutton.CanFocus = true;
             this.autoInsertTemplateCheckbutton.Name = "autoInsertTemplateCheckbutton";
-            this.autoInsertTemplateCheckbutton.Label = Mono.Unix.Catalog.GetString("_Automatic template initialization");
+            this.autoInsertTemplateCheckbutton.Label = Mono.Unix.Catalog.GetString("_Auto template insertion");
             this.autoInsertTemplateCheckbutton.DrawIndicator = true;
             this.autoInsertTemplateCheckbutton.UseUnderline = true;
             this.vbox1.Add(this.autoInsertTemplateCheckbutton);

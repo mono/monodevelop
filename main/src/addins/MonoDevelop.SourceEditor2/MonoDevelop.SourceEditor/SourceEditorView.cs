@@ -395,8 +395,11 @@ namespace MonoDevelop.SourceEditor
 		public void SetBookmarked (int position, bool mark)
 		{
 			LineSegment line = GetLine (position);
-			if (line != null)
+			if (line != null && line.IsBookmarked != mark) {
+				int lineNumber = widget.TextEditor.Document.Splitter.GetLineNumberForOffset (line.Offset);
 				line.IsBookmarked = mark;
+				widget.TextEditor.RedrawLine (lineNumber);
+			}
 		}
 		
 		public bool IsBookmarked (int position)

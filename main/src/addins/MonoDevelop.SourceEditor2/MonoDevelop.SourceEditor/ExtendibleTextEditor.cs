@@ -80,6 +80,11 @@ namespace MonoDevelop.SourceEditor
 			this.PopupMenu += delegate {
 				this.ShowPopup ();
 			};
+			this.ButtonPressEvent += delegate(object sender, Gtk.ButtonPressEventArgs args) {
+				if (args.Event.Button == 3) {
+					this.ShowPopup ();
+				}
+			};
 		}
 		protected override void OptionsChanged (object sender, EventArgs args)
 		{
@@ -87,14 +92,6 @@ namespace MonoDevelop.SourceEditor
 			base.OptionsChanged (sender, args);
 		}
 
-		
-		protected override bool OnButtonPressEvent (Gdk.EventButton e)
-		{
-			if (e.Button == 3) {
-				this.ShowPopup ();
-			}
-			return base.OnButtonPressEvent (e);
-		}
 		
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
@@ -286,7 +283,11 @@ namespace MonoDevelop.SourceEditor
 		{
 			HideLanguageItemWindow ();
 			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/SourceEditor2/ContextMenu/Editor");
-			IdeApp.CommandService.ShowContextMenu (cset);
+			Gtk.Menu menu = IdeApp.CommandService.CreateMenu (cset);
+			menu.Destroyed += delegate {
+				this.QueueDraw ();
+			};
+			IdeApp.CommandService.ShowContextMenu (menu);
 		}
 		
 		

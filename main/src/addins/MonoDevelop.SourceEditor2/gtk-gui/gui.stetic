@@ -439,7 +439,7 @@
           <widget class="Gtk.CheckButton" id="autoInsertTemplateCheckbutton">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Label" translatable="yes">_Automatic template initialization</property>
+            <property name="Label" translatable="yes">_Auto template insertion</property>
             <property name="DrawIndicator">True</property>
             <property name="HasLabel">True</property>
             <property name="UseUnderline">True</property>
