@@ -1,5 +1,10 @@
 2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
 
+	* gtk-gui, gtk-gui/generated.cs, gtk-gui/gui.stetic: added missing
+	  auto-generated code
+
+2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
+
 	* MonoDevelop.Database.ConnectionManager.mdp: Gtk# 2.8 compatibility
 
 2008-01-28  Ben Motmans <ben.motmans@gmail.com> 
