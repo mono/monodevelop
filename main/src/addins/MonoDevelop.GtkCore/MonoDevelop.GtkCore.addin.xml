@@ -46,6 +46,7 @@
 		<Pad id = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderProjectPad" 
 			class = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderProjectPad" 
 			_label="Widget Tree"
+			icon="md-gtkcore-pad-widget-tree"
 			defaultPlacement="MonoDevelop.DesignerSupport.PropertyPad/center; bottom"
 			/>
 	</Extension>
@@ -175,6 +176,7 @@
 		<StockIcon stockid = "md-gtkcore-dialog" resource = "dialog.png" />
 		<StockIcon stockid = "md-gtkcore-widget" resource = "widget.png" />
 		<StockIcon stockid = "md-gtkcore-actiongroup" resource = "actiongroup.png" />
+		<StockIcon stockid = "md-gtkcore-pad-widget-tree" resource = "pad-widget-tree-16.png" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
