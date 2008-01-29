@@ -141,7 +141,7 @@ namespace MonoDevelop.RegexToolkit
 			};
 			int ox = -1 , oy = -1;
 			this.elementsTreeview.WidgetEvent += delegate(object sender, WidgetEventArgs args) {
-				if (args.Event.Type != EventType.MotionNotify)
+				if (args.Event.Type != Gdk.EventType.MotionNotify)
 					return;
 				if (elementsTreeview.Selection.GetSelectedRows ().Length == 0)
 					return;
