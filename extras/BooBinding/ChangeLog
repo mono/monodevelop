@@ -1,3 +1,9 @@
+2008-01-28  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* po/nl.po: Updated translation by André Offringa.
+	* po/es.po: Updated translation by Andrés G. Aragoneses.
+	* po/de.po: Updated translation by anonymous GHOP student.
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* configure, BooBinding.addin.xml: Update MD version.
