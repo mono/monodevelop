@@ -1,5 +1,13 @@
 2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
 
+	* Widgets/DataGrid/Visualizers/DefaultVisualizers.cs,
+	  MonoDevelop.Database.Components.addin.xml: implementation of text and
+	  image datagrid visualizers
+	* Widgets/DataGrid/Views/TextVisualizerView.cs: allow to visualize byte
+	  arrays
+
+2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
+
 	* Commands/AbstractDatabaseProviderList.cs: use AddinCatalog to translate
 	  strings
 	* Commands/DataGridCommands.cs, Widgets/DataGrid/DataGrid.cs,

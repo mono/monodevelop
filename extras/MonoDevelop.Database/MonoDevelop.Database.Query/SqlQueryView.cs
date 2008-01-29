@@ -56,6 +56,7 @@ namespace MonoDevelop.Database.Query
 		
 		private object currentQueryState;
 		private List<object> stoppedQueries;
+		private DateTime queryStart;
 		
 		private DatabaseConnectionContext selectedConnection;
 		
@@ -174,17 +175,23 @@ namespace MonoDevelop.Database.Query
 			currentQueryState = new object ();
 			IPooledDbConnection conn = context.ConnectionPool.Request ();
 			IDbCommand command = conn.CreateCommand (Text);
+			queryStart = DateTime.Now;
 			conn.ExecuteSetAsync (command, new ExecuteCallback<DataSet> (ExecuteQueryThreaded), currentQueryState);
 		}
 		
 		private void ExecuteQueryThreaded (IPooledDbConnection connection, DataSet result, object state)
 		{
 			connection.Release ();
+			TimeSpan duration = DateTime.Now.Subtract (queryStart);
 
 			DispatchService.GuiDispatch (delegate () {
 				notebook.ShowAll ();
-				string msg = AddinCatalog.GetPluralString ("Query executed ({0} result table)",
-					"Query executed ({0} result tables)", result.Tables.Count);
+				string msg = String.Concat (
+					AddinCatalog.GetPluralString ("Query executed ({0} result table)",
+						"Query executed ({0} result tables)", result.Tables.Count),
+					Environment.NewLine,
+				        AddinCatalog.GetString ("Query duration: {0}", duration.ToString ())
+				);
 				SetQueryState (false, String.Format (msg, result.Tables.Count));
 			});
 			

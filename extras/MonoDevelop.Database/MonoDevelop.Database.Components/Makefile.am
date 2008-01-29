@@ -58,6 +58,7 @@ FILES =  \
 	Widgets/DataGrid/Renderers/StringContentRenderer.cs \
 	Widgets/DataGrid/Views/ImageVisualizerView.cs \
 	Widgets/DataGrid/Views/TextVisualizerView.cs \
+	Widgets/DataGrid/Visualizers/DefaultVisualizers.cs \
 	Widgets/DataGrid/Visualizers/IDataGridVisualizer.cs \
 	Widgets/ProjectDirectoryComboBox.cs \
 	Widgets/SelectColumnWidget.cs \

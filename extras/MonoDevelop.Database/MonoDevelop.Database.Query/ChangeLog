@@ -1,5 +1,9 @@
 2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
 
+	* SqlQueryView.cs: show the duration of the query in the status output
+
+2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
+
 	* gtk-gui, gtk-gui/generated.cs, gtk-gui/gui.stetic: auto generated code
 	* MonoDevelop.Database.Query.mdp: depend on Gtk# 2.8 instead of 2.10
 

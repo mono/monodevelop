@@ -44,7 +44,7 @@
 		
 		<Command id = "MonoDevelop.Database.Components.DataGridCommands.VisualizeAsList"
 			type = "array"
-			_label = "Visualize Data"/>
+			_label = "Visualize Data As"/>
 			
 		<Command id = "MonoDevelop.Database.Components.SqlEditorCommands.ImportFromFile"
 			_label = "Import From File"
@@ -65,5 +65,10 @@
 	<Extension path = "/MonoDevelop/Database/ContextMenu/SqlEditor">
 		<CommandItem id = "MonoDevelop.Database.Components.SqlEditorCommands.ImportFromFile"/>
 		<CommandItem id = "MonoDevelop.Database.Components.SqlEditorCommands.ExportToFile"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Database/DataGrid/Visualizers">
+		<Visualizer id = "MonoDevelop.Database.Components.TextVisualizer"/>
+		<Visualizer id = "MonoDevelop.Database.Components.ImageVisualizer"/>
 	</Extension>
 </Addin>
