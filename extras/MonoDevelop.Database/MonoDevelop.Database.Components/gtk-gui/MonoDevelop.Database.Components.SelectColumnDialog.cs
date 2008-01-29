@@ -29,7 +29,7 @@ namespace MonoDevelop.Database.Components {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Database.Components.SelectColumnDialog
             this.Name = "MonoDevelop.Database.Components.SelectColumnDialog";
-            this.Title = Mono.Unix.Catalog.GetString("Select Column");
+            this.Title = AddinCatalog.GetString("Select Column");
             this.TypeHint = ((Gdk.WindowTypeHint)(1));
             this.WindowPosition = ((Gtk.WindowPosition)(1));
             this.DestroyWithParent = true;
@@ -53,7 +53,7 @@ namespace MonoDevelop.Database.Components {
             this.buttonSelectAll.CanFocus = true;
             this.buttonSelectAll.Name = "buttonSelectAll";
             this.buttonSelectAll.UseUnderline = true;
-            this.buttonSelectAll.Label = Mono.Unix.Catalog.GetString("Select All");
+            this.buttonSelectAll.Label = AddinCatalog.GetString("Select All");
             this.vbuttonbox1.Add(this.buttonSelectAll);
             Gtk.ButtonBox.ButtonBoxChild w2 = ((Gtk.ButtonBox.ButtonBoxChild)(this.vbuttonbox1[this.buttonSelectAll]));
             w2.Expand = false;
@@ -63,7 +63,7 @@ namespace MonoDevelop.Database.Components {
             this.buttonDeselectAll.CanFocus = true;
             this.buttonDeselectAll.Name = "buttonDeselectAll";
             this.buttonDeselectAll.UseUnderline = true;
-            this.buttonDeselectAll.Label = Mono.Unix.Catalog.GetString("Deselect All");
+            this.buttonDeselectAll.Label = AddinCatalog.GetString("Deselect All");
             this.vbuttonbox1.Add(this.buttonDeselectAll);
             Gtk.ButtonBox.ButtonBoxChild w3 = ((Gtk.ButtonBox.ButtonBoxChild)(this.vbuttonbox1[this.buttonDeselectAll]));
             w3.Position = 1;

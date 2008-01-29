@@ -1,5 +1,16 @@
 2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
 
+	* gtk-gui/MonoDevelop.Database.Components.DataGrid.cs,
+	  gtk-gui/MonoDevelop.Database.Components.ShowImageDialog.cs,
+	  gtk-gui/MonoDevelop.Database.Components.WaitDialog.cs,
+	  gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs,
+	  gtk-gui/MonoDevelop.Database.Components.ShowTextDialog.cs,
+	  gtk-gui/MonoDevelop.Database.Components.SelectColumnDialog.cs,
+	  gtk-gui/gui.stetic: auto generated code
+	* MonoDevelop.Database.Components.mdp: depend on Gtk# 2.8 instead of 2.10
+
+2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
+
 	* Widgets/ConnectionSettingsWidget.cs,
 	  gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:
 	  several improvements to the "test connection" method

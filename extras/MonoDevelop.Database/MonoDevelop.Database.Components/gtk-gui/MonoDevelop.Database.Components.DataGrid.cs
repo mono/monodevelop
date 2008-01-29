@@ -102,7 +102,7 @@ namespace MonoDevelop.Database.Components {
             // Container child hbox.Gtk.Box+BoxChild
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
-            this.label1.LabelProp = Mono.Unix.Catalog.GetString("of");
+            this.label1.LabelProp = AddinCatalog.GetString("of");
             this.hbox.Add(this.label1);
             Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.hbox[this.label1]));
             w6.Position = 3;
