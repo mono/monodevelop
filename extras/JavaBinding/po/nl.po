@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: 2008-01-22 18:54:28+0100\n"
-"Last-Translator: \n"
+"Last-Translator: AndrÃ© Offringa\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -12,19 +12,19 @@ msgstr ""
 
 #: ../templates/EmptyJavaFile.xft.xml:4
 msgid "Empty File"
-msgstr ""
+msgstr "Leeg bestand"
 
 #: ../templates/EmptyJavaFile.xft.xml:6
 msgid "General"
-msgstr ""
+msgstr "Algemeen"
 
 #: ../templates/EmptyJavaFile.xft.xml:8
 msgid "Creates an empty Java file."
-msgstr ""
+msgstr "CrMaakt een nieuw Java-bestand aan."
 
 #: ../templates/EmptyJavaProject.xpt.xml:7
 msgid "Empty Project"
-msgstr ""
+msgstr "Leeg project"
 
 #: ../templates/EmptyJavaProject.xpt.xml:8
 #: ../templates/IkvmConsoleApplicationProject.xpt.xml:8
@@ -36,233 +36,233 @@ msgstr ""
 #: ../templates/JavaConsoleApplicationProject.xpt.xml:8
 #: ../JavaBinding.addin.xml:64
 msgid "Java"
-msgstr ""
+msgstr "Java"
 
 #: ../templates/EmptyJavaProject.xpt.xml:11
 msgid "Creates an empty Java solution."
-msgstr ""
+msgstr "Maakt een lege Java-oplossing aan."
 
 #: ../templates/IkvmConsoleApplicationProject.xpt.xml:7
 msgid "IKVM Console Project"
-msgstr ""
+msgstr "IKVM Console-project"
 
 #: ../templates/IkvmConsoleApplicationProject.xpt.xml:11
 msgid "Create a console Java project with IKVM"
-msgstr ""
+msgstr "Maakt een Java console-project met IKVM aan"
 
 #: ../templates/IkvmGladeApplicationProject.xpt.xml:7
 msgid "IKVM Glade# Project"
-msgstr ""
+msgstr "IKVM Glade#-project"
 
 #: ../templates/IkvmGladeApplicationProject.xpt.xml:11
 msgid "Create a Glade# Java project with IKVM"
-msgstr ""
+msgstr "Maakt een Glade# Java-project met IKVM aan"
 
 #: ../templates/IkvmGnomeApplicationProject.xpt.xml:7
 msgid "IKVM Gnome# Project"
-msgstr ""
+msgstr "IKVM Gnome#-project"
 
 #: ../templates/IkvmGnomeApplicationProject.xpt.xml:11
 msgid "Create a Gnome# Java project with IKVM"
-msgstr ""
+msgstr "Maakt een Gnome# Java-project met IKVM aan"
 
 #: ../templates/IkvmGtkApplicationProject.xpt.xml:7
 msgid "IKVM Gtk# Project"
-msgstr ""
+msgstr "IKVM Gtk#-project"
 
 #: ../templates/IkvmGtkApplicationProject.xpt.xml:11
 msgid "Create a Gtk# Java project with IKVM"
-msgstr ""
+msgstr "Maakt een Gtk# Java-project met IKVM aan"
 
 #: ../templates/IkvmLibraryProject.xpt.xml:7
 msgid "IKVM Library"
-msgstr ""
+msgstr "IKVM-bibliotheek"
 
 #: ../templates/IkvmLibraryProject.xpt.xml:11
 msgid "Create a Java library with IKVM"
-msgstr ""
+msgstr "Maakt een nieuwe Java-bibliotheek met IKVM aan"
 
 #: ../templates/JavaApplet.xft.xml:4
 msgid "AWT Applet"
-msgstr ""
+msgstr "AWT applet"
 
 #: ../templates/JavaApplet.xft.xml:6 ../templates/JavaApplication.xft.xml:6
 #: ../templates/JavaDialog.xft.xml:6 ../templates/JavaFrame.xft.xml:6
 #: ../templates/JavaOKDialog.xft.xml:6 ../templates/JavaPanel.xft.xml:6
 msgid "AWT"
-msgstr ""
+msgstr "AWT"
 
 #: ../templates/JavaApplet.xft.xml:8
 msgid "Creates a Java AWT Applet"
-msgstr ""
+msgstr "Maakt een JAva AWT applet aan"
 
 #: ../templates/JavaApplicationProject.xpt.xml:7
 msgid "AWT Project"
-msgstr ""
+msgstr "AWT-project"
 
 #: ../templates/JavaApplicationProject.xpt.xml:11
 msgid "Creates a Java AWT project."
-msgstr ""
+msgstr "Maakt een Java AWT-project aan."
 
 #: ../templates/JavaApplication.xft.xml:4
 msgid "AWT Application"
-msgstr ""
+msgstr "AWT-applicatie"
 
 #: ../templates/JavaApplication.xft.xml:8
 msgid "Creates a Java AWT application."
-msgstr ""
+msgstr "Maakt een JAva AWT-applicatie aan."
 
 #: ../templates/JavaConsoleApplicationProject.xpt.xml:7
 msgid "Console Project"
-msgstr ""
+msgstr "Console-project"
 
 #: ../templates/JavaConsoleApplicationProject.xpt.xml:11
 msgid "Create a console Java project"
-msgstr ""
+msgstr "Maakt een Java console-project aan"
 
 #: ../templates/JavaDialog.xft.xml:4
 msgid "Java AWT Dialog"
-msgstr ""
+msgstr "Java AWT-dialoog"
 
 #: ../templates/JavaDialog.xft.xml:8
 msgid "Creates an AWT dialog."
-msgstr ""
+msgstr "Maakt een AWT-dialoog aan."
 
 #: ../templates/JavaFrame.xft.xml:4
 msgid "AWT Frame"
-msgstr ""
+msgstr "AWT-frame"
 
 #: ../templates/JavaFrame.xft.xml:8
 msgid "Creates a Java AWT Frame"
-msgstr ""
+msgstr "Maakt een JAva AWT-frame aan"
 
 #: ../templates/JavaOKDialog.xft.xml:4
 msgid "AWT OK Dialog"
-msgstr ""
+msgstr "AWT OK-dialoog"
 
 #: ../templates/JavaOKDialog.xft.xml:8
 msgid "Creates a Java AWT OK Dialog."
-msgstr ""
+msgstr "Maakt een Java AWT OK-dialoog aan."
 
 #: ../templates/JavaPanel.xft.xml:4
 msgid "AWT Panel"
-msgstr ""
+msgstr "AWT panel"
 
 #: ../templates/JavaPanel.xft.xml:8
 msgid "Creates a Java AWT panel."
-msgstr ""
+msgstr "Maakt een Java AWT panel aan."
 
 #: ../Gui/ProjectConfigurationPropertyPanel.cs:60
 msgid "Executable"
-msgstr ""
+msgstr "Uitvoerbaar bestand"
 
 #: ../Gui/ProjectConfigurationPropertyPanel.cs:61
 msgid "Library"
-msgstr ""
+msgstr "Bibliotheek"
 
 #: ../Gui/GlobalOptionsPanel.cs:35
 msgid "Javac"
-msgstr ""
+msgstr "Javac"
 
 #: ../Gui/GlobalOptionsPanel.cs:36
 msgid "Gcj"
-msgstr ""
+msgstr "Gcj"
 
 #: ../JavaBinding.addin.xml:27
 msgid "Java Files"
-msgstr ""
+msgstr "Java-bestanden"
 
 #: ../JavaBinding.addin.xml:55
 msgid "Code Generation"
-msgstr ""
+msgstr "Broncode-generatie"
 
 #: ../JavaBinding.addin.xml:58
 msgid "Output"
-msgstr ""
+msgstr "Uitvoer"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:106
 #: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:171
 msgid "<b>Code Generation</b>"
-msgstr ""
+msgstr "<b>Broncode-generatie</b>"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:168
 msgid "Compile _Target:"
-msgstr ""
+msgstr "Compileer _doel:"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:178
 msgid "Define S_ymbols:"
-msgstr ""
+msgstr "Definieer s_ymbolen:"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:190
 msgid "_Main Class:"
-msgstr ""
+msgstr "_Hoofd klasse:"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:202
 #: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:210
 msgid "Classpath:"
-msgstr ""
+msgstr "Class-pad:"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:249
 #: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:64
 msgid "<b>Compiler</b>"
-msgstr ""
+msgstr "<b>Compileer</b>"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:277
 msgid "gcj"
-msgstr ""
+msgstr "gcj"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:289
 msgid "javac"
-msgstr ""
+msgstr "javac"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:331
 msgid "<b>Options</b>"
-msgstr ""
+msgstr "<b>Opties</b>"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:359
 msgid "Enable _optimizations"
-msgstr ""
+msgstr "_Optimalisaties inschakelen"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:370
 msgid "Emit _debugging information"
-msgstr ""
+msgstr "Genereer _debug-informatie"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:395
 msgid "<b>Warnings</b>"
-msgstr ""
+msgstr "<b>Waarschuwingen</b>"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:423
 msgid "Generate warnings"
-msgstr ""
+msgstr "Genereer waarschuwingen"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:434
 msgid "Enable deprecation warnings"
-msgstr ""
+msgstr "Deprecation-waarschuwingen inschakelen"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:445
 msgid "Treat warnings as _errors"
-msgstr ""
+msgstr "Behandel waarschuwingen als _foutmeldingen"
 
 #: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:132
 msgid "Compiler command:"
-msgstr ""
+msgstr "Compileer-commando:"
 
 #: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:143
 msgid "IKVM path:"
-msgstr ""
+msgstr "IKVM-pad:"
 
 #: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:152
 msgid "Java compiler:"
-msgstr ""
+msgstr "Java compiler:"
 
 #: ../IKVMCompilerManager.cs:134
 msgid "Generating {0} reference stub ..."
-msgstr ""
+msgstr "Bezig met genereren {0} referentie-stub ..."
 
 #: ../IKVMCompilerManager.cs:165
 msgid "Generating assembly ..."
-msgstr ""
+msgstr "Bezig met genereren assembly ..."
 
 #: ../IKVMCompilerManager.cs:213
 msgid "Compiling Java source code ..."
-msgstr ""
+msgstr "Bezig met compileren Java broncode ..."

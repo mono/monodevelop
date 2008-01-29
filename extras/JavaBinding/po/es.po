@@ -1,7 +1,7 @@
 # Translation of monodevelop.po into Spanish
 # Copyright (C) 2005 The Mono Project
 # This file is distributed under the same license as the MonoDevelop package.
-# Andrés G. Aragoneses <knocte@gmail.com>, 2005-2007
+# Andrés G. Aragoneses <knocte@gmail.com>, 2005-2008
 # Alejandro Serrano <trupill@yahoo.es>, 2006
 # Jonathan Hernández Velasco <jbilbo@ya.com>, 2004-2005
 # Antonio Ognio <gnrfan@gnrfan.org>, 2004
@@ -25,7 +25,7 @@ msgstr "Archivo vacío"
 
 #: ../templates/EmptyJavaFile.xft.xml:6
 msgid "General"
-msgstr ""
+msgstr "General"
 
 #: ../templates/EmptyJavaFile.xft.xml:8
 msgid "Creates an empty Java file."
@@ -99,7 +99,7 @@ msgstr "Applet AWT"
 #: ../templates/JavaDialog.xft.xml:6 ../templates/JavaFrame.xft.xml:6
 #: ../templates/JavaOKDialog.xft.xml:6 ../templates/JavaPanel.xft.xml:6
 msgid "AWT"
-msgstr ""
+msgstr "AWT"
 
 #: ../templates/JavaApplet.xft.xml:8
 msgid "Creates a Java AWT Applet"
@@ -114,9 +114,8 @@ msgid "Creates a Java AWT project."
 msgstr "Crea un proyecto Java AWT."
 
 #: ../templates/JavaApplication.xft.xml:4
-#, fuzzy
 msgid "AWT Application"
-msgstr "Applet AWT"
+msgstr "Aplicación AWT"
 
 #: ../templates/JavaApplication.xft.xml:8
 msgid "Creates a Java AWT application."
@@ -192,9 +191,8 @@ msgstr "Salida"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:106
 #: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:171
-#, fuzzy
 msgid "<b>Code Generation</b>"
-msgstr "Generación de código"
+msgstr "<b>Generación de código</b>"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:168
 msgid "Compile _Target:"
@@ -223,7 +221,6 @@ msgid "gcj"
 msgstr "gcj"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:289
-#, fuzzy
 msgid "javac"
 msgstr "javac"
 
@@ -269,12 +266,12 @@ msgstr "Compilador Java:"
 
 #: ../IKVMCompilerManager.cs:134
 msgid "Generating {0} reference stub ..."
-msgstr ""
+msgstr "Generando esqueleto de referencia {0} ..."
 
 #: ../IKVMCompilerManager.cs:165
 msgid "Generating assembly ..."
-msgstr ""
+msgstr "Generando ensamblado..."
 
 #: ../IKVMCompilerManager.cs:213
 msgid "Compiling Java source code ..."
-msgstr ""
+msgstr "Compilando código Java"
