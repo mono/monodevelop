@@ -95,7 +95,7 @@ dnl *** The following hunk of script-fu is to detect the      ***
 dnl *** available MonoDevelop.Database database providers...  ***
 dnl *************************************************************
 
-test_sqlite=$(gacutil -l | grep "Mono.Data.SqliteClient, Version=2")
+test_sqlite=$(gacutil -l | grep "Mono.Data.Sqlite, Version=2")
 test_sqlserver=$(gacutil -l | grep "System.Data, Version=2")
 test_postgres=$(gacutil -l | grep "Npgsql, Version=2")
 test_mysql=$(gacutil -l | grep "MySql.Data")
@@ -103,7 +103,7 @@ test_mysql=$(gacutil -l | grep "MySql.Data")
 if test "x$test_sqlite" != "x"; then
 	enable_sqlite="yes"
 else
-	enable_sqlite="no (missing Mono.Data.SqliteClient)"
+	enable_sqlite="no (missing Mono.Data.Sqlite, Version 2)"
 fi
 
 if test "x$test_sqlserver" != "x"; then
@@ -134,7 +134,6 @@ CSC_FLAGS="-debug -codepage:utf8"
 AC_SUBST(LIB_SUFFIX)
 AC_SUBST(LIB_PREFIX)
 AC_SUBST(ASSEMBLY_VERSION)
-AC_SUBST(SQLITE_XML)
 AC_SUBST(CSC_FLAGS)
 
 

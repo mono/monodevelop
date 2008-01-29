@@ -1,3 +1,13 @@
+2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
+
+	* configure.in: test the correct Sqlite assembly
+	* contrib/Firebird, contrib/Firebird/Firebird.mdp,
+	  contrib/Firebird/FirebirdSql.Data.Firebird.dll,
+	  contrib/Firebird/FirebirdSql.Data.Firebird.license.txt,
+	  contrib/Firebird/Makefile.am, contrib/Sqlite,
+	  contrib/Sqlite/Mono.Data.Sqlite.dll, contrib/Sqlite/Sqlite.license.txt:
+	  obsolete
+
 2008-01-28  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* po/nl.po: Updated translation by André Offringa.
