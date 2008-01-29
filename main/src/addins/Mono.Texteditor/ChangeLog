@@ -1,3 +1,8 @@
+2008-01-29  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/DefaultEditActions.cs: Added update request to the delete
+	  action.
+
 2008-01-28  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextEditorData.cs, Mono.TextEditor/TextEditor.cs,

@@ -637,9 +637,12 @@ namespace Mono.TextEditor
 					if (line.EndOffset == data.Document.Buffer.Length)
 						line.DelimiterLength = 0;
 				}
+				data.Document.RequestUpdate (new LineToEndUpdate (data.Caret.Line));
 			} else {
-				data.Document.Buffer.Remove (data.Caret.Offset, 1);
+				data.Document.Buffer.Remove (data.Caret.Offset, 1); 
+				data.Document.RequestUpdate (new LineUpdate (data.Caret.Line));
 			}
+			data.Document.CommitDocumentUpdate ();
 		}
 	}
 	
