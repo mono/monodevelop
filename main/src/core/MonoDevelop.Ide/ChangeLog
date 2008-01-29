@@ -1,3 +1,8 @@
+2008-01-29  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
+	* MonoDevelop.Ide.Gui.Dialogs/GotoLineDialog.cs: Small workaround to be able
+	  to build in mono 1.2.4 (mono 1.2.4 ignores usings in anon delegates).
+
 2008-01-28  Mike Krüger <mkrueger@novell.com> 
 
 	

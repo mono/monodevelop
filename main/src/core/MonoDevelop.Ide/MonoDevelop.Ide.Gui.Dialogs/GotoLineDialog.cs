@@ -66,9 +66,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			this.buttonGoToLine.Clicked += delegate {
 				try {
-					int line = Math.Max (1, Int32.Parse (entryLineNumber.Text));
+					int line = System.Math.Max (1, System.Int32.Parse (entryLineNumber.Text));
 					positionable.JumpTo (line, 1);
-				} catch (Exception) { 
+				} catch (System.Exception) { 
 				}
 				this.Destroy ();
 			};
