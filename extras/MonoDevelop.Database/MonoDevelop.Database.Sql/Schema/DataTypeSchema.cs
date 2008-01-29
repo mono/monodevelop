@@ -39,7 +39,7 @@ namespace MonoDevelop.Database.Sql
 		protected bool isFixedLength;
 		
 		protected DataTypeCategory category;
-		protected Type dataType;
+		protected Type dotNetType;
 		
 		protected string createFormat;
 		protected string createParameters;
@@ -64,7 +64,7 @@ namespace MonoDevelop.Database.Sql
 			this.isAutoincrementable = dt.isAutoincrementable;
 			this.isFixedLength = dt.isFixedLength;
 			this.category = dt.category;
-			this.dataType = dt.dataType;
+			this.dotNetType = dt.dotNetType;
 			this.createFormat = dt.createFormat;
 			this.createParameters = dt.createParameters;
 			this.lengthRange = new Range (dt.lengthRange);
@@ -160,11 +160,11 @@ namespace MonoDevelop.Database.Sql
 			}
 		}
 		
-		public Type DataType {
-			get { return dataType; }
+		public Type DotNetType {
+			get { return dotNetType; }
 			set {
-				if (dataType != value) {
-					dataType = value;
+				if (dotNetType != value) {
+					dotNetType = value;
 					OnChanged();
 				}
 			}
@@ -230,39 +230,6 @@ namespace MonoDevelop.Database.Sql
 				}
 				
 				return createFormat;
-			}
-		}
-		
-		public virtual Type GetDotNetDataType ()
-		{
-			//TODO: improve detection based on the length/precision of the DateTypeSchema
-			switch (DataTypeCategory) {
-			case DataTypeCategory.AutoNumber:
-			case DataTypeCategory.Integer:
-				return isNullable ? typeof (int?) : typeof (int);
-			case DataTypeCategory.Binary:
-			case DataTypeCategory.VarBinary:
-				return typeof (byte[]);
-			case DataTypeCategory.Bit:
-			case DataTypeCategory.Boolean:
-				return isNullable ? typeof (bool?) : typeof (bool);
-			case DataTypeCategory.Char:
-			case DataTypeCategory.NChar:
-			case DataTypeCategory.VarChar:
-			case DataTypeCategory.NVarChar:
-			case DataTypeCategory.Xml:
-				return typeof (string);
-			case DataTypeCategory.Date:
-			case DataTypeCategory.DateTime:
-			case DataTypeCategory.Time:
-			case DataTypeCategory.TimeStamp:
-				return isNullable ? typeof (DateTime?) : typeof (DateTime);
-			case DataTypeCategory.Float:
-				return isNullable ? typeof (double?) : typeof (double);
-			case DataTypeCategory.Uid:
-			case DataTypeCategory.Other:
-			default:
-				return typeof (object);
 			}
 		}
 		

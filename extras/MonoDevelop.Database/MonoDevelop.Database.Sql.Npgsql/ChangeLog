@@ -1,5 +1,9 @@
 2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
 
+	* NpgsqlSchemaProvider.cs: Add missing capability
+
+2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
+
 	* gtk-gui,
 	  gtk-gui/MonoDevelop.Database.Sql.Npgsql.NpgsqlCreateDatabaseWidget.cs,
 	  gtk-gui/generated.cs, gtk-gui/objects.xml,

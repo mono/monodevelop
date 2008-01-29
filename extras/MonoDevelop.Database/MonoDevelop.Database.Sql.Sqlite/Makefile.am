@@ -6,8 +6,8 @@ REFS =  \
 	-r:$(top_builddir)/build/MonoDevelop.Database.Components.dll \
 	-r:$(top_builddir)/build/MonoDevelop.Database.Designer.dll \
 	-r:$(top_builddir)/build/MonoDevelop.Database.Sql.dll \
-	-r:$(top_srcdir)/contrib/Sqlite/Mono.Data.Sqlite.dll \
 	-r:Mono.Data \
+	-r:Mono.Data.Sqlite \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Data
@@ -31,17 +31,11 @@ RES =  \
 	gtk-gui/gui.stetic \
 	MonoDevelop.Database.Sql.Sqlite.addin.xml
 
-SQLITE_FILES = \
-	Mono.Data.Sqlite.dll
-
-SRC_SQLITE_FILES = $(addprefix $(top_srcdir)/contrib/Sqlite/, $(SQLITE_FILES))
-BUILD_SQLITE_FILES = $(addprefix $(ADDIN_BUILD)/, $(notdir $(SQLITE_FILES)))
-
-all: $(ASSEMBLY) $(BUILD_SQLITE_FILES)
-
-$(BUILD_SQLITE_FILES): $(SRC_SQLITE_FILES)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(SRC_SQLITE_FILES) $(ADDIN_BUILD)/.
+if ENABLE_SQLITE
+all: $(ASSEMBLY)
+else
+all:
+endif
 
 $(ASSEMBLY): $(FILES) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
@@ -49,9 +43,9 @@ $(ASSEMBLY): $(FILES) $(build_resources)
 
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.Database
-assembly_DATA = $(ASSEMBLY) $(BUILD_SQLITE_FILES)
+assembly_DATA = $(ASSEMBLY)
 
-CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(BUILD_SQLITE_FILES)
-EXTRA_DIST = $(FILES) $(RES) $(SRC_SQLITE_FILES)
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
+EXTRA_DIST = $(FILES) $(RES)
 
 include $(top_srcdir)/Makefile.include

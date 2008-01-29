@@ -1,3 +1,8 @@
+2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
+
+	* MonoDevelop.Database.Sql.Firebird.mdp: removed the hard copy of the
+	  firebird .dll, use a pkg-config reference when firebird is supported
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Database.Sql.Firebird.addin.xml: Update MD version.

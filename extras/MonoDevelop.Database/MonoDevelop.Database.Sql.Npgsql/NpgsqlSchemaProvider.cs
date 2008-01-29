@@ -42,6 +42,7 @@ using MonoDevelop.Core;
 			AddSupportedSchemaActions (SchemaType.Database, SchemaActions.All);
 			AddSupportedSchemaActions (SchemaType.Table, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
 			AddSupportedSchemaActions (SchemaType.View, SchemaActions.All);
+			AddSupportedSchemaActions (SchemaType.Procedure, SchemaActions.All);
 			AddSupportedSchemaActions (SchemaType.TableColumn, SchemaActions.All);
 			AddSupportedSchemaActions (SchemaType.ProcedureParameter, SchemaActions.Schema);
 			AddSupportedSchemaActions (SchemaType.Trigger, SchemaActions.All);

@@ -449,7 +449,7 @@ namespace MonoDevelop.Database.Sql
 			schema.LengthRange = new Range (GetRowInt (row, dataTypeItemStrings[1]));
 			schema.CreateFormat = GetRowString (row, dataTypeItemStrings[2]);
 			schema.CreateParameters = GetRowString (row, dataTypeItemStrings[3]);
-			schema.DataType = Type.GetType (GetRowString (row, dataTypeItemStrings[4]), false, false);
+			schema.DotNetType = Type.GetType (GetRowString (row, dataTypeItemStrings[4]), false, false);
 			schema.IsAutoincrementable = GetRowBool (row, dataTypeItemStrings[5]);
 			schema.IsFixedLength = GetRowBool (row, dataTypeItemStrings[6]);
 			schema.IsNullable = GetRowBool (row, dataTypeItemStrings[7]);

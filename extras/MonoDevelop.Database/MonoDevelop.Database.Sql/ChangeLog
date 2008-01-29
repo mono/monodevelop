@@ -1,5 +1,10 @@
 2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
 
+	* Schema/DataTypeSchema.cs, Providers/AbstractSchemaProvider.cs: renamed the
+	  "DataType" property to "DotNetType"
+
+2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
+
 	* ConnectionPool/FakeConnectionPool.cs: throw NotSupportedExceptions instead
 	  of NotImplementedExceptions
 	* MonoDevelop.Database.Sql.addin.xml: changed the name of the addin

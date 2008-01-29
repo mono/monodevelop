@@ -1,5 +1,9 @@
 2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
 
+	* SqlServerSchemaProvider.cs: Add missing capability
+
+2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
+
 	* MonoDevelop.Database.Sql.SqlServer.mdp: depend on Gtk# 2.8 instead of 2.12
 	* gtk-gui,
 	  gtk-gui/MonoDevelop.Database.Sql.SqlServer.SqlServerColumnEditorWidget.cs,
