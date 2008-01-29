@@ -64,6 +64,7 @@ RES =  \
 	gui.glade \
 	icons/actiongroup.png \
 	icons/image-x-generic.png \
+	icons/pad-widget-tree-16.png \
 	icons/widget.png \
 	MonoDevelop.GtkCore.addin.xml \
 	templates/ActionGroup.xft.xml \

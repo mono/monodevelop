@@ -1,3 +1,8 @@
+2008-01-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.addin.xml, MonoDevelop.GtkCore.mdp, Makefile.am,
+	  icons/pad-widget-tree-16.png: Added widget tree icon.
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.addin.xml: Update MD version.
