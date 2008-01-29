@@ -1,5 +1,10 @@
 2008-01-29  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/LineSplitter.cs,
+	  Mono.TextEditor/BookmarkMargin.cs: Worked on bookmark commands.
+
+2008-01-29  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/DefaultEditActions.cs: Added update request to the delete
 	  action.
 

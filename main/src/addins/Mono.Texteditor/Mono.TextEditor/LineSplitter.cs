@@ -43,7 +43,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public IEnumerator<LineSegment> Lines {
+		public IEnumerable<LineSegment> Lines {
 			get {
 				RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = lines.GetNode (0).Iter;
 				iter.MoveNext ();

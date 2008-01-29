@@ -54,7 +54,9 @@ namespace Mono.TextEditor
 		
 		public override void MousePressed (int button, int x, int y, bool doubleClick)
 		{
-			int lineNumber = editor.Document.VisualToLogicalLine ((int)(y + editor.TextEditorData.VAdjustment.Value) / editor.LineHeight);
+			if (button != 1 || doubleClick)
+				return;
+			int lineNumber = editor.VisualToDocumentLocation (x, y).Line;
 			if (lineNumber < editor.Splitter.LineCount) {
 				LineSegment lineSegment = editor.Document.GetLine (lineNumber);
 				lineSegment.IsBookmarked = !lineSegment.IsBookmarked;

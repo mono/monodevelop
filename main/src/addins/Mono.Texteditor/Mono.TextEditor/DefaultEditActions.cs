@@ -930,6 +930,15 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
+			bool redraw = false;
+			foreach (LineSegment line in data.Document.Splitter.Lines) {
+				redraw |= line.IsBookmarked;
+				line.IsBookmarked = false;
+			}
+			if (redraw) {
+				data.Document.RequestUpdate (new UpdateAll ());
+				data.Document.CommitDocumentUpdate ();
+			}
 		}
 	}
 	
