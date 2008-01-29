@@ -3,7 +3,6 @@
 # This file is distributed under the same license as the MonoDevelop package.
 # André Offringa <offringa@gmail.com>, 2007.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop\n"
@@ -67,7 +66,7 @@ msgstr "LOG"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:347
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:488
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:130
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:160
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:152
 msgid "Options"
 msgstr "Opties"
 
@@ -76,14 +75,12 @@ msgid "Cat_egories:"
 msgstr "Cat_egoriën"
 
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:258
-#, fuzzy
 msgid "label5"
-msgstr "label124"
+msgstr "label5"
 
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:287
-#, fuzzy
 msgid "label4"
-msgstr "label124"
+msgstr "label4"
 
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:334
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:2606
@@ -107,9 +104,8 @@ msgid "MonoDevelop Add-in Manager"
 msgstr "MonoDevelop add-in-beheer"
 
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:621
-#, fuzzy
 msgid "<big><b>MonoDevelop Add-in Manager</b></big>"
-msgstr "<big><b>MonoDevelop beheerder voor add-ins"
+msgstr "<big><b>MonoDevelop add-ins beheer</b></big>"
 
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:659
 msgid "The following add-ins are currently installed:"
@@ -149,7 +145,6 @@ msgid "Install from:"
 msgstr "Installeer van:"
 
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:1424
-#, fuzzy
 msgid ""
 "Show all packages\n"
 "Show new versions only\n"
@@ -400,7 +395,6 @@ msgid "Auto Hide"
 msgstr "Automatisch verbergen"
 
 #: ../src/core/MonoDevelop.Dock/layout.glade:7
-#, fuzzy
 msgid "Layout Management"
 msgstr "Layoutbeheerder"
 
@@ -434,7 +428,7 @@ msgstr "Applicatie configuratiebestand"
 #: ../src/addins/VBNetBinding/templates/AssemblyInfo.xft.xml:9
 #: ../src/addins/CSharpBinding/templates/AssemblyInfo.xft.xml:9
 msgid "Misc"
-msgstr ""
+msgstr "Overig"
 
 #: ../src/core/MonoDevelop.Ide/templates/AppConfigFile.xft.xml:8
 msgid "Creates a .NET application configuration file."
@@ -484,9 +478,8 @@ msgid "Empty HTML File"
 msgstr "Leeg HTML-bestand"
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyHTMLFile.xft.xml:6
-#, fuzzy
 msgid "Web"
-msgstr "_Web"
+msgstr "Web"
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyHTMLFile.xft.xml:7
 msgid "Creates an empty HTML file."
@@ -530,7 +523,7 @@ msgstr "Leeg XML-bestand"
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyXMLFile.xft.xml:6
 msgid "XML"
-msgstr ""
+msgstr "XML"
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyXMLFile.xft.xml:7
 msgid "Creates an empty XML file."
@@ -772,12 +765,12 @@ msgstr "Bestand {0} kon niet geschreven worden."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:138
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/CombineEntryDescriptor.cs:86
-#, fuzzy
 msgid ""
 "Project file {0} already exists. Do you want to overwrite\n"
 "the existing file?"
 msgstr ""
-"Het projectbestand {0} bestaat al, wilt u het huidige bestand overschrijven?"
+"Het projectbestand {0} bestaat al. Wilt u het huidige\n"
+"bestand overschrijven?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:140
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:123
@@ -795,11 +788,12 @@ msgid "The file '{0}' already exists in the project."
 msgstr "Het bestand '{0}' bestaat al in het project."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:121
-#, fuzzy
 msgid ""
 "File {0} already exists. Do you want to overwrite\n"
 "the existing file?"
-msgstr "Het bestand {0} bestaat al, wilt u het huidige bestand overschrijven?"
+msgstr ""
+"Het bestand {0} bestaat al, wilt u het huidige\n"
+"bestand overschrijven?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/AbstractBaseViewContent.cs:47
 msgid "Abstract Content"
@@ -940,7 +934,7 @@ msgstr "Alle open bestanden"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:175
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:749
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:212
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:315
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:292
 msgid "Replace"
 msgstr "Vervang"
 
@@ -1418,7 +1412,6 @@ msgstr "Nieuwe map"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:121
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:162
-#, fuzzy
 msgid ""
 "File or directory name is already in use. Please choose a different one."
 msgstr "Bestand of mapnaam wordt al gebruikt, kies een andere."
@@ -1532,7 +1525,7 @@ msgstr "Zoekopdracht afgebroken"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:127
 msgid "Search completed. "
-msgstr "Zoekopdracht afgerond."
+msgstr "Zoekopdracht afgerond. "
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:133
 msgid "Search time: {0} seconds."
@@ -1554,8 +1547,8 @@ msgstr "{1} wordt afgezocht op '{0}'."
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:125
 msgid "{0} match found "
 msgid_plural "{0} matches found "
-msgstr[0] "{0} overeenkomst gevonden"
-msgstr[1] "{0} overeenkomsten gevonden"
+msgstr[0] "{0} overeenkomst gevonden "
+msgstr[1] "{0} overeenkomsten gevonden "
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:126
 msgid "in {0} file."
@@ -1605,6 +1598,8 @@ msgid ""
 "You need a newer monodoc to use it externally from monodevelop. Using the "
 "integrated help viewer now."
 msgstr ""
+"Je bent een nieuwere versie van Monodoc nodig om hem buiten MonoDevelop te "
+"gebruiken. De geïntegreerde helpweergave wordt gebruikt."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Ide.cs:113
 msgid "Loading Workbench"
@@ -1682,7 +1677,7 @@ msgstr "-------------------- Afgerond --------------------"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1224
 msgid "Build successful."
-msgstr "Sucessvol gebouwd."
+msgstr "Succesvol gebouwd."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1226
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1228
@@ -1873,14 +1868,12 @@ msgid "Pin results pad"
 msgstr "Pin resultatenbord vast"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:181
-#, fuzzy
 msgid "Searching..."
-msgstr "Opslaan..."
+msgstr "Zoeken..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:191
-#, fuzzy
 msgid "Search completed"
-msgstr "Zoekopdracht afgerond."
+msgstr "Zoekopdracht afgerond. "
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:352
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:259
@@ -1897,11 +1890,10 @@ msgstr "Tekst"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:192
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:423
-#, fuzzy
 msgid "{0} match."
 msgid_plural "{0} matches."
-msgstr[0] "{0} overeenkomst"
-msgstr[1] "{0} overeenkomsten"
+msgstr[0] "{0} overeenkomst."
+msgstr[1] "{0} overeenkomsten."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs:90
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs:92
@@ -2058,7 +2050,7 @@ msgstr "Voeg bestanden toe..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:367
 msgid "Include To Project"
-msgstr "Invoegen in project"
+msgstr "Opnemen in project"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:370
 msgid "Buil_d Solution"
@@ -2187,9 +2179,8 @@ msgid "Save All"
 msgstr "Alles opslaan"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:482
-#, fuzzy
 msgid "N_ew Solution..."
-msgstr "Nieuwe oplossing"
+msgstr "Ni_euwe oplossing..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:487
 msgid "_Close File"
@@ -2249,7 +2240,7 @@ msgstr "Sluit alles behalve deze"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:546
 msgid "Closes all opened files except for the active file"
-msgstr ""
+msgstr "Sluit alle geopende bestanden exclusief het actieve bestand"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:549
 msgid "Copy file path/name"
@@ -2590,7 +2581,7 @@ msgstr "Open met"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:892
 msgid "Include"
-msgstr "Invoegen"
+msgstr "Opnemen in"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:992
 msgid "Comments"
@@ -2853,7 +2844,7 @@ msgstr "Wijzig de zichtbaarheid van de 'regel'-kolom"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs:257
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:74
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DotDesktopViewWidget.cs:67
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:241
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:238
 msgid "Description"
 msgstr "Beschrijving"
 
@@ -3254,14 +3245,12 @@ msgid "Command"
 msgstr "Commando"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:73
-#, fuzzy
 msgid "Key Binding"
 msgstr "Toetsbinding"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:82
-#, fuzzy
 msgid "Current"
-msgstr "Huidig bestand"
+msgstr "Huidig"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:148
 msgid "Other"
@@ -3449,9 +3438,8 @@ msgid "Always create backup copy"
 msgstr "Altijd een reservekopie opslaan"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs:29
-#, fuzzy
 msgid "New Layout"
-msgstr "_Nieuwe layout..."
+msgstr "Nieuwe layout"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs:49
 msgid "Layout name:"
@@ -3502,10 +3490,9 @@ msgid "Priority:"
 msgstr "Prioriteit:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs:198
-#, fuzzy
 msgid "<i><b>Note:</b> Only Letters, Digits and Underscore are allowed.</i>"
 msgstr ""
-"<i><b>Noot:</b> Alleen letters, cijfers en underscore zijn toegestaan.</i>"
+"<i><b>Noot:</b> Alleen letters, cijfers en de underscore zijn toegestaan.</i>"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs:301
 msgid "<b>Task Priorities Foreground Colors</b>"
@@ -3624,11 +3611,11 @@ msgstr "_Voeg aan project toe:"
 
 #: ../src/core/MonoDevelop.Ide/templates/Workspace.xpt.xml:5
 msgid "Workspace"
-msgstr ""
+msgstr "Werkruimte"
 
 #: ../src/core/MonoDevelop.Ide/templates/Workspace.xpt.xml:9
 msgid "A blank workspace"
-msgstr ""
+msgstr "Een lege werkruimte"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.StandardHeaders.NewHeaderTemplateDialog.cs:30
 msgid "Add New Standard Header Template"
@@ -4331,27 +4318,24 @@ msgid "Select a target configuration for each solution item:"
 msgstr "Kies een doelconfiguratie voor ieder oplossingonderdeel:"
 
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs:76
-#, fuzzy
 msgid "<b>Project Information</b>"
-msgstr "<b>Projectmogelijkheden</b>"
+msgstr "<b>Projectinformatie</b>"
 
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs:121
-#, fuzzy
 msgid "Default Namespace:"
-msgstr "Naamruimte:"
+msgstr "Standaard naamruimte:"
 
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs:199
-#, fuzzy
 msgid "<b>On Project Load</b>"
-msgstr "<b>Projectmogelijkheden</b>"
+msgstr "<b>Bij inladen van project</b>"
 
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs:223
 msgid "Search for new _files on load"
-msgstr ""
+msgstr "Zoek naar nieuwe _bestanden tijdens inladen"
 
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs:252
 msgid "Automatically _include found files"
-msgstr ""
+msgstr "Automatisch gevonden bestanden toevoegen"
 
 #: ../src/addins/NUnit/nunit.glade:7
 msgid "NUnit Options"
@@ -4365,7 +4349,7 @@ msgstr "Gebruik instellingen van bovenstaande test"
 msgid "The following filter will be applied when running the tests:"
 msgstr ""
 "De volgende filters zullen worden toegepast tijdens het uitvoeren van de "
-"tests:"
+"testen:"
 
 #: ../src/addins/NUnit/nunit.glade:120
 msgid "Don't apply any filter"
@@ -4408,7 +4392,7 @@ msgstr "Regressie"
 
 #: ../src/addins/NUnit/Gui/TestPad.cs:266
 msgid "Failed tests"
-msgstr "Mislukte tests"
+msgstr "Mislukte testen"
 
 #: ../src/addins/NUnit/Gui/TestPad.cs:277
 msgid "Result"
@@ -4434,7 +4418,7 @@ msgstr "Geen mislukte testen gevonden."
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:270
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:349
 msgid "<b>Failed</b>: {0}"
-msgstr "<b> Mislukt</b>: {0}"
+msgstr "<b>Mislukt</b>: {0}"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:54
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:271
@@ -4444,27 +4428,27 @@ msgstr "<b>Overgeslagen</b>: {0}"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:106
 msgid "Successful Tests"
-msgstr "Succesvolle tests"
+msgstr "Succesvolle testen"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:111
 msgid "Show Successful Tests"
-msgstr "Succesvolle tests weergeven"
+msgstr "Succesvolle testen weergeven"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:115
 msgid "Failed Tests"
-msgstr "Misluke tests"
+msgstr "Mislukte testen"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:120
 msgid "Show Failed Tests"
-msgstr "Mislukte tests weergeven"
+msgstr "Mislukte testen weergeven"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:124
 msgid "Ignored Tests"
-msgstr "Overgeslagen tests"
+msgstr "Overgeslagen testen"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:129
 msgid "Show Ignored Tests"
-msgstr "Overgeslagen tests weergeven"
+msgstr "Overgeslagen testen weergeven"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:138
 msgid "Show Output"
@@ -4496,7 +4480,7 @@ msgstr "Stack volgen"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:348
 msgid "<b>Tests</b>: {0}"
-msgstr "<b>Tests</b>: {0}"
+msgstr "<b>Testen</b>: {0}"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:359
 msgid "Test execution cancelled."
@@ -4544,7 +4528,7 @@ msgstr "Maak een testfixture aan."
 
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:72
 msgid "Unit Tests"
-msgstr "Unittests"
+msgstr "Unittesten"
 
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:73
 msgid "Show Test Time"
@@ -4584,15 +4568,15 @@ msgstr "Tijdgrafiek"
 
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:101
 msgid "Show successful tests"
-msgstr "Succesvolle tests weergeven"
+msgstr "Succesvolle testen weergeven"
 
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:102
 msgid "Show failed tests"
-msgstr "Misluke tests weergeven"
+msgstr "Misluke testen weergeven"
 
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:103
 msgid "Show ignored tests"
-msgstr "Overgeslagen tests weergeven"
+msgstr "Overgeslagen testen weergeven"
 
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:104
 msgid "Add assembly..."
@@ -4619,9 +4603,8 @@ msgid "Console Project"
 msgstr "Consoleproject"
 
 #: ../src/addins/ILAsmBinding/ILAsmConsoleProject.xpt.xml:8
-#, fuzzy
 msgid "ILAsm"
-msgstr "ILAsm-bestanden"
+msgstr "ILAsm"
 
 #: ../src/addins/ILAsmBinding/ILAsmConsoleProject.xpt.xml:11
 msgid "ILAsm Console Project"
@@ -4860,6 +4843,8 @@ msgid ""
 "There isn't any supported version control system installed. You may need to "
 "install additional add-ins or packages."
 msgstr ""
+"Er is geen ondersteund versiebeheersysteem geïnstalleerd. Het kan nodig zijn "
+"om extra add-ins of pakketten te installeren."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:84
 msgid "Select Repository"
@@ -5163,7 +5148,6 @@ msgid "_Wrap mode: "
 msgstr "_Terugloop modus: "
 
 #: ../src/addins/MonoDevelop.SourceEditor/EditorBindings.glade:1024
-#, fuzzy
 msgid ""
 "None\n"
 "Char\n"
@@ -5424,9 +5408,8 @@ msgid "Signals"
 msgstr "Signalen"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:58
-#, fuzzy
 msgid "GUI Builder"
-msgstr "Bouwen"
+msgstr "GUI-bouwer"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:220
 msgid ""
@@ -5488,7 +5471,7 @@ msgstr "Dialoog"
 #: ../src/addins/MonoDevelop.GtkCore/templates/WidgetPartial.xft.xml:6
 #: ../src/addins/MonoDevelop.GtkCore/templates/WindowPartial.xft.xml:6
 msgid "Gtk"
-msgstr ""
+msgstr "Gtk"
 
 #: ../src/addins/MonoDevelop.GtkCore/templates/Dialog.xft.xml:8
 #: ../src/addins/MonoDevelop.GtkCore/templates/DialogPartial.xft.xml:8
@@ -5562,9 +5545,8 @@ msgid "Creates a global Action Group."
 msgstr "Maakt een globale actiegroep aan."
 
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:8
-#, fuzzy
 msgid "window1"
-msgstr "Venster"
+msgstr "venster1"
 
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:32
 msgid "Enable GTK# support"
@@ -6026,19 +6008,16 @@ msgid "Common Actions"
 msgstr "Veelgebruikte acties"
 
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:4
-#, fuzzy
 msgid "Start a New Solution"
-msgstr "Nieuwe oplossing"
+msgstr "Nieuwe oplossing starten"
 
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:5
-#, fuzzy
 msgid "Open a Solution / File"
 msgstr "Een project / bestand opvragen"
 
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:9
-#, fuzzy
 msgid "Recent Solutions"
-msgstr "Recen_te oplossingen"
+msgstr "Recente oplossingen"
 
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:10
 msgid "From MonoDevelop"
@@ -6049,9 +6028,8 @@ msgid "Last Modified"
 msgstr "Laatst gewijzigd"
 
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:13
-#, fuzzy
 msgid "Open Solution"
-msgstr "Maak oplossing schoon"
+msgstr "Oplossing openen"
 
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:16
 msgid "Support Links"
@@ -6062,9 +6040,8 @@ msgid "Mono Project Home Page"
 msgstr "Internetpagina van het Mono-project"
 
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:26
-#, fuzzy
 msgid "News Links"
-msgstr "Lijst weergeven"
+msgstr "Links naar nieuws"
 
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:29
 msgid "Development Links"
@@ -6151,9 +6128,8 @@ msgid "Error reading file {0} : "
 msgstr "Fout bij lezen van bestand {0} : "
 
 #: ../src/addins/prj2make-sharp-lib/MSBuildFileFormat.cs:164
-#, fuzzy
 msgid "Could not save project: {0}, {1}"
-msgstr "Kon project niet opslaan: {0}"
+msgstr "Kon project niet opslaan: {0}, {1}"
 
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:88
 msgid "Generating partial classes for {0} with {1}"
@@ -6182,13 +6158,12 @@ msgstr ""
 
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:164
 msgid "Language '{0}' not supported for building resource ids."
-msgstr ""
+msgstr "De taal '{0}' wordt niet ondersteund voor het bouwen van bron-ids."
 
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:145
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:200
-#, fuzzy
 msgid "Saving projects"
-msgstr "Bezig met opslaan van project: {0}"
+msgstr "Bezig met opslaan van projecten"
 
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:209
 msgid ""
@@ -6223,6 +6198,8 @@ msgstr ""
 msgid ""
 "{0}({1}): Projects with non-local source (http://...) not supported. '{2}'."
 msgstr ""
+"{0}({1}): Projecten met niet-lokale bron (http://...) zijn niet ondersteund. "
+"'{2}'."
 
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:521
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:523
@@ -6237,21 +6214,22 @@ msgstr "Fout bij het inladen van project {0}. Exceptie : {1}"
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:705
 msgid "{0} ({1}) : Unknown action. Only ActiveCfg & Build.0 supported."
 msgstr ""
+"{0} ({1}) : Onbekende actie. Enkel ActiveCfg & Build.0 wordt ondersteund."
 
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:725
-#, fuzzy
 msgid "{0} ({1}) : Project with guid = '{2}' not found or not loaded. Ignoring"
-msgstr "Projectbestand niet gevonden: "
+msgstr ""
+"{0} ({1}) : Project met guid = '{2}' niet gevonden of niet ingeladen. Wordt "
+"overgeslagen."
 
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:829
 msgid "{0} ({1}) : Invalid config name '{2}'"
-msgstr ""
+msgstr "{0} ({1}) : Ongeldige naam van configuratie '{2}'"
 
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:855
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:861
-#, fuzzy
 msgid "Project with guid '{0}' not found."
-msgstr "Projectbestand niet gevonden: "
+msgstr "Project met guid '{0}' niet gevonden."
 
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:957
 msgid ""
@@ -6287,39 +6265,42 @@ msgstr ""
 
 #: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:120
 msgid "Expected 'Include' attribute not found for ItemGroup '{0}'"
-msgstr ""
+msgstr "Verwachte 'Include'-attribuut niet gevonden voor ItemGroup '{0}'"
 
 #: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:178
 #: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:181
-#, fuzzy
 msgid "HintPath ({0}) for Reference '{1}' is invalid. Ignoring."
-msgstr "Bestandsnaam '{0}' is onjuist. Wordt overgeslagen."
+msgstr ""
+"Gehinte pad ({0}) voor referentie '{1}' is onjuist. Wordt overgeslagen."
 
 #: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:205
 msgid "Expected element <Name> for ProjectReference '{0}'"
-msgstr ""
+msgstr "Element <Name> wordt verwacht voor ProjectReference '{0}'"
 
 #: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:258
-#, fuzzy
 msgid ""
 "Unrecognised ItemGroup element '{0}', Include = '{1}' in project '{2}'. "
 "Ignoring."
 msgstr ""
-"Referentie '{0}' kan niet geparsed worden, oorzaak : {1}. Wordt genegeerd."
+"Niet herkend ItemGroup element '{0}', Include = '{1}' in project '{2}'. "
+"Wordt overgeslagen."
 
 #: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:274
 msgid ""
 "CopyToOutputDirectory not supported for BuildAction '{0}', Include = '{1}'"
 msgstr ""
+"CopyToOutputDirectory wordt niet ondersteund voor BuildAction '{0}', Include "
+"= '{1}'"
 
 #: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:307
 msgid "BuildAction.{0} not supported!"
-msgstr ""
+msgstr "BuildAction.{0} wordt niet ondersteund!"
 
 #: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:448
-#, fuzzy
 msgid "The project '{0}' referenced from '{1}' could not be found."
-msgstr "Het projectbestand '{0}' van de GUI-ontwerper kon niet worden geladen."
+msgstr ""
+"Het project '{0}' waarnaar verwezen werd vanuit '{1}' kon niet worden "
+"gevonden."
 
 #: ../src/addins/prj2make-sharp-lib/Utils.cs:51
 #: ../src/addins/prj2make-sharp-lib/Utils.cs:52
@@ -6418,7 +6399,7 @@ msgstr "Leeg project"
 #: ../src/addins/VBNetBinding/templates/VBConsoleApplicationProject.xpt.xml:8
 #: ../src/addins/VBNetBinding/templates/VBGtkSharp2Project.xpt.xml:8
 msgid "VBNet"
-msgstr ""
+msgstr "VBNet"
 
 #: ../src/addins/VBNetBinding/templates/EmptyVBProject.xpt.xml:11
 msgid "Creates an empty VB.Net solution."
@@ -6452,14 +6433,13 @@ msgstr "Runtime-opties"
 
 #: ../src/addins/VBNetBinding/templates/AssemblyInfo.xft.xml:8
 #: ../src/addins/CSharpBinding/templates/AssemblyInfo.xft.xml:8
-#, fuzzy
 msgid "Assembly Information"
-msgstr "Assembly ondertekening"
+msgstr "Assembly-informatie"
 
 #: ../src/addins/VBNetBinding/templates/AssemblyInfo.xft.xml:13
 #: ../src/addins/CSharpBinding/templates/AssemblyInfo.xft.xml:13
 msgid "A file defining assembly information attributes."
-msgstr ""
+msgstr "Een bestand dat assembly-informatie attributen definieert."
 
 #: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:30
 msgid "Insert ChangeLog Entry"
@@ -6522,14 +6502,12 @@ msgstr[1] ""
 "niet gelogd."
 
 #: ../src/addins/ChangeLogAddIn/ChangeLogAddInOptionPanelWidget.cs:41
-#, fuzzy
 msgid "Full Name"
-msgstr "Volledige naam:"
+msgstr "Volledige naam"
 
 #: ../src/addins/ChangeLogAddIn/ChangeLogAddInOptionPanelWidget.cs:42
-#, fuzzy
 msgid "Email Address"
-msgstr "E-mail adres:"
+msgstr "E-mailadres"
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs:64
 msgid "ChangeLog"
@@ -7063,6 +7041,8 @@ msgid ""
 "Cannot add {0} '{1}' to class '{2}', because there is already a {3} with "
 "that name{4}."
 msgstr ""
+"Kon {0} '{1}' niet toevoegen aan klasse '{2}', want er is al een {3} met die "
+"naam{4}."
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.PropertyGrid/PropertyGrid.cs:92
 msgid "Sort in categories"
@@ -7163,22 +7143,20 @@ msgid "Could not add reference to project '{0}'"
 msgstr "Referentie '{0}' kon niet toegevoegd worden aan het project"
 
 #: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:329
-#, fuzzy
 msgid ""
 "Custom commands are not supported for autotools based makefiles. Ignoring."
 msgstr ""
-"Niet-standaard commando's worden niet ondersteund voor op-autotools "
-"gebaseerde makefiles. Wordt genegeerd..."
+"Alternatieve commando's worden niet ondersteund voor op autotools gebaseerde "
+"makefiles. Wordt genegeerd."
 
 #: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:515
-#, fuzzy
 msgid "Project reference type '{0}' not supported yet"
-msgstr "Project referentietype {0} wordt nog niet ondersteund"
+msgstr "Project referentietype '{0}' wordt nog niet ondersteund"
 
 #: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:660
-#, fuzzy
 msgid "Custom commands of only the following types are supported: {0}."
-msgstr "Niet-standaard commando's enkel van {0} types worden ondersteund."
+msgstr ""
+"Alternatieve commando's van enkel het volgende type worden ondersteund: {0}."
 
 #: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:738
 msgid "Couldn't find referenced project '{0}'"
@@ -7275,55 +7253,51 @@ msgstr ""
 "# Projectspecifieke makefile opnemen\n"
 
 #: ../src/addins/MonoDevelop.Autotools/CustomMakefile.cs:252
-#, fuzzy
 msgid "Makefile variable {0} not found in the file."
-msgstr ""
-"Makefile-variabele '{0}' niet gevonden. Het schrijven van {1} bestanden naar "
-"de makefile wordt overgeslagen."
+msgstr "Makefile-variabele '{0}' niet gevonden in het bestand."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:31
-#, fuzzy
 msgid "Error: Unknown option {0}"
-msgstr "Onbekend doel {0}"
+msgstr "Fout: Onbekende optie {0}"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:35
 msgid ""
 "Error: Filename already specified - {0}, another filename '{1}' cannot be "
 "specified."
 msgstr ""
+"Fout: bestandnaam al gespecifieerd - {0}, een andere bestandsnaam '{1}' kan "
+"niet worden gespecifieerd."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:44
 msgid "Error: Solution file not specified."
-msgstr ""
+msgstr "Fout: Bestand van oplossing niet gespecifieerd."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:49
-#, fuzzy
 msgid "Loading solution file {0}"
-msgstr "Bezig met laden van oplossingonderdeel: {0}"
+msgstr "Bezig met laden van oplossingsbestand {0}"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:54
 msgid "Error: Makefile generation supported only for solutions.\n"
-msgstr ""
+msgstr "Fout: makefile-generatie wordt enkel ondersteund voor oplossingen.\n"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:59
 msgid ""
 "\n"
 "Invalid configuration {0}. Valid configurations : "
 msgstr ""
+"\n"
+"Ongeldige configuratie {0}. Valide configuraties : "
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:68
-#, fuzzy
 msgid "Select configuration : "
-msgstr "Standaard configuratie:"
+msgstr "Kies configuratie :"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:84
-#, fuzzy
 msgid ""
 "{0} already exist for this solution.  Would you like to overwrite them? (Y/N)"
-msgstr "{0} bestaat al voor deze oplossing. Wilt u deze overschrijven?"
+msgstr "{0} bestaat al voor deze oplossing. Wilt u deze overschrijven? (J/N)"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:131
-#, fuzzy
 msgid ""
 " --simple-makefiles -s\n"
 "\tGenerates set of Makefiles with the most common targets, and a "
@@ -7331,22 +7305,24 @@ msgid ""
 "Default is to generate Makefile structure based on Autotools with the "
 "standard targets and configuration scripts."
 msgstr ""
-"<b>Eenvoudige makefile</b>\n"
-"Genereert een verzameling makefiles met de meest gebruikelijke doelen, en "
+" --simple-makefiles -s\n"
+"\tGenereert een verzameling makefiles met de meest gebruikelijke doelen, en "
 "een configuratiescript dat een basiscontrole uitvoert op de "
-"pakketafhankelijkheden."
+"pakketafhankelijkheden. De standaardinstelling is om de Makefilestructuur te "
+"genereren gebaseerd op Autotools met de standaard doelen en configuratie "
+"scripten."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:133
-#, fuzzy
 msgid ""
 " -d:default-config\n"
 "\tConfiguration that the Makefile will build by default. Other "
 "configurations can be selected via the '--config' or '--enable-*' option of "
 "the generated configure script."
 msgstr ""
-"Kies de configuratie die de makefile standaard zal bouwen. Andere "
-"configuraties kunnen geselecteerd worden via de '--config'-optie van het "
-"gegenereerde configure-script."
+" -d:default-config\n"
+"\tDe configuratie die de makefile standaard zal bouwen. Andere "
+"configuraties kunnen geselecteerd worden via de '--config' or '--enable-*'-"
+"optie van het gegenereerde configure-script."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:61
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:435
@@ -7370,21 +7346,18 @@ msgstr ""
 "varabelen is niet ingesteld. Corrigeer dit aub."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:249
-#, fuzzy
 msgid "Invalid regex for Error messages: {0}"
-msgstr "Ongeldige regex voor foutmeldingen : {0}"
+msgstr "Ongeldige regex voor foutmeldingen: {0}"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:258
-#, fuzzy
 msgid "Invalid regex for Warning messages: {0}"
-msgstr "Ongeldige regex voor waarschuwingen : {0}"
+msgstr "Ongeldige regex voor waarschuwingen: {0}"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:268
 msgid "Updating project"
 msgstr "Bezig met updaten van project"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:282
-#, fuzzy
 msgid ""
 "File variable ({0}) is set for sync'ing, but no valid variable is selected. "
 "Either disable the sync'ing or select a variable name."
@@ -7406,6 +7379,9 @@ msgid ""
 "Unable to find the specified Makefile. You need to specify the path to an "
 "existing Makefile for use with the 'Makefile Integration' feature."
 msgstr ""
+"Kan het opgegeven makefile-bestand niet vinden. U moet een pad naar een "
+"bestaand makefile-bestand opgeven om de 'Makefile integratie'-functie te "
+"gebruiken."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:64
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:66
@@ -7464,9 +7440,8 @@ msgid "Project could not be executed: "
 msgstr "Project kon niet uitgevoerd worden: "
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:623
-#, fuzzy
 msgid "Invalid Makefile '{0}'. Disabling Makefile integration."
-msgstr "Ongeldige makefile : {0}. Makefile-integratie is uitgeschakeld."
+msgstr "Ongeldige makefile '{0}'. Makefile-integratie wordt uitgeschakeld."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:633
 msgid "Enable Makefile integration"
@@ -7484,35 +7459,32 @@ msgstr ""
 "origineel gebruikt worden."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:677
-#, fuzzy
 msgid ""
 "Error trying to read configure.in ('{0'}) for project '{1}':\n"
 "{2}"
-msgstr "Fout tijdens het lezen van configure.in ({0}) voor project {1} : {2} "
+msgstr ""
+"Fout tijdens het lezen van configure.in ('{0}') voor project '{1}':\n"
+"{2}"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:744
-#, fuzzy
 msgid "Error in loading references: {0}. Skipping syncing of references"
 msgstr ""
-"Fout in het laden van referentie : {0}. Referentie-synchronisatie wordt "
-"overgeslagen"
+"Fout bij het laden van referenties: {0}. Referentie-synchronisatie wordt "
+"overgeslagen."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:761
-#, fuzzy
 msgid "Error in loading files for '{0}'. Skipping."
-msgstr "Fout tijdens het laden van de bestanden voor {0}. Wordt overgeslagen."
+msgstr "Fout tijdens het laden van bestanden voor '{0}'. Wordt overgeslagen."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:778
-#, fuzzy
 msgid ""
 "Makefile variable '{0}' not found. Skipping syncing of '{1}' file list for "
 "project '{2}'."
 msgstr ""
-"Makefile-variabele '{0}' niet gevonden. De synchronisatie van {1} "
+"Makefile-variabele '{0}' niet gevonden. De synchronisatie van '{1}' "
 "bestandlijst voor project {2} wordt overgeslagen."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:826
-#, fuzzy
 msgid ""
 "Files in variable '{0}' contains variables which cannot be parsed without "
 "the path to configure.in being set. Ignoring such files."
@@ -7524,37 +7496,36 @@ msgstr ""
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:851
 msgid "Ignoring invalid file '{0}' found in '{1}' for project '{2}'."
 msgstr ""
+"Het onjuiste bestand '{0}', gevonden in '{1}' voor project '{2}', wordt "
+"genegeerd."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:888
-#, fuzzy
 msgid ""
 "Makefile variable '{0}' not found. Skipping syncing of all '{1}' references "
 "for project {2}."
 msgstr ""
-"Makefile-variabele '{0}' niet gevonden. Synchroniseren van {1} alle "
+"Makefile-variabele '{0}' niet gevonden. Synchroniseren van alle {1} "
 "referenties voor project {2} wordt overgeslagen."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:908
-#, fuzzy
 msgid "Unable to parse reference '{0}' for project '{1}'. Ignoring."
 msgstr ""
-"Referentie '{0}' kan niet geparsed worden, oorzaak : {1}. Wordt genegeerd."
+"Referentie '{0}' kan niet geparsed worden voor project '{1}'. Wordt "
+"genegeerd."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:1351
-#, fuzzy
 msgid ""
 "Makefile variable '{0}' not found. Skipping writing of '{1}' files to the "
 "Makefile."
 msgstr ""
-"Makefile-variabele '{0}' niet gevonden. Het schrijven van {1} bestanden naar "
-"de makefile wordt overgeslagen."
+"Makefile-variabele '{0}' niet gevonden. Het schrijven van '{1}' bestanden "
+"naar de makefile wordt overgeslagen."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:1410
-#, fuzzy
 msgid ""
 "Makefile variable '{0}' not found. Skipping syncing of '{1}' references."
 msgstr ""
-"Makefile variabele '{0}' niet gevonden. Het synchroniseren van {1} "
+"Makefile variabele '{0}' niet gevonden. Het synchroniseren van '{1}' "
 "referenties wordt overgeslagen."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:1512
@@ -7565,11 +7536,15 @@ msgid ""
 "so you might need to add it to ensure that the project builds successfully "
 "on other systems."
 msgstr ""
+"Een referentie naar het pkg-config pakket '{0}' wordt geproduceerd in het "
+"Makefile-bestand, omdat op zijn minst één assembly van het pakket gebruikt "
+"wordt in het project. Echter, deze afhankelijkheid wordt niet gespecificeerd "
+"in het configure.in-bestand, dus het zou kunnen dat deze toegevoegd moet "
+"worden om het project te kunnen bouwen op andere systemen."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:1619
-#, fuzzy
 msgid "Unable to find configure.in at '{0}'."
-msgstr "configure.in kan niet worden gevonden op {0}"
+msgstr "Kon configure.in niet vinden op '{0}'."
 
 #: ../src/addins/MonoDevelop.Autotools/ImportMakefileDialog.cs:20
 msgid "Makefile Project Import"
@@ -7838,19 +7813,16 @@ msgid "Delete All"
 msgstr "Alles verwijderen"
 
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.Dialogs/WebReferenceDialog.cs:194
-#, fuzzy
 msgid "The reference name '{0}' already exists."
-msgstr "Er bestaat al een configuratie met de naam '{0}'."
+msgstr "De referentienaam '{0}' bestaat al."
 
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.Dialogs/WebReferenceDialog.cs:370
-#, fuzzy
 msgid "Web service not found."
-msgstr "Webservice met CodeBehind"
+msgstr "Webservice niet gevonden."
 
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences/Library.cs:63
-#, fuzzy
 msgid "Web Service References"
-msgstr "Webreferenties"
+msgstr "Webservice-referenties"
 
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.NodeBuilders/WebReferenceFolderNodeBuilder.cs:65
 msgid "Web References"
@@ -9068,12 +9040,10 @@ msgstr "Glade# 2.0-project"
 
 #: ../src/addins/CSharpBinding/templates/GladeSharp2Project.xpt.xml:8
 #: ../src/addins/CSharpBinding/templates/GnomeSharp2Project.xpt.xml:8
-#, fuzzy
 msgid "C#/Samples"
-msgstr "C#-bestanden"
+msgstr "C#/voorbeelden"
 
 #: ../src/addins/CSharpBinding/templates/GladeSharp2Project.xpt.xml:11
-#, fuzzy
 msgid "A Glade# 2.0 project with one window and button"
 msgstr "Een Glade# 2.0-project met een venster en een knop"
 
@@ -9289,37 +9259,32 @@ msgid "Indent goto labels normally"
 msgstr "Goto-labels normaal laten inspringen"
 
 #: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs:159
-#, fuzzy
 msgid "Compiler Code Page:"
-msgstr "Compiler :"
+msgstr "Compiler codepagina:"
 
 #: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs:170
-#, fuzzy
 msgid "Win32 Icon:"
-msgstr "Icoon:"
+msgstr "Win32-icoon:"
 
 #: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs:181
 msgid "Compile _Target:"
-msgstr "Compileer&doel:"
+msgstr "Compileer_doel:"
 
 #: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs:191
 msgid "_Main Class:"
 msgstr "_Hoofdklasse:"
 
 #: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs:223
-#, fuzzy
 msgid "<b>Language Options</b>"
-msgstr "<b>Opties</b>"
+msgstr "<b>Taalopties</b>"
 
 #: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs:266
-#, fuzzy
 msgid "C# Language Version:"
-msgstr "Vertaalgroep:"
+msgstr "C#-taalversie:"
 
 #: ../src/addins/CSharpBinding/Gui/CompilerOptionsPanelWidget.cs:118
-#, fuzzy
 msgid "Invalid code page number."
-msgstr "Onjuiste bestandsnaam"
+msgstr "Onjuiste nummer van codepagina."
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.addin.xml:52
 msgid "Add Translation..."
@@ -9485,15 +9450,13 @@ msgid "Translator Output"
 msgstr "Vertaleruitvoer"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs:195
-#, fuzzy
 msgid "Translation update failed."
-msgstr "Vertaalopties"
+msgstr "Bijwerken van vertalingen mislukt."
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationNodeBuilder.cs:113
-#, fuzzy
 msgid "Do you really want to remove the translation {0} from solution {1}?"
 msgstr ""
-"Weet u zeker dat u alle vertalingen uit oplossing {0} wilt verwijderen?"
+"Weet u zeker dat u de vertaling {0} uit oplossing {1} wilt verwijderen?"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:75
 msgid "Translation Options"
@@ -9516,9 +9479,8 @@ msgid "The catalog initialization string should look like:"
 msgstr "De initialisatiestring van de catalogus moet er als volgt uitzien:"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:230
-#, fuzzy
 msgid "Mono.Unix.Catalog.Init (\"i18n\", \"./locale\");"
-msgstr "Mono.Unix.Catalog.Init (\"i8n1\", \"./locale\");"
+msgstr "Mono.Unix.Catalog.Init (\"i18n\", \"./locale\");"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:242
 msgid "<b>Init String</b>"
@@ -9643,14 +9605,13 @@ msgstr "_Regex gereedschapskist"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:2
 msgid "Character Escapes"
-msgstr "Karaketer-escapes"
+msgstr "Karakter-escapes"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:3
 msgid "\\a"
 msgstr "\\a"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:3
-#, fuzzy
 msgid "Matches a bell (alarm) \\u0007."
 msgstr "Komt overeen met een bel (alarm) \\u0007."
 
@@ -9660,16 +9621,16 @@ msgid "\\b"
 msgstr "\\b"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:4
-#, fuzzy
 msgid "Matches a backspace \\u0008 if in a [] character class."
-msgstr "Komt overeen met een backspace \\u0008 wanneer in [] karakterklasse."
+msgstr ""
+"Komt overeen met een backspace \\u0008 wanneer in een [] "
+"karakterklasse."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:5
 msgid "\\t"
 msgstr "\\t"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:5
-#, fuzzy
 msgid "Matches a tab \\u0009."
 msgstr "Komt overeen met een tab \\u0009."
 
@@ -9678,7 +9639,6 @@ msgid "\\r"
 msgstr "\\r"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:6
-#, fuzzy
 msgid "Matches a carriage return \\u000D."
 msgstr "Komt overeen met een carriage return \\u000D."
 
@@ -9687,7 +9647,6 @@ msgid "\\v"
 msgstr "\\v"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:7
-#, fuzzy
 msgid "Matches a vertical tab \\u000B."
 msgstr "Komt overeen met een verticale tab \\u000B."
 
@@ -9696,7 +9655,6 @@ msgid "\\f"
 msgstr "\\f"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:8
-#, fuzzy
 msgid "Matches a form feed \\u000C."
 msgstr "Komt overeen met een formfeed \\u000C."
 
@@ -9705,7 +9663,6 @@ msgid "\\n"
 msgstr "\\n"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:9
-#, fuzzy
 msgid "Matches a new line \\u000A."
 msgstr "Komt overeen met een newline \\u000A."
 
@@ -9714,17 +9671,14 @@ msgid "\\e"
 msgstr "\\e"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:10
-#, fuzzy
 msgid "Matches an escape \\u001B."
 msgstr "Komt overeen met escape \\u001B."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:11
-#, fuzzy
 msgid "\\040"
 msgstr "\\040"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:11
-#, fuzzy
 msgid ""
 "Matches an ASCII character as octal (up to three digits);\n"
 "numbers with no leading zero are backreferences if they have \n"
@@ -9732,33 +9686,30 @@ msgid ""
 "(For more information, see Backreferences.) \n"
 "For example, the character \\040 represents a space."
 msgstr ""
-"Komt overeen met een ASCII-karakter als octaal (max. drie cijfers);\n"
-"nummers die niet beginnen met een nul zijn terugverwijzingen wanneerze maar "
-"één cijfer hebben of wanneer ze overeenkomen met een te verkrijgen \n"
-"groepsnummer. Voor meer info, zie Terugverwijzigingen (Backreferences.) \n"
-"Bijvoorbeeld, het karakter \\040 representeert een spatie."
+"Komt overeen met een ASCII-karakter als octaal (max. drie \n"
+"cijfers); nummers die niet beginnen met een nul zijn \n"
+"terugverwijzingen wanneer ze maar één cijfer hebben of wanneer \n"
+"ze overeenkomen met een te verkrijgen groepsnummer. \n"
+"Voor meer info, zie terugverwijzigingen. Bijvoorbeeld, het \n"
+"karakter \\040 representeert een spatie."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:17
-#, fuzzy
 msgid "\\x20"
 msgstr "\\x20"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:17
-#, fuzzy
 msgid ""
 "Matches an ASCII character using hexadecimal representation\n"
 "(exactly two digits)."
 msgstr ""
-"Komt overeen met een ASCII-karakter gebruikmakend van hexadecimale notatie\n"
+"Komt overeen met een ASCII-karakter gebruikmakend van \nhexadecimale notatie "
 "(precies twee cijfers)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:19
-#, fuzzy
 msgid "\\cC"
 msgstr "\\cC"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:19
-#, fuzzy
 msgid ""
 "Matches an ASCII control character;\n"
 "for example, \\cC is control-C."
@@ -9767,18 +9718,16 @@ msgstr ""
 "bijvoorbeeld, \\cC is control-C."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:21
-#, fuzzy
 msgid "\\u0020"
 msgstr "\\u0020"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:21
-#, fuzzy
 msgid ""
 "Matches a Unicode character using hexadecimal representation\n"
 "(exactly four digits)."
 msgstr ""
-"Komt overeen met een Unicode karakter, gebruikmakend van \n"
-"hexadecimale notatie (precies vier cijfers)."
+"Komt overeen met een Unicode karakter, gebruikmakend van \nhexadecimale "
+"notatie (precies vier cijfers)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:25
 msgid "Substitutions"
@@ -9789,11 +9738,11 @@ msgid "$number"
 msgstr "$nummer"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:26
-#, fuzzy
 msgid ""
 "Substitutes the last substring matched by group number 'number' (decimal)."
 msgstr ""
-"Substitueert de laatste substring overeengekomen door een nummer (decimaal)."
+"Substitueert de laatste substring overeengekomen door een nummer "
+"'nummer' (decimaal)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:27
 msgid "${name}"
@@ -9861,86 +9810,75 @@ msgid "[character_group]"
 msgstr "[karakter_groep]"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:37
-#, fuzzy
 msgid ""
 "Positive character group.\n"
 "Matches any character in the specified character group."
 msgstr ""
-"Positieve karaktergroep.\n"
-"Komt overeen met iedere karakter in de gespecificeerde karaktergroep."
+"Positieve karaktergroep.\nKomt overeen met iedere karakter in de "
+"gespecificeerde karaktergroep."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:39
 msgid "[^character_group]"
 msgstr "[^karakter_groep]"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:39
-#, fuzzy
 msgid ""
 "Negative character group.\n"
 "Matches any character not in the specified character group."
 msgstr ""
-"Negatieve karaktergroep.\n"
-"Komt overeen met iedere karakter niet in de gespecificeerde karaktergroep."
+"Negatieve karaktergroep. \nKomt overeen met iedere karakter niet in de "
+"gespecificeerde karaktergroep."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:41
 msgid "[firstCharacter-lastCharacter]"
 msgstr "[eersteKarakter-laatsteKarakter]"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:41
-#, fuzzy
 msgid ""
 "Character range.\n"
 "Matches any character in a range of characters."
-msgstr ""
-"Karakterbereik.\n"
-"Komt overeen met iedere karakter binnen het bereik."
+msgstr "Karakterbereik.\nKomt overeen met iedere karakter binnen het bereik."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:43
 msgid "."
 msgstr "."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:43
-#, fuzzy
 msgid ""
 "The period character.\n"
 "Matches any character except \\n. \n"
 "If modified by the Singleline option, a period character matches any "
 "character."
 msgstr ""
-"Het punt-karakter.\n"
-"Komt overeen met iedere karakter behalve \\n. \n"
-"Wanneer aangepast met de 'enkele regel'-optie, een punt-karakter komt "
+"Het punt-karakter.\nKomt overeen met iedere karakter behalve \\n. \n"
+"Wanneer aangepast met de 'enkele regel'-optie komt een punt-karakter "
 "overeen met iedere karakter."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:46
-#, fuzzy
 msgid "\\p{name}"
 msgstr "\\p{naam}"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:46
-#, fuzzy
 msgid ""
 "Matches any character in the Unicode general category\n"
 "or named block specified by name (for example, Ll, Nd, Z, IsGreek, and "
 "IsBoxDrawing)."
 msgstr ""
-"Komt overeen met iedere karakter in de generieke categorie van Unicode\n"
-"of een blok met naam, gespecificeerd op naam (bijvoorbeeld, L1, Nd, Z, "
+"Komt overeen met iedere karakter in de generieke categorie\nvan Unicode of "
+"een blok met naam, gespecificeerd op naam (bijvoorbeeld, L1, Nd, Z, "
 "IsGrieks, en WordtDoosGetekend)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:49
-#, fuzzy
 msgid "\\P{name}"
 msgstr "\\P{naam}"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:49
-#, fuzzy
 msgid ""
 "Matches any character not in Unicode general category \n"
 "or named block specified in name."
 msgstr ""
-"Komt overeen met iedere karakter dat zich niet in de generieke categorie \n"
-"van Unicode bevindt of een blok met naam, gespecificeerd op naam."
+"Komt overeen met iedere karakter dat zich niet in de generieke\ncategorie van "
+"Unicode bevindt of een blok met naam, gespecificeerd op naam."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:52
 msgid "\\w"
@@ -9999,55 +9937,51 @@ msgid "^"
 msgstr "^"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:61
-#, fuzzy
 msgid ""
 "Specifies that the match must occur at the beginning of \n"
 "the string or the beginning of the line."
 msgstr ""
-"Specificeert dat de overeenkomst aan het begin van de string of \n"
-"regel moet voorkomen."
+"Specificeert dat de overeenkomst aan het begin van de string\nof regel moet "
+"voorkomen."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:64
 msgid "$"
 msgstr "$"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:64
-#, fuzzy
 msgid ""
 "Specifies that the match must occur at the end of the \n"
 "string, before \\n at the end of the string, or at the \n"
 "end of the line."
 msgstr ""
-"Specificeert dat de overeenkomst aan het eind van de string, \n"
-"voor \\n aan het eind van de string, of op het \n"
-"eind van de string moet plaatsvinden."
+"Specificeert dat de overeenkomst aan het eind van de \n"
+"string, voor \\n aan het eind van de string, of op het eind\n"
+"van de string moet plaatsvinden."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:68
 msgid "\\A"
 msgstr "\\A"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:68
-#, fuzzy
 msgid ""
 "Specifies that the match must occur at the beginning of \n"
 "the string (ignores the Multiline option)."
 msgstr ""
-"Specificeert dat de overeenkomst voor moet komen aan het begin van de \n"
-"string (negeert de 'meerdere regels'-optie)."
+"Specificeert dat de overeenkomst voor moet komen aan het begin\n"
+"van de string (negeert de 'meerdere regels'-optie)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:71
 msgid "\\Z"
 msgstr "\\Z"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:71
-#, fuzzy
 msgid ""
 "Specifies that the match must occur at the end of the \n"
 "string or before \\n at the end of the string (ignores \n"
 "the Multiline option)."
 msgstr ""
 "Specificeert dat de overeenkomst aan het eind van de string \n"
-"of voor \\n aan het eind van de string moet voorkomen (negeert \n"
+"of voor \\n aan het eind van de string moet voorkomen (negeert\n"
 "de 'meerdere regels'-optie)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:75
@@ -10055,32 +9989,29 @@ msgid "\\z"
 msgstr "\\z"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:75
-#, fuzzy
 msgid ""
 "Specifies that the match must occur at the end of the \n"
 "string (ignores the Multiline option)."
 msgstr ""
-"Specificeert dat de overeenkomst aan het eind van de string moet voorkomen \n"
-"(negeert de 'meerdere regels'-optie)."
+"Specificeert dat de overeenkomst aan het eind van de string\n"
+"moet voorkomen (negeert de 'meerdere regels'-optie)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:78
 msgid "\\G"
 msgstr "\\G"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:78
-#, fuzzy
 msgid ""
 "Specifies that the match must occur at the point where \n"
 "the previous match ended. When used with Match.NextMatch(), \n"
 "this ensures that matches are all contiguous."
 msgstr ""
-"Specificeert dat de overeenkomst plaats moet vinden op het punt waar \n"
-"de vorige overeenkomst eindigde. Wanneer het gebruikt wordt met \n"
-"Match.NextMatch() zorgt dit ervaar dat alle overeenkomsten \n"
-"achtereenvolgens zijn."
+"Specificeert dat de overeenkomst plaats moet vinden op het\n"
+"punt waar de vorige overeenkomst eindigde. Wanneer het gebruikt\n"
+"wordt met Match.NextMatch() zorgt dit ervaar dat alle \n"
+"overeenkomsten achtereenvolgens zijn."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:82
-#, fuzzy
 msgid ""
 "Specifies that the match must occur on a boundary \n"
 "between \\w (alphanumeric) and \\W (nonalphanumeric) characters. \n"
@@ -10089,22 +10020,22 @@ msgid ""
 "characters). The match can also occur on a word boundary at \n"
 "the end of the string."
 msgstr ""
-"Specificeert dat de overeenkomst plaats moet vinden op de grens \n"
-"tussen \\w (alfa-numeriek) en \\W (niet-alfa-numeriek) karakters. \n"
-"De overeenkomst moet plaatsvinden op een woordgrens (dat is, op het eerste \n"
-"of laatste karakters in woorden gescheiden door niet-alfanumerieke \n"
-"karakters). De overeenkomst kan ook plaatsvinden op een woordgrens aan \n"
-"het eind van de string."
+"Specificeert dat de overeenkomst plaats moet vinden op de\n"
+"grens tussen \\w (alfanumerieke) en \\W (niet-alfanumerieke)\n"
+"karakters. De overeenkomst moet plaatsvinden op een woordgrens\n"
+"(dat is, op het eerste of laatste karakters in woorden gescheiden\n"
+"door niet-alfanumerieke karakters). De overeenkomst kan ook \n"
+"plaatsvinden op een woordgrens aan het eind van de string."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:89
 msgid "\\B"
 msgstr "\\B"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:89
-#, fuzzy
 msgid "Specifies that the match must not occur on a \\b boundary."
 msgstr ""
-"Specificeert dat de overeenkomst niet mag plaatsvinden op een \\b grens."
+"Specificeert dat de overeenkomst niet mag plaatsvinden op een \\b "
+"grens."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:92
 msgid "Quantifiers"
@@ -10115,65 +10046,56 @@ msgid "*"
 msgstr "*"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:93
-#, fuzzy
 msgid ""
 "Specifies zero or more matches; \n"
 "for example, \\w* or (abc)*. Equivalent to {0,}."
 msgstr ""
-"Specificeert nul of meerdere overeenkomsten; \n"
-"bijvoorbeeld, \\w* of (abc)*. Gelijk aan {0,}."
+"Specificeert nul of meerdere overeenkomsten; \nbijvoorbeeld, \\w* of "
+"(abc)*. Gelijk aan {0,}."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:96
 msgid "+"
 msgstr "+"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:96
-#, fuzzy
 msgid ""
 "Specifies one or more matches; \n"
 "for example, \\w+ or (abc)+. Equivalent to {1,}."
 msgstr ""
-"Specificeert één of meerdere overeenkomsten; \n"
-"bijvoorbeeld, \\w+ of (abc)+. Gelijk aan {1,}."
+"Specificeert één of meerdere overeenkomsten; \nbijvoorbeeld, \\w+ of "
+"(abc)+. Gelijk aan {1,}."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:99
 msgid "?"
 msgstr "?"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:99
-#, fuzzy
 msgid ""
 "Specifies zero or one matches; \n"
 "for example, \\w? or (abc)?. Equivalent to {0,1}."
 msgstr ""
-"Specificeert nul of één overeenkomst; \n"
-"bijvoorbeeld, \\w? of (abc)?. Gelijk aan {0,1}."
+"Specificeert nul of één overeenkomst; \nbijvoorbeeld, \\w? of (abc)?. "
+"Gelijk aan {0,1}."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:102
 msgid "{n}"
 msgstr "{n}"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:102
-#, fuzzy
 msgid ""
 "Specifies exactly n matches; \n"
 "for example, (pizza){2}."
-msgstr ""
-"Specificeert precies n overeenkomsten; \n"
-"bijvoorbeeld, (pizza){2}."
+msgstr "Specificeert precies n overeenkomsten; \nbijvoorbeeld, (pizza){2}."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:105
 msgid "{n,}"
 msgstr "{n,}"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:105
-#, fuzzy
 msgid ""
 "Specifies at least n matches;\n"
 "for example, (abc){2,}."
-msgstr ""
-"Specificeert op zijn minst n overeenkomst;\n"
-"bijvoorbeeld, (abc){2,}."
+msgstr "Specificeert op zijn minst n overeenkomst;\nbijvoorbeeld, (abc){2,}."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:108
 msgid "{n,m}"
@@ -10188,12 +10110,11 @@ msgid "*?"
 msgstr "*?"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:109
-#, fuzzy
 msgid ""
 "Specifies the first match that consumes as few repeats \n"
 "as possible (equivalent to lazy *)."
 msgstr ""
-"Specificeert dat de eerste overeenkomst zo min mogelijk herhalingen \n"
+"Specificeert dat de eerste overeenkomst zo min mogelijk \nherhalingen "
 "consumeert (gelijk aan lazy *)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:112
@@ -10201,13 +10122,12 @@ msgid "+?"
 msgstr "+?"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:112
-#, fuzzy
 msgid ""
 "Specifies as few repeats as possible, but at least one \n"
 "(equivalent to lazy +)."
 msgstr ""
-"Specificeert zo min mogelijk herhalingen, maar op zijn minst een \n"
-"(gelijk aan lazy +)."
+"Specificeert zo min mogelijk herhalingen, maar op zijn minst\n"
+"één (gelijk aan lazy +)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:115
 msgid "??"
@@ -10230,25 +10150,23 @@ msgid "{n,}?"
 msgstr "{n,}?"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:117
-#, fuzzy
 msgid ""
 "Specifies as few repeats as possible, \n"
 "but at least n (lazy {n,})."
 msgstr ""
-"Specificeert zo min mogelijk herhalingen als mogelijk, \n"
-"maar tenminste n (lazy{n,})."
+"Specificeert zo min mogelijk herhalingen als mogelijk,\n"
+"maar tenminste n (lazy {n,})."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:120
 msgid "{n,m}?"
 msgstr "{n,n}?"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:120
-#, fuzzy
 msgid ""
 "Specifies as few repeats as possible \n"
 "between n and m (lazy {n,m})."
 msgstr ""
-"Geeft zo min mogelijk herhalingen als mogelijk op \n"
+"Geeft zo min mogelijk herhalingen als mogelijk\n"
 "tussen n en m (lazy {n,m})."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:125
@@ -10260,7 +10178,6 @@ msgid "(subexpression)"
 msgstr "(subexpressie)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:126
-#, fuzzy
 msgid ""
 "Captures the matched subexpression (or noncapturing group; \n"
 "for more information, see the ExplicitCapture option in \n"
@@ -10268,25 +10185,23 @@ msgid ""
 "automatically based on the order of the opening parenthesis, \n"
 "starting from one. "
 msgstr ""
-"Verkrijgt de overkomende subexpressie (of niet-verkrijgbare groep; \n"
-"voor meer informatie, zie de ExplicitCapture optie in \n"
-"Reguliere expressie-opties). Verkregen items door () worden \n"
-"automatisch genummerd door de volgorde van de haakjes-open, \n"
-"beginnend bij één. "
+"Verkrijgt de overkomende subexpressie (of niet-verkrijgbare groep;\n"
+"voor meer informatie, zie de ExplicitCapture optie in Reguliere\n"
+"expressieopties). Verkregen items door () worden automatisch genummerd\n"
+"door de volgorde van de haakjes-open, beginnend bij één. "
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:132
 msgid "(?<name> subexpression)"
 msgstr "(?<naam> subexpressie)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:132
-#, fuzzy
 msgid ""
 "Captures the matched subexpression into a group name or \n"
 "number name. The string used for name must not contain \n"
 "any punctuation and cannot begin with a number. "
 msgstr ""
 "Verkrijgt de overkomende subexpressie in een groepsnaam of \n"
-"nummernaam. De string die gebruikt wordt voor de naam mag geen \n"
+"nummernaam. De string die gebruikt wordt voor de naam mag geen\n"
 "leestekens bevatten en mag niet met een nummer beginnen. "
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:136
@@ -10294,28 +10209,26 @@ msgid "(?<name1-name2> subexpression)"
 msgstr "(?<naam1-naam2> subexpressie)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:136
-#, fuzzy
 msgid ""
 "Deletes the definition of the previously defined group name2 \n"
 "and stores in group name1 the interval between the previously \n"
 "defined name2 group and the current group."
 msgstr ""
 "Verwijdert de definitie van de eerder gedefinieerde group naam2 \n"
-"en bewaart in group naam1 het interval tussen de eerder \n"
-"gedefinieerde naam2 groep en de hudige groep."
+"en bewaart in group naam1 het interval tussen de eerder gedefinieerde \n"
+"naam2 groep en de hudige groep."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:140
 msgid "(?: subexpression)"
 msgstr "(?: subexpressie)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:140
-#, fuzzy
 msgid ""
 "Noncapturing group. \n"
 "Does not capture the substring matched by the subexpression."
 msgstr ""
-"Niet-verkrijgende groep. \n"
-"Verkrijgt de substring die overeengekomen is door de subexpressie niet."
+"Niet-verkrijgende groep. \nVerkrijgt de substring die overeengekomen is door "
+"de subexpressie niet."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:143
 msgid "(?imnsx-imnsx: subexpression)"
@@ -10332,22 +10245,20 @@ msgid "(?= subexpression)"
 msgstr "(?= subexpressie)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:145
-#, fuzzy
 msgid ""
 "Zero-width positive lookahead assertion.\n"
 "Continues match only if the subexpression matches at this \n"
 "position on the right."
 msgstr ""
 "Positieve voorwaartse assertie met nulresultaat.\n"
-"Gaat een overeenkomst enkel continueren indien de subexpressie overeenkomt \n"
-"op deze positie naar rechts."
+"Gaat een overeenkomst enkel continueren indien de subexpressie \n"
+"overeenkomt op deze positie naar rechts."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:149
 msgid "(?! subexpression)"
 msgstr "(?! subexpressie)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:149
-#, fuzzy
 msgid ""
 "Zero-width negative lookahead assertion.\n"
 "Continues match only if the subexpression does not match\n"
@@ -10355,17 +10266,15 @@ msgid ""
 "For example, \\b(?!un)\\w+\\b matches words that do not begin with un."
 msgstr ""
 "Negatieve voorwaartse assertie met nulresultaat.\n"
-"Gaat een overeenkomst alleen continueren indien de subexpressie niet \n"
-"overeenkomt op deze rechter positie. \n"
-"Bijvoorbeeld, \\b(?!on)\\w+\\b komt overeen met woorden die niet beginnen \n"
-"met on."
+"Gaat een overeenkomst alleen continueren indien de subexpressie \n"
+"niet overeenkomt op deze rechter positie. Bijvoorbeeld, \\b(?!on)\\w+\\b\n"
+"komt overeen met woorden die niet beginnen met on."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:154
 msgid "(?<= subexpression)"
 msgstr "(?<= subexpressie)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:154
-#, fuzzy
 msgid ""
 "Zero-width positive lookbehind assertion.\n"
 "Continues match only if the subexpression matches at this\n"
@@ -10374,32 +10283,30 @@ msgid ""
 "This construct does not backtrack."
 msgstr ""
 "Positieve achterwaartse assertie met nulresultaat.\n"
-"Gaat een overeenkomst enkel continueren indien de subexpressie overeenkomt \n"
-"op deze positie naar links. \n"
-"Bijvoorbeeld, (?<=19)99 komt overeen met instanties van 99 die gevolgd \n"
-"door 19. Deze constructie kijkt niet terug ('no backtracking')."
+"Gaat een overeenkomst enkel continueren indien de subexpressie\n"
+"overeenkomt op deze positie naar links.\n"
+"Bijvoorbeeld, (?<=19)99 komt overeen met instanties van 99 die \n"
+"gevolgd door 19. Deze constructie kijkt niet terug ('no backtracking')."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:160
 msgid "(?<! subexpression)"
 msgstr "(?<! subexpressie)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:160
-#, fuzzy
 msgid ""
 "Zero-width negative lookbehind assertion.\n"
 "Continues match only if the subexpression does not \n"
 "match at the position on the left."
 msgstr ""
 "Negatieve achterwaartse assertie met nulresultaat.\n"
-"Gaat een overeenkomst enkel continueren indien de subexpressie niet \n"
-"overeenkomt op deze positie naar links."
+"Gaat een overeenkomst enkel continueren indien de subexpressie \n"
+"niet overeenkomt op deze positie naar links."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:164
 msgid "(?> subexpression)"
 msgstr "(?> subexpressie)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:164
-#, fuzzy
 msgid ""
 "Nonbacktracking subexpression (also known as a 'greedy' subexpression.)\n"
 "The subexpression is fully matched once, and then does not participate \n"
@@ -10408,34 +10315,31 @@ msgid ""
 msgstr ""
 "Niet-terugzoekende subexpressie (ook wel bekend als een 'greedy' \n"
 "subexpressie). De subexpressie wordt één keer overeengekomen, en \n"
-"participeert niet langer mee in terugzoeken. (Dat is, de subexpressie komt \n"
-"enkel oevreen met strings die overeenkomen bij de subexpressie alleen.)"
+"participeert niet langer mee in terugzoeken (dat wil zeggen, de \n"
+"subexpressie komt enkel overeen met strings die overeenkomen bij \n"
+"de subexpressie alleen)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:171
 msgid "Backreference Constructs"
-msgstr "Terugverwijzingscontructie"
+msgstr "Terugverwijzingscontructies"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:172
-#, fuzzy
 msgid "\\number"
-msgstr "$nummer"
+msgstr "\\getal"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:172
-#, fuzzy
 msgid ""
 "Backreference. \n"
 "For example, (\\w)\\1 finds doubled word characters."
 msgstr ""
-"Terugverwijzing. \n"
-"Bijvoorbeeld, (\\w)\\1 vindt dubbele woordkarakters."
+"Terugverwijzing. \nBijvoorbeeld, (\\w)\\1 vindt dubbele "
+"woordkarakters."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:175
-#, fuzzy
 msgid "\\k<name>"
 msgstr "\\k<naam>"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:175
-#, fuzzy
 msgid ""
 "Named backreference. \n"
 "For example, (?<char>\\w)\\k<char> finds doubled word characters. \n"
@@ -10444,25 +10348,24 @@ msgid ""
 msgstr ""
 "Benoemde terugverwijzingen. \n"
 "Bijvoorbeeld, (?<char>\\w)\\k<char> vindt dubbele woordkarakters. \n"
-"De expressie (?<43>\\w)\\43 doet hetzelfde. U kunt enkele aanhalingstekens\n"
-"gebruiken in plaats van het groter/kleinerdan-teken; bijvoorbeeld, \\k'char'."
+"De expressie (?<43>\\w)\\43 doet hetzelfde. U kunt enkele \n"
+"aanhalingstekens gebruiken in plaats van het groter/kleinerdan-teken;\n"
+"bijvoorbeeld, \\k'char'."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:182
 msgid "Alternation Constructs"
-msgstr "Alternatieve constructies"
+msgstr "Alternerende constructies"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:183
 msgid "|"
 msgstr "|"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:183
-#, fuzzy
 msgid ""
 "Matches any one of the terms separated by the | (vertical bar) character; \n"
 "for example, cat|dog|tiger. The leftmost successful match wins."
 msgstr ""
-"Komt overeen met iedere term gescheiden door | (verticale streep) "
-"karakter; \n"
+"Komt overeen met iedere term gescheiden door | (verticale streep) karakter; \n"
 "bijvoorbeeld kat|poes|tijger. De meest linkse overeenkomst wint."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:186
@@ -10482,7 +10385,6 @@ msgid "(?(name)yes|no)"
 msgstr "(?(naam)ja|nee)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:187
-#, fuzzy
 msgid ""
 "Matches the 'yes' part if the named capture string has a match; \n"
 "otherwise, matches the 'no' part. The 'no' part can be omitted.\n"
@@ -10491,10 +10393,11 @@ msgid ""
 "is interpreted as an expression test."
 msgstr ""
 "Komt overeen met het 'ja'-gedeelte indien de verkregen string een \n"
-"overeenkomst heeft; anders komt het overeen met het 'nee'-gedeelte. Het\n"
-"'nee'-gedeelte kan weggelaten worden. Wanneer de naam niet overeenkomt met \n"
-"de naam of nummer van een verkrijgende groep gebruikt in deze expresse, \n"
-"wordt de alternatieve constructie geïnterpreteerd als een expressietest."
+"overeenkomst heeft; anders komt het overeen met het 'nee'-gedeelte.\n"
+"Het 'nee'-gedeelte kan weggelaten worden. Wanneer de naam niet \n"
+"overeenkomt met de naam of nummer van een verkrijgende groep gebruikt \n"
+"in deze expresse, wordt de alternatieve constructie geïnterpreteerd als \n"
+"een expressietest."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:195
 msgid "Miscellaneous Constructs"
@@ -10505,12 +10408,11 @@ msgid "(?imnsx-imnsx)"
 msgstr "(?imnsx-imnsx)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:196
-#, fuzzy
 msgid ""
 "Sets or disables options such as case insensitivity to be\n"
 "turned on or off in the middle of a pattern."
 msgstr ""
-"Schakelt opties in of uit zoals hoofdlettergevoeligheid dat wordt\n"
+"Schakelt opties in of uit zoals hoofdlettergevoeligheid dat wordt \n"
 "in of uitgeschakeld in het middel van het patroon."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:199
@@ -10518,7 +10420,6 @@ msgid "(?# )"
 msgstr "(?# )"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:199
-#, fuzzy
 msgid ""
 "Inline comment inserted within a regular expression. \n"
 "The comment terminates at the first closing parenthesis character."
@@ -10531,12 +10432,11 @@ msgid "# [to end of line]"
 msgstr "# [naar einde van regel]"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:202
-#, fuzzy
 msgid ""
 "X-mode comment. The comment begins at an unescaped # and \n"
 "continues to the end of the line."
 msgstr ""
-"X-mode-commentaar. Het commentaar begint op een niet-geëscapede # en \n"
+"X-mode-commentaar. Het commentaar begint op een niet-geëscapete # en \n"
 "gaat verder tot het eind van de regel."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/UpdateInProgressDialog.cs:65
@@ -10555,27 +10455,27 @@ msgstr "Contact leggen met www.regexlib.com. Dit kan even duren ..."
 msgid "Regular Expression Toolkit"
 msgstr "Reguliere expressie gereedschapskist"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:133
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:129
 msgid "Regular Expression"
 msgstr "Reguliere expressie"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:174
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:166
 msgid "Replace Regex"
 msgstr "Vervang regex"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:206
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:196
 msgid "Input"
 msgstr "Invoer"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:241
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:229
 msgid "Regex Elements"
 msgstr "Regex elementen"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:291
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:271
 msgid "Matches"
 msgstr "Komt overeen met"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:345
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:322
 msgid "Regex Library"
 msgstr "Regex bibliotheek"
 
@@ -10599,23 +10499,23 @@ msgstr "Zoek:"
 msgid "Expressions"
 msgstr "Expressie"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:177
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:174
 msgid "Source:"
 msgstr "Bron:"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:200
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:197
 msgid "Pattern:"
 msgstr "Patroon:"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:210
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:207
 msgid "Author:"
 msgstr "Auteur:"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:274
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:269
 msgid "Matching:"
 msgstr "Overeenkomstig met:"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:292
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:287
 msgid "Non Matching:"
 msgstr "Niet-overeenkomstig met:"
 
@@ -10633,7 +10533,7 @@ msgstr "C bestanden"
 #: ../src/addins/CBinding/templates/StaticLibraryCppProject.xpt.xml:9
 #: ../src/addins/CBinding/templates/ConsoleCppProject.xpt.xml:9
 msgid "C/C++"
-msgstr ""
+msgstr "C/C++"
 
 #: ../src/addins/CBinding/CBinding.addin.xml:149
 msgid "Edit Packages..."
@@ -10651,9 +10551,8 @@ msgstr "Leeg C-project"
 #: ../src/addins/CBinding/templates/SharedLibraryCProject.xpt.xml:9
 #: ../src/addins/CBinding/templates/StaticLibraryCProject.xpt.xml:9
 #: ../src/addins/CBinding/templates/ConsoleCProject.xpt.xml:9
-#, fuzzy
 msgid "C"
-msgstr "C#"
+msgstr "C"
 
 #: ../src/addins/CBinding/templates/EmptyCProject.xpt.xml:12
 msgid "Creates an empty C solution."
@@ -10785,7 +10684,7 @@ msgstr "Bewerk pakketten"
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.EditPackagesDialog.cs:83
 msgid "System Packages"
-msgstr "Syteempakketten"
+msgstr "Systeempakketten"
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.EditPackagesDialog.cs:103
 msgid "Project Packages"
@@ -10858,1037 +10757,20 @@ msgstr "Maakt een eenvoudig C++-project aan als statische bibliotheek"
 
 #: ../src/addins/CBinding/templates/ConsoleCProject.xpt.xml:12
 msgid "Creates simple hello world C project."
-msgstr "Maakt een eenvoudig 'hello world' C project aan."
+msgstr "Maakt een eenvoudig 'hello world' C-project aan."
 
 #: ../src/addins/CBinding/templates/ConsoleCppProject.xpt.xml:12
 msgid "Creates simple hello world C++ project."
 msgstr "Maakt een eenvoudig 'hello world' C++-project aan."
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.GeneralOptionsPanel.cs:65
-#, fuzzy
 msgid "Default C Compiler:"
-msgstr "Cimpiler:"
+msgstr "Standaard C-compiler:"
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.GeneralOptionsPanel.cs:75
-#, fuzzy
 msgid "Default C++ Compiler:"
-msgstr "Cimpiler:"
+msgstr "Standaard C++-compiler:"
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.GeneralOptionsPanel.cs:87
-#, fuzzy
 msgid "Parse System Tags"
-msgstr "Syteempakketten"
-
-#, fuzzy
-#~ msgid ""
-#~ "\\\\\\\n"
-#~ "umber"
-#~ msgstr "\\nummer"
-
-#~ msgid ""
-#~ "MonoDevelop failed to start.\n"
-#~ "If you installed MonoDevelop using a binary installer, take a look at \n"
-#~ "http://www.mono-project.com/InstallerInstructions for more info about "
-#~ "possible\n"
-#~ "causes of this error."
-#~ msgstr ""
-#~ "Het is niet gelukt om MonoDevelop te starten.\n"
-#~ "Indien u MonoDevelop met behulp van een binary installatie heeft "
-#~ "geïnstalleerd,\n"
-#~ "zoek dan op http://www.mono-project.com/InstallerInstructions naar meer "
-#~ "informatie\n"
-#~ "over mogelijke oorzaken van het probleem."
-
-#~ msgid "_Name"
-#~ msgstr "_Naam"
-
-#~ msgid "N_ew Project..."
-#~ msgstr "Ni_euw project..."
-
-#~ msgid "    "
-#~ msgstr "    "
-
-#~ msgid "DisplayName"
-#~ msgstr "Naam van display"
-
-#~ msgid "Boo Files"
-#~ msgstr "Boo-bestanden"
-
-#~ msgid "Boo Shell"
-#~ msgstr "Boo shell"
-
-#~ msgid "Creates a Boo/Gtk# project"
-#~ msgstr "Maakt een Boo/Gtk# project aan"
-
-#~ msgid "Gtk# Project"
-#~ msgstr "Gtk# project"
-
-#~ msgid "Creates a top-level Gtk# window"
-#~ msgstr "Maakt een Gtk# venster aan op hoogste niveau"
-
-#~ msgid "Gtk# Window"
-#~ msgstr "Gtk# venster"
-
-#~ msgid "Boo Library"
-#~ msgstr "Boo-bibliotheek"
-
-#~ msgid "Creates a Boo library"
-#~ msgstr "Maakt een Boo-bibliotheek aan"
-
-#~ msgid "Creates an empty Boo file."
-#~ msgstr "Maakt een leeg Boo-bestand aan."
-
-#~ msgid "Creates an empty Boo solution."
-#~ msgstr "Maakt een lege Boo-oplossing aan."
-
-#~ msgid "Glade# 1.0 Project"
-#~ msgstr "Glade# 1.0-project"
-
-#~ msgid "a Glade# project with one window and button"
-#~ msgstr "een Glade#-project met een venster en een knop"
-
-#~ msgid "Creates a Gnome# program."
-#~ msgstr "Maakt een Gnome# toepassing aan."
-
-#~ msgid "Gnome# Program"
-#~ msgstr "Gnome#-toepassing"
-
-#~ msgid "Creates a Gnome# project"
-#~ msgstr "Maakt een Gnome#-project aan"
-
-#~ msgid "Gnome# 1.0 Project"
-#~ msgstr "Gnome# 1.0-project"
-
-#~ msgid "Creates a Gtk# project."
-#~ msgstr "Maakt een Gtk#-project aan."
-
-#~ msgid "Gtk# 1.0 Project"
-#~ msgstr "Gtk# 1.0-project"
-
-#~ msgid "Javac"
-#~ msgstr "Javac"
-
-#~ msgid "Gcj"
-#~ msgstr "Gcj"
-
-#~ msgid "Generating {0} reference stub ..."
-#~ msgstr "Bezig met genereren van {0} referentie stub ..."
-
-#~ msgid "Generating assembly ..."
-#~ msgstr "Bezig met genereren van assembly ..."
-
-#~ msgid "Compiling Java source code ..."
-#~ msgstr "Bezig met compileren van Java broncode"
-
-#~ msgid "Java"
-#~ msgstr "Java"
-
-#~ msgid "Java Files"
-#~ msgstr "Java-bestanden"
-
-#~ msgid "Classpath:"
-#~ msgstr "Klaspad:"
-
-#~ msgid "<b>Compiler</b>"
-#~ msgstr "<b>Compiler</b>"
-
-#~ msgid "gcj"
-#~ msgstr "gcj"
-
-#~ msgid "javac"
-#~ msgstr "javac"
-
-#~ msgid "Generate warnings"
-#~ msgstr "Genereer waarschuwingen"
-
-#~ msgid "Enable deprecation warnings"
-#~ msgstr "Deprecation-waarschuwingen inschakelen"
-
-#~ msgid "Compiler command:"
-#~ msgstr "Compileercommando:"
-
-#~ msgid "IKVM path:"
-#~ msgstr "IKVM-pad:"
-
-#~ msgid "Java compiler:"
-#~ msgstr "Javacompiler:"
-
-#~ msgid "Creates an empty Java file."
-#~ msgstr "Maak een leeg Java-bestand aan."
-
-#~ msgid "Creates an empty Java solution."
-#~ msgstr "Maak een lege Java-oplossing aan."
-
-#~ msgid "Create a console Java project with IKVM"
-#~ msgstr "Maak een Java-consoleproject met IKVM aan"
-
-#~ msgid "IKVM Console Project"
-#~ msgstr "IVKM Consoleproject"
-
-#~ msgid "Create a Glade# Java project with IKVM"
-#~ msgstr "Maak een Glade#-Javaproject met IKVM aan"
-
-#~ msgid "IKVM Glade# Project"
-#~ msgstr "IKVM Glade#-project"
-
-#~ msgid "Create a Gnome# Java project with IKVM"
-#~ msgstr "Maak een Gnome#-Javaproject met IKVM aan"
-
-#~ msgid "IKVM Gnome# Project"
-#~ msgstr "IKVM Gnome#-project"
-
-#~ msgid "Create a Gtk# Java project with IKVM"
-#~ msgstr "Maak een Gtk#-Javaproject met IKVM aan"
-
-#~ msgid "IKVM Gtk# Project"
-#~ msgstr "IKVM Gtk#-project"
-
-#~ msgid "Create a Java library with IKVM"
-#~ msgstr "Maak een Javabibliotheek met IKVM aan"
-
-#~ msgid "IKVM Library"
-#~ msgstr "IKVM-bibliotheek"
-
-#~ msgid "AWT Applet"
-#~ msgstr "AWT-applet"
-
-#~ msgid "Creates a Java AWT Applet"
-#~ msgstr "Maakt een Java AWT-Applet aan"
-
-#~ msgid "AWT Application"
-#~ msgstr "AWT-toepassing"
-
-#~ msgid "Creates a Java AWT application."
-#~ msgstr "Maakt een Java AWT-toepassing aan."
-
-#~ msgid "AWT Project"
-#~ msgstr "AWT-project"
-
-#~ msgid "Creates a Java AWT project."
-#~ msgstr "Maakt een Java AWT-project aan."
-
-#~ msgid "Create a console Java project"
-#~ msgstr "Maak een Java-consoleproject aan"
-
-#~ msgid "Creates an AWT dialog."
-#~ msgstr "Maakt een AWT-dialoog aan."
-
-#~ msgid "Java AWT Dialog"
-#~ msgstr "Java AWT-dialoog"
-
-#~ msgid "AWT Frame"
-#~ msgstr "AWT-frame"
-
-#~ msgid "Creates a Java AWT Frame"
-#~ msgstr "Maakt een Java AWT-frame aan"
-
-#~ msgid "AWT OK Dialog"
-#~ msgstr "AWT 'OK'-dialoog"
-
-#~ msgid "Creates a Java AWT OK Dialog."
-#~ msgstr "Maakt een Java AWT 'OK'-dialoog aan."
-
-#~ msgid "AWT Panel"
-#~ msgstr "AWT-paneel"
-
-#~ msgid "Creates a Java AWT panel."
-#~ msgstr "Maakt een Java AWT-paneel aan."
-
-#~ msgid "Internal Error: ownerProject not set"
-#~ msgstr "Interne fout: projecteigenaar niet ingesteld"
-
-#~ msgid "Edit Database Connection"
-#~ msgstr "Bewerk databaseverbinding"
-
-#~ msgid "Add Database Connection"
-#~ msgstr "Voeg databaseverbinding toe"
-
-#~ msgid "No databases found!"
-#~ msgstr "Geen databases gevonden!"
-
-#~ msgid "Please Wait"
-#~ msgstr "Even wachten aub"
-
-#~ msgid "Display content as image"
-#~ msgstr "Inhoud als afbeelding weergeven"
-
-#~ msgid "Display content as text"
-#~ msgstr "Inhoud als tekst weergeven"
-
-#~ msgid "Display content as xml text"
-#~ msgstr "Inhoud als xml-tekst weergeven"
-
-#~ msgid "Display content as xml tree"
-#~ msgstr "Inhoud als xml-boom weergeven"
-
-#~ msgid "Export To File"
-#~ msgstr "Exporteren naar bestand"
-
-#~ msgid "Import From File"
-#~ msgstr "Importeren uit bestand"
-
-#~ msgid "Property Name"
-#~ msgstr "Property-naam"
-
-#~ msgid "Property Type"
-#~ msgstr "Property-type"
-
-#~ msgid "Nullable"
-#~ msgstr "Nullable"
-
-#~ msgid "Create Setter"
-#~ msgstr "Maak set-functie aan"
-
-#~ msgid "Ctor Parameter"
-#~ msgstr "Ctor parameter"
-
-#~ msgid "Y"
-#~ msgstr "J"
-
-#~ msgid "N"
-#~ msgstr "N"
-
-#~ msgid "Column"
-#~ msgstr "Kolom"
-
-#~ msgid "SQL files"
-#~ msgstr "SQL-bestanden"
-
-#~ msgid "All files"
-#~ msgstr "Alle bestanden"
-
-#~ msgid "Are you sure you want to overwrite the file '{0}'?"
-#~ msgstr "Weet u zeker dat u het bestand '{0} wilt overschrijven?"
-
-#~ msgid "Overwrite?"
-#~ msgstr "Overschrijven?"
-
-#~ msgid "of"
-#~ msgstr "van"
-
-#~ msgid "Save Password"
-#~ msgstr "Wachtwoord opslaan"
-
-#~ msgid "Server"
-#~ msgstr "Server"
-
-#~ msgid "Port"
-#~ msgstr "Poort"
-
-#~ msgid "Username"
-#~ msgstr "Gebruikersnaam"
-
-#~ msgid "Password"
-#~ msgstr "Wachtwoord"
-
-#~ msgid "Database"
-#~ msgstr "Database"
-
-#~ msgid "Use custom connection string"
-#~ msgstr "Gebruik andere verbindingsstring"
-
-#~ msgid "Min Pool Size"
-#~ msgstr "Min grootte van 'pool'"
-
-#~ msgid "Max Pool Size"
-#~ msgstr "Max grootte van 'pool'"
-
-#~ msgid "Advanced"
-#~ msgstr "Geavanceerd"
-
-#~ msgid "Select Column"
-#~ msgstr "Selecteer kolom"
-
-#~ msgid "Deselect All"
-#~ msgstr "De-selecteer alles"
-
-#~ msgid "Unable to load object as Image"
-#~ msgstr "Object kon niet als afbeelding worden geladen"
-
-#~ msgid "button462"
-#~ msgstr "knop462"
-
-#~ msgid "WaitDialog"
-#~ msgstr "WachtDialoog"
-
-#~ msgid "Please wait"
-#~ msgstr "Even wachten aub"
-
-#~ msgid "Add Connection"
-#~ msgstr "Verbinding toevoegen"
-
-#~ msgid "Alter Constraint"
-#~ msgstr "Voorwaarden aanpassen"
-
-#~ msgid "Alter Database"
-#~ msgstr "Database aanpassen"
-
-#~ msgid "Alter Procedure"
-#~ msgstr "Procedure aanpassen"
-
-#~ msgid "Alter Table"
-#~ msgstr "Tabel aanpassen"
-
-#~ msgid "Alter Trigger"
-#~ msgstr "Triggeren aanpassen"
-
-#~ msgid "Alter User"
-#~ msgstr "Gebruiker aanpassen"
-
-#~ msgid "Alter View"
-#~ msgstr "Weergave aanpassen"
-
-#~ msgid "Connect"
-#~ msgstr "Maak verbinding"
-
-#~ msgid "Create Constraint"
-#~ msgstr "Voorwaarde aanmaken"
-
-#~ msgid "Create Database"
-#~ msgstr "Database aanmaken"
-
-#~ msgid "Create Procedure"
-#~ msgstr "Procedure aanmaken"
-
-#~ msgid "Create Table"
-#~ msgstr "Tabel aanmaken"
-
-#~ msgid "Create Trigger"
-#~ msgstr "Triggerer aanmaken"
-
-#~ msgid "Create User"
-#~ msgstr "Gebruiker aanmaken"
-
-#~ msgid "Create View"
-#~ msgstr "Weergave aanmaken"
-
-#~ msgid "Database Browser"
-#~ msgstr "Databasebrowser"
-
-#~ msgid "Disconnect"
-#~ msgstr "Verbinding  verbreken"
-
-#~ msgid "Drop Constraint"
-#~ msgstr "Voorwaarde weghalen"
-
-#~ msgid "Drop Database"
-#~ msgstr "Database weghalen"
-
-#~ msgid "Drop Procedure"
-#~ msgstr "Procedure weghalen"
-
-#~ msgid "Drop Table"
-#~ msgstr "Tabel weghalen"
-
-#~ msgid "Drop Trigger"
-#~ msgstr "Triggerer weghalen"
-
-#~ msgid "Drop User"
-#~ msgstr "Gebruiker weghalen"
-
-#~ msgid "Drop View"
-#~ msgstr "Weergave weghalen"
-
-#~ msgid "Edit Connection"
-#~ msgstr "Verbinding bewerken"
-
-#~ msgid "Empty Table"
-#~ msgstr "Lege tabel"
-
-#~ msgid "Query"
-#~ msgstr "Vragen"
-
-#~ msgid "Select *"
-#~ msgstr "Select *"
-
-#~ msgid "Select x,y,..."
-#~ msgstr "Select x,y,..."
-
-#~ msgid "Show System Objects"
-#~ msgstr "Systeemobjecten weergeven"
-
-#~ msgid "Aggregates"
-#~ msgstr "Aggregeert"
-
-#~ msgid "Database Connections"
-#~ msgstr "Databaseverbindingen"
-
-#~ msgid "Unable to connect:"
-#~ msgstr "Verbinden niet gelukt:"
-
-#~ msgid "Are you sure you want to remove connection '{0}'?"
-#~ msgstr "Weet u zeker dat u de verbinding '{0}' wilt verwijderen?"
-
-#~ msgid "Remove Connection"
-#~ msgstr "Verbinding verwijderen"
-
-#~ msgid "Are you sure you want to drop database '{0}'"
-#~ msgstr "Weet u zeker dat u database '{0}' wilt weghalen"
-
-#~ msgid "Constraint"
-#~ msgstr "Voorwaarde"
-
-#~ msgid "Constraints"
-#~ msgstr "Voorwaarden"
-
-#~ msgid "Groups"
-#~ msgstr "Groepen"
-
-#~ msgid "Languages"
-#~ msgstr "Talen"
-
-#~ msgid "Operators"
-#~ msgstr "Operatoren"
-
-#~ msgid "Parameters"
-#~ msgstr "Parameters"
-
-#~ msgid "Are you sure you want to drop procedure '{0}'"
-#~ msgstr "Weet u zeker dat u procedure '{0}' wilt weghalen"
-
-#~ msgid "Procedures"
-#~ msgstr "Procedures"
-
-#~ msgid "Roles"
-#~ msgstr "Rollen"
-
-#~ msgid "Rules"
-#~ msgstr "Regels"
-
-#~ msgid "Sequences"
-#~ msgstr "Opeenvolgingen"
-
-#~ msgid "Are you sure you want to empty table '{0}'"
-#~ msgstr "Weet u zeker dat u tabel '{0}' wilt leegmaken"
-
-#~ msgid "Table emptied"
-#~ msgstr "Tabel leeggemaakt"
-
-#~ msgid "Are you sure you want to drop table '{0}'"
-#~ msgstr "Weet u zeker dat u tabel '{0}' wilt weghalen"
-
-#~ msgid "Tables"
-#~ msgstr "Tabel"
-
-#~ msgid "Triggers"
-#~ msgstr "Triggerers"
-
-#~ msgid "Types"
-#~ msgstr "Typen"
-
-#~ msgid "Are you sure you want to drop user '{0}'"
-#~ msgstr "Weet u zeker dat u gebruiker '{0}' wilt weghalen"
-
-#~ msgid "Users"
-#~ msgstr "Gebruikers"
-
-#~ msgid "Are you sure you want to drop view '{0}'"
-#~ msgstr "Weet u zeker dat u weergave '{0}' wilt weghalen"
-
-#~ msgid "Views"
-#~ msgstr "Weergaves"
-
-#~ msgid "Definition"
-#~ msgstr "Definitie"
-
-#~ msgid "Comment"
-#~ msgstr "Commentaar"
-
-#~ msgid "No name specified."
-#~ msgstr "Geen naam gespecificeerd."
-
-#~ msgid "Column Constraint"
-#~ msgstr "Kolomvoorwaarde"
-
-#~ msgid "Are you sure you want to remove constraint '{0}'?"
-#~ msgstr "Weet u zeker dat u voorwaarde '{0}' wilt verwijderen?"
-
-#~ msgid "Remove Constraint"
-#~ msgstr "Voorwaarde verwijderen"
-
-#~ msgid "Checked constraint '{0}' does not contain a check statement."
-#~ msgstr "Gecontroleerde voorwaarde '{0}' bevat geen controle-statement."
-
-#~ msgid ""
-#~ "Checked constraint '{0}' is marked as a column constraint but is not "
-#~ "applied to a column."
-#~ msgstr ""
-#~ "Gecontroleerde voorwaarde '{0}' is gemarkeerd als een kolomvoorwaarde "
-#~ "maar is niet toegepast op een kolom."
-
-#~ msgid "PK"
-#~ msgstr "PK"
-
-#~ msgid "Length"
-#~ msgstr "Lengte"
-
-#~ msgid "Are you sure you want to remove column '{0}'"
-#~ msgstr "Weet u zeker dat u kolom '{0}' wilt verwijderen"
-
-#~ msgid "Remove Column"
-#~ msgstr "Kolom verwijderen"
-
-#~ msgid "Unknown data type '{0}' applied to column '{1}'."
-#~ msgstr "Onbekend datatype '{0}' toegepast op kolom '{1}'."
-
-#~ msgid "Table '{0}' must contain at least one primary key."
-#~ msgstr "Tabel '{0}' moet op zijn minst een primaire sleutel bevatten."
-
-#~ msgid "Table '{0}' must contain at least 1 column."
-#~ msgstr "Tabel '{0}' moet op zijn minst één kolom bevatten."
-
-#~ msgid "Primary Key"
-#~ msgstr "Primaire sleutel"
-
-#~ msgid "Foreign Key"
-#~ msgstr "Oneigen sleutel"
-
-#~ msgid "Check"
-#~ msgstr "Controleer"
-
-#~ msgid "Unique"
-#~ msgstr "Uniek"
-
-#~ msgid "Reference Table"
-#~ msgstr "Referentietabel"
-
-#~ msgid "Delete Action"
-#~ msgstr "Actie verwijderen"
-
-#~ msgid "Update Action"
-#~ msgstr "Actie updaten"
-
-#~ msgid "Unique Key constraint '{0}' must be applied to one or more columns."
-#~ msgstr ""
-#~ "Unieke-sleutelvoorwaarde '{0}' moet toegepast worden op een of meerdere "
-#~ "kolommen."
-
-#~ msgid "Primary Key constraint '{0}' must be applied to one or more columns."
-#~ msgstr ""
-#~ "Primaire-sleutelvoorwaarde '{0}' moet toegepast worden op een of meerdere "
-#~ "kolommen."
-
-#~ msgid "Event"
-#~ msgstr "Gebeurtenis"
-
-#~ msgid "Each Row"
-#~ msgstr "Elke regel"
-
-#~ msgid "Position"
-#~ msgstr "Positie"
-
-#~ msgid "Active"
-#~ msgstr "Actief"
-
-#~ msgid "Are you sure you want to remove trigger '{0}'?"
-#~ msgstr "Weet u zeker dat u trigger '{0}' wilt verwijderen?"
-
-#~ msgid "Remove Trigger"
-#~ msgstr "Trigger verwijderen"
-
-#~ msgid "Trigger '{0}' does not contain a trigger statement."
-#~ msgstr "Trigger '{0}' bevat geen trigger statement."
-
-#~ msgid "Check Condition"
-#~ msgstr "Controleer conditie"
-
-#~ msgid "Base Settings"
-#~ msgstr "Basisinstellingen"
-
-#~ msgid "Reference Columns"
-#~ msgstr "Referentiekolommen"
-
-#~ msgid "Preview"
-#~ msgstr "Voorbeeld"
-
-#~ msgid "Edit Table"
-#~ msgstr "Bewerk tabel"
-
-#~ msgid "Preview SQL"
-#~ msgstr "SQL-voorbeeld"
-
-#~ msgid "Statement"
-#~ msgstr "Statement"
-
-#~ msgid "Query Database"
-#~ msgstr "Vraag database"
-
-#~ msgid "_Database"
-#~ msgstr "_Database"
-
-#~ msgid "Clear Results"
-#~ msgstr "Resultaten wissen"
-
-#~ msgid "Unable to connect to database '{0}'"
-#~ msgstr "Verbinden met database '{0}' niet gelukt"
-
-#~ msgid "Query executed ({0} result table)"
-#~ msgid_plural "Query executed ({0} result tables)"
-#~ msgstr[0] "Vraag uitgevoerd ({0} resultaattabel)"
-#~ msgstr[1] "Vraag uitgevoerd ({0} resultaattabellen)"
-
-#~ msgid "Table"
-#~ msgstr "Tabel"
-
-#~ msgid "Affected Rows"
-#~ msgstr "Beïnvloede regels"
-
-#~ msgid "No Results"
-#~ msgstr "Geen resultaten"
-
-#~ msgid "Executing query"
-#~ msgstr "Bezig met uitvoeren van vraag"
-
-#~ msgid "Query execute cancelled"
-#~ msgstr "Uitvoeren van vraag geannuleerd"
-
-#~ msgid "Save Database"
-#~ msgstr "Bewaar database"
-
-#~ msgid "Open Database"
-#~ msgstr "Open database"
-
-#~ msgid "SQLite databases"
-#~ msgstr "SQLite databases"
-
-#~ msgid "Unable to load stored SQL connection information."
-#~ msgstr "De bewaarde SQL-verbindingsinformatie kon niet geladen worden."
-
-#~ msgid "Please enter the password for connection '{0}'"
-#~ msgstr "Voer aub uw wachtwoord in voor verbinding '{0}'"
-
-#~ msgid "Enter Password"
-#~ msgstr "Voer wachtwoord in"
-
-#~ msgid "Action Group:"
-#~ msgstr "Actiegroep:"
-
-#~ msgid "New Action Group"
-#~ msgstr "Nieuwe actiegroep"
-
-#~ msgid "Bind to Field"
-#~ msgstr "Aan veld verbinden"
-
-#~ msgid "_Select"
-#~ msgstr "_Selecteer"
-
-#~ msgid "Placeholder"
-#~ msgstr "Placeholder"
-
-#~ msgid "Not a glade file according to node name."
-#~ msgstr "Geen glade-bestand volgens de knoopnaam."
-
-#~ msgid "Empty"
-#~ msgstr "Leeg"
-
-#~ msgid "Not a Stetic file according to node name."
-#~ msgstr "Geen Stetic-bestand volgens de knoopnaam."
-
-#~ msgid "Signal"
-#~ msgstr "Signaal"
-
-#~ msgid "Handler"
-#~ msgstr "Afhandelaar"
-
-#~ msgid "After"
-#~ msgstr "Na"
-
-#~ msgid "Click here to add a new handler"
-#~ msgstr "Klik hier voor het toevoegen van een nieuwe afhandelaar"
-
-#~ msgid "The desginer could not be loaded."
-#~ msgstr "De ontwerper kon niet worden geladen."
-
-#~ msgid "The form designer could not be loaded"
-#~ msgstr "De formulier-ontwerper kon niet worden geladen"
-
-#~ msgid "Add Widget Library"
-#~ msgstr "Voeg widget-bibliotheek toe"
-
-#~ msgid "Stetic - A GTK User Interface Builder"
-#~ msgstr "Stetic - Een ontwerper voor GTK-gebruikersinterfaces"
-
-#~ msgid "Usage:"
-#~ msgstr "Gebruik:"
-
-#~ msgid "The project could not be saved."
-#~ msgstr "Het project kon niet worden bewaard."
-
-#~ msgid "Save Stetic File As"
-#~ msgstr "Static-bestand opslaan als"
-
-#~ msgid "Do you want to save the project before closing?"
-#~ msgstr "Wilt u het project opslaan voor het sluiten?"
-
-#~ msgid "Close without saving"
-#~ msgstr "Sluiten zonder te bewaren"
-
-#~ msgid "Open a file"
-#~ msgstr "Open een bestand"
-
-#~ msgid "Recent files"
-#~ msgstr "Recente bestanden"
-
-#~ msgid "Save As"
-#~ msgstr "Opslaan als"
-
-#~ msgid "_Import from Glade File..."
-#~ msgstr "Uit Glade-bestand importeren..."
-
-#~ msgid "Import UI from a Glade file"
-#~ msgstr "UI importeren uit Glade-bestand"
-
-#~ msgid "_Export to Glade File..."
-#~ msgstr "Naar Glade-bestand exporteren..."
-
-#~ msgid "Export UI to a Glade file"
-#~ msgstr "UI exporteren naar Glade-bestand"
-
-#~ msgid "Close"
-#~ msgstr "Sluiten"
-
-#~ msgid "Quit"
-#~ msgstr "Afsluiten"
-
-#~ msgid "Undo previous action"
-#~ msgstr "Vorige actie ongedaan maken"
-
-#~ msgid "Redo previously-undone action"
-#~ msgstr "Actie opnieuw uitvoeren"
-
-#~ msgid "Cut selection to clipboard"
-#~ msgstr "Selectie knippen naar klembord"
-
-#~ msgid "Copy selection to clipboard"
-#~ msgstr "Selectie kopiëren naar klembord"
-
-#~ msgid "Paste from clipboard"
-#~ msgstr "Plakken uit klembord"
-
-#~ msgid "Delete selection"
-#~ msgstr "Selectie verwijderen"
-
-#~ msgid "Widget libraries..."
-#~ msgstr "Widget-bibliotheken..."
-
-#~ msgid "Project Icons..."
-#~ msgstr "Projecticonen..."
-
-#~ msgid "_Contents"
-#~ msgstr "_Inhoud"
-
-#~ msgid "About Stetic"
-#~ msgstr "Over Stetic"
-
-#~ msgid "Open Stetic File"
-#~ msgstr "Stetic-bestand openen"
-
-#~ msgid "Import from Glade File"
-#~ msgstr "Uit Glade-bestand importeren"
-
-#~ msgid "Export to Glade File"
-#~ msgstr "Naar Glade-bestand exporteren"
-
-#~ msgid "A GNOME and Gtk GUI designer"
-#~ msgstr "Een GNOME en Gtk GUI-ontwerper"
-
-#~ msgid "Export to Glade File..."
-#~ msgstr "Exporteer naar Glade-bestand..."
-
-#~ msgid "Import from Glade File..."
-#~ msgstr "Importeer uit Glade-bestand..."
-
-#~ msgid "Reload libraries"
-#~ msgstr "Bibliotheken opnieuw inladen"
-
-#~ msgid "Widget Libraries"
-#~ msgstr "Widget-bibliotheken"
-
-#~ msgid "\n"
-#~ msgstr "\n"
-
-#~ msgid "_Underline errors"
-#~ msgstr "Foutmeldingen _onderstrepen"
-
-#~ msgid "Creates an empty Nemerle file"
-#~ msgstr "Maak een leeg Nemerle-bestand aan"
-
-#~ msgid "Empty file"
-#~ msgstr "Leeg bestand"
-
-#~ msgid "<b>Optimizations</b>"
-#~ msgstr "<b>Optimalisatie</b>"
-
-#~ msgid "Do not load standard library"
-#~ msgstr "Standaardbibliotheek niet inladen"
-
-#~ msgid "Do not load standard macros"
-#~ msgstr "Standaard macro's niet inladen"
-
-#~ msgid "Enable pedantic checks for illegal characters"
-#~ msgstr "Strenge controle op illegale karakters inschakelen"
-
-#~ msgid ""
-#~ "Executable\n"
-#~ "Library"
-#~ msgstr ""
-#~ "Uitvoerbaar bestand\n"
-#~ "Bibliotheek"
-
-#~ msgid "General tail call optimization"
-#~ msgstr "Generieke staart-aanroep-optimalisatie"
-
-#~ msgid "Ignore warnings"
-#~ msgstr "Waarschuwingen negeren"
-
-#~ msgid "Recursive loading references of assemblies"
-#~ msgstr "Referenties van assemblies recursief inladen"
-
-#~ msgid "Nemerle Files"
-#~ msgstr "Nemerle-bestanden"
-
-#~ msgid "Creates an empty Nemerle project"
-#~ msgstr "Maakt een leeg Nemerle-project aan"
-
-#~ msgid "Creates a Nemerle/Gnome# project"
-#~ msgstr "Maakt een Nemerle/Gnome#-project aan"
-
-#~ msgid "Gnome# Project"
-#~ msgstr "Gnome#-project"
-
-#~ msgid "Creates a Nemerle/Gtk# project"
-#~ msgstr "Maakt een Nemerle/Gtk#-project aan"
-
-#~ msgid "Python Files"
-#~ msgstr "Python-bestanden"
-
-#~ msgid "Python Console Project"
-#~ msgstr "Python consoleproject"
-
-#~ msgid "Python Gtk Project"
-#~ msgstr "Python Gtk-project"
-
-#~ msgid "Runtime:"
-#~ msgstr "Runtime:"
-
-#~ msgid "Creates a VB.NET Gtk# project."
-#~ msgstr "Maakt een VB.NET Gtk#-project aan."
-
-#~ msgid "Open Project"
-#~ msgstr "Project opvragen"
-
-#~ msgid "Start a New Project"
-#~ msgstr "Start een nieuw project"
-
-#~ msgid "Version:"
-#~ msgstr "Versie:"
-
-#~ msgid "Copyright:"
-#~ msgstr "Copyright:"
-
-#~ msgid "Add-in Dependencies:"
-#~ msgstr "Add-in afhankelijkheden:"
-
-#~ msgid "All registered repositories"
-#~ msgstr "Alle geregistreerde repositories"
-
-#~ msgid "Are you sure you want to cancel the installation?"
-#~ msgstr "Weet u zeker dat u de installatie wilt afbreken?"
-
-#~ msgid "The following packages will be uninstalled:"
-#~ msgstr "De volgende pakket zullen worden gedeïnstalleerd:"
-
-#~ msgid ""
-#~ "There are other add-ins that depend on the previous ones which will also "
-#~ "be uninstalled:"
-#~ msgstr ""
-#~ "Er zijn andere add-ins die afhankelijk zijn van de vorige add-ins, welke "
-#~ "ook zullen worden gedeïnstalleerd:"
-
-#~ msgid ""
-#~ "The selected add-ins can't be installed because there are dependency "
-#~ "conflicts."
-#~ msgstr ""
-#~ "De gekozen add-ins kunnen niet worden geïnstalleerd doordat er conflicten "
-#~ "zijn in de afhankelijkheden."
-
-#~ msgid "The following packages will be installed:"
-#~ msgstr "De volgende pakketten worden geïnstalleerd:"
-
-#~ msgid " (in user directory)"
-#~ msgstr " (in gebruikersmap)"
-
-#~ msgid "The following packages need to be uninstalled:"
-#~ msgstr "De volgende pakketten moeten worden gedeïnstalleerd:"
-
-#~ msgid "The following dependencies could not be resolved:"
-#~ msgstr "De volgende afhankelijkheden konden niet worden opgelost:"
-
-#~ msgid "The installation has been successfully completed."
-#~ msgstr "De installatie is succesvol afgerond."
-
-#~ msgid "The installation failed!"
-#~ msgstr "De installatie is mislukt!"
-
-#~ msgid "The uninstallation has been successfully completed."
-#~ msgstr "De deïnstallatie is succesvol afgerond."
-
-#~ msgid "The uninstallation failed!"
-#~ msgstr "De deïnstallatie is mislukt!"
-
-#~ msgid "Repository"
-#~ msgstr "Repository"
-
-#~ msgid "Installation cancelled"
-#~ msgstr "Installatie afgebroken"
-
-#~ msgid "Some of the required add-ins were not found"
-#~ msgstr "Een aantal van de vereiste add-ins konden niet worden gevonden"
-
-#~ msgid "Installation failed"
-#~ msgstr "Installatie mislukt"
-
-#~ msgid "Add-in"
-#~ msgstr "Add-in"
-
-#~ msgid "Url"
-#~ msgstr "Url"
-
-#~ msgid "Show all packages"
-#~ msgstr "Alle pakketten weergeven"
-
-#~ msgid "Show new versions only"
-#~ msgstr "Nieuwe versies enkel weergeven"
-
-#~ msgid "Show updates only"
-#~ msgstr "Updates enkel weergeven"
-
-#~ msgid "Add-in Manager"
-#~ msgstr "Add-in beheerder"
-
-#~ msgid "Additional extensions are required to perform this operation."
-#~ msgstr "Extra extensies zijn vereist om deze operatie uit te voeren."
-
-#~ msgid "The following add-ins will be installed:"
-#~ msgstr "De volgende add-ins worden geïnstalleerd:"
-
-#~ msgid "<big><b>Add-in Manager</b></big>"
-#~ msgstr "<big><b>Add-in beheerder</b></big>"
-
-#~ msgid "Error"
-#~ msgstr "Fout"
-
-#~ msgid "(provided by {0})"
-#~ msgstr "(aangeleverd door {0})"
-
-#~ msgid "Disabled add-ins can't be loaded."
-#~ msgstr "Uitgeschakelde add-ins konden niet worden ingeladen."
-
-#~ msgid "Loading {0} add-in"
-#~ msgstr "Bezig met laden van add-in {0}"
-
-#~ msgid "The required addin '{0}' is disabled."
-#~ msgstr "De vereiste add-in '{0}' is uitgeschakeld."
-
-#~ msgid "The required addin '{0}' is not installed."
-#~ msgstr "De vereiste add-in '{0}' is niet geïnstalleerd."
+msgstr "Parseer systeemtags"

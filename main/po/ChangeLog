@@ -1,3 +1,10 @@
+2008-01-28  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* nl.po: Updated translation by André Offringa.
+	* es.po: Updated translation by Andrés G. Aragoneses.
+	* fr.po: Updated translation by Vincent Daron.
+	* de.po: Updated translation by anonymous GHOP student.
+
 2008-01-25  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* *.po: Updated after fixing bugs in the unescaping of parsed strings 
