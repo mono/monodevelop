@@ -1,5 +1,14 @@
 2008-01-29  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor.mdp, Mono.TextEditor/LineSplitter.cs,
+	  Mono.TextEditor/TextEditorData.cs,
+	  Mono.TextEditor.Highlighting/SyntaxMode.cs,
+	  Mono.TextEditor.Highlighting/Style.cs,
+	  Mono.TextEditor.Highlighting/Span.cs, CSharpSyntaxMode.xml,
+	  XmlSyntaxMode.xml: Worked on highlighting.
+
+2008-01-29  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/LineSplitter.cs,
 	  Mono.TextEditor/BookmarkMargin.cs: Worked on bookmark commands.
 

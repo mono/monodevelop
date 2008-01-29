@@ -172,7 +172,7 @@ namespace Mono.TextEditor
 			if (!IsSomethingSelected)
 				return;
 			ISegment selection = SelectionRange;
-			if (Caret.Offset >= selection.Offset)
+			if (Caret.Offset > selection.Offset)
 				Caret.Offset -= selection.Length;
 			Document.Buffer.Remove (selection.Offset, selection.Length);
 			ClearSelection();

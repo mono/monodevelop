@@ -22,14 +22,15 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE. -->
+ 
 <SyntaxMode name = "C#" mimeType="text/x-csharp">
 	<Delimiters>&amp;&lt;&gt;~!%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
 
-	<EolSpan color = "PreProcessorDirective1" rule="PreProcessor">#</EolSpan>
-	<EolSpan color = "Comment1" rule="XmlDocumentation">///</EolSpan>
-	<EolSpan color = "Comment1" rule="Comment" constraint="!/">//</EolSpan>
+	<EolSpan color = "PreProcessorDirective" rule="PreProcessor">#</EolSpan>
+	<EolSpan color = "Comment1" rule="XmlDocumentation" tagColor="CommentTag">///</EolSpan>
+	<EolSpan color = "Comment1" rule="Comment" constraint="!/" tagColor="CommentTag">//</EolSpan>
 	
-	<Span color = "Comment1" rule="Comment">
+	<Span color = "Comment1" rule="Comment" tagColor="CommentTag">
 		<Begin>/*</Begin>
 		<End>*/</End>
 	</Span>
@@ -50,52 +51,10 @@
 	</Span>
 	
 	<Keywords color = "Keyword1">
-		<Word>as</Word>
-		<Word>is</Word>
-		<Word>new</Word>
-		<Word>sizeof</Word>
-		<Word>typeof</Word>
-		<Word>true</Word>
-		<Word>false</Word>
-		<Word>stackalloc</Word>
-
-		<Word>else</Word>
-		<Word>if</Word>
-		<Word>switch</Word>
-		<Word>case</Word>
-		<Word>default</Word>
-		<Word>do</Word>
-		<Word>for</Word>
-		<Word>foreach</Word>
-		<Word>in</Word>
-		<Word>while</Word>
-		<Word>break</Word>
-		<Word>continue</Word>
-		<Word>goto</Word>
-		<Word>return</Word>
-		<Word>yield</Word>
-		<Word>partial</Word>
-		<Word>global</Word>
-		<Word>where</Word>
-		<Word>try</Word>
-		<Word>throw</Word>
-		<Word>catch</Word>
-		<Word>finally</Word>
-		<Word>checked</Word>
-		<Word>unchecked</Word>
-		<Word>fixed</Word>
-		<Word>unsafe</Word>
-		<Word>namespace</Word>
-		<Word>using</Word>
-		<Word>lock</Word>
-		<Word>get</Word>
-		<Word>set</Word>
-		<Word>add</Word>
-		<Word>remove</Word>
-		<Word>this</Word>
-		<Word>base</Word>
-		<Word>null</Word>
-		<Word>value</Word>
+		<Word>public</Word>
+		<Word>protected</Word>
+		<Word>private</Word>
+		<Word>internal</Word>
 	</Keywords>
 	
 	<Keywords color = "Keyword2">
@@ -119,6 +78,53 @@
 	</Keywords>
 	
 	<Keywords color = "Keyword3">
+		<Word>break</Word>
+		<Word>continue</Word>
+		<Word>goto</Word>
+		<Word>return</Word>
+		<Word>yield</Word>
+		<Word>partial</Word>
+		<Word>global</Word>
+		<Word>where</Word>
+		<Word>try</Word>
+		<Word>throw</Word>
+		<Word>catch</Word>
+		<Word>finally</Word>
+		<Word>checked</Word>
+		<Word>unchecked</Word>
+		<Word>fixed</Word>
+		<Word>unsafe</Word>
+		<Word>lock</Word>
+		<Word>get</Word>
+		<Word>set</Word>
+		<Word>add</Word>
+		<Word>remove</Word>
+		
+		<Word>else</Word>
+		<Word>if</Word>
+		<Word>switch</Word>
+		<Word>case</Word>
+		<Word>default</Word>
+		
+		<Word>do</Word>
+		<Word>for</Word>
+		<Word>foreach</Word>
+		<Word>in</Word>
+		<Word>while</Word>
+		
+	</Keywords>
+	
+	<Keywords color = "Keyword5">
+		<Word>this</Word>
+		<Word>base</Word>
+		<Word>value</Word>
+	</Keywords>
+	<Keywords color = "Keyword7">
+		<Word>namespace</Word>
+		<Word>using</Word>
+	</Keywords>
+	
+	<Keywords color = "Keyword4">
 		<Word>class</Word>
 		<Word>interface</Word>
 		<Word>delegate</Word>
@@ -142,15 +148,25 @@
 		<Word>static</Word>
 		<Word>virtual</Word>
 		<Word>volatile</Word>
-
-		<Word>public</Word>
-		<Word>protected</Word>
-		<Word>private</Word>
-		<Word>internal</Word>
+	</Keywords>
+	
+	<Keywords color = "Literal">
+		<Word>true</Word>
+		<Word>false</Word>
+		<Word>null</Word>
+	</Keywords>
+	
+	<Keywords color = "Keyword6">
+		<Word>as</Word>
+		<Word>is</Word>
+		<Word>new</Word>
+		<Word>sizeof</Word>
+		<Word>typeof</Word>
+		<Word>stackalloc</Word>
 	</Keywords>
 
-	<Rule name = "PreProcessor" color = "PreProcessorDirective">
-		<Keywords color="PreProcessorDirective2">
+	<Rule name = "PreProcessor">
+		<Keywords color="PreProcessorDirectiveKeyword">
 			<Word>if</Word>
 			<Word>else</Word>
 			<Word>elif</Word>
@@ -167,7 +183,7 @@
 	</Rule>
 	
 	<Rule name = "Comment">
-		<Keywords color="Comment4" ignorecase="True">
+		<Keywords color="CommentKeyword" ignorecase="True">
 			<Word>TODO</Word>
 			<Word>FIXME</Word>
 			<Word>HACK</Word>
@@ -176,7 +192,11 @@
 	</Rule>
 	
 	<Rule name = "XmlDocumentation">
-		<Keywords color="Comment2">
+		<Span color = "Literal" stopateol = "true" escape="\">
+			<Begin>"</Begin>
+			<End>"</End>
+		</Span>
+		<Keywords color="Comment3">
 			<Word>c</Word>
 			<Word>code</Word>
 			<Word>example</Word>

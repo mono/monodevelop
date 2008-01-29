@@ -173,7 +173,7 @@ namespace Mono.TextEditor.Highlighting
 							endOffset++;
 							if (endOffset >= curSpan.End.Length) {
 								int chunkEndOffset = i - curChunk.EndOffset + 1;
-								AddChunk (ref curChunk, chunkEndOffset, GetSpanStyle (spanStack));
+								AddChunk (ref curChunk, chunkEndOffset, !String.IsNullOrEmpty (curSpan.TagColor) ? style.GetChunkStyle (curSpan.TagColor) : GetSpanStyle (spanStack));
 								spanStack.Pop ();
 								SetSpan ();
 								SetTree ();
@@ -198,7 +198,8 @@ namespace Mono.TextEditor.Highlighting
 							}
 							spanStack.Push (span);
 							curChunk.Length -= span.Begin.Length - 1;
-							AddChunk (ref curChunk, span.Begin.Length, GetSpanStyle (spanStack));
+							
+							AddChunk (ref curChunk, span.Begin.Length, !String.IsNullOrEmpty (span.TagColor) ? style.GetChunkStyle (span.TagColor) : GetSpanStyle (spanStack));
 							SetSpan ();
 							SetTree ();
 							continue;

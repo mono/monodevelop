@@ -34,6 +34,7 @@ namespace Mono.TextEditor.Highlighting
 	public class Span
 	{
 		string color;
+		string tagColor;
 		string rule;
 		string begin;
 		string end;
@@ -64,6 +65,12 @@ namespace Mono.TextEditor.Highlighting
 		public string Color {
 			get {
 				return color;
+			}
+		}
+		
+		public string TagColor {
+			get {
+				return tagColor;
 			}
 		}
 
@@ -102,7 +109,9 @@ namespace Mono.TextEditor.Highlighting
 			
 			result.rule       = reader.GetAttribute ("rule");
 			result.color      = reader.GetAttribute ("color");
+			result.tagColor   = reader.GetAttribute ("tagColor");
 			result.constraint = reader.GetAttribute ("constraint");
+			
 			string esc = reader.GetAttribute ("escape");
 			if (!String.IsNullOrEmpty (esc)) {
 				Debug.Assert (esc.Length == 1);

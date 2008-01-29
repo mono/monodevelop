@@ -181,21 +181,27 @@ namespace Mono.TextEditor.Highlighting
 			invalidLineMarker = new Gdk.Color (210, 0, 0);
 			
 			SetStyle ("Comment1", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255), false, false));
-			SetStyle ("Comment2", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255), true, false));
-			SetStyle ("Comment3", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255), false, false));
-			SetStyle ("Comment4", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255), false, true));
+			SetStyle ("Comment2", new Mono.TextEditor.ChunkStyle (new Gdk.Color (128, 128, 128), true, false));
+			SetStyle ("Comment3", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255), true, false));
+			SetStyle ("CommentKeyword", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0,255), false, true));
+			SetStyle ("CommentTag", new Mono.TextEditor.ChunkStyle (new Gdk.Color (128, 128, 128), false, true));
 			
-			SetStyle ("Digit", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 0), false, false));
+			SetStyle ("Digit", new Mono.TextEditor.ChunkStyle (new Gdk.Color (255, 0, 255), false, false));
 			SetStyle ("Literal", new Mono.TextEditor.ChunkStyle (new Gdk.Color (255, 0, 255), false, false));
 			SetStyle ("Punctuation", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 0), false, false));
 			
-			SetStyle ("Keyword1", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165, 42, 42), true, false));
-			SetStyle ("Keyword2", new Mono.TextEditor.ChunkStyle (new Gdk.Color (46, 139, 87), true, false));
-			SetStyle ("Keyword3", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165, 42, 42), true, false));
-			SetStyle ("Keyword4", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 200, 0), true, false));
+			SetStyle ("Keyword1", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), true, false));
+			SetStyle ("Keyword2", new Mono.TextEditor.ChunkStyle (new Gdk.Color ( 46, 139,  87), true, false));
+			SetStyle ("Keyword3", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), true, false));
+			SetStyle ("Keyword4", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), true, false));
+			SetStyle ("Keyword5", new Mono.TextEditor.ChunkStyle (new Gdk.Color (  0,   0,   0), true, false));
+			SetStyle ("Keyword6", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), true, false));
+			SetStyle ("Keyword7", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), true, false));
 			
-			SetStyle ("PreProcessorDirective1", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 200, 0), false, false));
-			SetStyle ("PreProcessorDirective2", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 200, 0), true, false));
+			SetStyle ("PreProcessorDirective", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 128 , 0), false, false));
+			SetStyle ("PreProcessorDirectiveKeyword", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 128, 0), true, false));
+			
+			SetStyle ("Markup", new Mono.TextEditor.ChunkStyle (new Gdk.Color (128, 0, 0), false, false));
 		}
 		
 		void SetStyle (string name, ChunkStyle style)
