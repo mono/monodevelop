@@ -31,135 +31,29 @@ using System;
 using System.Data;
 using System.Data.Odbc;
 using System.Collections.Generic;
-namespace MonoDevelop.Database.Sql
+namespace MonoDevelop.Database.Sql.Odbc
 {
 	public class OdbcSchemaProvider : AbstractSchemaProvider
 	{
-		public OdbcSchemaProvider (IConnectionProvider connectionProvider)
-			: base (connectionProvider)
+		public OdbcSchemaProvider (IConnectionPool connectionPool)
+			: base (connectionPool)
 		{
+			AddSupportedSchemaActions (SchemaType.Database, SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.Table, SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.View, SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.Procedure, SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.TableColumn, SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.ProcedureParameter, SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.PrimaryKeyConstraint, SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.ForeignKeyConstraint, SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.CheckConstraint, SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.UniqueConstraint, SchemaActions.Schema);
+			AddSupportedSchemaActions (SchemaType.Constraint, SchemaActions.Schema);
 		}
 		
-		public override bool SupportsSchemaType (Type type)
-		{
-			if (type == typeof(TableSchema))
-				return true;
-			else if (type == typeof(ViewSchema))
-				return true;
-			else if (type == typeof(ProcedureSchema))
-				return true;
-			else if (type == typeof(AggregateSchema))
-				return true;
-			else if (type == typeof(GroupSchema))
-				return true;
-			else if (type == typeof(UserSchema))
-				return true;
-			else if (type == typeof(LanguageSchema))
-				return true;
-			else if (type == typeof(OperatorSchema))
-				return true;
-			else if (type == typeof(RoleSchema))
-				return true;
-			else if (type == typeof(SequenceSchema))
-				return true;
-			else if (type == typeof(DataTypeSchema))
-				return true;
-			else if (type == typeof(TriggerSchema))
-				return true;
-			else if (type == typeof(ColumnSchema))
-				return true;
-			else if (type == typeof(ConstraintSchema))
-				return true;
-			else if (type == typeof(RuleSchema))
-				return true;
-			else
-				return false;
-		}
-		
-		public override ICollection<DatabaseSchema> GetDatabases ()
-		{
-			CheckConnectionState ();
-			List<DatabaseSchema> databases = new List<DatabaseSchema> ();
-			
-			//TODO:
-
-			return databases;
+		public override bool CanEdit {
+			get { return false; }
 		}
 
-		public override ICollection<TableSchema> GetTables ()
-		{
-			CheckConnectionState ();
-			List<TableSchema> tables = new List<TableSchema> ();
-			
-			//TODO:
-			
-			return tables;
-		}
-		
-		public override ICollection<ColumnSchema> GetTableColumns (TableSchema table)
-		{
-			CheckConnectionState ();
-			List<ColumnSchema> columns = new List<ColumnSchema> ();
-			
-			//TODO:
-			
-			return columns;
-		}
-
-		public override ICollection<ViewSchema> GetViews ()
-		{
-			CheckConnectionState ();
-			List<ViewSchema> views = new List<ViewSchema> ();
-
-			//TODO:
-			
-			return views;
-		}
-
-		public override ICollection<ColumnSchema> GetViewColumns (ViewSchema view)
-		{
-			CheckConnectionState ();
-			List<ColumnSchema> columns = new List<ColumnSchema> ();
-			
-			//TODO:
-			return columns;
-		}
-
-		public override ICollection<ProcedureSchema> GetProcedures ()
-		{
-			CheckConnectionState ();
-			List<ProcedureSchema> procedures = new List<ProcedureSchema> ();
-			
-			//TODO:
-			
-			return procedures; 
-		}
-
-		public override ICollection<ColumnSchema> GetProcedureColumns (ProcedureSchema procedure)
-		{
-			CheckConnectionState ();
-			List<ColumnSchema> columns = new List<ColumnSchema> ();
-			
-			//TODO:
-		      
-			return columns;
-		}
-		
-		public override ICollection<ParameterSchema> GetProcedureParameters (ProcedureSchema procedure)
-		{
-			CheckConnectionState ();
-			//TODO:
-			throw new NotImplementedException ();
-		}
-
-		public override ICollection<ConstraintSchema> GetTableConstraints (TableSchema table)
-		{
-			CheckConnectionState ();
-			List<ConstraintSchema> constraints = new List<ConstraintSchema> ();
-			
-			//TODO:
-
-			return constraints;
-		}
 	}
 }

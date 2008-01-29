@@ -26,47 +26,60 @@
 using System;
 using System.Data;
 using System.Collections.Generic;
-namespace MonoDevelop.Database.Sql
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Database.Components;
+namespace MonoDevelop.Database.Sql.Odbc
 {
 	public class OdbcDbFactory : IDbFactory
 	{
 		private ISqlDialect dialect;
+		private IConnectionProvider connectionProvider;
 		
 		public string Identifier {
-			get { return "System.Data.Odbc"; }
+			get { return "Odbc"; }
 		}
 		
 		public string Name {
-			get { return "ODBC data sources (Incomplete)"; }
+			get { return "Odbc"; }
 		}
 		
 		public ISqlDialect Dialect {
 			get {
 				if (dialect == null)
-					dialect = new Sql99Dialect ("\"", "@");
+					dialect = new OdbcDialect ();
 				return dialect;
 			}
 		}
 		
-		public IConnectionProvider CreateConnectionProvider (ConnectionSettings settings)
-		{
-			return new OdbcConnectionProvider (this, settings);
+		public IConnectionProvider ConnectionProvider {
+			get {
+				if (connectionProvider == null)
+					connectionProvider = new OdbcConnectionProvider ();
+				return connectionProvider;
+			}
 		}
 		
-		public ISchemaProvider CreateSchemaProvider (IConnectionProvider connectionProvider)
-		{
-			return new OdbcSchemaProvider (connectionProvider);
+		public IGuiProvider GuiProvider {
+			get { return null; }
 		}
 		
-		public ConnectionSettings GetDefaultConnectionSettings ()
+		public IConnectionPool CreateConnectionPool (DatabaseConnectionContext context)
 		{
-			ConnectionSettings settings = new ConnectionSettings ();
+			return new DefaultConnectionPool (this, ConnectionProvider, context);
+		}
+		
+		public ISchemaProvider CreateSchemaProvider (IConnectionPool connectionPool)
+		{
+			return new OdbcSchemaProvider (connectionPool);
+		}
+		
+		public DatabaseConnectionSettings GetDefaultConnectionSettings ()
+		{
+			DatabaseConnectionSettings settings = new DatabaseConnectionSettings ();
 			settings.ProviderIdentifier = Identifier;
-			settings.Password = String.Empty;
-			settings.Database = String.Empty;
-			settings.Username = String.Empty;
-			settings.Server = String.Empty;
-			settings.Port = 0;
+			settings.UseConnectionString = true;
+			
 			return settings;
 		}
 	}

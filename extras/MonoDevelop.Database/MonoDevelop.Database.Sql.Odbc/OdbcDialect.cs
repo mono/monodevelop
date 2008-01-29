@@ -1,12 +1,8 @@
 ﻿//
 // Authors:
-//   Christian Hergert	<chris@mosaix.net>
-//   Daniel Morgan <danielmorgan@verizon.net>
 //   Ben Motmans  <ben.motmans@gmail.com>
 //
-// Copyright (C) 2005 Mosaix Communications, Inc.
-// Copyright (C) 2005 Daniel Morgan
-// Copyright (c) 2007 Ben Motmans
+// Copyright (c) 2008 Ben Motmans
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,30 +25,25 @@
 
 using System;
 using System.Data;
-using System.Data.Odbc;
 using System.Collections.Generic;
 namespace MonoDevelop.Database.Sql.Odbc
 {
-	public class OdbcConnectionProvider : AbstractConnectionProvider
+	public class OdbcDialect : AbstractSqlDialect
 	{
-		public override IPooledDbConnection CreateConnection (IConnectionPool pool, DatabaseConnectionSettings settings, out string error)
+		public override string QuoteIdentifier (string identifier)
 		{
-			string connStr = null;
-			try {	
-				if (settings.UseConnectionString)
-					connStr = settings.ConnectionString;
-				else
-					throw new NotSupportedException ();
-
-				OdbcConnection connection = new OdbcConnection (connStr);
-				connection.Open ();
-				
-				error = null;
-				return new OdbcPooledDbConnection (pool, connection);
-			} catch (Exception e) {
-				error = e.Message;
-				return null;
-			}
+			if (identifier == null)
+				throw new ArgumentNullException ("identifier");
+			
+			return String.Concat ('"', identifier, '"');
+		}
+		
+		public override string MarkAsParameter (string identifier)
+		{
+			if (identifier == null)
+				throw new ArgumentNullException ("identifier");
+			
+			return "@" + identifier;
 		}
 	}
 }

@@ -1,3 +1,10 @@
+2008-01-30  Ben Motmans <ben.motmans@gmail.com> 
+
+	* OdbcDialect.cs: Odbc dialect implementation
+	* OdbcPooledDbConnection.cs: Odbc pooled connection implementation
+	* OdbcConnectionProvider.cs, OdbcSchemaProvider.cs, OdbcDbFactory.cs,
+	  MonoDevelop.Database.Sql.Odbc.addin.xml: convertion to the current API
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Database.Sql.Odbc.addin.xml: Update MD version.
