@@ -410,6 +410,7 @@ namespace MonoDevelop.Database.Components
 		[CommandHandler (DataGridCommands.VisualizeAsList)]
 		protected void VisualizeAsListCommand (object obj)
 		{
+			//FIXME: it seems that this code is never reached
 			IDataGridVisualizer visualizer = (IDataGridVisualizer)obj;
 			visualizer.Visualize (clickedCellObject);
 		}

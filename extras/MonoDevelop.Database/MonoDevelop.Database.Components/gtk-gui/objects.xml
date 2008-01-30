@@ -76,6 +76,7 @@
         <property name="EnablePasswordEntry" />
         <property name="EnableRefreshButton" />
         <property name="EnableOpenButton" />
+        <property name="EnableTestButton" />
       </itemgroup>
     </itemgroups>
     <signals>

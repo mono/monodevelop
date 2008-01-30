@@ -80,7 +80,12 @@ namespace MonoDevelop.Database.Components
 				CombineEntry selected = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
 				TreeIter activeIter = TreeIter.Zero;
 
-				foreach (Project proj in cmb.Entries) {
+				//TODO: add support for recursive combines
+				foreach (CombineEntry entry in cmb.Entries) {
+					if (!(entry is DotNetProject))
+						continue;
+				
+					DotNetProject proj = (DotNetProject)entry;
 					Gdk.Pixbuf pixbuf = null;
 					
 					if (proj is DotNetProject && (proj as DotNetProject).LanguageBinding == null) {

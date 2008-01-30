@@ -49,6 +49,7 @@ namespace MonoDevelop.Database.Components
 		protected bool enablePortEntry;
 		protected bool enableRefreshButton;
 		protected bool enableOpenButton;
+		protected bool enableTestButton;
 		
 		protected IDbFactory factory;
 		protected DatabaseConnectionSettings settings;
@@ -128,6 +129,14 @@ namespace MonoDevelop.Database.Components
 			set {
 				enableOpenButton = value;
 				buttonOpen.Sensitive = value;
+			}
+		}
+		
+		public bool EnableTestButton {
+			get { return enableTestButton; }
+			set {
+				enableTestButton = value;
+				buttonTest.Sensitive = value;
 			}
 		}
 		

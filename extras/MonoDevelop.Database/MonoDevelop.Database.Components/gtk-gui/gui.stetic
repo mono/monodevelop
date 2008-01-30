@@ -590,7 +590,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Database.Components.ConnectionSettingsWidget" design-size="466 464">
+  <widget class="Gtk.Bin" id="MonoDevelop.Database.Components.ConnectionSettingsWidget" design-size="466 273">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.Table" id="table">
@@ -700,7 +700,6 @@
           <widget class="Gtk.Expander" id="expander">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Expanded">True</property>
             <child>
               <widget class="Gtk.Table" id="tableAdvanced">
                 <property name="MemberName" />
@@ -736,7 +735,7 @@
                   <widget class="Gtk.Label" id="label10">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
-                    <property name="LabelProp" translatable="yes">Min Pool Size</property>
+                    <property name="LabelProp" translatable="yes">Min Pool Size:</property>
                   </widget>
                   <packing>
                     <property name="AutoSize">True</property>
@@ -754,7 +753,7 @@
                   <widget class="Gtk.Label" id="label11">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
-                    <property name="LabelProp" translatable="yes">Max Pool Size</property>
+                    <property name="LabelProp" translatable="yes">Max Pool Size:</property>
                   </widget>
                   <packing>
                     <property name="TopAttach">1</property>
@@ -1002,7 +1001,7 @@
           <widget class="Gtk.Label" id="labelDatabase">
             <property name="MemberName" />
             <property name="Xalign">0</property>
-            <property name="LabelProp" translatable="yes">Database</property>
+            <property name="LabelProp" translatable="yes">Database:</property>
           </widget>
           <packing>
             <property name="TopAttach">5</property>
@@ -1022,7 +1021,7 @@
           <widget class="Gtk.Label" id="labelName">
             <property name="MemberName" />
             <property name="Xalign">0</property>
-            <property name="LabelProp" translatable="yes">Name</property>
+            <property name="LabelProp" translatable="yes">Name:</property>
           </widget>
           <packing>
             <property name="AutoSize">True</property>
@@ -1040,7 +1039,7 @@
           <widget class="Gtk.Label" id="labelPassword">
             <property name="MemberName" />
             <property name="Xalign">0</property>
-            <property name="LabelProp" translatable="yes">Password</property>
+            <property name="LabelProp" translatable="yes">Password:</property>
           </widget>
           <packing>
             <property name="TopAttach">4</property>
@@ -1060,7 +1059,7 @@
           <widget class="Gtk.Label" id="labelPort">
             <property name="MemberName" />
             <property name="Xalign">0</property>
-            <property name="LabelProp" translatable="yes">Port</property>
+            <property name="LabelProp" translatable="yes">Port:</property>
           </widget>
           <packing>
             <property name="TopAttach">2</property>
@@ -1080,7 +1079,7 @@
           <widget class="Gtk.Label" id="labelServer">
             <property name="MemberName" />
             <property name="Xalign">0</property>
-            <property name="LabelProp" translatable="yes">Server</property>
+            <property name="LabelProp" translatable="yes">Server:</property>
           </widget>
           <packing>
             <property name="TopAttach">1</property>
@@ -1123,7 +1122,7 @@
           <widget class="Gtk.Label" id="labelUsername">
             <property name="MemberName" />
             <property name="Xalign">0</property>
-            <property name="LabelProp" translatable="yes">Username</property>
+            <property name="LabelProp" translatable="yes">Username:</property>
           </widget>
           <packing>
             <property name="TopAttach">3</property>
