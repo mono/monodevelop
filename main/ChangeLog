@@ -1,3 +1,8 @@
+2008-01-30  Geoff Norton  <gnorton@novell.com>
+
+	* monodevelop.in: Work around a (broken?) behaviour in OSX 10.5 bash
+	that caused the launcher script to hang indefinately.
+
 2008-01-29  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Makefile.am: Restore some distcheck fixes that got lost during the 
