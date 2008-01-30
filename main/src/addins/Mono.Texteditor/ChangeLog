@@ -1,5 +1,9 @@
 2008-01-30  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/DefaultEditActions.cs: Fixed italic bug in rtf output.
+
+2008-01-30  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/Document.cs: Added update after undo/redo.
 
 2008-01-30  Mike Krüger <mkrueger@novell.com> 

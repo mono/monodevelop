@@ -733,7 +733,7 @@ namespace Mono.TextEditor
 							appendSpace = true;
 						}
 						if (isItalic != chunk.Style.Italic) {
-							rtfText.Append (chunk.Style.Italic ? @"\b" : @"\b0");
+							rtfText.Append (chunk.Style.Italic ? @"\i" : @"\i0");
 							isItalic = chunk.Style.Italic;
 							appendSpace = true;
 						}
@@ -814,6 +814,7 @@ namespace Mono.TextEditor
 			rtf.Append (@"\cf1");
 			rtf.Append (rtfText.ToString ());
 			rtf.Append("}");
+	//		System.Console.WriteLine(rtf);
 			return rtf.ToString ();
 		}
 		
