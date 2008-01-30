@@ -76,9 +76,9 @@ using MonoDevelop.Database.Components;
 //			}
 //		}
 		
-		public bool ShowCreateDatabaseDialog ()
+		public bool ShowCreateDatabaseDialog (IDbFactory factory)
 		{
-			return false;
+			return RunDialog (new SqliteCreateDatabaseDialog (factory));
 		}
 		
 		public bool ShowAddConnectionDialog (IDbFactory factory)

@@ -35,18 +35,59 @@ using MonoDevelop.Database.Designer;
 
 namespace MonoDevelop.Database.Sql.Sqlite
 {
-	public class SqliteCreateDatabaseDialog : CreateDatabaseDialog
+	internal class SqliteConnectionSettingsWidget : ConnectionSettingsWidget
 	{
-		public SqliteCreateDatabaseDialog (IDbFactory factory)
+		internal SqliteConnectionSettingsWidget (IDbFactory factory)
 			: base (factory)
 		{
+			EnableServerEntry = false;
+			EnablePortEntry = false;
+			EnableUsernameEntry = false;
+			EnablePasswordEntry = false;
+			EnableRefreshButton = false;
+			EnableOpenButton = true;
 		}
 		
-		protected override ConnectionSettingsWidget CreateConnectionSettingsWidget (IDbFactory factory)
+		protected override void OpenClicked (object sender, EventArgs e)
 		{
-			ConnectionSettingsWidget widget = new SqliteConnectionSettingsWidget (factory);
-			widget.EnableTestButton = false;
-			return widget;
+			string database = null;
+			if (ShowSelectDatabaseDialog (out database))
+				ComboDatabase.Entry.Text = database;
+		}
+		
+		private bool ShowSelectDatabaseDialog (out string database)
+		{
+			FileChooserDialog dlg = new FileChooserDialog (
+				AddinCatalog.GetString ("Open Database"), null, FileChooserAction.Open,
+				"gtk-cancel", ResponseType.Cancel,
+				"gtk-open", ResponseType.Accept
+			);
+			dlg.SelectMultiple = false;
+			dlg.LocalOnly = true;
+			dlg.Modal = true;
+		
+			FileFilter filter = new FileFilter ();
+			filter.AddMimeType ("application/x-sqlite2");
+			filter.AddMimeType ("application/x-sqlite3");
+			filter.AddPattern ("*.db");
+			filter.Name = AddinCatalog.GetString ("SQLite databases");
+			FileFilter filterAll = new FileFilter ();
+			filterAll.AddPattern ("*");
+			filterAll.Name = AddinCatalog.GetString ("All files");
+			dlg.AddFilter (filter);
+			dlg.AddFilter (filterAll);
+
+			database = null;
+			bool result = false;
+			try {
+				if (dlg.Run () == (int)ResponseType.Accept) {
+					database = dlg.Filename;
+					result = true;
+				}
+			} finally {
+				dlg.Destroy ();					
+			}
+			return result;
 		}
 	}
 }

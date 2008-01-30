@@ -1,3 +1,14 @@
+2008-01-30  Ben Motmans <ben.motmans@gmail.com> 
+
+	* Dialogs/SqliteDatabaseConnectionSettingsDialog.cs,
+	  Widgets/SqliteConnectionSettingsWidget.cs: moved the sqlite connection
+	  settings widget to a separate file
+	* Dialogs/SqliteCreateDatabaseDialog.cs,
+	  gtk-gui/MonoDevelop.Database.Sql.Sqlite.SqliteCreateDatabaseDialog.cs:
+	  Gui changes
+	* SqliteGuiProvider.cs: added parameter to the ShowCreateDatabaseDialog
+	  method
+
 2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
 
 	* SqliteSchemaProvider.cs: Removed temp log statements

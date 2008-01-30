@@ -17,7 +17,6 @@ FILES =  \
 	Dialogs/SqliteDatabaseConnectionSettingsDialog.cs \
 	Dialogs/SqliteTableEditorDialog.cs \
 	gtk-gui/generated.cs \
-	gtk-gui/MonoDevelop.Database.Sql.Sqlite.SqliteCreateDatabaseDialog.cs \
 	Schema/dummy.cs \
 	SqliteConnectionProvider.cs \
 	SqliteDbFactory.cs \
@@ -25,7 +24,7 @@ FILES =  \
 	SqliteGuiProvider.cs \
 	SqlitePooledDbConnection.cs \
 	SqliteSchemaProvider.cs \
-	Widgets/dummy.cs
+	Widgets/SqliteConnectionSettingsWidget.cs
 
 RES =  \
 	gtk-gui/gui.stetic \
