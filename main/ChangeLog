@@ -1,3 +1,10 @@
+2008-01-29  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Makefile.am: Restore some distcheck fixes that got lost during the 
+	  build reorg.
+	* theme-icons/Makefile.am: Add the GNOME/monodevelop.svg file to dist
+	  so that icons can get installed from tarball releases.
+
 2008-01-28  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Makefile.include: Workaround so that "make run" and uses of mdtool 
