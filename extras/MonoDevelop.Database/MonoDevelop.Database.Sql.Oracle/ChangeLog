@@ -1,5 +1,9 @@
 2008-01-30  Ben Motmans <ben.motmans@gmail.com> 
 
+	* MonoDevelop.Database.Sql.Oracle.addin.xml: added dependencies
+
+2008-01-30  Ben Motmans <ben.motmans@gmail.com> 
+
 	* OracleDialect.cs: simple Oracle dialect implementation
 	* OraclePooledDbConnection.cs: pooled db connection implementation
 	* OracleConnectionProvider.cs, OracleDbFactory.cs,

@@ -19,10 +19,6 @@ namespace MonoDevelop.Database.Sql.MySql {
         
         private Gtk.ComboBoxEntry comboCollation;
         
-        private Gtk.Entry entryName;
-        
-        private Gtk.Label label1;
-        
         private Gtk.Label label2;
         
         private Gtk.Label label3;
@@ -33,7 +29,7 @@ namespace MonoDevelop.Database.Sql.MySql {
             Stetic.BinContainer.Attach(this);
             this.Name = "MonoDevelop.Database.Sql.MySql.MySqlCreateDatabaseWidget";
             // Container child MonoDevelop.Database.Sql.MySql.MySqlCreateDatabaseWidget.Gtk.Container+ContainerChild
-            this.table = new Gtk.Table(((uint)(3)), ((uint)(2)), false);
+            this.table = new Gtk.Table(((uint)(2)), ((uint)(2)), false);
             this.table.Name = "table";
             this.table.RowSpacing = ((uint)(6));
             this.table.ColumnSpacing = ((uint)(6));
@@ -43,8 +39,6 @@ namespace MonoDevelop.Database.Sql.MySql {
             this.comboCharset.Name = "comboCharset";
             this.table.Add(this.comboCharset);
             Gtk.Table.TableChild w1 = ((Gtk.Table.TableChild)(this.table[this.comboCharset]));
-            w1.TopAttach = ((uint)(1));
-            w1.BottomAttach = ((uint)(2));
             w1.LeftAttach = ((uint)(1));
             w1.RightAttach = ((uint)(2));
             w1.XOptions = ((Gtk.AttachOptions)(4));
@@ -54,54 +48,32 @@ namespace MonoDevelop.Database.Sql.MySql {
             this.comboCollation.Name = "comboCollation";
             this.table.Add(this.comboCollation);
             Gtk.Table.TableChild w2 = ((Gtk.Table.TableChild)(this.table[this.comboCollation]));
-            w2.TopAttach = ((uint)(2));
-            w2.BottomAttach = ((uint)(3));
+            w2.TopAttach = ((uint)(1));
+            w2.BottomAttach = ((uint)(2));
             w2.LeftAttach = ((uint)(1));
             w2.RightAttach = ((uint)(2));
             w2.XOptions = ((Gtk.AttachOptions)(4));
             w2.YOptions = ((Gtk.AttachOptions)(4));
-            // Container child table.Gtk.Table+TableChild
-            this.entryName = new Gtk.Entry();
-            this.entryName.CanFocus = true;
-            this.entryName.Name = "entryName";
-            this.entryName.IsEditable = true;
-            this.entryName.InvisibleChar = '●';
-            this.table.Add(this.entryName);
-            Gtk.Table.TableChild w3 = ((Gtk.Table.TableChild)(this.table[this.entryName]));
-            w3.LeftAttach = ((uint)(1));
-            w3.RightAttach = ((uint)(2));
-            w3.YOptions = ((Gtk.AttachOptions)(4));
-            // Container child table.Gtk.Table+TableChild
-            this.label1 = new Gtk.Label();
-            this.label1.Name = "label1";
-            this.label1.Xalign = 0F;
-            this.label1.LabelProp = AddinCatalog.GetString("Database:");
-            this.table.Add(this.label1);
-            Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.table[this.label1]));
-            w4.XOptions = ((Gtk.AttachOptions)(4));
-            w4.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table.Gtk.Table+TableChild
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
             this.label2.Xalign = 0F;
             this.label2.LabelProp = AddinCatalog.GetString("Character Set:");
             this.table.Add(this.label2);
-            Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.table[this.label2]));
-            w5.TopAttach = ((uint)(1));
-            w5.BottomAttach = ((uint)(2));
-            w5.XOptions = ((Gtk.AttachOptions)(4));
-            w5.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w3 = ((Gtk.Table.TableChild)(this.table[this.label2]));
+            w3.XOptions = ((Gtk.AttachOptions)(4));
+            w3.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table.Gtk.Table+TableChild
             this.label3 = new Gtk.Label();
             this.label3.Name = "label3";
             this.label3.Xalign = 0F;
             this.label3.LabelProp = AddinCatalog.GetString("Collation:");
             this.table.Add(this.label3);
-            Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.table[this.label3]));
-            w6.TopAttach = ((uint)(2));
-            w6.BottomAttach = ((uint)(3));
-            w6.XOptions = ((Gtk.AttachOptions)(4));
-            w6.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.table[this.label3]));
+            w4.TopAttach = ((uint)(1));
+            w4.BottomAttach = ((uint)(2));
+            w4.XOptions = ((Gtk.AttachOptions)(4));
+            w4.YOptions = ((Gtk.AttachOptions)(4));
             this.Add(this.table);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

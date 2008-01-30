@@ -31,7 +31,7 @@ namespace MonoDevelop.Database.Sql
 {
 	public interface IGuiProvider
 	{
-		bool ShowCreateDatabaseDialog ();
+		bool ShowCreateDatabaseDialog (IDbFactory factory);
 		
 		bool ShowAddConnectionDialog (IDbFactory factory);
 		bool ShowEditConnectionDialog (IDbFactory factory, DatabaseConnectionSettings settings);

@@ -31,7 +31,7 @@ using MonoDevelop.Database.Components;
 
 namespace MonoDevelop.Database.Sql.MySql
 {
-	public partial class MySqlCreateDatabaseWidget : CreateDatabaseWidget
+	public partial class MySqlCreateDatabaseWidget : Bin
 	{
 		public MySqlCreateDatabaseWidget ()
 		{

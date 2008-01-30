@@ -29,7 +29,6 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Database.Sql
 {
-	//TODO: make use of the default .NET sort functionality
 	public abstract class SortedCollectionBase<T> : CollectionBase, IEnumerable<T>, IPropertyComparer<T, string> where T : ISchema
 	{
 		public SortedCollectionItemEventHandler<T> ItemAdded;

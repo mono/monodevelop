@@ -1,3 +1,12 @@
+2008-01-30  Ben Motmans <ben.motmans@gmail.com> 
+
+	* MySqlGuiProvider.cs: added parameter to the ShowCreateDatabaseDialog
+	  method
+	* Widgets/MySqlCreateDatabaseWidget.cs: don't inherit from
+	  CreateDatabaseWidget
+	* gtk-gui/MonoDevelop.Database.Sql.MySql.MySqlCreateDatabaseWidget.cs,
+	  gtk-gui/gui.stetic: auto generated code
+
 2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
 
 	* MySqlSchemaProvider.cs: only support procedures if the server version > 4

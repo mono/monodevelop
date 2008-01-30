@@ -1,3 +1,7 @@
+2008-01-30  Ben Motmans <ben.motmans@gmail.com> 
+
+	* Providers/IGuiProvider.cs: API changes
+
 2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
 
 	* Schema/DataTypeSchema.cs, Providers/AbstractSchemaProvider.cs: renamed the

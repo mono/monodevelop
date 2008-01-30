@@ -33,7 +33,7 @@ using MonoDevelop.Database.Components;
 {
 	public class NpgsqlGuiProvider : IGuiProvider
 	{
-		public bool ShowCreateDatabaseDialog ()
+		public bool ShowCreateDatabaseDialog (IDbFactory factory)
 		{
 			return false;
 		}

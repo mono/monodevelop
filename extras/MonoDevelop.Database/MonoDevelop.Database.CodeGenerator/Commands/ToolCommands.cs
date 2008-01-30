@@ -62,7 +62,12 @@ namespace MonoDevelop.Database.CodeGenerator
 				return;
 			}
 
-			foreach (DotNetProject proj in combine.Entries) {
+			//only enable the command if 1 or more code projects exist 
+			foreach (CombineEntry entry in combine.Entries) {
+				if (!(entry is DotNetProject))
+					continue;
+				
+				DotNetProject proj = (DotNetProject)entry;
 				if (proj.LanguageBinding != null) {
 					info.Enabled = true;
 					break;

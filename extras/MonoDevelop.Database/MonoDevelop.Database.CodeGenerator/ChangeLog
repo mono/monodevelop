@@ -1,3 +1,9 @@
+2008-01-30  Ben Motmans <ben.motmans@gmail.com> 
+
+	* Commands/ToolCommands.cs: fixes an issue with non-code projects
+	  (translation, ...)
+	* gtk-gui/gui.stetic: auto generated code
+
 2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
 
 	* MonoDevelop.Database.CodeGenerator.addin.xml: added a category attribute

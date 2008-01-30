@@ -98,7 +98,7 @@ namespace MonoDevelop.Database.ConnectionManager
 		protected override void Run (object ob)
 		{
 			factory = (IDbFactory)ob;
-			factory.GuiProvider.ShowCreateDatabaseDialog ();
+			factory.GuiProvider.ShowCreateDatabaseDialog (factory);
 		}
 	}
 }
