@@ -72,12 +72,4 @@
       </itemgroup>
     </signals>
   </object>
-  <object type="MonoDevelop.Database.Designer.CreateDatabaseWidget" palette-category="MonoDevelop.Database.Designer" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals>
-      <itemgroup label="CreateDatabaseWidget Signals">
-        <signal name="NeedsValidation" />
-      </itemgroup>
-    </signals>
-  </object>
 </objects>

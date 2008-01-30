@@ -39,24 +39,19 @@ namespace MonoDevelop.Database.Designer
 		private DatabaseConnectionContext context;
 		
 		private ConnectionSettingsWidget settingsWidget;
-		private CreateDatabaseWidget dbWidget;
 
-		//TODO: on page switch, create a temp connection setting context
 		public CreateDatabaseDialog (IDbFactory factory)
 		{
 			this.Build();
 			
 			settingsWidget = CreateConnectionSettingsWidget (factory);
-			dbWidget = CreateCreateDatabaseWidget (factory);
-			
 			vboxConnection.PackStart (settingsWidget, true, true, 0);
-			vboxDatabase.PackStart (dbWidget, true, true, 0);
 			
 			settingsWidget.NeedsValidation += Validate;
-			dbWidget.NeedsValidation += Validate;
-			
 			settingsWidget.EnableOpenButton = false;
 			settingsWidget.EnableRefreshButton = false;
+			
+			//TODO: hide the border if only 1 tab page exists
 			
 			ShowAll ();
 		}
@@ -65,14 +60,13 @@ namespace MonoDevelop.Database.Designer
 			get { return context; }
 		}
 		
+		protected internal Notebook Notebook {
+			get { return notebook; }
+		}
+		
 		protected virtual ConnectionSettingsWidget CreateConnectionSettingsWidget (IDbFactory factory)
 		{
 			return new ConnectionSettingsWidget (factory);
-		}
-		
-		protected virtual CreateDatabaseWidget CreateCreateDatabaseWidget (IDbFactory factory)
-		{
-			return new CreateDatabaseWidget ();
 		}
 		
 		protected virtual void OkClicked (object sender, EventArgs e)
@@ -103,7 +97,7 @@ namespace MonoDevelop.Database.Designer
 		
 		protected virtual void Validate (object sender, EventArgs e)
 		{
-			buttonOk.Sensitive = settingsWidget.ValidateFields () && dbWidget.ValidateFields ();
+			buttonOk.Sensitive = settingsWidget.ValidateFields ();
 		}
 	}
 }

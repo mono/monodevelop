@@ -1,3 +1,11 @@
+2008-01-30  Ben Motmans <ben.motmans@gmail.com> 
+
+	* Dialogs/CreateDatabaseDialog.cs: GUI changes
+	* gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.Database.Designer.CreateDatabaseDialog.cs,
+	  gtk-gui/gui.stetic: auto generated code
+	* gtk-gui/MonoDevelop.Database.Designer.CreateDatabaseWidget.cs: obsolete
+
 2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
 
 	* Dialogs/CreateDatabaseDialog.cs, Widgets/CreateDatabaseWidget.cs: improved

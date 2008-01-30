@@ -19,10 +19,6 @@ namespace MonoDevelop.Database.Designer {
         
         private Gtk.Label label1;
         
-        private Gtk.VBox vboxDatabase;
-        
-        private Gtk.Label label2;
-        
         private Gtk.Button buttonCancel;
         
         private Gtk.Button buttonOk;
@@ -45,6 +41,7 @@ namespace MonoDevelop.Database.Designer {
             this.notebook.CanFocus = true;
             this.notebook.Name = "notebook";
             this.notebook.CurrentPage = 0;
+            this.notebook.ShowTabs = false;
             // Container child notebook.Gtk.Notebook+NotebookChild
             this.vboxConnection = new Gtk.VBox();
             this.vboxConnection.Name = "vboxConnection";
@@ -57,29 +54,15 @@ namespace MonoDevelop.Database.Designer {
             this.label1.LabelProp = AddinCatalog.GetString("Connection");
             this.notebook.SetTabLabel(this.vboxConnection, this.label1);
             this.label1.ShowAll();
-            // Container child notebook.Gtk.Notebook+NotebookChild
-            this.vboxDatabase = new Gtk.VBox();
-            this.vboxDatabase.Name = "vboxDatabase";
-            this.vboxDatabase.Spacing = 6;
-            this.vboxDatabase.BorderWidth = ((uint)(6));
-            this.notebook.Add(this.vboxDatabase);
-            Gtk.Notebook.NotebookChild w3 = ((Gtk.Notebook.NotebookChild)(this.notebook[this.vboxDatabase]));
-            w3.Position = 1;
-            // Notebook tab
-            this.label2 = new Gtk.Label();
-            this.label2.Name = "label2";
-            this.label2.LabelProp = AddinCatalog.GetString("Database");
-            this.notebook.SetTabLabel(this.vboxDatabase, this.label2);
-            this.label2.ShowAll();
             w1.Add(this.notebook);
-            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(w1[this.notebook]));
-            w4.Position = 0;
+            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(w1[this.notebook]));
+            w3.Position = 0;
             // Internal child MonoDevelop.Database.Designer.CreateDatabaseDialog.ActionArea
-            Gtk.HButtonBox w5 = this.ActionArea;
-            w5.Name = "dialog1_ActionArea";
-            w5.Spacing = 6;
-            w5.BorderWidth = ((uint)(5));
-            w5.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
+            Gtk.HButtonBox w4 = this.ActionArea;
+            w4.Name = "dialog1_ActionArea";
+            w4.Spacing = 6;
+            w4.BorderWidth = ((uint)(5));
+            w4.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonCancel = new Gtk.Button();
             this.buttonCancel.CanDefault = true;
@@ -89,9 +72,9 @@ namespace MonoDevelop.Database.Designer {
             this.buttonCancel.UseUnderline = true;
             this.buttonCancel.Label = "gtk-cancel";
             this.AddActionWidget(this.buttonCancel, -6);
-            Gtk.ButtonBox.ButtonBoxChild w6 = ((Gtk.ButtonBox.ButtonBoxChild)(w5[this.buttonCancel]));
-            w6.Expand = false;
-            w6.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w5 = ((Gtk.ButtonBox.ButtonBoxChild)(w4[this.buttonCancel]));
+            w5.Expand = false;
+            w5.Fill = false;
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonOk = new Gtk.Button();
             this.buttonOk.Sensitive = false;
@@ -102,10 +85,10 @@ namespace MonoDevelop.Database.Designer {
             this.buttonOk.UseUnderline = true;
             this.buttonOk.Label = "gtk-ok";
             this.AddActionWidget(this.buttonOk, -5);
-            Gtk.ButtonBox.ButtonBoxChild w7 = ((Gtk.ButtonBox.ButtonBoxChild)(w5[this.buttonOk]));
-            w7.Position = 1;
-            w7.Expand = false;
-            w7.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w6 = ((Gtk.ButtonBox.ButtonBoxChild)(w4[this.buttonOk]));
+            w6.Position = 1;
+            w6.Expand = false;
+            w6.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
