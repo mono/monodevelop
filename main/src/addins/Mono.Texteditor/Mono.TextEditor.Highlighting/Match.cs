@@ -1,4 +1,4 @@
-// Keywords.cs
+// Match.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -26,17 +26,14 @@
 //
 
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Xml;
 
-namespace Mono.TextEditor.Highlighting
+namespace Mono.TextEditor
 {
-	public class Keywords
+	public class Match
 	{
-		string        color;
-		List<string>  words = new List<string> ();
-		bool          ignorecase = false;
+		string color;
+		string pattern;
 		
 		public string Color {
 			get {
@@ -44,43 +41,30 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
-		public ReadOnlyCollection<string> Words {
+		public string Pattern {
 			get {
-				return words.AsReadOnly ();
+				return pattern;
 			}
+		}
+		
+		public System.Text.RegularExpressions.Regex Regex {
+			get {
+				return new System.Text.RegularExpressions.Regex (pattern, System.Text.RegularExpressions.RegexOptions.Compiled);
+			}
+		}
+		
+		public override string ToString ()
+		{
+			return String.Format ("[Match: Color={0}, Pattern={1}]", color, pattern);
 		}
 
-		public bool Ignorecase {
-			get {
-				return ignorecase;
-			}
-			set {
-				ignorecase = value;
-			}
-		}
 		
-		public Keywords ()
+		public const string Node = "Match";
+		public static Match Read (XmlReader reader)
 		{
-		}
-		
-		public const string Node = "Keywords";
-		
-		public static Keywords Read (XmlReader reader)
-		{
-			Keywords result = new Keywords ();
-			
-			result.color      = reader.GetAttribute ("color");
-			if (!String.IsNullOrEmpty (reader.GetAttribute ("ignorecase")))
-				result.ignorecase = Boolean.Parse (reader.GetAttribute ("ignorecase"));
-			
-			XmlReadHelper.ReadList (reader, Node, delegate () {
-				switch (reader.LocalName) {
-				case "Word":
-					result.words.Add (reader.ReadElementString ());
-					return true;
-				};
-				return false;
-			});
+			Match result = new Match ();
+			result.color = reader.GetAttribute ("color");
+			result.pattern = reader.ReadElementString ();
 			return result;
 		}
 	}

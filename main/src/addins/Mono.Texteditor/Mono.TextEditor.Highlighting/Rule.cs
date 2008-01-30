@@ -41,6 +41,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		protected List<Keywords> keywords = new List<Keywords> ();
 		protected List<Span> spans = new List<Span> ();
+		protected List<Match> matches = new List<Match> ();
 		
 		public string Name {
 			get {
@@ -65,6 +66,12 @@ namespace Mono.TextEditor.Highlighting
 				return spans.AsReadOnly ();
 			}
 		}
+		
+		public ReadOnlyCollection<Match> Matches {
+			get {
+				return this.matches.AsReadOnly ();
+			}
+		}
 
 		public string DefaultColor {
 			get {
@@ -86,6 +93,9 @@ namespace Mono.TextEditor.Highlighting
 			switch (reader.LocalName) {
 			case "Delimiters":
 				this.delimiters = reader.ReadElementString ();
+				return true;
+			case Match.Node:
+				this.matches.Add (Match.Read (reader));
 				return true;
 			case Span.Node:
 			case Span.AltNode:

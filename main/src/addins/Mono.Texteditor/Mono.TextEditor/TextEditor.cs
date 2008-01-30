@@ -760,9 +760,9 @@ namespace Mono.TextEditor
 					selectionEnd = selectionStart;
 					selectionStart = tmp;
 				}
-//					Console.WriteLine ("#" + chunks.Length);
+//				Console.WriteLine ("#" + chunks.Length);
 				foreach (Chunk chunk in chunks) {
-//						Console.WriteLine (chunk + " style:" + chunk.Style);
+//					Console.WriteLine (chunk + " style:" + chunk.Style);
 					layout.FontDescription.Weight = chunk.Style.Bold ? Pango.Weight.Bold : Pango.Weight.Normal;
 					layout.FontDescription.Style = chunk.Style.Italic ? Pango.Style.Italic : Pango.Style.Normal;
 					if (chunk.Offset >= selectionStart && chunk.EndOffset <= selectionEnd) {
@@ -1034,6 +1034,8 @@ namespace Mono.TextEditor
 			if (area.Height % this.LineHeight == 0) {
 				startLine = (area.Top + reminder) / this.LineHeight;
 				endLine   = startLine + (area.Height / this.LineHeight) - 1;
+			} else {
+				endLine++;
 			}
 //			System.Console.WriteLine("draw" + startLine + " -- to: " + endLine);
 			for (int visualLineNumber = startLine; visualLineNumber <= endLine; visualLineNumber++) {

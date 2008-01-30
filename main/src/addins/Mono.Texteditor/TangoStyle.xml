@@ -22,7 +22,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE. -->
- <EditorStyle _name="Oblivion" _description="Dark color sheme using tango colors.">
+ <EditorStyle _name="TangoStyle" _description="Light color sheme using tango colors.">
  
 	<!-- tango palette -->
 	<Color name="butter1" value="#fce94f"/>
@@ -54,60 +54,62 @@
 	<Color name="aluminium6" value="#2e3436"/>
 	
 	<!-- environment -->
-	<Style name="default" color="aluminium2"/>
-	<Style name="caret" color="aluminium2"/>
-	<Style name="background" color="aluminium6"/>
-	<Style name="selectedBackground" color="aluminium4"/>
+	<Style name="default" color="black"/>
+	<Style name="caret" color="black"/>
+	<Style name="background" color="white"/>
+	<Style name="selectedBackground" color="skyblue1"/>
 	<Style name="selectedForeground" color="aluminium1"/>
 	
-	<Style name="lineMarker" color="aluminium5"/>
+	<Style name="lineMarker" color="aluminium1"/>
 	<Style name="ruler" color="aluminium3"/>
 	<Style name="whitespaces" color="aluminium3"/>
-	<Style name="invalidLines" color="orange1"/>
+	<Style name="invalidLines" color="scarletred2"/>
 
 	<Style name="lineNumber" color="aluminium5"/>
 	<Style name="lineNumberHighlighted" color="aluminium3"/>
-	<Style name="lineNumberBg" color="black"/>
+	<Style name="lineNumberBg" color="white"/>
 	
-	<Style name="iconBar" color="black"/>
+	<Style name="iconBar" color="white"/>
 	<Style name="iconBarSeperator" color="aluminium3"/>
 
 	<Style name="foldLine" color="aluminium3"/>
-	<Style name="foldBg" color="black"/>
+	<Style name="foldBg" color="white"/>
 	<Style name="foldLineHighlighted" color="aluminium2"/>
 	<Style name="foldToggleMarker" color="aluminium1"/>
 	
 	<!-- highlighting -->
-	<Style name="comment" color="aluminium4"/>
-	<Style name="altcomment" color="aluminium4"/>
-	<Style name="todocomment" color="aluminium4" weight="italic" />
-	<Style name="commentkw" color="aluminium4" weight="bold" />
+	<Style name="comment" color="chameleon3"/>
+	<Style name="altcomment" color="chameleon3"/>
+	<Style name="todocomment" color="chameleon3" weight="italic" />
+	<Style name="commentkw" color="chameleon3" weight="bold" />
 	<Style name="commenttag" color="aluminium4"/>
 	
-	<Style name="digit" color="butter2"/>
-	<Style name="literal" color="butter2"/>
-	<Style name="punctuation" color="butter2"/>
+	<Style name="digit" color="orange3"/>
+	<Style name="literal" color="orange3"/>
+	<Style name="punctuation" color="aluminium6"/>
 	
-	<Style name="kw:access" color="white" weight="bold" />
-	<Style name="kw:operator" color="white" weight="bold"/>
-	<Style name="kw:selection" color="white" weight="bold"/>
-	<Style name="kw:iteration" color="white" weight="bold"/>
-	<Style name="kw:jump" color="white" weight="bold"/>
-	<Style name="kw:context" color="white" weight="bold"/>
-	<Style name="kw:exceptions" color="white" weight="bold"/>
+	<Style name="kw:namespaces" color="plum3" weight="bold"/>
+	<Style name="kw:properties" color="skyblue3" weight="bold"/>
+	<Style name="kw:modifiers" color="plum3" weight="bold"/>
+	<Style name="kw:types" color="chameleon3" weight="bold"/>
+	<Style name="kw:void" color="chameleon3" weight="bold"/>
+	<Style name="kw:declarations" color="plum3" weight="bold"/>
+		
+	<Style name="kw:access" color="black" weight="bold" />
+	
+	<Style name="kw:operator" color="skyblue3"/>
+	<Style name="kw:selection" color="skyblue3" weight="bold"/>
+	<Style name="kw:iteration" color="skyblue3" weight="bold"/>
+	<Style name="kw:jump" color="skyblue3" weight="bold"/>
+	<Style name="kw:context" color="skyblue3" />
+	<Style name="kw:exceptions" color="scarletred3" weight="bold"/>
 	<Style name="kw:literals" color="orange3"/>
-	<Style name="kw:modifiers" color="white" weight="bold"/>
-	<Style name="kw:types" color="chameleon1" weight="bold"/>
-	<Style name="kw:namespaces" color="white" weight="bold"/>
-	<Style name="kw:properties" color="white" weight="bold"/>
-	<Style name="kw:declarations" color="white" weight="bold"/>
-	<Style name="kw:parameter" color="white" weight="bold"/>
-	<Style name="kw:operatordecl" color="white" weight="bold"/>
-	<Style name="kw:misc" color="white" weight="bold"/>
-	<Style name="kw:void" color="white" weight="bold"/>
+	<Style name="kw:parameter" color="skyblue3" weight="bold"/>
+	<Style name="kw:operatordecl" color="skyblue3" weight="bold"/>
+	<Style name="kw:misc" color="skyblue3"/>
 	
-	<Style name="preprocessor" color="plum1"/>
-	<Style name="preprocessorkw" color="plum1" weight="bold"/>
+	<Style name="preprocessor" color="orange2"/>
+	<Style name="preprocessorkw" color="orange2" weight="bold"/>
 	
 	<Style name="markup" color="orange1"/>
 </EditorStyle>

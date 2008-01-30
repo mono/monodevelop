@@ -1,3 +1,12 @@
+2008-01-30  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor.mdp, OblivionStyle.xml, Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor.Highlighting/SyntaxMode.cs,
+	  Mono.TextEditor.Highlighting/Match.cs,
+	  Mono.TextEditor.Highlighting/Rule.cs,
+	  Mono.TextEditor.Highlighting/Keywords.cs, TangoStyle.xml,
+	  CSharpSyntaxMode.xml: Worked on styling.
+
 2008-01-29  Mike Krüger <mkrueger@novell.com> 
 
 	* OblivionStyle.xml, Mono.TextEditor/DefaultEditActions.cs,

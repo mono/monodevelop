@@ -28,7 +28,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Text.RegularExpressions;
 using System.Xml;
+
 
 namespace Mono.TextEditor.Highlighting
 {
@@ -153,6 +155,7 @@ namespace Mono.TextEditor.Highlighting
 			
 			Chunk curChunk;
 			int maxEnd;
+			
 			public Chunk[] GetChunks (int offset, int length)
 			{
 				curRule = mode;
@@ -166,14 +169,15 @@ namespace Mono.TextEditor.Highlighting
 				SetSpan ();
 				SetTree ();
 				bool isNoKeyword = false;
+				string text = offset >= maxEnd ? doc.Buffer.GetTextAt (offset, maxEnd - offset) : "";
 				for (int i = offset; i < maxEnd; i++) {
 					char ch = doc.Buffer.GetCharAt (i);
 					if (curSpan != null) {
 						if (!String.IsNullOrEmpty (curSpan.End) && curSpan.End[endOffset] == ch) {
 							endOffset++;
 							if (endOffset >= curSpan.End.Length) {
-								int chunkEndOffset = i - curChunk.EndOffset + 1;
-								AddChunk (ref curChunk, chunkEndOffset, !String.IsNullOrEmpty (curSpan.TagColor) ? style.GetChunkStyle (curSpan.TagColor) : GetSpanStyle (spanStack));
+								curChunk.Length -= curSpan.End.Length - 1;
+								AddChunk (ref curChunk, curSpan.End.Length, !String.IsNullOrEmpty (curSpan.TagColor) ? style.GetChunkStyle (curSpan.TagColor) : GetSpanStyle (spanStack));
 								spanStack.Pop ();
 								SetSpan ();
 								SetTree ();
@@ -214,6 +218,7 @@ namespace Mono.TextEditor.Highlighting
 						AddChunk (ref curChunk, wordOffset, GetChunkStyleColor (spanStack, pair.o1));
 						isNoKeyword = false;
 					}
+					
 					if (tree != null) {
 						if (!isNoKeyword && tree.ContainsKey (ch)) {
 							wordOffset++;

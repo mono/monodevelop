@@ -62,6 +62,8 @@
     <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="Mono.TextEditor/TextEditor.cs" subtype="Code" buildaction="Compile" />
     <File name="XmlSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="TangoStyle.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="Mono.TextEditor.Highlighting/Match.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
