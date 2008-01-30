@@ -26,47 +26,63 @@
 using System;
 using System.Data;
 using System.Collections.Generic;
-namespace MonoDevelop.Database.Sql
+namespace MonoDevelop.Database.Sql.Oracle
 {
 	public class OracleDbFactory : IDbFactory
 	{
 		private ISqlDialect dialect;
+		private IConnectionProvider connectionProvider;
+		private IGuiProvider guiProvider;
 		
 		public string Identifier {
 			get { return "System.Data.OracleClient"; }
 		}
 		
 		public string Name {
-			get { return "Oracle database (Incomplete)"; }
+			get { return AddinCatalog.GetString ("Oracle database"); }
 		}
 		
 		public ISqlDialect Dialect {
 			get {
 				if (dialect == null)
-					dialect = new Sql99Dialect ("\"", ":");
+					dialect = new OracleDialect ();
 				return dialect;
 			}
 		}
 		
-		public IConnectionProvider CreateConnectionProvider (ConnectionSettings settings)
-		{
-			return new OracleConnectionProvider (this, settings);
+		public IConnectionProvider ConnectionProvider {
+			get {
+				if (connectionProvider == null)
+					connectionProvider = new OracleConnectionProvider ();
+				return connectionProvider;
+			}
 		}
 		
-		public ISchemaProvider CreateSchemaProvider (IConnectionProvider connectionProvider)
-		{
-			return new OracleSchemaProvider (connectionProvider);
+		public IGuiProvider GuiProvider {
+			get {
+				if (guiProvider == null)
+					guiProvider = new OracleGuiProvider ();
+				return guiProvider;
+			}
 		}
 		
-		public ConnectionSettings GetDefaultConnectionSettings ()
+		public IConnectionPool CreateConnectionPool (DatabaseConnectionContext context)
 		{
-			ConnectionSettings settings = new ConnectionSettings ();
+			return new DefaultConnectionPool (this, ConnectionProvider, context);
+		}
+		
+		public ISchemaProvider CreateSchemaProvider (IConnectionPool connectionPool)
+		{
+			return new OracleSchemaProvider (connectionPool);
+		}
+		
+		public DatabaseConnectionSettings GetDefaultConnectionSettings ()
+		{
+			DatabaseConnectionSettings settings = new DatabaseConnectionSettings ();
 			settings.ProviderIdentifier = Identifier;
 			settings.Port = 1521;
-			settings.Password = String.Empty;
-			settings.Database = String.Empty;
-			settings.Username = String.Empty;
-			//TODO: .Server property, not yet supported in the connection provider
+			settings.MaxPoolSize = 5;
+			
 			return settings;
 		}
 	}

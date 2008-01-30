@@ -6,7 +6,7 @@
 //
 // Copyright (C) 2005 Mosaix Communications, Inc.
 // Copyright (C) 2005 Daniel Morgan
-// Copyright (c) 2007 Ben Motmans
+// Copyright (c) 2007-2008 Ben Motmans
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -31,54 +31,11 @@ using System;
 using System.Data;
 using System.Data.OracleClient;
 using System.Collections.Generic;
-namespace MonoDevelop.Database.Sql
+namespace MonoDevelop.Database.Sql.Oracle
 {
 	public class OracleConnectionProvider : AbstractConnectionProvider
 	{
-		public OracleConnectionProvider (IDbFactory factory, ConnectionSettings settings)
-			: base (factory, settings)
-		{
-		}
-		
-		public override DataSet ExecuteQueryAsDataSet (string sql)
-		{
-			if (String.IsNullOrEmpty ("sql"))
-				throw new ArgumentException ("sql");
-
-			DataSet set = new DataSet ();
-			using (IDbCommand command = CreateCommand (sql)) {
-				using (OracleDataAdapter adapter = new OracleDataAdapter (command as OracleCommand)) {
-					try {
-						adapter.Fill (set);
-					} catch {
-					} finally {
-						command.Connection.Close ();
-					}
-				}
-			}
-			return set;
-		}
-
-		public override DataTable ExecuteQueryAsDataTable (string sql)
-		{
-			if (String.IsNullOrEmpty ("sql"))
-				throw new ArgumentException ("sql");
-
-			DataTable table = new DataTable ();
-			using (IDbCommand command = CreateCommand (sql)) {
-				using (OracleDataAdapter adapter = new OracleDataAdapter (command as OracleCommand)) {
-					try {
-						adapter.Fill (table);
-					} catch {
-					} finally {
-						command.Connection.Close ();
-					}
-				}
-			}
-			return table;
-		}
-
-		public override IDbConnection Open (out string errorMessage)
+		public override IPooledDbConnection CreateConnection (IConnectionPool pool, DatabaseConnectionSettings settings, out string error)
 		{
 			string connStr = null;
 			try {	
@@ -89,20 +46,14 @@ using System.Collections.Generic;
 					connStr = String.Format ("Data Source={0};User Id={1};Password={2};Integrated Security=no;",
 						settings.Database, settings.Username, settings.Password);
 				}
-				SetConnectionStringParameter (connStr, String.Empty, "pooling", settings.EnablePooling.ToString ());
-				if (settings.EnablePooling) {
-					SetConnectionStringParameter (connStr, String.Empty, "Min Pool Size", settings.MinPoolSize.ToString ());
-					SetConnectionStringParameter (connStr, String.Empty, "Max Pool Size", settings.MaxPoolSize.ToString ());
-				}
-				connection = new OracleConnection (connStr);
+				connStr = SetConnectionStringParameter (connStr, String.Empty, "Pooling", "false");
+				OracleConnection connection = new OracleConnection (connStr);
 				connection.Open ();
 				
-				errorMessage = String.Empty;
-				isConnectionError = false;
-				return connection;
-			} catch {
-				isConnectionError = true;
-				errorMessage = String.Format ("Unable to connect. (CS={0})", connStr == null ? "NULL" : connStr);
+				error = null;
+				return new OraclePooledDbConnection (pool, connection);
+			} catch (Exception e) {
+				error = e.Message;
 				return null;
 			}
 		}
