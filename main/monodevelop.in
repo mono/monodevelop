@@ -30,6 +30,7 @@ find_libgtkembedmoz ()
 	mozilla_script=$(which mozilla 2> /dev/null)
 	firefox_script=$(which firefox 2> /dev/null)
 	
+	if [ -z $mozilla_script ] && [ -z $firefox_script ]; then return; fi
 	for runtime_script in "$firefox_script $mozilla_script"; do
 		MOZDIR=$(grep "MOZ_DIST_LIB=" $runtime_script 2> /dev/null | cut -d '"' -f 2 | cut -d '=' -f 2)
 		if test -e "$MOZDIR/$MOZFILE"; then echo $MOZDIR; return; fi
