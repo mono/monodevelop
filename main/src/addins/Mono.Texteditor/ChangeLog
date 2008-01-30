@@ -1,5 +1,9 @@
 2008-01-30  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/Document.cs: Added update after undo/redo.
+
+2008-01-30  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor.mdp, OblivionStyle.xml, Mono.TextEditor/TextEditor.cs,
 	  Mono.TextEditor.Highlighting/SyntaxMode.cs,
 	  Mono.TextEditor.Highlighting/Match.cs,

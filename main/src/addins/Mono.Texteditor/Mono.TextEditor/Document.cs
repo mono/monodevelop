@@ -162,6 +162,8 @@ namespace Mono.TextEditor
 			redoStack.Push (chunk);
 			chunk.Undo (this);
 			isInUndo = false;
+			this.RequestUpdate (new UpdateAll ());
+			this.CommitDocumentUpdate ();
 		}
 		
 		public void Redo ()
@@ -173,6 +175,8 @@ namespace Mono.TextEditor
 			undoStack.Push (chunk);
 			chunk.Redo (this);
 			isInUndo = false;
+			this.RequestUpdate (new UpdateAll ());
+			this.CommitDocumentUpdate ();
 		}
 		
 		public void BeginAtomicUndo ()
