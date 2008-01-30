@@ -37,7 +37,7 @@ using MonoDevelop.Database.Components;
 		private IConnectionProvider connectionProvider;
 		
 		public string Identifier {
-			get { return "Odbc"; }
+			get { return "System.Data.Odbc"; }
 		}
 		
 		public string Name {

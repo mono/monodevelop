@@ -42,11 +42,18 @@ namespace MonoDevelop.Database.Sql.Odbc
 				OdbcConnection connection = DbConnection as OdbcConnection;
 				System.Text.StringBuilder sb = new System.Text.StringBuilder ();
 				//try to read as much characters and dots as possible, in the hope that it's a valid version
+				int dots = 0;
 				foreach (char c in connection.ServerVersion) {
-					if (char.IsNumber (c) || c == '.')
+					if (char.IsNumber (c)) {
 						sb.Append (c);
-					else
+					} else if (c == '.') {
+						if (++dots <= 3)
+							sb.Append (c);
+						else
+							break;
+					} else {
 						break;
+					}
 				}
 				try {
 					return new Version (sb.ToString ());

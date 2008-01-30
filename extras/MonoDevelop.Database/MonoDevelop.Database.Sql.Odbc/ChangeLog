@@ -1,5 +1,11 @@
 2008-01-30  Ben Motmans <ben.motmans@gmail.com> 
 
+	* OdbcPooledDbConnection.cs: improved server version parsing
+	* OdbcDbFactory.cs: use a better identifier
+	* MonoDevelop.Database.Sql.Odbc.addin.xml: added dependencies
+
+2008-01-30  Ben Motmans <ben.motmans@gmail.com> 
+
 	* OdbcDialect.cs: Odbc dialect implementation
 	* OdbcPooledDbConnection.cs: Odbc pooled connection implementation
 	* OdbcConnectionProvider.cs, OdbcSchemaProvider.cs, OdbcDbFactory.cs,
