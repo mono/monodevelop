@@ -163,10 +163,11 @@ namespace Mono.TextEditor.Highlighting
 		{
 			Assembly thisAssembly = typeof (SyntaxModeService).Assembly;
 			foreach (string resource in thisAssembly.GetManifestResourceNames ()) {
-				if (resource.EndsWith ("SyntaxMode.xml"))
+				if (resource.EndsWith ("SyntaxMode.xml")) {
 					syntaxModes.Add (SyntaxMode.Read (new XmlTextReader(thisAssembly.GetManifestResourceStream (resource))));
-				else if (resource.EndsWith ("Style.xml")) 
+				} else if (resource.EndsWith ("Style.xml"))  {
 					styles.Add (Style.Read (new XmlTextReader(thisAssembly.GetManifestResourceStream (resource))) );
+				}
 			}
 		}
 	}

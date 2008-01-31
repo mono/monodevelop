@@ -29,7 +29,7 @@
 		<End>--&gt;</End>
 	</Span>
 	
-	<Span color = "Markup" rule = "InTag" constraint="!!">
+	<Span color = "Markup" rule = "InTag">
 		<Begin>&lt;</Begin>
 		<End>&gt;</End>
 	</Span>

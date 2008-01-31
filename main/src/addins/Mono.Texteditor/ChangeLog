@@ -1,5 +1,14 @@
 2008-01-31  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor.mdp, TangoStyle.xml, VBNetSyntaxMode.xml,
+	  JavaSyntaxMode.xml, CSyntaxMode.xml, CPPSyntaxMode.xml,
+	  OblivionStyle.xml, Mono.TextEditor/Document.cs,
+	  Mono.TextEditor.Highlighting/SyntaxMode.cs,
+	  Mono.TextEditor.Highlighting/SyntaxModeService.cs, XmlSyntaxMode.xml,
+	  C64Style.xml: Added some syntax highlighting files.
+
+2008-01-31  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextEditorData.cs,
 	  Mono.TextEditor/TextEditorOptions.cs,
 	  Mono.TextEditor.Highlighting/SyntaxMode.cs, XmlSyntaxMode.xml: Added

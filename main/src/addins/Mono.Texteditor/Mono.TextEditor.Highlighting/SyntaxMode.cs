@@ -169,7 +169,6 @@ namespace Mono.TextEditor.Highlighting
 				SetSpan ();
 				SetTree ();
 				bool isNoKeyword = false;
-				string text = offset >= maxEnd ? doc.Buffer.GetTextAt (offset, maxEnd - offset) : "";
 				for (int i = offset; i < maxEnd; i++) {
 					char ch = doc.Buffer.GetCharAt (i);
 					if (curSpan != null) {
