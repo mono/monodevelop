@@ -63,6 +63,12 @@ namespace Mono.TextEditor
 		bool highlightCaretLine = false;
 		string fontName = DEFAULT_FONT;
 		
+		public string IndentationString {
+			get {
+				return this.tabsToSpaces ? new string (' ', this.TabSize) : "\t";
+			}
+		}
+		
 		public virtual bool TabsToSpaces {
 			get {
 				return tabsToSpaces;

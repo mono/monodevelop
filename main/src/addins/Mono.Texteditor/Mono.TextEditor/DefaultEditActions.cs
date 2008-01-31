@@ -472,7 +472,7 @@ namespace Mono.TextEditor
 	
 	public class RemoveTab : EditAction
 	{
-		static void RemoveTabInLine (Document document, LineSegment line)
+		public static void RemoveTabInLine (Document document, LineSegment line)
 		{
 			if (line.Length == 0)
 				return;
@@ -502,18 +502,10 @@ namespace Mono.TextEditor
 			if (data.IsSomethingSelected && data.SelectionStart.Segment != data.SelectionEnd.Segment) {
 				int startLineNr = data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.Offset);
 				int endLineNr   = data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.EndOffset);
-				
-				RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = data.Document.GetLine (startLineNr).Iter;
-				LineSegment endLine = data.Document.GetLine (endLineNr);
 				data.Document.BeginAtomicUndo ();
-				do {
-					if (iter.Current == endLine && (iter.Current.Offset == data.Caret.Offset ||
-					                                iter.Current.Offset == data.SelectionRange.EndOffset))
-						break;
-					RemoveTabInLine (data.Document, iter.Current);
-					if (iter.Current == endLine)
-						break;
-				} while (iter.MoveNext ());
+				foreach (LineSegment line in data.SelectedLines) {
+					RemoveTabInLine (data.Document, line);
+				}
 				data.Document.EndAtomicUndo ();
 				data.Document.RequestUpdate (new MultipleLineUpdate (startLineNr, endLineNr));
 				data.Document.CommitDocumentUpdate ();
@@ -543,19 +535,12 @@ namespace Mono.TextEditor
 		public override void Run (TextEditorData data)
 		{
 			if (data.IsSomethingSelected && data.SelectionStart.Segment != data.SelectionEnd.Segment) {
-				data.Document.BeginAtomicUndo ();
 				int startLineNr = data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.Offset);
 				int endLineNr   = data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.EndOffset);
-				RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = data.Document.GetLine (startLineNr).Iter;
-				LineSegment endLine = data.Document.GetLine (endLineNr);
-				do {
-					if (iter.Current == endLine && (iter.Current.Offset == data.Caret.Offset ||
-					                                iter.Current.Offset == data.SelectionRange.EndOffset))
-						break;
-					data.Document.Buffer.Insert (iter.Current.Offset, new StringBuilder("\t"));
-					if (iter.Current == endLine)
-						break;
-				} while (iter.MoveNext ());
+				data.Document.BeginAtomicUndo ();
+				foreach (LineSegment line in data.SelectedLines) {
+					data.Document.Buffer.Insert (line.Offset, new StringBuilder(TextEditorOptions.Options.IndentationString));
+				}
 				data.Document.EndAtomicUndo ();
 				data.Document.RequestUpdate (new MultipleLineUpdate (startLineNr, endLineNr));
 				data.Document.CommitDocumentUpdate ();
@@ -566,7 +551,7 @@ namespace Mono.TextEditor
 				DeleteAction.DeleteSelection (data);
 			}
 			
-			data.Document.Buffer.Insert (data.Caret.Offset, new StringBuilder ("\t"));
+			data.Document.Buffer.Insert (data.Caret.Offset, new StringBuilder (TextEditorOptions.Options.IndentationString));
 			data.Caret.Column ++;
 		}
 	}

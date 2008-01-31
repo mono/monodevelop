@@ -1,3 +1,10 @@
+2008-01-31  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextEditorData.cs,
+	  Mono.TextEditor/TextEditorOptions.cs,
+	  Mono.TextEditor.Highlighting/SyntaxMode.cs, XmlSyntaxMode.xml: Added
+	  iterator for selected lines.
+
 2008-01-30  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/DefaultEditActions.cs: Fixed italic bug in rtf output.

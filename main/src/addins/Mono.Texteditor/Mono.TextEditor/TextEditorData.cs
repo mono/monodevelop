@@ -24,6 +24,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using Gtk;
 
 namespace Mono.TextEditor
@@ -122,7 +123,26 @@ namespace Mono.TextEditor
 				return this.document.Buffer.GetTextAt (this.SelectionRange);
 			}
 		}
-
+		
+		public IEnumerable<LineSegment> SelectedLines {
+			get {
+				ISegment selectionRange = SelectionRange;
+				int startLineNr = Document.Splitter.GetLineNumberForOffset (selectionRange.Offset);
+				int endLineNr   = Document.Splitter.GetLineNumberForOffset (selectionRange.EndOffset);
+				
+				RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = this.document.Splitter.Get (startLineNr).Iter;
+				LineSegment endLine = Document.GetLine (endLineNr);
+				do {
+					if (iter.Current == endLine && (iter.Current.Offset == Caret.Offset ||
+					                                iter.Current.Offset == selectionRange.EndOffset))
+						break;
+					yield return iter.Current;
+					if (iter.Current == endLine)
+						break;
+				} while (iter.MoveNext ());
+			}
+		}
+		
 		public Adjustment HAdjustment {
 			get {
 				return hadjustment;

@@ -195,8 +195,8 @@ namespace Mono.TextEditor.Highlighting
 						if (spanPair.o1 != null) {
 							Span span = spanPair.o1;
 							if (!String.IsNullOrEmpty(span.Constraint)) {
-								if (span.Constraint == "!/" && i + 1 < maxEnd) 
-									if (doc.Buffer.GetCharAt (i + 1) == '/') {
+								if (span.Constraint.Length == 2 && span.Constraint.StartsWith ("!") && i + 1 < maxEnd) 
+									if (doc.Buffer.GetCharAt (i + 1) == span.Constraint [1]) {
 										goto skip;
 									}
 							}

@@ -24,8 +24,6 @@
  THE SOFTWARE. -->
  
 <SyntaxMode name = "Xml" mimeType="application/xml">
-	<Delimiters>&amp;&lt;&gt;~!%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
-	
 	<Span color = "Comment1">
 		<Begin>&lt;!--</Begin>
 		<End>--&gt;</End>
