@@ -75,14 +75,14 @@
 	<Style name="foldLine" color="aluminium3"/>
 	<Style name="foldBg" color="white"/>
 	<Style name="foldLineHighlighted" color="aluminium2"/>
-	<Style name="foldToggleMarker" color="aluminium1"/>
+	<Style name="foldToggleMarker" color="black"/>
 	
 	<!-- highlighting -->
 	<Style name="comment" color="chameleon3"/>
 	<Style name="altcomment" color="chameleon3"/>
 	<Style name="todocomment" color="chameleon3" weight="italic" />
 	<Style name="commentkw" color="chameleon3" weight="bold" />
-	<Style name="commenttag" color="aluminium4"/>
+	<Style name="commenttag" color="chameleon3"/>
 	
 	<Style name="digit" color="orange3"/>
 	<Style name="literal" color="orange3"/>

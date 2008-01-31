@@ -193,6 +193,10 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public int LocationToOffset (int line, int column)
+		{
+			return LocationToOffset (new DocumentLocation (line, column));
+		}
 		
 		public int LocationToOffset (DocumentLocation location)
 		{

@@ -1,3 +1,7 @@
+2008-02-01  Mike Krüger <mkrueger@novell.com> 
+
+	* TangoStyle.xml, Mono.TextEditor/Document.cs: Worked on folding.
+
 2008-01-31  Mike Krüger <mkrueger@novell.com> 
 
 	* VBNetSyntaxMode.xml, CSharpSyntaxMode.xml, JavaSyntaxMode.xml,
