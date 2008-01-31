@@ -89,7 +89,6 @@ namespace MonoDevelop.SourceEditor
 //				return true;
 //			});
 			
-			
 			fileSystemWatcher = new FileSystemWatcher ();
 			fileSystemWatcher.Created += (FileSystemEventHandler)MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));	
 			fileSystemWatcher.Changed += (FileSystemEventHandler)MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));

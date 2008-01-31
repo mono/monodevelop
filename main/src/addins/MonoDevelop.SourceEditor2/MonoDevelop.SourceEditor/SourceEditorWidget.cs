@@ -161,15 +161,52 @@ namespace MonoDevelop.SourceEditor
 #region Error underlining
 		Dictionary<int, Error> errors = new Dictionary<int, Error> ();
 		uint resetTimerId;
-		ICompilationUnitBase lastCu = null;
+		ICompilationUnit lastCu = null;
 		bool resetTimerStarted = false;
+		
+		void AddMarker (List<FoldSegment> foldSegments, string text, IRegion region)
+		{
+			int startOffset = this.TextEditor.Document.LocationToOffset (region.BeginLine - 1,  region.BeginColumn - 1);
+			int endOffset   = this.TextEditor.Document.LocationToOffset (region.EndLine - 1,  region.EndColumn - 1);
+			foldSegments.Add (new FoldSegment (text, startOffset, endOffset - startOffset));
+		}
+		
+		void AddClass (List<FoldSegment> foldSegments, IClass cl)
+		{
+			AddMarker (foldSegments, "...", cl.BodyRegion);
+			foreach (IClass inner in cl.InnerClasses) {
+				AddClass (foldSegments, inner);
+			}
+			
+			foreach (IMethod method in cl.Methods) {
+				int startOffset = this.TextEditor.Document.LocationToOffset (method.Region.EndLine - 1,  method.Region.EndColumn - 1);
+				int endOffset   = this.TextEditor.Document.LocationToOffset (method.BodyRegion.EndLine - 1,  method.BodyRegion.EndColumn - 1);
+				foldSegments.Add (new FoldSegment ("...", startOffset, endOffset - startOffset));
+			}
+			
+			foreach (IProperty property in cl.Properties) {
+				int startOffset = this.TextEditor.Document.LocationToOffset (property.Region.EndLine - 1,  property.Region.EndColumn - 1);
+				int endOffset   = this.TextEditor.Document.LocationToOffset (property.BodyRegion.EndLine - 1,  property.BodyRegion.EndColumn - 1);
+				foldSegments.Add (new FoldSegment ("...", startOffset, endOffset - startOffset));
+			}
+		}
 		
 		void OnParseInformationChanged (object sender, ParseInformationEventArgs args)
 		{
 			if (args == null || this.view.ContentName != args.FileName)
 				return;
-			
-			lastCu = args.ParseInformation.MostRecentCompilationUnit;
+			lastCu = args.ParseInformation.MostRecentCompilationUnit as ICompilationUnit;
+			if (lastCu != null) {
+				List<FoldSegment> foldSegments = new List<FoldSegment> ();
+				foreach (MonoDevelop.Projects.Parser.FoldingRegion region in lastCu.FoldingRegions) {
+					AddMarker (foldSegments, region.Name, region.Region);
+				}
+				foreach (IClass cl in lastCu.Classes) {
+					AddClass (foldSegments, cl);
+				}
+				this.TextEditor.Document.UpdateFoldSegments (foldSegments);
+			}
+				
 			UpdateAutocorTimer ();
 		}
 		

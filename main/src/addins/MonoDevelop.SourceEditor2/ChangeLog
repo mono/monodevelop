@@ -1,3 +1,8 @@
+2008-02-01  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor/SourceEditorView.cs: Worked on folding.
+
 2008-01-31  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs: Some changes
