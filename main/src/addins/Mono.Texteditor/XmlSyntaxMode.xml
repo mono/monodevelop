@@ -23,7 +23,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE. -->
  
-<SyntaxMode name = "Xml" mimeType="application/xml">
+<SyntaxMode name = "Xml" mimeTypes="application/xml">
 	<Span color = "Comment1">
 		<Begin>&lt;!--</Begin>
 		<End>--&gt;</End>

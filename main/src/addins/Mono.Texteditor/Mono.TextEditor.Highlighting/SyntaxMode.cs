@@ -251,7 +251,6 @@ namespace Mono.TextEditor.Highlighting
 				return result.ToArray ();
 			}
 		}
-			
 		
 		public Rule GetRule (string name)
 		{
@@ -264,12 +263,12 @@ namespace Mono.TextEditor.Highlighting
 		
 		public override string ToString ()
 		{
-			return String.Format ("[SyntaxMode: Name={0}, MimeType={1}]",
-			                      Name,
-			                      MimeType );
+			return String.Format ("[SyntaxMode: Name={0}, MimeType={1}]", Name, MimeType);
 		}
 				
 		new const string Node = "SyntaxMode"; 
+		
+		public const string MimeTypesAttribute = "mimeTypes";
 		
 		new public static SyntaxMode Read (XmlReader reader)
 		{
@@ -278,7 +277,7 @@ namespace Mono.TextEditor.Highlighting
 				switch (reader.LocalName) {
 				case Node:
 					result.name     = reader.GetAttribute ("name");
-					result.mimeType = reader.GetAttribute ("mimeType");
+					result.mimeType = reader.GetAttribute (MimeTypesAttribute);
 					return true;
 				case Rule.Node:
 					result.rules.Add (Rule.Read (reader));

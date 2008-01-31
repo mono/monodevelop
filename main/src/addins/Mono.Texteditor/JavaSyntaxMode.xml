@@ -23,7 +23,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE. -->
  
-<SyntaxMode name = "Java" mimeType="text/x-java">
+<SyntaxMode name = "Java" mimeTypes="text/x-java">
 	<EolSpan color = "comment" rule="Comment">//</EolSpan>
 	<Span color = "comment" rule="Comment">
 		<Begin>/*</Begin>

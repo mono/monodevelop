@@ -1,5 +1,14 @@
 2008-01-31  Mike Krüger <mkrueger@novell.com> 
 
+	* VBNetSyntaxMode.xml, CSharpSyntaxMode.xml, JavaSyntaxMode.xml,
+	  CPPSyntaxMode.xml, CSyntaxMode.xml,
+	  Mono.TextEditor.Highlighting/SyntaxMode.cs,
+	  Mono.TextEditor.Highlighting/SyntaxModeService.cs,
+	  Mono.TextEditor.Highlighting/Style.cs, XmlSyntaxMode.xml: Implemented
+	  lazy loading of syntax modes and styles.
+
+2008-01-31  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor.mdp, TangoStyle.xml, VBNetSyntaxMode.xml,
 	  JavaSyntaxMode.xml, CSyntaxMode.xml, CPPSyntaxMode.xml,
 	  OblivionStyle.xml, Mono.TextEditor/Document.cs,

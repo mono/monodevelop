@@ -23,7 +23,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE. -->
  
-<SyntaxMode name = "Visual Basic.NET" mimeType="text/x-vb">
+<SyntaxMode name = "Visual Basic.NET" mimeTypes="text/x-vb">
 
 	<EolSpan color = "preprocessor" rule="PreProcessor">#</EolSpan>
 	<EolSpan color = "comment" rule="Comment">'</EolSpan>

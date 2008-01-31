@@ -350,14 +350,14 @@ namespace Mono.TextEditor.Highlighting
 				throw new Exception ("color  " + name + " invalid.");
 			}
 		}
-		
+		public const string NameAttribute = "_name";
 		public static Style Read (XmlReader reader)
 		{
 			Style result = new Style ();
 			XmlReadHelper.ReadList (reader, "EditorStyle", delegate () {
 				switch (reader.LocalName) {
 				case "EditorStyle":
-					result.name        = reader.GetAttribute ("_name");
+					result.name        = reader.GetAttribute (NameAttribute);
 					result.description = reader.GetAttribute ("_description");
 					return true;
 				case "Color":

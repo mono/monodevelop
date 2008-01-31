@@ -36,34 +36,57 @@ namespace Mono.TextEditor.Highlighting
 {
 	public static class SyntaxModeService
 	{
-		static List<SyntaxMode> syntaxModes = new List<SyntaxMode> ();
-		static List<Style>      styles      = new List<Style> ();
+		static Dictionary<string, SyntaxMode> syntaxModes = new Dictionary<string, SyntaxMode> ();
+		static Dictionary<string, Style>      styles      = new Dictionary<string, Style> ();
+		static Dictionary<string, string> syntaxModeLookup = new Dictionary<string, string> ();
+		static Dictionary<string, string> styleLookup      = new Dictionary<string, string> ();
 		
-		public static ReadOnlyCollection<SyntaxMode> SyntaxModes {
+		public static string[] Styles {
 			get {
-				return syntaxModes.AsReadOnly ();
-			}
-		}
-		public static ReadOnlyCollection<Style> Styles {
-			get {
-				return styles.AsReadOnly ();
+				List<string> result = new List<string> ();
+				foreach (string style in styles.Keys) 
+					result.Add (style);
+				foreach (string style in styleLookup.Values) 
+					result.Add (style);
+				return result.ToArray ();
 			}
 		}
 		
 		public static Style GetColorStyle (Gtk.Widget widget, string name) 
 		{
-			foreach (Style style in styles) {
-				if (style.Name == name)
-					return style;
+			if (styles.ContainsKey (name))
+				return styles [name];
+			if (styleLookup.ContainsKey (name)) {
+				LoadStyle (name);
+				return GetColorStyle (widget, name);		
 			}
 			return new DefaultStyle (widget);
 		}
 		
+		static void LoadStyle (string name)
+		{
+			XmlTextReader reader = new XmlTextReader (typeof (SyntaxModeService).Assembly.GetManifestResourceStream (styleLookup [name]));
+			styles [name] = Style.Read (reader);
+			reader.Close ();
+		}
+		
+		static void LoadSyntaxMode (string mimeType)
+		{
+			XmlTextReader reader = new XmlTextReader (typeof (SyntaxModeService).Assembly.GetManifestResourceStream (syntaxModeLookup [mimeType]));
+			SyntaxMode mode = SyntaxMode.Read (reader);
+			foreach (string mime in mode.MimeType.Split (';')) {
+				syntaxModes [mime] = mode;
+			}
+			reader.Close ();
+		}
+					
 		public static SyntaxMode GetSyntaxMode (string mimeType)
 		{
-			foreach (SyntaxMode mode in syntaxModes) {
-				if (mode.MimeType == mimeType)
-					return mode;
+			if (syntaxModes.ContainsKey (mimeType))
+				return syntaxModes [mimeType];
+			if (syntaxModeLookup.ContainsKey (mimeType)) {
+				LoadSyntaxMode (mimeType);
+				return GetSyntaxMode (mimeType);
 			}
 			return null;
 		}
@@ -159,15 +182,30 @@ namespace Mono.TextEditor.Highlighting
 			updateThread.Start (new object[] {doc, mode, startOffset, endOffset});
 		}
 		
+		static string Scan (XmlTextReader reader, string attribute)
+		{
+			while (reader.Read () && !reader.IsStartElement ()) 
+				;
+			return reader.GetAttribute (attribute);
+		}
+		
 		static SyntaxModeService ()
 		{
 			Assembly thisAssembly = typeof (SyntaxModeService).Assembly;
 			foreach (string resource in thisAssembly.GetManifestResourceNames ()) {
+				if (!resource.EndsWith (".xml")) 
+					continue;
+				XmlTextReader reader =  new XmlTextReader (thisAssembly.GetManifestResourceStream (resource));
 				if (resource.EndsWith ("SyntaxMode.xml")) {
-					syntaxModes.Add (SyntaxMode.Read (new XmlTextReader(thisAssembly.GetManifestResourceStream (resource))));
-				} else if (resource.EndsWith ("Style.xml"))  {
-					styles.Add (Style.Read (new XmlTextReader(thisAssembly.GetManifestResourceStream (resource))) );
+					string mimeTypes = Scan (reader, SyntaxMode.MimeTypesAttribute);
+					foreach (string mimeType in mimeTypes.Split (';')) {
+						syntaxModeLookup [mimeType] = resource;
+					}
+				} else if (resource.EndsWith ("Style.xml")) {
+					string styleName = Scan (reader, Style.NameAttribute);
+					styleLookup [styleName] = resource;
 				}
+				reader.Close ();
 			}
 		}
 	}
