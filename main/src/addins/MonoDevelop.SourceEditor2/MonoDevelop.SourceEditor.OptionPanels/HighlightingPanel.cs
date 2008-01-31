@@ -121,11 +121,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.enableHighlightingCheckbutton.Active = SourceEditorOptions.Options.EnableSyntaxHighlighting;
 			
 			
-			TreeIter selectedIter = styleStore.AppendValues (GetMarkup (GettextCatalog.GetString ("Default"), GettextCatalog.GetString ("The default color sheme.")),
-			                                                 "Default");
-			foreach (Mono.TextEditor.Highlighting.Style style in SyntaxModeService.Styles) {
-				TreeIter iter = styleStore.AppendValues (GetMarkup (GettextCatalog.GetString (style.Name), GettextCatalog.GetString (style.Description)), 
-				                                         style.Name);
+			TreeIter selectedIter = styleStore.AppendValues (GetMarkup (GettextCatalog.GetString ("Default"), GettextCatalog.GetString ("The default color sheme.")), "Default");
+			foreach (string styleName in SyntaxModeService.Styles) {
+				Mono.TextEditor.Highlighting.Style style = SyntaxModeService.GetColorStyle (null, styleName);
+				TreeIter iter = styleStore.AppendValues (GetMarkup (GettextCatalog.GetString (style.Name), GettextCatalog.GetString (style.Description)), style.Name);
 				if (style.Name == SourceEditorOptions.Options.ColorSheme)
 					selectedIter = iter;
 			}

@@ -1,5 +1,10 @@
 2008-01-31  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs: Some changes
+	  due to lazy loading.
+
+2008-01-31  Mike Krüger <mkrueger@novell.com> 
+
 	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs,
 	  MonoDevelop.SourceEditor.addin.xml,
 	  MonoDevelop.SourceEditor/SourceEditorView.cs,
