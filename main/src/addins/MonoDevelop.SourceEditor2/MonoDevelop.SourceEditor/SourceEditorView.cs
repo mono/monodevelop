@@ -37,7 +37,7 @@ using MonoDevelop.Ide.Gui.Search;
 
 namespace MonoDevelop.SourceEditor
 {	
-	public class SourceEditorView : AbstractViewContent, IPositionable, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, ICompletionWidget, IDocumentInformation
+	public class SourceEditorView : AbstractViewContent, IPositionable, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, ICompletionWidget, IDocumentInformation, ICodeStyleOperations
 	{
 		SourceEditorWidget widget;
 		bool isDisposed = false;
@@ -654,6 +654,59 @@ namespace MonoDevelop.SourceEditor
 			{
 				return false;
 			}
+		}
+#endregion
+#region ICodeStyleOperations
+		
+		public void CommentCode ()
+		{
+			if (!this.TextEditorData.IsSomethingSelected)
+				return;
+			StringBuilder commentTag = new StringBuilder(Services.Languages.GetBindingPerFileName (this.ContentName).CommentTag ?? "//");
+			Document.BeginAtomicUndo ();
+			foreach (LineSegment line in this.TextEditorData.SelectedLines) {
+				this.Document.Buffer.Insert (line.Offset, commentTag);
+			}
+			Document.EndAtomicUndo ();
+		}
+		
+		public void UncommentCode ()
+		{
+			if (!this.TextEditorData.IsSomethingSelected)
+				return;
+			string commentTag = Services.Languages.GetBindingPerFileName (this.ContentName).CommentTag ?? "//";
+			Document.BeginAtomicUndo ();
+			foreach (LineSegment line in this.TextEditorData.SelectedLines) {
+				string text = Document.Buffer.GetTextAt (line);
+				string trimmedText = text.TrimStart ();
+				if (trimmedText.StartsWith (commentTag)) {
+					text = text.Substring (0, text.Length - trimmedText.Length) + trimmedText.Substring (commentTag.Length);
+					this.Document.Buffer.Replace (line.Offset, line.Length, new StringBuilder (text));
+				}
+			}
+			Document.EndAtomicUndo ();
+		}
+		
+		public void IndentSelection ()
+		{
+			if (!this.TextEditorData.IsSomethingSelected)
+				return;
+			Document.BeginAtomicUndo ();
+			foreach (LineSegment line in this.TextEditorData.SelectedLines) {
+				this.Document.Buffer.Insert (line.Offset, new StringBuilder (TextEditorOptions.Options.IndentationString));
+			}
+			Document.EndAtomicUndo ();
+		}
+		
+		public void UnIndentSelection ()
+		{
+			if (!this.TextEditorData.IsSomethingSelected)
+				return;
+			Document.BeginAtomicUndo ();
+			foreach (LineSegment line in this.TextEditorData.SelectedLines) {
+				Mono.TextEditor.RemoveTab.RemoveTabInLine (Document, line);
+			}
+			Document.EndAtomicUndo ();
 		}
 #endregion
 	}

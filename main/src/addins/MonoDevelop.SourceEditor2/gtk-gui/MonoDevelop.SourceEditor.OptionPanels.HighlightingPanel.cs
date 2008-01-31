@@ -81,6 +81,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             this.styleTreeview.CanFocus = true;
             this.styleTreeview.Name = "styleTreeview";
             this.styleTreeview.HeadersVisible = false;
+            this.styleTreeview.HeadersClickable = true;
             w1.Add(this.styleTreeview);
             this.scrolledwindow1.Add(w1);
             this.vbox5.Add(this.scrolledwindow1);
@@ -161,6 +162,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             this.treeview2 = new Gtk.TreeView();
             this.treeview2.CanFocus = true;
             this.treeview2.Name = "treeview2";
+            this.treeview2.HeadersClickable = true;
             this.GtkScrolledWindow.Add(this.treeview2);
             this.vbox6.Add(this.GtkScrolledWindow);
             Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.vbox6[this.GtkScrolledWindow]));

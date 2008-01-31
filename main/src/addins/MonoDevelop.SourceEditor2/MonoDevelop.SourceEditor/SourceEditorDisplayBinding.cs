@@ -77,6 +77,7 @@ namespace MonoDevelop.SourceEditor
 		MonoDevelop.Ide.Gui.IViewContent IDisplayBinding.CreateContentForMimeType (string mimeType, System.IO.Stream content)
 		{
 			SourceEditorView result = new SourceEditorView ();
+			result.Document.MimeType = mimeType;
 			using (StreamReader reader = new StreamReader (content)) {
 				result.Document.Buffer.Text = reader.ReadToEnd ();
 			}

@@ -43,20 +43,31 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Undo" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Redo" />
+		<SeparatorItem id = "Separator1" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.RefactoryCommands.CurrentRefactoryOperations" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.Help" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Save" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAs" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile" />
-		<SeparatorItem id = "Separator1" />
-<!--		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.CommentCode" />
+		<SeparatorItem id = "Separator2" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.CommentCode" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UncommentCode" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" />
 		<ItemSet id = "Advanced" _label = "_Advanced">
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UppercaseSelection" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection" />
-		</ItemSet> -->
+		</ItemSet> 
+		<SeparatorItem id = "Separator3" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Paste" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
+		<SeparatorItem id = "Separator4" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.SelectAll" />
+		
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/OptionsDialogPanels">
