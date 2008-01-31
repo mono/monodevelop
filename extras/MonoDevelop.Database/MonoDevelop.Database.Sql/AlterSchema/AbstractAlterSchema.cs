@@ -29,13 +29,42 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Database.Sql
 {
-	public abstract class AbstractAlterSchema : IAlterSchema
+	//TODO: AddUnique method ??
+	public abstract class AbstractAlterSchema<T> : IAlterSchema where T : ISchema
 	{
 		protected List<IAlteration> alterations;
+		
+		protected T oldSchema;
+		protected T newSchema;
 		
 		protected AbstractAlterSchema ()
 		{
 			alterations = new List<IAlteration> ();
+		}
+		
+		protected AbstractAlterSchema (T oldSchema, T newSchema)
+		{
+			if (oldSchema == null)
+				throw new ArgumentNullException ("oldSchema");
+			if (newSchema == null)
+				throw new ArgumentNullException ("newSchema");
+			
+			this.oldSchema = oldSchema;
+			this.newSchema = newSchema;
+			
+			DetermineDifferences (oldSchema, newSchema);
+		}
+		
+		public T OldSchema
+		{
+			get { return oldSchema; }
+			protected internal set { oldSchema = value; }
+		}
+		
+		public T NewSchema
+		{
+			get { return newSchema; }
+			protected internal set { newSchema = value; }
 		}
 		
 		public ICollection<IAlteration> Alterations
@@ -57,16 +86,19 @@ namespace MonoDevelop.Database.Sql
 			IAlteration alteration = GetAlteration<T> ();
 			return alteration != null;
 		}
-		
-		public virtual void Rename (string name)
+
+		protected virtual void DetermineDifferences (T oldSchema, T newSchema)
 		{
-			NameAlteration alteration = GetAlteration<NameAlteration> ();
-			if (alteration != null) {
-				alteration.Name = name;
-			} else {
-				alteration = new NameAlteration (name);
-				alterations.Add (alteration);
-			}
+			if (oldSchema.Name != newSchema.Name)
+				alterations.Add (new NameAlteration (oldSchema.Name, newSchema.Name));
+			if (oldSchema.OwnerName != newSchema.OwnerName)
+				alterations.Add (new OwnerNameAlteration (oldSchema.OwnerName, newSchema.OwnerName));
+			if (oldSchema.Comment != newSchema.Comment)
+				alterations.Add (new CommentAlteration (oldSchema.Comment, newSchema.Comment));
+			if (oldSchema.Definition != newSchema.Definition)
+				alterations.Add (new DefinitionAlteration (oldSchema.Name, newSchema.Name));
+			if (oldSchema.SchemaName != newSchema.SchemaName)
+				alterations.Add (new SchemaAlteration (oldSchema.SchemaName, newSchema.SchemaName));
 		}
 	}
 }

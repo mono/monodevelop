@@ -29,18 +29,35 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Database.Sql
 {
-	public class TableAlterSchema : AbstractAlterSchema<TableSchema>
+	public class TriggerTypeAlteration : AbstractAlteration<TriggerType>
 	{
-		public TableAlterSchema (TableSchema oldSchema, TableSchema newSchema)
-			: base (oldSchema, newSchema)
+		public TriggerTypeAlteration (TriggerType oldValue, TriggerType newValue)
+			: base (oldValue, newValue)
 		{
 		}
-		
-		protected override void DetermineDifferences (TableSchema oldSchema, TableSchema newSchema)
+	}
+	
+	public class TriggerFireTypeAlteration : AbstractAlteration<TriggerFireType>
+	{
+		public TriggerFireTypeAlteration (TriggerFireType oldValue, TriggerFireType newValue)
+			: base (oldValue, newValue)
 		{
-			base.DetermineDifferences (oldSchema, newSchema);
-			
-			//TODO:
+		}
+	}
+	
+	public class TriggerEventAlteration : AbstractAlteration<TriggerEvent>
+	{
+		public TriggerEventAlteration (TriggerEvent oldValue, TriggerEvent newValue)
+			: base (oldValue, newValue)
+		{
+		}
+	}
+	
+	public class IsTriggerActiveAlteration : AbstractAlteration<bool>
+	{
+		public IsTriggerActiveAlteration (bool oldValue, bool newValue)
+			: base (oldValue, newValue)
+		{
 		}
 	}
 }

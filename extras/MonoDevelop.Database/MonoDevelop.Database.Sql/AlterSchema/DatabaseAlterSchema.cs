@@ -29,8 +29,18 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Database.Sql
 {
-	public class DatabaseAlterSchema : AbstractAlterSchema
+	public class DatabaseAlterSchema : AbstractAlterSchema<DatabaseSchema>
 	{
+		public DatabaseAlterSchema (DatabaseSchema oldSchema, DatabaseSchema newSchema)
+			: base (oldSchema, newSchema)
+		{
+		}
 		
+		protected override void DetermineDifferences (DatabaseSchema oldSchema, DatabaseSchema newSchema)
+		{
+			base.DetermineDifferences (oldSchema, newSchema);
+			
+			//TODO:
+		}
 	}
 }

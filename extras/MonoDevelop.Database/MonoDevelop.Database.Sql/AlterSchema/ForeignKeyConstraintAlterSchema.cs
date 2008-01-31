@@ -29,8 +29,18 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Database.Sql
 {
-	public class ForeignKeyConstraintAlterSchema : AbstractAlterSchema
+	public class ForeignKeyConstraintAlterSchema : AbstractAlterSchema<ForeignKeyConstraintSchema>
 	{
+		public ForeignKeyConstraintAlterSchema (ForeignKeyConstraintSchema oldSchema, ForeignKeyConstraintSchema newSchema)
+			: base (oldSchema, newSchema)
+		{
+		}
 		
+		protected override void DetermineDifferences (ForeignKeyConstraintSchema oldSchema, ForeignKeyConstraintSchema newSchema)
+		{
+			base.DetermineDifferences (oldSchema, newSchema);
+			
+			//TODO:
+		}
 	}
 }

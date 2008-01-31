@@ -29,24 +29,19 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Database.Sql
 {
-	public class StatementAlteration : IAlteration
+	public class ProcedureLanguageAlteration : AbstractAlteration<string>
 	{
-		private string statement;
-		
-		public StatementAlteration (string statement)
+		public ProcedureLanguageAlteration (string oldValue, string newValue)
+			: base (oldValue, newValue)
 		{
-			Statement = statement;
 		}
-		
-		public string Statement
+	}
+	
+	public class IsSystemProcedureAlteration : AbstractAlteration<bool>
+	{
+		public IsSystemProcedureAlteration (bool oldValue, bool newValue)
+			: base (oldValue, newValue)
 		{
-			get { return statement; }
-			internal set
-			{
-				if (String.IsNullOrEmpty (value))
-					throw new ArgumentNullException ("Statement");
-				statement = value;
-			}
 		}
 	}
 }

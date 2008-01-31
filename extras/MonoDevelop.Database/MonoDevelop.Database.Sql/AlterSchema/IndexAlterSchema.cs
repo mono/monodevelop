@@ -29,8 +29,18 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Database.Sql
 {
-	public class IndexAlterSchema : AbstractAlterSchema
+	public class IndexAlterSchema : AbstractAlterSchema<IndexSchema>
 	{
+		public IndexAlterSchema (IndexSchema oldSchema, IndexSchema newSchema)
+			: base (oldSchema, newSchema)
+		{
+		}
 		
+		protected override void DetermineDifferences (IndexSchema oldSchema, IndexSchema newSchema)
+		{
+			base.DetermineDifferences (oldSchema, newSchema);
+			
+			//TODO:
+		}
 	}
 }

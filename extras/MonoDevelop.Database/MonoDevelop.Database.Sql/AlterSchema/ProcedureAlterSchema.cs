@@ -25,16 +25,22 @@
 //
 
 using System;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Database.Sql
 {
-	
-	
-	public class ProcedureAlterSchema
+	public class ProcedureAlterSchema : AbstractAlterSchema<ProcedureSchema>
 	{
-		
-		public ProcedureAlterSchema()
+		public ProcedureAlterSchema (ProcedureSchema oldSchema, ProcedureSchema newSchema)
+			: base (oldSchema, newSchema)
 		{
+		}
+		
+		protected override void DetermineDifferences (ProcedureSchema oldSchema, ProcedureSchema newSchema)
+		{
+			base.DetermineDifferences (oldSchema, newSchema);
+			
+			//TODO:
 		}
 	}
 }

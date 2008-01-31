@@ -29,8 +29,18 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Database.Sql
 {
-	public class CheckConstraintAlterSchema : AbstractAlterSchema
+	public class CheckConstraintAlterSchema : AbstractAlterSchema<CheckConstraintSchema>
 	{
+		public CheckConstraintAlterSchema (CheckConstraintSchema oldSchema, CheckConstraintSchema newSchema)
+			: base (oldSchema, newSchema)
+		{
+		}
 		
+		protected override void DetermineDifferences (CheckConstraintSchema oldSchema, CheckConstraintSchema newSchema)
+		{
+			base.DetermineDifferences (oldSchema, newSchema);
+			
+			//TODO:
+		}
 	}
 }

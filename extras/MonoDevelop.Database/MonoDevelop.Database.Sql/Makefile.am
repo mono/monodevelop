@@ -10,10 +10,17 @@ REFS =  \
 FILES =  \
 	AddinCatalog.cs \
 	AlterSchema/AbstractAlterSchema.cs \
-	AlterSchema/Alterations/DataTypeAlteration.cs \
+	AlterSchema/Alterations/AbstractAlteration.cs \
+	AlterSchema/Alterations/ColumnAlterations.cs \
+	AlterSchema/Alterations/ConstraintAlterations.cs \
+	AlterSchema/Alterations/DefaultAlterations.cs \
 	AlterSchema/Alterations/IAlteration.cs \
-	AlterSchema/Alterations/NameAlteration.cs \
-	AlterSchema/Alterations/StatementAlteration.cs \
+	AlterSchema/Alterations/IndexAlterations.cs \
+	AlterSchema/Alterations/ProcedureAlterations.cs \
+	AlterSchema/Alterations/TableAlterations.cs \
+	AlterSchema/Alterations/TriggerAlterations.cs \
+	AlterSchema/Alterations/UserAlterations.cs \
+	AlterSchema/Alterations/ViewAlterations.cs \
 	AlterSchema/CheckConstraintAlterSchema.cs \
 	AlterSchema/ColumnAlterSchema.cs \
 	AlterSchema/DatabaseAlterSchema.cs \

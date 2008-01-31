@@ -73,7 +73,7 @@ namespace MonoDevelop.Database.Sql
 			
 			if (!context.ConnectionSettings.SavePassword && String.IsNullOrEmpty (context.ConnectionSettings.Password) && requiresPassword) {
 				string password = Services.MessageService.GetPassword (
-			AddinCatalog.GetString ("Please enter the password for connection '{0}'",
+					AddinCatalog.GetString ("Please enter the password for connection '{0}'",
 					context.ConnectionSettings.Name),
 					AddinCatalog.GetString ("Enter Password")
 				);

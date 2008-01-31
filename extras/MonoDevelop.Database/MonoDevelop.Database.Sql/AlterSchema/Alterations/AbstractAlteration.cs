@@ -29,18 +29,33 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Database.Sql
 {
-	public class TableAlterSchema : AbstractAlterSchema<TableSchema>
+	public abstract class AbstractAlteration<T> : IAlteration
 	{
-		public TableAlterSchema (TableSchema oldSchema, TableSchema newSchema)
-			: base (oldSchema, newSchema)
+		protected T oldValue;
+		protected T newValue;
+		
+		protected AbstractAlteration ()
 		{
 		}
 		
-		protected override void DetermineDifferences (TableSchema oldSchema, TableSchema newSchema)
+		protected AbstractAlteration (T oldValue, T newValue)
 		{
-			base.DetermineDifferences (oldSchema, newSchema);
-			
-			//TODO:
+			this.oldValue = oldValue;
+			this.newValue = newValue;
+		}
+		
+		public T OldValue {
+			get { return oldValue; }
+			protected internal set { oldValue = value; }
+		}
+		
+		public T NewValue {
+			get { return newValue; }
+			protected internal set { newValue = value; }
+		}
+		
+		public bool HasNewValue {
+			get { return newValue != null; }
 		}
 	}
 }

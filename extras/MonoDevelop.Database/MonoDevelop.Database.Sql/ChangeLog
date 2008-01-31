@@ -1,3 +1,31 @@
+2008-01-31  Ben Motmans <ben.motmans@gmail.com> 
+
+	* AlterSchema/AbstractAlterSchema.cs, AlterSchema/TriggerAlterSchema.cs,
+	  AlterSchema/DatabaseAlterSchema.cs,
+	  AlterSchema/ForeignKeyConstraintAlterSchema.cs,
+	  AlterSchema/IndexAlterSchema.cs,
+	  AlterSchema/Alterations/TableAlterations.cs,
+	  AlterSchema/Alterations/IndexAlterations.cs,
+	  AlterSchema/Alterations/DataTypeAlteration.cs,
+	  AlterSchema/Alterations/ProcedureAlterations.cs,
+	  AlterSchema/Alterations/ViewAlterations.cs,
+	  AlterSchema/Alterations/NameAlteration.cs,
+	  AlterSchema/Alterations/ColumnAlterations.cs,
+	  AlterSchema/Alterations/UserAlterations.cs,
+	  AlterSchema/Alterations/AbstractAlteration.cs,
+	  AlterSchema/Alterations/StatementAlteration.cs,
+	  AlterSchema/Alterations/TriggerAlterations.cs,
+	  AlterSchema/Alterations/DefaultAlterations.cs,
+	  AlterSchema/Alterations/ConstraintAlterations.cs,
+	  AlterSchema/ViewAlterSchema.cs,
+	  AlterSchema/UniqueConstraintAlterSchema.cs,
+	  AlterSchema/UserAlterSchema.cs,
+	  AlterSchema/CheckConstraintAlterSchema.cs,
+	  AlterSchema/TableAlterSchema.cs, AlterSchema/ProcedureAlterSchema.cs,
+	  AlterSchema/ColumnAlterSchema.cs,
+	  AlterSchema/PrimaryKeyConstraintAlterSchema.cs: initial support for
+	  schema alterations (far from finished)
+
 2008-01-30  Ben Motmans <ben.motmans@gmail.com> 
 
 	* Providers/IGuiProvider.cs: API changes

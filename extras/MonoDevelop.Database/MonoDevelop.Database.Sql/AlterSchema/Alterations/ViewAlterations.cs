@@ -29,24 +29,11 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Database.Sql
 {
-	public class NameAlteration : IAlteration
+	public class IsSystemViewAlteration : AbstractAlteration<bool>
 	{
-		private string name;
-		
-		public NameAlteration (string name)
+		public IsSystemViewAlteration (bool oldValue, bool newValue)
+			: base (oldValue, newValue)
 		{
-			Name = name;
-		}
-		
-		public string Name
-		{
-			get { return name; }
-			internal set
-			{
-				if (String.IsNullOrEmpty (value))
-					throw new ArgumentNullException ("Name");
-				name = value;
-			}
 		}
 	}
 }

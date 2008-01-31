@@ -29,8 +29,18 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Database.Sql
 {
-	public class TriggerAlterSchema : AbstractAlterSchema
+	public class TriggerAlterSchema : AbstractAlterSchema<TriggerSchema>
 	{
+		public TriggerAlterSchema (TriggerSchema oldSchema, TriggerSchema newSchema)
+			: base (oldSchema, newSchema)
+		{
+		}
 		
+		protected override void DetermineDifferences (TriggerSchema oldSchema, TriggerSchema newSchema)
+		{
+			base.DetermineDifferences (oldSchema, newSchema);
+			
+			//TODO:
+		}
 	}
 }

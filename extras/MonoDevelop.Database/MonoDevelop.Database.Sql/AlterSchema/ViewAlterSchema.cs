@@ -25,16 +25,22 @@
 //
 
 using System;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Database.Sql
 {
-	
-	
-	public class ViewAlterSchema
+	public class ViewAlterSchema : AbstractAlterSchema<ViewSchema>
 	{
-		
-		public ViewAlterSchema()
+		public ViewAlterSchema (ViewSchema oldSchema, ViewSchema newSchema)
+			: base (oldSchema, newSchema)
 		{
+		}
+		
+		protected override void DetermineDifferences (ViewSchema oldSchema, ViewSchema newSchema)
+		{
+			base.DetermineDifferences (oldSchema, newSchema);
+			
+			//TODO:
 		}
 	}
 }

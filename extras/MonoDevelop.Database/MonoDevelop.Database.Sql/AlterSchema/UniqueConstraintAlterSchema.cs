@@ -29,8 +29,18 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Database.Sql
 {
-	public class UniqueConstraintAlterSchema : AbstractAlterSchema
+	public class UniqueConstraintAlterSchema : AbstractAlterSchema<UniqueConstraintSchema>
 	{
+		public UniqueConstraintAlterSchema (UniqueConstraintSchema oldSchema, UniqueConstraintSchema newSchema)
+			: base (oldSchema, newSchema)
+		{
+		}
 		
+		protected override void DetermineDifferences (UniqueConstraintSchema oldSchema, UniqueConstraintSchema newSchema)
+		{
+			base.DetermineDifferences (oldSchema, newSchema);
+			
+			//TODO:
+		}
 	}
 }

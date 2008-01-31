@@ -29,18 +29,27 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Database.Sql
 {
-	public class TableAlterSchema : AbstractAlterSchema<TableSchema>
+	public class IsColumnConstraintAlteration : AbstractAlteration<bool>
 	{
-		public TableAlterSchema (TableSchema oldSchema, TableSchema newSchema)
-			: base (oldSchema, newSchema)
+		public IsColumnConstraintAlteration (bool oldValue, bool newValue)
+			: base (oldValue, newValue)
 		{
 		}
-		
-		protected override void DetermineDifferences (TableSchema oldSchema, TableSchema newSchema)
+	}
+	
+	public class ForeignKeyDeleteActionAlteration : AbstractAlteration<ForeignKeyAction>
+	{
+		public ForeignKeyDeleteActionAlteration (ForeignKeyAction oldValue, ForeignKeyAction newValue)
+			: base (oldValue, newValue)
 		{
-			base.DetermineDifferences (oldSchema, newSchema);
-			
-			//TODO:
+		}
+	}
+	
+	public class ForeignKeyUpdateActionAlteration : AbstractAlteration<ForeignKeyAction>
+	{
+		public ForeignKeyUpdateActionAlteration (ForeignKeyAction oldValue, ForeignKeyAction newValue)
+			: base (oldValue, newValue)
+		{
 		}
 	}
 }
