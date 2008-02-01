@@ -31,9 +31,11 @@
 //
 
 using System;
+using System.IO;
 using System.ComponentModel;
 using Gtk;
 
+using Mono.Addins;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
@@ -54,12 +56,14 @@ namespace AspNetEdit.Integration
 		Gtk.Socket designerSocket;
 		Gtk.Socket propGridSocket;
 		
+		Frame propertyFrame;
 		DesignerFrame designerFrame;
 		
 		MonoDevelopProxy proxy;
 		
 		bool activated = false;
 		bool suppressSerialisation = false;
+		static string extensionError = null;
 		
 		internal AspNetEditViewContent (IViewContent viewContent)
 		{
@@ -69,6 +73,11 @@ namespace AspNetEdit.Integration
 			designerFrame.CanFocus = true;
 			designerFrame.Shadow = ShadowType.None;
 			designerFrame.BorderWidth = 0;
+			
+			propertyFrame = new Frame ();
+			propertyFrame.CanFocus = true;
+			propertyFrame.Shadow = ShadowType.None;
+			propertyFrame.BorderWidth = 0;
 			
 			viewContent.WorkbenchWindow.Closing += workbenchWindowClosingHandler;
 			viewContent.DirtyChanged += vcDirtyChanged;
@@ -123,6 +132,29 @@ namespace AspNetEdit.Integration
 		
 		public override void Selected ()
 		{
+			//check that the Mozilla extension is installed correctly, and if not, display an error
+			if (extensionError != null) {
+				return;
+			} else if (!CheckExtension (ref extensionError)) {
+				LoggingService.LogError (extensionError);
+				Label errorlabel = new Label (extensionError);
+				errorlabel.Wrap = true;
+				
+				HBox box = new HBox (false, 10);
+				Image errorImage = new Image (Gtk.Stock.DialogError, Gtk.IconSize.Dialog);
+				
+				box.PackStart (new Label (), true, true, 0);
+				box.PackStart (errorImage, false, false, 10);
+				box.PackStart (errorlabel, true, false, 10);
+				box.PackStart (new Label (), true, true, 0);
+				
+				designerFrame.Add (box);
+				designerFrame.ShowAll ();
+				return;
+			} else {
+				extensionError = null;
+			}
+			
 			if (editorProcess != null)
 				throw new Exception ("Editor should be null when document is selected");
 			
@@ -132,6 +164,7 @@ namespace AspNetEdit.Integration
 			
 			propGridSocket = new Gtk.Socket ();
 			propGridSocket.Show ();
+			propertyFrame.Add (propGridSocket);
 			
 			editorProcess = (EditorProcess) Runtime.ProcessService.CreateExternalProcessObject (typeof (EditorProcess), false);
 			
@@ -181,14 +214,15 @@ namespace AspNetEdit.Integration
 			
 		void saveDocumentToTextView ()
 		{
-			if (!editorProcess.ExceptionOccurred) {
+			if (editorProcess != null && !editorProcess.ExceptionOccurred) {
 				IEditableTextBuffer textBuf = (IEditableTextBuffer) viewContent.GetContent (typeof(IEditableTextBuffer));
 				
 				string doc = null;
 				try {
 					doc = editorProcess.Editor.GetDocument ();
 				} catch (Exception e) {
-					IdeApp.Services.MessageService.ShowError (e, "The document could not be retrieved from the designer");
+					IdeApp.Services.MessageService.ShowError (e,
+						AddinManager.CurrentLocalizer.GetString ("The document could not be retrieved from the designer"));
 				}
 			
 				if (doc != null)
@@ -209,6 +243,7 @@ namespace AspNetEdit.Integration
 			}
 			
 			if (propGridSocket != null) {
+				propertyFrame.Remove (propGridSocket);
 				propGridSocket.Dispose ();
 				propGridSocket = null;
 			}
@@ -274,12 +309,107 @@ namespace AspNetEdit.Integration
 			
 			Gtk.Widget ICustomPropertyPadProvider.GetCustomPropertyWidget ()
 			{
-				return view.propGridSocket;
+				return view.propertyFrame;
 			}
 			
 			void ICustomPropertyPadProvider.DisposeCustomPropertyWidget ()
 			{
 			}
+		}
+		
+		bool MozillaInstalled (ref string error)
+		{
+			string mozPath = System.Environment.GetEnvironmentVariable ("MOZILLA_FIVE_HOME");
+			if (mozPath == null) {
+				error = "MOZILLA_FIVE_HOME is not set.";
+				return false;
+			}
+			
+			string ffBrowserManifest = Path.Combine (Path.Combine (mozPath, "chrome"), "toolkit.manifest");
+			if (!File.Exists (ffBrowserManifest)) {
+				error = String.Format ("MOZILLA_FIVE_HOME does not appear to be pointing to a valid Mozilla runtime: \"{0}\".", mozPath);
+				return false;
+			}
+			return true;
+		}
+		
+		bool ExtensionInstalled (ref string error)
+		{
+			string mozPath = System.Environment.GetEnvironmentVariable ("MOZILLA_FIVE_HOME");
+			string manifestLocation = Path.Combine (Path.Combine (mozPath, "chrome"), "aspdesigner.manifest");
+			if (!System.IO.File.Exists (manifestLocation)) {
+				error = "The ASP.NET designer's Mozilla extension is not installed.";
+				return false;
+			} else {
+				try {
+					using (StreamReader reader = new StreamReader (manifestLocation)) {
+						string line = reader.ReadLine ().Trim ();
+						int startIndex = "content aspdesigner jar:".Length;
+						int length = line.Length - "aspdesigner.jar!/content/aspdesigner/".Length - startIndex;
+						string path = line.Substring (startIndex, length - 1);
+						if (Path.GetFullPath (path) == Path.GetDirectoryName (System.Reflection.Assembly.GetExecutingAssembly ().Location))
+							return true;
+					}
+				} catch (System.UnauthorizedAccessException) {}
+			}
+			
+			error = "A Mozilla extension is installed for the ASP.NET designer, \nbut it is either incorrectly installed or is not the correct version. \nIt is only possible to have one version installed.";
+			return false;
+		}
+		
+		bool InstallExtension (string extensionStatus)
+		{
+			if (!MonoDevelop.Core.Gui.Services.MessageService.AskQuestionFormatted
+				("Mozilla extension installation", "{0}\n Would you like to install it?", extensionStatus))
+				return false;
+			
+			string sourcePath = Path.GetTempFileName ();
+			using (TextWriter writer = new StreamWriter (sourcePath)) {
+				string jarfile = Path.Combine (Path.GetDirectoryName (System.Reflection.Assembly.GetExecutingAssembly ().Location), "aspdesigner.jar");
+				writer.WriteLine ("content aspdesigner jar:{0}!/content/aspdesigner/", jarfile);
+				writer.WriteLine ("locale aspdesigner en-US jar:{0}!/locale/en-US/aspdesigner/", jarfile);
+			}
+			
+			string mozPath = System.Environment.GetEnvironmentVariable ("MOZILLA_FIVE_HOME");
+			string manifestLocation = Path.Combine (Path.Combine (mozPath, "chrome"), "aspdesigner.manifest");
+			
+			//string installCommand = String.Format ("\"sh -c \\\"cp '{0}' '{1}'; chmod a+r '{1}'\\\"\"", sourcePath, manifestLocation);
+			string installCommand = String.Format ("\"install '{0}' '{1}'\"", sourcePath, manifestLocation);
+			LoggingService.LogInfo ("Attempting to run root command: '{0}'", installCommand);
+			ProcessWrapper process = null;
+			try {
+				try {
+					process = Runtime.ProcessService.StartProcess ("xdg-su", "-c " + installCommand, null, null);
+				} catch (System.ComponentModel.Win32Exception) {
+					process = Runtime.ProcessService.StartProcess ("gnomesu", "-c " + installCommand, null, null);
+				}
+				//FIXME: this will hang the GTK thread until we the command completes
+				process.WaitForOutput ();
+				File.Delete (sourcePath);
+				return (process != null && process.ExitCode == 0);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error installing ASP.NET designer Mozilla extension.", ex);
+			}
+			MonoDevelop.Core.Gui.Services.MessageService.ShowError (
+				string.Format ("Could not execute command as root. \nPlease manually run the command \n{0}\nbefore continuing.", installCommand));
+			File.Delete (sourcePath);
+			return true;
+		}
+		
+		bool CheckExtension (ref string error)
+		{
+			try {
+				if (!MozillaInstalled (ref error))
+					return false;
+				if (!ExtensionInstalled (ref error))
+					if (!InstallExtension (error))
+						return false;
+				if (ExtensionInstalled (ref error))
+					return true;
+			} catch (Exception ex) {
+				error = String.Format ("Unhandled error.\n{0}", ex);
+			}
+			return false;
 		}
 	}
 }

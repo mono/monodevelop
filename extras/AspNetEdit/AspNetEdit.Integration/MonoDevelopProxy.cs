@@ -58,7 +58,7 @@ namespace AspNetEdit.Integration
 			get {
 				return IdeApp.Services.MessageService;
 			}
-		}		
+		}
 		#endregion
 		
 		//keep this object available through remoting

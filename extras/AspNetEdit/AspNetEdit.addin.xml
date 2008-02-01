@@ -5,11 +5,12 @@
        copyright   = "MIT X11"
        url         = "http://www.monodevelop.com/"
        description = "Visual Designer for ASP.NET Web Forms."
-	   category    = "Web Development"
+       category    = "Web Development"
        version     = "0.19.0">
 	
 	<Runtime>
 		<Import assembly = "AspNetEdit.dll"/>
+		<Import file     = "aspdesigner.jar"/>
 	</Runtime>
 
 	<Dependencies>

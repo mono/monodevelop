@@ -1,3 +1,20 @@
+2008-01-31  Michael Hutchinson  <mhutchinson@novell.com> 
+
+	* AspNetEdit.mdp:
+	* configure:
+	* AspNetEdit.make: Get AspNetEdit building again.
+	
+	* AspNetEdit.Editor.UI/RootDesignerView.cs: 
+	* AspNetEdit.Integration/GeckoWebBrowser.cs: Copy simple code so that 
+	  we don't have to depend on another unstable addin.
+	
+	* AspNetEdit.addin.xml:
+	* AspNetEdit.Integration/AspNetEditViewContent.cs: Check that the 
+	  Mozilla extension is installed,and if not, install it.
+	
+	* chrome/Makefile.am:
+	* chrome/aspdesigner.manifest.in: Unneeded, removed.
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AspNetEdit.addin.xml: Update MD version.

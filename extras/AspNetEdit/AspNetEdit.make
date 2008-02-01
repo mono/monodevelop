@@ -1,7 +1,3 @@
-
-
-# Warning: This is an automatically generated file, do not edit!
-
 srcdir=.
 top_srcdir=.
 
@@ -10,7 +6,7 @@ include $(top_srcdir)/config.make
 
 ifeq ($(CONFIG),DEBUG)
 ASSEMBLY_COMPILER_COMMAND = gmcs
-ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize+ -debug -define:DEBUG
+ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize+ -debug -define:DEBUG\;TRACE
 ASSEMBLY = build/AspNetEdit.dll
 ASSEMBLY_MDB = $(ASSEMBLY).mdb
 COMPILE_TARGET = library
@@ -31,6 +27,9 @@ BUILD_DIR = build
 
 
 endif
+
+extension_name = aspdesigner
+extension_jar = $(shell pwd)/$(BUILD_DIR)/$(extension_name).jar
 
 FILES =  \
 	AspNetEdit.Editor.ComponentModel/DesignContainer.cs \
@@ -62,6 +61,7 @@ FILES =  \
 	AspNetEdit.Integration/AspNetEditDisplayBinding.cs \
 	AspNetEdit.Integration/AspNetEditViewContent.cs \
 	AspNetEdit.Integration/EditorProcess.cs \
+	AspNetEdit.Integration/GeckoWebBrowser.cs \
 	AspNetEdit.Integration/MonoDevelopProxy.cs \
 	AspNetEdit.Integration/ToolboxProvider.cs \
 	AspNetEdit.JSCall/CommandManager.cs \
@@ -108,19 +108,23 @@ CLEANFILES +=
 
 INSTALL_DIR = $(prefix)/lib/monodevelop/AddIns/AspNetEdit
 
+## actually all in $(srcdir)/chrome, but we handle this later
+## need to handle paths this way to get gorrect paths in the zip
+jar_files = \
+	content/aspdesigner/contents.rdf \
+	content/aspdesigner/aspdesigner.xul \
+	content/aspdesigner/editorContent.css \
+	content/aspdesigner/editor.js \
+	content/aspdesigner/clipboard.js \
+	content/aspdesigner/constants.js \
+	content/aspdesigner/xpcom.js \
+	content/aspdesigner/JSCall.js \
+	locale/en-US/aspdesigner/contents.rdf
+
+
 #Targets
-all-local: $(ASSEMBLY)  $(top_srcdir)/config.make
 
-
-
-
-
-$(build_xamlg_list): %.xaml.g.cs: %.xaml
-	xamlg '$<'
-
-$(build_resx_resources) : %.resources: %.resx
-	resgen2 '$<' '$@'
-
+all-local: $(ASSEMBLY) $(extension_jar) $(top_srcdir)/config.make
 
 LOCAL_PKGCONFIG=PKG_CONFIG_PATH=../../local-config:$$PKG_CONFIG_PATH
 
@@ -133,13 +137,16 @@ $(ASSEMBLY) $(ASSEMBLY_MDB): $(build_sources) $(build_resources) $(build_datafil
 	make post-all-local-hook prefix=$(prefix)
 
 
-install-local: $(ASSEMBLY) $(ASSEMBLY_MDB)
+$(extension_jar): $(foreach f, $(jar_files), $(srcdir)/chrome/$f)
+	pushd $(srcdir)/chrome; zip -q9 $@ $(jar_files); popd
+
+install-local: $(ASSEMBLY) $(ASSEMBLY_MDB) $(extension_jar)
 	make pre-install-local-hook prefix=$(prefix)
 	mkdir -p $(INSTALL_DIR)
-	cp $(ASSEMBLY) $(ASSEMBLY_MDB) $(INSTALL_DIR)
+	cp $(ASSEMBLY) $(ASSEMBLY_MDB) $(extension_jar) $(INSTALL_DIR)
 	make post-install-local-hook prefix=$(prefix)
 
-uninstall-local: $(ASSEMBLY) $(ASSEMBLY_MDB)
+uninstall-local: $(ASSEMBLY) $(ASSEMBLY_MDB) $(extension_jar)
 	make pre-uninstall-local-hook prefix=$(prefix)
 	rm -f $(INSTALL_DIR)/$(notdir $(ASSEMBLY))
 	test -z '$(ASSEMBLY_MDB)' || rm -f $(INSTALL_DIR)/$(notdir $(ASSEMBLY_MDB))

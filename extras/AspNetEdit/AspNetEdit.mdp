@@ -1,10 +1,10 @@
 <Project name="AspNetEdit" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
-      <Output directory="bin/Debug" assembly="AspNetEdit" />
+      <Output directory="bin/Debug" assemblyKeyFile="." assembly="AspNetEdit" />
       <Build debugmode="True" target="Library" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
-      <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+      <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" definesymbols="DEBUG;TRACE" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
       <Output directory="bin/Release" assembly="AspNetEdit" />
@@ -42,7 +42,6 @@
     <File name="AspNetEdit.Editor.UI/PropertyGrid.cs" subtype="Code" buildaction="Compile" />
     <File name="AspNetEdit.Editor.UI/RootDesignerView.cs" subtype="Code" buildaction="Compile" />
     <File name="chrome/install.rdf" subtype="Code" buildaction="Nothing" />
-    <File name="chrome/Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="chrome/README" subtype="Code" buildaction="Nothing" />
     <File name="chrome/content/aspdesigner/aspdesigner.xul" subtype="Code" buildaction="Nothing" />
     <File name="chrome/content/aspdesigner/clipboard.js" subtype="Code" buildaction="Nothing" />
@@ -60,9 +59,11 @@
     <File name="AspNetEdit.Integration/MonoDevelopProxy.cs" subtype="Code" buildaction="Compile" />
     <File name="AspNetEdit.Editor.ComponentModel/EventBindingService.cs" subtype="Code" buildaction="Compile" />
     <File name="AspNetEdit.Integration/ToolboxProvider.cs" subtype="Code" buildaction="Compile" />
-    <File name="chrome/aspdesigner.manifest.in" subtype="Code" buildaction="Nothing" />
     <File name="AspNetEdit.JSCall/CommandManager.cs" subtype="Code" buildaction="Compile" />
     <File name="AspNetEdit.JSCall/InvalidJSArgumentException.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.Integration/GeckoWebBrowser.cs" subtype="Code" buildaction="Compile" />
+    <File name="AspNetEdit.make" subtype="Code" buildaction="Nothing" />
+    <File name="configure" subtype="Code" buildaction="Nothing" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
@@ -79,27 +80,10 @@
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gecko-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=ccf7d78a55e9f021" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Projects.Gui, Version=0.17.0.0, Culture=neutral" />
-    <ProjectReference type="Gac" localcopy="True" refto="NRefactory, Version=0.0.0.0, Culture=neutral" />
-    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.NUnit, Version=0.0.0.0, Culture=neutral" />
-    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Gettext, Version=1.0.0.0, Culture=neutral" />
-    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Deployment, Version=1.0.0.0, Culture=neutral" />
-    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Deployment.Linux, Version=1.0.0.0, Culture=neutral" />
-    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.GtkCore, Version=0.0.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.DesignerSupport, Version=0.0.0.0, Culture=neutral" />
-    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Autotools, Version=0.1.0.0, Culture=neutral" />
-    <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.SourceEditor, Version=0.0.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
-    <ProjectReference type="Project" localcopy="False" refto="GeckoWebBrowser" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Cecil, Version=0.6.8.8607, Culture=neutral" />
-    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.VersionControl, Version=0.0.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.AspNet, Version=0.0.0.0, Culture=neutral" />
-    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.VBNetBinding, Version=1.0.1.1649, Culture=neutral" />
-    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.CBinding, Version=0.0.0.0, Culture=neutral" />
-    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.CSharpBinding, Version=0.0.0.0, Culture=neutral" />
-    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.MsVisualStudio, Version=0.17.0.0, Culture=neutral" />
   </References>
   <Deployment.LinuxDeployData generatePcFile="False" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="AspNetEdit.make" SyncReferences="True" RelativeConfigureInPath="../../">
