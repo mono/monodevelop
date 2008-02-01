@@ -1,5 +1,10 @@
 2008-02-01  Mike Krüger <mkrueger@novell.com> 
 
+	* gtk-gui/objects.xml, gtk-gui/gui.stetic, Makefile.am,
+	  MonoDevelop.SourceEditor.mdp: Added makefile.
+
+2008-02-01  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,
 	  MonoDevelop.SourceEditor/SourceEditorView.cs: Worked on folding.
 
