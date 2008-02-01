@@ -1,5 +1,10 @@
 2008-02-01  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/Document.cs, Mono.TextEditor/TextEditor.cs: Fixed
+	  VisualToLogicalLine method.
+
+2008-02-01  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditor.cs: Worked on folding.
 
 2008-02-01  Mike Krüger <mkrueger@novell.com> 

@@ -74,7 +74,7 @@
 
 	<Style name="foldLine" color="aluminium3"/>
 	<Style name="foldBg" color="white"/>
-	<Style name="foldLineHighlighted" color="aluminium2"/>
+	<Style name="foldLineHighlighted" color="aluminium5"/>
 	<Style name="foldToggleMarker" color="black"/>
 	
 	<!-- highlighting -->

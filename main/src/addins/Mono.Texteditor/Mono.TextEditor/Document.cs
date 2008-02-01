@@ -312,18 +312,20 @@ namespace Mono.TextEditor
 		
 		public int VisualToLogicalLine (int visualLineNumber)
 		{
-			List<FoldSegment> foldings = GetFoldingsBefore (visualLineNumber);
-			int lastFoldingEnd = 0;
 			int result = visualLineNumber;
-			foreach (FoldSegment folding in foldings) {
-				if (folding.IsFolded && lastFoldingEnd < folding.EndOffset) {
-					result += GetLineCount (folding);
-					lastFoldingEnd = folding.EndOffset;
+			int lastFoldingEnd = 0;
+			LineSegment line = splitter.Get (result);
+			foreach (FoldSegment foldSegment in foldSegments) {
+				if (foldSegment.Offset > line.Offset)
+					break;
+				if (foldSegment.IsFolded && foldSegment.StartLine.Offset < line.Offset && lastFoldingEnd < foldSegment.EndOffset ) {
+					result += GetLineCount (foldSegment);
+					lastFoldingEnd = foldSegment.EndOffset;
+					line = splitter.Get (result);
 				}
 			}
 			return result;
 		}
-		
 		
 		public DocumentLocation LogicalToVisualLocation (DocumentLocation location)
 		{

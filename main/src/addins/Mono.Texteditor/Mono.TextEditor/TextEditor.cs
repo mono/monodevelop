@@ -727,11 +727,7 @@ namespace Mono.TextEditor
 					DrawLineText (win, gc, line, offset, foldOffset - offset, ref xPos, y);
 //					xPos += width;
 					offset = folding.EndLine.Offset + folding.EndColumn;
-					if (folding.EndLine != line) {
-						line   = folding.EndLine;
-						foldings = Document.GetStartFoldings (line);
-						i = -1;
-					}
+					
 					layout.SetText (folding.Description);
 					layout.GetPixelSize (out width, out height);
 					gc.RgbBgColor = ColorStyle.Background;
@@ -741,6 +737,12 @@ namespace Mono.TextEditor
 					gc.RgbFgColor = ColorStyle.FoldLine;
 					win.DrawLayout (gc, xPos, y, layout);
 					xPos += width;
+					
+					if (folding.EndLine != line) {
+						line   = folding.EndLine;
+						foldings = Document.GetStartFoldings (line);
+						i = -1;
+					}
 				}
 			}
 			
@@ -1052,6 +1054,7 @@ namespace Mono.TextEditor
 			for (int visualLineNumber = startLine; visualLineNumber <= endLine; visualLineNumber++) {
 				int curX = 0;
 				int logicalLineNumber = Document.VisualToLogicalLine (visualLineNumber + firstLine);
+//				System.Console.WriteLine(logicalLineNumber + " == " + (visualLineNumber + firstLine));
 				foreach (IMargin margin in this.margins) {
 					if (margin.IsVisible) {
 						margin.XOffset = curX;
