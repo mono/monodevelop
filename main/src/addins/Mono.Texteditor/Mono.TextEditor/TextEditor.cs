@@ -52,6 +52,11 @@ namespace Mono.TextEditor
 		int caretBlinkStatus;
 		uint caretBlinkTimeoutId = 0;
 		const int CaretBlinkTime = 800;
+		
+		void Hallo ()
+		{
+			
+		}
 			
 		public Document Document {
 			get {

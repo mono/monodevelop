@@ -43,7 +43,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public int Length {
+		public virtual int Length {
 			get {
 				return length;
 			}

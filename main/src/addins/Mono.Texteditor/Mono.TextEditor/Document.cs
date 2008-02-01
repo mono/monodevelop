@@ -224,17 +224,33 @@ namespace Mono.TextEditor
 		public void UpdateFoldSegments (List<FoldSegment> newSegments)
 		{
 			if (newSegments == null) {
-				foldSegments.Clear ();
 				return;
 			}
 			newSegments.Sort ();
 			foreach (FoldSegment foldSegment in newSegments) {
-				foldSegment.StartLine = splitter.GetByOffset (foldSegment.Offset);
-				foldSegment.EndLine   = splitter.GetByOffset (foldSegment.EndOffset);
-				foldSegment.Column    = foldSegment.Offset    - foldSegment.StartLine.Offset; 
-				foldSegment.EndColumn = foldSegment.EndOffset - foldSegment.EndLine.Offset; 
+				LineSegment startLine = splitter.GetByOffset (foldSegment.Offset);
+				LineSegment endLine   = splitter.GetByOffset (foldSegment.EndOffset);
+				foldSegment.EndColumn = foldSegment.EndOffset - endLine.Offset; 
+				foldSegment.Column    = foldSegment.Offset - startLine.Offset; 
+				foldSegment.EndLine   = endLine;
+				foldSegment.StartLine = startLine;
+			}
+			int i = 0, j = 0;
+			while (i < foldSegments.Count && j < newSegments.Count) {
+				int cmp = foldSegments[i].CompareTo (newSegments [j]);
+				if (cmp == 0) {
+					newSegments[j].IsFolded = foldSegments[i].IsFolded;
+					i++;j++;
+				} else  if (cmp > 0) {
+					j++;
+				} else {
+					i++;
+				}
 			}
 			foldSegments = newSegments;
+			
+			RequestUpdate (new UpdateAll ());
+			CommitDocumentUpdate ();
 		}
 		
 		public List<FoldSegment> GetFoldingsFromOffset (int offset)

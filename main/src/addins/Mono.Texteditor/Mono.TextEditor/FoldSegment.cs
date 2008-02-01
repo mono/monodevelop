@@ -64,7 +64,26 @@ namespace Mono.TextEditor
 				column = value;
 			}
 		}
-
+		
+		public override int Offset {
+			get {
+				return StartLine != null ? StartLine.Offset + Column : base.Offset;
+			}
+			set {
+				base.Offset = value;
+			}
+		}
+		
+		public override int Length {
+			get {
+				return EndLine != null ? EndLine.Offset + EndColumn - Offset : base.Length;
+			}
+			set {
+				base.Length = value;
+			}
+		}
+		
+		
 		public LineSegment StartLine {
 			get {
 				return startLine;
@@ -101,10 +120,12 @@ namespace Mono.TextEditor
 		{
 			return String.Format ("[FoldSegment: Description= {0}, Offset={1}, Length={2}]", this.description, this.Offset, this.Length);
 		}
-
+		
 		public int CompareTo (object obj)
 		{
-			return this.offset.CompareTo (((FoldSegment)obj).offset);
+			FoldSegment segment = (FoldSegment)obj;
+			
+			return this.Offset != segment.Offset ? this.Offset.CompareTo (segment.Offset) : this.length.CompareTo (segment.length);
 		}
 	}
 }

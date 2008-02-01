@@ -1,5 +1,11 @@
 2008-02-01  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/Document.cs, Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor/Segment.cs, Mono.TextEditor/FoldSegment.cs: Improved
+	  folding updating.
+
+2008-02-01  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/Document.cs, Mono.TextEditor/TextEditor.cs: Fixed
 	  VisualToLogicalLine method.
 
