@@ -362,10 +362,14 @@ namespace MonoDevelop.SourceEditor
 		public void InsertText (int position, string text)
 		{
 			this.widget.TextEditor.Document.Buffer.Insert (position, new StringBuilder (text));
+			if (text != null && this.widget.TextEditor.Caret.Offset >= position) 
+				this.widget.TextEditor.Caret.Offset += text.Length;
 		}
 		public void DeleteText (int position, int length)
 		{
 			this.widget.TextEditor.Document.Buffer.Remove (position, length);
+			if (this.widget.TextEditor.Caret.Offset >= position) 
+				this.widget.TextEditor.Caret.Offset -= length;
 		}
 #endregion 
 		
