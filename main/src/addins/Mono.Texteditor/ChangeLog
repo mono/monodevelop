@@ -1,5 +1,11 @@
 2008-02-01  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor.mdp, AssemblyInfo.cs, Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor.Highlighting/AssemblyInfo.cs, gtk-gui/gui.stetic,
+	  Makefile.am: Added makefile.
+
+2008-02-01  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/Document.cs, Mono.TextEditor/TextEditor.cs,
 	  Mono.TextEditor/Segment.cs, Mono.TextEditor/FoldSegment.cs: Improved
 	  folding updating.
