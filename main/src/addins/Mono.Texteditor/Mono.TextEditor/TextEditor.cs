@@ -990,6 +990,8 @@ namespace Mono.TextEditor
 		
 		public void ScrollToCaret ()
 		{
+			if (Caret.Line < 0 || Caret.Line >= Document.Splitter.LineCount)
+				return;
 			int caretPosition = Document.LogicalToVisualLine (Caret.Line) * this.LineHeight;
 			if (this.textEditorData.VAdjustment.Value > caretPosition) {
 				this.textEditorData.VAdjustment.Value = caretPosition;

@@ -1,5 +1,9 @@
 2008-02-01  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextEditor.cs: Fixed bug.
+
+2008-02-01  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/DefaultEditActions.cs: Changed the way the textedior
 	  indents.
 
