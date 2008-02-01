@@ -32,7 +32,7 @@ namespace Mono.TextEditor
 	public class Chunk : Segment
 	{
 		ChunkStyle style;
-		
+
 		public ChunkStyle Style {
 			get {
 				return style;

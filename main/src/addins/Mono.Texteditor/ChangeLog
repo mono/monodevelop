@@ -1,5 +1,10 @@
 2008-02-01  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/DefaultEditActions.cs: Changed the way the textedior
+	  indents.
+
+2008-02-01  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor.mdp, AssemblyInfo.cs, Mono.TextEditor/TextEditor.cs,
 	  Mono.TextEditor.Highlighting/AssemblyInfo.cs, gtk-gui/gui.stetic,
 	  Makefile.am: Added makefile.
