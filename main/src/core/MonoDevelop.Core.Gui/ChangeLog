@@ -1,3 +1,13 @@
+2008-02-01  Michael Hutchinson  <mhutchinson@novell.com> 
+
+	* Makefile.am:
+	* icons/element-literal-16.png:
+	* MonoDevelop.Core.Gui.mdp:
+	* MonoDevelop.Core.Gui.addin.xml: Updated icon.
+	
+	* icons/Icons.16x16.Literal:
+	* icons/Icons.16x16.Struct: Removed old icons.
+
 2008-01-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.mdp, Makefile.am, icons/build-solution-16.png,
