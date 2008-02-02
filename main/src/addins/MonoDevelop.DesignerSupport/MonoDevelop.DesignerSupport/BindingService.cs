@@ -148,7 +148,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		public static IMember AddMemberToClass (CombineEntry entry, IClass cls, CodeTypeMember member, bool throwIfExists)
 		{
-			return AddMemberToClass (entry, cls, null, member, throwIfExists);
+			return AddMemberToClass (entry, cls, cls.Parts[0], member, throwIfExists);
 		}
 		
 		public static IMember AddMemberToClass (CombineEntry entry, IClass cls, IClass specificPartToAffect, CodeTypeMember member, bool throwIfExists)
