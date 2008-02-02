@@ -166,7 +166,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void AddMarker (List<FoldSegment> foldSegments, string text, IRegion region)
 		{
-			if (region.BeginLine <= 0 || region.EndLine <= 0 || region.BeginLine >= this.TextEditor.Document.Splitter.LineCount || region.EndLine >= this.TextEditor.Document.Splitter.LineCount)
+			if (region == null || region.BeginLine <= 0 || region.EndLine <= 0 || region.BeginLine >= this.TextEditor.Document.Splitter.LineCount || region.EndLine >= this.TextEditor.Document.Splitter.LineCount)
 				return;
 			int startOffset = this.TextEditor.Document.LocationToOffset (region.BeginLine - 1,  region.BeginColumn - 1);
 			int endOffset   = this.TextEditor.Document.LocationToOffset (region.EndLine - 1,  region.EndColumn - 1);
@@ -175,18 +175,23 @@ namespace MonoDevelop.SourceEditor
 		
 		void AddClass (List<FoldSegment> foldSegments, IClass cl)
 		{
-			AddMarker (foldSegments, "...", cl.BodyRegion);
+			if (cl.BodyRegion != null)
+				AddMarker (foldSegments, "...", cl.BodyRegion);
 			foreach (IClass inner in cl.InnerClasses) {
 				AddClass (foldSegments, inner);
 			}
 			
 			foreach (IMethod method in cl.Methods) {
+				if (method.Region == null || method.BodyRegion == null)
+					continue;
 				int startOffset = this.TextEditor.Document.LocationToOffset (method.Region.EndLine - 1,  method.Region.EndColumn - 1);
 				int endOffset   = this.TextEditor.Document.LocationToOffset (method.BodyRegion.EndLine - 1,  method.BodyRegion.EndColumn - 1);
 				foldSegments.Add (new FoldSegment ("...", startOffset, endOffset - startOffset));
 			}
 			
 			foreach (IProperty property in cl.Properties) {
+				if (property.Region == null || property.BodyRegion == null)
+					continue;
 				int startOffset = this.TextEditor.Document.LocationToOffset (property.Region.EndLine - 1,  property.Region.EndColumn - 1);
 				int endOffset   = this.TextEditor.Document.LocationToOffset (property.BodyRegion.EndLine - 1,  property.BodyRegion.EndColumn - 1);
 				foldSegments.Add (new FoldSegment ("...", startOffset, endOffset - startOffset));
