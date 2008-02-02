@@ -30,7 +30,6 @@
     <File name="icons/Icons.16x16.FindNextIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.GotoNextbookmark" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.GotoPrevbookmark" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.Literal" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.MiscFiles" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.NewFolderIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.NewSolutionIcon.png" subtype="Code" buildaction="EmbedAsResource" />
@@ -45,7 +44,6 @@
     <File name="icons/Icons.16x16.ResourceFileIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.SaveAllIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.SplitWindow" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.Struct" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.TipOfTheDay" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.ToggleBookmark" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.WebSearchIcon" subtype="Code" buildaction="EmbedAsResource" />
@@ -159,6 +157,7 @@
     <File name="icons/element-namespace-16.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/element-property-16.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/element-structure-16.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/element-literal-16.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/visibility-internal-16.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/visibility-private-16.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/visibility-protected-16.png" subtype="Code" buildaction="EmbedAsResource" />

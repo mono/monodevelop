@@ -85,6 +85,7 @@ RES =  \
 	icons/element-event-16.png \
 	icons/element-field-16.png \
 	icons/element-interface-16.png \
+	icons/element-literal-16.png \
 	icons/element-method-16.png \
 	icons/element-namespace-16.png \
 	icons/element-property-16.png \
@@ -109,7 +110,6 @@ RES =  \
 	icons/Icons.16x16.FindNextIcon \
 	icons/Icons.16x16.GotoNextbookmark \
 	icons/Icons.16x16.GotoPrevbookmark \
-	icons/Icons.16x16.Literal \
 	icons/Icons.16x16.MiscFiles \
 	icons/Icons.16x16.NewCombineIcon.png \
 	icons/Icons.16x16.NewFolderIcon \
@@ -124,7 +124,6 @@ RES =  \
 	icons/Icons.16x16.ResourceFileIcon \
 	icons/Icons.16x16.SaveAllIcon \
 	icons/Icons.16x16.SplitWindow \
-	icons/Icons.16x16.Struct \
 	icons/Icons.16x16.TextFileIcon \
 	icons/Icons.16x16.TipOfTheDay \
 	icons/Icons.16x16.ToggleBookmark \
