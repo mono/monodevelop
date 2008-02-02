@@ -501,8 +501,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			CodeCompletionContext result = new CodeCompletionContext ();
 			result.TriggerOffset = this.widget.TextEditor.Caret.Offset;
-			result.TriggerLine   = this.widget.TextEditor.Caret.Line + 1;
-			result.TriggerLineOffset = this.widget.TextEditor.Document.Splitter.Get (this.widget.TextEditor.Caret.Line).Offset;
+			result.TriggerLine   = this.widget.TextEditor.Caret.Line;
+			result.TriggerLineOffset = this.widget.TextEditor.Caret.Column;
 			Gdk.Point p = this.widget.TextEditor.DocumentToVisualLocation (this.widget.TextEditor.Caret.Location);
 			int tx, ty;
 			widget.ParentWindow.GetOrigin (out tx, out ty);

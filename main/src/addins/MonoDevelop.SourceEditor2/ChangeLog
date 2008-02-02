@@ -1,5 +1,9 @@
 2008-02-02  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed code completion bug.
+
+2008-02-02  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Added some safety checks.
 
 2008-02-02  Mike Krüger <mkrueger@novell.com> 
