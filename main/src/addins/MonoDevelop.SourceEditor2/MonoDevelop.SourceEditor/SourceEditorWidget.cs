@@ -166,6 +166,8 @@ namespace MonoDevelop.SourceEditor
 		
 		void AddMarker (List<FoldSegment> foldSegments, string text, IRegion region)
 		{
+			if (region.BeginLine <= 0 || region.EndLine <= 0 || region.BeginLine >= this.TextEditor.Document.Splitter.LineCount || region.EndLine >= this.TextEditor.Document.Splitter.LineCount)
+				return;
 			int startOffset = this.TextEditor.Document.LocationToOffset (region.BeginLine - 1,  region.BeginColumn - 1);
 			int endOffset   = this.TextEditor.Document.LocationToOffset (region.EndLine - 1,  region.EndColumn - 1);
 			foldSegments.Add (new FoldSegment (text, startOffset, endOffset - startOffset));

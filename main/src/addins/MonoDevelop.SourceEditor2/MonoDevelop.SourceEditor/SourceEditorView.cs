@@ -68,11 +68,8 @@ namespace MonoDevelop.SourceEditor
 //			widget.TextEditor.Buffer.TextReplaced += delegate (object sender, ReplaceEventArgs args) {
 //				int startIndex = args.Offset;
 //				int endIndex   = startIndex + Math.Max (args.Count, args.Value != null ? args.Value.Length : 0);
-//				if (this.extension != null) {
-//					extension.TextChanged (startIndex, endIndex);
-//				} else {
-//					this.TextChanged (startIndex, endIndex);
-//				}
+//				if (TextChanged != null)
+//					TextChanged (this, new TextChangedEventArgs (startIndex, endIndex));
 //			};
 			
 			widget.TextEditor.Buffer.TextReplaced += delegate {
