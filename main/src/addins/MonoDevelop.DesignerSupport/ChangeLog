@@ -1,3 +1,10 @@
+2008-02-01  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.DesignerSupport/BindingService.cs: If no specific part is
+	  specified when adding a member to a class, add it to the first part.
+	  Fixes an error in the ASP.NET designer (and anything else using the
+	  binding service without explicitly specifying class parts).
+
 2008-01-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.DesignerSupport.addin.xml, MonoDevelop.DesignerSupport.mdp,
