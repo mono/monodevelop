@@ -335,6 +335,38 @@
     <File name="gtk-gui/MonoDevelop.Ide.StandardHeaders.NewHeaderTemplateDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Dialogs/GotoLineDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GotoLineDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/IAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/AttributeTarget.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/DomRegion.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/IReturnType.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/Modifiers.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/IDomItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/IType.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/IField.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/TypeParameter.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/IMethod.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/IProperty.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/IMember.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/IEvent.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/IParameter.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/ParameterModifiers.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/ICompilationUnit.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/Comment.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/CommentType.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/Error.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/IUsing.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/IDomVisitor.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/DomAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/AbstractDomItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/DomEvent.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/DomField.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/AbstractMember.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/DomMethod.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/DomParameter.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/DomProperty.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/DomReturnType.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/DomUsing.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Dom/DomType.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -355,6 +387,14 @@
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Documentation" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="glade-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins.Gui, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins.Setup, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <ProjectReference type="Gac" localcopy="True" refto="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </References>
   <GtkDesignInfo isWidgetLibrary="True" gtkVersion="2.8.3">
     <ExportedWidgets>

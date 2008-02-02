@@ -56,6 +56,38 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeaders.NewHeaderTemplateDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel.cs \
+	MonoDevelop.Dom/AbstractDomItem.cs \
+	MonoDevelop.Dom/AbstractMember.cs \
+	MonoDevelop.Dom/AttributeTarget.cs \
+	MonoDevelop.Dom/Comment.cs \
+	MonoDevelop.Dom/CommentType.cs \
+	MonoDevelop.Dom/DomAttribute.cs \
+	MonoDevelop.Dom/DomEvent.cs \
+	MonoDevelop.Dom/DomField.cs \
+	MonoDevelop.Dom/DomMethod.cs \
+	MonoDevelop.Dom/DomParameter.cs \
+	MonoDevelop.Dom/DomProperty.cs \
+	MonoDevelop.Dom/DomRegion.cs \
+	MonoDevelop.Dom/DomReturnType.cs \
+	MonoDevelop.Dom/DomType.cs \
+	MonoDevelop.Dom/DomUsing.cs \
+	MonoDevelop.Dom/Error.cs \
+	MonoDevelop.Dom/IAttribute.cs \
+	MonoDevelop.Dom/ICompilationUnit.cs \
+	MonoDevelop.Dom/IDomItem.cs \
+	MonoDevelop.Dom/IDomVisitor.cs \
+	MonoDevelop.Dom/IEvent.cs \
+	MonoDevelop.Dom/IField.cs \
+	MonoDevelop.Dom/IMember.cs \
+	MonoDevelop.Dom/IMethod.cs \
+	MonoDevelop.Dom/IParameter.cs \
+	MonoDevelop.Dom/IProperty.cs \
+	MonoDevelop.Dom/IReturnType.cs \
+	MonoDevelop.Dom/IType.cs \
+	MonoDevelop.Dom/IUsing.cs \
+	MonoDevelop.Dom/Modifiers.cs \
+	MonoDevelop.Dom/ParameterModifiers.cs \
+	MonoDevelop.Dom/TypeParameter.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateGroup.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs \
