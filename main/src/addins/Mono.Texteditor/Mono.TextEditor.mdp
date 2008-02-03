@@ -55,6 +55,7 @@
     <File name="JavaSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="CSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="CPPSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="bookmark.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Mono.TextEditor.Highlighting/ChunkStyle.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor.Highlighting/Match.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor.Highlighting/Span.cs" subtype="Code" buildaction="Compile" />
@@ -63,7 +64,6 @@
     <File name="Mono.TextEditor.Highlighting/SyntaxModeService.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor.Highlighting/XmlReadHelper.cs" subtype="Code" buildaction="Compile" />
     <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
-    <File name="bookmark.png" subtype="Code" buildaction="Nothing" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

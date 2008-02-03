@@ -56,6 +56,7 @@ FILES =  \
 	Mono.TextEditor.Tests/Mono.TextEditor.Tests.DefaultEditActions/CaretMoveTests.cs
 
 RES =  \
+	bookmark.png \
 	C64Style.xml \
 	CPPSyntaxMode.xml \
 	CSharpSyntaxMode.xml \
@@ -66,7 +67,6 @@ RES =  \
 	TangoStyle.xml \
 	VBNetSyntaxMode.xml \
 	XmlSyntaxMode.xml
-
 
 all: $(ASSEMBLY)
 
