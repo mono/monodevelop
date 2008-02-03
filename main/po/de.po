@@ -107,7 +107,7 @@ msgstr "<big><b>MonoDevelop Add-in Manager</b></big>"
 
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:659
 msgid "The following add-ins are currently installed:"
-msgstr "Folgende Add-ins sind zurzeit installiert "
+msgstr "Folgende Add-ins sind installiert: "
 
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:783
 msgid "_Install Add-ins..."
@@ -168,7 +168,7 @@ msgstr "label124"
 
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:1671
 msgid "Overall Progress:"
-msgstr "Kompletter Prozess"
+msgstr "Gesamtfortschritt:"
 
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:1736
 msgid "Downloading add-ins..."
@@ -188,7 +188,7 @@ msgstr "Wähle den Ort des Repository aus das du registrieren möchtest:"
 
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:2233
 msgid "Register an on-line repository"
-msgstr "Registriere eine Linien Quelle"
+msgstr "Registriere ein online Repository"
 
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:2284
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs:147
@@ -198,7 +198,7 @@ msgstr "Url:"
 
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:2337
 msgid "Register a local repository"
-msgstr "Registriere einen lokalen Ordner"
+msgstr "Registriere ein lokales Repository"
 
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:2389
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.cs:202
@@ -219,11 +219,11 @@ msgstr "Lade..."
 
 #: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:60
 msgid "Go up one level"
-msgstr "Eine Ebene hinauf"
+msgstr "Den Eltern-Ordner öffnen"
 
 #: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:65
 msgid "Home"
-msgstr "Persönlicher Ordner"
+msgstr "Den persönlichen Ordner öffnen"
 
 #: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:71
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:155
@@ -246,11 +246,11 @@ msgstr "Zugang zu folgendem Verzeichniss verweigert:"
 
 #: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:239
 msgid "Open with file browser"
-msgstr "Öffne mit Dateibrowser"
+msgstr "Im _Dateibrowser öffnen"
 
 #: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:242
 msgid "Open with terminal"
-msgstr "Öffnen mit Terminal"
+msgstr "Im _Terminal öffnen"
 
 #: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:245
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:305
@@ -575,24 +575,24 @@ msgstr "Fortsetzen"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:247
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:261
 msgid "Build {0}"
-msgstr "Build {0}"
+msgstr "E_rstelle {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:249
 msgid "Build Solution {0}"
-msgstr "Build Solution {0}"
+msgstr "_Erstelle Solution {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:251
 msgid "Build Project {0}"
-msgstr "Build Projekt {0}"
+msgstr "Erstelle _Projekt {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:290
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:298
 msgid "Rebuild {0}"
-msgstr "Rebuild {0}"
+msgstr "Erstelle {0} neu"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:358
 msgid "Clean {0}"
-msgstr "Sauber {0}"
+msgstr "_Säubere {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:209
 msgid "_Go to declaration"
@@ -650,7 +650,7 @@ msgstr "Feld <b>{0}</b>"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:291
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs:47
 msgid "Encapsulate Field"
-msgstr "ausgeschlossenes Feld"
+msgstr "_Eigenschaft für Feld generieren"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:294
 msgid "Property <b>{0}</b>"
@@ -662,7 +662,7 @@ msgstr "Ereignis <b>{0}</b>"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:302
 msgid "Constructor <b>{0}</b>"
-msgstr "Ersteller <b>{0}</b>"
+msgstr "Konstruktor <b>{0}</b>"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:304
 msgid "Method <b>{0}</b>"
@@ -670,7 +670,7 @@ msgstr "Methode <b>{0}</b>"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:309
 msgid "Indexer <b>{0}</b>"
-msgstr "Indexersteller <b>{0}</b>"
+msgstr "Indexer <b>{0}</b>"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:311
 msgid "Parameter <b>{0}</b>"
@@ -678,7 +678,7 @@ msgstr "Parameter <b>{0}</b>"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:316
 msgid "Variable <b>{0}</b>"
-msgstr "variable <b>{0}</b>"
+msgstr "Variable <b>{0}</b>"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ToolsCommands.cs:57
 msgid "Start tool"
@@ -2025,11 +2025,11 @@ msgstr "Erstellen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:382
 msgid "Rebuild Solution"
-msgstr "Rebuild Solution"
+msgstr "Solution neu erstellen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:386
 msgid "Rebuild"
-msgstr "Rebuild"
+msgstr "Neu erstellen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:388
 msgid "Set As Startup Project"
@@ -2143,11 +2143,11 @@ msgstr "N_eue Solution..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:487
 msgid "_Close File"
-msgstr "Datei schließen"
+msgstr "Datei _schließen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:493
 msgid "Close All"
-msgstr "Alle schließen"
+msgstr "Alle s_chließen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:499
 msgid "Close Sol_ution"
@@ -2195,7 +2195,7 @@ msgstr "Öffne beinhaltetes Verzeichnis"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:545
 msgid "Close all but this"
-msgstr "Schließe alles außer dieses"
+msgstr "_Andere Fenster schließen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:546
 msgid "Closes all opened files except for the active file"
@@ -2203,7 +2203,7 @@ msgstr "Schließt alle geöffneten Dateien außer der aktiven Datei"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:549
 msgid "Copy file path/name"
-msgstr "kopiere URL/Name"
+msgstr "Datei_pfad/-namen kopieren"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:552
 msgid "Switch maximize/normal view"
@@ -2314,7 +2314,7 @@ msgstr "Werkzeuge"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:641
 msgid "_Add-in Manager"
-msgstr "_Erweiterungs-Manager"
+msgstr "_Add-in Manager"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:645
 msgid "Tool List"
@@ -2332,7 +2332,7 @@ msgstr "_Nächstes Fenster"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:660
 msgid "_Previous Window"
-msgstr "Vorheriges Fenster"
+msgstr "_Vorheriges Fenster"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:667
 msgid "Window List"
@@ -2548,7 +2548,7 @@ msgstr "Kommentare"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:993
 msgid "User Tasks"
-msgstr "Benutzer-Prozesse"
+msgstr "Benutzerdefinierte Aufgaben"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:998
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:81
@@ -2562,7 +2562,7 @@ msgstr "Nachtichten Log"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1000
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1085
 msgid "Task List"
-msgstr "Prozessliste"
+msgstr "Aufgabenliste"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1003
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:11
@@ -2845,15 +2845,15 @@ msgstr[1] "{0} Nachrichten"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:231
 msgid "Copy comment task"
-msgstr "Kopiere die kommentierte Aufgabe"
+msgstr "Kopiere Aufgabe"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:236
 msgid "Go to comment task"
-msgstr "Gehe zur kommentierten Aufgabe"
+msgstr "Gehe zur Aufgabe"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:241
 msgid "Delete comment task"
-msgstr "Kommentar-Aufgabe löschen"
+msgstr "Aufgabe löschen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/UserTasksView.cs:67
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs:269
