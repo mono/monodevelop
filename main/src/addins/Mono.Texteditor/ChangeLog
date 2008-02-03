@@ -1,5 +1,10 @@
 2008-02-03  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/DefaultEditActions.cs: Insert/Remove Indent now works
+	  without selection.
+
+2008-02-03  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextEditorData.cs:
 	  Some changes to remove code duplication.
 

@@ -502,8 +502,8 @@ namespace Mono.TextEditor
 		
 		public static void RemoveIndentSelection (TextEditorData data)
 		{
-			int startLineNr = data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.Offset);
-			int endLineNr   = data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.EndOffset);
+			int startLineNr = data.IsSomethingSelected ? data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.Offset) : data.Caret.Line;
+			int endLineNr   = data.IsSomethingSelected ? data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.EndOffset) : data.Caret.Line;
 			data.Document.BeginAtomicUndo ();
 			int first = -1;
 			int last  = 0;
@@ -512,11 +512,13 @@ namespace Mono.TextEditor
 				if (first < 0)
 					first = last;
 			}
-			data.SelectionStart.Column -= first;
-			if (data.SelectionEnd.Column != 0) {
-				data.SelectionEnd.Column -= last;
+			if (data.IsSomethingSelected)
+				data.SelectionStart.Column = System.Math.Max (0, data.SelectionStart.Column - first);
+			if (!data.IsSomethingSelected || data.SelectionEnd.Column != 0) {
+				if (data.IsSomethingSelected)
+					data.SelectionEnd.Column = System.Math.Max (0, data.SelectionEnd.Column - last);
 				data.Caret.PreserveSelection = true;
-				data.Caret.Column -= last;
+				data.Caret.Column = System.Math.Max (0, data.Caret.Column - last);
 				data.Caret.PreserveSelection = false;
 			}
 			data.Document.EndAtomicUndo ();
@@ -553,15 +555,17 @@ namespace Mono.TextEditor
 	{
 		public static void IndentSelection (TextEditorData data)
 		{
-			int startLineNr = data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.Offset);
-			int endLineNr   = data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.EndOffset);
+			int startLineNr = data.IsSomethingSelected ? data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.Offset) : data.Caret.Line;
+			int endLineNr   = data.IsSomethingSelected ? data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.EndOffset) : data.Caret.Line;
 			data.Document.BeginAtomicUndo ();
 			foreach (LineSegment line in data.SelectedLines) {
 				data.Document.Buffer.Insert (line.Offset, new StringBuilder(TextEditorOptions.Options.IndentationString));
 			}
-			data.SelectionStart.Column++;
-			if (data.SelectionEnd.Column != 0) {
-				data.SelectionEnd.Column++;
+			if (data.IsSomethingSelected)
+				data.SelectionStart.Column++;
+			if (!data.IsSomethingSelected || data.SelectionEnd.Column != 0) {
+				if (data.IsSomethingSelected)
+					data.SelectionEnd.Column++;
 				data.Caret.PreserveSelection = true;
 				data.Caret.Column++;
 				data.Caret.PreserveSelection = false;
