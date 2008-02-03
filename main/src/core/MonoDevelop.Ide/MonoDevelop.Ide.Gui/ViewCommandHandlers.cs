@@ -583,7 +583,7 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (SearchCommands.PrevBookmark)]
 		[CommandUpdateHandler (SearchCommands.NextBookmark)]
 		[CommandUpdateHandler (SearchCommands.ClearBookmarks)]
-		protected void OnUpdateBookmarkCommands (CommandInfo info)
+		protected void UpdateBookmarkCommands (CommandInfo info)
 		{
 			info.Enabled = GetContent <IBookmarkBuffer> () != null;
 		}
@@ -619,6 +619,50 @@ namespace MonoDevelop.Ide.Gui
 			IBookmarkBuffer markBuffer = GetContent <IBookmarkBuffer> ();
 			Debug.Assert (markBuffer != null);
 			markBuffer.ClearBookmarks ();
+		}
+#endregion
+		
+#region Splitting
+		[CommandUpdateHandler (WindowCommands.SplitWindowHorizontally)]
+		protected void UpdateSplitWindowHorizontally (CommandInfo info)
+		{
+			ISplittable split = GetContent <ISplittable> ();
+			info.Enabled = split != null && split.EnableSplitHorizontally;
+		}
+		[CommandHandler (WindowCommands.SplitWindowHorizontally)]
+		public void SplitWindowHorizontally ()
+		{
+			ISplittable split = GetContent <ISplittable> ();
+			Debug.Assert (split != null);
+			split.SplitHorizontally ();
+		}
+
+		[CommandUpdateHandler (WindowCommands.SplitWindowVertically)]
+		protected void UpdateSplitWindowVertically (CommandInfo info)
+		{
+			ISplittable split = GetContent <ISplittable> ();
+			info.Enabled = split != null && split.EnableSplitVertically;
+		}
+		[CommandHandler (WindowCommands.SplitWindowVertically)]
+		public void SplitWindowVertically ()
+		{
+			ISplittable split = GetContent <ISplittable> ();
+			Debug.Assert (split != null);
+			split.SplitVertically ();
+		}
+
+		[CommandUpdateHandler (WindowCommands.UnsplitWindow)]
+		protected void UpdateUnsplitWindow (CommandInfo info)
+		{
+			ISplittable split = GetContent <ISplittable> ();
+			info.Enabled = split != null && split.EnableUnsplit;
+		}
+		[CommandHandler (WindowCommands.UnsplitWindow)]
+		public void UnsplitWindow ()
+		{
+			ISplittable split = GetContent <ISplittable> ();
+			Debug.Assert (split != null);
+			split.Unsplit ();
 		}
 #endregion
 		

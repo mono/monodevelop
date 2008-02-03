@@ -32,7 +32,10 @@ namespace MonoDevelop.Ide.Commands
 	{
 		NextWindow,
 		PrevWindow,
-		OpenWindowList
+		OpenWindowList,
+		SplitWindowVertically,
+		SplitWindowHorizontally,
+		UnsplitWindow,
 	}
 	
 	internal class NextWindowHandler: CommandHandler

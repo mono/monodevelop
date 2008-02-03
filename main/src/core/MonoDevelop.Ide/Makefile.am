@@ -151,6 +151,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Content/IParsableContent.cs \
 	MonoDevelop.Ide.Gui.Content/IPositionable.cs \
 	MonoDevelop.Ide.Gui.Content/IPrintable.cs \
+	MonoDevelop.Ide.Gui.Content/ISplittable.cs \
 	MonoDevelop.Ide.Gui.Content/ITextBuffer.cs \
 	MonoDevelop.Ide.Gui.Content/IViewHistory.cs \
 	MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs \

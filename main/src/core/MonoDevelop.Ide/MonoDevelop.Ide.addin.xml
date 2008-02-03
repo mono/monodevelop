@@ -666,6 +666,13 @@
 				defaultHandler = "MonoDevelop.Ide.Commands.OpenWindowListHandler"
 				type="radio|array"
 				_label = "Window List" />
+
+		<Command id = "MonoDevelop.Ide.Commands.WindowCommands.SplitWindowVertically"
+				_label = "Split _vertically" />
+		<Command id = "MonoDevelop.Ide.Commands.WindowCommands.SplitWindowHorizontally"
+				_label = "Split _horizontally" />
+		<Command id = "MonoDevelop.Ide.Commands.WindowCommands.UnsplitWindow"
+				_label = "_Unsplit" />
 		</Category>
 				
 		<!-- HelpCommands -->
@@ -1350,6 +1357,10 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.PrevWindow" />
 			<SeparatorItem id ="NxtPrvSeparator" /> 
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseAllFiles" />
+			<SeparatorItem id ="SplitSeparator" /> 
+			<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.SplitWindowVertically" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.SplitWindowHorizontally" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.UnsplitWindow" />
 			<SeparatorItem id = "contentSep" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.OpenWindowList" />
 		</ItemSet> 
