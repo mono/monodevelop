@@ -208,7 +208,6 @@ namespace MonoDevelop.SourceEditor.Gui
 			}
 		}
 		
-		[CommandHandler (EditorCommands.PrintDocument)]
 		public void PrintDocument ()
 		{
 			if (printDialog == null)
@@ -253,7 +252,6 @@ namespace MonoDevelop.SourceEditor.Gui
 			}
 		}
 		
-		[CommandHandler (EditorCommands.PrintPreviewDocument)]
 		public void PrintPreviewDocument ()
 		{
 			CreatePrintJob ();

@@ -90,7 +90,7 @@ namespace MonoDevelop.SourceEditor.Gui
 	
 	public class SourceEditorDisplayBindingWrapper : AbstractViewContent,
 		IExtensibleTextEditor, IPositionable, IBookmarkBuffer, IDebuggableEditor, ICodeStyleOperations,
-		IDocumentInformation, IEncodedTextContent, IViewHistory
+		IDocumentInformation, IEncodedTextContent, IViewHistory, IPrintable
 	{
 		VBox mainBox;
 		VBox editorBar;
@@ -878,6 +878,18 @@ namespace MonoDevelop.SourceEditor.Gui
 		}
 #endregion
 
+#region IPrintable
+		void IPrintable.PrintDocument ()
+		{
+			se.PrintDocument ();
+		}
+
+		void IPrintable.PrintPreviewDocument ()
+		{
+			se.PrintPreviewDocument ();
+		}
+#endregion
+		
 #region IEditableTextBuffer
 		public IClipboardHandler ClipboardHandler {
 			get { return se.Buffer; }
