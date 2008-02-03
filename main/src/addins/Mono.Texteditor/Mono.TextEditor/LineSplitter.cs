@@ -84,8 +84,10 @@ namespace Mono.TextEditor
 		
 		void TextReplaced (object sender, ReplaceEventArgs args)
 		{
-			TextRemove (args.Offset, args.Count);
-			TextInsert (args.Offset, args.Value);
+			if (args.Count > 0)
+				TextRemove (args.Offset, args.Count);
+			if (args.Value != null && args.Count > 0)
+				TextInsert (args.Offset, args.Value);
 		}
 
 		void TextRemove (int offset, int length)
