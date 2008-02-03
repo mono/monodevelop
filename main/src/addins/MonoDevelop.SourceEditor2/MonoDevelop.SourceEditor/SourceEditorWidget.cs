@@ -176,14 +176,15 @@ namespace MonoDevelop.SourceEditor
 		
 		void AddClass (List<FoldSegment> foldSegments, IClass cl)
 		{
-			if (cl.BodyRegion != null)
+			if (cl.Region != null)
 				AddMarker (foldSegments, "...", cl.BodyRegion);
 			foreach (IClass inner in cl.InnerClasses) {
 				AddClass (foldSegments, inner);
 			}
-			
+			if (cl.ClassType == ClassType.Interface)
+				return;
 			foreach (IMethod method in cl.Methods) {
-				if (method.Region == null || method.BodyRegion == null)
+				if (method.Region == null || method.BodyRegion == null || method.BodyRegion.EndLine <= 0)
 					continue;
 				int startOffset = this.TextEditor.Document.LocationToOffset (method.Region.EndLine - 1,  method.Region.EndColumn - 1);
 				int endOffset   = this.TextEditor.Document.LocationToOffset (method.BodyRegion.EndLine - 1,  method.BodyRegion.EndColumn - 1);
@@ -191,7 +192,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			foreach (IProperty property in cl.Properties) {
-				if (property.Region == null || property.BodyRegion == null)
+				if (property.Region == null || property.BodyRegion == null || property.BodyRegion.EndLine <= 0)
 					continue;
 				int startOffset = this.TextEditor.Document.LocationToOffset (property.Region.EndLine - 1,  property.Region.EndColumn - 1);
 				int endOffset   = this.TextEditor.Document.LocationToOffset (property.BodyRegion.EndLine - 1,  property.BodyRegion.EndColumn - 1);
