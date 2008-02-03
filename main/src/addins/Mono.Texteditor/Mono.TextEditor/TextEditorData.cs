@@ -126,16 +126,20 @@ namespace Mono.TextEditor
 		
 		public IEnumerable<LineSegment> SelectedLines {
 			get {
-				int startLineNr = Document.Splitter.GetLineNumberForOffset (SelectionRange.Offset);
-				RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = this.document.Splitter.Get (startLineNr).Iter;
-				do {
-					if (iter.Current == Document.Splitter.GetByOffset (SelectionRange.EndOffset) && (iter.Current.Offset == Caret.Offset ||
-					                                iter.Current.Offset == SelectionRange.EndOffset))
-						break;
-					yield return iter.Current;
-					if (iter.Current == Document.Splitter.GetByOffset (SelectionRange.EndOffset))
-						break;
-				} while (iter.MoveNext ());
+				if (!this.IsSomethingSelected) {
+					yield return this.document.GetLine (this.caret.Line);
+				} else {
+					int startLineNr = Document.Splitter.GetLineNumberForOffset (SelectionRange.Offset);
+					RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = this.document.Splitter.Get (startLineNr).Iter;
+					do {
+						if (iter.Current == Document.Splitter.GetByOffset (SelectionRange.EndOffset) && (iter.Current.Offset == Caret.Offset ||
+						                                                                                 iter.Current.Offset == SelectionRange.EndOffset))
+							break;
+						yield return iter.Current;
+						if (iter.Current == Document.Splitter.GetByOffset (SelectionRange.EndOffset))
+							break;
+					} while (iter.MoveNext ());
+				}
 			}
 		}
 		

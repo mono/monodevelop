@@ -1,6 +1,11 @@
 2008-02-03  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextEditorData.cs:
+	  Some changes to remove code duplication.
+
+2008-02-03  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextEditorData.cs:
 	  Fixed Insert/Remove tab selection range bug.
 
 2008-02-03  Mike Krüger <mkrueger@novell.com> 

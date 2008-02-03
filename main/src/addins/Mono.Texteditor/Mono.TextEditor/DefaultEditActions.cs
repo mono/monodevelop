@@ -500,29 +500,34 @@ namespace Mono.TextEditor
 			return 0;
 		}
 		
+		public static void RemoveIndentSelection (TextEditorData data)
+		{
+			int startLineNr = data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.Offset);
+			int endLineNr   = data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.EndOffset);
+			data.Document.BeginAtomicUndo ();
+			int first = -1;
+			int last  = 0;
+			foreach (LineSegment line in data.SelectedLines) {
+				last = RemoveTabInLine (data.Document, line);
+				if (first < 0)
+					first = last;
+			}
+			data.SelectionStart.Column -= first;
+			if (data.SelectionEnd.Column != 0) {
+				data.SelectionEnd.Column -= last;
+				data.Caret.PreserveSelection = true;
+				data.Caret.Column -= last;
+				data.Caret.PreserveSelection = false;
+			}
+			data.Document.EndAtomicUndo ();
+			data.Document.RequestUpdate (new MultipleLineUpdate (startLineNr, endLineNr));
+			data.Document.CommitDocumentUpdate ();
+		}
+		
 		public override void Run (TextEditorData data)
 		{
 			if (data.IsSomethingSelected && data.SelectionStart.Segment != data.SelectionEnd.Segment) {
-				int startLineNr = data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.Offset);
-				int endLineNr   = data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.EndOffset);
-				data.Document.BeginAtomicUndo ();
-				int first = -1;
-				int last  = 0;
-				foreach (LineSegment line in data.SelectedLines) {
-					last = RemoveTabInLine (data.Document, line);
-					if (first < 0)
-						first = last;
-				}
-				data.SelectionStart.Column -= first;
-				if (data.SelectionEnd.Column != 0) {
-					data.SelectionEnd.Column -= last;
-					data.Caret.PreserveSelection = true;
-					data.Caret.Column -= last;
-					data.Caret.PreserveSelection = false;
-				}
-				data.Document.EndAtomicUndo ();
-				data.Document.RequestUpdate (new MultipleLineUpdate (startLineNr, endLineNr));
-				data.Document.CommitDocumentUpdate ();
+				RemoveIndentSelection (data);
 				return;
 			} else {
 				LineSegment line = data.Document.Splitter.Get (data.Caret.Line);
@@ -546,25 +551,30 @@ namespace Mono.TextEditor
 		
 	public class InsertTab : EditAction
 	{
+		public static void IndentSelection (TextEditorData data)
+		{
+			int startLineNr = data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.Offset);
+			int endLineNr   = data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.EndOffset);
+			data.Document.BeginAtomicUndo ();
+			foreach (LineSegment line in data.SelectedLines) {
+				data.Document.Buffer.Insert (line.Offset, new StringBuilder(TextEditorOptions.Options.IndentationString));
+			}
+			data.SelectionStart.Column++;
+			if (data.SelectionEnd.Column != 0) {
+				data.SelectionEnd.Column++;
+				data.Caret.PreserveSelection = true;
+				data.Caret.Column++;
+				data.Caret.PreserveSelection = false;
+			}
+			data.Document.EndAtomicUndo ();
+			data.Document.RequestUpdate (new MultipleLineUpdate (startLineNr, endLineNr));
+			data.Document.CommitDocumentUpdate ();
+		}
+		
 		public override void Run (TextEditorData data)
 		{
 			if (data.IsSomethingSelected && data.SelectionStart.Segment != data.SelectionEnd.Segment) {
-				int startLineNr = data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.Offset);
-				int endLineNr   = data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.EndOffset);
-				data.Document.BeginAtomicUndo ();
-				foreach (LineSegment line in data.SelectedLines) {
-					data.Document.Buffer.Insert (line.Offset, new StringBuilder(TextEditorOptions.Options.IndentationString));
-				}
-				data.SelectionStart.Column++;
-				if (data.SelectionEnd.Column != 0) {
-					data.SelectionEnd.Column++;
-					data.Caret.PreserveSelection = true;
-					data.Caret.Column++;
-					data.Caret.PreserveSelection = false;
-				}
-				data.Document.EndAtomicUndo ();
-				data.Document.RequestUpdate (new MultipleLineUpdate (startLineNr, endLineNr));
-				data.Document.CommitDocumentUpdate ();
+				IndentSelection (data);
 				return;
 			}
 			
