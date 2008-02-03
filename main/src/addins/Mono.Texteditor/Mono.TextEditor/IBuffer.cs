@@ -40,6 +40,7 @@ namespace Mono.TextEditor
 			get;
 			set;
 		}
+		
 		void Insert (int offset, StringBuilder value);
 		void Remove (int offset, int count);
 		void Replace (int offset, int count, StringBuilder value);

@@ -52,6 +52,10 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public void Clear ()
+		{
+			lines.Clear ();
+		}
 		public LineSplitter (IBuffer buffer)
 		{
 			lines.Clear ();
@@ -92,7 +96,7 @@ namespace Mono.TextEditor
 
 		void TextRemove (int offset, int length)
 		{
-			if (length == 0)
+			if (length == 0 || (lines.Count == 1 && lines.Length == 0))
 				return;
 			LineSegmentTree.TreeNode startNode = lines.GetNodeAtOffset (offset);
 			int charsRemoved = startNode.EndOffset - offset;

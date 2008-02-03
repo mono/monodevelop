@@ -57,6 +57,12 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public int Length {
+			get {
+				return tree.Root.value.totalLength;
+			}
+		}
+		
 		public LineSegmentTree()
 		{
 			tree.ChildrenChanged += delegate (object sender, RedBlackTree<TreeNode>.RedBlackTreeNodeEventArgs args) {

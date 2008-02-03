@@ -46,6 +46,16 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public string Text {
+			get {
+				return buffer.Text;
+			} 
+			set {
+				splitter.Clear ();
+				buffer.Text = value;
+			}
+		}
+		
 		string mimeType;
 		public string MimeType {
 			get {

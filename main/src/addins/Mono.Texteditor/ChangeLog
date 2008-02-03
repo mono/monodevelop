@@ -1,5 +1,11 @@
 2008-02-03  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/Document.cs, Mono.TextEditor/LineSplitter.cs,
+	  Mono.TextEditor/IBuffer.cs, Mono.TextEditor/LineSegmentTree.cs: Fixed
+	  reload bug.
+
+2008-02-03  Mike Krüger <mkrueger@novell.com> 
+
 	* TangoStyle.xml: Changed literal color in tango style.
 
 2008-02-03  Mike Krüger <mkrueger@novell.com> 
