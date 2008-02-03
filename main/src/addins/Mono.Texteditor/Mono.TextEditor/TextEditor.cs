@@ -330,26 +330,27 @@ namespace Mono.TextEditor
 		}
 		
 		
-		public void RedrawLine (int logicalLine)
+		internal void RedrawLine (int logicalLine)
 		{
 //			Console.WriteLine ("redraw:" + logicalLine);
 			this.QueueDrawArea (0, (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (logicalLine) * LineHeight, this.Allocation.Width, LineHeight);
 		}
 		
-		public void RedrawPosition (int logicalLine, int logicalColumn)
+		internal void RedrawPosition (int logicalLine, int logicalColumn)
 		{
 //			Console.WriteLine ("redraw:" + logicalLine);
 			RedrawLine (logicalLine);
 //			this.QueueDrawArea (0, (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (logicalLine) * LineHeight, this.Allocation.Width, LineHeight);
 		}
 		
-		public void RedrawLines (int start, int end)
+		internal void RedrawLines (int start, int end)
 		{
 			int visualStart = (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (start) * LineHeight;
 			int visualEnd   = (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (end) * LineHeight + LineHeight;
 			this.QueueDrawArea (0, visualStart, this.Allocation.Width, visualEnd - visualStart );
 		}
-		public void RedrawFromLine (int logicalLine)
+		
+		internal void RedrawFromLine (int logicalLine)
 		{
 			this.QueueDrawArea (0, (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (logicalLine) * LineHeight, this.Allocation.Width, this.Allocation.Height);
 		}
@@ -389,7 +390,13 @@ namespace Mono.TextEditor
 				char ch = (char)key;
 				if (!char.IsControl (ch)) {
 					Buffer.Insert (Caret.Offset, new StringBuilder (ch.ToString()));
+					bool autoScroll = Caret.AutoScrollToCaret;
 					Caret.Column++;
+					Caret.AutoScrollToCaret = autoScroll;
+					if (autoScroll)
+						ScrollToCaret ();
+					Document.RequestUpdate (new LineUpdate (Caret.Line));
+					Document.CommitDocumentUpdate ();
 				}
 			}
 			ResetCaretBlink ();

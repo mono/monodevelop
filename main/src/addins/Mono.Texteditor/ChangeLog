@@ -1,5 +1,10 @@
 2008-02-03  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextEditor.cs, Mono.TextEditor/BookmarkMargin.cs: Some
+	  changes for the splitting feature.
+
+2008-02-03  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/LineSplitter.cs, Mono.TextEditor/TextEditor.cs,
 	  Mono.TextEditor/GutterMargin.cs: Gutter redraws on width changes.
 
