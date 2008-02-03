@@ -24,6 +24,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Mono.TextEditor;
@@ -661,53 +662,69 @@ namespace MonoDevelop.SourceEditor
 		
 		public void CommentCode ()
 		{
-			if (!this.TextEditorData.IsSomethingSelected)
-				return;
+			int startLineNr = this.TextEditorData.IsSomethingSelected ? this.TextEditorData.Document.Splitter.GetLineNumberForOffset (this.TextEditorData.SelectionRange.Offset) : this.TextEditorData.Caret.Line;
+			int endLineNr   = this.TextEditorData.IsSomethingSelected ? this.TextEditorData.Document.Splitter.GetLineNumberForOffset (this.TextEditorData.SelectionRange.EndOffset) : this.TextEditorData.Caret.Line;
 			StringBuilder commentTag = new StringBuilder(Services.Languages.GetBindingPerFileName (this.ContentName).CommentTag ?? "//");
 			Document.BeginAtomicUndo ();
 			foreach (LineSegment line in this.TextEditorData.SelectedLines) {
 				this.Document.Buffer.Insert (line.Offset, commentTag);
 			}
+			if (this.TextEditorData.IsSomethingSelected)
+				this.TextEditorData.SelectionStart.Column += commentTag.Length;
+			if (!this.TextEditorData.IsSomethingSelected || this.TextEditorData.SelectionEnd.Column != 0) {
+				if (this.TextEditorData.IsSomethingSelected)
+					this.TextEditorData.SelectionEnd.Column += commentTag.Length;
+				this.TextEditorData.Caret.PreserveSelection = true;
+				this.TextEditorData.Caret.Column += commentTag.Length;
+				this.TextEditorData.Caret.PreserveSelection = false;
+			}
 			Document.EndAtomicUndo ();
+			this.TextEditorData.Document.RequestUpdate (new MultipleLineUpdate (startLineNr, endLineNr));
+			this.TextEditorData.Document.CommitDocumentUpdate ();
 		}
 		
 		public void UncommentCode ()
 		{
-			if (!this.TextEditorData.IsSomethingSelected)
-				return;
+			int startLineNr = this.TextEditorData.IsSomethingSelected ? this.TextEditorData.Document.Splitter.GetLineNumberForOffset (this.TextEditorData.SelectionRange.Offset) : this.TextEditorData.Caret.Line;
+			int endLineNr   = this.TextEditorData.IsSomethingSelected ? this.TextEditorData.Document.Splitter.GetLineNumberForOffset (this.TextEditorData.SelectionRange.EndOffset) : this.TextEditorData.Caret.Line;
 			string commentTag = Services.Languages.GetBindingPerFileName (this.ContentName).CommentTag ?? "//";
 			Document.BeginAtomicUndo ();
+			int first = -1;
+			int last  = 0;
 			foreach (LineSegment line in this.TextEditorData.SelectedLines) {
 				string text = Document.Buffer.GetTextAt (line);
 				string trimmedText = text.TrimStart ();
+				int length = 0;
 				if (trimmedText.StartsWith (commentTag)) {
-					text = text.Substring (0, text.Length - trimmedText.Length) + trimmedText.Substring (commentTag.Length);
-					this.Document.Buffer.Replace (line.Offset, line.Length, new StringBuilder (text));
+					this.Document.Buffer.Remove (line.Offset + (text.Length - trimmedText.Length), commentTag.Length);
+					length = commentTag.Length;
 				}
+				last = length;
+				if (first < 0)
+					first = last;
+			}
+			if (this.TextEditorData.IsSomethingSelected)
+				this.TextEditorData.SelectionStart.Column = System.Math.Max (0, this.TextEditorData.SelectionStart.Column - first);
+			if (!this.TextEditorData.IsSomethingSelected || this.TextEditorData.SelectionEnd.Column != 0) {
+				if (this.TextEditorData.IsSomethingSelected)
+					this.TextEditorData.SelectionEnd.Column = System.Math.Max (0, this.TextEditorData.SelectionEnd.Column - last);
+				this.TextEditorData.Caret.PreserveSelection = true;
+				this.TextEditorData.Caret.Column = System.Math.Max (0, this.TextEditorData.Caret.Column - last);
+				this.TextEditorData.Caret.PreserveSelection = false;
 			}
 			Document.EndAtomicUndo ();
+			this.TextEditorData.Document.RequestUpdate (new MultipleLineUpdate (startLineNr, endLineNr));
+			this.TextEditorData.Document.CommitDocumentUpdate ();
 		}
 		
 		public void IndentSelection ()
 		{
-			if (!this.TextEditorData.IsSomethingSelected)
-				return;
-			Document.BeginAtomicUndo ();
-			foreach (LineSegment line in this.TextEditorData.SelectedLines) {
-				this.Document.Buffer.Insert (line.Offset, new StringBuilder (TextEditorOptions.Options.IndentationString));
-			}
-			Document.EndAtomicUndo ();
+			InsertTab.IndentSelection (this.TextEditorData);
 		}
 		
 		public void UnIndentSelection ()
 		{
-			if (!this.TextEditorData.IsSomethingSelected)
-				return;
-			Document.BeginAtomicUndo ();
-			foreach (LineSegment line in this.TextEditorData.SelectedLines) {
-				Mono.TextEditor.RemoveTab.RemoveTabInLine (Document, line);
-			}
-			Document.EndAtomicUndo ();
+			RemoveTab.RemoveIndentSelection (this.TextEditorData);
 		}
 #endregion
 #region ISplittable
