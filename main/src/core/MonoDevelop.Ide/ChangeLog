@@ -1,3 +1,15 @@
+2008-02-03  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Dom.Parser, MonoDevelop.Dom.Parser/AbstractParser.cs,
+	  MonoDevelop.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Dom.Parser/IParser.cs, MonoDevelop.Dom.Parser/ProjectDom.cs,
+	  MonoDevelop.Dom.Output, MonoDevelop.Dom.Output/Ambience.cs,
+	  MonoDevelop.Dom.Output/NetAmbience.cs, MonoDevelop.Dom/DomType.cs,
+	  MonoDevelop.Dom/ClassType.cs, MonoDevelop.Dom/ICompilationUnit.cs,
+	  MonoDevelop.Dom/IType.cs: Added simple dom parser infrastructure.
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Parser database is now loaded on
+	  demand (slightly improving startup speed).
+
 2008-02-02  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Dom: Added a new dom layer (currently unused - will be for a

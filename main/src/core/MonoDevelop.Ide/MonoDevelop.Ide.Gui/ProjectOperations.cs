@@ -102,21 +102,24 @@ namespace MonoDevelop.Ide.Gui
 			FileService.FileRemoved += (EventHandler<FileEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileEventArgs> (CheckFileRemove));
 			FileService.FileRenamed += (EventHandler<FileCopyEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileCopyEventArgs> (CheckFileRename));
 			
-			parserDatabase = Services.ParserService.CreateParserDatabase ();
-			parserDatabase.TrackFileChanges = true;
-			parserDatabase.ParseProgressMonitorFactory = new ParseProgressMonitorFactory (); 
-			
 			GLib.Timeout.Add (2000, OnRunProjectChecks);
 		}
 		
 		public IParserDatabase ParserDatabase {
-			get { return parserDatabase; }
+			get { 
+				if (parserDatabase == null) {
+					parserDatabase = Services.ParserService.CreateParserDatabase ();
+					parserDatabase.TrackFileChanges = true;
+					parserDatabase.ParseProgressMonitorFactory = new ParseProgressMonitorFactory (); 
+				}
+				return parserDatabase; 
+			}
 		}
 		
 		public CodeRefactorer CodeRefactorer {
 			get {
 				if (refactorer == null) {
-					refactorer = new CodeRefactorer (openCombine, parserDatabase);
+					refactorer = new CodeRefactorer (openCombine, ParserDatabase);
 					refactorer.TextFileProvider = new OpenDocumentFileProvider ();
 				}
 				
@@ -326,7 +329,7 @@ namespace MonoDevelop.Ide.Gui
 						doc.Close ();
 				}
 				
-				parserDatabase.Unload (closedCombine);
+				ParserDatabase.Unload (closedCombine);
 
 				OnCombineClosed(new CombineEventArgs(closedCombine));
 				OnEntryUnloaded (closedCombine);
@@ -398,7 +401,7 @@ namespace MonoDevelop.Ide.Gui
 				
 				SearchForNewFiles ();
 
-				parserDatabase.Load (openCombine);
+				ParserDatabase.Load (openCombine);
 				
 			} catch (Exception ex) {
 				monitor.ReportError ("Load operation failed.", ex);

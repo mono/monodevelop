@@ -38,6 +38,7 @@ namespace MonoDevelop.Dom
 		protected IType baseType;
 		protected List<TypeParameter> typeParameters = new List<TypeParameter> ();
 		protected List<IDomItem> members = new List<IDomItem> ();
+		protected ClassType classType = ClassType.Unknown;
 		
 		public object SourceProject {
 			get {
@@ -48,6 +49,12 @@ namespace MonoDevelop.Dom
 		public IEnumerable<ICompilationUnit> CompilationUnits {
 			get {
 				return compilationUnits;
+			}
+		}
+		
+		public ClassType ClassType {
+			get {
+				return classType;
 			}
 		}
 		

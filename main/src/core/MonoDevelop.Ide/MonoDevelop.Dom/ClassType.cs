@@ -1,5 +1,5 @@
 //
-// ICompilationUnit.cs
+// ClassType.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -27,40 +27,15 @@
 //
 
 using System;
-using System.Collections.Generic;
 
 namespace MonoDevelop.Dom
 {
-	public interface ICompilationUnit : IDisposable
-	{
-		string FileName {
-			get;
-		}
-		
-		IEnumerable<IUsing> Usings {
-			get;
-		}
-		
-		IEnumerable<IAttribute> Attributes {
-			get;
-		}
-		
-		IEnumerable<IType> Types {
-			get;
-		}
-		
-		IEnumerable<Comment> Comments {
-			get;
-		}
-		
-		IEnumerable<DomRegion> FoldingRegions {
-			get;
-		}
-		
-		IEnumerable<Error> Errors {
-			get;
-		}
-		
-		object AcceptVisitior (IDomVisitor visitor, object data);
+	public enum ClassType {
+		Unknown,
+		Class,
+		Enum,
+		Interface,
+		Struct,
+		Delegate
 	}
 }

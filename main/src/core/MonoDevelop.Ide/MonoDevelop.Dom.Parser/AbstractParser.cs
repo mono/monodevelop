@@ -1,5 +1,5 @@
 //
-// ICompilationUnit.cs
+// AbstractParser.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -27,40 +27,47 @@
 //
 
 using System;
-using System.Collections.Generic;
+using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.Dom
+namespace MonoDevelop.Dom.Parser
 {
-	public interface ICompilationUnit : IDisposable
+	public abstract class AbstractParser : IParser
 	{
-		string FileName {
-			get;
+		string projectType;
+		string[] mimeTypes;
+		
+		protected AbstractParser (string projectType, params string[] mimeTypes)
+		{
+			this.projectType = projectType;
+			this.mimeTypes   = mimeTypes;
 		}
 		
-		IEnumerable<IUsing> Usings {
-			get;
+		public ICompilationUnit Parse (string fileName)
+		{
+			return Parse (fileName, System.IO.File.ReadAllText (fileName));
 		}
 		
-		IEnumerable<IAttribute> Attributes {
-			get;
+		public abstract ICompilationUnit Parse (string fileName, string content);
+		
+		public virtual bool CanParseMimeType (string mimeType)
+		{
+			if (mimeTypes == null)
+				return false;
+			foreach (string canParseType in mimeTypes) {
+				if (canParseType == mimeType)
+					return true;
+			}
+			return false;
 		}
 		
-		IEnumerable<IType> Types {
-			get;
+		public virtual bool CanParseProjectType (string projectType)
+		{
+			return this.projectType == projectType;
 		}
 		
-		IEnumerable<Comment> Comments {
-			get;
+		public virtual bool CanParse (string fileName)
+		{
+			return CanParseMimeType (IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName));
 		}
-		
-		IEnumerable<DomRegion> FoldingRegions {
-			get;
-		}
-		
-		IEnumerable<Error> Errors {
-			get;
-		}
-		
-		object AcceptVisitior (IDomVisitor visitor, object data);
 	}
 }

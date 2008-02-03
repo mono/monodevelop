@@ -41,6 +41,10 @@ namespace MonoDevelop.Dom
 			get;
 		}
 		
+		ClassType ClassType {
+			get;
+		}
+		
 		IType BaseType {
 			get;
 		}

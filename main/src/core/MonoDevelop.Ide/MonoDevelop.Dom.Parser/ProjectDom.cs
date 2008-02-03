@@ -1,5 +1,5 @@
 //
-// ICompilationUnit.cs
+// ProjectDom.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -29,38 +29,32 @@
 using System;
 using System.Collections.Generic;
 
-namespace MonoDevelop.Dom
+namespace MonoDevelop.Dom.Parser
 {
-	public interface ICompilationUnit : IDisposable
+	public class ProjectDom
 	{
-		string FileName {
-			get;
+		Dictionary<string, ICompilationUnit> compilationUnits = new Dictionary<string, ICompilationUnit> ();
+			
+		public IEnumerable<ICompilationUnit> CompilationUnits {
+			get {
+				return compilationUnits.Values;
+			}
 		}
 		
-		IEnumerable<IUsing> Usings {
-			get;
+		public void RemoveCompilationUnit (string fileName)
+		{
+			if (compilationUnits.ContainsKey (fileName)) {
+				compilationUnits[fileName].Dispose ();
+				compilationUnits.Remove (fileName);
+			}
 		}
 		
-		IEnumerable<IAttribute> Attributes {
-			get;
+		public void UpdateCompilationUnit (ICompilationUnit compilationUnit)
+		{
+			if (compilationUnits.ContainsKey (compilationUnit.FileName)) {
+				compilationUnits[compilationUnit.FileName].Dispose ();
+			}
+			compilationUnits[compilationUnit.FileName] = compilationUnit;
 		}
-		
-		IEnumerable<IType> Types {
-			get;
-		}
-		
-		IEnumerable<Comment> Comments {
-			get;
-		}
-		
-		IEnumerable<DomRegion> FoldingRegions {
-			get;
-		}
-		
-		IEnumerable<Error> Errors {
-			get;
-		}
-		
-		object AcceptVisitior (IDomVisitor visitor, object data);
 	}
 }

@@ -56,9 +56,16 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeaders.NewHeaderTemplateDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel.cs \
+	MonoDevelop.Dom.Output/Ambience.cs \
+	MonoDevelop.Dom.Output/NetAmbience.cs \
+	MonoDevelop.Dom.Parser/AbstractParser.cs \
+	MonoDevelop.Dom.Parser/IParser.cs \
+	MonoDevelop.Dom.Parser/ProjectDom.cs \
+	MonoDevelop.Dom.Parser/ProjectParserService.cs \
 	MonoDevelop.Dom/AbstractDomItem.cs \
 	MonoDevelop.Dom/AbstractMember.cs \
 	MonoDevelop.Dom/AttributeTarget.cs \
+	MonoDevelop.Dom/ClassType.cs \
 	MonoDevelop.Dom/Comment.cs \
 	MonoDevelop.Dom/CommentType.cs \
 	MonoDevelop.Dom/DomAttribute.cs \

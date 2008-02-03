@@ -1,5 +1,5 @@
 //
-// ICompilationUnit.cs
+// IParser.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -27,40 +27,16 @@
 //
 
 using System;
-using System.Collections.Generic;
 
-namespace MonoDevelop.Dom
+namespace MonoDevelop.Dom.Parser
 {
-	public interface ICompilationUnit : IDisposable
+	public interface IParser
 	{
-		string FileName {
-			get;
-		}
+		ICompilationUnit Parse (string fileName, string content);
+		ICompilationUnit Parse (string fileName);
 		
-		IEnumerable<IUsing> Usings {
-			get;
-		}
-		
-		IEnumerable<IAttribute> Attributes {
-			get;
-		}
-		
-		IEnumerable<IType> Types {
-			get;
-		}
-		
-		IEnumerable<Comment> Comments {
-			get;
-		}
-		
-		IEnumerable<DomRegion> FoldingRegions {
-			get;
-		}
-		
-		IEnumerable<Error> Errors {
-			get;
-		}
-		
-		object AcceptVisitior (IDomVisitor visitor, object data);
+		bool CanParseMimeType (string mimeType);
+		bool CanParseProjectType (string projectType);
+		bool CanParse (string fileName);
 	}
 }
