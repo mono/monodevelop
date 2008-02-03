@@ -112,7 +112,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			lock (fileSaveLock) {
-				File.WriteAllText (fileName, Document.Buffer.Text);
+				File.WriteAllText (fileName, Document.Text);
 //				lastSaveTime = File.GetLastWriteTime (fileName);
 			}
 //			if (encoding != null)
@@ -148,7 +148,7 @@ namespace MonoDevelop.SourceEditor
 				WorkbenchWindow.ShowNotification = false;
 			}
 			
-			Document.Buffer.Text = File.ReadAllText (fileName);
+			Document.Text = File.ReadAllText (fileName);
 			Document.MimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
 			ContentName = fileName;
 			lastSaveTime = File.GetLastWriteTime (ContentName);
