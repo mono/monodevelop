@@ -472,13 +472,14 @@ namespace Mono.TextEditor
 	
 	public class RemoveTab : EditAction
 	{
-		public static void RemoveTabInLine (Document document, LineSegment line)
+		public static int RemoveTabInLine (Document document, LineSegment line)
 		{
 			if (line.Length == 0)
-				return;
+				return 0;
 			char ch = document.Buffer.GetCharAt (line.Offset); 
 			if (ch == '\t') {
 				document.Buffer.Remove (line.Offset, 1);
+				return 1;
 			} else if (ch == ' ') {
 				int removeCount = 0;
 				for (int i = 0; i < TextEditorOptions.Options.IndentationSize;) {
@@ -494,7 +495,9 @@ namespace Mono.TextEditor
 					}
 				}
 				document.Buffer.Remove (line.Offset, removeCount);
+				return removeCount;
 			}
+			return 0;
 		}
 		
 		public override void Run (TextEditorData data)
@@ -503,8 +506,19 @@ namespace Mono.TextEditor
 				int startLineNr = data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.Offset);
 				int endLineNr   = data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.EndOffset);
 				data.Document.BeginAtomicUndo ();
+				int first = -1;
+				int last  = 0;
 				foreach (LineSegment line in data.SelectedLines) {
-					RemoveTabInLine (data.Document, line);
+					last = RemoveTabInLine (data.Document, line);
+					if (first < 0)
+						first = last;
+				}
+				data.SelectionStart.Column -= first;
+				if (data.SelectionEnd.Column != 0) {
+					data.SelectionEnd.Column -= last;
+					data.Caret.PreserveSelection = true;
+					data.Caret.Column -= last;
+					data.Caret.PreserveSelection = false;
 				}
 				data.Document.EndAtomicUndo ();
 				data.Document.RequestUpdate (new MultipleLineUpdate (startLineNr, endLineNr));
@@ -540,6 +554,13 @@ namespace Mono.TextEditor
 				data.Document.BeginAtomicUndo ();
 				foreach (LineSegment line in data.SelectedLines) {
 					data.Document.Buffer.Insert (line.Offset, new StringBuilder(TextEditorOptions.Options.IndentationString));
+				}
+				data.SelectionStart.Column++;
+				if (data.SelectionEnd.Column != 0) {
+					data.SelectionEnd.Column++;
+					data.Caret.PreserveSelection = true;
+					data.Caret.Column++;
+					data.Caret.PreserveSelection = false;
 				}
 				data.Document.EndAtomicUndo ();
 				data.Document.RequestUpdate (new MultipleLineUpdate (startLineNr, endLineNr));
