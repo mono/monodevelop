@@ -28,7 +28,7 @@
 
 using System;
 
-namespace MonoDevelop.Dom.Output
+namespace MonoDevelop.Ide.Dom.Output
 {
 	public class NetAmbience : Ambience
 	{

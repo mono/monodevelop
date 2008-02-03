@@ -29,7 +29,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace MonoDevelop.Dom.Parser
+namespace MonoDevelop.Ide.Dom.Parser
 {
 	public class ProjectDom
 	{

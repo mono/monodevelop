@@ -29,7 +29,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace MonoDevelop.Dom
+namespace MonoDevelop.Ide.Dom
 {
 	public interface IMethod : IMember
 	{

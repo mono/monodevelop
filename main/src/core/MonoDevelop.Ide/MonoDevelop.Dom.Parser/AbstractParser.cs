@@ -29,7 +29,7 @@
 using System;
 using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.Dom.Parser
+namespace MonoDevelop.Ide.Dom.Parser
 {
 	public abstract class AbstractParser : IParser
 	{

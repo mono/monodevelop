@@ -28,7 +28,7 @@
 
 using System;
 
-namespace MonoDevelop.Dom.Parser
+namespace MonoDevelop.Ide.Dom.Parser
 {
 	public interface IParser
 	{

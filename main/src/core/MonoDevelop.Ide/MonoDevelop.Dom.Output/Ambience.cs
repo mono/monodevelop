@@ -31,7 +31,7 @@ using System.Text;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Dom.Output
+namespace MonoDevelop.Ide.Dom.Output
 {
 	public class Ambience : IDomVisitor
 	{
@@ -83,12 +83,12 @@ namespace MonoDevelop.Dom.Output
 		}
 		
 		
-		public virtual object Visit (MonoDevelop.Dom.ICompilationUnit unit, object data)
+		public virtual object Visit (MonoDevelop.Ide.Dom.ICompilationUnit unit, object data)
 		{
 			return "";
 		}
 
-		public virtual object Visit (MonoDevelop.Dom.IAttribute attr, object data)
+		public virtual object Visit (MonoDevelop.Ide.Dom.IAttribute attr, object data)
 		{
 			return "";
 //			StringBuilder arguments = new StringBuilder ();
@@ -113,42 +113,42 @@ namespace MonoDevelop.Dom.Output
 //			});
 		}
 
-		public virtual object Visit (MonoDevelop.Dom.IType type, object data)
+		public virtual object Visit (MonoDevelop.Ide.Dom.IType type, object data)
 		{
 			return "";
 		}
 
-		public virtual object Visit (MonoDevelop.Dom.IField field, object data)
+		public virtual object Visit (MonoDevelop.Ide.Dom.IField field, object data)
 		{
 			return "";
 		}
 
-		public virtual object Visit (MonoDevelop.Dom.IMethod method, object data)
+		public virtual object Visit (MonoDevelop.Ide.Dom.IMethod method, object data)
 		{
 			return "";
 		}
 
-		public virtual object Visit (MonoDevelop.Dom.IProperty property, object data)
+		public virtual object Visit (MonoDevelop.Ide.Dom.IProperty property, object data)
 		{
 			return "";
 		}
 
-		public virtual object Visit (MonoDevelop.Dom.IEvent e, object data)
+		public virtual object Visit (MonoDevelop.Ide.Dom.IEvent e, object data)
 		{
 			return "";
 		}
 
-		public virtual object Visit (MonoDevelop.Dom.IReturnType type, object data)
+		public virtual object Visit (MonoDevelop.Ide.Dom.IReturnType type, object data)
 		{
 			return "";
 		}
 
-		public virtual object Visit (MonoDevelop.Dom.IParameter parameter, object data)
+		public virtual object Visit (MonoDevelop.Ide.Dom.IParameter parameter, object data)
 		{
 			return "";
 		}
 
-		public virtual object Visit (MonoDevelop.Dom.IUsing u, object data)
+		public virtual object Visit (MonoDevelop.Ide.Dom.IUsing u, object data)
 		{
 			return "";
 		}

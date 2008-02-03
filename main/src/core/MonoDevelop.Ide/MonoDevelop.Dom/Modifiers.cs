@@ -28,7 +28,7 @@
 
 using System;
 
-namespace MonoDevelop.Dom
+namespace MonoDevelop.Ide.Dom
 {
 	// For compatibility with nrefactory - same flags.
 	[Flags]

@@ -28,7 +28,7 @@
 
 using System;
 
-namespace MonoDevelop.Dom
+namespace MonoDevelop.Ide.Dom
 {
 	public class DomField : AbstractMember, IField
 	{

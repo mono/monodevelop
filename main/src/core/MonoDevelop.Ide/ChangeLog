@@ -1,5 +1,30 @@
 2008-02-03  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Dom.Parser/AbstractParser.cs,
+	  MonoDevelop.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Dom.Parser/IParser.cs, MonoDevelop.Dom.Parser/ProjectDom.cs,
+	  MonoDevelop.Dom.Output/Ambience.cs,
+	  MonoDevelop.Dom.Output/NetAmbience.cs, MonoDevelop.Dom/IMember.cs,
+	  MonoDevelop.Dom/DomReturnType.cs, MonoDevelop.Dom/DomType.cs,
+	  MonoDevelop.Dom/TypeParameter.cs, MonoDevelop.Dom/ParameterModifiers.cs,
+	  MonoDevelop.Dom/DomRegion.cs, MonoDevelop.Dom/DomUsing.cs,
+	  MonoDevelop.Dom/Error.cs, MonoDevelop.Dom/IMethod.cs,
+	  MonoDevelop.Dom/IProperty.cs, MonoDevelop.Dom/IUsing.cs,
+	  MonoDevelop.Dom/Comment.cs, MonoDevelop.Dom/DomAttribute.cs,
+	  MonoDevelop.Dom/IDomItem.cs, MonoDevelop.Dom/ClassType.cs,
+	  MonoDevelop.Dom/IDomVisitor.cs, MonoDevelop.Dom/IAttribute.cs,
+	  MonoDevelop.Dom/DomMethod.cs, MonoDevelop.Dom/DomParameter.cs,
+	  MonoDevelop.Dom/Modifiers.cs, MonoDevelop.Dom/DomEvent.cs,
+	  MonoDevelop.Dom/AbstractDomItem.cs, MonoDevelop.Dom/DomField.cs,
+	  MonoDevelop.Dom/DomProperty.cs, MonoDevelop.Dom/ICompilationUnit.cs,
+	  MonoDevelop.Dom/IParameter.cs, MonoDevelop.Dom/IReturnType.cs,
+	  MonoDevelop.Dom/IType.cs, MonoDevelop.Dom/IEvent.cs,
+	  MonoDevelop.Dom/AbstractMember.cs, MonoDevelop.Dom/IField.cs,
+	  MonoDevelop.Dom/CommentType.cs, MonoDevelop.Dom/AttributeTarget.cs,
+	  Makefile.am: Renamed MonoDevelop.Dom namespace to MonoDevelop.Ide.Dom
+
+2008-02-03  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Content/ISplittable.cs,
 	  MonoDevelop.Ide.Gui.Content/IPrintable.cs,
 	  MonoDevelop.Ide.Commands/FileCommands.cs, MonoDevelop.Ide.addin.xml,

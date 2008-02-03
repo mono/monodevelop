@@ -27,7 +27,7 @@
 //
 
 using System;
-namespace MonoDevelop.Dom
+namespace MonoDevelop.Ide.Dom
 {
 	public interface IProperty : IMember
 	{

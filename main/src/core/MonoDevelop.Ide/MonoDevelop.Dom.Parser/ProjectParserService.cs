@@ -31,7 +31,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using MonoDevelop.Projects;
 
-namespace MonoDevelop.Dom.Parser
+namespace MonoDevelop.Ide.Dom.Parser
 {
 	public static class ProjectDomService
 	{
