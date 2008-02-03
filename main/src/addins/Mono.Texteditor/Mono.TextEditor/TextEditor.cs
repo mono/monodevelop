@@ -780,7 +780,7 @@ namespace Mono.TextEditor
 		{
 			SyntaxMode mode = Document.SyntaxMode != null && TextEditorOptions.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
 			Chunk[] chunks = mode.GetChunks (Document, TextEditorData.ColorStyle, line, offset, length);
-			int start  = offset;
+//			int start  = offset;
 			int xStart = xPos;
 			offset = line.Offset + line.EditableLength - offset;
 			Gdk.Color selectedTextColor = ColorStyle.SelectedFg;

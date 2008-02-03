@@ -42,6 +42,20 @@ namespace Mono.TextEditor
 			layout = new Pango.Layout (editor.PangoContext);
 			TextEditorOptions.Changed += OptionsChanged;
 			OptionsChanged (this, EventArgs.Empty);
+			editor.TextEditorData.Document.Splitter.LinesInserted += LineCountChanged;
+			editor.TextEditorData.Document.Splitter.LinesRemoved += LineCountChanged;
+		}
+		
+		int oldWidth = 1;
+		void LineCountChanged (object sender, LineEventArgs args)
+		{
+			int newWidth = (int)System.Math.Log10 (editor.TextEditorData.Document.Splitter.LineCount);
+			if (oldWidth != newWidth) {
+				editor.TextEditorData.Document.RequestUpdate (new UpdateAll ());
+				editor.TextEditorData.Document.CommitDocumentUpdate ();
+				oldWidth = newWidth;
+			}
+			
 		}
 		
 		protected virtual void OptionsChanged (object sender, EventArgs args)

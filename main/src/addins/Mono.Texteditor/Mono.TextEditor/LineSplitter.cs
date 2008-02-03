@@ -86,7 +86,7 @@ namespace Mono.TextEditor
 		{
 			if (args.Count > 0)
 				TextRemove (args.Offset, args.Count);
-			if (args.Value != null && args.Count > 0)
+			if (args.Value != null && args.Value.Length > 0)
 				TextInsert (args.Offset, args.Value);
 		}
 
