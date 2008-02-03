@@ -1,5 +1,9 @@
 2008-02-03  Mike Krüger <mkrueger@novell.com> 
 
+	* TangoStyle.xml: Changed literal color in tango style.
+
+2008-02-03  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor.mdp, Makefile.am: bookmark.png wasn't a resource ?
 
 2008-02-03  Mike Krüger <mkrueger@novell.com> 

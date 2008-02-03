@@ -84,8 +84,8 @@
 	<Style name="commentkw" color="chameleon3" weight="bold" />
 	<Style name="commenttag" color="chameleon3"/>
 	
-	<Style name="digit" color="orange3"/>
-	<Style name="literal" color="orange3"/>
+	<Style name="digit" color="plum2"/>
+	<Style name="literal" color="plum2"/>
 	<Style name="punctuation" color="aluminium6"/>
 	
 	<Style name="kw:namespaces" color="plum3" weight="bold"/>
@@ -103,7 +103,7 @@
 	<Style name="kw:jump" color="skyblue3" weight="bold"/>
 	<Style name="kw:context" color="skyblue3" />
 	<Style name="kw:exceptions" color="scarletred3" weight="bold"/>
-	<Style name="kw:literals" color="orange3"/>
+	<Style name="kw:literals" color="plum2"/>
 	<Style name="kw:parameter" color="skyblue3" weight="bold"/>
 	<Style name="kw:operatordecl" color="skyblue3" weight="bold"/>
 	<Style name="kw:misc" color="skyblue3"/>
