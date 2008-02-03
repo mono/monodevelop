@@ -21,7 +21,7 @@
 		<Addin id="Components" version="0.19.0"/>
 	</Dependencies>
 
-	<!-- Extension points -->
+	<!-- Extension ponts -->
 	
 	<ConditionType id="combineopen" type="MonoDevelop.Ide.Codons.CombineOpenCondition" />
 	<ConditionType id="activeproject" type="MonoDevelop.Ide.Codons.ProjectActiveCondition" />
@@ -510,6 +510,16 @@
 				icon = "gtk-save-as"
 				shortcut = "Control|Shift|S" 
 				description = "Save file as" />
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.PrintDocument"
+				_label = "_Print..." 
+				_description = "Print current document" 
+				icon  = "gtk-print"
+				shortcut = "Control|P" />
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.PrintPreviewDocument"
+				_label = "Print Previe_w" 
+				description = "Show print preview" 
+				icon  = "gtk-print-preview"
+				shortcut = "Shift|Control|P" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.RecentFileList"
 				defaultHandler = "MonoDevelop.Ide.Commands.RecentFileListHandler"
 				type="array"
@@ -1161,6 +1171,7 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenFile" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Save" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAll" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.PrintDocument" />
 			<SeparatorItem id = "Separator1" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Undo" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Redo" />
@@ -1214,6 +1225,9 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAs" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAll" />
 			<SeparatorItem id = "SaveSeparator" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.PrintPreviewDocument" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.PrintDocument" />
+			<SeparatorItem id = "PrintSeparator" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseAllFiles" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseCombine" />

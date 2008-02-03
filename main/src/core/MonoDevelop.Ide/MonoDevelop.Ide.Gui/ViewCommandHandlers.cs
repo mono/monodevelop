@@ -665,6 +665,24 @@ namespace MonoDevelop.Ide.Gui
 			split.Unsplit ();
 		}
 #endregion
+#region Printing
+		[CommandUpdateHandler (FileCommands.PrintDocument)]
+		[CommandUpdateHandler (FileCommands.PrintPreviewDocument)]
+		protected void UpdatePrintCommands (CommandInfo info)
+		{
+			info.Enabled = GetContent <IPrintable> () != null;
+		}
+		[CommandHandler (FileCommands.PrintDocument)]
+		public void PrintDocument ()
+		{
+			GetContent <IPrintable> ().PrintDocument ();
+		}
+		[CommandHandler (FileCommands.PrintPreviewDocument)]
+		public void PrintPreviewDocument ()
+		{
+			GetContent <IPrintable> ().PrintPreviewDocument ();
+		}
+#endregion
 		
 	}
 }

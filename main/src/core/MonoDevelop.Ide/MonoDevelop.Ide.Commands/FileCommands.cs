@@ -56,7 +56,9 @@ namespace MonoDevelop.Ide.Commands
 		OpenFileInSolution,
 		OpenInTerminal,
 		OpenFolder,
-		OpenContainingFolder
+		OpenContainingFolder,
+		PrintDocument,
+		PrintPreviewDocument
 	}
 	
 	internal class NewProjectHandler : CommandHandler

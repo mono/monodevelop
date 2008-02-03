@@ -1,6 +1,14 @@
 2008-02-03  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Content/ISplittable.cs,
+	  MonoDevelop.Ide.Gui.Content/IPrintable.cs,
+	  MonoDevelop.Ide.Commands/FileCommands.cs, MonoDevelop.Ide.addin.xml,
+	  MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: Moved print infrastructure
+	  to MonoDevelop.Ide.
+
+2008-02-03  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Content/ISplittable.cs,
 	  MonoDevelop.Ide.Commands/WindowCommands.cs, MonoDevelop.Ide.addin.xml,
 	  MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: Added splitting
 	  infrastructure.
