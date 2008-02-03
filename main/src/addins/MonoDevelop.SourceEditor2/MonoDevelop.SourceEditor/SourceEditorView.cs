@@ -37,7 +37,7 @@ using MonoDevelop.Ide.Gui.Search;
 
 namespace MonoDevelop.SourceEditor
 {	
-	public class SourceEditorView : AbstractViewContent, IPositionable, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, ICompletionWidget, IDocumentInformation, ICodeStyleOperations
+	public class SourceEditorView : AbstractViewContent, IPositionable, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, ICompletionWidget, IDocumentInformation, ICodeStyleOperations, ISplittable
 	{
 		SourceEditorWidget widget;
 		bool isDisposed = false;
@@ -398,7 +398,8 @@ namespace MonoDevelop.SourceEditor
 			if (line != null && line.IsBookmarked != mark) {
 				int lineNumber = widget.TextEditor.Document.Splitter.GetLineNumberForOffset (line.Offset);
 				line.IsBookmarked = mark;
-				widget.TextEditor.RedrawLine (lineNumber);
+				widget.TextEditor.Document.RequestUpdate (new LineUpdate (lineNumber));
+				widget.TextEditor.Document.CommitDocumentUpdate ();
 			}
 		}
 		
@@ -708,6 +709,39 @@ namespace MonoDevelop.SourceEditor
 			}
 			Document.EndAtomicUndo ();
 		}
+#endregion
+#region ISplittable
+		public bool EnableSplitHorizontally {
+			get {
+				return !EnableUnsplit;
+			}
+		}
+		public bool EnableSplitVertically {
+			get {
+				return !EnableUnsplit;
+			}
+		}
+		public bool EnableUnsplit {
+			get {
+				return widget.IsSplitted;
+			}
+		}
+		
+		public void SplitHorizontally ()
+		{
+			widget.Split (false);
+		}
+		
+		public void SplitVertically ()
+		{
+			widget.Split (true);
+		}
+		
+		public void Unsplit ()
+		{
+			widget.Unsplit ();
+		}
+		
 #endregion
 	}
 }

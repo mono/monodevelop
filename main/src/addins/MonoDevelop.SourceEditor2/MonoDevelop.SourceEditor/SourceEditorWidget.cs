@@ -51,9 +51,10 @@ namespace MonoDevelop.SourceEditor
 		Tooltips tips = new Tooltips ();		
 		
 		MonoDevelop.SourceEditor.ExtendibleTextEditor textEditor;
+		MonoDevelop.SourceEditor.ExtendibleTextEditor splittedTextEditor;
 		public MonoDevelop.SourceEditor.ExtendibleTextEditor TextEditor {
 			get {
-				return this.textEditor;
+				return this.splittedTextEditor != null && this.splittedTextEditor.HasFocus ? this.splittedTextEditor : this.textEditor;
 			}
 		}
 		
@@ -85,7 +86,7 @@ namespace MonoDevelop.SourceEditor
 
 		bool ITextEditorExtension.KeyPress (Gdk.Key key, Gdk.ModifierType modifier)
 		{
-			this.textEditor.SimulateKeyPress (key, modifier);
+			this.TextEditor.SimulateKeyPress (key, modifier);
 			return true;
 		}
 #endregion
@@ -100,13 +101,13 @@ namespace MonoDevelop.SourceEditor
 			this.view = view;
 			this.Build();
 			this.textEditor = new MonoDevelop.SourceEditor.ExtendibleTextEditor (view);
-			this.mainsw.Child = this.textEditor;
+			this.mainsw.Child = this.TextEditor;
 			this.mainsw.ButtonPressEvent += PrepareEvent;
 			
 			this.textEditor.ShowAll ();
 
-			this.TextEditor.Caret.ModeChanged     += CaretModeChanged;
-			this.TextEditor.Caret.PositionChanged += CaretPositionChanged;
+			this.textEditor.Caret.ModeChanged     += CaretModeChanged;
+			this.textEditor.Caret.PositionChanged += CaretPositionChanged;
 			
 			// Setup the columns and column renders for the comboboxes
 			
@@ -289,7 +290,7 @@ namespace MonoDevelop.SourceEditor
 			if (errors.ContainsKey (info.Line))
 				return;
 			
-			LineSegment line = this.textEditor.Document.GetLine (info.Line);
+			LineSegment line = this.TextEditor.Document.GetLine (info.Line);
 			Error error = new Error (info, line); 
 			errors [info.Line] = error;
 			error.AddToLine ();
@@ -325,6 +326,9 @@ namespace MonoDevelop.SourceEditor
 			if (splitContainer == null)
 				return;
 			
+			splittedTextEditor.Destroy ();
+			splittedTextEditor = null;
+			
 			splitContainer.Remove (mainsw);
 			editorBar.Remove (splitContainer);
 			
@@ -352,8 +356,12 @@ namespace MonoDevelop.SourceEditor
 			};
 			ScrolledWindow secondsw = new ScrolledWindow ();
 			secondsw.ButtonPressEvent += PrepareEvent;
-			Mono.TextEditor.TextEditor secondEditor = new Mono.TextEditor.TextEditor (TextEditor.Document);
-			secondsw.Child = secondEditor;
+			this.splittedTextEditor = new MonoDevelop.SourceEditor.ExtendibleTextEditor (view, textEditor.Document);
+			this.splittedTextEditor.Extension = textEditor.Extension;
+			this.splittedTextEditor.TextEditorData.Caret.ModeChanged     += CaretModeChanged;
+			this.splittedTextEditor.TextEditorData.Caret.PositionChanged += CaretPositionChanged;
+			
+			secondsw.Child = splittedTextEditor;
 			splitContainer.Add2 (secondsw);
 			editorBar.PackEnd (splitContainer);
 			this.splitContainer.Position = (vSplit ? this.Allocation.Height : this.Allocation.Width) / 2;
@@ -436,11 +444,11 @@ namespace MonoDevelop.SourceEditor
 		
 		void UpdateLineCol ()
 		{
-			int offset = this.textEditor.Caret.Offset;
-			if (offset < 0 || offset >= this.textEditor.Document.Buffer.Length)
+			int offset = this.TextEditor.Caret.Offset;
+			if (offset < 0 || offset >= this.TextEditor.Document.Buffer.Length)
 				return;
-			char ch = this.textEditor.Document.Buffer.GetCharAt (offset);
-			DocumentLocation location = this.textEditor.Document.LogicalToVisualLocation (this.textEditor.Caret.Location);
+			char ch = this.TextEditor.Document.Buffer.GetCharAt (offset);
+			DocumentLocation location = this.TextEditor.Document.LogicalToVisualLocation (this.TextEditor.Caret.Location);
 			IdeApp.Workbench.StatusBar.SetCaretPosition (location.Line, location.Column, ch);
 		}
 		

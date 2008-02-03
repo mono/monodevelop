@@ -62,7 +62,17 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
+		public ExtendibleTextEditor (SourceEditorView view, Mono.TextEditor.Document doc) : base (doc)
+		{
+			Initialize (view);
+		}
+		
 		public ExtendibleTextEditor (SourceEditorView view)
+		{
+			Initialize (view);
+		}
+		
+		void Initialize (SourceEditorView view)
 		{
 			this.view = view;
 			this.Buffer.TextReplaced += delegate {
@@ -86,6 +96,7 @@ namespace MonoDevelop.SourceEditor
 				}
 			};
 		}
+		
 		protected override void OptionsChanged (object sender, EventArgs args)
 		{
 			this.ColorStyle = SyntaxModeService.GetColorStyle (this, SourceEditorOptions.Options.ColorSheme);
