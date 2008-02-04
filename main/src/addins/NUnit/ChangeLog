@@ -1,3 +1,8 @@
+2008-02-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* templates/NUnitProject.xpt.xml: Don't try to open Test.cs, since it wont
+	  work for languages other than c#. Fixes bug #358359.
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelopNUnit.addin.xml: Update MD version.
