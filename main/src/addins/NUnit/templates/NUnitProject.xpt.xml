@@ -12,7 +12,6 @@
 	
 	<!-- Actions -->
 	<Actions>
-		<Open filename = "Test.cs"/>
 	</Actions>
 	
 	<!-- Template Content -->
