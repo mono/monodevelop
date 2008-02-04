@@ -2486,11 +2486,11 @@ msgstr "Gehe die Seite herrunter"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:808
 msgid "Scroll line up"
-msgstr "Skrolle die Zeile herrauf"
+msgstr "Scrolle eine Zeile hoch"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:811
 msgid "Scroll line down"
-msgstr "Skrolle die Zeile herunter"
+msgstr "Scrolle eine Zeile runter"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:814
 msgid "Delete entire line"
