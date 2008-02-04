@@ -838,8 +838,10 @@ namespace Mono.TextEditor
 				layout.SetText (Buffer.GetTextAt (offset, bracketMarkerColumn).Replace ("\t", new string (' ', TextEditorOptions.Options.TabSize)));
 				layout.GetPixelSize (out width, out height);
 				Gdk.Rectangle bracketMatch = new Gdk.Rectangle (xStart + width, y, charWidth, LineHeight - 1);
-				gc.RgbFgColor = this.ColorStyle.BracketHighlightBg;
-				win.DrawRectangle (gc, true, bracketMatch);
+				if (this.bracketIndex < selectionStart || this.bracketIndex > selectionEnd) {
+					gc.RgbFgColor = this.ColorStyle.BracketHighlightBg;
+					win.DrawRectangle (gc, true, bracketMatch);
+				}
 				gc.RgbFgColor = this.ColorStyle.BracketHighlightRectangle;
 				win.DrawRectangle (gc, false, bracketMatch);
 			}
