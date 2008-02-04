@@ -283,12 +283,12 @@ namespace Mono.TextEditor
 			};
 			Caret.PositionChanged += delegate {
 				int offset = Caret.Offset - 1;
-				if (!TextUtil.IsBracket (Document.Buffer.GetCharAt (offset)))
+				if (offset >= 0 && offset < Document.Buffer.Length && !TextUtil.IsBracket (Document.Buffer.GetCharAt (offset)))
 					offset++;
-				if (offset < 0)
-					offset = 0;
 				if (offset >= Document.Buffer.Length)
 					return;
+				if (offset < 0)
+					offset = 0;
 				char ch = Document.Buffer.GetCharAt (offset);
 				int bracket = TextUtil.openBrackets.IndexOf (ch);
 				int oldIndex = bracketIndex;
@@ -982,6 +982,10 @@ namespace Mono.TextEditor
 			if (button == 1) {
 				clickLocation = VisualToDocumentLocation (x, y);
 				int offset = Document.LocationToOffset (clickLocation);
+				if (offset < 0) {
+					new CaretMoveToDocumentEnd ().Run (this.TextEditorData);
+					return;
+				}
 				if  (doubleClick) {
 					int start = ScanWord (offset, false);
 					int end   = ScanWord (offset, true);
