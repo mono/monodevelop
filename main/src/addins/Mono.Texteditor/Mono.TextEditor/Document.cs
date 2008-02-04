@@ -164,6 +164,13 @@ namespace Mono.TextEditor
 		Stack<UndoOperation> undoStack = new Stack<UndoOperation> ();
 		Stack<UndoOperation> redoStack = new Stack<UndoOperation> ();
 		AtomicUndoOperation currentAtomicOperation = null;
+			
+		public bool CanUndo {
+			get {
+				return this.undoStack.Count > 0;
+			}
+		}
+		
 		public void Undo ()
 		{
 			if (undoStack.Count <= 0)
@@ -175,6 +182,12 @@ namespace Mono.TextEditor
 			isInUndo = false;
 			this.RequestUpdate (new UpdateAll ());
 			this.CommitDocumentUpdate ();
+		}
+				
+		public bool CanRedo {
+			get {
+				return this.redoStack.Count > 0;
+			}
 		}
 		
 		public void Redo ()

@@ -1,3 +1,8 @@
+2008-02-04  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/Document.cs: Implemented Bug 323946 - Undo/Redo
+	  functionality are not context sensitive.
+
 2008-02-03  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/Document.cs, Mono.TextEditor/LineSplitter.cs,
