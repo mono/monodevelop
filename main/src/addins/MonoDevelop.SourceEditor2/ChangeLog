@@ -1,5 +1,10 @@
 2008-02-04  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs: Fixed
+	  highlighting panel.
+
+2008-02-04  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor/SourceEditorOptions.cs: Implemented bracket
 	  matching.
 

@@ -41,7 +41,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		public HighlightingPanel()
 		{
 			this.Build();
-
+			styleTreeview.AppendColumn ("", new CellRendererText (), "markup", 0);
+			styleTreeview.Model = styleStore;
 		}
 		
 		bool   wasActivated = false;
@@ -119,8 +120,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		public virtual void LoadPanelContents()
 		{
 			this.enableHighlightingCheckbutton.Active = SourceEditorOptions.Options.EnableSyntaxHighlighting;
-			
-			
+			styleStore.Clear ();
 			TreeIter selectedIter = styleStore.AppendValues (GetMarkup (GettextCatalog.GetString ("Default"), GettextCatalog.GetString ("The default color sheme.")), "Default");
 			foreach (string styleName in SyntaxModeService.Styles) {
 				Mono.TextEditor.Highlighting.Style style = SyntaxModeService.GetColorStyle (null, styleName);
@@ -128,8 +128,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				if (style.Name == SourceEditorOptions.Options.ColorSheme)
 					selectedIter = iter;
 			}
-			styleTreeview.AppendColumn ("", new CellRendererText (), "markup", 0);
-			styleTreeview.Model = styleStore;
 			styleTreeview.Selection.SelectIter (selectedIter); 
 		}
 		
