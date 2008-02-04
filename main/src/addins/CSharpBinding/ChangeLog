@@ -1,3 +1,7 @@
+2008-02-05  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/Parser.cs: Fixed #region ... #endregion end region position.
+
 2008-02-04  Mike Krüger <mkrueger@novell.com> 
 
 	* Parser/CSharpVisitor.cs: Corrected type location.
