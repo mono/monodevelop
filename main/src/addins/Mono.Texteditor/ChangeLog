@@ -1,5 +1,9 @@
 2008-02-04  Mike Krüger <mkrueger@novell.com> 
 
+	* TangoStyle.xml: Tango bracket matching has now better colors.
+
+2008-02-04  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor.mdp, TangoStyle.xml, OblivionStyle.xml,
 	  Mono.TextEditor/TextUtil.cs, Mono.TextEditor/TextEditor.cs,
 	  Mono.TextEditor/TextEditorOptions.cs,

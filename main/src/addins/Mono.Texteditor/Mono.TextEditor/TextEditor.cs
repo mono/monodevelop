@@ -832,7 +832,7 @@ namespace Mono.TextEditor
 				selectionStart = tmp;
 			}
 			
-			if (offset <= this.bracketIndex && this.bracketIndex < offset + length) {
+			if (TextEditorOptions.Options.HighlightMatchingBracket && offset <= this.bracketIndex && this.bracketIndex < offset + length) {
 				int bracketMarkerColumn = this.bracketIndex - line.Offset; 
 				int width, height;
 				layout.SetText (Buffer.GetTextAt (offset, bracketMarkerColumn).Replace ("\t", new string (' ', TextEditorOptions.Options.TabSize)));
