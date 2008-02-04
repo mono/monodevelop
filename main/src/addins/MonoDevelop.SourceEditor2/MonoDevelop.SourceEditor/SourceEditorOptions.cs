@@ -266,7 +266,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public bool HighlightMatchingBracket {
+		public override bool HighlightMatchingBracket {
 			get {
 				return PropertyService.Get ("HighlightMatchingBracket", true);
 			}

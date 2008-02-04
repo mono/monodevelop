@@ -1,5 +1,10 @@
 2008-02-04  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.SourceEditor/SourceEditorOptions.cs: Implemented bracket
+	  matching.
+
+2008-02-04  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor/ExtendibleTextEditor.cs,
 	  MonoDevelop.SourceEditor/EditActions.cs: Bug 354129 - Auto add second
 	  brackets, quotation mark
