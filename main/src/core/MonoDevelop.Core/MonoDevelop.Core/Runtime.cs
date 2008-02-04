@@ -61,10 +61,7 @@ namespace MonoDevelop.Core
 			AddinManager.AddinLoaded += OnLoad;
 			AddinManager.AddinUnloaded += OnUnload;
 			
-			string configDir = System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), ".config");
-			configDir = System.IO.Path.Combine (configDir, "MonoDevelop");
-			
-			AddinManager.Initialize (configDir);
+			AddinManager.Initialize (MonoDevelop.Core.PropertyService.ConfigPath);
 			AddinManager.InitializeDefaultLocalizer (new DefaultAddinLocalizer ());
 			
 			if (updateAddinRegistry)

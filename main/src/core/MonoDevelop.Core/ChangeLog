@@ -1,3 +1,12 @@
+2008-02-04  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Core/Runtime.cs: Use MD's config directory for addin engine
+	  too. More cross-platform safe, and ensures that they're always the same
+	  directory (previously, unusual combinations of environment variables
+	  could cause them to differ).
+	* MonoDevelop.Core/PropertyService.cs: Make config directory more
+	  cross-platform safe.
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.addin.xml: Update MD version.
