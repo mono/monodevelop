@@ -84,17 +84,20 @@ namespace ILAsmBinding
 			string output = String.Empty;
 			string error = String.Empty;
 			TempFileCollection tf = new TempFileCollection();
-			DoCompilation (parameters.ToString (), tf, ref output, ref error);
-			ICompilerResult result = ParseOutput(tf, output, error);
+			bool pres = DoCompilation (parameters.ToString (), tf, ref output, ref error);
+			DefaultCompilerResult result = ParseOutput(tf, output, error);
 			if (result.CompilerOutput.Trim () != "")
 				monitor.Log.WriteLine (result.CompilerOutput);
+			
+			if (!pres && result.ErrorCount == 0)
+				result.AddError (GettextCatalog.GetString ("Compilation failed."));
 			
 			File.Delete(output);
 			File.Delete(error);
 			return result;
 		}
 
-		private void DoCompilation (string outstr, TempFileCollection tf, ref string output, ref string error)
+		private bool DoCompilation (string outstr, TempFileCollection tf, ref string output, ref string error)
 		{
 			output = Path.GetTempFileName ();
 			error = Path.GetTempFileName ();
@@ -108,6 +111,7 @@ namespace ILAsmBinding
 			p.StartInfo = si;
 			p.Start ();
 			p.WaitForExit ();
+			return p.ExitCode == 0;
         }
 		
 		string GetCompilerName ()
@@ -115,7 +119,7 @@ namespace ILAsmBinding
 			return "ilasm";
 		}
 		
-		ICompilerResult ParseOutput (TempFileCollection tf, string stdout, string stderr)
+		DefaultCompilerResult ParseOutput (TempFileCollection tf, string stdout, string stderr)
 		{
 			StringBuilder compilerOutput = new StringBuilder ();
 			CompilerResults cr = new CompilerResults (tf);
@@ -146,6 +150,9 @@ namespace ILAsmBinding
 			return new DefaultCompilerResult (cr, compilerOutput.ToString ());
 		}
 
+		static Regex regexError = new Regex (@"^(\s*(?<file>.*)\s\((?<line>\d*)(,\s(?<column>\d*[\+]*))?\)\s(:|)\s+)*(?<level>\w+)\s*:\s*(?<message>.*)",
+			RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+		
 		private static string efile, etext = String.Empty;
 		// FIXME: ilasm seems to use > 1 line per error
 		private static CompilerError CreateErrorFromString (string error)
@@ -173,7 +180,24 @@ namespace ILAsmBinding
 				cerror.FileName = efile;
 				return cerror;
 			}
-			return null;
+			CompilerError err = new CompilerError();
+
+			Match match=regexError.Match (error);
+			if (!match.Success) return null;
+			if (String.Empty != match.Result("${file}"))
+				err.FileName=match.Result("${file}");
+			if (String.Empty != match.Result("${line}"))
+				err.Line=Int32.Parse(match.Result("${line}"));
+			if (String.Empty != match.Result("${column}")) {
+				if (match.Result("${column}") == "255+")
+					err.Column = -1;
+				else
+					err.Column=Int32.Parse(match.Result("${column}"));
+			}
+			if (match.Result("${level}").ToLower () == "warning")
+				err.IsWarning=true;
+			err.ErrorText=match.Result("${message}");
+			return err;
 		}
 	}
 }
