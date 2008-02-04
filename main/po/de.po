@@ -160,7 +160,7 @@ msgstr "Alles abwählen"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:276
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.IncludeFilesDialog.cs:164
 msgid "Select _All"
-msgstr "Alles auswählen"
+msgstr "Alles _markieren"
 
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:1641
 msgid "label124"
@@ -1165,7 +1165,7 @@ msgstr "MonoDevelop Start-Verzeichnis"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:126
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1283
 msgid "_Tools"
-msgstr "Werkzeuge"
+msgstr "_Werkzeuge"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:324
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs:157
@@ -1888,7 +1888,7 @@ msgstr "Bearbeiten"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:234
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:230
 msgid "_Copy"
-msgstr "Kopieren"
+msgstr "_Kopieren"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:241
 msgid "Copy the selection"
@@ -1896,7 +1896,7 @@ msgstr "Kopiere die Auswahl"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:245
 msgid "Cu_t"
-msgstr "Ausschneiden"
+msgstr "_Ausschneiden"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:247
 msgid "Cut the selection"
@@ -1904,7 +1904,7 @@ msgstr "Schneide die Auswahl aus"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:251
 msgid "_Paste"
-msgstr "Einfügen"
+msgstr "E_infügen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:253
 msgid "Paste"
@@ -1913,7 +1913,7 @@ msgstr "Einfügen"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:257
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:240
 msgid "_Delete"
-msgstr "Löschen"
+msgstr "_Löschen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:258
 msgid "Delete the selection"
@@ -1925,7 +1925,7 @@ msgstr "Umbe_nennen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:266
 msgid "_Undo"
-msgstr "Rückgängig"
+msgstr "_Rückgängig"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:268
 msgid "Undo last action"
@@ -1933,7 +1933,7 @@ msgstr "Letzte Aktion rückgängig"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:271
 msgid "_Redo"
-msgstr "Wiederholen"
+msgstr "_Wiederholen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:273
 msgid "Redo last undone action"
@@ -1941,27 +1941,27 @@ msgstr "Wiederhole letzte rückgängig gemachte Aktion"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:284
 msgid "C_omment Line(s)"
-msgstr "Zeile(n) in Kommentar umwandeln"
+msgstr "_Zeile(n) in Kommentar umwandeln"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:289
 msgid "_Uncomment Line(s)"
-msgstr "Zeile(n) entkommentieren"
+msgstr "Zei_le(n) entkommentieren"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:294
 msgid "_Indent Selection"
-msgstr "Auswahl einrücken"
+msgstr "_Auswahl einrücken"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:299
 msgid "_Unindent Selection"
-msgstr "Auswahl nicht mehr einrücken"
+msgstr "A_uswahl nicht mehr einrücken"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:304
 msgid "_Uppercase Selection"
-msgstr "Auswahl großbuchstabig machen"
+msgstr "_Auswahl großbuchstabig machen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:308
 msgid "_Lowercase Selection"
-msgstr "Auswahl kleinbuchstabig machen"
+msgstr "A_uswahl kleinbuchstabig machen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:310
 msgid "_Word Count..."
@@ -1969,7 +1969,7 @@ msgstr "_Wörter zählen..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:314
 msgid "Pre_ferences"
-msgstr "Einstellungen"
+msgstr "Ein_stellungen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:318
 msgid "Insert Standard Header"
@@ -2001,7 +2001,7 @@ msgstr "Referenzen bearbeiten..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:357
 msgid "New _File..."
-msgstr "Neue Datei..."
+msgstr "_Neue Datei..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:361
 msgid "Add Files..."
@@ -2099,15 +2099,15 @@ msgstr "Exportiere"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:454
 msgid "O_pen..."
-msgstr "Öffnen..."
+msgstr "Ö_ffnen..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:456
 msgid "Open file or solution"
-msgstr "Öffne Datei oder Solution"
+msgstr "Öffne _Datei oder Solution"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:460
 msgid "Open File in Solution..."
-msgstr "Öffne Datei in Solution..."
+msgstr "Öffne D_atei in Solution..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:462
 msgid "Open a file in the current solution..."
@@ -2115,7 +2115,7 @@ msgstr "Öffne eine Datei in der momentanen Solution..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:466
 msgid "New File..."
-msgstr "Neue Datei..."
+msgstr "Ne_ue Datei..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:468
 msgid "Create a new file"
@@ -2127,7 +2127,7 @@ msgstr "Aktuelles Dokument speichern"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:474
 msgid "Save"
-msgstr "Speichern"
+msgstr "_Speichern"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:478
 msgid "Save all open files"
@@ -2135,7 +2135,7 @@ msgstr "Speichere alle offenen Dateien"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:479
 msgid "Save All"
-msgstr "Alle Speichern"
+msgstr "A_lle Speichern"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:482
 msgid "N_ew Solution..."
@@ -2159,7 +2159,7 @@ msgstr "Datei erneut laden"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:508
 msgid "Save _As..."
-msgstr "Speichern unter..."
+msgstr "S_peichern unter..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:515
 msgid "Recent Files"
@@ -2324,7 +2324,7 @@ msgstr "Werkzeugliste"
 #: ../src/addins/MonoDevelop.GtkCore/templates/Window.xft.xml:4
 #: ../src/addins/MonoDevelop.GtkCore/templates/WindowPartial.xft.xml:4
 msgid "Window"
-msgstr "Fenster"
+msgstr "_Fenster"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:654
 msgid "_Next Window"
@@ -2344,7 +2344,7 @@ msgstr "_Tipp des Tages"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:686
 msgid "_About"
-msgstr "Über"
+msgstr "_Info"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:696
 msgid "Debug Application..."
@@ -2381,15 +2381,15 @@ msgstr "Suchen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:725
 msgid "_Find..."
-msgstr "Suchen..."
+msgstr "_Suchen..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:730
 msgid "Find _Next"
-msgstr "Weitersuchen"
+msgstr "_Weitersuchen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:732
 msgid "Find next"
-msgstr "Suche nächstes"
+msgstr "Weitersuchen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:735
 msgid "Find Next Selection"
@@ -2405,11 +2405,11 @@ msgstr "Sucher vorherige Auswahl"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:747
 msgid "_Replace..."
-msgstr "Ersetzen..."
+msgstr "E_rsetzen..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:753
 msgid "F_ind in Files..."
-msgstr "Suche in Dateien..."
+msgstr "_Suche in Dateien..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:759
 msgid "R_eplace in Files..."
@@ -2434,7 +2434,7 @@ msgstr "Texteditor"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:781
 msgid "Show completion window"
-msgstr "zeige 'completion' fenster"
+msgstr "Zeige Completion Fenster"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:784
 msgid "Go to end of line"
@@ -2486,11 +2486,11 @@ msgstr "Gehe die Seite herrunter"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:808
 msgid "Scroll line up"
-msgstr "Skrolle die Zeile herrauf"
+msgstr "Scrolle eine Zeile hoch"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:811
 msgid "Scroll line down"
-msgstr "Skrolle die Zeile herunter"
+msgstr "Scrolle eine Zeile runter"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:814
 msgid "Delete entire line"
@@ -2663,7 +2663,7 @@ msgstr "Navigation"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1160
 msgid "_File"
-msgstr "Datei"
+msgstr "_Datei"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1177
 msgid "Recent _Files"
@@ -2684,7 +2684,7 @@ msgstr "_Erweitert"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1226
 msgid "_View"
-msgstr "Ansicht"
+msgstr "_Ansicht"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1227
 msgid "Toolbars"
@@ -2704,7 +2704,7 @@ msgstr "_Projekt"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1289
 msgid "_Window"
-msgstr "Fenster"
+msgstr "_Fenster"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1298
 msgid "_Help"
@@ -4577,7 +4577,7 @@ msgstr "Veröffentliche..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:99
 msgid "Checkout..."
-msgstr "Abchecken..."
+msgstr "Auschecken..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:49
 msgid "Retrieving history for {0}..."
