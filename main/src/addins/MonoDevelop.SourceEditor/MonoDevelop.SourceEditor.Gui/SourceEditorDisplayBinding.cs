@@ -914,6 +914,11 @@ namespace MonoDevelop.SourceEditor.Gui
 			}
 			return false;
 		}
+		public bool EnableUndo {
+			get {
+				return ((SourceBuffer)se.Buffer).CanUndo ();
+			}
+		}
 		
 		public void Undo ()
 		{
@@ -922,6 +927,12 @@ namespace MonoDevelop.SourceEditor.Gui
 				TextIter iter = se.Buffer.GetIterAtMark (se.Buffer.InsertMark);
 				if (!se.View.VisibleRect.Contains (se.View.GetIterLocation (iter)))
 					se.View.ScrollToMark (se.Buffer.InsertMark, 0.1, false, 0, 0);
+			}
+		}
+		
+		public bool EnableRedo {
+			get {
+				return ((SourceBuffer)se.Buffer).CanRedo ();
 			}
 		}
 		

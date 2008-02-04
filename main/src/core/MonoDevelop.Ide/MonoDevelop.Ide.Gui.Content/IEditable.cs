@@ -29,6 +29,13 @@ namespace MonoDevelop.Ide.Gui.Content
 			get;
 		}
 		
+		bool EnableUndo {
+			get;
+		}
+		bool EnableRedo {
+			get;
+		}
+		
 		void Undo();
 		void Redo();
 		

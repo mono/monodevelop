@@ -135,7 +135,8 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.Undo)]
 		protected void OnUpdateUndo (CommandInfo info)
 		{
-			info.Bypass = GetContent <IEditableTextBuffer> () == null;
+			IEditableTextBuffer textBuffer = GetContent <IEditableTextBuffer> ();
+			info.Enabled = textBuffer != null && textBuffer.EnableUndo;
 		}
 		
 		[CommandHandler (EditCommands.Redo)]
@@ -150,7 +151,8 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.Redo)]
 		protected void OnUpdateRedo (CommandInfo info)
 		{
-			info.Bypass = GetContent <IEditableTextBuffer> () == null;
+			IEditableTextBuffer textBuffer = GetContent <IEditableTextBuffer> ();
+			info.Enabled = textBuffer != null && textBuffer.EnableRedo;
 		}
 		
 		[CommandHandler (EditCommands.Cut)]
