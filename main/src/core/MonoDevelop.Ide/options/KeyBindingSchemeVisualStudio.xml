@@ -150,16 +150,16 @@
 	<binding command="MonoDevelop.NUnit.Commands.TestCommands.SelectTestInTree" shortcut="" />
 	<binding command="MonoDevelop.NUnit.Commands.TestCommands.ShowTestCode" shortcut="" />
 	<binding command="MonoDevelop.NUnit.Commands.TestCommands.ShowTestDetails" shortcut="" />
-	<binding command="MonoDevelop.SourceEditor.EditorCommands.ClearBookmarks" shortcut="Control+Shift+F2" />
-	<binding command="MonoDevelop.SourceEditor.EditorCommands.GotoLineNumber" shortcut="Control+G" />
-	<binding command="MonoDevelop.SourceEditor.EditorCommands.GotoMatchingBrace" shortcut="Control+]" />
+	<binding command="MonoDevelop.Ide.Commands.SearchCommands.ClearBookmarks" shortcut="Control+Shift+F2" />
+	<binding command="MonoDevelop.Ide.Commands.SearchCommands.GotoLineNumber" shortcut="Control+G" />
+	<binding command="MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace" shortcut="Control+]" />
 	<binding command="MonoDevelop.SourceEditor.EditorCommands.HighlightingTypeList" shortcut="" />
-	<binding command="MonoDevelop.SourceEditor.EditorCommands.NextBookmark" shortcut="F2" />
-	<binding command="MonoDevelop.SourceEditor.EditorCommands.PrevBookmark" shortcut="Shift+F2" />
-	<binding command="MonoDevelop.SourceEditor.EditorCommands.PrintDocument" shortcut="Control+P" />
-	<binding command="MonoDevelop.SourceEditor.EditorCommands.PrintPreviewDocument" shortcut="Control+Shift+P" />
+	<binding command="MonoDevelop.Ide.Commands.SearchCommands.NextBookmark" shortcut="F2" />
+	<binding command="MonoDevelop.Ide.Commands.SearchCommands.PrevBookmark" shortcut="Shift+F2" />
+	<binding command="MonoDevelop.Ide.Commands.FileCommands.PrintDocument" shortcut="Control+P" />
+	<binding command="MonoDevelop.Ide.Commands.FileCommands.PrintPreviewDocument" shortcut="Control+Shift+P" />
 	<binding command="MonoDevelop.SourceEditor.EditorCommands.ShowBufferOptions" shortcut="" />
-	<binding command="MonoDevelop.SourceEditor.EditorCommands.ToggleBookmark" shortcut="Control+F2" />
+	<binding command="MonoDevelop.Ide.Commands.SearchCommands.ToggleBookmark" shortcut="Control+F2" />
 	<binding command="MonoDevelop.VersionControl.Commands.Add" shortcut="" />
 	<binding command="MonoDevelop.VersionControl.Commands.Checkout" shortcut="" />
 	<binding command="MonoDevelop.VersionControl.Commands.Commit" shortcut="" />
