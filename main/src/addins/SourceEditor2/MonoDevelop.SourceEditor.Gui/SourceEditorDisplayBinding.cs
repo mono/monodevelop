@@ -917,7 +917,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		}
 		public bool EnableUndo {
 			get {
-				return ((SourceBuffer)se.Buffer).CanUndo ();
+				return ((SourceBuffer)se.Buffer).CanUndo;
 			}
 		}
 		
@@ -933,7 +933,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		public bool EnableRedo {
 			get {
-				return ((SourceBuffer)se.Buffer).CanRedo ();
+				return ((SourceBuffer)se.Buffer).CanRedo;
 			}
 		}
 		
