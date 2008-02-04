@@ -1,3 +1,7 @@
+2008-02-04  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/CSharpVisitor.cs: Corrected type location.
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CSharpBinding.addin.xml: Update MD version.

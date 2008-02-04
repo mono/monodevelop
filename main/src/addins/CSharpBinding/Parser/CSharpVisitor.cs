@@ -141,8 +141,9 @@ namespace CSharpBinding.Parser
 		
 		public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
 		{
-			DefaultRegion bodyRegion = GetRegion(typeDeclaration.StartLocation, typeDeclaration.EndLocation);
-			DefaultRegion declarationRegion = bodyRegion; //GetRegion (typeDeclaration.DeclarationStartLocation, typeDeclaration.DeclarationEndLocation);
+			DefaultRegion bodyRegion = GetRegion(typeDeclaration.BodyStartLocation, typeDeclaration.EndLocation);
+			bodyRegion.EndColumn++;
+			DefaultRegion declarationRegion = GetRegion(typeDeclaration.StartLocation, typeDeclaration.EndLocation);
 			Modifiers mf = typeDeclaration.Modifier;
 			Class c = new Class(cu, TranslateClassType(typeDeclaration.Type), mf, declarationRegion, bodyRegion);
 			
