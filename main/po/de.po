@@ -4557,7 +4557,7 @@ msgstr "Diferenziere"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:79
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:98
 msgid "Revert"
-msgstr "Rückgängig"
+msgstr "Zurücksetzen"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:83
 msgid "Log"
