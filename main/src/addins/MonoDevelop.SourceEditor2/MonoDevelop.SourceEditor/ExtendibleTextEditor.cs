@@ -87,6 +87,7 @@ namespace MonoDevelop.SourceEditor
 					extension.TextChanged (args.Offset, args.Offset + Math.Max (args.Count, args.Value != null ? args.Value.Length : 0));
 			};
 			keyBindings [GetKeyCode (Gdk.Key.Tab)] = new TabAction (this);
+			keyBindings [GetKeyCode (Gdk.Key.BackSpace)] = new AdvancedBackspaceAction ();
 			this.PopupMenu += delegate {
 				this.ShowPopup ();
 			};
@@ -136,6 +137,15 @@ namespace MonoDevelop.SourceEditor
 					break;
 				case '(':
 					Buffer.Insert (Caret.Offset, new StringBuilder (")"));
+					break;
+				case '<':
+					Buffer.Insert (Caret.Offset, new StringBuilder (">"));
+					break;
+				case '\'':
+					Buffer.Insert (Caret.Offset, new StringBuilder ("'"));
+					break;
+				case '"':
+					Buffer.Insert (Caret.Offset, new StringBuilder ("\""));
 					break;
 				}
 			}

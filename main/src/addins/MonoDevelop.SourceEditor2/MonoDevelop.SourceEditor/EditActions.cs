@@ -43,5 +43,33 @@ namespace MonoDevelop.SourceEditor
 				base.Run (data);
 		}
 	}
-
+	
+	public class AdvancedBackspaceAction : BackspaceAction
+	{
+		const string open    = "'\"([{<";
+		const string closing = "'\")]}>";
+		
+		int GetNextNonWsCharOffset (TextEditorData data, int offset)
+		{
+			int result = offset;
+			while (Char.IsWhiteSpace (data.Document.Buffer.GetCharAt (result))) {
+				result++;
+				if (result >= data.Document.Buffer.Length)
+					return -1;
+			}
+			return result;
+		}
+		
+		protected override void RemoveCharBeforCaret (TextEditorData data)
+		{
+			char ch = data.Document.Buffer.GetCharAt (data.Caret.Offset - 1);
+			int idx = open.IndexOf (ch);
+			if (idx >= 0) {
+				int nextCharOffset = GetNextNonWsCharOffset (data, data.Caret.Offset);
+				if (nextCharOffset >= 0 && closing[idx] == data.Document.Buffer.GetCharAt (nextCharOffset))
+					data.Document.Buffer.Remove (data.Caret.Offset, nextCharOffset - data.Caret.Offset + 1);
+			}
+			base.RemoveCharBeforCaret (data);
+		}
+	}
 }
