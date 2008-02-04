@@ -48,9 +48,7 @@ namespace MonoDevelop.Core
 		
 		public static string ConfigPath {
 			get {
-				string configPath = Environment.GetEnvironmentVariable ("XDG_CONFIG_HOME");
-				if (String.IsNullOrEmpty (configPath))
-					configPath = Path.Combine (Environment.GetEnvironmentVariable ("HOME"), ".config");
+				string configPath = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
 				return Path.Combine (configPath, "MonoDevelop");
 			}
 		}
