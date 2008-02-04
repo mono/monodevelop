@@ -1,3 +1,8 @@
+2008-02-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* ILAsmCompilerManager.cs: Properly detect and report compiler errors. Fixes
+	  bug #358360.
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ILAsmBinding.addin.xml: Update MD version.
