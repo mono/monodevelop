@@ -44,10 +44,14 @@ namespace Mono.TextEditor.Highlighting
 		public static string[] Styles {
 			get {
 				List<string> result = new List<string> ();
-				foreach (string style in styles.Keys) 
-					result.Add (style);
-				foreach (string style in styleLookup.Keys) 
-					result.Add (style);
+				foreach (string style in styles.Keys) {
+					if (!result.Contains (style))
+						result.Add (style);
+				}
+				foreach (string style in styleLookup.Keys) {
+					if (!result.Contains (style))
+						result.Add (style);
+				}
 				return result.ToArray ();
 			}
 		}
@@ -86,6 +90,7 @@ namespace Mono.TextEditor.Highlighting
 				return syntaxModes [mimeType];
 			if (syntaxModeLookup.ContainsKey (mimeType)) {
 				LoadSyntaxMode (mimeType);
+				syntaxModeLookup.Remove (mimeType);
 				return GetSyntaxMode (mimeType);
 			}
 			return null;

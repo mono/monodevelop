@@ -25,6 +25,7 @@
  <EditorStyle _name="C64" _description="A Style style that uses the old Commodore 64 Styles">
 
 	<Style name="default" color="#97A0EF"/>
+	<Style name="caret" color="#97A0EF"/>
 	<Style name="background" color="#3F3FDF"/>
 	<Style name="selectedBackground" color="#000000"/>
 	<Style name="selectedForeground" color="#FFFFFF"/>
@@ -45,6 +46,9 @@
 	<Style name="foldBg" color="#3F3FDF"/>
 	<Style name="foldLineHighlighted" color="#FFFFFF"/>
 	<Style name="foldToggleMarker" color="#97A0EF"/>
+
+	<Style name="bracketHighlightRectangle" color="#97A0EF"/>
+	<Style name="bracketHighlightBg" color="#3F3FDF"/>
 
 	<!-- highlighting -->
 	<Style name="comment" color="white"/>
