@@ -1,3 +1,8 @@
+2008-02-05  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: #region ... #endregion is
+	  now folded per default.
+
 2008-02-04  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs: Fixed

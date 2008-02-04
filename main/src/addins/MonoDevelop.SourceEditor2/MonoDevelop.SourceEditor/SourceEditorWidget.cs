@@ -165,13 +165,16 @@ namespace MonoDevelop.SourceEditor
 		ICompilationUnit lastCu = null;
 		bool resetTimerStarted = false;
 		
-		void AddMarker (List<FoldSegment> foldSegments, string text, IRegion region)
+		FoldSegment AddMarker (List<FoldSegment> foldSegments, string text, IRegion region)
 		{
 			if (region == null || region.BeginLine <= 0 || region.EndLine <= 0 || region.BeginLine >= this.TextEditor.Document.Splitter.LineCount || region.EndLine >= this.TextEditor.Document.Splitter.LineCount)
-				return;
+				return null;
 			int startOffset = this.TextEditor.Document.LocationToOffset (region.BeginLine - 1,  region.BeginColumn - 1);
 			int endOffset   = this.TextEditor.Document.LocationToOffset (region.EndLine - 1,  region.EndColumn - 1);
-			foldSegments.Add (new FoldSegment (text, startOffset, endOffset - startOffset));
+			FoldSegment result = new FoldSegment (text, startOffset, endOffset - startOffset);
+			
+			foldSegments.Add (result);
+			return result;
 		}
 		
 		void AddClass (List<FoldSegment> foldSegments, IClass cl)
@@ -208,7 +211,7 @@ namespace MonoDevelop.SourceEditor
 			if (lastCu != null) {
 				List<FoldSegment> foldSegments = new List<FoldSegment> ();
 				foreach (MonoDevelop.Projects.Parser.FoldingRegion region in lastCu.FoldingRegions) {
-					AddMarker (foldSegments, region.Name, region.Region);
+					AddMarker (foldSegments, region.Name, region.Region).IsFolded = true;
 				}
 				foreach (IClass cl in lastCu.Classes) {
 					AddClass (foldSegments, cl);
