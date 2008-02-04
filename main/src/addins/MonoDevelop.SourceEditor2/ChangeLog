@@ -1,3 +1,8 @@
+2008-02-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Implemented Bug 323946 -
+	  Undo/Redo functionality are not context sensitive.
+
 2008-02-03  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed reload bug.

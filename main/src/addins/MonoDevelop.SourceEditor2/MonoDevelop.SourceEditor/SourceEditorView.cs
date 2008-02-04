@@ -232,10 +232,23 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
+		public bool EnableUndo {
+			get {
+				return this.Document.CanUndo;
+			}
+		}
+		
 		public void Undo()
 		{
 			this.Document.Undo ();
 		}
+		
+		public bool EnableRedo {
+			get {
+				return this.Document.CanRedo;
+			}
+		}
+		
 		public void Redo()
 		{
 			this.Document.Redo ();

@@ -176,7 +176,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void AddClass (List<FoldSegment> foldSegments, IClass cl)
 		{
-			if (cl.Region != null)
+			if (cl.BodyRegion != null)
 				AddMarker (foldSegments, "...", cl.BodyRegion);
 			foreach (IClass inner in cl.InnerClasses) {
 				AddClass (foldSegments, inner);
