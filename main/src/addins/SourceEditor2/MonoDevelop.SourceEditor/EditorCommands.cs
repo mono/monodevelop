@@ -33,8 +33,6 @@ namespace MonoDevelop.SourceEditor
 	public enum EditorCommands
 	{
 		HighlightingTypeList,
-		ShowBufferOptions,
-		PrintDocument,
-		PrintPreviewDocument
+		ShowBufferOptions
 	}
 }

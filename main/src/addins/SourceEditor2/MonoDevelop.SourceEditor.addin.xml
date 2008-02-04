@@ -48,17 +48,6 @@
 		<Command id = "MonoDevelop.SourceEditor.EditorCommands.ShowBufferOptions"
 				_label = "Buffer Options"
 				icon = "md-properties-icon" />
-		<!--FIXME GTKSV2
-		<Command id = "MonoDevelop.SourceEditor.EditorCommands.PrintDocument"
-				_label = "_Print..." 
-				_description = "Print current document" 
-				icon  = "gtk-print"
-				shortcut = "Control|P" />
-		<Command id = "MonoDevelop.SourceEditor.EditorCommands.PrintPreviewDocument"
-				_label = "Print Previe_w" 
-				description = "Show print preview" 
-				icon  = "gtk-print-preview"
-				shortcut = "Shift|Control|P" />-->
 	</Extension>
 
 	<Extension path = "/MonoDevelop/SourceEditor/ContextMenu/Editor">
@@ -76,27 +65,6 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UppercaseSelection" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection" />
 		</ItemSet>
-	</Extension>
-
-	<Extension path = "/MonoDevelop/Ide/Toolbar">
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/Ide/MainMenu/File">
-			<!--FIXME GTKSV2
-			<SeparatorItem id = "PrintSeparator"  insertafter = "SaveSeparator" />
-			<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.PrintPreviewDocument"
-						 insertafter = "SaveSeparator"
-						 insertbefore = "PrintSeparator" />
-			<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.PrintDocument"
-						 insertafter = "MonoDevelop.SourceEditor.EditorCommands.PrintPreviewDocument" />
-			-->
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/Ide/Toolbar/Standard">
-		<!--FIXME GTKSV2
-		<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.PrintDocument"
-					 insertafter = "MonoDevelop.Ide.Commands.FileCommands.SaveAll" />
-					 -->
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/OptionsDialogPanels">

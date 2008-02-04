@@ -89,8 +89,8 @@ namespace MonoDevelop.SourceEditor.Gui
 	}
 	
 	public class SourceEditorDisplayBindingWrapper : AbstractViewContent,
-		IExtensibleTextEditor, IPositionable, ICodeStyleOperations,
-		IDocumentInformation, IEncodedTextContent, IViewHistory //FIXME GTKSV2 IDebuggableEditor, IBookmarkBuffer
+		IExtensibleTextEditor, IPositionable, ICodeStyleOperations, IDocumentInformation, IEncodedTextContent, IViewHistory
+		//FIXME GTKSV2 IDebuggableEditor, IBookmarkBuffer, IPrintable
 	{
 		VBox mainBox;
 		VBox editorBar;
@@ -878,7 +878,19 @@ namespace MonoDevelop.SourceEditor.Gui
 			return se.View.AttachExtension (extension);
 		}
 #endregion
+/* FIXME GTKSV2
+#region IPrintable
+		void IPrintable.PrintDocument ()
+		{
+			se.PrintDocument ();
+		}
 
+		void IPrintable.PrintPreviewDocument ()
+		{
+			se.PrintPreviewDocument ();
+		}
+#endregion
+*/		
 #region IEditableTextBuffer
 		public IClipboardHandler ClipboardHandler {
 			get { return se.Buffer; }
@@ -915,6 +927,11 @@ namespace MonoDevelop.SourceEditor.Gui
 			}
 			return false;
 		}
+		public bool EnableUndo {
+			get {
+				return ((SourceBuffer)se.Buffer).CanUndo;
+			}
+		}
 		
 		public void Undo ()
 		{
@@ -923,6 +940,12 @@ namespace MonoDevelop.SourceEditor.Gui
 				TextIter iter = se.Buffer.GetIterAtMark (se.Buffer.InsertMark);
 				if (!se.View.VisibleRect.Contains (se.View.GetIterLocation (iter)))
 					se.View.ScrollToMark (se.Buffer.InsertMark, 0.1, false, 0, 0);
+			}
+		}
+		
+		public bool EnableRedo {
+			get {
+				return ((SourceBuffer)se.Buffer).CanRedo;
 			}
 		}
 		
