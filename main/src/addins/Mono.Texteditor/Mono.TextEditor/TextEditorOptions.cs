@@ -60,12 +60,25 @@ namespace Mono.TextEditor
 		bool showSpaces = false;
 		bool showEolMarkers = false;
 		bool enableSyntaxHighlighting = true;
+		bool highlightMatchingBracket = true;
 		bool highlightCaretLine = false;
 		string fontName = DEFAULT_FONT;
 		
 		public string IndentationString {
 			get {
 				return this.tabsToSpaces ? new string (' ', this.TabSize) : "\t";
+			}
+		}
+		
+		public virtual bool HighlightMatchingBracket {
+			get {
+				return highlightMatchingBracket;
+			}
+			set {
+				if (value != HighlightMatchingBracket) {
+					highlightMatchingBracket = value;
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 		

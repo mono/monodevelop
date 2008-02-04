@@ -281,6 +281,37 @@ namespace Mono.TextEditor
 					RedrawLine (Caret.Line);
 				}
 			};
+			Caret.PositionChanged += delegate {
+				int offset = Caret.Offset - 1;
+				if (!TextUtil.IsBracket (Document.Buffer.GetCharAt (offset)))
+					offset++;
+				if (offset < 0)
+					offset = 0;
+				if (offset >= Document.Buffer.Length)
+					return;
+				char ch = Document.Buffer.GetCharAt (offset);
+				int bracket = TextUtil.openBrackets.IndexOf (ch);
+				int oldIndex = bracketIndex;
+				if (bracket >= 0) {
+					bracketIndex = TextUtil.SearchMatchingBracketForward (Document, offset + 1, bracket);
+				} else {
+					bracket = TextUtil.closingBrackets.IndexOf (ch);
+					if (bracket >= 0) {
+						bracketIndex = TextUtil.SearchMatchingBracketBackward (Document, offset - 1, bracket);
+					} else {
+						bracketIndex = -1;
+					}
+				}
+				if (bracketIndex != oldIndex) {
+					int line1 = oldIndex >= 0 ? Document.Splitter.OffsetToLineNumber (oldIndex) : -1;
+					int line2 = bracketIndex >= 0 ? Document.Splitter.OffsetToLineNumber (bracketIndex) : -1;
+					if (line1 >= 0)
+						this.RedrawLine (line1);
+					if (line1 != line2 && line2 >= 0)
+						this.RedrawLine (line2);
+				}
+			};
+				
 			this.ColorStyle = new DefaultStyle (this);
 			defaultCursor = null;
 			textCursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
@@ -291,6 +322,8 @@ namespace Mono.TextEditor
 			list.AddTextTargets (CopyAction.TextType);
 			Gtk.Drag.DestSet (this, DestDefaults.All, (TargetEntry[])list, DragAction.Move | DragAction.Copy);
 		}
+		
+		int bracketIndex = -1;
 		
 		protected virtual void OptionsChanged (object sender, EventArgs args)
 		{
@@ -789,7 +822,7 @@ namespace Mono.TextEditor
 			Chunk[] chunks = mode.GetChunks (Document, TextEditorData.ColorStyle, line, offset, length);
 //			int start  = offset;
 			int xStart = xPos;
-			offset = line.Offset + line.EditableLength - offset;
+			int index = line.Offset + line.EditableLength - offset;
 			Gdk.Color selectedTextColor = ColorStyle.SelectedFg;
 			int selectionStart = textEditorData.SelectionStart != null ? textEditorData.SelectionStart.Segment.Offset + textEditorData.SelectionStart.Column : -1;
 			int selectionEnd = textEditorData.SelectionEnd != null ? textEditorData.SelectionEnd.Segment.Offset + textEditorData.SelectionEnd.Column : -1;
@@ -798,6 +831,19 @@ namespace Mono.TextEditor
 				selectionEnd = selectionStart;
 				selectionStart = tmp;
 			}
+			
+			if (offset <= this.bracketIndex && this.bracketIndex < offset + length) {
+				int bracketMarkerColumn = this.bracketIndex - line.Offset; 
+				int width, height;
+				layout.SetText (Buffer.GetTextAt (offset, bracketMarkerColumn).Replace ("\t", new string (' ', TextEditorOptions.Options.TabSize)));
+				layout.GetPixelSize (out width, out height);
+				Gdk.Rectangle bracketMatch = new Gdk.Rectangle (xStart + width, y, charWidth, LineHeight - 1);
+				gc.RgbFgColor = this.ColorStyle.BracketHighlightBg;
+				win.DrawRectangle (gc, true, bracketMatch);
+				gc.RgbFgColor = this.ColorStyle.BracketHighlightRectangle;
+				win.DrawRectangle (gc, false, bracketMatch);
+			}
+			
 //				Console.WriteLine ("#" + chunks.Length);
 			foreach (Chunk chunk in chunks) {
 //					Console.WriteLine (chunk + " style:" + chunk.Style);
@@ -818,10 +864,9 @@ namespace Mono.TextEditor
 				} else 
 					DrawTextWithHighlightedWs (win, gc, chunk.Style.Color, ref xPos, y, Document.Buffer.GetTextAt (chunk));
 			}
-			
 			if (line.Markers != null) {
 				foreach (TextMarker marker in line.Markers) {
-					marker.Draw (this, win, offset, offset + length, y, xStart, xPos);
+					marker.Draw (this, win, index, index + length, y, xStart, xPos);
 				}
 			}
 		}

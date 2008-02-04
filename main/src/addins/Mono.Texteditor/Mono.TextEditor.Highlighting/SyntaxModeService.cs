@@ -46,7 +46,7 @@ namespace Mono.TextEditor.Highlighting
 				List<string> result = new List<string> ();
 				foreach (string style in styles.Keys) 
 					result.Add (style);
-				foreach (string style in styleLookup.Values) 
+				foreach (string style in styleLookup.Keys) 
 					result.Add (style);
 				return result.ToArray ();
 			}

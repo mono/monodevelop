@@ -77,6 +77,9 @@
 	<Style name="foldLineHighlighted" color="aluminium5"/>
 	<Style name="foldToggleMarker" color="black"/>
 	
+	<Style name="bracketHighlightRectangle" color="orange3"/>
+	<Style name="bracketHighlightBg" color="orange1"/>
+
 	<!-- highlighting -->
 	<Style name="comment" color="chameleon3"/>
 	<Style name="altcomment" color="chameleon3"/>

@@ -1,5 +1,14 @@
 2008-02-04  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor.mdp, TangoStyle.xml, OblivionStyle.xml,
+	  Mono.TextEditor/TextUtil.cs, Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor/TextEditorOptions.cs,
+	  Mono.TextEditor.Highlighting/SyntaxModeService.cs,
+	  Mono.TextEditor.Highlighting/Style.cs, Makefile.am: Implemented bracket
+	  matching.
+
+2008-02-04  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/DefaultEditActions.cs: Implemented Bug 354129 - Auto add
 	  second brackets, quotation mark.
 

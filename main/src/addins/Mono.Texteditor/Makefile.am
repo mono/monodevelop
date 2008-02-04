@@ -3,11 +3,13 @@ ADDIN_BUILD = $(top_builddir)/build/bin
 ASSEMBLY = $(top_builddir)/build/bin/Mono.TextEditor.dll
 REFS =  \
 	$(GTK_SHARP_LIBS) \
+	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml
 
 FILES =  \
 	AssemblyInfo.cs \
+	gtk-gui/generated.cs \
 	Mono.TextEditor.Highlighting/Chunk.cs \
 	Mono.TextEditor.Highlighting/ChunkStyle.cs \
 	Mono.TextEditor.Highlighting/DefaultStyle.cs \
@@ -44,7 +46,8 @@ FILES =  \
 	Mono.TextEditor/TextEditor.cs \
 	Mono.TextEditor/TextEditorData.cs \
 	Mono.TextEditor/TextEditorOptions.cs \
-	Mono.TextEditor/TextMarker.cs 
+	Mono.TextEditor/TextMarker.cs \
+	Mono.TextEditor/TextUtil.cs 
 	Mono.TextEditor.Highlighting/Match.cs \
 	Mono.TextEditor.Highlighting/Style.cs \
 	Mono.TextEditor.Highlighting/SyntaxMode.cs \
@@ -61,6 +64,7 @@ RES =  \
 	CPPSyntaxMode.xml \
 	CSharpSyntaxMode.xml \
 	CSyntaxMode.xml \
+	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
 	JavaSyntaxMode.xml \
 	OblivionStyle.xml \

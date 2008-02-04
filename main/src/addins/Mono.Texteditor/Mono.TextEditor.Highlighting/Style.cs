@@ -43,6 +43,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		Color lineNumberFg, lineNumberBg, lineNumberFgHighlighted;
 		Color iconBarBg, iconBarSeperator;
+		Color bracketHighlightBg, bracketHighlightRectangle;
 		Color foldLine, foldLineHighlighted, foldBg, foldToggleMarker;
 		List<ChunkStyle>        styles           = new List<Mono.TextEditor.ChunkStyle> ();
 		Dictionary<string, int> styleLookupTable = new Dictionary<string, int> (); 
@@ -155,6 +156,18 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
+		public virtual Color BracketHighlightBg {
+			get {
+				return bracketHighlightBg;
+			}
+		}
+
+		public virtual Color BracketHighlightRectangle {
+			get {
+				return bracketHighlightRectangle;
+			}
+		}
+
 		public string Name {
 			get {
 				return name;
@@ -190,6 +203,9 @@ namespace Mono.TextEditor.Highlighting
 			ruler      = new Gdk.Color (187, 187, 187);
 			whitespaceMarker  = new Gdk.Color (187, 187, 187);
 			invalidLineMarker = new Gdk.Color (210, 0, 0);
+			
+			bracketHighlightBg        = new Gdk.Color (196, 196, 196);
+			bracketHighlightRectangle = new Gdk.Color (128, 128, 128);
 			
 			SetStyle ("comment", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255), false, false));
 			SetStyle ("altcomment", new Mono.TextEditor.ChunkStyle (new Gdk.Color (128, 128, 128), true, false));
@@ -271,11 +287,13 @@ namespace Mono.TextEditor.Highlighting
 			case "foldBg":
 			case "foldLineHighlighted":
 			case "foldToggleMarker":
+			case "bracketHighlightRectangle":
+			case "bracketHighlightBg":
 				return false;
 			}
 			return true;
 		}
-		
+					
 		Gdk.Color GetColor (string colorString)
 		{
 			if (customPalette.ContainsKey (colorString))
@@ -345,6 +363,12 @@ namespace Mono.TextEditor.Highlighting
 				break;
 			case "foldToggleMarker":
 				this.foldToggleMarker = color;
+				break;
+			case "bracketHighlightRectangle":
+				this.bracketHighlightRectangle = color;
+				break;
+			case "bracketHighlightBg":
+				this.bracketHighlightBg = color;
 				break;
 			default:
 				throw new Exception ("color  " + name + " invalid.");
