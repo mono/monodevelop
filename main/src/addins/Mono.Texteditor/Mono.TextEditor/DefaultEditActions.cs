@@ -595,7 +595,9 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
-			StringBuilder newLine = new StringBuilder ("\n");
+			StringBuilder newLine = new StringBuilder (data.Document.Eol);
+			
+			
 /*			if (TextEditorOptions.Options.AutoIndent) {
 				LineSegment line = data.Document.GetLine (data.Caret.Line);
 				for (int i = 0; i < line.EditableLength; i++) {
@@ -606,7 +608,7 @@ namespace Mono.TextEditor
 				}
 			}*/
 			data.Document.Buffer.Insert (data.Caret.Offset, newLine);
-			data.Caret.Column = newLine.Length - 1;
+			data.Caret.Column = 0;
 			data.Caret.Line++;
 		}
 	}

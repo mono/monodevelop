@@ -1,5 +1,11 @@
 2008-02-04  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/Document.cs:
+	  Implemented Bug 313786 - New editor needs to handle cr/lf issues,
+	  encoding.
+
+2008-02-04  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/Document.cs: Implemented Bug 323946 - Undo/Redo
 	  functionality are not context sensitive.
 

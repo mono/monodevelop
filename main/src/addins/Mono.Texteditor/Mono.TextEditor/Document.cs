@@ -39,7 +39,7 @@ namespace Mono.TextEditor
 		IBuffer      buffer;
 		LineSplitter splitter;
 		SyntaxMode   syntaxMode = null;
-		
+		string       eol = null;
 		public IBuffer Buffer {
 			get {
 				return buffer;
@@ -53,6 +53,17 @@ namespace Mono.TextEditor
 			set {
 				splitter.Clear ();
 				buffer.Text = value;
+			}
+		}
+		
+		public string Eol {
+			get {
+				if (eol == null && splitter.LineCount > 0) {
+					LineSegment line = splitter.Get (0);
+					if (line.DelimiterLength > 0) 
+						eol = Buffer.GetTextAt (line.EditableLength, line.DelimiterLength);
+				}
+				return !String.IsNullOrEmpty (eol) ? eol : Environment.NewLine;
 			}
 		}
 		
