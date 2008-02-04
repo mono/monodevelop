@@ -615,6 +615,12 @@ namespace Mono.TextEditor
 	
 	public class BackspaceAction : EditAction
 	{
+		protected virtual void RemoveCharBeforCaret (TextEditorData data)
+		{
+			data.Document.Buffer.Remove (data.Caret.Offset - 1, 1);
+			data.Caret.Column--;
+		}
+		
 		public override void Run (TextEditorData data)
 		{
 			if (data.IsSomethingSelected) {
@@ -629,8 +635,7 @@ namespace Mono.TextEditor
 				data.Caret.Location = new DocumentLocation (data.Caret.Line - 1, lineAbove.EditableLength);
 				data.Document.Buffer.Remove (lineAbove.EndOffset - lineAbove.DelimiterLength, lineAbove.DelimiterLength);
 			} else {
-				data.Document.Buffer.Remove (data.Caret.Offset - 1, 1);
-				data.Caret.Column--;
+				RemoveCharBeforCaret (data);
 			}
 		}
 	}
