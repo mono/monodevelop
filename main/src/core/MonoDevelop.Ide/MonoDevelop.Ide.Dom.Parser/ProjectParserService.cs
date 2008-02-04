@@ -44,11 +44,12 @@ namespace MonoDevelop.Ide.Dom.Parser
 			}
 		}
 
-		public static void Init ()
+		static ProjectDomService ()
 		{
 			MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.CombineOpened += delegate {
 				LoadWholeSolution ();
 			};
+			LoadWholeSolution ();
 		}
 		
 		static IParser GetParser (string projectType)
@@ -76,6 +77,8 @@ namespace MonoDevelop.Ide.Dom.Parser
 		
 		static void LoadWholeSolution ()
 		{
+			if (MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.CurrentOpenCombine == null)
+				return;
 			foreach (CombineEntry entry in MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects ()) {
 				Project project = (Project)entry;
 				IParser parser = GetParser (project.ProjectType);

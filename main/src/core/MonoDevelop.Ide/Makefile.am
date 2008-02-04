@@ -56,45 +56,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeaders.NewHeaderTemplateDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel.cs \
-	MonoDevelop.Ide.Dom.Output/Ambience.cs \
-	MonoDevelop.Ide.Dom.Output/NetAmbience.cs \
-	MonoDevelop.Ide.Dom.Parser/AbstractParser.cs \
-	MonoDevelop.Ide.Dom.Parser/IParser.cs \
-	MonoDevelop.Ide.Dom.Parser/ProjectDom.cs \
-	MonoDevelop.Ide.Dom.Parser/ProjectParserService.cs \
-	MonoDevelop.Ide.Dom/AbstractDomItem.cs \
-	MonoDevelop.Ide.Dom/AbstractMember.cs \
-	MonoDevelop.Ide.Dom/AttributeTarget.cs \
-	MonoDevelop.Ide.Dom/ClassType.cs \
-	MonoDevelop.Ide.Dom/Comment.cs \
-	MonoDevelop.Ide.Dom/CommentType.cs \
-	MonoDevelop.Ide.Dom/DomAttribute.cs \
-	MonoDevelop.Ide.Dom/DomEvent.cs \
-	MonoDevelop.Ide.Dom/DomField.cs \
-	MonoDevelop.Ide.Dom/DomMethod.cs \
-	MonoDevelop.Ide.Dom/DomParameter.cs \
-	MonoDevelop.Ide.Dom/DomProperty.cs \
-	MonoDevelop.Ide.Dom/DomRegion.cs \
-	MonoDevelop.Ide.Dom/DomReturnType.cs \
-	MonoDevelop.Ide.Dom/DomType.cs \
-	MonoDevelop.Ide.Dom/DomUsing.cs \
-	MonoDevelop.Ide.Dom/Error.cs \
-	MonoDevelop.Ide.Dom/IAttribute.cs \
-	MonoDevelop.Ide.Dom/ICompilationUnit.cs \
-	MonoDevelop.Ide.Dom/IDomItem.cs \
-	MonoDevelop.Ide.Dom/IDomVisitor.cs \
-	MonoDevelop.Ide.Dom/IEvent.cs \
-	MonoDevelop.Ide.Dom/IField.cs \
-	MonoDevelop.Ide.Dom/IMember.cs \
-	MonoDevelop.Ide.Dom/IMethod.cs \
-	MonoDevelop.Ide.Dom/IParameter.cs \
-	MonoDevelop.Ide.Dom/IProperty.cs \
-	MonoDevelop.Ide.Dom/IReturnType.cs \
-	MonoDevelop.Ide.Dom/IType.cs \
-	MonoDevelop.Ide.Dom/IUsing.cs \
-	MonoDevelop.Ide.Dom/Modifiers.cs \
-	MonoDevelop.Ide.Dom/ParameterModifiers.cs \
-	MonoDevelop.Ide.Dom/TypeParameter.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateGroup.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs \
@@ -135,6 +96,45 @@ FILES =  \
 	MonoDevelop.Ide.Commands/ToolsCommands.cs \
 	MonoDevelop.Ide.Commands/ViewCommands.cs \
 	MonoDevelop.Ide.Commands/WindowCommands.cs \
+	MonoDevelop.Ide.Dom.Output/Ambience.cs \
+	MonoDevelop.Ide.Dom.Output/NetAmbience.cs \
+	MonoDevelop.Ide.Dom.Parser/AbstractParser.cs \
+	MonoDevelop.Ide.Dom.Parser/IParser.cs \
+	MonoDevelop.Ide.Dom.Parser/ProjectDom.cs \
+	MonoDevelop.Ide.Dom.Parser/ProjectParserService.cs \
+	MonoDevelop.Ide.Dom/AbstractDomItem.cs \
+	MonoDevelop.Ide.Dom/AbstractMember.cs \
+	MonoDevelop.Ide.Dom/AttributeTarget.cs \
+	MonoDevelop.Ide.Dom/ClassType.cs \
+	MonoDevelop.Ide.Dom/Comment.cs \
+	MonoDevelop.Ide.Dom/CommentType.cs \
+	MonoDevelop.Ide.Dom/DomAttribute.cs \
+	MonoDevelop.Ide.Dom/DomEvent.cs \
+	MonoDevelop.Ide.Dom/DomField.cs \
+	MonoDevelop.Ide.Dom/DomMethod.cs \
+	MonoDevelop.Ide.Dom/DomParameter.cs \
+	MonoDevelop.Ide.Dom/DomProperty.cs \
+	MonoDevelop.Ide.Dom/DomRegion.cs \
+	MonoDevelop.Ide.Dom/DomReturnType.cs \
+	MonoDevelop.Ide.Dom/DomType.cs \
+	MonoDevelop.Ide.Dom/DomUsing.cs \
+	MonoDevelop.Ide.Dom/Error.cs \
+	MonoDevelop.Ide.Dom/IAttribute.cs \
+	MonoDevelop.Ide.Dom/ICompilationUnit.cs \
+	MonoDevelop.Ide.Dom/IDomItem.cs \
+	MonoDevelop.Ide.Dom/IDomVisitor.cs \
+	MonoDevelop.Ide.Dom/IEvent.cs \
+	MonoDevelop.Ide.Dom/IField.cs \
+	MonoDevelop.Ide.Dom/IMember.cs \
+	MonoDevelop.Ide.Dom/IMethod.cs \
+	MonoDevelop.Ide.Dom/IParameter.cs \
+	MonoDevelop.Ide.Dom/IProperty.cs \
+	MonoDevelop.Ide.Dom/IReturnType.cs \
+	MonoDevelop.Ide.Dom/IType.cs \
+	MonoDevelop.Ide.Dom/IUsing.cs \
+	MonoDevelop.Ide.Dom/Modifiers.cs \
+	MonoDevelop.Ide.Dom/ParameterModifiers.cs \
+	MonoDevelop.Ide.Dom/TypeParameter.cs \
 	MonoDevelop.Ide.ExternalTools/ExternalTool.cs \
 	MonoDevelop.Ide.ExternalTools/ExternalToolService.cs \
 	MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs \

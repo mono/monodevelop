@@ -335,46 +335,46 @@
     <File name="gtk-gui/MonoDevelop.Ide.StandardHeaders.NewHeaderTemplateDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Dialogs/GotoLineDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GotoLineDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/IAttribute.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/AttributeTarget.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/DomRegion.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/IReturnType.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/Modifiers.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/IDomItem.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/IType.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/IField.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/TypeParameter.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/IMethod.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/IProperty.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/IMember.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/IEvent.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/IParameter.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/ParameterModifiers.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/ICompilationUnit.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/Comment.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/CommentType.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/Error.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/IUsing.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/IDomVisitor.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/DomAttribute.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/AbstractDomItem.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/DomEvent.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/DomField.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/AbstractMember.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/DomMethod.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/DomParameter.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/DomProperty.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/DomReturnType.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/DomUsing.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/DomType.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom.Output/Ambience.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom/ClassType.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom.Output/NetAmbience.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom.Parser/ProjectDom.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom.Parser/ProjectParserService.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom.Parser/IParser.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Dom.Parser/AbstractParser.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Content/ISplittable.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom.Output/Ambience.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom.Output/NetAmbience.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom.Parser/AbstractParser.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom.Parser/IParser.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom.Parser/ProjectDom.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom.Parser/ProjectParserService.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/AbstractDomItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/AbstractMember.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/AttributeTarget.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/ClassType.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/Comment.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/CommentType.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/DomAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/DomEvent.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/DomField.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/DomMethod.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/DomParameter.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/DomProperty.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/DomRegion.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/DomReturnType.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/DomType.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/DomUsing.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/Error.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/IAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/ICompilationUnit.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/IDomItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/IDomVisitor.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/IEvent.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/IField.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/IMember.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/IMethod.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/IParameter.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/IProperty.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/IReturnType.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/IType.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/IUsing.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/Modifiers.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/ParameterModifiers.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom/TypeParameter.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
