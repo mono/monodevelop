@@ -1,3 +1,8 @@
+2008-02-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* templates/NUnitProject.xpt.xml: Fix nunit versions referenced in the
+	  project.
+
 2008-02-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* templates/NUnitProject.xpt.xml: Don't try to open Test.cs, since it wont
