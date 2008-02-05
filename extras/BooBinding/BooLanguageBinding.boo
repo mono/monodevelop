@@ -26,6 +26,7 @@ import System.Collections
 import System.Reflection
 import System.Resources
 import System.Xml
+import System.CodeDom
 import System.CodeDom.Compiler;
 import Boo.Lang.CodeDom;
 
@@ -38,7 +39,7 @@ import MonoDevelop.Core
 public class BooLanguageBinding(IDotNetLanguageBinding):
 	internal static LanguageName = "Boo"
 	compilerServices = BooBindingCompilerServices ()
-	provider = BooCodeProvider ()
+	provider = BooEnhancedCodeProvider ()
 	parser = BooBinding.Parser.BooParser ()
 	
 	public Language as string:
@@ -85,3 +86,19 @@ public class BooLanguageBinding(IDotNetLanguageBinding):
 	public Refactorer as IRefactorer:
 		get:
 			return null
+
+public class BooEnhancedCodeProvider (BooCodeProvider):
+	public override def CreateGenerator() as ICodeGenerator:
+		return BooEnhancedCodeGenerator ()
+		
+public class BooEnhancedCodeGenerator (BooCodeGenerator):
+	public override def GenerateCompileUnit (cu as CodeCompileUnit):
+		// Boo doesn't support more than one namespace in a file.
+		// If the compile unit has a default namespace declaration with
+		// only imports on it, merge it with the main namespace
+		if cu.Namespaces.Count == 2 and cu.Namespaces [0].Name == "":
+			for im in cu.Namespaces[0].Imports:
+				cu.Namespaces[1].Imports.Add (im)
+			cu.Namespaces.RemoveAt (0)
+		super.GenerateCompileUnit (cu)
+				
