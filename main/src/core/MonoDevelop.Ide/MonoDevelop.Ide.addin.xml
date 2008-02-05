@@ -452,19 +452,19 @@
 		
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenFile"
 				defaultHandler = "MonoDevelop.Ide.Commands.OpenFileHandler"
-				_label = "O_pen..." 
+				_label = "_Open..." 
 				shortcut = "Control|O"
 				_description = "Open file or solution"
 				icon  = "gtk-open" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenFileInSolution"
 				defaultHandler = "MonoDevelop.Ide.Commands.OpenFileInSolutionHandler"
-				_label = "Open File in Solution..." 
+				_label = "F_ile in Solution..." 
 				shortcut = "Alt|Shift|O"
 				_description = "Open a file in the current solution..."
 				icon  = "gtk-open" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.NewFile" 
 				defaultHandler = "MonoDevelop.Ide.Commands.NewFileHandler"
-				_label = "New File..."
+				_label = "_File..."
 				shortcut = "Control|N"
 				_description = "Create a new file"
 				icon = "gtk-new" />
@@ -472,20 +472,20 @@
 				icon = "gtk-save" 
 				shortcut = "Control|S"
 				_description = "Save the active document"
-				_label = "Save" />
+				_label = "_Save" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.SaveAll"
 				defaultHandler = "MonoDevelop.Ide.Commands.SaveAllHandler"
 				icon = "md-save-all-icon" 
 				_description = "Save all open files"
-				_label = "Save All" />
+				_label = "Save A_ll" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.NewProject" 
 				defaultHandler = "MonoDevelop.Ide.Commands.NewProjectHandler"
-				_label = "N_ew Solution..." 
+				_label = "_Solution..." 
 				icon = "md-new-project-icon" 
 				description = "Create a new solution" 
 				shortcut = "Control|Shift|N"  />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile"
-				_label = "_Close File" 
+				_label = "_File" 
 				description = "Close active file"
 				icon = "gtk-close"
 				shortcut = "Control|W"/>
@@ -497,7 +497,7 @@
 				shortcut = "Control|Shift|W" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.CloseCombine"
 				defaultHandler = "MonoDevelop.Ide.Commands.CloseCombineHandler"
-				_label = "Close Sol_ution" 
+				_label = "_Sol_ution" 
 				description = "Close solution"
 				icon = "md-close-combine-icon" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.ReloadFile"
@@ -523,7 +523,7 @@
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.RecentFileList"
 				defaultHandler = "MonoDevelop.Ide.Commands.RecentFileListHandler"
 				type="array"
-				_label = "Recent Files" />
+				_label = "Recent _Files" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.ClearRecentFiles" 
 				defaultHandler = "MonoDevelop.Ide.Commands.ClearRecentFilesHandler"
 				_label = "_Clear Recent Files" 
@@ -531,7 +531,7 @@
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.RecentProjectList"
 				defaultHandler = "MonoDevelop.Ide.Commands.RecentProjectListHandler"
 				type="array"
-				_label = "Recent Projects" />
+				_label = "Recent Pro_jects" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.ClearRecentProjects"
 				defaultHandler = "MonoDevelop.Ide.Commands.ClearRecentProjectsHandler"
 				_label = "_Clear Recent Solutions" 
@@ -1171,7 +1171,6 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenFile" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Save" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAll" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.PrintDocument" />
 			<SeparatorItem id = "Separator1" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Undo" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Redo" />
@@ -1216,24 +1215,28 @@
 
 	<Extension path = "/MonoDevelop/Ide/MainMenu">
 		<ItemSet id = "File" _label = "_File">
-			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewFile" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewProject" />
+			<ItemSet id = "New" _label = "_New">
+				<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewFile" />
+				<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewProject" />
+			</ItemSet>
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenFile" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenFileInSolution" />
+<!--			<ItemSet id = "Open" _label = "_Open">
+				<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenFileInSolution" />
+			</ItemSet>-->
+			<ItemSet id = "Close" _label = "_Close">
+				<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile" />
+				<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseCombine" />
+			</ItemSet>
+
 			<SeparatorItem id = "OpenSep" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Save" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAs" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAll" />
 			<SeparatorItem id = "SaveSeparator" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.PrintPreviewDocument" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.PrintDocument" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.PrintPreviewDocument" />
 			<SeparatorItem id = "PrintSeparator" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseAllFiles" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseCombine" />
-			<SeparatorItem id = "ReloadSeparator" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.ReloadFile" />
-			
 			<SeparatorItem id = "RecentSeparator" />
 			<ItemSet id = "RecentFiles" _label = "Recent _Files">
 				<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.RecentFileList" />
@@ -1265,17 +1268,18 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.SelectAll" />
 			
 			<SeparatorItem id = "Separator4" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.CommentCode" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UncommentCode" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow" />
-			<ItemSet id = "Advanced" _label = "_Advanced">
+			<ItemSet id = "Format" _label = "_Format">
 				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UppercaseSelection" />
 				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection" />
+				<SeparatorItem id = "Separator1" />
+				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.CommentCode" />
+				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UncommentCode" />
+				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection" />
+				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" />
 			</ItemSet>
 			
+			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow" />
 			<SeparatorItem id = "Separator5" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.WordCount" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.InsertStandardHeader" />
@@ -1331,7 +1335,15 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace" />
 		</ItemSet>
 
-		<ItemSet id = "Run" _label = "_Project">
+		<ItemSet id = "Project" _label = "_Project">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ExportProject" />
+			<SeparatorItem id = "ExportSeparator" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
+			<SeparatorItem id = "OptionsSeparator" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
+		</ItemSet>
+
+		<ItemSet id = "Build" _label = "_Build">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.BuildSolution" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RebuildSolution" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.CleanSolution" />
@@ -1339,12 +1351,11 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
-			<SeparatorItem id = "ExportSeparator" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ExportProject" />
-			<SeparatorItem id = "RunSeparator" />
+		</ItemSet>
+
+		<ItemSet id = "Debug" _label = "_Debug">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Run" />
-<!--			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Debug" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Debug" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.DebugApplication" />
 			<SeparatorItem id = "Separator2" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.Pause" />
@@ -1356,10 +1367,8 @@
 			<SeparatorItem id = "Separator4" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.ToggleBreakpoint" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.ClearAllBreakpoints" />
--->			<SeparatorItem id = "OptionsSeparator" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
 		</ItemSet>
-        
+
 		<ItemSet id = "Tools" _label = "_Tools">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.AddinManager" />
 			<SeparatorItem id ="AddinManagerSeparator" /> 
