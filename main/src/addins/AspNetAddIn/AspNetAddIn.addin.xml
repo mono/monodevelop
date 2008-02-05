@@ -159,7 +159,7 @@
 		<CommandItem id = "MonoDevelop.AspNet.Deployment.WebDeployCommands.DeployProject" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/MainMenu/Run">
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
 		<CommandItem id = "MonoDevelop.AspNet.Deployment.WebDeployCommands.DeployProject" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"/>
 	</Extension>
 
