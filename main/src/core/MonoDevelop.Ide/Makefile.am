@@ -147,6 +147,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Content/IEditable.cs \
 	MonoDevelop.Ide.Gui.Content/IEncodedTextContent.cs \
 	MonoDevelop.Ide.Gui.Content/IExtensibleTextEditor.cs \
+	MonoDevelop.Ide.Gui.Content/IFoldable.cs \
 	MonoDevelop.Ide.Gui.Content/IndentStyle.cs \
 	MonoDevelop.Ide.Gui.Content/IParsableContent.cs \
 	MonoDevelop.Ide.Gui.Content/IPositionable.cs \

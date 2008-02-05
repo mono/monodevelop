@@ -314,7 +314,18 @@
 				_label = "Insert Standard Header" 
 				defaultHandler = "MonoDevelop.Ide.Commands.InsertStandardHeaderHandler"
 				description = "Add the user defined header to the top of the file"/>
-				
+		
+		<Command id = "MonoDevelop.Ide.Commands.EditCommands.ToggleFolding"
+				_label = "_Toggle fold" 
+				shortcut = "Control|Shift|M"
+				description = "Toggles the folding at caret position."/>
+		<Command id = "MonoDevelop.Ide.Commands.EditCommands.ToggleAllFoldings"
+				_label = "Toggle _all folds" 
+				shortcut = "Control|Shift|A"
+				description = "Toggles the all foldings in the document."/>
+		<Command id = "MonoDevelop.Ide.Commands.EditCommands.FoldDefinitions"
+				_label = "Show _definitions only" 
+				description = "Folds all method and property bodies."/>
 		</Category>
 
 		<!-- ProjectCommands -->
@@ -1271,6 +1282,12 @@
 				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.ToggleCodeComment" />
 				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection" />
 				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" />
+			</ItemSet>
+
+			<ItemSet id = "Folding" _label = "F_olding">
+				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.ToggleFolding" />
+				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.ToggleAllFoldings" />
+				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.FoldDefinitions" />
 			</ItemSet>
 			
 			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" />

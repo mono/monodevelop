@@ -566,7 +566,42 @@ namespace MonoDevelop.Ide.Gui
 			doc.TextEditor.Select(selStart, selEnd);
 			doc.TextEditor.EndAtomicUndo ();
 		}
-#region Bookmarks
+		
+		#region Folding
+		[CommandUpdateHandler (EditCommands.ToggleAllFoldings)]
+		[CommandUpdateHandler (EditCommands.FoldDefinitions)]
+		void UpdateFoldCommands (CommandInfo info)
+		{
+			info.Enabled = GetContent <IFoldable> () != null;
+		}
+		
+		[CommandHandler (EditCommands.ToggleAllFoldings)]
+		void ToggleAllFoldings ()
+		{
+			GetContent <IFoldable> ().ToggleAllFoldings ();
+		}
+		
+		[CommandHandler (EditCommands.FoldDefinitions)]
+		void FoldDefinitions ()
+		{
+			GetContent <IFoldable> ().FoldDefinitions ();
+		}
+		
+		[CommandUpdateHandler (EditCommands.ToggleFolding)]
+		void UpdateToggleFolding (CommandInfo info)
+		{
+			info.Enabled = GetContent <IFoldable> () != null;
+		}
+		
+		[CommandHandler (EditCommands.ToggleFolding)]
+		void ToggleFolding ()
+		{
+			GetContent <IFoldable> ().ToggleFolding ();
+		}
+		
+		#endregion
+		
+		#region Bookmarks
 		[CommandUpdateHandler (SearchCommands.ToggleBookmark)]
 		[CommandUpdateHandler (SearchCommands.PrevBookmark)]
 		[CommandUpdateHandler (SearchCommands.NextBookmark)]
@@ -608,9 +643,9 @@ namespace MonoDevelop.Ide.Gui
 			Debug.Assert (markBuffer != null);
 			markBuffer.ClearBookmarks ();
 		}
-#endregion
+		#endregion
 		
-#region Splitting
+		#region Splitting
 		[CommandUpdateHandler (WindowCommands.SplitWindowHorizontally)]
 		protected void UpdateSplitWindowHorizontally (CommandInfo info)
 		{
@@ -652,8 +687,9 @@ namespace MonoDevelop.Ide.Gui
 			Debug.Assert (split != null);
 			split.Unsplit ();
 		}
-#endregion
-#region Printing
+		#endregion
+		
+		#region Printing
 		[CommandUpdateHandler (FileCommands.PrintDocument)]
 		[CommandUpdateHandler (FileCommands.PrintPreviewDocument)]
 		protected void UpdatePrintCommands (CommandInfo info)
@@ -670,7 +706,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			GetContent <IPrintable> ().PrintPreviewDocument ();
 		}
-#endregion
+		#endregion
 		
 	}
 }

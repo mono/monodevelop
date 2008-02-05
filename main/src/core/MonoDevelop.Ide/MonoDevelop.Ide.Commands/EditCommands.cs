@@ -53,7 +53,11 @@ namespace MonoDevelop.Ide.Commands
 		LowercaseSelection,
 		WordCount,
 		MonodevelopPreferences,
-		InsertStandardHeader
+		InsertStandardHeader,
+		
+		ToggleFolding,
+		ToggleAllFoldings,
+		FoldDefinitions
 	}
 	
 	internal class MonodevelopPreferencesHandler: CommandHandler
