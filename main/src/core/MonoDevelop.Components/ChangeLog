@@ -1,3 +1,11 @@
+2008-02-05  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Components.Commands.ExtensionNodes/CommandItemCodon.cs,
+	  MonoDevelop.Components.Commands/CommandMenuItem.cs,
+	  MonoDevelop.Components.Commands/CommandCheckMenuItem.cs,
+	  MonoDevelop.Components.Commands/CommandEntry.cs: It's now possible to
+	  override labels in the CommandItemCodon.
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Components.addin.xml: Update MD version.

@@ -33,10 +33,15 @@ namespace MonoDevelop.Components.Commands
 	public class CommandEntry
 	{
 		object cmdId;
-		
-		public CommandEntry (object cmdId)
+		string overrideLabel;
+
+		public CommandEntry (object cmdId, string overrideLabel)
 		{
-			this.cmdId = cmdId;
+			this.cmdId         = cmdId;
+			this.overrideLabel = overrideLabel;
+		}
+		public CommandEntry (object cmdId) : this (cmdId, null)
+		{
 		}
 		
 		public object CommandId {
@@ -46,7 +51,7 @@ namespace MonoDevelop.Components.Commands
 		
 		internal protected virtual Gtk.MenuItem CreateMenuItem (CommandManager manager)
 		{
-			return CreateMenuItem (manager, cmdId, true);
+			return CreateMenuItem (manager, cmdId, true, overrideLabel);
 		}
 		
 		internal protected virtual Gtk.ToolItem CreateToolItem (CommandManager manager)
@@ -99,7 +104,12 @@ namespace MonoDevelop.Components.Commands
 				return new CommandToggleToolButton (cmdId, manager);
 		}
 		
-		internal static Gtk.MenuItem CreateMenuItem (CommandManager manager, object cmdId, bool isArrayMaster)
+		internal static Gtk.MenuItem CreateMenuItem (CommandManager manager, object cmdId, bool isArrayMaster)		
+		{
+			return CreateMenuItem (manager, cmdId, isArrayMaster, null);
+		}
+
+		internal static Gtk.MenuItem CreateMenuItem (CommandManager manager, object cmdId, bool isArrayMaster, string overrideLabel)
 		{
 			if (cmdId == Command.Separator)
 				return new Gtk.SeparatorMenuItem ();
@@ -117,9 +127,9 @@ namespace MonoDevelop.Components.Commands
 			
 			ActionCommand acmd = cmd as ActionCommand;
 			if (acmd.ActionType == ActionType.Normal || (isArrayMaster && acmd.CommandArray))
-				return new CommandMenuItem (cmdId, manager);
+				return new CommandMenuItem (cmdId, manager, overrideLabel);
 			else
-				return new CommandCheckMenuItem (cmdId, manager);
+				return new CommandCheckMenuItem (cmdId, manager, overrideLabel);
 		}	
 	}
 }

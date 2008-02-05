@@ -40,10 +40,13 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 	[ExtensionNode (Description="A command menu or toolbar item. The id of the element must match the id of a registered command.")]
 	internal class CommandItemCodon : InstanceExtensionNode
 	{
+		[NodeAttribute ("_label", "Label", Localizable=true)]
+		string label;
+		
 		public override object CreateInstance ()
 		{
 			object id = CommandCodon.ParseCommandId (this);
-			return new CommandEntry (id);
+			return new CommandEntry (id, label);
 		}
 	}
 }

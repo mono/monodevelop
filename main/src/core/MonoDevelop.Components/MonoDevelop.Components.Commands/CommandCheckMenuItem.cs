@@ -38,14 +38,21 @@ namespace MonoDevelop.Components.Commands
 		bool isArrayItem;
 		object arrayDataItem;
 		object initialTarget;
+		string overrideLabel;
 		
-		public CommandCheckMenuItem (object commandId, CommandManager commandManager): base ("")
+		public CommandCheckMenuItem (object commandId, CommandManager commandManager, string overrideLabel): base ("")
 		{
 			this.commandId = commandId;
 			this.commandManager = commandManager;
+			this.overrideLabel = overrideLabel;
+			
 			ActionCommand cmd = commandManager.GetCommand (commandId) as ActionCommand;
 			if (cmd != null && cmd.ActionType == ActionType.Radio)
 				this.DrawAsRadio = true;
+		}
+
+		public CommandCheckMenuItem (object commandId, CommandManager commandManager): this (commandId, commandManager, null)
+		{
 		}
 		
 		void ICommandUserItem.Update (object initialTarget)
@@ -132,10 +139,10 @@ namespace MonoDevelop.Components.Commands
 				accel_label.Text = String.Empty;
 			
 			if (cmdInfo.UseMarkup) {
-				label.Markup = cmdInfo.Text;
+				label.Markup = overrideLabel ?? cmdInfo.Text;
 				label.UseMarkup = true;
 			} else {
-				label.Text = cmdInfo.Text;
+				label.Text = overrideLabel ?? cmdInfo.Text;
 				label.UseMarkup = false;
 			}
 			
