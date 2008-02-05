@@ -1,5 +1,5 @@
 
-EXTRA_DIST = JavaBinding.make rules.make configure Makefile.include
+EXTRA_DIST = JavaBinding.make rules.make configure Makefile.include COPYING
 
 all: all-recursive
 
