@@ -1957,11 +1957,11 @@ msgstr "A_uswahl nicht mehr einrücken"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:304
 msgid "_Uppercase Selection"
-msgstr "_Auswahl großbuchstabig machen"
+msgstr "_Zu Großbuchstaben"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:308
 msgid "_Lowercase Selection"
-msgstr "A_uswahl kleinbuchstabig machen"
+msgstr "Z_u Kleinbuchstaben"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:310
 msgid "_Word Count..."
