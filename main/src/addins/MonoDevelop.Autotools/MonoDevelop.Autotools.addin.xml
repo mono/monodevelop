@@ -65,7 +65,7 @@
 		<CommandItem id = "MonoDevelop.Autotools.Commands.GenerateFiles" insertafter="ExportListSeparator"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Ide/MainMenu/Run">
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
 		<CommandItem id = "MonoDevelop.Autotools.Commands.GenerateFiles" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"/>
 	</Extension>
 	
