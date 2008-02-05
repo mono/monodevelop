@@ -1,5 +1,9 @@
 2008-02-05  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.SourceEditor.addin.xml: Worked on text editor context menu.
+
+2008-02-05  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor.addin.xml,
 	  MonoDevelop.SourceEditor/SourceEditorView.cs: Converted
 	  comment/uncomment to the more common toggle comment logic.
