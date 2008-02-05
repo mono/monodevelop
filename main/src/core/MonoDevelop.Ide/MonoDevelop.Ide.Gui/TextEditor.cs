@@ -250,16 +250,10 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public void CommentCode ()
+		public void ToggleCodeComment ()
 		{
 			if (codeStyleOperations != null)
-				codeStyleOperations.CommentCode ();
-		}
-		
-		public void UncommentCode ()
-		{
-			if (codeStyleOperations != null)
-				codeStyleOperations.UncommentCode ();
+				codeStyleOperations.ToggleCodeComment ();
 		}
 		
 		public void IndentSelection ()

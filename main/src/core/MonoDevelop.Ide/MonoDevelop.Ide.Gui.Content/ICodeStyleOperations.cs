@@ -29,8 +29,8 @@ namespace MonoDevelop.Ide.Gui.Content
 {
 	public interface ICodeStyleOperations
 	{
-		void CommentCode ();
-		void UncommentCode ();
+		void ToggleCodeComment ();
+		
 		void IndentSelection ();
 		void UnIndentSelection ();
 	}

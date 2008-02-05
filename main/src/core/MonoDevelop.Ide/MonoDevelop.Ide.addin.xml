@@ -279,16 +279,11 @@
 				shortcut = "Control|A"
 				defaultHandler = "MonoDevelop.Ide.Commands.DefaultSelectAllHandler"
 				icon = "md-select-all" />
-		<Command id = "MonoDevelop.Ide.Commands.EditCommands.CommentCode"
+		<Command id = "MonoDevelop.Ide.Commands.EditCommands.ToggleCodeComment"
 				shortcut = "Control|Alt|C"
-				description = "Comment selected lines of code" 
-				_label = "C_omment Line(s)"
+				description = "Comment/Uncomment selected lines of code" 
+				_label = "_Toggle Line Comment(s)"
 				icon = "md-comment" />
-		<Command id = "MonoDevelop.Ide.Commands.EditCommands.UncommentCode"
-				shortcut = "Control|Alt|U"
-				description = "Uncomment selected lines of code" 
-				_label = "_Uncomment Line(s)"
-				icon = "md-uncomment" />
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection"
 				shortcut = "Control|Alt|End"
 				description = "Indent selected lines of code" 
@@ -1272,8 +1267,7 @@
 				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UppercaseSelection" />
 				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection" />
 				<SeparatorItem id = "Separator1" />
-				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.CommentCode" />
-				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UncommentCode" />
+				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.ToggleCodeComment" />
 				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection" />
 				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" />
 			</ItemSet>

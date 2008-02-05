@@ -251,32 +251,18 @@ namespace MonoDevelop.Ide.Gui
 			wcd.Hide ();
 		}
 		
-		[CommandHandler (EditCommands.CommentCode)]
-		public void OnCommentCode()
-		{
-			ICodeStyleOperations  styling = GetContent<ICodeStyleOperations> ();
-			if (styling != null)
-				styling.CommentCode ();
-		}
-		
-		[CommandUpdateHandler (EditCommands.CommentCode)]
+		[CommandUpdateHandler (EditCommands.ToggleCodeComment)]
 		protected void OnUpdateCommentCode (CommandInfo info)
 		{
 			info.Enabled = GetContent<ICodeStyleOperations> () != null;
 		}
 		
-		[CommandHandler (EditCommands.UncommentCode)]
+		[CommandHandler (EditCommands.ToggleCodeComment)]
 		public void OnUncommentCode()
 		{
 			ICodeStyleOperations  styling = GetContent <ICodeStyleOperations> ();
 			if (styling != null)
-				styling.UncommentCode ();
-		}
-		
-		[CommandUpdateHandler (EditCommands.UncommentCode)]
-		protected void OnUpdateUncommentCode (CommandInfo info)
-		{
-			info.Enabled = GetContent<ICodeStyleOperations> () != null;
+				styling.ToggleCodeComment ();
 		}
 		
 		[CommandHandler (EditCommands.IndentSelection)]

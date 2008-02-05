@@ -1,5 +1,13 @@
 2008-02-05  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Content/ICodeStyleOperations.cs,
+	  MonoDevelop.Ide.Commands/EditCommands.cs, MonoDevelop.Ide.addin.xml,
+	  MonoDevelop.Ide.Gui/ViewCommandHandlers.cs,
+	  MonoDevelop.Ide.Gui/TextEditor.cs: Converted comment/uncomment to the
+	  more common toggle comment logic.
+
+2008-02-05  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.addin.xml: Structured main menu.
 
 2008-02-04  Mike Krüger <mkrueger@novell.com> 
