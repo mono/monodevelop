@@ -1084,13 +1084,17 @@ namespace MonoDevelop.SourceEditor.Gui
 		}
 #endregion
 #region ICodeStyleOperations
-		void ICodeStyleOperations.CommentCode ()
+		void ICodeStyleOperations.ToggleCodeComment ()
 		{
-			se.Buffer.CommentCode ();
-		}
-		void ICodeStyleOperations.UncommentCode ()
-		{
-			se.Buffer.UncommentCode ();
+			string text = this.GetLineTextAtOffset (this.CursorPosition); 
+			string commentTag = Services.Languages.GetBindingPerFileName (IdeApp.Workbench.ActiveDocument.FileName).CommentTag;
+			if (commentTag == null)
+				commentTag = "//";
+			if (text.TrimStart ().StartsWith (commentTag)) {
+				se.Buffer.UncommentCode ();
+			} else {
+				se.Buffer.CommentCode ();
+			}
 		}
 		
 		void ICodeStyleOperations.IndentSelection ()
