@@ -672,6 +672,25 @@ namespace MonoDevelop.SourceEditor
 		}
 #endregion
 #region ICodeStyleOperations
+		public void ToggleCodeComment ()
+		{
+			bool comment = false;
+			string commentTag = Services.Languages.GetBindingPerFileName (this.ContentName).CommentTag ?? "//";
+			foreach (LineSegment line in this.TextEditorData.SelectedLines) {
+				string text = Document.Buffer.GetTextAt (line);
+				string trimmedText = text.TrimStart ();
+				int length = 0;
+				if (!trimmedText.StartsWith (commentTag)) {
+					comment = true;
+					break;
+				}
+			}
+			if (comment) {
+				CommentCode ();
+			} else {
+				UncommentCode ();
+			}
+		}
 		
 		public void CommentCode ()
 		{
@@ -774,4 +793,4 @@ namespace MonoDevelop.SourceEditor
 		
 #endregion
 	}
-}
+} 

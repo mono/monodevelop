@@ -1,5 +1,11 @@
 2008-02-05  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.SourceEditor.addin.xml,
+	  MonoDevelop.SourceEditor/SourceEditorView.cs: Converted
+	  comment/uncomment to the more common toggle comment logic.
+
+2008-02-05  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: #region ... #endregion is
 	  now folded per default.
 
