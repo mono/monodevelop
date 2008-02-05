@@ -1,14 +1,15 @@
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop Hungarian translation 1.0\n"
+"Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2007-12-23 22:55:57+0100\n"
+"PO-Revision-Date: 2008-02-03 23:22+0100\n"
 "Last-Translator: Gergely Kiss <mail.gery@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"X-Generator: MonoDevelop.Gettext \n"
+"Content-Transfer-Encoding: 8bit"
 
 #: ../templates/EmptyJavaFile.xft.xml:4
 msgid "Empty File"
@@ -16,7 +17,7 @@ msgstr "Üres fájl"
 
 #: ../templates/EmptyJavaFile.xft.xml:6
 msgid "General"
-msgstr ""
+msgstr "Általános"
 
 #: ../templates/EmptyJavaFile.xft.xml:8
 msgid "Creates an empty Java file."
@@ -90,7 +91,7 @@ msgstr "AWT applet"
 #: ../templates/JavaDialog.xft.xml:6 ../templates/JavaFrame.xft.xml:6
 #: ../templates/JavaOKDialog.xft.xml:6 ../templates/JavaPanel.xft.xml:6
 msgid "AWT"
-msgstr ""
+msgstr "AWT"
 
 #: ../templates/JavaApplet.xft.xml:8
 msgid "Creates a Java AWT Applet"
@@ -266,3 +267,4 @@ msgstr "Assembly kód generálása..."
 #: ../IKVMCompilerManager.cs:213
 msgid "Compiling Java source code ..."
 msgstr "Java forráskód fordítása..."
+

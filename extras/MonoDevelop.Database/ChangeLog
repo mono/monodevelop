@@ -1,3 +1,7 @@
+2008-02-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	
+
 2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
 
 	* configure.in: only compile the Sqlite addin if the mono version >= 1.2.5

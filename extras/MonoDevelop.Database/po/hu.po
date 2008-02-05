@@ -1,14 +1,15 @@
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop Hungarian translation 1.0\n"
+"Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2007-12-24 00:01:04+0100\n"
+"PO-Revision-Date: 2008-02-03 23:23+0100\n"
 "Last-Translator: Gergely Kiss <mail.gery@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"X-Generator: MonoDevelop.Gettext \n"
+"Content-Transfer-Encoding: 8bit"
 
 #: ../MonoDevelop.Database.Sql/ConnectionContextService.cs:112
 msgid "Unable to load stored SQL connection information."
@@ -67,11 +68,8 @@ msgid "Query execute cancelled"
 msgstr "A lekérdezés futtatása meg lett szakítva"
 
 #: ../MonoDevelop.Database.Query/SqlQueryView.cs:185
-#, fuzzy
 msgid "Query executed ({0} result table)"
-msgid_plural "Query executed ({0} result tables)"
-msgstr[0] "A lekérdezés sikeresen lefutott ({0} eredménytábla jött létre)"
-msgstr[1] "A lekérdezés sikeresen lefutott ({0} eredménytábla jött létre)"
+msgstr "A lekérdezés sikeresen lefutott ({0} eredménytábla jött létre)"
 
 #: ../MonoDevelop.Database.Sql.Sqlite/SqliteGuiProvider.cs:41
 msgid "Save Database"
@@ -755,3 +753,4 @@ msgstr "Feltételek ellenőrzése"
 msgid "Primary Key constraint '{0}' must be applied to one or more columns."
 msgstr ""
 "Az elsődleges kulcs megszorítást ('{0}') alkalmazni kell legalább egy mezőre."
+
