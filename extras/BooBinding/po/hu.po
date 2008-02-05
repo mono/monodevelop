@@ -1,14 +1,15 @@
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop Hungarian translation 1.0\n"
+"Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2007-12-24 22:28+0100\n"
+"PO-Revision-Date: 2008-02-03 23:25+0100\n"
 "Last-Translator: Gergely Kiss <mail.gery@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"X-Generator: MonoDevelop.Gettext\n"
+"Content-Transfer-Encoding: 8bit"
 
 #: ../templates/BooGtkSharpProject.xpt.xml:7
 msgid "Gtk# Project"
@@ -18,7 +19,7 @@ msgstr "GTK# projekt"
 #: ../templates/BooLibraryProject.xpt.xml:8
 #: ../templates/EmptyBooProject.xpt.xml:8
 msgid "Boo"
-msgstr ""
+msgstr "Boo"
 
 #: ../templates/BooGtkSharpProject.xpt.xml:11
 msgid "Creates a Boo/Gtk# project"
@@ -38,9 +39,8 @@ msgstr "GTK# ablak"
 
 #: ../templates/BooGtkSharpWindow.xft.xml:9
 #: ../templates/EmptyBooFile.xft.xml:6
-#, fuzzy
 msgid "General"
-msgstr "Általános beállítások"
+msgstr "Általános"
 
 #: ../templates/BooGtkSharpWindow.xft.xml:11
 msgid "Creates a top-level Gtk# window"
@@ -122,7 +122,7 @@ msgstr "Függvénykönyvtár"
 
 #: ../Gui/OptionPanels/CodeCompilationPanel.boo:114
 msgid "Executable with GUI"
-msgstr "Futtatható fájl GUI-vel"
+msgstr "Futtatható fájl GUI-val"
 
 #: ../Gui/OptionPanels/GeneralShellPanel.boo:50
 msgid "General Options"
@@ -135,7 +135,7 @@ msgstr "A kódblokkok új sorainak automatikus behúzása"
 # Elírás van az eredeti sztringben, ha jól veszem észre.
 #: ../Gui/OptionPanels/GeneralShellPanel.boo:53
 msgid "Shell reset clears scollback"
-msgstr "Visszagörgetés törlése a shell újraindításakor"
+msgstr "Előzmények törlése a shell újraindításakor"
 
 #: ../Gui/OptionPanels/GeneralShellPanel.boo:54
 msgid "Shell reset clears command history"
@@ -166,3 +166,4 @@ msgstr "Boo fájlok"
 #: ../BooBinding.addin.xml:82 ../BooBinding.addin.xml:90
 msgid "Boo Shell"
 msgstr "Boo shell"
+
