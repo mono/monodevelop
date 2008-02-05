@@ -1,5 +1,10 @@
 2008-02-05  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* BooLanguageBinding.boo: Added trick to support imports defined outside of
+	  a namespace declaration. Fixes bug #358368.
+
+2008-02-05  Lluis Sanchez Gual <lluis@novell.com> 
+
 	
 
 2008-02-05  Lluis Sanchez Gual <lluis@novell.com> 
