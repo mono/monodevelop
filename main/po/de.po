@@ -439,11 +439,11 @@ msgstr "Erzeugt eine .NET Anwendungs-Konfigurationsdatei"
 
 #: ../src/core/MonoDevelop.Ide/templates/BlankCombine.xpt.xml:7
 msgid "Blank Solution"
-msgstr "Leere Solution"
+msgstr "Leere Projektmappe"
 
 #: ../src/core/MonoDevelop.Ide/templates/BlankCombine.xpt.xml:11
 msgid "A blank solution"
-msgstr "Eine leere Solution"
+msgstr "Eine leere Projektmappe"
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyClass.xft.xml:4
 msgid "Empty Class"
@@ -566,7 +566,7 @@ msgstr "Liste der zuletzt geöffneten Projekte löschen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:305
 msgid "load solution {0}"
-msgstr "Lade Solution {0}"
+msgstr "Lade Projektmappe {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:170
 msgid "Resume"
@@ -579,20 +579,20 @@ msgstr "E_rstelle {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:249
 msgid "Build Solution {0}"
-msgstr "_Erstelle Solution {0}"
+msgstr "_Erstelle Projektmappe {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:251
 msgid "Build Project {0}"
-msgstr "Erstelle _Projekt {0}"
+msgstr "_Erstelle {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:290
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:298
 msgid "Rebuild {0}"
-msgstr "Erstelle {0} neu"
+msgstr "Erstelle {0} _neu"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:358
 msgid "Clean {0}"
-msgstr "_Säubere {0}"
+msgstr "Säu_bere {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:209
 msgid "_Go to declaration"
@@ -745,14 +745,14 @@ msgstr "Fehler beim Laden der Vorlage: {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/CombineDescriptor.cs:67
 msgid "Can't create solution with type: {0}"
-msgstr "Kann Solution nicht erstellen mit Typ: {0}"
+msgstr "Kann Projektmappe nicht erstellen mit Typ: {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/CombineDescriptor.cs:105
 msgid ""
 "Solution file {0} already exists, do you want to overwrite\n"
 "the existing file?"
 msgstr ""
-"Solutiondatei {0} existiert bereits, wollen Sie die bestehende\n"
+"Projektmappe {0} existiert bereits, wollen Sie die bestehende\n"
 "Datei überschreiben?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:93
@@ -851,7 +851,7 @@ msgstr "Speichere Dateien"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:27
 msgid "Solution: {0}"
-msgstr "Solution: {0}"
+msgstr "Projektmappe: {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:41
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:43
@@ -868,7 +868,7 @@ msgstr "Kann da Bild {0} nicht mit den Standard einstellungen laden"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:70
 msgid "New Solution"
-msgstr "Neue Solution"
+msgstr "Neue Projektmappe"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:70
 msgid "New Project"
@@ -1086,7 +1086,7 @@ msgstr "aktuelle Datei"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:249
 msgid "Whole solution"
-msgstr "Gesamte Solution"
+msgstr "Gesamte Projektmappe"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:58
 msgid "Item Path"
@@ -1151,11 +1151,11 @@ msgstr "_Projekt-Dateiname"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:75
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:89
 msgid "_Solution Directory"
-msgstr "_Solution-Verzeichnis"
+msgstr "_Projektmappen-Verzeichnis"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:76
 msgid "Solution File Name"
-msgstr "Solution-Dateiname"
+msgstr "Projektmappen-Dateiname"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:78
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:91
@@ -1248,7 +1248,7 @@ msgstr ".NET Assembly"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:81
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:431
 msgid "Stop"
-msgstr "Stopp"
+msgstr "Stop"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs:106
 msgid "Clear console"
@@ -1261,7 +1261,7 @@ msgstr "Kontakt-Ausgabeblock"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ClassPad/CombineNodeBuilder.cs:66
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs:84
 msgid "Solution {0}"
-msgstr "Solution {0}"
+msgstr "Projektmappe {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:49
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:997
@@ -1321,19 +1321,19 @@ msgstr "Mono-Dokumentation"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs:87
 msgid "Solution {0} (1 entry)"
-msgstr "Solution {0} (1 Eintrag)"
+msgstr "Projektmappe {0} (1 Eintrag)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs:90
 msgid "Solution {0} ({1} entries)"
-msgstr "Solution {0} ({1} Einträge)"
+msgstr "Projektmappe {0} ({1} Einträge)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs:178
 msgid "Solution name may not contain any of the following characters: {0}"
-msgstr "Solution-Name darf keine der folgenden Zeichen enthalten: {0}"
+msgstr "Projektmappenname darf keine der folgenden Zeichen enthalten: {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs:215
 msgid "Do you really want to remove solution {0} from solution {1}?"
-msgstr "Möchten Sie Solution {0} wirklich von Solution {1} entfernen?"
+msgstr "Möchten Sie die Projektmappe {0} wirklich von der Projektmappe {1} entfernen?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:170
 msgid "Do you really want to move the folder '{0}' to the root folder of project '{1}'?"
@@ -1445,7 +1445,7 @@ msgstr "Projektname darf die folgenden Zeichen nicht beinhalten: {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:333
 msgid "Do you really want to remove project {0} from solution {1}?"
-msgstr "Wollen Sie wirklich Projekt {0}von Solution {1} entfernen?"
+msgstr "Wollen Sie wirklich Projekt {0} von der Projektmappe {1} entfernen?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceFolderNodeBuilder.cs:79
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:907
@@ -1454,7 +1454,7 @@ msgstr "Verweise"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceFolderNodeBuilder.cs:200
 msgid "Cyclic project references are not allowed."
-msgstr "Periodische Projektverweise sind nicht erlaubt."
+msgstr "Zyklische Projektverweise sind nicht erlaubt."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolderNodeBuilder.cs:64
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libstetic/stetic.glade:432
@@ -1592,7 +1592,7 @@ msgstr "Datei nicht gefunden: {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:413
 msgid "Solution loaded."
-msgstr "Solution geladen."
+msgstr "Projektmappe geladen."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:457
 msgid "The project '{0}' has been modified by an external application. Do you want to reload it? All project files will be closed."
@@ -1605,7 +1605,7 @@ msgstr "Exportiere Projekt"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:591
 msgid "Solution saved."
-msgstr "Solution gespeichert."
+msgstr "Projektmappe gespeichert."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:593
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:606
@@ -1620,7 +1620,7 @@ msgstr "Projekt gespeichert."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:716
 msgid "Add to Solution"
-msgstr "Zu Solution hinzufügen"
+msgstr "Zur Projektmappe hinzufügen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:995
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1028
@@ -1878,7 +1878,7 @@ msgstr "Hinzufügen oder Entfe_rnen..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs:249
 msgid "Solution Workbench"
-msgstr "Solution-Arbeitsbereich"
+msgstr "Projektmappen-Arbeitsbereich"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:236
 msgid "Edit"
@@ -1981,7 +1981,7 @@ msgstr "Neues Projekt hinzufügen..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:332
 msgid "Add New Solution..."
-msgstr "Neue Solution hinzufügen..."
+msgstr "Neue Projektmappe hinzufügen..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:337
 msgid "Add existing _Project"
@@ -1989,7 +1989,7 @@ msgstr "Vorhandenes _Projekt hinzufügen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:340
 msgid "Add existing Solution"
-msgstr "Vorhandene Solution hinzufügen"
+msgstr "Vorhandene Projektmappe hinzufügen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:342
 msgid "_Remove From Project"
@@ -2013,11 +2013,11 @@ msgstr "In Projekt einfügen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:370
 msgid "Buil_d Solution"
-msgstr "Solution erstellen"
+msgstr "E_rstelle Projektmappe"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:372
 msgid "Build the solution"
-msgstr "Die Solution herstellen"
+msgstr "Die Projektmappe herstellen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:376
 msgid "Buil_d"
@@ -2025,7 +2025,7 @@ msgstr "Erstellen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:382
 msgid "Rebuild Solution"
-msgstr "Solution neu erstellen"
+msgstr "Ers_telle Projektmappe neu"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:386
 msgid "Rebuild"
@@ -2039,7 +2039,7 @@ msgstr "Als Start-Projekt setzten"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:394
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:399
 msgid "Run"
-msgstr "Ausführen"
+msgstr "Ausfüh_ren"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:405
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:410
@@ -2050,11 +2050,11 @@ msgstr "Debug"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:413
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs:86
 msgid "Clean"
-msgstr "Aufräumen"
+msgstr "Säubern"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:416
 msgid "Clean Solution"
-msgstr "Räume Solution auf"
+msgstr "_Säubere Projektmappe"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:419
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1079
@@ -2103,15 +2103,15 @@ msgstr "Ö_ffnen..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:456
 msgid "Open file or solution"
-msgstr "Öffne _Datei oder Solution"
+msgstr "Öffne _Datei oder Projektmappe"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:460
 msgid "Open File in Solution..."
-msgstr "Öffne D_atei in Solution..."
+msgstr "Öffne D_atei in Projektmappe..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:462
 msgid "Open a file in the current solution..."
-msgstr "Öffne eine Datei in der momentanen Solution..."
+msgstr "Öffne eine Datei in der momentanen Projektmappe..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:466
 msgid "New File..."
@@ -2139,7 +2139,7 @@ msgstr "A_lle Speichern"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:482
 msgid "N_ew Solution..."
-msgstr "N_eue Solution..."
+msgstr "N_eue Projektmappe..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:487
 msgid "_Close File"
@@ -2163,7 +2163,7 @@ msgstr "S_peichern unter..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:515
 msgid "Recent Files"
-msgstr "Zuletzt benutzte Dateien"
+msgstr "Letzte Da_teien"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:518
 msgid "_Clear Recent Files"
@@ -2171,11 +2171,11 @@ msgstr "Liste der zuletzt geöffneten Dateien löschen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:523
 msgid "Recent Projects"
-msgstr "Zuletzt benutzte Projekte"
+msgstr "Letzte  _Projekte"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:526
 msgid "_Clear Recent Solutions"
-msgstr "Liste der zuletzt geöffneten Solutions löschen"
+msgstr "Liste der zuletzt geöffneten Projekte löschen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:530
 msgid "_Quit"
@@ -2567,7 +2567,7 @@ msgstr "Aufgabenliste"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1003
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:11
 msgid "Solution"
-msgstr "Solution"
+msgstr "Projektmappe"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1004
 msgid "Show All Files"
@@ -2643,7 +2643,7 @@ msgstr "Andere Einstellungen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1111
 msgid "MonoDevelop Solution Files"
-msgstr "MonoDevelop Solution-Dateien"
+msgstr "MonoDevelop Projektmappen-Dateien"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1114
 msgid "MonoDevelop Project Files"
@@ -2667,11 +2667,11 @@ msgstr "_Datei"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1177
 msgid "Recent _Files"
-msgstr "Zuletzt benutzte Dateien"
+msgstr "Letzte Da_teien"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1183
 msgid "Recent Solu_tions"
-msgstr "Zuletzt benutzte Solutions"
+msgstr "Letzte _Projekte"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1193
 msgid "_Edit"
@@ -2905,7 +2905,7 @@ msgstr "{0} <span foreground='red' size='small'>(Laden fehlgechalgen)</span>"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs:116
 msgid "Do you really want to remove project '{0}' from solution '{1}'"
-msgstr "Wollen Sie wirklich Projekt '{0}' von Solution '{1}' entfernen?"
+msgstr "Wollen Sie wirklich Projekt '{0}' von der Projektmappe '{1}' entfernen?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/OpenFileInSolutionDialog.cs:159
 msgid "Full name"
@@ -2957,7 +2957,7 @@ msgstr "Item umbenennen"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.cs:42
 msgid "Open File in Solution"
-msgstr "Öffne Datei in Solution"
+msgstr "Öffne Datei in Projektmappe"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.cs:67
 msgid "Search _Files"
@@ -3023,7 +3023,7 @@ msgstr "N_ame:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:285
 msgid "_Solution name:"
-msgstr "_Solution-Name:"
+msgstr "_Projektmappen-Name:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:356
 msgid "<b>Project Features</b>"
@@ -3031,7 +3031,7 @@ msgstr "<b>Projekt-Merkmale</b>"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:368
 msgid "<small>This list shows a set of features you can enable in the new project. After creating the project those features can be enabled or disabled in the Project Options dialog, or by adding new projects to the solution.</small>"
-msgstr "<small>Diese Liste zeigt eine Reihe von Funktionen die sie in diesem Projekt aktivieren kÃÂ¶nnen. Nach dem erstellen eines Projekts kÃÂ¶nnen sie die Funktionen in den Projektoptionen einstellen </small>"
+msgstr "<small>Diese Liste zeigt eine Reihe von Funktionen die sie in diesem Projekt aktivieren können. Nach dem erstellen eines Projekts können sie die Funktionen in den Projektoptionen einstellen </small>"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog.cs:29
 msgid "New Project Features"
@@ -3364,7 +3364,7 @@ msgstr "Nur ganzes Wort"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget.cs:69
 msgid "Default _Solution location"
-msgstr "Standardverzeichnis der Solution"
+msgstr "Standardverzeichnis der Projektmappe"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget.cs:97
 msgid "<b>Load</b>"
@@ -3376,7 +3376,7 @@ msgstr "Lade benutzerspezifische Einstellungen mit dem Dokument"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget.cs:141
 msgid "_Load previous solution on startup"
-msgstr "Zuletzt geöffnete Solution beim Programmstart laden"
+msgstr "Zuletzt geöffnete Projektmappe beim Programmstart laden"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget.cs:173
 msgid "<b>Save</b>"
@@ -3565,26 +3565,26 @@ msgstr "Das Projekt oder die Lösung '{0}' kann nicht in das Format '{1}' konver
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/MonoDevelopFileFormat.cs:112
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:100
 msgid "Saving solution: {0}"
-msgstr "Speichere Solution: {0}"
+msgstr "Speichere Projektmappe: {0}"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:55
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/MonoDevelopFileFormat.cs:119
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:115
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:116
 msgid "Could not save solution: {0}"
-msgstr "Konnte Solution nicht speichern: {0}"
+msgstr "Konnte Projektmappe nicht speichern: {0}"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:75
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/MonoDevelopFileFormat.cs:149
 msgid "The file '{0}' is using an old solution file format. It will be automatically converted to the current format."
-msgstr "Die Datei '{0}' benutzt ein altes Solution-Format. Es wird automatisch ins aktuelle Format konvertiert."
+msgstr "Die Datei '{0}' benutzt ein altes Projektmappen-Format. Es wird automatisch ins aktuelle Format konvertiert."
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:134
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:204
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:377
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:408
 msgid "Loading solution: {0}"
-msgstr "Lade Solution: {0}"
+msgstr "Lade Projektmappe: {0}"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:46
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/MonoDevelopFileFormat.cs:96
@@ -3622,11 +3622,11 @@ msgstr "Kann das Projekt nicht laden: {0}"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:737
 msgid "The solution does not have an active configuration."
-msgstr "Die Solution hat keine aktive Konfiguration."
+msgstr "Die Projektmappe hat keine aktive Konfiguration."
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:742
 msgid "Building Solution {0}"
-msgstr "Erstelle Solution {0}"
+msgstr "Erstelle Projektmappe {0}"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:749
 msgid ""
@@ -3642,7 +3642,7 @@ msgstr "Unbekannte Sprache '{0}'. Es könnte sein, dass sie eine zusätzliche Er
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:241
 msgid "Referenced project '{0}' not found in the solution."
-msgstr "Verknüpftes Projekt '{0}' nicht in der Solution gefunden."
+msgstr "Verknüpftes Projekt '{0}' nicht in der Projektmappe gefunden."
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:377
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:378
@@ -3900,19 +3900,19 @@ msgstr "Konnte Lösung nicht laden: {0}"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DefaultFileFormat.cs:72
 msgid "Saving solution item: {0}"
-msgstr "Speichere Solution-Objekt: {0}"
+msgstr "Speichere Projektmappen-Objekt: {0}"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DefaultFileFormat.cs:77
 msgid "Could not save solution item: {0}"
-msgstr "Konnte Solution-Objekt nicht speichern: {0}"
+msgstr "Konnte Projektmappen-Objekt nicht speichern: {0}"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DefaultFileFormat.cs:88
 msgid "Loading solution item: {0}"
-msgstr "Lade Solution-Objekt: {0}"
+msgstr "Lade Projektmappen-Objekt: {0}"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DefaultFileFormat.cs:100
 msgid "Could not load solution item: {0}"
-msgstr "Konnte Solution-Objekt nicht laden: {0}"
+msgstr "Konnte Projektmappen-Objekt nicht laden: {0}"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/UnknownCombineEntry.cs:64
 msgid "Unknown entry"
@@ -3942,7 +3942,7 @@ msgstr "(Aktiv)"
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs:74
 msgid "Solution Item"
-msgstr "Solution Item"
+msgstr "Projektmappen-Objekt"
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs:84
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:77
@@ -3982,7 +3982,7 @@ msgstr "Aktion"
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:138
 msgid "The Solution Execute Definitions for this Solution were invalid. A new empty set of Execute Definitions has been created."
-msgstr "Die Solution-Ausführungsdefinitionen für diese Solution waren ungültig. Eine neues leeres Set an Ausführungsdefinitionen wurde erstellt."
+msgstr "Die Projektmappen-Ausführungsdefinitionen für diese Projektmappe waren ungültig. Eine neues leeres Set an Ausführungsdefinitionen wurde erstellt."
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs:110
 msgid "File {0} not found in {1}."
@@ -3998,7 +3998,7 @@ msgstr "Ungültiges Ausgabeverzeichnis angegeben"
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs:51
 msgid "Solution Options"
-msgstr "Solution-Einstellungen"
+msgstr "Projekt-Einstellungen"
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:380
 msgid "Gathering class information..."
@@ -4037,7 +4037,7 @@ msgstr "Allgemein"
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml:69
 msgid "Solution Information"
-msgstr "Solution-Informationen"
+msgstr "Projektmappen-Informationen"
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml:72
 msgid "Startup Properties"
@@ -4049,12 +4049,12 @@ msgstr "Erstellungs-Eigenschaften"
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Completion/ParameterInformationWindow.cs:85
 msgid "{0} of {1}"
-msgstr "{0} von {1}MonoDevelop can execute user specified commands or scripts before, after or as a replacement of common project operations. It is also possible to enter custom commands which will be available in the project or solution menu."
+msgstr "{0} von {1}"
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs:74
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs:80
 msgid "_Root Solution Directory"
-msgstr "Haupt-Solution-Verzeichnis"
+msgstr "Haupt-Projektmappen-Verzeichnis"
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs:130
 msgid "Select File"
@@ -4124,7 +4124,7 @@ msgstr "Konsolenausgabe pausieren"
 
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs:38
 msgid "MonoDevelop can execute user specified commands or scripts before, after or as a replacement of common project operations. It is also possible to enter custom commands which will be available in the project or solution menu."
-msgstr "MonoDevelop kann benutzerdefiniert Befehle oder Skripte ausführen, nach oder als eine Ersetzung von häufigen Projekt-Operationen. Es ist ebenfalls möglich benutzerdefinierte Befehle einzugeben, die dann im Projekt- oder Solution-Menü verfügbar sein werden. "
+msgstr "MonoDevelop kann benutzerdefiniert Befehle oder Skripte ausführen, nach oder als eine Ersetzung von häufigen Projekt-Operationen. Es ist ebenfalls möglich benutzerdefinierte Befehle einzugeben, die dann im Projekt- oder Projektmappen-Menü verfügbar sein werden. "
 
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences.cs:38
 msgid "_Sign this assembly"
@@ -4158,7 +4158,7 @@ msgstr "Neue Konfiguration"
 
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.NewConfigurationDialog.cs:73
 msgid "Create configurations for all solution items"
-msgstr "Erstelle Konfigurationen für alle Solution-Objekte"
+msgstr "Erstelle Konfigurationen für alle Projektmappen-Objekte"
 
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.DeleteConfigDialog.cs:33
 msgid "Delete Configuration"
@@ -4170,7 +4170,7 @@ msgstr "Sind Sie sich sicher das sie diese Konfiguration löschen wollen?"
 
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.DeleteConfigDialog.cs:70
 msgid "Delete also configurations in solution items"
-msgstr "Lösche auch Konfigurationen in Solution-Objekten"
+msgstr "Lösche auch Konfigurationen in Projektmappen-Objekten"
 
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.RenameConfigDialog.cs:33
 msgid "Rename Configuration"
@@ -4182,7 +4182,7 @@ msgstr "Neuer Name:"
 
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.RenameConfigDialog.cs:73
 msgid "Rename configurations in all solution items"
-msgstr "Benenne Konfigurationen in allen Solution-Objekten um"
+msgstr "Benenne Konfigurationen in allen Projektmappen-Objekten um"
 
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineBuildOptionsWidget.cs:38
 msgid "<b>Output Directory</b>"
@@ -4215,7 +4215,7 @@ msgstr "Runtime _version:"
 
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineConfigurationPanelWidget.cs:41
 msgid "Select a target configuration for each solution item:"
-msgstr "Wähle eine Zielkonfiguration für jedes Solution-Objekt:"
+msgstr "Wähle eine Zielkonfiguration für jedes Projektmappen-Objekt:"
 
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs:76
 msgid "<b>Project Information</b>"
@@ -5829,15 +5829,15 @@ msgstr "Häufige Aktionen"
 
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:4
 msgid "Start a New Solution"
-msgstr "Starte eine neue Solution"
+msgstr "Starte ein neues Projekt"
 
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:5
 msgid "Open a Solution / File"
-msgstr "Öffne eine Solution / eine Datei"
+msgstr "Öffne ein Projekt oder eine Datei"
 
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:9
 msgid "Recent Solutions"
-msgstr "Zuletzt benutzte Solutions"
+msgstr "Letzte Projekte"
 
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:10
 msgid "From MonoDevelop"
@@ -5849,11 +5849,11 @@ msgstr "Zuletzt geändert"
 
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:13
 msgid "Open Solution"
-msgstr "Öffne Solution"
+msgstr "Öffne Projekt"
 
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:16
 msgid "Support Links"
-msgstr "Support-Links"
+msgstr "Support"
 
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:23
 msgid "Mono Project Home Page"
@@ -5861,11 +5861,11 @@ msgstr "Mono Projekt Home Page"
 
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:26
 msgid "News Links"
-msgstr "Neuigkeiten-Links"
+msgstr "Nachrichten"
 
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:29
 msgid "Development Links"
-msgstr "Entwicklungs-Links"
+msgstr "Entwickler"
 
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:32
 msgid "Mono Documentation Library"
@@ -5903,7 +5903,7 @@ msgstr "Importiere Projekt:"
 
 #: ../src/addins/prj2make-sharp-lib/MsPrjHelper.cs:531
 msgid "Importing solution"
-msgstr "Importiere Solution"
+msgstr "Importiere Projektmappe"
 
 #: ../src/addins/prj2make-sharp-lib/MsPrjHelper.cs:545
 msgid "Project file not found: "
@@ -5911,7 +5911,7 @@ msgstr "Projekt-Datei nicht gefunden:"
 
 #: ../src/addins/prj2make-sharp-lib/MsPrjHelper.cs:577
 msgid "The solution could not be imported."
-msgstr "Die Solution konnte nicht importiert werden."
+msgstr "Die Projektmappe konnte nicht importiert werden."
 
 #: ../src/addins/prj2make-sharp-lib/MsPrjHelper.cs:642
 #: ../src/addins/prj2make-sharp-lib/MsPrjHelper.cs:678
@@ -5928,7 +5928,7 @@ msgstr "Ausgabe-Verzeichnis '{0}' kann nicht auf ein lokales Verzeichnis abgebil
 
 #: ../src/addins/prj2make-sharp-lib/prj2make-sharp-lib.addin.xml:35
 msgid "Visual Studio Solution"
-msgstr "Visual-Studio-Solution"
+msgstr "Visual-Studio-Projektmappe"
 
 #: ../src/addins/prj2make-sharp-lib/prj2make-sharp-lib.addin.xml:38
 msgid "Visual Studio Project"
@@ -5981,7 +5981,7 @@ msgstr "Speichere Projekte"
 
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:209
 msgid "Error saving project ({0}) : Only DotNetProjects can be part of a MSBuild solution. Ignoring."
-msgstr "Fehler beim Speichern des Projekts ({0}) : Nur DotNet-Projekt können Teil einer MSBuild-Solution sein. Ignoriere."
+msgstr "Fehler beim Speichern des Projekts ({0}) : Nur DotNet-Projekt können Teil einer MSBuild-Projektmappe sein. Ignoriere."
 
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:217
 msgid "Saving for project {0} not supported. Ignoring."
@@ -6036,7 +6036,7 @@ msgstr "Projekt mit guid '{0}' nicht gefunden."
 
 #: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:957
 msgid "The project file {0} must be converted to msbuild format to be added to a msbuild solution. Convert?"
-msgstr "Die Projekt-Datei {0} muss ins MSBuild-Format konvertiert werden um zu einer MSBuild-Solution hinzugefügt zu werden.Konvertieren?"
+msgstr "Die Projekt-Datei {0} muss ins MSBuild-Format konvertiert werden um zu einer MSBuild-Projektmappe hinzugefügt zu werden.Konvertieren?"
 
 #: ../src/addins/prj2make-sharp-lib/VS2003SlnFileFormat.cs:89
 #: ../src/addins/prj2make-sharp-lib/VS2003ProjectFileFormat.cs:93
@@ -6045,7 +6045,7 @@ msgstr "Umwandlung erforderlich"
 
 #: ../src/addins/prj2make-sharp-lib/VS2003SlnFileFormat.cs:90
 msgid "The solution file {0} is a VS2003 solution. It must be converted to either a MonoDevelop or a VS2005 solution. Converting to VS2005 format will overwrite existing files. Convert ?"
-msgstr "Die Solutiondatei {0} ist eine VS2003-Solution. Es muss entweder in eine MonoDevelop- oder eine VS2005-Solution konvertiert werden. Konvertierung ins VS2005-Format wird bestehende Dateien überschreiben. Konvertieren?"
+msgstr "Die Projektmappendatei {0} ist eine VS2003-Projektmappe. Es muss entweder in eine MonoDevelop- oder eine VS2005-Projektmappe konvertiert werden. Konvertierung ins VS2005-Format wird bestehende Dateien überschreiben. Konvertieren?"
 
 #: ../src/addins/prj2make-sharp-lib/VS2003ProjectFileFormat.cs:94
 msgid "The project file {0} is a VS2003 project. It must be converted to either a MonoDevelop or a VS2005 project. Converting to VS2005 format will overwrite existing files. Convert ?"
@@ -6181,7 +6181,7 @@ msgstr "VBNet"
 
 #: ../src/addins/VBNetBinding/templates/EmptyVBProject.xpt.xml:11
 msgid "Creates an empty VB.Net solution."
-msgstr "Erzeugt eine leere VB.Net-Solution"
+msgstr "Erzeugt eine leere VB.Net-Projektmappe"
 
 #: ../src/addins/VBNetBinding/templates/VBConsoleApplicationProject.xpt.xml:11
 msgid "Create a console VB.Net project"
@@ -6305,7 +6305,7 @@ msgstr "Die Änderungsprotokoll-Datei existiert nicht und wird <b>nicht</b> erst
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs:238
 msgid "To change the ChangeLog creation and update policies, open the options dialog of the project or solution and click on the 'ChangeLog Integration\" section."
-msgstr "Um die Änderungsprotokollerzeugung und Updateverfahren zu ändern, öffnen Sie den Dialog für das Projekt oder die Solution und klicken Sie auf die 'Änderungsprotokoll-Integration'-Sektion."
+msgstr "Um die Änderungsprotokollerzeugung und Updateverfahren zu ändern, öffnen Sie den Dialog für das Projekt oder die Projektmappe und klicken Sie auf die 'Änderungsprotokoll-Integration'-Sektion."
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ChangeLogAddInOptionPanelWidget.cs:47
 msgid "Specify personal information used in ChangeLog entries"
@@ -6336,7 +6336,7 @@ msgid ""
 "<b>Use parent solution policy</b>\n"
 "Apply the policy specified in the parent solution."
 msgstr ""
-"<b>Benutze übergeordnete Solutionrichtlinien</b>\n"
+"<b>Benutze übergeordnete Projektmappenrichtlinien</b>\n"
 "Wende die Richtlinien die in der übergeordneten Lösung sind an."
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:78
@@ -6829,7 +6829,7 @@ msgstr "Benutzerdefiniert"
 
 #: ../src/addins/MonoDevelop.Autotools/Commands.cs:67
 msgid "Generating Makefiles is not supported for single projects. Do you want to generate them for the full solution - '{0}' ?"
-msgstr "Generierung von Makefiles ist für Einzel-Projekte nicht unterstützt. Möchten Sie sie für die Gesamt-Solution generieren - '{0}' ?"
+msgstr "Generierung von Makefiles ist für Einzel-Projekte nicht unterstützt. Möchten Sie sie für die Gesamt-Projektmappe generieren - '{0}' ?"
 
 #: ../src/addins/MonoDevelop.Autotools/Commands.cs:69
 #: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:51
@@ -6838,7 +6838,7 @@ msgstr "Makefiles erzeugen..."
 
 #: ../src/addins/MonoDevelop.Autotools/Commands.cs:86
 msgid "{0} already exist for this solution.  Would you like to overwrite them?"
-msgstr "{0} existiert bereits für diese Solution bereits. Möchten Sie sie überschreiben?"
+msgstr "{0} existiert bereits für diese Projektmappe bereits. Möchten Sie sie überschreiben?"
 
 #: ../src/addins/MonoDevelop.Autotools/Commands.cs:92
 msgid "Makefiles Output"
@@ -6886,7 +6886,7 @@ msgstr "Konnte referenziertes Projekt '{0}' nicht finden"
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:75
 msgid "Generating {0} for Solution {1}"
-msgstr "Erzeuge {0} für Solution {1}"
+msgstr "Erzeuge {0} für Projektmappe {1}"
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:92
 msgid "MonoDevelop does not currently support generating {0} for one (or more) child projects."
@@ -6907,7 +6907,7 @@ msgstr "{0} konnte nicht erzeugt werden:"
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:153
 msgid "Deploying Solution to Tarball"
-msgstr "Verbreite Solution als Tarball"
+msgstr "Verbreite Projektmappe als Tarball"
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:167
 #: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:185
@@ -6917,11 +6917,11 @@ msgstr "Ein nicht spezifizierter Fehler ist beim Laufen von '{0}' aufgetreten"
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:201
 msgid "Solution could not be deployed: "
-msgstr "Solution konnte nicht verbreitet werden:"
+msgstr "Projektmappe konnte nicht verbreitet werden:"
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:208
 msgid "Solution was succesfully deployed"
-msgstr "Solution wurde erfolgreich verbreitet"
+msgstr "Projektmappe wurde erfolgreich verbreitet"
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:219
 msgid "Adding variables to top-level Makefile"
@@ -6945,15 +6945,15 @@ msgstr "Erzeuge Makefile.include"
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionMakefileHandler.cs:44
 msgid "Creating {0} for Solution {1}"
-msgstr "Erzeuge {0} für Solution {1}"
+msgstr "Erzeuge {0} für Projektmappe {1}"
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionMakefileHandler.cs:84
 msgid "Child projects / solutions must be in sub-directories of their parent"
-msgstr "Nachfolge-Projekte/-Solutions müssen in einem Unterverzeichnis ihres Vorgängers sein"
+msgstr "Nachfolge-Projekte/-mappen müssen in einem Unterverzeichnis ihres Vorgängers sein"
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionMakefileHandler.cs:117
 msgid "More than 1 project in the same directory as the top-level solution is not supported."
-msgstr "Mehr als 1 Projekt im gleichen Verzeichnis wie die Spitzen-Solution ist nicht unterstützt."
+msgstr "Mehr als 1 Projekt im gleichen Verzeichnis wie die Wurzelprojektmappe ist nicht unterstützt."
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionMakefileHandler.cs:155
 msgid ""
@@ -6977,15 +6977,15 @@ msgstr "Fehler: Dateiname bereits angegeben - {0}, ein anderer Dateiname '{1}' k
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:44
 msgid "Error: Solution file not specified."
-msgstr "Fehler: Solution-Datei nicht angegeben."
+msgstr "Fehler: Projektmappen-Datei nicht angegeben."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:49
 msgid "Loading solution file {0}"
-msgstr "Lade Solution-Datei {0}"
+msgstr "Lade Projektmappen-Datei {0}"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:54
 msgid "Error: Makefile generation supported only for solutions.\n"
-msgstr "Fehler: Makefile-Erzeugung nur für Solutions unterstützt.\n"
+msgstr "Fehler: Makefile-Erzeugung nur für Projektmappen unterstützt.\n"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:59
 msgid ""
@@ -7001,7 +7001,7 @@ msgstr "Wähle Konfiguration :"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:84
 msgid "{0} already exist for this solution.  Would you like to overwrite them? (Y/N)"
-msgstr "{0} existieren bereits für diese Solution. Möchten Sie diese überschreiben? (J/N)"
+msgstr "{0} existieren bereits für diese Projektmappe. Möchten Sie diese überschreiben? (J/N)"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:131
 msgid ""
@@ -7067,7 +7067,7 @@ msgstr "Unfähig das angegebene Makfile zu finden. Sie müssen für den Gebrauch
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:64
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:66
 msgid "Error resolving Makefile based project references for solution {0}"
-msgstr "Fehler beim Auflösen der Makefile-basierten Projekt-Verweise für Solution {0}"
+msgstr "Fehler beim Auflösen der Makefile-basierten Projekt-Verweise für Projektmappe {0}"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:82
 msgid "Updating project from Makefile"
@@ -7466,7 +7466,7 @@ msgstr "Projektname nicht bereitgestellt."
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:195
 msgid "Please select a project or solution."
-msgstr "Bitte wählen sie eine Projekt oder eine Solution."
+msgstr "Bitte wählen sie ein Projekt oder eine Projektmappe."
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:208
 msgid "Package name not provided."
@@ -7474,7 +7474,7 @@ msgstr "Paketname nicht bereitgestellt."
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:214
 msgid "Solution where to create the project not selected."
-msgstr "Solution in der das Projekt erstellt werden soll nicht ausgewählt."
+msgstr "Projektmappe in der das Projekt erstellt werden soll nicht ausgewählt."
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:217
 msgid "Packaging project not selected."
@@ -7576,7 +7576,7 @@ msgstr "Verpacke"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/templates/PackagingProject.xpt.xml:8
 msgid "Create a project which can generate packages for a solution"
-msgstr "Erzeuge ein Projekt das Pakete für eine Solution generieren kann"
+msgstr "Erzeuge ein Projekt das Pakete für eine Projektmappe generieren kann"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployOperations.cs:31
 msgid "Packaging Output"
@@ -7608,7 +7608,7 @@ msgstr "Füge neue Pakete für dieses Projekt im Paketierungsprojekt '{0}' hinzu
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PackagingFeature.cs:16
 msgid "Add a Packaging Project to the solution for generating different kinds of packages for the new project."
-msgstr "Füge ein Paketierungsprojekt zur Solution hinzu um verschiedene Type von Paketen für das neue Projekt zu erstellen."
+msgstr "Füge ein Paketierungsprojekt zur Projektmappe hinzu um verschiedene Type von Paketen für das neue Projekt zu erstellen."
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment/DeployProjectServiceExtension.cs:34
 msgid "File '{0}' not found"
@@ -7649,7 +7649,7 @@ msgstr "<big><b>Wähle Projekt</b></big>"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:244
 msgid "Select the project or solution for which you want to create a package:"
-msgstr "Wählen Sie das Projekt oder die Solution für die Sie ein Paket erstellen wollen:"
+msgstr "Wählen Sie das Projekt oder die Projektmappe für die Sie ein Paket erstellen wollen:"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:274
 msgid "<big><b>Package Settings</b></big>"
@@ -7657,7 +7657,7 @@ msgstr "<big><b>Paket-Einstellungen</b></big>"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:311
 msgid "Save this package configuration in the solution"
-msgstr "Speichere diese Paket-Konfiguration in der Solution"
+msgstr "Speichere diese Paket-Konfiguration in der Projektmappe"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:341
 msgid "<big><b>Save Package Configuration</b></big>"
@@ -7682,7 +7682,7 @@ msgstr "Projektname:"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:490
 msgid "Create in solution:"
-msgstr "In Solution erzeugen:"
+msgstr "In Projektmappe erzeugen:"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:506
 msgid "Add to existing Packaging Project"
@@ -7714,11 +7714,11 @@ msgstr "Pakte-Einstellungen"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs:128
 msgid "Select the projects and solutions you want to include in the package:"
-msgstr "Wählen Sie die Projekte und Solutions die Sie in dieses Paket einbeziehen möchten:"
+msgstr "Wählen Sie die Projekte und Projektmappen die Sie in dieses Paket einbeziehen möchten:"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs:147
 msgid "Projects/Solutions"
-msgstr "Projekte/Solutions"
+msgstr "Projekte/-mappen"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:51
 msgid "Select the archive file name and location:"
@@ -8799,7 +8799,7 @@ msgstr "Übersetzung hinzufügen"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.addin.xml:53
 msgid "Add another translation (language) for a solution or project"
-msgstr "Eine andere Übersetzung (Sprache) zur Solution oder zum Projekt hinzufügen"
+msgstr "Eine andere Übersetzung (Sprache) zur Projektmappe oder zum Projekt hinzufügen"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.addin.xml:55
 msgid "Update Translations"
@@ -8949,7 +8949,7 @@ msgstr "Entferne alle .mo-Dateien."
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs:125
 msgid "Do you really want to remove the translations from solution {0}?"
-msgstr "Wollen sie die Übersetzung wirklich aus der Solution {0} entfernen?"
+msgstr "Wollen sie die Übersetzung wirklich aus der Projektmappe {0} entfernen?"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs:159
 msgid "Translator Output"
@@ -8961,7 +8961,7 @@ msgstr "Übersetzungsaktualisierung fehlgeschlagen."
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationNodeBuilder.cs:113
 msgid "Do you really want to remove the translation {0} from solution {1}?"
-msgstr "Wollen sie die Übersetzung {0} wirklich aus der Solution {1} entfernen?"
+msgstr "Wollen sie die Übersetzung {0} wirklich aus der Projektmappe {1} entfernen?"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:75
 msgid "Translation Options"
@@ -9087,7 +9087,7 @@ msgstr "Form {0} (bspw. \"{1}\")"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/GettextFeature.cs:45
 msgid "Add a Translation Project to the solution that will use gettext to generate a set of PO files for the new project."
-msgstr "Füge ein Überstzungsprojekt zur Solution hinzu, das gettext benutzen wird um eine Anzahl an PO-Dateien für das neue Projekt zu erzeugen."
+msgstr "Füge ein Überstzungsprojekt zur Projektmappe hinzu, das gettext benutzen wird um eine Anzahl an PO-Dateien für das neue Projekt zu erzeugen."
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.GettextFeatureWidget.cs:47
 msgid "Select the languages you want to support (more languages can be added later):"
@@ -10044,7 +10044,7 @@ msgstr "C"
 
 #: ../src/addins/CBinding/templates/EmptyCProject.xpt.xml:12
 msgid "Creates an empty C solution."
-msgstr "Erzeugt eine leere C-Solution."
+msgstr "Erzeugt eine leeres C-Projekt."
 
 #: ../src/addins/CBinding/templates/EmptyCSourceFile.xft.xml:8
 msgid "Empty C Source File"
@@ -10060,7 +10060,7 @@ msgstr "Leeres C++-Projekt"
 
 #: ../src/addins/CBinding/templates/EmptyCppProject.xpt.xml:12
 msgid "Creates an empty C++ solution."
-msgstr "Erzeugt eine leere C++-Solution."
+msgstr "Erzeugt ein leeres C++-Projekt."
 
 #: ../src/addins/CBinding/Compiler/GNUCompiler.cs:104
 msgid "Compiling source to object files"
