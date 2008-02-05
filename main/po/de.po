@@ -2553,7 +2553,7 @@ msgstr "Benutzerdefinierte Aufgaben"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:998
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:81
 msgid "Error List"
-msgstr "Fehler Liste"
+msgstr "Fehler"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:999
 msgid "Message Log"
@@ -2562,7 +2562,7 @@ msgstr "Nachtichten Log"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1000
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1085
 msgid "Task List"
-msgstr "Aufgabenliste"
+msgstr "Aufgaben"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1003
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:11
