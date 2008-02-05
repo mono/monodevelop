@@ -696,6 +696,9 @@ namespace MonoDevelop.SourceEditor
 		{
 			int startLineNr = this.TextEditorData.IsSomethingSelected ? this.TextEditorData.Document.Splitter.GetLineNumberForOffset (this.TextEditorData.SelectionRange.Offset) : this.TextEditorData.Caret.Line;
 			int endLineNr   = this.TextEditorData.IsSomethingSelected ? this.TextEditorData.Document.Splitter.GetLineNumberForOffset (this.TextEditorData.SelectionRange.EndOffset) : this.TextEditorData.Caret.Line;
+			if (endLineNr < 0)
+				endLineNr = this.TextEditorData.Document.Splitter.LineCount;
+			
 			StringBuilder commentTag = new StringBuilder(Services.Languages.GetBindingPerFileName (this.ContentName).CommentTag ?? "//");
 			Document.BeginAtomicUndo ();
 			foreach (LineSegment line in this.TextEditorData.SelectedLines) {
@@ -719,6 +722,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			int startLineNr = this.TextEditorData.IsSomethingSelected ? this.TextEditorData.Document.Splitter.GetLineNumberForOffset (this.TextEditorData.SelectionRange.Offset) : this.TextEditorData.Caret.Line;
 			int endLineNr   = this.TextEditorData.IsSomethingSelected ? this.TextEditorData.Document.Splitter.GetLineNumberForOffset (this.TextEditorData.SelectionRange.EndOffset) : this.TextEditorData.Caret.Line;
+			if (endLineNr < 0)
+				endLineNr = this.TextEditorData.Document.Splitter.LineCount;
 			string commentTag = Services.Languages.GetBindingPerFileName (this.ContentName).CommentTag ?? "//";
 			Document.BeginAtomicUndo ();
 			int first = -1;
