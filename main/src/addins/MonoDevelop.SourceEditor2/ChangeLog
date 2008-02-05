@@ -1,6 +1,12 @@
 2008-02-05  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor/SourceEditorView.cs: Added some folding
+	  commands.
+
+2008-02-05  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,
 	  MonoDevelop.SourceEditor/SourceEditorView.cs: Improved folding behavior.
 
 2008-02-05  Mike Krüger <mkrueger@novell.com> 

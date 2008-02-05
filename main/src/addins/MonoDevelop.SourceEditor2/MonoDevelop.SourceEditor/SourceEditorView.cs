@@ -38,7 +38,7 @@ using MonoDevelop.Ide.Gui.Search;
 
 namespace MonoDevelop.SourceEditor
 {	
-	public class SourceEditorView : AbstractViewContent, IPositionable, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, ICompletionWidget, IDocumentInformation, ICodeStyleOperations, ISplittable
+	public class SourceEditorView : AbstractViewContent, IPositionable, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, ICompletionWidget, IDocumentInformation, ICodeStyleOperations, ISplittable, IFoldable
 	{
 		SourceEditorWidget widget;
 		bool isDisposed = false;
@@ -369,6 +369,7 @@ namespace MonoDevelop.SourceEditor
 			column = location.Column + 1;
 		}
 #endregion
+
 #region IEditableTextFile
 		public void InsertText (int position, string text)
 		{
@@ -671,6 +672,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 #endregion
+
 #region ICodeStyleOperations
 		public void ToggleCodeComment ()
 		{
@@ -764,6 +766,7 @@ namespace MonoDevelop.SourceEditor
 			RemoveTab.RemoveIndentSelection (this.TextEditorData);
 		}
 #endregion
+
 #region ISplittable
 		public bool EnableSplitHorizontally {
 			get {
@@ -797,5 +800,42 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 #endregion
+		
+		#region IFoldable
+		void ToggleFoldings (ICollection<FoldSegment> segments)
+		{
+			bool doFold = true;
+			foreach (FoldSegment segment in segments) {
+				if (segment.IsFolded) {
+					doFold = false;
+					break;
+				}
+			}
+			foreach (FoldSegment segment in segments) {
+				segment.IsFolded = doFold;
+			}
+			Document.RequestUpdate (new UpdateAll ());
+			Document.CommitDocumentUpdate ();
+		}
+		
+		public void ToggleAllFoldings ()
+		{
+			ToggleFoldings (Document.FoldSegments);
+		}
+		
+		public void FoldDefinitions ()
+		{
+			foreach (FoldSegment segment in Document.FoldSegments) {
+				segment.IsFolded = segment.FoldingType == FoldingType.TypeMember;
+			}
+			Document.RequestUpdate (new UpdateAll ());
+			Document.CommitDocumentUpdate ();
+		}
+		
+		public void ToggleFolding ()
+		{
+			ToggleFoldings (Document.GetStartFoldings (Document.GetLine (TextEditorData.Caret.Line)));
+		}
+		#endregion
 	}
 } 

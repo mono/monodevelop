@@ -165,13 +165,13 @@ namespace MonoDevelop.SourceEditor
 		ICompilationUnit lastCu = null;
 		bool resetTimerStarted = false;
 		
-		FoldSegment AddMarker (List<FoldSegment> foldSegments, string text, IRegion region)
+		FoldSegment AddMarker (List<FoldSegment> foldSegments, string text, IRegion region, FoldingType type)
 		{
 			if (region == null || region.BeginLine <= 0 || region.EndLine <= 0 || region.BeginLine >= this.TextEditor.Document.Splitter.LineCount || region.EndLine >= this.TextEditor.Document.Splitter.LineCount)
 				return null;
 			int startOffset = this.TextEditor.Document.LocationToOffset (region.BeginLine - 1,  region.BeginColumn - 1);
 			int endOffset   = this.TextEditor.Document.LocationToOffset (region.EndLine - 1,  region.EndColumn - 1);
-			FoldSegment result = new FoldSegment (text, startOffset, endOffset - startOffset);
+			FoldSegment result = new FoldSegment (text, startOffset, endOffset - startOffset, type);
 			
 			foldSegments.Add (result);
 			return result;
@@ -180,7 +180,7 @@ namespace MonoDevelop.SourceEditor
 		void AddClass (List<FoldSegment> foldSegments, IClass cl)
 		{
 			if (cl.BodyRegion != null)
-				AddMarker (foldSegments, "...", cl.BodyRegion);
+				AddMarker (foldSegments, "...", cl.BodyRegion, FoldingType.TypeDefinition);
 			foreach (IClass inner in cl.InnerClasses) {
 				AddClass (foldSegments, inner);
 			}
@@ -191,7 +191,7 @@ namespace MonoDevelop.SourceEditor
 					continue;
 				int startOffset = this.TextEditor.Document.LocationToOffset (method.Region.EndLine - 1,  method.Region.EndColumn - 1);
 				int endOffset   = this.TextEditor.Document.LocationToOffset (method.BodyRegion.EndLine - 1,  method.BodyRegion.EndColumn - 1);
-				foldSegments.Add (new FoldSegment ("...", startOffset, endOffset - startOffset));
+				foldSegments.Add (new FoldSegment ("...", startOffset, endOffset - startOffset, FoldingType.TypeMember));
 			}
 			
 			foreach (IProperty property in cl.Properties) {
@@ -199,7 +199,7 @@ namespace MonoDevelop.SourceEditor
 					continue;
 				int startOffset = this.TextEditor.Document.LocationToOffset (property.Region.EndLine - 1,  property.Region.EndColumn - 1);
 				int endOffset   = this.TextEditor.Document.LocationToOffset (property.BodyRegion.EndLine - 1,  property.BodyRegion.EndColumn - 1);
-				foldSegments.Add (new FoldSegment ("...", startOffset, endOffset - startOffset));
+				foldSegments.Add (new FoldSegment ("...", startOffset, endOffset - startOffset, FoldingType.TypeMember));
 			}
 		}
 		
@@ -211,7 +211,9 @@ namespace MonoDevelop.SourceEditor
 			if (lastCu != null) {
 				List<FoldSegment> foldSegments = new List<FoldSegment> ();
 				foreach (MonoDevelop.Projects.Parser.FoldingRegion region in lastCu.FoldingRegions) {
-					AddMarker (foldSegments, region.Name, region.Region).IsFolded = !this.TextEditor.Document.HasFoldSegments;
+					FoldSegment marker = AddMarker (foldSegments, region.Name, region.Region, FoldingType.Region);
+					if (marker != null)
+						marker.IsFolded = !this.TextEditor.Document.HasFoldSegments;
 				}
 				foreach (IClass cl in lastCu.Classes) {
 					AddClass (foldSegments, cl);
