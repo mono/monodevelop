@@ -104,8 +104,8 @@
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Ide/MainMenu/File">
-		<CommandItem id="MonoDevelop.VersionControl.Commands.Checkout" 
-			insertafter="MonoDevelop.Ide.Commands.FileCommands.OpenFile" />
+		<SeparatorItem id = "CheckoutSep" insertafter="Close" />
+		<CommandItem id="MonoDevelop.VersionControl.Commands.Checkout" />
 	</Extension>	
 
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/ProjectFile">

@@ -1,3 +1,7 @@
+2008-02-05  Mike Krüger <mkrueger@novell.com> 
+
+	* VersionControl.addin.xml: Changed main menu items.
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* VersionControl.addin.xml: Update MD version.
