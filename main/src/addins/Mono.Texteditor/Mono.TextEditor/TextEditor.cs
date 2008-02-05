@@ -1010,6 +1010,7 @@ namespace Mono.TextEditor
 				}
 			}
 		}
+		
 		int ScanWord (int offset, bool forwardDirection)
 		{
 			LineSegment line = Document.Splitter.GetByOffset (offset);
@@ -1069,7 +1070,7 @@ namespace Mono.TextEditor
 		void SetAdjustments ()
 		{
 			this.textEditorData.VAdjustment.SetBounds (0, 
-			                       Splitter.LineCount * this.LineHeight, 
+			                       (Splitter.LineCount + 10) * this.LineHeight, 
 			                       LineHeight,
 			                       this.Allocation.Height,
 			                       this.Allocation.Height);

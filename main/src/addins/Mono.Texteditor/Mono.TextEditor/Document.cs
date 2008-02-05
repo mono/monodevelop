@@ -260,6 +260,13 @@ namespace Mono.TextEditor
 				return foldSegments.Count != 0;
 			}
 		}
+		
+		public ReadOnlyCollection<FoldSegment> FoldSegments {
+			get {
+				return foldSegments.AsReadOnly ();
+			}
+		}
+		
 		public void UpdateFoldSegments (List<FoldSegment> newSegments)
 		{
 			if (newSegments == null) {

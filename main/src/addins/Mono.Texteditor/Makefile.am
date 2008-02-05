@@ -28,6 +28,7 @@ FILES =  \
 	Mono.TextEditor/DocumentLocation.cs \
 	Mono.TextEditor/DocumentUpdateRequest.cs \
 	Mono.TextEditor/EditAction.cs \
+	Mono.TextEditor/FoldingType.cs \
 	Mono.TextEditor/FoldMarkerMargin.cs \
 	Mono.TextEditor/FoldSegment.cs \
 	Mono.TextEditor/GapBuffer.cs \

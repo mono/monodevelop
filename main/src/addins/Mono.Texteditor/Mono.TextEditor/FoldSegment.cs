@@ -35,6 +35,7 @@ namespace Mono.TextEditor
 		string description;
 		int         column;
 		int         endColumn;
+		FoldingType foldingType;
 		LineSegment startLine;
 		LineSegment endLine;
 		
@@ -110,10 +111,20 @@ namespace Mono.TextEditor
 				endColumn = value;
 			}
 		}
+
+		public FoldingType FoldingType {
+			get {
+				return foldingType;
+			}
+			set {
+				foldingType = value;
+			}
+		}
 		
-		public FoldSegment (string description, int offset, int length) : base (offset, length)
+		public FoldSegment (string description, int offset, int length, FoldingType foldingType) : base (offset, length)
 		{
 			this.description = description;
+			this.foldingType = foldingType;
 		}
 		
 		public override string ToString ()

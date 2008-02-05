@@ -1,5 +1,11 @@
 2008-02-05  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/Document.cs, Mono.TextEditor/FoldingType.cs,
+	  Mono.TextEditor/TextEditor.cs, Mono.TextEditor/FoldSegment.cs: Added
+	  some folding commands.
+
+2008-02-05  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/Document.cs,
 	  Mono.TextEditor/Caret.cs, Mono.TextEditor/FoldSegment.cs: Improved
 	  folding behavior.
