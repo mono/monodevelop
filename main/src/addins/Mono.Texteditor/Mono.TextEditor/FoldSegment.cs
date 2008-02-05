@@ -125,7 +125,7 @@ namespace Mono.TextEditor
 		{
 			FoldSegment segment = (FoldSegment)obj;
 			
-			return this.Offset != segment.Offset ? this.Offset.CompareTo (segment.Offset) : this.length.CompareTo (segment.length);
+			return this.Offset != segment.Offset ? this.Offset.CompareTo (segment.Offset) : 0;
 		}
 	}
 }

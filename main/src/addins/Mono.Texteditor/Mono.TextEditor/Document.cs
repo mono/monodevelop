@@ -255,6 +255,11 @@ namespace Mono.TextEditor
 		}
 		
 		List<FoldSegment> foldSegments = new List<FoldSegment> ();
+		public bool HasFoldSegments {
+			get {
+				return foldSegments.Count != 0;
+			}
+		}
 		public void UpdateFoldSegments (List<FoldSegment> newSegments)
 		{
 			if (newSegments == null) {
@@ -281,6 +286,8 @@ namespace Mono.TextEditor
 					i++;
 				}
 			}
+			if (i < foldSegments.Count)
+				newSegments.AddRange (foldSegments.GetRange (i, foldSegments.Count - i));
 			foldSegments = newSegments;
 			
 			RequestUpdate (new UpdateAll ());

@@ -504,6 +504,8 @@ namespace Mono.TextEditor
 		{
 			int startLineNr = data.IsSomethingSelected ? data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.Offset) : data.Caret.Line;
 			int endLineNr   = data.IsSomethingSelected ? data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.EndOffset) : data.Caret.Line;
+			if (endLineNr < 0)
+				endLineNr = data.Document.Splitter.LineCount;
 			data.Document.BeginAtomicUndo ();
 			int first = -1;
 			int last  = 0;
@@ -557,6 +559,8 @@ namespace Mono.TextEditor
 		{
 			int startLineNr = data.IsSomethingSelected ? data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.Offset) : data.Caret.Line;
 			int endLineNr   = data.IsSomethingSelected ? data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.EndOffset) : data.Caret.Line;
+			if (endLineNr < 0)
+				endLineNr = data.Document.Splitter.LineCount;
 			data.Document.BeginAtomicUndo ();
 			foreach (LineSegment line in data.SelectedLines) {
 				data.Document.Buffer.Insert (line.Offset, new StringBuilder(TextEditorOptions.Options.IndentationString));
