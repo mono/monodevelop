@@ -59,6 +59,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Ide.Gui.Dialogs.NewFileDialog
             this.Name = "MonoDevelop.Ide.Gui.Dialogs.NewFileDialog";
+            this.Title = Mono.Unix.Catalog.GetString("New File");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.BorderWidth = ((uint)(6));
             this.HasSeparator = false;
