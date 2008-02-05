@@ -146,7 +146,7 @@ namespace MonoDevelop.WelcomePage
 				button.EnterNotifyEvent += linkHoverEnterEventHandler;
 				button.LeaveNotifyEvent += linkHoverLeaveEventHandler;
 				a = link.Attributes ["_title"];
-				if (a != null) button.Label = string.Format (textFormat, a.Value);
+				if (a != null) button.Label = string.Format (textFormat, GettextCatalog.GetString (a.Value));
 				a = link.Attributes ["href"];
 				if (a != null) button.LinkUrl = a.Value;
 				a = link.Attributes ["_desc"];

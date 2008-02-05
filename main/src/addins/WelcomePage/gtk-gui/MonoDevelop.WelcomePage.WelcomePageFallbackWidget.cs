@@ -85,6 +85,7 @@ namespace MonoDevelop.WelcomePage {
             this.alignment1.Name = "alignment1";
             // Container child alignment1.Gtk.Container+ContainerChild
             this.hbox1 = new Gtk.HBox();
+            this.hbox1.Name = "hbox1";
             this.hbox1.Spacing = 35;
             // Container child hbox1.Gtk.Box+BoxChild
             this.vbox2 = new Gtk.VBox();
