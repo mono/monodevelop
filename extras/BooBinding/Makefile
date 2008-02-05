@@ -1,5 +1,5 @@
 
-EXTRA_DIST = BooBinding.make rules.make configure Makefile.include
+EXTRA_DIST = BooBinding.make rules.make configure Makefile.include COPYING
 
 all: all-recursive
 
