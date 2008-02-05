@@ -480,7 +480,7 @@
 				description = "Create a new solution" 
 				shortcut = "Control|Shift|N"  />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile"
-				_label = "_File" 
+				_label = "_Close File" 
 				description = "Close active file"
 				icon = "gtk-close"
 				shortcut = "Control|W"/>
@@ -1219,9 +1219,10 @@
 				<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenFileInSolution" />
 			</ItemSet>-->
 			<ItemSet id = "Close" _label = "_Close">
-				<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile" />
+				<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile" _label = "_File" />
 				<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseCombine" />
 			</ItemSet>
+				
 
 			<SeparatorItem id = "OpenSep" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Save" />
