@@ -1,3 +1,11 @@
+2008-02-04  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Commands/FileCommands.cs: Dispose new file dialog. Fixes
+	  "Bug 358361 - Have to hit esc twice to close the file/new file dialog".
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.cs, gtk-gui/gui.stetic:
+	  Set title on "New File" window window. Partial workaround for "Bug
+	  358370 - Add new file dialog says "unknown" in the window title".
+
 2008-02-05  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Content/ICodeStyleOperations.cs,
