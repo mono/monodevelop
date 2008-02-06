@@ -110,9 +110,11 @@ namespace MonoDevelop.Projects
 							return suggestion;
 						}
 					}
+					
 					return versions[0];
 				}
 			}
+			
 			return suggestion;
 		}
 		
@@ -187,6 +189,14 @@ namespace MonoDevelop.Projects
 					return false;
 				return provider.Supports ( System.CodeDom.Compiler.GeneratorSupport.PartialTypes);
 			}
+		}
+		
+		protected override DataCollection Serialize (ITypeSerializer handler)
+		{
+			//make sure clr version is sorted out before saving
+			ClrVersion v = this.ClrVersion;
+			
+			return base.Serialize (handler);
 		}
 		
 		protected override void Deserialize (ITypeSerializer handler, DataCollection data)
@@ -375,7 +385,7 @@ namespace MonoDevelop.Projects
 		{
 			resourceId = finfo.ResourceId;
 			if (resourceId == null) {
-				Console.WriteLine (GettextCatalog.GetString ("Error: Unable to build ResourceId for {0}.", fname));
+				LoggingService.LogDebug (GettextCatalog.GetString ("Error: Unable to build ResourceId for {0}.", fname));
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Error: Unable to build ResourceId for {0}.", fname));
 
 				return new CompilerError (fname, 0, 0, String.Empty,
@@ -394,7 +404,7 @@ namespace MonoDevelop.Projects
 			}
 
 			using (StringWriter sw = new StringWriter ()) {
-				Console.WriteLine ("Compiling resources\n{0}$ {1} /compile {2}", Path.GetDirectoryName (fname), resgen, fname);
+				LoggingService.LogDebug ("Compiling resources\n{0}$ {1} /compile {2}", Path.GetDirectoryName (fname), resgen, fname);
 				monitor.Log.WriteLine (GettextCatalog.GetString (
 					"Compiling resource {0} with {1}", fname, resgen));
 				ProcessWrapper pw = null;
@@ -408,7 +418,7 @@ namespace MonoDevelop.Projects
 
 					pw = Runtime.ProcessService.StartProcess (info, sw, sw, null);
 				} catch (System.ComponentModel.Win32Exception ex) {
-					Console.WriteLine (GettextCatalog.GetString (
+					LoggingService.LogDebug (GettextCatalog.GetString (
 						"Error while trying to invoke '{0}' to compile resource '{1}' :\n {2}", resgen, fname, ex.ToString ()));
 					monitor.Log.WriteLine (GettextCatalog.GetString (
 						"Error while trying to invoke '{0}' to compile resource '{1}' :\n {2}", resgen, fname, ex.Message));
@@ -423,7 +433,7 @@ namespace MonoDevelop.Projects
 					fname = Path.ChangeExtension (fname, ".resources");
 				} else {
 					string output = sw.ToString ();
-					Console.WriteLine (GettextCatalog.GetString (
+					LoggingService.LogDebug (GettextCatalog.GetString (
 						"Unable to compile ({0}) {1} to .resources. \nReason: \n{2}\n",
 						resgen, fname, output));
 					monitor.Log.WriteLine (GettextCatalog.GetString (
@@ -470,7 +480,7 @@ namespace MonoDevelop.Projects
 					//generate assembly
 					string args = String.Format ("/t:lib {0} \"/out:{1}\" /culture:{2}", pair.Value, outputFile, culture);
 
-					Console.WriteLine ("Generating satellite assembly for '{0}' culture.\n{1}$ {2} {3}", culture, satDir, al, args);
+					LoggingService.LogDebug ("Generating satellite assembly for '{0}' culture.\n{1}$ {2} {3}", culture, satDir, al, args);
 					monitor.Log.WriteLine (GettextCatalog.GetString (
 						"Generating satellite assembly for '{0}' culture with {1}", culture, al));
 					ProcessWrapper pw = null;
@@ -481,7 +491,7 @@ namespace MonoDevelop.Projects
 
 						pw = Runtime.ProcessService.StartProcess (info, sw, sw, null);
 					} catch (System.ComponentModel.Win32Exception ex) {
-						Console.WriteLine (GettextCatalog.GetString (
+						LoggingService.LogDebug (GettextCatalog.GetString (
 							"Error while trying to invoke '{0}' to generate satellite assembly for '{1}' culture:\n {2}", al, culture, ex.ToString ()));
 						monitor.Log.WriteLine (GettextCatalog.GetString (
 							"Error while trying to invoke '{0}' to generate satellite assembly for '{1}' culture:\n {2}", al, culture, ex.Message));
@@ -494,7 +504,7 @@ namespace MonoDevelop.Projects
 
 					if (pw.ExitCode != 0) {
 						string output = sw.ToString ();
-						Console.WriteLine (GettextCatalog.GetString (
+						LoggingService.LogDebug (GettextCatalog.GetString (
 							"Unable to generate satellite assemblies for '{0}' culture with {1}.\nReason: \n{2}\n",
 							culture, al, output));
 						monitor.Log.WriteLine (GettextCatalog.GetString (

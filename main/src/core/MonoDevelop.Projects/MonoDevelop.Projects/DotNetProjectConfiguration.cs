@@ -55,7 +55,7 @@ namespace MonoDevelop.Projects
 		NetRuntime netRuntime = NetRuntime.MsNet;
 		
 		[ItemProperty ("Execution/clr-version")]
-		MonoDevelop.Core.ClrVersion clrVersion = MonoDevelop.Core.ClrVersion.Net_1_1;
+		MonoDevelop.Core.ClrVersion clrVersion = MonoDevelop.Core.ClrVersion.Net_2_0;
 		
 		[ItemProperty ("Build/target")]
 		CompileTarget compiletarget = CompileTarget.Exe;
