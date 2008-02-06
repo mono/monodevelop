@@ -1,0 +1,21 @@
+This is the beginnings of Stetic, which will eventually be a new GUI
+designer for GNOME. At the moment, it is just a mostly useless demo of
+certain bits of Gtk#.
+
+To build Stetic you need Mono/MCS head (a recent 1.1.x release is
+*probably* ok), and the very latest Gtk# (yesterday's snapshot is
+probably too old).
+
+FAQ:
+	Q. "How do I--"
+	A. You can't, it's not implemented yet.
+
+	Q. "Why does--"
+	A. Because it was just a quick hack. It will be different later.
+
+	Q. "Can I--"
+	A. No.
+
+	Q. "But--"
+	A. I'm sorry, which part of "mostly useless" didn't you
+	understand?
