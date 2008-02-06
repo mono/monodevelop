@@ -304,6 +304,12 @@ namespace MonoDevelop.Ide.Gui
 					SaveCombinePreferences ();
 				Combine closedCombine = CurrentOpenCombine;
 				CurrentSelectedProject = null;
+				
+				//stop all operations associated with this combine
+				if (!CurrentBuildOperation.IsCompleted)
+					CurrentBuildOperation.Cancel ();
+				if (!CurrentRunOperation.IsCompleted)
+					CurrentRunOperation.Cancel ();
 
 				closedCombine.FileAddedToProject -= fileAddedToProjectHandler;
 				closedCombine.FileRemovedFromProject -= fileRemovedFromProjectHandler;
