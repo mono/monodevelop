@@ -1,3 +1,10 @@
+2008-02-05  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: End build and run operations
+	  when the solution is closed (which includes closing MD). Fixes "Bug
+	  358367 - MD hangs on exit if XSP is still running" and "Bug 356837 -
+	  Built app doesn't close when solution closes".
+
 2008-02-05  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Content/IFoldable.cs,
