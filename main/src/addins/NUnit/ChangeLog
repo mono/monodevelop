@@ -1,3 +1,7 @@
+2008-02-06  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/TestPad.cs: Some changes for the new TreeViePiye
+
 2008-02-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* templates/NUnitProject.xpt.xml: Fix nunit versions referenced in the

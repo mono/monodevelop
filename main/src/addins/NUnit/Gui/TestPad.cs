@@ -308,15 +308,15 @@ namespace MonoDevelop.NUnit
 			failedTree.RowActivated += new Gtk.RowActivatedHandler (OnFailedTestActivated);
 			
 			if (testService.RootTest != null)
-				LoadTree (testService.RootTest);
+				TreeView.LoadTree (testService.RootTest);
 		}
 		
 		void OnTestSuiteChanged (object sender, EventArgs e)
 		{
 			if (testService.RootTest != null)
-				LoadTree (testService.RootTest);
+				TreeView.LoadTree (testService.RootTest);
 			else {
-				Clear ();
+				TreeView.Clear ();
 				ClearDetails ();
 			}
 		}
@@ -332,7 +332,7 @@ namespace MonoDevelop.NUnit
 		
 		ITreeNavigator FindTestNode (UnitTest t)
 		{
-			ITreeNavigator nav = GetNodeAtObject (t);
+			ITreeNavigator nav = TreeView.GetNodeAtObject (t);
 			if (nav != null)
 				return nav;
 			if (t.Parent == null)
@@ -344,7 +344,7 @@ namespace MonoDevelop.NUnit
 				return null;
 				
 			nav.MoveToFirstChild ();	// Make sure the children are created
-			return GetNodeAtObject (t);
+			return TreeView.GetNodeAtObject (t);
 		}
 		
 		public override Gtk.Widget Control {
@@ -365,14 +365,16 @@ namespace MonoDevelop.NUnit
 			info.Enabled = runningTestOperation == null;
 		}
 		
-		public override void ActivateCurrentItem ()
+		public TestPad ()
 		{
-			RunSelectedTest ();
+			base.TreeView.CurrentItemActivated += delegate {
+				RunSelectedTest ();
+			};
 		}
 		
 		void RunSelectedTest ()
 		{
-			ITreeNavigator nav = GetSelectedNode ();
+			ITreeNavigator nav = TreeView.GetSelectedNode ();
 			UnitTest test = (UnitTest) nav.DataItem;
 			
 			runningTestOperation = testService.RunTest (test);
@@ -389,7 +391,7 @@ namespace MonoDevelop.NUnit
 		protected override void OnSelectionChanged (object sender, EventArgs args)
 		{
 			base.OnSelectionChanged (sender, args);
-			ITreeNavigator nav = GetSelectedNode ();
+			ITreeNavigator nav = TreeView.GetSelectedNode ();
 			if (nav != null) {
 				UnitTest test = (UnitTest) nav.DataItem;
 				if (test != null)
@@ -419,7 +421,7 @@ namespace MonoDevelop.NUnit
 			if (!detailsPad.Visible) {
 				detailsPad.Show ();
 				
-				ITreeNavigator nav = GetSelectedNode ();
+				ITreeNavigator nav = TreeView.GetSelectedNode ();
 				if (nav != null) {
 					UnitTest test = (UnitTest) nav.DataItem;
 					FillDetails (test, false);
