@@ -635,6 +635,14 @@ namespace Mono.TextEditor
 			return width;
 		}
 		int rulerX = 0;
+		
+		public int GetWidth (string text)
+		{
+			layout.SetText (text);
+			int width, height;
+			layout.GetPixelSize (out width, out height);
+			return width;
+		}
 
 		static Color DimColor (Color color)
 		{
