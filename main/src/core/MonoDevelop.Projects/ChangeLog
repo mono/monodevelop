@@ -1,3 +1,7 @@
+2008-02-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/DotNetProject.cs: Set 2.0 as the default runtime.
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.addin.xml: Update MD version.
