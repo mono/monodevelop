@@ -42,17 +42,10 @@ namespace MonoDevelop.Ide.Gui
 	public class DisplayBindingService
 	{
 		readonly static string displayBindingPath = "/MonoDevelop/Ide/DisplayBindings";
-		List<DisplayBindingCodon> bindings = null;
-
-		public DisplayBindingService ()
-		{
-			bindings = new List<DisplayBindingCodon> ();
-			AddinManager.AddExtensionNodeHandler (displayBindingPath, OnExtensionChanged);
-		}
 		
 		public IDisplayBinding LastBinding {
 			get {
-				return bindings[0].DisplayBinding;
+				return ((DisplayBindingCodon)AddinManager.GetExtensionNodes (displayBindingPath)[0]).DisplayBinding;
 			}
 		}
 		
@@ -64,7 +57,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IDisplayBinding GetBindingForMimeType (string mimeType)
 		{
-			foreach (DisplayBindingCodon binding in bindings) {
+			foreach (DisplayBindingCodon binding in AddinManager.GetExtensionNodes (displayBindingPath)) {
 				if (binding.DisplayBinding != null && binding.DisplayBinding.CanCreateContentForMimeType (mimeType)) {
 					return binding.DisplayBinding;
 				}
@@ -74,13 +67,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IDisplayBinding[] GetBindingsForMimeType (string mimeType)
 		{
-			ArrayList list = new ArrayList ();
-			foreach (DisplayBindingCodon binding in bindings) {
-				if (binding.DisplayBinding != null && binding.DisplayBinding.CanCreateContentForMimeType (mimeType)) {
-					list.Add (binding.DisplayBinding);
-				}
+			List<IDisplayBinding> result = new List<IDisplayBinding> ();
+			foreach (DisplayBindingCodon binding in AddinManager.GetExtensionNodes (displayBindingPath)) {
+				if (binding.DisplayBinding != null && binding.DisplayBinding.CanCreateContentForMimeType (mimeType)) 
+					result.Add (binding.DisplayBinding);
 			}
-			return (IDisplayBinding[]) list.ToArray (typeof(IDisplayBinding));
+			return result.ToArray ();
 		}
 		
 		internal DisplayBindingCodon GetCodonPerFileName(string filename)
@@ -90,14 +82,13 @@ namespace MonoDevelop.Ide.Gui
 			vfsname = vfsname.Replace ("#", "%23");
 			vfsname = vfsname.Replace ("?", "%3F");
 			string mimetype = IdeApp.Services.PlatformService.GetMimeTypeForUri (vfsname);
-
-			foreach (DisplayBindingCodon binding in bindings) {
+			foreach (DisplayBindingCodon binding in AddinManager.GetExtensionNodes (displayBindingPath)) {
 				if (binding.DisplayBinding != null && binding.DisplayBinding.CanCreateContentForFile(filename)) {
 					return binding;
 				}
 			}
 			if (!filename.StartsWith ("http")) {
-				foreach (DisplayBindingCodon binding in bindings) {
+				foreach (DisplayBindingCodon binding in AddinManager.GetExtensionNodes (displayBindingPath)) {
 					if (binding.DisplayBinding != null && binding.DisplayBinding.CanCreateContentForMimeType (mimetype)) {
 						return binding;
 					}
@@ -108,19 +99,11 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal void AttachSubWindows(IWorkbenchWindow workbenchWindow)
 		{
-			foreach (DisplayBindingCodon binding in bindings) {
+			foreach (DisplayBindingCodon binding in AddinManager.GetExtensionNodes (displayBindingPath)) {
 				if (binding.SecondaryDisplayBinding != null && binding.SecondaryDisplayBinding.CanAttachTo(workbenchWindow.ViewContent)) {
 					workbenchWindow.AttachSecondaryViewContent(binding.SecondaryDisplayBinding.CreateSecondaryViewContent(workbenchWindow.ViewContent));
 				}
 			}
-		}
-		
-		void OnExtensionChanged (object s, ExtensionNodeEventArgs args)
-		{
-			if (args.Change == ExtensionChange.Add)
-				bindings.Add ((DisplayBindingCodon)args.ExtensionNode);
-			else
-				bindings.Remove ((DisplayBindingCodon)args.ExtensionNode);
 		}
 	}
 }

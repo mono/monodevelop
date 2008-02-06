@@ -1,3 +1,8 @@
+2008-02-06  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui/DisplayBindingService.cs: Fixed bug in display binding
+	  service.
+
 2008-02-05  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs: End build and run operations
