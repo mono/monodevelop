@@ -35,10 +35,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 	public class NodeCommandHandler: ICommandRouter
 	{
 		ITreeNavigator currentNode;
-		TreeViewPad tree;
+		MonoDevelopTreeView tree;
 		object nextTarget;
 		
-		internal void Initialize (TreeViewPad tree)
+		internal void Initialize (MonoDevelopTreeView tree)
 		{
 			this.tree = tree;
 		}
@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			get { return currentNode; }
 		}
 		
-		protected TreeViewPad Tree {
+		protected MonoDevelopTreeView Tree {
 			get { return tree; }
 		}
 		

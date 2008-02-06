@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		protected override void OnSelectionChanged (object sender, EventArgs args)
 		{
 			base.OnSelectionChanged (sender, args);
-			ITreeNavigator nav = GetSelectedNode ();
+			ITreeNavigator nav = treeView.GetSelectedNode ();
 			if (nav != null) {
 				Project p = (Project) nav.GetParentDataItem (typeof(Project), true);
 				IdeApp.ProjectOperations.CurrentSelectedProject = p;
@@ -79,7 +79,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				if (file != null) {
 					ProjectFile pf = doc.Project.ProjectFiles.GetFile (doc.FileName);
 					if (pf != null) {
-						ITreeNavigator nav = GetNodeAtObject (pf, true);
+						ITreeNavigator nav = treeView.GetNodeAtObject (pf, true);
 						if (nav != null) {
 							nav.ExpandToNode ();
 							nav.Selected = true;

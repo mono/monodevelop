@@ -49,7 +49,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			base.Initialize (builders, options);
 			if (IdeApp.ProjectOperations.CurrentOpenCombine != null)
-				LoadTree (IdeApp.ProjectOperations.CurrentOpenCombine);
+				treeView.LoadTree (IdeApp.ProjectOperations.CurrentOpenCombine);
 		}
 		
 		void TrackPropertyChange (object o, MonoDevelop.Core.PropertyChangedEventArgs e)
@@ -61,12 +61,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		protected virtual void OnOpenCombine (object sender, CombineEventArgs e)
 		{
-			LoadTree (e.Combine);
+			treeView.LoadTree (e.Combine);
 		}
 
 		protected virtual void OnCloseCombine (object sender, CombineEventArgs e)
 		{
-			Clear ();
+			treeView.Clear ();
 		}
 	}
 }

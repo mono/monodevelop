@@ -41,6 +41,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		Gdk.Pixbuf GetComposedIcon (Gdk.Pixbuf baseIcon, object compositionKey);
 		void CacheComposedIcon (Gdk.Pixbuf baseIcon, object compositionKey, Gdk.Pixbuf composedIcon);
 		
-		TreeViewPad Tree { get; }
+		MonoDevelopTreeView Tree { get; }
 	}
 }

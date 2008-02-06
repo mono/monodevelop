@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		bool expanded;
 		bool selected;
-		TreeViewPad.TreeOptions options;
+		MonoDevelopTreeView.TreeOptions options;
 		
 		List<NodeState> childrenState;
 
@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 		}
 
-		public MonoDevelop.Ide.Gui.Pads.TreeViewPad.TreeOptions Options {
+		public MonoDevelopTreeView.TreeOptions Options {
 			get {
 				return options;
 			}
@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		const string expandedAttribute = "expanded";
 		const string selectedAttribute = "selected";
 
-		void WriteTo (XmlWriter writer, TreeViewPad.TreeOptions parentOptions)
+		void WriteTo (XmlWriter writer, MonoDevelopTreeView.TreeOptions parentOptions)
 		{
 			writer.WriteStartElement (Node);
 			if (NodeName != null)
@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			if (Selected)
 				writer.WriteAttributeString (selectedAttribute, bool.TrueString);
 
-			TreeViewPad.TreeOptions ops = Options;
+			MonoDevelopTreeView.TreeOptions ops = Options;
 			if (ops != null) {
 				foreach (DictionaryEntry de in ops) {
 					object parentVal = parentOptions != null ? parentOptions [de.Key] : null;
@@ -137,7 +137,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			writer.WriteEndElement (); // NodeState
 		}
 
-		ICustomXmlSerializer ReadFrom (XmlReader reader, TreeViewPad.TreeOptions parentOptions)
+		ICustomXmlSerializer ReadFrom (XmlReader reader, MonoDevelopTreeView.TreeOptions parentOptions)
 		{
 			NodeState result = new NodeState ();
 			result.NodeName = reader.GetAttribute (nameAttribute);
@@ -150,7 +150,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				switch (reader.LocalName) {
 				case "Option":
 					if (result.Options == null) 
-						result.Options = parentOptions != null ? parentOptions.CloneOptions (Gtk.TreeIter.Zero) : new TreeViewPad.TreeOptions ();   
+						result.Options = parentOptions != null ? parentOptions.CloneOptions (Gtk.TreeIter.Zero) : new MonoDevelopTreeView.TreeOptions ();   
 					result.Options [reader.GetAttribute ("id")] = bool.Parse (reader.GetAttribute ("value"));
 					return true;
 				case "Node":
@@ -164,7 +164,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			return result;
 		}
 		
-		internal static NodeState SaveState (TreeViewPad pad, ITreeNavigator nav)
+		internal static NodeState SaveState (MonoDevelopTreeView pad, ITreeNavigator nav)
 		{
 			NodeState state = SaveStateRec (pad, nav);
 			if (state == null) 
@@ -172,7 +172,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			else return state;
 		}
 		
-		static NodeState SaveStateRec (TreeViewPad pad, ITreeNavigator nav)
+		static NodeState SaveStateRec (MonoDevelopTreeView pad, ITreeNavigator nav)
 		{
 			Gtk.TreeIter it = nav.CurrentPosition._iter;
 			
@@ -191,7 +191,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				nav.MoveToParent ();
 			}
 			
-			TreeViewPad.TreeOptions ops = pad.GetIterOptions (it);
+			MonoDevelopTreeView.TreeOptions ops = pad.GetIterOptions (it);
 			
 			if (ops != null || nav.Expanded || childrenState != null || nav.Selected) {
 				NodeState es = new NodeState ();
@@ -214,7 +214,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			                      this.childrenState != null ? this.childrenState.Count.ToString () : "null");
 		}
 		 
-		internal static void RestoreState (TreeViewPad pad, ITreeNavigator nav, NodeState es)
+		internal static void RestoreState (MonoDevelopTreeView pad, ITreeNavigator nav, NodeState es)
 		{
 			if (es == null) 
 				return;

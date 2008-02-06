@@ -98,7 +98,7 @@ namespace MonoDevelop.Ide.Codons
 			string codonpath = Path + "/" + this.Id;
 			if (args.PathChanged (codonpath)) {
 				BuildChildren ();
-				pad.UpdateBuilders (builders, options);
+				pad.TreeView.UpdateBuilders (builders, options);
 			}
 		}
 	}

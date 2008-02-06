@@ -1,5 +1,17 @@
 2008-02-06  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectSolutionPad.cs,
+	  MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs,
+	  MonoDevelop.Ide.Gui.Pads/NodeCommandHandler.cs,
+	  MonoDevelop.Ide.Gui.Pads/ITreeBuilderContext.cs,
+	  MonoDevelop.Ide.Gui.Pads/NodeState.cs,
+	  MonoDevelop.Ide.Gui.Pads/SolutionPad.cs,
+	  MonoDevelop.Ide.Gui/MonoDevelopTreeView.cs,
+	  MonoDevelop.Ide.Codons/SolutionPadCodon.cs: Splitted TreeViewPad into
+	  pad and widget. (I needed the widget elsewhere too.)
+
+2008-02-06  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.Gui/DisplayBindingService.cs: Fixed bug in display binding
 	  service.
 
