@@ -376,12 +376,9 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public TreeBuilderContext BuilderContext {
+		internal TreeBuilderContext BuilderContext {
 			get {
 				return builderContext;
-			}
-			set {
-				builderContext = value;
 			}
 		}
 
@@ -996,7 +993,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public TreeOptions GetOptions (Gtk.TreeIter iter, bool createSpecificOptions)
+		internal TreeOptions GetOptions (Gtk.TreeIter iter, bool createSpecificOptions)
 		{
 			if (nodeOptions.Count == 0) {
 				if (createSpecificOptions) {
@@ -1043,12 +1040,12 @@ namespace MonoDevelop.Ide.Gui
 				nodeOptions.Remove (ob);
 		}
 		
-		public TreeOptions GetIterOptions (Gtk.TreeIter iter)
+		internal TreeOptions GetIterOptions (Gtk.TreeIter iter)
 		{
 			return nodeOptions [iter] as TreeOptions;
 		}
 
-		public void SetIterOptions (Gtk.TreeIter iter, TreeOptions ops)
+		internal void SetIterOptions (Gtk.TreeIter iter, TreeOptions ops)
 		{
 			ops.Pad = this;
 			ops.Iter = iter;
@@ -1279,7 +1276,7 @@ namespace MonoDevelop.Ide.Gui
 		public event EventHandler TitleChanged;
 		public event EventHandler IconChanged;
 
-		class PadCheckMenuItem: Gtk.CheckMenuItem
+		internal class PadCheckMenuItem: Gtk.CheckMenuItem
 		{
 			internal string Id;
 			
@@ -1288,7 +1285,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		class TreeBuilderContext: ITreeBuilderContext
+		internal class TreeBuilderContext: ITreeBuilderContext
 		{
 			MonoDevelopTreeView pad;
 			Hashtable icons = new Hashtable ();
@@ -1359,7 +1356,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public class TreeNodeNavigator: ITreeNavigator, ITreeOptions
+		internal class TreeNodeNavigator: ITreeNavigator, ITreeOptions
 		{
 			protected MonoDevelopTreeView pad;
 			protected Gtk.TreeView tree;
@@ -1640,7 +1637,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public class TreeBuilder: TreeNodeNavigator, ITreeBuilder
+		internal class TreeBuilder: TreeNodeNavigator, ITreeBuilder
 		{
 			public TreeBuilder (MonoDevelopTreeView pad) : base (pad)
 			{
@@ -1895,7 +1892,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public class TreeOptions : Hashtable, ITreeOptions
+		internal class TreeOptions : Hashtable, ITreeOptions
 		{
 			MonoDevelopTreeView pad;
 			Gtk.TreeIter iter;

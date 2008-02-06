@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 		}
 
-		public MonoDevelopTreeView.TreeOptions Options {
+		internal MonoDevelopTreeView.TreeOptions Options {
 			get {
 				return options;
 			}

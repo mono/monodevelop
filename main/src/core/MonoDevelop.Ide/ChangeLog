@@ -1,5 +1,11 @@
 2008-02-06  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Pads/NodeState.cs,
+	  MonoDevelop.Ide.Gui/MonoDevelopTreeView.cs: Changed some accessibilities
+	  to internal.
+
+2008-02-06  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectSolutionPad.cs,
 	  MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs,
 	  MonoDevelop.Ide.Gui.Pads/NodeCommandHandler.cs,
