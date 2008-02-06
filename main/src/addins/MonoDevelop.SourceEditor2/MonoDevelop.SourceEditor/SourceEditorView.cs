@@ -27,6 +27,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+
+using Gtk;
+using Gnome;
+
 using Mono.TextEditor;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
@@ -38,7 +42,7 @@ using MonoDevelop.Ide.Gui.Search;
 
 namespace MonoDevelop.SourceEditor
 {	
-	public class SourceEditorView : AbstractViewContent, IPositionable, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, ICompletionWidget, IDocumentInformation, ICodeStyleOperations, ISplittable, IFoldable
+	public class SourceEditorView : AbstractViewContent, IPositionable, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, ICompletionWidget, IDocumentInformation, ICodeStyleOperations, ISplittable, IFoldable, IPrintable
 	{
 		SourceEditorWidget widget;
 		bool isDisposed = false;
@@ -835,6 +839,182 @@ namespace MonoDevelop.SourceEditor
 		public void ToggleFolding ()
 		{
 			ToggleFoldings (Document.GetStartFoldings (Document.GetLine (TextEditorData.Caret.Line)));
+		}
+		#endregion
+		
+		#region IPrintable
+		PrintDialog    printDialog;
+		Gnome.PrintJob printJob;
+		
+		public void PrintDocument ()
+		{
+			if (printDialog != null) 
+				return;
+			CreatePrintJob ();
+			
+			printDialog = new PrintDialog (printJob, GettextCatalog.GetString ("Print Source Code"));
+			printDialog.SkipTaskbarHint = true;
+			printDialog.Modal = true;
+//			printDialog.IconName = "gtk-print";
+			printDialog.SetPosition (WindowPosition.CenterOnParent);
+			printDialog.Gravity = Gdk.Gravity.Center;
+			printDialog.TypeHint = Gdk.WindowTypeHint.Dialog;
+			printDialog.TransientFor = IdeApp.Workbench.RootWindow;
+			printDialog.KeepAbove = false;
+			printDialog.Response += OnPrintDialogResponse;
+			printDialog.Close += delegate {
+				printDialog = null;
+			};
+			printDialog.Run ();
+		}
+		
+		public void PrintPreviewDocument ()
+		{
+			CreatePrintJob ();
+			PrintJobPreview preview = new PrintJobPreview (printJob, GettextCatalog.GetString ("Print Preview - Source Code"));
+			preview.Modal = true;
+			preview.SetPosition (WindowPosition.CenterOnParent);
+			preview.Gravity = Gdk.Gravity.Center;
+			preview.TransientFor = printDialog != null ? printDialog : IdeApp.Workbench.RootWindow;
+//			preview.IconName = "gtk-print-preview";
+			preview.ShowAll ();
+		}
+		
+		void OnPrintDialogResponse (object sender, Gtk.ResponseArgs args)
+		{
+			switch ((int)args.ResponseId) {
+			case (int)PrintButtons.Print:
+				int result = printJob.Print ();
+				if (result != 0)
+					IdeApp.Services.MessageService.ShowError (GettextCatalog.GetString ("Print operation failed."));
+				goto default;
+			case (int)PrintButtons.Preview:
+				PrintPreviewDocument ();
+				break;
+			default:
+				printDialog.HideAll ();
+				printDialog.Destroy ();
+				break;
+			}
+		}
+		
+		const int marginTop    = 50;
+		const int marginBottom = 50;
+		const int marginLeft   = 30;
+		const int marginRight  = 30;
+		
+		int yPos = 0;
+		int xPos = 0;
+		int page = 0;
+		int totalPages = 0;
+		
+		double pageWidth, pageHeight;
+		
+		void PrintHeader (Gnome.PrintContext gpc, Gnome.PrintConfig config)
+		{
+			gpc.SetRgbColor (0, 0, 0);
+			string header = GettextCatalog.GetString ("File:") +  " " + StrMiddleTruncate (IdeApp.Workbench.ActiveDocument.FileName, 60);
+			yPos = marginTop;
+			gpc.MoveTo (xPos, pageHeight - yPos);
+			gpc.Show (header);
+			xPos = marginLeft;
+			gpc.RectFilled (marginLeft, pageHeight - (marginTop + 5), pageWidth - marginRight - marginLeft, 2);
+			yPos += widget.TextEditor.LineHeight;
+		}
+		
+		void PrintFooter (Gnome.PrintContext gpc, Gnome.PrintConfig config)
+		{
+			gpc.SetRgbColor (0, 0, 0);
+			gpc.MoveTo (xPos, marginBottom);
+			gpc.Show ("MonoDevelop");
+			gpc.MoveTo (xPos + 200, marginBottom);
+			string footer = GettextCatalog.GetString ("Page") + " " + page + "/" + (totalPages + 1);
+			gpc.Show (footer);
+			gpc.RectFilled (marginLeft, marginBottom - 3 + widget.TextEditor.LineHeight, pageWidth - marginRight - marginLeft, 2);
+		}
+		
+		void MyPrint (Gnome.PrintContext gpc, Gnome.PrintConfig config)
+		{
+			config.GetPageSize (out pageWidth, out pageHeight);
+			int linesPerPage = (int)((pageHeight - marginBottom - marginTop - 10) / widget.TextEditor.LineHeight);
+			linesPerPage -= 2;
+			totalPages = Document.Splitter.LineCount / linesPerPage;
+			System.Console.WriteLine("height:" + pageHeight + " -- lines:" + linesPerPage);
+			gpc.BeginPage ("page " + page++);
+			xPos = marginLeft;
+			PrintHeader (gpc, config);
+			Gnome.Font font       =  Gnome.Font.FindFromFullName (SourceEditorOptions.Options.FontName);
+			Gnome.Font boldFont   =  Gnome.Font.FindFromFullName (font.FontName + " Bold " + ((int)font.Size));
+			Gnome.Font italicFont =  Gnome.Font.FindFromFullName (font.FontName + " Italic " + ((int)font.Size));
+			
+			foreach (LineSegment line in Document.Splitter.Lines) {
+				if (yPos >= pageHeight - marginBottom - 5 - widget.TextEditor.LineHeight) {
+					gpc.SetFont (font);
+					yPos = marginTop;
+					PrintFooter (gpc, config);
+					gpc.ShowPage ();
+					gpc.BeginPage ("page " + page++);
+					PrintHeader (gpc, config);
+				}
+				Chunk[] chunks = Document.SyntaxMode.GetChunks (Document, TextEditorData.ColorStyle, line, line.Offset, line.Length);
+				foreach (Chunk chunk in chunks) {
+					string text = Document.Buffer.GetTextAt (chunk);
+					text = text.Replace ("\t", new string (' ', TextEditorOptions.Options.TabSize));
+					gpc.SetRgbColor (chunk.Style.Color.Red / (double)ushort.MaxValue, 
+					                 chunk.Style.Color.Green / (double)ushort.MaxValue, 
+					                 chunk.Style.Color.Blue / (double)ushort.MaxValue);
+					
+					gpc.MoveTo (xPos, pageHeight - yPos);
+					if (chunk.Style.Bold) {
+						gpc.SetFont (boldFont);
+					} else if (chunk.Style.Italic) {
+						gpc.SetFont (italicFont);
+					} else {
+						gpc.SetFont (font);
+					}
+					gpc.Show (text);
+					xPos += widget.TextEditor.GetWidth (text);
+				}
+				xPos = marginLeft;
+				yPos += widget.TextEditor.LineHeight;
+			}
+			
+			gpc.SetFont (font);
+			PrintFooter (gpc, config);
+			gpc.ShowPage ();
+			gpc.EndDoc ();
+		}
+		
+		void CreatePrintJob ()
+		{
+			if (printDialog != null  || printJob != null)
+				return;/*
+			PrintConfig config = ;
+			PrintJob sourcePrintJob = new SourcePrintJob (config, Buffer);
+			sourcePrintJob.upFromView = View;
+			sourcePrintJob.PrintHeader = true;
+			sourcePrintJob.PrintFooter = true;
+			sourcePrintJob.SetHeaderFormat (GettextCatalog.GetString ("File:") +  " " +
+									  StrMiddleTruncate (IdeApp.Workbench.ActiveDocument.FileName, 60), null, null, true);
+			sourcePrintJob.SetFooterFormat (GettextCatalog.GetString ("MonoDevelop"), null, GettextCatalog.GetString ("Page") + " %N/%Q", true);
+			sourcePrintJob.WrapMode = WrapMode.Word; */
+			printJob = new Gnome.PrintJob (Gnome.PrintConfig.Default ());
+			Gnome.PrintContext ctx = printJob.Context;
+			MyPrint (ctx, printJob.Config); 
+			printJob.Close ();
+		}
+		
+		static string StrMiddleTruncate (string str, int truncLen)
+		{
+			if (str == null) 
+				return "";
+			if (str.Length <= truncLen) 
+				return str;
+			
+			string delimiter = "...";
+			int leftOffset = (truncLen - delimiter.Length) / 2;
+			int rightOffset = str.Length - truncLen + leftOffset + delimiter.Length;
+			return str.Substring (0, leftOffset) + delimiter + str.Substring (rightOffset);
 		}
 		#endregion
 	}
