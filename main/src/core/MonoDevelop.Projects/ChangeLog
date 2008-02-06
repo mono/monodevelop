@@ -1,3 +1,12 @@
+2008-02-06  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects/DotNetProjectConfiguration.cs: Update default
+	  ClrVersion.
+	* MonoDevelop.Projects/DotNetProject.cs: Make sure that ClrVersion is
+	  updated before saving begins; fixes "Bug 350628 - VB.NET binding
+	  contains broken templates". Change some console writelines to log
+	  messages.
+
 2008-02-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/DotNetProject.cs: Set 2.0 as the default runtime.
