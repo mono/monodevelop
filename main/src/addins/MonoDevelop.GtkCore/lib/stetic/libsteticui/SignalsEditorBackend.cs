@@ -78,8 +78,10 @@ namespace Stetic
 					project.SignalRemoved += new SignalEventHandler (OnSignalAddedOrRemoved);
 					project.SignalChanged += new SignalChangedEventHandler (OnSignalChanged);
 					project.ProjectReloaded += new EventHandler (OnProjectReloaded);
-				} else
-					TargetObject = null;
+				} else {
+					selection = null;
+					RefreshTree ();
+				}
 			}
 		}
 		
@@ -99,10 +101,14 @@ namespace Stetic
 		}
 		
 		public object TargetObject {
-			get { return selection.Wrapped; }
+			get {
+				return selection != null ? selection.Wrapped : null;
+			}
 			set {
-				selection = ObjectWrapper.Lookup (value);
-				RefreshTree ();
+				if (project != null) {
+					selection = ObjectWrapper.Lookup (value);
+					RefreshTree ();
+				}
 			}
 		}
 		

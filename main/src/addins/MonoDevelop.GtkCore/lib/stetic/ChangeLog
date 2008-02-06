@@ -1,3 +1,8 @@
+2008-02-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* libsteticui/SignalsEditorBackend.cs: TargetObject can't be set when no
+	  project is selected.
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* libsteticui/PropertyTree.cs: Use a theme color for the property group
