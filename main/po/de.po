@@ -618,7 +618,7 @@ msgstr "Struktur <b>{0}</b>"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:238
 msgid "Interface <b>{0}</b>"
-msgstr "Oberfläche <b>{0}</b>"
+msgstr "Schnittstelle <b>{0}</b>"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:240
 msgid "Class <b>{0}</b>"
