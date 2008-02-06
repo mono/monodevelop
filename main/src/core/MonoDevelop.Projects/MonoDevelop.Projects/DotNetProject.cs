@@ -99,7 +99,7 @@ namespace MonoDevelop.Projects
 				if (languageBinding == null)
 					return ClrVersion.Default;
 				else
-					suggestion = ClrVersion.Net_1_1;
+					suggestion = ClrVersion.Net_2_0;
 			}
 			
 			if (languageBinding != null) {
