@@ -744,28 +744,29 @@ namespace MonoDevelop.SourceEditor.Gui
 			TextIter start, end;
 			string commentTag;
 			
-			if (!GetSelectionBounds (out start, out end))
-				return;
+			if (GetSelectionBounds (out start, out end)) {
+				//selection; can contain multiple lines
+				// Don't comment lines where no chars are actually selected (fixes bug #81632)
+				if (end.LineOffset == 0)
+					end.BackwardLine ();
+			}
 			
-			commentTag = Services.Languages.GetBindingPerFileName (IdeApp.Workbench.ActiveDocument.FileName).CommentTag;
-			
-			if (commentTag == null)
-				commentTag = "//";
-			
-			// Don't comment lines where no chars are actually selected (fixes bug #81632)
-			if (end.LineOffset == 0)
-				end.BackwardLine ();
+			ILanguageBinding binding = Services.Languages.GetBindingPerFileName (IdeApp.Workbench.ActiveDocument.FileName);
+			commentTag = "//";
+			if (binding != null && binding.CommentTag != null)
+				commentTag = binding.CommentTag;
 			
 			start.LineOffset = 0;
 			
 			endMark = CreateMark (null, end, false);
-			
-			while (start.Line <= end.Line) {
-				curMark = CreateMark (null, start, true);
-				Insert (ref start, commentTag);
-				start = GetIterAtMark (curMark);
-				end = GetIterAtMark (endMark);
-				start.ForwardLine ();
+			using (new AtomicUndo (this)) {
+				while (start.Line <= end.Line) {
+					curMark = CreateMark (null, start, true);
+					Insert (ref start, commentTag);
+					start = GetIterAtMark (curMark);
+					end = GetIterAtMark (endMark);
+					start.ForwardLine ();
+				}
 			}
 		}
 		
@@ -777,20 +778,12 @@ namespace MonoDevelop.SourceEditor.Gui
 			TextIter textStart;
 			TextIter textEnd;
 			GetSelectionBounds (out textStart, out textEnd);
-//			if (textStart.Line == textEnd.Line)
-//			{ // all the code is in one line, just uncomment is text starts with comment tag
-//				textStart.LineOffset = 0;
-//				textEnd = textStart;
-//				textEnd.ForwardChars (commentTag.Length);
-//				if (textStart.GetText (textEnd) == commentTag)
-//					Delete (ref textStart, ref textEnd);
-//			}
-//			else
-			{ // uncomment the entire lines
-				int numberOfLines = textStart.Line == textEnd.Line ? 1 : textEnd.Line - textStart.Line + 1;
-				TextMark mTextStart = CreateMark (null, textStart, true);
-				TextMark mTextTmp = mTextStart;
-				
+			
+			int numberOfLines = textStart.Line == textEnd.Line ? 1 : textEnd.Line - textStart.Line + 1;
+			TextMark mTextStart = CreateMark (null, textStart, true);
+			TextMark mTextTmp = mTextStart;
+			
+			using (new AtomicUndo (this)) {
 				for (int i=0; i<numberOfLines; i++)
 				{
 					TextIter textTmp = GetIterAtMark (mTextTmp);
