@@ -1,5 +1,10 @@
 2008-02-07  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.AssemblyBrowser.mdp, Makefile.am: Added assembly browser to
+	  the build.
+
+2008-02-07  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.AssemblyBrowser.mdp, Makefile.am: Added makefile.
 
 2008-02-07  Mike Krüger <mkrueger@novell.com> 

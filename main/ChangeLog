@@ -1,5 +1,9 @@
 2008-02-07  Mike Krüger <mkrueger@novell.com> 
 
+	* configure.in, src/addins/Makefile.am: Added assembly browser to the build.
+
+2008-02-07  Mike Krüger <mkrueger@novell.com> 
+
 	* src/addins/Addins.mds: Added managed text editor and assembly browser to
 	  the addin combine.
 
