@@ -72,7 +72,7 @@ namespace CBinding.Parser
 			}
 		}
 		
-		bool AreDepsInstalled {
+		bool DepsInstalled {
 			get {
 				if (!checkedCtagsInstalled) {
 					checkedCtagsInstalled = true;
@@ -88,9 +88,18 @@ namespace CBinding.Parser
 						LoggingService.LogWarning ("Cannot update C/C++ tags database because gcc is not installed.");
 						return false;
 					}
-					ctagsInstalled = true;
+					lock (parsingJobs) {
+						ctagsInstalled = true;
+					}
 				}
 				return ctagsInstalled;
+			}
+			set {
+				//don't assume that the caller is correct :-)
+				if (value)
+					checkedCtagsInstalled = false; //wil re-determine ctagsInstalled on next getting
+				else
+					ctagsInstalled = false;
 			}
 		}
 
@@ -167,29 +176,38 @@ namespace CBinding.Parser
 		
 		private void FillFileInformation (FileInformation fileInfo)
 		{
-			if (!AreDepsInstalled)
+			if (!DepsInstalled)
 				return;
 			
 			string confdir = PropertyService.ConfigPath;
 			string tagFileName = Path.GetFileName (fileInfo.FileName) + ".tag";
 			string tagdir = Path.Combine (confdir, "system-tags");
 			string tagFullFileName = Path.Combine (tagdir, tagFileName);
-			string ctags_options = "--C++-kinds=+p+u --fields=+a-f+S --language-force=C++ --excmd=pattern -f " + tagFullFileName + " " + fileInfo.FileName;
+			string ctags_options = "--C++-kinds=+p+u --fields=+a-f+S --language-force=C++ --excmd=pattern -f '" + tagFullFileName + "' " + fileInfo.FileName;
 			
 			if (!Directory.Exists (tagdir))
 				Directory.CreateDirectory (tagdir);
 			
-			if (!File.Exists (tagFullFileName)) {
-				ProcessWrapper p;
-				
+			if (!File.Exists (tagFullFileName) || File.GetLastWriteTimeUtc (tagFullFileName) < File.GetLastWriteTimeUtc (fileInfo.FileName)) {
+				ProcessWrapper p = null;
+				System.IO.StringWriter output = null;
 				try {
-					p = Runtime.ProcessService.StartProcess ("ctags", ctags_options, null, null);
-					p.WaitForExit ();
+					output = new System.IO.StringWriter ();
+					
+					p = Runtime.ProcessService.StartProcess ("ctags", ctags_options, null, output, output, null);
+					p.WaitForOutput (10000);
+					if (p.ExitCode != 0 || !File.Exists (tagFullFileName)) {
+						LoggingService.LogError ("Ctags did not successfully populate the tags database '{0}' from '{1}' within ten seconds.\nOutput: {2}", tagFullFileName, output.ToString ());
+						return;
+					}
 				} catch (Exception ex) {
 					throw new IOException ("Could not create tags database (You must have exuberant ctags installed).", ex);
+				} finally {
+					if (output != null)
+						output.Dispose ();
+					if (p != null)
+						p.Dispose ();
 				}
-				
-				p.Close ();
 			}
 			
 			string ctags_output;
@@ -215,21 +233,26 @@ namespace CBinding.Parser
 		
 		private void ParsingThread ()
 		{
-			while (parsingJobs.Count > 0)
-			{
-				ProjectFilePair p;
+			try {
+				while (parsingJobs.Count > 0) {
+					ProjectFilePair p;
 					
-				lock (parsingJobs) {
-					p = parsingJobs.Dequeue ();
+					lock (parsingJobs) {
+						p = parsingJobs.Dequeue ();
+					}
+					
+					DoUpdateFileTags (p.Project, p.File);
 				}
-
-				DoUpdateFileTags (p.Project, p.File);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Unhandled error updating parser database. Disabling C/C++ parsing.", ex);
+				DepsInstalled = false;
+				return;
 			}
 		}
 		
 		public void UpdateFileTags (Project project, string filename)
 		{
-			if (!AreDepsInstalled)
+			if (!DepsInstalled)
 				return;
 			
 			ProjectFilePair p = new ProjectFilePair (project, filename);
@@ -248,7 +271,7 @@ namespace CBinding.Parser
 		
 		private void DoUpdateFileTags (Project project, string filename)
 		{
-			if (!AreDepsInstalled)
+			if (!DepsInstalled)
 				return;
 			
 			string[] headers = Headers (filename, false);
@@ -256,17 +279,29 @@ namespace CBinding.Parser
 			
 			string[] system_headers = diff (Headers (filename, true), headers);
 			
-			ProcessWrapper p;
-			
+			ProcessWrapper p = null;
+			System.IO.StringWriter output = null, error = null;
+			string ctags_output = string.Empty;
 			try {
-				p = Runtime.ProcessService.StartProcess ("ctags", ctags_options, null, null);
-				p.WaitForExit (10000);	//If no return detected in 10s, kill anyway
+				output = new System.IO.StringWriter ();
+				error = new System.IO.StringWriter ();
+				p = Runtime.ProcessService.StartProcess ("ctags", ctags_options, null, output, error, null);
+				p.WaitForOutput (10000);
+				if (p.ExitCode != 0) {
+					LoggingService.LogError ("Ctags did not successfully populate the tags database from '{0}' within ten seconds.\nError output: {1}", filename, error.ToString ());
+					return;
+				}
+				ctags_output = output.ToString ();
 			} catch (Exception ex) {
 				throw new IOException ("Could not create tags database (You must have exuberant ctags installed).", ex);
+			} finally {
+				if (output != null)
+					output.Dispose ();
+				if (error != null)
+					error.Dispose ();
+				if (p != null)
+					p.Dispose ();
 			}
-
-			string ctags_output = p.StandardOutput.ReadToEnd ();
-			p.Close ();
 			
 			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
 			string tagEntry;
