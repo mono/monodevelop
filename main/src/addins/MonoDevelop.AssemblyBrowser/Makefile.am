@@ -47,15 +47,15 @@ GENERATED_FILES =  \
 
 REFS =  \
 	$(GTK_SHARP_LIBS) \
-	-r:$(top_srcdir)/src/addins/build/bin/Mono.Cecil.dll \
-	-r:$(top_srcdir)/src/addins/build/bin/MonoDevelop.Components.dll \
-	-r:$(top_srcdir)/src/addins/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_srcdir)/src/addins/build/bin/MonoDevelop.Core.Gui.dll \
-	-r:$(top_srcdir)/src/addins/build/bin/MonoDevelop.Ide.dll \
-	-r:$(top_srcdir)/src/addins/build/bin/MonoDevelop.Projects.dll \
-	-r:$(top_srcdir)/src/addins/build/bin/MonoDevelop.Projects.Gui.dll \
-	-r:$(top_srcdir)/src/addins/MonoDevelop.AssemblyBrowser/-r:Mono.Posix \
-	-r:$(top_srcdir)/src/addins/MonoDevelop.AssemblyBrowser/-r:System
+	-r:$(top_srcdir)/build/bin/Mono.Cecil.dll \
+	-r:$(top_srcdir)/build/bin/MonoDevelop.Components.dll \
+	-r:$(top_srcdir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_srcdir)/build/bin/MonoDevelop.Core.Gui.dll \
+	-r:$(top_srcdir)/build/bin/MonoDevelop.Ide.dll \
+	-r:$(top_srcdir)/build/bin/MonoDevelop.Projects.dll \
+	-r:$(top_srcdir)/build/bin/MonoDevelop.Projects.Gui.dll \
+	-r:Mono.Posix \
+	-r:System
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns
 
