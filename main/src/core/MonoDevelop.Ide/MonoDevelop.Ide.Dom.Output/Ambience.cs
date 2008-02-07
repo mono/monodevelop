@@ -110,7 +110,19 @@ namespace MonoDevelop.Ide.Dom.Output
 		{
 			return (outputFlags & OutputFlags.IncludeModifiers) == OutputFlags.IncludeModifiers;
 		}
+		protected static bool IncludeBaseTypes (OutputFlags outputFlags)
+		{
+			return (outputFlags & OutputFlags.IncludeBaseTypes) == OutputFlags.IncludeBaseTypes;
+		}
 		#endregion			
+		
+		protected string Format (string str)
+		{
+			if (String.IsNullOrEmpty (str))
+				return "";
+			str = str.Replace ("<", "&lt;");
+			return str.Replace (">", "&gt;");
+		}
 		
 		public abstract string GetString (string nameSpace, OutputFlags flags);
 		public abstract string GetString (IField field, OutputFlags flags);

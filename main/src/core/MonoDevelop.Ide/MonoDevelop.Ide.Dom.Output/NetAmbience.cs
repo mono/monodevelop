@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.Dom.Output
 				if (EmitMarkup (flags))
 					result.Append ("</b>");
 			}
-			result.Append (nameSpace);
+			result.Append (Format (nameSpace));
 			return result.ToString ();
 		}
 		
@@ -107,9 +107,9 @@ namespace MonoDevelop.Ide.Dom.Output
 			}
 			
 			if (UseFullName (flags)) {
-				result.Append (property.FullName);
+				result.Append (Format (property.FullName));
 			} else {
-				result.Append (property.Name);
+				result.Append (Format (property.Name));
 			}
 			if (IncludeReturnType (flags)) {
 				result.Append (" : ");
@@ -142,9 +142,9 @@ namespace MonoDevelop.Ide.Dom.Output
 			}
 			
 			if (UseFullName (flags)) {
-				result.Append (field.FullName);
+				result.Append (Format (field.FullName));
 			} else {
-				result.Append (field.Name);
+				result.Append (Format (field.Name));
 			}
 			if (IncludeReturnType (flags)) {
 				result.Append (" : ");
@@ -159,9 +159,9 @@ namespace MonoDevelop.Ide.Dom.Output
 				return nullString;
 			StringBuilder result = new StringBuilder ();
 			if (UseFullName (flags)) {
-				result.Append (returnType.FullName);
+				result.Append (Format (returnType.FullName));
 			} else {
-				result.Append (returnType.Name);
+				result.Append (Format (returnType.Name));
 			}
 			return result.ToString ();
 		}
@@ -190,9 +190,9 @@ namespace MonoDevelop.Ide.Dom.Output
 			}
 			
 			if (UseFullName (flags)) {
-				result.Append (method.FullName);
+				result.Append (Format (method.FullName));
 			} else {
-				result.Append (method.Name);
+				result.Append (Format (method.Name));
 			}
 			
 			if (IncludeParameters (flags)) {
@@ -221,7 +221,7 @@ namespace MonoDevelop.Ide.Dom.Output
 				return nullString;
 			StringBuilder result = new StringBuilder ();
 			if (IncludeParameterName (flags)) {
-				result.Append (parameter.Name);
+				result.Append (Format (parameter.Name));
 				if (IncludeReturnType (flags)) {
 					result.Append (" : ");
 					result.Append (GetString (parameter.ReturnType, flags));
@@ -255,11 +255,10 @@ namespace MonoDevelop.Ide.Dom.Output
 					result.Append ("</b>");
 			}
 						
-			result.Append (type.Name);
-			
-			if (type.BaseType != null) {
+			result.Append (Format (type.Name));
+			if (IncludeBaseTypes (flags) && type.BaseType != null) {
 				result.Append (" : ");
-				result.Append (type.BaseType.Name);
+				result.Append (Format (type.BaseType.Name));
 			}
 			return result.ToString ();
 		}
@@ -286,7 +285,7 @@ namespace MonoDevelop.Ide.Dom.Output
 					result.Append ("</b>");
 			}
 						
-			result.Append (evt.Name);
+			result.Append (Format (evt.Name));
 			
 			return result.ToString ();
 		}

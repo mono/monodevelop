@@ -42,8 +42,9 @@ namespace MonoDevelop.Ide.Dom.Output
 		EmitMarkup               = 0x0010,
 		EmitKeywords             = 0x0020,
 		IncludeModifiers         = 0x0040,
+		IncludeBaseTypes         = 0x0080,
 		
 		ClassBrowserEntries        = IncludeReturnType | IncludeParameters,
-		AssemblyBrowserDescription = IncludeReturnType | IncludeParameters | IncludeParameterName | EmitMarkup | EmitKeywords | IncludeModifiers
+		AssemblyBrowserDescription = IncludeBaseTypes | IncludeReturnType | IncludeParameters | IncludeParameterName | EmitMarkup | EmitKeywords | IncludeModifiers
 	}
 }
