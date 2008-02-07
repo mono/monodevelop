@@ -1,5 +1,10 @@
 2008-02-07  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: Assembly browser can
+	  now be used to open referenced assemblies.
+
+2008-02-07  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.AssemblyBrowser.Dom/DomCecilMethod.cs,
 	  MonoDevelop.AssemblyBrowser.mdp,
 	  MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs,

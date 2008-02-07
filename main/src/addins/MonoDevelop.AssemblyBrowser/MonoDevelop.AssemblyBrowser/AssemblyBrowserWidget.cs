@@ -68,8 +68,6 @@ namespace MonoDevelop.AssemblyBrowser
 				}, new TreePadOption [] {});
 			scrolledwindow2.Add (treeView);
 			scrolledwindow2.ShowAll ();
-			this.label2.Style.Font = Gdk.Font.FromDescription (Pango.FontDescription.FromString ("Monospace 12"));
-			
 			treeView.Tree.CursorChanged += delegate {
 				ITreeNavigator nav = treeView.GetSelectedNode ();
 				if (nav != null) {
