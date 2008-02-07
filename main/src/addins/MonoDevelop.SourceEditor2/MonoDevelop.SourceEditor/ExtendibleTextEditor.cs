@@ -100,7 +100,6 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override void OptionsChanged (object sender, EventArgs args)
 		{
-			this.ColorStyle = SyntaxModeService.GetColorStyle (this, SourceEditorOptions.Options.ColorSheme);
 			base.OptionsChanged (sender, args);
 		}
 

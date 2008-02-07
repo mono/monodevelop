@@ -28,6 +28,7 @@ using System;
 using Pango;
 
 using Mono.TextEditor;
+
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
@@ -357,6 +358,11 @@ namespace MonoDevelop.SourceEditor
 					OnChanged (EventArgs.Empty);
 				}
 			}
+		}
+		
+		public override Mono.TextEditor.Highlighting.Style GetColorStyle (Gtk.Widget widget)
+		{
+			return Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (widget, ColorSheme);
 		}
 		
 		public override FontDescription Font {
