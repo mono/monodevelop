@@ -72,6 +72,9 @@ namespace MonoDevelop.AssemblyBrowser
 			disassemblerTextview.ModifyFont (Pango.FontDescription.FromString ("Monospace 10"));
             disassemblerTextview.ModifyBase (Gtk.StateType.Normal, new Gdk.Color (255, 255, 220));
 			
+			this.vpaned1.ExposeEvent += VPaneExpose;
+			this.hpaned1.ExposeEvent += HPaneExpose;
+				
 			treeView.Tree.CursorChanged += delegate {
 				ITreeNavigator nav = treeView.GetSelectedNode ();
 				if (nav != null) {
@@ -87,7 +90,23 @@ namespace MonoDevelop.AssemblyBrowser
 				}
 			};
 		}
-
+		int oldSize = -1;
+		void VPaneExpose (object sender, Gtk.ExposeEventArgs args)
+		{
+			int size = this.vpaned1.Allocation.Height - 80;
+			if (size == oldSize)
+				return;
+			this.vpaned1.Position = oldSize = size;
+		}
+		int oldSize2 = -1;
+		void HPaneExpose (object sender, Gtk.ExposeEventArgs args)
+		{
+			int size = this.Allocation.Width;
+			if (size == oldSize2)
+				return;
+			oldSize2 = size;
+			this.hpaned1.Position = this.hpaned1.Allocation.Width - 250;
+		}
 		public void AddReference (string fileName)
 		{
 			AssemblyDefinition assemblyDefinition = AssemblyFactory.GetAssembly (fileName);
