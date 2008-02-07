@@ -26,6 +26,7 @@
 
 using System;
 using System.Diagnostics;
+using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
@@ -249,6 +250,12 @@ namespace Mono.TextEditor
 			get {
 				return Pango.FontDescription.FromString (FontName);
 			}
+		}
+		
+		
+		public virtual Style GetColorStyle (Gtk.Widget widget)
+		{
+			return new DefaultStyle (widget);
 		}
 		
 		protected static void OnChanged (EventArgs args)

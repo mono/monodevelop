@@ -312,7 +312,6 @@ namespace Mono.TextEditor
 				}
 			};
 				
-			this.ColorStyle = new DefaultStyle (this);
 			defaultCursor = null;
 			textCursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
 			OptionsChanged (this, EventArgs.Empty);
@@ -330,7 +329,7 @@ namespace Mono.TextEditor
 			layout.FontDescription = TextEditorOptions.Options.Font;
 			layout.SetText ("H");
 			layout.GetPixelSize (out this.charWidth, out this.lineHeight);
-			
+			this.ColorStyle = TextEditorOptions.Options.GetColorStyle (this);
 			bookmarkMargin.IsVisible   = TextEditorOptions.Options.ShowIconMargin;
 			gutterMargin.IsVisible     = TextEditorOptions.Options.ShowLineNumberMargin;
 			foldMarkerMargin.IsVisible = TextEditorOptions.Options.ShowFoldMargin;
