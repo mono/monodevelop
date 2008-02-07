@@ -3,6 +3,8 @@ ASSEMBLY = $(top_builddir)/build/AddIns/$(DLLNAME)
 
 FILES =  \
 	AssemblyInfo.cs \
+	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs \
 	MonoDevelop.AssemblyBrowser.Dom/DomCecilAttribute.cs \
 	MonoDevelop.AssemblyBrowser.Dom/DomCecilEvent.cs \
 	MonoDevelop.AssemblyBrowser.Dom/DomCecilField.cs \
@@ -41,19 +43,17 @@ RES =  \
 	gtk-gui/objects.xml \
 	MonoDevelop.AssemblyBrowser.addin.xml
 
-GENERATED_FILES =  \
-	gtk-gui/generated.cs \
-	gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs
+GENERATED_FILES =  
 
 REFS =  \
 	$(GTK_SHARP_LIBS) \
-	-r:$(top_srcdir)/build/bin/Mono.Cecil.dll \
-	-r:$(top_srcdir)/build/bin/MonoDevelop.Components.dll \
-	-r:$(top_srcdir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_srcdir)/build/bin/MonoDevelop.Core.Gui.dll \
-	-r:$(top_srcdir)/build/bin/MonoDevelop.Ide.dll \
-	-r:$(top_srcdir)/build/bin/MonoDevelop.Projects.dll \
-	-r:$(top_srcdir)/build/bin/MonoDevelop.Projects.Gui.dll \
+	-r:$(top_builddir)/build/bin/Mono.Cecil.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:Mono.Posix \
 	-r:System
 

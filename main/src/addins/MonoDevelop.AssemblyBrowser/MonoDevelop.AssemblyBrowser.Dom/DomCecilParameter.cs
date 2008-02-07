@@ -35,6 +35,12 @@ namespace MonoDevelop.AssemblyBrowser.Dom
 	{
 		ParameterDefinition parameterDefinition;
 		
+		public ParameterDefinition ParameterDefinition {
+			get {
+				return parameterDefinition;
+			}
+		}
+		
 		public DomCecilParameter (ParameterDefinition parameterDefinition)
 		{
 			this.parameterDefinition = parameterDefinition;

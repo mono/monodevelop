@@ -58,7 +58,7 @@ namespace MonoDevelop.AssemblyBrowser
 				new ResourceFolderNodeBuilder (),
 				new ResourceNodeBuilder (),
 				new NamespaceBuilder (),
-				new DomTypeNodeBuilder (this),
+				new DomTypeNodeBuilder (/*this*/),
 				new DomMethodNodeBuilder (),
 				new DomFieldNodeBuilder (),
 				new DomEventNodeBuilder (),

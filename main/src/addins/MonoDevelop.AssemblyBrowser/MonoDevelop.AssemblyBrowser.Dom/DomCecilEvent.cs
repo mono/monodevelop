@@ -34,6 +34,12 @@ namespace MonoDevelop.AssemblyBrowser.Dom
 	{
 		EventDefinition eventDefinition;
 		
+		public EventDefinition EventDefinition {
+			get {
+				return eventDefinition;
+			}
+		}
+		
 		public  DomCecilEvent (EventDefinition eventDefinition)
 		{
 			this.eventDefinition = eventDefinition;

@@ -47,12 +47,12 @@ namespace MonoDevelop.AssemblyBrowser
 			get { return typeof(IType); }
 		}
 		
-		AssemblyBrowserWidget widget;
+/*		AssemblyBrowserWidget widget;
 		
 		public DomTypeNodeBuilder (AssemblyBrowserWidget widget)
 		{
 			this.widget = widget;
-		}
+		}*/
 		
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)

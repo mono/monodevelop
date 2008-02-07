@@ -35,6 +35,12 @@ namespace MonoDevelop.AssemblyBrowser
 	{
 		CustomAttribute customAttribute;
 		
+		public CustomAttribute CustomAttribute {
+			get {
+				return customAttribute;
+			}
+		}
+		
 		public DomCecilAttribute (CustomAttribute customAttribute)
 		{
 			this.customAttribute = customAttribute;

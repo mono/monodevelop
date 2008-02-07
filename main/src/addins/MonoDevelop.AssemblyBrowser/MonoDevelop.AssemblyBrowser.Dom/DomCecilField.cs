@@ -34,6 +34,13 @@ namespace MonoDevelop.AssemblyBrowser.Dom
 	public class DomCecilField : MonoDevelop.Ide.Dom.DomField
 	{
 		FieldDefinition fieldDefinition;
+		
+		public FieldDefinition FieldDefinition {
+			get {
+				return fieldDefinition;
+			}
+		}
+		
 		public DomCecilField (FieldDefinition fieldDefinition)
 		{
 			this.fieldDefinition = fieldDefinition;

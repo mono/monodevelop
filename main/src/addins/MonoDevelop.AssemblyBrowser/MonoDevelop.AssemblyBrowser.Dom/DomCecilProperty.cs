@@ -35,6 +35,12 @@ namespace MonoDevelop.AssemblyBrowser.Dom
 	{
 		PropertyDefinition propertyDefinition;
 		
+		public PropertyDefinition PropertyDefinition {
+			get {
+				return propertyDefinition;
+			}
+		}
+		
 		public DomCecilProperty (PropertyDefinition propertyDefinition)
 		{
 			this.propertyDefinition = propertyDefinition;
