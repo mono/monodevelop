@@ -1,3 +1,13 @@
+2008-02-07  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Dom.Output/OutputFlags.cs,
+	  MonoDevelop.Ide.Dom.Output/Ambience.cs,
+	  MonoDevelop.Ide.Dom.Output/AmbienceService.cs,
+	  MonoDevelop.Ide.Dom.Output/NetAmbience.cs,
+	  MonoDevelop.Ide.Dom/DomType.cs, MonoDevelop.Ide.Dom/ClassType.cs,
+	  MonoDevelop.Ide.Dom/Modifiers.cs, MonoDevelop.Ide.Dom/IType.cs: Worked
+	  on Dom output.
+
 2008-02-06  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads/NodeState.cs,

@@ -1,5 +1,5 @@
 //
-// ClassType.cs
+// AmbienceService.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -28,14 +28,14 @@
 
 using System;
 
-namespace MonoDevelop.Ide.Dom
+namespace MonoDevelop.Ide.Dom.Output
 {
-	public enum ClassType {
-		Unknown   = 0,
-		Class     = 1,
-		Enum      = 2,
-		Interface = 3,
-		Struct    = 4,
-		Delegate  = 5
+	public static class AmbienceService
+	{
+		public static Ambience Default {
+			get {
+				return new NetAmbience ();
+			}
+		}
 	}
 }

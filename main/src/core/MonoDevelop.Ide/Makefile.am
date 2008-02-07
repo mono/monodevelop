@@ -97,7 +97,9 @@ FILES =  \
 	MonoDevelop.Ide.Commands/ViewCommands.cs \
 	MonoDevelop.Ide.Commands/WindowCommands.cs \
 	MonoDevelop.Ide.Dom.Output/Ambience.cs \
+	MonoDevelop.Ide.Dom.Output/AmbienceService.cs \
 	MonoDevelop.Ide.Dom.Output/NetAmbience.cs \
+	MonoDevelop.Ide.Dom.Output/OutputFlags.cs \
 	MonoDevelop.Ide.Dom.Parser/AbstractParser.cs \
 	MonoDevelop.Ide.Dom.Parser/IParser.cs \
 	MonoDevelop.Ide.Dom.Parser/ProjectDom.cs \

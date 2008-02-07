@@ -35,17 +35,19 @@ namespace MonoDevelop.Ide.Dom
 	{
 		protected object sourceProject;
 		protected List<ICompilationUnit> compilationUnits = new List<ICompilationUnit> ();
-		protected IType baseType;
+		protected IReturnType baseType;
 		protected List<TypeParameter> typeParameters = new List<TypeParameter> ();
 		protected List<IDomItem> members = new List<IDomItem> ();
+		protected List<IReturnType> implementedInterfaces = new List<IReturnType> ();
 		protected ClassType classType = ClassType.Unknown;
+		
 		
 		public object SourceProject {
 			get {
 				return sourceProject;
 			}
 		}
-		
+
 		public IEnumerable<ICompilationUnit> CompilationUnits {
 			get {
 				return compilationUnits;
@@ -58,9 +60,15 @@ namespace MonoDevelop.Ide.Dom
 			}
 		}
 		
-		public IType BaseType {
+		public IReturnType BaseType {
 			get {
 				return baseType;
+			}
+		}
+		
+		public IEnumerable<IReturnType> ImplementedInterfaces {
+			get {
+				return implementedInterfaces;
 			}
 		}
 		
@@ -70,7 +78,7 @@ namespace MonoDevelop.Ide.Dom
 			}
 		}
 		
-		public IEnumerable<IDomItem> Members {
+		public virtual IEnumerable<IDomItem> Members {
 			get {
 				return members;
 			}

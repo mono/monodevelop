@@ -45,7 +45,11 @@ namespace MonoDevelop.Ide.Dom
 			get;
 		}
 		
-		IType BaseType {
+		IReturnType BaseType {
+			get;
+		}
+		
+		IEnumerable<IReturnType> ImplementedInterfaces {
 			get;
 		}
 		

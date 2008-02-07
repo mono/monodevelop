@@ -1,5 +1,5 @@
 //
-// ClassType.cs
+// OutputFlags.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -28,14 +28,18 @@
 
 using System;
 
-namespace MonoDevelop.Ide.Dom
+namespace MonoDevelop.Ide.Dom.Output
 {
-	public enum ClassType {
-		Unknown   = 0,
-		Class     = 1,
-		Enum      = 2,
-		Interface = 3,
-		Struct    = 4,
-		Delegate  = 5
+	[Flags]
+	public enum OutputFlags {
+		None = 0,
+		
+		// Flags
+		UseFullName              = 0x1,
+		IncludeReturnType        = 0x2,
+		IncludeParameters        = 0x4,
+		IncludeParameterName     = 0x8,
+		
+		ClassBrowserEntries = IncludeReturnType | IncludeParameters
 	}
 }

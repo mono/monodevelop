@@ -27,11 +27,13 @@
 //
 
 using System;
+using System.Text;
 
 namespace MonoDevelop.Ide.Dom.Output
 {
 	public class NetAmbience : Ambience
 	{
+		const string nullString = "Null";
 		public NetAmbience () : base ("NET")
 		{
 			classTypes[ClassType.Class]     = "Class";
@@ -67,6 +69,101 @@ namespace MonoDevelop.Ide.Dom.Output
 			modifiers[Modifiers.Fixed]                = "Fixed";
 			modifiers[Modifiers.ProtectedAndInternal] = "Protected Internal";
 			modifiers[Modifiers.ProtectedOrInternal]  = "Internal Protected";
+		}
+		
+		public override string GetString (IProperty property, OutputFlags flags)
+		{
+			if (property == null)
+				return nullString;
+			StringBuilder result = new StringBuilder ();
+			if (UseFullName (flags)) {
+				result.Append (property.FullName);
+			} else {
+				result.Append (property.Name);
+			}
+			if (IncludeReturnType (flags)) {
+				result.Append (" : ");
+				result.Append (GetString (property.ReturnType, flags));
+			}
+			return result.ToString ();
+		}
+		
+		public override string GetString (IField field, OutputFlags flags)
+		{
+			if (field == null)
+				return nullString;
+			StringBuilder result = new StringBuilder ();
+			if (UseFullName (flags)) {
+				result.Append (field.FullName);
+			} else {
+				result.Append (field.Name);
+			}
+			if (IncludeReturnType (flags)) {
+				result.Append (" : ");
+				result.Append (GetString (field.ReturnType, flags));
+			}
+			return result.ToString ();
+		}
+		
+		public override string GetString (IReturnType returnType, OutputFlags flags)
+		{
+			if (returnType == null)
+				return nullString;
+			StringBuilder result = new StringBuilder ();
+			if (UseFullName (flags)) {
+				result.Append (returnType.FullName);
+			} else {
+				result.Append (returnType.Name);
+			}
+			return result.ToString ();
+		}
+		
+		public override string GetString (IMethod method, OutputFlags flags)
+		{
+			if (method == null)
+				return nullString;
+			StringBuilder result = new StringBuilder ();
+			if (UseFullName (flags)) {
+				result.Append (method.FullName);
+			} else {
+				result.Append (method.Name);
+			}
+			
+			if (IncludeParameters (flags)) {
+				result.Append ("(");
+				bool first = true;
+				foreach (IParameter parameter in method.Parameters) {
+					if (!first)
+						result.Append (", ");
+					result.Append (GetString (parameter, flags));
+					first = false;
+				}
+				result.Append (")");
+			}
+				
+			if (IncludeReturnType (flags)) {
+				result.Append (" : ");
+				result.Append (GetString (method.ReturnType, flags));
+			}
+			
+			return result.ToString ();
+		}
+		
+		public override string GetString (IParameter parameter, OutputFlags flags)
+		{
+			if (parameter == null)
+				return nullString;
+			StringBuilder result = new StringBuilder ();
+			if (IncludeParameterName (flags)) {
+				result.Append (parameter.Name);
+				if (IncludeReturnType (flags)) {
+					result.Append (" : ");
+					result.Append (GetString (parameter.ReturnType, flags));
+				}				
+			} else {
+				result.Append (GetString (parameter.ReturnType, flags));
+			}
+			return result.ToString ();
 		}
 	}
 }

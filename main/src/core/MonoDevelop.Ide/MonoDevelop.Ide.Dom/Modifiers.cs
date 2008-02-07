@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide.Dom
 		ProtectedAndInternal = Internal | Protected,
 		ProtectedOrInternal = 0x8000,
 		SpecialName         = 0x20000,
-		
 		Final               = 0x40000,
+		Literal             = 0x80000,
 		VisibilityMask = Private | Internal | Protected | Public,
 	}}

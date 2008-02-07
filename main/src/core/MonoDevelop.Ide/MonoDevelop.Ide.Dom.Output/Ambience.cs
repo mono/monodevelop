@@ -33,7 +33,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Dom.Output
 {
-	public class Ambience : IDomVisitor
+	public abstract class Ambience
 	{
 		string name;
 		protected Dictionary<Modifiers, string> modifiers = new Dictionary<Modifiers, string> ();
@@ -81,76 +81,30 @@ namespace MonoDevelop.Ide.Dom.Output
 			}
 			return result.ToString ();
 		}
+		#region FlagShortcuts
+		protected static bool UseFullName (OutputFlags outputFlags)
+		{
+			return (outputFlags & OutputFlags.UseFullName) == OutputFlags.UseFullName;
+		}
+		protected static bool IncludeParameters (OutputFlags outputFlags)
+		{
+			return (outputFlags & OutputFlags.IncludeParameters) == OutputFlags.IncludeParameters;
+		}
+		protected static bool IncludeReturnType (OutputFlags outputFlags)
+		{
+			return (outputFlags & OutputFlags.IncludeReturnType) == OutputFlags.IncludeReturnType;
+		}
+		protected static bool IncludeParameterName (OutputFlags outputFlags)
+		{
+			return (outputFlags & OutputFlags.IncludeParameterName) == OutputFlags.IncludeParameterName;
+		}
+		#endregion			
 		
+		public abstract string GetString (IField field, OutputFlags flags);
+		public abstract string GetString (IProperty property, OutputFlags flags);
+		public abstract string GetString (IReturnType returnType, OutputFlags flags);
+		public abstract string GetString (IMethod method, OutputFlags flags);
+		public abstract string GetString (IParameter parameter, OutputFlags flags);
 		
-		public virtual object Visit (MonoDevelop.Ide.Dom.ICompilationUnit unit, object data)
-		{
-			return "";
-		}
-
-		public virtual object Visit (MonoDevelop.Ide.Dom.IAttribute attr, object data)
-		{
-			return "";
-//			StringBuilder arguments = new StringBuilder ();
-//			arguments.Append ('(');
-//			foreach (object o in attr.PositionalArguments) {
-//				if (arguments.Length > 1)
-//					arguments.Append (',');
-//				arguments.Append (o.ToString ());
-//			}
-//			foreach (KeyValuePair<string, object> pair in attr.PositionalArguments) {
-//				if (arguments.Length > 1)
-//					arguments.Append (',');
-//				arguments.Append (pair.Key.ToString ());
-//				arguments.Append ('=');
-//				arguments.Append (pair.Value.ToString ());
-//			}
-//				
-//			arguments.Append (')');
-//			return StringParserService.Parse (constructs[Attribute], new string[,] {
-//				{"Type", Visit (attr.AttributeType, data).ToString ()},
-//				{"ArgumentList", arguments.ToString}
-//			});
-		}
-
-		public virtual object Visit (MonoDevelop.Ide.Dom.IType type, object data)
-		{
-			return "";
-		}
-
-		public virtual object Visit (MonoDevelop.Ide.Dom.IField field, object data)
-		{
-			return "";
-		}
-
-		public virtual object Visit (MonoDevelop.Ide.Dom.IMethod method, object data)
-		{
-			return "";
-		}
-
-		public virtual object Visit (MonoDevelop.Ide.Dom.IProperty property, object data)
-		{
-			return "";
-		}
-
-		public virtual object Visit (MonoDevelop.Ide.Dom.IEvent e, object data)
-		{
-			return "";
-		}
-
-		public virtual object Visit (MonoDevelop.Ide.Dom.IReturnType type, object data)
-		{
-			return "";
-		}
-
-		public virtual object Visit (MonoDevelop.Ide.Dom.IParameter parameter, object data)
-		{
-			return "";
-		}
-
-		public virtual object Visit (MonoDevelop.Ide.Dom.IUsing u, object data)
-		{
-			return "";
-		}
 	}
 }
