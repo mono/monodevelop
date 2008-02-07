@@ -27,14 +27,17 @@
 //
 
 using System;
+using System.Text;
 
 using Mono.Cecil;
 
+using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Dom;
 using MonoDevelop.Ide.Dom.Output;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.AssemblyBrowser.Dom;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -43,6 +46,14 @@ namespace MonoDevelop.AssemblyBrowser
 		public override Type NodeDataType {
 			get { return typeof(IType); }
 		}
+		
+		AssemblyBrowserWidget widget;
+		
+		public DomTypeNodeBuilder (AssemblyBrowserWidget widget)
+		{
+			this.widget = widget;
+		}
+		
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
@@ -96,15 +107,127 @@ namespace MonoDevelop.AssemblyBrowser
 			return true;
 		}
 		
-		public string GetDescription (object dataObject)
+		#region IAssemblyBrowserNodeBuilder
+		internal static void PrintAssembly (StringBuilder result, ITreeNavigator navigator)
 		{
-			IType type = (IType)dataObject;
-			return AmbienceService.Default.GetString (type, OutputFlags.AssemblyBrowserDescription);
+			AssemblyDefinition assemblyDefinition = (AssemblyDefinition)navigator.GetParentDataItem (typeof (AssemblyDefinition), false);
+			if (assemblyDefinition == null)
+				return;
+			
+			result.Append (String.Format (GettextCatalog.GetString ("<b>Assembly:</b>\t{0}, Version={1}"),
+			                              assemblyDefinition.Name.Name,
+			                              assemblyDefinition.Name.Version));
+			result.AppendLine ();
 		}
-		public string GetDisassembly (object dataObject)
+		
+		string IAssemblyBrowserNodeBuilder.GetDescription (ITreeNavigator navigator)
 		{
-			return "TODO";
+			IType type = (IType)navigator.DataItem;
+			StringBuilder result = new StringBuilder ();
+			result.Append ("<span font_family=\"monospace\">");
+			result.Append (AmbienceService.Default.GetString (type, OutputFlags.AssemblyBrowserDescription));
+			result.Append ("</span>");
+			result.AppendLine ();
+			result.Append (String.Format (GettextCatalog.GetString ("<b>Name:</b>\t{0}"),
+			                              type.FullName));
+			result.AppendLine ();
+			PrintAssembly (result, navigator);
+			return result.ToString ();
 		}
+		
+		string IAssemblyBrowserNodeBuilder.GetDisassembly (ITreeNavigator navigator)
+		{
+			IType type = (IType)navigator.DataItem;
+			StringBuilder result = new StringBuilder ();
+			result.Append (AmbienceService.Default.GetString (type, OutputFlags.AssemblyBrowserDescription));
+			result.AppendLine ();
+			bool first = true;
+			
+			if (type.ClassType == ClassType.Enum) {
+				int length = result.Length;
+				foreach (IField field in type.Fields) {
+					if ((field.Modifiers & Modifiers.SpecialName) == Modifiers.SpecialName)
+						continue;
+					result.Append ("\t");
+					result.Append (field.Name);
+					length = result.Length;
+					result.Append (",");
+					result.AppendLine ();
+				}
+				result.Length = length;
+				return result.ToString ();
+			}
+			
+//			Style colorStyle = TextEditorOptions.Options.GetColorStyle (widget);
+//			ChunkStyle comments = colorStyle.GetChunkStyle ("comment");
+//			string commentSpan = String.Format ("<span foreground=\"#{0:X6}\">", comments.Color.Pixel);
+			
+			string commentSpan = "<span foreground=\"#666666\">";
+			foreach (IField field in type.Fields) {
+				if ((field.Modifiers & Modifiers.SpecialName) == Modifiers.SpecialName)
+					continue;
+				if (first) {
+					result.AppendLine ();
+					result.Append ("\t");
+					result.Append (commentSpan);
+					result.Append (AmbienceService.Default.SingleLineComment (GettextCatalog.GetString ("Fields")));
+					result.Append ("</span>");
+					result.AppendLine ();
+				}
+				first = false;
+				result.Append ("\t");
+				result.Append (AmbienceService.Default.GetString (field, OutputFlags.AssemblyBrowserDescription));
+				result.AppendLine ();
+			}
+			first = true;
+			foreach (IEvent evt in type.Events) {
+				if (first) {
+					result.Append ("\t");
+					result.Append (commentSpan);
+					result.Append (AmbienceService.Default.SingleLineComment (GettextCatalog.GetString ("Events")));
+					result.Append ("</span>");
+					result.AppendLine ();
+				}
+				first = false;
+				result.Append ("\t");
+				result.Append (AmbienceService.Default.GetString (evt, OutputFlags.AssemblyBrowserDescription));
+				result.AppendLine ();
+			}
+			first = true;
+			foreach (IMethod method in type.Methods) {
+				if ((method.Modifiers & Modifiers.SpecialName) == Modifiers.SpecialName)
+					continue;
+				if (first) {
+					result.AppendLine ();
+					result.Append ("\t");
+					result.Append (commentSpan);
+					result.Append (AmbienceService.Default.SingleLineComment (GettextCatalog.GetString ("Methods")));
+					result.Append ("</span>");
+					result.AppendLine ();
+				}
+				first = false;
+				result.Append ("\t");
+				result.Append (AmbienceService.Default.GetString (method, OutputFlags.AssemblyBrowserDescription));
+				result.AppendLine ();
+			}
+			first = true;
+			foreach (IProperty property in type.Properties) {
+				if (first) {
+					result.AppendLine ();
+					result.Append ("\t");
+					result.Append (commentSpan);
+					result.Append (AmbienceService.Default.SingleLineComment (GettextCatalog.GetString ("Properties")));
+					result.Append ("</span>");
+					result.AppendLine ();
+				}
+				first = false;
+				result.Append ("\t");
+				result.Append (AmbienceService.Default.GetString (property, OutputFlags.AssemblyBrowserDescription));
+				result.AppendLine ();
+			}
+			return result.ToString ();
+		}
+		#endregion
 		
 	}
 }

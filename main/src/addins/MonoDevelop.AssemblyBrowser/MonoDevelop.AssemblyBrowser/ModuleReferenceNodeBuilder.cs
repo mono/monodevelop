@@ -53,6 +53,8 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
+			if (dataObject is ModuleDefinition)
+				return;
 			ModuleReference reference = (ModuleReference)dataObject;
 			label = reference.Name;
 			icon = Context.GetIcon (Stock.MiscFiles);

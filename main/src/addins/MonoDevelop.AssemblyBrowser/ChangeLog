@@ -1,5 +1,24 @@
 2008-02-07  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.AssemblyBrowser.Dom/DomCecilType.cs,
+	  MonoDevelop.AssemblyBrowser.Dom/DomCecilReturnType.cs,
+	  MonoDevelop.AssemblyBrowser.Dom/DomCecilAttribute.cs,
+	  MonoDevelop.AssemblyBrowser.mdp,
+	  MonoDevelop.AssemblyBrowser/ModuleDefinitionNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/ModuleReferenceNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs,
+	  MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomEventNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomFieldNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomPropertyNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/NamespaceBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/IAssemblyBrowserNodeBuilder.cs: Worked on
+	  assembly browser.
+
+2008-02-07  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: Changed pane
 	  positioning.
 

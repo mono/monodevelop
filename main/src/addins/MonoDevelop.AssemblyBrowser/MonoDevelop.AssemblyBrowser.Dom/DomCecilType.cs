@@ -82,6 +82,12 @@ namespace MonoDevelop.AssemblyBrowser.Dom
 				return members;
 			}
 		}
+
+		public TypeDefinition TypeDefinition {
+			get {
+				return typeDefinition;
+			}
+		}
 				
 		
 		public static MonoDevelop.Ide.Dom.Modifiers GetModifiers (Mono.Cecil.TypeAttributes attr)

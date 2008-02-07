@@ -32,6 +32,7 @@ using System.Text;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
+using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Dom;
 using MonoDevelop.Ide.Dom.Output;
@@ -72,33 +73,70 @@ namespace MonoDevelop.AssemblyBrowser
 			return -1;
 		}
 		
-		public string GetDescription (object dataObject)
+		#region IAssemblyBrowserNodeBuilder
+		internal static void PrintDeclaringType (StringBuilder result, ITreeNavigator navigator)
 		{
-			IMethod method = (IMethod)dataObject;
-			return AmbienceService.Default.GetString (method, OutputFlags.AssemblyBrowserDescription);
+			IType type = (IType)navigator.GetParentDataItem (typeof (IType), false);
+			if (type == null)
+				return;
+			
+			result.Append (String.Format (GettextCatalog.GetString ("<b>Declaring Type:</b>\t{0}"), type.FullName));
+			result.AppendLine ();
 		}
 		
-		public string GetDisassembly (object dataObject)
+		string IAssemblyBrowserNodeBuilder.GetDescription (ITreeNavigator navigator)
 		{
-			DomCecilMethod method = dataObject as DomCecilMethod;
+			IMethod method = (IMethod)navigator.DataItem;
+			StringBuilder result = new StringBuilder ();
+			result.Append ("<span font_family=\"monospace\">");
+			result.Append (AmbienceService.Default.GetString (method, OutputFlags.AssemblyBrowserDescription));
+			result.Append ("</span>");
+			result.AppendLine ();
+			PrintDeclaringType (result, navigator);
+			DomTypeNodeBuilder.PrintAssembly (result, navigator);
+			return result.ToString ();
+		}
+		
+		static string GetInstructionOffset (Instruction instruction)
+		{
+			return String.Format ("IL_{0:X4}", instruction.Offset);
+		}
+		
+		string IAssemblyBrowserNodeBuilder.GetDisassembly (ITreeNavigator navigator)
+		{
+			DomCecilMethod method = navigator.DataItem as DomCecilMethod;
 			if (method == null)
 				return "";
 			if (method.MethodDefinition.IsPInvokeImpl)
-				return "Method is P/Invoke";
-			if (method.MethodDefinition.Body == null)
-				return "Interface method";
+				return GettextCatalog.GetString ("Method is P/Invoke");
+			if (method.MethodDefinition.Body == null) {
+				IType type = (IType)navigator.GetParentDataItem (typeof (IType), false);
+				return type == null || type.ClassType == ClassType.Interface ? GettextCatalog.GetString ("Interface method") : GettextCatalog.GetString ("Abstract method");
+			}
+			
 			StringBuilder result = new StringBuilder ();
 			foreach (Instruction instruction in method.MethodDefinition.Body.Instructions ) {
-			    result.Append (String.Format ("IL_{0:X4} {1} ", 
-				                              instruction.Offset,
-				                              instruction.OpCode));
-				if (instruction.Operand != null)
-					result.Append (instruction.Operand.GetType() == typeof(string) ? String.Format( "\"{0}\"", instruction.Operand ) :instruction.Operand.ToString());
+				result.Append (GetInstructionOffset (instruction));
+				result.Append (' ');
+				result.Append (instruction.OpCode);
+				if (instruction.Operand != null) {
+					result.Append (' ');
+					if (instruction.Operand is string) {
+						result.Append ('"');
+						result.Append (instruction.Operand);
+						result.Append ('"');
+					} else if (instruction.Operand is Mono.Cecil.Cil.Instruction) {
+						result.Append (GetInstructionOffset ((Mono.Cecil.Cil.Instruction)instruction.Operand));
+					} else {
+						result.Append (instruction.Operand);
+					}
+				}
 				result.AppendLine ();
 			}
 					
 			return result.ToString ();
 		}
+		#endregion
 
 	}
 }

@@ -52,13 +52,13 @@ namespace MonoDevelop.AssemblyBrowser
 			treeView = new MonoDevelopTreeView (new NodeBuilder[] { 
 				new ErrorNodeBuilder (),
 				new AssemblyNodeBuilder (),
+				new ModuleReferenceNodeBuilder (),
 				new ModuleDefinitionNodeBuilder (),
 				new ReferenceFolderNodeBuilder (this),
-				new ModuleReferenceNodeBuilder (),
 				new ResourceFolderNodeBuilder (),
 				new ResourceNodeBuilder (),
 				new NamespaceBuilder (),
-				new DomTypeNodeBuilder (),
+				new DomTypeNodeBuilder (this),
 				new DomMethodNodeBuilder (),
 				new DomFieldNodeBuilder (),
 				new DomEventNodeBuilder (),
@@ -69,23 +69,24 @@ namespace MonoDevelop.AssemblyBrowser
 			scrolledwindow2.Add (treeView);
 			scrolledwindow2.ShowAll ();
             
-			disassemblerTextview.ModifyFont (Pango.FontDescription.FromString ("Monospace 10"));
-            disassemblerTextview.ModifyBase (Gtk.StateType.Normal, new Gdk.Color (255, 255, 220));
+			this.descriptionLabel.ModifyFont (Pango.FontDescription.FromString ("Sans 9"));
+			this.disassemblerLabel.ModifyFont (Pango.FontDescription.FromString ("Monospace 10"));
+            this.disassemblerLabel.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 220));
 			
 			this.vpaned1.ExposeEvent += VPaneExpose;
 			this.hpaned1.ExposeEvent += HPaneExpose;
 				
 			treeView.Tree.CursorChanged += delegate {
 				ITreeNavigator nav = treeView.GetSelectedNode ();
-				if (nav != null) {
-					System.Console.WriteLine(nav.TypeNodeBuilder);
-					IAssemblyBrowserNodeBuilder builder = nav.TypeNodeBuilder as IAssemblyBrowserNodeBuilder;
 					
+				if (nav != null) {
+					IAssemblyBrowserNodeBuilder builder = nav.TypeNodeBuilder as IAssemblyBrowserNodeBuilder;
+					System.Console.WriteLine("builder:" + nav.TypeNodeBuilder);
 					if (builder != null) {
-						this.label2.Markup                    = builder.GetDescription (nav.DataItem);
-						this.disassemblerTextview.Buffer.Text = builder.GetDisassembly (nav.DataItem);
+						this.descriptionLabel.Markup   = builder.GetDescription (nav);
+						this.disassemblerLabel.Markup = builder.GetDisassembly (nav);
 					} else {
-						this.label2.Markup =  this.disassemblerTextview.Buffer.Text = "";
+						this.descriptionLabel.Markup =  this.disassemblerLabel.Markup = "";
 					}
 				}
 			};
@@ -93,7 +94,7 @@ namespace MonoDevelop.AssemblyBrowser
 		int oldSize = -1;
 		void VPaneExpose (object sender, Gtk.ExposeEventArgs args)
 		{
-			int size = this.vpaned1.Allocation.Height - 80;
+			int size = this.vpaned1.Allocation.Height - 96;
 			if (size == oldSize)
 				return;
 			this.vpaned1.Position = oldSize = size;
@@ -105,7 +106,7 @@ namespace MonoDevelop.AssemblyBrowser
 			if (size == oldSize2)
 				return;
 			oldSize2 = size;
-			this.hpaned1.Position = this.hpaned1.Allocation.Width - 250;
+			this.hpaned1.Position = Math.Min (350, this.Allocation.Width * 2 / 3);
 		}
 		public void AddReference (string fileName)
 		{

@@ -38,5 +38,10 @@ namespace MonoDevelop.AssemblyBrowser
 			this.name   = typeReference.Name;
 			this.nspace = typeReference.Namespace;
 		}
+		public DomCecilReturnType (MethodReference methodReference)
+		{
+			this.name   = methodReference.DeclaringType.Name;
+			this.nspace = methodReference.DeclaringType.Namespace;
+		}
 	}
 }

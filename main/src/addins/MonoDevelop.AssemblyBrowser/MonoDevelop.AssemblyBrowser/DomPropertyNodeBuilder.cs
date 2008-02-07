@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Text;
 
 using Mono.Cecil;
 
@@ -69,15 +70,28 @@ namespace MonoDevelop.AssemblyBrowser
 			return -1;
 		}
 		
-		public string GetDescription (object dataObject)
+		#region IAssemblyBrowserNodeBuilder
+		string IAssemblyBrowserNodeBuilder.GetDescription (ITreeNavigator navigator)
 		{
-			IProperty property = (IProperty)dataObject;
-			return AmbienceService.Default.GetString (property, OutputFlags.AssemblyBrowserDescription);
+			IProperty property = (IProperty)navigator.DataItem;
+			StringBuilder result = new StringBuilder ();
+			result.Append ("<span font_family=\"monospace\">");
+			result.Append (AmbienceService.Default.GetString (property, OutputFlags.AssemblyBrowserDescription));
+			result.Append ("</span>");
+			result.AppendLine ();
+			DomMethodNodeBuilder.PrintDeclaringType (result, navigator);
+			DomTypeNodeBuilder.PrintAssembly (result, navigator);
+			return result.ToString ();
 		}
-		public string GetDisassembly (object dataObject)
+		
+		string IAssemblyBrowserNodeBuilder.GetDisassembly (ITreeNavigator navigator)
 		{
-			return "TODO";
+			IProperty property = (IProperty)navigator.DataItem;
+			StringBuilder result = new StringBuilder ();
+			result.Append (AmbienceService.Default.GetString (property, OutputFlags.AssemblyBrowserDescription));
+			return result.ToString ();
 		}
+		#endregion
 
 	}
 }

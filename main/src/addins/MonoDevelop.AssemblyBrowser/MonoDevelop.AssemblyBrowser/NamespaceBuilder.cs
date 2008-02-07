@@ -73,15 +73,38 @@ namespace MonoDevelop.AssemblyBrowser
 			return true;
 		}
 		
-		public string GetDescription (object dataObject)
+		#region IAssemblyBrowserNodeBuilder
+		string IAssemblyBrowserNodeBuilder.GetDescription (ITreeNavigator navigator)
 		{
-			Namespace ns = (Namespace)dataObject;
-			return AmbienceService.Default.GetString (ns.Name, OutputFlags.AssemblyBrowserDescription);
+			Namespace ns = (Namespace)navigator.DataItem;
+			StringBuilder result = new StringBuilder ();
+			if (!String.IsNullOrEmpty (ns.Name)) {
+				result.Append ("<span font_family=\"monospace\">");
+				result.Append (AmbienceService.Default.GetString (ns.Name, OutputFlags.AssemblyBrowserDescription));
+				result.Append ("</span>");
+				result.AppendLine ();
+			}
+			DomTypeNodeBuilder.PrintAssembly (result, navigator);
+			return result.ToString ();
 		}
 		
-		public string GetDisassembly (object dataObject)
+		string IAssemblyBrowserNodeBuilder.GetDisassembly (ITreeNavigator navigator)
 		{
-			return "TODO";
+			Namespace ns = (Namespace)navigator.DataItem;
+			StringBuilder result = new StringBuilder ();
+			if (!String.IsNullOrEmpty (ns.Name)) {
+				result.Append (AmbienceService.Default.GetString (ns.Name, OutputFlags.AssemblyBrowserDescription));
+				result.AppendLine ();
+			}
+			foreach (IType type in ns.Types) {
+				if (!String.IsNullOrEmpty (ns.Name))
+					result.Append ("\t");
+				result.Append (AmbienceService.Default.GetString (type, OutputFlags.AssemblyBrowserDescription));
+				result.AppendLine ();
+			}
+			result.AppendLine ();
+			return result.ToString ();
 		}
+		#endregion
 	}
 }

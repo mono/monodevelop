@@ -27,18 +27,21 @@
 //
 
 using System;
+using System.Text;
 using System.Collections.Generic;
 
 using Mono.Cecil;
 
+using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Dom.Output;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.AssemblyBrowser.Dom;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class ModuleDefinitionNodeBuilder : TypeNodeBuilder
+	public class ModuleDefinitionNodeBuilder : TypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(ModuleDefinition); }
@@ -78,5 +81,37 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			return true;
 		}
+		
+		#region IAssemblyBrowserNodeBuilder
+		static void PrintModuleHeader (StringBuilder result, ModuleDefinition moduleDefinition)
+		{
+			result.Append ("<span font_family=\"monospace\">");
+			result.Append (AmbienceService.Default.SingleLineComment (
+			                    String.Format (GettextCatalog.GetString ("Module <b>{0}</b>"),
+			                    moduleDefinition.Name)));
+			result.Append ("</span>");
+			result.AppendLine ();
+		}
+		
+		string IAssemblyBrowserNodeBuilder.GetDescription (ITreeNavigator navigator)
+		{
+			ModuleDefinition moduleDefinition = (ModuleDefinition)navigator.DataItem;
+			StringBuilder result = new StringBuilder ();
+			PrintModuleHeader (result, moduleDefinition);
+			
+			result.Append (String.Format (GettextCatalog.GetString ("<b>Version:</b>\t{0}"),
+			                              moduleDefinition.Mvid));
+			result.AppendLine ();
+			return result.ToString ();
+		}
+		
+		string IAssemblyBrowserNodeBuilder.GetDisassembly (ITreeNavigator navigator)
+		{
+			ModuleDefinition moduleDefinition = (ModuleDefinition)navigator.DataItem;
+			StringBuilder result = new StringBuilder ();
+			PrintModuleHeader (result, moduleDefinition);
+			return result.ToString ();
+		}
+		#endregion		
 	}
 }

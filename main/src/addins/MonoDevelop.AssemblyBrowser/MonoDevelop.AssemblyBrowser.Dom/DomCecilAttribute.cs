@@ -1,5 +1,5 @@
 //
-// IAssemblyBrowserNodeBuilder.cs
+// DomCecilAttribute.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -27,13 +27,21 @@
 //
 
 using System;
-using MonoDevelop.Ide.Gui.Pads;
+using Mono.Cecil;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public interface IAssemblyBrowserNodeBuilder
+	public class DomCecilAttribute : MonoDevelop.Ide.Dom.DomAttribute
 	{
-		string GetDescription (ITreeNavigator navigator);
-		string GetDisassembly (ITreeNavigator navigator);
+		CustomAttribute customAttribute;
+		
+		public DomCecilAttribute (CustomAttribute customAttribute)
+		{
+			this.customAttribute = customAttribute;
+			base.attributeType = new DomCecilReturnType (customAttribute.Constructor);
+			foreach (object param in customAttribute.ConstructorParameters)
+				base.positionalArguments.Add (param);
+//			base.AttributeTarget = customAttribute.ConstructorParameters
+		}
 	}
 }
