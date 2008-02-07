@@ -117,9 +117,11 @@ namespace MonoDevelop.AssemblyBrowser
 			
 			StringBuilder result = new StringBuilder ();
 			foreach (Instruction instruction in method.MethodDefinition.Body.Instructions ) {
+				result.Append ("<b>");
 				result.Append (GetInstructionOffset (instruction));
-				result.Append (' ');
+				result.Append (":</b> ");
 				result.Append (instruction.OpCode);
+				result.Append ("<i>");
 				if (instruction.Operand != null) {
 					result.Append (' ');
 					if (instruction.Operand is string) {
@@ -132,6 +134,7 @@ namespace MonoDevelop.AssemblyBrowser
 						result.Append (instruction.Operand);
 					}
 				}
+				result.Append ("</i>");
 				result.AppendLine ();
 			}
 					

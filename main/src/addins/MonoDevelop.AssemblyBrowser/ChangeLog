@@ -1,5 +1,10 @@
 2008-02-07  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs: Formated the IL
+	  output a bit nicer.
+
+2008-02-07  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.AssemblyBrowser.Dom/DomCecilParameter.cs,
 	  MonoDevelop.AssemblyBrowser.Dom/DomCecilEvent.cs,
 	  MonoDevelop.AssemblyBrowser.Dom/DomCecilField.cs,
