@@ -75,5 +75,14 @@
       <Widget>MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget</Widget>
     </ExportedWidgets>
   </GtkDesignInfo>
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../..">
+    <BuildFilesVar Sync="True" Name="FILES" />
+    <DeployFilesVar />
+    <ResourcesVar Sync="True" Name="RES" />
+    <OthersVar />
+    <GacRefVar Sync="True" Name="REFS" />
+    <AsmRefVar Sync="True" Name="REFS" />
+    <ProjectRefVar Sync="True" Name="REFS" />
+  </MonoDevelop.Autotools.MakefileInfo>
   <MonoDevelop.ChangeLogAddIn.ChangeLogInfo policy="UseParentPolicy" />
 </Project>
