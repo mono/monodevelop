@@ -60,6 +60,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			IMethod method = (IMethod)dataObject;
 			label = AmbienceService.Default.GetString (method, OutputFlags.ClassBrowserEntries);
+			System.Console.WriteLine (label);
 			icon = Context.GetIcon (iconTable[DomTypeNodeBuilder.GetModifierOffset (method.Modifiers)]);
 		}
 		
