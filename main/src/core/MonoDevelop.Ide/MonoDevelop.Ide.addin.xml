@@ -927,6 +927,8 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Reference">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.Open" />
+		<SeparatorItem id = "OpenSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.LocalCopyReference" />
 		<SeparatorItem id = "CopySeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />

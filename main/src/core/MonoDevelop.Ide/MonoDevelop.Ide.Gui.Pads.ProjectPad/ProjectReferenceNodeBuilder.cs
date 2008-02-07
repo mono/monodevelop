@@ -83,6 +83,17 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 	
 	public class ProjectReferenceNodeCommandHandler: NodeCommandHandler
 	{
+
+		public override void ActivateItem ()
+		{
+			ProjectReference pref = CurrentNode.DataItem as ProjectReference;
+			if (pref == null)
+				return;
+			foreach (string fileName in pref.GetReferencedFileNames ()) {
+				IdeApp.Workbench.OpenDocument (fileName);
+			}
+		}
+				
 		[CommandHandler (EditCommands.Delete)]
 		public void RemoveItem ()
 		{

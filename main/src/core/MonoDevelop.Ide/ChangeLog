@@ -1,5 +1,12 @@
 2008-02-07  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceFolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceNodeBuilder.cs,
+	  MonoDevelop.Ide.addin.xml: Assembly browser can now be used to open
+	  referenced assemblies.
+
+2008-02-07  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads/ITreeNavigator.cs,
 	  MonoDevelop.Ide.Dom.Output/OutputFlags.cs,
 	  MonoDevelop.Ide.Dom.Output/Ambience.cs,
