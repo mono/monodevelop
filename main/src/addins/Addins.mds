@@ -21,6 +21,9 @@
       <Entry build="True" name="MonoDevelop.RegexToolkit" configuration="Debug" />
       <Entry build="True" name="CBinding" configuration="Debug" />
       <Entry build="True" name="GnomePlatform" configuration="Debug" />
+      <Entry build="True" name="Mono.TextEditor" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.SourceEditor2" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.AssemblyBrowser" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
@@ -43,6 +46,9 @@
       <Entry build="True" name="MonoDevelop.RegexToolkit" configuration="Release" />
       <Entry build="True" name="CBinding" configuration="Release" />
       <Entry build="True" name="GnomePlatform" configuration="Release" />
+      <Entry build="True" name="Mono.TextEditor" configuration="Release" />
+      <Entry build="True" name="MonoDevelop.SourceEditor2" configuration="Release" />
+      <Entry build="True" name="MonoDevelop.AssemblyBrowser" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="MonoDevelop.NUnit" single="True">
@@ -70,6 +76,9 @@
     <Execute type="None" entry="CBinding" />
     <Execute type="None" entry="BooBinding" />
     <Execute type="None" entry="GnomePlatform" />
+    <Execute type="None" entry="Mono.TextEditor" />
+    <Execute type="None" entry="MonoDevelop.SourceEditor2" />
+    <Execute type="None" entry="MonoDevelop.AssemblyBrowser" />
   </StartMode>
   <Entries>
     <Entry filename="NUnit/MonoDevelop.NUnit.mdp" />
@@ -92,5 +101,8 @@
     <Entry filename="MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit.mdp" />
     <Entry filename="CBinding/CBinding.mds" />
     <Entry filename="GnomePlatform/GnomePlatform.mdp" />
+    <Entry filename="Mono.Texteditor/Mono.TextEditor.mdp" />
+    <Entry filename="MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.mdp" />
+    <Entry filename="MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser.mdp" />
   </Entries>
 </Combine>
