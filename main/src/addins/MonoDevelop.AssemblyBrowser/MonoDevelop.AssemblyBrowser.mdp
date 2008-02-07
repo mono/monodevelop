@@ -53,6 +53,7 @@
     <File name="MonoDevelop.AssemblyBrowser.Dom/DomCecilReturnType.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AssemblyBrowser/DomReturnTypeNodeBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AssemblyBrowser.Dom/DomCecilParameter.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AssemblyBrowser/IAssemblyBrowserNodeBuilder.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
@@ -66,6 +67,7 @@
     <ProjectReference type="Project" localcopy="True" refto="Mono.Cecil" />
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
   <GtkDesignInfo isWidgetLibrary="True" gtkVersion="2.10.2">
     <ExportedWidgets>

@@ -27,18 +27,21 @@
 //
 
 using System;
+using System.Text;
 
 using Mono.Cecil;
+using Mono.Cecil.Cil;
 
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Dom;
 using MonoDevelop.Ide.Dom.Output;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.AssemblyBrowser.Dom;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class DomMethodNodeBuilder : TypeNodeBuilder
+	public class DomMethodNodeBuilder : TypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		static readonly string[] iconTable = {Stock.Method, Stock.PrivateMethod, Stock.ProtectedMethod, Stock.InternalMethod};
 		
@@ -68,5 +71,34 @@ namespace MonoDevelop.AssemblyBrowser
 			
 			return -1;
 		}
+		
+		public string GetDescription (object dataObject)
+		{
+			IMethod method = (IMethod)dataObject;
+			return AmbienceService.Default.GetString (method, OutputFlags.AssemblyBrowserDescription);
+		}
+		
+		public string GetDisassembly (object dataObject)
+		{
+			DomCecilMethod method = dataObject as DomCecilMethod;
+			if (method == null)
+				return "";
+			if (method.MethodDefinition.IsPInvokeImpl)
+				return "Method is P/Invoke";
+			if (method.MethodDefinition.Body == null)
+				return "Interface method";
+			StringBuilder result = new StringBuilder ();
+			foreach (Instruction instruction in method.MethodDefinition.Body.Instructions ) {
+			    result.Append (String.Format ("IL_{0:X4} {1} ", 
+				                              instruction.Offset,
+				                              instruction.OpCode));
+				if (instruction.Operand != null)
+					result.Append (instruction.Operand.GetType() == typeof(string) ? String.Format( "\"{0}\"", instruction.Operand ) :instruction.Operand.ToString());
+				result.AppendLine ();
+			}
+					
+			return result.ToString ();
+		}
+
 	}
 }

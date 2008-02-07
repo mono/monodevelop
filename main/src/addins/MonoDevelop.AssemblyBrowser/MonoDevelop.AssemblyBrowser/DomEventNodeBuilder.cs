@@ -32,12 +32,13 @@ using Mono.Cecil;
 
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Dom;
+using MonoDevelop.Ide.Dom.Output;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class DomEventNodeBuilder : TypeNodeBuilder
+	public class DomEventNodeBuilder : TypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		static readonly string[] iconTable = {Stock.Event, Stock.PrivateEvent, Stock.ProtectedEvent, Stock.InternalEvent};
 		
@@ -63,6 +64,16 @@ namespace MonoDevelop.AssemblyBrowser
 			if (otherNode.DataItem is IEvent)
 				return ((IEvent)thisNode.DataItem).Name.CompareTo (((IEvent)otherNode.DataItem).Name);
 			return 1;
+		}
+		
+		public string GetDescription (object dataObject)
+		{
+			IEvent evt = (IEvent)dataObject;
+			return AmbienceService.Default.GetString (evt, OutputFlags.AssemblyBrowserDescription);
+		}
+		public string GetDisassembly (object dataObject)
+		{
+			return "TODO";
 		}
 		
 	}

@@ -32,12 +32,13 @@ using Mono.Cecil;
 
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Dom;
+using MonoDevelop.Ide.Dom.Output;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class DomTypeNodeBuilder : TypeNodeBuilder
+	public class DomTypeNodeBuilder : TypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(IType); }
@@ -96,5 +97,16 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			return true;
 		}
+		
+		public string GetDescription (object dataObject)
+		{
+			IType type = (IType)dataObject;
+			return AmbienceService.Default.GetString (type, OutputFlags.AssemblyBrowserDescription);
+		}
+		public string GetDisassembly (object dataObject)
+		{
+			return "TODO";
+		}
+		
 	}
 }

@@ -38,7 +38,7 @@ using MonoDevelop.Ide.Gui.Pads;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class DomPropertyNodeBuilder : TypeNodeBuilder
+	public class DomPropertyNodeBuilder : TypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		static readonly string[] iconTable = {Stock.Property, Stock.PrivateProperty, Stock.ProtectedProperty, Stock.InternalProperty};
 		
@@ -69,5 +69,15 @@ namespace MonoDevelop.AssemblyBrowser
 			return -1;
 		}
 		
+		public string GetDescription (object dataObject)
+		{
+			IProperty property = (IProperty)dataObject;
+			return AmbienceService.Default.GetString (property, OutputFlags.AssemblyBrowserDescription);
+		}
+		public string GetDisassembly (object dataObject)
+		{
+			return "TODO";
+		}
+
 	}
 }

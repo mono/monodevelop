@@ -28,6 +28,7 @@
 
 using System;
 
+using Gtk;
 using Mono.Cecil;
 
 using MonoDevelop.Ide.Gui;
@@ -44,7 +45,7 @@ namespace MonoDevelop.AssemblyBrowser
 				return treeView;
 			}
 		}
-			
+		
 		public AssemblyBrowserWidget ()
 		{
 			this.Build();
@@ -67,6 +68,22 @@ namespace MonoDevelop.AssemblyBrowser
 				}, new TreePadOption [] {});
 			scrolledwindow2.Add (treeView);
 			scrolledwindow2.ShowAll ();
+			this.label2.Style.Font = Gdk.Font.FromDescription (Pango.FontDescription.FromString ("Monospace 12"));
+			
+			treeView.Tree.CursorChanged += delegate {
+				ITreeNavigator nav = treeView.GetSelectedNode ();
+				if (nav != null) {
+					System.Console.WriteLine(nav.TypeNodeBuilder);
+					IAssemblyBrowserNodeBuilder builder = nav.TypeNodeBuilder as IAssemblyBrowserNodeBuilder;
+					
+					if (builder != null) {
+						this.label2.Markup                    = builder.GetDescription (nav.DataItem);
+						this.disassemblerTextview.Buffer.Text = builder.GetDisassembly (nav.DataItem);
+					} else {
+						this.label2.Markup =  this.disassemblerTextview.Buffer.Text = "";
+					}
+				}
+			};
 		}
 
 		public void AddReference (string fileName)

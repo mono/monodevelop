@@ -1,5 +1,5 @@
 //
-// DomCecilMethod.cs
+// IAssemblyBrowserNodeBuilder.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -27,29 +27,12 @@
 //
 
 using System;
-using Mono.Cecil;
 
-namespace MonoDevelop.AssemblyBrowser.Dom
+namespace MonoDevelop.AssemblyBrowser
 {
-	public class DomCecilMethod : MonoDevelop.Ide.Dom.DomMethod
+	public interface IAssemblyBrowserNodeBuilder
 	{
-		MethodDefinition methodDefinition;
-		
-		public MethodDefinition MethodDefinition {
-			get {
-				return methodDefinition;
-			}
-		}
-		
-		public DomCecilMethod (MethodDefinition methodDefinition)
-		{
-			this.methodDefinition = methodDefinition;
-			base.name             = methodDefinition.Name;
-			base.modifiers        = DomCecilType.GetModifiers (methodDefinition.Attributes);
-			base.returnType       = new DomCecilReturnType (methodDefinition.ReturnType.ReturnType);
-			foreach (ParameterDefinition paramDef in methodDefinition.Parameters) {
-				base.parameters.Add (new DomCecilParameter (paramDef));
-			}
-		}
+		string GetDescription (object dataObject);
+		string GetDisassembly (object dataObject);
 	}
 }

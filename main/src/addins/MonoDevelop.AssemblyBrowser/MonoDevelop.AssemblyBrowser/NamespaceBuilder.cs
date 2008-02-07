@@ -28,18 +28,20 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 using Mono.Cecil;
 
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Dom;
+using MonoDevelop.Ide.Dom.Output;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.AssemblyBrowser.Dom;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class NamespaceBuilder : TypeNodeBuilder
+	public class NamespaceBuilder : TypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(Namespace); }
@@ -69,6 +71,17 @@ namespace MonoDevelop.AssemblyBrowser
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			return true;
+		}
+		
+		public string GetDescription (object dataObject)
+		{
+			Namespace ns = (Namespace)dataObject;
+			return AmbienceService.Default.GetString (ns.Name, OutputFlags.AssemblyBrowserDescription);
+		}
+		
+		public string GetDisassembly (object dataObject)
+		{
+			return "TODO";
 		}
 	}
 }

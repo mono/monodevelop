@@ -38,7 +38,7 @@ using MonoDevelop.Ide.Gui.Pads;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class DomFieldNodeBuilder : TypeNodeBuilder
+	public class DomFieldNodeBuilder : TypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		static readonly string[] iconTable = {Stock.Field, Stock.PrivateField, Stock.ProtectedField, Stock.InternalField};
 		
@@ -70,6 +70,17 @@ namespace MonoDevelop.AssemblyBrowser
 			if (otherNode.DataItem is IField)
 				return ((IField)thisNode.DataItem).Name.CompareTo (((IField)otherNode.DataItem).Name);
 			return -1;
+		}
+		
+		public string GetDescription (object dataObject)
+		{
+			IField field = (IField)dataObject;
+			return AmbienceService.Default.GetString (field, OutputFlags.AssemblyBrowserDescription);
+		}
+		
+		public string GetDisassembly (object dataObject)
+		{
+			return "TODO";
 		}
 	}
 }

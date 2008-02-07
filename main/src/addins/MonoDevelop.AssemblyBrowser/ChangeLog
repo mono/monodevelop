@@ -1,6 +1,20 @@
 2008-02-07  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.AssemblyBrowser.Dom/DomCecilMethod.cs,
+	  MonoDevelop.AssemblyBrowser.mdp,
+	  MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs,
+	  MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomEventNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomFieldNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomPropertyNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/NamespaceBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/IAssemblyBrowserNodeBuilder.cs: Worked on
+	  assembly browser.
+
+2008-02-07  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.AssemblyBrowser.Dom/DomCecilMethod.cs,
 	  MonoDevelop.AssemblyBrowser.Dom/DomCecilParameter.cs,
 	  MonoDevelop.AssemblyBrowser.Dom/DomCecilType.cs,
 	  MonoDevelop.AssemblyBrowser.Dom/DomCecilEvent.cs,
