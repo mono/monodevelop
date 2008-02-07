@@ -1,5 +1,15 @@
 2008-02-07  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Pads/ITreeNavigator.cs,
+	  MonoDevelop.Ide.Dom.Output/OutputFlags.cs,
+	  MonoDevelop.Ide.Dom.Output/Ambience.cs,
+	  MonoDevelop.Ide.Dom.Output/NetAmbience.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs,
+	  gtk-gui/gui.stetic, MonoDevelop.Ide.Gui/MonoDevelopTreeView.cs: Worked
+	  on assembly browser.
+
+2008-02-07  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.Dom.Output/OutputFlags.cs,
 	  MonoDevelop.Ide.Dom.Output/Ambience.cs,
 	  MonoDevelop.Ide.Dom.Output/AmbienceService.cs,

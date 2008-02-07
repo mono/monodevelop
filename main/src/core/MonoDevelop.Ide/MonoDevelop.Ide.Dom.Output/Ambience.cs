@@ -98,13 +98,28 @@ namespace MonoDevelop.Ide.Dom.Output
 		{
 			return (outputFlags & OutputFlags.IncludeParameterName) == OutputFlags.IncludeParameterName;
 		}
+		protected static bool EmitMarkup (OutputFlags outputFlags)
+		{
+			return (outputFlags & OutputFlags.EmitMarkup) == OutputFlags.EmitMarkup;
+		}
+		protected static bool EmitKeywords (OutputFlags outputFlags)
+		{
+			return (outputFlags & OutputFlags.EmitKeywords) == OutputFlags.EmitKeywords;
+		}
+		protected static bool IncludeModifiers (OutputFlags outputFlags)
+		{
+			return (outputFlags & OutputFlags.IncludeModifiers) == OutputFlags.IncludeModifiers;
+		}
 		#endregion			
 		
+		public abstract string GetString (string nameSpace, OutputFlags flags);
 		public abstract string GetString (IField field, OutputFlags flags);
 		public abstract string GetString (IProperty property, OutputFlags flags);
 		public abstract string GetString (IReturnType returnType, OutputFlags flags);
 		public abstract string GetString (IMethod method, OutputFlags flags);
 		public abstract string GetString (IParameter parameter, OutputFlags flags);
+		public abstract string GetString (IType type, OutputFlags flags);
+		public abstract string GetString (IEvent evt, OutputFlags flags);
 		
 	}
 }

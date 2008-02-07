@@ -41,6 +41,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		bool Expanded { get; set; }
 		void ExpandToNode ();
 		ITreeOptions Options { get; }
+		TypeNodeBuilder  TypeNodeBuilder  { get; }
 		
 		NodeState SaveState ();
 		void RestoreState (NodeState state);

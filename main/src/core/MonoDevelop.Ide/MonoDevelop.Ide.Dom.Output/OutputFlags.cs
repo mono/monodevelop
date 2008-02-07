@@ -35,11 +35,15 @@ namespace MonoDevelop.Ide.Dom.Output
 		None = 0,
 		
 		// Flags
-		UseFullName              = 0x1,
-		IncludeReturnType        = 0x2,
-		IncludeParameters        = 0x4,
-		IncludeParameterName     = 0x8,
+		UseFullName              = 0x0001,
+		IncludeReturnType        = 0x0002,
+		IncludeParameters        = 0x0004,
+		IncludeParameterName     = 0x0008,
+		EmitMarkup               = 0x0010,
+		EmitKeywords             = 0x0020,
+		IncludeModifiers         = 0x0040,
 		
-		ClassBrowserEntries = IncludeReturnType | IncludeParameters
+		ClassBrowserEntries        = IncludeReturnType | IncludeParameters,
+		AssemblyBrowserDescription = IncludeReturnType | IncludeParameters | IncludeParameterName | EmitMarkup | EmitKeywords | IncludeModifiers
 	}
 }

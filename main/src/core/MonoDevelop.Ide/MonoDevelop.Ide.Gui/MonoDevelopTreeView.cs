@@ -1248,34 +1248,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public ICustomXmlSerializer CreateMemento ()
-		{
-			return this.SaveTreeState ();
-		}
-
-		public void SetMemento (ICustomXmlSerializer memento)
-		{
-			this.RestoreTreeState ((NodeState)memento);
-		}
-
-		// ********* Own events
-		protected virtual void OnTitleChanged(EventArgs e)
-		{
-			if (TitleChanged != null) {
-				TitleChanged(this, e);
-			}
-		}
-
-		protected virtual void OnIconChanged(EventArgs e)
-		{
-			if (IconChanged != null) {
-				IconChanged(this, e);
-			}
-		}
-
-		public event EventHandler TitleChanged;
-		public event EventHandler IconChanged;
-
 		internal class PadCheckMenuItem: Gtk.CheckMenuItem
 		{
 			internal string Id;
@@ -1383,6 +1355,12 @@ namespace MonoDevelop.Ide.Gui
 			
 			public object DataItem {
 				get { return store.GetValue (currentIter, MonoDevelopTreeView.DataItemColumn); }
+			}
+			
+			public TypeNodeBuilder TypeNodeBuilder {
+				get {
+					return pad.GetTypeNodeBuilder (CurrentPosition._iter);
+				}
 			}
 			
 			internal NodeBuilder[] NodeBuilderChain {

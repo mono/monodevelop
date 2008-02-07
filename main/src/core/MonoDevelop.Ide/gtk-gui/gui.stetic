@@ -2126,7 +2126,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Gui.OptionPanels.CodeGenerationPanelWidget">
+  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Gui.OptionPanels.CodeGenerationPanelWidget" design-size="239 208">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <child>

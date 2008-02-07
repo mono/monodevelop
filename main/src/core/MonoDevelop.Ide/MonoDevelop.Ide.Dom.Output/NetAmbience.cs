@@ -71,11 +71,41 @@ namespace MonoDevelop.Ide.Dom.Output
 			modifiers[Modifiers.ProtectedOrInternal]  = "Internal Protected";
 		}
 		
+		public override string GetString (string nameSpace, OutputFlags flags)
+		{
+			StringBuilder result = new StringBuilder ();
+			if (EmitKeywords (flags)) {
+				if (EmitMarkup (flags))
+					result.Append ("<b>");
+				result.Append ("Namespace ");
+				if (EmitMarkup (flags))
+					result.Append ("</b>");
+			}
+			result.Append (nameSpace);
+			return result.ToString ();
+		}
+		
 		public override string GetString (IProperty property, OutputFlags flags)
 		{
 			if (property == null)
 				return nullString;
 			StringBuilder result = new StringBuilder ();
+			if (IncludeModifiers (flags)) {
+				if (EmitMarkup (flags))
+					result.Append ("<b>");
+				result.Append (base.GetString (property.Modifiers));
+				result.Append (" ");
+				if (EmitMarkup (flags))
+					result.Append ("</b>");
+			}
+			if (EmitKeywords (flags)) {
+				if (EmitMarkup (flags))
+					result.Append ("<b>");
+				result.Append ("Property ");
+				if (EmitMarkup (flags))
+					result.Append ("</b>");
+			}
+			
 			if (UseFullName (flags)) {
 				result.Append (property.FullName);
 			} else {
@@ -93,6 +123,24 @@ namespace MonoDevelop.Ide.Dom.Output
 			if (field == null)
 				return nullString;
 			StringBuilder result = new StringBuilder ();
+			
+			if (IncludeModifiers (flags)) {
+				if (EmitMarkup (flags))
+					result.Append ("<b>");
+				result.Append (base.GetString (field.Modifiers));
+				result.Append (" ");
+				if (EmitMarkup (flags))
+					result.Append ("</b>");
+			}
+			
+			if (EmitKeywords (flags)) {
+				if (EmitMarkup (flags))
+					result.Append ("<b>");
+				result.Append ("Field ");
+				if (EmitMarkup (flags))
+					result.Append ("</b>");
+			}
+			
 			if (UseFullName (flags)) {
 				result.Append (field.FullName);
 			} else {
@@ -123,6 +171,24 @@ namespace MonoDevelop.Ide.Dom.Output
 			if (method == null)
 				return nullString;
 			StringBuilder result = new StringBuilder ();
+			
+			if (IncludeModifiers (flags)) {
+				if (EmitMarkup (flags))
+					result.Append ("<b>");
+				result.Append (base.GetString (method.Modifiers));
+				result.Append (" ");
+				if (EmitMarkup (flags))
+					result.Append ("</b>");
+			}
+			
+			if (EmitKeywords (flags)) {
+				if (EmitMarkup (flags))
+					result.Append ("<b>");
+				result.Append ("Method ");
+				if (EmitMarkup (flags))
+					result.Append ("</b>");
+			}
+			
 			if (UseFullName (flags)) {
 				result.Append (method.FullName);
 			} else {
@@ -165,5 +231,65 @@ namespace MonoDevelop.Ide.Dom.Output
 			}
 			return result.ToString ();
 		}
+		
+		public override string GetString (IType type, OutputFlags flags)
+		{
+			if (type == null)
+				return nullString;
+			StringBuilder result = new StringBuilder ();
+			if (IncludeModifiers (flags)) {
+				if (EmitMarkup (flags))
+					result.Append ("<b>");
+				result.Append (base.GetString (type.Modifiers));
+				result.Append (" ");
+				if (EmitMarkup (flags))
+					result.Append ("</b>");
+			}
+			
+			if (EmitKeywords (flags)) {
+				if (EmitMarkup (flags))
+					result.Append ("<b>");
+				result.Append (GetString (type.ClassType));
+				result.Append (" ");
+				if (EmitMarkup (flags))
+					result.Append ("</b>");
+			}
+						
+			result.Append (type.Name);
+			
+			if (type.BaseType != null) {
+				result.Append (" : ");
+				result.Append (type.BaseType.Name);
+			}
+			return result.ToString ();
+		}
+		
+		public override string GetString (IEvent evt, OutputFlags flags)
+		{
+			if (evt == null)
+				return nullString;
+			StringBuilder result = new StringBuilder ();
+			if (IncludeModifiers (flags)) {
+				if (EmitMarkup (flags))
+					result.Append ("<b>");
+				result.Append (base.GetString (evt.Modifiers));
+				result.Append (" ");
+				if (EmitMarkup (flags))
+					result.Append ("</b>");
+			}
+			
+			if (EmitKeywords (flags)) {
+				if (EmitMarkup (flags))
+					result.Append ("<b>");
+				result.Append ("Event ");
+				if (EmitMarkup (flags))
+					result.Append ("</b>");
+			}
+						
+			result.Append (evt.Name);
+			
+			return result.ToString ();
+		}
+		
 	}
 }
