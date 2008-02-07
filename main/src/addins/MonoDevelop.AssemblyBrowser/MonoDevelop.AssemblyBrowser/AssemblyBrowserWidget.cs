@@ -69,7 +69,7 @@ namespace MonoDevelop.AssemblyBrowser
 			scrolledwindow2.Add (treeView);
 			scrolledwindow2.ShowAll ();
             
-			disassemblerTextview.ModifyFont (Pango.FontDescription.FromString ("Monospace 12"));
+			disassemblerTextview.ModifyFont (Pango.FontDescription.FromString ("Monospace 10"));
             disassemblerTextview.ModifyBase (Gtk.StateType.Normal, new Gdk.Color (255, 255, 220));
 			
 			treeView.Tree.CursorChanged += delegate {

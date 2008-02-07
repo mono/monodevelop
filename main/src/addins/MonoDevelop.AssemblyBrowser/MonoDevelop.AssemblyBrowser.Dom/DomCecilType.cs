@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using Mono.Cecil;
 using MonoDevelop.Ide.Dom;
 
@@ -61,15 +62,27 @@ namespace MonoDevelop.AssemblyBrowser.Dom
 			foreach (TypeReference interfaceReference in typeDefinition.Interfaces) {
 				this.implementedInterfaces.Add (new DomCecilReturnType (interfaceReference));
 			}
-			foreach (FieldDefinition fieldDefinition in typeDefinition.Fields)
-				base.members.Add (new DomCecilField (fieldDefinition));
-			foreach (MethodDefinition methodDefinition in typeDefinition.Methods)
-				base.members.Add (new DomCecilMethod (methodDefinition));
-			foreach (PropertyDefinition propertyDefinition in typeDefinition.Properties)
-				base.members.Add (new DomCecilProperty (propertyDefinition));
-			foreach (EventDefinition eventDefinition in typeDefinition.Events)
-				base.members.Add (new DomCecilEvent (eventDefinition));
+			
+			members = null;
 		}
+		
+		public override IEnumerable<IDomItem> Members {
+			get {
+				if (base.members == null) {
+					base.members = new List<IDomItem> ();
+					foreach (FieldDefinition fieldDefinition in typeDefinition.Fields)
+						base.members.Add (new DomCecilField (fieldDefinition));
+					foreach (MethodDefinition methodDefinition in typeDefinition.Methods)
+						base.members.Add (new DomCecilMethod (methodDefinition));
+					foreach (PropertyDefinition propertyDefinition in typeDefinition.Properties)
+						base.members.Add (new DomCecilProperty (propertyDefinition));
+					foreach (EventDefinition eventDefinition in typeDefinition.Events)
+						base.members.Add (new DomCecilEvent (eventDefinition));
+				}
+				return members;
+			}
+		}
+				
 		
 		public static MonoDevelop.Ide.Dom.Modifiers GetModifiers (Mono.Cecil.TypeAttributes attr)
 		{

@@ -32,6 +32,7 @@ using Mono.Cecil;
 
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Dom;
+using MonoDevelop.Ide.Dom.Output;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 
@@ -52,7 +53,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			IReturnType returnType = (IReturnType)dataObject;
-			label = returnType.Name;
+			label = AmbienceService.Default.GetString (returnType, OutputFlags.ClassBrowserEntries);
 			icon = Context.GetIcon (Stock.Class);
 		}
 	}
