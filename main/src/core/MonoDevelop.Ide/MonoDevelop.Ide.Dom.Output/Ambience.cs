@@ -120,8 +120,9 @@ namespace MonoDevelop.Ide.Dom.Output
 		{
 			if (String.IsNullOrEmpty (str))
 				return "";
+			str = str.Replace ("&", "&amp;");
 			str = str.Replace ("<", "&lt;");
-			return str.Replace (">", "&gt;");
+			return str.Replace (">", "&gt;"); 
 		}
 		
 		public abstract string SingleLineComment (string text);
