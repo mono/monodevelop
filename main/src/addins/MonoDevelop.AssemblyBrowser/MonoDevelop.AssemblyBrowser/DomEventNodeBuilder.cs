@@ -39,6 +39,8 @@ namespace MonoDevelop.AssemblyBrowser
 {
 	public class DomEventNodeBuilder : TypeNodeBuilder
 	{
+		static readonly string[] iconTable = {Stock.Event, Stock.PrivateEvent, Stock.ProtectedEvent, Stock.InternalEvent};
+		
 		public override Type NodeDataType {
 			get { return typeof(IEvent); }
 		}
@@ -53,8 +55,9 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			IEvent evt = (IEvent)dataObject;
 			label = evt.Name;
-			icon = Context.GetIcon (Stock.Event);
+			icon = Context.GetIcon (iconTable[DomTypeNodeBuilder.GetModifierOffset (evt.Modifiers)]);
 		}
+		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
 			if (otherNode.DataItem is IEvent)

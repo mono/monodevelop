@@ -1,5 +1,5 @@
 //
-// DomCecilField.cs
+// DomCecilParameter.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -31,15 +31,16 @@ using Mono.Cecil;
 
 namespace MonoDevelop.AssemblyBrowser.Dom
 {
-	public class DomCecilField : MonoDevelop.Ide.Dom.DomField
+	public class DomCecilParameter : MonoDevelop.Ide.Dom.DomParameter
 	{
-		FieldDefinition fieldDefinition;
-		public DomCecilField (FieldDefinition fieldDefinition)
+		ParameterDefinition parameterDefinition;
+		
+		public DomCecilParameter (ParameterDefinition parameterDefinition)
 		{
-			this.fieldDefinition = fieldDefinition;
-			base.name            = fieldDefinition.Name;
-			base.modifiers       = DomCecilType.GetModifiers (fieldDefinition.Attributes);
-			base.returnType      = new DomCecilReturnType (fieldDefinition.FieldType);
+			this.parameterDefinition = parameterDefinition;
+			base.name                = parameterDefinition.Name;
+//			base.modifiers           = DomCecilType.GetModifiers (parameterDefinition..Attributes);
+			base.returnType          = new DomCecilReturnType (parameterDefinition.ParameterType);
 		}
 	}
 }

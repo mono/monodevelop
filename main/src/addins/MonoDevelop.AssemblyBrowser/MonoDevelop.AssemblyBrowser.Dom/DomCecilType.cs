@@ -28,6 +28,7 @@
 
 using System;
 using Mono.Cecil;
+using MonoDevelop.Ide.Dom;
 
 namespace MonoDevelop.AssemblyBrowser.Dom
 {
@@ -35,13 +36,31 @@ namespace MonoDevelop.AssemblyBrowser.Dom
 	{
 		TypeDefinition typeDefinition;
 		
+		static ClassType GetClassType (TypeDefinition typeDefinition)
+		{
+			if (typeDefinition.IsInterface)
+				return ClassType.Interface;
+			if (typeDefinition.IsEnum)
+				return ClassType.Enum;
+			if (typeDefinition.IsValueType)
+				return ClassType.Struct;
+			// Todo: Delegates
+			return ClassType.Class;
+		}
+		
 		public DomCecilType (TypeDefinition typeDefinition)
 		{
 			this.typeDefinition = typeDefinition;
+			this.classType      = GetClassType (typeDefinition);
 			this.name           = typeDefinition.Name;
 			this.namesp         = typeDefinition.Namespace;
 			this.modifiers      = GetModifiers (typeDefinition.Attributes);
+			if (typeDefinition.BaseType != null)
+				this.baseType = new DomCecilReturnType (typeDefinition.BaseType);
 			
+			foreach (TypeReference interfaceReference in typeDefinition.Interfaces) {
+				this.implementedInterfaces.Add (new DomCecilReturnType (interfaceReference));
+			}
 			foreach (FieldDefinition fieldDefinition in typeDefinition.Fields)
 				base.members.Add (new DomCecilField (fieldDefinition));
 			foreach (MethodDefinition methodDefinition in typeDefinition.Methods)
@@ -55,30 +74,99 @@ namespace MonoDevelop.AssemblyBrowser.Dom
 		public static MonoDevelop.Ide.Dom.Modifiers GetModifiers (Mono.Cecil.TypeAttributes attr)
 		{
 			MonoDevelop.Ide.Dom.Modifiers result = MonoDevelop.Ide.Dom.Modifiers.None;
+			if ((attr & TypeAttributes.Abstract) == TypeAttributes.Abstract)
+				result |= Modifiers.Abstract;
+			if ((attr & TypeAttributes.Sealed) == TypeAttributes.Sealed)
+				result |= Modifiers.Sealed;
+			
+			if ((attr & TypeAttributes.Public) == TypeAttributes.Public) {
+				result |= Modifiers.Public;
+			} else if ((attr & TypeAttributes.NestedFamANDAssem) == TypeAttributes.NestedFamANDAssem) {
+				result |= Modifiers.ProtectedAndInternal;
+			} else if ((attr & TypeAttributes.NestedFamORAssem) == TypeAttributes.NestedFamORAssem) {
+				result |= Modifiers.ProtectedOrInternal;
+			} else if ((attr & TypeAttributes.NestedFamily) == TypeAttributes.NestedFamily) {
+				result |= Modifiers.Protected;
+			} else if ((attr & TypeAttributes.NestedAssembly) == TypeAttributes.NestedAssembly) {
+				result |= Modifiers.Internal;
+			} else {
+				result |= Modifiers.Private;
+			}
 			return result;
 		}
 		
 		public static MonoDevelop.Ide.Dom.Modifiers GetModifiers (Mono.Cecil.FieldAttributes attr)
 		{
 			MonoDevelop.Ide.Dom.Modifiers result = MonoDevelop.Ide.Dom.Modifiers.None;
+			
+			if ((attr & FieldAttributes.Literal) == FieldAttributes.Literal) 
+				result |= Modifiers.Literal;
+			if ((attr & FieldAttributes.Static) == FieldAttributes.Static) 
+				result |= Modifiers.Static;
+			if ((attr & FieldAttributes.SpecialName) == FieldAttributes.SpecialName) 
+				result |= Modifiers.SpecialName;
+			if ((attr & FieldAttributes.InitOnly) == FieldAttributes.InitOnly) 
+				result |= Modifiers.Readonly;
+			
+			if ((attr & FieldAttributes.Public) == FieldAttributes.Public) {
+				result |= Modifiers.Public;
+			} else if ((attr & FieldAttributes.FamANDAssem) == FieldAttributes.FamANDAssem) {
+				result |= Modifiers.ProtectedAndInternal;
+			} else if ((attr & FieldAttributes.FamORAssem) == FieldAttributes.FamORAssem) {
+				result |= Modifiers.ProtectedOrInternal;
+			} else if ((attr & FieldAttributes.Family) == FieldAttributes.Family) {
+				result |= Modifiers.Protected;
+			} else if ((attr & FieldAttributes.Assembly) == FieldAttributes.Assembly) {
+				result |= Modifiers.Internal;
+			} else {
+				result |= Modifiers.Private;
+			}
 			return result;
 		}
 		
 		public static MonoDevelop.Ide.Dom.Modifiers GetModifiers (Mono.Cecil.EventAttributes attr)
 		{
 			MonoDevelop.Ide.Dom.Modifiers result = MonoDevelop.Ide.Dom.Modifiers.None;
+			if ((attr & EventAttributes.SpecialName) == EventAttributes.SpecialName) 
+				result |= Modifiers.SpecialName;
 			return result;
 		}
 		
 		public static MonoDevelop.Ide.Dom.Modifiers GetModifiers (Mono.Cecil.MethodAttributes attr)
 		{
 			MonoDevelop.Ide.Dom.Modifiers result = MonoDevelop.Ide.Dom.Modifiers.None;
+			
+			if ((attr & MethodAttributes.Static) == MethodAttributes.Static) 
+				result |= Modifiers.Static;
+			if ((attr & MethodAttributes.Abstract) == MethodAttributes.Abstract) 
+				result |= Modifiers.Static;
+			if ((attr & MethodAttributes.Virtual) == MethodAttributes.Virtual) 
+				result |= Modifiers.Virtual;
+			if ((attr & MethodAttributes.Final) == MethodAttributes.Final) 
+				result |= Modifiers.Final;
+			
+			if ((attr & MethodAttributes.Public) == MethodAttributes.Public) {
+				result |= Modifiers.Public;
+			} else if ((attr & MethodAttributes.FamANDAssem) == MethodAttributes.FamANDAssem) {
+				result |= Modifiers.ProtectedAndInternal;
+			} else if ((attr & MethodAttributes.FamORAssem) == MethodAttributes.FamORAssem) {
+				result |= Modifiers.ProtectedOrInternal;
+			} else if ((attr & MethodAttributes.Family) == MethodAttributes.Family) {
+				result |= Modifiers.Protected;
+			} else if ((attr & MethodAttributes.Assem) == MethodAttributes.Assem) {
+				result |= Modifiers.Internal;
+			} else {
+				result |= Modifiers.Private;
+			}
+			
 			return result;
 		}
 		
 		public static MonoDevelop.Ide.Dom.Modifiers GetModifiers (Mono.Cecil.PropertyAttributes attr)
 		{
 			MonoDevelop.Ide.Dom.Modifiers result = MonoDevelop.Ide.Dom.Modifiers.None;
+			if ((attr & PropertyAttributes.SpecialName) == PropertyAttributes.SpecialName) 
+				result |= Modifiers.SpecialName;
 			return result;
 		}
 	}

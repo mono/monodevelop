@@ -38,7 +38,7 @@ namespace MonoDevelop.AssemblyBrowser.Dom
 		{
 			this.eventDefinition = eventDefinition;
 			base.name            = eventDefinition.Name;
-			base.modifiers       = DomCecilType.GetModifiers (eventDefinition.Attributes);
+			base.modifiers       = DomCecilType.GetModifiers (eventDefinition.AddMethod.Attributes);
 		}
 	}
 }

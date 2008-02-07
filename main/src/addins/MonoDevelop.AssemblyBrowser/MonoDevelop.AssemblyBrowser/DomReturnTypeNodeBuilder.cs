@@ -1,5 +1,5 @@
 //
-// DomCecilField.cs
+// DomReturnTypeNodeBuilder.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -27,19 +27,33 @@
 //
 
 using System;
+
 using Mono.Cecil;
 
-namespace MonoDevelop.AssemblyBrowser.Dom
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Dom;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Pads;
+
+namespace MonoDevelop.AssemblyBrowser
 {
-	public class DomCecilField : MonoDevelop.Ide.Dom.DomField
+	public class DomReturnTypeNodeBuilder : TypeNodeBuilder
 	{
-		FieldDefinition fieldDefinition;
-		public DomCecilField (FieldDefinition fieldDefinition)
+		public override Type NodeDataType {
+			get { return typeof(IReturnType); }
+		}
+		
+		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			this.fieldDefinition = fieldDefinition;
-			base.name            = fieldDefinition.Name;
-			base.modifiers       = DomCecilType.GetModifiers (fieldDefinition.Attributes);
-			base.returnType      = new DomCecilReturnType (fieldDefinition.FieldType);
+			IReturnType returnType = (IReturnType)dataObject;
+			return returnType.FullName;
+		}
+		
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		{
+			IReturnType returnType = (IReturnType)dataObject;
+			label = returnType.Name;
+			icon = Context.GetIcon (Stock.Class);
 		}
 	}
 }

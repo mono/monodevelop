@@ -39,7 +39,8 @@ namespace MonoDevelop.AssemblyBrowser.Dom
 		{
 			this.propertyDefinition = propertyDefinition;
 			base.name               = propertyDefinition.Name;
-			base.modifiers          = DomCecilType.GetModifiers (propertyDefinition.Attributes);
+			base.modifiers          = DomCecilType.GetModifiers ((propertyDefinition.GetMethod != null ? propertyDefinition.GetMethod : propertyDefinition.SetMethod).Attributes);
+			base.returnType         = new DomCecilReturnType (propertyDefinition.PropertyType);
 		}
 	}
 }

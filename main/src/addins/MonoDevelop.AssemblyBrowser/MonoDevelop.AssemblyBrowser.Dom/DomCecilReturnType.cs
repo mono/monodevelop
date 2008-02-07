@@ -1,5 +1,5 @@
 //
-// DomCecilField.cs
+// DomCecilReturnType.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -29,17 +29,14 @@
 using System;
 using Mono.Cecil;
 
-namespace MonoDevelop.AssemblyBrowser.Dom
+namespace MonoDevelop.AssemblyBrowser
 {
-	public class DomCecilField : MonoDevelop.Ide.Dom.DomField
+	public class DomCecilReturnType : MonoDevelop.Ide.Dom.DomReturnType
 	{
-		FieldDefinition fieldDefinition;
-		public DomCecilField (FieldDefinition fieldDefinition)
+		public DomCecilReturnType (TypeReference typeReference)
 		{
-			this.fieldDefinition = fieldDefinition;
-			base.name            = fieldDefinition.Name;
-			base.modifiers       = DomCecilType.GetModifiers (fieldDefinition.Attributes);
-			base.returnType      = new DomCecilReturnType (fieldDefinition.FieldType);
+			this.name   = typeReference.Name;
+			this.nspace = typeReference.Namespace;
 		}
 	}
 }

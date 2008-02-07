@@ -40,6 +40,10 @@ namespace MonoDevelop.AssemblyBrowser.Dom
 			this.methodDefinition = methodDefinition;
 			base.name             = methodDefinition.Name;
 			base.modifiers        = DomCecilType.GetModifiers (methodDefinition.Attributes);
+			base.returnType       = new DomCecilReturnType (methodDefinition.ReturnType.ReturnType);
+			foreach (ParameterDefinition paramDef in methodDefinition.Parameters) {
+				base.parameters.Add (new DomCecilParameter (paramDef));
+			}
 		}
 	}
 }

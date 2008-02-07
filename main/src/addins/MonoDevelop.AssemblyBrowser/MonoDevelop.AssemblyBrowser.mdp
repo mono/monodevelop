@@ -48,6 +48,11 @@
     <File name="MonoDevelop.AssemblyBrowser/ErrorNodeBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AssemblyBrowser/ModuleReferenceNodeBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="MonoDevelop.AssemblyBrowser/BaseTypeFolder.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AssemblyBrowser/BaseTypeFolderNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AssemblyBrowser.Dom/DomCecilReturnType.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AssemblyBrowser/DomReturnTypeNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AssemblyBrowser.Dom/DomCecilParameter.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />

@@ -1,4 +1,24 @@
 2008-02-07  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.AssemblyBrowser.Dom/DomCecilMethod.cs,
+	  MonoDevelop.AssemblyBrowser.Dom/DomCecilParameter.cs,
+	  MonoDevelop.AssemblyBrowser.Dom/DomCecilType.cs,
+	  MonoDevelop.AssemblyBrowser.Dom/DomCecilEvent.cs,
+	  MonoDevelop.AssemblyBrowser.Dom/DomCecilReturnType.cs,
+	  MonoDevelop.AssemblyBrowser.Dom/DomCecilField.cs,
+	  MonoDevelop.AssemblyBrowser.Dom/DomCecilProperty.cs,
+	  MonoDevelop.AssemblyBrowser/BaseTypeFolderNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs,
+	  MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomReturnTypeNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomEventNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomFieldNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomPropertyNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/BaseTypeFolder.cs: Worked on assembly
+	  browser (Now using dom output).
+
+2008-02-07  Mike Krüger <mkrueger@novell.com> 
+
 	
 

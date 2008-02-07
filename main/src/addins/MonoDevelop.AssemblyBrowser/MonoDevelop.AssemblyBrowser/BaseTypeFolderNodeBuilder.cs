@@ -1,5 +1,5 @@
 //
-// DomFieldNodeBuilder.cs
+// BaseTypeFolderNodeBuilder.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -27,48 +27,51 @@
 //
 
 using System;
+using System.Collections.Generic;
 
 using Mono.Cecil;
 
 using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Dom;
-using MonoDevelop.Ide.Dom.Output;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Dom;
 using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.AssemblyBrowser.Dom;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class DomFieldNodeBuilder : TypeNodeBuilder
+	public class BaseTypeFolderNodeBuilder : TypeNodeBuilder
 	{
-		static readonly string[] iconTable = {Stock.Field, Stock.PrivateField, Stock.ProtectedField, Stock.InternalField};
-		
 		public override Type NodeDataType {
-			get { return typeof(IField); }
+			get { return typeof(BaseTypeFolder); }
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			IField field = (IField)dataObject;
-			return field.FullName;
+			return "Base Types";
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			IField field = (IField)dataObject;
-			label = AmbienceService.Default.GetString (field, OutputFlags.ClassBrowserEntries);
-			icon = Context.GetIcon (iconTable[DomTypeNodeBuilder.GetModifierOffset (field.Modifiers)]);
+			label      = MonoDevelop.Core.GettextCatalog.GetString ("Base Types");
+			icon       = Context.GetIcon (Stock.OpenFolder);
+			closedIcon = Context.GetIcon (Stock.ClosedFolder);
 		}
 		
+		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
+		{
+			BaseTypeFolder baseTypeFolder = (BaseTypeFolder)dataObject;
+			ctx.AddChild (baseTypeFolder.Type.BaseType);
+			foreach (IType type in baseTypeFolder.Type.ImplementedInterfaces) {
+				ctx.AddChild (type);
+			}
+		}
+		
+		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
+		{
+			return true;
+		}
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
-			if (otherNode.DataItem is IMethod)
-				return 1;
-			if (otherNode.DataItem is IProperty)
-				return 1;
-			if (otherNode.DataItem is BaseTypeFolder)
-				return 1;
-			if (otherNode.DataItem is IField)
-				return ((IField)thisNode.DataItem).Name.CompareTo (((IField)otherNode.DataItem).Name);
 			return -1;
 		}
 	}

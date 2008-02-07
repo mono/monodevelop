@@ -32,6 +32,7 @@ using Mono.Cecil;
 
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Dom;
+using MonoDevelop.Ide.Dom.Output;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 
@@ -39,6 +40,8 @@ namespace MonoDevelop.AssemblyBrowser
 {
 	public class DomPropertyNodeBuilder : TypeNodeBuilder
 	{
+		static readonly string[] iconTable = {Stock.Property, Stock.PrivateProperty, Stock.ProtectedProperty, Stock.InternalProperty};
+		
 		public override Type NodeDataType {
 			get { return typeof(IProperty); }
 		}
@@ -51,13 +54,15 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			IProperty poperty = (IProperty)dataObject;
-			label = poperty.Name;
-			icon = Context.GetIcon (Stock.Property);
+			IProperty property = (IProperty)dataObject;
+			label = AmbienceService.Default.GetString (property, OutputFlags.ClassBrowserEntries);
+			icon = Context.GetIcon (iconTable[DomTypeNodeBuilder.GetModifierOffset (property.Modifiers)]);
 		}
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
 			if (otherNode.DataItem is IMethod)
+				return 1;
+			if (otherNode.DataItem is BaseTypeFolder)
 				return 1;
 			if (otherNode.DataItem is IProperty)
 				return ((IProperty)thisNode.DataItem).Name.CompareTo (((IProperty)otherNode.DataItem).Name);

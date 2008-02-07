@@ -1,5 +1,5 @@
 //
-// DomCecilField.cs
+// BaseTypeFolder.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -27,19 +27,22 @@
 //
 
 using System;
-using Mono.Cecil;
-
-namespace MonoDevelop.AssemblyBrowser.Dom
+using MonoDevelop.Ide.Dom;
+namespace MonoDevelop.AssemblyBrowser
 {
-	public class DomCecilField : MonoDevelop.Ide.Dom.DomField
+	public class BaseTypeFolder
 	{
-		FieldDefinition fieldDefinition;
-		public DomCecilField (FieldDefinition fieldDefinition)
+		IType type;
+		
+		public IType Type {
+			get {
+				return type;
+			}
+		}
+		
+		public BaseTypeFolder (IType type)
 		{
-			this.fieldDefinition = fieldDefinition;
-			base.name            = fieldDefinition.Name;
-			base.modifiers       = DomCecilType.GetModifiers (fieldDefinition.Attributes);
-			base.returnType      = new DomCecilReturnType (fieldDefinition.FieldType);
+			this.type = type;
 		}
 	}
 }

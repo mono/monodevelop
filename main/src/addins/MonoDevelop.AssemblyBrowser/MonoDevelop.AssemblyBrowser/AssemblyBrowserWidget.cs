@@ -61,7 +61,9 @@ namespace MonoDevelop.AssemblyBrowser
 				new DomMethodNodeBuilder (),
 				new DomFieldNodeBuilder (),
 				new DomEventNodeBuilder (),
-				new DomPropertyNodeBuilder ()
+				new DomPropertyNodeBuilder (),
+				new BaseTypeFolderNodeBuilder (),
+				new DomReturnTypeNodeBuilder ()
 				}, new TreePadOption [] {});
 			scrolledwindow2.Add (treeView);
 			scrolledwindow2.ShowAll ();
