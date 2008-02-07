@@ -124,6 +124,8 @@ namespace MonoDevelop.Ide.Dom.Output
 			return str.Replace (">", "&gt;");
 		}
 		
+		public abstract string SingleLineComment (string text);
+		
 		public abstract string GetString (string nameSpace, OutputFlags flags);
 		public abstract string GetString (IField field, OutputFlags flags);
 		public abstract string GetString (IProperty property, OutputFlags flags);
@@ -132,6 +134,7 @@ namespace MonoDevelop.Ide.Dom.Output
 		public abstract string GetString (IParameter parameter, OutputFlags flags);
 		public abstract string GetString (IType type, OutputFlags flags);
 		public abstract string GetString (IEvent evt, OutputFlags flags);
+		public abstract string GetString (IAttribute attribute, OutputFlags flags);
 		
 	}
 }

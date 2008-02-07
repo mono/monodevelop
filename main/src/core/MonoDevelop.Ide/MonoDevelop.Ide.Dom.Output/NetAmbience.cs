@@ -71,6 +71,11 @@ namespace MonoDevelop.Ide.Dom.Output
 			modifiers[Modifiers.ProtectedOrInternal]  = "Internal Protected";
 		}
 		
+		public override string SingleLineComment (string text)
+		{
+			return "// " + text;
+		}
+
 		public override string GetString (string nameSpace, OutputFlags flags)
 		{
 			StringBuilder result = new StringBuilder ();
@@ -260,6 +265,33 @@ namespace MonoDevelop.Ide.Dom.Output
 				result.Append (" : ");
 				result.Append (Format (type.BaseType.Name));
 			}
+			return result.ToString ();
+		}
+		
+		public override string GetString (IAttribute attribute, OutputFlags flags)
+		{
+			StringBuilder result = new StringBuilder ();
+			result.Append ('[');
+			result.Append (GetString (attribute.AttributeType, flags));
+			result.Append ('(');
+			bool first = true;
+			foreach (object o in attribute.PositionalArguments) {
+				if (!first)
+					result.Append (", ");
+				first = false;
+				if (o is string) {
+					result.Append ('"');
+					result.Append (o);
+					result.Append ('"');
+				} else if (o is char) {
+					result.Append ("'");
+					result.Append (o);
+					result.Append ("'");
+				} else
+					result.Append (o);
+			}
+			result.Append (')');
+			result.Append (']');
 			return result.ToString ();
 		}
 		
