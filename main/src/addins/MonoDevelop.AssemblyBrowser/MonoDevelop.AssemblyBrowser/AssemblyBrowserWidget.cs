@@ -77,7 +77,7 @@ namespace MonoDevelop.AssemblyBrowser
 			this.hpaned1.ExposeEvent += HPaneExpose;
 				
 			treeView.Tree.CursorChanged += delegate {
-				ITreeNavigator nav = treeView.GetSelectedNode ();
+				MonoDevelop.Ide.Gui.Pads.ITreeNavigator nav = treeView.GetSelectedNode ();
 					
 				if (nav != null) {
 					IAssemblyBrowserNodeBuilder builder = nav.TypeNodeBuilder as IAssemblyBrowserNodeBuilder;

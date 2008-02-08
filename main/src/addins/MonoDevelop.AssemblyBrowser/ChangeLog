@@ -1,3 +1,8 @@
+2008-02-07  Zach Lute <zach.lute@gmail.com> 
+
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: Fix to use a full
+	  qualifier in an anonymous delegate so things would build in Mono 1.2.4.
+
 2008-02-07  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs: Formated the IL
