@@ -100,12 +100,11 @@ namespace MonoDevelop.SourceEditor
 		{
 			this.view = view;
 			this.Build();
+			this.SetSizeRequest (32, 32);
 			this.textEditor = new MonoDevelop.SourceEditor.ExtendibleTextEditor (view);
 			this.mainsw.Child = this.TextEditor;
 			this.mainsw.ButtonPressEvent += PrepareEvent;
 			
-			this.textEditor.ShowAll ();
-
 			this.textEditor.Caret.ModeChanged     += CaretModeChanged;
 			this.textEditor.Caret.PositionChanged += CaretPositionChanged;
 			
@@ -155,7 +154,6 @@ namespace MonoDevelop.SourceEditor
 				UpdateLineCol ();
 				CaretModeChanged (this, EventArgs.Empty);
 			};
-			
 			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += OnParseInformationChanged;
 		}
 
