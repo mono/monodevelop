@@ -59,8 +59,8 @@ namespace MonoDevelop.Database.ConnectionManager
 			vbox.PackStart (base.Control, true, true, 0);
 			vbox.ShowAll ();
 
-			Clear ();
-			LoadTree (ConnectionContextService.DatabaseConnections);
+			TreeView.Clear ();
+			TreeView.LoadTree (ConnectionContextService.DatabaseConnections);
 		}
 		
 		public override Widget Control {

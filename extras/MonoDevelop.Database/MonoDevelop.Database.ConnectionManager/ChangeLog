@@ -1,3 +1,7 @@
+2008-02-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* ConnectionManagerPad.cs: Track api changes.
+
 2008-01-30  Ben Motmans <ben.motmans@gmail.com> 
 
 	* Commands/ConnectionManagerCommands.cs: added parameter to the
