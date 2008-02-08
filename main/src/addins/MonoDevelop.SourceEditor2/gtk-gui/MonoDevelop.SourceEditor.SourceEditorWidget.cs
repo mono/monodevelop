@@ -15,7 +15,7 @@ namespace MonoDevelop.SourceEditor {
         
         private Gtk.VBox editorBar;
         
-        private Gtk.HBox classBrowser;
+        private Gtk.Table classBrowser;
         
         private Gtk.ComboBox classCombo;
         
@@ -33,22 +33,25 @@ namespace MonoDevelop.SourceEditor {
             this.editorBar.Name = "editorBar";
             this.editorBar.Spacing = 6;
             // Container child editorBar.Gtk.Box+BoxChild
-            this.classBrowser = new Gtk.HBox();
+            this.classBrowser = new Gtk.Table(((uint)(1)), ((uint)(2)), true);
             this.classBrowser.Name = "classBrowser";
-            this.classBrowser.Homogeneous = true;
-            this.classBrowser.Spacing = 6;
-            // Container child classBrowser.Gtk.Box+BoxChild
+            this.classBrowser.RowSpacing = ((uint)(6));
+            this.classBrowser.ColumnSpacing = ((uint)(6));
+            // Container child classBrowser.Gtk.Table+TableChild
             this.classCombo = new Gtk.ComboBox();
             this.classCombo.Name = "classCombo";
             this.classBrowser.Add(this.classCombo);
-            Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.classBrowser[this.classCombo]));
-            w1.Position = 0;
-            // Container child classBrowser.Gtk.Box+BoxChild
+            Gtk.Table.TableChild w1 = ((Gtk.Table.TableChild)(this.classBrowser[this.classCombo]));
+            w1.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child classBrowser.Gtk.Table+TableChild
             this.membersCombo = new Gtk.ComboBox();
             this.membersCombo.Name = "membersCombo";
             this.classBrowser.Add(this.membersCombo);
-            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.classBrowser[this.membersCombo]));
-            w2.Position = 1;
+            Gtk.Table.TableChild w2 = ((Gtk.Table.TableChild)(this.classBrowser[this.membersCombo]));
+            w2.LeftAttach = ((uint)(1));
+            w2.RightAttach = ((uint)(2));
+            w2.XOptions = ((Gtk.AttachOptions)(4));
+            w2.YOptions = ((Gtk.AttachOptions)(4));
             this.editorBar.Add(this.classBrowser);
             Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.editorBar[this.classBrowser]));
             w3.Position = 0;

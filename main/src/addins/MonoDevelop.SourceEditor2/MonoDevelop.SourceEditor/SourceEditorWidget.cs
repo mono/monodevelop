@@ -99,8 +99,8 @@ namespace MonoDevelop.SourceEditor
 		public SourceEditorWidget (SourceEditorView view)
 		{
 			this.view = view;
-			this.Build();
 			this.SetSizeRequest (32, 32);
+			this.Build();
 			this.textEditor = new MonoDevelop.SourceEditor.ExtendibleTextEditor (view);
 			this.mainsw.Child = this.TextEditor;
 			this.mainsw.ButtonPressEvent += PrepareEvent;
@@ -130,12 +130,12 @@ namespace MonoDevelop.SourceEditor
 			membersCombo.AddAttribute (colr, "text", 1);
 			
 			// Pack the controls into the editorbar just below the file name tabs.
-			EventBox tbox = new EventBox ();
-			tbox.Add (classCombo);
-			classBrowser.PackStart(tbox, true, true, 0);
-			tbox = new EventBox ();
-			tbox.Add (membersCombo);
-			classBrowser.PackStart (tbox, true, true, 0);
+//			EventBox tbox = new EventBox ();
+//			tbox.Add (classCombo);
+//			classBrowser.PackStart(tbox, true, true, 0);
+//			tbox = new EventBox ();
+//			tbox.Add (membersCombo);
+//			classBrowser.PackStart (tbox, true, true, 0);
 			
 			// Set up the data stores for the comboboxes
 			classStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(IClass));

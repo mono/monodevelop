@@ -153,8 +153,8 @@ namespace MonoDevelop.SourceEditor
 				WorkbenchWindow.ShowNotification = false;
 			}
 			
-			Document.Text = File.ReadAllText (fileName);
 			Document.MimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
+			Document.Text = File.ReadAllText (fileName);
 			ContentName = fileName;
 			lastSaveTime = File.GetLastWriteTime (ContentName);
 //			InitializeFormatter ();
