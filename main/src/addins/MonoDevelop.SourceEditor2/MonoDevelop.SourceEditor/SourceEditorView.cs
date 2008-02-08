@@ -70,12 +70,12 @@ namespace MonoDevelop.SourceEditor
 		public SourceEditorView()
 		{
 			widget = new SourceEditorWidget (this);
-//			widget.TextEditor.Buffer.TextReplaced += delegate (object sender, ReplaceEventArgs args) {
-//				int startIndex = args.Offset;
-//				int endIndex   = startIndex + Math.Max (args.Count, args.Value != null ? args.Value.Length : 0);
-//				if (TextChanged != null)
-//					TextChanged (this, new TextChangedEventArgs (startIndex, endIndex));
-//			};
+			widget.TextEditor.Buffer.TextReplaced += delegate (object sender, ReplaceEventArgs args) {
+				int startIndex = args.Offset;
+				int endIndex   = startIndex + Math.Max (args.Count, args.Value != null ? args.Value.Length : 0);
+				if (TextChanged != null)
+					TextChanged (this, new TextChangedEventArgs (startIndex, endIndex));
+			};
 			
 			widget.TextEditor.Buffer.TextReplaced += delegate {
 				this.IsDirty = true;
@@ -940,14 +940,23 @@ namespace MonoDevelop.SourceEditor
 			int linesPerPage = (int)((pageHeight - marginBottom - marginTop - 10) / widget.TextEditor.LineHeight);
 			linesPerPage -= 2;
 			totalPages = Document.Splitter.LineCount / linesPerPage;
-			System.Console.WriteLine("height:" + pageHeight + " -- lines:" + linesPerPage);
-			gpc.BeginPage ("page " + page++);
 			xPos = marginLeft;
-			PrintHeader (gpc, config);
-			Gnome.Font font       =  Gnome.Font.FindFromFullName (SourceEditorOptions.Options.FontName);
+			string fontName = SourceEditorOptions.Options.FontName;
+			Gnome.Font font =  Gnome.Font.FindClosestFromFullName (fontName);
+			if (font == null) {
+				LoggingService.LogError ("Can't find font: '" + fontName + "', trying default." );
+				font = Gnome.Font.FindClosestFromFullName (IdeApp.Services.PlatformService.DefaultMonospaceFont);
+			}
+			if (font == null) {
+				LoggingService.LogError ("Unable to load font." );
+				MonoDevelop.Core.Gui.Services.MessageService.ShowError ("Unable to initialize Font, aborting.");
+				return;
+			}
 			Gnome.Font boldFont   =  Gnome.Font.FindFromFullName (font.FontName + " Bold " + ((int)font.Size));
 			Gnome.Font italicFont =  Gnome.Font.FindFromFullName (font.FontName + " Italic " + ((int)font.Size));
 			
+			gpc.BeginPage ("page " + page++);
+			PrintHeader (gpc, config);
 			foreach (LineSegment line in Document.Splitter.Lines) {
 				if (yPos >= pageHeight - marginBottom - 5 - widget.TextEditor.LineHeight) {
 					gpc.SetFont (font);

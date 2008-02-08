@@ -1,5 +1,9 @@
 2008-02-08  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: TextChange is now fired.
+
+2008-02-08  Mike Krüger <mkrueger@novell.com> 
+
 	* gtk-gui/MonoDevelop.SourceEditor.SourceEditorWidget.cs,
 	  MonoDevelop.SourceEditor/SourceEditorWidget.cs,
 	  MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed highlighting
