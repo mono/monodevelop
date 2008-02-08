@@ -1,5 +1,9 @@
 2008-02-08  Mike Krüger <mkrueger@novell.com> 
 
+	* UbuntuStyle.xml: Added ubuntu style (but it could need some improvements).
+
+2008-02-08  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor.Highlighting/DefaultStyle.cs: Changed default style
 	  (folding on mouse over).
 

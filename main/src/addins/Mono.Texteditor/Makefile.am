@@ -70,7 +70,8 @@ RES =  \
 	gtk-gui/objects.xml \
 	JavaSyntaxMode.xml \
 	OblivionStyle.xml \
-	TangoStyle.xml \
+	TangoLightStyle.xml \
+	UbuntuStyle.xml \
 	VBNetSyntaxMode.xml \
 	XmlSyntaxMode.xml
 

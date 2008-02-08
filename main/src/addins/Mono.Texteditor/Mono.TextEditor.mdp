@@ -50,7 +50,7 @@
     <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="Mono.TextEditor/TextEditor.cs" subtype="Code" buildaction="Compile" />
     <File name="XmlSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="TangoStyle.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="TangoLightStyle.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="VBNetSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="JavaSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="CSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
@@ -69,6 +69,7 @@
     <File name="Mono.TextEditor/TextUtil.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/FoldingType.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor.Highlighting/Marker.cs" subtype="Code" buildaction="Compile" />
+    <File name="UbuntuStyle.xml" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
