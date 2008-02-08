@@ -81,7 +81,7 @@ namespace Mono.TextEditor.Highlighting
 
 		public override Color FoldLineHighlighted {
 			get {
-				return new Gdk.Color (172, 168, 153);
+				return new Gdk.Color (122, 118, 103);
 			}
 		}
 
