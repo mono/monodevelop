@@ -375,7 +375,7 @@ namespace Mono.TextEditor.Highlighting
 				throw new Exception ("color  " + name + " invalid.");
 			}
 		}
-		public const string NameAttribute = "_name";
+		public const string NameAttribute = "name";
 		public static Style Read (XmlReader reader)
 		{
 			Style result = new Style ();

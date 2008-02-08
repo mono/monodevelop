@@ -1,5 +1,12 @@
 2008-02-08  Mike Krüger <mkrueger@novell.com> 
 
+	* TangoLightStyle.xml, OblivionStyle.xml, UbuntuStyle.xml,
+	  Mono.TextEditor.Highlighting/Style.cs,
+	  Mono.TextEditor.Highlighting/DefaultStyle.cs, C64Style.xml: Style names
+	  are not localized anymore (but descriptions are).
+
+2008-02-08  Mike Krüger <mkrueger@novell.com> 
+
 	* UbuntuStyle.xml: Added ubuntu style (but it could need some improvements).
 
 2008-02-08  Mike Krüger <mkrueger@novell.com> 
