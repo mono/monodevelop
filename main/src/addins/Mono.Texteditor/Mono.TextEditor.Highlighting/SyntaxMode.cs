@@ -164,15 +164,15 @@ namespace Mono.TextEditor.Highlighting
 				pair = null;
 				curChunk = new Chunk (offset, 0, GetSpanStyle (spanStack));
 				maxEnd = System.Math.Min (offset + length, line.Offset + line.EditableLength);
-
+				
 				int endOffset = 0;
 				SetSpan ();
 				SetTree ();
 				bool isNoKeyword = false;
 				for (int i = offset; i < maxEnd; i++) {
 					char ch = doc.Buffer.GetCharAt (i);
-					if (curSpan != null) {
-						if (!String.IsNullOrEmpty (curSpan.End) && curSpan.End[endOffset] == ch) {
+					if (curSpan != null && !String.IsNullOrEmpty (curSpan.End)) {
+						if (curSpan.End[endOffset] == ch) {
 							endOffset++;
 							if (endOffset >= curSpan.End.Length) {
 								curChunk.Length -= curSpan.End.Length - 1;
@@ -184,8 +184,12 @@ namespace Mono.TextEditor.Highlighting
 								endOffset = 0;
 								continue;
 							}
-						} else {
+						} else if (endOffset != 0) {
 							endOffset = 0;
+							if (curSpan.End[endOffset] == ch) {
+								i--;
+								continue;
+							}
 						}
 					}
 					if (spanTree != null && spanTree.ContainsKey (ch)) {

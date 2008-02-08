@@ -111,12 +111,14 @@ namespace Mono.TextEditor
 					redoStack.Clear ();
 				}
 			};
-			buffer.TextReplaced +=  delegate(object sender, ReplaceEventArgs args) {
-				if (this.syntaxMode != null)  
-					Mono.TextEditor.Highlighting.SyntaxModeService.StartUpdate (this, this.syntaxMode, args.Offset, args.Offset + args.Count);
-			};
 			
 			splitter = new LineSplitter (buffer);
+			
+			buffer.TextReplaced +=  delegate(object sender, ReplaceEventArgs args) {
+				splitter.TextReplaced (sender, args);
+				if (this.syntaxMode != null)
+					Mono.TextEditor.Highlighting.SyntaxModeService.StartUpdate (this, this.syntaxMode, args.Offset, args.Offset + args.Count);
+			};
 		}
 		
 		class UndoOperation 

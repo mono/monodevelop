@@ -98,36 +98,52 @@ namespace Mono.TextEditor.Highlighting
 		
 		public static void ScanSpans (Document doc, Rule rule, Stack<Span> spanStack, int start, int end)
 		{
-			Dictionary<char, Rule.Pair<Span, object>> tree = rule.spanTree;
-			Rule.Pair<Span, object> pair = null;
+			Dictionary<char, Rule.Pair<Span, object>> spanTree = rule.spanTree;
+			Rule.Pair<Span, object> spanPair = null;
 			int endOffset = 0;
 			end = System.Math.Min (end, doc.Buffer.Length);
+			Span curSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
 			for (int offset = start; offset < end; offset++) {
 				char ch = doc.Buffer.GetCharAt (offset);
-				Span curSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
 				if (curSpan != null && !String.IsNullOrEmpty (curSpan.End)) {
-					if (endOffset < curSpan.End.Length && curSpan.End[endOffset] == ch) {
+					if (curSpan.End[endOffset] == ch) {
 						endOffset++;
 						if (endOffset >= curSpan.End.Length) {
 							spanStack.Pop ();
+							curSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
+							endOffset = 0;
+							continue;
 						}
-						continue;
+					} else if (endOffset != 0) {
+						endOffset = 0;
+						if (curSpan.End[endOffset] == ch) {
+							offset--;
+							continue;
+						}
 					}
 				}
-				endOffset = 0;
-				if (!tree.ContainsKey (ch)) {
-					tree = rule.spanTree;
-					if (pair != null && pair.o1 != null) 
-						spanStack.Push (pair.o1);
-					pair      = null;
-					endOffset = 0;
-					continue;
+				if (spanTree != null && spanTree.ContainsKey (ch)) {
+					spanPair = spanTree[ch];
+					spanTree = (Dictionary<char, Rule.Pair<Span, object>>)spanPair.o2;
+					if (spanPair.o1 != null) {
+						Span span = spanPair.o1;
+						if (!String.IsNullOrEmpty(span.Constraint)) {
+							if (span.Constraint.Length == 2 && span.Constraint.StartsWith ("!") && offset + 1 < end) {
+								if (doc.Buffer.GetCharAt (offset + 1) == span.Constraint [1]) 
+									goto skip;
+							}
+						}
+						spanStack.Push (span);
+						curSpan = span;
+						continue;
+					}
+				} else {
+					spanPair = null;
+					spanTree = rule.spanTree;
 				}
-				pair = tree[ch];
-				tree = (Dictionary<char, Rule.Pair<Span, object>>)pair.o2;
+			 skip:
+					;
 			}
-			if (pair != null && pair.o1 != null)
-				spanStack.Push (pair.o1);			
 		}
 		
 		static void Update (object o)
@@ -137,13 +153,14 @@ namespace Mono.TextEditor.Highlighting
 			SyntaxMode mode = (SyntaxMode)data[1];
 			int startOffset = (int)data[2];
 			int endOffset   = (int)data[3];
+			int lineOffset  = 0;
 			bool foundEndLine = false;
 			RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = doc.Splitter.GetByOffset (startOffset).Iter;
 			LineSegment endLine = doc.Splitter.GetByOffset (endOffset);
 			Stack<Span> spanStack = iter.Current.StartSpan != null ? new Stack<Span> (iter.Current.StartSpan) : new Stack<Span> ();
 			do {
 				LineSegment line = iter.Current;
-				int         lineOffset = line.Offset;
+				lineOffset = line.Offset;
 				if (lineOffset < 0)
 					break;
 				Span[] newSpans = spanStack.ToArray ();
@@ -175,7 +192,12 @@ namespace Mono.TextEditor.Highlighting
 					foundEndLine = true;
 				}
 			} while (iter.MoveNext ());
+			if (lineOffset > endLine.Offset) {
+				doc.RequestUpdate (new UpdateAll ());
+				doc.CommitDocumentUpdate ();
+			}
 		}
+		
 		static Thread updateThread = null;
 		public static void StartUpdate (Document doc, SyntaxMode mode, int startOffset, int endOffset)
 		{

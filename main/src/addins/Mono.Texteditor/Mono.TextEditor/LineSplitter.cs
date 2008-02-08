@@ -59,7 +59,6 @@ namespace Mono.TextEditor
 		public LineSplitter (IBuffer buffer)
 		{
 			lines.Clear ();
-			buffer.TextReplaced += new EventHandler<ReplaceEventArgs> (TextReplaced);
 		}
 		
 		public LineSegment Get (int number)
@@ -86,7 +85,7 @@ namespace Mono.TextEditor
 			return 0;
 		}
 		
-		void TextReplaced (object sender, ReplaceEventArgs args)
+		internal void TextReplaced (object sender, ReplaceEventArgs args)
 		{
 			if (args.Count > 0)
 				TextRemove (args.Offset, args.Count);

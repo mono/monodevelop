@@ -1,3 +1,10 @@
+2008-02-08  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/Document.cs, Mono.TextEditor/LineSplitter.cs,
+	  Mono.TextEditor.Highlighting/SyntaxMode.cs,
+	  Mono.TextEditor.Highlighting/SyntaxModeService.cs: Fixed highlighting
+	  bug.
+
 2008-02-07  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextEditor.cs, Mono.TextEditor/TextEditorOptions.cs: Color
