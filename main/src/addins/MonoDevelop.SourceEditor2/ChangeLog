@@ -1,5 +1,10 @@
 2008-02-08  Mike Krüger <mkrueger@novell.com> 
 
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs:
+	  Changed the highlighting panel.
+
+2008-02-08  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: TextChange is now fired.
 
 2008-02-08  Mike Krüger <mkrueger@novell.com> 

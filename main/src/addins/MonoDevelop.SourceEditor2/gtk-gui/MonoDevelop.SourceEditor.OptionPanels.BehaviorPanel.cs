@@ -48,7 +48,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             this.Name = "MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel";
             // Container child MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.Gtk.Container+ContainerChild
             this.vbox1 = new Gtk.VBox();
-            this.vbox1.Name = "vbox1";
             this.vbox1.Spacing = 6;
             // Container child vbox1.Gtk.Box+BoxChild
             this.autoInsertTemplateCheckbutton = new Gtk.CheckButton();
