@@ -42,6 +42,7 @@ namespace Mono.TextEditor.Highlighting
 		protected List<Keywords> keywords = new List<Keywords> ();
 		protected List<Span> spans = new List<Span> ();
 		protected List<Match> matches = new List<Match> ();
+		protected List<Marker> prevMarker = new List<Marker> ();
 		
 		public string Name {
 			get {
@@ -78,6 +79,12 @@ namespace Mono.TextEditor.Highlighting
 				return defaultColor;
 			}
 		}
+
+		public List<Marker> PrevMarker {
+			get {
+				return prevMarker;
+			}
+		}
 		
 		public Rule()
 		{
@@ -103,6 +110,9 @@ namespace Mono.TextEditor.Highlighting
 				return true;
 			case Mono.TextEditor.Highlighting.Keywords.Node:
 				this.keywords.Add (Mono.TextEditor.Highlighting.Keywords.Read (reader));
+				return true;
+			case Marker.PrevMarker:
+				this.prevMarker.Add (Marker.Read (reader));
 				return true;
 			}
 			return false;

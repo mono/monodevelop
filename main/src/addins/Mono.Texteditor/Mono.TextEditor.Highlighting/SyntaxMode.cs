@@ -85,14 +85,14 @@ namespace Mono.TextEditor.Highlighting
 				this.mode = mode;
 				this.line = line;
 			}
-			
 			void AddChunk (ref Chunk curChunk, int length, ChunkStyle style)
 			{
 				if (curChunk.Length > 0) {
 					result.Add (curChunk);
 					curChunk = new Chunk (curChunk.EndOffset, 0, ChunkStyle.Default);
 				}
-				curChunk.Style = style;
+				if (curChunk.Style == ChunkStyle.Default)
+					curChunk.Style = style;
 				curChunk.Length = length;
 				result.Add (curChunk);
 				curChunk = new Chunk (curChunk.EndOffset, 0, ChunkStyle.Default);
@@ -169,6 +169,7 @@ namespace Mono.TextEditor.Highlighting
 				SetSpan ();
 				SetTree ();
 				bool isNoKeyword = false;
+				bool isAfterSpan = false;
 				for (int i = offset; i < maxEnd; i++) {
 					char ch = doc.Buffer.GetCharAt (i);
 					if (curSpan != null && !String.IsNullOrEmpty (curSpan.End)) {
@@ -209,6 +210,8 @@ namespace Mono.TextEditor.Highlighting
 							AddChunk (ref curChunk, span.Begin.Length, !String.IsNullOrEmpty (span.TagColor) ? style.GetChunkStyle (span.TagColor) : GetSpanStyle (spanStack));
 							SetSpan ();
 							SetTree ();
+							if (!String.IsNullOrEmpty (span.NextColor))
+								curChunk.Style = style.GetChunkStyle (span.NextColor);
 							continue;
 						}
 					} else {

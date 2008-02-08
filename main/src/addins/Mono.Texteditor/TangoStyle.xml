@@ -114,5 +114,5 @@
 	<Style name="preprocessor" color="orange2"/>
 	<Style name="preprocessorkw" color="orange2" weight="bold"/>
 	
-	<Style name="markup" color="orange1"/>
+	<Style name="markup" color="skyblue3"/>
 </EditorStyle>

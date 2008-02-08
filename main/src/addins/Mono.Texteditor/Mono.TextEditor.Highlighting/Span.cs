@@ -39,6 +39,7 @@ namespace Mono.TextEditor.Highlighting
 		string begin;
 		string end;
 		string constraint;
+		string nextColor;
 		char   escape;
 		
 		bool   stopAtEol;
@@ -97,6 +98,12 @@ namespace Mono.TextEditor.Highlighting
 				return constraint;
 			}
 		}
+
+		public string NextColor {
+			get {
+				return nextColor;
+			}
+		}
 		
 		public override string ToString ()
 		{
@@ -111,6 +118,7 @@ namespace Mono.TextEditor.Highlighting
 			result.color      = reader.GetAttribute ("color");
 			result.tagColor   = reader.GetAttribute ("tagColor");
 			result.constraint = reader.GetAttribute ("constraint");
+			result.nextColor  = reader.GetAttribute ("nextColor");
 			
 			string esc = reader.GetAttribute ("escape");
 			if (!String.IsNullOrEmpty (esc)) {

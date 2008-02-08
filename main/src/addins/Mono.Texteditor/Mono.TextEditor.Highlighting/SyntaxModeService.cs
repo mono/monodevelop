@@ -200,6 +200,11 @@ namespace Mono.TextEditor.Highlighting
 		}
 		
 		static Thread updateThread = null;
+		public static void WaitForUpdate ()
+		{
+			if (updateThread != null && updateThread.IsAlive)
+				updateThread.Join ();
+		}
 		public static void StartUpdate (Document doc, SyntaxMode mode, int startOffset, int endOffset)
 		{
 			if (updateThread != null && updateThread.IsAlive)

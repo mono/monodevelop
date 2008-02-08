@@ -53,6 +53,7 @@ namespace Mono.TextEditor
 			set {
 				splitter.Clear ();
 				buffer.Text = value;
+				Mono.TextEditor.Highlighting.SyntaxModeService.WaitForUpdate ();
 			}
 		}
 		

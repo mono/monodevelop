@@ -24,25 +24,37 @@
  THE SOFTWARE. -->
  
 <SyntaxMode name = "Xml" mimeTypes="application/xml">
-	<Span color = "Comment1">
+	<Span color = "comment">
 		<Begin>&lt;!--</Begin>
 		<End>--&gt;</End>
 	</Span>
 	
-	<Span color = "Markup" rule = "InTag">
+	<Span color = "preprocessor">
+		<Begin>&amp;</Begin>
+		<End>;</End>
+	</Span>
+	
+	<Span color = "markup" rule = "InTag" constraint="!!" >
 		<Begin>&lt;</Begin>
 		<End>&gt;</End>
 	</Span>
 	
-	<Rule name = "InTag" color = "PreProcessorDirective1">
-		<Span color = "Literal">
+	<Rule name = "InTag">
+		<Span color = "literal" rule="InLiteral">
 			<Begin>&quot;</Begin>
 			<End>&quot;</End>
 		</Span>
-		<Span color = "Literal">
+		
+		<Span color = "literal" rule="InLiteral">
 			<Begin>&apos;</Begin>
 			<End>&apos;</End>
 		</Span>
 	</Rule>
 	
+	<Rule name = "InLiteral">
+		<Span color = "preprocessor">
+			<Begin>&amp;</Begin>
+			<End>;</End>
+		</Span>
+	</Rule>
 </SyntaxMode>

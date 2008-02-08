@@ -237,8 +237,9 @@ namespace Mono.TextEditor.Highlighting
 			
 			SetStyle ("preprocessor", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 128 , 0), false, false));
 			SetStyle ("preprocessorkw", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 128, 0), true, false));
-			
-			SetStyle ("markup", new Mono.TextEditor.ChunkStyle (new Gdk.Color (128, 0, 0), false, false));
+
+			SetStyle ("markup", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0x8A , 0x8C), false, false));
+			SetStyle ("markupTag", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0x6A, 0x5A, 0xCD), false, false));
 		}
 		
 		void SetStyle (string name, ChunkStyle style)

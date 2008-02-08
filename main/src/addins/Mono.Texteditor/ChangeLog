@@ -1,5 +1,9 @@
 2008-02-08  Mike Krüger <mkrueger@novell.com> 
 
+	* XmlSyntaxMode.xml: Worked on xml syntax highlighting
+
+2008-02-08  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: removed some redraws.
 
 2008-02-08  Mike Krüger <mkrueger@novell.com> 
