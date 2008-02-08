@@ -40,6 +40,11 @@ namespace MonoDevelop.Ide.Dom.Output
 		protected Dictionary<ClassType, string> classTypes = new Dictionary<ClassType, string> ();
 		protected Dictionary<ParameterModifiers, string> parameterModifiers = new Dictionary<ParameterModifiers, string> ();
 		protected Dictionary<string, string> constructs = new Dictionary<string, string> ();
+		protected string nullString = "null";
+		
+		protected abstract IDomVisitor OutputVisitor {
+			get;
+		}
 		
 		public Ambience (string name)
 		{
@@ -126,16 +131,13 @@ namespace MonoDevelop.Ide.Dom.Output
 		}
 		
 		public abstract string SingleLineComment (string text);
-		
 		public abstract string GetString (string nameSpace, OutputFlags flags);
-		public abstract string GetString (IField field, OutputFlags flags);
-		public abstract string GetString (IProperty property, OutputFlags flags);
-		public abstract string GetString (IReturnType returnType, OutputFlags flags);
-		public abstract string GetString (IMethod method, OutputFlags flags);
-		public abstract string GetString (IParameter parameter, OutputFlags flags);
-		public abstract string GetString (IType type, OutputFlags flags);
-		public abstract string GetString (IEvent evt, OutputFlags flags);
-		public abstract string GetString (IAttribute attribute, OutputFlags flags);
 		
+		public string GetString (IDomVisitable domVisitable, OutputFlags flags)
+		{
+			if (domVisitable == null)
+				return nullString;
+			return (string)domVisitable.AcceptVisitior (OutputVisitor, flags);
+		}
 	}
 }

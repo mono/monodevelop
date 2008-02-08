@@ -80,6 +80,5 @@ namespace MonoDevelop.Ide.Dom
 		IEnumerable<IEvent> Events {
 			get;
 		}
-		object AcceptVisitior (IDomVisitor visitor, object data);
 	}
 }

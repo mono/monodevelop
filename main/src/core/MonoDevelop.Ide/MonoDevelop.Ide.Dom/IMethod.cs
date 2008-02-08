@@ -40,6 +40,5 @@ namespace MonoDevelop.Ide.Dom
 		IEnumerable<IParameter> Parameters {
 			get;
 		}
-		object AcceptVisitior (IDomVisitor visitor, object data);
 	}
 }

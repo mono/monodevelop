@@ -34,6 +34,5 @@ namespace MonoDevelop.Ide.Dom
 		bool IsIndexer {
 			get;
 		}
-		object AcceptVisitior (IDomVisitor visitor, object data);
 	}
 }

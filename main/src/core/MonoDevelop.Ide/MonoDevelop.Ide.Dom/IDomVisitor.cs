@@ -30,20 +30,25 @@ using System;
 
 namespace MonoDevelop.Ide.Dom
 {
+	public interface IDomVisitable
+	{
+		object AcceptVisitior (IDomVisitor visitor, object data);
+	}
+	
 	public interface IDomVisitor
 	{
 		object Visit (ICompilationUnit unit, object data);
 		
-		object Visit (IAttribute attr, object data);
+		object Visit (IAttribute attribute, object data);
 		
 		object Visit (IType type, object data);
 		
 		object Visit (IField field, object data);
 		object Visit (IMethod method, object data);
 		object Visit (IProperty property, object data);
-		object Visit (IEvent e, object data);
+		object Visit (IEvent evt, object data);
 		
-		object Visit (IReturnType type, object data);
+		object Visit (IReturnType returnType, object data);
 		object Visit (IParameter parameter, object data);
 		object Visit (IUsing u, object data);
 	}

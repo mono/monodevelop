@@ -1,3 +1,21 @@
+2008-02-08  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Dom.Output/Ambience.cs,
+	  MonoDevelop.Ide.Dom.Output/NetAmbience.cs,
+	  MonoDevelop.Ide.Dom/DomType.cs, MonoDevelop.Ide.Dom/IMethod.cs,
+	  MonoDevelop.Ide.Dom/IProperty.cs, MonoDevelop.Ide.Dom/IUsing.cs,
+	  MonoDevelop.Ide.Dom/IDomItem.cs, MonoDevelop.Ide.Dom/IDomVisitor.cs,
+	  MonoDevelop.Ide.Dom/IAttribute.cs,
+	  MonoDevelop.Ide.Dom/CompilationUnit.cs,
+	  MonoDevelop.Ide.Dom/DomMethod.cs, MonoDevelop.Ide.Dom/DomEvent.cs,
+	  MonoDevelop.Ide.Dom/AbstractDomItem.cs, MonoDevelop.Ide.Dom/DomField.cs,
+	  MonoDevelop.Ide.Dom/DomProperty.cs,
+	  MonoDevelop.Ide.Dom/ICompilationUnit.cs,
+	  MonoDevelop.Ide.Dom/IParameter.cs, MonoDevelop.Ide.Dom/IEvent.cs,
+	  MonoDevelop.Ide.Dom/IType.cs, MonoDevelop.Ide.Dom/IReturnType.cs,
+	  MonoDevelop.Ide.Dom/IField.cs: Worked on Dom, added some functions,
+	  ambiences now using the visitor pattern.
+
 2008-02-07  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Dom.Output/Ambience.cs: Fixed ambience format bug.

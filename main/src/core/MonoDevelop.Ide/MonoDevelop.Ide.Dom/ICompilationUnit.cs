@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Dom
 {
-	public interface ICompilationUnit : IDisposable
+	public interface ICompilationUnit : IDisposable, IDomVisitable
 	{
 		string FileName {
 			get;
@@ -60,7 +60,5 @@ namespace MonoDevelop.Ide.Dom
 		IEnumerable<Error> Errors {
 			get;
 		}
-		
-		object AcceptVisitior (IDomVisitor visitor, object data);
 	}
 }

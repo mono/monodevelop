@@ -110,6 +110,7 @@ FILES =  \
 	MonoDevelop.Ide.Dom/ClassType.cs \
 	MonoDevelop.Ide.Dom/Comment.cs \
 	MonoDevelop.Ide.Dom/CommentType.cs \
+	MonoDevelop.Ide.Dom/CompilationUnit.cs \
 	MonoDevelop.Ide.Dom/DomAttribute.cs \
 	MonoDevelop.Ide.Dom/DomEvent.cs \
 	MonoDevelop.Ide.Dom/DomField.cs \

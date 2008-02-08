@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Dom
 {
-	public interface IAttribute
+	public interface IAttribute : IDomVisitable
 	{
 		DomRegion Region {
 			get;
@@ -52,8 +52,6 @@ namespace MonoDevelop.Ide.Dom
 		IDictionary<string, object> NamedArguments {
 			get;
 		}
-		
-		object AcceptVisitior (IDomVisitor visitor, object data);
 	}
 	
 }

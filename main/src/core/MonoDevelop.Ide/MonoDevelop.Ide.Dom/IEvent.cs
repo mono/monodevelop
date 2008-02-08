@@ -41,6 +41,5 @@ namespace MonoDevelop.Ide.Dom
 		IMethod RaiseMethod {
 			get;
 		}
-		object AcceptVisitior (IDomVisitor visitor, object data);
 	}
 }

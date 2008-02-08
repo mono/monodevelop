@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Dom
 {
-	public interface IUsing
+	public interface IUsing : IDomVisitable
 	{
 		DomRegion DomRegion {
 			get;
@@ -43,6 +43,5 @@ namespace MonoDevelop.Ide.Dom
 		IDictionary<string, IReturnType> Aliases {
 			get;
 		}
-		object AcceptVisitior (IDomVisitor visitor, object data);
 	}
 }

@@ -32,6 +32,5 @@ namespace MonoDevelop.Ide.Dom
 {
 	public interface IField : IMember
 	{
-		object AcceptVisitior (IDomVisitor visitor, object data);
 	}
 }

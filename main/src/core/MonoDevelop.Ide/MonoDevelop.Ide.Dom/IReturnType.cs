@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Dom
 {
-	public interface IReturnType
+	public interface IReturnType : IDomVisitable
 	{
 		string FullName {
 			get;
@@ -53,6 +53,5 @@ namespace MonoDevelop.Ide.Dom
 		IEnumerable<IReturnType> TypeParameters {
 			get;
 		}
-		object AcceptVisitior (IDomVisitor visitor, object data);
 	}
 }

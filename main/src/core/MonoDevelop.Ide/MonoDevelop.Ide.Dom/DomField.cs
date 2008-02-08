@@ -32,7 +32,7 @@ namespace MonoDevelop.Ide.Dom
 {
 	public class DomField : AbstractMember, IField
 	{
-		public object AcceptVisitior (IDomVisitor visitor, object data)
+		public override object AcceptVisitior (IDomVisitor visitor, object data)
 		{
 			return visitor.Visit (this, data);
 		}

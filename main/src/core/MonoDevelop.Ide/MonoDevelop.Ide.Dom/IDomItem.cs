@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Dom
 {
-	public interface IDomItem : IComparable
+	public interface IDomItem : IComparable, IDomVisitable
 	{
 		string FullName {
 			get;
@@ -62,5 +62,35 @@ namespace MonoDevelop.Ide.Dom
 			get;
 		}
 		
+		#region ModifierAccessors
+		bool IsPrivate   { get; }
+		bool IsInternal  { get; }
+		bool IsProtected { get; }
+		bool IsPublic    { get; }
+		bool IsProtectedAndInternal { get; }
+		bool IsProtectedOrInternal { get; }
+		
+		bool IsAbstract  { get; }
+		bool IsVirtual   { get; }
+		bool IsSealed    { get; }
+		bool IsStatic    { get; }
+		bool IsOverride  { get; }
+		bool IsReadonly  { get; }
+		bool IsConst	 { get; }
+		bool IsNew       { get; }
+		bool IsPartial   { get; }
+		
+		bool IsExtern    { get; }
+		bool IsVolatile  { get; }
+		bool IsUnsafe    { get; }
+		bool IsOverloads  { get; }
+		bool IsWithEvents { get; }
+		bool IsDefault    { get; }
+		bool IsFixed      { get; }
+		
+		bool IsSpecialName { get; }
+		bool IsFinal       { get; }
+		bool IsLiteral     { get; }
+		#endregion
 	}
 }

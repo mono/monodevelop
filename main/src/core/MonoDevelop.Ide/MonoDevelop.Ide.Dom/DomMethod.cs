@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.Dom
 			}
 		}
 		
-		public object AcceptVisitior (IDomVisitor visitor, object data)
+		public override object AcceptVisitior (IDomVisitor visitor, object data)
 		{
 			return visitor.Visit (this, data);
 		}

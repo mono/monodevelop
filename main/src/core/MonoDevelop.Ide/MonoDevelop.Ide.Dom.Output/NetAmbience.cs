@@ -31,9 +31,16 @@ using System.Text;
 
 namespace MonoDevelop.Ide.Dom.Output
 {
-	public class NetAmbience : Ambience
+	public class NetAmbience : Ambience, IDomVisitor
 	{
 		const string nullString = "Null";
+		
+		protected override IDomVisitor OutputVisitor {
+			get {
+				return this;
+			}
+		}
+		
 		public NetAmbience () : base ("NET")
 		{
 			classTypes[ClassType.Class]     = "Class";
@@ -90,10 +97,19 @@ namespace MonoDevelop.Ide.Dom.Output
 			return result.ToString ();
 		}
 		
-		public override string GetString (IProperty property, OutputFlags flags)
+		object IDomVisitor.Visit (ICompilationUnit unit, object data)
 		{
-			if (property == null)
-				return nullString;
+			return "TODO";
+		}
+		
+		object IDomVisitor.Visit (IUsing u, object data)
+		{
+			return "TODO";
+		}
+		
+		object IDomVisitor.Visit (IProperty property, object data)
+		{
+			OutputFlags flags = (OutputFlags)data;
 			StringBuilder result = new StringBuilder ();
 			if (IncludeModifiers (flags)) {
 				if (EmitMarkup (flags))
@@ -123,10 +139,9 @@ namespace MonoDevelop.Ide.Dom.Output
 			return result.ToString ();
 		}
 		
-		public override string GetString (IField field, OutputFlags flags)
+		object IDomVisitor.Visit (IField field, object data)
 		{
-			if (field == null)
-				return nullString;
+			OutputFlags flags = (OutputFlags)data;
 			StringBuilder result = new StringBuilder ();
 			
 			if (IncludeModifiers (flags)) {
@@ -158,10 +173,9 @@ namespace MonoDevelop.Ide.Dom.Output
 			return result.ToString ();
 		}
 		
-		public override string GetString (IReturnType returnType, OutputFlags flags)
+		object IDomVisitor.Visit (IReturnType returnType, object data)
 		{
-			if (returnType == null)
-				return nullString;
+			OutputFlags flags = (OutputFlags)data;
 			StringBuilder result = new StringBuilder ();
 			if (UseFullName (flags)) {
 				result.Append (Format (returnType.FullName));
@@ -171,10 +185,9 @@ namespace MonoDevelop.Ide.Dom.Output
 			return result.ToString ();
 		}
 		
-		public override string GetString (IMethod method, OutputFlags flags)
+		object IDomVisitor.Visit (IMethod method, object data)
 		{
-			if (method == null)
-				return nullString;
+			OutputFlags flags = (OutputFlags)data;
 			StringBuilder result = new StringBuilder ();
 			
 			if (IncludeModifiers (flags)) {
@@ -220,10 +233,9 @@ namespace MonoDevelop.Ide.Dom.Output
 			return result.ToString ();
 		}
 		
-		public override string GetString (IParameter parameter, OutputFlags flags)
+		object IDomVisitor.Visit (IParameter parameter, object data)
 		{
-			if (parameter == null)
-				return nullString;
+			OutputFlags flags = (OutputFlags)data;
 			StringBuilder result = new StringBuilder ();
 			if (IncludeParameterName (flags)) {
 				result.Append (Format (parameter.Name));
@@ -237,10 +249,9 @@ namespace MonoDevelop.Ide.Dom.Output
 			return result.ToString ();
 		}
 		
-		public override string GetString (IType type, OutputFlags flags)
+		object IDomVisitor.Visit (IType type, object data)
 		{
-			if (type == null)
-				return nullString;
+			OutputFlags flags = (OutputFlags)data;
 			StringBuilder result = new StringBuilder ();
 			if (IncludeModifiers (flags)) {
 				if (EmitMarkup (flags))
@@ -268,8 +279,9 @@ namespace MonoDevelop.Ide.Dom.Output
 			return result.ToString ();
 		}
 		
-		public override string GetString (IAttribute attribute, OutputFlags flags)
+		object IDomVisitor.Visit (IAttribute attribute, object data)
 		{
+			OutputFlags flags = (OutputFlags)data;
 			StringBuilder result = new StringBuilder ();
 			result.Append ('[');
 			result.Append (GetString (attribute.AttributeType, flags));
@@ -295,10 +307,9 @@ namespace MonoDevelop.Ide.Dom.Output
 			return result.ToString ();
 		}
 		
-		public override string GetString (IEvent evt, OutputFlags flags)
+		object IDomVisitor.Visit (IEvent evt, object data)
 		{
-			if (evt == null)
-				return nullString;
+			OutputFlags flags = (OutputFlags)data;
 			StringBuilder result = new StringBuilder ();
 			if (IncludeModifiers (flags)) {
 				if (EmitMarkup (flags))
@@ -316,11 +327,10 @@ namespace MonoDevelop.Ide.Dom.Output
 				if (EmitMarkup (flags))
 					result.Append ("</b>");
 			}
-						
+			
 			result.Append (Format (evt.Name));
 			
 			return result.ToString ();
 		}
-		
 	}
 }

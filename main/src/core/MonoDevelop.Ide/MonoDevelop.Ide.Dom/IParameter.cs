@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Dom
 {
-	public interface IParameter
+	public interface IParameter : IDomVisitable
 	{
 		string Name {
 			get;
@@ -52,6 +52,5 @@ namespace MonoDevelop.Ide.Dom
 		DomRegion Region {
 			get;
 		}
-		object AcceptVisitior (IDomVisitor visitor, object data);
 	}
 }
