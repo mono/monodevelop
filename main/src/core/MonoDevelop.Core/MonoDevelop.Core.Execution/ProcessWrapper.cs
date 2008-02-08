@@ -33,13 +33,18 @@ namespace MonoDevelop.Core.Execution
 			captureErrorThread.Start ();
 		}
 		
-		public void WaitForOutput ()
+		public void WaitForOutput (int milliseconds)
 		{
-			WaitForExit ();
+			WaitForExit (milliseconds);
 			lock (this) {
 				done = true;
 			}
 			WaitHandle.WaitAll (new WaitHandle[] {endEventOut, endEventErr});
+		}
+		
+		public void WaitForOutput ()
+		{
+			WaitForOutput (-1);
 		}
 		
 		private void CaptureOutput ()

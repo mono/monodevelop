@@ -1,3 +1,8 @@
+2008-02-07  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Core.Execution/ProcessWrapper.cs: Add a WaitForOutput overload
+	  with a time limit.
+
 2008-02-04  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Core/Runtime.cs: Use MD's config directory for addin engine
