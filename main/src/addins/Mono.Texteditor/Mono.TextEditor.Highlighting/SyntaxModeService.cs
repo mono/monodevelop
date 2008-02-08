@@ -155,6 +155,7 @@ namespace Mono.TextEditor.Highlighting
 			int endOffset   = (int)data[3];
 			int lineOffset  = 0;
 			bool foundEndLine = false;
+			bool equal = false;
 			RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = doc.Splitter.GetByOffset (startOffset).Iter;
 			LineSegment endLine = doc.Splitter.GetByOffset (endOffset);
 			Stack<Span> spanStack = iter.Current.StartSpan != null ? new Stack<Span> (iter.Current.StartSpan) : new Stack<Span> ();
@@ -166,7 +167,7 @@ namespace Mono.TextEditor.Highlighting
 				Span[] newSpans = spanStack.ToArray ();
 				if (foundEndLine) {
 					if (line.StartSpan == null || newSpans.Length == line.StartSpan.Length) {
-						bool equal = false;
+						equal = false;
 						if (line.StartSpan != null) {
 							equal = true;
 							for (int i = 0; i < newSpans.Length; i++) {
@@ -192,7 +193,7 @@ namespace Mono.TextEditor.Highlighting
 					foundEndLine = true;
 				}
 			} while (iter.MoveNext ());
-			if (lineOffset > endLine.Offset) {
+			if (!equal) {
 				doc.RequestUpdate (new UpdateAll ());
 				doc.CommitDocumentUpdate ();
 			}
