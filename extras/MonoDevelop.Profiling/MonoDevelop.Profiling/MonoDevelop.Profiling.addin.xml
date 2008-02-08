@@ -101,7 +101,7 @@
 		</Category>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Ide/MainMenu/Run">
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Debug">
 		<ItemSet id = "MonoDevelop.Profiling.ProjectCommands.RunProfiled" _label = "Run Profiled" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.Run">
 			<CommandItem id = "MonoDevelop.Profiling.ProjectCommands.RunProfiledList" />
 		</ItemSet>

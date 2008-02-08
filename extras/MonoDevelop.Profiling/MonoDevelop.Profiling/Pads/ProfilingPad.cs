@@ -59,7 +59,7 @@ namespace MonoDevelop.Profiling
 			vbox.PackStart (base.Control, true, true, 0);
 			vbox.ShowAll ();
 
-			LoadTree (ProfilingService.ProfilingSnapshots);
+			TreeView.LoadTree (ProfilingService.ProfilingSnapshots);
 		}
 		
 		public override Widget Control {
@@ -68,7 +68,7 @@ namespace MonoDevelop.Profiling
 		
 		public object GetActiveComponent ()
 		{
-			ITreeNavigator nav = base.GetSelectedNode ();
+			ITreeNavigator nav = TreeView.GetSelectedNode ();
 			if (nav != null)
 				return nav.DataItem;
 			return null;
