@@ -707,7 +707,8 @@ namespace Mono.TextEditor
 		
 		const int UTF8_FORMAT = 8;
 		
-		public static readonly Gdk.Atom CLIPBOARD_ATOM = Gdk.Atom.Intern ("CLIPBOARD", false);
+		public static readonly Gdk.Atom CLIPBOARD_ATOM        = Gdk.Atom.Intern ("CLIPBOARD", false);
+		public static readonly Gdk.Atom PRIMARYCLIPBOARD_ATOM = Gdk.Atom.Intern ("PRIMARY", false);
 		static readonly Gdk.Atom RTF_ATOM = Gdk.Atom.Intern ("text/rtf", false);
 		
 		public void SetData (SelectionData selection_data, uint info)
@@ -863,7 +864,16 @@ namespace Mono.TextEditor
 			if (data.IsSomethingSelected) {
 				text = data.Document.Buffer.GetTextAt (data.SelectionRange);
 				rtf  = GenerateRtf (data);
+			} else {
+				text = rtf = null;
 			}
+		}
+		
+		public void CopyToPrimary (TextEditorData data)
+		{
+			Clipboard clipboard = Clipboard.Get (CopyAction.PRIMARYCLIPBOARD_ATOM);
+			CopyData (data);
+			clipboard.SetWithData ((Gtk.TargetEntry[])TargetList, ClipboardGetFunc, ClipboardClearFunc);
 		}
 		
 		public override void Run (TextEditorData data)
@@ -871,7 +881,6 @@ namespace Mono.TextEditor
 			if (data.IsSomethingSelected) {
 				Clipboard clipboard = Clipboard.Get (CopyAction.CLIPBOARD_ATOM);
 				CopyData (data);
-				
 				clipboard.SetWithData ((Gtk.TargetEntry[])TargetList, ClipboardGetFunc, ClipboardClearFunc);
 			}
 		}

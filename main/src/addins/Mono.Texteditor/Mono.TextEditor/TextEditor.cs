@@ -218,6 +218,9 @@ namespace Mono.TextEditor
 			margins.Add (this);
 			ISegment oldSelection = null;
 			this.TextEditorData.SelectionChanged += delegate {
+				new CopyAction ().CopyToPrimary (this.TextEditorData);
+				
+				// Handle redraw
 				ISegment selection = this.TextEditorData.SelectionRange;
 				int startLine    = selection != null ? Document.Splitter.GetLineNumberForOffset (selection.Offset) : -1;
 				int endLine      = selection != null ? Document.Splitter.GetLineNumberForOffset (selection.EndOffset) : -1;

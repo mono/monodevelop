@@ -1,5 +1,10 @@
 2008-02-09  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextEditor.cs:
+	  Primary clipboard now works.
+
+2008-02-09  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditor.cs, Mono.TextEditor/Caret.cs: Overwrite mode
 	  now works.
 
