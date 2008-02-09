@@ -11,9 +11,6 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Gui.Completion;
 
-using MonoDevelop.SourceEditor;
-using MonoDevelop.SourceEditor.FormattingStrategy;
-
 using CSharpBinding.Parser;
 using CSharpBinding.FormattingStrategy;
 

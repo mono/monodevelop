@@ -307,6 +307,7 @@ namespace CSharpBinding {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
+            this.label88.MnemonicWidget = this.mainClassEntry;
             this.Show();
         }
     }

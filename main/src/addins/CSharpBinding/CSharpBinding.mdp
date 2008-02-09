@@ -39,7 +39,6 @@
     <File name="Parser/ExpressionFinder.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/CSharpCompilerParameters.cs" subtype="Code" buildaction="Compile" />
     <File name="CSharpLanguageBinding.cs" subtype="Code" buildaction="Compile" />
-    <File name="FormattingStrategy/CSharpFormattingStrategy.cs" subtype="Code" buildaction="Compile" />
     <File name="CSharpBindingCompilerManager.cs" subtype="Code" buildaction="Compile" />
     <File name="CSharpEnhancedCodeProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="Parser/SharpDevelopTree/GenericParameter.cs" subtype="Code" buildaction="Compile" />
@@ -66,7 +65,6 @@
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core.Gui" />
-    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.SourceEditor" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Ide" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />

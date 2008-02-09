@@ -7,8 +7,6 @@ using MonoDevelop.Core.Gui.Dialogs;
 
 using MonoDevelop.Ide.Gui.Content;
 
-using MonoDevelop.SourceEditor;
-
 using CSharpBinding.FormattingStrategy.Properties;
 
 namespace CSharpBinding {

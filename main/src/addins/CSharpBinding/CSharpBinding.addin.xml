@@ -14,7 +14,6 @@
     	<Addin id="Projects" version="0.19.0"/>
 		<Addin id="Projects.Gui" version="0.19.0"/>
 		<Addin id="Ide" version="0.19.0"/>
-		<Addin id="SourceEditor" version="0.19.0"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Ambiences">
@@ -82,10 +81,6 @@
 				             _label = "Compiler Options"
 				             class = "CSharpBinding.CompilerOptionsPanel"/>
 		</Condition>
-	</Extension>
-		
-	<Extension path = "/MonoDevelop/SourceEditor/Formatters">
-		<Class id ="cs" class = "CSharpBinding.FormattingStrategy.CSharpFormattingStrategy" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/OptionsDialogPanels/TextEditorOptions">
