@@ -1,3 +1,8 @@
+2008-02-09  Mike Krüger <mkrueger@novell.com> 
+
+	* CBinding.addin.xml, CBinding.mdp, Makefile.am: Removed source editor
+	  dependency.
+
 2008-02-07  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Parser/TagDatabaseManager.cs: Improve error handling. Should fix "Bug
