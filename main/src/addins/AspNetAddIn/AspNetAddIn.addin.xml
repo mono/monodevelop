@@ -14,7 +14,7 @@
     	<Addin id="Projects" version="0.19.0"/>
 		<Addin id="Projects.Gui" version="0.19.0"/>
 		<Addin id="Ide" version="0.19.0"/>
-		<Addin id="SourceEditor" version="0.19.0"/>
+<!--		<Addin id="SourceEditor" version="0.19.0"/>-->
 		<Addin id="DesignerSupport" version="0.19.0"/>
 		<Addin id="Deployment" version="0.19.0"/>
 		<Addin id="Prj2Make" version="0.19.0" />
