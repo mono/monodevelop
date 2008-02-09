@@ -458,7 +458,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void CaretModeChanged (object sender, EventArgs e)
 		{
-			IdeApp.Workbench.StatusBar.SetInsertMode (!this.TextEditor.Caret.IsInInsertMode);
+			IdeApp.Workbench.StatusBar.SetInsertMode (this.TextEditor.Caret.IsInInsertMode);
 		}
 #endregion
 
