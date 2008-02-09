@@ -1,3 +1,8 @@
+2008-02-09  Mike Krüger <mkrueger@novell.com> 
+
+	* configure.in, src/addins/Makefile.am: Added managed texteditor to the
+	  default build.
+
 2008-02-07  Mike Krüger <mkrueger@novell.com> 
 
 	* configure.in, src/addins/Makefile.am: Added assembly browser to the build.
