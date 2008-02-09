@@ -424,7 +424,12 @@ namespace Mono.TextEditor
 				this.textEditorData.DeleteSelectedText ();
 				char ch = (char)key;
 				if (!char.IsControl (ch)) {
-					Buffer.Insert (Caret.Offset, new StringBuilder (ch.ToString()));
+					LineSegment line = Document.GetLine (Caret.Line);
+					if (Caret.IsInInsertMode || Caret.Column >= line.EditableLength) {
+						Buffer.Insert (Caret.Offset, new StringBuilder (ch.ToString()));
+					} else {
+						Buffer.Replace (Caret.Offset, 1, new StringBuilder (ch.ToString()));
+					}
 					bool autoScroll = Caret.AutoScrollToCaret;
 					Caret.Column++;
 					Caret.AutoScrollToCaret = autoScroll;
@@ -827,9 +832,9 @@ namespace Mono.TextEditor
 				return;
 			gc.RgbFgColor = ColorStyle.Caret;
 			if (Caret.IsInInsertMode) {
-				win.DrawRectangle (gc, false, new Gdk.Rectangle (x, y, this.charWidth, LineHeight));
-			} else {
 				win.DrawLine (gc, x, y, x, y + LineHeight);
+			} else {
+				win.DrawRectangle (gc, false, new Gdk.Rectangle (x, y, this.charWidth, LineHeight - 1));
 			}
 		}
 		

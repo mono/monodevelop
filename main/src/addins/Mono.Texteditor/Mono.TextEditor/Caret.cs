@@ -33,7 +33,7 @@ namespace Mono.TextEditor
 	{
 		DocumentLocation location;
 		bool preserveSelection = false;
-		bool isInInsertMode = false;
+		bool isInInsertMode = true;
 		bool autoScrollToCaret = true;
 		Document document;
 

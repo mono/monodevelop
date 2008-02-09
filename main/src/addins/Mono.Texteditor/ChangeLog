@@ -1,5 +1,10 @@
 2008-02-09  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextEditor.cs, Mono.TextEditor/Caret.cs: Overwrite mode
+	  now works.
+
+2008-02-09  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditor.cs: Fixed caret drawing bug (occurred when
 	  caret was in line with foldings).
 
