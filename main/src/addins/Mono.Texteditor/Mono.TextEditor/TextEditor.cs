@@ -268,8 +268,11 @@ namespace Mono.TextEditor
 //				}
 //			};
 			Document.DocumentUpdated += delegate {
-				foreach (DocumentUpdateRequest request in Document.UpdateRequests) {
-					request.Update (this);
+				try {
+					foreach (DocumentUpdateRequest request in Document.UpdateRequests) {
+						request.Update (this);
+					}
+				} catch (Exception e) {
 				}
 			};
 			Caret.PositionChanged += delegate (object sender, DocumentLocationEventArgs args) {
@@ -637,6 +640,7 @@ namespace Mono.TextEditor
 		
 		public int GetWidth (string text)
 		{
+			text = text.Replace ("\t", new string (' ', TextEditorOptions.Options.TabSize));
 			layout.SetText (text);
 			int width, height;
 			layout.GetPixelSize (out width, out height);
@@ -759,6 +763,7 @@ namespace Mono.TextEditor
 			List<FoldSegment> foldings = Document.GetStartFoldings (line);
 			int offset = line.Offset;
 			int xPos   = (int)(x - this.textEditorData.HAdjustment.Value);
+			int caretOffset = Caret.Offset;
 			for (int i = 0; i < foldings.Count; ++i) {
 				FoldSegment folding = foldings[i];
 				int foldOffset = folding.StartLine.Offset + folding.Column;
@@ -783,6 +788,10 @@ namespace Mono.TextEditor
 					
 					gc.RgbFgColor = ColorStyle.FoldLine;
 					win.DrawLayout (gc, xPos, y, layout);
+					if (caretOffset == foldOffset) {
+						DrawCaret (win, gc, xPos, y);
+					}
+						
 					xPos += width;
 					
 					if (folding.EndLine != line) {
@@ -790,6 +799,7 @@ namespace Mono.TextEditor
 						foldings = Document.GetStartFoldings (line);
 						i = -1;
 					}
+				
 				}
 			}
 			
@@ -801,25 +811,25 @@ namespace Mono.TextEditor
 			// Draw remaining line
 			if (line.EndOffset - offset > 0) {
 				DrawLineText (win, gc, line, offset, line.Offset + line.EditableLength - offset, ref xPos, y);
+				if (caretOffset == line.Offset + line.EditableLength) {
+					DrawCaret (win, gc, xPos, y);
+				}
 			}
-			
+				
 			if (TextEditorOptions.Options.ShowEolMarkers) 
 				DrawEolMarker (win, gc, ref xPos, y);
 		
-			if (lineNr == Caret.Line) {
-				int caretX = ColumnToVisualX (line, Caret.Column);
-				Gdk.Rectangle cursor = new Gdk.Rectangle ((int)(x + caretX - this.textEditorData.HAdjustment.Value), y, charWidth, LineHeight - 1);
-				
-				if (caretBlink && this.IsFocus && cursor.X >= x) {
-					gc.RgbFgColor = ColorStyle.Caret;
-					
-					if (Caret.IsInInsertMode) {
-						win.DrawRectangle (gc, false, cursor);
-					} else {
-						win.DrawLine (gc, cursor.X, cursor.Y, cursor.X, cursor.Y + LineHeight);
-					}
-				}
-					//Gtk.Draw.InsertionCursor (this, win, area, cursor, true, Gtk.TextDirection.Ltr, Caret.IsInInsertMode);
+		}
+		
+		void DrawCaret (Gdk.Window win, Gdk.GC gc, int x, int y)
+		{
+			if (!caretBlink || !this.IsFocus) 
+				return;
+			gc.RgbFgColor = ColorStyle.Caret;
+			if (Caret.IsInInsertMode) {
+				win.DrawRectangle (gc, false, new Gdk.Rectangle (x, y, this.charWidth, LineHeight));
+			} else {
+				win.DrawLine (gc, x, y, x, y + LineHeight);
 			}
 		}
 		
@@ -877,6 +887,12 @@ namespace Mono.TextEditor
 				foreach (TextMarker marker in line.Markers) {
 					marker.Draw (this, win, index, index + length, y, xStart, xPos);
 				}
+			}
+			
+			int caretOffset = Caret.Offset;
+			if (offset <= caretOffset && caretOffset < offset + length) {
+				int caretX = GetWidth (Buffer.GetTextAt (offset, caretOffset - offset));
+				DrawCaret (win, gc, xStart + caretX, y);
 			}
 		}
 		

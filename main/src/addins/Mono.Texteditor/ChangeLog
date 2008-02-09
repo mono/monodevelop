@@ -1,3 +1,8 @@
+2008-02-09  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextEditor.cs: Fixed caret drawing bug (occurred when
+	  caret was in line with foldings).
+
 2008-02-08  Mike Krüger <mkrueger@novell.com> 
 
 	* TangoLightStyle.xml, OblivionStyle.xml, UbuntuStyle.xml,
