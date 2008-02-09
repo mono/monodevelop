@@ -4,7 +4,6 @@
       <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
       <Entry build="True" name="ILAsmBinding" configuration="Debug" />
       <Entry build="True" name="VersionControl" configuration="Debug" />
-      <Entry build="True" name="MonoDevelop.SourceEditor" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.GtkCore" configuration="Debug" />
       <Entry build="True" name="WelcomePage" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.MsVisualStudio" configuration="Debug" />
@@ -29,7 +28,6 @@
       <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
       <Entry build="True" name="ILAsmBinding" configuration="Debug" />
       <Entry build="True" name="VersionControl" configuration="Debug" />
-      <Entry build="True" name="MonoDevelop.SourceEditor" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.GtkCore" configuration="Debug" />
       <Entry build="True" name="WelcomePage" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.MsVisualStudio" configuration="Debug" />
@@ -84,7 +82,6 @@
     <Entry filename="NUnit/MonoDevelop.NUnit.mdp" />
     <Entry filename="ILAsmBinding/ILAsmBinding.mdp" />
     <Entry filename="VersionControl/VersionControl.mds" />
-    <Entry filename="MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.mdp" />
     <Entry filename="MonoDevelop.GtkCore/MonoDevelop.GtkCore.mds" />
     <Entry filename="WelcomePage/WelcomePage.mdp" />
     <Entry filename="prj2make-sharp-lib/prj2make-sharp-lib.mdp" />

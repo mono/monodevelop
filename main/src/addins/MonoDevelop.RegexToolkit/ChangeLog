@@ -1,3 +1,8 @@
+2008-02-09  Mike Krüger <mkrueger@novell.com> 
+
+	* Makefile.am: Managed texteditor is now standard - the gtksourceview1&2 are
+	  now optional.
+
 2008-01-29  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* MonoDevelop.RegexToolkit/RegexToolkitWindow.cs: Small workaround to be

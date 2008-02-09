@@ -54,21 +54,14 @@ REFS =  \
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns
 
-if ENABLE_GTKSOURCEVIEW2
-  all:
-else
-  all: $(ASSEMBLY)
-endif
+all: $(ASSEMBLY)
 
 $(ASSEMBLY) : $(build_sources) $(build_resources)
 	mkdir -p $(top_builddir)/build/bin
 	$(CSC) $(CSC_FLAGS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -t:library $(REFS)
 
-if ENABLE_GTKSOURCEVIEW2
-else
-  assemblydir = $(MD_ADDIN_DIR)
-  assembly_DATA = $(ASSEMBLY)
-endif
+assemblydir = $(MD_ADDIN_DIR)
+assembly_DATA = $(ASSEMBLY)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 

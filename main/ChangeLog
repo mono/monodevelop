@@ -1,5 +1,10 @@
 2008-02-09  Mike Krüger <mkrueger@novell.com> 
 
+	* configure.in, src/addins/Addins.mds, src/addins/Makefile.am: Managed
+	  texteditor is now standard - the gtksourceview1&2 are now optional.
+
+2008-02-09  Mike Krüger <mkrueger@novell.com> 
+
 	* configure.in, src/addins/Makefile.am: Added managed texteditor to the
 	  default build.
 
