@@ -1,3 +1,8 @@
+2008-02-10  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed Bug 360411 - Problems
+	  in Code Completion.
+
 2008-02-09  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Changes for overwrite

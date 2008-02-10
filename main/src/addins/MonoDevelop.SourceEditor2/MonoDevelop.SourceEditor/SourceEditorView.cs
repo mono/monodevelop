@@ -230,7 +230,7 @@ namespace MonoDevelop.SourceEditor
 //		}		
 #endregion
 		
-#region IEditableTextBuffer
+		#region IEditableTextBuffer
 		public IClipboardHandler ClipboardHandler {
 			get {
 				return this;
@@ -282,7 +282,7 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		public event TextChangedEventHandler TextChanged;
-#endregion
+		#endregion
 
 #region ITextBuffer
 		public int CursorPosition { 
@@ -521,11 +521,13 @@ namespace MonoDevelop.SourceEditor
 		public CodeCompletionContext CreateCodeCompletionContext (int triggerOffset) 
 		{
 			CodeCompletionContext result = new CodeCompletionContext ();
-			result.TriggerOffset = this.widget.TextEditor.Caret.Offset;
-			result.TriggerLine   = this.widget.TextEditor.Caret.Line;
-			result.TriggerLineOffset = this.widget.TextEditor.Caret.Column;
-			Gdk.Point p = this.widget.TextEditor.DocumentToVisualLocation (this.widget.TextEditor.Caret.Location);
+			result.TriggerOffset = triggerOffset;
+			DocumentLocation loc = Document.OffsetToLocation (triggerOffset);
+			result.TriggerLine   = loc.Line;
+			result.TriggerLineOffset = loc.Column;
+			Gdk.Point p = this.widget.TextEditor.DocumentToVisualLocation (loc);
 			int tx, ty;
+			
 			widget.ParentWindow.GetOrigin (out tx, out ty);
 			tx += widget.TextEditor.Allocation.X;
 			ty += widget.TextEditor.Allocation.Y;
