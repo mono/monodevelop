@@ -276,6 +276,7 @@ namespace Mono.TextEditor
 						request.Update (this);
 					}
 				} catch (Exception e) {
+					System.Console.WriteLine (e);
 				}
 			};
 			Caret.PositionChanged += delegate (object sender, DocumentLocationEventArgs args) {
@@ -637,6 +638,9 @@ namespace Mono.TextEditor
 
 		int ColumnToVisualX (LineSegment line, int column)
 		{
+			if (line.EditableLength == 0)
+				return 0;
+			System.Console.WriteLine(line);
 			string text = this.Document.Buffer.GetTextAt (line.Offset, System.Math.Min (column, line.EditableLength));
 			text = text.Replace ("\t", new string (' ', TextEditorOptions.Options.TabSize));
 			layout.SetText (text);
@@ -681,7 +685,7 @@ namespace Mono.TextEditor
 			LineSegment line = lineNr < Splitter.LineCount ? Splitter.Get (lineNr) : null;
 			
 			Gdk.GC gc = new Gdk.GC (win);
-			gc.ClipRectangle = new Gdk.Rectangle (x, y, area.Width, LineHeight);
+			gc.ClipRectangle = new Gdk.Rectangle (x, y, this.Allocation.Width - x, LineHeight);
 		
 			Gdk.Rectangle lineArea = new Gdk.Rectangle (x, y, area.Width - x, LineHeight);
 			bool isSelected = false;
@@ -762,9 +766,8 @@ namespace Mono.TextEditor
 			}
 			
 			if (line == null) {
-				if (TextEditorOptions.Options.ShowInvalidLines) {
+				if (TextEditorOptions.Options.ShowInvalidLines)
 					DrawInvalidLineMarker (win, gc, x, y);
-				}
 				return;
 			}
 			
@@ -796,9 +799,8 @@ namespace Mono.TextEditor
 					
 					gc.RgbFgColor = ColorStyle.FoldLine;
 					win.DrawLayout (gc, xPos, y, layout);
-					if (caretOffset == foldOffset) {
+					if (caretOffset == foldOffset)
 						DrawCaret (win, gc, xPos, y);
-					}
 						
 					xPos += width;
 					
@@ -817,16 +819,12 @@ namespace Mono.TextEditor
 			}
 			
 			// Draw remaining line
-			if (line.EndOffset - offset > 0) {
+			if (line.EndOffset - offset > 0)
 				DrawLineText (win, gc, line, offset, line.Offset + line.EditableLength - offset, ref xPos, y);
-				if (caretOffset == line.Offset + line.EditableLength) {
-					DrawCaret (win, gc, xPos, y);
-				}
-			}
-				
+			if (caretOffset == line.Offset + line.EditableLength)
+				DrawCaret (win, gc, xPos, y);
 			if (TextEditorOptions.Options.ShowEolMarkers) 
 				DrawEolMarker (win, gc, ref xPos, y);
-		
 		}
 		
 		void DrawCaret (Gdk.Window win, Gdk.GC gc, int x, int y)

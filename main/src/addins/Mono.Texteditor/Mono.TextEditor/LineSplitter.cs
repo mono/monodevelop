@@ -174,7 +174,9 @@ namespace Mono.TextEditor
 				if (this.Get(i).Offset <= offset && offset < this.Get(i).EndOffset)
 					return i;
 			}
-			return -1;
+			if (offset < 0)
+				return 0;
+			return this.LineCount;
 		}
 		
 		Segment FindDelimiter (StringBuilder text, int startOffset) 

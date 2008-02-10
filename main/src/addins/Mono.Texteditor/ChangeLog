@@ -1,3 +1,8 @@
+2008-02-10  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/LineSplitter.cs, Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor.Highlighting/SyntaxMode.cs: Fixed some drawing issues.
+
 2008-02-09  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextEditor.cs:
