@@ -50,7 +50,6 @@ FILES =  \
 	BooCompiler.boo \
 	BooLanguageBinding.boo \
 	BooShellPadContent.boo \
-	FormattingStrategy/BooFormattingStrategy.boo \
 	Gui/BooShellModel.boo \
 	Gui/BooTextEditorExtension.boo \
 	Gui/IShellModel.boo \
