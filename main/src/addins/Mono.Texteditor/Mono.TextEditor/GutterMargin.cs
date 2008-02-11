@@ -36,15 +36,15 @@ namespace Mono.TextEditor
 		TextEditor editor;
 		Pango.Layout layout;
 		int width;
+		
 		public GutterMargin (TextEditor editor)
 		{
 			this.editor = editor;
 			layout = new Pango.Layout (editor.PangoContext);
-			TextEditorOptions.Changed += OptionsChanged;
-			OptionsChanged (this, EventArgs.Empty);
 			editor.TextEditorData.Document.Splitter.LinesInserted += LineCountChanged;
 			editor.TextEditorData.Document.Splitter.LinesRemoved += LineCountChanged;
 		}
+		
 		
 		int oldWidth = 1;
 		void LineCountChanged (object sender, LineEventArgs args)
@@ -56,11 +56,6 @@ namespace Mono.TextEditor
 				oldWidth = newWidth;
 			}
 			
-		}
-		
-		protected virtual void OptionsChanged (object sender, EventArgs args)
-		{
-			layout.FontDescription = TextEditorOptions.Options.Font;
 		}
 		
 		public override int Width {
@@ -93,6 +88,7 @@ namespace Mono.TextEditor
 		Gdk.GC lineNumberBgGC, lineNumberGC, lineNumberHighlightGC;
 		public override void OptionsChanged ()
 		{
+			layout.FontDescription = TextEditorOptions.Options.Font;
 			lineNumberBgGC = new Gdk.GC (editor.GdkWindow);
 			lineNumberBgGC.RgbFgColor = editor.ColorStyle.LineNumberBg;
 			
@@ -102,7 +98,7 @@ namespace Mono.TextEditor
 			lineNumberHighlightGC = new Gdk.GC (editor.GdkWindow);
 			lineNumberHighlightGC.RgbFgColor = editor.ColorStyle.LineNumberFgHighlighted;
 		}
-				
+		
 		public override void Draw (Gdk.Window win, Gdk.Rectangle area, int line, int x, int y)
 		{
 			Gdk.Rectangle drawArea = new Rectangle (x, y, Width, editor.LineHeight);
@@ -112,10 +108,14 @@ namespace Mono.TextEditor
 				win.DrawLayout (editor.Caret.Line == line ? lineNumberHighlightGC : lineNumberGC, x + 1, y, layout);
 			}
 		}
-
-		public void Dispose ()
+		
+		void IDisposable.Dispose ()
 		{
-			TextEditorOptions.Changed -= OptionsChanged;
+			System.Console.WriteLine("Gutter dispose");
+			if (layout != null) {
+				layout.Dispose ();
+				layout = null;
+			}
 		}
 	}
 }

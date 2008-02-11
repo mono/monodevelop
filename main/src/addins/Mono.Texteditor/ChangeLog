@@ -1,5 +1,11 @@
 2008-02-11  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor.mdp, Mono.TextEditor/TextViewMargin.cs,
+	  Mono.TextEditor/TextEditor.cs, Mono.TextEditor/GutterMargin.cs,
+	  gtk-gui/objects.xml, Makefile.am: Optimized/Refactored the text editor.
+
+2008-02-11  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/FoldMarkerMargin.cs, Mono.TextEditor/IMargin.cs,
 	  Mono.TextEditor/TextEditor.cs, Mono.TextEditor/BookmarkMargin.cs,
 	  Mono.TextEditor/GutterMargin.cs,

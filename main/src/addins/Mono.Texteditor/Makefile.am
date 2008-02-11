@@ -49,7 +49,8 @@ FILES =  \
 	Mono.TextEditor/TextEditorData.cs \
 	Mono.TextEditor/TextEditorOptions.cs \
 	Mono.TextEditor/TextMarker.cs \
-	Mono.TextEditor/TextUtil.cs 
+	Mono.TextEditor/TextUtil.cs \
+	Mono.TextEditor/TextViewMargin.cs 
 	Mono.TextEditor.Highlighting/Match.cs \
 	Mono.TextEditor.Highlighting/Style.cs \
 	Mono.TextEditor.Highlighting/SyntaxMode.cs \
