@@ -713,6 +713,8 @@ namespace Mono.TextEditor
 		
 		public void SetData (SelectionData selection_data, uint info)
 		{
+			if (selection_data == null)
+				return;
 			switch (info) {
 			case TextType:
 				selection_data.Text = text;
@@ -888,9 +890,8 @@ namespace Mono.TextEditor
 	
 	public class PasteAction : EditAction
 	{
-		public override void Run (TextEditorData data)
+		static void PasteFrom (Clipboard clipboard, TextEditorData data)
 		{
-			Clipboard clipboard = Clipboard.Get (CopyAction.CLIPBOARD_ATOM);
 			if (clipboard.WaitIsTextAvailable ()) {
 				if (data.IsSomethingSelected) {
 					DeleteAction.DeleteSelection (data);
@@ -901,6 +902,14 @@ namespace Mono.TextEditor
 				data.Caret.Offset += sb.Length;
 				data.Document.RequestUpdate (oldLine != data.Caret.Line ? (DocumentUpdateRequest)new LineToEndUpdate (oldLine) : (DocumentUpdateRequest)new LineUpdate (oldLine));
 			}
+		}
+		public static void PasteFromPrimary (TextEditorData data)
+		{
+			PasteFrom (Clipboard.Get (CopyAction.PRIMARYCLIPBOARD_ATOM), data);
+		}
+		public override void Run (TextEditorData data)
+		{
+			PasteFrom (Clipboard.Get (CopyAction.CLIPBOARD_ATOM), data);
 		}
 	}
 #endregion

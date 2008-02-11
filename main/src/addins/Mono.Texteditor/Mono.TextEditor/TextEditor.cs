@@ -194,7 +194,8 @@ namespace Mono.TextEditor
 			margins.Add (textViewMargin);
 			ISegment oldSelection = null;
 			this.TextEditorData.SelectionChanged += delegate {
-				new CopyAction ().CopyToPrimary (this.TextEditorData);
+				if (this.TextEditorData.IsSomethingSelected && this.TextEditorData.SelectionRange.Offset > 0)
+					new CopyAction ().CopyToPrimary (this.TextEditorData);
 				
 				// Handle redraw
 				ISegment selection = this.TextEditorData.SelectionRange;

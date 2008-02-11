@@ -394,6 +394,10 @@ namespace Mono.TextEditor
 					this.caretBlink = false;
 				}
 			}
+			if (button == 2) {
+				System.Console.WriteLine("Paste From Binary");
+				PasteAction.PasteFromPrimary (TextEditorData);
+			}
 		}
 		
 		int ScanWord (int offset, bool forwardDirection)
