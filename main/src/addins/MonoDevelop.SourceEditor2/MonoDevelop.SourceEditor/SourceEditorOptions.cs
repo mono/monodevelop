@@ -348,7 +348,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public string ColorSheme {
+		public override string ColorSheme {
 			get {
 				return PropertyService.Get ("ColorSheme", "Default");
 			}
@@ -358,11 +358,6 @@ namespace MonoDevelop.SourceEditor
 					OnChanged (EventArgs.Empty);
 				}
 			}
-		}
-		
-		public override Mono.TextEditor.Highlighting.Style GetColorStyle (Gtk.Widget widget)
-		{
-			return Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (widget, ColorSheme);
 		}
 		
 		public override FontDescription Font {

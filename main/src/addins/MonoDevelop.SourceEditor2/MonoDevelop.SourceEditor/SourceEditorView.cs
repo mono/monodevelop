@@ -172,7 +172,8 @@ namespace MonoDevelop.SourceEditor
 		
 		public override void Dispose()
 		{
-			this.isDisposed = true;
+			this.isDisposed= true;
+			widget.Destroy ();
 		}
 		
 		public IParserContext GetParserContext ()
@@ -525,7 +526,6 @@ namespace MonoDevelop.SourceEditor
 			DocumentLocation loc = Document.OffsetToLocation (triggerOffset);
 			result.TriggerLine   = loc.Line;
 			result.TriggerLineOffset = loc.Column;
-			System.Console.WriteLine(loc + " --- " + triggerOffset + " --- " + Document.Buffer.Length);
 			Gdk.Point p = this.widget.TextEditor.DocumentToVisualLocation (loc);
 			int tx, ty;
 			
