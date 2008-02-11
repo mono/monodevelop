@@ -86,8 +86,8 @@ $(ASSEMBLY): $(FILES) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
 
-assemblydir = $(MD_ADDIN_DIR)/NUnit
-assembly_DATA = $(ASSEMBLY) $(SRC_NUNIT_FILES)
+assemblydir = $(MD_ASSEMBLY_DIR)
+assembly_DATA = $(ASSEMBLY)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 EXTRA_DIST = $(FILES) $(RES)
