@@ -69,7 +69,7 @@
 	<Style name="lineNumberHighlighted" color="aluminium5"/>
 	<Style name="lineNumberBg" color="white"/>
 	
-	<Style name="iconBar" color="white"/>
+	<Style name="iconBar" color="aluminium1"/>
 	<Style name="iconBarSeperator" color="aluminium3"/>
 
 	<Style name="foldLine" color="aluminium3"/>
@@ -79,6 +79,9 @@
 	
 	<Style name="bracketHighlightRectangle" color="aluminium4"/>
 	<Style name="bracketHighlightBg" color="aluminium1"/>
+	
+	<Style name="bookmarkColor1" color="skyblue2"/>
+	<Style name="bookmarkColor2" color="white"/>
 
 	<!-- highlighting -->
 	<Style name="comment" color="chameleon3"/>

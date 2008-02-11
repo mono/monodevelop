@@ -27,6 +27,7 @@
 
 using System;
 using Gtk;
+using Gdk;
 
 namespace Mono.TextEditor
 {
@@ -34,13 +35,7 @@ namespace Mono.TextEditor
 	{
 		TextEditor editor;
 		Gdk.GC backgroundGC, seperatorGC;
-		
-		static Gdk.Pixbuf bookmarkPixbuf;
-		
-		static BookmarkMargin ()
-		{
-			bookmarkPixbuf = Gdk.Pixbuf.LoadFromResource ("bookmark.png");
-		}
+		Cairo.Color color1, color2;
 		
 		public BookmarkMargin (TextEditor editor)
 		{
@@ -53,6 +48,18 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public override void Dispose ()
+		{
+			if (backgroundGC != null) {
+				backgroundGC.Dispose ();
+				backgroundGC = null;
+			}
+			if (seperatorGC != null) {
+				seperatorGC.Dispose ();
+				seperatorGC = null;
+			}
+		}
+		
 		public override void OptionsChanged ()
 		{
 			backgroundGC = new Gdk.GC (editor.GdkWindow);
@@ -60,6 +67,29 @@ namespace Mono.TextEditor
 			
 			seperatorGC = new Gdk.GC (editor.GdkWindow);
 			seperatorGC.RgbFgColor = editor.ColorStyle.IconBarSeperator;
+			
+			color1 = Convert (editor.ColorStyle.BookmarkColor1);
+			color2 = Convert (editor.ColorStyle.BookmarkColor2);
+		}
+		
+		static Cairo.Color Convert (Gdk.Color color)
+		{
+			return new Cairo.Color (color.Red / (double)ushort.MaxValue, 
+			                        color.Green / (double)ushort.MaxValue, 
+			                        color.Blue / (double)ushort.MaxValue);
+		}
+		
+		public static void DrawRoundRectangle (Cairo.Context cr, int x, int y, int r, int w, int h)
+		{
+			cr.MoveTo (x + r, y);
+			cr.LineTo (x + w - r, y);
+			cr.CurveTo (x + w, y, x + w, y, x + w, y + r);
+			cr.LineTo (x + w, y + h - r);
+			cr.CurveTo (x + w, y + h, x + w, y + h, x + w - r, y + h);
+			cr.LineTo (x + r, y + h);
+			cr.CurveTo (x, y + h, x, y + h, x, y + h - r);
+			cr.LineTo (x, y + r);
+			cr.CurveTo (x, y, x, y, x + r, y);
 		}
 
 		public override void MousePressed (int button, int x, int y, bool doubleClick)
@@ -83,8 +113,22 @@ namespace Mono.TextEditor
 			win.DrawLine (seperatorGC, x + Width - 1, drawArea.Top, x + Width - 1, drawArea.Bottom);
 			if (line < editor.Splitter.LineCount) {
 				LineSegment lineSegment = editor.Document.GetLine (line);
-				if (lineSegment.IsBookmarked) 
-					win.DrawPixbuf (backgroundGC, bookmarkPixbuf, 0, 0, x + 1, y, bookmarkPixbuf.Width, bookmarkPixbuf.Height, Gdk.RgbDither.None, 0, 0);
+				if (lineSegment.IsBookmarked) {
+					Cairo.Context cr = Gdk.CairoHelper.Create (win);
+					DrawRoundRectangle (cr, x + 1, y + 1, 8, Width - 4, editor.LineHeight - 4);
+					Cairo.Gradient pat = new Cairo.LinearGradient (x, y + editor.LineHeight, x + Width, y);
+					pat.AddColorStop (0, color1);
+					pat.AddColorStop (1, color2);
+					cr.Pattern = pat;
+					cr.FillPreserve ();
+					
+					pat = new Cairo.LinearGradient (x, y + editor.LineHeight, x + Width, y);
+					pat.AddColorStop (0, color2);
+					pat.AddColorStop (1, color1);
+					cr.Pattern = pat;
+					cr.Stroke ();
+					((IDisposable)cr).Dispose();
+				}
 			}
 		}
 	}

@@ -1,3 +1,14 @@
+2008-02-11  Mike Krüger <mkrueger@novell.com> 
+
+	* TangoLightStyle.xml, Mono.TextEditor.mdp, bookmark.png, OblivionStyle.xml,
+	  UbuntuStyle.xml, Mono.TextEditor/TextViewMargin.cs,
+	  Mono.TextEditor/Document.cs, Mono.TextEditor/FoldMarkerMargin.cs,
+	  Mono.TextEditor/IMargin.cs, Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor/BookmarkMargin.cs, Mono.TextEditor/TextEditorOptions.cs,
+	  Mono.TextEditor/GutterMargin.cs, Mono.TextEditor.Highlighting/Style.cs,
+	  Makefile.am, C64Style.xml: Worked on text editor - performance & drawing
+	  improvements.
+
 2008-02-11 Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Makefile.am: Fix location of installed assembly.

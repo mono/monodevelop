@@ -3,6 +3,7 @@ ADDIN_BUILD = $(top_builddir)/build/bin
 ASSEMBLY = $(top_builddir)/build/bin/Mono.TextEditor.dll
 REFS =  \
 	$(GTK_SHARP_LIBS) \
+	-r:Mono.Cairo \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml
@@ -62,7 +63,6 @@ FILES =  \
 	Mono.TextEditor.Tests/Mono.TextEditor.Tests.DefaultEditActions/CaretMoveTests.cs
 
 RES =  \
-	bookmark.png \
 	C64Style.xml \
 	CPPSyntaxMode.xml \
 	CSharpSyntaxMode.xml \

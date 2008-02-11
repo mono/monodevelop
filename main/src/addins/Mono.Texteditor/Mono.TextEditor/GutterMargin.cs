@@ -31,7 +31,7 @@ using Gdk;
 
 namespace Mono.TextEditor
 {
-	public class GutterMargin : AbstractMargin, System.IDisposable
+	public class GutterMargin : AbstractMargin
 	{
 		TextEditor editor;
 		Pango.Layout layout;
@@ -84,6 +84,25 @@ namespace Mono.TextEditor
 				}
 			}
 		}
+		public override void Dispose ()
+		{
+			if (layout != null) {
+				layout.Dispose ();
+				layout = null;
+			}
+			if (lineNumberBgGC != null) {
+				lineNumberBgGC.Dispose ();
+				lineNumberBgGC = null;
+			}
+			if (lineNumberGC != null) {
+				lineNumberGC.Dispose ();
+				lineNumberGC = null;
+			}
+			if (lineNumberHighlightGC != null) {
+				lineNumberHighlightGC.Dispose ();
+				lineNumberHighlightGC = null;
+			}
+		}
 		
 		Gdk.GC lineNumberBgGC, lineNumberGC, lineNumberHighlightGC;
 		public override void OptionsChanged ()
@@ -109,13 +128,5 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		void IDisposable.Dispose ()
-		{
-			System.Console.WriteLine("Gutter dispose");
-			if (layout != null) {
-				layout.Dispose ();
-				layout = null;
-			}
-		}
 	}
 }

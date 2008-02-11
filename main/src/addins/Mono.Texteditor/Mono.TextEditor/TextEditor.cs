@@ -52,6 +52,8 @@ namespace Mono.TextEditor
 		List<IMargin> margins = new List<IMargin> ();
 		int oldRequest = -1;
 		
+		bool isDisposed = false;
+		
 		public Document Document {
 			get {
 				return textEditorData.Document;
@@ -259,6 +261,9 @@ namespace Mono.TextEditor
 			Gtk.TargetList list = new Gtk.TargetList ();
 			list.AddTextTargets (CopyAction.TextType);
 			Gtk.Drag.DestSet (this, DestDefaults.All, (TargetEntry[])list, DragAction.Move | DragAction.Copy);
+			this.Destroyed += delegate {
+				Dispose ();
+			};
 		}
 		
 		protected virtual void OptionsChanged (object sender, EventArgs args)
@@ -287,6 +292,9 @@ namespace Mono.TextEditor
 		
 		public override void Dispose ()
 		{
+			if (isDisposed)
+				return;
+			this.isDisposed = true;
 			TextEditorOptions.Changed -= OptionsChanged;
 			
 			foreach (IMargin margin in this.margins) {
@@ -299,17 +307,23 @@ namespace Mono.TextEditor
 		
 		internal void RedrawLine (int logicalLine)
 		{
+			if (isDisposed)
+				return;
 			this.QueueDrawArea (0, (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (logicalLine) * LineHeight, this.Allocation.Width, LineHeight);
 		}
 		
 		internal void RedrawPosition (int logicalLine, int logicalColumn)
 		{
+			if (isDisposed)
+				return;
 			RedrawLine (logicalLine);
 //			this.QueueDrawArea (0, (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (logicalLine) * LineHeight, this.Allocation.Width, LineHeight);
 		}
 		
 		internal void RedrawLines (int start, int end)
 		{
+			if (isDisposed)
+				return;
 			int visualStart = (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (start) * LineHeight;
 			int visualEnd   = (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (end) * LineHeight + LineHeight;
 			this.QueueDrawArea (0, visualStart, this.Allocation.Width, visualEnd - visualStart );
@@ -317,11 +331,15 @@ namespace Mono.TextEditor
 		
 		internal void RedrawFromLine (int logicalLine)
 		{
+			if (isDisposed)
+				return;
 			this.QueueDrawArea (0, (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (logicalLine) * LineHeight, this.Allocation.Width, this.Allocation.Height);
 		}
 	
 		public void SimulateKeyPress (Gdk.Key key, Gdk.ModifierType modifier)
 		{
+			if (isDisposed)
+				return;
 			int keyCode = GetKeyCode (key, modifier);
 			if (keyBindings.ContainsKey (keyCode)) {
 				try {
@@ -364,7 +382,7 @@ namespace Mono.TextEditor
 		{
 			base.IsFocus = true;
 			if (lastTime != e.Time) {// filter double clicks
-				if (e.Type == EventType.TwoButtonPress) {				
+				if (e.Type == EventType.TwoButtonPress) {
 				    lastTime = e.Time;
 					mousePressed = false;
 				} else {

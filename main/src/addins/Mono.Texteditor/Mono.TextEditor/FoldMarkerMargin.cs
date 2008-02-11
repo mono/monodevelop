@@ -99,6 +99,26 @@ namespace Mono.TextEditor
 		
 		Gdk.GC foldBgGC, foldLineGC, foldLineHighlightedGC, foldToggleMarkerGC;
 		
+		public override void Dispose ()
+		{
+			if (foldBgGC != null) {
+				foldBgGC.Dispose ();
+				foldBgGC = null;
+			}
+			if (foldLineGC != null) {
+				foldLineGC.Dispose ();
+				foldLineGC = null;
+			}
+			if (foldLineHighlightedGC != null) {
+				foldLineHighlightedGC.Dispose ();
+				foldLineHighlightedGC = null;
+			}
+			if (foldToggleMarkerGC != null) {
+				foldToggleMarkerGC.Dispose ();
+				foldToggleMarkerGC = null;
+			}
+		}
+		
 		void DrawFoldSegment (Gdk.Window win, int x, int y, bool isOpen, bool isSelected)
 		{
 			Gdk.Rectangle drawArea = new Gdk.Rectangle (x + 3, y + 3, foldSegmentSize, foldSegmentSize);

@@ -53,7 +53,7 @@ namespace Mono.TextEditor
 		void MouseLeft ();
 	}
 	
-	public abstract class AbstractMargin : IMargin
+	public abstract class AbstractMargin : IMargin, IDisposable
 	{
 		public abstract int Width {
 			get;
@@ -94,5 +94,9 @@ namespace Mono.TextEditor
 		public virtual void MouseLeft ()
 		{
 		}
+		public virtual void Dispose ()
+		{
+		}
+		
 	}
 }

@@ -41,7 +41,10 @@ namespace Mono.TextEditor.Highlighting
 		Color caret;
 		Color lineMarker, ruler, whitespaceMarker, invalidLineMarker;
 		
+		Color bookmarkColor1, bookmarkColor2;
+		
 		Color lineNumberFg, lineNumberBg, lineNumberFgHighlighted;
+		
 		Color iconBarBg, iconBarSeperator;
 		Color bracketHighlightBg, bracketHighlightRectangle;
 		Color foldLine, foldLineHighlighted, foldBg, foldToggleMarker;
@@ -161,13 +164,25 @@ namespace Mono.TextEditor.Highlighting
 				return bracketHighlightBg;
 			}
 		}
-
+		
 		public virtual Color BracketHighlightRectangle {
 			get {
 				return bracketHighlightRectangle;
 			}
 		}
-
+		
+		public virtual Color BookmarkColor2 {
+			get {
+				return bookmarkColor2;
+			}
+		}
+		
+		public virtual Color BookmarkColor1 {
+			get {
+				return bookmarkColor1;
+			}
+		}
+		
 		public string Name {
 			get {
 				return name;
@@ -179,7 +194,7 @@ namespace Mono.TextEditor.Highlighting
 				return description;
 			}
 		}
-
+		
 		public Style ()
 		{
 			
@@ -206,6 +221,10 @@ namespace Mono.TextEditor.Highlighting
 			
 			bracketHighlightBg        = new Gdk.Color (196, 196, 196);
 			bracketHighlightRectangle = new Gdk.Color (128, 128, 128);
+			
+			bookmarkColor1 = new Gdk.Color (105, 156, 235);
+			bookmarkColor2 = new Gdk.Color (255, 255, 255);
+			
 			
 			SetStyle ("comment", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255), false, false));
 			SetStyle ("altcomment", new Mono.TextEditor.ChunkStyle (new Gdk.Color (128, 128, 128), true, false));
@@ -290,11 +309,13 @@ namespace Mono.TextEditor.Highlighting
 			case "foldToggleMarker":
 			case "bracketHighlightRectangle":
 			case "bracketHighlightBg":
+			case "bookmarkColor1":
+			case "bookmarkColor2":
 				return false;
 			}
 			return true;
 		}
-					
+		
 		Gdk.Color GetColor (string colorString)
 		{
 			if (customPalette.ContainsKey (colorString))
@@ -370,6 +391,12 @@ namespace Mono.TextEditor.Highlighting
 				break;
 			case "bracketHighlightBg":
 				this.bracketHighlightBg = color;
+				break;
+			case "bookmarkColor1":
+				this.bookmarkColor1 = color;
+				break;
+			case "bookmarkColor2":
+				this.bookmarkColor2 = color;
 				break;
 			default:
 				throw new Exception ("color  " + name + " invalid.");

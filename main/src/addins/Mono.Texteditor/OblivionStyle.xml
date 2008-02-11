@@ -80,6 +80,9 @@
 	<Style name="bracketHighlightRectangle" color="aluminium4"/>
 	<Style name="bracketHighlightBg" color="aluminium6"/>
 
+	<Style name="bookmarkColor1" color="aluminium1"/>
+	<Style name="bookmarkColor2" color="aluminium4"/>
+
 	<!-- highlighting -->
 	<Style name="comment" color="aluminium4"/>
 	<Style name="altcomment" color="aluminium4"/>

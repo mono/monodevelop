@@ -49,6 +49,9 @@
 
 	<Style name="bracketHighlightRectangle" color="#97A0EF"/>
 	<Style name="bracketHighlightBg" color="#3F3FDF"/>
+	
+	<Style name="bookmarkColor1" color="#3F3FDF"/>
+	<Style name="bookmarkColor2" color="#FFFFFF"/>
 
 	<!-- highlighting -->
 	<Style name="comment" color="white"/>

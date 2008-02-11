@@ -64,6 +64,7 @@ namespace Mono.TextEditor
 		bool highlightMatchingBracket = true;
 		bool highlightCaretLine = false;
 		string fontName = DEFAULT_FONT;
+		string colorStyle = "Default";
 		
 		public string IndentationString {
 			get {
@@ -252,10 +253,18 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		
+		public virtual string ColorSheme {
+			get {
+				return colorStyle;
+			}
+			set {
+				colorStyle = value;
+				OnChanged (EventArgs.Empty);
+			}
+		}
 		public virtual Style GetColorStyle (Gtk.Widget widget)
 		{
-			return new DefaultStyle (widget);
+			return SyntaxModeService.GetColorStyle (widget, ColorSheme);
 		}
 		
 		protected static void OnChanged (EventArgs args)

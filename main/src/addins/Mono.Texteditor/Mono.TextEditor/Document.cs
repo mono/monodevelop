@@ -298,10 +298,14 @@ namespace Mono.TextEditor
 			}
 			if (i < foldSegments.Count)
 				newSegments.AddRange (foldSegments.GetRange (i, foldSegments.Count - i));
+			bool needsUpdate = foldSegments.Count != newSegments.Count;
 			foldSegments = newSegments;
-			
-			RequestUpdate (new UpdateAll ());
-			CommitDocumentUpdate ();
+			if (needsUpdate) {
+				System.Console.WriteLine("UPDATE!!!");
+				RequestUpdate (new UpdateAll ());
+				CommitDocumentUpdate ();
+				
+			}
 		}
 		
 		public List<FoldSegment> GetFoldingsFromOffset (int offset)
