@@ -96,13 +96,14 @@ namespace MonoDevelop.SourceEditor
 					this.ShowPopup ();
 				}
 			};
+			this.Realized += delegate {
+				FireOptionsChange ();
+			};
 		}
-		
-		protected override void OptionsChanged (object sender, EventArgs args)
+		public void FireOptionsChange ()
 		{
-			base.OptionsChanged (sender, args);
+			this.OptionsChanged (null, null);
 		}
-
 		
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{

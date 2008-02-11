@@ -155,6 +155,11 @@ namespace MonoDevelop.SourceEditor
 				CaretModeChanged (this, EventArgs.Empty);
 			};
 			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += OnParseInformationChanged;
+			this.textEditor.FireOptionsChange ();
+//			this.d += delegate {
+//				this.textEditor.Destroy ();
+//			};
+			
 		}
 
 #region Error underlining
@@ -303,6 +308,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public override void Dispose ()
 		{
+			System.Console.WriteLine("Dispose !!!");
 			isDisposed = true;
 			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged -= new ParseInformationEventHandler(UpdateClassBrowser);
 		}

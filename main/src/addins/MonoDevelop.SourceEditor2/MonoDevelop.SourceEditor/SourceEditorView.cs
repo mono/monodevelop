@@ -525,6 +525,7 @@ namespace MonoDevelop.SourceEditor
 			DocumentLocation loc = Document.OffsetToLocation (triggerOffset);
 			result.TriggerLine   = loc.Line;
 			result.TriggerLineOffset = loc.Column;
+			System.Console.WriteLine(loc + " --- " + triggerOffset + " --- " + Document.Buffer.Length);
 			Gdk.Point p = this.widget.TextEditor.DocumentToVisualLocation (loc);
 			int tx, ty;
 			
@@ -688,7 +689,6 @@ namespace MonoDevelop.SourceEditor
 			foreach (LineSegment line in this.TextEditorData.SelectedLines) {
 				string text = Document.Buffer.GetTextAt (line);
 				string trimmedText = text.TrimStart ();
-				int length = 0;
 				if (!trimmedText.StartsWith (commentTag)) {
 					comment = true;
 					break;
