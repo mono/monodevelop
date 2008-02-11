@@ -366,7 +366,7 @@ namespace Mono.TextEditor
 		{
 			inSelectionDrag = false;
 			inDrag = false;
-			if (button == 1) {
+			if (button == 1 || button == 2) {
 				clickLocation = VisualToDocumentLocation (x, y);
 				int offset = Document.LocationToOffset (clickLocation);
 				if (offset < 0) {

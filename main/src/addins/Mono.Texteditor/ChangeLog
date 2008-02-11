@@ -1,3 +1,10 @@
+2008-02-12  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/Document.cs,
+	  Mono.TextEditor/LineSegment.cs,
+	  Mono.TextEditor.Highlighting/SyntaxModeService.cs: Syntax highlighting
+	  update is now faster. (produced too many redraws)
+
 2008-02-11  Mike Krüger <mkrueger@novell.com> 
 
 	* TangoLightStyle.xml, Mono.TextEditor.Highlighting/Style.cs, C64Style.xml:

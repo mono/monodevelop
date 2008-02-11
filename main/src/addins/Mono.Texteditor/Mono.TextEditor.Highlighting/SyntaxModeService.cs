@@ -145,6 +145,22 @@ namespace Mono.TextEditor.Highlighting
 					;
 			}
 		}
+		static bool IsEqual (Span[] spans1, Span[] spans2)
+		{
+			if (spans1 == null || spans1.Length == 0) {
+				if (spans2 == null || spans2.Length == 0)
+					return true;
+				return false;
+			}
+			if (spans1.Length != spans2.Length)
+				return false;
+			for (int i = 0; i < spans1.Length; i++) {
+				if (spans1[i] != spans2[i]) {
+					return false;
+				}
+			}
+			return true;
+		}
 		
 		static void Update (object o)
 		{
@@ -153,49 +169,37 @@ namespace Mono.TextEditor.Highlighting
 			SyntaxMode mode = (SyntaxMode)data[1];
 			int startOffset = (int)data[2];
 			int endOffset   = (int)data[3];
-			int lineOffset  = 0;
-			bool foundEndLine = false;
-			bool equal = false;
-			RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = doc.Splitter.GetByOffset (startOffset).Iter;
+			bool doUpdate = false;
 			LineSegment endLine = doc.Splitter.GetByOffset (endOffset);
+			RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = doc.Splitter.GetByOffset (startOffset).Iter;
 			Stack<Span> spanStack = iter.Current.StartSpan != null ? new Stack<Span> (iter.Current.StartSpan) : new Stack<Span> ();
 			do {
 				LineSegment line = iter.Current;
-				lineOffset = line.Offset;
-				if (lineOffset < 0)
+				if (line == null || line.Offset < 0)
 					break;
 				Span[] newSpans = spanStack.ToArray ();
-				if (foundEndLine) {
-					if (line.StartSpan == null || newSpans.Length == line.StartSpan.Length) {
-						equal = false;
-						if (line.StartSpan != null) {
-							equal = true;
-							for (int i = 0; i < newSpans.Length; i++) {
-								if (line.StartSpan[i] != newSpans[i]) {
-									equal = false;
-									break;
-								}
-							}
-						}
-						if (equal)
-							break;
-					}
+				if (line.Offset >= endOffset) {
+					bool equal = IsEqual (line.StartSpan, newSpans);
+					doUpdate |= !equal;
+					if (equal) 
+						break;
 				}
 				line.StartSpan = newSpans.Length > 0 ? newSpans : null;
 				Rule rule = mode;
 				if (spanStack.Count > 0 && !String.IsNullOrEmpty (spanStack.Peek ().Rule)) {
 					rule = mode.GetRule (spanStack.Peek ().Rule) ?? mode;
 				}
-				ScanSpans (doc, rule, spanStack, lineOffset, lineOffset + line.EditableLength);
+				ScanSpans (doc, rule, spanStack, line.Offset, line.Offset + line.EditableLength);
+				System.Console.WriteLine(spanStack.Count);
 				while (spanStack.Count > 0 && spanStack.Peek ().StopAtEol)
 					spanStack.Pop ();
-				if (line == endLine) {
-					foundEndLine = true;
-				}
 			} while (iter.MoveNext ());
-			if (!equal) {
-				doc.RequestUpdate (new UpdateAll ());
-				doc.CommitDocumentUpdate ();
+			if (doUpdate) {
+				GLib.Timeout.Add (0, delegate {
+					doc.RequestUpdate (new UpdateAll ());
+					doc.CommitDocumentUpdate ();
+					return false;
+				});
 			}
 		}
 		

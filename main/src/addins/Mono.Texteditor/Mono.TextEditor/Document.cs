@@ -301,7 +301,6 @@ namespace Mono.TextEditor
 			bool needsUpdate = foldSegments.Count != newSegments.Count;
 			foldSegments = newSegments;
 			if (needsUpdate) {
-				System.Console.WriteLine("UPDATE!!!");
 				RequestUpdate (new UpdateAll ());
 				CommitDocumentUpdate ();
 				
@@ -437,6 +436,7 @@ namespace Mono.TextEditor
 		
 		public void RequestUpdate (DocumentUpdateRequest request)
 		{
+//			System.Console.WriteLine(request);
 			updateRequests.Add (request);
 		}
 		

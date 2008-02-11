@@ -133,7 +133,7 @@ namespace Mono.TextEditor
 		
 		public override string ToString ()
 		{
-			return String.Format ("[LineSegment: Offset={0}, Length={1}, DelimiterLength={2}]", this.Offset, this.Length, this.DelimiterLength);
+			return String.Format ("[LineSegment: Offset={0}, Length={1}, DelimiterLength={2}, StartSpan={3}]", this.Offset, this.Length, this.DelimiterLength, StartSpan == null ? "null" : StartSpan.Length.ToString());
 		}
 		
 		public void Dispose ()
