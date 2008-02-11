@@ -1,5 +1,10 @@
 2008-02-11  Mike Krüger <mkrueger@novell.com> 
 
+	* TangoLightStyle.xml, Mono.TextEditor.Highlighting/Style.cs, C64Style.xml:
+	  Reversed bookmark color.
+
+2008-02-11  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextViewMargin.cs,
 	  Mono.TextEditor/TextEditor.cs: Middle mouse button paste now works.
 

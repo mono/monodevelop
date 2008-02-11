@@ -80,8 +80,8 @@
 	<Style name="bracketHighlightRectangle" color="aluminium4"/>
 	<Style name="bracketHighlightBg" color="aluminium1"/>
 	
-	<Style name="bookmarkColor1" color="skyblue2"/>
-	<Style name="bookmarkColor2" color="white"/>
+	<Style name="bookmarkColor1" color="white"/>
+	<Style name="bookmarkColor2" color="skyblue2"/>
 
 	<!-- highlighting -->
 	<Style name="comment" color="chameleon3"/>

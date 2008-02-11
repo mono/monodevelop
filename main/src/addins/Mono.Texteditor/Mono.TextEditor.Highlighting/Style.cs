@@ -222,9 +222,8 @@ namespace Mono.TextEditor.Highlighting
 			bracketHighlightBg        = new Gdk.Color (196, 196, 196);
 			bracketHighlightRectangle = new Gdk.Color (128, 128, 128);
 			
-			bookmarkColor1 = new Gdk.Color (105, 156, 235);
-			bookmarkColor2 = new Gdk.Color (255, 255, 255);
-			
+			bookmarkColor1 = new Gdk.Color (255, 255, 255);
+			bookmarkColor2 = new Gdk.Color (105, 156, 235);
 			
 			SetStyle ("comment", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255), false, false));
 			SetStyle ("altcomment", new Mono.TextEditor.ChunkStyle (new Gdk.Color (128, 128, 128), true, false));
