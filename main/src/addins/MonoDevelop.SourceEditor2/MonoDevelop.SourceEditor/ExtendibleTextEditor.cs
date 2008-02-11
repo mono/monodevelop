@@ -151,11 +151,16 @@ namespace MonoDevelop.SourceEditor
 			}
 			return result;
 		}
+		public TextViewMargin TextViewMargin {
+			get {
+				return textViewMargin;
+			}
+		}
 		
 		double mx, my;
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion evnt)
 		{
-			mx = evnt.X - this.XOffset;
+			mx = evnt.X - textViewMargin.XOffset;
 			my = evnt.Y;
 			bool result = base.OnMotionNotifyEvent (evnt);
 			UpdateLanguageItemWindow ();

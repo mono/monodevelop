@@ -532,7 +532,7 @@ namespace MonoDevelop.SourceEditor
 			widget.ParentWindow.GetOrigin (out tx, out ty);
 			tx += widget.TextEditor.Allocation.X;
 			ty += widget.TextEditor.Allocation.Y;
-			result.TriggerXCoord = tx + p.X + this.widget.TextEditor.XOffset - (int)this.widget.TextEditor.TextEditorData.HAdjustment.Value;
+			result.TriggerXCoord = tx + p.X + widget.TextEditor.TextViewMargin.XOffset - (int)this.widget.TextEditor.TextEditorData.HAdjustment.Value;
 			result.TriggerYCoord = ty + p.Y - (int)this.widget.TextEditor.TextEditorData.VAdjustment.Value + this.widget.TextEditor.LineHeight;
 			result.TriggerTextHeight = this.widget.TextEditor.LineHeight;
 			return result;
@@ -985,7 +985,7 @@ namespace MonoDevelop.SourceEditor
 						gpc.SetFont (font);
 					}
 					gpc.Show (text);
-					xPos += widget.TextEditor.GetWidth (text);
+					xPos += widget.TextEditor.TextViewMargin.GetWidth (text);
 				}
 				xPos = marginLeft;
 				yPos += widget.TextEditor.LineHeight;
