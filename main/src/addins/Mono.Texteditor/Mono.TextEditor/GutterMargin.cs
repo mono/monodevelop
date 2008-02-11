@@ -90,17 +90,26 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		Gdk.GC lineNumberBgGC, lineNumberGC, lineNumberHighlightGC;
+		public override void OptionsChanged ()
+		{
+			lineNumberBgGC = new Gdk.GC (editor.GdkWindow);
+			lineNumberBgGC.RgbFgColor = editor.ColorStyle.LineNumberBg;
+			
+			lineNumberGC = new Gdk.GC (editor.GdkWindow);
+			lineNumberGC.RgbFgColor = editor.ColorStyle.LineNumberFg;
+			
+			lineNumberHighlightGC = new Gdk.GC (editor.GdkWindow);
+			lineNumberHighlightGC.RgbFgColor = editor.ColorStyle.LineNumberFgHighlighted;
+		}
+				
 		public override void Draw (Gdk.Window win, Gdk.Rectangle area, int line, int x, int y)
 		{
 			Gdk.Rectangle drawArea = new Rectangle (x, y, Width, editor.LineHeight);
-			
-			Gdk.GC gc = new Gdk.GC (win);
-			gc.RgbFgColor = editor.ColorStyle.LineNumberBg;
-			win.DrawRectangle (gc, true, drawArea);
+			win.DrawRectangle (lineNumberBgGC, true, drawArea);
 			if (line < editor.Splitter.LineCount) {
 				layout.SetText ((line + 1).ToString ());
-				gc.RgbFgColor = editor.Caret.Line == line ? editor.ColorStyle.LineNumberFgHighlighted : editor.ColorStyle.LineNumberFg;
-				win.DrawLayout (gc, x + 1, y, layout);
+				win.DrawLayout (editor.Caret.Line == line ? lineNumberHighlightGC : lineNumberGC, x + 1, y, layout);
 			}
 		}
 

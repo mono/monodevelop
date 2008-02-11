@@ -1,3 +1,13 @@
+2008-02-11  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/FoldMarkerMargin.cs, Mono.TextEditor/IMargin.cs,
+	  Mono.TextEditor/TextEditor.cs, Mono.TextEditor/BookmarkMargin.cs,
+	  Mono.TextEditor/GutterMargin.cs,
+	  Mono.TextEditor.Highlighting/SyntaxMode.cs,
+	  Mono.TextEditor.Highlighting/SyntaxModeService.cs,
+	  Mono.TextEditor.Highlighting/Rule.cs: Optimized performance a bit. (To
+	  get real performance gain, scrolling must be solved differently)
+
 2008-02-10  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/LineSplitter.cs, Mono.TextEditor/TextEditor.cs,

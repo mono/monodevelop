@@ -82,28 +82,37 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public override void OptionsChanged ()
+		{
+			foldBgGC = new Gdk.GC (editor.GdkWindow);
+			foldBgGC.RgbFgColor = editor.ColorStyle.FoldBg;
+			
+			foldLineGC = new Gdk.GC (editor.GdkWindow);
+			foldLineGC.RgbFgColor = editor.ColorStyle.FoldLine;
+			
+			foldLineHighlightedGC = new Gdk.GC (editor.GdkWindow);
+			foldLineHighlightedGC.RgbFgColor = editor.ColorStyle.FoldLineHighlighted;
+			
+			foldToggleMarkerGC = new Gdk.GC (editor.GdkWindow);
+			foldToggleMarkerGC.RgbFgColor = editor.ColorStyle.FoldToggleMarker;
+		}
+		
+		Gdk.GC foldBgGC, foldLineGC, foldLineHighlightedGC, foldToggleMarkerGC;
 		
 		void DrawFoldSegment (Gdk.Window win, int x, int y, bool isOpen, bool isSelected)
 		{
-			
-			Gdk.GC gc = new Gdk.GC (win);
-			
 			Gdk.Rectangle drawArea = new Gdk.Rectangle (x + 3, y + 3, foldSegmentSize, foldSegmentSize);
-			gc.RgbFgColor = editor.ColorStyle.FoldBg;
-			win.DrawRectangle (gc, true, drawArea);
-						
-			gc.RgbFgColor = isSelected ? editor.ColorStyle.FoldLineHighlighted : editor.ColorStyle.FoldLine;
-			win.DrawRectangle (gc, false, drawArea);
+			win.DrawRectangle (foldBgGC, true, drawArea);
+			win.DrawRectangle (isSelected ? foldLineHighlightedGC  : foldLineGC, false, drawArea);
 			
-			gc.RgbFgColor = editor.ColorStyle.FoldToggleMarker;
-			win.DrawLine (gc, 
+			win.DrawLine (foldToggleMarkerGC, 
 			              drawArea.Left  + 2,
 			              drawArea.Top + 4,
 			              drawArea.Right - 2,
 			              drawArea.Top + 4);
 			
 			if (!isOpen)
-				win.DrawLine (gc, 
+				win.DrawLine (foldToggleMarkerGC, 
 				              drawArea.Left  + 4,
 				              drawArea.Top + 2,
 				              drawArea.Left  + 4,
@@ -112,11 +121,9 @@ namespace Mono.TextEditor
 		
 		void DrawDashedVLine (Gdk.Window win, int x, int top, int bottom)
 		{
-			Gdk.GC gc = new Gdk.GC (win);
-			gc.RgbFgColor = editor.ColorStyle.FoldLine;
 			for (int i = top; i <= bottom; i++) {
 				if (i % 2 == 0)
-					win.DrawPoint (gc, x, i);
+					win.DrawPoint (foldLineGC, x, i);
 			}
 		}
 		
@@ -132,14 +139,7 @@ namespace Mono.TextEditor
 		public override void Draw (Gdk.Window win, Gdk.Rectangle area, int line, int x, int y)
 		{
 			Gdk.Rectangle drawArea = new Gdk.Rectangle (x, y, Width, editor.LineHeight);
-			Gdk.GC gc = new Gdk.GC (win);
-			Gdk.GC selectedGc = new Gdk.GC (win);
-			selectedGc.RgbFgColor = editor.ColorStyle.FoldLineHighlighted;
-			
-			gc.RgbFgColor = editor.ColorStyle.FoldBg;
-			win.DrawRectangle (gc, true, drawArea);
-
-			gc.RgbFgColor = editor.ColorStyle.FoldLine;
+			win.DrawRectangle (foldBgGC, true, drawArea);
 			DrawDashedVLine (win, x, drawArea.Top, drawArea.Bottom);
 			
 			if (line < editor.Splitter.LineCount) {
@@ -176,18 +176,18 @@ namespace Mono.TextEditor
 					}
 					DrawFoldSegment (win, x, y, isVisible, isStartSelected);
 					if (isContaining || isFoldEndFromUpperFold) 
-						win.DrawLine (isContainingSelected ? selectedGc : gc, xPos, drawArea.Top, xPos, foldSegmentYPos - 1);
+						win.DrawLine (isContainingSelected ? foldLineHighlightedGC : foldLineGC, xPos, drawArea.Top, xPos, foldSegmentYPos - 1);
 					if (isContaining || moreLinedOpenFold) 
-						win.DrawLine (isEndSelected || (isStartSelected && isVisible) || isContainingSelected ? selectedGc : gc, xPos, foldSegmentYPos + foldSegmentSize + 1, xPos, drawArea.Bottom);
+						win.DrawLine (isEndSelected || (isStartSelected && isVisible) || isContainingSelected ? foldLineHighlightedGC : foldLineGC, xPos, foldSegmentYPos + foldSegmentSize + 1, xPos, drawArea.Bottom);
 				} else {
 					if (isFoldEnd) {
 						int yMid = drawArea.Top + drawArea.Height / 2;
-						win.DrawLine (isEndSelected ? selectedGc : gc, xPos, yMid, xPos + foldSegmentSize / 2, yMid);
-						win.DrawLine (isContainingSelected || isEndSelected ? selectedGc : gc, xPos, drawArea.Top, xPos, yMid);
+						win.DrawLine (isEndSelected ? foldLineHighlightedGC : foldLineGC, xPos, yMid, xPos + foldSegmentSize / 2, yMid);
+						win.DrawLine (isContainingSelected || isEndSelected ? foldLineHighlightedGC : foldLineGC, xPos, drawArea.Top, xPos, yMid);
 						if (isContaining) 
-							win.DrawLine (isContainingSelected ? selectedGc : gc, xPos, yMid + 1, xPos, drawArea.Bottom);					
+							win.DrawLine (isContainingSelected ? foldLineHighlightedGC : foldLineGC, xPos, yMid + 1, xPos, drawArea.Bottom);
 					} else if (isContaining) {
-						win.DrawLine (isContainingSelected ? selectedGc : gc, xPos, drawArea.Top, xPos, drawArea.Bottom);
+						win.DrawLine (isContainingSelected ? foldLineHighlightedGC : foldLineGC, xPos, drawArea.Top, xPos, drawArea.Bottom);
 					}
 				}
 			}

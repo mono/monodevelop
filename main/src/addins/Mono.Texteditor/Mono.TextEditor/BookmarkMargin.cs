@@ -33,6 +33,7 @@ namespace Mono.TextEditor
 	public class BookmarkMargin : AbstractMargin
 	{
 		TextEditor editor;
+		Gdk.GC backgroundGC, seperatorGC;
 		
 		static Gdk.Pixbuf bookmarkPixbuf;
 		
@@ -52,6 +53,15 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public override void OptionsChanged ()
+		{
+			backgroundGC = new Gdk.GC (editor.GdkWindow);
+			backgroundGC.RgbFgColor = editor.ColorStyle.IconBarBg;
+			
+			seperatorGC = new Gdk.GC (editor.GdkWindow);
+			seperatorGC.RgbFgColor = editor.ColorStyle.IconBarSeperator;
+		}
+
 		public override void MousePressed (int button, int x, int y, bool doubleClick)
 		{
 			if (button != 1 || doubleClick)
@@ -68,16 +78,13 @@ namespace Mono.TextEditor
 		public override void Draw (Gdk.Window win, Gdk.Rectangle area, int line, int x, int y)
 		{
 			Gdk.Rectangle drawArea = new Gdk.Rectangle (x, y, Width, editor.LineHeight);
-			Gdk.GC gc = new Gdk.GC (win);
-			gc.RgbFgColor = editor.ColorStyle.IconBarBg;
-			win.DrawRectangle (gc, true, drawArea);
-			gc.RgbFgColor = editor.ColorStyle.IconBarSeperator;
-			win.DrawLine (gc, x + Width - 1, drawArea.Top, x + Width - 1, drawArea.Bottom);
+			
+			win.DrawRectangle (backgroundGC, true, drawArea);
+			win.DrawLine (seperatorGC, x + Width - 1, drawArea.Top, x + Width - 1, drawArea.Bottom);
 			if (line < editor.Splitter.LineCount) {
 				LineSegment lineSegment = editor.Document.GetLine (line);
-				if (lineSegment.IsBookmarked) {
-					win.DrawPixbuf (editor.Style.BackgroundGC (StateType.Normal), bookmarkPixbuf, 0, 0, x + 1, y, bookmarkPixbuf.Width, bookmarkPixbuf.Height, Gdk.RgbDither.None, 0, 0);
-				}
+				if (lineSegment.IsBookmarked) 
+					win.DrawPixbuf (backgroundGC, bookmarkPixbuf, 0, 0, x + 1, y, bookmarkPixbuf.Width, bookmarkPixbuf.Height, Gdk.RgbDither.None, 0, 0);
 			}
 		}
 	}

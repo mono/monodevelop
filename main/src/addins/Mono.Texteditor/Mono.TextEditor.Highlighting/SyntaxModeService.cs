@@ -240,6 +240,7 @@ namespace Mono.TextEditor.Highlighting
 				}
 				reader.Close ();
 			}
+			SyntaxModeService.GetSyntaxMode ("text/x-csharp").AddSemanticRule ("Comment", new SemanticRule ());
 		}
 	}
 }

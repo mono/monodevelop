@@ -33,6 +33,13 @@ using System.Xml;
 
 namespace Mono.TextEditor.Highlighting
 {
+	public class SemanticRule
+	{
+		public virtual void Analyze (Document doc, List<Chunk> chunks, int startOffset, int endOffset)
+		{
+//			System.Console.WriteLine(doc.Buffer.GetTextAt (startOffset, endOffset - startOffset));
+		}
+	}
 	public class Rule
 	{
 		protected string name;
@@ -43,6 +50,8 @@ namespace Mono.TextEditor.Highlighting
 		protected List<Span> spans = new List<Span> ();
 		protected List<Match> matches = new List<Match> ();
 		protected List<Marker> prevMarker = new List<Marker> ();
+		
+		public List<SemanticRule> SemanticRules = new List<SemanticRule> ();
 		
 		public string Name {
 			get {
@@ -118,9 +127,6 @@ namespace Mono.TextEditor.Highlighting
 			return false;
 		}
 		
-			
-		
-		
 		public class Pair<S, T>
 		{
 			public S o1;
@@ -195,7 +201,7 @@ namespace Mono.TextEditor.Highlighting
 				}
 			}
 		}
-		                         
+		
 		public const string Node = "Rule";
 		public static Rule Read (XmlReader reader)
 		{

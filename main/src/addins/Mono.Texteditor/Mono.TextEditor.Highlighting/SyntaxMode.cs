@@ -77,6 +77,7 @@ namespace Mono.TextEditor.Highlighting
 			Rule.Pair<Span, object>   spanPair = null;
 			
 			Span curSpan;
+			int ruleStart;
 			
 			public ChunkParser (Document doc, Style style, SyntaxMode mode, LineSegment line)
 			{
@@ -85,6 +86,7 @@ namespace Mono.TextEditor.Highlighting
 				this.mode = mode;
 				this.line = line;
 			}
+			
 			void AddChunk (ref Chunk curChunk, int length, ChunkStyle style)
 			{
 				if (curChunk.Length > 0) {
@@ -134,7 +136,7 @@ namespace Mono.TextEditor.Highlighting
 				wordOffset = 0;
 			}
 			
-			void SetSpan ()
+			void SetSpan (int offset)
 			{
 				curSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
 				if (curSpan != null) { 
@@ -149,6 +151,12 @@ namespace Mono.TextEditor.Highlighting
 					curRule  = mode;
 					spanTree = curRule.spanTree;
 				}
+				if (curRule != null) {
+					foreach (SemanticRule semanticRule in curRule.SemanticRules) {
+						semanticRule.Analyze (this.doc, result, ruleStart, offset);
+					}
+				}
+				ruleStart = offset;
 			}
 			
 			int wordOffset =  0; 
@@ -159,6 +167,7 @@ namespace Mono.TextEditor.Highlighting
 			public Chunk[] GetChunks (int offset, int length)
 			{
 				curRule = mode;
+				this.ruleStart = offset;
 				spanStack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
 				SyntaxModeService.ScanSpans (doc, curRule, spanStack, line.Offset, offset);
 				pair = null;
@@ -166,10 +175,10 @@ namespace Mono.TextEditor.Highlighting
 				maxEnd = System.Math.Min (offset + length, line.Offset + line.EditableLength);
 				
 				int endOffset = 0;
-				SetSpan ();
+				SetSpan (offset);
 				SetTree ();
 				bool isNoKeyword = false;
-//				bool isAfterSpan = false;
+//		bool isAfterSpan = false;
 				for (int i = offset; i < maxEnd; i++) {
 					char ch = doc.Buffer.GetCharAt (i);
 					if (curSpan != null && !String.IsNullOrEmpty (curSpan.End)) {
@@ -179,7 +188,7 @@ namespace Mono.TextEditor.Highlighting
 								curChunk.Length -= curSpan.End.Length - 1;
 								AddChunk (ref curChunk, curSpan.End.Length, !String.IsNullOrEmpty (curSpan.TagColor) ? style.GetChunkStyle (curSpan.TagColor) : GetSpanStyle (spanStack));
 								spanStack.Pop ();
-								SetSpan ();
+								SetSpan (i);
 								SetTree ();
 								curChunk.Style  = GetSpanStyle (spanStack);
 								endOffset = 0;
@@ -208,14 +217,12 @@ namespace Mono.TextEditor.Highlighting
 							curChunk.Length -= span.Begin.Length - 1;
 							
 							AddChunk (ref curChunk, span.Begin.Length, !String.IsNullOrEmpty (span.TagColor) ? style.GetChunkStyle (span.TagColor) : GetSpanStyle (spanStack));
-							SetSpan ();
+							SetSpan (i);
 							SetTree ();
 							if (!String.IsNullOrEmpty (span.NextColor))
 								curChunk.Style = style.GetChunkStyle (span.NextColor);
 							continue;
 						}
-					} else {
-						SetSpan ();
 					}
 				 skip:
 						;
@@ -251,10 +258,11 @@ namespace Mono.TextEditor.Highlighting
 					AddChunk (ref curChunk, wordOffset, GetChunkStyleColor (spanStack, pair.o1));
 					curChunk.Style = GetChunkStyleColor (spanStack, pair.o1);
 				}
-				if (curChunk.Length > 0) {
-					result.Add (curChunk);
-				}
 				
+				if (curChunk.Length > 0) 
+					result.Add (curChunk);
+				
+				SetSpan (maxEnd);
 				return result.ToArray ();
 			}
 		}
@@ -266,6 +274,13 @@ namespace Mono.TextEditor.Highlighting
 					return rule;
 			}
 			return null;
+		}
+		
+		public void AddSemanticRule (string name, SemanticRule semanticRule)
+		{
+			Rule rule = GetRule (name);
+			if (rule != null)
+				rule.SemanticRules.Add (semanticRule);
 		}
 		
 		public override string ToString ()
