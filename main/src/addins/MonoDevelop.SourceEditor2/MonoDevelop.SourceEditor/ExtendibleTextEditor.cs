@@ -109,16 +109,29 @@ namespace MonoDevelop.SourceEditor
 		{
 			bool result = true;
 			char ch = (char)evnt.Key;
+			
+			bool inStringOrComment = false;
+			if (SourceEditorOptions.Options.AutoInsertMatchingBracket && (ch == '{' || ch == '[' || ch == '(' || ch == '"' || ch == '\'' )) {
+				LineSegment line = Document.GetLine (Caret.Line);
+				Stack<Span> stack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
+				SyntaxModeService.ScanSpans (Document, TextEditorData.Document.SyntaxMode, stack, line.Offset, Caret.Offset);
+				foreach (Span span in stack) {
+					if (span.Color == "comment" || span.Color == "literal") {
+						inStringOrComment = true;
+						break;
+					}
+				}
+			}
 			if (extension != null) {
 				if (!extension.KeyPress (evnt.Key, evnt.State)) {
 					result = base.OnKeyPressEvent (evnt);
 				}
 			} else {
-				result = base.OnKeyPressEvent (evnt);				
+				result = base.OnKeyPressEvent (evnt);
 			}
 			if (SourceEditorOptions.Options.AutoInsertTemplates && IsTemplateKnown ())
 				DoInsertTemplate ();
-			if (SourceEditorOptions.Options.AutoInsertMatchingBracket) {
+			if (SourceEditorOptions.Options.AutoInsertMatchingBracket && !inStringOrComment) {
 				switch (ch) {
 				case '{':
 					if (extension != null) {
@@ -137,9 +150,6 @@ namespace MonoDevelop.SourceEditor
 					break;
 				case '(':
 					Buffer.Insert (Caret.Offset, new StringBuilder (")"));
-					break;
-				case '<':
-					Buffer.Insert (Caret.Offset, new StringBuilder (">"));
 					break;
 				case '\'':
 					Buffer.Insert (Caret.Offset, new StringBuilder ("'"));
