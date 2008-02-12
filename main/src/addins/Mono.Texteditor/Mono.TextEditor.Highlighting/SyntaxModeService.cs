@@ -244,7 +244,9 @@ namespace Mono.TextEditor.Highlighting
 				}
 				reader.Close ();
 			}
-			SyntaxModeService.GetSyntaxMode ("text/x-csharp").AddSemanticRule ("Comment", new SemanticRule ());
+			SyntaxModeService.GetSyntaxMode ("text/x-csharp").AddSemanticRule ("Comment", new SemanticRule ("comment"));
+			SyntaxModeService.GetSyntaxMode ("text/x-csharp").AddSemanticRule ("XmlDocumentation", new SemanticRule ("comment"));
+			SyntaxModeService.GetSyntaxMode ("text/x-csharp").AddSemanticRule ("String", new SemanticRule ("literal"));
 		}
 	}
 }

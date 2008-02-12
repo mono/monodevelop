@@ -140,6 +140,7 @@ namespace Mono.TextEditor
 				int newLineLength = line.EndOffset - (offset + textOffset);
 				int oldDelimiterLength = line.DelimiterLength;
 				lines.ChangeLength (line, offset + delimiter.EndOffset - line.Offset, delimiter.Length);
+				line.ClearMarker ();
 				line = this.lines.InsertAfter (line, newLineLength, oldDelimiterLength);
 //				OnLineLenghtChanged (new LineEventArgs (line));
 				textOffset = delimiter.EndOffset;

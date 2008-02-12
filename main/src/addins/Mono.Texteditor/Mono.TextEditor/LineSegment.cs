@@ -123,12 +123,36 @@ namespace Mono.TextEditor
 			markers.Add (marker);
 		}
 		
+		public void ClearMarker ()
+		{
+			if (markers != null) {
+				markers.Clear ();
+				markers = null;
+			}
+		}
+		
 		public void RemoveMarker (TextMarker marker)
 		{
 			marker.LineSegment = null;
+			if (markers == null)
+				return;
 			markers.Remove (marker);
 			if (markers.Count == 0)
 				markers = null;
+		}
+		
+		public void RemoveMarker (Type type)
+		{
+			if (markers == null)
+				return;
+			for (int i = 0; i < markers.Count; i++) {
+				if (markers[i].GetType () == type) {
+					RemoveMarker (markers[i]);
+					if (markers == null)
+						return;
+					i--;
+				}
+			}
 		}
 		
 		public override string ToString ()

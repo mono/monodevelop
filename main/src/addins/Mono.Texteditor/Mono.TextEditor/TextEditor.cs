@@ -549,7 +549,6 @@ namespace Mono.TextEditor
 				return this.textViewMargin.LineHeight;
 			}
 		}
-
 		
 		public Gdk.Point DocumentToVisualLocation (DocumentLocation loc)
 		{
@@ -599,6 +598,10 @@ namespace Mono.TextEditor
 				                       this.textViewMargin.charWidth,
 				                       this.Allocation.Width,
 				                       this.Allocation.Width);
+		}
+		public int GetWidth (string text)
+		{
+			return this.textViewMargin.GetWidth (text);
 		}
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose e)

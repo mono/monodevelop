@@ -1,5 +1,19 @@
 2008-02-12  Mike Krüger <mkrueger@novell.com> 
 
+	* CSharpSyntaxMode.xml, Mono.TextEditor/LineSplitter.cs,
+	  Mono.TextEditor/TextMarker.cs, Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor/LineSegment.cs,
+	  Mono.TextEditor.Highlighting/SyntaxMode.cs,
+	  Mono.TextEditor.Highlighting/SyntaxModeService.cs,
+	  Mono.TextEditor.Highlighting/Rule.cs: Started support for semantic
+	  highlighting. Urls+email addresses in comments and strings are
+	  highlighted.
+	
+	  (Yes I know that THIS doesn't need to be done with semantic
+	  highlighting, but I need to test it out somewhere)
+
+2008-02-12  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/Document.cs,
 	  Mono.TextEditor/FoldMarkerMargin.cs, Mono.TextEditor/BookmarkMargin.cs,
 	  Mono.TextEditor/GutterMargin.cs,

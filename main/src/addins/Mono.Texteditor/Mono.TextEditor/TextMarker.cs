@@ -28,6 +28,38 @@ using Gdk;
 
 namespace Mono.TextEditor
 {
+	public class UrlMarker : TextMarker
+	{
+		string url;
+		string style;
+		int startColumn;
+		int endColumn;
+		LineSegment line;
+		
+		public UrlMarker (LineSegment line, string url, string style, int startColumn, int endColumn)
+		{
+			this.line        = line;
+			this.url         = url;
+			this.style       = style;
+			this.startColumn = startColumn;
+			this.endColumn   = endColumn;
+		}
+		
+		public override void Draw (TextEditor editor, Gdk.Window win, int startOffset, int endOffset, int y, int startXPos, int endXPos)
+		{
+			using (Gdk.GC gc = new Gdk.GC (win)) {
+				int width1 = editor.GetWidth (editor.Buffer.GetTextAt (line.Offset, startColumn));
+				int width2 = editor.GetWidth (editor.Buffer.GetTextAt (line.Offset + startColumn, endColumn - startColumn));
+				gc.RgbFgColor = editor.ColorStyle.GetChunkStyle (style).Color;
+				win.DrawLine (gc, 
+				              startXPos + width1,
+				              y + editor.LineHeight - 1,
+				              startXPos + width1 + width2,
+				              y + editor.LineHeight - 1);
+			}
+		}
+	}
+	
 	public class TextMarker
 	{
 		LineSegment lineSegment;
@@ -41,7 +73,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public void Draw (TextEditor editor, Gdk.Window win, int startOffset, int endOffset, int y, int startXPos, int endXPos)
+		public virtual void Draw (TextEditor editor, Gdk.Window win, int startOffset, int endOffset, int y, int startXPos, int endXPos)
 		{
 			using (Gdk.GC gc = new Gdk.GC (win)) {
 				gc.RgbFgColor = new Color (255, 0, 0);

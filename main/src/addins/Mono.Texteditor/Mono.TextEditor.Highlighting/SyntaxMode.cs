@@ -139,6 +139,11 @@ namespace Mono.TextEditor.Highlighting
 			void SetSpan (int offset)
 			{
 				curSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
+				if (curRule != null) {
+					foreach (SemanticRule semanticRule in curRule.SemanticRules) {
+						semanticRule.Analyze (this.doc, line, result, ruleStart, offset);
+					}
+				}
 				if (curSpan != null) { 
 					curRule = mode.GetRule (curSpan.Rule);
 					if (curRule == null) {
@@ -151,11 +156,7 @@ namespace Mono.TextEditor.Highlighting
 					curRule  = mode;
 					spanTree = curRule.spanTree;
 				}
-				if (curRule != null) {
-					foreach (SemanticRule semanticRule in curRule.SemanticRules) {
-						semanticRule.Analyze (this.doc, result, ruleStart, offset);
-					}
-				}
+				
 				ruleStart = offset;
 			}
 			
