@@ -667,13 +667,14 @@ namespace MonoDevelop.Ide.Gui
 				ExtensionNode generalOptionsNode = AddinManager.GetExtensionNode ("/MonoDevelop/ProjectModel/Gui/ProjectOptions/GeneralOptions");
 				ExtensionNode configurationPropertiesNode = AddinManager.GetExtensionNode ("/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions");
 				
-				ProjectOptionsDialog optionsDialog = new ProjectOptionsDialog (IdeApp.Workbench.RootWindow, selectedProject, generalOptionsNode, configurationPropertiesNode);
-				if (panelId != null)
-					optionsDialog.SelectPanel (panelId);
+				using (ProjectOptionsDialog optionsDialog = new ProjectOptionsDialog (IdeApp.Workbench.RootWindow, selectedProject, generalOptionsNode, configurationPropertiesNode)) {
+					if (panelId != null)
+						optionsDialog.SelectPanel (panelId);
 					
-				if (optionsDialog.Run() == (int)Gtk.ResponseType.Ok) {
-					selectedProject.NeedsBuilding = true;
-					SaveProject (selectedProject);
+					if (optionsDialog.Run() == (int)Gtk.ResponseType.Ok) {
+						selectedProject.NeedsBuilding = true;
+						SaveProject (selectedProject);
+					}
 				}
 			} else if (entry is Combine) {
 				Combine combine = (Combine) entry;
@@ -681,11 +682,12 @@ namespace MonoDevelop.Ide.Gui
 				ExtensionNode generalOptionsNode = AddinManager.GetExtensionNode ("/MonoDevelop/ProjectModel/Gui/CombineOptions/GeneralOptions");
 				ExtensionNode configurationPropertiesNode = AddinManager.GetExtensionNode ("/MonoDevelop/ProjectModel/Gui/CombineOptions/ConfigurationOptions");
 				
-				CombineOptionsDialog optionsDialog = new CombineOptionsDialog (IdeApp.Workbench.RootWindow, combine, generalOptionsNode, configurationPropertiesNode);
-				if (panelId != null)
-					optionsDialog.SelectPanel (panelId);
-				if (optionsDialog.Run () == (int) Gtk.ResponseType.Ok)
-					SaveCombine ();
+				using (CombineOptionsDialog optionsDialog = new CombineOptionsDialog (IdeApp.Workbench.RootWindow, combine, generalOptionsNode, configurationPropertiesNode)) {
+					if (panelId != null)
+						optionsDialog.SelectPanel (panelId);
+					if (optionsDialog.Run () == (int) Gtk.ResponseType.Ok)
+						SaveCombine ();
+				}
 			}
 		}
 		

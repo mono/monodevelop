@@ -1,3 +1,9 @@
+2008-02-12  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Dispose options dialog when done
+	  with it. Fixes "Bug 358361 - Have to hit esc twice to close the file/new
+	  file dialog".
+
 2008-02-08  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Dom.Output/Ambience.cs,
