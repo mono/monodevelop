@@ -509,7 +509,7 @@ namespace Mono.TextEditor
 			if (oldMargin != margin && oldMargin != null)
 				oldMargin.MouseLeft ();
 			
-			if (textViewMargin.inDrag && margin == this) {
+			if (textViewMargin.inDrag && margin == this.textViewMargin) {
 				dragContents = new CopyAction ();
 				dragContents.CopyData (this.TextEditorData);
 				Gtk.Drag.Begin (this, CopyAction.TargetList, DragAction.Move | DragAction.Copy, 1, e);

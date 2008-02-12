@@ -1,5 +1,9 @@
 2008-02-12  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextEditor.cs: Fixed an error.
+
+2008-02-12  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor.mdp, Mono.TextEditor/Document.cs,
 	  Mono.TextEditor.Highlighting/SyntaxMode.cs,
 	  Mono.TextEditor.Highlighting/SemanticRule.cs,
