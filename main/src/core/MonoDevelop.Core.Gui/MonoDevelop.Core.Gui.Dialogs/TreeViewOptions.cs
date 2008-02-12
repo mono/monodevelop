@@ -34,7 +34,8 @@ namespace MonoDevelop.Core.Gui.Dialogs {
 	/// TreeView options are used, when more options will be edited (for something like
 	/// IDE Options + Plugin Options)
 	/// </summary>
-	public class TreeViewOptions {
+	public class TreeViewOptions : IDisposable
+	{
 		List<IDialogPanel> optionPanels = new List<IDialogPanel> ();
 		protected Properties properties = null;
 		CommandManager cmdManager;
@@ -246,6 +247,15 @@ namespace MonoDevelop.Core.Gui.Dialogs {
 		protected virtual void OnButtonRelease(object sender, Gtk.ButtonReleaseEventArgs e)
 		{
 			// do nothing. this is need to wire up button release event for ProjectOptionsDialog
+		}
+
+		public void Dispose ()
+		{
+			if (TreeViewOptionDialog != null) {
+				TreeViewOptionDialog.Destroy ();
+				TreeViewOptionDialog.Dispose ();
+				TreeViewOptionDialog = null;
+			}
 		}
 
 	}
