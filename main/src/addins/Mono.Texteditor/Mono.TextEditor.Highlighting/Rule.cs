@@ -27,48 +27,12 @@
 
 using System;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Xml;
 
 namespace Mono.TextEditor.Highlighting
 {
-	public class SemanticRule
-	{
-		const string urlRegexStr = "https?://"
-				+ "?(([0-9a-z_!~*'().&=+$%-]+: )?[0-9a-z_!~*'().&=+$%-]+@)?" //user@
-				+ @"(([0-9]{1,3}\.){3}[0-9]{1,3}" // IP- 199.194.52.184
-				+ "|" // allows either IP or domain
-				+ @"([0-9a-z_!~*'()-]+\.)*" // tertiary domain(s)- www.
-				+ @"([0-9a-z][0-9a-z-]{0,61})?[0-9a-z]\." // second level domain
-				+ "[a-z]{2,6})" // first level domain- .com or .museum
-				+ "(:[0-9]{1,4})?" // port number- :80
-				+ "((/?)|" // a slash isn't required if there is no file name
-				+ "(/[0-9a-z_!~*'().;?:@&=+$,%#-]+)+/?)"; 
-		
-		static Regex urlRegex = new Regex (urlRegexStr, RegexOptions.Compiled);
-		static Regex mailRegex = new Regex (@"[\w\d._%+-]+@[\w\d.-]+\.\w{2,4}", RegexOptions.Compiled);
-		string syntax;
-		
-		public SemanticRule (string syntax)
-		{
-			this.syntax = syntax;
-		}
-		
-		public virtual void Analyze (Document doc, LineSegment line, List<Chunk> chunks, int startOffset, int endOffset)
-		{
-			string text = doc.Buffer.GetTextAt (startOffset, endOffset - startOffset);
-			int startColumn = startOffset - line.Offset;
-			line.RemoveMarker (typeof(UrlMarker));
-			foreach (System.Text.RegularExpressions.Match m in urlRegex.Matches (text)) {
-				line.AddMarker (new UrlMarker (line, m.Value, syntax, startColumn + m.Index, startColumn + m.Index + m.Length));
-			}
-			foreach (System.Text.RegularExpressions.Match m in mailRegex.Matches (text)) {
-				line.AddMarker (new UrlMarker (line, m.Value, syntax, startColumn + m.Index, startColumn + m.Index + m.Length));
-			}
-		}
-	}
 	public class Rule
 	{
 		protected string name;

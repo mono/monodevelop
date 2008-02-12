@@ -18,6 +18,7 @@ FILES =  \
 	Mono.TextEditor.Highlighting/Marker.cs \
 	Mono.TextEditor.Highlighting/Match.cs \
 	Mono.TextEditor.Highlighting/Rule.cs \
+	Mono.TextEditor.Highlighting/SemanticRule.cs \
 	Mono.TextEditor.Highlighting/Span.cs \
 	Mono.TextEditor.Highlighting/Style.cs \
 	Mono.TextEditor.Highlighting/SyntaxMode.cs \

@@ -277,11 +277,40 @@ namespace Mono.TextEditor.Highlighting
 			return null;
 		}
 		
-		public void AddSemanticRule (string name, SemanticRule semanticRule)
+		void AddSemanticRule (Rule rule, SemanticRule semanticRule)
 		{
-			Rule rule = GetRule (name);
 			if (rule != null)
 				rule.SemanticRules.Add (semanticRule);
+		}
+		
+		public void AddSemanticRule (SemanticRule semanticRule)
+		{
+			AddSemanticRule (this, semanticRule);
+		}
+		
+		public void AddSemanticRule (string addToRuleName, SemanticRule semanticRule)
+		{
+			AddSemanticRule (GetRule (addToRuleName), semanticRule);
+		}
+		
+		void RemoveSemanticRule (Rule rule, Type type)
+		{
+			if (rule != null) {
+				for (int i = 0; i < rule.SemanticRules.Count; i++) {
+					if (rule.SemanticRules[i].GetType () == type) {
+						rule.SemanticRules.RemoveAt (i);
+						i--;
+					}
+				}
+			}
+		}
+		public void RemoveSemanticRule (Type type)
+		{
+			RemoveSemanticRule (this, type);
+		}
+		public void RemoveSemanticRule (string removeFromRuleName, Type type)
+		{
+			RemoveSemanticRule (GetRule (removeFromRuleName), type);
 		}
 		
 		public override string ToString ()

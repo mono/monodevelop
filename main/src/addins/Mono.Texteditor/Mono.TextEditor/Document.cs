@@ -40,6 +40,10 @@ namespace Mono.TextEditor
 		LineSplitter splitter;
 		SyntaxMode   syntaxMode = null;
 		string       eol = null;
+		
+		string mimeType;
+		string fileName;
+		
 		public IBuffer Buffer {
 			get {
 				return buffer;
@@ -68,7 +72,6 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		string mimeType;
 		public string MimeType {
 			get {
 				return mimeType;
@@ -430,6 +433,15 @@ namespace Mono.TextEditor
 		public ReadOnlyCollection<DocumentUpdateRequest> UpdateRequests {
 			get {
 				return updateRequests.AsReadOnly ();
+			}
+		}
+
+		public string FileName {
+			get {
+				return fileName;
+			}
+			set {
+				fileName = value;
 			}
 		}
 		
