@@ -170,7 +170,7 @@ namespace Mono.TextEditor.Highlighting
 			int startOffset = (int)data[2];
 			int endOffset   = (int)data[3];
 			bool doUpdate = false;
-			LineSegment endLine = doc.Splitter.GetByOffset (endOffset);
+//			LineSegment endLine = doc.Splitter.GetByOffset (endOffset);
 			RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = doc.Splitter.GetByOffset (startOffset).Iter;
 			Stack<Span> spanStack = iter.Current.StartSpan != null ? new Stack<Span> (iter.Current.StartSpan) : new Stack<Span> ();
 			do {

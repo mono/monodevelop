@@ -90,6 +90,11 @@ namespace Mono.TextEditor
 				layout.Dispose ();
 				layout = null;
 			}
+			DisposeGCs ();
+		}
+		
+		void DisposeGCs ()
+		{
 			if (lineNumberBgGC != null) {
 				lineNumberBgGC.Dispose ();
 				lineNumberBgGC = null;
@@ -108,6 +113,7 @@ namespace Mono.TextEditor
 		public override void OptionsChanged ()
 		{
 			layout.FontDescription = TextEditorOptions.Options.Font;
+			DisposeGCs ();
 			lineNumberBgGC = new Gdk.GC (editor.GdkWindow);
 			lineNumberBgGC.RgbFgColor = editor.ColorStyle.LineNumberBg;
 			

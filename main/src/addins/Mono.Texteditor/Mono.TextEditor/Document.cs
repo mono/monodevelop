@@ -303,7 +303,6 @@ namespace Mono.TextEditor
 			if (needsUpdate) {
 				RequestUpdate (new UpdateAll ());
 				CommitDocumentUpdate ();
-				
 			}
 		}
 		

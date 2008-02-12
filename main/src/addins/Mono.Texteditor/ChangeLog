@@ -1,6 +1,14 @@
 2008-02-12  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/Document.cs,
+	  Mono.TextEditor/FoldMarkerMargin.cs, Mono.TextEditor/BookmarkMargin.cs,
+	  Mono.TextEditor/GutterMargin.cs,
+	  Mono.TextEditor.Highlighting/SyntaxModeService.cs: Worked on memory
+	  management.
+
+2008-02-12  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/Document.cs,
 	  Mono.TextEditor/LineSegment.cs,
 	  Mono.TextEditor.Highlighting/SyntaxModeService.cs: Syntax highlighting
 	  update is now faster. (produced too many redraws)

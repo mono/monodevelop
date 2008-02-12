@@ -88,15 +88,12 @@ namespace Mono.TextEditor
 			}
 		}
 		
-
-		
 		public TextViewMargin (TextEditor textEditor)
 		{
 			this.textEditor = textEditor;
 			
 			layout = new Pango.Layout (textEditor.PangoContext);
 			layout.Alignment = Pango.Alignment.Left;
-			
 			
 			tabMarker = new Pango.Layout (textEditor.PangoContext);
 			tabMarker.SetText ("\u00BB");
@@ -159,23 +156,29 @@ namespace Mono.TextEditor
 		
 		public override void OptionsChanged ()
 		{
+			DisposeGCs ();
 			gc = new Gdk.GC (textEditor.GdkWindow);
 			layout.FontDescription = TextEditorOptions.Options.Font;
 			layout.SetText ("H");
 			layout.GetPixelSize (out this.charWidth, out this.lineHeight);
 		}
 		
+		void DisposeGCs ()
+		{
+			if (gc != null) {
+				gc.Dispose ();
+				gc = null;
+			}
+		}
+		
 		public override void Dispose ()
 		{
 			if (caretBlinkTimeoutId != 0)
 				GLib.Source.Remove (caretBlinkTimeoutId);
+			DisposeGCs ();
 			if (layout != null) {
 				layout.Dispose ();
 				layout = null;
-			}
-			if (gc != null) {
-				gc.Dispose ();
-				gc = null;
 			}
 			if (tabMarker != null) {
 				tabMarker.Dispose ();

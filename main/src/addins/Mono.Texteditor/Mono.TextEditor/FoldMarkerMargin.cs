@@ -84,6 +84,7 @@ namespace Mono.TextEditor
 		
 		public override void OptionsChanged ()
 		{
+			DisposeGCs ();
 			foldBgGC = new Gdk.GC (editor.GdkWindow);
 			foldBgGC.RgbFgColor = editor.ColorStyle.FoldBg;
 			
@@ -100,6 +101,11 @@ namespace Mono.TextEditor
 		Gdk.GC foldBgGC, foldLineGC, foldLineHighlightedGC, foldToggleMarkerGC;
 		
 		public override void Dispose ()
+		{
+			DisposeGCs ();
+		}
+		
+		void DisposeGCs ()
 		{
 			if (foldBgGC != null) {
 				foldBgGC.Dispose ();

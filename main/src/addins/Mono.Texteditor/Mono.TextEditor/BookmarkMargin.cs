@@ -50,6 +50,11 @@ namespace Mono.TextEditor
 		
 		public override void Dispose ()
 		{
+			DisposeGCs ();
+		}
+		
+		void DisposeGCs ()
+		{
 			if (backgroundGC != null) {
 				backgroundGC.Dispose ();
 				backgroundGC = null;
@@ -62,6 +67,7 @@ namespace Mono.TextEditor
 		
 		public override void OptionsChanged ()
 		{
+			DisposeGCs ();
 			backgroundGC = new Gdk.GC (editor.GdkWindow);
 			backgroundGC.RgbFgColor = editor.ColorStyle.IconBarBg;
 			
