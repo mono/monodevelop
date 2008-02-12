@@ -39,6 +39,7 @@
     <File name="MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.SourceEditor.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="MonoDevelop.SourceEditor/HighlightPropertiesSemanticRule.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="Mono.TextEditor" />

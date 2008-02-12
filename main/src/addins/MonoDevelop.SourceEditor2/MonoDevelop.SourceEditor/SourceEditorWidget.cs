@@ -70,7 +70,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-#region ITextEditorExtension
+		#region ITextEditorExtension
 		object ITextEditorExtension.GetExtensionCommandTarget ()
 		{
 			return null;
@@ -89,7 +89,7 @@ namespace MonoDevelop.SourceEditor
 			this.TextEditor.SimulateKeyPress (key, modifier);
 			return true;
 		}
-#endregion
+		#endregion
 		
 		void PrepareEvent (object sender, ButtonPressEventArgs args) 
 		{
@@ -147,7 +147,6 @@ namespace MonoDevelop.SourceEditor
 			classCombo.Changed += new EventHandler (ClassChanged);
 			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += new ParseInformationEventHandler(UpdateClassBrowser);
 			
-			
 			UpdateLineCol ();
 			CaretModeChanged (this, EventArgs.Empty);
 			this.Focused += delegate {
@@ -155,6 +154,7 @@ namespace MonoDevelop.SourceEditor
 				CaretModeChanged (this, EventArgs.Empty);
 			};
 			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += OnParseInformationChanged;
+//			this.IsClassBrowserVisible = SourceEditorOptions.Options.EnableQuickFinder;
 			this.textEditor.FireOptionsChange ();
 //			this.d += delegate {
 //				this.textEditor.Destroy ();
@@ -162,7 +162,7 @@ namespace MonoDevelop.SourceEditor
 			
 		}
 
-#region Error underlining
+		#region Error underlining
 		Dictionary<int, Error> errors = new Dictionary<int, Error> ();
 		uint resetTimerId;
 		ICompilationUnit lastCu = null;
@@ -304,7 +304,7 @@ namespace MonoDevelop.SourceEditor
 			errors [info.Line] = error;
 			error.AddToLine ();
 		}
-#endregion
+		#endregion
 		
 		public override void Dispose ()
 		{

@@ -95,6 +95,9 @@ namespace MonoDevelop.SourceEditor
 			fileSystemWatcher.Created += (FileSystemEventHandler)MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));	
 			fileSystemWatcher.Changed += (FileSystemEventHandler)MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));
 			widget.ShowAll ();
+			this.ContentNameChanged += delegate {
+				this.Document.FileName = this.ContentName;
+			};
 		}
 		
 		public override void Save (string fileName)

@@ -1,5 +1,20 @@
 2008-02-12  Mike Krüger <mkrueger@novell.com> 
 
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs,
+	  gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs,
+	  gtk-gui/gui.stetic,
+	  MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs, Makefile.am,
+	  MonoDevelop.SourceEditor.mdp,
+	  MonoDevelop.SourceEditor/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor/ExtendibleTextEditor.cs,
+	  MonoDevelop.SourceEditor/HighlightPropertiesSemanticRule.cs,
+	  MonoDevelop.SourceEditor/SourceEditorView.cs,
+	  MonoDevelop.SourceEditor/SourceEditorOptions.cs: Worked on semantic
+	  highlighting - properties can now be shown as italic. (Enable it in the
+	  syntax highlighting panel)
+
+2008-02-12  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor/ExtendibleTextEditor.cs: Improved auto insert
 	  bracket.
 

@@ -105,6 +105,13 @@ namespace MonoDevelop.SourceEditor
 			this.OptionsChanged (null, null);
 		}
 		
+		protected override void OptionsChanged (object sender, EventArgs args)
+		{
+			if (view.Control != null)
+				((SourceEditorWidget)view.Control).IsClassBrowserVisible = SourceEditorOptions.Options.EnableQuickFinder;
+			base.OptionsChanged (sender, args);
+		}
+		
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
 			bool result = true;
@@ -265,30 +272,30 @@ namespace MonoDevelop.SourceEditor
 				return null;
 		}
 		
-		ILanguageItem GetLanguageItem (int offset)
+		public ILanguageItem GetLanguageItem (int offset)
 		{
 			string txt = this.Document.Buffer.Text;
 			string fileName = view.ContentName;
 			if (fileName == null)
 				fileName = view.UntitledName;
-
+			
 			IParserContext ctx = view.GetParserContext ();
 			if (ctx == null)
 				return null;
-
+			
 			IExpressionFinder expressionFinder = null;
 			if (fileName != null)
 				expressionFinder = ctx.GetExpressionFinder (fileName);
-
+			
 			string expression = expressionFinder == null ? TextUtilities.GetExpressionBeforeOffset (view, offset) : expressionFinder.FindFullExpression (txt, offset).Expression;
 			if (expression == null)
 				return null;
 			
 			int lineNumber = this.Document.Splitter.OffsetToLineNumber (offset);
 			LineSegment line = this.Document.GetLine (lineNumber);
-
+			
 			return ctx.ResolveIdentifier (expression, lineNumber + 1, line.Offset + 1, fileName, txt);
-		}		
+		}
 		
 
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)		

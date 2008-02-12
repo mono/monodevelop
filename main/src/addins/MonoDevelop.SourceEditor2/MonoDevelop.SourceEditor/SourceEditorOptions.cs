@@ -24,14 +24,19 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 
 using Pango;
 
 using Mono.TextEditor;
+using Mono.TextEditor.Highlighting;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Gui.Completion;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -61,11 +66,31 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		static bool initialized = false;
+		
 		public static void Init ()
 		{
-			if (!initialized) {
-				Mono.TextEditor.TextEditorOptions.Options = new SourceEditorOptions ();
-				initialized = true;
+			if (initialized) 
+				return;
+			Mono.TextEditor.TextEditorOptions.Options = new SourceEditorOptions ();
+			initialized = true;
+			Mono.TextEditor.TextEditorOptions.Changed += delegate {
+				if (SourceEditorOptions.Options.EnableSemanticHighlighting) {
+					SyntaxModeService.GetSyntaxMode ("text/x-csharp").AddSemanticRule (new HighlightPropertiesRule ());
+				} else {
+					SyntaxModeService.GetSyntaxMode ("text/x-csharp").RemoveSemanticRule (typeof (HighlightPropertiesRule));
+				}
+			};
+		}
+		
+		public bool EnableSemanticHighlighting {
+			get {
+				return PropertyService.Get ("EnableSemanticHighlighting", false);
+			}
+			set {
+				if (value != TabsToSpaces) {
+					PropertyService.Set ("EnableSemanticHighlighting", value);
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 		

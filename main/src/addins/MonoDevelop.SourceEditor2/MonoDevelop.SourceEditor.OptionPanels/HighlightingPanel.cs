@@ -120,6 +120,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		public virtual void LoadPanelContents()
 		{
 			this.enableHighlightingCheckbutton.Active = SourceEditorOptions.Options.EnableSyntaxHighlighting;
+			this.enableSemanticHighlightingCheckbutton.Active = SourceEditorOptions.Options.EnableSemanticHighlighting;
+			this.enableHighlightingCheckbutton.Toggled += EnableHighlightingCheckbuttonToggled;
+			EnableHighlightingCheckbuttonToggled (this, EventArgs.Empty);
 			styleStore.Clear ();
 			TreeIter selectedIter = styleStore.AppendValues (GetMarkup (GettextCatalog.GetString ("Default"), GettextCatalog.GetString ("The default color sheme.")), "Default");
 			foreach (string styleName in SyntaxModeService.Styles) {
@@ -131,9 +134,15 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			styleTreeview.Selection.SelectIter (selectedIter); 
 		}
 		
+		void EnableHighlightingCheckbuttonToggled (object sender, EventArgs e)
+		{
+			this.enableSemanticHighlightingCheckbutton.Sensitive = this.enableHighlightingCheckbutton.Active;
+		}
+		
 		public virtual bool StorePanelContents()
 		{
 			SourceEditorOptions.Options.EnableSyntaxHighlighting = this.enableHighlightingCheckbutton.Active;
+			SourceEditorOptions.Options.EnableSemanticHighlighting = this.enableSemanticHighlightingCheckbutton.Active;
 			TreeIter selectedIter;
 			if (styleTreeview.Selection.GetSelected (out selectedIter)) {
 				SourceEditorOptions.Options.ColorSheme = (string)this.styleStore.GetValue (selectedIter, 1);
