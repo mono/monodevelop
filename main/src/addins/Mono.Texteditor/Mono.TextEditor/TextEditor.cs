@@ -129,7 +129,6 @@ namespace Mono.TextEditor
 					this.QueueDraw ();
 					return;
 				}
-				
 				int from, to;
 				if (delta > 0) {
 					from = delta;
