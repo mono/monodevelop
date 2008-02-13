@@ -222,7 +222,10 @@ namespace MonoDevelop.Ide.Gui
 		protected void OnUpdateDelete (CommandInfo info)
 		{
 			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
-			info.Enabled = editable != null && editable.ClipboardHandler.EnableDelete;
+			if (editable != null)
+				info.Enabled = editable.ClipboardHandler.EnableDelete;
+			else
+				info.Bypass = true;
 		}
 		
 		[CommandHandler (EditCommands.SelectAll)]

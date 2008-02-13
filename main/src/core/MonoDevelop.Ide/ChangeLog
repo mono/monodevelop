@@ -1,5 +1,10 @@
 2008-02-13  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: Allowed to bypass the delete
+	  event.
+
+2008-02-13  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.addin.xml: Delete action is not longer bound to the delete
 	  key.
 
