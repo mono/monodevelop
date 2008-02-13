@@ -1,3 +1,8 @@
+2008-02-13  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.addin.xml: Delete action is not longer bound to the delete
+	  key.
+
 2008-02-12  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Dispose options dialog when done
