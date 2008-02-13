@@ -330,7 +330,7 @@ namespace CBinding
 		{			
 			if (!NeedsUpdate (projectFiles, outputName)) return;
 			
-			string objectFiles = StringArrayToSingleString (ObjectFiles (projectFiles, true));
+			string objectFiles = string.Join (" ", ObjectFiles (projectFiles, true));
 			string pkgargs = GeneratePkgLinkerArgs (packages);
 			StringBuilder args = new StringBuilder ();
 			CCompilationParameters cp =
@@ -369,7 +369,7 @@ namespace CBinding
 		{
 			if (!NeedsUpdate (projectFiles, outputName)) return;
 			
-			string objectFiles = StringArrayToSingleString (ObjectFiles (projectFiles, true));
+			string objectFiles = string.Join (" ", ObjectFiles (projectFiles, true));
 			string args = string.Format ("rcs \"{0}\" {1}", outputName, objectFiles);
 			
 			monitor.BeginTask (GettextCatalog.GetString ("Generating static library {0} from object files", Path.GetFileName (outputName)), 1);
@@ -389,7 +389,7 @@ namespace CBinding
 		{
 			if (!NeedsUpdate (projectFiles, outputName)) return;
 			
-			string objectFiles = StringArrayToSingleString (ObjectFiles (projectFiles, true));
+			string objectFiles = string.Join (" ", ObjectFiles (projectFiles, true));
 			string pkgargs = GeneratePkgLinkerArgs (packages);
 			StringBuilder args = new StringBuilder ();
 			CCompilationParameters cp =
@@ -549,29 +549,27 @@ namespace CBinding
 			}
 			
 			CleanPrecompiledHeaders (configuration);
-			
 		}
 		
 		void CleanPrecompiledHeaders (CProjectConfiguration configuration)
 		{
 			string precDir = Path.Combine (configuration.SourceDirectory, ".prec");
+			
+			if (string.IsNullOrEmpty (precDir))
+				return;
+			
 			string precConfigDir = Path.Combine (precDir, configuration.Name);
+			
+			if (string.IsNullOrEmpty (precConfigDir))
+				return;
+			
 			if (Directory.Exists (precConfigDir))
 				   Directory.Delete (precConfigDir, true);
-			if (Directory.GetFiles (precDir).Length == 0 && Directory.GetDirectories (precDir).Length == 0)
+			
+			if (Directory.Exists (precDir) &&
+			    Directory.GetFiles (precDir).Length == 0 &&
+			    Directory.GetDirectories (precDir).Length == 0)
 				Directory.Delete (precDir);
-		}
-
-		
-		private string StringArrayToSingleString (string[] array)
-		{
-			StringBuilder str = new StringBuilder ();
-			
-			foreach (string s in array) {
-				str.Append (s + " ");
-			}
-			
-			return str.ToString ();
 		}
 		
 		private bool NeedsUpdate (ProjectFileCollection projectFiles,
