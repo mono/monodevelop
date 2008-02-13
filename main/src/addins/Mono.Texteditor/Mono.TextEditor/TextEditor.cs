@@ -139,14 +139,14 @@ namespace Mono.TextEditor
 				}
 				DoFlipBuffer ();
 				this.buffer.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
-				                          flipBuffer,
+				                          this.flipBuffer,
 				                          0, from, 
 				                          0, to, 
 				                          Allocation.Width, Allocation.Height - from - to);
 				if (delta > 0) {
-					this.QueueDrawArea (0, Allocation.Height - delta, Allocation.Width, delta + this.LineHeight);
+					RenderMargins (buffer, new Gdk.Rectangle (0, Allocation.Height - delta, Allocation.Width, delta + this.LineHeight));
 				} else {
-					this.QueueDrawArea (0, 0, Allocation.Width, -delta + this.LineHeight);
+					RenderMargins (buffer, new Gdk.Rectangle (0, 0, Allocation.Width, -delta + this.LineHeight));
 				}
 				GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
 				                        buffer,
@@ -669,15 +669,8 @@ namespace Mono.TextEditor
 			return this.textViewMargin.GetWidth (text);
 		}
 		
-		double oldVadjustment = 0;
-		protected override bool OnExposeEvent (Gdk.EventExpose e)
+		void RenderMargins (Gdk.Drawable win, Gdk.Rectangle area)
 		{
-			Gdk.Drawable  win  = buffer;
-			Gdk.Rectangle area = e.Area;
-			if (oldRequest != Splitter.LineCount * this.LineHeight) {
-				SetAdjustments ();
-				oldRequest = Splitter.LineCount * this.LineHeight;
-			}
 			int reminder  = (int)this.textEditorData.VAdjustment.Value % LineHeight;
 			int firstLine = (int)(this.textEditorData.VAdjustment.Value / LineHeight);
 			int startLine = area.Top / this.LineHeight;
@@ -704,6 +697,17 @@ namespace Mono.TextEditor
 				}
 				curY += LineHeight;
 			}
+		}
+		
+		double oldVadjustment = 0;
+		protected override bool OnExposeEvent (Gdk.EventExpose e)
+		{
+			if (oldRequest != Splitter.LineCount * this.LineHeight) {
+				SetAdjustments ();
+				oldRequest = Splitter.LineCount * this.LineHeight;
+			}
+			
+			RenderMargins (buffer, e.Area);
 			
 			e.Window.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
 			                     buffer,
