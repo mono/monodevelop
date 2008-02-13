@@ -82,7 +82,6 @@ EXTRAS = \
 REFERENCES =  \
 	Mono.Posix \
 	-pkg:glade-sharp-2.0 \
-	-pkg:gnome-sharp-2.0 \
 	-pkg:gtk-sharp-2.0 \
 	-pkg:mono-addins \
 	-pkg:monodevelop \
