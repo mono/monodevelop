@@ -1,5 +1,10 @@
 2008-02-13  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
+	* Compiler/GNUCompiler.cs: Make sure directory exists before attempting to
+	  delete it.
+
+2008-02-13  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
 	* Compiler/GNUCompiler.cs: Use string.Join instead of custom method.
 
 2008-02-09  Mike Krüger <mkrueger@novell.com> 
