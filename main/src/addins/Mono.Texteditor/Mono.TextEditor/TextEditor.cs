@@ -113,7 +113,7 @@ namespace Mono.TextEditor
 				return;
 			
 			this.textEditorData.HAdjustment.ValueChanged += delegate {
-				this.QueueDraw ();
+				this.QueueDrawArea (this.textViewMargin.XOffset, 0, this.Allocation.Width - this.textViewMargin.XOffset, this.Allocation.Height);
 			};
 			this.textEditorData.VAdjustment.ValueChanged += delegate {
 				if (this.textEditorData.VAdjustment.Value != System.Math.Ceiling (this.textEditorData.VAdjustment.Value)) {
@@ -608,6 +608,12 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public TextViewMargin TextViewMargin {
+			get {
+				return textViewMargin;
+			}
+		}
+		
 		public Gdk.Point DocumentToVisualLocation (DocumentLocation loc)
 		{
 			Gdk.Point result = new Point ();
@@ -694,8 +700,9 @@ namespace Mono.TextEditor
 				foreach (IMargin margin in this.margins) {
 					if (margin.IsVisible) {
 						margin.XOffset = curX;
-						margin.Draw (win, area, logicalLineNumber, curX, curY);
 						curX += margin.Width;
+						if (curX > area.X || margin.Width < 0)
+							margin.Draw (win, area, logicalLineNumber, margin.XOffset, curY);
 					}
 				}
 				curY += LineHeight;

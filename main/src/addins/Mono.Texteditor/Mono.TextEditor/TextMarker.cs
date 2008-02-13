@@ -51,11 +51,10 @@ namespace Mono.TextEditor
 				int width1 = editor.GetWidth (editor.Buffer.GetTextAt (line.Offset, startColumn));
 				int width2 = editor.GetWidth (editor.Buffer.GetTextAt (line.Offset + startColumn, endColumn - startColumn));
 				gc.RgbFgColor = editor.ColorStyle.GetChunkStyle (style).Color;
-				win.DrawLine (gc, 
-				              startXPos + width1,
-				              y + editor.LineHeight - 1,
-				              startXPos + width1 + width2,
-				              y + editor.LineHeight - 1);
+				int from = System.Math.Max (editor.TextViewMargin.XOffset, startXPos + width1);
+				int to   = System.Math.Max (editor.TextViewMargin.XOffset, startXPos + width1 + width2);
+				if (from < to)
+					win.DrawLine (gc, from, y + editor.LineHeight - 1, to, y + editor.LineHeight - 1);
 			}
 		}
 	}

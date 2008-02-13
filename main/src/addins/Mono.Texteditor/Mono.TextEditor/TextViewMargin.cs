@@ -487,11 +487,15 @@ namespace Mono.TextEditor
 		public override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int lineNr, int x, int y)
 		{
 			layout.Alignment = Pango.Alignment.Left;
-			LineSegment line = lineNr < Document.Splitter.LineCount ? Document.Splitter.Get (lineNr) : null;
 			
-			gc.ClipRectangle = new Gdk.Rectangle (x, y, textEditor.Allocation.Width - x, LineHeight);
+			LineSegment line = lineNr < Document.Splitter.LineCount ? Document.Splitter.Get (lineNr) : null;
+			int xStart = System.Math.Max (area.X, XOffset);
+			gc.ClipRectangle = new Gdk.Rectangle (xStart, 
+			                                      y, 
+			                                      area.Right - xStart,
+			                                      LineHeight);
 		
-			Gdk.Rectangle lineArea = new Gdk.Rectangle (x, y, area.Width - x, LineHeight);
+			Gdk.Rectangle lineArea = new Gdk.Rectangle (XOffset, y, textEditor.Allocation.Width - XOffset, LineHeight);
 			bool isSelected = false;
 			bool drawDefaultBg = true;
 			bool eolSelected = false;
