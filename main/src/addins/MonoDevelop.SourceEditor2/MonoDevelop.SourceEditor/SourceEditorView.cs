@@ -465,7 +465,7 @@ namespace MonoDevelop.SourceEditor
 		}
 		public bool EnableDelete {
 			get {
-				return true;
+				return widget.TextEditor.TextEditorData.IsSomethingSelected;
 			}
 		}
 		public bool EnableSelectAll {
@@ -488,7 +488,9 @@ namespace MonoDevelop.SourceEditor
 		}
 		public void Delete (object sender, EventArgs args)
 		{
-			new DeleteAction ().Run (widget.TextEditor.TextEditorData);
+			if (widget.TextEditor.TextEditorData.IsSomethingSelected) {
+				DeleteAction.DeleteSelection (widget.TextEditor.TextEditorData);
+			}
 		}
 		public void SelectAll (object sender, EventArgs args)
 		{
