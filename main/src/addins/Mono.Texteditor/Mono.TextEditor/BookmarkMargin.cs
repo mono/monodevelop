@@ -98,7 +98,7 @@ namespace Mono.TextEditor
 			cr.CurveTo (x, y, x, y, x + r, y);
 		}
 
-		public override void MousePressed (int button, int x, int y, bool doubleClick)
+		public override void MousePressed (int button, int x, int y, bool doubleClick, Gdk.ModifierType modifierState)
 		{
 			if (button != 1 || doubleClick)
 				return;

@@ -50,7 +50,7 @@ namespace Mono.TextEditor
 			this.editor = editor;
 		}
 		
-		public override void MousePressed (int button, int x, int y, bool doubleClick)
+		public override void MousePressed (int button, int x, int y, bool doubleClick, Gdk.ModifierType modifierState)
 		{
 			if (lineHover == null)
 				return;
@@ -64,14 +64,16 @@ namespace Mono.TextEditor
 		public override void MouseHover (int x, int y, bool buttonPressed)
 		{
 			int lineNumber = editor.Document.VisualToLogicalLine ((int)(y + editor.TextEditorData.VAdjustment.Value) / editor.LineHeight);
-			lineHover = null;
+			LineSegment lineSegment = null;
 			if (lineNumber < editor.Splitter.LineCount) {
-				LineSegment lineSegment = editor.Document.GetLine (lineNumber);
+				lineSegment = editor.Document.GetLine (lineNumber);
 				if (lineHover != lineSegment) {
 					lineHover = lineSegment;
 					editor.QueueDraw ();
 				}
-			}
+			} 
+			lineHover = lineSegment;
+			
 		}
 		
 		public override void MouseLeft ()

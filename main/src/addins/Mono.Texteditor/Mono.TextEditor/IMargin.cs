@@ -48,7 +48,7 @@ namespace Mono.TextEditor
 		
 		void Draw (Gdk.Drawable drawable, Gdk.Rectangle area, int line, int x, int y);
 		
-		void MousePressed (int button, int x, int y, bool doubleClick);
+		void MousePressed (int button, int x, int y, bool doubleClick, Gdk.ModifierType modifierState);
 		void MouseHover (int x, int y, bool buttonPressed);
 		void MouseLeft ();
 	}
@@ -84,7 +84,8 @@ namespace Mono.TextEditor
 		public virtual void OptionsChanged ()
 		{
 		}
-		public virtual void MousePressed (int button, int x, int y, bool doubleClick)
+		
+		public virtual void MousePressed (int button, int x, int y, bool doubleClick, Gdk.ModifierType modifierState)
 		{
 		}
 		

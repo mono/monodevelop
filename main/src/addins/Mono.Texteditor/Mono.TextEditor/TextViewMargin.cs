@@ -365,7 +365,7 @@ namespace Mono.TextEditor
 		public bool inDrag = false;
 		public DocumentLocation clickLocation;
 		
-		public override void MousePressed (int button, int x, int y, bool doubleClick)
+		public override void MousePressed (int button, int x, int y, bool doubleClick, Gdk.ModifierType modifierState)
 		{
 			inSelectionDrag = false;
 			inDrag = false;
@@ -393,12 +393,20 @@ namespace Mono.TextEditor
 					inDrag = true;
 				} else {
 					inSelectionDrag = true;
-					Caret.Location = clickLocation; 
+					if ((modifierState & Gdk.ModifierType.ShiftMask) == ModifierType.ShiftMask) {
+						if (!TextEditorData.IsSomethingSelected) 
+							SelectionMoveLeft.StartSelection (TextEditorData);
+						Caret.PreserveSelection = true;
+						Caret.Location = clickLocation;
+						Caret.PreserveSelection = false;
+						SelectionMoveLeft.EndSelection (TextEditorData);
+					} else {
+						Caret.Location = clickLocation; 
+					}
 					this.caretBlink = false;
 				}
 			}
 			if (button == 2) {
-				System.Console.WriteLine("Paste From Binary");
 				PasteAction.PasteFromPrimary (TextEditorData);
 			}
 		}

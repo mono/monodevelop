@@ -67,7 +67,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public override void MousePressed (int button, int x, int y, bool doubleClick)
+		public override void MousePressed (int button, int x, int y, bool doubleClick, Gdk.ModifierType modifierState)
 		{
 			int lineNumber = editor.Document.VisualToLogicalLine ((int)(y + editor.TextEditorData.VAdjustment.Value) / editor.LineHeight);
 			if (lineNumber < editor.Splitter.LineCount) {

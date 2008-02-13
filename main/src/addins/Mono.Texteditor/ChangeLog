@@ -1,5 +1,12 @@
 2008-02-13  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/FoldMarkerMargin.cs,
+	  Mono.TextEditor/IMargin.cs, Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor/BookmarkMargin.cs, Mono.TextEditor/GutterMargin.cs:
+	  Implemented shift+click behavior.
+
+2008-02-13  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditor.cs: Changed delete action.
 
 2008-02-13  Mike Krüger <mkrueger@novell.com> 
