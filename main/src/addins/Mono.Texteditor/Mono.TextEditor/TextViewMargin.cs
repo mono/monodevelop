@@ -634,20 +634,30 @@ namespace Mono.TextEditor
 		{
 			int lineNumber = Document.VisualToLogicalLine (System.Math.Min ((int)(y + TextEditorData.VAdjustment.Value) / LineHeight, Document.Splitter.LineCount - 1));
 			LineSegment line = Document.Splitter.Get (lineNumber);
-			int lineXPos = 0;
+			int lineXPos  = 0;
 			int column;
+			int visualXPos = x;
 			for (column = 0; column < line.EditableLength; column++) {
+				int delta;
 				if (this.Document.Buffer.GetCharAt (line.Offset + column) == '\t') {
-					lineXPos += TextEditorOptions.Options.TabSize * this.charWidth;
+					delta = TextEditorOptions.Options.TabSize * this.charWidth;
 				} else {
-					lineXPos += this.charWidth;
+					delta = this.charWidth;
 				}
-				if (lineXPos >= x + TextEditorData.HAdjustment.Value) {
+				int nextXPosition = lineXPos + delta;
+				if (nextXPosition >= visualXPos) {
+					if (!IsNearX1 (visualXPos, lineXPos, nextXPosition))
+						column++;
 					break;
 				}
+				lineXPos = nextXPosition;
 			}
 			return new DocumentLocation (lineNumber, column);
 		}
 		
+		static bool IsNearX1 (int pos, int x1, int x2)
+		{
+			return System.Math.Abs (x1 - pos) < System.Math.Abs (x2 - pos);
+		}
 	}
 }
