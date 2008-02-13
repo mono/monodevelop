@@ -125,7 +125,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		void DrawFoldSegment (Gdk.Window win, int x, int y, bool isOpen, bool isSelected)
+		void DrawFoldSegment (Gdk.Drawable win, int x, int y, bool isOpen, bool isSelected)
 		{
 			Gdk.Rectangle drawArea = new Gdk.Rectangle (x + 3, y + 3, foldSegmentSize, foldSegmentSize);
 			win.DrawRectangle (foldBgGC, true, drawArea);
@@ -145,7 +145,7 @@ namespace Mono.TextEditor
 				              drawArea.Bottom - 2);
 		}
 		
-		void DrawDashedVLine (Gdk.Window win, int x, int top, int bottom)
+		void DrawDashedVLine (Gdk.Drawable win, int x, int top, int bottom)
 		{
 			for (int i = top; i <= bottom; i++) {
 				if (i % 2 == 0)
@@ -162,7 +162,7 @@ namespace Mono.TextEditor
 			return false;
 		}
 		
-		public override void Draw (Gdk.Window win, Gdk.Rectangle area, int line, int x, int y)
+		public override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int line, int x, int y)
 		{
 			Gdk.Rectangle drawArea = new Gdk.Rectangle (x, y, Width, editor.LineHeight);
 			win.DrawRectangle (foldBgGC, true, drawArea);

@@ -45,7 +45,7 @@ namespace Mono.TextEditor
 			this.endColumn   = endColumn;
 		}
 		
-		public override void Draw (TextEditor editor, Gdk.Window win, int startOffset, int endOffset, int y, int startXPos, int endXPos)
+		public override void Draw (TextEditor editor, Gdk.Drawable win, int startOffset, int endOffset, int y, int startXPos, int endXPos)
 		{
 			using (Gdk.GC gc = new Gdk.GC (win)) {
 				int width1 = editor.GetWidth (editor.Buffer.GetTextAt (line.Offset, startColumn));
@@ -73,7 +73,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public virtual void Draw (TextEditor editor, Gdk.Window win, int startOffset, int endOffset, int y, int startXPos, int endXPos)
+		public virtual void Draw (TextEditor editor, Gdk.Drawable win, int startOffset, int endOffset, int y, int startXPos, int endXPos)
 		{
 			using (Gdk.GC gc = new Gdk.GC (win)) {
 				gc.RgbFgColor = new Color (255, 0, 0);

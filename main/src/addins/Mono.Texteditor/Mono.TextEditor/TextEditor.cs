@@ -85,38 +85,84 @@ namespace Mono.TextEditor
 		{
 		}
 		
+		Gdk.Pixmap buffer = null, flipBuffer = null;
+		void DoFlipBuffer ()
+		{
+			Gdk.Pixmap tmp = buffer;
+			buffer = flipBuffer;
+			flipBuffer = tmp;
+		}
+		void AllocateWindowBuffer (Rectangle allocation)
+		{
+			if (buffer != null) {
+				buffer.Dispose ();
+				flipBuffer.Dispose ();
+			}
+			buffer = new Gdk.Pixmap (this.GdkWindow, allocation.Width, allocation.Height);
+			flipBuffer = new Gdk.Pixmap (this.GdkWindow, allocation.Width, allocation.Height);
+		}
+		
 		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
 		{
 			this.textEditorData.HAdjustment = hAdjustement;
 			this.textEditorData.VAdjustment = vAdjustement;
+			
 			if (hAdjustement == null || vAdjustement == null)
 				return;
+			SetAdjustments ();
 			this.textEditorData.HAdjustment.ValueChanged += delegate {
 				this.QueueDraw ();
 			};
 			this.textEditorData.VAdjustment.ValueChanged += delegate {
-				this.QueueDraw ();
+				if (this.textEditorData.VAdjustment.Value != System.Math.Ceiling (this.textEditorData.VAdjustment.Value)) {
+					this.textEditorData.VAdjustment.Value = System.Math.Ceiling (this.textEditorData.VAdjustment.Value);
+					return;
+				}
+//				int reminder  = (int)this.textEditorData.VAdjustment.Value % LineHeight;
+//				if (reminder != 0) {
+//					this.textEditorData.VAdjustment.Value -= reminder;
+//					return;
+//				}
+				int delta = (int)(this.textEditorData.VAdjustment.Value - this.oldVadjustment);
+				oldVadjustment = this.textEditorData.VAdjustment.Value;
+				if (delta >= Allocation.Height - this.LineHeight || this.textViewMargin.inSelectionDrag) {
+					this.QueueDraw ();
+					return;
+				}
+				
+				int from, to;
+				if (delta > 0) {
+					from = delta;
+					to   = 0;
+				} else {
+					from = 0;
+					to   = -delta;
+				}
+				DoFlipBuffer ();
+				this.buffer.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
+				                          flipBuffer,
+				                          0, from, 
+				                          0, to, 
+				                          Allocation.Width, Allocation.Height - from - to);
+				if (delta > 0) {
+					this.QueueDrawArea (0, Allocation.Height - delta, Allocation.Width, delta + this.LineHeight);
+				} else {
+					this.QueueDrawArea (0, 0, Allocation.Width, -delta + this.LineHeight);
+				}
+				GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
+				                        buffer,
+				                        0, 0, 
+				                        0, 0, 
+				                        Allocation.Width, Allocation.Height);
 			};
 		}
-		
-//		protected override bool OnScrollEvent (Gdk.EventScroll evnt)
-//		{
-//			if (evnt.Direction == ScrollDirection.Down || evnt.Direction == ScrollDirection.Up) {
-//				//this.GdkWindow.MoveRegion (this.GdkWindow.VisibleRegion, 0, (int)evnt.Y);
-//			}
-//			return true;
-//		}
 		
 		public TextEditor (Document doc)
 		{
 			this.textEditorData.Document = doc;
 			this.Events = EventMask.AllEventsMask;
+			this.DoubleBuffered = false;
 			base.CanFocus = true;
-			
-			this.SizeAllocated += delegate {
-				SetAdjustments ();
-			};
-			
 			
 			keyBindings.Add (GetKeyCode (Gdk.Key.Left), new CaretMoveLeft ());
 			keyBindings.Add (GetKeyCode (Gdk.Key.Left, Gdk.ModifierType.ShiftMask), new SelectionMoveLeft ());
@@ -302,6 +348,15 @@ namespace Mono.TextEditor
 				if (margin is IDisposable)
 					((IDisposable)margin).Dispose ();
 			}
+			if (buffer != null) {
+				buffer.Dispose ();
+				buffer = null;
+			}
+			if (flipBuffer != null) {
+				flipBuffer.Dispose ();
+				flipBuffer = null;
+			}
+			
 			base.Dispose ();
 		}
 		
@@ -310,7 +365,7 @@ namespace Mono.TextEditor
 		{
 			if (isDisposed)
 				return;
-			this.QueueDrawArea (0, (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (logicalLine) * LineHeight, this.Allocation.Width, LineHeight);
+			this.QueueDrawArea (0, Document.LogicalToVisualLine (logicalLine) * LineHeight - (int)this.textEditorData.VAdjustment.Value,  this.Allocation.Width,  LineHeight);
 		}
 		
 		internal void RedrawPosition (int logicalLine, int logicalColumn)
@@ -421,6 +476,7 @@ namespace Mono.TextEditor
 				Caret.Location = textViewMargin.clickLocation;
 			mousePressed = false;
 			textViewMargin.inDrag = false;
+			textViewMargin.inSelectionDrag = false;
 			return base.OnButtonReleaseEvent (e);
 		}
 		
@@ -585,6 +641,14 @@ namespace Mono.TextEditor
 			
 		}
 		
+		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
+		{
+			if (IsRealized) 
+				AllocateWindowBuffer (allocation);
+			SetAdjustments ();
+			base.OnSizeAllocated (allocation);
+		}
+		
 		internal void SetAdjustments ()
 		{
 			this.textEditorData.VAdjustment.SetBounds (0, 
@@ -599,17 +663,18 @@ namespace Mono.TextEditor
 				                       this.Allocation.Width,
 				                       this.Allocation.Width);
 		}
+		
 		public int GetWidth (string text)
 		{
 			return this.textViewMargin.GetWidth (text);
 		}
 		
+		double oldVadjustment = 0;
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
-			Gdk.Window    win  = e.Window;
+			Gdk.Drawable  win  = buffer;
 			Gdk.Rectangle area = e.Area;
-			
-			if (oldRequest !=Splitter.LineCount * this.LineHeight) {
+			if (oldRequest != Splitter.LineCount * this.LineHeight) {
 				SetAdjustments ();
 				oldRequest = Splitter.LineCount * this.LineHeight;
 			}
@@ -623,19 +688,27 @@ namespace Mono.TextEditor
 			} else {
 				endLine++;
 			}
-//			System.Console.WriteLine("draw" + startLine + " -- to: " + endLine);
+			int startY = startLine * this.LineHeight - reminder;
+			int curY = startY;
+			//System.Console.WriteLine("Redraw #" + (endLine - startLine));
+			//System.Console.WriteLine("Redraw line:" + startLine + " to " + endLine);
 			for (int visualLineNumber = startLine; visualLineNumber <= endLine; visualLineNumber++) {
 				int curX = 0;
 				int logicalLineNumber = Document.VisualToLogicalLine (visualLineNumber + firstLine);
-//				System.Console.WriteLine(logicalLineNumber + " == " + (visualLineNumber + firstLine));
 				foreach (IMargin margin in this.margins) {
 					if (margin.IsVisible) {
 						margin.XOffset = curX;
-						margin.Draw (win, area, logicalLineNumber, curX, visualLineNumber * LineHeight - reminder);
+						margin.Draw (win, area, logicalLineNumber, curX, curY);
 						curX += margin.Width;
 					}
 				}
+				curY += LineHeight;
 			}
+			
+			e.Window.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
+			                     buffer,
+			                     e.Area.X, e.Area.Y, e.Area.X, e.Area.Y, 
+			                     e.Area.Width, e.Area.Height);
 			return true;
 		}
 	}

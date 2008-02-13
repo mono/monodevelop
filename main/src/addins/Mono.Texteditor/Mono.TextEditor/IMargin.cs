@@ -46,7 +46,7 @@ namespace Mono.TextEditor
 		
 		void OptionsChanged ();
 		
-		void Draw (Gdk.Window win, Gdk.Rectangle area, int line, int x, int y);
+		void Draw (Gdk.Drawable drawable, Gdk.Rectangle area, int line, int x, int y);
 		
 		void MousePressed (int button, int x, int y, bool doubleClick);
 		void MouseHover (int x, int y, bool buttonPressed);
@@ -78,7 +78,8 @@ namespace Mono.TextEditor
 				 xOffset = value;
 			}
 		}
-		public abstract void Draw (Gdk.Window win, Gdk.Rectangle area, int line, int x, int y);
+		
+		public abstract void Draw (Gdk.Drawable drawable, Gdk.Rectangle area, int line, int x, int y);
 		
 		public virtual void OptionsChanged ()
 		{

@@ -1,3 +1,10 @@
+2008-02-13  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/FoldMarkerMargin.cs,
+	  Mono.TextEditor/IMargin.cs, Mono.TextEditor/TextMarker.cs,
+	  Mono.TextEditor/TextEditor.cs, Mono.TextEditor/BookmarkMargin.cs,
+	  Mono.TextEditor/GutterMargin.cs: Implemented smooth scrolling.
+
 2008-02-12  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextEditor.cs: Fixed an error.

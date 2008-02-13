@@ -124,7 +124,7 @@ namespace Mono.TextEditor
 			lineNumberHighlightGC.RgbFgColor = editor.ColorStyle.LineNumberFgHighlighted;
 		}
 		
-		public override void Draw (Gdk.Window win, Gdk.Rectangle area, int line, int x, int y)
+		public override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int line, int x, int y)
 		{
 			Gdk.Rectangle drawArea = new Rectangle (x, y, Width, editor.LineHeight);
 			win.DrawRectangle (lineNumberBgGC, true, drawArea);

@@ -111,7 +111,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public override void Draw (Gdk.Window win, Gdk.Rectangle area, int line, int x, int y)
+		public override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int line, int x, int y)
 		{
 			Gdk.Rectangle drawArea = new Gdk.Rectangle (x, y, Width, editor.LineHeight);
 			

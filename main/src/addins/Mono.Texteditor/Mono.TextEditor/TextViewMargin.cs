@@ -217,7 +217,7 @@ namespace Mono.TextEditor
 			return true;
 		}
 		
-		void DrawCaret (Gdk.Window win, int x, int y)
+		void DrawCaret (Gdk.Drawable win, int x, int y)
 		{
 			if (!caretBlink || !textEditor.IsFocus) 
 				return;
@@ -231,7 +231,7 @@ namespace Mono.TextEditor
 		int bracketIndex = -1;
 		
 		
-		void DrawLineText (Gdk.Window win, LineSegment line, int offset, int length, ref int xPos, int y)
+		void DrawLineText (Gdk.Drawable win, LineSegment line, int offset, int length, ref int xPos, int y)
 		{
 			SyntaxMode mode = Document.SyntaxMode != null && TextEditorOptions.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
 			Chunk[] chunks = mode.GetChunks (Document, TextEditorData.ColorStyle, line, offset, length);
@@ -290,7 +290,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		void DrawTextWithHighlightedWs (Gdk.Window win, bool selected, ChunkStyle style, ref int xPos, int y, string text)
+		void DrawTextWithHighlightedWs (Gdk.Drawable win, bool selected, ChunkStyle style, ref int xPos, int y, string text)
 		{
 			string[] spaces = text.Split (' ');
 			for (int i = 0; i < spaces.Length; i++) {
@@ -326,7 +326,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		void DrawText (Gdk.Window win, ref int xPos, int y, string text)
+		void DrawText (Gdk.Drawable win, ref int xPos, int y, string text)
 		{
 			layout.SetText (text);
 			win.DrawLayout (gc, xPos, y, layout);
@@ -335,33 +335,33 @@ namespace Mono.TextEditor
 			xPos += width;
 		}
 		
-		void DrawEolMarker (Gdk.Window win, bool selected, ref int xPos, int y)
+		void DrawEolMarker (Gdk.Drawable win, bool selected, ref int xPos, int y)
 		{
 			gc.RgbFgColor = selected ? ColorStyle.SelectedFg : ColorStyle.WhitespaceMarker;
 			win.DrawLayout (gc, xPos, y, eolMarker);
 		}
 		
-		void DrawSpaceMarker (Gdk.Window win, bool selected, ref int xPos, int y)
+		void DrawSpaceMarker (Gdk.Drawable win, bool selected, ref int xPos, int y)
 		{
 			gc.RgbFgColor = selected ? ColorStyle.SelectedFg : ColorStyle.WhitespaceMarker;
 			win.DrawLayout (gc, xPos, y, spaceMarker);
 			xPos += charWidth;
 		}
 		
-		void DrawTabMarker (Gdk.Window win, bool selected, ref int xPos, int y)
+		void DrawTabMarker (Gdk.Drawable win, bool selected, ref int xPos, int y)
 		{
 			gc.RgbFgColor = selected ? ColorStyle.SelectedFg : ColorStyle.WhitespaceMarker;
 			win.DrawLayout (gc, xPos, y, tabMarker);
 			xPos += charWidth * TextEditorOptions.Options.TabSize;
 		}
 		
-		void DrawInvalidLineMarker (Gdk.Window win, int x, int y)
+		void DrawInvalidLineMarker (Gdk.Drawable win, int x, int y)
 		{
 			gc.RgbFgColor = ColorStyle.InvalidLineMarker;
 			win.DrawLayout (gc, x, y, invalidLineMarker);
 		}
 		
-		bool inSelectionDrag = false;
+		public bool inSelectionDrag = false;
 		public bool inDrag = false;
 		public DocumentLocation clickLocation;
 		
@@ -430,7 +430,7 @@ namespace Mono.TextEditor
 				Caret.PreserveSelection = false;
 				SelectionMoveLeft.EndSelection (TextEditorData);
 				this.caretBlink = false;
-//				this.RedrawLines (System.Math.Min (oldLine, Caret.Line), System.Math.Max (oldLine, Caret.Line));
+//				textEditor.RedrawLines (System.Math.Min (oldLine, Caret.Line), System.Math.Max (oldLine, Caret.Line));
 			}
 		}
 		
@@ -463,7 +463,7 @@ namespace Mono.TextEditor
 			                  (byte)(((byte)color.Blue * 19) / 20));
 		}
 		Gdk.GC gc;
-		void DrawRectangleWithRuler (Gdk.Window win, int x, Gdk.Rectangle area, Gdk.Color color)
+		void DrawRectangleWithRuler (Gdk.Drawable win, int x, Gdk.Rectangle area, Gdk.Color color)
 		{
 			gc.RgbFgColor = color;
 			if (TextEditorOptions.Options.ShowRuler) {
@@ -476,7 +476,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public override void Draw (Gdk.Window win, Gdk.Rectangle area, int lineNr, int x, int y)
+		public override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int lineNr, int x, int y)
 		{
 			layout.Alignment = Pango.Alignment.Left;
 			LineSegment line = lineNr < Document.Splitter.LineCount ? Document.Splitter.Get (lineNr) : null;
