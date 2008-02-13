@@ -98,8 +98,10 @@ namespace Mono.TextEditor
 				buffer.Dispose ();
 				flipBuffer.Dispose ();
 			}
-			buffer = new Gdk.Pixmap (this.GdkWindow, allocation.Width, allocation.Height);
-			flipBuffer = new Gdk.Pixmap (this.GdkWindow, allocation.Width, allocation.Height);
+			if (this.IsRealized) {
+				buffer = new Gdk.Pixmap (this.GdkWindow, allocation.Width, allocation.Height);
+				flipBuffer = new Gdk.Pixmap (this.GdkWindow, allocation.Width, allocation.Height);
+			}
 		}
 		
 		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
@@ -109,7 +111,7 @@ namespace Mono.TextEditor
 			
 			if (hAdjustement == null || vAdjustement == null)
 				return;
-			SetAdjustments ();
+			
 			this.textEditorData.HAdjustment.ValueChanged += delegate {
 				this.QueueDraw ();
 			};
@@ -645,23 +647,24 @@ namespace Mono.TextEditor
 		{
 			if (IsRealized) 
 				AllocateWindowBuffer (allocation);
-			SetAdjustments ();
+			SetAdjustments (allocation);
 			base.OnSizeAllocated (allocation);
 		}
 		
-		internal void SetAdjustments ()
+		internal void SetAdjustments (Gdk.Rectangle allocation)
 		{
-			this.textEditorData.VAdjustment.SetBounds (0, 
-			                       (Splitter.LineCount + 10) * this.LineHeight, 
-			                       LineHeight,
-			                       this.Allocation.Height,
-			                       this.Allocation.Height);
-			if (longestLine != null)
+			if (this.textEditorData.VAdjustment != null)
+				this.textEditorData.VAdjustment.SetBounds (0, 
+				                                           (Splitter.LineCount + 10) * this.LineHeight, 
+				                                           LineHeight,
+				                                           allocation.Height,
+				                                           allocation.Height);
+			if (longestLine != null && this.textEditorData.HAdjustment != null)
 				this.textEditorData.HAdjustment.SetBounds (0, 
 				                       (longestLine.Length + 100) * this.textViewMargin.charWidth, 
 				                       this.textViewMargin.charWidth,
-				                       this.Allocation.Width,
-				                       this.Allocation.Width);
+				                       allocation.Width,
+				                       allocation.Width);
 		}
 		
 		public int GetWidth (string text)
@@ -703,7 +706,7 @@ namespace Mono.TextEditor
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
 			if (oldRequest != Splitter.LineCount * this.LineHeight) {
-				SetAdjustments ();
+				SetAdjustments (this.Allocation);
 				oldRequest = Splitter.LineCount * this.LineHeight;
 			}
 			

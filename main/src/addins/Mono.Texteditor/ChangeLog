@@ -1,5 +1,10 @@
 2008-02-13  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/TextEditor.cs: Fixed
+	  drawing glicht caused by false adjustment.
+
+2008-02-13  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditor.cs: Changed scrolling a bit.
 
 2008-02-13  Mike Krüger <mkrueger@novell.com> 

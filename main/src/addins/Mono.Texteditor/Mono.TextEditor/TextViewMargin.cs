@@ -609,7 +609,7 @@ namespace Mono.TextEditor
 			
 			if (textEditor.longestLine == null || line.EditableLength > textEditor.longestLine.EditableLength) {
 				textEditor.longestLine = line;
-				textEditor.SetAdjustments ();
+				textEditor.SetAdjustments (textEditor.Allocation);
 			}
 			
 			// Draw remaining line
