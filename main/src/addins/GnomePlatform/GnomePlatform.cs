@@ -83,6 +83,10 @@ namespace MonoDevelop.Platform
 			get { return (string) (new GConf.Client ().Get ("/desktop/gnome/interface/monospace_font_name")); }
 		}
 		
+		public override string Name {
+			get { return "Gnome"; }
+		}
+
 		public override string GetIconForFile (string filename)
 		{
 			Gnome.IconLookupResultFlags result;
