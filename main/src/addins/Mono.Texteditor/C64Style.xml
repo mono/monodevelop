@@ -26,6 +26,7 @@
 
 	<Style name="default" color="#97A0EF"/>
 	<Style name="caret" color="#97A0EF"/>
+	<Style name="caretForeground" color="#3F3FDF"/>
 	<Style name="background" color="#3F3FDF"/>
 	<Style name="selectedBackground" color="#000000"/>
 	<Style name="selectedForeground" color="#FFFFFF"/>

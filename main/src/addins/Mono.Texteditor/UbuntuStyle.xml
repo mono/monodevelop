@@ -68,6 +68,7 @@
 	<!-- environment -->
 	<Style name="default" color="black"/>
 	<Style name="caret" color="black"/>
+	<Style name="caretForeground" color="white"/>
 	<Style name="background" color="white"/>
 	<Style name="selectedBackground" color="human_highlight"/>
 	<Style name="selectedForeground" color="black"/>

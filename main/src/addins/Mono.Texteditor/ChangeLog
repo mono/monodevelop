@@ -1,5 +1,12 @@
 2008-02-14  Mike Krüger <mkrueger@novell.com> 
 
+	* TangoLightStyle.xml, OblivionStyle.xml, UbuntuStyle.xml,
+	  Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor.Highlighting/Style.cs, C64Style.xml: Fixed some drawing
+	  issues & speed bug with ctrl+home.
+
+2008-02-14  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/ISegment.cs, Mono.TextEditor/DefaultEditActions.cs,
 	  Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/Document.cs,
 	  Mono.TextEditor/TextEditorData.cs, Mono.TextEditor/TextMarker.cs,

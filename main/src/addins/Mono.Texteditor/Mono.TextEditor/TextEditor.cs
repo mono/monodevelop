@@ -122,7 +122,7 @@ namespace Mono.TextEditor
 				}
 				int delta = (int)(this.textEditorData.VAdjustment.Value - this.oldVadjustment);
 				oldVadjustment = this.textEditorData.VAdjustment.Value;
-				if (delta >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.inSelectionDrag) {
+				if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.inSelectionDrag) {
 					this.QueueDraw ();
 					return;
 				}
@@ -375,8 +375,6 @@ namespace Mono.TextEditor
 	
 		public void SimulateKeyPress (Gdk.Key key, Gdk.ModifierType modifier)
 		{
-			if (isDisposed)
-				return;
 			int keyCode = GetKeyCode (key, modifier);
 			if (keyBindings.ContainsKey (keyCode)) {
 				try {
@@ -685,7 +683,6 @@ namespace Mono.TextEditor
 						margin.XOffset = curX;
 						curX += margin.Width;
 						if (curX > area.X || margin.Width < 0) {
-							DateTime now = DateTime.Now;
 							margin.Draw (win, area, logicalLineNumber, margin.XOffset, curY);
 						}
 					}

@@ -40,6 +40,7 @@ namespace Mono.TextEditor.Highlighting
 		Color def, background, selectedBg, selectedFg;
 		Color caret;
 		Color lineMarker, ruler, whitespaceMarker, invalidLineMarker;
+		Color caretForeground;
 		
 		Color bookmarkColor1, bookmarkColor2;
 		
@@ -194,6 +195,12 @@ namespace Mono.TextEditor.Highlighting
 				return description;
 			}
 		}
+
+		public virtual Color CaretForeground {
+			get {
+				return caretForeground;
+			}
+		}
 		
 		public Style ()
 		{
@@ -201,6 +208,7 @@ namespace Mono.TextEditor.Highlighting
 			def          = new Gdk.Color (0, 0, 0); 
 			
 			caret        = new Gdk.Color (0, 0, 0); 
+			caretForeground	 = new Gdk.Color (255, 255, 255);
 			
 			lineNumberBg = new Gdk.Color (255, 255, 255);
 			lineNumberFg = new Gdk.Color (172, 168, 153);
@@ -291,6 +299,7 @@ namespace Mono.TextEditor.Highlighting
 			case "default":
 			case "background":
 			case "caret":
+			case "caretForeground":
 			case "selectedBackground":
 			case "selectedForeground":
 			case "lineMarker":
@@ -336,6 +345,9 @@ namespace Mono.TextEditor.Highlighting
 				break;
 			case "caret":
 				this.caret = color;
+				break;
+			case "caretForeground":
+				this.caretForeground = color;
 				break;
 			case "background":
 				this.background = color;
