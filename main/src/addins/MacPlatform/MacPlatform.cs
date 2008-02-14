@@ -73,7 +73,11 @@ namespace MonoDevelop.Platform
 		}
 
 		public override string DefaultMonospaceFont {
-			get { return "Bitstream Vera Serif"; }
+			get { return "Lucida Grade 14"; }
+		}
+		
+		public override string Name {
+			get { return "OSX"; }
 		}
 		
 		public override string GetIconForFile (string filename)

@@ -1,3 +1,7 @@
+2008-02-14  Geoff Norton  <gnorton@novell.com>
+
+	* MacPlatform.cs:  Expose the Name property.
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MacPlatform.addin.xml: Update MD version.
