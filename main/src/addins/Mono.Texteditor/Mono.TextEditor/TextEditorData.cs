@@ -192,10 +192,16 @@ namespace Mono.TextEditor
 			if (!IsSomethingSelected)
 				return;
 			ISegment selection = SelectionRange;
+			bool needUpdate = this.selectionStart.Segment != this.selectionEnd.Segment;
 			if (Caret.Offset > selection.Offset)
 				Caret.Offset -= selection.Length;
+			
 			Document.Buffer.Remove (selection.Offset, selection.Length);
+			if (needUpdate)
+				Document.RequestUpdate (new LineToEndUpdate (Document.Splitter.GetLineNumberForOffset (selection.Offset)));
 			ClearSelection();
+			if (needUpdate)
+				Document.CommitDocumentUpdate ();
 		}
 		
 		public event EventHandler SelectionChanged;

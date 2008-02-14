@@ -68,6 +68,11 @@ namespace Mono.TextEditor
 			this.length = length;
 		}
 		
+		public bool Contains (int offset)
+		{
+			return Offset <= offset && offset < EndOffset;
+		}
+		
 		public override string ToString ()
 		{
 			return String.Format ("[Segment: Offset={0}, Length={1}]", this.offset, this.length);

@@ -36,6 +36,12 @@ namespace Mono.TextEditor
 		int endColumn;
 		LineSegment line;
 		
+		public string Url {
+			get {
+				return url;
+			}
+		}
+		
 		public UrlMarker (LineSegment line, string url, string style, int startColumn, int endColumn)
 		{
 			this.line        = line;

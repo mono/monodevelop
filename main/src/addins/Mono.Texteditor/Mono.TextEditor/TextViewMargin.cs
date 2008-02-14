@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 using Mono.TextEditor.Highlighting;
 
@@ -240,6 +241,7 @@ namespace Mono.TextEditor
 			int index = line.Offset + line.EditableLength - offset;
 			int selectionStart = TextEditorData.SelectionStart != null ? TextEditorData.SelectionStart.Segment.Offset + TextEditorData.SelectionStart.Column : -1;
 			int selectionEnd = TextEditorData.SelectionEnd != null ? TextEditorData.SelectionEnd.Segment.Offset + TextEditorData.SelectionEnd.Column : -1;
+			int visibleColumn = 0;
 			if (selectionStart > selectionEnd) {
 				int tmp = selectionEnd;
 				selectionEnd = selectionStart;
@@ -263,19 +265,19 @@ namespace Mono.TextEditor
 //				Console.WriteLine ("#" + chunks.Length);
 			foreach (Chunk chunk in chunks) {
 				if (chunk.Offset >= selectionStart && chunk.EndOffset <= selectionEnd) {
-					DrawTextWithHighlightedWs (win, true, chunk.Style, ref xPos, y, Document.Buffer.GetTextAt (chunk));
+					DrawTextWithHighlightedWs (win, true, chunk.Style, ref visibleColumn, ref xPos, y, chunk.Offset, chunk.EndOffset);
 				} else if (chunk.Offset >= selectionStart && chunk.Offset < selectionEnd && chunk.EndOffset > selectionEnd) {
-					DrawTextWithHighlightedWs (win, true, chunk.Style, ref xPos, y, Document.Buffer.GetTextAt (chunk.Offset, selectionEnd - chunk.Offset));
-					DrawTextWithHighlightedWs (win, false, chunk.Style, ref xPos, y, Document.Buffer.GetTextAt (selectionEnd, chunk.EndOffset - selectionEnd));
+					DrawTextWithHighlightedWs (win, true, chunk.Style, ref visibleColumn, ref xPos, y, chunk.Offset, selectionEnd);
+					DrawTextWithHighlightedWs (win, false, chunk.Style, ref visibleColumn, ref xPos, y, selectionEnd, chunk.EndOffset);
 				} else if (chunk.Offset < selectionStart && chunk.EndOffset > selectionStart && chunk.EndOffset <= selectionEnd) {
-					DrawTextWithHighlightedWs (win, false, chunk.Style, ref xPos, y, Document.Buffer.GetTextAt (chunk.Offset, selectionStart - chunk.Offset));
-					DrawTextWithHighlightedWs (win, true, chunk.Style, ref xPos, y, Document.Buffer.GetTextAt (selectionStart, chunk.EndOffset - selectionStart));
+					DrawTextWithHighlightedWs (win, false, chunk.Style, ref visibleColumn, ref xPos, y, chunk.Offset, selectionStart);
+					DrawTextWithHighlightedWs (win, true, chunk.Style, ref visibleColumn, ref xPos, y, selectionStart, chunk.EndOffset);
 				} else if (chunk.Offset < selectionStart && chunk.EndOffset > selectionEnd) {
-					DrawTextWithHighlightedWs (win, false, chunk.Style, ref xPos, y, Document.Buffer.GetTextAt (chunk.Offset, selectionStart - chunk.Offset));
-					DrawTextWithHighlightedWs (win, true, chunk.Style, ref xPos, y, Document.Buffer.GetTextAt (selectionStart, selectionEnd - selectionStart));
-					DrawTextWithHighlightedWs (win, false, chunk.Style, ref xPos, y, Document.Buffer.GetTextAt (selectionEnd, chunk.EndOffset - selectionEnd));
+					DrawTextWithHighlightedWs (win, false, chunk.Style, ref visibleColumn, ref xPos, y, chunk.Offset, selectionStart);
+					DrawTextWithHighlightedWs (win, true, chunk.Style, ref visibleColumn, ref xPos, y, selectionStart, selectionEnd);
+					DrawTextWithHighlightedWs (win, false, chunk.Style, ref visibleColumn, ref xPos, y, selectionEnd, chunk.EndOffset);
 				} else 
-					DrawTextWithHighlightedWs (win, false, chunk.Style, ref xPos, y, Document.Buffer.GetTextAt (chunk));
+					DrawTextWithHighlightedWs (win, false, chunk.Style, ref visibleColumn, ref xPos, y, chunk.Offset, chunk.EndOffset);
 			}
 			if (line.Markers != null) {
 				foreach (TextMarker marker in line.Markers) {
@@ -284,54 +286,84 @@ namespace Mono.TextEditor
 			}
 			
 			int caretOffset = Caret.Offset;
-			if (offset <= caretOffset && caretOffset < offset + length) {
-				int caretX = GetWidth (Document.Buffer.GetTextAt (offset, caretOffset - offset));
-				DrawCaret (win, xStart + caretX, y);
-			}
+			if (caretOffset == offset + length) 
+				DrawCaret (win, xPos, y);
 		}
 		
-		void DrawTextWithHighlightedWs (Gdk.Drawable win, bool selected, ChunkStyle style, ref int xPos, int y, string text)
+		StringBuilder wordBuilder = new StringBuilder ();
+		void OutputWordBuilder (Gdk.Drawable win, bool selected, ChunkStyle style, ref int visibleColumn, ref int xPos, int y)
 		{
-			string[] spaces = text.Split (' ');
-			for (int i = 0; i < spaces.Length; i++) {
-				string[] tabs = spaces[i].Split ('\t');
-				
-				for (int j = 0; j < tabs.Length; j++) {
-					gc.RgbFgColor = selected ? ColorStyle.SelectedFg : style.Color;
-					if (style.Bold)
-						layout.FontDescription.Weight = Pango.Weight.Bold; 
-					if (style.Italic)
-						layout.FontDescription.Style  = Pango.Style.Italic; 
-					DrawText (win, ref xPos, y, tabs[j]);
-					if (style.Bold)
-						layout.FontDescription.Weight = Pango.Weight.Normal; 
-					if (style.Italic)
-						layout.FontDescription.Style  = Pango.Style.Normal; 
-					if (j + 1 < tabs.Length) {
-						if (TextEditorOptions.Options.ShowTabs) { 
-							DrawTabMarker (win, selected, ref xPos, y);
-						} else {
-							DrawText (win, ref xPos, y, new string (' ', TextEditorOptions.Options.TabSize));
-						}
-					}
-				}
-				
-				if (i + 1 < spaces.Length) {
-					if (TextEditorOptions.Options.ShowSpaces) { 
-						DrawSpaceMarker (win, selected, ref xPos, y);
-					} else {
-						DrawText (win, ref xPos, y, " ");
-					}
-				}
+			if (selected) {
+				DrawText (win, ColorStyle.SelectedFg, ColorStyle.SelectedBg, ref xPos, y);
+			} else {
+				DrawText (win, style.Color, ColorStyle.Background, ref xPos, y);
 			}
+			visibleColumn += wordBuilder.Length;
+			wordBuilder.Length = 0;
 		}
 		
-		void DrawText (Gdk.Drawable win, ref int xPos, int y, string text)
+		void DrawTextWithHighlightedWs (Gdk.Drawable win, bool selected, ChunkStyle style, ref int visibleColumn, ref int xPos, int y, int startOffset, int endOffset)
 		{
-			layout.SetText (text);
-			win.DrawLayout (gc, xPos, y, layout);
+			int caretOffset = Caret.Offset;
+			int drawCaretAt = -1;
+			wordBuilder.Length = 0;
+			if (style.Bold)
+				layout.FontDescription.Weight = Pango.Weight.Bold;
+			if (style.Italic)
+				layout.FontDescription.Style = Pango.Style.Italic;
+			for (int offset = startOffset; offset < endOffset; offset++) {
+				char ch = Document.Buffer.GetCharAt (offset);
+				if (ch == ' ') {
+					OutputWordBuilder (win, selected, style, ref visibleColumn, ref xPos, y);
+					DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, charWidth, LineHeight), selected ? ColorStyle.SelectedBg : ColorStyle.Background);
+					
+					if (TextEditorOptions.Options.ShowSpaces) 
+						DrawSpaceMarker (win, selected, xPos, y);
+					if (offset == caretOffset) 
+						DrawCaret (win, xPos, y);
+					xPos += this.charWidth;
+					visibleColumn++;
+				} else if (ch == '\t') {
+					OutputWordBuilder (win, selected, style, ref visibleColumn, ref xPos, y);
+					
+					int newColumn = visibleColumn + TextEditorOptions.Options.TabSize;
+					newColumn = (newColumn / TextEditorOptions.Options.TabSize) * TextEditorOptions.Options.TabSize;
+					int delta = (newColumn - visibleColumn) * this.charWidth;
+					visibleColumn = newColumn;
+					
+					DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, delta, LineHeight), selected ? ColorStyle.SelectedBg : ColorStyle.Background);
+					if (TextEditorOptions.Options.ShowTabs) 
+						DrawTabMarker (win, selected, xPos, y);
+					if (offset == caretOffset) 
+						DrawCaret (win, xPos, y);
+					xPos += delta;
+				} else {
+					if (offset == caretOffset) 
+						drawCaretAt = xPos + wordBuilder.Length * this.charWidth;
+					wordBuilder.Append (ch);
+				}
+			}
+			OutputWordBuilder (win, selected, style, ref visibleColumn, ref xPos, y);
+			
+			if (style.Bold)
+				layout.FontDescription.Weight = Pango.Weight.Normal;
+			if (style.Italic)
+				layout.FontDescription.Style = Pango.Style.Normal;
+			
+			if (drawCaretAt >= 0)
+				DrawCaret (win, drawCaretAt , y);
+		}
+		
+		void DrawText (Gdk.Drawable win, Gdk.Color foreColor, Gdk.Color backgroundColor, ref int xPos, int y)
+		{
+			layout.SetText (wordBuilder.ToString ());
+			
 			int width, height;
 			layout.GetPixelSize (out width, out height);
+			DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, width, height), backgroundColor);
+			
+			gc.RgbFgColor = foreColor;
+			win.DrawLayout (gc, xPos, y, layout);
 			xPos += width;
 		}
 		
@@ -341,18 +373,16 @@ namespace Mono.TextEditor
 			win.DrawLayout (gc, xPos, y, eolMarker);
 		}
 		
-		void DrawSpaceMarker (Gdk.Drawable win, bool selected, ref int xPos, int y)
+		void DrawSpaceMarker (Gdk.Drawable win, bool selected, int xPos, int y)
 		{
 			gc.RgbFgColor = selected ? ColorStyle.SelectedFg : ColorStyle.WhitespaceMarker;
 			win.DrawLayout (gc, xPos, y, spaceMarker);
-			xPos += charWidth;
 		}
 		
-		void DrawTabMarker (Gdk.Drawable win, bool selected, ref int xPos, int y)
+		void DrawTabMarker (Gdk.Drawable win, bool selected, int xPos, int y)
 		{
 			gc.RgbFgColor = selected ? ColorStyle.SelectedFg : ColorStyle.WhitespaceMarker;
 			win.DrawLayout (gc, xPos, y, tabMarker);
-			xPos += charWidth * TextEditorOptions.Options.TabSize;
 		}
 		
 		void DrawInvalidLineMarker (Gdk.Drawable win, int x, int y)
@@ -433,10 +463,13 @@ namespace Mono.TextEditor
 					SelectionMoveLeft.StartSelection (TextEditorData);
 				}
 				Caret.PreserveSelection = true;
+				Caret.AutoScrollToCaret = false;
 //				int oldLine = Caret.Line;
 				Caret.Location = VisualToDocumentLocation (x, y);
 				Caret.PreserveSelection = false;
+				Caret.AutoScrollToCaret = true;
 				SelectionMoveLeft.EndSelection (TextEditorData);
+				this.textEditor.ScrollToCaret ();
 				this.caretBlink = false;
 //				textEditor.RedrawLines (System.Math.Min (oldLine, Caret.Line), System.Math.Max (oldLine, Caret.Line));
 			}
@@ -446,12 +479,24 @@ namespace Mono.TextEditor
 		{
 			if (line.EditableLength == 0)
 				return 0;
-			string text = this.Document.Buffer.GetTextAt (line.Offset, System.Math.Min (column, line.EditableLength));
-			text = text.Replace ("\t", new string (' ', TextEditorOptions.Options.TabSize));
-			layout.SetText (text);
-			int width, height;
-			layout.GetPixelSize (out width, out height);
-			return width;
+			
+			int lineXPos  = 0;
+			
+			int visibleColumn = 0;
+			for (int c = 0; c < column; c++) {
+				int delta;
+				if (this.Document.Buffer.GetCharAt (line.Offset + column) == '\t') {
+					int newColumn = visibleColumn + TextEditorOptions.Options.TabSize;
+					newColumn = (newColumn / TextEditorOptions.Options.TabSize) * TextEditorOptions.Options.TabSize;
+					delta = (newColumn - visibleColumn) * this.charWidth;
+					visibleColumn = newColumn;
+				} else {
+					delta = this.charWidth;
+					visibleColumn++;
+				}
+				lineXPos += delta;
+			}
+			return lineXPos;
 		}
 		int rulerX = 0;
 		
@@ -476,12 +521,14 @@ namespace Mono.TextEditor
 			gc.RgbFgColor = color;
 			if (TextEditorOptions.Options.ShowRuler) {
 				int divider = System.Math.Max (area.Left, System.Math.Min (x + rulerX, area.Right));
-				win.DrawRectangle (gc, true, new Rectangle (area.X, area.Y, divider - area.X, area.Height));
-				gc.RgbFgColor = DimColor (color);
-				win.DrawRectangle (gc, true, new Rectangle (divider, area.Y, area.Right - divider, area.Height));
-			} else {
-				win.DrawRectangle (gc, true, area);
+				if (divider < area.Right) {
+					win.DrawRectangle (gc, true, new Rectangle (area.X, area.Y, divider - area.X, area.Height));
+					gc.RgbFgColor = DimColor (color);
+					win.DrawRectangle (gc, true, new Rectangle (divider, area.Y, area.Right - divider, area.Height));
+					return;
+				}
 			}
+			win.DrawRectangle (gc, true, area);
 		}
 		
 		public override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int lineNr, int x, int y)
@@ -490,82 +537,16 @@ namespace Mono.TextEditor
 			
 			LineSegment line = lineNr < Document.Splitter.LineCount ? Document.Splitter.Get (lineNr) : null;
 			int xStart = System.Math.Max (area.X, XOffset);
-			gc.ClipRectangle = new Gdk.Rectangle (xStart, 
-			                                      y, 
-			                                      area.Right - xStart,
-			                                      LineHeight);
+			gc.ClipRectangle = new Gdk.Rectangle (xStart, y, area.Right - xStart, LineHeight);
 		
 			Gdk.Rectangle lineArea = new Gdk.Rectangle (XOffset, y, textEditor.Allocation.Width - XOffset, LineHeight);
-			bool isSelected = false;
-			bool drawDefaultBg = true;
-			bool eolSelected = false;
-			Gdk.Color defaultStateType = lineNr == Caret.Line && TextEditorOptions.Options.HighlightCaretLine ? this.ColorStyle.LineMarker : this.ColorStyle.Background;
-			
-			if (line != null && TextEditorData.SelectionStart != null && TextEditorData.SelectionEnd != null) {
-				SelectionMarker start;
-				SelectionMarker end;
-				
-				if (TextEditorData.SelectionStart.Segment.Offset < TextEditorData.SelectionEnd.Segment.EndOffset) {
-					start = TextEditorData.SelectionStart;
-					end   = TextEditorData.SelectionEnd;
-				} else {
-					start = TextEditorData.SelectionEnd;
-					end   = TextEditorData.SelectionStart;
-				}
-				isSelected = start.Segment.Offset < line.Offset && line.Offset + line.EditableLength < end.Segment.EndOffset;
-				int selectionColumnStart = -1;
-				int selectionColumnEnd   = -1;
-				if (line == end.Segment) {
-					selectionColumnStart = 0;
-					selectionColumnEnd   = end.Column; 
-				} 
-				if (line == start.Segment) {
-					selectionColumnStart = start.Column; 
-				} 
-				if (selectionColumnStart >= 0) {
-					if (selectionColumnStart >= 0 && selectionColumnEnd >= 0 && selectionColumnEnd < selectionColumnStart) {
-						int tmp = selectionColumnStart;
-						selectionColumnStart = selectionColumnEnd;
-						selectionColumnEnd = tmp;
-					}
-					
-					// draw space before selection
-					int visualXStart = ColumnToVisualX (line, selectionColumnStart) - (int)TextEditorData.HAdjustment.Value;
-					lineArea = new Gdk.Rectangle (x, y, visualXStart, LineHeight);
-					DrawRectangleWithRuler (win, x, lineArea, defaultStateType);
-					
-					// draw selection (if selection is in the middle)
-					if (selectionColumnEnd >= 0) {
-						int visualXEnd = ColumnToVisualX (line, selectionColumnEnd) - (int)TextEditorData.HAdjustment.Value;
-						int reminder =  System.Math.Max (0, -visualXStart); 
-						if (visualXEnd - visualXStart > reminder) {
-							lineArea = new Gdk.Rectangle (x + visualXStart + reminder, y, visualXEnd - visualXStart - reminder, LineHeight);
-							DrawRectangleWithRuler (win, x, lineArea, ColorStyle.SelectedBg);
-						}
-					}
-					
-					// draw remaining line (unselected, if in middle, otherwise rest of line is selected)
-					lineArea = new Gdk.Rectangle (System.Math.Max (x, lineArea.Right), y, area.Width - System.Math.Max (x, lineArea.Right), LineHeight);
-					DrawRectangleWithRuler (win, x, lineArea, selectionColumnEnd >= 0 ? defaultStateType : this.ColorStyle.SelectedBg);
-					eolSelected = true;
-					drawDefaultBg = false;
-				}
-			}
 			int width, height;
 			
-			if (drawDefaultBg) {
-				eolSelected = isSelected;
-				DrawRectangleWithRuler (win, x, lineArea, isSelected ? this.ColorStyle.SelectedBg : defaultStateType);
-			}
-			
-			if (TextEditorOptions.Options.ShowRuler) {
-				gc.RgbFgColor = ColorStyle.Ruler;
-				win.DrawLine (gc, x + rulerX, y, x + rulerX, y + LineHeight); 
-			}
-			
 			if (line == null) {
-				if (TextEditorOptions.Options.ShowInvalidLines)
+				if (TextEditorOptions.Options.ShowInvalidLines) {
+					DrawRectangleWithRuler (win, x, lineArea, this.ColorStyle.Background);
 					DrawInvalidLineMarker (win, x, y);
+				}
 				return;
 			}
 			
@@ -619,8 +600,20 @@ namespace Mono.TextEditor
 			// Draw remaining line
 			if (line.EndOffset - offset > 0)
 				DrawLineText (win, line, offset, line.Offset + line.EditableLength - offset, ref xPos, y);
-			if (TextEditorOptions.Options.ShowEolMarkers) 
-				DrawEolMarker (win, eolSelected, ref xPos, y);
+			
+			bool isEolSelected = TextEditorData.IsSomethingSelected && TextEditorData.SelectionRange.Contains (line.Offset + line.EditableLength);
+			if (TextEditorOptions.Options.ShowEolMarkers) // TODO: EOL selected
+				DrawEolMarker (win, isEolSelected, ref xPos, y);
+			
+			lineArea.X     = xPos;
+			lineArea.Width = textEditor.Allocation.Width - xPos;
+			DrawRectangleWithRuler (win, x, lineArea, isEolSelected ? this.ColorStyle.SelectedBg : this.ColorStyle.Background);
+			
+			if (TextEditorOptions.Options.ShowRuler) {
+				gc.RgbFgColor = ColorStyle.Ruler;
+				win.DrawLine (gc, x + rulerX, y, x + rulerX, y + LineHeight); 
+			}
+			
 			if (caretOffset == line.Offset + line.EditableLength)
 				DrawCaret (win, xPos, y);
 		}
@@ -636,13 +629,18 @@ namespace Mono.TextEditor
 			LineSegment line = Document.Splitter.Get (lineNumber);
 			int lineXPos  = 0;
 			int column;
+			int  visibleColumn = 0;
 			int visualXPos = x + (int)TextEditorData.HAdjustment.Value;
 			for (column = 0; column < line.EditableLength; column++) {
 				int delta;
 				if (this.Document.Buffer.GetCharAt (line.Offset + column) == '\t') {
-					delta = TextEditorOptions.Options.TabSize * this.charWidth;
+					int newColumn = visibleColumn + TextEditorOptions.Options.TabSize;
+					newColumn = (newColumn / TextEditorOptions.Options.TabSize) * TextEditorOptions.Options.TabSize;
+					delta = (newColumn - visibleColumn) * this.charWidth;
+					visibleColumn = newColumn;
 				} else {
 					delta = this.charWidth;
+					visibleColumn++;
 				}
 				int nextXPosition = lineXPos + delta;
 				if (nextXPosition >= visualXPos) {

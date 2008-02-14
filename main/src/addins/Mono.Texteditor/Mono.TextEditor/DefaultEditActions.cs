@@ -261,9 +261,7 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
-			DocumentLocation newLocation = new DocumentLocation (0, 0);
-			if (newLocation != data.Caret.Location) 
-				data.Caret.Location = newLocation;
+			data.Caret.Location = new DocumentLocation (0, 0);
 		}
 	}
 	
@@ -587,7 +585,7 @@ namespace Mono.TextEditor
 			}
 			
 			if (data.IsSomethingSelected) {
-				DeleteAction.DeleteSelection (data);
+				data.DeleteSelectedText ();
 			}
 			
 			data.Document.Buffer.Insert (data.Caret.Offset, new StringBuilder (TextEditorOptions.Options.IndentationString));
@@ -612,6 +610,7 @@ namespace Mono.TextEditor
 				}
 			}*/
 			data.Document.Buffer.Insert (data.Caret.Offset, newLine);
+			data.Document.CommitLineToEndUpdate (data.Caret.Line);
 			data.Caret.Column = 0;
 			data.Caret.Line++;
 		}
@@ -628,7 +627,7 @@ namespace Mono.TextEditor
 		public override void Run (TextEditorData data)
 		{
 			if (data.IsSomethingSelected) {
-				DeleteAction.DeleteSelection (data);
+				data.DeleteSelectedText ();
 				return;
 			}
 			if (data.Caret.Offset == 0)
@@ -638,6 +637,7 @@ namespace Mono.TextEditor
 				LineSegment lineAbove = data.Document.Splitter.Get (data.Caret.Line - 1);
 				data.Caret.Location = new DocumentLocation (data.Caret.Line - 1, lineAbove.EditableLength);
 				data.Document.Buffer.Remove (lineAbove.EndOffset - lineAbove.DelimiterLength, lineAbove.DelimiterLength);
+				data.Document.CommitLineToEndUpdate (data.Caret.Line);
 			} else {
 				RemoveCharBeforCaret (data);
 			}
@@ -646,17 +646,10 @@ namespace Mono.TextEditor
 	
 	public class DeleteAction : EditAction
 	{
-		public static void DeleteSelection (TextEditorData data)
-		{
-			ISegment selection = data.SelectionRange;
-			data.Caret.Offset = selection.Offset;
-			data.Document.Buffer.Remove (selection.Offset, selection.Length);
-			data.ClearSelection ();
-		}
 		public override void Run (TextEditorData data)
 		{
 			if (data.IsSomethingSelected) {
-				DeleteSelection (data);
+				data.DeleteSelectedText ();
 				return;
 			}
 			if (data.Caret.Offset >= data.Document.Buffer.Length)
@@ -668,12 +661,11 @@ namespace Mono.TextEditor
 					if (line.EndOffset == data.Document.Buffer.Length)
 						line.DelimiterLength = 0;
 				}
-				data.Document.RequestUpdate (new LineToEndUpdate (data.Caret.Line));
+				data.Document.CommitLineToEndUpdate (data.Caret.Line);
 			} else {
 				data.Document.Buffer.Remove (data.Caret.Offset, 1); 
-				data.Document.RequestUpdate (new LineUpdate (data.Caret.Line));
+				data.Document.CommitLineUpdate (data.Caret.Line);
 			}
-			data.Document.CommitDocumentUpdate ();
 		}
 	}
 	
@@ -894,13 +886,14 @@ namespace Mono.TextEditor
 		{
 			if (clipboard.WaitIsTextAvailable ()) {
 				if (data.IsSomethingSelected) {
-					DeleteAction.DeleteSelection (data);
+					data.DeleteSelectedText ();
 				}
 				StringBuilder sb = new StringBuilder (clipboard.WaitForText ());
 				data.Document.Buffer.Insert (data.Caret.Offset, sb);
 				int oldLine = data.Caret.Line;
 				data.Caret.Offset += sb.Length;
 				data.Document.RequestUpdate (oldLine != data.Caret.Line ? (DocumentUpdateRequest)new LineToEndUpdate (oldLine) : (DocumentUpdateRequest)new LineUpdate (oldLine));
+				data.Document.CommitDocumentUpdate ();
 			}
 		}
 		public static void PasteFromPrimary (TextEditorData data)

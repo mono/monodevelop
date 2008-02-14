@@ -44,6 +44,8 @@ namespace Mono.TextEditor
 		int EndOffset {
 			get;
 		}
+		
+		bool Contains (int offset);
 	}
 }	
 

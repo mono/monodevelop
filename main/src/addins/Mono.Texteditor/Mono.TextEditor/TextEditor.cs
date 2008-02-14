@@ -120,14 +120,9 @@ namespace Mono.TextEditor
 					this.textEditorData.VAdjustment.Value = System.Math.Ceiling (this.textEditorData.VAdjustment.Value);
 					return;
 				}
-//				int reminder  = (int)this.textEditorData.VAdjustment.Value % LineHeight;
-//				if (reminder != 0) {
-//					this.textEditorData.VAdjustment.Value -= reminder;
-//					return;
-//				}
 				int delta = (int)(this.textEditorData.VAdjustment.Value - this.oldVadjustment);
 				oldVadjustment = this.textEditorData.VAdjustment.Value;
-				if (delta >= Allocation.Height - this.LineHeight || this.textViewMargin.inSelectionDrag) {
+				if (delta >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.inSelectionDrag) {
 					this.QueueDraw ();
 					return;
 				}
@@ -278,22 +273,7 @@ namespace Mono.TextEditor
 				oldSelection = selection;
 				this.RedrawLines (System.Math.Min (from, to), System.Math.Max (from, to));
 			};
-			Document.Splitter.LinesInserted  += delegate (object sender, LineEventArgs e) {
-				int lineNumber = Document.Splitter.GetLineNumberForOffset (e.Line.Offset);
-				RedrawFromLine (lineNumber);
-			};
-			Document.Splitter.LinesRemoved  += delegate (object sender, LineEventArgs e) {
-				int lineNumber = Document.Splitter.GetLineNumberForOffset (e.Line.Offset);
-				RedrawFromLine (lineNumber);
-			};
-//			Document.Splitter.LineLenghtChanged += delegate (object sender, LineEventArgs e) {
-//				int lineNumber = Document.Splitter.GetLineNumberForOffset (e.Line.Offset);
-//				this.RedrawLine (lineNumber);
-//				if (longestLine == null || longestLine.Length < e.Line.Length || longestLine == e.Line) {
-//					longestLine = e.Line;
-//					this.SetAdjustments ();
-//				}
-//			};
+			
 			Document.DocumentUpdated += delegate {
 				try {
 					foreach (DocumentUpdateRequest request in Document.UpdateRequests) {
@@ -637,7 +617,6 @@ namespace Mono.TextEditor
 		{
 			if (Caret.Line < 0 || Caret.Line >= Document.Splitter.LineCount)
 				return;
-			
 			int yMargin = 2 * this.LineHeight;
 			int xMargin = 10 * this.textViewMargin.charWidth;
 			int caretPosition = Document.LogicalToVisualLine (Caret.Line) * this.LineHeight;
@@ -698,8 +677,6 @@ namespace Mono.TextEditor
 			}
 			int startY = startLine * this.LineHeight - reminder;
 			int curY = startY;
-			//System.Console.WriteLine("Redraw #" + (endLine - startLine));
-			//System.Console.WriteLine("Redraw line:" + startLine + " to " + endLine);
 			for (int visualLineNumber = startLine; visualLineNumber <= endLine; visualLineNumber++) {
 				int curX = 0;
 				int logicalLineNumber = Document.VisualToLogicalLine (visualLineNumber + firstLine);
@@ -707,11 +684,15 @@ namespace Mono.TextEditor
 					if (margin.IsVisible) {
 						margin.XOffset = curX;
 						curX += margin.Width;
-						if (curX > area.X || margin.Width < 0)
+						if (curX > area.X || margin.Width < 0) {
+							DateTime now = DateTime.Now;
 							margin.Draw (win, area, logicalLineNumber, margin.XOffset, curY);
+						}
 					}
 				}
 				curY += LineHeight;
+				if (curY > area.Bottom)
+					break;
 			}
 		}
 		

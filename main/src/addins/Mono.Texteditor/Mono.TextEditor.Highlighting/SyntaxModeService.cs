@@ -190,7 +190,6 @@ namespace Mono.TextEditor.Highlighting
 					rule = mode.GetRule (spanStack.Peek ().Rule) ?? mode;
 				}
 				ScanSpans (doc, rule, spanStack, line.Offset, line.Offset + line.EditableLength);
-				System.Console.WriteLine(spanStack.Count);
 				while (spanStack.Count > 0 && spanStack.Peek ().StopAtEol)
 					spanStack.Pop ();
 			} while (iter.MoveNext ());

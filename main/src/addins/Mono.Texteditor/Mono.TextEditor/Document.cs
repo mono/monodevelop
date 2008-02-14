@@ -447,7 +447,7 @@ namespace Mono.TextEditor
 		
 		public void RequestUpdate (DocumentUpdateRequest request)
 		{
-//			System.Console.WriteLine(request);
+			//System.Console.WriteLine(request);
 			updateRequests.Add (request);
 		}
 		
@@ -456,6 +456,30 @@ namespace Mono.TextEditor
 			if (DocumentUpdated != null)
 				DocumentUpdated (this, EventArgs.Empty);
 			updateRequests.Clear ();
+		}
+		
+		public void CommitLineToEndUpdate (int line)
+		{
+			RequestUpdate (new LineToEndUpdate (line));
+			CommitDocumentUpdate ();
+		}
+				
+		public void CommitLineUpdate (int line)
+		{
+			RequestUpdate (new LineUpdate (line));
+			CommitDocumentUpdate ();
+		}
+					
+		public void CommitUpdateAll ()
+		{
+			RequestUpdate (new UpdateAll ());
+			CommitDocumentUpdate ();
+		}
+						
+		public void CommitMultipleLineUpdate (int start, int end)
+		{
+			RequestUpdate (new MultipleLineUpdate (start, end));
+			CommitDocumentUpdate ();
 		}
 		
 		public event EventHandler DocumentUpdated;
