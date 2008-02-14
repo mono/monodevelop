@@ -39,7 +39,7 @@ namespace MonoDevelop.AddinAuthoring {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.AddinAuthoring.NodeTypeEditorDialog
             this.Name = "MonoDevelop.AddinAuthoring.NodeTypeEditorDialog";
-            this.Title = Mono.Unix.Catalog.GetString("Extension Node Type");
+            this.Title = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Extension Node Type");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.Modal = true;
             this.HasSeparator = false;
@@ -96,7 +96,7 @@ namespace MonoDevelop.AddinAuthoring {
             this.label3 = new Gtk.Label();
             this.label3.Name = "label3";
             this.label3.Xalign = 0F;
-            this.label3.LabelProp = Mono.Unix.Catalog.GetString("Node type:");
+            this.label3.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Node type:");
             this.table1.Add(this.label3);
             Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.table1[this.label3]));
             w5.XOptions = ((Gtk.AttachOptions)(4));
@@ -105,7 +105,7 @@ namespace MonoDevelop.AddinAuthoring {
             this.label4 = new Gtk.Label();
             this.label4.Name = "label4";
             this.label4.Xalign = 0F;
-            this.label4.LabelProp = Mono.Unix.Catalog.GetString("Description:");
+            this.label4.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Description:");
             this.table1.Add(this.label4);
             Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.table1[this.label4]));
             w6.TopAttach = ((uint)(3));
@@ -116,7 +116,7 @@ namespace MonoDevelop.AddinAuthoring {
             this.label5 = new Gtk.Label();
             this.label5.Name = "label5";
             this.label5.Xalign = 0F;
-            this.label5.LabelProp = Mono.Unix.Catalog.GetString("Base type:");
+            this.label5.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Base type:");
             this.table1.Add(this.label5);
             Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.table1[this.label5]));
             w7.TopAttach = ((uint)(2));
@@ -127,7 +127,7 @@ namespace MonoDevelop.AddinAuthoring {
             this.label6 = new Gtk.Label();
             this.label6.Name = "label6";
             this.label6.Xalign = 0F;
-            this.label6.LabelProp = Mono.Unix.Catalog.GetString("Node name:");
+            this.label6.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Node name:");
             this.table1.Add(this.label6);
             Gtk.Table.TableChild w8 = ((Gtk.Table.TableChild)(this.table1[this.label6]));
             w8.TopAttach = ((uint)(1));

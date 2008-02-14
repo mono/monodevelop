@@ -34,7 +34,7 @@ namespace MonoDevelop.AddinAuthoring {
             this.checkEnable = new Gtk.CheckButton();
             this.checkEnable.CanFocus = true;
             this.checkEnable.Name = "checkEnable";
-            this.checkEnable.Label = Mono.Unix.Catalog.GetString("Enable extensibility features");
+            this.checkEnable.Label = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Enable extensibility features");
             this.checkEnable.DrawIndicator = true;
             this.checkEnable.UseUnderline = true;
             this.vbox2.Add(this.checkEnable);

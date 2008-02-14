@@ -60,11 +60,14 @@ FILES =  \
 	gtk-gui/MonoDevelop.AddinAuthoring.TypeSelector.cs \
 	MonoDevelop.AddinAuthoring.NodeBuilders/AddinFolderNodeBuilder.cs \
 	MonoDevelop.AddinAuthoring.NodeBuilders/AddinHeaderNodeBuilder.cs \
+	MonoDevelop.AddinAuthoring.NodeBuilders/AddinReferenceNodeBuilder.cs \
 	MonoDevelop.AddinAuthoring.NodeBuilders/ExtensionPointsNodeBuilder.cs \
 	MonoDevelop.AddinAuthoring.NodeBuilders/ExtensionsNodeBuilder.cs \
 	MonoDevelop.AddinAuthoring.NodeBuilders/ProjectFolderNodeBuilderExtension.cs \
+	MonoDevelop.AddinAuthoring.NodeBuilders/ReferencesFolderNodeBuilder.cs \
 	MonoDevelop.AddinAuthoring/AddinAuthoringService.cs \
 	MonoDevelop.AddinAuthoring/AddinData.cs \
+	MonoDevelop.AddinAuthoring/AddinDescriptionDisplayBinding.cs \
 	MonoDevelop.AddinAuthoring/AddinDescriptionView.cs \
 	MonoDevelop.AddinAuthoring/AddinDescriptionWidget.cs \
 	MonoDevelop.AddinAuthoring/AddinFeatureWidget.cs \

@@ -1,5 +1,43 @@
 2008-02-14  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.AddinAuthoring/AddinDescriptionView.cs,
+	  MonoDevelop.AddinAuthoring/AddinAuthoringService.cs,
+	  MonoDevelop.AddinAuthoring/TypeSelector.cs,
+	  MonoDevelop.AddinAuthoring/ExtensionPointsEditorWidget.cs,
+	  MonoDevelop.AddinAuthoring/ExtensionEditorWidget.cs,
+	  MonoDevelop.AddinAuthoring/AddinDescriptionWidget.cs,
+	  MonoDevelop.AddinAuthoring/ExtensionSelectorDialog.cs,
+	  MonoDevelop.AddinAuthoring/AddinFeatureWidget.cs,
+	  MonoDevelop.AddinAuthoring/NodeEditorWidget.cs,
+	  MonoDevelop.AddinAuthoring/AddinProjectExtension.cs,
+	  MonoDevelop.AddinAuthoring/AddinDescriptionDisplayBinding.cs,
+	  MonoDevelop.AddinAuthoring/AddinData.cs,
+	  MonoDevelop.AddinAuthoring/RegistrySelector.cs,
+	  MonoDevelop.AddinAuthoring.make, MonoDevelop.AddinAuthoring.addin.xml,
+	  MonoDevelop.AddinAuthoring.NodeBuilders/AddinReferenceNodeBuilder.cs,
+	  MonoDevelop.AddinAuthoring.NodeBuilders/ProjectFolderNodeBuilderExtension.cs,
+	  MonoDevelop.AddinAuthoring.NodeBuilders/ExtensionsNodeBuilder.cs,
+	  MonoDevelop.AddinAuthoring.NodeBuilders/ExtensionPointsNodeBuilder.cs,
+	  MonoDevelop.AddinAuthoring.NodeBuilders/AddinFolderNodeBuilder.cs,
+	  MonoDevelop.AddinAuthoring.NodeBuilders/ReferencesFolderNodeBuilder.cs,
+	  MonoDevelop.AddinAuthoring.mdp,
+	  gtk-gui/MonoDevelop.AddinAuthoring.ExtensionEditorWidget.cs,
+	  gtk-gui/MonoDevelop.AddinAuthoring.AddinDescriptionWidget.cs,
+	  gtk-gui/MonoDevelop.AddinAuthoring.AddinOptionPanelWidget.cs,
+	  gtk-gui/MonoDevelop.AddinAuthoring.ExtensionSelectorDialog.cs,
+	  gtk-gui/MonoDevelop.AddinAuthoring.AddinFeatureWidget.cs,
+	  gtk-gui/MonoDevelop.AddinAuthoring.SelectRepositoryDialog.cs,
+	  gtk-gui/MonoDevelop.AddinAuthoring.NodeSetEditorWidget.cs,
+	  gtk-gui/MonoDevelop.AddinAuthoring.NodeTypeEditorDialog.cs,
+	  gtk-gui/MonoDevelop.AddinAuthoring.NewExtensionPointDialog.cs,
+	  gtk-gui/MonoDevelop.AddinAuthoring.SelectNodeSetDialog.cs,
+	  gtk-gui/MonoDevelop.AddinAuthoring.ExtensionPointsEditorWidget.cs,
+	  gtk-gui/gui.stetic, MonoDevelop.AddinAuthoring.mds: Improved
+	  localization, handling of manifest file changes, reloading of manifest.
+	  Simplified manifest view.
+
+2008-02-14  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* configure, monodevelop.addinauthoring.pc.in, Makefile.include,
 	  MonoDevelop.AddinAuthoring.make, rules.make, Makefile: Add build files
 

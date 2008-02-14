@@ -5,6 +5,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using Mono.Addins.Description;
+using Mono.Addins;
 
 namespace MonoDevelop.AddinAuthoring
 {
@@ -21,8 +22,9 @@ namespace MonoDevelop.AddinAuthoring
 			if (data == null)
 				return res;
 			
-			monitor.Log.WriteLine (GettextCatalog.GetString ("Verifying add-in description"));
-			ProjectFile file = data.GetAddinManifestFile ();
+			monitor.Log.WriteLine (AddinManager.CurrentLocalizer.GetString ("Verifying add-in description"));
+			string fileName = data.AddinManifestFileName;
+			ProjectFile file = data.Project.ProjectFiles.GetFile (fileName);
 			if (file == null)
 				return res;
 			
@@ -33,8 +35,6 @@ namespace MonoDevelop.AddinAuthoring
 				addinFile = file.FilePath;
 			
 			AddinDescription desc = data.AddinRegistry.GetAddinDescription (new ProgressStatusMonitor (monitor), addinFile);
-			Console.WriteLine ("pp: " + addinFile);
-			Console.WriteLine ("pp1: " + desc.AddinFile);
 			StringCollection errors = desc.Verify ();
 			
 			foreach (string err in errors)

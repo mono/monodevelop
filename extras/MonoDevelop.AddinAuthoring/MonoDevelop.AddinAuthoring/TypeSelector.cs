@@ -30,6 +30,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
+using Mono.Addins;
 
 namespace MonoDevelop.AddinAuthoring
 {
@@ -43,8 +44,8 @@ namespace MonoDevelop.AddinAuthoring
 		Project project;
 		bool loading;
 		
-		string newClassLabel = GettextCatalog.GetString ("(New Class)");
-		string newInterfaceLabel = GettextCatalog.GetString ("(New Interface)");
+		string newClassLabel = AddinManager.CurrentLocalizer.GetString ("(New Class)");
+		string newInterfaceLabel = AddinManager.CurrentLocalizer.GetString ("(New Interface)");
 		
 		public event EventHandler Changed;
 		

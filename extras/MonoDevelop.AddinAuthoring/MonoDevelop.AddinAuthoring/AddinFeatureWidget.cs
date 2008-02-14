@@ -36,9 +36,6 @@ namespace MonoDevelop.AddinAuthoring
 			AddinData data = AddinData.GetAddinData (project);
 			if (data != null) {
 				regSelector.RegistryPath = data.RegistryPath;
-				if (data.AddinManifest != null) {
-					checkRoot.Active = data.AddinManifest.IsRoot;
-				}
 			}
 			
 			UpdateControls ();
@@ -47,7 +44,7 @@ namespace MonoDevelop.AddinAuthoring
 		protected virtual void OnButtonBrowseClicked(object sender, System.EventArgs e)
 		{
 			
-/*			FolderDialog fd = new FolderDialog (GettextCatalog.GetString ("Select Repository"));
+/*			FolderDialog fd = new FolderDialog (AddinManager.CurrentLocalizer.GetString ("Select Repository"));
 			
 			try {
 				fd.SetFilename (Environment.GetFolderPath (Environment.SpecialFolder.Personal));
@@ -96,7 +93,7 @@ namespace MonoDevelop.AddinAuthoring
 		public string Validate ()
 		{
 			if (RegistryPath.Length == 0)
-				return GettextCatalog.GetString ("Please select the location of the add-in registry");
+				return AddinManager.CurrentLocalizer.GetString ("Please select the location of the add-in registry");
 			else
 				return null;
 		}
@@ -173,11 +170,11 @@ namespace MonoDevelop.AddinAuthoring
 	public class AddinFeature: ICombineEntryFeature
 	{
 		public string Title {
-			get { return GettextCatalog.GetString ("Add-in Support"); }
+			get { return AddinManager.CurrentLocalizer.GetString ("Add-in Support"); }
 		}
 		
 		public string Description {
-			get { return GettextCatalog.GetString ("Add-in Support"); }
+			get { return AddinManager.CurrentLocalizer.GetString ("Add-in Support"); }
 		}
 		
 		public bool SupportsCombineEntry (Combine parentCombine, CombineEntry entry)
@@ -210,7 +207,7 @@ namespace MonoDevelop.AddinAuthoring
 			
 			data.AddinRegistry = new AddinRegistry (editor.RegistryPath);
 			
-			AddinDescription desc = data.AddinManifest;
+			AddinDescription desc = data.LoadAddinManifest ();
 			if (editor.AddinId.Length > 0)
 				desc.LocalId = editor.AddinId;
 			if (editor.AddinName.Length > 0)
@@ -219,6 +216,7 @@ namespace MonoDevelop.AddinAuthoring
 			desc.IsRoot = editor.IsRoot;
 			desc.Version = "1.0";
 			desc.Save ();
+			data.NotifyChanged ();
 		}
 	}
 }

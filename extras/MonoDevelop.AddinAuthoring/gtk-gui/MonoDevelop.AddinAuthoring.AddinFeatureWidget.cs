@@ -58,7 +58,7 @@ namespace MonoDevelop.AddinAuthoring {
             this.label3 = new Gtk.Label();
             this.label3.Name = "label3";
             this.label3.Xalign = 0F;
-            this.label3.LabelProp = Mono.Unix.Catalog.GetString("Add-in repository:");
+            this.label3.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Add-in repository:");
             this.boxRepo.Add(this.label3);
             Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.boxRepo[this.label3]));
             w1.Position = 0;
@@ -80,7 +80,7 @@ namespace MonoDevelop.AddinAuthoring {
             this.checkRoot = new Gtk.CheckButton();
             this.checkRoot.CanFocus = true;
             this.checkRoot.Name = "checkRoot";
-            this.checkRoot.Label = Mono.Unix.Catalog.GetString("This project is an add-in root");
+            this.checkRoot.Label = Mono.Addins.AddinManager.CurrentLocalizer.GetString("This project is an add-in root");
             this.checkRoot.DrawIndicator = true;
             this.checkRoot.UseUnderline = true;
             this.vbox2.Add(this.checkRoot);
@@ -92,7 +92,7 @@ namespace MonoDevelop.AddinAuthoring {
             this.labelAddinInfo = new Gtk.Label();
             this.labelAddinInfo.Name = "labelAddinInfo";
             this.labelAddinInfo.Xalign = 0F;
-            this.labelAddinInfo.LabelProp = Mono.Unix.Catalog.GetString("Add-in information:");
+            this.labelAddinInfo.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Add-in information:");
             this.vbox2.Add(this.labelAddinInfo);
             Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox2[this.labelAddinInfo]));
             w5.Position = 2;
@@ -152,7 +152,7 @@ namespace MonoDevelop.AddinAuthoring {
             this.label7 = new Gtk.Label();
             this.label7.Name = "label7";
             this.label7.Xalign = 0F;
-            this.label7.LabelProp = Mono.Unix.Catalog.GetString("Namespace:");
+            this.label7.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Namespace:");
             this.tableNames.Add(this.label7);
             Gtk.Table.TableChild w10 = ((Gtk.Table.TableChild)(this.tableNames[this.label7]));
             w10.TopAttach = ((uint)(1));
@@ -165,7 +165,7 @@ namespace MonoDevelop.AddinAuthoring {
             this.label9 = new Gtk.Label();
             this.label9.Name = "label9";
             this.label9.Xalign = 0F;
-            this.label9.LabelProp = Mono.Unix.Catalog.GetString("Identifier:");
+            this.label9.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Identifier:");
             this.tableNames.Add(this.label9);
             Gtk.Table.TableChild w11 = ((Gtk.Table.TableChild)(this.tableNames[this.label9]));
             w11.TopAttach = ((uint)(2));
@@ -178,7 +178,7 @@ namespace MonoDevelop.AddinAuthoring {
             this.labelName = new Gtk.Label();
             this.labelName.Name = "labelName";
             this.labelName.Xalign = 0F;
-            this.labelName.LabelProp = Mono.Unix.Catalog.GetString("Display name:");
+            this.labelName.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Display name:");
             this.tableNames.Add(this.labelName);
             Gtk.Table.TableChild w12 = ((Gtk.Table.TableChild)(this.tableNames[this.labelName]));
             w12.LeftAttach = ((uint)(1));

@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.Core.Gui;
+using Mono.Addins;
 
 namespace MonoDevelop.AddinAuthoring
 {
@@ -69,15 +70,15 @@ namespace MonoDevelop.AddinAuthoring
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			label = GettextCatalog.GetString ("Add-in Description");
+			label = AddinManager.CurrentLocalizer.GetString ("Add-in Description");
 			icon = Context.GetIcon (Stock.Addin);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			builder.AddChild (new TreeViewItem ("Dependencies"));
-			builder.AddChild (new TreeViewItem ("Extension Points"));
-			builder.AddChild (new TreeViewItem ("Extensions"));
+			AddinData data = (AddinData) dataObject;
+			builder.AddChild (data.CachedAddinManifest.ExtensionPoints);
+			builder.AddChild (data.CachedAddinManifest.MainModule.Extensions);
 		}
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

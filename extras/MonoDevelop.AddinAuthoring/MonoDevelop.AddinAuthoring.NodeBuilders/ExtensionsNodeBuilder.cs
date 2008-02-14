@@ -26,16 +26,58 @@
 //
 
 using System;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Ide.Gui.Pads.ProjectPad;
+using MonoDevelop.Components.Commands;
+using Mono.Addins;
+using Mono.Addins.Description;
+using Gdk;
 
 namespace MonoDevelop.AddinAuthoring
 {
 	
 	
-	public class ExtensionsNodeBuilder
+	public class ExtensionsNodeBuilder: TypeNodeBuilder
 	{
+		public override Type NodeDataType {
+			get { return typeof(ExtensionCollection); }
+		}
 		
-		public ExtensionsNodeBuilder()
+		public override Type CommandHandlerType {
+			get { return typeof(ExtensionsCommandHandler); }
+		}
+		
+		public override string ContextMenuAddinPath {
+			get { return "/MonoDevelop/AddinAuthoring/ContextMenu/ProjectPad/AddinReference"; }
+		}
+		
+		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
+			return "extension-points";
+		}
+
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Pixbuf icon, ref Pixbuf closedIcon)
+		{
+			AddinData data = (AddinData) treeBuilder.GetParentDataItem (typeof(AddinData), false);
+			label = AddinManager.CurrentLocalizer.GetString ("Extensions ({0})", data.CachedAddinManifest.MainModule.Extensions.Count);
+			icon = Context.GetIcon ("md-extension-node");
+		}	
+	}
+	
+	class ExtensionsCommandHandler: NodeCommandHandler
+	{
+		public override void ActivateItem ()
+		{
+			AddinData data = (AddinData) CurrentNode.GetParentDataItem (typeof(AddinData), false);
+			Document doc = IdeApp.Workbench.OpenDocument (data.AddinManifestFileName);
+			if (doc != null) {
+				AddinDescriptionView view = doc.GetContent<AddinDescriptionView> ();
+				if (view != null)
+					view.ShowExtensions ();
+			}
 		}
 	}
 }

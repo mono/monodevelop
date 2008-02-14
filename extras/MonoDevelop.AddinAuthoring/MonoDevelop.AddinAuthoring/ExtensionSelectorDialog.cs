@@ -96,7 +96,7 @@ namespace MonoDevelop.AddinAuthoring
 				AddAddin (addin);
 			
 			if (adesc != null && showExtensionPoints) {
-				string txt = GettextCatalog.GetString ("Local extension points");
+				string txt = AddinManager.CurrentLocalizer.GetString ("Local extension points");
 				TreeIter iter = store.AppendValues (GLib.Markup.EscapeText (txt), adesc, null, false, false, pixLocalAddin, true, false);
 				// Add a dummy node to make sure the expand button is shown
 				store.AppendValues (iter, "", null, null, false, false, null, true, true);
@@ -128,7 +128,7 @@ namespace MonoDevelop.AddinAuthoring
 			TreeIter iter = TreeIter.Zero;
 			if (showNamespaces) {
 				if (desc.Namespace.Length == 0)
-					iter = GetBranch (iter, GettextCatalog.GetString ("Global namespace"), pixNamespace);
+					iter = GetBranch (iter, AddinManager.CurrentLocalizer.GetString ("Global namespace"), pixNamespace);
 				else
 					iter = GetBranch (iter, desc.Namespace, pixNamespace);
 			}
@@ -141,7 +141,7 @@ namespace MonoDevelop.AddinAuthoring
 						iter = GetBranch (iter, tcat, pixCategory);
 					}
 				} else {
-					iter = GetBranch (iter, GettextCatalog.GetString ("Miscellaneous"), pixCategory);
+					iter = GetBranch (iter, AddinManager.CurrentLocalizer.GetString ("Miscellaneous"), pixCategory);
 				}
 			}
 			

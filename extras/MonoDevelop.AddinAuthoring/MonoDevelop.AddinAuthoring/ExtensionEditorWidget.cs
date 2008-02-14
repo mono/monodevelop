@@ -89,13 +89,11 @@ namespace MonoDevelop.AddinAuthoring
 			}
 		}
 		
-		public AddinData AddinData {
-			get { return data; }
-			set {
-				data = value;
-				adesc = data.AddinManifest;
-				Fill (); 
-			}
+		public void SetData (AddinDescription desc, AddinData data)
+		{
+			this.data = data;
+			this.adesc = desc;
+			Fill ();
 		}
 		
 		public void Fill ()
@@ -105,7 +103,7 @@ namespace MonoDevelop.AddinAuthoring
 			ArrayList deps = new ArrayList ();
 			deps.Add (CompiledAddinDesc);
 			
-			foreach (Dependency dep in data.AddinManifest.MainModule.Dependencies) {
+			foreach (Dependency dep in adesc.MainModule.Dependencies) {
 				AddinDependency adep = dep as AddinDependency;
 				if (adep == null) continue;
 				Addin ad = data.AddinRegistry.GetAddin (adep.FullAddinId);
@@ -114,7 +112,7 @@ namespace MonoDevelop.AddinAuthoring
 				}
 			}
 			
-			foreach (Extension ext in data.AddinManifest.MainModule.Extensions) {
+			foreach (Extension ext in adesc.MainModule.Extensions) {
 				AddExtension (ext, deps);
 			}
 			UpdateButtons ();
@@ -128,7 +126,7 @@ namespace MonoDevelop.AddinAuthoring
 				return;
 			
 			Menu menu = new Menu ();
-			Gtk.ImageMenuItem mi = new Gtk.ImageMenuItem (GettextCatalog.GetString ("Select Extension Points..."));
+			Gtk.ImageMenuItem mi = new Gtk.ImageMenuItem (AddinManager.CurrentLocalizer.GetString ("Select Extension Points..."));
 			menu.Insert (mi, -1);
 			
 			string aid = (string) store.GetValue (it, ColAddin);
@@ -156,7 +154,7 @@ namespace MonoDevelop.AddinAuthoring
 				if (menu.Children.Length > 0)
 					menu.Insert (new Gtk.SeparatorMenuItem (), -1);
 				foreach (ExtensionNodeType nt in types) {
-					Gtk.ImageMenuItem mi = new Gtk.ImageMenuItem (GettextCatalog.GetString ("Add node '{0}'", nt.NodeName));
+					Gtk.ImageMenuItem mi = new Gtk.ImageMenuItem (AddinManager.CurrentLocalizer.GetString ("Add node '{0}'", nt.NodeName));
 					menu.Insert (mi, -1);
 					ExtensionNodeType ntc = nt;
 					mi.Activated += delegate {
@@ -269,7 +267,7 @@ namespace MonoDevelop.AddinAuthoring
 			}
 			else {
 				string txt = "<b>" + GLib.Markup.EscapeText (ext.Path) + "</b>\n";
-				txt += "<small><span foreground='red'>" + GettextCatalog.GetString ("Unknown extension point") + "</span></small>";
+				txt += "<small><span foreground='red'>" + AddinManager.CurrentLocalizer.GetString ("Unknown extension point") + "</span></small>";
 				store.AppendValues (txt, null, null, null, pixExtensionPoint, true, null);
 			}
 		}
@@ -316,7 +314,7 @@ namespace MonoDevelop.AddinAuthoring
 				string txt = GLib.Markup.EscapeText (adesc.Name);
 				return store.AppendValues (txt, adesc.AddinId, null, null, pixAddin, true, null);
 			} else {
-				string txt = GettextCatalog.GetString ("Local extension points");
+				string txt = AddinManager.CurrentLocalizer.GetString ("Local extension points");
 				return store.AppendValues (txt, adesc.AddinId, null, null, pixLocalAddin, true, null);
 			}
 		}

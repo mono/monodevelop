@@ -567,108 +567,12 @@
               </packing>
             </child>
             <child>
-              <widget class="Gtk.VBox" id="vbox4">
-                <property name="MemberName" />
-                <property name="BorderWidth">6</property>
-                <child>
-                  <widget class="Gtk.HBox" id="hbox7">
-                    <property name="MemberName" />
-                    <property name="Spacing">3</property>
-                    <child>
-                      <widget class="Gtk.Button" id="buttonAddDep">
-                        <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="Type">TextAndIcon</property>
-                        <property name="Icon">stock:gtk-add Menu</property>
-                        <property name="Label" translatable="yes">Add Dependency</property>
-                        <property name="UseUnderline">True</property>
-                        <property name="Relief">None</property>
-                        <signal name="Clicked" handler="OnButtonAddDepClicked" />
-                      </widget>
-                      <packing>
-                        <property name="Position">0</property>
-                        <property name="AutoSize">True</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="Gtk.Button" id="buttonRemoveDep">
-                        <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="Type">TextAndIcon</property>
-                        <property name="Icon">stock:gtk-remove Menu</property>
-                        <property name="Label" translatable="yes">Remove Dependency</property>
-                        <property name="UseUnderline">True</property>
-                        <property name="Relief">None</property>
-                        <signal name="Clicked" handler="OnButtonRemoveDepClicked" />
-                      </widget>
-                      <packing>
-                        <property name="Position">1</property>
-                        <property name="AutoSize">True</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
-                    </child>
-                  </widget>
-                  <packing>
-                    <property name="Position">0</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.HBox" id="hbox2">
-                    <property name="MemberName" />
-                    <property name="Spacing">6</property>
-                    <property name="BorderWidth">3</property>
-                    <child>
-                      <widget class="Gtk.ScrolledWindow" id="scrolledwindow3">
-                        <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="ShadowType">In</property>
-                        <child>
-                          <widget class="Gtk.TreeView" id="listDeps">
-                            <property name="MemberName" />
-                            <property name="CanFocus">True</property>
-                            <property name="HeadersVisible">False</property>
-                            <property name="HeadersClickable">True</property>
-                          </widget>
-                        </child>
-                      </widget>
-                      <packing>
-                        <property name="Position">0</property>
-                        <property name="AutoSize">True</property>
-                      </packing>
-                    </child>
-                  </widget>
-                  <packing>
-                    <property name="Position">1</property>
-                    <property name="AutoSize">True</property>
-                  </packing>
-                </child>
-              </widget>
-              <packing>
-                <property name="Position">1</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="Gtk.Label" id="label6">
-                <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">Dependencies</property>
-              </widget>
-              <packing>
-                <property name="type">tab</property>
-              </packing>
-            </child>
-            <child>
               <widget class="MonoDevelop.AddinAuthoring.ExtensionPointsEditorWidget" id="extensionPointsEditor">
                 <property name="MemberName" />
                 <property name="Events">ButtonPressMask</property>
               </widget>
               <packing>
-                <property name="Position">2</property>
+                <property name="Position">1</property>
               </packing>
             </child>
             <child>
@@ -697,7 +601,7 @@
                 </child>
               </widget>
               <packing>
-                <property name="Position">3</property>
+                <property name="Position">2</property>
               </packing>
             </child>
             <child>

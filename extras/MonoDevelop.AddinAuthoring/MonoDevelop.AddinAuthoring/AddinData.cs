@@ -37,7 +37,7 @@ using Mono.Addins.Description;
 
 namespace MonoDevelop.AddinAuthoring
 {
-	public class AddinData
+	public class AddinData: IDisposable
 	{
 		Project project;
 		AddinRegistry registry;
@@ -49,6 +49,8 @@ namespace MonoDevelop.AddinAuthoring
 		
 		AddinDescription manifest;
 		AddinDescription compiledManifest;
+		FileSystemWatcher watcher;
+		DateTime lastNotifiedTimestamp;
 		
 		public event EventHandler Changed;
 		internal static event AddinSupportEventHandler AddinSupportChanged;
@@ -65,7 +67,29 @@ namespace MonoDevelop.AddinAuthoring
 		internal void Bind (Project project)
 		{
 			this.project = project;
+			
+			watcher = new FileSystemWatcher (Path.GetDirectoryName (AddinManifestFileName));
+			watcher.Filter = Path.GetFileName (AddinManifestFileName);
+			watcher.Changed += OnDescFileChanged;
+			watcher.EnableRaisingEvents = true;
 		}
+		
+		void OnDescFileChanged (object s, EventArgs a)
+		{
+			Gtk.Application.Invoke (delegate {
+				DateTime tim = File.GetLastWriteTime (AddinManifestFileName);
+				if (tim != lastNotifiedTimestamp) {
+					lastNotifiedTimestamp = tim;
+					NotifyChanged ();
+				}
+			});
+		}
+		
+		public void Dispose ()
+		{
+			watcher.Dispose ();
+		}
+
 		
 		public static AddinData GetAddinData (Project project)
 		{
@@ -99,15 +123,31 @@ namespace MonoDevelop.AddinAuthoring
 			get { return project; }
 		}
 		
-		public AddinDescription AddinManifest {
+		public AddinDescription CachedAddinManifest {
 			get {
-				if (manifest == null) {
-					ProjectFile file = GetAddinManifestFile ();
-					if (file == null)
-						return null;
-					manifest = AddinRegistry.ReadAddinManifestFile (file.FilePath);
-				}
+				if (manifest == null)
+					manifest = LoadAddinManifest ();
 				return manifest;
+			}
+		}
+		
+		public AddinDescription LoadAddinManifest ()
+		{
+			return AddinRegistry.ReadAddinManifestFile (AddinManifestFileName);
+		}
+		
+		public string AddinManifestFileName {
+			get {
+				foreach (ProjectFile pf in project.ProjectFiles) {
+					if (pf.FilePath.EndsWith (".addin") || pf.FilePath.EndsWith (".addin.xml"))
+						return pf.FilePath;
+				}
+				
+				AddinDescription desc = new AddinDescription ();
+				string file = Path.Combine (project.BaseDirectory, "manifest.addin.xml");
+				desc.Save (file);
+				project.AddFile (file, BuildAction.EmbedAsResource);
+				return file;
 			}
 		}
 		
@@ -183,23 +223,11 @@ namespace MonoDevelop.AddinAuthoring
 			}
 		}
 		
-		void NotifyChanged ()
+		public void NotifyChanged ()
 		{
+			manifest = null;
 			if (Changed != null)
 				Changed (this, EventArgs.Empty);
-		}
-		
-		public ProjectFile GetAddinManifestFile ()
-		{
-			foreach (ProjectFile pf in project.ProjectFiles) {
-				if (pf.FilePath.EndsWith (".addin") || pf.FilePath.EndsWith (".addin.xml"))
-					return pf;
-			}
-			
-			AddinDescription desc = new AddinDescription ();
-			string file = Path.Combine (project.BaseDirectory, "manifest.addin.xml");
-			desc.Save (file);
-			return project.AddFile (file, BuildAction.EmbedAsResource);
 		}
 		
 		internal static ExtensionNodeDescriptionCollection GetExtensionNodes (AddinRegistry registry, AddinDescription desc, string path)

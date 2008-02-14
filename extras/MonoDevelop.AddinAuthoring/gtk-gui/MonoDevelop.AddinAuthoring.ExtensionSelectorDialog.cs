@@ -30,7 +30,7 @@ namespace MonoDevelop.AddinAuthoring {
             // Widget MonoDevelop.AddinAuthoring.ExtensionSelectorDialog
             this.Events = ((Gdk.EventMask)(256));
             this.Name = "MonoDevelop.AddinAuthoring.ExtensionSelectorDialog";
-            this.Title = Mono.Unix.Catalog.GetString("Extension Selector");
+            this.Title = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Extension Selector");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.HasSeparator = false;
             // Internal child MonoDevelop.AddinAuthoring.ExtensionSelectorDialog.VBox
@@ -47,7 +47,7 @@ namespace MonoDevelop.AddinAuthoring {
             this.label13 = new Gtk.Label();
             this.label13.Name = "label13";
             this.label13.Xalign = 0F;
-            this.label13.LabelProp = Mono.Unix.Catalog.GetString("Select the extension points to be extended:");
+            this.label13.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Select the extension points to be extended:");
             this.vbox5.Add(this.label13);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox5[this.label13]));
             w2.Position = 0;

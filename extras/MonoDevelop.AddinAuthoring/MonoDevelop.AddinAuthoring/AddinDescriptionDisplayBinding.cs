@@ -1,7 +1,7 @@
-// RegistrySelector.cs
+// AddinDescriptionDisplayBinding.cs
 //
 // Author:
-//   Lluis Sanchez Gual
+//   Lluis Sanchez Gual <lluis@novell.com>
 //
 // Copyright (c) 2007 Novell, Inc (http://www.novell.com)
 //
@@ -26,63 +26,48 @@
 //
 
 using System;
-using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Codons;
+using MonoDevelop.Projects;
 using Mono.Addins;
 
 namespace MonoDevelop.AddinAuthoring
 {
-	public partial class RegistrySelector : Gtk.Bin
+	public class AddinDescriptionDisplayBinding: IDisplayBinding
 	{
-		string registryPath;
-		string startupPath;
-		
-		public event EventHandler Changed;
-		
-		public RegistrySelector()
-		{
-			this.Build();
+		public string DisplayName {
+			get {
+				return AddinManager.CurrentLocalizer.GetString ("Add-in description editor");
+			}
 		}
 		
-		public string RegistryPath {
-			get {
-				return registryPath; 
+		public bool CanCreateContentForFile (string fileName)
+		{
+			if (fileName.EndsWith (".addin.xml") || fileName.EndsWith (".xml")) {
+				if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
+					Project p = IdeApp.ProjectOperations.CurrentOpenCombine.GetProjectContainingFile (fileName);
+					return p != null && AddinData.GetAddinData (p) != null;
+				}
 			}
-			set {
-				registryPath = value;
-				UpdateLabel ();
-			}
+			return false;
 		}
 
-		public string StartupPath {
-			get {
-				return startupPath;
-			}
-			set {
-				startupPath = value;
-				UpdateLabel ();
-			}
+		public bool CanCreateContentForMimeType (string mimetype)
+		{
+			return false;
 		}
 
-		protected virtual void OnButtonBrowseClicked (object sender, System.EventArgs e)
+		public IViewContent CreateContentForFile (string fileName)
 		{
-			SelectRepositoryDialog dlg = new SelectRepositoryDialog (registryPath, startupPath);
-			dlg.TransientFor = this.Toplevel as Gtk.Window;
-			if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
-				registryPath = dlg.RegistryPath;
-				startupPath = dlg.StartupPath;
-				UpdateLabel ();
-				if (Changed != null)
-					Changed (this, EventArgs.Empty);
-			}
-			dlg.Destroy ();
+			Project p = IdeApp.ProjectOperations.CurrentOpenCombine.GetProjectContainingFile (fileName);
+			AddinData data = AddinData.GetAddinData (p);
+			return new AddinDescriptionView (data);
 		}
-		
-		void UpdateLabel ()
+
+		public IViewContent CreateContentForMimeType (string mimeType, System.IO.Stream content)
 		{
-			if (registryPath != null)
-				label.Text = AddinAuthoringService.GetRegistryName (registryPath);
-			else
-				label.Text = AddinManager.CurrentLocalizer.GetString ("(No selection)");
+			throw new NotImplementedException();
 		}
+
 	}
 }

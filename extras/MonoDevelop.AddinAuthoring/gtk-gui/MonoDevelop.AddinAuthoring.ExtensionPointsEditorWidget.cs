@@ -60,7 +60,7 @@ namespace MonoDevelop.AddinAuthoring {
             w2.Add(w3);
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w5 = new Gtk.Label();
-            w5.LabelProp = Mono.Unix.Catalog.GetString("New Extension Point");
+            w5.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("New Extension Point");
             w5.UseUnderline = true;
             w2.Add(w5);
             w1.Add(w2);
@@ -100,7 +100,7 @@ namespace MonoDevelop.AddinAuthoring {
             w12.Add(w13);
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w15 = new Gtk.Label();
-            w15.LabelProp = Mono.Unix.Catalog.GetString("Properties");
+            w15.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Properties");
             w15.UseUnderline = true;
             w12.Add(w15);
             w11.Add(w12);

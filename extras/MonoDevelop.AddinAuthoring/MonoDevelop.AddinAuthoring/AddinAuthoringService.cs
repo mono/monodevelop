@@ -29,6 +29,8 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using Mono.Addins;
+using Mono.Addins.Description;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.AddinAuthoring
 {
@@ -57,6 +59,84 @@ namespace MonoDevelop.AddinAuthoring
 			}
 			else
 				return path;
+		}
+		
+		internal static void AddReferences (AddinData data, object[] addins)
+		{
+			AddinDescription desc = data.LoadAddinManifest ();
+			AddinDescriptionView view = FindLoadedDescription (data);
+			foreach (Addin ad in addins) {
+				AddReference (desc, ad);
+				if (view != null)
+					AddReference (view.AddinDescription, ad);
+			}
+			if (view != null) {
+				view.Update ();
+				view.BeginInternalUpdate ();
+			}
+			
+			try {
+				desc.Save ();
+				data.NotifyChanged ();
+			} finally {
+				if (view != null)
+					view.EndInternalUpdate ();
+			}
+		}
+		
+		internal static void RemoveReferences (AddinData data, string[] fullIds)
+		{
+			AddinDescription desc = data.LoadAddinManifest ();
+			AddinDescriptionView view = FindLoadedDescription (data);
+			foreach (string ad in fullIds) {
+				RemoveReference (desc, ad);
+				if (view != null)
+					RemoveReference (view.AddinDescription, ad);
+			}
+			if (view != null) {
+				view.Update ();
+				view.BeginInternalUpdate ();
+			}
+			
+			try {
+				desc.Save ();
+				data.NotifyChanged ();
+			} finally {
+				if (view != null)
+					view.EndInternalUpdate ();
+			}
+		}
+		
+		static AddinDescriptionView FindLoadedDescription (AddinData data)
+		{
+			foreach (Document doc in IdeApp.Workbench.Documents) {
+				AddinDescriptionView view = doc.GetContent <AddinDescriptionView> ();
+				if (view != null && view.Data == data)
+					return view;
+			}
+			return null;
+		}
+				
+		static void AddReference (AddinDescription desc, Addin addin)
+		{
+			foreach (AddinDependency adep in desc.MainModule.Dependencies) {
+				if (adep.FullAddinId == addin.Id)
+					return;
+			}
+			if (addin.Namespace == desc.Namespace)
+				desc.MainModule.Dependencies.Add (new AddinDependency (addin.LocalId, addin.Version));
+			else
+				desc.MainModule.Dependencies.Add (new AddinDependency (addin.Id));
+		}
+				
+		static void RemoveReference (AddinDescription desc, string addinId)
+		{
+			foreach (AddinDependency adep in desc.MainModule.Dependencies) {
+				if (adep.FullAddinId == addinId) {
+					desc.MainModule.Dependencies.Remove (adep);
+					break;
+				}
+			}
 		}
 	}
 }

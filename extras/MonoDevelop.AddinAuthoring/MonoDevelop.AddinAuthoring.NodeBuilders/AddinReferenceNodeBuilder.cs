@@ -1,4 +1,4 @@
-// ExtensionPointsNodeBuilder.cs
+// AddinReferenceNodeBuilder.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -38,45 +38,49 @@ using Gdk;
 
 namespace MonoDevelop.AddinAuthoring
 {
-	public class ExtensionPointsNodeBuilder: TypeNodeBuilder
+	public class AddinReferenceNodeBuilder: TypeNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(ExtensionPointCollection); }
+			get { return typeof(AddinDependency); }
 		}
 		
 		public override Type CommandHandlerType {
-			get { return typeof(ExtensionPointsCommandHandler); }
+			get { return typeof(AddinReferenceCommandHandler); }
 		}
 		
 		public override string ContextMenuAddinPath {
 			get { return "/MonoDevelop/AddinAuthoring/ContextMenu/ProjectPad/AddinReference"; }
 		}
+
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return "extension-points";
+			AddinDependency adep = (AddinDependency) dataObject;
+			return Addin.GetIdName (adep.FullAddinId);
 		}
 
+		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Pixbuf icon, ref Pixbuf closedIcon)
 		{
-			AddinData data = (AddinData) treeBuilder.GetParentDataItem (typeof(AddinData), false);
-			label = AddinManager.CurrentLocalizer.GetString ("Extension Points ({0})", data.CachedAddinManifest.ExtensionPoints.Count);
-			icon = Context.GetIcon ("md-extension-point");
-		}	
+			AddinDependency adep = (AddinDependency) dataObject;
+			label = Addin.GetIdName (adep.FullAddinId);
+			icon = Context.GetIcon ("md-addin");
+		}
 	}
 	
-	class ExtensionPointsCommandHandler: NodeCommandHandler
+	class AddinReferenceCommandHandler: NodeCommandHandler
 	{
-		public override void ActivateItem ()
+		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Delete)]
+		public void DeleteDependency ()
 		{
-			AddinData data = (AddinData) CurrentNode.GetParentDataItem (typeof(AddinData), false);
-			Document doc = IdeApp.Workbench.OpenDocument (data.AddinManifestFileName);
-			if (doc != null) {
-				AddinDescriptionView view = doc.GetContent<AddinDescriptionView> ();
-				if (view != null)
-					view.ShowExtensionPoints ();
+			DotNetProject p = CurrentNode.GetParentDataItem (typeof(Project), true) as DotNetProject;
+			AddinData data = AddinData.GetAddinData (p);
+			AddinDependency adep = (AddinDependency) CurrentNode.DataItem;
+			
+			string q = AddinManager.CurrentLocalizer.GetString ("Are you sure you want to remove the reference to add-in '{0}'?", Addin.GetIdName (adep.FullAddinId));
+			if (IdeApp.Services.MessageService.AskQuestion (q)) {
+				AddinAuthoringService.RemoveReferences (data, new string[] { adep.FullAddinId });
 			}
 		}
-
 	}
 }

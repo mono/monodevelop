@@ -23,6 +23,10 @@
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/AddinAuthoring/ContextMenu/ProjectPad/AddinReference">
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+	</ExtensionPoint>
+	
 	<ExtensionPoint path = "/MonoDevelop/AddinAuthoring/AddinRegistries">
 		<ExtensionNode name="Registry" type="MonoDevelop.AddinAuthoring.RegistryExtensionNode" />
 	</ExtensionPoint>
@@ -35,7 +39,7 @@
 	
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Command id = "MonoDevelop.AddinAuthoring.Commands.AddAddinDependency"
-			_label = "Add add-in dependency" />
+			_label = "Add add-in reference..." />
 		<Command id = "MonoDevelop.AddinAuthoring.Commands.AddExtension"
 			icon = "md-addin"
 			_label = "Add new extension..." />
@@ -49,9 +53,17 @@
 		<CommandItem id="MonoDevelop.AddinAuthoring.Commands.AddAddinDependency" insertafter="Separator5"/>
 	</Extension>
 
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/ReferenceFolder">
+		<CommandItem id = "MonoDevelop.AddinAuthoring.Commands.AddAddinDependency" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddReference"/>
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder class = "MonoDevelop.AddinAuthoring.ProjectFolderNodeBuilderExtension"/>
 		<NodeBuilder class = "MonoDevelop.AddinAuthoring.AddinFolderNodeBuilder"/>
+		<NodeBuilder class = "MonoDevelop.AddinAuthoring.ReferencesFolderNodeBuilder"/>
+		<NodeBuilder class = "MonoDevelop.AddinAuthoring.AddinReferenceNodeBuilder"/>
+		<NodeBuilder class = "MonoDevelop.AddinAuthoring.ExtensionsNodeBuilder"/>
+		<NodeBuilder class = "MonoDevelop.AddinAuthoring.ExtensionPointsNodeBuilder"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
@@ -67,6 +79,10 @@
 	<Extension path = "/MonoDevelop/AddinAuthoring/ContextMenu/ProjectPad/Addin">
 		<CommandItem id = "MonoDevelop.AddinAuthoring.Commands.AddAddinDependency" />
 		<CommandItem id = "MonoDevelop.AddinAuthoring.Commands.AddExtension" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/AddinAuthoring/ContextMenu/ProjectPad/AddinReference">
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Project/Add">
@@ -86,6 +102,10 @@
 		<Condition id="activeproject" value="DotNet">
 			<DialogPanel id = "AddinAuthoring" _label = "Add-in Settings" class="MonoDevelop.AddinAuthoring.AddinOptionPanel"/>
 		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
+		<DisplayBinding class = "MonoDevelop.AddinAuthoring.AddinDescriptionDisplayBinding"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">

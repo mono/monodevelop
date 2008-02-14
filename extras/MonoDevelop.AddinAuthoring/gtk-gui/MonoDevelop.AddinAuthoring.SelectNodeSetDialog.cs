@@ -31,7 +31,7 @@ namespace MonoDevelop.AddinAuthoring {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.AddinAuthoring.SelectNodeSetDialog
             this.Name = "MonoDevelop.AddinAuthoring.SelectNodeSetDialog";
-            this.Title = Mono.Unix.Catalog.GetString("Select Node Set");
+            this.Title = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Select Node Set");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.Modal = true;
             this.HasSeparator = false;
@@ -52,7 +52,7 @@ namespace MonoDevelop.AddinAuthoring {
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
             this.label1.Xalign = 0F;
-            this.label1.LabelProp = Mono.Unix.Catalog.GetString("Node Set:");
+            this.label1.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Node Set:");
             this.hbox1.Add(this.label1);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox1[this.label1]));
             w2.Position = 0;

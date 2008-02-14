@@ -71,7 +71,7 @@ namespace MonoDevelop.AddinAuthoring {
             w2.Add(w3);
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w5 = new Gtk.Label();
-            w5.LabelProp = Mono.Unix.Catalog.GetString("Select Extension Points");
+            w5.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Select Extension Points");
             w5.UseUnderline = true;
             w2.Add(w5);
             w1.Add(w2);
@@ -102,7 +102,7 @@ namespace MonoDevelop.AddinAuthoring {
             // Container child hbox2.Gtk.Box+BoxChild
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
-            this.label1.LabelProp = Mono.Unix.Catalog.GetString("Add Node");
+            this.label1.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Add Node");
             this.hbox2.Add(this.label1);
             Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.hbox2[this.label1]));
             w11.Position = 1;
@@ -140,7 +140,7 @@ namespace MonoDevelop.AddinAuthoring {
             w16.Add(w17);
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w19 = new Gtk.Label();
-            w19.LabelProp = Mono.Unix.Catalog.GetString("Remove");
+            w19.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Remove");
             w19.UseUnderline = true;
             w16.Add(w19);
             w15.Add(w16);
@@ -175,7 +175,7 @@ namespace MonoDevelop.AddinAuthoring {
             w26.Add(w27);
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w29 = new Gtk.Label();
-            w29.LabelProp = Mono.Unix.Catalog.GetString("Properties");
+            w29.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Properties");
             w29.UseUnderline = true;
             w26.Add(w29);
             w25.Add(w26);

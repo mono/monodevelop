@@ -34,6 +34,8 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.Components.Commands;
+using Mono.Addins.Description;
+using Gtk;
 
 namespace MonoDevelop.AddinAuthoring
 {
@@ -58,6 +60,34 @@ namespace MonoDevelop.AddinAuthoring
 					builder.AddChild (data);
 			}
 		}
+		
+		public override void OnNodeAdded (object dataObject)
+		{
+			if (dataObject is DotNetProject) {
+				AddinData data = AddinData.GetAddinData ((DotNetProject)dataObject);
+				if (data != null)
+					data.Changed += OnProjectChanged;
+			}
+		}
+		
+		public override void OnNodeRemoved (object dataObject)
+		{
+			if (dataObject is DotNetProject) {
+				AddinData data = AddinData.GetAddinData ((DotNetProject)dataObject);
+				if (data != null)
+					data.Changed -= OnProjectChanged;
+			}
+		}
+
+		
+		void OnProjectChanged (object s, EventArgs a)
+		{
+			AddinData data = (AddinData) s;
+			ITreeBuilder tb = Context.GetTreeBuilder (data.Project);
+			if (tb != null)
+				tb.UpdateAll ();
+		}
+
 	}
 	
 	class AddinFolderCommandHandler: NodeCommandHandler
@@ -65,8 +95,8 @@ namespace MonoDevelop.AddinAuthoring
 		public override void ActivateItem ()
 		{
 			if (CurrentNode.DataItem is AddinData) {
-				AddinDescriptionView view = new AddinDescriptionView ((AddinData) CurrentNode.DataItem);
-				IdeApp.Workbench.OpenDocument (view, true);
+				AddinData data = (AddinData) CurrentNode.DataItem;
+				IdeApp.Workbench.OpenDocument (data.AddinManifestFileName, true);
 			}
 		}
 
@@ -76,8 +106,12 @@ namespace MonoDevelop.AddinAuthoring
 			DotNetProject p = CurrentNode.GetParentDataItem (typeof(Project), true) as DotNetProject;
 			AddinData data = AddinData.GetAddinData (p);
 			
-			ExtensionSelectorDialog dlg = new ExtensionSelectorDialog (data.AddinRegistry, null, data.AddinManifest.IsRoot,  false);
-			dlg.Run ();
+			AddinDescription desc = data.LoadAddinManifest ();
+			ExtensionSelectorDialog dlg = new ExtensionSelectorDialog (data.AddinRegistry, null, desc.IsRoot,  false);
+			if (dlg.Run () == (int) ResponseType.Ok) {
+				foreach (object ob in dlg.GetSelection ())
+					Console.WriteLine ("pp s: " + ob);
+			}
 			dlg.Destroy ();
 		}
 

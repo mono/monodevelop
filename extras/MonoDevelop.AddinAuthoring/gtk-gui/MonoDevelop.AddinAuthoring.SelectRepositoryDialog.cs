@@ -38,7 +38,7 @@ namespace MonoDevelop.AddinAuthoring {
             // Widget MonoDevelop.AddinAuthoring.SelectRepositoryDialog
             this.Events = ((Gdk.EventMask)(256));
             this.Name = "MonoDevelop.AddinAuthoring.SelectRepositoryDialog";
-            this.Title = Mono.Unix.Catalog.GetString("Select Add-in Registry");
+            this.Title = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Select Add-in Registry");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.HasSeparator = false;
             // Internal child MonoDevelop.AddinAuthoring.SelectRepositoryDialog.VBox
@@ -55,7 +55,7 @@ namespace MonoDevelop.AddinAuthoring {
             this.label11 = new Gtk.Label();
             this.label11.Name = "label11";
             this.label11.Xalign = 0F;
-            this.label11.LabelProp = Mono.Unix.Catalog.GetString("Select the add-in registry for the new add-in:");
+            this.label11.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Select the add-in registry for the new add-in:");
             this.vbox4.Add(this.label11);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox4[this.label11]));
             w2.Position = 0;

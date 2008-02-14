@@ -47,7 +47,7 @@ namespace MonoDevelop.AddinAuthoring
 			table.ColumnSpacing = 6;
 			
 			uint r = 1;
-			AddAttribute (table, "id", "System.String", GettextCatalog.GetString ("Identifier of the extension node"), false, 0);
+			AddAttribute (table, "id", "System.String", AddinManager.CurrentLocalizer.GetString ("Identifier of the extension node"), false, 0);
 			Console.WriteLine ("pp: " + ntype.TypeName + " " + ntype.Attributes.Count);
 			foreach (NodeTypeAttribute att in ntype.Attributes) {
 				AddAttribute (table, att.Name, att.Type, att.Description, att.Required, r);
@@ -62,20 +62,20 @@ namespace MonoDevelop.AddinAuthoring
 			table.RowSpacing = 6;
 			table.ColumnSpacing = 6;
 			
-			label = new Label (GettextCatalog.GetString ("Insert before:"));
+			label = new Label (AddinManager.CurrentLocalizer.GetString ("Insert before:"));
 			label.Xalign = 0f;
 			table.Attach (label, 0, 1, 0, 1, AttachOptions.Shrink|AttachOptions.Fill, AttachOptions.Shrink, 0, 0);
-			label = new Label (GettextCatalog.GetString ("Insert after:"));
+			label = new Label (AddinManager.CurrentLocalizer.GetString ("Insert after:"));
 			label.Xalign = 0f;
 			table.Attach (label, 0, 1, 1, 2, AttachOptions.Shrink|AttachOptions.Fill, AttachOptions.Shrink, 0, 0);
 			
 			insBeforeCombo = ComboBox.NewText ();
-			insBeforeCombo.AppendText (GettextCatalog.GetString ("(None)"));
+			insBeforeCombo.AppendText (AddinManager.CurrentLocalizer.GetString ("(None)"));
 			insBeforeCombo.Active = 0;
 			table.Attach (insBeforeCombo, 1, 2, 0, 1);
 			
 			insAfterCombo = ComboBox.NewText ();
-			insAfterCombo.AppendText (GettextCatalog.GetString ("(None)"));
+			insAfterCombo.AppendText (AddinManager.CurrentLocalizer.GetString ("(None)"));
 			insAfterCombo.Active = 0;
 			table.Attach (insAfterCombo, 1, 2, 1, 2);
 			

@@ -1,8 +1,11 @@
 
 using System;
+using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui;
+using Mono.Addins;
+using Mono.Addins.Description;
 
 namespace MonoDevelop.AddinAuthoring
 {
@@ -10,16 +13,32 @@ namespace MonoDevelop.AddinAuthoring
 	{
 		AddinDescriptionWidget descWidget;
 		AddinData data;
+		AddinDescription adesc;
+		DateTime descTimestamp;
+		bool inInternalUpdate;
 		
 		public AddinDescriptionView (AddinData data)
 		{
 			this.data = data;
-			ContentName = data.Project.Name + " Add-in Description";
-			descWidget = new AddinDescriptionWidget (data);
+			//ContentName = data.Project.Name + " Add-in Description";
+			ContentName = data.AddinManifestFileName;
+			
+			descWidget = new AddinDescriptionWidget ();
 			descWidget.Changed += delegate {
 				IsDirty = true;
 			};
+
+			data.Changed += OnDataChanged;
+			
+			Reload ();
 		}
+		
+		public override void Dispose ()
+		{
+			data.Changed -= OnDataChanged;
+			base.Dispose ();
+		}
+
 		
 		public override string StockIconId {
 			get { return "md-addin"; }
@@ -37,12 +56,71 @@ namespace MonoDevelop.AddinAuthoring
 		public override bool IsFile {
 			get { return false; }
 		}
+
+		public AddinData Data {
+			get {
+				return data;
+			}
+		}
+
+		public AddinDescription AddinDescription {
+			get {
+				return adesc;
+			}
+		}
 		
 		public override void Save ()
 		{
 			descWidget.Save ();
-			data.AddinManifest.Save ();
+			adesc.Save ();
 			IsDirty = false;
+			data.NotifyChanged ();
+		}
+		
+		internal void BeginInternalUpdate ()
+		{
+			inInternalUpdate = true;
+		}
+		
+		internal void EndInternalUpdate ()
+		{
+			inInternalUpdate = false;
+			descTimestamp = File.GetLastWriteTime (data.AddinManifestFileName);
+		}
+		
+		public void Update ()
+		{
+			descWidget.Update ();
+		}
+		
+		public void Reload ()
+		{
+			adesc = data.AddinRegistry.ReadAddinManifestFile (data.AddinManifestFileName);
+			descWidget.Fill (adesc, data);
+			IsDirty = false;
+			descTimestamp = File.GetLastWriteTime (data.AddinManifestFileName);
+		}
+		
+		void OnDataChanged (object s, EventArgs a)
+		{
+			if (inInternalUpdate || descTimestamp == File.GetLastWriteTime (data.AddinManifestFileName))
+				return;
+			if (IsDirty) {
+				string q = AddinManager.CurrentLocalizer.GetString ("The add-in manifest for project '{0}' has been modified. Do you want to reload it? (unsaved changes will be lost)", data.Project.Name);
+				if (!IdeApp.Services.MessageService.AskQuestion (q))
+					return;
+			}
+			Reload ();
+		}
+		
+		public void ShowExtensionPoints ()
+		{
+			descWidget.ShowExtensionPoints ();
+		}
+		
+		public void ShowExtensions ()
+		{
+			descWidget.ShowExtensions ();
 		}
 	}
 }

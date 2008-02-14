@@ -70,13 +70,11 @@ namespace MonoDevelop.AddinAuthoring
 				Changed (this, EventArgs.Empty);
 		}
 		
-		public AddinData AddinData {
-			get { return data; }
-			set {
-				data = value;
-				adesc = data.AddinManifest;
-				Fill (); 
-			}
+		public void SetData (AddinDescription desc, AddinData data)
+		{
+			this.data = data;
+			this.adesc = desc;
+			Fill ();
 		}
 		
 		void Fill ()
