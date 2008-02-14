@@ -35,6 +35,7 @@ namespace Mono.TextEditor
 		bool preserveSelection = false;
 		bool isInInsertMode = true;
 		bool autoScrollToCaret = true;
+		bool isHidden = false;
 		Document document;
 
 		public int Line {
@@ -121,6 +122,15 @@ namespace Mono.TextEditor
 			}
 			set {
 				autoScrollToCaret = value;
+			}
+		}
+
+		public bool IsHidden {
+			get {
+				return isHidden;
+			}
+			set {
+				isHidden = value;
 			}
 		}
 		

@@ -134,7 +134,9 @@ namespace Mono.TextEditor
 					from = 0;
 					to   = -delta;
 				}
+				
 				DoFlipBuffer ();
+				Caret.IsHidden = true;
 				this.buffer.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
 				                          this.flipBuffer,
 				                          0, from, 
@@ -145,7 +147,9 @@ namespace Mono.TextEditor
 				} else {
 					RenderMargins (buffer, new Gdk.Rectangle (0, 0, Allocation.Width, -delta + this.LineHeight));
 				}
-				GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
+				Caret.IsHidden = false;
+				
+				GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal),
 				                        buffer,
 				                        0, 0, 
 				                        0, 0, 

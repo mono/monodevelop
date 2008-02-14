@@ -227,7 +227,7 @@ namespace Mono.TextEditor
 		
 		void DrawCaret (Gdk.Drawable win, char ch, int x, int y)
 		{
-			if (!caretBlink || !textEditor.IsFocus) 
+			if (Caret.IsHidden || !caretBlink || !textEditor.IsFocus) 
 				return;
 			gc.RgbFgColor = ColorStyle.Caret;
 			if (Caret.IsInInsertMode) {
