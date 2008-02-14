@@ -135,19 +135,13 @@ namespace Mono.TextEditor
 					return;
 				if (offset < 0)
 					offset = 0;
-				char ch = Document.Buffer.GetCharAt (offset);
-				int bracket = TextUtil.openBrackets.IndexOf (ch);
 				int oldIndex = highlightBracketOffset;
-				if (bracket >= 0) {
-					highlightBracketOffset = TextUtil.SearchMatchingBracketForward (Document, offset + 1, bracket);
-				} else {
-					bracket = TextUtil.closingBrackets.IndexOf (ch);
-					if (bracket >= 0) {
-						highlightBracketOffset = TextUtil.SearchMatchingBracketBackward (Document, offset - 1, bracket);
-					} else {
-						highlightBracketOffset = -1;
-					}
-				}
+				highlightBracketOffset = GetMatchingBracketOffset (offset);
+				if (highlightBracketOffset == Caret.Offset && offset + 1 < Document.Buffer.Length)
+					highlightBracketOffset = GetMatchingBracketOffset (offset + 1);
+				if (highlightBracketOffset == Caret.Offset)
+					highlightBracketOffset = -1;
+				
 				if (highlightBracketOffset != oldIndex) {
 					int line1 = oldIndex >= 0 ? Document.Splitter.OffsetToLineNumber (oldIndex) : -1;
 					int line2 = highlightBracketOffset >= 0 ? Document.Splitter.OffsetToLineNumber (highlightBracketOffset) : -1;
@@ -160,6 +154,24 @@ namespace Mono.TextEditor
 			
 			defaultCursor = null;
 			textCursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
+		}
+		
+		int GetMatchingBracketOffset (int offset)
+		{
+			char ch = Document.Buffer.GetCharAt (offset);
+			int bracket = TextUtil.openBrackets.IndexOf (ch);
+			int result;
+			if (bracket >= 0) {
+				result = TextUtil.SearchMatchingBracketForward (Document, offset + 1, bracket);
+			} else {
+				bracket = TextUtil.closingBrackets.IndexOf (ch);
+				if (bracket >= 0) {
+					result = TextUtil.SearchMatchingBracketBackward (Document, offset - 1, bracket);
+				} else {
+					result = -1;
+				}
+			}
+			return result;
 		}
 		
 		public override void OptionsChanged ()
