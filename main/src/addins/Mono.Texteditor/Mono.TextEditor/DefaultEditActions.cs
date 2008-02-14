@@ -466,6 +466,20 @@ namespace Mono.TextEditor
 				data.Caret.Line = data.Document.Splitter.LineCount - 1;
 		}
 	}	
+	
+	public class GotoMatchingBracket : EditAction
+	{
+		public override void Run (TextEditorData data)
+		{
+			int matchingBracketOffset = TextUtil.GetMatchingBracketOffset (data.Document, data.Caret.Offset);
+			if (matchingBracketOffset == -1 && data.Caret.Offset > 0)
+				matchingBracketOffset = TextUtil.GetMatchingBracketOffset (data.Document, data.Caret.Offset - 1);
+			
+			if (matchingBracketOffset != -1)
+				data.Caret.Offset = matchingBracketOffset;
+		}
+	}
+
 #endregion
 	
 	public class RemoveTab : EditAction

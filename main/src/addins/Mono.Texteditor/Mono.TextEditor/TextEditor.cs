@@ -231,6 +231,9 @@ namespace Mono.TextEditor
 			
 			keyBindings.Add (GetKeyCode (Gdk.Key.F2), new GotoNextBookmark ());
 			keyBindings.Add (GetKeyCode (Gdk.Key.F2, Gdk.ModifierType.ShiftMask), new GotoPrevBookmark ());
+			
+			keyBindings.Add (GetKeyCode (Gdk.Key.b, Gdk.ModifierType.ControlMask), new GotoMatchingBracket ());
+			
 			bookmarkMargin = new BookmarkMargin (this);
 			gutterMargin = new GutterMargin (this);
 			foldMarkerMargin = new FoldMarkerMargin (this);

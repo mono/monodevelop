@@ -136,9 +136,9 @@ namespace Mono.TextEditor
 				if (offset < 0)
 					offset = 0;
 				int oldIndex = highlightBracketOffset;
-				highlightBracketOffset = GetMatchingBracketOffset (offset);
+				highlightBracketOffset = TextUtil.GetMatchingBracketOffset (Document, offset);
 				if (highlightBracketOffset == Caret.Offset && offset + 1 < Document.Buffer.Length)
-					highlightBracketOffset = GetMatchingBracketOffset (offset + 1);
+					highlightBracketOffset = TextUtil.GetMatchingBracketOffset (Document, offset + 1);
 				if (highlightBracketOffset == Caret.Offset)
 					highlightBracketOffset = -1;
 				
@@ -154,24 +154,6 @@ namespace Mono.TextEditor
 			
 			defaultCursor = null;
 			textCursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
-		}
-		
-		int GetMatchingBracketOffset (int offset)
-		{
-			char ch = Document.Buffer.GetCharAt (offset);
-			int bracket = TextUtil.openBrackets.IndexOf (ch);
-			int result;
-			if (bracket >= 0) {
-				result = TextUtil.SearchMatchingBracketForward (Document, offset + 1, bracket);
-			} else {
-				bracket = TextUtil.closingBrackets.IndexOf (ch);
-				if (bracket >= 0) {
-					result = TextUtil.SearchMatchingBracketBackward (Document, offset - 1, bracket);
-				} else {
-					result = -1;
-				}
-			}
-			return result;
 		}
 		
 		public override void OptionsChanged ()

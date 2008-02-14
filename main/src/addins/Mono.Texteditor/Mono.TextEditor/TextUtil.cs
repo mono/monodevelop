@@ -40,6 +40,24 @@ namespace Mono.TextEditor
 			return (openBrackets + closingBrackets).IndexOf (ch) >= 0;
 		}
 		
+		public static int GetMatchingBracketOffset (Document document, int offset)
+		{
+			char ch = document.Buffer.GetCharAt (offset);
+			int bracket = TextUtil.openBrackets.IndexOf (ch);
+			int result;
+			if (bracket >= 0) {
+				result = TextUtil.SearchMatchingBracketForward (document, offset + 1, bracket);
+			} else {
+				bracket = TextUtil.closingBrackets.IndexOf (ch);
+				if (bracket >= 0) {
+					result = TextUtil.SearchMatchingBracketBackward (document, offset - 1, bracket);
+				} else {
+					result = -1;
+				}
+			}
+			return result;
+		}
+		
 		public static int SearchMatchingBracketForward (Document document, int offset, int bracket)
 		{
 			return SearchMatchingBracket (document, offset, closingBrackets[bracket], openBrackets[bracket], 1);
