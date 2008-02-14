@@ -460,5 +460,112 @@ namespace MonoDevelop.SourceEditor
 			Caret.Offset = finalCaretOffset;
 		}		
 #endregion
+		
+#region Key bindings
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.LineEnd)]
+		internal void OnLineEnd ()
+		{
+			SimulateKeyPress (Gdk.Key.End, Gdk.ModifierType.None);
+		}
+		
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.LineStart)]
+		internal void OnLineStart ()
+		{
+			SimulateKeyPress (Gdk.Key.Home, Gdk.ModifierType.None);
+		}
+		
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLeftChar)]
+		internal void OnDeleteLeftChar ()
+		{
+			SimulateKeyPress (Gdk.Key.BackSpace, Gdk.ModifierType.None);
+		}
+		
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DeleteRightChar)]
+		internal void OnDeleteRightChar ()
+		{
+			SimulateKeyPress (Gdk.Key.Delete, Gdk.ModifierType.None);
+		}
+		
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.CharLeft)]
+		internal void OnCharLeft ()
+		{
+			SimulateKeyPress (Gdk.Key.Left, Gdk.ModifierType.None);
+		}
+		
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.CharRight)]
+		internal void OnCharRight ()
+		{
+			SimulateKeyPress (Gdk.Key.Right, Gdk.ModifierType.None);
+		}
+		
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.LineUp)]
+		internal void OnLineUp ()
+		{
+			SimulateKeyPress (Gdk.Key.Up, Gdk.ModifierType.None);
+		}
+		
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.LineDown)]
+		internal void OnLineDown ()
+		{
+			SimulateKeyPress (Gdk.Key.Down, Gdk.ModifierType.None);
+		}
+		
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DocumentStart)]
+		internal void OnDocumentStart ()
+		{
+			SimulateKeyPress (Gdk.Key.Home, Gdk.ModifierType.ControlMask);
+		}
+		
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DocumentEnd)]
+		internal void OnDocumentEnd ()
+		{
+			SimulateKeyPress (Gdk.Key.End, Gdk.ModifierType.ControlMask);
+		}
+		
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.PageUp)]
+		internal void OnPageUp ()
+		{
+			SimulateKeyPress (Gdk.Key.Page_Up, Gdk.ModifierType.None);
+		}
+		
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.PageDown)]
+		internal void OnPageDown ()
+		{
+			SimulateKeyPress (Gdk.Key.Page_Down, Gdk.ModifierType.None);
+		}
+		
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLine)]
+		internal void OnDeleteLine ()
+		{
+			SimulateKeyPress (Gdk.Key.d, Gdk.ModifierType.ControlMask);
+		}
+		
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DeleteToLineEnd)]
+		internal void OnDeleteToLineEnd ()
+		{
+			SimulateKeyPress (Gdk.Key.D, Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask);
+		}
+		
+ 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.ScrollLineUp)]
+		internal void OnScrollLineUp ()
+		{
+			SimulateKeyPress (Gdk.Key.Up, Gdk.ModifierType.ControlMask);
+		}
+		
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.ScrollLineDown)]
+		internal void OnScrollLineDown ()
+		{
+			SimulateKeyPress (Gdk.Key.Down, Gdk.ModifierType.ControlMask);
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace)]
+		internal void OnGotoMatchingBrace ()
+		{
+			SimulateKeyPress (Gdk.Key.b, Gdk.ModifierType.ControlMask);
+		}
+		
+#endregion
+		
 	}
 }
