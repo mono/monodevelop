@@ -52,6 +52,7 @@ namespace MonoDevelop.SourceEditor
 		UserSpecified
 	}
 	
+	
 	public class SourceEditorOptions : TextEditorOptions
 	{
 		public new static SourceEditorOptions Options {

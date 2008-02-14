@@ -60,6 +60,11 @@ namespace MonoDevelop.SourceEditor
 				return widget.TextEditor.TextEditorData;
 			}
 		}
+		public ExtendibleTextEditor TextEditor {
+			get {
+				return widget.TextEditor;
+			}
+		}
 		
 		public override Gtk.Widget Control {
 			get {

@@ -52,6 +52,13 @@ namespace MonoDevelop.SourceEditor
 		bool showTipScheduled;
 		int langTipX, langTipY;
 		uint tipTimeoutId;
+		DocumentLocation menuPopupLocation;
+		
+		public DocumentLocation MenuPopupLocation {
+			get {
+				return menuPopupLocation;
+			}
+		}
 		
 		public ITextEditorExtension Extension {
 			get {
@@ -89,10 +96,15 @@ namespace MonoDevelop.SourceEditor
 			keyBindings [GetKeyCode (Gdk.Key.Tab)] = new TabAction (this);
 			keyBindings [GetKeyCode (Gdk.Key.BackSpace)] = new AdvancedBackspaceAction ();
 			this.PopupMenu += delegate {
+				menuPopupLocation = TextEditorData.Caret.Location;
 				this.ShowPopup ();
 			};
 			this.ButtonPressEvent += delegate(object sender, Gtk.ButtonPressEventArgs args) {
 				if (args.Event.Button == 3) {
+					int textEditorXOffset = (int)args.Event.X - this.TextViewMargin.XOffset;
+					if (textEditorXOffset < 0)
+						return;
+					menuPopupLocation = this.TextViewMargin.VisualToDocumentLocation (textEditorXOffset, (int)args.Event.Y);
 					this.ShowPopup ();
 				}
 			};
@@ -116,6 +128,11 @@ namespace MonoDevelop.SourceEditor
 		{
 			bool result = true;
 			char ch = (char)evnt.Key;
+			if (evnt.Key == Gdk.Key.Menu) {
+				this.menuPopupLocation = Caret.Location;
+				this.ShowPopup ();
+				return true;
+			}
 			
 			bool inStringOrComment = false;
 			if (SourceEditorOptions.Options.AutoInsertMatchingBracket && (ch == '{' || ch == '[' || ch == '(' || ch == '"' || ch == '\'' )) {

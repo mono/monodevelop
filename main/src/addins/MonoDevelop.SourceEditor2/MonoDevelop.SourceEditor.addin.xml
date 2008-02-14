@@ -14,9 +14,17 @@
 	
 	<Dependencies>
 	    <Addin id="Core" version="0.19.0"/>
+		<Addin id="Components" version="0.19.0"/>
 		<Addin id="Ide" version="0.19.0"/>
 	</Dependencies>
-	
+
+	<Extension path = "/MonoDevelop/Ide/Commands">
+		<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations"
+		         defaultHandler = "MonoDevelop.SourceEditor.MarkerOperationsHandler"
+		         _label = ""
+		         type = "array"/> 
+	</Extension>
+
 	<!-- Extension points -->
 	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor" name = "Editor context menu">
 		<Description>Context menu for the editor.</Description>
@@ -43,6 +51,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
+		<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.RefactoryCommands.CurrentRefactoryOperations" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Undo" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Redo" />
