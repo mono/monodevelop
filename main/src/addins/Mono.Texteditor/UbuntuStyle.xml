@@ -22,7 +22,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE. -->
- <EditorStyle name="Ubuntu" _description="Light color sheme using ubuntu colors.">
+ <EditorStyle name="Ubuntu" _description="Light color scheme using ubuntu colors.">
  
 	<!-- ubuntu palette -->
 	<Color name="orange_highlight" value="#eec73e"/>

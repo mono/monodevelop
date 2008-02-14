@@ -1,4 +1,4 @@
-<!-- TangeLightStyle.xml
+<!-- TangoLightStyle.xml
 
  Author:
    Mike Krüger <mkrueger@novell.com>
@@ -22,7 +22,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE. -->
- <EditorStyle name="TangoLight" _description="Light color sheme using tango colors.">
+ <EditorStyle name="TangoLight" _description="Light color scheme using tango colors.">
  
 	<!-- tango palette -->
 	<Color name="butter1" value="#fce94f"/>

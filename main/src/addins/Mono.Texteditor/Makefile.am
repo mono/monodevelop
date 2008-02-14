@@ -75,6 +75,7 @@ RES =  \
 	TangoLightStyle.xml \
 	UbuntuStyle.xml \
 	VBNetSyntaxMode.xml \
+	VisualStudioStyle.xml \
 	XmlSyntaxMode.xml
 
 all: $(ASSEMBLY)
