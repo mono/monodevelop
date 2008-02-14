@@ -272,25 +272,25 @@ namespace Mono.TextEditor
 //				Console.WriteLine ("#" + chunks.Length);
 			foreach (Chunk chunk in chunks) {
 				if (chunk.Offset >= selectionStart && chunk.EndOffset <= selectionEnd) {
-					DrawTextWithHighlightedWs (win, true, chunk.Style, ref visibleColumn, ref xPos, y, chunk.Offset, chunk.EndOffset);
+					DrawTextWithHighlightedWs (win, line, true, chunk.Style, ref visibleColumn, ref xPos, y, chunk.Offset, chunk.EndOffset);
 				} else if (chunk.Offset >= selectionStart && chunk.Offset < selectionEnd && chunk.EndOffset > selectionEnd) {
-					DrawTextWithHighlightedWs (win, true, chunk.Style, ref visibleColumn, ref xPos, y, chunk.Offset, selectionEnd);
-					DrawTextWithHighlightedWs (win, false, chunk.Style, ref visibleColumn, ref xPos, y, selectionEnd, chunk.EndOffset);
+					DrawTextWithHighlightedWs (win, line, true, chunk.Style, ref visibleColumn, ref xPos, y, chunk.Offset, selectionEnd);
+					DrawTextWithHighlightedWs (win, line, false, chunk.Style, ref visibleColumn, ref xPos, y, selectionEnd, chunk.EndOffset);
 				} else if (chunk.Offset < selectionStart && chunk.EndOffset > selectionStart && chunk.EndOffset <= selectionEnd) {
-					DrawTextWithHighlightedWs (win, false, chunk.Style, ref visibleColumn, ref xPos, y, chunk.Offset, selectionStart);
-					DrawTextWithHighlightedWs (win, true, chunk.Style, ref visibleColumn, ref xPos, y, selectionStart, chunk.EndOffset);
+					DrawTextWithHighlightedWs (win, line, false, chunk.Style, ref visibleColumn, ref xPos, y, chunk.Offset, selectionStart);
+					DrawTextWithHighlightedWs (win, line, true, chunk.Style, ref visibleColumn, ref xPos, y, selectionStart, chunk.EndOffset);
 				} else if (chunk.Offset < selectionStart && chunk.EndOffset > selectionEnd) {
-					DrawTextWithHighlightedWs (win, false, chunk.Style, ref visibleColumn, ref xPos, y, chunk.Offset, selectionStart);
-					DrawTextWithHighlightedWs (win, true, chunk.Style, ref visibleColumn, ref xPos, y, selectionStart, selectionEnd);
-					DrawTextWithHighlightedWs (win, false, chunk.Style, ref visibleColumn, ref xPos, y, selectionEnd, chunk.EndOffset);
+					DrawTextWithHighlightedWs (win, line, false, chunk.Style, ref visibleColumn, ref xPos, y, chunk.Offset, selectionStart);
+					DrawTextWithHighlightedWs (win, line, true, chunk.Style, ref visibleColumn, ref xPos, y, selectionStart, selectionEnd);
+					DrawTextWithHighlightedWs (win, line, false, chunk.Style, ref visibleColumn, ref xPos, y, selectionEnd, chunk.EndOffset);
 				} else 
-					DrawTextWithHighlightedWs (win, false, chunk.Style, ref visibleColumn, ref xPos, y, chunk.Offset, chunk.EndOffset);
+					DrawTextWithHighlightedWs (win, line, false, chunk.Style, ref visibleColumn, ref xPos, y, chunk.Offset, chunk.EndOffset);
 			}
-			if (line.Markers != null) {
-				foreach (TextMarker marker in line.Markers) {
-					marker.Draw (textEditor, win, index, index + length, y, xStart, xPos);
-				}
-			}
+//			if (line.Markers != null) {
+//				foreach (TextMarker marker in line.Markers) {
+//					marker.Draw (textEditor, win, index, index + length, y, xStart, xPos);
+//				}
+//			}
 			
 			int caretOffset = Caret.Offset;
 			if (caretOffset == offset + length) 
@@ -298,18 +298,25 @@ namespace Mono.TextEditor
 		}
 		
 		StringBuilder wordBuilder = new StringBuilder ();
-		void OutputWordBuilder (Gdk.Drawable win, bool selected, ChunkStyle style, ref int visibleColumn, ref int xPos, int y)
+		void OutputWordBuilder (Gdk.Drawable win, LineSegment line, bool selected, ChunkStyle style, ref int visibleColumn, ref int xPos, int y, int curOffset)
 		{
+			int oldxPos = xPos;
 			if (selected) {
 				DrawText (win, ColorStyle.SelectedFg, ColorStyle.SelectedBg, ref xPos, y);
 			} else {
 				DrawText (win, style.Color, ColorStyle.Background, ref xPos, y);
 			}
+			if (line.Markers != null) {
+				foreach (TextMarker marker in line.Markers) {
+					marker.Draw (textEditor, win, selected, curOffset - wordBuilder.Length, curOffset, y, oldxPos, xPos);
+				}
+			}
+			
 			visibleColumn += wordBuilder.Length;
 			wordBuilder.Length = 0;
 		}
 		
-		void DrawTextWithHighlightedWs (Gdk.Drawable win, bool selected, ChunkStyle style, ref int visibleColumn, ref int xPos, int y, int startOffset, int endOffset)
+		void DrawTextWithHighlightedWs (Gdk.Drawable win, LineSegment line, bool selected, ChunkStyle style, ref int visibleColumn, ref int xPos, int y, int startOffset, int endOffset)
 		{
 			int caretOffset = Caret.Offset;
 			int drawCaretAt = -1;
@@ -318,10 +325,11 @@ namespace Mono.TextEditor
 				layout.FontDescription.Weight = Pango.Weight.Bold;
 			if (style.Italic)
 				layout.FontDescription.Style = Pango.Style.Italic;
+			
 			for (int offset = startOffset; offset < endOffset; offset++) {
 				char ch = Document.Buffer.GetCharAt (offset);
 				if (TextEditorOptions.Options.HighlightMatchingBracket && offset == this.highlightBracketOffset) {
-					OutputWordBuilder (win, selected, style, ref visibleColumn, ref xPos, y);
+					OutputWordBuilder (win, line, selected, style, ref visibleColumn, ref xPos, y, offset);
 					
 					Gdk.Rectangle bracketMatch = new Gdk.Rectangle (xPos, y, charWidth - 1, LineHeight - 1);
 					gc.RgbFgColor = selected ? this.ColorStyle.SelectedBg : this.ColorStyle.BracketHighlightBg;
@@ -333,23 +341,34 @@ namespace Mono.TextEditor
 					gc.RgbFgColor = selected ? ColorStyle.SelectedFg : style.Color;
 					win.DrawLayout (gc, xPos, y, layout);
 					
+					if (line.Markers != null) {
+						foreach (TextMarker marker in line.Markers) {
+							marker.Draw (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth);
+						}
+					}
+					
 					xPos += this.charWidth;
 					visibleColumn++;
 				} else if (ch == ' ') {
-					OutputWordBuilder (win, selected, style, ref visibleColumn, ref xPos, y);
+					OutputWordBuilder (win, line, selected, style, ref visibleColumn, ref xPos, y, offset);
 					DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, charWidth, LineHeight), selected ? ColorStyle.SelectedBg : ColorStyle.Background);
 					
 					if (TextEditorOptions.Options.ShowSpaces) 
 						DrawSpaceMarker (win, selected, xPos, y);
 					if (offset == caretOffset) 
 						DrawCaret (win, TextEditorOptions.Options.ShowSpaces ? spaceMarkerChar : ' ', xPos, y);
+					
+					if (line.Markers != null) {
+						foreach (TextMarker marker in line.Markers) {
+							marker.Draw (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth);
+						}
+					}
 					xPos += this.charWidth;
 					visibleColumn++;
 				} else if (ch == '\t') {
-					OutputWordBuilder (win, selected, style, ref visibleColumn, ref xPos, y);
+					OutputWordBuilder (win, line, selected, style, ref visibleColumn, ref xPos, y, offset);
 					
-					int newColumn = visibleColumn + TextEditorOptions.Options.TabSize;
-					newColumn = (newColumn / TextEditorOptions.Options.TabSize) * TextEditorOptions.Options.TabSize;
+					int newColumn = GetNextTabstop (visibleColumn);
 					int delta = (newColumn - visibleColumn) * this.charWidth;
 					visibleColumn = newColumn;
 					
@@ -358,6 +377,11 @@ namespace Mono.TextEditor
 						DrawTabMarker (win, selected, xPos, y);
 					if (offset == caretOffset) 
 						DrawCaret (win, TextEditorOptions.Options.ShowSpaces ? tabMarkerChar : ' ', xPos, y);
+					if (line.Markers != null) {
+						foreach (TextMarker marker in line.Markers) {
+							marker.Draw (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + delta);
+						}
+					}
 					xPos += delta;
 				} else {
 					if (offset == caretOffset) 
@@ -365,7 +389,7 @@ namespace Mono.TextEditor
 					wordBuilder.Append (ch);
 				}
 			}
-			OutputWordBuilder (win, selected, style, ref visibleColumn, ref xPos, y);
+			OutputWordBuilder (win, line, selected, style, ref visibleColumn, ref xPos, y, endOffset);
 			
 			if (style.Bold)
 				layout.FontDescription.Weight = Pango.Weight.Normal;
@@ -499,7 +523,7 @@ namespace Mono.TextEditor
 		
 		public int ColumnToVisualX (LineSegment line, int column)
 		{
-			if (line.EditableLength == 0)
+			if (line == null || line.EditableLength == 0)
 				return 0;
 			
 			int lineXPos  = 0;
@@ -508,8 +532,7 @@ namespace Mono.TextEditor
 			for (int c = 0; c < column && c < line.EditableLength; c++) {
 				int delta;
 				if (this.Document.Buffer.GetCharAt (line.Offset + column) == '\t') {
-					int newColumn = visibleColumn + TextEditorOptions.Options.TabSize;
-					newColumn = (newColumn / TextEditorOptions.Options.TabSize) * TextEditorOptions.Options.TabSize;
+					int newColumn = GetNextTabstop (visibleColumn);
 					delta = (newColumn - visibleColumn) * this.charWidth;
 					visibleColumn = newColumn;
 				} else {
@@ -522,6 +545,13 @@ namespace Mono.TextEditor
 				lineXPos += (line.EditableLength - column + 1) * this.charWidth;
 			return lineXPos;
 		}
+		
+		static int GetNextTabstop (int currentColumn)
+		{
+			int result = currentColumn + TextEditorOptions.Options.TabSize;
+			return (result / TextEditorOptions.Options.TabSize) * TextEditorOptions.Options.TabSize;
+		}
+		
 		int rulerX = 0;
 		
 		public int GetWidth (string text)
@@ -661,8 +691,7 @@ namespace Mono.TextEditor
 			for (column = 0; column < line.EditableLength; column++) {
 				int delta;
 				if (this.Document.Buffer.GetCharAt (line.Offset + column) == '\t') {
-					int newColumn = visibleColumn + TextEditorOptions.Options.TabSize;
-					newColumn = (newColumn / TextEditorOptions.Options.TabSize) * TextEditorOptions.Options.TabSize;
+					int newColumn = GetNextTabstop (visibleColumn);
 					delta = (newColumn - visibleColumn) * this.charWidth;
 					visibleColumn = newColumn;
 				} else {

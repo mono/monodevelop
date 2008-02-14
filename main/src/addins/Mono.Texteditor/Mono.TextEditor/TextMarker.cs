@@ -51,16 +51,32 @@ namespace Mono.TextEditor
 			this.endColumn   = endColumn;
 		}
 		
-		public override void Draw (TextEditor editor, Gdk.Drawable win, int startOffset, int endOffset, int y, int startXPos, int endXPos)
+		public override void Draw (TextEditor editor, Gdk.Drawable win, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)
 		{
-			using (Gdk.GC gc = new Gdk.GC (win)) {
-				int width1 = editor.GetWidth (editor.Buffer.GetTextAt (line.Offset, startColumn));
-				int width2 = editor.GetWidth (editor.Buffer.GetTextAt (line.Offset + startColumn, endColumn - startColumn));
-				gc.RgbFgColor = editor.ColorStyle.GetChunkStyle (style).Color;
-				int from = System.Math.Max (editor.TextViewMargin.XOffset, startXPos + width1);
-				int to   = System.Math.Max (editor.TextViewMargin.XOffset, startXPos + width1 + width2);
-				if (from < to)
+			int markerStart = line.Offset + startColumn;
+			int markerEnd   = line.Offset + endColumn;
+			if (markerEnd < startOffset || markerStart > endOffset)
+				return;
+			    
+			int from;
+			int to;
+			
+			if (markerStart < startOffset && endOffset < markerEnd) {
+				from = startXPos;
+				to   = endXPos;
+			} else {
+				int start = startOffset < markerStart ? markerStart : startOffset;
+				int end   = endOffset < markerEnd ? endOffset : markerEnd;
+				from = startXPos + editor.GetWidth (editor.Buffer.GetTextAt (startOffset, start - startOffset));
+				to   = startXPos + editor.GetWidth (editor.Buffer.GetTextAt (startOffset, end - startOffset));
+			}
+ 			from = System.Math.Max (from, editor.TextViewMargin.XOffset);
+ 			to   = System.Math.Max (to, editor.TextViewMargin.XOffset);
+			if (from < to) {
+				using (Gdk.GC gc = new Gdk.GC (win)) {
+					gc.RgbFgColor = selected ? editor.ColorStyle.SelectedFg : editor.ColorStyle.GetChunkStyle (style).Color;
 					win.DrawLine (gc, from, y + editor.LineHeight - 1, to, y + editor.LineHeight - 1);
+				}
 			}
 		}
 	}
@@ -78,7 +94,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public virtual void Draw (TextEditor editor, Gdk.Drawable win, int startOffset, int endOffset, int y, int startXPos, int endXPos)
+		public virtual void Draw (TextEditor editor, Gdk.Drawable win, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)
 		{
 			using (Gdk.GC gc = new Gdk.GC (win)) {
 				gc.RgbFgColor = new Color (255, 0, 0);
