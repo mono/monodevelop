@@ -201,7 +201,7 @@ namespace MonoDevelop.Core.Gui
 			
 			// Create method
 			
-			MethodBuilder methodCreate = typeBuilder.DefineMethod ("Create", MethodAttributes.Public, typeof(Delegate), new Type[] {typeof(Delegate), typeof(SyncContext)});
+			MethodBuilder methodCreate = typeBuilder.DefineMethod ("Create", MethodAttributes.Public | MethodAttributes.Virtual, typeof(Delegate), new Type[] {typeof(Delegate), typeof(SyncContext)});
 			gen = methodCreate.GetILGenerator();
 			LocalBuilder vthis = gen.DeclareLocal (typeBuilder);
 			gen.Emit (OpCodes.Newobj, ctor);
