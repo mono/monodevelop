@@ -1,3 +1,7 @@
+2008-02-14  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Gui/BooShellModel.boo: Fix path to BooShell.dll.
+
 2008-02-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* BooLanguageBinding.boo: Added trick to support imports defined outside of

@@ -79,7 +79,8 @@ class BooShellModel(IShellModel):
 
 	private def getRemoteShellObject ():
 		_procService as ProcessService = ServiceManager.GetService (typeof (ProcessService))
-		_booShell = _procService.CreateExternalProcessObject ("../AddIns/BackendBindings/BooShell.dll", "BooBinding.BooShell.BooShell", false)
+		path as string  = Path.Combine (Path.GetDirectoryName (typeof(BooShellModel).Assembly.Location), "BooShell.dll")
+		_booShell = _procService.CreateExternalProcessObject (path, "BooBinding.BooShell.BooShell", false)
 		if _booShell is null:
 			raise Exception ("Unable to instantiate remote BooShell object")
 	
