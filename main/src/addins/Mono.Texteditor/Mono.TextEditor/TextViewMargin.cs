@@ -584,11 +584,13 @@ namespace Mono.TextEditor
 					
 					layout.SetText (folding.Description);
 					layout.GetPixelSize (out width, out height);
-					gc.RgbBgColor = ColorStyle.Background;
-					gc.RgbFgColor = ColorStyle.FoldLine;
-					win.DrawRectangle (gc, false, new Rectangle (xPos, y, width, this.LineHeight - 1));
+					bool isFoldingSelected = TextEditorData.IsSomethingSelected && TextEditorData.SelectionRange.Contains (folding);
+					gc.RgbFgColor = isFoldingSelected ? ColorStyle.SelectedBg : ColorStyle.Background;
+					win.DrawRectangle (gc, true, new Rectangle (xPos, y, width - 1, this.LineHeight - 1));
+					gc.RgbFgColor = isFoldingSelected ? ColorStyle.SelectedFg : ColorStyle.FoldLine;
+					win.DrawRectangle (gc, false, new Rectangle (xPos, y, width - 1, this.LineHeight - 1));
 					
-					gc.RgbFgColor = ColorStyle.FoldLine;
+					gc.RgbFgColor = isFoldingSelected ? ColorStyle.SelectedFg : ColorStyle.FoldLine;
 					win.DrawLayout (gc, xPos, y, layout);
 					if (caretOffset == foldOffset)
 						DrawCaret (win, folding.Description[0], xPos, y);

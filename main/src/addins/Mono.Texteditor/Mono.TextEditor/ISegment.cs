@@ -46,6 +46,7 @@ namespace Mono.TextEditor
 		}
 		
 		bool Contains (int offset);
+		bool Contains (ISegment segment);
 	}
 }	
 
