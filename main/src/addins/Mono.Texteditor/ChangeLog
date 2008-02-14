@@ -1,3 +1,8 @@
+2008-02-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.TextEditor/TextEditor.cs: Ignore leave events raised by pointer Grab,
+	  since the pointer is not actually leaving the window.
+
 2008-02-13  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextViewMargin.cs: Fixed Bug 361473 - Incorrect placement

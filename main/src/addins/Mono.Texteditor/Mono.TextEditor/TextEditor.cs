@@ -581,9 +581,11 @@ namespace Mono.TextEditor
 		}
 		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing e)
-		{ 
-			if (oldMargin != null)
-				oldMargin.MouseLeft ();
+		{
+			if (e.Mode == CrossingMode.Normal) {
+				if (oldMargin != null)
+					oldMargin.MouseLeft ();
+			}
 			return base.OnLeaveNotifyEvent (e); 
 		}
 
