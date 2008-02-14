@@ -85,24 +85,24 @@ namespace Mono.TextEditor
 		{
 		}
 		
-		Gdk.Pixmap buffer = null, flipBuffer = null;
-		void DoFlipBuffer ()
-		{
-			Gdk.Pixmap tmp = buffer;
-			buffer = flipBuffer;
-			flipBuffer = tmp;
-		}
-		void AllocateWindowBuffer (Rectangle allocation)
-		{
-			if (buffer != null) {
-				buffer.Dispose ();
-				flipBuffer.Dispose ();
-			}
-			if (this.IsRealized) {
-				buffer = new Gdk.Pixmap (this.GdkWindow, allocation.Width, allocation.Height);
-				flipBuffer = new Gdk.Pixmap (this.GdkWindow, allocation.Width, allocation.Height);
-			}
-		}
+//		Gdk.Pixmap buffer = null, flipBuffer = null;
+//		void DoFlipBuffer ()
+//		{
+//			Gdk.Pixmap tmp = buffer;
+//			buffer = flipBuffer;
+//			flipBuffer = tmp;
+//		}
+//		void AllocateWindowBuffer (Rectangle allocation)
+//		{
+//			if (buffer != null) {
+//				buffer.Dispose ();
+//				flipBuffer.Dispose ();
+//			}
+//			if (this.IsRealized) {
+//				buffer = new Gdk.Pixmap (this.GdkWindow, allocation.Width, allocation.Height);
+//				flipBuffer = new Gdk.Pixmap (this.GdkWindow, allocation.Width, allocation.Height);
+//			}
+//		}
 		
 		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
 		{
@@ -116,44 +116,46 @@ namespace Mono.TextEditor
 				this.QueueDrawArea (this.textViewMargin.XOffset, 0, this.Allocation.Width - this.textViewMargin.XOffset, this.Allocation.Height);
 			};
 			this.textEditorData.VAdjustment.ValueChanged += delegate {
-				if (this.textEditorData.VAdjustment.Value != System.Math.Ceiling (this.textEditorData.VAdjustment.Value)) {
-					this.textEditorData.VAdjustment.Value = System.Math.Ceiling (this.textEditorData.VAdjustment.Value);
-					return;
-				}
-				int delta = (int)(this.textEditorData.VAdjustment.Value - this.oldVadjustment);
-				oldVadjustment = this.textEditorData.VAdjustment.Value;
-				if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.inSelectionDrag) {
-					this.QueueDraw ();
-					return;
-				}
-				int from, to;
-				if (delta > 0) {
-					from = delta;
-					to   = 0;
-				} else {
-					from = 0;
-					to   = -delta;
-				}
-				
-				DoFlipBuffer ();
-				Caret.IsHidden = true;
-				this.buffer.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
-				                          this.flipBuffer,
-				                          0, from, 
-				                          0, to, 
-				                          Allocation.Width, Allocation.Height - from - to);
-				if (delta > 0) {
-					RenderMargins (buffer, new Gdk.Rectangle (0, Allocation.Height - delta, Allocation.Width, delta + this.LineHeight));
-				} else {
-					RenderMargins (buffer, new Gdk.Rectangle (0, 0, Allocation.Width, -delta + this.LineHeight));
-				}
-				Caret.IsHidden = false;
-				
-				GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal),
-				                        buffer,
-				                        0, 0, 
-				                        0, 0, 
-				                        Allocation.Width, Allocation.Height);
+				this.QueueDraw ();
+				return;
+//				if (this.textEditorData.VAdjustment.Value != System.Math.Ceiling (this.textEditorData.VAdjustment.Value)) {
+//					this.textEditorData.VAdjustment.Value = System.Math.Ceiling (this.textEditorData.VAdjustment.Value);
+//					return;
+//				}
+//				int delta = (int)(this.textEditorData.VAdjustment.Value - this.oldVadjustment);
+//				oldVadjustment = this.textEditorData.VAdjustment.Value;
+//				if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.inSelectionDrag) {
+//					this.QueueDraw ();
+//					return;
+//				}
+//				int from, to;
+//				if (delta > 0) {
+//					from = delta;
+//					to   = 0;
+//				} else {
+//					from = 0;
+//					to   = -delta;
+//				}
+//				
+//				DoFlipBuffer ();
+//				Caret.IsHidden = true;
+//				this.buffer.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
+//				                          this.flipBuffer,
+//				                          0, from, 
+//				                          0, to, 
+//				                          Allocation.Width, Allocation.Height - from - to);
+//				if (delta > 0) {
+//					RenderMargins (buffer, new Gdk.Rectangle (0, Allocation.Height - delta, Allocation.Width, delta + this.LineHeight));
+//				} else {
+//					RenderMargins (buffer, new Gdk.Rectangle (0, 0, Allocation.Width, -delta + this.LineHeight));
+//				}
+//				Caret.IsHidden = false;
+//				
+//				GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal),
+//				                        buffer,
+//				                        0, 0, 
+//				                        0, 0, 
+//				                        Allocation.Width, Allocation.Height);
 			};
 		}
 		
@@ -161,7 +163,7 @@ namespace Mono.TextEditor
 		{
 			this.textEditorData.Document = doc;
 			this.Events = EventMask.AllEventsMask;
-			this.DoubleBuffered = false;
+			this.DoubleBuffered = true;
 			base.CanFocus = true;
 			
 			keyBindings.Add (GetKeyCode (Gdk.Key.Left), new CaretMoveLeft ());
@@ -333,15 +335,15 @@ namespace Mono.TextEditor
 				if (margin is IDisposable)
 					((IDisposable)margin).Dispose ();
 			}
-			if (buffer != null) {
-				buffer.Dispose ();
-				buffer = null;
-			}
-			if (flipBuffer != null) {
-				flipBuffer.Dispose ();
-				flipBuffer = null;
-			}
-			
+//			if (buffer != null) {
+//				buffer.Dispose ();
+//				buffer = null;
+//			}
+//			if (flipBuffer != null) {
+//				flipBuffer.Dispose ();
+//				flipBuffer = null;
+//			}
+//			
 			base.Dispose ();
 		}
 		
@@ -638,8 +640,8 @@ namespace Mono.TextEditor
 		
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
-			if (IsRealized) 
-				AllocateWindowBuffer (allocation);
+//			if (IsRealized) 
+//				AllocateWindowBuffer (allocation);
 			SetAdjustments (allocation);
 			base.OnSizeAllocated (allocation);
 		}
@@ -705,12 +707,12 @@ namespace Mono.TextEditor
 				oldRequest = Splitter.LineCount * this.LineHeight;
 			}
 			
-			RenderMargins (buffer, e.Area);
+			RenderMargins (e.Window, e.Area);
 			
-			e.Window.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
-			                     buffer,
-			                     e.Area.X, e.Area.Y, e.Area.X, e.Area.Y, 
-			                     e.Area.Width, e.Area.Height);
+//			e.Window.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
+//			                     buffer,
+//			                     e.Area.X, e.Area.Y, e.Area.X, e.Area.Y, 
+//			                     e.Area.Width, e.Area.Height);
 			return true;
 		}
 	}

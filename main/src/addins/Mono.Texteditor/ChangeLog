@@ -1,5 +1,10 @@
 2008-02-14  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextEditor.cs: Commented out smooth scrooling (can't get
+	  it right)
+
+2008-02-14  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/TextMarker.cs: Markers
 	  are now drawn with selection information.
 
