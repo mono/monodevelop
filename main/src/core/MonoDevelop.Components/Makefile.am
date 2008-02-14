@@ -92,8 +92,10 @@ FILES =  \
 	MonoDevelop.Components/GladeWidgetExtract.cs \
 	MonoDevelop.Components/IconView.cs \
 	MonoDevelop.Components/Navbar.cs \
+	MonoDevelop.Components/NotebookButtonBar.cs \
 	MonoDevelop.Components/TabLabel.cs \
-	MonoDevelop.Components/TreeViewCellContainer.cs
+	MonoDevelop.Components/TreeViewCellContainer.cs \
+	MonoDevelop.Components/TreeViewState.cs
 
 RES =  \
 	gtk-gui/gui.stetic \

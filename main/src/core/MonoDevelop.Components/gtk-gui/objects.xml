@@ -36,4 +36,8 @@
       </itemgroup>
     </signals>
   </object>
+  <object type="MonoDevelop.Components.NotebookButtonBar" palette-category="MonoDevelop.Components" allow-children="false" base-type="Gtk.Toolbar">
+    <itemgroups />
+    <signals />
+  </object>
 </objects>
