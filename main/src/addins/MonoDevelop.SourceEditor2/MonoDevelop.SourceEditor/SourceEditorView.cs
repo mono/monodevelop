@@ -489,7 +489,7 @@ namespace MonoDevelop.SourceEditor
 		public void Delete (object sender, EventArgs args)
 		{
 			if (widget.TextEditor.TextEditorData.IsSomethingSelected) {
-				DeleteAction.DeleteSelection (widget.TextEditor.TextEditorData);
+				widget.TextEditor.TextEditorData.DeleteSelectedText ();
 			}
 		}
 		public void SelectAll (object sender, EventArgs args)
