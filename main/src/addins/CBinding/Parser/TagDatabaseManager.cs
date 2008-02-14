@@ -76,6 +76,9 @@ namespace CBinding.Parser
 			get {
 				if (!checkedCtagsInstalled) {
 					checkedCtagsInstalled = true;
+					if (IdeApp.Services.PlatformService.Name.Equals ("OSX")) {
+						return false;
+					}
 					try {
 						Runtime.ProcessService.StartProcess ("ctags", "--version", null, null).WaitForOutput ();
 					} catch {

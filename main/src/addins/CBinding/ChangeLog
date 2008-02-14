@@ -1,3 +1,8 @@
+2008-02-14  Geoff Norton  <gnorton@novell.com>
+
+	* Parser/TagDatabaseManager.cs: Disable the ctag implementation on OSX 
+	as the ctags that apple ships is entirely incompatible with this parser.
+
 2008-02-13  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* Compiler/GNUCompiler.cs: Make sure directory exists before attempting to
