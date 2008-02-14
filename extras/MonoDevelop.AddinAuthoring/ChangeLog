@@ -1,0 +1,5 @@
+2008-02-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* configure, monodevelop.addinauthoring.pc.in, Makefile.include,
+	  MonoDevelop.AddinAuthoring.make, rules.make, Makefile: Add build files
+
