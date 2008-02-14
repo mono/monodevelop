@@ -49,6 +49,10 @@ namespace MonoDevelop.Core.Gui
 		public override string DefaultMonospaceFont {
 			get { return string.Empty; }
 		}
+
+		public override string Name {
+			get { return "Default"; }
+		}
 		
 		public override string GetIconForFile (string filename)
 		{

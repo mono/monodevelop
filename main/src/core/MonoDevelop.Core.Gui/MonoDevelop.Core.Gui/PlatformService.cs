@@ -46,6 +46,7 @@ namespace MonoDevelop.Core.Gui
 		public abstract DesktopApplication [] GetAllApplications (string mimetype);
 		public abstract string GetMimeTypeDescription (string mt);
 		public abstract string DefaultMonospaceFont { get; }
+		public abstract string Name { get; }
 		public abstract string GetIconForFile (string filename);
 		
 		public virtual string GetMimeTypeForUri (string uri) {
