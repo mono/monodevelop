@@ -564,6 +564,10 @@ namespace Mono.TextEditor
 		{
 			int startPos;
 			IMargin margin = GetMarginAtX ((int)e.X, out startPos);
+			if (textViewMargin.inSelectionDrag) {
+				margin   = textViewMargin;
+				startPos = textViewMargin.XOffset;
+			}
 			if (oldMargin != margin && oldMargin != null)
 				oldMargin.MouseLeft ();
 			

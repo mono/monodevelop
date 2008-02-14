@@ -636,7 +636,7 @@ namespace Mono.TextEditor
 			LineSegment line = Document.Splitter.Get (lineNumber);
 			int lineXPos  = 0;
 			int column;
-			int visualXPos = x;
+			int visualXPos = x + (int)TextEditorData.HAdjustment.Value;
 			for (column = 0; column < line.EditableLength; column++) {
 				int delta;
 				if (this.Document.Buffer.GetCharAt (line.Offset + column) == '\t') {
