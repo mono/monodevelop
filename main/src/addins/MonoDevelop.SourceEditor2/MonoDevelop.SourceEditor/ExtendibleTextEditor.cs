@@ -168,11 +168,6 @@ namespace MonoDevelop.SourceEditor
 			}
 			return result;
 		}
-		public TextViewMargin TextViewMargin {
-			get {
-				return textViewMargin;
-			}
-		}
 		
 		double mx, my;
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion evnt)
