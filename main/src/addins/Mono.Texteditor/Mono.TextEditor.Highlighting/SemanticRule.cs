@@ -65,10 +65,10 @@ namespace Mono.TextEditor
 			int startColumn = startOffset - line.Offset;
 			line.RemoveMarker (typeof(UrlMarker));
 			foreach (System.Text.RegularExpressions.Match m in urlRegex.Matches (text)) {
-				line.AddMarker (new UrlMarker (line, m.Value, syntax, startColumn + m.Index, startColumn + m.Index + m.Length));
+				line.AddMarker (new UrlMarker (line, m.Value, UrlType.Url, syntax, startColumn + m.Index, startColumn + m.Index + m.Length));
 			}
 			foreach (System.Text.RegularExpressions.Match m in mailRegex.Matches (text)) {
-				line.AddMarker (new UrlMarker (line, m.Value, syntax, startColumn + m.Index, startColumn + m.Index + m.Length));
+				line.AddMarker (new UrlMarker (line, m.Value, UrlType.Email, syntax, startColumn + m.Index, startColumn + m.Index + m.Length));
 			}
 		}
 		

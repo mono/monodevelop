@@ -28,6 +28,12 @@ using Gdk;
 
 namespace Mono.TextEditor
 {
+	public enum UrlType {
+		Unknown,
+		Url,
+		Email
+	}
+	
 	public class UrlMarker : TextMarker
 	{
 		string url;
@@ -35,17 +41,37 @@ namespace Mono.TextEditor
 		int startColumn;
 		int endColumn;
 		LineSegment line;
+		UrlType urlType;
 		
 		public string Url {
 			get {
 				return url;
 			}
 		}
+
+		public int StartColumn {
+			get {
+				return startColumn;
+			}
+		}
+
+		public int EndColumn {
+			get {
+				return endColumn;
+			}
+		}
+
+		public UrlType UrlType {
+			get {
+				return urlType;
+			}
+		}
 		
-		public UrlMarker (LineSegment line, string url, string style, int startColumn, int endColumn)
+		public UrlMarker (LineSegment line, string url, UrlType urlType, string style, int startColumn, int endColumn)
 		{
 			this.line        = line;
 			this.url         = url;
+			this.urlType     = urlType;
 			this.style       = style;
 			this.startColumn = startColumn;
 			this.endColumn   = endColumn;

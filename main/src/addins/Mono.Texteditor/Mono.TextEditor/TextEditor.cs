@@ -699,7 +699,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		double oldVadjustment = 0;
+		//double oldVadjustment = 0;
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
 			if (oldRequest != Splitter.LineCount * this.LineHeight) {

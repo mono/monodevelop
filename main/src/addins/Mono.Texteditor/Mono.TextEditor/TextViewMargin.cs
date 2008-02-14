@@ -256,9 +256,6 @@ namespace Mono.TextEditor
 		{
 			SyntaxMode mode = Document.SyntaxMode != null && TextEditorOptions.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
 			Chunk[] chunks = mode.GetChunks (Document, TextEditorData.ColorStyle, line, offset, length);
-//			int start  = offset;
-			int xStart = xPos;
-			int index = line.Offset + line.EditableLength - offset;
 			int selectionStart = TextEditorData.SelectionStart != null ? TextEditorData.SelectionStart.Segment.Offset + TextEditorData.SelectionStart.Column : -1;
 			int selectionEnd = TextEditorData.SelectionEnd != null ? TextEditorData.SelectionEnd.Segment.Offset + TextEditorData.SelectionEnd.Column : -1;
 			int visibleColumn = 0;

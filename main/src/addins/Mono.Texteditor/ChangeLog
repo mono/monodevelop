@@ -1,5 +1,12 @@
 2008-02-14  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/TextMarker.cs,
+	  Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor.Highlighting/SemanticRule.cs: Url textmarker now has a
+	  type enum.
+
+2008-02-14  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextViewMargin.cs: Fixed bug in ColumnToVisualX.
 
 2008-02-14  Mike Krüger <mkrueger@novell.com> 
