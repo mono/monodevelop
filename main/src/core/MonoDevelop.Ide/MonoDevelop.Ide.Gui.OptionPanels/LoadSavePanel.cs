@@ -64,10 +64,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			//
 			// load the internationalized strings.
 			//
-			folderEntry.Path = PropertyService.Get(
-				"MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", 
-				System.IO.Path.Combine(System.Environment.GetEnvironmentVariable ("HOME"),
-						"Projects")).ToString();
+			folderEntry.Path = IdeApp.ProjectOperations.ProjectsDefaultPath;
 			//
 			// setup the properties
 			//
@@ -93,7 +90,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 					return false;
 				}
 			}
-			PropertyService.Set("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", projectPath);
+			IdeApp.ProjectOperations.ProjectsDefaultPath = projectPath;
 			
 			return true;
 		}

@@ -65,8 +65,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		public FileScout()
 		{
-			string path = PropertyService.Get("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", 
-									System.Environment.GetEnvironmentVariable("HOME")).ToString();
+			string path = IdeApp.ProjectOperations.ProjectsDefaultPath;
 
 			if (Directory.Exists(path))
 			{

@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					tsFiles.AppendValues (projIter, viewcontent.PathRelativeToProject, true, viewcontent.WorkbenchWindow);
 				} else {
 					if (viewcontent.ContentName == null) {
-						viewcontent.ContentName = System.IO.Path.Combine (Environment.GetEnvironmentVariable ("HOME"), viewcontent.UntitledName);
+						viewcontent.ContentName = System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), viewcontent.UntitledName);
 					}
 					tsFiles.AppendValues (viewcontent.ContentName, true, viewcontent.WorkbenchWindow);
 				}

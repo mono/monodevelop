@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide.Gui
 				string a = arg;
 				// this does not yet work with relative paths
 				if (a[0] == '~') {
-					a = System.IO.Path.Combine (Environment.GetEnvironmentVariable ("HOME"), a.Substring (1));
+					a = System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), a.Substring (1));
 				}
 				
 				if (System.IO.File.Exists (a)) {

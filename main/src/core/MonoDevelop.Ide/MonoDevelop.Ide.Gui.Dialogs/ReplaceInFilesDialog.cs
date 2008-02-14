@@ -271,11 +271,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				string defaultFolder = this.directoryTextBox.Text;	
 				if (defaultFolder == string.Empty || defaultFolder == null) {
 					// only use the bew project default path if there is no path set
-					defaultFolder =	PropertyService.Get (
-							"MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", 
-							System.IO.Path.Combine (
-								System.Environment.GetEnvironmentVariable ("HOME"),
-								"Projects")).ToString ();
+					defaultFolder = IdeApp.ProjectOperations.ProjectsDefaultPath;
 				}
 				fd.SetFilename( defaultFolder );
 				if (fd.Run() == (int)Gtk.ResponseType.Ok)

@@ -472,7 +472,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			hbox_template.PackStart (TemplateView, true, true, 0);
 
 			if (basePath == null)
-				basePath = PropertyService.Get ("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", System.IO.Path.Combine (Environment.GetEnvironmentVariable ("HOME"), "Projects"));
+				basePath = IdeApp.ProjectOperations.ProjectsDefaultPath;
 				
 			entry_location.Path = basePath;
 			

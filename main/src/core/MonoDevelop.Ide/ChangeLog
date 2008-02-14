@@ -1,3 +1,14 @@
+2008-02-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs,
+	  MonoDevelop.Ide.Gui.Pads/FileScout.cs,
+	  MonoDevelop.Ide.Gui/StartupInfo.cs,
+	  MonoDevelop.Ide.Gui/ProjectOperations.cs, MonoDevelop.Ide.mdp: Use
+	  Environment.GetFolderPath to get the home directory. Fixes bug #361880.
+
 2008-02-13  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: Allowed to bypass the delete

@@ -201,6 +201,15 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
+		public string ProjectsDefaultPath {
+			get {
+				return PropertyService.Get ("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), "Projects"));
+			}
+			set {
+				PropertyService.Set ("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", value);
+			}
+		}
+		
 		public Project GetProjectContaining (string fileName)
 		{
 			if (this.openCombine == null)
