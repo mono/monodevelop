@@ -1,5 +1,9 @@
 2008-02-14  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextViewMargin.cs: Fixed bug in ColumnToVisualX.
+
+2008-02-14  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditor.cs: Commented out smooth scrooling (can't get
 	  it right)
 

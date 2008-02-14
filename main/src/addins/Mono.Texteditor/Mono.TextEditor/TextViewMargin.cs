@@ -529,9 +529,9 @@ namespace Mono.TextEditor
 			int lineXPos  = 0;
 			
 			int visibleColumn = 0;
-			for (int c = 0; c < column && c < line.EditableLength; c++) {
+			for (int curColumn = 0; curColumn < column && curColumn < line.EditableLength; curColumn++) {
 				int delta;
-				if (this.Document.Buffer.GetCharAt (line.Offset + column) == '\t') {
+				if (this.Document.Buffer.GetCharAt (line.Offset + curColumn) == '\t') {
 					int newColumn = GetNextTabstop (visibleColumn);
 					delta = (newColumn - visibleColumn) * this.charWidth;
 					visibleColumn = newColumn;
