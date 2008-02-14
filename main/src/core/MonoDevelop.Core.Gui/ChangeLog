@@ -1,3 +1,9 @@
+2008-08-14  Geoff Norton  <gnorton@novell.com>
+
+	* MonoDevelop.Core.Gui/DefaultPlatformService.cs:
+	* MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/PlatformService.cs: Add a
+	property for the PlatformService to identify itself to other bindings.
+
 2008-02-12  Geoff Norton  <gnorton@novell.com>
 
 	* MonoDevelop.Core.Gui/SyncContext.cs: Create from the interface is marked
