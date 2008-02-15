@@ -81,44 +81,167 @@ namespace MonoDevelop.SourceEditor
 					SyntaxModeService.GetSyntaxMode ("text/x-csharp").RemoveSemanticRule (typeof (HighlightPropertiesRule));
 				}
 			};
+			
 		}
 		
+		public SourceEditorOptions ()
+		{
+			this.enableSemanticHighlighting = PropertyService.Get ("EnableSemanticHighlighting", false);
+			this.autoInsertTemplates        = PropertyService.Get ("AutoInsertTemplates", false);
+			this.autoInsertMatchingBracket  = PropertyService.Get ("AutoInsertMatchingBracket", false);
+			this.enableCodeCompletion       = PropertyService.Get ("EnableCodeCompletion", true);
+			this.enableQuickFinder          = PropertyService.Get ("EnableQuickFinder", true);
+			this.underlineErrors            = PropertyService.Get ("UnderlineErrors", true);
+			this.indentStyle                = PropertyService.Get ("IndentStyle", MonoDevelop.Ide.Gui.Content.IndentStyle.Smart);
+			this.editorFontType             = PropertyService.Get ("EditorFontType", MonoDevelop.SourceEditor.EditorFontType.DefaultMonospace);
+			
+			base.TabsToSpaces          = PropertyService.Get ("TabsToSpaces", false);
+			base.IndentationSize       = PropertyService.Get ("TabIndent", 4);
+			base.ShowLineNumberMargin  = PropertyService.Get ("ShowLineNumberMargin", true);
+			base.ShowFoldMargin        = PropertyService.Get ("ShowFoldMargin", true);
+			base.ShowInvalidLines      = PropertyService.Get ("ShowInvalidLines", true);
+			base.ShowTabs              = PropertyService.Get ("ShowTabs", false);
+			base.ShowEolMarkers        = PropertyService.Get ("ShowEolMarkers", false);
+			base.HighlightCaretLine    = PropertyService.Get ("HighlightCaretLine", false);
+			base.ShowSpaces            = PropertyService.Get ("ShowSpaces", false);
+			base.EnableSyntaxHighlighting = PropertyService.Get ("EnableSyntaxHighlighting", true);
+			base.HighlightMatchingBracket = PropertyService.Get ("HighlightMatchingBracket", true);
+			base.RulerColumn              = PropertyService.Get ("RulerColumn", 80);
+			base.ShowRuler                = PropertyService.Get ("ShowRuler", false);
+			base.FontName                 = PropertyService.Get ("FontName", "Mono 10");
+			base.ColorSheme               =  PropertyService.Get ("ColorSheme", "Default");
+		}
+		
+		#region new options
+		bool enableSemanticHighlighting;
 		public bool EnableSemanticHighlighting {
 			get {
-				return PropertyService.Get ("EnableSemanticHighlighting", false);
+				return enableSemanticHighlighting;
 			}
 			set {
-				if (value != TabsToSpaces) {
+				if (value != this.enableSemanticHighlighting) {
+					this.enableSemanticHighlighting = value;
 					PropertyService.Set ("EnableSemanticHighlighting", value);
 					OnChanged (EventArgs.Empty);
 				}
 			}
 		}
 		
+		bool autoInsertTemplates;
+		public bool AutoInsertTemplates {
+			get {
+				return autoInsertTemplates;
+			}
+			set {
+				if (value != this.autoInsertTemplates) {
+					this.autoInsertTemplates = value;
+					PropertyService.Set ("AutoInsertTemplates", value);
+					OnChanged (EventArgs.Empty);
+				}
+			}
+		}
+		
+		bool autoInsertMatchingBracket;
+		public bool AutoInsertMatchingBracket {
+			get {
+				return autoInsertMatchingBracket;
+			}
+			set {
+				if (value != this.autoInsertMatchingBracket) {
+					this.autoInsertMatchingBracket = value;
+					PropertyService.Set ("AutoInsertMatchingBracket", value);
+					OnChanged (EventArgs.Empty);
+				}
+			}
+		}
+		
+		bool enableCodeCompletion;
+		public bool EnableCodeCompletion {
+			get {
+				return enableCodeCompletion;
+			}
+			set {
+				if (value != this.enableCodeCompletion) {
+					this.enableCodeCompletion = value;
+					PropertyService.Set ("EnableCodeCompletion", value);
+					OnChanged (EventArgs.Empty);
+				}
+			}
+		}
+		
+		bool enableQuickFinder;
+		public bool EnableQuickFinder {
+			get {
+				return enableQuickFinder;
+			}
+			set {
+				if (value != this.enableQuickFinder) {
+					this.enableQuickFinder = value;
+					PropertyService.Set ("EnableQuickFinder", value);
+					OnChanged (EventArgs.Empty);
+				}
+			}
+		}
+		
+		bool underlineErrors;
+		public bool UnderlineErrors {
+			get {
+				return underlineErrors; 
+			}
+			set {
+				if (value != this.underlineErrors) {
+					this.underlineErrors = value;
+					PropertyService.Set ("UnderlineErrors", value);
+					OnChanged (EventArgs.Empty);
+				}
+			}
+		}
+		
+		IndentStyle indentStyle;
+		public IndentStyle IndentStyle {
+			get {
+				return indentStyle;
+			}
+			set {
+				if (value != this.indentStyle) {
+					this.indentStyle = value;
+					PropertyService.Set ("IndentStyle", value);
+					OnChanged (EventArgs.Empty);
+				}
+			}
+		}
+		
+		EditorFontType editorFontType;
+		public EditorFontType EditorFontType {
+			get {
+				return editorFontType;
+			}
+			set {
+				if (value != this.editorFontType) {
+					this.editorFontType = value;
+					PropertyService.Set ("EditorFontType", value);
+					OnChanged (EventArgs.Empty);
+				}
+			}
+		}
+		
+		#endregion
+		
+		#region old options
 		public override bool TabsToSpaces {
-			get {
-				return PropertyService.Get ("TabsToSpaces", base.TabsToSpaces);
-			}
 			set {
-				if (value != TabsToSpaces) {
-					PropertyService.Set ("TabsToSpaces", value);
-					OnChanged (EventArgs.Empty);
-				}
+				PropertyService.Set ("TabsToSpaces", value);
+				base.TabsToSpaces = value;
 			}
 		}
-
+		
 		public override int IndentationSize {
-			get {
-				return PropertyService.Get ("TabIndent", base.IndentationSize);
-			}
 			set {
-				if (value != IndentationSize) {
-					PropertyService.Set ("TabIndent", value);
-					OnChanged (EventArgs.Empty);
-				}
+				PropertyService.Set ("TabIndent", value);
+				base.IndentationSize = value;
 			}
 		}
-
+		
 		public override int TabSize {
 			get {
 				return IndentationSize;
@@ -127,205 +250,81 @@ namespace MonoDevelop.SourceEditor
 				IndentationSize = value;
 			}
 		}
-
-//		public override bool ShowIconMargin {
-//			get {
-//				return showIconMargin;
-//			}
-//			set {
-//				showIconMargin = value;
-//			}
-//		}
-
+		
 		public override bool ShowLineNumberMargin {
-			get {
-				return PropertyService.Get ("ShowLineNumberMargin", base.ShowLineNumberMargin);
-			}
 			set {
-				if (value != ShowLineNumberMargin) {
-					PropertyService.Set ("ShowLineNumberMargin", value);
-					OnChanged (EventArgs.Empty);
-				}
+				PropertyService.Set ("ShowLineNumberMargin", value);
+				base.ShowLineNumberMargin = value;
 			}
 		}
-
+		
 		public override bool ShowFoldMargin {
-			get {
-				return PropertyService.Get ("ShowFoldMargin", base.ShowFoldMargin);
-			}
 			set {
-				if (value != ShowFoldMargin) {
-					PropertyService.Set ("ShowFoldMargin", value);
-					OnChanged (EventArgs.Empty);
-				}
+				PropertyService.Set ("ShowFoldMargin", value);
+				base.ShowFoldMargin = value;
 			}
 		}
-
+		
 		public override bool ShowInvalidLines {
-			get {
-				return PropertyService.Get ("ShowInvalidLines", base.ShowInvalidLines);
-			}
 			set {
-				if (value != ShowInvalidLines) {
-					PropertyService.Set ("ShowInvalidLines", value);
-					OnChanged (EventArgs.Empty);
-				}
+				PropertyService.Set ("ShowInvalidLines", value);
+				base.ShowInvalidLines = value;
 			}
 		}
-
+		
 		public override bool ShowTabs {
-			get {
-				return PropertyService.Get ("ShowTabs", base.ShowTabs);
-			}
 			set {
-				if (value != ShowTabs) {
-					PropertyService.Set ("ShowTabs", value);
-					OnChanged (EventArgs.Empty);
-				}
+				PropertyService.Set ("ShowTabs", value);
+				base.ShowTabs = value;
 			}
 		}
-
+		
 		public override bool ShowEolMarkers {
-			get {
-				return PropertyService.Get ("ShowEolMarkers", base.ShowEolMarkers);
-			}
 			set {
-				if (value != ShowEolMarkers) {
-					PropertyService.Set ("ShowEolMarkers", value);
-					OnChanged (EventArgs.Empty);
-				}
+				PropertyService.Set ("ShowEolMarkers", value);
+				base.ShowEolMarkers = value;
 			}
 		}
-
+		
 		public override bool HighlightCaretLine {
-			get {
-				return PropertyService.Get ("HighlightCaretLine", base.HighlightCaretLine);
-			}
 			set {
-				if (value != HighlightCaretLine) {
-					PropertyService.Set ("HighlightCaretLine", value);
-					OnChanged (EventArgs.Empty);
-				}
+				PropertyService.Set ("HighlightCaretLine", value);
+				base.HighlightCaretLine = value;
 			}
 		}
-
+		
 		public override bool ShowSpaces {
-			get {
-				return PropertyService.Get ("ShowSpaces", base.ShowSpaces);
-			}
 			set {
-				if (value != ShowSpaces) {
-					PropertyService.Set ("ShowSpaces", value);
-					OnChanged (EventArgs.Empty);
-				}
+				PropertyService.Set ("ShowSpaces", value);
+				base.ShowSpaces = value;
 			}
 		}
 		
 		public override bool EnableSyntaxHighlighting {
-			get {
-				return PropertyService.Get ("EnableSyntaxHighlighting", true);
-			}
 			set {
-				if (value != EnableSyntaxHighlighting) {
-					PropertyService.Set ("EnableSyntaxHighlighting", value);
-					OnChanged (EventArgs.Empty);
-				}
-			}
-		}
-		
-		public bool AutoInsertTemplates {
-			get {
-				return PropertyService.Get ("AutoInsertTemplates", false);
-			}
-			set {
-				if (value != AutoInsertTemplates) {
-					PropertyService.Set ("AutoInsertTemplates", value);
-					OnChanged (EventArgs.Empty);
-				}
-			}
-		}
-		
-		public bool AutoInsertMatchingBracket {
-			get {
-				return PropertyService.Get ("AutoInsertMatchingBracket", false);
-			}
-			set {
-				if (value != AutoInsertMatchingBracket) {
-					PropertyService.Set ("AutoInsertMatchingBracket", value);
-					OnChanged (EventArgs.Empty);
-				}
-			}
-		}
-		
-		public bool EnableCodeCompletion {
-			get {
-				return PropertyService.Get ("EnableCodeCompletion", true);
-			}
-			set {
-				if (value != EnableCodeCompletion) {
-					PropertyService.Set ("EnableCodeCompletion", value);
-					OnChanged (EventArgs.Empty);
-				}
-			}
-		}
-		
-		public bool EnableQuickFinder {
-			get {
-				return PropertyService.Get ("EnableQuickFinder", true);
-			}
-			set {
-				if (value != EnableQuickFinder) {
-					PropertyService.Set ("EnableQuickFinder", value);
-					OnChanged (EventArgs.Empty);
-				}
-			}
-		}
-		
-		public bool UnderlineErrors {
-			get {
-				return PropertyService.Get ("UnderlineErrors", true);
-			}
-			set {
-				if (value != UnderlineErrors) {
-					PropertyService.Set ("UnderlineErrors", value);
-					OnChanged (EventArgs.Empty);
-				}
+				PropertyService.Set ("EnableSyntaxHighlighting", value);
+				base.EnableSyntaxHighlighting = value;
 			}
 		}
 		
 		public override bool HighlightMatchingBracket {
-			get {
-				return PropertyService.Get ("HighlightMatchingBracket", true);
-			}
 			set {
-				if (value != HighlightMatchingBracket) {
-					PropertyService.Set ("HighlightMatchingBracket", value);
-					OnChanged (EventArgs.Empty);
-				}
+				PropertyService.Set ("HighlightMatchingBracket", value);
+				base.HighlightMatchingBracket = value;
 			}
 		}
 		
 		public override int RulerColumn {
-			get {
-				return PropertyService.Get ("RulerColumn", base.RulerColumn);
-			}
 			set {
-				if (value != RulerColumn) {
-					PropertyService.Set ("RulerColumn", value);
-					OnChanged (EventArgs.Empty);
-				}
+				PropertyService.Set ("RulerColumn", value);
+				base.RulerColumn = value;
 			}
 		}
-
+		
 		public override bool ShowRuler {
-			get {
-				return PropertyService.Get ("ShowRuler", base.ShowRuler);
-			}
 			set {
-				if (value != ShowRuler) {
-					PropertyService.Set ("ShowRuler", value);
-					OnChanged (EventArgs.Empty);
-				}
+				PropertyService.Set ("ShowRuler", value);
+				base.ShowRuler = value;
 			}
 		}
 
@@ -338,51 +337,19 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public IndentStyle IndentStyle {
-			get {
-				return PropertyService.Get ("IndentStyle", MonoDevelop.Ide.Gui.Content.IndentStyle.Smart);
-			}
-			set {
-				if (value != IndentStyle) {
-					PropertyService.Set ("IndentStyle", value);
-					OnChanged (EventArgs.Empty);
-				}
-			}
-		}
-		
-		public EditorFontType EditorFontType {
-			get {
-				return PropertyService.Get ("EditorFontType", MonoDevelop.SourceEditor.EditorFontType.DefaultMonospace);
-			}
-			set {
-				if (value != EditorFontType) {
-					PropertyService.Set ("EditorFontType", value);
-					OnChanged (EventArgs.Empty);
-				}
-			}
-		}
-		
 		public override string FontName {
-			get {
-				return PropertyService.Get ("FontName", "Mono 10");
-			}
 			set {
-				if (value != FontName) {
-					PropertyService.Set ("FontName", !String.IsNullOrEmpty (value) ? value : "Mono 10");
-					OnChanged (EventArgs.Empty);
-				}
+				string newName = !String.IsNullOrEmpty (value) ? value : "Mono 10";
+				PropertyService.Set ("FontName", newName);
+				base.FontName = newName;
 			}
 		}
 		
 		public override string ColorSheme {
-			get {
-				return PropertyService.Get ("ColorSheme", "Default");
-			}
 			set {
-				if (value != ColorSheme) {
-					PropertyService.Set ("ColorSheme", !String.IsNullOrEmpty (value) ? value : "Default");
-					OnChanged (EventArgs.Empty);
-				}
+				string newColorSheme = !String.IsNullOrEmpty (value) ? value : "Default";
+				PropertyService.Set ("ColorSheme", newColorSheme);
+				base.ColorSheme =  newColorSheme;
 			}
 		}
 		
@@ -403,5 +370,6 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 		}
+		#endregion
 	}
 }

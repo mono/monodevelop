@@ -52,9 +52,9 @@ namespace MonoDevelop.SourceEditor
 		int GetNextNonWsCharOffset (TextEditorData data, int offset)
 		{
 			int result = offset;
-			while (Char.IsWhiteSpace (data.Document.Buffer.GetCharAt (result))) {
+			while (Char.IsWhiteSpace (data.Document.GetCharAt (result))) {
 				result++;
-				if (result >= data.Document.Buffer.Length)
+				if (result >= data.Document.Length)
 					return -1;
 			}
 			return result;
@@ -62,12 +62,12 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override void RemoveCharBeforCaret (TextEditorData data)
 		{
-			char ch = data.Document.Buffer.GetCharAt (data.Caret.Offset - 1);
+			char ch = data.Document.GetCharAt (data.Caret.Offset - 1);
 			int idx = open.IndexOf (ch);
 			if (idx >= 0) {
 				int nextCharOffset = GetNextNonWsCharOffset (data, data.Caret.Offset);
-				if (nextCharOffset >= 0 && closing[idx] == data.Document.Buffer.GetCharAt (nextCharOffset))
-					data.Document.Buffer.Remove (data.Caret.Offset, nextCharOffset - data.Caret.Offset + 1);
+				if (nextCharOffset >= 0 && closing[idx] == data.Document.GetCharAt (nextCharOffset))
+					data.Document.Remove (data.Caret.Offset, nextCharOffset - data.Caret.Offset + 1);
 			}
 			base.RemoveCharBeforCaret (data);
 		}

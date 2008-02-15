@@ -61,11 +61,11 @@ namespace MonoDevelop.SourceEditor
 				expressionFinder = ctx.GetExpressionFinder (document.FileName);
 			if (expressionFinder == null)
 				return null;
-			string txt = document.Buffer.Text;
+			string txt = document.Text;
 			expression = expressionFinder.FindFullExpression (txt, offset).Expression;
 			if (expression == null)
 				return null;
-			int lineNumber = document.Splitter.OffsetToLineNumber (offset);
+			int lineNumber = document.OffsetToLineNumber (offset);
 			LineSegment line = document.GetLine (lineNumber);
 			
 			return ctx.ResolveIdentifier (expression, lineNumber + 1, line.Offset + 1, document.FileName, null);
@@ -78,8 +78,8 @@ namespace MonoDevelop.SourceEditor
 				if (chunk.Style.Color.Pixel != 0)
 					continue;
 				for (int i = chunk.Offset; i < chunk.EndOffset; i++) {
-					char charBefore = i == chunk.Offset ? 'E' : doc.Buffer.GetCharAt (i - 1);
-					if (Char.IsLetter (doc.Buffer.GetCharAt (i)) && !Char.IsLetterOrDigit (charBefore)) {
+					char charBefore = i == chunk.Offset ? 'E' : doc.GetCharAt (i - 1);
+					if (Char.IsLetter (doc.GetCharAt (i)) && !Char.IsLetterOrDigit (charBefore)) {
 					} else {
 						continue;
 					}

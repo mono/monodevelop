@@ -170,7 +170,7 @@ namespace MonoDevelop.SourceEditor
 		
 		FoldSegment AddMarker (List<FoldSegment> foldSegments, string text, IRegion region, FoldingType type)
 		{
-			if (region == null || region.BeginLine <= 0 || region.EndLine <= 0 || region.BeginLine >= this.TextEditor.Document.Splitter.LineCount || region.EndLine >= this.TextEditor.Document.Splitter.LineCount)
+			if (region == null || region.BeginLine <= 0 || region.EndLine <= 0 || region.BeginLine >= this.TextEditor.Document.LineCount || region.EndLine >= this.TextEditor.Document.LineCount)
 				return null;
 			int startOffset = this.TextEditor.Document.LocationToOffset (region.BeginLine - 1,  region.BeginColumn - 1);
 			int endOffset   = this.TextEditor.Document.LocationToOffset (region.EndLine - 1,  region.EndColumn - 1);
@@ -455,9 +455,9 @@ namespace MonoDevelop.SourceEditor
 		void UpdateLineCol ()
 		{
 			int offset = this.TextEditor.Caret.Offset;
-			if (offset < 0 || offset >= this.TextEditor.Document.Buffer.Length)
+			if (offset < 0 || offset >= this.TextEditor.Document.Length)
 				return;
-			char ch = this.TextEditor.Document.Buffer.GetCharAt (offset);
+			char ch = this.TextEditor.Document.GetCharAt (offset);
 			DocumentLocation location = this.TextEditor.Document.LogicalToVisualLocation (this.TextEditor.Caret.Location);
 			IdeApp.Workbench.StatusBar.SetCaretPosition (location.Line, location.Column, ch);
 		}

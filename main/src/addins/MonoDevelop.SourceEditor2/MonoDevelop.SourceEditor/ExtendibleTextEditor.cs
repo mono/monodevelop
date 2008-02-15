@@ -82,14 +82,14 @@ namespace MonoDevelop.SourceEditor
 		void Initialize (SourceEditorView view)
 		{
 			this.view = view;
-			this.Buffer.TextReplaced += delegate {
+			this.Document.TextReplaced += delegate {
 				this.HideLanguageItemWindow ();
 			};
 			base.TextEditorData.Caret.PositionChanged += delegate {
 				if (extension != null)
 					extension.CursorPositionChanged ();
 			};
-			base.TextEditorData.Document.Buffer.TextReplaced += delegate (object sender, ReplaceEventArgs args) {
+			base.TextEditorData.Document.TextReplaced += delegate (object sender, ReplaceEventArgs args) {
 				if (extension != null)
 					extension.TextChanged (args.Offset, args.Offset + Math.Max (args.Count, args.Value != null ? args.Value.Length : 0));
 			};
@@ -166,20 +166,20 @@ namespace MonoDevelop.SourceEditor
 						extension.KeyPress (Gdk.Key.Return, Gdk.ModifierType.None);
 					} else {
 						base.SimulateKeyPress (Gdk.Key.Return, Gdk.ModifierType.None);
-						Buffer.Insert (Caret.Offset, new StringBuilder ("}"));
+						Document.Insert (Caret.Offset, new StringBuilder ("}"));
 					}
 					break;
 				case '[':
-					Buffer.Insert (Caret.Offset, new StringBuilder ("]"));
+					Document.Insert (Caret.Offset, new StringBuilder ("]"));
 					break;
 				case '(':
-					Buffer.Insert (Caret.Offset, new StringBuilder (")"));
+					Document.Insert (Caret.Offset, new StringBuilder (")"));
 					break;
 				case '\'':
-					Buffer.Insert (Caret.Offset, new StringBuilder ("'"));
+					Document.Insert (Caret.Offset, new StringBuilder ("'"));
 					break;
 				case '"':
-					Buffer.Insert (Caret.Offset, new StringBuilder ("\""));
+					Document.Insert (Caret.Offset, new StringBuilder ("\""));
 					break;
 				}
 			}
@@ -286,7 +286,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public ILanguageItem GetLanguageItem (int offset)
 		{
-			string txt = this.Document.Buffer.Text;
+			string txt = this.Document.Text;
 			string fileName = view.ContentName;
 			if (fileName == null)
 				fileName = view.UntitledName;
@@ -303,7 +303,7 @@ namespace MonoDevelop.SourceEditor
 			if (expression == null)
 				return null;
 			
-			int lineNumber = this.Document.Splitter.OffsetToLineNumber (offset);
+			int lineNumber = this.Document.OffsetToLineNumber (offset);
 			LineSegment line = this.Document.GetLine (lineNumber);
 			
 			return ctx.ResolveIdentifier (expression, lineNumber + 1, line.Offset + 1, fileName, txt);
@@ -361,7 +361,7 @@ namespace MonoDevelop.SourceEditor
 #region Templates
 		int FindPrevWordStart (int offset)
 		{
-			while (--offset >= 0 && !Char.IsWhiteSpace (Buffer.GetCharAt (offset))) 
+			while (--offset >= 0 && !Char.IsWhiteSpace (Document.GetCharAt (offset))) 
 				;
 			return ++offset;
 		}
@@ -370,14 +370,14 @@ namespace MonoDevelop.SourceEditor
 		{
 			int offset = this.Caret.Offset;
 			int start  = FindPrevWordStart (offset);
-			return Buffer.GetTextAt (start, offset - start);
+			return Document.GetTextAt (start, offset - start);
 		}
 		
 		public int DeleteWordBeforeCaret ()
 		{
 			int offset = this.Caret.Offset;
 			int start  = FindPrevWordStart (offset);
-			Buffer.Remove (start, offset - start);
+			Document.Remove (start, offset - start);
 			return start;
 		}
 
@@ -385,9 +385,9 @@ namespace MonoDevelop.SourceEditor
 		{
 			LineSegment line = Document.GetLine (lineNr);
 			int index = 0;
-			while (index < line.EditableLength && Char.IsWhiteSpace (Buffer.GetCharAt (line.Offset + index)))
+			while (index < line.EditableLength && Char.IsWhiteSpace (Document.GetCharAt (line.Offset + index)))
 				index++;
- 	   		return index > 0 ? Buffer.GetTextAt (line.Offset, index) : "";
+ 	   		return index > 0 ? Document.GetTextAt (line.Offset, index) : "";
 		}
 
 		public bool IsTemplateKnown ()
@@ -456,7 +456,7 @@ namespace MonoDevelop.SourceEditor
 //			if (endLine > beginLine) {
 //				IndentLines (beginLine+1, endLine, leadingWhiteSpace);
 //			}
-			Buffer.Insert (offset, builder);
+			Document.Insert (offset, builder);
 			Caret.Offset = finalCaretOffset;
 		}		
 #endregion

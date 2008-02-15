@@ -1,3 +1,16 @@
+2008-02-15  Mike Krüger <mkrueger@novell.com> 
+
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs,
+	  MonoDevelop.SourceEditor/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor/ExtendibleTextEditor.cs,
+	  MonoDevelop.SourceEditor/HighlightPropertiesSemanticRule.cs,
+	  MonoDevelop.SourceEditor/SourceEditorView.cs,
+	  MonoDevelop.SourceEditor/SourceEditorOptions.cs,
+	  MonoDevelop.SourceEditor/MarkerOperationsHandler.cs,
+	  MonoDevelop.SourceEditor/EditActions.cs,
+	  MonoDevelop.SourceEditor/SourceEditorDisplayBinding.cs: Refactored text
+	  editor.
+
 2008-02-14  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* SourceEditorWidget.cs: Add workaround for gmcs 1.2.4 bug. 

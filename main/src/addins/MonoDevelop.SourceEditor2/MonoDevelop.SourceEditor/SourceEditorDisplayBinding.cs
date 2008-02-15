@@ -79,7 +79,7 @@ namespace MonoDevelop.SourceEditor
 			SourceEditorView result = new SourceEditorView ();
 			result.Document.MimeType = mimeType;
 			using (StreamReader reader = new StreamReader (content)) {
-				result.Document.Buffer.Text = reader.ReadToEnd ();
+				result.Document.Text = reader.ReadToEnd ();
 			}
 			return result;
 		}

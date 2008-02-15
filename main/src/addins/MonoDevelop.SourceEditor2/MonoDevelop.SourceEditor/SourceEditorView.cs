@@ -75,14 +75,14 @@ namespace MonoDevelop.SourceEditor
 		public SourceEditorView()
 		{
 			widget = new SourceEditorWidget (this);
-			widget.TextEditor.Buffer.TextReplaced += delegate (object sender, ReplaceEventArgs args) {
+			widget.TextEditor.Document.TextReplaced += delegate (object sender, ReplaceEventArgs args) {
 				int startIndex = args.Offset;
 				int endIndex   = startIndex + Math.Max (args.Count, args.Value != null ? args.Value.Length : 0);
 				if (TextChanged != null)
 					TextChanged (this, new TextChangedEventArgs (startIndex, endIndex));
 			};
 			
-			widget.TextEditor.Buffer.TextReplaced += delegate {
+			widget.TextEditor.Document.TextReplaced += delegate {
 				this.IsDirty = true;
 			};
 			
@@ -279,12 +279,11 @@ namespace MonoDevelop.SourceEditor
 			
 		public string SelectedText { 
 			get {
-				return this.widget.TextEditor.TextEditorData.IsSomethingSelected ? this.widget.TextEditor.Document.Buffer.GetTextAt (this.widget.TextEditor.TextEditorData.SelectionRange) : "";
+				return this.widget.TextEditor.TextEditorData.IsSomethingSelected ? this.widget.TextEditor.Document.GetTextAt (this.widget.TextEditor.TextEditorData.SelectionRange) : "";
 			}
 			set {
 				this.widget.TextEditor.TextEditorData.DeleteSelectedText ();
-				this.widget.TextEditor.Document.Buffer.Insert (this.widget.TextEditor.Caret.Offset,
-				                                               new StringBuilder (value));
+				this.widget.TextEditor.Document.Insert (this.widget.TextEditor.Caret.Offset, new StringBuilder (value));
 				this.widget.TextEditor.TextEditorData.SelectionRange = new Segment (this.widget.TextEditor.Caret.Offset, value.Length);
 				this.widget.TextEditor.Caret.Offset += value.Length; 
 			}
@@ -339,15 +338,16 @@ namespace MonoDevelop.SourceEditor
 
 		public string Text {
 			get {
-				return this.widget.TextEditor.Buffer.Text;
+				return this.widget.TextEditor.Document.Text;
 			}
 			set {
-				this.widget.TextEditor.Buffer.Text = value;
+				this.widget.TextEditor.Document.Text = value;
 			}
 		}
+		
 		public int Length { 
 			get {
-				return this.widget.TextEditor.Buffer.Length;
+				return this.widget.TextEditor.Document.Length;
 			}
 		}
 
@@ -364,12 +364,12 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (startPosition < 0 || endPosition < 0 || startPosition > endPosition)
 				return "";
-			return this.widget.TextEditor.Buffer.GetTextAt (startPosition, endPosition - startPosition);
+			return this.widget.TextEditor.Document.GetTextAt (startPosition, endPosition - startPosition);
 		}
 		
 		public char GetCharAt (int position)
 		{
-			return this.widget.TextEditor.Buffer.GetCharAt (position);
+			return this.widget.TextEditor.Document.GetCharAt (position);
 		}
 		
 		public int GetPositionFromLineColumn (int line, int column)
@@ -387,13 +387,13 @@ namespace MonoDevelop.SourceEditor
 #region IEditableTextFile
 		public void InsertText (int position, string text)
 		{
-			this.widget.TextEditor.Document.Buffer.Insert (position, new StringBuilder (text));
+			this.widget.TextEditor.Document.Insert (position, new StringBuilder (text));
 			if (text != null && this.widget.TextEditor.Caret.Offset >= position) 
 				this.widget.TextEditor.Caret.Offset += text.Length;
 		}
 		public void DeleteText (int position, int length)
 		{
-			this.widget.TextEditor.Document.Buffer.Remove (position, length);
+			this.widget.TextEditor.Document.Remove (position, length);
 			if (this.widget.TextEditor.Caret.Offset >= position) 
 				this.widget.TextEditor.Caret.Offset -= length;
 		}
@@ -425,7 +425,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			LineSegment line = GetLine (position);
 			if (line != null && line.IsBookmarked != mark) {
-				int lineNumber = widget.TextEditor.Document.Splitter.GetLineNumberForOffset (line.Offset);
+				int lineNumber = widget.TextEditor.Document.OffsetToLineNumber (line.Offset);
 				line.IsBookmarked = mark;
 				widget.TextEditor.Document.RequestUpdate (new LineUpdate (lineNumber));
 				widget.TextEditor.Document.CommitDocumentUpdate ();
@@ -506,7 +506,7 @@ namespace MonoDevelop.SourceEditor
 #region ICompletionWidget		
 		public int TextLength {
 			get {
-				return this.widget.TextEditor.Document.Buffer.Length;
+				return this.widget.TextEditor.Document.Length;
 			}
 		}
 		public int SelectedLength { 
@@ -520,7 +520,7 @@ namespace MonoDevelop.SourceEditor
 //		}
 		public char GetChar (int offset)
 		{
-			return this.widget.TextEditor.Document.Buffer.GetCharAt (offset);
+			return this.widget.TextEditor.Document.GetCharAt (offset);
 		}
 		
 		public Gtk.Style GtkStyle { 
@@ -554,7 +554,7 @@ namespace MonoDevelop.SourceEditor
 				return null;
 			int min = Math.Min (ctx.TriggerOffset, this.widget.TextEditor.Caret.Offset);
 			int max = Math.Max (ctx.TriggerOffset, this.widget.TextEditor.Caret.Offset);
-			return widget.TextEditor.Buffer.GetTextAt (min, max - min);
+			return widget.TextEditor.Document.GetTextAt (min, max - min);
 		}
 		
 		public void SetCompletionText (ICodeCompletionContext ctx, string partial_word, string complete_word)
@@ -568,7 +568,7 @@ namespace MonoDevelop.SourceEditor
 				idx = complete_word.Length;
 			}
 			
-			this.widget.TextEditor.Buffer.Replace (ctx.TriggerOffset, String.IsNullOrEmpty (partial_word) ? 0 : partial_word.Length, new StringBuilder (complete_word));
+			this.widget.TextEditor.Document.Replace (ctx.TriggerOffset, String.IsNullOrEmpty (partial_word) ? 0 : partial_word.Length, new StringBuilder (complete_word));
 			this.widget.TextEditor.Caret.Offset = ctx.TriggerOffset + idx;
 		}
 		
@@ -595,10 +595,10 @@ namespace MonoDevelop.SourceEditor
 		
 		public string GetLineTextAtOffset (int offset)
 		{
-			LineSegment line = this.widget.TextEditor.Document.Splitter.GetByOffset (offset);
+			LineSegment line = this.widget.TextEditor.Document.GetLineByOffset (offset);
 			if (line == null)
 				return null;
-			return this.widget.TextEditor.Document.Buffer.GetTextAt (line);
+			return this.widget.TextEditor.Document.GetTextAt (line);
 		}
 		
 		class DocumentTextIterator : ITextIterator
@@ -614,7 +614,7 @@ namespace MonoDevelop.SourceEditor
 			
 			public char Current {
 				get {
-					return view.Document.Buffer.GetCharAt (offset);
+					return view.Document.GetCharAt (offset);
 				}
 			}
 			public int Position {
@@ -627,14 +627,16 @@ namespace MonoDevelop.SourceEditor
 			}
 			public int Line { 
 				get {
-					return view.Document.Splitter.GetLineNumberForOffset (offset);
+					return view.Document.OffsetToLineNumber (offset);
 				}
 			}
+			
 			public int Column {
 				get {
-					return offset - view.Document.Splitter.GetByOffset (offset).Offset;
+					return view.Document.OffsetToLocation (offset).Column;
 				}
 			}
+			
 			public int DocumentOffset { 
 				get {
 					return offset;
@@ -643,22 +645,22 @@ namespace MonoDevelop.SourceEditor
 			
 			public char GetCharRelative (int offset)
 			{
-				return view.Document.Buffer.GetCharAt (this.offset + offset);
+				return view.Document.GetCharAt (this.offset + offset);
 			}
 			
 			public bool MoveAhead (int numChars)
 			{
-				bool result = offset + numChars < view.Document.Buffer.Length && offset + numChars >= 0;
-				offset = Math.Max (Math.Min (offset + numChars, view.Document.Buffer.Length - 1), 0);
+				bool result = offset + numChars < view.Document.Length && offset + numChars >= 0;
+				offset = Math.Max (Math.Min (offset + numChars, view.Document.Length - 1), 0);
 				return result;
 			}
 			public void MoveToEnd ()
 			{
-				offset = view.Document.Buffer.Length - 1;
+				offset = view.Document.Length - 1;
 			}
 			public string ReadToEnd ()
 			{
-				return view.Document.Buffer.GetTextAt (offset, view.Document.Buffer.Length - offset);
+				return view.Document.GetTextAt (offset, view.Document.Length - offset);
 			}
 					
 			public void Reset()
@@ -667,7 +669,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			public void Replace (int length, string pattern)
 			{
-				view.Document.Buffer.Replace (offset, length, new StringBuilder (pattern));
+				view.Document.Replace (offset, length, new StringBuilder (pattern));
 			}
 			public void Close ()
 			{
@@ -697,7 +699,7 @@ namespace MonoDevelop.SourceEditor
 			bool comment = false;
 			string commentTag = Services.Languages.GetBindingPerFileName (this.ContentName).CommentTag ?? "//";
 			foreach (LineSegment line in this.TextEditorData.SelectedLines) {
-				string text = Document.Buffer.GetTextAt (line);
+				string text = Document.GetTextAt (line);
 				string trimmedText = text.TrimStart ();
 				if (!trimmedText.StartsWith (commentTag)) {
 					comment = true;
@@ -713,15 +715,15 @@ namespace MonoDevelop.SourceEditor
 		
 		public void CommentCode ()
 		{
-			int startLineNr = this.TextEditorData.IsSomethingSelected ? this.TextEditorData.Document.Splitter.GetLineNumberForOffset (this.TextEditorData.SelectionRange.Offset) : this.TextEditorData.Caret.Line;
-			int endLineNr   = this.TextEditorData.IsSomethingSelected ? this.TextEditorData.Document.Splitter.GetLineNumberForOffset (this.TextEditorData.SelectionRange.EndOffset) : this.TextEditorData.Caret.Line;
+			int startLineNr = this.TextEditorData.IsSomethingSelected ? this.TextEditorData.Document.OffsetToLineNumber (this.TextEditorData.SelectionRange.Offset) : this.TextEditorData.Caret.Line;
+			int endLineNr   = this.TextEditorData.IsSomethingSelected ? this.TextEditorData.Document.OffsetToLineNumber (this.TextEditorData.SelectionRange.EndOffset) : this.TextEditorData.Caret.Line;
 			if (endLineNr < 0)
-				endLineNr = this.TextEditorData.Document.Splitter.LineCount;
+				endLineNr = this.TextEditorData.Document.LineCount;
 			
 			StringBuilder commentTag = new StringBuilder(Services.Languages.GetBindingPerFileName (this.ContentName).CommentTag ?? "//");
 			Document.BeginAtomicUndo ();
 			foreach (LineSegment line in this.TextEditorData.SelectedLines) {
-				this.Document.Buffer.Insert (line.Offset, commentTag);
+				this.Document.Insert (line.Offset, commentTag);
 			}
 			if (this.TextEditorData.IsSomethingSelected)
 				this.TextEditorData.SelectionStart.Column += commentTag.Length;
@@ -739,20 +741,20 @@ namespace MonoDevelop.SourceEditor
 		
 		public void UncommentCode ()
 		{
-			int startLineNr = this.TextEditorData.IsSomethingSelected ? this.TextEditorData.Document.Splitter.GetLineNumberForOffset (this.TextEditorData.SelectionRange.Offset) : this.TextEditorData.Caret.Line;
-			int endLineNr   = this.TextEditorData.IsSomethingSelected ? this.TextEditorData.Document.Splitter.GetLineNumberForOffset (this.TextEditorData.SelectionRange.EndOffset) : this.TextEditorData.Caret.Line;
+			int startLineNr = this.TextEditorData.IsSomethingSelected ? this.TextEditorData.Document.OffsetToLineNumber (this.TextEditorData.SelectionRange.Offset) : this.TextEditorData.Caret.Line;
+			int endLineNr   = this.TextEditorData.IsSomethingSelected ? this.TextEditorData.Document.OffsetToLineNumber (this.TextEditorData.SelectionRange.EndOffset) : this.TextEditorData.Caret.Line;
 			if (endLineNr < 0)
-				endLineNr = this.TextEditorData.Document.Splitter.LineCount;
+				endLineNr = this.TextEditorData.Document.LineCount;
 			string commentTag = Services.Languages.GetBindingPerFileName (this.ContentName).CommentTag ?? "//";
 			Document.BeginAtomicUndo ();
 			int first = -1;
 			int last  = 0;
 			foreach (LineSegment line in this.TextEditorData.SelectedLines) {
-				string text = Document.Buffer.GetTextAt (line);
+				string text = Document.GetTextAt (line);
 				string trimmedText = text.TrimStart ();
 				int length = 0;
 				if (trimmedText.StartsWith (commentTag)) {
-					this.Document.Buffer.Remove (line.Offset + (text.Length - trimmedText.Length), commentTag.Length);
+					this.Document.Remove (line.Offset + (text.Length - trimmedText.Length), commentTag.Length);
 					length = commentTag.Length;
 				}
 				last = length;
@@ -951,7 +953,7 @@ namespace MonoDevelop.SourceEditor
 			config.GetPageSize (out pageWidth, out pageHeight);
 			int linesPerPage = (int)((pageHeight - marginBottom - marginTop - 10) / widget.TextEditor.LineHeight);
 			linesPerPage -= 2;
-			totalPages = Document.Splitter.LineCount / linesPerPage;
+			totalPages = Document.LineCount / linesPerPage;
 			xPos = marginLeft;
 			string fontName = SourceEditorOptions.Options.FontName;
 			Gnome.Font font =  Gnome.Font.FindClosestFromFullName (fontName);
@@ -969,7 +971,7 @@ namespace MonoDevelop.SourceEditor
 			
 			gpc.BeginPage ("page " + page++);
 			PrintHeader (gpc, config);
-			foreach (LineSegment line in Document.Splitter.Lines) {
+			foreach (LineSegment line in Document.Lines) {
 				if (yPos >= pageHeight - marginBottom - 5 - widget.TextEditor.LineHeight) {
 					gpc.SetFont (font);
 					yPos = marginTop;
@@ -980,7 +982,7 @@ namespace MonoDevelop.SourceEditor
 				}
 				Chunk[] chunks = Document.SyntaxMode.GetChunks (Document, TextEditorData.ColorStyle, line, line.Offset, line.Length);
 				foreach (Chunk chunk in chunks) {
-					string text = Document.Buffer.GetTextAt (chunk);
+					string text = Document.GetTextAt (chunk);
 					text = text.Replace ("\t", new string (' ', TextEditorOptions.Options.TabSize));
 					gpc.SetRgbColor (chunk.Style.Color.Red / (double)ushort.MaxValue, 
 					                 chunk.Style.Color.Green / (double)ushort.MaxValue, 

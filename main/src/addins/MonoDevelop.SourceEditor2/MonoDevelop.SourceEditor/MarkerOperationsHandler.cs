@@ -60,7 +60,7 @@ namespace MonoDevelop.SourceEditor
 				SourceEditorView view = IdeApp.Workbench.ActiveDocument.GetContent <SourceEditorView>();
 				if (view != null) {
 					DocumentLocation location = view.TextEditor.MenuPopupLocation;
-					if (location == null)
+					if (location.IsEmpty)
 						return;
 					LineSegment line = view.TextEditorData.Document.GetLine (location.Line);
 					if (line == null || line.Markers == null)
