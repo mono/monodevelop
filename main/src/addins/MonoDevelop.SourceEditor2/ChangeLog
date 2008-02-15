@@ -1,3 +1,8 @@
+2008-02-15  Geoff Norton  <gnorton@novell.com>
+
+	* MonoDevelop.SourceEditor.mdp: Remove the gnome-sharp dependecny.
+	* Makefile.am: Remove the gnome-sharp dependecny.
+
 2008-02-15  Geoff Norton  <gnorton@novell.com>:
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Disable GnomePrint so that

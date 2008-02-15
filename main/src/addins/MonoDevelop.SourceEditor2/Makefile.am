@@ -33,7 +33,6 @@ RES =  \
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
-	$(GNOME_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
 	-r:$(top_builddir)/build/bin/Mono.TextEditor.dll \
