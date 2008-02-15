@@ -466,103 +466,223 @@ namespace MonoDevelop.SourceEditor
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.LineEnd)]
 		internal void OnLineEnd ()
 		{
-			SimulateKeyPress (Gdk.Key.End, Gdk.ModifierType.None);
+			RunAction (new CaretMoveLeft ());
 		}
 		
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.LineStart)]
 		internal void OnLineStart ()
 		{
-			SimulateKeyPress (Gdk.Key.Home, Gdk.ModifierType.None);
+			RunAction (new CaretMoveEnd ());
 		}
 		
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLeftChar)]
 		internal void OnDeleteLeftChar ()
 		{
-			SimulateKeyPress (Gdk.Key.BackSpace, Gdk.ModifierType.None);
+			RunAction (new BackspaceAction ());
 		}
 		
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DeleteRightChar)]
 		internal void OnDeleteRightChar ()
 		{
-			SimulateKeyPress (Gdk.Key.Delete, Gdk.ModifierType.None);
+			RunAction (new DeleteAction ());
 		}
 		
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.CharLeft)]
 		internal void OnCharLeft ()
 		{
-			SimulateKeyPress (Gdk.Key.Left, Gdk.ModifierType.None);
+			RunAction (new CaretMoveLeft ());
 		}
 		
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.CharRight)]
 		internal void OnCharRight ()
 		{
-			SimulateKeyPress (Gdk.Key.Right, Gdk.ModifierType.None);
+			RunAction (new CaretMoveRight ());
 		}
 		
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.LineUp)]
 		internal void OnLineUp ()
 		{
-			SimulateKeyPress (Gdk.Key.Up, Gdk.ModifierType.None);
+			RunAction (new CaretMoveUp ());
 		}
 		
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.LineDown)]
 		internal void OnLineDown ()
 		{
-			SimulateKeyPress (Gdk.Key.Down, Gdk.ModifierType.None);
+			RunAction (new CaretMoveDown ());
 		}
 		
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DocumentStart)]
 		internal void OnDocumentStart ()
 		{
-			SimulateKeyPress (Gdk.Key.Home, Gdk.ModifierType.ControlMask);
+			RunAction (new CaretMoveToDocumentStart ());
 		}
 		
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DocumentEnd)]
 		internal void OnDocumentEnd ()
 		{
-			SimulateKeyPress (Gdk.Key.End, Gdk.ModifierType.ControlMask);
+			RunAction (new CaretMoveToDocumentEnd ());
 		}
 		
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.PageUp)]
 		internal void OnPageUp ()
 		{
-			SimulateKeyPress (Gdk.Key.Page_Up, Gdk.ModifierType.None);
+			RunAction (new PageUpAction ());
 		}
 		
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.PageDown)]
 		internal void OnPageDown ()
 		{
-			SimulateKeyPress (Gdk.Key.Page_Down, Gdk.ModifierType.None);
+			RunAction (new PageDownAction ());
 		}
 		
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLine)]
 		internal void OnDeleteLine ()
 		{
-			SimulateKeyPress (Gdk.Key.d, Gdk.ModifierType.ControlMask);
+			RunAction (new DeleteCaretLine ());
 		}
 		
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DeleteToLineEnd)]
 		internal void OnDeleteToLineEnd ()
 		{
-			SimulateKeyPress (Gdk.Key.D, Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask);
+			RunAction (new DeleteCaretLineToEnd ());
 		}
 		
  		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.ScrollLineUp)]
 		internal void OnScrollLineUp ()
 		{
-			SimulateKeyPress (Gdk.Key.Up, Gdk.ModifierType.ControlMask);
+			RunAction (new ScrollUpAction ());
 		}
 		
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.ScrollLineDown)]
 		internal void OnScrollLineDown ()
 		{
-			SimulateKeyPress (Gdk.Key.Down, Gdk.ModifierType.ControlMask);
+			RunAction (new ScrollDownAction ());
 		}
 
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace)]
 		internal void OnGotoMatchingBrace ()
 		{
-			SimulateKeyPress (Gdk.Key.b, Gdk.ModifierType.ControlMask);
+			RunAction (new GotoMatchingBracket ());
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveLeft)]
+		internal void OnSelectionMoveLeft ()
+		{
+			RunAction (new SelectionMoveLeft ());
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveRight)]
+		internal void OnSelectionMoveRight ()
+		{
+			RunAction (new SelectionMoveRight ());
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.MovePrevWord)]
+		internal void OnMovePrevWord ()
+		{
+			RunAction (new CaretMovePrevWord ());
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.MoveNextWord)]
+		internal void OnMoveNextWord ()
+		{
+			RunAction (new CaretMoveNextWord ());
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMovePrevWord)]
+		internal void OnSelectionMovePrevWord ()
+		{
+			RunAction (new SelectionMovePrevWord ());
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveNextWord)]
+		internal void OnSelectionMoveNextWord ()
+		{
+			RunAction (new SelectionMoveNextWord ());
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveUp)]
+		internal void OnSelectionMoveUp ()
+		{
+			RunAction (new SelectionMoveUp ());
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveDown)]
+		internal void OnSelectionMoveDown ()
+		{
+			RunAction (new SelectionMoveDown ());
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveHome)]
+		internal void OnSelectionMoveHome ()
+		{
+			RunAction (new SelectionMoveHome ());
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveEnd)]
+		internal void OnSelectionMoveEnd ()
+		{
+			RunAction (new SelectionMoveEnd ());
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveToDocumentStart)]
+		internal void OnSelectionMoveToDocumentStart ()
+		{
+			RunAction (new SelectionMoveToDocumentStart ());
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveToDocumentEnd)]
+		internal void OnSelectionMoveToDocumentEnd ()
+		{
+			RunAction (new SelectionMoveToDocumentEnd ());
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SwitchCaretMode)]
+		internal void OnSwitchCaretMode ()
+		{
+			RunAction (new SwitchCaretModeAction ());
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.InsertTab)]
+		internal void OnInsertTab ()
+		{
+			RunAction (new InsertTab ());
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.RemoveTab)]
+		internal void OnRemoveTab ()
+		{
+			RunAction (new RemoveTab ());
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.InsertNewLine)]
+		internal void OnInsertNewLine ()
+		{
+			RunAction (new InsertNewLine ());
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DeletePrevWord)]
+		internal void OnDeletePrevWord ()
+		{
+			RunAction (new DeletePrevWord ());
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DeleteNextWord)]
+		internal void OnDeleteNextWord ()
+		{
+			RunAction (new DeleteNextWord ());
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionPageDownAction)]
+		internal void OnSelectionPageDownAction ()
+		{
+			RunAction (new SelectionPageDownAction ());
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionPageUpAction)]
+		internal void OnSelectionPageUpAction ()
+		{
+			RunAction (new SelectionPageUpAction ());
 		}
 		
 #endregion

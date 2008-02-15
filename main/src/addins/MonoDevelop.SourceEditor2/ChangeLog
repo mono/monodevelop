@@ -1,5 +1,10 @@
 2008-02-15  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.SourceEditor/ExtendibleTextEditor.cs: Use new RunAction method
+	  to execute editor actions. Added missing commands.
+
+2008-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.SourceEditor/ExtendibleTextEditor.cs: Bind MonoDevelop
 	  shortcuts to editor actions.
 
