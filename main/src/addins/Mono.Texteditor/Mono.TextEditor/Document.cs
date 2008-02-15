@@ -252,7 +252,7 @@ namespace Mono.TextEditor
 				if (args.Value != null && args.Value.Length > 0)
 					doc.Remove (args.Offset, args.Value.Length);
 				if (!String.IsNullOrEmpty (text))
-					doc.Insert (args.Offset, new StringBuilder (text));
+					doc.Insert (args.Offset, text);
 			}
 			
 			public virtual void Redo (Document doc)

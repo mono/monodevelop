@@ -574,7 +574,7 @@ namespace Mono.TextEditor
 				endLineNr = data.Document.LineCount;
 			data.Document.BeginAtomicUndo ();
 			foreach (LineSegment line in data.SelectedLines) {
-				data.Document.Insert (line.Offset, new StringBuilder(TextEditorOptions.Options.IndentationString));
+				data.Document.Insert (line.Offset, TextEditorOptions.Options.IndentationString);
 			}
 			if (data.IsSomethingSelected)
 				data.SelectionStart.Column++;
@@ -601,7 +601,7 @@ namespace Mono.TextEditor
 				data.DeleteSelectedText ();
 			}
 			
-			data.Document.Insert (data.Caret.Offset, new StringBuilder (TextEditorOptions.Options.IndentationString));
+			data.Document.Insert (data.Caret.Offset, TextEditorOptions.Options.IndentationString);
 			data.Caret.Column ++;
 		}
 	}
@@ -610,9 +610,6 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
-			StringBuilder newLine = new StringBuilder (data.Document.EolMarker);
-			
-			
 /*			if (TextEditorOptions.Options.AutoIndent) {
 				LineSegment line = data.Document.GetLine (data.Caret.Line);
 				for (int i = 0; i < line.EditableLength; i++) {
@@ -622,7 +619,7 @@ namespace Mono.TextEditor
 					newLine.Append (ch);
 				}
 			}*/
-			data.Document.Insert (data.Caret.Offset, newLine);
+			data.Document.Insert (data.Caret.Offset, data.Document.EolMarker);
 			data.Document.CommitLineToEndUpdate (data.Caret.Line);
 			data.Caret.Column = 0;
 			data.Caret.Line++;

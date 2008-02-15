@@ -272,15 +272,7 @@ namespace Mono.TextEditor
 				this.RedrawLines (System.Math.Min (from, to), System.Math.Max (from, to));
 			};
 			
-			Document.DocumentUpdated += delegate {
-				try {
-					foreach (DocumentUpdateRequest request in Document.UpdateRequests) {
-						request.Update (this);
-					}
-				} catch (Exception e) {
-					System.Console.WriteLine (e);
-				}
-			};
+			Document.DocumentUpdated += DocumentUpdatedHandler;
 				
 			TextEditorOptions.Changed += OptionsChanged;
 			
@@ -290,6 +282,13 @@ namespace Mono.TextEditor
 			this.Destroyed += delegate {
 				Dispose ();
 			};
+		}
+		
+		void DocumentUpdatedHandler (object sender, EventArgs args)
+		{
+			foreach (DocumentUpdateRequest request in Document.UpdateRequests) {
+				request.Update (this);
+			}
 		}
 		
 		protected virtual void OptionsChanged (object sender, EventArgs args)
@@ -321,6 +320,8 @@ namespace Mono.TextEditor
 			if (isDisposed)
 				return;
 			this.isDisposed = true;
+			
+			Document.DocumentUpdated -= DocumentUpdatedHandler;
 			TextEditorOptions.Changed -= OptionsChanged;
 			
 			foreach (IMargin margin in this.margins) {
@@ -396,9 +397,9 @@ namespace Mono.TextEditor
 				if (!char.IsControl (ch)) {
 					LineSegment line = Document.GetLine (Caret.Line);
 					if (Caret.IsInInsertMode || Caret.Column >= line.EditableLength) {
-						Document.Insert (Caret.Offset, new StringBuilder (ch.ToString()));
+						Document.Insert (Caret.Offset, ch.ToString());
 					} else {
-						Document.Replace (Caret.Offset, 1, new StringBuilder (ch.ToString()));
+						Document.Replace (Caret.Offset, 1, ch.ToString());
 					}
 					bool autoScroll = Caret.AutoScrollToCaret;
 					Caret.Column++;
@@ -508,14 +509,13 @@ namespace Mono.TextEditor
 		protected override void OnDragDataReceived (DragContext context, int x, int y, SelectionData selection_data, uint info, uint time_)
 		{
 			if (selection_data.Length > 0 && selection_data.Format == 8) {
-				StringBuilder builder = new StringBuilder (selection_data.Text);
 				Caret.Location = dragCaretPos;
 				int offset = Caret.Offset;
 				if (selection != null && selection.Offset >= offset)
-					selection.Offset += builder.Length;
-				Document.Insert (offset, builder);
-				Caret.Offset = offset + builder.Length;
-				this.TextEditorData.SelectionRange = new Segment (offset, builder.Length);
+					selection.Offset += selection_data.Text.Length;
+				Document.Insert (offset, selection_data.Text);
+				Caret.Offset = offset + selection_data.Text.Length;
+				this.TextEditorData.SelectionRange = new Segment (offset, selection_data.Text.Length);
 				dragOver  = false;
 				context   = null;
 			}

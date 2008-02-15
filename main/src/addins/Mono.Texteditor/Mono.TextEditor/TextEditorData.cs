@@ -37,7 +37,7 @@ namespace Mono.TextEditor
 		Adjustment vadjustment = new Adjustment (0, 0, 0, 0, 0, 0);
 		Document   document; 
 		Caret      caret;
-
+		
 		public TextEditorData ()
 		{
 			Document = new Document ();
@@ -56,7 +56,7 @@ namespace Mono.TextEditor
 				};
 			}
 		}
-
+		
 		public Mono.TextEditor.Caret Caret {
 			get {
 				return caret;
@@ -151,7 +151,7 @@ namespace Mono.TextEditor
 				hadjustment = value;
 			}
 		}
-
+		
 		public Adjustment VAdjustment {
 			get {
 				return vadjustment;
@@ -160,7 +160,7 @@ namespace Mono.TextEditor
 				vadjustment = value;
 			}
 		}
-
+		
 		public SelectionMarker SelectionStart {
 			get {
 				return selectionStart;
@@ -170,7 +170,7 @@ namespace Mono.TextEditor
 				OnSelectionChanged (EventArgs.Empty);
 			}
 		}
-
+		
 		public SelectionMarker SelectionEnd {
 			get {
 				return selectionEnd;
