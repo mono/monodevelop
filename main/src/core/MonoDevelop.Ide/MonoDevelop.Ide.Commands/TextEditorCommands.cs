@@ -51,6 +51,26 @@ namespace MonoDevelop.Ide.Commands
 		MoveBlockUp,
 		MoveBlockDown,
 		ShowParameterCompletionWindow,
-		GotoMatchingBrace
+		GotoMatchingBrace,
+		SelectionMoveLeft,
+		SelectionMoveRight,
+		MovePrevWord,
+		MoveNextWord,
+		SelectionMovePrevWord,
+		SelectionMoveNextWord,
+		SelectionMoveUp,
+		SelectionMoveDown,
+		SelectionMoveHome,
+		SelectionMoveEnd,
+		SelectionMoveToDocumentStart,
+		SelectionMoveToDocumentEnd,
+		SwitchCaretMode,
+		InsertTab,
+		RemoveTab,
+		InsertNewLine,
+		DeletePrevWord,
+		DeleteNextWord,
+		SelectionPageDownAction,
+		SelectionPageUpAction
 	}
 }

@@ -1,3 +1,8 @@
+2008-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Commands/TextEditorCommands.cs, MonoDevelop.Ide.addin.xml:
+	  Added new editor commands.
+
 2008-02-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs,

@@ -875,6 +875,47 @@
 				_label = "Go to Matching _Brace" 
 				description = "Go to Matching Brace" 
 				shortcut = "Control|B" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveLeft"
+				_label = "Expand selection to the left" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveRight"
+				_label = "Expand selection to the right" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.MovePrevWord"
+				_label = "Go to previous word" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.MoveNextWord"
+				_label = "Go to next word" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMovePrevWord"
+				_label = "Select previous word" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveNextWord"
+				_label = "Select next word" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveUp"
+				_label = "Expand selection to previous line" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveDown"
+				_label = "Expand selection to next line" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveHome"
+				_label = "Expand selection to line start" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveEnd"
+				_label = "Expand selection to line end" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveToDocumentStart"
+				_label = "Expand selection to document start" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveToDocumentEnd"
+				_label = "Expand selection to document end" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SwitchCaretMode"
+				_label = "Switch caret mode"
+				description = "Switch between insert and overwrite caret modes"/>
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.InsertTab"
+				_label = "Insert tab" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.RemoveTab"
+				_label = "Remove tab" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.InsertNewLine"
+				_label = "Insert new line" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DeletePrevWord"
+				_label = "Delete previous word" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DeleteNextWord"
+				_label = "Delete next word" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionPageDownAction"
+				_label = "Expand selection to page down" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionPageUpAction"
+				_label = "Expand selection to page up" />
 		</Category>
 		
 	</Extension>
