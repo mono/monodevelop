@@ -2982,7 +2982,7 @@ Large</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Gui.OptionPanels.ExternalToolPanelWidget" design-size="482 390">
+  <widget class="Gtk.Bin" id="MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget" design-size="482 390">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.VBox" id="vbox32">

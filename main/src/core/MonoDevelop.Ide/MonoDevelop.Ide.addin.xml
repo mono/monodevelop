@@ -1192,7 +1192,7 @@
 		             _label = "Tools">
 			<DialogPanel id = "ExternalTools"
 			             _label = "External Tools"
-			             class = "MonoDevelop.Ide.Gui.OptionPanels.ExternalToolPane"/>
+			             class = "MonoDevelop.Ide.ExternalTools.ExternalToolPane"/>
 		</DialogPanel>
 		<DialogPanel id = "Other"
 		             _label = "Other Settings">

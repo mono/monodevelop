@@ -104,7 +104,6 @@
     <File name="MonoDevelop.Ide.Gui.Dialogs/TipOfTheDay.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.OptionPanels/CodeGenerationPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs" subtype="Code" buildaction="Compile" />
@@ -299,7 +298,6 @@
     <File name="icons/pindown.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/pinup.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="MonoDevelop.Ide.Commands/FileTabCommands.cs" subtype="Code" buildaction="Compile" />
-    <File name="gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.ExternalToolPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.CodeGenerationPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ReplaceDialog.cs" subtype="Code" buildaction="Compile" />
@@ -378,6 +376,8 @@
     <File name="MonoDevelop.Ide.Dom.Output/OutputFlags.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Dom.Output/AmbienceService.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Dom/CompilationUnit.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

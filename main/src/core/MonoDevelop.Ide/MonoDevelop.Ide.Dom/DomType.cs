@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.Dom
 		protected List<ICompilationUnit> compilationUnits = new List<ICompilationUnit> ();
 		protected IReturnType baseType;
 		protected List<TypeParameter> typeParameters = new List<TypeParameter> ();
-		protected List<IDomItem> members = new List<IDomItem> ();
+		protected List<IMember> members = new List<IMember> ();
 		protected List<IReturnType> implementedInterfaces = new List<IReturnType> ();
 		protected ClassType classType = ClassType.Unknown;
 		protected string namesp;
@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.Dom
 			}
 		}
 		
-		public virtual IEnumerable<IDomItem> Members {
+		public virtual IEnumerable<IMember> Members {
 			get {
 				return members;
 			}
@@ -98,7 +98,7 @@ namespace MonoDevelop.Ide.Dom
 		
 		public IEnumerable<IType> InnerTypes {
 			get {
-				foreach (IDomItem item in Members)
+				foreach (IMember item in Members)
 					if (item is IType)
 						yield return (IType)item;
 			}
@@ -106,7 +106,7 @@ namespace MonoDevelop.Ide.Dom
 
 		public IEnumerable<IField> Fields {
 			get {
-				foreach (IDomItem item in Members)
+				foreach (IMember item in Members)
 					if (item is IField)
 						yield return (IField)item;
 			}
@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.Dom
 
 		public IEnumerable<IProperty> Properties {
 			get {
-				foreach (IDomItem item in Members)
+				foreach (IMember item in Members)
 					if (item is IProperty)
 						yield return (IProperty)item;
 			}
@@ -122,7 +122,7 @@ namespace MonoDevelop.Ide.Dom
 
 		public IEnumerable<IMethod> Methods {
 			get {
-				foreach (IDomItem item in Members)
+				foreach (IMember item in Members)
 					if (item is IMethod)
 						yield return (IMethod)item;
 			}
@@ -130,7 +130,7 @@ namespace MonoDevelop.Ide.Dom
 
 		public IEnumerable<IEvent> Events {
 			get {
-				foreach (IDomItem item in Members)
+				foreach (IMember item in Members)
 					if (item is IEvent)
 						yield return (IEvent)item;
 			}

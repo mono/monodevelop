@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Dom
 {
-	public abstract class AbstractMember : AbstractDomItem, IMember
+	public abstract class AbstractMember : IMember
 	{
 		protected IReturnType returnType;
 		protected List<IReturnType> explicitInterfaces = new List<IReturnType> ();
@@ -232,6 +232,8 @@ namespace MonoDevelop.Ide.Dom
 			}
 		}
 		#endregion
+		
+		public abstract object AcceptVisitior (IDomVisitor visitor, object data);
 		
 	}
 }

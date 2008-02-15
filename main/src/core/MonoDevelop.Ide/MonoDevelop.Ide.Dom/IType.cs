@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide.Dom
 			get;
 		}
 		
-		IEnumerable<IDomItem> Members {
+		IEnumerable<IMember> Members {
 			get;
 		}
 		
