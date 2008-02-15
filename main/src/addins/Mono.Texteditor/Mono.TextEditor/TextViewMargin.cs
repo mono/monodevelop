@@ -579,6 +579,11 @@ namespace Mono.TextEditor
 					DrawRectangleWithRuler (win, x, lineArea, this.ColorStyle.Background);
 					DrawInvalidLineMarker (win, x, y);
 				}
+				if (TextEditorOptions.Options.ShowRuler) { // warning: code duplication, look at the method end.
+					gc.RgbFgColor = ColorStyle.Ruler;
+					win.DrawLine (gc, x + rulerX, y, x + rulerX, y + LineHeight); 
+				}
+				
 				return;
 			}
 			
@@ -644,7 +649,7 @@ namespace Mono.TextEditor
 			if (TextEditorOptions.Options.ShowEolMarkers)
 				DrawEolMarker (win, isEolSelected, xPos, y);
 			
-			if (TextEditorOptions.Options.ShowRuler) {
+			if (TextEditorOptions.Options.ShowRuler) { // warning: code duplication, scroll up.
 				gc.RgbFgColor = ColorStyle.Ruler;
 				win.DrawLine (gc, x + rulerX, y, x + rulerX, y + LineHeight); 
 			}

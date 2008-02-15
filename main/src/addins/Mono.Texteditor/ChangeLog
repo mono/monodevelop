@@ -1,5 +1,9 @@
 2008-02-15  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextViewMargin.cs: Fixed ruler drawing.
+
+2008-02-15  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditor.cs: Corrected ruler posititon.
 
 2008-02-15  Mike Krüger <mkrueger@novell.com> 
