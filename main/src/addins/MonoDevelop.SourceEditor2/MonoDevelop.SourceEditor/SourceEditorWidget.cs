@@ -151,7 +151,7 @@ namespace MonoDevelop.SourceEditor
 			CaretModeChanged (this, EventArgs.Empty);
 			this.Focused += delegate {
 				UpdateLineCol ();
-				CaretModeChanged (this, EventArgs.Empty);
+				CaretModeChanged (this, System.EventArgs.Empty);
 			};
 			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += OnParseInformationChanged;
 //			this.IsClassBrowserVisible = SourceEditorOptions.Options.EnableQuickFinder;
