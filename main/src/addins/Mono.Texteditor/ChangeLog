@@ -1,3 +1,8 @@
+2008-02-16  Mike Krüger <mkrueger@novell.com> 
+
+	* OblivionStyle.xml, Mono.TextEditor/TextViewMargin.cs: Fixed caret drawing
+	  issues.
+
 2008-02-15  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextViewMargin.cs: Fixed ruler drawing.

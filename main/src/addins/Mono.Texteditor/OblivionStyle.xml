@@ -62,7 +62,7 @@
 	<Style name="selectedForeground" color="aluminium1"/>
 	
 	<Style name="lineMarker" color="aluminium5"/>
-	<Style name="ruler" color="aluminium3"/>
+	<Style name="ruler" color="aluminium5"/>
 	<Style name="whitespaces" color="aluminium3"/>
 	<Style name="invalidLines" color="orange1"/>
 

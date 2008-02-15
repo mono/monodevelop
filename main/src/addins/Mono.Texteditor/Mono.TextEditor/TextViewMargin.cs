@@ -220,18 +220,29 @@ namespace Mono.TextEditor
 			return true;
 		}
 		
-		void DrawCaret (Gdk.Drawable win, char ch, int x, int y)
+		char caretChar; 
+		int  caretX;
+		int  caretY;
+		
+		void SetVisibleCaretPosition (Gdk.Drawable win, char ch, int x, int y)
+		{
+			caretChar = ch;
+			caretX    = x;
+			caretY    = y;
+		}
+		
+		void DrawCaret (Gdk.Drawable win)
 		{
 			if (!Caret.IsVisible || !caretBlink || !textEditor.IsFocus) 
 				return;
 			gc.RgbFgColor = ColorStyle.Caret;
 			if (Caret.IsInInsertMode) {
-				win.DrawLine (gc, x, y, x, y + LineHeight);
+				win.DrawLine (gc, caretX, caretY, caretX, caretY + LineHeight);
 			} else {
-				win.DrawRectangle (gc, true, new Gdk.Rectangle (x, y, this.charWidth, LineHeight));
-				layout.SetText (ch.ToString ());
+				win.DrawRectangle (gc, true, new Gdk.Rectangle (caretX, caretY, this.charWidth, LineHeight));
+				layout.SetText (caretChar.ToString ());
 				gc.RgbFgColor = ColorStyle.CaretForeground;
-				win.DrawLayout (gc, x, y, layout);
+				win.DrawLayout (gc, caretX, caretY, layout);
 			}
 		}
 		
@@ -273,7 +284,7 @@ namespace Mono.TextEditor
 			
 			int caretOffset = Caret.Offset;
 			if (caretOffset == offset + length) 
-				DrawCaret (win, ' ', xPos, y);
+				SetVisibleCaretPosition (win, ' ', xPos, y);
 		}
 		
 		StringBuilder wordBuilder = new StringBuilder ();
@@ -325,7 +336,6 @@ namespace Mono.TextEditor
 							marker.Draw (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth);
 						}
 					}
-					
 					xPos += this.charWidth;
 					visibleColumn++;
 				} else if (ch == ' ') {
@@ -335,7 +345,7 @@ namespace Mono.TextEditor
 					if (TextEditorOptions.Options.ShowSpaces) 
 						DrawSpaceMarker (win, selected, xPos, y);
 					if (offset == caretOffset) 
-						DrawCaret (win, TextEditorOptions.Options.ShowSpaces ? spaceMarkerChar : ' ', xPos, y);
+						SetVisibleCaretPosition (win, TextEditorOptions.Options.ShowSpaces ? spaceMarkerChar : ' ', xPos, y);
 					
 					if (line.Markers != null) {
 						foreach (TextMarker marker in line.Markers) {
@@ -355,7 +365,7 @@ namespace Mono.TextEditor
 					if (TextEditorOptions.Options.ShowTabs) 
 						DrawTabMarker (win, selected, xPos, y);
 					if (offset == caretOffset) 
-						DrawCaret (win, TextEditorOptions.Options.ShowSpaces ? tabMarkerChar : ' ', xPos, y);
+						SetVisibleCaretPosition (win, TextEditorOptions.Options.ShowSpaces ? tabMarkerChar : ' ', xPos, y);
 					if (line.Markers != null) {
 						foreach (TextMarker marker in line.Markers) {
 							marker.Draw (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + delta);
@@ -376,7 +386,7 @@ namespace Mono.TextEditor
 				layout.FontDescription.Style = Pango.Style.Normal;
 			
 			if (drawCaretAt >= 0)
-				DrawCaret (win, Document.GetCharAt (caretOffset), drawCaretAt, y);
+				SetVisibleCaretPosition (win, Document.GetCharAt (caretOffset), drawCaretAt, y);
 		}
 		
 		void DrawText (Gdk.Drawable win, Gdk.Color foreColor, Gdk.Color backgroundColor, ref int xPos, int y)
@@ -565,8 +575,8 @@ namespace Mono.TextEditor
 		
 		public override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int lineNr, int x, int y)
 		{
+			this.caretX = -1;
 			layout.Alignment = Pango.Alignment.Left;
-			
 			LineSegment line = lineNr < Document.LineCount ? Document.GetLine (lineNr) : null;
 			int xStart = System.Math.Max (area.X, XOffset);
 			gc.ClipRectangle = new Gdk.Rectangle (xStart, y, area.Right - xStart, LineHeight);
@@ -618,7 +628,7 @@ namespace Mono.TextEditor
 					gc.RgbFgColor = isFoldingSelected ? ColorStyle.SelectedFg : ColorStyle.FoldLine;
 					win.DrawLayout (gc, xPos, y, layout);
 					if (caretOffset == foldOffset)
-						DrawCaret (win, folding.Description[0], xPos, y);
+						SetVisibleCaretPosition (win, folding.Description[0], xPos, y);
 					
 					xPos += width;
 					
@@ -655,7 +665,10 @@ namespace Mono.TextEditor
 			}
 			
 			if (caretOffset == line.Offset + line.EditableLength)
-				DrawCaret (win, TextEditorOptions.Options.ShowEolMarkers ? eolMarkerChar : ' ', xPos, y);
+				SetVisibleCaretPosition (win, TextEditorOptions.Options.ShowEolMarkers ? eolMarkerChar : ' ', xPos, y);
+			
+			if (this.caretX >= 0)
+				this.DrawCaret (win);
 		}
 		
 		public override void MouseLeft ()
