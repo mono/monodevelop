@@ -59,7 +59,12 @@ public class MonoDevelopProcessHost
 				Hashtable props = new Hashtable ();
 				props ["port"] = 0;
 				props ["name"] = "__internal_tcp";
-				ChannelServices.RegisterChannel (new TcpChannel (props, null, null), false);
+				BinaryClientFormatterSinkProvider clientProvider = new BinaryClientFormatterSinkProvider();
+				BinaryServerFormatterSinkProvider serverProvider = new BinaryServerFormatterSinkProvider();
+
+				serverProvider.TypeFilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full;
+
+				ChannelServices.RegisterChannel (new TcpChannel (props, clientProvider, serverProvider), false);
 			}
 			
 			string sref = Console.In.ReadLine ();

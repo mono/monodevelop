@@ -1,3 +1,7 @@
+2008-02-15  Geoff Norton  <gnorton@novell.com>
+
+	* src/mdhost.cs: Disable .NET remoting security on Tcp channels.
+
 2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* src/mdhost.cs: Fix warnings.
