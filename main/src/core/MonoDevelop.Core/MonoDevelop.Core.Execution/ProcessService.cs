@@ -31,6 +31,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Threading;
+using System.Collections;
 using System.Diagnostics;
 using Mono.Remoting.Channels.Unix;
 using System.Runtime.Remoting;
@@ -293,8 +294,16 @@ namespace MonoDevelop.Core.Execution
 		{
 			if (remotingChannel == "tcp") {
 				IChannel ch = ChannelServices.GetChannel ("tcp");
-				if (ch == null)
-					ChannelServices.RegisterChannel (new TcpChannel (0), false);
+				if (ch == null) {
+					IDictionary dict = new Hashtable ();
+					BinaryClientFormatterSinkProvider clientProvider = new BinaryClientFormatterSinkProvider();
+					BinaryServerFormatterSinkProvider serverProvider = new BinaryServerFormatterSinkProvider();
+
+					dict ["port"] = 0;
+					serverProvider.TypeFilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full;
+
+					ChannelServices.RegisterChannel (new TcpChannel (dict, clientProvider, serverProvider), false);
+				}
 			} else {
 				IChannel ch = ChannelServices.GetChannel ("unix");
 				if (ch == null) {

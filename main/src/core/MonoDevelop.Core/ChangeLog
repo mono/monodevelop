@@ -1,3 +1,8 @@
+2008-02-15  Geoff Norton  <gnorton@novell.com>
+
+	* MonoDevelop.Core.Execution/ProcessService.cs: Disable .NET remoting 
+	security on the TCP channel.
+
 2008-02-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core/Properties.cs: Improve performance of Get method.
