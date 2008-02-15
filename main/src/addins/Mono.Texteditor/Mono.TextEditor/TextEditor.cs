@@ -688,7 +688,7 @@ namespace Mono.TextEditor
 		
 		void RenderMargins (Gdk.Drawable win, Gdk.Rectangle area)
 		{
-			this.TextViewMargin.rulerX = this.TextViewMargin.XOffset + TextEditorOptions.Options.RulerColumn * this.TextViewMargin.CharWidth - (int)this.textEditorData.HAdjustment.Value;
+			this.TextViewMargin.rulerX = TextEditorOptions.Options.RulerColumn * this.TextViewMargin.CharWidth - (int)this.textEditorData.HAdjustment.Value;
 			int reminder  = (int)this.textEditorData.VAdjustment.Value % LineHeight;
 			int firstLine = (int)(this.textEditorData.VAdjustment.Value / LineHeight);
 			int startLine = area.Top / this.LineHeight;
