@@ -60,11 +60,6 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public Mono.TextEditor.TextEditorData TextEditorData {
-			get {
-				return widget.TextEditor.TextEditorData;
-			}
-		}
 		public ExtendibleTextEditor TextEditor {
 			get {
 				return widget.TextEditor;
@@ -284,13 +279,13 @@ namespace MonoDevelop.SourceEditor
 			
 		public string SelectedText { 
 			get {
-				return this.widget.TextEditor.TextEditorData.IsSomethingSelected ? this.widget.TextEditor.Document.GetTextAt (this.widget.TextEditor.TextEditorData.SelectionRange) : "";
+				return TextEditor.IsSomethingSelected ? Document.GetTextAt (TextEditor.SelectionRange) : "";
 			}
 			set {
-				this.widget.TextEditor.TextEditorData.DeleteSelectedText ();
-				this.widget.TextEditor.Document.Insert (this.widget.TextEditor.Caret.Offset, new StringBuilder (value));
-				this.widget.TextEditor.TextEditorData.SelectionRange = new Segment (this.widget.TextEditor.Caret.Offset, value.Length);
-				this.widget.TextEditor.Caret.Offset += value.Length; 
+				TextEditor.DeleteSelectedText ();
+				Document.Insert (TextEditor.Caret.Offset, new StringBuilder (value));
+				TextEditor.SelectionRange = new Segment (TextEditor.Caret.Offset, value.Length);
+				TextEditor.Caret.Offset += value.Length; 
 			}
 		}
 		
@@ -300,32 +295,32 @@ namespace MonoDevelop.SourceEditor
 #region ITextBuffer
 		public int CursorPosition { 
 			get {
-				return this.widget.TextEditor.Caret.Offset;
+				return TextEditor.Caret.Offset;
 			}
 			set {
-				this.widget.TextEditor.Caret.Offset = value;
+				TextEditor.Caret.Offset = value;
 			}
 		}
 
 		public int SelectionStartPosition { 
 			get {
-				if (!widget.TextEditor.TextEditorData.IsSomethingSelected)
-					return this.widget.TextEditor.Caret.Offset;
-				return this.widget.TextEditor.TextEditorData.SelectionRange.Offset;
+				if (!TextEditor.IsSomethingSelected)
+					return TextEditor.Caret.Offset;
+				return TextEditor.SelectionRange.Offset;
 			}
 		}
 		public int SelectionEndPosition { 
 			get {
-				if (!widget.TextEditor.TextEditorData.IsSomethingSelected)
-					return this.widget.TextEditor.Caret.Offset;
-				return this.widget.TextEditor.TextEditorData.SelectionRange.EndOffset;
+				if (!TextEditor.IsSomethingSelected)
+					return TextEditor.Caret.Offset;
+				return TextEditor.SelectionRange.EndOffset;
 			}
 		}
 		
 		public void Select (int startPosition, int endPosition)
 		{
-			this.widget.TextEditor.TextEditorData.SelectionRange = new Segment (startPosition, endPosition - startPosition);
-			this.widget.TextEditor.ScrollToCaret ();
+			TextEditor.SelectionRange = new Segment (startPosition, endPosition - startPosition);
+			TextEditor.ScrollToCaret ();
 		}
 		
 		public void ShowPosition (int position)
@@ -422,8 +417,8 @@ namespace MonoDevelop.SourceEditor
 #region IBookmarkBuffer
 		LineSegment GetLine (int position)
 		{
-			DocumentLocation location = widget.TextEditor.TextEditorData.Document.OffsetToLocation (position);
-			return widget.TextEditor.TextEditorData.Document.GetLine (location.Line);
+			DocumentLocation location = Document.OffsetToLocation (position);
+			return Document.GetLine (location.Line);
 		}
 				
 		public void SetBookmarked (int position, bool mark)
@@ -445,22 +440,23 @@ namespace MonoDevelop.SourceEditor
 		
 		public void PrevBookmark ()
 		{
-			new GotoPrevBookmark ().Run (widget.TextEditor.TextEditorData);
+			TextEditor.RunAction (new GotoPrevBookmark ());
 		}
+		
 		public void NextBookmark ()
 		{
-			new GotoNextBookmark ().Run (widget.TextEditor.TextEditorData);
+			TextEditor.RunAction (new GotoNextBookmark ());
 		}
 		public void ClearBookmarks ()
 		{
-			new ClearAllBookmarks ().Run (widget.TextEditor.TextEditorData);
+			TextEditor.RunAction (new ClearAllBookmarks ());
 		}
 #endregion
 		
 #region IClipboardHandler
 		public bool EnableCut {
 			get {
-				return this.widget.TextEditor.TextEditorData.IsSomethingSelected;
+				return TextEditor.IsSomethingSelected;
 			}
 		}
 		public bool EnableCopy {
@@ -475,7 +471,7 @@ namespace MonoDevelop.SourceEditor
 		}
 		public bool EnableDelete {
 			get {
-				return widget.TextEditor.TextEditorData.IsSomethingSelected;
+				return TextEditor.IsSomethingSelected;
 			}
 		}
 		public bool EnableSelectAll {
@@ -486,37 +482,40 @@ namespace MonoDevelop.SourceEditor
 		
 		public void Cut (object sender, EventArgs args)
 		{
-			new CutAction ().Run (widget.TextEditor.TextEditorData);
+			TextEditor.RunAction (new CutAction ());
 		}
+		
 		public void Copy (object sender, EventArgs args)
 		{
-			new CopyAction ().Run (widget.TextEditor.TextEditorData);
+			TextEditor.RunAction (new CopyAction ());
 		}
+		
 		public void Paste (object sender, EventArgs args)
 		{
-			new PasteAction ().Run (widget.TextEditor.TextEditorData);
+			TextEditor.RunAction (new PasteAction ());
 		}
+		
 		public void Delete (object sender, EventArgs args)
 		{
-			if (widget.TextEditor.TextEditorData.IsSomethingSelected) {
-				widget.TextEditor.TextEditorData.DeleteSelectedText ();
-			}
+			if (TextEditor.IsSomethingSelected) 
+				TextEditor.DeleteSelectedText ();
 		}
+		
 		public void SelectAll (object sender, EventArgs args)
 		{
-			new SelectionSelectAll ().Run (widget.TextEditor.TextEditorData);
+			TextEditor.RunAction (new SelectionSelectAll ());
 		}
 #endregion
 
 #region ICompletionWidget		
 		public int TextLength {
 			get {
-				return this.widget.TextEditor.Document.Length;
+				return Document.Length;
 			}
 		}
 		public int SelectedLength { 
 			get {
-				return this.widget.TextEditor.TextEditorData.IsSomethingSelected ? this.widget.TextEditor.TextEditorData.SelectionRange.Length : 0;
+				return TextEditor.IsSomethingSelected ? TextEditor.SelectionRange.Length : 0;
 			}
 		}
 //		public string GetText (int startOffset, int endOffset)
@@ -525,7 +524,7 @@ namespace MonoDevelop.SourceEditor
 //		}
 		public char GetChar (int offset)
 		{
-			return this.widget.TextEditor.Document.GetCharAt (offset);
+			return Document.GetCharAt (offset);
 		}
 		
 		public Gtk.Style GtkStyle { 
@@ -545,11 +544,11 @@ namespace MonoDevelop.SourceEditor
 			int tx, ty;
 			
 			widget.ParentWindow.GetOrigin (out tx, out ty);
-			tx += widget.TextEditor.Allocation.X;
-			ty += widget.TextEditor.Allocation.Y;
-			result.TriggerXCoord = tx + p.X + widget.TextEditor.TextViewMargin.XOffset - (int)this.widget.TextEditor.TextEditorData.HAdjustment.Value;
-			result.TriggerYCoord = ty + p.Y - (int)this.widget.TextEditor.TextEditorData.VAdjustment.Value + this.widget.TextEditor.LineHeight;
-			result.TriggerTextHeight = this.widget.TextEditor.LineHeight;
+			tx += TextEditor.Allocation.X;
+			ty += TextEditor.Allocation.Y;
+			result.TriggerXCoord = tx + p.X + TextEditor.TextViewMargin.XOffset - (int)TextEditor.HAdjustment.Value;
+			result.TriggerYCoord = ty + p.Y - (int)TextEditor.VAdjustment.Value + TextEditor.LineHeight;
+			result.TriggerTextHeight = TextEditor.LineHeight;
 			return result;
 		}
  
@@ -557,14 +556,14 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (ctx == null)
 				return null;
-			int min = Math.Min (ctx.TriggerOffset, this.widget.TextEditor.Caret.Offset);
-			int max = Math.Max (ctx.TriggerOffset, this.widget.TextEditor.Caret.Offset);
-			return widget.TextEditor.Document.GetTextAt (min, max - min);
+			int min = Math.Min (ctx.TriggerOffset, TextEditor.Caret.Offset);
+			int max = Math.Max (ctx.TriggerOffset, TextEditor.Caret.Offset);
+			return Document.GetTextBetween (min, max);
 		}
 		
 		public void SetCompletionText (ICodeCompletionContext ctx, string partial_word, string complete_word)
 		{
-			this.widget.TextEditor.TextEditorData.DeleteSelectedText ();
+			TextEditor.DeleteSelectedText ();
 			
 			int idx = complete_word.IndexOf ('|'); // | in the completion text now marks the caret position
 			if (idx >= 0) {
@@ -595,7 +594,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public ITextIterator GetTextIterator ()
 		{
-			return new DocumentTextIterator (this, this.widget.TextEditor.TextEditorData.Caret.Offset);
+			return new DocumentTextIterator (this, TextEditor.Caret.Offset);
 		}
 		
 		public string GetLineTextAtOffset (int offset)
@@ -703,7 +702,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			bool comment = false;
 			string commentTag = Services.Languages.GetBindingPerFileName (this.ContentName).CommentTag ?? "//";
-			foreach (LineSegment line in this.TextEditorData.SelectedLines) {
+			foreach (LineSegment line in TextEditor.SelectedLines) {
 				string text = Document.GetTextAt (line);
 				string trimmedText = text.TrimStart ();
 				if (!trimmedText.StartsWith (commentTag)) {
@@ -720,74 +719,73 @@ namespace MonoDevelop.SourceEditor
 		
 		public void CommentCode ()
 		{
-			int startLineNr = this.TextEditorData.IsSomethingSelected ? this.TextEditorData.Document.OffsetToLineNumber (this.TextEditorData.SelectionRange.Offset) : this.TextEditorData.Caret.Line;
-			int endLineNr   = this.TextEditorData.IsSomethingSelected ? this.TextEditorData.Document.OffsetToLineNumber (this.TextEditorData.SelectionRange.EndOffset) : this.TextEditorData.Caret.Line;
+			int startLineNr = TextEditor.IsSomethingSelected ? Document.OffsetToLineNumber (TextEditor.SelectionRange.Offset) : TextEditor.Caret.Line;
+			int endLineNr   = TextEditor.IsSomethingSelected ? Document.OffsetToLineNumber (TextEditor.SelectionRange.EndOffset) : TextEditor.Caret.Line;
 			if (endLineNr < 0)
-				endLineNr = this.TextEditorData.Document.LineCount;
+				endLineNr = Document.LineCount;
 			
 			StringBuilder commentTag = new StringBuilder(Services.Languages.GetBindingPerFileName (this.ContentName).CommentTag ?? "//");
 			Document.BeginAtomicUndo ();
-			foreach (LineSegment line in this.TextEditorData.SelectedLines) {
-				this.Document.Insert (line.Offset, commentTag);
+			foreach (LineSegment line in TextEditor.SelectedLines) {
+				Document.Insert (line.Offset, commentTag);
 			}
-			if (this.TextEditorData.IsSomethingSelected)
-				this.TextEditorData.SelectionStart.Column += commentTag.Length;
-			if (!this.TextEditorData.IsSomethingSelected || this.TextEditorData.SelectionEnd.Column != 0) {
-				if (this.TextEditorData.IsSomethingSelected)
-					this.TextEditorData.SelectionEnd.Column += commentTag.Length;
-				this.TextEditorData.Caret.PreserveSelection = true;
-				this.TextEditorData.Caret.Column += commentTag.Length;
-				this.TextEditorData.Caret.PreserveSelection = false;
+			if (TextEditor.IsSomethingSelected)
+				TextEditor.GetTextEditorData ().SelectionStart.Column += commentTag.Length;
+			
+			if (!TextEditor.IsSomethingSelected || TextEditor.GetTextEditorData ().SelectionEnd.Column != 0) {
+				if (TextEditor.IsSomethingSelected)
+					TextEditor.GetTextEditorData ().SelectionEnd.Column += commentTag.Length;
+				TextEditor.Caret.PreserveSelection = true;
+				TextEditor.Caret.Column += commentTag.Length;
+				TextEditor.Caret.PreserveSelection = false;
 			}
 			Document.EndAtomicUndo ();
-			this.TextEditorData.Document.RequestUpdate (new MultipleLineUpdate (startLineNr, endLineNr));
-			this.TextEditorData.Document.CommitDocumentUpdate ();
+			Document.CommitMultipleLineUpdate (startLineNr, endLineNr);
 		}
 		
 		public void UncommentCode ()
 		{
-			int startLineNr = this.TextEditorData.IsSomethingSelected ? this.TextEditorData.Document.OffsetToLineNumber (this.TextEditorData.SelectionRange.Offset) : this.TextEditorData.Caret.Line;
-			int endLineNr   = this.TextEditorData.IsSomethingSelected ? this.TextEditorData.Document.OffsetToLineNumber (this.TextEditorData.SelectionRange.EndOffset) : this.TextEditorData.Caret.Line;
+			int startLineNr = TextEditor.IsSomethingSelected ? Document.OffsetToLineNumber (TextEditor.SelectionRange.Offset) : TextEditor.Caret.Line;
+			int endLineNr   = TextEditor.IsSomethingSelected ? Document.OffsetToLineNumber (TextEditor.SelectionRange.EndOffset) : TextEditor.Caret.Line;
 			if (endLineNr < 0)
-				endLineNr = this.TextEditorData.Document.LineCount;
+				endLineNr = Document.LineCount;
 			string commentTag = Services.Languages.GetBindingPerFileName (this.ContentName).CommentTag ?? "//";
 			Document.BeginAtomicUndo ();
 			int first = -1;
 			int last  = 0;
-			foreach (LineSegment line in this.TextEditorData.SelectedLines) {
+			foreach (LineSegment line in TextEditor.SelectedLines) {
 				string text = Document.GetTextAt (line);
 				string trimmedText = text.TrimStart ();
 				int length = 0;
 				if (trimmedText.StartsWith (commentTag)) {
-					this.Document.Remove (line.Offset + (text.Length - trimmedText.Length), commentTag.Length);
+					Document.Remove (line.Offset + (text.Length - trimmedText.Length), commentTag.Length);
 					length = commentTag.Length;
 				}
 				last = length;
 				if (first < 0)
 					first = last;
 			}
-			if (this.TextEditorData.IsSomethingSelected)
-				this.TextEditorData.SelectionStart.Column = System.Math.Max (0, this.TextEditorData.SelectionStart.Column - first);
-			if (!this.TextEditorData.IsSomethingSelected || this.TextEditorData.SelectionEnd.Column != 0) {
-				if (this.TextEditorData.IsSomethingSelected)
-					this.TextEditorData.SelectionEnd.Column = System.Math.Max (0, this.TextEditorData.SelectionEnd.Column - last);
-				this.TextEditorData.Caret.PreserveSelection = true;
-				this.TextEditorData.Caret.Column = System.Math.Max (0, this.TextEditorData.Caret.Column - last);
-				this.TextEditorData.Caret.PreserveSelection = false;
+			if (TextEditor.IsSomethingSelected)
+				TextEditor.GetTextEditorData ().SelectionStart.Column = System.Math.Max (0, TextEditor.GetTextEditorData ().SelectionStart.Column - first);
+			if (!TextEditor.IsSomethingSelected || TextEditor.GetTextEditorData ().SelectionEnd.Column != 0) {
+				if (TextEditor.IsSomethingSelected)
+					TextEditor.GetTextEditorData ().SelectionEnd.Column = System.Math.Max (0, TextEditor.GetTextEditorData ().SelectionEnd.Column - last);
+				TextEditor.Caret.PreserveSelection = true;
+				TextEditor.Caret.Column = System.Math.Max (0, TextEditor.Caret.Column - last);
+				TextEditor.Caret.PreserveSelection = false;
 			}
 			Document.EndAtomicUndo ();
-			this.TextEditorData.Document.RequestUpdate (new MultipleLineUpdate (startLineNr, endLineNr));
-			this.TextEditorData.Document.CommitDocumentUpdate ();
+			Document.CommitMultipleLineUpdate (startLineNr, endLineNr);
 		}
 		
 		public void IndentSelection ()
 		{
-			InsertTab.IndentSelection (this.TextEditorData);
+			InsertTab.IndentSelection (TextEditor.GetTextEditorData ());
 		}
 		
 		public void UnIndentSelection ()
 		{
-			RemoveTab.RemoveIndentSelection (this.TextEditorData);
+			RemoveTab.RemoveIndentSelection (TextEditor.GetTextEditorData ());
 		}
 #endregion
 
@@ -858,7 +856,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public void ToggleFolding ()
 		{
-			ToggleFoldings (Document.GetStartFoldings (Document.GetLine (TextEditorData.Caret.Line)));
+			ToggleFoldings (Document.GetStartFoldings (Document.GetLine (TextEditor.Caret.Line)));
 		}
 		#endregion
 		
@@ -986,7 +984,7 @@ namespace MonoDevelop.SourceEditor
 					gpc.BeginPage ("page " + page++);
 					PrintHeader (gpc, config);
 				}
-				Chunk[] chunks = Document.SyntaxMode.GetChunks (Document, TextEditorData.ColorStyle, line, line.Offset, line.Length);
+				Chunk[] chunks = Document.SyntaxMode.GetChunks (Document, TextEditor.ColorStyle, line, line.Offset, line.Length);
 				foreach (Chunk chunk in chunks) {
 					string text = Document.GetTextAt (chunk);
 					text = text.Replace ("\t", new string (' ', TextEditorOptions.Options.TabSize));

@@ -82,21 +82,21 @@ namespace MonoDevelop.SourceEditor
 		void Initialize (SourceEditorView view)
 		{
 			this.view = view;
-			this.Document.TextReplaced += delegate {
+			Document.TextReplaced += delegate {
 				this.HideLanguageItemWindow ();
 			};
-			base.TextEditorData.Caret.PositionChanged += delegate {
+			Caret.PositionChanged += delegate {
 				if (extension != null)
 					extension.CursorPositionChanged ();
 			};
-			base.TextEditorData.Document.TextReplaced += delegate (object sender, ReplaceEventArgs args) {
+			Document.TextReplaced += delegate (object sender, ReplaceEventArgs args) {
 				if (extension != null)
 					extension.TextChanged (args.Offset, args.Offset + Math.Max (args.Count, args.Value != null ? args.Value.Length : 0));
 			};
 			keyBindings [GetKeyCode (Gdk.Key.Tab)] = new TabAction (this);
 			keyBindings [GetKeyCode (Gdk.Key.BackSpace)] = new AdvancedBackspaceAction ();
 			this.PopupMenu += delegate {
-				menuPopupLocation = TextEditorData.Caret.Location;
+				menuPopupLocation = Caret.Location;
 				this.ShowPopup ();
 			};
 			this.ButtonPressEvent += delegate(object sender, Gtk.ButtonPressEventArgs args) {
@@ -138,7 +138,7 @@ namespace MonoDevelop.SourceEditor
 			if (SourceEditorOptions.Options.AutoInsertMatchingBracket && (ch == '{' || ch == '[' || ch == '(' || ch == '"' || ch == '\'' )) {
 				LineSegment line = Document.GetLine (Caret.Line);
 				Stack<Span> stack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
-				SyntaxModeService.ScanSpans (Document, TextEditorData.Document.SyntaxMode, stack, line.Offset, Caret.Offset);
+				SyntaxModeService.ScanSpans (Document, Document.SyntaxMode, stack, line.Offset, Caret.Offset);
 				foreach (Span span in stack) {
 					if (span.Color == "comment" || span.Color == "literal") {
 						inStringOrComment = true;

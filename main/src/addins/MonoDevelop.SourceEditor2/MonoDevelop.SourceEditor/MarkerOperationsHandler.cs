@@ -62,7 +62,7 @@ namespace MonoDevelop.SourceEditor
 					DocumentLocation location = view.TextEditor.MenuPopupLocation;
 					if (location.IsEmpty)
 						return;
-					LineSegment line = view.TextEditorData.Document.GetLine (location.Line);
+					LineSegment line = view.Document.GetLine (location.Line);
 					if (line == null || line.Markers == null)
 						return;
 					foreach (TextMarker marker in line.Markers) {

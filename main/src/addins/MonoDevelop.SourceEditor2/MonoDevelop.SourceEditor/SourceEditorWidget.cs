@@ -368,8 +368,8 @@ namespace MonoDevelop.SourceEditor
 			secondsw.ButtonPressEvent += PrepareEvent;
 			this.splittedTextEditor = new MonoDevelop.SourceEditor.ExtendibleTextEditor (view, textEditor.Document);
 			this.splittedTextEditor.Extension = textEditor.Extension;
-			this.splittedTextEditor.TextEditorData.Caret.ModeChanged     += CaretModeChanged;
-			this.splittedTextEditor.TextEditorData.Caret.PositionChanged += CaretPositionChanged;
+			this.splittedTextEditor.Caret.ModeChanged     += CaretModeChanged;
+			this.splittedTextEditor.Caret.PositionChanged += CaretPositionChanged;
 			
 			secondsw.Child = splittedTextEditor;
 			splitContainer.Add2 (secondsw);
@@ -780,7 +780,7 @@ namespace MonoDevelop.SourceEditor
 #endregion		
 		public void SetSearchPattern ()
 		{
-			string selectedText = this.TextEditor.TextEditorData.SelectedText;
+			string selectedText = this.TextEditor.SelectedText;
 			
 			if (!String.IsNullOrEmpty (selectedText))
 				SearchReplaceManager.SearchOptions.SearchPattern = selectedText.Split ('\n')[0];
