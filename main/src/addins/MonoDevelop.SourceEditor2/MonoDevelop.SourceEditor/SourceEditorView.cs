@@ -29,7 +29,6 @@ using System.IO;
 using System.Text;
 
 using Gtk;
-using Gnome;
 
 using Mono.TextEditor;
 using MonoDevelop.Ide.Gui;
@@ -42,7 +41,7 @@ using MonoDevelop.Ide.Gui.Search;
 
 namespace MonoDevelop.SourceEditor
 {	
-	public class SourceEditorView : AbstractViewContent, IPositionable, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, ICompletionWidget, IDocumentInformation, ICodeStyleOperations, ISplittable, IFoldable, IPrintable
+	public class SourceEditorView : AbstractViewContent, IPositionable, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, ICompletionWidget, IDocumentInformation, ICodeStyleOperations, ISplittable, IFoldable
 	{
 		SourceEditorWidget widget;
 		bool isDisposed = false;
@@ -857,6 +856,7 @@ namespace MonoDevelop.SourceEditor
 		}
 		#endregion
 		
+#if GNOME_PRINT
 		#region IPrintable
 		PrintDialog    printDialog;
 		Gnome.PrintJob printJob;
@@ -1041,5 +1041,6 @@ namespace MonoDevelop.SourceEditor
 			return str.Substring (0, leftOffset) + delimiter + str.Substring (rightOffset);
 		}
 		#endregion
+#endif
 	}
 } 

@@ -1,3 +1,8 @@
+2008-02-15  Geoff Norton  <gnorton@novell.com>:
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Disable GnomePrint so that
+	we can work on systems that dont have it.  TODO: Rewrite in GtkPrint.
+
 2008-02-15  Mike Krüger <mkrueger@novell.com> 
 
 	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs,
