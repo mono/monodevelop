@@ -1,5 +1,12 @@
 2008-02-16  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextViewMargin.cs,
+	  Mono.TextEditor/Document.cs, Mono.TextEditor/Caret.cs,
+	  Mono.TextEditor/LineSegment.cs: Caret now remembers it's column when
+	  moving up/down.
+
+2008-02-16  Mike Krüger <mkrueger@novell.com> 
+
 	* OblivionStyle.xml, Mono.TextEditor/TextViewMargin.cs: Fixed caret drawing
 	  issues.
 

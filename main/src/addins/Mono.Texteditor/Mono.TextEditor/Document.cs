@@ -495,13 +495,6 @@ namespace Mono.TextEditor
 			int line = LogicalToVisualLine (location.Line);
 			int column = 0;
 			LineSegment lineSegment = this.GetLine (location.Line);
-			for (int i = 0; i < location.Column; i++) {
-				if (i < lineSegment.EditableLength && this.buffer.GetCharAt (lineSegment.Offset + i) == '\t') {
-					column += Mono.TextEditor.TextEditorOptions.Options.TabSize;
-				} else {
-					column++;
-				}
-			}
 			return new DocumentLocation (line, column);
 		}
 		

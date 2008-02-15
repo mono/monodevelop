@@ -127,7 +127,6 @@ namespace Mono.TextEditor
 				return;
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			data.Document.Remove (line.Offset, line.Length);
-			data.Caret.SetColumn ();
 		}
 	}
 	
@@ -206,7 +205,6 @@ namespace Mono.TextEditor
 		{
 			if (data.Caret.Line > 0) {
 				data.Caret.Line = data.Document.VisualToLogicalLine (data.Document.LogicalToVisualLine (data.Caret.Line) - 1);
-				data.Caret.SetColumn ();
 			}
 		}
 	}
@@ -217,7 +215,6 @@ namespace Mono.TextEditor
 		{
 			if (data.Caret.Line < data.Document.LineCount - 1) {
 				data.Caret.Line = data.Document.VisualToLogicalLine (data.Document.LogicalToVisualLine (data.Caret.Line) + 1);
-				data.Caret.SetColumn ();
 			}
 		}
 	}

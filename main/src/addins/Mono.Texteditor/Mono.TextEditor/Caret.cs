@@ -36,8 +36,9 @@ namespace Mono.TextEditor
 		bool isInInsertMode = true;
 		bool autoScrollToCaret = true;
 		bool isVisible = true;
+		int  desiredColumn;
 		Document document;
-
+		
 		public int Line {
 			get {
 				return location.Line;
@@ -60,6 +61,7 @@ namespace Mono.TextEditor
 				if (location.Column != value) {
 					DocumentLocation old = location;
 					location.Column = value;
+					SetDesiredColumn ();
 					OnPositionChanged (new DocumentLocationEventArgs (old));
 				}
 			}
@@ -73,8 +75,7 @@ namespace Mono.TextEditor
 				if (location != value) {
 					DocumentLocation old = location;
 					location = value;
-					SetColumn ();
-					
+					SetDesiredColumn ();
 					OnPositionChanged (new DocumentLocationEventArgs (old));
 				}
 			}
@@ -95,7 +96,6 @@ namespace Mono.TextEditor
 				int line   = document.OffsetToLineNumber (value);
 				int column = value - document.GetLine (line).Offset;
 				Location = new DocumentLocation (line, column);
-				
 			}
 		}
 
@@ -141,9 +141,16 @@ namespace Mono.TextEditor
 			this.document = document;
 		}
 		
-		public void SetColumn ()
+		void SetDesiredColumn ()
 		{
-			this.Column = System.Math.Max (0, System.Math.Min (this.document.GetLine (this.Line).EditableLength, Column));
+			LineSegment curLine = this.document.GetLine (this.Line);
+			this.desiredColumn = curLine.GetVisualColumn (document, this.Column);
+		}
+		
+		void SetColumn ()
+		{
+			LineSegment curLine = this.document.GetLine (this.Line);
+			this.location.Column = curLine.GetLogicalColumn (this.document, this.desiredColumn);
 		}
 		
 		public override string ToString ()

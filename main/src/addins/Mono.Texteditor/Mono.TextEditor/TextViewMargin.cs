@@ -535,7 +535,7 @@ namespace Mono.TextEditor
 			return lineXPos;
 		}
 		
-		int GetNextTabstop (int currentColumn)
+		public static int GetNextTabstop (int currentColumn)
 		{
 			int result = currentColumn + TextEditorOptions.Options.TabSize;
 			return (result / TextEditorOptions.Options.TabSize) * TextEditorOptions.Options.TabSize;

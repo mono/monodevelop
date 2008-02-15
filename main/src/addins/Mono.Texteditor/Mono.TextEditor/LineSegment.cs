@@ -155,6 +155,36 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public int GetLogicalColumn (IBuffer doc, int visualColumn)
+		{
+			int curVisualColumn = 0;
+			for (int i = 0; i < EditableLength; i++) {
+				if (doc.GetCharAt (Offset + i) == '\t') {
+					curVisualColumn = TextViewMargin.GetNextTabstop (curVisualColumn);
+				} else {
+					curVisualColumn++;
+				}
+				if (curVisualColumn > visualColumn)
+					return i;
+			}
+			return EditableLength;
+		}
+		
+		public int GetVisualColumn (IBuffer doc, int logicalColumn)
+		{
+			int result = 0;
+			for (int i = 0; i < logicalColumn; i++) {
+				if (i < EditableLength && doc.GetCharAt (Offset + i) == '\t') {
+					result = TextViewMargin.GetNextTabstop (result);
+				} else {
+					result++;
+				}
+			}
+			return result;
+		}
+		
+
+		
 		public bool Contains (int offset)
 		{
 			return Offset <= offset && offset < EndOffset;
