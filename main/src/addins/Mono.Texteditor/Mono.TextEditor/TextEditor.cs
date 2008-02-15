@@ -382,6 +382,15 @@ namespace Mono.TextEditor
 			this.QueueDrawArea (0, (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (logicalLine) * LineHeight, this.Allocation.Width, this.Allocation.Height);
 		}
 	
+		public void RunAction (EditAction action)
+		{
+			try {
+				action.Run (this.textEditorData);
+			} catch (Exception e) {
+				Console.WriteLine ("Error while executing " + action + " :" + e);
+			}
+		}
+		
 		public void SimulateKeyPress (Gdk.Key key, Gdk.ModifierType modifier)
 		{
 			int keyCode = GetKeyCode (key, modifier);

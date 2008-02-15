@@ -1,5 +1,9 @@
 2008-02-15  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Mono.TextEditor/TextEditor.cs: Added method for running an editor action.
+
+2008-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextViewMargin.cs,
 	  Mono.TextEditor/TextUtil.cs, Mono.TextEditor/TextEditor.cs: Implemented
 	  'go to matching bracket' action.
