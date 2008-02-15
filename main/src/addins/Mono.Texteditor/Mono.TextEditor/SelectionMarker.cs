@@ -52,7 +52,6 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		
 		public SelectionMarker (LineSegment segment, int column)
 		{
 			this.segment = segment;

@@ -101,10 +101,10 @@ namespace Mono.TextEditor.Highlighting
 			Dictionary<char, Rule.Pair<Span, object>> spanTree = rule.spanTree;
 			Rule.Pair<Span, object> spanPair = null;
 			int endOffset = 0;
-			end = System.Math.Min (end, doc.Buffer.Length);
+			end = System.Math.Min (end, doc.Length);
 			Span curSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
 			for (int offset = start; offset < end; offset++) {
-				char ch = doc.Buffer.GetCharAt (offset);
+				char ch = doc.GetCharAt (offset);
 				if (curSpan != null && !String.IsNullOrEmpty (curSpan.End)) {
 					if (curSpan.End[endOffset] == ch) {
 						endOffset++;
@@ -129,7 +129,7 @@ namespace Mono.TextEditor.Highlighting
 						Span span = spanPair.o1;
 						if (!String.IsNullOrEmpty(span.Constraint)) {
 							if (span.Constraint.Length == 2 && span.Constraint.StartsWith ("!") && offset + 1 < end) {
-								if (doc.Buffer.GetCharAt (offset + 1) == span.Constraint [1]) 
+								if (doc.GetCharAt (offset + 1) == span.Constraint [1]) 
 									goto skip;
 							}
 						}
@@ -170,8 +170,7 @@ namespace Mono.TextEditor.Highlighting
 			int startOffset = (int)data[2];
 			int endOffset   = (int)data[3];
 			bool doUpdate = false;
-//			LineSegment endLine = doc.Splitter.GetByOffset (endOffset);
-			RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = doc.Splitter.GetByOffset (startOffset).Iter;
+			RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = doc.GetLineByOffset (startOffset).Iter;
 			Stack<Span> spanStack = iter.Current.StartSpan != null ? new Stack<Span> (iter.Current.StartSpan) : new Stack<Span> ();
 			do {
 				LineSegment line = iter.Current;

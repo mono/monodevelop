@@ -67,23 +67,11 @@ namespace Mono.TextEditor
 			return node != null ? node : new LineSegment(0, 0);
 		}
 		
-		public LineSegment GetByOffset (int offset)
+		public LineSegment GetLineByOffset (int offset)
 		{
 			return Get (OffsetToLineNumber (offset));
 		}
 		
-		public int OffsetToLineNumber (int offset)
-		{
-			for (int i = 0; i < lines.Count - 1; ++i) {
-				LineSegment line = Get (i);
-				if (line.Offset <= offset && offset < line.EndOffset)
-					return i;
-			}
-			
-			if (lines.Count > 0 && Get (lines.Count - 1).Offset <= offset && offset <= Get (lines.Count - 1).EndOffset)
-				return lines.Count - 1;
-			return 0;
-		}
 		
 		internal void TextReplaced (object sender, ReplaceEventArgs args)
 		{
@@ -101,14 +89,12 @@ namespace Mono.TextEditor
 			int charsRemoved = startNode.EndOffset - offset;
 			if (offset + length < startNode.EndOffset) {
 				lines.ChangeLength (startNode, startNode.Length - length);
-				OnLineLenghtChanged (new LineEventArgs (startNode));
 				return;
 			}
 			LineSegmentTree.TreeNode endNode = lines.GetNodeAtOffset (offset + length);
 			int charsLeft = endNode.EndOffset - (offset + length);
 			if (startNode == endNode) {
 				lines.ChangeLength (startNode, startNode.Length - length);
-				OnLineLenghtChanged (new LineEventArgs (startNode));
 				return;
 			}
 			RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = startNode.Iter;
@@ -121,10 +107,7 @@ namespace Mono.TextEditor
 				lines.RemoveLine (line);
 				++cnt;
 			} while (line != endNode);
-			if (LinesRemoved != null)
-				LinesRemoved (this, new LineEventArgs (startNode));
 			lines.ChangeLength (startNode, startNode.Length - charsRemoved + charsLeft, endNode.DelimiterLength);
-			OnLineLenghtChanged (new LineEventArgs (startNode));
 		}
 
 		void TextInsert (int offset, StringBuilder text)
@@ -132,9 +115,7 @@ namespace Mono.TextEditor
 			if (text == null || text.Length == 0)
 				return;
 			LineSegment line  = lines.GetNodeAtOffset (offset);
-			LineSegment first = lines.GetNodeAtOffset (offset);
 			int textOffset = 0;
-			bool inserted = false; 
 			ISegment delimiter;
 			while ((delimiter = FindDelimiter (text, textOffset)) != null) {
 				int newLineLength = line.EndOffset - (offset + textOffset);
@@ -142,42 +123,24 @@ namespace Mono.TextEditor
 				lines.ChangeLength (line, offset + delimiter.EndOffset - line.Offset, delimiter.Length);
 				line.ClearMarker ();
 				line = this.lines.InsertAfter (line, newLineLength, oldDelimiterLength);
-//				OnLineLenghtChanged (new LineEventArgs (line));
 				textOffset = delimiter.EndOffset;
-				inserted = true;
 			}
-			if (inserted && LinesInserted != null)
-				LinesInserted (this, new LineEventArgs (first));
 			if (textOffset != text.Length) { 
 				lines.ChangeLength (line, line.Length + text.Length - textOffset);
-				OnLineLenghtChanged (new LineEventArgs (line));
 			}
 		}
 		
-		internal void FireLineLenghtChange (LineSegment line)
+		public int OffsetToLineNumber (int offset)
 		{
-			OnLineLenghtChanged (new LineEventArgs (line));
-		}
-		
-		protected virtual void OnLineLenghtChanged (LineEventArgs args)
-		{
-			if (LineLenghtChanged != null)
-				LineLenghtChanged (this, args);
-		}
-		
-		public event EventHandler<LineEventArgs> LineLenghtChanged;
-		public event EventHandler<LineEventArgs> LinesInserted;
-		public event EventHandler<LineEventArgs> LinesRemoved;
-			
-		public int GetLineNumberForOffset (int offset)
-		{
-			for (int i = 0; i < this.lines.Count; ++i) {
-				if (this.Get(i).Offset <= offset && offset < this.Get(i).EndOffset)
+			for (int i = 0; i < lines.Count - 1; ++i) {
+				LineSegment line = Get (i);
+				if (line.Offset <= offset && offset < line.EndOffset)
 					return i;
 			}
-			if (offset < 0)
-				return 0;
-			return this.LineCount;
+			
+			if (lines.Count > 0 && Get (lines.Count - 1).Offset <= offset && offset <= Get (lines.Count - 1).EndOffset)
+				return lines.Count - 1;
+			return 0;
 		}
 		
 		Segment FindDelimiter (StringBuilder text, int startOffset) 

@@ -93,8 +93,8 @@ namespace Mono.TextEditor
 			} else {
 				int start = startOffset < markerStart ? markerStart : startOffset;
 				int end   = endOffset < markerEnd ? endOffset : markerEnd;
-				from = startXPos + editor.GetWidth (editor.Buffer.GetTextAt (startOffset, start - startOffset));
-				to   = startXPos + editor.GetWidth (editor.Buffer.GetTextAt (startOffset, end - startOffset));
+				from = startXPos + editor.GetWidth (editor.Document.GetTextAt (startOffset, start - startOffset));
+				to   = startXPos + editor.GetWidth (editor.Document.GetTextAt (startOffset, end - startOffset));
 			}
  			from = System.Math.Max (from, editor.TextViewMargin.XOffset);
  			to   = System.Math.Max (to, editor.TextViewMargin.XOffset);

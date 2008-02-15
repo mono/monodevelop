@@ -80,9 +80,7 @@ namespace Mono.TextEditor
 		
 		static Cairo.Color Convert (Gdk.Color color)
 		{
-			return new Cairo.Color (color.Red / (double)ushort.MaxValue, 
-			                        color.Green / (double)ushort.MaxValue, 
-			                        color.Blue / (double)ushort.MaxValue);
+			return new Cairo.Color (color.Red / (double)ushort.MaxValue, color.Green / (double)ushort.MaxValue,  color.Blue / (double)ushort.MaxValue);
 		}
 		
 		public static void DrawRoundRectangle (Cairo.Context cr, int x, int y, int r, int w, int h)
@@ -103,7 +101,7 @@ namespace Mono.TextEditor
 			if (button != 1 || doubleClick)
 				return;
 			int lineNumber = editor.VisualToDocumentLocation (x, y).Line;
-			if (lineNumber < editor.Splitter.LineCount) {
+			if (lineNumber < editor.Document.LineCount) {
 				LineSegment lineSegment = editor.Document.GetLine (lineNumber);
 				lineSegment.IsBookmarked = !lineSegment.IsBookmarked;
 				editor.Document.RequestUpdate (new LineUpdate (lineNumber));
@@ -117,7 +115,7 @@ namespace Mono.TextEditor
 			
 			win.DrawRectangle (backgroundGC, true, drawArea);
 			win.DrawLine (seperatorGC, x + Width - 1, drawArea.Top, x + Width - 1, drawArea.Bottom);
-			if (line < editor.Splitter.LineCount) {
+			if (line < editor.Document.LineCount) {
 				LineSegment lineSegment = editor.Document.GetLine (line);
 				if (lineSegment.IsBookmarked) {
 					Cairo.Context cr = Gdk.CairoHelper.Create (win);

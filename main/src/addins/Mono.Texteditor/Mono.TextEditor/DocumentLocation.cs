@@ -32,7 +32,7 @@ namespace Mono.TextEditor
 	public struct DocumentLocation
 	{
 		public static readonly DocumentLocation Empty = new DocumentLocation (-1, -1);
-				
+		
 		int line;
 		int column;
 		
@@ -71,7 +71,7 @@ namespace Mono.TextEditor
 			return String.Format ("[DocumentLocation: Line={0}, Column={1}]", this.line, this.column);
 		}
 		
-#region Operations
+		#region Operations
 		public static bool operator ==(DocumentLocation left, DocumentLocation right)
 		{
 			return left.line == right.line && left.column == right.column;
@@ -106,8 +106,8 @@ namespace Mono.TextEditor
 		public override bool Equals(object obj)
 		{
 			return obj is DocumentLocation && (DocumentLocation)obj == this; 
-		}		
-#endregion
+		}
+		#endregion
 	}
 	
 	public class DocumentLocationEventArgs : System.EventArgs

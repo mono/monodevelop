@@ -1,3 +1,18 @@
+2008-02-15  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextViewMargin.cs,
+	  Mono.TextEditor/Document.cs, Mono.TextEditor/LineSplitter.cs,
+	  Mono.TextEditor/TextUtil.cs, Mono.TextEditor/FoldMarkerMargin.cs,
+	  Mono.TextEditor/TextEditorData.cs, Mono.TextEditor/TextMarker.cs,
+	  Mono.TextEditor/SelectionMarker.cs,
+	  Mono.TextEditor/DocumentUpdateRequest.cs, Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor/Caret.cs, Mono.TextEditor/BookmarkMargin.cs,
+	  Mono.TextEditor/DocumentLocation.cs, Mono.TextEditor/GutterMargin.cs,
+	  Mono.TextEditor.Highlighting/SyntaxMode.cs,
+	  Mono.TextEditor.Highlighting/SemanticRule.cs,
+	  Mono.TextEditor.Highlighting/SyntaxModeService.cs: Refactored text
+	  editor. Fixed column ruler.
+
 2008-02-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.TextEditor/TextViewMargin.cs: Remove access to properties service

@@ -42,7 +42,7 @@ namespace Mono.TextEditor
 		
 		public static int GetMatchingBracketOffset (Document document, int offset)
 		{
-			char ch = document.Buffer.GetCharAt (offset);
+			char ch = document.GetCharAt (offset);
 			int bracket = TextUtil.openBrackets.IndexOf (ch);
 			int result;
 			if (bracket >= 0) {
@@ -74,14 +74,14 @@ namespace Mono.TextEditor
 			bool isInChar         = false;	
 			bool isInBlockComment = false;
 			int depth = -1;
-			while (offset >= 0 && offset < document.Buffer.Length) {
-				char ch = document.Buffer.GetCharAt (offset);
+			while (offset >= 0 && offset < document.Length) {
+				char ch = document.GetCharAt (offset);
 				switch (ch) {
 					case '/':
 						if (isInBlockComment) 
-							isInBlockComment = document.Buffer.GetCharAt (offset + direction) != '*';
-						if (!isInString && !isInChar && offset - direction < document.Buffer.Length) 
-							isInBlockComment = offset > 0 && document.Buffer.GetCharAt (offset - direction) == '*';
+							isInBlockComment = document.GetCharAt (offset + direction) != '*';
+						if (!isInString && !isInChar && offset - direction < document.Length) 
+							isInBlockComment = offset > 0 && document.GetCharAt (offset - direction) == '*';
 						break;
 					case '"':
 						if (!isInChar && !isInBlockComment) 

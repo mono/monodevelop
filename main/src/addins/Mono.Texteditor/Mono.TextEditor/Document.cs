@@ -34,7 +34,7 @@ using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
-	public class Document
+	public class Document : AbstractBuffer
 	{
 		IBuffer      buffer;
 		LineSplitter splitter;
@@ -44,29 +44,12 @@ namespace Mono.TextEditor
 		string mimeType;
 		string fileName;
 		
-		public IBuffer Buffer {
-			get {
-				return buffer;
-			}
-		}
-		
-		public string Text {
-			get {
-				return buffer.Text;
-			} 
-			set {
-				splitter.Clear ();
-				buffer.Text = value;
-				Mono.TextEditor.Highlighting.SyntaxModeService.WaitForUpdate ();
-			}
-		}
-		
 		public string Eol {
 			get {
 				if (eol == null && splitter.LineCount > 0) {
 					LineSegment line = splitter.Get (0);
 					if (line.DelimiterLength > 0) 
-						eol = Buffer.GetTextAt (line.EditableLength, line.DelimiterLength);
+						eol = buffer.GetTextAt (line.EditableLength, line.DelimiterLength);
 				}
 				return !String.IsNullOrEmpty (eol) ? eol : Environment.NewLine;
 			}
@@ -77,18 +60,17 @@ namespace Mono.TextEditor
 				return mimeType;
 			}
 			set {
-				mimeType = value;
-//				System.Console.WriteLine("Set mime type to: " + value);
+				mimeType        = value;
 				this.SyntaxMode = SyntaxModeService.GetSyntaxMode (value);
 			}
 		}
 		
-		public Mono.TextEditor.LineSplitter Splitter {
+		public string FileName {
 			get {
-				return splitter;
+				return fileName;
 			}
 			set {
-				splitter = value;
+				fileName = value;
 			}
 		}
 		
@@ -125,6 +107,93 @@ namespace Mono.TextEditor
 			};
 		}
 		
+		#region Buffer implementation
+		public override int Length {
+			get {
+				return this.buffer.Length;
+			}
+		}
+		
+		public override string Text {
+			get {
+				return this.buffer.Text;
+			}
+			set {
+				splitter.Clear ();
+				this.buffer.Text = value;
+				Mono.TextEditor.Highlighting.SyntaxModeService.WaitForUpdate ();
+			}
+		}
+		
+		public override void Replace (int offset, int count, StringBuilder value)
+		{
+			buffer.Replace (offset, count, value);
+		}
+		
+		public override string GetTextAt (int offset, int count)
+		{
+			return buffer.GetTextAt (offset, count);
+		}
+		
+		public override char GetCharAt (int offset)
+		{
+			return buffer.GetCharAt (offset);
+		}
+		#endregion
+		
+		#region Line Splitter operations
+		public IEnumerable<LineSegment> Lines {
+			get {
+				return splitter.Lines;
+			}
+		}
+		
+		public int LineCount {
+			get {
+				return splitter.LineCount;
+			}
+		}
+		
+		public int LocationToOffset (int line, int column)
+		{
+			return LocationToOffset (new DocumentLocation (line, column));
+		}
+		
+		public int LocationToOffset (DocumentLocation location)
+		{
+			if (location.Line >= this.splitter.LineCount) 
+				return -1;
+			LineSegment line = GetLine (location.Line);
+			return System.Math.Min (Length, line.Offset + System.Math.Min (line.Length, location.Column));
+		}
+		
+		public DocumentLocation OffsetToLocation (int offset)
+		{
+			int lineNr = splitter.OffsetToLineNumber (offset);
+			if (lineNr < 0)
+				return DocumentLocation.Empty;
+			LineSegment line = GetLine (lineNr);
+			return new DocumentLocation (lineNr, System.Math.Min (line.Length, offset - line.Offset));
+		}
+		
+		public LineSegment GetLine (int lineNumber)
+		{
+			return splitter.Get (lineNumber);
+		}
+		
+		public LineSegment GetLineByOffset (int offset)
+		{
+			return splitter.GetLineByOffset (offset);
+		}
+		
+		public int OffsetToLineNumber (int offset)
+		{
+			return splitter.OffsetToLineNumber (offset);
+		}
+		
+		#endregion
+		
+		#region Undo/Redo operations
 		class UndoOperation 
 		{
 			ReplaceEventArgs args;
@@ -142,16 +211,17 @@ namespace Mono.TextEditor
 			public virtual void Undo (Document doc)
 			{
 				if (args.Value != null && args.Value.Length > 0)
-					doc.Buffer.Remove (args.Offset, args.Value.Length);
+					doc.Remove (args.Offset, args.Value.Length);
 				if (!String.IsNullOrEmpty (text))
-					doc.Buffer.Insert (args.Offset, new StringBuilder (text));
+					doc.Insert (args.Offset, new StringBuilder (text));
 			}
 			
 			public virtual void Redo (Document doc)
 			{
-				doc.Buffer.Replace (args.Offset, args.Count, args.Value);
+				doc.Replace (args.Offset, args.Count, args.Value);
 			}
 		}
+		
 		class AtomicUndoOperation : UndoOperation
 		{
 			List<UndoOperation> operations = new List<UndoOperation> ();
@@ -232,34 +302,9 @@ namespace Mono.TextEditor
 				currentAtomicOperation = null;
 			}
 		}
+		#endregion
 		
-		public int LocationToOffset (int line, int column)
-		{
-			return LocationToOffset (new DocumentLocation (line, column));
-		}
-		
-		public int LocationToOffset (DocumentLocation location)
-		{
-			if (location.Line >= this.splitter.LineCount) 
-				return -1;
-			LineSegment line = GetLine (location.Line);
-			return System.Math.Min (this.Buffer.Length, line.Offset + System.Math.Min (line.Length, location.Column));
-		}
-		
-		public DocumentLocation OffsetToLocation (int offset)
-		{
-			int lineNr = Splitter.GetLineNumberForOffset (offset);
-			if (lineNr < 0)
-				return DocumentLocation.Empty;
-			LineSegment line = GetLine (lineNr);
-			return new DocumentLocation (lineNr, System.Math.Min (line.Length, offset - line.Offset));
-		}
-		
-		public LineSegment GetLine (int lineNumber)
-		{
-			return splitter.Get (lineNumber);
-		}
-		
+		#region Folding
 		List<FoldSegment> foldSegments = new List<FoldSegment> ();
 		public bool HasFoldSegments {
 			get {
@@ -280,8 +325,8 @@ namespace Mono.TextEditor
 			}
 			newSegments.Sort ();
 			foreach (FoldSegment foldSegment in newSegments) {
-				LineSegment startLine = splitter.GetByOffset (foldSegment.Offset);
-				LineSegment endLine   = splitter.GetByOffset (foldSegment.EndOffset);
+				LineSegment startLine = splitter.GetLineByOffset (foldSegment.Offset);
+				LineSegment endLine   = splitter.GetLineByOffset (foldSegment.EndOffset);
 				foldSegment.EndColumn = foldSegment.EndOffset - endLine.Offset; 
 				foldSegment.Column    = foldSegment.Offset - startLine.Offset; 
 				foldSegment.EndLine   = endLine;
@@ -358,8 +403,9 @@ namespace Mono.TextEditor
 		
 		public List<FoldSegment> GetFoldingsBefore (int lineNumber)
 		{
-			return GetFoldingsBefore (splitter.Get (lineNumber));
+			return GetFoldingsBefore (GetLine (lineNumber));
 		}
+		
 		public List<FoldSegment> GetFoldingsBefore (LineSegment line)
 		{
 			List<FoldSegment> result = new List<FoldSegment> ();
@@ -381,19 +427,20 @@ namespace Mono.TextEditor
 			}
 			return result;
 		}
+		#endregion
 		
 		public int VisualToLogicalLine (int visualLineNumber)
 		{
 			int result = visualLineNumber;
 			int lastFoldingEnd = 0;
-			LineSegment line = splitter.Get (result);
+			LineSegment line = GetLine (result);
 			foreach (FoldSegment foldSegment in foldSegments) {
 				if (foldSegment.Offset > line.Offset)
 					break;
 				if (foldSegment.IsFolded && foldSegment.StartLine.Offset < line.Offset && lastFoldingEnd < foldSegment.EndOffset ) {
 					result += GetLineCount (foldSegment);
 					lastFoldingEnd = foldSegment.EndOffset;
-					line = splitter.Get (result);
+					line = GetLine (result);
 				}
 			}
 			return result;
@@ -403,7 +450,7 @@ namespace Mono.TextEditor
 		{
 			int line = LogicalToVisualLine (location.Line);
 			int column = 0;
-			LineSegment lineSegment = this.splitter.Get (location.Line);
+			LineSegment lineSegment = this.GetLine (location.Line);
 			for (int i = 0; i < location.Column; i++) {
 				if (i < lineSegment.EditableLength && this.buffer.GetCharAt (lineSegment.Offset + i) == '\t') {
 					column += Mono.TextEditor.TextEditorOptions.Options.TabSize;
@@ -428,6 +475,7 @@ namespace Mono.TextEditor
 			return result;
 		}
 		
+		#region Update logic
 		List<DocumentUpdateRequest> updateRequests = new List<DocumentUpdateRequest> ();
 		
 		public ReadOnlyCollection<DocumentUpdateRequest> UpdateRequests {
@@ -436,15 +484,6 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public string FileName {
-			get {
-				return fileName;
-			}
-			set {
-				fileName = value;
-			}
-		}
-		
 		public void RequestUpdate (DocumentUpdateRequest request)
 		{
 			//System.Console.WriteLine(request);
@@ -483,5 +522,6 @@ namespace Mono.TextEditor
 		}
 		
 		public event EventHandler DocumentUpdated;
+		#endregion
 	}
 }

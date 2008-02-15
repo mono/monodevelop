@@ -42,6 +42,7 @@ namespace Mono.TextEditor
 	public class TextEditor : Gtk.DrawingArea
 	{
 		TextEditorData textEditorData = new TextEditorData ();
+		
 		protected Dictionary <int, EditAction> keyBindings = new Dictionary<int,EditAction> ();
 		protected BookmarkMargin   bookmarkMargin;
 		protected GutterMargin     gutterMargin;
@@ -62,22 +63,10 @@ namespace Mono.TextEditor
 				textEditorData.Document = value;
 			}
 		}
-
+		
 		public Mono.TextEditor.Caret Caret {
 			get {
 				return textEditorData.Caret;
-			}
-		}
-
-		public IBuffer Buffer {
-			get {
-				return Document.Buffer;
-			}
-		}
-		
-		public Mono.TextEditor.LineSplitter Splitter {
-			get {
-				return Document.Splitter;
 			}
 		}
 		
@@ -250,14 +239,14 @@ namespace Mono.TextEditor
 				
 				// Handle redraw
 				ISegment selection = this.TextEditorData.SelectionRange;
-				int startLine    = selection != null ? Document.Splitter.GetLineNumberForOffset (selection.Offset) : -1;
-				int endLine      = selection != null ? Document.Splitter.GetLineNumberForOffset (selection.EndOffset) : -1;
-				int oldStartLine = oldSelection != null ? Document.Splitter.GetLineNumberForOffset (oldSelection.Offset) : -1;
-				int oldEndLine   = oldSelection != null ? Document.Splitter.GetLineNumberForOffset (oldSelection.EndOffset) : -1;
+				int startLine    = selection != null ? Document.OffsetToLineNumber (selection.Offset) : -1;
+				int endLine      = selection != null ? Document.OffsetToLineNumber (selection.EndOffset) : -1;
+				int oldStartLine = oldSelection != null ? Document.OffsetToLineNumber (oldSelection.Offset) : -1;
+				int oldEndLine   = oldSelection != null ? Document.OffsetToLineNumber (oldSelection.EndOffset) : -1;
 				if (endLine < 0 && startLine >=0)
-					endLine = Splitter.LineCount;
+					endLine = Document.LineCount;
 				if (oldEndLine < 0 && oldStartLine >=0)
-					oldEndLine = Splitter.LineCount;
+					oldEndLine = Document.LineCount;
 				int from = oldEndLine, to = endLine;
 				if (selection != null && oldSelection != null) {
 					if (startLine != oldStartLine && endLine != oldEndLine) {
@@ -407,9 +396,9 @@ namespace Mono.TextEditor
 				if (!char.IsControl (ch)) {
 					LineSegment line = Document.GetLine (Caret.Line);
 					if (Caret.IsInInsertMode || Caret.Column >= line.EditableLength) {
-						Buffer.Insert (Caret.Offset, new StringBuilder (ch.ToString()));
+						Document.Insert (Caret.Offset, new StringBuilder (ch.ToString()));
 					} else {
-						Buffer.Replace (Caret.Offset, 1, new StringBuilder (ch.ToString()));
+						Document.Replace (Caret.Offset, 1, new StringBuilder (ch.ToString()));
 					}
 					bool autoScroll = Caret.AutoScrollToCaret;
 					Caret.Column++;
@@ -486,7 +475,7 @@ namespace Mono.TextEditor
 		protected override void OnDragDataDelete (DragContext context)
 		{
 			int offset = Caret.Offset;
-			Document.Buffer.Remove (selection.Offset, selection.Length);
+			Document.Remove (selection.Offset, selection.Length);
 			if (offset >= selection.Offset) {
 				Caret.PreserveSelection = true;
 				Caret.Offset = offset - selection.Length;
@@ -524,7 +513,7 @@ namespace Mono.TextEditor
 				int offset = Caret.Offset;
 				if (selection != null && selection.Offset >= offset)
 					selection.Offset += builder.Length;
-				this.Buffer.Insert (offset, builder);
+				Document.Insert (offset, builder);
 				Caret.Offset = offset + builder.Length;
 				this.TextEditorData.SelectionRange = new Segment (offset, builder.Length);
 				dragOver  = false;
@@ -631,17 +620,17 @@ namespace Mono.TextEditor
 		
 		public void ScrollToCaret ()
 		{
-			if (Caret.Line < 0 || Caret.Line >= Document.Splitter.LineCount)
+			if (Caret.Line < 0 || Caret.Line >= Document.LineCount)
 				return;
 			int yMargin = 2 * this.LineHeight;
-			int xMargin = 10 * this.textViewMargin.charWidth;
+			int xMargin = 10 * this.textViewMargin.CharWidth;
 			int caretPosition = Document.LogicalToVisualLine (Caret.Line) * this.LineHeight;
 			if (this.textEditorData.VAdjustment.Value > caretPosition - yMargin) {
 				this.textEditorData.VAdjustment.Value = caretPosition - yMargin;
 			} else if (this.textEditorData.VAdjustment.Value + this.textEditorData.VAdjustment.PageSize - this.LineHeight < caretPosition + yMargin) {
 				this.textEditorData.VAdjustment.Value = caretPosition - this.textEditorData.VAdjustment.PageSize + this.LineHeight + yMargin;
 			}
-			int caretX = textViewMargin.ColumnToVisualX (Document.Splitter.Get (Caret.Line), Caret.Column);
+			int caretX = textViewMargin.ColumnToVisualX (Document.GetLine (Caret.Line), Caret.Column);
 			if (this.textEditorData.HAdjustment.Value > caretX) {
 				this.textEditorData.HAdjustment.Value = caretX ;
 			} else if (this.textEditorData.HAdjustment.Value + this.textEditorData.HAdjustment.PageSize - 60 < caretX + xMargin) {
@@ -662,14 +651,14 @@ namespace Mono.TextEditor
 		{
 			if (this.textEditorData.VAdjustment != null)
 				this.textEditorData.VAdjustment.SetBounds (0, 
-				                                           (Splitter.LineCount + 10) * this.LineHeight, 
+				                                           (Document.LineCount + 10) * this.LineHeight, 
 				                                           LineHeight,
 				                                           allocation.Height,
 				                                           allocation.Height);
 			if (longestLine != null && this.textEditorData.HAdjustment != null)
 				this.textEditorData.HAdjustment.SetBounds (0, 
-				                       (longestLine.Length + 100) * this.textViewMargin.charWidth, 
-				                       this.textViewMargin.charWidth,
+				                       (longestLine.Length + 100) * this.textViewMargin.CharWidth, 
+				                       this.textViewMargin.CharWidth,
 				                       allocation.Width,
 				                       allocation.Width);
 		}
@@ -681,6 +670,7 @@ namespace Mono.TextEditor
 		
 		void RenderMargins (Gdk.Drawable win, Gdk.Rectangle area)
 		{
+			this.TextViewMargin.rulerX = this.TextViewMargin.XOffset + TextEditorOptions.Options.RulerColumn * this.TextViewMargin.CharWidth - (int)this.textEditorData.HAdjustment.Value;
 			int reminder  = (int)this.textEditorData.VAdjustment.Value % LineHeight;
 			int firstLine = (int)(this.textEditorData.VAdjustment.Value / LineHeight);
 			int startLine = area.Top / this.LineHeight;
@@ -714,9 +704,9 @@ namespace Mono.TextEditor
 		//double oldVadjustment = 0;
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
-			if (oldRequest != Splitter.LineCount * this.LineHeight) {
+			if (oldRequest != Document.LineCount * this.LineHeight) {
 				SetAdjustments (this.Allocation);
-				oldRequest = Splitter.LineCount * this.LineHeight;
+				oldRequest = Document.LineCount * this.LineHeight;
 			}
 			
 			RenderMargins (e.Window, e.Area);

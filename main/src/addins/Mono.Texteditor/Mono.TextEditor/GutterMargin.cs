@@ -36,41 +36,42 @@ namespace Mono.TextEditor
 		TextEditor editor;
 		Pango.Layout layout;
 		int width;
+		int oldLineCountLog10 = 100;
 		
 		public GutterMargin (TextEditor editor)
 		{
 			this.editor = editor;
 			layout = new Pango.Layout (editor.PangoContext);
-			editor.TextEditorData.Document.Splitter.LinesInserted += LineCountChanged;
-			editor.TextEditorData.Document.Splitter.LinesRemoved += LineCountChanged;
 		}
 		
-		
-		int oldWidth = 1;
-		void LineCountChanged (object sender, LineEventArgs args)
+		void CalculateWidth ()
 		{
-			int newWidth = (int)System.Math.Log10 (editor.TextEditorData.Document.Splitter.LineCount);
-			if (oldWidth != newWidth) {
-				editor.TextEditorData.Document.RequestUpdate (new UpdateAll ());
-				editor.TextEditorData.Document.CommitDocumentUpdate ();
-				oldWidth = newWidth;
+			layout.SetText (editor.Document.LineCount.ToString ());
+			int height;
+			layout.GetPixelSize (out this.width, out height);
+			this.width += 5;
+		}
+		
+		void UpdateWidth ()
+		{
+			int currentLineCountLog10 = (int)System.Math.Log10 (editor.TextEditorData.Document.LineCount);
+			if (oldLineCountLog10 < currentLineCountLog10) {
+				CalculateWidth ();
+				editor.TextEditorData.Document.CommitUpdateAll ();
+				oldLineCountLog10 = currentLineCountLog10;
 			}
-			
 		}
 		
 		public override int Width {
 			get {
-				layout.SetText (editor.Splitter.LineCount.ToString ());
-				int height;
-				layout.GetPixelSize (out width, out height);
-				return 5 + width;
+				return width;
 			}
 		}
 		
 		public override void MousePressed (int button, int x, int y, bool doubleClick, Gdk.ModifierType modifierState)
 		{
 			int lineNumber = editor.Document.VisualToLogicalLine ((int)(y + editor.TextEditorData.VAdjustment.Value) / editor.LineHeight);
-			if (lineNumber < editor.Splitter.LineCount) {
+			if (lineNumber < editor.Document.LineCount) {
 				DocumentLocation loc = new DocumentLocation (lineNumber, 0);
 				if (loc != editor.Caret.Location) {
 					editor.Caret.Location = loc;
@@ -84,6 +85,7 @@ namespace Mono.TextEditor
 				}
 			}
 		}
+		
 		public override void Dispose ()
 		{
 			if (layout != null) {
@@ -99,10 +101,12 @@ namespace Mono.TextEditor
 				lineNumberBgGC.Dispose ();
 				lineNumberBgGC = null;
 			}
+			
 			if (lineNumberGC != null) {
 				lineNumberGC.Dispose ();
 				lineNumberGC = null;
 			}
+			
 			if (lineNumberHighlightGC != null) {
 				lineNumberHighlightGC.Dispose ();
 				lineNumberHighlightGC = null;
@@ -113,6 +117,8 @@ namespace Mono.TextEditor
 		public override void OptionsChanged ()
 		{
 			layout.FontDescription = TextEditorOptions.Options.Font;
+			CalculateWidth ();
+			
 			DisposeGCs ();
 			lineNumberBgGC = new Gdk.GC (editor.GdkWindow);
 			lineNumberBgGC.RgbFgColor = editor.ColorStyle.LineNumberBg;
@@ -126,9 +132,11 @@ namespace Mono.TextEditor
 		
 		public override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int line, int x, int y)
 		{
+			UpdateWidth ();
+			
 			Gdk.Rectangle drawArea = new Rectangle (x, y, Width, editor.LineHeight);
 			win.DrawRectangle (lineNumberBgGC, true, drawArea);
-			if (line < editor.Splitter.LineCount) {
+			if (line < editor.Document.LineCount) {
 				layout.SetText ((line + 1).ToString ());
 				win.DrawLayout (editor.Caret.Line == line ? lineNumberHighlightGC : lineNumberGC, x + 1, y, layout);
 			}

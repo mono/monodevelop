@@ -35,7 +35,7 @@ namespace Mono.TextEditor
 		bool preserveSelection = false;
 		bool isInInsertMode = true;
 		bool autoScrollToCaret = true;
-		bool isHidden = false;
+		bool isVisible = true;
 		Document document;
 
 		public int Line {
@@ -74,6 +74,7 @@ namespace Mono.TextEditor
 					DocumentLocation old = location;
 					location = value;
 					SetColumn ();
+					
 					OnPositionChanged (new DocumentLocationEventArgs (old));
 				}
 			}
@@ -82,8 +83,8 @@ namespace Mono.TextEditor
 		public int Offset {
 			get {
 				int result = 0;
-				if (Line < document.Splitter.LineCount) {
-					LineSegment line = document.Splitter.Get (Line);
+				if (Line < document.LineCount) {
+					LineSegment line = document.GetLine (Line);
 					if (line != null)
 						result = line.Offset;
 				}
@@ -91,9 +92,10 @@ namespace Mono.TextEditor
 				return result;
 			}
 			set {
-				int line   = document.Splitter.OffsetToLineNumber (value);
-				int column = value - document.Splitter.Get (line).Offset;
+				int line   = document.OffsetToLineNumber (value);
+				int column = value - document.GetLine (line).Offset;
 				Location = new DocumentLocation (line, column);
+				
 			}
 		}
 
@@ -125,12 +127,12 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public bool IsHidden {
+		public bool IsVisible {
 			get {
-				return isHidden;
+				return isVisible;
 			}
 			set {
-				isHidden = value;
+				isVisible = value;
 			}
 		}
 		

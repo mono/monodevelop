@@ -107,8 +107,8 @@ namespace Mono.TextEditor
 					start = value.EndOffset;
 					end   = value.Offset;
 				}
-				LineSegment startLine = document.Splitter.GetByOffset (start);
-				LineSegment endLine   = document.Splitter.GetByOffset (end);
+				LineSegment startLine = Document.GetLineByOffset (start);
+				LineSegment endLine   = Document.GetLineByOffset (end);
 				this.Caret.Offset = end;
 				selectionStart = new SelectionMarker (startLine, start - startLine.Offset);
 				selectionEnd   = new SelectionMarker (endLine, end - endLine.Offset);
@@ -120,7 +120,7 @@ namespace Mono.TextEditor
 			get {
 				if (!IsSomethingSelected)
 					return null;
-				return this.document.Buffer.GetTextAt (this.SelectionRange);
+				return this.Document.GetTextAt (this.SelectionRange);
 			}
 		}
 		
@@ -129,14 +129,14 @@ namespace Mono.TextEditor
 				if (!this.IsSomethingSelected) {
 					yield return this.document.GetLine (this.caret.Line);
 				} else {
-					int startLineNr = Document.Splitter.GetLineNumberForOffset (SelectionRange.Offset);
-					RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = this.document.Splitter.Get (startLineNr).Iter;
+					int startLineNr = Document.OffsetToLineNumber (SelectionRange.Offset);
+					RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = this.document.GetLine (startLineNr).Iter;
 					do {
-						if (iter.Current == Document.Splitter.GetByOffset (SelectionRange.EndOffset) && (iter.Current.Offset == Caret.Offset ||
+						if (iter.Current == Document.GetLineByOffset (SelectionRange.EndOffset) && (iter.Current.Offset == Caret.Offset ||
 						                                                                                 iter.Current.Offset == SelectionRange.EndOffset))
 							break;
 						yield return iter.Current;
-						if (iter.Current == Document.Splitter.GetByOffset (SelectionRange.EndOffset))
+						if (iter.Current == Document.GetLineByOffset (SelectionRange.EndOffset))
 							break;
 					} while (iter.MoveNext ());
 				}
@@ -196,9 +196,9 @@ namespace Mono.TextEditor
 			if (Caret.Offset > selection.Offset)
 				Caret.Offset -= selection.Length;
 			
-			Document.Buffer.Remove (selection.Offset, selection.Length);
+			Document.Remove (selection.Offset, selection.Length);
 			if (needUpdate)
-				Document.RequestUpdate (new LineToEndUpdate (Document.Splitter.GetLineNumberForOffset (selection.Offset)));
+				Document.RequestUpdate (new LineToEndUpdate (Document.OffsetToLineNumber (selection.Offset)));
 			ClearSelection();
 			if (needUpdate)
 				Document.CommitDocumentUpdate ();

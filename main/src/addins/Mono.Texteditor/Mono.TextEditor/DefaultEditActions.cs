@@ -38,7 +38,7 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
-			LineSegment line = data.Document.Splitter.Get (data.Caret.Line);
+			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			List<FoldSegment> foldings = data.Document.GetEndFoldings (line);
 			FoldSegment segment = null;
 			foreach (FoldSegment folding in foldings) {
@@ -55,7 +55,7 @@ namespace Mono.TextEditor
 			if (data.Caret.Column > 0) {
 				data.Caret.Column--;
 			} else if (data.Caret.Line > 0) {
-				LineSegment prevLine = data.Document.Splitter.Get (data.Caret.Line - 1);
+				LineSegment prevLine = data.Document.GetLine (data.Caret.Line - 1);
 				data.Caret.Location = new DocumentLocation (data.Caret.Line - 1, prevLine.EditableLength);
 			}
 		}
@@ -68,9 +68,9 @@ namespace Mono.TextEditor
 			if (offset <= 0)
 				return 0;
 			int  result = offset - 1;
-			bool isLetter = Char.IsLetterOrDigit (document.Buffer.GetCharAt (result));
+			bool isLetter = Char.IsLetterOrDigit (document.GetCharAt (result));
 			while (result > 0) {
-				char ch = document.Buffer.GetCharAt (result);
+				char ch = document.GetCharAt (result);
 				if (isLetter) {
 					if (Char.IsLetterOrDigit (ch)) 
 						result--;
@@ -103,7 +103,7 @@ namespace Mono.TextEditor
 		{
 			int offset = CaretMovePrevWord.FindPrevWordOffset (data.Document, data.Caret.Offset);
 			if (data.Caret.Offset != offset) {
-				data.Document.Buffer.Remove (offset, data.Caret.Offset - offset);
+				data.Document.Remove (offset, data.Caret.Offset - offset);
 				data.Caret.Offset = offset;
 			}
 		}
@@ -114,9 +114,8 @@ namespace Mono.TextEditor
 		public override void Run (TextEditorData data)
 		{
 			int offset = CaretMoveNextWord.FindNextWordOffset (data.Document, data.Caret.Offset);
-			if (data.Caret.Offset != offset) {
-				data.Document.Buffer.Remove (data.Caret.Offset, offset - data.Caret.Offset);
-			}
+			if (data.Caret.Offset != offset) 
+				data.Document.Remove (data.Caret.Offset, offset - data.Caret.Offset);
 		}
 	}
 	
@@ -124,10 +123,10 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
-			if (data.Document.Splitter.LineCount <= 1)
+			if (data.Document.LineCount <= 1)
 				return;
-			LineSegment line = data.Document.Splitter.Get (data.Caret.Line);
-			data.Document.Buffer.Remove (line.Offset, line.Length);
+			LineSegment line = data.Document.GetLine (data.Caret.Line);
+			data.Document.Remove (line.Offset, line.Length);
 			data.Caret.SetColumn ();
 		}
 	}
@@ -136,8 +135,8 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
-			LineSegment line = data.Document.Splitter.Get (data.Caret.Line);
-			data.Document.Buffer.Remove (line.Offset + data.Caret.Column, line.EditableLength - data.Caret.Column);
+			LineSegment line = data.Document.GetLine (data.Caret.Line);
+			data.Document.Remove (line.Offset + data.Caret.Column, line.EditableLength - data.Caret.Column);
 		}
 	}
 	
@@ -146,7 +145,7 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
-			LineSegment line = data.Document.Splitter.Get (data.Caret.Line);
+			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			List<FoldSegment> foldings = data.Document.GetStartFoldings (line);
 			FoldSegment segment = null;
 			foreach (FoldSegment folding in foldings) {
@@ -161,7 +160,7 @@ namespace Mono.TextEditor
 			}
 			if (data.Caret.Column < line.EditableLength) {
 				data.Caret.Column++;
-			} else if (data.Caret.Line + 1 < data.Document.Splitter.LineCount) {
+			} else if (data.Caret.Line + 1 < data.Document.LineCount) {
 				data.Caret.Location = new DocumentLocation (data.Caret.Line + 1, 0);
 			}
 		}
@@ -170,12 +169,12 @@ namespace Mono.TextEditor
 	{
 		public static int FindNextWordOffset (Document document, int offset)
 		{
-			if (offset + 1 >= document.Buffer.Length)
-				return document.Buffer.Length;
+			if (offset + 1 >= document.Length)
+				return document.Length;
 			int result = offset + 1;
-			bool isLetter = Char.IsLetterOrDigit (document.Buffer.GetCharAt (result));
-			while (result < document.Buffer.Length) {
-				char ch = document.Buffer.GetCharAt (result);
+			bool isLetter = Char.IsLetterOrDigit (document.GetCharAt (result));
+			while (result < document.Length) {
+				char ch = document.GetCharAt (result);
 				if (isLetter) {
 					if (Char.IsLetterOrDigit (ch)) 
 						result++;
@@ -216,7 +215,7 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
-			if (data.Caret.Line < data.Document.Splitter.LineCount - 1) {
+			if (data.Caret.Line < data.Document.LineCount - 1) {
 				data.Caret.Line = data.Document.VisualToLogicalLine (data.Document.LogicalToVisualLine (data.Caret.Line) + 1);
 				data.Caret.SetColumn ();
 			}
@@ -229,7 +228,7 @@ namespace Mono.TextEditor
 		{
 			int result;
 			for (result = 0; result < line.EditableLength; result++)
-				if (!Char.IsWhiteSpace (document.Buffer.GetCharAt (line.Offset + result)))
+				if (!Char.IsWhiteSpace (document.GetCharAt (line.Offset + result)))
 					return result;
 			return result;
 		}
@@ -237,7 +236,7 @@ namespace Mono.TextEditor
 		public override void Run (TextEditorData data)
 		{
 			DocumentLocation newLocation = data.Caret.Location;
-			LineSegment line = data.Document.Splitter.Get (data.Caret.Line);
+			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			int homeMark = GetHomeMark (data.Document, line);
 			newLocation.Column = newLocation.Column == homeMark ? 0 : homeMark;
 			if (newLocation != data.Caret.Location) 
@@ -250,7 +249,7 @@ namespace Mono.TextEditor
 		public override void Run (TextEditorData data)
 		{
 			DocumentLocation newLocation = data.Caret.Location;
-			LineSegment line = data.Document.Splitter.Get (data.Caret.Line);
+			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			newLocation.Column = line.EditableLength;
 			if (newLocation != data.Caret.Location) 
 				data.Caret.Location = newLocation;
@@ -269,7 +268,7 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
-			data.Caret.Offset = data.Document.Buffer.Length;
+			data.Caret.Offset = data.Document.Length;
 		}
 	}
 	
@@ -460,10 +459,10 @@ namespace Mono.TextEditor
 			int pageIncrement =  PageUpAction.LineHeight * ((int)(data.VAdjustment.PageIncrement / PageUpAction.LineHeight) - 1);
 			if (data.VAdjustment.Value < data.VAdjustment.Upper - data.VAdjustment.PageIncrement)
 				data.VAdjustment.Value = data.VAdjustment.Value + pageIncrement;
-			if (data.Caret.Line + pageIncrement / PageUpAction.LineHeight < data.Document.Splitter.LineCount)
+			if (data.Caret.Line + pageIncrement / PageUpAction.LineHeight < data.Document.LineCount)
 				data.Caret.Line += pageIncrement / PageUpAction.LineHeight;
 			else 
-				data.Caret.Line = data.Document.Splitter.LineCount - 1;
+				data.Caret.Line = data.Document.LineCount - 1;
 		}
 	}	
 	
@@ -488,14 +487,14 @@ namespace Mono.TextEditor
 		{
 			if (line.Length == 0)
 				return 0;
-			char ch = document.Buffer.GetCharAt (line.Offset); 
+			char ch = document.GetCharAt (line.Offset); 
 			if (ch == '\t') {
-				document.Buffer.Remove (line.Offset, 1);
+				document.Remove (line.Offset, 1);
 				return 1;
 			} else if (ch == ' ') {
 				int removeCount = 0;
 				for (int i = 0; i < TextEditorOptions.Options.IndentationSize;) {
-					ch = document.Buffer.GetCharAt (line.Offset + i);
+					ch = document.GetCharAt (line.Offset + i);
 					if (ch == ' ') {
 						removeCount ++;
 						i++;
@@ -506,7 +505,7 @@ namespace Mono.TextEditor
 						break;
 					}
 				}
-				document.Buffer.Remove (line.Offset, removeCount);
+				document.Remove (line.Offset, removeCount);
 				return removeCount;
 			}
 			return 0;
@@ -514,10 +513,10 @@ namespace Mono.TextEditor
 		
 		public static void RemoveIndentSelection (TextEditorData data)
 		{
-			int startLineNr = data.IsSomethingSelected ? data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.Offset) : data.Caret.Line;
-			int endLineNr   = data.IsSomethingSelected ? data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.EndOffset) : data.Caret.Line;
+			int startLineNr = data.IsSomethingSelected ? data.Document.OffsetToLineNumber (data.SelectionRange.Offset) : data.Caret.Line;
+			int endLineNr   = data.IsSomethingSelected ? data.Document.OffsetToLineNumber (data.SelectionRange.EndOffset) : data.Caret.Line;
 			if (endLineNr < 0)
-				endLineNr = data.Document.Splitter.LineCount;
+				endLineNr = data.Document.LineCount;
 			data.Document.BeginAtomicUndo ();
 			int first = -1;
 			int last  = 0;
@@ -546,16 +545,16 @@ namespace Mono.TextEditor
 				RemoveIndentSelection (data);
 				return;
 			} else {
-				LineSegment line = data.Document.Splitter.Get (data.Caret.Line);
+				LineSegment line = data.Document.GetLine (data.Caret.Line);
 				int visibleColumn = 0;
 				for (int i = 0; i < data.Caret.Column; ++i)
-					visibleColumn += data.Document.Buffer.GetCharAt (line.Offset + i) == '\t' ? TextEditorOptions.Options.TabSize : 1;
+					visibleColumn += data.Document.GetCharAt (line.Offset + i) == '\t' ? TextEditorOptions.Options.TabSize : 1;
 				
 				int newColumn = ((visibleColumn / TextEditorOptions.Options.IndentationSize) - 1) * TextEditorOptions.Options.IndentationSize;
 				
 				visibleColumn = 0;
 				for (int i = 0; i < data.Caret.Column; ++i) {
-					visibleColumn += data.Document.Buffer.GetCharAt (line.Offset + i) == '\t' ? TextEditorOptions.Options.TabSize : 1;
+					visibleColumn += data.Document.GetCharAt (line.Offset + i) == '\t' ? TextEditorOptions.Options.TabSize : 1;
 					if (visibleColumn >= newColumn) {
 						data.Caret.Column = i;
 						break;
@@ -569,13 +568,13 @@ namespace Mono.TextEditor
 	{
 		public static void IndentSelection (TextEditorData data)
 		{
-			int startLineNr = data.IsSomethingSelected ? data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.Offset) : data.Caret.Line;
-			int endLineNr   = data.IsSomethingSelected ? data.Document.Splitter.GetLineNumberForOffset (data.SelectionRange.EndOffset) : data.Caret.Line;
+			int startLineNr = data.IsSomethingSelected ? data.Document.OffsetToLineNumber (data.SelectionRange.Offset) : data.Caret.Line;
+			int endLineNr   = data.IsSomethingSelected ? data.Document.OffsetToLineNumber (data.SelectionRange.EndOffset) : data.Caret.Line;
 			if (endLineNr < 0)
-				endLineNr = data.Document.Splitter.LineCount;
+				endLineNr = data.Document.LineCount;
 			data.Document.BeginAtomicUndo ();
 			foreach (LineSegment line in data.SelectedLines) {
-				data.Document.Buffer.Insert (line.Offset, new StringBuilder(TextEditorOptions.Options.IndentationString));
+				data.Document.Insert (line.Offset, new StringBuilder(TextEditorOptions.Options.IndentationString));
 			}
 			if (data.IsSomethingSelected)
 				data.SelectionStart.Column++;
@@ -602,7 +601,7 @@ namespace Mono.TextEditor
 				data.DeleteSelectedText ();
 			}
 			
-			data.Document.Buffer.Insert (data.Caret.Offset, new StringBuilder (TextEditorOptions.Options.IndentationString));
+			data.Document.Insert (data.Caret.Offset, new StringBuilder (TextEditorOptions.Options.IndentationString));
 			data.Caret.Column ++;
 		}
 	}
@@ -617,13 +616,13 @@ namespace Mono.TextEditor
 /*			if (TextEditorOptions.Options.AutoIndent) {
 				LineSegment line = data.Document.GetLine (data.Caret.Line);
 				for (int i = 0; i < line.EditableLength; i++) {
-					char ch = data.Document.Buffer.GetCharAt (line.Offset + i);
+					char ch = data.Document.GetCharAt (line.Offset + i);
 					if (!Char.IsWhiteSpace (ch))
 						break;
 					newLine.Append (ch);
 				}
 			}*/
-			data.Document.Buffer.Insert (data.Caret.Offset, newLine);
+			data.Document.Insert (data.Caret.Offset, newLine);
 			data.Document.CommitLineToEndUpdate (data.Caret.Line);
 			data.Caret.Column = 0;
 			data.Caret.Line++;
@@ -634,7 +633,7 @@ namespace Mono.TextEditor
 	{
 		protected virtual void RemoveCharBeforCaret (TextEditorData data)
 		{
-			data.Document.Buffer.Remove (data.Caret.Offset - 1, 1);
+			data.Document.Remove (data.Caret.Offset - 1, 1);
 			data.Caret.Column--;
 		}
 		
@@ -646,11 +645,11 @@ namespace Mono.TextEditor
 			}
 			if (data.Caret.Offset == 0)
 				return;
-			LineSegment line = data.Document.Splitter.Get (data.Caret.Line);
+			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			if (data.Caret.Offset == line.Offset) {
-				LineSegment lineAbove = data.Document.Splitter.Get (data.Caret.Line - 1);
+				LineSegment lineAbove = data.Document.GetLine (data.Caret.Line - 1);
 				data.Caret.Location = new DocumentLocation (data.Caret.Line - 1, lineAbove.EditableLength);
-				data.Document.Buffer.Remove (lineAbove.EndOffset - lineAbove.DelimiterLength, lineAbove.DelimiterLength);
+				data.Document.Remove (lineAbove.EndOffset - lineAbove.DelimiterLength, lineAbove.DelimiterLength);
 				data.Document.CommitLineToEndUpdate (data.Caret.Line);
 			} else {
 				RemoveCharBeforCaret (data);
@@ -666,18 +665,18 @@ namespace Mono.TextEditor
 				data.DeleteSelectedText ();
 				return;
 			}
-			if (data.Caret.Offset >= data.Document.Buffer.Length)
+			if (data.Caret.Offset >= data.Document.Length)
 				return;
-			LineSegment line = data.Document.Splitter.Get (data.Caret.Line);
+			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			if (data.Caret.Column == line.EditableLength) {
-				if (data.Caret.Line < data.Document.Splitter.LineCount) { 
-					data.Document.Buffer.Remove (line.EndOffset - line.DelimiterLength, line.DelimiterLength);
-					if (line.EndOffset == data.Document.Buffer.Length)
+				if (data.Caret.Line < data.Document.LineCount) { 
+					data.Document.Remove (line.EndOffset - line.DelimiterLength, line.DelimiterLength);
+					if (line.EndOffset == data.Document.Length)
 						line.DelimiterLength = 0;
 				}
 				data.Document.CommitLineToEndUpdate (data.Caret.Line);
 			} else {
-				data.Document.Buffer.Remove (data.Caret.Offset, 1); 
+				data.Document.Remove (data.Caret.Offset, 1); 
 				data.Document.CommitLineUpdate (data.Caret.Line);
 			}
 		}
@@ -751,8 +750,8 @@ namespace Mono.TextEditor
 			List<Gdk.Color> colorList = new List<Gdk.Color> ();
 
 			ISegment selection = data.SelectionRange;
-			LineSegment line    = data.Document.Splitter.GetByOffset (selection.Offset);
-			LineSegment endLine = data.Document.Splitter.GetByOffset (selection.EndOffset);
+			LineSegment line    = data.Document.GetLineByOffset (selection.Offset);
+			LineSegment endLine = data.Document.GetLineByOffset (selection.EndOffset);
 			
 			RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = line.Iter;
 			bool isItalic = false;
@@ -786,7 +785,7 @@ namespace Mono.TextEditor
 							appendSpace = true;
 						}
 						for (int i = start; i < end; i++) {
-							char ch = data.Document.Buffer.GetCharAt (i);
+							char ch = data.Document.GetCharAt (i);
 							if (appendSpace && ch != '\t') {
 								rtfText.Append (' ');
 								appendSpace = false;
@@ -870,7 +869,7 @@ namespace Mono.TextEditor
 		public void CopyData (TextEditorData data)
 		{
 			if (data.IsSomethingSelected) {
-				text = data.Document.Buffer.GetTextAt (data.SelectionRange);
+				text = data.Document.GetTextAt (data.SelectionRange);
 				rtf  = GenerateRtf (data);
 			} else {
 				text = rtf = null;
@@ -903,7 +902,7 @@ namespace Mono.TextEditor
 					data.DeleteSelectedText ();
 				}
 				StringBuilder sb = new StringBuilder (clipboard.WaitForText ());
-				data.Document.Buffer.Insert (data.Caret.Offset, sb);
+				data.Document.Insert (data.Caret.Offset, sb);
 				int oldLine = data.Caret.Line;
 				data.Caret.Offset += sb.Length;
 				data.Document.RequestUpdate (oldLine != data.Caret.Line ? (DocumentUpdateRequest)new LineToEndUpdate (oldLine) : (DocumentUpdateRequest)new LineUpdate (oldLine));
@@ -941,7 +940,7 @@ namespace Mono.TextEditor
 	{
 		int GetNextOffset (Document document, int lineNumber)
 		{
-			LineSegment startLine = document.Splitter.Get (lineNumber);
+			LineSegment startLine = document.GetLine (lineNumber);
 			RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = startLine.Iter;
 			while (iter.MoveNext ()) {
 				LineSegment line = iter.Current;
@@ -965,7 +964,7 @@ namespace Mono.TextEditor
 	{
 		int GetPrevOffset (Document document, int lineNumber)
 		{
-			LineSegment startLine = document.Splitter.Get (lineNumber);
+			LineSegment startLine = document.GetLine (lineNumber);
 			RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = startLine.Iter;
 			while (iter.MoveBack ()) {
 				LineSegment line = iter.Current;
@@ -979,7 +978,7 @@ namespace Mono.TextEditor
 		{
 			int offset = GetPrevOffset (data.Document, data.Caret.Line);
 			if (offset < 0)
-				offset = GetPrevOffset (data.Document, data.Document.Splitter.LineCount - 1);
+				offset = GetPrevOffset (data.Document, data.Document.LineCount - 1);
 			if (offset >= 0)
 				data.Caret.Offset = offset;
 		}
@@ -990,7 +989,7 @@ namespace Mono.TextEditor
 		public override void Run (TextEditorData data)
 		{
 			bool redraw = false;
-			foreach (LineSegment line in data.Document.Splitter.Lines) {
+			foreach (LineSegment line in data.Document.Lines) {
 				redraw |= line.IsBookmarked;
 				line.IsBookmarked = false;
 			}

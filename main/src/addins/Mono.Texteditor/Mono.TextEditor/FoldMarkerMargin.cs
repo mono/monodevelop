@@ -65,7 +65,7 @@ namespace Mono.TextEditor
 		{
 			int lineNumber = editor.Document.VisualToLogicalLine ((int)(y + editor.TextEditorData.VAdjustment.Value) / editor.LineHeight);
 			LineSegment lineSegment = null;
-			if (lineNumber < editor.Splitter.LineCount) {
+			if (lineNumber < editor.Document.LineCount) {
 				lineSegment = editor.Document.GetLine (lineNumber);
 				if (lineHover != lineSegment) {
 					lineHover = lineSegment;
@@ -170,7 +170,7 @@ namespace Mono.TextEditor
 			win.DrawRectangle (foldBgGC, true, drawArea);
 			DrawDashedVLine (win, x, drawArea.Top, drawArea.Bottom);
 			
-			if (line < editor.Splitter.LineCount) {
+			if (line < editor.Document.LineCount) {
 				LineSegment lineSegment = editor.Document.GetLine (line);
 				List<FoldSegment> startFoldings      = editor.Document.GetStartFoldings (lineSegment);
 				List<FoldSegment> containingFoldings = editor.Document.GetFoldingContaining (lineSegment);

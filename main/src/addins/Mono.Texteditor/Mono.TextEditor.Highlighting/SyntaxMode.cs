@@ -181,7 +181,7 @@ namespace Mono.TextEditor.Highlighting
 				bool isNoKeyword = false;
 //		bool isAfterSpan = false;
 				for (int i = offset; i < maxEnd; i++) {
-					char ch = doc.Buffer.GetCharAt (i);
+					char ch = doc.GetCharAt (i);
 					if (curSpan != null && !String.IsNullOrEmpty (curSpan.End)) {
 						if (curSpan.End[endOffset] == ch) {
 							endOffset++;
@@ -210,7 +210,7 @@ namespace Mono.TextEditor.Highlighting
 							Span span = spanPair.o1;
 							if (!String.IsNullOrEmpty(span.Constraint)) {
 								if (span.Constraint.Length == 2 && span.Constraint.StartsWith ("!") && i + 1 < maxEnd) 
-									if (doc.Buffer.GetCharAt (i + 1) == span.Constraint [1]) {
+									if (doc.GetCharAt (i + 1) == span.Constraint [1]) {
 										goto skip;
 									}
 							}

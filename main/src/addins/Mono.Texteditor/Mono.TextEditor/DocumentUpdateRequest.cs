@@ -59,10 +59,12 @@ namespace Mono.TextEditor
 	public class LineUpdate : DocumentUpdateRequest
 	{
 		int line;
+		
 		public LineUpdate (int line)
 		{
 			this.line = line;
 		}
+		
 		public override void Update (TextEditor editor)
 		{
 			editor.RedrawLine (line);
@@ -72,10 +74,12 @@ namespace Mono.TextEditor
 	public class LineToEndUpdate : DocumentUpdateRequest
 	{
 		int line;
+		
 		public LineToEndUpdate (int line)
 		{
 			this.line = line;
 		}
+		
 		public override void Update (TextEditor editor)
 		{
 			editor.RedrawFromLine (line);
@@ -96,6 +100,5 @@ namespace Mono.TextEditor
 		{
 			editor.RedrawLines (start, end);
 		}
-		
 	}
 }
