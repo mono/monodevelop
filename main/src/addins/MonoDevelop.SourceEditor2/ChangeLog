@@ -1,5 +1,10 @@
 2008-02-15  Mike Krüger <mkrueger@novell.com> 
 
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs: Ruler can
+	  now be set up to column 1024.
+
+2008-02-15  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,
 	  MonoDevelop.SourceEditor/ExtendibleTextEditor.cs,
 	  MonoDevelop.SourceEditor/SourceEditorView.cs,

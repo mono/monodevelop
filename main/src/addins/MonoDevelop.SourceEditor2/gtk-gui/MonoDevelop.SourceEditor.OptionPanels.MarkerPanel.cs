@@ -118,7 +118,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             w5.Position = 0;
             w5.Expand = false;
             // Container child hbox1.Gtk.Box+BoxChild
-            this.rulerColSpinbutton = new Gtk.SpinButton(0, 100, 1);
+            this.rulerColSpinbutton = new Gtk.SpinButton(0, 1024, 1);
             this.rulerColSpinbutton.CanFocus = true;
             this.rulerColSpinbutton.Name = "rulerColSpinbutton";
             this.rulerColSpinbutton.Adjustment.PageIncrement = 10;
