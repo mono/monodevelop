@@ -1,5 +1,9 @@
 2008-02-15  Geoff Norton  <gnorton@novell.com>
 
+	* MonoDevelop.Core/Runtime.cs: Only pinvoke libc on unix.
+
+2008-02-15  Geoff Norton  <gnorton@novell.com>
+
 	* MonoDevelop.Core.Execution/ProcessService.cs: Disable .NET remoting 
 	security on the TCP channel.
 

@@ -138,10 +138,12 @@ namespace MonoDevelop.Core
 		
 		public static void SetProcessName (string name)
 		{
-			try {
-				unixSetProcessName (name);
-			} catch (Exception e) {
-				LoggingService.LogError ("Error setting process name", e);
+			if (Environment.OSVersion.Platform == PlatformID.Unix) {
+				try {
+					unixSetProcessName (name);
+				} catch (Exception e) {
+					LoggingService.LogError ("Error setting process name", e);
+				}
 			}
 		}
 		
