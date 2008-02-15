@@ -342,7 +342,6 @@
     <File name="MonoDevelop.Ide.Dom.Parser/IParser.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Dom.Parser/ProjectDom.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Dom.Parser/ProjectParserService.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/AbstractDomItem.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Dom/AbstractMember.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Dom/AttributeTarget.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Dom/ClassType.cs" subtype="Code" buildaction="Compile" />
@@ -361,7 +360,6 @@
     <File name="MonoDevelop.Ide.Dom/Error.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Dom/IAttribute.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Dom/ICompilationUnit.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/IDomItem.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Dom/IDomVisitor.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Dom/IEvent.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Dom/IField.cs" subtype="Code" buildaction="Compile" />

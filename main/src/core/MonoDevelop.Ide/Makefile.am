@@ -104,7 +104,6 @@ FILES =  \
 	MonoDevelop.Ide.Dom.Parser/IParser.cs \
 	MonoDevelop.Ide.Dom.Parser/ProjectDom.cs \
 	MonoDevelop.Ide.Dom.Parser/ProjectParserService.cs \
-	MonoDevelop.Ide.Dom/AbstractDomItem.cs \
 	MonoDevelop.Ide.Dom/AbstractMember.cs \
 	MonoDevelop.Ide.Dom/AttributeTarget.cs \
 	MonoDevelop.Ide.Dom/ClassType.cs \
@@ -124,7 +123,6 @@ FILES =  \
 	MonoDevelop.Ide.Dom/Error.cs \
 	MonoDevelop.Ide.Dom/IAttribute.cs \
 	MonoDevelop.Ide.Dom/ICompilationUnit.cs \
-	MonoDevelop.Ide.Dom/IDomItem.cs \
 	MonoDevelop.Ide.Dom/IDomVisitor.cs \
 	MonoDevelop.Ide.Dom/IEvent.cs \
 	MonoDevelop.Ide.Dom/IField.cs \

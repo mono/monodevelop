@@ -31,8 +31,12 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Dom
 {
-	public interface IType : IDomItem
+	public interface IType : IMember
 	{
+		string Namespace {
+			get;
+		}
+		
 		object SourceProject {
 			get;
 		}

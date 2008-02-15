@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Dom
 {
-	public class DomType : AbstractDomItem, IType
+	public class DomType : AbstractMember, IType
 	{
 		protected object sourceProject;
 		protected List<ICompilationUnit> compilationUnits = new List<ICompilationUnit> ();
@@ -40,7 +40,19 @@ namespace MonoDevelop.Ide.Dom
 		protected List<IDomItem> members = new List<IDomItem> ();
 		protected List<IReturnType> implementedInterfaces = new List<IReturnType> ();
 		protected ClassType classType = ClassType.Unknown;
+		protected string namesp;
 		
+		public override string FullName {
+			get {
+				return !String.IsNullOrEmpty (namesp) ? namesp + "." + name : name;
+			}
+		}
+		
+		public string Namespace {
+			get {
+				return namesp;
+			}
+		}
 		
 		public object SourceProject {
 			get {

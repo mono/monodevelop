@@ -1,3 +1,10 @@
+2008-02-15  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Dom/IMember.cs, MonoDevelop.Ide.Dom/DomType.cs,
+	  MonoDevelop.Ide.Dom/IDomItem.cs, MonoDevelop.Ide.Dom/AbstractDomItem.cs,
+	  MonoDevelop.Ide.Dom/IType.cs, MonoDevelop.Ide.Dom/AbstractMember.cs:
+	  Refactored dom layer.
+
 2008-02-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Commands/TextEditorCommands.cs, MonoDevelop.Ide.addin.xml:
