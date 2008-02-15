@@ -1,5 +1,11 @@
 2008-02-15  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/Document.cs,
+	  Mono.TextEditor/FoldMarkerMargin.cs, Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor/GutterMargin.cs: Refactored text editor.
+
+2008-02-15  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditor.cs: Keypad control keys now work.
 
 2008-02-15  Mike Krüger <mkrueger@novell.com> 

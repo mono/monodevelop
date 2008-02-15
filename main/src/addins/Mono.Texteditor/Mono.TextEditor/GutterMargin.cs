@@ -53,11 +53,11 @@ namespace Mono.TextEditor
 		
 		void UpdateWidth ()
 		{
-			int currentLineCountLog10 = (int)System.Math.Log10 (editor.TextEditorData.Document.LineCount);
+			int currentLineCountLog10 = (int)System.Math.Log10 (editor.Document.LineCount);
 			if (oldLineCountLog10 < currentLineCountLog10) {
 				CalculateWidth ();
 				oldLineCountLog10 = currentLineCountLog10;
-				editor.TextEditorData.Document.CommitUpdateAll ();
+				editor.Document.CommitUpdateAll ();
 			}
 		}
 		
@@ -69,17 +69,17 @@ namespace Mono.TextEditor
 		
 		public override void MousePressed (int button, int x, int y, bool doubleClick, Gdk.ModifierType modifierState)
 		{
-			int lineNumber = editor.Document.VisualToLogicalLine ((int)(y + editor.TextEditorData.VAdjustment.Value) / editor.LineHeight);
+			int lineNumber = editor.Document.VisualToLogicalLine ((int)(y + editor.VAdjustment.Value) / editor.LineHeight);
 			if (lineNumber < editor.Document.LineCount) {
 				DocumentLocation loc = new DocumentLocation (lineNumber, 0);
 				if (loc != editor.Caret.Location) {
 					editor.Caret.Location = loc;
-				} else if (editor.TextEditorData.IsSomethingSelected) {
-					editor.TextEditorData.ClearSelection ();
+				} else if (editor.IsSomethingSelected) {
+					editor.ClearSelection ();
 					editor.QueueDraw ();
 				} else {
 					LineSegment line = editor.Document.GetLine (lineNumber);
-					editor.TextEditorData.SelectionRange = new Segment (line.Offset, line.EditableLength); 
+					editor.SelectionRange = new Segment (line.Offset, line.EditableLength); 
 					editor.QueueDraw ();
 				}
 			}

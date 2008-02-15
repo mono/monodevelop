@@ -265,12 +265,12 @@ namespace Mono.TextEditor
 			margins.Add (foldMarkerMargin);
 			margins.Add (textViewMargin);
 			ISegment oldSelection = null;
-			this.TextEditorData.SelectionChanged += delegate {
-				if (this.TextEditorData.IsSomethingSelected && this.TextEditorData.SelectionRange.Offset > 0)
-					new CopyAction ().CopyToPrimary (this.TextEditorData);
+			this.textEditorData.SelectionChanged += delegate {
+				if (IsSomethingSelected && SelectionRange.Offset > 0)
+					new CopyAction ().CopyToPrimary (this.textEditorData);
 				
 				// Handle redraw
-				ISegment selection = this.TextEditorData.SelectionRange;
+				ISegment selection = SelectionRange;
 				int startLine    = selection != null ? Document.OffsetToLineNumber (selection.Offset) : -1;
 				int endLine      = selection != null ? Document.OffsetToLineNumber (selection.EndOffset) : -1;
 				int oldStartLine = oldSelection != null ? Document.OffsetToLineNumber (oldSelection.Offset) : -1;
@@ -302,6 +302,7 @@ namespace Mono.TextEditor
 				}
 				oldSelection = selection;
 				this.RedrawLines (System.Math.Min (from, to), System.Math.Max (from, to));
+				OnSelectionChanged (EventArgs.Empty);
 			};
 			
 			Document.DocumentUpdated += DocumentUpdatedHandler;
@@ -325,7 +326,7 @@ namespace Mono.TextEditor
 		
 		protected virtual void OptionsChanged (object sender, EventArgs args)
 		{
-			this.TextEditorData.ColorStyle = TextEditorOptions.Options.GetColorStyle (this);
+			this.textEditorData.ColorStyle = TextEditorOptions.Options.GetColorStyle (this);
 			
 			bookmarkMargin.IsVisible   = TextEditorOptions.Options.ShowIconMargin;
 			gutterMargin.IsVisible     = TextEditorOptions.Options.ShowLineNumberMargin;
@@ -547,7 +548,7 @@ namespace Mono.TextEditor
 					selection.Offset += selection_data.Text.Length;
 				Document.Insert (offset, selection_data.Text);
 				Caret.Offset = offset + selection_data.Text.Length;
-				this.TextEditorData.SelectionRange = new Segment (offset, selection_data.Text.Length);
+				SelectionRange = new Segment (offset, selection_data.Text.Length);
 				dragOver  = false;
 				context   = null;
 			}
@@ -590,9 +591,9 @@ namespace Mono.TextEditor
 			
 			if (textViewMargin.inDrag && margin == this.textViewMargin) {
 				dragContents = new CopyAction ();
-				dragContents.CopyData (this.TextEditorData);
+				dragContents.CopyData (textEditorData);
 				Gtk.Drag.Begin (this, CopyAction.TargetList, DragAction.Move | DragAction.Copy, 1, e);
-				selection = this.TextEditorData.SelectionRange;
+				selection = SelectionRange;
 				textViewMargin.inDrag = false;
 			} else if (margin != null) {
 				margin.MouseHover ((int)(e.X - startPos), (int)e.Y, mousePressed);
@@ -610,21 +611,6 @@ namespace Mono.TextEditor
 			return base.OnLeaveNotifyEvent (e); 
 		}
 
-		public Mono.TextEditor.Highlighting.Style ColorStyle {
-			get {
-				return this.textEditorData.ColorStyle;
-			}
-		}
-
-		public TextEditorData TextEditorData {
-			get {
-				return textEditorData;
-			}
-			set {
-				textEditorData = value;
-			}
-		}
-		
 		public int LineHeight {
 			get {
 				return this.textViewMargin.LineHeight;
@@ -749,5 +735,86 @@ namespace Mono.TextEditor
 //			                     e.Area.Width, e.Area.Height);
 			return true;
 		}
+		
+		#region TextEditorData functions
+		public Mono.TextEditor.Highlighting.Style ColorStyle {
+			get {
+				return this.textEditorData.ColorStyle;
+			}
+		}
+		
+		public bool IsSomethingSelected {
+			get {
+				return this.textEditorData.IsSomethingSelected;
+			}
+		}
+		
+		public ISegment SelectionRange {
+			get {
+				return this.textEditorData.SelectionRange;
+			}
+			set {
+				this.textEditorData.SelectionRange = value;
+			}
+		}
+		
+		public string SelectedText {
+			get {
+				return this.textEditorData.SelectedText;
+			}
+		}
+		
+		public IEnumerable<LineSegment> SelectedLines {
+			get {
+				return this.textEditorData.SelectedLines;
+			}
+		}
+		
+		public Adjustment HAdjustment {
+			get {
+				return this.textEditorData.HAdjustment;
+			}
+		}
+		
+		public Adjustment VAdjustment {
+			get {
+				return this.textEditorData.VAdjustment;
+			}
+		}
+		
+		public void ClearSelection ()
+		{
+			this.textEditorData.ClearSelection ();
+		}
+		
+		public void DeleteSelectedText ()
+		{
+			this.textEditorData.DeleteSelectedText ();
+		}
+		
+		public void RunEditAction (EditAction action)
+		{
+			action.Run (this.textEditorData);
+		}
+		
+		/// <summary>
+		/// Use with care.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="TextEditorData"/>
+		/// </returns>
+		public TextEditorData GetTextEditorData ()
+		{
+			return this.textEditorData;
+		}
+		
+		public event EventHandler SelectionChanged;
+		protected virtual void OnSelectionChanged (EventArgs args)
+		{
+			if (SelectionChanged != null) 
+				SelectionChanged (this, args);
+		}
+		
+		#endregion
 	}
 }

@@ -63,7 +63,7 @@ namespace Mono.TextEditor
 		
 		public override void MouseHover (int x, int y, bool buttonPressed)
 		{
-			int lineNumber = editor.Document.VisualToLogicalLine ((int)(y + editor.TextEditorData.VAdjustment.Value) / editor.LineHeight);
+			int lineNumber = editor.Document.VisualToLogicalLine ((int)(y + editor.VAdjustment.Value) / editor.LineHeight);
 			LineSegment lineSegment = null;
 			if (lineNumber < editor.Document.LineCount) {
 				lineSegment = editor.Document.GetLine (lineNumber);

@@ -2,6 +2,10 @@
   <object type="Mono.TextEditor.TextEditor" palette-category="Mono.TextEditor" allow-children="false" base-type="Gtk.DrawingArea">
     <itemgroups>
     </itemgroups>
-    <signals />
+    <signals>
+      <itemgroup label="TextEditor Signals">
+        <signal name="SelectionChanged" />
+      </itemgroup>
+    </signals>
   </object>
 </objects>

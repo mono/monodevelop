@@ -154,6 +154,11 @@ namespace Mono.TextEditor
 				Mono.TextEditor.Highlighting.SyntaxModeService.StartUpdate (this, this.syntaxMode, offset, offset + count);
 		}
 		
+		public string GetTextBetween (int startOffset, int endOffset)
+		{
+			return buffer.GetTextAt (startOffset, endOffset - startOffset);
+		}
+		
 		public override string GetTextAt (int offset, int count)
 		{
 			return buffer.GetTextAt (offset, count);
