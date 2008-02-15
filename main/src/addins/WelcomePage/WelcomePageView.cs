@@ -116,12 +116,14 @@ namespace MonoDevelop.WelcomePage
 				if (response.StatusCode ==  HttpStatusCode.OK) {
 					Stream responseStream = response.GetResponseStream ();
 					using (FileStream fs = File.Create (localCachedNewsFile)) {
+						long avail = response.ContentLength;
 						int position = 0;
 						int readBytes = -1;
 						byte[] buffer = new byte[2048];
 						while (readBytes != 0) {							
-							readBytes = responseStream.Read (buffer, position, 2048);
+							readBytes = responseStream.Read (buffer, position, (int) (avail > 2048 ? 2048 : avail));
 							position += readBytes;
+							avail -= readBytes;
 							fs.Write (buffer, 0, readBytes);
 						}
 					}
