@@ -1,5 +1,11 @@
 2008-02-15  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/Document.cs,
+	  Mono.TextEditor/IBuffer.cs, Mono.TextEditor/GapBuffer.cs,
+	  Mono.TextEditor/GutterMargin.cs: Fixed gutter bug & refactored.
+
+2008-02-15  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextViewMargin.cs,
 	  Mono.TextEditor/Document.cs, Mono.TextEditor/LineSplitter.cs,
 	  Mono.TextEditor/TextUtil.cs, Mono.TextEditor/FoldMarkerMargin.cs,

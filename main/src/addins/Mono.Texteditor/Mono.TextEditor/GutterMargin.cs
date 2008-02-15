@@ -36,7 +36,7 @@ namespace Mono.TextEditor
 		TextEditor editor;
 		Pango.Layout layout;
 		int width;
-		int oldLineCountLog10 = 100;
+		int oldLineCountLog10 = 1;
 		
 		public GutterMargin (TextEditor editor)
 		{
@@ -46,10 +46,9 @@ namespace Mono.TextEditor
 		
 		void CalculateWidth ()
 		{
-			layout.SetText (editor.Document.LineCount.ToString ());
+			layout.SetText (editor.Document.LineCount.ToString () + "_");
 			int height;
 			layout.GetPixelSize (out this.width, out height);
-			this.width += 5;
 		}
 		
 		void UpdateWidth ()
@@ -57,8 +56,8 @@ namespace Mono.TextEditor
 			int currentLineCountLog10 = (int)System.Math.Log10 (editor.TextEditorData.Document.LineCount);
 			if (oldLineCountLog10 < currentLineCountLog10) {
 				CalculateWidth ();
-				editor.TextEditorData.Document.CommitUpdateAll ();
 				oldLineCountLog10 = currentLineCountLog10;
+				editor.TextEditorData.Document.CommitUpdateAll ();
 			}
 		}
 		

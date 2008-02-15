@@ -53,10 +53,8 @@ namespace Mono.TextEditor
 				return GetTextAt (0, Length);
 			}
 			set {
-				int oldLength = buffer.Length;
 				buffer = value != null ? value.ToCharArray () : new char[0];
 				gapBegin = gapEnd = gapLength = 0;
-				this.OnTextReplaced (new ReplaceEventArgs (0, oldLength, new StringBuilder (value)));
 			}
 		}
 		
@@ -90,7 +88,6 @@ namespace Mono.TextEditor
 //			Debug.Assert (count >= 0);
 //			Debug.Assert (0 <= offset && offset + count <= Length);
 			
-			OnTextReplacing (new ReplaceEventArgs (offset, count, text));
 			if (text != null) { 
 				PlaceGap (offset, text.Length - count);
 				text.CopyTo (0, buffer, offset, text.Length);
@@ -102,7 +99,6 @@ namespace Mono.TextEditor
 			gapLength = gapEnd - gapBegin;
 			if (gapLength > maxGapLength) 
 				CreateBuffer (gapBegin, minGapLength);
-			OnTextReplaced (new ReplaceEventArgs (offset, count, text));
 		}
 		
 		void PlaceGap (int newOffset, int minLength)

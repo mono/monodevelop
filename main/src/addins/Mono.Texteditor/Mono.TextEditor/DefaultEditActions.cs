@@ -610,7 +610,7 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
-			StringBuilder newLine = new StringBuilder (data.Document.Eol);
+			StringBuilder newLine = new StringBuilder (data.Document.EolMarker);
 			
 			
 /*			if (TextEditorOptions.Options.AutoIndent) {

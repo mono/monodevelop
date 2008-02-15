@@ -48,9 +48,6 @@ namespace Mono.TextEditor
 		string GetTextAt (int offset, int count);
 		string GetTextAt (ISegment segment);
 		char GetCharAt (int offset);
-		
-		event EventHandler<ReplaceEventArgs> TextReplacing;
-		event EventHandler<ReplaceEventArgs> TextReplaced;
 	}
 	
 	public abstract class AbstractBuffer : IBuffer
@@ -83,19 +80,5 @@ namespace Mono.TextEditor
 		{
 			return GetTextAt (segment.Offset, segment.Length);
 		}
-		
-		protected virtual void OnTextReplaced (ReplaceEventArgs args)
-		{
-			if (TextReplaced != null)
-				TextReplaced (this, args);
-		}
-		public event EventHandler<ReplaceEventArgs> TextReplaced;
-		
-		protected virtual void OnTextReplacing (ReplaceEventArgs args)
-		{
-			if (TextReplacing != null)
-				TextReplacing (this, args);
-		}
-		public event EventHandler<ReplaceEventArgs> TextReplacing;
 	}
 }

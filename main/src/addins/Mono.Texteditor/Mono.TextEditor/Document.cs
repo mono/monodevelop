@@ -44,7 +44,12 @@ namespace Mono.TextEditor
 		string mimeType;
 		string fileName;
 		
-		public string Eol {
+		/// <value>
+		/// The eol mark used in this document - it's taken from the first line in the document,
+		/// if no eol mark is found it's using the default (Environment.NewLine).
+		/// The value is saved, even when all lines are deleted the eol marker will still be the old eol marker.
+		/// </value>
+		public string EolMarker {
 			get {
 				if (eol == null && splitter.LineCount > 0) {
 					LineSegment line = splitter.Get (0);
@@ -86,25 +91,7 @@ namespace Mono.TextEditor
 		public Document()
 		{
 			buffer = new GapBuffer ();
-			buffer.TextReplacing += delegate(object sender, ReplaceEventArgs args) {
-				if (!isInUndo) {
-					UndoOperation operation = new UndoOperation (args, buffer.GetTextAt (args.Offset, args.Count));
-					if (currentAtomicOperation != null) {
-						currentAtomicOperation.Add (operation);
-					} else {
-						undoStack.Push (operation);
-					}
-					redoStack.Clear ();
-				}
-			};
-			
 			splitter = new LineSplitter (buffer);
-			
-			buffer.TextReplaced +=  delegate(object sender, ReplaceEventArgs args) {
-				splitter.TextReplaced (sender, args);
-				if (this.syntaxMode != null)
-					Mono.TextEditor.Highlighting.SyntaxModeService.StartUpdate (this, this.syntaxMode, args.Offset, args.Offset + args.Count);
-			};
 		}
 		
 		#region Buffer implementation
@@ -120,14 +107,51 @@ namespace Mono.TextEditor
 			}
 			set {
 				splitter.Clear ();
+				int oldLength = Length;
+				ReplaceEventArgs args = new ReplaceEventArgs (0, oldLength, new StringBuilder (value));
+				this.OnTextReplacing (args);
 				this.buffer.Text = value;
+				splitter.TextReplaced (this, args);
+				if (this.syntaxMode != null)
+					Mono.TextEditor.Highlighting.SyntaxModeService.StartUpdate (this, this.syntaxMode, 0, value.Length);
 				Mono.TextEditor.Highlighting.SyntaxModeService.WaitForUpdate ();
+				this.OnTextReplaced (args);
 			}
+		}
+		
+		public void Insert (int offset, string value)
+		{
+			Insert (offset, new StringBuilder (value));
+		}
+		
+		public void Replace (int offset, int count, string value)
+		{
+			Replace (offset, count, new StringBuilder (value));
 		}
 		
 		public override void Replace (int offset, int count, StringBuilder value)
 		{
+//			Debug.Assert (count >= 0);
+//			Debug.Assert (0 <= offset && offset + count <= Length);
+			
+			ReplaceEventArgs args = new ReplaceEventArgs (offset, count, value);
+			OnTextReplacing (args);
+			
+			if (!isInUndo) {
+				UndoOperation operation = new UndoOperation (args, GetTextAt (offset, count));
+				if (currentAtomicOperation != null) {
+					currentAtomicOperation.Add (operation);
+				} else {
+					undoStack.Push (operation);
+				}
+				redoStack.Clear ();
+			}
+			
 			buffer.Replace (offset, count, value);
+			OnTextReplaced (args);
+			splitter.TextReplaced (this, args);
+			if (this.syntaxMode != null)
+				Mono.TextEditor.Highlighting.SyntaxModeService.StartUpdate (this, this.syntaxMode, offset, offset + count);
 		}
 		
 		public override string GetTextAt (int offset, int count)
@@ -139,6 +163,21 @@ namespace Mono.TextEditor
 		{
 			return buffer.GetCharAt (offset);
 		}
+		
+		protected virtual void OnTextReplaced (ReplaceEventArgs args)
+		{
+			if (TextReplaced != null)
+				TextReplaced (this, args);
+		}
+		public event EventHandler<ReplaceEventArgs> TextReplaced;
+		
+		protected virtual void OnTextReplacing (ReplaceEventArgs args)
+		{
+			if (TextReplacing != null)
+				TextReplacing (this, args);
+		}
+		public event EventHandler<ReplaceEventArgs> TextReplacing;
+		
 		#endregion
 		
 		#region Line Splitter operations
