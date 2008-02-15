@@ -66,10 +66,10 @@ namespace MonoDevelop.AssemblyBrowser.Dom
 			members = null;
 		}
 		
-		public override IEnumerable<IDomItem> Members {
+		public override IEnumerable<IMember> Members {
 			get {
 				if (base.members == null) {
-					base.members = new List<IDomItem> ();
+					base.members = new List<IMember> ();
 					foreach (FieldDefinition fieldDefinition in typeDefinition.Fields)
 						base.members.Add (new DomCecilField (fieldDefinition));
 					foreach (MethodDefinition methodDefinition in typeDefinition.Methods)

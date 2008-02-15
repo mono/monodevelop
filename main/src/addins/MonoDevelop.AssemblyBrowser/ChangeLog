@@ -1,3 +1,7 @@
+2008-02-15  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.AssemblyBrowser.Dom/DomCecilType.cs: Changed dom.
+
 2008-02-07  Zach Lute <zach.lute@gmail.com> 
 
 	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: Fix to use a full
