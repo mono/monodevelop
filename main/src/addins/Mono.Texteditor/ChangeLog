@@ -1,5 +1,10 @@
 2008-02-15  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Mono.TextEditor/TextViewMargin.cs: Remove access to properties service
+	  from performance critical methods. Greatly improves performance.
+
+2008-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.TextEditor/TextEditor.cs: Added method for running an editor action.
 
 2008-02-15  Lluis Sanchez Gual <lluis@novell.com> 

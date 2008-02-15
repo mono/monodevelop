@@ -55,6 +55,15 @@ namespace Mono.TextEditor
 		int lineHeight = 16;
 		int highlightBracketOffset = -1;
 		
+		bool enableSyntaxHighlighting;
+		bool highlightMatchingBracket;
+		bool showSpaces;
+		bool showTabs;
+		bool showRuler;
+		bool showInvalidLines;
+		bool showEolMarkers;
+		int tabSize;
+		
 		public int LineHeight {
 			get {
 				return lineHeight;
@@ -163,6 +172,15 @@ namespace Mono.TextEditor
 			layout.FontDescription = TextEditorOptions.Options.Font;
 			layout.SetText ("H");
 			layout.GetPixelSize (out this.charWidth, out this.lineHeight);
+			
+			enableSyntaxHighlighting = TextEditorOptions.Options.EnableSyntaxHighlighting;
+			highlightMatchingBracket = TextEditorOptions.Options.HighlightMatchingBracket;
+			showSpaces = TextEditorOptions.Options.ShowSpaces;
+			showTabs = TextEditorOptions.Options.ShowTabs;
+			tabSize = TextEditorOptions.Options.TabSize;
+			showRuler = TextEditorOptions.Options.ShowRuler;
+			showInvalidLines = TextEditorOptions.Options.ShowInvalidLines;
+			showEolMarkers = TextEditorOptions.Options.ShowEolMarkers;
 		}
 		
 		void DisposeGCs ()
@@ -236,7 +254,7 @@ namespace Mono.TextEditor
 		
 		void DrawLineText (Gdk.Drawable win, LineSegment line, int offset, int length, ref int xPos, int y)
 		{
-			SyntaxMode mode = Document.SyntaxMode != null && TextEditorOptions.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
+			SyntaxMode mode = Document.SyntaxMode != null && enableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
 			Chunk[] chunks = mode.GetChunks (Document, TextEditorData.ColorStyle, line, offset, length);
 			int selectionStart = TextEditorData.SelectionStart != null ? TextEditorData.SelectionStart.Segment.Offset + TextEditorData.SelectionStart.Column : -1;
 			int selectionEnd = TextEditorData.SelectionEnd != null ? TextEditorData.SelectionEnd.Segment.Offset + TextEditorData.SelectionEnd.Column : -1;
@@ -307,7 +325,7 @@ namespace Mono.TextEditor
 			
 			for (int offset = startOffset; offset < endOffset; offset++) {
 				char ch = Document.Buffer.GetCharAt (offset);
-				if (TextEditorOptions.Options.HighlightMatchingBracket && offset == this.highlightBracketOffset) {
+				if (highlightMatchingBracket && offset == this.highlightBracketOffset) {
 					OutputWordBuilder (win, line, selected, style, ref visibleColumn, ref xPos, y, offset);
 					
 					Gdk.Rectangle bracketMatch = new Gdk.Rectangle (xPos, y, charWidth - 1, LineHeight - 1);
@@ -332,10 +350,10 @@ namespace Mono.TextEditor
 					OutputWordBuilder (win, line, selected, style, ref visibleColumn, ref xPos, y, offset);
 					DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, charWidth, LineHeight), selected ? ColorStyle.SelectedBg : ColorStyle.Background);
 					
-					if (TextEditorOptions.Options.ShowSpaces) 
+					if (showSpaces) 
 						DrawSpaceMarker (win, selected, xPos, y);
 					if (offset == caretOffset) 
-						DrawCaret (win, TextEditorOptions.Options.ShowSpaces ? spaceMarkerChar : ' ', xPos, y);
+						DrawCaret (win, showSpaces ? spaceMarkerChar : ' ', xPos, y);
 					
 					if (line.Markers != null) {
 						foreach (TextMarker marker in line.Markers) {
@@ -352,10 +370,10 @@ namespace Mono.TextEditor
 					visibleColumn = newColumn;
 					
 					DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, delta, LineHeight), selected ? ColorStyle.SelectedBg : ColorStyle.Background);
-					if (TextEditorOptions.Options.ShowTabs) 
+					if (showTabs) 
 						DrawTabMarker (win, selected, xPos, y);
 					if (offset == caretOffset) 
-						DrawCaret (win, TextEditorOptions.Options.ShowSpaces ? tabMarkerChar : ' ', xPos, y);
+						DrawCaret (win, showSpaces ? tabMarkerChar : ' ', xPos, y);
 					if (line.Markers != null) {
 						foreach (TextMarker marker in line.Markers) {
 							marker.Draw (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + delta);
@@ -525,17 +543,17 @@ namespace Mono.TextEditor
 			return lineXPos;
 		}
 		
-		static int GetNextTabstop (int currentColumn)
+		int GetNextTabstop (int currentColumn)
 		{
-			int result = currentColumn + TextEditorOptions.Options.TabSize;
-			return (result / TextEditorOptions.Options.TabSize) * TextEditorOptions.Options.TabSize;
+			int result = currentColumn + tabSize;
+			return (result / tabSize) * tabSize;
 		}
 		
 		int rulerX = 0;
 		
 		public int GetWidth (string text)
 		{
-			text = text.Replace ("\t", new string (' ', TextEditorOptions.Options.TabSize));
+			text = text.Replace ("\t", new string (' ', tabSize));
 			layout.SetText (text);
 			int width, height;
 			layout.GetPixelSize (out width, out height);
@@ -552,7 +570,7 @@ namespace Mono.TextEditor
 		void DrawRectangleWithRuler (Gdk.Drawable win, int x, Gdk.Rectangle area, Gdk.Color color)
 		{
 			gc.RgbFgColor = color;
-			if (TextEditorOptions.Options.ShowRuler) {
+			if (showRuler) {
 				int divider = System.Math.Max (area.Left, System.Math.Min (x + rulerX, area.Right));
 				if (divider < area.Right) {
 					win.DrawRectangle (gc, true, new Rectangle (area.X, area.Y, divider - area.X, area.Height));
@@ -576,7 +594,7 @@ namespace Mono.TextEditor
 			int width, height;
 			
 			if (line == null) {
-				if (TextEditorOptions.Options.ShowInvalidLines) {
+				if (showInvalidLines) {
 					DrawRectangleWithRuler (win, x, lineArea, this.ColorStyle.Background);
 					DrawInvalidLineMarker (win, x, y);
 				}
@@ -642,16 +660,16 @@ namespace Mono.TextEditor
 			lineArea.Width = textEditor.Allocation.Width - xPos;
 			DrawRectangleWithRuler (win, x, lineArea, isEolSelected ? this.ColorStyle.SelectedBg : this.ColorStyle.Background);
 			
-			if (TextEditorOptions.Options.ShowEolMarkers)
+			if (showEolMarkers)
 				DrawEolMarker (win, isEolSelected, xPos, y);
 			
-			if (TextEditorOptions.Options.ShowRuler) {
+			if (showRuler) {
 				gc.RgbFgColor = ColorStyle.Ruler;
 				win.DrawLine (gc, x + rulerX, y, x + rulerX, y + LineHeight); 
 			}
 			
 			if (caretOffset == line.Offset + line.EditableLength)
-				DrawCaret (win, TextEditorOptions.Options.ShowEolMarkers ? eolMarkerChar : ' ', xPos, y);
+				DrawCaret (win, showEolMarkers ? eolMarkerChar : ' ', xPos, y);
 		}
 		
 		public override void MouseLeft ()
