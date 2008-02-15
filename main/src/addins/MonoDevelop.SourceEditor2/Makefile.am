@@ -1,25 +1,7 @@
 DLLNAME = MonoDevelop.SourceEditor2.dll
 ASSEMBLY = $(top_builddir)/build/AddIns/$(DLLNAME)
 
-FILES = \
-	MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs \
-	MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs \
-	MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs \
-	MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs \
-	MonoDevelop.SourceEditor/EditActions.cs \
-	MonoDevelop.SourceEditor/ExtendibleTextEditor.cs \
-	MonoDevelop.SourceEditor/LanguageItemWindow.cs \
-	MonoDevelop.SourceEditor/SourceEditorDisplayBinding.cs \
-	MonoDevelop.SourceEditor/SourceEditorOptions.cs \
-	MonoDevelop.SourceEditor/SourceEditorView.cs \
-	MonoDevelop.SourceEditor/SourceEditorWidget.cs
-
-RES =  \
-	gtk-gui/gui.stetic \
-	gtk-gui/objects.xml \
-	MonoDevelop.SourceEditor.addin.xml  
-
-GENERATED_FILES =  \
+FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs \
@@ -42,6 +24,13 @@ GENERATED_FILES =  \
 	MonoDevelop.SourceEditor/SourceEditorView.cs \
 	MonoDevelop.SourceEditor/SourceEditorWidget.cs 
 
+GENERATED_FILES = 
+
+RES =  \
+	gtk-gui/gui.stetic \
+	gtk-gui/objects.xml \
+	MonoDevelop.SourceEditor.addin.xml  
+
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GNOME_SHARP_LIBS) \
@@ -60,14 +49,14 @@ REFS =  \
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns
 
-  all: $(ASSEMBLY)
+all: $(ASSEMBLY)
 
 $(ASSEMBLY) : $(build_sources) $(build_resources)
 	mkdir -p $(top_builddir)/build/bin
 	$(CSC) $(CSC_FLAGS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -t:library $(REFS)
 
-  assemblydir = $(MD_ADDIN_DIR)
-  assembly_DATA = $(ASSEMBLY)
+assemblydir = $(MD_ADDIN_DIR)
+assembly_DATA = $(ASSEMBLY)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 
