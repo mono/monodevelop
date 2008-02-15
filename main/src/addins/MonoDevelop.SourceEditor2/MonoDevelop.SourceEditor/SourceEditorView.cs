@@ -29,6 +29,9 @@ using System.IO;
 using System.Text;
 
 using Gtk;
+#if GNOME_PRINT
+using Gnome;
+#endif
 
 using Mono.TextEditor;
 using MonoDevelop.Ide.Gui;
@@ -42,6 +45,9 @@ using MonoDevelop.Ide.Gui.Search;
 namespace MonoDevelop.SourceEditor
 {	
 	public class SourceEditorView : AbstractViewContent, IPositionable, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, ICompletionWidget, IDocumentInformation, ICodeStyleOperations, ISplittable, IFoldable
+#if GNOME_PRINT
+		, IPrintable
+#endif
 	{
 		SourceEditorWidget widget;
 		bool isDisposed = false;
