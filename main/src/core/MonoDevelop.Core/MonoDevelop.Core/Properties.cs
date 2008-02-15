@@ -44,6 +44,7 @@ namespace MonoDevelop.Core
 	{
 		Dictionary<string, object> properties    = new Dictionary<string, object> ();
 		Dictionary<string, object> defaultValues = new Dictionary<string, object> ();
+		Dictionary<Type, TypeConverter> cachedConverters = new Dictionary<Type, TypeConverter> ();
 		
 		public ICollection<string> Keys {
 			get {
@@ -60,7 +61,8 @@ namespace MonoDevelop.Core
 			if (o is T) 
 				return (T)o;
 			
-			TypeConverter converter = TypeDescriptor.GetConverter (typeof(T));
+			TypeConverter converter = GetConverter (typeof(T));
+			
 			if (o is string) {
 				try {
 					return (T)converter.ConvertFromInvariantString (o.ToString ());
@@ -80,8 +82,18 @@ namespace MonoDevelop.Core
 		{
 			if (o == null)
 				return null;
-			TypeConverter converter = TypeDescriptor.GetConverter (o.GetType ());
+			TypeConverter converter = GetConverter (o.GetType ());
 			return converter.ConvertToInvariantString (o);
+		}
+		
+		TypeConverter GetConverter (Type type)
+		{
+			TypeConverter converter;
+			if (!cachedConverters.TryGetValue (type, out converter)) {
+				converter = TypeDescriptor.GetConverter (type);
+				cachedConverters [type] = converter;
+			}
+			return converter;
 		}
 		
 		public T Get<T> (string property, T defaultValue)
