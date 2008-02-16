@@ -121,7 +121,7 @@ namespace MonoDevelop.Ide.Dom.Output
 		}
 		#endregion			
 		
-		protected string Format (string str)
+		public static string Format (string str)
 		{
 			if (String.IsNullOrEmpty (str))
 				return "";
