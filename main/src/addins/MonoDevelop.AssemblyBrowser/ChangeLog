@@ -1,3 +1,9 @@
+2008-02-16  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.AssemblyBrowser/Decompiler.cs,
+	  MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs: Added basic c#
+	  decompiler (Very BASIC).
+
 2008-02-15  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.AssemblyBrowser.Dom/DomCecilType.cs: Changed dom.
