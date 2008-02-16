@@ -271,7 +271,7 @@
 				_label = "_Redo" 
 				icon = "gtk-redo" 
 				_description = "Redo last undone action" 
-				shortcut = "Control|Y" />
+				shortcut = "Control|Shift|Z" />
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.SelectAll" 
 				_label = "Select _All" 
 				description = "Select all text" 
@@ -740,7 +740,7 @@
 				defaultHandler = "MonoDevelop.Ide.Commands.ClearAllBreakpointsHandler"
 				_label = "Clear All Breakpoints" />
 		</Category>
-
+		
 		<!-- SearchCommands -->
 		<Category _name = "Search" id = "Serach">
 		
@@ -749,39 +749,42 @@
 				icon = "gtk-find" 
 				_description = "Find" 
 				shortcut = "Control|F" />
-		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindNext"
-				_label = "Find _Next" 
-				icon = "md-find-next-icon" 
-				_description = "Find next" 
-				shortcut = "F3" />
-		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindNextSelection"
-				_label = "Find Next Selection" 
-				description = "Find next selection" 
-				shortcut = "Control|F3" />
-		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindPrevious"
-				_label = "Find _Previous" 
-				description = "Find previous" 
-				shortcut = "Shift|F3" />
-		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindPreviousSelection"
-				_label = "Find _Previous Selection" 
-				description = "Find previous selection" 
-				shortcut = "Shift|Control|F3" />
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.Replace"
 				_label = "_Replace..." 
 				icon = "gtk-find-and-replace" 
 				_description = "Replace" 
 				shortcut = "Control|H" />
+
+		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindNext"
+				_label = "Find _Next" 
+				icon = "md-find-next-icon" 
+				_description = "Find next" 
+				shortcut = "Control|G" />
+		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindPrevious"
+				_label = "Find _Previous" 
+				description = "Find previous" 
+				shortcut = "Control|Shift|G" />
+
+		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindNextSelection"
+				_label = "Find Next Selection" 
+				description = "Find next selection" 
+				shortcut = "Control|F3" />
+		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindPreviousSelection"
+				_label = "Find _Previous Selection" 
+				description = "Find previous selection" 
+				shortcut = "Shift|Control|F3" />
+
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles"
 				defaultHandler = "MonoDevelop.Ide.Commands.FindInFilesHandler"
 				_label = "F_ind in Files..." 
 				icon = "md-find-in-files" 
-				description = "Find in files"
-				shortcut = "Shift|Control|F" />
+				description = "Find in files" />
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.ReplaceInFiles"
 				defaultHandler = "MonoDevelop.Ide.Commands.ReplaceInFilesHandler"
 				_label = "R_eplace in Files..." 
 				icon = "md-replace-in-files" 
 				description = "Replace in files" />
+		
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType"		
 		        defaultHandler = "MonoDevelop.Ide.Commands.GotoTypeHandler"
 				_label = "Go to Type..." 
@@ -808,7 +811,7 @@
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoLineNumber"
 				_label = "_Go to Line..." 
 				description = "Go to line"
-				shortcut = "Control|G"
+				shortcut = "Control|I"
 				icon = "gtk-jump-to" />
 		</Category>
 				
