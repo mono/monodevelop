@@ -108,7 +108,7 @@ namespace MonoDevelop.SourceEditor
 					line = entryLineNumber.Text.Trim ().StartsWith ("-") ? int.MinValue : int.MaxValue;
 				}
 				bool isRelativeJump = entryLineNumber.Text.Trim ().StartsWith ("-") || entryLineNumber.Text.Trim ().StartsWith ("+");
-				return isRelativeJump ? this.caretSave.Line + line - System.Math.Sign (line) : line - 1;
+				return isRelativeJump ? this.caretSave.Line + line : line - 1;
 			}
 		}
 		

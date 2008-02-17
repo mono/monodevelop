@@ -1,5 +1,10 @@
 2008-02-17  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.SourceEditor/GotoLineNumberWidget.cs: Fixed goto line number
+	  relative jump.
+
+2008-02-17  Mike Krüger <mkrueger@novell.com> 
+
 	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs,
 	  MonoDevelop.SourceEditor/SourceEditorWidget.cs,
 	  MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs,
