@@ -1,5 +1,10 @@
 2008-02-17  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextUtil.cs, Mono.TextEditor/TextEditor.cs: Worked on
+	  search options.
+
+2008-02-17  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextViewMargin.cs: Caret line highlighting works again.
 
 2008-02-17  Mike Krüger <mkrueger@novell.com> 

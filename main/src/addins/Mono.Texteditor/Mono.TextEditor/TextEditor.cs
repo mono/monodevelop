@@ -870,7 +870,7 @@ namespace Mono.TextEditor
 			return false;
 		}
 		
-		void CompilePattern ()
+		public void CompilePattern ()
 		{
 			compiledPattern = SearchOptions.IsCaseSensitive ? SearchPattern : SearchPattern.ToUpper ();
 		}

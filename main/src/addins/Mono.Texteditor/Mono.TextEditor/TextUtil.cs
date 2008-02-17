@@ -47,8 +47,8 @@ namespace Mono.TextEditor
 		
 		public static bool IsWholeWordAt (Document doc, int offset, int length)
 		{
-			return offset == 0 || IsWordSeparator (doc.GetCharAt (offset - 1)) &&
-				   offset + length == doc.Length || IsWordSeparator (doc.GetCharAt (offset + length));
+			return (offset == 0 || IsWordSeparator (doc.GetCharAt (offset - 1))) &&
+				   (offset + length == doc.Length || IsWordSeparator (doc.GetCharAt (offset + length)));
 		}
 		
 		public static int GetMatchingBracketOffset (Document document, int offset)
