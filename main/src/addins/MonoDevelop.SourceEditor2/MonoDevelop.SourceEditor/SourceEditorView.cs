@@ -66,6 +66,12 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
+		public SourceEditorWidget SourceEditorWidget {
+			get {
+				return widget;
+			}
+		}
+		
 		public override Gtk.Widget Control {
 			get {
 				return widget;
@@ -181,7 +187,11 @@ namespace MonoDevelop.SourceEditor
 		public override void Dispose()
 		{
 			this.isDisposed= true;
-			widget.Destroy ();
+			if (widget != null) {
+				widget.Destroy ();
+				widget.Dispose ();
+				widget = null;
+			}
 		}
 		
 		public IParserContext GetParserContext ()
@@ -399,22 +409,24 @@ namespace MonoDevelop.SourceEditor
 		}
 #endregion 
 		
-#region IPositionable
+		#region IPositionable
 		public void JumpTo (int line, int column)
 		{
-			widget.TextEditor.Caret.Location = new DocumentLocation (line - 1, column - 1);
 			
 			GLib.Timeout.Add (20,  delegate {
 				if (this.isDisposed)
 					return false;
+				line = Math.Min (line, Document.LineCount);
+				widget.TextEditor.Caret.Location = new DocumentLocation (line - 1, column - 1);
+				
 				widget.TextEditor.GrabFocus ();
 				widget.TextEditor.ScrollToCaret ();
 				return false;
 			});
 		}
-#endregion
+		#endregion
 		
-#region IBookmarkBuffer
+		#region IBookmarkBuffer
 		LineSegment GetLine (int position)
 		{
 			DocumentLocation location = Document.OffsetToLocation (position);
@@ -451,9 +463,9 @@ namespace MonoDevelop.SourceEditor
 		{
 			TextEditor.RunAction (new ClearAllBookmarks ());
 		}
-#endregion
+		#endregion
 		
-#region IClipboardHandler
+		#region IClipboardHandler
 		public bool EnableCut {
 			get {
 				return TextEditor.IsSomethingSelected;
@@ -505,7 +517,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			TextEditor.RunAction (new SelectionSelectAll ());
 		}
-#endregion
+		#endregion
 
 #region ICompletionWidget		
 		public int TextLength {
@@ -686,11 +698,11 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 			
-			public bool SupportsSearch (SearchOptions options, bool reverse)
+			public bool SupportsSearch (MonoDevelop.Ide.Gui.Search.SearchOptions options, bool reverse)
 			{
 				return false;
 			}
-			public bool SearchNext (string text, SearchOptions options, bool reverse)
+			public bool SearchNext (string text, MonoDevelop.Ide.Gui.Search.SearchOptions options, bool reverse)
 			{
 				return false;
 			}
@@ -1046,5 +1058,6 @@ namespace MonoDevelop.SourceEditor
 		}
 		#endregion
 #endif
+		
 	}
 } 

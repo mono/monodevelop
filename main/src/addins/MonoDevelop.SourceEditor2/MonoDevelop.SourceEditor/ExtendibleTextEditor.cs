@@ -133,6 +133,15 @@ namespace MonoDevelop.SourceEditor
 				this.ShowPopup ();
 				return true;
 			}
+			if (evnt.Key == Gdk.Key.Escape) {
+				bool b = extension.KeyPress (evnt.Key, evnt.State);
+				System.Console.WriteLine(b);
+				if (b) {
+					view.SourceEditorWidget.RemoveSearchWidget ();
+					return true;
+				}
+				return false;
+			}
 			
 			bool inStringOrComment = false;
 			if (SourceEditorOptions.Options.AutoInsertMatchingBracket && (ch == '{' || ch == '[' || ch == '(' || ch == '"' || ch == '\'' )) {
@@ -147,7 +156,7 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 			if (extension != null) {
-				if (!extension.KeyPress (evnt.Key, evnt.State)) {
+				if (extension.KeyPress (evnt.Key, evnt.State)) {
 					result = base.OnKeyPressEvent (evnt);
 				}
 			} else {

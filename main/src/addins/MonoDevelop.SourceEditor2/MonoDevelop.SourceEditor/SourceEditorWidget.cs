@@ -86,8 +86,10 @@ namespace MonoDevelop.SourceEditor
 
 		bool ITextEditorExtension.KeyPress (Gdk.Key key, Gdk.ModifierType modifier)
 		{
+			if (key == Gdk.Key.Escape)
+				return true;
 			this.TextEditor.SimulateKeyPress (key, modifier);
-			return true;
+			return false;
 		}
 		#endregion
 		
@@ -159,7 +161,6 @@ namespace MonoDevelop.SourceEditor
 //			this.d += delegate {
 //				this.textEditor.Destroy ();
 //			};
-			
 		}
 
 		#region Error underlining
@@ -170,7 +171,7 @@ namespace MonoDevelop.SourceEditor
 		
 		FoldSegment AddMarker (List<FoldSegment> foldSegments, string text, IRegion region, FoldingType type)
 		{
-			if (region == null || region.BeginLine <= 0 || region.EndLine <= 0 || region.BeginLine >= this.TextEditor.Document.LineCount || region.EndLine >= this.TextEditor.Document.LineCount)
+			if (region == null || this.TextEditor == null || this.TextEditor.Document == null || region.BeginLine <= 0 || region.EndLine <= 0 || region.BeginLine >= this.TextEditor.Document.LineCount || region.EndLine >= this.TextEditor.Document.LineCount)
 				return null;
 			int startOffset = this.TextEditor.Document.LocationToOffset (region.BeginLine - 1,  region.BeginColumn - 1);
 			int endOffset   = this.TextEditor.Document.LocationToOffset (region.EndLine - 1,  region.EndColumn - 1);
@@ -182,11 +183,13 @@ namespace MonoDevelop.SourceEditor
 		
 		void AddClass (List<FoldSegment> foldSegments, IClass cl)
 		{
+			if (this.TextEditor == null || this.TextEditor.Document == null)
+				return;
 			if (cl.BodyRegion != null)
 				AddMarker (foldSegments, "...", cl.BodyRegion, FoldingType.TypeDefinition);
-			foreach (IClass inner in cl.InnerClasses) {
+			foreach (IClass inner in cl.InnerClasses) 
 				AddClass (foldSegments, inner);
-			}
+			
 			if (cl.ClassType == ClassType.Interface)
 				return;
 			foreach (IMethod method in cl.Methods) {
@@ -208,8 +211,9 @@ namespace MonoDevelop.SourceEditor
 		
 		void OnParseInformationChanged (object sender, ParseInformationEventArgs args)
 		{
-			if (args == null || this.view.ContentName != args.FileName)
+			if (args == null || this.view.ContentName != args.FileName || this.TextEditor == null || this.TextEditor.Document == null)
 				return;
+			
 			lastCu = args.ParseInformation.MostRecentCompilationUnit as ICompilationUnit;
 			if (lastCu != null) {
 				List<FoldSegment> foldSegments = new List<FoldSegment> ();
@@ -308,8 +312,12 @@ namespace MonoDevelop.SourceEditor
 		
 		public override void Dispose ()
 		{
-			System.Console.WriteLine("Dispose !!!");
 			isDisposed = true;
+			Unsplit ();
+			if (this.textEditor != null) {
+				this.textEditor.Dispose ();
+				this.textEditor = null;
+			}
 			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged -= new ParseInformationEventHandler(UpdateClassBrowser);
 		}
 		
@@ -331,6 +339,15 @@ namespace MonoDevelop.SourceEditor
 				return splitContainer != null;
 			}
 		}
+
+		public SourceEditorView View {
+			get {
+				return view;
+			}
+			set {
+				view = value;
+			}
+		}
 		public void Unsplit ()
 		{
 			if (splitContainer == null)
@@ -343,6 +360,7 @@ namespace MonoDevelop.SourceEditor
 			editorBar.Remove (splitContainer);
 			
 			splitContainer.Destroy ();
+			splitContainer.Dispose ();
 			splitContainer = null;
 			editorBar.PackEnd (mainsw);
 			editorBar.ShowAll ();
@@ -354,11 +372,11 @@ namespace MonoDevelop.SourceEditor
 				Unsplit ();
 			
 			editorBar.Remove (this.mainsw);
-
+			
 			this.splitContainer = vSplit ? (Gtk.Paned)new VPaned () : (Gtk.Paned)new HPaned ();
 			
 			splitContainer.Add1 (mainsw);
-							
+			
 			this.splitContainer.ButtonPressEvent += delegate(object sender, ButtonPressEventArgs args) {
 				if (args.Event.Type == Gdk.EventType.TwoButtonPress && args.RetVal == null) {
 					Unsplit (); 
@@ -438,7 +456,7 @@ namespace MonoDevelop.SourceEditor
 			view.WorkbenchWindow.ShowNotification = false;
 		}
 		
-#region Status Bar Handling
+		#region Status Bar Handling
 		void CaretPositionChanged (object o, DocumentLocationEventArgs args)
 		{
 			UpdateLineCol ();
@@ -466,9 +484,9 @@ namespace MonoDevelop.SourceEditor
 		{
 			IdeApp.Workbench.StatusBar.SetInsertMode (this.TextEditor.Caret.IsInInsertMode);
 		}
-#endregion
-
-#region Class/Member combo handling
+		#endregion
+		
+		#region Class/Member combo handling
 		void UpdateMethodBrowser ()
 		{
 			if (!this.IsClassBrowserVisible)
@@ -777,63 +795,154 @@ namespace MonoDevelop.SourceEditor
 			this.memberParseInfo = context.ParseFile (view.ContentName);
 			BindClassCombo();
 		}
-#endregion		
+		#endregion
+		
+		#region Search and Replace
+		SearchWidget           searchWidget           = null;
+		SearchAndReplaceWidget searchAndReplaceWidget = null;
+		GotoLineNumberWidget   gotoLineNumberWidget   = null;
+		
 		public void SetSearchPattern ()
 		{
 			string selectedText = this.TextEditor.SelectedText;
 			
-			if (!String.IsNullOrEmpty (selectedText))
-				SearchReplaceManager.SearchOptions.SearchPattern = selectedText.Split ('\n')[0];
+			if (!String.IsNullOrEmpty (selectedText)) {
+				TextEditor.SearchPattern = selectedText;
+				if (searchWidget != null)
+					searchWidget.SearchPattern = selectedText;
+				if (searchAndReplaceWidget != null)
+					searchAndReplaceWidget.SearchPattern = selectedText;
+			}
+		}
+		
+		bool KillWidgets ()
+		{
+			bool result = false;
+			if (searchWidget != null) {
+				editorBar.Remove (searchWidget);
+				searchWidget.Destroy ();
+				searchWidget.Dispose ();
+				searchWidget = null;
+				result = true;
+			} 
+			if (searchAndReplaceWidget != null) {
+				editorBar.Remove (searchAndReplaceWidget);
+				searchAndReplaceWidget.Destroy ();
+				searchAndReplaceWidget.Dispose ();
+				searchAndReplaceWidget = null;
+				result = true;
+			}
+			if (gotoLineNumberWidget != null) {
+				editorBar.Remove (gotoLineNumberWidget);
+				gotoLineNumberWidget.Destroy ();
+				gotoLineNumberWidget.Dispose ();
+				gotoLineNumberWidget = null;
+				result = true;
+			}
+			this.TextEditor.HighlightSearchPattern = false;
+			return result;
+		}
+		
+		internal bool RemoveSearchWidget ()
+		{
+			bool result = KillWidgets ();
+			TextEditor.GrabFocus ();
+			return result;
 		}
 		
 		[CommandHandler (SearchCommands.Find)]
-		public void Find()
+		public void ShowSearchWidget ()
 		{
-			SetSearchPattern();
-			SearchReplaceManager.ShowFindWindow ();
+			if (searchWidget == null) {
+				KillWidgets ();
+				searchWidget = new SearchWidget (this);
+				editorBar.Add (searchWidget);
+				editorBar.SetChildPacking(searchWidget, false, true, 0, PackType.End);
+				searchWidget.ShowAll ();
+				this.TextEditor.HighlightSearchPattern = true;
+			}
+			searchWidget.Focus ();
+		}
+		
+		[CommandHandler (SearchCommands.Replace)]
+		public void ShowReplaceWidget ()
+		{ 
+			if (searchAndReplaceWidget == null) {
+				KillWidgets ();
+				searchAndReplaceWidget = new SearchAndReplaceWidget (this);
+				editorBar.Add (searchAndReplaceWidget);
+				editorBar.SetChildPacking(searchAndReplaceWidget, false, true, 0, PackType.End);
+				searchAndReplaceWidget.ShowAll ();
+				this.TextEditor.HighlightSearchPattern = true;
+			}
+			searchAndReplaceWidget.Focus ();
+		}
+		
+		[CommandHandler (SearchCommands.GotoLineNumber)]
+		public void ShowGotoLineNumberWidget ()
+		{
+			if (gotoLineNumberWidget == null) {
+				KillWidgets ();
+				gotoLineNumberWidget = new GotoLineNumberWidget (this);
+				editorBar.Add (gotoLineNumberWidget);
+				editorBar.SetChildPacking(gotoLineNumberWidget, false, true, 0, PackType.End);
+				gotoLineNumberWidget.ShowAll ();
+			}
+			gotoLineNumberWidget.Focus ();
+		}
+		
+		internal void SetSearchOptions ()
+		{
+			TextEditor.SearchOptions.IsCaseSensitive = SearchWidget.IsCaseSensitive;
+			TextEditor.SearchOptions.IsWholeWordOnly = SearchWidget.IsWholeWordOnly;
 		}
 		
 		[CommandHandler (SearchCommands.FindNext)]
 		public void FindNext ()
 		{
-			SearchReplaceManager.FindNext ();
+			SetSearchOptions ();
+			TextEditor.FindNext ();
+			TextEditor.GrabFocus ();
 		}
-	
+		
 		[CommandHandler (SearchCommands.FindPrevious)]
 		public void FindPrevious ()
 		{
-			SearchReplaceManager.FindPrevious ();
+			SetSearchOptions ();
+			TextEditor.FindPrevious ();
+			TextEditor.GrabFocus ();
 		}
 	
 		[CommandHandler (SearchCommands.FindNextSelection)]
 		public void FindNextSelection ()
 		{
+			SetSearchOptions ();
 			SetSearchPattern();
-			SearchReplaceManager.FindNext ();
+			FindNext ();
 		}
 	
 		[CommandHandler (SearchCommands.FindPreviousSelection)]
 		public void FindPreviousSelection ()
 		{
+			SetSearchOptions ();
 			SetSearchPattern();
-			SearchReplaceManager.FindPrevious ();
+			FindPrevious ();
 		}
-	
-		[CommandHandler (SearchCommands.Replace)]
+		
 		public void Replace ()
-		{ 
-			SetSearchPattern ();
-			SearchReplaceManager.ShowFindReplaceWindow ();
-			
+		{
+			SetSearchOptions ();
+			TextEditor.Replace (searchAndReplaceWidget.ReplacePattern);
+			TextEditor.GrabFocus ();
 		}
 		
-//		[CommandHandler (EditorCommands.GotoLineNumber)]
-//		public void GotoLineNumber ()
-//		{
-//			if (!GotoLineNumberDialog.IsVisible)
-//				using (GotoLineNumberDialog gnd = new GotoLineNumberDialog ())
-//					gnd.Run ();
-//		}
+		public void ReplaceAll ()
+		{
+			SetSearchOptions ();
+			TextEditor.ReplaceAll (searchAndReplaceWidget.ReplacePattern);
+			TextEditor.GrabFocus ();
+		}
 		
+		#endregion
 	}
 }

@@ -4,10 +4,13 @@ ASSEMBLY = $(top_builddir)/build/AddIns/$(DLLNAME)
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.SourceEditor.GotoLineNumberWidget.cs \
 	gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs \
 	gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs \
 	gtk-gui/MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs \
 	gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs \
+	gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs \
+	gtk-gui/MonoDevelop.SourceEditor.SearchWidget.cs \
 	gtk-gui/MonoDevelop.SourceEditor.SourceEditorWidget.cs \
 	MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs \
 	MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs \
@@ -15,9 +18,12 @@ FILES =  \
 	MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs \
 	MonoDevelop.SourceEditor/EditActions.cs \
 	MonoDevelop.SourceEditor/ExtendibleTextEditor.cs \
+	MonoDevelop.SourceEditor/GotoLineNumberWidget.cs \
 	MonoDevelop.SourceEditor/HighlightPropertiesSemanticRule.cs \
 	MonoDevelop.SourceEditor/LanguageItemWindow.cs \
 	MonoDevelop.SourceEditor/MarkerOperationsHandler.cs \
+	MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs \
+	MonoDevelop.SourceEditor/SearchWidget.cs \
 	MonoDevelop.SourceEditor/SourceEditorCommands.cs \
 	MonoDevelop.SourceEditor/SourceEditorDisplayBinding.cs \
 	MonoDevelop.SourceEditor/SourceEditorOptions.cs \
