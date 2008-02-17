@@ -296,7 +296,7 @@ namespace Mono.TextEditor
 					// Draw text before the search result (if any)
 					if (firstSearch.Offset > offset) {
 						s = offset - startOffset;
-						DrawText (win, text.Substring (s, firstSearch.Offset - offset), style.Color, ColorStyle.Background, ref xPos, y);
+						DrawText (win, text.Substring (s, firstSearch.Offset - offset), style.Color, defaultBgColor, ref xPos, y);
 						offset += firstSearch.Offset - offset;
 					}
 					// Draw text within the search result
@@ -308,7 +308,7 @@ namespace Mono.TextEditor
 				}
 				s = offset - startOffset;
 				if (s < wordBuilder.Length) {
-					DrawText (win, text.Substring (s, wordBuilder.Length - s), style.Color, ColorStyle.Background, ref xPos, y);
+					DrawText (win, text.Substring (s, wordBuilder.Length - s), style.Color, defaultBgColor, ref xPos, y);
 				}
 			}
 			
@@ -379,7 +379,7 @@ namespace Mono.TextEditor
 					visibleColumn++;
 				} else if (ch == ' ') {
 					OutputWordBuilder (win, line, selected, style, ref visibleColumn, ref xPos, y, offset);
-					DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, charWidth, LineHeight), selected ? ColorStyle.SelectedBg : (IsSearchResultAt (offset) ? ColorStyle.SearchTextBg : ColorStyle.Background));
+					DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, charWidth, LineHeight), selected ? ColorStyle.SelectedBg : (IsSearchResultAt (offset) ? ColorStyle.SearchTextBg : defaultBgColor));
 					
 					if (TextEditorOptions.Options.ShowSpaces) 
 						DrawSpaceMarker (win, selected, xPos, y);
@@ -400,7 +400,7 @@ namespace Mono.TextEditor
 					int delta = (newColumn - visibleColumn) * this.charWidth;
 					visibleColumn = newColumn;
 					
-					DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, delta, LineHeight), selected ? ColorStyle.SelectedBg : (IsSearchResultAt (offset) ? ColorStyle.SearchTextBg : ColorStyle.Background));
+					DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, delta, LineHeight), selected ? ColorStyle.SelectedBg : (IsSearchResultAt (offset) ? ColorStyle.SearchTextBg : defaultBgColor));
 					if (TextEditorOptions.Options.ShowTabs) 
 						DrawTabMarker (win, selected, xPos, y);
 					if (offset == caretOffset) 
@@ -613,6 +613,8 @@ namespace Mono.TextEditor
 		}
 		
 		List<ISegment> selectedRegions = new List<ISegment> ();
+		
+		Gdk.Color      defaultBgColor;
 		public override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int lineNr, int x, int y)
 		{
 			this.caretX = -1;
@@ -621,13 +623,19 @@ namespace Mono.TextEditor
 			int xStart = System.Math.Max (area.X, XOffset);
 			gc.ClipRectangle = new Gdk.Rectangle (xStart, y, area.Right - xStart, LineHeight);
 			
+			if (TextEditorOptions.Options.HighlightCaretLine && Caret.Line == lineNr) {
+				defaultBgColor = ColorStyle.LineMarker;
+			} else {
+				defaultBgColor = ColorStyle.Background;
+			}
+				
 			Gdk.Rectangle lineArea = new Gdk.Rectangle (XOffset, y, textEditor.Allocation.Width - XOffset, LineHeight);
 			int width, height;
 			int xPos = (int)(x - textEditor.HAdjustment.Value);
 			
 			if (line == null) {
 				if (TextEditorOptions.Options.ShowInvalidLines) {
-					DrawRectangleWithRuler (win, x, lineArea, this.ColorStyle.Background);
+					DrawRectangleWithRuler (win, x, lineArea, defaultBgColor);
 					DrawInvalidLineMarker (win, xPos, y);
 				}
 				if (TextEditorOptions.Options.ShowRuler) { // warning: code duplication, look at the method end.
@@ -666,7 +674,7 @@ namespace Mono.TextEditor
 					layout.SetText (folding.Description);
 					layout.GetPixelSize (out width, out height);
 					bool isFoldingSelected = textEditor.IsSomethingSelected && textEditor.SelectionRange.Contains (folding);
-					gc.RgbFgColor = isFoldingSelected ? ColorStyle.SelectedBg : ColorStyle.Background;
+					gc.RgbFgColor = isFoldingSelected ? ColorStyle.SelectedBg : defaultBgColor;
 					win.DrawRectangle (gc, true, new Rectangle (xPos, y, width - 1, this.LineHeight - 1));
 					gc.RgbFgColor = isFoldingSelected ? ColorStyle.SelectedFg : ColorStyle.FoldLine;
 					win.DrawRectangle (gc, false, new Rectangle (xPos, y, width - 1, this.LineHeight - 1));
@@ -699,7 +707,7 @@ namespace Mono.TextEditor
 			
 			lineArea.X     = xPos;
 			lineArea.Width = textEditor.Allocation.Width - xPos;
-			DrawRectangleWithRuler (win, x, lineArea, isEolSelected ? this.ColorStyle.SelectedBg : this.ColorStyle.Background);
+			DrawRectangleWithRuler (win, x, lineArea, isEolSelected ? this.ColorStyle.SelectedBg : defaultBgColor);
 			
 			if (TextEditorOptions.Options.ShowEolMarkers)
 				DrawEolMarker (win, isEolSelected, xPos, y);
