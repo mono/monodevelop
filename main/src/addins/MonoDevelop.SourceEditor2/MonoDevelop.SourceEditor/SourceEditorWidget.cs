@@ -314,6 +314,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			isDisposed = true;
 			Unsplit ();
+			RemoveReloadBar ();
+			RemoveSearchWidget ();
 			if (this.textEditor != null) {
 				this.textEditor.Dispose ();
 				this.textEditor = null;
@@ -422,19 +424,22 @@ namespace MonoDevelop.SourceEditor
 				Button b2 = new Button (GettextCatalog.GetString("Ignore"));
 				box.PackStart (b2, false, false, 5);
 				b2.Clicked += new EventHandler (ClickedIgnore);
-				
-				reloadBar.ShowAll ();
 			}
 			view.WarnOverwrite = true;
 			editorBar.PackStart (reloadBar, false, true, 0);
+			editorBar.ReorderChild (reloadBar, this.isClassBrowserVisible ? 1 : 0);
 			reloadBar.ShowAll ();
 			view.WorkbenchWindow.ShowNotification = true;
 		}
 		
 		public void RemoveReloadBar ()
 		{
-			if (reloadBar != null)
+			if (reloadBar != null) {
 				editorBar.Remove (reloadBar);
+				reloadBar.Destroy ();
+				reloadBar.Dispose ();
+				reloadBar = null;
+			}
 		}
 		
 		void ClickedReload (object sender, EventArgs args)
@@ -442,7 +447,7 @@ namespace MonoDevelop.SourceEditor
 			try {
 //				double vscroll = view.VScroll;
 				view.Load (view.ContentName);
-				editorBar.Remove (reloadBar);
+				RemoveReloadBar ();
 //				view.VScroll = vscroll;
 				view.WorkbenchWindow.ShowNotification = false;
 			} catch (Exception ex) {
@@ -452,7 +457,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void ClickedIgnore (object sender, EventArgs args)
 		{
-			editorBar.Remove (reloadBar);
+			RemoveReloadBar ();
 			view.WorkbenchWindow.ShowNotification = false;
 		}
 		

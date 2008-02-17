@@ -51,8 +51,9 @@ namespace MonoDevelop.SourceEditor
 	{
 		SourceEditorWidget widget;
 		bool isDisposed = false;
-		static object fileSaveLock = new object ();
 		FileSystemWatcher fileSystemWatcher;
+		static bool isInWrite = false;
+		DateTime lastSaveTime;
 		
 		public Mono.TextEditor.Document Document {
 			get {
@@ -102,12 +103,24 @@ namespace MonoDevelop.SourceEditor
 //				return true;
 //			});
 			
+			widget.ShowAll ();
+			
 			fileSystemWatcher = new FileSystemWatcher ();
 			fileSystemWatcher.Created += (FileSystemEventHandler)MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));	
 			fileSystemWatcher.Changed += (FileSystemEventHandler)MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));
-			widget.ShowAll ();
+			
 			this.ContentNameChanged += delegate {
-				this.Document.FileName = this.ContentName;
+				this.Document.FileName   = this.ContentName;
+				
+				if (String.IsNullOrEmpty (ContentName) || !File.Exists (ContentName))
+					return;
+				
+				fileSystemWatcher.EnableRaisingEvents = false;
+				isInWrite = true;
+				fileSystemWatcher.Path = Path.GetDirectoryName (ContentName);
+				fileSystemWatcher.Filter = Path.GetFileName (ContentName);
+				isInWrite = false;
+				fileSystemWatcher.EnableRaisingEvents = true;
 			};
 		}
 		
@@ -130,16 +143,21 @@ namespace MonoDevelop.SourceEditor
 				WorkbenchWindow.ShowNotification = false;
 			}
 			
-			lock (fileSaveLock) {
+			isInWrite = true;
+			try {
 				File.WriteAllText (fileName, Document.Text);
-//				lastSaveTime = File.GetLastWriteTime (fileName);
+				lastSaveTime = File.GetLastWriteTime (ContentName);
+			} finally {
+				isInWrite = false;
 			}
+				
 //			if (encoding != null)
 //				se.Buffer.SourceEncoding = encoding;
 //			TextFileService.FireCommitCountChanges (this);
-			ContentName = fileName;
+			
+			ContentName = fileName; 
 			Document.MimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
-//			InitializeFormatter ();
+			
 			this.IsDirty = false;
 		}
 		
@@ -157,6 +175,7 @@ namespace MonoDevelop.SourceEditor
 			result = result.Replace ("?", "%3F");
 			return result;
 		}
+		
 		bool warnOverwrite = false;
 		public void Load (string fileName, string encoding)
 		{
@@ -170,7 +189,6 @@ namespace MonoDevelop.SourceEditor
 			Document.MimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
 			Document.Text = File.ReadAllText (fileName);
 			ContentName = fileName;
-			lastSaveTime = File.GetLastWriteTime (ContentName);
 //			InitializeFormatter ();
 //			
 //			if (Services.DebuggingService != null) {
@@ -187,6 +205,13 @@ namespace MonoDevelop.SourceEditor
 		public override void Dispose()
 		{
 			this.isDisposed= true;
+			
+			if (fileSystemWatcher != null) {
+				fileSystemWatcher.EnableRaisingEvents = false;
+				fileSystemWatcher.Dispose ();
+				fileSystemWatcher = null;
+			}
+			
 			if (widget != null) {
 				widget.Destroy ();
 				widget.Dispose ();
@@ -214,17 +239,15 @@ namespace MonoDevelop.SourceEditor
 			return MonoDevelop.Projects.Services.Ambience.GetAmbienceForFile (file);
 		}
 		
-		DateTime lastSaveTime;
 		void OnFileChanged (object sender, FileSystemEventArgs args)
 		{
-			lock (fileSaveLock) {
-				if (lastSaveTime == File.GetLastWriteTime (ContentName))
-					return;
-			}
+			if (!isInWrite && args.FullPath != ContentName)
+				return;
+			if (lastSaveTime == File.GetLastWriteTime (ContentName))
+				return;
 			
-			if (args.ChangeType == WatcherChangeTypes.Changed || args.ChangeType == WatcherChangeTypes.Created) {
+			if (args.ChangeType == WatcherChangeTypes.Changed || args.ChangeType == WatcherChangeTypes.Created) 
 				widget.ShowFileChangedWarning ();
-			}
 		}
 		
 #region IExtensibleTextEditor
