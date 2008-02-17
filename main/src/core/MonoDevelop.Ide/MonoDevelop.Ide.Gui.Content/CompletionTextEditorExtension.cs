@@ -52,14 +52,14 @@ namespace MonoDevelop.Ide.Gui.Content
 				autoHideCompletionWindow = false;
 				if (CompletionWindowManager.ProcessKeyEvent (key, modifier)) {
 					autoHideCompletionWindow = true;
-					return true;
+					return false;
 				}
 				autoHideCompletionWindow = false;
 			}
 			
 			if (ParameterInformationWindowManager.IsWindowVisible) {
 				if (ParameterInformationWindowManager.ProcessKeyEvent (key, modifier))
-					return true;
+					return false;
 				autoHideCompletionWindow = false;
 			}
 			

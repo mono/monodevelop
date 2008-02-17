@@ -1,5 +1,10 @@
 2008-02-17  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs: Completion
+	  editor extension no longer passes keys throug it processed.
+
+2008-02-17  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.addin.xml: Set some hotkeys to the gnome application
 	  'standard' hotkeys.
 
