@@ -38,11 +38,6 @@
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
-
-	<Span color = "literal" stopateol = "true" escape="\">
-		<Begin>&apos;</Begin>
-		<End>&apos;</End>
-	</Span>
 	
 	<Keywords color = "kw:access" ignorecase="True">
 		<Word>Me</Word>
