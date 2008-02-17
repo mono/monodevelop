@@ -31,7 +31,7 @@ namespace MonoDevelop.SourceEditor {
         
         private Gtk.Button buttonSearchBackward;
         
-        private Gtk.Button button4;
+        private Gtk.Button buttonOptions;
         
         private Gtk.HBox hbox2;
         
@@ -164,11 +164,11 @@ namespace MonoDevelop.SourceEditor {
             w22.Expand = false;
             w22.Fill = false;
             // Container child hbox1.Gtk.Box+BoxChild
-            this.button4 = new Gtk.Button();
-            this.button4.CanFocus = true;
-            this.button4.Name = "button4";
-            this.button4.UseUnderline = true;
-            // Container child button4.Gtk.Container+ContainerChild
+            this.buttonOptions = new Gtk.Button();
+            this.buttonOptions.CanFocus = true;
+            this.buttonOptions.Name = "buttonOptions";
+            this.buttonOptions.UseUnderline = true;
+            // Container child buttonOptions.Gtk.Container+ContainerChild
             Gtk.Alignment w23 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
             // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w24 = new Gtk.HBox();
@@ -183,9 +183,9 @@ namespace MonoDevelop.SourceEditor {
             w27.UseUnderline = true;
             w24.Add(w27);
             w23.Add(w24);
-            this.button4.Add(w23);
-            this.hbox1.Add(this.button4);
-            Gtk.Box.BoxChild w31 = ((Gtk.Box.BoxChild)(this.hbox1[this.button4]));
+            this.buttonOptions.Add(w23);
+            this.hbox1.Add(this.buttonOptions);
+            Gtk.Box.BoxChild w31 = ((Gtk.Box.BoxChild)(this.hbox1[this.buttonOptions]));
             w31.Position = 2;
             w31.Expand = false;
             w31.Fill = false;

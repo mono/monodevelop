@@ -49,24 +49,22 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		void SetIsCaseSensitive (bool value)
-		{
-			PropertyService.Set ("IsCaseSensitive", value);
-			widget.SetSearchOptions ();
-			widget.TextEditor.QueueDraw ();
-		}
-		
 		public static bool IsWholeWordOnly {
 			get {
 				return PropertyService.Get ("IsWholeWordOnly", false);
 			}
 		}
 		
+		void SetIsCaseSensitive (bool value)
+		{
+			PropertyService.Set ("IsCaseSensitive", value);
+			widget.SetSearchOptions ();
+		}
+		
 		void SetIsWholeWordOnly (bool value)
 		{
 			PropertyService.Set ("IsWholeWordOnly", value);
 			widget.SetSearchOptions ();
-			widget.TextEditor.QueueDraw ();
 		}
 		
 		public string SearchPattern {
@@ -93,6 +91,7 @@ namespace MonoDevelop.SourceEditor
 				};
 			}
 			
+			// if you change something here don"t forget the SearchAndReplaceWidget
 			this.closeButton.Clicked += delegate {
 				widget.RemoveSearchWidget ();
 			};
@@ -120,21 +119,26 @@ namespace MonoDevelop.SourceEditor
 				Menu menu = new Menu ();
 				
 				Gtk.CheckMenuItem caseSensitive = new Gtk.CheckMenuItem (GettextCatalog.GetString ("Case sensitive"));
-				caseSensitive.Active = IsCaseSensitive;
+				caseSensitive.Active = SearchWidget.IsCaseSensitive;
 				caseSensitive.ShowToggle = true;
 				caseSensitive.Toggled += delegate {
 					SetIsCaseSensitive (caseSensitive.Active);
 				};
+				caseSensitive.ButtonPressEvent += delegate {
+					caseSensitive.Toggle ();
+				};
 				menu.Append (caseSensitive);
 				
 				Gtk.CheckMenuItem wholeWordsOnly = new Gtk.CheckMenuItem (GettextCatalog.GetString ("Whole words only"));
-				wholeWordsOnly.Active = IsWholeWordOnly;
+				wholeWordsOnly.Active = SearchWidget.IsWholeWordOnly;
 				wholeWordsOnly.ShowToggle = true;
 				wholeWordsOnly.Toggled += delegate {
 					SetIsWholeWordOnly (wholeWordsOnly.Active);
 				};
+				wholeWordsOnly.ButtonPressEvent += delegate {
+					wholeWordsOnly.Toggle ();
+				};
 				menu.Append (wholeWordsOnly);
-				
 				IdeApp.CommandService.ShowContextMenu (menu);
 				menu.ShowAll ();
 			};

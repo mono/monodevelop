@@ -1,6 +1,13 @@
 2008-02-17  Mike Krüger <mkrueger@novell.com> 
 
 	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs,
+	  MonoDevelop.SourceEditor/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs,
+	  MonoDevelop.SourceEditor/SearchWidget.cs: Worked on search options.
+
+2008-02-17  Mike Krüger <mkrueger@novell.com> 
+
+	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs,
 	  gtk-gui/MonoDevelop.SourceEditor.SearchWidget.cs,
 	  gtk-gui/MonoDevelop.SourceEditor.GotoLineNumberWidget.cs,
 	  MonoDevelop.SourceEditor/SourceEditorWidget.cs,

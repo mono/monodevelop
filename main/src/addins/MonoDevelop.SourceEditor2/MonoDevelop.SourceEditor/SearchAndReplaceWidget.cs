@@ -31,6 +31,7 @@ using System;
 using Gtk;
 
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -102,6 +103,33 @@ namespace MonoDevelop.SourceEditor
 				UpdateSearchHistory (SearchPattern);
 				widget.FindPrevious ();
 			};
+			this.buttonOptions.Clicked += delegate {
+				Menu menu = new Menu ();
+				
+				Gtk.CheckMenuItem caseSensitive = new Gtk.CheckMenuItem (GettextCatalog.GetString ("Case sensitive"));
+				caseSensitive.Active = SearchWidget.IsCaseSensitive;
+				caseSensitive.ShowToggle = true;
+				caseSensitive.Toggled += delegate {
+					SetIsCaseSensitive (caseSensitive.Active);
+				};
+				caseSensitive.ButtonPressEvent += delegate {
+					caseSensitive.Toggle ();
+				};
+				menu.Append (caseSensitive);
+				
+				Gtk.CheckMenuItem wholeWordsOnly = new Gtk.CheckMenuItem (GettextCatalog.GetString ("Whole words only"));
+				wholeWordsOnly.Active = SearchWidget.IsWholeWordOnly;
+				wholeWordsOnly.ShowToggle = true;
+				wholeWordsOnly.Toggled += delegate {
+					SetIsWholeWordOnly (wholeWordsOnly.Active);
+				};
+				wholeWordsOnly.ButtonPressEvent += delegate {
+					wholeWordsOnly.Toggle ();
+				};
+				menu.Append (wholeWordsOnly);
+				IdeApp.CommandService.ShowContextMenu (menu);
+				menu.ShowAll ();
+			};
 			#endregion
 			
 			this.entryReplace.Changed += delegate {
@@ -152,6 +180,18 @@ namespace MonoDevelop.SourceEditor
 			foreach (string item in SearchWidget.GetHistory (SearchWidget.seachHistoryProperty)) {
 				this.searchHistory.AppendValues (item);
 			}
+		}
+		
+		void SetIsCaseSensitive (bool value)
+		{
+			PropertyService.Set ("IsCaseSensitive", value);
+			widget.SetSearchOptions ();
+		}
+		
+		void SetIsWholeWordOnly (bool value)
+		{
+			PropertyService.Set ("IsWholeWordOnly", value);
+			widget.SetSearchOptions ();
 		}
 		#endregion
 		

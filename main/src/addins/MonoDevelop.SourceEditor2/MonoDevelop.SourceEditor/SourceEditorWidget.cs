@@ -895,6 +895,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			TextEditor.SearchOptions.IsCaseSensitive = SearchWidget.IsCaseSensitive;
 			TextEditor.SearchOptions.IsWholeWordOnly = SearchWidget.IsWholeWordOnly;
+			TextEditor.CompilePattern ();
+			TextEditor.QueueDraw ();
 		}
 		
 		[CommandHandler (SearchCommands.FindNext)]
