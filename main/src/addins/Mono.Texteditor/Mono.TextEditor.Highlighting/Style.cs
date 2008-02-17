@@ -38,6 +38,7 @@ namespace Mono.TextEditor.Highlighting
 		string description;
 		
 		Color def, background, selectedBg, selectedFg;
+		Color searchTextBg;
 		Color caret;
 		Color lineMarker, ruler, whitespaceMarker, invalidLineMarker;
 		Color caretForeground;
@@ -201,6 +202,15 @@ namespace Mono.TextEditor.Highlighting
 				return caretForeground;
 			}
 		}
+
+		public Color SearchTextBg {
+			get {
+				return searchTextBg;
+			}
+			set {
+				searchTextBg = value;
+			}
+		}
 		
 		public Style ()
 		{
@@ -226,6 +236,8 @@ namespace Mono.TextEditor.Highlighting
 			ruler      = new Gdk.Color (187, 187, 187);
 			whitespaceMarker  = new Gdk.Color (187, 187, 187);
 			invalidLineMarker = new Gdk.Color (210, 0, 0);
+			
+			searchTextBg = new Gdk.Color (250, 250, 0);
 			
 			bracketHighlightBg        = new Gdk.Color (196, 196, 196);
 			bracketHighlightRectangle = new Gdk.Color (128, 128, 128);
@@ -319,6 +331,7 @@ namespace Mono.TextEditor.Highlighting
 			case "bracketHighlightBg":
 			case "bookmarkColor1":
 			case "bookmarkColor2":
+			case "searchTextBg":
 				return false;
 			}
 			return true;
@@ -408,6 +421,9 @@ namespace Mono.TextEditor.Highlighting
 				break;
 			case "bookmarkColor2":
 				this.bookmarkColor2 = color;
+				break;
+			case "searchTextBg":
+				this.searchTextBg = color;
 				break;
 			default:
 				throw new Exception ("color  " + name + " invalid.");

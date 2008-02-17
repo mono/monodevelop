@@ -38,6 +38,8 @@ namespace Mono.TextEditor
 		Document   document; 
 		Caret      caret;
 		
+		string searchPattern = "";
+		
 		public TextEditorData ()
 		{
 			Document = new Document ();
@@ -122,6 +124,15 @@ namespace Mono.TextEditor
 					return null;
 				return this.Document.GetTextAt (this.SelectionRange);
 			}
+			set {
+				if (!IsSomethingSelected)
+					return;
+				ISegment selection = this.SelectionRange;
+				Document.Replace (selection.Offset, selection.Length, value);
+				if (this.Caret.Offset > selection.Offset)
+					this.Caret.Offset   = selection.Offset + value.Length;
+				this.SelectionRange = new Segment(selection.Offset, value.Length);
+			}
 		}
 		
 		public IEnumerable<LineSegment> SelectedLines {
@@ -178,6 +189,15 @@ namespace Mono.TextEditor
 			set {
 				selectionEnd = value;
 				OnSelectionChanged (EventArgs.Empty);
+			}
+		}
+		
+		public string SearchPattern {
+			get {
+				return searchPattern;
+			}
+			set {
+				searchPattern = value;
 			}
 		}
 		

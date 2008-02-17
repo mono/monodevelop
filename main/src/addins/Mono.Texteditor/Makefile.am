@@ -45,6 +45,7 @@ FILES =  \
 	Mono.TextEditor/LineSplitter.cs \
 	Mono.TextEditor/RedBlackTree.cs \
 	Mono.TextEditor/ReplaceEventArgs.cs \
+	Mono.TextEditor/SearchOptions.cs \
 	Mono.TextEditor/Segment.cs \
 	Mono.TextEditor/SelectionMarker.cs \
 	Mono.TextEditor/TextEditor.cs \

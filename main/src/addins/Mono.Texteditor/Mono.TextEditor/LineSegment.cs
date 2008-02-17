@@ -191,7 +191,7 @@ namespace Mono.TextEditor
 		}
 		public bool Contains (ISegment segment)
 		{
-			return  Offset <= segment.Offset && segment.EndOffset < EndOffset;
+			return  Offset <= segment.Offset && segment.EndOffset <= EndOffset;
 		}
 		
 		public override string ToString ()

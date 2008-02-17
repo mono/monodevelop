@@ -1,6 +1,11 @@
 <objects>
   <object type="Mono.TextEditor.TextEditor" palette-category="Mono.TextEditor" allow-children="false" base-type="Gtk.DrawingArea">
     <itemgroups>
+      <itemgroup label="TextEditor Properties">
+        <property name="SearchPattern" />
+        <property name="HighlightSearchPattern" />
+        <property name="SelectedText" />
+      </itemgroup>
     </itemgroups>
     <signals>
       <itemgroup label="TextEditor Signals">

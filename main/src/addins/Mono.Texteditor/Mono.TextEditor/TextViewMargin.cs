@@ -60,7 +60,7 @@ namespace Mono.TextEditor
 				return lineHeight;
 			}
 		}
-
+		
 		public override int Width {
 			get {
 				return -1;
@@ -283,22 +283,66 @@ namespace Mono.TextEditor
 		StringBuilder wordBuilder = new StringBuilder ();
 		void OutputWordBuilder (Gdk.Drawable win, LineSegment line, bool selected, ChunkStyle style, ref int visibleColumn, ref int xPos, int y, int curOffset)
 		{
-			int oldxPos = xPos;
-			
+			int oldxPos     = xPos;
+			int startOffset = curOffset - wordBuilder.Length;
+			string text = wordBuilder.ToString ();
 			if (selected) {
-				DrawText (win, ColorStyle.SelectedFg, ColorStyle.SelectedBg, ref xPos, y);
+				DrawText (win, text, ColorStyle.SelectedFg, ColorStyle.SelectedBg, ref xPos, y);
 			} else {
-				DrawText (win, style.Color, ColorStyle.Background, ref xPos, y);
+				ISegment firstSearch;
+				int offset = startOffset;
+				int s;
+				while ((firstSearch = GetFirstSearchResult (offset, curOffset)) != null) {
+					// Draw text before the search result (if any)
+					if (firstSearch.Offset > offset) {
+						s = offset - startOffset;
+						DrawText (win, text.Substring (s, firstSearch.Offset - offset), style.Color, ColorStyle.Background, ref xPos, y);
+						offset += firstSearch.Offset - offset;
+					}
+					// Draw text within the search result
+					s = offset - startOffset;
+					int len = System.Math.Min (firstSearch.EndOffset - offset, text.Length - s);
+					if (len > 0)
+						DrawText (win, text.Substring (s, len), style.Color, ColorStyle.SearchTextBg, ref xPos, y);
+					offset = System.Math.Max (firstSearch.EndOffset, offset + 1);
+				}
+				s = offset - startOffset;
+				if (s < wordBuilder.Length) {
+					DrawText (win, text.Substring (s, wordBuilder.Length - s), style.Color, ColorStyle.Background, ref xPos, y);
+				}
 			}
 			
 			if (line.Markers != null) {
 				foreach (TextMarker marker in line.Markers) {
-					marker.Draw (textEditor, win, selected, curOffset - wordBuilder.Length, curOffset, y, oldxPos, xPos);
+					marker.Draw (textEditor, win, selected, startOffset, curOffset, y, oldxPos, xPos);
 				}
 			}
 			
 			visibleColumn += wordBuilder.Length;
 			wordBuilder.Length = 0;
+		}
+		
+		ISegment GetFirstSearchResult (int startOffset, int endOffset)
+		{
+			if (startOffset < endOffset) {
+				ISegment region = new Segment (startOffset, endOffset - startOffset);
+				foreach (ISegment segment in this.selectedRegions) {
+					if (segment.Contains (startOffset) || segment.Contains (endOffset) || 
+					    region.Contains (segment)) {
+						return segment;
+					}
+				}
+			}
+			return null;
+		}
+		
+		bool IsSearchResultAt (int offset)
+		{
+			foreach (ISegment segment in this.selectedRegions) {
+				if (segment.Contains (offset))
+					return true;
+			}
+			return false;
 		}
 		
 		void DrawStyledText (Gdk.Drawable win, LineSegment line, bool selected, ChunkStyle style, ref int visibleColumn, ref int xPos, int y, int startOffset, int endOffset)
@@ -335,7 +379,7 @@ namespace Mono.TextEditor
 					visibleColumn++;
 				} else if (ch == ' ') {
 					OutputWordBuilder (win, line, selected, style, ref visibleColumn, ref xPos, y, offset);
-					DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, charWidth, LineHeight), selected ? ColorStyle.SelectedBg : ColorStyle.Background);
+					DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, charWidth, LineHeight), selected ? ColorStyle.SelectedBg : (IsSearchResultAt (offset) ? ColorStyle.SearchTextBg : ColorStyle.Background));
 					
 					if (TextEditorOptions.Options.ShowSpaces) 
 						DrawSpaceMarker (win, selected, xPos, y);
@@ -356,7 +400,7 @@ namespace Mono.TextEditor
 					int delta = (newColumn - visibleColumn) * this.charWidth;
 					visibleColumn = newColumn;
 					
-					DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, delta, LineHeight), selected ? ColorStyle.SelectedBg : ColorStyle.Background);
+					DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, delta, LineHeight), selected ? ColorStyle.SelectedBg : (IsSearchResultAt (offset) ? ColorStyle.SearchTextBg : ColorStyle.Background));
 					if (TextEditorOptions.Options.ShowTabs) 
 						DrawTabMarker (win, selected, xPos, y);
 					if (offset == caretOffset) 
@@ -385,9 +429,9 @@ namespace Mono.TextEditor
 				SetVisibleCaretPosition (win, Document.GetCharAt (caretOffset), drawCaretAt, y);
 		}
 		
-		void DrawText (Gdk.Drawable win, Gdk.Color foreColor, Gdk.Color backgroundColor, ref int xPos, int y)
+		void DrawText (Gdk.Drawable win, string text, Gdk.Color foreColor, Gdk.Color backgroundColor, ref int xPos, int y)
 		{
-			layout.SetText (wordBuilder.ToString ());
+			layout.SetText (text);
 			
 			int width, height;
 			layout.GetPixelSize (out width, out height);
@@ -568,6 +612,7 @@ namespace Mono.TextEditor
 			win.DrawRectangle (gc, true, area);
 		}
 		
+		List<ISegment> selectedRegions = new List<ISegment> ();
 		public override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int lineNr, int x, int y)
 		{
 			this.caretX = -1;
@@ -590,6 +635,13 @@ namespace Mono.TextEditor
 					win.DrawLine (gc, x + rulerX, y, x + rulerX, y + LineHeight); 
 				}
 				return;
+			}
+			selectedRegions.Clear ();
+			if (textEditor.HighlightSearchPattern) {
+				for (int i = line.Offset; i < line.EndOffset; i++) {
+					if (this.textEditor.IsMatchAt (i))
+						selectedRegions.Add (new Segment (i, textEditor.SearchPattern.Length));
+				}
 			}
 			
 			List<FoldSegment> foldings = Document.GetStartFoldings (line);

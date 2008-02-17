@@ -1,3 +1,11 @@
+2008-02-17  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/Document.cs,
+	  Mono.TextEditor/SearchOptions.cs, Mono.TextEditor/TextUtil.cs,
+	  Mono.TextEditor/TextEditorData.cs, Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor/Segment.cs, Mono.TextEditor/LineSegment.cs,
+	  Mono.TextEditor.Highlighting/Style.cs: Worked on search and replace.
+
 2008-02-16  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextViewMargin.cs: Small refactorings.
