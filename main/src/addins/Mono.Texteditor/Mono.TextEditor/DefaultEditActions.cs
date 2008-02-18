@@ -599,7 +599,7 @@ namespace Mono.TextEditor
 			}
 			
 			data.Document.Insert (data.Caret.Offset, TextEditorOptions.Options.IndentationString);
-			data.Caret.Column ++;
+			data.Caret.Column += TextEditorOptions.Options.IndentationString.Length;
 		}
 	}
 	
