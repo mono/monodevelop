@@ -215,6 +215,7 @@ namespace Mono.TextEditor
 		{
 			if (!IsSomethingSelected)
 				return;
+			document.BeginAtomicUndo ();
 			ISegment selection = SelectionRange;
 			bool needUpdate = this.selectionStart.Segment != this.selectionEnd.Segment;
 			if (Caret.Offset > selection.Offset)
@@ -224,6 +225,7 @@ namespace Mono.TextEditor
 			if (needUpdate)
 				Document.RequestUpdate (new LineToEndUpdate (Document.OffsetToLineNumber (selection.Offset)));
 			ClearSelection();
+			document.EndAtomicUndo ();
 			if (needUpdate)
 				Document.CommitDocumentUpdate ();
 		}

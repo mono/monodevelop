@@ -338,19 +338,25 @@ namespace Mono.TextEditor
 			
 			public TextEditorDataState (TextEditor editor, Document.UndoOperation operation, int caretPos, ISegment selection)
 			{
-				this.editor  = editor;
+				this.editor    = editor;
+				this.caretPos  = caretPos;
+				this.selection = selection;
 				
 				operation.UndoDone += delegate {
-					oldPos       = editor.Caret.Offset;
-					oldSelection = editor.SelectionRange;
+					this.oldPos       = editor.Caret.Offset;
+					this.oldSelection = editor.SelectionRange;
 					
-					editor.Caret.Offset   = caretPos;
-					editor.SelectionRange = selection;
+					editor.SelectionRange = this.selection;
+					editor.Caret.PreserveSelection = true;
+					editor.Caret.Offset   = this.caretPos;
+					editor.Caret.PreserveSelection = false;
 				};
 				
 				operation.RedoDone += delegate {
-					editor.Caret.Offset   = oldPos;
-					editor.SelectionRange = oldSelection;
+					editor.SelectionRange = this.oldSelection;
+					editor.Caret.PreserveSelection = true;
+					editor.Caret.Offset   = this.oldPos;
+					editor.Caret.PreserveSelection = false;
 				};
 			}
 		}

@@ -269,17 +269,27 @@ namespace Mono.TextEditor
 					doc.Remove (args.Offset, args.Value.Length);
 				if (!String.IsNullOrEmpty (text))
 					doc.Insert (args.Offset, text);
-				if (UndoDone != null)
-					UndoDone (this, EventArgs.Empty);
+				OnUndoDone ();
 			}
 			
 			public virtual void Redo (Document doc)
 			{
 				doc.Replace (args.Offset, args.Count, args.Value);
-				if (RedoDone != null)
-					RedoDone (this, EventArgs.Empty);
+				OnRedoDone ();
+			}
+			
+			protected virtual void OnUndoDone ()
+			{
+				if (UndoDone != null)
+					UndoDone (this, EventArgs.Empty);
 			}
 			public event EventHandler UndoDone;
+			
+			protected virtual void OnRedoDone ()
+			{
+				if (UndoDone != null)
+					UndoDone (this, EventArgs.Empty);
+			}
 			public event EventHandler RedoDone;
 		}
 		
@@ -315,6 +325,7 @@ namespace Mono.TextEditor
 				for (int i = operations.Count - 1; i >= 0; i--) {
 					operations[i].Undo (doc);
 				}
+				OnUndoDone ();
 			}
 			
 			public override void Redo (Document doc)
@@ -322,6 +333,7 @@ namespace Mono.TextEditor
 				foreach (UndoOperation operation in this.operations) {
 					operation.Redo (doc);
 				}
+				OnRedoDone ();
 			}
 			
 		}
@@ -417,18 +429,23 @@ namespace Mono.TextEditor
 			this.RequestUpdate (new UpdateAll ());
 			this.CommitDocumentUpdate ();
 		}
-		
+		int atomicUndoLevel;
 		public void BeginAtomicUndo ()
 		{
 			if (currentAtomicOperation == null) {
-			    currentAtomicOperation = new AtomicUndoOperation ();
+				Debug.Assert (atomicUndoLevel == 0); 
+				currentAtomicOperation = new AtomicUndoOperation ();
 				OnBeginUndo ();
 			}
+			atomicUndoLevel++;
 		}
 		
 		public void EndAtomicUndo ()
 		{
-			if (currentAtomicOperation != null) {
+			atomicUndoLevel--;
+			Debug.Assert (atomicUndoLevel >= 0); 
+			
+			if (atomicUndoLevel == 0 && currentAtomicOperation != null) {
 				if (currentAtomicOperation.Operations.Count > 1) {
 					undoStack.Push (currentAtomicOperation);
 					OnEndUndo (currentAtomicOperation);
