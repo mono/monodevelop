@@ -1,5 +1,10 @@
 2008-02-18  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/Document.cs, Mono.TextEditor/TextEditor.cs: Implemented
+	  undo operation dispose
+
+2008-02-18  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/Document.cs, Mono.TextEditor/TextEditorData.cs,
 	  Mono.TextEditor/TextEditor.cs: Fixed undo/redo bug.
 

@@ -145,6 +145,9 @@ namespace Mono.TextEditor
 					undoStack.Push (operation);
 					OnEndUndo (operation);
 				}
+				foreach (UndoOperation redoOp in redoStack) {
+					redoOp.Dispose ();
+				}
 				redoStack.Clear ();
 			}
 			
@@ -240,7 +243,7 @@ namespace Mono.TextEditor
 		#endregion
 		
 		#region Undo/Redo operations
-		public class UndoOperation 
+		public class UndoOperation : IDisposable
 		{
 			ReplaceEventArgs args;
 			string text;
@@ -263,6 +266,14 @@ namespace Mono.TextEditor
 				this.args = args;
 				this.text = text;
 			}
+			
+			public virtual void Dispose ()
+			{
+				args = null;
+				if (Disposed != null) 
+					Disposed (this, EventArgs.Empty);
+			}
+			
 			public virtual void Undo (Document doc)
 			{
 				if (args.Value != null && args.Value.Length > 0)
@@ -291,6 +302,8 @@ namespace Mono.TextEditor
 					UndoDone (this, EventArgs.Empty);
 			}
 			public event EventHandler RedoDone;
+			
+			public event EventHandler Disposed;
 		}
 		
 		class AtomicUndoOperation : UndoOperation
@@ -314,6 +327,16 @@ namespace Mono.TextEditor
 				}
 			}
 			
+			public override void Dispose ()
+			{
+				if (operations != null) {
+					foreach (UndoOperation operation in operations) {
+						operation.Dispose ();
+					}
+					operations = null;
+				}
+				base.Dispose ();
+			}
 			
 			public void Add (UndoOperation operation)
 			{

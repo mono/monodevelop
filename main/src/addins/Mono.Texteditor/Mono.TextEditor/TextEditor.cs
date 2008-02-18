@@ -315,25 +315,36 @@ namespace Mono.TextEditor
 			this.Destroyed += delegate {
 				Dispose ();
 			};
-			this.Document.BeginUndo += delegate {
-				savedCaretPos  = Caret.Offset;
-				savedSelection = SelectionRange;
-			};
-			this.Document.EndUndo += delegate (object sender, Document.UndoOperation operation) {
-				new TextEditorDataState (this, operation, savedCaretPos, savedSelection);
-			};
+			this.Document.BeginUndo += OnBeginUndo;
+			this.Document.EndUndo += OnEndUndo;
 		}
+		
+		#region undo/redo handling
 		int      savedCaretPos;
 		ISegment savedSelection;
+		List<TextEditorDataState> states = new List<TextEditorDataState> ();
 		
-		class TextEditorDataState
+		void OnBeginUndo (object sender, EventArgs args)
+		{
+			savedCaretPos  = Caret.Offset;
+			savedSelection = SelectionRange;
+		}
+		
+		void OnEndUndo (object sender, Document.UndoOperation operation)
+		{
+			TextEditorDataState state = new TextEditorDataState (this, operation, savedCaretPos, savedSelection);
+			state.Attach ();
+			states.Add (state);
+		}
+		
+		class TextEditorDataState : IDisposable
 		{
 			int      caretPos;
 			ISegment selection;
 			
 			int      oldPos;
 			ISegment oldSelection;
-			
+			Document.UndoOperation operation;
 			TextEditor editor;
 			
 			public TextEditorDataState (TextEditor editor, Document.UndoOperation operation, int caretPos, ISegment selection)
@@ -341,25 +352,54 @@ namespace Mono.TextEditor
 				this.editor    = editor;
 				this.caretPos  = caretPos;
 				this.selection = selection;
-				
-				operation.UndoDone += delegate {
-					this.oldPos       = editor.Caret.Offset;
-					this.oldSelection = editor.SelectionRange;
-					
-					editor.SelectionRange = this.selection;
-					editor.Caret.PreserveSelection = true;
-					editor.Caret.Offset   = this.caretPos;
-					editor.Caret.PreserveSelection = false;
-				};
-				
-				operation.RedoDone += delegate {
-					editor.SelectionRange = this.oldSelection;
-					editor.Caret.PreserveSelection = true;
-					editor.Caret.Offset   = this.oldPos;
-					editor.Caret.PreserveSelection = false;
+				this.operation = operation;
+				this.operation.Disposed += delegate {
+					if (editor != null)
+						editor.states.Remove (this);
+					Dispose ();
 				};
 			}
+			
+			public void Attach ()
+			{
+				if (operation == null)
+					return;
+				operation.UndoDone += UndoDone;
+				operation.RedoDone += RedoDone;
+			}
+			
+			public void Dispose ()
+			{
+				if (operation != null) {
+					operation.UndoDone -= UndoDone;
+					operation.RedoDone -= RedoDone;
+					operation = null;
+				}
+				editor    = null;
+				selection = oldSelection = null;
+			}
+			
+			void UndoDone (object sender, EventArgs args)
+			{
+				if (editor == null)
+					return;
+				this.oldPos       = editor.Caret.Offset;
+				this.oldSelection = editor.SelectionRange;
+				
+				editor.Caret.Offset   = this.caretPos;
+				editor.SelectionRange = this.selection;
+			}
+			
+			void RedoDone (object sender, EventArgs args)
+			{
+				if (editor == null)
+					return;
+				editor.Caret.Offset   = this.oldPos;
+				editor.SelectionRange = this.oldSelection;
+			}
+			
 		}
+		#endregion
 		
 		void DocumentUpdatedHandler (object sender, EventArgs args)
 		{
@@ -400,12 +440,22 @@ namespace Mono.TextEditor
 			this.isDisposed = true;
 			
 			Document.DocumentUpdated -= DocumentUpdatedHandler;
+			Document.BeginUndo       -= OnBeginUndo;
+			Document.EndUndo         -= OnEndUndo;
+			
 			TextEditorOptions.Changed -= OptionsChanged;
+			
+			foreach (IDisposable disposeable in this.states) {
+				disposeable.Dispose ();
+			}
+			this.states = null;
 			
 			foreach (IMargin margin in this.margins) {
 				if (margin is IDisposable)
 					((IDisposable)margin).Dispose ();
 			}
+			this.margins = null;
+			
 //			if (buffer != null) {
 //				buffer.Dispose ();
 //				buffer = null;
