@@ -355,19 +355,25 @@ namespace MonoDevelop.SourceEditor
 		
 		public override FontDescription Font {
 			get {
+				FontDescription result;
 				switch (EditorFontType) {
 				case EditorFontType.DefaultMonospace:
 					try {
-						return FontDescription.FromString (IdeApp.Services.PlatformService.DefaultMonospaceFont);
+						result =  FontDescription.FromString (IdeApp.Services.PlatformService.DefaultMonospaceFont);
 					} catch (Exception ex) {
 						LoggingService.LogWarning ("Could not load platform's default monospace font.", ex);
 						goto default;
 					}
+					break;
 //				case "__default_sans":
 //					return new Gtk.Label ("").Style.FontDescription;
 				default:
-					return FontDescription.FromString (FontName);
+					result = FontDescription.FromString (FontName);
+					break;
 				}
+				if (result != null)
+					result.Size = (int)(result.Size * Zoom);
+				return result;
 			}
 		}
 		#endregion

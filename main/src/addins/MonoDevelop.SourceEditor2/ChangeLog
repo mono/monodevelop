@@ -1,5 +1,10 @@
 2008-02-18  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.SourceEditor/SourceEditorOptions.cs: Implemented mouse wheel
+	  zoom.
+
+2008-02-18  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Fixed find next selection
 	  update.
 
