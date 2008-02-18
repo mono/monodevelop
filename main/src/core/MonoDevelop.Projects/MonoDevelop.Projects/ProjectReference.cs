@@ -84,6 +84,10 @@ namespace MonoDevelop.Projects
 			reference = referencedProject.Name;
 		}
 		
+		public Project OwnerProject {
+			get { return ownerProject; }
+		}
+		
 		[ReadOnly(true)]
 		public ReferenceType ReferenceType {
 			get {

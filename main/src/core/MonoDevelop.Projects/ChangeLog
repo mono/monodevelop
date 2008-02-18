@@ -1,3 +1,8 @@
+2008-02-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/ProjectReference.cs: Added property for getting the
+	  owner project of a reference.
+
 2008-02-06  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Projects/DotNetProjectConfiguration.cs: Update default
