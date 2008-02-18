@@ -157,7 +157,7 @@ namespace MonoDevelop.SourceEditor
 			};
 			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += OnParseInformationChanged;
 //			this.IsClassBrowserVisible = SourceEditorOptions.Options.EnableQuickFinder;
-			this.textEditor.FireOptionsChange ();
+			
 //			this.d += delegate {
 //				this.textEditor.Destroy ();
 //			};

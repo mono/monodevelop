@@ -1,5 +1,10 @@
 2008-02-19  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: fixed some gdk criticals
+	  caused by an too early OptionsChanged event.
+
+2008-02-19  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs,
 	  MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs,
 	  MonoDevelop.SourceEditor/SearchWidget.cs: Worked on selection.
