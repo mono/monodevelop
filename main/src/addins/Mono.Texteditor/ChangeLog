@@ -1,5 +1,10 @@
 2008-02-18  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/DefaultEditActions.cs: fixed Bug 322763 - Ctrl + Backspace
+	  deletes the end of the line.
+
+2008-02-18  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/DefaultEditActions.cs: goto/delete next/prev word should
 	  now be the same as in gtksourceview.
 

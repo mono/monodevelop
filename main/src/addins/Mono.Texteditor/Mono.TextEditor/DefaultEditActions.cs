@@ -68,11 +68,17 @@ namespace Mono.TextEditor
 			if (offset <= 0)
 				return 0;
 			int  result = offset - 1;
+			bool crossedEol = false;
 			while (result > 0 && !Char.IsLetterOrDigit (document.GetCharAt (result))) {
+				crossedEol |= document.GetCharAt (result) == '\n';
+				crossedEol |= document.GetCharAt (result) == '\r';
 				result--;
 			}
+			
 			bool isLetter = Char.IsLetter (document.GetCharAt (result));
 			bool isDigit  = Char.IsDigit (document.GetCharAt (result));
+			if (crossedEol && (isLetter || isDigit))
+				return result + 1;
 			while (result > 0) {
 				char ch = document.GetCharAt (result);
 				if (isLetter) {
@@ -188,12 +194,17 @@ namespace Mono.TextEditor
 			if (offset + 1 >= document.Length)
 				return document.Length;
 			int result = offset + 1;
+			bool crossedEol = false;
 			while (result < document.Length && !Char.IsLetterOrDigit (document.GetCharAt (result))) {
+				crossedEol |= document.GetCharAt (result) == '\n';
+				crossedEol |= document.GetCharAt (result) == '\r';
 				result++;
 			}
 			
 			bool isLetter = Char.IsLetter (document.GetCharAt (result));
 			bool isDigit  = Char.IsDigit (document.GetCharAt (result));
+			if (crossedEol && (isLetter || isDigit))
+				return result;
 			while (result < document.Length) {
 				char ch = document.GetCharAt (result);
 				if (isLetter) {
