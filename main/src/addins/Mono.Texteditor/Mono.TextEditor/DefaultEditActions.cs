@@ -912,7 +912,7 @@ namespace Mono.TextEditor
 		
 		public void CopyData (TextEditorData data)
 		{
-			if (data.IsSomethingSelected) {
+			if (data.IsSomethingSelected && data.Document.Contains (data.SelectionRange)) {
 				text = data.Document.GetTextAt (data.SelectionRange);
 				rtf  = GenerateRtf (data);
 			} else {

@@ -471,8 +471,6 @@ namespace Mono.TextEditor
 		public bool inSelectionDrag = false;
 		public bool inDrag = false;
 		public DocumentLocation clickLocation;
-		DocumentLocation selectionStartLocation;
-		ISegment minimalSelection = null;
 		enum MouseSelectionMode {
 			SingleChar,
 			Word,
@@ -498,22 +496,18 @@ namespace Mono.TextEditor
 				if (type == EventType.TwoButtonPress) {
 					int start = ScanWord (offset, false);
 					int end   = ScanWord (offset, true);
-					textEditor.SelectionRange = minimalSelection = new Segment (start, end - start);
-					selectionStartLocation = Document.OffsetToLocation (start);
+					textEditor.SelectionRange = new Segment (start, end - start);
 					inSelectionDrag = true;
 					mouseSelectionMode = MouseSelectionMode.Word;
 					return;
 				} else if (type == EventType.ThreeButtonPress) {
-					textEditor.SelectionRange = minimalSelection = Document.GetLineByOffset (offset);
-					selectionStartLocation = Document.OffsetToLocation (minimalSelection.Offset);
+					textEditor.SelectionRange = Document.GetLineByOffset (offset);
 					inSelectionDrag = true;
 					mouseSelectionMode = MouseSelectionMode.WholeLine;
 					return;
 				}
 				mouseSelectionMode = MouseSelectionMode.SingleChar;
-				selectionStartLocation = clickLocation;
 				
-				minimalSelection = null;
 				if (textEditor.IsSomethingSelected && textEditor.SelectionRange.Offset <= offset && offset < textEditor.SelectionRange.EndOffset && clickLocation != textEditor.Caret.Location) {
 					inDrag = true;
 				} else {

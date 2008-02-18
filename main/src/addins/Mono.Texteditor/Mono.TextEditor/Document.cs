@@ -623,6 +623,16 @@ namespace Mono.TextEditor
 		}
 		#endregion
 		
+		public bool Contains (int offset)
+		{
+			return new Segment (0, Length).Contains (offset);
+		}
+		
+		public bool Contains (ISegment segment)
+		{
+			return new Segment (0, Length).Contains (segment);
+		}
+		
 		public int VisualToLogicalLine (int visualLineNumber)
 		{
 			int result = visualLineNumber;
