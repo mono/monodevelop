@@ -833,10 +833,20 @@ namespace MonoDevelop.Ide.Gui
 			if (chain == null)
 			{
 				ArrayList list = new ArrayList ();
+				
+				// Find the most specific node builder type.
+				TypeNodeBuilder bestTypeNodeBuilder = null;
+				Type bestNodeType = null;
+				
 				foreach (NodeBuilder nb in builders) {
 					if (nb is TypeNodeBuilder) {
-						if (((TypeNodeBuilder)nb).NodeDataType.IsAssignableFrom (type))
-							list.Insert (0, nb);
+						TypeNodeBuilder tnb = (TypeNodeBuilder) nb;
+						if (tnb.NodeDataType.IsAssignableFrom (type)) {
+							if (bestNodeType == null || bestNodeType.IsAssignableFrom (tnb.NodeDataType)) {
+								bestNodeType = tnb.NodeDataType;
+								bestTypeNodeBuilder = tnb;
+							}
+						}
 					}
 					else {
 						try {
@@ -848,11 +858,12 @@ namespace MonoDevelop.Ide.Gui
 					}
 				}
 				
-				chain = (NodeBuilder[]) list.ToArray (typeof(NodeBuilder));
-				
-				if (chain.Length == 0 || !(chain[0] is TypeNodeBuilder))
+				if (bestTypeNodeBuilder != null) {
+					list.Insert (0, bestTypeNodeBuilder);
+					chain = (NodeBuilder[]) list.ToArray (typeof(NodeBuilder));
+				} else
 					chain = null;
-
+				
 				builderChains [type] = chain;
 			}
 			return chain;

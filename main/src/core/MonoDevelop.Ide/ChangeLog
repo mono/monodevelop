@@ -1,3 +1,8 @@
+2008-02-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui/MonoDevelopTreeView.cs: If there are several valid
+	  node type builders for a type, make sure to pick the most specific one.
+
 2008-02-18  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs: Fixed tabs2spaces
