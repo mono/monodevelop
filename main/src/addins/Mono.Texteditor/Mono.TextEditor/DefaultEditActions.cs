@@ -314,9 +314,9 @@ namespace Mono.TextEditor
 		{
 			data.Caret.AutoScrollToCaret = false;
 			data.Caret.PreserveSelection = true;
-			data.SelectionStart = new SelectionMarker (data.Document.GetLine (0), 0);
+			data.SelectionAnchor = 0;
 			new CaretMoveToDocumentEnd ().Run (data);
-			SelectionMoveLeft.EndSelection (data);
+			data.ExtendSelectionTo (data.Document.Length);
 			data.Caret.AutoScrollToCaret = true;
 		}
 	}
@@ -326,14 +326,13 @@ namespace Mono.TextEditor
 		public static void StartSelection (TextEditorData data)
 		{
 			data.Caret.PreserveSelection = true;
-			if (data.SelectionStart == null) {
-				data.SelectionStart = new SelectionMarker (data.Document.GetLine (data.Caret.Line), data.Caret.Column);
-			}
+			if (!data.IsSomethingSelected)
+				data.SelectionAnchor = data.Caret.Offset;
 		}
 		
 		public static void EndSelection (TextEditorData data)
 		{
-			data.SelectionEnd = new SelectionMarker (data.Document.GetLine (data.Caret.Line), data.Caret.Column);
+			data.ExtendSelectionTo (data.Caret.Offset);
 			data.Caret.PreserveSelection = false;
 		}
 		
@@ -561,11 +560,15 @@ namespace Mono.TextEditor
 				if (first < 0)
 					first = last;
 			}
-			if (data.IsSomethingSelected)
-				data.SelectionStart.Column = System.Math.Max (0, data.SelectionStart.Column - first);
-			if (!data.IsSomethingSelected || data.SelectionEnd.Column != 0) {
-				if (data.IsSomethingSelected)
-					data.SelectionEnd.Column = System.Math.Max (0, data.SelectionEnd.Column - last);
+			if (data.IsSomethingSelected) {
+				data.SelectionAnchor = System.Math.Max (0, data.SelectionAnchor - first);
+				data.SelectionRange = new Segment (data.SelectionRange.Offset - first, data.SelectionRange.Length + first);
+			}
+			DocumentLocation selectionEnd = data.IsSomethingSelected ? data.Document.OffsetToLocation (data.SelectionRange.EndOffset) : DocumentLocation.Empty;
+			if (!data.IsSomethingSelected || selectionEnd.Column != 0) {
+				if (data.IsSomethingSelected) {
+					data.SelectionRange = new Segment (data.SelectionRange.Offset, data.SelectionRange.Length -last);
+				}
 				data.Caret.PreserveSelection = true;
 				data.Caret.Column = System.Math.Max (0, data.Caret.Column - last);
 				data.Caret.PreserveSelection = false;
@@ -577,7 +580,7 @@ namespace Mono.TextEditor
 		
 		public override void Run (TextEditorData data)
 		{
-			if (data.IsSomethingSelected && data.SelectionStart.Segment != data.SelectionEnd.Segment) {
+			if (data.IsMultiLineSelection) {
 				RemoveIndentSelection (data);
 				return;
 			} else {
@@ -612,13 +615,15 @@ namespace Mono.TextEditor
 			foreach (LineSegment line in data.SelectedLines) {
 				data.Document.Insert (line.Offset, TextEditorOptions.Options.IndentationString);
 			}
-			if (data.IsSomethingSelected)
-				data.SelectionStart.Column++;
-			if (!data.IsSomethingSelected || data.SelectionEnd.Column != 0) {
-				if (data.IsSomethingSelected)
-					data.SelectionEnd.Column++;
+			if (data.IsSomethingSelected) {
+				data.SelectionAnchor++;
+			}
+			DocumentLocation selectionEnd = data.IsSomethingSelected ? data.Document.OffsetToLocation (data.SelectionRange.EndOffset) : DocumentLocation.Empty;
+			if (selectionEnd.Column != 0) {
 				data.Caret.PreserveSelection = true;
 				data.Caret.Column++;
+				if (data.IsSomethingSelected) 
+					data.ExtendSelectionTo (data.Caret.Offset);
 				data.Caret.PreserveSelection = false;
 			}
 			data.Document.EndAtomicUndo ();
@@ -628,7 +633,7 @@ namespace Mono.TextEditor
 		
 		public override void Run (TextEditorData data)
 		{
-			if (data.IsSomethingSelected && data.SelectionStart.Segment != data.SelectionEnd.Segment) {
+			if (data.IsMultiLineSelection) {
 				IndentSelection (data);
 				return;
 			}
@@ -636,7 +641,6 @@ namespace Mono.TextEditor
 			if (data.IsSomethingSelected) {
 				data.DeleteSelectedText ();
 			}
-			
 			data.Document.Insert (data.Caret.Offset, TextEditorOptions.Options.IndentationString);
 			data.Caret.Column += TextEditorOptions.Options.IndentationString.Length;
 			data.Document.EndAtomicUndo ();

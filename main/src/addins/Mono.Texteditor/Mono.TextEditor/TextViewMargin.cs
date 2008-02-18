@@ -49,9 +49,6 @@ namespace Mono.TextEditor
 		uint caretBlinkTimeoutId = 0;
 		const int CaretBlinkTime = 800;
 		
-		Gdk.Cursor defaultCursor;
-		Gdk.Cursor textCursor;
-		
 		int lineHeight = 16;
 		int highlightBracketOffset = -1;
 		
@@ -152,9 +149,7 @@ namespace Mono.TextEditor
 						textEditor.RedrawLine (line2);
 				}
 			};
-			
-			defaultCursor = null;
-			textCursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
+			base.cursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
 		}
 		
 		public override void OptionsChanged ()
@@ -205,6 +200,7 @@ namespace Mono.TextEditor
 				invalidLineMarker.Dispose ();
 				invalidLineMarker = null;
 			}
+			base.Dispose ();
 		}
 		
 		public void ResetCaretBlink ()
@@ -477,6 +473,12 @@ namespace Mono.TextEditor
 		public DocumentLocation clickLocation;
 		DocumentLocation selectionStartLocation;
 		ISegment minimalSelection = null;
+		enum MouseSelectionMode {
+			SingleChar,
+			Word,
+			WholeLine
+		};
+		MouseSelectionMode mouseSelectionMode = MouseSelectionMode.SingleChar;
 		
 		public override void MousePressed (int button, int x, int y, Gdk.EventType type, Gdk.ModifierType modifierState)
 		{
@@ -484,25 +486,31 @@ namespace Mono.TextEditor
 			inDrag = false;
 			if (button == 1 || button == 2) {
 				clickLocation = VisualToDocumentLocation (x, y);
+				if (!textEditor.IsSomethingSelected) {
+					textEditor.SelectionAnchorLocation = clickLocation;
+				}
+				
 				int offset = Document.LocationToOffset (clickLocation);
 				if (offset < 0) {
 					textEditor.RunAction (new CaretMoveToDocumentEnd ());
 					return;
 				}
-
 				if (type == EventType.TwoButtonPress) {
 					int start = ScanWord (offset, false);
 					int end   = ScanWord (offset, true);
 					textEditor.SelectionRange = minimalSelection = new Segment (start, end - start);
 					selectionStartLocation = Document.OffsetToLocation (start);
 					inSelectionDrag = true;
+					mouseSelectionMode = MouseSelectionMode.Word;
 					return;
 				} else if (type == EventType.ThreeButtonPress) {
 					textEditor.SelectionRange = minimalSelection = Document.GetLineByOffset (offset);
 					selectionStartLocation = Document.OffsetToLocation (minimalSelection.Offset);
 					inSelectionDrag = true;
+					mouseSelectionMode = MouseSelectionMode.WholeLine;
 					return;
 				}
+				mouseSelectionMode = MouseSelectionMode.SingleChar;
 				selectionStartLocation = clickLocation;
 				
 				minimalSelection = null;
@@ -510,15 +518,13 @@ namespace Mono.TextEditor
 					inDrag = true;
 				} else {
 					inSelectionDrag = true;
-					textEditor.ClearSelection ();
 					if ((modifierState & Gdk.ModifierType.ShiftMask) == ModifierType.ShiftMask) {
-						if (!textEditor.IsSomethingSelected) 
-							SelectionMoveLeft.StartSelection (textEditor.GetTextEditorData ());
 						Caret.PreserveSelection = true;
 						Caret.Location = clickLocation;
 						Caret.PreserveSelection = false;
-						SelectionMoveLeft.EndSelection (textEditor.GetTextEditorData ());
+						textEditor.ExtendSelectionTo (clickLocation);
 					} else {
+						textEditor.ClearSelection ();
 						Caret.Location = clickLocation; 
 					}
 					this.caretBlink = false;
@@ -531,37 +537,49 @@ namespace Mono.TextEditor
 		int ScanWord (int offset, bool forwardDirection)
 		{
 			LineSegment line = Document.GetLineByOffset (offset);
-			while (offset >= line.Offset && offset < line.Offset + line.EditableLength && char.IsWhiteSpace (Document.GetCharAt (offset))) {
+			while (offset >= line.Offset && offset < line.Offset + line.EditableLength && !char.IsLetterOrDigit (Document.GetCharAt (offset))) {
 				offset = forwardDirection ? offset + 1 : offset - 1; 
 			}
 			while (offset >= line.Offset && offset < line.Offset + line.EditableLength && (char.IsLetterOrDigit (Document.GetCharAt (offset)) || Document.GetCharAt (offset) == '_')) {
 				offset = forwardDirection ? offset + 1 : offset - 1; 
 			}
-			return offset + (forwardDirection ? 0 : 1);
+			return System.Math.Min (line.EndOffset - 1, System.Math.Max (line.Offset, offset + (forwardDirection ? 0 : 1)));
 		}
 		
 		public override void MouseHover (int x, int y, bool buttonPressed)
 		{
-			textEditor.GdkWindow.Cursor = textCursor;
 			if (!buttonPressed)
 				return;
 			if (inSelectionDrag) {
 				DocumentLocation loc = VisualToDocumentLocation (x, y);
-				int offset1 = Document.LocationToOffset (this.selectionStartLocation);
-				int offset2 = Document.LocationToOffset (loc);
-				ISegment requestedSelection = offset1 < offset2 ? new Segment (offset1, offset2 - offset1) : new Segment (offset2, offset1 - offset2);
-				if (this.minimalSelection != null) {
-					if (requestedSelection.EndOffset < minimalSelection.EndOffset) {
-						requestedSelection = new Segment (requestedSelection.Offset, minimalSelection.EndOffset - requestedSelection.Offset);
-					}
-					
-					if (requestedSelection.Offset > minimalSelection.Offset) {
-						requestedSelection = new Segment (minimalSelection.Offset, requestedSelection.EndOffset - minimalSelection.Offset);
-					}
-				}
 				Caret.PreserveSelection = true;
-				textEditor.SelectionRange = requestedSelection;
-				Caret.Location = loc;
+				switch (this.mouseSelectionMode) {
+				case MouseSelectionMode.SingleChar:
+					textEditor.ExtendSelectionTo (loc);
+					Caret.Location = loc;
+					break;
+				case MouseSelectionMode.Word:
+					int offset = textEditor.Document.LocationToOffset (loc);
+					int start;
+					int end;
+					if (offset < textEditor.SelectionAnchor) {
+						start = ScanWord (offset, false);
+						end   = ScanWord (textEditor.SelectionAnchor, true);
+						Caret.Offset = start;
+					} else {
+						start = ScanWord (textEditor.SelectionAnchor, false);
+						end   = ScanWord (offset, true);
+						Caret.Offset = end;
+					}
+					textEditor.SelectionRange = new Segment (start, end - start);
+					break;
+				case MouseSelectionMode.WholeLine:
+					textEditor.SetSelectLines (loc.Line, textEditor.SelectionAnchorLocation.Line);
+					LineSegment line1 = textEditor.Document.GetLine (loc.Line);
+					LineSegment line2 = textEditor.Document.GetLineByOffset (textEditor.SelectionAnchor);
+					Caret.Offset = line1.Offset < line2.Offset ? line1.Offset : line1.EndOffset;
+					break;
+				}
 				Caret.PreserveSelection = false;
 //				textEditor.RedrawLines (System.Math.Min (oldLine, Caret.Line), System.Math.Max (oldLine, Caret.Line));
 			}
@@ -745,7 +763,6 @@ namespace Mono.TextEditor
 		
 		public override void MouseLeft ()
 		{
-			textEditor.GdkWindow.Cursor = defaultCursor;
 		}
 		
 		public DocumentLocation VisualToDocumentLocation (int x, int y)

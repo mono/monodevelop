@@ -44,11 +44,16 @@ namespace Mono.TextEditor
 			set;
 		}
 		
+		Gdk.Cursor MarginCursor {
+			get;
+		}
+		
 		void OptionsChanged ();
 		
 		void Draw (Gdk.Drawable drawable, Gdk.Rectangle area, int line, int x, int y);
 		
 		void MousePressed (int button, int x, int y, Gdk.EventType type, Gdk.ModifierType modifierState);
+		void MouseReleased (int button, int x, int y, Gdk.ModifierType modifierState);
 		void MouseHover (int x, int y, bool buttonPressed);
 		void MouseLeft ();
 	}
@@ -79,6 +84,13 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		protected Gdk.Cursor cursor = null;
+		public Gdk.Cursor MarginCursor {
+			get {
+				return cursor;
+			}
+		}
+		
 		public abstract void Draw (Gdk.Drawable drawable, Gdk.Rectangle area, int line, int x, int y);
 		
 		public virtual void OptionsChanged ()
@@ -86,6 +98,9 @@ namespace Mono.TextEditor
 		}
 		
 		public virtual void MousePressed (int button, int x, int y, Gdk.EventType type, Gdk.ModifierType modifierState)
+		{
+		}
+		public virtual void MouseReleased (int button, int x, int y, Gdk.ModifierType modifierState)
 		{
 		}
 		
@@ -98,6 +113,10 @@ namespace Mono.TextEditor
 		}
 		public virtual void Dispose ()
 		{
+			if (cursor != null) {
+				cursor.Dispose ();
+				cursor = null;
+			}
 		}
 		
 	}

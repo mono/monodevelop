@@ -5,6 +5,7 @@
         <property name="SearchPattern" />
         <property name="HighlightSearchPattern" />
         <property name="SelectedText" />
+        <property name="SelectionAnchor" />
       </itemgroup>
     </itemgroups>
     <signals>

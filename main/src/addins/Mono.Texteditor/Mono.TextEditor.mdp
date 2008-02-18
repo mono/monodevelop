@@ -38,7 +38,6 @@
     <File name="Mono.TextEditor/FoldMarkerMargin.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/IMargin.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor.Highlighting/Chunk.cs" subtype="Code" buildaction="Compile" />
-    <File name="Mono.TextEditor/SelectionMarker.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/ISegment.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/TextEditorOptions.cs" subtype="Code" buildaction="Compile" />
     <File name="C64Style.xml" subtype="Code" buildaction="EmbedAsResource" />

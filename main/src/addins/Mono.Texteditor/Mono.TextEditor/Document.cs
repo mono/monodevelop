@@ -391,7 +391,7 @@ namespace Mono.TextEditor
 			
 		public bool CanUndo {
 			get {
-				return this.undoStack.Count > 0;
+				return this.undoStack.Count > 0 || currentAtomicOperation != null;
 			}
 		}
 		

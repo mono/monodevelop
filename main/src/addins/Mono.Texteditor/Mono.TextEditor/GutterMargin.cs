@@ -42,6 +42,7 @@ namespace Mono.TextEditor
 		{
 			this.editor = editor;
 			layout = new Pango.Layout (editor.PangoContext);
+			base.cursor = new Gdk.Cursor (Gdk.CursorType.RightPtr);
 		}
 		
 		void CalculateWidth ()
@@ -69,20 +70,57 @@ namespace Mono.TextEditor
 		
 		public override void MousePressed (int button, int x, int y, Gdk.EventType type, Gdk.ModifierType modifierState)
 		{
-			int lineNumber = editor.Document.VisualToLogicalLine ((int)(y + editor.VAdjustment.Value) / editor.LineHeight);
+			int lineNumber       = editor.Document.VisualToLogicalLine ((int)(y + editor.VAdjustment.Value) / editor.LineHeight);
+			bool extendSelection = (modifierState & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask;
 			if (lineNumber < editor.Document.LineCount) {
 				DocumentLocation loc = new DocumentLocation (lineNumber, 0);
-				if (loc != editor.Caret.Location) {
-					editor.Caret.Location = loc;
-				} else if (editor.IsSomethingSelected) {
-					editor.ClearSelection ();
-					editor.QueueDraw ();
+				LineSegment line = editor.Document.GetLine (lineNumber);
+				if (type == EventType.TwoButtonPress) {
+					editor.SelectionRange = line;
+					editor.SelectionAnchor = editor.Document.LocationToOffset (loc);
+				} else if (extendSelection) {
+					if (!editor.IsSomethingSelected) {
+						editor.SelectionAnchor = editor.Caret.Offset;
+					} 
+					editor.SetSelectLines (editor.SelectionAnchorLocation.Line, lineNumber);
 				} else {
-					LineSegment line = editor.Document.GetLine (lineNumber);
-					editor.SelectionRange = new Segment (line.Offset, line.EditableLength); 
-					editor.QueueDraw ();
+					editor.ClearSelection ();
 				}
+				editor.Caret.PreserveSelection = true;
+				editor.Caret.Location = loc;
+				editor.Caret.PreserveSelection = false;
+				
+				
+//				if (loc != editor.Caret.Location) {
+//					
+//				} else if (editor.IsSomethingSelected) {
+//					editor.ClearSelection ();
+//					editor.QueueDraw ();
+//				} else {
+//					LineSegment line = editor.Document.GetLine (lineNumber);
+//					editor.SelectionRange = new Segment (line.Offset, line.EditableLength); 
+//					editor.QueueDraw ();
+//				}
 			}
+		}
+		
+		public override void MouseHover (int x, int y, bool buttonPressed)
+		{
+			if (buttonPressed) {
+				if (!editor.IsSomethingSelected) {
+					editor.SelectionAnchor = editor.Caret.Offset;
+				} 
+				int lineNumber = editor.Document.VisualToLogicalLine ((int)(y + editor.VAdjustment.Value) / editor.LineHeight);
+				editor.SetSelectLines (editor.SelectionAnchorLocation.Line, lineNumber);
+				editor.Caret.PreserveSelection = true;
+				editor.Caret.Location = new DocumentLocation (lineNumber, 0);
+				editor.Caret.PreserveSelection = false;
+			}
+		}
+		
+		
+		public override void MouseReleased (int button, int x, int y, Gdk.ModifierType modifierState)
+		{
 		}
 		
 		public override void Dispose ()
@@ -92,6 +130,7 @@ namespace Mono.TextEditor
 				layout = null;
 			}
 			DisposeGCs ();
+			base.Dispose ();
 		}
 		
 		void DisposeGCs ()

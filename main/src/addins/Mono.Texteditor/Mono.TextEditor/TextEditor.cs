@@ -266,7 +266,7 @@ namespace Mono.TextEditor
 			margins.Add (textViewMargin);
 			ISegment oldSelection = null;
 			this.textEditorData.SelectionChanged += delegate {
-				if (IsSomethingSelected && SelectionRange.Offset > 0)
+				if (IsSomethingSelected && SelectionRange.Offset >= 0 && SelectionRange.EndOffset < Document.Length)
 					new CopyAction ().CopyToPrimary (this.textEditorData);
 				
 				// Handle redraw
@@ -300,7 +300,7 @@ namespace Mono.TextEditor
 						to = endLine;
 					} 
 				}
-				oldSelection = selection;
+				oldSelection = selection != null ? new Segment (selection.Offset, selection.Length) : null;
 				this.RedrawLines (System.Math.Min (from, to), System.Math.Max (from, to));
 				OnSelectionChanged (EventArgs.Empty);
 			};
@@ -591,6 +591,12 @@ namespace Mono.TextEditor
 		{
 			if (textViewMargin.inDrag) 
 				Caret.Location = textViewMargin.clickLocation;
+			int startPos;
+			IMargin margin = GetMarginAtX ((int)e.X, out startPos);
+			if (margin != null) {
+				margin.MouseReleased ((int)e.Button, (int)(e.X - startPos), (int)e.Y, e.State);
+			}
+			
 			mousePressed = false;
 			textViewMargin.inDrag = false;
 			textViewMargin.inSelectionDrag = false;
@@ -678,6 +684,8 @@ namespace Mono.TextEditor
 		{
 			int startPos;
 			IMargin margin = GetMarginAtX ((int)e.X, out startPos);
+			GdkWindow.Cursor = margin.MarginCursor;
+			
 			if (textViewMargin.inSelectionDrag) {
 				margin   = textViewMargin;
 				startPos = textViewMargin.XOffset;
@@ -700,6 +708,8 @@ namespace Mono.TextEditor
 		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing e)
 		{
+			GdkWindow.Cursor = null;
+			
 			if (e.Mode == CrossingMode.Normal) {
 				if (oldMargin != null)
 					oldMargin.MouseLeft ();
@@ -775,7 +785,6 @@ namespace Mono.TextEditor
 			}
 			return base.OnScrollEvent (evnt); 
 		}
-
 		
 		internal void SetAdjustments (Gdk.Rectangle allocation)
 		{
@@ -861,6 +870,24 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public int SelectionAnchor {
+			get {
+				return this.textEditorData.SelectionAnchor;
+			}
+			set {
+				this.textEditorData.SelectionAnchor = value;
+			}
+		}
+		
+		public DocumentLocation SelectionAnchorLocation {
+			get {
+				return Document.OffsetToLocation (SelectionAnchor);
+			}
+			set {
+				SelectionAnchor = Document.LocationToOffset (value);
+			}
+		}
+		
 		public ISegment SelectionRange {
 			get {
 				return this.textEditorData.SelectionRange;
@@ -911,7 +938,18 @@ namespace Mono.TextEditor
 		{
 			action.Run (this.textEditorData);
 		}
-		
+		public void ExtendSelectionTo (DocumentLocation location)
+		{
+			this.textEditorData.ExtendSelectionTo (location);
+		}
+		public void ExtendSelectionTo (int offset)
+		{
+			this.textEditorData.ExtendSelectionTo (offset);
+		}
+		public void SetSelectLines (int from, int to)
+		{
+			this.textEditorData.SetSelectLines (from, to);
+		}
 		
 		
 		/// <summary>

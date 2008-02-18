@@ -31,14 +31,39 @@ namespace Mono.TextEditor
 {
 	public class TextEditorData
 	{
-		SelectionMarker selectionStart;
-		SelectionMarker selectionEnd;
-		Adjustment hadjustment = new Adjustment (0, 0, 0, 0, 0, 0); 
-		Adjustment vadjustment = new Adjustment (0, 0, 0, 0, 0, 0);
 		Document   document; 
 		Caret      caret;
 		
+		Adjustment hadjustment = new Adjustment (0, 0, 0, 0, 0, 0); 
+		public Adjustment HAdjustment {
+			get {
+				return hadjustment;
+			}
+			set {
+				hadjustment = value;
+			}
+		}
+		
+		Adjustment vadjustment = new Adjustment (0, 0, 0, 0, 0, 0);
+		public Adjustment VAdjustment {
+			get {
+				return vadjustment;
+			}
+			set {
+				vadjustment = value;
+			}
+		}
+		
+		
 		string searchPattern = "";
+		public string SearchPattern {
+			get {
+				return searchPattern;
+			}
+			set {
+				searchPattern = value;
+			}
+		}
 		
 		public TextEditorData ()
 		{
@@ -75,51 +100,68 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		#region Selection management
+		int      selectionAnchor = -1;
+		ISegment selectionRange  = null;
+		
 		public bool IsSomethingSelected {
 			get {
-				return SelectionStart != null && SelectionEnd != null; 
+				return selectionRange != null; 
+			}
+		}
+		
+		public bool IsMultiLineSelection {
+			get {
+				return IsSomethingSelected && document.OffsetToLineNumber (selectionRange.Offset) != document.OffsetToLineNumber (selectionRange.EndOffset);
 			}
 		}
 		
 		public ISegment SelectionRange {
 			get {
-				if (!IsSomethingSelected)
-					return null;
-				SelectionMarker start;
-				SelectionMarker end;
-				 
-				if (SelectionStart.Segment.Offset < SelectionEnd.Segment.Offset || SelectionStart.Segment.Offset == SelectionEnd.Segment.Offset && SelectionStart.Column < SelectionEnd.Column) {
-					start = SelectionStart;
-					end   = SelectionEnd;
-				} else {
-					start = SelectionEnd;
-					end   = SelectionStart;
-				}
-				
-				int startOffset = start.Segment.Offset + start.Column;
-				int endOffset   = end.Segment.Offset + end.Column;
-				return new Segment (startOffset, endOffset - startOffset);
+				return selectionRange;
 			}
 			set {
-				if (value == null) {
-					ClearSelection ();
-					return;
-				}
-				int start, end;
-				if (value.Offset < value.EndOffset) {
-					start = value.Offset;
-					end   = value.EndOffset;
-				} else {
-					start = value.EndOffset;
-					end   = value.Offset;
-				}
-				LineSegment startLine = Document.GetLineByOffset (start);
-				LineSegment endLine   = Document.GetLineByOffset (end);
-				this.Caret.Offset = end;
-				selectionStart = new SelectionMarker (startLine, start - startLine.Offset);
-				selectionEnd   = new SelectionMarker (endLine, end - endLine.Offset);
-				OnSelectionChanged (EventArgs.Empty);				
+				selectionRange = value;
+				OnSelectionChanged (EventArgs.Empty);
 			}
+//			get {
+//				if (!IsSomethingSelected)
+//					return null;
+//				SelectionMarker start;
+//				SelectionMarker end;
+//				 
+//				if (SelectionAnchor.Segment.Offset < SelectionEnd.Segment.Offset || SelectionAnchor.Segment.Offset == SelectionEnd.Segment.Offset && SelectionAnchor.Column < SelectionEnd.Column) {
+//					start = SelectionAnchor;
+//					end   = SelectionEnd;
+//				} else {
+//					start = SelectionEnd;
+//					end   = SelectionAnchor;
+//				}
+//				
+//				int startOffset = start.Segment.Offset + start.Column;
+//				int endOffset   = end.Segment.Offset + end.Column;
+//				return new Segment (startOffset, endOffset - startOffset);
+//			}
+//			set {
+//				if (value == null) {
+//					ClearSelection ();
+//					return;
+//				}
+//				int start, end;
+//				if (value.Offset < value.EndOffset) {
+//					start = value.Offset;
+//					end   = value.EndOffset;
+//				} else {
+//					start = value.EndOffset;
+//					end   = value.Offset;
+//				}
+//				LineSegment startLine = Document.GetLineByOffset (start);
+//				LineSegment endLine   = Document.GetLineByOffset (end);
+//				this.Caret.Offset = end;
+//				selectionStart = new SelectionMarker (startLine, start - startLine.Offset);
+//				selectionEnd   = new SelectionMarker (endLine, end - endLine.Offset);
+//				OnSelectionChanged (EventArgs.Empty);				
+//			}
 		}
 		
 		public string SelectedText {
@@ -158,58 +200,54 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public Adjustment HAdjustment {
+		public int SelectionAnchor {
 			get {
-				return hadjustment;
+				return selectionAnchor;
 			}
 			set {
-				hadjustment = value;
-			}
-		}
-		
-		public Adjustment VAdjustment {
-			get {
-				return vadjustment;
-			}
-			set {
-				vadjustment = value;
-			}
-		}
-		
-		public SelectionMarker SelectionStart {
-			get {
-				return selectionStart;
-			}
-			set {
-				selectionStart = value;
-				OnSelectionChanged (EventArgs.Empty);
-			}
-		}
-		
-		public SelectionMarker SelectionEnd {
-			get {
-				return selectionEnd;
-			}
-			set {
-				selectionEnd = value;
-				OnSelectionChanged (EventArgs.Empty);
-			}
-		}
-		
-		public string SearchPattern {
-			get {
-				return searchPattern;
-			}
-			set {
-				searchPattern = value;
+				selectionAnchor = value;
 			}
 		}
 		
 		public void ClearSelection ()
 		{
-			this.selectionStart = this.selectionEnd = null;
+			this.selectionAnchor = -1;
+			this.selectionRange  = null;
 			OnSelectionChanged (EventArgs.Empty);
 		}
+		
+		public void ExtendSelectionTo (DocumentLocation location)
+		{
+			ExtendSelectionTo (document.LocationToOffset (location));
+		}
+		
+		public void ExtendSelectionTo (int offset)
+		{
+			if (selectionAnchor < 0)
+				selectionAnchor = offset;
+			int from, to;
+			if (offset < selectionAnchor) {
+				from = offset;
+				to   = selectionAnchor;
+			} else {
+				to   = offset;
+				from = selectionAnchor;
+			}
+			this.SelectionRange = new Segment (from, to - from);
+		}
+		
+		public void SetSelectLines (int from, int to)
+		{
+			if (to < from) {
+				int tmp = from;
+				from = to;
+				to = tmp;
+			}
+			LineSegment fromLine =Document.GetLine (from);
+			LineSegment toLine = Document.GetLine (to);
+			SelectionRange = new Segment (fromLine.Offset, toLine.EndOffset - fromLine.Offset);
+		}
+				
 		
 		public void DeleteSelectedText ()
 		{
@@ -217,7 +255,7 @@ namespace Mono.TextEditor
 				return;
 			document.BeginAtomicUndo ();
 			ISegment selection = SelectionRange;
-			bool needUpdate = this.selectionStart.Segment != this.selectionEnd.Segment;
+			bool needUpdate = Document.OffsetToLineNumber (selection.Offset) != Document.OffsetToLineNumber (selection.EndOffset);
 			if (Caret.Offset > selection.Offset)
 				Caret.Offset -= selection.Length;
 			
@@ -229,7 +267,7 @@ namespace Mono.TextEditor
 			if (needUpdate)
 				Document.CommitDocumentUpdate ();
 		}
-		
+#endregion
 		public event EventHandler SelectionChanged;
 		protected virtual void OnSelectionChanged (EventArgs args)
 		{

@@ -1,3 +1,11 @@
+2008-02-19  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextViewMargin.cs,
+	  Mono.TextEditor/Document.cs, Mono.TextEditor/TextEditorData.cs,
+	  Mono.TextEditor/IMargin.cs, Mono.TextEditor/SelectionMarker.cs,
+	  Mono.TextEditor/TextEditor.cs, Mono.TextEditor/GutterMargin.cs: Worked
+	  on selection.
+
 2008-02-18  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/DefaultEditActions.cs: fixed Bug 322763 - Ctrl + Backspace
