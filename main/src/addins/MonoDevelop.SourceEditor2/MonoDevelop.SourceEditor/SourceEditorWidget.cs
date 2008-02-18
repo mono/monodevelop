@@ -860,6 +860,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (searchWidget == null) {
 				KillWidgets ();
+				if (TextEditor.IsSomethingSelected)
+					TextEditor.SearchPattern = TextEditor.SelectedText;
 				searchWidget = new SearchWidget (this);
 				editorBar.Add (searchWidget);
 				editorBar.SetChildPacking(searchWidget, false, true, 0, PackType.End);
@@ -874,6 +876,8 @@ namespace MonoDevelop.SourceEditor
 		{ 
 			if (searchAndReplaceWidget == null) {
 				KillWidgets ();
+				if (TextEditor.IsSomethingSelected)
+					TextEditor.SearchPattern = TextEditor.SelectedText;
 				searchAndReplaceWidget = new SearchAndReplaceWidget (this);
 				editorBar.Add (searchAndReplaceWidget);
 				editorBar.SetChildPacking(searchAndReplaceWidget, false, true, 0, PackType.End);

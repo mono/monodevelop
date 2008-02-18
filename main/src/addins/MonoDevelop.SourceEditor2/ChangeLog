@@ -1,5 +1,14 @@
 2008-02-18  Mike Krüger <mkrueger@novell.com> 
 
+	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs,
+	  gtk-gui/MonoDevelop.SourceEditor.SearchWidget.cs,
+	  MonoDevelop.SourceEditor/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs,
+	  MonoDevelop.SourceEditor/SearchWidget.cs: replace/search patterns are
+	  now static.
+
+2008-02-18  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,
 	  MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed file system watcher.
 

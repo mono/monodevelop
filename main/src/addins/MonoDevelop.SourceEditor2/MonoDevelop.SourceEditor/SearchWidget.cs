@@ -42,6 +42,7 @@ namespace MonoDevelop.SourceEditor
 		internal const string seachHistoryProperty = "MonoDevelop.FindReplaceDialogs.FindHistory";
 		ListStore searchHistory = new ListStore (typeof (string));
 		SourceEditorWidget widget;
+		internal static string searchPattern = "";
 		
 		public static bool IsCaseSensitive {
 			get {
@@ -80,6 +81,12 @@ namespace MonoDevelop.SourceEditor
 		{
 			this.Build();
 			this.widget = widget;
+			if (String.IsNullOrEmpty (widget.TextEditor.SearchPattern)) {
+				widget.TextEditor.SearchPattern = SearchWidget.searchPattern;
+			} else if (widget.TextEditor.SearchPattern != SearchWidget.searchPattern) {
+				searchPattern = widget.TextEditor.SearchPattern;
+				FireSearchPatternChanged ();
+			}
 			this.entrySearch.Entry.Text = widget.TextEditor.SearchPattern;
 			this.entrySearch.Model = searchHistory;
 			RestoreSearchHistory ();
@@ -92,6 +99,8 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			// if you change something here don"t forget the SearchAndReplaceWidget
+			SearchWidget.SearchPatternChanged += UpdateSearchPattern;
+			
 			this.closeButton.Clicked += delegate {
 				widget.RemoveSearchWidget ();
 			};
@@ -101,6 +110,10 @@ namespace MonoDevelop.SourceEditor
 			
 			this.entrySearch.Changed += delegate {
 				widget.TextEditor.SearchPattern = SearchPattern;
+				if (!SearchWidget.inSearchUpdate) {
+					SearchWidget.searchPattern = SearchPattern;
+					FireSearchPatternChanged ();
+				}
 			};
 			this.entrySearch.Entry.Activated += delegate {
 				UpdateSearchHistory (SearchPattern);
@@ -146,6 +159,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public override void Dispose ()
 		{
+			SearchPatternChanged -= UpdateSearchPattern;
 			if (searchHistory != null) {
 				searchHistory.Dispose ();
 				searchHistory = null;
@@ -192,9 +206,24 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
+		void UpdateSearchPattern (object sender, EventArgs args)
+		{
+			this.entrySearch.Entry.Text = SearchWidget.searchPattern;
+		}
 		public void Focus ()
 		{
 			this.entrySearch.GrabFocus ();
 		}
+		
+		internal static bool inSearchUpdate = false;
+		internal static void FireSearchPatternChanged ()
+		{
+			inSearchUpdate = true;
+			if (SearchPatternChanged != null)
+				SearchPatternChanged (null, EventArgs.Empty);
+			inSearchUpdate = false;
+		}
+		
+		internal static event EventHandler SearchPatternChanged;
 	}
 }

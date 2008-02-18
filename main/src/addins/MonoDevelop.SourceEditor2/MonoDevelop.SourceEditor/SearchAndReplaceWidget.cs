@@ -42,7 +42,7 @@ namespace MonoDevelop.SourceEditor
 		SourceEditorWidget widget;
 		ListStore searchHistory = new ListStore (typeof (string));
 		ListStore replaceHistory = new ListStore (typeof (string));
-		static string replaceText = ""; // used to store the replace text between dialogs
+		static string replacePattern = ""; // used to store the replace text between dialogs
 		
 		public string ReplacePattern {
 			get {
@@ -64,11 +64,20 @@ namespace MonoDevelop.SourceEditor
 			this.Build();
 			
 			this.widget = widget;
+			
+			#region Cut & Paste from SearchWidget
+			if (String.IsNullOrEmpty (widget.TextEditor.SearchPattern)) {
+				widget.TextEditor.SearchPattern = SearchWidget.searchPattern;
+			} else if (widget.TextEditor.SearchPattern != SearchWidget.searchPattern) {
+				SearchWidget.searchPattern = widget.TextEditor.SearchPattern;
+				SearchWidget.FireSearchPatternChanged ();
+			}
 			this.entrySearch.Entry.Text = widget.TextEditor.SearchPattern;
 			this.entrySearch.Model = searchHistory;
 			RestoreSearchHistory ();
+			#endregion
 			
-			this.entryReplace.Entry.Text = replaceText;
+			this.entryReplace.Entry.Text = replacePattern;
 			this.entryReplace.Model = replaceHistory;
 			RestoreReplaceHistory ();
 			
@@ -87,9 +96,16 @@ namespace MonoDevelop.SourceEditor
 			this.comboboxSearchAs.AppendText (GettextCatalog.GetString ("Text"));
 			this.comboboxSearchAs.AppendText (GettextCatalog.GetString ("Regular Expressions"));
 			this.comboboxSearchAs.Active = 0;
+			ReplacePatternChanged += UpdateReplacePattern;
 			#region Cut & Paste from SearchWidget
+			SearchWidget.SearchPatternChanged += UpdateSearchPattern;
+			
 			this.entrySearch.Changed += delegate {
 				widget.TextEditor.SearchPattern = SearchPattern;
+				if (!SearchWidget.inSearchUpdate) {
+					SearchWidget.searchPattern = SearchPattern;
+					SearchWidget.FireSearchPatternChanged ();
+				}
 			};
 			this.entrySearch.Entry.Activated += delegate {
 				UpdateSearchHistory (SearchPattern);
@@ -133,7 +149,9 @@ namespace MonoDevelop.SourceEditor
 			#endregion
 			
 			this.entryReplace.Changed += delegate {
-				replaceText = ReplacePattern;
+				replacePattern = ReplacePattern;
+				if (!inReplaceUpdate) 
+					FireReplacePatternChanged ();
 			};
 			
 			this.buttonReplace.Clicked += delegate {
@@ -151,6 +169,9 @@ namespace MonoDevelop.SourceEditor
 		
 		public override void Dispose ()
 		{
+			SearchWidget.SearchPatternChanged -= UpdateSearchPattern;
+			ReplacePatternChanged -= UpdateReplacePattern;
+			
 			if (searchHistory != null) {
 				searchHistory.Dispose ();
 				searchHistory = null;
@@ -193,6 +214,12 @@ namespace MonoDevelop.SourceEditor
 			PropertyService.Set ("IsWholeWordOnly", value);
 			widget.SetSearchOptions ();
 		}
+		
+		void UpdateSearchPattern (object sender, EventArgs args)
+		{
+			this.entrySearch.Entry.Text = SearchWidget.searchPattern;
+		}
+		
 		#endregion
 		
 		void UpdateReplaceHistory (string item)
@@ -209,5 +236,20 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
+		void UpdateReplacePattern (object sender, EventArgs args)
+		{
+			this.entryReplace.Entry.Text = replacePattern;
+		}
+		
+		internal static bool inReplaceUpdate = false;
+		internal static void FireReplacePatternChanged ()
+		{
+			inReplaceUpdate = true;
+			if (ReplacePatternChanged != null)
+				ReplacePatternChanged (null, EventArgs.Empty);
+			inReplaceUpdate = false;
+		}
+		
+		internal static event EventHandler ReplacePatternChanged;
 	}
 }
