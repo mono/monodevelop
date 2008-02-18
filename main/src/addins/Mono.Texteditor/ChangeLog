@@ -1,5 +1,9 @@
 2008-02-19  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextEditor.cs: Fixed possible nullref.
+
+2008-02-19  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextViewMargin.cs,
 	  Mono.TextEditor/Document.cs, Mono.TextEditor/TextEditorData.cs,
 	  Mono.TextEditor/IMargin.cs, Mono.TextEditor/SelectionMarker.cs,

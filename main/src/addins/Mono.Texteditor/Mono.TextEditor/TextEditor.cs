@@ -684,7 +684,8 @@ namespace Mono.TextEditor
 		{
 			int startPos;
 			IMargin margin = GetMarginAtX ((int)e.X, out startPos);
-			GdkWindow.Cursor = margin.MarginCursor;
+			if (margin != null)
+				GdkWindow.Cursor = margin.MarginCursor;
 			
 			if (textViewMargin.inSelectionDrag) {
 				margin   = textViewMargin;
