@@ -1,5 +1,9 @@
 2008-02-18  Mike Krüger <mkrueger@novell.com> 
 
+	* BooSyntaxMode.xml: Added boo syntax mode.
+
+2008-02-18  Mike Krüger <mkrueger@novell.com> 
+
 	* VBNetSyntaxMode.xml: Fixed VB.NET syntax mode (comments).
 
 2008-02-17  Mike Krüger <mkrueger@novell.com> 

@@ -65,6 +65,7 @@ FILES =  \
 	Mono.TextEditor.Tests/Mono.TextEditor.Tests.DefaultEditActions/CaretMoveTests.cs
 
 RES =  \
+	BooSyntaxMode.xml \
 	C64Style.xml \
 	CPPSyntaxMode.xml \
 	CSharpSyntaxMode.xml \
