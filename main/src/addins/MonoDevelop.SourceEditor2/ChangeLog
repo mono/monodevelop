@@ -1,3 +1,9 @@
+2008-02-18  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
+	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs,
+	  MonoDevelop.SourceEditor/SearchWidget.cs: Small workaround to be able to
+	  build in mono 1.2.4 (mono 1.2.4 ignores usings in anon delegates).
+
 2008-02-18  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed Bug 362692 - Undoing

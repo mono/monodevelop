@@ -120,9 +120,9 @@ namespace MonoDevelop.SourceEditor
 				widget.FindPrevious ();
 			};
 			this.buttonOptions.Clicked += delegate {
-				Menu menu = new Menu ();
+				Gtk.Menu menu = new Gtk.Menu ();
 				
-				Gtk.CheckMenuItem caseSensitive = new Gtk.CheckMenuItem (GettextCatalog.GetString ("Case sensitive"));
+				Gtk.CheckMenuItem caseSensitive = new Gtk.CheckMenuItem (MonoDevelop.Core.GettextCatalog.GetString ("Case sensitive"));
 				caseSensitive.Active = SearchWidget.IsCaseSensitive;
 				caseSensitive.ShowToggle = true;
 				caseSensitive.Toggled += delegate {
@@ -133,7 +133,7 @@ namespace MonoDevelop.SourceEditor
 				};
 				menu.Append (caseSensitive);
 				
-				Gtk.CheckMenuItem wholeWordsOnly = new Gtk.CheckMenuItem (GettextCatalog.GetString ("Whole words only"));
+				Gtk.CheckMenuItem wholeWordsOnly = new Gtk.CheckMenuItem (MonoDevelop.Core.GettextCatalog.GetString ("Whole words only"));
 				wholeWordsOnly.Active = SearchWidget.IsWholeWordOnly;
 				wholeWordsOnly.ShowToggle = true;
 				wholeWordsOnly.Toggled += delegate {
@@ -143,7 +143,7 @@ namespace MonoDevelop.SourceEditor
 					wholeWordsOnly.Toggle ();
 				};
 				menu.Append (wholeWordsOnly);
-				IdeApp.CommandService.ShowContextMenu (menu);
+				MonoDevelop.Ide.Gui.IdeApp.CommandService.ShowContextMenu (menu);
 				menu.ShowAll ();
 			};
 			#endregion
