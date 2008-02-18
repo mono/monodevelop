@@ -35,9 +35,15 @@ namespace MonoDevelop.Core.ProgressMonitoring
 	{
 		IProgressMonitor monitor;
 		int step;
+		int logLevel;
 		
-		public ProgressStatusMonitor (IProgressMonitor monitor)
+		public ProgressStatusMonitor (IProgressMonitor monitor): this (monitor, 1)
 		{
+		}
+		
+		public ProgressStatusMonitor (IProgressMonitor monitor, int logLevel)
+		{
+			this.logLevel = logLevel;
 			this.monitor = monitor;
 			monitor.BeginTask ("", 100);
 		}
@@ -75,7 +81,8 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		}
 		
 		public int LogLevel {
-			get { return 1; }
+			get { return logLevel; }
+			set { logLevel = value; }
 		}
 		
 		public void Cancel ()

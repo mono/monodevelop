@@ -1,3 +1,8 @@
+2008-02-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.ProgressMonitoring/ConsoleProgressStatus.cs: Allow
+	  specifying the log level.
+
 2008-02-15  Geoff Norton  <gnorton@novell.com>
 
 	* MonoDevelop.Core/Runtime.cs: Only pinvoke libc on unix.
