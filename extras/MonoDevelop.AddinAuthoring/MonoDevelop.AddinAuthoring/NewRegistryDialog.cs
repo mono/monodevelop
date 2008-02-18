@@ -1,7 +1,7 @@
-// RegistryExtensionNode.cs
+// NewRegistryDialog.cs
 //
 // Author:
-//   Lluis Sanchez Gual
+//   Lluis Sanchez Gual <lluis@novell.com>
 //
 // Copyright (c) 2007 Novell, Inc (http://www.novell.com)
 //
@@ -26,38 +26,25 @@
 //
 
 using System;
-using Mono.Addins;
-using MonoDevelop.Projects.Serialization;
 
 namespace MonoDevelop.AddinAuthoring
 {
-	[DataItem ("AddinRegistry")]
-	public class RegistryExtensionNode: ExtensionNode
+	
+	
+	public partial class NewRegistryDialog : Gtk.Dialog
 	{
-		[ItemProperty]
-		[NodeAttribute ("name", Required=true)]
-		string name;
 		
-		[ItemProperty]
-		[NodeAttribute ("path", Required=true)]
-		string path;
-		
-		public string Name {
-			get {
-				return name;
-			}
-			set {
-				name = value;
-			}
+		public NewRegistryDialog()
+		{
+			this.Build();
 		}
-
+		
+		public string RegistryName {
+			get { return entryName.Text; }
+		}
+		
 		public string RegistryPath {
-			get {
-				return AddinAuthoringService.NormalizeUserPath (path);
-			}
-			set {
-				path = value;
-			}
+			get { return entryPath.Path; }
 		}
 	}
 }

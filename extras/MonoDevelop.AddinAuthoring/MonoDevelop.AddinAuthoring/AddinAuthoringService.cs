@@ -30,12 +30,84 @@ using System.IO;
 using System.Collections.Generic;
 using Mono.Addins;
 using Mono.Addins.Description;
+using MonoDevelop.Core;
+using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Serialization;
+using System.Xml;
 
 namespace MonoDevelop.AddinAuthoring
 {
 	public static class AddinAuthoringService
 	{
+		static AddinAuthoringServiceConfig config;
+		static string configFile;
+		
+		static AddinAuthoringService ()
+		{
+			if (IdeApp.IsInitialized) {
+				IdeApp.ProjectOperations.EndBuild += OnEndBuild;
+			}
+			
+			configFile = Path.Combine (PropertyService.ConfigPath, "AddinAuthoring.config");
+			if (File.Exists (configFile)) {
+				try {
+					XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
+					StreamReader sr = new StreamReader (configFile);
+					using (sr) {
+						config = (AddinAuthoringServiceConfig) ser.Deserialize (new XmlTextReader (sr), typeof(AddinAuthoringServiceConfig));
+					}
+				}
+				catch (Exception ex) {
+					LoggingService.LogError ("Could not load add-in authoring service configuration", ex);
+				}
+			}
+			if (config == null)
+				config = new AddinAuthoringServiceConfig ();
+		}
+		
+		static void SaveConfig ()
+		{
+			try {
+				XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
+				StreamWriter sw = new StreamWriter (configFile);
+				using (sw) {
+					ser.Serialize (new XmlTextWriter (sw), config, typeof(AddinAuthoringServiceConfig));
+				}
+			}
+			catch (Exception ex) {
+				LoggingService.LogError ("Could not save add-in authoring service configuration", ex);
+			}
+		}
+		
+		internal static void Init ()
+		{
+			// Do nothing. Will be initialized in the static constructor.
+		}
+		
+		static void OnEndBuild (object s, BuildEventArgs args)
+		{
+			if (args.Success && IdeApp.ProjectOperations.CurrentOpenCombine != null) {
+				Dictionary<string, AddinRegistry> regs = new Dictionary<string, AddinRegistry> ();
+				foreach (Project p in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects ()) {
+					AddinData data = AddinData.GetAddinData (p);
+					if (data != null) {
+						if (!regs.ContainsKey (data.AddinRegistry.RegistryPath))
+							regs [data.AddinRegistry.RegistryPath] = data.AddinRegistry;
+					}
+				}
+				if (regs.Count > 0) {
+					args.ProgressMonitor.BeginTask (AddinManager.CurrentLocalizer.GetString ("Updating add-in registry"), regs.Count);
+					foreach (AddinRegistry reg in regs.Values) {
+						reg.Update (new ProgressStatusMonitor (args.ProgressMonitor, 2));
+						args.ProgressMonitor.Step (1);
+					}
+					args.ProgressMonitor.EndTask ();
+				}
+			}
+		}
+		
 		public static string GetRegistryName (string regPath)
 		{
 			foreach (RegistryExtensionNode node in GetRegistries ()) {
@@ -49,6 +121,20 @@ namespace MonoDevelop.AddinAuthoring
 		{
 			foreach (RegistryExtensionNode node in AddinManager.GetExtensionNodes ("MonoDevelop/AddinAuthoring/AddinRegistries"))
 				yield return node;
+			foreach (RegistryExtensionNode node in config.Registries)
+				yield return node;
+		}
+		
+		public static void AddCustomRegistry (RegistryExtensionNode reg)
+		{
+			config.Registries.Add (reg);
+			SaveConfig ();
+		}
+		
+		public static void RemoveCustomRegistry (RegistryExtensionNode reg)
+		{
+			config.Registries.Remove (reg);
+			SaveConfig ();
 		}
 		
 		internal static string NormalizeUserPath (string path)
@@ -137,6 +223,16 @@ namespace MonoDevelop.AddinAuthoring
 					break;
 				}
 			}
+		}
+	}
+	
+	class AddinAuthoringServiceConfig
+	{
+		List<RegistryExtensionNode> registries = new List<RegistryExtensionNode> ();
+		
+		[ItemProperty]
+		public List<RegistryExtensionNode> Registries {
+			get { return registries; }
 		}
 	}
 }

@@ -41,9 +41,13 @@ namespace MonoDevelop.AddinAuthoring
 	{
 		Project project;
 		AddinRegistry registry;
+		string lastOutputPath;
 		
 		[ItemProperty]
 		string registryPath;
+		
+		[ItemProperty]
+		bool isRoot;
 		
 		string absRegistryPath;
 		
@@ -57,6 +61,7 @@ namespace MonoDevelop.AddinAuthoring
 		
 		internal AddinData ()
 		{
+			AddinAuthoringService.Init ();
 		}
 		
 		internal AddinData (Project project)
@@ -72,6 +77,10 @@ namespace MonoDevelop.AddinAuthoring
 			watcher.Filter = Path.GetFileName (AddinManifestFileName);
 			watcher.Changed += OnDescFileChanged;
 			watcher.EnableRaisingEvents = true;
+			lastOutputPath = Path.GetDirectoryName (Project.GetOutputFileName ());
+			
+			SyncRoot ();
+			SyncReferences ();
 		}
 		
 		void OnDescFileChanged (object s, EventArgs a)
@@ -214,20 +223,85 @@ namespace MonoDevelop.AddinAuthoring
 			if (RegistryPath == null)
 				return registry = AddinRegistry.GetGlobalRegistry ();
 			else {
-				string[] s = AddinRegistry.GetRegisteredStartupFolders (RegistryPath);
-				if (s.Length > 0)
-					registry = new AddinRegistry (RegistryPath, s[0]);
-				else
-					registry = new AddinRegistry (RegistryPath);
+				if (isRoot) {
+					string outDir = Path.GetDirectoryName (Project.GetOutputFileName ());
+					registry = new AddinRegistry (RegistryPath, outDir);
+					Console.WriteLine ("pp reg is root: " + RegistryPath + " - " + outDir);
+				} else {
+					string[] s = AddinRegistry.GetRegisteredStartupFolders (RegistryPath);
+					if (s.Length > 0) {
+						registry = new AddinRegistry (RegistryPath, s[0]);
+						Console.WriteLine ("pp reg nor1: " + RegistryPath + " - " + s[0]);
+					}
+					else {
+						registry = new AddinRegistry (RegistryPath);
+						Console.WriteLine ("pp reg nor2: " + RegistryPath);
+					}
+				}
 				return registry;
+			}
+		}
+		
+		internal void CheckOutputPath ()
+		{
+			if (CachedAddinManifest.IsRoot) {
+				string outDir = Path.GetDirectoryName (Project.GetOutputFileName ());
+				if (lastOutputPath != outDir) {
+					registry = null;
+					NotifyChanged ();
+				}
 			}
 		}
 		
 		public void NotifyChanged ()
 		{
 			manifest = null;
+			SyncRoot ();
+			SyncReferences ();
+			
 			if (Changed != null)
 				Changed (this, EventArgs.Empty);
+		}
+		
+		void SyncRoot ()
+		{
+			if (CachedAddinManifest.IsRoot != isRoot) {
+				isRoot = CachedAddinManifest.IsRoot;
+				registry = null;
+				manifest = null;
+			}
+		}
+		
+		void SyncReferences ()
+		{
+			bool changed = false;
+			Hashtable addinRefs = new Hashtable ();
+			foreach (AddinDependency adep in CachedAddinManifest.MainModule.Dependencies) {
+				bool found = false;
+				foreach (ProjectReference pr in Project.ProjectReferences) {
+					if ((pr is AddinProjectReference) && pr.Reference == adep.FullAddinId) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					AddinProjectReference ar = new AddinProjectReference (adep.FullAddinId);
+					Project.ProjectReferences.Add (ar);
+					changed = true;
+				}
+				addinRefs [adep.FullAddinId] = adep;
+			}
+			
+			ArrayList toDelete = new ArrayList ();
+			foreach (ProjectReference pr in Project.ProjectReferences) {
+				if ((pr is AddinProjectReference) && !addinRefs.ContainsKey (pr.Reference))
+					toDelete.Add (pr);
+			}
+			foreach (ProjectReference pr in toDelete)
+				Project.ProjectReferences.Remove (pr);
+			
+			if (changed || toDelete.Count > 0)
+				Project.Save (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
 		}
 		
 		internal static ExtensionNodeDescriptionCollection GetExtensionNodes (AddinRegistry registry, AddinDescription desc, string path)

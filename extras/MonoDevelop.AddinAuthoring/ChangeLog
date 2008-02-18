@@ -1,3 +1,20 @@
+2008-02-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.AddinAuthoring/RegistryExtensionNode.cs,
+	  MonoDevelop.AddinAuthoring/AddinAuthoringService.cs,
+	  MonoDevelop.AddinAuthoring/AddinProjectReference.cs,
+	  MonoDevelop.AddinAuthoring/SelectRepositoryDialog.cs,
+	  MonoDevelop.AddinAuthoring/NewRegistryDialog.cs,
+	  MonoDevelop.AddinAuthoring/AddinProjectExtension.cs,
+	  MonoDevelop.AddinAuthoring/AddinData.cs,
+	  MonoDevelop.AddinAuthoring.make, MonoDevelop.AddinAuthoring.addin.xml,
+	  MonoDevelop.AddinAuthoring.NodeBuilders/AddinReferenceNodeBuilder.cs,
+	  MonoDevelop.AddinAuthoring.mdp,
+	  gtk-gui/MonoDevelop.AddinAuthoring.SelectRepositoryDialog.cs,
+	  gtk-gui/MonoDevelop.AddinAuthoring.NewRegistryDialog.cs,
+	  gtk-gui/gui.stetic: Improved add-in reference management and registry
+	  selection.
+
 2008-02-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.AddinAuthoring/AddinDescriptionView.cs,

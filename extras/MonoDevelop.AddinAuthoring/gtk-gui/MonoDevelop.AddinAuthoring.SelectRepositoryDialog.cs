@@ -25,9 +25,9 @@ namespace MonoDevelop.AddinAuthoring {
         
         private Gtk.VBox vbox2;
         
-        private Gtk.Button button1372;
+        private Gtk.Button buttonAdd;
         
-        private Gtk.Button button1373;
+        private Gtk.Button buttonRemove;
         
         private Gtk.Button button155;
         
@@ -85,26 +85,26 @@ namespace MonoDevelop.AddinAuthoring {
             this.vbox2.Name = "vbox2";
             this.vbox2.Spacing = 6;
             // Container child vbox2.Gtk.Box+BoxChild
-            this.button1372 = new Gtk.Button();
-            this.button1372.CanFocus = true;
-            this.button1372.Name = "button1372";
-            this.button1372.UseStock = true;
-            this.button1372.UseUnderline = true;
-            this.button1372.Label = "gtk-add";
-            this.vbox2.Add(this.button1372);
-            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox2[this.button1372]));
+            this.buttonAdd = new Gtk.Button();
+            this.buttonAdd.CanFocus = true;
+            this.buttonAdd.Name = "buttonAdd";
+            this.buttonAdd.UseStock = true;
+            this.buttonAdd.UseUnderline = true;
+            this.buttonAdd.Label = "gtk-add";
+            this.vbox2.Add(this.buttonAdd);
+            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox2[this.buttonAdd]));
             w5.Position = 0;
             w5.Expand = false;
             w5.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
-            this.button1373 = new Gtk.Button();
-            this.button1373.CanFocus = true;
-            this.button1373.Name = "button1373";
-            this.button1373.UseStock = true;
-            this.button1373.UseUnderline = true;
-            this.button1373.Label = "gtk-remove";
-            this.vbox2.Add(this.button1373);
-            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox2[this.button1373]));
+            this.buttonRemove = new Gtk.Button();
+            this.buttonRemove.CanFocus = true;
+            this.buttonRemove.Name = "buttonRemove";
+            this.buttonRemove.UseStock = true;
+            this.buttonRemove.UseUnderline = true;
+            this.buttonRemove.Label = "gtk-remove";
+            this.vbox2.Add(this.buttonRemove);
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox2[this.buttonRemove]));
             w6.Position = 1;
             w6.Expand = false;
             w6.Fill = false;
@@ -156,6 +156,8 @@ namespace MonoDevelop.AddinAuthoring {
             this.DefaultWidth = 575;
             this.DefaultHeight = 398;
             this.Show();
+            this.buttonAdd.Clicked += new System.EventHandler(this.OnButtonAddClicked);
+            this.buttonRemove.Clicked += new System.EventHandler(this.OnButtonRemoveClicked);
         }
     }
 }

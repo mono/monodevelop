@@ -1,7 +1,7 @@
-// RegistryExtensionNode.cs
+// AddinProjectReference.cs
 //
 // Author:
-//   Lluis Sanchez Gual
+//   Lluis Sanchez Gual <lluis@novell.com>
 //
 // Copyright (c) 2007 Novell, Inc (http://www.novell.com)
 //
@@ -26,38 +26,40 @@
 //
 
 using System;
+using System.IO;
+using System.Collections.Generic;
 using Mono.Addins;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.AddinAuthoring
 {
-	[DataItem ("AddinRegistry")]
-	public class RegistryExtensionNode: ExtensionNode
+	public class AddinProjectReference: ProjectReference 
 	{
-		[ItemProperty]
-		[NodeAttribute ("name", Required=true)]
-		string name;
-		
-		[ItemProperty]
-		[NodeAttribute ("path", Required=true)]
-		string path;
-		
-		public string Name {
-			get {
-				return name;
-			}
-			set {
-				name = value;
-			}
+		AddinProjectReference ()
+		{
 		}
-
-		public string RegistryPath {
-			get {
-				return AddinAuthoringService.NormalizeUserPath (path);
+		
+		public AddinProjectReference (string reference): base (ReferenceType.Custom, reference)
+		{
+		}
+		
+		public override string[] GetReferencedFileNames ()
+		{
+			if (OwnerProject != null) {
+				AddinData data = AddinData.GetAddinData (OwnerProject);
+				if (data != null) {
+					Addin addin = data.AddinRegistry.GetAddin (Reference);
+					if (addin != null) {
+						List<string> list = new List<string> ();
+						foreach (string asm in addin.Description.MainModule.Assemblies) {
+							string afile = Path.Combine (Path.GetDirectoryName (addin.Description.AddinFile), asm);
+							list.Add (afile);
+						}
+						return list.ToArray ();
+					}
+				}
 			}
-			set {
-				path = value;
-			}
+			return new string [0];
 		}
 	}
 }

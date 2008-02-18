@@ -51,6 +51,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.AddinAuthoring.ExtensionPointsEditorWidget.cs \
 	gtk-gui/MonoDevelop.AddinAuthoring.ExtensionSelectorDialog.cs \
 	gtk-gui/MonoDevelop.AddinAuthoring.NewExtensionPointDialog.cs \
+	gtk-gui/MonoDevelop.AddinAuthoring.NewRegistryDialog.cs \
 	gtk-gui/MonoDevelop.AddinAuthoring.NodeSetEditorDialog.cs \
 	gtk-gui/MonoDevelop.AddinAuthoring.NodeSetEditorWidget.cs \
 	gtk-gui/MonoDevelop.AddinAuthoring.NodeTypeEditorDialog.cs \
@@ -74,12 +75,14 @@ FILES =  \
 	MonoDevelop.AddinAuthoring/AddinFileDescriptionTemplate.cs \
 	MonoDevelop.AddinAuthoring/AddinOptionPanelWidget.cs \
 	MonoDevelop.AddinAuthoring/AddinProjectExtension.cs \
+	MonoDevelop.AddinAuthoring/AddinProjectReference.cs \
 	MonoDevelop.AddinAuthoring/CellRendererExtension.cs \
 	MonoDevelop.AddinAuthoring/Commands.cs \
 	MonoDevelop.AddinAuthoring/ExtensionEditorWidget.cs \
 	MonoDevelop.AddinAuthoring/ExtensionPointsEditorWidget.cs \
 	MonoDevelop.AddinAuthoring/ExtensionSelectorDialog.cs \
 	MonoDevelop.AddinAuthoring/NewExtensionPointDialog.cs \
+	MonoDevelop.AddinAuthoring/NewRegistryDialog.cs \
 	MonoDevelop.AddinAuthoring/NodeEditorDialog.cs \
 	MonoDevelop.AddinAuthoring/NodeEditorWidget.cs \
 	MonoDevelop.AddinAuthoring/NodeSetEditorDialog.cs \
