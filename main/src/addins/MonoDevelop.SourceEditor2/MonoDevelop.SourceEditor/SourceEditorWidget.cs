@@ -813,10 +813,8 @@ namespace MonoDevelop.SourceEditor
 			
 			if (!String.IsNullOrEmpty (selectedText)) {
 				TextEditor.SearchPattern = selectedText;
-				if (searchWidget != null)
-					searchWidget.SearchPattern = selectedText;
-				if (searchAndReplaceWidget != null)
-					searchAndReplaceWidget.SearchPattern = selectedText;
+				SearchWidget.searchPattern = selectedText;
+				SearchWidget.FireSearchPatternChanged ();
 			}
 		}
 		
@@ -904,6 +902,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			TextEditor.SearchOptions.IsCaseSensitive = SearchWidget.IsCaseSensitive;
 			TextEditor.SearchOptions.IsWholeWordOnly = SearchWidget.IsWholeWordOnly;
+			TextEditor.SearchPattern = SearchWidget.searchPattern;
 			TextEditor.CompilePattern ();
 			TextEditor.QueueDraw ();
 		}

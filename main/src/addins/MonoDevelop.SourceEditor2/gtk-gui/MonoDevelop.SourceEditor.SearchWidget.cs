@@ -87,11 +87,11 @@ namespace MonoDevelop.SourceEditor {
             // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w6 = new Gtk.HBox();
             w6.Spacing = 2;
-            // Container child GtkHBox1.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w7 = new Gtk.Image();
             w7.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-go-forward", Gtk.IconSize.Menu, 16);
             w6.Add(w7);
-            // Container child GtkHBox1.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w9 = new Gtk.Label();
             w9.LabelProp = Mono.Unix.Catalog.GetString("_Next");
             w9.UseUnderline = true;
@@ -110,14 +110,14 @@ namespace MonoDevelop.SourceEditor {
             this.buttonSearchBackward.UseUnderline = true;
             // Container child buttonSearchBackward.Gtk.Container+ContainerChild
             Gtk.Alignment w14 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            // Container child GtkAlignment1.Gtk.Container+ContainerChild
+            // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w15 = new Gtk.HBox();
             w15.Spacing = 2;
-            // Container child GtkHBox2.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w16 = new Gtk.Image();
             w16.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-go-back", Gtk.IconSize.Menu, 16);
             w15.Add(w16);
-            // Container child GtkHBox2.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w18 = new Gtk.Label();
             w18.LabelProp = Mono.Unix.Catalog.GetString("_Previous");
             w18.UseUnderline = true;
@@ -136,14 +136,14 @@ namespace MonoDevelop.SourceEditor {
             this.buttonOptions.UseUnderline = true;
             // Container child buttonOptions.Gtk.Container+ContainerChild
             Gtk.Alignment w23 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            // Container child GtkAlignment2.Gtk.Container+ContainerChild
+            // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w24 = new Gtk.HBox();
             w24.Spacing = 2;
-            // Container child GtkHBox3.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w25 = new Gtk.Image();
             w25.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-preferences", Gtk.IconSize.Menu, 16);
             w24.Add(w25);
-            // Container child GtkHBox3.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w27 = new Gtk.Label();
             w27.LabelProp = Mono.Unix.Catalog.GetString("_Options");
             w27.UseUnderline = true;
