@@ -2,7 +2,7 @@
 ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll
 
 REFS =  \
-	$(GNOME_SHARP_LIBS) \
+	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \

@@ -1,3 +1,8 @@
+2008-02-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp, Makefile.am: Removed gnome reference, added
+	  glib.
+
 2008-01-28  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Completion/TextUtilities.cs: Added
