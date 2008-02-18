@@ -475,8 +475,10 @@ namespace Mono.TextEditor
 		public bool inSelectionDrag = false;
 		public bool inDrag = false;
 		public DocumentLocation clickLocation;
+		DocumentLocation selectionStartLocation;
+		ISegment minimalSelection = null;
 		
-		public override void MousePressed (int button, int x, int y, bool doubleClick, Gdk.ModifierType modifierState)
+		public override void MousePressed (int button, int x, int y, Gdk.EventType type, Gdk.ModifierType modifierState)
 		{
 			inSelectionDrag = false;
 			inDrag = false;
@@ -487,19 +489,22 @@ namespace Mono.TextEditor
 					textEditor.RunAction (new CaretMoveToDocumentEnd ());
 					return;
 				}
-				if (doubleClick) {
+
+				if (type == EventType.TwoButtonPress) {
 					int start = ScanWord (offset, false);
 					int end   = ScanWord (offset, true);
-					if (textEditor.IsSomethingSelected) {
-						if (textEditor.SelectionRange.Offset == start && textEditor.SelectionRange.EndOffset == end) {
-							textEditor.SelectionRange = Document.GetLineByOffset (offset);
-							return;
-						}
-					}
-					textEditor.SelectionRange = new Segment (start, end - start);
+					textEditor.SelectionRange = minimalSelection = new Segment (start, end - start);
+					selectionStartLocation = Document.OffsetToLocation (start);
+					inSelectionDrag = true;
+					return;
+				} else if (type == EventType.ThreeButtonPress) {
+					textEditor.SelectionRange = minimalSelection = Document.GetLineByOffset (offset);
+					selectionStartLocation = Document.OffsetToLocation (minimalSelection.Offset);
+					inSelectionDrag = true;
 					return;
 				}
- 
+				selectionStartLocation = clickLocation;
+				minimalSelection = null;
 				if (textEditor.IsSomethingSelected && textEditor.SelectionRange.Offset <= offset && offset < textEditor.SelectionRange.EndOffset) {
 					inDrag = true;
 				} else {
@@ -539,17 +544,23 @@ namespace Mono.TextEditor
 			if (!buttonPressed)
 				return;
 			if (inSelectionDrag) {
-				if (!textEditor.IsSomethingSelected) 
-					SelectionMoveLeft.StartSelection (textEditor.GetTextEditorData ());
+				DocumentLocation loc = VisualToDocumentLocation (x, y);
+				int offset1 = Document.LocationToOffset (this.selectionStartLocation);
+				int offset2 = Document.LocationToOffset (loc);
+				ISegment requestedSelection = offset1 < offset2 ? new Segment (offset1, offset2 - offset1) : new Segment (offset2, offset1 - offset2);
+				if (this.minimalSelection != null) {
+					if (requestedSelection.EndOffset < minimalSelection.EndOffset) {
+						requestedSelection = new Segment (requestedSelection.Offset, minimalSelection.EndOffset - requestedSelection.Offset);
+					}
+					
+					if (requestedSelection.Offset > minimalSelection.Offset) {
+						requestedSelection = new Segment (minimalSelection.Offset, requestedSelection.EndOffset - minimalSelection.Offset);
+					}
+				}
 				Caret.PreserveSelection = true;
-				Caret.AutoScrollToCaret = false;
-//				int oldLine = Caret.Line;
-				Caret.Location = VisualToDocumentLocation (x, y);
+				textEditor.SelectionRange = requestedSelection;
+				Caret.Location = loc;
 				Caret.PreserveSelection = false;
-				Caret.AutoScrollToCaret = true;
-				SelectionMoveLeft.EndSelection (textEditor.GetTextEditorData ());
-				this.textEditor.ScrollToCaret ();
-				this.caretBlink = false;
 //				textEditor.RedrawLines (System.Math.Min (oldLine, Caret.Line), System.Math.Max (oldLine, Caret.Line));
 			}
 		}

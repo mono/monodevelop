@@ -462,15 +462,14 @@ namespace Mono.TextEditor
 			if (lastTime != e.Time) {// filter double clicks
 				if (e.Type == EventType.TwoButtonPress) {
 				    lastTime = e.Time;
-					mousePressed = false;
 				} else {
 					lastTime = 0;
-					mousePressed = true;
 				}
+				mousePressed = true;
 				int startPos;
 				IMargin margin = GetMarginAtX ((int)e.X, out startPos);
 				if (margin != null) {
-					margin.MousePressed ((int)e.Button, (int)(e.X - startPos), (int)e.Y, e.Type == EventType.TwoButtonPress, e.State);
+					margin.MousePressed ((int)e.Button, (int)(e.X - startPos), (int)e.Y, e.Type, e.State);
 				}
 			}
 			return base.OnButtonPressEvent (e);

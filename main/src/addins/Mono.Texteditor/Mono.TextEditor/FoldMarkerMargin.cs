@@ -50,7 +50,7 @@ namespace Mono.TextEditor
 			this.editor = editor;
 		}
 		
-		public override void MousePressed (int button, int x, int y, bool doubleClick, Gdk.ModifierType modifierState)
+		public override void MousePressed (int button, int x, int y, Gdk.EventType type, Gdk.ModifierType modifierState)
 		{
 			if (lineHover == null)
 				return;

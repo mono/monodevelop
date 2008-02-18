@@ -98,10 +98,10 @@ namespace Mono.TextEditor
 			cr.LineTo (x, y + r);
 			cr.CurveTo (x, y, x, y, x + r, y);
 		}
-
-		public override void MousePressed (int button, int x, int y, bool doubleClick, Gdk.ModifierType modifierState)
+		
+		public override void MousePressed (int button, int x, int y, Gdk.EventType type, Gdk.ModifierType modifierState)
 		{
-			if (button != 1 || doubleClick)
+			if (button != 1 || type != Gdk.EventType.ButtonPress)
 				return;
 			int lineNumber = editor.VisualToDocumentLocation (x, y).Line;
 			if (lineNumber < editor.Document.LineCount) {
