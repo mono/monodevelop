@@ -1,5 +1,10 @@
 2008-02-18  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextViewMargin.cs: fixed Bug 362691 - Mouse click doesn't
+	  clear selection in some specific case
+
+2008-02-18  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/FoldMarkerMargin.cs,
 	  Mono.TextEditor/IMargin.cs, Mono.TextEditor/TextEditor.cs,
 	  Mono.TextEditor/BookmarkMargin.cs, Mono.TextEditor/GutterMargin.cs:

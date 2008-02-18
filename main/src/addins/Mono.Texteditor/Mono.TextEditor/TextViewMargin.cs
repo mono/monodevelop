@@ -504,11 +504,13 @@ namespace Mono.TextEditor
 					return;
 				}
 				selectionStartLocation = clickLocation;
+				
 				minimalSelection = null;
-				if (textEditor.IsSomethingSelected && textEditor.SelectionRange.Offset <= offset && offset < textEditor.SelectionRange.EndOffset) {
+				if (textEditor.IsSomethingSelected && textEditor.SelectionRange.Offset <= offset && offset < textEditor.SelectionRange.EndOffset && clickLocation != textEditor.Caret.Location) {
 					inDrag = true;
 				} else {
 					inSelectionDrag = true;
+					textEditor.ClearSelection ();
 					if ((modifierState & Gdk.ModifierType.ShiftMask) == ModifierType.ShiftMask) {
 						if (!textEditor.IsSomethingSelected) 
 							SelectionMoveLeft.StartSelection (textEditor.GetTextEditorData ());
