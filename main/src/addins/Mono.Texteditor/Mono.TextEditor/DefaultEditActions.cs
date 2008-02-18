@@ -68,11 +68,22 @@ namespace Mono.TextEditor
 			if (offset <= 0)
 				return 0;
 			int  result = offset - 1;
-			bool isLetter = Char.IsLetterOrDigit (document.GetCharAt (result));
+			while (result > 0 && !Char.IsLetterOrDigit (document.GetCharAt (result))) {
+				result--;
+			}
+			bool isLetter = Char.IsLetter (document.GetCharAt (result));
+			bool isDigit  = Char.IsDigit (document.GetCharAt (result));
 			while (result > 0) {
 				char ch = document.GetCharAt (result);
 				if (isLetter) {
-					if (Char.IsLetterOrDigit (ch)) 
+					if (Char.IsLetter (ch)) 
+						result--;
+					else {
+						result++;
+						break;
+					}
+				} else if (isDigit) {
+					if (Char.IsDigit (ch)) 
 						result--;
 					else {
 						result++;
@@ -80,7 +91,8 @@ namespace Mono.TextEditor
 					}
 				} else {
 					if (Char.IsLetterOrDigit (ch)) {
-						return FindPrevWordOffset (document, result);
+						result++;
+						break;
 					} else 
 						result--;
 				}
@@ -101,11 +113,15 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
+			int oldLine = data.Caret.Line;
 			int offset = CaretMovePrevWord.FindPrevWordOffset (data.Document, data.Caret.Offset);
 			if (data.Caret.Offset != offset) {
 				data.Document.Remove (offset, data.Caret.Offset - offset);
 				data.Caret.Offset = offset;
 			}
+			if (oldLine != data.Caret.Line)
+				data.Document.CommitLineToEndUpdate (data.Caret.Line);
+			
 		}
 	}
 	
@@ -116,6 +132,7 @@ namespace Mono.TextEditor
 			int offset = CaretMoveNextWord.FindNextWordOffset (data.Document, data.Caret.Offset);
 			if (data.Caret.Offset != offset) 
 				data.Document.Remove (data.Caret.Offset, offset - data.Caret.Offset);
+			data.Document.CommitLineToEndUpdate (data.Caret.Line);
 		}
 	}
 	
@@ -171,18 +188,29 @@ namespace Mono.TextEditor
 			if (offset + 1 >= document.Length)
 				return document.Length;
 			int result = offset + 1;
-			bool isLetter = Char.IsLetterOrDigit (document.GetCharAt (result));
+			while (result < document.Length && !Char.IsLetterOrDigit (document.GetCharAt (result))) {
+				result++;
+			}
+			
+			bool isLetter = Char.IsLetter (document.GetCharAt (result));
+			bool isDigit  = Char.IsDigit (document.GetCharAt (result));
 			while (result < document.Length) {
 				char ch = document.GetCharAt (result);
 				if (isLetter) {
-					if (Char.IsLetterOrDigit (ch)) 
+					if (Char.IsLetter (ch)) 
+						result++;
+					else {
+						break;
+					}
+				} else if (isDigit) {
+					if (Char.IsDigit (ch)) 
 						result++;
 					else {
 						break;
 					}
 				} else {
 					if (Char.IsLetterOrDigit (ch)) {
-						return FindNextWordOffset (document, result);
+						break;
 					} else 
 						result++;
 				}
