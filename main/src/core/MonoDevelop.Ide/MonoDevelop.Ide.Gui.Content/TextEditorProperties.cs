@@ -58,10 +58,25 @@ namespace MonoDevelop.Ide.Gui.Content {
 		
 		public static int TabIndent {
 			get {
-				return properties.Get ("TabIndent", 4);
+				return PropertyService.Get ("TabIndent", 4);
 			}
 			set {
-				properties.Set ("TabIndent", value);
+				PropertyService.Set ("TabIndent", value);
+			}
+		}
+		
+		public static bool ConvertTabsToSpaces {
+			get {
+				return PropertyService.Get ("TabsToSpaces", false);
+			}
+			set {
+				PropertyService.Set ("TabsToSpaces", value);
+			}
+		}
+		
+		public static string IndentString {
+			get { 
+				return ConvertTabsToSpaces ? new string(' ', TabIndent) : "\t"; 
 			}
 		}
 		
@@ -209,14 +224,6 @@ namespace MonoDevelop.Ide.Gui.Content {
 			}
 		}
 		
-		public static bool ConvertTabsToSpaces {
-			get {
-				return properties.Get ("TabsToSpaces", false);
-			}
-			set {
-				properties.Set ("TabsToSpaces", value);
-			}
-		}
 		
 		public static bool UseAntiAliasedFont {
 			get {
@@ -432,10 +439,5 @@ namespace MonoDevelop.Ide.Gui.Content {
 			}
 		}
 		
-		public static string IndentString {
-			get { 
-				return ConvertTabsToSpaces ? new string(' ', TabIndent) : "\t"; 
-			}
-		}
 	}
 }

@@ -1,3 +1,8 @@
+2008-02-18  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs: Fixed tabs2spaces
+	  option.
+
 2008-02-17  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs: Completion
