@@ -15,12 +15,13 @@ namespace MonoDevelop.Deployment.Linux
 			widget.Changed += delegate {
 				IsDirty = true;
 			};
+			entry = new DesktopEntry ();
+			widget.DesktopEntry = entry;
 		}
 		
 		public override void Load (string fileName)
 		{
 			ContentName = fileName;
-			entry = new DesktopEntry ();
 			entry.Load (fileName);
 			widget.DesktopEntry = entry;
 		}
