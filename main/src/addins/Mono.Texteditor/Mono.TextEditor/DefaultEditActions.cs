@@ -593,13 +593,14 @@ namespace Mono.TextEditor
 				IndentSelection (data);
 				return;
 			}
-			
+			data.Document.BeginAtomicUndo ();
 			if (data.IsSomethingSelected) {
 				data.DeleteSelectedText ();
 			}
 			
 			data.Document.Insert (data.Caret.Offset, TextEditorOptions.Options.IndentationString);
 			data.Caret.Column += TextEditorOptions.Options.IndentationString.Length;
+			data.Document.EndAtomicUndo ();
 		}
 	}
 	
@@ -616,10 +617,16 @@ namespace Mono.TextEditor
 					newLine.Append (ch);
 				}
 			}*/
+			data.Document.BeginAtomicUndo ();
+			if (data.IsSomethingSelected) {
+				data.DeleteSelectedText ();
+			}
 			data.Document.Insert (data.Caret.Offset, data.Document.EolMarker);
 			data.Document.CommitLineToEndUpdate (data.Caret.Line);
 			data.Caret.Column = 0;
+			
 			data.Caret.Line++;
+			data.Document.EndAtomicUndo ();
 		}
 	}
 	
@@ -892,6 +899,7 @@ namespace Mono.TextEditor
 		static void PasteFrom (Clipboard clipboard, TextEditorData data)
 		{
 			if (clipboard.WaitIsTextAvailable ()) {
+				data.Document.BeginAtomicUndo ();
 				if (data.IsSomethingSelected) {
 					data.DeleteSelectedText ();
 				}
@@ -899,6 +907,7 @@ namespace Mono.TextEditor
 				data.Document.Insert (data.Caret.Offset, sb);
 				int oldLine = data.Caret.Line;
 				data.Caret.Offset += sb.Length;
+				data.Document.EndAtomicUndo ();
 				data.Document.RequestUpdate (oldLine != data.Caret.Line ? (DocumentUpdateRequest)new LineToEndUpdate (oldLine) : (DocumentUpdateRequest)new LineUpdate (oldLine));
 				data.Document.CommitDocumentUpdate ();
 			}
@@ -918,7 +927,7 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
-			Console.WriteLine ("Todo: Undo");
+			data.Document.Undo ();
 		}
 	}
 	
@@ -926,7 +935,7 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
-			Console.WriteLine ("Todo: Redo");
+			data.Document.Redo ();
 		}
 	}
 #region Bookmarks

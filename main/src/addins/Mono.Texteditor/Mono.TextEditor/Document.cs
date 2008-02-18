@@ -136,13 +136,14 @@ namespace Mono.TextEditor
 			
 			ReplaceEventArgs args = new ReplaceEventArgs (offset, count, value);
 			OnTextReplacing (args);
-			
 			if (!isInUndo) {
 				UndoOperation operation = new UndoOperation (args, GetTextAt (offset, count));
 				if (currentAtomicOperation != null) {
 					currentAtomicOperation.Add (operation);
 				} else {
+					OnBeginUndo ();
 					undoStack.Push (operation);
+					OnEndUndo (operation);
 				}
 				redoStack.Clear ();
 			}
@@ -150,6 +151,7 @@ namespace Mono.TextEditor
 			buffer.Replace (offset, count, value);
 			OnTextReplaced (args);
 			splitter.TextReplaced (this, args);
+			
 			if (this.syntaxMode != null)
 				Mono.TextEditor.Highlighting.SyntaxModeService.StartUpdate (this, this.syntaxMode, offset, offset + count);
 		}
@@ -238,11 +240,20 @@ namespace Mono.TextEditor
 		#endregion
 		
 		#region Undo/Redo operations
-		class UndoOperation 
+		public class UndoOperation 
 		{
 			ReplaceEventArgs args;
 			string text;
-			
+			public virtual string Text {
+				get {
+					return text;
+				}
+			}
+			public virtual ReplaceEventArgs Args {
+				get {
+					return args;
+				}
+			}
 			protected UndoOperation()
 			{
 			}
@@ -258,17 +269,41 @@ namespace Mono.TextEditor
 					doc.Remove (args.Offset, args.Value.Length);
 				if (!String.IsNullOrEmpty (text))
 					doc.Insert (args.Offset, text);
+				if (UndoDone != null)
+					UndoDone (this, EventArgs.Empty);
 			}
 			
 			public virtual void Redo (Document doc)
 			{
 				doc.Replace (args.Offset, args.Count, args.Value);
+				if (RedoDone != null)
+					RedoDone (this, EventArgs.Empty);
 			}
+			public event EventHandler UndoDone;
+			public event EventHandler RedoDone;
 		}
 		
 		class AtomicUndoOperation : UndoOperation
 		{
-			List<UndoOperation> operations = new List<UndoOperation> ();
+			protected List<UndoOperation> operations = new List<UndoOperation> ();
+			
+			public List<UndoOperation> Operations {
+				get {
+					return operations;
+				}
+			}
+			
+			public override string Text {
+				get {
+					return null;
+				}
+			}
+			public override ReplaceEventArgs Args {
+				get {
+					return null;
+				}
+			}
+			
 			
 			public void Add (UndoOperation operation)
 			{
@@ -291,6 +326,29 @@ namespace Mono.TextEditor
 			
 		}
 		
+		class KeyboardStackUndo : AtomicUndoOperation
+		{
+			bool isClosed = false;
+			public bool IsClosed {
+				get {
+					return isClosed;
+				}
+				set {
+					isClosed = value;
+				}
+			}
+			public override string Text {
+				get {
+					return operations.Count > 0 ? operations [operations.Count - 1].Text : "";
+				}
+			}
+			public override ReplaceEventArgs Args {
+				get {
+					return operations.Count > 0 ? operations [operations.Count - 1].Args : null;
+				}
+			}
+		}
+		
 		bool isInUndo = false;
 		Stack<UndoOperation> undoStack = new Stack<UndoOperation> ();
 		Stack<UndoOperation> redoStack = new Stack<UndoOperation> ();
@@ -300,6 +358,32 @@ namespace Mono.TextEditor
 			get {
 				return this.undoStack.Count > 0;
 			}
+		}
+		
+		public void OptimizeTypedUndo ()
+		{
+			if (undoStack.Count == 0)
+				return;
+			UndoOperation top = undoStack.Pop ();
+			
+			if (top.Args == null || top.Args.Value == null || top.Args.Value.Length != 1) {
+				undoStack.Push (top);
+				return;
+			}
+			
+			if (undoStack.Count == 0 || !(undoStack.Peek () is KeyboardStackUndo) || ((KeyboardStackUndo)undoStack.Peek ()).IsClosed) {
+				undoStack.Push (new KeyboardStackUndo ());
+			}
+			
+			KeyboardStackUndo keyUndo = (KeyboardStackUndo)undoStack.Pop ();
+			
+			if (keyUndo.Args != null && keyUndo.Args.Offset + 1 != top.Args.Offset) {
+				keyUndo.IsClosed = true;
+				undoStack.Push (keyUndo);
+				keyUndo = new KeyboardStackUndo ();
+			}
+			keyUndo.Add (top);
+			undoStack.Push (keyUndo);
 		}
 		
 		public void Undo ()
@@ -336,16 +420,42 @@ namespace Mono.TextEditor
 		
 		public void BeginAtomicUndo ()
 		{
-			if (currentAtomicOperation == null)
+			if (currentAtomicOperation == null) {
 			    currentAtomicOperation = new AtomicUndoOperation ();
+				OnBeginUndo ();
+			}
 		}
+		
 		public void EndAtomicUndo ()
 		{
 			if (currentAtomicOperation != null) {
-				undoStack.Push (currentAtomicOperation);
+				if (currentAtomicOperation.Operations.Count > 1) {
+					undoStack.Push (currentAtomicOperation);
+					OnEndUndo (currentAtomicOperation);
+				} else {
+					undoStack.Push (currentAtomicOperation.Operations [0]);
+					OnEndUndo (currentAtomicOperation.Operations [0]);
+				}
 				currentAtomicOperation = null;
 			}
 		}
+		
+		protected virtual void OnBeginUndo ()
+		{
+			if (BeginUndo != null) 
+				BeginUndo (this, EventArgs.Empty);
+		}
+		
+		protected virtual void OnEndUndo (UndoOperation undo)
+		{
+			if (EndUndo != null) 
+				EndUndo (this, undo);
+		}
+		
+		public delegate void UndoOperationHandler (object sender, UndoOperation operation);
+		
+		public event EventHandler         BeginUndo;
+		public event UndoOperationHandler EndUndo;
 		#endregion
 		
 		#region Folding

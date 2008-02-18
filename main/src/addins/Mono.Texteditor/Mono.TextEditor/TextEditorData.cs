@@ -101,6 +101,10 @@ namespace Mono.TextEditor
 				return new Segment (startOffset, endOffset - startOffset);
 			}
 			set {
+				if (value == null) {
+					ClearSelection ();
+					return;
+				}
 				int start, end;
 				if (value.Offset < value.EndOffset) {
 					start = value.Offset;

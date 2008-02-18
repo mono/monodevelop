@@ -248,7 +248,7 @@ namespace Mono.TextEditor
 			keyBindings.Add (GetKeyCode (Gdk.Key.D, Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask), new DeleteCaretLineToEnd ());
 			
 			keyBindings.Add (GetKeyCode (Gdk.Key.z, Gdk.ModifierType.ControlMask), new UndoAction ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.y, Gdk.ModifierType.ControlMask), new RedoAction ());
+			keyBindings.Add (GetKeyCode (Gdk.Key.z, Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask), new RedoAction ());
 			
 			keyBindings.Add (GetKeyCode (Gdk.Key.F2), new GotoNextBookmark ());
 			keyBindings.Add (GetKeyCode (Gdk.Key.F2, Gdk.ModifierType.ShiftMask), new GotoPrevBookmark ());
@@ -315,6 +315,44 @@ namespace Mono.TextEditor
 			this.Destroyed += delegate {
 				Dispose ();
 			};
+			this.Document.BeginUndo += delegate {
+				savedCaretPos  = Caret.Offset;
+				savedSelection = SelectionRange;
+			};
+			this.Document.EndUndo += delegate (object sender, Document.UndoOperation operation) {
+				new TextEditorDataState (this, operation, savedCaretPos, savedSelection);
+			};
+		}
+		int      savedCaretPos;
+		ISegment savedSelection;
+		
+		class TextEditorDataState
+		{
+			int      caretPos;
+			ISegment selection;
+			
+			int      oldPos;
+			ISegment oldSelection;
+			
+			TextEditor editor;
+			
+			public TextEditorDataState (TextEditor editor, Document.UndoOperation operation, int caretPos, ISegment selection)
+			{
+				this.editor  = editor;
+				
+				operation.UndoDone += delegate {
+					oldPos       = editor.Caret.Offset;
+					oldSelection = editor.SelectionRange;
+					
+					editor.Caret.Offset   = caretPos;
+					editor.SelectionRange = selection;
+				};
+				
+				operation.RedoDone += delegate {
+					editor.Caret.Offset   = oldPos;
+					editor.SelectionRange = oldSelection;
+				};
+			}
 		}
 		
 		void DocumentUpdatedHandler (object sender, EventArgs args)
@@ -374,7 +412,6 @@ namespace Mono.TextEditor
 			base.Dispose ();
 		}
 		
-		
 		internal void RedrawLine (int logicalLine)
 		{
 			if (isDisposed)
@@ -405,7 +442,7 @@ namespace Mono.TextEditor
 				return;
 			this.QueueDrawArea (0, (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (logicalLine) * LineHeight, this.Allocation.Width, this.Allocation.Height);
 		}
-	
+		
 		public void RunAction (EditAction action)
 		{
 			try {
@@ -426,6 +463,7 @@ namespace Mono.TextEditor
 				}
 				
 			} else if (((ulong)key) < 65000) {
+				Document.BeginAtomicUndo ();
 				this.textEditorData.DeleteSelectedText ();
 				char ch = (char)key;
 				if (!char.IsControl (ch)) {
@@ -443,6 +481,8 @@ namespace Mono.TextEditor
 					Document.RequestUpdate (new LineUpdate (Caret.Line));
 					Document.CommitDocumentUpdate ();
 				}
+				Document.EndAtomicUndo ();
+				Document.OptimizeTypedUndo ();
 			}
 			textViewMargin.ResetCaretBlink ();
 		}
