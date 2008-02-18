@@ -90,7 +90,7 @@ namespace MonoDevelop.SourceEditor
 			};
 			
 			widget.TextEditor.Document.TextReplaced += delegate {
-				this.IsDirty = true;
+				this.IsDirty = Document.CanUndo;
 			};
 			
 			widget.TextEditor.Caret.PositionChanged += delegate {
