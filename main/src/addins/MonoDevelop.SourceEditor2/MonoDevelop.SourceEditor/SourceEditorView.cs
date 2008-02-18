@@ -764,14 +764,16 @@ namespace MonoDevelop.SourceEditor
 			foreach (LineSegment line in TextEditor.SelectedLines) {
 				Document.Insert (line.Offset, commentTag);
 			}
-			if (TextEditor.IsSomethingSelected)
-				TextEditor.GetTextEditorData ().SelectionStart.Column += commentTag.Length;
+			if (TextEditor.IsSomethingSelected) {
+				TextEditor.SelectionAnchor += commentTag.Length;
+			}
 			
-			if (!TextEditor.IsSomethingSelected || TextEditor.GetTextEditorData ().SelectionEnd.Column != 0) {
-				if (TextEditor.IsSomethingSelected)
-					TextEditor.GetTextEditorData ().SelectionEnd.Column += commentTag.Length;
+			DocumentLocation selectionEnd = TextEditor.IsSomethingSelected ? TextEditor.Document.OffsetToLocation (TextEditor.SelectionRange.EndOffset) : DocumentLocation.Empty;
+			if (selectionEnd.Column != 0) {
 				TextEditor.Caret.PreserveSelection = true;
 				TextEditor.Caret.Column += commentTag.Length;
+				if (TextEditor.IsSomethingSelected) 
+					TextEditor.ExtendSelectionTo (TextEditor.Caret.Offset);
 				TextEditor.Caret.PreserveSelection = false;
 			}
 			Document.EndAtomicUndo ();
@@ -800,13 +802,15 @@ namespace MonoDevelop.SourceEditor
 				if (first < 0)
 					first = last;
 			}
-			if (TextEditor.IsSomethingSelected)
-				TextEditor.GetTextEditorData ().SelectionStart.Column = System.Math.Max (0, TextEditor.GetTextEditorData ().SelectionStart.Column - first);
-			if (!TextEditor.IsSomethingSelected || TextEditor.GetTextEditorData ().SelectionEnd.Column != 0) {
-				if (TextEditor.IsSomethingSelected)
-					TextEditor.GetTextEditorData ().SelectionEnd.Column = System.Math.Max (0, TextEditor.GetTextEditorData ().SelectionEnd.Column - last);
+//			if (TextEditor.IsSomethingSelected) 
+//				TextEditor.GetTextEditorData ().SelectionStart.Column = System.Math.Max (0, TextEditor.GetTextEditorData ().SelectionStart.Column - first);
+			
+			DocumentLocation selectionEnd = TextEditor.IsSomethingSelected ? TextEditor.Document.OffsetToLocation (TextEditor.SelectionRange.EndOffset) : DocumentLocation.Empty;
+			if (selectionEnd.Column != 0) {
 				TextEditor.Caret.PreserveSelection = true;
 				TextEditor.Caret.Column = System.Math.Max (0, TextEditor.Caret.Column - last);
+				if (TextEditor.IsSomethingSelected) 
+					TextEditor.ExtendSelectionTo (TextEditor.Caret.Offset);
 				TextEditor.Caret.PreserveSelection = false;
 			}
 			Document.EndAtomicUndo ();
