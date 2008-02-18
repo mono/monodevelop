@@ -37,11 +37,11 @@ namespace Mono.TextEditor
 		TextEditor editor;
 		LineSegment lineHover;
 		
-		const int foldSegmentSize = 8;
-		
+		int foldSegmentSize = 8;
+		int marginWidth;
 		public override int Width {
 			get {
-				return 13;
+				return marginWidth;
 			}
 		}
 		
@@ -98,6 +98,8 @@ namespace Mono.TextEditor
 			
 			foldToggleMarkerGC = new Gdk.GC (editor.GdkWindow);
 			foldToggleMarkerGC.RgbFgColor = editor.ColorStyle.FoldToggleMarker;
+			
+			marginWidth = editor.LineHeight * 8 / 10;
 		}
 		
 		Gdk.GC foldBgGC, foldLineGC, foldLineHighlightedGC, foldToggleMarkerGC;
@@ -129,22 +131,22 @@ namespace Mono.TextEditor
 		
 		void DrawFoldSegment (Gdk.Drawable win, int x, int y, bool isOpen, bool isSelected)
 		{
-			Gdk.Rectangle drawArea = new Gdk.Rectangle (x + 3, y + 3, foldSegmentSize, foldSegmentSize);
+			Gdk.Rectangle drawArea = new Gdk.Rectangle (x + (Width - foldSegmentSize) / 2, y + (editor.LineHeight - foldSegmentSize) / 2, foldSegmentSize, foldSegmentSize);
 			win.DrawRectangle (foldBgGC, true, drawArea);
 			win.DrawRectangle (isSelected ? foldLineHighlightedGC  : foldLineGC, false, drawArea);
 			
 			win.DrawLine (foldToggleMarkerGC, 
-			              drawArea.Left  + 2,
-			              drawArea.Top + 4,
-			              drawArea.Right - 2,
-			              drawArea.Top + 4);
+			              drawArea.Left  + drawArea.Width * 3 / 10,
+			              drawArea.Top + drawArea.Height / 2,
+			              drawArea.Right - drawArea.Width * 3 / 10,
+			              drawArea.Top + drawArea.Height / 2);
 			
 			if (!isOpen)
 				win.DrawLine (foldToggleMarkerGC, 
-				              drawArea.Left  + 4,
-				              drawArea.Top + 2,
-				              drawArea.Left  + 4,
-				              drawArea.Bottom - 2);
+				              drawArea.Left + drawArea.Width / 2,
+				              drawArea.Top + drawArea.Height * 3 / 10,
+				              drawArea.Left  + drawArea.Width / 2,
+				              drawArea.Bottom - drawArea.Height * 3 / 10);
 		}
 		
 		void DrawDashedVLine (Gdk.Drawable win, int x, int top, int bottom)
@@ -166,6 +168,9 @@ namespace Mono.TextEditor
 		
 		public override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int line, int x, int y)
 		{
+			foldSegmentSize = Width * 4 / 6;
+			foldSegmentSize -= (foldSegmentSize) % 2;
+			
 			Gdk.Rectangle drawArea = new Gdk.Rectangle (x, y, Width, editor.LineHeight);
 			win.DrawRectangle (foldBgGC, true, drawArea);
 			DrawDashedVLine (win, x, drawArea.Top, drawArea.Bottom);
@@ -183,9 +188,9 @@ namespace Mono.TextEditor
 				bool isStartSelected      = IsMouseHover (startFoldings);
 				bool isContainingSelected = IsMouseHover (containingFoldings);
 				bool isEndSelected        = IsMouseHover (endFoldings);
-										
-				int foldSegmentYPos = y + 3;
-				int xPos = x + 3 + 4;
+			
+				int foldSegmentYPos = y + (editor.LineHeight - foldSegmentSize) / 2;
+				int xPos = x + Width / 2;
 				
 				if (isFoldStart) {
 					bool isVisible         = true;

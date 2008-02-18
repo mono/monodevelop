@@ -161,7 +161,13 @@ namespace Mono.TextEditor
 		{
 			DisposeGCs ();
 			gc = new Gdk.GC (textEditor.GdkWindow);
+			
+			tabMarker.FontDescription = 
+			spaceMarker.FontDescription = 
+			eolMarker.FontDescription = 
+			invalidLineMarker.FontDescription = 
 			layout.FontDescription = TextEditorOptions.Options.Font;
+			
 			layout.SetText ("H");
 			layout.GetPixelSize (out this.charWidth, out this.lineHeight);
 		}

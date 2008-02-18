@@ -334,6 +334,7 @@ namespace Mono.TextEditor
 			foreach (IMargin margin in this.margins) {
 				margin.OptionsChanged ();
 			}
+			SetAdjustments (Allocation);
 			this.QueueDraw ();
 		}
 		
@@ -664,6 +665,22 @@ namespace Mono.TextEditor
 			SetAdjustments (allocation);
 			base.OnSizeAllocated (allocation);
 		}
+		
+		protected override bool OnScrollEvent (EventScroll evnt)
+		{
+			if ((evnt.State & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask) {
+				double zoom;
+				if (evnt.Direction == ScrollDirection.Down)
+					zoom = TextEditorOptions.Options.Zoom * 1.1;
+				else 
+					zoom = TextEditorOptions.Options.Zoom * 0.9;
+				zoom = System.Math.Min (8.0, System.Math.Max (0.7, zoom));
+				TextEditorOptions.Options.Zoom = zoom;
+				return true;
+			}
+			return base.OnScrollEvent (evnt); 
+		}
+
 		
 		internal void SetAdjustments (Gdk.Rectangle allocation)
 		{

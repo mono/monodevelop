@@ -1,5 +1,11 @@
 2008-02-18  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/FoldMarkerMargin.cs,
+	  Mono.TextEditor/TextEditor.cs, Mono.TextEditor/BookmarkMargin.cs,
+	  Mono.TextEditor/TextEditorOptions.cs: Implemented mouse wheel zoom.
+
+2008-02-18  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditor.cs: Changed scroll to caret a bit.
 
 2008-02-18  Mike Krüger <mkrueger@novell.com> 

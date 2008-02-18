@@ -66,6 +66,18 @@ namespace Mono.TextEditor
 		string fontName = DEFAULT_FONT;
 		string colorStyle = "Default";
 		
+		double zoom = 1.0;
+		
+		public double Zoom {
+			get {
+				return zoom;
+			}
+			set {
+				zoom = value;
+				OnChanged (EventArgs.Empty);
+			}
+		}
+		
 		public string IndentationString {
 			get {
 				return this.tabsToSpaces ? new string (' ', this.TabSize) : "\t";
@@ -235,6 +247,7 @@ namespace Mono.TextEditor
 				}
 			}
 		}
+		
 		public virtual bool EnableSyntaxHighlighting {
 			get {
 				return enableSyntaxHighlighting;
@@ -249,7 +262,10 @@ namespace Mono.TextEditor
 		
 		public virtual Pango.FontDescription Font {
 			get {
-				return Pango.FontDescription.FromString (FontName);
+				Pango.FontDescription result = Pango.FontDescription.FromString (FontName);
+				if (result != null)
+					result.Size = (int)(result.Size * Zoom);
+				return result;
 			}
 		}
 		

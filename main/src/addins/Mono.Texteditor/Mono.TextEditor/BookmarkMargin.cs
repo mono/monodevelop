@@ -36,6 +36,7 @@ namespace Mono.TextEditor
 		TextEditor editor;
 		Gdk.GC backgroundGC, seperatorGC;
 		Cairo.Color color1, color2;
+		int marginWidth = 18;
 		
 		public BookmarkMargin (TextEditor editor)
 		{
@@ -44,7 +45,7 @@ namespace Mono.TextEditor
 		
 		public override int Width {
 			get {
-				return 18;
+				return marginWidth;
 			}
 		}
 		
@@ -76,6 +77,8 @@ namespace Mono.TextEditor
 			
 			color1 = Convert (editor.ColorStyle.BookmarkColor1);
 			color2 = Convert (editor.ColorStyle.BookmarkColor2);
+			
+			marginWidth = editor.LineHeight * 12 / 10;
 		}
 		
 		static Cairo.Color Convert (Gdk.Color color)
