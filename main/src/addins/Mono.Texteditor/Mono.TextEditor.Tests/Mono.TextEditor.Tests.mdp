@@ -17,6 +17,7 @@
     <File name="Mono.TextEditor.Tests.DefaultEditActions" subtype="Directory" buildaction="Compile" />
     <File name="Mono.TextEditor.Tests.DefaultEditActions/InsertNewLineTests.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor.Tests.DefaultEditActions/CaretMoveTests.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.TextEditor.Tests.DefaultEditActions/DocumentTests.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="Mono.TextEditor" />

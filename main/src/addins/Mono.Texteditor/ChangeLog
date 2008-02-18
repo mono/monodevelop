@@ -1,5 +1,9 @@
 2008-02-18  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextEditor.cs: Changed scroll to caret a bit.
+
+2008-02-18  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/DefaultEditActions.cs: Fixed tabs2spaces option.
 
 2008-02-18  Mike Krüger <mkrueger@novell.com> 

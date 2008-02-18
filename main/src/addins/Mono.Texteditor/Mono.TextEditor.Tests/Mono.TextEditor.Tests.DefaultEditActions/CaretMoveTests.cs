@@ -25,7 +25,6 @@
 //
 //
 
-
 using System;
 using NUnit.Framework;
 
@@ -34,20 +33,6 @@ namespace Mono.TextEditor.Tests
 	[TestFixture()]
 	public class CaretMoveTests
 	{
-		[Test()]
-		public void TestCaretMoveUp ()
-		{
-			Mono.TextEditor.TextEditorData data = new Mono.TextEditor.TextEditorData ();
-//			data.Document.Buffer.Text = "1\n2\n3\n";
-			Assert.AreEqual (0, 0);
-			/*
-			new CaretMoveUp ().Run (data);
-			Assert.AreEqual (0, data.Caret.Line);
-			Assert.AreEqual (0, data.Caret.Column);
-			new CaretMoveUp ().Run (data);
-			Assert.AreEqual (0, data.Caret.Line);
-			Assert.AreEqual (0, data.Caret.Column);*/
-		}
 //		
 //		[Test()]
 //		public void TestCaretMoveDown ()
@@ -89,5 +74,17 @@ namespace Mono.TextEditor.Tests
 //			new CaretMoveRight ().Run (document, caret);
 //			Assert.AreEqual (4, caret.Column);
 //		}
+		
+		[TestFixtureSetUp] 
+		public void SetUp()
+		{
+			Gtk.Application.Init ();
+		}
+		
+		[TestFixtureTearDown] 
+		public void Dispose()
+		{
+		}
+		
 	}
 }

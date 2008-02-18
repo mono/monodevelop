@@ -640,11 +640,11 @@ namespace Mono.TextEditor
 		{
 			if (Caret.Line < 0 || Caret.Line >= Document.LineCount)
 				return;
-			int yMargin = 2 * this.LineHeight;
+			int yMargin = 1 * this.LineHeight;
 			int xMargin = 10 * this.textViewMargin.CharWidth;
 			int caretPosition = Document.LogicalToVisualLine (Caret.Line) * this.LineHeight;
-			if (this.textEditorData.VAdjustment.Value > caretPosition - yMargin) {
-				this.textEditorData.VAdjustment.Value = caretPosition - yMargin;
+			if (this.textEditorData.VAdjustment.Value > caretPosition) {
+				this.textEditorData.VAdjustment.Value = caretPosition;
 			} else if (this.textEditorData.VAdjustment.Value + this.textEditorData.VAdjustment.PageSize - this.LineHeight < caretPosition + yMargin) {
 				this.textEditorData.VAdjustment.Value = caretPosition - this.textEditorData.VAdjustment.PageSize + this.LineHeight + yMargin;
 			}
