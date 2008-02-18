@@ -31,6 +31,7 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -89,6 +90,14 @@ namespace MonoDevelop.Gettext
 		{
 			this.NeedsBuilding = true;
 			isDirty = true;
+		}
+		
+		protected override StringCollection OnGetExportFiles ()
+		{
+			StringCollection col = base.OnGetExportFiles ();
+			foreach (Translation tr in translations)
+				col.Add (tr.PoFile);
+			return col;
 		}
 		
 		public TranslationProjectInformation GetProjectInformation (CombineEntry entry, bool force)

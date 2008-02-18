@@ -1,3 +1,8 @@
+2008-02-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Gettext/TranslationProject.cs: Include .po files in the list
+	  of exportable files of the project. Fixes bug #362567.
+
 2008-01-25  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Gettext.addin.xml, MonoDevelop.Gettext/RegexFileScanner.cs,
