@@ -1,5 +1,9 @@
 2008-02-19  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Makefile.am, Mono.TextEditor.mdp: Fixed assembly references.
+
+2008-02-19  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.TextEditor/TextEditor.cs: Added key bindings for
 	  control+shift+up/down. In OnLeaveNotifyEvent, reset the cursor only when
 	  the mouse is really leaving the window.

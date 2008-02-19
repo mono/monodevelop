@@ -2,6 +2,7 @@
 ADDIN_BUILD = $(top_builddir)/build/bin
 ASSEMBLY = $(top_builddir)/build/bin/Mono.TextEditor.dll
 REFS =  \
+	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	-r:Mono.Cairo \
 	-r:Mono.Posix \
