@@ -277,21 +277,25 @@ namespace MonoDevelop.SourceEditor
 		{
 			public ErrorInfo info;
 			public LineSegment line;
+			public Mono.TextEditor.Document doc;
 			TextMarker marker = new TextMarker ();
 			
-			public Error (ErrorInfo info, LineSegment line)
+			public Error (Mono.TextEditor.Document doc, ErrorInfo info, LineSegment line)
 			{
 				this.info = info;
 				this.line = line;
+				this.doc  = doc;
 			}
 			
 			public void AddToLine ()
 			{
 				line.AddMarker (marker);
+				doc.CommitLineUpdate (doc.OffsetToLineNumber(line.Offset));
 			}
 			public void RemoveFromLine ()
 			{
 				line.RemoveMarker (marker);
+				doc.CommitLineUpdate (doc.OffsetToLineNumber(line.Offset));
 			}
 		}
 		void UnderLineError (ErrorInfo info)
@@ -304,7 +308,7 @@ namespace MonoDevelop.SourceEditor
 				return;
 			
 			LineSegment line = this.TextEditor.Document.GetLine (info.Line);
-			Error error = new Error (info, line); 
+			Error error = new Error (this.TextEditor.Document, info, line); 
 			errors [info.Line] = error;
 			error.AddToLine ();
 		}

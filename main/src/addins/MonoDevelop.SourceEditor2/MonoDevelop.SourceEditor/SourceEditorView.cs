@@ -440,6 +440,7 @@ namespace MonoDevelop.SourceEditor
 				if (this.isDisposed)
 					return false;
 				line = Math.Min (line, Document.LineCount);
+				
 				widget.TextEditor.Caret.Location = new DocumentLocation (line - 1, column - 1);
 				
 				widget.TextEditor.GrabFocus ();

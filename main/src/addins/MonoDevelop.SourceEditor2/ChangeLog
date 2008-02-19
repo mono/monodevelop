@@ -1,5 +1,11 @@
 2008-02-19  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed Bug 362889 - Error
+	  underlining not properly redrawn.
+
+2008-02-19  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: fixed some gdk criticals
 	  caused by an too early OptionsChanged event.
 
