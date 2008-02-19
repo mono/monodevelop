@@ -1,5 +1,11 @@
 2008-02-19  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextEditorData.cs,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests.DefaultEditActions/SelectionSelectAllTests.cs:
+	  Fixed "Bug 362983 - Text selected with Select All can't be unselected"
+
+2008-02-19  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor.Tests/Mono.TextEditor.Tests.pidb: Copy to primary
 	  clipboard is now lazy (Improves performance for large selections).
 

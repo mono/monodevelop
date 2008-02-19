@@ -214,6 +214,8 @@ namespace Mono.TextEditor
 		
 		public void ClearSelection ()
 		{
+			if (!this.IsSomethingSelected)
+				return;
 			this.selectionAnchor = -1;
 			this.selectionRange  = null;
 			OnSelectionChanged (EventArgs.Empty);

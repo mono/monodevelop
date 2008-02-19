@@ -318,6 +318,7 @@ namespace Mono.TextEditor
 			data.SelectionAnchor = 0;
 			new CaretMoveToDocumentEnd ().Run (data);
 			data.ExtendSelectionTo (data.Document.Length);
+			data.Caret.PreserveSelection = false;
 			data.Caret.AutoScrollToCaret = true;
 		}
 	}
