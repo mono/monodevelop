@@ -193,6 +193,34 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (data.Document.GetLine(1).Length, data.Document.GetLine(2).Length);
 		}
 		
+		[Test()]
+		public void TestInsertTabLineCase4 ()
+		{
+			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
+			data.Document.Text = 
+@"123d456789
+[123456789
+123d456789
+123]456789
+123456789
+123456789";
+			SetSelection (data, false);
+			
+			new InsertTab ().Run (data);
+			ISegment currentSelection = GetSelection (data, false);
+			
+			Assert.AreEqual (currentSelection.EndOffset, data.SelectionRange.EndOffset);
+			Assert.AreEqual (currentSelection.EndOffset, data.Caret.Offset);
+			
+			Assert.AreEqual (data.Document.GetLine(1).Offset, data.SelectionRange.Offset);
+			
+			Assert.Greater (data.Document.GetLine(1).Length, data.Document.GetLine(0).Length);
+			Assert.Greater (data.Document.GetLine(2).Length, data.Document.GetLine(0).Length);
+			Assert.Greater (data.Document.GetLine(3).Length, data.Document.GetLine(0).Length);
+			
+			Assert.AreEqual (data.Document.GetLine(1).Length, data.Document.GetLine(2).Length);
+		}
+		
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{
