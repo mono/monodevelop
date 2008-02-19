@@ -553,23 +553,13 @@ namespace CBinding
 		
 		void CleanPrecompiledHeaders (CProjectConfiguration configuration)
 		{
-			string precDir = Path.Combine (configuration.SourceDirectory, ".prec");
+			if (string.IsNullOrEmpty (configuration.SourceDirectory))
+			    return;
 			
-			if (string.IsNullOrEmpty (precDir))
-				return;
-			
-			string precConfigDir = Path.Combine (precDir, configuration.Name);
-			
-			if (string.IsNullOrEmpty (precConfigDir))
-				return;
-			
-			if (Directory.Exists (precConfigDir))
-				   Directory.Delete (precConfigDir, true);
-			
-			if (Directory.Exists (precDir) &&
-			    Directory.GetFiles (precDir).Length == 0 &&
-			    Directory.GetDirectories (precDir).Length == 0)
-				Directory.Delete (precDir);
+			string precDir = Path.Combine (configuration.SourceDirectory, ".prec");			
+
+			if (Directory.Exists (precDir))
+				Directory.Delete (precDir, true);
 		}
 		
 		private bool NeedsUpdate (ProjectFileCollection projectFiles,

@@ -1,3 +1,8 @@
+2008-02-19  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
+	* Compiler/GNUCompiler.cs: Handle better CleanPrecompiledHeaders, fixes bug
+	  361045.
+
 2008-02-14  Geoff Norton  <gnorton@novell.com>
 
 	* Parser/TagDatabaseManager.cs: Disable the ctag implementation on OSX 
