@@ -1,5 +1,11 @@
 2008-02-19  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/TextEditorData.cs,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests.pidb: Fixed Bug 362887 -
+	  Paste command pastes text to the wrong location.
+
+2008-02-19  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor.Tests/Mono.TextEditor.Tests.mdp,
 	  Mono.TextEditor.Tests/Mono.TextEditor.Tests.DefaultEditActions/InsertTabTests.cs:
 	  Added some tests for the insert tab behavior.

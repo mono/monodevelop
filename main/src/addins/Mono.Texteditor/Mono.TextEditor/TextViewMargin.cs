@@ -496,6 +496,8 @@ namespace Mono.TextEditor
 				if (type == EventType.TwoButtonPress) {
 					int start = ScanWord (offset, false);
 					int end   = ScanWord (offset, true);
+					Caret.Offset = end;
+					textEditor.SelectionAnchor = start;
 					textEditor.SelectionRange = new Segment (start, end - start);
 					inSelectionDrag = true;
 					mouseSelectionMode = MouseSelectionMode.Word;
@@ -514,6 +516,8 @@ namespace Mono.TextEditor
 					inSelectionDrag = true;
 					if ((modifierState & Gdk.ModifierType.ShiftMask) == ModifierType.ShiftMask) {
 						Caret.PreserveSelection = true;
+						if (!textEditor.IsSomethingSelected)
+							textEditor.SelectionAnchor = Caret.Offset;
 						Caret.Location = clickLocation;
 						Caret.PreserveSelection = false;
 						textEditor.ExtendSelectionTo (clickLocation);

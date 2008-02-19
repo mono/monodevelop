@@ -258,10 +258,10 @@ namespace Mono.TextEditor
 				return;
 			document.BeginAtomicUndo ();
 			ISegment selection = SelectionRange;
+			
 			bool needUpdate = Document.OffsetToLineNumber (selection.Offset) != Document.OffsetToLineNumber (selection.EndOffset);
 			if (Caret.Offset > selection.Offset)
-				Caret.Offset -= selection.Length;
-			
+				Caret.Offset -= System.Math.Min (selection.Length, Caret.Offset - selection.Offset);
 			Document.Remove (selection.Offset, selection.Length);
 			if (needUpdate)
 				Document.RequestUpdate (new LineToEndUpdate (Document.OffsetToLineNumber (selection.Offset)));
