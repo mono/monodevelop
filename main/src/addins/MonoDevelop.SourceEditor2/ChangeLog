@@ -1,5 +1,9 @@
 2008-02-19  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: fixed little comment issue.
+
+2008-02-19  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixing file changed bug
 	  (with new files).
 

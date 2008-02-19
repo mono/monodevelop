@@ -770,7 +770,8 @@ namespace MonoDevelop.SourceEditor
 			}
 			if (TextEditor.IsSomethingSelected) {
 				if (TextEditor.SelectionAnchor < TextEditor.Caret.Offset) {
-					TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, TextEditor.SelectionAnchor + commentTag.Length));
+					if (anchorColumn != 0) 
+						TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, TextEditor.SelectionAnchor + commentTag.Length));
 				} else {
 					if (anchorColumn != 0) {
 						TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, anchorLine.Offset + anchorColumn + commentTag.Length));
