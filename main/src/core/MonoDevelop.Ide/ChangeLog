@@ -1,5 +1,10 @@
 2008-02-19  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.Commands/ProjectCommands.cs, MonoDevelop.Ide.addin.xml:
+	  Implemented run again command.
+
+2008-02-19  Mike Krüger <mkrueger@novell.com> 
+
 	* options/KeyBindingSchemeEmacs.xml,
 	  options/KeyBindingSchemeMonoDevelop1.xml,
 	  options/KeyBindingSchemeVisualStudio.xml,

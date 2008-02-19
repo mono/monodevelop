@@ -79,6 +79,10 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Run ()
 		{
+			if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
+				StopHandler.StopBuildOperations ();
+				IdeApp.ProjectOperations.CurrentRunOperation.WaitForCompleted ();
+			} 
 			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
 				IAsyncOperation op = IdeApp.ProjectOperations.Build (IdeApp.ProjectOperations.CurrentOpenCombine);
 				op.Completed += new OperationHandler (ExecuteCombine);
@@ -93,8 +97,13 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Update (CommandInfo info)
 		{
+			info.Text = GettextCatalog.GetString ("_Run");
 			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				info.Enabled = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
+				if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
+					info.Text = GettextCatalog.GetString ("_Run again");
+				}
+				
+				info.Enabled = true;
 			} else {
 				info.Enabled = (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsBuildTarget);
 			}
@@ -365,12 +374,17 @@ namespace MonoDevelop.Ide.Commands
 	
 	internal class StopHandler: CommandHandler
 	{
-		protected override void Run ()
+		public static void StopBuildOperations ()
 		{
 			if (!IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted)
 				IdeApp.ProjectOperations.CurrentBuildOperation.Cancel ();
 			if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted)
 				IdeApp.ProjectOperations.CurrentRunOperation.Cancel ();
+		}
+		
+		protected override void Run ()
+		{
+			StopBuildOperations ();
 		}
 		
 		protected override void Update (CommandInfo info)
@@ -379,7 +393,7 @@ namespace MonoDevelop.Ide.Commands
 							!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
 		}
 	}
-		
+	
 	internal class CombineEntryOptionsHandler: CommandHandler
 	{
 		protected override void Run ()

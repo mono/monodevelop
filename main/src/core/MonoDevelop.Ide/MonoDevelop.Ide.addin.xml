@@ -397,12 +397,12 @@
 				icon = "gtk-execute"
 				shortcut = "F5"
 				_description = "Run"
-				_label = "Run" />
+				_label = "_Run" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.RunEntry"
 				defaultHandler = "MonoDevelop.Ide.Commands.RunEntryHandler"
 				icon = "gtk-execute"
 				description = "Run"
-				_label = "Run" />
+				_label = "_Run" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Debug"
 				defaultHandler = "MonoDevelop.Ide.Commands.DebugHandler"
 				icon = "gtk-execute"
