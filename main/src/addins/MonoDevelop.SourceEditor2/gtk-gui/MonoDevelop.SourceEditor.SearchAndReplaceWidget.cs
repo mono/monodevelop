@@ -77,6 +77,7 @@ namespace MonoDevelop.SourceEditor {
             this.closeButton = new Gtk.Button();
             this.closeButton.CanFocus = true;
             this.closeButton.Name = "closeButton";
+            this.closeButton.Relief = ((Gtk.ReliefStyle)(2));
             // Container child closeButton.Gtk.Container+ContainerChild
             this.image4 = new Gtk.Image();
             this.image4.Name = "image4";
@@ -116,6 +117,7 @@ namespace MonoDevelop.SourceEditor {
             this.buttonSearchForward.CanFocus = true;
             this.buttonSearchForward.Name = "buttonSearchForward";
             this.buttonSearchForward.UseUnderline = true;
+            this.buttonSearchForward.Relief = ((Gtk.ReliefStyle)(2));
             // Container child buttonSearchForward.Gtk.Container+ContainerChild
             Gtk.Alignment w5 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
             // Container child GtkAlignment.Gtk.Container+ContainerChild
@@ -142,6 +144,7 @@ namespace MonoDevelop.SourceEditor {
             this.buttonSearchBackward.CanFocus = true;
             this.buttonSearchBackward.Name = "buttonSearchBackward";
             this.buttonSearchBackward.UseUnderline = true;
+            this.buttonSearchBackward.Relief = ((Gtk.ReliefStyle)(2));
             // Container child buttonSearchBackward.Gtk.Container+ContainerChild
             Gtk.Alignment w14 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
             // Container child GtkAlignment.Gtk.Container+ContainerChild
@@ -168,6 +171,7 @@ namespace MonoDevelop.SourceEditor {
             this.buttonOptions.CanFocus = true;
             this.buttonOptions.Name = "buttonOptions";
             this.buttonOptions.UseUnderline = true;
+            this.buttonOptions.Relief = ((Gtk.ReliefStyle)(2));
             // Container child buttonOptions.Gtk.Container+ContainerChild
             Gtk.Alignment w23 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
             // Container child GtkAlignment.Gtk.Container+ContainerChild
@@ -204,6 +208,7 @@ namespace MonoDevelop.SourceEditor {
             this.buttonReplace.CanFocus = true;
             this.buttonReplace.Name = "buttonReplace";
             this.buttonReplace.UseUnderline = true;
+            this.buttonReplace.Relief = ((Gtk.ReliefStyle)(2));
             // Container child buttonReplace.Gtk.Container+ContainerChild
             Gtk.Alignment w33 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
             // Container child GtkAlignment.Gtk.Container+ContainerChild
@@ -230,6 +235,7 @@ namespace MonoDevelop.SourceEditor {
             this.buttonReplaceAll.CanFocus = true;
             this.buttonReplaceAll.Name = "buttonReplaceAll";
             this.buttonReplaceAll.UseUnderline = true;
+            this.buttonReplaceAll.Relief = ((Gtk.ReliefStyle)(2));
             this.buttonReplaceAll.Label = Mono.Unix.Catalog.GetString("Replace _all");
             this.hbox2.Add(this.buttonReplaceAll);
             Gtk.Box.BoxChild w42 = ((Gtk.Box.BoxChild)(this.hbox2[this.buttonReplaceAll]));
@@ -319,6 +325,7 @@ namespace MonoDevelop.SourceEditor {
             this.buttonSearchMode = new Gtk.Button();
             this.buttonSearchMode.CanFocus = true;
             this.buttonSearchMode.Name = "buttonSearchMode";
+            this.buttonSearchMode.Relief = ((Gtk.ReliefStyle)(2));
             // Container child buttonSearchMode.Gtk.Container+ContainerChild
             this.arrow4 = new Gtk.Arrow(((Gtk.ArrowType)(1)), ((Gtk.ShadowType)(0)));
             this.arrow4.Name = "arrow4";

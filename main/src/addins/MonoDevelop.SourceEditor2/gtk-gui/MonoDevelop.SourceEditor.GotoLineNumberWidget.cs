@@ -38,6 +38,7 @@ namespace MonoDevelop.SourceEditor {
             this.closeButton = new Gtk.Button();
             this.closeButton.CanFocus = true;
             this.closeButton.Name = "closeButton";
+            this.closeButton.Relief = ((Gtk.ReliefStyle)(2));
             // Container child closeButton.Gtk.Container+ContainerChild
             this.image1 = new Gtk.Image();
             this.image1.Name = "image1";
@@ -75,6 +76,7 @@ namespace MonoDevelop.SourceEditor {
             this.buttonGoToLine.CanFocus = true;
             this.buttonGoToLine.Name = "buttonGoToLine";
             this.buttonGoToLine.UseUnderline = true;
+            this.buttonGoToLine.Relief = ((Gtk.ReliefStyle)(2));
             // Container child buttonGoToLine.Gtk.Container+ContainerChild
             Gtk.Alignment w5 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
             // Container child GtkAlignment.Gtk.Container+ContainerChild

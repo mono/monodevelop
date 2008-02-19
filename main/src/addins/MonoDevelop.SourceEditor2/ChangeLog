@@ -1,3 +1,11 @@
+2008-02-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs,
+	  gtk-gui/MonoDevelop.SourceEditor.SearchWidget.cs,
+	  gtk-gui/MonoDevelop.SourceEditor.GotoLineNumberWidget.cs,
+	  gtk-gui/gui.stetic: Use buttons without relief for the search/replace
+	  widgets.
+
 2008-02-19  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed toggle code comment

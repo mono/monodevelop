@@ -48,6 +48,7 @@ namespace MonoDevelop.SourceEditor {
             this.closeButton = new Gtk.Button();
             this.closeButton.CanFocus = true;
             this.closeButton.Name = "closeButton";
+            this.closeButton.Relief = ((Gtk.ReliefStyle)(2));
             // Container child closeButton.Gtk.Container+ContainerChild
             this.image1 = new Gtk.Image();
             this.image1.Name = "image1";
@@ -82,6 +83,7 @@ namespace MonoDevelop.SourceEditor {
             this.buttonSearchForward.CanFocus = true;
             this.buttonSearchForward.Name = "buttonSearchForward";
             this.buttonSearchForward.UseUnderline = true;
+            this.buttonSearchForward.Relief = ((Gtk.ReliefStyle)(2));
             // Container child buttonSearchForward.Gtk.Container+ContainerChild
             Gtk.Alignment w5 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
             // Container child GtkAlignment.Gtk.Container+ContainerChild
@@ -108,6 +110,7 @@ namespace MonoDevelop.SourceEditor {
             this.buttonSearchBackward.CanFocus = true;
             this.buttonSearchBackward.Name = "buttonSearchBackward";
             this.buttonSearchBackward.UseUnderline = true;
+            this.buttonSearchBackward.Relief = ((Gtk.ReliefStyle)(2));
             // Container child buttonSearchBackward.Gtk.Container+ContainerChild
             Gtk.Alignment w14 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
             // Container child GtkAlignment.Gtk.Container+ContainerChild
@@ -134,6 +137,7 @@ namespace MonoDevelop.SourceEditor {
             this.buttonOptions.CanFocus = true;
             this.buttonOptions.Name = "buttonOptions";
             this.buttonOptions.UseUnderline = true;
+            this.buttonOptions.Relief = ((Gtk.ReliefStyle)(2));
             // Container child buttonOptions.Gtk.Container+ContainerChild
             Gtk.Alignment w23 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
             // Container child GtkAlignment.Gtk.Container+ContainerChild
@@ -166,6 +170,7 @@ namespace MonoDevelop.SourceEditor {
             this.buttonReplaceMode = new Gtk.Button();
             this.buttonReplaceMode.CanFocus = true;
             this.buttonReplaceMode.Name = "buttonReplaceMode";
+            this.buttonReplaceMode.Relief = ((Gtk.ReliefStyle)(2));
             // Container child buttonReplaceMode.Gtk.Container+ContainerChild
             this.arrow1 = new Gtk.Arrow(((Gtk.ArrowType)(0)), ((Gtk.ShadowType)(1)));
             this.arrow1.Name = "arrow1";
