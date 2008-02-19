@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 using Gtk;
@@ -548,10 +549,13 @@ namespace Mono.TextEditor
 		
 		public static void RemoveIndentSelection (TextEditorData data)
 		{
+			Debug.Assert (data.IsSomethingSelected);
 			int startLineNr = data.IsSomethingSelected ? data.Document.OffsetToLineNumber (data.SelectionRange.Offset) : data.Caret.Line;
 			int endLineNr   = data.IsSomethingSelected ? data.Document.OffsetToLineNumber (data.SelectionRange.EndOffset) : data.Caret.Line;
 			if (endLineNr < 0)
 				endLineNr = data.Document.LineCount;
+			LineSegment anchorLine   = data.IsSomethingSelected ? data.Document.GetLineByOffset (data.SelectionAnchor) : null;
+			int         anchorColumn = data.IsSomethingSelected ? data.SelectionAnchor - anchorLine.Offset : -1;
 			data.Document.BeginAtomicUndo ();
 			int first = -1;
 			int last  = 0;
@@ -560,19 +564,24 @@ namespace Mono.TextEditor
 				if (first < 0)
 					first = last;
 			}
+			
 			if (data.IsSomethingSelected) {
-				data.SelectionAnchor = System.Math.Max (0, data.SelectionAnchor - first);
-				data.SelectionRange = new Segment (data.SelectionRange.Offset - first, data.SelectionRange.Length + first);
-			}
-			DocumentLocation selectionEnd = data.IsSomethingSelected ? data.Document.OffsetToLocation (data.SelectionRange.EndOffset) : DocumentLocation.Empty;
-			if (!data.IsSomethingSelected || selectionEnd.Column != 0) {
-				if (data.IsSomethingSelected) {
-					data.SelectionRange = new Segment (data.SelectionRange.Offset, data.SelectionRange.Length -last);
+				if (data.SelectionAnchor < data.Caret.Offset) {
+					data.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, data.SelectionAnchor - first));
+				} else {
+					data.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, anchorLine.Offset + anchorColumn - last));
 				}
+			}
+			
+			if (data.Caret.Column != 0) {
 				data.Caret.PreserveSelection = true;
 				data.Caret.Column = System.Math.Max (0, data.Caret.Column - last);
 				data.Caret.PreserveSelection = false;
 			}
+			
+			if (data.IsSomethingSelected) 
+				data.ExtendSelectionTo (data.Caret.Location);
+			
 			data.Document.EndAtomicUndo ();
 			data.Document.RequestUpdate (new MultipleLineUpdate (startLineNr, endLineNr));
 			data.Document.CommitDocumentUpdate ();
@@ -611,21 +620,28 @@ namespace Mono.TextEditor
 			int endLineNr   = data.IsSomethingSelected ? data.Document.OffsetToLineNumber (data.SelectionRange.EndOffset) : data.Caret.Line;
 			if (endLineNr < 0)
 				endLineNr = data.Document.LineCount;
+			
+			LineSegment anchorLine   = data.IsSomethingSelected ? data.Document.GetLineByOffset (data.SelectionAnchor) : null;
+			int         anchorColumn = data.IsSomethingSelected ? data.SelectionAnchor - anchorLine.Offset : -1;
 			data.Document.BeginAtomicUndo ();
 			foreach (LineSegment line in data.SelectedLines) {
 				data.Document.Insert (line.Offset, TextEditorOptions.Options.IndentationString);
 			}
 			if (data.IsSomethingSelected) {
-				data.SelectionAnchor++;
+				if (data.SelectionAnchor < data.Caret.Offset) {
+					data.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, data.SelectionAnchor + TextEditorOptions.Options.IndentationString.Length));
+				} else {
+					data.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, anchorLine.Offset + anchorColumn + TextEditorOptions.Options.IndentationString.Length));
+				}
 			}
-			DocumentLocation selectionEnd = data.IsSomethingSelected ? data.Document.OffsetToLocation (data.SelectionRange.EndOffset) : DocumentLocation.Empty;
-			if (selectionEnd.Column != 0) {
+			
+			if (data.Caret.Column != 0) {
 				data.Caret.PreserveSelection = true;
 				data.Caret.Column++;
-				if (data.IsSomethingSelected) 
-					data.ExtendSelectionTo (data.Caret.Offset);
 				data.Caret.PreserveSelection = false;
 			}
+			if (data.IsSomethingSelected) 
+				data.ExtendSelectionTo (data.Caret.Offset);
 			data.Document.EndAtomicUndo ();
 			data.Document.RequestUpdate (new MultipleLineUpdate (startLineNr, endLineNr));
 			data.Document.CommitDocumentUpdate ();

@@ -334,6 +334,8 @@ namespace Mono.TextEditor
 		
 		void OnEndUndo (object sender, Document.UndoOperation operation)
 		{
+			if (operation == null)
+				return;
 			TextEditorDataState state = new TextEditorDataState (this, operation, savedCaretPos, savedSelection);
 			state.Attach ();
 			states.Add (state);
@@ -412,6 +414,8 @@ namespace Mono.TextEditor
 		
 		protected virtual void OptionsChanged (object sender, EventArgs args)
 		{
+			if (!this.IsRealized)
+				return;
 			this.textEditorData.ColorStyle = TextEditorOptions.Options.GetColorStyle (this);
 			
 			bookmarkMargin.IsVisible   = TextEditorOptions.Options.ShowIconMargin;

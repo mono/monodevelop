@@ -473,8 +473,12 @@ namespace Mono.TextEditor
 					undoStack.Push (currentAtomicOperation);
 					OnEndUndo (currentAtomicOperation);
 				} else {
-					undoStack.Push (currentAtomicOperation.Operations [0]);
-					OnEndUndo (currentAtomicOperation.Operations [0]);
+					if (currentAtomicOperation.Operations.Count > 0) {
+						undoStack.Push (currentAtomicOperation.Operations [0]);
+						OnEndUndo (currentAtomicOperation.Operations [0]);
+					} else {
+						OnEndUndo (null);
+					}
 				}
 				currentAtomicOperation = null;
 			}

@@ -183,20 +183,23 @@ namespace Mono.TextEditor
 		
 		public IEnumerable<LineSegment> SelectedLines {
 			get {
+				List<LineSegment> result = new List<LineSegment> ();
 				if (!this.IsSomethingSelected) {
-					yield return this.document.GetLine (this.caret.Line);
+					result.Add (this.document.GetLine (this.caret.Line));
 				} else {
 					int startLineNr = Document.OffsetToLineNumber (SelectionRange.Offset);
 					RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = this.document.GetLine (startLineNr).Iter;
+					LineSegment endLine = Document.GetLineByOffset (SelectionRange.EndOffset);
+					bool skipEndLine = Caret.Offset == endLine.Offset;
 					do {
-						if (iter.Current == Document.GetLineByOffset (SelectionRange.EndOffset) && (iter.Current.Offset == Caret.Offset ||
-						                                                                                 iter.Current.Offset == SelectionRange.EndOffset))
+						if (iter.Current == endLine && skipEndLine)
 							break;
-						yield return iter.Current;
+						result.Add (iter.Current);
 						if (iter.Current == Document.GetLineByOffset (SelectionRange.EndOffset))
 							break;
 					} while (iter.MoveNext ());
 				}
+				return result;
 			}
 		}
 		

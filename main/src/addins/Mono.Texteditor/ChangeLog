@@ -1,5 +1,12 @@
 2008-02-19  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/Document.cs,
+	  Mono.TextEditor/TextEditorData.cs, Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests.pidb: Fixed insert/remove
+	  indent (Bug 362896 - Unindent action leaves selection in a weird state).
+
+2008-02-19  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor.Tests/Mono.TextEditor.Tests.mdp,
 	  Mono.TextEditor.Tests/Mono.TextEditor.Tests,
 	  Mono.TextEditor.Tests/Mono.TextEditor.Tests/DocumentTests.cs,
