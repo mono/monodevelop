@@ -1,5 +1,11 @@
 2008-02-19  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor.Tests/Mono.TextEditor.Tests.mdp,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests.DefaultEditActions/InsertTabTests.cs:
+	  Added some tests for the insert tab behavior.
+
+2008-02-19  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/Document.cs,
 	  Mono.TextEditor/TextEditorData.cs, Mono.TextEditor/TextEditor.cs,
 	  Mono.TextEditor.Tests/Mono.TextEditor.Tests.pidb: Fixed insert/remove
