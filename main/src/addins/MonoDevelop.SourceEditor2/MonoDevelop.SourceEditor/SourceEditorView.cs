@@ -760,23 +760,30 @@ namespace MonoDevelop.SourceEditor
 			if (endLineNr < 0)
 				endLineNr = Document.LineCount;
 			
+			LineSegment anchorLine   = TextEditor.IsSomethingSelected ? TextEditor.Document.GetLineByOffset (TextEditor.SelectionAnchor) : null;
+			int         anchorColumn = TextEditor.IsSomethingSelected ? TextEditor.SelectionAnchor - anchorLine.Offset : -1;
+			
 			StringBuilder commentTag = new StringBuilder(Services.Languages.GetBindingPerFileName (this.ContentName).CommentTag ?? "//");
 			Document.BeginAtomicUndo ();
 			foreach (LineSegment line in TextEditor.SelectedLines) {
 				Document.Insert (line.Offset, commentTag);
 			}
 			if (TextEditor.IsSomethingSelected) {
-				TextEditor.SelectionAnchor += commentTag.Length;
+				if (TextEditor.SelectionAnchor < TextEditor.Caret.Offset) {
+					TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, TextEditor.SelectionAnchor + commentTag.Length));
+				} else {
+					TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, anchorLine.Offset + anchorColumn + commentTag.Length));
+				}
 			}
 			
-			DocumentLocation selectionEnd = TextEditor.IsSomethingSelected ? TextEditor.Document.OffsetToLocation (TextEditor.SelectionRange.EndOffset) : DocumentLocation.Empty;
-			if (selectionEnd.Column != 0) {
+			if (TextEditor.Caret.Column != 0) {
 				TextEditor.Caret.PreserveSelection = true;
 				TextEditor.Caret.Column += commentTag.Length;
-				if (TextEditor.IsSomethingSelected) 
-					TextEditor.ExtendSelectionTo (TextEditor.Caret.Offset);
 				TextEditor.Caret.PreserveSelection = false;
 			}
+			
+			if (TextEditor.IsSomethingSelected) 
+				TextEditor.ExtendSelectionTo (TextEditor.Caret.Offset);
 			Document.EndAtomicUndo ();
 			Document.CommitMultipleLineUpdate (startLineNr, endLineNr);
 		}
@@ -787,6 +794,9 @@ namespace MonoDevelop.SourceEditor
 			int endLineNr   = TextEditor.IsSomethingSelected ? Document.OffsetToLineNumber (TextEditor.SelectionRange.EndOffset) : TextEditor.Caret.Line;
 			if (endLineNr < 0)
 				endLineNr = Document.LineCount;
+			LineSegment anchorLine   = TextEditor.IsSomethingSelected ? TextEditor.Document.GetLineByOffset (TextEditor.SelectionAnchor) : null;
+			int         anchorColumn = TextEditor.IsSomethingSelected ? TextEditor.SelectionAnchor - anchorLine.Offset : -1;
+			
 			string commentTag = Services.Languages.GetBindingPerFileName (this.ContentName).CommentTag ?? "//";
 			Document.BeginAtomicUndo ();
 			int first = -1;
@@ -803,17 +813,24 @@ namespace MonoDevelop.SourceEditor
 				if (first < 0)
 					first = last;
 			}
-//			if (TextEditor.IsSomethingSelected) 
-//				TextEditor.GetTextEditorData ().SelectionStart.Column = System.Math.Max (0, TextEditor.GetTextEditorData ().SelectionStart.Column - first);
 			
-			DocumentLocation selectionEnd = TextEditor.IsSomethingSelected ? TextEditor.Document.OffsetToLocation (TextEditor.SelectionRange.EndOffset) : DocumentLocation.Empty;
-			if (selectionEnd.Column != 0) {
+			if (TextEditor.IsSomethingSelected) {
+				if (TextEditor.SelectionAnchor < TextEditor.Caret.Offset) {
+					TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, TextEditor.SelectionAnchor - first));
+				} else {
+					TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, anchorLine.Offset + anchorColumn - last));
+				}
+			}
+			
+			if (TextEditor.Caret.Column != 0) {
 				TextEditor.Caret.PreserveSelection = true;
 				TextEditor.Caret.Column = System.Math.Max (0, TextEditor.Caret.Column - last);
-				if (TextEditor.IsSomethingSelected) 
-					TextEditor.ExtendSelectionTo (TextEditor.Caret.Offset);
 				TextEditor.Caret.PreserveSelection = false;
 			}
+			
+			if (TextEditor.IsSomethingSelected) 
+				TextEditor.ExtendSelectionTo (TextEditor.Caret.Offset);
+		
 			Document.EndAtomicUndo ();
 			Document.CommitMultipleLineUpdate (startLineNr, endLineNr);
 		}
