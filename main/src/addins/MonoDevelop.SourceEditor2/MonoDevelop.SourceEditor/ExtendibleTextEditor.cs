@@ -490,6 +490,7 @@ namespace MonoDevelop.SourceEditor
 			RunAction (new BackspaceAction ());
 		}
 		
+		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Delete)]
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DeleteRightChar)]
 		internal void OnDeleteRightChar ()
 		{

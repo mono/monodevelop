@@ -1,3 +1,9 @@
+2008-02-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor/ExtendibleTextEditor.cs: Add binding for delete
+	  command, so the delete action will work even if the the delete command
+	  is bound to the delete key.
+
 2008-02-19  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: fixed little comment issue.
