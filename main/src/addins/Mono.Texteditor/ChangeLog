@@ -1,5 +1,11 @@
 2008-02-19  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor.Tests/Mono.TextEditor.Tests.DefaultEditActions/InsertTabTests.cs,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests.DefaultEditActions/RemoveTabTests.cs:
+	  Added Remove tab tests.
+
+2008-02-19  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextViewMargin.cs,
 	  Mono.TextEditor/TextEditorData.cs, Mono.TextEditor/TextEditor.cs: Fixed
 	  little issues found by unit testing.
