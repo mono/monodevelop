@@ -1,3 +1,10 @@
+2008-02-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/ProjectFileEventArgs.cs: Fix license header.
+	* MonoDevelop.Projects/ProjectFileCollection.cs,
+	  MonoDevelop.Projects/ProjectReferenceCollection.cs: Reimplemented
+	  collections using generic classes.
+
 2008-02-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/ProjectReference.cs: Added property for getting the
