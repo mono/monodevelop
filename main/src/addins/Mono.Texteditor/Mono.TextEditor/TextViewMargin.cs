@@ -129,8 +129,13 @@ namespace Mono.TextEditor
 				int offset = Caret.Offset - 1;
 				if (offset >= 0 && offset < Document.Length && !TextUtil.IsBracket (Document.GetCharAt (offset)))
 					offset++;
-				if (offset >= Document.Length)
+				if (offset >= Document.Length) {
+					int old = highlightBracketOffset;
+					highlightBracketOffset = -1;
+					if (old >= 0)
+						textEditor.RedrawLine (Document.OffsetToLineNumber (old));
 					return;
+				}
 				if (offset < 0)
 					offset = 0;
 				int oldIndex = highlightBracketOffset;
