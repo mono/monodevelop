@@ -1,5 +1,10 @@
 2008-02-19  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor.Tests/Mono.TextEditor.Tests.pidb: Copy to primary
+	  clipboard is now lazy (Improves performance for large selections).
+
+2008-02-19  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor.Tests/Mono.TextEditor.Tests.DefaultEditActions/InsertTabTests.cs,
 	  Mono.TextEditor.Tests/Mono.TextEditor.Tests.DefaultEditActions/RemoveTabTests.cs:
 	  Added Remove tab tests.

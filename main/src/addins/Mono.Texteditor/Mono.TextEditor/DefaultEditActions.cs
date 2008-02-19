@@ -794,6 +794,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
+			
 		void ClipboardGetFunc (Clipboard clipboard, SelectionData selection_data, uint info)
 		{
 			SetData (selection_data, info);
@@ -930,21 +931,36 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public void CopyData (TextEditorData data)
+		void CopyData (TextEditorData data, ISegment segment)
 		{
-			if (data.IsSomethingSelected && data.Document.Contains (data.SelectionRange)) {
-				text = data.Document.GetTextAt (data.SelectionRange);
+			if (segment != null) {
+				text = data.Document.GetTextAt (segment);
 				rtf  = GenerateRtf (data);
 			} else {
 				text = rtf = null;
 			}
 		}
+		public void CopyData (TextEditorData data)
+		{
+			CopyData (data, data.SelectionRange);
+		}
 		
+		TextEditorData data;
+		ISegment       selection;
+		
+		void ClipboardGetFuncLazy (Clipboard clipboard, SelectionData selection_data, uint info)
+		{
+			CopyData (data, selection);
+			ClipboardGetFunc (clipboard, selection_data, info);
+		}
+
 		public void CopyToPrimary (TextEditorData data)
 		{
+			this.data      = data;
+			this.selection = data.SelectionRange;
+			
 			Clipboard clipboard = Clipboard.Get (CopyAction.PRIMARYCLIPBOARD_ATOM);
-			CopyData (data);
-			clipboard.SetWithData ((Gtk.TargetEntry[])TargetList, ClipboardGetFunc, ClipboardClearFunc);
+			clipboard.SetWithData ((Gtk.TargetEntry[])TargetList, ClipboardGetFuncLazy, ClipboardClearFunc);
 		}
 		
 		public override void Run (TextEditorData data)
