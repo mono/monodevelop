@@ -631,7 +631,11 @@ namespace Mono.TextEditor
 				if (data.SelectionAnchor < data.Caret.Offset) {
 					data.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, data.SelectionAnchor + TextEditorOptions.Options.IndentationString.Length));
 				} else {
-					data.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, anchorLine.Offset + anchorColumn + TextEditorOptions.Options.IndentationString.Length));
+					if (anchorColumn != 0) {
+						data.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, anchorLine.Offset + anchorColumn + TextEditorOptions.Options.IndentationString.Length));
+					} else {
+						data.SelectionAnchor = anchorLine.Offset;
+					}
 				}
 			}
 			

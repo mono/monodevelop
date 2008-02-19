@@ -595,8 +595,6 @@ namespace Mono.TextEditor
 
 		protected override bool OnButtonReleaseEvent (EventButton e)
 		{
-			if (textViewMargin.inDrag) 
-				Caret.Location = textViewMargin.clickLocation;
 			int startPos;
 			IMargin margin = GetMarginAtX ((int)e.X, out startPos);
 			if (margin != null) {

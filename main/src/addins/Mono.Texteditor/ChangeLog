@@ -1,5 +1,14 @@
 2008-02-19  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextViewMargin.cs,
+	  Mono.TextEditor/TextEditorData.cs, Mono.TextEditor/TextEditor.cs: Fixed
+	  little issues found by unit testing.
+	* Mono.TextEditor.Tests/Mono.TextEditor.Tests/SelectionTests.cs,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests.DefaultEditActions/InsertTabTests.cs:
+	  Extended unit tests.
+
+2008-02-19  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/Caret.cs: Bug 362895 - Caret missplaced when jumping to an
 	  error.
 

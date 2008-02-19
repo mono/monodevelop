@@ -57,7 +57,7 @@ namespace Mono.TextEditor.Tests
 		}
 		
 		[Test()]
-		public void TestInsertNewLine ()
+		public void TestInsertTabLine ()
 		{
 			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
 			data.Document.Text = 
@@ -85,7 +85,7 @@ namespace Mono.TextEditor.Tests
 		}
 		
 		[Test()]
-		public void TestInsertNewLineReverse ()
+		public void TestInsertTabLineReverse ()
 		{
 			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
 			data.Document.Text = 
@@ -113,7 +113,7 @@ namespace Mono.TextEditor.Tests
 		}
 		
 		[Test()]
-		public void TestInsertNewLineCase2 ()
+		public void TestInsertTabLineCase2 ()
 		{
 			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
 			data.Document.Text = 
@@ -131,6 +131,60 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (currentSelection.Offset, data.SelectionRange.Offset);
 			Assert.AreEqual (currentSelection.EndOffset, data.SelectionRange.EndOffset);
 			Assert.AreEqual (currentSelection.EndOffset, data.Caret.Offset);
+			
+			Assert.Greater (data.Document.GetLine(1).Length, data.Document.GetLine(0).Length);
+			Assert.Greater (data.Document.GetLine(2).Length, data.Document.GetLine(0).Length);
+			
+			Assert.AreEqual (data.Document.GetLine(0).Length, data.Document.GetLine(3).Length);
+			Assert.AreEqual (data.Document.GetLine(1).Length, data.Document.GetLine(2).Length);
+		}
+		
+		[Test()]
+		public void TestInsertTabLineCase3 ()
+		{
+			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
+			data.Document.Text = 
+@"123d456789
+123[456789
+123d456789
+]123456789
+123456789
+123456789";
+			SetSelection (data, false);
+			
+			new InsertTab ().Run (data);
+			ISegment currentSelection = GetSelection (data, false);
+			
+			Assert.AreEqual (currentSelection.Offset, data.SelectionRange.Offset);
+			Assert.AreEqual (currentSelection.EndOffset, data.SelectionRange.EndOffset);
+			Assert.AreEqual (currentSelection.EndOffset, data.Caret.Offset);
+			
+			Assert.Greater (data.Document.GetLine(1).Length, data.Document.GetLine(0).Length);
+			Assert.Greater (data.Document.GetLine(2).Length, data.Document.GetLine(0).Length);
+			
+			Assert.AreEqual (data.Document.GetLine(0).Length, data.Document.GetLine(3).Length);
+			Assert.AreEqual (data.Document.GetLine(1).Length, data.Document.GetLine(2).Length);
+		}
+		
+		[Test()]
+		public void TestInsertTabLineCase3Reverse ()
+		{
+			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
+			data.Document.Text = 
+@"123d456789
+123[456789
+123d456789
+]123456789
+123456789
+123456789";
+			SetSelection (data, true);
+			
+			new InsertTab ().Run (data);
+			ISegment currentSelection = GetSelection (data, true);
+			
+			Assert.AreEqual (currentSelection.Offset, data.SelectionRange.Offset);
+			Assert.AreEqual (currentSelection.EndOffset, data.SelectionRange.EndOffset);
+			Assert.AreEqual (currentSelection.Offset, data.Caret.Offset);
 			
 			Assert.Greater (data.Document.GetLine(1).Length, data.Document.GetLine(0).Length);
 			Assert.Greater (data.Document.GetLine(2).Length, data.Document.GetLine(0).Length);

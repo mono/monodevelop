@@ -537,6 +537,17 @@ namespace Mono.TextEditor
 				PasteAction.PasteFromPrimary (textEditor.GetTextEditorData ());
 		}
 		
+		public override void MouseReleased (int button, int x, int y, ModifierType modifierState)
+		{
+			if (inDrag) 
+				Caret.Location = clickLocation;
+			if (!inSelectionDrag)
+				textEditor.ClearSelection ();
+			inSelectionDrag = false;
+			base.MouseReleased (button, x, y, modifierState);
+		}
+
+		
 		int ScanWord (int offset, bool forwardDirection)
 		{
 			LineSegment line = Document.GetLineByOffset (offset);

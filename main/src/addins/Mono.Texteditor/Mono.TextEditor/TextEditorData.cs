@@ -190,7 +190,7 @@ namespace Mono.TextEditor
 					int startLineNr = Document.OffsetToLineNumber (SelectionRange.Offset);
 					RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = this.document.GetLine (startLineNr).Iter;
 					LineSegment endLine = Document.GetLineByOffset (SelectionRange.EndOffset);
-					bool skipEndLine = Caret.Offset == endLine.Offset;
+					bool skipEndLine = SelectionRange.EndOffset == endLine.Offset;
 					do {
 						if (iter.Current == endLine && skipEndLine)
 							break;
@@ -250,7 +250,6 @@ namespace Mono.TextEditor
 			LineSegment toLine = Document.GetLine (to);
 			SelectionRange = new Segment (fromLine.Offset, toLine.EndOffset - fromLine.Offset);
 		}
-				
 		
 		public void DeleteSelectedText ()
 		{
