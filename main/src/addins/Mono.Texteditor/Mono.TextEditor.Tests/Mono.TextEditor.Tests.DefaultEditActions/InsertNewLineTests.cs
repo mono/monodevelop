@@ -36,16 +36,26 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestInsertNewLine ()
 		{
-//			Document document = new Document ();
-//			document.Buffer.Text = "Hello World!";
-//			
-//			Caret caret = new Caret (document);
-//			caret.Location = new DocumentLocation (0, "Hello".Length);
-//			new InsertNewLine().Run (document, caret);
-//			Assert.AreEqual (2, document.Splitter.LineCount);
-//			Assert.AreEqual (1, caret.Line);
-//			Assert.AreEqual (0, caret.Column);
-//			Assert.AreEqual ("Hello\n World!", document.Buffer.Text);
+			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
+			data.Document.Text = "Hello World!";
+			data.Caret.Location = new DocumentLocation (0, "Hello".Length);
+			new InsertNewLine().Run (data);
+			Assert.AreEqual (2, data.Document.LineCount);
+			Assert.AreEqual (1, data.Caret.Line);
+			Assert.AreEqual (0, data.Caret.Column);
+			Assert.AreEqual ("Hello\n World!", data.Document.Text);
+		}
+		
+		
+		[TestFixtureSetUp] 
+		public void SetUp()
+		{
+			Gtk.Application.Init ();
+		}
+		
+		[TestFixtureTearDown] 
+		public void Dispose()
+		{
 		}
 	}
 }

@@ -142,6 +142,27 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (top.Length - 1, line.Offset);
 			Assert.AreEqual (testText.Length + 1, line.Length);
 		}
+		
+		[Test]
+		public void SplitterTest ()
+		{
+			Document document = new Mono.TextEditor.Document ();
+			for (int i = 0; i < 100; i++) {
+				document.Insert (0, new string ('c', i) + Environment.NewLine);
+			}
+			Assert.AreEqual (101, document.LineCount);
+			for (int i = 0; i < 100; i++) {
+				LineSegment line = document.GetLine (i);
+				Assert.AreEqual (99 - i, line.EditableLength);
+				Assert.AreEqual (Environment.NewLine.Length, line.DelimiterLength);
+			}
+			
+			for (int i = 0; i < 100; i++) {
+				LineSegment line = document.GetLine (0);
+				document.Remove (line.EditableLength, line.DelimiterLength);
+			}
+			Assert.AreEqual (1, document.LineCount);
+		}
 				
 		[TestFixtureSetUp] 
 		public void SetUp()

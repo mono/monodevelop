@@ -33,47 +33,44 @@ namespace Mono.TextEditor.Tests
 	[TestFixture()]
 	public class CaretMoveTests
 	{
-//		
-//		[Test()]
-//		public void TestCaretMoveDown ()
-//		{
-//			Document document = new Document ();
-//			document.Buffer.Text = "1\n2\n3";
-//			
-//			Caret caret = new Caret (document);
-//			caret.Location = new DocumentLocation (1, 0);
-//			new CaretMoveDown ().Run (document, caret);
-//			Assert.AreEqual (2, caret.Line);
-//			Assert.AreEqual (0, caret.Column);
-//		}
-//		
-//		[Test()]
-//		public void TestCaretMoveLeft ()
-//		{
-//			Document document = new Document ();
-//			document.Buffer.Text = "test";
-//			
-//			Caret caret = new Caret (document);
-//			caret.Location = new DocumentLocation (0, 1);
-//			new CaretMoveLeft ().Run (document, caret);
-//			Assert.AreEqual (0, caret.Line);
-//			Assert.AreEqual (0, caret.Column);
-//			new CaretMoveLeft ().Run (document, caret);
-//			Assert.AreEqual (0, caret.Line);
-//			Assert.AreEqual (0, caret.Column);
-//		}
-//		
-//		[Test()]
-//		public void TestCaretMoveRight ()
-//		{
-//			Document document = new Document ();
-//			document.Buffer.Text = "test";
-//			
-//			Caret caret = new Caret (document);
-//			caret.Location = new DocumentLocation (0, 3);
-//			new CaretMoveRight ().Run (document, caret);
-//			Assert.AreEqual (4, caret.Column);
-//		}
+		
+		[Test()]
+		public void TestCaretMoveDown ()
+		{
+			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
+			data.Document.Text = "1\n2\n3";
+			
+			data.Caret.Location = new DocumentLocation (1, 0);
+			new CaretMoveDown ().Run (data);
+			Assert.AreEqual (2, data.Caret.Line);
+			Assert.AreEqual (0, data.Caret.Column);
+		}
+		
+		[Test()]
+		public void TestCaretMoveLeft ()
+		{
+			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
+			data.Document.Text = "test";
+			
+			data.Caret.Location = new DocumentLocation (0, 1);
+			new CaretMoveLeft ().Run (data);
+			Assert.AreEqual (0, data.Caret.Line);
+			Assert.AreEqual (0, data.Caret.Column);
+			new CaretMoveLeft ().Run (data);
+			Assert.AreEqual (0, data.Caret.Line);
+			Assert.AreEqual (0, data.Caret.Column);
+		}
+		
+		[Test()]
+		public void TestCaretMoveRight ()
+		{
+			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
+			data.Document.Text = "test";
+			
+			data.Caret.Location = new DocumentLocation (0, 3);
+			new CaretMoveRight ().Run (data);
+			Assert.AreEqual (4, data.Caret.Column);
+		}
 		
 		[TestFixtureSetUp] 
 		public void SetUp()

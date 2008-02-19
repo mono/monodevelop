@@ -1,3 +1,13 @@
+2008-02-19  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor.Tests/Mono.TextEditor.Tests.mdp,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests/DocumentTests.cs,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests.DefaultEditActions/DocumentTests.cs,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests.DefaultEditActions/CaretMoveTests.cs,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests.DefaultEditActions/InsertNewLineTests.cs:
+	  Worked on text editor unit tests.
+
 2008-02-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Makefile.am, Mono.TextEditor.mdp: Fixed assembly references.
