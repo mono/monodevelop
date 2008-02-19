@@ -179,6 +179,7 @@ namespace Mono.TextEditor
 			keyBindings.Add (GetKeyCode (Gdk.Key.Up), new CaretMoveUp ());
 			keyBindings.Add (GetKeyCode (Gdk.Key.Up, Gdk.ModifierType.ControlMask), new ScrollUpAction ());
 			keyBindings.Add (GetKeyCode (Gdk.Key.Up, Gdk.ModifierType.ShiftMask), new SelectionMoveUp ());
+			keyBindings.Add (GetKeyCode (Gdk.Key.Up, Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask), new SelectionMoveUp ());
 			
 			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Down), new CaretMoveDown ());
 			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Down, Gdk.ModifierType.ControlMask), new ScrollDownAction ());
@@ -186,6 +187,7 @@ namespace Mono.TextEditor
 			keyBindings.Add (GetKeyCode (Gdk.Key.Down), new CaretMoveDown ());
 			keyBindings.Add (GetKeyCode (Gdk.Key.Down, Gdk.ModifierType.ControlMask), new ScrollDownAction ());
 			keyBindings.Add (GetKeyCode (Gdk.Key.Down, Gdk.ModifierType.ShiftMask), new SelectionMoveDown ());
+			keyBindings.Add (GetKeyCode (Gdk.Key.Down, Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask), new SelectionMoveDown ());
 			
 			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Home), new CaretMoveHome ());
 			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Home, Gdk.ModifierType.ShiftMask), new SelectionMoveHome ());
@@ -709,9 +711,8 @@ namespace Mono.TextEditor
 		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing e)
 		{
-			GdkWindow.Cursor = null;
-			
 			if (e.Mode == CrossingMode.Normal) {
+				GdkWindow.Cursor = null;
 				if (oldMargin != null)
 					oldMargin.MouseLeft ();
 			}

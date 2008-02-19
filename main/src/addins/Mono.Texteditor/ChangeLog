@@ -1,3 +1,9 @@
+2008-02-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.TextEditor/TextEditor.cs: Added key bindings for
+	  control+shift+up/down. In OnLeaveNotifyEvent, reset the cursor only when
+	  the mouse is really leaving the window.
+
 2008-02-19  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextViewMargin.cs,
