@@ -111,12 +111,12 @@ namespace MonoDevelop.SourceEditor
 			
 			this.ContentNameChanged += delegate {
 				this.Document.FileName   = this.ContentName;
-				
+				isInWrite = true;
 				if (String.IsNullOrEmpty (ContentName) || !File.Exists (ContentName))
 					return;
 				
 				fileSystemWatcher.EnableRaisingEvents = false;
-				isInWrite = true;
+				lastSaveTime = File.GetLastWriteTime (ContentName);
 				fileSystemWatcher.Path = Path.GetDirectoryName (ContentName);
 				fileSystemWatcher.Filter = Path.GetFileName (ContentName);
 				isInWrite = false;
