@@ -1,5 +1,10 @@
 2008-02-19  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/Caret.cs: Bug 362895 - Caret missplaced when jumping to an
+	  error.
+
+2008-02-19  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextViewMargin.cs: fixed Bug 362879 - Bracket highlight
 	  not removed.
 
