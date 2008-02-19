@@ -376,6 +376,7 @@ RES =  \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderTemplates.xml \
 	options/KeyBindingSchemeDefault.xml \
 	options/KeyBindingSchemeEmacs.xml \
+	options/KeyBindingSchemeMonoDevelop1.xml \
 	options/KeyBindingSchemeVisualStudio.xml \
 	templates/AppConfigFile.xft.xml \
 	templates/BlankCombine.xpt.xml \

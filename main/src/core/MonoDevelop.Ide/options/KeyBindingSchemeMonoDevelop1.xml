@@ -16,24 +16,24 @@
 	<binding command="MonoDevelop.GtkCore.GtkCommands.GtkSettings" shortcut="" />
 	<binding command="MonoDevelop.GtkCore.GtkCommands.ImportGladeFile" shortcut="" />
 	<binding command="MonoDevelop.Ide.Commands.DebugCommands.ClearAllBreakpoints" shortcut="" />
-	<binding command="MonoDevelop.Ide.Commands.DebugCommands.DebugApplication" shortcut="" />
-	<binding command="MonoDevelop.Ide.Commands.DebugCommands.Pause" shortcut="Control+F8" />
-	<binding command="MonoDevelop.Ide.Commands.DebugCommands.StepInto" shortcut="F11" />
-	<binding command="MonoDevelop.Ide.Commands.DebugCommands.StepOut" shortcut="Shift+F11" />
-	<binding command="MonoDevelop.Ide.Commands.DebugCommands.StepOver" shortcut="F10" />
-	<binding command="MonoDevelop.Ide.Commands.DebugCommands.ToggleBreakpoint" shortcut="F9" />
-	<binding command="MonoDevelop.Ide.Commands.EditCommands.CommentCode" shortcut="Control+K|Control+C" />
+	<binding command="MonoDevelop.Ide.Commands.DebugCommands.DebugApplication" shortcut="Control+F5" />
+	<binding command="MonoDevelop.Ide.Commands.DebugCommands.Pause" shortcut="" />
+	<binding command="MonoDevelop.Ide.Commands.DebugCommands.StepInto" shortcut="" />
+	<binding command="MonoDevelop.Ide.Commands.DebugCommands.StepOut" shortcut="" />
+	<binding command="MonoDevelop.Ide.Commands.DebugCommands.StepOver" shortcut="" />
+	<binding command="MonoDevelop.Ide.Commands.DebugCommands.ToggleBreakpoint" shortcut="F2" />
+	<binding command="MonoDevelop.Ide.Commands.EditCommands.CommentCode" shortcut="Shift+Control+C" />
 	<binding command="MonoDevelop.Ide.Commands.EditCommands.Copy" shortcut="Control+C" />
 	<binding command="MonoDevelop.Ide.Commands.EditCommands.Cut" shortcut="Control+X" />
 	<binding command="MonoDevelop.Ide.Commands.EditCommands.Delete" shortcut="" />
-	<binding command="MonoDevelop.Ide.Commands.EditCommands.IndentSelection" shortcut="Control+Alt+Home" />
-	<binding command="MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection" shortcut="Control+U" />
+	<binding command="MonoDevelop.Ide.Commands.EditCommands.IndentSelection" shortcut="Control+Alt+End" />
+	<binding command="MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection" shortcut="" />
 	<binding command="MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences" shortcut="" />
 	<binding command="MonoDevelop.Ide.Commands.EditCommands.Paste" shortcut="Control+V" />
 	<binding command="MonoDevelop.Ide.Commands.EditCommands.Redo" shortcut="Control+Y" />
 	<binding command="MonoDevelop.Ide.Commands.EditCommands.Rename" shortcut="F2" />
 	<binding command="MonoDevelop.Ide.Commands.EditCommands.SelectAll" shortcut="Control+A" />
-	<binding command="MonoDevelop.Ide.Commands.EditCommands.UncommentCode" shortcut="Control+K|Control+U" />
+	<binding command="MonoDevelop.Ide.Commands.EditCommands.UncommentCode" shortcut="Shift+Control+C" />
 	<binding command="MonoDevelop.Ide.Commands.EditCommands.Undo" shortcut="Control+Z" />
 	<binding command="MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" shortcut="Control+Alt+End" />
 	<binding command="MonoDevelop.Ide.Commands.EditCommands.UppercaseSelection" shortcut="Control+Shift+U" />
@@ -42,7 +42,7 @@
 	<binding command="MonoDevelop.Ide.Commands.FileCommands.ClearRecentProjects" shortcut="" />
 	<binding command="MonoDevelop.Ide.Commands.FileCommands.CloseAllFiles" shortcut="Control+Shift+W" />
 	<binding command="MonoDevelop.Ide.Commands.FileCommands.CloseCombine" shortcut="" />
-	<binding command="MonoDevelop.Ide.Commands.FileCommands.CloseFile" shortcut="Control+F4" />
+	<binding command="MonoDevelop.Ide.Commands.FileCommands.CloseFile" shortcut="Control+W" />
 	<binding command="MonoDevelop.Ide.Commands.FileCommands.Exit" shortcut="Control+Q" />
 	<binding command="MonoDevelop.Ide.Commands.FileCommands.NewFile" shortcut="Control+N" />
 	<binding command="MonoDevelop.Ide.Commands.FileCommands.NewProject" shortcut="Control+Shift+N" />
@@ -67,8 +67,8 @@
 	<binding command="MonoDevelop.Ide.Commands.ProjectCommands.AddProject" shortcut="" />
 	<binding command="MonoDevelop.Ide.Commands.ProjectCommands.AddReference" shortcut="" />
 	<binding command="MonoDevelop.Ide.Commands.ProjectCommands.AddResource" shortcut="" />
-	<binding command="MonoDevelop.Ide.Commands.ProjectCommands.Build" shortcut="" />
-	<binding command="MonoDevelop.Ide.Commands.ProjectCommands.BuildSolution" shortcut="F7" />
+	<binding command="MonoDevelop.Ide.Commands.ProjectCommands.Build" shortcut="F7" />
+	<binding command="MonoDevelop.Ide.Commands.ProjectCommands.BuildSolution" shortcut="F8" />
 	<binding command="MonoDevelop.Ide.Commands.ProjectCommands.Clean" shortcut="" />
 	<binding command="MonoDevelop.Ide.Commands.ProjectCommands.CleanSolution" shortcut="" />
 	<binding command="MonoDevelop.Ide.Commands.ProjectCommands.ConfigurationSelector" shortcut="" />
@@ -82,11 +82,11 @@
 	<binding command="MonoDevelop.Ide.Commands.ProjectCommands.LocalCopyReference" shortcut="" />
 	<binding command="MonoDevelop.Ide.Commands.ProjectCommands.NewFolder" shortcut="" />
 	<binding command="MonoDevelop.Ide.Commands.ProjectCommands.Options" shortcut="" />
-	<binding command="MonoDevelop.Ide.Commands.ProjectCommands.Rebuild" shortcut="" />
-	<binding command="MonoDevelop.Ide.Commands.ProjectCommands.RebuildSolution" shortcut="Control+Alt+F7" />
+	<binding command="MonoDevelop.Ide.Commands.ProjectCommands.Rebuild" shortcut="Control+F7" />
+	<binding command="MonoDevelop.Ide.Commands.ProjectCommands.RebuildSolution" shortcut="Control+F8" />
 	<binding command="MonoDevelop.Ide.Commands.ProjectCommands.Reload" shortcut="" />
 	<binding command="MonoDevelop.Ide.Commands.ProjectCommands.RemoveFromProject" shortcut="" />
-	<binding command="MonoDevelop.Ide.Commands.ProjectCommands.Run" shortcut="Control+F5" />
+	<binding command="MonoDevelop.Ide.Commands.ProjectCommands.Run" shortcut="F5" />
 	<binding command="MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" shortcut="" />
 	<binding command="MonoDevelop.Ide.Commands.ProjectCommands.SetAsStartupProject" shortcut="" />
 	<binding command="MonoDevelop.Ide.Commands.ProjectCommands.Stop" shortcut="Shift+F5" />

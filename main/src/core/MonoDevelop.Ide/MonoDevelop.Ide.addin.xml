@@ -927,6 +927,7 @@
 		<Scheme _name = "Default" resource="KeyBindingSchemeDefault.xml"/>
 		<Scheme _name = "GNU/Emacs" resource="KeyBindingSchemeEmacs.xml"/>
 		<Scheme _name = "Visual Studio" resource="KeyBindingSchemeVisualStudio.xml"/>
+		<Scheme _name = "MonoDevelop 1.0" resource="KeyBindingSchemeMonoDevelop1.xml"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Combine">

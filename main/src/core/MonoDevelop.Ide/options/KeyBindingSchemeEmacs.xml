@@ -25,7 +25,7 @@
 	<binding command="MonoDevelop.Ide.Commands.EditCommands.CommentCode" shortcut="Control+Alt+C" />
 	<binding command="MonoDevelop.Ide.Commands.EditCommands.Copy" shortcut="Alt+W" />
 	<binding command="MonoDevelop.Ide.Commands.EditCommands.Cut" shortcut="Control+W" />
-	<binding command="MonoDevelop.Ide.Commands.EditCommands.Delete" shortcut="Delete" />
+	<binding command="MonoDevelop.Ide.Commands.EditCommands.Delete" shortcut="" />
 	<binding command="MonoDevelop.Ide.Commands.EditCommands.IndentSelection" shortcut="Control+X|Tab" />
 	<binding command="MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection" shortcut="Control+X|Control+L" />
 	<binding command="MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences" shortcut="" />
