@@ -88,15 +88,30 @@ namespace Mono.TextEditor
 		
 		public static void DrawRoundRectangle (Cairo.Context cr, int x, int y, int r, int w, int h)
 		{
-			cr.MoveTo (x + r, y);
-			cr.LineTo (x + w - r, y);
-			cr.CurveTo (x + w, y, x + w, y, x + w, y + r);
-			cr.LineTo (x + w, y + h - r);
-			cr.CurveTo (x + w, y + h, x + w, y + h, x + w - r, y + h);
-			cr.LineTo (x + r, y + h);
-			cr.CurveTo (x, y + h, x, y + h, x, y + h - r);
-			cr.LineTo (x, y + r);
-			cr.CurveTo (x, y, x, y, x + r, y);
+			const double ARC_TO_BEZIER = 0.55228475;
+			int radius_x = r;
+			int radius_y = 2;
+			
+			if (radius_x > w - radius_x)
+				radius_x = w / 2;
+					
+			if (radius_y > h - radius_y)
+				radius_y = h / 2;
+			
+			double c1 = ARC_TO_BEZIER * radius_x;
+			double c2 = ARC_TO_BEZIER * radius_y;
+			
+			cr.NewPath ();
+			cr.MoveTo (x + radius_x, y);
+			cr.RelLineTo (w - 2 * radius_x, 0.0);
+			cr.RelCurveTo (c1, 0.0, radius_x, c2, radius_x, radius_y);
+			cr.RelLineTo (0, h - 2 * radius_y);
+			cr.RelCurveTo (0.0, c2, c1 - radius_x, radius_y, -radius_x, radius_y);
+			cr.RelLineTo (-w + 2 * radius_x, 0);
+			cr.RelCurveTo (-c1, 0, -radius_x, -c2, -radius_x, -radius_y);
+			cr.RelLineTo (0, -h + 2 * radius_y);
+			cr.RelCurveTo (0.0, -c2, radius_x - c1, -radius_y, radius_x, -radius_y);
+			cr.ClosePath ();
 		}
 		
 		public override void MousePressed (int button, int x, int y, Gdk.EventType type, Gdk.ModifierType modifierState)
@@ -123,7 +138,7 @@ namespace Mono.TextEditor
 				if (lineSegment.IsBookmarked) {
 					Cairo.Context cr = Gdk.CairoHelper.Create (win);
 					DrawRoundRectangle (cr, x + 1, y + 1, 8, Width - 4, editor.LineHeight - 4);
-					Cairo.Gradient pat = new Cairo.LinearGradient (x, y + editor.LineHeight, x + Width, y);
+					Cairo.Gradient pat = new Cairo.LinearGradient (x + Width / 4, y, x + Width / 2, y + editor.LineHeight - 4);
 					pat.AddColorStop (0, color1);
 					pat.AddColorStop (1, color2);
 					cr.Pattern = pat;
@@ -131,7 +146,7 @@ namespace Mono.TextEditor
 					
 					pat = new Cairo.LinearGradient (x, y + editor.LineHeight, x + Width, y);
 					pat.AddColorStop (0, color2);
-					pat.AddColorStop (1, color1);
+					//pat.AddColorStop (1, color1);
 					cr.Pattern = pat;
 					cr.Stroke ();
 					((IDisposable)cr).Dispose();
