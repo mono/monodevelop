@@ -60,9 +60,14 @@ namespace Stetic.Wrapper
 			}
 		}
 		
-		public string ActionLabel {
+		public string Label {
 			get { return GtkAction.Label; }
-			set { GtkAction.Label = value; }
+			set { GtkAction.Label = value; EmitNotify ("Label"); }
+		}
+		
+		public string StockId {
+			get { return GtkAction.StockId; }
+			set { GtkAction.StockId = value; EmitNotify ("StockId"); }
 		}
 		
 		public override string WrappedTypeName {
@@ -102,7 +107,7 @@ namespace Stetic.Wrapper
 				string s = GtkAction.StockId.Replace ("gtk-", "");
 				return GetIdentifier (s.Replace ("gnome-stock-", ""));
 			}
-			return "";
+			return "Action";
 		}
 		
 		public ActionType Type {
@@ -378,7 +383,7 @@ namespace Stetic.Wrapper
 				} else
 					sb.Append (c);
 			}
-			return sb.ToString ();
+			return sb.ToString () + "Action";
 		}
 		
 		internal override UndoManager GetUndoManagerInternal ()

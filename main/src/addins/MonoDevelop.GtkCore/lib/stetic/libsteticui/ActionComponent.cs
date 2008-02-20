@@ -34,12 +34,12 @@ namespace Stetic
 		public string Label {
 			get {
 				if (label == null)
-					label = ((Wrapper.Action)backend).ActionLabel;
+					label = ((Wrapper.Action)backend).Label;
 				return label;
 			}
 			set {
 				label = value;
-				((Wrapper.Action)backend).ActionLabel = value;
+				((Wrapper.Action)backend).Label = value;
 			}
 		}
 		

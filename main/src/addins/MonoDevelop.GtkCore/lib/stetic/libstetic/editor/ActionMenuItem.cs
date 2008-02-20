@@ -80,7 +80,7 @@ namespace Stetic.Editor
 					localUpdate = true;
 					if (entry.Text.Length > 0 || node.Action.GtkAction.StockId != null) {
 						using (node.Action.UndoManager.AtomicChange) {
-							node.Action.GtkAction.Label = entry.Text;
+							node.Action.Label = entry.Text;
 							node.Action.NotifyChanged ();
 						}
 					}
@@ -387,7 +387,7 @@ namespace Stetic.Editor
 		void OnStockSelected (object s, IconEventArgs args)
 		{
 			using (node.Action.UndoManager.AtomicChange) {
-				node.Action.GtkAction.StockId = args.IconId;
+				node.Action.StockId = args.IconId;
 				node.Action.NotifyChanged ();
 			}
 		}
@@ -419,7 +419,7 @@ namespace Stetic.Editor
 		void OnClearIcon (object on, EventArgs args)
 		{
 			using (node.Action.UndoManager.AtomicChange) {
-				node.Action.GtkAction.StockId = null;
+				node.Action.StockId = null;
 				node.Action.NotifyChanged ();
 			}
 		}

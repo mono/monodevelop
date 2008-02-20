@@ -1,3 +1,11 @@
+2008-02-20  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* libsteticui/ActionComponent.cs, libstetic/wrapper/Action.cs: Added wrapper
+	  properties for Label and StockId, since the notify event is not being
+	  fired for Gtk.Action.
+	* libstetic/editor/ActionMenuItem.cs, libstetic/editor/ActionToolItem.cs:
+	  Use new Action wrapper properties to access to the label and stock id.
+
 2008-02-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* libsteticui/SignalsEditorBackend.cs: TargetObject can't be set when no
