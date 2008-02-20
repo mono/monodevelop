@@ -26,7 +26,7 @@ namespace AspNetAddIn
 				return base.Build (monitor, project);
 			
 			RefactorOperations ops = aspProject.LanguageBinding.Refactorer.SupportedOperations;
-			if (ops & RefactorOperations.AddField != RefactorOperations.AddField)
+			if ((ops & RefactorOperations.AddField) != RefactorOperations.AddField)
 				return base.Build (monitor, project);
 			
 			//lists of members to be added 
