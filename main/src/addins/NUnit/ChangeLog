@@ -1,3 +1,11 @@
+2008-02-20  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.NUnit.mdp, Makefile.am: Fix references.
+	* MonoDevelopNUnit.addin.xml, Services/NUnitService.cs: Register nunit
+	  packages using the extension point, instead of doing it by conde in the
+	  nunit service (since that code won't be run unless the service is
+	  explicitely loaded). Fixes bug #
+
 2008-02-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* templates/NUnitProject.xpt.xml: Fix nunit versions referenced in the

@@ -47,17 +47,6 @@ namespace MonoDevelop.NUnit
 		ArrayList providers = new ArrayList ();
 		UnitTest rootTest;
 		
-		public NUnitService ()
-		{
-			if (Runtime.SystemAssemblyService.GetPackage ("nunit") == null) {
-				string basePath = Path.GetDirectoryName (GetType().Assembly.Location);
-				Runtime.SystemAssemblyService.RegisterPackage ("nunit", "2.2.9.0", "NUnit", ClrVersion.Default, null,
-					Path.Combine (basePath, "nunit.core.dll"),
-					Path.Combine (basePath, "nunit.framework.dll")
-				);
-			}
-		}
-		
 		public override void InitializeService ()
 		{
 			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (OnOpenCombine));
