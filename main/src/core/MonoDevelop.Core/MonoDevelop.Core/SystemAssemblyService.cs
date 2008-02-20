@@ -395,10 +395,15 @@ namespace MonoDevelop.Core
 		void OnPackagesChanged (object s, ExtensionNodeEventArgs args)
 		{
 			PackageExtensionNode node = (PackageExtensionNode) args.ExtensionNode;
-			if (args.Change == ExtensionChange.Add)
-				RegisterPackage (node.Name, node.Version, node.Name, node.TargetClrVersion, node.GacRoot, node.Assemblies);
-			else
-				UnregisterPackage (node.Name, node.Version);
+			if (args.Change == ExtensionChange.Add) {
+				if (GetPackage (node.Name, node.Version) == null)
+					RegisterPackage (node.Name, node.Version, node.Name, node.TargetClrVersion, node.GacRoot, node.Assemblies);
+			}
+			else {
+				SystemPackage p = GetPackage (node.Name, node.Version);
+				if (p.IsInternalPackage)
+					UnregisterPackage (node.Name, node.Version);
+			}
 		}
 
 		void RegisterSystemAssemblies (string prefix, string version, ClrVersion ver)
