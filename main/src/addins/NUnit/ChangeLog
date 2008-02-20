@@ -1,5 +1,13 @@
 2008-02-20  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.NUnit.mdp, Makefile.am: Fix references.
+	* MonoDevelopNUnit.addin.xml, Services/NUnitService.cs: Register nunit
+	  packages using the extension point, instead of doing it by conde in the
+	  nunit service (since that code won't be run unless the service is
+	  explicitely loaded). Fixes bug #
+
+2008-02-20  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Gui/NUnitAssemblyGroupNodeBuilder.cs, Gui/TestAssemblyNodeBuilder.cs:
 	  Handle the delete key in TreeViewPad, so it will work event if the
 	  shortcut is not defined.

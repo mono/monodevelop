@@ -69,6 +69,13 @@
 		<Class id = "NUnitService" class = "MonoDevelop.NUnit.NUnitService" insertafter = "CommandService"/>
 	</Extension>
 
+	<Extension path="/MonoDevelop/Core/SupportPackages">
+		<Package name="nunit" version="2.2.9.0" clrVersion="Default">
+			<Assembly file="nunit.core.dll" />
+			<Assembly file="nunit.framework.dll" />
+		</Package>
+	</Extension>
+
 	<Extension path = "/MonoDevelop/Ide/Pads">
 		<SolutionPad id = "MonoDevelop.NUnit.TestPad" defaultPlacement = "Left" _label = "Unit Tests" icon = "nunit-pad-icon" class = "MonoDevelop.NUnit.TestPad">
 			<PadOption id = "ShowTestTime" _label = "Show Test Time" defaultValue = "False" />
