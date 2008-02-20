@@ -79,7 +79,7 @@ public class BooTextEditorExtension (CompletionTextEditorExtension):
 				completion_prov.AddResolveResults (ResolveResult(namespaces))
 		else:
 			resolve_result = p_ctx.Resolve (expr, caret_line, caret_col, FileName, Editor.Text)
-			completion_prov.AddResolveResults (resolve_result)
+			completion_prov.AddResolveResults (resolve_result, false)
 
 		return null if completion_prov.IsEmpty
 
