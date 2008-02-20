@@ -191,8 +191,11 @@ namespace MonoDevelop.Components.Commands
 			for (int i = 0; i < commands.Count; i++) {
 				CommandInfo cinfo = GetCommandInfo (commands[i].Id, null);
 				if (cinfo.Enabled && cinfo.Visible && DispatchCommand (commands[i].Id))
-					break;
+					return;
 			}
+			
+			e.RetVal = false;
+			mode = null;
 		}
 		
 		public void SetRootWindow (Gtk.Window root)

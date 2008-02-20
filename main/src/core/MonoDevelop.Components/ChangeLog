@@ -1,3 +1,8 @@
+2008-02-20  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Components.Commands/CommandManager.cs: If a shortcut can't be
+	  handled, propagate the key press event to the widget that generated it.
+
 2008-02-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/objects.xml, gtk-gui/gui.stetic, Makefile.am,
