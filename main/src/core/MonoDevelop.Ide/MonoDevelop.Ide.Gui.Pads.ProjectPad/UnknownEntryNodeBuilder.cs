@@ -106,8 +106,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			info.Enabled = entry.ParentCombine != null;
 		}
 		
-		[CommandHandler (EditCommands.Delete)]
-		public void RemoveItem ()
+		public override void DeleteItem ()
 		{
 			UnknownCombineEntry entry = (UnknownCombineEntry) CurrentNode.DataItem;
 			Combine cmb = entry.ParentCombine;

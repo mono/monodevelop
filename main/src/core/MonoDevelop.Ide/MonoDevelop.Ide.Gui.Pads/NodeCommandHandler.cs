@@ -78,6 +78,15 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 		}
 		
+		public virtual bool CanDeleteItem ()
+		{
+			return GetType().GetMethod ("DeleteItem").DeclaringType != typeof(NodeCommandHandler);
+		}
+		
+		public virtual void DeleteItem ()
+		{
+		}
+		
 		public virtual DragOperation CanDragNode ()
 		{
 			return DragOperation.None;

@@ -1,3 +1,16 @@
+2008-02-20  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads/NodeCommandHandler.cs,
+	  MonoDevelop.Ide.Gui/MonoDevelopTreeView.cs: Handle the delete key in
+	  TreeViewPad, so it will work event if the shortcut is not defined.
+
 2008-02-19  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Commands/ProjectCommands.cs, MonoDevelop.Ide.addin.xml:

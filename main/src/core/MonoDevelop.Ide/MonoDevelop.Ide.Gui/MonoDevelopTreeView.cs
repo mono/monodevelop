@@ -203,6 +203,8 @@ namespace MonoDevelop.Ide.Gui
 			tree.DragMotion += new Gtk.DragMotionHandler (OnDragMotion);
 			
 			tree.CursorChanged += new EventHandler (OnSelectionChanged);
+			tree.KeyPressEvent += OnKeyPress;
+				
 			this.Add (tree);
 			this.ShowAll ();
 		}
@@ -551,6 +553,49 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 			OnCurrentItemActivated (EventArgs.Empty);
+		}
+
+		[CommandHandler (EditCommands.Delete)]
+		public virtual void DeleteCurrentItem ()
+		{
+			TreeNodeNavigator node = (TreeNodeNavigator) GetSelectedNode ();
+			if (node != null) {
+				NodeBuilder[] chain = node.NodeBuilderChain;
+				NodePosition pos = node.CurrentPosition;
+				foreach (NodeBuilder b in chain) {
+					NodeCommandHandler handler = b.CommandHandler;
+					handler.SetCurrentNode (node);
+					if (handler.CanDeleteItem ()) {
+						Console.WriteLine ("pp deleting: ");
+						node.MoveToPosition (pos);
+						handler.DeleteItem ();
+					}
+					node.MoveToPosition (pos);
+				}
+			}
+		}
+
+		[CommandUpdateHandler (EditCommands.Delete)]
+		internal void CanDeleteCurrentItem (CommandInfo info)
+		{
+			info.Bypass = !CanDeleteCurrentItem ();
+		}
+		
+		protected virtual bool CanDeleteCurrentItem ()
+		{
+			TreeNodeNavigator node = (TreeNodeNavigator) GetSelectedNode ();
+			if (node != null) {
+				NodeBuilder[] chain = node.NodeBuilderChain;
+				NodePosition pos = node.CurrentPosition;
+				foreach (NodeBuilder b in chain) {
+					NodeCommandHandler handler = b.CommandHandler;
+					handler.SetCurrentNode (node);
+					if (handler.CanDeleteItem ())
+						return true;
+					node.MoveToPosition (pos);
+				}
+			}
+			return false;
 		}
 		
 		protected virtual void OnCurrentItemActivated (EventArgs args)
@@ -1220,6 +1265,13 @@ namespace MonoDevelop.Ide.Gui
 		protected void CollapseTree ()
 		{
 			tree.CollapseAll();
+		}
+		
+		void OnKeyPress (object o, Gtk.KeyPressEventArgs args)
+		{
+			Console.WriteLine ("pp key: ");
+			if (args.Event.Key == Gdk.Key.Delete || args.Event.Key == Gdk.Key.KP_Delete)
+				DeleteCurrentItem ();
 		}
 			
 		void OnPopupMenu (object o, Gtk.PopupMenuArgs args)

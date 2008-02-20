@@ -78,8 +78,7 @@ namespace CBinding.ProjectPad
 	
 	public class PackageNodeCommandHandler : NodeCommandHandler
 	{
-		[CommandHandler (EditCommands.Delete)]
-		public void RomoveItem ()
+		public override void DeleteItem ()
 		{
 			ProjectPackage package = (ProjectPackage)CurrentNode.DataItem;
 			CProject project = (CProject)CurrentNode.GetParentDataItem (

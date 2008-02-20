@@ -94,8 +94,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 		}
 				
-		[CommandHandler (EditCommands.Delete)]
-		public void RemoveItem ()
+		public override void DeleteItem ()
 		{
 			ProjectReference pref = (ProjectReference) CurrentNode.DataItem;
 			Project project = CurrentNode.GetParentDataItem (typeof(Project), false) as Project;

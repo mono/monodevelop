@@ -122,8 +122,7 @@ namespace MonoDevelop.Deployment.NodeBuilders
 			info.Enabled = !(package.PackageBuilder is UnknownPackageBuilder);
 		}
 		
-		[CommandHandler (EditCommands.Delete)]
-		protected void OnDelete ()
+		public override void DeleteItem ()
 		{
 			Package package = CurrentNode.DataItem as Package;
 			if (IdeApp.Services.MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to delete the package '{0}'?", package.Name))) {

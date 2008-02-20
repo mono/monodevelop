@@ -1,3 +1,9 @@
+2008-02-20  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.AddinAuthoring.NodeBuilders/AddinReferenceNodeBuilder.cs:
+	  Handle the delete key in TreeViewPad, so it will work event if the
+	  shortcut is not defined.
+
 2008-02-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.AddinAuthoring/RegistryExtensionNode.cs,

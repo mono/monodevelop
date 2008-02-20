@@ -116,8 +116,7 @@ namespace MonoDevelop.NUnit
 		{
 		}
 		
-		[CommandHandler (EditCommands.Delete)]
-		protected void OnDeleteNUnitAssemblyGroup ()
+		public override void DeleteItem ()
 		{
 			NUnitAssemblyGroupProject project = CurrentNode.DataItem as NUnitAssemblyGroupProject;
 			project.ParentCombine.RemoveEntry (project);

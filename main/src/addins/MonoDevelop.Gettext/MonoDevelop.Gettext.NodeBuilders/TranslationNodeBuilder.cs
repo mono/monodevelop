@@ -103,8 +103,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 				IdeApp.Workbench.OpenDocument (Path.Combine (project.BaseDirectory, translation.FileName));
 			}
 			
-			[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Delete)]
-			public void OnDelete ()
+			public override void DeleteItem ()
 			{
 				TranslationProject project     = CurrentNode.GetParentDataItem (typeof(TranslationProject), false) as TranslationProject;
 				Translation        translation = CurrentNode.DataItem as Translation;

@@ -109,8 +109,7 @@ namespace MonoDevelop.Deployment.NodeBuilders
 	
 	class PackagingProjectNodeCommandHandler: NodeCommandHandler
 	{
-		[CommandHandler (EditCommands.Delete)]
-		protected void OnDelete ()
+		public override void DeleteItem ()
 		{
 			PackagingProject project = CurrentNode.DataItem as PackagingProject;
 			if (IdeApp.Services.MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to delete the project '{0}'?", project.Name))) {

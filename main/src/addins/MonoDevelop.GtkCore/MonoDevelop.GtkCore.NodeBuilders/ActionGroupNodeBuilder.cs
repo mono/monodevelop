@@ -107,17 +107,14 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			}
 		}
 		
-		[CommandUpdateHandler (EditCommands.Delete)]
-		public void OnUpdateDelete (CommandInfo cinfo)
+		public override bool CanDeleteItem ()
 		{
 			// Don't allow deleting action groups local to a window
 			GuiBuilderWindow w = (GuiBuilderWindow) CurrentNode.GetParentDataItem (typeof(GuiBuilderWindow), false);
-			if (w != null)
-				cinfo.Enabled = false;
+			return (w == null);
 		}
 		
-		[CommandHandler (EditCommands.Delete)]
-		public void OnDelete ()
+		public override void DeleteItem ()
 		{
 			// Don't allow deleting action groups local to a window
 			GuiBuilderWindow w = (GuiBuilderWindow) CurrentNode.GetParentDataItem (typeof(GuiBuilderWindow), false);

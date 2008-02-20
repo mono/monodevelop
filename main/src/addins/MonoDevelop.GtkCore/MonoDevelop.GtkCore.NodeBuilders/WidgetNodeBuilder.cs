@@ -132,8 +132,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			}
 		}
 		
-		[CommandHandler (EditCommands.Delete)]
-		public void OnDelete ()
+		public override void DeleteItem ()
 		{
 			GuiBuilderWindow w = (GuiBuilderWindow) CurrentNode.DataItem;
 			string fn = FileService.AbsoluteToRelativePath (w.Project.Project.BaseDirectory, w.SourceCodeFile);

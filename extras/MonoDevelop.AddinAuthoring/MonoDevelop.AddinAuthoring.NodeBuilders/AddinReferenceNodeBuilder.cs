@@ -70,8 +70,7 @@ namespace MonoDevelop.AddinAuthoring
 	
 	class AddinReferenceCommandHandler: NodeCommandHandler
 	{
-		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Delete)]
-		public void DeleteDependency ()
+		public override void DeleteItem ()
 		{
 			DotNetProject p = CurrentNode.GetParentDataItem (typeof(Project), true) as DotNetProject;
 			AddinData data = AddinData.GetAddinData (p);

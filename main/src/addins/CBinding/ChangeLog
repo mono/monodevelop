@@ -1,3 +1,8 @@
+2008-02-20  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* ProjectPad/ProjectPackageNodeBuilder.cs: Handle the delete key in
+	  TreeViewPad, so it will work event if the shortcut is not defined.
+
 2008-02-19  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* Compiler/GNUCompiler.cs: Handle better CleanPrecompiledHeaders, fixes bug

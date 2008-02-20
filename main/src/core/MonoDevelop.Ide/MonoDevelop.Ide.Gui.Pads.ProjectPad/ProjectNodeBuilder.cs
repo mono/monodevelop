@@ -325,8 +325,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			IdeApp.ProjectOperations.SaveCombine ();
 		}
 		
-		[CommandHandler (EditCommands.Delete)]
-		public void RemoveItem ()
+		public override void DeleteItem ()
 		{
 			Combine cmb = CurrentNode.GetParentDataItem (typeof(Combine), false) as Combine;;
 			Project prj = CurrentNode.DataItem as Project;

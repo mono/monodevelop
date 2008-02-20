@@ -206,8 +206,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 
 		
-		[CommandHandler (EditCommands.Delete)]
-		public void RemoveItem ()
+		public override void DeleteItem ()
 		{
 			Combine combine = CurrentNode.DataItem as Combine;
 			Combine parent = CurrentNode.GetParentDataItem (typeof(Combine), false) as Combine;
@@ -221,11 +220,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 		}
 		
-		[CommandUpdateHandler (EditCommands.Delete)]
-		public void OnUpdateRemoveItem (CommandInfo info)
+		public override bool CanDeleteItem ()
 		{
 			Combine parent = CurrentNode.GetParentDataItem (typeof(Combine), false) as Combine;
-			info.Enabled = parent != null;
+			return parent != null;
 		}
 		
 		[CommandHandler (ProjectCommands.AddNewProject)]

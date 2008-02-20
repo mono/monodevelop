@@ -121,8 +121,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			IdeApp.Workbench.OpenDocument (file.Path);
 		}
 		
-		[CommandHandler (EditCommands.Delete)]
-		public void RemoveItem ()
+		public override void DeleteItem ()
 		{
 			SystemFile file = CurrentNode.DataItem as SystemFile;
 			

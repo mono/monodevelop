@@ -69,8 +69,7 @@ namespace MonoDevelop.NUnit
 	
 	class TestAssemblyNodeCommandHandler: NodeCommandHandler
 	{
-		[CommandHandler (EditCommands.Delete)]
-		protected void OnDeleteAssembly ()
+		public override void DeleteItem ()
 		{
 			TestAssembly asm = CurrentNode.DataItem as TestAssembly;
 			NUnitAssemblyGroupProjectConfiguration config = (NUnitAssemblyGroupProjectConfiguration) CurrentNode.GetParentDataItem (typeof(NUnitAssemblyGroupProjectConfiguration), false);

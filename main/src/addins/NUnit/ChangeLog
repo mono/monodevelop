@@ -1,3 +1,9 @@
+2008-02-20  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/NUnitAssemblyGroupNodeBuilder.cs, Gui/TestAssemblyNodeBuilder.cs:
+	  Handle the delete key in TreeViewPad, so it will work event if the
+	  shortcut is not defined.
+
 2008-02-06  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/TestPad.cs: Some changes for the new TreeViePiye

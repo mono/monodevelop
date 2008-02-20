@@ -116,8 +116,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 		
 		class TranslationProjectNodeCommandHandler : NodeCommandHandler
 		{
-			[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Delete)]
-			public void OnDelete ()
+			public override void DeleteItem ()
 			{
 				TranslationProject project = CurrentNode.DataItem as TranslationProject;
 				if (project == null)

@@ -111,8 +111,7 @@ namespace MonoDevelop.Profiling.HeapBuddy
 				Services.MessageService.ShowError (GettextCatalog.GetString ("Invalid filename"));
 		}
 		
-		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Delete)]
-		public void Remove ()
+		public override void DeleteItem ()
 		{
 			IProfilingSnapshot snapshot = (IProfilingSnapshot)CurrentNode.DataItem;
 			ProfilingService.RemoveSnapshot (snapshot);
