@@ -1,5 +1,10 @@
 2008-02-20  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/DefaultEditActions.cs: Fixed update at delet line/delete
+	  line to end commands.
+
+2008-02-20  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/BookmarkMargin.cs: Bookmark is now scaling better.
 
 2008-02-19  Mike Krüger <mkrueger@novell.com> 

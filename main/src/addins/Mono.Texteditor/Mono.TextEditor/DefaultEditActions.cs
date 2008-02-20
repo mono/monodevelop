@@ -151,6 +151,7 @@ namespace Mono.TextEditor
 				return;
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			data.Document.Remove (line.Offset, line.Length);
+			data.Document.CommitLineToEndUpdate (data.Caret.Line);
 		}
 	}
 	
@@ -160,6 +161,7 @@ namespace Mono.TextEditor
 		{
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			data.Document.Remove (line.Offset + data.Caret.Column, line.EditableLength - data.Caret.Column);
+			data.Document.CommitLineUpdate (data.Caret.Line);
 		}
 	}
 	

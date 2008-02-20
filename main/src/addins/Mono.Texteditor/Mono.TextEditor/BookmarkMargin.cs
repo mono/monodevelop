@@ -90,7 +90,7 @@ namespace Mono.TextEditor
 		{
 			const double ARC_TO_BEZIER = 0.55228475;
 			int radius_x = r;
-			int radius_y = 2;
+			int radius_y = r / 4;
 			
 			if (radius_x > w - radius_x)
 				radius_x = w / 2;
