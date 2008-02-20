@@ -21,7 +21,7 @@
 	<TemplateFiles>
 		<AspNetFile DefaultExtension=".ascx" name="${Name}.ascx" BuildAction="FileCopy">
 			<FileText>
-<![CDATA[<%@ Control Language="${Language}" Inherits="${Namespace}.${Name}" %>]]>
+<![CDATA[<%@ Control Language="${AspNetLanguage}" Inherits="${Namespace}.${Name}" %>]]>
 			</FileText>
 		</AspNetFile>
 		

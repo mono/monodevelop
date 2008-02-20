@@ -81,44 +81,42 @@ namespace AspNetAddIn.Parser.Tree
 		{
 			switch (tagtype)
 			{
-				case TagType.Close:
-					if ( !(currentTagId != tagId))
-						throw new ParseException (location, "Closing tag does not match opening tag " + tagId + ".");
-					currentNode = currentNode.Parent;
-					break;
+			case TagType.Close:
+				if ( !(currentTagId != tagId))
+					throw new ParseException (location, "Closing tag does not match opening tag " + tagId + ".");
+				currentNode = currentNode.Parent;
+				break;
 				
-				case TagType.CodeRender:
-					throw new NotImplementedException ("Code render expressions have not yet been implemented: " + location.PlainText);
-					
-				case TagType.CodeRenderExpression:
-					throw new NotImplementedException ("Code render expressions have not yet been implemented: " + location.PlainText);
-					
-				case TagType.DataBinding:
-					throw new NotImplementedException("Data binding expressions have not yet been implemented: " + location.PlainText);
-					
-				case TagType.Directive:
-					AddtoCurrent (location, new DirectiveNode (location, tagId, attributes));
-					break;
+			case TagType.CodeRender:
+			case TagType.CodeRenderExpression:
+			case TagType.DataBinding:
+				AddtoCurrent (location, new ExpressionNode (location, tagId));
+				break;
 				
-				case TagType.Include:
-					throw new NotImplementedException ("Server-side includes have not yet been implemented: " + location.PlainText);
-					
-				case TagType.ServerComment:
-					
-					throw new NotImplementedException ("Server comments have not yet been implemented: " + location.PlainText);
+			case TagType.Directive:
+				AddtoCurrent (location, new DirectiveNode (location, tagId, attributes));
+				break;
 				
-				case TagType.SelfClosing:
-					AddtoCurrent (location, new TagNode (location, tagId, attributes));
-					break;
+			case TagType.Include:
+				throw new NotImplementedException ("Server-side includes have not yet been implemented: " + location.PlainText);
 				
-				case TagType.Tag:
-					Node child = new TagNode (location, tagId, attributes);
-					AddtoCurrent (location, child);
-					currentNode = child;
-					break;
+			case TagType.ServerComment:
+				//FIXME: the parser doesn't actually return these
+				throw new NotImplementedException ("Server comments have not yet been implemented: " + location.PlainText);
 				
-				case TagType.Text:
-					throw new NotImplementedException("Text tagtypes have not yet been implemented: " + location.PlainText);
+			case TagType.SelfClosing:
+				AddtoCurrent (location, new TagNode (location, tagId, attributes));
+				break;
+				
+			case TagType.Tag:
+				Node child = new TagNode (location, tagId, attributes);
+				AddtoCurrent (location, child);
+				currentNode = child;
+				break;
+				
+			case TagType.Text:
+				//FIXME: the parser doesn't actually return these
+				throw new NotImplementedException("Text tagtypes have not yet been implemented: " + location.PlainText);
 			}
 		}
 		

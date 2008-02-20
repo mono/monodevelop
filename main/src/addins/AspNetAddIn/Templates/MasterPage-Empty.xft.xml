@@ -21,7 +21,7 @@
 	<TemplateFiles>
 		<AspNetFile name="${Name}.master" BuildAction="FileCopy">
 			<FileText>
-				<![CDATA[<%@ Master Language="${Language}"%>
+				<![CDATA[<%@ Master Language="${AspNetLanguage}"%>
 ${Doctype}
 <html>
 <head>

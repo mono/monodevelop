@@ -22,7 +22,7 @@
 	<TemplateFiles>
 		<AspNetFile name="Global.asax" BuildAction="FileCopy">
 			<FileText>
-<![CDATA[<%@ Application Language="${Language}" %>
+<![CDATA[<%@ Application Language="${AspNetLanguage}" %>
 <script runat="server">
 ${CodeRegion:script1}
 </script>

@@ -17,7 +17,7 @@
 	<TemplateFiles>
 		<AspNetFile name="${Name}.ascx" BuildAction="FileCopy">
 			<FileText>
-<![CDATA[<%@ Control Language="${Language}" ClassName="${Namespace}.${Name}" %>
+<![CDATA[<%@ Control Language="${AspNetLanguage}" ClassName="${Namespace}.${Name}" %>
 
 <script runat="server">
 

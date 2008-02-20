@@ -1,5 +1,6 @@
 //
-// Visitor.cs: base class for walking an ASP.NET document tree
+// DirectiveNode.cs: Represents a code render expression in an ASP.NET 
+//     document tree
 //
 // Authors:
 //   Michael Hutchinson <m.j.hutchinson@gmail.com>
@@ -33,34 +34,24 @@ using System;
 
 namespace AspNetAddIn.Parser.Tree
 {
-	public abstract class Visitor
+	
+	public class ExpressionNode : Node
 	{
-		public virtual void Visit (DirectiveNode node)
+		string expression;
+		public ExpressionNode (ILocation location, string expression)
+			: base (location)
 		{
+			this.expression = expression;
 		}
 		
-		public virtual void Visit (TextNode node)
-		{
+		public string Expression {
+			get { return expression; }
 		}
 		
-		public virtual void Visit (TagNode node)
+		public override void AcceptVisit (Visitor visitor)
 		{
+			visitor.Visit (this);
 		}
-		
-		public virtual void Visit (ExpressionNode node)
-		{
-		}
-		
-		public virtual void Visit (RootNode node)
-		{
-		}
-		
-		public virtual void Visit (ServerCommentNode node)
-		{
-		}
-		
-		public virtual void Visit (ServerIncludeNode node)
-		{
-		}
+
 	}
 }

@@ -17,7 +17,7 @@
 	<TemplateFiles>
 		<AspNetFile name="${Name}.ashx" BuildAction="FileCopy">
 			<FileText>
-<![CDATA[<%@ WebHandler Language="${Language}" Class="${Namespace}.${Name}" %>]]>
+<![CDATA[<%@ WebHandler Language="${AspNetLanguage}" Class="${Namespace}.${Name}" %>]]>
 			</FileText>
 		</AspNetFile>
 		

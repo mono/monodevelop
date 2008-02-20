@@ -42,6 +42,8 @@ using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.CodeGeneration;
 
+using MonoDevelop.AspNet;
+
 namespace AspNetAddIn
 {
 	
@@ -97,6 +99,28 @@ namespace AspNetAddIn
 		public override void ModifyTags (Project project, string language, string identifier, string fileName, ref Hashtable tags)
 		{
 			tags ["Doctype"] = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">";
+			
+			//get a language binding
+			IDotNetLanguageBinding langbinding = null;
+			if (project == null) {
+				langbinding = (IDotNetLanguageBinding) Services.Languages.GetBindingPerLanguageName (language);
+			} else {
+				DotNetProject dnp = (DotNetProject) project;
+				langbinding = dnp.LanguageBinding;
+			}
+			
+			// work out the ASP.NET language code. Although it's  originally a hack around MD's VBNet language name 
+			// not corresponding to any of the valid ASP.NET codes, we also provide an interface that
+			// non-core language bindings can implement to advertise that they support ASP.NET 
+			string languageCode = language;
+			if (langbinding is IAspNetLanguageBinding) {
+				languageCode = ((IAspNetLanguageBinding) langbinding).AspNetLanguageCode;
+			} else if (language == "VBNet") {
+				languageCode = "VB";
+			} else if (language != "C#") {
+				LoggingService.LogWarning ("The language binding '{0}' does not have explicit support for ASP.NET");
+			}
+			tags ["AspNetLanguage"] = languageCode;
 			
 			base.ModifyTags (project, language, identifier, fileName, ref tags);
 			

@@ -34,7 +34,7 @@ http://msdn2.microsoft.com/en-us/library/b5ysx397.aspx
 <configuration>
 	<system.web>
 		<compilation 
-			defaultLanguage="${Language}"
+			defaultLanguage="${AspNetLanguage}"
 			debug="true"
 		>
 			<assemblies>

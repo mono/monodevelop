@@ -57,8 +57,8 @@ FILES =  \
 	Parser/LocatedParserException.cs \
 	Parser/MemberListVisitor.cs \
 	Parser/PageInfoVisitor.cs \
-	Parser/Tree/CodeRenderNode.cs \
 	Parser/Tree/DirectiveNode.cs \
+	Parser/Tree/ExpressionNode.cs \
 	Parser/Tree/ILocation.cs \
 	Parser/Tree/Node.cs \
 	Parser/Tree/ParentNode.cs \
@@ -78,6 +78,7 @@ FILES =  \
 	Project/AspNetFileDescriptionTemplate.cs \
 	Project/AspNetMSBuildProjectExtension.cs \
 	Project/CodeBehind.cs \
+	Project/IAspNetLanguageBinding.cs \
 	Project/ProjectFolderNodeBuilderExtension.cs \
 	Project/VerifyCodeBehindBuildStep.cs \
 	Project/WebTypeManager.cs \

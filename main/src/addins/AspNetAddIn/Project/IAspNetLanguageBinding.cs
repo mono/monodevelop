@@ -1,15 +1,11 @@
-//
-// DirectiveNode.cs: Represents a code render expression in an ASP.NET 
-//     document tree
-//
-// Authors:
-//   Michael Hutchinson <m.j.hutchinson@gmail.com>
-//
-// Copyright (C) 2006 Michael Hutchinson
-//
-//
-// This source code is licenced under The MIT License:
-//
+// 
+// IAspNetLanguage.cs
+// 
+// Author:
+//   Michael Hutchinson <mhutchinson@novell.com>
+// 
+// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
+// 
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -32,14 +28,13 @@
 
 using System;
 
-namespace AspNetAddIn.Parser.Tree
+using MonoDevelop.Projects;
+
+namespace MonoDevelop.AspNet
 {
 	
-	public class CodeRenderNode
+	public interface IAspNetLanguageBinding : IDotNetLanguageBinding
 	{
-		
-		public CodeRenderNode()
-		{
-		}
+		string AspNetLanguageCode { get; }
 	}
 }
