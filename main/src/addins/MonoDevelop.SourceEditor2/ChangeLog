@@ -1,3 +1,8 @@
+2008-02-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Enable clipboard and
+	  undo commands only when the editor window has the focus.
+
 2008-02-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor/ExtendibleTextEditor.cs: Add binding for delete

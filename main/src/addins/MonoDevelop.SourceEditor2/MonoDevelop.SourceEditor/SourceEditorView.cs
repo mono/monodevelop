@@ -281,7 +281,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public bool EnableUndo {
 			get {
-				return this.Document.CanUndo;
+				return this.Document.CanUndo && TextEditor.HasFocus;
 			}
 		}
 		
@@ -292,7 +292,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public bool EnableRedo {
 			get {
-				return this.Document.CanRedo;
+				return this.Document.CanRedo && TextEditor.HasFocus;
 			}
 		}
 		
@@ -492,7 +492,7 @@ namespace MonoDevelop.SourceEditor
 		#region IClipboardHandler
 		public bool EnableCut {
 			get {
-				return TextEditor.IsSomethingSelected;
+				return TextEditor.HasFocus && TextEditor.IsSomethingSelected;
 			}
 		}
 		public bool EnableCopy {
@@ -502,17 +502,17 @@ namespace MonoDevelop.SourceEditor
 		}
 		public bool EnablePaste {
 			get {
-				return true;
+				return TextEditor.HasFocus;
 			}
 		}
 		public bool EnableDelete {
 			get {
-				return TextEditor.IsSomethingSelected;
+				return TextEditor.HasFocus && TextEditor.IsSomethingSelected;
 			}
 		}
 		public bool EnableSelectAll {
 			get {
-				return true;
+				return TextEditor.HasFocus;
 			}
 		}
 		
