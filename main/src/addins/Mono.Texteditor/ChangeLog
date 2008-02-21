@@ -1,5 +1,10 @@
 2008-02-21  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextEditor.cs: Fixed Bug 363762 - Scrollbar does not take
+	  into account collapsed regions.
+
+2008-02-21  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/Document.cs, Mono.TextEditor/TextUtil.cs: Fixed Bug 363771
 	  - Strange behavior when typing on a new file.
 

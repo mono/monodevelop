@@ -792,12 +792,16 @@ namespace Mono.TextEditor
 		
 		internal void SetAdjustments (Gdk.Rectangle allocation)
 		{
-			if (this.textEditorData.VAdjustment != null)
+			if (this.textEditorData.VAdjustment != null) {
+				int maxY = (Document.LogicalToVisualLine (Document.LineCount - 1) + 5) * this.LineHeight;
 				this.textEditorData.VAdjustment.SetBounds (0, 
-				                                           (Document.LineCount + 10) * this.LineHeight, 
+				                                           maxY, 
 				                                           LineHeight,
 				                                           allocation.Height,
 				                                           allocation.Height);
+				if (maxY < allocation.Height) 
+					this.textEditorData.VAdjustment.Value = 0;
+			}
 			if (longestLine != null && this.textEditorData.HAdjustment != null)
 				this.textEditorData.HAdjustment.SetBounds (0, 
 				                       (longestLine.Length + 100) * this.textViewMargin.CharWidth, 
@@ -847,9 +851,10 @@ namespace Mono.TextEditor
 		//double oldVadjustment = 0;
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
-			if (oldRequest != Document.LineCount * this.LineHeight) {
+			int lastVisibleLine = Document.LogicalToVisualLine (Document.LineCount - 1);
+			if (oldRequest != lastVisibleLine) {
 				SetAdjustments (this.Allocation);
-				oldRequest = Document.LineCount * this.LineHeight;
+				oldRequest = lastVisibleLine;
 			}
 			
 			RenderMargins (e.Window, e.Area);
