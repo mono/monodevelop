@@ -957,7 +957,7 @@ namespace Mono.TextEditor
 			CopyData (data, selection);
 			ClipboardGetFunc (clipboard, selection_data, info);
 		}
-
+		
 		public void CopyToPrimary (TextEditorData data)
 		{
 			this.data      = data;

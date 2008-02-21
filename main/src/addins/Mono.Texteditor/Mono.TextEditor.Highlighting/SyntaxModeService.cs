@@ -103,6 +103,7 @@ namespace Mono.TextEditor.Highlighting
 			int endOffset = 0;
 			end = System.Math.Min (end, doc.Length);
 			Span curSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
+			Rule curRule = rule;
 			for (int offset = start; offset < end; offset++) {
 				char ch = doc.GetCharAt (offset);
 				if (curSpan != null && !String.IsNullOrEmpty (curSpan.End)) {
@@ -135,11 +136,13 @@ namespace Mono.TextEditor.Highlighting
 						}
 						spanStack.Push (span);
 						curSpan = span;
+						curRule = doc.SyntaxMode.GetRule (curSpan.Rule);
+						spanTree = curRule != null ? curRule.spanTree : null;
 						continue;
 					}
 				} else {
 					spanPair = null;
-					spanTree = rule.spanTree;
+					spanTree = curRule != null ? curRule.spanTree : null;
 				}
 			 skip:
 					;
@@ -147,12 +150,9 @@ namespace Mono.TextEditor.Highlighting
 		}
 		static bool IsEqual (Span[] spans1, Span[] spans2)
 		{
-			if (spans1 == null || spans1.Length == 0) {
-				if (spans2 == null || spans2.Length == 0)
-					return true;
-				return false;
-			}
-			if (spans1.Length != spans2.Length)
+			if (spans1 == null || spans1.Length == 0) 
+				return spans2 == null || spans2.Length == 0;
+			if (spans2 == null || spans1.Length != spans2.Length)
 				return false;
 			for (int i = 0; i < spans1.Length; i++) {
 				if (spans1[i] != spans2[i]) {
@@ -172,12 +172,15 @@ namespace Mono.TextEditor.Highlighting
 			bool doUpdate = false;
 			RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = doc.GetLineByOffset (startOffset).Iter;
 			Stack<Span> spanStack = iter.Current.StartSpan != null ? new Stack<Span> (iter.Current.StartSpan) : new Stack<Span> ();
+			
 			do {
 				LineSegment line = iter.Current;
+				
 				if (line == null || line.Offset < 0)
 					break;
+				
 				Span[] newSpans = spanStack.ToArray ();
-				if (line.Offset >= endOffset) {
+				if (line.Offset > endOffset) {
 					bool equal = IsEqual (line.StartSpan, newSpans);
 					doUpdate |= !equal;
 					if (equal) 
@@ -185,10 +188,10 @@ namespace Mono.TextEditor.Highlighting
 				}
 				line.StartSpan = newSpans.Length > 0 ? newSpans : null;
 				Rule rule = mode;
-				if (spanStack.Count > 0 && !String.IsNullOrEmpty (spanStack.Peek ().Rule)) {
+				if (spanStack.Count > 0 && !String.IsNullOrEmpty (spanStack.Peek ().Rule))
 					rule = mode.GetRule (spanStack.Peek ().Rule) ?? mode;
-				}
-				ScanSpans (doc, rule, spanStack, line.Offset, line.Offset + line.EditableLength);
+				
+				ScanSpans (doc, rule, spanStack, line.Offset, line.EndOffset);
 				while (spanStack.Count > 0 && spanStack.Peek ().StopAtEol)
 					spanStack.Pop ();
 			} while (iter.MoveNext ());
