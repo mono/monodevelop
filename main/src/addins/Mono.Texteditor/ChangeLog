@@ -1,5 +1,10 @@
 2008-02-21  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextViewMargin.cs: Fixed Bug 363631 - The selection does
+	  not work for "*" symbol.
+
+2008-02-21  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor.Highlighting/SyntaxMode.cs: fixed highlighting issue.
 
 2008-02-21  Mike Krüger <mkrueger@novell.com> 

@@ -546,17 +546,26 @@ namespace Mono.TextEditor
 			inSelectionDrag = false;
 			base.MouseReleased (button, x, y, modifierState);
 		}
-
+		
 		
 		int ScanWord (int offset, bool forwardDirection)
 		{
+			if (offset < 0 || offset >= Document.Length)
+				return offset;
 			LineSegment line = Document.GetLineByOffset (offset);
-			while (offset >= line.Offset && offset < line.Offset + line.EditableLength && !char.IsLetterOrDigit (Document.GetCharAt (offset))) {
+			char first = Document.GetCharAt (offset);
+			while (offset >= line.Offset && offset < line.Offset + line.EditableLength) {
+				char ch = Document.GetCharAt (offset);
+				if (char.IsWhiteSpace (first) && !char.IsWhiteSpace (ch) ||
+				    char.IsPunctuation (first) && !char.IsPunctuation (ch) ||
+				    (char.IsLetterOrDigit (first) || first == '_') && !(char.IsLetterOrDigit (ch) || ch == '_'))
+				    break;
+				
 				offset = forwardDirection ? offset + 1 : offset - 1; 
 			}
-			while (offset >= line.Offset && offset < line.Offset + line.EditableLength && (char.IsLetterOrDigit (Document.GetCharAt (offset)) || Document.GetCharAt (offset) == '_')) {
-				offset = forwardDirection ? offset + 1 : offset - 1; 
-			}
+//			while (offset >= line.Offset && offset < line.Offset + line.EditableLength && (char.IsLetterOrDigit (Document.GetCharAt (offset)) || Document.GetCharAt (offset) == '_')) {
+//				offset = forwardDirection ? offset + 1 : offset - 1; 
+//			}
 			return System.Math.Min (line.EndOffset - 1, System.Math.Max (line.Offset, offset + (forwardDirection ? 0 : 1)));
 		}
 		
