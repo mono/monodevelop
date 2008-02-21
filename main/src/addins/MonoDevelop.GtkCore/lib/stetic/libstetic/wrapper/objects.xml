@@ -333,9 +333,14 @@
 	</itemgroups>
 	<contextmenu>
 	    <command name="InsertBefore" label="Insert Before"
-		     description="Insert an empty row/column before the selected one" />
+		     description="Insert an empty row/column before the selected one">
+		     <invisible-if check="ChildrenAllowed" />
+		</command>
+
 	    <command name="InsertAfter" label="Insert After"
-		     description="Insert an empty row/column after the selected one" />
+		     description="Insert an empty row/column after the selected one">
+		     <invisible-if check="ChildrenAllowed" />
+		</command>
 	</contextmenu>
     </object>
     
@@ -371,9 +376,13 @@
 	</itemgroups>
 	<contextmenu>
 	    <command name="InsertBefore" label="Insert Button Before"
-		     description="Insert a new button before the selected one" />
+		     description="Insert a new button before the selected one" >
+		     <invisible-if check="ChildrenAllowed" />
+		</command>
 	    <command name="InsertAfter" label="Insert Button After"
-		     description="Insert a new button after the selected one" />
+		     description="Insert a new button after the selected one">
+		     <invisible-if check="ChildrenAllowed" />
+		</command>
 	</contextmenu>
     </object>
     <object type="Gtk.ButtonBox+ButtonBoxChild,gtk-sharp" wrapper="Stetic.Wrapper.ButtonBox+ButtonBoxChild">
@@ -949,10 +958,13 @@
 		<property name="BorderWidth" />
 		<command name="InsertBefore" label="Insert Page Before"
 			 description="Insert a blank page before this one">
+		    <invisible-if check="ChildrenAllowed" />
 		    <disabled-if check="CheckInsertBefore" />
 		</command>
 		<command name="InsertAfter" label="Insert Page After"
-			 description="Insert a blank page after this one" />
+			 description="Insert a blank page after this one" >
+		     <invisible-if check="ChildrenAllowed" />
+		</command>
 	    </itemgroup>
 	</itemgroups>
 	<signals>
@@ -975,14 +987,17 @@
 		</command>
 	    <command name="DeletePage" label="Delete Page"
 		     description="Delete the current page">
+		    <invisible-if check="ChildrenAllowed" />
 		    <disabled-if check="CheckDeletePage" />
 		</command>
 	    <command name="SwapPrevious" label="Swap with Previous Page"
 		     description="Swap the contents of this page with the contents of the previous page">
+		    <invisible-if check="ChildrenAllowed" />
 		    <disabled-if check="CheckPreviousPage" />
 		</command>
 	    <command name="SwapNext" label="Swap with Next Page"
 		     description="Swap the contents of this page with the contents of the next page">
+		    <invisible-if check="ChildrenAllowed" />
 		    <disabled-if check="CheckNextPage" />
 		</command>
 	    <command ref="InsertBefore" />
@@ -1256,17 +1271,29 @@
 	</itemgroups>
 	<contextmenu>
 	    <command name="InsertRowBefore" label="Insert Row Before"
-		     description="Insert an empty row above the selected row" />
+		     description="Insert an empty row above the selected row">
+		     <invisible-if check="ChildrenAllowed" />
+		</command>
 	    <command name="InsertRowAfter" label="Insert Row After"
-		     description="Insert an empty row below the selected row" />
+		     description="Insert an empty row below the selected row">
+		     <invisible-if check="ChildrenAllowed" />
+		</command>
 	    <command name="InsertColumnBefore" label="Insert Column Before"
-		     description="Insert an empty column before the selected column" />
+		     description="Insert an empty column before the selected column">
+		     <invisible-if check="ChildrenAllowed" />
+		</command>
 	    <command name="InsertColumnAfter" label="Insert Column After"
-		     description="Insert an empty column after the selected column" />
+		     description="Insert an empty column after the selected column">
+		     <invisible-if check="ChildrenAllowed" />
+		</command>
 	    <command name="DeleteRow" label="Delete Row"
-		     description="Delete the selected row" />
+		     description="Delete the selected row">
+		     <invisible-if check="ChildrenAllowed" />
+		</command>
 	    <command name="DeleteColumn" label="Delete Column"
-		     description="Delete the selected column" />
+		     description="Delete the selected column">
+		     <invisible-if check="ChildrenAllowed" />
+		</command>
 	</contextmenu>
 
 	<glade-transform>

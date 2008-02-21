@@ -117,7 +117,7 @@ namespace Stetic.Wrapper
 
 		protected virtual bool AllowPlaceholders {
 			get {
-				return true;
+				return true && this.ClassDescriptor.AllowChildren;
 			}
 		}
 		
@@ -142,6 +142,11 @@ namespace Stetic.Wrapper
 				container.BorderWidth -= 3;
 			else
 				container.BorderWidth = 0;
+		}
+		
+		internal bool ChildrenAllowed ()
+		{
+			return this.ClassDescriptor.AllowChildren;
 		}
 		
 		int freeze;

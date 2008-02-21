@@ -37,6 +37,8 @@ namespace Stetic.Wrapper {
 
 		protected override void DoSync ()
 		{
+			if (!AllowPlaceholders)
+				return;
 			using (UndoManager.AtomicChange) {
 				uint left, right, top, bottom;
 				uint row, col;

@@ -17,7 +17,8 @@ namespace Stetic.Wrapper {
 			base.Wrap (obj, initialized);
 			if (!initialized) {
 				expander.Label = expander.Name;
-				AddPlaceholder ();
+				if (AllowPlaceholders)
+					AddPlaceholder ();
 			}
 			if (expander.LabelWidget != null)
 				ObjectWrapper.Create (proj, expander.LabelWidget);

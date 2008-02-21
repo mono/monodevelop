@@ -12,7 +12,7 @@ namespace Stetic.Wrapper {
 		public override void Wrap (object obj, bool initialized)
 		{
 			base.Wrap (obj, initialized);
-			if (!initialized) {
+			if (!initialized && AllowPlaceholders) {
 				if (notebook.Children.Length != 0) {
 					// Remove the dummy page Container.Wrap added
 					notebook.Remove (notebook.Children[0]);

@@ -13,7 +13,7 @@ namespace Stetic.Wrapper {
 		{
 			base.Wrap (obj, initialized);
 			if (!initialized) {
-				if (scrolled.Child == null)
+				if (scrolled.Child == null && AllowPlaceholders)
 					AddPlaceholder ();
 				HscrollbarPolicy = VscrollbarPolicy = Gtk.PolicyType.Automatic;
 				scrolled.ShadowType = Gtk.ShadowType.In;

@@ -40,7 +40,7 @@ namespace Stetic
 				wrapperClassDescriptor = typeClassDescriptor;
 			}
 			
-			if (steticDefinition == null && NeedsBlackBox (typeClassDescriptor.Name)) {
+			if (steticDefinition == null && !AllowChildren && NeedsBlackBox (typeClassDescriptor.Name)) {
 				// It is not possible to create instances of that widget, instead we'll have
 				// to create the typical custom widget black box.
 				

@@ -1,3 +1,18 @@
+2008-02-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* libsteticui/CecilClassDescriptor.cs: Don't create black boxes for
+	  custom widgets which allow children. Fixes bug #361650.
+	* libsteticui/ContextMenu.cs: Dont show invisible commands.
+	* libstetic/wrapper/Frame.cs, libstetic/wrapper/Table.cs,
+	  libstetic/wrapper/Paned.cs, libstetic/wrapper/Box.cs,
+	  libstetic/wrapper/ScrolledWindow.cs, libstetic/wrapper/Expander.cs,
+	  libstetic/wrapper/Notebook.cs: Don't add placeholders if they are
+	  not allowed.
+	* libstetic/wrapper/Container.cs: Don't allow placeholders if a
+	  container can't have children.
+	* libstetic/wrapper/objects.xml: Hide commands not allowed when
+	  containers does not allow children.
+
 2008-02-20  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* libsteticui/ActionComponent.cs, libstetic/wrapper/Action.cs: Added wrapper

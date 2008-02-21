@@ -7,7 +7,7 @@ namespace Stetic.Wrapper {
 		public override void Wrap (object obj, bool initialized)
 		{
 			base.Wrap (obj, initialized);
-			if (!initialized) {
+			if (!initialized && AllowPlaceholders) {
 				Placeholder ph = CreatePlaceholder ();
 				paned.Pack1 (ph, true, false);
 				NotifyChildAdded (ph);
