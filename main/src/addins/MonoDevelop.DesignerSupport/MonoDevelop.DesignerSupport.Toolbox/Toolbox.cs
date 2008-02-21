@@ -101,7 +101,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				toolboxService.SelectItem (selectedNode);
 			};
 			this.toolboxWidget.DragBegin += delegate(object sender, Gtk.DragBeginArgs e) {
-				toolboxService.DragSelectedItem (this.toolboxWidget, e.Context);
+				if (this.toolboxWidget.SelectedItem != null)
+					toolboxService.DragSelectedItem (this.toolboxWidget, e.Context);
 			};
 			this.toolboxWidget.ActivateSelectedItem += delegate {
 				toolboxService.UseSelectedItem ();
