@@ -1,3 +1,7 @@
+2008-02-21  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextEditor.cs: Fixed control key problem.
+
 2008-02-20  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/DefaultEditActions.cs: Fixed update at delet line/delete

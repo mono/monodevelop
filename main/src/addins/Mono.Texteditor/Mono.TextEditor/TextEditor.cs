@@ -524,7 +524,7 @@ namespace Mono.TextEditor
 					Console.WriteLine ("Error while executing " + keyBindings[keyCode] + " :" + e);
 				}
 				
-			} else if (((ulong)key) < 65000) {
+			} else if (((ulong)key) < 65000 && (modifier & Gdk.ModifierType.ControlMask) != Gdk.ModifierType.ControlMask) {
 				Document.BeginAtomicUndo ();
 				this.textEditorData.DeleteSelectedText ();
 				char ch = (char)key;
