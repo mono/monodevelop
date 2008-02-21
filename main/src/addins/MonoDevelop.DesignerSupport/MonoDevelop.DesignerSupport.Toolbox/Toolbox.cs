@@ -29,6 +29,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using Gtk;
 using System.Reflection;
 using System.Collections;
@@ -43,13 +44,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	public class Toolbox : VBox
 	{
 		ToolboxService toolboxService;
-		ToolboxStore store;
-		NodeView nodeView;
+		
 		ItemToolboxNode selectedNode;
 		Hashtable expandedCategories = new Hashtable ();
 		
-		CompactToolboxView compactToolboxView;
+		ToolboxWidget toolboxWidget;
 		ScrolledWindow scrolledWindow;
+
 		Toolbar toolbar;
 		ToggleToolButton filterToggleButton;
 		ToggleToolButton catToggleButton;
@@ -94,83 +95,40 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			
 			#endregion
 			
-			compactToolboxView = new CompactToolboxView ();
-			compactToolboxView.SelectionChanged += delegate {
-				selectedNode = this.compactToolboxView.CurrentlySelected as ItemToolboxNode;
+			toolboxWidget = new ToolboxWidget ();
+			toolboxWidget.SelectedItemChanged += delegate {
+				selectedNode = this.toolboxWidget.SelectedItem != null ? this.toolboxWidget.SelectedItem.Tag as ItemToolboxNode : null;
 				toolboxService.SelectItem (selectedNode);
 			};
-			compactToolboxView.DragBegin += delegate(object sender, Gtk.DragBeginArgs e) {
-				toolboxService.DragSelectedItem (compactToolboxView, e.Context);
+			this.toolboxWidget.DragBegin += delegate(object sender, Gtk.DragBeginArgs e) {
+				toolboxService.DragSelectedItem (this.toolboxWidget, e.Context);
 			};
-			compactToolboxView.ButtonReleaseEvent += OnButtonRelease;
+			this.toolboxWidget.ActivateSelectedItem += delegate {
+				toolboxService.UseSelectedItem ();
+			};
+			
+			this.toolboxWidget.ButtonReleaseEvent += OnButtonRelease;
 			
 			scrolledWindow = new ScrolledWindow ();
 			base.PackEnd (scrolledWindow, true, true, 0);
-			
-						
-			//Initialise model
-			
-			store = new ToolboxStore ();
-			
-			//HACK: see #81942 (caused by #82087)
-			typeof (Gtk.NodeStore).GetField ("node_hash", BindingFlags.Instance | BindingFlags.NonPublic).SetValue (store, new Hashtable ());
-			
-			//initialise view
-			nodeView = new InternalNodeView (store);
-			nodeView.Selection.Mode = SelectionMode.Single;
-			nodeView.HeadersVisible = false;
-			
-			//cell renderers
-			CellRendererPixbuf pixbufRenderer = new CellRendererPixbuf ();
-			CellRendererText textRenderer = new CellRendererText ();
-//			textRenderer.Ellipsize = Pango.EllipsizeMode.End;
-			
-			//Main column with text, icons
-			TreeViewColumn col = new TreeViewColumn ();
-			
-			col.PackStart (pixbufRenderer, false);
-			col.SetAttributes (pixbufRenderer,
-			                      "pixbuf", ToolboxStore.Columns.Icon,
-			                      "visible", ToolboxStore.Columns.IconVisible
-//			                   , "cell-background-gdk", ToolboxStore.Columns.BackgroundColour
-			                   );
-			
-			col.PackEnd (textRenderer, true);
-			col.SetAttributes (textRenderer,
-			                      "text", ToolboxStore.Columns.Label,
-			                      "weight", ToolboxStore.Columns.FontWeight
-//			                   ,  "cell-background-gdk", ToolboxStore.Columns.BackgroundColour
-			                   );
-			
-			nodeView.AppendColumn (col);
 			
 			//Initialise self
 			scrolledWindow.ShadowType = ShadowType.None;
 			scrolledWindow.VscrollbarPolicy = PolicyType.Automatic;
 			scrolledWindow.HscrollbarPolicy = PolicyType.Never;
 			scrolledWindow.WidthRequest = 150;
-			scrolledWindow.Add (nodeView);
-			
-			//selection events
-			nodeView.NodeSelection.Changed += OnSelectionChanged;
-			nodeView.RowActivated  += OnRowActivated;
-			nodeView.DragBegin += OnDragBegin;
-
+			scrolledWindow.Add (this.toolboxWidget);
 			
 			//update view when toolbox service updated
 			toolboxService.ToolboxContentsChanged += delegate { Refresh (); };
 			toolboxService.ToolboxConsumerChanged += delegate { Refresh (); };
 			Refresh ();
 			
-			//track expanded state of nodes
-			nodeView.RowCollapsed += new RowCollapsedHandler (whenRowCollapsed);
-			nodeView.RowExpanded += new RowExpandedHandler (whenRowExpanded);
-			nodeView.ButtonReleaseEvent += OnButtonRelease;
-			
 			//set initial state
 			filterToggleButton.Active = false;
-			catToggleButton.Active = true;
-			
+			this.toolboxWidget.ShowCategories = catToggleButton.Active = true;
+			compactModeToggleButton.Active = MonoDevelop.Core.PropertyService.Get ("ToolboxIsInCompactMode", false);
+			this.toolboxWidget.IsListMode  = !compactModeToggleButton.Active;
 			this.ShowAll ();
 		}
 		
@@ -178,15 +136,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		void ToggleCompactMode (object sender, EventArgs e)
 		{
-			if (compactModeToggleButton.Active) {
-				Remove (this.scrolledWindow);
-				PackEnd (this.compactToolboxView, true, true, 0);
-				ShowAll ();
-			} else {
-				Remove (this.compactToolboxView);
-				PackEnd (scrolledWindow, true, true, 0);
-				ShowAll ();
-			}
+			this.toolboxWidget.IsListMode = !compactModeToggleButton.Active;
+			MonoDevelop.Core.PropertyService.Set ("ToolboxIsInCompactMode", compactModeToggleButton.Active);
 		}
 		
 		void toggleFiltering (object sender, EventArgs e)
@@ -203,16 +154,16 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		void toggleCategorisation (object sender, EventArgs e)
 		{
-			store.SetCategorised (catToggleButton.Active);
-			this.compactToolboxView.ShowCategories = catToggleButton.Active;
-			EnsureState ();
+			this.toolboxWidget.ShowCategories = catToggleButton.Active;
 		}
 		
-		private void filterTextChanged (object sender, EventArgs e)
+		void filterTextChanged (object sender, EventArgs e)
 		{
-			store.SetFilter (filterEntry.Text);
-			this.compactToolboxView.Filter = filterEntry.Text;
-			EnsureState ();
+			foreach (Item item in toolboxWidget.AllItems) {
+				item.IsVisible = !filterToggleButton.Active || 
+					              item.Text.ToUpper ().Contains (filterEntry.Text.ToUpper ());
+			}
+			toolboxWidget.QueueDraw ();
 		}
 		
 		void toolboxAddButton_Clicked (object sender, EventArgs e)
@@ -248,107 +199,30 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		#endregion
 		
 		#region GUI population
-		
 		public void Refresh ()
 		{
-			store.Clear ();
-			ICollection nodes = toolboxService.GetCurrentToolboxItems ();
-			Gtk.Drag.SourceUnset (nodeView);
-			Gtk.TargetEntry[] targetTable = toolboxService.GetCurrentDragTargetTable ();
-			if (targetTable != null)
-				Gtk.Drag.SourceSet (nodeView, Gdk.ModifierType.Button1Mask, targetTable, Gdk.DragAction.Copy | Gdk.DragAction.Move);
-			
-			Gtk.Drag.SourceUnset (this.compactToolboxView);
-			if (targetTable != null)
-				Gtk.Drag.SourceSet (this.compactToolboxView, Gdk.ModifierType.Button1Mask, targetTable, Gdk.DragAction.Copy | Gdk.DragAction.Move);
-			this.compactToolboxView.SetNodes (nodes);
-			
-			store.SetNodes (nodes);
-			EnsureState ();
-		}
-		
-		#endregion
-		
-		#region Maintain state
-		
-		private void EnsureState ()
-		{
-			if (store.Categorised) {
-				//LAMESPEC: why can't we just get a TreePath or a count from the NodeStore?
-				TreePath tp = new Gtk.TreePath ("0");
-				CategoryToolboxNode node = (CategoryToolboxNode) store.GetNode (tp);
-				while (node != null) {
-					if (expandedCategories [node.Label] != null)
-						nodeView.ExpandRow (tp, false);
-					tp.Next ();
-					node = (CategoryToolboxNode) store.GetNode (tp);
+			Dictionary<string, Category> categories = new Dictionary<string, Category> ();
+			foreach (BaseToolboxNode node in toolboxService.GetCurrentToolboxItems ()) {
+				Item newItem = new Item (node.ViewIcon, node.Label, node.Label, node);
+				if (node is ItemToolboxNode) {
+					ItemToolboxNode itbn = ((ItemToolboxNode)node);
+					if (!categories.ContainsKey (itbn.Category))
+						categories[itbn.Category] = new Category (itbn.Category);
+					categories[itbn.Category].Items.Add (newItem);
 				}
 			}
-			
-			if (selectedNode != null) {
-				//LAMESPEC: why oh why is there no easy way to find if a node is in the store?
-				//FIXME: This doesn't survive all store rebuilds, for some reason
-				foreach (BaseToolboxNode b in store)
-					if (b == selectedNode) {
-						nodeView.NodeSelection.SelectNode (selectedNode);
-						break;
-					}
+			Drag.SourceUnset (toolboxWidget);
+			toolboxWidget.ClearCategories ();
+			foreach (Category category in categories.Values) {
+				category.IsExpanded = true;
+				toolboxWidget.AddCategory (category);
 			}
+			toolboxWidget.QueueDraw ();
+			Gtk.TargetEntry[] targetTable = toolboxService.GetCurrentDragTargetTable ();
+			if (targetTable != null)
+				Drag.SourceSet (toolboxWidget, Gdk.ModifierType.Button1Mask, targetTable, Gdk.DragAction.Copy | Gdk.DragAction.Move);
 		}
-		
-		private void whenRowCollapsed (object o, RowCollapsedArgs rca)
-		{
-			CategoryToolboxNode node =  store.GetNode (rca.Path) as CategoryToolboxNode;
-			if (node != null)
-			        expandedCategories [node.Label] = null;
-		}
-		
-		private void whenRowExpanded (object o, RowExpandedArgs rea)
-		{
-			CategoryToolboxNode node =  store.GetNode (rea.Path) as CategoryToolboxNode;
-			if (node != null)
-				expandedCategories [node.Label] = true;
-		}
-		
-		
 		#endregion
 		
-		#region Activation/selection handlers, drag'n'drop source, selection state
-		
-		private void OnSelectionChanged (object sender, EventArgs e)
-		{
-			selectedNode = nodeView.NodeSelection.SelectedNode as ItemToolboxNode;		
-			toolboxService.SelectItem (selectedNode);
-		}
-		
-		private void OnRowActivated (object sender, RowActivatedArgs e)
-		{
-			selectedNode = store.GetNode(e.Path) as ItemToolboxNode;		
-			toolboxService.SelectItem (selectedNode);
-			toolboxService.UseSelectedItem ();
-		}
-		
-		void OnDragBegin (object o, Gtk.DragBeginArgs arg)
-		{
-			try {
-				toolboxService.DragSelectedItem (nodeView, arg.Context);
-			} catch (Exception ex) {
-				MonoDevelop.Core.LoggingService.LogError (ex.ToString ());
-			}
-		}
-		#endregion	
-	}
-
-	class InternalNodeView: NodeView
-	{
-		public InternalNodeView (NodeStore store): base (store)
-		{
-		}
-		
-		protected override void OnDragDataDelete (Gdk.DragContext context)
-		{
-			// This method is necessary to avoid a GTK warning about the
-			// need to override drag_data_delete.
-		}
 	}
 }

@@ -11,6 +11,7 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	-r:Mono.Cairo \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Design \
@@ -67,7 +68,6 @@ FILES =  \
 	MonoDevelop.DesignerSupport.PropertyGrid/SurrogateUITypeEditorAttribute.cs \
 	MonoDevelop.DesignerSupport.Toolbox/BaseToolboxNode.cs \
 	MonoDevelop.DesignerSupport.Toolbox/CategoryToolboxNode.cs \
-	MonoDevelop.DesignerSupport.Toolbox/CompactToolboxView.cs \
 	MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs \
 	MonoDevelop.DesignerSupport.Toolbox/ItemToolboxNode.cs \
 	MonoDevelop.DesignerSupport.Toolbox/IToolboxConsumer.cs \
@@ -80,6 +80,7 @@ FILES =  \
 	MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxNode.cs \
 	MonoDevelop.DesignerSupport.Toolbox/ToolboxList.cs \
 	MonoDevelop.DesignerSupport.Toolbox/ToolboxStore.cs \
+	MonoDevelop.DesignerSupport.Toolbox/ToolboxWidget.cs \
 	MonoDevelop.DesignerSupport.Toolbox/TypeReference.cs \
 	MonoDevelop.DesignerSupport.Toolbox/TypeToolboxNode.cs \
 	MonoDevelop.DesignerSupport.Toolbox/UnknownToolboxNode.cs \

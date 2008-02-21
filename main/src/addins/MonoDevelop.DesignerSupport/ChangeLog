@@ -1,3 +1,9 @@
+2008-02-21  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs,
+	  MonoDevelop.DesignerSupport.Toolbox/ToolboxWidget.cs: Replaced old
+	  toolbox with a new one.
+
 2008-02-09  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.DesignerSupport.addin.xml: Removed source editor dependency.
