@@ -778,11 +778,13 @@
 				defaultHandler = "MonoDevelop.Ide.Commands.FindInFilesHandler"
 				_label = "F_ind in Files..." 
 				icon = "md-find-in-files" 
+				shortcut = "Control|Shift|F" />
 				description = "Find in files" />
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.ReplaceInFiles"
 				defaultHandler = "MonoDevelop.Ide.Commands.ReplaceInFilesHandler"
 				_label = "R_eplace in Files..." 
 				icon = "md-replace-in-files" 
+				shortcut = "Control|Shift|H" />
 				description = "Replace in files" />
 		
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType"		
