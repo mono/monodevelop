@@ -1,5 +1,10 @@
 2008-02-21  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/Document.cs, Mono.TextEditor/TextUtil.cs: Fixed Bug 363771
+	  - Strange behavior when typing on a new file.
+
+2008-02-21  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/Caret.cs,
 	  Mono.TextEditor.Highlighting/SyntaxModeService.cs,
 	  Mono.TextEditor.Highlighting/Caret.cs: Fixed Bug 363628 - MD text editor

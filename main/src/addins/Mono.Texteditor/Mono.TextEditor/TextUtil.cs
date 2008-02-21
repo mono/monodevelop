@@ -53,6 +53,8 @@ namespace Mono.TextEditor
 		
 		public static int GetMatchingBracketOffset (Document document, int offset)
 		{
+			if (offset < 0 || offset >= document.Length)
+				return -1;
 			char ch = document.GetCharAt (offset);
 			int bracket = TextUtil.openBrackets.IndexOf (ch);
 			int result;
