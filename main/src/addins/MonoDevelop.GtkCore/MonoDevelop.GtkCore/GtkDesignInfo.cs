@@ -365,7 +365,7 @@ namespace MonoDevelop.GtkCore
 			if (!SupportsDesigner) // No need to check posix in this case
 				posix = true;
 			
-			foreach (ProjectReference r in new ArrayList (project.ProjectReferences)) {
+			foreach (ProjectReference r in new List<ProjectReference> (project.ProjectReferences)) {
 				if (r.ReferenceType != ReferenceType.Gac)
 					continue;
 				int i = r.StoredReference.IndexOf (',');

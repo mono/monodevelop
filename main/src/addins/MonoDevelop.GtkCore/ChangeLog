@@ -1,3 +1,8 @@
+2008-02-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs: Workaround for mono bug
+	  #350432.
+
 2008-02-20  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.NodeBuilders/ActionGroupNodeBuilder.cs,
