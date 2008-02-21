@@ -240,7 +240,7 @@ namespace Mono.TextEditor.Highlighting
 							tree = (Dictionary<char, Rule.Pair<Keywords, object>>)pair.o2;
 						} else {
 							SetTree ();
-							if (!Char.IsLetterOrDigit (ch)) {
+							if (!Char.IsLetterOrDigit (ch) && ch != '_') {
 								isNoKeyword = false;
 							}  else 
 								isNoKeyword = true;

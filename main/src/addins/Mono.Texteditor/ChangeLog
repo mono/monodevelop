@@ -1,5 +1,9 @@
 2008-02-21  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs: fixed highlighting issue.
+
+2008-02-21  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditor.cs: Fixed Bug 363762 - Scrollbar does not take
 	  into account collapsed regions.
 
