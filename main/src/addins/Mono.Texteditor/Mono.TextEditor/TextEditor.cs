@@ -960,6 +960,10 @@ namespace Mono.TextEditor
 			this.textEditorData.SetSelectLines (from, to);
 		}
 		
+		public void InsertAtCaret (string text)
+		{
+			textEditorData.InsertAtCaret (text);
+		}
 		
 		/// <summary>
 		/// Use with care.

@@ -972,9 +972,13 @@ namespace Mono.TextEditor
 			if (data.IsSomethingSelected) {
 				Clipboard clipboard = Clipboard.Get (CopyAction.CLIPBOARD_ATOM);
 				CopyData (data);
+				if (Copy != null)
+					Copy (text);
 				clipboard.SetWithData ((Gtk.TargetEntry[])TargetList, ClipboardGetFunc, ClipboardClearFunc);
 			}
 		}
+		public delegate void CopyDelegate (string text);
+		public static event CopyDelegate Copy;
 	}
 	
 	public class PasteAction : EditAction

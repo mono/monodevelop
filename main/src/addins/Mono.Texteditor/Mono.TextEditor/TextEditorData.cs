@@ -100,6 +100,14 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public void InsertAtCaret (string text)
+		{
+			if (String.IsNullOrEmpty (text))
+				return;
+			Document.Insert (Caret.Offset, text);
+			Caret.Offset += text.Length;
+		}
+		
 		#region Selection management
 		int      selectionAnchor = -1;
 		ISegment selectionRange  = null;
