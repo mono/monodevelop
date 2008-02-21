@@ -227,7 +227,7 @@ namespace Mono.TextEditor.Highlighting
 					}
 				 skip:
 						;
-					if (!Char.IsLetterOrDigit (ch) && pair != null && pair.o1 != null) {
+					if (!Char.IsLetterOrDigit (ch) && ch != '_' && pair != null && pair.o1 != null) {
 						curChunk.Length -= wordOffset;
 						AddChunk (ref curChunk, wordOffset, GetChunkStyleColor (spanStack, pair.o1));
 						isNoKeyword = false;

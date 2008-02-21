@@ -1,5 +1,10 @@
 2008-02-21  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs: fixed Bug 363624 - variables
+	  which contains keyword are wrongly recongnized
+
+2008-02-21  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditor.cs: Fixed control key problem.
 
 2008-02-20  Mike Krüger <mkrueger@novell.com> 
