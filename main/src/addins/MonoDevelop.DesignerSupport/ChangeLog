@@ -1,5 +1,10 @@
 2008-02-21  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs: Added resize in toolbox
+	  refresh.
+
+2008-02-21  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs: Fixed little dnd bug.
 
 2008-02-21  Mike Krüger <mkrueger@novell.com> 

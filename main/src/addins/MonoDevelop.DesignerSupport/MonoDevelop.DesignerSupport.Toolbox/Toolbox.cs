@@ -218,7 +218,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				category.IsExpanded = true;
 				toolboxWidget.AddCategory (category);
 			}
-			toolboxWidget.QueueDraw ();
+			toolboxWidget.QueueResize ();
 			Gtk.TargetEntry[] targetTable = toolboxService.GetCurrentDragTargetTable ();
 			if (targetTable != null)
 				Drag.SourceSet (toolboxWidget, Gdk.ModifierType.Button1Mask, targetTable, Gdk.DragAction.Copy | Gdk.DragAction.Move);
