@@ -1,3 +1,31 @@
+2008-02-20  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Project/IAspNetLanguageBinding.cs,
+	  Project/AspNetFileDescriptionTemplate.cs,
+	  Templates/WebService-CodeBehind.xft.xml,
+	  Templates/WebForm-CodeBehind.xft.xml,
+	  Templates/MasterPage-Empty.xft.xml,
+	  Templates/WebControl-CodeBehindNonPartial.xft.xml,
+	  Templates/WebService-Empty.xft.xml,
+	  Templates/WebHandler-CodeBehind.xft.xml,
+	  Templates/WebForm-Empty.xft.xml,
+	  Templates/WebControl-CodeBehind.xft.xml,
+	  Templates/MasterPage-CodeBehindNonPartial.xft.xml,
+	  Templates/WebConfig-Application.xft.xml,
+	  Templates/WebHandler-Empty.xft.xml, Templates/GlobalAsax-Empty.xft.xml,
+	  Templates/WebControl-Empty.xft.xml,
+	  Templates/MasterPage-CodeBehind.xft.xml,
+	  Templates/WebForm-CodeBehindNonPartial.xft.xml: Add a mechanism for
+	  having the ASP.NET language code be different from MD's internal
+	  language codes, and use it to make VB.NET pages work OOTB.
+	* AspNetAddIn.mdp, Makefile.am: Updated.
+	* Parser/Tree/Visitor.cs, Parser/Tree/ExpressionNode.cs,
+	  Parser/Tree/RootNode.cs: The way the parser's currently used, it doesn't
+	  need to understand expressions, so rather than throwing a
+	  NotImplementedException, just insert them into the AST and carry on.
+	  Means that CodeBehind generation can be used for a much larger subset of
+	  aspx pages.
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AspNetAddIn.addin.xml: Update MD version.

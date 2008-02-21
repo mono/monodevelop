@@ -17,7 +17,7 @@
 	<TemplateFiles>
 		<AspNetFile name="${Name}.aspx" BuildAction="FileCopy">
 			<FileText>
-				<![CDATA[<%@ Page Language="${Language}" %>
+				<![CDATA[<%@ Page Language="${AspNetLanguage}" %>
 ${Doctype}
 <html>
 <head>

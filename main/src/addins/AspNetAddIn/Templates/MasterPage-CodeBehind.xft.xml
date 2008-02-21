@@ -22,7 +22,7 @@
 	<TemplateFiles>
 		<AspNetFile name="${Name}.master" BuildAction="FileCopy">
 			<FileText>
-				<![CDATA[<%@ Master Language="${Language}" Inherits="${Namespace}.${Name}" %>
+				<![CDATA[<%@ Master Language="${AspNetLanguage}" Inherits="${Namespace}.${Name}" %>
 ${Doctype}
 <html>
 <head>

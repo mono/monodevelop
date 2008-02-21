@@ -17,7 +17,7 @@
 	<TemplateFiles>
 		<AspNetFile name="${Name}.asmx" BuildAction="FileCopy">
 			<FileText>
-<![CDATA[<%@ WebService Language="C#" Class="${Namespace}.${Name}" %>]]>
+<![CDATA[<%@ WebService Language="${AspNetLanguage}" Class="${Namespace}.${Name}" %>]]>
 			</FileText>
 		</AspNetFile>
 		
