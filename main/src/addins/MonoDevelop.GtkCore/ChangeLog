@@ -1,3 +1,9 @@
+2008-02-22  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs: Added IViewContent
+	  switching logic (but should be done centrally using the secondaryview
+	  paradigmn).
+
 2008-02-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore/GtkDesignInfo.cs: Workaround for mono bug

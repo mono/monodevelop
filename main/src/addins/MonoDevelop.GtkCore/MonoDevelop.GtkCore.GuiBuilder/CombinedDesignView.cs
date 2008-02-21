@@ -86,6 +86,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			box.Show ();
 			
 			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnActiveDocumentChanged);
+			content.Control.Realized += delegate {
+				if (content != null && content.WorkbenchWindow != null) 
+					content.WorkbenchWindow.ActiveViewContent = notebook.CurrentPageWidget == content.Control ? content : this;
+			};
+			notebook.SwitchPage += delegate {
+				if (content != null && content.WorkbenchWindow != null) 
+					content.WorkbenchWindow.ActiveViewContent = notebook.CurrentPageWidget == content.Control ? content : this;
+			};
 		}
 		
 		public virtual Stetic.Designer Designer {
@@ -150,7 +158,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				ToggleToolButton b = (ToggleToolButton) buttons [n];
 				b.Active = (n == npage);
 			}
-
 			updating = false;
 		}
 		
@@ -160,7 +167,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			content.DirtyChanged -= new EventHandler (OnTextDirtyChanged);
 			IdeApp.Workbench.ActiveDocumentChanged -= new EventHandler (OnActiveDocumentChanged);
 			content.Dispose ();
-	
+			
 			// Remove and destroy the contents of the Notebook, since the destroy event is
 			// not propagated to pages in some gtk versions.
 			
