@@ -155,13 +155,14 @@ namespace MonoDevelop.SourceEditor
 					}
 				}
 			}
+			Document.BeginAtomicUndo ();
 			if (extension != null) {
-				if (extension.KeyPress (evnt.Key, evnt.State)) {
+				if (extension.KeyPress (evnt.Key, evnt.State)) 
 					result = base.OnKeyPressEvent (evnt);
-				}
 			} else {
 				result = base.OnKeyPressEvent (evnt);
 			}
+			
 			if (SourceEditorOptions.Options.AutoInsertTemplates && IsTemplateKnown ())
 				DoInsertTemplate ();
 			if (SourceEditorOptions.Options.AutoInsertMatchingBracket && !inStringOrComment) {
@@ -174,8 +175,9 @@ namespace MonoDevelop.SourceEditor
 						Caret.Offset = offset;
 						extension.KeyPress (Gdk.Key.Return, Gdk.ModifierType.None);
 					} else {
+						result = base.OnKeyPressEvent (evnt);
 						base.SimulateKeyPress (Gdk.Key.Return, Gdk.ModifierType.None);
-						Document.Insert (Caret.Offset, new StringBuilder ("}"));
+						Document.Insert (Caret.Offset, "}");
 					}
 					break;
 				case '[':
@@ -192,6 +194,7 @@ namespace MonoDevelop.SourceEditor
 					break;
 				}
 			}
+			Document.EndAtomicUndo ();
 			return result;
 		}
 		
