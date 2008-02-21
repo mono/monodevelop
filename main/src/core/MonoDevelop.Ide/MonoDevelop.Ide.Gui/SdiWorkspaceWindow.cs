@@ -53,6 +53,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public SdiWorkspaceWindow (IWorkbench workbench, IViewContent content, Notebook tabControl, TabLabel tabLabel) : base ()
 		{
+			System.Console.WriteLine("content:" + content);
 			this.workbench = workbench;
 			this.tabControl = tabControl;
 			this.content = content;
@@ -127,12 +128,20 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
+		// caution use activeView with care !!
+		IBaseViewContent activeView = null;
 		public IBaseViewContent ActiveViewContent {
 			get {
+				if (activeView != null)
+					return activeView;
 				if (subViewNotebook != null && subViewNotebook.CurrentPage > 0) {
 					return (IBaseViewContent)subViewContents[subViewNotebook.CurrentPage - 1];
 				}
 				return content;
+			}
+			set {
+				this.activeView = value;
+				this.OnActiveViewContentChanged (new ActiveViewContentEventArgs (value));
 			}
 		}
 		
@@ -272,6 +281,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void AttachSecondaryViewContent(ISecondaryViewContent subViewContent)
 		{
+			System.Console.WriteLine("attach!!!");
 			// need to create child Notebook when first ISecondaryViewContent is added
 			if (subViewContents == null) {
 				subViewContents = new ArrayList ();
@@ -433,6 +443,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		protected virtual void OnActiveViewContentChanged (ActiveViewContentEventArgs e)
 		{
+			System.Console.WriteLine("cc1");
 			if (ActiveViewContentChanged != null)
 				ActiveViewContentChanged (this, e);
 		}

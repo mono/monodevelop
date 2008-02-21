@@ -58,6 +58,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		IBaseViewContent ActiveViewContent {
 			get;
+			set;
 		}
 		
 		/// <summary>
