@@ -933,7 +933,7 @@ namespace MonoDevelop.SourceEditor
 			if (result == null) {
 				IdeApp.Workbench.StatusBar.ShowErrorMessage (GettextCatalog.GetString ("Search pattern not found"));
 			} else if (result.SearchWrapped) {
-				IdeApp.Workbench.StatusBar.SetMessage (GettextCatalog.GetString ("Reached top, continued from bottom"));
+				IdeApp.Workbench.StatusBar.SetMessage (GettextCatalog.GetString ("Reached bottom, continued from top"));
 			} else {
 				IdeApp.Workbench.StatusBar.SetMessage (GettextCatalog.GetString ("Ready"));
 			}
@@ -949,7 +949,7 @@ namespace MonoDevelop.SourceEditor
 			if (result == null) {
 				IdeApp.Workbench.StatusBar.ShowErrorMessage (GettextCatalog.GetString ("Search pattern not found"));
 			} else if (result.SearchWrapped) {
-				IdeApp.Workbench.StatusBar.SetMessage (GettextCatalog.GetString ("Reached bottom, continued from top"));
+				IdeApp.Workbench.StatusBar.SetMessage (GettextCatalog.GetString ("Reached top, continued from bottom"));
 			} else {
 				IdeApp.Workbench.StatusBar.SetMessage (GettextCatalog.GetString ("Ready"));
 			}
