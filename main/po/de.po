@@ -720,11 +720,11 @@ msgstr "Aktiviere das Fenster"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultStatusBarService.cs:100
 msgid "INS"
-msgstr "INS"
+msgstr "EIN"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultStatusBarService.cs:100
 msgid "OVR"
-msgstr "OVR"
+msgstr "ÜBS"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/StatusProgressMonitor.cs:137
 msgid "Ready"
