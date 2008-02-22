@@ -35,7 +35,7 @@ namespace MonoDevelop.SourceEditor {
             this.editorBar.Name = "editorBar";
             this.editorBar.Spacing = 6;
             // Container child editorBar.Gtk.Box+BoxChild
-            this.classBrowser = new Gtk.Table(((uint)(1)), ((uint)(3)), true);
+            this.classBrowser = new Gtk.Table(((uint)(1)), ((uint)(3)), false);
             this.classBrowser.Name = "classBrowser";
             this.classBrowser.RowSpacing = ((uint)(6));
             this.classBrowser.ColumnSpacing = ((uint)(6));
@@ -44,6 +44,7 @@ namespace MonoDevelop.SourceEditor {
             this.classCombo.Name = "classCombo";
             this.classBrowser.Add(this.classCombo);
             Gtk.Table.TableChild w1 = ((Gtk.Table.TableChild)(this.classBrowser[this.classCombo]));
+            w1.XOptions = ((Gtk.AttachOptions)(4));
             w1.YOptions = ((Gtk.AttachOptions)(4));
             // Container child classBrowser.Gtk.Table+TableChild
             this.membersCombo = new Gtk.ComboBox();

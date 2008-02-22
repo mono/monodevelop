@@ -178,6 +178,14 @@ namespace MonoDevelop.SourceEditor
 //				this.textEditor.Destroy ();
 //			};
 		}
+		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
+		{
+			classCombo.WidthRequest   = allocation.Width * 2 / 6 - 6;
+			membersCombo.WidthRequest = allocation.Width * 3 / 6 - 6;
+			regionCombo.WidthRequest  = allocation.Width / 6;
+			
+			base.OnSizeAllocated (allocation);
+		}
 
 		#region Error underlining
 		Dictionary<int, Error> errors = new Dictionary<int, Error> ();
