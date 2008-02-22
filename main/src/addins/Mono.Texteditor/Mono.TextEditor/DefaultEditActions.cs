@@ -938,8 +938,16 @@ namespace Mono.TextEditor
 		void CopyData (TextEditorData data, ISegment segment)
 		{
 			if (segment != null) {
-				text = data.Document.GetTextAt (segment);
-				rtf  = GenerateRtf (data);
+				try {
+					text = data.Document.GetTextAt (segment);
+				} catch (Exception e) {
+					System.Console.WriteLine("Copy data failed - unable to get text at:" + segment);
+				}
+				try {
+					rtf  = GenerateRtf (data);
+				} catch (Exception e) {
+					System.Console.WriteLine("Copy data failed - unable to generate rtf for text at:" + segment);
+				}
 			} else {
 				text = rtf = null;
 			}
