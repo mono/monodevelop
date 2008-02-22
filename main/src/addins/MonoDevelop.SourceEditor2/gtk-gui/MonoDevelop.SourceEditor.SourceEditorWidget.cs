@@ -21,6 +21,8 @@ namespace MonoDevelop.SourceEditor {
         
         private Gtk.ComboBox membersCombo;
         
+        private Gtk.ComboBox regionCombo;
+        
         private Gtk.ScrolledWindow mainsw;
         
         protected virtual void Build() {
@@ -33,7 +35,7 @@ namespace MonoDevelop.SourceEditor {
             this.editorBar.Name = "editorBar";
             this.editorBar.Spacing = 6;
             // Container child editorBar.Gtk.Box+BoxChild
-            this.classBrowser = new Gtk.Table(((uint)(1)), ((uint)(2)), true);
+            this.classBrowser = new Gtk.Table(((uint)(1)), ((uint)(3)), true);
             this.classBrowser.Name = "classBrowser";
             this.classBrowser.RowSpacing = ((uint)(6));
             this.classBrowser.ColumnSpacing = ((uint)(6));
@@ -52,19 +54,28 @@ namespace MonoDevelop.SourceEditor {
             w2.RightAttach = ((uint)(2));
             w2.XOptions = ((Gtk.AttachOptions)(4));
             w2.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child classBrowser.Gtk.Table+TableChild
+            this.regionCombo = new Gtk.ComboBox();
+            this.regionCombo.Name = "regionCombo";
+            this.classBrowser.Add(this.regionCombo);
+            Gtk.Table.TableChild w3 = ((Gtk.Table.TableChild)(this.classBrowser[this.regionCombo]));
+            w3.LeftAttach = ((uint)(2));
+            w3.RightAttach = ((uint)(3));
+            w3.XOptions = ((Gtk.AttachOptions)(4));
+            w3.YOptions = ((Gtk.AttachOptions)(4));
             this.editorBar.Add(this.classBrowser);
-            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.editorBar[this.classBrowser]));
-            w3.Position = 0;
-            w3.Expand = false;
-            w3.Fill = false;
+            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.editorBar[this.classBrowser]));
+            w4.Position = 0;
+            w4.Expand = false;
+            w4.Fill = false;
             // Container child editorBar.Gtk.Box+BoxChild
             this.mainsw = new Gtk.ScrolledWindow();
             this.mainsw.CanFocus = true;
             this.mainsw.Name = "mainsw";
             this.mainsw.ShadowType = ((Gtk.ShadowType)(1));
             this.editorBar.Add(this.mainsw);
-            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.editorBar[this.mainsw]));
-            w4.Position = 1;
+            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.editorBar[this.mainsw]));
+            w5.Position = 1;
             this.Add(this.editorBar);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

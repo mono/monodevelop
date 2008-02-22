@@ -47,6 +47,8 @@ namespace MonoDevelop.SourceEditor
 		bool loadingMembers = false;
 		ListStore classStore;
 		ListStore memberStore;
+		ListStore regionStore;
+		
 		IParseInformation memberParseInfo;
 		bool handlingParseEvent = false;
 		Tooltips tips = new Tooltips ();		
@@ -132,6 +134,13 @@ namespace MonoDevelop.SourceEditor
 			membersCombo.PackStart (colr, true);
 			membersCombo.AddAttribute (colr, "text", 1);
 			
+			regionCombo.PackStart (pixr, false);
+			regionCombo.AddAttribute (pixr, "pixbuf", 0);
+			colr = new CellRendererText ();
+			colr.Ypad = 0;
+			regionCombo.PackStart (colr, true);
+			regionCombo.AddAttribute (colr, "text", 1);
+			
 			// Pack the controls into the editorbar just below the file name tabs.
 //			EventBox tbox = new EventBox ();
 //			tbox.Add (classCombo);
@@ -143,11 +152,17 @@ namespace MonoDevelop.SourceEditor
 			// Set up the data stores for the comboboxes
 			classStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(IClass));
 			classCombo.Model = classStore;	
+			classCombo.Changed += new EventHandler (ClassChanged);
+			
 			memberStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(IMember));
 			memberStore.SetSortColumnId (1, Gtk.SortType.Ascending);
 			membersCombo.Model = memberStore;
-   			membersCombo.Changed += new EventHandler (MemberChanged);
-			classCombo.Changed += new EventHandler (ClassChanged);
+			membersCombo.Changed += new EventHandler (MemberChanged);
+			
+			regionStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(IRegion));
+			regionCombo.Model = regionStore;	
+			regionCombo.Changed += new EventHandler (RegionChanged);
+			
 			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += new ParseInformationEventHandler(UpdateClassBrowser);
 			
 			UpdateLineCol ();
@@ -367,6 +382,7 @@ namespace MonoDevelop.SourceEditor
 				view = value;
 			}
 		}
+		
 		public void Unsplit ()
 		{
 			if (splitContainer == null)
@@ -499,7 +515,7 @@ namespace MonoDevelop.SourceEditor
 				return;
 			char ch = this.TextEditor.Document.GetCharAt (offset);
 			DocumentLocation location = this.TextEditor.Document.LogicalToVisualLocation (this.TextEditor.Caret.Location);
-			IdeApp.Workbench.StatusBar.SetCaretPosition (location.Line, location.Column, ch);
+			IdeApp.Workbench.StatusBar.SetCaretPosition (location.Line + 1, location.Column + 1, ch);
 		}
 		
 		void CaretModeChanged (object sender, EventArgs e)
@@ -513,7 +529,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (!this.IsClassBrowserVisible)
 				return;
-
+			
 			if (memberParseInfo == null) {
 				classBrowser.Visible = false;
 				return;
@@ -521,15 +537,15 @@ namespace MonoDevelop.SourceEditor
 			
 			int line = TextEditor.Caret.Line + 1;
 			int column = TextEditor.Caret.Column;
-
+			
 			// Find the selected class
 			
 			KeyValuePair<IClass, int> c = SearchClass (line);
 			IClass classFound = c.Key;
-
-			loadingMembers = true;
 			
+			loadingMembers = true;
 			try {
+				UpdateRegionCombo (line, column);
 				if (classFound == null) {
 					classCombo.Active = -1;
 					membersCombo.Active = -1;
@@ -547,10 +563,8 @@ namespace MonoDevelop.SourceEditor
 				}
 				
 				// Find the member
-				
 				if (!memberStore.GetIterFirst (out iter))
 					return;
-				
 				do {
 					IMember mem = (IMember) memberStore.GetValue (iter, 2);
 					if (IsMemberSelected (mem, line, column)) {
@@ -560,11 +574,9 @@ namespace MonoDevelop.SourceEditor
 					}
 				}
 				while (memberStore.IterNext (ref iter));
-				
 				membersCombo.Active = -1;
 				UpdateComboTip (membersCombo, null);
-			}
-			finally {
+			} finally {
 				loadingMembers = false;
 			}
 		}
@@ -585,6 +597,8 @@ namespace MonoDevelop.SourceEditor
 			loadingMembers = true;
 			
 			try {
+				BindRegionCombo ();
+				
 				// Clear down all our local stores.
 				classStore.Clear();				
 				
@@ -629,9 +643,34 @@ namespace MonoDevelop.SourceEditor
 				handlingParseEvent = false;
 				loadingMembers = false;
 			}
-			
 			// return false to stop the GLib.Timeout
 			return false;
+		}
+		
+		void UpdateRegionCombo (int line, int column)
+		{
+			int regionNumber = 0;
+			foreach (FoldingRegion region in ((ICompilationUnit)memberParseInfo.MostRecentCompilationUnit).FoldingRegions) {
+				if (region.Region.BeginLine <= line && line <= region.Region.EndLine) {
+					regionCombo.Active = regionNumber;
+					return;
+				}
+				regionNumber++;
+			}
+			regionCombo.Active = -1;
+		}
+		bool added = true;
+		void BindRegionCombo ()
+		{
+			regionCombo.Model = null;
+			regionStore.Clear ();
+			foreach (FoldingRegion region in ((ICompilationUnit)memberParseInfo.MostRecentCompilationUnit).FoldingRegions) {
+				regionStore.AppendValues (IdeApp.Services.Resources.GetIcon(Stock.Add, IconSize.Menu), 
+				                          region.Name, 
+				                          region.Region);
+			}
+			//bool isVisible = ((ICompilationUnit)memberParseInfo.MostRecentCompilationUnit).FoldingRegions.Count > 0; 
+			regionCombo.Model = regionStore;
 		}
 		
 		void BindMemberCombo (IClass c)
@@ -725,7 +764,7 @@ namespace MonoDevelop.SourceEditor
 				return;
 			
 			Gtk.TreeIter iter;
-			if (classCombo.GetActiveIter(out iter)) 	{
+			if (classCombo.GetActiveIter(out iter)) {
 				IClass selectedClass = (IClass)classStore.GetValue(iter, 2);
 				int line = selectedClass.Region.BeginLine;
 				
@@ -746,6 +785,27 @@ namespace MonoDevelop.SourceEditor
 				} else {
 					BindMemberCombo(selectedClass);
 				}
+			}
+		}
+		
+		void RegionChanged (object sender, EventArgs e)
+		{
+			if (loadingMembers)
+				return;
+			
+			Gtk.TreeIter iter;
+			if (regionCombo.GetActiveIter (out iter)) {
+				IRegion selectedRegion = (IRegion)regionStore.GetValue (iter, 2);
+				
+				// Get a handle to the current document
+				if (IdeApp.Workbench.ActiveDocument == null) {
+					return;
+				}
+				
+				// If we can we navigate to the line location of the IMember.
+				IViewContent content = (IViewContent)IdeApp.Workbench.ActiveDocument.GetContent(typeof(IViewContent));
+				if (content is IPositionable) 
+					((IPositionable)content).JumpTo (Math.Max (1, selectedRegion.BeginLine), 1);
 			}
 		}
 		
