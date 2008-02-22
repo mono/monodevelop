@@ -116,7 +116,7 @@ namespace MonoDevelop.SourceEditor
 					FireSearchPatternChanged ();
 				}
 				SearchResult result = widget.TextEditor.SearchForward (widget.TextEditor.Caret.Offset);
-				if (result == null) {
+				if (result == null && !String.IsNullOrEmpty (SearchPattern)) {
 					this.entrySearch.Entry.ModifyBase (Gtk.StateType.Normal, GotoLineNumberWidget.errorColor);
 				} else {
 					this.entrySearch.Entry.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Normal));
