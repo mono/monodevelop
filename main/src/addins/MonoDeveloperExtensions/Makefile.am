@@ -11,9 +11,7 @@ FILES =  \
 
 REFS =  \
 	$(GCONF_SHARP_LIBS) \
-	$(GLADE_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	$(GTKSOURCEVIEW_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \

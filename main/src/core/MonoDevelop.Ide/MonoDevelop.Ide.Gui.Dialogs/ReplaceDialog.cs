@@ -30,7 +30,6 @@ using MonoDevelop.Ide.Gui.Search;
 using MonoDevelop.Ide.Gui;
 
 using Gtk;
-using Glade;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {

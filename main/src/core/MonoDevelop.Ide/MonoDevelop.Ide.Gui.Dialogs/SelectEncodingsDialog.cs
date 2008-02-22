@@ -29,7 +29,6 @@
 using System;
 using System.Collections;
 using Gtk;
-using Glade;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
 

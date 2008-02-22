@@ -1,7 +1,6 @@
 
 
 REFS =  \
-	$(GLADE_SHARP_LIBS) \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_GUI_LIBS) \

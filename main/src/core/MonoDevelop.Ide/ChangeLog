@@ -1,3 +1,20 @@
+2008-02-23  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/SelectEncodingsDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs,
+	  MonoDevelop.Ide.mdp,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs,
+	  gtk-gui/gui.stetic,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog.cs,
+	  Makefile.am: Removed some unused glade and gnome-sharp references (only
+	  the unused). But I'll continue to remove glade, we need to lower the
+	  dependency tree a bit.
+
 2008-02-22  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui/IWorkbenchWindow.cs,

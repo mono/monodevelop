@@ -24,7 +24,6 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 
 using Gtk;
-using Glade;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {

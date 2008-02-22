@@ -3,7 +3,6 @@ ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.Deployment
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Deployment.dll
 
 REFS =  \
-	$(GLADE_SHARP_LIBS) \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \

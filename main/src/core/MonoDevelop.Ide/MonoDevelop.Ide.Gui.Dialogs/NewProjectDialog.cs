@@ -34,7 +34,6 @@ using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Components;
 using IconView = MonoDevelop.Components.IconView;
 using Gtk;
-using Glade;
 
 namespace MonoDevelop.Ide.Gui.Dialogs {
 	/// <summary>
@@ -56,10 +55,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		ProjectTemplate selectedItem;
 		CombineEntry currentEntry;
 		Combine parentCombine;
-		
+		CombineEntryFeatureSelector featureList;
+			
 		public NewProjectDialog (Combine parentCombine, bool openCombine, bool newCombine, string basePath)
 		{
 			Build ();
+			featureList = new CombineEntryFeatureSelector ();
+			vbox5.PackEnd (featureList, true, true, 0);
+			vbox5.ShowAll ();
 			notebook.Page = 0;
 			notebook.ShowTabs = false;
 			

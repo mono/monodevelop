@@ -30,7 +30,6 @@ using System;
 using System.IO;
 using Mono.GetOptions;
 using Gtk;
-using Glade;
 using System.Reflection;
 
 using Mono.Addins;

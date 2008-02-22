@@ -73,8 +73,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
         
         private Gtk.Label label4;
         
-        private MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector featureList;
-        
         private Gtk.Label label2;
         
         private Gtk.Button btn_close;
@@ -374,16 +372,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             w28.Position = 1;
             w28.Expand = false;
             w28.Fill = false;
-            // Container child vbox5.Gtk.Box+BoxChild
-            this.featureList = new MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector();
-            this.featureList.Events = ((Gdk.EventMask)(256));
-            this.featureList.Name = "featureList";
-            this.vbox5.Add(this.featureList);
-            Gtk.Box.BoxChild w29 = ((Gtk.Box.BoxChild)(this.vbox5[this.featureList]));
-            w29.Position = 2;
             this.notebook.Add(this.vbox5);
-            Gtk.Notebook.NotebookChild w30 = ((Gtk.Notebook.NotebookChild)(this.notebook[this.vbox5]));
-            w30.Position = 1;
+            Gtk.Notebook.NotebookChild w29 = ((Gtk.Notebook.NotebookChild)(this.notebook[this.vbox5]));
+            w29.Position = 1;
             // Notebook tab
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
@@ -391,14 +382,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.notebook.SetTabLabel(this.vbox5, this.label2);
             this.label2.ShowAll();
             w1.Add(this.notebook);
-            Gtk.Box.BoxChild w31 = ((Gtk.Box.BoxChild)(w1[this.notebook]));
-            w31.Position = 0;
+            Gtk.Box.BoxChild w30 = ((Gtk.Box.BoxChild)(w1[this.notebook]));
+            w30.Position = 0;
             // Internal child MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.ActionArea
-            Gtk.HButtonBox w32 = this.ActionArea;
-            w32.Name = "dialog-action_area1";
-            w32.Spacing = 10;
-            w32.BorderWidth = ((uint)(5));
-            w32.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
+            Gtk.HButtonBox w31 = this.ActionArea;
+            w31.Name = "dialog-action_area1";
+            w31.Spacing = 6;
+            w31.BorderWidth = ((uint)(5));
+            w31.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog-action_area1.Gtk.ButtonBox+ButtonBoxChild
             this.btn_close = new Gtk.Button();
             this.btn_close.CanDefault = true;
@@ -414,9 +405,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.btn_new.UseStock = true;
             this.btn_new.UseUnderline = true;
             this.btn_new.Label = "gtk-go-forward";
-            w32.Add(this.btn_new);
-            Gtk.ButtonBox.ButtonBoxChild w34 = ((Gtk.ButtonBox.ButtonBoxChild)(w32[this.btn_new]));
-            w34.Position = 1;
+            w31.Add(this.btn_new);
+            Gtk.ButtonBox.ButtonBoxChild w33 = ((Gtk.ButtonBox.ButtonBoxChild)(w31[this.btn_new]));
+            w33.Position = 1;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }

@@ -6,7 +6,6 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.CSharpBinding.dll
 PARSE = parse.exe
 
 REFS =  \
-	$(GLADE_SHARP_LIBS) \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \

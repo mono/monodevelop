@@ -1,3 +1,9 @@
+2008-02-23  Mike Krüger <mkrueger@novell.com> 
+
+	* AspNetAddIn.mdp, Makefile.am: Removed some unused glade and gnome-sharp
+	  references (only the unused). But I'll continue to remove glade, we need
+	  to lower the dependency tree a bit.
+
 2008-02-20  Marek Safar <marek.safar@gmail.com> 
 
 	* Project/VerifyCodeBehindBuildStep.cs: Fixed missing parenthesis.

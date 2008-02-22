@@ -3,7 +3,6 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.AspNet.dll
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
-	$(GNOME_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll \
