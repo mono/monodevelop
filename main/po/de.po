@@ -1762,7 +1762,7 @@ msgstr "Fehler : {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:126
 msgid " ln <span font_family='fixed'>{0,-4}</span>  col <span font_family='fixed'>{1,-3}</span>  ch <span font_family='fixed'>{2,-3}</span> "
-msgstr "Z. <span font_family='fixed'>{0,-4}</span>  Sp. <span font_family='fixed'>{1,-3}</span>  ASCII <span font_family='fixed'>{2,-3}</span> "
+msgstr "Z. <span font_family='fixed'>{0,-4}</span>  Sp.v. <span font_family='fixed'>{1,-3}</span>  Sp.l. <span font_family='fixed'>{2,-3}</span> "
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:52
 msgid "Build Output"
@@ -4548,36 +4548,36 @@ msgstr "Version"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:71
 msgid "Commit"
-msgstr "Commit"
+msgstr "Ü_bertrage"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:75
 msgid "Diff"
-msgstr "Diferenziere"
+msgstr "_Differenziere"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:79
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:98
 msgid "Revert"
-msgstr "Zurücksetzen"
+msgstr "_Zurücksetzen"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:83
 msgid "Log"
-msgstr "Mitschreiben"
+msgstr "Zeige _Log"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:87
 msgid "Status/Commit..."
-msgstr "Status/Commit..."
+msgstr "_Status/Übertragen..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:91
 msgid "Update"
-msgstr "Aktualisierung"
+msgstr "A_ktualisiere"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:95
 msgid "Publish..."
-msgstr "Veröffentliche..."
+msgstr "_Veröffentliche..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:99
 msgid "Checkout..."
-msgstr "Auschecken..."
+msgstr "_Auschecken..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:49
 msgid "Retrieving history for {0}..."
