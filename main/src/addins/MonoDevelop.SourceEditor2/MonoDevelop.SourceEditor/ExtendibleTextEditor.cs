@@ -331,9 +331,9 @@ namespace MonoDevelop.SourceEditor
 		{
 			CompletionWindowManager.HideWindow ();
 			ParameterInformationWindowManager.HideWindow ();
+			HideLanguageItemWindow ();
 			return base.OnFocusOutEvent (evnt); 
 		}
-
 		
 		protected override bool OnScrollEvent (Gdk.EventScroll evnt)
 		{
