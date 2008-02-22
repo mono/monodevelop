@@ -1,5 +1,9 @@
 2008-02-22  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextEditor.cs: Bug 363951 - Numeric keyboard does not work
+
+2008-02-22  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/DefaultEditActions.cs: Changed copy behaviour.
 
 2008-02-22  Mike Krüger <mkrueger@novell.com> 
