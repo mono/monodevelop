@@ -1109,53 +1109,51 @@ namespace Mono.TextEditor
 			compiledPattern = SearchOptions.IsCaseSensitive ? SearchPattern : SearchPattern.ToUpper ();
 		}
 		
-		public int SearchForward (int fromOffset)
+		public SearchResult SearchForward (int fromOffset)
 		{
 			for (int i = 0; i < Document.Length - this.SearchPattern.Length; i++) {
 				int offset = (fromOffset + i) % Document.Length;
-				if (IsMatchAt (offset)) {
-					return offset;
-				}
+				if (IsMatchAt (offset))
+					return new SearchResult (offset, this.SearchPattern.Length, offset < fromOffset);
 			}
-			return -1;
+			return null;
 		}
 		
-		public int SearchBackward (int fromOffset)
+		public SearchResult SearchBackward (int fromOffset)
 		{
 			for (int i = 0; i < Document.Length - this.SearchPattern.Length; i++) {
 				int offset = (fromOffset + Document.Length - i) % Document.Length;
-				if (IsMatchAt (offset)) {
-					return offset;
-				}
+				if (IsMatchAt (offset))
+					return new SearchResult (offset, this.SearchPattern.Length, offset > fromOffset);
 			}
-			return -1;
+			return null;
 		}
 		
-		public bool FindNext ()
+		public SearchResult FindNext ()
 		{
-			int offset = SearchForward (Caret.Offset + 1);
-			if (offset >= 0) {
-				Segment searchResultRegion = new Segment (offset, SearchPattern.Length);
-				Caret.Offset = searchResultRegion.EndOffset;
-				SelectionRange = searchResultRegion;
-				return true;
+			SearchResult result = SearchForward (Caret.Offset + 1);
+			if (result != null) {
+				Caret.Offset = result.Offset + result.Length;
+				SelectionAnchor = Caret.Offset;
+				SelectionRange = new Segment (result.Offset, result.Length);
 			}
-			return false;
+			return result;
 		}
 		
-		public bool FindPrevious ()
+		public SearchResult FindPrevious ()
 		{
 			int startOffset = Caret.Offset;
-			if (IsSomethingSelected && SelectionRange.Offset == SearchBackward (SelectionRange.Offset)) {
+			if (IsSomethingSelected && IsMatchAt (startOffset)) {
 				startOffset = SelectionRange.Offset;
 			}
-			int offset = SearchBackward ((startOffset + Document.Length - 1) % Document.Length);
-			if (offset >= 0) {
-				Segment searchResultRegion = new Segment (offset, SearchPattern.Length);
-				Caret.Offset = searchResultRegion.EndOffset;
-				SelectionRange = searchResultRegion;
+			
+			SearchResult result = SearchBackward ((startOffset + Document.Length - 1) % Document.Length);
+			if (result != null) {
+				Caret.Offset  = result.Offset + result.Length;
+				SelectionAnchor = Caret.Offset;
+				SelectionRange = new Segment (result.Offset, result.Length);
 			}
-			return false;
+			return result;
 		}
 		
 		public bool Replace (string withPattern)
@@ -1169,7 +1167,7 @@ namespace Mono.TextEditor
 					result = true;
 				}
 			}
-			return FindNext () || result;
+			return FindNext () != null || result;
 		}
 		
 		public void ReplaceAll (string withPattern)

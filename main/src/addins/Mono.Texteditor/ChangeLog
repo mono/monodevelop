@@ -1,5 +1,10 @@
 2008-02-22  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextEditor.cs, Mono.TextEditor/SearchResult.cs: Search now
+	  gives more information about the result.
+
+2008-02-22  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditor.cs: Added support for custom drag sources.
 
 2008-02-22  Mike Krüger <mkrueger@novell.com> 
