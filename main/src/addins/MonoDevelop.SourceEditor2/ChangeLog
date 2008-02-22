@@ -1,3 +1,7 @@
+2008-02-22  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: toolbox drag from now works.
+
 2008-02-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,

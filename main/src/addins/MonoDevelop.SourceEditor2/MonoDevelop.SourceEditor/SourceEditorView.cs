@@ -168,7 +168,7 @@ namespace MonoDevelop.SourceEditor
 			Load (fileName, null);
 		}
 		
-
+		
 		static string ConvertFileNameToVFS (string fileName)
 		{
 			string result = fileName;
@@ -252,7 +252,7 @@ namespace MonoDevelop.SourceEditor
 				widget.ShowFileChangedWarning ();
 		}
 		
-#region IExtensibleTextEditor
+		#region IExtensibleTextEditor
 		ITextEditorExtension IExtensibleTextEditor.AttachExtension (ITextEditorExtension extension)
 		{
 			this.widget.TextEditor.Extension = extension;
@@ -272,7 +272,7 @@ namespace MonoDevelop.SourceEditor
 //				return extension.KeyPress (evnt.Key, evnt.State);
 //			return this.KeyPress (evnt.Key, evnt.State); 
 //		}		
-#endregion
+		#endregion
 		
 		#region IEditableTextBuffer
 		public IClipboardHandler ClipboardHandler {
@@ -326,8 +326,8 @@ namespace MonoDevelop.SourceEditor
 		
 		public event TextChangedEventHandler TextChanged;
 		#endregion
-
-#region ITextBuffer
+		
+		#region ITextBuffer
 		public int CursorPosition { 
 			get {
 				return TextEditor.Caret.Offset;
@@ -362,9 +362,9 @@ namespace MonoDevelop.SourceEditor
 		{
 			// TODO
 		}
-#endregion
+		#endregion
 		
-#region ITextFile
+		#region ITextFile
 		public string Name {
 			get { 
 				return this.ContentName; 
@@ -417,9 +417,9 @@ namespace MonoDevelop.SourceEditor
 			line   = location.Line + 1;
 			column = location.Column + 1;
 		}
-#endregion
-
-#region IEditableTextFile
+		#endregion
+		
+		#region IEditableTextFile
 		public void InsertText (int position, string text)
 		{
 			this.widget.TextEditor.Document.Insert (position, new StringBuilder (text));
@@ -432,7 +432,7 @@ namespace MonoDevelop.SourceEditor
 			if (this.widget.TextEditor.Caret.Offset >= position) 
 				this.widget.TextEditor.Caret.Offset -= length;
 		}
-#endregion 
+		#endregion 
 		
 		#region IPositionable
 		public void JumpTo (int line, int column)
@@ -544,8 +544,8 @@ namespace MonoDevelop.SourceEditor
 			TextEditor.RunAction (new SelectionSelectAll ());
 		}
 		#endregion
-
-#region ICompletionWidget		
+		
+		#region ICompletionWidget
 		public int TextLength {
 			get {
 				return Document.Length;
@@ -621,9 +621,9 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		public event EventHandler CompletionContextChanged;
-#endregion
+		#endregion
 		
-#region IDocumentInformation
+		#region IDocumentInformation
 		string IDocumentInformation.FileName {
 			get { 
 				return this.IsUntitled ? UntitledName : ContentName; 
@@ -733,9 +733,9 @@ namespace MonoDevelop.SourceEditor
 				return false;
 			}
 		}
-#endregion
-
-#region ICodeStyleOperations
+		#endregion
+		
+		#region ICodeStyleOperations
 		public void ToggleCodeComment ()
 		{
 			bool comment = false;
@@ -851,9 +851,9 @@ namespace MonoDevelop.SourceEditor
 		{
 			RemoveTab.RemoveIndentSelection (TextEditor.GetTextEditorData ());
 		}
-#endregion
-
-#region ISplittable
+		#endregion
+		
+		#region ISplittable
 		public bool EnableSplitHorizontally {
 			get {
 				return !EnableUnsplit;
@@ -885,7 +885,7 @@ namespace MonoDevelop.SourceEditor
 			widget.Unsplit ();
 		}
 		
-#endregion
+		#endregion
 		
 		#region IFoldable
 		void ToggleFoldings (ICollection<FoldSegment> segments)
@@ -1111,10 +1111,7 @@ namespace MonoDevelop.SourceEditor
 		#endregion
 #endif
 	
-		#region toolbox
-		
-		
-		
+		#region Toolbox
 		static List<TextToolboxNode> clipboardRing = new List<TextToolboxNode> ();
 		static event EventHandler ClipbardRingUpdated;
 		
@@ -1158,6 +1155,7 @@ namespace MonoDevelop.SourceEditor
 			if (ItemsChanged != null)
 				ItemsChanged (this, EventArgs.Empty);
 		}
+		
 		public IList<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
 		{
 			List<ItemToolboxNode> result = new List<ItemToolboxNode> ();
@@ -1190,7 +1188,7 @@ namespace MonoDevelop.SourceEditor
 			TextToolboxNode textNode = item as TextToolboxNode;
 			if (textNode == null)
 				return;
-			//TextEditor.BeginDrag (textNode.Text, source, ctx);
+			TextEditor.BeginDrag (textNode.Text, source, ctx);
 		}
 		
 		System.ComponentModel.ToolboxItemFilterAttribute[] IToolboxConsumer.ToolboxFilterAttributes {
@@ -1202,9 +1200,7 @@ namespace MonoDevelop.SourceEditor
 		}
 		public Gtk.TargetEntry[] DragTargets { 
 			get {
-				return new Gtk.TargetEntry[] {
-					new Gtk.TargetEntry ("text", TargetFlags.Widget, CopyAction.TextType)
-				};
+				return (Gtk.TargetEntry[])CopyAction.TargetList;
 			}
 		}
 				
