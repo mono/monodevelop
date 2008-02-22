@@ -56,6 +56,8 @@ namespace MonoDevelop.Gettext
 		internal static void InitializeTranslationService ()
 		{
 			Debug.Assert (!isInitialized);
+			if (isInitialized)
+				return;
 			isInitialized = true;
 			IdeApp.ProjectOperations.CombineOpened += new CombineEventHandler (CombineOpened);
 			IdeApp.ProjectOperations.CombineClosed += delegate {

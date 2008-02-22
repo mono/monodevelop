@@ -1,3 +1,9 @@
+2008-02-23  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Gettext.mdp, gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs,
+	  MonoDevelop.Gettext/TranslationService.cs: Removed reference to
+	  gnome-vfs-sharp and fixed 2 warnings.
+
 2008-02-20  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Gettext.NodeBuilders/TranslationNodeBuilder.cs,
