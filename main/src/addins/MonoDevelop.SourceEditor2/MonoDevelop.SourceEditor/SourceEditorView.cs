@@ -589,7 +589,7 @@ namespace MonoDevelop.SourceEditor
 			result.TriggerTextHeight = TextEditor.LineHeight;
 			return result;
 		}
- 
+		
 		public string GetCompletionText (ICodeCompletionContext ctx)
 		{
 			if (ctx == null)

@@ -1,5 +1,11 @@
 2008-02-22  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor/SourceEditorView.cs: Some changes for slight
+	  change in the text editor interface.
+
+2008-02-22  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Added some safety checks.
 
 2008-02-22  Mike Krüger <mkrueger@novell.com> 

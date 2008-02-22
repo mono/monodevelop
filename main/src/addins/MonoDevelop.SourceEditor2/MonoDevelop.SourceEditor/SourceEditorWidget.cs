@@ -664,7 +664,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			regionCombo.Active = -1;
 		}
-		bool added = true;
+		
 		void BindRegionCombo ()
 		{
 			regionCombo.Model = null;
@@ -987,10 +987,9 @@ namespace MonoDevelop.SourceEditor
 		
 		internal void SetSearchOptions ()
 		{
-			TextEditor.SearchOptions.IsCaseSensitive = SearchWidget.IsCaseSensitive;
-			TextEditor.SearchOptions.IsWholeWordOnly = SearchWidget.IsWholeWordOnly;
+			TextEditor.IsCaseSensitive = SearchWidget.IsCaseSensitive;
+			TextEditor.IsWholeWordOnly = SearchWidget.IsWholeWordOnly;
 			TextEditor.SearchPattern = SearchWidget.searchPattern;
-			TextEditor.CompilePattern ();
 			TextEditor.QueueDraw ();
 		}
 		
