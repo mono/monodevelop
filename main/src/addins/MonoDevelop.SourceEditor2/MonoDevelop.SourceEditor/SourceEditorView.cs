@@ -41,10 +41,11 @@ using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Search;
+using MonoDevelop.DesignerSupport.Toolbox;
 
 namespace MonoDevelop.SourceEditor
 {	
-	public class SourceEditorView : AbstractViewContent, IPositionable, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, ICompletionWidget, IDocumentInformation, ICodeStyleOperations, ISplittable, IFoldable
+	public class SourceEditorView : AbstractViewContent, IPositionable, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, ICompletionWidget, IDocumentInformation, ICodeStyleOperations, ISplittable, IFoldable, IToolboxDynamicProvider, IToolboxConsumer
 #if GNOME_PRINT
 		, IPrintable
 #endif
@@ -122,6 +123,7 @@ namespace MonoDevelop.SourceEditor
 				isInWrite = false;
 				fileSystemWatcher.EnableRaisingEvents = true;
 			};
+			ClipbardRingUpdated += UpdateClipboardRing;
 		}
 		
 		public override void Save (string fileName)
@@ -205,7 +207,7 @@ namespace MonoDevelop.SourceEditor
 		public override void Dispose()
 		{
 			this.isDisposed= true;
-			
+			ClipbardRingUpdated -= UpdateClipboardRing;
 			if (fileSystemWatcher != null) {
 				fileSystemWatcher.EnableRaisingEvents = false;
 				fileSystemWatcher.Dispose ();
@@ -1108,6 +1110,106 @@ namespace MonoDevelop.SourceEditor
 		}
 		#endregion
 #endif
+	
+		#region toolbox
+		
+		
+		
+		static List<TextToolboxNode> clipboardRing = new List<TextToolboxNode> ();
+		static event EventHandler ClipbardRingUpdated;
+		
+		static SourceEditorView ()
+		{
+			CopyAction.Copy += delegate (string text) {
+				TextToolboxNode item = new TextToolboxNode (text);
+				string[] lines = text.Split ('\n');
+				for (int i = 0; i < 3; i++) {
+					if (i > 0)
+						item.Description += Environment.NewLine;
+					string line = lines[i];
+					if (line.Length > 16)
+						line = line.Substring (0, 16) + "...";
+					item.Description += line;
+				}
+				item.Category = GettextCatalog.GetString ("Clipboard ring");
+				item.Icon = IdeApp.Services.PlatformService.GetPixbufForFile ("test.txt", 16);
+				item.Name = text.Length > 16 ? text.Substring (0, 16) + "..." : text;
+				item.Name = item.Name.Replace ("\t", "\\t");
+				item.Name = item.Name.Replace ("\n", "\\n");
+				clipboardRing.Add (item);
+				while (clipboardRing.Count > 12) {
+					clipboardRing.RemoveAt (0);
+				}
+				if (ClipbardRingUpdated != null)
+					ClipbardRingUpdated (null, EventArgs.Empty);
+			};
+		}
+		public void UpdateClipboardRing (object sender, EventArgs e)
+		{
+			if (ItemsChanged != null)
+				ItemsChanged (this, EventArgs.Empty);
+		}
+		public IList<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
+		{
+			List<ItemToolboxNode> result = new List<ItemToolboxNode> ();
+			foreach (TextToolboxNode item in clipboardRing) {
+				result.Add (item);
+			}
+			
+			if (clipboardRing.Count == 0) {
+				TextToolboxNode item = new TextToolboxNode (null);
+				item.Category = GettextCatalog.GetString ("Clipboard ring");
+				item.Name = null;
+				result.Add (item);
+			}
+			return result;
+		}
+		
+		public event EventHandler ItemsChanged;
+		
+		void IToolboxConsumer.ConsumeItem (ItemToolboxNode item)
+		{
+			TextToolboxNode textNode = item as TextToolboxNode;
+			if (textNode == null)
+				return;
+			TextEditor.InsertAtCaret (textNode.Text);
+			TextEditor.GrabFocus ();
+		}
+		
+		void IToolboxConsumer.DragItem (ItemToolboxNode item, Gtk.Widget source, Gdk.DragContext ctx)
+		{
+			TextToolboxNode textNode = item as TextToolboxNode;
+			if (textNode == null)
+				return;
+			//TextEditor.BeginDrag (textNode.Text, source, ctx);
+		}
+		
+		System.ComponentModel.ToolboxItemFilterAttribute[] IToolboxConsumer.ToolboxFilterAttributes {
+			get {
+				return new System.ComponentModel.ToolboxItemFilterAttribute[] {
+					
+				};
+			}
+		}
+		public Gtk.TargetEntry[] DragTargets { 
+			get {
+				return new Gtk.TargetEntry[] {
+					new Gtk.TargetEntry ("text", TargetFlags.Widget, CopyAction.TextType)
+				};
+			}
+		}
+				
+		bool IToolboxConsumer.CustomFilterSupports (ItemToolboxNode item)
+		{
+			return false;
+		}
+		
+		string IToolboxConsumer.DefaultItemDomain { 
+			get {
+				return "Text";
+			}
+		}
+		#endregion
 		
 	}
 } 

@@ -5,7 +5,8 @@
         <property name="IsClassBrowserVisible" />
       </itemgroup>
     </itemgroups>
-    <signals />
+    <signals>
+    </signals>
   </object>
   <object type="MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel" palette-category="MonoDevelop.SourceEditor2" allow-children="false" base-type="Gtk.Bin">
     <itemgroups>

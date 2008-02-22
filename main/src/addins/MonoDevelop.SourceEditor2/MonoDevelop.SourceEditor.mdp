@@ -66,6 +66,7 @@
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects.Gui" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core.Gui" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.DesignerSupport" />
   </References>
   <GtkDesignInfo isWidgetLibrary="True">
     <ExportedWidgets>

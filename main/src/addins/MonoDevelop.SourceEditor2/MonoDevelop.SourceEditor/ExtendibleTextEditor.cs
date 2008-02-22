@@ -135,7 +135,6 @@ namespace MonoDevelop.SourceEditor
 			}
 			if (evnt.Key == Gdk.Key.Escape) {
 				bool b = extension.KeyPress (evnt.Key, evnt.State);
-				System.Console.WriteLine(b);
 				if (b) {
 					view.SourceEditorWidget.RemoveSearchWidget ();
 					return true;
@@ -328,8 +327,18 @@ namespace MonoDevelop.SourceEditor
 			return base.OnLeaveNotifyEvent (evnt);
 		}
 		
+		protected override bool OnFocusOutEvent (Gdk.EventFocus evnt)
+		{
+			CompletionWindowManager.HideWindow ();
+			ParameterInformationWindowManager.HideWindow ();
+			return base.OnFocusOutEvent (evnt); 
+		}
+
+		
 		protected override bool OnScrollEvent (Gdk.EventScroll evnt)
 		{
+			CompletionWindowManager.HideWindow ();
+			ParameterInformationWindowManager.HideWindow ();
 			HideLanguageItemWindow ();
 			return base.OnScrollEvent (evnt);
 		}

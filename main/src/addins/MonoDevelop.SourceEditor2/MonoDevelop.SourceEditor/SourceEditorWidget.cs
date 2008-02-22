@@ -36,6 +36,7 @@ using MonoDevelop.Ide.Gui.Search;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 
+
 namespace MonoDevelop.SourceEditor
 {
 	public partial class SourceEditorWidget : Gtk.Bin, ITextEditorExtension
@@ -958,5 +959,6 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		#endregion
+		
 	}
 }
