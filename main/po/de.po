@@ -1762,7 +1762,7 @@ msgstr "Fehler : {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:126
 msgid " ln <span font_family='fixed'>{0,-4}</span>  col <span font_family='fixed'>{1,-3}</span>  ch <span font_family='fixed'>{2,-3}</span> "
-msgstr " ln <span font_family='fixed'>{0,-4}</span>  Zeile <span font_family='fixed'>{1,-3}</span>  ch <span font_family='fixed'>{2,-3}</span> "
+msgstr "Z. <span font_family='fixed'>{0,-4}</span>  Sp. <span font_family='fixed'>{1,-3}</span>  ASCII <span font_family='fixed'>{2,-3}</span> "
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:52
 msgid "Build Output"
