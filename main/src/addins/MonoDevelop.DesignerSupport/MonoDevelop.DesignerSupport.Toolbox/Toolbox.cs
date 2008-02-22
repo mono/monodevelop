@@ -50,7 +50,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		ToolboxWidget toolboxWidget;
 		ScrolledWindow scrolledWindow;
-
+		
 		Toolbar toolbar;
 		ToggleToolButton filterToggleButton;
 		ToggleToolButton catToggleButton;
@@ -204,12 +204,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			Dictionary<string, Category> categories = new Dictionary<string, Category> ();
 			foreach (BaseToolboxNode node in toolboxService.GetCurrentToolboxItems ()) {
-				Item newItem = new Item (node.ViewIcon, node.Label, node.Label, node);
 				if (node is ItemToolboxNode) {
 					ItemToolboxNode itbn = ((ItemToolboxNode)node);
+					Item newItem = new Item (itbn.ViewIcon, itbn.Label, itbn.Description, itbn);
 					if (!categories.ContainsKey (itbn.Category))
 						categories[itbn.Category] = new Category (itbn.Category);
-					categories[itbn.Category].Items.Add (newItem);
+					if (newItem.Text != null)
+						categories[itbn.Category].Items.Add (newItem);
 				}
 			}
 			Drag.SourceUnset (toolboxWidget);

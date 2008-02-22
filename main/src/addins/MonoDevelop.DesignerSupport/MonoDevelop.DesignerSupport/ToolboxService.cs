@@ -337,8 +337,8 @@ namespace MonoDevelop.DesignerSupport
 					}
 				}
 			}
+			//arr.Sort ();
 			
-			arr.Sort ();
 			return arr;
 		}
 		
@@ -394,13 +394,16 @@ namespace MonoDevelop.DesignerSupport
 		
 		#region Change notification
 		
-		Document oldActiveDoc =  null;
+		Document         oldActiveDoc =  null;
+		IToolboxDynamicProvider viewProvider = null;
 		void onActiveDocChanged (object o, EventArgs e)
 		{
-			if (oldActiveDoc != null)
+			if (oldActiveDoc != null) 
 				oldActiveDoc.ViewChanged -= OnViewChanged;
-			if (IdeApp.Workbench.ActiveDocument != null)
+			
+			if (IdeApp.Workbench.ActiveDocument != null) {
 				IdeApp.Workbench.ActiveDocument.ViewChanged += OnViewChanged;
+			}
 			oldActiveDoc = IdeApp.Workbench.ActiveDocument;
 			
 			OnViewChanged (null, null);
@@ -408,11 +411,24 @@ namespace MonoDevelop.DesignerSupport
 		
 		void OnViewChanged (object sender, EventArgs args)
 		{
+			if (viewProvider != null) {
+				this.dynamicProviders.Remove (viewProvider);
+				viewProvider.ItemsChanged -= OnProviderItemsChanged;
+			}
+			
 			//only treat active ViewContent as a Toolbox consumer if it implements IToolboxConsumer
-			if (IdeApp.Workbench.ActiveDocument != null)
+			if (IdeApp.Workbench.ActiveDocument != null) {
 				CurrentConsumer = IdeApp.Workbench.ActiveDocument.ActiveView as IToolboxConsumer;
-			else
+				viewProvider    = IdeApp.Workbench.ActiveDocument.ActiveView as IToolboxDynamicProvider;
+				if (viewProvider != null)  {
+					this.dynamicProviders.Add (viewProvider);
+					viewProvider.ItemsChanged += OnProviderItemsChanged;
+					OnToolboxContentsChanged ();
+				}
+			} else {
 				CurrentConsumer = null;
+				viewProvider = null;
+			}
 		}
 		
 		protected virtual void OnToolboxContentsChanged ()
