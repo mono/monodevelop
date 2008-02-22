@@ -1,5 +1,9 @@
 2008-02-22  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextEditor.cs: Added support for custom drag sources.
+
+2008-02-22  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/DefaultEditActions.cs: Added try/catch, may help to track
 	  the cut&paste problem.
 

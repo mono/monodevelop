@@ -761,6 +761,27 @@ namespace Mono.TextEditor
 			return base.OnMotionNotifyEvent (e);
 		}
 		
+		string     customText;
+		Gtk.Widget customSource;
+		public void BeginDrag (string text, Gtk.Widget source, DragContext context)
+		{
+			customText = text;
+			customSource = source;
+			source.DragDataGet += CustomDragDataGet;
+			source.DragEnd += CustomDragEnd;
+		}
+		void CustomDragDataGet (object sender, Gtk.DragDataGetArgs args) 
+		{
+			args.SelectionData.Text = customText;
+		}
+		void CustomDragEnd (object sender, Gtk.DragEndArgs args) 
+		{
+			customSource.DragDataGet -= CustomDragDataGet;
+			customSource.DragEnd -= CustomDragEnd;
+			customSource = null;
+			customText = null;
+		}
+		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing e)
 		{
 			if (e.Mode == CrossingMode.Normal) {
