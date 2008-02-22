@@ -30,36 +30,27 @@ using System;
 
 namespace Mono.TextEditor
 {
-	public class SearchResult
+	public class SearchResult : Segment
 	{
-		int offset;
-		int length;
 		bool searchWrapped;
 		
-		public int Offset {
-			get {
-				return offset;
-			}
-		}
-
-		public int Length {
-			get {
-				return length;
-			}
-		}
-
 		public bool SearchWrapped {
 			get {
 				return searchWrapped;
 			}
+			set {
+				searchWrapped = value;
+			}
 		}
 		
-		public SearchResult (int offset, int length, bool searchWrapped)
+		public SearchResult (int offset, int length, bool searchWrapped) : base (offset, length)
 		{
-			this.offset        = offset;
-			this.length        = length;
 			this.searchWrapped = searchWrapped;
 		}
 		
+		public override string ToString ()
+		{
+			return String.Format ("[SearchResult: Offset={0}, Length={1}, SearchWrapped={2}]", this.Offset, this.Length, this.SearchWrapped);
+		}
 	}
 }

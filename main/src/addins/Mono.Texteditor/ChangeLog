@@ -1,5 +1,14 @@
 2008-02-22  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextViewMargin.cs,
+	  Mono.TextEditor/SearchOptions.cs, Mono.TextEditor/TextEditorData.cs,
+	  Mono.TextEditor/TextEditor.cs, Mono.TextEditor/SearchResult.cs,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests/SearchTests.cs: Fixed Bug
+	  364045 - Can't use Search Previous command to go through to all matches.
+	  And wrote some unit tests for the search commands. 
+
+2008-02-22  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/Document.cs: Fixed bug in logicaltovisuallocation.
 
 2008-02-22  Mike Krüger <mkrueger@novell.com> 

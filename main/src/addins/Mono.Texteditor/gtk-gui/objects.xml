@@ -6,6 +6,8 @@
         <property name="HighlightSearchPattern" />
         <property name="SelectedText" />
         <property name="SelectionAnchor" />
+        <property name="IsCaseSensitive" />
+        <property name="IsWholeWordOnly" />
       </itemgroup>
     </itemgroups>
     <signals>

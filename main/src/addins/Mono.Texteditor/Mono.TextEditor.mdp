@@ -70,7 +70,6 @@
     <File name="Mono.TextEditor/TextViewMargin.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor.Highlighting/SemanticRule.cs" subtype="Code" buildaction="Compile" />
     <File name="VisualStudioStyle.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="Mono.TextEditor/SearchOptions.cs" subtype="Code" buildaction="Compile" />
     <File name="BooSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Mono.TextEditor.Highlighting/Caret.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/SearchResult.cs" subtype="Code" buildaction="Compile" />

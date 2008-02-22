@@ -1055,16 +1055,14 @@ namespace Mono.TextEditor
 		}
 		#endregion
 		
-		#region Search and Replace
+		#region Search & Replace
 		bool highlightSearchPattern = false;
-		string compiledPattern = "";
 		public string SearchPattern {
 			get {
 				return this.textEditorData.SearchPattern;
 			}
 			set {
 				this.textEditorData.SearchPattern = value;
-				CompilePattern ();
 				this.QueueDraw ();
 			}
 		}
@@ -1080,111 +1078,53 @@ namespace Mono.TextEditor
 				}
 			}
 		}
-		
-		public SearchOptions SearchOptions = new SearchOptions ();
-		internal bool IsMatchAt (int offset)
-		{
-			if (offset + SearchPattern.Length <= Document.Length && compiledPattern.Length > 0) {
-				if (SearchOptions.IsCaseSensitive) {
-					for (int i = 0; i < compiledPattern.Length; i++) {
-						if (Document.GetCharAt (offset + i) != compiledPattern[i]) 
-							return false;
-					}
-				} else {
-					for (int i = 0; i < compiledPattern.Length; i++) {
-						if (System.Char.ToUpper (Document.GetCharAt (offset + i)) != compiledPattern[i]) 
-							return false;
-					}
-				}
-				if (SearchOptions.IsWholeWordOnly) {
-					return TextUtil.IsWholeWordAt (Document, offset, compiledPattern.Length);
-				}
-				return true;
+		public bool IsCaseSensitive {
+			get {
+				return this.textEditorData.IsCaseSensitive;
 			}
-			return false;
+			set {
+				this.textEditorData.IsCaseSensitive = value;
+			}
 		}
 		
-		public void CompilePattern ()
-		{
-			compiledPattern = SearchOptions.IsCaseSensitive ? SearchPattern : SearchPattern.ToUpper ();
+		public bool IsWholeWordOnly {
+			get {
+				return this.textEditorData.IsWholeWordOnly;
+			}
+			
+			set {
+				this.textEditorData.IsWholeWordOnly = value;
+			}
 		}
 		
 		public SearchResult SearchForward (int fromOffset)
 		{
-			for (int i = 0; i < Document.Length - this.SearchPattern.Length; i++) {
-				int offset = (fromOffset + i) % Document.Length;
-				if (IsMatchAt (offset))
-					return new SearchResult (offset, this.SearchPattern.Length, offset < fromOffset);
-			}
-			return null;
+			return textEditorData.SearchForward (fromOffset);
 		}
 		
 		public SearchResult SearchBackward (int fromOffset)
 		{
-			for (int i = 0; i < Document.Length - this.SearchPattern.Length; i++) {
-				int offset = (fromOffset + Document.Length - i) % Document.Length;
-				if (IsMatchAt (offset))
-					return new SearchResult (offset, this.SearchPattern.Length, offset > fromOffset);
-			}
-			return null;
+			return textEditorData.SearchBackward (fromOffset);
 		}
 		
 		public SearchResult FindNext ()
 		{
-			SearchResult result = SearchForward (Caret.Offset + 1);
-			if (result != null) {
-				Caret.Offset = result.Offset + result.Length;
-				SelectionAnchor = Caret.Offset;
-				SelectionRange = new Segment (result.Offset, result.Length);
-			}
-			return result;
+			return textEditorData.FindNext ();
 		}
 		
 		public SearchResult FindPrevious ()
 		{
-			int startOffset = Caret.Offset;
-			if (IsSomethingSelected && IsMatchAt (startOffset)) {
-				startOffset = SelectionRange.Offset;
-			}
-			
-			SearchResult result = SearchBackward ((startOffset + Document.Length - 1) % Document.Length);
-			if (result != null) {
-				Caret.Offset  = result.Offset + result.Length;
-				SelectionAnchor = Caret.Offset;
-				SelectionRange = new Segment (result.Offset, result.Length);
-			}
-			return result;
+			return textEditorData.FindPrevious ();
 		}
 		
 		public bool Replace (string withPattern)
 		{
-			bool result = false;
-			if (this.IsSomethingSelected) {
-				ISegment selection = this.SelectionRange;
-				if (IsMatchAt (selection.Offset) && selection.Length == compiledPattern.Length) {
-					SelectedText = withPattern;
-					ClearSelection ();
-					result = true;
-				}
-			}
-			return FindNext () != null || result;
+			return textEditorData.Replace (withPattern);
 		}
 		
-		public void ReplaceAll (string withPattern)
+		public bool ReplaceAll (string withPattern)
 		{
-			Document.BeginAtomicUndo ();
-			bool foundAtLeastOnce = false;
-			for (int i = 0; i < Document.Length - compiledPattern.Length; i++) {
-				if (IsMatchAt (i)) {
-					foundAtLeastOnce = true;
-					Document.Replace (i, SearchPattern.Length, withPattern);
-					if (withPattern.Length > 0)
-						i += withPattern.Length - 1;
-				}
-			}
-			if (foundAtLeastOnce)
-				ClearSelection ();
-			Document.EndAtomicUndo ();
+			return textEditorData.ReplaceAll (withPattern);
 		}
 		#endregion
 		
