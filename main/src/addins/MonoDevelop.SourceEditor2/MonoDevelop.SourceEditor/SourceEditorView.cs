@@ -1121,9 +1121,17 @@ namespace MonoDevelop.SourceEditor
 		static SourceEditorView ()
 		{
 			CopyAction.Copy += delegate (string text) {
+				if (String.IsNullOrEmpty (text))
+					return;
+				foreach (TextToolboxNode node in clipboardRing) {
+					if (node.Text == text) {
+						clipboardRing.Remove (node);
+						break;
+					}
+				}
 				TextToolboxNode item = new TextToolboxNode (text);
 				string[] lines = text.Split ('\n');
-				for (int i = 0; i < 3; i++) {
+				for (int i = 0; i < 3 && i < lines.Length; i++) {
 					if (i > 0)
 						item.Description += Environment.NewLine;
 					string line = lines[i];
@@ -1144,6 +1152,7 @@ namespace MonoDevelop.SourceEditor
 					ClipbardRingUpdated (null, EventArgs.Empty);
 			};
 		}
+		
 		public void UpdateClipboardRing (object sender, EventArgs e)
 		{
 			if (ItemsChanged != null)
