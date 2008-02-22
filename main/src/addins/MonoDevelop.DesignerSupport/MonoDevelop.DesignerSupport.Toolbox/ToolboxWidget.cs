@@ -675,7 +675,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				                             20,
 				                             Allocation.Height,
 				                             Allocation.Height);
-				if (Allocation.Height <= ypos)
+				if (ypos < Allocation.Height)
 					this.vAdjustement.Value = 0;
 			}
 		}
