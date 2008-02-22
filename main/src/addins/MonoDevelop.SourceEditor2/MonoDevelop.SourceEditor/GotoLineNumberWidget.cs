@@ -121,8 +121,8 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		static readonly Gdk.Color warningColor = new Gdk.Color (210, 210, 32);
-		static readonly Gdk.Color errorColor   = new Gdk.Color (210, 32, 32);
+		internal static readonly Gdk.Color warningColor = new Gdk.Color (210, 210, 32);
+		internal static readonly Gdk.Color errorColor   = new Gdk.Color (210, 32, 32);
 		
 		void PreviewLine ()
 		{
@@ -135,7 +135,7 @@ namespace MonoDevelop.SourceEditor
 				int targetLine = TargetLine;
 				if (targetLine >= widget.TextEditor.Document.LineCount || targetLine < 0) {
 					targetLine = Math.Max (0, Math.Min (widget.TextEditor.Document.LineCount - 1, targetLine));
-					this.entryLineNumber.ModifyBase (Gtk.StateType.Normal, warningColor);
+					
 				} else {
 					this.entryLineNumber.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Normal));
 				}

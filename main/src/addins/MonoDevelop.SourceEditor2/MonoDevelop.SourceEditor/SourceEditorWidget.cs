@@ -925,35 +925,53 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		[CommandHandler (SearchCommands.FindNext)]
-		public void FindNext ()
+		public SearchResult FindNext ()
 		{
 			SetSearchOptions ();
-			TextEditor.FindNext ();
+			SearchResult result = TextEditor.FindNext ();
 			TextEditor.GrabFocus ();
+			if (result == null) {
+				IdeApp.Workbench.StatusBar.ShowErrorMessage (GettextCatalog.GetString ("Search pattern not found"));
+			} else if (result.SearchWrapped) {
+				IdeApp.Workbench.StatusBar.SetMessage (GettextCatalog.GetString ("Reached top, continued from bottom"));
+			} else {
+				IdeApp.Workbench.StatusBar.SetMessage (GettextCatalog.GetString ("Ready"));
+			}
+			return result;
 		}
 		
 		[CommandHandler (SearchCommands.FindPrevious)]
-		public void FindPrevious ()
+		public SearchResult FindPrevious ()
 		{
 			SetSearchOptions ();
-			TextEditor.FindPrevious ();
+			SearchResult result = TextEditor.FindPrevious ();
 			TextEditor.GrabFocus ();
+			if (result == null) {
+				IdeApp.Workbench.StatusBar.ShowErrorMessage (GettextCatalog.GetString ("Search pattern not found"));
+			} else if (result.SearchWrapped) {
+				IdeApp.Workbench.StatusBar.SetMessage (GettextCatalog.GetString ("Reached bottom, continued from top"));
+			} else {
+				IdeApp.Workbench.StatusBar.SetMessage (GettextCatalog.GetString ("Ready"));
+			}
+			return result;
 		}
 	
 		[CommandHandler (SearchCommands.FindNextSelection)]
-		public void FindNextSelection ()
+		public SearchResult FindNextSelection ()
 		{
 			SetSearchOptions ();
 			SetSearchPattern();
-			FindNext ();
+			TextEditor.GrabFocus ();
+			return FindNext ();
 		}
 	
 		[CommandHandler (SearchCommands.FindPreviousSelection)]
-		public void FindPreviousSelection ()
+		public SearchResult FindPreviousSelection ()
 		{
 			SetSearchOptions ();
 			SetSearchPattern();
-			FindPrevious ();
+			TextEditor.GrabFocus ();
+			return FindPrevious ();
 		}
 		
 		public void Replace ()

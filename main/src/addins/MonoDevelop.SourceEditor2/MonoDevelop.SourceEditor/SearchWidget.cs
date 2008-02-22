@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using Mono.TextEditor;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -113,6 +114,12 @@ namespace MonoDevelop.SourceEditor
 				if (!SearchWidget.inSearchUpdate) {
 					SearchWidget.searchPattern = SearchPattern;
 					FireSearchPatternChanged ();
+				}
+				SearchResult result = widget.TextEditor.SearchForward (widget.TextEditor.Caret.Offset);
+				if (result == null) {
+					this.entrySearch.Entry.ModifyBase (Gtk.StateType.Normal, GotoLineNumberWidget.errorColor);
+				} else {
+					this.entrySearch.Entry.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Normal));
 				}
 			};
 			this.entrySearch.Entry.Activated += delegate {

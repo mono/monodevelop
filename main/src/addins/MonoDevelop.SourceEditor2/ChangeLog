@@ -1,5 +1,12 @@
 2008-02-22  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor/GotoLineNumberWidget.cs,
+	  MonoDevelop.SourceEditor/SearchWidget.cs: Improved search (user
+	  recognizes if pattern is not found). Set some status bar messages.
+
+2008-02-22  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor/ExtendibleTextEditor.cs: Fixed Bug 363983 -
 	  Tooltip does not hide when goto dialog shows.
 
