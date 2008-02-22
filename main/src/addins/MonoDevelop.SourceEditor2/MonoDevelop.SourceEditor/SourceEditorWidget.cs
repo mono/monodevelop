@@ -346,6 +346,18 @@ namespace MonoDevelop.SourceEditor
 				return splitContainer != null;
 			}
 		}
+		
+		public bool EditorHasFocus {
+			get {
+				Gtk.Container c = this;
+				while (c != null) {
+					if (c.FocusChild == textEditor)
+						return true;
+					c = c.FocusChild as Gtk.Container;
+				}
+				return false;
+			}
+		}
 
 		public SourceEditorView View {
 			get {
