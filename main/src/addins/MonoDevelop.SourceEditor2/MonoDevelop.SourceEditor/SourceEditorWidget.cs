@@ -650,12 +650,17 @@ namespace MonoDevelop.SourceEditor
 		void UpdateRegionCombo (int line, int column)
 		{
 			int regionNumber = 0;
-			foreach (FoldingRegion region in ((ICompilationUnit)memberParseInfo.MostRecentCompilationUnit).FoldingRegions) {
-				if (region.Region.BeginLine <= line && line <= region.Region.EndLine) {
-					regionCombo.Active = regionNumber;
-					return;
+			if (memberParseInfo == null) 
+				return;
+			ICompilationUnit cu = memberParseInfo.MostRecentCompilationUnit as ICompilationUnit;
+			if (cu != null && cu.FoldingRegions != null) {
+				foreach (FoldingRegion region in cu.FoldingRegions) {
+					if (region.Region.BeginLine <= line && line <= region.Region.EndLine) {
+						regionCombo.Active = regionNumber;
+						return;
+					}
+					regionNumber++;
 				}
-				regionNumber++;
 			}
 			regionCombo.Active = -1;
 		}
@@ -664,12 +669,17 @@ namespace MonoDevelop.SourceEditor
 		{
 			regionCombo.Model = null;
 			regionStore.Clear ();
-			foreach (FoldingRegion region in ((ICompilationUnit)memberParseInfo.MostRecentCompilationUnit).FoldingRegions) {
+			if (memberParseInfo == null) 
+				return;
+			ICompilationUnit cu = memberParseInfo.MostRecentCompilationUnit as ICompilationUnit;
+			if (cu == null || cu.FoldingRegions == null) 
+				return;
+			foreach (FoldingRegion region in cu.FoldingRegions) {
 				regionStore.AppendValues (IdeApp.Services.Resources.GetIcon(Stock.Add, IconSize.Menu), 
 				                          region.Name, 
 				                          region.Region);
 			}
-			//bool isVisible = ((ICompilationUnit)memberParseInfo.MostRecentCompilationUnit).FoldingRegions.Count > 0; 
+			//bool isVisible = cu.FoldingRegions.Count > 0; 
 			regionCombo.Model = regionStore;
 		}
 		
