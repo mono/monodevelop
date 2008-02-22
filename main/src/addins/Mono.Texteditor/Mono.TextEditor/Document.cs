@@ -659,8 +659,8 @@ namespace Mono.TextEditor
 		public DocumentLocation LogicalToVisualLocation (DocumentLocation location)
 		{
 			int line = LogicalToVisualLine (location.Line);
-			int column = 0;
-//			LineSegment lineSegment = this.GetLine (location.Line);
+			LineSegment lineSegment = this.GetLine (location.Line);
+			int column = lineSegment.GetVisualColumn (this, location.Column);
 			return new DocumentLocation (line, column);
 		}
 		
