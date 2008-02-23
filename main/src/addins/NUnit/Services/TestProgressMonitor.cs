@@ -46,7 +46,7 @@ namespace MonoDevelop.NUnit
 		IProgressMonitor monitor;
 		int failures, success, ignored;
 		int totalWork, currentWork;
-		
+		DateTime startTime;
 		public TestProgressMonitor ()
 		{
 		}
@@ -59,6 +59,7 @@ namespace MonoDevelop.NUnit
 			IdeApp.Services.TaskService.Clear ();
 			totalWork = test.CountTestCases ();
 			IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Running tests"));
+			startTime = DateTime.Now;
 		}
 		
 		public void FinishTestRun ()
@@ -66,6 +67,12 @@ namespace MonoDevelop.NUnit
 			if (monitor != null) {
 				IdeApp.Workbench.StatusBar.EndProgress ();
 				IdeApp.Workbench.StatusBar.SetMessage (GettextCatalog.GetString ("<b>Successful</b>: {0} <b>Failed</b>: {1} <b>Ignored</b>: {2}", this.success, this.failures, this.ignored));
+				monitor.Log.WriteLine ("");
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Test run finished"));
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Total seconds: {0:0.0}", (DateTime.Now - this.startTime).TotalSeconds));
+				monitor.Log.Write (String.Format (GettextCatalog.GetPluralString ("{0} was successfull, ", "{0} tests were successful,", this.success), this.success));
+				monitor.Log.Write (String.Format (GettextCatalog.GetPluralString (" {0} failed,", " {0} failed,", this.failures), this.failures));
+				monitor.Log.Write (String.Format (GettextCatalog.GetPluralString (" {0} ignored", " {0} ignored", this.ignored), this.ignored));
 				monitor.Dispose ();
 				monitor = null;
 				if (failures > 0) {

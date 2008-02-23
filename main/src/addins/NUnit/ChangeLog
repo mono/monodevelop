@@ -1,5 +1,9 @@
 2008-02-23  Mike Krüger <mkrueger@novell.com> 
 
+	* Services/TestProgressMonitor.cs: Added tests finished message.
+
+2008-02-23  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/TestPad.cs: Fixed threading bug.
 
 2008-02-23  Mike Krüger <mkrueger@novell.com> 
