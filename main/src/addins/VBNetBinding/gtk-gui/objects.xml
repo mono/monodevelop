@@ -1,0 +1,19 @@
+<objects>
+  <object type="MonoDevelop.VBNetBinding.CodeGenerationPanelWidget" palette-category="MonoDevelop.VBNetBinding" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.VBNetBinding.CodeGenerationPanel" palette-category="MonoDevelop.VBNetBinding" allow-children="false" base-type="Gtk.Dialog">
+    <itemgroups>
+      <itemgroup label="AbstractOptionPanel Properties">
+        <property name="EnableFinish" />
+      </itemgroup>
+    </itemgroups>
+    <signals>
+      <itemgroup label="AbstractOptionPanel Signals">
+        <signal name="CustomizationObjectChanged" />
+        <signal name="EnableFinishChanged" />
+      </itemgroup>
+    </signals>
+  </object>
+</objects>
