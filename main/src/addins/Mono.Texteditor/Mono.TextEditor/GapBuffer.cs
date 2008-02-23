@@ -62,9 +62,9 @@ namespace Mono.TextEditor
 		{
 #if DEBUG
 			if (offset < 0) 
-				Debug.Assert (false, "offset was '" + offset +"' value must be >= 0.\n" + Environment.StackTrace);
+				Debug.Assert (false, "offset was '" + offset +"' value must be >= 0." + Environment.NewLine + Environment.StackTrace);
 			if (offset >= Length) 
-				Debug.Assert (false, "offset was '" + offset +"' value must be < Length = " + Length + ".\n" + Environment.StackTrace);
+				Debug.Assert (false, "offset was '" + offset +"' value must be < Length = " + Length + "." + Environment.NewLine + Environment.StackTrace);
 #endif
 			return buffer[offset < gapBegin ? offset : offset + gapLength];
 		}
@@ -73,13 +73,13 @@ namespace Mono.TextEditor
 		{
 #if DEBUG
 			if (offset < 0) 
-				Debug.Assert (false, "offset was '" + offset +"' value must be >= 0.\n" + Environment.StackTrace);
+				Debug.Assert (false, "offset was '" + offset +"' value must be >= 0." + Environment.NewLine + Environment.StackTrace);
 			if (offset >= Length) 
-				Debug.Assert (false, "offset was '" + offset +"' value must be < Length = " + Length + ".\n" + Environment.StackTrace);
+				Debug.Assert (false, "offset was '" + offset +"' value must be < Length = " + Length + "." + Environment.NewLine + Environment.StackTrace);
 			if (count < 0) 
-				Debug.Assert (false, "count was '" + count +"' value must be >= 0.\n" + Environment.StackTrace);
+				Debug.Assert (false, "count was '" + count +"' value must be >= 0." + Environment.NewLine + Environment.StackTrace);
 			if (offset + count > Length) 
-				Debug.Assert (false, "count was '" + count +"' value must be offset + count <= Length = " + Length + " offset was " + offset + " and count was " + count +"\n" + Environment.StackTrace);
+				Debug.Assert (false, "count was '" + count +"' value must be offset + count <= Length = " + Length + " offset was " + offset + " and count was " + count + Environment.NewLine + Environment.StackTrace);
 #endif
 			
 			int end = offset + count;
@@ -100,13 +100,13 @@ namespace Mono.TextEditor
 		{
 #if DEBUG
 			if (offset < 0) 
-				Debug.Assert (false, "offset was '" + offset +"' value must be >= 0.\n" + Environment.StackTrace);
+				Debug.Assert (false, "offset was '" + offset +"' value must be >= 0." + Environment.NewLine + Environment.StackTrace);
 			if (offset >= Length) 
-				Debug.Assert (false, "offset was '" + offset +"' value must be < Length = " + Length + ".\n" + Environment.StackTrace);
+				Debug.Assert (false, "offset was '" + offset +"' value must be < Length = " + Length + "." + Environment.NewLine + Environment.StackTrace);
 			if (count < 0) 
-				Debug.Assert (false, "count was '" + count +"' value must be >= 0.\n" + Environment.StackTrace);
+				Debug.Assert (false, "count was '" + count +"' value must be >= 0." + Environment.NewLine + Environment.StackTrace);
 			if (offset + count > Length) 
-				Debug.Assert (false, "count was '" + count +"' value must be offset + count <= Length = " + Length + " offset was " + offset + " and count was " + count +"\n" + Environment.StackTrace);
+				Debug.Assert (false, "count was '" + count +"' value must be offset + count <= Length = " + Length + " offset was " + offset + " and count was " + count + Environment.NewLine + Environment.StackTrace);
 #endif
 			
 			if (text != null) { 

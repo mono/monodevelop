@@ -96,8 +96,8 @@ namespace Mono.TextEditor
 
 		public override bool Equals (object o)
 		{
-			ChunkStyle c = (ChunkStyle)o;
-			return bold == c.bold && color.GetHashCode() == c.color.GetHashCode();
+			ChunkStyle c = o as ChunkStyle;
+			return c != null && bold == c.bold && color.GetHashCode () == c.color.GetHashCode ();
 		}
 	}
 }

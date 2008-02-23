@@ -940,15 +940,15 @@ namespace Mono.TextEditor
 			if (segment != null) {
 				try {
 					text = data.Document.GetTextAt (segment);
-				} catch (Exception e) {
+				} catch (Exception) {
 					System.Console.WriteLine("Copy data failed - unable to get text at:" + segment);
-					throw e;
+					throw;
 				}
 				try {
 					rtf  = GenerateRtf (data);
-				} catch (Exception e) {
+				} catch (Exception) {
 					System.Console.WriteLine("Copy data failed - unable to generate rtf for text at:" + segment);
-					throw e;
+					throw;
 				}
 			} else {
 				text = rtf = null;

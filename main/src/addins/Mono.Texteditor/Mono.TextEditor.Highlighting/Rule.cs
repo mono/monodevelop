@@ -37,7 +37,6 @@ namespace Mono.TextEditor.Highlighting
 	{
 		protected string name;
 		protected string defaultColor;
-		protected string delimiters = "&<>~!%^*()-+=|\\#/{}[]:;\"' ,\t.?\n\r";
 		
 		protected List<Keywords> keywords = new List<Keywords> ();
 		protected List<Span> spans = new List<Span> ();
@@ -52,12 +51,6 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public string Delimiters {
-			get {
-				return delimiters;
-			}
-		}
-
 		public ReadOnlyCollection<Keywords> Keywords {
 			get {
 				return keywords.AsReadOnly ();
@@ -100,9 +93,6 @@ namespace Mono.TextEditor.Highlighting
 		protected bool ReadNode (XmlReader reader)
 		{
 			switch (reader.LocalName) {
-			case "Delimiters":
-				this.delimiters = reader.ReadElementString ();
-				return true;
 			case Match.Node:
 				this.matches.Add (Match.Read (reader));
 				return true;

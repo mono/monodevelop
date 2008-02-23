@@ -1,5 +1,12 @@
 2008-02-23  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/GapBuffer.cs,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests.pidb,
+	  Mono.TextEditor.Highlighting/Rule.cs,
+	  Mono.TextEditor.Highlighting/ChunkStyle.cs: Cleaned some code.
+
+2008-02-23  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditor.cs: possible fix for 363621.
 
 2008-02-23  Mike Krüger <mkrueger@novell.com> 
