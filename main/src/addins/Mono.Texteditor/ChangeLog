@@ -1,5 +1,12 @@
 2008-02-23  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor.mdp, Mono.TextEditor/Document.cs,
+	  Mono.TextEditor/LineSegmentTree.cs, Mono.TextEditor/GapBuffer.cs,
+	  Mono.TextEditor.Highlighting/SyntaxMode.cs: Added some assertions which
+	  help to track errors.
+
+2008-02-23  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor.Tests/Mono.TextEditor.Tests.pidb: Removed some unused
 	  glade and gnome-sharp references (only the unused). But I'll continue to
 	  remove glade, we need to lower the dependency tree a bit.

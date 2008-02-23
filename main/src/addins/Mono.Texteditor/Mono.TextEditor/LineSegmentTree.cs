@@ -198,7 +198,10 @@ namespace Mono.TextEditor
 		
 		public TreeNode GetNode (int index)
 		{
-			Debug.Assert (0 <= index && index < tree.Count);
+#if DEBUG
+			if (index < 0 || index > tree.Count)
+				Debug.Assert (false, "index must be between 0 and tree.Count==" + tree.Count + " but was " + index + "." + Environment.NewLine + "Stack trace:" + Environment.StackTrace);
+#endif
 			RedBlackTree<TreeNode>.RedBlackTreeNode node = tree.Root;
 			int i = index;
 			while (true) {

@@ -173,7 +173,7 @@ namespace Mono.TextEditor.Highlighting
 				SyntaxModeService.ScanSpans (doc, curRule, spanStack, line.Offset, offset);
 				pair = null;
 				curChunk = new Chunk (offset, 0, GetSpanStyle (spanStack));
-				maxEnd = System.Math.Min (offset + length, line.Offset + line.EditableLength);
+				maxEnd = System.Math.Min (offset + length, System.Math.Min (line.Offset + line.EditableLength, doc.Length));
 				
 				int endOffset = 0;
 				SetSpan (offset);

@@ -641,6 +641,8 @@ namespace Mono.TextEditor
 		{
 			if (visualLineNumber <= 0)
 				return 0;
+			if (visualLineNumber >= LineCount)
+				return visualLineNumber;
 			int result = visualLineNumber;
 			int lastFoldingEnd = 0;
 			LineSegment line = GetLine (result);

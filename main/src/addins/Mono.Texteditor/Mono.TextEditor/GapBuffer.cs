@@ -60,16 +60,29 @@ namespace Mono.TextEditor
 		
 		public override char GetCharAt (int offset)
 		{
-//			Debug.Assert (0 <= offset && offset < Length); 
+#if DEBUG
+			if (offset < 0) 
+				Debug.Assert (false, "offset was '" + offset +"' value must be >= 0.\n" + Environment.StackTrace);
+			if (offset >= Length) 
+				Debug.Assert (false, "offset was '" + offset +"' value must be < Length = " + Length + ".\n" + Environment.StackTrace);
+#endif
 			return buffer[offset < gapBegin ? offset : offset + gapLength];
 		}
 		
 		public override string GetTextAt (int offset, int count)
 		{
-//			Debug.Assert (count >= 0);
-//			Debug.Assert (0 <= offset && offset + count < Length); 
+#if DEBUG
+			if (offset < 0) 
+				Debug.Assert (false, "offset was '" + offset +"' value must be >= 0.\n" + Environment.StackTrace);
+			if (offset >= Length) 
+				Debug.Assert (false, "offset was '" + offset +"' value must be < Length = " + Length + ".\n" + Environment.StackTrace);
+			if (count < 0) 
+				Debug.Assert (false, "count was '" + count +"' value must be >= 0.\n" + Environment.StackTrace);
+			if (offset + count > Length) 
+				Debug.Assert (false, "count was '" + count +"' value must be offset + count <= Length = " + Length + " offset was " + offset + " and count was " + count +"\n" + Environment.StackTrace);
+#endif
+			
 			int end = offset + count;
-		
 			if (end < gapBegin) 
 				return new string (buffer, offset, count);
 			if (offset > gapBegin) 
@@ -85,8 +98,16 @@ namespace Mono.TextEditor
 		
 		public override void Replace (int offset, int count, StringBuilder text)
 		{
-//			Debug.Assert (count >= 0);
-//			Debug.Assert (0 <= offset && offset + count <= Length);
+#if DEBUG
+			if (offset < 0) 
+				Debug.Assert (false, "offset was '" + offset +"' value must be >= 0.\n" + Environment.StackTrace);
+			if (offset >= Length) 
+				Debug.Assert (false, "offset was '" + offset +"' value must be < Length = " + Length + ".\n" + Environment.StackTrace);
+			if (count < 0) 
+				Debug.Assert (false, "count was '" + count +"' value must be >= 0.\n" + Environment.StackTrace);
+			if (offset + count > Length) 
+				Debug.Assert (false, "count was '" + count +"' value must be offset + count <= Length = " + Length + " offset was " + offset + " and count was " + count +"\n" + Environment.StackTrace);
+#endif
 			
 			if (text != null) { 
 				PlaceGap (offset, text.Length - count);
