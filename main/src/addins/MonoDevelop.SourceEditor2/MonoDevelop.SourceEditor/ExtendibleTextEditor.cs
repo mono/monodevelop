@@ -104,7 +104,9 @@ namespace MonoDevelop.SourceEditor
 					int textEditorXOffset = (int)args.Event.X - this.TextViewMargin.XOffset;
 					if (textEditorXOffset < 0)
 						return;
-					Caret.Location = menuPopupLocation = this.TextViewMargin.VisualToDocumentLocation (textEditorXOffset, (int)args.Event.Y);
+					menuPopupLocation = this.TextViewMargin.VisualToDocumentLocation (textEditorXOffset, (int)args.Event.Y);
+					if (!this.IsSomethingSelected || !this.SelectionRange.Contains (Document.LocationToOffset (menuPopupLocation)))
+						Caret.Location = menuPopupLocation;
 					this.ShowPopup ();
 				}
 			};
