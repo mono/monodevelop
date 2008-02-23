@@ -36,7 +36,7 @@ using Gtk;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
-	internal class ErrorListPad : IPadContent, ILocationListPad
+	public class ErrorListPad : IPadContent, ILocationListPad
 	{
 		VBox control;
 		ScrolledWindow sw;

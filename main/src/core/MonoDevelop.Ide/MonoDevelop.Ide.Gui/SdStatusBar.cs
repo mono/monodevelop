@@ -134,7 +134,7 @@ namespace MonoDevelop.Ide.Gui
 				currentStatusImage = null;
 			}
 			if (message != null)
-				statusLabel.Text = " " + message.Replace ("\n", " ");
+				statusLabel.Markup = " " + message.Replace ("\n", " ");
 			else
 				statusLabel.Text = "";
 		}

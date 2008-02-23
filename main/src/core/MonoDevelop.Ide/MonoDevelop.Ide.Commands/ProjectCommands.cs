@@ -372,7 +372,7 @@ namespace MonoDevelop.Ide.Commands
 		}
 	}
 	
-	internal class StopHandler: CommandHandler
+	public class StopHandler: CommandHandler
 	{
 		public static void StopBuildOperations ()
 		{
