@@ -1,3 +1,10 @@
+2008-02-23  Mike Krüger <mkrueger@novell.com> 
+
+	* VB.glade, Gui/CodeGenerationPanel.cs, Gui/CodeGenerationPanelWidget.cs,
+	  VBNetBinding.addin.xml, VBNetBinding.mdp, VBBindingCompilerServices.cs,
+	  Project/VBCompilerParameters.cs, Makefile.am: Removed old glade widget,
+	  improved option panel a bit.
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* VBNetBinding.addin.xml: Update MD version.

@@ -86,6 +86,9 @@ namespace VBBinding {
 		[ItemProperty("imports")]
 		string imports = String.Empty;
 		
+		[ItemProperty("additionalParameters")]
+		string additionalParameters = String.Empty;
+		
 		[ProjectPathItemProperty("VBDOC-outputfile")]
 		string outputfile = String.Empty;
 		
@@ -279,6 +282,15 @@ namespace VBBinding {
 			}
 			set {
 				commentprefix = value;
+			}
+		}
+
+		public string AdditionalParameters {
+			get {
+				return additionalParameters;
+			}
+			set {
+				additionalParameters = value;
 			}
 		}
 	}

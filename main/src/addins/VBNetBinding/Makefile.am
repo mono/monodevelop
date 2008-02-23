@@ -3,7 +3,6 @@ ADDIN_BUILD = $(top_builddir)/build/AddIns/BackendBindings
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.VBNetBinding.dll
 
 REFS =  \
-	$(GLADE_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
@@ -12,13 +11,17 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/bin/NRefactory.dll \
+	-r:Mono.Posix \
 	-r:System \
 	-r:System.Drawing \
 	-r:System.Xml
 
 FILES =  \
 	AssemblyInfo.cs \
+	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.VBNetBinding.CodeGenerationPanelWidget.cs \
 	Gui/CodeGenerationPanel.cs \
+	Gui/CodeGenerationPanelWidget.cs \
 	Parser/ExpressionFinder.cs \
 	Parser/Parser.cs \
 	Parser/Resolver.cs \
@@ -35,6 +38,8 @@ FILES =  \
 	VBLanguageBinding.cs
 
 RES =  \
+	gtk-gui/gui.stetic \
+	gtk-gui/objects.xml \
 	icons/VB.FileIcon \
 	icons/vb-icon-32.png \
 	templates/AssemblyInfo.xft.xml \
@@ -42,7 +47,6 @@ RES =  \
 	templates/EmptyVBProject.xpt.xml \
 	templates/VBConsoleApplicationProject.xpt.xml \
 	templates/VBGtkSharp2Project.xpt.xml \
-	VB.glade \
 	VBNetBinding.addin.xml
 
 all: $(ASSEMBLY)

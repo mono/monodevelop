@@ -38,7 +38,7 @@
     <Condition id="activelanguage" value = "VBNet">
       <DialogPanel id = "VBNetCodeGenerationPanel"
                    _label = "Code Generation"
-                   class = "VBBinding.CodeGenerationPanel"/>
+                   class = "MonoDevelop.VBNetBinding.CodeGenerationPanel"/>
     </Condition>
   </Extension>
   

@@ -118,6 +118,10 @@ namespace VBBinding {
 				sb.Append("-main:");sb.Append(compilerparameters.MainClass);sb.Append(Environment.NewLine);
 			}
 			
+			if (!String.IsNullOrEmpty (compilerparameters.AdditionalParameters)) {
+				sb.Append(compilerparameters.AdditionalParameters.Length);sb.Append(Environment.NewLine);
+			}
+			
 			if(compilerparameters.Imports.Length > 0) {
 				sb.Append("-imports:");sb.Append(compilerparameters.Imports);sb.Append(Environment.NewLine);
 			}
