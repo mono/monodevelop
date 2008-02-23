@@ -41,7 +41,7 @@ using MonoDevelop.NUnit.Commands;
 
 namespace MonoDevelop.NUnit
 {
-	public class TestPad: TreeViewPad
+	public class TestPad : TreeViewPad
 	{
 		NUnitService testService = (NUnitService) ServiceManager.GetService (typeof(NUnitService));
 		
@@ -61,6 +61,7 @@ namespace MonoDevelop.NUnit
 		ListStore regressionStore;
 		TreeView failedTree;
 		ListStore failedStore;
+		Gtk.Tooltips tips = new Gtk.Tooltips ();
 		
 		int TestSummaryPage;
 		int TestRegressionsPage;
@@ -73,15 +74,58 @@ namespace MonoDevelop.NUnit
 		
 		ArrayList testNavigationHistory = new ArrayList ();
 		
+		ToolButton buttonRunAll, buttonRun, buttonStop;
 		public override void Initialize (NodeBuilder[] builders, TreePadOption[] options)
 		{
 			base.Initialize (builders, options);
 			
 			testChangedHandler = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnDetailsTestChanged));
 			testService.TestSuiteChanged += (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnTestSuiteChanged));
-			
 			paned = new VPaned ();
-			paned.Pack1 (base.Control, true, true);
+			
+			VBox vbox = new VBox ();
+			Toolbar topToolbar = new Toolbar ();
+			topToolbar.IconSize = IconSize.Menu;
+			vbox.PackStart (topToolbar, false, false, 0);
+			
+			Gdk.Pixbuf pixbuf  = Gtk.IconTheme.Default.LoadIcon (Gtk.Stock.GoUp, 16, (Gtk.IconLookupFlags) 0);
+//			Gdk.Pixbuf pixbuf2 = Gtk.IconTheme.Default.LoadIcon (Gtk.Stock.Execute, 16, (Gtk.IconLookupFlags) 0);
+//			pixbuf2.CopyArea (0, 0, 15, 16, pixbuf, 1, 0);
+//			Gtk.Image image = new Gtk.Image (Gtk.Stock.Execute, IconSize.Menu);
+//			Gdk.Pixmap pixbuf, mask;
+//			image.GetPixmap (out pixbuf, out mask);
+//			
+//			pixbuf.DrawDrawable (vbox.Style.BaseGC (StateType.Normal), pixbuf, 5, 5 , 0, 0, image.WidthRequest, image.HeightRequest);
+			
+			buttonRunAll = new ToolButton (new Gtk.Image (pixbuf), null);
+			buttonRunAll.IsImportant = true;
+			buttonRunAll.Clicked += new EventHandler (OnRunAllClicked);
+			buttonRunAll.Sensitive = true;
+			buttonRunAll.SetTooltip (tips, 
+			                     GettextCatalog.GetString ("Run all tests"), 
+			                     GettextCatalog.GetString ("Run all tests"));
+			topToolbar.Insert (buttonRunAll, -1);
+			
+			buttonRun = new ToolButton (new Gtk.Image (Gtk.Stock.Execute, IconSize.Menu), null);
+			buttonRun.IsImportant = true;
+			buttonRun.Clicked += new EventHandler (OnRunClicked);
+			buttonRun.Sensitive = true;
+			buttonRun.SetTooltip (tips, 
+			                     GettextCatalog.GetString ("Run test"), 
+			                     GettextCatalog.GetString ("Run test"));
+			topToolbar.Insert (buttonRun, -1);
+			
+			buttonStop = new ToolButton (Gtk.Stock.Stop);
+			buttonStop.Clicked += new EventHandler (OnStopClicked);
+			buttonStop.Sensitive = false;
+			buttonStop.SetTooltip (tips, 
+			                     GettextCatalog.GetString ("Cancel running test"), 
+			                     GettextCatalog.GetString ("Cancel running test"));
+			topToolbar.Insert (buttonStop, -1);
+			
+			vbox.PackEnd (base.Control, true, true, 0);
+			
+			paned.Pack1 (vbox, true, true);
 			
 			detailsPad = new VBox ();
 			
@@ -372,13 +416,56 @@ namespace MonoDevelop.NUnit
 			};
 		}
 		
+		void OnStopClicked (object sender, EventArgs args)
+		{
+			if (runningTestOperation != null)
+				runningTestOperation.Cancel ();
+		}
+		
+		void OnRunClicked (object sender, EventArgs args)
+		{
+			RunSelectedTest ();
+		}
+		
+		
+		
+		void RunTest (ITreeNavigator nav)
+		{
+			if (nav == null)
+				return;
+			UnitTest test = nav.DataItem as UnitTest;
+			if (test == null)
+				return;
+			TestSession.ResetResult (this.testService.RootTest);
+			
+			IdeApp.Workbench.GetPad<TestPad> ().BringToFront ();
+			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
+				if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
+					MonoDevelop.Ide.Commands.StopHandler.StopBuildOperations ();
+					IdeApp.ProjectOperations.CurrentRunOperation.WaitForCompleted ();
+				} 
+				IAsyncOperation op = IdeApp.ProjectOperations.Build (IdeApp.ProjectOperations.CurrentOpenCombine);
+				op.Completed += delegate {
+					GLib.Timeout.Add (0, delegate {
+						runningTestOperation = testService.RunTest (test);
+						runningTestOperation.Completed += (OperationHandler) DispatchService.GuiDispatch (new OperationHandler (TestSessionCompleted));
+						this.buttonRun.Sensitive = false;
+						this.buttonRunAll.Sensitive = false;
+						this.buttonStop.Sensitive = true;
+						return false;
+					});
+				};
+			} 
+		}
+		
+		void OnRunAllClicked (object sender, EventArgs args)
+		{
+			RunTest (TreeView.GetRootNode ());
+		}
+		
 		void RunSelectedTest ()
 		{
-			ITreeNavigator nav = TreeView.GetSelectedNode ();
-			UnitTest test = (UnitTest) nav.DataItem;
-			
-			runningTestOperation = testService.RunTest (test);
-			runningTestOperation.Completed += (OperationHandler) DispatchService.GuiDispatch (new OperationHandler (TestSessionCompleted));
+			RunTest (TreeView.GetSelectedNode ());
 		}
 		
 		void TestSessionCompleted (IAsyncOperation op)
@@ -386,6 +473,9 @@ namespace MonoDevelop.NUnit
 			if (op.Success)
 				RefreshDetails ();
 			runningTestOperation = null;
+			this.buttonRun.Sensitive = true;
+			this.buttonRunAll.Sensitive = true;
+			this.buttonStop.Sensitive = false;
 		}
 		
 		protected override void OnSelectionChanged (object sender, EventArgs args)

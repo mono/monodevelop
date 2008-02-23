@@ -47,6 +47,7 @@ FILES =  \
 	Services/NUnitTestSuite.cs \
 	Services/SystemTestProvider.cs \
 	Services/TestContext.cs \
+	Services/TestProgressMonitor.cs \
 	Services/UnitTest.cs \
 	Services/UnitTestCollection.cs \
 	Services/UnitTestGroup.cs \

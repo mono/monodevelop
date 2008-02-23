@@ -38,10 +38,6 @@
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/NUnit/ContextMenu/TestResultsPad">
-		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
-	</ExtensionPoint>
-
 	<ExtensionPoint path = "/MonoDevelop/NUnit/ContextMenu/ProjectPad/NUnitAssemblyGroup">
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
@@ -82,7 +78,6 @@
 			<PadOption id = "ShowTestCounters" _label = "Show Test Counters" defaultValue = "False" />
 			<NodeBuilder id = "TestNode" class = "MonoDevelop.NUnit.TestNodeBuilder"/>
 		</SolutionPad>
-		<Pad id="MonoDevelop.NUnit.TestResultsPad" _label="Test results" icon="nunit-pad-icon" class="MonoDevelop.NUnit.TestResultsPad" defaultPlacement = "Bottom"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
@@ -132,12 +127,7 @@
 		<SeparatorItem id = "s1" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
 	</Extension>
-
-	<Extension path = "/MonoDevelop/NUnit/ContextMenu/TestResultsPad">
-		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.ShowTestCode" />
-		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.SelectTestInTree" />
-	</Extension>
-
+	
 	<Extension path = "/MonoDevelop/NUnit/ContextMenu/TestChart">
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestChartCommands.ShowResults" />
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestChartCommands.ShowTime" />

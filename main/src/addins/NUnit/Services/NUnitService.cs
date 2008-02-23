@@ -96,13 +96,12 @@ namespace MonoDevelop.NUnit
 		
 		public IAsyncOperation RunTest (UnitTest test)
 		{
-			Pad resultsPad = IdeApp.Workbench.GetPad <TestResultsPad>();
-			if (resultsPad == null) {
-				resultsPad = IdeApp.Workbench.ShowPad (new TestResultsPad (), "MonoDevelop.NUnit.TestResultsPad", GettextCatalog.GetString ("Test results"), "Bottom", "md-solution");
-			}
-			
-			resultsPad.BringToFront ();
-			TestSession session = new TestSession (test, (TestResultsPad) resultsPad.Content);
+//			Pad resultsPad = IdeApp.Workbench.GetPad <TestResultsPad>();
+//			if (resultsPad == null) {
+//				resultsPad = IdeApp.Workbench.ShowPad (new TestResultsPad (), "MonoDevelop.NUnit.TestResultsPad", GettextCatalog.GetString ("Test results"), "Bottom", "md-solution");
+//			}
+//			resultsPad.BringToFront ();
+			TestSession session = new TestSession (test);
 			session.Start ();
 			return session;
 		}
@@ -175,15 +174,15 @@ namespace MonoDevelop.NUnit
 	class TestSession: IAsyncOperation, ITestProgressMonitor
 	{
 		UnitTest test;
-		TestMonitor monitor;
+		TestProgressMonitor monitor;
 		Thread runThread;
 		bool success;
 		ManualResetEvent waitEvent;
 		
-		public TestSession (UnitTest test, TestResultsPad resultsPad)
+		public TestSession (UnitTest test)
 		{
 			this.test = test;
-			this.monitor = new TestMonitor (resultsPad);
+			this.monitor = new TestProgressMonitor ();
 		}
 		
 		public void Start ()
@@ -218,11 +217,15 @@ namespace MonoDevelop.NUnit
 				Completed (this);
 		}
 		
-		void ResetResult (UnitTest test)
+		public static void ResetResult (UnitTest test)
 		{
+			if (test == null)
+				return;
+			
 			test.ResetLastResult ();
 			UnitTestGroup group = test as UnitTestGroup;
-			if (group == null) return;
+			if (group == null) 
+				return;
 			foreach (UnitTest t in group.Tests)
 				ResetResult (t);
 		}

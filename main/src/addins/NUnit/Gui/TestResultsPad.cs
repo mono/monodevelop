@@ -1,3 +1,4 @@
+/*
 //
 // TestResultsPad.cs
 //
@@ -579,4 +580,4 @@ namespace MonoDevelop.NUnit
 		}
 	}
 }
-
+*/

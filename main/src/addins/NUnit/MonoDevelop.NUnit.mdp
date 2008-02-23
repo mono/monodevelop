@@ -67,6 +67,7 @@
     <File name="templates/NUnitProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Gui/nunit.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Gui/nunit-overlay-32.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="Services/TestProgressMonitor.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Assembly" localcopy="True" refto="lib/nunit.core.dll" />
