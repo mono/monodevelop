@@ -1,3 +1,9 @@
+2008-02-23  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.AssemblyBrowser/Decompiler.cs: Added new decompiler changes
+	  from Andrea. (most opcodes should work (however switch ... case doesn't
+	  work yet))
+
 2008-02-16  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.AssemblyBrowser/Decompiler.cs,

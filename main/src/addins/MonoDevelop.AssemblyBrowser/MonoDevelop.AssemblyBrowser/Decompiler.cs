@@ -142,14 +142,22 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			switch (c) {
 			case Code.Add:
+			case Code.Add_Ovf:
+			case Code.Add_Ovf_Un:
 				return "+";
 			case Code.Mul:
+			case Code.Mul_Ovf:
+			case Code.Mul_Ovf_Un:
 				return "*";
 			case Code.Sub:
+			case Code.Sub_Ovf:
+			case Code.Sub_Ovf_Un:
 				return "-";
 			case Code.Div:
+			case Code.Div_Un:
 				return "/";
 			case Code.Rem:
+			case Code.Rem_Un:
 				return "%";
 			case Code.And:
 				return "&";
@@ -160,22 +168,41 @@ namespace MonoDevelop.AssemblyBrowser
 			case Code.Shl:
 				return "<<";
 			case Code.Shr:
+			case Code.Shr_Un:
 				return ">>";
 			case Code.Beq:
+			case Code.Beq_S:
 			case Code.Ceq:
 				return "==";
+			case Code.Bne_Un:
+			case Code.Bne_Un_S:
+				return "!=";
 			case Code.Bgt:
+			case Code.Bgt_S:
 			case Code.Cgt:
+			case Code.Cgt_Un:
+			case Code.Bgt_Un:
+			case Code.Bgt_Un_S:
 				return ">";
 			case Code.Bge:
+			case Code.Bge_S:
+			case Code.Bge_Un:
+			case Code.Bge_Un_S:
 				return ">=";
 			case Code.Blt:
+			case Code.Blt_S:
+			case Code.Blt_Un:
+			case Code.Blt_Un_S:
 			case Code.Clt:
+			case Code.Clt_Un:
 				return "<";
 			case Code.Ble:
+			case Code.Ble_S:
+			case Code.Ble_Un:
+			case Code.Ble_Un_S:
 				return "<=";
 			default:
-				return "error " + c;
+				return "error in GetOperatorChar, unexpected opcode: " + c;
 			}
 		}
 		
@@ -183,11 +210,19 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			switch (c) {
 			case Code.Add:
+			case Code.Add_Ovf:
+			case Code.Add_Ovf_Un:
 			case Code.Sub:
+			case Code.Sub_Ovf:
+			case Code.Sub_Ovf_Un:
 				return OperationType.Additive;
 			case Code.Mul:
+			case Code.Mul_Ovf:
+			case Code.Mul_Ovf_Un:
 			case Code.Div:
+			case Code.Div_Un:
 			case Code.Rem:
+			case Code.Rem_Un:
 				return OperationType.Multiplicative;
 			case Code.And:
 				return OperationType.LogicalAnd;
@@ -197,15 +232,33 @@ namespace MonoDevelop.AssemblyBrowser
 				return OperationType.LogicalXor;
 			case Code.Shl:
 			case Code.Shr:
+			case Code.Shr_Un:
 				return OperationType.Shift;
 			case Code.Beq:
+			case Code.Beq_S:
 			case Code.Bgt:
+			case Code.Bgt_S:
+			case Code.Bgt_Un:
+			case Code.Bgt_Un_S:
 			case Code.Blt:
+			case Code.Blt_S:
+			case Code.Blt_Un:
+			case Code.Blt_Un_S:
 			case Code.Bge:
+			case Code.Bge_S:
+			case Code.Bge_Un:
+			case Code.Bge_Un_S:
 			case Code.Ble:
+			case Code.Ble_S:
+			case Code.Ble_Un:
+			case Code.Ble_Un_S:
+			case Code.Bne_Un:
+			case Code.Bne_Un_S:
 			case Code.Ceq:
 			case Code.Cgt:
+			case Code.Cgt_Un:
 			case Code.Clt:
+			case Code.Clt_Un:
 				return OperationType.Relational;
 			default:
 				return OperationType.Assignment;
@@ -214,7 +267,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		int GetLoadArgumentNumber (Code c, bool isStatic)
 		{
-			int result = 0;
+			int result = -2;
 			switch (c) {
 			case Code.Ldarg_0:
 				result = 0;
@@ -250,8 +303,9 @@ namespace MonoDevelop.AssemblyBrowser
 			case Code.Ldloc_3:
 			case Code.Stloc_3:
 				return "loc3";
+			default:
+				return "error in GetVariableName, unexpected opcode: " + c;
 			}
-			return "error" + c;
 		}
 		
 		string GetConst (Code c)
@@ -279,8 +333,9 @@ namespace MonoDevelop.AssemblyBrowser
 				return "8";
 			case Code.Ldnull:
 				return "null";
+			default:
+				return "error in GetConst, unexpected opcode: " + c;
 			}
-			return "error" + c;
 		}
 		
 		Dictionary<int, Statement> statements = new Dictionary<int, Statement>();
@@ -292,6 +347,14 @@ namespace MonoDevelop.AssemblyBrowser
 			} else {
 				statements[statement.Line].StringValue = statement.StringValue;
 			}
+		}
+		
+		string GetArgument(Operand StackItem, OperationType precedence)
+		{
+			if (StackItem.OperationType > precedence)
+				return "(" + StackItem.StringValue + ")";
+			else
+				return StackItem.StringValue;
 		}
 		
 		public string Decompile(MonoDevelop.Ide.Gui.Pads.ITreeNavigator navigator)
@@ -307,37 +370,51 @@ namespace MonoDevelop.AssemblyBrowser
 				try {
 					MethodReference calledMethod;
 					switch (instruction.OpCode.Code) {
+					case Code.Nop:
+					case Code.Break:
+					case Code.Ckfinite: // checks if a int value is NaN or Infinite
+						break;
 					case Code.Box:
 						break;
 					case Code.Add:
+					case Code.Add_Ovf:
+					case Code.Add_Ovf_Un:
 					case Code.Sub:
+					case Code.Sub_Ovf:
+					case Code.Sub_Ovf_Un:
 					case Code.Div:
+					case Code.Div_Un:
 					case Code.Mul:
+					case Code.Mul_Ovf:
+					case Code.Mul_Ovf_Un:
 					case Code.Rem:
+					case Code.Rem_Un:
 					case Code.And:
 					case Code.Or:
 					case Code.Xor:
 					case Code.Shl:
 					case Code.Shr:
+					case Code.Shr_Un:
 					case Code.Ceq:
 					case Code.Cgt:
+					case Code.Cgt_Un:
 					case Code.Clt:
+					case Code.Clt_Un:
 						OperationType precedence = GetOperatorPrecedence (instruction.OpCode.Code);
-						if (stack.Peek().OperationType > precedence)
-							arg2 = "(" + stack.Pop().StringValue + ")";
-						else
-							arg2 = stack.Pop().StringValue;
-						if (stack.Peek().OperationType > precedence)
-							arg1 = "(" + stack.Pop().StringValue + ")";
-						else
-							arg1 = stack.Pop().StringValue;
+						arg2 = GetArgument(stack.Pop(), precedence);
+						arg1 = GetArgument(stack.Pop(), precedence);
 						stack.Push(new Operand(arg1 + ' ' + GetOperatorChar(instruction.OpCode.Code) + ' ' + arg2, precedence));
 						break;
+					case Code.Neg:
+						arg1 = GetArgument(stack.Pop(), OperationType.Unary);
+						stack.Push(new Operand("-" +  instruction.Operand.ToString(), OperationType.Unary));
+						break;
+					case Code.Not:
+						arg1 = GetArgument(stack.Pop(), OperationType.Unary);
+						stack.Push(new Operand("Tilde ­" +  instruction.Operand.ToString(), OperationType.Unary));
+						break;
 					case Code.Castclass:
-						if (stack.Peek().OperationType > OperationType.Assignment)
-							arg1 = "(" + stack.Pop().StringValue + ")";
-						else
-							arg1 = stack.Pop().StringValue;
+						arg1 = GetArgument(stack.Pop(), OperationType.Assignment);
 						stack.Push(new Operand("(" +  instruction.Operand.ToString() + ")" + arg1, OperationType.Assignment));
 						break;
 					case Code.Ldarg_0:
@@ -350,11 +427,13 @@ namespace MonoDevelop.AssemblyBrowser
 							stack.Push(new Operand(method.MethodDefinition.Parameters[i].Name.ToString()));
 						break;
 					case Code.Ldarg_S:
+					case Code.Ldarg:
 						current.Line = instruction.Offset;
 						name = instruction.Operand.ToString();
 						stack.Push(new Operand(name));
 						break;
 					case Code.Starg_S:
+					case Code.Starg:
 						name = instruction.Operand.ToString();
 						current.StringValue = (name + " = " + stack.Pop().StringValue + ";");
 						SetStatement (current);
@@ -369,6 +448,7 @@ namespace MonoDevelop.AssemblyBrowser
 						current = new Statement();
 						break;
 					case Code.Stloc_S:
+					case Code.Stloc:
 						name = instruction.Operand.ToString();
 						current.StringValue = (name + " = " + stack.Pop().StringValue + ";");
 						SetStatement (current);
@@ -395,11 +475,14 @@ namespace MonoDevelop.AssemblyBrowser
 						SetStatement (current);
 						current = new Statement ();
 						break;
-					case Code.Ldelem_I: // hope the only difference between them is the Type of the Array Elements
+					case Code.Ldelem_I:
 					case Code.Ldelem_I1:
 					case Code.Ldelem_I2:
 					case Code.Ldelem_I4:
 					case Code.Ldelem_I8:
+					case Code.Ldelem_U1:
+					case Code.Ldelem_U2:
+					case Code.Ldelem_U4:
 					case Code.Ldelem_R4:
 					case Code.Ldelem_R8:
 					case Code.Ldelem_Ref:
@@ -414,6 +497,7 @@ namespace MonoDevelop.AssemblyBrowser
 						stack.Push (new Operand (GetVariableName (instruction.OpCode.Code)));
 						break;
 					case Code.Ldloc_S:
+					case Code.Ldloc:
 						current.Line = instruction.Offset;
 						name = instruction.Operand.ToString ();
 						stack.Push (new Operand (name));
@@ -437,12 +521,11 @@ namespace MonoDevelop.AssemblyBrowser
 						current.Line = instruction.Offset;
 						stack.Push (new Operand (GetConst (instruction.OpCode.Code)));
 						break;
-					case Code.Ldc_I4_S:
-						current.Line = instruction.Offset;
-						name = instruction.Operand.ToString ();
-						stack.Push (new Operand (name));
-						break;
 					case Code.Ldc_I4:
+					case Code.Ldc_I4_S:
+					case Code.Ldc_I8:
+					case Code.Ldc_R4:
+					case Code.Ldc_R8:
 						current.Line = instruction.Offset;
 						name = instruction.Operand.ToString ();
 						stack.Push (new Operand (name));
@@ -494,6 +577,12 @@ namespace MonoDevelop.AssemblyBrowser
 						SetStatement (current);
 						current = new Statement ();
 						break;
+					case Code.Dup:
+						stack.Push (stack.Peek ());
+						break;
+					case Code.Ldlen:
+						stack.Push (new Operand (stack.Pop ().StringValue + ".Count"));
+						break;
 					case Code.Newarr:
 						current.Line = instruction.Offset;
 						name = instruction.Operand.ToString ();
@@ -536,25 +625,39 @@ namespace MonoDevelop.AssemblyBrowser
 						current = new Statement ();
 						break;
 					case Code.Beq:
+					case Code.Beq_S:
+					case Code.Bne_Un:
+					case Code.Bne_Un_S:
 					case Code.Bgt:
+					case Code.Bgt_S:
+					case Code.Bgt_Un:
+					case Code.Bgt_Un_S:
 					case Code.Bge:
+					case Code.Bge_S:
+					case Code.Bge_Un:
+					case Code.Bge_Un_S:
 					case Code.Blt:
+					case Code.Blt_S:
+					case Code.Blt_Un:
+					case Code.Blt_Un_S:
 					case Code.Ble:
+					case Code.Ble_S:
+					case Code.Ble_Un:
+					case Code.Ble_Un_S:
 						precedence = GetOperatorPrecedence (instruction.OpCode.Code);
-						if (stack.Peek ().OperationType > precedence)
-							arg2 = "(" + stack.Pop ().StringValue + ")";
-						else
-							arg2 = stack.Pop().StringValue;
-						if (stack.Peek ().OperationType > precedence)
-							arg1 = "(" + stack.Pop ().StringValue + ")";
-						else
-							arg1 = stack.Pop().StringValue;
+						arg2 = GetArgument(stack.Pop (), precedence);
+						arg1 = GetArgument(stack.Pop(), precedence);
 						stack.Push (new Operand (arg1 + ' ' + GetOperatorChar (instruction.OpCode.Code) + ' ' + arg2, precedence));
 						goto case Code.Br;
+					case Code.Leave:
+					case Code.Leave_S:
 					case Code.Br:
+					case Code.Br_S:
 					case Code.Brfalse:
+					case Code.Brfalse_S:
 					case Code.Brtrue:
-						if (instruction.OpCode.Code == Code.Br)
+					case Code.Brtrue_S:
+						if (instruction.OpCode.Code == Code.Br || instruction.OpCode.Code == Code.Br_S)
 							current.Line = instruction.Offset;
 						Mono.Cecil.Cil.Instruction instr = (Mono.Cecil.Cil.Instruction)instruction.Operand;
 						int target = instr.Offset;
@@ -570,8 +673,8 @@ namespace MonoDevelop.AssemblyBrowser
 							statements.Add (target, s);
 						}
 						name  = "goto " + label + ";";
-						if (instruction.OpCode.Code != Code.Br) {
-							string not = (instruction.OpCode.Code == Code.Brfalse) ? "!" : "";
+						if (instruction.OpCode.Code != Code.Br && instruction.OpCode.Code != Code.Br_S && instruction.OpCode.Code != Code.Leave && instruction.OpCode.Code != Code.Leave_S) {
+							string not = (instruction.OpCode.Code == Code.Brfalse || instruction.OpCode.Code == Code.Brfalse_S) ? "!" : "";
 							name = "if (" + not + stack.Pop ().StringValue + ") " + name;
 						}
 						current.StringValue = name;
@@ -590,6 +693,10 @@ namespace MonoDevelop.AssemblyBrowser
 							SetStatement (current);
 							current = new Statement ();
 						}
+						break;
+					case Code.Sizeof: 
+						name = instruction.Operand.ToString ();
+						stack.Push (new Operand ("sizeof (" + name + ")", OperationType.Unary));
 						break;
 					default:
 						current.Line = instruction.Offset;
