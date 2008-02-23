@@ -895,10 +895,11 @@ namespace Mono.TextEditor
 			int endLine   = startLine + (area.Height / this.LineHeight);
 			if (area.Height % this.LineHeight == 0) {
 				startLine = (area.Top + reminder) / this.LineHeight;
-				endLine   = startLine + (area.Height / this.LineHeight) - 1;
+				endLine   = startLine + (area.Height / this.LineHeight);
 			} else {
 				endLine++;
 			}
+			
 			int startY = startLine * this.LineHeight - reminder;
 			int curY = startY;
 			for (int visualLineNumber = startLine; visualLineNumber <= endLine; visualLineNumber++) {

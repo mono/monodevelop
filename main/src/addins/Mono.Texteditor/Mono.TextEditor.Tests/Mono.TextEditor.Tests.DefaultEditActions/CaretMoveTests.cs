@@ -39,7 +39,6 @@ namespace Mono.TextEditor.Tests
 		{
 			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
 			data.Document.Text = "1\n2\n3";
-			
 			data.Caret.Location = new DocumentLocation (1, 0);
 			new CaretMoveDown ().Run (data);
 			Assert.AreEqual (2, data.Caret.Line);
