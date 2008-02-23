@@ -428,6 +428,24 @@ namespace MonoDevelop.NUnit
 		}
 		
 		
+		public static UnitTest SearchTest (UnitTest test, string fullName)
+		{
+			if (test == null)
+				return null;
+			if (test.FullName == fullName)
+				return test;
+			
+			UnitTestGroup group = test as UnitTestGroup;
+			if (group != null)  {
+				foreach (UnitTest t in group.Tests) {
+					UnitTest result = SearchTest (t, fullName);
+					if (result != null)
+						return result;
+				}
+			}
+			return null;
+		}
+		
 		
 		void RunTest (ITreeNavigator nav)
 		{
@@ -436,8 +454,8 @@ namespace MonoDevelop.NUnit
 			UnitTest test = nav.DataItem as UnitTest;
 			if (test == null)
 				return;
+			string fullName = test.FullName;
 			TestSession.ResetResult (this.testService.RootTest);
-			
 			IdeApp.Workbench.GetPad<TestPad> ().BringToFront ();
 			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
 				if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
@@ -446,7 +464,10 @@ namespace MonoDevelop.NUnit
 				} 
 				IAsyncOperation op = IdeApp.ProjectOperations.Build (IdeApp.ProjectOperations.CurrentOpenCombine);
 				op.Completed += delegate {
-					GLib.Timeout.Add (0, delegate {
+					GLib.Timeout.Add (50, delegate {
+						test = SearchTest (this.testService.RootTest, fullName);
+						if (test == null)
+							return false;
 						runningTestOperation = testService.RunTest (test);
 						runningTestOperation.Completed += (OperationHandler) DispatchService.GuiDispatch (new OperationHandler (TestSessionCompleted));
 						this.buttonRun.Sensitive = false;

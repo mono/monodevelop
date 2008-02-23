@@ -1,5 +1,9 @@
 2008-02-23  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/TestPad.cs: Fixed threading bug.
+
+2008-02-23  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelopNUnit.addin.xml, Services/TestProgressMonitor.cs,
 	  Services/NUnitService.cs, Gui/TestResultsPad.cs, Gui/TestPad.cs,
 	  Gui/CircleImage.cs: Worked on nunit pad
