@@ -54,5 +54,6 @@ namespace MonoDevelop.AssemblyBrowser
 			this.ContentName = System.IO.Path.GetFileName (fileName);
 			widget.AddReference (fileName);
 		}
+
 	}
 }

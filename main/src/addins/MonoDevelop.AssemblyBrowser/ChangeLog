@@ -1,5 +1,13 @@
 2008-02-24  Mike Krüger <mkrueger@novell.com> 
 
+	* gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs,
+	  MonoDevelop.AssemblyBrowser/AssemblyBrowserView.cs,
+	  MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs,
+	  MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs: Worked on assembly
+	  browser.
+
+2008-02-24  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.AssemblyBrowser.Dom/DomCecilMethod.cs,
 	  MonoDevelop.AssemblyBrowser.Dom/DomCecilType.cs,
 	  MonoDevelop.AssemblyBrowser.Dom/DomCecilEvent.cs,

@@ -111,6 +111,28 @@ namespace MonoDevelop.AssemblyBrowser
 			return String.Format ("IL_{0:X4}", instruction.Offset);
 		}
 		
+		public string GetDecompiledCode (ITreeNavigator navigator)
+		{
+			DomCecilMethod method = navigator.DataItem as DomCecilMethod;
+			if (method == null)
+				return "";
+			if (method.MethodDefinition.IsPInvokeImpl)
+				return GettextCatalog.GetString ("Method is P/Invoke");
+			if (method.MethodDefinition.Body == null) {
+				IType type = (IType)navigator.GetParentDataItem (typeof (IType), false);
+				return type == null || type.ClassType == ClassType.Interface ? GettextCatalog.GetString ("Interface method") : GettextCatalog.GetString ("Abstract method");
+			}
+			
+			StringBuilder result = new StringBuilder ();
+			try {
+				string decompiledCode = new Decompiler().Decompile (navigator);
+				result.Append (Ambience.Format (decompiledCode));
+			} catch (Exception e) {
+				result.Append ("got exception while decompilation: \n" + e);
+			}
+			return result.ToString ();
+		}
+		
 		string IAssemblyBrowserNodeBuilder.GetDisassembly (ITreeNavigator navigator)
 		{
 			DomCecilMethod method = navigator.DataItem as DomCecilMethod;
@@ -124,7 +146,6 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			
 			StringBuilder result = new StringBuilder ();
-			
 			foreach (Instruction instruction in method.MethodDefinition.Body.Instructions ) {
 				result.Append ("<b>");
 				result.Append (GetInstructionOffset (instruction));
@@ -147,13 +168,6 @@ namespace MonoDevelop.AssemblyBrowser
 				result.AppendLine ();
 			}
 			result.AppendLine ();
-			
-			try {
-				string decompiledCode = new Decompiler().Decompile (navigator);
-				result.Append (Ambience.Format (decompiledCode));
-			} catch (Exception e) {
-				result.Append ("got exception while decompilation: \n" + e);
-			}
 			
 			return result.ToString ();
 		}
