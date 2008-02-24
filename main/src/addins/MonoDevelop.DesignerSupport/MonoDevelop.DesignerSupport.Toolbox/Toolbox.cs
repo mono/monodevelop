@@ -206,7 +206,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			foreach (BaseToolboxNode node in toolboxService.GetCurrentToolboxItems ()) {
 				if (node is ItemToolboxNode) {
 					ItemToolboxNode itbn = ((ItemToolboxNode)node);
-					Item newItem = new Item (itbn.ViewIcon, itbn.Label, itbn.Description, itbn);
+					Item newItem = new Item (itbn.ViewIcon, itbn.Label, String.IsNullOrEmpty (itbn.Description) ? itbn.Label : itbn.Description, itbn);
 					if (!categories.ContainsKey (itbn.Category))
 						categories[itbn.Category] = new Category (itbn.Category);
 					if (newItem.Text != null)

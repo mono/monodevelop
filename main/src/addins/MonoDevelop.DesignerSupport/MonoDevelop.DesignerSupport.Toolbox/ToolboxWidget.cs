@@ -383,13 +383,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				if (xpos <= mouseX && mouseX <= xpos + itemDimension.Width + spacing  &&
 				    ypos <= mouseY && mouseY <= ypos + itemDimension.Height + spacing) {
 					mouseOverItem = category;
-					ShowTooltip (mouseOverItem, (int)e.X - 2, (int)e.Y + itemDimension.Height + 3);
+					ShowTooltip (mouseOverItem, (int)e.X + 2, (int)e.Y + 16);
 				}
 			}, delegate (Item item, Gdk.Size itemDimension) {
 				if (xpos <= mouseX && mouseX <= xpos + itemDimension.Width + spacing  &&
 				    ypos <= mouseY && mouseY <= ypos + itemDimension.Height + spacing) {
 					mouseOverItem = item;
-					ShowTooltip (mouseOverItem, (int)e.X - 2, (int)e.Y + itemDimension.Height + 3);
+					ShowTooltip (mouseOverItem, (int)e.X + 2, (int)e.Y + 16);
 				}
 			});
 			
