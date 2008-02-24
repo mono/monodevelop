@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Diagnostics;
 
 namespace MonoDevelop.Ide.Dom
 {
@@ -39,6 +40,40 @@ namespace MonoDevelop.Ide.Dom
 				return isIndexer;
 			}
 		}
+		
+		public virtual bool HasSet {
+			get {
+				return GetMethod != null;
+			}
+		}
+		
+		public virtual bool HasGet {
+			get {
+				return SetMethod != null;
+			}
+		}
+		
+		public virtual IMethod GetMethod {
+			get {
+				return LookupSpecialMethod ("get_");
+			}
+		}
+		
+		public virtual IMethod SetMethod {
+			get {
+				return LookupSpecialMethod ("set_");
+			}
+		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[DomProperty:Name={0}, Modifiers={1}, ReturnType={2}, Region={3}]",
+			                      Name,
+			                      Modifiers,
+			                      ReturnType,
+			                      Region);
+		}
+		
 		
 		public override object AcceptVisitior (IDomVisitor visitor, object data)
 		{

@@ -166,7 +166,7 @@ namespace MonoDevelop.Ide.Dom.Output
 			} else {
 				result.Append (Format (field.Name));
 			}
-			if (IncludeReturnType (flags)) {
+			if (IncludeReturnType (flags) && !field.IsLiteral) {
 				result.Append (" : ");
 				result.Append (GetString (field.ReturnType, flags));
 			}

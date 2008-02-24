@@ -78,6 +78,14 @@ namespace MonoDevelop.Ide.Dom
 		{
 			return visitor.Visit (this, data);
 		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[DomReturnType:Name={0}, PointerNestingLevel={1}, ArrayDimensions={2}]",
+			                      Name,
+			                      PointerNestingLevel,
+			                      ArrayDimensions);
+		}
 
 	}
 }

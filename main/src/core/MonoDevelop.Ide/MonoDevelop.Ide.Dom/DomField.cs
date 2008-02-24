@@ -32,6 +32,16 @@ namespace MonoDevelop.Ide.Dom
 {
 	public class DomField : AbstractMember, IField
 	{
+		
+		public override string ToString ()
+		{
+			return string.Format ("[DomField:Name={0}, Modifiers={1}, ReturnType={2}, Region={3}]",
+			                      Name,
+			                      Modifiers,
+			                      ReturnType,
+			                      Region);
+		}
+		
 		public override object AcceptVisitior (IDomVisitor visitor, object data)
 		{
 			return visitor.Visit (this, data);

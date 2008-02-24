@@ -34,5 +34,22 @@ namespace MonoDevelop.Ide.Dom
 		bool IsIndexer {
 			get;
 		}
+		
+		bool HasSet {
+			get;
+		}
+		
+		bool HasGet {
+			get;
+		}
+		
+		IMethod GetMethod {
+			get;
+		}
+		
+		IMethod SetMethod {
+			get;
+		}
+		
 	}
 }

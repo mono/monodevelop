@@ -97,6 +97,30 @@ namespace MonoDevelop.Ide.Dom
 			}
 		}
 		
+		/// <summary>
+		/// This method is used to look up special methods that are connected to
+		/// the member (like set/get method for events).
+		/// </summary>
+		/// <param name="prefix">
+		/// A <see cref="System.String"/> for the prefix. For example the property Name has the method set_Name attacehd
+		/// and 'set_' is the prefix.
+		/// </param>
+		/// <returns>
+		/// A <see cref="IMethod"/> when the special method is found, null otherwise.
+		/// </returns>
+		protected IMethod LookupSpecialMethod (string prefix)
+		{
+			if (DeclaringType == null)
+				return null;
+			string specialMethodName = prefix + Name;
+			foreach (IMethod method in DeclaringType.Methods) {
+				if (method.IsSpecialName && method.Name == specialMethodName)
+					return method;
+			}
+			return null;
+		}
+
+		
 		public virtual int CompareTo (object obj)
 		{
 			return 0;

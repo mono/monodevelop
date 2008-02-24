@@ -68,6 +68,14 @@ namespace MonoDevelop.Ide.Dom
 				return region;
 			}
 		}
+		public override string ToString ()
+		{
+			return string.Format ("[DomParameter:Name={0}, ParameterModifiers={1}, ReturnType={2}, Region={3}]",
+			                      Name,
+			                      ParameterModifiers,
+			                      ReturnType,
+			                      Region);
+		}
 
 		public object AcceptVisitior (IDomVisitor visitor, object data)
 		{

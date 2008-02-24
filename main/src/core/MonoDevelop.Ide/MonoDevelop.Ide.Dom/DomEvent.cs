@@ -33,26 +33,31 @@ namespace MonoDevelop.Ide.Dom
 {
 	public class DomEvent : AbstractMember, IEvent
 	{
-		protected IMethod addMethod;
-		protected IMethod removeMethod;
-		protected IMethod raiseMethod;
-		
-		public IMethod AddMethod {
+		public virtual IMethod AddMethod {
 			get {
-				return addMethod;
+				return LookupSpecialMethod ("add_");
 			}
 		}
 		
-		public IMethod RemoveMethod {
+		public virtual IMethod RemoveMethod {
 			get {
-				return removeMethod;
+				return LookupSpecialMethod ("remove_");
 			}
 		}
 		
-		public IMethod RaiseMethod {
+		public virtual IMethod RaiseMethod {
 			get {
-				return raiseMethod;
+				return LookupSpecialMethod ("raise_");
 			}
+		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[DomEvent:Name={0}, Modifiers={1}, ReturnType={2}, Region={3}]",
+			                      Name,
+			                      Modifiers,
+			                      ReturnType,
+			                      Region);
 		}
 		
 		public override object AcceptVisitior (IDomVisitor visitor, object data)

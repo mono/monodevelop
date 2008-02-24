@@ -75,5 +75,16 @@ namespace MonoDevelop.Ide.Dom
 			this.endLine     = endLine;
 			this.endColumn   = endColumn;
 		}
+		public override string ToString ()
+		{
+			if (this.IsEmpty)
+				return string.Format ("[DomRegion: Empty]");
+			
+			return string.Format ("[DomRegion:{0}/{1} - {2}/{3}]",
+			                      StartLine,
+			                      StartColumn,
+			                      EndLine,
+			                      EndColumn);
+		}
 	}
 }
