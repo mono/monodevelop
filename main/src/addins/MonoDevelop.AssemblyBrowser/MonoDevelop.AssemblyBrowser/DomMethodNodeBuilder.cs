@@ -44,8 +44,6 @@ namespace MonoDevelop.AssemblyBrowser
 {
 	public class DomMethodNodeBuilder : TypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
-		static readonly string[] iconTable = {Stock.Method, Stock.PrivateMethod, Stock.ProtectedMethod, Stock.InternalMethod};
-		
 		public override Type NodeDataType {
 			get { return typeof(IMethod); }
 		}
@@ -69,7 +67,7 @@ namespace MonoDevelop.AssemblyBrowser
 			if (method.IsPrivate || method.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
 			
-			icon = Context.GetIcon (iconTable[DomTypeNodeBuilder.GetModifierOffset (method.Modifiers)]);
+			icon = method.Icon;
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)

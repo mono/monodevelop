@@ -67,32 +67,7 @@ namespace MonoDevelop.AssemblyBrowser
 			label = AmbienceService.Default.GetString (type, OutputFlags.ClassBrowserEntries);
 			if (type.IsPrivate || type.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
-			icon = Context.GetIcon (GetIcon (type));
-		}
-		
-		static string[,] iconTable = new string[,] {
-			{Stock.Error,     Stock.Error,            Stock.Error,              Stock.Error},             // unknown
-			{Stock.Class,     Stock.PrivateClass,     Stock.ProtectedClass,     Stock.InternalClass},     // class
-			{Stock.Enum,      Stock.PrivateEnum,      Stock.ProtectedEnum,      Stock.InternalEnum},      // enum
-			{Stock.Interface, Stock.PrivateInterface, Stock.ProtectedInterface, Stock.InternalInterface}, // interface
-			{Stock.Struct,    Stock.PrivateStruct,    Stock.ProtectedStruct,    Stock.InternalStruct},    // struct
-			{Stock.Delegate,  Stock.PrivateDelegate,  Stock.ProtectedDelegate,  Stock.InternalDelegate}   // delegate
-		};
-		
-		public static int GetModifierOffset (Modifiers modifier)
-		{
-			if ((modifier & Modifiers.Private) == Modifiers.Private)
-				return 1;
-			if ((modifier & Modifiers.Protected) == Modifiers.Protected)
-				return 2;
-			if ((modifier & Modifiers.Internal) == Modifiers.Internal)
-				return 3;
-			return 0;
-		}
-		
-		public static string GetIcon (IType type)
-		{
-			return iconTable[(int)type.ClassType, GetModifierOffset (type.Modifiers)];
+			icon = type.Icon;
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
@@ -101,7 +76,6 @@ namespace MonoDevelop.AssemblyBrowser
 			ctx.AddChild (new BaseTypeFolder (type));
 			foreach (object o in type.Members) {
 				if (o is IMember && ((IMember)o).IsSpecialName) {
-					System.Console.WriteLine(o);
 					continue;
 				}
 				ctx.AddChild (o);

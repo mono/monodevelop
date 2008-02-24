@@ -6,6 +6,7 @@ FILES =  \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs \
 	MonoDevelop.AssemblyBrowser.Dom/DomCecilAttribute.cs \
+	MonoDevelop.AssemblyBrowser.Dom/DomCecilCompilationUnit.cs \
 	MonoDevelop.AssemblyBrowser.Dom/DomCecilEvent.cs \
 	MonoDevelop.AssemblyBrowser.Dom/DomCecilField.cs \
 	MonoDevelop.AssemblyBrowser.Dom/DomCecilMethod.cs \
@@ -47,6 +48,7 @@ RES =  \
 GENERATED_FILES =  
 
 REFS =  \
+	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	-r:$(top_builddir)/build/bin/Mono.Cecil.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \

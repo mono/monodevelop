@@ -41,14 +41,13 @@ namespace MonoDevelop.AssemblyBrowser
 {
 	public class DomEventNodeBuilder : TypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
-		static readonly string[] iconTable = {Stock.Event, Stock.PrivateEvent, Stock.ProtectedEvent, Stock.InternalEvent};
-		
 		public override Type NodeDataType {
 			get { return typeof(IEvent); }
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
+			
 			IEvent evt = (IEvent)dataObject;
 			return evt.FullName;
 		}
@@ -59,7 +58,7 @@ namespace MonoDevelop.AssemblyBrowser
 			label = AmbienceService.Default.GetString (evt, OutputFlags.ClassBrowserEntries);
 			if (evt.IsPrivate || evt.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
-			icon = Context.GetIcon (iconTable[DomTypeNodeBuilder.GetModifierOffset (evt.Modifiers)]);
+			icon = evt.Icon;
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)

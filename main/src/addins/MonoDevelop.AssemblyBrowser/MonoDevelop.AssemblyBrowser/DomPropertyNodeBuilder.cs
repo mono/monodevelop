@@ -41,8 +41,6 @@ namespace MonoDevelop.AssemblyBrowser
 {
 	public class DomPropertyNodeBuilder : TypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
-		static readonly string[] iconTable = {Stock.Property, Stock.PrivateProperty, Stock.ProtectedProperty, Stock.InternalProperty};
-		
 		public override Type NodeDataType {
 			get { return typeof(IProperty); }
 		}
@@ -59,7 +57,7 @@ namespace MonoDevelop.AssemblyBrowser
 			label = AmbienceService.Default.GetString (property, OutputFlags.ClassBrowserEntries);
 			if (property.IsPrivate || property.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
-			icon = Context.GetIcon (iconTable[DomTypeNodeBuilder.GetModifierOffset (property.Modifiers)]);
+			icon = property.Icon;
 		}
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
@@ -75,9 +73,9 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
 			IProperty property = (IProperty)dataObject;
-			if (property.HasGet)
+			if (property.GetMethod != null)
 				ctx.AddChild (property.GetMethod);
-			if (property.HasSet)
+			if (property.SetMethod != null)
 				ctx.AddChild (property.SetMethod);
 		}
 		

@@ -1,3 +1,15 @@
+2008-02-25  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.AssemblyBrowser.Dom/DomCecilCompilationUnit.cs,
+	  MonoDevelop.AssemblyBrowser/BaseTypeFolderNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs,
+	  MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomEventNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomFieldNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomPropertyNodeBuilder.cs: Worked on
+	  assembly browser (search types & members)
+
 2008-02-24  Mike Krüger <mkrueger@novell.com> 
 
 	* gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs,
