@@ -27,11 +27,19 @@
 //
 
 using System;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.Dom
 {
 	public class DomField : AbstractMember, IField
 	{
+		
+		static readonly string[] iconTable = {Stock.Event, Stock.PrivateEvent, Stock.ProtectedEvent, Stock.InternalEvent};
+		public override string StockIcon {
+			get {
+				return iconTable [ModifierToOffset (Modifiers)];
+			}
+		}		
 		
 		public override string ToString ()
 		{

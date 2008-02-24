@@ -69,6 +69,14 @@ namespace MonoDevelop.Ide.Dom
 			get;
 		}
 		
+		string StockIcon {
+			get;
+		}
+		
+		Gdk.Pixbuf Icon {
+			get;
+		}
+		
 		#region ModifierAccessors
 		bool IsPrivate   { get; }
 		bool IsInternal  { get; }

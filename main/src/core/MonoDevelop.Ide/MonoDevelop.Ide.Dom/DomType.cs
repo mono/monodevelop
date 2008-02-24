@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.Dom
 {
@@ -133,6 +134,21 @@ namespace MonoDevelop.Ide.Dom
 				foreach (IMember item in Members)
 					if (item is IEvent)
 						yield return (IEvent)item;
+			}
+		}
+		
+		static string[,] iconTable = new string[,] {
+			{Stock.Error,     Stock.Error,            Stock.Error,              Stock.Error},             // unknown
+			{Stock.Class,     Stock.PrivateClass,     Stock.ProtectedClass,     Stock.InternalClass},     // class
+			{Stock.Enum,      Stock.PrivateEnum,      Stock.ProtectedEnum,      Stock.InternalEnum},      // enum
+			{Stock.Interface, Stock.PrivateInterface, Stock.ProtectedInterface, Stock.InternalInterface}, // interface
+			{Stock.Struct,    Stock.PrivateStruct,    Stock.ProtectedStruct,    Stock.InternalStruct},    // struct
+			{Stock.Delegate,  Stock.PrivateDelegate,  Stock.ProtectedDelegate,  Stock.InternalDelegate}   // delegate
+		};
+		
+		public override string StockIcon {
+			get {
+				return iconTable[(int)ClassType, ModifierToOffset (Modifiers)];
 			}
 		}
 		

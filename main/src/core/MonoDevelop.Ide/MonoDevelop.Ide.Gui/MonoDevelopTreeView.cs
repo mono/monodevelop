@@ -1442,12 +1442,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 				set {
 					if (value != Selected) {
-						Gtk.TreeIter parent = currentIter;
-						while (store.IterParent (out parent, parent)) {
-							Gtk.TreePath path = store.GetPath (parent);
-							tree.ExpandRow (path, false);
-						}
-				
+						ExpandToNode ();
 						tree.Selection.SelectIter (currentIter);
 						tree.SetCursor (store.GetPath (currentIter), pad.CompleteColumn, false);
 //						tree.ScrollToCell (store.GetPath (currentIter), null, false, 0, 0);

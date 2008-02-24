@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.Dom
 {
@@ -45,6 +46,13 @@ namespace MonoDevelop.Ide.Dom
 		public IEnumerable<IParameter> Parameters {
 			get {
 				return parameters;
+			}
+		}
+		
+		static readonly string[] iconTable = {Stock.Method, Stock.PrivateMethod, Stock.ProtectedMethod, Stock.InternalMethod};
+		public override string StockIcon {
+			get {
+				return iconTable [ModifierToOffset (Modifiers)];
 			}
 		}
 		

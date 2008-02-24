@@ -28,6 +28,7 @@
 
 using System;
 using System.Diagnostics;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.Dom
 {
@@ -62,6 +63,14 @@ namespace MonoDevelop.Ide.Dom
 		public virtual IMethod SetMethod {
 			get {
 				return LookupSpecialMethod ("set_");
+			}
+		}
+		
+		static readonly string[] iconTable = {Stock.Property, Stock.PrivateProperty, Stock.ProtectedProperty, Stock.InternalProperty};
+		
+		public override string StockIcon {
+			get {
+				return iconTable [ModifierToOffset (Modifiers)];
 			}
 		}
 		

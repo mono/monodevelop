@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.Dom
 {
@@ -48,6 +49,13 @@ namespace MonoDevelop.Ide.Dom
 		public virtual IMethod RaiseMethod {
 			get {
 				return LookupSpecialMethod ("raise_");
+			}
+		}
+		
+		static readonly string[] iconTable = {Stock.Event, Stock.PrivateEvent, Stock.ProtectedEvent, Stock.InternalEvent};
+		public override string StockIcon {
+			get {
+				return iconTable [ModifierToOffset (Modifiers)];
 			}
 		}
 		

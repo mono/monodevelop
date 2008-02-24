@@ -54,37 +54,37 @@ namespace MonoDevelop.Ide.Dom
 			}
 		}
 		
-		IEnumerable<IUsing> ICompilationUnit.Usings {
+		public IEnumerable<IUsing> Usings {
 			get {
 				return usings;
 			}
 		}
 		
-		IEnumerable<IAttribute> ICompilationUnit.Attributes {
+		public IEnumerable<IAttribute> Attributes {
 			get {
 				return attributes;
 			}
 		}
 		
-		IEnumerable<IType> ICompilationUnit.Types {
+		public IEnumerable<IType> Types {
 			get {
 				return types;
 			}
 		}
 		
-		IEnumerable<Comment> ICompilationUnit.Comments {
+		public IEnumerable<Comment> Comments {
 			get {
 				return comments;
 			}
 		}
 		
-		IEnumerable<DomRegion> ICompilationUnit.FoldingRegions {
+		public IEnumerable<DomRegion> FoldingRegions {
 			get {
 				return foldingRegions;
 			}
 		}
 		
-		IEnumerable<Error> ICompilationUnit.Errors {
+		public IEnumerable<Error> Errors {
 			get {
 				return errors;
 			}

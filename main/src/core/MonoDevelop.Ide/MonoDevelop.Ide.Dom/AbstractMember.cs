@@ -119,7 +119,37 @@ namespace MonoDevelop.Ide.Dom
 			}
 			return null;
 		}
-
+		
+		public virtual Gdk.Pixbuf Icon {
+			get {
+				return MonoDevelop.Ide.Gui.IdeApp.Services.Resources.GetIcon (StockIcon, Gtk.IconSize.Menu);
+			}
+		}
+		
+		public abstract string StockIcon {
+			get;
+		}
+		
+		/// <summary>
+		/// Help method used for getting the right icon for a member.
+		/// </summary>
+		/// <param name="modifier">
+		/// A <see cref="Modifiers"/>
+		/// </param>
+		/// <returns>
+		/// A <see cref="System.Int32"/> 
+		/// </returns>
+		protected static int ModifierToOffset (Modifiers modifier)
+		{
+			if ((modifier & Modifiers.Private) == Modifiers.Private)
+				return 1;
+			if ((modifier & Modifiers.Protected) == Modifiers.Protected)
+				return 2;
+			if ((modifier & Modifiers.Internal) == Modifiers.Internal)
+				return 3;
+			return 0;
+		}
+		
 		
 		public virtual int CompareTo (object obj)
 		{
