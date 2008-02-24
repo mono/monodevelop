@@ -41,8 +41,9 @@ namespace MonoDevelop.AssemblyBrowser.Dom
 			}
 		}
 		
-		public DomCecilField (FieldDefinition fieldDefinition)
+		public DomCecilField (MonoDevelop.Ide.Dom.IType declaringType, FieldDefinition fieldDefinition)
 		{
+			this.declaringType   = declaringType;
 			this.fieldDefinition = fieldDefinition;
 			base.name            = fieldDefinition.Name;
 			base.modifiers       = DomCecilType.GetModifiers (fieldDefinition.Attributes);

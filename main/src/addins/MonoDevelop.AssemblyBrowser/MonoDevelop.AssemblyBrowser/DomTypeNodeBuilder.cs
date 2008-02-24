@@ -65,6 +65,8 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			IType type = (IType)dataObject;
 			label = AmbienceService.Default.GetString (type, OutputFlags.ClassBrowserEntries);
+			if (type.IsPrivate || type.IsInternal)
+				label = DomMethodNodeBuilder.FormatPrivate (label);
 			icon = Context.GetIcon (GetIcon (type));
 		}
 		
@@ -98,6 +100,10 @@ namespace MonoDevelop.AssemblyBrowser
 			IType type = (IType)dataObject;
 			ctx.AddChild (new BaseTypeFolder (type));
 			foreach (object o in type.Members) {
+				if (o is IMember && ((IMember)o).IsSpecialName) {
+					System.Console.WriteLine(o);
+					continue;
+				}
 				ctx.AddChild (o);
 			}
 		}

@@ -57,6 +57,8 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			IProperty property = (IProperty)dataObject;
 			label = AmbienceService.Default.GetString (property, OutputFlags.ClassBrowserEntries);
+			if (property.IsPrivate || property.IsInternal)
+				label = DomMethodNodeBuilder.FormatPrivate (label);
 			icon = Context.GetIcon (iconTable[DomTypeNodeBuilder.GetModifierOffset (property.Modifiers)]);
 		}
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
@@ -69,6 +71,22 @@ namespace MonoDevelop.AssemblyBrowser
 				return ((IProperty)thisNode.DataItem).Name.CompareTo (((IProperty)otherNode.DataItem).Name);
 			return -1;
 		}
+		
+		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
+		{
+			IProperty property = (IProperty)dataObject;
+			if (property.HasGet)
+				ctx.AddChild (property.GetMethod);
+			if (property.HasSet)
+				ctx.AddChild (property.SetMethod);
+		}
+		
+		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
+		{
+			IProperty property = (IProperty)dataObject;
+			return property.HasGet || property.HasSet;
+		}
+		
 		
 		#region IAssemblyBrowserNodeBuilder
 		string IAssemblyBrowserNodeBuilder.GetDescription (ITreeNavigator navigator)

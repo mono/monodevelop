@@ -57,6 +57,8 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			IField field = (IField)dataObject;
 			label = AmbienceService.Default.GetString (field, OutputFlags.ClassBrowserEntries);
+			if (field.IsPrivate || field.IsInternal)
+				label = DomMethodNodeBuilder.FormatPrivate (label);
 			icon = Context.GetIcon (iconTable[DomTypeNodeBuilder.GetModifierOffset (field.Modifiers)]);
 		}
 		

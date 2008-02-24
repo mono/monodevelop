@@ -56,11 +56,19 @@ namespace MonoDevelop.AssemblyBrowser
 			return method.FullName;
 		}
 		
+		public static string FormatPrivate (string label)
+		{
+			return "<span foreground= \"#666666\">" + label + "</span>";	
+		}
+		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			IMethod method = (IMethod)dataObject;
+			
 			label = AmbienceService.Default.GetString (method, OutputFlags.ClassBrowserEntries);
-			System.Console.WriteLine (label);
+			if (method.IsPrivate || method.IsInternal)
+				label = DomMethodNodeBuilder.FormatPrivate (label);
+			
 			icon = Context.GetIcon (iconTable[DomTypeNodeBuilder.GetModifierOffset (method.Modifiers)]);
 		}
 		
@@ -102,7 +110,6 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			return String.Format ("IL_{0:X4}", instruction.Offset);
 		}
-		
 		
 		string IAssemblyBrowserNodeBuilder.GetDisassembly (ITreeNavigator navigator)
 		{

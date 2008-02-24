@@ -41,8 +41,9 @@ namespace MonoDevelop.AssemblyBrowser.Dom
 			}
 		}
 		
-		public DomCecilMethod (MethodDefinition methodDefinition)
+		public DomCecilMethod (MonoDevelop.Ide.Dom.IType declaringType, MethodDefinition methodDefinition)
 		{
+			this.declaringType    = declaringType;
 			this.methodDefinition = methodDefinition;
 			base.name             = methodDefinition.Name;
 			base.modifiers        = DomCecilType.GetModifiers (methodDefinition.Attributes);

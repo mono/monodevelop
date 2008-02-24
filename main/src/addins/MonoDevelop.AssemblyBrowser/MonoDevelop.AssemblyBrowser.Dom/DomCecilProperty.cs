@@ -41,11 +41,15 @@ namespace MonoDevelop.AssemblyBrowser.Dom
 			}
 		}
 		
-		public DomCecilProperty (PropertyDefinition propertyDefinition)
+		public DomCecilProperty (MonoDevelop.Ide.Dom.IType declaringType, PropertyDefinition propertyDefinition)
 		{
+			this.declaringType      = declaringType;
 			this.propertyDefinition = propertyDefinition;
 			base.name               = propertyDefinition.Name;
+			
 			base.modifiers          = DomCecilType.GetModifiers ((propertyDefinition.GetMethod != null ? propertyDefinition.GetMethod : propertyDefinition.SetMethod).Attributes);
+			if (!propertyDefinition.IsSpecialName)
+				base.modifiers &= ~MonoDevelop.Ide.Dom.Modifiers.SpecialName;
 			base.returnType         = new DomCecilReturnType (propertyDefinition.PropertyType);
 		}
 	}

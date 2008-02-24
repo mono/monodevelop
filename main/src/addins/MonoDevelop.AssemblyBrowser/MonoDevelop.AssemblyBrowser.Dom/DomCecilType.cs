@@ -71,13 +71,13 @@ namespace MonoDevelop.AssemblyBrowser.Dom
 				if (base.members == null) {
 					base.members = new List<IMember> ();
 					foreach (FieldDefinition fieldDefinition in typeDefinition.Fields)
-						base.members.Add (new DomCecilField (fieldDefinition));
+						base.members.Add (new DomCecilField (this, fieldDefinition));
 					foreach (MethodDefinition methodDefinition in typeDefinition.Methods)
-						base.members.Add (new DomCecilMethod (methodDefinition));
+						base.members.Add (new DomCecilMethod (this, methodDefinition));
 					foreach (PropertyDefinition propertyDefinition in typeDefinition.Properties)
-						base.members.Add (new DomCecilProperty (propertyDefinition));
+						base.members.Add (new DomCecilProperty (this, propertyDefinition));
 					foreach (EventDefinition eventDefinition in typeDefinition.Events)
-						base.members.Add (new DomCecilEvent (eventDefinition));
+						base.members.Add (new DomCecilEvent (this, eventDefinition));
 				}
 				return members;
 			}
@@ -163,6 +163,8 @@ namespace MonoDevelop.AssemblyBrowser.Dom
 				result |= Modifiers.Virtual;
 			if ((attr & MethodAttributes.Final) == MethodAttributes.Final) 
 				result |= Modifiers.Final;
+			if ((attr & MethodAttributes.SpecialName) == MethodAttributes.SpecialName) 
+				result |= Modifiers.SpecialName;
 			
 			if ((attr & MethodAttributes.Public) == MethodAttributes.Public) {
 				result |= Modifiers.Public;

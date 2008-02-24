@@ -40,11 +40,14 @@ namespace MonoDevelop.AssemblyBrowser.Dom
 			}
 		}
 		
-		public  DomCecilEvent (EventDefinition eventDefinition)
+		public  DomCecilEvent (MonoDevelop.Ide.Dom.IType declaringType, EventDefinition eventDefinition)
 		{
+			this.declaringType      = declaringType;
 			this.eventDefinition = eventDefinition;
 			base.name            = eventDefinition.Name;
 			base.modifiers       = DomCecilType.GetModifiers (eventDefinition.AddMethod.Attributes);
+			if (!eventDefinition.IsSpecialName)
+				base.modifiers &= ~MonoDevelop.Ide.Dom.Modifiers.SpecialName;
 		}
 	}
 }

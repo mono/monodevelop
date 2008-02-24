@@ -57,6 +57,8 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			IEvent evt = (IEvent)dataObject;
 			label = AmbienceService.Default.GetString (evt, OutputFlags.ClassBrowserEntries);
+			if (evt.IsPrivate || evt.IsInternal)
+				label = DomMethodNodeBuilder.FormatPrivate (label);
 			icon = Context.GetIcon (iconTable[DomTypeNodeBuilder.GetModifierOffset (evt.Modifiers)]);
 		}
 		
@@ -65,6 +67,22 @@ namespace MonoDevelop.AssemblyBrowser
 			if (otherNode.DataItem is IEvent)
 				return ((IEvent)thisNode.DataItem).Name.CompareTo (((IEvent)otherNode.DataItem).Name);
 			return 1;
+		}
+		
+		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
+		{
+			IEvent evt = (IEvent)dataObject;
+			if (evt.AddMethod != null)
+				ctx.AddChild (evt.AddMethod);
+			if (evt.RemoveMethod != null)
+				ctx.AddChild (evt.RemoveMethod);
+			if (evt.RaiseMethod != null)
+				ctx.AddChild (evt.RaiseMethod);
+		}
+		
+		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
+		{
+			return true;
 		}
 		
 		#region IAssemblyBrowserNodeBuilder
