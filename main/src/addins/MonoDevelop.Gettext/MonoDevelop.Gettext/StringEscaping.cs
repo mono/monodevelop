@@ -86,7 +86,6 @@ namespace MonoDevelop.Gettext
 			return sb.ToString ();
 		}
 		
-		
 		public static string FromGettextFormat (string text)
 		{
 			StringBuilder sb = new StringBuilder ();
@@ -94,10 +93,29 @@ namespace MonoDevelop.Gettext
 				char c = text[i];
 				switch (c) {
 				case '\\':
-					if (i + 1 < text.Length && text [i + 1] == '\\') {
-						sb.Append (c);
-						i++;
-						continue;
+					if (i + 1 < text.Length) {
+						char nextChar = text [i + 1];
+						if (nextChar == '\\' || nextChar == '"') {
+							sb.Append (nextChar);
+							i++;
+							continue;
+						}
+						if (nextChar == 'n') {
+							sb.Append ('\n');
+							i++;
+							continue;
+						}
+						if (nextChar == 't') {
+							sb.Append ('\t');
+							i++;
+							continue;
+						}
+						if (nextChar == 'r') {
+							sb.Append ('\r');
+							i++;
+							continue;
+						}
+						throw new FormatException ("Invalid escape sequence '" + nextChar + "' in gettext string : '" + text + "'");
 					}
 					break;
 				}
