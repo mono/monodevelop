@@ -79,11 +79,31 @@ namespace MonoDevelop.Gettext
 				}
 				
 				if (c != '_' && char.IsControl (c))
-					throw new FormatException ("Invalid character '" + c + "' in translatable string");
+					throw new FormatException ("Invalid character '" + c + "' in translatable string : '" + text + "'");
 				
 				sb.Append (c);
 			}
-			
+			return sb.ToString ();
+		}
+		
+		
+		public static string FromGettextFormat (string text)
+		{
+			StringBuilder sb = new StringBuilder ();
+			for (int i = 0; i < text.Length; i++) {
+				char c = text[i];
+				switch (c) {
+				case '\\':
+					if (i + 1 < text.Length && text [i + 1] == '\\') {
+						sb.Append (c);
+						i++;
+						continue;
+					}
+					break;
+				}
+				
+				sb.Append (c);
+			}
 			return sb.ToString ();
 		}
 		

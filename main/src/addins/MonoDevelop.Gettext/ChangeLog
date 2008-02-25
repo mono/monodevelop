@@ -1,5 +1,17 @@
 2008-02-25  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Gettext.addin.xml,
+	  MonoDevelop.Gettext.Editor/POEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs,
+	  MonoDevelop.Gettext/StringEscaping.cs,
+	  MonoDevelop.Gettext/CatalogDeletedEntry.cs,
+	  MonoDevelop.Gettext/RegexFileScanner.cs,
+	  MonoDevelop.Gettext/CatalogParser.cs,
+	  MonoDevelop.Gettext/CatalogEntry.cs, MonoDevelop.Gettext/Catalog.cs:
+	  Fixed some gettext issues (at least for monodevelop/german it works now)
+
+2008-02-25  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: gettext pad now updates the
 	  changes in the translated message list.
 

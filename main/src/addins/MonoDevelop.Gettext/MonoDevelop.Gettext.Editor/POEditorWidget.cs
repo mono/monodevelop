@@ -194,6 +194,23 @@ namespace MonoDevelop.Gettext
 					ShowPopup ();
 			};
 			widgets.Add (this);
+//			this.vpaned2.AcceptPosition += delegate {
+//				PropertyService.Set ("Gettext.SplitPosition", vpaned2.Position / (double)Allocation.Height);
+//				inMove = false;
+//			};
+//			this.vpaned2.CancelPosition += delegate {
+//				inMove = false;
+//			};
+//			this.vpaned2.MoveHandle += delegate {
+//				inMove = true;
+//			};
+//			this.ResizeChecked += delegate {
+//				if (inMove)
+//					return;
+//				int newPosition = (int)(Allocation.Height * PropertyService.Get ("Gettext.SplitPosition", 0.3d));
+//				if (vpaned2.Position != newPosition)
+//					vpaned2.Position = newPosition;
+//			};
 		}
 		
 		public static void ReloadWidgets ()
@@ -203,6 +220,12 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
+//		bool inMove = false;
+//		protected override void OnSizeAllocated (Rectangle rect)
+//		{
+//			base.OnSizeAllocated (rect);
+//		}
+//		
 		void Reload ()
 		{
 			Catalog newCatalog = new Catalog();

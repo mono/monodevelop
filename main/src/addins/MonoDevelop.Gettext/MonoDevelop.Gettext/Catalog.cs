@@ -2,10 +2,10 @@
 // Catalog.cs
 //
 // Author:
-//   David Makovský <yakeen@sannyas-on.net>
+//   David Makovskï¿½ <yakeen@sannyas-on.net>
 //
 // Copyright (C) 1999-2006 Vaclav Slavik (Code and design inspiration - poedit.org)
-// Copyright (C) 2007 David Makovský
+// Copyright (C) 2007 David Makovskï¿½
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -180,25 +180,21 @@ namespace MonoDevelop.Gettext
 
 			// Load the .po file:
 			bool finished = false;
-			try
-			{
+			try {
 				CharsetInfoFinder charsetFinder = new CharsetInfoFinder (poFile);
 				charsetFinder.Parse ();
 				headers.Charset = charsetFinder.Charset;
 				originalNewLine = charsetFinder.NewLine;
 				finished = true;
-			}
-			catch (Exception e)
-			{
+			} catch (Exception e) {
 				if (monitor != null)
 					monitor.ReportError ("Error during getting charset of file '" + poFile + "'.", e);
 			}
-			if (! finished)
+			if (!finished)
 				return false;
 
 			LoadParser parser = new LoadParser (this, poFile, Catalog.GetEncoding (this.Headers.Charset));
-			if (!parser.Parse())
-			{
+			if (!parser.Parse()) {
 				// TODO: use loging - GUI!
 				Console.WriteLine ("Error during parsing '{0}' file, file is probably corrupted.", poFile);
 				return false;
@@ -281,16 +277,13 @@ namespace MonoDevelop.Gettext
 			}
 
 			// Write back deleted items in the file so that they're not lost
-			foreach (CatalogDeletedEntry deletedItem in deletedEntriesList)
-			{
+			foreach (CatalogDeletedEntry deletedItem in deletedEntriesList) {
 				if (deletedItem.Comment != String.Empty)
 					SaveMultiLines (sb, deletedItem.Comment, originalNewLine);
-				foreach (string autoComment in deletedItem.AutoComments)
-				{
+				foreach (string autoComment in deletedItem.AutoComments) {
 					sb.AppendFormat ("#. {0}{1}", autoComment, originalNewLine);
 				}
-				foreach (string reference in deletedItem.References)
-				{
+				foreach (string reference in deletedItem.References) {
 					sb.AppendFormat ("#: {0}{1}", reference, originalNewLine);
 				}
 				string flags = deletedItem.Flags;
@@ -298,16 +291,14 @@ namespace MonoDevelop.Gettext
 					sb.Append (flags);
 					sb.Append (originalNewLine);
 				}
-				foreach (string deletedLine in deletedItem.DeletedLines)
-				{
+				foreach (string deletedLine in deletedItem.DeletedLines){
 					sb.AppendFormat ("{0}{1}", deletedLine, originalNewLine);
 				}
 				sb.Append (originalNewLine);
 			}
 
 			bool saved = false;
-			try
-			{
+			try {
 				// Write it as bytes, text writer includes BOF for utf-8,
 				// getetext utils are refusing to work with this
 				byte[] content = encoding.GetBytes (sb.ToString ());

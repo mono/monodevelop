@@ -174,7 +174,9 @@ namespace MonoDevelop.Gettext
 						mt = ti.Regex.Replace (mt, ti.ReplaceText);
 					
 					try {
+						System.Console.Write ( "mt:" +mt);
 						mt = StringEscaping.UnEscape (ri.EscapeMode, mt);
+						System.Console.WriteLine ( "-->>:" +mt + " (" + ri.EscapeMode + ")");
 					} catch (FormatException fex) {
 						monitor.ReportWarning ("Error unescaping string '" + mt + "': " + fex.Message);
 						continue;
