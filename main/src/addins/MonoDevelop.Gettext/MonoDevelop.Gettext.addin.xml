@@ -50,10 +50,10 @@
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Command id   = "MonoDevelop.Gettext.Commands.AddTranslation"
 		         icon = "md-gettext-locale"
-		         _label = "Add Translation..."
+		         _label = "_Add Translation..."
 			     _description = "Add another translation (language) for a solution or project" />
 		<Command id   = "MonoDevelop.Gettext.Commands.UpdateTranslations"
-		         _label = "Update Translations"
+		         _label = "_Update Translations"
 			     _description = "Updates all translation files." />
 	</Extension>	
 	
