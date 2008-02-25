@@ -55,6 +55,10 @@ namespace MonoDevelop.Core.Gui
 			switch (file.Extension) {
 				case ".cs":
 					return "text/x-csharp";
+				case ".boo":
+					return "text/x-boo";
+				case ".xml":
+					return "application/xml";
 			}
 			switch (file.Name.ToLower ()) {
 				case "changelog":

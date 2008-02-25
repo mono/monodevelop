@@ -1,3 +1,8 @@
+2008-02-25  Geoff Norton  <gnorton@novell.com>
+
+	* MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/PlatformService.cs: Add mime
+	overloads for boo and xml.
+
 2008-02-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.mdp, Makefile.am: Fixed project references.
