@@ -1,5 +1,10 @@
 2008-02-25  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: gettext pad now updates the
+	  changes in the translated message list.
+
+2008-02-25  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Gettext.Editor/POEditorWidget.cs,
 	  gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs: Added
 	  some tooltips for the description button

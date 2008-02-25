@@ -59,6 +59,11 @@ namespace MonoDevelop.Gettext
 				headersEditor.CatalogHeaders = catalog.Headers;
 				ClearTextview ();
 				AddTextview (0);
+				this.GetTextView (0).Buffer.Changed += delegate {
+					TreeIter iter = SelectedIter;
+					if (treeviewEntries.Selection.IterIsSelected (iter))
+						return store.SetValue (iter, (int)Columns.Translation, this.GetTextView (0).Buffer.Text);
+				};
 				UpdateFromCatalog ();
 				UpdateProgressBar ();
 			}
@@ -318,7 +323,7 @@ namespace MonoDevelop.Gettext
 			this.progressbar1.Fraction = percentage;
 		}		
 		
-#region EntryEditor handling
+		#region EntryEditor handling
 		CatalogEntry currentEntry;
 		Dictionary<TextView, bool> gtkSpellSet = new Dictionary<TextView, bool> (); 
 		void RemoveTextViewsFrom (int index)
@@ -334,6 +339,7 @@ namespace MonoDevelop.Gettext
 				this.notebookTranslated.RemovePage (i);
 			}
 		}
+		
 		void EditEntry (CatalogEntry entry)
 		{
 			this.isUpdating = true;
@@ -404,8 +410,7 @@ namespace MonoDevelop.Gettext
 				this.isUpdating = false;
 			}
 		}
-		
-#endregion
+		#endregion
 		
 #region TreeView handling
 		enum Columns : int
@@ -458,15 +463,25 @@ namespace MonoDevelop.Gettext
 				return missing;
 			return entry.IsFuzzy ? fuzzy : entry.IsTranslated ? translated : untranslated;
 		}
-		CatalogEntry SelectedEntry {
+		
+		TreeIter SelectedIter {
 			get {
 				TreeIter iter;
-				if (treeviewEntries.Selection.GetSelected (out iter)) {
+				if (treeviewEntries.Selection.GetSelected (out iter)) 
+					return iter;
+				return Gtk.TreeIter.Zero;
+			}
+		}
+			
+		CatalogEntry SelectedEntry {
+			get {
+				TreeIter iter = SelectedIter;
+				if (treeviewEntries.Selection.IterIsSelected (iter))
 					return store.GetValue (iter, (int)Columns.CatalogEntry) as CatalogEntry;
-				}
 				return null;
 			}
 		}
+		
 		void OnEntrySelected (object sender, EventArgs args)
 		{			
 			CatalogEntry entry = SelectedEntry;
