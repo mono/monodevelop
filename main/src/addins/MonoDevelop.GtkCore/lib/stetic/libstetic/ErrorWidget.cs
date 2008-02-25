@@ -64,7 +64,7 @@ namespace Stetic
 
 		public override XmlElement Write (ObjectWriter writer)
 		{
-			if (writer.Format == FileFormat.Native) {
+			if (writer.Format != this.format) {
 				ErrorWidget ew = (ErrorWidget) Wrapped;
 				XmlElement elem = writer.XmlDocument.CreateElement ("widget");
 				elem.SetAttribute ("class", "Gtk.Label");
@@ -80,10 +80,8 @@ namespace Stetic
 				elem.AppendChild (ce);
 				return elem;
 			}
-			else if (writer.Format != this.format)
-				throw new InvalidOperationException ("Can't export incomplete widget information");
-			
-			return (XmlElement) writer.XmlDocument.ImportNode (elementData, true);
+			else
+				return (XmlElement) writer.XmlDocument.ImportNode (elementData, true);
 		}
 		
 		public override string WrappedTypeName {

@@ -1,3 +1,10 @@
+2008-02-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* libstetic/ErrorWidget.cs: Always write the ErrorWidget by reusing the
+	  xml that generated it, unless we are exporting to another format,
+	  in which case we can't write the same xml, and we replace it by a
+	  label. Fixes bug #362596.
+
 2008-02-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* libsteticui/CecilClassDescriptor.cs: Don't create black boxes for
