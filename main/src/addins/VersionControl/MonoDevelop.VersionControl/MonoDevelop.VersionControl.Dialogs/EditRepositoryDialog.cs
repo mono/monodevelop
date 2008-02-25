@@ -30,7 +30,6 @@ namespace MonoDevelop.VersionControl.Dialogs
 					}
 				}
 				versionControlType.Active = 0;
-				entryName.Sensitive = false;
 			}
 			if (repo != null) {
 				entryName.Text = repo.Name;
