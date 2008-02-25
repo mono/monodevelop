@@ -563,6 +563,7 @@ namespace MonoDevelop.Gettext
 			if (timeoutHandler != null)
 				GLib.Source.Remove (timeoutHandler);
 			timeoutHandler = GLib.Timeout.Add (100, delegate {
+				this.treeviewEntries.Model = null;
 				store.Clear ();
 				string filter = entryFilter.Text.ToUpper ();
 				foreach (CatalogEntry entry in catalog) {
@@ -570,6 +571,7 @@ namespace MonoDevelop.Gettext
 						continue;
 					store.AppendValues (GetStockForEntry (entry), entry.IsFuzzy, entry.String, entry.GetTranslation (0), entry, GetRowColorForEntry (entry));
 				}
+				this.treeviewEntries.Model = store;
 				timeoutHandler = 0;
 				return false;
 			});

@@ -1,5 +1,10 @@
 2008-02-25  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: Made the update operation a
+	  lot faster.
+
+2008-02-25  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Gettext/StringEscaping.cs: Fixed bug in FromGettextFormat.
 
 2008-02-25  Mike Krüger <mkrueger@novell.com> 
