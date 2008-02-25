@@ -351,7 +351,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			
 			//The one below seemed to be failing sometimes.
 			if(solution.IndexOfAny("$#@!%^&*/?\\|'\";:}{".ToCharArray()) > -1) {
-				Services.MessageService.ShowError(this, GettextCatalog.GetString ("Illegal project name. \nOnly use letters, digits, space, '.' or '_'."));
+				Services.MessageService.ShowError(this, GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, space, '.' or '_'."));
 				return false;
 			}
 
