@@ -46,6 +46,7 @@ namespace MonoDevelop.Gettext
 		ListStore foundInStore;
 		Catalog catalog;
 		string  poFileName;
+		Gtk.Tooltips tooltips = new Gtk.Tooltips ();
 		
 		static List<POEditorWidget> widgets = new List<POEditorWidget> (); 
 		
@@ -131,25 +132,28 @@ namespace MonoDevelop.Gettext
 				MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (file, lineNr, 1, true);
 			};
 			this.notebookTranslated.RemovePage (0);
-			this.entryFilter.Text           = PropertyService.Get ("Gettext.Filter", "");
+			this.entryFilter.Text = PropertyService.Get ("Gettext.Filter", "");
 			entryFilter.Changed += delegate {
 				PropertyService.Set ("Gettext.Filter", this.entryFilter.Text);
 				UpdateFromCatalog ();
 			};
 			
-			this.togglebuttonFuzzy.Active   = PropertyService.Get ("Gettext.ShowFuzzy", true);
+			this.togglebuttonFuzzy.Active = PropertyService.Get ("Gettext.ShowFuzzy", true);
+			tooltips.SetTip (this.togglebuttonFuzzy, GettextCatalog.GetString ("Show fuzzy translations"), null);
 			this.togglebuttonFuzzy.Toggled += delegate {
 				PropertyService.Set ("Gettext.ShowFuzzy", this.togglebuttonFuzzy.Active);
 				UpdateFromCatalog ();
 			};
 			
 			this.togglebuttonMissing.Active = PropertyService.Get ("Gettext.ShowMissing", true);
+			tooltips.SetTip (this.togglebuttonMissing, GettextCatalog.GetString ("Show missing translations"), null);
 			this.togglebuttonMissing.Toggled += delegate {
 				PropertyService.Set ("Gettext.ShowMissing", this.togglebuttonMissing.Active);
 				UpdateFromCatalog ();
 			};
 			
 			this.togglebuttonOk.Active = PropertyService.Get ("Gettext.ShowTranslated", true);
+			tooltips.SetTip (this.togglebuttonOk, GettextCatalog.GetString ("Show valid translations"), null);
 			this.togglebuttonOk.Toggled += delegate {
 				PropertyService.Set ("Gettext.ShowTranslated", this.togglebuttonOk.Active);
 				UpdateFromCatalog ();
