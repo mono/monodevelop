@@ -224,6 +224,9 @@ namespace Mono.TextEditor.Highlighting
 								curChunk.Style = style.GetChunkStyle (span.NextColor);
 							continue;
 						}
+					} else {
+						spanPair = null;
+						spanTree = curRule != null ? curRule.spanTree : null;
 					}
 				 skip:
 						;
