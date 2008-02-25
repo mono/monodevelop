@@ -545,9 +545,10 @@ namespace MonoDevelop.VersionControl.Subversion {
 				commitmessage = message;
 				
 				CheckError (svn.client_commit (ref commit_info, array, 0, ctx, localpool));
-                                unsafe {
-                                        monitor.Log.WriteLine ("Revision: " + ((LibSvnClient.svn_client_commit_info_t *) commit_info.ToPointer())->revision);
-                                }
+				unsafe {
+					if (commit_info != IntPtr.Zero)
+						monitor.Log.WriteLine ("Revision: " + ((LibSvnClient.svn_client_commit_info_t *) commit_info.ToPointer())->revision);
+				}
 			} finally {
 				commitmessage = null;
 				updatemonitor = null;
