@@ -125,9 +125,9 @@ namespace MonoDevelop.Gettext
 					line = line.Substring (1);
 				
 				if (line[0] == '"' && line[line.Length - 1] == '"') { 
-					if (!firstLine && !result.ToString ().EndsWith ("\\n")) {
+					/*if (!firstLine && !result.ToString ().EndsWith ("\\n")) {
 						result.Append ("\n");
-					}
+					}*/
 					result.Append (StringEscaping.FromGettextFormat (line.Substring (1, line.Length - 2)));
 				} else
 					break;
@@ -441,6 +441,6 @@ namespace MonoDevelop.Gettext
 			}
 			catalog.AddDeletedItem (d);
 			return true;
-        }
+		}
 	}
 }
