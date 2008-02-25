@@ -19,7 +19,7 @@
     <File name="gtk-gui/generated.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/objects.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="MonoDevelop.Gettext.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="MonoDevelop.Gettext.Editor/CatalogEditor.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Gettext.Editor/CatalogEditorView.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Gettext.Editor/GtkSpell.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Gettext.Editor/CatalogHeadersWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="Commands.cs" subtype="Code" buildaction="Compile" />

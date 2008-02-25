@@ -37,12 +37,12 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Gettext.Editor
 {
-	internal class CatalogEditor : AbstractViewContent
+	internal class CatalogEditorView : AbstractViewContent
 	{
 		Catalog catalog = new Catalog ();
 		POEditorWidget poEditorWidget = new POEditorWidget ();
 		
-		public CatalogEditor (string poFile)
+		public CatalogEditorView (string poFile)
 		{
 			Load (poFile);
 			catalog.OnDirtyChanged += delegate (object sender, EventArgs args) {

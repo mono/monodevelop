@@ -204,30 +204,42 @@ namespace MonoDevelop.Gettext
 			isDirty = false;
 			return true;
 		}
-
+		
+		// Ensures that the end lines of text are the same as in the reference string.
+		static string EnsureCorrectEndings (string reference, string text)
+		{
+			int numEndings = 0;
+			for (int i = text.Length - 1; i >= 0 && text[i] == '\n'; i--, numEndings++)
+				;
+			StringBuilder sb = new StringBuilder (text, 0, text.Length - numEndings, text.Length + reference.Length - numEndings);
+			for (int i = reference.Length - 1; i >= 0 && reference[i] == '\n'; i--) {
+				sb.Append ('\n');
+			}
+			return sb.ToString ();
+		}
+		
 		// Saves catalog to file.
 		public bool Save (string poFile)
 		{
 			StringBuilder sb = new StringBuilder ();
-
+			
 			// TODO: check directory
 			//if (! File.Exists (poFile))
 			//{
 			//    // TODO: log it
 			//    return false;
 			//}
-
+			
 			// Update information about last modification time:
 			headers.RevisionDate = Catalog.GetDateTimeRfc822Format ();
-
+			
 			// Save .po file
-
+			
 			string charset = headers.Charset;
 			if (String.IsNullOrEmpty (charset) || charset == "CHARSET")
 				charset = "utf-8";
-
-			if (! CanEncodeToCharset (charset))
-			{
+			
+			if (! CanEncodeToCharset (charset)) {
 				// TODO: log that we don't support such encoding, utf-8 would be used
 				charset = "utf-8";
 			}
@@ -268,10 +280,11 @@ namespace MonoDevelop.Gettext
 					FormatMessageForFile (sb, "msgid_plural", data.PluralString, originalNewLine);
 					for (int n = 0; n < data.NumberOfTranslations; n++) {
 						string hdr = String.Format ("msgstr[{0}]", n);
-						FormatMessageForFile (sb, hdr, data.GetTranslation (n), originalNewLine);
+						
+						FormatMessageForFile (sb, hdr, EnsureCorrectEndings (data.String, data.GetTranslation (n)), originalNewLine);
 					}
 				} else {
-					FormatMessageForFile (sb, "msgstr", data.GetTranslation (0), originalNewLine);
+					FormatMessageForFile (sb, "msgstr", EnsureCorrectEndings (data.String, data.GetTranslation (0)), originalNewLine);
 				}
 				sb.Append (originalNewLine);
 			}

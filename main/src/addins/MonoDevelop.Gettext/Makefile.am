@@ -28,7 +28,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs \
 	gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs \
 	gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs \
-	MonoDevelop.Gettext.Editor/CatalogEditor.cs \
+	MonoDevelop.Gettext.Editor/CatalogEditorView.cs \
 	MonoDevelop.Gettext.Editor/CatalogHeadersWidget.cs \
 	MonoDevelop.Gettext.Editor/GettextEditorDisplayBinding.cs \
 	MonoDevelop.Gettext.Editor/GtkSpell.cs \

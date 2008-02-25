@@ -54,7 +54,7 @@ namespace MonoDevelop.Gettext
 		
 		public IViewContent CreateContentForFile (string fileName)
 		{
-			return new Editor.CatalogEditor (fileName);
+			return new Editor.CatalogEditorView (fileName);
 		}
 		
 		public IViewContent CreateContentForMimeType (string mimeType, Stream content)

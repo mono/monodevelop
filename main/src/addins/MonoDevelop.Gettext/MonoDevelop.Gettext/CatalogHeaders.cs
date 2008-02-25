@@ -2,10 +2,10 @@
 // CatalogHeaders.cs
 //
 // Author:
-//   David Makovský <yakeen@sannyas-on.net>
+//   David Makovskï¿½ <yakeen@sannyas-on.net>
 //
 // Copyright (C) 1999-2006 Vaclav Slavik (Code and design inspiration - poedit.org)
-// Copyright (C) 2007 David Makovský
+// Copyright (C) 2007 David Makovskï¿½
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -51,10 +51,8 @@ namespace MonoDevelop.Gettext
 
 		static CatalogHeaders ()
 		{
-			foreach (Mono.Addins.Addin addin in Mono.Addins.AddinRegistry.GetGlobalRegistry ().GetAddins ())
-			{
-				if (addin.Id == AddinName)
-				{
+			foreach (Mono.Addins.Addin addin in Mono.Addins.AddinRegistry.GetGlobalRegistry ().GetAddins ()) {
+				if (addin.Id == AddinName) {
 					version = addin.Version;
 					break;
 				}
@@ -113,7 +111,7 @@ namespace MonoDevelop.Gettext
 			string hdr = CatalogHeaders.UnescapeCEscapes (headers);
 			string[] tokens = hdr.Split ('\n');
 			entries.Clear ();
-
+			
 			foreach (string token in tokens)
 			{
 				if (token != String.Empty)
@@ -280,10 +278,8 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
-		public string CommentForGui
-		{
-			get
-			{
+		public string CommentForGui {
+			get {
 				if (String.IsNullOrEmpty (Comment))
 					return string.Empty;
 				
@@ -303,25 +299,19 @@ namespace MonoDevelop.Gettext
 				}
 				return sb.ToString ();
 			}
-			set
-			{
-				if (String.IsNullOrEmpty (value))
-				{
+			set {
+				if (String.IsNullOrEmpty (value)) {
 					Comment = String.Empty;
 					return;
 				}
 				
 				StringBuilder sb = new StringBuilder ();
-				bool first = true;
-				foreach (string line in value.Split ('\n'))
-				{
-					if (! first)
-						sb.Append ('\n');
-					else
-						first = false;
+				foreach (string line in value.Split (new string[] {Environment.NewLine}, StringSplitOptions.None)) {
+					if (sb.Length != 0)
+						sb.AppendLine ();
 					sb.Append ("# " + line);
 				}
-				Comment = sb.ToString ();
+				this.Comment = sb.ToString ();
 			}
 		}
 		

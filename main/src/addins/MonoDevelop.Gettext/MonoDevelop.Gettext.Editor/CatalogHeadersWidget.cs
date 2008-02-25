@@ -35,13 +35,18 @@ namespace MonoDevelop.Gettext.Editor
 	partial class CatalogHeadersWidget : Bin
 	{
 		CatalogHeaders headers;
-		
+		bool inUpdate = false;
 		public event EventHandler PluralDefinitionChanged;
 		
 		public CatalogHeadersWidget ()
 		{
 			this.Build ();
-			this.textviewComments.Buffer.Changed += new EventHandler (OnHeaderChanged);
+			this.textviewComments.Buffer.Changed += delegate {
+				if (inUpdate)
+					return;
+				headers.CommentForGui = textviewComments.Buffer.Text;
+				Update ();
+			};
 			
 			headers = new CatalogHeaders (null);
 			UpdateGui ();
@@ -63,6 +68,7 @@ namespace MonoDevelop.Gettext.Editor
 		
 		void UpdateGui ()
 		{
+			inUpdate = true;
 			// project tab
 			textviewComments.Buffer.Clear ();
 			textviewComments.Buffer.InsertAtCursor (headers.CommentForGui);
@@ -107,6 +113,7 @@ namespace MonoDevelop.Gettext.Editor
 			// other headers
 			
 			this.ShowAll ();
+			inUpdate = false;
 		}
 
 		protected virtual void OnButtonPluralsHelpClicked (object sender, System.EventArgs e)
@@ -116,10 +123,7 @@ namespace MonoDevelop.Gettext.Editor
 
 		void OnHeaderChanged (object sender, System.EventArgs e)
 		{
-			if (sender == textviewComments)
-			{
-				headers.CommentForGui = textviewComments.Buffer.Text;
-			} else if (sender == entryProjectName || sender == entryProjectVersion)
+			if (sender == entryProjectName || sender == entryProjectVersion)
 			{
 				headers.Project = (entryProjectName.Text + ' ' + entryProjectVersion.Text).Trim ();
 			} else if (sender == entryBugzilla)
@@ -182,11 +186,13 @@ namespace MonoDevelop.Gettext.Editor
 					OnPluralDefinitionChanged ();
 				}
 			}
-			
+			Update ();
+		}
+		void Update ()
+		{
 			headers.UpdateDict ();
 			headers.Owner.MarkDirty (this.headers);
 		}
-		
 		void OnPluralDefinitionChanged ()
 		{
 			if (PluralDefinitionChanged != null)
