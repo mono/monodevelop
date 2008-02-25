@@ -2,7 +2,7 @@
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
-    <target-gtk-version>2.8.3</target-gtk-version>
+    <target-gtk-version>2.10.2</target-gtk-version>
   </configuration>
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
@@ -270,8 +270,6 @@
               <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="VscrollbarPolicy">Automatic</property>
-                <property name="HscrollbarPolicy">Automatic</property>
                 <property name="ShadowType">In</property>
                 <child>
                   <widget class="Gtk.TextView" id="textviewComments">
@@ -296,9 +294,6 @@
               </packing>
             </child>
           </widget>
-          <packing>
-            <property name="TabExpand">False</property>
-          </packing>
         </child>
         <child>
           <widget class="Gtk.Label" id="label3">
@@ -587,7 +582,6 @@
           </widget>
           <packing>
             <property name="Position">1</property>
-            <property name="TabExpand">False</property>
           </packing>
         </child>
         <child>
@@ -635,7 +629,6 @@
                   <widget class="Gtk.Frame" id="frame1">
                     <property name="MemberName" />
                     <property name="ShadowType">None</property>
-                    <property name="LabelXalign">0</property>
                     <child>
                       <widget class="Gtk.Alignment" id="GtkAlignment2">
                         <property name="MemberName" />
@@ -672,8 +665,6 @@
                                     <property name="MemberName" />
                                     <property name="HeightRequest">200</property>
                                     <property name="CanFocus">True</property>
-                                    <property name="VscrollbarPolicy">Automatic</property>
-                                    <property name="HscrollbarPolicy">Automatic</property>
                                     <property name="ShadowType">In</property>
                                     <child>
                                       <widget class="Gtk.TreeView" id="languageTreeView">
@@ -724,8 +715,6 @@
                                   <widget class="Gtk.ScrolledWindow" id="scrolledwindow2">
                                     <property name="MemberName" />
                                     <property name="CanFocus">True</property>
-                                    <property name="VscrollbarPolicy">Automatic</property>
-                                    <property name="HscrollbarPolicy">Automatic</property>
                                     <property name="ShadowType">In</property>
                                     <child>
                                       <widget class="Gtk.TreeView" id="countryTreeView">
@@ -755,6 +744,7 @@
                       <widget class="Gtk.RadioButton" id="radiobuttonKnown">
                         <property name="MemberName" />
                         <property name="Label" translatable="yes">_Known Language</property>
+                        <property name="Active">True</property>
                         <property name="DrawIndicator">True</property>
                         <property name="HasLabel">True</property>
                         <property name="UseUnderline">True</property>
@@ -774,7 +764,6 @@
                   <widget class="Gtk.Frame" id="frame2">
                     <property name="MemberName" />
                     <property name="ShadowType">None</property>
-                    <property name="LabelXalign">0</property>
                     <child>
                       <widget class="Gtk.Alignment" id="GtkAlignment3">
                         <property name="MemberName" />
@@ -973,7 +962,6 @@
                   <widget class="Gtk.Frame" id="frame1">
                     <property name="MemberName" />
                     <property name="ShadowType">None</property>
-                    <property name="LabelXalign">0</property>
                     <child>
                       <widget class="Gtk.Alignment" id="GtkAlignment2">
                         <property name="MemberName" />
@@ -1100,7 +1088,6 @@
                   <widget class="Gtk.Frame" id="frame2">
                     <property name="MemberName" />
                     <property name="ShadowType">None</property>
-                    <property name="LabelXalign">0</property>
                     <child>
                       <widget class="Gtk.Alignment" id="GtkAlignment3">
                         <property name="MemberName" />
@@ -1128,7 +1115,6 @@
                               <widget class="Gtk.Frame" id="frame3">
                                 <property name="MemberName" />
                                 <property name="ShadowType">In</property>
-                                <property name="LabelXalign">0</property>
                                 <child>
                                   <widget class="Gtk.Alignment" id="GtkAlignment4">
                                     <property name="MemberName" />
@@ -1175,9 +1161,6 @@
                   </packing>
                 </child>
               </widget>
-              <packing>
-                <property name="TabExpand">False</property>
-              </packing>
             </child>
             <child>
               <widget class="Gtk.Label" id="label1">
@@ -1192,8 +1175,6 @@
               <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="VscrollbarPolicy">Automatic</property>
-                <property name="HscrollbarPolicy">Automatic</property>
                 <property name="ShadowType">In</property>
                 <property name="BorderWidth">6</property>
                 <child>
@@ -1206,7 +1187,6 @@
               </widget>
               <packing>
                 <property name="Position">1</property>
-                <property name="TabExpand">False</property>
               </packing>
             </child>
             <child>
@@ -1281,25 +1261,8 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Gettext.POEditorWidget" design-size="748 556">
-    <action-group name="Default">
-      <action id="Translation">
-        <property name="Type">Toggle</property>
-        <property name="IsImportant">True</property>
-        <property name="Label" translatable="yes">Translation</property>
-        <property name="ShortLabel" translatable="yes">Translation</property>
-        <property name="DrawAsRadio">False</property>
-        <property name="Active">True</property>
-      </action>
-      <action id="Headers">
-        <property name="Type">Toggle</property>
-        <property name="IsImportant">True</property>
-        <property name="Label" translatable="yes">Headers</property>
-        <property name="ShortLabel" translatable="yes">Headers</property>
-        <property name="DrawAsRadio">False</property>
-        <property name="Active">False</property>
-      </action>
-    </action-group>
+  <widget class="Gtk.Bin" id="MonoDevelop.Gettext.POEditorWidget" design-size="748 574">
+    <action-group name="Default" />
     <property name="MemberName" />
     <child>
       <widget class="Gtk.VBox" id="vbox2">
@@ -1317,16 +1280,99 @@
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
                 <child>
+                  <widget class="Gtk.HBox" id="hbox2">
+                    <property name="MemberName" />
+                    <property name="Spacing">6</property>
+                    <child>
+                      <widget class="Gtk.Label" id="label2">
+                        <property name="MemberName" />
+                        <property name="LabelProp" translatable="yes">_Filter:</property>
+                        <property name="UseUnderline">True</property>
+                      </widget>
+                      <packing>
+                        <property name="Position">0</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.Entry" id="entryFilter">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="IsEditable">True</property>
+                        <property name="InvisibleChar">●</property>
+                      </widget>
+                      <packing>
+                        <property name="Position">1</property>
+                        <property name="AutoSize">True</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.ToggleButton" id="togglebuttonOk">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="Type">TextAndIcon</property>
+                        <property name="Icon">stock:gtk-apply Menu</property>
+                        <property name="Label" translatable="yes" />
+                        <property name="UseUnderline">True</property>
+                      </widget>
+                      <packing>
+                        <property name="Position">2</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.ToggleButton" id="togglebuttonMissing">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="Type">TextAndIcon</property>
+                        <property name="Icon">stock:gtk-cancel Menu</property>
+                        <property name="Label" translatable="yes" />
+                        <property name="UseUnderline">True</property>
+                      </widget>
+                      <packing>
+                        <property name="Position">3</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.ToggleButton" id="togglebuttonFuzzy">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="Type">TextAndIcon</property>
+                        <property name="Icon">stock:gtk-about Menu</property>
+                        <property name="Label" translatable="yes" />
+                        <property name="UseUnderline">True</property>
+                      </widget>
+                      <packing>
+                        <property name="Position">4</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                  </widget>
+                  <packing>
+                    <property name="Position">0</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+                <child>
                   <widget class="Gtk.VPaned" id="vpaned2">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="Position">149</property>
+                    <property name="Position">186</property>
                     <child>
                       <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="VscrollbarPolicy">Automatic</property>
-                        <property name="HscrollbarPolicy">Automatic</property>
                         <property name="ShadowType">In</property>
                         <child>
                           <widget class="Gtk.TreeView" id="treeviewEntries">
@@ -1371,8 +1417,6 @@
                               <widget class="Gtk.ScrolledWindow" id="scrolledwindow3">
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
-                                <property name="VscrollbarPolicy">Automatic</property>
-                                <property name="HscrollbarPolicy">Automatic</property>
                                 <property name="ShadowType">In</property>
                                 <child>
                                   <widget class="Gtk.TextView" id="textviewComments">
@@ -1412,7 +1456,9 @@
                               <widget class="Gtk.Label" id="label7">
                                 <property name="MemberName" />
                                 <property name="Xalign">0</property>
-                                <property name="LabelProp" translatable="yes">Translated (msgstr):</property>
+                                <property name="LabelProp" translatable="yes">_Translated (msgstr):</property>
+                                <property name="UseUnderline">True</property>
+                                <property name="MnemonicWidget">notebookTranslated</property>
                               </widget>
                               <packing>
                                 <property name="Position">0</property>
@@ -1477,11 +1523,18 @@
                               </packing>
                             </child>
                             <child>
-                              <widget class="Gtk.TextView" id="textviewOriginal">
+                              <widget class="Gtk.ScrolledWindow" id="scrolledwindow4">
                                 <property name="MemberName" />
-                                <property name="Sensitive">False</property>
                                 <property name="CanFocus">True</property>
-                                <property name="Text" translatable="yes" />
+                                <property name="ShadowType">In</property>
+                                <child>
+                                  <widget class="Gtk.TextView" id="textviewOriginal">
+                                    <property name="MemberName" />
+                                    <property name="Sensitive">False</property>
+                                    <property name="CanFocus">True</property>
+                                    <property name="Text" translatable="yes" />
+                                  </widget>
+                                </child>
                               </widget>
                               <packing>
                                 <property name="Position">1</property>
@@ -1506,11 +1559,18 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <widget class="Gtk.TextView" id="textviewOriginalPlural">
+                                  <widget class="Gtk.ScrolledWindow" id="scrolledwindow5">
                                     <property name="MemberName" />
-                                    <property name="Sensitive">False</property>
                                     <property name="CanFocus">True</property>
-                                    <property name="Text" translatable="yes" />
+                                    <property name="ShadowType">In</property>
+                                    <child>
+                                      <widget class="Gtk.TextView" id="textviewOriginalPlural">
+                                        <property name="MemberName" />
+                                        <property name="Sensitive">False</property>
+                                        <property name="CanFocus">True</property>
+                                        <property name="Text" translatable="yes" />
+                                      </widget>
+                                    </child>
                                   </widget>
                                   <packing>
                                     <property name="Position">1</property>
@@ -1542,7 +1602,9 @@
                               <widget class="Gtk.Label" id="label4">
                                 <property name="MemberName" />
                                 <property name="Xalign">0</property>
-                                <property name="LabelProp" translatable="yes">Found in:</property>
+                                <property name="LabelProp" translatable="yes">F_ound in:</property>
+                                <property name="UseUnderline">True</property>
+                                <property name="MnemonicWidget">treeviewFoundIn</property>
                               </widget>
                               <packing>
                                 <property name="Position">0</property>
@@ -1555,8 +1617,6 @@
                               <widget class="Gtk.ScrolledWindow" id="scrolledwindow2">
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
-                                <property name="VscrollbarPolicy">Automatic</property>
-                                <property name="HscrollbarPolicy">Automatic</property>
                                 <property name="ShadowType">In</property>
                                 <child>
                                   <widget class="Gtk.TreeView" id="treeviewFoundIn">
@@ -1593,14 +1653,11 @@
                     </child>
                   </widget>
                   <packing>
-                    <property name="Position">0</property>
+                    <property name="Position">1</property>
                     <property name="AutoSize">True</property>
                   </packing>
                 </child>
               </widget>
-              <packing>
-                <property name="TabExpand">False</property>
-              </packing>
             </child>
             <child>
               <widget class="Gtk.Label" id="label5">
@@ -1626,7 +1683,6 @@
                 <property name="MemberName" />
                 <property name="ShowArrow">False</property>
                 <property name="ButtonStyle">Icons</property>
-                <property name="IconSize">LargeToolbar</property>
                 <node name="toolbarPages" type="Toolbar" />
               </widget>
               <packing>
@@ -1686,7 +1742,6 @@
                   <widget class="Gtk.Frame" id="frame1">
                     <property name="MemberName" />
                     <property name="ShadowType">In</property>
-                    <property name="LabelXalign">0</property>
                     <child>
                       <widget class="Gtk.TreeView" id="treeviewTranslations">
                         <property name="MemberName" />

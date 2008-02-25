@@ -48,7 +48,7 @@ namespace MonoDevelop.Gettext
 		string  poFileName;
 		
 		static List<POEditorWidget> widgets = new List<POEditorWidget> (); 
-				
+		
 		public Catalog Catalog {
 			get {
 				return catalog;
@@ -101,13 +101,22 @@ namespace MonoDevelop.Gettext
 			treeviewEntries.AppendColumn (GettextCatalog.GetString ("Translated string"), translation, "text", Columns.Translation, "cell-background-gdk", Columns.RowColor);
 			treeviewEntries.Selection.Changed += new EventHandler (OnEntrySelected);
 			
+			treeviewEntries.GetColumn (1).SortIndicator = true;
+			treeviewEntries.GetColumn (1).SortColumnId = (int)Columns.Fuzzy;
+			
+			treeviewEntries.GetColumn (2).SortIndicator = true;
+			treeviewEntries.GetColumn (2).SortColumnId = (int)Columns.String;
+
+			treeviewEntries.GetColumn (3).SortIndicator = true;
+			treeviewEntries.GetColumn (3).SortColumnId = (int)Columns.Translation;
+						
 			// found in tree view
 			foundInStore = new ListStore (typeof (string), typeof (string), typeof (string));
 			this.treeviewFoundIn.Model = foundInStore;
 			
 			treeviewFoundIn.AppendColumn ("", new CellRendererText (), "text", FoundInColumns.File);
 			treeviewFoundIn.AppendColumn ("", new CellRendererText (), "text", FoundInColumns.Line);
-			this.treeviewFoundIn.HeadersVisible = false;
+			treeviewFoundIn.HeadersVisible = false;
 			treeviewFoundIn.GetColumn (1).FixedWidth = 100;
 			
 			treeviewFoundIn.RowActivated += delegate (object sender, RowActivatedArgs e) {
@@ -122,6 +131,29 @@ namespace MonoDevelop.Gettext
 				MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (file, lineNr, 1, true);
 			};
 			this.notebookTranslated.RemovePage (0);
+			this.entryFilter.Text           = PropertyService.Get ("Gettext.Filter", "");
+			entryFilter.Changed += delegate {
+				PropertyService.Set ("Gettext.Filter", this.entryFilter.Text);
+				UpdateFromCatalog ();
+			};
+			
+			this.togglebuttonFuzzy.Active   = PropertyService.Get ("Gettext.ShowFuzzy", true);
+			this.togglebuttonFuzzy.Toggled += delegate {
+				PropertyService.Set ("Gettext.ShowFuzzy", this.togglebuttonFuzzy.Active);
+				UpdateFromCatalog ();
+			};
+			
+			this.togglebuttonMissing.Active = PropertyService.Get ("Gettext.ShowMissing", true);
+			this.togglebuttonMissing.Toggled += delegate {
+				PropertyService.Set ("Gettext.ShowMissing", this.togglebuttonMissing.Active);
+				UpdateFromCatalog ();
+			};
+			
+			this.togglebuttonOk.Active = PropertyService.Get ("Gettext.ShowTranslated", true);
+			this.togglebuttonOk.Toggled += delegate {
+				PropertyService.Set ("Gettext.ShowTranslated", this.togglebuttonOk.Active);
+				UpdateFromCatalog ();
+			};
 			
 //			this.textviewTranslatedPlural.Buffer.Changed += delegate {
 //				if (this.isUpdating)
@@ -147,6 +179,7 @@ namespace MonoDevelop.Gettext
 			this.treeviewEntries.PopupMenu += delegate {
 				ShowPopup ();
 			};
+			
 			this.treeviewEntries.ButtonReleaseEvent += delegate (object sender, Gtk.ButtonReleaseEventArgs e) {
 				if (e.Event.Button == 3)
 					ShowPopup ();
@@ -286,7 +319,7 @@ namespace MonoDevelop.Gettext
 		Dictionary<TextView, bool> gtkSpellSet = new Dictionary<TextView, bool> (); 
 		void RemoveTextViewsFrom (int index)
 		{
-			for (int i = this.notebookTranslated.NPages - 1; i >= index ; i--) {
+			for (int i = this.notebookTranslated.NPages - 1; i >= index; i--) {
 				TextView view = GetTextView (i);
 				if (view == null)
 					continue;
@@ -456,12 +489,48 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
+		bool ShouldFilter (CatalogEntry entry, string filter)
+		{
+			if (entry.IsFuzzy) {
+				if (!this.togglebuttonFuzzy.Active) {
+					return true;
+				}
+			} else {
+				if (!entry.IsTranslated && !this.togglebuttonMissing.Active)
+					return true;
+				if (entry.IsTranslated && !this.togglebuttonOk.Active)
+					return true;
+			}
+				
+			
+			
+			if (String.IsNullOrEmpty (filter)) 
+				return false;
+			if (entry.String.ToUpper ().Contains (filter))
+				return false;
+			for (int i = 0; i < entry.NumberOfTranslations; i++) {
+				if (entry.GetTranslation (i).ToUpper ().Contains (filter))
+					return false;
+			}
+			return true;
+		}
+		
+		uint timeoutHandler = 0;
 		void UpdateFromCatalog ()
 		{
-			store.Clear ();
-			foreach (CatalogEntry entry in catalog) {
-				store.AppendValues (GetStockForEntry (entry), entry.IsFuzzy, entry.String, entry.GetTranslation (0), entry, GetRowColorForEntry (entry));
-			}
+			if (timeoutHandler != null)
+				GLib.Source.Remove (timeoutHandler);
+			timeoutHandler = GLib.Timeout.Add (100, delegate {
+				store.Clear ();
+				string filter = entryFilter.Text.ToUpper ();
+				foreach (CatalogEntry entry in catalog) {
+					if (ShouldFilter (entry, filter)) 
+						continue;
+					store.AppendValues (GetStockForEntry (entry), entry.IsFuzzy, entry.String, entry.GetTranslation (0), entry, GetRowColorForEntry (entry));
+				}
+				timeoutHandler = 0;
+				return false;
+			});
 		}
 #endregion
 		

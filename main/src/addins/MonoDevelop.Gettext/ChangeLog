@@ -1,3 +1,14 @@
+2008-02-25  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Gettext.GettextFeatureWidget.cs,
+	  gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs,
+	  gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs,
+	  gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs,
+	  MonoDevelop.Gettext/StringEscaping.cs: Added filter & sort functions to
+	  the gettext editor.
+
 2008-02-23  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Gettext.mdp, gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs,

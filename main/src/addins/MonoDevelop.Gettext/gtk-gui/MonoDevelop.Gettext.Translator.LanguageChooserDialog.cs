@@ -92,7 +92,6 @@ namespace MonoDevelop.Gettext.Translator {
             this.frame1 = new Gtk.Frame();
             this.frame1.Name = "frame1";
             this.frame1.ShadowType = ((Gtk.ShadowType)(0));
-            this.frame1.LabelXalign = 0F;
             // Container child frame1.Gtk.Container+ContainerChild
             this.GtkAlignment2 = new Gtk.Alignment(0F, 0F, 1F, 1F);
             this.GtkAlignment2.Name = "GtkAlignment2";
@@ -123,8 +122,6 @@ namespace MonoDevelop.Gettext.Translator {
             this.scrolledwindow1.HeightRequest = 200;
             this.scrolledwindow1.CanFocus = true;
             this.scrolledwindow1.Name = "scrolledwindow1";
-            this.scrolledwindow1.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow1.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow1.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow1.Gtk.Container+ContainerChild
             this.languageTreeView = new Gtk.TreeView();
@@ -163,8 +160,6 @@ namespace MonoDevelop.Gettext.Translator {
             this.scrolledwindow2 = new Gtk.ScrolledWindow();
             this.scrolledwindow2.CanFocus = true;
             this.scrolledwindow2.Name = "scrolledwindow2";
-            this.scrolledwindow2.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow2.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow2.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow2.Gtk.Container+ContainerChild
             this.countryTreeView = new Gtk.TreeView();
@@ -183,6 +178,7 @@ namespace MonoDevelop.Gettext.Translator {
             this.frame1.Add(this.GtkAlignment2);
             this.radiobuttonKnown = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("_Known Language"));
             this.radiobuttonKnown.Name = "radiobuttonKnown";
+            this.radiobuttonKnown.Active = true;
             this.radiobuttonKnown.DrawIndicator = true;
             this.radiobuttonKnown.UseUnderline = true;
             this.radiobuttonKnown.Group = new GLib.SList(System.IntPtr.Zero);
@@ -194,7 +190,6 @@ namespace MonoDevelop.Gettext.Translator {
             this.frame2 = new Gtk.Frame();
             this.frame2.Name = "frame2";
             this.frame2.ShadowType = ((Gtk.ShadowType)(0));
-            this.frame2.LabelXalign = 0F;
             // Container child frame2.Gtk.Container+ContainerChild
             this.GtkAlignment3 = new Gtk.Alignment(0F, 0F, 1F, 1F);
             this.GtkAlignment3.Name = "GtkAlignment3";
@@ -289,6 +284,8 @@ namespace MonoDevelop.Gettext.Translator {
             }
             this.DefaultWidth = 466;
             this.DefaultHeight = 416;
+            this.label3.MnemonicWidget = this.languageTreeView;
+            this.label2.MnemonicWidget = this.entryLocale;
             this.Show();
             this.checkbuttonUseCoutry.Clicked += new System.EventHandler(this.ChangeSensitivity);
             this.entryLocale.Changed += new System.EventHandler(this.OnEntryLocaleChanged);

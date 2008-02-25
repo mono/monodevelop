@@ -78,8 +78,8 @@ namespace MonoDevelop.Gettext
 					continue;
 				}
 				
-				if (char.IsControl (c))
-					throw new FormatException ("Invalid character in translatable string");
+				if (c != '_' && char.IsControl (c))
+					throw new FormatException ("Invalid character '" + c + "' in translatable string");
 				
 				sb.Append (c);
 			}
