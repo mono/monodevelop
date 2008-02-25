@@ -124,7 +124,7 @@ namespace MonoDevelop.Ide.Gui
 		public void SetCursorPosition (int ln, int col, int ch)
 		{
 			cursorStatusBarPanel.ShowAll ();
-			cursorLabel.Markup = GettextCatalog.GetString (" ln <span font_family='fixed'>{0,-4}</span>  col <span font_family='fixed'>{1,-3}</span>  ch <span font_family='fixed'>{2,-3}</span> ", ln, col, ch);
+			cursorLabel.Markup = GettextCatalog.GetString (" ln <span font_family='fixed'>{0,-4}</span> col <span font_family='fixed'>{1,-3}</span> ch <span font_family='fixed'>{2,-3}</span> ", ln, col, ch);
 		}
 		
 		public void SetMessage (string message)

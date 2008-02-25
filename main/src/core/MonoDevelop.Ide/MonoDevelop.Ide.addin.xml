@@ -502,7 +502,7 @@
 				shortcut = "Control|Shift|W" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.CloseCombine"
 				defaultHandler = "MonoDevelop.Ide.Commands.CloseCombineHandler"
-				_label = "_Sol_ution" 
+				_label = "_Solution" 
 				description = "Close solution"
 				icon = "md-close-combine-icon" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.ReloadFile"
