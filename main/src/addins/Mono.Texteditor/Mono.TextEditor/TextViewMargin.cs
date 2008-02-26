@@ -433,7 +433,7 @@ namespace Mono.TextEditor
 				layout.FontDescription.Style = Pango.Style.Normal;
 			
 			if (drawCaretAt >= 0)
-				SetVisibleCaretPosition (win, Document.GetCharAt (caretOffset), drawCaretAt, y);
+				SetVisibleCaretPosition (win, Document.Contains (caretOffset) ? Document.GetCharAt (caretOffset) : ' ', drawCaretAt, y);
 		}
 		
 		void DrawText (Gdk.Drawable win, string text, Gdk.Color foreColor, Gdk.Color backgroundColor, ref int xPos, int y)

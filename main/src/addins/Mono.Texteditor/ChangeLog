@@ -1,3 +1,8 @@
+2008-02-26  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextViewMargin.cs: Fixed possible exception in
+	  TextViewMargin.
+
 2008-02-25  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor.Highlighting/SyntaxMode.cs: Fixed syntax highlighting bug.
