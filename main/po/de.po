@@ -6,12 +6,12 @@ msgstr ""
 "X-Poedit-Bookmarks: -1,1681,-1,-1,-1,-1,-1,-1,-1,-1\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2008-02-26 16:30:29+0100\n"
+"PO-Revision-Date: 2008-02-26 19:36:20+0100\n"
 "Language-Team: \n"
 "Project-Id-Version: Monodevelop\n"
 "MIME-Version: 1.0\n"
 "X-Generator: MonoDevelop Gettext addin\n"
-"POT-Creation-Date: 2008-02-26 16:22:44+0100\n"
+"POT-Creation-Date: 2008-02-26 19:34:29+0100\n"
 "Last-Translator: Mike Krüger <mkrueger@novell.com>\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core/ServiceManager.cs:120
@@ -1114,8 +1114,8 @@ msgstr "Datei '{0}' ist kein gültiges .NET Assembly "
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:54
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:182
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:52
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:191
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:200
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:216
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:226
 msgid "Assembly"
 msgstr "Assembly"
 
@@ -1152,7 +1152,7 @@ msgstr "Verweis"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:153
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:247
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:196
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:222
 msgid "Type"
 msgstr "Typ"
 
@@ -2394,7 +2394,7 @@ msgstr "Lösche alle Haltepunkte"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:744
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1236
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:105
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:109
 msgid "Search"
 msgstr "Suchen"
 
@@ -6479,20 +6479,20 @@ msgstr "Änderungsprotokoll"
 msgid "Modified ChangeLog files:"
 msgstr "Geänderte Änderungsprotokoll-Dateien:"
 
-#: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs:125
+#: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs:123
 msgid "ChangeLog entry:"
 msgstr "Änderungsprotokolleintrag:"
 
-#: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs:168
+#: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs:164
 msgid "This ChangeLog file does not exist and will be created."
 msgstr "Die Änderungsprotokoll-Datei existiert nicht und wird erstellt."
 
-#: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs:198
+#: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs:194
 msgid "This ChangeLog file does not exist and will <b>not</b> be created."
 msgstr ""
 "Die Änderungsprotokoll-Datei existiert nicht und wird <b>nicht</b> erstellt."
 
-#: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs:238
+#: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs:234
 msgid ""
 "To change the ChangeLog creation and update policies, open the options dialog "
 "of the project or solution and click on the 'ChangeLog Integration\" "
@@ -6528,7 +6528,7 @@ msgstr ""
 msgid "radiobutton2"
 msgstr "Auswahlfeld2"
 
-#: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:69
+#: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:70
 msgid ""
 "<b>Use parent solution policy</b>\n"
 "Apply the policy specified in the parent solution."
@@ -6536,11 +6536,11 @@ msgstr ""
 "<b>Benutze übergeordnete Projektmappenrichtlinien</b>\n"
 "Wende die Richtlinien die in der übergeordneten Lösung sind an."
 
-#: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:78
+#: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:79
 msgid "radiobutton1"
 msgstr "Auswahlfeld1"
 
-#: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:88
+#: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:89
 msgid ""
 "<b>Disable ChangeLog support</b>\n"
 "No ChangeLog entries will be generated for this project."
@@ -6548,11 +6548,11 @@ msgstr ""
 "<b>Deaktiviere Änderungsprotokollunterstützung</b>\n"
 "Es werden keine Änderungsprotokolleinträge für dieses Projekt erstellt."
 
-#: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:97
+#: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:98
 msgid "Custom policy"
 msgstr "Benutzerdefinierte Vereinbarung"
 
-#: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:108
+#: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:109
 msgid ""
 "<b>Update nearest ChangeLog</b>\n"
 "The nearest ChangeLog file in the directory hierarchy will be updated (below "
@@ -6564,11 +6564,11 @@ msgstr ""
 "(unter dem Commit-Verzeichnis ). Wenn keine gefunden wird, wird einen "
 "Warnmeldung angezeigt. Änderungsprotokolldateien werden niemals automatisch erstellt."
 
-#: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:118
+#: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:119
 msgid "One ChangeLog in the project root directory"
 msgstr "Ein Änderungsprotokoll im Wurzelverzeichnis des Projekts"
 
-#: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:129
+#: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:130
 msgid ""
 "<b>Single project ChangeLog</b>\n"
 "All changes done in the project files will be logged in a single ChangeLog "
@@ -6580,11 +6580,11 @@ msgstr ""
 "protokolliert, die in dem Wurzelverzeichnis des Projekts liegt. Die Datei wird erstellt "
 "wenn sie noch nicht existiert"
 
-#: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:139
+#: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:140
 msgid "One ChangeLog in each directory"
 msgstr "Ein Änderungsprotokoll in jedem Verzeichnis"
 
-#: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:150
+#: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:151
 msgid ""
 "<b>One ChangeLog in each directory</b>\n"
 "File changes will be logged in a ChangeLog located at the file's directory. "
@@ -7065,7 +7065,7 @@ msgstr "Benutzerdefiniert"
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ToolboxWidget.cs:154
 msgid "There are no tools available for the current document."
 msgstr ""
-"Es sind für das aktuelle Dokument keine passenden Steuerelemente vorhanden."
+"Für das aktuelle Dokument sind keine passenden Steuerelemente vorhanden."
 
 #: ../src/addins/MonoDevelop.Autotools/Commands.cs:67
 msgid ""
@@ -11016,33 +11016,52 @@ msgstr "als"
 msgid "R_eplace:"
 msgstr "E_rsetzen:"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:94
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:96
 msgid "Types"
 msgstr "Typen"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:95
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:97
 msgid "Members"
 msgstr "Elementen"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:103
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:98
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:107
 msgid "Disassembler"
 msgstr "Disassembler"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:104
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:99
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:108
 msgid "Decompiler"
 msgstr "Decompiler"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:187
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:212
 msgid "Member"
 msgstr "Element"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:189
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:214
 msgid "Declaring Type"
 msgstr "Deklarierender Typ"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:198
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:224
 msgid "Namespace"
 msgstr "Namensraum"
+
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:242
+msgid "Searching member..."
+msgstr "Suche Element..."
+
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:245
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:302
+msgid "Searching string in disassembled code..."
+msgstr "Suche in disassembliertem Code..."
+
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:248
+msgid "Searching string in decompiled code..."
+msgstr "Suche im decompilierten Code..."
+
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:251
+msgid "Searching type..."
+msgstr "Suche Typ..."
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs:81
 msgid "Assembly <b>{0}</b>, Version {1}"
@@ -11085,18 +11104,18 @@ msgstr "Methoden"
 msgid "<b>Declaring Type:</b>\t{0}"
 msgstr "<b>Deklarierender Typ:</b>\t{0}"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:117
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:139
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:115
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:142
 msgid "Method is P/Invoke"
 msgstr "Methode ist nativ (P/Invoke)"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:120
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:142
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:118
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:145
 msgid "Interface method"
 msgstr "Interface Methode"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:120
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:142
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:118
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:145
 msgid "Abstract method"
 msgstr "Abstrakte Methode"
 

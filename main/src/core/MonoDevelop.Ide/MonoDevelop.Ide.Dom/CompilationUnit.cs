@@ -65,7 +65,11 @@ namespace MonoDevelop.Ide.Dom
 				return attributes;
 			}
 		}
-		
+		public int TypeCount {
+			get {
+				return types.Count;
+			}
+		}
 		public IEnumerable<IType> Types {
 			get {
 				return types;

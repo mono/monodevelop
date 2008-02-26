@@ -37,6 +37,10 @@ namespace MonoDevelop.Ide.Dom
 			get;
 		}
 		
+		int TypeCount {
+			get;
+		}
+		
 		IEnumerable<IUsing> Usings {
 			get;
 		}
