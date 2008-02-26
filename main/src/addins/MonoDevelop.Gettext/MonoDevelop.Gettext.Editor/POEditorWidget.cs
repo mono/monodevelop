@@ -369,22 +369,22 @@ namespace MonoDevelop.Gettext
 			try {
 				currentEntry = entry;
 					
-				this.textviewOriginal.Buffer.Text = entry != null ? StringEscaping.ToGettextFormat (entry.String) : "";
+				this.labelOriginal.Text = entry != null ? StringEscaping.ToGettextFormat (entry.String) : "";
 				
-				if (GtkSpell.IsSupported && !gtkSpellSet.ContainsKey (this.textviewOriginal)) {
-					GtkSpell.Attach (this.textviewOriginal, "en");
-					this.gtkSpellSet[this.textviewOriginal] = true;
-				}
-				
+//				if (GtkSpell.IsSupported && !gtkSpellSet.ContainsKey (this.textviewOriginal)) {
+//					GtkSpell.Attach (this.textviewOriginal, "en");
+//					this.gtkSpellSet[this.textviewOriginal] = true;
+//				}
+//				
 				this.vbox8.Visible = entry != null && entry.HasPlural;
 				this.notebookTranslated.ShowTabs = entry != null && entry.HasPlural;
 				
 				if (entry != null && entry.HasPlural) {
-					this.textviewOriginalPlural.Buffer.Text = StringEscaping.ToGettextFormat (entry.PluralString);
-					if (GtkSpell.IsSupported && !gtkSpellSet.ContainsKey (this.textviewOriginalPlural)) {
-						GtkSpell.Attach (this.textviewOriginalPlural, "en");
-						this.gtkSpellSet[this.textviewOriginalPlural] = true;
-					}
+					this.labelPlural.Text = StringEscaping.ToGettextFormat (entry.PluralString);
+//					if (GtkSpell.IsSupported && !gtkSpellSet.ContainsKey (this.textviewOriginalPlural)) {
+//						GtkSpell.Attach (this.textviewOriginalPlural, "en");
+//						this.gtkSpellSet[this.textviewOriginalPlural] = true;
+//					}
 				}
 				
 				this.foundInStore.Clear ();
@@ -569,7 +569,7 @@ namespace MonoDevelop.Gettext
 				foreach (CatalogEntry entry in catalog) {
 					if (ShouldFilter (entry, filter)) 
 						continue;
-					store.AppendValues (GetStockForEntry (entry), entry.IsFuzzy, entry.String, entry.GetTranslation (0), entry, GetRowColorForEntry (entry));
+					store.AppendValues (GetStockForEntry (entry), entry.IsFuzzy, StringEscaping.ToGettextFormat (entry.String), StringEscaping.ToGettextFormat (entry.GetTranslation (0)), entry, GetRowColorForEntry (entry));
 				}
 				this.treeviewEntries.Model = store;
 				timeoutHandler = 0;

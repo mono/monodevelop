@@ -1,6 +1,13 @@
 2008-02-26  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Gettext.Editor/POEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs: Improved ui: original
+	  strings are now selectable.Fixed ui glitch: original string in the
+	  entrylist is now in gettext format too.
+
+2008-02-26  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs,
 	  MonoDevelop.Gettext/StringEscaping.cs,
 	  MonoDevelop.Gettext/PluralForms.cs: Now using the gettext format for
 	  text input instead of the plain text (otherwise the translation of some

@@ -1547,11 +1547,17 @@
                                 <property name="CanFocus">True</property>
                                 <property name="ShadowType">In</property>
                                 <child>
-                                  <widget class="Gtk.TextView" id="textviewOriginal">
+                                  <widget class="Gtk.Viewport" id="GtkViewport">
                                     <property name="MemberName" />
-                                    <property name="Sensitive">False</property>
-                                    <property name="CanFocus">True</property>
-                                    <property name="Text" translatable="yes" />
+                                    <property name="ShadowType">None</property>
+                                    <child>
+                                      <widget class="Gtk.Label" id="labelOriginal">
+                                        <property name="MemberName" />
+                                        <property name="Xalign">0</property>
+                                        <property name="LabelProp" translatable="yes" />
+                                        <property name="Selectable">True</property>
+                                      </widget>
+                                    </child>
                                   </widget>
                                 </child>
                               </widget>
@@ -1583,11 +1589,17 @@
                                     <property name="CanFocus">True</property>
                                     <property name="ShadowType">In</property>
                                     <child>
-                                      <widget class="Gtk.TextView" id="textviewOriginalPlural">
+                                      <widget class="Gtk.Viewport" id="GtkViewport1">
                                         <property name="MemberName" />
-                                        <property name="Sensitive">False</property>
-                                        <property name="CanFocus">True</property>
-                                        <property name="Text" translatable="yes" />
+                                        <property name="ShadowType">None</property>
+                                        <child>
+                                          <widget class="Gtk.Label" id="labelPlural">
+                                            <property name="MemberName" />
+                                            <property name="Xalign">0</property>
+                                            <property name="LabelProp" translatable="yes" />
+                                            <property name="Selectable">True</property>
+                                          </widget>
+                                        </child>
                                       </widget>
                                     </child>
                                   </widget>
