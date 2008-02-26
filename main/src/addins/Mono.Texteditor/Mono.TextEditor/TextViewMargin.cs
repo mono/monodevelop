@@ -695,7 +695,7 @@ namespace Mono.TextEditor
 			
 			if (line == null) {
 				if (TextEditorOptions.Options.ShowInvalidLines) {
-					DrawRectangleWithRuler (win, x, lineArea, defaultBgColor);
+				DrawRectangleWithRuler (win, x, lineArea, defaultBgColor);
 					DrawInvalidLineMarker (win, xPos, y);
 				}
 				if (TextEditorOptions.Options.ShowRuler) { // warning: code duplication, look at the method end.
