@@ -156,23 +156,13 @@ namespace MonoDevelop.Gettext {
             w6.XOptions = ((Gtk.AttachOptions)(4));
             w6.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
-            this.radiobuttonRelPath = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("_Relative to output path:"));
-            this.radiobuttonRelPath.CanFocus = true;
-            this.radiobuttonRelPath.Name = "radiobuttonRelPath";
-            this.radiobuttonRelPath.DrawIndicator = true;
-            this.radiobuttonRelPath.UseUnderline = true;
-            this.radiobuttonRelPath.Group = new GLib.SList(System.IntPtr.Zero);
+            this.radiobuttonRelPath = null;
             this.table1.Add(this.radiobuttonRelPath);
             Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.table1[this.radiobuttonRelPath]));
             w7.XOptions = ((Gtk.AttachOptions)(4));
             w7.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
-            this.radiobuttonSystemPath = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("_System path:"));
-            this.radiobuttonSystemPath.CanFocus = true;
-            this.radiobuttonSystemPath.Name = "radiobuttonSystemPath";
-            this.radiobuttonSystemPath.DrawIndicator = true;
-            this.radiobuttonSystemPath.UseUnderline = true;
-            this.radiobuttonSystemPath.Group = this.radiobuttonRelPath.Group;
+            this.radiobuttonSystemPath = null;
             this.table1.Add(this.radiobuttonSystemPath);
             Gtk.Table.TableChild w8 = ((Gtk.Table.TableChild)(this.table1[this.radiobuttonSystemPath]));
             w8.TopAttach = ((uint)(1));

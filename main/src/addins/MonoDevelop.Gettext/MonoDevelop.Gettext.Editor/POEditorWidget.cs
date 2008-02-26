@@ -108,14 +108,21 @@ namespace MonoDevelop.Gettext
 			treeviewEntries.AppendColumn (GettextCatalog.GetString ("Translated string"), translation, "text", Columns.Translation, "cell-background-gdk", Columns.RowColor);
 			treeviewEntries.Selection.Changed += new EventHandler (OnEntrySelected);
 			
+			treeviewEntries.GetColumn (0).SortIndicator = true;
+			treeviewEntries.GetColumn (0).SortColumnId = (int)Columns.RowColor;
+			
 			treeviewEntries.GetColumn (1).SortIndicator = true;
 			treeviewEntries.GetColumn (1).SortColumnId = (int)Columns.Fuzzy;
 			
 			treeviewEntries.GetColumn (2).SortIndicator = true;
 			treeviewEntries.GetColumn (2).SortColumnId = (int)Columns.String;
-
+			treeviewEntries.GetColumn (2).Resizable = true;
+			treeviewEntries.GetColumn (2).Expand = true;
+			
 			treeviewEntries.GetColumn (3).SortIndicator = true;
 			treeviewEntries.GetColumn (3).SortColumnId = (int)Columns.Translation;
+			treeviewEntries.GetColumn (3).Resizable = true;
+			treeviewEntries.GetColumn (3).Expand = true;
 						
 			// found in tree view
 			foundInStore = new ListStore (typeof (string), typeof (string), typeof (string));

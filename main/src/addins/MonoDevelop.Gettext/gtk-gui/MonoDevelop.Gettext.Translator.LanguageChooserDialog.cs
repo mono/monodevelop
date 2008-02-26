@@ -176,12 +176,7 @@ namespace MonoDevelop.Gettext.Translator {
             w9.Position = 1;
             this.GtkAlignment2.Add(this.tableKnown);
             this.frame1.Add(this.GtkAlignment2);
-            this.radiobuttonKnown = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("_Known Language"));
-            this.radiobuttonKnown.Name = "radiobuttonKnown";
-            this.radiobuttonKnown.Active = true;
-            this.radiobuttonKnown.DrawIndicator = true;
-            this.radiobuttonKnown.UseUnderline = true;
-            this.radiobuttonKnown.Group = new GLib.SList(System.IntPtr.Zero);
+            this.radiobuttonKnown = null;
             this.frame1.LabelWidget = this.radiobuttonKnown;
             this.vbox3.Add(this.frame1);
             Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.vbox3[this.frame1]));
@@ -220,11 +215,7 @@ namespace MonoDevelop.Gettext.Translator {
             w14.Position = 1;
             this.GtkAlignment3.Add(this.hboxUser);
             this.frame2.Add(this.GtkAlignment3);
-            this.radiobuttonCustom = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("_User Defined Locale"));
-            this.radiobuttonCustom.Name = "radiobuttonCustom";
-            this.radiobuttonCustom.DrawIndicator = true;
-            this.radiobuttonCustom.UseUnderline = true;
-            this.radiobuttonCustom.Group = this.radiobuttonKnown.Group;
+            this.radiobuttonCustom = null;
             this.frame2.LabelWidget = this.radiobuttonCustom;
             this.vbox3.Add(this.frame2);
             Gtk.Box.BoxChild w17 = ((Gtk.Box.BoxChild)(this.vbox3[this.frame2]));
