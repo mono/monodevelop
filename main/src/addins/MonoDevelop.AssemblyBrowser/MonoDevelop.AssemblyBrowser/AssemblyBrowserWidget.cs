@@ -28,11 +28,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 using Gtk;
 using Mono.Cecil;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Commands;
@@ -228,93 +230,150 @@ namespace MonoDevelop.AssemblyBrowser
 				break;
 			}
 		}
-			
+		Thread searchThread = null;
 		public void StartSearch ()
 		{
-			uint timeoutHandler = 0;
-			if (timeoutHandler != 0)
-				GLib.Source.Remove (timeoutHandler);
-			timeoutHandler = GLib.Timeout.Add (150, delegate {
-				
-				StartSearchThread ();
-				timeoutHandler = 0;
-				return false;
-			});
+			if (searchThread != null) {
+				IdeApp.Workbench.StatusBar.EndProgress ();
+				searchThread.Abort ();
+				searchThread = null;
+			}
+			switch (searchMode) {
+			case SearchMode.Member:
+				IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching member..."));
+				break;
+			case SearchMode.Disassembler:
+				IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching string in disassembled code..."));
+				break;
+			case SearchMode.Decompiler:
+				IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching string in decompiled code..."));
+				break;
+			case SearchMode.Type:
+				IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching type..."));
+				break;
+			}
+			memberListStore.Clear ();
+			typeListStore.Clear ();
+			
+			searchThread = new Thread (StartSearchThread);
+			searchThread.IsBackground = true;
+			searchThread.Priority = ThreadPriority.Lowest;
+			searchThread.Start ();
+//			timeoutHandler = GLib.Timeout.Add (150, delegate {
+//				StartSearchThread ();
+//				IdeApp.Workbench.StatusBar.EndProgress ();
+//				timeoutHandler = 0;
+//				return false;
+//			});
 		}
 		
 		void StartSearchThread ()
 		{
 			string pattern = searchEntry.Text.ToUpper ();
+			int types = 0, curType = 0;
+			foreach (DomCecilCompilationUnit unit in this.definitions) {
+				types += unit.TypeCount;
+			}
+			List<IMember> members = new List<IMember> ();
 			switch (searchMode) {
 			case SearchMode.Member:
-				memberListStore.Clear ();
 				foreach (DomCecilCompilationUnit unit in this.definitions) {
 					foreach (IType type in unit.Types) {
+						curType++;
+						members.Clear ();
 						foreach (IMember member in type.Members) {
 							if (member.Name.ToUpper ().Contains (pattern)) {
+								members.Add (member);
+							}
+						}
+						DispatchService.GuiDispatch (delegate {
+							IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
+							foreach (IMember member in members) {
 								memberListStore.AppendValues (member.Icon,
 								                              member.Name,
 								                              type.FullName,
 								                              unit.AssemblyDefinition.Name.FullName,
 								                              member);
 							}
-						}
+						});
 					}
 				}
 				break;
 			case SearchMode.Disassembler:
-				memberListStore.Clear ();
+				IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching string in disassembled code..."));
 				foreach (DomCecilCompilationUnit unit in this.definitions) {
 					foreach (IType type in unit.Types) {
+						curType++;
+						members.Clear ();
 						foreach (IMethod method in type.Methods) {
 							DomCecilMethod domMethod = method as DomCecilMethod;
 							if (domMethod == null)
 								continue;
 							if (DomMethodNodeBuilder.Disassemble (domMethod, false).ToUpper ().Contains (pattern)) {
-								memberListStore.AppendValues (method.Icon,
-								                              method.Name,
-								                              type.FullName,
-								                              unit.AssemblyDefinition.Name.FullName,
-								                              method);
+								members.Add (method);
 							}
 						}
+						DispatchService.GuiDispatch (delegate {
+							IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
+							foreach (IMember member in members) {
+								memberListStore.AppendValues (member.Icon,
+								                              member.Name,
+								                              type.FullName,
+								                              unit.AssemblyDefinition.Name.FullName,
+								                              member);
+							}
+						});
 					}
 				}
 				break;
 			case SearchMode.Decompiler:
-				memberListStore.Clear ();
 				foreach (DomCecilCompilationUnit unit in this.definitions) {
 					foreach (IType type in unit.Types) {
+						curType++;
+						members.Clear ();
 						foreach (IMethod method in type.Methods) {
 							DomCecilMethod domMethod = method as DomCecilMethod;
 							if (domMethod == null)
 								continue;
 							if (DomMethodNodeBuilder.Decompile (domMethod, false).ToUpper ().Contains (pattern)) {
-								memberListStore.AppendValues (method.Icon,
-								                              method.Name,
-								                              type.FullName,
-								                              unit.AssemblyDefinition.Name.FullName,
-								                              method);
+								members.Add (method);
 							}
 						}
+						DispatchService.GuiDispatch (delegate {
+							IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
+							foreach (IMember member in members) {
+								memberListStore.AppendValues (member.Icon,
+								                              member.Name,
+								                              type.FullName,
+								                              unit.AssemblyDefinition.Name.FullName,
+								                              member);
+							}
+						});
 					}
 				}
 				break;
 			case SearchMode.Type:
-				typeListStore.Clear ();
 				foreach (DomCecilCompilationUnit unit in this.definitions) {
 					foreach (IType type in unit.Types) {
-						if (type.FullName.ToUpper ().Contains (pattern)) {
-							typeListStore.AppendValues (type.Icon,
-							                            type.Name,
-							                            type.Namespace,
-							                            unit.AssemblyDefinition.Name.FullName,
-							                            type);
-						}
+						curType++;
+						DispatchService.GuiDispatch (delegate {
+							IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
+							if (type.FullName.ToUpper ().Contains (pattern)) {
+								typeListStore.AppendValues (type.Icon,
+								                            type.Name,
+								                            type.Namespace,
+								                            unit.AssemblyDefinition.Name.FullName,
+								                            type);
+							}
+						});
 					}
 				}
 				break;
 			}
+			DispatchService.GuiDispatch (delegate {
+				IdeApp.Workbench.StatusBar.EndProgress ();
+			});
+			searchThread = null;
 		}
 		
 		void CreateOutput ()

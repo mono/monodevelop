@@ -1,5 +1,10 @@
 2008-02-26  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: Added progress bar
+	  for search operations.
+
+2008-02-26  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.AssemblyBrowser/Decompiler.cs,
 	  MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs,
 	  MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs: Added search in
