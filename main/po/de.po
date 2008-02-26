@@ -6,7 +6,7 @@ msgstr ""
 "X-Poedit-Bookmarks: -1,1681,-1,-1,-1,-1,-1,-1,-1,-1\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2008-02-26 15:37:15+0100\n"
+"PO-Revision-Date: 2008-02-26 15:48:59+0100\n"
 "Language-Team: \n"
 "Project-Id-Version: Monodevelop\n"
 "MIME-Version: 1.0\n"
@@ -10787,19 +10787,19 @@ msgstr ""
 
 #: ../src/addins/Mono.Texteditor/OblivionStyle.xml:24
 msgid "Dark color scheme using tango colors."
-msgstr ""
+msgstr "Ein dunkles Farbschema das die Tango Farbpalette benutzt."
 
 #: ../src/addins/Mono.Texteditor/TangoLightStyle.xml:24
 msgid "Light color scheme using tango colors."
-msgstr ""
+msgstr "Helles Tango Farbschema"
 
 #: ../src/addins/Mono.Texteditor/UbuntuStyle.xml:24
 msgid "Light color scheme using ubuntu colors."
-msgstr ""
+msgstr "Ubuntu Farbschema"
 
 #: ../src/addins/Mono.Texteditor/VisualStudioStyle.xml:23
 msgid "Microsoft Visual Studio color scheme."
-msgstr ""
+msgstr "Ein Farbschema das an Microsoft Visual Studio angelehnt ist"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:50
 msgid "_Code completion"
@@ -10891,19 +10891,16 @@ msgid "<b>Tabs</b>"
 msgstr "<b>Tabulatoren</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs:72
-#, fuzzy
 msgid "_Enable highlighting"
-msgstr "Syntaxhervorhebung aktivieren"
+msgstr "_Syntaxhervorhebung aktivieren"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs:84
-#, fuzzy
 msgid "E_nable semantic highlighting"
-msgstr "Syntaxhervorhebung aktivieren"
+msgstr "S_emantische Syntaxhervorhebung aktivieren"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs:96
-#, fuzzy
 msgid "<b>Syntax highlighting</b>"
-msgstr "Syntax-Hervorhebung"
+msgstr "<b>Syntaxhervorhebung</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs:172
 msgid "<b>Color sheme</b>"
@@ -10965,11 +10962,11 @@ msgstr "Ausdruck nicht gefunden"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1012
 msgid "Reached bottom, continued from top"
-msgstr ""
+msgstr "Das Dokumentende wurde erreicht. Suche vom Dokumentanfang fortgesetzt."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1028
 msgid "Reached top, continued from bottom"
-msgstr ""
+msgstr "Der Dokumentanfang wurde erreicht. Suche am Dokumentende fortgesetzt."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:38
 msgid "Automatic"
@@ -10981,7 +10978,7 @@ msgstr "Elegant"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:126
 msgid "The default color sheme."
-msgstr ""
+msgstr "Voreingestelltes Farbschema"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:76
 msgid "Markers and Rulers"
@@ -11071,9 +11068,8 @@ msgid "Assembly <b>{0}</b>, Version {1}"
 msgstr "Assembly <b>{0}</b>, Version {1}"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs:92
-#, fuzzy
 msgid "Console application"
-msgstr "Kalender-Anwendung"
+msgstr "Konsolenanwendung"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs:107
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:110
@@ -11093,7 +11089,6 @@ msgid "<b>Version:</b>\t{0}"
 msgstr "<b>Version:</b>\t{0}"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:96
-#, fuzzy
 msgid "<b>Assembly:</b>\t{0}, Version={1}"
 msgstr "<b>Assembly:</b>\t{0}, Version={1}"
 
