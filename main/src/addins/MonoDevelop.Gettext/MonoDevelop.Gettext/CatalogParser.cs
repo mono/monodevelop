@@ -124,9 +124,6 @@ namespace MonoDevelop.Gettext
 					line = line.Substring (1);
 				
 				if (line[0] == '"' && line[line.Length - 1] == '"') { 
-					/*if (!firstLine && !result.ToString ().EndsWith ("\\n")) {
-						result.Append ("\n");
-					}*/
 					result.Append (StringEscaping.FromGettextFormat (line.Substring (1, line.Length - 2)));
 				} else
 					break;
@@ -254,17 +251,13 @@ namespace MonoDevelop.Gettext
 					string label = "msgstr[" + idx + "]";
 					
 					while (CatalogParser.ReadParam (line, label + " \"", out dummy) || CatalogParser.ReadParam (line, label + "\t\"", out dummy)) {
-						string str = dummy.Substring (0, dummy.Length - 1);
+						StringBuilder str = new StringBuilder (dummy.Substring (0, dummy.Length - 1));
 						
-						bool firstLine = true;
 						while ((line = fileLines[lineNumber++]) != String.Empty) {
 							if (line[0] == '\t')
 								line = line.Substring (1);
 							if (line[0] == '"' && line[line.Length - 1] == '"') {
-								if (!firstLine && !str.EndsWith ("\\n")) {
-									str += "\n";
-								}
-								str += line.Substring (1, line.Length - 2);
+								str.Append (line.Substring (1, line.Length - 2));
 							} else {
 								if (ReadParam (line, "msgstr[", out dummy)) {
 									pos = dummy.IndexOf (']');
@@ -273,9 +266,8 @@ namespace MonoDevelop.Gettext
 								}
 								break;
 							}
-							firstLine = false;
 						}
-						mtranslations.Add (str);
+						mtranslations.Add (str.ToString ());
 					}
 					
 					if (! OnEntry (mstr, msgidPlural, true, mtranslations.ToArray (),
